@@ -1,14 +1,18 @@
 // Copyright © 2024 650 Industries.
 
-/// <reference path="ts-declarations/NativeComponentRegistry.d.ts" />
-
 'use client';
 
 import { type Component, type ComponentType, createRef, PureComponent } from 'react';
-import { type ReactNativeElement, findNodeHandle, type HostComponent } from 'react-native';
-import { get as componentRegistryGet } from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
+import {
+  type ReactNativeElement,
+  findNodeHandle,
+  type HostComponent,
+  NativeComponentRegistry,
+} from 'react-native';
 
-import { SharedObject } from './SharedObject';
+import { getNativeViewComponent } from './NativeViewComponent';
+import { mapAriaProps } from './ariaProps';
+import { addAttributeProcessing } from './nativeViewProps';
 import { requireNativeModule } from './requireNativeModule';
 
 // To make the transition from React Native's `requireNativeComponent` to Expo's
@@ -25,12 +29,11 @@ import { requireNativeModule } from './requireNativeModule';
  */
 const nativeComponentsCache = new Map<string, HostComponent<any>>();
 
-// TODO(@kitten): Optimally, this is defined on ExpoGlobal, but we treat `__expo_app_identifier__` as internal
+// TODO(@kitten): Optimally, this is defined on ExpoGlobal
 declare namespace globalThis {
   const expo:
     | undefined
     | {
-        __expo_app_identifier__?: string;
         getViewConfig(
           moduleName: string,
           viewName?: string
@@ -44,18 +47,15 @@ declare namespace globalThis {
 /**
  * Requires a React Native component using the static view config from an Expo module.
  */
-function requireNativeComponent<Props>(
+function requireNativeComponent<Props extends object>(
   moduleName: string,
   viewName?: string
 ): HostComponent<Props> {
-  const appIdentifier = globalThis.expo?.['__expo_app_identifier__'] ?? '';
-  const viewNameSuffix = appIdentifier ? `_${appIdentifier}` : '';
-
   const nativeViewName = viewName
-    ? `ViewManagerAdapter_${moduleName}_${viewName}${viewNameSuffix}`
-    : `ViewManagerAdapter_${moduleName}${viewNameSuffix}`;
+    ? `ViewManagerAdapter_${moduleName}_${viewName}`
+    : `ViewManagerAdapter_${moduleName}`;
 
-  return componentRegistryGet<Props>(nativeViewName, () => {
+  return NativeComponentRegistry.get<Props>(nativeViewName, () => {
     const expoViewConfig = globalThis.expo?.getViewConfig(moduleName, viewName);
 
     if (!expoViewConfig) {
@@ -76,44 +76,11 @@ function requireNativeComponent<Props>(
 }
 
 /**
- * Unwraps a shared object to its id so that native receives the registry id
- * instead of the JS wrapper. Other values are passed through unchanged.
- */
-function processPropValue(value: unknown): unknown {
-  if (value != null && typeof value === 'object' && value instanceof SharedObject) {
-    // `__expo_shared_object_id__` is a hidden property installed by native and planned for
-    // removal; the `typeof` check guards against returning `undefined` once native stops
-    // setting the property.
-    // @ts-expect-error
-    const sharedObjectId = value.__expo_shared_object_id__;
-    if (typeof sharedObjectId === 'number') {
-      return sharedObjectId;
-    }
-  }
-  return value;
-}
-
-/**
- * Wraps each attribute in the descriptor shape React Native expects and attaches `process`
- * to unwrap shared objects to their registry id. `diff` is intentionally left unset so
- * React Native falls back to its `deepDiffer` default, which does structural comparison
- * for object/array props.
- */
-function addAttributeProcessing(validAttributes: Record<string, any>): Record<string, any> {
-  const descriptor = { process: processPropValue };
-  const attributes: Record<string, any> = {};
-  for (const key of Object.keys(validAttributes)) {
-    attributes[key] = descriptor;
-  }
-  return attributes;
-}
-
-/**
  * Requires a React Native component from cache if possible. This prevents
  * "Tried to register two views with the same name" errors on fast refresh, but
  * also when there are multiple versions of the same package with native component.
  */
-function requireCachedNativeComponent<Props>(
+function requireCachedNativeComponent<Props extends object>(
   moduleName: string,
   viewName?: string
 ): HostComponent<Props> {
@@ -131,10 +98,14 @@ function requireCachedNativeComponent<Props>(
 /**
  * A drop-in replacement for `requireNativeComponent`.
  */
-export function requireNativeViewManager<P>(
+export function requireNativeViewManager<P extends object>(
   moduleName: string,
   viewName?: string
 ): ComponentType<P> {
+  const nativeViewComponent = getNativeViewComponent<P>(moduleName, viewName);
+  if (nativeViewComponent) {
+    return nativeViewComponent;
+  }
   const ReactNativeComponent = requireCachedNativeComponent(moduleName, viewName);
 
   class NativeComponent extends PureComponent<P> {
@@ -158,7 +129,7 @@ export function requireNativeViewManager<P>(
     }
 
     render() {
-      return <ReactNativeComponent {...this.props} ref={this.nativeRef} />;
+      return <ReactNativeComponent {...mapAriaProps(this.props)} ref={this.nativeRef} />;
     }
   }
 

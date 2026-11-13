@@ -90,9 +90,12 @@ final class RelaunchProcedure: StateMachineProcedure {
           procedureContext.resetStateAfterRestart()
           procedureContext.onComplete()
         } else {
-          // swiftlint:disable:next force_unwrapping
-          self.logger.error(cause: UpdatesError.relaunchProcedureFailedToRelaunch(cause: error!))
-          self.errorBlock(UpdatesReloadException())
+          let reloadException = UpdatesReloadException()
+          self.logger.error(
+            .launchFailed,
+            values: ["launch": "relaunch", "cause": error?.localizedDescription ?? reloadException.localizedDescription]
+          )
+          self.errorBlock(reloadException)
           procedureContext.onComplete()
         }
       }

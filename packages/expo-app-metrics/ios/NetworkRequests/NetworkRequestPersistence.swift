@@ -7,30 +7,38 @@ import Foundation
 /// Mirrors the Android `NetworkRequestPersistence`.
 @AppMetricsActor
 final class NetworkRequestPersistence: Sendable {
-  /// Optional so a failed database open degrades to dropped rows instead of blocking the
-  /// monitor from starting.
-  private let database: MetricsDatabase?
+  private let writer: SpanWriter
 
   /// A closure so constructing this does not force the session machinery into existence before
   /// the app delegate finished wiring it.
   private let sessionId: @Sendable () -> String
 
-  init(database: MetricsDatabase?, sessionId: @escaping @Sendable () -> String) {
-    self.database = database
+  private var configuration: NetworkTracesConfiguration
+
+  init(
+    writer: SpanWriter,
+    configuration: NetworkTracesConfiguration = NetworkTracesConfiguration(),
+    sessionId: @escaping @Sendable () -> String
+  ) {
+    self.writer = writer
+    self.configuration = configuration
     self.sessionId = sessionId
+  }
+
+  /// Applies a new recording policy. Affects future requests only; rows already written stay.
+  func setConfiguration(_ configuration: NetworkTracesConfiguration) {
+    self.configuration = configuration
   }
 
   /// Records one completed request as a span.
   func persist(_ request: NetworkRequest) {
-    guard let database, let row = SpanRow.from(request: request, sessionId: sessionId()) else {
+    guard configuration.allows(url: request.url, method: request.method) else {
       return
     }
-    do {
-      try database.insert(span: row)
-    } catch {
-      // Swallowed: recording telemetry must never break the monitor's fan-out to its delegates.
-      logger.warn("[AppMetrics] Failed to persist a network request span: \(error.localizedDescription)")
+    guard let row = SpanRow.from(request: request, sessionId: sessionId()) else {
+      return
     }
+    writer.write(row)
   }
 }
 

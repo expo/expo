@@ -92,8 +92,8 @@ class AesCryptoModule : Module() {
         sealedData.combinedArray.formatted(format)
       }
       AsyncFunction("ciphertext") { sealedData: SealedData, options: CiphertextOptions? ->
-        val (includeTag, outputFormat) = options ?: CiphertextOptions()
-        sealedData.ciphertextBytes(withTag = includeTag).formatted(outputFormat)
+        val (includeTag, encoding) = options ?: CiphertextOptions()
+        sealedData.ciphertextBytes(withTag = includeTag).formatted(encoding)
       }
 
       Property("combinedSize") { sealedData -> sealedData.combinedSize }

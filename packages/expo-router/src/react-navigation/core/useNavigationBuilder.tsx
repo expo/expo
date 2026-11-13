@@ -285,6 +285,7 @@ export function useNavigationBuilder<
     if (UNSTABLE_router != null) {
       const overrides = UNSTABLE_router(original);
 
+      // TODO(@ubax): Remove the UNSTABLE_router prop
       return {
         ...original,
         ...overrides,
@@ -425,10 +426,6 @@ export function useNavigationBuilder<
 
   useFocusEvents({ state, emitter });
 
-  React.useEffect(() => {
-    emitter.emit({ type: 'state', data: { state } });
-  }, [emitter, state]);
-
   const { listeners: childListeners, addListener } = useChildListeners();
 
   // TODO(@ubax): Check whether this ref can be safely removed.
@@ -442,6 +439,8 @@ export function useNavigationBuilder<
       shouldActionChangeFocus: router.shouldActionChangeFocus,
       getStateForRouteFocus: (registryState, routeKey) =>
         router.getStateForRouteFocus(registryState as State, routeKey),
+      getBrowserHistoryForRouteFocus: (previous, next, childAction) =>
+        router.getBrowserHistoryForRouteFocus?.(previous as State, next as State, childAction),
       routeNode: routeNode ?? undefined,
     }),
     [reduce, routeNode, router]
@@ -490,6 +489,12 @@ export function useNavigationBuilder<
     router,
   });
 
+  // Declared after `useNavigationHelpers` so that `navigation.getState()` already
+  // returns the new state when `state` listeners run.
+  React.useEffect(() => {
+    emitter.emit({ type: 'state', data: { state } });
+  }, [emitter, state]);
+
   useFocusedListenersChildrenAdapter({
     navigation,
     focusedListeners: childListeners.focus,
@@ -508,10 +513,10 @@ export function useNavigationBuilder<
     addListener,
     router,
     emitter,
+    routeNode,
   });
   useCurrentRender({
     state,
-    navigation,
     descriptors,
   });
 

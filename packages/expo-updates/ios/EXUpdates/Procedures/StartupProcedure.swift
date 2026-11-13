@@ -113,7 +113,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
 
     delegate?.startupProcedureDidLaunch(self)
 
-    ErrorRecovery.writeErrorOrExceptionToLog(error, logger)
+    ErrorRecovery.writeErrorOrExceptionToLog(error, logger, message: .errorRecoveryStartupFailed)
   }
 
   // MARK: - AppLoaderTaskDelegate
@@ -186,7 +186,6 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
   }
 
   func appLoaderTask(_: AppLoaderTask, didFinishWithError error: Error) {
-    logger.error(cause: UpdatesError.startupProcedureDidFinishWithError(cause: error), code: .updateFailedToLoad)
     self.procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
     emergencyLaunch(fatalError: error)
   }
@@ -203,18 +202,29 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       guard let error = error else {
         preconditionFailure("Background update with error status must have a nonnull error object")
       }
-      logger.error(
-        cause: UpdatesError.startupProcedureDidFinishBackgroundUpdateWithStatusWithError(cause: error),
-        code: .updateFailedToLoad,
-        updateId: update?.loggingId(),
-        assetId: nil
+      logger.errorForLoadFailure(
+        error,
+        failed: .startupRemoteLoadFailed,
+        unreachable: .startupRemoteLoadUnreachable,
+        updateId: update?.loggingId()
       )
       // Since errors can happen through a number of paths, we do these checks
       // to make sure the state machine is valid
-      if self.procedureContext.getCurrentState() == .checking {
+      switch self.procedureContext.getCurrentState() {
+      case .checking:
         self.procedureContext.processStateEvent(.checkError(errorMessage: error.localizedDescription))
-      } else if self.procedureContext.getCurrentState() == .downloading {
+      case .downloading:
         self.procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
+      case .idle:
+        // `downloadError` on its own is an illegal transition out of idle and would be dropped,
+        // leaving `useUpdates()` with no record of the failure. Move into the downloading state
+        // first, as the Android implementation does.
+        self.procedureContext.processStateEvent(.download)
+        self.procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
+      case .restarting:
+        // The machine accepts no events while restarting. errorForLoadFailure above logged the
+        // failure.
+        break
       }
     case .updateAvailable:
       remoteLoadStatus = .NewUpdateLoaded
@@ -303,7 +313,11 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       self.remoteLoadStatus = updateResponse != nil ? .NewUpdateLoaded : .Idle
       self.errorRecovery.notify(newRemoteLoadStatus: self.remoteLoadStatus)
     } error: { error in
-      self.logger.error(cause: error, code: .updateFailedToLoad)
+      self.logger.errorForLoadFailure(
+        error,
+        failed: .startupErrorRecoveryLoadFailed,
+        unreachable: .startupErrorRecoveryLoadUnreachable
+      )
       self.remoteLoadStatus = .Idle
       self.errorRecovery.notify(newRemoteLoadStatus: self.remoteLoadStatus)
     }
@@ -321,15 +335,14 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       }
 
       self.logger.warn(
-        message: "AppController markFailedLaunchForUpdate",
-        code: .unknown,
-        updateId: launchedUpdate.loggingId(),
-        assetId: nil
+        .startupMarkFailedLaunch,
+        values: ["updateId": launchedUpdate.loggingId()],
+        updateId: launchedUpdate.loggingId()
       )
       do {
         try self.database.incrementFailedLaunchCountForUpdate(launchedUpdate)
       } catch {
-        self.logger.warn(message: "Unable to mark update as failed in the local DB: \(error.localizedDescription)")
+        self.logger.warn(.startupLaunchCountUpdateFailed, cause: error, values: ["count": "failed"])
       }
     }
   }
@@ -347,7 +360,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       do {
         try self.database.incrementSuccessfulLaunchCountForUpdate(launchedUpdate)
       } catch {
-        self.logger.warn(message: "Failed to increment successful launch count for update: \(error.localizedDescription)")
+        self.logger.warn(.startupLaunchCountUpdateFailed, cause: error, values: ["count": "successful"])
       }
     }
   }

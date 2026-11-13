@@ -9,7 +9,7 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 
 [`@expo/repack-app`](https://www.npmjs.com/package/@expo/repack-app) is a CLI tool that repackages an existing Android APK, iOS IPA, or iOS **.app** bundle without performing a full native build. It updates the existing artifact with a new JavaScript (JS) bundle, assets, and app metadata (such as, app name, version, and package name or bundle identifier). Since there is no native compilation involved, a repack is typically much faster than a full native build.
 
-To learn more about how fingerprint and repack work together to accelerate CI, see [Accelerating Continuous Integration with Fingerprint and Repack in EAS Workflows](https://expo.dev/blog/accelerating-continuous-integration-with-fingerprint-repack-in-eas-workflows) blog post.
+To learn more about how fingerprint and repack work together to accelerate CI, see [Accelerating Continuous Integration with Fingerprint and Repack in Expo Workflows](https://expo.dev/blog/accelerating-continuous-integration-with-fingerprint-repack-in-eas-workflows) blog post.
 
 <Prerequisites>
   <Requirement title="An existing build artifact">
@@ -26,7 +26,7 @@ To learn more about how fingerprint and repack work together to accelerate CI, s
 
 Repack assumes the source binary's native side is unchanged since it was built. If you added a native dependency, changed a [config plugin](/config-plugins/introduction/), or upgraded the Expo SDK, a repacked artifact will have JS that expects native APIs that do not exist, and will likely crash at runtime. Use [fingerprint](/versions/latest/sdk/fingerprint/) to compare the source binary's native identity against your current project. If the fingerprints match, then repack is safe. If they differ, do a full native build instead.
 
-Repack is not a replacement for [EAS Update](/eas-update/introduction/). EAS Update ships a new JS bundle to apps that are already installed, and users see it on the next launch. Repack produces a new installable artifact. A good rule of thumb is to use repack for internal testing (QA devices, testers, CI smoke tests) and use EAS Update to deliver JS changes to production users.
+Repack is not a replacement for [Expo Update](/eas-update/introduction/). Expo Update ships a new JS bundle to apps that are already installed, and users see it on the next launch. Repack produces a new installable artifact. A good rule of thumb is to use repack for internal testing (QA devices, testers, CI smoke tests) and use Expo Update to deliver JS changes to production users.
 
 ## Use cases
 
@@ -64,9 +64,9 @@ Using a **.app** bundle (for simulator builds, the iOS device artifacts are alwa
 
 </Tabs>
 
-### EAS Workflows
+### Expo Workflows
 
-EAS Workflows provides a pre-packaged `repack` job type that handles signing and build management automatically. See [EAS Workflows pre-packaged jobs](/eas/workflows/pre-packaged-jobs/#repack) for full syntax, parameters, and examples.
+Expo Workflows provides a pre-packaged `repack` job type that handles signing and build management automatically. See [Expo Workflows pre-packaged jobs](/eas/workflows/pre-packaged-jobs/#repack) for full syntax, parameters, and examples.
 
 ## Signing
 

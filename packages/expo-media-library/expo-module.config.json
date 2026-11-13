@@ -1,12 +1,18 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
+    "podspecPath": "ios/ExpoMediaLibrary.podspec",
     "modules": ["MediaLibraryModule", "MediaLibraryNextModule"]
   },
   "android": {
     "modules": [
       "expo.modules.medialibrary.MediaLibraryModule",
       "expo.modules.medialibrary.next.MediaLibraryNextModule"
-    ]
+    ],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.medialibrary",
+      "repository": "local-maven-repo"
+    }
   }
 }

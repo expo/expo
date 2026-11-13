@@ -2,18 +2,12 @@
 
 package expo.modules.appmetrics.networkrequests
 
-import android.util.Log
-import expo.modules.appmetrics.storage.MetricsDatabase
+import expo.modules.appmetrics.spans.SpanWriter
 import expo.modules.appmetrics.storage.Span
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URLDecoder
-
-private const val TAG = "ExpoAppMetrics"
 
 /**
  * Records completed network requests as trace spans in the `spans` table.
@@ -21,30 +15,39 @@ private const val TAG = "ExpoAppMetrics"
  * Mirrors the iOS `NetworkRequestPersistence`.
  */
 class NetworkRequestPersistence(
-  private val database: MetricsDatabase,
-  private val scope: CoroutineScope,
+  private val writer: SpanWriter,
+  initialConfiguration: NetworkTracesConfiguration = NetworkTracesConfiguration(),
   // A plain value rather than a provider: the id is constant for an instance, and resolving it
   // eagerly keeps the monitor's record path off module state a teardown could have invalidated.
   private val sessionId: String
 ) {
   /**
+   * Capture-time recording policy. Volatile because the monitor reads it from OkHttp dispatcher
+   * threads while reconfigures land on the modules queue.
+   */
+  @Volatile
+  private var configuration: NetworkTracesConfiguration = initialConfiguration
+
+  /**
+   * Applies a new recording policy. Affects future requests only; rows already written stay.
+   */
+  fun setConfiguration(configuration: NetworkTracesConfiguration) {
+    this.configuration = configuration
+  }
+
+  /**
    * Records one completed request as a span.
    */
   fun persist(request: NetworkRequest) {
-    // Converts and inserts on `scope`, so OkHttp dispatcher threads pay neither the URL parsing
-    // and JSON building nor the database write. Matches `persistBuffered`.
-    scope.launch {
-      val span = request.toSpan(sessionId) ?: return@launch
-      try {
-        database.spanDao().insert(span)
-      } catch (e: CancellationException) {
-        // A torn-down scope is routine (a JS reload), not a failure worth warning about.
-        throw e
-      } catch (e: Exception) {
-        // Swallowed: recording telemetry must never break the monitor's fan-out to its delegates.
-        Log.w(TAG, "Failed to persist a network request span", e)
-      }
+    // Checked before dispatching: a request the policy excludes costs nothing beyond this. A
+    // `hosts` list does parse the URL here, on the dispatcher thread, which is the price of
+    // deciding before the hop.
+    if (!configuration.allows(request.url, request.method)) {
+      return
     }
+    // Converts on the writer's scope, not here: this runs on an OkHttp dispatcher thread for
+    // every completed request, and `persistBuffered` defers the same work for the same reason.
+    writer.write { request.toSpan(sessionId) }
   }
 
   /**
@@ -56,26 +59,18 @@ class NetworkRequestPersistence(
     if (requests.isEmpty()) {
       return
     }
-    // One coroutine, converting inside it: the install path shares the module's serial queue
-    // with the session INSERT and crash-report processing, so converting up to 200 requests
-    // there would be the most expensive place to do it.
-    scope.launch {
-      for (request in requests) {
-        val span = request.toSpan(sessionId) ?: continue
-        try {
-          database.spanDao().insert(span)
-        } catch (e: CancellationException) {
-          // Must not be swallowed: `CancellationException` is an `Exception`, so a blanket catch
-          // would let the loop finish and report completion for a batch that never wrote its
-          // remaining rows, losing the buffered requests the caller means to retry.
-          throw e
-        } catch (e: Exception) {
-          Log.w(TAG, "Failed to persist a network request span", e)
-        }
+    // Snapshotted once, unlike `persist`, which samples the policy per request. Everything in
+    // this batch was observed before the install that triggered the drain, so one policy keeps
+    // their treatment from depending on how far the loop happened to get before a reconfigure
+    // landed.
+    val policy = configuration
+    // The conversion runs lazily inside the writer's batch coroutine: the install path shares
+    // the module's serial queue with the session INSERT and crash-report processing, so
+    // converting up to 200 requests there would be the most expensive place to do it.
+    writer.writeAll(onComplete) {
+      requests.mapNotNull { request ->
+        request.takeIf { policy.allows(it.url, it.method) }?.toSpan(sessionId)
       }
-      // Deliberately not in a `finally`: a cancelled batch must not report completion, so the
-      // caller can retry the drain on the next install.
-      onComplete()
     }
   }
 }
@@ -98,7 +93,14 @@ internal fun NetworkRequest.toSpan(sessionId: String): Span? {
   // (verbatim value preserved in `http.request.method_original`) and names the span `HTTP`,
   // so caller-controlled verbs can't mint unbounded span names.
   val isKnownMethod = method in KNOWN_HTTP_METHODS
-  attributes.put("http.request.method", if (isKnownMethod) method else "_OTHER")
+  attributes.put(
+    "http.request.method",
+    if (isKnownMethod) {
+      method
+    } else {
+      "_OTHER"
+    }
+  )
   if (!isKnownMethod) {
     attributes.put("http.request.method_original", method)
   }
@@ -166,14 +168,30 @@ internal fun NetworkRequest.toSpan(sessionId: String): Span? {
 
   return Span(
     sessionId = sessionId,
-    name = if (isKnownMethod) method else "HTTP",
+    name = if (isKnownMethod) {
+      method
+    } else {
+      "HTTP"
+    },
     kind = Span.CLIENT_KIND,
     startTimestampMs = resolvedStart,
     endTimestampMs = resolvedEnd,
-    statusCode = if (failed) Span.STATUS_ERROR else null,
-    statusMessage = if (failed) errorDescription else null,
+    statusCode = if (failed) {
+      Span.STATUS_ERROR
+    } else {
+      null
+    },
+    statusMessage = if (failed) {
+      errorDescription
+    } else {
+      null
+    },
     attributes = attributes.toString(),
-    events = if (events.length() > 0) events.toString() else null
+    events = if (events.length() > 0) {
+      events.toString()
+    } else {
+      null
+    }
   )
 }
 
@@ -229,7 +247,11 @@ private fun redactedUrlFull(url: String, parsed: okhttp3.HttpUrl?): String {
           // A malformed escape cannot be decoded; fall back to the raw name rather than drop it.
           name
         }
-        if (decodedName.lowercase() in SENSITIVE_QUERY_PARAMETERS) "$name=REDACTED" else pair
+        if (decodedName.lowercase() in SENSITIVE_QUERY_PARAMETERS) {
+          "$name=REDACTED"
+        } else {
+          pair
+        }
       }
     if (redacted != encodedQuery) {
       builder.encodedQuery(redacted)

@@ -27,7 +27,7 @@ public final class UpdatesReaper: NSObject {
       do {
         try database.markUpdateFinished(launchedUpdate)
       } catch {
-        logger.warn(message: "Error reaping updates: \(error.localizedDescription)")
+        logger.warn(.reaperFailed, cause: error)
         return
       }
 
@@ -35,7 +35,7 @@ public final class UpdatesReaper: NSObject {
       do {
         allUpdates = try database.allUpdates(withConfig: config)
       } catch {
-        logger.warn(message: "Error reaping updates: \(error.localizedDescription)")
+        logger.warn(.reaperFailed, cause: error)
         return
       }
 
@@ -43,7 +43,7 @@ public final class UpdatesReaper: NSObject {
       do {
         manifestFilters = try database.manifestFilters(withScopeKey: config.scopeKey)
       } catch {
-        logger.warn(message: "Error selecting manifest filters while reaping updates: \(error.localizedDescription)")
+        logger.warn(.localMetadataReadFailed, cause: error, values: ["field": "manifestFilters"])
         return
       }
 
@@ -51,7 +51,7 @@ public final class UpdatesReaper: NSObject {
       do {
         try database.deleteUpdates(updatesToDelete)
       } catch {
-        logger.warn(message: "Error reaping updates: \(error.localizedDescription)")
+        logger.warn(.reaperFailed, cause: error)
         return
       }
 
@@ -59,7 +59,7 @@ public final class UpdatesReaper: NSObject {
       do {
         assetsForDeletion = try database.deleteUnusedAssets()
       } catch {
-        logger.warn(message: "Error reaping updates: \(error.localizedDescription)")
+        logger.warn(.reaperFailed, cause: error)
         return
       }
 
@@ -72,7 +72,7 @@ public final class UpdatesReaper: NSObject {
         let beginDeleteAssets = Date()
         for asset in assetsForDeletion {
           guard UpdatesUtils.isSafeFilename(asset.filename) else {
-            logger.warn(message: "Refusing to delete asset at unsafe path \(asset.filename)")
+            logger.warn(.reaperUnsafePath, values: ["filename": asset.filename])
             continue
           }
           let localUrl = directory.appendingPathComponent(asset.filename)
@@ -81,7 +81,7 @@ public final class UpdatesReaper: NSObject {
               try FileManager.default.removeItem(at: localUrl)
               deletedAssets += 1
             } catch {
-              logger.warn(message: "Error deleting asset at \(localUrl): \(error.localizedDescription)")
+              logger.warn(.reaperAssetDeleteFailed, cause: error, values: ["path": localUrl.path, "retry": "false"])
               erroredAssets.append(asset)
             }
           } else {
@@ -98,7 +98,7 @@ public final class UpdatesReaper: NSObject {
             do {
               try FileManager.default.removeItem(at: localUrl)
             } catch {
-              logger.warn(message: "Retried deleting asset at \(localUrl) and failed again: \(error.localizedDescription)")
+              logger.warn(.reaperAssetDeleteFailed, cause: error, values: ["path": localUrl.path, "retry": "true"])
             }
           }
         }

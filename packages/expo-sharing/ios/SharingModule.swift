@@ -91,6 +91,7 @@ public final class SharingModule: Module {
 
     Function("clearSharedPayloads") {
       try UserDefaults(suiteName: appGroupId)?.removeObject(forKey: SHARE_INTO_DEFAULTS_KEY)
+      try ShareIntoFileStore(appGroupId: appGroupId)?.removeAll()
     }
   }
 
@@ -99,18 +100,22 @@ public final class SharingModule: Module {
     from viewController: UIViewController,
     anchor: SharingOptions.Rect?
   ) {
-    guard UIDevice.current.userInterfaceIdiom == .pad else {
+    // Popovers are a regular-width behavior, not an iPad one.
+    guard viewController.traitCollection.horizontalSizeClass == .regular else {
       return
     }
 
     let viewFrame = viewController.view.frame
-    activityController.popoverPresentationController?.sourceRect = CGRect(
-      x: anchor?.x ?? viewFrame.midX,
-      y: anchor?.y ?? viewFrame.maxY,
-      width: anchor?.width ?? 0,
-      height: anchor?.height ?? 0
+    SceneGeometry.anchorPopover(
+      of: activityController,
+      to: viewController.view,
+      rect: CGRect(
+        x: anchor?.x ?? viewFrame.midX,
+        y: anchor?.y ?? viewFrame.maxY,
+        width: anchor?.width ?? 0,
+        height: anchor?.height ?? 0
+      )
     )
-    activityController.popoverPresentationController?.sourceView = viewController.view
     activityController.modalPresentationStyle = .pageSheet
   }
 

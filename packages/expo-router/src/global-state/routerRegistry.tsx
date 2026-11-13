@@ -7,16 +7,23 @@ import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutE
 import type {
   NavigationAction,
   NavigationState,
+  RouterActionHandling,
   RouterActionResult,
+  RouterBrowserHistoryAction,
 } from '../react-navigation/routers';
 
 export type RouterRegistryEntry = {
   reduce: (
     state: NavigationState,
     action: NavigationAction
-  ) => RouterActionResult<NavigationState> | null;
+  ) => RouterActionResult<NavigationState> | RouterActionHandling.Unhandled | null;
   shouldActionChangeFocus?: (action: NavigationAction) => boolean;
   getStateForRouteFocus?: (state: NavigationState, routeKey: string) => NavigationState;
+  getBrowserHistoryForRouteFocus?: (
+    previous: NavigationState,
+    next: NavigationState,
+    childAction?: RouterBrowserHistoryAction
+  ) => RouterBrowserHistoryAction | undefined;
   routeNode?: RouteNode;
 };
 

@@ -101,8 +101,8 @@ describe('StackToolbarView component', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  it('renders RouterToolbarItem in bottom placement', () => {
-    render(
+  it('renders RouterToolbarItem in bottom placement', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarView>
           <Text>Custom Content</Text>
@@ -117,22 +117,22 @@ describe('StackToolbarView component', () => {
 
   it.each(['left', 'right', undefined, 'xyz'] as const)(
     'throws error when not in bottom placement (placement=%s)',
-    (placement) => {
-      expect(() => {
-        render(
+    async (placement) => {
+      await expect(async () => {
+        await render(
           <ToolbarPlacementContext.Provider value={placement as any}>
             <StackToolbarView>
               <Text>Custom Content</Text>
             </StackToolbarView>
           </ToolbarPlacementContext.Provider>
         );
-      }).toThrow('Stack.Toolbar.View must be used inside a Stack.Toolbar');
+      }).rejects.toThrow('Stack.Toolbar.View must be used inside a Stack.Toolbar');
     }
   );
 
-  it('passes children to RouterToolbarItem', () => {
+  it('passes children to RouterToolbarItem', async () => {
     const CustomContent = <Text testID="custom-content">Custom Content</Text>;
-    render(
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarView>{CustomContent}</StackToolbarView>
       </ToolbarPlacementContext.Provider>
@@ -142,8 +142,8 @@ describe('StackToolbarView component', () => {
     expect(within(toolbarItem).getByTestId('custom-content')).toBeVisible();
   });
 
-  it.each([true, false, undefined])('passes hidden=%s prop', (hidden) => {
-    render(
+  it.each([true, false, undefined])('passes hidden=%s prop', async (hidden) => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarView hidden={hidden}>
           <Text>Content</Text>
@@ -161,8 +161,8 @@ describe('StackToolbarView component', () => {
 
   it.each([true, false, undefined])(
     'passes hidesSharedBackground=%s prop',
-    (hidesSharedBackground) => {
-      render(
+    async (hidesSharedBackground) => {
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarView hidesSharedBackground={hidesSharedBackground}>
             <Text>Content</Text>
@@ -181,8 +181,8 @@ describe('StackToolbarView component', () => {
 
   it.each([true, false, undefined])(
     'passes sharesBackground as inverted separateBackground=%s',
-    (separateBackground) => {
-      render(
+    async (separateBackground) => {
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarView separateBackground={separateBackground}>
             <Text>Content</Text>

@@ -2,8 +2,14 @@
 
 // Right now NativeTabs.Trigger.* components cannot be used in the server environment
 import { Badge, Icon, Label } from '../../primitives';
-import { NativeTabs } from '../NativeTabs';
 import { NativeTabsBottomAccessory } from '../common/elements';
+import { NativeTabs, createNativeTabsProps } from '../index';
+
+it('resolves createNativeTabsProps as a client reference', () => {
+  expect((createNativeTabsProps as { $$typeof?: symbol }).$$typeof).toBe(
+    Symbol.for('react.client.reference')
+  );
+});
 
 it(`renders NativeTabs`, async () => {
   await expect(<NativeTabs />).toMatchFlightSnapshot();

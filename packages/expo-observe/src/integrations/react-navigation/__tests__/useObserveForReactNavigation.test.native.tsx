@@ -96,7 +96,7 @@ describe('useObserveForReactNavigation', () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000 };
     jest.spyOn(performance, 'now').mockReturnValue(1300);
 
-    const { result } = renderHook(() => useObserveForReactNavigation(), {
+    const { result } = await renderHook(() => useObserveForReactNavigation(), {
       wrapper: wrapper({ storage }),
     });
     await act(async () => {
@@ -116,7 +116,7 @@ describe('useObserveForReactNavigation', () => {
 
   it('calls AppMetrics.markInteractive when the screen is focused', async () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000 };
-    const { result } = renderHook(() => useObserveForReactNavigation(), {
+    const { result } = await renderHook(() => useObserveForReactNavigation(), {
       wrapper: wrapper({ storage }),
     });
     await act(async () => {
@@ -133,7 +133,7 @@ describe('useObserveForReactNavigation', () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000 };
     jest.spyOn(performance, 'now').mockReturnValue(1300);
 
-    const { result } = renderHook(() => useObserveForReactNavigation(), {
+    const { result } = await renderHook(() => useObserveForReactNavigation(), {
       wrapper: wrapper({ storage }),
     });
     await act(async () => {
@@ -156,7 +156,7 @@ describe('useObserveForReactNavigation', () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000 };
     jest.spyOn(performance, 'now').mockReturnValue(1300);
 
-    const { result } = renderHook(() => useObserveForReactNavigation(), {
+    const { result } = await renderHook(() => useObserveForReactNavigation(), {
       wrapper: wrapper({ storage }),
     });
     await act(async () => {
@@ -173,7 +173,7 @@ describe('useObserveForReactNavigation', () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000 };
     jest.spyOn(performance, 'now').mockReturnValue(1300);
 
-    const { result } = renderHook(() => useObserveForReactNavigation(), {
+    const { result } = await renderHook(() => useObserveForReactNavigation(), {
       wrapper: wrapper({ storage }),
     });
     await act(async () => {
@@ -188,7 +188,7 @@ describe('useObserveForReactNavigation', () => {
 
   it('skips TTI silently when no dispatchTime is recorded for the screen', async () => {
     const warnSpy = jest.spyOn(console, 'warn');
-    const { result } = renderHook(() => useObserveForReactNavigation(), {
+    const { result } = await renderHook(() => useObserveForReactNavigation(), {
       wrapper: wrapper({ storage }),
     });
     await act(async () => {
@@ -200,11 +200,11 @@ describe('useObserveForReactNavigation', () => {
 
   it('warns and skips when called on an unmounted screen', async () => {
     const warnSpy = jest.spyOn(console, 'warn');
-    const { result, unmount } = renderHook(() => useObserveForReactNavigation(), {
+    const { result, unmount } = await renderHook(() => useObserveForReactNavigation(), {
       wrapper: wrapper({ storage }),
     });
     const fn = result.current!;
-    unmount();
+    await unmount();
     await act(async () => {
       await fn();
     });
@@ -217,7 +217,7 @@ describe('useObserveForReactNavigation', () => {
   it('warns when there is no screenId on the route', async () => {
     mockUseRoute.mockReturnValue({ key: undefined, name: 'A', params: {} });
     const warnSpy = jest.spyOn(console, 'warn');
-    const { result } = renderHook(() => useObserveForReactNavigation(), {
+    const { result } = await renderHook(() => useObserveForReactNavigation(), {
       wrapper: wrapper({ storage }),
     });
     await act(async () => {
@@ -229,31 +229,31 @@ describe('useObserveForReactNavigation', () => {
     expect(AppMetrics.markInteractive).not.toHaveBeenCalled();
   });
 
-  it('warns when the screen ID changes between renders', () => {
+  it('warns when the screen ID changes between renders', async () => {
     const warnSpy = jest.spyOn(console, 'warn');
     mockUseRoute.mockReturnValue({ key: 'screen-a', name: 'A', params: {} });
-    const { rerender } = renderHook(() => useObserveForReactNavigation(), {
+    const { rerender } = await renderHook(() => useObserveForReactNavigation(), {
       wrapper: wrapper({ storage }),
     });
 
     mockUseRoute.mockReturnValue({ key: 'screen-b', name: 'A', params: {} });
-    rerender(undefined);
+    await rerender(undefined);
 
     expect(warnSpy).toHaveBeenCalledWith(
       '[expo-observe] Screen ID changed between renders. The hook should be called inside the screen component, not a higher wrapper.'
     );
   });
 
-  it('throws when isInitialized() flips mid-lifetime', () => {
+  it('throws when isInitialized() flips mid-lifetime', async () => {
     initModule.isInitialized.mockReturnValue(false);
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    const { rerender } = renderHook(() => useObserveForReactNavigation(), {
+    const { rerender } = await renderHook(() => useObserveForReactNavigation(), {
       wrapper: wrapper({ storage }),
     });
 
     initModule.isInitialized.mockReturnValue(true);
-    expect(() => rerender(undefined)).toThrow(
+    await expect(async () => await rerender(undefined)).rejects.toThrow(
       "[expo-observe] React Navigation integration was toggled during a screen's lifecycle. Call `Observe.configure({ integrations: { 'react-navigation': true } })` once at startup before any screen mounts."
     );
   });
@@ -262,7 +262,7 @@ describe('useObserveForReactNavigation', () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000 };
     jest.spyOn(performance, 'now').mockReturnValue(1300);
 
-    const { result } = renderHook(() => useObserveForReactNavigation(), {
+    const { result } = await renderHook(() => useObserveForReactNavigation(), {
       wrapper: wrapper({ storage }),
     });
     await act(async () => {
@@ -279,7 +279,7 @@ describe('useObserveForReactNavigation', () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000 };
     jest.spyOn(performance, 'now').mockReturnValue(1100);
 
-    const { result } = renderHook(() => useObserveForReactNavigation(), {
+    const { result } = await renderHook(() => useObserveForReactNavigation(), {
       wrapper: wrapper({ storage }),
     });
     await act(async () => {
@@ -293,7 +293,7 @@ describe('useObserveForReactNavigation', () => {
     // markInteractive runs before handleStateChange has recorded the dispatch.
     jest.spyOn(performance, 'now').mockReturnValue(1234);
 
-    const { result } = renderHook(() => useObserveForReactNavigation(), {
+    const { result } = await renderHook(() => useObserveForReactNavigation(), {
       wrapper: wrapper({ storage }),
     });
     await act(async () => {

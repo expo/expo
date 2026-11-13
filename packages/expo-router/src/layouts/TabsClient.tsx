@@ -20,12 +20,14 @@ import {
   type TabNavigationState,
   type TabRouterOptions,
 } from '../react-navigation/native';
-import { unstable_integrateWithRouter } from '../standard-navigation';
+import { integrateWithRouter } from '../standard-navigation';
 import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
+import type { StandardNavigatorCreatePropsFactoryDeps } from '../standard-navigation/types';
 import type { Href } from '../types';
+import { createBaseTabProps } from './createBaseTabProps';
 
 // Keep React Navigation client-only so the entry evaluates in React Server Components.
 export * from '../react-navigation/bottom-tabs';
@@ -36,11 +38,45 @@ export type TabsScreenOptions = BottomTabNavigationOptions & {
 };
 
 /**
+ * Creates the props required to integrate Expo Router's JavaScript tabs navigator.
+ *
+ * @param dependencies The navigation state and dispatch function provided to a `createProps`
+ * factory.
+ * @returns The JavaScript tabs navigator props.
+ *
+ * @example
+ * ```tsx
+ * import { TabRouter, integrateWithRouter } from 'expo-router';
+ * import { createJSTabsProps } from 'expo-router/js-tabs';
+ * import { navigator } from './navigator';
+ *
+ * export const Tabs = integrateWithRouter(navigator, TabRouter, {
+ *   createProps: createJSTabsProps,
+ * });
+ * ```
+ */
+export function createJSTabsProps(
+  args: StandardNavigatorCreatePropsFactoryDeps<TabNavigationState<ParamListBase>>
+): BottomTabNavigatorCreateProps {
+  const { dispatch, state } = args;
+  return {
+    ...createBaseTabProps(args),
+    popNestedStackToTop: (routeKey) => {
+      const nestedState = state.routes.find((route) => route.key === routeKey)?.state;
+      // A targeted POP_TO_TOP is a no-op for nested navigators that are not stacks.
+      if (nestedState?.key) {
+        dispatch({ ...StackActions.popToTop(), target: nestedState.key });
+      }
+    },
+  };
+}
+
+/**
  * Renders a tabs navigator.
  *
  * @hideType
  */
-const Tabs = unstable_integrateWithRouter<
+const Tabs = integrateWithRouter<
   TabsScreenOptions,
   TabNavigationState<ParamListBase>,
   BottomTabNavigationEventMap,
@@ -51,17 +87,7 @@ const Tabs = unstable_integrateWithRouter<
   activityDefaultThreshold: 1,
   processDescriptors: appendMissingPlaceholderTabDescriptors,
   processState: appendMissingPlaceholderTabRoutes,
-  createProps: ({ state, dispatch }) => ({
-    routeNames: state.routeNames,
-    preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
-    popNestedStackToTop: (routeKey) => {
-      const nestedState = state.routes.find((route) => route.key === routeKey)?.state;
-      // A targeted POP_TO_TOP is a no-op for nested navigators that are not stacks.
-      if (nestedState?.key) {
-        dispatch({ ...StackActions.popToTop(), target: nestedState.key });
-      }
-    },
-  }),
+  createProps: createJSTabsProps,
   // Support the `href` shortcut prop.
   processScreens: (screens) =>
     screens.map((screen) => {

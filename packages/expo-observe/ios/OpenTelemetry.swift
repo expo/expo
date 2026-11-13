@@ -210,7 +210,7 @@ struct OTResourceSpans: Codable, Sendable {
 /// — a renamed key would silently mismatch the declared schema otherwise.
 private let semConvSchemaUrl = "https://opentelemetry.io/schemas/1.27.0"
 
-// This must be kept in sync with the INTERNAL_TO_OTEL map in universe
+// Keep in sync with INTERNAL_TO_OTEL in universe and `ObserveMetricName` in `src/types.ts`:
 // https://github.com/expo/universe/blob/main/server/www/src/middleware/easObserveRoutes.ts#L209
 // Keyed by "<category>/<name>" — mirrors the (category, name) pair used by the
 // Android port so the same metric name under a different category never silently
@@ -234,7 +234,12 @@ let metricNameMap = [
   "navigation/cold_ttr": "expo.navigation.cold_ttr",
   "navigation/warm_ttr": "expo.navigation.warm_ttr",
   "navigation/tti": "expo.navigation.tti",
+  "navigation/tbt": "expo.navigation.tbt",
 ]
+
+func exportedMetricName(category: String?, name: String) -> String {
+  return metricNameMap["\(category ?? "unknown")/\(name)"] ?? "expo.unknown.\(name)"
+}
 
 private func nsFromISOString(_ dateString: String?) -> UInt64 {
   if let dateString,
@@ -264,10 +269,9 @@ extension Event.Metric {
       attributes.append(OTAttribute(key: "expo.custom_params", rawValue: customParamsString))
     }
 
-    let lookupKey = "\(self.category ?? "unknown")/\(self.name)"
     return OTMetric(
       unit: "s",
-      name: metricNameMap[lookupKey] ?? "expo.unknown.\(self.name)",
+      name: exportedMetricName(category: category, name: name),
       gauge: OTGauge(dataPoints: [
         OTDataPoint(
           timeUnixNano: nsFromISODateString(),
@@ -280,10 +284,11 @@ extension Event.Metric {
 }
 
 extension Event.Log {
-  func toOTLogRecord() -> OTLogRecord {
+  func toOTLogRecord(inSampleRate: Bool) -> OTLogRecord {
     var attributes: [OTAttribute] = [
       OTAttribute(key: "session.id", rawValue: sessionId),
       OTAttribute(key: "event.name", rawValue: name),
+      OTAttribute(key: "expo.in_sample_rate", value: .bool(inSampleRate)),
     ]
 
     var encodeTimeDrops = 0
@@ -528,13 +533,13 @@ extension Event {
     )
   }
 
-  func toOTResourceLogs(_ easClientId: String) -> OTResourceLogs {
+  func toOTResourceLogs(_ easClientId: String, inSampleRate: Bool) -> OTResourceLogs {
     OTResourceLogs(
       resource: toOTMetadata(easClientId),
       scopeLogs: [
         OTScopeLogs(
           scope: OTScope(name: "expo-observe", version: ObserveVersions.clientVersion),
-          logRecords: self.logs.map { $0.toOTLogRecord() }
+          logRecords: self.logs.map { $0.toOTLogRecord(inSampleRate: inSampleRate) }
         )
       ],
       schemaUrl: semConvSchemaUrl

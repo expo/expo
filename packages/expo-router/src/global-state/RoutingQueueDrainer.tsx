@@ -2,17 +2,36 @@
 
 import * as React from 'react';
 
-import type { RoutingIntent } from './routingQueue';
+import type { QueuedRoutingIntent, RoutingIntent } from './routingQueue';
 import { PendingIntentsContext, RoutingQueueApiContext } from './routingQueueContext';
+import type { NavigationTransitionMode } from './types';
 
 type Props = {
-  processIntent: (intent: RoutingIntent) => void;
+  processIntent: (intent: QueuedRoutingIntent, inTransition: boolean) => void;
 };
+
+export function shouldUseTransition(
+  intents: RoutingIntent[],
+  mode: NavigationTransitionMode
+): boolean {
+  if (mode === 'never') return false;
+  if (intents.some((intent) => intent.inTransition === false)) return false;
+
+  if (mode === 'always') return true;
+
+  mode satisfies 'preload-only';
+
+  return intents.every((intent) => intent.inTransition === true || isPreloadIntent(intent));
+}
+
+function isPreloadIntent(intent: RoutingIntent): boolean {
+  return intent.type === 'NAVIGATE_TO_HREF' && intent.payload.options.event === 'PRELOAD';
+}
 
 export function RoutingQueueDrainer({ processIntent }: Props) {
   const intents = React.use(PendingIntentsContext);
-  const { dequeue, startTransition } = React.use(RoutingQueueApiContext)!;
-  const lastProcessed = React.useRef<RoutingIntent[] | undefined>(undefined);
+  const { dequeue, startTransition, transitionMode } = React.use(RoutingQueueApiContext)!;
+  const lastProcessed = React.useRef<QueuedRoutingIntent[] | undefined>(undefined);
 
   React.useEffect(() => {
     if (intents.length === 0 || lastProcessed.current === intents) {
@@ -25,16 +44,13 @@ export function RoutingQueueDrainer({ processIntent }: Props) {
     // "Bundling..." toast for async routes). Design a fallback UX for pending navigation.
     // Dequeue urgently so a later enqueue is not rebased on a stale queue.
     dequeue(intents);
-    startTransition(() => {
+    const inTransition = shouldUseTransition(intents, transitionMode);
+    const process = () => {
       for (const intent of intents) {
         // Only catches errors thrown while dispatching. The navigation reducer runs
         // during the next render, so errors from it surface there, not here.
         try {
-          // TODO(@ubax): `onDispatch` records the web history operation now, but the commit that
-          // consumes it is deferred by the transition and an urgent `dispatchSync` can land in between.
-          // https://linear.app/expo/issue/ENG-22046
-          intent.onDispatch?.(intent.metadata);
-          processIntent(intent);
+          processIntent(intent, inTransition);
         } catch (error) {
           const message =
             typeof error === 'object' && error != null && 'message' in error
@@ -45,8 +61,14 @@ export function RoutingQueueDrainer({ processIntent }: Props) {
           );
         }
       }
-    });
-  }, [dequeue, intents, processIntent, startTransition]);
+    };
+
+    if (inTransition) {
+      startTransition(process);
+    } else {
+      process();
+    }
+  }, [dequeue, intents, processIntent, startTransition, transitionMode]);
 
   return null;
 }

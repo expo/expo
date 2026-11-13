@@ -116,6 +116,48 @@ class FileDownloaderAssetDiffTest {
   }
 
   @Test
+  fun downloadAssetAndVerifyHashAndWriteToPath_failedFallbackKeepsHttpStatusAndTruncatesBody() = runTest {
+    server.enqueue(
+      MockResponse()
+        .setResponseCode(226)
+        .setHeader("Content-Type", "application/javascript")
+        .setHeader("im", "bsdiff")
+        .setBody("diff")
+    )
+    server.enqueue(MockResponse().setResponseCode(500).setBody("x".repeat(2000)))
+
+    val asset = AssetEntity("bundle", "hbc").apply {
+      url = Uri.parse(server.url("/bundle.hbc").toString())
+      isLaunchAsset = true
+    }
+    val downloader = FileDownloader(filesDirectory, "test-eas-client", configuration, logger, defaultDatabase, OkHttpClient())
+    val request = downloader.createRequestForAsset(asset, JSONObject(), configuration)
+
+    val error = try {
+      downloader.downloadAssetAndVerifyHashAndWriteToPath(
+        asset = asset,
+        extraHeaders = JSONObject(),
+        request = request,
+        expectedBase64URLEncodedSHA256Hash = null,
+        destination = File(updatesDirectory, "downloaded.hbc"),
+        updatesDirectory = updatesDirectory,
+        progressListener = null,
+        allowPatch = true
+      )
+      null
+    } catch (e: IOException) {
+      e
+    }
+
+    val httpError = generateSequence<Throwable>(error) { it.cause }
+      .filterIsInstance<FileDownloader.AssetHttpResponseException>()
+      .firstOrNull()
+    assertNotNull("Expected an AssetHttpResponseException in: $error", httpError)
+    assertEquals(500, httpError!!.statusCode)
+    assertTrue(httpError.message, httpError.message!!.contains("truncated, 2000 characters total"))
+  }
+
+  @Test
   fun downloadAssetAndVerifyHashAndWriteToPath_fallsBackWhenPatchFails() = runTest {
     val fallback = loadFixture("new.hbc")
     val expected = temporaryFolder.newFile("fallback.hbc").apply {
@@ -143,6 +185,7 @@ class FileDownloaderAssetDiffTest {
       url = Uri.parse(server.url("/bundle.hbc").toString())
       isLaunchAsset = true
     }
+    asset.expectedHash = expectedHash
 
     val downloader = FileDownloader(filesDirectory, "test-eas-client", configuration, logger, defaultDatabase, OkHttpClient())
     val request = downloader.createRequestForAsset(asset, JSONObject(), configuration)
@@ -197,6 +240,7 @@ class FileDownloaderAssetDiffTest {
       url = Uri.parse(server.url("/bundle.hbc").toString())
       isLaunchAsset = true
     }
+    asset.expectedHash = expectedHash
 
     val launchedUpdate = createUpdate(UUID.randomUUID())
     val requestedUpdate = createUpdate(UUID.randomUUID())
@@ -243,6 +287,69 @@ class FileDownloaderAssetDiffTest {
 
     val secondRequest = server.takeRequest()
     assertNull(secondRequest.getHeader("A-IM"))
+  }
+
+  @Test
+  fun downloadAssetAndVerifyHashAndWriteToPath_fallsBackToFullDownloadWhenPatchArrivesWithoutExpectedHash() = runTest {
+    val currentUpdateId = UUID.randomUUID()
+    val baseRelativePath = "bundles/base.hbc"
+    File(updatesDirectory, baseRelativePath).apply {
+      parentFile?.mkdirs()
+      writeBytes(loadFixture("old.hbc"))
+    }
+    val launchEntity = AssetEntity("launch", "hbc").apply { relativePath = baseRelativePath }
+    val updateDao = mockk<UpdateDao> {
+      every { loadLaunchAssetForUpdate(currentUpdateId) } returns launchEntity
+    }
+    val database = mockk<UpdatesDatabase> {
+      every { updateDao() } returns updateDao
+    }
+
+    val fullBytes = loadFixture("new.hbc")
+    server.enqueue(
+      MockResponse()
+        .setResponseCode(226)
+        .setHeader("Content-Type", "application/javascript")
+        .setHeader("im", "bsdiff")
+        .setHeader("expo-base-update-id", currentUpdateId.toString())
+        .setBody("diff payload")
+    )
+    server.enqueue(
+      MockResponse()
+        .setResponseCode(200)
+        .setHeader("Content-Type", "*/*")
+        .setBody(Buffer().write(fullBytes))
+    )
+
+    val asset = AssetEntity("bundle", "hbc").apply {
+      url = Uri.parse(server.url("/bundle.hbc").toString())
+      isLaunchAsset = true
+    }
+    val downloader = FileDownloader(filesDirectory, "test-eas-client", configuration, logger, database, OkHttpClient())
+    var patchApplied = false
+    downloader.applyPatch = { _, newFilePath, _ ->
+      patchApplied = true
+      File(newFilePath).writeBytes("patched".toByteArray())
+      0
+    }
+
+    val destination = File(updatesDirectory, "downloaded.hbc")
+    downloader.downloadAssetAndVerifyHashAndWriteToPath(
+      asset = asset,
+      extraHeaders = JSONObject(),
+      request = downloader.createRequestForAsset(asset, JSONObject(), configuration, allowPatch = true),
+      expectedBase64URLEncodedSHA256Hash = null,
+      destination = destination,
+      updatesDirectory = updatesDirectory,
+      progressListener = null,
+      allowPatch = true,
+      launchedUpdate = createUpdate(currentUpdateId),
+      requestedUpdate = createUpdate(UUID.randomUUID())
+    )
+
+    assertFalse("a patch must not be applied when the result cannot be verified", patchApplied)
+    assertArrayEquals(fullBytes, destination.readBytes())
+    assertEquals(2, server.requestCount)
   }
 
   @Test
@@ -455,6 +562,7 @@ class FileDownloaderAssetDiffTest {
       url = Uri.parse(server.url("/bundle.hbc").toString())
       isLaunchAsset = true
     }
+    asset.expectedHash = expectedHash
 
     val downloader = FileDownloader(filesDirectory, "test-eas-client", configuration, logger, database, OkHttpClient())
     downloader.applyPatch = { baseFilePath, newFilePath, _ ->

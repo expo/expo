@@ -3,8 +3,11 @@
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { NavigatorContentProps } from '../../../standard-navigation/types';
+import { useNonStackAnchorWarning } from '../../../standard-navigation/useNonStackAnchorWarning';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
+import { useReconcileTabHistory } from '../../../standard-navigation/useReconcileTabHistory';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
+import type { TabRouterOptions } from '../../native';
 import type {
   BottomTabDescriptorMap,
   BottomTabNavigationConfig,
@@ -14,6 +17,8 @@ import type {
 import { BottomTabView } from '../views/BottomTabView';
 
 export interface BottomTabNavigatorCreateProps {
+  isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
   routeNames: string[];
   popNestedStackToTop: (routeKey: string) => void;
   preload: (name: string) => void;
@@ -25,7 +30,8 @@ export type BottomTabNavigatorContentProps = BottomTabNavigationConfig &
 type ContentArgs = NavigatorContentProps<
   BottomTabNavigationOptions,
   BottomTabNavigationEventMap,
-  BottomTabNavigationConfig,
+  // Router options are forwarded to the content too.
+  BottomTabNavigationConfig & Pick<TabRouterOptions, 'backBehavior'>,
   BottomTabNavigatorCreateProps
 >;
 
@@ -34,12 +40,17 @@ function BottomTabNavigatorContent({
   descriptors,
   actions,
   emitter,
+  isPreloaded: _isPreloaded,
+  isRemovalPrevented: _isRemovalPrevented,
   routeNames,
   popNestedStackToTop,
   preload,
+  backBehavior,
   ...rest
 }: ContentArgs) {
-  const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
+  useNonStackAnchorWarning(backBehavior);
+  useReconcileTabHistory();
+  const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames,
     focusedRouteKey: state.routes[state.index]?.key,
@@ -66,6 +77,10 @@ function BottomTabNavigatorContent({
     preload,
     lazyByDefault: true,
   });
+
+  if (focusedFallbackRoute) {
+    return descriptors[focusedFallbackRoute.key]?.render() ?? null;
+  }
 
   if (visibleRoutes.length === 0 || focusedIndex < 0) {
     return null;

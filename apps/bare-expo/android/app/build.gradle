@@ -200,22 +200,6 @@ dependencies {
     }
 }
 
-class ExecuteSetupAndroidProject implements Plugin<Project> {
-    @Override
-    void apply(Project target) {
-        target.providers.exec {
-            def configuration = target.gradle.startParameter.taskNames.any {
-                it.toLowerCase().contains("release")
-            } ? "release" : "debug"
-
-            workingDir '../..'
-            commandLine "./scripts/setup-android-project.sh", configuration
-        }
-    }
-}
-
-apply plugin: ExecuteSetupAndroidProject
-
 // Generates minimal stub PCH files from an empty header so the IDE's C++ engine
 // doesn't fail during sync. The actual build regenerates proper PCH files via ninja.
 def cxxDir = project.file(".cxx")

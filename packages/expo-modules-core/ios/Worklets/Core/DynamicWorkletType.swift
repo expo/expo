@@ -14,7 +14,7 @@ internal struct DynamicWorkletType: AnyDynamicType {
     return type is Self
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     guard let serializable = try serializableDynamicType.cast(jsValue: jsValue, appContext: appContext) as? Serializable else {
       throw NotSerializableException(Worklet.self)
     }

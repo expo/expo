@@ -80,6 +80,11 @@ open class SharedObject(runtime: Runtime? = null) {
     }
   }
 
+  /**
+   * Delays the release until the queued view updates are applied. Use it for objects passed as view props.
+   */
+  open val releasesAfterPendingViewUpdates: Boolean = false
+
   open fun onStartListeningToEvent(eventName: String) = Unit
 
   open fun onStopListeningToEvent(eventName: String) = Unit

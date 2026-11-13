@@ -7,8 +7,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.datasource.DataSource
+import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.session.MediaSession
 import expo.modules.audio.service.AudioPlaybackServiceConnection
 import expo.modules.kotlin.AppContext
@@ -22,14 +21,12 @@ class AudioPlaylist(
   context: Context,
   appContext: AppContext,
   initialSources: List<AudioSource>,
-  updateInterval: Double,
-  dataSourceFactory: DataSource.Factory
+  updateInterval: Double
 ) : BaseAudioPlayer(
-  player = ExoPlayer.Builder(context)
+  player = ExoPlayer.Builder(context, AudioRenderersFactory(context))
     .setLooper(context.mainLooper)
     .setAudioAttributes(AudioAttributes.DEFAULT, false)
     .setHandleAudioBecomingNoisy(true)
-    .setMediaSourceFactory(DefaultMediaSourceFactory(context).setDataSourceFactory(dataSourceFactory))
     .build(),
   appContext = appContext,
   updateInterval = updateInterval,
@@ -43,7 +40,7 @@ class AudioPlaylist(
   override var isActiveForLockScreen = false
   override var metadata: Metadata? = null
   override var lockScreenOptions: AudioLockScreenOptions? = null
-  override var mediaSession: MediaSession = buildBasicMediaSession(context, ref)
+  override var mediaSession: MediaSession = buildBasicMediaSession(context, ref) { requestPlay() }
   override val serviceConnection = AudioPlaybackServiceConnection(WeakReference(this), appContext)
   override val supportsNextTrack = true
   override val supportsPreviousTrack = true
@@ -51,23 +48,23 @@ class AudioPlaylist(
   val currentTrackIndex get() = ref.currentMediaItemIndex
   val trackCount get() = ref.mediaItemCount
 
-  private var createMediaItemForSource: ((AudioSource) -> MediaItem?)? = null
+  private var createMediaSourceForSource: ((AudioSource) -> MediaSource?)? = null
 
   init {
     installPlayerListeners()
     startUpdating()
   }
 
-  fun setMediaItemCreator(creator: (AudioSource) -> MediaItem?) {
-    this.createMediaItemForSource = creator
+  fun setMediaSourceCreator(creator: (AudioSource) -> MediaSource?) {
+    this.createMediaSourceForSource = creator
   }
 
   fun loadInitialPlaylist() {
     val validSources = mutableListOf<AudioSource>()
     sources.forEach { source ->
-      createMediaItemForSource?.invoke(source)?.let { mediaItem ->
+      createMediaSourceForSource?.invoke(source)?.let { mediaSource ->
         validSources.add(source)
-        ref.addMediaItem(mediaItem)
+        ref.addMediaSource(mediaSource)
       }
     }
     sources = validSources
@@ -142,27 +139,33 @@ class AudioPlaylist(
   }
 
   fun skipTo(index: Int) {
-    if (index !in 0..<trackCount) return
+    if (index !in 0..<trackCount) {
+      return
+    }
     ref.seekToDefaultPosition(index)
   }
 
   fun add(source: AudioSource) {
-    val mediaItem = createMediaItemForSource?.invoke(source) ?: return
+    val mediaSource = createMediaSourceForSource?.invoke(source) ?: return
     sources.add(source)
-    ref.addMediaItem(mediaItem)
+    ref.addMediaSource(mediaSource)
     sendStatusUpdate(mapOf("trackCount" to trackCount))
   }
 
   fun insert(source: AudioSource, index: Int) {
-    if (index !in 0..trackCount) return
-    val mediaItem = createMediaItemForSource?.invoke(source) ?: return
+    if (index !in 0..trackCount) {
+      return
+    }
+    val mediaSource = createMediaSourceForSource?.invoke(source) ?: return
     sources.add(index, source)
-    ref.addMediaItem(index, mediaItem)
+    ref.addMediaSource(index, mediaSource)
     sendStatusUpdate(mapOf("trackCount" to trackCount))
   }
 
   fun remove(index: Int) {
-    if (index !in 0..<trackCount) return
+    if (index !in 0..<trackCount) {
+      return
+    }
 
     sources.removeAt(index)
     ref.removeMediaItem(index)
@@ -192,14 +195,18 @@ class AudioPlaylist(
 
   override fun assignBasicMediaSession() {
     mediaSession.release()
-    mediaSession = buildBasicMediaSession(appContext?.reactContext ?: return, ref)
+    mediaSession = buildBasicMediaSession(appContext?.reactContext ?: return, ref) { requestPlay() }
   }
 
   override fun currentStatus(): Map<String, Any?> {
     val isMuted = ref.volume == 0f
     val isLoaded = ref.playbackState == Player.STATE_READY
     val isBuffering = ref.playbackState == Player.STATE_BUFFERING
-    val playingStatus = if (isBuffering) intendedPlayingState else ref.isPlaying
+    val playingStatus = if (isBuffering) {
+      intendedPlayingState
+    } else {
+      ref.isPlaying
+    }
 
     return mapOf(
       "id" to id,
@@ -209,8 +216,16 @@ class AudioPlaylist(
       "duration" to duration,
       "playing" to playingStatus,
       "isBuffering" to isBuffering,
-      "isLoaded" to if (ref.playbackState == Player.STATE_ENDED) true else isLoaded,
-      "playbackRate" to if (ref.isPlaying) ref.playbackParameters.speed else currentRate,
+      "isLoaded" to if (ref.playbackState == Player.STATE_ENDED) {
+        true
+      } else {
+        isLoaded
+      },
+      "playbackRate" to if (ref.isPlaying) {
+        ref.playbackParameters.speed
+      } else {
+        currentRate
+      },
       "muted" to isMuted,
       "volume" to ref.volume,
       "loop" to loopMode.value,

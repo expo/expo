@@ -136,7 +136,11 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   var volume: Float by IgnoreSameSet(1f) { new: Float, old: Float ->
     appContext.mainQueue.launch {
-      player.volume = if (muted) 0f else new
+      player.volume = if (muted) {
+        0f
+      } else {
+        new
+      }
     }
     userVolume = volume
     sendEvent(PlayerEvent.VolumeChanged(new, old))
@@ -144,7 +148,11 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   var muted: Boolean by IgnoreSameSet(false) { new: Boolean, old: Boolean ->
     appContext.mainQueue.launch {
-      player.volume = if (new) 0f else userVolume
+      player.volume = if (new) {
+        0f
+      } else {
+        userVolume
+      }
     }
     sendEvent(PlayerEvent.MutedChanged(new, old))
   }
@@ -456,7 +464,11 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   private fun applyPitchCorrection(playbackParameters: PlaybackParameters): PlaybackParameters {
     val speed = playbackParameters.speed
-    val pitch = if (preservesPitch) 1f else speed
+    val pitch = if (preservesPitch) {
+      1f
+    } else {
+      speed
+    }
     return PlaybackParameters(speed, pitch)
   }
 

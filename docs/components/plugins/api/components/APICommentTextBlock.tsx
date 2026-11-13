@@ -19,7 +19,7 @@ import {
   parseCommentContent,
 } from '../APISectionUtils';
 import { ELEMENT_SPACING, STYLES_SECONDARY } from '../styles';
-import { APIBoxSectionHeader } from './APIBoxSectionHeader';
+import { APIBoxExampleHeader } from './APIBoxExampleHeader';
 import { APISectionPlatformTags } from './APISectionPlatformTags';
 
 type Props = {
@@ -75,7 +75,7 @@ export const APICommentTextBlock = ({
             Example
           </CALLOUT>
         ) : (
-          <APIBoxSectionHeader text="Example" className="-mx-4 mt-1 mb-3" Icon={CodeSquare01Icon} />
+          <APIBoxExampleHeader />
         )}
         <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
           {exampleText}

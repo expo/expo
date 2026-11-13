@@ -1,4 +1,4 @@
-import base from 'expo-module-scripts/oxlint.config.base';
+import base from '@expo/internal-scripts/oxlint.config.base';
 import { defineConfig } from 'oxlint';
 
 export default defineConfig({

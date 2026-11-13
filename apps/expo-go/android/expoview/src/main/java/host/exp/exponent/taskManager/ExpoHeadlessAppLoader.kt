@@ -8,7 +8,7 @@ import expo.modules.core.interfaces.DoNotStrip
 import host.exp.exponent.headless.InternalHeadlessAppLoader
 
 @DoNotStrip
-class ExpoHeadlessAppLoader @DoNotStrip constructor(context: Context?) : HeadlessAppLoader {
+class ExpoHeadlessAppLoader @DoNotStrip constructor() : HeadlessAppLoader {
   private val appScopeKeysToAppRecords = mutableMapOf<String, AppRecordInterface>()
 
   override fun loadApp(
@@ -61,7 +61,7 @@ class ExpoHeadlessAppLoader @DoNotStrip constructor(context: Context?) : Headles
     return appLoader!!
   }
 
-  override fun isRunning(appScopeKey: String): Boolean {
+  override fun isRunningInHeadlessMode(appScopeKey: String): Boolean {
     return appScopeKeysToAppRecords.containsKey(appScopeKey)
   }
 

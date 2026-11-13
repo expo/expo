@@ -55,8 +55,6 @@ describe('export server with headers', () => {
           E2E_ROUTER_HEADERS: JSON.stringify(GLOBAL_HEADERS),
           E2E_ROUTER_REWRITES: JSON.stringify([{ source: '/rewrite/api', destination: '/api' }]),
           E2E_ROUTER_PAGE_HEADERS: JSON.stringify(PAGE_HEADERS),
-          E2E_ROUTER_SERVER_LOADERS: 'true',
-          E2E_ROUTER_SERVER_RENDERING: 'true',
         },
       },
     })

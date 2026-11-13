@@ -48,6 +48,8 @@ module Expo
         return
       end
 
+      Expo::PrecompiledModules.record_spm_dependency_pods
+
       global_flags = @options.fetch(:flags, {})
       tests_only = @options.fetch(:testsOnly, false)
       include_tests = @options.fetch(:includeTests, false)
@@ -84,9 +86,9 @@ module Expo
             # `pod install` may fail if there is no `use_modular_headers!` declaration or
             # `:modular_headers => true` is not used for this particular dependency.
             # The latter require adding transitive dependencies to user's Podfile that we'd rather like to avoid.
-            if package.has_something_to_link?
-              use_modular_headers_for_dependencies(pod.spec.all_dependencies)
-            end
+            # Not gated on having something to link: scanned classes are only known when the
+            # provider is generated.
+            use_modular_headers_for_dependencies(pod.spec.all_dependencies)
 
             debug_configurations = @target_definition.build_configurations ? @target_definition.build_configurations.select { |config| config.include?('Debug') }.keys : ['Debug']
 
@@ -158,9 +160,9 @@ module Expo
       platform = @target_definition.platform
 
       @packages.select do |package|
-        # Check whether the package has any module to autolink
-        # and if there is any pod that supports target's platform.
-        package.has_something_to_link? && package.pods.any? { |pod| pod.supports_platform?(platform) }
+        # Not gated on having something to link: scanned classes are only known when the
+        # provider is generated.
+        package.pods.any? { |pod| pod.supports_platform?(platform) }
       end
     end
 
@@ -255,6 +257,7 @@ module Expo
 
     public def generate_modules_provider_command_args(target_name, target_path)
       command_args = ['--target', target_path, '--target-name', target_name, "--podfile-properties-file-path", "\"#{@podfile_properties_path}\""]
+      command_args.concat(['--target-platform', platform_name.downcase])
 
       if !custom_app_root.nil?
         command_args.concat(['--app-root', custom_app_root])

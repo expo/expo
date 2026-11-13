@@ -19,6 +19,9 @@ class Config(
   @Field val dispatchingEnabled: Boolean? = null,
   @Field val dispatchInDebug: Boolean? = null,
   @Field val sampleRate: Double? = null,
+  @Field val errorSampleRate: Double? = null,
+  @Field val ignoredMetrics: List<String> = emptyList(),
+  @Field val ignoredEvents: List<String> = emptyList(),
   @Field val integrations: Map<String, Any?>? = null
 ) : Record
 
@@ -75,7 +78,10 @@ class ObserveModule : Module() {
           PersistedConfig(
             dispatchingEnabled = config.dispatchingEnabled,
             dispatchInDebug = config.dispatchInDebug,
-            sampleRate = config.sampleRate
+            sampleRate = config.sampleRate,
+            errorSampleRate = config.errorSampleRate,
+            ignoredMetrics = config.ignoredMetrics,
+            ignoredEvents = config.ignoredEvents
           )
         )
         // Environment falls back to the bundle default (set on JS package import) so an

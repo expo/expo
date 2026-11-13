@@ -1,13 +1,13 @@
 ---
 title: Expo Image integration
 sidebar_title: Expo Image
-description: Detect oversized images in your production app by enabling the Expo Image integration for EAS Observe.
+description: Detect oversized images in your production app by enabling the Expo Image integration for Expo Observe.
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 
-[`expo-image`](/versions/latest/sdk/image/) ships an opt-in integration for EAS Observe that reports images decoded at a much larger size than the device's screen can display. Oversized images waste bandwidth and memory without improving visual quality. The integration logs an `expo-image.oversized` event for each one, so you can find them in production instead of auditing every screen by hand.
+[`expo-image`](/versions/latest/sdk/image/) ships an opt-in integration for Expo Observe that reports images decoded at a much larger size than the device's screen can display. Oversized images waste bandwidth and memory without improving visual quality. The integration logs an `expo-image.oversized` event for each one, so you can find them in production instead of auditing every screen by hand.
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ import { Terminal } from '~/ui/components/Snippet';
   <Requirement title="Expo SDK 57 or later">
     The integration is available in `expo-image` version 57.0.2 and later.
   </Requirement>
-  <Requirement title="An app already using EAS Observe">
+  <Requirement title="An app already using Expo Observe">
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
     build. If `expo-observe` is not installed, the integration is a silent no-op.
   </Requirement>

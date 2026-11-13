@@ -152,7 +152,13 @@ class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter
       record.urlAddresses?.let { addAll(it.map(WebsiteMapper::toNew)) }
     }
     return NewContact(
-      Starred(if (record.isFavourite) 1 else 0),
+      Starred(
+        if (record.isFavourite) {
+          1
+        } else {
+          0
+        }
+      ),
       modelsToInsert
     )
   }

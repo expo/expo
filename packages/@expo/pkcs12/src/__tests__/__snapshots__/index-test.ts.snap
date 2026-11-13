@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`getting the ASN.1 representation of a X.509 certificate from PKCS#12 files gets the ASN.1 value of supported RSA certificates from PKCS #12 keystores 1`] = `
 {

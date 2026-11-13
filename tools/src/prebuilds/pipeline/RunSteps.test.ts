@@ -10,6 +10,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import os from 'os';
 import path from 'path';
+import stripAnsi from 'strip-ansi';
 
 import type { SPMPackageSource } from '../ExternalPackage';
 import type { SPMProduct, SPMPackageDependencyConfig } from '../SPMConfig.types';
@@ -73,13 +74,91 @@ function makeSwiftProduct(
   };
 }
 
-function withTempDir<T>(fn: (dir: string) => T): T {
+/** A non-framework target that names no directory, so its layout has to come from elsewhere. */
+function makePathlessTargetProduct(name: string, externalDeps: string[] = []): SPMProduct {
+  return {
+    ...makeProduct(name, externalDeps),
+    targets: [{ type: 'swift', name, pattern: '**/*.swift' }],
+  };
+}
+
+/** Mode B: the checked-in manifest names the sources, so the config target needs neither a path
+ * nor a pattern — and the resolver rejects a pattern outright. */
+function makeCheckedInManifestProduct(
+  name: string,
+  externalDeps: string[] = [],
+  targetPath?: string
+): SPMProduct {
+  return {
+    ...makeProduct(name, externalDeps),
+    targets: [{ type: 'swift', name, path: targetPath }],
+  };
+}
+
+async function withTempDir<T>(fn: (dir: string) => Promise<T>): Promise<T> {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'runsteps-'));
   try {
-    return fn(dir);
+    return await fn(dir);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
+}
+
+/**
+ * Runs `fn` against the `packages/` directory of a temporary repository root. Only a package
+ * directly under the repository packages directory can carry a checked-in `Package.swift`, so a
+ * Mode B fixture has to live under one.
+ */
+async function withTempPackagesDir<T>(fn: (packagesDir: string) => Promise<T>): Promise<T> {
+  const originalRoot = process.env.EXPO_ROOT_DIR;
+  return withTempDir(async (repoRoot) => {
+    process.env.EXPO_ROOT_DIR = repoRoot;
+    try {
+      return await fn(path.join(repoRoot, 'packages'));
+    } finally {
+      if (originalRoot === undefined) delete process.env.EXPO_ROOT_DIR;
+      else process.env.EXPO_ROOT_DIR = originalRoot;
+    }
+  });
+}
+
+/** Converts `pkg` to Mode B: the manifest that takes over naming `productName`'s sources. */
+function writeCheckedInManifest(
+  pkg: SPMPackageSource,
+  productName: string,
+  sourcePath: string,
+  mtime: Date,
+  { exclude = [], resources = [] }: { exclude?: string[]; resources?: string[] } = {}
+) {
+  const copies = resources.map((resource) => `.copy(${JSON.stringify(resource)})`).join(', ');
+  writeFileWithMtime(
+    path.join(pkg.path, 'Package.swift'),
+    `// swift-tools-version: 5.9
+import PackageDescription
+
+let package = Package(
+  name: "${pkg.packageName}",
+  products: [.library(name: "${productName}", targets: ["${productName}"])],
+  targets: [.target(name: "${productName}", path: "${sourcePath}", exclude: ${JSON.stringify(exclude)}, resources: [${copies}])]
+)
+`,
+    mtime
+  );
+}
+
+/** The lines `logger.info` wrote while `fn` executed, without their colour codes. */
+async function captureInfo(fn: () => Promise<void>): Promise<string[]> {
+  const lines: string[] = [];
+  const original = console.info;
+  console.info = (...args: unknown[]) => {
+    lines.push(args.map(String).join(' '));
+  };
+  try {
+    await fn();
+  } finally {
+    console.info = original;
+  }
+  return lines.map(stripAnsi);
 }
 
 function writeFileWithMtime(filePath: string, content: string, mtime: Date) {
@@ -118,6 +197,8 @@ function makeTempPackage(
   for (const product of products) {
     for (const target of product.targets) {
       if (target.type === 'framework') continue;
+      // A target whose layout lives in a checked-in Package.swift names no directory to seed.
+      if (!target.path) continue;
       writeFileWithMtime(
         path.join(packagePath, target.path, `${target.name}.swift`),
         'public struct Example {}',
@@ -372,8 +453,8 @@ describe('sortPackagesByDependencies', () => {
 // ---------------------------------------------------------------------------
 
 describe('expandWithUnbuiltDependencies', () => {
-  it('skips a dependency when requested flavor output is fresh', () => {
-    withTempDir((dir) => {
+  it('skips a dependency when requested flavor output is fresh', async () => {
+    await withTempDir(async (dir) => {
       const old = new Date('2026-01-01T00:00:00Z');
       const newer = new Date('2026-01-02T00:00:00Z');
       const consumer = makeTempPackage(
@@ -386,7 +467,7 @@ describe('expandWithUnbuiltDependencies', () => {
       writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', newer);
       writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'release', newer);
 
-      const result = expandWithUnbuiltDependencies([consumer], {
+      const result = await expandWithUnbuiltDependencies([consumer], {
         buildFlavors: ['Debug', 'Release'],
         resolvePackageByName: (name) => (name === 'dep' ? dep : null),
       });
@@ -398,8 +479,252 @@ describe('expandWithUnbuiltDependencies', () => {
     });
   });
 
-  it('auto-adds a dependency when requested flavor output is missing', () => {
-    withTempDir((dir) => {
+  describe('with a checked-in Package.swift', () => {
+    const old = new Date('2026-01-01T00:00:00Z');
+    const built = new Date('2026-01-02T00:00:00Z');
+    const edited = new Date('2026-01-03T00:00:00Z');
+
+    /** A consumer and a Mode B `dep` whose inputs and both xcframeworks predate `built`. */
+    function makeFreshModeBDependency(
+      dir: string,
+      layout: { exclude?: string[]; resources?: string[] } = {},
+      depProduct: SPMProduct = makeCheckedInManifestProduct('DepProduct')
+    ) {
+      const consumer = makeTempPackage(
+        dir,
+        'consumer',
+        [makeSwiftProduct('Consumer', ['dep/DepProduct'])],
+        old
+      );
+      const dep = makeTempPackage(dir, 'dep', [depProduct], old);
+      writeCheckedInManifest(dep, 'DepProduct', 'ios', old, layout);
+      writeFileWithMtime(path.join(dep.path, 'ios/DepProduct.swift'), 'public struct E {}', old);
+      writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', built);
+      writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'release', built);
+      return { consumer, dep };
+    }
+
+    async function expand(consumer: SPMPackageSource, dep: SPMPackageSource) {
+      let result: SPMPackageSource[] = [];
+      const lines = await captureInfo(async () => {
+        result = await expandWithUnbuiltDependencies([consumer], {
+          buildFlavors: ['Debug', 'Release'],
+          resolvePackageByName: (name) => (name === 'dep' ? dep : null),
+        });
+      });
+      return {
+        packageNames: result.map((pkg) => pkg.packageName),
+        reason: lines.find((line) => line.includes('Auto-adding dep')),
+      };
+    }
+
+    it('skips a dependency whose xcframeworks are newer than every input', async () => {
+      await withTempPackagesDir(async (dir) => {
+        const { consumer, dep } = makeFreshModeBDependency(dir);
+
+        const { packageNames, reason } = await expand(consumer, dep);
+
+        assert.deepEqual(packageNames, ['consumer'], `Unexpected auto-add: ${reason}`);
+      });
+    });
+
+    it('auto-adds a dependency whose target source is newer than its xcframeworks', async () => {
+      await withTempPackagesDir(async (dir) => {
+        const { consumer, dep } = makeFreshModeBDependency(dir);
+        writeFileWithMtime(path.join(dep.path, 'ios/Nested/Helper.h'), '#pragma once', edited);
+
+        const { packageNames, reason } = await expand(consumer, dep);
+
+        assert.deepEqual(packageNames, ['consumer', 'dep']);
+        assert.ok(reason, 'The auto-add must be reported');
+        assert.match(reason, /Debug xcframework stale/);
+      });
+    });
+
+    it('auto-adds a dependency whose Package.swift is newer than its xcframeworks', async () => {
+      await withTempPackagesDir(async (dir) => {
+        const { consumer, dep } = makeFreshModeBDependency(dir);
+        writeCheckedInManifest(dep, 'DepProduct', 'ios', edited);
+
+        const { packageNames, reason } = await expand(consumer, dep);
+
+        assert.deepEqual(packageNames, ['consumer', 'dep']);
+        assert.ok(reason, 'The auto-add must be reported');
+        assert.match(reason, /stale/);
+      });
+    });
+
+    it('ignores files the target excludes', async () => {
+      await withTempPackagesDir(async (dir) => {
+        const { consumer, dep } = makeFreshModeBDependency(dir, {
+          exclude: ['Generated', 'DepProduct.podspec'],
+        });
+        writeFileWithMtime(path.join(dep.path, 'ios/Generated/Output.swift'), '', edited);
+        writeFileWithMtime(path.join(dep.path, 'ios/DepProduct.podspec'), '', edited);
+
+        const { packageNames, reason } = await expand(consumer, dep);
+
+        assert.deepEqual(packageNames, ['consumer'], `Unexpected auto-add: ${reason}`);
+      });
+    });
+
+    it('auto-adds a dependency whose Package.swift cannot be read', async () => {
+      await withTempPackagesDir(async (dir) => {
+        const { consumer, dep } = makeFreshModeBDependency(dir);
+        writeFileWithMtime(path.join(dep.path, 'Package.swift'), 'let package = Package(', old);
+
+        const { packageNames, reason } = await expand(consumer, dep);
+
+        // A manifest that cannot be read names no inputs, and unknown inputs must never read as
+        // fresh; building the package reports the manifest error in full.
+        assert.deepEqual(packageNames, ['consumer', 'dep']);
+        assert.ok(reason, 'The auto-add must be reported');
+        assert.match(reason, /Package\.swift could not be resolved/);
+        assert.doesNotMatch(reason, /stale/);
+      });
+    });
+
+    it('auto-adds a dependency whose resource is newer, even when an exclude covers it', async () => {
+      await withTempPackagesDir(async (dir) => {
+        const { consumer, dep } = makeFreshModeBDependency(dir, {
+          exclude: ['Assets'],
+          resources: ['Assets'],
+        });
+        writeFileWithMtime(path.join(dep.path, 'ios/Assets/icon.png'), 'x', edited);
+
+        const { packageNames, reason } = await expand(consumer, dep);
+
+        assert.deepEqual(packageNames, ['consumer', 'dep']);
+        assert.ok(reason, 'The auto-add must be reported');
+        assert.match(reason, /Debug xcframework stale/);
+      });
+    });
+
+    it('auto-adds a dependency whose vendored xcframework is newer', async () => {
+      await withTempPackagesDir(async (dir) => {
+        const { consumer, dep } = makeFreshModeBDependency(
+          dir,
+          {},
+          {
+            ...makeProduct('DepProduct'),
+            targets: [
+              { type: 'swift', name: 'DepProduct' },
+              { type: 'framework', name: 'Vendor', path: 'Vendor.xcframework' },
+            ],
+          }
+        );
+        const vendor = path.join(dep.path, 'Vendor.xcframework');
+        writeFileWithMtime(path.join(vendor, 'Info.plist'), '<plist />', old);
+        fs.utimesSync(vendor, edited, edited);
+
+        const { packageNames, reason } = await expand(consumer, dep);
+
+        assert.deepEqual(packageNames, ['consumer', 'dep']);
+        assert.ok(reason, 'The auto-add must be reported');
+        assert.match(reason, /Debug xcframework stale/);
+      });
+    });
+
+    it(
+      'auto-adds a dependency whose target files cannot be listed',
+      { skip: process.getuid?.() === 0 && 'root reads a directory whatever its permissions' },
+      async () => {
+        await withTempPackagesDir(async (dir) => {
+          // The resolver never walks a resource directory, so only the input listing reads it.
+          const { consumer, dep } = makeFreshModeBDependency(dir, { resources: ['Locked'] });
+          const locked = path.join(dep.path, 'ios/Locked');
+          fs.mkdirSync(locked);
+          fs.chmodSync(locked, 0o000);
+          try {
+            const { packageNames, reason } = await expand(consumer, dep);
+
+            assert.deepEqual(packageNames, ['consumer', 'dep']);
+            assert.ok(reason, 'The auto-add must be reported');
+            assert.match(reason, /could not be listed/);
+            assert.doesNotMatch(reason, /stale/);
+          } finally {
+            fs.chmodSync(locked, 0o755);
+          }
+        });
+      }
+    );
+
+    it('reads the sources the manifest names, not a path left in the config', async () => {
+      await withTempPackagesDir(async (dir) => {
+        const consumer = makeTempPackage(
+          dir,
+          'consumer',
+          [makeSwiftProduct('Consumer', ['dep/DepProduct'])],
+          old
+        );
+        // Converting the package left `path` behind in spm.config.json. The manifest overrides it,
+        // so the artifact is built from ios/, and nothing has touched legacy-ios/ since the build.
+        const dep = makeTempPackage(
+          dir,
+          'dep',
+          [makeCheckedInManifestProduct('DepProduct', [], 'legacy-ios')],
+          old
+        );
+        writeCheckedInManifest(dep, 'DepProduct', 'ios', old);
+        writeFileWithMtime(
+          path.join(dep.path, 'ios/DepProduct.swift'),
+          'public struct E {}',
+          edited
+        );
+        writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', built);
+        writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'release', built);
+
+        const { packageNames, reason } = await expand(consumer, dep);
+
+        assert.deepEqual(packageNames, ['consumer', 'dep']);
+        assert.ok(reason, 'The auto-add must be reported');
+        assert.match(reason, /Debug xcframework stale/);
+      });
+    });
+  });
+
+  it('rebuilds a Mode A dependency whose target declares no path', async () => {
+    await withTempPackagesDir(async (dir) => {
+      const old = new Date('2026-01-01T00:00:00Z');
+      const newer = new Date('2026-01-02T00:00:00Z');
+      const consumer = makeTempPackage(
+        dir,
+        'consumer',
+        [makeSwiftProduct('Consumer', ['dep/DepProduct'])],
+        old
+      );
+      // No Package.swift, so nothing overrides spm.config.json and the missing `path` is a
+      // config error. SPMGenerator reports it in full, but only once the package is built.
+      const dep = makeTempPackage(dir, 'dep', [makePathlessTargetProduct('DepProduct')], old);
+      writeFileWithMtime(path.join(dep.path, 'ios/DepProduct.swift'), 'public struct E {}', old);
+      writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', newer);
+
+      let result: SPMPackageSource[] = [];
+      const lines = await captureInfo(async () => {
+        result = await expandWithUnbuiltDependencies([consumer], {
+          buildFlavors: ['Debug'],
+          resolvePackageByName: (name) => (name === 'dep' ? dep : null),
+        });
+      });
+
+      // Skipping the build here would link a stale xcframework and swallow the config error
+      // with it, because the generator that reports it never runs.
+      assert.deepEqual(
+        result.map((pkg) => pkg.packageName),
+        ['consumer', 'dep']
+      );
+      const reason = lines.find((line) => line.includes('Auto-adding dep'));
+      assert.ok(reason, `The auto-add must be reported: ${lines.join('\n')}`);
+      assert.match(reason, /declares no "path" in spm\.config\.json/);
+      // Neither the artifact nor a checked-in manifest is the problem; naming either sends a
+      // developer looking in the wrong place.
+      assert.doesNotMatch(reason, /stale/);
+      assert.doesNotMatch(reason, /Package\.swift/);
+    });
+  });
+
+  it('auto-adds a dependency when requested flavor output is missing', async () => {
+    await withTempDir(async (dir) => {
       const mtime = new Date('2026-01-01T00:00:00Z');
       const consumer = makeTempPackage(
         dir,
@@ -409,7 +734,7 @@ describe('expandWithUnbuiltDependencies', () => {
       );
       const dep = makeTempPackage(dir, 'dep', [makeSwiftProduct('DepProduct')], mtime);
 
-      const result = expandWithUnbuiltDependencies([consumer], {
+      const result = await expandWithUnbuiltDependencies([consumer], {
         buildFlavors: ['Debug'],
         resolvePackageByName: (name) => (name === 'dep' ? dep : null),
       });
@@ -421,8 +746,8 @@ describe('expandWithUnbuiltDependencies', () => {
     });
   });
 
-  it('auto-adds a scoped dependency when requested flavor output is missing', () => {
-    withTempDir((dir) => {
+  it('auto-adds a scoped dependency when requested flavor output is missing', async () => {
+    await withTempDir(async (dir) => {
       const mtime = new Date('2026-01-01T00:00:00Z');
       const consumer = makeTempPackage(
         dir,
@@ -432,7 +757,7 @@ describe('expandWithUnbuiltDependencies', () => {
       );
       const ui = makeTempPackage(dir, '@expo/ui', [makeSwiftProduct('ExpoUI')], mtime);
 
-      const result = expandWithUnbuiltDependencies([consumer], {
+      const result = await expandWithUnbuiltDependencies([consumer], {
         buildFlavors: ['Debug'],
         resolvePackageByName: (name) => (name === '@expo/ui' ? ui : null),
       });
@@ -444,8 +769,8 @@ describe('expandWithUnbuiltDependencies', () => {
     });
   });
 
-  it('auto-adds a dependency when requested flavor output is stale', () => {
-    withTempDir((dir) => {
+  it('auto-adds a dependency when requested flavor output is stale', async () => {
+    await withTempDir(async (dir) => {
       const old = new Date('2026-01-01T00:00:00Z');
       const newer = new Date('2026-01-02T00:00:00Z');
       const consumer = makeTempPackage(
@@ -457,7 +782,7 @@ describe('expandWithUnbuiltDependencies', () => {
       const dep = makeTempPackage(dir, 'dep', [makeSwiftProduct('DepProduct')], newer);
       writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', old);
 
-      const result = expandWithUnbuiltDependencies([consumer], {
+      const result = await expandWithUnbuiltDependencies([consumer], {
         buildFlavors: ['Debug'],
         resolvePackageByName: (name) => (name === 'dep' ? dep : null),
       });
@@ -469,8 +794,8 @@ describe('expandWithUnbuiltDependencies', () => {
     });
   });
 
-  it('auto-adds a fresh dependency when clean is requested', () => {
-    withTempDir((dir) => {
+  it('auto-adds a fresh dependency when clean is requested', async () => {
+    await withTempDir(async (dir) => {
       const old = new Date('2026-01-01T00:00:00Z');
       const newer = new Date('2026-01-02T00:00:00Z');
       const consumer = makeTempPackage(
@@ -482,7 +807,7 @@ describe('expandWithUnbuiltDependencies', () => {
       const dep = makeTempPackage(dir, 'dep', [makeSwiftProduct('DepProduct')], old);
       writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', newer);
 
-      const result = expandWithUnbuiltDependencies([consumer], {
+      const result = await expandWithUnbuiltDependencies([consumer], {
         buildFlavors: ['Debug'],
         clean: true,
         resolvePackageByName: (name) => (name === 'dep' ? dep : null),
@@ -495,8 +820,8 @@ describe('expandWithUnbuiltDependencies', () => {
     });
   });
 
-  it('only requires requested flavors', () => {
-    withTempDir((dir) => {
+  it('only requires requested flavors', async () => {
+    await withTempDir(async (dir) => {
       const old = new Date('2026-01-01T00:00:00Z');
       const newer = new Date('2026-01-02T00:00:00Z');
       const consumer = makeTempPackage(
@@ -508,7 +833,7 @@ describe('expandWithUnbuiltDependencies', () => {
       const dep = makeTempPackage(dir, 'dep', [makeSwiftProduct('DepProduct')], old);
       writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', newer);
 
-      const result = expandWithUnbuiltDependencies([consumer], {
+      const result = await expandWithUnbuiltDependencies([consumer], {
         buildFlavors: ['Debug'],
         resolvePackageByName: (name) => (name === 'dep' ? dep : null),
       });
@@ -520,8 +845,8 @@ describe('expandWithUnbuiltDependencies', () => {
     });
   });
 
-  it('auto-adds a dependency when a bundled resource is newer than the framework', () => {
-    withTempDir((dir) => {
+  it('auto-adds a dependency when a bundled resource is newer than the framework', async () => {
+    await withTempDir(async (dir) => {
       const old = new Date('2026-01-01T00:00:00Z');
       const newer = new Date('2026-01-02T00:00:00Z');
       const consumer = makeTempPackage(
@@ -547,7 +872,7 @@ describe('expandWithUnbuiltDependencies', () => {
       // A bundled resource was modified after the framework was last built.
       writeFileWithMtime(path.join(dep.path, 'ios/Resources/icon.png'), 'x', newer);
 
-      const result = expandWithUnbuiltDependencies([consumer], {
+      const result = await expandWithUnbuiltDependencies([consumer], {
         buildFlavors: ['Debug'],
         resolvePackageByName: (name) => (name === 'dep' ? dep : null),
       });
@@ -559,8 +884,8 @@ describe('expandWithUnbuiltDependencies', () => {
     });
   });
 
-  it('treats a framework with no Info.plist as stale', () => {
-    withTempDir((dir) => {
+  it('treats a framework with no Info.plist as stale', async () => {
+    await withTempDir(async (dir) => {
       const mtime = new Date('2026-01-02T00:00:00Z');
       const frameworkDirMtime = new Date('2026-01-03T00:00:00Z');
       const consumer = makeTempPackage(
@@ -583,7 +908,7 @@ describe('expandWithUnbuiltDependencies', () => {
       fs.mkdirSync(frameworkPath, { recursive: true });
       fs.utimesSync(frameworkPath, frameworkDirMtime, frameworkDirMtime);
 
-      const result = expandWithUnbuiltDependencies([consumer], {
+      const result = await expandWithUnbuiltDependencies([consumer], {
         buildFlavors: ['Debug'],
         resolvePackageByName: (name) => (name === 'dep' ? dep : null),
       });

@@ -95,15 +95,21 @@ internal enum TextContentTypeValue: String, Enumerable {
     case .oneTimeCode: return .oneTimeCode
     case .emailAddress: return .emailAddress
     case .telephoneNumber: return .telephoneNumber
+    // macOS has no `cellularEID` / `cellularIMEI` content type at any version, so it takes the
+    // same `telephoneNumber` fallback the pre-17.4 Apple platforms use.
     case .cellularEID:
+#if !os(macOS)
       if #available(iOS 17.4, tvOS 17.4, *) {
         return .cellularEID
       }
+#endif
       return .telephoneNumber
     case .cellularIMEI:
+#if !os(macOS)
       if #available(iOS 17.4, tvOS 17.4, *) {
         return .cellularIMEI
       }
+#endif
       return .telephoneNumber
     case .creditCardNumber: return .creditCardNumber
     case .creditCardExpiration:

@@ -4,13 +4,15 @@ import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
 import java.lang.ref.WeakReference
+import java.util.concurrent.atomic.AtomicBoolean
 
 @DoNotStrip
 class PromiseImpl @DoNotStrip internal constructor(
   @DoNotStrip internal val callback: JavaCallback
 ) : Promise {
-  internal var wasSettled = false
-    private set
+  private val settled = AtomicBoolean(false)
+  internal val wasSettled: Boolean
+    get() = settled.get()
   private var appContextHolder: WeakReference<AppContext>? = null
   private var fullFunctionName: String? = null
 
@@ -57,12 +59,19 @@ class PromiseImpl @DoNotStrip internal constructor(
   }
 
   private inline fun checkIfWasSettled(body: () -> Unit) {
-    if (wasSettled) {
+    if (!settled.compareAndSet(false, true)) {
       return
     }
 
-    body()
-    wasSettled = true
+    var didSettle = false
+    try {
+      body()
+      didSettle = true
+    } finally {
+      if (!didSettle) {
+        settled.set(false)
+      }
+    }
   }
 
   fun decorateWithDebugInformation(

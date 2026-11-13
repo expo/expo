@@ -515,11 +515,11 @@ describe('convertHtmlToMarkdown', () => {
     </main>`;
     const md = convertHtmlToMarkdown(html);
 
-    expect(md).toContain('[CLI](/more/expo-cli.md#install)');
+    expect(md).toContain('[CLI](https://docs.expo.dev/more/expo-cli.md#install)');
     expect(md).toContain(
       '[Contacts](https://docs.expo.dev/versions/v56.0.0/sdk/contacts.md#contactgetalloptions)'
     );
-    expect(md).toContain('[llms](/llms.txt)');
+    expect(md).toContain('[llms](https://docs.expo.dev/llms.txt)');
     expect(md).toContain('[External](https://expo.dev)');
     expect(md).toContain('[Inside](/more/expo-cli#install)');
   });
@@ -574,7 +574,7 @@ describe('card links', () => {
       </a>
     </main>`;
     const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('[My Guide](/guide.md)');
+    expect(md).toContain('[My Guide](https://docs.expo.dev/guide.md)');
     expect(md).toContain('Guide description.');
   });
 });
@@ -822,6 +822,66 @@ describe('diff tables', () => {
     expect(md).toContain('+ new line');
     expect(md).toMatch(/^\s+unchanged$/m);
   });
+
+  it('keeps the file name, indentation, and blank lines of a DiffBlock', () => {
+    const row = (type: string, text: string) =>
+      `<tr class="diff-line"><td class="diff-gutter diff-gutter-${type}">1</td>` +
+      `<td class="diff-gutter diff-gutter-${type}">1</td>` +
+      `<td class="diff-code diff-code-${type}">${text}</td></tr>`;
+    const html = [
+      '<main><div data-md="diff">',
+      '<div data-md="snippet-header"><span>metro.config.js</span><button></button></div>',
+      '<div><table class="diff diff-unified"><tbody class="diff-hunk">',
+      row('normal', '  nested: true,'),
+      row('normal', ' '),
+      row('insert', 'server: {'),
+      row('insert', '  port: 8081,'),
+      row('insert', '},'),
+      '</tbody></table></div></div></main>',
+    ].join('');
+
+    expect(convertHtmlToMarkdown(html)).toContain(
+      [
+        '```diff metro.config.js',
+        '    nested: true,',
+        '',
+        '+ server: {',
+        '+   port: 8081,',
+        '+ },',
+        '```',
+      ].join('\n')
+    );
+  });
+
+  it('adds a hunk header to each hunk of a diff with more than one hunk', () => {
+    const row = (type: string, oldLine: string, newLine: string, text: string) =>
+      `<tr class="diff-line"><td class="diff-gutter diff-gutter-${type}">${oldLine}</td>` +
+      `<td class="diff-gutter diff-gutter-${type}">${newLine}</td>` +
+      `<td class="diff-code diff-code-${type}">${text}</td></tr>`;
+    const html = [
+      '<main><div data-md="diff"><table class="diff diff-unified">',
+      '<tbody class="diff-hunk">',
+      row('insert', '', '1', 'first'),
+      row('normal', '1', '2', 'second'),
+      '</tbody><tbody class="diff-hunk">',
+      row('normal', '9', '10', 'tenth'),
+      row('delete', '10', '', 'removed'),
+      '</tbody></table></div></main>',
+    ].join('');
+
+    expect(convertHtmlToMarkdown(html)).toContain(
+      [
+        '```diff',
+        '@@ -1,1 +1,2 @@',
+        '+ first',
+        '  second',
+        '@@ -9,2 +10,1 @@',
+        '  tenth',
+        '- removed',
+        '```',
+      ].join('\n')
+    );
+  });
 });
 
 describe('placeholder markers', () => {
@@ -951,7 +1011,9 @@ describe('convertHtmlToMarkdown with real page structure', () => {
     expect(md).toContain('[Node.js (LTS)](https://nodejs.org)');
     expect(md).toContain('```sh\nnpx create-expo-app@latest\n```');
     expect(md).toContain('## Next step');
-    expect(md).toContain('[development environment](/get-started/set-up-your-environment.md)');
+    expect(md).toContain(
+      '[development environment](https://docs.expo.dev/get-started/set-up-your-environment.md)'
+    );
 
     // Non-content is removed
     expect(md).not.toContain('Home');
@@ -1302,6 +1364,20 @@ describe('API platform tags', () => {
     ].join('');
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('Supported platforms: Android, iOS');
+  });
+});
+
+describe('Package version', () => {
+  it('converts package-version to a recommended version line', () => {
+    const html = [
+      '<main><h1>Camera</h1>',
+      '<div data-md="package-version" data-md-version="~58.0.3">',
+      '<svg/>Recommended version:<div><span>~58.0.3</span></div><button><svg/></button>',
+      '</div>',
+      '<p>Camera API.</p></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('Recommended version: ~58.0.3');
   });
 });
 

@@ -1,14 +1,11 @@
 package expo.modules.splashscreen
 
 import android.app.Activity
-import android.app.Application.ActivityLifecycleCallbacks
 import android.os.Build
-import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver.OnPreDrawListener
 import android.view.animation.AccelerateInterpolator
 import android.window.SplashScreenView
-import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
@@ -16,7 +13,7 @@ import com.facebook.react.bridge.ReactMarkerConstants
 object SplashScreenManager {
   private var keepSplashScreenOnScreen = true
   var preventAutoHideCalled: Boolean = false
-  private lateinit var splashScreen: SplashScreen
+  private var exitAnimationDuration = SplashScreenOptions().duration
 
   private val contentAppearedListener = ReactMarker.MarkerListener { name, _, _ ->
     if (name == ReactMarkerConstants.CONTENT_APPEARED) {
@@ -26,35 +23,8 @@ object SplashScreenManager {
     }
   }
 
-  private fun configureSplashScreen(options: SplashScreenOptions = SplashScreenOptions()) {
-    // If loaded in a headless JS context we might not have initialized the splash screen
-    // lateinit variable, so let's check to be nice citizens
-    if (!::splashScreen.isInitialized) {
-      return
-    }
-
-    val duration = options.duration
-
-    splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
-      val splashScreenView = splashScreenViewProvider.view
-      splashScreenView
-        .animate()
-        .setDuration(duration)
-        .alpha(0.0f)
-        .setInterpolator(AccelerateInterpolator())
-        .withEndAction {
-          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            splashScreenViewProvider.remove()
-          } else {
-            // Avoid calling applyThemesSystemBarAppearance
-            (splashScreenView as SplashScreenView).remove()
-          }
-        }.start()
-    }
-  }
-
   fun registerOnActivity(mainActivity: Activity) {
-    splashScreen = mainActivity.installSplashScreen()
+    val splashScreen = mainActivity.installSplashScreen()
     ReactMarker.addListener(contentAppearedListener)
 
     // Using `splashScreen.setKeepOnScreenCondition()` does not work on apis below 33
@@ -71,29 +41,21 @@ object SplashScreenManager {
       }
     })
 
-    configureSplashScreen()
-
-    // Mitigate race where splash exit listener may fire after activity stop,
-    // causing SurfaceControl.checkNotReleased() crash on API 31-33
-    // https://issuetracker.google.com/issues/242118185
-    if (Build.VERSION.SDK_INT in Build.VERSION_CODES.S..Build.VERSION_CODES.TIRAMISU) {
-      val application = mainActivity.application
-
-      application.registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
-        override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
-        override fun onActivityDestroyed(activity: Activity) {}
-        override fun onActivityPaused(activity: Activity) {}
-        override fun onActivityResumed(activity: Activity) {}
-        override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-        override fun onActivityStarted(activity: Activity) {}
-
-        override fun onActivityStopped(activity: Activity) {
-          if (activity == mainActivity) {
-            runCatching { mainActivity.splashScreen.clearOnExitAnimationListener() }
-            application.unregisterActivityLifecycleCallbacks(this)
+    splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
+      val splashScreenView = splashScreenViewProvider.view
+      splashScreenView
+        .animate()
+        .setDuration(exitAnimationDuration)
+        .alpha(0.0f)
+        .setInterpolator(AccelerateInterpolator())
+        .withEndAction {
+          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            splashScreenViewProvider.remove()
+          } else {
+            // Avoid calling applyThemesSystemBarAppearance
+            (splashScreenView as SplashScreenView).remove()
           }
-        }
-      })
+        }.start()
     }
   }
 
@@ -102,7 +64,7 @@ object SplashScreenManager {
   }
 
   fun setSplashScreenOptions(options: SplashScreenOptions) {
-    configureSplashScreen(options)
+    exitAnimationDuration = options.duration
   }
 
   fun unregisterContentAppearedListener() {

@@ -42,7 +42,9 @@ export type DefaultNavigatorOptions<
 
   /**
    * Enables React Activity for nested Expo Router screens. For stack navigators, a number specifies
-   * how many screens must be above a route before its content is hidden.
+   * how many screens must be above a route before its content is hidden. When a route that holds a
+   * nested navigator hides, the screens of that navigator also hide, unless they set
+   * `activityEnabled={false}`.
    * @default false
    */
   activityEnabled?: State extends { type?: 'stack' } ? boolean | number : boolean;
@@ -259,10 +261,9 @@ type NavigationHelpersCommon<
    * Navigate to a screen in the current or parent navigator.
    * If we're already on the screen, update the params instead.
    *
-   * @param screen Name of the route to navigate to.
-   * @param [params] Params object for the route.
-   * @param [options.merge] Whether to merge the params onto the route. Defaults to `false`.
-   * @param [options.pop] Whether to pop routes in a stack to go back to the matching route. Defaults to `false`.
+   * `screen` is the name of the route to navigate to. `params` contains the route params.
+   * `options.merge` merges the params onto the route, and `options.pop` pops routes in a stack
+   * to go back to the matching route. Both options default to `false`.
    */
   navigate<RouteName extends keyof ParamList>(
     ...args: // This condition allows us to iterate over a union type
@@ -288,11 +289,10 @@ type NavigationHelpersCommon<
   /**
    * Navigate to a route in current navigation tree.
    *
-   * @param options.name Name of the route to navigate to.
-   * @param [options.params] Params object for the route.
-   * @param [options.path] Path to associate the route with (e.g. for deep links).
-   * @param [options.merge] Whether to merge the params onto the route. Defaults to `false`.
-   * @param [options.pop] Whether to pop routes in a stack to go back to the matching route. Defaults to `false`.
+   * `options.name` is the name of the route to navigate to, `options.params` contains the route
+   * params, and `options.path` associates a path with the route for deep links. `options.merge`
+   * merges the params onto the route, and `options.pop` pops routes in a stack to go back to the
+   * matching route. Both options default to `false`.
    */
   navigate<RouteName extends keyof ParamList>(
     options: RouteName extends unknown
@@ -309,8 +309,7 @@ type NavigationHelpersCommon<
   /**
    * Preloads the route in current navigation tree.
    *
-   * @param screen Name of the route to preload.
-   * @param [params] Params object for the route.
+   * `screen` is the name of the route to preload. `params` contains the route params.
    */
   preload<RouteName extends keyof ParamList>(
     ...args: RouteName extends unknown
@@ -440,7 +439,7 @@ export type NavigationProp<
    * Update the options for the route.
    * The options object will be shallow merged with default options object.
    *
-   * @param update Options object or a callback which takes the options from navigator config and returns a new options object.
+   * @param options Options object to merge with the options from the navigator config.
    */
   setOptions(options: Partial<ScreenOptions>): void;
 } & NavigationHelpersRoute<ParamList, RouteName> &

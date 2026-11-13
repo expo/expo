@@ -14,7 +14,9 @@ internal suspend fun repairCursorIfStale(
   readMaxId: suspend () -> Long?
 ) {
   val cursor = readCursor()
-  if (cursor < 0) return
+  if (cursor < 0) {
+    return
+  }
 
   val maxId = try {
     readMaxId()

@@ -8,6 +8,7 @@ import {
   type ParamListBase,
   type Router,
 } from '../routers';
+import { withWarnOnceIfCalledDuringRender } from './isRenderingComponent';
 import type { NavigationHelpers, NavigationProp } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
 
@@ -142,7 +143,7 @@ export function useNavigationCache<
           [route.key]: { ...o[route.key]!, ...options },
         }));
       },
-      isFocused: () => {
+      isFocused: withWarnOnceIfCalledDuringRender(() => {
         const state = rest.getState();
 
         if (state.routes[state.index]?.key !== route.key) {
@@ -152,7 +153,7 @@ export function useNavigationCache<
         // If the current screen is focused, we also need to check if parent navigator is focused
         // This makes sure that we return the focus state in the whole tree, not just this navigator
         return navigation ? navigation.isFocused() : true;
-      },
+      }, 'navigation.isFocused() was called during render, which can return a stale value. Use the useIsFocused() hook to read focus during render, or call navigation.isFocused() in an effect or event handler.'),
     };
 
     return navigationItem;

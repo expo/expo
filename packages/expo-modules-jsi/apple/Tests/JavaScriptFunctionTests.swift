@@ -1,6 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesJSI
+import Foundation
 import Testing
 
 @Suite
@@ -246,7 +247,7 @@ struct JavaScriptFunctionTests {
     let result = try fn.call(arguments: 21)
 
     #expect(result.isObject() == true)
-    #expect(result.is("Promise"))
+    #expect(result.is("Promise") == true)
   }
 
   @Test
@@ -305,10 +306,132 @@ struct JavaScriptFunctionTests {
     try runtime.eval("globalThis.checkArgs = function(a, b) { return [a === null, b === undefined]; };")
 
     let fn = try runtime.global().getPropertyAsFunction("checkArgs")
-    let result = try fn.call(arguments: JavaScriptValue.null, JavaScriptValue.undefined)
+    let result = try fn.call(arguments: JavaScriptValue.null().ref(), JavaScriptValue.undefined().ref())
     let array = result.getArray()
 
     #expect(try array.getValue(at: 0).getBool() == true)
     #expect(array[1].getBool() == true)
+  }
+
+  @Test
+  func `call function with emplaced arguments`() throws {
+    let runtime = JavaScriptRuntime()
+    let fn = try runtime.eval(
+      "(count, name, date, options) => `${count}|${name}|${date instanceof Date}|${options.verbose}`"
+    ).getFunction()
+    let options = try runtime.eval("({ verbose: true })").getObject()
+    let result = try fn.call(argumentCount: 4, returning: String.self) { arguments, runtime in
+      try arguments.emplace(2.5, at: 0, in: runtime)
+      try arguments.emplace("photo.jpg", at: 1, in: runtime)
+      try arguments.emplace(Date(), at: 2, in: runtime)
+      arguments.emplace(options.asValue(), at: 3)
+    }
+    #expect(result == "2.5|photo.jpg|true|true")
+  }
+
+  @Test
+  func `call function passes undefined for arguments that are not emplaced`() throws {
+    let runtime = JavaScriptRuntime()
+    let fn = try runtime.eval("(function() { return `${arguments.length}|${arguments[1]}`; })").getFunction()
+    let result = try fn.call(argumentCount: 2, returning: String.self) { arguments, runtime in
+      try arguments.emplace(1, at: 0, in: runtime)
+    }
+    #expect(result == "2|undefined")
+  }
+
+  @Test
+  func `call function rethrows an error from emplacing arguments without calling the function`() throws {
+    struct EmplaceError: Error {}
+    let runtime = JavaScriptRuntime()
+    try runtime.eval("globalThis.called = false")
+    let fn = try runtime.eval("(function() { globalThis.called = true; })").getFunction()
+    #expect(throws: EmplaceError.self) {
+      _ = try fn.call(argumentCount: 2) { arguments, runtime in
+        try arguments.emplace("emplaced before the error", at: 0, in: runtime)
+        throw EmplaceError()
+      }
+    }
+    #expect(try runtime.eval("globalThis.called").asBool() == false)
+  }
+
+  @Test
+  func `call function throws when the result does not decode as the requested type`() throws {
+    let runtime = JavaScriptRuntime()
+    let fn = try runtime.eval("(function() { return 'text'; })").getFunction()
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try fn.call(argumentCount: 0, returning: Int.self) { _, _ in }
+    }
+  }
+
+  // MARK: - JavaScriptCodable
+
+  @Test
+  func `decodes and encodes as JavaScriptCodable`() throws {
+    let runtime = JavaScriptRuntime()
+    let value = try runtime.eval("(function(x) { return x * 2; })")
+    let fn = try JavaScriptFunction.decode(value, in: runtime)
+    #expect(try fn.call(arguments: 21).getInt() == 42)
+    let encoded = try JavaScriptFunction.encode(fn, in: runtime)
+    #expect(encoded.isFunction() == true)
+    #expect(try encoded.getFunction().call(arguments: 2).getInt() == 4)
+  }
+
+  @Test
+  func `encodes the same function`() throws {
+    let runtime = JavaScriptRuntime()
+    try runtime.eval("globalThis.fn = function() {}")
+    let fn = try runtime.global().getPropertyAsFunction("fn")
+    let encoded = try JavaScriptFunction.encode(fn, in: runtime)
+    let isSame = try runtime.eval("(function(other) { return other === globalThis.fn; })").getFunction()
+    #expect(try isSame.call(arguments: encoded.ref()).getBool() == true)
+  }
+
+  @Test
+  func `decodes from an unowned value`() throws {
+    let runtime = JavaScriptRuntime()
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: try runtime.eval("(function() { return 42; })").ref(),
+      try runtime.eval("({})").ref()
+    )
+    let fn = try JavaScriptFunction.decode(buffer.unownedValue(at: 0), in: runtime)
+    #expect(try fn.call().getInt() == 42)
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptFunction.decode(buffer.unownedValue(at: 1), in: runtime)
+    }
+  }
+
+  @Test
+  func `decoding rejects a value that is not a function`() throws {
+    let runtime = JavaScriptRuntime()
+    let number = try runtime.eval("42")
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptFunction.decode(number, in: runtime)
+    }
+    let object = try runtime.eval("({})")
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptFunction.decode(object, in: runtime)
+    }
+  }
+
+  @Test
+  func `decodable kinds are objects`() {
+    #expect(JavaScriptFunction.decodableKinds == .object)
+  }
+
+  @Test
+  func `call function returns a decoded function`() throws {
+    let runtime = JavaScriptRuntime()
+    let fn = try runtime.eval("(function() { return function() { return 'inner'; }; })").getFunction()
+    let inner = try fn.call(argumentCount: 0, returning: JavaScriptFunction.self) { _, _ in }
+    #expect(try inner.call().getString() == "inner")
+  }
+
+  @Test
+  func `decoding rejects a runtime-free value`() throws {
+    let runtime = JavaScriptRuntime()
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptFunction.decode(JavaScriptValue.number(42), in: runtime)
+    }
   }
 }

@@ -19,7 +19,6 @@ enum class ShareType(val value: String) : Enumerable {
         mimeType.startsWith("image/") -> Image
         mimeType.startsWith("video/") -> Video
         mimeType.startsWith("audio/") -> Audio
-        mimeType.startsWith("text/") -> Text
         else -> File
       }
     }

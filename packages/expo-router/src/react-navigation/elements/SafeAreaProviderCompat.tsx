@@ -9,12 +9,9 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
-import {
-  initialWindowMetrics,
-  SafeAreaInsetsContext,
-  SafeAreaProvider,
-} from 'react-native-safe-area-context';
+import { initialWindowMetrics, SafeAreaInsetsContext } from 'react-native-safe-area-context';
 
+import { SafeAreaProvider } from '../../SafeAreaProvider';
 import { FrameSizeProvider } from './useFrameSize';
 
 type Props = {

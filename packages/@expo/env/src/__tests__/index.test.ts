@@ -12,6 +12,7 @@ import {
   LOADED_ENV_NAME,
   loadProjectEnv,
   logLoadedEnv,
+  parseEnv,
   parseEnvFiles,
   parseProjectEnv,
   setNodeEnv,
@@ -46,6 +47,14 @@ describe(setNodeEnv, () => {
 
     expect(setNodeEnv('production')).toBe(process.env);
     expect(process.env.NODE_ENV).toBe('production');
+  });
+
+  it('removes an inherited BABEL_ENV value', () => {
+    process.env.BABEL_ENV = 'development';
+
+    setNodeEnv('production');
+
+    expect(process.env.BABEL_ENV).toBeUndefined();
   });
 
   it('updates a custom environment without changing process.env', () => {
@@ -340,6 +349,12 @@ describe(parseProjectEnv, () => {
     );
 
     expect(parseProjectEnv('/')).toMatchObject({ env: {}, files: ['/.env'] });
+  });
+
+  it.each(['BABEL_ENV', 'babel_env'])('ignores %s in env files', (key) => {
+    vol.fromJSON({ '.env': [`${key}=production`, 'FOO=default'].join('\n') }, '/');
+
+    expect(parseProjectEnv('/').env).toEqual({ FOO: 'default' });
   });
 });
 
@@ -752,6 +767,19 @@ describe(getOriginalEnvValue, () => {
 });
 
 describe('isLocalEnvKey policy', () => {
+  it('tracks mixed-case local-only keys as sensitive without changing their spelling', () => {
+    vol.fromJSON({ '.env.local': 'android_home=/dev/sdk' }, '/');
+    const result = parseEnvFiles(['/.env.local'], { systemEnv: {} });
+    expect(result.env).toEqual({ android_home: '/dev/sdk' });
+    expect(result.sensitiveLoadedKeys).toEqual(['android_home']);
+  });
+
+  it('filters mixed-case protected keys in the single-file parser', () => {
+    expect(parseEnv('npm_config_registry=https://attacker.example/npm\nAPP_VALUE=ok')).toEqual({
+      APP_VALUE: 'ok',
+    });
+  });
+
   it('throws when a local-only key is set in a non-.local file', () => {
     delete process.env.ANDROID_HOME;
     vol.fromJSON({ '.env': 'ANDROID_HOME=/evil/sdk\nUNRELATED=ok' }, '/');
@@ -869,6 +897,19 @@ describe('isLocalEnvKey policy', () => {
     expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(
       /NODE_OPTIONS[\s\S]*ANDROID_HOME/
     );
+  });
+
+  it('throws when ignored keys use mixed casing (Windows bypass)', () => {
+    vol.fromJSON({ '.env': 'npm_config_registry=https://attacker.example/npm' }, '/');
+
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/npm_config_registry/);
+  });
+
+  it('throws when local-only keys use mixed casing (Windows bypass)', () => {
+    vol.fromJSON({ '.env': 'android_home=/evil/sdk' }, '/');
+
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/android_home/);
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/\.local/);
   });
 
   it('throws on package-manager registry/install vars even in .local files', () => {

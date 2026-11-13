@@ -4,7 +4,7 @@ sidebar_title: Preview updates
 description: Learn how to preview updates in development, preview, and production builds.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { StoplightIcon } from '@expo/styleguide-icons/custom/StoplightIcon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -13,7 +13,7 @@ Before deploying an update to production, you will often want to test it in a pr
 
 ## Previewing updates in development builds
 
-Development builds are a great way to preview updates from pull requests, directly from the EAS dashboard, or from the built-in UI provided by the `expo-dev-client` library.
+Development builds are a great way to preview updates from pull requests, directly from the Expo dashboard, or from the built-in UI provided by the `expo-dev-client` library.
 
 <BoxLink
   title="Preview updates in development builds"
@@ -24,21 +24,21 @@ Development builds are a great way to preview updates from pull requests, direct
 
 <BoxLink
   title="Use GitHub Actions to automate publishing updates"
-  description="Learn how to use GitHub Actions to automate publishing updates with EAS Update."
+  description="Learn how to use GitHub Actions to automate publishing updates with Expo Update."
   href="/eas-update/github-actions/"
   Icon={LayersTwo02Icon}
 />
 
 <BoxLink
-  title="Launch preview updates from the EAS dashboard using Orbit"
+  title="Launch preview updates from the Expo dashboard using Orbit"
   description="Learn how to launch updates with the macOS, Windows, and Linux desktop app Expo Orbit."
   href="/review/with-orbit/"
-  Icon={BookOpen02Icon}
+  Icon={StoplightIcon}
 />
 
 ## Previewing updates in preview builds
 
-Non-technical users will typically not want to interact with a development build, and they will want to test changes from a preview build on an [App store testing track](/review/overview/#app-store-testing-tracks) or [internal distribution](/review/overview/#internal-distribution-with-eas-build).
+Non-technical users will typically not want to interact with a development build, and they will want to test changes from a preview build on an [App store testing track](/review/overview/#app-store-testing-tracks) or [internal distribution](/review/overview/#internal-distribution-with-expo-build).
 
 If your team is smaller, it may be sufficient to deploy a single preview build at a time to an app store testing track or internal distribution. You can then publish updates to the channel that is used by that preview build. [Learn more about preview builds](/review/overview/).
 

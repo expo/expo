@@ -1,3 +1,4 @@
+import { useTheme } from 'ThemeProvider';
 import React, { PropsWithChildren } from 'react';
 import {
   ActivityIndicator,
@@ -28,23 +29,32 @@ const Button = ({
   style,
   buttonStyle,
   children,
-}: Props) => (
-  <View style={[styles.container, style]}>
-    <TouchableHighlight
-      style={[styles.button, disabled && styles.disabledButton, buttonStyle]}
-      disabled={disabled || loading}
-      onPressIn={onPressIn}
-      onPress={onPress}
-      underlayColor={Colors.highlightColor}>
-      {children ||
-        (loading ? (
-          <ActivityIndicator size="small" color="white" />
-        ) : (
-          <Text style={styles.label}>{title}</Text>
-        ))}
-    </TouchableHighlight>
-  </View>
-);
+}: Props) => {
+  const { theme } = useTheme();
+  const labelColor = disabled ? theme.text.secondary : '#ffffff';
+
+  return (
+    <View style={[styles.container, style]}>
+      <TouchableHighlight
+        style={[
+          styles.button,
+          disabled && { backgroundColor: theme.background.selected },
+          buttonStyle,
+        ]}
+        disabled={disabled || loading}
+        onPressIn={onPressIn}
+        onPress={onPress}
+        underlayColor={Colors.highlightColor}>
+        {children ||
+          (loading ? (
+            <ActivityIndicator size="small" color={labelColor} />
+          ) : (
+            <Text style={[styles.label, { color: labelColor }]}>{title}</Text>
+          ))}
+      </TouchableHighlight>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -59,11 +69,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: Colors.tintColor,
   },
-  disabledButton: {
-    backgroundColor: Colors.disabled,
-  },
   label: {
-    color: '#ffffff',
     fontWeight: '700',
   },
 });

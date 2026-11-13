@@ -26,7 +26,11 @@ class CalendarRepository(context: Context) {
 
     return@withContext cursor.use { cursor ->
       generateSequence {
-        if (cursor.moveToNext()) cursor.extractCalendar() else null
+        if (cursor.moveToNext()) {
+          cursor.extractCalendar()
+        } else {
+          null
+        }
       }.toList()
     }
   }

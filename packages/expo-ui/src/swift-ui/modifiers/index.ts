@@ -18,11 +18,17 @@ import {
 import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
+import { onHingeChange } from './hingeObservation';
 import { progressViewStyle } from './progressViewStyle';
 import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservation';
 import { id, scrollPosition } from './scrollPosition';
 import { resolveShapeStyle, type ShapeStyle } from './shapeStyle';
-import { symbolEffect } from './symbolEffect';
+import {
+  symbolEffect,
+  type ContentTransitionSymbolEffect,
+  type SymbolEffectOptions,
+} from './symbolEffect';
+import { flattenOptions } from './symbolEffectOptions';
 import type { Color } from './types';
 import { activityBackgroundTint, widgetAccentedRenderingMode, widgetURL } from './widgets';
 
@@ -107,30 +113,70 @@ export const matchedGeometryEffect = (
 export const geometryGroup = () => createModifier('geometryGroup', {});
 
 /**
- * Sets the frame properties of a view.
- * @param params - The frame parameters. Width, height, minWidth, maxWidth, minHeight, maxHeight, idealWidth, idealHeight and alignment.
+ * The alignment of a view inside the frame that `frame()` creates.
+ * Most values have no visible effect when the frame is the same size as the view.
+ */
+export type FrameAlignment =
+  | 'center'
+  | 'leading'
+  | 'trailing'
+  | 'top'
+  | 'bottom'
+  | 'topLeading'
+  | 'topTrailing'
+  | 'bottomLeading'
+  | 'bottomTrailing';
+
+/**
+ * Positions this view within an invisible frame with the specified size.
+ * @param params - The fixed frame parameters: `width`, `height` and `alignment`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/frame(width:height:alignment:)).
  */
-export const frame = (params: {
+export function frame(params: {
+  width?: number;
+  height?: number;
+  alignment?: FrameAlignment;
+}): ModifierConfig;
+/**
+ * Positions this view within an invisible frame having the specified size constraints.
+ * @param params - The flexible frame parameters: `minWidth`, `idealWidth`, `maxWidth`, `minHeight`, `idealHeight`, `maxHeight` and `alignment`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/frame(minwidth:idealwidth:maxwidth:minheight:idealheight:maxheight:alignment:)).
+ */
+export function frame(params: {
+  minWidth?: number;
+  idealWidth?: number;
+  maxWidth?: number;
+  minHeight?: number;
+  idealHeight?: number;
+  maxHeight?: number;
+  alignment?: FrameAlignment;
+}): ModifierConfig;
+export function frame(params: {
   width?: number;
   height?: number;
   minWidth?: number;
+  idealWidth?: number;
   maxWidth?: number;
   minHeight?: number;
-  maxHeight?: number;
-  idealWidth?: number;
   idealHeight?: number;
-  alignment?:
-    | 'center'
-    | 'leading'
-    | 'trailing'
-    | 'top'
-    | 'bottom'
-    | 'topLeading'
-    | 'topTrailing'
-    | 'bottomLeading'
-    | 'bottomTrailing';
-}) => createModifier('frame', params);
+  maxHeight?: number;
+  alignment?: FrameAlignment;
+}): ModifierConfig {
+  if (__DEV__) {
+    const { width, height, alignment: _alignment, ...flexible } = params;
+    const ignored = Object.keys(flexible).filter(
+      (key) => flexible[key as keyof typeof flexible] !== undefined
+    );
+    if ((width !== undefined || height !== undefined) && ignored.length > 0) {
+      console.warn(
+        `frame() ignores ${ignored.join(', ')} because width or height is also set. ` +
+          'SwiftUI applies fixed and flexible frames as separate modifiers. ' +
+          'Split the values into two calls, for example [frame({ height: 50 }), frame({ maxWidth: Infinity })].'
+      );
+    }
+  }
+  return createModifier('frame', params);
+}
 
 /**
  * Positions this view within an invisible frame with a size relative to the nearest container.
@@ -787,6 +833,16 @@ export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
 
 /**
+ * Sets the preferred color scheme for the nearest enclosing presentation, such as a `BottomSheet`,
+ * including its background. The value overrides the device's light or dark appearance for that
+ * presentation.
+ * @param colorScheme - The preferred color scheme, or `null` to indicate no preference.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/preferredcolorscheme(_:)).
+ */
+export const preferredColorScheme = (colorScheme: 'light' | 'dark' | null) =>
+  createModifier('preferredColorScheme', { colorScheme });
+
+/**
  * Disables or enables clipping of a scrollable view's content to its bounds.
  * Content drawn outside those bounds, such as a shadow or a view scaled up past the edge, is
  * cut off by default and stays visible once clipping is disabled.
@@ -815,6 +871,24 @@ export const scrollIndicators = (
   visibility: 'automatic' | 'visible' | 'hidden' | 'never',
   axes: 'vertical' | 'horizontal' | 'both' = 'both'
 ) => createModifier('scrollIndicators', { visibility, axes });
+
+/**
+ * Sets the style of the scroll edge effect that a scrollable view shows where its content meets
+ * a bar, such as a navigation bar or a toolbar.
+ * Mirrors SwiftUI's `scrollEdgeEffectStyle(_:for:)` modifier. On versions before iOS 26 it does
+ * nothing.
+ * @param style - The style of the effect:
+ * - `'automatic'`: the system picks the style.
+ * - `'hard'`: a bar with a defined edge separates the content.
+ * - `'soft'`: the content fades out gradually, without a defined edge.
+ * @param edges - The edges where the style applies. Defaults to `'all'`.
+ * @platform ios 26.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolledgeeffectstyle(_:for:)).
+ */
+export const scrollEdgeEffectStyle = (
+  style: 'automatic' | 'hard' | 'soft',
+  edges: 'all' | 'top' | 'bottom' | 'leading' | 'trailing' | 'horizontal' | 'vertical' = 'all'
+) => createModifier('scrollEdgeEffectStyle', { style, edges });
 
 export type UnitPointValue =
   | 'zero'
@@ -1389,6 +1463,16 @@ export const font = (params: {
     | 'footnote'
     | 'caption'
     | 'caption2';
+  /**
+   * Draws both lowercase and uppercase letters as small capitals.
+   * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/font/smallcaps()).
+   */
+  smallCaps?: boolean;
+  /**
+   * The space between lines of text, relative to the font's standard leading.
+   * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/font/leading(_:)).
+   */
+  leading?: 'standard' | 'tight' | 'loose';
 }) => createModifier('font', params);
 /**
  * A standard size for Dynamic Type, from `xSmall` through the five
@@ -1633,9 +1717,11 @@ export const textContentType = (
  * Useful for animating changes in text content, especially numeric text.
  * Use with the [`animation`](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
  *
- * @param transitionType - The type of content transition.
+ * @param transitionType - The type of content transition. The `'symbolEffect'` type applies a symbol effect transition to symbol images. Other views are unaffected by this transition. It requires iOS 17.0+, tvOS 17.0+, and macOS 14.0+. On earlier versions, the view does not change.
  * @param params - Optional parameters.
  * @param params.countsDown - Whether the numeric text counts down.
+ * @param params.symbolEffect - The symbol effect to use with the `'symbolEffect'` type. Defaults to `{ effect: 'automatic' }`.
+ * @param params.options - A set of options that configure how effects apply to symbol-based images. Use it with the `'symbolEffect'` type.
  *
  * @example
  * ```tsx
@@ -1644,17 +1730,34 @@ export const textContentType = (
  * </Text>
  * ```
  *
+ * @example
+ * ```tsx
+ * <Image
+ *   systemName={isOn ? 'speaker.wave.2.fill' : 'speaker.slash.fill'}
+ *   modifiers={[
+ *     contentTransition('symbolEffect', { symbolEffect: { effect: 'replace', direction: 'downUp' } }),
+ *     animation(Animation.default, isOn),
+ *   ]}
+ * />
+ * ```
+ *
  * @platform ios 16.0+
  * @platform tvos 16.0+
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/contenttransition(_:)).
  */
 export const contentTransition = (
-  transitionType: 'numericText' | 'identity' | 'opacity' | 'interpolate',
-  params?: { countsDown?: boolean }
+  transitionType: 'numericText' | 'identity' | 'opacity' | 'interpolate' | 'symbolEffect',
+  params?: {
+    countsDown?: boolean;
+    symbolEffect?: ContentTransitionSymbolEffect;
+    options?: SymbolEffectOptions;
+  }
 ) =>
   createModifier('contentTransition', {
     transitionType,
     countsDown: params?.countsDown,
+    symbolEffect: params?.symbolEffect,
+    options: flattenOptions(params?.options),
   });
 
 export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
@@ -1664,6 +1767,15 @@ export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grou
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/liststyle(_:)).
  */
 export const listStyle = (style: ListStyle) => createModifier('listStyle', { style });
+
+/**
+ * Sets the label that a list's section index shows for this `Section`. People tap or drag along
+ * the index to scroll the list to the section. On versions before iOS 26 it does nothing.
+ * @param label - The label for the section, usually a single letter.
+ * @platform ios 26.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/sectionindexlabel(_:)).
+ */
+export const sectionIndexLabel = (label: string) => createModifier('sectionIndexLabel', { label });
 
 /**
  * Adds a luminance to alpha effect to this view.
@@ -1693,6 +1805,41 @@ export const resizable = (
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/navigationtitle(_:)).
  */
 export const navigationTitle = (title: string) => createModifier('navigationTitle', { title });
+
+/**
+ * Title display modes for the `navigationBarTitleDisplayMode` modifier.
+ * @platform ios
+ */
+export type NavigationBarTitleDisplayMode = 'automatic' | 'inline' | 'large';
+
+/**
+ * Configures the title display mode for a navigation bar.
+ * @param displayMode - The style to use for displaying the navigation bar title.
+ * @platform ios
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/navigationbartitledisplaymode(_:)).
+ */
+export const navigationBarTitleDisplayMode = (displayMode: NavigationBarTitleDisplayMode) =>
+  createModifier('navigationBarTitleDisplayMode', { displayMode });
+
+/**
+ * Title display modes for the `toolbarTitleDisplayMode` modifier. On tvOS, `large` and
+ * `inlineLarge` have no effect. On macOS, `large` has no effect.
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ * @platform macos 14.0+
+ */
+export type ToolbarTitleDisplayMode = 'automatic' | 'inline' | 'inlineLarge' | 'large';
+
+/**
+ * Configures the title display mode for a toolbar.
+ * @param mode - The style to use for displaying the toolbar title.
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ * @platform macos 14.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/toolbartitledisplaymode(_:)).
+ */
+export const toolbarTitleDisplayMode = (mode: ToolbarTitleDisplayMode) =>
+  createModifier('toolbarTitleDisplayMode', { mode });
 
 // =============================================================================
 // Type Definitions
@@ -1781,8 +1928,10 @@ export type BuiltInModifier =
   | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof scrollDisabled>
+  | ReturnType<typeof preferredColorScheme>
   | ReturnType<typeof scrollClipDisabled>
   | ReturnType<typeof scrollIndicators>
+  | ReturnType<typeof scrollEdgeEffectStyle>
   | ReturnType<typeof defaultScrollAnchor>
   | ReturnType<typeof defaultScrollAnchorForRole>
   | ReturnType<typeof scrollTargetBehavior>
@@ -1791,6 +1940,7 @@ export type BuiltInModifier =
   | ReturnType<typeof scrollPosition>
   | ReturnType<typeof onScrollPhaseChange>
   | NonNullable<ReturnType<typeof useScrollGeometryChange>>
+  | ReturnType<typeof onHingeChange>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>
@@ -1838,7 +1988,9 @@ export type BuiltInModifier =
   | ReturnType<typeof widgetURL>
   | ReturnType<typeof activityBackgroundTint>
   | ReturnType<typeof containerBackground>
-  | ReturnType<typeof navigationTitle>;
+  | ReturnType<typeof navigationTitle>
+  | ReturnType<typeof navigationBarTitleDisplayMode>
+  | ReturnType<typeof toolbarTitleDisplayMode>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -1881,6 +2033,8 @@ export * from './tag';
 export * from './pickerStyle';
 export * from './menuOrder';
 export * from './tabViewModifiers';
+export * from './navigationModifiers';
+export * from './arrangementModifiers';
 export * from './datePickerStyle';
 export * from './progressViewStyle';
 export * from './gaugeStyle';
@@ -1888,12 +2042,15 @@ export * from './presentationModifiers';
 export * from './environment';
 export type { ShapeStyle } from './shapeStyle';
 export * from './scrollPosition';
+export * from './searchable';
 export * from './symbolEffect';
 export * from './scrollObservation';
+export * from './hingeObservation';
 export * from './widgets';
 export type {
   TimingAnimationParams,
   SpringAnimationParams,
   InterpolatingSpringAnimationParams,
+  SpringPresetAnimationParams,
   ChainableAnimationType,
 } from './animation/types';

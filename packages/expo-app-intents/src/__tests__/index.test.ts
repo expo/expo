@@ -1,5 +1,8 @@
 import * as AppIntents from '../index';
 
+// jest-expo mocks the native module, so null it out to exercise the unavailable path.
+jest.mock('../ExpoAppIntentsModule', () => ({ __esModule: true, default: null }));
+
 describe('expo-app-intents on unsupported platforms', () => {
   it('reports unavailability', () => {
     expect(AppIntents.isAvailable()).toBe(false);
@@ -20,6 +23,18 @@ describe('expo-app-intents on unsupported platforms', () => {
       AppIntents.setEntityCatalogAsync('dish', [{ id: 'margherita', title: 'Margherita Pizza' }])
     ).resolves.toBeUndefined();
     await expect(AppIntents.reindexEntitiesAsync()).resolves.toBeUndefined();
+  });
+
+  it('donates nothing', async () => {
+    await expect(
+      AppIntents.donateIntentAsync('increaseCounter', { amount: 1 })
+    ).resolves.toBeNull();
+  });
+
+  it('deletes no donations', async () => {
+    await expect(AppIntents.deleteDonationsAsync({ intent: 'increaseCounter' })).resolves.toEqual(
+      []
+    );
   });
 
   it('rejects refreshShortcutsAsync with UnavailabilityError', async () => {

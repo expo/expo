@@ -21,6 +21,8 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
 
+  s.resource_bundles = {'EASClient_privacy' => ['PrivacyInfo.xcprivacy']}
+
   s.source_files = "#{s.name}/**/*.{h,m,swift}"
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {

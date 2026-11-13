@@ -59,7 +59,7 @@ struct JavaScriptActorTests {
   }
 
   @Test
-  func `assumeIsolated preserves typed error`() {
+  func `assumeIsolated rethrows a typed error`() {
     struct CustomError: Error {}
 
     #expect(throws: CustomError.self) {

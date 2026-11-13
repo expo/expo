@@ -13,11 +13,13 @@ class DevMenuFABWindow: UIWindow {
   var fabFrame: CGRect = .zero
   private var currentAnimator: UIViewPropertyAnimator?
   private var targetVisibility: Bool?
+  private var appWindowFrameObservation: NSKeyValueObservation?
 
   init(manager: DevMenuManager, windowScene: UIWindowScene) {
     self.manager = manager
     super.init(windowScene: windowScene)
     setupWindow()
+    observeAppWindowRotation(in: windowScene)
   }
 
   @available(*, unavailable)
@@ -44,6 +46,21 @@ class DevMenuFABWindow: UIWindow {
     hostingController.view.backgroundColor = .clear
     self.hostingController = hostingController
     rootViewController = hostingController
+  }
+
+  // react-native-screens rotates only the app window, and UIKit does not ask this overlay for its orientations again.
+  // The scene would then report the overlay's old orientation, and react-native-screens would skip the next rotation.
+  private func observeAppWindowRotation(in windowScene: UIWindowScene) {
+    guard let appWindow = windowScene.windows.first(where: { $0.windowLevel == .normal }) else {
+      return
+    }
+    appWindowFrameObservation = appWindow.observe(\.frame, options: [.old, .new]) { [weak self] _, change in
+      guard let old = change.oldValue, let new = change.newValue,
+        (old.width > old.height) != (new.width > new.height) else {
+        return
+      }
+      self?.hostingController?.setNeedsUpdateOfSupportedInterfaceOrientations()
+    }
   }
 
   private var edgeTranslation: CGAffineTransform {

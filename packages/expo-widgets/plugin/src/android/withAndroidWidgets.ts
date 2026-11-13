@@ -1,10 +1,20 @@
 import { ConfigPlugin } from 'expo/config-plugins';
 
 import { WidgetConfig } from '../types/WidgetConfig.type';
+import withAndroidNotificationPermission from './withAndroidNotificationPermission';
 import withAndroidWidgetFiles from './withAndroidWidgetFiles';
 import withAndroidWidgetManifest from './withAndroidWidgetManifest';
 
-const withAndroidWidgets: ConfigPlugin<{ widgets: WidgetConfig[] }> = (config, { widgets }) => {
+type AndroidWidgetsProps = {
+  enablePushNotifications?: boolean;
+  widgets: WidgetConfig[];
+};
+
+const withAndroidWidgets: ConfigPlugin<AndroidWidgetsProps> = (config, props) => {
+  const { widgets } = props;
+  config = withAndroidNotificationPermission(config, {
+    enablePushNotifications: props.enablePushNotifications ?? false,
+  });
   if (widgets.length === 0) {
     return config;
   }

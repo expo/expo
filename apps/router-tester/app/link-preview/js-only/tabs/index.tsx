@@ -1,10 +1,12 @@
 import { Link, usePathname } from 'expo-router';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Index() {
   const pathname = usePathname();
   return (
-    <View
+    <SafeAreaView
+      edges={['left', 'right']}
       style={{
         flex: 1,
         backgroundColor: '#84DCC6',
@@ -17,6 +19,6 @@ export default function Index() {
         <Link.Trigger>Link.Preview: /js-only/tabs/second</Link.Trigger>
         <Link.Preview />
       </Link>
-    </View>
+    </SafeAreaView>
   );
 }

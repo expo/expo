@@ -106,7 +106,9 @@ class BaseObservabilityManager(
   private fun retryGateBlocks(state: DispatchUtils.RetryGateState, signal: String): Boolean {
     val until = state.dispatchAfterMs ?: return false
     val now = currentTimeMs()
-    if (until <= now) return false
+    if (until <= now) {
+      return false
+    }
     Log.d(OBSERVE_TAG, "$signal dispatch suppressed by retry gate until $until (now $now)")
     return true
   }
@@ -133,7 +135,9 @@ class BaseObservabilityManager(
     }
 
     repairMetricCursorIfStale(context, sessionManager)
-    if (!shouldDispatch()) {
+    val config = ObservePreferences.getConfig(context)
+    val ignoredMetrics = config?.ignoredMetrics?.toSet() ?: emptySet()
+    if (!shouldDispatch(config, config?.sampleRate)) {
       val maxId = sessionManager.getMaxMetricId() ?: -1
       if (ObservePreferences.getLastDispatchedMetricId(context) != maxId) {
         ObservePreferences.setLastDispatchedMetricId(context, maxId)
@@ -151,7 +155,9 @@ class BaseObservabilityManager(
       }
 
       val highestId = metrics.last().id
-      val metricsBySessionId = metrics.groupBy { it.sessionId }
+      val metricsBySessionId = metrics
+        .filterNot { exportedMetricName(it.category, it.name) in ignoredMetrics }
+        .groupBy { it.sessionId }
       val sessions = sessionManager.getSessions(metricsBySessionId.keys).associateBy { it.id }
       val events = metricsBySessionId.mapNotNull { (sessionId, sessionMetrics) ->
         sessions[sessionId]?.let { session ->
@@ -212,7 +218,12 @@ class BaseObservabilityManager(
     }
 
     repairLogCursorIfStale(context, sessionManager)
-    if (!shouldDispatch()) {
+    val config = ObservePreferences.getConfig(context)
+    val ignoredEvents = config?.ignoredEvents?.toSet() ?: emptySet()
+    // Installations in-sample for `sampleRate` send all logs. Errors use the higher of the two rates.
+    val dispatchLogsAndErrors = shouldDispatch(config, config?.sampleRate)
+    val dispatchErrors = shouldDispatch(config, config?.errorSampleRate ?: config?.sampleRate)
+    if (!dispatchLogsAndErrors && !dispatchErrors) {
       val maxId = sessionManager.getMaxLogId() ?: -1
       if (ObservePreferences.getLastDispatchedLogId(context) != maxId) {
         ObservePreferences.setLastDispatchedLogId(context, maxId)
@@ -230,14 +241,19 @@ class BaseObservabilityManager(
       }
 
       val highestId = logs.last().id
-      val logsBySessionId = logs.groupBy { it.sessionId }
+      val sampledLogs = if (dispatchLogsAndErrors) {
+        logs
+      } else {
+        logs.filter { it.name in ERROR_LOG_NAMES }
+      }.filterNot { it.name in ignoredEvents }
+      val logsBySessionId = sampledLogs.groupBy { it.sessionId }
       val sessions = sessionManager.getSessions(logsBySessionId.keys).associateBy { it.id }
       val events = logsBySessionId.mapNotNull { (sessionId, sessionLogs) ->
         sessions[sessionId]?.let { session ->
           Event(
             metadata = Metadata.fromSessionMetadata(session),
             metrics = emptyList(),
-            logs = sessionLogs.map(LogEvent::fromLogRecord)
+            logs = sessionLogs.map { LogEvent.fromLogRecord(it, inSampleRate = dispatchLogsAndErrors) }
           )
         }
       }
@@ -253,12 +269,12 @@ class BaseObservabilityManager(
         is DispatchResult.PartialSuccess ->
           Log.w(
             OBSERVE_TAG,
-            "Partial success on batch of ${logs.size} log event(s): " +
+            "Partial success on batch of ${sampledLogs.size} log event(s): " +
               "server rejected ${result.partial.rejectedCount} " +
               "(${result.partial.errorMessage ?: "no error message"})"
           )
         is DispatchResult.NonRetryableFailure ->
-          Log.w(OBSERVE_TAG, "Dropping batch of ${logs.size} log event(s): ${result.reason}")
+          Log.w(OBSERVE_TAG, "Dropping batch of ${sampledLogs.size} log event(s): ${result.reason}")
         DispatchResult.PayloadTooLarge -> if (logs.size == 1) {
           Log.w(OBSERVE_TAG, "Dropping log event that exceeds the server's payload limit")
         }
@@ -295,7 +311,8 @@ class BaseObservabilityManager(
       return
     }
 
-    if (!shouldDispatch()) {
+    val config = ObservePreferences.getConfig(context)
+    if (!shouldDispatch(config, config?.sampleRate)) {
       // Mirrors metrics/logs advancing the cursor past rows they won't send.
       sessionManager.getMaxSpanId()?.let { sessionManager.deleteSpansUpTo(it) }
       return
@@ -366,14 +383,13 @@ class BaseObservabilityManager(
     }
   }
 
-  private fun isInSample(): Boolean {
-    val rate = ObservePreferences.getConfig(context)?.sampleRate ?: return true
+  private fun isInSample(rate: Double?): Boolean {
+    rate ?: return true
     val clamped = rate.coerceIn(0.0, 1.0)
     return deterministicUniformValueProvider() < clamped
   }
 
-  private fun shouldDispatch(): Boolean {
-    val config = ObservePreferences.getConfig(context)
+  private fun shouldDispatch(config: PersistedConfig?, rate: Double?): Boolean {
     val dispatchingEnabled = config?.dispatchingEnabled ?: true
     val dispatchInDebug = config?.dispatchInDebug ?: false
     // `isDev` is the OR of the JS-bundle dev flag (pushed via `setBundleDefaults` on JS
@@ -381,7 +397,7 @@ class BaseObservabilityManager(
     // bundle should be treated as dev for dispatch-gating.
     val isJsDev = ObservePreferences.getBundleDefaults(context)?.isJsDev ?: false
     val isDev = isDebugBuild || isJsDev
-    return dispatchingEnabled && isInSample() && (!isDev || dispatchInDebug)
+    return dispatchingEnabled && isInSample(rate) && (!isDev || dispatchInDebug)
   }
 
   suspend fun cleanup() {

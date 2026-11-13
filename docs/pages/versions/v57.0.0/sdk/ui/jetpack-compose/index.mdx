@@ -7,7 +7,11 @@ packageName: '@expo/ui'
 platforms: ['android', 'expo-go']
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import JetpackComposeCards from '~/scenes/versions/v57.0.0/ui/jetpack-compose.mdx';
 
 The Jetpack Compose components in `@expo/ui/jetpack-compose` allow you to build fully native Android interfaces using Jetpack Compose from React Native.
@@ -32,6 +36,254 @@ export function SaveButton() {
 }
 ```
 
+<BoxLink
+  title="Extending with Jetpack Compose"
+  description="Create custom Jetpack Compose components and modifiers that integrate with Expo UI."
+  href="jetpack-compose/extending"
+  Icon={BookOpen02Icon}
+/>
+
 ## Available components
 
 <JetpackComposeCards />
+
+## Examples
+
+### Modifiers
+
+Modifiers are applied with the `modifiers` prop, in array order. Put `background` before `paddingAll` so the padding sits inside the background rather than outside it.
+
+<ComponentExample
+  title="ComposeModifiersExample.tsx"
+  src="/static/images/expo-ui/examples/jetpack-compose-index-modifiers-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/jetpack-compose-index-modifiers-android-dark.webp"
+  alt="A purple filled label above a light purple bordered label, both padded and full width">
+
+```tsx
+import { Column, Host, Text } from '@expo/ui/jetpack-compose';
+import {
+  background,
+  border,
+  fillMaxWidth,
+  paddingAll,
+  shadow,
+} from '@expo/ui/jetpack-compose/modifiers';
+
+export default function ComposeModifiersExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Column
+        verticalArrangement={{ spacedBy: 16 }}
+        modifiers={[paddingAll(16)]}>
+        <Text
+          color="#FFFFFF"
+          modifiers={[
+            fillMaxWidth(),
+            shadow(4),
+            background('#6750A4'),
+            paddingAll(16),
+          ]}>
+          Background, shadow and padding
+        </Text>
+        <Text
+          color="#1D192B"
+          modifiers={[
+            fillMaxWidth(),
+            background('#E8DEF8'),
+            border(2, '#6750A4'),
+            paddingAll(16),
+          ]}>
+          Background, border and padding
+        </Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Settings screen
+
+Combine `ListItem` slots with a `Switch` and an `Icon` to build a Material 3 settings screen.
+
+<ComponentExample
+  title="ComposeSettingsScreenExample.tsx"
+  src="/static/images/expo-ui/examples/jetpack-compose-index-settings-screen-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/jetpack-compose-index-settings-screen-android-dark.webp"
+  alt="An Airplane mode row with a switch above a Wi-Fi row showing Expo Guest and a chevron">
+
+```tsx
+import {
+  Column,
+  Host,
+  Icon,
+  ListItem,
+  Switch,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
+import ChevronRight from '@expo/material-symbols/chevron_right.xml';
+import Flight from '@expo/material-symbols/flight.xml';
+import Wifi from '@expo/material-symbols/wifi.xml';
+import { useState } from 'react';
+
+export default function ComposeSettingsScreenExample() {
+  const [airplaneMode, setAirplaneMode] = useState(true);
+  const colors = useMaterialColors();
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Column>
+        <ListItem>
+          <ListItem.LeadingContent>
+            <Icon
+              source={Flight}
+              tint={colors.onSurfaceVariant}
+              contentDescription="Airplane mode"
+            />
+          </ListItem.LeadingContent>
+          <ListItem.HeadlineContent>
+            <Text>Airplane mode</Text>
+          </ListItem.HeadlineContent>
+          <ListItem.TrailingContent>
+            <Switch
+              value={airplaneMode}
+              onCheckedChange={setAirplaneMode}
+            />
+          </ListItem.TrailingContent>
+        </ListItem>
+        <ListItem>
+          <ListItem.LeadingContent>
+            <Icon
+              source={Wifi}
+              tint={colors.onSurfaceVariant}
+              contentDescription="Wi-Fi"
+            />
+          </ListItem.LeadingContent>
+          <ListItem.HeadlineContent>
+            <Text>Wi-Fi</Text>
+          </ListItem.HeadlineContent>
+          <ListItem.SupportingContent>
+            <Text>Expo Guest</Text>
+          </ListItem.SupportingContent>
+          <ListItem.TrailingContent>
+            <Icon
+              source={ChevronRight}
+              tint={colors.onSurfaceVariant}
+              contentDescription="Open"
+            />
+          </ListItem.TrailingContent>
+        </ListItem>
+      </Column>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Brightness row
+
+A common pattern for brightness or volume controls is to flank a `Slider` with icons. Give the `Slider` a `weight` modifier so it takes the space left over by the icons.
+
+<ComponentExample
+  title="ComposeBrightnessRowExample.tsx"
+  src="/static/images/expo-ui/examples/jetpack-compose-index-brightness-row-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/jetpack-compose-index-brightness-row-android-dark.webp"
+  alt="A brightness slider between a dim and a bright backlight icon">
+
+```tsx
+import {
+  Host,
+  Icon,
+  Row,
+  Slider,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
+import {
+  paddingAll,
+  weight,
+} from '@expo/ui/jetpack-compose/modifiers';
+import BacklightHigh from '@expo/material-symbols/backlight_high.xml';
+import BacklightLow from '@expo/material-symbols/backlight_low.xml';
+import { useState } from 'react';
+
+export default function ComposeBrightnessRowExample() {
+  const [brightness, setBrightness] = useState(0.5);
+  const colors = useMaterialColors();
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Row
+        verticalAlignment="center"
+        horizontalArrangement={{ spacedBy: 12 }}
+        modifiers={[paddingAll(16)]}>
+        <Icon
+          source={BacklightLow}
+          tint={colors.onSurfaceVariant}
+          contentDescription="Dimmer"
+        />
+        <Slider
+          value={brightness}
+          onValueChange={setBrightness}
+          modifiers={[weight(1)]}
+        />
+        <Icon
+          source={BacklightHigh}
+          tint={colors.onSurfaceVariant}
+          contentDescription="Brighter"
+        />
+      </Row>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Secondary text
+
+Use `ListItem.SupportingContent` for the second line, and `useMaterialColors` for a text color that follows the light and dark themes.
+
+<ComponentExample
+  title="ComposeSecondaryTextExample.tsx"
+  src="/static/images/expo-ui/examples/jetpack-compose-index-secondary-text-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/jetpack-compose-index-secondary-text-android-dark.webp"
+  alt="A Chrome row with Last used Today in grey supporting text and 1.57 GB on the right">
+
+```tsx
+import {
+  Column,
+  Host,
+  ListItem,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
+
+export default function ComposeSecondaryTextExample() {
+  const colors = useMaterialColors();
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Column>
+        <ListItem>
+          <ListItem.HeadlineContent>
+            <Text>Chrome</Text>
+          </ListItem.HeadlineContent>
+          <ListItem.SupportingContent>
+            <Text color={colors.onSurfaceVariant}>
+              Last used: Today
+            </Text>
+          </ListItem.SupportingContent>
+          <ListItem.TrailingContent>
+            <Text color={colors.onSurfaceVariant}>1.57 GB</Text>
+          </ListItem.TrailingContent>
+        </ListItem>
+      </Column>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>

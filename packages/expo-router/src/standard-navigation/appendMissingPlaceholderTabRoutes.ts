@@ -1,11 +1,14 @@
 import type { NavigationState } from '../react-navigation/native';
 import type { DescribePlaceholderRoute, PlaceholderDescriptorMap } from './types';
 
-export function appendMissingPlaceholderTabDescriptors<State extends NavigationState>(
-  descriptors: PlaceholderDescriptorMap,
+export function appendMissingPlaceholderTabDescriptors<
+  State extends NavigationState,
+  NavigatorOptions extends object,
+>(
+  descriptors: PlaceholderDescriptorMap<NavigatorOptions>,
   state: State,
-  describe: DescribePlaceholderRoute
-): PlaceholderDescriptorMap {
+  describe: DescribePlaceholderRoute<NavigatorOptions>
+): PlaceholderDescriptorMap<NavigatorOptions> {
   const missingRouteNames = state.routeNames.filter(
     (name) => !state.routes.some((route) => route.name === name)
   );
@@ -13,21 +16,20 @@ export function appendMissingPlaceholderTabDescriptors<State extends NavigationS
     return descriptors;
   }
 
-  const placeholderDescriptors = missingRouteNames.reduce<PlaceholderDescriptorMap>(
-    (result, name) => {
-      result[name] = describe({ key: undefined, name });
-      return result;
-    },
-    {}
-  );
+  const placeholderDescriptors = missingRouteNames.reduce<
+    PlaceholderDescriptorMap<NavigatorOptions>
+  >((result, name) => {
+    result[name] = describe({ key: undefined, name });
+    return result;
+  }, {});
   return { ...descriptors, ...placeholderDescriptors };
 }
 
 // TODO: Evaluate making this function public.
-export function appendMissingPlaceholderTabRoutes<State extends NavigationState>(
-  state: State,
-  descriptors: PlaceholderDescriptorMap
-): State {
+export function appendMissingPlaceholderTabRoutes<
+  State extends NavigationState,
+  NavigatorOptions extends object,
+>(state: State, descriptors: PlaceholderDescriptorMap<NavigatorOptions>): State {
   const hasMissingRoute = state.routeNames.some(
     (name) => !state.routes.some((route) => route.name === name)
   );
@@ -41,7 +43,7 @@ export function appendMissingPlaceholderTabRoutes<State extends NavigationState>
     if (existingRoute) {
       return existingRoute;
     }
-    return createPlaceholderRoute<State>(name, descriptors);
+    return createPlaceholderRoute<State, NavigatorOptions>(name, descriptors);
   });
   const index = Math.max(
     0,
@@ -51,9 +53,9 @@ export function appendMissingPlaceholderTabRoutes<State extends NavigationState>
   return { ...state, index, routes };
 }
 
-function createPlaceholderRoute<State extends NavigationState>(
+function createPlaceholderRoute<State extends NavigationState, NavigatorOptions extends object>(
   name: string,
-  descriptors: PlaceholderDescriptorMap
+  descriptors: PlaceholderDescriptorMap<NavigatorOptions>
 ): State['routes'][number] {
   const descriptor = descriptors[name];
   if (!descriptor) {

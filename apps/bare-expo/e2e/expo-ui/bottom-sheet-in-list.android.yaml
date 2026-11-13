@@ -1,0 +1,35 @@
+appId: dev.expo.payments
+jsEngine: graaljs
+---
+# https://github.com/expo/expo/issues/52091
+# FlatList clips offscreen children on Android. A sheet in the first row, at the list's top edge,
+# and a sheet in a row without a horizontal inset must still present.
+- openLink: bareexpo://components/ui/bottom-sheet-in-list
+- extendedWaitUntil:
+    visible: 'Community 0'
+    timeout: 30000
+
+- tapOn: 'Community 0'
+- extendedWaitUntil:
+    visible: 'Community sheet 0'
+    timeout: 10000
+- back
+- extendedWaitUntil:
+    notVisible: 'Community sheet 0'
+    timeout: 10000
+
+- tapOn: 'Universal 1'
+- extendedWaitUntil:
+    visible: 'Universal sheet 1'
+    timeout: 10000
+- back
+- extendedWaitUntil:
+    notVisible: 'Universal sheet 1'
+    timeout: 10000
+
+# The rows still respond after the sheets close.
+- tapOn: 'Community 2'
+- extendedWaitUntil:
+    visible: 'Community sheet 2'
+    timeout: 10000
+- back

@@ -56,12 +56,8 @@ struct JavaScriptWeakObjectTests {
 
     #expect((weakObject?.lock() != nil) == true)
 
-    // Force garbage collection
-    runtime.collectGarbage()
+    runtime.collectGarbage { weakObject?.lock() == nil }
 
-    // Object should be collected now
-    // Note: This test may be flaky depending on GC behavior
-    // In practice, lock() should return nil after GC, but timing may vary
     #expect((weakObject?.lock() == nil) == true)
   }
 
@@ -78,11 +74,8 @@ struct JavaScriptWeakObjectTests {
       #expect(value?.isObject() == true)
     }
 
-    // Force garbage collection
-    runtime.collectGarbage()
+    runtime.collectGarbage { weakObject?.asValue().isUndefined() == true }
 
-    // After collection, asValue should return undefined
-    // Note: This test may be flaky depending on GC behavior
     #expect(weakObject?.asValue().isUndefined() == true)
   }
 

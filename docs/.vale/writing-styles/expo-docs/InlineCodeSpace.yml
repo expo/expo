@@ -1,0 +1,8 @@
+extends: existence
+message: "Add a space between the inline code and the word next to it."
+level: error
+scope: raw
+nonword: true
+tokens:
+  - '(?m)^(?:[^`\n]*`[^`\n]*`)*[^`\n]*`[^`\n]+`(?:[A-Za-rt-z]|s[A-Za-z])'
+  - '(?m)^(?:[^`\n]*`[^`\n]*`)*[^`\n]*[A-Za-z]`[^`\n$]+`'

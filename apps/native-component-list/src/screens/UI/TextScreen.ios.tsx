@@ -1,5 +1,13 @@
 import { Host, List, Text, Section } from '@expo/ui/swift-ui';
-import { bold, font, foregroundStyle, italic, lineLimit } from '@expo/ui/swift-ui/modifiers';
+import {
+  bold,
+  font,
+  foregroundStyle,
+  italic,
+  lineLimit,
+  strikethrough,
+  underline,
+} from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
 export default function TextScreen() {
@@ -25,6 +33,12 @@ export default function TextScreen() {
           <Text>
             Normal, <Text modifiers={[italic()]}>italic</Text>,{' '}
             <Text modifiers={[bold()]}>bold</Text>
+          </Text>
+          <Text>
+            <Text modifiers={[underline({ isActive: true, pattern: 'solid' })]}>underline</Text>,{' '}
+            <Text modifiers={[strikethrough({ isActive: true, pattern: 'solid' })]}>
+              strikethrough
+            </Text>
           </Text>
         </Section>
 
@@ -61,6 +75,16 @@ export default function TextScreen() {
           <Text modifiers={[font({ family: 'Inter-Medium', size: 16 })]}>Inter Medium Font</Text>
           <Text modifiers={[font({ family: 'Inter-Light', size: 14 })]}>Inter Light Font</Text>
           <Text modifiers={[font({ family: 'Inter-Regular', size: 15 })]}>Inter Regular Font</Text>
+        </Section>
+
+        <Section title="Small Caps and Leading">
+          <Text modifiers={[font({ textStyle: 'body', smallCaps: true })]}>Small Caps Text</Text>
+          <Text modifiers={[font({ textStyle: 'body', leading: 'tight' })]}>
+            Tight leading puts the lines of this paragraph closer together than standard leading.
+          </Text>
+          <Text modifiers={[font({ textStyle: 'body', leading: 'loose' })]}>
+            Loose leading puts the lines of this paragraph further apart than standard leading.
+          </Text>
         </Section>
 
         <Section title="System Font Weights">

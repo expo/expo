@@ -72,21 +72,24 @@ describe('server rewrites', () => {
     expect(files).not.toContain('+html.html');
     expect(files).not.toContain('_layout.html');
 
-    // Injected by framework
-    expect(files).toContain('_sitemap.html');
-    expect(files).toContain('+not-found.html');
+    expect(files).toContain('_expo/server/render.js');
+    expect(files).toContain('_expo/routes.json');
 
-    // Normal routes
-    expect(files).toContain('about.html');
-    expect(files).toContain('index.html');
-    expect(files).toContain('styled.html');
+    // Framework routes render at request time
+    expect(files).not.toContain('_sitemap.html');
+    expect(files).not.toContain('+not-found.html');
+
+    // Regular routes render at request time
+    expect(files).not.toContain('about.html');
+    expect(files).not.toContain('index.html');
+    expect(files).not.toContain('styled.html');
 
     // Rewrite routes should not be written to disk
     expect(files).not.toContain('rewrite.html');
 
-    // generateStaticParams values
-    expect(files).toContain('[post].html');
-    expect(files).toContain('welcome-to-the-universe.html');
-    expect(files).toContain('other.html');
+    // generateStaticParams is ignored by server rendering
+    expect(files).not.toContain('[post].html');
+    expect(files).not.toContain('welcome-to-the-universe.html');
+    expect(files).not.toContain('other.html');
   });
 });

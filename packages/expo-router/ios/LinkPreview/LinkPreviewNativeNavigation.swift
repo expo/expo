@@ -5,71 +5,57 @@ import UIKit
 struct TabChangeCommand {
   weak var tabBarController: UITabBarController?
   let tabIndex: Int
+  private weak var target: UIViewController?
+
+  init(tabBarController: UITabBarController?, tabIndex: Int) {
+    self.tabBarController = tabBarController
+    self.tabIndex = tabIndex
+    self.target =
+      tabBarController?.viewControllers?.indices.contains(tabIndex) == true
+      ? tabBarController?.viewControllers?[tabIndex] : nil
+  }
+
+  func perform() {
+    guard let tabBarController, let target,
+      tabBarController.viewControllers?.indices.contains(tabIndex) == true,
+      tabBarController.viewControllers?[tabIndex] === target
+    else { return }
+    tabBarController.selectedIndex = tabIndex
+  }
 }
 
-internal class LinkPreviewNativeNavigation {
-  private weak var preloadedScreenView: RNSScreenView?
-  private weak var preloadedStackView: RNSScreenStackView?
-  private var tabChangeCommands: [TabChangeCommand] = []
-  private let logger: ExpoModulesCore.Logger?
+// One UIKit commit owns one immutable selection. Weak references do not pin dismissed routes.
+internal final class LinkPreviewActivation {
+  private weak var screen: RNSScreenView?
+  private weak var stack: RNSScreenStackView?
+  let screenId: String?
+  private let tabChangeCommands: [TabChangeCommand]
+  private var consumed = false
 
-  init(logger: ExpoModulesCore.Logger?) {
-    self.logger = logger
+  init(screen: RNSScreenView?, stack: RNSScreenStackView?, tabChangeCommands: [TabChangeCommand]) {
+    self.screen = screen
+    self.stack = stack
+    self.screenId = screen?.screenId
+    self.tabChangeCommands = tabChangeCommands
   }
 
-  func pushPreloadedView() {
-    self.performTabChanges()
+  func cancel() { consumed = true }
 
-    guard let preloadedScreenView,
-      let preloadedStackView
-    else {
-      // Check if there were any tab change commands to perform
-      // If there were, the preview transition could be to a different tab only
-      if self.tabChangeCommands.isEmpty {
-        logger?.warn(
-          "[expo-router] No preloaded screen view to push. Link.Preview transition is only supported inside a native stack or native tabs navigators."
-        )
-      }
-      return
-    }
-
-    // Instead of pushing the preloaded screen view, we set its activity state
-    // React native screens will then handle the rest.
-    preloadedScreenView.activityState = Int32(RNSActivityState.onTop.rawValue)
-    preloadedStackView.markChildUpdated()
-    self.pushModalInnerScreenIfNeeded(screenView: preloadedScreenView)
-  }
-
-  func updatePreloadedView(screenId: String?, tabPath: TabPathPayload?, responder: UIView) {
-    self.tabChangeCommands = []
-    let oldTabKeys = tabPath?.path.map { $0.oldTabKey } ?? []
-    let stackOrTabView = findStackViewWithScreenIdOrTabBarController(
-      screenId: screenId,
-      tabKeys: oldTabKeys,
-      responder: responder
-    )
-    guard let stackOrTabView else {
-      return
-    }
-    if RNScreensTabCompat.isTabScreen(stackOrTabView) {
-      let newTabKeys = tabPath?.path.map { $0.newTabKey } ?? []
-      // The order is important here. findStackViewWithScreenIdInSubViews must be called
-      // even if screenId is nil to compute the tabChangeCommands.
-      if let stackView = findStackViewWithScreenIdInSubViews(
-        screenId: screenId,
-        tabKeys: newTabKeys,
-        rootView: stackOrTabView
-      ), let screenId {
-        setPreloadedView(stackView: stackView, screenId: screenId)
-      }
-    } else if let stackView = stackOrTabView as? RNSScreenStackView, let screenId {
-      setPreloadedView(stackView: stackView, screenId: screenId)
-    }
-  }
-
-  private func performTabChanges() {
-    for command in self.tabChangeCommands {
-      command.tabBarController?.selectedIndex = command.tabIndex
+  func commit() {
+    guard !consumed else { return }
+    consumed = true
+    if let screenId {
+      guard let screen, let stack,
+        screen.screenId == screenId,
+        stack.reactSubviews().contains(where: { $0 === screen }),
+        screen.activityState == 0
+      else { return }
+      for command in tabChangeCommands { command.perform() }
+      screen.activityState = Int32(RNSActivityState.onTop.rawValue)
+      stack.markChildUpdated()
+      pushModalInnerScreenIfNeeded(screenView: screen)
+    } else {
+      for command in tabChangeCommands { command.perform() }
     }
   }
 
@@ -96,121 +82,49 @@ internal class LinkPreviewNativeNavigation {
         // We need to set the activity of inner screen as well, because its
         // react value is the same as the preloaded screen - 0.
         // https://github.com/software-mansion/react-native-screens/blob/8b82e081e8fdfa6e0864821134bda9e87a745b00/src/components/ScreenStackItem.tsx#L151
+        guard screenContentView.activityState == 0 else { return }
         screenContentView.activityState = Int32(RNSActivityState.onTop.rawValue)
         innerScreenStack.markChildUpdated()
       }
     }
   }
+}
 
-  private func setPreloadedView(
-    stackView: RNSScreenStackView,
-    screenId: String
-  ) {
-    let screenViews = stackView.reactSubviews()
-    if let screenView = screenViews?.first(where: {
-      ($0 as? RNSScreenView)?.screenId == screenId
-    }) as? RNSScreenView {
-      preloadedScreenView = screenView
-      preloadedStackView = stackView
-    }
+internal class LinkPreviewNativeNavigation {
+  private var selection: LinkPreviewActivation?
+  private weak var committedActivation: LinkPreviewActivation?
+  private let pathWalker = LinkPreviewPathWalker()
+  private let logger: ExpoModulesCore.Logger?
+
+  init(logger: ExpoModulesCore.Logger?) {
+    self.logger = logger
   }
 
-  // Allowing for null screenId to support preloading tab navigators
-  // Even if the desired screenId is not found, we still need to compute the tabChangeCommands
-  private func findStackViewWithScreenIdInSubViews(
-    screenId: String?,
-    tabKeys: [String],
-    rootView: UIView
-  ) -> RNSScreenStackView? {
-    if let rootView = rootView as? RNSScreenStackView,
-      let screenId
-    {
-      if rootView.screenIds.contains(screenId) {
-        return rootView
-      }
-    } else if let tabBarController = getTabBarControllerFromTabView(view: rootView) {
-      if let (tabIndex, tabView) = getIndexAndViewOfFirstTabWithKey(
-        tabBarController: tabBarController,
-        tabKeys: tabKeys
-      ) {
-        self.tabChangeCommands.append(
-          TabChangeCommand(tabBarController: tabBarController, tabIndex: tabIndex)
-        )
-        for subview in tabView.subviews {
-          if let result = findStackViewWithScreenIdInSubViews(
-            screenId: screenId,
-            tabKeys: tabKeys,
-            rootView: subview
-          ) {
-            return result
-          }
-        }
-      }
-    } else {
-      for subview in rootView.subviews {
-        let result = findStackViewWithScreenIdInSubViews(
-          screenId: screenId,
-          tabKeys: tabKeys,
-          rootView: subview
-        )
-        if result != nil {
-          return result
-        }
-      }
-    }
-
-    return nil
+  func beginInteraction() {
+    committedActivation?.cancel()
+    clearPreloadedView()
   }
 
-  private func getIndexAndViewOfFirstTabWithKey(
-    tabBarController: UITabBarController,
-    tabKeys: [String]
-  ) -> (tabIndex: Int, tabView: UIView)? {
-    let views = tabBarController.viewControllers?.compactMap { $0.view } ?? []
-    let enumeratedViews = views.enumerated()
-    if let result =
-      enumeratedViews
-      .first(where: { _, view in
-        guard let screenKey = RNScreensTabCompat.screenKey(from: view) else {
-          return false
-        }
-        return tabKeys.contains(screenKey)
-      })
-    {
-      return (result.offset, result.element)
-    }
-    return nil
+  func clearPreloadedView() { selection = nil }
+
+  func captureActivation() -> LinkPreviewActivation? {
+    let activation = selection
+    committedActivation = activation
+    selection = nil
+    return activation
   }
 
-  private func getTabBarControllerFromTabView(view: UIView) -> UITabBarController? {
-    if let tabBarController = RNScreensTabCompat.tabBarController(fromTabScreen: view) {
-      return tabBarController
+  func updatePreloadedView(path: [PreviewActivationRoute], responder: UIView) {
+    let result = pathWalker.walk(path: path, responder: responder)
+    if !result.resolved {
+      logger?.warn(
+        "[expo-router] No preloaded screen view to push. Link.Preview transition is only supported inside a native stack or native tabs navigator."
+      )
     }
-    return RNScreensTabCompat.tabBarController(fromTabHost: view)
-  }
-
-  private func findStackViewWithScreenIdOrTabBarController(
-    screenId: String?,
-    tabKeys: [String],
-    responder: UIView
-  ) -> UIView? {
-    var currentResponder: UIResponder? = responder
-
-    while let nextResponder = currentResponder?.next {
-      if let view = nextResponder as? RNSScreenStackView,
-        let screenId
-      {
-        if view.screenIds.contains(screenId) {
-          return view
-        }
-      } else if let nextView = nextResponder as? UIView,
-        let screenKey = RNScreensTabCompat.screenKey(from: nextView),
-        tabKeys.contains(screenKey)
-      {
-        return nextView
-      }
-      currentResponder = nextResponder
-    }
-    return nil
+    selection = LinkPreviewActivation(
+      screen: result.preloadedScreenView as? RNSScreenView,
+      stack: result.preloadedStackView as? RNSScreenStackView,
+      tabChangeCommands: result.tabChangeCommands
+    )
   }
 }

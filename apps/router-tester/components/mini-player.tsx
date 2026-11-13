@@ -1,5 +1,5 @@
 import FontAwesomeIcons from '@expo/vector-icons/FontAwesome5';
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 import { ColorValue, DynamicColorIOS, Platform, Pressable, Text, View } from 'react-native';
 
 interface MiniPlayerProps {

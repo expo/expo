@@ -103,7 +103,13 @@ export default function ScrollViewHorizontalExample() {
 
 Set `showsIndicators` to `false` to hide the scroll bars.
 
-```tsx ScrollViewHiddenIndicatorsExample.tsx
+<ComponentExample
+  title="ScrollViewHiddenIndicatorsExample.tsx"
+  src="/static/images/expo-ui/examples/scrollview-hidden-indicators-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/scrollview-hidden-indicators-ios-dark.webp"
+  alt="A vertical list of numbered items with no scroll indicator on the right edge">
+
+```tsx
 import { Host, ScrollView, VStack, Text } from '@expo/ui/swift-ui';
 
 export default function ScrollViewHiddenIndicatorsExample() {
@@ -120,6 +126,8 @@ export default function ScrollViewHiddenIndicatorsExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ### Shared scroll position
 
@@ -204,7 +212,13 @@ export default function ScrollViewSharedPositionExample() {
 
 A scroll view clips its content to its own bounds, which cuts off anything drawn past them, such as a shadow or a card scaled up beyond the edge. Apply the [`scrollClipDisabled`](modifiers/#scrollclipdisableddisabled) modifier to keep that content visible.
 
-```tsx ScrollViewUnclippedExample.tsx
+<ComponentExample
+  title="ScrollViewUnclippedExample.tsx"
+  src="/static/images/expo-ui/examples/scrollview-unclipped-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/scrollview-unclipped-ios-dark.webp"
+  alt="A horizontal row of coloured squares whose shadows extend past the scroll bounds">
+
+```tsx
 import {
   Host,
   HStack,
@@ -242,6 +256,8 @@ export default function ScrollViewUnclippedExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

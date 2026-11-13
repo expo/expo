@@ -1,14 +1,38 @@
 # Changelog
 
-## Unpublished
+## 0.12.5
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Updated dependencies. ([#51535](https://github.com/expo/expo/pull/51535))
+  - @expo/require-utils@58.0.4
+
+## 0.12.4
+
+### Patch Changes
+
+- Updated dependencies. ([#51076](https://github.com/expo/expo/pull/51076), [#51080](https://github.com/expo/expo/pull/51080), [#51089](https://github.com/expo/expo/pull/51089))
+  - @expo/require-utils@58.0.3
+
+## 0.12.3
+
+### Patch Changes
+
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+
+## 0.12.2
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/require-utils@58.0.2
+
+## 0.12.1 — 2026-09-21
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Fix `Invalid mimeType` error for images with uppercase file extensions, such as `icon.PNG`. ([#50298](https://github.com/expo/expo/pull/50298) by [@tahakocal](https://github.com/tahakocal))
 
 ## 0.12.0 — 2026-09-10
 

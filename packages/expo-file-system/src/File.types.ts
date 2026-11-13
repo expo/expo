@@ -48,6 +48,11 @@ export type FileWriteOptions = {
   append?: boolean;
 };
 
+/**
+ * Options for checking whether a file can be previewed.
+ * @platform android
+ * @platform ios
+ */
 export type FileCanPreviewOptions = {
   /**
    * MIME type of the file. Android uses this value to find a matching app for the preview intent.
@@ -56,6 +61,24 @@ export type FileCanPreviewOptions = {
   mimeType?: string;
 };
 
+/**
+ * Options for choosing which file `File.preview()` displays first.
+ * @platform android
+ * @platform ios
+ */
+export type FilePreviewCollectionOptions = {
+  /**
+   * Zero-based index of the file to display first. Must be within the supplied array.
+   * @default 0
+   */
+  initialIndex?: number;
+};
+
+/**
+ * Options for previewing a single file.
+ * @platform android
+ * @platform ios
+ */
 export type FilePreviewOptions = {
   /**
    * Optional display title for the preview when the platform supports one.

@@ -4,6 +4,11 @@
     "modules": ["SecureStoreModule"]
   },
   "android": {
-    "modules": ["expo.modules.securestore.SecureStoreModule"]
+    "modules": ["expo.modules.securestore.SecureStoreModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.securestore",
+      "repository": "local-maven-repo"
+    }
   }
 }

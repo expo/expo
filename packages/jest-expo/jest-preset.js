@@ -2,16 +2,20 @@
 
 const cloneDeep = require('lodash/cloneDeep');
 const isEqual = require('lodash/isEqual');
+const path = require('node:path');
 
 let jestPreset;
+let jestPresetPath;
 try {
-  jestPreset = require('@react-native/jest-preset');
+  jestPresetPath = require.resolve('@react-native/jest-preset');
+  jestPreset = require(jestPresetPath);
 } catch (error) {
   if (error.code === 'MODULE_NOT_FOUND') {
     try {
       // NOTE(@kitten): We can still try the old import to see if it
       // works, in case there's some kind of version mismatch
-      jestPreset = require('react-native/jest-preset');
+      jestPresetPath = require.resolve('react-native/jest-preset');
+      jestPreset = require(jestPresetPath);
     } catch {
       throw new Error(
         'The React Native Jest preset that jest-expo relies on has moved to a separate package.\n' +
@@ -23,27 +27,60 @@ try {
 
 jestPreset = cloneDeep(jestPreset);
 
+// Use jest-expo's own copy of the React Native test environment. The upstream preset resolves
+// `jest-environment-node` from its own (Jest 29) dependencies, which must not be mixed into a Jest 30
+// runtime. The environment is otherwise identical to `@react-native/jest-preset/jest/react-native-env`.
+jestPreset.testEnvironment = require.resolve('./src/preset/nativeEnvironment.js');
+
 const { withTypescriptMapping } = require('./src/preset/withTypescriptMapping');
 const { resolveBabelOptions } = require('./src/resolveBabelOptions');
 
+// NOTE: Jest 30 replaced its resolver with `unrs-resolver` and dropped the `packageFilter` option,
+// so `@react-native/jest-preset`'s resolver can no longer strip `react-native`'s `exports` map.
+// Mapped module targets must be absolute paths, since bare `react-native/src/*` subpaths are
+// not listed in `exports`.
+const reactNativeAssetRegistry = path.join(
+  path.dirname(require.resolve('react-native/package.json')),
+  'src/asset-registry.js'
+);
+// Resolve from the upstream preset so the entry point's relative requires load the same
+// `react-native` copy its mocks are registered against.
+const reactNativeUnstableInternals = path.join(
+  path.dirname(
+    require.resolve('react-native/package.json', {
+      paths: [path.dirname(require.resolve('@react-native/jest-preset/package.json'))],
+    })
+  ),
+  'src/unstable-internals-do-not-use.js'
+);
+
 // Emulate the alias behavior of Expo's Metro resolver.
 jestPreset.moduleNameMapper = {
-  '^react-native/asset-registry$': 'react-native/src/asset-registry',
+  '^react-native/asset-registry$': reactNativeAssetRegistry,
+  '^react-native/unstable-internals-do-not-use$': reactNativeUnstableInternals,
   ...(jestPreset.moduleNameMapper || {}),
   '^react-native-vector-icons$': '@expo/vector-icons',
   '^react-native-vector-icons/(.*)': '@expo/vector-icons/$1',
 };
 
+// React Native 0.89 sets the transformer to `babel-jest` resolved from the preset's directory.
+const upstreamBabelJestPath = resolveFromUpstreamPreset('babel-jest');
 const upstreamBabelJest = Object.keys(jestPreset.transform).find(
-  (key) => jestPreset.transform[key] === 'babel-jest'
+  (key) =>
+    jestPreset.transform[key] === 'babel-jest' ||
+    jestPreset.transform[key] === upstreamBabelJestPath
 );
 if (upstreamBabelJest) {
   delete jestPreset.transform[upstreamBabelJest];
 }
 
 // transform
+// Resolve `babel-jest` from jest-expo so the Jest 30 version is used. `@react-native/jest-preset`
+// still depends on `babel-jest@29`, and a bare `'babel-jest'` would resolve from the project root,
+// where hoisting decides which of the two copies wins.
+const babelJestPath = require.resolve('babel-jest');
 const babelOpts = resolveBabelOptions(process.cwd());
-jestPreset.transform['\\.[jt]sx?$'] = ['babel-jest', babelOpts];
+jestPreset.transform['\\.[jt]sx?$'] = [babelJestPath, babelOpts];
 
 /* Update this when metro changes their default extensions */
 const defaultMetroAssetExts = [
@@ -132,3 +169,12 @@ Object.assign(jestPreset, require('jest-expo/config/maxWorkers'));
 
 // Add typescript custom mapping
 module.exports = withTypescriptMapping(jestPreset);
+
+function resolveFromUpstreamPreset(request) {
+  try {
+    return require.resolve(request, { paths: [path.dirname(jestPresetPath)] });
+  } catch {
+    // Older presets use the bare `'babel-jest'` name and may not resolve it from their directory.
+    return null;
+  }
+}

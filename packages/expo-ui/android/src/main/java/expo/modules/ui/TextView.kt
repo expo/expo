@@ -134,7 +134,9 @@ enum class TextLineBreakType(val value: String) : Enumerable {
 }
 
 fun resolveFontFamily(name: String?, context: Context): FontFamily? {
-  if (name == null) return null
+  if (name == null) {
+    return null
+  }
   return when (name) {
     "default" -> FontFamily.Default
     "sansSerif" -> FontFamily.SansSerif

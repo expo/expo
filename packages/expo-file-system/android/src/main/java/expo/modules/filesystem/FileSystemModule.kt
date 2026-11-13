@@ -99,7 +99,7 @@ class FileSystemModule : Module() {
     }
 
     Property("availableDiskSpace") {
-      filesDirectory.freeSpace
+      filesDirectory.usableSpace
     }
 
     AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptions?, downloadUUID: String? ->
@@ -482,6 +482,10 @@ class FileSystemModule : Module() {
       AsyncFunction("resume") Coroutine { task: FileSystemDownloadTask, url: URI, to: FileSystemPath, resumeData: String, options: DownloadTaskOptions? ->
         to.validatePermission(FilePermissionService.Permission.WRITE)
         task.resume(url, to, resumeData, options)
+      }
+
+      Property("response") { task: FileSystemDownloadTask ->
+        task.getResponse()
       }
 
       Function("cancel") { task: FileSystemDownloadTask ->

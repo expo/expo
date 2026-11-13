@@ -323,11 +323,7 @@ class UploadTaskDelegate: NSObject, NetworkTaskDelegate {
     }
 
     let bodyString = String(data: responseBody, encoding: .utf8) ?? ""
-    let headers = httpResponse.allHeaderFields.reduce(into: [String: String]()) { result, item in
-      if let key = item.key as? String, let value = item.value as? String {
-        result[key] = value
-      }
-    }
+    let headers = httpResponse.responseHeaders()
 
     let result: [String: Any] = [
       "body": bodyString,

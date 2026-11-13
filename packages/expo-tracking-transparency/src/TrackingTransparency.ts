@@ -11,47 +11,47 @@ import { Platform } from 'react-native';
 import ExpoTrackingTransparency from './ExpoTrackingTransparency';
 
 /**
- * Gets the advertising ID, a UUID string intended only for advertising. Use this string for
- * frequency capping, attribution, conversion events, estimating the number of unique users,
- * advertising fraud detection, and debugging.
+ * @deprecated Use [`getAdvertisingIdAsync()`](#getadvertisingidasync) instead. This function returns
+ * the same value synchronously and blocks the JS thread until the native lookup returns.
  *
- * As a best practice, don't store the advertising ID. Instead, call this function each time your
- * app needs to use the advertising ID. Users can change whether they allow app tracking and can
- * reset their advertising ID at any time in their system settings. Check your app's authorization
- * using [`getTrackingPermissionsAsync()`](#gettrackingpermissionsasync) to determine the user's
- * intent.
- *
- * On Android, this function returns the "Android Advertising ID"
- * ([AAID](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)).
- * On Android devices that support multiple users, including guest users, it's possible for your app
- * to obtain different advertising IDs on the same device. These different IDs correspond to
- * different users who could be signed in on that device. See Google's documentation for more
- * information: [Get a user-resettable advertising
- * ID](https://developer.android.com/training/articles/ad-id).
- *
- * On iOS, this function returns the "Identifier for Advertisers"
- * ([IDFA](https://developer.apple.com/documentation/adsupport/asidentifiermanager/advertisingidentifier)),
- * a string that's unique to each device. Your app must request tracking authorization using
- * [`requestTrackingPermissionsAsync()`](#requesttrackingpermissionsasync) before it can get the
- * advertising identifier.
- *
- * @return Returns either a UUID `string` or `null`. It returns null in the following cases:
- * - On Android, when the system's [Limit Ad Tracking setting](https://support.google.com/googleplay/android-developer/answer/6048248)
- * is enabled (the app user has opted out of ad personalization)
- * - In the iOS simulator, regardless of any settings
- * - On iOS if you haven't received permission using [`requestTrackingPermissionsAsync()`](#requesttrackingpermissionsasync)
- * - On iOS, if you've requested permission and the user declines
- * - On iOS, when a profile or configuration restricts access to the advertising identifier, such as
- *   when the user has turned off the system-wide "Allow Apps to Request to Track" setting
- *
- * @example
- * ```ts
- * ExpoTrackingTransparency.getAdvertisingId();
- * // "E9228286-4C4E-4789-9D95-15827DCB291B"
- * ```
+ * @return The advertising ID as a UUID `string`, or `null` in the cases listed for
+ * [`getAdvertisingIdAsync()`](#getadvertisingidasync).
  */
 export function getAdvertisingId(): string | null {
   const advertisingId = ExpoTrackingTransparency.getAdvertisingId();
+  if (advertisingId === '00000000-0000-0000-0000-000000000000') {
+    return null;
+  }
+  return advertisingId;
+}
+
+/**
+ * Gets the advertising ID, a UUID string intended only for advertising, such as frequency capping,
+ * attribution, conversion events, and fraud detection.
+ *
+ * Don't store the advertising ID. Call this function each time your app needs it, because users can
+ * reset the ID or change their tracking permission at any time. Check the permission with
+ * [`getTrackingPermissionsAsync()`](#gettrackingpermissionsasync).
+ *
+ * On Android, this is the [Android Advertising ID](https://developer.android.com/training/articles/ad-id).
+ * On a device with multiple users, each user has their own ID.
+ *
+ * On iOS, this is the [IDFA](https://developer.apple.com/documentation/adsupport/asidentifiermanager/advertisingidentifier).
+ * Your app must call [`requestTrackingPermissionsAsync()`](#requesttrackingpermissionsasync) first.
+ *
+ * @return A promise that resolves to the advertising ID as a UUID `string`, or `null`:
+ * - On Android, when the user has enabled [Limit Ad Tracking](https://support.google.com/googleplay/android-developer/answer/6048248)
+ * - On iOS, when the user has not granted tracking permission, when a profile or configuration
+ *   restricts access to the identifier, or in the simulator
+ *
+ * @example
+ * ```ts
+ * await TrackingTransparency.getAdvertisingIdAsync();
+ * // "E9228286-4C4E-4789-9D95-15827DCB291B"
+ * ```
+ */
+export async function getAdvertisingIdAsync(): Promise<string | null> {
+  const advertisingId = await ExpoTrackingTransparency.getAdvertisingIdAsync();
   if (advertisingId === '00000000-0000-0000-0000-000000000000') {
     return null;
   }

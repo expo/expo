@@ -1,0 +1,98 @@
+---
+title: Debug a workflow run with SSH
+sidebar_title: Debug with SSH
+description: Learn how to open an SSH session on the worker that runs a job in Expo Workflows.
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **info** SSH access is [experimental](/more/release-statuses/#experimental). Its commands, flags, and behavior may change.
+
+An SSH session gives you an interactive shell on the worker that runs a job. Use it to inspect a job while it runs or after it fails. For example, you can:
+
+- Inspect the files that a failed step created.
+- Run a failing command again on the same worker, with the same tools and environment variables.
+- Check the versions of the tools that the job uses.
+
+<Prerequisites>
+  <Requirement title="EAS CLI 24.12.0 or later">
+    Install or update EAS CLI:
+
+    <Terminal cmd={['$ npm install -g eas-cli']} />
+
+  </Requirement>
+  <Requirement title="An SSH client">
+    The `ssh` command must be available in your terminal.
+  </Requirement>
+  <Requirement title="Developer role or higher">
+    To connect, your [role](/accounts/account-types/#manage-access) on the project's account must be Developer, Release Manager, Admin, or Owner. A member with the Runner role can start a run with `--ssh` but cannot connect.
+  </Requirement>
+</Prerequisites>
+
+## Start a run with SSH
+
+Add the `--ssh` flag when you run a workflow:
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/my-workflow.yml --ssh']} />
+
+Each job that runs on a worker opens an SSH session before its steps start. Jobs that run without a worker, such as `slack` and `require-approval`, do not open a session. If the run calls [reusable workflows](/eas/workflows/reusable-workflows/), their jobs also open sessions. If you [re-run the workflow](/eas/workflows/manage-workflow-runs/#re-run-a-workflow) on the Expo dashboard, the jobs that run again also open sessions.
+
+You can enable SSH only when you start a run with `eas workflow:run`. To debug a workflow that GitHub started, run the same workflow file at the same Git reference:
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/my-workflow.yml --ref my-branch --ssh']} />
+
+## Connect to a job
+
+1. Open the job logs on the [workflows page](https://expo.dev/accounts/[account]/projects/[projectName]/workflows) of your project, or with `eas workflow:logs`.
+2. Find the **Start SSH session** step. It prints the command to connect:
+
+   ```text
+   SSH session ready. Connect with: eas workflow:ssh ID
+   ```
+
+3. Run that command in your terminal:
+
+   <Terminal cmd={['$ eas workflow:ssh ID']} />
+
+If the session is not ready yet, the command waits for it.
+
+The job does not wait for you to connect. Its steps continue to run while you are connected.
+
+When you connect, the shell starts in the build directory, **~/workingdir/build**. Your project files are in this directory after the **Prepare project** step in a build job, or after the [`eas/checkout`](/eas/workflows/syntax/#eascheckout) step in a custom job. These steps replace the directory. If you connected before the step ran, run `cd ~/workingdir/build` to see your project files.
+
+## Keep the session open after the job ends
+
+The session is open for the whole job. When the job ends, the session stays open while you are connected. It closes when no one is connected.
+
+To get time to connect after the job ends, for example after a step fails, set `--ssh-idle-timeout` in seconds. The value must be from 0 to 3600. The default is 0.
+
+<Terminal
+  cmd={['$ eas workflow:run .eas/workflows/my-workflow.yml --ssh --ssh-idle-timeout 600']}
+/>
+
+With this value, the session closes after 10 minutes with no client connected. Each time the last client disconnects, the 10 minutes start again.
+
+While the session is open after the job ends, the job and the run stay in progress. The job gets its final status, such as **Failure**, when the session closes. This time uses build minutes and a concurrency slot on your account.
+
+If you [cancel the workflow run](/eas/workflows/manage-workflow-runs/#cancel-a-workflow-run), its open sessions close without waiting for the idle timeout. The jobs that still have an open session end with the **Canceled** status.
+
+## Connect with another SSH client
+
+To connect with a different SSH client or from a script, print the connection command:
+
+<Terminal cmd={['$ eas workflow:ssh --show-connect ID']} />
+
+The output contains a token. Anyone who has the token can connect to the session until it closes. Do not share the output or save it in logs.
+
+The output also shows a second command. Use it if your network blocks SSH connections.
+
+## Troubleshooting
+
+| Message                                                             | Cause                                                                        | Next step                                                                                                                                       |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SSH was not enabled for "ID"`                                      | The run started without `--ssh`, or your role on the account is Runner.      | Start a new run with `--ssh`. To connect, you need the Developer role or higher.                                                                |
+| `This ssh session has ended.`                                       | The job ended and no client was connected, or the run was canceled.          | Start a new run with `--ssh`. To get time to connect after the job ends, add [`--ssh-idle-timeout`](#keep-the-session-open-after-the-job-ends). |
+| `Timed out waiting for the ssh session to open.`                    | The worker is still starting.                                                | Run the command again.                                                                                                                          |
+| Could not run `ssh`                                                 | No SSH client is available in your terminal.                                 | Install an OpenSSH client, then run the command again.                                                                                          |
+| `Failed to open the SSH session. The job will continue without it.` | The worker could not open the session. This message appears in the job logs. | Start a new run with `--ssh`. If the error occurs again, contact [workflows@expo.dev](mailto:workflows@expo.dev).                               |

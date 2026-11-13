@@ -13,7 +13,6 @@ import type {
 import CountingSet from '@expo/metro/metro/lib/CountingSet';
 import countLines from '@expo/metro/metro/lib/countLines';
 
-import { installPackedMap } from './packedMap';
 import type { SerializerParameters } from './withExpoSerializers';
 
 export function getTransformEnvironment(url: string): string | null {
@@ -99,7 +98,7 @@ export function environmentVariableSerializerPlugin(
     // !!MUST!! be one line in order to ensure Metro's asymmetric serializer system can handle it.
     data.code = code;
     data.lineCount = countLines(data.code);
-    installPackedMap(data, []);
+    data.map = { mappings: '', names: [] };
     return [entryPoint, preModules, graph, options];
   }
 

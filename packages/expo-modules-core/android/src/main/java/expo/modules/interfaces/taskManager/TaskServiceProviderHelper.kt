@@ -30,7 +30,7 @@ object TaskServiceProviderHelper {
     // Invoke and get the list of packages
     val result = getPackageList.invoke(null) as? List<*> ?: return null
     val packages = result.filterIsInstance<Package>()
-      .sortedByDescending { ModulePriorities.get(it::class.qualifiedName) }
+      .sortedByDescending { ModulePriorities.get(it.javaClass.canonicalName) }
 
     // Check if any of the packages are providing a task manager implementation
     return packages

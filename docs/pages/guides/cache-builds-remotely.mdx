@@ -11,9 +11,9 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 Build caching is a feature that speeds up `npx expo run:[android|ios]` by caching builds remotely, based on the project [fingerprint](/versions/latest/sdk/fingerprint/).
 When you run `npx expo run:[android|ios]`, it checks if a build with a matching fingerprint exists, then downloads and launches it rather than compiling it again. Otherwise, the project is compiled as usual and then the resulting binary is uploaded to the remote cache for future runs.
 
-## Using EAS as a build provider
+## Using Expo Build as a build provider
 
-To use the EAS Build provider plugin, start by installing the `eas-build-cache-provider` package as a developer dependency:
+To use the Expo Build provider plugin, start by installing the `eas-build-cache-provider` package as a developer dependency:
 
 <Tabs>
 
@@ -109,7 +109,7 @@ Some local builds are also skipped:
 
 - **iOS physical device builds.** A device build is only valid on devices that match its provisioning profile, so reusing one across machines or devices is unsafe. `npx expo run:ios` therefore skips both the cache lookup and the post-build upload when the target is a physical device. Only iOS Simulator builds participate in caching.
 
-If you're using `appVersionSource: "remote"` in **eas.json**, note that the `versionCode` (Android) and `buildNumber` (iOS) live on EAS servers rather than in your project source, so they are not part of the fingerprint inputs. This is fine for normal development iteration. Local `npx expo run:*` invocations don't auto-increment those values, but be aware that a cached artifact retains whatever build number was embedded when it was originally built.
+If you're using `appVersionSource: "remote"` in **eas.json**, note that the `versionCode` (Android) and `buildNumber` (iOS) live on Expo servers rather than in your project source, so they are not part of the fingerprint inputs. This is fine for normal development iteration. Local `npx expo run:*` invocations don't auto-increment those values, but be aware that a cached artifact retains whatever build number was embedded when it was originally built.
 
 ## Creating a custom build provider
 

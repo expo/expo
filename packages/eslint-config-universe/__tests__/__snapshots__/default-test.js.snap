@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`doesn't conflict with Prettier: message 1`] = `
 "No rules that are unnecessary or conflict with Prettier were found.

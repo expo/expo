@@ -784,6 +784,28 @@ struct MetricsDatabaseTests {
     }
   }
 
+  // MARK: - Legacy storage
+
+  @Test
+  func `removes the legacy JSON file and keeps the database`() throws {
+    try withTemporaryDirectory { directoryUrl in
+      let database = try MetricsDatabase(directoryUrl: directoryUrl)
+      let legacyFileUrl = directoryUrl.appendingPathComponent("metrics.json")
+      try Data("[]".utf8).write(to: legacyFileUrl)
+      MetricsDatabase.cleanUpLegacyStorage(in: directoryUrl)
+      #expect(!FileManager.default.fileExists(atPath: legacyFileUrl.path))
+      #expect(FileManager.default.fileExists(atPath: database.fileUrl.path))
+    }
+  }
+
+  @Test
+  func `does not fail when the legacy file does not exist`() throws {
+    try withTemporaryDirectory { directoryUrl in
+      MetricsDatabase.cleanUpLegacyStorage(in: directoryUrl)
+      #expect(FileManager.default.fileExists(atPath: directoryUrl.path))
+    }
+  }
+
   // MARK: - Helpers
 }
 

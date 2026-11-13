@@ -64,6 +64,49 @@ struct SceneGeometryTests {
   }
 
   @Test
+  func `anchorPopover sets the source view and a bottom-center rect by default`() {
+    let host = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 500))
+    let controller = UIViewController()
+    controller.modalPresentationStyle = .popover
+
+    #expect(SceneGeometry.anchorPopover(of: controller, to: host) == true)
+    #expect(controller.popoverPresentationController?.sourceView === host)
+    #expect(controller.popoverPresentationController?.sourceRect == CGRect(x: 150, y: 500, width: 0, height: 0))
+  }
+
+  @Test
+  func `anchorPopover uses the given rect`() {
+    let host = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 500))
+    let controller = UIViewController()
+    controller.modalPresentationStyle = .popover
+    let rect = CGRect(x: 10, y: 20, width: 30, height: 40)
+
+    #expect(SceneGeometry.anchorPopover(of: controller, to: host, rect: rect) == true)
+    #expect(controller.popoverPresentationController?.sourceRect == rect)
+  }
+
+  @Test
+  func `anchorPopover is a no-op for a full screen presentation`() {
+    let controller = UIViewController()
+    controller.modalPresentationStyle = .fullScreen
+
+    #expect(SceneGeometry.anchorPopover(of: controller, to: UIView()) == false)
+    #expect(controller.popoverPresentationController == nil)
+  }
+
+  @Test
+  func `anchorPopover falls back to the view's window root view`() {
+    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+    let root = UIViewController()
+    window.rootViewController = root
+    let controller = UIViewController()
+    controller.modalPresentationStyle = .popover
+
+    #expect(SceneGeometry.anchorPopover(of: controller, to: root.view) == true)
+    #expect(controller.popoverPresentationController?.sourceView === root.view)
+  }
+
+  @Test
   func `display scale is always positive`() {
     // Callers divide by this value, so it must never be zero regardless of how much of the
     // environment is available.

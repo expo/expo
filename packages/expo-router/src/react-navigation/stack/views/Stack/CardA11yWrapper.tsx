@@ -2,6 +2,8 @@
 import * as React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
+import { getUnfocusedScreenProps } from '../../../elements/getUnfocusedScreenProps';
+
 type Props = {
   ref?: React.Ref<CardA11yWrapperRef>;
   focused: boolean;
@@ -34,7 +36,7 @@ export const CardA11yWrapper = ({
 
   return (
     <View
-      aria-hidden={!focused}
+      {...getUnfocusedScreenProps(focused)}
       style={[
         StyleSheet.absoluteFill,
         {

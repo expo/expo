@@ -3,6 +3,7 @@ package expo.modules.appmetrics.networkrequests
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import expo.modules.appmetrics.spans.SpanWriter
 import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.Session
 import expo.modules.appmetrics.storage.Span
@@ -481,11 +482,111 @@ class NetworkRequestPersistenceTest {
   private suspend fun allSpans() = database.spanDao().getSpans(afterId = -1, limit = Int.MAX_VALUE)
 
   @Test
+  fun `drops every request while recording is disabled`() = runTest(testDispatcher) {
+    insertSession("s")
+    val persistence = NetworkRequestPersistence(
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = false),
+      sessionId = "s"
+    )
+    persistence.persist(makeRequest())
+    testScheduler.advanceUntilIdle()
+    assertTrue(allSpans().isEmpty())
+  }
+
+  @Test
+  fun `records only requests matching the configured filter`() = runTest(testDispatcher) {
+    insertSession("s")
+    val persistence = NetworkRequestPersistence(
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true, hosts = listOf("API.myapp.com")),
+      sessionId = "s"
+    )
+    persistence.persist(makeRequest(url = "https://api.example.com/skip"))
+    persistence.persist(makeRequest(url = "https://api.myapp.com/keep"))
+    testScheduler.advanceUntilIdle()
+    val rows = allSpans()
+    assertEquals(1, rows.size)
+    val recordedUrl = JSONObject(checkNotNull(rows.single().attributes)).getString("url.full")
+    assertEquals("https://api.myapp.com/keep", recordedUrl)
+  }
+
+  @Test
+  fun `applies a configuration change to subsequent requests only`() = runTest(testDispatcher) {
+    // "Applies forward": rows persisted before the change stay in the table and still dispatch.
+    insertSession("s")
+    val persistence = NetworkRequestPersistence(
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
+      sessionId = "s"
+    )
+    persistence.persist(makeRequest())
+    testScheduler.advanceUntilIdle()
+    persistence.setConfiguration(NetworkTracesConfiguration(enabled = false))
+    persistence.persist(makeRequest())
+    testScheduler.advanceUntilIdle()
+    assertEquals(1, allSpans().size)
+  }
+
+  @Test
+  fun `a backfill records only the buffered requests the policy allows`() = runTest(testDispatcher) {
+    // The startup buffer goes through the same gate as live traffic, so a filter set before the
+    // drain keeps the non-matching requests out of the table rather than letting the backlog in.
+    insertSession("s")
+    val persistence = NetworkRequestPersistence(
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true, hosts = listOf("api.example.com")),
+      sessionId = "s"
+    )
+    persistence.persistBuffered(
+      listOf(
+        makeRequest(url = "https://api.example.com/v1/items"),
+        makeRequest(url = "https://cdn.other.dev/asset.png"),
+        makeRequest(url = "https://api.example.com/v1/users")
+      )
+    )
+    testScheduler.advanceUntilIdle()
+    assertEquals(2, allSpans().size)
+  }
+
+  @Test
+  fun `a backfill applies one policy to the whole batch`() = runTest(testDispatcher) {
+    // The drain reads the policy once. Without that, a reconfigure landing while the batch is
+    // inserting would write the requests it already reached and drop the rest, so one buffer
+    // would be split across two policies.
+    insertSession("s")
+    val persistence = NetworkRequestPersistence(
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
+      sessionId = "s"
+    )
+    // The reconfigure is triggered from inside the loop, as the second request is read. Calling
+    // it from the test body instead would run before or after the whole drain, never between two
+    // inserts, so it would pass even with the policy re-read per request.
+    var reconfigured = false
+    val buffered = object : AbstractList<NetworkRequest>() {
+      private val backing = (0 until 4).map { makeRequest(url = "https://api.example.com/$it") }
+      override val size = backing.size
+      override fun get(index: Int): NetworkRequest {
+        if (index == 1 && !reconfigured) {
+          reconfigured = true
+          persistence.setConfiguration(NetworkTracesConfiguration(enabled = false))
+        }
+        return backing[index]
+      }
+    }
+    persistence.persistBuffered(buffered)
+    testScheduler.advanceUntilIdle()
+    assertTrue("the reconfigure must land mid-drain for this test to mean anything", reconfigured)
+    assertEquals("the batch must not be split by a mid-drain reconfigure", 4, allSpans().size)
+  }
+
+  @Test
   fun `persists a completed request as a span attributed to the provided session`() = runTest(testDispatcher) {
     insertSession("main-session")
     val persistence = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "main-session"
     )
     persistence.persist(makeRequest())
@@ -505,8 +606,8 @@ class NetworkRequestPersistenceTest {
     val monitor = NetworkRequestMonitor()
     monitor.record(makeRequest(method = "GET"))
     val persistence = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "main-session"
     )
     monitor.installPersistence(persistence)
@@ -524,16 +625,16 @@ class NetworkRequestPersistenceTest {
     val monitor = NetworkRequestMonitor()
     monitor.record(makeRequest(method = "GET"))
     val first = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
     monitor.installPersistence(first)
     testScheduler.advanceUntilIdle()
     monitor.uninstallPersistence(first)
     val second = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
     monitor.installPersistence(second)
@@ -551,8 +652,8 @@ class NetworkRequestPersistenceTest {
     monitor.record(makeRequest(method = "GET"))
     val canceledScope = CoroutineScope(testDispatcher + Job())
     val first = NetworkRequestPersistence(
-      database = database,
-      scope = canceledScope,
+      writer = SpanWriter(database = database, scope = canceledScope),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
     monitor.installPersistence(first)
@@ -560,8 +661,8 @@ class NetworkRequestPersistenceTest {
     testScheduler.advanceUntilIdle()
     assertTrue(allSpans().isEmpty())
     val second = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
     monitor.installPersistence(second)
@@ -582,8 +683,8 @@ class NetworkRequestPersistenceTest {
     val canceledScope = CoroutineScope(testDispatcher + Job())
     var reportedComplete = false
     val persistence = NetworkRequestPersistence(
-      database = database,
-      scope = canceledScope,
+      writer = SpanWriter(database = database, scope = canceledScope),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
     // Cancel from inside the loop's own iteration: `persistBuffered` walks this list, so
@@ -617,7 +718,11 @@ class NetworkRequestPersistenceTest {
     val monitor = NetworkRequestMonitor()
     // A startup request, so the first install drains a real buffer and marks it drained.
     monitor.record(makeRequest(method = "GET", url = "https://api.example.com/startup"))
-    val first = NetworkRequestPersistence(database = database, scope = this, sessionId = "s")
+    val first = NetworkRequestPersistence(
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
+      sessionId = "s"
+    )
     monitor.installPersistence(first)
     testScheduler.advanceUntilIdle()
     monitor.uninstallPersistence(first)
@@ -625,7 +730,11 @@ class NetworkRequestPersistenceTest {
     monitor.record(makeRequest(method = "GET", url = "https://api.example.com/in-window"))
     testScheduler.advanceUntilIdle()
 
-    val second = NetworkRequestPersistence(database = database, scope = this, sessionId = "s")
+    val second = NetworkRequestPersistence(
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
+      sessionId = "s"
+    )
     monitor.installPersistence(second)
     testScheduler.advanceUntilIdle()
     val urls = allSpans().map { JSONObject(checkNotNull(it.attributes)).getString("url.full") }
@@ -640,8 +749,8 @@ class NetworkRequestPersistenceTest {
     insertSession("s")
     val monitor = NetworkRequestMonitor()
     val first = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
     monitor.installPersistence(first)
@@ -652,8 +761,8 @@ class NetworkRequestPersistenceTest {
     monitor.uninstallPersistence(first)
 
     val second = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
     monitor.installPersistence(second)
@@ -672,8 +781,8 @@ class NetworkRequestPersistenceTest {
     val monitor = NetworkRequestMonitor(recentCapacity = 2)
     monitor.record(makeRequest(method = "GET", url = "https://api.example.com/first"))
     val first = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
     // Install starts the drain, then uninstall immediately: the next two requests arrive with no
@@ -686,8 +795,8 @@ class NetworkRequestPersistenceTest {
     testScheduler.advanceUntilIdle()
 
     val second = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
     monitor.installPersistence(second)
@@ -706,8 +815,8 @@ class NetworkRequestPersistenceTest {
     insertSession("s")
     val monitor = NetworkRequestMonitor(recentCapacity = 2)
     val persistence = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
     monitor.installPersistence(persistence)
@@ -732,8 +841,8 @@ class NetworkRequestPersistenceTest {
     insertSession("s")
     val monitor = NetworkRequestMonitor(recentCapacity = 2)
     val first = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
     monitor.installPersistence(first)
@@ -745,8 +854,8 @@ class NetworkRequestPersistenceTest {
     monitor.uninstallPersistence(first)
 
     val second = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
     monitor.installPersistence(second)
@@ -761,8 +870,8 @@ class NetworkRequestPersistenceTest {
     insertSession("s")
     val monitor = NetworkRequestMonitor()
     val persistence = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
     monitor.installPersistence(persistence)
@@ -779,14 +888,14 @@ class NetworkRequestPersistenceTest {
     insertSession("s")
     val monitor = NetworkRequestMonitor()
     val stale = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
     monitor.installPersistence(stale)
     val replacement = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
     monitor.installPersistence(replacement)
@@ -801,8 +910,8 @@ class NetworkRequestPersistenceTest {
     // The sessions FK protects referential integrity; persistence must degrade to a dropped
     // row rather than throw into the monitor's record path.
     val persistence = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "never-inserted"
     )
     persistence.persist(makeRequest())

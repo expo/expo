@@ -33,8 +33,15 @@ public actor AppIntentDispatcher {
   /// `AppShortcutsProvider` because the pod cannot reference that type.
   private var shortcutsRefreshHandler: (@Sendable () async -> Void)?
 
-  internal init(store: sending AppIntentInvocationStore = AppIntentInvocationStore()) {
+  /// Runs the tasks of `runBackgroundTask`, or `nil` when expo-task-manager is not installed.
+  internal let taskRunner: AppIntentTaskRunner?
+
+  internal init(
+    store: sending AppIntentInvocationStore = AppIntentInvocationStore(),
+    taskRunner: sending AppIntentTaskRunner? = discoverTaskRunner()
+  ) {
     self.store = store
+    self.taskRunner = taskRunner
   }
 
   /// Returns a stream of the invocations dispatched while JavaScript is running.

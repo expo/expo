@@ -1,7 +1,7 @@
 ---
 title: React Navigation integration
 sidebar_title: React Navigation
-description: Track per-screen render and interactive timings by enabling the React Navigation integration for EAS Observe.
+description: Track per-screen render and interactive timings by enabling the React Navigation integration for Expo Observe.
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
@@ -9,7 +9,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-EAS Observe ships an opt-in integration for [React Navigation](https://reactnavigation.org/) that collects per-screen metrics tagged with the screen's route-name path (for example, `/Tabs/Sessions`). This lets you compare navigation performance by screen in the dashboard instead of looking only at app-wide aggregates.
+Expo Observe ships an opt-in integration for [React Navigation](https://reactnavigation.org/) that collects per-screen metrics tagged with the screen's route-name path (for example, `/Tabs/Sessions`). This lets you compare navigation performance by screen in the dashboard instead of looking only at app-wide aggregates.
 
 If your app uses [Expo Router](/router/introduction/), use the [Expo Router integration](/eas/observe/integrations/expo-router/) instead. This page is for apps that use React Navigation directly.
 
@@ -20,7 +20,7 @@ If your app uses [Expo Router](/router/introduction/), use the [Expo Router inte
     The React Navigation integration is available on SDK 56 and later. On earlier SDKs,
     `expo-observe` still tracks app-wide metrics, but per-screen navigation events are not emitted.
   </Requirement>
-  <Requirement title="An app already using EAS Observe">
+  <Requirement title="An app already using Expo Observe">
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
     build.
   </Requirement>
@@ -224,4 +224,4 @@ Run `eas observe:routes --help` for the full list of flags (time range, platform
 - With static configuration, pass the same ref to both `<ObserveNavigationProvider>` and the `<Navigation>` element. If the provider receives a ref that is not connected to a navigation container, no per-screen metrics are emitted.
 - `markInteractive()` only records once the screen is focused. Calls made on an unfocused screen update internal state but do not emit a `tti` event until the screen is focused.
 - Call `useObserve()` inside the screen component, not in a higher-level wrapper. If the screen's identity changes between renders, the hook logs a warning. If `markInteractive()` logs `Calling markInteractive on unmounted screen` or `No metadata available for the current screen`, the call ran outside a screen component or after unmount. Move the call into a `useEffect` inside the screen component.
-- For general issues with EAS Observe, see [Troubleshooting](/eas/observe/reference/troubleshooting/).
+- For general issues with Expo Observe, see [Troubleshooting](/eas/observe/reference/troubleshooting/).

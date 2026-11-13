@@ -1,5 +1,12 @@
 export const TALKS = [
   {
+    title: "Your Biggest User Isn't Human: Designing DevTools for AI Agents",
+    event: 'Agent Conf 2026',
+    description: 'David Mokos',
+    videoId: 'mkJlmG1rkBg',
+    uploadDate: '2026-09-21',
+  },
+  {
     title: 'The future of mobile development with Expo',
     event: 'Chain React 2026',
     description: 'Charlie Cheever',
@@ -186,6 +193,12 @@ export const TALKS = [
 
 export const PODCASTS = [
   {
+    title: 'State of React Native',
+    event: 'This Dot Media',
+    videoId: 'dx-5GCUX14o',
+    uploadDate: '2026-09-30',
+  },
+  {
     title: 'Expo SDK 54, Expo Router v6 & Expo UI Beta for iOS with Beto Moedano',
     event: 'Rocket Ship #081',
     description: 'Alberto Moedano',
@@ -338,6 +351,18 @@ export const PODCASTS = [
 ] as Talk[];
 
 export const LIVE_STREAMS = [
+  {
+    title: 'Expo SDK 58: iOS 27, iPhone Duo, App Intents & @expo/agent-cli',
+    event: 'Expo Live Stream',
+    videoId: '45YfqOL56FI',
+    uploadDate: '2026-11-04',
+  },
+  {
+    title: 'Agentic CI for Expo apps with TesterArmy',
+    event: 'Expo Live Stream',
+    videoId: 'yrtWWbhTsHE',
+    uploadDate: '2026-10-05',
+  },
   {
     title: 'How is your app actually doing in production? | Introducing Observe',
     event: 'Expo Live Stream',
@@ -522,6 +547,36 @@ export const LIVE_STREAMS = [
 
 export const YOUTUBE_VIDEOS = [
   {
+    title: 'Apple Developer account: free vs paid explained',
+    event: 'Expo Tutorials',
+    videoId: 'ELPS37cMrCQ',
+    uploadDate: '2026-10-29',
+  },
+  {
+    title: 'Expo SDK 58 just dropped. Here are the 24 biggest updates',
+    event: 'Expo Tutorials',
+    videoId: 'vqMYeWjBWkI',
+    uploadDate: '2026-10-19',
+  },
+  {
+    title: 'Introduction to Verification Engineering',
+    event: 'Expo Tutorials',
+    videoId: '2OFB4B7Vy10',
+    uploadDate: '2026-10-04',
+  },
+  {
+    title: 'What if your app could fix itself?',
+    event: 'Expo Tutorials',
+    videoId: 'MUFlnOXi-o4',
+    uploadDate: '2026-09-22',
+  },
+  {
+    title: 'What we learned using only Expo apps for 24 hours',
+    event: 'Expo Tutorials',
+    videoId: 'JRH6_rjCy_g',
+    uploadDate: '2026-09-10',
+  },
+  {
     title: 'From React Web to React Native in 60 Seconds',
     event: 'Expo Tutorials',
     videoId: '8ExmJ7gqVaw',
@@ -530,7 +585,6 @@ export const YOUTUBE_VIDEOS = [
   {
     title: 'Fable 5 vs GPT 5.6: I spent $2,000 to find out',
     event: 'Expo Tutorials',
-    description: 'Rami Maalouf',
     videoId: 'SLWl53sizHs',
     uploadDate: '2026-08-05',
   },
@@ -614,7 +668,7 @@ export const YOUTUBE_VIDEOS = [
   },
   {
     title: 'The fastest mobile QA workflow: Expo pull request previews in GitHub Actions',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: '7UVIrqrrrso',
     uploadDate: '2025-11-26',
   },
@@ -674,7 +728,7 @@ export const YOUTUBE_VIDEOS = [
   },
   {
     title: 'When to use over the air updates | Three important OTA use cases',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'PMRekmaeb1o',
     uploadDate: '2025-08-12',
   },
@@ -686,7 +740,7 @@ export const YOUTUBE_VIDEOS = [
   },
   {
     title: 'Repack Workflow Demo | Speed up CI builds by ~80%',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'peZ36U87k-M',
     uploadDate: '2025-07-21',
   },
@@ -728,19 +782,19 @@ export const YOUTUBE_VIDEOS = [
   },
   {
     title: 'Golden Workflow: Automate the creation of development builds',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'u8MAJ0F18s0',
     uploadDate: '2025-05-28',
   },
   {
     title: 'Golden Workflow: Share preview updates with your team',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'v_rzRcVSQYQ',
     uploadDate: '2025-05-28',
   },
   {
     title: 'Golden Workflow: Deploy your app to production with an automated workflow',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'o-peODF6E2o',
     uploadDate: '2025-05-28',
   },
@@ -806,7 +860,7 @@ export const YOUTUBE_VIDEOS = [
   },
   {
     title: 'EAS Workflows: React Native CI/CD for app developers',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'OJ2u9tQCpr4',
     uploadDate: '2025-02-14',
   },
@@ -824,79 +878,79 @@ export const YOUTUBE_VIDEOS = [
   },
   {
     title: 'How to manage Multiple App Environments with Expo',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'uKGx3gRrhx0',
     uploadDate: '2025-01-30',
   },
   {
     title: 'How to create a production build for Android',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'nxlt8uwqhpE',
     uploadDate: '2025-01-27',
   },
   {
     title: 'How to create a production build for iOS',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'VZL_e0cEwo8',
     uploadDate: '2025-01-27',
   },
   {
     title: 'How to configure multiple app variants',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'UtJJCAfrjIg',
     uploadDate: '2025-01-27',
   },
   {
     title: 'How to create and share internal distribution builds',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: '1fQuGLHxWks',
     uploadDate: '2025-01-27',
   },
   {
     title: 'How to use over the air updates to share previews with your team',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'vPKh-tNm-yI',
     uploadDate: '2025-01-27',
   },
   {
     title: 'How to configure a development build',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'uQCE9zl3dXU',
     uploadDate: '2025-01-27',
   },
   {
     title: 'How to trigger builds from a GitHub repository',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'fBLFEFC0ip0',
     uploadDate: '2025-01-27',
   },
   {
     title: 'How to create and run a cloud build for iOS Simulator',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'SgL97PFZctg',
     uploadDate: '2025-01-27',
   },
   {
     title: 'How to create and run a cloud build for iOS devices',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'HbfWU7_o4cU',
     uploadDate: '2025-01-27',
   },
   {
     title: 'How to create and run a cloud build for Android',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'D612BUtvvl8',
     uploadDate: '2025-01-27',
   },
   {
     title: 'How to automate App Version code',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'C8x4N9UmzS8',
     uploadDate: '2025-01-27',
   },
   {
     title: 'How to deploy an app with EAS Hosting from Expo',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: 'NaKsfWciJLo',
     uploadDate: '2025-01-14',
   },
@@ -1052,7 +1106,7 @@ export const YOUTUBE_VIDEOS = [
   },
   {
     title: 'How to quickly publish to the App Store & Play Store with EAS Submit',
-    event: 'EAS Tutorials',
+    event: 'Expo Services Tutorials',
     videoId: '-KZjr576tuE',
     uploadDate: '2023-05-30',
   },

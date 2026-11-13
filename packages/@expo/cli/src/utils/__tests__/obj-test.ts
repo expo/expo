@@ -10,6 +10,11 @@ describe(set, () => {
   it(`shallow writes`, () => {
     expect(set({}, 'a', 'd')).toEqual({ a: 'd' });
   });
+  it(`does not pollute the object prototype`, () => {
+    set({}, '__proto__.polluted', 'yes');
+    set({}, 'constructor.prototype.polluted', 'yes');
+    expect(({} as any).polluted).toBeUndefined();
+  });
 });
 describe(get, () => {
   it(`gets deeply`, () => {
@@ -17,6 +22,22 @@ describe(get, () => {
   });
   it(`returns null`, () => {
     expect(get({ a: { b: { c: 'd' } } }, 'a.b.d')).toEqual(null);
+  });
+  it(`returns null when a section on the path is null or undefined`, () => {
+    expect(get({ splash: null }, 'splash.image')).toEqual(null);
+    expect(get({ splash: undefined }, 'splash.image')).toEqual(null);
+    expect(
+      get({ android: { adaptiveIcon: null } }, 'android.adaptiveIcon.foregroundImage')
+    ).toEqual(null);
+  });
+  it(`returns null when a section on the path is a primitive`, () => {
+    expect(get({ ios: 'oops' }, 'ios.bundleIdentifier')).toEqual(null);
+    expect(get({ a: 1 }, 'a.b')).toEqual(null);
+  });
+  it(`still returns a falsy value that is set`, () => {
+    expect(get({ a: { b: 0 } }, 'a.b')).toEqual(0);
+    expect(get({ a: { b: '' } }, 'a.b')).toEqual('');
+    expect(get({ a: { b: null } }, 'a.b')).toEqual(null);
   });
 });
 

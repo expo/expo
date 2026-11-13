@@ -2,8 +2,9 @@
 
 import React from 'react';
 
-import { LocalRouteParamsContext } from '../Route';
+import { LocalRouteParamsContext, useRouteNode } from '../Route';
 import { usePreviewInfo } from '../link/preview/PreviewRouteContext';
+import { NavigationStateContext } from '../react-navigation/core/NavigationStateContext';
 import type { RouteParams, RoutePath, UnknownOutputParams } from '../types';
 
 /**
@@ -46,8 +47,22 @@ export function useLocalSearchParams<
   TParams extends UnknownOutputParams = UnknownOutputParams,
 >(): RouteParams<TRoute> & TParams;
 export function useLocalSearchParams() {
-  const params = React.use(LocalRouteParamsContext) ?? {};
+  let params = React.use(LocalRouteParamsContext) ?? {};
+  const node = useRouteNode();
   const { params: previewParams } = usePreviewInfo();
+
+  if (node?.type === 'layout' && !previewParams) {
+    // TODO(@ubax): Reading this context re-renders the layout on any navigation, even when params do not
+    // change; outside it via https://github.com/react/react/issues/35397. Investigate a selector subscription.
+    let { state } = React.use(NavigationStateContext);
+    while (state) {
+      const child = state.routes[state.index ?? 0];
+      if (!child) break;
+      params = { ...params, ...child.params };
+      state = child.state;
+    }
+  }
+
   return Object.fromEntries(
     Object.entries(previewParams ?? params).map(([key, value]) => {
       // React Navigation doesn't remove `undefined` values from the params object, and you cannot remove them via

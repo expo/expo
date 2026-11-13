@@ -1,0 +1,19 @@
+{
+  "branches": {
+    "main": {
+      "publish": null,
+      "canary": "canary",
+      "allowMajor": true
+    },
+    "sdk-58": {
+      "publish": "latest",
+      "canary": null,
+      "allowMajor": false
+    }
+  },
+  "sdkBranchDefaults": {
+    "publish": "{branch}",
+    "canary": "canary-{branch}",
+    "allowMajor": false
+  }
+}

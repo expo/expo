@@ -1,3 +1,13 @@
 {
-  "platforms": ["android"]
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["StatusBarModule"]
+  },
+  "android": {
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.statusbar",
+      "repository": "local-maven-repo"
+    }
+  }
 }

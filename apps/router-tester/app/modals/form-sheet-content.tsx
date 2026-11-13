@@ -1,9 +1,12 @@
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Screen() {
   return (
-    <View style={{ justifyContent: 'center', alignItems: 'center', height: 100 }}>
+    <SafeAreaView
+      edges={['left', 'right']}
+      style={{ justifyContent: 'center', alignItems: 'center', height: 100 }}>
       <Text>Form Sheet Modal Content</Text>
-    </View>
+    </SafeAreaView>
   );
 }

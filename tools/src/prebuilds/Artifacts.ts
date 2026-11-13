@@ -341,7 +341,7 @@ async function getNightlyVersionFromNPMAsync(packageName: string): Promise<strin
     );
   }
 
-  const json = await npmResponse.json();
+  const json = (await npmResponse.json()) as { version: string };
   return json.version;
 }
 

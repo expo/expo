@@ -45,8 +45,23 @@ struct JavaScriptCodableSharedObjectTests {
 
     // The second encode reuses the already-paired JS object rather than registering a new one.
     // `JavaScriptValue` equality is JS strict equality, so two values wrapping the same object are equal.
-    #expect(first == second)
+    #expect(first.isEqual(to: second) == true)
     #expect(appContext.sharedObjectRegistry.size == registrySizeAfterFirst)
+  }
+
+  @Test
+  func `encoding a released object pairs it with a new JS object`() throws {
+    let runtime = try runtime
+    let native = CodableSharedObject()
+
+    let first = try CodableSharedObject.encode(native, in: runtime)
+    appContext.sharedObjectRegistry.delete(native.sharedObjectId)
+    let second = try CodableSharedObject.encode(native, in: runtime)
+
+    // The first JS object keeps the released native state, so encoding must not return it again.
+    #expect(first.isEqual(to: second) == false)
+    let decoded = try CodableSharedObject.decode(second, in: runtime)
+    #expect(decoded === native)
   }
 
   // MARK: - decode
@@ -92,7 +107,7 @@ struct JavaScriptCodableSharedObjectTests {
     let runtime = try runtime
     let native = CodableSharedObject()
     let encoded = try CodableSharedObject.encode(native, in: runtime)
-    let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [encoded])
+    let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [JavaScriptValue.Ref(encoded)])
 
     let decoded = try CodableSharedObject.decode(buffer.unownedValue(at: 0), in: runtime)
 

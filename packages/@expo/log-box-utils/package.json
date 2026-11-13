@@ -1,6 +1,6 @@
 {
   "name": "@expo/log-box-utils",
-  "version": "58.0.0",
+  "version": "58.0.2",
   "description": "Pure error parsing utilities for Expo LogBox.",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/log-box-utils",
   "license": "MIT",
@@ -30,8 +30,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "expo-build src",
-    "clean": "rimraf build",
+    "build": "expo-build cjs:src",
+    "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
     "prepublishOnly": "run-s clean build",
@@ -40,7 +40,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "workspace:*",
+    "@expo/internal-scripts": "workspace:*",
     "npm-run-all2": "^8.0.4",
     "rimraf": "^6.1.2"
   }

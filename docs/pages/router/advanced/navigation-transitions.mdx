@@ -1,0 +1,56 @@
+---
+title: Configure navigation transitions
+description: Learn how to use React transitions for navigation in Expo Router.
+---
+
+> **important** This is an [experimental](/more/release-statuses/#experimental) feature available in **Expo SDK 58** and later.
+
+Expo Router can process navigation inside a [React transition](https://react.dev/reference/react/startTransition). A transition keeps the current screen visible while the next screen suspends.
+
+Set the transition mode before the root layout renders:
+
+```tsx src/app/_layout.tsx
+import { router, Stack } from 'expo-router';
+
+router.setTransitionMode('always');
+
+export default function RootLayout() {
+  return <Stack />;
+}
+```
+
+## Choose a transition mode
+
+Use these modes to configure when Expo Router starts transitions:
+
+| Mode           | Behavior                                                            |
+| -------------- | ------------------------------------------------------------------- |
+| `preload-only` | Uses transitions for preloading. This is the default.               |
+| `always`       | Uses transitions for all queued navigation operations.              |
+| `never`        | Never uses transitions. Individual operations cannot override this. |
+
+Use `inTransition` to override the mode for an individual operation. The `never` mode cannot be overridden.
+
+```tsx
+router.push('/details', { inTransition: true });
+router.back({ inTransition: false });
+```
+
+> **info** When Expo Router batches operations, every operation must allow transitions for the batch to use one.
+
+## Show pending navigation
+
+Use `unstable_useIsNavigating()` to check whether navigation is queued or pending:
+
+```tsx
+import { unstable_useIsNavigating } from 'expo-router';
+import { ActivityIndicator } from 'react-native';
+
+export function NavigationProgress() {
+  const isNavigating = unstable_useIsNavigating();
+
+  return <ActivityIndicator animating={isNavigating} />;
+}
+```
+
+The hook does not report synchronous navigation or native back gestures. See the [Expo Router API reference](/versions/latest/sdk/router/) for the complete API.

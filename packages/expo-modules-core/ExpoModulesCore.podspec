@@ -115,14 +115,12 @@ Pod::Spec.new do |s|
 
   install_modules_dependencies(s)
 
-  if (!Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s))
-    s.static_framework = true
-    s.header_dir     = 'ExpoModulesCore'
-    s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
-    s.exclude_files = ['ios/Tests', 'ios/Worklets', 'ios/WorkletsTests', 'ios/WorkletsAdapter']
-    s.compiler_flags = compiler_flags
-    s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
-  end
+  s.static_framework = true
+  s.header_dir     = 'ExpoModulesCore'
+  s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
+  s.exclude_files = ['ios/Tests', 'ios/Benchmarks', 'ios/Worklets', 'ios/WorkletsTests', 'ios/WorkletsAdapter']
+  s.compiler_flags = compiler_flags
+  s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
@@ -143,6 +141,15 @@ Pod::Spec.new do |s|
     test_spec.pod_target_xcconfig = {
       'OTHER_LDFLAGS' => '$(inherited) -lc++',
       'SWIFT_OBJC_BRIDGING_HEADER' => '$(PODS_TARGET_SRCROOT)/ios/Tests/Tests-Bridging-Header.h'
+    }
+  end
+
+  # Performance benchmarks. A separate spec, so unit test runs neither build nor run them.
+  s.test_spec 'Benchmarks' do |test_spec|
+    test_spec.dependency 'ExpoModulesTestCore'
+    test_spec.source_files = 'ios/Benchmarks/**/*.swift'
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '$(inherited) -lc++'
     }
   end
 end

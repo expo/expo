@@ -1,9 +1,16 @@
-import { Stack } from 'expo-router';
+import { Stack, usePathname } from 'expo-router';
+import Head from 'expo-router/head';
 
 export default function RootLayout() {
+  const pathname = usePathname();
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" />
-    </Stack>
+    <>
+      <Head>
+        <title>{pathname}</title>
+      </Head>
+      <Stack>
+        <Stack.Screen name="(tabs)" />
+      </Stack>
+    </>
   );
 }

@@ -1,8 +1,11 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
 import Module from 'node:module';
+import os from 'node:os';
+import path from 'node:path';
 import { describe, it } from 'node:test';
 
-import { getPackageByName } from './Packages';
+import { getPackageByName, Package } from './Packages';
 
 type ModuleWithResolveFilename = typeof Module & {
   _resolveFilename: (
@@ -61,4 +64,18 @@ describe('getPackageByName', () => {
     // @babel/core is reachable via the node_modules walk-up but is not a workspace package.
     assert.equal(getPackageByName('@babel/core'), null);
   });
+});
+
+it('prefers an iOS podspec over an Apple podspec when neither is configured', async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'expotools-podspec-'));
+  try {
+    for (const directory of ['ios', 'apple']) {
+      await fs.mkdir(path.join(root, directory));
+      await fs.writeFile(path.join(root, directory, 'Fixture.podspec'), '');
+    }
+    const pkg = new Package(root, { name: 'fixture', version: '1.0.0', scripts: {} });
+    assert.equal(pkg.podspecPath, 'ios/Fixture.podspec');
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
 });

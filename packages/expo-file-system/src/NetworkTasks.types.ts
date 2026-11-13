@@ -158,6 +158,18 @@ export type DownloadTaskOptions = {
    */
   headers?: Record<string, string>;
   /**
+   * Delays the iOS background session completion handler until processing is acknowledged with
+   * `DownloadTask.acknowledgeBackgroundCompletionAsync()` after the download succeeds.
+   * Every successful opted-in download needs its own acknowledgment. A 25-second deadline covers
+   * event delivery and JS processing; the system handler is never called before all events arrive.
+   * Applies only to iOS background sessions. Android and foreground sessions ignore this option.
+   * Does not restore JS tasks or acknowledgment state after process termination.
+   * @default false
+   * @platform ios
+   */
+  deferBackgroundSessionCompletion?: boolean;
+
+  /**
    * Determines whether the iOS native session should continue in the background.
    * Android accepts this option for API consistency and ignores it.
    *
@@ -223,3 +235,16 @@ export type UploadTaskState = Exclude<TaskState, 'paused'>;
  * Represents the current state of a download task.
  */
 export type DownloadTaskState = TaskState;
+
+/**
+ * HTTP response metadata for the current download attempt, after redirects.
+ */
+export type DownloadResponse = {
+  /** The HTTP status code, or `null` if no HTTP response has been received. */
+  status: number | null;
+  /**
+   * Response headers as provided by the platform's networking stack.
+   * Header names are case-insensitive; casing and repeated values may vary by platform.
+   */
+  headers: Record<string, string>;
+};

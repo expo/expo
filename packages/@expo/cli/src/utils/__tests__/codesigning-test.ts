@@ -59,7 +59,15 @@ beforeEach(() => {
     id: 'userwat',
     username: 'wat',
     primaryAccount: { id: 'blah-account' },
-    accounts: [],
+    accounts: [
+      {
+        id: 'blah-account',
+        viewerUserPermission2: {
+          permissions: ['OWN', 'ADMIN', 'PUBLISH_PROTECTED', 'PUBLISH', 'RUN', 'VIEW'],
+          effectivePermissions: ['OWN', 'ADMIN', 'PUBLISH_PROTECTED', 'PUBLISH', 'RUN', 'VIEW'],
+        },
+      },
+    ],
   }));
 });
 
@@ -114,6 +122,58 @@ describe(getCodeSigningInfoAsync, () => {
           undefined
         );
         expect(result).toMatchSnapshot();
+      });
+
+      it('gets a development certificate when the credential scopes allow RUN but not PUBLISH', async () => {
+        jest.mocked(getUserAsync).mockImplementationOnce(async () => ({
+          __typename: 'User',
+          id: 'userwat',
+          username: 'wat',
+          primaryAccount: { id: 'blah-account' },
+          accounts: [
+            {
+              id: 'blah-account',
+              viewerUserPermission2: {
+                permissions: ['RUN', 'VIEW'],
+                effectivePermissions: ['RUN', 'VIEW'],
+              },
+            },
+          ],
+        }));
+
+        const result = await getCodeSigningInfoAsync(
+          { extra: { eas: { projectId: 'testprojectid' } } } as any,
+          'keyid="expo-root", alg="rsa-v1_5-sha256"',
+          undefined
+        );
+        expect(result).not.toBeNull();
+        expect(getProjectDevelopmentCertificateAsync).toHaveBeenCalled();
+      });
+
+      it('does not get a development certificate when the credential scopes remove RUN', async () => {
+        jest.mocked(getUserAsync).mockImplementationOnce(async () => ({
+          __typename: 'User',
+          id: 'userwat',
+          username: 'wat',
+          primaryAccount: { id: 'blah-account' },
+          accounts: [
+            {
+              id: 'blah-account',
+              viewerUserPermission2: {
+                permissions: ['OWN', 'ADMIN', 'PUBLISH_PROTECTED', 'PUBLISH', 'RUN', 'VIEW'],
+                effectivePermissions: ['VIEW'],
+              },
+            },
+          ],
+        }));
+
+        const result = await getCodeSigningInfoAsync(
+          { extra: { eas: { projectId: 'testprojectid' } } } as any,
+          'keyid="expo-root", alg="rsa-v1_5-sha256"',
+          undefined
+        );
+        expect(result).toBeNull();
+        expect(getProjectDevelopmentCertificateAsync).not.toHaveBeenCalled();
       });
 
       it('requires easProjectId to be configured', async () => {

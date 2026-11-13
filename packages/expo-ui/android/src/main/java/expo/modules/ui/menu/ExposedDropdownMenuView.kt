@@ -2,6 +2,7 @@ package expo.modules.ui.menu
 
 import android.graphics.Color
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenu
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.views.ComposeProps

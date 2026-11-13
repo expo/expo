@@ -1,5 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore
@@ -150,7 +151,7 @@ struct ClassDefinitionTests {
     }
 
     init() {
-      appContext = AppContext.create()
+      appContext = TestAppContext()
       appContext.moduleRegistry.register(moduleType: ModuleWithCounterClass.self, name: "TestModule")
     }
 
@@ -253,60 +254,20 @@ struct ClassDefinitionTests {
     @Test
     func `initializes the shared object from static async function`() async throws {
       let initialValue = Int.random(in: 1..<100)
-      try runtime
-        .eval(
-          "expo.modules.TestModule.Counter.createAsync(\(initialValue)).then((result) => { globalThis.result = result; })"
-        )
+      let object = try await runtime.evalAsync("expo.modules.TestModule.Counter.createAsync(\(initialValue))").ref()
+      // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+      let currentValue = try await runtime.execute { try object.take().asObject().getProperty("currentValue").getInt() }
 
-      try await waitUntil(timeout: 4.0) {
-        safeBoolEval("globalThis.result != null")
-      }
-      let object = try runtime.eval("object = globalThis.result")
-
-      #expect(object.kind == .object)
-      #expect(object.getObject().getProperty("currentValue").getInt() == initialValue)
+      #expect(currentValue == initialValue)
     }
 
     @Test
     func `initializes the shared object from static concurrent function`() async throws {
       let initialValue = Int.random(in: 1..<100)
-      try runtime
-        .eval(
-          "expo.modules.TestModule.Counter.createConcurrently(\(initialValue)).then((result) => { globalThis.result = result; })"
-        )
+      let object = try await runtime.evalAsync("expo.modules.TestModule.Counter.createConcurrently(\(initialValue))").ref()
+      let currentValue = try await runtime.execute { try object.take().asObject().getProperty("currentValue").getInt() }
 
-      try await waitUntil(timeout: 4.0) {
-        safeBoolEval("globalThis.result != null")
-      }
-      let object = try runtime.eval("object = globalThis.result")
-
-      #expect(object.kind == .object)
-      #expect(object.getObject().getProperty("currentValue").getInt() == initialValue)
-    }
-
-    private func safeBoolEval(_ js: String) -> Bool {
-      var result = false
-      do {
-        try EXUtilities.catchException {
-          guard let jsResult = try? self.runtime.eval(js) else {
-            return
-          }
-          result = jsResult.getBool()
-        }
-      } catch {
-        return false
-      }
-      return result
-    }
-
-    private func waitUntil(timeout: TimeInterval, condition: @escaping () -> Bool) async throws {
-      let start = Date()
-      while !condition() {
-        if Date().timeIntervalSince(start) > timeout {
-          throw TestError.timeout
-        }
-        try await Task.sleep(nanoseconds: 50_000_000) // 50ms
-      }
+      #expect(currentValue == initialValue)
     }
   }
 
@@ -354,8 +315,9 @@ struct ClassDefinitionTests {
         guard let evalError = error as? ScriptEvaluationError else {
           return false
         }
+        // The JS message is the exception's description: the cause chain without type names.
         return evalError.message.contains("Calling the 'constructor' function has failed") &&
-               evalError.message.contains("→ Caused by: TestException:")
+               evalError.message.contains("→ Caused by: This is a test Exception with a code")
       }
     }
 
@@ -383,10 +345,6 @@ struct ClassDefinitionTests {
       #expect(result.getString() == "success")
     }
   }
-}
-
-private enum TestError: Error {
-  case timeout
 }
 
 /**

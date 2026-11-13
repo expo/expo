@@ -77,6 +77,8 @@
         {
           "isAndroidBackgroundLocationEnabled": true,
           "isIosBackgroundLocationEnabled": true,
+          "isAndroidMotionActivityEnabled": true,
+          "isAndroidMotionActivityForegroundServiceEnabled": true,
           "androidForegroundServiceIcon": "./assets/location_service_icon.png"
         }
       ],
@@ -115,6 +117,14 @@
         "expo-web-browser",
         {
           "experimentalLauncherActivity": true
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone.",
+          "enableBackgroundPlayback": true,
+          "enableBackgroundRecording": true
         }
       ],
       "./plugins/withAndroidNetworkSecurityConfig",

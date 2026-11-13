@@ -43,50 +43,110 @@ index c41f442..6ec9f2c 100644
    use_react_native!(
      :path => config[:reactNativePath],
 diff --git a/ios/myapp/AppDelegate.swift b/ios/myapp/AppDelegate.swift
-index d06a6a8..d8dd308 100644
 --- a/ios/myapp/AppDelegate.swift
 +++ b/ios/myapp/AppDelegate.swift
-@@ -1,21 +1,22 @@
+@@ -1,11 +1,38 @@
  import UIKit
 +internal import Expo
- import React
- import React_RCTAppDelegate
- import ReactAppDependencyProvider
++import React
++import React_RCTAppDelegate
++import ReactAppDependencyProvider
 
  @main
 -class AppDelegate: UIResponder, UIApplicationDelegate {
-+class AppDelegate: ExpoAppDelegate {
-   var window: UIWindow?
-
-   var reactNativeDelegate: ReactNativeDelegate?
-   var reactNativeFactory: RCTReactNativeFactory?
-
 -  func application(
++class AppDelegate: ExpoAppDelegate, ExpoReactNativeFactoryProvider {
++  var window: UIWindow?
++
++  var reactNativeDelegate: ReactNativeDelegate?
++  var reactNativeFactory: RCTReactNativeFactory?
++  let reactNativeFactoryModuleName = "myapp"
++
 +  override func application(
      _ application: UIApplication,
      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
    ) -> Bool {
-     let delegate = ReactNativeDelegate()
--    let factory = RCTReactNativeFactory(delegate: delegate)
+-    true
++    let delegate = ReactNativeDelegate()
 +    let factory = ExpoReactNativeFactory(delegate: delegate)
-     delegate.dependencyProvider = RCTAppDependencyProvider()
-
-     reactNativeDelegate = delegate
-@@ -29,13 +30,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
-       launchOptions: launchOptions
-     )
-
--    return true
++    delegate.dependencyProvider = RCTAppDependencyProvider()
++
++    reactNativeDelegate = delegate
++    reactNativeFactory = factory
++
 +    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
    }
  }
-
--class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
++
 +class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
-   override func sourceURL(for bridge: RCTBridge) -> URL? {
--    self.bundleURL()
-+    // needed to return the correct URL for expo-dev-client.
-+    bridge.bundleURL ?? bundleURL()
-   }
++  override func bundleURL() -> URL? {
++#if DEBUG
++    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
++#else
++    Bundle.main.url(forResource: "main", withExtension: "jsbundle")
++#endif
++  }
++}
+diff --git a/ios/myapp/SceneDelegate.swift b/ios/myapp/SceneDelegate.swift
+--- a/ios/myapp/SceneDelegate.swift
++++ b/ios/myapp/SceneDelegate.swift
+@@ -1,56 +1,5 @@
+-import React
+-import React_RCTAppDelegate
+-import ReactAppDependencyProvider
+-import UIKit
++internal import Expo
 
-   override func bundleURL() -> URL? {
+-class SceneDelegate: RCTDefaultReactNativeFactoryDelegate, UIWindowSceneDelegate {
+-  var window: UIWindow?
+-  var reactNativeFactory: RCTReactNativeFactory?
+-
+-  func scene(
+-    _ scene: UIScene,
+-    willConnectTo session: UISceneSession,
+-    options connectionOptions: UIScene.ConnectionOptions
+-  ) {
+-    guard let windowScene = scene as? UIWindowScene else {
+-      return
+-    }
+-
+-    dependencyProvider = RCTAppDependencyProvider()
+-    reactNativeFactory = RCTReactNativeFactory(delegate: self)
+-    window = UIWindow(windowScene: windowScene)
+-
+-    #if DEBUG
+-    let devMenuConfiguration = RCTDevMenuConfiguration(
+-      devMenuEnabled: true,
+-      shakeGestureEnabled: true,
+-      keyboardShortcutsEnabled: true
+-    )
+-    reactNativeFactory?.devMenuConfiguration = devMenuConfiguration
+-    #endif
+-
+-    reactNativeFactory?.startReactNative(
+-      withModuleName: "myapp",
+-      in: window,
+-      connectionOptions: connectionOptions
+-    )
+-
+-
+-  }
+-
+-  func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+-    RCTLinkingManager.scene(scene, openURLContexts: URLContexts)
+-  }
+-
+-  func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+-    RCTLinkingManager.scene(scene, continue: userActivity)
+-  }
+-
+-  override func bundleURL() -> URL? {
+-    #if DEBUG
+-    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
+-    #else
+-    Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+-    #endif
+-  }
++@objc(SceneDelegate)
++class SceneDelegate: ExpoAppSceneDelegate {
+ }

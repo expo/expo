@@ -1,14 +1,28 @@
 'use client';
 
+import { nanoid } from 'nanoid/non-secure';
 import * as React from 'react';
 
 import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
+import { collectMissingLayouts, loadLayouts } from '../layoutAnchor';
 import { warnIfScreenParam } from '../navigationParams';
 import { deepFreeze } from '../react-navigation/core/deepFreeze';
-import type { InitialState, NavigationAction, NavigationState } from '../react-navigation/routers';
+import type {
+  InitialState,
+  NavigationAction,
+  NavigationState,
+  RouterBrowserHistoryAction,
+} from '../react-navigation/routers';
 import { getChainFromStateKey } from '../react-navigation/routers/stateKeys';
 import useLatestCallback from '../utils/useLatestCallback';
+import {
+  applyRouterHistoryAction,
+  createBrowserHistory,
+  restoreNavigationFromBrowser,
+  updateCurrentHistoryEntry,
+} from './browserHistory';
+import type { BrowserHistory, BrowserHistoryEvent } from './browserHistory.types';
 import {
   completeNavigationState,
   createSeededNavigationState,
@@ -16,9 +30,12 @@ import {
 import { getNavigateAction } from './getNavigationAction';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
 import type { RouterRegistry } from './routerRegistry';
-import type { RoutingIntent } from './routingQueue';
+import { markActionEnqueuedAndReturnId, type QueuedRoutingIntent } from './routingQueue';
 import { findStateByKey, resetNavigatorState } from './stateUtils';
 import type { StoreRedirects } from './types';
+
+// React IDs can repeat after a reload; the session prefix keeps old browser entries distinct.
+const browserHistorySessionId = nanoid();
 
 type ReducerConfig = {
   registry: RouterRegistry;
@@ -26,10 +43,27 @@ type ReducerConfig = {
   routeNode?: RouteNode;
   linking?: ExpoLinkingOptions;
   redirects?: StoreRedirects[];
+  browserHistoryIdPrefix: string;
+};
+
+type QueuedOperation = (
+  | Exclude<QueuedRoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }>
+  | (Extract<QueuedRoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }> & {
+      /**
+       * Browser traversal may interrupt a suspended transition. Restore from the last committed
+       * result so commands from the abandoned transition are not applied later.
+       */
+      commitedTreeResult?: NavigationTreeResult;
+    })
+) & {
+  // Queued operations wait for missing layouts. Direct actions apply at once.
+  deferrable?: { inTransition: boolean };
 };
 
 type TreeOperation =
-  | RoutingIntent
+  | QueuedOperation
+  // `failed` layouts could not load, so the replay skips their anchors.
+  | { type: 'RESUME'; failed: RouteNode[] }
   | {
       type: 'NAVIGATOR_UNMOUNTED';
       stateKey: string;
@@ -77,7 +111,14 @@ type NavigationTreeReportEventData =
       type: 'action-dispatched';
       action: NavigationAction;
       state: NavigationState;
-    };
+      actionId: number;
+    }
+  | {
+      type: 'route-preloaded';
+      routeKey: string;
+      state: NavigationState;
+    }
+  | BrowserHistoryEvent;
 
 export type NavigationTreeReportEvent = NavigationTreeReportEventData & {
   id: number;
@@ -87,6 +128,16 @@ type NavigationTreeResult = {
   state: NavigationState;
   report: NavigationTreeReport | undefined;
   eventSeq: number;
+  // Web only; browser entries tracked by this page.
+  history: BrowserHistory | undefined;
+  browserHistoryAction?: RouterBrowserHistoryAction;
+  // Queued operations that wait for layout modules, in order.
+  deferred?: {
+    operations: QueuedOperation[];
+    missing: RouteNode[];
+    // Resume as a transition only if every waiting operation was one.
+    inTransition: boolean;
+  };
 };
 
 const ACTIONS_WITHOUT_REMOVAL_PREVENTION = new Set(['ROUTE_NAMES_CHANGED']);
@@ -111,6 +162,110 @@ function navigationTreeReducer(
   operation: TreeOperation,
   config: ReducerConfig
 ): NavigationTreeResult {
+  if (operation.type === 'RESUME') {
+    if (!result.deferred) {
+      return result;
+    }
+    // Replays go through the same path, so an operation that needs another layout waits again.
+    const failed = new Set(operation.failed);
+    return result.deferred.operations.reduce<NavigationTreeResult>(
+      (current, deferred) => reduceQueuedOperation(current, deferred, config, failed),
+      { ...result, deferred: undefined }
+    );
+  }
+  if (operation.type === 'BROWSER_HISTORY_CHANGED') {
+    const { commitedTreeResult, ...change } = operation;
+    // Waiting operations never reached the screen or the browser, so the browser change drops them.
+    result = commitedTreeResult
+      ? // Discard the interrupted transition while keeping event IDs monotonic.
+        { ...commitedTreeResult, eventSeq: result.eventSeq, deferred: undefined }
+      : { ...result, deferred: undefined };
+    return reduceQueuedOperation(result, change, config);
+  }
+  if ('deferrable' in operation && operation.deferrable) {
+    return reduceQueuedOperation(result, operation, config);
+  }
+  const { value, missing } = collectMissingLayouts(() =>
+    reduceOperation(result, operation, config)
+  );
+  if (missing.length > 0 && process.env.NODE_ENV !== 'production') {
+    // TODO(@ubax): move console side effects out of the reducer.
+    console.warn(
+      `Expo Router handled "${operation.type === 'ACTION' ? operation.payload.action.type : operation.type}" before the layouts ${missing.map((node) => `"${node.contextKey}"`).join(', ')} loaded, so their \`unstable_settings.anchor\` is skipped.`
+    );
+  }
+  return value;
+}
+
+function reduceQueuedOperation(
+  result: NavigationTreeResult,
+  operation: QueuedOperation,
+  config: ReducerConfig,
+  failedLayouts?: ReadonlySet<RouteNode>
+): NavigationTreeResult {
+  const inTransition = operation.deferrable?.inTransition ?? false;
+  if (result.deferred) {
+    const { operations, missing } = result.deferred;
+    return {
+      ...result,
+      deferred: {
+        operations: [...operations, operation],
+        missing,
+        inTransition: result.deferred.inTransition && inTransition,
+      },
+    };
+  }
+  const { value, missing } = collectMissingLayouts(
+    () => reduceOperation(result, operation, config),
+    failedLayouts
+  );
+  if (missing.length === 0) {
+    return value;
+  }
+  // TODO(@ubax): show a pending UI or a Suspense fallback while the layout chunk loads.
+  return { ...result, deferred: { operations: [operation], missing, inTransition } };
+}
+
+// Browser changes restore a saved navigation state. Other operations update navigation first,
+// then queue the matching browser command to run after React commits.
+function reduceOperation(
+  result: NavigationTreeResult,
+  operation: Exclude<TreeOperation, { type: 'RESUME' }>,
+  config: ReducerConfig
+): NavigationTreeResult {
+  if (operation.type === 'BROWSER_HISTORY_CHANGED') {
+    if (!result.history) {
+      return result;
+    }
+    const restored = restoreNavigationFromBrowser(
+      result.history,
+      result,
+      operation.payload,
+      config,
+      (current, intent) => reduceTree(current, { ...intent, actionId: operation.actionId }, config)
+    );
+    return appendReportEvents({ ...restored.result, history: restored.history }, restored.events);
+  }
+
+  const next = reduceTree({ ...result, browserHistoryAction: undefined }, operation, config);
+  if (next.state === result.state || !next.history) {
+    return next;
+  }
+  // Structural repairs are not navigations, so they never move the browser.
+  const projected =
+    operation.type === 'NAVIGATOR_UNMOUNTED' || operation.type === 'NAVIGATOR_CHANGED'
+      ? updateCurrentHistoryEntry(next.history, next.state, config)
+      : applyRouterHistoryAction(next.history, next.state, config, next.browserHistoryAction);
+  return appendReportEvents({ ...next, history: projected.history }, projected.events);
+}
+
+// Browser changes are handled above because they restore tracked history and may call this
+// helper with a generated navigation intent. Excluding them prevents a recursive restore.
+function reduceTree(
+  result: NavigationTreeResult,
+  operation: Exclude<TreeOperation, { type: 'BROWSER_HISTORY_CHANGED' | 'RESUME' }>,
+  config: ReducerConfig
+): NavigationTreeResult {
   const state = result.state;
 
   switch (operation.type) {
@@ -125,7 +280,7 @@ function navigationTreeReducer(
           options.event,
           options.withAnchor,
           options.dangerouslySingular,
-          !!options.__internal__PreviewKey,
+          options.__internal__PreviewKey,
           state
         );
       } catch (error) {
@@ -145,9 +300,13 @@ function navigationTreeReducer(
         );
         return result;
       }
-      return navigationTreeReducer(
+      return reduceTree(
         result,
-        { type: 'ACTION', payload: { action: resolution.action } },
+        {
+          type: 'ACTION',
+          payload: { action: resolution.action },
+          actionId: operation.actionId,
+        },
         config
       );
     }
@@ -167,9 +326,13 @@ function navigationTreeReducer(
       if (!action) {
         return result;
       }
-      return navigationTreeReducer(
+      return reduceTree(
         result,
-        { type: 'ACTION', payload: { action, originKey: operation.payload.originKey } },
+        {
+          type: 'ACTION',
+          payload: { action, originKey: operation.payload.originKey },
+          actionId: operation.actionId,
+        },
         config
       );
     }
@@ -224,13 +387,27 @@ function navigationTreeReducer(
                     },
                   ] satisfies NavigationTreeReportEventData[])
                 : []),
+              ...(operation.payload.action.type === 'PRELOAD' &&
+              reduction.affectedRouteKey !== undefined
+                ? ([
+                    {
+                      type: 'route-preloaded',
+                      routeKey: reduction.affectedRouteKey,
+                      state: committedState,
+                    },
+                  ] satisfies NavigationTreeReportEventData[])
+                : []),
               {
                 type: 'action-dispatched',
                 action: operation.payload.action,
                 state: committedState,
+                actionId: operation.actionId,
               },
             ];
-      return appendReportEvents({ ...result, state: committedState }, eventsWithoutIds);
+      return appendReportEvents(
+        { ...result, state: committedState, browserHistoryAction: reduction.browserHistory },
+        eventsWithoutIds
+      );
     }
     case 'NAVIGATOR_UNMOUNTED': {
       // A still-registered key re-registered before this operation reduced, so it did not unmount.
@@ -287,6 +464,9 @@ function appendReportEvents(
   result: NavigationTreeResult,
   events: NavigationTreeReportEventData[]
 ): NavigationTreeResult {
+  if (events.length === 0) {
+    return result;
+  }
   const eventsWithIds: NavigationTreeReportEvent[] = events.map((event, index) => ({
     ...event,
     id: result.eventSeq + index,
@@ -308,12 +488,14 @@ export function useNavigationTreeReducer({
   linking,
   redirects,
 }: Options) {
+  const browserHistoryIdPrefix = `${browserHistorySessionId}:${React.useId()}`;
   const config: ReducerConfig = {
     registry,
     routesWithRemovalPrevented,
     routeNode,
     linking,
     redirects,
+    browserHistoryIdPrefix,
   };
   const [result, reactDispatch] = React.useReducer(
     (result: NavigationTreeResult, operation: TreeOperation) =>
@@ -327,7 +509,12 @@ export function useNavigationTreeReducer({
         );
       }
       // TODO(@ubax): check if deepFreeze is needed here.
-      return { state: deepFreeze(value), report: undefined, eventSeq: 0 };
+      const state = deepFreeze(value);
+      const initial = createBrowserHistory(state, config);
+      return appendReportEvents(
+        { state, report: undefined, eventSeq: 0, history: initial.history },
+        initial.events
+      );
     }
   );
   const [previousRegistry, setPreviousRegistry] = React.useState(registry);
@@ -355,7 +542,12 @@ export function useNavigationTreeReducer({
         ? payload.params
         : undefined;
     warnIfScreenParam(params);
-    reactDispatch({ type: 'ACTION', payload: { action, originKey } });
+    reactDispatch({
+      type: 'ACTION',
+      payload: { action, originKey },
+      // Sync dispatches skip the routing queue, so mark the enqueue here.
+      actionId: markActionEnqueuedAndReturnId(),
+    });
   });
   const resetNavigator = useLatestCallback((stateKey: string, routerType: string | undefined) => {
     reactDispatch({ type: 'NAVIGATOR_CHANGED', stateKey, routerType });
@@ -364,17 +556,54 @@ export function useNavigationTreeReducer({
     reactDispatch({ type: 'REPORT_CONSUMED', eventIds });
   });
 
+  const processIntent = useLatestCallback((intent: QueuedRoutingIntent, inTransition = false) => {
+    const deferrable = { inTransition };
+    if (intent.type === 'BROWSER_HISTORY_CHANGED') {
+      // Example: A is visible while a push to B is suspended. Browser Back starts from A,
+      // so restore from A's committed result, not the reducer's pending B state.
+      // useLatestCallback keeps `result` at the last commit; the browser's ID and URL still pass through.
+      reactDispatch({ ...intent, commitedTreeResult: result, deferrable });
+      return;
+    }
+    reactDispatch({ ...intent, deferrable });
+  });
+
+  const resume = React.useEffectEvent((failed: RouteNode[]) => {
+    const dispatchResume = () => reactDispatch({ type: 'RESUME', failed });
+    if (result.deferred?.inTransition) {
+      React.startTransition(dispatchResume);
+    } else {
+      dispatchResume();
+    }
+  });
+  const missingLayouts = result.deferred?.missing;
+  React.useEffect(() => {
+    if (!missingLayouts) {
+      return;
+    }
+    let cancelled = false;
+    loadLayouts(missingLayouts).then((failed) => {
+      if (!cancelled) {
+        resume(failed);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [missingLayouts]);
+
   React.useInsertionEffect(() => {
     warnIfStaleState(result.state);
   }, [result.state]);
 
   return {
     state: result.state,
+    isWaitingForLayouts: result.deferred !== undefined,
     report: result.report,
     consumeReportEvents,
     resetNavigator,
     handleAction,
-    processIntent: reactDispatch,
+    processIntent,
   };
 }
 

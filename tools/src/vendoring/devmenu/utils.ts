@@ -1,4 +1,4 @@
-import { glob } from 'glob';
+import { glob } from 'node:fs/promises';
 import path from 'path';
 
 import * as Directories from '../../Directories';
@@ -15,5 +15,5 @@ export function toRepoPath(pathToConvert: string): string {
 }
 
 export async function findFiles(directory: string, filePattern: string) {
-  return await glob(path.join(directory, filePattern));
+  return await Array.fromAsync(glob(path.join(directory, filePattern)));
 }

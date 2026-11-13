@@ -5,6 +5,7 @@ import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.OptimizedRecord
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -83,6 +84,7 @@ class FileSystemUploadTask : SharedObject() {
   private val progressThrottleInterval = 100.milliseconds
 
   suspend fun start(url: String, file: FileSystemFile, options: UploadTaskOptions): UploadTaskResult {
+    file.validatePermission(FilePermissionService.Permission.READ)
     cancelled = false
     val request = buildUploadRequest(url, file, options)
     return executeUploadRequest(request)
@@ -143,7 +145,7 @@ class FileSystemUploadTask : SharedObject() {
         override fun onResponse(call: Call, response: Response) {
           try {
             val body = response.body?.string() ?: ""
-            val headers = response.headers.toMultimap().mapValues { it.value.firstOrNull() ?: "" }
+            val headers = response.headers.toResponseHeaders()
 
             val result = UploadTaskResult()
             result.body = body
@@ -261,10 +263,13 @@ private class CountingSink(
 
 private fun UnifiedFileInterface.asRequestBody(contentType: String?): RequestBody {
   return object : RequestBody() {
-    // length() is a ContentResolver query for content:// files, and ContentProviderFile
-    // and AssetFile can fall back to reading the whole stream; resolve it once, and
-    // not before OkHttp asks for it.
-    private val resolvedLength: Long by lazy { length() }
+    // For content:// files, length() is the size the provider reports, which can be wrong
+    // (stale, or 0 when unknown), and OkHttp rejects a body that doesn't match its
+    // Content-Length. Prefer the size of the opened file, which is what writeTo() sends.
+    // Resolve it once, and not before OkHttp asks for it.
+    private val resolvedLength: Long by lazy {
+      openFileDescriptor("r")?.use { it.statSize }?.takeIf { it >= 0 } ?: length()
+    }
 
     override fun contentType() = contentType?.toMediaTypeOrNull()
     override fun contentLength() = resolvedLength

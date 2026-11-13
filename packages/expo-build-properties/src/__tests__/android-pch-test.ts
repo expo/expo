@@ -1,4 +1,9 @@
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+
 import { updateBuildGradleForPCH, withAndroidPrecompiledHeaders } from '../android';
+import { PCH_CCACHE_CMAKE_CONTENTS, PCH_CMAKE_CONTENTS } from '../androidPCHTemplates';
 
 jest.mock('expo/config-plugins', () => {
   return {
@@ -19,6 +24,8 @@ jest.mock('expo/config-plugins', () => {
 
 const getMockWithAppBuildGradle = () =>
   jest.requireMock('expo/config-plugins').withAppBuildGradle as jest.Mock;
+const getMockWithDangerousMod = () =>
+  jest.requireMock('expo/config-plugins').withDangerousMod as jest.Mock;
 
 const TEMPLATE_BUILD_GRADLE = `\
 apply plugin: "com.android.application"
@@ -88,6 +95,78 @@ describe(withAndroidPrecompiledHeaders, () => {
     process.env.EXPO_USE_ANDROID_PRECOMPILED_HEADERS = '0';
     withAndroidPrecompiledHeaders(mockConfig, { android: {} });
     expect(getMockWithAppBuildGradle()).not.toHaveBeenCalled();
+  });
+});
+
+describe('PCH_CMAKE_CONTENTS', () => {
+  it('includes the PCH header without its absolute path', () => {
+    // CMake writes the header path into the cmake_pch.hxx that ccache hashes for every user of the PCH.
+    expect(PCH_CMAKE_CONTENTS).toContain('<pch.h>');
+    expect(PCH_CMAKE_CONTENTS).not.toContain('${CMAKE_CURRENT_SOURCE_DIR}/pch.h');
+  });
+
+  it('lets the consumers of the PCH find the header', () => {
+    // When ccache runs the preprocessor for a consumer, the preprocessor reads cmake_pch.hxx and must find <pch.h>.
+    const consumerFunction = PCH_CMAKE_CONTENTS.slice(
+      PCH_CMAKE_CONTENTS.indexOf('function(add_pch_if_eligible')
+    );
+    expect(consumerFunction).toContain('${PCH_INCLUDE_OPTION}');
+    expect(PCH_CMAKE_CONTENTS).toContain('-idirafter${CMAKE_CURRENT_SOURCE_DIR}');
+  });
+
+  it('writes the ccache checksum of the PCH before its consumers are compiled', () => {
+    expect(PCH_CMAKE_CONTENTS).toContain('include("${CMAKE_CURRENT_SOURCE_DIR}/pch-ccache.cmake")');
+    expect(PCH_CMAKE_CONTENTS).not.toContain('OPTIONAL');
+    expect(PCH_CMAKE_CONTENTS).toContain('pch_ccache_owner(appmodules_pch)');
+    expect(PCH_CMAKE_CONTENTS).toContain('pch_ccache_consumer(${target} appmodules_pch)');
+  });
+});
+
+describe('PCH_CCACHE_CMAKE_CONTENTS', () => {
+  it('defines the functions that CMakeLists.txt calls', () => {
+    expect(PCH_CCACHE_CMAKE_CONTENTS).toContain('function(pch_ccache_owner owner)');
+    expect(PCH_CCACHE_CMAKE_CONTENTS).toContain('function(pch_ccache_consumer consumer owner)');
+  });
+
+  it('writes the .sum without the ccache checks when EXPO_FORCE_PCH_CCACHE_SUM is set', () => {
+    expect(PCH_CCACHE_CMAKE_CONTENTS).toContain('$ENV{EXPO_FORCE_PCH_CCACHE_SUM}');
+  });
+
+  it('writes the .sum when CMake runs it as a script', () => {
+    expect(PCH_CCACHE_CMAKE_CONTENTS).toContain('if(CMAKE_SCRIPT_MODE_FILE)');
+    expect(PCH_CCACHE_CMAKE_CONTENTS).toContain('-module-file-info');
+  });
+});
+
+describe('withAndroidPrecompiledHeaders native files', () => {
+  let platformProjectRoot: string;
+
+  beforeEach(async () => {
+    platformProjectRoot = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'expo-pch-test-'));
+  });
+
+  afterEach(async () => {
+    await fs.promises.rm(platformProjectRoot, { recursive: true, force: true });
+    getMockWithDangerousMod().mockClear();
+  });
+
+  it('writes its own pch-ccache.cmake next to CMakeLists.txt', async () => {
+    withAndroidPrecompiledHeaders({ name: 'test', slug: 'test' } as any, {
+      android: { usePrecompiledHeaders: true },
+    });
+    const [, [, writeNativeFiles]] = getMockWithDangerousMod().mock.calls[0];
+    // A project root in which no package is resolvable.
+    const projectRoot = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'expo-pch-project-'));
+    try {
+      await writeNativeFiles({ modRequest: { platformProjectRoot, projectRoot } });
+    } finally {
+      await fs.promises.rm(projectRoot, { recursive: true, force: true });
+    }
+
+    const jniDir = path.join(platformProjectRoot, 'app', 'src', 'main', 'jni');
+    expect(await fs.promises.readFile(path.join(jniDir, 'pch-ccache.cmake'), 'utf8')).toBe(
+      PCH_CCACHE_CMAKE_CONTENTS
+    );
   });
 });
 

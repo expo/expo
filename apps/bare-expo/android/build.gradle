@@ -9,6 +9,9 @@ buildscript {
     classpath("com.android.tools.build:gradle")
     classpath("com.facebook.react:react-native-gradle-plugin")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+    // Spotless reads the custom ktlint rules jar while it creates its tasks, before Gradle would
+    // build the included build. As a buildscript dependency, the jar is built before this script runs.
+    classpath("expo.ktlint:ktlint-rules:1.0.0")
   }
 }
 
@@ -42,6 +45,8 @@ subprojects { project ->
       kotlin {
         target '**/*.kt'
         ktlint("1.0.1")
+            // Provided by the included build in packages/expo-ktlint-rules
+            .customRuleSets(["expo.ktlint:ktlint-rules:1.0.0"])
             .editorConfigOverride([
                 "ktlint_standard_no-wildcard-imports"          : "disabled",
                 "ktlint_standard_import-ordering"              : "disabled",

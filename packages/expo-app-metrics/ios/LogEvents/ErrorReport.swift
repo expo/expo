@@ -2,6 +2,8 @@
 
 import ExpoModulesCore
 
+public let jsExceptionLogName = "js.exception"
+
 /// An unhandled JavaScript error forwarded from the JS-side `global.ErrorUtils` handler. Recorded as
 /// a `js.exception` log event following OpenTelemetry's exception conventions.
 @Record
@@ -18,6 +20,7 @@ struct ErrorReport {
     case global
     case errorBoundary
     case reportedByUser
+    case integration
   }
 
   /// Builds the `js.exception` log event for the live path.
@@ -94,7 +97,7 @@ private func makeExceptionLogRecord(
     attributes["expo.error.component_stack"] = componentStack
   }
   return LogRecord(
-    name: "js.exception",
+    name: jsExceptionLogName,
     attributes: attributes,
     severity: isFatal ? .fatal : .error,
     timestamp: timestamp

@@ -1,6 +1,6 @@
 {
   "name": "@expo/image-utils",
-  "version": "0.12.0",
+  "version": "0.12.5",
   "description": "A package used by Expo CLI for processing images",
   "keywords": [
     "json"
@@ -39,15 +39,13 @@
     "@expo/require-utils": "workspace:^",
     "@expo/spawn-async": "^1.8.0",
     "chalk": "^4.0.0",
-    "getenv": "^2.0.0",
     "jimp-compact": "0.16.1",
     "parse-png": "^2.1.0",
-    "semver": "^7.6.0"
+    "semver": "^7.7.4"
   },
   "devDependencies": {
-    "@types/getenv": "^1.0.0",
-    "@types/semver": "^7.0.0",
-    "expo-module-scripts": "workspace:*",
+    "@expo/internal-scripts": "workspace:*",
+    "@types/semver": "^7.7.1",
     "sharp": "~0.34.2",
     "sharp-cli": "^5.2.0"
   }

@@ -5,6 +5,7 @@ import { serverBoundary, type Noxcturnal } from '../noxcturnal-transformer';
 export function createClientServerDirectiveBoundaryPlugin(nox: Noxcturnal): DefinedNativePlugin {
   return nox.defineNativePlugin({
     name: 'expo-client-server-directive-boundary',
+    contract: { syntax: { anyOf: ['Directive'] } },
     visitors: [
       nox.defineVisitor(
         'Directive',

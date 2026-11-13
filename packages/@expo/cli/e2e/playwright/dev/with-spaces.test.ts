@@ -25,7 +25,7 @@ test.describe('router-e2e with spaces', () => {
       'with spaces',
       'with-router',
       {
-        linkExpoPackages: ['expo-router'],
+        linkExpoPackages: ['expo-router', 'expo-linking'],
       }
     );
 

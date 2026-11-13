@@ -1,1 +1,1 @@
--keep class expo.modules.taskManager.** {*;}
+-keep class expo.modules.taskmanager.** {*;}

@@ -4,16 +4,29 @@ final class AssetCollectionRepository {
   static let shared = AssetCollectionRepository()
   private init() {}
 
-  func getAll() -> [PHAssetCollection] {
+  func get(type: PHAssetCollectionType) -> [PHAssetCollection] {
     var collections: [PHAssetCollection] = []
-    let pHFetchResult = PHCollectionList.fetchTopLevelUserCollections(with: nil)
-
-    pHFetchResult.enumerateObjects { collection, _, _ in
-      if let assetCollection = collection as? PHAssetCollection {
-        collections.append(assetCollection)
-      }
+    let fetchResult = PHAssetCollection.fetchAssetCollections(with: type, subtype: .any, options: nil)
+    fetchResult.enumerateObjects { collection, _, _ in
+      collections.append(collection)
     }
     return collections
+  }
+
+  func getUserAlbums() -> [PHAssetCollection] {
+    flatten(PHCollectionList.fetchTopLevelUserCollections(with: nil))
+  }
+
+  private func flatten(_ collections: PHFetchResult<PHCollection>) -> [PHAssetCollection] {
+    var result: [PHAssetCollection] = []
+    collections.enumerateObjects { collection, _, _ in
+      if let album = collection as? PHAssetCollection {
+        result.append(album)
+      } else if let folder = collection as? PHCollectionList {
+        result.append(contentsOf: self.flatten(PHCollectionList.fetchCollections(in: folder, options: nil)))
+      }
+    }
+    return result
   }
 
   func get(by ids: [String]) -> [PHAssetCollection] {

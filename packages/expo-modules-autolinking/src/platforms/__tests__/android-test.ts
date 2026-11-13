@@ -48,11 +48,38 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
-          modulesV2: [],
           services: [],
           packages: [],
         },
       ],
+    });
+  });
+
+  it('should default an Android publication to the package version', async () => {
+    const name = 'react-native-third-party';
+    const pkgDir = path.join('node_modules', name);
+    const result = await resolveModuleAsync(name, {
+      name,
+      path: pkgDir,
+      version: '1.2.3',
+      config: new ExpoModuleConfig({
+        platforms: ['android'],
+        android: {
+          path: 'android',
+          publication: {
+            groupId: 'example.modules',
+            artifactId: 'third-party',
+            repository: 'local-maven-repo',
+          },
+        },
+      }),
+    });
+
+    expect(result?.projects?.[0]?.publication).toEqual({
+      groupId: 'example.modules',
+      artifactId: 'third-party',
+      version: '1.2.3',
+      repository: 'local-maven-repo',
     });
   });
 
@@ -76,7 +103,6 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
-          modulesV2: [],
           services: [],
           packages: [],
         },
@@ -101,7 +127,6 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
-          modulesV2: [],
           services: [],
           packages: [],
         },
@@ -221,7 +246,6 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
-          modulesV2: [],
           services: [],
           packages: [],
         },
@@ -229,7 +253,6 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party$subproject',
           sourceDir: 'node_modules/react-native-third-party/subproject',
           modules: [],
-          modulesV2: [],
           services: [],
           packages: [],
         },
@@ -237,7 +260,6 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party$kotlinSubProject',
           sourceDir: 'node_modules/react-native-third-party/kotlinSubProject',
           modules: [],
-          modulesV2: [],
           services: [],
           packages: [],
         },

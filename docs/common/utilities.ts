@@ -35,6 +35,8 @@ export const generateSlug = (slugger: GithubSlugger, node: ReactNode, length = 7
   return slugger.slug(stringToSlug);
 };
 
+export const reserveSlug = (slugger: GithubSlugger, id: string): string => slugger.slug(id);
+
 /**
  * Replace the version in the pathname from the URL.
  */

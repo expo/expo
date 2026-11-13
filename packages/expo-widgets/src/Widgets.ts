@@ -6,6 +6,9 @@ import type {
   ExpoWidgetsEvents,
   LiveActivityComponent,
   LiveActivityDismissalPolicy,
+  LiveActivityStartOptions,
+  LiveActivityState,
+  LiveActivityUpdateOptions,
   NativeLiveActivity,
   NativeLiveActivityFactory,
   NativeWidgetObject,
@@ -49,6 +52,7 @@ export class Widget<
   /**
    * Schedules a series of updates for the widget's content and reloads the widget.
    * @param entries Timeline entries, each specifying a date and the props to display at that time.
+   * @platform ios
    */
   updateTimeline(entries: WidgetTimelineEntry<PropsType>[]) {
     if (Platform.OS === 'android') {
@@ -73,6 +77,7 @@ export class Widget<
 
   /**
    * Returns the current timeline entries for the widget, including past and future entries.
+   * @platform ios
    */
   async getTimeline(): Promise<WidgetTimelineEntry<PropsType>[]> {
     return (await this.nativeWidgetObject.getTimeline()).map((entry) => ({
@@ -84,6 +89,7 @@ export class Widget<
   /**
    * Replaces the runtime options for a dynamic enum configuration parameter.
    * The app config values remain the fallback when no runtime options are set.
+   * @platform ios
    */
   setConfigurationParameterEnum(
     parameterName: keyof ConfigurationType & string,
@@ -95,6 +101,7 @@ export class Widget<
 
 /**
  * Represents a Live Activity instance. Provides methods to update its content and end it.
+ * @platform ios
  */
 export class LiveActivity<T extends object = object> {
   /** @hidden */
@@ -105,18 +112,41 @@ export class LiveActivity<T extends object = object> {
 
   /**
    * Returns the stable ActivityKit identifier for this Live Activity.
+   * @platform ios
    */
   getId(): string {
     return this.nativeLiveActivity.getId();
   }
 
   /**
+   * Returns the current state of this Live Activity.
+   * Throws if ActivityKit no longer returns the activity.
+   * @platform ios
+   */
+  getState(): LiveActivityState {
+    return this.nativeLiveActivity.getState();
+  }
+
+  /**
    * Updates the Live Activity's content. The UI reflects the new properties immediately.
    * @param props The updated content properties.
-   * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
+   * @param options Options for updating the content's stale date, relevance score, and content date.
+   * @platform ios
    */
-  update(props: T, staleDate?: Date): Promise<void> {
-    return this.nativeLiveActivity.update(JSON.stringify(props), staleDate?.getTime());
+  update(props: T, options?: LiveActivityUpdateOptions): Promise<void>;
+  /**
+   * @deprecated Use `update(props, options)` instead.
+   * @platform ios
+   */
+  update(props: T, staleDate?: Date): Promise<void>;
+  update(props: T, optionsOrDate?: LiveActivityUpdateOptions | Date): Promise<void> {
+    const options =
+      optionsOrDate && 'getTime' in optionsOrDate ? { staleDate: optionsOrDate } : optionsOrDate;
+    return this.nativeLiveActivity.update(JSON.stringify(props), {
+      ...options,
+      staleDate: options?.staleDate?.getTime(),
+      contentDate: options?.contentDate?.getTime(),
+    });
   }
 
   /**
@@ -125,6 +155,7 @@ export class LiveActivity<T extends object = object> {
    * Can be `'default'`, `'immediate'`, or `after(date)`.
    * @param props Final content properties to update after the activity ends.
    * @param contentDate The time the data in the payload was generated. If this is older than a previous update or push payload, the system ignores this update.
+   * @platform ios
    */
   end(dismissalPolicy?: LiveActivityDismissalPolicy, props?: T, contentDate?: Date): Promise<void> {
     const serializedProps = props ? JSON.stringify(props) : undefined;
@@ -151,6 +182,7 @@ export class LiveActivity<T extends object = object> {
   /**
    * Returns the push token for this Live Activity, used to send push notification updates via APNs.
    * Returns `null` if push notifications are not enabled or the token is not yet available.
+   * @platform ios
    */
   getPushToken(): Promise<string | null> {
     return this.nativeLiveActivity.getPushToken();
@@ -161,6 +193,7 @@ export class LiveActivity<T extends object = object> {
    * The token can be used to send content updates to this specific activity via APNs.
    * @param listener Callback invoked when a new push token is available.
    * @returns An event subscription that can be used to remove the listener.
+   * @platform ios
    */
   addPushTokenListener(listener: (event: PushTokenEvent) => void): EventSubscription {
     return this.nativeLiveActivity.addListener('onExpoWidgetsTokenReceived', listener);
@@ -168,7 +201,9 @@ export class LiveActivity<T extends object = object> {
 }
 
 /**
- * Manages Live Activity instances of a specific type. Use it to start new activities and retrieve currently active ones.
+ * Manages Live Activity instances of a specific type. It starts or schedules activities and
+ * retrieves their instances.
+ * @platform ios
  */
 export class LiveActivityFactory<T extends object = object> {
   /** @hidden */
@@ -183,18 +218,37 @@ export class LiveActivityFactory<T extends object = object> {
   /**
    * Starts a new Live Activity with the given properties.
    * @param props The initial content properties for the Live Activity.
-   * @param url An optional URL to associate with the Live Activity, used for deep linking.
-   * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
+   * @param options Options for starting the Live Activity.
    * @returns The new Live Activity instance.
+   * @platform ios
    */
-  start(props: T, url?: string, staleDate?: Date) {
+  start(props: T, options?: LiveActivityStartOptions): LiveActivity<T>;
+  /**
+   * @deprecated Use `start(props, options)` instead.
+   * @platform ios
+   */
+  start(props: T, url?: string, staleDate?: Date): LiveActivity<T>;
+  start(props: T, optionsOrUrl?: LiveActivityStartOptions | string, staleDate?: Date) {
+    const options: LiveActivityStartOptions =
+      typeof optionsOrUrl === 'object' && optionsOrUrl !== null
+        ? optionsOrUrl
+        : { url: optionsOrUrl, staleDate };
     return new LiveActivity<T>(
-      this.nativeLiveActivityFactory.start(JSON.stringify(props), url, staleDate?.getTime())
+      this.nativeLiveActivityFactory.start(JSON.stringify(props), {
+        ...options,
+        staleDate: options.staleDate?.getTime(),
+        schedule: options.schedule && {
+          ...options.schedule,
+          startDate: options.schedule.startDate.getTime(),
+        },
+      })
     );
   }
 
   /**
-   * Returns all currently active instances of this Live Activity type.
+   * Returns all instances of this Live Activity type that ActivityKit still tracks, including ended activities.
+   * Use `getState()` to filter by state, and `end('immediate')` to dismiss an ended activity from the Lock Screen.
+   * @platform ios
    */
   getInstances() {
     return this.nativeLiveActivityFactory
@@ -233,6 +287,7 @@ export function createWidget<
  * Creates a Live Activity Factory for managing Live Activities of a specific type.
  * @param name The Live Activity name. Must match the `'name'` field in your widget configuration in the app config.
  * @param liveActivity The Live Activity component, marked with the `'widget'` directive.
+ * @platform ios
  */
 export function createLiveActivity<T extends object = object>(
   name: string,
@@ -257,11 +312,25 @@ export function addUserInteractionListener(
  * This token can be used to start live activities remotely via APNs.
  * @param listener Callback function to handle push-to-start token events.
  * @return An event subscription that can be used to remove the listener.
+ * @platform ios
  */
 export function addPushToStartTokenListener(
   listener: ExpoWidgetsEvents['onExpoWidgetsPushToStartTokenReceived']
 ): EventSubscription {
   return ExpoWidgetsModule.addListener('onExpoWidgetsPushToStartTokenReceived', listener);
+}
+
+/**
+ * Returns whether the user allows this app to start Live Activities (Settings > Live Activities).
+ * Read it again before each `start()`, because the user can change it while the app is running.
+ * Always `false` on Android and web.
+ * @platform ios
+ */
+export function areActivitiesEnabled(): boolean {
+  if (Platform.OS !== 'ios') {
+    return false;
+  }
+  return ExpoWidgetsModule.areActivitiesEnabled();
 }
 
 /**

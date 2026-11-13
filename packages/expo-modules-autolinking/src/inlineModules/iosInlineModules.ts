@@ -2,16 +2,19 @@ import type { ModuleIosConfig } from '../types';
 import type { InlineModulesScanOptions } from './inlineModules';
 import { getMirrorStateObject } from './inlineModules';
 
+/**
+ * Returns all Swift inline modules in `modules`, and the ones declared with the `@ExpoModule` macro
+ * (Expo Modules API 2.0) also in `expoModules`.
+ */
 export async function getIosInlineModulesClassNames(
   options: InlineModulesScanOptions
-): Promise<ModuleIosConfig[]> {
+): Promise<{ modules: ModuleIosConfig[]; expoModules: ModuleIosConfig[] }> {
   const stateObject = await getMirrorStateObject(options);
-  return stateObject.swiftModuleClassNames.map((className: string) => {
-    return {
-      class: className,
-      name: null,
-    };
-  });
+  const toConfig = (className: string): ModuleIosConfig => ({ class: className, name: null });
+  return {
+    modules: stateObject.swiftModuleClassNames.map(toConfig),
+    expoModules: stateObject.swiftExpoModuleClassNames.map(toConfig),
+  };
 }
 
 function extractTargetNameFromPath(targetPath: string): string | undefined {

@@ -1,12 +1,4 @@
-import React, {
-  ReactNode,
-  RefObject,
-  useRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  forwardRef,
-} from 'react';
+import React, { ReactNode, useRef, useCallback, useEffect, useMemo, forwardRef } from 'react';
 import {
   View,
   Platform,
@@ -83,7 +75,7 @@ export interface ViewShotProperties {
    * - if not defined (default). the capture is not automatic and you need to use the ref and call capture()
    *   yourself.
    * - "mount". Capture the view once at mount. (It is important to understand image loading won't be waited, in
-   *   such case you want to use "none" with viewShotRef.capture() after Image#onLoad.)
+   *   such case omit captureMode and call viewShotRef.current.capture() after Image#onLoad.)
    * - "continuous" EXPERIMENTAL, this will capture A LOT of images continuously. For very specific use-cases.
    * - "update" EXPERIMENTAL, this will capture images each time React redraw (on did update). For very specific
    *   use-cases.
@@ -137,23 +129,36 @@ function validateOptions(input?: CaptureOptions): {
     ...input,
   };
   const errors: string[] = [];
-  if ('width' in options && (typeof options.width !== 'number' || options.width <= 0)) {
+  if (
+    'width' in options &&
+    (typeof options.width !== 'number' || !Number.isFinite(options.width) || options.width <= 0)
+  ) {
     errors.push('option width should be a positive number');
     delete options.width;
   }
-  if ('height' in options && (typeof options.height !== 'number' || options.height <= 0)) {
+  if (
+    'height' in options &&
+    (typeof options.height !== 'number' || !Number.isFinite(options.height) || options.height <= 0)
+  ) {
     errors.push('option height should be a positive number');
     delete options.height;
   }
-  if (typeof options.quality !== 'number' || options.quality < 0 || options.quality > 1) {
+  if (
+    typeof options.quality !== 'number' ||
+    !Number.isFinite(options.quality) ||
+    options.quality < 0 ||
+    options.quality > 1
+  ) {
     errors.push('option quality should be a number between 0.0 and 1.0');
     options.quality = defaultOptions.quality;
   }
   if (typeof options.snapshotContentContainer !== 'boolean') {
     errors.push('option snapshotContentContainer should be a boolean');
+    options.snapshotContentContainer = defaultOptions.snapshotContentContainer;
   }
   if (typeof options.handleGLSurfaceViewOnAndroid !== 'boolean') {
     errors.push('option handleGLSurfaceViewOnAndroid should be a boolean');
+    options.handleGLSurfaceViewOnAndroid = defaultOptions.handleGLSurfaceViewOnAndroid;
   }
   if (acceptedFormats.indexOf(options.format || '') === -1) {
     const badFormat = options.format;
@@ -278,7 +283,7 @@ function checkCompatibleProps(props: ViewShotProperties): void {
  * method is attached to that node for the imperative `ref.current.capture()`
  * usage.
  */
-export type ViewShotRef = View & {
+export type ViewShotRef = React.ComponentRef<typeof View> & {
   capture: () => Promise<string>;
 };
 
@@ -286,7 +291,7 @@ const ViewShotComponent = forwardRef<ViewShotRef, ViewShotProperties>(
   function ViewShot(props, ref) {
     const { children, options, captureMode, onCapture, onCaptureFailure, onLayout, style } = props;
 
-    const rootRef = useRef<View | null>(null);
+    const rootRef = useRef<React.ComponentRef<typeof View> | null>(null);
     const rafRef = useRef<number | null>(null);
     const lastCapturedURIRef = useRef<string | null>(null);
     const resolveFirstLayoutRef = useRef<((layout: unknown) => void) | null>(null);
@@ -334,7 +339,7 @@ const ViewShotComponent = forwardRef<ViewShotRef, ViewShotProperties>(
     );
 
     const setRootRef = useCallback(
-      (node: View | null): void => {
+      (node: React.ComponentRef<typeof View> | null): void => {
         rootRef.current = node;
         if (node) (node as ViewShotRef).capture = capture;
         if (typeof ref === 'function') {

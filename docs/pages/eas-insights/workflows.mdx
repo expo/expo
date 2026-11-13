@@ -1,7 +1,7 @@
 ---
-title: EAS Workflows insights
-sidebar_title: EAS Workflows
-description: Track run counts, success rates, and trends for your EAS Workflows in the Workflows tab of EAS Insights.
+title: Expo Workflows insights
+sidebar_title: Expo Workflows
+description: Track run counts, success rates, and trends for your Expo Workflows in the Workflows tab of Expo Insights.
 ---
 
 import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
@@ -10,17 +10,17 @@ import { TerminalBrowserIcon } from '@expo/styleguide-icons/outline/TerminalBrow
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-> **info** Workflows insights is available on the Production and Enterprise plans. Time ranges can start up to 30 days back on the Production plan, and up to 365 days back on the Enterprise plan. Learn more at [EAS pricing](https://expo.dev/pricing).
+> **info** Workflows insights is available on the Production and Enterprise plans. Time ranges can start up to 30 days back on the Production plan, and up to 365 days back on the Enterprise plan. Learn more at [Expo pricing](https://expo.dev/pricing).
 
-The **Workflows** tab in the dashboard shows how your [EAS Workflows](/eas/workflows/introduction/) are doing over time: how often they run, how often they succeed, and which workflows fail most. Data appears automatically as your workflows run.
+The **Workflows** tab in the dashboard shows how your [Expo Workflows](/eas/workflows/introduction/) are doing over time: how often they run, how often they succeed, and which workflows fail most. Data appears automatically as your workflows run.
 
-- To view these insights, open your project in the EAS dashboard, select **Insights** from the navigation menu, and then select the **Workflows** tab.
+- To view these insights, open your project in the Expo dashboard, select **Insights** from the navigation menu, and then select the **Workflows** tab.
 - Choose a time range to load the data. Every metric also compares against the previous period of equal length so you can see whether a number is trending up or down.
 
 You can also [query these metrics from the terminal with EAS CLI](/eas-insights/eas-cli/). Exporting runs stays in the dashboard.
 
 <ContentSpotlight
-  alt="The Workflows tab in EAS Insights showing run metrics, a runs-over-time chart, and a table of workflows."
+  alt="The Workflows tab in Expo Insights showing run metrics, a runs-over-time chart, and a table of workflows."
   src="/static/images/eas-insights/insights-workflows-light.webp"
   darkSrc="/static/images/eas-insights/insights-workflows-dark.webp"
 />
@@ -59,15 +59,15 @@ Export the workflow runs that match your current filters and time range as CSV o
 ## More
 
 <BoxLink
-  title="Query EAS Insights with EAS CLI"
+  title="Query Expo Insights with EAS CLI"
   description="Query the same run counts, success rates, and trends from the terminal or a CI job."
   href="/eas-insights/eas-cli/"
   Icon={TerminalBrowserIcon}
 />
 
 <BoxLink
-  title="Introduction to EAS Workflows"
-  description="Learn how to automate builds, updates, submissions, and tests with EAS Workflows."
+  title="Introduction to Expo Workflows"
+  description="Learn how to automate builds, updates, submissions, and tests with Expo Workflows."
   href="/eas/workflows/introduction/"
   Icon={Dataflow03Icon}
 />

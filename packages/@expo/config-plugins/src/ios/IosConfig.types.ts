@@ -54,4 +54,5 @@ export type ExpoPlist = {
   EXUpdatesDisableAntiBrickingMeasures?: boolean;
   EXUpdatesEnableBsdiffPatchSupport?: boolean;
   EXUpdatesExcludeFromBackup?: boolean;
+  EXUpdatesMaxUpdatesToKeep?: number;
 };

@@ -194,11 +194,8 @@ data class OTResourceSpans(
 data class OTRequestBody(
   val resourceMetrics: List<OTEvent>
 ) {
-  fun toJson(prettyPrint: Boolean = false): String {
-    val json = Json {
-      this.prettyPrint = prettyPrint
-    }
-    return json.encodeToString(serializer(), this)
+  fun toJson(): String {
+    return Json.encodeToString(serializer(), this)
   }
 }
 
@@ -206,11 +203,8 @@ data class OTRequestBody(
 data class OTLogsRequestBody(
   val resourceLogs: List<OTResourceLogs>
 ) {
-  fun toJson(prettyPrint: Boolean = false): String {
-    val json = Json {
-      this.prettyPrint = prettyPrint
-    }
-    return json.encodeToString(serializer(), this)
+  fun toJson(): String {
+    return Json.encodeToString(serializer(), this)
   }
 }
 
@@ -218,11 +212,8 @@ data class OTLogsRequestBody(
 data class OTTracesRequestBody(
   val resourceSpans: List<OTResourceSpans>
 ) {
-  fun toJson(prettyPrint: Boolean = false): String {
-    val json = Json {
-      this.prettyPrint = prettyPrint
-    }
-    return json.encodeToString(serializer(), this)
+  fun toJson(): String {
+    return Json.encodeToString(serializer(), this)
   }
 }
 
@@ -267,7 +258,7 @@ data class OTServiceResponse(
  */
 internal const val SEMCONV_SCHEMA_URL = "https://opentelemetry.io/schemas/1.27.0"
 
-// This must be kept in sync with the INTERNAL_TO_OTEL map in universe
+// Keep in sync with INTERNAL_TO_OTEL in universe and `ObserveMetricName` in `src/types.ts`:
 // https://github.com/expo/universe/blob/main/server/www/src/middleware/easObserveRoutes.ts#L209
 private val metricNameMap = mapOf(
   // App startup
@@ -288,8 +279,12 @@ private val metricNameMap = mapOf(
   // Navigation
   (MetricCategory.Navigation.categoryName to "cold_ttr") to "expo.navigation.cold_ttr",
   (MetricCategory.Navigation.categoryName to "warm_ttr") to "expo.navigation.warm_ttr",
-  (MetricCategory.Navigation.categoryName to "tti") to "expo.navigation.tti"
+  (MetricCategory.Navigation.categoryName to "tti") to "expo.navigation.tti",
+  (MetricCategory.Navigation.categoryName to "tbt") to "expo.navigation.tbt"
 )
+
+internal fun exportedMetricName(category: String, name: String): String =
+  metricNameMap[category to name] ?: "expo.unknown.$name"
 
 fun EASMetric.toOTMetric(): OTMetric {
   val attributes = mutableListOf(
@@ -307,7 +302,7 @@ fun EASMetric.toOTMetric(): OTMetric {
 
   return OTMetric(
     unit = "s",
-    name = metricNameMap[category to name] ?: "expo.unknown.$name",
+    name = exportedMetricName(category, name),
     gauge = OTGauge(
       dataPoints = listOf(
         OTDataPoint(
@@ -449,7 +444,11 @@ fun LogEvent.toOTLogRecord(): OTLogRecord {
     severityText = resolvedSeverity.severityText,
     body = OTStringValue(stringValue = body ?: ""),
     attributes = attributes,
-    droppedAttributesCount = if (totalDrops > 0) totalDrops else null
+    droppedAttributesCount = if (totalDrops > 0) {
+      totalDrops
+    } else {
+      null
+    }
   )
 }
 
@@ -575,7 +574,13 @@ internal fun otAnyValueFromJsonElement(element: JsonElement): OTAnyValue? {
         return OTAnyValue.Str(element.content)
       }
       element.longOrNull?.let { return OTAnyValue.Int64(it) }
-      element.doubleOrNull?.let { return if (it.isFinite()) OTAnyValue.Dbl(it) else null }
+      element.doubleOrNull?.let {
+        return if (it.isFinite()) {
+          OTAnyValue.Dbl(it)
+        } else {
+          null
+        }
+      }
       null
     }
     is JsonObject -> {

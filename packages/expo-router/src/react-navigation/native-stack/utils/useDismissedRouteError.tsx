@@ -3,9 +3,12 @@ import * as React from 'react';
 
 import type { NativeStackViewState } from '../types';
 
-export function useDismissedRouteError(state: NativeStackViewState) {
+export function useDismissedRouteError(
+  state: NativeStackViewState,
+  isPreloaded: (key: string) => boolean
+) {
   const [nextDismissedKey, setNextDismissedKey] = React.useState<string | null>(null);
-  const activeRoutes = state.routes.slice(0, state.index + 1);
+  const activeRoutes = state.routes.filter((route) => !isPreloaded(route.key));
 
   const dismissedRouteName = nextDismissedKey
     ? activeRoutes.find((route) => route.key === nextDismissedKey)?.name

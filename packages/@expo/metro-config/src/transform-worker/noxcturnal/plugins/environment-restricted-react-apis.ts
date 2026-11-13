@@ -63,9 +63,15 @@ export function createEnvironmentRestrictedReactApisPlugin(
           const source = String(importPath.node.source);
           const forbidden = forbiddenFor(source);
           if (!forbidden) return;
-          for (const specifier of importPath.getChildList('specifiers')) {
+          const specifiers = importPath.getChildList('specifiers');
+          const bindings = new Map(
+            importPath.scope
+              .getBindings(specifiers.map((specifier) => String(specifier.node.local)))
+              .map((binding) => [binding.name, binding])
+          );
+          for (const specifier of specifiers) {
             const local = String(specifier.node.local);
-            const binding = importPath.scope.getBinding(local);
+            const binding = bindings.get(local);
             const declarationId = binding?.declaration?.id;
             if (declarationId == null) continue;
             if (specifier.node.type === 'ImportSpecifier') {

@@ -18,7 +18,41 @@ function setCurrentScript(src: string | null) {
 // The web test project runs this file in jsdom, the node project on the server.
 // `getBundleUrl` reads `document.currentScript`, so only assert in the browser.
 if (typeof window === 'undefined') {
-  it('noop', () => {});
+  // The jsdom environment provides animation frames, which a server environment such as Node.js
+  // does not, so remove them for each test.
+  const jsdomRequestAnimationFrame = globalThis.requestAnimationFrame;
+  const jsdomCancelAnimationFrame = globalThis.cancelAnimationFrame;
+
+  beforeEach(() => {
+    // @ts-expect-error Simulates a server environment without animation frames.
+    delete globalThis.requestAnimationFrame;
+    // @ts-expect-error Simulates a server environment without animation frames.
+    delete globalThis.cancelAnimationFrame;
+  });
+
+  afterEach(() => {
+    globalThis.requestAnimationFrame = jsdomRequestAnimationFrame;
+    globalThis.cancelAnimationFrame = jsdomCancelAnimationFrame;
+    jest.resetModules();
+  });
+
+  it('stubs requestAnimationFrame on the server, never running callbacks', async () => {
+    require('../runtime');
+
+    const callback = jest.fn();
+    globalThis.requestAnimationFrame(callback);
+    globalThis.cancelAnimationFrame(0);
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(callback).not.toHaveBeenCalled();
+  });
+
+  it('keeps an existing requestAnimationFrame on the server', () => {
+    const existingRequestAnimationFrame = jest.fn();
+    globalThis.requestAnimationFrame = existingRequestAnimationFrame;
+    require('../runtime');
+
+    expect(globalThis.requestAnimationFrame).toBe(existingRequestAnimationFrame);
+  });
 } else {
   afterEach(() => {
     setCurrentScript(null);

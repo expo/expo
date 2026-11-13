@@ -10,7 +10,8 @@ import {
   ScreenStackItem,
 } from 'react-native-screens';
 
-import { useRoutesWithRemovalPrevented } from '../../../global-state/removalPrevention';
+import { useRouteNode } from '../../../Route';
+import { useWarnOnce } from '../../../useDeprecated';
 import {
   getDefaultHeaderHeight,
   getHeaderTitle,
@@ -34,6 +35,7 @@ import { getModalRouteKeys } from '../utils/getModalRoutesKeys';
 import { AnimatedHeaderHeightContext } from '../utils/useAnimatedHeaderHeight';
 import { useDismissedRouteError } from '../utils/useDismissedRouteError';
 import { useInvalidPreventRemoveError } from '../utils/useInvalidPreventRemoveError';
+import { getPlatformHeaderTransparent } from './headerAppearance';
 import { useHeaderConfigProps } from './useHeaderConfigProps';
 
 const ANDROID_DEFAULT_HEADER_HEIGHT = 56;
@@ -46,7 +48,9 @@ type SceneViewProps = {
   previousDescriptor?: NativeStackDescriptor;
   nextDescriptor?: NativeStackDescriptor;
   isPresentationModal?: boolean;
+  hasModalBelow: boolean;
   isPreloaded?: boolean;
+  isRemovalPrevented: boolean;
   onWillDisappear: () => void;
   onWillAppear: () => void;
   onAppear: () => void;
@@ -68,7 +72,9 @@ const SceneView = ({
   previousDescriptor,
   nextDescriptor,
   isPresentationModal,
+  hasModalBelow,
   isPreloaded,
+  isRemovalPrevented,
   onWillDisappear,
   onWillAppear,
   onAppear,
@@ -126,6 +132,23 @@ const SceneView = ({
     unstable_nativeProps,
   } = options;
   const screenNativeProps = unstable_nativeProps;
+  const routeNode = useRouteNode();
+
+  useWarnOnce(
+    `Route "${route.name}" uses presentation "${options.presentation}" but is the first screen in its native stack, so it is rendered as a card. Add unstable_settings.anchor to the stack layout to place a non-modal screen before this route.`,
+    __DEV__ && index === 0 && isPresentationModal && options.presentation != null,
+    routeNode ? `${routeNode.contextKey}:${route.name}` : route.name
+  );
+  useWarnOnce(
+    `Route "${route.name}" has no presentation option, so it is shown as a modal because a modal screen is below it. This may change in a future version. Set presentation from route params with options={({ route }) => ...}, or use separate card and formSheet screens that render the same component.`,
+    __DEV__ && isPresentationModal && options.presentation == null,
+    `${route.key}:above-modal`
+  );
+  useWarnOnce(
+    `Route "${route.name}" uses presentation "card" above a modal screen, so it is pushed behind the modal and is not visible until the modal closes. Use a modal presentation for this route, or close the modal before you navigate.`,
+    __DEV__ && Platform.OS === 'ios' && options.presentation === 'card' && hasModalBelow,
+    `${route.key}:card-above-modal`
+  );
 
   if (gestureDirection === 'vertical' && Platform.OS === 'ios') {
     // for `vertical` direction to work, we need to set `fullScreenGestureEnabled` to `true`
@@ -189,8 +212,6 @@ const SceneView = ({
     })
   );
 
-  const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
-
   const [headerHeight, setHeaderHeight] = React.useState(defaultHeaderHeight);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -249,12 +270,10 @@ const SceneView = ({
     return undefined;
   }, [canGoBack, backTitle]);
 
-  const isRemovePrevented = routesWithRemovalPrevented.has(route.key);
-
   const headerConfig = useHeaderConfigProps({
     ...options,
     route,
-    headerBackButtonMenuEnabled: isRemovePrevented ? false : headerBackButtonMenuEnabled,
+    headerBackButtonMenuEnabled: isRemovalPrevented ? false : headerBackButtonMenuEnabled,
     headerBackTitle: options.headerBackTitle !== undefined ? options.headerBackTitle : undefined,
     headerHeight,
     headerShown: header !== undefined ? false : headerShown,
@@ -262,6 +281,8 @@ const SceneView = ({
     headerTransparent,
     headerBack,
   });
+
+  const isHeaderTransparent = getPlatformHeaderTransparent(headerTransparent);
 
   const onHeaderHeightChange = hasCustomHeader
     ? // If we have a custom header, don't use native header height
@@ -374,7 +395,7 @@ const SceneView = ({
         gestureResponseDistance={gestureResponseDistance}
         nativeBackButtonDismissalEnabled={false} // on Android
         onHeaderBackButtonClicked={onHeaderBackButtonClicked}
-        preventNativeDismiss={isRemovePrevented} // on iOS
+        preventNativeDismiss={isRemovalPrevented} // on iOS
         scrollEdgeEffects={{
           bottom: scrollEdgeEffects?.bottom ?? 'automatic',
           top: scrollEdgeEffects?.top ?? 'automatic',
@@ -406,7 +427,7 @@ const SceneView = ({
                 <View
                   style={[
                     styles.background,
-                    headerTransparent ? styles.translucent : null,
+                    isHeaderTransparent ? styles.translucent : null,
                     { height: headerHeight },
                   ]}>
                   {headerBackground()}
@@ -420,7 +441,7 @@ const SceneView = ({
                     setHeaderHeight(headerHeight);
                     rawAnimatedHeaderHeight.setValue(headerHeight);
                   }}
-                  style={[styles.header, headerTransparent ? styles.absolute : null]}>
+                  style={[styles.header, isHeaderTransparent ? styles.absolute : null]}>
                   {header({
                     back: headerBack,
                     options,
@@ -446,12 +467,22 @@ type Props = {
   state: NativeStackViewState;
   descriptors: NativeStackDescriptorMap;
   emit: NativeStackViewEmit;
+  isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
 } & NativeStackNavigationConfig;
 
-export function NativeStackView({ state, descriptors, emit, pop, unstable_nativeProps }: Props) {
+export function NativeStackView({
+  state,
+  descriptors,
+  emit,
+  pop,
+  isPreloaded,
+  isRemovalPrevented,
+  unstable_nativeProps,
+}: Props) {
   const { colors } = useTheme();
-  const { setNextDismissedKey } = useDismissedRouteError(state);
+  const { setNextDismissedKey } = useDismissedRouteError(state, isPreloaded);
 
   const parentPresentation = use(ScreenPresentationContext);
   const isInTransparentPresentation =
@@ -459,12 +490,15 @@ export function NativeStackView({ state, descriptors, emit, pop, unstable_native
     parentPresentation === 'transparentModal' ||
     parentPresentation === 'containedTransparentModal';
 
-  useInvalidPreventRemoveError(descriptors);
+  useInvalidPreventRemoveError(descriptors, isRemovalPrevented);
 
-  // Routes after `index` are preloaded and rendered natively-detached. Only the routes up to the
-  // focused one participate in back-affordance and modal-grouping computations.
-  const activeRoutes = state.routes.slice(0, state.index + 1);
+  // Preloaded routes are detached and don't participate in back-affordance or modal grouping.
+  const activeRoutes = state.routes.filter((route) => !isPreloaded(route.key));
   const modalRouteKeys = getModalRouteKeys(activeRoutes, descriptors);
+  // The first screen always renders as a card, so a modal there does not count.
+  const firstModalIndex = activeRoutes.findIndex(
+    (route, index) => index > 0 && modalRouteKeys.includes(route.key)
+  );
 
   return (
     <SafeAreaProviderCompat>
@@ -477,9 +511,12 @@ export function NativeStackView({ state, descriptors, emit, pop, unstable_native
         {state.routes.map((route, index) => {
           const descriptor = descriptors[route.key]!;
           const isFocused = state.index === index;
-          const isPreloaded = index > state.index;
-          const previousKey = activeRoutes[index - 1]?.key;
-          const nextKey = activeRoutes[index + 1]?.key;
+          const routeIsPreloaded = isPreloaded(route.key);
+          const activeIndex = activeRoutes.findIndex(
+            (activeRoute) => activeRoute.key === route.key
+          );
+          const previousKey = activeIndex > 0 ? activeRoutes[activeIndex - 1]?.key : undefined;
+          const nextKey = activeIndex >= 0 ? activeRoutes[activeIndex + 1]?.key : undefined;
           const previousDescriptor = previousKey ? descriptors[previousKey] : undefined;
           const nextDescriptor = nextKey ? descriptors[nextKey] : undefined;
 
@@ -495,7 +532,9 @@ export function NativeStackView({ state, descriptors, emit, pop, unstable_native
               previousDescriptor={previousDescriptor}
               nextDescriptor={nextDescriptor}
               isPresentationModal={isModal}
-              isPreloaded={isPreloaded}
+              hasModalBelow={firstModalIndex !== -1 && activeIndex > firstModalIndex}
+              isPreloaded={routeIsPreloaded}
+              isRemovalPrevented={isRemovalPrevented(route.key)}
               onWillDisappear={() => {
                 emit({
                   type: 'transitionStart',

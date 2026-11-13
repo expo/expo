@@ -23,8 +23,16 @@ fun AutoSizingComposable(shadowNodeProxy: ShadowNodeProxy, axis: EnumSet<Directi
       val minIntrinsicHeight = measurable.minIntrinsicHeight(minIntrinsicWidth)
       val intrinsicWidth = minIntrinsicWidth.toDouble() / Resources.getSystem().displayMetrics.density
       val intrinsicHeight = minIntrinsicHeight.toDouble() / Resources.getSystem().displayMetrics.density
-      val width: Double = if (axis.contains(Direction.HORIZONTAL)) intrinsicWidth else Double.NaN
-      val height: Double = if (axis.contains(Direction.VERTICAL)) intrinsicHeight else Double.NaN
+      val width: Double = if (axis.contains(Direction.HORIZONTAL)) {
+        intrinsicWidth
+      } else {
+        Double.NaN
+      }
+      val height: Double = if (axis.contains(Direction.VERTICAL)) {
+        intrinsicHeight
+      } else {
+        Double.NaN
+      }
       shadowNodeProxy.setViewSize(width, height)
 
       val placeable = measurable.measure(constraints)

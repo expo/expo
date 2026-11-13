@@ -5,8 +5,8 @@ import android.os.Looper
 import android.os.Message
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.launcher.Launcher
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updatesinterface.UpdatesLogMessage
 import java.lang.RuntimeException
 
 /**
@@ -107,7 +107,7 @@ internal class ErrorRecoveryHandler(
         tryRelaunchFromCache()
       }
       Task.CRASH -> {
-        logger.error("UpdatesErrorRecovery: could not recover from error, crashing", encounteredErrors[0], UpdatesErrorCode.Unknown)
+        logger.error(UpdatesLogMessage.ErrorRecoveryCrash, encounteredErrors[0])
         crash()
       }
     }

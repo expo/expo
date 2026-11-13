@@ -24,6 +24,39 @@ describe('REACT_NATIVE_PACKAGER_HOSTNAME', () => {
   });
 });
 
+describe('CI', () => {
+  afterEach(() => {
+    delete process.env.CI;
+  });
+
+  it('only treats 1 and true as CI', () => {
+    for (const [value, expected] of [
+      ['1', true],
+      ['TRUE', true],
+      ['yes', false],
+      ['', false],
+    ] as const) {
+      process.env.CI = value;
+      expect(env.CI).toBe(expected);
+    }
+  });
+});
+
+describe('EXPO_NO_DEV_MENU', () => {
+  beforeEach(() => {
+    delete process.env.EXPO_NO_DEV_MENU;
+  });
+
+  it('returns false when unset', () => {
+    expect(env.EXPO_NO_DEV_MENU).toBe(false);
+  });
+
+  it('returns true when set', () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    expect(env.EXPO_NO_DEV_MENU).toBe(true);
+  });
+});
+
 describe(envIsWebcontainer, () => {
   it('returns false without running in stackblitz', () => {
     expect(envIsWebcontainer()).toBe(false);

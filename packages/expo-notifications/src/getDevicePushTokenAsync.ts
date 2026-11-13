@@ -17,16 +17,13 @@ export async function getDevicePushTokenAsync(): Promise<DevicePushToken> {
   }
   warnOfExpoGoPushUsage();
 
-  let devicePushToken: string | null;
-  if (nativeTokenPromise) {
-    // Reuse existing Promise
-    devicePushToken = await nativeTokenPromise;
-  } else {
-    // Create a new Promise and clear it afterwards
-    nativeTokenPromise = PushTokenManager.getDevicePushTokenAsync();
-    devicePushToken = await nativeTokenPromise;
-    nativeTokenPromise = null;
+  if (!nativeTokenPromise) {
+    // Share one in-flight native request; clear it once it settles so a rejection can be retried
+    nativeTokenPromise = PushTokenManager.getDevicePushTokenAsync().finally(() => {
+      nativeTokenPromise = null;
+    });
   }
+  const devicePushToken = await nativeTokenPromise;
 
   // @ts-ignore: TS thinks Platform.OS could be anything and can't decide what type is it
   return { type: Platform.OS, data: devicePushToken };

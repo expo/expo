@@ -6,16 +6,14 @@
  */
 import { getConfig } from '@expo/config';
 import { convertEntryPointToRelative } from '@expo/config/paths';
-import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
-import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import Server from '@expo/metro/metro/Server';
 import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
 import * as output from '@expo/metro/metro/shared/output/bundle';
 import type { BundleOptions } from '@expo/metro/metro/shared/types';
+import { isAppleTargetPlatform } from '@expo/platforms';
 import assert from 'assert';
 import fs from 'fs';
-import { sync as globSync } from 'glob';
 import path from 'path';
 
 import { Log } from '../../log';
@@ -23,12 +21,18 @@ import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 import { replaceMetroFileMap } from '../../start/server/metro/createFileMap-fork';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
+import { isApiRoutesEnabled } from '../../start/server/metro/router';
+import {
+  patchGetDeltaForCacheVary,
+  patchTransformFileForCacheVary,
+} from '../../start/server/metro/withMetroCacheVary';
 import { DOM_COMPONENTS_BUNDLE_DIR } from '../../start/server/middleware/DomComponentsMiddleware';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
-import { copyAsync, removeAsync } from '../../utils/dir';
+import { copyAsync, fileExistsAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
+import { compileHermesArtifactsAsync } from '../compileHermesArtifacts';
 import { debugEvent } from '../events';
 import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
@@ -41,7 +45,7 @@ import type { Options } from './resolveOptions';
 import { deserializeEagerKey, getExportEmbedOptionsKey } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 
-function guessCopiedAppleBundlePath(bundleOutput: string) {
+async function guessCopiedAppleBundlePath(bundleOutput: string) {
   // Ensure the path is familiar before guessing.
   if (
     !bundleOutput.match(/\/Xcode\/DerivedData\/.*\/Build\/Products\//) &&
@@ -52,12 +56,26 @@ function guessCopiedAppleBundlePath(bundleOutput: string) {
   }
   const bundleName = path.basename(bundleOutput);
   const bundleParent = path.dirname(bundleOutput);
-  const possiblePath = globSync(`*.app/${bundleName}`, {
-    cwd: bundleParent,
-    absolute: true,
-    // bundle identifiers can start with dots.
-    dot: true,
-  })[0];
+  let appNames: string[];
+  try {
+    appNames = await fs.promises.readdir(bundleParent);
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    if (code !== 'ENOENT' && code !== 'ENOTDIR') throw error;
+    appNames = [];
+  }
+  let possiblePath: string | undefined;
+  // NOTE(@kitten): Check bundle paths directly to avoid crawling app resources.
+  for (const name of appNames
+    .filter((name) => name.endsWith('.app'))
+    .sort()
+    .reverse()) {
+    const file = path.join(bundleParent, name, bundleName);
+    if (await fileExistsAsync(file)) {
+      possiblePath = file;
+      break;
+    }
+  }
   debugEvent('embed:possible_previous_bundle', { possiblePath: possiblePath ?? '' });
   return possiblePath;
 }
@@ -111,8 +129,7 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
 
 // Apple platforms (ios/tvos/macos) all build via Xcode and share the same bundle output and
 // error-reporting handling.
-const isApplePlatform = (platform: string): boolean =>
-  platform === 'ios' || platform === 'tvos' || platform === 'macos';
+const isApplePlatform = isAppleTargetPlatform;
 
 export async function exportEmbedInternalAsync(projectRoot: string, options: Options) {
   // Ensure we delete the old bundle to trigger a failure if the bundle cannot be created.
@@ -121,8 +138,8 @@ export async function exportEmbedInternalAsync(projectRoot: string, options: Opt
   // The iOS bundle is copied in to the Xcode project, so we need to remove the old one
   // to prevent Xcode from loading the old one after a build failure.
   if (isApplePlatform(options.platform)) {
-    const previousPath = guessCopiedAppleBundlePath(options.bundleOutput);
-    if (previousPath && fs.existsSync(previousPath)) {
+    const previousPath = await guessCopiedAppleBundlePath(options.bundleOutput);
+    if (previousPath) {
       debugEvent('embed:removing_previous_bundle', { previousPath });
       await removeAsync(previousPath);
     }
@@ -222,8 +239,7 @@ export async function exportEmbedBundleAndAssetsAsync(
     // We optimistically build the server-side API routes code here, to ensure they're
     // valid or to enable parallel deployment in the future (TBD). This is disabled using
     // the explicit `--skip-server` flag.
-    const apiRoutesEnabled =
-      devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
+    const apiRoutesEnabled = devServer.isReactServerComponentsEnabled || isApiRoutesEnabled(exp);
     if (!options.skipServer && apiRoutesEnabled) {
       await exportStandaloneServerAsync(projectRoot, devServer, {
         exp,
@@ -278,6 +294,10 @@ export async function exportEmbedBundleAndAssetsAsync(
           }
         })
       );
+    }
+
+    if (options.bytecode && isHermes && !options.dev) {
+      await compileHermesArtifactsAsync(projectRoot, bundles.artifacts);
     }
 
     return {
@@ -385,11 +405,9 @@ export async function createMetroServerAndBundleRequestAsync(
     }),
   }));
 
-  // The dev server applies the same patch from `instantiateMetro.ts`;
-  // this is the export-embed / `expo-updates` path, where `data.map`
-  // would otherwise reach Metro's readers in the unwrapped wire shape.
-  patchTransformFileForPackedMaps(metro.getBundler().getBundler());
-  patchMetroSourceMapStringForPackedMaps();
+  // Make ambient-value (cache-vary) staleness visible to the graph and delta layers.
+  patchTransformFileForCacheVary(metro.getBundler().getBundler());
+  patchGetDeltaForCacheVary();
 
   return { server: metro, bundleRequest };
 }

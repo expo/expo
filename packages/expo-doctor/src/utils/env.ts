@@ -1,9 +1,10 @@
-import { boolish } from 'getenv';
+import { boolish } from '@expo/env';
 
 class Env {
   /** Is running in non-interactive CI mode */
   get CI() {
-    return boolish('CI', false);
+    const ci = process.env.CI;
+    return ci === '1' || ci?.toLowerCase() === 'true';
   }
 
   /** Enable debug logging */

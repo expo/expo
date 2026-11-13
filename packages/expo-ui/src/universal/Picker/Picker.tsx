@@ -57,6 +57,7 @@ export function Picker<T extends PickerItemValue>({
   selectedValue,
   onValueChange,
   enabled = true,
+  accessibilityLabel,
   children,
   testID,
 }: PickerProps<T>) {
@@ -66,6 +67,7 @@ export function Picker<T extends PickerItemValue>({
   return (
     <View>
       <Select
+        aria-label={accessibilityLabel}
         disabled={!enabled}
         value={String(selectedValue)}
         onFocus={onFocus}

@@ -37,7 +37,7 @@ struct LocalNetworkPermissionView: View {
 
         Text("Expo Dev Launcher needs to access your local network to discover development servers running on your computer.")
           .font(.body)
-          .foregroundColor(.secondary)
+          .foregroundStyle(Color.secondary)
           .multilineTextAlignment(.center)
           .fixedSize(horizontal: false, vertical: true)
 
@@ -100,12 +100,12 @@ struct LocalNetworkPermissionView: View {
           .padding()
       }
       .background(Color.accentColor)
-      .foregroundColor(.white)
-      .cornerRadius(12)
+      .foregroundStyle(Color.white)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
 
       Text("When the system prompt pops up, tap \"Allow\" to continue.")
         .font(.footnote)
-        .foregroundColor(.secondary)
+        .foregroundStyle(Color.secondary)
         .multilineTextAlignment(.center)
         .fixedSize(horizontal: false, vertical: true)
     }
@@ -122,8 +122,8 @@ struct LocalNetworkPermissionView: View {
           .padding()
       }
       .background(Color.accentColor)
-      .foregroundColor(.white)
-      .cornerRadius(12)
+      .foregroundStyle(Color.white)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
 
       checkAccessButton(label: "I was not prompted") { verdict in
         handleCheckVerdict(verdict, onGranted: { showAlreadyGrantedAlert = true })
@@ -135,7 +135,7 @@ struct LocalNetworkPermissionView: View {
     Group {
       Text("Local network permission was not granted. Enable it in Settings \u{2192} Privacy & Security \u{2192} Local Network.")
         .font(.footnote)
-        .foregroundColor(.secondary)
+        .foregroundStyle(Color.secondary)
         .multilineTextAlignment(.center)
         .fixedSize(horizontal: false, vertical: true)
 
@@ -152,8 +152,8 @@ struct LocalNetworkPermissionView: View {
           .padding()
       }
       .background(Color.expoSecondarySystemBackground)
-      .foregroundColor(.primary)
-      .cornerRadius(12)
+      .foregroundStyle(Color.primary)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
 
       checkAccessButton(label: "Try Again") { verdict in
         handleCheckVerdict(verdict, onGranted: {
@@ -171,8 +171,8 @@ struct LocalNetworkPermissionView: View {
           .padding()
       }
       .background(Color.expoSecondarySystemBackground)
-      .foregroundColor(.secondary)
-      .cornerRadius(12)
+      .foregroundStyle(Color.secondary)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
     }
   }
 
@@ -219,8 +219,8 @@ struct LocalNetworkPermissionView: View {
     }
     .disabled(isCheckingAccess)
     .background(Color.expoSecondarySystemBackground)
-    .foregroundColor(.secondary)
-    .cornerRadius(12)
+    .foregroundStyle(Color.secondary)
+    .clipShape(RoundedRectangle(cornerRadius: 12))
   }
 }
 

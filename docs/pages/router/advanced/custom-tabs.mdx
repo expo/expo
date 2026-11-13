@@ -4,7 +4,7 @@ description: Learn how to use headless tab components to create custom tab layou
 sidebar_title: Custom tabs
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { RouterLogo } from '@expo/styleguide';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -22,14 +22,14 @@ For other tab layouts see:
   title="Native tabs"
   href="/router/advanced/native-tabs/"
   description="See native tabs if you want to achieve a native look and feel for your tab bar."
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 <BoxLink
   title="JavaScript tabs"
   href="/router/advanced/tabs/"
   description="See JavaScript tabs if you already use React Navigation's tabs."
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 ## Anatomy of custom Tabs components
@@ -43,7 +43,7 @@ There are four components offered by `expo-router/ui` to create custom tab layou
 | `TabTrigger` | A trigger component to switch to the specified tab. It is used to define the route using `href` prop and a `name` for each tab. |
 | `TabSlot`    | A slot to render the currently selected tab.                                                                                    |
 
-A bare minimum structure of a custom tab layout would consist of a `TabList` (containing `TabTrigger` components for each tab) and a`TabSlot`, all within the `Tabs` component, as shown here:
+A bare minimum structure of a custom tab layout would consist of a `TabList` (containing `TabTrigger` components for each tab) and a `TabSlot`, all within the `Tabs` component, as shown here:
 
 ```tsx src/app/(tabs)/_layout.tsx|collapseHeight=440
 import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
@@ -147,6 +147,8 @@ An additional `TabTrigger` can be defined outside of a `TabList`, allowing you t
 ## Customizing appearance
 
 All components are rendered unstyled as a `<View>`, except `TabTrigger` which renders as a `<Pressable>`. This allows you to provide a custom `style` prop to customize their appearance. Styling `TabList` is similar to customizing the tab bar in React Navigation, while styling `TabTrigger` affects the appearance of tab buttons.
+
+`TabList` pads its content by the left and right safe area insets it overlaps, such as the rail on iPhone Duo, and leaves top and bottom insets to you. With `asChild`, your component handles the safe area.
 
 If you need to change the structure of a component, you can override its underlying component by using the `asChild` props. The component then acts as a slot, and will forward its props to its immediate child.
 

@@ -1,7 +1,7 @@
 ---
-title: 'EAS Workflows で Maestro による E2E テストを実行する'
+title: 'Expo Workflows で Maestro による E2E テストを実行する'
 sidebar_title: E2E テスト
-description: EAS Workflows 上で Android と iOS の開発ビルドを使い、Maestro によるエンドツーエンド（E2E）テストを自動化する方法を学びます。
+description: Expo Workflows 上で Android と iOS の開発ビルドを使い、Maestro によるエンドツーエンド（E2E）テストを自動化する方法を学びます。
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -17,13 +17,13 @@ import { Step } from '~/ui/components/Step';
 - ワークフロー内で Android と iOS の[開発ビルド](/develop/development-builds/introduction/)に対して E2E テストを実行する
 - `on.pull_request` でプルリクエストのたびに、あるいは `on.pull_request_labeled` で必要なときだけ E2E テストをトリガーする
 
-> **important** EAS Workflows の Maestro ジョブタイプは、現時点では [alpha](/more/release-statuses/#alpha) です。
+> **important** Expo Workflows の Maestro ジョブタイプは、現時点では [alpha](/more/release-statuses/#alpha) です。
 
 ## E2E テストが役に立つ理由
 
 これまでの章で作ったパイプラインは、プロジェクトをビルドしてアップデートを配信し、Slack で通知します。しかし、ナビゲーションの不具合やクラッシュする画面は、それでも気づかれないまま本番に届いてしまうことがあります。E2E テストは、実際のユーザー操作をシミュレートしてアプリが期待どおりに動くことを検証することで、こうした問題が本番に届く前に見つける助けになります。
 
-[Maestro](https://maestro.mobile.dev/) は、Android エミュレーターや iOS シミュレーター上でビルド済みのアプリに対して自動化されたフローを実行します。ボタンをタップし、テキストを入力し、画面の内容を検証し、画面間を移動できます。EAS Workflows は、Android 向けの APK または iOS シミュレーター向けのビルドを作成したあと、これらのフローをクラウド上で実行します。
+[Maestro](https://maestro.mobile.dev/) は、Android エミュレーターや iOS シミュレーター上でビルド済みのアプリに対して自動化されたフローを実行します。ボタンをタップし、テキストを入力し、画面の内容を検証し、画面間を移動できます。Expo Workflows は、Android 向けの APK または iOS シミュレーター向けのビルドを作成したあと、これらのフローをクラウド上で実行します。
 
 ## E2E テストをセットアップする
 
@@ -137,16 +137,16 @@ jobs:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/e2e-tests.yml']} />
 
-EAS ダッシュボードでは、Android と iOS のビルドが並列に始まることが分かります。各ビルドが完了すると、対応する Maestro のテストジョブがそのビルドに対してフローファイルを実行します。
+Expo ダッシュボードでは、Android と iOS のビルドが並列に始まることが分かります。各ビルドが完了すると、対応する Maestro のテストジョブがそのビルドに対してフローファイルを実行します。
 
 <ContentSpotlight
-  alt="開発ビルドに対して Android と iOS のテストジョブを並列に実行している Maestro の E2E テスト実行を表示している EAS Workflows ダッシュボード。"
+  alt="開発ビルドに対して Android と iOS のテストジョブを並列に実行している Maestro の E2E テスト実行を表示している Expo Workflows ダッシュボード。"
   src="/static/images/tutorial/cicd/eas-workflows-maestro-e2e-run.png"
   className="max-w-160"
 />
 
 <ContentSpotlight
-  alt="Android と iOS の開発ビルドに対する Maestro の E2E テストジョブが正常に完了したことを表示している EAS Workflows ダッシュボード。"
+  alt="Android と iOS の開発ビルドに対する Maestro の E2E テストジョブが正常に完了したことを表示している Expo Workflows ダッシュボード。"
   src="/static/images/tutorial/cicd/eas-workflows-maestro-e2e-success.webp"
   className="max-w-160"
 />
@@ -178,7 +178,7 @@ on:
 ```
 
 <ContentSpotlight
-  alt="GitHub プルリクエストのラベルによってトリガーされ、Android と iOS の開発ビルドに対して Maestro の E2E テストを実行している EAS Workflows の実行。"
+  alt="GitHub プルリクエストのラベルによってトリガーされ、Android と iOS の開発ビルドに対して Maestro の E2E テストを実行している Expo Workflows の実行。"
   src="/static/images/tutorial/cicd/eas-workflows-maestro-e2e-pull-request-label.png"
   className="max-w-160"
 />

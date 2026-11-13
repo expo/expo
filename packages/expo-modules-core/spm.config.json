@@ -5,6 +5,7 @@
     {
       "name": "ExpoModulesCore",
       "podName": "ExpoModulesCore",
+      "headersXCFramework": true,
       "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
@@ -34,9 +35,15 @@
           "type": "objc",
           "name": "ExpoModulesCore_ios_objc",
           "path": "ios",
-          "pattern": "**/*.{m,mm}",
+          "pattern": "**/*.{m,mm,cpp}",
           "headerPattern": "**/*.h",
-          "exclude": ["Tests/**", "WorkletsTests/**", "Worklets/**", "WorkletsAdapter/**"],
+          "exclude": [
+            "Tests/**",
+            "Benchmarks/**",
+            "WorkletsTests/**",
+            "Worklets/**",
+            "WorkletsAdapter/**"
+          ],
           "fileMapping": [
             {
               "from": "Core/Views/SwiftUI/SwiftUIVirtualViewSharedImpl+Private.h",
@@ -54,7 +61,10 @@
           "linkedFrameworks": ["Foundation", "UserNotifications", "AVKit", "AVFoundation", "UIKit"],
           "includeDirectories": ["."],
           "compilerFlags": {
-            "common": ["-DEXPO_MODULES_CORE_VERSION=${PACKAGE_VERSION}"]
+            "common": [
+              "-DEXPO_MODULES_CORE_VERSION=${PACKAGE_VERSION}",
+              "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_MINOR_VERSION}"
+            ]
           }
         },
         {
@@ -65,6 +75,7 @@
           "exclude": [
             "JSI/**",
             "Tests/**",
+            "Benchmarks/**",
             "WorkletsTests/**",
             "BridgeModule/**",
             "Views/**",

@@ -43,3 +43,11 @@ export function isFailedToResolvePathError(error: any): error is FailedToResolve
     !error.message.includes('Importing native-only module')
   );
 }
+
+/**
+ * Thrown for specifiers Metro can't resolve by design, including a URI-scheme specifier
+ * (e.g. `node:fs`) with no registered scheme resolver that also fails normal resolution.
+ */
+export function isFailedToResolveUnsupportedError(error: any): error is Error {
+  return !!error && error.constructor.name === 'FailedToResolveUnsupportedError';
+}

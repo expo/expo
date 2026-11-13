@@ -100,6 +100,7 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
           <LinkBase
             href={'#' + heading.current.slug}
             ref={heading.current.ref}
+            skipNextLink
             onClick={() => {
               detailsRef?.current?.setAttribute('open', '');
             }}

@@ -1,3 +1,4 @@
+import ExpoModulesTestCore
 import Foundation
 import Testing
 
@@ -175,26 +176,6 @@ struct AppIntentEntityStoreTests {
     #expect(readBack.map(\.id) == ["t1"])
   }
 
-  /// A non-optional `@Record` property without a default is required at the JavaScript boundary.
-  @Test
-  func `record requires an id and a title`() throws {
-    let appContext = AppContext.create()
-
-    #expect(throws: RecordPropertyRequiredException.self) {
-      try AppIntentEntityRecord.from(dictionary: [:], appContext: appContext)
-    }
-    #expect(throws: RecordPropertyRequiredException.self) {
-      try AppIntentEntityRecord.from(dictionary: ["id": "t1"], appContext: appContext)
-    }
-    #expect(throws: RecordPropertyRequiredException.self) {
-      try AppIntentEntityRecord.from(dictionary: ["title": "A"], appContext: appContext)
-    }
-    _ = try AppIntentEntityRecord.from(
-      dictionary: ["id": "t1", "title": "A"],
-      appContext: appContext
-    )
-  }
-
   /// Required record fields reject missing keys, but an explicit empty string is just as
   /// unresolvable, and so is a string made only of whitespace.
   @Test
@@ -246,5 +227,25 @@ struct AppIntentEntityStoreTests {
 
     let stored = try await store.entities(ofKind: "trail")
     #expect(stored.isEmpty, "a rejected catalog must not be stored")
+  }
+}
+
+/// Decodes from JavaScript, so it runs on the JavaScript actor, apart from the serialized store suite.
+@Suite("AppIntentEntityRecord")
+@JavaScriptActor
+struct AppIntentEntityRecordTests {
+  /// A non-optional `@Record` property without a default is required at the JavaScript boundary.
+  @Test
+  func `record requires an id and a title`() throws {
+    let appContext = TestAppContext()
+    let runtime = try appContext.runtime
+
+    for source in ["({})", "({ id: 't1' })", "({ title: 'A' })"] {
+      let object = try runtime.eval(source)
+      #expect(throws: RecordPropertyRequiredException.self) {
+        try AppIntentEntityRecord.decode(object, in: runtime)
+      }
+    }
+    _ = try AppIntentEntityRecord.decode(runtime.eval("({ id: 't1', title: 'A' })"), in: runtime)
   }
 }

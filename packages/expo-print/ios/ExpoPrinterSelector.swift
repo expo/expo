@@ -10,7 +10,7 @@ public class ExpoPrinterSelector {
   }
 
   func selectPrinter(promise: Promise) {
-    guard let rootController = UIApplication.shared.keyWindow?.rootViewController else {
+    guard let rootController = SceneGeometry.keyWindow()?.rootViewController else {
       promise.reject(ViewControllerNotFoundException())
       return
     }
@@ -34,9 +34,9 @@ public class ExpoPrinterSelector {
         name: selectedPrinter.displayName))
     }
 
-    if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad { // iPad
+    if rootController.traitCollection.horizontalSizeClass == .regular {
       picker.present(from: rootController.view.frame, in: rootController.view, animated: true, completionHandler: completionHandler)
-    } else { // iPhone
+    } else {
       picker.present(animated: true, completionHandler: completionHandler)
     }
   }

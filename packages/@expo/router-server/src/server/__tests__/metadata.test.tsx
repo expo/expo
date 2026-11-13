@@ -31,28 +31,31 @@ describe(resolveMetadata, () => {
     mockedCtx.mockReset();
   });
 
-  it('passes the request and params to a route `generateMetadata()`', async () => {
-    const generateMetadata = jest.fn().mockResolvedValue({ title: 'Post 123' });
-    mockedCtx.mockResolvedValue({
-      generateMetadata,
-    } as never);
+  it.each([false, true])(
+    'passes the request and params to `generateMetadata()` (request: %s)',
+    async (hasRequest) => {
+      const generateMetadata = jest.fn().mockResolvedValue({ title: 'Post 123' });
+      mockedCtx.mockResolvedValue({
+        generateMetadata,
+      } as never);
 
-    const request = createMockRequest('http://localhost/posts/123');
-    const result = await resolveMetadata({
-      route: {
-        file: './posts/[id].tsx',
-        page: '/posts/[id]',
-      },
-      request,
-      params: { id: '123' },
-    });
+      const request = hasRequest ? createMockRequest('http://localhost/posts/123') : undefined;
+      const result = await resolveMetadata({
+        route: {
+          file: './posts/[id].tsx',
+          page: '/posts/[id]',
+        },
+        request,
+        params: { id: '123' },
+      });
 
-    expect(generateMetadata).toHaveBeenCalledWith(request, { id: '123' });
-    expect(result).toEqual({
-      metadata: { title: 'Post 123' },
-      headNodes: [<title key="metadata-title">Post 123</title>],
-    });
-  });
+      expect(generateMetadata).toHaveBeenCalledWith(request, { id: '123' });
+      expect(result).toEqual({
+        metadata: { title: 'Post 123' },
+        headNodes: [<title key="metadata-title">Post 123</title>],
+      });
+    }
+  );
 
   it('normalizes nullish metadata results to null', async () => {
     mockedCtx.mockResolvedValue({

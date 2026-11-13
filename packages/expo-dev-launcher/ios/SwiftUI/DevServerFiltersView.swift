@@ -12,7 +12,7 @@ struct DevServerFiltersView: View {
     VStack(alignment: .leading) {
       Text("Server discovery".uppercased())
         .font(.caption)
-        .foregroundColor(.primary.opacity(0.6))
+        .foregroundStyle(Color.primary.opacity(0.6))
 
       VStack(spacing: 0) {
         DevServerFilterRow(icon: "app") {
@@ -32,7 +32,7 @@ struct DevServerFiltersView: View {
         }
       }
       .background(Color.expoSecondarySystemBackground)
-      .cornerRadius(12)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
 
       Text(serverDiscoveryInfoMessage)
         .font(.system(size: 13))
@@ -42,9 +42,9 @@ struct DevServerFiltersView: View {
 
   private var slugField: some View {
     TextField("Match slug", text: $viewModel.filterBySlug)
-      .disableAutocorrection(true)
+      .autocorrectionDisabled()
     #if !os(macOS) && !os(tvOS)
-      .autocapitalization(.none)
+      .textInputAutocapitalization(.never)
     #endif
   }
 }

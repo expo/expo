@@ -6,7 +6,7 @@ import AuthenticationServices
 private class PresentationContextProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
   func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
     #if os(iOS)
-    return UIApplication.shared.keyWindow ?? ASPresentationAnchor()
+    return SceneGeometry.keyWindow() ?? ASPresentationAnchor()
     #else
     return NSApp.mainWindow ?? ASPresentationAnchor()
     #endif
@@ -15,9 +15,9 @@ private class PresentationContextProvider: NSObject, ASWebAuthenticationPresenta
 
 final internal class WebAuthSession {
   var authSession: ASWebAuthenticationSession?
-  var promise: Promise?
+  var continuation: CheckedContinuation<[String: String?], Error>?
   var isOpen: Bool {
-    promise != nil
+    continuation != nil
   }
 
   // It must be initialized before hand as `ASWebAuthenticationSession` holds it as a weak property
@@ -25,11 +25,7 @@ final internal class WebAuthSession {
 
   init(authUrl: URL, redirectUrl: URL?, options: AuthSessionOptions) {
     let completionHandler: ASWebAuthenticationSession.CompletionHandler = { callbackUrl, error in
-      self.finish(with: [
-        "type": callbackUrl != nil ? "success" : "cancel",
-        "url": callbackUrl?.absoluteString,
-        "error": error?.localizedDescription
-      ])
+      self.finish(with: WebAuthSession.result(callbackUrl: callbackUrl, error: error))
     }
 
     // iOS 17.4+/macOS 14.4+ supports HTTPS callbacks with host/path matching.
@@ -59,13 +55,16 @@ final internal class WebAuthSession {
     self.authSession?.prefersEphemeralWebBrowserSession = options.preferEphemeralSession
   }
 
-  func open(_ promise: Promise) {
+  @MainActor
+  func open() async throws -> [String: String?] {
     authSession?.presentationContextProvider = presentationContextProvider
-    guard authSession?.start() == true else {
-      promise.reject(WebAuthSessionFailedToStartException())
-      return
+    return try await withCheckedThrowingContinuation { continuation in
+      guard authSession?.start() == true else {
+        continuation.resume(throwing: WebAuthSessionFailedToStartException())
+        return
+      }
+      self.continuation = continuation
     }
-    self.promise = promise
   }
 
   func dismiss() {
@@ -73,11 +72,19 @@ final internal class WebAuthSession {
     finish(with: ["type": "dismiss"])
   }
 
+  static func result(callbackUrl: URL?, error: Error?) -> [String: String?] {
+    return [
+      "type": callbackUrl != nil ? "success" : "cancel",
+      "url": callbackUrl?.absoluteString,
+      "error": error?.localizedDescription
+    ]
+  }
+
   // MARK: - Private
 
   private func finish(with result: [String: String?]) {
-    promise?.resolve(result)
-    promise = nil
+    continuation?.resume(returning: result)
+    continuation = nil
     authSession = nil
   }
 }

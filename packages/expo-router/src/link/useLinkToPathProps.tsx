@@ -50,15 +50,12 @@ export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPr
     }
   };
 
-  let strippedHref = stripGroupSegmentsFromPath(href) || '/';
-
-  // Append base url only if needed.
-  if (!shouldLinkExternally(strippedHref)) {
-    strippedHref = appendBaseUrl(strippedHref);
-  }
+  const resolvedHref = shouldLinkExternally(href)
+    ? href
+    : appendBaseUrl(stripGroupSegmentsFromPath(href) || '/');
 
   return {
-    href: strippedHref,
+    href: resolvedHref,
     role: 'link' as const,
     onPress,
   };

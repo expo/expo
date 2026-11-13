@@ -27,7 +27,10 @@ export const PermalinkedSnippetHeader = withHeadingManager(
         <SnippetHeader
           {...snippetHeaderProps}
           title={
-            <LinkBase href={'#' + heading.slug} className="text-inherit hocus:underline">
+            <LinkBase
+              href={'#' + heading.slug}
+              skipNextLink
+              className="text-inherit hocus:underline">
               {title}
             </LinkBase>
           }

@@ -41,6 +41,7 @@ export type ExpoBabelFileMetadata = MetroBabelFileMetadata & {
   performConstantFolding?: boolean;
   reactClientReference?: string;
   reactServerReference?: string;
+  cacheVary?: { scheme: string; name: string }[];
 };
 
 /**

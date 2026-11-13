@@ -1,7 +1,7 @@
 import * as Calendar from 'expo-calendar/legacy';
 import { type NativeStackScreenProps } from 'expo-router';
 import React from 'react';
-import { Alert, Button, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Button, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import { BodyText } from '../components/BodyText';
 
@@ -50,6 +50,9 @@ export default class RemindersScreen extends React.Component<Props, State> {
   };
 
   componentDidMount() {
+    if (Platform.OS !== 'ios') {
+      return;
+    }
     const calendarId = this.props.route.params?.calendarId;
     if (calendarId) {
       this._loadCalendar(calendarId);
@@ -139,6 +142,9 @@ export default class RemindersScreen extends React.Component<Props, State> {
   };
 
   render() {
+    if (Platform.OS !== 'ios') {
+      return <BodyText>Reminders are only available on iOS.</BodyText>;
+    }
     if (!this.props.route.params?.calendarId) {
       return <BodyText>Access this screen from the "Calendars" screen.</BodyText>;
     }

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Converts basic link 1`] = `
 "import { A } from "@expo/html-elements";import { jsx as _jsx } from "react/jsx-runtime";

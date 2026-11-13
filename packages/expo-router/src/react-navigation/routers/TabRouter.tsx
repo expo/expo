@@ -1,18 +1,25 @@
-import { orderRoutesByRouteNames } from '../../utils/orderRoutesByRouteNames';
+import isEqual from 'react-fast-compare';
+
 import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
-import { ensureStateType } from './ensureStateType';
-import { createRouteKeyMinter } from './stateKeys';
-import type {
-  CommonNavigationAction,
-  DefaultRouterOptions,
-  NavigationState,
-  ParamListBase,
-  Route,
-  Router,
+import {
+  extendRouter,
+  type RouterExtensionContext,
+  type RouterExtensionMembers,
+} from './extendRouter';
+import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
+import {
+  type CommonNavigationAction,
+  type DefaultRouterOptions,
+  type NavigationState,
+  type ParamListBase,
+  type Route,
+  RouterActionHandling,
+  type RouterBrowserHistoryAction,
 } from './types';
+import { isActionHandled } from './utils';
 
 export type TabActionType =
   | {
@@ -120,6 +127,17 @@ function clearFocusedPreloadedRoute<ParamList extends ParamListBase>(
   return { ...state, routes };
 }
 
+// A route that `getId` re-keys is a new route instance, so it must not keep the nested navigator
+// state of the previous ID.
+function withoutStaleState<T extends Route<string> & { state?: unknown }>(route: T, key: string) {
+  if (key === route.key) {
+    return route;
+  }
+
+  const { state, ...routeWithoutState } = route;
+  return routeWithoutState;
+}
+
 const addFallbackRouteIfEmpty = (
   routes: Route<string>[],
   routeNames: string[],
@@ -220,6 +238,10 @@ const getRouteHistory = (
   return history;
 };
 
+// Unvisited tabs use the same placeholder keys as their descriptors until navigation creates a route.
+const getHistoryRoutes = (routes: Route<string>[], routeNames: string[]) =>
+  routeNames.map((name) => routes.find((route) => route.name === name) ?? { name, key: name });
+
 export const ensureStateHistory = (
   state: TabNavigationState<ParamListBase>,
   backBehavior: BackBehavior,
@@ -230,11 +252,11 @@ export const ensureStateHistory = (
     return state as TabNavigationStateWithHistory;
   }
 
-  const routes = orderRoutesByRouteNames(state.routes, state.routeNames);
+  const routes = getHistoryRoutes(state.routes, state.routeNames);
   const focusedRoute = state.routes[state.index];
   const index = routes.findIndex((route) => route.key === focusedRoute?.key);
 
-  // `orderRoutesByRouteNames` drops undeclared routes, so the focused one can be missing from
+  // The declared routes can omit the focused route, so it can be missing from
   // `routes`. Keep it in history anyway, so the current route is always the last entry.
   const history =
     index === -1
@@ -290,7 +312,7 @@ const changeIndex = (
       params: backBehavior === 'fullHistory' ? currentRoute.params : undefined,
     });
   } else {
-    const routes = orderRoutesByRouteNames(state.routes, state.routeNames);
+    const routes = getHistoryRoutes(state.routes, state.routeNames);
     const orderedIndex = routes.findIndex((route) => route.key === state.routes[index]!.key);
     history = getRouteHistory(routes, orderedIndex, backBehavior, initialRouteName);
   }
@@ -302,30 +324,89 @@ const changeIndex = (
   };
 };
 
-/**
- * TabRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
- */
-export function TabRouter({
-  initialRouteName,
-  backBehavior = 'firstRoute',
-}: TabRouterOptions): Router<
+function tabRouterExtension({
+  baseRouter,
+  nextKey,
+  options: { initialRouteName, backBehavior = 'firstRoute' },
+}: RouterExtensionContext<
   TabNavigationState<ParamListBase>,
-  TabActionType | CommonNavigationAction
-> {
-  // TODO: Simplify the action handling in this router.
-  const router: Router<
-    TabNavigationState<ParamListBase>,
-    TabActionType | CommonNavigationAction
-  > = {
-    ...BaseRouter,
+  TabActionType | CommonNavigationAction,
+  TabRouterOptions
+>) {
+  const normalizeHistory = (state: TabNavigationState<ParamListBase>) => {
+    if (backBehavior === 'history' || backBehavior === 'fullHistory') {
+      return ensureStateHistory(state, backBehavior, initialRouteName);
+    }
+    const normalized = ensureStateHistory(
+      { ...state, history: undefined },
+      backBehavior,
+      initialRouteName
+    );
+    const history = [
+      ...normalized.history,
+      ...(state.history?.filter((item) => item.type !== 'route') ?? []),
+    ];
+    return isEqual(history, state.history) ? state : { ...state, history };
+  };
 
-    type: 'tab',
+  const getBrowserHistoryForAction = (
+    previous: TabNavigationState<ParamListBase>,
+    next: TabNavigationState<ParamListBase>,
+    action: Pick<TabActionType | CommonNavigationAction, 'type'>
+  ): RouterBrowserHistoryAction | undefined => {
+    switch (action.type) {
+      case 'PUSH':
+      case 'NAVIGATE':
+      case 'JUMP_TO':
+        // Selecting another tab is a new browser visit even if tab history removes a duplicate.
+        // For example, Home -> Search -> Home still needs three browser entries.
+        if (
+          (backBehavior === 'history' || backBehavior === 'fullHistory') &&
+          previous.routes[previous.index]?.key !== next.routes[next.index]?.key
+        ) {
+          return { type: 'push' };
+        }
+        break;
+      case 'GO_BACK':
+        break;
+      default:
+        return undefined;
+    }
+    // URL-derived state may have no history yet. Action/focus handling already fills in `next`.
+    // Reconstruct `previous` too, so that initialization is not counted as a new browser visit.
+    return getBrowserHistoryForHistoryChange(
+      ensureStateHistory(previous, backBehavior, initialRouteName),
+      next
+    );
+  };
+
+  // TODO: Simplify the action handling in this router.
+  const router: Omit<
+    RouterExtensionMembers<
+      TabNavigationState<ParamListBase>,
+      TabActionType | CommonNavigationAction
+    >,
+    'shouldActionChangeFocus'
+  > = {
+    normalizeState: clearFocusedPreloadedRoute,
+
+    getStateForDeclaredRoutes(state, routeNames) {
+      const declared = baseRouter.getStateForDeclaredRoutes(state, routeNames);
+      if (declared.history != null && isArrayEqual(declared.routeNames, routeNames)) {
+        return declared;
+      }
+      return normalizeHistory(
+        isArrayEqual(declared.routeNames, routeNames) ? declared : { ...declared, routeNames }
+      );
+    },
+
+    getBrowserHistoryForAction,
+
+    getBrowserHistoryForRouteFocus: (previous, next) =>
+      getBrowserHistoryForAction(previous, next, { type: 'JUMP_TO' }),
 
     getStateForRouteFocus(inputState, key) {
-      const state = ensureStateType(
-        ensureStateHistory(inputState, backBehavior, initialRouteName),
-        'tab'
-      );
+      const state = ensureStateHistory(inputState, backBehavior, initialRouteName);
       const index = state.routes.findIndex((r) => r.key === key);
 
       if (index === -1 || index === state.index) {
@@ -335,30 +416,30 @@ export function TabRouter({
       return changeIndex(state, index, backBehavior, initialRouteName);
     },
 
-    getStateForAction(inputState, action, { routeGetIdList }) {
-      const state = ensureStateType(
-        ensureStateHistory(inputState, backBehavior, initialRouteName),
-        'tab'
-      );
+    getStateForAction(inputState, action, options) {
+      const { routeGetIdList } = options;
+      const state = ensureStateHistory(inputState, backBehavior, initialRouteName);
 
       if (action.target && action.target !== state.key) {
-        return null;
+        return RouterActionHandling.Unhandled;
       }
-      const minter = createRouteKeyMinter(state);
 
       switch (action.type) {
         case 'ROUTE_NAMES_CHANGED': {
           const routeNames = action.payload.routeNames;
 
           if (isArrayEqual(state.routeNames, routeNames)) {
-            return { state, affectedRouteKey: state.routes[state.index]?.key };
+            return {
+              state: normalizeHistory(state),
+              affectedRouteKey: state.routes[state.index]?.key,
+            };
           }
 
           const routes = addFallbackRouteIfEmpty(
             state.routes.filter((route) => routeNames.includes(route.name)),
             routeNames,
             initialRouteName,
-            minter.mint
+            nextKey
           );
 
           if (routes.length === 0) {
@@ -367,7 +448,6 @@ export function TabRouter({
                 ...state,
                 routeNames,
                 routes,
-                routeKeySeq: minter.routeKeySeq,
                 index: -1,
                 history: [],
               },
@@ -413,7 +493,7 @@ export function TabRouter({
             backBehavior === 'initialRoute' ||
             backBehavior === 'order'
           ) {
-            const orderedRoutes = orderRoutesByRouteNames(routes, routeNames);
+            const orderedRoutes = getHistoryRoutes(routes, routeNames);
             const orderedIndex = orderedRoutes.findIndex(
               (route) => route.key === routes[index]!.key
             );
@@ -429,14 +509,13 @@ export function TabRouter({
           }
 
           return {
-            state: {
+            state: normalizeHistory({
               ...state,
               history,
               routeNames,
               routes,
-              routeKeySeq: minter.routeKeySeq,
               index,
-            },
+            }),
             affectedRouteKey: routes[index]!.key,
           };
         }
@@ -446,13 +525,13 @@ export function TabRouter({
         case 'JUMP_TO':
         case 'NAVIGATE': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
 
           const { routes, index } = addRouteIfMissing(state.routes, action.payload.name, () => {
             const route = createRouteFromAction({
               action,
-              key: minter.mint(action.payload.name),
+              key: nextKey(action.payload.name),
             });
             return action.type === 'NAVIGATE' && action.payload.path != null
               ? { ...route, path: action.payload.path }
@@ -473,7 +552,7 @@ export function TabRouter({
                 const nextId = getId?.({ params: action.payload.params });
 
                 // TODO(@ubax): Rewrite `history` when `getId` re-keys a route, as `PRELOAD` does with `replacedKey`.
-                const key = currentId === nextId ? route.key : minter.mint(route.name);
+                const key = currentId === nextId ? route.key : nextKey(route.name);
 
                 let params;
 
@@ -496,11 +575,10 @@ export function TabRouter({
 
                 const updatedRoute =
                   params !== route.params || path !== route.path
-                    ? { ...route, key, path, params }
+                    ? { ...withoutStaleState(route, key), key, path, params }
                     : route;
                 return attachRouteState(updatedRoute, action);
               }),
-              routeKeySeq: minter.routeKeySeq,
             },
             index,
             backBehavior,
@@ -516,9 +594,9 @@ export function TabRouter({
 
         case 'SET_PARAMS':
         case 'REPLACE_PARAMS': {
-          const actionResult = BaseRouter.getStateForAction(state, action);
+          const actionResult = baseRouter.getStateForAction(state, action, options);
 
-          if (actionResult !== null) {
+          if (isActionHandled(actionResult)) {
             const nextState = actionResult.state;
             const index = nextState.index;
 
@@ -553,12 +631,12 @@ export function TabRouter({
 
         case 'GO_BACK': {
           if (backBehavior === 'none') {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
 
           const focusedRoute = state.routes[state.index];
           if (!focusedRoute) {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
           let backTargetName: string | undefined;
 
@@ -577,12 +655,12 @@ export function TabRouter({
           if (backTargetName !== undefined && backTargetName !== focusedRoute.name) {
             const { routes, index } = addRouteIfMissing(state.routes, backTargetName, () => ({
               name: backTargetName,
-              key: minter.mint(backTargetName),
+              key: nextKey(backTargetName),
             }));
 
             if (routes !== state.routes) {
               const result = changeIndex(
-                { ...state, routes, routeKeySeq: minter.routeKeySeq },
+                { ...state, routes },
                 index,
                 backBehavior,
                 initialRouteName
@@ -592,7 +670,7 @@ export function TabRouter({
           }
 
           if (state.history.length === 1) {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
 
           const previousHistoryItem = state.history[state.history.length - 2];
@@ -600,7 +678,7 @@ export function TabRouter({
           const index = state.routes.findLastIndex((route) => route.key === previousKey);
 
           if (index === -1) {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
 
           let routes = state.routes;
@@ -629,7 +707,7 @@ export function TabRouter({
 
         case 'PRELOAD': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
 
           const routeIndex = state.routes.findIndex((route) => route.name === action.payload.name);
@@ -640,7 +718,7 @@ export function TabRouter({
           if (routeIndex === -1) {
             const route = attachRouteState(
               {
-                ...createRouteFromAction({ action, key: minter.mint(action.payload.name) }),
+                ...createRouteFromAction({ action, key: nextKey(action.payload.name) }),
                 isPreloaded: true,
               },
               action
@@ -652,12 +730,12 @@ export function TabRouter({
             const getId = routeGetIdList[route.name];
             const currentId = getId?.({ params: route.params });
             const nextId = getId?.({ params: action.payload.params });
-            const key = currentId === nextId ? route.key : minter.mint(route.name);
+            const key = currentId === nextId ? route.key : nextKey(route.name);
             const params = action.payload.params;
             const newRoute = attachRouteState(
               params !== route.params
                 ? {
-                    ...route,
+                    ...withoutStaleState(route, key),
                     key,
                     params,
                     ...(key !== route.key && { isPreloaded: true }),
@@ -697,7 +775,7 @@ export function TabRouter({
               );
             }
           } else {
-            const orderedRoutes = orderRoutesByRouteNames(routes, state.routeNames);
+            const orderedRoutes = getHistoryRoutes(routes, state.routeNames);
             const focusedKey = routes[state.index]?.key;
             const focusedIndex = orderedRoutes.findIndex((route) => route.key === focusedKey);
             const routeHistory =
@@ -714,30 +792,21 @@ export function TabRouter({
               ...state,
               routes,
               history,
-              routeKeySeq: minter.routeKeySeq,
             },
             affectedRouteKey,
           };
         }
 
         default: {
-          const result = BaseRouter.getStateForAction(state, action);
+          const result = baseRouter.getStateForAction(state, action, options);
 
-          if (result === null) {
+          if (!isActionHandled(result)) {
             return result;
           }
 
           return {
             ...result,
-            state: ensureStateType(
-              ensureStateHistory(
-                // BaseRouter throws instead of returning partial RESET payloads.
-                result.state as TabNavigationState<ParamListBase>,
-                backBehavior,
-                initialRouteName
-              ),
-              state.type
-            ),
+            state: ensureStateHistory(result.state, backBehavior, initialRouteName),
           };
         }
       }
@@ -746,27 +815,13 @@ export function TabRouter({
     actionCreators: TabActions,
   };
 
-  const routerWithClearedFocusedPreloadedRoute: typeof router = {
-    ...router,
-    getStateForDeclaredRoutes(state, routeNames) {
-      return clearFocusedPreloadedRoute(router.getStateForDeclaredRoutes(state, routeNames));
-    },
-    getStateForRouteFocus(state, key) {
-      return clearFocusedPreloadedRoute(router.getStateForRouteFocus(state, key));
-    },
-    getStateForAction(state, action, options) {
-      const result = router.getStateForAction(state, action, options);
-      if (result === null) {
-        return null;
-      }
-
-      const normalizedState = clearFocusedPreloadedRoute(result.state);
-      return normalizedState === result.state ? result : { ...result, state: normalizedState };
-    },
-  };
-
-  return routerWithClearedFocusedPreloadedRoute;
+  return router;
 }
+
+/**
+ * TabRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
+ */
+export const TabRouter = extendRouter(BaseRouter, tabRouterExtension, { type: 'tab' });
 
 function removeReplacedRouteFromHistory(
   previousState: TabNavigationStateWithHistory,

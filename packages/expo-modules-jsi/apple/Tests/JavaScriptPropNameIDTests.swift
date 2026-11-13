@@ -52,6 +52,16 @@ struct JavaScriptPropNameIDTests {
     #expect(propName.utf16() == key)
   }
 
+  // MARK: - Creation
+
+  @Test
+  func `creates a PropNameID from a borrowed runtime`() {
+    func makePropName(_ runtime: borrowing JavaScriptRuntime) -> JavaScriptPropNameID {
+      return JavaScriptPropNameID(runtime, string: "length")
+    }
+    #expect(makePropName(runtime).utf8() == "length")
+  }
+
   // MARK: - Caching
 
   @Test

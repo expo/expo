@@ -31,7 +31,10 @@ export default function PickerScreen() {
             <Row alignment="center" spacing={12}>
               <Text>Flavour:</Text>
               <Spacer flexible />
-              <Picker selectedValue={menuFlavour} onValueChange={setMenuFlavour}>
+              <Picker
+                accessibilityLabel="Flavour"
+                selectedValue={menuFlavour}
+                onValueChange={setMenuFlavour}>
                 {FLAVOURS.map((f) => (
                   <Picker.Item key={f.value} label={f.label} value={f.value} />
                 ))}

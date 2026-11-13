@@ -16,18 +16,18 @@ import { Step } from '~/ui/components/Step';
 次のプロンプトをエージェントに貼り付けてください。
 
 ```text プロンプト|wrap
-オプションの並びに、ダウンロードアイコン付きの "Save" を追加して。タップしたら、react-native-view-shot ライブラリを使って画面全体ではなくステッカー付きの写真だけをキャプチャし、expo-media-library ライブラリを使ってスマートフォンの写真ライブラリに保存して。必要であれば初回にアクセス許可を求め、画像が保存されたことを知らせるアラートを表示して。
+オプションの並びに、ダウンロードアイコン付きの "Save" を追加して。タップしたら、react-native-view-shot ライブラリを使って画面全体ではなくステッカー付きの写真だけをキャプチャし、expo-media-library ライブラリの Asset.create() メソッドを使ってスマートフォンの写真ライブラリに保存して。必要であれば初回に写真を追加する許可を求め、画像が保存されたことを知らせるアラートを表示して。
 ```
 
 <Collapsible summary="英語の原文プロンプト">
 
 ```text Prompt|wrap
-Add a "Save" option to the row of options, with a download icon. When I tap it, capture just the photo with the sticker on it (not the whole screen) using the react-native-view-shot library, and save the result to my phone's photo library using the expo-media-library library. Ask for permission the first time if needed, and show an alert confirming that the image was saved.
+Add a "Save" option to the row of options, with a download icon. When I tap it, capture just the photo with the sticker on it (not the whole screen) using the react-native-view-shot library, and save the result to my phone's photo library using the Asset.create() method from the expo-media-library library. Ask for permission to add photos the first time if needed, and show an alert confirming that the image was saved.
 ```
 
 </Collapsible>
 
-**表示されるもの**: **Save** をタップすると、初回は写真への保存許可が求められます。**Allow**（許可）をタップすると、アプリが確認メッセージを表示します。スマートフォンの写真ギャラリーを開いてみましょう。ステッカーが焼き込まれた写真がそこにあり、どこにでも共有できる状態になっています。
+**表示されるもの**: 初めて **Save** をタップしたときに、写真を追加する許可を求められることがあります。**Allow**（許可）をタップすると、アプリが確認メッセージを表示します。スマートフォンの写真ギャラリーを開いてみましょう。ステッカーが焼き込まれた写真がそこにあり、どこにでも共有できる状態になっています。
 
 </Step>
 
@@ -35,20 +35,20 @@ Add a "Save" option to the row of options, with a download icon. When I tap it, 
 
 ## web でも動くようにする（任意）
 
-このアプリはスマートフォン専用ではありません。同じプロジェクトは web ブラウザでも動作します。開発サーバーを実行しているターミナルウィンドウで <kbd>W</kbd> を押すと、アプリがブラウザで開きます。**Save** を除いて、すべて動作します。スマートフォンで画像をキャプチャするライブラリは web では動作しないためです。
+このアプリはスマートフォン専用ではありません。同じプロジェクトは web ブラウザでも動作します。開発サーバーを実行しているターミナルウィンドウで <kbd>W</kbd> を押すと、アプリがブラウザで開きます。**Save** を除いて、すべて動作します。web ブラウザはアプリに写真ライブラリへのアクセスを提供しないため、画像をそこに保存できません。
 
 <Collapsible summary="Save オプションを web でも動くようにしたい場合">
 
 次のプロンプトをエージェントに貼り付けてください。
 
 ```text プロンプト|wrap
-アプリが web ブラウザで動作しているときも Save オプションが使えるようにして。react-native-view-shot ライブラリは web に対応していないので、プラットフォームが web の場合は代わりに dom-to-image ライブラリを使って画像をキャプチャし、ファイルとしてダウンロードして。
+アプリが web ブラウザで動作しているときも Save オプションが使えるようにして。プラットフォームが web の場合は、react-native-view-shot ライブラリで画像を data URI としてキャプチャし、写真ライブラリに保存する代わりに JPEG ファイルとしてダウンロードして。
 ```
 
 <Collapsible summary="英語の原文プロンプト">
 
 ```text Prompt|wrap
-Make the Save option also work when the app runs in a web browser. The react-native-view-shot library doesn't support the web, so when the platform is web, use the dom-to-image library to capture the image and download it as a file instead.
+Make the Save option also work when the app runs in a web browser. When the platform is web, capture the image with the react-native-view-shot library as a data URI, and download it as a JPEG file instead of saving it to the photo library.
 ```
 
 </Collapsible>

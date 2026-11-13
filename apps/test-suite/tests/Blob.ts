@@ -141,6 +141,23 @@ export async function test({ describe, it, expect }: JasmineInterface) {
         );
         expect(await blob.size).toBe(17);
       });
+      it('accepts empty string parts', async () => {
+        expect(new Blob(['']).size).toBe(0);
+        expect(new Blob(['', 'a']).size).toBe(1);
+        expect(await new Blob(['', 'a']).text()).toBe('a');
+      });
+      it('keeps NUL characters in both directions', async () => {
+        const nul = String.fromCharCode(0);
+        expect(new Blob([`a${nul}b`]).size).toBe(3);
+        expect(await new Blob([nul]).text()).toBe(nul);
+        expect(await new Blob([`a${nul}b`]).text()).toBe(`a${nul}b`);
+        expect(await new Blob([nul.repeat(8)]).text()).toBe(nul.repeat(8));
+        expect(await new Blob([new Uint8Array([0x61, 0, 0x62])]).text()).toBe(`a${nul}b`);
+      });
+      it('keeps NUL characters alongside non-ASCII ones', async () => {
+        const mixed = `a${String.fromCharCode(0)}\u00e9 \u4e16\u754c \ud83c\udf0d`;
+        expect(await new Blob([mixed]).text()).toBe(mixed);
+      });
       it('Slicing emotes', async () => {
         const str = 'a🌍b'; // 'a' (1 byte) + '🌍' (4 bytes) + 'b' (1 byte) = 6 UTF-8 bytes
         const blob = new Blob([str]);

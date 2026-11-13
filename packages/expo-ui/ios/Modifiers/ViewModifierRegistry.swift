@@ -16,7 +16,7 @@ internal struct ListSectionSpacingModifier: ViewModifier, Record {
   @Field var value: CGFloat = 0
 
   func body(content: Content) -> some View {
-#if os(tvOS)
+#if os(tvOS) || os(macOS)
     content
 #else
     if #available(iOS 17.0, *) {
@@ -587,7 +587,11 @@ internal struct MenuActionDismissBehaviorModifier: ViewModifier, Record {
       case .automatic:
         content.menuActionDismissBehavior(.automatic)
       case .disabled:
+#if os(macOS)
+        content.menuActionDismissBehavior(.automatic)
+#else
         content.menuActionDismissBehavior(.disabled)
+#endif
       case .enabled:
         content.menuActionDismissBehavior(.enabled)
       }
@@ -1183,6 +1187,18 @@ internal enum TextLinePattern: String, Enumerable {
   case dashDotDot
 }
 
+internal extension TextLinePattern {
+  func toSwiftUI() -> Text.LineStyle.Pattern {
+    switch self {
+    case .solid: return .solid
+    case .dash: return .dash
+    case .dot: return .dot
+    case .dashDot: return .dashDot
+    case .dashDotDot: return .dashDotDot
+    }
+  }
+}
+
 internal struct TextUnderLine: ViewModifier, Record {
   @Field var isActive: Bool = false
   @Field var pattern: TextLinePattern = .solid
@@ -1391,7 +1407,7 @@ internal struct ListSectionMargins: ViewModifier, Record {
   @Field var edges: EdgeOptions?
 
   func body(content: Content) -> some View {
-#if compiler(>=6.2) && !os(tvOS) // Xcode 26
+#if compiler(>=6.2) && !os(tvOS) && !os(macOS) // Xcode 26
     if #available(iOS 26.0, *) {
       if let edges {
         content.listSectionMargins(edges.toEdge(), length ?? 0)
@@ -1529,6 +1545,8 @@ public class ViewModifierRegistry {
   public typealias ModifierFactory = ([String: Any], AppContext, EventDispatcher) throws -> any ViewModifier
   private(set) internal var modifierFactories: [String: ModifierFactory] = [:]
 
+  public static var widgetKit: WidgetKitModifiers?
+
   private init() {
     registerBuiltInModifiers()
   }
@@ -1629,6 +1647,12 @@ public class ViewModifierRegistry {
         return text.foregroundColor(color)
       }
       return text
+    case "underline":
+      guard let modifier = try? TextUnderLine(from: params, appContext: appContext) else { return text }
+      return text.underline(modifier.isActive, pattern: modifier.pattern.toSwiftUI(), color: modifier.color)
+    case "strikethrough":
+      guard let modifier = try? TextStrikeThrough(from: params, appContext: appContext) else { return text }
+      return text.strikethrough(modifier.isActive, pattern: modifier.pattern.toSwiftUI(), color: modifier.color)
     default:
       #if DEBUG
       return Text(" ['\(type)' not supported for nested Text]").foregroundColor(.red)
@@ -1813,6 +1837,83 @@ internal struct NavigationTitleModifier: ViewModifier, Record {
   }
 }
 
+internal enum NavigationBarTitleDisplayMode: String, Enumerable {
+  case automatic
+  case inline
+  case large
+
+#if os(iOS)
+  var value: NavigationBarItem.TitleDisplayMode {
+    switch self {
+    case .automatic:
+      return .automatic
+    case .inline:
+      return .inline
+    case .large:
+      return .large
+    }
+  }
+#endif
+}
+
+internal struct NavigationBarTitleDisplayModeModifier: ViewModifier, Record {
+  @Field var displayMode: NavigationBarTitleDisplayMode = .automatic
+
+  func body(content: Content) -> some View {
+#if os(iOS)
+    content.navigationBarTitleDisplayMode(displayMode.value)
+#else
+    content
+#endif
+  }
+}
+
+internal enum ToolbarTitleDisplayModeType: String, Enumerable {
+  case automatic
+  case inline
+  case inlineLarge
+  case large
+
+  @available(iOS 17.0, tvOS 17.0, macOS 14.0, *)
+  var value: SwiftUI.ToolbarTitleDisplayMode? {
+    switch self {
+    case .automatic:
+      return .automatic
+    case .inline:
+      return .inline
+    case .inlineLarge:
+#if os(tvOS)
+      return nil
+#else
+      return .inlineLarge
+#endif
+    case .large:
+#if os(iOS)
+      return .large
+#else
+      return nil
+#endif
+    }
+  }
+}
+
+internal struct ToolbarTitleDisplayModeModifier: ViewModifier, Record {
+  @Field var mode: ToolbarTitleDisplayModeType = .automatic
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+      if let value = mode.value {
+        content.toolbarTitleDisplayMode(value)
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
 // MARK: - Built-in Modifier Registration
 
 // swiftlint:disable:next no_grouping_extension
@@ -1836,6 +1937,10 @@ extension ViewModifierRegistry {
 
     register("frame") { params, appContext, _ in
       return try FrameModifier(from: params, appContext: appContext)
+    }
+
+    register("universalLayout") { params, appContext, _ in
+      return try UniversalLayoutModifier(from: params, appContext: appContext)
     }
 
     register("padding") { params, appContext, _ in
@@ -1888,6 +1993,10 @@ extension ViewModifierRegistry {
 
     register("tint") { params, appContext, _ in
       return try TintModifier(from: params, appContext: appContext)
+    }
+
+    register("selectedSegmentTintColor") { params, appContext, _ in
+      return try SelectedSegmentTintColorModifier(from: params, appContext: appContext)
     }
 
     register("hidden") { params, appContext, _ in
@@ -1987,6 +2096,42 @@ extension ViewModifierRegistry {
 
     register("navigationTitle") { params, appContext, _ in
       return try NavigationTitleModifier(from: params, appContext: appContext)
+    }
+
+    register("navigationBarTitleDisplayMode") { params, appContext, _ in
+      return try NavigationBarTitleDisplayModeModifier(from: params, appContext: appContext)
+    }
+
+    register("toolbarTitleDisplayMode") { params, appContext, _ in
+      return try ToolbarTitleDisplayModeModifier(from: params, appContext: appContext)
+    }
+
+    register("navigationSplitViewStyle") { params, appContext, _ in
+      return try NavigationSplitViewStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("navigationSplitViewColumnWidth") { params, appContext, _ in
+      return try NavigationSplitViewColumnWidthModifier(from: params, appContext: appContext)
+    }
+
+    register("arrangementViewStyle") { params, appContext, _ in
+      return try ArrangementViewStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("splitArrangementLayoutRatio") { params, appContext, _ in
+      return try SplitArrangementLayoutRatioModifier(from: params, appContext: appContext)
+    }
+
+    register("splitArrangementLayoutSize") { params, appContext, _ in
+      return try SplitArrangementLayoutSizeModifier(from: params, appContext: appContext)
+    }
+
+    register("splitArrangementFixedLayoutSize") { params, appContext, _ in
+      return try SplitArrangementFixedLayoutSizeModifier(from: params, appContext: appContext)
+    }
+
+    register("overlayArrangementEdge") { params, appContext, _ in
+      return try OverlayArrangementEdgeModifier(from: params, appContext: appContext)
     }
 
     register("accessibilityLabel") { params, appContext, _ in
@@ -2261,6 +2406,14 @@ extension ViewModifierRegistry {
       return try ScrollPositionModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
+    register("searchable") { params, appContext, eventDispatcher in
+      return try SearchableModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
+    register("searchToolbarBehavior") { params, appContext, _ in
+      return try SearchToolbarBehaviorModifier(from: params, appContext: appContext)
+    }
+
     register("pickerStyle") { params, appContext, _ in
       return try PickerStyleModifier(from: params, appContext: appContext)
     }
@@ -2297,12 +2450,20 @@ extension ViewModifierRegistry {
       return try ScrollDisabledModifier(from: params, appContext: appContext)
     }
 
+    register("preferredColorScheme") { params, appContext, _ in
+      return try PreferredColorSchemeModifier(from: params, appContext: appContext)
+    }
+
     register("scrollClipDisabled") { params, appContext, _ in
       return try ScrollClipDisabledModifier(from: params, appContext: appContext)
     }
 
     register("scrollIndicators") { params, appContext, _ in
       return try ScrollIndicatorsModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollEdgeEffectStyle") { params, appContext, _ in
+      return try ScrollEdgeEffectStyleModifier(from: params, appContext: appContext)
     }
 
     register("tabViewStyle") { params, appContext, _ in
@@ -2337,6 +2498,10 @@ extension ViewModifierRegistry {
       return try PresentationDragIndicatorModifier(from: params, appContext: appContext)
     }
 
+    register("presentationCornerRadius") { params, appContext, _ in
+      return try PresentationCornerRadiusModifier(from: params, appContext: appContext)
+    }
+
     register("presentationBackgroundInteraction") { params, appContext, _ in
       return try PresentationBackgroundInteractionModifier(from: params, appContext: appContext)
     }
@@ -2344,7 +2509,7 @@ extension ViewModifierRegistry {
     register("interactiveDismissDisabled") { params, appContext, _ in
       return try InteractiveDismissDisabledModifier(from: params, appContext: appContext)
     }
-    
+
     register("presentationBackground") { params, appContext, _ in
       return try PresentationBackgroundModifier(from: params, appContext: appContext)
     }
@@ -2355,6 +2520,10 @@ extension ViewModifierRegistry {
 
     register("listStyle") { params, appContext, _ in
       return try ListStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("sectionIndexLabel") { params, appContext, _ in
+      return try SectionIndexLabelModifier(from: params, appContext: appContext)
     }
 
     register("moveDisabled") { params, appContext, _ in
@@ -2373,14 +2542,6 @@ extension ViewModifierRegistry {
       return try ContentTransitionModifier(from: params, appContext: appContext)
     }
 
-    register("widgetURL") { params, appContext, _ in
-      return try WidgetURLModifier(from: params, appContext: appContext)
-    }
-
-    register("activityBackgroundTint") { params, appContext, _ in
-      return try ActivityBackgroundTintModifier(from: params, appContext: appContext)
-    }
-
     register("keyboardType") { params, appContext, _ in
       return try KeyboardTypeModifier(from: params, appContext: appContext)
     }
@@ -2394,7 +2555,11 @@ extension ViewModifierRegistry {
     }
 
     register("containerBackground") { params, appContext, _ in
-      return try ContainerBackgroundModifier(from: params, appContext: appContext)
+      let modifier = try ContainerBackgroundModifier(from: params, appContext: appContext)
+      #if DEBUG
+      modifier.warnIfWidgetPlacementIsUnavailable()
+      #endif
+      return modifier
     }
 
     register("symbolEffect") { params, appContext, _ in
@@ -2407,6 +2572,10 @@ extension ViewModifierRegistry {
 
     register("onScrollGeometryChange") { params, appContext, eventDispatcher in
       return try OnScrollGeometryChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
+    register("onHingeChange") { params, appContext, eventDispatcher in
+      return try OnHingeChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
   }
 }

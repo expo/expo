@@ -1,0 +1,227 @@
+---
+title: Toolbar
+description: A SwiftUI Toolbar component that places items in the toolbar of the view it wraps.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+Expo UI Toolbar matches the official SwiftUI [`toolbar(content:)` API](<https://developer.apple.com/documentation/swiftui/view/toolbar(content:)>) and adds a toolbar to the view it wraps.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/toolbar/ios-light.webp"
+  darkSrc="/static/images/expo-ui/toolbar/ios-dark.webp"
+  alt="A Birds list with a sort button in the navigation bar"
+/>
+
+Put the toolbar items in [`Toolbar.Content`](#toolbarcontent). Everything else inside `Toolbar` is the view the toolbar belongs to. Inside a [`NavigationStack`](navigationstack), the items go into the navigation bar.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Buttons in the navigation bar
+
+Set the title with the [`navigationTitle`](modifiers/#navigationtitletitle) modifier on `Toolbar`.
+
+<ComponentExample
+  title="ToolbarExample.tsx"
+  src="/static/images/expo-ui/examples/toolbar-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/toolbar-basic-ios-dark.webp"
+  alt="A Birds list with a sort button in the navigation bar">
+
+```tsx
+import {
+  Button,
+  Host,
+  List,
+  NavigationStack,
+  Text,
+  Toolbar,
+} from '@expo/ui/swift-ui';
+import { navigationTitle } from '@expo/ui/swift-ui/modifiers';
+import { useState } from 'react';
+
+const BIRDS = ['Goldcrest', 'Barn Swallow', 'Grey Heron'];
+
+export default function ToolbarExample() {
+  const [descending, setDescending] = useState(false);
+
+  const sorted = [...BIRDS].sort((a, b) =>
+    descending ? b.localeCompare(a) : a.localeCompare(b)
+  );
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <NavigationStack>
+        <Toolbar modifiers={[navigationTitle('Birds')]}>
+          <List>
+            {sorted.map(bird => (
+              <Text key={bird}>{bird}</Text>
+            ))}
+          </List>
+          <Toolbar.Content>
+            <Button
+              systemImage="arrow.up.arrow.down"
+              label={descending ? 'Sort Z to A' : 'Sort A to Z'}
+              onPress={() => setDescending(value => !value)}
+            />
+          </Toolbar.Content>
+        </Toolbar>
+      </NavigationStack>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Toolbar item placement
+
+Wrap an item in a [`ToolbarItem`](#toolbaritem) and set its `placement`. An item without a `ToolbarItem` uses the `automatic` placement.
+
+<ComponentExample
+  title="ToolbarItemExample.tsx"
+  src="/static/images/expo-ui/examples/toolbar-item-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/toolbar-item-ios-dark.webp"
+  alt="A Birds list with a share button in the navigation bar and an add button in the bottom bar">
+
+```tsx
+import {
+  Button,
+  Host,
+  List,
+  NavigationStack,
+  Text,
+  Toolbar,
+  ToolbarItem,
+} from '@expo/ui/swift-ui';
+import { navigationTitle } from '@expo/ui/swift-ui/modifiers';
+
+const BIRDS = ['Goldcrest', 'Barn Swallow', 'Grey Heron'];
+
+export default function ToolbarItemExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <NavigationStack>
+        <Toolbar modifiers={[navigationTitle('Birds')]}>
+          <List>
+            {BIRDS.map(bird => (
+              <Text key={bird}>{bird}</Text>
+            ))}
+          </List>
+          <Toolbar.Content>
+            <ToolbarItem placement="topBarTrailing">
+              <Button
+                systemImage="square.and.arrow.up"
+                label="Share"
+                onPress={() => {}}
+              />
+            </ToolbarItem>
+            <ToolbarItem placement="bottomBar">
+              <Button
+                systemImage="plus"
+                label="Add bird"
+                onPress={() => {}}
+              />
+            </ToolbarItem>
+          </Toolbar.Content>
+        </Toolbar>
+      </NavigationStack>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+A `ToolbarItem` has to be inside `Toolbar.Content`. If the current platform or OS version does not offer a placement, the item uses `automatic`.
+
+### Close button in a sheet
+
+A sheet has no navigation bar of its own, so give its content a [`NavigationStack`](navigationstack). On iOS 26 and later, a [`Button`](button) with `role="close"` and no `label` or children shows as a close (X) icon. On earlier versions, set a `label` and `systemImage="xmark"` instead.
+
+<ComponentExample
+  title="ToolbarCloseButtonExample.tsx"
+  src="/static/images/expo-ui/examples/toolbar-sheet-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/toolbar-sheet-ios-dark.webp"
+  alt="A sheet titled Grey Heron with a close button in its navigation bar">
+
+```tsx
+import {
+  BottomSheet,
+  Button,
+  Host,
+  NavigationStack,
+  Text,
+  Toolbar,
+  VStack,
+} from '@expo/ui/swift-ui';
+import {
+  navigationTitle,
+  padding,
+  presentationDetents,
+} from '@expo/ui/swift-ui/modifiers';
+import { useState } from 'react';
+
+export default function ToolbarCloseButtonExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <BottomSheet
+        isPresented={isPresented}
+        onIsPresentedChange={setIsPresented}
+        anchor={
+          <Button
+            label="Show details"
+            onPress={() => setIsPresented(true)}
+          />
+        }>
+        <NavigationStack
+          modifiers={[presentationDetents(['medium'])]}>
+          <Toolbar modifiers={[navigationTitle('Grey Heron')]}>
+            <VStack
+              alignment="leading"
+              spacing={12}
+              modifiers={[padding({ all: 20 })]}>
+              <Text>
+                Stands still at the water's edge for long spells,
+                then strikes at fish with its dagger bill.
+              </Text>
+            </VStack>
+            <Toolbar.Content>
+              <Button
+                role="close"
+                onPress={() => setIsPresented(false)}
+              />
+            </Toolbar.Content>
+          </Toolbar>
+        </NavigationStack>
+      </BottomSheet>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+## API
+
+```tsx
+import { Toolbar, ToolbarItem } from '@expo/ui/swift-ui';
+```
+
+<APISection
+  packageName="expo-ui/swift-ui/toolbar"
+  apiName="Toolbar"
+/>

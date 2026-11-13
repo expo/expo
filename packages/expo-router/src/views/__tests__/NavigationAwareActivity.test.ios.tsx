@@ -9,7 +9,7 @@ import Tabs from '../../layouts/Tabs';
 import { NativeTabs } from '../../native-tabs';
 import { CommonActions, StackRouter, useNavigation, useRoute } from '../../react-navigation/native';
 import {
-  unstable_createStandardRouterNavigator,
+  createStandardRouterNavigator,
   type NavigatorContentProps,
 } from '../../standard-navigation';
 import { renderRouter, screen } from '../../testing-library';
@@ -54,11 +54,11 @@ function EmptyScreen() {
 
 function getActivityModes(testID: string) {
   const modes: ActivityMode[] = [];
-  let node = screen.UNSAFE_getByProps({ testID });
+  let node = screen.getByTestId(testID, { includeHiddenElements: true });
 
   while (node.parent) {
     node = node.parent;
-    if (node.type === View && node.props.testID === 'activity-contents') {
+    if (node.props.testID === 'activity-contents') {
       modes.push(node.props.accessibilityLabel);
     }
   }
@@ -72,7 +72,7 @@ function expectActivityModes(expected: Record<string, ActivityMode[]>) {
   }
 }
 
-const ActivityStack = unstable_createStandardRouterNavigator(
+const ActivityStack = createStandardRouterNavigator(
   ({ state, descriptors }: NavigatorContentProps<object>) =>
     state.routes.map((route) => (
       <React.Fragment key={route.key}>{descriptors[route.key]?.render()}</React.Fragment>
@@ -81,7 +81,10 @@ const ActivityStack = unstable_createStandardRouterNavigator(
   { activityDefaultThreshold: 1 }
 );
 
-function renderModes({ tabs = false, threshold }: { tabs?: boolean; threshold?: number } = {}) {
+async function renderModes({
+  tabs = false,
+  threshold,
+}: { tabs?: boolean; threshold?: number } = {}) {
   const modes: Record<string, ActivityMode> = {};
 
   function ModeReporter() {
@@ -90,7 +93,7 @@ function renderModes({ tabs = false, threshold }: { tabs?: boolean; threshold?: 
     return null;
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: () =>
       tabs ? (
         <Tabs>
@@ -113,13 +116,13 @@ function renderModes({ tabs = false, threshold }: { tabs?: boolean; threshold?: 
   return modes;
 }
 
-test('hides stack screens at the default depth', () => {
-  const modes = renderModes();
+test('hides stack screens at the default depth', async () => {
+  const modes = await renderModes();
 
-  act(() => router.push('/b'));
-  act(() => router.push('/c'));
-  act(() => router.push('/d'));
-  act(() => router.push('/e'));
+  await act(() => router.push('/b'));
+  await act(() => router.push('/c'));
+  await act(() => router.push('/d'));
+  await act(() => router.push('/e'));
 
   expect(modes).toEqual({
     index: 'hidden',
@@ -129,7 +132,7 @@ test('hides stack screens at the default depth', () => {
     e: 'visible',
   });
 
-  act(() => router.back());
+  await act(() => router.back());
 
   expect(modes).toEqual({
     index: 'hidden',
@@ -158,10 +161,10 @@ test.each([
     },
     expected: { index: 'hidden', b: 'visible', c: 'visible', d: 'visible' },
   },
-] as const)('supports stack depth $threshold', ({ threshold, navigate, expected }) => {
-  const modes = renderModes({ threshold });
+] as const)('supports stack depth $threshold', async ({ threshold, navigate, expected }) => {
+  const modes = await renderModes({ threshold });
 
-  act(navigate);
+  await act(navigate);
 
   expect(modes).toEqual(expected);
 });
@@ -187,24 +190,24 @@ test.each([
       e: 'visible',
     },
   },
-] as const)('uses depth $threshold for tabs', ({ threshold, expected }) => {
-  const modes = renderModes({ tabs: true, threshold });
+] as const)('uses depth $threshold for tabs', async ({ threshold, expected }) => {
+  const modes = await renderModes({ tabs: true, threshold });
 
-  act(() => router.navigate('/b'));
-  act(() => router.navigate('/c'));
-  act(() => router.navigate('/d'));
-  act(() => router.navigate('/e'));
+  await act(() => router.navigate('/b'));
+  await act(() => router.navigate('/c'));
+  await act(() => router.navigate('/d'));
+  await act(() => router.navigate('/e'));
 
   expect(modes).toEqual(expected);
 
   if (threshold === 1) {
-    act(() => router.navigate('/b'));
+    await act(() => router.navigate('/b'));
     expect(modes.index).toBe('hidden');
     expect(modes.b).toBe('visible');
   }
 });
 
-test('keeps preloaded stack routes visible', () => {
+test('keeps preloaded stack routes visible', async () => {
   const modes: Record<string, ActivityMode> = {};
   let preload = () => {};
 
@@ -220,15 +223,15 @@ test('keeps preloaded stack routes visible', () => {
     return null;
   }
 
-  renderRouter({ _layout: () => <JSStack />, index: ModeReporter, b: ModeReporter });
+  await renderRouter({ _layout: () => <JSStack />, index: ModeReporter, b: ModeReporter });
 
-  act(preload);
+  await act(preload);
 
   expect(modes.b).toBe('visible');
 });
 
-test('automatically wraps screens when enabled on a navigator', () => {
-  renderRouter({
+test('automatically wraps screens when enabled on a navigator', async () => {
+  await renderRouter({
     _layout: () => <JSStack activityEnabled />,
     index: () => <View testID="index" />,
     b: () => <View testID="b" />,
@@ -237,15 +240,15 @@ test('automatically wraps screens when enabled on a navigator', () => {
 
   expectActivityModes({ index: ['visible'] });
 
-  act(() => router.push('/b'));
+  await act(() => router.push('/b'));
   expectActivityModes({ index: ['visible'], b: ['visible'] });
 
-  act(() => router.push('/c'));
+  await act(() => router.push('/c'));
   expectActivityModes({ index: ['hidden'], b: ['visible'], c: ['visible'] });
 });
 
-test('uses the navigator activity default threshold', () => {
-  renderRouter({
+test('uses the navigator activity default threshold', async () => {
+  await renderRouter({
     _layout: () => <ActivityStack activityEnabled />,
     index: () => <View testID="index" />,
     b: () => <View testID="b" />,
@@ -253,12 +256,12 @@ test('uses the navigator activity default threshold', () => {
 
   expectActivityModes({ index: ['visible'] });
 
-  act(() => router.push('/b'));
+  await act(() => router.push('/b'));
   expectActivityModes({ index: ['hidden'], b: ['visible'] });
 });
 
-test('uses depth 1 for Slot', () => {
-  renderRouter(
+test('uses depth 1 for Slot', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -275,7 +278,7 @@ test('uses depth 1 for Slot', () => {
 
   expectActivityModes({ index: ['visible'] });
 
-  act(() => router.navigate('/other'));
+  await act(() => router.navigate('/other'));
   expectActivityModes({ index: ['hidden'], other: [] });
 });
 
@@ -290,8 +293,8 @@ describe('invalid activity threshold', () => {
     warn.mockRestore();
   });
 
-  test.each([0, -1, NaN])('disables activity for %s', (activityEnabled) => {
-    renderRouter({
+  test.each([0, -1, NaN])('disables activity for %s', async (activityEnabled) => {
+    await renderRouter({
       _layout: () => <JSStack activityEnabled={activityEnabled} />,
       index: () => <View testID="index" />,
     });
@@ -303,8 +306,8 @@ describe('invalid activity threshold', () => {
   });
 });
 
-test('counts screens above only in the current navigator', () => {
-  renderRouter(
+test('counts screens above only in the current navigator', async () => {
+  await renderRouter(
     {
       _layout: () => <JSStack activityEnabled />,
       '(tabs)/_layout': () => (
@@ -324,27 +327,27 @@ test('counts screens above only in the current navigator', () => {
 
   expectActivityModes({ 'home-index': ['visible'] });
 
-  act(() => router.push('/home/details'));
+  await act(() => router.push('/home/details'));
   expectActivityModes({ 'home-index': ['visible'], 'home-details': ['visible'] });
 
-  act(() => router.navigate('/other'));
+  await act(() => router.navigate('/other'));
   expectActivityModes({
-    'home-index': ['visible'],
-    'home-details': ['visible'],
+    'home-index': ['hidden'],
+    'home-details': ['hidden'],
     other: ['visible'],
   });
 
-  act(() => router.push('/modal'));
+  await act(() => router.push('/modal'));
   expectActivityModes({
-    'home-index': ['visible'],
-    'home-details': ['visible'],
+    'home-index': ['hidden'],
+    'home-details': ['hidden'],
     other: ['hidden'],
     modal: ['visible'],
   });
 });
 
-test('uses the nearest navigator or screen activity setting', () => {
-  renderRouter({
+test('uses the nearest navigator or screen activity setting', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs activityEnabled>
         <Tabs.Screen name="index" />
@@ -359,15 +362,15 @@ test('uses the nearest navigator or screen activity setting', () => {
 
   expectActivityModes({ index: ['visible'] });
 
-  act(() => router.navigate('/inherited'));
+  await act(() => router.navigate('/inherited'));
   expectActivityModes({ index: ['hidden'], inherited: ['visible'] });
 
-  act(() => router.navigate('/disabled'));
+  await act(() => router.navigate('/disabled'));
   expectActivityModes({ index: ['hidden'], inherited: ['hidden'], disabled: [] });
 });
 
-test('does not inherit activity from a parent navigator', () => {
-  renderRouter(
+test('wraps nested navigator screens when a parent navigator enables activity', async () => {
+  await renderRouter(
     {
       _layout: () => <JSStack activityEnabled />,
       '(tabs)/_layout': () => (
@@ -380,11 +383,11 @@ test('does not inherit activity from a parent navigator', () => {
     { initialUrl: '/' }
   );
 
-  expectActivityModes({ index: [] });
+  expectActivityModes({ index: ['visible'] });
 });
 
-test('uses NativeTabs trigger activity settings', () => {
-  renderRouter({
+test('uses NativeTabs trigger activity settings', async () => {
+  await renderRouter({
     _layout: () => (
       <NativeTabs activityEnabled>
         <NativeTabs.Trigger name="index" activityEnabled />
@@ -397,12 +400,12 @@ test('uses NativeTabs trigger activity settings', () => {
 
   expectActivityModes({ index: ['visible'] });
 
-  act(() => router.navigate('/disabled'));
+  await act(() => router.navigate('/disabled'));
   expectActivityModes({ index: ['hidden'], disabled: [] });
 });
 
-test('uses headless tab trigger activity settings', () => {
-  renderRouter({
+test('uses headless tab trigger activity settings', async () => {
+  await renderRouter({
     _layout: () => (
       <HeadlessTabs activityEnabled>
         <TabSlot />
@@ -418,12 +421,219 @@ test('uses headless tab trigger activity settings', () => {
 
   expectActivityModes({ index: ['visible'] });
 
-  act(() => router.navigate('/disabled'));
+  await act(() => router.navigate('/disabled'));
   expectActivityModes({ index: ['hidden'], disabled: [] });
 });
 
-test('wraps route modules but not layout modules', () => {
-  renderRouter(
+test('hides screens of a nested stack in a hidden NativeTabs tab', async () => {
+  const effect = jest.fn();
+  const cleanup = jest.fn();
+  const renderedValues: number[] = [];
+  let setValue: React.Dispatch<React.SetStateAction<number>> = () => {};
+
+  function StatefulScreen() {
+    const [value, updateValue] = React.useState(0);
+    setValue = updateValue;
+    renderedValues.push(value);
+
+    React.useEffect(() => {
+      effect();
+      return cleanup;
+    }, []);
+
+    return <View testID="more-index" />;
+  }
+
+  await renderRouter(
+    {
+      _layout: () => (
+        <NativeTabs activityEnabled>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="more" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      'more/_layout': () => <Stack />,
+      'more/index': StatefulScreen,
+    },
+    { initialUrl: '/more' }
+  );
+
+  expectActivityModes({ 'more-index': ['visible'] });
+
+  await act(() => setValue(1));
+  await act(() => router.navigate('/'));
+
+  expectActivityModes({ 'more-index': ['hidden'] });
+  expect(cleanup).toHaveBeenCalledTimes(1);
+
+  await act(() => router.navigate('/more'));
+
+  expectActivityModes({ 'more-index': ['visible'] });
+  expect(effect).toHaveBeenCalledTimes(2);
+  expect(renderedValues.at(-1)).toBe(1);
+});
+
+test('hides screens of a nested stack in a hidden JavaScript tab', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <Tabs activityEnabled>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="more" />
+        </Tabs>
+      ),
+      index: () => <View testID="index" />,
+      'more/_layout': () => <Stack />,
+      'more/index': () => <View testID="more-index" />,
+    },
+    { initialUrl: '/more' }
+  );
+
+  expectActivityModes({ 'more-index': ['visible'] });
+
+  await act(() => router.navigate('/'));
+  expectActivityModes({ 'more-index': ['hidden'] });
+});
+
+test('hides every screen of a nested stack route that loses focus with depth 1', async () => {
+  await renderRouter(
+    {
+      _layout: () => <Stack activityEnabled={1} />,
+      'nested/_layout': () => <Stack />,
+      'nested/index': () => <View testID="nested-index" />,
+      'nested/details': () => <View testID="nested-details" />,
+      other: () => <View testID="other" />,
+    },
+    { initialUrl: '/nested' }
+  );
+
+  await act(() => router.push('/nested/details'));
+  expectActivityModes({ 'nested-index': ['visible'], 'nested-details': ['visible'] });
+
+  await act(() => router.push('/other'));
+  expectActivityModes({
+    'nested-index': ['hidden'],
+    'nested-details': ['hidden'],
+    other: ['visible'],
+  });
+});
+
+test('hides screens of a nested stack route at the default stack depth', async () => {
+  await renderRouter(
+    {
+      _layout: () => <Stack activityEnabled />,
+      'nested/_layout': () => <Stack />,
+      'nested/index': () => <View testID="nested-index" />,
+      b: () => <View testID="b" />,
+      c: () => <View testID="c" />,
+    },
+    { initialUrl: '/nested' }
+  );
+
+  await act(() => router.push('/b'));
+  expectActivityModes({ 'nested-index': ['visible'] });
+
+  await act(() => router.push('/c'));
+  expectActivityModes({ 'nested-index': ['hidden'] });
+});
+
+test('does not hide screens of a nested stack with activity disabled', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <NativeTabs activityEnabled>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="home" />
+          <NativeTabs.Trigger name="player" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      'home/_layout': () => <Stack />,
+      'home/index': () => <View testID="home-index" />,
+      'player/_layout': () => <Stack activityEnabled={false} />,
+      'player/index': () => <View testID="player-index" />,
+      'player/details': () => <View testID="player-details" />,
+    },
+    { initialUrl: '/home' }
+  );
+
+  await act(() => router.navigate('/player'));
+  await act(() => router.push('/player/details'));
+  await act(() => router.navigate('/'));
+
+  expectActivityModes({
+    'home-index': ['hidden'],
+    'player-index': [],
+    'player-details': [],
+  });
+});
+
+test('does not hide a nested stack screen with activity disabled', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <NativeTabs activityEnabled>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="home" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      'home/_layout': () => (
+        <Stack>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="player" activityEnabled={false} />
+        </Stack>
+      ),
+      'home/index': () => <View testID="home-index" />,
+      'home/player': () => <View testID="home-player" />,
+    },
+    { initialUrl: '/home' }
+  );
+
+  await act(() => router.push('/home/player'));
+  await act(() => router.navigate('/'));
+
+  expectActivityModes({ 'home-index': ['hidden'], 'home-player': [] });
+});
+
+test('applies only the deeper navigator rule below a navigator with activity disabled', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <NativeTabs activityEnabled>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="home" />
+          <NativeTabs.Trigger name="player" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      'home/_layout': () => <Stack />,
+      'home/index': () => <View testID="home-index" />,
+      'player/_layout': () => <Stack activityEnabled={false} />,
+      'player/queue/_layout': () => <JSStack activityEnabled />,
+      'player/queue/index': () => <View testID="queue-index" />,
+      'player/queue/details': () => <View testID="queue-details" />,
+      'player/queue/more': () => <View testID="queue-more" />,
+    },
+    { initialUrl: '/home' }
+  );
+
+  await act(() => router.navigate('/player/queue'));
+  await act(() => router.push('/player/queue/details'));
+  await act(() => router.push('/player/queue/more'));
+  await act(() => router.navigate('/'));
+
+  expectActivityModes({
+    'home-index': ['hidden'],
+    'queue-index': ['hidden'],
+    'queue-details': ['visible'],
+    'queue-more': ['visible'],
+  });
+});
+
+test('wraps route modules but not layout modules', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <View testID="root-layout">
@@ -447,8 +657,8 @@ test('wraps route modules but not layout modules', () => {
   });
 });
 
-test('manual activity only counts screens above in the current navigator', () => {
-  renderRouter(
+test('manual activity only counts screens above in the current navigator', async () => {
+  await renderRouter(
     {
       _layout: () => <JSStack />,
       '(tabs)/_layout': () => (
@@ -471,10 +681,10 @@ test('manual activity only counts screens above in the current navigator', () =>
 
   expectActivityModes({ 'home-index': ['visible'] });
 
-  act(() => router.push('/home/details'));
+  await act(() => router.push('/home/details'));
   expectActivityModes({ 'home-index': ['visible'] });
 
-  act(() => router.navigate('/other'));
+  await act(() => router.navigate('/other'));
   expectActivityModes({ 'home-index': ['visible'] });
 });
 
@@ -497,7 +707,7 @@ test('cleans up effects while preserving local state', async () => {
     return null;
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: () => <JSStack />,
     index: () => (
       <NavigationAwareActivity>
@@ -508,9 +718,9 @@ test('cleans up effects while preserving local state', async () => {
     c: EmptyScreen,
   });
 
-  act(() => setValue(1));
-  act(() => router.push('/b'));
-  act(() => router.push('/c'));
+  await act(() => setValue(1));
+  await act(() => router.push('/b'));
+  await act(() => router.push('/c'));
 
   expect(cleanup).toHaveBeenCalledTimes(1);
 
@@ -520,21 +730,22 @@ test('cleans up effects while preserving local state', async () => {
   expect(renderedValues.at(-1)).toBe(1);
 });
 
-test('throws outside a screen', () => {
-  expect(() => render(<NavigationAwareActivity>content</NavigationAwareActivity>)).toThrow(
-    'NavigationAwareActivity must be rendered inside a screen component.'
-  );
+test('throws outside a screen', async () => {
+  await expect(
+    async () => await render(<NavigationAwareActivity>content</NavigationAwareActivity>)
+  ).rejects.toThrow('NavigationAwareActivity must be rendered inside a screen component.');
 });
 
-test('throws when wrapping a layout navigator', () => {
-  expect(() =>
-    renderRouter({
-      _layout: () => (
-        <NavigationAwareActivity>
-          <Stack />
-        </NavigationAwareActivity>
-      ),
-      index: EmptyScreen,
-    })
-  ).toThrow('NavigationAwareActivity must be rendered inside a screen component.');
+test('throws when wrapping a layout navigator', async () => {
+  await expect(
+    async () =>
+      await renderRouter({
+        _layout: () => (
+          <NavigationAwareActivity>
+            <Stack />
+          </NavigationAwareActivity>
+        ),
+        index: EmptyScreen,
+      })
+  ).rejects.toThrow('NavigationAwareActivity must be rendered inside a screen component.');
 });

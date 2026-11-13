@@ -12,7 +12,7 @@ import * as path from 'path';
 
 import type { WatcherBackendOptions } from '../types';
 import { AbstractWatcher } from './AbstractWatcher';
-import { includedByGlob, typeFromStat } from './common';
+import { isIncluded, typeFromStat } from './common';
 
 const debug = require('debug')('Metro:NativeWatcher');
 
@@ -103,7 +103,7 @@ export default class NativeWatcher extends AbstractWatcher {
         return;
       }
 
-      if (!includedByGlob(type, this.globs, this.dot, relativePath)) {
+      if (!isIncluded(type, this.included, relativePath)) {
         return;
       }
 

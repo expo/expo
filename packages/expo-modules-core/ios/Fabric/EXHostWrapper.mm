@@ -37,4 +37,9 @@
   return [_host.bundleManager bundleURL];
 }
 
+- (nullable id<RCTSurfacePresenterStub>)surfacePresenter
+{
+  return _host.surfacePresenter;
+}
+
 @end

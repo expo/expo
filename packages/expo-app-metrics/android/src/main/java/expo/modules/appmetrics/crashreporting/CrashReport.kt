@@ -8,6 +8,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+const val NATIVE_EXCEPTION_LOG_NAME = "native.exception"
+
 @Serializable
 data class CrashReport(
   /** Unix signal number (e.g. SIGSEGV = 11), from `ApplicationExitInfo.getStatus()` for native crashes. */
@@ -48,7 +50,7 @@ data class CrashReport(
     return LogRecord(
       sessionId = sessionId,
       timestamp = timestampBegin,
-      name = "native.exception",
+      name = NATIVE_EXCEPTION_LOG_NAME,
       severity = Severity.FATAL.rawValue,
       attributes = JsonAny.encodeMapToJsonString(attributes)
     )
@@ -142,7 +144,9 @@ data class CrashReport(
     }
 
     private const val MAX_CAUSE_DEPTH = 5
-    private const val MAX_LOG_STACK_FRAMES = 25
+
+    /** Kept in step with the iOS limit so the same crash isn't cut at a different depth. */
+    private const val MAX_LOG_STACK_FRAMES = 50
     private const val MAX_LOG_STACKTRACE_LENGTH = 65_536
 
     private fun signalName(signal: Int): String =

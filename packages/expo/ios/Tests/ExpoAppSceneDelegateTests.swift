@@ -222,6 +222,25 @@ struct ExpoAppSceneDelegateTests {
 
   @Test
   @MainActor
+  func `keeps a fingerprint-check trigger away from RCTLinkingManager so JS does not see it`() {
+    let url = URL(string: "bareexpo://?__expo_fingerprint_check=1&__expo_fingerprint_nonce=abc")!
+    let recorder = OpenURLNotificationRecorder()
+    let spy = SpyAppDelegate()
+    SceneEventForwarder(appDelegate: { spy }).open(url: url, options: [:])
+    #expect(recorder.count(of: url) == 0)
+  }
+
+  @Test
+  @MainActor
+  func `still hands a fingerprint-check trigger to the app delegate`() {
+    let url = URL(string: "bareexpo://?__expo_fingerprint_check=1&__expo_fingerprint_nonce=def")!
+    let delegate = LegacyLinkingAppDelegate()
+    SceneEventForwarder(appDelegate: { delegate }).open(url: url, options: [:])
+    #expect(delegate.openedURLs == [url])
+  }
+
+  @Test
+  @MainActor
   func `notifies RCTLinkingManager once when the delegate notifies it too`() {
     let delegate = LegacyLinkingAppDelegate()
     let url = URL(string: "bareexpo://scene-delegate/legacy-open-url")!
@@ -242,6 +261,51 @@ struct ExpoAppSceneDelegateTests {
     SceneEventForwarder(appDelegate: { delegate }).continue(userActivity)
     #expect(delegate.continuedUserActivities.count == 1)
     #expect(recorder.count(of: webpageURL) == 1)
+  }
+
+  @Test
+  @MainActor
+  func `notifies React Native through the injected notifier for a warm URL`() {
+    let spy = SpyAppDelegate()
+    let url = URL(string: "bareexpo://scene-delegate/warm-open-url")!
+    let recorder = OpenURLNotificationRecorder()
+    var notifications = 0
+    SceneEventForwarder(appDelegate: { spy }).open(url: url, options: [:]) {
+      notifications += 1
+    }
+    #expect(spy.openedURLs.first?.url == url)
+    #expect(notifications == 1)
+    #expect(recorder.count(of: url) == 0)
+  }
+
+  @Test
+  @MainActor
+  func `does not notify React Native when the app delegate already notified for a URL`() {
+    let delegate = LegacyLinkingAppDelegate()
+    let url = URL(string: "bareexpo://scene-delegate/warm-legacy-open-url")!
+    var notifications = 0
+    SceneEventForwarder(appDelegate: { delegate }).open(url: url, options: [:]) {
+      notifications += 1
+    }
+    #expect(delegate.openedURLs == [url])
+    #expect(notifications == 0)
+  }
+
+  @Test
+  @MainActor
+  func `notifies React Native through the injected notifier for a warm user activity`() {
+    let spy = SpyAppDelegate()
+    let userActivity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)
+    let webpageURL = URL(string: "https://expo.dev/scene-delegate/warm-activity")!
+    userActivity.webpageURL = webpageURL
+    let recorder = OpenURLNotificationRecorder()
+    var notifications = 0
+    SceneEventForwarder(appDelegate: { spy }).continue(userActivity) {
+      notifications += 1
+    }
+    #expect(spy.continuedUserActivities.first === userActivity)
+    #expect(notifications == 1)
+    #expect(recorder.count(of: webpageURL) == 0)
   }
 
   @Test
@@ -280,6 +344,23 @@ struct ExpoAppSceneDelegateTests {
     #expect(handled == [false])
   }
 #endif
+
+  @Test
+  @MainActor
+  func `passes no root properties by default`() {
+    // The app-delegate life cycle started React Native with no initial properties, so adopting the
+    // scene life cycle must not start handing the root component properties it never had.
+    #expect(ExpoAppSceneDelegate().initialProperties == nil)
+  }
+
+  @Test
+  @MainActor
+  func `lets a subclass supply root properties`() {
+    // Restores what `RCTAppDelegate.initialProps` gave apps before React Native moved its startup
+    // into `scene(_:willConnectTo:)`.
+    let properties = PropertySupplyingSceneDelegate().initialProperties
+    #expect(properties?["myProperty"] as? Bool == true)
+  }
 
   @Test
   @MainActor
@@ -355,6 +436,14 @@ private final class UserActivityRecordingSubscriber: NSObject, ExpoAppDelegateSu
     error: Error
   ) {
     failures.append(Failure(application: application, activityType: userActivityType, error: error))
+  }
+}
+
+/// Scene delegate shaped like an app that supplies its own root properties, the way apps did with
+/// `RCTAppDelegate.initialProps` under the app-delegate life cycle.
+private final class PropertySupplyingSceneDelegate: ExpoAppSceneDelegate {
+  override var initialProperties: [AnyHashable: Any]? {
+    return ["myProperty": true]
   }
 }
 

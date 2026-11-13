@@ -27,6 +27,11 @@ export interface ColumnProps extends PrimitiveBaseProps {
    * Vertical alignment of children.
    */
   verticalAlignment?: VerticalAlignment;
+  /**
+   * When `true`, a child percentage is a fraction of this column.
+   * Universal `Column` sets this. Leave it unset to keep the Compose `Column`.
+   */
+  resolvesChildPercentages?: boolean;
 }
 
 const ColumnNativeView: React.ComponentType<ColumnProps> = requireNativeView(

@@ -8,6 +8,7 @@ import { Platform, processColor } from 'react-native';
 
 import InternalExpoCalendar from './ExpoCalendar';
 import type {
+  ExtendedProperty,
   ModifiableEventProperties,
   ModifiableReminderProperties,
   ModifiableCalendarProperties,
@@ -73,6 +74,27 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     const newAttendee = await super.createAttendee(attendee);
     Object.setPrototypeOf(newAttendee, ExpoCalendarAttendee.prototype);
     return newAttendee;
+  }
+
+  override async getExtendedProperties(): Promise<ExtendedProperty[]> {
+    if (Platform.OS !== 'android') {
+      throw new UnavailabilityError('ExpoCalendarEvent', 'getExtendedProperties');
+    }
+    return await super.getExtendedProperties();
+  }
+
+  override async setExtendedProperty(name: string, value: string): Promise<void> {
+    if (Platform.OS !== 'android') {
+      throw new UnavailabilityError('ExpoCalendarEvent', 'setExtendedProperty');
+    }
+    await super.setExtendedProperty(name, value);
+  }
+
+  override async deleteExtendedProperty(name: string): Promise<boolean> {
+    if (Platform.OS !== 'android') {
+      throw new UnavailabilityError('ExpoCalendarEvent', 'deleteExtendedProperty');
+    }
+    return await super.deleteExtendedProperty(name);
   }
 
   override async update(details: Partial<ModifiableEventProperties>): Promise<void> {
@@ -210,6 +232,10 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
 
 /**
  * Gets an instance of the default calendar object.
+ *
+ * > **iOS 17+:** With write-only calendar access, this returns EventKit's virtual calendar,
+ * > which can be used to create events but does not expose existing calendar data.
+ *
  * > **Android:** This function is not available on Android. Android does not expose a single
  * > system-managed default calendar. Use `getCalendars()` and choose an appropriate writable
  * > calendar for your app; `isPrimary` can help identify per-account primary calendars.
@@ -226,12 +252,16 @@ export function getDefaultCalendarSync(): ExpoCalendar {
 }
 
 /**
- * Gets an array of [`ExpoCalendar`](#expocalendar) shared objects with details about the different calendars stored on the device.
- * @param entityType __iOS Only.__ Not required, but if defined, filters the returned calendars to
- * a specific [entity type](#entitytypes). Possible values are `Calendar.EntityTypes.EVENT` (for calendars shown in
- * the Calendar app) and `Calendar.EntityTypes.REMINDER` (for the Reminders app).
- * > **Note:** If not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
- * @return An array of [`ExpoCalendar`](#expocalendar) shared objects matching the provided entity type (if provided).
+ * Gets an array of [`ExpoCalendar`](#expocalendar) shared objects with details about the
+ * calendars available to the app.
+ *
+ * > **iOS 17+:** With write-only calendar access, requesting `EntityTypes.EVENT` returns a
+ * > single virtual calendar, which can be used to create events but does not expose the user's
+ * > real calendars.
+ *
+ * @param entityType __iOS Only.__ Not required, but if defined, filters the returned calendars to a specific [entity type](#entitytypes).
+ * > **Note:** If not defined, both calendar (write-only is enough) and reminders permissions are required.
+ * @return An array of [`ExpoCalendar`](#expocalendar) shared objects matching the provided entity type, if provided.
  */
 export async function getCalendars(entityType?: EntityTypes): Promise<ExpoCalendar[]> {
   if (!InternalExpoCalendar.getCalendars) {
@@ -355,6 +385,7 @@ export function getSourcesSync(): Source[] {
 }
 
 export type {
+  ExtendedProperty,
   ModifiableEventProperties,
   ModifiableReminderProperties,
   ModifiableCalendarProperties,

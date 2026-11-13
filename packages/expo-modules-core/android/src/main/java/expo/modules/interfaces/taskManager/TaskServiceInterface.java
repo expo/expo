@@ -86,6 +86,6 @@ public interface TaskServiceInterface extends SingletonModule {
   /**
    *  Checks whether the app with given appScopeKey is currently being run in headless mode.
    */
-  boolean isStartedByHeadlessLoader(String appScopeKey);
+  boolean isRunningInHeadlessMode(String appScopeKey);
 
 }

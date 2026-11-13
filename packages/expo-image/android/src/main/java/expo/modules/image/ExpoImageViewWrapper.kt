@@ -1,5 +1,7 @@
 package expo.modules.image
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
@@ -52,7 +54,14 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   private val progressListener = OkHttpProgressListener(WeakReference(this))
 
   private val firstView = ExpoImageView(activity)
-  private val secondView = ExpoImageView(activity)
+
+  /**
+   * Holds the next image while the current one is still displayed. Most views never show a second
+   * image, so it is created on first use by [getOrCreateSecondView].
+   */
+  private var secondView: ExpoImageView? = null
+
+  private val imageViewsLayout = FrameLayout(context)
 
   private val mainHandler = Handler(context.mainLooper)
 
@@ -60,15 +69,11 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
    * @returns the view which is currently active or will be used when both views are empty
    */
   private val activeView: ExpoImageView
-    get() {
-      if (secondView.drawable != null) {
-        return secondView
-      }
-      return firstView
-    }
+    get() = secondView?.takeIf { it.drawable != null } ?: firstView
 
   private var firstTarget = ImageViewWrapperTarget(WeakReference(this))
   private var secondTarget = ImageViewWrapperTarget(WeakReference(this))
+  private var foregroundTarget: ImageViewWrapperTarget? = null
 
   internal val onLoadStart by EventDispatcher<Unit>()
   internal val onProgress by EventDispatcher<ImageProgressEvent>()
@@ -126,6 +131,18 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
     }
 
+  // `null` leaves SVG documents untouched. An empty map still resolves `var()` fallbacks.
+  internal var svgVariables: Map<String, String>? = null
+    set(value) {
+      if (field == value) {
+        return
+      }
+      field = value
+      // The variables are substituted into the source before it's parsed, so the document has to be
+      // decoded again for new values to take effect.
+      shouldRerender = true
+    }
+
   internal var isFocusableProp: Boolean = false
     set(value) {
       field = value
@@ -170,9 +187,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal var cachePolicy: CachePolicy = CachePolicy.DISK
 
   fun setIsAnimating(setAnimating: Boolean) {
-    // Animatable animations always start from the beginning when resumed.
-    // So we check first if the resource is a GifDrawable, because it can continue
-    // from where it was paused.
+    // APNG4Android's GifDrawable supports pause and resume, while the generic Animatable API only
+    // exposes start and stop.
     when (val resource = activeView.drawable) {
       is GifDrawable -> setIsAnimating(resource, setAnimating)
       is Animatable -> setIsAnimating(resource, setAnimating)
@@ -280,26 +296,24 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           val (newView, previousView) = if (firstView.drawable == null) {
             firstView to secondView
           } else {
-            secondView to firstView
+            getOrCreateSecondView() to firstView
           }
 
-          val isInitialDisplay = previousView.drawable == null || previousView.isPlaceholder
+          val isInitialDisplay = previousView?.drawable == null || previousView.isPlaceholder
           val transitionDuration = transition
             ?.takeIf { it.shouldPlay(target.cacheType, isInitialDisplay) }
             ?.duration
             ?.toLong()
             ?: 0L
 
-          val clearPreviousView = {
-            previousView
-              .recycleView()
-              ?.apply {
-                // When the placeholder is loaded, one target is displayed in both views.
-                // So we just have to move the reference to a new view instead of clearing the target.
-                if (this != target) {
-                  clear(requestManager)
-                }
+          val clearRecycledTarget = { recycledTarget: ImageViewWrapperTarget? ->
+            recycledTarget?.apply {
+              // When the placeholder is loaded, one target is displayed in both views.
+              // So we just have to move the reference to a new view instead of clearing the target.
+              if (this != target) {
+                clear(requestManager)
               }
+            }
           }
 
           configureView(newView, target, resource, isPlaceholder)
@@ -310,25 +324,52 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           }
 
           if (transitionDuration <= 0) {
-            clearPreviousView()
+            clearRecycledTarget(previousView?.recycleView())
             newView.alpha = 1f
             newView.bringToFront()
+          } else if (previousView == null) {
+            newView.bringToFront()
+            newView.alpha = 0f
+            newView.animate().apply {
+              duration = transitionDuration
+              alpha(1f)
+            }
           } else {
             newView.bringToFront()
             previousView.alpha = 1f
             newView.alpha = 0f
-            // A newer source can reuse this view as its `newView` before the fade-out ends. That
-            // cancels this animation, and the end action runs on cancel too, so without this guard
-            // it would recycle the view now holding the new image. See issue #46703.
+            // A newer source can reuse this view as its `newView` before the fade-out ends, so the
+            // cleanup is guarded on the view still holding the exact binding it was scheduled for.
+            // The same target object can be recycled for a newer source, so target identity alone
+            // is not sufficient.
+            // See issue #46703.
             val previousTarget = previousView.currentTarget
+            val previousTargetBindingId = previousView.targetBindingId
             previousView.animate().apply {
               duration = transitionDuration
               alpha(0f)
-              withEndAction {
-                if (previousView.currentTarget === previousTarget) {
-                  clearPreviousView()
+              // Deliberately not `withEndAction`: `ViewPropertyAnimator` drops the end action when
+              // the animation is cancelled, and starting a new animation on the same view cancels
+              // this one. In a recycling list that happens constantly, so the target would never be
+              // returned to the pool and the view would stay blank.
+              setListener(object : AnimatorListenerAdapter() {
+                private var handled = false
+
+                override fun onAnimationCancel(animation: Animator) = onAnimationEnd(animation)
+
+                override fun onAnimationEnd(animation: Animator) {
+                  if (handled) {
+                    return
+                  }
+                  handled = true
+                  clearRecycledTarget(
+                    previousView.recycleViewIfBindingMatches(
+                      previousTarget,
+                      previousTargetBindingId
+                    )
+                  )
                 }
-              }
+              })
             }
             newView.animate().apply {
               duration = transitionDuration
@@ -338,7 +379,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         } else {
           // We don't want to show the placeholder if something is currently displayed.
           // There is one exception - when we're displaying a different placeholder.
-          if ((firstView.drawable != null && !firstView.isPlaceholder) || secondView.drawable != null) {
+          if ((firstView.drawable != null && !firstView.isPlaceholder) || secondView?.drawable != null) {
             return@trace
           }
 
@@ -356,7 +397,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           if (transitionDuration > 0) {
             firstView.bringToFront()
             firstView.alpha = 0f
-            secondView.isVisible = false
+            secondView?.isVisible = false
             firstView.animate().apply {
               duration = transitionDuration
               alpha(1f)
@@ -397,6 +438,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       it.applyTransformationMatrix()
     }
     target.isUsed = true
+    foregroundTarget = target
 
     if (resource is Animatable) {
       resource.start()
@@ -456,10 +498,22 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   fun onViewDestroys() {
     firstView.setImageDrawable(null)
-    secondView.setImageDrawable(null)
+    secondView?.setImageDrawable(null)
 
     requestManager.clear(firstTarget)
     requestManager.clear(secondTarget)
+  }
+
+  fun onTargetCleared(target: ImageViewWrapperTarget) {
+    if (foregroundTarget === target) {
+      foregroundTarget = null
+    }
+
+    // Detach a cleared Glide drawable before its pooled resource is released.
+    if (firstView.currentTarget === target) {
+      firstView.recycleView()
+    }
+    secondView?.takeIf { it.currentTarget === target }?.recycleView()
   }
 
   private fun cleanIfNeeded(
@@ -470,7 +524,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     // We only clean the image when the source is set to null and we don't have a placeholder or the view is empty.
     if (width == 0 || height == 0 || (newBestSource == null || newBestSourceModel == null) && newBestPlaceholderModel == null) {
       firstView.recycleView()
-      secondView.recycleView()
+      secondView?.recycleView()
 
       requestManager.clear(firstTarget)
       requestManager.clear(secondTarget)
@@ -493,7 +547,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       contentFit != ContentFit.Fill &&
       contentFit != ContentFit.None
     ) {
-      ContentFitDownsampleStrategy(target, contentFit)
+      ContentFitDownsampleStrategy(target, contentFit, decodeFormat)
     } else {
       // it won't downscale the image if the image is smaller than hardware bitmap size limit
       SafeDownsampleStrategy(decodeFormat)
@@ -509,7 +563,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
 
       activeView
-        .recycleView()
+        ?.recycleView()
         ?.apply {
           clear(requestManager)
         }
@@ -563,10 +617,14 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
 
       onLoadStart.invoke(Unit)
-      val newTarget = if (secondTarget.isUsed) {
-        firstTarget
-      } else {
-        secondTarget
+      val newTarget = when (foregroundTarget) {
+        firstTarget -> secondTarget
+        secondTarget -> firstTarget
+        else -> if (secondTarget.isUsed) {
+          firstTarget
+        } else {
+          secondTarget
+        }
       }
       newTarget.hasSource = sourceToLoad != null
       newTarget.cacheType = ImageCacheType.NONE
@@ -599,6 +657,9 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         .customize(tintColor) {
           apply(RequestOptions().set(CustomOptions.tintColor, it))
         }
+        .customize(svgVariables) {
+          apply(RequestOptions().set(CustomOptions.svgVariables, it))
+        }
 
       val cookie = Trace.getNextCookieValue()
       beginAsyncTraceBlock(Trace.tag, Trace.loadNewImageBlock, cookie)
@@ -609,29 +670,32 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       clearViewBeforeChangingSource = false
     }
 
+  private fun getOrCreateSecondView(): ExpoImageView {
+    secondView?.let { return it }
+    return ExpoImageView(activity).also {
+      secondView = it
+      imageViewsLayout.addView(it, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+    }
+  }
+
   init {
     val matchParent = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
 
     layoutParams = matchParent
 
     firstView.isVisible = true
-    secondView.isVisible = true
 
     // We need to add a `FrameLayout` to allow views to overflow.
     // With the `LinearLayout` is impossible to render two views on each other.
-    val layout = FrameLayout(context).apply {
+    imageViewsLayout.apply {
       layoutParams = matchParent
       addView(
         firstView,
         matchParent
       )
-      addView(
-        secondView,
-        matchParent
-      )
     }
 
-    addView(layout, matchParent)
+    addView(imageViewsLayout, matchParent)
   }
 
   companion object {

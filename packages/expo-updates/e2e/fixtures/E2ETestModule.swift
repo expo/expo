@@ -68,6 +68,27 @@ public final class E2ETestModule: Module, UpdatesStateChangeListener {
       return Int(floor(downloadFinishTime.timeIntervalSince(downloadStartTime) * 1000.0))
     }
 
+    AsyncFunction("readCachedUpdateIdsAsync") { (promise: Promise) in
+      guard let directory = AppController.sharedInstance.updatesDirectory else {
+        promise.reject("ERR_UPDATES_E2E_READ", "No updatesDirectory initialized")
+        return
+      }
+      let database = UpdatesDatabase()
+      database.databaseQueue.async {
+        do {
+          let config = try UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: nil)
+          try database.openDatabase(inDirectory: directory, logger: UpdatesLogger())
+          defer { database.closeDatabase() }
+          // The controller may still be reaping updates on its own connection.
+          _ = try database.execute(sql: "PRAGMA busy_timeout = 1000", withArgs: nil)
+          let updates = try database.allUpdates(withConfig: config)
+          promise.resolve(updates.map { $0.updateId.uuidString.lowercased() }.sorted())
+        } catch {
+          promise.reject("ERR_UPDATES_E2E_READ", error.localizedDescription)
+        }
+      }
+    }
+
     AsyncFunction("readInternalAssetsFolderAsync") { (promise: Promise) in
       guard let assetsFolder = AppController.sharedInstance.updatesDirectory else {
         promise.reject("ERR_UPDATES_E2E_READ", "No updatesDirectory initialized")

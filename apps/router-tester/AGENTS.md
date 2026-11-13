@@ -9,7 +9,8 @@ Use an EAS iOS Simulator session with `--type agent-device`. This app uses:
 - Bundle identifier: `dev.expo.routertester`
 - Development-client scheme: `router-tester`
 - Development-client build profile: `development`
-- Static simulator build profile: `ios-simulator`
+- Static simulator build profile: `ios-simulator` (Xcode 27)
+- Xcode 26 compile-check profile: `ios-simulator-xcode-26`
 
 Check for an existing session before creating one:
 

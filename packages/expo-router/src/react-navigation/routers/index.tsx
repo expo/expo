@@ -3,6 +3,7 @@ import * as CommonActions from './CommonActions';
 export { CommonActions };
 
 export { BaseRouter } from './BaseRouter';
+export { attachRouteState } from './attachRouteState';
 export type {
   DrawerActionHelpers,
   DrawerActionType,
@@ -11,6 +12,16 @@ export type {
   DrawerStatus,
 } from './DrawerRouter';
 export { DrawerActions, DrawerRouter } from './DrawerRouter';
+export { extendRouter, extendRouterActions } from './extendRouter';
+export type {
+  ExtendedRouter,
+  RouterActionContext,
+  RouterActionReducer,
+  RouterExtension,
+  RouterExtensionContext,
+  RouterExtensionMembers,
+  RouterExtensionOptions,
+} from './extendRouter';
 export type {
   StackActionHelpers,
   StackActionType,
@@ -26,3 +37,4 @@ export type {
 } from './TabRouter';
 export { TabActions, TabRouter } from './TabRouter';
 export * from './types';
+export { isActionHandled } from './utils';

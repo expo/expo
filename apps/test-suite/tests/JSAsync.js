@@ -835,6 +835,115 @@ export function test({ describe, it, xit, expect }) {
         expect(await f(1, 2, 3)).toBe(3);
       });
 
+      it('binds array rest patterns in async arrows', async () => {
+        const empty = async (...[]) => 1;
+        const defaults = async (...[input, options = {}]) => [input, options];
+        const nested = async (first, ...[, { value }, ...[last]]) => [first, value, last];
+        const rest = async (...[...values]) => values;
+        expect(await empty()).toBe(1);
+        expect(await defaults('input')).toEqual(['input', {}]);
+        expect(await nested(1, 2, { value: 3 }, 4)).toEqual([1, 3, 4]);
+        expect(await rest(1, 2)).toEqual([1, 2]);
+      });
+
+      it('binds object rest patterns in async arrows', async () => {
+        const empty = async (...{}) => 1;
+        const key = '0';
+        const read = async (...{ [key]: value = 7, length, ...rest }) => [value, length, rest];
+        const nested = async (
+          ...{
+            0: { value },
+          }
+        ) => value;
+        expect(await empty()).toBe(1);
+        expect(await read()).toEqual([7, 0, {}]);
+        expect(await read(1, 2)).toEqual([1, 2, { 1: 2 }]);
+        expect(await nested({ value: 3 })).toBe(3);
+      });
+
+      it('preserves parameter scope and lexical captures with destructured rest', async () => {
+        function make(offset) {
+          return async (read = () => value, ...[value]) => {
+            await Promise.resolve();
+            return [read(), this.base, eval('this.base'), arguments[0]];
+          };
+        }
+        const f = make.call({ base: 3 }, 9);
+        expect(f.length).toBe(0);
+        expect(await f.call({ base: 100 }, undefined, 42)).toEqual([42, 3, 3, 9]);
+      });
+
+      it('rejects destructured rest initialization errors', async () => {
+        let entered = false;
+        const failure = new Error('parameter');
+        const fail = () => {
+          throw failure;
+        };
+        const f = async (...[value = fail()]) => {
+          entered = true;
+          return value;
+        };
+        const result = f();
+        expect(result instanceof Promise).toBe(true);
+        let caught;
+        try {
+          await result;
+        } catch (error) {
+          caught = error;
+        }
+        expect(caught).toBe(failure);
+        expect(entered).toBe(false);
+      });
+
+      it('initializes default parameters once before await', async () => {
+        const events = [];
+        const f = async (x = (events.push('default'), 7)) => {
+          events.push(x);
+          await Promise.resolve();
+          return x;
+        };
+        const result = f();
+        expect(events).toEqual(['default', 7]);
+        expect(await result).toBe(7);
+        expect(await f(9)).toBe(9);
+        expect(events).toEqual(['default', 7, 9]);
+      });
+
+      it('keeps mixed non-simple parameters and lexical captures after await', async () => {
+        function make(offset) {
+          return async ({ value } = { value: 2 }, [extra] = [3], ...rest) => {
+            await Promise.resolve();
+            return this.base + arguments[0] + value + extra + rest.length;
+          };
+        }
+        const f = make.call({ base: 10 }, 5);
+        expect(await f()).toBe(20);
+        expect(await f({ value: 4 }, [6], 'a', 'b')).toBe(27);
+      });
+
+      it('rejects parameter initialization errors without entering the body', async () => {
+        let entered = false;
+        const failure = new Error('parameter');
+        const fail = () => {
+          throw failure;
+        };
+        const f = async (value = fail()) => {
+          entered = true;
+          await Promise.resolve();
+          return value;
+        };
+        const result = f();
+        expect(result instanceof Promise).toBe(true);
+        let caught;
+        try {
+          await result;
+        } catch (error) {
+          caught = error;
+        }
+        expect(caught).toBe(failure);
+        expect(entered).toBe(false);
+      });
+
       it('value visible through .then()', async () => {
         const f = async ({ b: _ }) => 42;
         const seen = await new Promise((resolve) => {

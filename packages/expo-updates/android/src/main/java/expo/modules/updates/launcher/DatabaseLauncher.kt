@@ -12,13 +12,13 @@ import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.LoaderFiles
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.EmbeddedUpdate
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.utils.AndroidResourceAssetUtils
+import expo.modules.updatesinterface.UpdatesLogMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -167,12 +167,12 @@ class DatabaseLauncher(
       if (update.status != UpdateStatus.DEVELOPMENT &&
         database.updateDao().loadLaunchAssetForUpdate(update.id) == null
       ) {
-        logger.warn("Skipping launchable update with no launch asset. Debug info: ${update.debugInfo()}")
+        logger.warn(UpdatesLogMessage.LocalMissingLaunchAsset, values = mapOf("debugInfo" to update.debugInfo()), updateId = update.loggingId)
         continue
       }
       filteredLaunchableUpdates.add(update)
     }
-    val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
+    val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration, logger)
     return selectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, manifestFilters)
   }
 
@@ -191,10 +191,8 @@ class DatabaseLauncher(
           if (filename != null) {
             asset.relativePath = filename
             this[asset] = filename
-            logger.info("embeddedAssetFileMap: ${asset.key},${asset.type} => ${this[asset]}")
           } else {
-            val cause = Exception("Missing embedded asset")
-            logger.error("embeddedAssetFileMap: no file for ${asset.key},${asset.type}", cause, UpdatesErrorCode.AssetsFailedToLoad)
+            logger.error(UpdatesLogMessage.EmbeddedAssetMissing, values = mapOf("assetKey" to UpdatesLogger.assetKeyValue(asset.key)), assetId = asset.key)
           }
           continue
         }
@@ -207,10 +205,8 @@ class DatabaseLauncher(
         }
         if (assetFile.exists()) {
           this[asset] = Uri.fromFile(assetFile).toString()
-          logger.info("embeddedAssetFileMap: ${asset.key},${asset.type} => ${this[asset]}")
         } else {
-          val cause = Exception("Missing embedded asset")
-          logger.error("embeddedAssetFileMap: no file for ${asset.key},${asset.type}", cause, UpdatesErrorCode.AssetsFailedToLoad)
+          logger.error(UpdatesLogMessage.EmbeddedAssetMissing, values = mapOf("assetKey" to UpdatesLogger.assetKeyValue(asset.key)), assetId = asset.key)
         }
       }
     }
@@ -246,7 +242,7 @@ class DatabaseLauncher(
             }
           } catch (e: Exception) {
             // things are really not going our way...
-            logger.error("Failed to copy matching embedded asset", e, UpdatesErrorCode.AssetsFailedToLoad)
+            logger.warn(UpdatesLogMessage.EmbeddedAssetCopyFailed, e, mapOf("assetKey" to UpdatesLogger.assetKeyValue(asset.key)), assetId = asset.key)
           }
         }
       }
@@ -265,9 +261,13 @@ class DatabaseLauncher(
 
         database.assetDao().updateAsset(result.assetEntity)
         val assetFileLocal = File(updatesDirectory, result.assetEntity.relativePath!!)
-        if (assetFileLocal.exists()) assetFileLocal else null
+        if (assetFileLocal.exists()) {
+          assetFileLocal
+        } else {
+          null
+        }
       } catch (e: Exception) {
-        logger.error("Failed to load asset from disk or network", e, UpdatesErrorCode.AssetsFailedToLoad)
+        logger.error(UpdatesLogMessage.LocalAssetMissing, e, mapOf("assetKey" to UpdatesLogger.assetKeyValue(asset.key)), launchedUpdate?.loggingId, asset.key)
         if (asset.isLaunchAsset) {
           launchAssetException = e
         }

@@ -19,7 +19,7 @@ internal struct DynamicDataType: AnyDynamicType {
   /**
    Converts JS typed array to its native representation.
    */
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     guard jsValue.isTypedArray() else {
       throw Conversions.CastingJSValueException<Uint8Array>(jsValue.kind)
     }

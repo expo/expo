@@ -213,6 +213,8 @@ function transformWithBabelPreset(
       isServer: server,
       supportsStaticESM: true,
       babelRuntimeVersion: '7.29.2',
+      // Match the `projectRoot` the Noxcturnal half of these parity tests receives.
+      projectRoot: '/app',
     } as babel.TransformCaller,
   });
   if (!result?.code || !result.map) throw new Error('Babel preset produced no output');
@@ -397,6 +399,78 @@ module.exports = App;`;
     generatedPositionOf(result.result.code, 'module.exports')
   );
   expect(mappedExport.line).toBe(7);
+});
+
+describe('EXPO_ROUTER_IMPORT_MODE', () => {
+  async function transformImportMode(overrides: Partial<JsTransformOptions>) {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename: '/app/node_modules/expo-router/_ctx.ios.js',
+      projectRoot: '/app',
+      source: `module.exports = process.env.EXPO_ROUTER_IMPORT_MODE;`,
+      options: options(overrides),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') throw new Error('Expected a complete transform');
+    return result.result.code;
+  }
+
+  const asyncRoutes = { engine: 'hermes', asyncRoutes: 'true' } as const;
+
+  it('is synchronous when async routes are not requested', async () => {
+    expect(await transformImportMode({ platform: 'web', dev: false })).toMatch(/["']sync["']/);
+  });
+
+  it.each(['node', 'react-server'])(
+    'stays synchronous for %s server bundles with async routes enabled',
+    async (environment) => {
+      expect(
+        await transformImportMode({
+          platform: 'web',
+          dev: false,
+          customTransformOptions: { ...asyncRoutes, environment },
+        })
+      ).toMatch(/["']sync["']/);
+    }
+  );
+
+  it('is lazy for web production bundles with async routes', async () => {
+    expect(
+      await transformImportMode({
+        platform: 'web',
+        dev: false,
+        customTransformOptions: asyncRoutes,
+      })
+    ).toMatch(/["']lazy["']/);
+  });
+
+  it.each(['ios', 'android'])(
+    'is lazy for %s development bundles with async routes',
+    async (platform) => {
+      expect(
+        await transformImportMode({
+          platform,
+          dev: true,
+          customTransformOptions: asyncRoutes,
+        })
+      ).toMatch(/["']lazy["']/);
+    }
+  );
+
+  // Matches `getAsyncRoutes` in `babel-preset-expo`: production async routes are web-only.
+  it.each(['ios', 'android'])(
+    'stays synchronous for %s production bundles even with async routes',
+    async (platform) => {
+      expect(
+        await transformImportMode({
+          platform,
+          dev: false,
+          customTransformOptions: asyncRoutes,
+        })
+      ).toMatch(/["']sync["']/);
+    }
+  );
 });
 
 it('completes plain production application JavaScript through the native path', async () => {
@@ -1757,7 +1831,9 @@ it('preserves development deep React Native import warnings', async () => {
     export { default as Text } from "react-native/Libraries/Text/Text";
     const Image = require("react-native/Libraries/Image/Image");
     require("react-native/Libraries/Core/InitializeCore");
-    export default [View, Text, Image];`;
+    require("react-native/setup-env");
+    import { NativeSourceCode } from "react-native/unstable-internals-do-not-use";
+    export default [View, Text, Image, NativeSourceCode];`;
   const result = await transformFileFullyWithNoxcturnal({
     filename: candidate,
     projectRoot: '/app',
@@ -1774,11 +1850,13 @@ it('preserves development deep React Native import warnings', async () => {
   if (result.status !== 'complete') return;
   expect(
     result.result.code.match(/Deep imports from the 'react-native' package are deprecated/g)
-  ).toHaveLength(3);
+  ).toHaveLength(4);
   expect(result.result.code).toContain(`Source: ${candidate} 1:0`);
   expect(result.result.code).not.toContain(
     "deprecated ('react-native/Libraries/Core/InitializeCore')"
   );
+  expect(result.result.code).not.toContain("deprecated ('react-native/setup-env')");
+  expect(result.result.code).toContain("deprecated ('react-native/unstable-internals-do-not-use')");
 });
 
 it.each([
@@ -1812,3 +1890,50 @@ it.each([
     expect(result.result.code).not.toContain('<View');
   }
 );
+
+describe('project-relative filenames', () => {
+  const projectRoot = '/workspace/apps/mobile';
+
+  function transform(
+    filename: string,
+    source: string,
+    customTransformOptions: JsTransformOptions['customTransformOptions'] = {},
+    dev = false
+  ) {
+    const result = transformFileFullyWithNoxcturnalSync({
+      filename,
+      source,
+      projectRoot,
+      isDefaultExpoTransformer: true,
+      options: options({
+        dev,
+        inlinePlatform: false,
+        customTransformOptions: { engine: 'hermes', ...customTransformOptions },
+      }),
+      config: fullConfig(),
+    });
+    if (result.status !== 'complete') throw new Error(result.reason);
+    return result.result;
+  }
+
+  it.each([
+    { filename: 'app/index.tsx', routerRoot: 'app' },
+    { filename: '../shared/app/index.tsx', routerRoot: '../shared/app' },
+  ])('recognizes the router directory for $filename', ({ filename, routerRoot }) => {
+    const result = transform(
+      filename,
+      'export async function loader() { return null; } export default function Route() { return null; }',
+      { routerRoot }
+    );
+    expect(result.metadata.loaderReference).toBe(path.resolve(projectRoot, filename));
+    expect(result.code).not.toMatch(/\bloader\b/);
+  });
+
+  it('computes EXPO_ROUTER_APP_ROOT relative to the app file, independently of cwd', () => {
+    const result = transform(
+      'src/entry.js',
+      'export const root = process.env.EXPO_ROUTER_APP_ROOT;'
+    );
+    expect(result.code).toContain('"../app"');
+  });
+});

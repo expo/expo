@@ -1,3 +1,5 @@
+import type { UnknownInputParams } from './typed-routes/types';
+
 export const INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = '__internal_expo_router_no_animation';
 export const INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME =
   '__internal__expo_router_is_preview_navigation';
@@ -5,6 +7,7 @@ export const INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME =
   '__internal_expo_router_zoom_transition_source_id';
 export const INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME =
   '__internal_expo_router_zoom_transition_screen_id';
+export const INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME = '__internal_expo_router_preview_id';
 
 /**
  * Internal navigation option name used to control gesture-based dismissal independently
@@ -16,6 +19,12 @@ export const INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME =
  */
 export const INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME = 'internal_gestureEnabled';
 
+// A layout `Stack.Screen` reaches the stack navigator only as a screen with `options`. This
+// option carries the `unstable_requiredScreensBelow` prop there, without adding it to the public
+// option types.
+export const INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME =
+  'internal_requiredScreensBelow';
+
 /**
  * Internal navigation options that Expo Router uses to control React Navigation behavior,
  * which are not available to developers directly and do not change user-defined options.
@@ -26,6 +35,11 @@ export interface InternalNavigationOptions {
    * When set, this value overrides the user's `gestureEnabled` option.
    */
   [INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME]?: boolean;
+  // The same type as the `unstable_requiredScreensBelow` prop of `Stack.Screen`.
+  [INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME]?: (
+    | string
+    | { name: string; params?: UnknownInputParams }
+  )[];
 }
 
 const internalExpoRouterParamNames = [
@@ -33,6 +47,7 @@ const internalExpoRouterParamNames = [
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME,
 ] as const;
 
 export type InternalExpoRouterParamName = (typeof internalExpoRouterParamNames)[number];

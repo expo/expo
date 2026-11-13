@@ -6,14 +6,15 @@
  */
 
 import type {
+  BabelDecodedMap,
   BabelSourceMapSegment,
   BasicSourceMap,
   FBSourceFunctionMap,
   HermesFunctionOffsets,
   MetroSourceMapSegmentTuple,
   MixedSourceMap,
+  VlqMap,
 } from '@expo/metro/metro-source-map';
-import type GeneratorClass from '@expo/metro/metro-source-map/Generator';
 // Central indirection for sourcemap operations in `@expo/metro-config`
 // and `@expo/cli`. Implementations are loaded lazily — `metro-source-map`
 // (and its transitive `@babel/traverse`) at top level adds ~100ms to
@@ -21,10 +22,8 @@ import type GeneratorClass from '@expo/metro/metro-source-map/Generator';
 import type { SourceMapGeneratorOptions } from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapGenerator';
 import type { Module } from '@expo/metro/metro/DeltaBundler/types';
 
-import type { ModuleSourceMap } from './jsOutput';
-import { PackedMap, SENTINEL, STRIDE, isSerializableSourceMap } from './packedMap';
-
 export type {
+  BabelDecodedMap,
   BabelSourceMapSegment,
   BasicSourceMap,
   FBSourceFunctionMap,
@@ -32,6 +31,7 @@ export type {
   MetroSourceMapSegmentTuple,
   MixedSourceMap,
   SourceMapGeneratorOptions,
+  VlqMap,
 };
 
 // Metro's `BasicSourceMap` types `x_google_ignoreList` as `void`, which
@@ -83,186 +83,123 @@ function loadSourcemapCodec(): typeof import('@jridgewell/sourcemap-codec') {
   return _sourcemapCodec!;
 }
 
-// NOTE(@kitten): @jridgewell/gen-mapping has no streaming encoder — its
-// `addSegment` buffers every segment into `_mappings` until
-// `toEncodedMap` runs VLQ encoding at the end (~100 MB transient on a
-// large bundle). Metro's own `Generator` is already a streaming VLQ
-// encoder, so peak memory stays at roughly the size of the final
-// `mappings` string. We use it directly here.
+type MetroSourceMapModule = typeof import('@expo/metro/metro-source-map');
 
-type GeneratorCtor = new () => GeneratorClass;
-
-let _Generator: GeneratorCtor | undefined;
-function loadGenerator(): GeneratorCtor {
-  if (!_Generator) {
-    _Generator = require('@expo/metro/metro-source-map/Generator').default;
+let _metroSourceMap: MetroSourceMapModule | undefined;
+function loadMetroSourceMap(): MetroSourceMapModule {
+  if (!_metroSourceMap) {
+    _metroSourceMap = require('@expo/metro/metro-source-map');
   }
-  return _Generator!;
+  return _metroSourceMap!;
 }
 
-// `.js` suffix required for jest's resolver to find the file under
-// `@expo/metro`'s `exports` map (see `getCssDeps.ts`/`getAssets.ts` for
-// the same pattern).
-type IsJsModule = typeof import('@expo/metro/metro/DeltaBundler/Serializers/helpers/js').isJsModule;
+type MetroSourceMapStringModule =
+  typeof import('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString');
 
-let _isJsModule: IsJsModule | undefined;
-function loadMetroSerializerHelpers(): { isJsModule: IsJsModule } {
-  if (!_isJsModule) {
-    _isJsModule = require('@expo/metro/metro/DeltaBundler/Serializers/helpers/js.js').isJsModule;
+let _metroSourceMapString: MetroSourceMapStringModule | undefined;
+function loadMetroSourceMapString(): MetroSourceMapStringModule {
+  if (!_metroSourceMapString) {
+    _metroSourceMapString = require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString');
   }
-  return { isJsModule: _isJsModule! };
+  return _metroSourceMapString!;
 }
 
-function feedModuleSegments(
-  generator: GeneratorClass,
-  tuples: readonly MetroSourceMapSegmentTuple[],
-  carryOver: number
-): void {
-  for (let i = 0, n = tuples.length; i < n; i++) {
-    const tuple = tuples[i]!;
-    const line = tuple[0] + carryOver;
-    const column = tuple[1];
-    if (tuple.length === 2) {
-      generator.addSimpleMapping(line, column);
-    } else if (tuple.length === 4) {
-      generator.addSourceMapping(line, column, tuple[2], tuple[3]);
-    } else {
-      generator.addNamedSourceMapping(line, column, tuple[2], tuple[3], tuple[4]);
-    }
+type TraceMappingModule = typeof import('@jridgewell/trace-mapping');
+
+let _traceMapping: TraceMappingModule | undefined;
+function loadTraceMapping(): TraceMappingModule {
+  if (!_traceMapping) {
+    _traceMapping = require('@jridgewell/trace-mapping');
   }
+  return _traceMapping!;
 }
 
-// Encoder fast path: read the `Int32Array` directly, skipping the Proxy
-// and the tuple-per-segment allocation that Proxy iteration would incur.
-// Without this, encoding a large bundle would allocate millions of
-// transient tuples per pass — defeating the in-memory storage win.
-function feedModuleSegmentsPacked(
-  generator: GeneratorClass,
-  packed: PackedMap,
-  carryOver: number
-): void {
-  const buf = packed.buf;
-  const names = packed.names;
-  const count = packed.count;
-  for (let i = 0; i < count; i++) {
-    const off = i * STRIDE;
-    const line = buf[off]! + carryOver;
-    const column = buf[off + 1]!;
-    const srcLine = buf[off + 2]!;
-    if (srcLine === SENTINEL) {
-      generator.addSimpleMapping(line, column);
-      continue;
-    }
-    const srcCol = buf[off + 3]!;
-    const nameIdx = buf[off + 4]!;
-    if (nameIdx === SENTINEL) {
-      generator.addSourceMapping(line, column, srcLine, srcCol);
-    } else {
-      generator.addNamedSourceMapping(line, column, srcLine, srcCol, names[nameIdx]!);
-    }
-  }
+/** An indexed source map, as Metro emits for bundles */
+export interface IndexedSourceMap {
+  version: number;
+  file?: string;
+  sections: {
+    offset: { line: number; column: number };
+    map: ComposableSourceMap | IndexedSourceMap;
+  }[];
 }
 
-// Inlined rather than going through Metro's `getSourceMapInfo` because
-// it spreads `data` and drops the non-enumerable `__packedMap`,
-// silently forcing the encoder onto the slow Proxy path.
-function readSourceMapInfo(
-  module: Module,
-  options: SourceMapGeneratorOptions
-): {
-  path: string;
-  source: string;
-  functionMap: FBSourceFunctionMap | null | undefined;
-  isIgnored: boolean;
-  map: ModuleSourceMap | null | undefined;
-  packed: PackedMap | undefined;
-  lineCount: number;
-} {
-  const data = getModuleJsData(module);
-  // Don't read `data.map` when `__packedMap` is set — `data.map` is a
-  // lazy accessor that materializes the Proxy on first read, and the
-  // fast path below doesn't need it.
-  let packed = data.data.__packedMap;
-  let map: ModuleSourceMap | null | undefined;
-  if (!packed) {
-    map = data.data.map;
-    // Self-heal a `SerializableSourceMap` `data.map` that bypassed the wrapper.
-    if (isSerializableSourceMap(map)) {
-      packed = PackedMap.deserialize(map);
-      map = undefined;
-    }
+/**
+ * Flattens an indexed source map into a single `mappings` string, and returns a flat map unchanged.
+ * Metro emits indexed bundle maps, but some consumers (like `@jridgewell/remapping`) only accept
+ * flat ones.
+ */
+export function flattenSourceMap(map: ComposableSourceMap | IndexedSourceMap): ComposableSourceMap {
+  if (!('sections' in map)) {
+    return map;
   }
-  return {
-    path: options.getSourceUrl?.(module) ?? module.path,
-    source:
-      options.excludeSource || data.type === 'js/module/asset' ? '' : module.getSource().toString(),
-    functionMap: data.data.functionMap,
-    isIgnored: options.shouldAddToIgnoreList(module),
-    map,
-    packed,
-    lineCount: data.data.lineCount,
-  };
-}
-
-function getModuleJsData(module: Module): { data: JsOutputData; type: string } {
-  for (const out of module.output) {
-    const type = (out as { type?: string }).type;
-    if (typeof type === 'string' && type.startsWith('js/')) {
-      return out as { data: JsOutputData; type: string };
-    }
-  }
-  throw new Error(
-    `[expo-metro-config] Module "${module.path}" has no JS output. Cannot build a sourcemap entry.`
+  const { FlattenMap, encodedMap } = loadTraceMapping();
+  const flat = encodedMap(
+    new FlattenMap(map as unknown as ConstructorParameters<typeof FlattenMap>[0])
   );
-}
-
-// Local shape rather than importing from `jsOutput.ts` to avoid a cycle
-// through the transformer.
-interface JsOutputData {
-  code: string;
-  lineCount: number;
-  map: ModuleSourceMap | null | undefined;
-  functionMap: FBSourceFunctionMap | null | undefined;
-  readonly __packedMap?: PackedMap;
-}
-
-function processModuleIntoGenerator(
-  generator: GeneratorClass,
-  module: Module,
-  options: SourceMapGeneratorOptions,
-  carryOver: number
-): number {
-  const info = readSourceMapInfo(module, options);
-  generator.startFile(info.path, info.source, info.functionMap ?? null, {
-    addToIgnoreList: info.isIgnored,
-  });
-  if (info.packed) {
-    feedModuleSegmentsPacked(generator, info.packed, carryOver);
-  } else if (Array.isArray(info.map)) {
-    // Legacy plain-tuple path — hits for cache entries written before
-    // `data.map` switched to `SerializableSourceMap`, and for modules from custom
-    // transformers that don't emit packed format.
-    feedModuleSegments(generator, info.map, carryOver);
+  const result: ComposableSourceMap = {
+    version: flat.version,
+    mappings: flat.mappings,
+    names: flat.names,
+    sources: flat.sources,
+  };
+  if (flat.file != null) {
+    result.file = flat.file;
   }
-  generator.endFile();
-  return carryOver + info.lineCount;
-}
-
-function filterModules(
-  modules: readonly Module[],
-  processModuleFilter: SourceMapGeneratorOptions['processModuleFilter']
-): Module[] {
-  const { isJsModule } = loadMetroSerializerHelpers();
-  const out: Module[] = [];
-  for (const m of modules) {
-    if (isJsModule(m) && processModuleFilter(m)) {
-      out.push(m);
-    }
+  if (flat.sourcesContent) {
+    result.sourcesContent = flat.sourcesContent;
   }
-  return out;
+  if (flat.ignoreList && flat.ignoreList.length > 0) {
+    result.ignoreList = flat.ignoreList;
+  }
+  return result;
 }
 
-// Adds `debugId`, which is emitted during JSON construction so callers
+/** An encoded source map's `mappings` and `names`, such as a minifier's output */
+export interface EncodedMappings {
+  mappings: string;
+  names: readonly string[];
+}
+
+const NEWLINE = /\r\n?|\n|\u2028|\u2029/g;
+
+function countLinesAndLastLineColumn(code: string): { lineCount: number; lastLineColumn: number } {
+  let lineCount = 1;
+  let lastLineStart = 0;
+  for (const match of code.matchAll(NEWLINE)) {
+    lineCount++;
+    lastLineStart = match.index! + match[0].length;
+  }
+  return { lineCount, lastLineColumn: code.length - lastLineStart };
+}
+
+/**
+ * Encodes a module's compact `VlqMap` from Babel's `decodedMap`. Like Metro's transform worker,
+ * a generated-only mapping terminates the map one past the last column of `code`, so
+ * out-of-bounds lookups resolve to nothing rather than aliasing the last real mapping.
+ */
+export function vlqMapFromDecodedMap(
+  decodedMap: BabelDecodedMap | null | undefined,
+  code: string
+): { lineCount: number; map: VlqMap } {
+  const { lineCount, lastLineColumn } = countLinesAndLastLineColumn(code);
+  const map = loadMetroSourceMap().vlqMapFromBabelDecodedMap(
+    decodedMap ?? { mappings: [], names: [] },
+    [lineCount, lastLineColumn]
+  );
+  return { lineCount, map };
+}
+
+/** Encodes a module's compact `VlqMap` from an encoded source map, such as a minifier's output. */
+export function vlqMapFromEncodedMap(
+  encoded: EncodedMappings,
+  code: string
+): { lineCount: number; map: VlqMap } {
+  const mappings = loadSourcemapCodec().decode(encoded.mappings) as BabelDecodedMap['mappings'];
+  return vlqMapFromDecodedMap({ mappings, names: encoded.names }, code);
+}
+
+// Adds `debugId`, which is spliced into the serialized map so callers
 // don't pay for a parse + re-stringify roundtrip on a freshly-built
 // sourcemap.
 export interface ExpoSourceMapOptions extends SourceMapGeneratorOptions {
@@ -270,72 +207,28 @@ export interface ExpoSourceMapOptions extends SourceMapGeneratorOptions {
 }
 
 // Splice `,"debugId":"..."` in front of the trailing `}` of an already
-// JSON-encoded sourcemap. Used for Hermes output where we don't control
+// JSON-encoded sourcemap. Also used for Hermes output where we don't control
 // the JSON producer.
 export function appendDebugIdToSourceMap(sourceMap: string, debugId: string): string {
   return sourceMap.slice(0, -1) + `,"debugId":${JSON.stringify(debugId)}}`;
 }
 
-function emitGeneratorJson(generator: GeneratorClass, options: ExpoSourceMapOptions): string {
-  const json = generator.toString(undefined, { excludeSource: options.excludeSource });
-  return options.debugId ? appendDebugIdToSourceMap(json, options.debugId) : json;
-}
-
 export function sourceMapString(modules: readonly Module[], options: ExpoSourceMapOptions): string {
-  const Generator = loadGenerator();
-  const generator = new Generator();
-  const filtered = filterModules(modules, options.processModuleFilter);
-  let carryOver = 0;
-  for (const mod of filtered) {
-    carryOver = processModuleIntoGenerator(generator, mod, options, carryOver);
-  }
-  return emitGeneratorJson(generator, options);
+  const { debugId, ...generatorOptions } = options;
+  const json = loadMetroSourceMapString().sourceMapString(modules, generatorOptions);
+  return debugId ? appendDebugIdToSourceMap(json, debugId) : json;
 }
 
-// Yields back to the event loop every ~50 ms so the node server stays
-// responsive on very large bundles. Matches Metro's `getSourceMapInfosImpl`
-// pacing.
 export async function sourceMapStringNonBlocking(
   modules: readonly Module[],
   options: ExpoSourceMapOptions
 ): Promise<string> {
-  const Generator = loadGenerator();
-  const generator = new Generator();
-  const filtered = filterModules(modules, options.processModuleFilter);
-
-  const NS_IN_MS = 1_000_000;
-  const SLICE_NS = 50 * NS_IN_MS;
-  let carryOver = 0;
-  let i = 0;
-
-  await new Promise<void>((resolve) => {
-    const tick = () => {
-      const start = process.hrtime();
-      while (i < filtered.length) {
-        carryOver = processModuleIntoGenerator(generator, filtered[i]!, options, carryOver);
-        i++;
-        const diff = process.hrtime(start);
-        if (diff[1] > SLICE_NS || diff[0] > 0) {
-          setImmediate(tick);
-          return;
-        }
-      }
-      resolve();
-    };
-    tick();
-  });
-
-  return emitGeneratorJson(generator, options);
-}
-
-// Metro's `Server._processSourceMapRequest` calls
-// `sourceMapStringNonBlocking` directly, bypassing the `customSerializer`
-// chain — so without rerouting it, every dev `.map` fetch iterates the
-// `data.map` Proxy and the encoder fast path is unreachable.
-export function patchMetroSourceMapStringForPackedMaps(): void {
-  const stock = require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString');
-  stock.sourceMapString = sourceMapString;
-  stock.sourceMapStringNonBlocking = sourceMapStringNonBlocking;
+  const { debugId, ...generatorOptions } = options;
+  const json = await loadMetroSourceMapString().sourceMapStringNonBlocking(
+    modules,
+    generatorOptions
+  );
+  return debugId ? appendDebugIdToSourceMap(json, debugId) : json;
 }
 
 function repairInvalidNegativeIndices(map: ComposableSourceMap): ComposableSourceMap {
@@ -359,7 +252,7 @@ function repairInvalidNegativeIndices(map: ComposableSourceMap): ComposableSourc
 }
 
 // `maps[0]` is the original-most transform; `maps[maps.length - 1]` is
-// the most recent. Built on `@jridgewell/remapping` instead of mozilla's
+// the most recent. Indexed inputs (like Metro's bundle maps) are flattened first. Built on `@jridgewell/remapping` instead of mozilla's
 // `SourceMapConsumer`-based composer.
 //
 // Two shims around remapping:
@@ -374,12 +267,15 @@ function repairInvalidNegativeIndices(map: ComposableSourceMap): ComposableSourc
 //
 // `x_facebook_sources` is deliberately dropped — Expo doesn't ship to FB
 // symbolicators.
-export function composeSourceMaps(maps: readonly ComposableSourceMap[]): ComposableSourceMap {
+export function composeSourceMaps(
+  maps: readonly (ComposableSourceMap | IndexedSourceMap)[]
+): ComposableSourceMap {
   if (maps.length < 1) {
     throw new Error('composeSourceMaps: Expected at least one map');
   }
 
-  const normalized = maps.map((map) => {
+  const normalized = maps.map((input) => {
+    const map = flattenSourceMap(input);
     if (map.ignoreList || !map.x_google_ignoreList) {
       return map;
     }
@@ -438,7 +334,7 @@ export function composeSourceMaps(maps: readonly ComposableSourceMap[]): Composa
 
   // Required by Hermes for bytecode-frame symbolication. Lives on the
   // most-recent map (the Hermes map) and passes through unchanged.
-  const last = maps[maps.length - 1]!;
+  const last = normalized[normalized.length - 1]!;
   if (last.x_hermes_function_offsets) {
     result.x_hermes_function_offsets = last.x_hermes_function_offsets;
   }

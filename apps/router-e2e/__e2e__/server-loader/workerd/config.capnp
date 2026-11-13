@@ -14,6 +14,7 @@ const server :Workerd.Worker = (
     (name = "_expo/routes.json", text = embed "_expo/routes.json"),
     (name = "_expo/loaders/index.js", commonJsModule = embed "_expo/loaders/index.js"),
     (name = "_expo/loaders/env.js", commonJsModule = embed "_expo/loaders/env.js"),
+    (name = "_expo/loaders/large-suspense.js", commonJsModule = embed "_expo/loaders/large-suspense.js"),
     (name = "_expo/loaders/meta.js", commonJsModule = embed "_expo/loaders/meta.js"),
     (name = "_expo/loaders/nested/index.js", commonJsModule = embed "_expo/loaders/nested/index.js"),
     (name = "_expo/loaders/second.js", commonJsModule = embed "_expo/loaders/second.js"),
@@ -22,12 +23,13 @@ const server :Workerd.Worker = (
     (name = "_expo/loaders/request.js", commonJsModule = embed "_expo/loaders/request.js"),
     (name = "_expo/loaders/response.js", commonJsModule = embed "_expo/loaders/response.js"),
     (name = "_expo/loaders/(group)/index.js", commonJsModule = embed "_expo/loaders/(group)/index.js"),
+    (name = "_expo/loaders/(group)/platform/[...slug].js", commonJsModule = embed "_expo/loaders/(group)/platform/[...slug].js"),
     (name = "_expo/loaders/static-helper.js", commonJsModule = embed "_expo/loaders/static-helper.js"),
     (name = "_expo/loaders/server-helper.js", commonJsModule = embed "_expo/loaders/server-helper.js"),
   ],
   bindings = [
     (name = "TEST_SECRET_RUNTIME_KEY", text = "runtime-secret-value"),
-    (name = "E2E_ROUTER_SERVER_RENDERING", text = "true"),
+    (name = "EXPO_USE_STATIC", text = "server"),
   ],
   compatibilityDate = "2025-05-05",
   compatibilityFlags = [

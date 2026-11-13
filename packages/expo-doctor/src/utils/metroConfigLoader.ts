@@ -1,8 +1,27 @@
-import type { InputConfigT } from '@expo/metro/metro-config';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { dynamicRequire } from './dynamicRequire';
+
+type ExpoMetroConfigModule = typeof import('expo/metro-config');
+
+/** The user's Metro config, as returned by `loadUserConfig` from `expo/metro-config`. */
+export type MetroUserConfig = Awaited<ReturnType<ExpoMetroConfigModule['loadUserConfig']>>;
+
+/**
+ * The parts of `metro-config` used to load a user config on SDKs whose `expo/metro-config`
+ * predates `loadUserConfig`.
+ */
+interface LegacyMetroConfigModule {
+  resolveConfig(
+    filePath: string | undefined,
+    cwd: string
+  ): Promise<{ filepath: string; isEmpty: boolean }>;
+  loadConfig(
+    argv: { cwd: string; config: string },
+    defaultConfigOverrides: object
+  ): Promise<MetroUserConfig>;
+}
 
 const notFoundError = (basePackage: string): Error =>
   new MetroConfigPackageMissingError(
@@ -12,9 +31,7 @@ const notFoundError = (basePackage: string): Error =>
       'and run `yarn` or `npm install`.'
   );
 
-function importMetroConfigFromProject(
-  projectDir: string
-): typeof import('@expo/metro/metro-config') {
+function importMetroConfigFromProject(projectDir: string): LegacyMetroConfigModule {
   const expoResolved = resolveFrom.silent(projectDir, 'expo/package.json');
   if (!expoResolved) {
     throw notFoundError('expo');
@@ -37,9 +54,9 @@ function importMetroConfigFromProject(
   }
 }
 
-let _expoMetroConfig: typeof import('expo/metro-config') | undefined;
+let _expoMetroConfig: ExpoMetroConfigModule | undefined;
 
-function loadExpoMetroConfig(projectDir: string): typeof import('expo/metro-config') {
+function loadExpoMetroConfig(projectDir: string): ExpoMetroConfigModule {
   if (_expoMetroConfig != null) {
     return _expoMetroConfig;
   }
@@ -59,7 +76,7 @@ export function getDefaultMetroConfig(projectRoot: string) {
 export async function loadMetroUserConfigAsync(
   projectRoot: string,
   serverRoot: string
-): Promise<InputConfigT | null> {
+): Promise<MetroUserConfig | null> {
   const expoMetroConfig = loadExpoMetroConfig(projectRoot);
   // NOTE(@kitten): This API was added later on
   if ('loadUserConfig' in expoMetroConfig) {

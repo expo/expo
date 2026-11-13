@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import Foundation
+
 /**
  A data structure to store response body chunks
  */
@@ -11,6 +13,10 @@ internal final class ResponseSink {
   func appendBufferBody(data: Data) {
     bodyUsed = true
     bodyQueue.append(data)
+  }
+
+  func discard() {
+    bodyQueue.removeAll()
   }
 
   func finalize() -> Data {

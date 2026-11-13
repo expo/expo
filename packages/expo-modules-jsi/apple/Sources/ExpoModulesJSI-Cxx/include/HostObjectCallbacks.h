@@ -4,6 +4,7 @@
 
 #include <swift/bridging>
 #include <jsi/jsi.h>
+#include <string>
 
 #include "RetainedSwiftPointer.h"
 
@@ -20,16 +21,24 @@ public:
   // Swift side can fill the caller's slot from inside its guaranteed-reference scope.
   // Both return whether the Swift side stored an error in `CppError`'s thread-local slot, so the
   // caller reads that slot only when needed.
-  using Getter = bool(Context, const char *_Nonnull name, facebook::jsi::Value *_Nonnull result);
-  using Setter = bool(Context, const char *_Nonnull name, void *_Nonnull value);
+  using Getter = bool(Context, const facebook::jsi::PropNameID *_Nonnull name, facebook::jsi::Value *_Nonnull result);
+  using Setter = bool(Context, const facebook::jsi::PropNameID *_Nonnull name, void *_Nonnull value);
   using PropertyNamesGetter = PropNameIds(Context);
   using Deallocator = void(Context);
 
-  explicit HostObjectCallbacks(Context context, Getter getter, Setter *_Nullable setter, PropertyNamesGetter propertyNamesGetter, Deallocator deallocator)
+  explicit HostObjectCallbacks(Context context, Getter getter, Setter setter, PropertyNamesGetter propertyNamesGetter, Deallocator deallocator)
   : _context(context), _getter(getter), _setter(setter), _propertyNamesGetter(propertyNamesGetter), _deallocator(deallocator) {}
 
-  inline bool get(const char *_Nonnull name, facebook::jsi::Value &result) const {
-    return _getter(_context, name, &result);
+  /**
+   Creates callbacks for a read-only host object: assignment from JavaScript throws a `jsi::JSError`
+   without calling into Swift. A separate constructor rather than a nullable setter, because Swift can't
+   pass a function reference where an optional C function pointer is expected.
+   */
+  explicit HostObjectCallbacks(Context context, Getter getter, PropertyNamesGetter propertyNamesGetter, Deallocator deallocator)
+  : _context(context), _getter(getter), _setter(nullptr), _propertyNamesGetter(propertyNamesGetter), _deallocator(deallocator) {}
+
+  inline bool get(const facebook::jsi::PropNameID &name, facebook::jsi::Value &result) const {
+    return _getter(_context, &name, &result);
   }
 
   /**
@@ -41,16 +50,16 @@ public:
    JSI call frame above this on the stack; calling outside that context will surface
    the throw as an unhandled C++ exception.
    */
-  inline bool set(facebook::jsi::Runtime &runtime, const char *_Nonnull name, const facebook::jsi::Value &value) const {
+  inline bool set(facebook::jsi::Runtime &runtime, const facebook::jsi::PropNameID &name, const facebook::jsi::Value &value) const {
     if (_setter == nullptr) {
       throw facebook::jsi::JSError(
         runtime,
-        std::string("Cannot set property '") + name + "' on a read-only host object: "
+        std::string("Cannot set property '") + name.utf8(runtime) + "' on a read-only host object: "
           "no setter was provided when the host object was created. "
           "Pass a `set` closure to `createHostObject` to make this property writable."
       );
     }
-    return _setter(_context, name, (void *)(&value));
+    return _setter(_context, &name, (void *)(&value));
   }
 
   inline PropNameIds getPropertyNames() const {
