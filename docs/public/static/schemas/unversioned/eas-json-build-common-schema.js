@@ -188,6 +188,29 @@ export default [
     ],
   },
   {
+    name: 'permissions',
+    type: 'object',
+    description: [
+      "The [role](/accounts/account-types/#manage-access) that the build acts with on the account. The actor that starts the build must have at least this role, or the build fails. Without this field, the build acts with at most Developer-level permissions. The role also applies to the automatic submission that a build triggered from GitHub starts. In an Expo Workflows `build` job, the job's [`permissions`](/eas/workflows/syntax/#permissions) take precedence. [Learn more](/eas/protected-resources/#expo-workflows-and-protected-resources).",
+    ],
+    properties: [
+      {
+        name: 'account',
+        type: 'object',
+        description: ['Permissions on the account that owns the project.'],
+        properties: [
+          {
+            name: 'role',
+            enum: ['runner', 'developer', 'release_manager'],
+            description: [
+              'The role that the build acts with. Requires EAS CLI 26.0.0 or later. Older versions report **eas.json** as invalid.',
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
     name: 'environment',
     enum: ['development', 'preview', 'production'],
     description: [
