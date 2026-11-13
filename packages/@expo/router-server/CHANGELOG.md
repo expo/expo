@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- Wait for Suspense content to fully render before sending server-rendered HTML to known crawlers and link preview bots. ([#52311](https://github.com/expo/expo/pull/52311) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.22
 
 ### Patch Changes

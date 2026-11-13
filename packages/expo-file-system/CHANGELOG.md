@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- [Android] Fix `File.copy` producing an empty file when the source `content://` file is served through a pipe. ([#53385](https://github.com/expo/expo/pull/53385) by [@Titozzz](https://github.com/Titozzz))
+- [Android] Fix `File.upload` failing with "expected N bytes but received M" for `content://` files whose provider reports a wrong size. ([#53384](https://github.com/expo/expo/pull/53384) by [@Titozzz](https://github.com/Titozzz))
+
 ## 58.0.13
 
 ### Patch Changes
