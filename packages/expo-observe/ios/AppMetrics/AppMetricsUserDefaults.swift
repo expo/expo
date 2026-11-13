@@ -1,5 +1,5 @@
 /// Class that manages a custom `UserDefaults` database with `"dev.expo.app-metrics"` suite name.
-public final class AppMetricsUserDefaults: UserDefaults {
+final class AppMetricsUserDefaults: UserDefaults {
   /// Singleton instance of the user defaults for AppMetrics.
   /// It is not isolated, but UserDefaults is thread-safe.
   nonisolated(unsafe) private static let defaults = AppMetricsUserDefaults()
@@ -17,7 +17,7 @@ public final class AppMetricsUserDefaults: UserDefaults {
     super.init(suiteName: "dev.expo.app-metrics")!
   }
 
-  public static var environment: String? {
+  static var environment: String? {
     get {
       return defaults.string(forKey: Keys.environment.rawValue)
     }
@@ -26,7 +26,7 @@ public final class AppMetricsUserDefaults: UserDefaults {
     }
   }
 
-  public nonisolated static func getDefaultEnvironment() -> String? {
+  nonisolated static func getDefaultEnvironment() -> String? {
     #if DEBUG
     return "development"
     #else
