@@ -11,7 +11,7 @@ internal struct SecureStoreOptions: Record {
   var keychainService: String?
 
   @Field
-  var requireAuthentication: Bool
+  var requireAuthentication: AuthenticationMethod = .none
 
   @Field
   var accessGroup: String?
