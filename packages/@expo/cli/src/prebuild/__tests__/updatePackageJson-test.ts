@@ -277,6 +277,60 @@ describe(updatePkgDependencies, () => {
       )
     );
   });
+
+  describe('with package manager protocols', () => {
+    const templatePkg = {
+      dependencies: { expo: '~58.0.23', 'react-native': '0.88.1' },
+      devDependencies: {},
+    };
+
+    beforeEach(() => {
+      vol.reset();
+      jest.mocked(Log.warn).mockClear();
+    });
+
+    it('compares the installed version of a `catalog:` dependency', () => {
+      vol.fromJSON({
+        '/app/node_modules/expo/package.json': JSON.stringify({ version: '58.0.23' }),
+        '/app/node_modules/react-native/package.json': JSON.stringify({ version: '0.88.1' }),
+      });
+      const pkg = { dependencies: { expo: 'catalog:', 'react-native': 'catalog:react-native' } };
+
+      updatePkgDependencies('/app', { pkg, templatePkg });
+
+      expect(Log.warn).not.toHaveBeenCalled();
+      expect(pkg.dependencies).toStrictEqual({
+        expo: 'catalog:',
+        'react-native': 'catalog:react-native',
+      });
+    });
+
+    it('warns with the installed version when it does not match', () => {
+      vol.fromJSON({
+        '/app/node_modules/expo/package.json': JSON.stringify({ version: '57.0.4' }),
+        '/app/node_modules/react-native/package.json': JSON.stringify({ version: '0.88.1' }),
+      });
+      const pkg = { dependencies: { expo: 'catalog:', 'react-native': 'workspace:*' } };
+
+      updatePkgDependencies('/app', { pkg, templatePkg });
+
+      expect(Log.warn).toHaveBeenCalledTimes(1);
+      expect(Log.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          `Using ${chalk.bold('expo@57.0.4')} instead of recommended ${chalk.bold('expo@~58.0.23')}`
+        )
+      );
+    });
+
+    it('does not warn when the installed version cannot be resolved', () => {
+      vol.fromJSON({ '/app/package.json': '{}' });
+      const pkg = { dependencies: { expo: 'catalog:', 'react-native': 'catalog:' } };
+
+      updatePkgDependencies('/app', { pkg, templatePkg });
+
+      expect(Log.warn).not.toHaveBeenCalled();
+    });
+  });
 });
 
 describe(updatePkgScripts, () => {
