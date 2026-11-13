@@ -1,5 +1,5 @@
 import EXUpdatesInterface
-import ExpoModulesCore
+import Foundation
 
 // swift-format-ignore: AlwaysUseLowerCamelCase
 let MAX_CACHED_EVENTS = 50
