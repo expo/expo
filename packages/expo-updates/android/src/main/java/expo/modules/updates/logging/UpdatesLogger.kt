@@ -5,6 +5,7 @@ import expo.modules.core.logging.LogType
 import expo.modules.core.logging.Logger
 import expo.modules.core.logging.LoggerTimer
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
+import expo.modules.updatesinterface.UpdatesLogEntryListenerRegistry
 import expo.modules.updatesinterface.UpdatesLogMessage
 import java.io.File
 import java.util.Date
@@ -162,7 +163,7 @@ class UpdatesLogger(filesDirectory: File) : IUpdatesLogger {
     } else {
       null
     }
-    return UpdatesLogEntry(
+    val logEntry = UpdatesLogEntry(
       Date().time,
       fill(message.template, filledValues),
       message.code.code,
@@ -173,7 +174,9 @@ class UpdatesLogger(filesDirectory: File) : IUpdatesLogger {
       stacktrace,
       message.key,
       filledValues.ifEmpty { null }
-    ).asString()
+    )
+    notifyListeners(logEntry, level)
+    return logEntry.asString()
   }
 
   private fun logEntryString(
@@ -195,8 +198,13 @@ class UpdatesLogger(filesDirectory: File) : IUpdatesLogger {
       assetId,
       stacktrace = null
     )
-
     return logEntry.asString()
+  }
+
+  private fun notifyListeners(logEntry: UpdatesLogEntry, level: LogType) {
+    if (level == LogType.Warn || level == LogType.Error || level == LogType.Fatal) {
+      UpdatesLogEntryListenerRegistry.notify(logEntry.asMap())
+    }
   }
 
   companion object {
