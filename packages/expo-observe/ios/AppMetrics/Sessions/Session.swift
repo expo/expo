@@ -1,8 +1,7 @@
-import ExpoModulesCore
 import Foundation
 
 /// Session is a time frame during the app's lifetime that tracks various metrics from its start till its end.
-class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
+class Session: MetricsReceiver, @unchecked Sendable {
   /// Unique ID of the session in UUID v4 format.
   let id: String
 
@@ -19,7 +18,6 @@ class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
     self.id = UUID().uuidString
     self.startDate = Date.now
     self.type = type
-    super.init()
 
     // The session-row INSERT is fire-and-forget on `AppMetricsActor`. Subsequent writes for this
     // session (metrics, logs, `stop()`, crash reports) all go through the same actor, and tasks on
@@ -46,7 +44,6 @@ class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
     self.type = type
     self.startDate = startDate
     self.endDate = endDate
-    super.init()
   }
 
   /// Whether the session is still running, i.e. did not end yet.
@@ -125,8 +122,8 @@ class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
 
   /// Records a metric against this session. JS-facing: errors propagate so the caller's promise rejects.
   @AppMetricsActor
-  func addMetric(_ input: SessionMetricInput) throws {
-    try insert(input.toMetric(sessionId: id))
+  func addMetric(_ metric: Metric) throws {
+    try insert(metric)
   }
 
   // Persists a metric row for this session. Shared by the throwing JS path (`addMetric`) and the

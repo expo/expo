@@ -113,42 +113,44 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     }
 
     // Synchronous and never nil: the main session is the process-lifetime singleton, always
-    // available. It's a `SharedObject`, so returning the same instance hands JS the identical shared
-    // object on every call (`getMainSession() === getMainSession()`).
-    Function("getMainSession") { () -> Session in
-      return AppMetrics.mainSession
+    // available. Its `SessionObject` is cached, so JS gets the identical shared object on every call
+    // (`getMainSession() === getMainSession()`).
+    Function("getMainSession") { () -> SessionObject in
+      return SessionObject.main
     }
 
     // Returns the current foreground session, or `nil` when the app is not in the foreground.
-    // Reads the actor-isolated `foregroundSession`, so it's async. The instance is the shared object
-    // itself, so JS gets the same object while the session is current and a new one after it rotates.
-    AsyncFunction("getForegroundSession") { () -> Session? in
-      return try await AppMetricsActor.isolated { AppMetrics.foregroundSession }.value
+    // Reads the actor-isolated `foregroundSession`, so it's async. JS gets the same object while the
+    // session is current and a new one after it rotates.
+    AsyncFunction("getForegroundSession") { () -> SessionObject? in
+      return try await SessionObject.currentForeground()
     }
 
-    Class("Session", Session.self) {
-      Property("id") { $0.id }
-      Property("type") { $0.type.rawValue }
-      Property("startDate") { $0.startDate.ISO8601Format() }
+    Class("Session", SessionObject.self) {
+      Property("id") { $0.session.id }
+      Property("type") { $0.session.type.rawValue }
+      Property("startDate") { $0.session.startDate.ISO8601Format() }
 
-      AsyncFunction("isActive") { (session: Session) -> Bool in
-        return try await AppMetricsActor.isolated { session.isActive }.value
+      AsyncFunction("isActive") { (object: SessionObject) -> Bool in
+        return try await AppMetricsActor.isolated { object.session.isActive }.value
       }
 
-      AsyncFunction("getEndDate") { (session: Session) -> String? in
-        return try await AppMetricsActor.isolated { session.endDate?.ISO8601Format() }.value
+      AsyncFunction("getEndDate") { (object: SessionObject) -> String? in
+        return try await AppMetricsActor.isolated { object.session.endDate?.ISO8601Format() }.value
       }
 
-      AsyncFunction("getMetrics") { (session: Session) -> [Metric] in
-        return try await AppMetricsActor.isolated { try session.getMetrics() }.value
+      AsyncFunction("getMetrics") { (object: SessionObject) -> [Metric] in
+        return try await AppMetricsActor.isolated { try object.session.getMetrics() }.value
       }
 
-      AsyncFunction("getLogs") { (session: Session) -> [LogRecord] in
-        return try await AppMetricsActor.isolated { try session.getLogs() }.value
+      AsyncFunction("getLogs") { (object: SessionObject) -> [LogRecord] in
+        return try await AppMetricsActor.isolated { try object.session.getLogs() }.value
       }
 
-      AsyncFunction("addMetric") { (session: Session, input: SessionMetricInput) in
-        try await AppMetricsActor.isolated { try session.addMetric(input) }.value
+      AsyncFunction("addMetric") { (object: SessionObject, input: SessionMetricInput) in
+        let session = object.session
+        let metric = input.toMetric(sessionId: session.id)
+        try await AppMetricsActor.isolated { try session.addMetric(metric) }.value
       }
     }
 
