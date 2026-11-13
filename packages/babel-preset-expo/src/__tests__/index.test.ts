@@ -391,4 +391,28 @@ describe('"lazyImports" option', () => {
     const { code } = babel.transformFileSync(testFilename, options)!;
     expect(code).toMatchSnapshot();
   });
+
+  it('preserves correct argument indices for generator default parameters with TypeScript this annotation on Hermes', () => {
+    const sourceCode = `
+      function* test(this: any, val: string, cb = () => {}) {
+        yield val;
+      }
+    `;
+
+    const options = {
+      babelrc: false,
+      presets: [preset],
+      filename: '/unknown.ts',
+      caller: getCaller({
+        name: 'metro',
+        engine: 'hermes',
+        platform: 'ios',
+      }),
+    };
+
+    const { code } = babel.transformSync(sourceCode, options)!;
+    // Should check arguments[1], NOT arguments[2] (which would happen if `this:` was treated as parameter 0)
+    expect(code).toMatch(/arguments\[1\]/);
+    expect(code).not.toMatch(/arguments\[2\]/);
+  });
 });
