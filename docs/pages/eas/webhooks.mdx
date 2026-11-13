@@ -185,7 +185,15 @@ export async function POST(request: Request) {
 }
 ```
 
-Add `SECRET_WEBHOOK_KEY` as a sensitive [environment variable for Expo Hosting](/eas/environment-variables/usage/#using-environment-variables-with-expo-hosting). After you deploy the project, use the deployment URL with the `/webhook` path as the webhook URL, for example, `https://my-app.expo.app/webhook`.
+Add `SECRET_WEBHOOK_KEY` as a sensitive [environment variable for Expo Hosting](/eas/environment-variables/usage/#using-environment-variables-with-expo-hosting) in the `production` environment. Then export the project and deploy it to production:
+
+<Terminal
+  cmd={['$ npx expo export --platform web', '$ eas deploy --prod --environment production']}
+/>
+
+`eas deploy` uploads Expo Services environment variables only with the `--environment` flag. Without this flag, `SECRET_WEBHOOK_KEY` is undefined in the route.
+
+Use the production URL with the `/webhook` path as the webhook URL, for example, `https://my-app.expo.app/webhook`.
 
 ### Express server
 
