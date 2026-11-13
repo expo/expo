@@ -33,6 +33,12 @@ class ContactsPermissionsDelegate(appContext: AppContext) {
     Permissions.getPermissionsWithPermissionsManager(permissionsManager, promise, *permissionsInManifest)
   }
 
+  fun isReadPermissionDeclared() =
+    permissionsManager.isPermissionPresentInManifest(Manifest.permission.READ_CONTACTS)
+
+  fun hasReadPermission() =
+    permissionsManager.hasGrantedPermissions(Manifest.permission.READ_CONTACTS)
+
   fun ensureReadPermission() {
     val hasPermission = permissionsManager.hasGrantedPermissions(Manifest.permission.READ_CONTACTS)
     if (!hasPermission) {

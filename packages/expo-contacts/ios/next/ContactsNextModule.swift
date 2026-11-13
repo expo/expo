@@ -390,6 +390,16 @@ public class ContactsNextModule: Module {
         return try formDelegate.presentPicker(promise: promise)
       }.runOnQueue(.main)
 
+      StaticAsyncFunction("pickDetails") { (fields: [ContactField], promise: Promise) in
+        let detailsMapper = GetContactDetailsMapper(imageService: imageService)
+        try formDelegate.presentPicker(promise: promise) { contact in
+          let details = try detailsMapper.map(contact: contact).format { formatter in
+            getDetailsFormat(formatter: formatter, fields: fields)
+          }
+          promise.resolve(details)
+        }
+      }.runOnQueue(.main)
+
       StaticAsyncFunction("presentAccessPicker") { (promise: Promise) in
         return try formDelegate.presentAccessPicker(promise: promise)
       }.runOnQueue(.main)
