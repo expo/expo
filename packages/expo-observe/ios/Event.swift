@@ -1,4 +1,3 @@
-import ExpoAppMetrics
 import ExpoModulesCore
 import Foundation
 

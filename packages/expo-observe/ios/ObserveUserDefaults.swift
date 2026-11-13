@@ -1,7 +1,5 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoAppMetrics
-
 /// Snapshot of the last `configure(...)` payload.
 internal struct PersistedConfig: Codable {
   var dispatchingEnabled: Bool?

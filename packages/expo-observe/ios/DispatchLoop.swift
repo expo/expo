@@ -1,7 +1,5 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoAppMetrics
-
 @AppMetricsActor
 internal enum DispatchLoop {
   internal static let defaultChunkSize = 200

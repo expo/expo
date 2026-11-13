@@ -1,6 +1,5 @@
 import Testing
 
-@testable import ExpoAppMetrics
 @testable import ExpoObserve
 
 @Suite("OpenTelemetry conversion")

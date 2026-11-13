@@ -1,7 +1,5 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoAppMetrics
-
 /// The chunk-by-chunk send loop behind span dispatch, with its collaborators injected so the
 /// outcome handling can be tested without a database, a network, or the module's globals.
 ///

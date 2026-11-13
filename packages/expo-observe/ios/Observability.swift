@@ -1,5 +1,4 @@
 import EASClient
-import ExpoAppMetrics
 import ExpoModulesCore
 
 @AppMetricsActor
