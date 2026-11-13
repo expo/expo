@@ -37,7 +37,7 @@ export function parsePropertiesFile(contents: string): PropertiesItem[] {
   return propertiesList;
 }
 
-export function propertiesListToString(props: PropertiesItem[]): string {
+export function propertiesListToString(props: readonly PropertiesItem[]): string {
   let output = '';
   for (let i = 0; i < props.length; i++) {
     const prop = props[i];

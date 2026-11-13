@@ -127,7 +127,7 @@ const defaultProviders = {
   }),
 
   // Append a rule to supply gradle.properties data to mods on `mods.android.gradleProperties`
-  gradleProperties: provider<Properties.PropertiesItem[]>({
+  gradleProperties: provider<readonly Properties.PropertiesItem[]>({
     isIntrospective: true,
 
     getFilePath({ modRequest: { platformProjectRoot } }) {
