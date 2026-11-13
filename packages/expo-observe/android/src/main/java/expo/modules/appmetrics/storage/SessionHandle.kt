@@ -2,20 +2,17 @@ package expo.modules.appmetrics.storage
 
 import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.utils.TimeUtils
-import expo.modules.kotlin.runtime.Runtime
-import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-internal class SessionSharedObject(
+internal class SessionHandle(
   private val sessionManager: SessionManager,
   private val scope: CoroutineScope,
   val type: String,
   customStartTimestamp: String? = null,
-  private val metadata: AppMetadata? = null,
-  runtime: Runtime? = null
-) : SharedObject(runtime) {
+  private val metadata: AppMetadata? = null
+) {
   // Generated synchronously so it's available immediately to readers and to
   // collaborators that capture it before the session row has been persisted.
   val sessionId: String = sessionManager.createSessionId()
