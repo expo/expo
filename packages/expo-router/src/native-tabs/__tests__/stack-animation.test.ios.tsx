@@ -92,3 +92,32 @@ it('keeps the default animation when pushing within the focused tab', async () =
   expect(screen).toHavePathname('/second/details');
   expect(latestStackItemProps('details')?.stackAnimation).toBeUndefined();
 });
+
+it('keeps the params of a cross-tab navigation to a mounted screen once it appears', async () => {
+  const result = await renderRouter(routes, { initialUrl: '/first' });
+  const secondIndexParams = () => {
+    const tabsState = result.getRouterState()!.routes[0]!.state!;
+    const secondTab = tabsState.routes.find((route) => route.name === 'second')!;
+    return secondTab.state!.routes.find((route) => route.name === 'index')!.params;
+  };
+  // Every stack has an `index`, so end the transition of each one that rendered; only the
+  // screen that carries the no-animation param changes its params.
+  const appearIndexScreens = async () => {
+    const latest = new Map<string, StackItemProps>();
+    MockedScreenStackItem.mock.calls.forEach(([props]) => {
+      if (typeof props.screenId === 'string' && props.screenId.startsWith('index:')) {
+        latest.set(props.screenId, props);
+      }
+    });
+    await act(() => latest.forEach((props) => props.onAppear?.({} as never)));
+  };
+
+  await act(() => router.push('/second?filter=paid'));
+  await appearIndexScreens();
+  await act(() => router.navigate('/first'));
+  await act(() => router.push('/second?filter=unpaid'));
+  await appearIndexScreens();
+
+  expect(secondIndexParams()).toHaveProperty('filter', 'unpaid');
+  expect(secondIndexParams()).not.toHaveProperty(INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME);
+});
