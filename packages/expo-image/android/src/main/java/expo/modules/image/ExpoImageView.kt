@@ -10,7 +10,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
 import android.view.ViewConfiguration
-import androidx.appcompat.widget.AppCompatImageView
+import android.widget.ImageView
 import androidx.core.graphics.transform
 import androidx.core.view.isVisible
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
@@ -22,7 +22,7 @@ import expo.modules.image.svg.SVGPictureDrawable
 @SuppressLint("ViewConstructor")
 class ExpoImageView(
   context: Context
-) : AppCompatImageView(context) {
+) : ImageView(context) {
   internal var targetBindingId = 0L
     private set
 
