@@ -12,7 +12,7 @@ import expo.modules.appmetrics.networkrequests.NetworkRequestSummary
  * readings always win — a user passing `expo.device.lowPowerMode` as a
  * string doesn't get to overwrite the actual OS bool.
  */
-object MetricParamsBuilder {
+internal object MetricParamsBuilder {
   fun build(
     userParams: Map<String, Any>? = null,
     frameMetrics: FrameMetricsRecord? = null,

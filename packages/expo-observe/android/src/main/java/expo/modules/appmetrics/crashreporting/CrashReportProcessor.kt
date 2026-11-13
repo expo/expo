@@ -10,7 +10,7 @@ import java.lang.ref.WeakReference
  * JVM file (a crash before the session existed → orphan) differently from an
  * id-less native record (attributable to the previous session).
  */
-enum class CrashOrigin {
+internal enum class CrashOrigin {
   JVM_FILE,
   EXIT_RECORD
 }
@@ -19,13 +19,13 @@ enum class CrashOrigin {
  * Stores the timestamp of the newest OS exit record already turned into a crash
  * report, so each launch only processes records newer than it.
  */
-interface LastProcessedExitStore {
+internal interface LastProcessedExitStore {
   fun get(): Long
 
   fun set(timestampMillis: Long)
 }
 
-class PreferencesLastProcessedExitStore(context: Context) : LastProcessedExitStore {
+internal class PreferencesLastProcessedExitStore(context: Context) : LastProcessedExitStore {
   private val contextRef = WeakReference(context)
 
   override fun get(): Long =
@@ -41,7 +41,7 @@ class PreferencesLastProcessedExitStore(context: Context) : LastProcessedExitSto
  * pending JVM crash files from `JvmCrashHandler` and OS exit records from
  * `ExitInfoProvider` — into `CrashReport`s, and hands each to `storeReport`.
  */
-class CrashReportProcessor(
+internal class CrashReportProcessor(
   private val crashFileReader: CrashFileReader,
   private val exitInfoProvider: ExitInfoProvider,
   private val lastProcessedExitStore: LastProcessedExitStore,

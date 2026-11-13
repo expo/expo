@@ -12,7 +12,7 @@ import java.io.File
  * One file per pid+timestamp, so a crash burst (crash → relaunch → crash)
  * can't overwrite a file the processor hasn't read yet.
  */
-class CrashFileWriter(private val directory: File) {
+internal class CrashFileWriter(private val directory: File) {
   /**
    * Writes one pending-crash file. Returns the file, or `null` on any failure —
    * this runs on the crash path and must never throw into the handler chain.

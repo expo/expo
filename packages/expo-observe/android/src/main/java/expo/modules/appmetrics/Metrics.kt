@@ -1,6 +1,6 @@
 package expo.modules.appmetrics
 
-enum class AppStartupMetric(
+internal enum class AppStartupMetric(
   val metricName: String
 ) {
   ColdLaunchTime("coldLaunchTime"),
@@ -14,7 +14,7 @@ enum class AppStartupMetric(
   }
 }
 
-enum class MemoryMetric(
+internal enum class MemoryMetric(
   val metricName: String
 ) {
   Physical("physical"),
@@ -26,7 +26,7 @@ enum class MemoryMetric(
   }
 }
 
-enum class MetricCategory(
+internal enum class MetricCategory(
   val categoryName: String
 ) {
   AppStartup("appStartup"),

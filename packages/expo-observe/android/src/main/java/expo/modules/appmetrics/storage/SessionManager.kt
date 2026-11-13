@@ -13,7 +13,7 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import java.util.UUID
 
-class SessionManager(
+internal class SessionManager(
   context: Context,
   database: MetricsDatabase? = null
 ) {

@@ -15,7 +15,7 @@ import expo.modules.updatesinterface.UpdatesStateChangeSubscription
  * Provides updates-related metric helpers.
  * The subscription lifecycle and state change listening are managed by AppMetricsModule.
  */
-class UpdatesMonitoring(
+internal class UpdatesMonitoring(
   private val session: SessionSharedObject
 ) {
 

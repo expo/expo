@@ -1,6 +1,6 @@
 package expo.modules.appmetrics
 
-data class AppMetadata(
+internal data class AppMetadata(
   val appName: String?,
   val appIdentifier: String,
   val appVersion: String?,
@@ -17,7 +17,7 @@ data class AppMetadata(
   val clientVersion: String?
 )
 
-data class AppUpdatesInfo(
+internal data class AppUpdatesInfo(
   val updateId: String?,
   val runtimeVersion: String?,
   val requestHeaders: Map<String, String>?

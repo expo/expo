@@ -3,7 +3,7 @@ package expo.modules.appmetrics.crashreporting
 /**
  * Maps a JVM stack trace into the cross-platform `CrashReport.CallStackTree` shape.
  */
-object CallStackTreeBuilder {
+internal object CallStackTreeBuilder {
   /**
    * Frame cap per stack. `StackOverflowError` traces routinely reach the JVM's
    * 1024-element limit; beyond this cap the repeating tail adds payload size

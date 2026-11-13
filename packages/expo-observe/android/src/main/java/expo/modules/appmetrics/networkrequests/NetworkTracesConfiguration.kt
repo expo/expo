@@ -13,7 +13,7 @@ import org.json.JSONObject
  * Mirrors the iOS `NetworkTracesConfiguration`, except for how a partially corrupt blob decodes:
  * this side recovers the readable fields, while iOS falls back to the default wholesale.
  */
-data class NetworkTracesConfiguration(
+internal data class NetworkTracesConfiguration(
   val enabled: Boolean = false,
   /**
    * Allowed hosts, compared for exact, case-insensitive equality. `null` allows every host;

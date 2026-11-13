@@ -27,7 +27,7 @@ internal const val REQUEST_COMPLETED_EVENT = "requestCompleted"
  * The class only forwards events — it doesn't store request history. Use
  * `NetworkRequestMonitor.shared.recent` for that.
  */
-class NetworkRequestObserver private constructor(
+internal class NetworkRequestObserver private constructor(
   appContext: AppContext,
   filter: NetworkRequestFilter?,
   private val monitor: NetworkRequestMonitor // Set for testing, otherwise default singleton

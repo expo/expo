@@ -9,14 +9,14 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
 
-const val JS_EXCEPTION_LOG_NAME = "js.exception"
+internal const val JS_EXCEPTION_LOG_NAME = "js.exception"
 
 /**
  * An unhandled JavaScript error forwarded from the JS-side `global.ErrorUtils` handler. Recorded as
  * a `js.exception` log event following OpenTelemetry's exception conventions.
  */
 @OptimizedRecord
-data class ErrorReport(
+internal data class ErrorReport(
   @Field val source: ErrorSource = ErrorSource.GLOBAL,
   @Field val type: String? = null,
   @Field val message: String = "",
@@ -55,7 +55,7 @@ data class ErrorReport(
 }
 
 /** How the error was captured. A closed set so the `expo.error.source` attribute stays consistent. */
-enum class ErrorSource(val rawValue: String) : Enumerable {
+internal enum class ErrorSource(val rawValue: String) : Enumerable {
   GLOBAL("global"),
   ERROR_BOUNDARY("errorBoundary"),
   REPORTED_BY_USER("reportedByUser"),
@@ -66,7 +66,7 @@ enum class ErrorSource(val rawValue: String) : Enumerable {
  * Builds the `js.exception` log event for a fatal error ingested from disk on the next launch, using the
  * session and timestamp captured at fatal time.
  */
-fun PendingErrorStore.PendingError.toLogRecord(): LogRecord =
+internal fun PendingErrorStore.PendingError.toLogRecord(): LogRecord =
   makeExceptionLogRecord(
     sessionId = sessionId,
     source = source,

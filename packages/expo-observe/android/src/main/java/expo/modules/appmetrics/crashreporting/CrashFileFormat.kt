@@ -46,7 +46,7 @@ internal object CrashFileFormat {
  * `CrashFileWriter` and read back on the next launch by `CrashFileReader`.
  */
 @Serializable
-data class PendingJvmCrashPayload(
+internal data class PendingJvmCrashPayload(
   /** Session that crashed, or `null` when the crash predated the session identity. */
   val sessionId: String? = null,
   val pid: Int,

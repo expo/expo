@@ -15,7 +15,7 @@ private const val KEY_LAST_DISPATCHED_LOG_ID = "lastDispatchedLogId"
  * Snapshot of the last `configure(...)` payload
  */
 @Serializable
-data class PersistedConfig(
+internal data class PersistedConfig(
   val dispatchingEnabled: Boolean? = null,
   val dispatchInDebug: Boolean? = null,
   val sampleRate: Double? = null,
@@ -28,12 +28,12 @@ data class PersistedConfig(
  * Bundle-derived facts pushed from the JS layer at package import time.
  */
 @Serializable
-data class PersistedBundleDefaults(
+internal data class PersistedBundleDefaults(
   val environment: String,
   val isJsDev: Boolean
 )
 
-object ObservePreferences {
+internal object ObservePreferences {
   fun getConfig(context: Context): PersistedConfig? {
     val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     val json = prefs.getString(KEY_CONFIG, null) ?: return null

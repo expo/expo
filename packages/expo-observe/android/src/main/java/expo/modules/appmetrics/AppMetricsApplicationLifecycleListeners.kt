@@ -7,7 +7,7 @@ import expo.modules.appmetrics.crashreporting.JvmCrashHandler
 import expo.modules.appmetrics.networkrequests.OkHttpClientProviderHook
 import expo.modules.core.interfaces.ApplicationLifecycleListener
 
-class AppMetricsApplicationLifecycleListeners : ApplicationLifecycleListener {
+internal class AppMetricsApplicationLifecycleListeners : ApplicationLifecycleListener {
   override fun onCreate(application: Application) {
     super.onCreate(application)
     AppStartupManager.recordAppCreated(application)

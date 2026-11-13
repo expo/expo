@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicReference
  * immutable map keeps reads lock-free and prevents a concurrent set from
  * mutating a snapshot mid-merge.
  */
-object GlobalAttributes {
+internal object GlobalAttributes {
   private val current = AtomicReference<Map<String, Any?>>(emptyMap())
 
   /**

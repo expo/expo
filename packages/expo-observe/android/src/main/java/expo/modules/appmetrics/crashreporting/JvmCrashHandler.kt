@@ -8,7 +8,7 @@ import android.os.Process
  * `CrashFileWriter`, then delegates to the previously installed handler so the
  * process still dies and other reporters keep working.
  */
-class JvmCrashHandler internal constructor(
+internal class JvmCrashHandler internal constructor(
   private val fileWriter: CrashFileWriter,
   private val previousHandler: Thread.UncaughtExceptionHandler?,
   // Injectable for tests; production uses the real pid and clock.

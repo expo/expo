@@ -22,7 +22,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
  * request. A filter with no fields set matches every request, matching the no-filter default.
  */
 @OptimizedRecord
-data class NetworkRequestFilter(
+internal data class NetworkRequestFilter(
   /**
    * Exact host matches, compared case-insensitively against the request URL's host.
    */

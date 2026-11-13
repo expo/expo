@@ -15,7 +15,7 @@ import expo.modules.kotlin.sharedobjects.SharedObject
  * timestamp, and inventing one at GC time would record the collector's schedule, not the
  * operation's duration.
  */
-class SpanHandle(
+internal class SpanHandle(
   val recorder: SpanRecorder,
   private val onEnd: (Span) -> Unit
 ) : SharedObject() {

@@ -19,7 +19,7 @@ import expo.modules.appmetrics.TAG
  * in production (DataDog/dd-sdk-android#513). We log a warning if we detect we landed too late
  * so engineers see it in logcat; the workaround is to install another hook earlier.
  */
-object OkHttpClientProviderHook {
+internal object OkHttpClientProviderHook {
   @Volatile
   private var installed = false
 

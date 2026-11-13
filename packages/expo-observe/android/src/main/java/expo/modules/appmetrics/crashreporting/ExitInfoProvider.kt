@@ -9,7 +9,7 @@ import androidx.annotation.RequiresApi
 import expo.modules.appmetrics.utils.TimeUtils
 import kotlin.math.abs
 
-data class ExitRecord(
+internal data class ExitRecord(
   /** One of the `ApplicationExitInfo.REASON_*` constants. */
   val reason: Int,
   val status: Int,
@@ -73,7 +73,7 @@ data class ExitRecord(
  * `CrashReportProcessor` can be unit-tested with canned records: production uses
  * `ExitInfoProviderImpl`, tests pass a lambda returning fixture `ExitRecord`s.
  */
-fun interface ExitInfoProvider {
+internal fun interface ExitInfoProvider {
   fun getExitRecords(): List<ExitRecord>
 }
 
@@ -81,7 +81,7 @@ fun interface ExitInfoProvider {
  * Decouples `CrashReportProcessor` from the API-30 framework type
  * so its logic runs and tests on every SDK level.
  */
-class ExitInfoProviderImpl(private val context: Context) : ExitInfoProvider {
+internal class ExitInfoProviderImpl(private val context: Context) : ExitInfoProvider {
   override fun getExitRecords(): List<ExitRecord> {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
       return emptyList()

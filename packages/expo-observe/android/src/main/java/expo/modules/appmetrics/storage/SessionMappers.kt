@@ -22,7 +22,7 @@ import kotlinx.serialization.json.JsonObject
  *   hooks for foreground/screen/custom sessions.
  */
 @OptimizedRecord
-data class JsDebugSession(
+internal data class JsDebugSession(
   @Field val id: String,
   @Field val type: String,
   @Field val startDate: String,
@@ -46,7 +46,7 @@ data class JsDebugSession(
 }
 
 @OptimizedRecord
-data class JsMetric(
+internal data class JsMetric(
   @Field val sessionId: String,
   @Field val category: String,
   @Field val name: String,
@@ -91,7 +91,7 @@ data class JsMetric(
  * exposed to JS.
  */
 @OptimizedRecord
-data class SessionMetricInput(
+internal data class SessionMetricInput(
   @Field val category: String,
   @Field val name: String,
   @Field val value: Double,
@@ -122,7 +122,7 @@ data class SessionMetricInput(
  * bookkeeping is only meaningful on the OTel wire payload.
  */
 @OptimizedRecord
-data class JsLogRecord(
+internal data class JsLogRecord(
   @Field val timestamp: String,
   @Field val name: String,
   @Field val body: String?,

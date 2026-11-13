@@ -18,7 +18,7 @@ private const val TAG = "ExpoAppMetrics"
  * Collects the attributes and events of one in-flight span and builds its `Span` row when the
  * span ends. Nothing is written to the database before [end].
  */
-class SpanRecorder(
+internal class SpanRecorder(
   name: String,
   private val sessionId: String,
   parentTraceId: String? = null,

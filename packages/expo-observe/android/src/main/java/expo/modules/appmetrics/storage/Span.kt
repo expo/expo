@@ -31,7 +31,7 @@ import java.util.concurrent.ThreadLocalRandom
     )
   ]
 )
-data class Span(
+internal data class Span(
   /**
    * Auto-incremented rowid, like `metrics` and `logs`: a monotonic id lets the export layer
    * chunk in insertion order and delete consumed prefixes with one query.
@@ -120,7 +120,7 @@ data class Span(
 }
 
 @Dao
-interface SpanDao {
+internal interface SpanDao {
   companion object {
     /**
      * Maximum number of rows retained in `spans`. Span producers (network requests especially)
