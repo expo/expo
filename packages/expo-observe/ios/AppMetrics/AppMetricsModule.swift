@@ -163,7 +163,8 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     // write race the shutdown. We write it to disk synchronously here (on the JS thread, no actor/DB)
     // and ingest it on the next launch. Non-fatal errors aren't racing termination, so they go through
     // the normal async log path.
-    Function("reportError") { (report: ErrorReport) in
+    Function("reportError") { (record: ErrorReportRecord) in
+      let report = record.toErrorReport()
       if report.isFatal {
         PendingErrorStore.write(report.toPendingError(sessionId: AppMetrics.mainSession.id))
       } else {
@@ -173,8 +174,8 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }
     }
 
-    Function("reportFeedback") { (report: FeedbackReport) in
-      let record = report.toLogRecord()
+    Function("reportFeedback") { (report: FeedbackReportRecord) in
+      let record = report.toFeedbackReport().toLogRecord()
       AppMetricsActor.isolated {
         AppMetrics.mainSession.receiveLog(record)
       }
@@ -269,6 +270,52 @@ private func storedSession(id: String) throws -> StoredSession? {
 internal struct NetworkTracesConfigParam {
   var enabled: Bool = true
   var filter: NetworkRequestFilter?
+}
+
+@Record
+internal struct ErrorReportRecord {
+  var source: ErrorReport.Source = .global
+  var type: String?
+  var message: String = ""
+  var stacktrace: String?
+  var componentStack: String?
+  var isFatal: Bool = false
+
+  func toErrorReport() -> ErrorReport {
+    return ErrorReport(
+      source: source,
+      type: type,
+      message: message,
+      stacktrace: stacktrace,
+      componentStack: componentStack,
+      isFatal: isFatal
+    )
+  }
+}
+
+@Record
+internal struct FeedbackReportRecord {
+  var id: String = ""
+  var message: String?
+  var rating: Int?
+  var scale: FeedbackScaleRecord?
+  var attributes: [String: Any]?
+
+  func toFeedbackReport() -> FeedbackReport {
+    return FeedbackReport(
+      id: id,
+      message: message,
+      rating: rating,
+      scale: scale.map { FeedbackScale(min: $0.min, max: $0.max) },
+      attributes: attributes
+    )
+  }
+}
+
+@Record
+internal struct FeedbackScaleRecord {
+  var min: Int = 0
+  var max: Int = 0
 }
 
 internal struct StartSpanOptions: Record {
@@ -440,3 +487,7 @@ struct MetricAttributes: Record {
   @Field var routeName: String?
   @Field var params: [String: Any]?
 }
+
+// The JS bridge converts these enums from strings.
+extension Severity: Enumerable {}
+extension ErrorReport.Source: Enumerable {}
