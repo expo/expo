@@ -32,6 +32,9 @@ Pod::Spec.new do |s|
                          "**/RecordingDelegate.swift"
 
   s.test_spec 'Tests' do |test_spec|
+    # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
+    test_spec.dependency 'ExpoModulesTestCore'
+
     test_spec.source_files = 'Tests/**/*.swift'
     test_spec.requires_app_host = false
 

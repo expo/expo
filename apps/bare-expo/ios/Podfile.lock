@@ -323,6 +323,7 @@ PODS:
     - ExpoModulesCore
   - ExpoAudio/Tests (58.0.10):
     - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoBackgroundFetch (58.0.11):
     - ExpoModulesCore
   - ExpoBackgroundTask (58.0.11):
@@ -4404,7 +4405,7 @@ SPEC CHECKSUMS:
   ExpoApplication: c83355b2f69f996b5d26b64fef39228e7f1e1208
   ExpoAppMetrics: ca9a0a9fec85aa654fe8502e7840e8c31b4d11c5
   ExpoAsset: 9548991f0332bd8ed8819299e0b413d713104a1a
-  ExpoAudio: 7f919daf0ebf1b0e1cf8b7464b7c85be6664a412
+  ExpoAudio: a34dd4ccdf9141699e1667c4f1278fd00f481995
   ExpoBackgroundFetch: a7f3f09822c310c201056cb86c167ed76036b048
   ExpoBackgroundTask: 58850693ca813a3da1f5410ad3dd5e2ef07e2a75
   ExpoBattery: e9e5059b1bc5784141c61cec44761c8328de9523
