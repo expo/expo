@@ -105,21 +105,22 @@ const withShareExtension: ShareExtensionConfigPlugin = (config, props?) => {
       );
     }
 
-    const singleIntentFilter = parseIntentFilters(
-      props?.android?.singleShareMimeTypes ?? [],
-      'single'
-    );
-    const multiIntentFilter = parseIntentFilters(
-      props?.android?.multipleShareMimeTypes ?? [],
-      'multiple'
-    );
+    const singleShareMimeTypes = props?.android?.singleShareMimeTypes ?? [];
+    const multipleShareMimeTypes = props?.android?.multipleShareMimeTypes ?? [];
 
     plugins = [
       ...plugins,
       [
         withAndroidIntentFilters,
         {
-          intentFilters: [singleIntentFilter, multiIntentFilter],
+          intentFilters: [
+            ...(singleShareMimeTypes.length
+              ? [parseIntentFilters(singleShareMimeTypes, 'single')]
+              : []),
+            ...(multipleShareMimeTypes.length
+              ? [parseIntentFilters(multipleShareMimeTypes, 'multiple')]
+              : []),
+          ],
         },
       ],
       [withShareIntoSchemeString, urlScheme],
