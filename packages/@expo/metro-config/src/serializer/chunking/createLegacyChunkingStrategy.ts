@@ -2,6 +2,7 @@ import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/Delta
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import assert from 'assert';
 
+import type { AsyncDependencyType } from '../../transform-worker/collect-dependencies';
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
 import { Chunk, getBaseUrlOption } from './Chunk';
 import {
@@ -91,13 +92,15 @@ function getComputedPathsForAsyncDependencies(
   chunk.deps.forEach((module) => {
     module.dependencies.forEach((dependency) => {
       if (isResolvedDependency(dependency) && dependency.data.data.asyncType) {
+        const isWorker = (dependency.data.data.asyncType as AsyncDependencyType) === 'worker';
         const chunkContainingModule = chunksByPath.get(dependency.absolutePath);
         assert(
           chunkContainingModule,
           'Chunk containing module not found: ' + dependency.absolutePath
         );
 
-        if (chunkContainingModule.isAsync) {
+        // Imports within this chunk need no fetch URL. Workers still need a standalone URL.
+        if (chunkContainingModule.isAsync && (chunkContainingModule !== chunk || isWorker)) {
           const moduleIdName = filenamesByChunk.get(chunkContainingModule);
           assert(
             moduleIdName,
