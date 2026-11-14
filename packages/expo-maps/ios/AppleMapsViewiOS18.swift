@@ -66,7 +66,12 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
 
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
-      state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
+      state.mapCameraPosition = config.map {
+        convertToMapCamera(
+          position: $0, size: state.mapSize, fitter: state.cameraFitter,
+          currentCamera: state.mapCameraPosition.camera ?? state.lastKnownCamera
+        )
+      } ?? .userLocation(fallback: state.mapCameraPosition)
     }
   }
 
@@ -100,9 +105,9 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
             self.state.mapCameraPosition = .camera(
               MapCamera(
                 centerCoordinate: coordinate,
-                distance: self.state.lastKnownDistance ?? 10000,
-                heading: self.state.lastKnownHeading,
-                pitch: self.state.lastKnownPitch
+                distance: self.state.lastKnownCamera?.distance ?? 10000,
+                heading: self.state.lastKnownCamera?.heading ?? 0,
+                pitch: self.state.lastKnownCamera?.pitch ?? 0
               )
             )
           }
@@ -288,13 +293,17 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         }
       }
       .onChange(of: props.cameraPosition) { _, newValue in
-        state.mapCameraPosition = convertToMapCamera(position: newValue)
+        if state.hasInitializedCamera {
+          state.mapCameraPosition = convertToMapCamera(
+            position: newValue, size: state.mapSize, fitter: state.cameraFitter
+          )
+        }
       }
       .onChange(of: state.selection, perform: handleSelectionChange)
+      .onMapCameraChange(frequency: .continuous) { context in
+        state.lastKnownCamera = context.camera
+      }
       .onMapCameraChange(frequency: .onEnd) { context in
-        state.lastKnownDistance = context.camera.distance
-        state.lastKnownHeading = context.camera.heading
-        state.lastKnownPitch = context.camera.pitch
 
         let cameraPosition = context.region.center
         let longitudeDelta = context.region.span.longitudeDelta
@@ -326,9 +335,15 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
           state.lookAroundPresented = false
         }
       )
-      .onAppear {
+      .onGeometryChange(for: CGSize.self) { proxy in
+        proxy.size
+      } action: { size in
+        guard size.width > 0, size.height > 0 else { return }
+        state.mapSize = size
         if !state.hasInitializedCamera {
-          state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
+          state.mapCameraPosition = convertToMapCamera(
+            position: props.cameraPosition, size: size, fitter: state.cameraFitter
+          )
           state.hasInitializedCamera = true
         }
       }
