@@ -15,8 +15,16 @@ internal import jsi
 ///
 /// ## Lifecycle
 ///
-/// The runtime maintains a weak reference pattern for values, objects, and arrays to prevent
-/// retain cycles. Ensure the runtime remains alive while any derived JavaScript objects are in use.
+/// Values, objects and arrays hold the runtime's ``handle``, which doesn't retain the runtime. Ensure the
+/// runtime remains alive while any derived JavaScript objects are in use.
+///
+/// ## Referencing the runtime
+///
+/// Don't hold a `weak` reference to a runtime. It gives the runtime a side table, and from then on every
+/// retain and release of the runtime, which happen on almost every operation, takes a slower path. Hold its
+/// ``handle`` instead when the reference must not keep the runtime alive, for example in a host object or a
+/// host function that the runtime owns, and read ``JavaScriptRuntimeHandle/runtime`` when you need the
+/// runtime. Hold the runtime itself when it should stay alive.
 open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// The underlying JSI runtime this `JavaScriptRuntime` points to, exposed as
   /// `IRuntime` — the abstract base interface that virtually all JSI value/object/
@@ -39,7 +47,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
   /// Strong handle that values hold instead of a `weak` reference to the runtime. See
   /// ``JavaScriptRuntimeHandle`` for why.
-  internal let handle: JavaScriptRuntimeHandle
+  public let handle: JavaScriptRuntimeHandle
 
   internal let scheduler: Scheduler
 

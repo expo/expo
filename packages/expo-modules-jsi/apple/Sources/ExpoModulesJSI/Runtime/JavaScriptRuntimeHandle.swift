@@ -20,7 +20,11 @@ internal import jsi
 /// does). Other threads go through ``JavaScriptRuntime/Scheduler``.
 ///
 /// Not to be confused with the engine's handles to JavaScript values (`jsi::PointerValue`).
-internal final class JavaScriptRuntimeHandle: @unchecked Sendable {
+///
+/// Hold a handle (``JavaScriptRuntime/handle``) instead of the runtime when something that the runtime
+/// owns, such as a host object or a host function, needs to reach the runtime later. Holding the runtime
+/// itself there would keep a runtime that owns its engine alive forever.
+public final class JavaScriptRuntimeHandle: @unchecked Sendable {
   /// The runtime that owns this handle, cleared by the runtime's `deinit`. Read it through ``runtime``
   /// instead. `Unmanaged`, so ``unretainedRuntime`` can read it without retaining the runtime.
   private var unmanagedRuntime: Unmanaged<JavaScriptRuntime>?
@@ -52,9 +56,10 @@ internal final class JavaScriptRuntimeHandle: @unchecked Sendable {
     return jsiRuntime != nil
   }
 
-  /// The runtime, or `nil` if it has been deallocated.
+  /// The runtime, or `nil` if it has been deallocated. Read it only on the JavaScript thread of the
+  /// runtime.
   @inline(__always)
-  internal var runtime: JavaScriptRuntime? {
+  public var runtime: JavaScriptRuntime? {
     return isAlive ? unmanagedRuntime?.takeUnretainedValue() : nil
   }
 
