@@ -1,7 +1,7 @@
 ---
 title: Expo Simulators usage, limits, and billing
 sidebar_title: Usage and billing
-description: Learn how Expo Simulators access works, how long a session can run on each plan, how sessions queue, and how to control usage.
+description: Learn how Expo Simulators access works, how long a session can run, how sessions queue, and how to control usage.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -20,7 +20,7 @@ The check is read-only. It does not start a device or consume usage. If `availab
 
 ## Session duration limits
 
-Each session has a maximum duration of 115 minutes. When the session reaches it, Expo Simulators stops the session.
+Only paid plans can start sessions. On a paid plan, each session has a maximum duration of 115 minutes. When the session reaches it, Expo Simulators stops the session.
 
 If you do not set a maximum duration, the session gets the 115-minute maximum. To set a shorter limit, use `--max-duration-minutes` in EAS CLI or `maxDurationMinutes` in the REST API. A value above 115 minutes returns an error.
 
