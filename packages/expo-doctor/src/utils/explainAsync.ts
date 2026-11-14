@@ -8,13 +8,13 @@ function isSpawnResult(result: any): result is SpawnResult {
   return 'stderr' in result && 'stdout' in result && 'status' in result;
 }
 
-/** Spawn `npm explain [name] --json` and return the parsed JSON. Returns `null` if the requested package is not installed. */
+/** Spawn `npm explain [name] --json --force` and return the parsed JSON. Returns `null` if the requested package is not installed. `--force` keeps the read-only lookup working in projects whose `devEngines.packageManager` is not npm, where npm otherwise exits with EBADDEVENGINES. */
 export async function explainAsync(
   packageName: string,
   projectRoot: string,
   parameters: string[] = []
 ): Promise<RootNodePackage[] | null> {
-  const args = ['explain', packageName, ...parameters, '--json'];
+  const args = ['explain', packageName, ...parameters, '--json', '--force'];
 
   try {
     const { stdout } = await spawnAsync('npm', args, {
