@@ -1,5 +1,6 @@
 package expo.modules.agerange
 
+import android.app.Activity
 import android.content.pm.ApplicationInfo
 import com.google.android.play.agesignals.AgeSignalsAccessRequest
 import com.google.android.play.agesignals.AgeSignalsException
@@ -41,18 +42,7 @@ class AgeRangeModule : Module() {
   @JS
   suspend fun requestAgeRangeAsync(options: Map<String, Any?>): AgeRangeResult =
     suspendCancellableCoroutine { continuation ->
-      currentAgeSignalsManager
-        .checkAgeSignals(AgeSignalsRequest.builder().build())
-        .addOnCanceledListener {
-          continuation.resumeWithException(AgeRangeTaskCancelledException())
-        }
-        .addOnFailureListener { exception ->
-          val codedException = processAgeSignalsError(exception)
-          continuation.resumeWithException(codedException)
-        }
-        .addOnSuccessListener { ageSignalsResult ->
-          continuation.resume(AgeRangeResult(ageSignalsResult))
-        }
+      requestAgeRange(currentAgeSignalsManager, continuation::resume, continuation::resumeWithException)
     }
 
   @JS
@@ -62,21 +52,7 @@ class AgeRangeModule : Module() {
   suspend fun requestAgeSignalsAccessAsync(): String? {
     val activity = currentActivity ?: throw Exceptions.MissingActivity()
     return suspendCancellableCoroutine { continuation ->
-      currentAgeSignalsManager
-        .requestAgeSignalsAccess(
-          AgeSignalsAccessRequest.builder().setActivity(activity).build()
-        )
-        .addOnCanceledListener {
-          continuation.resumeWithException(AgeRangeTaskCancelledException())
-        }
-        .addOnFailureListener { exception ->
-          continuation.resumeWithException(processAgeSignalsError(exception))
-        }
-        .addOnSuccessListener { accessResult ->
-          continuation.resume(
-            AgeSignalsStatusValue.fromPlayValue(accessResult.ageSignalsStatus())?.value
-          )
-        }
+      requestAgeSignalsAccess(currentAgeSignalsManager, activity, continuation::resume, continuation::resumeWithException)
     }
   }
 
@@ -100,4 +76,31 @@ internal fun processAgeSignalsError(exception: Exception): CodedException {
   } else {
     return exception.toCodedException()
   }
+}
+
+internal fun requestAgeRange(
+  ageSignalsManager: AgeSignalsManager,
+  onSuccess: (AgeRangeResult) -> Unit,
+  onError: (CodedException) -> Unit
+) {
+  ageSignalsManager
+    .checkAgeSignals(AgeSignalsRequest.builder().build())
+    .addOnCanceledListener { onError(AgeRangeTaskCancelledException()) }
+    .addOnFailureListener { exception -> onError(processAgeSignalsError(exception)) }
+    .addOnSuccessListener { ageSignalsResult -> onSuccess(AgeRangeResult(ageSignalsResult)) }
+}
+
+internal fun requestAgeSignalsAccess(
+  ageSignalsManager: AgeSignalsManager,
+  activity: Activity,
+  onSuccess: (String?) -> Unit,
+  onError: (CodedException) -> Unit
+) {
+  ageSignalsManager
+    .requestAgeSignalsAccess(AgeSignalsAccessRequest.builder().setActivity(activity).build())
+    .addOnCanceledListener { onError(AgeRangeTaskCancelledException()) }
+    .addOnFailureListener { exception -> onError(processAgeSignalsError(exception)) }
+    .addOnSuccessListener { accessResult ->
+      onSuccess(AgeSignalsStatusValue.fromPlayValue(accessResult.ageSignalsStatus())?.value)
+    }
 }
