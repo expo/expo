@@ -319,11 +319,22 @@ export type ObserveIntegrationReportOptions = {
 };
 
 /**
+ * Strings that a library integration keeps across launches, such as how far it has read a log.
+ * Each integration has its own keys. On web, nothing is stored and `getItem` resolves to `null`.
+ */
+export type ObserveIntegrationStorage = {
+  getItem(key: string): Promise<string | null>;
+  /** Stores the value, or removes it when the value is `null`. */
+  setItem(key: string, value: string | null): Promise<void>;
+};
+
+/**
  * Reports for a library integration. Each report sets the `integration` source, applies the
  * integration's `ignoredCodes` and `shouldReport` options, and then the rate limit. Each function
  * returns whether the report was sent. Nothing is sent while the integration is disabled.
  */
 export type ObserveIntegrationReporter = {
+  storage: ObserveIntegrationStorage;
   reportError(
     report: ObserveIntegrationErrorReport,
     options?: ObserveIntegrationReportOptions

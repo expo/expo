@@ -99,6 +99,14 @@ class ObserveModule : Module() {
         lastIntegrations
       }
 
+      AsyncFunction("getIntegrationValue") { integration: String, key: String ->
+        ObservePreferences.getIntegrationValue(context, integration, key)
+      }
+
+      AsyncFunction("setIntegrationValue") { integration: String, key: String, value: String? ->
+        ObservePreferences.setIntegrationValue(context, integration, key, value)
+      }
+
       Function("setBundleDefaults") { defaults: BundleDefaults ->
         // Empty environment means JS bypassed both `process.env.NODE_ENV` and the
         // `?? 'production'` fallback. Refuse rather than persist an empty string,

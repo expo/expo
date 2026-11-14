@@ -247,3 +247,65 @@ describe('reporter', () => {
     expect(mockAppMetrics.logEvent).not.toHaveBeenCalled();
   });
 });
+
+describe('storage', () => {
+  function createStore() {
+    const values = new Map<string, string>();
+    return {
+      values,
+      getIntegrationValue: jest.fn(async (integration: string, key: string) => {
+        return values.get(`${integration}/${key}`) ?? null;
+      }),
+      setIntegrationValue: jest.fn(
+        async (integration: string, key: string, value: string | null) => {
+          if (value === null) {
+            values.delete(`${integration}/${key}`);
+          } else {
+            values.set(`${integration}/${key}`, value);
+          }
+        }
+      ),
+    };
+  }
+
+  test('keeps the values of each integration under its own name', async () => {
+    const store = createStore();
+    const first = createIntegration('first-library');
+    const second = createIntegration('second-library');
+    registry.registerObserveIntegration(first.integration);
+    registry.registerObserveIntegration(second.integration);
+    registry.configureRegisteredIntegrations(
+      { 'first-library': true, 'second-library': true } as never,
+      store
+    );
+
+    await first.reporter().storage.setItem('cursor', '1');
+    await second.reporter().storage.setItem('cursor', '2');
+
+    expect(await first.reporter().storage.getItem('cursor')).toBe('1');
+    expect(await second.reporter().storage.getItem('cursor')).toBe('2');
+    expect(store.setIntegrationValue).toHaveBeenCalledWith('first-library', 'cursor', '1');
+  });
+
+  test('removes a value set to null', async () => {
+    const store = createStore();
+    const { integration, reporter } = createIntegration();
+    registry.registerObserveIntegration(integration);
+    registry.configureRegisteredIntegrations({ 'test-library': true } as never, store);
+
+    await reporter().storage.setItem('cursor', '1');
+    await reporter().storage.setItem('cursor', null);
+
+    expect(await reporter().storage.getItem('cursor')).toBeNull();
+  });
+
+  test('stores nothing without a native store', async () => {
+    const { integration, reporter } = createIntegration();
+    registry.registerObserveIntegration(integration);
+    registry.configureRegisteredIntegrations({ 'test-library': true } as never);
+
+    await reporter().storage.setItem('cursor', '1');
+
+    expect(await reporter().storage.getItem('cursor')).toBeNull();
+  });
+});
