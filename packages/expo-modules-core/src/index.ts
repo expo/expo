@@ -17,6 +17,7 @@ export type { ProxyNativeModule } from './NativeModulesProxy.types';
 export { requireNativeViewManager } from './NativeViewManagerAdapter';
 
 export * from './requireNativeModule';
+export * from './requireNative';
 export * from './registerWebModule';
 export * from './TypedArrays.types';
 
