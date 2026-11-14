@@ -173,7 +173,7 @@ Use `--platform android` for an Android Emulator. The session page on expo.dev s
 
 Use `--device` to select an Android virtual device hardware profile, or a specific iOS Simulator name or unique device identifier (UDID). If you omit the flag, the remote runner uses `medium_phone` on Android and `iPhone 17` on iOS. See [Expo Simulators devices](/eas/simulators/reference/devices/).
 
-For an unattended or shareable session, use `--max-duration-minutes` to set an automatic stop time. Any plan can set a value up to the account limit. The limit is 40 minutes on the Free plan and 115 minutes on paid plans. A value above the limit returns an error. Without the flag, the maximum duration is the account limit. You can also use `--max-idle-time-minutes` to stop after a period without session activity.
+For an unattended or shareable session, use `--max-duration-minutes` to set an automatic stop time. The value can be up to 115 minutes. A larger value returns an error. Without the flag, the maximum duration is 115 minutes. You can also use `--max-idle-time-minutes` to stop after a period without session activity.
 
 When `--platform` is omitted in an interactive terminal, EAS CLI asks which platform to use. Non-interactive runs require the flag.
 
