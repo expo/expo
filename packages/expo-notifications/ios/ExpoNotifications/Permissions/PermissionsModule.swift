@@ -17,13 +17,12 @@ public class PermissionsModule: Module {
     }
 
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
-      appContext?
-        .permissions?
-        .getPermissionUsingRequesterClass(
-          ExpoNotificationsPermissionsRequester.self,
-          resolve: promise.legacyResolver,
-          reject: promise.legacyRejecter
-        )
+      // Do not wait for the settings on this function's queue. That queue is serial,
+      // and the async functions of every module share it.
+      Task {
+        let permission = await requester.getPermissionsAsync()
+        promise.legacyResolver(EXPermissionsService.parsePermission(fromRequester: permission))
+      }
     }
 
     AsyncFunction("requestPermissionsAsync") { (requestedPermissions: NotificationPermissionRecord, promise: Promise) in

@@ -29,7 +29,7 @@ public class ExpoNotificationsPermissionsRequester: NSObject, EXPermissionsReque
     return result
   }
 
-  private func getPermissionsAsync() async -> [AnyHashable: Any] {
+  func getPermissionsAsync() async -> [AnyHashable: Any] {
     let settings = await UNUserNotificationCenter.current().notificationSettings()
     return makePermissionsResult(from: settings)
   }
