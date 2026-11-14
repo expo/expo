@@ -309,6 +309,8 @@ public macro ViewProps() =
 /// It binds the class to its `@ViewProps` type, which is the generic argument, and conforms it to
 /// `AnyNativeView`. The module registers the view with `@ExpoModule(views:)`.
 ///
+/// The view's name defaults to the class name; pass `@ExpoView<Props>("CustomName")` to override it.
+///
 /// Usage:
 ///
 ///     @ExpoView<CardProps>
@@ -321,7 +323,7 @@ public macro ViewProps() =
 ///         }
 ///       }
 ///     }
-@attached(member, names: named(Props))
+@attached(member, names: named(Props), named(_jsName))
 @attached(extension, conformances: AnyNativeView)
-public macro ExpoView<Props: AnyViewProps>() =
+public macro ExpoView<Props: AnyViewProps>(_ name: String? = nil) =
   #externalMacro(module: "ExpoModulesMacros", type: "ExpoViewMacro")

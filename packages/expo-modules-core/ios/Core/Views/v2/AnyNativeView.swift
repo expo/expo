@@ -19,6 +19,10 @@ public protocol AnyNativeView: AnyObject {
   /// Framework-internal (leading underscore). It's a requirement, so the default implementation is
   /// specialized in the module that declares the view, where the props type is known.
   nonisolated static func _makePropsDecoder(viewName: String) -> ViewPropsDecoderAdapter
+
+  /// The name that the module registers the view under. The `@ExpoView<Props>("CustomName")` macro
+  /// overrides it; it's the unqualified type name by default.
+  nonisolated static var _jsName: String { get }
 }
 
 extension AnyNativeView {
@@ -67,6 +71,10 @@ extension AnyNativeView {
   @inlinable
   public nonisolated static func _makePropsDecoder(viewName: String) -> ViewPropsDecoderAdapter {
     return ViewPropsDecoderAdapter(ViewPropsDecoder<Props>(viewName: viewName))
+  }
+
+  public nonisolated static var _jsName: String {
+    return unqualifiedTypeName(self)
   }
 
   /// The names of the view's props, for the view config in JavaScript.
