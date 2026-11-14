@@ -82,9 +82,6 @@ export async function getHashSourcesAsync(
       useRNCoreAutolinkingFromExpo
     ),
 
-    // patch-package
-    profile(options, getPatchPackageSourcesAsync)(projectRoot, options),
-
     // some known dependencies, e.g. react-native
     profile(options, getDefaultPackageSourcesAsync)(projectRoot, options),
   ]);
@@ -97,6 +94,9 @@ export async function getHashSourcesAsync(
     results.push(options.extraSources);
   }
 
-  // flatten results
-  return ([] as HashSource[]).concat(...results);
+  const sources = ([] as HashSource[]).concat(...results);
+  sources.push(
+    ...(await profile(options, getPatchPackageSourcesAsync)(projectRoot, options, sources))
+  );
+  return sources;
 }
