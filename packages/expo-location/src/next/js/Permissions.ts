@@ -1,6 +1,5 @@
-import { Platform, UnavailabilityError } from 'expo';
+import { Platform, UnavailabilityError, createPermissionHook } from 'expo';
 import type { PermissionResponse } from 'expo';
-import { createPermissionHook } from 'expo-modules-core';
 
 import { NativeLocationModuleNext } from '../native';
 import type { LocationPermissionResponse, RequestPermissionsOptions } from '../types';

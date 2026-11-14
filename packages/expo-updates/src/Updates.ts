@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError } from 'expo';
 import { Image } from 'react-native';
 
 import ExpoUpdates from './ExpoUpdates';
