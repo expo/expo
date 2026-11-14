@@ -13,8 +13,16 @@ import {
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
-import { isRouteGuarded, useGuardRedirect, type GuardedRedirects } from './layouts/GuardContext';
+import {
+  dispatchReplaceWithGuardFallback,
+  isRouteGuarded,
+  useResolvedGuard,
+  type GuardedRedirects,
+  type GuardFallback,
+  type ResolvedGuard,
+} from './layouts/GuardContext';
 import { Redirect } from './link/Redirect';
+import { useIsPreview } from './link/preview/PreviewRouteContext';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
 import { LoaderRouteLifecycle } from './loaders/LoaderRouteLifecycle';
@@ -314,8 +322,8 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const routeInfo = useCurrentRouteInfo();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
-    const redirectHref = useGuardRedirect(value.route);
-    const isGuarded = redirectHref !== undefined;
+    const guard = useResolvedGuard(value.route);
+    const isGuarded = guard !== undefined;
     const isRouteType = value.type === 'route';
     const resolvedLoaderPath = useMemo(() => {
       if (!isRouteType || isGuarded) {
@@ -353,13 +361,10 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
     const hasRouteKey = !!route?.key;
 
-    if (isGuarded) {
-      // A `null` href means guarded with no destination to redirect to (every
-      // candidate is also guarded): render nothing but keep the screen registered
-      // so the navigator and its state stay mounted.
+    if (guard) {
       return (
         <Route node={value} params={route?.params}>
-          {redirectHref != null ? <Redirect href={redirectHref} /> : <AllRoutesProtectedWarning />}
+          <GuardedRouteRedirect guard={guard} navigation={navigation} />
         </Route>
       );
     }
@@ -464,6 +469,41 @@ function createFailedScreen(error: unknown, reset: () => void) {
     }, []);
     return null;
   };
+}
+
+function GuardedRouteRedirect({
+  guard,
+  navigation,
+}: {
+  guard: ResolvedGuard;
+  navigation: Pick<NavigationProp<ParamListBase>, 'getParent'>;
+}) {
+  if (guard.redirectTo !== undefined) {
+    return <Redirect href={guard.redirectTo} />;
+  }
+  if (guard.fallback) {
+    return <GuardFallbackReplace navigation={navigation} fallback={guard.fallback} />;
+  }
+  // With no destination (every candidate is also guarded), render nothing but keep
+  // the screen registered so the navigator and its state stay mounted.
+  return <AllRoutesProtectedWarning />;
+}
+
+function GuardFallbackReplace({
+  navigation,
+  fallback,
+}: {
+  navigation: Pick<NavigationProp<ParamListBase>, 'getParent'>;
+  fallback: GuardFallback;
+}) {
+  const isFocused = useIsFocused();
+  const isPreview = useIsPreview();
+  useEffect(() => {
+    if (isFocused && !isPreview) {
+      dispatchReplaceWithGuardFallback(navigation, fallback);
+    }
+  }, [fallback, isFocused, isPreview, navigation]);
+  return null;
 }
 
 // A separate component, so reading focus does not rerender the screen on focus changes.

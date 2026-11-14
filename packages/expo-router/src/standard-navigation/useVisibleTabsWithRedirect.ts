@@ -4,11 +4,12 @@ import { useRouteNode } from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
 import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
 import { useRouterActions } from '../global-state/useRouterActions';
-import { useGuardRedirect } from '../layouts/GuardContext';
+import { dispatchReplaceWithGuardFallback, useResolvedGuard } from '../layouts/GuardContext';
 import { useIsPreview } from '../link/preview/PreviewRouteContext';
 import { NavigatorStateContext } from '../react-navigation/core/useNavigationState';
 import {
   type Descriptor,
+  NavigationContext,
   type ParamListBase,
   type RouteProp,
   useIsFocused,
@@ -53,7 +54,9 @@ export function useVisibleTabsWithRedirect<
   const isFocused = useIsFocused();
   const routeNode = useRouteNode();
   const focusedRoute = routes.find((route) => route.key === focusedRouteKey);
-  const guardRedirect = useGuardRedirect(focusedRoute?.name ?? '');
+  const guard = useResolvedGuard(focusedRoute?.name ?? '');
+  // The screen that holds this navigator. It reaches the navigator that owns an ancestor fallback.
+  const parentNavigation = use(NavigationContext);
 
   const visibleRoutes = useMemo(
     () =>
@@ -84,7 +87,7 @@ export function useVisibleTabsWithRedirect<
   useEffect(() => {
     // TODO(@ubax): Consider throwing in __DEV__ instead of warning.
     // TODO: Skip this during HMR while placeholder descriptors lack `routeSource`.
-    if (__DEV__ && visibleRoutes.length === 0 && guardRedirect === undefined) {
+    if (__DEV__ && visibleRoutes.length === 0 && guard === undefined) {
       const undeclaredRoutes = routes
         .filter((route) => !isDeclaredInLayout(descriptors[route.key]))
         .map((route) => route.name)
@@ -97,23 +100,18 @@ export function useVisibleTabsWithRedirect<
       );
     }
     // Route names are diagnostic; only rerun when the warning's eligibility changes.
-  }, [guardRedirect, routeNode?.contextKey, visibleRoutes.length]);
+  }, [guard, routeNode?.contextKey, visibleRoutes.length]);
 
   useEffect(() => {
     // The focused route can be hidden or have no trigger at all — for example a path pointing at a
     // route without a tab, or a trigger hidden while focused. Redirect to the router's initial tab,
     // falling back to the first visible tab. `replace` keeps the unreachable route out of history.
     // TODO(@ubax): Show a formsheet for hidden tabs which are focused (Tabs + Stack in one).
-    if (
-      !isPreview &&
-      isFocused &&
-      visibleFocusedIndex < 0 &&
-      focusedFallbackRoute === undefined &&
-      (guardRedirect != null || redirectRoute !== undefined)
-    ) {
-      if (guardRedirect != null) {
-        router.replace(guardRedirect);
+    if (!isPreview && isFocused && visibleFocusedIndex < 0 && focusedFallbackRoute === undefined) {
+      if (guard?.redirectTo !== undefined) {
+        router.replace(guard.redirectTo);
       } else if (redirectRoute) {
+        // TODO(@ubax): Investigate if this should use `dispatchSync` instead of `enqueue` (ENG-29147).
         enqueue({
           type: 'ACTION',
           payload: {
@@ -124,15 +122,19 @@ export function useVisibleTabsWithRedirect<
             originKey: key,
           },
         });
+      } else if (guard?.fallback && parentNavigation) {
+        // No tab is visible, so an ancestor navigator owns the fallback.
+        dispatchReplaceWithGuardFallback(parentNavigation, guard.fallback);
       }
     }
   }, [
     enqueue,
     focusedFallbackRoute,
-    guardRedirect,
+    guard,
     isFocused,
     isPreview,
     key,
+    parentNavigation,
     redirectRoute,
     router,
     visibleFocusedIndex,

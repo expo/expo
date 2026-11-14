@@ -879,6 +879,107 @@ it('works with tabs', async () => {
   expect(screen.queryByLabelText('protected, tab, 2 of 2')).toBeVisible();
 });
 
+it('replaces a guarded group with the root index when they share a URL', async () => {
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter(
+    {
+      _layout: function Layout() {
+        const [signedIn, setState] = useState(true);
+        setSignedIn = setState;
+        return (
+          <Stack>
+            <Stack.Protected guard={signedIn}>
+              <Stack.Screen name="(app)" />
+            </Stack.Protected>
+            <Stack.Protected guard={!signedIn}>
+              <Stack.Screen name="index" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text testID="login">Login</Text>,
+      '(app)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="(home)" />
+        </Tabs>
+      ),
+      '(app)/(home)/_layout': () => <Stack />,
+      '(app)/(home)/index': () => <Text testID="home">Home</Text>,
+    },
+    { initialUrl: '/(app)/(home)' }
+  );
+
+  expect(screen.getByTestId('home')).toBeVisible();
+  await act(() => setSignedIn(false));
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(screen).toHavePathname('/');
+  expect(screen).toHaveSegments([]);
+});
+
+it('opens the root index on a cold start at a guarded group that shares its URL', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard={false}>
+            <Stack.Screen name="(app)" />
+          </Stack.Protected>
+          <Stack.Screen name="index" />
+        </Stack>
+      ),
+      '(app)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="(home)" />
+        </Tabs>
+      ),
+      '(app)/(home)/_layout': () => <Stack />,
+      '(app)/(home)/index': () => <Text testID="home">Home</Text>,
+      index: () => <Text testID="login">Login</Text>,
+    },
+    { initialUrl: '/(app)/(home)' }
+  );
+
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(screen.queryByTestId('home')).toBeNull();
+  expect(screen).toHavePathname('/');
+  expect(screen).toHaveSegments([]);
+});
+
+it('replaces a fully guarded nested navigator with the parent fallback when they share a URL', async () => {
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter(
+    {
+      _layout: {
+        unstable_settings: { anchor: 'index' },
+        default: () => <Stack />,
+      },
+      index: () => <Text testID="login">Login</Text>,
+      '(app)/_layout': function AppLayout() {
+        const [signedIn, setState] = useState(true);
+        setSignedIn = setState;
+        return (
+          <Stack>
+            <Stack.Protected guard={signedIn}>
+              <Stack.Screen name="index" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      '(app)/index': () => <Text testID="home">Home</Text>,
+    },
+    { initialUrl: '/(app)' }
+  );
+
+  expect(screen.getByTestId('home')).toBeVisible();
+  await act(() => setSignedIn(false));
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(screen.queryByTestId('home')).toBeNull();
+  expect(screen).toHavePathname('/');
+  expect(screen).toHaveSegments([]);
+});
+
 describe('all routes guarded', () => {
   let consoleWarnSpy: jest.SpyInstance<void, Parameters<typeof console.warn>>;
 
