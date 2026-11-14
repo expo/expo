@@ -1,4 +1,4 @@
-/// <reference path="./ts-declarations/xcode.d.ts" />
+/// <reference types="./ts-declarations/xcode" preserve="true" />
 
 /**
  * For internal use in Expo CLI
