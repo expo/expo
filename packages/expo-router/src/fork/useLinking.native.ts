@@ -143,7 +143,7 @@ export function useLinking(
           payload: {
             href: path,
             originalHref: url,
-            options: { event: 'NAVIGATE', __internal__popToNavigator: true },
+            options: { event: 'NAVIGATE', withAnchor: true, __internal__popToNavigator: true },
           },
         });
       }
