@@ -771,7 +771,7 @@ permissions:
 - `developer`
 - `release_manager`
 
-The actor that starts the run must have at least the requested role. Otherwise, the job fails.
+The actor that starts the run must have at least the requested role. Otherwise, the job fails. Runs triggered by GitHub events or by a schedule act as the [GitHub App robot](/accounts/programmatic-access/#github-app-robot), which has the Developer role by default.
 
 `permissions` applies to all jobs running on a VM (see [`jobs.<job_id>.env`](#jobsjob_idenv) for which jobs run on a VM). Without it, these jobs act with at most Developer-level permissions, even when an actor with a higher role starts the run.
 

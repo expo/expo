@@ -26,6 +26,16 @@ A limited token never gets more access than you have. If your own role on an acc
 
 Accounts can create Robot users to take actions on resources owned by the Account. Bot Users can be assigned [a role](/accounts/account-types/#manage-access) to limit the actions they are authorized to perform. Bot users cannot sign in to any Expo products, cannot own any projects themselves, and can only authenticate via an access token.
 
+### GitHub App robot
+
+When you install the [Expo GitHub App](/build/building-from-github/) for an account, Expo Services adds a robot user named **GitHub App** to the account. Runs and builds that no user starts directly act as this robot. These include:
+
+- [Expo Workflows](/eas/workflows/introduction/) runs triggered by GitHub events, such as pushes and pull requests
+- Scheduled Expo Workflows runs
+- Builds triggered from GitHub
+
+The robot has the Developer [role](/accounts/account-types/#manage-access) by default. To change its role, go to [Access tokens](https://expo.dev/accounts/[account]/settings/access-tokens) in your account settings, find the robot, and select **Edit robot**. For example, give it the Release Manager role and set [`permissions`](/eas/workflows/syntax/#permissions) so that these runs and builds can use [protected resources](/eas/protected-resources/#expo-workflows-and-protected-resources). If you delete the robot or remove it from the account, Expo Services adds it again with the Developer role.
+
 ## Access tokens usage
 
 You can use any tokens you have created to perform actions with the EAS CLI. To use tokens, you need to define an environment variable, like `EXPO_TOKEN="token"`, before running commands.
