@@ -174,6 +174,11 @@ export function getTestModules() {
 
   modules.push(optionalRequire(() => require('./tests/Cellular')));
 
+  if (Platform.OS === 'ios') {
+    // Uses the `worklets-tester` module of bare-expo.
+    modules.push(optionalRequire(() => require('./tests/Worklets')));
+  }
+
   return modules
     .filter(Boolean)
     .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));

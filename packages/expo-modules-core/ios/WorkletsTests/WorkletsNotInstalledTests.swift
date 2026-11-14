@@ -2,6 +2,8 @@
 
 import Testing
 
+import ExpoModulesJSI
+
 @testable import ExpoModulesCore
 @testable import ExpoModulesWorklets
 
@@ -28,6 +30,19 @@ struct WorkletsNotInstalledTests {
 
     #expect(throws: WorkletsNotInstalledException.self) {
       _ = try dynamicType.cast(jsValue: jsValue, appContext: appContext)
+    }
+  }
+
+  @Test
+  func `decoding a worklet reports that worklets are not installed`() throws {
+    // Only meaningful while the adapter is unlinked (the default in this test harness).
+    try #require(WorkletsProviderRegistry.shared == nil)
+
+    let runtime = JavaScriptRuntime()
+    let jsValue = try runtime.eval("({})")
+
+    #expect(throws: WorkletsNotInstalledException.self) {
+      _ = try Worklet.decode(jsValue, in: runtime)
     }
   }
 
