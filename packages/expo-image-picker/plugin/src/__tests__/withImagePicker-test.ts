@@ -1,7 +1,7 @@
 import { AndroidConfig } from 'expo/config-plugins';
 import path from 'path';
 
-import { withAndroidImagePickerPermissions } from '../withImagePicker';
+import withImagePicker, { withAndroidImagePickerPermissions } from '../withImagePicker';
 
 function getMockAndroidManifest() {
   return AndroidConfig.Manifest.readAndroidManifestAsync(
@@ -91,5 +91,46 @@ describe(withAndroidImagePickerPermissions, () => {
         application: expect.anything(),
       },
     });
+  });
+});
+
+describe('withImagePicker iOS camera permission', () => {
+  it('does not delete NSCameraUsageDescription when cameraPermission is false', async () => {
+    const config = withImagePicker(
+      {
+        slug: '',
+        name: '',
+      },
+      {
+        photosPermission: 'Pick a photo.',
+        cameraPermission: false,
+      }
+    );
+
+    const { modResults } = await (config as any).mods.ios.infoPlist({
+      modRequest: {},
+      modResults: { NSCameraUsageDescription: 'Scan QR codes.' },
+    });
+
+    expect(modResults.NSCameraUsageDescription).toBe('Scan QR codes.');
+  });
+
+  it('sets NSCameraUsageDescription when cameraPermission is a string', async () => {
+    const config = withImagePicker(
+      {
+        slug: '',
+        name: '',
+      },
+      {
+        cameraPermission: 'Take a photo.',
+      }
+    );
+
+    const { modResults } = await (config as any).mods.ios.infoPlist({
+      modRequest: {},
+      modResults: {},
+    });
+
+    expect(modResults.NSCameraUsageDescription).toBe('Take a photo.');
   });
 });
