@@ -3,9 +3,8 @@
 import ExpoModulesCore
 import UIKit
 
-/**
- A context of the image manipulation.
- */
+/// A context of the image manipulation.
+@SharedObject("Context")
 public final class ImageManipulatorContext: SharedObject {
   internal typealias Loader = () async throws -> UIImage
 
@@ -47,6 +46,32 @@ public final class ImageManipulatorContext: SharedObject {
     return self
   }
 
+  @JS
+  func resize(_ options: ResizeOptions) -> ImageManipulatorContext {
+    return addTransformer(ImageResizeTransformer(options: options))
+  }
+
+  @JS
+  func rotate(_ rotate: Double) -> ImageManipulatorContext {
+    return addTransformer(ImageRotateTransformer(rotate: rotate))
+  }
+
+  @JS
+  func flip(_ flipType: FlipType) -> ImageManipulatorContext {
+    return addTransformer(ImageFlipTransformer(flip: flipType))
+  }
+
+  @JS
+  func crop(_ rect: CropRect) -> ImageManipulatorContext {
+    return addTransformer(ImageCropTransformer(options: rect))
+  }
+
+  @JS
+  func renderAsync() async throws -> ImageRef {
+    let image = try await render()
+    return ImageRef(image)
+  }
+
   /**
    Awaits for the last processing task to finish and returns its result.
    */
@@ -57,12 +82,15 @@ public final class ImageManipulatorContext: SharedObject {
   /**
    Resets the manipulator context to the originally loaded image.
    */
-  internal func reset() {
+  @JS
+  @discardableResult
+  internal func reset() -> ImageManipulatorContext {
     // Firstly cancel currently running manipulations.
     currentTask.cancel()
 
     currentTask = Task(priority: .background) {
       return try await loader()
     }
+    return self
   }
 }
