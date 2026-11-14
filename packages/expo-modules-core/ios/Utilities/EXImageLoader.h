@@ -1,13 +1,13 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+#import <ExpoModulesCore/EXImageLoaderInterface.h>
+
 #if !__building_module(ExpoModulesCore)
 #import <React/RCTBridge.h>
 #import <React/RCTImageLoader.h>
-#import <ExpoModulesCore/EXImageLoaderInterface.h>
 #else
 @class RCTBridge;
 @class RCTImageLoader;
-@protocol EXImageLoaderInterface;
 #endif
 
 NS_SWIFT_NAME(ImageLoader)
