@@ -485,6 +485,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   private fun createPropOptions(): RequestOptions {
     return RequestOptions()
       .priority(this@ExpoImageViewWrapper.priority.toGlidePriority())
+      .disableUnboundedAnimationChecks()
       .customize(`when` = cachePolicy != CachePolicy.MEMORY_AND_DISK && cachePolicy != CachePolicy.MEMORY) {
         skipMemoryCache(true)
       }
@@ -645,6 +646,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           thumbnail(
             requestManager.load(placeholderModel.getGlideModel())
               .downsample(PlaceholderDownsampleStrategy(newTarget))
+              .disableUnboundedAnimationChecks()
               .apply(placeholderSource.createGlideOptions(context))
           )
         }
