@@ -8,12 +8,14 @@ import AppMetrics, {
 } from 'expo-app-metrics';
 
 import { reportCaughtError } from './reportCaughtError';
+import { reportFeedback } from './reportFeedback';
 import type {
   ObserveConfig,
   ObserveIntegrationsConfig,
   ObserveModule,
   ObserveModuleEvents,
   ObserveAttributes,
+  ObserveFeedback,
 } from './types';
 
 class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements ObserveModule {
@@ -40,6 +42,9 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
   }
   reportError(error: unknown): void {
     reportCaughtError(error);
+  }
+  reportFeedback(feedback: ObserveFeedback): void {
+    reportFeedback(feedback);
   }
   markFirstRender(): void {
     AppMetrics.markFirstRender();

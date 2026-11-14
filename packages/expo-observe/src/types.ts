@@ -41,9 +41,41 @@ export type ObserveMetricName =
 export type ObserveEventName =
   | 'js.exception'
   | 'native.exception'
+  | 'expo.feedback'
   | 'reanimated.warning'
   | 'expo-image.oversized'
   | (string & {});
+
+/**
+ * User feedback sent by `reportFeedback`. Set `message`, `rating`, or both.
+ */
+export type ObserveFeedback = {
+  /**
+   * Where the feedback is collected, for example, `'checkout'`. Many reports can use the same id.
+   * Sent as the `expo.feedback.id` attribute.
+   */
+  id: string;
+  /**
+   * Text that the user wrote. Sent as the event body. Text longer than 4096 characters is cut.
+   */
+  message?: string;
+  /**
+   * A whole number from `scale.min` to `scale.max`. Sent as the `expo.feedback.rating` attribute.
+   */
+  rating?: number;
+  /**
+   * The lowest and the highest `rating` your UI allows, as whole numbers. `min` must be less than
+   * `max`. Set it only with a `rating`. Sent as the `expo.feedback.scale.min` and
+   * `expo.feedback.scale.max` attributes. The dashboard uses the scale to compare ratings.
+   *
+   * @default { min: 0, max: 10 }
+   */
+  scale?: { min: number; max: number };
+  /**
+   * Attributes attached to the event. They follow the same rules as `logEvent` attributes.
+   */
+  attributes?: ObserveAttributes;
+};
 
 export type ObserveConfig = {
   /**
@@ -87,7 +119,8 @@ export type ObserveConfig = {
    * - If `dispatchingEnabled` is `true` (or unset), metrics are dispatched only when this device
    *   is in-sample.
    *
-   * Errors follow `errorSampleRate` when it is set and higher.
+   * Errors follow `errorSampleRate` when it is set and higher. Every installation sends feedback
+   * from `reportFeedback`.
    *
    * > Note: Devices that end up out-of-sample drop pending metrics rather than accumulating them.
    *
@@ -100,7 +133,8 @@ export type ObserveConfig = {
    * `errorSampleRate: 1`.
    *
    * Errors include unhandled JavaScript errors, errors from `reportError` and
-   * `ObserveErrorBoundary`, and native crash reports. All other events follow `sampleRate`.
+   * `ObserveErrorBoundary`, and native crash reports. Every installation sends feedback from
+   * `reportFeedback`. All other events follow `sampleRate`.
    *
    * `errorSampleRate` is a minimum. Installations in-sample for `sampleRate` always send errors. A
    * lower value has no effect, and `configure()` prints a warning. An unset `sampleRate` counts as
@@ -403,6 +437,27 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    */
   // eslint-disable-next-line handle-callback-err -- `error` is the caught value to report, not a Node callback error.
   reportError(error: unknown): void;
+  /**
+   * Reports feedback from a user as an `expo.feedback` event. Every installation sends feedback:
+   * `sampleRate` and `errorSampleRate` do not apply to it. `dispatchingEnabled`,
+   * `dispatchInDebug`, and `ignoredEvents` apply to it the same way as to other events.
+   *
+   * `reportFeedback` drops the report and prints a warning in development when `id` is empty, when
+   * the report has neither `message` nor `rating` (an empty `message` counts as none), when
+   * `rating` is not a whole number within `scale`, when `scale` is not valid or has no `rating`,
+   * or when an argument has the wrong type.
+   *
+   * @param feedback The feedback to report.
+   *
+   * @example
+   * ```ts
+   * Observe.reportFeedback({ id: 'checkout', message: 'The pay button is hard to find.', rating: 6 });
+   * ```
+   *
+   * @platform android
+   * @platform ios
+   */
+  reportFeedback(feedback: ObserveFeedback): void;
   /**
    * Marks the first render of the app. Used to compute the `cold_ttr` and
    * `warm_ttr` metrics.

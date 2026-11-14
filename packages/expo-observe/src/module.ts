@@ -15,6 +15,7 @@ import {
 import { initReactNavigationIntegration } from './integrations/react-navigation/init';
 import { isReactNavigationInstalled } from './integrations/react-navigation/reactNavigation';
 import { reportCaughtError } from './reportCaughtError';
+import { reportFeedback } from './reportFeedback';
 import type { ObserveConfig, ObserveIntegrationsConfig, ObserveModule } from './types';
 
 /**
@@ -119,6 +120,9 @@ const Observe: ObserveModule = new Proxy(native, {
 
     if (prop === 'reportError') {
       return (error: unknown) => reportCaughtError(error);
+    }
+    if (prop === 'reportFeedback') {
+      return reportFeedback;
     }
 
     // The span wrappers add JS-side behavior over the raw native functions (`parent` folding,
