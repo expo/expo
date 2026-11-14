@@ -11,7 +11,7 @@ import {
   Switch,
   Text as ComposeText,
 } from '@expo/ui/jetpack-compose';
-import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
+import type { ModalBottomSheetRef, SheetValue } from '@expo/ui/jetpack-compose';
 import {
   background,
   clip,
@@ -31,6 +31,7 @@ const LIST_DATA = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
 
 export default function BottomSheetScreen() {
   const [showSheet, setShowSheet] = React.useState(false);
+  const [currentValue, setCurrentValue] = React.useState<SheetValue>('hidden');
   const [showRNContent, setShowRNContent] = React.useState(false);
   const [showRNContentWithFlex, setShowRNContentWithFlex] = React.useState(false);
   const [counter, setCounter] = React.useState(0);
@@ -159,6 +160,7 @@ export default function BottomSheetScreen() {
               </Row>
             </Column>
 
+            <ComposeText>Sheet state: {currentValue}</ComposeText>
             <Button onClick={() => setShowSheet(true)} modifiers={[fillMaxWidth()]}>
               <ComposeText>Open Sheet</ComposeText>
             </Button>
@@ -209,6 +211,7 @@ export default function BottomSheetScreen() {
       {showSheet && (
         <ModalBottomSheet
           ref={sheetRef}
+          onCurrentValueChange={setCurrentValue}
           onDismissRequest={() => setShowSheet(false)}
           skipPartiallyExpanded={skipPartiallyExpanded}
           initialFullyExpanded={initialFullyExpanded}
@@ -235,6 +238,7 @@ export default function BottomSheetScreen() {
             </ModalBottomSheet.DragHandle>
           )}
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Sheet state: {currentValue}</ComposeText>
             <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
               <ComposeText modifiers={[weight(1)]}>Bottom Sheet</ComposeText>
               <Button onClick={hideSheet}>
