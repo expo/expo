@@ -9,21 +9,22 @@ import android.print.PageRange
 import android.print.PrintAttributes
 import android.print.PrintDocumentAdapter
 import android.print.PrintDocumentInfo
+import android.util.Log
 import android.webkit.URLUtil
 import java.io.IOException
 import java.lang.ref.WeakReference
 import java.net.URL
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resumeWithException
 
-class PrintDocumentAdapter(private val context: WeakReference<Context>, private val continuation: Continuation<Unit>, private val uri: String?) : PrintDocumentAdapter() {
+private const val TAG = "ExpoPrint"
+
+class PrintDocumentAdapter(private val context: WeakReference<Context>, private val uri: String?) : PrintDocumentAdapter() {
   private val jobName: String = uri?.let {
     Uri.parse(it).lastPathSegment ?: it
   } ?: "Printing"
 
   override fun onWrite(pages: Array<PageRange>, destination: ParcelFileDescriptor, cancellationSignal: CancellationSignal, callback: WriteResultCallback) {
     if (uri == null) {
-      printFailed(callback, NullUriException(), continuation)
+      printFailed(callback, NullUriException())
       return
     }
     val isUrl = URLUtil.isValidUrl(uri)
@@ -41,20 +42,19 @@ class PrintDocumentAdapter(private val context: WeakReference<Context>, private 
             FileUtils.copyToOutputStream(destination, callback, it)
           }
         } catch (e: Exception) {
-          e.printStackTrace()
-          printFailed(callback, CannotLoadUriException(uri, e), continuation)
+          printFailed(callback, CannotLoadUriException(uri, e))
         }
       }.start()
-    } else if (uri.startsWith("data:") && uri.contains(";base64,")) {
+    } else if (FileUtils.isBase64DataUri(uri)) {
       try {
         FileUtils.decodeDataURI(uri).use {
           FileUtils.copyToOutputStream(destination, callback, it)
         }
       } catch (e: IOException) {
-        printFailed(callback, CannotLoadUriException(uri, e), continuation)
+        printFailed(callback, CannotLoadUriException(uri, e))
       }
     } else {
-      printFailed(callback, InvalidUriException(), continuation)
+      printFailed(callback, InvalidUriException(uri))
     }
   }
 
@@ -67,8 +67,10 @@ class PrintDocumentAdapter(private val context: WeakReference<Context>, private 
     callback.onLayoutFinished(pdi, true)
   }
 
-  private fun printFailed(callback: WriteResultCallback, exception: Throwable, continuation: Continuation<Unit>) {
-    continuation.resumeWithException(exception)
-    callback.onWriteFailed(exception.localizedMessage)
+  // `printAsync` already resolved when the print window opened, so it cannot reject here.
+  // The print window shows the `onWriteFailed` text to the user. `null` shows the localized system message.
+  private fun printFailed(callback: WriteResultCallback, exception: Throwable) {
+    Log.e(TAG, exception.message, exception)
+    callback.onWriteFailed(null)
   }
 }
