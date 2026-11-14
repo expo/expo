@@ -486,3 +486,56 @@ describe('Expo Router server files (+html, +api)', () => {
     });
   });
 });
+
+describe('implicit assets', () => {
+  const transformWithSourceExts = (filename: string, options: Partial<JsTransformOptions>) =>
+    transform(
+      { expo_sourceExts: ['ts', 'tsx', 'js', 'json'] } as any,
+      '/',
+      filename,
+      Buffer.from(''),
+      {
+        dev: true,
+        minify: false,
+        platform: 'ios',
+        type: 'module',
+        inlinePlatform: false,
+        inlineRequires: false,
+        unstable_transformProfile: 'default',
+        ...options,
+      }
+    );
+  const getTransformedType = () =>
+    jest.mocked(upstreamTransformer.transform).mock.calls[0]![4].type;
+
+  it('transforms modules with an extension that is not a source extension as assets', async () => {
+    await transformWithSourceExts('assets/animation.lottie', {});
+    expect(getTransformedType()).toBe('asset');
+  });
+
+  it.each(['src/index.ts', 'src/data.json', 'src/Button.web.tsx', 'src/no-extension'])(
+    'keeps %s as a module',
+    async (filename) => {
+      await transformWithSourceExts(filename, {});
+      expect(getTransformedType()).toBe('module');
+    }
+  );
+
+  it('does not change scripts', async () => {
+    await transformWithSourceExts('polyfill.lottie', { type: 'script' });
+    expect(getTransformedType()).toBe('script');
+  });
+
+  it('does nothing when the source extensions are unknown', async () => {
+    await transform({} as any, '/', 'assets/animation.lottie', Buffer.from(''), {
+      dev: true,
+      minify: false,
+      platform: 'ios',
+      type: 'module',
+      inlinePlatform: false,
+      inlineRequires: false,
+      unstable_transformProfile: 'default',
+    });
+    expect(getTransformedType()).toBe('module');
+  });
+});
