@@ -1,4 +1,5 @@
 export * from './ContactsModule';
+export * as Contacts from './Contacts';
 
 export * from './types/Contact.types';
 export * from './types/Contact.props';
