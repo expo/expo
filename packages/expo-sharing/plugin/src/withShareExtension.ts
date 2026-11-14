@@ -9,6 +9,7 @@ import withIosWarning from './ios/withIosWarning';
 import { withShareExtensionFiles } from './ios/withShareExtensionFiles';
 import { withShareExtensionXcodeProject } from './ios/withShareExtensionXcodeProject';
 import { ShareExtensionConfigPluginProps } from './sharingPlugin.types';
+import { resolveUrlScheme } from './utils';
 import { withConfig } from './withConfig';
 
 const EXPO_SHARE_EXTENSION_TARGET_NAME = 'expo-sharing-extension';
@@ -34,7 +35,7 @@ const withShareExtension: ShareExtensionConfigPlugin = (config, props?) => {
       `${config.ios?.bundleIdentifier}.${EXPO_SHARE_EXTENSION_TARGET_NAME}`;
     const fallbackAppGroupId = `group.${bundleIdentifier}`;
     const appGroupId = props?.ios?.appGroupId ?? fallbackAppGroupId;
-    const urlScheme = config.scheme ?? bundleIdentifier;
+    const urlScheme = resolveUrlScheme(config.scheme) ?? bundleIdentifier;
     const activationRule = props?.ios?.activationRule ?? {
       supportsText: true,
       supportsWebUrlWithMaxCount: 1,
@@ -97,7 +98,7 @@ const withShareExtension: ShareExtensionConfigPlugin = (config, props?) => {
   }
 
   if (androidEnabled) {
-    const urlScheme = config.scheme ?? config.android?.package;
+    const urlScheme = resolveUrlScheme(config.scheme) ?? config.android?.package;
 
     if (!urlScheme) {
       throw new Error(
