@@ -12,9 +12,42 @@ import {
   serializeChunksAsync,
 } from './chunkingStrategy';
 
+export const legacyChunkSerialization: Omit<ChunkingImplementation, 'serializeAsync'> = {
+  getAsyncChunkTargets(chunk, chunksByPath) {
+    const targets = new Set<Chunk>();
+    if (chunk.options.includeAsyncPaths) return targets;
+    for (const module of chunk.deps) {
+      for (const dependency of module.dependencies.values()) {
+        if (isResolvedDependency(dependency) && dependency.data.data.asyncType) {
+          const target = chunksByPath.get(dependency.absolutePath);
+          // Merges can leave async imports pointing at eagerly loaded chunks.
+          if (target?.isAsync) targets.add(target);
+        }
+      }
+    }
+    return targets;
+  },
+  getStableSerializationOptions() {
+    return {};
+  },
+  getSerializationOptions(chunk, chunksByPath, filenamesByChunk) {
+    return {
+      computedAsyncModulePaths: getComputedPathsForAsyncDependencies(
+        chunk,
+        chunksByPath,
+        filenamesByChunk
+      ),
+    };
+  },
+  getMetadata(chunk) {
+    return { modulePaths: [...chunk.deps].map((module) => module.path) };
+  },
+};
+
 export function createLegacyChunkingStrategy(context: ChunkingContext): ChunkingImplementation {
   const { entryFile, preModules, graph, options } = context;
   const strategy: ChunkingImplementation = {
+    ...legacyChunkSerialization,
     async serializeAsync() {
       // Create chunks for splitting.
       const chunks = new Set<Chunk>();
@@ -38,35 +71,6 @@ export function createLegacyChunkingStrategy(context: ChunkingContext): Chunking
       }
 
       return serializeChunksAsync(chunks, context);
-    },
-    getAsyncChunkTargets(chunk, chunksByPath) {
-      const targets = new Set<Chunk>();
-      if (options.includeAsyncPaths) return targets;
-      for (const module of chunk.deps) {
-        for (const dependency of module.dependencies.values()) {
-          if (isResolvedDependency(dependency) && dependency.data.data.asyncType) {
-            const target = chunksByPath.get(dependency.absolutePath);
-            // Merges can leave async imports pointing at eagerly loaded chunks.
-            if (target?.isAsync) targets.add(target);
-          }
-        }
-      }
-      return targets;
-    },
-    getStableSerializationOptions() {
-      return {};
-    },
-    getSerializationOptions(chunk, chunksByPath, filenamesByChunk) {
-      return {
-        computedAsyncModulePaths: getComputedPathsForAsyncDependencies(
-          chunk,
-          chunksByPath,
-          filenamesByChunk
-        ),
-      };
-    },
-    getMetadata(chunk) {
-      return { modulePaths: [...chunk.deps].map((module) => module.path) };
     },
   };
   return strategy;

@@ -21,6 +21,33 @@ import type {
 // `@expo/cli` startup.
 import type { SourceMapGeneratorOptions } from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapGenerator';
 import type { Module } from '@expo/metro/metro/DeltaBundler/types';
+import path from 'path';
+
+import { toPosixPath } from '../utils/filePath';
+import type { ExpoSerializerOptions } from './fork/baseJSBundle';
+
+export function getSourceMapOptions(
+  options: ExpoSerializerOptions,
+  isServer: boolean
+): ExpoSourceMapOptions {
+  return {
+    ...options,
+    excludeSource: options.serializerOptions?.excludeSource ?? !!options.excludeSource,
+    flatten: isServer,
+    getSourceUrl:
+      options.getSourceUrl ??
+      (options.serializerOptions?.output === 'static'
+        ? (module) => getExportSourceUrl(module.path, options.serverRoot ?? options.projectRoot)
+        : undefined),
+  };
+}
+
+function getExportSourceUrl(modulePath: string, serverRoot: string): string {
+  if (!path.isAbsolute(modulePath)) return modulePath;
+  const relativePath = toPosixPath(path.relative(serverRoot, modulePath));
+  // A leading slash would discard parent traversal when the map is flattened.
+  return relativePath.startsWith('../') ? relativePath : '/' + relativePath;
+}
 
 export type {
   BabelDecodedMap,
@@ -39,6 +66,7 @@ export type {
 // what `composeSourceMaps` actually reads and writes.
 export interface ComposableSourceMap {
   version: number;
+  debugId?: string;
   file?: string;
   mappings: string;
   names: string[];
@@ -117,6 +145,7 @@ function loadTraceMapping(): TraceMappingModule {
 /** An indexed source map, as Metro emits for bundles */
 export interface IndexedSourceMap {
   version: number;
+  debugId?: string;
   file?: string;
   sections: {
     offset: { line: number; column: number };
@@ -143,6 +172,7 @@ export function flattenSourceMap(map: ComposableSourceMap | IndexedSourceMap): C
     names: flat.names,
     sources: flat.sources,
   };
+  if (map.debugId != null) result.debugId = map.debugId;
   if (flat.file != null) {
     result.file = flat.file;
   }
@@ -151,6 +181,7 @@ export function flattenSourceMap(map: ComposableSourceMap | IndexedSourceMap): C
   }
   if (flat.ignoreList && flat.ignoreList.length > 0) {
     result.ignoreList = flat.ignoreList;
+    result.x_google_ignoreList = flat.ignoreList;
   }
   return result;
 }
@@ -203,6 +234,7 @@ export function vlqMapFromEncodedMap(
 // don't pay for a parse + re-stringify roundtrip on a freshly-built
 // sourcemap.
 export interface ExpoSourceMapOptions extends SourceMapGeneratorOptions {
+  flatten?: boolean;
   debugId?: string;
 }
 
@@ -214,20 +246,39 @@ export function appendDebugIdToSourceMap(sourceMap: string, debugId: string): st
 }
 
 export function sourceMapString(modules: readonly Module[], options: ExpoSourceMapOptions): string {
-  const { debugId, ...generatorOptions } = options;
+  const { debugId: _debugId, flatten: _flatten, ...generatorOptions } = options;
   const json = loadMetroSourceMapString().sourceMapString(modules, generatorOptions);
-  return debugId ? appendDebugIdToSourceMap(json, debugId) : json;
+  return normalizeSourceMapString(json, options);
 }
 
 export async function sourceMapStringNonBlocking(
   modules: readonly Module[],
   options: ExpoSourceMapOptions
 ): Promise<string> {
-  const { debugId, ...generatorOptions } = options;
+  const { debugId: _debugId, flatten: _flatten, ...generatorOptions } = options;
   const json = await loadMetroSourceMapString().sourceMapStringNonBlocking(
     modules,
     generatorOptions
   );
+  return normalizeSourceMapString(json, options);
+}
+
+export function normalizeSourceMapString(
+  json: string | ComposableSourceMap | IndexedSourceMap,
+  {
+    debugId,
+    flatten,
+    excludeSource,
+  }: Partial<Pick<ExpoSourceMapOptions, 'debugId' | 'flatten' | 'excludeSource'>>
+): string {
+  if (flatten) {
+    const map = { ...flattenSourceMap(typeof json === 'string' ? JSON.parse(json) : json) };
+    if (excludeSource) delete map.sourcesContent;
+    return JSON.stringify(debugId ? { ...map, debugId } : map);
+  }
+  if (typeof json !== 'string') {
+    return JSON.stringify(debugId ? { ...json, debugId } : json);
+  }
   return debugId ? appendDebugIdToSourceMap(json, debugId) : json;
 }
 
