@@ -4,6 +4,8 @@ import NotificationCategoriesModule from './NotificationCategoriesModule';
 
 /**
  * Deletes the category associated with the provided identifier.
+ * @deprecated Use [`setNotificationCategoriesAsync`](#setnotificationcategoriesasynccategories)
+ * with the complete list of categories to keep instead. Pass an empty array to remove all categories.
  * @param identifier Identifier initially provided to `setNotificationCategoryAsync` when creating the category.
  * @return A Promise which resolves to `true` if the category was successfully deleted, or `false` if it was not.
  * An example of when this method would return `false` is if you try to delete a category that doesn't exist.

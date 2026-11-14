@@ -794,7 +794,7 @@ export interface NotificationAction {
  * Defines a group of notification actions and their behavior. Categories allow you to create custom
  * action buttons that appear with notifications, enabling users to respond to notifications.
  *
- * Categories must be registered with [`setNotificationCategoryAsync`](#setnotificationcategoryasyncidentifier-actions-options)
+ * Categories must be registered with [`setNotificationCategoriesAsync`](#setnotificationcategoriesasynccategories)
  * before they can be used. When scheduling a notification, reference the category by its `identifier` in the
  * [`NotificationContentInput.categoryIdentifier`](#notificationcontentinput) field.
  */
