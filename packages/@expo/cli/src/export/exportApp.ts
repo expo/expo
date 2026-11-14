@@ -195,7 +195,7 @@ export async function exportAppAsync(
                 }),
                 mode: dev ? 'development' : 'production',
                 engine: isHermes ? 'hermes' : undefined,
-                serializerIncludeMaps: sourceMaps || inlineSourceMaps,
+                includeSourceMaps: sourceMaps || inlineSourceMaps,
                 inlineSourceMap: inlineSourceMaps,
                 bytecode: bytecode && isHermes,
                 reactCompiler: !!exp.experiments?.reactCompiler,

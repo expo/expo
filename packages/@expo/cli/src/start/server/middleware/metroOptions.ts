@@ -19,14 +19,15 @@ function toBoolStr(x: boolean): 'true' | 'false' {
 
 export type MetroEnvironment = 'node' | 'react-server' | 'client';
 
-export type ExpoMetroOptions = {
+export type ExpoMetroOptions = Pick<SerializerOptions, 'includeSourceMaps' | 'output'> & {
   platform: string;
   mainModuleName: string;
   mode: EnvironmentMode;
   minify?: boolean;
   environment?: MetroEnvironment;
-  serializerOutput?: 'static';
-  serializerIncludeMaps?: boolean;
+  entryFilename?: string;
+  outputDirectory?: string;
+  outputExtension?: string;
   lazy?: boolean;
   engine?: 'hermes';
   preserveEnvVars?: boolean;
@@ -70,6 +71,9 @@ export type ExpoMetroOptions = {
 export type SerializerOptions = {
   includeSourceMaps?: boolean;
   output?: 'static';
+  entryFilename?: string;
+  outputDirectory?: string;
+  outputExtension?: string;
   splitChunks?: boolean;
   chunkingStrategy?: 'granular' | 'legacy';
   usedExports?: boolean;
@@ -177,8 +181,11 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     mode,
     minify,
     environment,
-    serializerOutput,
-    serializerIncludeMaps,
+    output,
+    entryFilename,
+    outputDirectory,
+    outputExtension,
+    includeSourceMaps,
     bytecode,
     lazy,
     engine,
@@ -216,12 +223,12 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
   let fakeSourceMapUrl: string | undefined;
 
   // TODO: Upstream support to Metro for passing custom serializer options.
-  if (serializerIncludeMaps != null || serializerOutput != null) {
+  if (includeSourceMaps != null || output != null) {
     fakeSourceUrl = new URL(
       createBundleUrlPath(options).replace(/^\//, ''),
       'http://localhost:8081'
     ).toString();
-    if (serializerIncludeMaps) {
+    if (includeSourceMaps) {
       fakeSourceMapUrl = fakeSourceUrl.replace('.bundle?', '.map?');
     }
   }
@@ -275,8 +282,11 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
       splitChunks,
       chunkingStrategy,
       usedExports: usedExports || undefined,
-      output: serializerOutput,
-      includeSourceMaps: serializerIncludeMaps,
+      output,
+      entryFilename,
+      outputDirectory,
+      outputExtension,
+      includeSourceMaps,
       exporting: isExporting || undefined,
       excludeSource: excludeSource ?? Server.DEFAULT_BUNDLE_OPTIONS.excludeSource,
     },
@@ -322,8 +332,8 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     mode,
     minify,
     environment,
-    serializerOutput,
-    serializerIncludeMaps,
+    output,
+    includeSourceMaps,
     lazy,
     bytecode,
     engine,
@@ -422,11 +432,11 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   if (optimize) {
     queryParams.append('transform.optimize', String(optimize));
   }
-  if (serializerOutput) {
-    queryParams.append('serializer.output', serializerOutput);
+  if (output) {
+    queryParams.append('serializer.output', output);
   }
-  if (serializerIncludeMaps) {
-    queryParams.append('serializer.map', String(serializerIncludeMaps));
+  if (includeSourceMaps) {
+    queryParams.append('serializer.map', String(includeSourceMaps));
   }
   if (engine === 'hermes') {
     queryParams.append('unstable_transformProfile', 'hermes-stable');

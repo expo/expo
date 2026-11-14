@@ -1,3 +1,4 @@
+import { getMetroServerRoot } from '@expo/config/paths';
 import JsonFile from '@expo/json-file';
 import fs from 'fs/promises';
 import path from 'path';
@@ -10,7 +11,7 @@ import {
   RUNTIME_EXPO_SERVE,
   RUNTIME_WORKERD,
 } from '../../utils/runtime';
-import { findProjectFiles } from '../utils';
+import { findProjectFiles, getRouterE2ERoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
@@ -365,7 +366,7 @@ describe('server-output', () => {
         expect(files).not.toContain('server/_expo/functions/(a)/multi-group-api+api.js');
         expect(files).not.toContain('server/_expo/functions/(b)/multi-group-api+api.js');
 
-        // Load the sourcemap and check that the paths are relative
+        // Exported source names are URLs relative to the Metro server root.
         const map = JSON.parse(
           await fs.readFile(
             path.join(server.outputDir, 'server/_expo/functions/(a,b)/multi-group-api+api.js.map'),
@@ -373,7 +374,14 @@ describe('server-output', () => {
           )
         );
 
-        expect(map.sources).toContain('__e2e__/server/app/(a,b)/multi-group-api+api.ts');
+        const projectRoot = getRouterE2ERoot();
+        const sourceFile = path.join(
+          projectRoot,
+          '__e2e__/server/app/(a,b)/multi-group-api+api.ts'
+        );
+        expect(map.sources).toContain(
+          '/' + path.relative(getMetroServerRoot(projectRoot), sourceFile).split(path.sep).join('/')
+        );
       });
 
       it('has expected files', async () => {
