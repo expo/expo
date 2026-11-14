@@ -72,9 +72,6 @@ public class BackgroundTaskModule: Module {
   }
 
   @objc func handleTasksExpiredNotification(_ notification: Notification) {
-    guard let url = notification.userInfo?["url"] as? URL else {
-      return
-    }
     self.sendEvent(onTasksExpired, [:])
   }
 }
