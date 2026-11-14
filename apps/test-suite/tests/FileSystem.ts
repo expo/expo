@@ -22,6 +22,10 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
     { describe, it, pending: t.pending },
     'https://httpbingo.org/get'
   );
+  const picsum = await gateOnHostAsync(
+    { describe, it, pending: t.pending },
+    'https://picsum.photos/id/237/200/300'
+  );
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : describe;
 
   const testDirectory = FS.documentDirectory + 'tests/';
@@ -1561,7 +1565,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
       });
 
-      it('downloads a file to a target file', async () => {
+      picsum.it('downloads a file to a target file', async () => {
         const url = 'https://picsum.photos/id/237/200/300';
         const file = new File(testDirectory, 'image.jpeg');
         const output = await File.downloadFileAsync(url, file);
@@ -1569,7 +1573,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         expect(output.uri).toBe(file.uri);
       });
 
-      it('downloads a file to a target directory', async () => {
+      picsum.it('downloads a file to a target directory', async () => {
         const url = 'https://picsum.photos/id/237/200/300';
         const directory = new Directory(testDirectory);
         const output = await File.downloadFileAsync(url, directory);
@@ -1582,7 +1586,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         expect(output.uri).toBe(file.uri);
       });
 
-      it('throws an error if destination file already exists', async () => {
+      picsum.it('throws an error if destination file already exists', async () => {
         const url = 'https://picsum.photos/id/237/200/300';
         const file = new File(testDirectory, 'image.jpeg');
         file.create();
@@ -1595,7 +1599,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         expect((error as Error).message.includes('Destination already exists')).toBe(true);
       });
 
-      it('downloads file when headers are set', async () => {
+      picsum.it('downloads file when headers are set', async () => {
         const url = 'https://picsum.photos/id/237/200/300';
         const file = new File(testDirectory, 'image.jpeg');
         const output = await File.downloadFileAsync(url, file, { headers: { Token: '1234' } });
@@ -1768,7 +1772,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         expect(progressUpdates.length).toBeGreaterThanOrEqual(1);
       });
 
-      it('downloads without progress when no onProgress is set', async () => {
+      picsum.it('downloads without progress when no onProgress is set', async () => {
         // Ensure the basic path still works when no options are provided
         const url = 'https://picsum.photos/id/237/200/300';
         const file = new File(testDirectory, 'no_progress.jpeg');
