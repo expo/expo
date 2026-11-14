@@ -5,6 +5,7 @@ import * as Log from '../log';
 import { getOperationLog } from '../start/doctor/dependencies/getVersionedPackages';
 import type { getVersionedDependenciesAsync } from '../start/doctor/dependencies/validateDependenciesVersions';
 import { groupBy } from '../utils/array';
+import { withProgramStatus } from '../utils/programStatus';
 import { applyPluginsAsync } from './applyPlugins';
 import { installExpoPackageAsync } from './installExpoPackage';
 
@@ -70,7 +71,9 @@ export async function fixPackagesAsync(
       (dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`
     );
 
-    await packageManager.addAsync([...packageManagerArguments, ...versionedPackages]);
+    await withProgramStatus({ state: 'working', msg: 'Installing packages' }, () =>
+      packageManager.addAsync([...packageManagerArguments, ...versionedPackages])
+    );
 
     await applyPluginsAsync(
       projectRoot,
@@ -79,9 +82,11 @@ export async function fixPackagesAsync(
   }
 
   if (devDependencies.length) {
-    await packageManager.addDevAsync([
-      ...packageManagerArguments,
-      ...devDependencies.map((dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`),
-    ]);
+    await withProgramStatus({ state: 'working', msg: 'Installing packages' }, () =>
+      packageManager.addDevAsync([
+        ...packageManagerArguments,
+        ...devDependencies.map((dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`),
+      ])
+    );
   }
 }

@@ -1,10 +1,14 @@
 import * as PackageManager from '@expo/package-manager';
 
+import { isInteractive } from '../../utils/interactive';
 import { applyPluginsAsync } from '../applyPlugins';
 import { fixPackagesAsync } from '../fixPackages';
 import { installExpoPackageAsync } from '../installExpoPackage';
 
 jest.mock('../../log');
+jest.mock('../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => false),
+}));
 jest.mock('../applyPlugins', () => ({
   applyPluginsAsync: jest.fn(),
 }));
@@ -113,6 +117,39 @@ describe(fixPackagesAsync, () => {
       'typescript@^5.9.0',
     ]);
     expect(applyPluginsAsync).toHaveBeenCalledWith('/path/to/project', ['expo-sms']);
+  });
+
+  it('stops reporting working before applying plugins', async () => {
+    const write = jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+    let writesBeforePlugins: unknown[][] = [];
+    jest.mocked(isInteractive).mockReturnValue(true);
+    jest.mocked(applyPluginsAsync).mockImplementationOnce(async () => {
+      writesBeforePlugins = [...write.mock.calls];
+    });
+
+    try {
+      await fixPackagesAsync('/path/to/project', {
+        packageManager: PackageManager.createForProject('/path/to/project'),
+        packages: [
+          {
+            packageName: 'expo-sms',
+            packageType: 'dependencies',
+            expectedVersionOrRange: '~14.0.0',
+            actualVersion: '9.0.0',
+          },
+        ],
+        packageManagerArguments: [],
+        sdkVersion: '55.0.0',
+      });
+
+      expect(writesBeforePlugins).toEqual([
+        ['\x1b]7501;state=working:app=expo:msg=SW5zdGFsbGluZyBwYWNrYWdlcw==:id=5\x1b\\'],
+        ['\x1b]7501;state=clear:id=5\x1b\\'],
+      ]);
+    } finally {
+      write.mockRestore();
+      jest.mocked(isInteractive).mockReturnValue(false);
+    }
   });
 
   it('routes through installExpoPackageAsync when expo itself is outdated', async () => {
