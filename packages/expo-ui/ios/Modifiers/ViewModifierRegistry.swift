@@ -2254,6 +2254,10 @@ extension ViewModifierRegistry {
       return try LabelStyleModifier(from: params, appContext: appContext)
     }
 
+    register("labelReservedIconWidth") { params, appContext, _ in
+      return try LabelReservedIconWidthModifier(from: params, appContext: appContext)
+    }
+
     register("textFieldStyle") { params, appContext, _ in
       return try TextFieldStyleModifier(from: params, appContext: appContext)
     }
