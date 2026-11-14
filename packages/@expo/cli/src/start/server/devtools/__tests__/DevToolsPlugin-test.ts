@@ -1,6 +1,7 @@
 import path from 'path';
 
 import { DevToolsPlugin } from '../DevToolsPlugin';
+import { createHttpRequestContext } from '../DevToolsPluginServerHelpers';
 
 describe('DevToolsPlugin', () => {
   it('should create an instance from a plugin with only the webpageRoot configuration set', () => {
@@ -192,12 +193,13 @@ describe('DevToolsPlugin', () => {
       const handler = await plugin.getRequestHandlerAsync();
       expect(typeof handler).toBe('function');
 
-      const response = await handler!(new Request('http://localhost:8081/api/hello'));
+      const context = createHttpRequestContext();
+      const response = await handler!(new Request('http://localhost:8081/api/hello'), context);
       expect(response).not.toBeNull();
       expect(response!.status).toBe(200);
       expect(await response!.json()).toEqual({ message: 'hello' });
 
-      const passthrough = await handler!(new Request('http://localhost:8081/unknown'));
+      const passthrough = await handler!(new Request('http://localhost:8081/unknown'), context);
       expect(passthrough).toBeNull();
     });
 
