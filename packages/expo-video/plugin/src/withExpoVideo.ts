@@ -30,10 +30,6 @@ const withExpoVideo: ConfigPlugin<WithExpoVideoOptions> = (
 
     if (shouldEnableBackgroundAudio && !currentBackgroundModes.includes('audio')) {
       config.modResults.UIBackgroundModes = [...currentBackgroundModes, 'audio'];
-    } else if (!shouldEnableBackgroundAudio) {
-      config.modResults.UIBackgroundModes = currentBackgroundModes.filter(
-        (mode: string) => mode !== 'audio'
-      );
     }
     return config;
   });

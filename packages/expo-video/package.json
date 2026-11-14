@@ -48,8 +48,5 @@
     "react": "*",
     "react-native": "*"
   },
-  "jest": {
-    "preset": "@expo/internal-scripts"
-  },
   "title": "Expo Video"
 }
