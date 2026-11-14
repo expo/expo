@@ -85,6 +85,25 @@
   // Bounded documentation research available directly to reviewer and cross-file
   // passes. The built-in MCP sanitizes agent-authored API queries, restricts discovery
   // and direct fetches to fixed official providers, and audits accepted results.
+  // Reviewers check how a tool behaves in an expo-sandbox-mcp sandbox. The workflow
+  // mints REVIEW_SANDBOX_TOKEN, a child token with one sandbox and no builds. The
+  // model cannot destroy the sandbox; a workflow step does, so the token also holds
+  // destroy_sandbox (extraTokenTools).
+  // ecr refuses the server when the token offers any other tool, or when tokenInfoUrl
+  // does not call it a scoped token that expires, with no network access in the
+  // sandbox. A fork PR gets the sandbox only with the ai-review label.
+  "mcpServers": {
+    "sandbox": {
+      "url": "https://agile-minnow-543.convex.site/mcp",
+      "tokenEnv": "REVIEW_SANDBOX_TOKEN",
+      "tools": ["list_sandboxes", "create_sandbox", "sandbox_write_file", "sandbox_exec"],
+      "agents": ["deep", "verifier"],
+      "extraTokenTools": ["destroy_sandbox"],
+      "forkLabel": "ai-review",
+      "tokenInfoUrl": "https://agile-minnow-543.convex.site/tokens/info",
+      "requireNoNetwork": true
+    }
+  },
   "research": {
     "enabled": true,
     "maxQueries": 20,
