@@ -92,17 +92,30 @@ internal fun Bitmap.CompressFormat.toImageFileExtension(): String {
   }
 }
 
+internal fun Bitmap.CompressFormat.toMimeType(): String {
+  return when (this) {
+    Bitmap.CompressFormat.PNG -> "image/png"
+    Bitmap.CompressFormat.JPEG -> "image/jpeg"
+    else -> throw RuntimeException("Compress format not supported '${this.name}'")
+  }
+}
+
 internal fun String.toImageFileExtension(): String = when {
   this.endsWith("png", ignoreCase = true) -> ".png"
   this.endsWith("gif", ignoreCase = true) -> ".gif"
   this.endsWith("bmp", ignoreCase = true) -> ".bmp"
   this.endsWith("webp", ignoreCase = true) -> ".webp"
+  this.endsWith("heic", ignoreCase = true) -> ".heic"
+  this.endsWith("heif", ignoreCase = true) -> ".heif"
   !this.endsWith("jpeg", ignoreCase = true) -> {
     Log.w(TAG, "Image file $this is of unsupported type. Falling back to JPEG instead.")
     ".jpeg"
   }
   else -> ".jpeg"
 }
+
+internal fun String.withImageFileExtension(mimeType: String): String =
+  this.substringBeforeLast('.') + mimeType.toImageFileExtension()
 
 internal fun Uri.toMediaType(contentResolver: ContentResolver): MediaType? {
   val type = getType(contentResolver, this)
