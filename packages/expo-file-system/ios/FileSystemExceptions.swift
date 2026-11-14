@@ -13,6 +13,20 @@ internal final class UnableToDownloadException: GenericException<String> {
   }
 }
 
+internal extension Error {
+  /// `localizedDescription` followed by the error's `[domain:code]` and, when present, the
+  /// underlying error's. The description is translated to the device language; the domain and
+  /// code are not, so JS can tell errors apart without matching the text.
+  var localizedDescriptionWithCode: String {
+    let nsError = self as NSError
+    var description = "\(localizedDescription) [\(nsError.domain):\(nsError.code)]"
+    if let underlying = nsError.userInfo[NSUnderlyingErrorKey] as? NSError {
+      description += " [\(underlying.domain):\(underlying.code)]"
+    }
+    return description
+  }
+}
+
 internal final class UnableToWriteBase64DataException: GenericException<String> {
   override var reason: String {
     "Unable to write base64 data to a file: \(param)"
