@@ -668,6 +668,7 @@ export const eas = [
         makePage('eas/simulators/how-to/install-your-app.mdx'),
         makePage('eas/simulators/how-to/drive-the-device.mdx'),
         makePage('eas/simulators/how-to/control-with-eas-cli.mdx'),
+        makePage('eas/simulators/how-to/capture-screenshots-with-the-preview-api.mdx'),
         makePage('eas/simulators/how-to/iterate-on-your-code.mdx'),
         makePage('eas/simulators/how-to/capture-evidence.mdx'),
         makePage('eas/simulators/how-to/organize-sessions.mdx'),
