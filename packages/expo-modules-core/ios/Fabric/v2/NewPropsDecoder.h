@@ -4,6 +4,7 @@
 
 #ifdef __cplusplus
 
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -89,9 +90,10 @@ public:
   virtual ~NewPropsDecoder() = default;
 
   /**
-   Decodes the props object that React sent. It has all props when React creates the view, and only
-   the changed props when it updates the view. React sends a removed prop as `null`. Returns the props
-   after applying `props` to `previous`, which is `nullptr` before the first decode.
+   Decodes the props object that React sent. `NewComponentDescriptor` calls it before React Native 0.87,
+   and `decodeValues` since. It has all props when React creates the view, and only the changed props
+   when it updates the view. React sends a removed prop as `null`. Returns the props after applying
+   `props` to `previous`, which is `nullptr` before the first decode.
    */
   virtual DecodedProps decode(
     facebook::jsi::Runtime &runtime,
@@ -100,10 +102,27 @@ public:
   ) const = 0;
 
   /**
-   Called instead of `decode` for props that come as `folly::dynamic`, without a runtime, for example
-   from Reanimated or React Native's animations. They aren't decoded yet, so the decoded props keep their
-   values. `propNames` has all keys of the update, the base view props too, so the decoder can report the
-   ones it would have decoded.
+   The names of the view's props, in the order that `decodeValues` indexes them.
+   */
+  virtual std::vector<std::string> propNames() const = 0;
+
+  /**
+   Decodes the values of the view's props that React sent, each with the index of its name in
+   `propNames`. Unlike `decode`, it gets only the view's props, which the caller already picked out of
+   the props object. Returns the props after applying `values` to `previous`, which is `nullptr` before
+   the first decode.
+   */
+  virtual DecodedProps decodeValues(
+    facebook::jsi::Runtime &runtime,
+    const std::vector<std::pair<size_t, facebook::jsi::Value>> &values,
+    const DecodedProps &previous
+  ) const = 0;
+
+  /**
+   Called instead of `decodeValues` (or `decode`) for props that come as `folly::dynamic`, without a
+   runtime, for example from Reanimated or React Native's animations. They aren't decoded yet, so the
+   decoded props keep their values. `propNames` may have all keys of the update, the base view props too,
+   so the decoder reports only the ones it would have decoded.
 
    After `setNativeProps` is called on a view, React Native merges every later React update of that view
    into `folly::dynamic` too, for as long as the view exists. So until these props are decoded, such a

@@ -37,7 +37,7 @@ namespace views = expo::views;
 @end
 
 /**
- Decodes any props into a new object.
+ Decodes the `title` prop into a new object.
  */
 @interface NewObjectViewPropsDecoder : NSObject <EXViewPropsDecoding>
 @end
@@ -45,6 +45,20 @@ namespace views = expo::views;
 @implementation NewObjectViewPropsDecoder
 
 - (nullable id)decodeProps:(const void *)props runtime:(const void *)runtime previous:(nullable id)previous
+{
+  return [NSObject new];
+}
+
+- (NSArray<NSString *> *)propNames
+{
+  return @[ @"title" ];
+}
+
+- (nullable id)decodeValues:(const void *const _Nonnull *)values
+                    indexes:(const NSInteger *)indexes
+                      count:(NSInteger)count
+                    runtime:(const void *)runtime
+                   previous:(nullable id)previous
 {
   return [NSObject new];
 }

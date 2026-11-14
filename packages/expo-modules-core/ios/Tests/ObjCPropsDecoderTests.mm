@@ -7,6 +7,7 @@
 #import <ExpoModulesCore/ObjCPropsDecoder.h>
 
 #include <memory>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -26,6 +27,8 @@ namespace views = expo::views;
 @property (nonatomic) const void *lastRuntime;
 @property (nonatomic, nullable) id lastPrevious;
 @property (nonatomic, nullable) NSArray<NSString *> *skippedPropNames;
+@property (nonatomic, nullable) NSArray<NSNumber *> *lastIndexes;
+@property (nonatomic) std::vector<const void *> lastValues;
 @end
 
 @implementation RecordingViewPropsDecoder
@@ -33,6 +36,33 @@ namespace views = expo::views;
 - (nullable id)decodeProps:(const void *)props runtime:(const void *)runtime previous:(nullable id)previous
 {
   self.lastProps = props;
+  self.lastRuntime = runtime;
+  self.lastPrevious = previous;
+  if (self.returnsNil) {
+    return nil;
+  }
+  return self.returnsPrevious ? previous : [NSObject new];
+}
+
+- (NSArray<NSString *> *)propNames
+{
+  return @[ @"title", @"radius" ];
+}
+
+- (nullable id)decodeValues:(const void *const _Nonnull *)values
+                    indexes:(const NSInteger *)indexes
+                      count:(NSInteger)count
+                    runtime:(const void *)runtime
+                   previous:(nullable id)previous
+{
+  NSMutableArray<NSNumber *> *recordedIndexes = [NSMutableArray array];
+  std::vector<const void *> recordedValues;
+  for (NSInteger i = 0; i < count; i++) {
+    [recordedIndexes addObject:@(indexes[i])];
+    recordedValues.push_back(values[i]);
+  }
+  self.lastIndexes = recordedIndexes;
+  self.lastValues = recordedValues;
   self.lastRuntime = runtime;
   self.lastPrevious = previous;
   if (self.returnsNil) {
@@ -119,6 +149,34 @@ namespace views = expo::views;
   _objcDecoder.returnsNil = YES;
   auto updated = _decoder->decode(*_runtime, props, created);
   XCTAssertTrue(updated == created);
+}
+
+- (void)testReturnsThePropNamesOfTheDecoder
+{
+  XCTAssertTrue((_decoder->propNames() == std::vector<std::string>{"title", "radius"}));
+}
+
+- (void)testPassesTheValuesWithTheirIndexes
+{
+  std::vector<std::pair<size_t, jsi::Value>> values;
+  values.emplace_back(1, jsi::Value(8));
+  values.emplace_back(0, jsi::String::createFromUtf8(*_runtime, "Title"));
+  auto created = _decoder->decodeValues(*_runtime, values, nullptr);
+  auto updated = _decoder->decodeValues(*_runtime, values, created);
+
+  XCTAssertEqualObjects(_objcDecoder.lastIndexes, (@[ @1, @0 ]));
+  XCTAssertEqual(_objcDecoder.lastValues.size(), 2u);
+  XCTAssertEqual(_objcDecoder.lastValues[0], static_cast<const void *>(&values[0].second));
+  XCTAssertEqual(_objcDecoder.lastValues[1], static_cast<const void *>(&values[1].second));
+  XCTAssertEqual(_objcDecoder.lastRuntime, static_cast<const void *>(_runtime.get()));
+  XCTAssertEqual(_objcDecoder.lastPrevious, (__bridge id)created.get());
+  XCTAssertFalse(updated == created);
+
+  _objcDecoder.returnsPrevious = YES;
+  XCTAssertTrue(_decoder->decodeValues(*_runtime, values, updated) == updated);
+  _objcDecoder.returnsPrevious = NO;
+  _objcDecoder.returnsNil = YES;
+  XCTAssertTrue(_decoder->decodeValues(*_runtime, values, updated) == updated);
 }
 
 - (void)testPassesTheSkippedPropNames

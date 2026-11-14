@@ -31,6 +31,69 @@ struct ViewPropsDecoderTests {
     }
   }
 
+  /// Decodes two values of the given props, the way the component descriptor passes them after picking
+  /// them out of the props object.
+  private func decodeValues(
+    _ first: (name: DecoderTestProps.PropName, source: String),
+    _ second: (name: DecoderTestProps.PropName, source: String),
+    previous: DecodedViewProps<DecoderTestProps>? = nil
+  ) throws -> DecodedViewProps<DecoderTestProps>? {
+    let firstValue = try runtime.eval("(\(first.source))")
+    let secondValue = try runtime.eval("(\(second.source))")
+    let indexes = [first.name, second.name].map { decoder.propNames.firstIndex(of: $0)! }
+
+    return runtime.withUnsafePointee { runtimePointer in
+      firstValue.withUnsafePointee { firstPointer in
+        secondValue.withUnsafePointee { secondPointer in
+          [firstPointer, secondPointer].withUnsafeBufferPointer { valuePointers in
+            indexes.withUnsafeBufferPointer { indexes in
+              decoder.decode(
+                valuePointers: valuePointers.baseAddress!,
+                indexes: indexes.baseAddress!,
+                count: 2,
+                runtimePointer: runtimePointer,
+                previous: previous
+              )
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @Test
+  func `prop names follow the declaration order`() {
+    #expect(decoder.propNameStrings == ["title", "radius", "tint"])
+  }
+
+  @Test
+  func `decodes the values by the index of their prop name`() throws {
+    let created = try #require(try decodeValues((.tint, "'red'"), (.title, "'Card'")))
+
+    #expect(created.props.title == "Card")
+    #expect(created.props.radius == 4)
+    #expect(created.props.tint == "red")
+  }
+
+  @Test
+  func `decoding values resets null props and keeps the props that don't decode`() throws {
+    let created = try decode("{ title: 'Card', radius: 8, tint: 'red' }")
+    let updated = try #require(try decodeValues((.tint, "null"), (.radius, "'large'"), previous: created))
+
+    #expect(updated.props.title == "Card")
+    #expect(updated.props.radius == 8)
+    #expect(updated.props.tint == nil)
+    #expect(updated.changedProps(since: created) == .tint)
+  }
+
+  @Test
+  func `decoding values that don't decode returns the previous props`() throws {
+    let created = try decode("{ title: 'Card', radius: 8 }")
+    let updated = try decodeValues((.radius, "'large'"), (.radius, "'huge'"), previous: created)
+
+    #expect(updated === created)
+  }
+
   @Test
   func `generated init sets the defaults`() {
     let props = DecoderTestProps()
