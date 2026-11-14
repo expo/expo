@@ -12,8 +12,8 @@
  * The player keeps just enough in-memory state (playback flag, current time,
  * current source) that tests can exercise play/pause/seek/replace instead of
  * asserting against inert stubs, and it emits the core change events
- * (`playingChange`, `sourceChange`, `mutedChange`, `volumeChange`,
- * `playbackRateChange`) so `useEvent`-driven components update in tests.
+ * (`playingChange`, `playbackRequestedChange`, `sourceChange`, `mutedChange`,
+ * `volumeChange`, `playbackRateChange`) so `useEvent`-driven components update in tests.
  *
  * Intended scope: behavior stops there. Time never advances on its own (no
  * `timeUpdate`/`playToEnd`), `status` never transitions, and the native views
@@ -187,6 +187,8 @@ export class VideoPlayer extends SharedObject<VideoPlayerEvents> {
     const oldIsPlaying = this.playing;
     this.playing = value;
     this.emit('playingChange', { isPlaying: value, oldIsPlaying });
+    // The mock never buffers or seeks, so the play request always matches `playing`.
+    this.emit('playbackRequestedChange', { isPlaybackRequested: value });
   }
 
   private applySource(source: VideoSource): void {
