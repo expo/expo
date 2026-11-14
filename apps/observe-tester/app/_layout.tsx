@@ -4,6 +4,8 @@ import { Stack } from 'expo-router';
 import { StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { ReanimatedLogLevel } from 'react-native-reanimated';
 
+import { crashOnLaunchIfRequested } from '@/utils/crashOnLaunch';
+
 Observe.configure({
   environment: 'custom-env',
   dispatchingEnabled: true,
@@ -26,8 +28,16 @@ Observe.configure({
       strict: true,
       reportWarnings: true,
     },
+    'expo-updates': {
+      reportWarnings: true,
+      shouldReport: (entry) => entry.key !== 'reaper.assetDeleteFailed',
+    },
   },
   networkTraces: true,
+});
+
+crashOnLaunchIfRequested().catch((error) => {
+  console.warn(`[observe-tester] Could not read the crash-on-launch flag: ${String(error)}`);
 });
 
 // Passing `errorBoundaryFallback` opts the root into capturing render-phase errors: the boundary
