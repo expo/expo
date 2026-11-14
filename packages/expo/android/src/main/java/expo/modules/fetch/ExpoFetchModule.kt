@@ -2,6 +2,10 @@
 
 package expo.modules.fetch
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.Network
 import android.util.Log
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.blob.BlobModule
@@ -18,23 +22,34 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
+import okhttp3.ConnectionPool
 import okhttp3.JavaNetCookieJar
+import okhttp3.OkHttpClient
 import java.net.URL
 
 @Suppress("unused")
 class ExpoFetchModule : Module() {
-  private val client by lazy {
-    OkHttpClientProvider.createClient(reactContext)
-      .newBuilder()
-      .addInterceptor(OkHttpFileUrlInterceptor(reactContext))
-      .addInterceptor(TransparentCompressionInterceptor)
-      .build()
-  }
+  @Volatile
+  private lateinit var client: OkHttpClient
   private val cookieHandler by lazy { ForwardingCookieHandler(reactContext) }
   private val cookieJarContainer by lazy { client.cookieJar as CookieJarContainer }
 
   private val reactContext: ReactContext
     get() = appContext.reactContext as? ReactContext ?: throw Exceptions.ReactContextLost()
+
+  private var connectivityManager: ConnectivityManager? = null
+
+  private val networkCallback = object : ConnectivityManager.NetworkCallback() {
+    // Registration reports the current default network. Its connections are not stale.
+    private var isFirstCall = true
+
+    override fun onAvailable(network: Network) {
+      if (!isFirstCall) {
+        renewConnections()
+      }
+      isFirstCall = false
+    }
+  }
 
   private val moduleCoroutineScope by lazy {
     CoroutineScope(
@@ -47,7 +62,9 @@ class ExpoFetchModule : Module() {
     Name("ExpoFetchModule")
 
     OnCreate {
+      client = createClient()
       cookieJarContainer.setCookieJar(JavaNetCookieJar(cookieHandler))
+      watchDefaultNetwork()
     }
 
     // TODO(kudo,20260706): remove this when we install expo-blob as globalThis.Blob
@@ -58,6 +75,8 @@ class ExpoFetchModule : Module() {
     }
 
     OnDestroy {
+      connectivityManager?.unregisterNetworkCallback(networkCallback)
+      connectivityManager = null
       cookieHandler.destroy()
       cookieJarContainer.removeCookieJar()
 
@@ -151,6 +170,32 @@ class ExpoFetchModule : Module() {
         request.cancel()
       }
     }
+  }
+
+  private fun createClient(): OkHttpClient =
+    OkHttpClientProvider.createClient(reactContext)
+      .newBuilder()
+      .addInterceptor(OkHttpFileUrlInterceptor(reactContext))
+      .addInterceptor(TransparentCompressionInterceptor)
+      .build()
+
+  private fun watchDefaultNetwork() {
+    // The app may not declare this permission; without it, there is nothing to watch.
+    val granted = reactContext.checkSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE)
+    if (granted != PackageManager.PERMISSION_GRANTED) {
+      return
+    }
+    val manager = reactContext.getSystemService(ConnectivityManager::class.java) ?: return
+    manager.registerDefaultNetworkCallback(networkCallback)
+    connectivityManager = manager
+  }
+
+  // After a network change, a pooled HTTP/2 connection can be dead without a closed socket.
+  // OkHttp keeps reusing it, so new calls get a new pool. Calls in flight keep the old client.
+  private fun renewConnections() {
+    val oldClient = client
+    client = oldClient.newBuilder().connectionPool(ConnectionPool()).build()
+    oldClient.connectionPool.evictAll()
   }
 
   companion object {
