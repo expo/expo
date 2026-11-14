@@ -124,4 +124,29 @@ class UpdatesConfigurationTest {
     Truth.assertThat(config.updateUrl).isEqualTo(embeddedUpdateUrl)
     Truth.assertThat(config.requestHeaders).containsExactly("expo-channel-name", "preview")
   }
+
+  @Test
+  fun `useReactNativeHttpClient should default to true`() {
+    val config = UpdatesConfiguration(
+      context = null,
+      overrideMap = mapOf(
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://example.com/manifest"),
+        UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0.0"
+      )
+    )
+    Truth.assertThat(config.useReactNativeHttpClient).isTrue()
+  }
+
+  @Test
+  fun `useReactNativeHttpClient should be read from the override map`() {
+    val config = UpdatesConfiguration(
+      context = null,
+      overrideMap = mapOf(
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://example.com/manifest"),
+        UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0.0",
+        UpdatesConfiguration.UPDATES_CONFIGURATION_USE_REACT_NATIVE_HTTP_CLIENT_KEY to false
+      )
+    )
+    Truth.assertThat(config.useReactNativeHttpClient).isFalse()
+  }
 }
