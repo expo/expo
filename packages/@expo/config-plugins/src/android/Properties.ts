@@ -24,11 +24,21 @@ function endsWithContinuation(text: string): boolean {
   return (text.length - index) % 2 === 1;
 }
 
+// Keep other trailing whitespace: a '\' before it is an escape, not a continuation.
+function stripCarriageReturn(line: string): string {
+  return line.replace(/\r+$/, '');
+}
+
 function skipPropertySpace(line: string, index: number): number {
   while (isPropertySpace(line[index])) {
     index++;
   }
   return index;
+}
+
+function stripLeadingPropertySpace(line: string): string {
+  const text = stripCarriageReturn(line);
+  return text.slice(skipPropertySpace(text, 0));
 }
 
 function splitProperty(line: string): { key: string; value: string } {
@@ -67,7 +77,7 @@ export function parsePropertiesFile(contents: string): PropertiesItem[] {
   const propertiesList: PropertiesItem[] = [];
   const lines = contents.split('\n');
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]?.trim();
+    const line = stripLeadingPropertySpace(lines[i] ?? '');
     if (!line) {
       propertiesList.push({ type: 'empty' });
     } else if (line.startsWith('#') || line.startsWith('!')) {
@@ -81,16 +91,14 @@ export function parsePropertiesFile(contents: string): PropertiesItem[] {
           break;
         }
         i++;
-        const trimmed = lines[i]!.trimEnd();
-        const next = trimmed.slice(skipPropertySpace(trimmed, 0));
-        split = splitProperty(split.key.slice(0, -1) + next);
+        split = splitProperty(split.key.slice(0, -1) + stripLeadingPropertySpace(lines[i] ?? ''));
       }
 
       let { key, value } = split;
       // An odd number of trailing backslashes continues the value on the next line.
       while (endsWithContinuation(value) && i + 1 < lines.length) {
         i++;
-        value += '\n' + lines[i]!.trimEnd();
+        value += '\n' + stripCarriageReturn(lines[i] ?? '');
       }
       propertiesList.push({ type: 'property', key, value });
     }

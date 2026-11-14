@@ -53,6 +53,18 @@ describe(parsePropertiesFile, () => {
     expect(parsePropertiesFile('foo\\')).toEqual([{ type: 'property', key: 'foo', value: '' }]);
   });
 
+  it('does not continue a line when the backslash escapes trailing whitespace', () => {
+    const props = parsePropertiesFile(['foo\\ ', 'bar=1', 'k v\\ ', 'next=2'].join('\n'));
+
+    expect(props).toEqual([
+      { type: 'property', key: 'foo\\ ', value: '' },
+      { type: 'property', key: 'bar', value: '1' },
+      { type: 'property', key: 'k', value: 'v\\ ' },
+      { type: 'property', key: 'next', value: '2' },
+    ]);
+    expect(parsePropertiesFile(propertiesListToString(props))).toEqual(props);
+  });
+
   it('splits only at space, tab, or form feed', () => {
     expect(parsePropertiesFile(['key =value', 'key\u000bvalue'].join('\n'))).toEqual([
       { type: 'property', key: 'key ', value: 'value' },
