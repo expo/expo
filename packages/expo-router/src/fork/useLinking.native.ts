@@ -67,14 +67,8 @@ export function useLinking(
     }
 
     if (linkingHandlers.length) {
-      console.error(
-        [
-          'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
-          "- You don't have multiple NavigationContainers in the app",
-          '- Only a single instance of the root component is rendered',
-        ]
-          .join('\n')
-          .trim()
+      console.warn(
+        'Your app mounted a second time while the first instance was still handling deep links. This can happen during an Android Activity relaunch when a configuration change is not listed in `android:configChanges`. Expo Router keeps working, but the app state may reset.'
       );
     }
 

@@ -18,6 +18,7 @@ import { useLinking } from '../useLinking';
 import { getPendingIntents, render, renderHook, setRouteNode } from './__fixtures__/store';
 
 let errorSpy: jest.SpiedFunction<typeof console.error> | undefined;
+let warnSpy: jest.SpiedFunction<typeof console.warn> | undefined;
 
 function getParsedHomeState() {
   return {
@@ -36,6 +37,7 @@ beforeEach(() => {
 
 afterEach(() => {
   errorSpy?.mockRestore();
+  warnSpy?.mockRestore();
 });
 
 test('queues an incoming deep link using its extracted app path', async () => {
@@ -372,7 +374,7 @@ test('throws when linking does not produce an initial state', async () => {
   );
 });
 
-test('throws if multiple instances of useLinking are used', async () => {
+test('warns if multiple instances of useLinking are used', async () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const options = { prefixes: [] };
@@ -383,15 +385,16 @@ test('throws if multiple instances of useLinking are used', async () => {
     return null;
   }
 
-  errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
   let element: RenderResult | undefined;
 
   element = await render(<Sample />);
 
-  expect(errorSpy).toHaveBeenCalledTimes(1);
-  expect(errorSpy.mock.calls[0]![0]).toMatch(
-    'Looks like you have configured linking in multiple places.'
+  expect(warnSpy).toHaveBeenCalledTimes(1);
+  expect(warnSpy).toHaveBeenNthCalledWith(
+    1,
+    'Your app mounted a second time while the first instance was still handling deep links. This can happen during an Android Activity relaunch when a configuration change is not listed in `android:configChanges`. Expo Router keeps working, but the app state may reset.'
   );
 
   await element?.unmount();
@@ -413,9 +416,10 @@ test('throws if multiple instances of useLinking are used', async () => {
     </>
   );
 
-  expect(errorSpy).toHaveBeenCalledTimes(2);
-  expect(errorSpy.mock.calls[1]![0]).toMatch(
-    'Looks like you have configured linking in multiple places.'
+  expect(warnSpy).toHaveBeenCalledTimes(2);
+  expect(warnSpy).toHaveBeenNthCalledWith(
+    2,
+    'Your app mounted a second time while the first instance was still handling deep links. This can happen during an Android Activity relaunch when a configuration change is not listed in `android:configChanges`. Expo Router keeps working, but the app state may reset.'
   );
 
   await element?.unmount();
@@ -432,7 +436,7 @@ test('throws if multiple instances of useLinking are used', async () => {
 
   element = await render(wrapper2);
 
-  expect(errorSpy).toHaveBeenCalledTimes(2);
+  expect(warnSpy).toHaveBeenCalledTimes(2);
 
   await element?.unmount();
 });
