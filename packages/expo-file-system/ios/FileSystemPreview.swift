@@ -27,11 +27,22 @@ internal final class FileSystemPreviewSession: NSObject, QLPreviewControllerData
   private let items: [FileSystemPreviewItem]
   // Retain security-scoped access while Quick Look is open.
   private let scopedAccesses: [FileSystemScopedAccess]
+  // The view the source item zooms out of and back into. React Native owns it, so it may unmount while Quick Look is open.
+  private weak var sourceView: UIView?
+  private let sourceItem: FileSystemPreviewItem
   private let onFinish: () -> Void
 
-  init(items: [FileSystemPreviewItem], scopedAccesses: [FileSystemScopedAccess], onFinish: @escaping () -> Void) {
+  init(
+    items: [FileSystemPreviewItem],
+    scopedAccesses: [FileSystemScopedAccess],
+    sourceView: UIView?,
+    sourceItemIndex: Int,
+    onFinish: @escaping () -> Void
+  ) {
     self.items = items
     self.scopedAccesses = scopedAccesses
+    self.sourceView = sourceView
+    self.sourceItem = items[sourceItemIndex]
     self.onFinish = onFinish
   }
 
@@ -41,6 +52,14 @@ internal final class FileSystemPreviewSession: NSObject, QLPreviewControllerData
 
   func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
     return items[index]
+  }
+
+  func previewController(_ controller: QLPreviewController, transitionViewFor item: QLPreviewItem) -> UIView? {
+    // Zooming another item back into the source view would point at the wrong file.
+    guard item === sourceItem, let sourceView, sourceView.window != nil else {
+      return nil
+    }
+    return sourceView
   }
 
   func previewControllerDidDismiss(_ controller: QLPreviewController) {

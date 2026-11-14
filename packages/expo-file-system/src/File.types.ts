@@ -1,3 +1,6 @@
+import type { Component } from 'react';
+import type { HostInstance } from 'react-native';
+
 import type { File } from './File';
 
 export type FileCreateOptions = {
@@ -75,7 +78,8 @@ export type FilePreviewCollectionOptions = {
 };
 
 /**
- * Options for previewing a single file.
+ * Options for previewing a file.
+ * `title` and `mimeType` only apply to single-file previews.
  * @platform android
  * @platform ios
  */
@@ -89,7 +93,27 @@ export type FilePreviewOptions = {
    * If omitted, the MIME type defaults to the file's `type` property.
    */
   mimeType?: string;
+  /**
+   * A mounted view that the preview opens from, such as the thumbnail the user tapped.
+   * Pass the ref's current value or a view tag.
+   *
+   * On iOS, Quick Look zooms the file out of this view and back into it when the preview closes.
+   * With several files, only the file at `initialIndex` zooms back.
+   * On Android, the viewer app scales up from the bounds of this view.
+   *
+   * If the view is no longer mounted, or React Native flattened it away (see `collapsable`),
+   * the preview opens with the default animation.
+   */
+  sourceView?: FilePreviewSourceView | null;
 };
+
+/**
+ * A view that a preview opens from: a host component instance, a class component instance,
+ * or a native view tag.
+ * @platform android
+ * @platform ios
+ */
+export type FilePreviewSourceView = HostInstance | Component<any, any> | number;
 
 /**
  * Specifies the access mode when opening a file handle.

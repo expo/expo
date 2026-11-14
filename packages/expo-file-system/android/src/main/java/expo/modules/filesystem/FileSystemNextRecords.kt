@@ -51,7 +51,8 @@ data class RelocationOptions(
 @OptimizedRecord
 data class FilePreviewOptions(
   @Field val title: String? = null,
-  @Field val mimeType: String? = null
+  @Field val mimeType: String? = null,
+  @Field val sourceViewTag: Int? = null
 ) : Record
 
 @OptimizedRecord

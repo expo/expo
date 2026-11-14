@@ -35,6 +35,13 @@ import type {
   UploadProgress,
   UploadResult,
 } from '../NetworkTasks.types';
+/**
+ * Preview options as native code receives them: the source view is resolved to its tag.
+ */
+export type NativeFilePreviewOptions = Omit<FilePreviewOptions, 'sourceView'> & {
+  sourceViewTag?: number;
+};
+
 export declare class NativeFileSystemDirectory {
   /**
    * Creates an instance of a directory.
@@ -296,7 +303,7 @@ export declare class NativeFileSystemFile {
   /**
    * Opens this file with the platform's file preview flow.
    */
-  preview(options?: FilePreviewOptions): Promise<void>;
+  preview(options?: NativeFilePreviewOptions): Promise<void>;
   upload(url: string, options?: UploadOptions): Promise<UploadResult>;
   createUploadTask(url: string, options?: UploadOptions): UploadTask;
   watch(

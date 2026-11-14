@@ -1,5 +1,5 @@
 import { UnavailabilityError, uuid, type EventSubscription } from 'expo-modules-core';
-import { Platform } from 'react-native';
+import { findNodeHandle, Platform } from 'react-native';
 
 import { Directory } from './Directory';
 import ExpoFileSystem from './ExpoFileSystem';
@@ -29,6 +29,7 @@ import {
 } from './NetworkTasks.types';
 import { Paths } from './Paths';
 import { FileSystemWatcher } from './internal/FileSystemWatcher';
+import type { NativeFilePreviewOptions } from './internal/NativeFileSystem.types';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './internal/streams';
 
 /**
@@ -102,12 +103,20 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
     }
     validateCollectionPreviewOptions(files, options);
     if (files.length === 1) {
-      return files[0]!.preview({ title: options?.title, mimeType: options?.mimeType });
+      return files[0]!.preview({
+        title: options?.title,
+        mimeType: options?.mimeType,
+        sourceView: options?.sourceView,
+      });
     }
     if (Platform.OS !== 'ios' || Platform.isTV || !ExpoFileSystem.preview) {
       throw new UnavailabilityError('expo-file-system', 'File.preview (multiple files)');
     }
-    return ExpoFileSystem.preview(files, initialIndex);
+    return ExpoFileSystem.preview(
+      files,
+      initialIndex,
+      toNativePreviewOptions({ sourceView: options?.sourceView })
+    );
   }
 
   /**
@@ -327,7 +336,7 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
    * @platform ios
    */
   preview(options?: FilePreviewOptions): Promise<void> {
-    return super.preview(options ?? {});
+    return super.preview(toNativePreviewOptions(options));
   }
 
   /**
@@ -526,6 +535,20 @@ function normalizePreviewFiles(input: File | File[]): File[] {
     }
   }
   return files;
+}
+
+// React Native's legacy findNodeHandle types omit host instances, which the runtime accepts.
+function toNativePreviewOptions({
+  sourceView,
+  ...options
+}: FilePreviewOptions = {}): NativeFilePreviewOptions {
+  return {
+    ...options,
+    sourceViewTag:
+      sourceView == null
+        ? undefined
+        : (findNodeHandle(sourceView as Parameters<typeof findNodeHandle>[0]) ?? undefined),
+  };
 }
 
 function validateCollectionPreviewOptions(files: File[], options?: FilePreviewOptions): void {

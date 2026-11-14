@@ -49,10 +49,45 @@ describe('static file previews', () => {
     const preview = jest.spyOn(ExpoFileSystem, 'preview');
     await expect(File.canPreview(files)).resolves.toBe(true);
     await File.preview(files);
-    expect(preview).toHaveBeenLastCalledWith(files, 0);
+    expect(preview).toHaveBeenLastCalledWith(files, 0, { sourceViewTag: undefined });
     await File.preview(files, { initialIndex: 1 });
-    expect(preview).toHaveBeenLastCalledWith(files, 1);
+    expect(preview).toHaveBeenLastCalledWith(files, 1, { sourceViewTag: undefined });
   });
+
+  it.each(['ios', 'android'] as const)(
+    'passes a source view tag for single files on %s',
+    async (os) => {
+      platform(os);
+      const [file] = await fixtures();
+      const preview = jest.spyOn(ExpoFileSystem.FileSystemFile.prototype, 'preview');
+      await file.preview({ title: 'Image', sourceView: 42 });
+      expect(preview).toHaveBeenLastCalledWith({ title: 'Image', sourceViewTag: 42 });
+      await File.preview(file, { sourceView: 42 });
+      expect(preview).toHaveBeenLastCalledWith({ sourceViewTag: 42 });
+      await File.preview([file], { sourceView: 42 });
+      expect(preview).toHaveBeenLastCalledWith({ sourceViewTag: 42 });
+    }
+  );
+
+  it('passes a source view tag and the initial index for an iOS collection', async () => {
+    platform('ios');
+    const files = await fixtures();
+    const preview = jest.spyOn(ExpoFileSystem, 'preview');
+    await File.preview(files, { initialIndex: 1, sourceView: 42 });
+    expect(preview).toHaveBeenLastCalledWith(files, 1, { sourceViewTag: 42 });
+  });
+
+  it.each([undefined, null])(
+    'omits a missing source view from native options (%s)',
+    async (sourceView) => {
+      const [file] = await fixtures();
+      const preview = jest.spyOn(ExpoFileSystem.FileSystemFile.prototype, 'preview');
+      await file.preview({ sourceView });
+      const options = preview.mock.calls[0]![0];
+      expect(options).not.toHaveProperty('sourceView');
+      expect(options?.sourceViewTag).toBeUndefined();
+    }
+  );
 
   it('does not hand a collection to Android', async () => {
     platform('android');
