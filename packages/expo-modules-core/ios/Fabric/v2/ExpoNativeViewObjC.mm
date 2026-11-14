@@ -83,13 +83,13 @@ std::unordered_map<std::string, std::shared_ptr<const views::NewComponentFlavor>
 
   if (updateMask & RNComponentViewUpdateMaskProps) {
     const auto &props = static_cast<const views::NewViewProps &>(*_props);
-    [self updateDecodedProps:(__bridge id)props.decodedProps.get()];
+    [self updateDecodedProps:props.decodedProps.get()];
   }
 }
 
 #pragma mark - Methods to override in Swift
 
-- (void)updateDecodedProps:(nullable id)decodedProps
+- (void)updateDecodedProps:(nullable const void *)decodedProps
 {
   // Implemented in `ExpoNativeView.swift`
 }
