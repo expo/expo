@@ -1,0 +1,90 @@
+name: SDK cherry-pick
+
+# SECURITY: `pull_request_target` runs this workflow from the default branch with secrets, also for
+# pull requests from forks. Only code from the default branch runs. The merged change is read as git
+# data with hooks off, and its changesets only as text.
+on:
+  pull_request_target:
+    types: [closed, labeled]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: 'Number of the pull request on main to backport'
+        required: true
+        type: number
+      sdk:
+        description: 'SDK version of the target branch, such as 58 for sdk-58'
+        required: true
+        type: number
+      dry_run:
+        description: 'Show what would happen. Do not push, open a pull request, or comment.'
+        type: boolean
+        default: true
+
+permissions: {}
+
+jobs:
+  cherry-pick:
+    name: Backport to SDK branches
+    # On `closed`, every `sdk-NN` label. On `labeled`, only the label that was added.
+    if: >-
+      github.repository == 'expo/expo'
+      && (github.event_name == 'workflow_dispatch'
+      || github.event.pull_request.merged
+      && (github.event.action == 'labeled' && startsWith(github.event.label.name, 'sdk-')
+      || github.event.action == 'closed' && contains(join(github.event.pull_request.labels.*.name, ' '), 'sdk-')))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    concurrency:
+      group: sdk-cherry-pick-${{ github.event.pull_request.number || inputs.pr }}-${{ github.event.label.name || inputs.sdk || 'merged' }}
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr }}
+      SDK_VERSION: ${{ inputs.sdk }}
+      LABELS: ${{ github.event.action == 'labeled' && toJSON(github.event.label.name) || toJSON(github.event.pull_request.labels.*.name) }}
+      MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+      PR_TITLE: ${{ github.event.pull_request.title }}
+      PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+      REPO_DIR: ${{ github.workspace }}
+      SKIP_SKIA_DOWNLOAD: '1'
+    steps:
+      # SECURITY: the default branch, never the pull request head. No token is stored in .git/config.
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: 🔨 Install pnpm
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          install: false
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: 📦 Install dependencies
+        run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+      - name: 🛠 Build expotools
+        run: pnpm turbo build --filter expotools...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      - name: 🍒 Backport
+        id: backport
+        run: node tools/bin/expotools.js sdk-cherry-pick
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+      # The backport step comments on its own failures, so this step covers only the steps before it.
+      - name: 💬 Comment that the backport failed
+        if: failure() && github.event_name == 'pull_request_target' && steps.backport.outcome != 'failure'
+        run: |
+          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "The SDK backport failed before it started, so no backport pull request was opened. [Run log]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
