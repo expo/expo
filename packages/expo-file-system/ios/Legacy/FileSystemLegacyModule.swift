@@ -11,7 +11,14 @@ public final class FileSystemLegacyModule: Module {
   private lazy var taskHandlersManager = EXTaskHandlersManager()
   private lazy var resourceManager = PHAssetResourceManager()
 
-  private lazy var backgroundSession = createUrlSession(type: .background, delegate: sessionTaskDispatcher)
+  private lazy var backgroundSession: URLSession = {
+    let session = createUrlSession(type: .background, delegate: sessionTaskDispatcher)
+    if let identifier = session.configuration.identifier {
+      ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)?
+        .registerLegacySession(identifier)
+    }
+    return session
+  }()
   private lazy var foregroundSession = createUrlSession(type: .foreground, delegate: sessionTaskDispatcher)
 
   private var documentDirectory: URL? {

@@ -221,7 +221,7 @@ final class NetworkTaskSessionManager {
     return URLSession(configuration: configuration, delegate: dispatcher, delegateQueue: .main)
   }
 
-  private static let backgroundSessionIdentifier = {
+  static let backgroundSessionIdentifier = {
     let bundleIdentifier = Bundle.main.bundleIdentifier ?? "expo.modules.filesystem"
     return "\(bundleIdentifier).expo-file-system.network-task.background"
   }()

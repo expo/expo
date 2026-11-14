@@ -43,7 +43,9 @@ EX_REGISTER_SINGLETON_MODULE(SessionHandler);
 
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)(void))completionHandler
 {
-  _completionHandlers[identifier] = completionHandler;
+  // FileSystemBackgroundSessionHandler handles background sessions. EXLegacyAppDelegateWrapper still
+  // forwards this event to this singleton module and waits for it, so complete at once.
+  completionHandler();
 }
 
 @end
