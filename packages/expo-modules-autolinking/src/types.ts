@@ -84,6 +84,16 @@ export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
    * (Expo Modules API 2.0). The generated modules provider also lists these modules by package in `packages`.
    */
   expoModules?: ModuleIosConfig[];
+  /**
+   * Names of the `@SharedObject` classes that `scan-modules` found. The generated modules provider lists them by
+   * package in `packages`, next to the modules.
+   */
+  expoSharedObjects?: string[];
+  /**
+   * Names of the `@ExpoView` classes that `scan-modules` found. The generated modules provider lists them by
+   * package in `packages`, next to the modules.
+   */
+  expoViews?: string[];
   pods: ModuleIosPodspecInfo[];
   flags: Record<string, any> | undefined;
   swiftModuleNames: string[];

@@ -21,9 +21,10 @@ import {
 import { listFilesInDirectories, fileExistsAsync } from '../../utils';
 import {
   collectPackageRoots,
-  groupScannedModules,
+  groupScannedPackageClasses,
   loadModulesScanner,
   scanExpoModulesAsync,
+  type ScannedPackageClasses,
 } from './moduleScanner';
 
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
@@ -63,13 +64,13 @@ export function getSwiftModuleNames(
 }
 
 /**
- * Scans all packages for `@ExpoModule` classes that compile for the given platform, in one scanner
- * run. Returns the classes by package name, or null when the scan is unavailable or fails.
+ * Scans all packages for `@ExpoModule`, `@SharedObject` and `@ExpoView` classes that compile for the given
+ * platform, in one scanner run. Returns the classes by package name, or null when the scan is unavailable or fails.
  */
 export async function scanNativeModulesAsync(
   searchResults: SearchResults,
   platform: SupportedPlatform
-): Promise<Record<string, ModuleIosConfig[]> | null> {
+): Promise<ScannedPackageClasses | null> {
   // The scanner is a macOS binary.
   if (process.platform !== 'darwin') {
     return null;
@@ -89,7 +90,7 @@ export async function scanNativeModulesAsync(
 
   const packageRoots = collectPackageRoots(searchResults);
   const output = await scanExpoModulesAsync(scanner, packageRoots);
-  return output ? groupScannedModules(output, packageRoots, platform) : null;
+  return output ? groupScannedPackageClasses(output, packageRoots, platform) : null;
 }
 
 /**
@@ -127,7 +128,7 @@ export async function resolveModuleAsync(
   revision: PackageRevision,
   extraOutput: {
     flags?: Record<string, any>;
-    scannedModules?: Record<string, ModuleIosConfig[]> | null;
+    scannedModules?: ScannedPackageClasses | null;
   }
 ): Promise<ModuleDescriptorIos | null> {
   const podspecFiles = await findPodspecFiles(revision);
@@ -148,7 +149,9 @@ export async function resolveModuleAsync(
       ?.appleModules()
       .map((module) => (typeof module === 'string' ? { name: null, class: module } : module)) ?? [];
 
-  const scannedModules = extraOutput.scannedModules?.[packageName] ?? [];
+  const scannedModules = extraOutput.scannedModules?.modules[packageName] ?? [];
+  const expoSharedObjects = extraOutput.scannedModules?.sharedObjects[packageName] ?? [];
+  const expoViews = extraOutput.scannedModules?.views[packageName] ?? [];
   const modules = pickModules(
     revision.config?.declaresAppleModules() ? configModules : null,
     scannedModules
@@ -172,6 +175,8 @@ export async function resolveModuleAsync(
     flags: extraOutput.flags,
     modules,
     ...(expoModules.length > 0 ? { expoModules } : {}),
+    ...(expoSharedObjects.length > 0 ? { expoSharedObjects } : {}),
+    ...(expoViews.length > 0 ? { expoViews } : {}),
     appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
     reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
     debugOnly: revision.config?.appleDebugOnly() ?? false,
@@ -261,6 +266,8 @@ async function generatePackageListFileContentAsync(
   const iosModules = modules.filter(
     (module) =>
       module.modules.length ||
+      module.expoSharedObjects?.length ||
+      module.expoViews?.length ||
       module.appDelegateSubscribers.length ||
       module.reactDelegateHandlers.length
   );
@@ -284,7 +291,7 @@ async function generatePackageListFileContentAsync(
   if (isTargetInInlineModulesTargets(params)) {
     const inlineModules = await getIosInlineModulesClassNames(params);
     modulesClassNames = modulesClassNames.concat(inlineModules.modules);
-    addToPackage(packages, LOCAL_PACKAGE_NAME, inlineModules.expoModules);
+    addToPackage(packages, LOCAL_PACKAGE_NAME, { modules: inlineModules.expoModules });
   }
 
   const debugOnlyModulesClassNames = ([] as ModuleIosConfig[])
@@ -383,20 +390,25 @@ ${indent.repeat(2)}]`;
 
 interface PackageExports {
   modules: ModuleIosConfig[];
+  /** Names of the `@SharedObject` classes. */
+  sharedObjects: string[];
+  /** Names of the `@ExpoView` classes. */
+  views: string[];
 }
 
 /**
- * Groups the modules declared with the `@ExpoModule` macro by the package they are exported in: the npm package
- * name, or the name that the descriptor overrides it with (for example, for local modules).
+ * Groups the classes declared with the `@ExpoModule`, `@SharedObject` and `@ExpoView` macros by the package they
+ * are exported in: the npm package name, or the name that the descriptor overrides it with (for example, for local
+ * modules).
  */
 function groupByPackage(modules: ModuleDescriptorIos[]): Map<string, PackageExports> {
   const packages = new Map<string, PackageExports>();
   for (const module of modules) {
-    addToPackage(
-      packages,
-      module.exportedPackageName ?? module.packageName,
-      module.expoModules ?? []
-    );
+    addToPackage(packages, module.exportedPackageName ?? module.packageName, {
+      modules: module.expoModules,
+      sharedObjects: module.expoSharedObjects,
+      views: module.expoViews,
+    });
   }
   return packages;
 }
@@ -404,13 +416,15 @@ function groupByPackage(modules: ModuleDescriptorIos[]): Map<string, PackageExpo
 function addToPackage(
   packages: Map<string, PackageExports>,
   packageName: string,
-  modules: ModuleIosConfig[]
+  { modules = [], sharedObjects = [], views = [] }: Partial<PackageExports>
 ) {
-  if (!modules.length) {
+  if (!modules.length && !sharedObjects.length && !views.length) {
     return;
   }
-  const exports = packages.get(packageName) ?? { modules: [] };
+  const exports = packages.get(packageName) ?? { modules: [], sharedObjects: [], views: [] };
   exports.modules.push(...modules);
+  exports.sharedObjects.push(...sharedObjects);
+  exports.views.push(...views);
   packages.set(packageName, exports);
 }
 
@@ -434,11 +448,9 @@ function generatePackages(
 ): string {
   const commonPackages = formatPackages(packages);
   if (debugOnlyPackages.size > 0) {
-    const allPackages = new Map(
-      [...packages].map(([packageName, { modules }]) => [packageName, { modules: [...modules] }])
-    );
-    for (const [packageName, { modules }] of debugOnlyPackages) {
-      addToPackage(allPackages, packageName, modules);
+    const allPackages = new Map<string, PackageExports>();
+    for (const [packageName, exports] of [...packages, ...debugOnlyPackages]) {
+      addToPackage(allPackages, packageName, exports);
     }
     return wrapInDebugConfigurationCheck(
       2,
@@ -469,9 +481,20 @@ function formatPackages(packages: Map<string, PackageExports>): string {
     return '[:]';
   }
   const sortedPackages = [...packages].sort(([a], [b]) => comparePackageNames(a, b));
-  const entries = sortedPackages.map(([packageName, { modules }]) => {
-    const moduleClassNames = formatInlineArrayOfClassNames(modules.map((module) => module.class));
-    return `\n${indent.repeat(3)}"${packageName}": ExpoPackage(\n${indent.repeat(4)}modules: ${moduleClassNames}\n${indent.repeat(3)})`;
+  const entries = sortedPackages.map(([packageName, { modules, sharedObjects, views }]) => {
+    // Only the non-empty lists are passed, the others have empty defaults.
+    const lists: [string, string[]][] = [
+      ['modules', modules.map((module) => module.class)],
+      ['sharedObjects', sharedObjects],
+      ['views', views],
+    ];
+    const args = lists
+      .filter(([, classNames]) => classNames.length > 0)
+      .map(
+        ([label, classNames]) =>
+          `\n${indent.repeat(4)}${label}: ${formatInlineArrayOfClassNames(classNames)}`
+      );
+    return `\n${indent.repeat(3)}"${packageName}": ExpoPackage(${args.join(',')}\n${indent.repeat(3)})`;
   });
   return `[${entries.join(',')}\n${indent.repeat(2)}]`;
 }

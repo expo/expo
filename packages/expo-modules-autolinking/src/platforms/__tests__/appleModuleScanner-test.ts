@@ -3,6 +3,7 @@ import { vol } from 'memfs';
 import {
   collectPackageRoots,
   groupScannedModules,
+  groupScannedPackageClasses,
   hasModuleAnnotations,
   scanExpoModulesAsync,
   type ModulesScanner,
@@ -387,6 +388,75 @@ describe(groupScannedModules, () => {
     expect(grouped).toEqual({
       'expo-camera-next': [{ name: null, class: 'NextCameraModule' }],
     });
+  });
+});
+
+describe(groupScannedPackageClasses, () => {
+  function scannedClass(
+    name: string,
+    file: string,
+    accessLevel: ScanModulesOutput['modules'][number]['accessLevel'] = 'public'
+  ) {
+    return { name, jsName: name, accessLevel, file, platforms: ALL_PLATFORMS };
+  }
+
+  it('groups the modules, shared objects and views by package', () => {
+    const output = scannerOutput({
+      modules: [
+        scannedClass('CameraModule', '/app/node_modules/expo-camera/ios/CameraModule.swift'),
+      ],
+      sharedObjects: [
+        scannedClass('CameraSession', '/app/node_modules/expo-camera/ios/CameraSession.swift'),
+        scannedClass('ClipboardItem', '/app/node_modules/expo-clipboard/ios/ClipboardItem.swift'),
+      ],
+      views: [scannedClass('CameraView', '/app/node_modules/expo-camera/ios/CameraView.swift')],
+    });
+
+    expect(groupScannedPackageClasses(output, packageRoots, 'ios')).toEqual({
+      modules: { 'expo-camera': [{ name: null, class: 'CameraModule' }] },
+      sharedObjects: { 'expo-camera': ['CameraSession'], 'expo-clipboard': ['ClipboardItem'] },
+      views: { 'expo-camera': ['CameraView'] },
+    });
+  });
+
+  it('accepts the output of a scanner that does not report shared objects and views', () => {
+    const output = scannerOutput({});
+    delete output.sharedObjects;
+    delete output.views;
+
+    expect(groupScannedPackageClasses(output, packageRoots, 'ios')).toEqual({
+      modules: {},
+      sharedObjects: {},
+      views: {},
+    });
+  });
+
+  it('excludes internal shared objects and views without a warning', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation();
+    const output = scannerOutput({
+      sharedObjects: [
+        scannedClass(
+          'CameraSession',
+          '/app/node_modules/expo-camera/ios/CameraSession.swift',
+          'internal'
+        ),
+      ],
+      views: [
+        scannedClass(
+          'CameraView',
+          '/app/node_modules/expo-camera/ios/CameraView.swift',
+          'internal'
+        ),
+      ],
+    });
+
+    expect(groupScannedPackageClasses(output, packageRoots, 'ios')).toEqual({
+      modules: {},
+      sharedObjects: {},
+      views: {},
+    });
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
   });
 });
 

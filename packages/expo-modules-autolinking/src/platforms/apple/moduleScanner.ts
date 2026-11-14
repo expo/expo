@@ -14,12 +14,13 @@ const SCANNER_PLATFORM_NAMES: Record<string, string> = {
   tvos: 'tvOS',
 };
 
-interface ScannedModule {
-  /** The Swift class name the module is declared as. */
+/** An `@ExpoModule`, `@SharedObject` or `@ExpoView` class that the scanner found. */
+interface ScannedClass {
+  /** The Swift class name. */
   name: string;
   /**
-   * The `@ExpoModule("Foo")` name, or the class name. Unused: it equals the runtime `_jsName`,
-   * which must stay below the module's own `Name(...)` in `ModuleHolder.name`.
+   * The `@ExpoModule("Foo")` or `@SharedObject("Foo")` name, or the class name. Unused: core reads
+   * the runtime `_jsName`, which must stay below a module's own `Name(...)` in `ModuleHolder.name`.
    */
   jsName: string;
   /** The spelled access modifier, or `internal` when none is written. */
@@ -41,7 +42,9 @@ interface ScanWarning {
 
 export interface ScanModulesOutput {
   schemaVersion: number;
-  modules: ScannedModule[];
+  modules: ScannedClass[];
+  sharedObjects?: ScannedClass[];
+  views?: ScannedClass[];
   warnings: ScanWarning[];
   stats: { filesScanned: number; filesParsed: number; durationMs: number };
 }
@@ -166,60 +169,110 @@ export async function scanExpoModulesAsync(
   return output;
 }
 
+/** The scanned classes of each kind, by package name. */
+export interface ScannedPackageClasses {
+  /** The `@ExpoModule` classes. */
+  modules: Record<string, ModuleIosConfig[]>;
+  /** The names of the `@SharedObject` classes. */
+  sharedObjects: Record<string, string[]>;
+  /** The names of the `@ExpoView` classes. */
+  views: Record<string, string[]>;
+}
+
 /**
- * Groups the scanned modules by the package with the longest root containing their source file.
- * Leaves out classes that aren't `public` or `open` or don't compile for the platform, and lists
- * each class once per package.
+ * Groups the scanned modules, shared objects and views by package, as `groupScannedClasses` does.
+ */
+export function groupScannedPackageClasses(
+  output: ScanModulesOutput,
+  packageRoots: Record<string, string>,
+  platform: SupportedPlatform
+): ScannedPackageClasses {
+  return {
+    modules: groupScannedModules(output, packageRoots, platform),
+    // An internal shared object or view can still be in `@ExpoModule(classes:)` or `@ExpoModule(views:)`,
+    // so the internal ones don't warn.
+    sharedObjects: groupScannedClasses(output.sharedObjects ?? [], null, packageRoots, platform),
+    views: groupScannedClasses(output.views ?? [], null, packageRoots, platform),
+  };
+}
+
+/**
+ * Groups the scanned modules by package, as `groupScannedClasses` does.
  */
 export function groupScannedModules(
   output: ScanModulesOutput,
   packageRoots: Record<string, string>,
   platform: SupportedPlatform
 ): Record<string, ModuleIosConfig[]> {
+  const grouped = groupScannedClasses(output.modules, '@ExpoModule', packageRoots, platform);
+  // A null name keeps the module's own name, as for config-declared string entries.
+  return Object.fromEntries(
+    Object.entries(grouped).map(([packageName, classNames]) => [
+      packageName,
+      classNames.map((className) => ({ name: null, class: className })),
+    ])
+  );
+}
+
+/**
+ * Groups the scanned class names by the package with the longest root containing their source file.
+ * Leaves out classes that aren't `public` or `open` or don't compile for the platform, and lists
+ * each class once per package. Warns about an internal class when `macroName` (the macro of the
+ * classes) is given.
+ */
+function groupScannedClasses(
+  classes: ScannedClass[],
+  macroName: string | null,
+  packageRoots: Record<string, string>,
+  platform: SupportedPlatform
+): Record<string, string[]> {
   const targetPlatformName = SCANNER_PLATFORM_NAMES[platform];
   const rootEntries = Object.entries(packageRoots).sort(
     ([, rootA], [, rootB]) => rootB.length - rootA.length
   );
-  const grouped: Record<string, ModuleIosConfig[]> = {};
+  const grouped: Record<string, string[]> = {};
   const seenClassesByPackage: Record<string, Set<string>> = {};
   const warnedClasses = new Set<string>();
 
-  for (const module of output.modules) {
+  for (const scannedClass of classes) {
     // Skip a malformed entry instead of failing the whole scan.
-    if (typeof module.file !== 'string' || typeof module.name !== 'string') {
+    if (typeof scannedClass.file !== 'string' || typeof scannedClass.name !== 'string') {
       continue;
     }
     // An empty list is a condition the scanner couldn't evaluate (it already warned), so skip it
     // for the umbrella platform too.
     if (
-      !module.platforms?.length ||
-      (targetPlatformName && !module.platforms.includes(targetPlatformName))
+      !scannedClass.platforms?.length ||
+      (targetPlatformName && !scannedClass.platforms.includes(targetPlatformName))
     ) {
       continue;
     }
-    if (module.accessLevel !== 'public' && module.accessLevel !== 'open') {
+    if (scannedClass.accessLevel !== 'public' && scannedClass.accessLevel !== 'open') {
       // Only `internal` warns: it's the default, so likely a mistake. A lower level is an opt-out.
-      if (module.accessLevel === 'internal' && !warnedClasses.has(module.file + module.name)) {
+      if (
+        macroName &&
+        scannedClass.accessLevel === 'internal' &&
+        !warnedClasses.has(scannedClass.file + scannedClass.name)
+      ) {
         console.warn(
-          `warning: The @ExpoModule class '${module.name}' (${module.file}) is internal, so the generated modules provider cannot reference it. Declare it public to link it automatically, or use a lower access level such as private to opt it out of linking.`
+          `warning: The ${macroName} class '${scannedClass.name}' (${scannedClass.file}) is internal, so the generated modules provider cannot reference it. Declare it public to link it automatically, or use a lower access level such as private to opt it out of linking.`
         );
-        warnedClasses.add(module.file + module.name);
+        warnedClasses.add(scannedClass.file + scannedClass.name);
       }
       continue;
     }
-    const owner = rootEntries.find(([, root]) => isPathInside(module.file, root));
+    const owner = rootEntries.find(([, root]) => isPathInside(scannedClass.file, root));
     if (!owner) {
       continue;
     }
     const packageName = owner[0];
     seenClassesByPackage[packageName] ??= new Set<string>();
     const seenClasses = seenClassesByPackage[packageName];
-    if (seenClasses.has(module.name)) {
+    if (seenClasses.has(scannedClass.name)) {
       continue;
     }
-    seenClasses.add(module.name);
-    // A null name keeps the module's own name, as for config-declared string entries.
-    (grouped[packageName] ??= []).push({ name: null, class: module.name });
+    seenClasses.add(scannedClass.name);
+    (grouped[packageName] ??= []).push(scannedClass.name);
   }
   return grouped;
 }
