@@ -4,12 +4,16 @@ import { vol } from 'memfs';
 import { Log } from '../../../log';
 import rnFixture from '../../../prebuild/__tests__/fixtures/react-native-project';
 import { copyAsync, removeAsync } from '../../../utils/dir';
+import { isInteractive } from '../../../utils/interactive';
 import { loadEnvFiles } from '../../../utils/nodeEnv.js';
 import { event } from '../../events';
 import { expoCompileIos } from '../index';
 
 jest.mock('../../../log');
 jest.mock('../../../utils/dir');
+jest.mock('../../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => false),
+}));
 jest.mock('../../../utils/nodeEnv.js', () => ({ loadEnvFiles: jest.fn() }), { virtual: true });
 jest.mock('../../events', () => {
   const done = jest.fn();
@@ -116,6 +120,35 @@ it('builds the app for the simulator', async () => {
     outputType: 'app',
     outputPath: appPath,
   });
+});
+
+it('reports working while building and done after', async () => {
+  const write = jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+  let writesWhileBuilding: unknown[][] = [];
+  const spawn = jest.mocked(spawnAsync).getMockImplementation()!;
+  jest.mocked(isInteractive).mockReturnValue(true);
+  jest.mocked(spawnAsync).mockImplementation((command, args, options) => {
+    if (command === 'xcodebuild' && !args?.includes('-showBuildSettings')) {
+      writesWhileBuilding = [...write.mock.calls];
+    }
+    return spawn(command, args, options);
+  });
+
+  try {
+    await expoCompileIos(['--dev']);
+
+    expect(writesWhileBuilding).toEqual([
+      ['\x1b]7501;state=working:app=expo:msg=QnVpbGRpbmcgaU9TIGFwcA==:id=2\x1b\\'],
+    ]);
+    expect(write.mock.calls).toEqual([
+      ['\x1b]7501;state=working:app=expo:msg=QnVpbGRpbmcgaU9TIGFwcA==:id=2\x1b\\'],
+      ['\x1b]7501;state=clear:id=2\x1b\\'],
+      ['\x1b]7501;state=done:app=expo:msg=QnVpbGQgY29tcGxldGU=\x1b\\'],
+    ]);
+  } finally {
+    write.mockRestore();
+    jest.mocked(isInteractive).mockReturnValue(false);
+  }
 });
 
 it('copies the app to the output directory', async () => {
