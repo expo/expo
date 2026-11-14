@@ -22,6 +22,7 @@ data class ErrorReport(
   @Field val message: String = "",
   @Field val stacktrace: String? = null,
   @Field val componentStack: String? = null,
+  @Field val code: String? = null,
   @Field val isFatal: Boolean = false
 ) : Record {
   /** Builds the `js.exception` log event for the live path. */
@@ -33,6 +34,7 @@ data class ErrorReport(
       message = message,
       stacktrace = stacktrace,
       componentStack = componentStack,
+      code = code,
       isFatal = isFatal
     )
 
@@ -41,7 +43,8 @@ data class ErrorReport(
    * time it happened, both resolved now since by drain time the main session has rotated.
    *
    * Only fatal errors are persisted, and those come from the global handler, which has no React
-   * component stack, so `componentStack` isn't carried through this path.
+   * component stack and no error code, so `componentStack` and `code` aren't carried through this
+   * path.
    */
   fun toPendingError(sessionId: String): PendingErrorStore.PendingError =
     PendingErrorStore.PendingError(
@@ -74,6 +77,7 @@ fun PendingErrorStore.PendingError.toLogRecord(): LogRecord =
     message = message,
     stacktrace = stacktrace,
     componentStack = null,
+    code = null,
     isFatal = true,
     timestamp = timestamp
   )
@@ -87,7 +91,7 @@ fun PendingErrorStore.PendingError.toLogRecord(): LogRecord =
  * Absent `type`/`stacktrace` are kept as explicit `null` rather than omitted, so every `js.exception`
  * event carries the same attribute keys. The React component stack only exists for error-boundary
  * captures, so `expo.error.component_stack` is omitted entirely when absent rather than logged as
- * `null` on every event.
+ * `null` on every event. An absent `expo.error.code` is omitted the same way.
  */
 private fun makeExceptionLogRecord(
   sessionId: String,
@@ -96,6 +100,7 @@ private fun makeExceptionLogRecord(
   message: String,
   stacktrace: String?,
   componentStack: String?,
+  code: String?,
   isFatal: Boolean,
   timestamp: String = TimeUtils.getCurrentTimestampInISOFormat()
 ): LogRecord {
@@ -107,6 +112,9 @@ private fun makeExceptionLogRecord(
     put("exception.stacktrace", stacktrace)
     if (componentStack != null) {
       put("expo.error.component_stack", componentStack)
+    }
+    if (code != null) {
+      put("expo.error.code", code)
     }
   }
   return LogRecord(
