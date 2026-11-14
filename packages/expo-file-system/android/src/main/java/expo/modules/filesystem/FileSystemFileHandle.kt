@@ -141,29 +141,51 @@ class FileSystemFileHandle private constructor(
     ensureIsOpen()
     mode.ensureCanRead()
 
-    try {
-      val toRead = if (seekable) {
+    val toRead = try {
+      if (seekable) {
         min(length, fileChannel.size() - position)
       } else {
         length
       }.coerceIn(0L, Int.MAX_VALUE.toLong()).toInt()
-      val buffer = ByteBuffer.allocateDirect(toRead)
+    } catch (e: Exception) {
+      throw UnableToReadHandleException(e.message ?: "unknown error")
+    }
+    val buffer = ByteBuffer.allocateDirect(toRead)
+    readInto(position, buffer)
+    buffer.flip()
+    // `slice()` is zero-copy and bounds the capacity to the bytes read, so a file that shrank
+    // between the size check and the read never hands JS a stale tail.
+    return buffer.slice()
+  }
+
+  /**
+   * Reads into [target], from its position to its limit, starting at file offset [position] without
+   * touching the channel's own position. Returns the number of bytes read, shorter than the space in
+   * [target] at the end of the file and 0 at or past it. [target] is left with its position advanced
+   * by that count. Safe to call from any thread.
+   *
+   * On a non-seekable descriptor the position is ignored and the next bytes of the stream are read.
+   */
+  fun readInto(position: Long, target: ByteBuffer): Int {
+    ensureIsOpen()
+    mode.ensureCanRead()
+
+    try {
       var readPosition = position
-      while (buffer.hasRemaining()) {
+      var total = 0
+      while (target.hasRemaining()) {
         val result = if (seekable) {
-          fileChannel.read(buffer, readPosition)
+          fileChannel.read(target, readPosition)
         } else {
-          fileChannel.read(buffer)
+          fileChannel.read(target)
         }
         if (result == -1) {
           break
         }
         readPosition += result
+        total += result
       }
-      buffer.flip()
-      // `slice()` is zero-copy and bounds the capacity to the bytes read, so a file that shrank
-      // between the size check and the read never hands JS a stale tail.
-      return buffer.slice()
+      return total
     } catch (e: Exception) {
       throw UnableToReadHandleException(e.message ?: "unknown error")
     }

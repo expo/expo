@@ -15,6 +15,7 @@ export {
   type FilePreviewOptions,
   type FilePreviewCollectionOptions,
   type FileWriteOptions,
+  type FileHandleReadWriteOptions,
   type InfoOptions,
   type PathInfo,
   type DirectoryInfo,

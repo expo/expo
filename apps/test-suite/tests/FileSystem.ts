@@ -127,6 +127,10 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
           expect(reader.size).toBe(11);
           expect(await reader.readBytes(5)).toEqual(new Uint8Array([104, 101, 108, 108, 111])); // hello
           expect(reader.offset).toBe(5);
+          expect(reader.readBytesSync(5, { at: 6 })).toEqual(
+            new Uint8Array([119, 111, 114, 108, 100])
+          ); // world
+          expect(reader.offset).toBe(5);
           reader.offset = 6;
           expect(reader.readBytesSync(5)).toEqual(new Uint8Array([119, 111, 114, 108, 100])); // world
           expect(reader.readBytesSync(5)).toEqual(new Uint8Array([]));
@@ -2354,6 +2358,68 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
       await handle.writeBytes(new Uint8Array([72, 105])); // Hi
       handle.close();
       expect(src.textSync()).toBe('Hi');
+    });
+
+    it('Reads at a position without moving the offset', async () => {
+      const src = new File(testDirectory, 'positional.txt');
+      src.writeSync('abcdef');
+      const handle = src.open(FileMode.ReadOnly);
+      handle.readBytesSync(1);
+      expect(handle.readBytesSync(2, { at: 4 })).toEqual(new Uint8Array([101, 102])); // ef
+      const second = handle.readBytes(2, { at: 2 });
+      const first = handle.readBytes(2, { at: 0 });
+      expect(await second).toEqual(new Uint8Array([99, 100])); // cd
+      expect(await first).toEqual(new Uint8Array([97, 98])); // ab
+      expect(handle.offset).toBe(1);
+      handle.close();
+    });
+
+    it('Fills a typed array view in place with readIntoSync', () => {
+      const src = new File(testDirectory, 'read-into.txt');
+      src.writeSync('abcdef');
+      const handle = src.open(FileMode.ReadOnly);
+      const backing = new ArrayBuffer(12);
+      const view = new Uint8Array(backing, 4, 4);
+      expect(handle.readIntoSync(view, { at: 1 })).toBe(4);
+      expect(Array.from(new Uint8Array(backing))).toEqual([
+        0, 0, 0, 0, 98, 99, 100, 101, 0, 0, 0, 0,
+      ]);
+      const tail = new Uint8Array(4).fill(255);
+      expect(handle.readIntoSync(tail, { at: 4 })).toBe(2);
+      expect(Array.from(tail)).toEqual([101, 102, 255, 255]);
+      expect(handle.readIntoSync(tail, { at: 6 })).toBe(0);
+      expect(handle.offset).toBe(0);
+      handle.close();
+    });
+
+    it('Reuses one buffer across readInto calls', async () => {
+      const src = new File(testDirectory, 'read-into-reuse.txt');
+      src.writeSync('abcdefgh');
+      const handle = src.open(FileMode.ReadOnly);
+      const buffer = new Uint8Array(2);
+      const seen: string[] = [];
+      for (let at = 0; at < 8; at += 2) {
+        expect(await handle.readInto(buffer, { at })).toBe(2);
+        seen.push(String.fromCharCode(...buffer));
+      }
+      expect(seen).toEqual(['ab', 'cd', 'ef', 'gh']);
+      expect(handle.readIntoSync(buffer)).toBe(2);
+      expect(String.fromCharCode(...buffer)).toBe('ab');
+      expect(handle.offset).toBe(2);
+      handle.close();
+    });
+
+    it('Writes at a position without moving the offset', async () => {
+      const src = new File(testDirectory, 'positional-write.txt');
+      src.writeSync('abcd');
+      const handle = src.open(FileMode.ReadWrite);
+      handle.writeBytesSync(new Uint8Array([90]), { at: 1 }); // Z
+      await handle.writeBytes(new Uint8Array([33]), { at: 6 }); // !
+      expect(handle.offset).toBe(0);
+      expect(handle.readBytesSync(7, { at: 0 })).toEqual(
+        new Uint8Array([97, 90, 99, 100, 0, 0, 33])
+      );
+      handle.close();
     });
 
     describe('It supports different FileMode options', () => {

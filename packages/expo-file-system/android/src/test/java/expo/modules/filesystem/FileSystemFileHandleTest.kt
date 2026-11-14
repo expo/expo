@@ -172,6 +172,72 @@ class FileSystemFileHandleTest {
   }
 
   @Test
+  fun readIntoFillsTheBufferAndReturnsTheCount() {
+    val handle = FileSystemFileHandle.forJavaFile(file("abcdef"), FileMode.READ)
+    val target = ByteBuffer.allocateDirect(4)
+
+    assertEquals(4, handle.readInto(2, target))
+    target.flip()
+    assertEquals("cdef", target.asString())
+  }
+
+  @Test
+  fun readIntoHonorsThePositionAndLimitOfTheBuffer() {
+    val handle = FileSystemFileHandle.forJavaFile(file("abcdef"), FileMode.READ)
+    val target = ByteBuffer.allocateDirect(8).apply {
+      put(ByteArray(8) { 0x2A })
+      position(2)
+      limit(6)
+    }
+
+    assertEquals(4, handle.readInto(0, target))
+    assertEquals(6, target.position())
+    target.clear()
+    assertEquals("**abcd**", target.asString())
+  }
+
+  @Test
+  fun readIntoStopsAtEof() {
+    val handle = FileSystemFileHandle.forJavaFile(file("abcdef"), FileMode.READ)
+
+    assertEquals(2, handle.readInto(4, ByteBuffer.allocateDirect(10)))
+    assertEquals(0, handle.readInto(6, ByteBuffer.allocateDirect(10)))
+    assertEquals(0, handle.readInto(10, ByteBuffer.allocateDirect(10)))
+    assertEquals(0, handle.readInto(0, ByteBuffer.allocateDirect(0)))
+  }
+
+  @Test
+  fun readIntoRejectsANegativePosition() {
+    val handle = FileSystemFileHandle.forJavaFile(file("abc"), FileMode.READ)
+
+    assertThrows(UnableToReadHandleException::class.java) {
+      handle.readInto(-1, ByteBuffer.allocateDirect(1))
+    }
+  }
+
+  @Test
+  fun readIntoThrowsInWriteOnlyMode() {
+    val handle = FileSystemFileHandle.forJavaFile(file("abc"), FileMode.WRITE)
+
+    assertThrows(Exceptions.IllegalStateException::class.java) {
+      handle.readInto(0, ByteBuffer.allocateDirect(1))
+    }
+  }
+
+  @Test
+  fun readIntoOnAPipeReadsSequentially() {
+    val (writeEnd, readEnd) = pipe()
+    ParcelFileDescriptor.AutoCloseOutputStream(writeEnd).use { it.write("hello".toByteArray()) }
+    val handle = FileSystemFileHandle.forParcelFileDescriptor(readEnd, FileMode.READ)
+    val target = ByteBuffer.allocateDirect(3)
+
+    assertEquals(3, handle.readInto(0, target))
+    target.flip()
+    assertEquals("hel", target.asString())
+    assertEquals(2, handle.readInto(0, ByteBuffer.allocateDirect(10)))
+  }
+
+  @Test
   fun closedHandleRejectsReadsAndReportsNullSize() {
     val handle = FileSystemFileHandle.forJavaFile(file("abc"), FileMode.READ)
 

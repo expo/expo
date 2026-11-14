@@ -465,6 +465,10 @@ public final class FileSystemModule: Module {
         try fileHandle.readAt(position, length)
       }
 
+      Function("readIntoSync") { (fileHandle, position: UInt64, target: Uint8Array) in
+        try fileHandle.readInto(position, UnsafeMutableRawBufferPointer(start: target.rawPointer, count: target.byteLength))
+      }
+
       AsyncFunction("writeAt") { (fileHandle, position: UInt64, data: ArrayBuffer) in
         try fileHandle.writeAt(position, data)
       }

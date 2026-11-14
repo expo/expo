@@ -124,8 +124,6 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
       throw UnableToReadHandleException("File opened write-only")
     }
 
-    // Read the descriptor once: `FileHandle.fileDescriptor` raises an ObjC exception after close.
-    let descriptor = FileDescriptor(rawValue: handle.fileDescriptor)
     let fileSize = size ?? 0
     let available = position < fileSize ? Int(clamping: fileSize - position) : 0
     let toRead = max(0, min(length, available))
@@ -134,24 +132,7 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
       return buffer
     }
 
-    var total = 0
-    try buffer.withUnsafeMutableBytes { raw in
-      while total < toRead {
-        let count: Int
-        do {
-          count = try descriptor.read(
-            fromAbsoluteOffset: Int64(position) + Int64(total),
-            into: UnsafeMutableRawBufferPointer(rebasing: raw[total...])
-          )
-        } catch {
-          throw UnableToReadHandleException(String(describing: error))
-        }
-        if count == 0 {
-          break
-        }
-        total += count
-      }
-    }
+    let total = try buffer.withUnsafeMutableBytes { try readInto(position, $0) }
     if total == toRead {
       return buffer
     }
@@ -162,6 +143,41 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
       }
       return ArrayBuffer.copy(of: base, count: total)
     }
+  }
+
+  /// Reads up to `target.count` bytes starting at `position` straight into `target` with `pread(2)`,
+  /// which never touches the descriptor's own offset. Returns the number of bytes read: fewer than
+  /// `target.count` at the end of the file, `0` at or past it. Bytes of `target` past the returned
+  /// count are left untouched. Safe to call from any thread.
+  func readInto(_ position: UInt64, _ target: UnsafeMutableRawBufferPointer) throws -> Int {
+    try ensureIsOpen()
+    if mode.writeOnly {
+      throw UnableToReadHandleException("File opened write-only")
+    }
+
+    // Read the descriptor once: `FileHandle.fileDescriptor` raises an ObjC exception after close.
+    let descriptor = FileDescriptor(rawValue: handle.fileDescriptor)
+    let fileSize = size ?? 0
+    let available = position < fileSize ? Int(clamping: fileSize - position) : 0
+    let toRead = max(0, min(target.count, available))
+
+    var total = 0
+    while total < toRead {
+      let count: Int
+      do {
+        count = try descriptor.read(
+          fromAbsoluteOffset: Int64(position) + Int64(total),
+          into: UnsafeMutableRawBufferPointer(rebasing: target[total..<toRead])
+        )
+      } catch {
+        throw UnableToReadHandleException(String(describing: error))
+      }
+      if count == 0 {
+        break
+      }
+      total += count
+    }
+    return total
   }
 
   /// Writes all of `data` at `position` with `pwrite(2)` and returns the offset right after the
