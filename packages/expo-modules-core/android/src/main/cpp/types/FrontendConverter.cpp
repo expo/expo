@@ -14,6 +14,8 @@
 #include "../NativeArrayBuffer.h"
 #include "../JavaScriptValue.h"
 #include "../JavaScriptFunction.h"
+#include "../Callback.h"
+#include "../CallbackContext.h"
 #include "../javaclasses/Collections.h"
 
 #include "react/jni/ReadableNativeMap.h"
@@ -360,6 +362,22 @@ jobject JavaScriptFunctionFrontendConverter::convert(
 }
 
 bool JavaScriptFunctionFrontendConverter::canConvert(
+  jsi::Runtime &rt,
+  const jsi::Value &value
+) const {
+  return value.isObject() && value.getObject(rt).isFunction(rt);
+}
+
+jobject CallbackFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  auto context = CallbackContext::create(rt, value.asObject(rt).asFunction(rt), std::nullopt);
+  return Callback::newInstance(getJSIContext(rt), std::move(context)).release();
+}
+
+bool CallbackFrontendConverter::canConvert(
   jsi::Runtime &rt,
   const jsi::Value &value
 ) const {
