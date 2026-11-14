@@ -101,7 +101,7 @@ class DisabledUpdatesController(
     weakActivity = WeakReference(reactContext.currentActivity)
   }
 
-  override fun onReactInstanceException(exception: java.lang.Exception) {}
+  override fun onReactInstanceException(exception: java.lang.Exception): Boolean = false
 
   override val isActiveController = false
 
