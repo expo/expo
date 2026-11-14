@@ -1,0 +1,596 @@
+---
+title: 'Tutorial: Create a native module with Expo Modules API 2.0'
+sidebar_title: Create a native module
+description: A tutorial on creating a native module that persists settings with Expo Modules API 2.0.
+---
+
+import { CpuChip01Icon } from '@expo/styleguide-icons/outline/CpuChip01Icon';
+
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+In this tutorial, you build a module that stores the app theme that the user prefers: dark, light, or system. On Android, the module uses [`SharedPreferences`](https://developer.android.com/reference/android/content/SharedPreferences), and on iOS, it uses [`UserDefaults`](https://developer.apple.com/documentation/foundation/userdefaults).
+
+The steps are the same as in the [native module tutorial for the module definition DSL](/modules/native-module-tutorial/) (domain-specific language), and so is the TypeScript code. Only the native code is different.
+
+---
+
+<Step label="1">
+
+## Initialize a new module
+
+Create a new module named `expo-settings`. You can choose a different name, but then adjust the instructions to match your choice.
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module expo-settings'],
+    yarn: ['$ yarn create expo-module expo-settings'],
+    pnpm: ['$ pnpm create expo-module expo-settings'],
+    bun: ['$ bun create expo-module expo-settings'],
+  }}
+/>
+
+> **info** You aren't going to ship this library, so press <kbd>Return</kbd> for all the prompts to accept the default values. With the default values, the module has no feature examples.
+
+</Step>
+
+<Step label="2">
+
+## Set up the module for Expo Modules API 2.0
+
+This tutorial doesn't cover web, so delete the web module:
+
+<Terminal cmd={['$ cd expo-settings', '$ rm src/ExpoSettingsModule.web.ts']} />
+
+Turn on Expo Modules API 2.0 for Android in **android/build.gradle**:
+
+```groovy android/build.gradle
+expoModule {
+  v2 true
+}
+```
+
+Autolinking finds modules that use Expo Modules API 2.0 without a list, so remove the `modules` lists from **expo-module.config.json**. For the details, see [Get started](/modules/v2/get-started/#remove-the-module-list-from-the-module-config).
+
+```json expo-module.config.json
+{
+  "platforms": ["apple", "android"]
+}
+```
+
+Replace the content of the following files with a minimal module:
+
+<CodeBlocksTable tabs={['ExpoSettingsModule.kt', 'ExpoSettingsModule.swift']}>
+
+```kotlin
+package expo.modules.settings
+
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+
+@ExpoModule("ExpoSettings")
+class ExpoSettingsModule : Module() {
+  @JS
+  fun getTheme(): String = "system"
+}
+```
+
+```swift
+import ExpoModulesCore
+
+@ExpoModule("ExpoSettings")
+public class ExpoSettingsModule: Module {
+  @JS
+  func getTheme() -> String {
+    "system"
+  }
+}
+```
+
+</CodeBlocksTable>
+
+The Kotlin file is **android/src/main/java/expo/modules/settings/ExpoSettingsModule.kt**, and the Swift file is **ios/ExpoSettingsModule.swift**.
+
+```ts src/ExpoSettings.types.ts
+export type ExpoSettingsModuleEvents = {};
+```
+
+```ts src/ExpoSettingsModule.ts
+import { NativeModule, requireNativeModule } from 'expo';
+
+import { ExpoSettingsModuleEvents } from './ExpoSettings.types';
+
+declare class ExpoSettingsModule extends NativeModule<ExpoSettingsModuleEvents> {
+  getTheme: () => string;
+}
+
+export default requireNativeModule<ExpoSettingsModule>('ExpoSettings');
+```
+
+```ts src/index.ts
+import ExpoSettingsModule from './ExpoSettingsModule';
+
+export function getTheme(): string {
+  return ExpoSettingsModule.getTheme();
+}
+```
+
+```tsx example/App.tsx
+import * as Settings from 'expo-settings';
+import { Text, View } from 'react-native';
+
+export default function App() {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Theme: {Settings.getTheme()}</Text>
+    </View>
+  );
+}
+```
+
+</Step>
+
+<Step label="3">
+
+## Run the example project
+
+Start the TypeScript compiler in the root of the module:
+
+<Terminal
+  cmd={{
+    npm: ['$ npm run build'],
+    yarn: ['$ yarn run build'],
+    pnpm: ['$ pnpm run build'],
+    bun: ['$ bun run build'],
+  }}
+/>
+
+In a separate terminal window, run the example app:
+
+<Terminal
+  cmd={{
+    npm: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ npx expo run:android',
+      '# Run the example app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ yarn expo run:android',
+      '# Run the example app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ pnpm expo run:android',
+      '# Run the example app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '$ cd example',
+      '# Run the example app on Android',
+      '$ bun expo run:android',
+      '# Run the example app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
+/>
+
+The app shows the text "Theme: system". The value comes from a synchronous call to the native `getTheme()` function.
+
+</Step>
+
+<Step label="4">
+
+## Get, set, and persist the theme
+
+To read the theme, the module reads the string under the `"theme"` key. When the key doesn't exist, it returns `"system"`. To write the theme, `setTheme` stores the string under the same key.
+
+On Android, `androidContext` gives the Android context of the app, which the module uses to get the `SharedPreferences`.
+
+<CodeBlocksTable tabs={['ExpoSettingsModule.kt', 'ExpoSettingsModule.swift']}>
+
+```kotlin
+package expo.modules.settings
+
+import android.content.Context
+import android.content.SharedPreferences
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContext
+
+@ExpoModule("ExpoSettings")
+class ExpoSettingsModule : Module() {
+  private val preferences: SharedPreferences
+    get() = androidContext.getSharedPreferences(
+      androidContext.packageName + ".settings",
+      Context.MODE_PRIVATE
+    )
+
+  @JS
+  fun setTheme(theme: String) {
+    preferences.edit().putString("theme", theme).commit()
+  }
+
+  @JS
+  fun getTheme(): String = preferences.getString("theme", "system") ?: "system"
+}
+```
+
+```swift
+import ExpoModulesCore
+
+@ExpoModule("ExpoSettings")
+public class ExpoSettingsModule: Module {
+  @JS
+  func setTheme(theme: String) {
+    UserDefaults.standard.set(theme, forKey: "theme")
+  }
+
+  @JS
+  func getTheme() -> String {
+    UserDefaults.standard.string(forKey: "theme") ?? "system"
+  }
+}
+```
+
+</CodeBlocksTable>
+
+Add the function to the TypeScript module, and export it:
+
+```ts src/ExpoSettingsModule.ts
+import { NativeModule, requireNativeModule } from 'expo';
+
+import { ExpoSettingsModuleEvents } from './ExpoSettings.types';
+
+declare class ExpoSettingsModule extends NativeModule<ExpoSettingsModuleEvents> {
+  setTheme: (theme: string) => void;
+  getTheme: () => string;
+}
+
+export default requireNativeModule<ExpoSettingsModule>('ExpoSettings');
+```
+
+```ts src/index.ts
+import ExpoSettingsModule from './ExpoSettingsModule';
+
+export function getTheme(): string {
+  return ExpoSettingsModule.getTheme();
+}
+
+export function setTheme(theme: string): void {
+  return ExpoSettingsModule.setTheme(theme);
+}
+```
+
+Use the new function in the example app:
+
+```tsx example/App.tsx
+import * as Settings from 'expo-settings';
+import { Button, Text, View } from 'react-native';
+
+export default function App() {
+  const theme = Settings.getTheme();
+  const nextTheme = theme === 'dark' ? 'light' : 'dark';
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Theme: {theme}</Text>
+      <Button title={`Set theme to ${nextTheme}`} onPress={() => Settings.setTheme(nextTheme)} />
+    </View>
+  );
+}
+```
+
+Rebuild and run the app. When you press the button, the text doesn't change, because the app doesn't know that the theme changed. When you reload the app, it shows the new theme. In the next step, the module tells the app about the change.
+
+</Step>
+
+<Step label="5">
+
+## Send an event when the theme changes
+
+The module sends an event with the payload `{ theme: string }` each time the theme changes. A record describes the payload, and `@Event` declares the event:
+
+<CodeBlocksTable tabs={['ExpoSettingsModule.kt', 'ExpoSettingsModule.swift']}>
+
+```kotlin
+package expo.modules.settings
+
+import android.content.Context
+import android.content.SharedPreferences
+import io.github.expo.modules.v2.Event
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.Record
+import io.github.expo.modules.v2.react.androidContext
+
+@Record
+data class ThemeChangeEvent(val theme: String)
+
+@ExpoModule("ExpoSettings")
+class ExpoSettingsModule : Module() {
+  @Event(name = "onChangeTheme")
+  private val onChangeTheme = event<ThemeChangeEvent>()
+
+  private val preferences: SharedPreferences
+    get() = androidContext.getSharedPreferences(
+      androidContext.packageName + ".settings",
+      Context.MODE_PRIVATE
+    )
+
+  @JS
+  fun setTheme(theme: String) {
+    preferences.edit().putString("theme", theme).commit()
+    onChangeTheme(ThemeChangeEvent(theme))
+  }
+
+  @JS
+  fun getTheme(): String = preferences.getString("theme", "system") ?: "system"
+}
+```
+
+```swift
+import ExpoModulesCore
+
+@Record
+struct ThemeChangeEvent {
+  var theme: String
+}
+
+@ExpoModule("ExpoSettings")
+public class ExpoSettingsModule: Module {
+  @Event("onChangeTheme")
+  var onChangeTheme: (ThemeChangeEvent) -> Void
+
+  @JS
+  func setTheme(theme: String) {
+    UserDefaults.standard.set(theme, forKey: "theme")
+    onChangeTheme(ThemeChangeEvent(theme: theme))
+  }
+
+  @JS
+  func getTheme() -> String {
+    UserDefaults.standard.string(forKey: "theme") ?? "system"
+  }
+}
+```
+
+</CodeBlocksTable>
+
+Describe the event in TypeScript, and export a function that adds a listener:
+
+```ts src/ExpoSettings.types.ts
+export type ThemeChangeEvent = {
+  theme: string;
+};
+
+export type ExpoSettingsModuleEvents = {
+  onChangeTheme: (params: ThemeChangeEvent) => void;
+};
+```
+
+```ts src/index.ts
+import { EventSubscription } from 'expo-modules-core';
+
+import ExpoSettingsModule from './ExpoSettingsModule';
+import { ThemeChangeEvent } from './ExpoSettings.types';
+
+export function addThemeListener(listener: (event: ThemeChangeEvent) => void): EventSubscription {
+  return ExpoSettingsModule.addListener('onChangeTheme', listener);
+}
+
+export function getTheme(): string {
+  return ExpoSettingsModule.getTheme();
+}
+
+export function setTheme(theme: string): void {
+  return ExpoSettingsModule.setTheme(theme);
+}
+```
+
+Update the example app to listen to the event:
+
+```tsx example/App.tsx
+import * as Settings from 'expo-settings';
+import { useEffect, useState } from 'react';
+import { Button, Text, View } from 'react-native';
+
+export default function App() {
+  const [theme, setTheme] = useState<string>(Settings.getTheme());
+
+  useEffect(() => {
+    const subscription = Settings.addThemeListener(({ theme: newTheme }) => {
+      setTheme(newTheme);
+    });
+
+    return () => subscription.remove();
+  }, [setTheme]);
+
+  const nextTheme = theme === 'dark' ? 'light' : 'dark';
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Theme: {theme}</Text>
+      <Button title={`Set theme to ${nextTheme}`} onPress={() => Settings.setTheme(nextTheme)} />
+    </View>
+  );
+}
+```
+
+Rebuild and run the app. The text now changes when you press the button.
+
+</Step>
+
+<Step label="6">
+
+## Accept only valid themes with an enum
+
+`setTheme` accepts any string. An enum limits the values to `light`, `dark`, and `system`. When JavaScript passes another string, the call throws an error.
+
+<CodeBlocksTable tabs={['ExpoSettingsModule.kt', 'ExpoSettingsModule.swift']}>
+
+```kotlin
+package expo.modules.settings
+
+import android.content.Context
+import android.content.SharedPreferences
+import io.github.expo.modules.v2.Enumerable
+import io.github.expo.modules.v2.Event
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.Record
+import io.github.expo.modules.v2.react.androidContext
+
+enum class Theme(val value: String) : Enumerable {
+  LIGHT("light"),
+  DARK("dark"),
+  SYSTEM("system")
+}
+
+@Record
+data class ThemeChangeEvent(val theme: Theme)
+
+@ExpoModule("ExpoSettings")
+class ExpoSettingsModule : Module() {
+  @Event(name = "onChangeTheme")
+  private val onChangeTheme = event<ThemeChangeEvent>()
+
+  private val preferences: SharedPreferences
+    get() = androidContext.getSharedPreferences(
+      androidContext.packageName + ".settings",
+      Context.MODE_PRIVATE
+    )
+
+  @JS
+  fun setTheme(theme: Theme) {
+    preferences.edit().putString("theme", theme.value).commit()
+    onChangeTheme(ThemeChangeEvent(theme))
+  }
+
+  @JS
+  fun getTheme(): Theme {
+    val value = preferences.getString("theme", null)
+    return Theme.entries.find { it.value == value } ?: Theme.SYSTEM
+  }
+}
+```
+
+```swift
+import ExpoModulesCore
+
+enum Theme: String, Enumerable {
+  case light
+  case dark
+  case system
+}
+
+@Record
+struct ThemeChangeEvent {
+  var theme: Theme
+}
+
+@ExpoModule("ExpoSettings")
+public class ExpoSettingsModule: Module {
+  @Event("onChangeTheme")
+  var onChangeTheme: (ThemeChangeEvent) -> Void
+
+  @JS
+  func setTheme(theme: Theme) {
+    UserDefaults.standard.set(theme.rawValue, forKey: "theme")
+    onChangeTheme(ThemeChangeEvent(theme: theme))
+  }
+
+  @JS
+  func getTheme() -> Theme {
+    UserDefaults.standard.string(forKey: "theme").flatMap(Theme.init(rawValue:)) ?? .system
+  }
+}
+```
+
+</CodeBlocksTable>
+
+Use the same values in TypeScript:
+
+```ts src/ExpoSettings.types.ts
+export type Theme = 'light' | 'dark' | 'system';
+
+export type ThemeChangeEvent = {
+  theme: Theme;
+};
+
+export type ExpoSettingsModuleEvents = {
+  onChangeTheme: (params: ThemeChangeEvent) => void;
+};
+```
+
+```ts src/ExpoSettingsModule.ts
+import { NativeModule, requireNativeModule } from 'expo';
+
+import { ExpoSettingsModuleEvents, Theme } from './ExpoSettings.types';
+
+declare class ExpoSettingsModule extends NativeModule<ExpoSettingsModuleEvents> {
+  setTheme: (theme: Theme) => void;
+  getTheme: () => Theme;
+}
+
+export default requireNativeModule<ExpoSettingsModule>('ExpoSettings');
+```
+
+```ts src/index.ts
+import { EventSubscription } from 'expo-modules-core';
+
+import ExpoSettingsModule from './ExpoSettingsModule';
+import { Theme, ThemeChangeEvent } from './ExpoSettings.types';
+
+export function addThemeListener(listener: (event: ThemeChangeEvent) => void): EventSubscription {
+  return ExpoSettingsModule.addListener('onChangeTheme', listener);
+}
+
+export function getTheme(): Theme {
+  return ExpoSettingsModule.getTheme();
+}
+
+export function setTheme(theme: Theme): void {
+  return ExpoSettingsModule.setTheme(theme);
+}
+```
+
+If you change `Settings.setTheme(nextTheme)` to `Settings.setTheme('not-a-real-theme')` in the example app, TypeScript reports an error. If you ignore it and press the button, the native call throws an error, because `not-a-real-theme` isn't a value of the `Theme` enum.
+
+</Step>
+
+You created a module for Android and iOS with Expo Modules API 2.0.
+
+## Next steps
+
+<BoxLink
+  title="Modules reference"
+  description="Learn about functions, properties, and constants of a module."
+  href="/modules/v2/reference/modules/"
+  Icon={CpuChip01Icon}
+/>
+
+<BoxLink
+  title="Events reference"
+  description="Learn how to send events from a module to JavaScript."
+  href="/modules/v2/reference/events/"
+  Icon={CpuChip01Icon}
+/>
+
+<BoxLink
+  title="Feature support"
+  description="Learn which features of Expo Modules API 2.0 Kotlin and Swift support."
+  href="/modules/v2/feature-support/"
+  Icon={CpuChip01Icon}
+/>
