@@ -81,6 +81,7 @@ class TaskManagerModule : Module() {
     }
 
     OnStartObserving {
+      (taskManagerInternal as? TaskManagerInternalModule)?.markObserved()
       val handler = Handler(Looper.getMainLooper())
       handler.postDelayed(
         {
