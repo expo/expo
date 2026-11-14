@@ -1,0 +1,188 @@
+---
+title: 'Expo Modules API 2.0: Modules'
+sidebar_title: Modules
+description: Learn how to declare a module, its functions, and its properties with Expo Modules API 2.0.
+---
+
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { LanguageSupport } from '~/components/plugins/modules-v2-support';
+
+A module is a class with the `@ExpoModule` annotation in Kotlin or the `@ExpoModule` macro in Swift. Its members with `@JS` are available in JavaScript.
+
+## Declare a module
+
+<LanguageSupport feature="modules" />
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
+
+```kotlin
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+
+@ExpoModule("MyModule")
+class MyModule : Module() {
+  @JS
+  fun add(a: Int, b: Int): Int = a + b
+}
+```
+
+```swift
+import ExpoModulesCore
+
+@ExpoModule("MyModule")
+public final class MyModule: Module {
+  @JS
+  func add(a: Int, b: Int) -> Int {
+    a + b
+  }
+}
+```
+
+</CodeBlocksTable>
+
+The argument of `@ExpoModule` is the name of the module in JavaScript. Without it, the name is the name of the class. JavaScript gets the module with `requireNativeModule`:
+
+```ts
+import { requireNativeModule } from 'expo';
+
+const MyModule = requireNativeModule('MyModule');
+
+MyModule.add(1, 2); // 3
+```
+
+In Swift, make the module class `public`. Autolinking generates the list of modules in the app target, so it can use only `public` and `open` classes. The macro shows a warning and a fix for a class that isn't `public`.
+
+## Functions
+
+<LanguageSupport feature="functions" />
+
+`@JS` exports a function to JavaScript. The JavaScript name is the native name. To use another name, pass it as the first argument:
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
+
+```kotlin
+@JS("import")
+fun importKey(key: String): Boolean {
+  // ...
+}
+```
+
+```swift
+@JS("import")
+func importKey(key: String) -> Bool {
+  // ...
+}
+```
+
+</CodeBlocksTable>
+
+The arguments and the result convert between JavaScript and native types. To learn which types convert, see [Types](/modules/v2/reference/types/).
+
+In Swift, the macro checks at build time that each argument and result type can convert. A type that can't convert is a build error, for example:
+
+```text
+local function 'move(_:by:returning:)' requires that 'Point' conform to 'JavaScriptEncodable'
+```
+
+Two `@JS` members with the same JavaScript name on one object are also a build error in Swift.
+
+## Asynchronous functions
+
+<LanguageSupport feature="async-functions" />
+
+A `suspend` function in Kotlin and an `async` function in Swift return a promise in JavaScript. The promise is fulfilled with the result of the function, or rejected with the error that the function throws.
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
+
+```kotlin
+@JS
+suspend fun getInstallationTimeAsync(): Double = withContext(Dispatchers.IO) {
+  // ...
+}
+```
+
+```swift
+@JS
+func getInstallationTimeAsync() async throws -> Double {
+  // ...
+}
+```
+
+</CodeBlocksTable>
+
+A synchronous function can also return a promise: a `Promise` in Kotlin, or a `Task` in Swift. The function returns at once, and JavaScript gets a promise that settles with the result. In Swift, a `Task` can also be inside another result, for example in an array.
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
+
+```kotlin
+@JS
+fun getUptimeAsync(): Promise<Double> =
+  Promise.resolve(SystemClock.uptimeMillis().toDouble())
+```
+
+```swift
+@JS
+func readTextAsync(path: String) -> Task<String, any Error> {
+  Task {
+    try String(contentsOfFile: path, encoding: .utf8)
+  }
+}
+```
+
+</CodeBlocksTable>
+
+An asynchronous function starts on the JavaScript thread, the same as a synchronous function. To learn how to move work off the JavaScript thread, see [Concurrency](/modules/v2/reference/concurrency/).
+
+## Properties
+
+<LanguageSupport feature="properties" />
+
+`@JS` on a property exports it to JavaScript. JavaScript reads the property like a regular object property, and can also set a `var` property:
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
+
+```kotlin
+@JS
+var volume: Double = 1.0
+
+@JS
+val isMuted: Boolean
+  get() = volume == 0.0
+```
+
+```swift
+@JS
+var volume: Double = 1.0
+
+@JS
+var isMuted: Bool {
+  volume == 0
+}
+```
+
+</CodeBlocksTable>
+
+Each time JavaScript reads a property, the getter runs. For a value that doesn't change, use a [constant](#constants).
+
+## Constants
+
+<LanguageSupport feature="constants" />
+
+A constant is a property whose value doesn't change. In Kotlin, add `@Constant` to a read-only `@JS` property. In Swift, use a `lazy var`: JavaScript can't change it. On the first read, the value is stored on the JavaScript object, so later reads don't call native code.
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
+
+```kotlin
+@JS
+@Constant
+val isSupported: Boolean
+  get() = true
+```
+
+```swift
+@JS
+lazy var isSupported: Bool = true
+```
+
+</CodeBlocksTable>

@@ -1,0 +1,106 @@
+---
+title: 'Expo Modules API 2.0: Events'
+sidebar_title: Events
+description: Learn how to send events from a module or a shared object to JavaScript with Expo Modules API 2.0.
+---
+
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { LanguageSupport } from '~/components/plugins/modules-v2-support';
+
+An event sends a value from native code to JavaScript listeners. You declare an event as a property with `@Event` and call the property to send the event.
+
+## Declare and send an event
+
+<LanguageSupport feature="events" />
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
+
+```kotlin
+@Record
+data class ProgressEvent(val percent: Double)
+
+@ExpoModule("MyModule")
+class MyModule : Module() {
+  @Event(name = "progress")
+  private val onProgress = event<ProgressEvent>()
+
+  private fun reportProgress(percent: Double) {
+    onProgress(ProgressEvent(percent))
+  }
+}
+```
+
+```swift
+@Record
+struct ProgressEvent {
+  var percent: Double
+}
+
+@ExpoModule("MyModule")
+public final class MyModule: Module {
+  @Event
+  var onProgress: (ProgressEvent) -> Void
+
+  private func reportProgress(percent: Double) {
+    onProgress(ProgressEvent(percent: percent))
+  }
+}
+```
+
+</CodeBlocksTable>
+
+The payload is the argument of the call. It can be any type that converts to JavaScript.
+
+In Kotlin, `event<T>()` creates the event and `T` is the payload type. Pass the JavaScript name of the event to `@Event`.
+
+In Swift, the property is a function type: its parameter is the payload type, and `() -> Void` is an event without a payload. The JavaScript name is the property name without the `on` prefix, so `onProgress` sends the `progress` event. You can call the property from any thread. To use another name, pass it to `@Event`, for example `@Event("didProgress")`. The macro shows a warning when two events of one class have the same JavaScript name.
+
+JavaScript listens to the event with `addListener`:
+
+```ts
+const subscription = MyModule.addListener('progress', event => {
+  console.log(event.percent);
+});
+
+// Later, to stop listening:
+subscription.remove();
+```
+
+## Start and stop observing
+
+In Kotlin, `event()` takes two optional functions: `onStartObserving` and `onStopObserving`. Use them to start native work only while JavaScript listens to the event, for example to register a broadcast receiver:
+
+```kotlin
+@Event(name = "batteryLevelDidChange")
+private val onBatteryLevelChange = event<BatteryLevelEvent>(
+  onStartObserving = ::registerBroadcastReceivers,
+  onStopObserving = ::unregisterBroadcastReceivers
+)
+```
+
+The `isObserved` property of the event tells whether JavaScript listens to it.
+
+## Inline and blocking events
+
+<LanguageSupport feature="inline-and-blocking-events" />
+
+By default, an event is scheduled on the JavaScript thread, and the listeners run later. This is true even when you send the event on the JavaScript thread, for example from a synchronous function. Two options change this:
+
+- `.inline` runs the listeners before the call returns, when you send the event on the JavaScript thread. On any other thread, the event is scheduled, the same as without an option. It never blocks.
+- `.blocking` runs the listeners before the call returns, on any thread. A call from another thread waits until the JavaScript thread runs the listeners.
+
+```swift
+@Event(.inline)
+var onChange: (String) -> Void
+
+@Event("tick", .blocking)
+var onTick: () -> Void
+```
+
+With both options, the event can reach the listeners before events that you sent earlier without an option. The listeners can also call back into the module before the call returns, so send the event after the state of the module is up to date. An event that a shared object sends before it has a JavaScript object, for example from its initializer, is dropped.
+
+Prefer `.inline` unless the caller must wait for the listeners. A `.blocking` event has these risks:
+
+- A call from the main thread freezes the UI while the JavaScript thread is busy.
+- The call deadlocks when the JavaScript thread waits for the calling thread, for example in `DispatchQueue.main.sync` while the main thread sends the event.
+- A call from an `async` function blocks a thread of the cooperative thread pool. The compiler doesn't report this, so don't send a `.blocking` event from an `async` function.

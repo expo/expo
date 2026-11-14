@@ -55,6 +55,15 @@ export const modulesV2Features: ModulesV2Feature[] = [
   { id: 'records', name: 'Records', swift: 'supported', kotlin: 'supported' },
   { id: 'enums', name: 'Enums', swift: 'supported', kotlin: 'supported' },
   { id: 'unions', name: 'Unions', swift: 'supported', kotlin: 'not-supported' },
+  { id: 'byte-arrays', name: 'Byte arrays', swift: 'supported', kotlin: 'supported' },
+  {
+    id: 'array-buffers',
+    name: 'Array buffers',
+    swift: 'supported',
+    kotlin: 'not-supported',
+    note: 'in Kotlin, use a byte array',
+  },
+  { id: 'typed-arrays', name: 'Typed arrays', swift: 'supported', kotlin: 'supported' },
   { id: 'tuples', name: 'Tuples', swift: 'supported', kotlin: 'not-supported' },
   {
     id: 'closure-arguments',

@@ -1,0 +1,87 @@
+---
+title: 'Expo Modules API 2.0: Records'
+sidebar_title: Records
+description: Learn how to convert JavaScript objects to native types with records in Expo Modules API 2.0.
+---
+
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { LanguageSupport } from '~/components/plugins/modules-v2-support';
+
+A record is a native type that converts to and from a JavaScript object. Use a record for an argument, a result, or an event payload that is an object with known fields. To accept one of a few types, use a [union](/modules/v2/reference/unions/).
+
+## Declare a record
+
+<LanguageSupport feature="records" />
+
+Add `@Record` to a data class in Kotlin, or to a struct in Swift. In Kotlin, each `val` or `var` parameter of the primary constructor is a field of the JavaScript object. In Swift, each stored property is a field, except the properties in [Rules for Swift records](#rules-for-swift-records). You don't mark the fields one by one.
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
+
+```kotlin
+@Record
+data class SetStringOptions(
+  val inputFormat: StringFormat = StringFormat.PLAIN,
+  val isSensitive: Boolean = false
+)
+
+@ExpoModule("MyModule")
+class MyModule : Module() {
+  @JS
+  suspend fun setStringAsync(content: String, options: SetStringOptions): Boolean {
+    // ...
+  }
+}
+```
+
+```swift
+@Record
+struct SetStringOptions {
+  var inputFormat: StringFormat = .plain
+  var isSensitive: Bool = false
+}
+
+@ExpoModule("MyModule")
+public final class MyModule: Module {
+  @JS
+  func setStringAsync(content: String, options: SetStringOptions) async -> Bool {
+    // ...
+  }
+}
+```
+
+</CodeBlocksTable>
+
+A field with a default value is optional: JavaScript can leave it out, and the field gets the default value. With the previous record, JavaScript can call `setStringAsync('text', {})`.
+
+## Required, optional, and nullable fields in Swift
+
+In Swift, the type and the default value of a property set what JavaScript must pass:
+
+```swift
+@Record
+struct Options {
+  var name: String      // Required
+  var count: Int = 0    // Optional, because it has a default value
+  var note: String?     // Optional and nullable, because its type is optional
+}
+```
+
+When JavaScript leaves out a required field, the conversion throws `RecordPropertyRequiredException`.
+
+## Rules for Swift records
+
+A Swift record has the following rules:
+
+- It is a struct, or a `final` class without an inheritance clause. Declare the protocol conformances of a class in an extension.
+- Static, `private`, `fileprivate`, `lazy`, and computed properties aren't fields.
+- The macro generates a memberwise initializer that sets every field. So, a `let` field with a default value is a build error.
+- A `private` or `fileprivate` stored property needs a default value, unless it is an optional `var`.
+- A record converts only from and to JavaScript values. You can't create it from a native dictionary.
+
+If your module builds with a default isolation, for example `-default-isolation MainActor`, a class record or a struct record with a property whose type isn't `Sendable` needs `nonisolated`:
+
+```swift
+@Record nonisolated final class Options {
+  // ...
+}
+```
