@@ -127,6 +127,29 @@ function loadReanimatedInit() {
 }
 
 describe('module Proxy', () => {
+  test('gives function options to library integrations but not to the native module', () => {
+    const Observe = loadModule();
+    const { registerObserveIntegration } =
+      require('../integrations/registry') as typeof import('../integrations/registry');
+    const configure = jest.fn();
+    registerObserveIntegration({ name: 'expo-updates', configure });
+    const shouldReport = () => true;
+
+    Observe.configure({
+      environment: 'test',
+      integrations: { 'expo-updates': { reportWarnings: true, shouldReport } },
+    });
+
+    expect(configure).toHaveBeenCalledWith(
+      { reportWarnings: true, shouldReport },
+      expect.any(Object)
+    );
+    expect(mockNative.configure).toHaveBeenCalledWith({
+      environment: 'test',
+      integrations: { 'expo-updates': { reportWarnings: true } },
+    });
+  });
+
   test('passes the original integrations object to library integrations after the native configure', () => {
     const Observe = loadModule();
     const { registerObserveIntegration } =

@@ -234,6 +234,31 @@ export interface ObserveIntegrationsConfig {
    * @default false
    */
   'react-native-reanimated'?: boolean | ObserveReanimatedIntegrationConfig;
+  /**
+   * Enables the `expo-updates` integration, which reports the errors in the `expo-updates` log to
+   * Observe as errors named `updates.error`. The message starts with the log entry's code, for
+   * example `UpdateFailedToLoad: ...`. The integration reports a JS error that `expo-updates` error
+   * recovery handled as `updates.error_recovery`.
+   * To also report warnings as events named `updates.warning`, set `reportWarnings`.
+   *
+   * The integration reads the `expo-updates` log when `configure` runs, and reports the entries
+   * written since the last report, up to one day back. So it reports errors from an earlier launch,
+   * such as a crash that error recovery handled, on the next launch. After that, it reports each
+   * new entry when `expo-updates` logs it. A reported error gets the current session and time, not
+   * the time of the log entry.
+   *
+   * The integration reports each distinct message at most once every 15 minutes. It reports at most
+   * 20 distinct errors and 20 distinct warnings in any 15-minute period. JS errors that error
+   * recovery handled skip `ignoredCodes` and `shouldReport`, and have their own limit of 20
+   * distinct messages. The limits reset when the app restarts.
+   *
+   * The integration lives in `expo-updates`, which registers it when the app imports
+   * `expo-updates`. If it has not registered 5 seconds after `configure`, a warning is printed.
+   * Requires `expo-updates` 58.1.0 or later.
+   *
+   * @default false
+   */
+  'expo-updates'?: boolean | ObserveExpoUpdatesIntegrationConfig;
 }
 
 export type ObserveReanimatedIntegrationConfig = {
@@ -258,6 +283,78 @@ export type ObserveReanimatedIntegrationConfig = {
    * @default false
    */
   reportWarnings?: boolean;
+};
+
+/**
+ * The code of an `expo-updates` log entry. The same values as `UpdatesLogEntryCode` in
+ * `expo-updates`.
+ */
+export type ObserveExpoUpdatesLogEntryCode =
+  | 'None'
+  | 'NoUpdatesAvailable'
+  | 'UpdateAssetsNotAvailable'
+  | 'UpdateServerUnreachable'
+  | 'UpdateHasInvalidSignature'
+  | 'UpdateCodeSigningError'
+  | 'UpdateFailedToLoad'
+  | 'AssetsFailedToLoad'
+  | 'JSRuntimeError'
+  | 'InitializationError'
+  | 'Unknown';
+
+/**
+ * An `expo-updates` log entry, as `readLogEntriesAsync` in `expo-updates` returns it.
+ */
+export type ObserveExpoUpdatesLogEntry = {
+  /**
+   * The time the entry was written, in milliseconds since Jan 1 1970 UTC.
+   */
+  timestamp: number;
+  message: string;
+  code: ObserveExpoUpdatesLogEntryCode;
+  level: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+  updateId?: string;
+  assetId?: string;
+  /**
+   * A native Android or iOS stack trace.
+   */
+  stacktrace?: string[];
+  /**
+   * The key of the event that a warning or error entry logs, such as `remote.assetDownloadFailed`.
+   * The key stays the same when the text of the message changes, so `shouldReport` can match on
+   * it. The same values as `UpdatesLogMessageKey` in `expo-updates`.
+   */
+  key?: string;
+  /**
+   * The values that fill the message template of the key, such as `cause` or `assetKey`.
+   */
+  values?: Record<string, string>;
+};
+
+export type ObserveExpoUpdatesIntegrationConfig = {
+  /**
+   * Whether the integration also reports `expo-updates` warnings to Observe, as events named
+   * `updates.warning`.
+   *
+   * @default false
+   */
+  reportWarnings?: boolean;
+  /**
+   * Log entry codes that the integration does not report. For example, `expo-updates` logs a
+   * network error with the `UpdateServerUnreachable` code. This option does not apply to JS errors
+   * that error recovery handled.
+   *
+   * @default []
+   */
+  ignoredCodes?: ObserveExpoUpdatesLogEntryCode[];
+  /**
+   * A function that decides whether the integration reports a log entry. Return `false` to skip
+   * the entry, for example by its `key`. It runs after `ignoredCodes`, and it does not run for JS
+   * errors that error recovery handled. If the function throws, the integration reports the entry.
+   * The function runs only in JS, so `getIntegrations()`, `registerIntegration` and the
+   * `configure` event do not include it.
+   */
+  shouldReport?: (entry: ObserveExpoUpdatesLogEntry) => boolean;
 };
 
 /**
