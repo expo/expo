@@ -1,8 +1,15 @@
 package expo.modules.mediasession
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.os.Handler
+import android.os.Looper
 import androidx.annotation.VisibleForTesting
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.mediasession.service.Media3SessionFactory
+import expo.modules.mediasession.service.MediaPlaybackServiceLogic
+import expo.modules.mediasession.service.NowPlayingSessionCenter
+import expo.modules.mediasession.service.ServiceConnector
 import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CompletableDeferred
@@ -55,6 +62,8 @@ interface MediaSessionObserver {
   fun mediaSessionServicesReset() {}
 
   fun mediaSessionSilentModeChanged(isSilent: Boolean) {}
+
+  fun mediaSessionNowPlayingOwnerChanged(id: String?) {}
 }
 
 /** The manager keeps the observer until [remove] or [close] is called. */
@@ -70,9 +79,34 @@ class ObserverRegistration internal constructor(private val onRemove: () -> Unit
   override fun close() = remove()
 }
 
-class MediaSessionManager internal constructor(backend: SessionBackend, dispatcher: CoroutineDispatcher) {
+class MediaSessionManager internal constructor(
+  backend: SessionBackend,
+  dispatcher: CoroutineDispatcher,
+  nowPlayingCenter: NowPlayingCenterBackend = DetachedNowPlayingCenter,
+  checkThread: () -> Unit = {}
+) {
   internal val coordinator = SessionCoordinator(backend, dispatcher)
   private var systemEvents: SystemEventSource? = null
+  private val nowPlaying = NowPlayingStack(
+    nowPlayingCenter,
+    mixingMode = { coordinator.effectiveInterruptionMode },
+    onOwnerChange = { id -> coordinator.notify { it.mediaSessionNowPlayingOwnerChanged(id) } },
+    checkThread = checkThread,
+    log = { coordinator.log(it) }
+  )
+
+  init {
+    coordinator.onTask = nowPlaying::prune
+    nowPlayingCenter.setCommandHandler { command ->
+      coordinator.post { nowPlaying.handle(command) }
+    }
+    nowPlayingCenter.setFailureHandler { error ->
+      coordinator.post {
+        val client = nowPlaying.ownerId ?: "Now Playing"
+        coordinator.notify { it.mediaSessionDidFail(error, client) }
+      }
+    }
+  }
 
   val policy: AudioPolicy
     get() = coordinator.policy
@@ -103,7 +137,31 @@ class MediaSessionManager internal constructor(backend: SessionBackend, dispatch
     coordinator.setPolicy(update)
   }
 
+  /** Begin the owner's session use first. */
+  fun offerNowPlaying(owner: NowPlayingOwner, info: NowPlayingInfo, commands: Set<RemoteCommandKind>): NowPlayingClaim {
+    val claim = NowPlayingClaim(coordinator.nextId(), this)
+    val offered = commands.toSet()
+    coordinator.post { nowPlaying.offer(owner, info, offered, claim.id, claim) }
+    return claim
+  }
+
+  val nowPlayingOwnerId: String?
+    get() = nowPlaying.ownerId
+
   fun addObserver(observer: MediaSessionObserver): ObserverRegistration = coordinator.addObserver(observer)
+
+  internal fun updateNowPlaying(id: Long, info: NowPlayingInfo, commands: Set<RemoteCommandKind>?) {
+    coordinator.post { nowPlaying.update(id, info, commands) }
+  }
+
+  internal fun withdrawNowPlaying(id: Long, reason: WithdrawReason) {
+    coordinator.post { nowPlaying.withdraw(id, reason) }
+  }
+
+  @VisibleForTesting
+  internal fun clearNowPlayingClaimReference(claim: NowPlayingClaim) {
+    coordinator.post { nowPlaying.clearClaimReference(claim.id) }
+  }
 
   @VisibleForTesting
   internal fun close() {
@@ -122,7 +180,24 @@ class MediaSessionManager internal constructor(backend: SessionBackend, dispatch
 
     private fun create(context: Context): MediaSessionManager {
       val scheduler = HandlerScheduler()
-      return MediaSessionManager(AudioManagerBackend(context, scheduler.handler), scheduler.dispatcher).apply {
+      val main = Handler(Looper.getMainLooper())
+      val center = NowPlayingSessionCenter(post = { body -> main.post(body) })
+      val connector = ServiceConnector(context, onCommand = center::send)
+      val sessions = Media3SessionFactory(context, onPlayRequested = { center.logic.onPlayRequested() }, onCommand = center::send)
+      center.logic = MediaPlaybackServiceLogic(sessions, connector, center::fail)
+      connector.logic = center.logic
+      val coordinatorLooper = scheduler.handler.looper
+      val checkThread: () -> Unit = if (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
+        { check(Looper.myLooper() == coordinatorLooper) { "The Now Playing stack was called off the coordinator thread" } }
+      } else {
+        {}
+      }
+      return MediaSessionManager(
+        AudioManagerBackend(context, scheduler.handler),
+        scheduler.dispatcher,
+        center,
+        checkThread
+      ).apply {
         systemEvents = SystemEventSource(context, scheduler.handler, coordinator).also { it.start() }
       }
     }

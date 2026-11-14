@@ -29,17 +29,78 @@ class NowPlayingPropertyTest {
   }
 }
 
+private interface NowPlayingDriver {
+  val ownerId: String?
+  fun offer(owner: NowPlayingOwner, info: NowPlayingInfo, commands: Set<RemoteCommandKind>): Any
+  fun update(claim: Any, info: NowPlayingInfo)
+  fun withdraw(claim: Any, reason: WithdrawReason)
+  fun handle(command: RemoteCommand)
+}
+
+private class StackDriver(private val stack: NowPlayingStack) : NowPlayingDriver {
+  override val ownerId get() = stack.ownerId
+
+  override fun offer(owner: NowPlayingOwner, info: NowPlayingInfo, commands: Set<RemoteCommandKind>): Any =
+    stack.offer(owner, info, commands)
+
+  override fun update(claim: Any, info: NowPlayingInfo) = stack.update(claim as Long, info)
+
+  override fun withdraw(claim: Any, reason: WithdrawReason) = stack.withdraw(claim as Long, reason)
+
+  override fun handle(command: RemoteCommand) = stack.handle(command)
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+private class ClaimDriver(
+  private val manager: MediaSessionManager,
+  private val center: FakeNowPlayingCenter,
+  private val scheduler: TestCoroutineScheduler
+) : NowPlayingDriver {
+  override val ownerId get() = manager.nowPlayingOwnerId
+
+  override fun offer(owner: NowPlayingOwner, info: NowPlayingInfo, commands: Set<RemoteCommandKind>): Any =
+    manager.offerNowPlaying(owner, info, commands).also { scheduler.runCurrent() }
+
+  override fun update(claim: Any, info: NowPlayingInfo) {
+    (claim as NowPlayingClaim).update(info)
+    scheduler.runCurrent()
+  }
+
+  override fun withdraw(claim: Any, reason: WithdrawReason) {
+    (claim as NowPlayingClaim).withdraw(reason)
+    scheduler.runCurrent()
+  }
+
+  override fun handle(command: RemoteCommand) {
+    center.send(command)
+    scheduler.runCurrent()
+  }
+}
+
 @OptIn(ExperimentalCoroutinesApi::class)
 private class NowPlayingRun(seed: Int) {
-  private class Live(val owner: Int, val claim: Long, var info: NowPlayingInfo, val commands: Set<RemoteCommandKind>)
+  private class Live(val owner: Int, val claim: Any, var info: NowPlayingInfo, val commands: Set<RemoteCommandKind>)
 
   private val random = Random(seed)
   private val center = FakeNowPlayingCenter()
   private val scheduler = TestCoroutineScheduler()
-  private val manager = MediaSessionManager(FakeSessionBackend(), StandardTestDispatcher(scheduler)).apply {
+  private val throughClaims = seed % 4 >= 2
+  private val manager = MediaSessionManager(
+    FakeSessionBackend(),
+    StandardTestDispatcher(scheduler),
+    if (throughClaims) {
+      center
+    } else {
+      DetachedNowPlayingCenter
+    }
+  ).apply {
     coordinator.log = {}
   }
-  private val stack = NowPlayingStack(center, { manager.coordinator.effectiveInterruptionMode })
+  private val stack: NowPlayingDriver = if (throughClaims) {
+    ClaimDriver(manager, center, scheduler)
+  } else {
+    StackDriver(NowPlayingStack(center, { manager.coordinator.effectiveInterruptionMode }))
+  }
   private val hold = if (seed % 2 == 0) {
     manager.hold("property")
   } else {
@@ -58,7 +119,7 @@ private class NowPlayingRun(seed: Int) {
     )
   }
   private val live = mutableListOf<Live>()
-  private val stale = mutableListOf<Long>()
+  private val stale = mutableListOf<Any>()
   private val outstanding = BooleanArray(4)
   private val seen = IntArray(4)
   private var offers = 0
