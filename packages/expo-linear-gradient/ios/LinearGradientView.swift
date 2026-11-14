@@ -23,7 +23,9 @@ final class LinearGradientView: ExpoView {
   #if !os(macOS)
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
     super.traitCollectionDidChange(previousTraitCollection)
-    layer.setNeedsDisplay()
+    if gradientLayer.drawsDifferently(from: previousTraitCollection, to: traitCollection) {
+      layer.setNeedsDisplay()
+    }
   }
   #else
   override func viewDidChangeEffectiveAppearance() {
