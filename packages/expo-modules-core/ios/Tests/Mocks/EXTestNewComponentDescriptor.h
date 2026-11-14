@@ -31,6 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable id)updateWithDynamicProps:(NSDictionary<NSString *, id> *)props NS_SWIFT_NAME(update(dynamicProps:));
 
 /**
+ Drops the current props, as Fabric does when the view's shadow node goes away.
+ */
+- (void)reset;
+
+/**
  The `opacity` of the current props, one of the base view props that React Native parses.
  */
 @property (nonatomic, readonly) float opacity;

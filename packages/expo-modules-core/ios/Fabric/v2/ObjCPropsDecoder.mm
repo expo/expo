@@ -13,8 +13,8 @@ DecodedProps ObjCPropsDecoder::decode(
   const jsi::Value &props,
   const DecodedProps &previous
 ) const {
-  id decoded = [decoder_ decodeProps:&props runtime:&runtime previous:(__bridge id)previous.get()];
-  return decodedProps(decoded, previous);
+  const void *decoded = [decoder_ decodeProps:&props runtime:&runtime previous:previous.get()];
+  return decoded != nullptr ? DecodedProps::adopt(decoded) : previous;
 }
 
 std::vector<std::string> ObjCPropsDecoder::propNames() const {
@@ -40,12 +40,12 @@ DecodedProps ObjCPropsDecoder::decodeValues(
     valuePointers.push_back(&value);
     indexes.push_back(static_cast<NSInteger>(index));
   }
-  id decoded = [decoder_ decodeValues:valuePointers.data()
-                              indexes:indexes.data()
-                                count:static_cast<NSInteger>(values.size())
-                              runtime:&runtime
-                             previous:(__bridge id)previous.get()];
-  return decodedProps(decoded, previous);
+  const void *decoded = [decoder_ decodeValues:valuePointers.data()
+                                       indexes:indexes.data()
+                                         count:static_cast<NSInteger>(values.size())
+                                       runtime:&runtime
+                                      previous:previous.get()];
+  return decoded != nullptr ? DecodedProps::adopt(decoded) : previous;
 }
 
 void ObjCPropsDecoder::didSkipProps(const std::vector<std::string_view> &propNames) const {
@@ -60,13 +60,6 @@ void ObjCPropsDecoder::didSkipProps(const std::vector<std::string_view> &propNam
     }
   }
   [decoder_ didSkipProps:names];
-}
-
-DecodedProps ObjCPropsDecoder::decodedProps(id decoded, const DecodedProps &previous) {
-  if (decoded == (__bridge id)previous.get() || decoded == nil) {
-    return previous;
-  }
-  return DecodedProps::adopt((__bridge_retained CFTypeRef)decoded);
 }
 
 } // namespace expo::views

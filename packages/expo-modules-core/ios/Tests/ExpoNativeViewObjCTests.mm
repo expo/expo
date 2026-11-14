@@ -44,9 +44,11 @@ namespace views = expo::views;
 
 @implementation NewObjectViewPropsDecoder
 
-- (nullable id)decodeProps:(const void *)props runtime:(const void *)runtime previous:(nullable id)previous
+- (nullable const void *)decodeProps:(const void *)props
+                             runtime:(const void *)runtime
+                            previous:(nullable const void *)previous
 {
-  return [NSObject new];
+  return (__bridge_retained const void *)[NSObject new];
 }
 
 - (NSArray<NSString *> *)propNames
@@ -54,13 +56,13 @@ namespace views = expo::views;
   return @[ @"title" ];
 }
 
-- (nullable id)decodeValues:(const void *const _Nonnull *)values
-                    indexes:(const NSInteger *)indexes
-                      count:(NSInteger)count
-                    runtime:(const void *)runtime
-                   previous:(nullable id)previous
+- (nullable const void *)decodeValues:(const void *const _Nonnull *)values
+                              indexes:(const NSInteger *)indexes
+                                count:(NSInteger)count
+                              runtime:(const void *)runtime
+                             previous:(nullable const void *)previous
 {
-  return [NSObject new];
+  return (__bridge_retained const void *)[NSObject new];
 }
 
 - (void)didSkipProps:(NSArray<NSString *> *)propNames

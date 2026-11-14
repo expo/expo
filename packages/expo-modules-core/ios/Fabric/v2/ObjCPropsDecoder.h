@@ -35,12 +35,6 @@ public:
   void didSkipProps(const std::vector<std::string_view> &propNames) const override;
 
 private:
-  /**
-   Returns the props for the object that the decoder returned: `previous` when it's the previous object or
-   `nil`, otherwise the new object.
-   */
-  static DecodedProps decodedProps(id decoded, const DecodedProps &previous);
-
   id<EXViewPropsDecoding> decoder_;
 };
 
