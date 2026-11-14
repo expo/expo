@@ -326,11 +326,6 @@ class AppDelegate: ExpoAppDelegate {
 // Step 4
 class CustomReactNativeFactoryDelegate: ExpoReactNativeFactoryDelegate {
   let bundledUrl = Bundle.main.url(forResource: "main", withExtension: "jsbundle")
-  override func sourceURL(for bridge: RCTBridge) -> URL? {
-    // needed to return the correct URL for expo-dev-client.
-    bridge.bundleURL ?? bundleURL()
-  }
-
   override func bundleURL() -> URL? {
     if let updatesUrl = AppDelegate.shared().updatesController?.launchAssetUrl() {
       return updatesUrl
