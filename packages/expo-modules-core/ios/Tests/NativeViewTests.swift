@@ -175,7 +175,10 @@ struct NativeViewTests {
 
   @Test
   func `registered component class is a subclass that applies the props`() throws {
-    ExpoNativeView.registerComponent(NativeCardView.self, moduleName: "NativeViewTests", viewName: "NativeCardView")
+    ExpoNativeView.registerComponent(
+      NativeCardView.self,
+      componentName: ExpoFabricView.componentName(moduleName: "NativeViewTests", viewName: "NativeCardView")
+    )
 
     let viewClass: AnyClass = try #require(NSClassFromString("ViewManagerAdapter_NativeViewTests_NativeCardView"))
     #expect(class_getSuperclass(viewClass) == NativeCardView.self)
@@ -190,10 +193,28 @@ struct NativeViewTests {
 
   @Test
   func `another view type with a registered component name isn't registered`() throws {
-    ExpoNativeView.registerComponent(NativeCardView.self, moduleName: "NativeViewTests", viewName: "SharedName")
-    ExpoNativeView.registerComponent(OtherCardView.self, moduleName: "NativeViewTests", viewName: "SharedName")
+    let componentName = ExpoFabricView.componentName(moduleName: "NativeViewTests", viewName: "SharedName")
+    ExpoNativeView.registerComponent(NativeCardView.self, componentName: componentName)
+    ExpoNativeView.registerComponent(OtherCardView.self, componentName: componentName)
 
     let viewClass: AnyClass = try #require(NSClassFromString("ViewManagerAdapter_NativeViewTests_SharedName"))
+    #expect(class_getSuperclass(viewClass) == NativeCardView.self)
+  }
+
+  @Test
+  func `package component name is a valid class name`() {
+    #expect(ExpoNativeView.packageComponentName(packageName: "expo-blur", viewName: "ExpoBlurView") == "expo_blur_ExpoBlurView")
+    #expect(ExpoNativeView.packageComponentName(packageName: "@expo/ui", viewName: "Host") == "expo_ui_Host")
+    #expect(ExpoNativeView.packageComponentName(packageName: "$local", viewName: "MyView") == "_local_MyView")
+    #expect(ExpoNativeView.packageComponentName(packageName: "my.pkg", viewName: "View") == "my_pkg_View")
+  }
+
+  @Test
+  func `view of a package is registered under the package component name`() throws {
+    let componentName = ExpoNativeView.packageComponentName(packageName: "native-view-tests", viewName: "NativeCardView")
+    ExpoNativeView.registerComponent(NativeCardView.self, componentName: componentName)
+
+    let viewClass: AnyClass = try #require(NSClassFromString("native_view_tests_NativeCardView"))
     #expect(class_getSuperclass(viewClass) == NativeCardView.self)
   }
 }
@@ -253,8 +274,8 @@ struct NativeViewComponentTests {
     try runtime.eval(
       """
       configs = [];
-      expo.__createNativeViewComponent = (config) => {
-        configs.push(config);
+      expo.__createNativeViewComponent = (name, displayName, validAttributes, directEventTypes) => {
+        configs.push({ name, displayName, validAttributes, directEventTypes });
         return function NativeView() {};
       };
       """
@@ -317,5 +338,84 @@ struct NativeViewComponentTests {
     // The getter stays, so a later read can create the component.
     try runtime.eval("expo.__createNativeViewComponent = () => function NativeView() {}")
     #expect(try runtime.eval("typeof expo.modules.NativeCards.NativeCardView").asString() == "function")
+  }
+}
+
+/// Creates the React components of the `@ExpoView` views that packages export, with a stub factory in place of
+/// the one that expo-modules-core's JS installs.
+@Suite
+@JavaScriptActor
+struct PackageViewComponentTests {
+  let appContext: AppContext
+  var runtime: ExpoRuntime {
+    get throws {
+      try appContext.runtime
+    }
+  }
+
+  init() throws {
+    appContext = AppContext.create()
+    appContext.packageRegistry.register(views: [NativeCardView.self], inPackage: "@expo/cards")
+    // `OtherCardView` has the same name as the module, so the module wins.
+    appContext.packageRegistry.register(
+      holder: mockModuleHolder(appContext) {
+        Name("OtherCardView")
+      },
+      inPackage: "other-cards"
+    )
+    appContext.packageRegistry.register(views: [OtherCardView.self], inPackage: "other-cards")
+    try runtime.eval(
+      """
+      configs = [];
+      expo.__createNativeViewComponent = (name, displayName, validAttributes, directEventTypes) => {
+        configs.push({ name, displayName, validAttributes, directEventTypes });
+        return function NativeView() {};
+      };
+      """
+    )
+  }
+
+  @Test
+  func `package lists its views without creating them`() throws {
+    #expect(try runtime.eval("Object.keys(expo.packages['@expo/cards']).join(',')").asString() == "NativeCardView")
+    #expect(try runtime.eval("configs.length").asInt() == 0)
+  }
+
+  @Test
+  func `reading a view creates its component once`() throws {
+    #expect(
+      try runtime.eval("expo.packages['@expo/cards'].NativeCardView === expo.packages['@expo/cards'].NativeCardView")
+        .asBool()
+    )
+    #expect(try runtime.eval("configs.length").asInt() == 1)
+
+    let config = try runtime.eval("configs[0]").asObject()
+    #expect(try config.getProperty("name").asString() == "expo_cards_NativeCardView")
+    #expect(try config.getProperty("displayName").asString() == "NativeCardView")
+    #expect(try runtime.eval("JSON.stringify(configs[0].validAttributes)").asString() == #"{"title":true,"radius":true}"#)
+    #expect(try runtime.eval("JSON.stringify(configs[0].directEventTypes)").asString() == #"{"topTap":{"registrationName":"onTap"}}"#)
+  }
+
+  @Test
+  func `module takes precedence over a view with the same name`() throws {
+    #expect(try runtime.eval("typeof expo.packages['other-cards'].OtherCardView").asString() == "object")
+    #expect(try runtime.eval("Object.keys(expo.packages['other-cards']).join(',')").asString() == "OtherCardView")
+    #expect(try runtime.eval("configs.length").asInt() == 0)
+  }
+
+  @Test
+  func `view is undefined without the factory`() throws {
+    try runtime.eval("delete expo.__createNativeViewComponent")
+
+    #expect(try runtime.eval("expo.packages['@expo/cards'].NativeCardView === undefined").asBool())
+    // Nothing is cached, so a later read can create the component.
+    try runtime.eval("expo.__createNativeViewComponent = () => function NativeView() {}")
+    #expect(try runtime.eval("typeof expo.packages['@expo/cards'].NativeCardView").asString() == "function")
+  }
+
+  @Test
+  func `app context registers the views of packages`() {
+    let views = appContext.packageRegistry.views.map { "\($0.packageName) \(unqualifiedTypeName($0.viewType))" }
+    #expect(views.sorted() == ["@expo/cards NativeCardView", "other-cards OtherCardView"])
   }
 }

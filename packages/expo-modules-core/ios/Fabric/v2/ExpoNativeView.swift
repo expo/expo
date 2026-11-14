@@ -48,32 +48,30 @@ open class ExpoNativeView: ExpoNativeViewObjC {
   @MainActor
   private static var registeredViewTypes = [String: ObjectIdentifier]()
 
-  /// Registers the view type of the given module in `RCTComponentViewFactory`. Each component is registered
-  /// once per process, under the same name as the views of `ExpoFabricView`, so `requireNativeView` finds it.
+  /// Registers the view type in `RCTComponentViewFactory` under the given component name. Each component is
+  /// registered once per process. A view of a module has the same name as the views of `ExpoFabricView`
+  /// (`ExpoFabricView.componentName`), so `requireNativeView` finds it, and a view of a package has
+  /// `packageComponentName`.
   ///
   /// `RCTComponentViewFactory` maps each component to a class and creates the views with `+[viewClass new]`.
   /// So the registered class is a subclass of the view type that is named after the component, the same way
   /// that `ExpoFabricView.viewClass` does it. The subclass adds no methods.
   @MainActor
-  internal static func registerComponent(_ viewType: any AnyNativeView.Type, moduleName: String, viewName: String) {
-    let componentName = ExpoFabricView.componentName(moduleName: moduleName, viewName: viewName)
-
+  internal static func registerComponent(_ viewType: any AnyNativeView.Type, componentName: String) {
     guard viewType is ExpoNativeView.Type else {
-      log.error("The view '\(viewName)' from module '\(moduleName)' isn't registered, because it isn't an ExpoNativeView")
+      log.error("The view '\(viewType)' isn't registered as '\(componentName)', because it isn't an ExpoNativeView")
       return
     }
     if let registeredViewType = registeredViewTypes[componentName] {
       if registeredViewType != ObjectIdentifier(viewType) {
         log.error(
-          "The view '\(viewName)' from module '\(moduleName)' has the same component name as another view, so it isn't registered"
+          "The view '\(viewType)' has the same component name '\(componentName)' as another view, so it isn't registered"
         )
       }
       return
     }
     guard let viewClass = objc_allocateClassPair(viewType, componentName, 0) else {
-      log.error(
-        "Cannot register the view '\(viewName)' from module '\(moduleName)' because a class named '\(componentName)' already exists"
-      )
+      log.error("Cannot register the view '\(viewType)' because a class named '\(componentName)' already exists")
       return
     }
     objc_registerClassPair(viewClass)
@@ -81,5 +79,14 @@ open class ExpoNativeView: ExpoNativeViewObjC {
 
     let propsDecoder = viewType._makePropsDecoder(viewName: unqualifiedTypeName(viewType))
     ExpoNativeViewObjC.registerComponentViewClass(viewClass, propsDecoder: propsDecoder)
+  }
+
+  /// Returns the component name of a view that the package with the given name exports, for example
+  /// `expo_blur_ExpoBlurView`. It's also the name of an Objective-C class, so the characters that a class name
+  /// can't have are replaced with `_`, and the `@` of a scoped package name is left out (`@expo/ui` is `expo_ui`).
+  nonisolated internal static func packageComponentName(packageName: String, viewName: String) -> String {
+    let unscopedName = packageName.hasPrefix("@") ? String(packageName.dropFirst()) : packageName
+    let sanitizedName = String(unscopedName.map { $0.isASCII && ($0.isLetter || $0.isNumber) ? $0 : "_" })
+    return "\(sanitizedName)_\(viewName)"
   }
 }

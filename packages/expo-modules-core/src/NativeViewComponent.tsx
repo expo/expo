@@ -24,44 +24,46 @@ const DEFAULT_VIEW_PROPERTY = '__expo_default_view__';
  */
 const NATIVE_VIEW_COMPONENT = Symbol.for('expo.nativeViewComponent');
 
-/**
- * What native passes to `createNativeViewComponent` for a view of Expo Modules v2.
- */
-export type NativeViewComponentConfig = {
-  /** The component name that native registered, e.g. `ViewManagerAdapter_Cards_CardView`. */
-  name: string;
-  /** The name that React DevTools and errors show, e.g. `CardView`. */
-  displayName: string;
-  validAttributes: Record<string, true>;
-  directEventTypes: Record<string, { registrationName: string }>;
-  // TODO: Add an optional `functions` object once views of Expo Modules v2 have view functions.
-};
-
-function requireHostComponent(config: NativeViewComponentConfig): HostComponent<any> {
-  let component = hostComponentsCache.get(config.name);
+function requireHostComponent(
+  name: string,
+  validAttributes: Record<string, true>,
+  directEventTypes: Record<string, { registrationName: string }>
+): HostComponent<any> {
+  let component = hostComponentsCache.get(name);
   if (!component) {
-    component = NativeComponentRegistry.get(config.name, () => ({
-      uiViewClassName: config.name,
-      validAttributes: addAttributeProcessing(config.validAttributes),
-      directEventTypes: config.directEventTypes,
+    component = NativeComponentRegistry.get(name, () => ({
+      uiViewClassName: name,
+      validAttributes: addAttributeProcessing(validAttributes),
+      directEventTypes,
     }));
-    hostComponentsCache.set(config.name, component);
+    hostComponentsCache.set(name, component);
   }
   return component;
 }
 
 /**
  * Creates the React component of a view of Expo Modules v2. Native calls it through
- * `expo.__createNativeViewComponent` the first time JS reads the view from its module.
+ * `expo.__createNativeViewComponent` the first time JS reads the view from its module or package.
+ *
+ * @param name The component name that native registered, e.g. `ViewManagerAdapter_Cards_CardView`.
+ * @param displayName The name that React DevTools and errors show, e.g. `CardView`.
+ * @param validAttributes The names of the view's props.
+ * @param directEventTypes The view's events, keyed by the normalized event name.
  */
-export function createNativeViewComponent(config: NativeViewComponentConfig) {
-  const HostView = requireHostComponent(config);
+// TODO: Add an optional `functions` argument once views of Expo Modules v2 have view functions.
+export function createNativeViewComponent(
+  name: string,
+  displayName: string,
+  validAttributes: Record<string, true>,
+  directEventTypes: Record<string, { registrationName: string }>
+) {
+  const HostView = requireHostComponent(name, validAttributes, directEventTypes);
 
   // `ref` is a regular prop in React 19, so spreading the props passes it to the host view.
   function NativeView(props: Record<string, any>) {
     return <HostView {...(hasAriaProps(props) ? mapAriaProps(props) : props)} />;
   }
-  NativeView.displayName = config.displayName;
+  NativeView.displayName = displayName;
   Object.defineProperty(NativeView, NATIVE_VIEW_COMPONENT, { value: true });
   return NativeView;
 }

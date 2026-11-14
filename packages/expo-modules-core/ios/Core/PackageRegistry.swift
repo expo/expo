@@ -1,7 +1,8 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 /**
- The registry of the packages that a modules provider returns in `packages`, keyed by the npm package name.
+ The registry of the packages that a modules provider returns in `packages`, keyed by the npm package name:
+ their modules, shared object classes and views.
  It backs `expo.packages`, the same way `ModuleRegistry` backs `expo.modules`, and the two are independent:
  a module that is only in a package isn't in `ModuleRegistry`, and modules of different packages can have the same name.
  A module type that `ModuleRegistry` has too shares its holder, so it has one native instance and one JavaScript object.
@@ -37,6 +38,7 @@ internal final class PackageRegistry {
       return
     }
     register(sharedObjects: package.sharedObjects, inPackage: packageName)
+    register(views: package.views, inPackage: packageName)
 
     for moduleType in package.modules {
       if let holder = appContext.moduleRegistry.first(where: { type(of: $0.module) == moduleType }) {
@@ -65,6 +67,16 @@ internal final class PackageRegistry {
   func register(sharedObjects: [SharedObject.Type], inPackage packageName: String) {
     packages.withLock { packages in
       packages[packageName, default: PackageHolder(name: packageName)].sharedObjects.append(contentsOf: sharedObjects)
+    }
+  }
+
+  /**
+   Registers the view classes in the package with the given name. Their React components are created
+   on the first access, not here.
+   */
+  func register(views: [any AnyNativeView.Type], inPackage packageName: String) {
+    packages.withLock { packages in
+      packages[packageName, default: PackageHolder(name: packageName)].views.append(contentsOf: views)
     }
   }
 
@@ -100,6 +112,17 @@ internal final class PackageRegistry {
   var moduleHolders: [ModuleHolder] {
     return packages.withLock { packages in
       return packages.values.flatMap(\.modules.values)
+    }
+  }
+
+  /**
+   The view classes of all packages, with the names of their packages.
+   */
+  var views: [(packageName: String, viewType: any AnyNativeView.Type)] {
+    return packages.withLock { packages in
+      return packages.flatMap { packageName, package in
+        package.views.map { (packageName: packageName, viewType: $0) }
+      }
     }
   }
 
