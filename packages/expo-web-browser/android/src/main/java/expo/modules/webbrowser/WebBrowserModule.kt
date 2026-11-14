@@ -1,12 +1,16 @@
 package expo.modules.webbrowser
 
 import android.os.Bundle
+import android.provider.Browser
 import android.text.TextUtils
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.CustomTabsSession
 import androidx.core.os.bundleOf
 import expo.modules.core.utilities.ifNull
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import androidx.core.net.toUri
@@ -80,35 +84,59 @@ class WebBrowserModule : Module() {
       }
     }
 
-    AsyncFunction("openBrowserAsync") { url: String, options: OpenBrowserOptions ->
-      val tabsIntent = createCustomTabsIntent(options).apply {
-        intent.data = url.toUri()
-      }
-
-      if (!customTabsResolver.canResolveIntent(tabsIntent)) {
-        throw NoMatchingActivityException()
-      }
-
-      if (options.browserPackage.isNullOrEmpty() && tabsIntent.intent.`package` == null) {
-        customTabsResolver.getPreferredCustomTabsResolvingActivity(null)?.let {
-          tabsIntent.intent.setPackage(it)
+    AsyncFunction("openBrowserAsync") { url: String, options: OpenBrowserOptions, promise: Promise ->
+      val uri = url.toUri()
+      val headers = options.additionalHeaderFields
+      val open = { session: CustomTabsSession? ->
+        val tabsIntent = createCustomTabsIntent(options, session).apply {
+          intent.data = uri
+          if (headers != null) {
+            intent.putExtra(
+              Browser.EXTRA_HEADERS,
+              Bundle().apply {
+                headers.forEach { (name, value) -> putString(name, value) }
+              }
+            )
+          }
         }
+
+        if (!customTabsResolver.canResolveIntent(tabsIntent)) {
+          throw NoMatchingActivityException()
+        }
+
+        if (options.browserPackage.isNullOrEmpty() && tabsIntent.intent.`package` == null) {
+          customTabsResolver.getPreferredCustomTabsResolvingActivity(null)?.let {
+            tabsIntent.intent.setPackage(it)
+          }
+        }
+
+        customTabsResolver.startCustomTabs(tabsIntent, options)
+        bundleOf("type" to "opened")
       }
 
-      customTabsResolver.startCustomTabs(tabsIntent, options)
+      if (headers == null) {
+        promise.resolve(open(null))
+        return@AsyncFunction
+      }
+      if (!"https".equals(uri.scheme, ignoreCase = true) || uri.host.isNullOrEmpty() || uri.userInfo != null) {
+        throw BrowserHeadersException("Authentication headers require an HTTPS URL without URL credentials. Update the authentication URL.")
+      }
+      val packageName = givenOrPreferredPackageName(options.browserPackage)
+      val origin = uri.buildUpon().scheme("https").path(null).query(null).fragment(null).build()
+      connectionHelper.openWithHeaders(packageName, origin, promise, open)
+    }.runOnQueue(Queues.MAIN)
 
-      return@AsyncFunction bundleOf(
-        "type" to "opened"
-      )
-    }
+    AsyncFunction("cancelPendingBrowserOpen") {
+      connectionHelper.cancelPendingBrowserOpen()
+    }.runOnQueue(Queues.MAIN)
   }
 
   // these must be `internal` to be able to be injected in tests
   internal lateinit var customTabsResolver: CustomTabsActivitiesHelper
   internal lateinit var connectionHelper: CustomTabsConnectionHelper
 
-  private fun createCustomTabsIntent(options: OpenBrowserOptions): CustomTabsIntent {
-    val builder = CustomTabsIntent.Builder()
+  private fun createCustomTabsIntent(options: OpenBrowserOptions, session: CustomTabsSession?): CustomTabsIntent {
+    val builder = CustomTabsIntent.Builder(session)
 
     val toolbarColor = options.toolbarColor
     val secondaryToolbarColor = options.secondaryToolbarColor
@@ -132,7 +160,7 @@ class WebBrowserModule : Module() {
 
     return builder.build().apply {
       val packageName = options.browserPackage
-      if (!TextUtils.isEmpty(packageName)) {
+      if (session == null && !TextUtils.isEmpty(packageName)) {
         intent.setPackage(packageName)
       }
     }

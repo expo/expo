@@ -228,6 +228,10 @@ export async function openAuthSessionAsync(
   redirectUrl?: string | null,
   options: AuthSessionOpenOptions = {}
 ): Promise<WebBrowserAuthSessionResult> {
+  if (Platform.OS === 'web' && options.additionalHeaderFields != null) {
+    throw new UnavailabilityError('WebBrowser', 'additionalHeaderFields');
+  }
+
   if (_authSessionIsNativelySupported()) {
     if (!ExponentWebBrowser.openAuthSessionAsync) {
       throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
@@ -332,31 +336,36 @@ let _onWebBrowserCloseAndroid: null | (() => void) = null;
 // is triggered instead by the bridge capturing the current state
 // (https://reactnative.dev/docs/appstate#basic-usage)
 let _isAppStateAvailable: boolean = AppState.currentState !== null;
-function _onAppStateChangeAndroid(state: AppStateStatus) {
+function _onAppStateChangeAndroid(state: AppStateStatus, canDismissBrowser: boolean) {
   if (!_isAppStateAvailable) {
     _isAppStateAvailable = true;
     return;
   }
 
-  if (state === 'active' && _onWebBrowserCloseAndroid) {
+  if (state === 'active' && canDismissBrowser && _onWebBrowserCloseAndroid) {
     _onWebBrowserCloseAndroid();
   }
 }
 
 async function _openBrowserAndWaitAndroidAsync(
   startUrl: string,
-  browserParams: WebBrowserOpenOptions = {}
+  browserParams: AuthSessionOpenOptions = {}
 ): Promise<WebBrowserResult> {
+  let browserOpened = false;
   const appStateChangedToActive = new Promise<void>((resolve) => {
     _onWebBrowserCloseAndroid = resolve;
   });
-  const stateChangeSubscription = AppState.addEventListener('change', _onAppStateChangeAndroid);
+  // Origin verification can span an app foreground cycle before any browser opens.
+  const stateChangeSubscription = AppState.addEventListener('change', (state) =>
+    _onAppStateChangeAndroid(state, browserParams.additionalHeaderFields == null || browserOpened)
+  );
 
   let result: WebBrowserResult = { type: WebBrowserResultType.CANCEL };
   let type: string | null = null;
 
   try {
     ({ type } = await openBrowserAsync(startUrl, browserParams));
+    browserOpened = type === 'opened';
   } catch (e) {
     stateChangeSubscription.remove();
     _onWebBrowserCloseAndroid = null;
@@ -376,7 +385,7 @@ async function _openBrowserAndWaitAndroidAsync(
 async function _openAuthSessionPolyfillAsync(
   startUrl: string,
   returnUrl?: string | null,
-  browserParams: WebBrowserOpenOptions = {}
+  browserParams: AuthSessionOpenOptions = {}
 ): Promise<WebBrowserAuthSessionResult> {
   if (_redirectSubscription) {
     throw new Error(
@@ -388,12 +397,11 @@ async function _openAuthSessionPolyfillAsync(
     throw new Error(`WebBrowser is already open, only one can be open at a time`);
   }
 
+  let browserPromise: Promise<WebBrowserResult> | undefined;
   try {
     if (Platform.OS === 'android') {
-      return await Promise.race([
-        _openBrowserAndWaitAndroidAsync(startUrl, browserParams),
-        _waitForRedirectAsync(returnUrl),
-      ]);
+      browserPromise = _openBrowserAndWaitAndroidAsync(startUrl, browserParams);
+      return await Promise.race([browserPromise, _waitForRedirectAsync(returnUrl)]);
     } else {
       return await Promise.race([
         openBrowserAsync(startUrl, browserParams),
@@ -401,6 +409,13 @@ async function _openAuthSessionPolyfillAsync(
       ]);
     }
   } finally {
+    if (Platform.OS === 'android' && browserParams.additionalHeaderFields != null) {
+      // Keep the auth guard until validation cannot launch and the old waiter has cleaned up.
+      await ExponentWebBrowser.cancelPendingBrowserOpen().then(() => {
+        _onWebBrowserCloseAndroid?.();
+      });
+      await browserPromise?.catch(() => {});
+    }
     // We can't dismiss the browser on Android, only call this when it's available.
     // Users on Android need to manually press the 'x' button in Chrome Custom Tabs, sadly.
     if (ExponentWebBrowser.dismissBrowser) {

@@ -104,6 +104,23 @@ export type WebBrowserOpenOptions = {
  */
 export type AuthSessionOpenOptions = WebBrowserOpenOptions & {
   /**
+   * HTTP headers to supply when opening the authentication URL.
+   * On iOS 17.4 and macOS 14.4 or later, the system applies them to the initial request.
+   * Earlier versions and web reject this option.
+   *
+   * On Android, the URL must use HTTPS. The selected browser must verify your app and
+   * the URL's origin through Digital Asset Links with the
+   * `delegate_permission/common.use_as_origin` relation. Opening rejects if verification
+   * fails or does not finish within 30 seconds. The browser can filter headers and forward
+   * them on HTTP redirects; do not rely on headers staying on the initial request.
+   *
+   * Omitting this option preserves the normal authentication flow.
+   * @platform android
+   * @platform ios 17.4+
+   */
+  additionalHeaderFields?: Record<string, string>;
+
+  /**
    * Determines whether the session should ask the browser for a private authentication session.
    * Set this to `true` to request that the browser doesn’t share cookies or other browsing data between the authentication session and the user’s normal browser session.
    * Whether the request is honored depends on the user’s default web browser.
