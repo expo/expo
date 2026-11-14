@@ -96,6 +96,27 @@ describe(SQLiteStatement, () => {
     await statement.finalizeAsync();
   });
 
+  it('reading a result without rows should not run the statement again', async () => {
+    // SQLite runs a statement again when it is stepped after it returned SQLITE_DONE.
+    const statement = await db.prepareAsync('INSERT INTO test (value, intValue) VALUES (?, ?)');
+    const rows: unknown[] = [];
+    for await (const row of await statement.executeAsync('read', 1)) {
+      rows.push(row);
+    }
+    rows.push(await (await statement.executeAsync('read', 2)).getFirstAsync());
+    for (const row of statement.executeSync('read', 3)) {
+      rows.push(row);
+    }
+    rows.push(statement.executeSync('read', 4).getFirstSync());
+    await statement.finalizeAsync();
+    expect(rows).toEqual([null, null]);
+    const read = await db.getAllAsync<TestEntity>(
+      'SELECT intValue FROM test WHERE value = ? ORDER BY intValue ASC',
+      'read'
+    );
+    expect(read.map((row) => row.intValue)).toEqual([1, 2, 3, 4]);
+  });
+
   it('executeForRawResultAsync + getFirstAsync should return the first raw value array', async () => {
     const statement = await db.prepareAsync('SELECT * FROM test WHERE intValue = ?');
     const result = await statement.executeForRawResultAsync<TestEntity>(123);
@@ -170,8 +191,10 @@ describe(SQLiteStatement, () => {
 
   it('a superseded result that must step for its first row should throw', async () => {
     const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue > ?');
-    // No row matches, so this result has no cached row and has to step the cursor.
+    // A reset result has no cached row, so it has to step the cursor.
     const first = await statement.executeAsync<TestEntity>(1000);
+    expect(await first.getFirstAsync()).toBeNull();
+    await first.resetAsync();
     await statement.executeAsync<TestEntity>(0);
     await expect(first.getFirstAsync()).rejects.toThrow(/prepared statement ran again/);
     await statement.finalizeAsync();
@@ -253,8 +276,10 @@ describe(SQLiteStatement, () => {
 
   it('getFirstSync on a superseded result should throw', async () => {
     const statement = await db.prepareAsync('SELECT intValue FROM test WHERE intValue > ?');
-    // No row matches, so this result has no cached row and has to step the cursor.
+    // A reset result has no cached row, so it has to step the cursor.
     const first = statement.executeSync<TestEntity>(1000);
+    expect(first.getFirstSync()).toBeNull();
+    first.resetSync();
     statement.executeSync<TestEntity>(0);
     expect(() => first.getFirstSync()).toThrow(/prepared statement ran again/);
     await statement.finalizeAsync();

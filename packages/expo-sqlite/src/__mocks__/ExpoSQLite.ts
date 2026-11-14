@@ -130,6 +130,9 @@ class NativeStatement {
   private nodeStmt: StatementSync | null = null;
   private iterator: Iterator<unknown> | null = null;
   private boundParams: SQLiteBindParams = [];
+  // Whether the last step returned SQLITE_DONE. SQLite resets such a statement on its next step
+  // and runs it again, so `_step()` does too.
+  private isDone = false;
 
   prepare(nodeDb: DatabaseSync, source: string) {
     const stmt = nodeDb.prepare(source);
@@ -214,6 +217,7 @@ class NativeStatement {
 
     if (this.nodeStmt.columns().length === 0) {
       const result = this.nodeStmt.run(...asBindArgs(params));
+      this.isDone = true;
       return {
         lastInsertRowId: Number(result.lastInsertRowid),
         changes: Number(result.changes),
@@ -224,6 +228,7 @@ class NativeStatement {
     // node:sqlite exposes no changes/lastInsertRowId for row-returning statements.
     this.iterator = this.nodeStmt.iterate(...asBindArgs(params));
     const first = this.iterator.next();
+    this.isDone = first.done ?? false;
     return {
       lastInsertRowId: 0,
       changes: 0,
@@ -232,10 +237,15 @@ class NativeStatement {
   };
 
   private _step = (): SQLiteColumnValues | null => {
+    if (this.isDone) {
+      const { firstRowValues } = this._run(this.boundParams);
+      return firstRowValues.length > 0 ? firstRowValues : null;
+    }
     if (this.iterator == null) {
       return null;
     }
     const result = this.iterator.next();
+    this.isDone = result.done ?? false;
     return result.done ? null : (result.value as SQLiteColumnValues);
   };
 
@@ -250,6 +260,7 @@ class NativeStatement {
       rows.push(result.value as SQLiteColumnValues);
       result = this.iterator.next();
     }
+    this.isDone = true;
     return rows;
   };
 
@@ -262,11 +273,13 @@ class NativeStatement {
     assert(this.nodeStmt);
     this.iterator?.return?.();
     this.iterator = this.nodeStmt.iterate(...asBindArgs(this.boundParams));
+    this.isDone = false;
   };
 
   private _finalize = () => {
     this.iterator?.return?.();
     this.iterator = null;
+    this.isDone = false;
   };
 }
 
