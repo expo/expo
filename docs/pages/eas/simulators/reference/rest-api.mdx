@@ -129,7 +129,7 @@ Save `data.id` and set it as `SESSION_ID` for the remaining examples. `url` link
 
 The response's `maxDurationMinutes` matches the requested session duration. A request for 30 minutes returns `30`.
 
-Only paid plans can start sessions. The duration limit on a paid plan is 115 minutes. When you omit `maxDurationMinutes`, the session gets this maximum. See [Session duration limits](/eas/simulators/reference/usage-and-billing/#session-duration-limits).
+Only paid plans can start sessions. The duration limit is 115 minutes. When you omit `maxDurationMinutes`, the session gets this maximum. See [Session duration limits](/eas/simulators/reference/usage-and-billing/#session-duration-limits).
 
 `remoteConfig` is `null` while the session is new, queued, or starting. Poll the [get endpoint](#get-a-session) for status and connection details together.
 
