@@ -57,7 +57,7 @@ internal struct PackageHolder {
    or a shared object class with the same name takes precedence.
    */
   func viewType(named viewName: String) -> (any AnyNativeView.Type)? {
-    return views.first { unqualifiedTypeName($0) == viewName }
+    return views.first { $0._jsName == viewName }
   }
 
   /**
@@ -69,7 +69,7 @@ internal struct PackageHolder {
     var names = moduleHolders.map(\.name)
     var seenNames = Set(names)
     let classNames = sharedObjects.map(\._jsName)
-    let viewNames = views.map { unqualifiedTypeName($0) }
+    let viewNames = views.map { $0._jsName }
 
     for (kind, exportNames) in [("Class", classNames), ("View", viewNames)] {
       for exportName in exportNames {
