@@ -31,7 +31,7 @@ public final class ModuleHolder {
 
   /**
    The `@ExpoView` views that the module registers with `@ExpoModule(views:)`, keyed by the view name,
-   which is the unqualified type name. When the definition has no views, the first one is also the
+   which is the view's `_jsName`. When the definition has no views, the first one is also the
    module's default view, as the first view of the definition is. A view whose name another view of
    the module already has isn't included.
    */
@@ -94,7 +94,7 @@ public final class ModuleHolder {
     var viewTypes: [String: any AnyNativeView.Type] = [:]
 
     for viewType in type(of: module)._viewTypes {
-      let viewName = unqualifiedTypeName(viewType)
+      let viewName = viewType._jsName
 
       if viewTypes[viewName] != nil || definitionViews[viewName] != nil {
         log.error(
@@ -208,7 +208,7 @@ public final class ModuleHolder {
       }
       let config = NativeViewComponentConfig(
         name: ExpoFabricView.componentName(moduleName: name, viewName: viewName),
-        displayName: unqualifiedTypeName(viewType),
+        displayName: viewType._jsName,
         propNames: viewType.propNames,
         eventNames: viewType.eventNames
       )

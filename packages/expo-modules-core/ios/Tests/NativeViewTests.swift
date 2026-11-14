@@ -29,6 +29,12 @@ private final class OtherCardView: ExpoNativeView {}
 @ExpoModule("NativeCards", views: [NativeCardView.self])
 private final class NativeCardsModule: Module {}
 
+@ExpoView<NativeCardProps>("FancyCard")
+private final class RenamedCardView: ExpoNativeView {}
+
+@ExpoModule("RenamedCards", views: [RenamedCardView.self])
+private final class RenamedCardsModule: Module {}
+
 private enum First {
   @ExpoView<NativeCardProps>
   final class MarkerView: ExpoNativeView {}
@@ -151,6 +157,16 @@ struct NativeViewTests {
     #expect(ObjectIdentifier(viewType) == ObjectIdentifier(NativeCardView.self))
     #expect(viewType.propNames == ["title", "radius"])
     #expect(viewType.eventNames == ["onTap"])
+  }
+
+  @Test
+  func `module registers a view under the name from the macro argument`() throws {
+    let appContext = AppContext()
+    let holder = ModuleHolder(appContext: appContext, module: RenamedCardsModule(appContext: appContext), name: nil)
+    let viewType = try #require(holder.nativeViewTypes["FancyCard"])
+
+    #expect(holder.nativeViewTypes.keys.sorted() == [DEFAULT_MODULE_VIEW, "FancyCard"])
+    #expect(ObjectIdentifier(viewType) == ObjectIdentifier(RenamedCardView.self))
   }
 
   @Test
