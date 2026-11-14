@@ -80,6 +80,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal val onError by EventDispatcher<ImageErrorEvent>()
   internal val onLoad by EventDispatcher<ImageLoadEvent>()
   internal val onDisplay by EventDispatcher<Unit>()
+  internal val onPlaceholderDisplay by EventDispatcher<Unit>()
 
   internal var sources: List<Source> = emptyList()
   private val bestSource: Source?
@@ -231,6 +232,11 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   private var loadedPlaceholder: GlideModelProvider? = null
 
   /**
+   * Placeholder for which "onPlaceholderDisplay" was last dispatched
+   */
+  private var notifiedPlaceholder: GlideModelProvider? = null
+
+  /**
    * Whether the transformation matrix should be reapplied
    */
   private var transformationMatrixChanged = false
@@ -270,6 +276,18 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         }
       )
     }
+  }
+
+  /**
+   * Dispatches "onPlaceholderDisplay" unless the same placeholder was already reported
+   * and no main image has been displayed since.
+   */
+  private fun dispatchPlaceholderDisplay() {
+    if (loadedPlaceholder == notifiedPlaceholder) {
+      return
+    }
+    notifiedPlaceholder = loadedPlaceholder
+    onPlaceholderDisplay.invoke(Unit)
   }
 
   /**
@@ -319,8 +337,15 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           configureView(newView, target, resource, isPlaceholder)
 
           // Dispatch "onDisplay" event only for the main source (no placeholder).
-          if (target.hasSource) {
-            onDisplay.invoke(Unit)
+          // A placeholder reaching this branch is rendered as the main image, so it gets
+          // "onPlaceholderDisplay" instead.
+          if (isPlaceholder) {
+            dispatchPlaceholderDisplay()
+          } else {
+            notifiedPlaceholder = null
+            if (target.hasSource) {
+              onDisplay.invoke(Unit)
+            }
           }
 
           if (transitionDuration <= 0) {
@@ -393,6 +418,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
             }
 
           configureView(firstView, target, resource, isPlaceholder)
+          dispatchPlaceholderDisplay()
           val transitionDuration = (transition?.duration ?: 0).toLong()
           if (transitionDuration > 0) {
             firstView.bringToFront()
@@ -532,6 +558,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       shouldRerender = false
       loadedSource = null
       loadedPlaceholder = null
+      notifiedPlaceholder = null
       transformationMatrixChanged = false
       clearViewBeforeChangingSource = false
       return true
