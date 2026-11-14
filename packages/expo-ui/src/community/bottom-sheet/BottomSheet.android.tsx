@@ -61,6 +61,7 @@ export function BottomSheet(props: BottomSheetProps) {
     onClose,
     onDismiss,
     enablePanDownToClose = false,
+    shouldDismissOnBackPress = enablePanDownToClose,
     enableDynamicSizing = true,
     handleComponent,
     backgroundStyle,
@@ -197,7 +198,7 @@ export function BottomSheet(props: BottomSheetProps) {
             sheetGesturesEnabled={enablePanDownToClose}
             containerColor={containerColor}
             properties={{
-              shouldDismissOnBackPress: enablePanDownToClose,
+              shouldDismissOnBackPress,
               shouldDismissOnClickOutside: enablePanDownToClose,
             }}>
             <RNHostView matchContents={fitToContents}>
