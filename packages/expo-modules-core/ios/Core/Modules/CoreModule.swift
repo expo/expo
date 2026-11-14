@@ -112,17 +112,31 @@ internal final class CoreModule: Module {
       throw WorkletUIRuntimeException()
     }
 
-    // The runtime is created and stored on the main thread: setting `_uiRuntime` prepares it there.
+    // The runtime is created, prepared and stored on the main thread, which is the thread of the UI runtime.
     // `DispatchQueue.main.sync` doesn't escape its closure and rethrows, so the closure can borrow the
     // holder and the error reaches the caller directly.
     if Thread.isMainThread {
-      appContext._uiRuntime = try factory(appContext, uiRuntimeHolder, runtime)
+      try installUIRuntime(factory: factory, holder: uiRuntimeHolder, runtime: runtime, appContext: appContext)
     } else {
       try DispatchQueue.main.sync {
-        appContext._uiRuntime = try factory(appContext, uiRuntimeHolder, runtime)
+        try installUIRuntime(factory: factory, holder: uiRuntimeHolder, runtime: runtime, appContext: appContext)
       }
     }
   }
+}
+
+private func installUIRuntime(
+  factory: AppContext.UIRuntimeFactory,
+  holder: borrowing JavaScriptValue,
+  runtime: JavaScriptRuntime,
+  appContext: AppContext
+) throws {
+  let uiRuntime = try factory(appContext, holder, runtime)
+
+  try JavaScriptActor.assumeIsolated {
+    try appContext.attach(runtime: uiRuntime)
+  }
+  appContext._uiRuntime = uiRuntime
 }
 
 internal final class WorkletUIRuntimeException: Exception, @unchecked Sendable {
