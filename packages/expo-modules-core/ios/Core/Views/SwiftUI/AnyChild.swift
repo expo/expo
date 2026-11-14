@@ -30,6 +30,15 @@ extension ExpoSwiftUI {
   public enum ChildIdentity: Hashable {
     case object(ObjectIdentifier)
     case string(String)
+
+    /// The identity as a String, for `ForEach` and `.id`. WidgetKit matches
+    /// views across a timeline reload by String ids, but not by this enum.
+    public var key: String {
+      switch self {
+      case .string(let value): return "s:" + value
+      case .object(let id): return "o:\(id)"
+      }
+    }
   }
 }
 
