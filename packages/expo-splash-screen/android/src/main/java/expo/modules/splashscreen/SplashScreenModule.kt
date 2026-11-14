@@ -28,6 +28,7 @@ class SplashScreenModule : Module() {
       // the user to do it.
       userControlledAutoHideEnabled = true
       SplashScreenManager.preventAutoHideCalled = true
+      SplashScreenManager.userControlledAutoHide = true
       return@AsyncFunction true
     }
 
