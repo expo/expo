@@ -3,11 +3,12 @@ import * as React from 'react';
 
 import { StackRouter as ExpoStackRouter } from '../../layouts/stack-router';
 import {
-  type NavigationState,
-  type StackNavigationState,
-  type ParamListBase,
+  type NavigationAction,
   StackRouter,
   TabRouter,
+  type NavigationState,
+  type ParamListBase,
+  type StackNavigationState,
 } from '../../react-navigation/routers';
 import type { RouterRegistry, RouterRegistryEntry } from '../routerRegistry';
 import { useNavigationTreeReducer } from '../useNavigationTreeReducer';
@@ -463,4 +464,67 @@ test('ignores a required screens sync for a route that is no longer focused', as
   );
 
   expect(result.result.current.state).toBe(state);
+});
+
+test('replays a prevented browser restore as a move to the restored entry', async () => {
+  // Like an app whose root layout is a Stack: the root navigator holds one route with the stack.
+  const child = { ...initialState, key: 'child' };
+  const seed = {
+    ...initialState,
+    routeNames: ['layout'],
+    routes: [{ key: 'layout', name: 'layout', state: child }],
+  };
+  const nestedRegistry: RouterRegistry = new Map<string, RouterRegistryEntry>([
+    ['root', entry(StackRouter({}), ['layout'])],
+    ['child', entry(StackRouter({}), initialState.routeNames)],
+  ]);
+  const prevented = new Set<string>();
+  const result = await renderHook(() =>
+    useNavigationTreeReducer({
+      initialState: seed,
+      registry: nestedRegistry,
+      routesWithRemovalPrevented: prevented,
+    })
+  );
+  const initialEntryId = browserEvents(result)![0]!;
+  await act(() =>
+    result.result.current.handleAction({
+      type: 'PUSH',
+      target: 'child',
+      payload: { name: 'second' },
+    })
+  );
+  expect(browserEvents(result)?.at(-1)).toMatchObject({ op: 'push', path: '/layout' });
+  const childState = result.result.current.state.routes[0]!.state as NavigationState;
+  const secondKey = childState.routes[1]!.key;
+  prevented.add(secondKey);
+
+  // Browser Back to the first entry; `second` prevents its removal.
+  await act(() =>
+    result.result.current.processIntent({
+      type: 'BROWSER_HISTORY_CHANGED',
+      actionId: 0,
+      payload: { id: initialEntryId.op === 'go' ? null : initialEntryId.entryId, path: '/layout' },
+    })
+  );
+  const preventedEvent = result.result.current.report?.events.findLast(
+    (event) => event.type === 'prevented-routes'
+  );
+  expect(preventedEvent).toMatchObject({ routeKeys: [secondKey] });
+  expect(browserEvents(result)?.at(-1)).toEqual(expect.objectContaining({ op: 'go', delta: 1 }));
+
+  // `usePreventRemove`'s `repeat()` disables prevention and dispatches the prevented action as is.
+  prevented.delete(secondKey);
+  const eventsBefore = result.result.current.report!.events.length;
+  await act(() =>
+    result.result.current.handleAction((preventedEvent as { action: NavigationAction }).action)
+  );
+  expect(result.result.current.state.routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+    'first',
+  ]);
+  const newEvents = result.result.current.report!.events.slice(eventsBefore);
+  expect(newEvents.filter((event) => event.type === 'browser-history')).toEqual([
+    expect.objectContaining({ op: 'go', delta: -1 }),
+    expect.objectContaining({ op: 'replace', path: '/layout' }),
+  ]);
 });
