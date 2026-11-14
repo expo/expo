@@ -1,1 +1,2 @@
-export { default as ExpoMediaSession } from './ExpoMediaSession';
+export * from './MediaSession';
+export type * from './MediaSession.types';

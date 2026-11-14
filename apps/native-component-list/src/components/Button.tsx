@@ -29,6 +29,7 @@ const Button = ({
   style,
   buttonStyle,
   children,
+  testID,
 }: Props) => {
   const { theme } = useTheme();
   const labelColor = disabled ? theme.text.secondary : '#ffffff';
@@ -42,6 +43,7 @@ const Button = ({
           buttonStyle,
         ]}
         disabled={disabled || loading}
+        testID={testID}
         onPressIn={onPressIn}
         onPress={onPress}
         underlayColor={Colors.highlightColor}>
