@@ -3,9 +3,18 @@
 import SwiftUI
 import ExpoModulesCore
 
-struct RenderToImageOptions: Record {
-  @Field var fontFamily: String = ""
-  @Field var lineHeight: CGFloat? = nil
-  @Field var size: CGFloat = 24
-  @Field var color: Color = .black
+@Record
+struct RenderToImageOptions {
+  var fontFamily: String = ""
+  var lineHeight: CGFloat? = nil
+  var size: CGFloat = 24
+  var color: Color = .black
+}
+
+@Record
+struct RenderToImageResult {
+  var uri: String
+  var width: CGFloat
+  var height: CGFloat
+  var scale: CGFloat
 }
