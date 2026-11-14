@@ -480,6 +480,18 @@ export async function test(t: JasmineInterface) {
         }
       );
     }
+
+    if (Platform.OS === 'android') {
+      t.it('.getDetails() should omit the iOS-only fields', async () => {
+        const newContact = await Contact.create({ givenName: 'IosOnlyFields' });
+        contacts.push(newContact);
+
+        const fetchedDetails = await newContact.getDetails(IOS_ONLY_FIELDS);
+        for (const field of IOS_ONLY_FIELDS) {
+          t.expect(fetchedDetails[field]).toBeUndefined();
+        }
+      });
+    }
   });
 
   t.describe('.getAll()', () => {
@@ -729,6 +741,21 @@ export async function test(t: JasmineInterface) {
           t.expect(error?.code).toBe('ERR_CONTACT_NOTES_NOT_ACCESSIBLE');
         }
       );
+    }
+
+    if (Platform.OS === 'android') {
+      t.it('.getAllDetails() should omit the iOS-only fields', async () => {
+        const newContact = await Contact.create({ givenName: 'IosOnlyFields' });
+        contacts.push(newContact);
+
+        const result = await Contact.getAllDetails(IOS_ONLY_FIELDS);
+        t.expect(result.length).toBeGreaterThan(0);
+        for (const details of result) {
+          for (const field of IOS_ONLY_FIELDS) {
+            t.expect(details[field]).toBeUndefined();
+          }
+        }
+      });
     }
 
     t.it('.getAllDetails({name}) should filter contacts', async () => {
@@ -2323,3 +2350,12 @@ export async function test(t: JasmineInterface) {
     });
   });
 }
+
+const IOS_ONLY_FIELDS = [
+  ContactField.MAIDEN_NAME,
+  ContactField.NICKNAME,
+  ContactField.IM_ADDRESSES,
+  ContactField.SOCIAL_PROFILES,
+  ContactField.BIRTHDAY,
+  ContactField.NON_GREGORIAN_BIRTHDAY,
+];

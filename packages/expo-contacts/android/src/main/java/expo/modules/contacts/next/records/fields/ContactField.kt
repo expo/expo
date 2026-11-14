@@ -32,5 +32,7 @@ enum class ContactField(val key: String) : Enumerable {
   MAIDEN_NAME("maidenName"),
   NICKNAME("nickname"),
   IM_ADDRESS("imAddresses"),
-  SOCIAL_PROFILES("socialProfiles")
+  SOCIAL_PROFILES("socialProfiles"),
+  BIRTHDAY("birthday"),
+  NON_GREGORIAN_BIRTHDAY("nonGregorianBirthday")
 }
