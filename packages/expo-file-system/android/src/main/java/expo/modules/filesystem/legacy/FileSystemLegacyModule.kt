@@ -38,10 +38,6 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okio.*
-import org.apache.commons.codec.binary.Hex
-import org.apache.commons.codec.digest.DigestUtils
-import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -53,6 +49,8 @@ import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.math.BigInteger
 import java.net.URLConnection
+import java.nio.file.Files
+import java.security.MessageDigest
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
@@ -163,8 +161,7 @@ open class FileSystemLegacyModule : Module() {
             //       more reliable than querying `OpenableColumns.SIZE` in practice in tests ¯\_(ツ)_/¯
             putDouble("size", inputStream.available().toDouble())
             if (options.md5 == true) {
-              val md5bytes = DigestUtils.md5(inputStream)
-              putString("md5", String(Hex.encodeHex(md5bytes)))
+              putString("md5", md5(inputStream))
             }
           }
         } catch (e: FileNotFoundException) {
@@ -213,12 +210,7 @@ open class FileSystemLegacyModule : Module() {
       if (uri.scheme == "file") {
         val file = uri.toFile()
         if (file.exists()) {
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            FileUtils.forceDelete(file)
-          } else {
-            // to be removed once Android SDK 25 support is dropped
-            forceDelete(file)
-          }
+          forceDelete(file)
           return@AsyncFunction
         } else {
           if (options.idempotent) {
@@ -286,19 +278,9 @@ open class FileSystemLegacyModule : Module() {
           val from = fromUri.toFile()
           val to = toUri.toFile()
           if (from.isDirectory) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-              FileUtils.copyDirectory(from, to)
-            } else {
-              // to be removed once Android SDK 25 support is dropped
-              from.copyRecursively(to, overwrite = true)
-            }
+            copyDirectory(from, to)
           } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-              FileUtils.copyFile(from, to)
-            } else {
-              // to be removed once Android SDK 25 support is dropped
-              from.copyTo(to, overwrite = true)
-            }
+            copyFile(from, to)
           }
         }
 
@@ -313,21 +295,22 @@ open class FileSystemLegacyModule : Module() {
 
         fromUri.scheme == "content" -> {
           val inputStream = context.contentResolver.openInputStream(fromUri)
+            ?: throw FileSystemCopyFailedException(fromUri)
           val out: OutputStream = FileOutputStream(toUri.toFile())
-          IOUtils.copy(inputStream, out)
+          inputStream.copyTo(out)
         }
 
         fromUri.scheme == "asset" -> {
           val inputStream = openAssetInputStream(fromUri)
           val out: OutputStream = FileOutputStream(toUri.toFile())
-          IOUtils.copy(inputStream, out)
+          inputStream.copyTo(out)
         }
 
         fromUri.scheme == null -> {
           // this is probably an asset embedded by the packager in resources
           val inputStream = openResourceInputStream(options.from)
           val out: OutputStream = FileOutputStream(toUri.toFile())
-          IOUtils.copy(inputStream, out)
+          inputStream.copyTo(out)
         }
 
         else -> {
@@ -861,8 +844,9 @@ open class FileSystemLegacyModule : Module() {
       } else {
         File(outputDir.path)
       }
-      context.contentResolver.openInputStream(documentFile.uri)
-        .use { `in` -> FileOutputStream(newFile).use { out -> IOUtils.copy(`in`, out) } }
+      val inputStream = context.contentResolver.openInputStream(documentFile.uri)
+        ?: throw FileNotFoundException("InputStream for ${documentFile.uri} was null.")
+      inputStream.use { `in` -> FileOutputStream(newFile).use { out -> `in`.copyTo(out) } }
       if (!copy) {
         documentFile.delete()
       }
@@ -1013,20 +997,81 @@ open class FileSystemLegacyModule : Module() {
   @Throws(IOException::class)
   private fun md5(file: File): String {
     val inputStream: InputStream = FileInputStream(file)
-    return inputStream.use {
-      val md5bytes = DigestUtils.md5(it)
-      String(Hex.encodeHex(md5bytes))
+    return inputStream.use { md5(it) }
+  }
+
+  @OptIn(ExperimentalStdlibApi::class)
+  @Throws(IOException::class)
+  private fun md5(inputStream: InputStream): String {
+    val digest = MessageDigest.getInstance("MD5")
+    val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+    var bytesRead: Int
+    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+      digest.update(buffer, 0, bytesRead)
     }
+    return digest.digest().toHexString()
   }
 
   /**
-   * Concatenated copy of org.apache.commons.io@1.4.0#FileUtils#forceDelete
-   * Newer version of commons-io uses File#toPath() under the hood that unsupported below Android SDK 26
-   * See docs for reference https://commons.apache.org/proper/commons-io/javadocs/api-1.4/index.html
+   * Copies [from] to [to] and keeps the modification date of [from].
+   * Unlike `File.copyTo(overwrite = true)`, this does not delete [from] when both paths point to the same file.
+   */
+  @Throws(IOException::class)
+  private fun copyFile(from: File, to: File) {
+    if (from.canonicalFile == to.canonicalFile) {
+      throw IOException("Source '$from' and destination '$to' are the same.")
+    }
+    if (to.isDirectory) {
+      throw IOException("Destination '$to' exists but is a directory.")
+    }
+    from.copyTo(to, overwrite = true)
+    to.setLastModified(from.lastModified())
+  }
+
+  /**
+   * Copies the contents of [from] into [to], merges them with the contents of an existing [to],
+   * and keeps the modification dates. When [to] is inside [from], [to] is not copied into itself.
+   */
+  @Throws(IOException::class)
+  private fun copyDirectory(from: File, to: File) {
+    val fromCanonical = from.canonicalFile
+    val toCanonical = to.canonicalFile
+    if (fromCanonical == toCanonical) {
+      throw IOException("Source '$from' and destination '$to' are the same.")
+    }
+    val excluded = toCanonical.takeIf { it.path.startsWith(fromCanonical.path + File.separator) }
+    copyDirectoryContents(from, to, excluded)
+  }
+
+  @Throws(IOException::class)
+  private fun copyDirectoryContents(from: File, to: File, excluded: File?) {
+    val children = from.listFiles() ?: throw IOException("Failed to list contents of $from")
+    if (!to.isDirectory && !to.mkdirs()) {
+      throw IOException("Unable to create directory $to.")
+    }
+    for (child in children) {
+      if (excluded != null && child.canonicalFile == excluded) {
+        continue
+      }
+      val target = File(to, child.name)
+      if (child.isDirectory) {
+        copyDirectoryContents(child, target, excluded)
+      } else {
+        copyFile(child, target)
+      }
+    }
+    to.setLastModified(from.lastModified())
+  }
+
+  /**
+   * Deletes [file]. A directory is deleted with its contents.
+   * `java.nio.file.Files` needs Android 8.0, so on older versions a symbolic link to a directory
+   * is followed and the contents of its target are deleted too.
    */
   @Throws(IOException::class)
   private fun forceDelete(file: File) {
-    if (file.isDirectory) {
+    val isSymbolicLink = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Files.isSymbolicLink(file.toPath())
+    if (file.isDirectory && !isSymbolicLink) {
       val files = file.listFiles() ?: throw IOException("Failed to list contents of $file")
       var exception: IOException? = null
       for (f in files) {

@@ -19,8 +19,6 @@ android {
 }
 
 dependencies {
-  api 'commons-codec:commons-codec:1.10'
-  api 'commons-io:commons-io:1.4'
   api 'com.squareup.okhttp3:okhttp:4.9.2'
   api 'com.squareup.okio:okio:2.9.0'
   api "androidx.documentfile:documentfile:1.1.0"
