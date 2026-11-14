@@ -712,6 +712,9 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (58.0.3):
     - ExpoModulesCore
+  - ExpoSpeech/Tests (58.0.3):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoSplashScreen (58.0.11):
     - ExpoModulesCore
   - ExpoSQLite (58.0.14):
@@ -3741,6 +3744,7 @@ DEPENDENCIES:
   - ExpoSharing (from `../../../packages/expo-sharing/ios`)
   - ExpoSMS (from `../../../packages/expo-sms/ios`)
   - ExpoSpeech (from `../../../packages/expo-speech/ios`)
+  - ExpoSpeech/Tests (from `../../../packages/expo-speech/ios`)
   - ExpoSplashScreen (from `../../../packages/expo-splash-screen/ios`)
   - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
   - ExpoSQLite/Benchmarks (from `../../../packages/expo-sqlite/ios`)
@@ -4460,7 +4464,7 @@ SPEC CHECKSUMS:
   ExpoSensors: c126f95565e222791ba5e9ce8535e4e2ecfad1c3
   ExpoSharing: 3287d1b7e0382c59f346df0c0b80da9acb899cb1
   ExpoSMS: c8b282d16f6ed0846beeec28f59bdf9218199d91
-  ExpoSpeech: c5197a19bf647a5f0d5766fa76fa597cc3139414
+  ExpoSpeech: 285f0182cbba95a10b3be102de69a17dd1aa6875
   ExpoSplashScreen: 4a16996856aeceb61b1c253c5fc9b43208705fa5
   ExpoSQLite: e36e471b931a62bae175a55fb659e2519df9a740
   ExpoStatusBar: 56aa9746e1bee4d8adbab12f4d7efc97000ac49f
