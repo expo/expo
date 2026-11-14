@@ -216,6 +216,24 @@ class UpdatesDatabaseTest {
     Assert.assertEquals(2, assetDao.loadAllAssets().size)
   }
 
+  @Test
+  fun testInsertAssets_KeyConflict_SavesTheNewRelativePath() {
+    val oldPath = "file:///android_res/raw/old_name.ttf"
+    val newPath = "file:///android_res/raw/new_name.ttf"
+
+    val update1 = insertedUpdate(Date(1000))
+    assetDao.insertAssets(listOf(asset("shared-font").apply { relativePath = oldPath }), update1)
+    updateDao.markUpdateFinished(update1)
+
+    val update2 = insertedUpdate(Date(2000))
+    assetDao.insertAssets(listOf(asset("shared-font").apply { relativePath = newPath }), update2)
+
+    Assert.assertEquals(1, assetDao.loadAllAssets().size)
+    Assert.assertEquals(newPath, assetDao.loadAssetWithKey("shared-font")!!.relativePath)
+    Assert.assertEquals(1, assetDao.loadAssetsForUpdate(update1.id).size)
+    Assert.assertEquals(1, assetDao.loadAssetsForUpdate(update2.id).size)
+  }
+
   private fun insertedUpdate(commitTime: Date) = UpdateEntity(
     UUID.randomUUID(),
     commitTime,
