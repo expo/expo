@@ -138,6 +138,15 @@ describe('Schemes', () => {
     expect(schemes).toContain('longestschemewiththehost');
   });
 
+  it(`gets schemes from a singleTop Activity`, async () => {
+    const manifest = await getFixtureManifestAsync();
+    ensureManifestHasValidIntentFilter(manifest);
+    appendScheme('myapp.test', manifest);
+    getMainActivity(manifest)!.$['android:launchMode'] = 'singleTop';
+
+    expect(getSchemesFromManifest(manifest)).toStrictEqual(['myapp.test']);
+  });
+
   it(`detect when a duplicate might be added`, async () => {
     const manifest = await getFixtureManifestAsync();
     ensureManifestHasValidIntentFilter(manifest);
