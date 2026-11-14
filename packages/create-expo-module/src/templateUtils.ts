@@ -14,7 +14,7 @@ import {
   buildViewSnippets,
   buildWebModuleSnippets,
 } from './snippets';
-import type { LocalSubstitutionData, SubstitutionData } from './types';
+import type { GeneratedNames, LocalSubstitutionData, ProjectData, SubstitutionData } from './types';
 import { env } from './utils/env';
 import { UserError } from './utils/errors';
 import { writeFileAsync, type WriteFile } from './utils/files';
@@ -75,11 +75,50 @@ export function getGeneratedWebStubSentinel(moduleName: string): string {
   return `${moduleName} is not available on the web platform`;
 }
 
-export function handleSuffix(name: string, suffix: string): string {
+function handleSuffix(name: string, suffix: string): string {
   if (name.endsWith(suffix)) {
     return name;
   }
   return `${name}${suffix}`;
+}
+
+/**
+ * Derives the generated class names from the native module name.
+ */
+function getGeneratedNames(name: string): GeneratedNames {
+  const moduleName = handleSuffix(name, 'Module');
+  return {
+    moduleName,
+    viewName: handleSuffix(name, 'View'),
+    swiftUIViewName: handleSuffix(name, 'SwiftUIView'),
+    swiftUIModifierName: handleSuffix(name, 'SwiftUIModifier'),
+    composeViewName: handleSuffix(name, 'ComposeView'),
+    composeModifierName: handleSuffix(name, 'ComposeModifier'),
+    sharedObjectName: `${moduleName}SharedObject`,
+  };
+}
+
+type StandaloneMetadata = Pick<SubstitutionData, 'author' | 'license' | 'repo'> &
+  Pick<SubstitutionData['project'], 'version' | 'description'>;
+
+/**
+ * Builds the template data of a local module, or of a standalone module when `metadata` is set.
+ * Generated names that `project` doesn't set are derived from the native module name.
+ */
+export function createSubstitutionData(
+  project: Omit<ProjectData, keyof GeneratedNames> & Partial<GeneratedNames>,
+  metadata: StandaloneMetadata | null
+): SubstitutionData | LocalSubstitutionData {
+  const projectData = { ...getGeneratedNames(project.name), ...project };
+  if (!metadata) {
+    return { project: projectData, type: 'local' };
+  }
+  const { version, description, ...packageMetadata } = metadata;
+  return {
+    project: { ...projectData, version, description },
+    ...packageMetadata,
+    type: 'standalone',
+  };
 }
 
 function lowerFirst(value: string): string {
