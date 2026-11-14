@@ -8,21 +8,29 @@ var defaultStartPoint = CGPoint(x: 0.5, y: 0.0)
 var defaultEndPoint = CGPoint(x: 0.5, y: 1.0)
 var defaultLocations: [CGFloat] = []
 
-final class LinearGradientLayer: CALayer {
-  var colors = [UIColor]()
-  var startPoint = defaultStartPoint
-  var endPoint = defaultEndPoint
-  var locations = defaultLocations
+// A CAGradientLayer is drawn by the GPU at composite time. Painting the gradient into a bitmap instead kept
+// width x height x scale^2 x 4 bytes per gradient in memory, e.g. 4.9 MB for a 402 x 337 pt view at 3x.
+final class LinearGradientLayer: CAGradientLayer {
+  private var uiColors = [UIColor]()
+  private var stopLocations = defaultLocations
+  private var requestedStartPoint = defaultStartPoint
+  private var requestedEndPoint = defaultEndPoint
+
+  override var bounds: CGRect {
+    didSet {
+      if bounds.size != oldValue.size {
+        applyPoints()
+      }
+    }
+  }
 
   override init() {
     super.init()
-    self.needsDisplayOnBoundsChange = true
     self.masksToBounds = true
   }
-  
+
   override init(layer: Any) {
     super.init(layer: layer)
-    self.needsDisplayOnBoundsChange = true
     self.masksToBounds = true
   }
 
@@ -31,117 +39,62 @@ final class LinearGradientLayer: CALayer {
   }
 
   func setColors(_ colors: [UIColor]) {
-    self.colors = colors
-    setNeedsDisplay()
+    uiColors = colors
+    applyColors()
   }
 
   func setStartPoint(_ startPoint: CGPoint?) {
-    self.startPoint = startPoint ?? defaultStartPoint
-    setNeedsDisplay()
+    requestedStartPoint = startPoint ?? defaultStartPoint
+    applyPoints()
   }
 
   func setEndPoint(_ endPoint: CGPoint?) {
-    self.endPoint = endPoint ?? defaultEndPoint
-    setNeedsDisplay()
+    requestedEndPoint = endPoint ?? defaultEndPoint
+    applyPoints()
   }
 
   func setLocations(_ locations: [CGFloat]?) {
-    self.locations = locations ?? defaultLocations
-    setNeedsDisplay()
+    stopLocations = locations ?? defaultLocations
+    applyLocations()
   }
 
-  override func display() {
-    super.display()
-
-    if colors.isEmpty || bounds.size.width.isZero || bounds.size.height.isZero {
-      return
-    }
-    let hasAlpha = colors.reduce(false) { result, color in
-      return result || color.cgColor.alpha < 1.0
-    }
-
-    #if os(macOS)
-    setLayerContentsMacOS(hasAlpha: hasAlpha)
-    #else
-    setLayerContents(hasAlpha: hasAlpha)
-    #endif
+  // Dynamic colors resolve when converted, so the view calls this again when the appearance changes.
+  func applyColors() {
+    // CAGradientLayer draws nothing for a single color, where the stock layer filled it.
+    let cgColors = uiColors.map { $0.cgColor }
+    self.colors = cgColors.count == 1 ? [cgColors[0], cgColors[0]] : cgColors
+    applyLocations()
   }
 
-  #if !os(macOS)
-  private func setLayerContents(hasAlpha: Bool) {
-    UIGraphicsBeginImageContextWithOptions(bounds.size, !hasAlpha, 0.0)
-
-    guard let contextRef = UIGraphicsGetCurrentContext() else {
+  // CAGradientLayer keeps color bands perpendicular to the axis in unit space, which tilts them on a
+  // non-square view. Android, web and the previous bitmap keep them perpendicular in points, so the end
+  // point is moved along (width² · dx, height² · dy), which gives every pixel the same color as there.
+  private func applyPoints() {
+    let start = requestedStartPoint
+    let dx = requestedEndPoint.x - start.x
+    let dy = requestedEndPoint.y - start.y
+    let a = bounds.width * bounds.width * dx
+    let b = bounds.height * bounds.height * dy
+    let norm = a * a + b * b
+    self.startPoint = start
+    guard norm > 0 else {
+      self.endPoint = requestedEndPoint
       return
     }
-
-    draw(in: contextRef)
-
-    guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
-      return
-    }
-
-    self.contents = image.cgImage
-    self.contentsScale = image.scale
-
-    UIGraphicsEndImageContext()
+    let scale = (a * dx + b * dy) / norm
+    self.endPoint = CGPoint(x: start.x + a * scale, y: start.y + b * scale)
   }
-  #else
-  private func setLayerContentsMacOS(hasAlpha: Bool) {
-    let scale = contentsScale > 0 ? contentsScale : (NSScreen.main?.backingScaleFactor ?? 2.0)
-    let pixelWidth = Int(bounds.size.width * scale)
-    let pixelHeight = Int(bounds.size.height * scale)
-    if pixelWidth == 0 || pixelHeight == 0 {
+
+  // Same stops as the stock layer: given locations first, the rest spread evenly by index.
+  private func applyLocations() {
+    let count = uiColors.count
+    guard count > 1 else {
+      self.locations = nil
       return
     }
-    let colorSpace = CGColorSpaceCreateDeviceRGB()
-    let bitmapInfo: UInt32 = hasAlpha
-      ? CGImageAlphaInfo.premultipliedLast.rawValue
-      : CGImageAlphaInfo.noneSkipLast.rawValue
-    guard let ctx = CGContext(
-      data: nil,
-      width: pixelWidth,
-      height: pixelHeight,
-      bitsPerComponent: 8,
-      bytesPerRow: 0,
-      space: colorSpace,
-      bitmapInfo: bitmapInfo
-    ) else {
-      return
+    self.locations = (0..<count).map { offset in
+      let location = stopLocations.count > offset ? stopLocations[offset] : CGFloat(offset) / CGFloat(count - 1)
+      return NSNumber(value: Double(location))
     }
-    ctx.scaleBy(x: scale, y: scale)
-    draw(in: ctx)
-    self.contents = ctx.makeImage()
-    self.contentsScale = scale
-  }
-  #endif
-
-  override func draw(in ctx: CGContext) {
-    super.draw(in: ctx)
-
-    ctx.saveGState()
-
-    let colorSpace = CGColorSpaceCreateDeviceRGB()
-    let locations = colors.enumerated().map { (offset: Int, _: UIColor) -> CGFloat in
-      if self.locations.count > offset {
-        return self.locations[offset]
-      } else {
-        return CGFloat(offset) / CGFloat(colors.count - 1)
-      }
-    }
-    let cgColors = colors.map { $0.cgColor } as CFArray
-
-    if let gradient = CGGradient(colorsSpace: colorSpace, colors: cgColors, locations: locations) {
-      let size = bounds.size
-
-      ctx.drawLinearGradient(
-        gradient,
-        start: CGPoint(x: startPoint.x * size.width, y: startPoint.y * size.height),
-        end: CGPoint(x: endPoint.x * size.width, y: endPoint.y * size.height),
-        options: [.drawsBeforeStartLocation, .drawsAfterEndLocation]
-      )
-    }
-
-    ctx.restoreGState()
   }
 }
