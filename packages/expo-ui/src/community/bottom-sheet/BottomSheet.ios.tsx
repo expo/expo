@@ -92,6 +92,7 @@ export function BottomSheet(props: BottomSheetProps) {
     enableDynamicSizing = true,
     handleComponent,
     backgroundStyle,
+    modifiers: modifiersProp,
     children,
   } = props;
   const { width } = useWindowDimensions();
@@ -215,6 +216,8 @@ export function BottomSheet(props: BottomSheetProps) {
       presentationDragIndicator(handleComponent === null ? 'hidden' : 'visible'),
       interactiveDismissDisabled(!enablePanDownToClose),
       ...(bg ? [presentationBackground(bg)] : []),
+      // The app's modifiers go last, so they can add to or override the ones above.
+      ...(modifiersProp ?? []),
     ];
   }, [
     fitToContents,
@@ -224,6 +227,7 @@ export function BottomSheet(props: BottomSheetProps) {
     handleComponent,
     enablePanDownToClose,
     backgroundStyle,
+    modifiersProp,
   ]);
 
   return (
