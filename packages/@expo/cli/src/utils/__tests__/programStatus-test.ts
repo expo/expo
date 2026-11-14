@@ -32,4 +32,15 @@ describe(withProgramStatus, () => {
       withProgramStatus({ state: 'blocked', kind: 'auth' }, async () => 'result')
     ).resolves.toBe('result');
   });
+
+  it('cuts the message to 2048 bytes without splitting a character', async () => {
+    jest.mocked(isInteractive).mockReturnValue(true);
+    const write = jest.spyOn(process.stdout, 'write').mockReturnValue(true);
+
+    await withProgramStatus({ state: 'working', msg: '€'.repeat(700) }, async () => {});
+    const msg = /:msg=([^:\x1b]+)/.exec(String(write.mock.calls[0]![0]))![1]!;
+    expect(Buffer.from(msg, 'base64').toString()).toBe('€'.repeat(682));
+
+    write.mockRestore();
+  });
 });
