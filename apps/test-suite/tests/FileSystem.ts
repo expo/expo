@@ -114,6 +114,33 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
           const dir = await Directory.pickDirectoryAsync(Paths.cache.uri);
           expect(dir.exists).toBe(true);
         });
+
+        it('Supports file handles on SAF files', async () => {
+          const safDirectory = await Directory.pickDirectoryAsync();
+          safDirectory.list().forEach((sd) => {
+            sd.delete();
+          });
+          const file = safDirectory.createFile('handle.txt', 'text/plain');
+          file.writeSync('hello world');
+
+          const reader = file.open(FileMode.ReadOnly);
+          expect(reader.size).toBe(11);
+          expect(await reader.readBytes(5)).toEqual(new Uint8Array([104, 101, 108, 108, 111])); // hello
+          expect(reader.offset).toBe(5);
+          reader.offset = 6;
+          expect(reader.readBytesSync(5)).toEqual(new Uint8Array([119, 111, 114, 108, 100])); // world
+          expect(reader.readBytesSync(5)).toEqual(new Uint8Array([]));
+          reader.close();
+
+          const appender = file.open(FileMode.Append);
+          expect(appender.offset).toBe(11);
+          await appender.writeBytes(new Uint8Array([33]));
+          appender.writeBytesSync(new Uint8Array([33]));
+          expect(appender.offset).toBe(13);
+          appender.close();
+          expect(file.textSync()).toBe('hello world!!');
+          file.delete();
+        });
       }
 
       if (Platform.OS === 'ios') {
@@ -2160,6 +2187,118 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
       const handle2 = src.open();
       expect(handle2.readBytesSync(1)).toEqual(new Uint8Array([97])); // a
       handle2.close();
+    });
+
+    it('Advances offset by the bytes actually read at the end of the file', () => {
+      const src = new File(testDirectory, 'short-read.txt');
+      src.writeSync('abcde');
+      const handle = src.open();
+      handle.offset = 3;
+      expect(handle.readBytesSync(10)).toEqual(new Uint8Array([100, 101])); // de
+      expect(handle.offset).toBe(5);
+      expect(handle.readBytesSync(1)).toEqual(new Uint8Array([]));
+      expect(handle.offset).toBe(5);
+      handle.close();
+    });
+
+    it('Keeps offset unchanged after a failed write', () => {
+      const src = new File(testDirectory, 'failed-write.txt');
+      src.writeSync('abcde');
+      const handle = src.open(FileMode.ReadOnly);
+      handle.readBytesSync(2);
+      expect(() => handle.writeBytesSync(new Uint8Array([65]))).toThrow();
+      expect(handle.offset).toBe(2);
+      handle.close();
+    });
+
+    it('Reports size while open in Truncate mode', () => {
+      const src = new File(testDirectory, 'truncate-size.txt');
+      src.writeSync('Old content');
+      const handle = src.open(FileMode.Truncate);
+      expect(handle.size).toBe(0);
+      handle.writeBytesSync(new Uint8Array([78, 101, 119])); // New
+      expect(handle.size).toBe(3);
+      expect(handle.offset).toBe(3);
+      handle.close();
+    });
+
+    it('Starts at the end of the file in Append mode', () => {
+      const src = new File(testDirectory, 'append-offset.txt');
+      src.writeSync('Hello');
+      const handle = src.open(FileMode.Append);
+      expect(handle.offset).toBe(5);
+      handle.writeBytesSync(new Uint8Array([33])); // !
+      expect(handle.offset).toBe(6);
+      expect(handle.size).toBe(6);
+      handle.close();
+      expect(src.textSync()).toBe('Hello!');
+    });
+
+    it('Reads nothing from an offset past the end of the file', () => {
+      const src = new File(testDirectory, 'past-eof.txt');
+      src.writeSync('abc');
+      const handle = src.open();
+      handle.offset = 100;
+      expect(handle.readBytesSync(2)).toEqual(new Uint8Array([]));
+      expect(handle.offset).toBe(100);
+      handle.close();
+    });
+
+    it('Keeps a pending async write intact while size is read', async () => {
+      const src = new File(testDirectory, 'write-race.txt');
+      src.create();
+      const handle = src.open();
+      const payload = new Uint8Array(64 * 1024).fill(120); // 'x'
+      const pending = handle.writeBytes(payload);
+      expect(typeof handle.size).toBe('number');
+      await pending;
+      expect(handle.offset).toBe(payload.length);
+      expect(handle.size).toBe(payload.length);
+      handle.close();
+      expect(src.size).toBe(payload.length);
+    });
+
+    it('Runs concurrent async reads in call order', async () => {
+      const src = new File(testDirectory, 'read-race.txt');
+      src.writeSync('abcdef');
+      const handle = src.open();
+      const [first, second] = await Promise.all([handle.readBytes(2), handle.readBytes(2)]);
+      expect(first).toEqual(new Uint8Array([97, 98])); // ab
+      expect(second).toEqual(new Uint8Array([99, 100])); // cd
+      expect(handle.offset).toBe(4);
+      handle.close();
+    });
+
+    it('Lets a pending async read finish when close() is called before it settles', async () => {
+      const src = new File(testDirectory, 'close-race.txt');
+      src.writeSync('abcdef');
+      const handle = src.open();
+      const pending = handle.readBytes(3);
+      handle.close();
+      expect(handle.offset).toBe(null);
+      expect(await pending).toEqual(new Uint8Array([97, 98, 99])); // abc
+      expect(handle.size).toBe(null);
+      expect(() => handle.readBytesSync(1)).toThrow();
+    });
+
+    it('Lets a pending async write finish when close() is called before it settles', async () => {
+      const src = new File(testDirectory, 'close-race-write.txt');
+      src.create();
+      const handle = src.open();
+      const pending = handle.writeBytes(new Uint8Array(256 * 1024).fill(121)); // 'y'
+      handle.close();
+      await pending;
+      expect(src.size).toBe(256 * 1024);
+    });
+
+    it('Cancels a ReadableStream while a read is pending', async () => {
+      const src = new File(testDirectory, 'cancel-stream.txt');
+      src.writeSync('abcdefghij'.repeat(1000));
+      const reader = src.readableStream().getReader();
+      const pending = reader.read();
+      await reader.cancel();
+      const result = await pending;
+      expect(result.done === true || result.value?.length === 1024).toBe(true);
     });
 
     it('Reads a file in chunks', () => {

@@ -6,7 +6,6 @@ import type { File as PublicFile } from '../File';
 import type {
   FileCreateOptions,
   FileCanPreviewOptions,
-  FileHandle,
   FileDigestAlgorithm,
   FileInfo,
   FileMode,
@@ -35,6 +34,28 @@ import type {
   UploadProgress,
   UploadResult,
 } from '../NetworkTasks.types';
+/**
+ * The native side of a file handle: stateless positional I/O, no cursor. The cursor lives in
+ * the TypeScript `FileHandle` class. Positions and lengths are byte counts.
+ */
+export declare class NativeFileSystemFileHandle {
+  /**
+   * Reads up to `length` bytes starting at `position` on a background thread. The result holds
+   * exactly the bytes read: fewer than `length` at the end of the file, none at or past it.
+   */
+  readAt(position: number, length: number): Promise<ArrayBuffer>;
+  readAtSync(position: number, length: number): ArrayBuffer;
+  /**
+   * Writes all of `bytes` at `position` on a background thread and resolves with the offset right
+   * after the written bytes. In append mode the position is ignored and the data goes to the end
+   * of the file.
+   */
+  writeAt(position: number, bytes: Uint8Array): Promise<number>;
+  writeAtSync(position: number, bytes: Uint8Array): number;
+  close(): void;
+  readonly size: number | null;
+}
+
 export declare class NativeFileSystemDirectory {
   /**
    * Creates an instance of a directory.
@@ -278,17 +299,13 @@ export declare class NativeFileSystemFile {
   rename(newName: string): void;
 
   /**
-   * Returns A `FileHandle` object that can be used to read and write data to the file.
-   *
-   * @param mode - The {@link FileMode} to use.
-   * - On **Android**, SAF `content://` URIs do not support `ReadWrite` mode.
-   * - **Defaults**:
-   *   - For SAF `content://` URIs, the default is `FileMode.ReadOnly`.
-   *   - For standard `file://` URIs, the default is `FileMode.ReadWrite`.
+   * Opens the native, cursor-less handle that the TypeScript `FileHandle` wraps.
+   * `File.open()` documents the mode defaults and platform limits.
    *
    * @throws Error if the file does not exist or cannot be opened.
+   * @hidden
    */
-  open(mode?: FileMode): FileHandle;
+  openHandle(mode?: FileMode): NativeFileSystemFileHandle;
   /**
    * Determines whether the platform can preview this file.
    */
