@@ -17,13 +17,13 @@ public class PermissionsModule: Module {
     }
 
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
-      appContext?
-        .permissions?
-        .getPermissionUsingRequesterClass(
-          ExpoNotificationsPermissionsRequester.self,
-          resolve: promise.legacyResolver,
-          reject: promise.legacyRejecter
-        )
+      requester.getPermissions(resolver: { result in
+        if let permission = result as? [AnyHashable: Any] {
+          promise.legacyResolver(EXPermissionsService.parsePermission(fromRequester: permission))
+        } else {
+          promise.legacyRejecter("ERR_PERMISSIONS_GET_NOTIFICATIONS", "Unexpected permission result type", nil)
+        }
+      })
     }
 
     AsyncFunction("requestPermissionsAsync") { (requestedPermissions: NotificationPermissionRecord, promise: Promise) in
