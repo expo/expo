@@ -7,6 +7,7 @@ import {
   appendDebugIdToSourceMap,
   composeSourceMaps,
   flattenSourceMap,
+  normalizeExportSourceMapPaths,
   rawMappingsToEncodedMap,
   sourceMapString,
   sourceMapStringNonBlocking,
@@ -16,6 +17,21 @@ import {
   type ComposableSourceMap,
   type MetroSourceMapSegmentTuple,
 } from '../sourceMap';
+
+it('resolves a filesystem sourceRoot before normalizing exported source paths', () => {
+  const map = normalizeExportSourceMapPaths(
+    {
+      version: 3,
+      sourceRoot: '/private/project',
+      sources: ['app/hello.ts', '/private/project/shared.ts', 'custom://original.ts'],
+      names: [],
+      mappings: 'AAAA',
+    },
+    '/private/project'
+  );
+  expect(map.sourceRoot).toBeUndefined();
+  expect(map.sources).toEqual(['/app/hello.ts', '/shared.ts', 'custom://original.ts']);
+});
 
 function buildMap(opts: {
   file?: string;

@@ -5,6 +5,15 @@ import type { SerialAsset } from './serializerAssets';
 type SourceMap = { source: string; debugId?: string };
 type BundleAnnotations = { sourceMapUrl?: string | null; debugId?: string };
 
+export const TRAILING_BUNDLE_ANNOTATIONS =
+  /((?:^|\n)\/\/# (?:sourceMappingURL|sourceURL|debugId)=[^\n]*)+\s*$/;
+
+export function replaceSourceMapUrl(source: string, url: string): string {
+  return source.replace(TRAILING_BUNDLE_ANNOTATIONS, (annotations) =>
+    annotations.replace(/(^|\n)(\/\/# sourceMappingURL=)[^\r\n]*/g, '$1$2' + url)
+  );
+}
+
 export async function serializeJavaScriptArtifactsAsync({
   includeSourceMaps,
   inlineSourceMap,

@@ -1,3 +1,5 @@
+import type { Module } from '@expo/metro/metro/DeltaBundler/types';
+
 export type ChunkingStrategy = 'granular' | 'legacy';
 export type AsyncModulePath = string | readonly string[];
 export type AsyncModulePaths = Record<string, AsyncModulePath>;
@@ -38,3 +40,25 @@ export type SerialAsset = {
     requires?: string[];
   };
 };
+
+export function getModuleReferences(modules: Iterable<Module>) {
+  const dependencies = [...modules];
+  return {
+    expoDomComponentReferences: collectOutputReferences(dependencies, 'expoDomComponentReference'),
+    reactClientReferences: collectOutputReferences(dependencies, 'reactClientReference'),
+    reactServerReferences: collectOutputReferences(dependencies, 'reactServerReference'),
+    loaderReferences: collectOutputReferences(dependencies, 'loaderReference'),
+  };
+}
+
+function collectOutputReferences(modules: readonly Module[], key: string): string[] {
+  const references = new Set<string>();
+  for (const module of modules) {
+    for (const output of module.output) {
+      // TODO: This is a mess. This needs to be properly typed
+      const data = output.data as Record<string, unknown>;
+      if (typeof data[key] === 'string') references.add(data[key]);
+    }
+  }
+  return [...references];
+}

@@ -278,7 +278,7 @@ describe('side-effecty imports', () => {
           "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
             "use strict";
           },"/app/index.js",[]);
-          TEST_RUN_MODULE("/app/index.js");"
+          __r("/app/index.js");"
         `);
   });
 
@@ -304,7 +304,7 @@ var hey = 0;
           __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
             var hey = 0;
           },"/app/node_modules/foo/index.js",[]);
-          TEST_RUN_MODULE("/app/index.js");"
+          __r("/app/index.js");"
       `);
   });
 
@@ -326,7 +326,7 @@ var hey = 0;
       "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
       },"/app/index.js",[]);
-      TEST_RUN_MODULE("/app/index.js");"
+      __r("/app/index.js");"
     `);
   });
 });
@@ -657,7 +657,7 @@ describe('cjs', () => {
           return a - b;
         }
       },"/app/math.js",[]);
-      TEST_RUN_MODULE("/app/index.js");"
+      __r("/app/index.js");"
     `);
   });
 });
@@ -729,7 +729,7 @@ it(`export var with trailing exports`, async () => {
       };
       var _default = createInstance();
     },"/app/b.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 
   expectImports(graph, '/app/index.js').toEqual([
@@ -774,7 +774,7 @@ it(`export var with trailing exports (const and function)`, async () => {
       });
       const add = function () {};
     },"/app/lib.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 
   expectImports(graph, '/app/index.js').toEqual([
@@ -1128,7 +1128,7 @@ export { Worm as default };
       });
       const createLucideIcon = (iconName, iconNode) => {};
     },"/app/createLucideIcon.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });
 
@@ -1191,7 +1191,7 @@ it(`removes unused exports`, async () => {
   expect(artifacts).toMatchInlineSnapshot(`
     [
       {
-        "filename": "_expo/static/js/web/index-8abca6d5d425c00e018d01046c13c550.js",
+        "filename": "_expo/static/js/web/index-c2509941615149769c29c0e33208cdfa.js",
         "metadata": {
           "expoDomComponentReferences": [],
           "isAsync": false,
@@ -1222,7 +1222,7 @@ it(`removes unused exports`, async () => {
         return a + b;
       }
     },"/app/math.js",[]);
-    TEST_RUN_MODULE("/app/index.js");",
+    __r("/app/index.js");",
         "type": "js",
       },
     ]
@@ -1414,7 +1414,7 @@ it(`preserves remapped imports when an import with the same name is removed`, as
         return Platform;
       }({});
     },"/app/x0.ts",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
   expect(artifact.source).toMatch('require(_dependencyMap[0]).Platform');
 });
@@ -1469,7 +1469,7 @@ it(`recursively expands export all statements (shallow)`, async () => {
       });
       const z1 = 0;
     },"/app/x1.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });
 
@@ -1536,7 +1536,7 @@ it(`recursively expands unused with overlapping exports`, async () => {
       });
       var _default = {};
     },"/app/x1.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });
 
@@ -1562,7 +1562,7 @@ it(`removes all overlapping exports (export-all and default)`, async () => {
     "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
     },"/app/index.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });
 
@@ -1638,7 +1638,7 @@ it(`TODO: removes default export with overlapping exports (export-all and defaul
       const z1 = 0;
       var _default = {};
     },"/app/x1.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });
 
@@ -1730,7 +1730,7 @@ it(`recursively expands export all statements`, async () => {
       });
       const z1 = 0;
     },"/app/x2.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });
 it(`recursively expands export all statements with nested statements`, async () => {
@@ -1792,7 +1792,7 @@ it(`recursively expands export all statements with nested statements`, async () 
       });
       const z1 = 0;
     },"/app/x1.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });
 it(`cannot expands export all statements with cjs usage`, async () => {
@@ -1977,7 +1977,7 @@ it(`recursively expands export all statements while omitting existing and defaul
       const z3 = 0;
       var _default = 0;
     },"/app/x2.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });
 

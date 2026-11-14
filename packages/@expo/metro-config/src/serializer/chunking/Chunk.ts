@@ -4,12 +4,12 @@ import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import assert from 'assert';
 import path from 'path';
 
-import { stringToUUID } from '../debugId';
-import { getExportPathForDependencyWithOptions } from '../exportPath';
+import { getExportPathForDependencyWithOptions, getSiblingSourceMapUrl } from '../exportPath';
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
+import { getServerRunModuleStatement } from '../getServerRunModuleStatement';
 import { transformJsAssetToHermesBytecodeAsync } from '../hermesArtifacts';
 import { serializeJavaScriptArtifactsAsync } from '../serializeJavaScriptArtifacts';
-import type { SerialAsset } from '../serializerAssets';
+import { getModuleReferences, type SerialAsset } from '../serializerAssets';
 import { getSourceMapOptions, sourceMapStringNonBlocking } from '../sourceMap';
 import type {
   ChunkingImplementation,
@@ -124,6 +124,10 @@ export class Chunk {
     const jsSplitBundle = getBaseJSBundleWithDependencies()(entryFile, preModules, dependencies, {
       ...this.options,
       sourceMapOptions: getSourceMapOptions(this.options, this.isServer),
+      getRunModuleStatement:
+        this.isServer && this.isEntry
+          ? getServerRunModuleStatement(entryFile, this.options)
+          : this.options.getRunModuleStatement,
       runBeforeMainModule:
         options.runBeforeMainModule ??
         serializerConfig?.getModulesRunBeforeMainModule?.(
@@ -178,6 +182,16 @@ export class Chunk {
   }
 
   private getAdjustedSourceMapUrl(filename: string): string | null {
+    if (
+      this.isServer &&
+      this.options.serializerOptions?.exporting &&
+      this.options.serializerOptions.includeSourceMaps === true &&
+      this.options.sourceMapUrl &&
+      !this.options.inlineSourceMap
+    ) {
+      return getSiblingSourceMapUrl(filename);
+    }
+
     // Metro really only accounts for development, so we'll use the defaults here.
     if (this.options.dev) {
       return this.options.sourceMapUrl ?? null;
@@ -239,11 +253,12 @@ export class Chunk {
     serializerConfig: Partial<SerializerConfigT>,
     chunksByPath: Map<string, Chunk>,
     filenamesByChunk: Map<Chunk, string>,
+    debugIdsByChunk: Map<Chunk, string>,
     { includeSourceMaps, unstable_beforeAssetSerializationPlugins }: SerializeChunkOptions
   ): Promise<SerialAsset[]> {
     const outputFile = filenamesByChunk.get(this);
-    assert(outputFile, 'Precomputed filename missing for chunk: ' + this.name);
-    const debugId = stringToUUID(path.basename(outputFile, path.extname(outputFile)));
+    const debugId = debugIdsByChunk.get(this);
+    assert(outputFile && debugId, 'Precomputed output missing for chunk: ' + this.name);
     let finalPreModules = [...this.preModules];
     if (unstable_beforeAssetSerializationPlugins) {
       for (const plugin of unstable_beforeAssetSerializationPlugins) {
@@ -297,13 +312,7 @@ export class Chunk {
             // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
             modulePaths,
             paths: jsCode.paths,
-            expoDomComponentReferences: collectOutputReferences(
-              this.deps,
-              'expoDomComponentReference'
-            ),
-            reactClientReferences: collectOutputReferences(this.deps, 'reactClientReference'),
-            reactServerReferences: collectOutputReferences(this.deps, 'reactServerReference'),
-            loaderReferences: collectOutputReferences(this.deps, 'loaderReference'),
+            ...getModuleReferences(this.deps),
           },
           source: jsCode.code,
         };
@@ -351,23 +360,4 @@ export function getSortedModules(
   return modules.sort(
     (a: Module<any>, b: Module<any>) => createModuleId(a.path) - createModuleId(b.path)
   );
-}
-
-function collectOutputReferences(modules: Iterable<Module>, key: string): string[] {
-  return [
-    ...new Set(
-      [...modules]
-        .map((module) => {
-          return module.output.map((output) => {
-            // TODO: This is a mess. This needs to be properly typed
-            const data = output.data as any;
-            if (key in data && typeof data[key] === 'string') {
-              return data[key];
-            }
-            return undefined;
-          });
-        })
-        .flat()
-    ),
-  ].filter((value): value is string => typeof value === 'string');
 }
