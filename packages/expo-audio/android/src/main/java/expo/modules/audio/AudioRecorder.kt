@@ -50,6 +50,23 @@ class AudioRecorder(
   private var recordingTimerJob: Job? = null
   private var durationLimitMillis: Long? = null
   var useForegroundService = false
+  var notificationOptions = RecordingNotificationOptions()
+  var notificationSessionId = UUID.randomUUID().toString()
+    private set
+
+  internal fun handleNotificationAction(action: String, sessionId: String) {
+    if (!isPrepared || sessionId != notificationSessionId) {
+      return
+    }
+    when (action) {
+      "pause" -> if (notificationOptions.showPauseResume && isRecording) {
+        pauseRecording()
+      }
+      "resume" -> if (notificationOptions.showPauseResume && isPaused) {
+        record()
+      }
+    }
+  }
 
   val serviceConnection = AudioRecordingServiceConnection(WeakReference(this), appContext)
 
@@ -99,6 +116,7 @@ class AudioRecorder(
         serviceConnection.bindWithService()
       }
       mediaRecorder.prepare()
+      notificationSessionId = UUID.randomUUID().toString()
       isPrepared = true
     } catch (e: Exception) {
       mediaRecorder.release()
@@ -131,6 +149,7 @@ class AudioRecorder(
     isRecording = true
     isPaused = false
     scheduleRecordingStop()
+    serviceConnection.recordingServiceBinder?.service?.updateNotification()
   }
 
   fun recordWithOptions(atTimeSeconds: Double? = null, forDurationSeconds: Double? = null) {
@@ -166,6 +185,7 @@ class AudioRecorder(
     durationAlreadyRecorded = getAudioRecorderDurationMillis()
     isRecording = false
     isPaused = true
+    serviceConnection.recordingServiceBinder?.service?.updateNotification()
   }
 
   fun pauseForSystem() {
