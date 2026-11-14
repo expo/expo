@@ -84,6 +84,36 @@ describe('BottomSheet', () => {
     }
   );
 
+  itIOS(
+    'selects the requested detent on the first render after the index and snap points change',
+    async () => {
+      const view = await render(
+        <BottomSheet index={0} snapPoints={['40%', '60%']}>
+          <View />
+        </BottomSheet>
+      );
+      renderedNativeViews.mockClear();
+
+      // A smaller snap point is added in front, and the index moves so the sheet stays at 40%.
+      await view.rerender(
+        <BottomSheet index={1} snapPoints={['20%', '40%', '60%']}>
+          <View />
+        </BottomSheet>
+      );
+
+      // Every render the native sheet receives must select 40%. If a render passes the
+      // previous index, SwiftUI moves the sheet to 20% for a frame and then back to 40%.
+      const selections = renderedNativeViews.mock.calls
+        .filter(([name]) => name === 'GroupView')
+        .map(([, props]) =>
+          props.modifiers.find((m: { $type: string }) => m.$type === 'presentationDetents')
+        )
+        .map((modifier) => modifier?.selection);
+      expect(selections.length).toBeGreaterThan(0);
+      expect(selections).toEqual(selections.map(() => ({ fraction: 0.4 })));
+    }
+  );
+
   it('fills the snap point height when snap points are set', async () => {
     await render(
       <BottomSheet index={0} snapPoints={['50%']}>
