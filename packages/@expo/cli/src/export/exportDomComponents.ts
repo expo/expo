@@ -1,5 +1,9 @@
 import type { ExpoConfig } from '@expo/config';
 import { convertEntryPointToRelative } from '@expo/config/paths';
+import {
+  finalizeDomComponentArtifacts,
+  finalizeNativeDomReferences,
+} from '@expo/metro-config/build/serializer/domArtifacts';
 import assert from 'assert';
 import crypto from 'crypto';
 import path from 'path';
@@ -72,12 +76,7 @@ export async function exportDomComponentAsync({
     minify: true,
   });
 
-  if (useMd5Filename) {
-    for (const artifact of bundle.artifacts) {
-      const md5 = crypto.createHash('md5').update(artifact.source).digest('hex');
-      artifact.filename = `${md5}.${artifact.type}`;
-    }
-  }
+  if (useMd5Filename) finalizeDomComponentArtifacts(bundle.artifacts);
 
   const html = await serializeHtmlWithAssets({
     isExporting: true,
@@ -169,25 +168,7 @@ export function transformNativeBundleForMd5Filename({
   const htmlContent = files.get(htmlOutputName);
   assert(htmlContent);
   const htmlMd5 = crypto.createHash('md5').update(htmlContent.contents.toString()).digest('hex');
-  const hash = crypto.createHash('md5').update(domComponentReference).digest('hex');
-  for (const artifact of nativeBundle.artifacts) {
-    if (artifact.type !== 'js') {
-      continue;
-    }
-    if (Buffer.isBuffer(artifact.source)) {
-      if (artifact.metadata.expoDomComponentReferences?.length) {
-        throw new Error(
-          `Cannot rename DOM assets in compiled Hermes bytecode (${artifact.filename}). ` +
-            'Run `npx expo-doctor` to check package compatibility. Custom serializers must defer Hermes compilation until DOM filenames are resolved.'
-        );
-      }
-    } else {
-      const search = `${hash}.html`;
-      const replace = `${htmlMd5}.html`;
-      assert(search.length === replace.length);
-      artifact.source = artifact.source.replaceAll(search, replace);
-    }
-  }
+  finalizeNativeDomReferences(nativeBundle.artifacts, domComponentReference, htmlMd5 + '.html');
 }
 
 //#endregion `npx export` for updates
