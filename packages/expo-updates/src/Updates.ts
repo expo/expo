@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError, type EventSubscription } from 'expo-modules-core';
 import { Image } from 'react-native';
 
 import ExpoUpdates from './ExpoUpdates';
@@ -297,6 +297,20 @@ export async function setExtraParamAsync(
  */
 export async function readLogEntriesAsync(maxAge: number = 3600000): Promise<UpdatesLogEntry[]> {
   return await ExpoUpdates.readLogEntriesAsync(maxAge);
+}
+
+/**
+ * Adds a listener that receives each `expo-updates` log entry at the `warn` level or higher when it
+ * is logged. An entry has the same fields as the entries that
+ * [`readLogEntriesAsync`](#updatesreadlogentriesasyncmaxage) returns. An entry that is logged before
+ * the listener is added is not sent to it; read it with `readLogEntriesAsync`.
+ *
+ * @param listener A function that receives each log entry.
+ *
+ * @return A subscription. Call its `remove()` method to stop receiving log entries.
+ */
+export function addLogEntryListener(listener: (entry: UpdatesLogEntry) => void): EventSubscription {
+  return ExpoUpdates.addListener('Expo.updatesLogEntry', listener);
 }
 
 /**
