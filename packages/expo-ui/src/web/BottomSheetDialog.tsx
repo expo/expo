@@ -7,6 +7,7 @@ import {
   type ReactNode,
   type SyntheticEvent,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { createWebComponent, css } from '../universal/webUtils';
@@ -114,8 +115,13 @@ function isDialogOpen(dialog: HTMLDialogElement) {
 }
 
 function openDialog(dialog: HTMLDialogElement) {
-  if (typeof dialog.showModal === 'function') {
-    dialog.showModal();
+  // show(), not showModal(): the HTML spec makes everything outside a modal
+  // dialog inert, so an overlay that portals to <body> — such as react-native-web's
+  // Modal opened from sheet content — could never be used. The sheet provides the
+  // modal experience itself: scrim, Escape, focus restore, and a background
+  // `inert` that spares overlays mounted while the sheet is open.
+  if (typeof dialog.show === 'function') {
+    dialog.show();
     return;
   }
   dialog.setAttribute('open', '');
@@ -173,6 +179,10 @@ const sheetCss = css`
     border: none;
     background: transparent;
     overflow: hidden;
+    /* The dialog is not in the top layer. One step below react-native-web
+       Modal's 9999, so a Modal opened from sheet content always paints above
+       the sheet, wherever its portal node sits in <body>. */
+    z-index: 9998;
   }
   [data-expo-ui-bottom-sheet]::backdrop {
     background: transparent;
@@ -282,6 +292,50 @@ function unlockBodyScroll() {
   }
 }
 
+const SHEET_ROOT_ATTRIBUTE = 'data-expo-ui-bottom-sheet-root';
+
+// Reference counts per element, so stacked sheets restore `inert` correctly.
+const inertLocks = new Map<HTMLElement, number>();
+
+// The dialog is not modal, so the browser does not make the rest of the page
+// inert. Do it for the elements already in <body> when the sheet opens.
+// Elements appended later — such as a react-native-web Modal opened from sheet
+// content — stay interactive on purpose. Sheet roots are skipped so two open
+// sheets cannot make each other inert.
+function lockBackgroundInert() {
+  const locked: HTMLElement[] = [];
+  for (const child of Array.from(document.body.children)) {
+    if (!(child instanceof HTMLElement) || child.hasAttribute(SHEET_ROOT_ATTRIBUTE)) continue;
+    // An element without element children hosts no background content.
+    // react-native-web's Modal appends its empty portal <div> when the Modal
+    // mounts — even hidden inside sheet content — and fills it when the Modal
+    // becomes visible; `inert` here would disable that Modal.
+    if (child.childElementCount === 0) continue;
+    const count = inertLocks.get(child) ?? 0;
+    if (count === 0) {
+      // The app made this element inert itself; leave it alone.
+      if (child.inert) continue;
+      child.inert = true;
+    }
+    inertLocks.set(child, count + 1);
+    locked.push(child);
+  }
+  return () => {
+    for (const el of locked) {
+      const count = inertLocks.get(el) ?? 0;
+      if (count <= 1) {
+        inertLocks.delete(el);
+        el.inert = false;
+      } else {
+        inertLocks.set(el, count - 1);
+      }
+    }
+  };
+}
+
+// Open sheet dialogs, oldest first. Only the top-most one reacts to Escape.
+const openSheetDialogs: HTMLDialogElement[] = [];
+
 /**
  * Web-only bottom sheet built on the HTML dialog element.
  * Shared by the community and universal BottomSheet web implementations.
@@ -306,12 +360,43 @@ export function BottomSheetDialog({
   const handleRef = useRef(null);
   const dragRef = useRef<DragSession | null>(null);
   const playedEnterRef = useRef(false);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
   const [mounted, setMounted] = useState(open);
   const [dragVisual, setDragVisual] = useState<DragVisual | null>(null);
+
+  // The dialog renders in a portal under <body>. In the React tree it can sit
+  // inside a transformed or z-indexed ancestor, which would clip a non-top-layer
+  // fixed element; under <body> its z-index competes with other overlays directly.
+  const containerRef = useRef<HTMLElement | null>(null);
+  if (containerRef.current == null && typeof document !== 'undefined') {
+    const container = document.createElement('div');
+    container.setAttribute(SHEET_ROOT_ATTRIBUTE, '');
+    containerRef.current = container;
+  }
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    document.body.appendChild(container);
+    return () => {
+      container.remove();
+    };
+  }, []);
 
   useEffect(() => {
     if (open) setMounted(true);
   }, [open]);
+
+  const restoreFocus = useCallback(() => {
+    const dialog = asHTMLDialogElement(dialogRef.current);
+    const target = previouslyFocusedRef.current;
+    previouslyFocusedRef.current = null;
+    if (!target || !target.isConnected) return;
+    const active = document.activeElement;
+    // Keep focus where the user put it when it is not being lost with the sheet.
+    if (active && active !== document.body && !(dialog?.contains(active) ?? false)) return;
+    target.focus();
+  }, []);
 
   useLayoutEffect(() => {
     const dialog = asHTMLDialogElement(dialogRef.current);
@@ -320,7 +405,11 @@ export function BottomSheetDialog({
     if (!dialog || !sheet || !overlay || !mounted) return;
 
     if (open) {
-      if (!isDialogOpen(dialog)) openDialog(dialog);
+      if (!isDialogOpen(dialog)) {
+        previouslyFocusedRef.current =
+          document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        openDialog(dialog);
+      }
       if (playedEnterRef.current) return;
       playedEnterRef.current = true;
       if (prefersReducedMotion()) {
@@ -347,6 +436,7 @@ export function BottomSheetDialog({
     if (!isDialogOpen(dialog)) return;
     if (prefersReducedMotion()) {
       closeDialog(dialog);
+      restoreFocus();
       return;
     }
     sheet.style.animation = SHEET_OUT;
@@ -356,6 +446,7 @@ export function BottomSheetDialog({
       if (finished) return;
       finished = true;
       closeDialog(dialog);
+      restoreFocus();
     };
     const onEnd = (event: AnimationEvent) => {
       if (event.target === sheet) finish();
@@ -366,12 +457,17 @@ export function BottomSheetDialog({
       sheet.removeEventListener('animationend', onEnd);
       window.clearTimeout(timeout);
     };
-  }, [open, mounted]);
+  }, [open, mounted, restoreFocus]);
 
   useEffect(() => {
     if (!open) return;
     return lockBodyScroll();
   }, [open]);
+
+  useEffect(() => {
+    if (!open || !mounted) return;
+    return lockBackgroundInert();
+  }, [open, mounted]);
 
   const commitClose = useCallback(() => {
     onOpenChange(false);
@@ -400,6 +496,32 @@ export function BottomSheetDialog({
   resolveStartHeightRef.current = resolveStartHeight;
   minSnapHeightRef.current = minSnapHeight;
   dismissibleRef.current = dismissible;
+
+  // A non-modal dialog gets no `cancel` event, so Escape is handled here.
+  useEffect(() => {
+    if (!open || !mounted) return;
+    const dialog = asHTMLDialogElement(dialogRef.current);
+    if (!dialog) return;
+    openSheetDialogs.push(dialog);
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || event.defaultPrevented) return;
+      if (openSheetDialogs[openSheetDialogs.length - 1] !== dialog) return;
+      const target = event.target;
+      // An overlay above the sheet (a react-native-web Modal traps focus inside
+      // itself) owns Escape; the sheet only reacts when the key lands in the
+      // sheet or on the body.
+      if (target instanceof Node && target !== document.body && !dialog.contains(target)) return;
+      event.preventDefault();
+      if (!dismissibleRef.current) return;
+      commitCloseRef.current();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      const index = openSheetDialogs.indexOf(dialog);
+      if (index !== -1) openSheetDialogs.splice(index, 1);
+    };
+  }, [open, mounted]);
 
   useEffect(() => {
     if (!open || !mounted) return;
@@ -528,7 +650,7 @@ export function BottomSheetDialog({
     [commitClose, dismissible]
   );
 
-  if (!mounted) return null;
+  if (!mounted || !containerRef.current) return null;
 
   const dataState = open ? 'open' : 'closed';
   const renderedHeight = dragVisual?.height ?? height;
@@ -537,10 +659,11 @@ export function BottomSheetDialog({
   const sheetBackground = flatStyle?.backgroundColor ?? styles.sheet.backgroundColor;
   const handleBackground = isDarkCssColor(sheetBackground) ? HANDLE_ON_DARK : HANDLE_ON_LIGHT;
 
-  return (
+  return createPortal(
     <Dialog
       ref={dialogRef}
       aria-label={accessibleTitle}
+      aria-modal
       dataSet={{ expoUiBottomSheet: '', state: dataState }}
       onCancel={onCancel}>
       <style href="expo-ui-bottom-sheet" precedence="expo-ui">
@@ -586,7 +709,8 @@ export function BottomSheetDialog({
           {children}
         </View>
       </View>
-    </Dialog>
+    </Dialog>,
+    containerRef.current
   );
 }
 
