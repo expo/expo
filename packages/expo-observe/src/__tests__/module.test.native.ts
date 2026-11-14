@@ -127,6 +127,21 @@ function loadReanimatedInit() {
 }
 
 describe('module Proxy', () => {
+  test('passes the original integrations object to library integrations after the native configure', () => {
+    const Observe = loadModule();
+    const { registerObserveIntegration } =
+      require('../integrations/registry') as typeof import('../integrations/registry');
+    const configure = jest.fn(() => {
+      expect(mockNative.configure).toHaveBeenCalled();
+    });
+    registerObserveIntegration({ name: 'test-library', configure });
+    const shouldReport = () => true;
+
+    Observe.configure({ integrations: { 'test-library': { shouldReport } } as never });
+
+    expect(configure).toHaveBeenCalledWith({ shouldReport }, expect.any(Object));
+  });
+
   it.each([true, false, undefined])(
     "forwards a integrations object to native when 'expo-router' is %s",
     (router) => {

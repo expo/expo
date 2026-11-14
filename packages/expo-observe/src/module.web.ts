@@ -7,6 +7,7 @@ import AppMetrics, {
   type MetricAttributes,
 } from 'expo-app-metrics';
 
+import { configureRegisteredIntegrations } from './integrations/registry';
 import { reportCaughtError } from './reportCaughtError';
 import type {
   ObserveConfig,
@@ -25,7 +26,9 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
   startSpan = startSpan;
   withSpan = withSpan;
   recordSpan = recordSpan;
-  configure(config: ObserveConfig): void {}
+  configure(config: ObserveConfig): void {
+    configureRegisteredIntegrations(config.integrations ?? {});
+  }
   getIntegrations(): ObserveIntegrationsConfig {
     return {};
   }

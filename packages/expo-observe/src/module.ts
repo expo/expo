@@ -14,6 +14,7 @@ import {
 } from './integrations/react-native-reanimated/init';
 import { initReactNavigationIntegration } from './integrations/react-navigation/init';
 import { isReactNavigationInstalled } from './integrations/react-navigation/reactNavigation';
+import { configureRegisteredIntegrations } from './integrations/registry';
 import { reportCaughtError } from './reportCaughtError';
 import type { ObserveConfig, ObserveIntegrationsConfig, ObserveModule } from './types';
 
@@ -113,7 +114,11 @@ const Observe: ObserveModule = new Proxy(native, {
           disableReanimatedIntegration();
         }
         warnIfErrorSampleRateIsLower(config);
-        return target.configure(config);
+        const result = target.configure(config);
+        // After the native configure, so a library integration that reads `getIntegrations()` sees
+        // the new config.
+        configureRegisteredIntegrations(config.integrations ?? {});
+        return result;
       };
     }
 

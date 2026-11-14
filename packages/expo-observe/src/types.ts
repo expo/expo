@@ -261,6 +261,106 @@ export type ObserveReanimatedIntegrationConfig = {
 };
 
 /**
+ * Options that a library integration with error codes accepts in its config, so that every
+ * integration filters reports the same way. A library adds them to its config type, with `T` the
+ * value that its `shouldReport` gets.
+ */
+export type ObserveIntegrationFilterConfig<T = unknown> = {
+  /**
+   * Codes that are not reported.
+   *
+   * @default []
+   */
+  ignoredCodes?: string[];
+  /**
+   * Returns whether a report is sent. It runs after `ignoredCodes`, and it gets the value that the
+   * integration documents, such as the log entry the report comes from. When it throws, the report
+   * is sent and a warning is printed once.
+   */
+  shouldReport?: (value: T) => boolean;
+};
+
+/**
+ * An error that a library integration reports.
+ */
+export type ObserveIntegrationErrorReport = {
+  /** The error type, such as `updates.error`. Errors are grouped by type and message. */
+  type: string;
+  message: string;
+  stack?: string;
+  /** A stable code for the kind of error, recorded as the `expo.error.code` attribute. */
+  code?: string;
+};
+
+/**
+ * A warning that a library integration reports, recorded as an event at `warn` severity.
+ */
+export type ObserveIntegrationWarningReport = {
+  /** The event name, such as `updates.warning`. */
+  name: string;
+  displayName?: string;
+  message: string;
+  /** Recorded as the `code` attribute. */
+  code?: string;
+  attributes?: ObserveAttributes;
+};
+
+export type ObserveIntegrationReportOptions = {
+  /** The value passed to `shouldReport`. Defaults to the report itself. */
+  filterValue?: unknown;
+  /** Sends the report without applying `ignoredCodes` and `shouldReport`. */
+  skipFilter?: boolean;
+  /**
+   * The rate limit the report counts toward. Each limit allows a distinct message at most once in
+   * 15 minutes, and at most 20 distinct messages in 15 minutes. Defaults to `error` for errors and
+   * `warning` for warnings, so many warnings cannot stop errors from being reported.
+   */
+  limit?: string;
+};
+
+/**
+ * Reports for a library integration. Each report sets the `integration` source, applies the
+ * integration's `ignoredCodes` and `shouldReport` options, and then the rate limit. Each function
+ * returns whether the report was sent. Nothing is sent while the integration is disabled.
+ */
+export type ObserveIntegrationReporter = {
+  reportError(
+    report: ObserveIntegrationErrorReport,
+    options?: ObserveIntegrationReportOptions
+  ): boolean;
+  reportWarning(
+    report: ObserveIntegrationWarningReport,
+    options?: ObserveIntegrationReportOptions
+  ): boolean;
+};
+
+/**
+ * An integration that lives in another library.
+ */
+export type ObserveIntegration = {
+  /** The key of the integration in `Observe.configure({ integrations })`. */
+  name: string;
+  /**
+   * Runs on each `configure` call that enables the integration, with the original config value,
+   * functions included.
+   */
+  configure(config: unknown, reporter: ObserveIntegrationReporter): void;
+  /** Runs when a `configure` call turns off an integration that was enabled. */
+  disable?(): void;
+};
+
+/**
+ * The registry at `globalThis.__expo_observe_integrations__`. A library creates it as
+ * `{ integrations: [] }` when it is missing, pushes its integration, and calls `onRegister` when it
+ * is set.
+ */
+export type ObserveIntegrationRegistry = {
+  integrations: ObserveIntegration[];
+  /** Set by `expo-observe` after the first `configure` call. */
+  onRegister?: (integration: ObserveIntegration) => void;
+};
+
+/**
  * Events emitted by the native `ExpoObserve` module.
  */
 export type ObserveModuleEvents = {
