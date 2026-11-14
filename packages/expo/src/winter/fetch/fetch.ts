@@ -31,13 +31,23 @@ const dangerouslyGetBodyFromRequest = (
   }
 };
 
-// TODO(@kitten): Do we really want to use our own types for web standards?
-export async function fetch(
+type Fetch = (
   input: string | URL | FetchRequestLike,
   init?: FetchRequestInit
+) => Promise<FetchResponse>;
+
+type FetchImplementation = (
+  devToolsRequestId: string | undefined,
+  input: string | URL | FetchRequestLike,
+  init: FetchRequestInit | undefined
+) => Promise<FetchResponse>;
+
+// TODO(@kitten): Do we really want to use our own types for web standards?
+async function fetchImplementation(
+  devToolsRequestId: string | undefined,
+  input: string | URL | FetchRequestLike,
+  init: FetchRequestInit | undefined
 ): Promise<FetchResponse> {
-  // Created before any `await`, so React Native DevTools captures this call stack as the initiator
-  const devToolsRequestId = globalThis.__NETWORK_REPORTER__?.createDevToolsRequestId();
   const initFromRequest = isRequest(input);
   const url = initFromRequest ? input.url : input;
   const body =
@@ -103,6 +113,26 @@ export async function fetch(
   }
   return response;
 }
+
+/**
+ * On iOS, `fetch` is the host function returned by `createFetch`, which passes the request id ahead
+ * of the caller's arguments. Hermes omits host frames from the DevTools stack, so the initiator is
+ * the caller of `fetch` rather than this file. Android has no host function and records the id here.
+ */
+function installFetch(implementation: FetchImplementation): Fetch {
+  const createFetch = ExpoFetchModule.createFetch as
+    | ((implementation: FetchImplementation) => Fetch)
+    | undefined;
+  if (typeof createFetch === 'function') {
+    return createFetch(implementation);
+  }
+  return async function fetch(input, init) {
+    const devToolsRequestId = globalThis.__NETWORK_REPORTER__?.createDevToolsRequestId();
+    return implementation(devToolsRequestId, input, init);
+  };
+}
+
+export const fetch = installFetch(fetchImplementation);
 
 /**
  * A wrapper of `AbortSignal.addEventListener` that returns a cleanup function.
