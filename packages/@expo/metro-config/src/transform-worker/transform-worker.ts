@@ -307,6 +307,7 @@ async function transformCss(
             // Disable caching for CSS files when postcss is enabled and has been run on the file.
             // This ensures that things like tailwind can update on every change.
             skipCache: postcssResults.hasPostcss,
+            fileDependencies: postcssResults.fileDependencies,
             externalImports: results.externalImports,
           },
         },
@@ -356,6 +357,7 @@ async function transformCss(
     // Disable caching for CSS files when postcss is enabled and has been run on the file.
     // This ensures that things like tailwind can update on every change.
     skipCache: postcssResults.hasPostcss,
+    fileDependencies: postcssResults.fileDependencies,
     externalImports: cssImports.externalImports,
   };
 
