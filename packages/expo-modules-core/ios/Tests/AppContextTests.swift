@@ -1,5 +1,6 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 import ExpoModulesJSI
@@ -394,4 +395,32 @@ struct AppContextTests {
       #expect(try attachedRuntime.eval("typeof expo.installOnUIRuntime").asString() == "function")
     }
   }
+
+  @Suite("Added runtimes")
+  @JavaScriptActor
+  struct AddedRuntimeTests {
+    let appContext = TestAppContext()
+
+    @Test
+    func `an added runtime runs scheduled work on its own thread`() throws {
+      let addedRuntime = try appContext.addRuntime()
+      let mainThreadID = try appContext.runtime.execute { currentThreadID() }
+      let addedThreadID = try addedRuntime.execute { currentThreadID() }
+      #expect(mainThreadID != addedThreadID)
+      #expect(addedThreadID != currentThreadID())
+    }
+
+    @Test
+    func `an added runtime settles promises`() async throws {
+      let addedRuntime = try appContext.addRuntime()
+      let result = try await addedRuntime.evalAsync("Promise.resolve('settled')")
+      #expect(try result.asString() == "settled")
+    }
+  }
+}
+
+private func currentThreadID() -> UInt64 {
+  var threadID: UInt64 = 0
+  pthread_threadid_np(nil, &threadID)
+  return threadID
 }
