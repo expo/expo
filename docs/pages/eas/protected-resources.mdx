@@ -47,6 +47,10 @@ When you turn on credentials protection for an account, only Release Managers, A
 
 To turn credentials protection on or off, go to [**Credentials**](https://expo.dev/accounts/[account]/credentials) in your account and use the **Protect credentials** switch. Only Admins and Owners can change this setting.
 
-## Coming soon
+## Protected environment variables
 
-Protection for other resource types is in progress.
+When you turn on environment variable protection for an account, only Release Managers, Admins, and Owners can view, create, change, or delete [environment variables](/eas/environment-variables/) that belong only to the `production` environment. Protection applies to account-wide and project variables in every project of the account. Members with other roles don't see these variables. Variables that also belong to another environment, such as `preview`, aren't protected.
+
+To turn environment variable protection on or off, go to [**Environment variables**](https://expo.dev/accounts/[account]/environment-variables) in your account. Only Admins and Owners can change this setting.
+
+Unlike other protected resources, protected environment variables can be accessed by builds, submissions, and other workloads that run on [Expo Workflows](/eas/workflows/introduction/) infrastructure even when these workloads lack an explicitly set role. The actor that started them must have the Release Manager role or higher. Otherwise, they fail.
