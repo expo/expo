@@ -303,7 +303,7 @@ export default class TreeFS implements MutableFileSystem {
 
     this.#forEachMetadata(
       rootNode,
-      { includeNodeModules: true, includeSymlinks: true },
+      { includeNodeModules: true, includeSymlinks: true, subtreeOnly: subpath != null },
       prefix,
       (_baseName, canonicalPath, metadata) => {
         const newMetadata = files.get(canonicalPath);
@@ -1627,20 +1627,27 @@ export default class TreeFS implements MutableFileSystem {
     metadata: FileMetadata;
   }> {
     const buffer: { baseName: string; canonicalPath: string; metadata: FileMetadata }[] = [];
-    this.#forEachMetadata(this.#rootNode, opts, '', (baseName, canonicalPath, metadata) => {
-      buffer.push({ baseName, canonicalPath, metadata });
-    });
+    this.#forEachMetadata(
+      this.#rootNode,
+      { ...opts, subtreeOnly: false },
+      '',
+      (baseName, canonicalPath, metadata) => {
+        buffer.push({ baseName, canonicalPath, metadata });
+      }
+    );
     yield* buffer;
   }
 
   #forEachMetadata(
     rootNode: DirectoryNode,
-    opts: Readonly<{ includeSymlinks: boolean; includeNodeModules: boolean }>,
+    opts: Readonly<{ includeSymlinks: boolean; includeNodeModules: boolean; subtreeOnly: boolean }>,
     prefix: string,
     callback: (baseName: string, canonicalPath: string, metadata: FileMetadata) => void
   ): void {
     for (const [name, node] of rootNode) {
       if (node == null) {
+        continue;
+      } else if (opts.subtreeOnly && name === '..') {
         continue;
       } else if (!opts.includeNodeModules && isDirectory(node) && name === 'node_modules') {
         continue;
