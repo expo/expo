@@ -14,11 +14,9 @@ import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.notifications.BuildConfig
 import expo.modules.notifications.notifications.model.NotificationBehaviorRecord
 import expo.modules.notifications.notifications.model.*
-import expo.modules.notifications.service.delegates.ExpoCategoriesDelegate
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
 import expo.modules.notifications.service.delegates.ExpoSchedulingDelegate
-import expo.modules.notifications.service.interfaces.CategoriesDelegate
 import expo.modules.notifications.service.interfaces.HandlingDelegate
 import expo.modules.notifications.service.interfaces.PresentationDelegate
 import expo.modules.notifications.service.interfaces.SchedulingDelegate
@@ -47,9 +45,6 @@ open class NotificationsService : BroadcastReceiver() {
     private const val RECEIVE_TYPE = "receive"
     private const val RECEIVE_RESPONSE_TYPE = "receiveResponse"
     private const val DROPPED_TYPE = "dropped"
-    private const val GET_CATEGORIES_TYPE = "getCategories"
-    private const val SET_CATEGORY_TYPE = "setCategory"
-    private const val DELETE_CATEGORY_TYPE = "deleteCategory"
     private const val SCHEDULE_TYPE = "schedule"
     private const val TRIGGER_TYPE = "trigger"
     private const val GET_ALL_SCHEDULED_TYPE = "getAllScheduled"
@@ -73,13 +68,10 @@ open class NotificationsService : BroadcastReceiver() {
     const val NOTIFICATION_KEY = "notification"
     const val NOTIFICATION_RESPONSE_KEY = "notificationResponse"
     const val TEXT_INPUT_NOTIFICATION_RESPONSE_KEY = "textInputNotificationResponse"
-    const val SUCCEEDED_KEY = "succeeded"
     const val IDENTIFIERS_KEY = "identifiers"
     const val IDENTIFIER_KEY = "identifier"
     const val NOTIFICATION_BEHAVIOR_KEY = "notificationBehavior"
     const val NOTIFICATIONS_KEY = "notifications"
-    const val NOTIFICATION_CATEGORY_KEY = "notificationCategory"
-    const val NOTIFICATION_CATEGORIES_KEY = "notificationCategories"
     const val NOTIFICATION_REQUEST_KEY = "notificationRequest"
     const val NOTIFICATION_REQUESTS_KEY = "notificationRequests"
     const val NOTIFICATION_ACTION_KEY = "notificationAction"
@@ -193,72 +185,6 @@ open class NotificationsService : BroadcastReceiver() {
         context,
         Intent(NOTIFICATION_EVENT_ACTION).apply {
           putExtra(EVENT_TYPE_KEY, DROPPED_TYPE)
-        }
-      )
-    }
-
-    /**
-     * A helper function for dispatching a "get notification categories" command to the service.
-     *
-     * @param context Context where to start the service.
-     */
-    fun getCategories(context: Context, receiver: ResultReceiver? = null) {
-      doWork(
-        context,
-        Intent(
-          NOTIFICATION_EVENT_ACTION,
-          getUriBuilder()
-            .appendPath("categories")
-            .build()
-        ).apply {
-          putExtra(EVENT_TYPE_KEY, GET_CATEGORIES_TYPE)
-          putExtra(RECEIVER_KEY, receiver)
-        }
-      )
-    }
-
-    /**
-     * A helper function for dispatching a "set notification category" command to the service.
-     *
-     * @param context Context where to start the service.
-     * @param category Notification category to be set
-     */
-    fun setCategory(context: Context, category: NotificationCategory, receiver: ResultReceiver? = null) {
-      doWork(
-        context,
-        Intent(
-          NOTIFICATION_EVENT_ACTION,
-          getUriBuilder()
-            .appendPath("categories")
-            .appendPath(category.identifier)
-            .build()
-        ).apply {
-          putExtra(EVENT_TYPE_KEY, SET_CATEGORY_TYPE)
-          putExtra(NOTIFICATION_CATEGORY_KEY, category as Parcelable)
-          putExtra(RECEIVER_KEY, receiver)
-        }
-      )
-    }
-
-    /**
-     * A helper function for dispatching a "delete notification category" command to the service.
-     *
-     * @param context Context where to start the service.
-     * @param identifier Category Identifier
-     */
-    fun deleteCategory(context: Context, identifier: String, receiver: ResultReceiver? = null) {
-      doWork(
-        context,
-        Intent(
-          NOTIFICATION_EVENT_ACTION,
-          getUriBuilder()
-            .appendPath("categories")
-            .appendPath(identifier)
-            .build()
-        ).apply {
-          putExtra(EVENT_TYPE_KEY, DELETE_CATEGORY_TYPE)
-          putExtra(IDENTIFIER_KEY, identifier)
-          putExtra(RECEIVER_KEY, receiver)
         }
       )
     }
@@ -649,9 +575,6 @@ open class NotificationsService : BroadcastReceiver() {
   protected open fun getHandlingDelegate(context: Context): HandlingDelegate =
     ExpoHandlingDelegate(context)
 
-  protected open fun getCategoriesDelegate(context: Context): CategoriesDelegate =
-    ExpoCategoriesDelegate(context)
-
   protected open fun getSchedulingDelegate(context: Context): SchedulingDelegate =
     ExpoSchedulingDelegate(context)
 
@@ -693,15 +616,6 @@ open class NotificationsService : BroadcastReceiver() {
           DISMISS_SELECTED_TYPE -> onDismissNotifications(context, intent)
 
           DISMISS_ALL_TYPE -> onDismissAllNotifications(context, intent)
-
-          GET_CATEGORIES_TYPE ->
-            resultData = onGetCategories(context, intent)
-
-          SET_CATEGORY_TYPE ->
-            resultData = onSetCategory(context, intent)
-
-          DELETE_CATEGORY_TYPE ->
-            resultData = onDeleteCategory(context, intent)
 
           GET_ALL_SCHEDULED_TYPE ->
             resultData = onGetAllScheduledNotifications(context, intent)
@@ -796,39 +710,6 @@ open class NotificationsService : BroadcastReceiver() {
     getPresentationDelegate(context).removeOrphanedGroupSummaries(notification)
   }
 
-  //endregion
-
-  //region Category handling
-
-  open fun onGetCategories(context: Context, intent: Intent) =
-    Bundle().apply {
-      putParcelableArrayList(
-        NOTIFICATION_CATEGORIES_KEY,
-        ArrayList(
-          getCategoriesDelegate(context).getCategories()
-        )
-      )
-    }
-
-  open fun onSetCategory(context: Context, intent: Intent) =
-    Bundle().apply {
-      putParcelable(
-        NOTIFICATION_CATEGORY_KEY,
-        getCategoriesDelegate(context).setCategory(
-          intent.getParcelableExtra(NOTIFICATION_CATEGORY_KEY)!!
-        )
-      )
-    }
-
-  open fun onDeleteCategory(context: Context, intent: Intent) =
-    Bundle().apply {
-      putBoolean(
-        SUCCEEDED_KEY,
-        getCategoriesDelegate(context).deleteCategory(
-          intent.extras?.getString(IDENTIFIER_KEY)!!
-        )
-      )
-    }
   //endregion
 
   //region Scheduling notifications

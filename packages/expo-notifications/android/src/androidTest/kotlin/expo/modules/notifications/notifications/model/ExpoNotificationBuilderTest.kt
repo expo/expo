@@ -10,6 +10,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.notifications.notifications.enums.NotificationPriority
 import expo.modules.notifications.notifications.interfaces.INotificationContent
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
+import expo.modules.notifications.notifications.categories.NotificationCategoryRecord
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
@@ -34,7 +35,7 @@ class ExpoNotificationBuilderTest {
     categoriesStore = SharedPreferencesNotificationCategoriesStore(context)
     val na = NotificationAction("test-action", "Test Action", true)
     val nc = NotificationCategory("test-category", listOf(na))
-    categoriesStore.saveNotificationCategory(nc)
+    categoriesStore.saveNotificationCategory(NotificationCategoryRecord.fromLegacy(nc))
   }
 
   private fun createTestNotificationBuilder(notificationContent: INotificationContent): ExpoNotificationBuilder {
