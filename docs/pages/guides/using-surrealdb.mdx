@@ -1,0 +1,389 @@
+---
+title: Using SurrealDB
+description: Connect your React Native app to a SurrealDB database and sign users in with record access.
+platforms: ['android', 'ios']
+---
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+[SurrealDB](https://surrealdb.com/?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) is a multi-model database that stores documents, graph relations, and key-value data, and that you query with SurrealQL. Table [permissions](https://surrealdb.com/docs/reference/query-language/statements/define/table?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) and [record access](https://surrealdb.com/docs/reference/query-language/statements/define/access/record?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) protect the data, so your React Native app can connect to the database directly, with no server in between.
+
+The `surrealdb` JavaScript SDK is written in plain JavaScript and has no native code, so it works in Expo Go and in [development builds](/develop/development-builds/introduction/). Every connection from an app is a remote connection to a SurrealDB instance over `wss://` or `https://`. The SDK's embedded WebAssembly and Node.js engines don't run on Hermes.
+
+The EAS CLI integration automates the standard setup: installing the SDK and writing your connection details to your environment variables. You can also [set it up manually](#manual-setup) and use the rest of this guide unchanged.
+
+<Prerequisites>
+  <Requirement title="Expo account">
+    Sign up for an [Expo account](https://expo.dev/signup).
+  </Requirement>
+  <Requirement title="EAS CLI">Install EAS CLI globally with `npm install -g eas-cli`.</Requirement>
+  <Requirement title="Expo project linked to Expo Services">
+    Create an Expo project and link it to Expo Services with `eas init`.
+  </Requirement>
+  <Requirement title="SurrealDB instance">
+    Create an instance on [SurrealDB
+    Cloud](https://surrealdb.com/cloud?utm_source=expo&utm_medium=referral&utm_term=expo-react-native),
+    or run one yourself with `surreal start`. Your app must be able to reach it.
+  </Requirement>
+</Prerequisites>
+
+## What you'll learn
+
+- [Install and configure SurrealDB](#install-and-configure-surrealdb) in your React Native app
+- [Add authentication](#add-authentication) with record access and store the session on the device
+- [Set up environments](#set-up-environments) for local development, Production, and Preview
+- [Manage the integration](#manage-the-integration) and [troubleshoot common problems](#troubleshooting)
+
+## Install and configure SurrealDB
+
+<Step label="1">
+
+### Run the `connect` command
+
+Run the following command in your project directory:
+
+<Terminal cmd={['$ eas integrations:surrealdb:connect']} />
+
+The command asks for your instance's **endpoint**, **namespace**, and **database**. You can also pass them as flags:
+
+<Terminal
+  cmd={[
+    '$ eas integrations:surrealdb:connect --endpoint wss://<your-instance>.surreal.cloud --namespace app --database main',
+  ]}
+/>
+
+This command:
+
+- Accepts a full URL or a bare hostname. A bare hostname gets `wss://`, and a trailing `/rpc` is removed because the SDK adds it.
+- Checks that the instance responds. A development endpoint that only your emulator can reach fails this check, so the command prints a warning and continues.
+- Installs `surrealdb` and `expo-secure-store`, which stores the session token in the device keystore.
+- Writes `EXPO_PUBLIC_SURREAL_ENDPOINT`, `EXPO_PUBLIC_SURREAL_NAMESPACE`, and `EXPO_PUBLIC_SURREAL_DATABASE` to **.env.local** and to your Expo Services environment variables across the Production, Preview, and Development environments.
+
+All three values are public, so your app can ship them. Anyone who has them can connect to your instance, so table permissions and record access are what keep your data private.
+
+> **warning** Never put the password of a root, namespace, or database user in your app. Those system users bypass table permissions and have full access to your data. The `connect` command never asks for credentials.
+
+<Collapsible summary="Running in CI or non-interactively">
+
+Pass all three values as flags, and add `--overwrite` to replace existing environment variables without prompting:
+
+<Terminal
+  cmd={[
+    '$ eas integrations:surrealdb:connect --endpoint wss://db.example.com --namespace app --database main --non-interactive --overwrite',
+  ]}
+/>
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+
+### Create the SurrealDB client
+
+Create a helper file that connects the client with the environment variables `connect` writes. Paths here follow the default Expo template, where `@/` maps to **src**. Check the `paths` field in **tsconfig.json** and put the file where your alias resolves, or use a relative import if your project has no alias.
+
+```ts src/lib/surreal.ts
+import { Surreal } from 'surrealdb';
+
+export const db = new Surreal();
+
+let connection: Promise<true> | undefined;
+
+export function connectSurreal() {
+  connection ??= db
+    .connect(process.env.EXPO_PUBLIC_SURREAL_ENDPOINT!, {
+      namespace: process.env.EXPO_PUBLIC_SURREAL_NAMESPACE,
+      database: process.env.EXPO_PUBLIC_SURREAL_DATABASE,
+    })
+    .catch(error => {
+      connection = undefined;
+      throw error;
+    });
+  return connection;
+}
+```
+
+`connectSurreal` opens one connection for the whole app, however many screens call it. If the connection fails, the next call tries again. The SDK needs `TextEncoder`, `TextDecoder`, and `URL`, which Expo installs as globals, so you don't need polyfills. If the connection drops, for example while the app is in the background, the SDK reconnects on its own.
+
+</Step>
+
+<Step label="3">
+
+### Define a table and an access method
+
+Run `eas integrations:surrealdb:dashboard` to open [SurrealDB Studio](https://studio.surrealdb.com?utm_source=expo&utm_medium=referral&utm_term=expo-react-native), connect to your instance as a system user, and select your namespace and database. Then run the following in the query editor:
+
+```sql SurrealDB Studio query editor
+DEFINE TABLE user SCHEMAFULL
+  PERMISSIONS FOR select, update, delete WHERE id = $auth.id;
+DEFINE FIELD email ON user TYPE string ASSERT string::is_email($value);
+DEFINE FIELD password ON user TYPE string;
+DEFINE INDEX unique_email ON user FIELDS email UNIQUE;
+
+DEFINE ACCESS account ON DATABASE TYPE RECORD
+  SIGNUP (CREATE user SET email = $email, password = crypto::argon2::generate($password))
+  SIGNIN (SELECT * FROM user WHERE email = $email AND crypto::argon2::compare(password, $password))
+  DURATION FOR TOKEN 15m, FOR SESSION 12h;
+
+DEFINE TABLE todo SCHEMAFULL
+  PERMISSIONS FOR select WHERE $auth.id != NONE;
+DEFINE FIELD title ON todo TYPE string;
+
+CREATE todo SET title = 'Hello from SurrealDB';
+CREATE user SET email = 'test@example.com', password = crypto::argon2::generate('change-me');
+```
+
+The `account` access method lets end users sign up and sign in as records in the `user` table. A signed-in user can read and change only their own `user` record, and can read every `todo`. The last line creates a test user for the next step.
+
+SurrealDB rejects queries from a connection that hasn't signed in, so the app signs in before it queries. To let the app write todos, add `create` and `update` to the `todo` permissions.
+
+</Step>
+
+<Step label="4">
+
+### Verify the configuration
+
+Replace the contents of your first screen with a sign-in as the test user and a query against the table:
+
+```tsx src/app/index.tsx
+import { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
+import { connectSurreal, db } from '@/lib/surreal';
+
+type Todo = { title: string };
+
+export default function Index() {
+  const [titles, setTitles] = useState<string[]>([]);
+
+  useEffect(() => {
+    async function load() {
+      await connectSurreal();
+      await db.signin({
+        access: 'account',
+        variables: { email: 'test@example.com', password: 'change-me' },
+      });
+      const [todos] = await db.query<[Todo[]]>('SELECT title FROM todo');
+      setTitles(todos.map(todo => todo.title));
+    }
+
+    load().catch(error => setTitles([String(error)]));
+  }, []);
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      {titles.map(title => (
+        <Text key={title}>{title}</Text>
+      ))}
+    </View>
+  );
+}
+```
+
+Start your app:
+
+<Terminal cmd={['$ npx expo start']} />
+
+If the screen shows `Hello from SurrealDB`, your client works. An error message means something else, so see [Troubleshooting](#troubleshooting).
+
+You can test everything in this guide in Expo Go. You need a [development build](/develop/development-builds/introduction/) only when you add other native libraries.
+
+</Step>
+
+For the concepts behind these steps, see the SurrealDB guide to securing your data:
+
+<BoxLink
+  title="Record access"
+  description="Let end users sign up and sign in, and limit what each user can read and write."
+  href="https://surrealdb.com/docs/reference/query-language/statements/define/access/record?utm_source=expo&utm_medium=referral&utm_term=expo-react-native"
+/>
+
+## Add authentication
+
+Replace the hardcoded test user from [Step 4](#verify-the-configuration) with sign-in and sign-up functions that your screens call. Add a listener that stores the access token in `expo-secure-store`, and restore the token after the app connects. This keeps users signed in across app launches.
+
+```ts src/lib/surreal.ts
+import * as SecureStore from 'expo-secure-store';
+import { Surreal } from 'surrealdb';
+
+const TOKEN_KEY = 'surreal.token';
+
+export const db = new Surreal();
+
+db.subscribe('auth', tokens => {
+  if (tokens) {
+    SecureStore.setItemAsync(TOKEN_KEY, tokens.access);
+  } else {
+    SecureStore.deleteItemAsync(TOKEN_KEY);
+  }
+});
+
+let connection: Promise<boolean> | undefined;
+
+async function openConnection() {
+  await db.connect(process.env.EXPO_PUBLIC_SURREAL_ENDPOINT!, {
+    namespace: process.env.EXPO_PUBLIC_SURREAL_NAMESPACE,
+    database: process.env.EXPO_PUBLIC_SURREAL_DATABASE,
+  });
+
+  const token = await SecureStore.getItemAsync(TOKEN_KEY);
+  if (!token) {
+    return false;
+  }
+
+  try {
+    await db.authenticate(token);
+    return true;
+  } catch {
+    await SecureStore.deleteItemAsync(TOKEN_KEY);
+    return false;
+  }
+}
+
+export function connectSurreal() {
+  connection ??= openConnection().catch(error => {
+    connection = undefined;
+    throw error;
+  });
+  return connection;
+}
+
+export function signIn(email: string, password: string) {
+  return db.signin({ access: 'account', variables: { email, password } });
+}
+
+export function signUp(email: string, password: string) {
+  return db.signup({ access: 'account', variables: { email, password } });
+}
+
+export function signOut() {
+  return db.invalidate();
+}
+```
+
+The `auth` event fires when a user signs in, signs up, or signs out. `connectSurreal` now resolves to `true` when it restores a session, and to `false` when no token is stored or the stored token has expired. In both cases the connection stays open, so show your sign-in screen when it resolves to `false`.
+
+The `DURATION FOR TOKEN 15m` clause in [Step 3](#define-a-table-and-an-access-method) means a restored token stops working after 15 minutes. Increase it to match how long you want sessions to last, or follow the [SurrealDB Expo guide](https://surrealdb.com/docs/reference/javascript/frameworks/expo?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) to also store and use a refresh token.
+
+## Set up environments
+
+`connect` stores the values as [Expo Services environment variables](/eas/environment-variables/), so each build or update reads them from the environment it runs in.
+
+**Development** can run against a local instance. Install the [SurrealDB CLI](https://surrealdb.com/docs/installation?utm_source=expo&utm_medium=referral&utm_term=expo-react-native), then start an in-memory database:
+
+<Terminal cmd={['$ surreal start memory --user root --pass <your-password>']} />
+
+Set `EXPO_PUBLIC_SURREAL_ENDPOINT` in **.env.local** to an address that the device can reach. On a device or emulator, `localhost` is the device itself, not your computer:
+
+| Where the app runs | Endpoint                                                          |
+| ------------------ | ----------------------------------------------------------------- |
+| iOS Simulator      | `ws://127.0.0.1:8000`                                             |
+| Android Emulator   | `ws://10.0.2.2:8000`                                              |
+| Physical device    | Your computer's LAN address, for example `ws://192.168.1.24:8000` |
+
+The local database starts empty, so run your schema from [Step 3](#define-a-table-and-an-access-method) against it too. Re-running `connect` writes the hosted values back.
+
+> **info** Android and iOS block unencrypted `ws://` and `http://` connections by default. Expo Go allows them to your computer, so a local endpoint works there. If a development build can't connect, see [reaching your database from a device](https://surrealdb.com/docs/reference/javascript/frameworks/expo?utm_source=expo&utm_medium=referral&utm_term=expo-react-native#reaching-your-database-from-a-device). Use `wss://` in every build you ship.
+
+**Production** uses the instance that `connect` set up.
+
+**Preview** uses the same instance by default. To point Preview, or any other Expo Services environment, at a different instance or database, re-run `connect` with `--environment`:
+
+<Terminal
+  cmd={[
+    '$ eas integrations:surrealdb:connect --environment preview --endpoint wss://staging.example.com --namespace app --database preview',
+  ]}
+/>
+
+The new values go to the named environments only, and your other environments keep their current values. This doesn't install the SDK or change **.env.local**.
+
+## Manage the integration
+
+Two commands manage the integration afterward:
+
+<Terminal
+  cmd={['$ eas integrations:surrealdb:dashboard', '', '$ eas integrations:surrealdb:disconnect']}
+/>
+
+`dashboard` lists the endpoint for each Expo Services environment and opens SurrealDB Studio. `disconnect` removes the three `EXPO_PUBLIC_SURREAL_*` variables from **.env.local** and from every Expo Services environment. Your SurrealDB instance, its data, and the installed packages stay unchanged.
+
+## Manual setup
+
+`connect` is a shortcut for the standard SurrealDB setup. To do it manually:
+
+1. Create an instance on [SurrealDB Cloud](https://surrealdb.com/cloud?utm_source=expo&utm_medium=referral&utm_term=expo-react-native), or start one with `surreal start`.
+2. Copy the instance's endpoint, and choose a namespace and a database.
+3. Install the SDK:
+
+   <Terminal
+     cmd={{
+       npm: ['$ npx expo install surrealdb expo-secure-store'],
+       yarn: ['$ yarn expo install surrealdb expo-secure-store'],
+       pnpm: ['$ pnpm expo install surrealdb expo-secure-store'],
+       bun: ['$ bun expo install surrealdb expo-secure-store'],
+     }}
+   />
+
+4. Set `EXPO_PUBLIC_SURREAL_ENDPOINT`, `EXPO_PUBLIC_SURREAL_NAMESPACE`, and `EXPO_PUBLIC_SURREAL_DATABASE` in **.env.local**, then create the client file from [Step 2](#create-the-surrealdb-client).
+
+```bash .env.local
+EXPO_PUBLIC_SURREAL_ENDPOINT=wss://<your-instance>.surreal.cloud
+EXPO_PUBLIC_SURREAL_NAMESPACE=app
+EXPO_PUBLIC_SURREAL_DATABASE=main
+```
+
+## Troubleshooting
+
+<Collapsible summary="Anonymous access not allowed">
+
+The query ran on a connection that hasn't signed in, or the stored session has expired. Sign in with record access before you query.
+
+</Collapsible>
+
+<Collapsible summary="The access method does not exist">
+
+The namespace or database in your environment variables doesn't match the one where you ran the schema from [Step 3](#define-a-table-and-an-access-method), or the `access` name in `signin` doesn't match the `DEFINE ACCESS` statement.
+
+</Collapsible>
+
+<Collapsible summary="Connection fails on Android but works on iOS">
+
+The endpoint uses `localhost` or `127.0.0.1`. On the Android Emulator, use `10.0.2.2`. On a physical device, use your computer's LAN address.
+
+</Collapsible>
+
+<Collapsible summary="Unable to resolve module node:util">
+
+Metro resolved the SDK's Node.js build. Remove `node` from `resolver.unstable_conditionNames` in **metro.config.js**.
+
+</Collapsible>
+
+<Collapsible summary="Environment variables don't update">
+
+After `connect` writes them, reload the app so it picks up the new values. If the app still reads the old value, stop the development server and run `npx expo start` again.
+
+</Collapsible>
+
+## Further reading
+
+<BoxLink
+  title="SurrealDB Expo guide"
+  description="Add a connection provider, live queries, refresh tokens, and app lifecycle handling."
+  href="https://surrealdb.com/docs/reference/javascript/frameworks/expo?utm_source=expo&utm_medium=referral&utm_term=expo-react-native"
+/>
+
+<BoxLink
+  title="Live queries"
+  description="Receive changes on the device as they happen, without polling."
+  href="https://surrealdb.com/docs/reference/javascript/concepts/live-queries?utm_source=expo&utm_medium=referral&utm_term=expo-react-native"
+/>
+
+<BoxLink
+  title="JavaScript SDK reference"
+  description="Every method on the SurrealDB client, including queries, authentication, and events."
+  href="https://surrealdb.com/docs/reference/javascript?utm_source=expo&utm_medium=referral&utm_term=expo-react-native"
+/>

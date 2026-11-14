@@ -226,6 +226,7 @@ exceptions:
   - '.*Strict-Transport-Security.*'
   - '.*SSO.*'
   - '.*Supabase.*'
+  - '.*SurrealDB.*'
   - '.*Suspense.*'
   - '.*Swift.*'
   - '.*Terser.*'
