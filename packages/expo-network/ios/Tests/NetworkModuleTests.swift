@@ -7,7 +7,7 @@ import Testing
 @testable import ExpoModulesCore
 @testable import ExpoNetwork
 
-@Suite("NetworkModule")
+@Suite("NetworkModule", .serialized)
 @JavaScriptActor
 struct NetworkModuleTests {
   let appContext: AppContext
