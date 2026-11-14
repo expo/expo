@@ -10,13 +10,10 @@ struct RawPropsAccessor {
   jsi::Value value_;
 };
 
-void AndroidExpoViewComponentDescriptor::setStateProps(
-  const std::unordered_map<
-    std::string,
-    std::shared_ptr<FrontendConverter>
-  > &stateProps
+void AndroidExpoViewComponentDescriptor::setComponentRegistration(
+  std::shared_ptr<ExpoViewComponentRegistration> registration
 ) {
-  stateProps_ = stateProps;
+  registration_ = std::move(registration);
 }
 
 react::Props::Shared AndroidExpoViewComponentDescriptor::cloneProps(
@@ -30,6 +27,12 @@ react::Props::Shared AndroidExpoViewComponentDescriptor::cloneProps(
 
   rawProps.parse(rawPropsParser_);
 
+  // A reload can replace the schema while a render still uses its previous snapshot.
+  const auto stateProps = registration_ ? registration_->getStateProps() : nullptr;
+  const auto filterObjectKeys = [&stateProps](const std::string &key) {
+    return stateProps && stateProps->find(key) != stateProps->end();
+  };
+
   const auto &sourceProps = props
     ? dynamic_cast<const AndroidExpoViewProps &>(*props)
     : *ExpoViewShadowNode<AndroidExpoViewProps>::defaultSharedProps();
@@ -38,21 +41,21 @@ react::Props::Shared AndroidExpoViewComponentDescriptor::cloneProps(
     context,
     sourceProps,
     rawProps,
-    filterObjectKeys_
+    filterObjectKeys
   );
 
 #ifdef RN_SERIALIZABLE_STATE
-  shadowNodeProps->initializeDynamicProps(sourceProps, rawProps, filterObjectKeys_);
+  shadowNodeProps->initializeDynamicProps(sourceProps, rawProps, filterObjectKeys);
 #endif
 
-  if (!stateProps_.empty()) {
+  if (stateProps && !stateProps->empty()) {
     JNIEnv *env = jni::Environment::current();
     const auto &rawPropsAccessor = *((RawPropsAccessor *) &rawProps);
 
     jsi::Runtime &runtime = *rawPropsAccessor.runtime_;
     const auto jsiProps = rawPropsAccessor.value_.asObject(runtime);
 
-    for (const auto &statePropPair: stateProps_) {
+    for (const auto &statePropPair: *stateProps) {
       const auto &[propName, converter] = statePropPair;
 
       const auto jsPropName = jsi::String::createFromUtf8(runtime, propName);
