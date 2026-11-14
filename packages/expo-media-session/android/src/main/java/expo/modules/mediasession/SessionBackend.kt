@@ -10,6 +10,7 @@ import android.os.Handler
 internal enum class FocusResult { GRANTED, DELAYED }
 
 internal interface SessionBackend {
+  var onFocusChange: (Int) -> Unit
   fun requestFocus(spec: FocusSpec): FocusResult
   fun abandonFocus()
 }
@@ -19,7 +20,7 @@ internal class AudioManagerBackend(context: Context, private val handler: Handle
   private var request: AudioFocusRequest? = null
   private var holdsLegacyFocus = false
 
-  var onFocusChange: (Int) -> Unit = {}
+  override var onFocusChange: (Int) -> Unit = {}
 
   private val listener = AudioManager.OnAudioFocusChangeListener { onFocusChange(it) }
 
