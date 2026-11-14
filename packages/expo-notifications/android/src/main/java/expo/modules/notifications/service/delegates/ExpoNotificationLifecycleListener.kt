@@ -1,7 +1,9 @@
 package expo.modules.notifications.service.delegates
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
@@ -33,8 +35,15 @@ class ExpoNotificationLifecycleListener : ReactActivityLifecycleListener {
     if (isConsumed(extras)) {
       return
     }
+    // The marker above does not survive process death: the system relaunches the activity with its
+    // own copy of the intent that started it. Skip a message an earlier onCreate already delivered.
+    val context = activity.applicationContext
+    if (wasDeliveredOnCreate(context, extras)) {
+      return
+    }
     DebugLogging.logBundle("ExpoNotificationLifeCycleListener.onCreate:", extras)
     markConsumed(intent, extras)
+    markDeliveredOnCreate(context, extras)
     NotificationManager.onNotificationResponseFromExtras(extras)
   }
 
@@ -82,7 +91,24 @@ class ExpoNotificationLifecycleListener : ReactActivityLifecycleListener {
     intent.putExtra(CONSUMED_MESSAGE_ID_KEY, extras.getString(GOOGLE_MESSAGE_ID_KEY))
   }
 
+  private fun wasDeliveredOnCreate(context: Context, extras: Bundle): Boolean {
+    val messageId = extras.getString(GOOGLE_MESSAGE_ID_KEY) ?: return false
+    return preferences(context).getString(LAST_DELIVERED_ON_CREATE_MESSAGE_ID_KEY, null) == messageId
+  }
+
+  private fun markDeliveredOnCreate(context: Context, extras: Bundle) {
+    preferences(context)
+      .edit()
+      .putString(LAST_DELIVERED_ON_CREATE_MESSAGE_ID_KEY, extras.getString(GOOGLE_MESSAGE_ID_KEY))
+      .apply()
+  }
+
+  private fun preferences(context: Context): SharedPreferences =
+    context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+
   companion object {
     private const val CONSUMED_MESSAGE_ID_KEY = "expo.modules.notifications.consumedMessageId"
+    private const val SHARED_PREFERENCES_NAME = "expo.modules.notifications.ExpoNotificationLifecycleListener"
+    private const val LAST_DELIVERED_ON_CREATE_MESSAGE_ID_KEY = "lastDeliveredOnCreateMessageId"
   }
 }
