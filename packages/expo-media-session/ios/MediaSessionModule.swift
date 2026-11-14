@@ -4,6 +4,7 @@ import os
 private let interruptionEvent = "interruption"
 private let routeChangeEvent = "routeChange"
 private let activationErrorEvent = "activationError"
+private let nowPlayingOwnerChangeEvent = "nowPlayingOwnerChange"
 
 public class MediaSessionModule: Module {
   private let forwarder = EventForwarder()
@@ -12,7 +13,7 @@ public class MediaSessionModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoMediaSession")
 
-    Events(interruptionEvent, routeChangeEvent, activationErrorEvent)
+    Events(interruptionEvent, routeChangeEvent, activationErrorEvent, nowPlayingOwnerChangeEvent)
 
     OnCreate {
       self.forwarder.module = self
@@ -62,5 +63,9 @@ private final class EventForwarder: MediaSessionObserver {
   func mediaSession(didFail error: Error, client: String) {
     let message = (error as? Exception)?.description ?? error.localizedDescription
     module?.sendEvent(activationErrorEvent, ["message": message, "client": client])
+  }
+
+  func mediaSessionNowPlayingOwnerChanged(id: String?) {
+    module?.sendEvent(nowPlayingOwnerChangeEvent, ["id": id])
   }
 }
