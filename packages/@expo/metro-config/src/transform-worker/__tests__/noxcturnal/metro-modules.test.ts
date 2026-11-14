@@ -1265,6 +1265,34 @@ it('collects and rewrites Worker URL constructors through the Metro async runtim
   ]);
 });
 
+it('keeps the SharedWorker constructor when it rewrites the SharedWorker URL', async () => {
+  const result = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source: `const worker = new SharedWorker(new URL('./worker', window.location.href), { name: 'shared' });`,
+    options: options({ dev: true }),
+    isDefaultExpoTransformer: true,
+    config: {
+      allowOptionalDependencies: false,
+      asyncRequireModulePath: 'metro-runtime',
+      globalPrefix: '',
+      unstable_compactOutput: false,
+    },
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toContain('new SharedWorker(new URL(');
+  expect(result.result.code).not.toContain('unstable_createWorker');
+  expect(result.result.code).toContain(
+    '.unstable_resolve(_dependencyMap[0], _dependencyMap.paths)'
+  );
+  expect(result.dependencies.map(({ name, data }) => [name, data.asyncType])).toEqual([
+    ['./worker', 'worker'],
+    ['metro-runtime', null],
+  ]);
+});
+
 it('collects require.context parameters and keeps distinct contexts separate', async () => {
   const result = await transformFileFullyWithNoxcturnal({
     filename,
