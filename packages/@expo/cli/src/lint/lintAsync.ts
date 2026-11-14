@@ -7,6 +7,7 @@ import semver from 'semver';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { loadEnvFiles } from '../utils/nodeEnv';
+import { reportProgramResult, withProgramStatus } from '../utils/programStatus';
 import { ESLintProjectPrerequisite } from './ESlintPrerequisite';
 import { event } from './events';
 import type { Options } from './resolveOptions';
@@ -114,10 +115,19 @@ export const lintAsync = async (
     // - Use relative paths
     // - When react-hooks/exhaustive-deps is hit, notify about enabling React Compiler.
     // - Green check when no issues are found.
-    await manager.runBinAsync(['eslint', ...eslintArgs], {
-      stdio: 'inherit',
-    });
+    await withProgramStatus({ state: 'working', msg: 'Linting' }, () =>
+      manager.runBinAsync(['eslint', ...eslintArgs], {
+        stdio: 'inherit',
+      })
+    );
   } catch (error: any) {
+    if (typeof error.status === 'number') {
+      reportProgramResult({
+        state: 'error',
+        msg: error.status === 1 ? 'Lint found problems' : 'ESLint failed',
+      });
+    }
     process.exit(error.status);
   }
+  reportProgramResult({ state: 'done', msg: 'Finished linting' });
 };
