@@ -40,7 +40,7 @@ interface ScanWarning {
   line: number;
 }
 
-export interface ScanModulesOutput {
+export interface ScanPackagesOutput {
   schemaVersion: number;
   modules: ScannedClass[];
   sharedObjects?: ScannedClass[];
@@ -51,7 +51,7 @@ export interface ScanModulesOutput {
 
 /** The part of the `expo-modules-macros` API used here. */
 export interface ModulesScanner {
-  scanModules(paths: string[], options?: { timeout?: number }): Promise<ScanModulesOutput>;
+  scanPackages(paths: string[], options?: { timeout?: number }): Promise<ScanPackagesOutput>;
 }
 
 /**
@@ -63,7 +63,9 @@ export function loadModulesScanner(resolutionBasePath: string): ModulesScanner |
     const scanner = require(
       require.resolve('expo-modules-macros', { paths: [resolutionBasePath] })
     );
-    return typeof scanner?.scanModules === 'function' ? scanner : null;
+    // `scanModules` is the name before expo-modules-macros 0.37.0.
+    const scanPackages = scanner?.scanPackages ?? scanner?.scanModules;
+    return typeof scanPackages === 'function' ? { scanPackages } : null;
   } catch {
     return null;
   }
@@ -145,15 +147,15 @@ export function collectPackageRoots(searchResults: SearchResults): Record<string
 export async function scanExpoModulesAsync(
   scanner: ModulesScanner,
   packageRoots: Record<string, string>
-): Promise<ScanModulesOutput | null> {
+): Promise<ScanPackagesOutput | null> {
   const roots = Object.values(packageRoots);
   if (!roots.length) {
     return null;
   }
 
-  let output: ScanModulesOutput;
+  let output: ScanPackagesOutput;
   try {
-    output = await scanner.scanModules(roots, { timeout: 5000 });
+    output = await scanner.scanPackages(roots, { timeout: 5000 });
   } catch (error: any) {
     console.warn(
       `warning: Scanning for Expo modules failed, only modules declared in expo-module.config.json will be linked: ${error.message ?? error}`
@@ -191,7 +193,7 @@ export interface ScannedPackageClasses {
  * Groups the scanned modules, shared objects and views by package, as `groupScannedClasses` does.
  */
 export function groupScannedPackageClasses(
-  output: ScanModulesOutput,
+  output: ScanPackagesOutput,
   packageRoots: Record<string, string>,
   platform: SupportedPlatform
 ): ScannedPackageClasses {
@@ -208,7 +210,7 @@ export function groupScannedPackageClasses(
  * Groups the scanned modules by package, as `groupScannedClasses` does.
  */
 export function groupScannedModules(
-  output: ScanModulesOutput,
+  output: ScanPackagesOutput,
   packageRoots: Record<string, string>,
   platform: SupportedPlatform
 ): Record<string, PackageClass[]> {
