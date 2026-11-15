@@ -114,8 +114,8 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
   }
 
   /**
-   Creates the object that is installed as `expo.packages[packageName]`. It returns the modules
-   and shared object classes of the package by their names.
+   Creates the object that is installed as `expo.packages[packageName]`. It returns the modules,
+   shared object classes and view components of the package by their names.
    */
   @JavaScriptActor
   private static func createPackageObject(
@@ -128,12 +128,34 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
     // Logs name collisions once, when the package object is created.
     _ = package.exportNames
 
+    // The React components of the package's views, created on the first access.
+    let viewComponents = JavaScriptValuesCache()
+
     return runtime.createHostObject(
       get: { [weak appContext] exportName in
         guard let appContext, let package = appContext.package(named: packageName) else {
           return .undefined()
         }
-        return try package.export(named: exportName, appContext: appContext) ?? .undefined()
+        if let export = try package.export(named: exportName, appContext: appContext) {
+          return export
+        }
+        guard let viewType = package.viewType(named: exportName) else {
+          return .undefined()
+        }
+        if let component = viewComponents.store[exportName]?.withUnwrappedValue({ $0.copy() }) {
+          return component
+        }
+        // Only the React runtime can create components, so a view is `undefined` in the UI runtime.
+        guard NativeViewComponentFactory.isAvailable(in: runtime) else {
+          return .undefined()
+        }
+        let config = NativeViewComponentConfig(
+          viewType: viewType,
+          componentName: ExpoNativeView.packageComponentName(packageName: packageName, viewName: exportName)
+        )
+        let component = try NativeViewComponentFactory.create(config, in: runtime)
+        viewComponents.store[exportName] = component.copy().ref()
+        return component
       },
       set: { exportName, _ in
         throw ReadOnlyExpoPackagesPropertyException("expo.packages[\"\(packageName)\"].\(exportName)")

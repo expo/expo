@@ -6,12 +6,12 @@ import { requireNativeViewManager } from '../NativeViewManagerAdapter';
 import '../setUpNativeViewComponentFactory.fx';
 
 describe('createNativeViewComponent', () => {
-  const CardView = createNativeViewComponent({
-    name: 'ViewManagerAdapter_ExpoTestCards_CardView',
-    displayName: 'CardView',
-    validAttributes: { title: true },
-    directEventTypes: {},
-  });
+  const CardView = createNativeViewComponent(
+    'ViewManagerAdapter_ExpoTestCards_CardView',
+    'CardView',
+    { title: true },
+    {}
+  );
 
   afterEach(() => {
     delete globalThis.expo.modules.ExpoTestCards;
@@ -66,12 +66,12 @@ describe('createNativeViewComponent', () => {
   });
 
   it(`is returned by requireNativeViewManager when the module has it`, () => {
-    const DefaultView = createNativeViewComponent({
-      name: 'ViewManagerAdapter_ExpoTestCards',
-      displayName: 'CardView',
-      validAttributes: {},
-      directEventTypes: {},
-    });
+    const DefaultView = createNativeViewComponent(
+      'ViewManagerAdapter_ExpoTestCards',
+      'CardView',
+      {},
+      {}
+    );
     const nativeModule = { CardView };
     Object.defineProperty(nativeModule, '__expo_default_view__', { value: DefaultView });
     globalThis.expo.modules.ExpoTestCards = nativeModule;

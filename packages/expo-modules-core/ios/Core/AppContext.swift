@@ -528,7 +528,19 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       }
       // Views of Expo Modules v2, the `@ExpoView` classes in `@ExpoModule(views:)`.
       for (viewName, viewType) in holder.nativeViewTypes {
-        ExpoNativeView.registerComponent(viewType, moduleName: holder.name, viewName: viewName)
+        ExpoNativeView.registerComponent(
+          viewType,
+          componentName: ExpoFabricView.componentName(moduleName: holder.name, viewName: viewName)
+        )
+      }
+    }
+    // Views of Expo Modules v2 that packages export, the `@ExpoView` classes in `ExpoPackage.views`.
+    if isPackageRegistryInitialized {
+      for (packageName, viewType) in packageRegistry.views {
+        ExpoNativeView.registerComponent(
+          viewType,
+          componentName: ExpoNativeView.packageComponentName(packageName: packageName, viewName: unqualifiedTypeName(viewType))
+        )
       }
     }
     AppContext.viewsRegisteringAppContext = self

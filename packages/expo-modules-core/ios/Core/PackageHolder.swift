@@ -3,7 +3,7 @@
 import ExpoModulesJSI
 
 /**
- The modules and shared object classes of one package in the package registry. It's a value, so a package
+ The modules, shared object classes and views of one package in the package registry. It's a value, so a package
  that `PackageRegistry.package(named:)` returns doesn't change when more classes are registered.
  */
 internal struct PackageHolder {
@@ -21,6 +21,11 @@ internal struct PackageHolder {
    Shared object classes that the package exports next to its modules.
    */
   var sharedObjects: [SharedObject.Type] = []
+
+  /**
+   View classes that the package exports next to its modules.
+   */
+  var views: [any AnyNativeView.Type] = []
 
   init(name: String) {
     self.name = name
@@ -48,33 +53,44 @@ internal struct PackageHolder {
   }
 
   /**
-   The names of the exports of the package in `expo.packages`: its modules, then its shared object classes.
-   They are siblings, so reading the names doesn't create any of them. An export whose name is already taken
-   by another export of the package is left out and logged.
+   Returns the view class with the given name. Read it after `export(named:appContext:)`, because a module
+   or a shared object class with the same name takes precedence.
+   */
+  func viewType(named viewName: String) -> (any AnyNativeView.Type)? {
+    return views.first { unqualifiedTypeName($0) == viewName }
+  }
+
+  /**
+   The names of the exports of the package in `expo.packages`: its modules, then its shared object classes,
+   then its views. They are siblings, so reading the names doesn't create any of them. An export whose name
+   is already taken by another export of the package is left out and logged.
    */
   var exportNames: [String] {
     var names = moduleHolders.map(\.name)
     var seenNames = Set(names)
+    let classNames = sharedObjects.map(\._jsName)
+    let viewNames = views.map { unqualifiedTypeName($0) }
 
-    for sharedObjectType in sharedObjects {
-      let className = sharedObjectType._jsName
-
-      if seenNames.insert(className).inserted {
-        names.append(className)
-      } else {
-        log.error(
-          "Class '\(className)' is not available in 'expo.packages[\"\(name)\"]', "
-            + "because another module or class in the '\(name)' package already has this name. "
-            + "Rename the class or the module so that each name in the package is unique."
-        )
+    for (kind, exportNames) in [("Class", classNames), ("View", viewNames)] {
+      for exportName in exportNames {
+        if seenNames.insert(exportName).inserted {
+          names.append(exportName)
+        } else {
+          log.error(
+            "\(kind) '\(exportName)' is not available in 'expo.packages[\"\(name)\"]', "
+              + "because another export of the '\(name)' package already has this name. "
+              + "Rename it so that each name in the package is unique."
+          )
+        }
       }
     }
     return names
   }
 
   /**
-   Returns the JavaScript value of the export with the given name: a module object or a shared object class.
-   Each export is created on its own when it's read first. The order of precedence is the same as in `exportNames`.
+   Returns the JavaScript value of the module or shared object class with the given name. Each export is
+   created on its own when it's read first. The order of precedence is the same as in `exportNames`. Views
+   are read with `viewType(named:)`, because the package object caches their components.
    */
   @JavaScriptActor
   func export(named exportName: String, appContext: AppContext) throws -> JavaScriptValue? {
