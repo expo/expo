@@ -252,6 +252,35 @@ describe(resolveModuleAsync, () => {
       }
     );
 
+    // Qualified with the package's Swift module, so a type of the same name in the app target can't
+    // shadow them in the generated provider.
+    expect(result?.expoSharedObjects).toEqual(['ExpoAudio.AudioPlayer']);
+    expect(result?.expoViews).toEqual(['ExpoAudio.AudioWaveformView']);
+  });
+
+  it('leaves the shared objects and views unqualified when the package has several Swift modules', async () => {
+    const name = 'expo-audio';
+    const pkgDir = path.join('node_modules', name);
+
+    vol.fromJSON({ [`ios/ExpoAudio.podspec`]: '', [`ios/ExpoAudioExtras.podspec`]: '' }, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name: '',
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({ platforms: ['apple'] }),
+      },
+      {
+        scannedModules: scannedClasses(
+          {},
+          { [name]: ['AudioPlayer'] },
+          { [name]: ['AudioWaveformView'] }
+        ),
+      }
+    );
+
     expect(result?.expoSharedObjects).toEqual(['AudioPlayer']);
     expect(result?.expoViews).toEqual(['AudioWaveformView']);
   });

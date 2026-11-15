@@ -150,8 +150,16 @@ export async function resolveModuleAsync(
       .map((module) => (typeof module === 'string' ? { name: null, class: module } : module)) ?? [];
 
   const scannedModules = extraOutput.scannedModules?.modules[packageName] ?? [];
-  const expoSharedObjects = extraOutput.scannedModules?.sharedObjects[packageName] ?? [];
-  const expoViews = extraOutput.scannedModules?.views[packageName] ?? [];
+  // The generated provider is compiled in the app target, where a type of the same name (for example one from a
+  // template) would shadow an unqualified class. Only the classes of a package with one Swift module are
+  // qualified, because the pod of a class isn't looked up from its file yet. `Module.Class` doesn't compile when
+  // the module has a type named like the module itself.
+  const qualify = (className: string) =>
+    swiftModuleNames.length === 1 ? `${swiftModuleNames[0]}.${className}` : className;
+  const expoSharedObjects = (extraOutput.scannedModules?.sharedObjects[packageName] ?? []).map(
+    qualify
+  );
+  const expoViews = (extraOutput.scannedModules?.views[packageName] ?? []).map(qualify);
   const modules = pickModules(
     revision.config?.declaresAppleModules() ? configModules : null,
     scannedModules
