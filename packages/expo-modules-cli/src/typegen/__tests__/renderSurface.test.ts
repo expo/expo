@@ -515,6 +515,61 @@ export declare class M extends NativeModule {
     ]);
   });
 
+  it('declares a member bound under a well-known symbol and skips one bound under Symbol.for', () => {
+    const result = render({
+      ...emptySurface,
+      sharedObjects: [
+        {
+          name: 'Playlist',
+          jsName: 'Playlist',
+          file: FILE,
+          events: [],
+          properties: [
+            {
+              name: 'tag',
+              symbol: { kind: 'wellKnown', name: 'toStringTag' },
+              type: Str,
+              readonly: true,
+              static: false,
+            },
+          ],
+          functions: [
+            {
+              name: 'makeIterator',
+              symbol: { kind: 'wellKnown', name: 'iterator' },
+              parameters: [],
+              returns: Int,
+              async: false,
+              throws: false,
+              static: false,
+            },
+            {
+              name: 'appId',
+              symbol: { kind: 'registered', name: 'app.id' },
+              parameters: [],
+              returns: Str,
+              async: false,
+              throws: false,
+              static: false,
+            },
+          ],
+        },
+      ],
+    });
+    expect(result.source).toContain('readonly [Symbol.toStringTag]: string;');
+    expect(result.source).toContain('[Symbol.iterator](): number;');
+    expect(result.source).not.toContain('app.id');
+    expect(result.warnings).toEqual([
+      {
+        kind: 'skipped',
+        file: FILE,
+        location: 'Playlist.appId',
+        message:
+          'binds under Symbol.for("app.id"), which a TypeScript declaration can\'t name, so it was skipped',
+      },
+    ]);
+  });
+
   it('keeps functions sharing a JS name, which TypeScript reads as overloads', () => {
     const fn = (name: string, type: TypeNode) => ({
       name,
