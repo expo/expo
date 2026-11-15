@@ -20,7 +20,7 @@ import { resolveOptionsAsync } from './resolveOptions';
 
 export async function runAndroidAsync(projectRoot: string, { install, ...options }: Options) {
   // Guess the mode from the build type of the selected native build variant.
-  // A flavored variant is `<flavor><BuildType>`, such as `fooDebug` or `fooDebugOptimized`.
+  // A flavored variant is `<flavor><BuildType>`, such as `freeDebug` or `freeDebugOptimized`.
   const variant = options.variant ?? 'debug';
   const isProduction = !(
     ['debug', 'debugoptimized'].includes(variant.toLowerCase()) ||
