@@ -43,6 +43,36 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   private var isModuleRegistryInitialized: Bool = false
 
   /**
+   The registry of the packages that back `expo.packages`. It's independent of `moduleRegistry`,
+   but a module that is in both has one holder.
+   */
+  internal private(set) lazy var packageRegistry: PackageRegistry = {
+    isPackageRegistryInitialized = true
+    return PackageRegistry(appContext: self)
+  }()
+
+  /**
+   Whether the package registry for this app context has already been initialized.
+   */
+  private var isPackageRegistryInitialized: Bool = false
+
+  /**
+   The holders of the modules in `moduleRegistry` and of the modules that are only in `packageRegistry`,
+   each holder once. It doesn't create a registry that isn't created yet.
+   */
+  internal var allModuleHolders: [ModuleHolder] {
+    var holders = isModuleRegistryInitialized ? Array(moduleRegistry) : []
+    guard isPackageRegistryInitialized else {
+      return holders
+    }
+    var seenHolders = Set(holders.map(ObjectIdentifier.init))
+    for holder in packageRegistry.moduleHolders where seenHolders.insert(ObjectIdentifier(holder)).inserted {
+      holders.append(holder)
+    }
+    return holders
+  }
+
+  /**
    The legacy module registry with modules written in the old-fashioned way.
    */
   @objc
@@ -216,6 +246,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   @discardableResult
   public func useModulesProvider(_ provider: ModulesProvider) -> Self {
     moduleRegistry.register(fromProvider: provider)
+    packageRegistry.register(fromProvider: provider)
     return self
   }
 
@@ -256,8 +287,23 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   /// - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
   internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
     let runtime = try self.runtime
-    return classRegistry.withPrototype(nativeClassId: nativeClassId) { (prototype: borrowing JavaScriptObject) in
+    if let object = classRegistry.withPrototype(nativeClassId: nativeClassId, { (prototype: borrowing JavaScriptObject) in
       return runtime.createObject(prototype: prototype)
+    }) {
+      return object
+    }
+    // A class that a package exports is built when JS reads it first.
+    // Build it now, because a native instance gets to JS before that.
+    guard let sharedObjectType = packageRegistry.sharedObjectType(for: nativeClassId) else {
+      return nil
+    }
+    // Native values are converted to JS on the JavaScript thread.
+    return try JavaScriptActor.assumeIsolated {
+      // Building the class registers its prototype in `classRegistry`.
+      _ = try JavaScriptBindings.buildSharedObjectClass(sharedObjectType, appContext: self)
+      return classRegistry.withPrototype(nativeClassId: nativeClassId) { (prototype: borrowing JavaScriptObject) in
+        return runtime.createObject(prototype: prototype)
+      }
     }
   }
 
@@ -356,25 +402,34 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   }
 
   /**
-   Handles app's (`UIApplication`) lifecycle notifications and posts appropriate events to the module registry.
+   Posts the event to the modules of both registries, each module once.
+   */
+  private func postToModules(event: EventName) {
+    for holder in allModuleHolders {
+      holder.post(event: event)
+    }
+  }
+
+  /**
+   Handles app's (`UIApplication`) lifecycle notifications and posts appropriate events to the modules.
    */
   @objc
   private func handleClientAppNotification(_ notification: Notification) {
     switch notification.name {
     #if os(iOS) || os(tvOS)
     case UIApplication.willEnterForegroundNotification:
-      moduleRegistry.post(event: .appEntersForeground)
+      postToModules(event: .appEntersForeground)
     case UIApplication.didBecomeActiveNotification:
-      moduleRegistry.post(event: .appBecomesActive)
+      postToModules(event: .appBecomesActive)
     case UIApplication.didEnterBackgroundNotification:
-      moduleRegistry.post(event: .appEntersBackground)
+      postToModules(event: .appEntersBackground)
     #elseif os(macOS)
     case NSApplication.willUnhideNotification:
-      moduleRegistry.post(event: .appEntersForeground)
+      postToModules(event: .appEntersForeground)
     case NSApplication.didBecomeActiveNotification:
-      moduleRegistry.post(event: .appBecomesActive)
+      postToModules(event: .appBecomesActive)
     case NSApplication.didHideNotification:
-      moduleRegistry.post(event: .appEntersBackground)
+      postToModules(event: .appEntersBackground)
     #endif
     default:
       return
@@ -404,6 +459,30 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   @JavaScriptActor
   public func getNativeModuleObject(_ moduleName: String) -> JavaScriptValue? {
     return moduleRegistry.get(moduleHolderForName: moduleName)?.getJavaScriptValue()
+  }
+
+  /**
+   Returns the package with the given name that backs `expo.packages[packageName]`, or `nil` when it isn't registered.
+   */
+  func package(named packageName: String) -> PackageHolder? {
+    return packageRegistry.package(named: packageName)
+  }
+
+  /**
+   Returns the JavaScript class of the given `@SharedObject` class, and builds it on the first call. There is one
+   class for each native type, so a class that a package exports and a module registers in `_classTypes` too is
+   the same object in both places.
+   */
+  @JavaScriptActor
+  func getSharedObjectClass(_ sharedObjectType: SharedObject.Type) throws -> JavaScriptObject {
+    let cachedClass = classRegistry.withPrototype(nativeClassId: ObjectIdentifier(sharedObjectType)) {
+      (prototype: borrowing JavaScriptObject) in
+      return prototype.getProperty("constructor").getObject()
+    }
+    if let cachedClass {
+      return cachedClass
+    }
+    return try JavaScriptBindings.buildSharedObjectClass(sharedObjectType, appContext: self)
   }
 
   // MARK: - Modules registration
@@ -442,7 +521,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    */
   @MainActor
   private func registerNativeViews() {
-    for holder in moduleRegistry {
+    for holder in allModuleHolders {
       // Views of Expo Modules v1, declared with `View` in the module definition.
       for viewName in holder.definition.views.keys {
         ExpoFabricView.registerComponent(moduleName: holder.name, viewName: viewName)
@@ -557,6 +636,9 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
     // Install the modules host object as the `global.expo.modules`.
     try installer.installExpoModulesHostObject()
+
+    // Install the packages host object as the `global.expo.packages`.
+    try installer.installExpoPackagesHostObject()
   }
 
   @MainActor
@@ -591,6 +673,9 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
       // Install the modules host object as the `global.expo.modules`.
       try installer.installExpoModulesHostObject()
+
+      // Install the packages host object as the `global.expo.packages`.
+      try installer.installExpoPackagesHostObject()
 
       // Install module class prototypes so SharedObject properties are accessible in worklets.
       try installModuleClasses(in: uiRuntime)
@@ -670,7 +755,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    Finds the ClassDefinition for a given native type identifier by searching all modules.
    */
   private func findClassDefinition(for typeId: ObjectIdentifier) -> ClassDefinition? {
-    for module in moduleRegistry {
+    for module in allModuleHolders {
       for (_, classDefinition) in module.definition.classes {
         if let sharedObjectType = classDefinition.associatedType as? DynamicSharedObjectType,
            sharedObjectType.typeIdentifier == typeId {
@@ -682,14 +767,14 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   }
 
   /// Finds the `@SharedObject` class for a given native type identifier among the classes that modules
-  /// register in `_classTypes`.
+  /// register in `_classTypes` and the classes that packages export.
   private func findClassType(for typeId: ObjectIdentifier) -> SharedObject.Type? {
-    for module in moduleRegistry {
+    for module in allModuleHolders {
       if let classType = type(of: module.module)._classTypes.first(where: { ObjectIdentifier($0) == typeId }) {
         return classType
       }
     }
-    return nil
+    return packageRegistry.sharedObjectType(for: typeId)
   }
 
   /**
@@ -700,7 +785,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     sharedObjectRegistry.clear()
     classRegistry.clear()
 
-    for module in moduleRegistry {
+    for module in allModuleHolders {
       module.releaseJavaScriptObject()
     }
   }
@@ -805,12 +890,10 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       destroy()
     }
 
-    // Post an event to the registry only if it was already created.
-    // If we let it to lazy-load here, that would crash since the module registry
-    // has a weak reference to the app context which is being deallocated.
-    if isModuleRegistryInitialized {
-      moduleRegistry.post(event: .appContextDestroys)
-    }
+    // Post an event only to the registries that were already created.
+    // If we let them lazy-load here, that would crash since the registries
+    // have a weak reference to the app context which is being deallocated.
+    postToModules(event: .appContextDestroys)
   }
 
   @objc
