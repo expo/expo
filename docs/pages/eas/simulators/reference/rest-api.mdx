@@ -129,7 +129,7 @@ Save `data.id` and set it as `SESSION_ID` for the remaining examples. `url` link
 
 The response's `maxDurationMinutes` matches the requested session duration. A request for 30 minutes returns `30`.
 
-The account's duration limit depends on its plan: 40 minutes on the Free plan and 115 minutes on paid plans. When you omit `maxDurationMinutes`, the session gets the plan maximum. See [Session duration limits](/eas/simulators/reference/usage-and-billing/#session-duration-limits).
+Only paid plans can start sessions. The duration limit is 115 minutes. When you omit `maxDurationMinutes`, the session gets this maximum. See [Session duration limits](/eas/simulators/reference/usage-and-billing/#session-duration-limits).
 
 `remoteConfig` is `null` while the session is new, queued, or starting. Poll the [get endpoint](#get-a-session) for status and connection details together.
 
@@ -266,12 +266,12 @@ Always stop the session when your work finishes, including on errors or polling 
 
 ## Errors
 
-| Status | Reason                                                                                                                                                                                                                                                   |
-| ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 400    | The request fails validation. Examples include an invalid UUID, incompatible application sources, unsupported session options, or a duration outside the account's limit. Session creation also fails if Expo Simulators is not enabled for the account. |
-| 401    | The bearer token is invalid. A request with no `Authorization` header returns `400` with `UNAUTHORIZED_ERROR` instead.                                                                                                                                   |
-| 403    | The token does not have permission to read the project or perform the requested action.                                                                                                                                                                  |
-| 404    | No project or session exists with the given ID.                                                                                                                                                                                                          |
+| Status | Reason                                                                                                                                                                                                                                         |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 400    | The request fails validation. Examples include an invalid UUID, incompatible application sources, unsupported session options, or a duration above 115 minutes. Session creation also fails if Expo Simulators is not enabled for the account. |
+| 401    | The bearer token is invalid. A request with no `Authorization` header returns `400` with `UNAUTHORIZED_ERROR` instead.                                                                                                                         |
+| 403    | The token does not have permission to read the project or perform the requested action.                                                                                                                                                        |
+| 404    | No project or session exists with the given ID.                                                                                                                                                                                                |
 
 Use the returned error message to identify which option or permission needs attention. For session startup failures, inspect the session page linked by `url`.
 
