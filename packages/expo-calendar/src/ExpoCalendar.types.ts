@@ -586,8 +586,8 @@ export declare class ExpoCalendarReminder {
 }
 
 /**
- * Represents a calendar attendee object.
- * @platform android
+ * Represents a calendar attendee object. On iOS, attendees are read-only: EventKit has no API to
+ * add, update or delete them.
  */
 export declare class ExpoCalendarAttendee {
   /**
