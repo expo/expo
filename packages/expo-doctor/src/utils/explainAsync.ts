@@ -14,7 +14,7 @@ export async function explainAsync(
   projectRoot: string,
   parameters: string[] = []
 ): Promise<RootNodePackage[] | null> {
-  const args = ['explain', packageName, ...parameters, '--json'];
+  const args = ['explain', packageName, ...parameters, '--json', '--force'];
 
   try {
     const { stdout } = await spawnAsync('npm', args, {
