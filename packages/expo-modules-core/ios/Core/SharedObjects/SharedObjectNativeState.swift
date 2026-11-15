@@ -1,103 +1,147 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 import ExpoModulesJSI
+import os
 
 /// Native state attached to a `SharedObject`'s JS object(s). Holds the paired native `SharedObject` so
 /// callers that already have the JS object can recover the native counterpart via
 /// `JavaScriptObject.getNativeState(as:)` without going through `SharedObjectRegistry`.
 ///
-/// A single instance is shared across every runtime the native object is exposed to: its underlying C++
-/// `jsi::NativeState` is attached to each runtime's JS object (the same `shared_ptr`, reused via
-/// `JavaScriptNativeState.acquireShared`), and this instance maps each runtime to its paired JS object so
-/// the native object can recover *its* JS counterpart in any given runtime.
-internal final class SharedObjectNativeState: JavaScriptNativeState {
+/// The JS objects of the native object in all runtimes (for example the main runtime and the worklet UI runtime)
+/// share this native state and its C++ state. The C++ state is destroyed, and its releaser releases the native
+/// object, when the last of these JS objects is collected.
+///
+/// Only the main runtime can have event listeners in the C++ state (`addListener` throws in the other runtimes), and
+/// only its JS object is kept here, so the native state holds values of the main runtime only. The app context
+/// releases them before the main runtime is destroyed (see ``releaseRuntimeValues()``).
+///
+/// `@unchecked Sendable`: the native object is immutable. The JS objects are read and written only on the thread of
+/// the runtime they belong to. The release flag is behind a lock, because the threads of all runtimes read it and
+/// a release can come from any of them or from a garbage collector thread.
+internal final class SharedObjectNativeState: JavaScriptNativeState, @unchecked Sendable {
   internal let native: SharedObject
 
+  /// The main runtime of the app context. The JS object in that runtime is kept in `pairedObject`. JS objects in
+  /// other runtimes are kept by those runtimes (see `PairedObjects`), so each runtime touches only its own JS
+  /// objects, on its own thread.
+  private let mainRuntimeId: JavaScriptRuntime.ID?
+
+  /// The JS object paired with the native object in the main runtime, held weakly.
+  private var pairedObject: JavaScriptWeakObject?
+
+  /// The listeners in the C++ state, which belong to the main runtime.
+  private let listeners: SharedObjectListeners
+
+  private let isReleasedFlag = OSAllocatedUnfairLock(initialState: false)
+
   /// Whether the native object was released. A JS object can keep its native state after the release
-  /// (for example a frozen one, whose native state can't be reset), so lookups check this flag.
-  internal private(set) var isReleased = false
+  /// (for example a frozen one, or one in another runtime), so lookups check this flag.
+  internal var isReleased: Bool {
+    return isReleasedFlag.withLock { $0 }
+  }
 
-  /// The JS object paired with the native object in the first runtime it was paired in, held weakly.
-  /// Most native objects are only exposed to one runtime, so that pairing skips the dictionary below.
-  private var firstRuntimeId: JavaScriptRuntime.ID?
-  private var firstPairedObject: JavaScriptWeakObject?
-
-  /// The JS object paired with the native object in each other runtime, keyed by runtime identity and
-  /// held weakly. One native object can be exposed to several runtimes (e.g. the main and UI runtimes,
-  /// or worklet contexts), each with its own JS counterpart.
-  private var pairedObjects: [JavaScriptRuntime.ID: JavaScriptWeakObject.Ref] = [:]
-
-  internal init(native: SharedObject, factory: @escaping JavaScriptNativeState.Factory) {
+  internal init(native: SharedObject, objectId: SharedObjectId, mainRuntimeId: JavaScriptRuntime.ID?, releaser: @escaping ObjectReleaser) {
+    let listeners = SharedObjectListeners()
     self.native = native
-    super.init(factory: factory)
+    self.mainRuntimeId = mainRuntimeId
+    self.listeners = listeners
+    super.init { context, deallocator in
+      return SharedObjectUtils.makeSharedObjectNativeStatePtr(
+        objectId: objectId,
+        releaser: releaser,
+        listeners: listeners,
+        context: context,
+        contextDeallocator: deallocator
+      )
+    }
   }
 
   internal func markReleased() {
-    isReleased = true
+    isReleasedFlag.withLock { $0 = true }
+  }
+
+  /// Removes the event listeners and the JS object of the main runtime. Call it on the thread of the main runtime
+  /// before the runtime is destroyed, because a JS object of another runtime can keep the native state alive for
+  /// longer.
+  internal func releaseRuntimeValues() {
+    listeners.clear()
+    pairedObject = nil
   }
 
   /// Records `jsObject` as the native object's JS counterpart in `runtime`. The caller is responsible
-  /// for having attached this native state to `jsObject` (`jsObject.setNativeState(self)`), which reuses
-  /// the shared C++ pointee across runtimes.
+  /// for having attached this native state to `jsObject` (`jsObject.setNativeState(self)`).
   internal func setJavaScriptObject(_ jsObject: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) {
-    let runtimeId = runtime.id
-
-    // Take the first slot when it's free, already belongs to this runtime, or its JS object is gone.
-    if firstRuntimeId == nil || firstRuntimeId == runtimeId || !isFirstPairedObjectAlive() {
-      firstRuntimeId = runtimeId
-      firstPairedObject = jsObject.createWeak()
-      if !pairedObjects.isEmpty {
-        pairedObjects[runtimeId] = nil
-      }
+    if runtime.id == mainRuntimeId {
+      pairedObject = jsObject.createWeak()
       return
     }
-    // Drop entries whose runtime or JS object has gone away before inserting, so the map doesn't
-    // accumulate dead keys for runtimes that paired once and were torn down.
-    pruneExpired()
-    pairedObjects[runtimeId] = jsObject.createWeak().ref()
+    JavaScriptActor.assumeIsolated {
+      runtime.cached(pairedObjectsCacheKey, PairedObjects.init).set(jsObject, for: self)
+    }
   }
 
   /// Returns the JS object paired with the native object in `runtime`, or `nil` if there is no live
   /// pairing there (none was created, or the JS object has been garbage-collected).
   internal func javaScriptObject(in runtime: borrowing JavaScriptRuntime) -> JavaScriptObject? {
-    let runtimeId = runtime.id
-
-    // Unwrap the ref first so the optional doesn't nest with `withValue`'s, which would form a
-    // `JavaScriptObject??` that the non-`Copyable` element can't be wrapped in.
-    if runtimeId == firstRuntimeId {
-      switch firstPairedObject {
+    if runtime.id == mainRuntimeId {
+      // Unwrap the ref first so the optional doesn't nest with `withValue`'s, which would form a
+      // `JavaScriptObject??` that the non-`Copyable` element can't be wrapped in.
+      switch pairedObject {
       case .some(let weakObject):
         return weakObject.lock()
       case .none:
         return nil
       }
     }
-    guard !pairedObjects.isEmpty, let ref = pairedObjects[runtimeId] else {
-      return nil
-    }
-    return ref.withValue { $0?.lock() }
-  }
-
-  private func pruneExpired() {
-    guard !pairedObjects.isEmpty else {
-      return
-    }
-    pairedObjects = pairedObjects.filter { _, ref in
-      return Self.isAlive(ref)
+    return JavaScriptActor.assumeIsolated {
+      return runtime.cached(pairedObjectsCacheKey, PairedObjects.init).object(for: self)
     }
   }
 
-  private func isFirstPairedObjectAlive() -> Bool {
-    switch firstPairedObject {
-    case .some(let weakObject):
-      return weakObject.lock() != nil
-    case .none:
-      return false
+  /// Returns the JS object paired with the native object in `runtime`, a runtime other than the main runtime.
+  /// When there is none, it pairs the object that `makeObject` creates.
+  @JavaScriptActor
+  internal func javaScriptObject(in runtime: JavaScriptRuntime, makeObject: () throws -> JavaScriptObject) throws -> JavaScriptObject {
+    if let jsObject = javaScriptObject(in: runtime) {
+      return jsObject
     }
-  }
-
-  /// Whether the weak ref still resolves to a JS object; an empty or missing ref doesn't.
-  private static func isAlive(_ ref: JavaScriptWeakObject.Ref?) -> Bool {
-    return ref?.withValue { $0?.lock() != nil } ?? false
+    let jsObject = try makeObject()
+    jsObject.setNativeState(self)
+    runtime.cached(pairedObjectsCacheKey, PairedObjects.init).set(jsObject, for: self)
+    return jsObject
   }
 }
+
+/// The JS objects that a runtime other than the main runtime pairs with native objects.
+/// Each runtime keeps its own in its cache, so they are used only on the thread of that runtime and are
+/// released together with the runtime.
+private final class PairedObjects {
+  private var objects: [ObjectIdentifier: JavaScriptWeakObject.Ref] = [:]
+
+  /// The number of objects above which `set(_:for:)` removes the objects that were garbage-collected.
+  private var pruneThreshold = 64
+
+  func set(_ jsObject: borrowing JavaScriptObject, for nativeState: SharedObjectNativeState) {
+    if objects.count >= pruneThreshold {
+      objects = objects.filter { _, ref in
+        return ref.withValue { $0?.lock() != nil } ?? false
+      }
+      pruneThreshold = max(64, objects.count * 2)
+    }
+    objects[ObjectIdentifier(nativeState)] = jsObject.createWeak().ref()
+  }
+
+  func object(for nativeState: SharedObjectNativeState) -> JavaScriptObject? {
+    guard let ref = objects[ObjectIdentifier(nativeState)], let jsObject = ref.withValue({ $0?.lock() }) else {
+      return nil
+    }
+    // A new native state can get the identifier of a deallocated one, so check that the JS object
+    // still holds this native state.
+    guard jsObject.getNativeState(as: SharedObjectNativeState.self) === nativeState else {
+      return nil
+    }
+    return jsObject
+  }
+}
+
+private let pairedObjectsCacheKey = JavaScriptRuntime.Cache.Key<PairedObjects>()

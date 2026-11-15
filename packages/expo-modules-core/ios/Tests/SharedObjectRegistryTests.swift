@@ -149,17 +149,17 @@ struct SharedObjectRegistryTests {
 
   @Test
   func `re-adding a still-paired native object reuses its id and single registry entry`() throws {
-    let primaryRuntime = try runtime
-    let secondaryRuntime = JavaScriptRuntime()
-
     let nativeObject = TestSharedObject()
-    let firstId = registry.add(native: nativeObject, javaScript: primaryRuntime.createObject())
+    let firstObject = try runtime.createObject()
+    let firstId = registry.add(native: nativeObject, javaScript: firstObject)
 
-    // Pair the same, still-alive native object again (e.g. from a second runtime). Because it already
-    // carries a native state, `add` must reuse that state's id rather than mint a new one — otherwise
-    // the C++ `NativeState.objectId` (which drives the releaser/`delete`) would disagree with
-    // `sharedObjectId`, leaking the first registry entry.
-    let secondId = registry.add(native: nativeObject, javaScript: secondaryRuntime.createObject())
+    // Pair the same, still-alive native object again. Because its JS object still holds its native state,
+    // `add` must reuse that state's id rather than mint a new one — otherwise the C++ `NativeState.objectId`
+    // (which drives the releaser/`delete`) would disagree with `sharedObjectId`, leaking the first registry entry.
+    let secondObject = try runtime.createObject()
+    let secondId = withExtendedLifetime(firstObject) {
+      registry.add(native: nativeObject, javaScript: secondObject)
+    }
 
     #expect(secondId == firstId)
     #expect(nativeObject.sharedObjectId == firstId)

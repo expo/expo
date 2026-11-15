@@ -19,5 +19,14 @@ export function test({ describe, expect, it, beforeAll }: JasmineInterface) {
         'function'
       );
     });
+
+    it('resolves a shared object to the same JS object each time', async () => {
+      const counter = WorkletsTester.createCounter();
+      const id = counter.__expo_shared_object_id__;
+      const isSame = await WorkletsTester.evaluateOnUIRuntime(
+        `String(expo.SharedObject.__resolveInWorklet(${id}) === expo.SharedObject.__resolveInWorklet(${id}))`
+      );
+      expect(isSame).toBe('true');
+    });
   });
 }
