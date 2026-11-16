@@ -774,6 +774,24 @@ describe('lists in table cells', () => {
   });
 });
 
+describe('line breaks in table cells', () => {
+  it('keeps a space where a cell has a line break', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Type</th><th>Description</th></tr></thead>',
+      '<tbody>',
+      '<tr><td><code>CGColor</code><br><code>UIColor</code></td><td>Two letter code.<br>For example, <code>US</code>.</td></tr>',
+      '</tbody>',
+      '</table></main>',
+    ].join('');
+    const row = convertHtmlToMarkdown(html)
+      .split('\n')
+      .find(line => line.includes('CGColor'));
+
+    expect(row).toBe('| `CGColor` `UIColor` | Two letter code. For example, `US`. |');
+  });
+});
+
 describe('platform indicators in table cells', () => {
   it('keeps "Only for: iOS" on same line as description in table cells', () => {
     const html = [
