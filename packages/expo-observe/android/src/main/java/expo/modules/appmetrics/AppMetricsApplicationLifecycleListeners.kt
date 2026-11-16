@@ -1,6 +1,8 @@
 package expo.modules.appmetrics
 
 import android.app.Application
+import com.facebook.react.bridge.ReactMarker
+import com.facebook.react.bridge.ReactMarkerConstants
 import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.crashreporting.CrashFileWriter
 import expo.modules.appmetrics.crashreporting.JvmCrashHandler
@@ -12,6 +14,13 @@ internal class AppMetricsApplicationLifecycleListeners : ApplicationLifecycleLis
     super.onCreate(application)
     // Set before the main session starts: the session reads these values when it builds its row.
     AppMetrics.configure(AppMetricsHost(updatesInfo = ::expoUpdatesInfo))
+    ReactMarker.addListener { name, _, _ ->
+      when (name) {
+        ReactMarkerConstants.RUN_JS_BUNDLE_START -> AppStartupManager.markBundleLoadStart()
+        ReactMarkerConstants.RUN_JS_BUNDLE_END -> AppStartupManager.markBundleLoadEnd()
+        else -> {}
+      }
+    }
     AppStartupManager.recordAppCreated(application)
     // Crash capture starts at process start, not at module creation: the module
     // system spins up lazily (when JS first touches a module), and a crash
