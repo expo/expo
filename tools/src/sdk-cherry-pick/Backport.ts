@@ -33,7 +33,7 @@ const GIT_CONFIG = [
   '-c',
   'user.name=Expo Bot',
   '-c',
-  'user.email=expo-bot@users.noreply.github.com',
+  'user.email=34669131+expo-bot@users.noreply.github.com',
   // Reads the token from the environment, so that it is not written to .git/config.
   '-c',
   'credential.helper=',
@@ -222,12 +222,15 @@ If \`${targetBranch}\` has no \`.changeset/config.json\`, move the summary of ea
     }
 
     await git('push', '--quiet', 'origin', `HEAD:refs/heads/${botBranch}`);
-    const number = await github.createPullRequestAsync({
-      base: targetBranch,
-      head: botBranch,
-      title,
-      body,
-    });
+    const number = await github
+      .createPullRequestAsync({ base: targetBranch, head: botBranch, title, body })
+      .catch(async (error) => {
+        // A bot branch with no pull request would block the next run, which stops when the branch exists.
+        await git('push', '--quiet', 'origin', '--delete', botBranch).catch((deleteError) =>
+          log(`Could not delete ${botBranch}: ${deleteError}`)
+        );
+        throw error;
+      });
     await github
       .addLabelAsync(number, BACKPORT_LABEL)
       .catch((error) => log(`Could not add the "${BACKPORT_LABEL}" label to #${number}: ${error}`));

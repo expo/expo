@@ -272,6 +272,27 @@ describe('backportAsync', () => {
     }
   });
 
+  it('deletes the pushed branch and comments once when opening the pull request fails', async () => {
+    const comments: string[] = [];
+    const run = await backport(52, 90, shas.changeset, {
+      github: {
+        createPullRequestAsync: async () => {
+          throw new Error('gh pr create failed');
+        },
+        addLabelAsync: async () => {},
+        commentAsync: async (number, body) => {
+          comments.push(`#${number} ${body}`);
+        },
+      },
+    });
+
+    assert.ok(run.error);
+    assert.equal(comments.length, 1);
+    assert.match(comments[0], /^#52 The backport to `sdk-90` failed\./);
+    assert.equal(remoteBranch('bot/sdk-90-cherry-pick-52'), null);
+    assertNoTemporaryWorktree();
+  });
+
   it('prints the title, body, and diff summary in a dry run, without pushing or commenting', async () => {
     const run = await backport(50, 91, shas.changeset, { dryRun: true });
 
