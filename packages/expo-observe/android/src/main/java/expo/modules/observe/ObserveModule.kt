@@ -2,7 +2,6 @@ package expo.modules.observe
 
 import android.content.Context
 import android.util.Log
-import expo.modules.appmetrics.AppMetricsModule
 import expo.modules.easclient.EASClientID
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.exception.Exceptions
@@ -12,6 +11,12 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.observe.shared.dispatch.OBSERVE_DEFAULT_BASE_URL
+import expo.modules.observe.shared.dispatch.OBSERVE_TAG
+import expo.modules.observe.shared.dispatch.ObservabilityManager
+import expo.modules.observe.shared.dispatch.ObservePreferences
+import expo.modules.observe.shared.dispatch.PersistedBundleDefaults
+import expo.modules.observe.shared.dispatch.PersistedConfig
 
 @OptimizedRecord
 internal class Config(
