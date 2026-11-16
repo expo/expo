@@ -134,6 +134,27 @@ class AppStartupManagerTest {
   }
 
   @Test
+  fun `markBundleLoadEnd records the time since markBundleLoadStart`() {
+    // Drop anything left by other tests.
+    AppStartupManager.takeUnsavedMetrics()
+    AppStartupManager.startupState = StartupState.LAUNCHING
+    var uptime = 1_000L
+    mockkObject(TimeUtils)
+    try {
+      every { TimeUtils.getCurrentTimeInMillis() } answers { uptime }
+      AppStartupManager.markBundleLoadStart()
+      uptime = 1_250L
+      AppStartupManager.markBundleLoadEnd()
+    } finally {
+      unmockkObject(TimeUtils)
+    }
+
+    val metric = AppStartupManager.takeUnsavedMetrics().single()
+    assertEquals(AppStartupMetric.BundleLoadTime.metricName, metric.name)
+    assertEquals(0.25, metric.value, 0.0)
+  }
+
+  @Test
   fun `TTI network summary counts only requests from launch on`() {
     resetLaunchState()
     val wallClockAtInteractive = System.currentTimeMillis() - 60_000
