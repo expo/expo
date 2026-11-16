@@ -99,7 +99,12 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   private lateinit var spanWriter: SpanWriter
 
   private val metadata: AppMetadata? by lazy {
-    AppMetadataProvider.getAppMetadata(appContext.service<ConstantsInterface>(), context)
+    val constants = appContext.service<ConstantsInterface>()?.constants
+    val manifest = constants?.get("manifest") as? String ?: run {
+      Log.d(TAG, "Manifest is missing or is not a String in ConstantsInterface")
+      null
+    }
+    AppMetadataProvider.getAppMetadata(manifest, context)
   }
 
   override fun definition() =
@@ -486,7 +491,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
   override fun updatesStateDidChange(event: Map<String, Any>) {
     if (UpdatesStateEvent.fromMap(event)?.type == UpdatesStateEvent.EventType.DownloadCompleteWithUpdate) {
-      updatesMonitoring.downloadTimeMetric(subscription)?.let { metric ->
+      updateDownload(subscription)?.let { (downloadTimeSeconds, updateId) ->
+        val metric = updatesMonitoring.downloadTimeMetric(downloadTimeSeconds, updateId)
         scope.launch {
           // Attach any pending startup metrics first so the download-time
           // metric lands alongside them. The session waits for its row before
