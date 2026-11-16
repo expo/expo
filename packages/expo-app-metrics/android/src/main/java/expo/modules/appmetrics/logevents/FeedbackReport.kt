@@ -20,12 +20,7 @@ data class FeedbackReport(
   @Field val attributes: Map<String, Any?>? = null
 ) : Record {
   fun toLogRecord(sessionId: String): LogRecord {
-    // The ingest keeps only the first 128 attributes, so leave room for the 4 `expo.feedback.*` keys.
-    val sanitized = sanitizeLogEventAttributes(
-      attributes,
-      source = "reportFeedback",
-      maxCount = MAX_ATTRIBUTE_COUNT - 4
-    )
+    val sanitized = sanitizeLogEventAttributes(attributes, source = "reportFeedback")
     // Added after sanitization, so caller attributes cannot replace them.
     val attributes = buildMap {
       sanitized.attributes?.let { putAll(it) }

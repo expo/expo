@@ -26,7 +26,7 @@ let displayNameAttributeKey = "expo.log.display_name"
 /// Maximum number of attributes accepted per log record. Mirrors the OTel SDK
 /// default — collectors and backends start to push back well before this limit,
 /// so we cap eagerly and surface the overflow via `droppedAttributesCount`.
-let maxAttributeCount = 128
+private let maxAttributeCount = 128
 
 /// Result of sanitizing caller-provided log-event attributes.
 ///
@@ -68,8 +68,7 @@ private func withoutNonFiniteNumbers(_ value: Any) -> Any? {
 /// which rule fired.
 func sanitizeLogEventAttributes(
   _ attributes: [String: Any]?,
-  source: String = "logEvent",
-  maxCount: Int = maxAttributeCount
+  source: String = "logEvent"
 ) -> SanitizedLogAttributes {
   guard let attributes else {
     return SanitizedLogAttributes(attributes: nil, droppedCount: 0)
@@ -101,12 +100,12 @@ func sanitizeLogEventAttributes(
   // dictionary iteration order would make this nondeterministic. Note this
   // biases retention toward alphabetically-earlier keys when the cap is hit —
   // acceptable for accidental-overflow cases (loop bug, typo); a caller that
-  // genuinely needs more than `maxCount` attributes should split them across multiple events.
+  // genuinely needs >128 attributes should split them across multiple events.
   var overflowDrops = 0
-  if sanitized.count > maxCount {
-    let kept = sanitized.keys.sorted().prefix(maxCount)
+  if sanitized.count > maxAttributeCount {
+    let kept = sanitized.keys.sorted().prefix(maxAttributeCount)
     let keptSet = Set(kept)
-    overflowDrops = sanitized.count - maxCount
+    overflowDrops = sanitized.count - maxAttributeCount
     sanitized = sanitized.filter { keptSet.contains($0.key) }
   }
 
@@ -129,7 +128,7 @@ func sanitizeLogEventAttributes(
   }
   if overflowDrops > 0 {
     logger.warn(
-      "[AppMetrics] \(source) dropped \(overflowDrops) attribute(s) past the \(maxCount)-attribute per-record cap."
+      "[AppMetrics] \(source) dropped \(overflowDrops) attribute(s) past the \(maxAttributeCount)-attribute per-record cap."
     )
   }
 

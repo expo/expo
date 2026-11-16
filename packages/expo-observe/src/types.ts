@@ -72,8 +72,8 @@ export type ObserveFeedback = {
    */
   scale?: { min: number; max: number };
   /**
-   * Attributes attached to the event, up to 124 for feedback. The other `logEvent` attribute
-   * rules apply.
+   * Attributes attached to the event. They follow the same rules as `logEvent` attributes. If the
+   * event has more than 128 attributes in total, the `expo.*` attributes are kept first.
    */
   attributes?: ObserveAttributes;
 };
