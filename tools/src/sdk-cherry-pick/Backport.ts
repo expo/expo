@@ -1,3 +1,4 @@
+import { parseChangesetFile } from '@changesets/parse';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -39,6 +40,41 @@ const GIT_CONFIG = [
   '-c',
   'credential.helper=!f() { echo username=x-access-token; echo "password=$GH_TOKEN"; }; f',
 ];
+
+/**
+ * Appends a `See:` line for the pull request to each changeset that has none outside a code fence,
+ * so that the changelog script credits the original pull request instead of the backport one.
+ * The patterns follow `scripts/changesets/changelog.cjs`.
+ */
+async function linkChangesetsAsync(
+  repoDir: string,
+  changesetPaths: readonly string[],
+  prNumber: number
+): Promise<boolean> {
+  let changed = false;
+  for (const changesetPath of changesetPaths) {
+    const filePath = path.join(repoDir, changesetPath);
+    const content = await fs.promises.readFile(filePath, 'utf8');
+    let inFence = false;
+    const hasSeeLine = parseChangesetFile(content)
+      .summary.split(/\r?\n/)
+      .some((line) => {
+        if (/^\s*```/.test(line)) {
+          inFence = !inFence;
+          return false;
+        }
+        return !inFence && /^\s*See:/i.test(line);
+      });
+    if (!hasSeeLine) {
+      await fs.promises.writeFile(
+        filePath,
+        `${content.trimEnd()}\n\nSee: [#${prNumber}](https://github.com/expo/expo/pull/${prNumber})\n`
+      );
+      changed = true;
+    }
+  }
+  return changed;
+}
 
 function gitIn(dir: string) {
   const repo = new GitDirectory(dir);
@@ -131,34 +167,40 @@ If \`${targetBranch}\` has no \`.changeset/config.json\`, move the summary of ea
       return;
     }
 
+    const addedChangesets = (
+      await git('diff-tree', '-r', '-z', '--name-only', '--no-commit-id', '--diff-filter=A', 'HEAD')
+    )
+      .split('\0')
+      .filter(isChangesetPath);
     let changesetNote = '';
-    if (!fs.existsSync(path.join(worktree, '.changeset/config.json'))) {
-      const added = (
-        await git(
-          'diff-tree',
-          '-r',
-          '-z',
-          '--name-only',
-          '--no-commit-id',
-          '--diff-filter=A',
-          'HEAD'
-        )
-      )
-        .split('\0')
-        .filter(isChangesetPath);
-      if (added.length > 0) {
-        await convertChangesetsAsync(worktree, added, { number: prNumber, author: options.author });
+    if (fs.existsSync(path.join(worktree, '.changeset/config.json'))) {
+      if (await linkChangesetsAsync(worktree, addedChangesets, prNumber)) {
         await git('add', '-A');
         await git(
           'commit',
           '--quiet',
           '-m',
-          'Convert changesets to CHANGELOG entries',
+          `Link changesets to #${prNumber}`,
           '-m',
-          `${targetBranch} does not use changesets. This commit moves the changesets of #${prNumber} into CHANGELOG.md entries.`
+          'The changelog script credits the pull request in the `See:` line, not the backport pull request.'
         );
-        changesetNote = `\n\`${targetBranch}\` does not use changesets, so a second commit moved the changesets of #${prNumber} into \`CHANGELOG.md\` entries. Each entry is in the section for its bump type. Check that the section fits the change.\n`;
+        changesetNote = `\nA second commit added a \`See:\` line for #${prNumber} to each changeset that had none, so that the changelog credits #${prNumber} and its author, not this pull request.\n`;
       }
+    } else if (addedChangesets.length > 0) {
+      await convertChangesetsAsync(worktree, addedChangesets, {
+        number: prNumber,
+        author: options.author,
+      });
+      await git('add', '-A');
+      await git(
+        'commit',
+        '--quiet',
+        '-m',
+        'Convert changesets to CHANGELOG entries',
+        '-m',
+        `${targetBranch} does not use changesets. This commit moves the changesets of #${prNumber} into CHANGELOG.md entries.`
+      );
+      changesetNote = `\n\`${targetBranch}\` does not use changesets, so a second commit moved the changesets of #${prNumber} into \`CHANGELOG.md\` entries. Each entry is in the section for its bump type. Check that the section fits the change.\n`;
     }
 
     const diffStat = await git('diff', '--stat', `origin/${targetBranch}`, 'HEAD');

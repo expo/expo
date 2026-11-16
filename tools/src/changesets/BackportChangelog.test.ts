@@ -9,6 +9,7 @@ import { convertChangesetsAsync } from './BackportChangelog';
 const TRAILER =
   '([#51463](https://github.com/expo/expo/pull/51463) by [@chrfalch](https://github.com/chrfalch))';
 const NEW_FEATURES = '### 🎉 New features';
+const BUG_FIXES = '### 🐛 Bug fixes';
 const OTHERS = '### 💡 Others';
 const CHANGELOG = [
   '# Changelog',
@@ -19,7 +20,7 @@ const CHANGELOG = [
   '',
   NEW_FEATURES,
   '',
-  '### 🐛 Bug fixes',
+  BUG_FIXES,
   '',
   OTHERS,
   '',
@@ -67,7 +68,7 @@ describe('convertChangesetsAsync', () => {
   for (const [type, section] of [
     ['major', '### 🛠 Breaking changes'],
     ['minor', NEW_FEATURES],
-    ['patch', OTHERS],
+    ['patch', BUG_FIXES],
     ['none', OTHERS],
   ]) {
     it(`adds a ${type} change under "${section}" with the trailer`, async () => {
@@ -81,7 +82,7 @@ describe('convertChangesetsAsync', () => {
   it('adds the entry after the last existing entry of the section', async () => {
     const before = replaceLine(CHANGELOG, OTHERS, [OTHERS, '', '- First entry.', '- Last entry.']);
     assert.equal(
-      await convert('patch', 'Fix a crash.', before),
+      await convert('none', 'Fix a crash.', before),
       replaceLine(before, '- Last entry.', ['- Last entry.', `- Fix a crash. ${TRAILER}`])
     );
   });
@@ -106,7 +107,7 @@ describe('convertChangesetsAsync', () => {
     it(`adds ${kind} below an existing entry of the same section`, async () => {
       const before = replaceLine(CHANGELOG, OTHERS, [OTHERS, '', '- An existing entry.']);
       assert.equal(
-        await convert('patch', summary, before),
+        await convert('none', summary, before),
         replaceLine(before, '- An existing entry.', ['- An existing entry.', ...entry])
       );
     });
@@ -114,7 +115,7 @@ describe('convertChangesetsAsync', () => {
 
   it('puts the trailer on its own line after a summary that is only a code block', async () => {
     assert.equal(
-      await convert('patch', '```js\nfoo();\n```'),
+      await convert('none', '```js\nfoo();\n```'),
       replaceLine(CHANGELOG, OTHERS, [
         OTHERS,
         '',
@@ -129,7 +130,7 @@ describe('convertChangesetsAsync', () => {
 
   it('skips a named package without a CHANGELOG.md, such as a template', async () => {
     assert.equal(
-      await convert('patch', 'Fix a crash.', CHANGELOG, true),
+      await convert('none', 'Fix a crash.', CHANGELOG, true),
       replaceLine(CHANGELOG, OTHERS, [OTHERS, '', `- Fix a crash. ${TRAILER}`])
     );
   });

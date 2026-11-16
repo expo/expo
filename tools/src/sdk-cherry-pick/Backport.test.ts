@@ -38,12 +38,12 @@ function commit(repo: string, files: Record<string, string | null>, message: str
 }
 
 const CHANGELOG =
-  '# Changelog\n\n## Unpublished\n\n### 💡 Others\n\n## 1.0.0\n\n### 🐛 Bug fixes\n\n- Old fix.\n';
+  '# Changelog\n\n## Unpublished\n\n### 🐛 Bug fixes\n\n## 1.0.0\n\n### 🐛 Bug fixes\n\n- Old fix.\n';
 const TRAILER =
   '([#45](https://github.com/expo/expo/pull/45) by [@chrfalch](https://github.com/chrfalch))';
 const CHANGELOG_WITH_ENTRY = CHANGELOG.replace(
-  '### 💡 Others\n',
-  `### 💡 Others\n\n- Fix foo. ${TRAILER}\n`
+  '### 🐛 Bug fixes\n',
+  `### 🐛 Bug fixes\n\n- Fix foo. ${TRAILER}\n`
 );
 
 let root: string;
@@ -150,6 +150,10 @@ function remoteBranch(name: string): string | null {
   return heads || null;
 }
 
+function showFile(revision: string, file: string): string {
+  return execFileSync('git', ['show', `${revision}:${file}`], { cwd: origin, encoding: 'utf8' });
+}
+
 function assertNoTemporaryWorktree() {
   assert.equal(git(clone, 'worktree', 'list').split('\n').length, 1);
 }
@@ -173,15 +177,21 @@ describe('backportAsync', () => {
     assert.match(run.pullRequests[0].body, /moved the changesets of #45 into `CHANGELOG\.md`/);
   });
 
-  it('keeps the changesets, opens the pull request, labels it, and links it on a branch with changesets', async () => {
+  it('keeps the changesets, links them to the original pull request, opens the pull request, labels it, and links it on a branch with changesets', async () => {
     const run = await backport(48, 90, shas.changeset);
 
     assert.equal(run.error, undefined);
     const tip = remoteBranch('bot/sdk-90-cherry-pick-48');
     assert.ok(tip);
-    assert.equal(git(origin, 'rev-parse', `${tip}~1`), git(origin, 'rev-parse', 'sdk-90'));
+    assert.equal(git(origin, 'rev-parse', `${tip}~2`), git(origin, 'rev-parse', 'sdk-90'));
     assert.equal(git(origin, 'diff', '--name-status', 'sdk-90', tip), 'A\t.changeset/good.md');
-    assert.match(git(origin, 'log', '-1', '--format=%B', tip), /cherry picked from commit/);
+    assert.equal(
+      showFile(tip, '.changeset/good.md'),
+      "---\n'expo-foo': patch\n---\n\nFix foo.\n\nSee: [#48](https://github.com/expo/expo/pull/48)\n"
+    );
+    assert.equal(git(origin, 'log', '-1', '--format=%s', tip), 'Link changesets to #48');
+    assert.match(git(origin, 'log', '-1', '--format=%B', `${tip}~1`), /cherry picked from commit/);
+    assert.match(run.pullRequests[0].body, /`See:` line/);
     assert.deepEqual(
       run.pullRequests.map(({ base, head, title }) => ({ base, head, title })),
       [{ base: 'sdk-90', head: 'bot/sdk-90-cherry-pick-48', title: '[sdk-90] Title of #48 (#48)' }]

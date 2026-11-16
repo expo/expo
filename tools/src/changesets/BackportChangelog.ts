@@ -12,7 +12,7 @@ type BumpType = ReturnType<typeof parseChangesetFile>['releases'][number]['type'
 const SECTION_BY_BUMP_TYPE: Record<BumpType, ChangeType> = {
   major: ChangeType.BREAKING_CHANGES,
   minor: ChangeType.NEW_FEATURES,
-  patch: ChangeType.OTHERS,
+  patch: ChangeType.BUG_FIXES,
   none: ChangeType.OTHERS,
 };
 
