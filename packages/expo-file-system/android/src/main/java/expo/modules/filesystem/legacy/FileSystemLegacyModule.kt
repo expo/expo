@@ -1024,7 +1024,8 @@ open class FileSystemLegacyModule : Module() {
     if (to.isDirectory) {
       throw IOException("Destination '$to' exists but is a directory.")
     }
-    from.copyTo(to, overwrite = true)
+    to.parentFile?.mkdirs()
+    from.inputStream().use { input -> to.outputStream().use { output -> input.copyTo(output) } }
     to.setLastModified(from.lastModified())
   }
 
