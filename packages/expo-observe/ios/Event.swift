@@ -1,4 +1,3 @@
-import ExpoModulesCore
 import Foundation
 
 /// An object representing an event providing some app metrics and the information about the app and the device.
