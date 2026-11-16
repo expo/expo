@@ -3,7 +3,6 @@ import path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
 import * as iosInlineModules from '../../inlineModules/iosInlineModules';
-import type { ModuleIosConfig } from '../../types';
 import {
   coreSupportsPackagesAsync,
   formatArrayOfReactDelegateHandler,
@@ -13,18 +12,42 @@ import {
   resolveModuleAsync,
   scanNativeModulesAsync,
 } from '../apple/apple';
+import type { PackageClass, ScannedPackageClasses } from '../apple/moduleScanner';
 
 afterEach(() => {
   vol.reset();
   jest.resetAllMocks();
 });
 
+type ScannedClassNames = Record<string, (string | PackageClass)[]>;
+
+/**
+ * Scanned classes by package. A class given by name is found in `node_modules/<package>/ios/<name>.swift`.
+ */
 function scannedClasses(
-  modules: Record<string, ModuleIosConfig[]>,
-  sharedObjects: Record<string, string[]> = {},
-  views: Record<string, string[]> = {}
-) {
-  return { modules, sharedObjects, views };
+  modules: ScannedClassNames,
+  sharedObjects: ScannedClassNames = {},
+  views: ScannedClassNames = {}
+): ScannedPackageClasses {
+  const withFiles = (classes: ScannedClassNames) =>
+    Object.fromEntries(
+      Object.entries(classes).map(([packageName, packageClasses]) => [
+        packageName,
+        packageClasses.map((packageClass) =>
+          typeof packageClass === 'string'
+            ? {
+                name: packageClass,
+                file: path.resolve('node_modules', packageName, 'ios', `${packageClass}.swift`),
+              }
+            : packageClass
+        ),
+      ])
+    );
+  return {
+    modules: withFiles(modules),
+    sharedObjects: withFiles(sharedObjects),
+    views: withFiles(views),
+  };
 }
 
 describe(formatArrayOfReactDelegateHandler, () => {
@@ -214,17 +237,14 @@ describe(resolveModuleAsync, () => {
       },
       {
         scannedModules: scannedClasses({
-          [name]: [
-            { name: null, class: 'ClipboardPasteButtonModule' },
-            { name: null, class: 'ClipboardModule' },
-          ],
+          [name]: ['ClipboardPasteButtonModule', 'ClipboardModule'],
         }),
       }
     );
 
     expect(result?.modules).toEqual([
-      { name: null, class: 'ClipboardModule' },
-      { name: null, class: 'ClipboardPasteButtonModule' },
+      { name: null, class: 'ExpoClipboard::ClipboardModule' },
+      { name: null, class: 'ExpoClipboard::ClipboardPasteButtonModule' },
     ]);
     expect(result?.expoModules).toEqual(result?.modules);
   });
@@ -245,20 +265,18 @@ describe(resolveModuleAsync, () => {
       },
       {
         scannedModules: scannedClasses(
-          { [name]: [{ name: null, class: 'AudioModule' }] },
+          { [name]: ['AudioModule'] },
           { [name]: ['AudioPlayer'], 'expo-video': ['VideoPlayer'] },
           { [name]: ['AudioWaveformView'] }
         ),
       }
     );
 
-    // Qualified with the package's Swift module, so a type of the same name in the app target can't
-    // shadow them in the generated provider.
-    expect(result?.expoSharedObjects).toEqual(['ExpoAudio.AudioPlayer']);
-    expect(result?.expoViews).toEqual(['ExpoAudio.AudioWaveformView']);
+    expect(result?.expoSharedObjects).toEqual(['ExpoAudio::AudioPlayer']);
+    expect(result?.expoViews).toEqual(['ExpoAudio::AudioWaveformView']);
   });
 
-  it('leaves the shared objects and views unqualified when the package has several Swift modules', async () => {
+  it('leaves the classes unqualified when several pods are in the directory of their files', async () => {
     const name = 'expo-audio';
     const pkgDir = path.join('node_modules', name);
 
@@ -285,6 +303,158 @@ describe(resolveModuleAsync, () => {
     expect(result?.expoViews).toEqual(['AudioWaveformView']);
   });
 
+  it('qualifies the scanned classes with the Swift module of the pod in the closest directory', async () => {
+    const name = 'expo-calendar';
+    const pkgDir = path.join('node_modules', name);
+
+    vol.fromJSON({ 'ios/ExpoCalendar.podspec': '', 'next/ExpoCalendarNext.podspec': '' }, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name: '',
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({
+          platforms: ['apple'],
+          apple: { appDelegateSubscribers: ['CalendarAppDelegateSubscriber'] },
+        }),
+      },
+      {
+        scannedModules: scannedClasses(
+          {
+            [name]: [
+              { name: 'CalendarModule', file: path.resolve(pkgDir, 'ios/CalendarModule.swift') },
+              {
+                name: 'CalendarNextModule',
+                file: path.resolve(pkgDir, 'next/CalendarNextModule.swift'),
+              },
+            ],
+          },
+          {
+            [name]: [
+              {
+                name: 'ExpoCalendarEvent',
+                file: path.resolve(pkgDir, 'next/ExpoCalendarEvent.swift'),
+              },
+            ],
+          }
+        ),
+      }
+    );
+
+    expect(result?.modules).toEqual([
+      { name: null, class: 'ExpoCalendar::CalendarModule' },
+      { name: null, class: 'ExpoCalendarNext::CalendarNextModule' },
+    ]);
+    expect(result?.expoSharedObjects).toEqual(['ExpoCalendarNext::ExpoCalendarEvent']);
+    // There's no file to find the pod of a class that only the config declares.
+    expect(result?.appDelegateSubscribers).toEqual(['CalendarAppDelegateSubscriber']);
+  });
+
+  it('leaves the classes unqualified when the config names several Swift modules', async () => {
+    const name = 'expo-calendar';
+    const pkgDir = path.join('node_modules', name);
+
+    vol.fromJSON({ 'ios/ExpoCalendar.podspec': '', 'next/ExpoCalendarNext.podspec': '' }, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name: '',
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({
+          platforms: ['apple'],
+          apple: { swiftModuleName: ['Calendar', 'CalendarNext'] },
+        }),
+      },
+      {
+        scannedModules: scannedClasses({
+          [name]: [
+            {
+              name: 'CalendarNextModule',
+              file: path.resolve(pkgDir, 'next/CalendarNextModule.swift'),
+            },
+          ],
+        }),
+      }
+    );
+
+    expect(result?.modules).toEqual([{ name: null, class: 'CalendarNextModule' }]);
+  });
+
+  it('finds the pod of a scanned class when the package path is a symlink', async () => {
+    const name = 'expo-calendar';
+    const realDir = path.resolve('store', name);
+    const pkgDir = path.join('node_modules', name);
+
+    vol.fromJSON({ 'ios/ExpoCalendar.podspec': '', 'next/ExpoCalendarNext.podspec': '' }, realDir);
+    vol.mkdirSync('node_modules', { recursive: true });
+    vol.symlinkSync(realDir, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name: '',
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({ platforms: ['apple'] }),
+      },
+      {
+        scannedModules: scannedClasses({
+          // The scanner reports real paths.
+          [name]: [
+            {
+              name: 'CalendarNextModule',
+              file: path.join(realDir, 'next/CalendarNextModule.swift'),
+            },
+          ],
+        }),
+      }
+    );
+
+    expect(result?.modules).toEqual([
+      { name: null, class: 'ExpoCalendarNext::CalendarNextModule' },
+    ]);
+  });
+
+  it('qualifies the config classes of a package with one Swift module', async () => {
+    const name = 'expo-screen-orientation';
+    const pkgDir = path.join('node_modules', name);
+
+    vol.fromJSON({ 'ios/ExpoScreenOrientation.podspec': '' }, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name: '',
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({
+          platforms: ['apple'],
+          apple: {
+            modules: ['ScreenOrientationModule', 'ExpoScreenOrientation.QualifiedModule'],
+            appDelegateSubscribers: ['ScreenOrientationAppDelegate'],
+            reactDelegateHandlers: ['ScreenOrientationReactDelegateHandler'],
+          },
+        }),
+      },
+      {}
+    );
+
+    expect(result?.modules).toEqual([
+      { name: null, class: 'ExpoScreenOrientation::ScreenOrientationModule' },
+      { name: null, class: 'ExpoScreenOrientation.QualifiedModule' },
+    ]);
+    expect(result?.appDelegateSubscribers).toEqual([
+      'ExpoScreenOrientation::ScreenOrientationAppDelegate',
+    ]);
+    expect(result?.reactDelegateHandlers).toEqual([
+      'ExpoScreenOrientation::ScreenOrientationReactDelegateHandler',
+    ]);
+  });
+
   it('orders scanned modules by code unit, independent of the host locale', async () => {
     const name = 'expo-clipboard';
     const pkgDir = path.join('node_modules', name);
@@ -301,19 +471,15 @@ describe(resolveModuleAsync, () => {
       },
       {
         scannedModules: scannedClasses({
-          [name]: [
-            { name: null, class: 'bModule' },
-            { name: null, class: 'aModule' },
-            { name: null, class: 'BModule' },
-          ],
+          [name]: ['bModule', 'aModule', 'BModule'],
         }),
       }
     );
 
     expect(result?.modules?.map((module) => module.class)).toEqual([
-      'BModule',
-      'aModule',
-      'bModule',
+      'ExpoClipboard::BModule',
+      'ExpoClipboard::aModule',
+      'ExpoClipboard::bModule',
     ]);
   });
 
@@ -333,7 +499,7 @@ describe(resolveModuleAsync, () => {
       },
       {
         scannedModules: scannedClasses({
-          [name]: [{ name: null, class: 'ClipboardModule' }],
+          [name]: ['ClipboardModule'],
         }),
       }
     );
@@ -361,16 +527,13 @@ describe(resolveModuleAsync, () => {
       },
       {
         scannedModules: scannedClasses({
-          [name]: [
-            { name: null, class: 'ClipboardModule' },
-            { name: null, class: 'ClipboardPasteButtonModule' },
-          ],
+          [name]: ['ClipboardModule', 'ClipboardPasteButtonModule'],
         }),
       }
     );
 
-    expect(result?.modules).toEqual([{ name: null, class: 'ClipboardModule' }]);
-    expect(result?.expoModules).toEqual([{ name: null, class: 'ClipboardModule' }]);
+    expect(result?.modules).toEqual([{ name: null, class: 'ExpoClipboard::ClipboardModule' }]);
+    expect(result?.expoModules).toEqual([{ name: null, class: 'ExpoClipboard::ClipboardModule' }]);
   });
 
   it('marks only the declared modules that the scan found as declared with the macro', async () => {
@@ -392,16 +555,16 @@ describe(resolveModuleAsync, () => {
       },
       {
         scannedModules: scannedClasses({
-          [name]: [{ name: null, class: 'ClipboardModule' }],
+          [name]: ['ClipboardModule'],
         }),
       }
     );
 
     expect(result?.modules).toEqual([
-      { name: null, class: 'LegacyClipboardModule' },
-      { name: null, class: 'ClipboardModule' },
+      { name: null, class: 'ExpoClipboard::LegacyClipboardModule' },
+      { name: null, class: 'ExpoClipboard::ClipboardModule' },
     ]);
-    expect(result?.expoModules).toEqual([{ name: null, class: 'ClipboardModule' }]);
+    expect(result?.expoModules).toEqual([{ name: null, class: 'ExpoClipboard::ClipboardModule' }]);
   });
 
   it('matches a declared class qualified with the Swift module of the package', async () => {
@@ -423,10 +586,7 @@ describe(resolveModuleAsync, () => {
       },
       {
         scannedModules: scannedClasses({
-          [name]: [
-            { name: null, class: 'ClipboardModule' },
-            { name: null, class: 'PasteModule' },
-          ],
+          [name]: ['ClipboardModule', 'PasteModule'],
         }),
       }
     );

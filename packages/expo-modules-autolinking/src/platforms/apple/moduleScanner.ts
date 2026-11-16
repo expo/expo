@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import type { ModuleIosConfig, SearchResults, SupportedPlatform } from '../../types';
+import type { SearchResults, SupportedPlatform } from '../../types';
 import { isPathInside } from '../../utils';
 
 /**
@@ -169,14 +169,22 @@ export async function scanExpoModulesAsync(
   return output;
 }
 
+/** A scanned class that is linked in a package. */
+export interface PackageClass {
+  /** The Swift class name. */
+  name: string;
+  /** Absolute path of the source file the class was found in. */
+  file: string;
+}
+
 /** The scanned classes of each kind, by package name. */
 export interface ScannedPackageClasses {
   /** The `@ExpoModule` classes. */
-  modules: Record<string, ModuleIosConfig[]>;
-  /** The names of the `@SharedObject` classes. */
-  sharedObjects: Record<string, string[]>;
-  /** The names of the `@ExpoView` classes. */
-  views: Record<string, string[]>;
+  modules: Record<string, PackageClass[]>;
+  /** The `@SharedObject` classes. */
+  sharedObjects: Record<string, PackageClass[]>;
+  /** The `@ExpoView` classes. */
+  views: Record<string, PackageClass[]>;
 }
 
 /**
@@ -203,21 +211,14 @@ export function groupScannedModules(
   output: ScanModulesOutput,
   packageRoots: Record<string, string>,
   platform: SupportedPlatform
-): Record<string, ModuleIosConfig[]> {
-  const grouped = groupScannedClasses(output.modules, '@ExpoModule', packageRoots, platform);
-  // A null name keeps the module's own name, as for config-declared string entries.
-  return Object.fromEntries(
-    Object.entries(grouped).map(([packageName, classNames]) => [
-      packageName,
-      classNames.map((className) => ({ name: null, class: className })),
-    ])
-  );
+): Record<string, PackageClass[]> {
+  return groupScannedClasses(output.modules, '@ExpoModule', packageRoots, platform);
 }
 
 /**
- * Groups the scanned class names by the package with the longest root containing their source file.
+ * Groups the scanned classes by the package with the longest root containing their source file.
  * Leaves out classes that aren't `public` or `open` or don't compile for the platform, and lists
- * each class once per package. Warns about an internal class when `macroName` (the macro of the
+ * each class once per package, with the first file it was found in. Warns about an internal class when `macroName` (the macro of the
  * classes) is given.
  */
 function groupScannedClasses(
@@ -225,12 +226,12 @@ function groupScannedClasses(
   macroName: string | null,
   packageRoots: Record<string, string>,
   platform: SupportedPlatform
-): Record<string, string[]> {
+): Record<string, PackageClass[]> {
   const targetPlatformName = SCANNER_PLATFORM_NAMES[platform];
   const rootEntries = Object.entries(packageRoots).sort(
     ([, rootA], [, rootB]) => rootB.length - rootA.length
   );
-  const grouped: Record<string, string[]> = {};
+  const grouped: Record<string, PackageClass[]> = {};
   const seenClassesByPackage: Record<string, Set<string>> = {};
   const warnedClasses = new Set<string>();
 
@@ -272,7 +273,7 @@ function groupScannedClasses(
       continue;
     }
     seenClasses.add(scannedClass.name);
-    (grouped[packageName] ??= []).push(scannedClass.name);
+    (grouped[packageName] ??= []).push({ name: scannedClass.name, file: scannedClass.file });
   }
   return grouped;
 }

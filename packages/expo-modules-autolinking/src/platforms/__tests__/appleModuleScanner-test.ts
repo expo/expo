@@ -141,11 +141,16 @@ describe(groupScannedModules, () => {
 
     const grouped = groupScannedModules(output, packageRoots, 'ios');
 
-    // The registration name stays null: the module's own `Name(...)` DSL entry and the macro's
-    // `_jsName` must keep precedence, exactly as for config-declared string entries.
     expect(grouped).toEqual({
-      'expo-clipboard': [{ name: null, class: 'ClipboardModule' }],
-      'expo-camera': [{ name: null, class: 'CameraModule' }],
+      'expo-clipboard': [
+        {
+          name: 'ClipboardModule',
+          file: '/app/node_modules/expo-clipboard/ios/ClipboardModule.swift',
+        },
+      ],
+      'expo-camera': [
+        { name: 'CameraModule', file: '/app/node_modules/expo-camera/ios/CameraModule.swift' },
+      ],
     });
   });
 
@@ -220,12 +225,14 @@ describe(groupScannedModules, () => {
     });
 
     expect(groupScannedModules(output, packageRoots, 'ios')).toEqual({
-      'expo-camera': [{ name: null, class: 'CameraModule' }],
+      'expo-camera': [
+        { name: 'CameraModule', file: '/app/node_modules/expo-camera/ios/CameraModule.swift' },
+      ],
     });
     expect(groupScannedModules(output, packageRoots, 'tvos')).toEqual({
       'expo-camera': [
-        { name: null, class: 'TvOnlyModule' },
-        { name: null, class: 'CameraModule' },
+        { name: 'TvOnlyModule', file: '/app/node_modules/expo-camera/ios/TvOnlyModule.swift' },
+        { name: 'CameraModule', file: '/app/node_modules/expo-camera/ios/CameraModule.swift' },
       ],
     });
   });
@@ -266,7 +273,9 @@ describe(groupScannedModules, () => {
     });
 
     expect(groupScannedModules(output, packageRoots, 'apple')).toEqual({
-      'expo-camera': [{ name: null, class: 'TvOnlyModule' }],
+      'expo-camera': [
+        { name: 'TvOnlyModule', file: '/app/node_modules/expo-camera/ios/TvOnlyModule.swift' },
+      ],
     });
   });
 
@@ -292,7 +301,9 @@ describe(groupScannedModules, () => {
     });
 
     expect(groupScannedModules(output, packageRoots, 'ios')).toEqual({
-      'expo-camera': [{ name: null, class: 'CameraModule' }],
+      'expo-camera': [
+        { name: 'CameraModule', file: '/app/node_modules/expo-camera/ios/CameraModule.swift' },
+      ],
     });
   });
 
@@ -316,7 +327,7 @@ describe(groupScannedModules, () => {
     const grouped = groupScannedModules(output, nestedRoots, 'ios');
 
     expect(grouped).toEqual({
-      'expo-camera-next': [{ name: null, class: 'NextCameraModule' }],
+      'expo-camera-next': [{ name: 'NextCameraModule', file: scannedModule.file }],
     });
   });
 
@@ -362,7 +373,9 @@ describe(groupScannedModules, () => {
     const grouped = groupScannedModules(output, packageRoots, 'ios');
 
     expect(grouped).toEqual({
-      'expo-camera': [{ name: null, class: 'CameraModule' }],
+      'expo-camera': [
+        { name: 'CameraModule', file: '/app/node_modules/expo-camera/ios/CameraModule.swift' },
+      ],
     });
   });
 
@@ -386,7 +399,12 @@ describe(groupScannedModules, () => {
     const grouped = groupScannedModules(output, nestedRoots, 'ios');
 
     expect(grouped).toEqual({
-      'expo-camera-next': [{ name: null, class: 'NextCameraModule' }],
+      'expo-camera-next': [
+        {
+          name: 'NextCameraModule',
+          file: '/app/node_modules/expo-camera/next/ios/NextCameraModule.swift',
+        },
+      ],
     });
   });
 });
@@ -413,9 +431,27 @@ describe(groupScannedPackageClasses, () => {
     });
 
     expect(groupScannedPackageClasses(output, packageRoots, 'ios')).toEqual({
-      modules: { 'expo-camera': [{ name: null, class: 'CameraModule' }] },
-      sharedObjects: { 'expo-camera': ['CameraSession'], 'expo-clipboard': ['ClipboardItem'] },
-      views: { 'expo-camera': ['CameraView'] },
+      modules: {
+        'expo-camera': [
+          { name: 'CameraModule', file: '/app/node_modules/expo-camera/ios/CameraModule.swift' },
+        ],
+      },
+      sharedObjects: {
+        'expo-camera': [
+          { name: 'CameraSession', file: '/app/node_modules/expo-camera/ios/CameraSession.swift' },
+        ],
+        'expo-clipboard': [
+          {
+            name: 'ClipboardItem',
+            file: '/app/node_modules/expo-clipboard/ios/ClipboardItem.swift',
+          },
+        ],
+      },
+      views: {
+        'expo-camera': [
+          { name: 'CameraView', file: '/app/node_modules/expo-camera/ios/CameraView.swift' },
+        ],
+      },
     });
   });
 

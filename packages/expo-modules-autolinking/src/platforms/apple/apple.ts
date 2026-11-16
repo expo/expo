@@ -18,12 +18,13 @@ import {
   type SearchResults,
   type SupportedPlatform,
 } from '../../types';
-import { listFilesInDirectories, fileExistsAsync } from '../../utils';
+import { fileExistsAsync, isPathInside, listFilesInDirectories, maybeRealpath } from '../../utils';
 import {
   collectPackageRoots,
   groupScannedPackageClasses,
   loadModulesScanner,
   scanExpoModulesAsync,
+  type PackageClass,
   type ScannedPackageClasses,
 } from './moduleScanner';
 
@@ -108,10 +109,17 @@ function pickModules(
 }
 
 /**
- * Splits a class name such as `ExpoFoo.FooModule` into the Swift module name and the class name. The module name is
- * null when the class name isn't qualified.
+ * Splits a class name such as `ExpoFoo::FooModule` or `ExpoFoo.FooModule` into the Swift module name and the class
+ * name. The module name is null when the class name isn't qualified.
  */
 function splitQualifiedClassName(qualifiedClassName: string): [string | null, string] {
+  const selectorIndex = qualifiedClassName.lastIndexOf('::');
+  if (selectorIndex !== -1) {
+    return [
+      qualifiedClassName.slice(0, selectorIndex),
+      qualifiedClassName.slice(selectorIndex + 2),
+    ];
+  }
   const separatorIndex = qualifiedClassName.lastIndexOf('.');
   if (separatorIndex === -1) {
     return [null, qualifiedClassName];
@@ -120,6 +128,57 @@ function splitQualifiedClassName(qualifiedClassName: string): [string | null, st
     qualifiedClassName.slice(0, separatorIndex),
     qualifiedClassName.slice(separatorIndex + 1),
   ];
+}
+
+/**
+ * Returns a function that qualifies a class name of the package with its Swift module, as in
+ * `ExpoFoo::FooModule`. The generated provider imports the Swift modules of all packages and is compiled in the
+ * app target, so a bare name is ambiguous when two packages have a class of that name, and a type of that name in
+ * the app target shadows it. A module selector (`Module::Class`, Swift 6.3) also works when the module has a type
+ * named like the module, unlike `Module.Class`.
+ *
+ * The class is qualified with the only Swift module of the package. In a package with several Swift modules, it's
+ * qualified with the module of the pod in the closest directory above its source file, when that pod is the only
+ * one there and its module name comes from the pod name. Otherwise, and for a class name that's already qualified,
+ * the name stays as it is.
+ */
+async function createClassNameQualifierAsync(
+  pods: ModuleIosPodspecInfo[],
+  swiftModuleNames: string[],
+  podsHaveOwnSwiftModuleNames: boolean
+): Promise<(className: string, file?: string) => string> {
+  // The scanner reports real paths.
+  const podDirs = await Promise.all(
+    pods.map(async (pod) => (await maybeRealpath(pod.podspecDir)) ?? path.resolve(pod.podspecDir))
+  );
+
+  const findSwiftModuleName = (file: string | undefined): string | null => {
+    if (swiftModuleNames.length === 1) {
+      return swiftModuleNames[0] ?? null;
+    }
+    if (!file || !podsHaveOwnSwiftModuleNames) {
+      return null;
+    }
+    const containingDirs = podDirs.filter((podDir) => isPathInside(file, podDir));
+    const closestDir = containingDirs.reduce<string | null>(
+      (closest, podDir) => (closest && closest.length >= podDir.length ? closest : podDir),
+      null
+    );
+    const closestPodIndices = podDirs.flatMap((podDir, index) =>
+      podDir === closestDir ? [index] : []
+    );
+    return closestPodIndices.length === 1
+      ? (swiftModuleNames[closestPodIndices[0]!] ?? null)
+      : null;
+  };
+
+  return (className, file) => {
+    if (splitQualifiedClassName(className)[0] !== null) {
+      return className;
+    }
+    const swiftModuleName = findSwiftModuleName(file);
+    return swiftModuleName ? `${swiftModuleName}::${className}` : className;
+  };
 }
 
 /** Resolves module search result with additional details required for iOS platform. */
@@ -149,31 +208,39 @@ export async function resolveModuleAsync(
       ?.appleModules()
       .map((module) => (typeof module === 'string' ? { name: null, class: module } : module)) ?? [];
 
-  const scannedModules = extraOutput.scannedModules?.modules[packageName] ?? [];
-  // The generated provider is compiled in the app target, where a type of the same name (for example one from a
-  // template) would shadow an unqualified class. Only the classes of a package with one Swift module are
-  // qualified, because the pod of a class isn't looked up from its file yet. `Module.Class` doesn't compile when
-  // the module has a type named like the module itself.
-  const qualify = (className: string) =>
-    swiftModuleNames.length === 1 ? `${swiftModuleNames[0]}.${className}` : className;
-  const expoSharedObjects = (extraOutput.scannedModules?.sharedObjects[packageName] ?? []).map(
-    qualify
+  const qualify = await createClassNameQualifierAsync(
+    pods,
+    swiftModuleNames,
+    !revision.config?.appleSwiftModuleNames().length
   );
-  const expoViews = (extraOutput.scannedModules?.views[packageName] ?? []).map(qualify);
-  const modules = pickModules(
+  const qualifyScanned = ({ name, file }: PackageClass) => qualify(name, file);
+
+  const scannedModules = extraOutput.scannedModules?.modules[packageName] ?? [];
+  const expoSharedObjects = (extraOutput.scannedModules?.sharedObjects[packageName] ?? []).map(
+    qualifyScanned
+  );
+  const expoViews = (extraOutput.scannedModules?.views[packageName] ?? []).map(qualifyScanned);
+  // A null name keeps the module's own name, as for config-declared string entries.
+  const pickedModules = pickModules(
     revision.config?.declaresAppleModules() ? configModules : null,
-    scannedModules
+    scannedModules.map((module) => ({ name: null, class: module.name }))
   );
   // A module that the config declares is declared with the macro too when the scan found it. The config can
-  // qualify the class with the Swift module of the package, as in `ExpoFoo.FooModule`.
-  const scannedClassNames = new Set(scannedModules.map((module) => module.class));
-  const expoModules = modules.filter((module) => {
+  // qualify the class with the Swift module of the package, as in `ExpoFoo::FooModule`.
+  const scannedFiles = new Map(scannedModules.map((module) => [module.name, module.file]));
+  const isExpoModule = (module: ModuleIosConfig) => {
     const [swiftModuleName, className] = splitQualifiedClassName(module.class);
     return (
-      scannedClassNames.has(className) &&
+      scannedFiles.has(className) &&
       (swiftModuleName === null || swiftModuleNames.includes(swiftModuleName))
     );
+  };
+  const qualifyModule = (module: ModuleIosConfig): ModuleIosConfig => ({
+    ...module,
+    class: qualify(module.class, scannedFiles.get(module.class)),
   });
+  const modules = pickedModules.map(qualifyModule);
+  const expoModules = pickedModules.filter(isExpoModule).map(qualifyModule);
 
   return {
     packageName,
@@ -185,8 +252,12 @@ export async function resolveModuleAsync(
     ...(expoModules.length > 0 ? { expoModules } : {}),
     ...(expoSharedObjects.length > 0 ? { expoSharedObjects } : {}),
     ...(expoViews.length > 0 ? { expoViews } : {}),
-    appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
-    reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
+    appDelegateSubscribers: (revision.config?.appleAppDelegateSubscribers() ?? []).map(
+      (className) => qualify(className)
+    ),
+    reactDelegateHandlers: (revision.config?.appleReactDelegateHandlers() ?? []).map((className) =>
+      qualify(className)
+    ),
     debugOnly: revision.config?.appleDebugOnly() ?? false,
     ...(coreFeatures.length > 0 ? { coreFeatures } : {}),
   };
