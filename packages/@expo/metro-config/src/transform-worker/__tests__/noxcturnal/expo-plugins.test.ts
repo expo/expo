@@ -867,12 +867,12 @@ describe('object rest/spread transform profiles', () => {
     const module = { exports: {} as unknown };
     factory?.(
       globalThis,
-      (_id: unknown, name: string) => requireFromBabelPresetExpo(name),
-      (_id: unknown, name: string) => requireFromBabelPresetExpo(name),
-      (_id: unknown, name: string) => requireFromBabelPresetExpo(name),
+      (name: string) => requireFromBabelPresetExpo(name),
+      (name: string) => requireFromBabelPresetExpo(name),
+      (name: string) => requireFromBabelPresetExpo(name),
       module,
       module.exports,
-      []
+      result.dependencies.map(({ name }) => name)
     );
     expect(module.exports).toEqual({ b: 2 });
   });
@@ -1884,7 +1884,7 @@ it.each([
     });
     expect(result.status).toBe('complete');
     if (result.status !== 'complete') return;
-    expect(result.result.code).toContain('react/compiler-runtime');
+    expect(result.dependencies.map(({ name }) => name)).toContain('react/compiler-runtime');
     expect(result.result.code).toContain('exports.App = App');
     expect(result.result.code).not.toContain('type Props');
     expect(result.result.code).not.toContain('<View');
