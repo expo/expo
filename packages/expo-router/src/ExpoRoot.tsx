@@ -8,7 +8,7 @@ import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './
 import { useDomComponentNavigation } from './domComponents/useDomComponentNavigation';
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
 import type { ExpoLinkingOptions } from './getLinkingConfig';
-import { navigationRef } from './global-state/navigationRef';
+import { setNavigationRef } from './global-state/navigationRef';
 import { RemovalPreventionProvider } from './global-state/removalPrevention';
 import { RouterConfigContext } from './global-state/routerConfigContext';
 import { RoutingQueueProvider } from './global-state/routingQueueContext';
@@ -131,7 +131,7 @@ function ContextNavigator({
     <RouterConfigContext.Provider value={routerConfig}>
       <RemovalPreventionProvider>
         <UpstreamNavigationContainer
-          ref={navigationRef}
+          ref={setNavigationRef}
           linking={linkingConfig as LinkingOptions<any>}>
           <WrapperComponent>
             <Content rootComponent={rootComponent} />
