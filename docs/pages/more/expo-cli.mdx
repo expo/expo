@@ -216,7 +216,7 @@ Without `platform`, the response is keyed by platform for discovery:
 
 #### POST behavior
 
-`POST /_expo/open?platform=ios` opens the project locally on the requested platform (`ios` → iOS Simulator, `android` → Android emulator, `web` → desktop browser). Responses:
+`POST /_expo/open?platform=ios` opens the project locally on the requested platform (`ios` → iOS Simulator, `android` → Android Emulator, `web` → desktop browser). Responses:
 
 - `200`: `{ "platform", "runtime", "url" }` describing what was opened.
 - `403`: cross-origin POST. The body's `error` explains the host mismatch and points at `GET /_expo/open` as the safe alternative.
