@@ -3,7 +3,7 @@ import ExpoModulesCore
 public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func appDelegateWillBeginInitialization() {
     // Before the main session starts: its session row reads the update info.
-    AppMetrics.configure(AppMetricsHost(updatesInfo: expoUpdatesInfo))
+    AppMetrics.configure(AppMetricsHost(updatesInfo: expoUpdatesInfo, bundleLoadTime: reactBundleLoadTime))
     if ObserveConsent.state == .notGranted {
       AppMetrics.deleteStoredData()
     }
@@ -63,4 +63,17 @@ public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
       AppMetrics.mainSession.stop()
     }
   }
+}
+
+/// Returns the JS bundle evaluation time in seconds, or `nil` until React Native logs both markers.
+private func reactBundleLoadTime() -> TimeInterval? {
+  let bundleStartTime = ReactMarker.getRunJSBundleStartTime()
+  // React Native logs `APP_STARTUP_STOP` right after the bundle evaluation ends.
+  let bundleEndTime = ReactMarker.getAppStartupEndTime()
+  // The markers are `NaN` until React Native logs them (e.g. no logger attached), and any
+  // arithmetic on `NaN` stays `NaN`. Skip the metric rather than report a bogus value.
+  guard bundleStartTime.isFinite, bundleEndTime.isFinite else {
+    return nil
+  }
+  return (bundleEndTime - bundleStartTime) / 1000
 }
