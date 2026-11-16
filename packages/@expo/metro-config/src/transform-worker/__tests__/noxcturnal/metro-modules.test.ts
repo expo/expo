@@ -2211,7 +2211,11 @@ it.each([
       true,
       native.dependencies.map(({ name }) => name)
     )
-  ).toBe(canonicalModuleBody(expected.code));
+  ).toBe(
+    canonicalModuleBody(
+      expected.code.startsWith('"use strict";') ? expected.code : `"use strict";\n${expected.code}`
+    )
+  );
 });
 
 it.each([
@@ -2244,7 +2248,11 @@ it.each([
       true,
       native.dependencies.map(({ name }) => name)
     )
-  ).toBe(canonicalModuleBody(expected.code));
+  ).toBe(
+    canonicalModuleBody(
+      expected.code.startsWith('"use strict";') ? expected.code : `"use strict";\n${expected.code}`
+    )
+  );
 });
 
 it('uses static import and export values when live bindings are disabled', async () => {
