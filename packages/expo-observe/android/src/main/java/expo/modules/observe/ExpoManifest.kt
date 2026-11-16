@@ -2,6 +2,7 @@ package expo.modules.observe
 
 import android.util.Log
 import expo.modules.interfaces.constants.ConstantsInterface
+import expo.modules.observe.shared.dispatch.OBSERVE_TAG
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject

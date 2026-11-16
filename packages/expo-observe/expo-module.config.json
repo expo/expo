@@ -5,7 +5,7 @@
     "appDelegateSubscribers": ["AppMetricsAppDelegateSubscriber", "ObserveAppDelegateSubscriber"]
   },
   "android": {
-    "modules": ["expo.modules.appmetrics.AppMetricsModule", "expo.modules.observe.ObserveModule"],
+    "modules": ["expo.modules.observe.AppMetricsModule", "expo.modules.observe.ObserveModule"],
     "publication": {
       "groupId": "expo.modules.observe",
       "artifactId": "expo.modules.observe",

@@ -1,0 +1,221 @@
+package expo.modules.observe.shared.appstartup
+
+import android.app.Activity
+import expo.modules.observe.shared.AppStartupMetric
+import expo.modules.observe.shared.networkrequests.NetworkRequest
+import expo.modules.observe.shared.networkrequests.NetworkRequestMonitor
+import expo.modules.observe.shared.storage.Metric
+import expo.modules.observe.shared.utils.TimeUtils
+import io.mockk.every
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
+import org.json.JSONObject
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.Robolectric
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import java.util.Date
+import java.util.UUID
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.atomic.AtomicBoolean
+
+@RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE, sdk = [28])
+class AppStartupManagerTest {
+  @Before
+  fun resumeRecording() {
+    // The manager is a singleton shared across tests, so undo a stop from an earlier test.
+    AppStartupManager::class.java.getDeclaredField("isRecordingStopped").apply {
+      isAccessible = true
+    }.setBoolean(AppStartupManager, false)
+  }
+
+  @Test
+  fun `takeUnsavedMetrics returns each metric once`() {
+    // Drop anything left by other tests.
+    AppStartupManager.takeUnsavedMetrics()
+
+    AppStartupManager.addMetric(AppStartupMetric.ColdLaunchTime, valueInMs = 100)
+    assertEquals(
+      listOf(AppStartupMetric.ColdLaunchTime.metricName),
+      AppStartupManager.takeUnsavedMetrics().map { it.name }
+    )
+    assertEquals(emptyList<Metric>(), AppStartupManager.takeUnsavedMetrics())
+
+    // For example TTI recorded after an update download already saved the launch time.
+    AppStartupManager.addMetric(AppStartupMetric.TimeToInteractive, valueInMs = 200)
+    assertEquals(
+      listOf(AppStartupMetric.TimeToInteractive.metricName),
+      AppStartupManager.takeUnsavedMetrics().map { it.name }
+    )
+  }
+
+  @Test
+  fun `metrics added after stopRecording are never returned`() {
+    // Drop anything left by other tests.
+    AppStartupManager.takeUnsavedMetrics()
+
+    AppStartupManager.addMetric(AppStartupMetric.ColdLaunchTime, valueInMs = 100)
+    AppStartupManager.stopRecording()
+    AppStartupManager.addMetric(AppStartupMetric.TimeToInteractive, valueInMs = 200)
+    assertEquals(
+      listOf(AppStartupMetric.ColdLaunchTime.metricName),
+      AppStartupManager.takeUnsavedMetrics().map { it.name }
+    )
+
+    AppStartupManager.addMetric(AppStartupMetric.TimeToFirstRender, valueInMs = 300)
+    assertEquals(emptyList<Metric>(), AppStartupManager.takeUnsavedMetrics())
+  }
+
+  @Test
+  fun `concurrent add and iterate on _metrics does not throw`() {
+    // Drive _metrics directly: the public mutators (markInteractive / markFirstRender)
+    // are one-shot guards, so they can't reliably reproduce sustained churn against
+    // a single iterator. Reflection lets us prove the underlying field is safe.
+    val field = AppStartupManager::class.java.getDeclaredField("_metrics").apply {
+      isAccessible = true
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    val backing = field.get(AppStartupManager) as MutableList<Metric>
+    backing.clear()
+
+    val sample = Metric(
+      sessionId = "test",
+      timestamp = "2026-01-01T00:00:00Z",
+      category = "test",
+      name = "test",
+      value = 0.0
+    )
+
+    val running = AtomicBoolean(true)
+    val errors = ConcurrentLinkedQueue<Throwable>()
+
+    val readerThread = Thread({
+      while (running.get()) {
+        try {
+          // Iterate through the public getter, the same way the module reads it.
+          for (m in AppStartupManager.metrics) {
+            m.name.length
+          }
+        } catch (t: Throwable) {
+          errors.add(t)
+        }
+      }
+    }, "metrics-reader-thread")
+
+    val writerThread = Thread({
+      while (running.get()) {
+        try {
+          backing.add(sample)
+        } catch (t: Throwable) {
+          errors.add(t)
+        }
+      }
+    }, "metrics-writer-thread")
+
+    readerThread.start()
+    writerThread.start()
+    Thread.sleep(500)
+    running.set(false)
+    readerThread.join()
+    writerThread.join()
+
+    backing.clear()
+
+    assertTrue(
+      "Expected no exceptions, got ${errors.size}; first: ${errors.firstOrNull()?.let { "${it.javaClass.simpleName}: ${it.message}" }}",
+      errors.isEmpty()
+    )
+  }
+
+  @Test
+  fun `markBundleLoadEnd records the time since markBundleLoadStart`() {
+    // Drop anything left by other tests.
+    AppStartupManager.takeUnsavedMetrics()
+    AppStartupManager.startupState = StartupState.LAUNCHING
+    var uptime = 1_000L
+    mockkObject(TimeUtils)
+    try {
+      every { TimeUtils.getCurrentTimeInMillis() } answers { uptime }
+      AppStartupManager.markBundleLoadStart()
+      uptime = 1_250L
+      AppStartupManager.markBundleLoadEnd()
+    } finally {
+      unmockkObject(TimeUtils)
+    }
+
+    val metric = AppStartupManager.takeUnsavedMetrics().single()
+    assertEquals(AppStartupMetric.BundleLoadTime.metricName, metric.name)
+    assertEquals(0.25, metric.value, 0.0)
+  }
+
+  @Test
+  fun `TTI network summary counts only requests from launch on`() {
+    resetLaunchState()
+    val wallClockAtInteractive = System.currentTimeMillis() - 60_000
+    var uptime = 10_000L
+    mockkObject(TimeUtils)
+    try {
+      every { TimeUtils.getCurrentTimeInMillis() } answers { uptime }
+      every { TimeUtils.getWallClockMillis() } returns wallClockAtInteractive
+
+      val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
+      AppStartupManager.markLoadedIfNeeded(activity)
+      uptime = 12_000L
+      val launch = wallClockAtInteractive - 2_000
+      for (fetchStart in listOf(launch - 1, launch, launch + 1_000)) {
+        NetworkRequestMonitor.shared.record(makeRequest(Date(fetchStart)))
+      }
+
+      AppStartupManager.markInteractive(activity)
+    } finally {
+      unmockkObject(TimeUtils)
+    }
+
+    val tti = AppStartupManager.metrics.last {
+      it.name == AppStartupMetric.TimeToInteractive.metricName
+    }
+    assertEquals(2, JSONObject(tti.params!!).getInt("expo.network.requests.count"))
+  }
+
+  private fun resetLaunchState() {
+    for ((name, value) in listOf("launchTimeInMillis" to null, "hasRecordedInteractive" to false)) {
+      AppStartupManager::class.java.getDeclaredField(name).apply {
+        isAccessible = true
+      }.set(AppStartupManager, value)
+    }
+    AppStartupManager.startupState = StartupState.LAUNCHING
+  }
+
+  private fun makeRequest(fetchStart: Date): NetworkRequest = NetworkRequest(
+    id = UUID.randomUUID(),
+    url = "https://expo.dev/x",
+    method = "GET",
+    statusCode = 200,
+    networkProtocol = null,
+    requestBytesSent = 0,
+    responseBytesReceived = 0,
+    timings = NetworkRequest.Timings(
+      fetchStart = fetchStart,
+      domainLookupStart = null,
+      domainLookupEnd = null,
+      connectStart = null,
+      connectEnd = null,
+      secureConnectionStart = null,
+      secureConnectionEnd = null,
+      requestStart = null,
+      requestEnd = null,
+      responseStart = null,
+      responseEnd = null,
+      measuredResponseEnd = null,
+      totalDuration = 0.1
+    ),
+    errorDescription = null,
+    redirects = emptyList()
+  )
+}
