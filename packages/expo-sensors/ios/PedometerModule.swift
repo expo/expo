@@ -83,7 +83,7 @@ public final class PedometerModule: Module {
         )
       }
 
-      pedometer.startPedometerEventUpdates(handler)
+      pedometer.startEventUpdates(handler: handler)
       eventHandler = handler
       promise.resolve(true)
     }

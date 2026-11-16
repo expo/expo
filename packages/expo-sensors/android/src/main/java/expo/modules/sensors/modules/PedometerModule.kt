@@ -345,6 +345,5 @@ class PedometerModule : Module() {
 
       mapOf("steps" to sum.toLong())
     }
-
   }
 }
