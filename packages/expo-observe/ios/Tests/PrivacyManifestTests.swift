@@ -8,7 +8,10 @@ struct PrivacyManifestTests {
   private func manifest(_ dataTypes: [String]) -> Data {
     let entries = dataTypes.map { ["NSPrivacyCollectedDataType": $0] }
     return try! PropertyListSerialization.data(
-      fromPropertyList: ["NSPrivacyCollectedDataTypes": entries], format: .xml, options: 0)
+      fromPropertyList: ["NSPrivacyCollectedDataTypes": entries],
+      format: .xml,
+      options: 0
+    )
   }
 
   @Test(arguments: ["NSPrivacyCollectedDataTypeOtherUserContent", "NSPrivacyCollectedDataTypeCustomerSupport"])
