@@ -15,6 +15,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import expo.modules.appmetrics.AppMetrics
 import expo.modules.appmetrics.storage.SessionManager
 
 /**
@@ -40,8 +41,7 @@ class ObservabilityBackgroundWorker(
       context = context,
       projectId = projectId,
       sessionManager = sessionManager,
-      baseUrl = baseUrl,
-      isDebugBuild = BuildConfig.DEBUG
+      baseUrl = baseUrl
     )
   }
 
@@ -61,6 +61,16 @@ class ObservabilityBackgroundWorker(
   }
 
   override suspend fun doWork(): Result {
+    // After a force-stop, WorkManager can start this worker before `Application.onCreate` configured
+    // the host, and the payload would carry an empty client id. Stored rows stay for the next schedule.
+    if (!AppMetrics.isConfigured) {
+      if (runAttemptCount >= MAX_UNCONFIGURED_ATTEMPTS) {
+        Log.w(OBSERVE_TAG, "The host is still not configured after $runAttemptCount attempts. Skipping this dispatch")
+        return Result.failure()
+      }
+      Log.d(OBSERVE_TAG, "The host is not configured yet. Retrying the dispatch later")
+      return Result.retry()
+    }
     return try {
       if (observabilityManager == null) {
         Log.e(OBSERVE_TAG, "ObservabilityManager is null - missing projectId or baseUrl")
@@ -84,6 +94,7 @@ class ObservabilityBackgroundWorker(
 
   companion object {
     private const val WORK_NAME = "eas-observe-dispatch"
+    private const val MAX_UNCONFIGURED_ATTEMPTS = 3
 
     fun scheduleBackgroundDispatch(
       context: Context,

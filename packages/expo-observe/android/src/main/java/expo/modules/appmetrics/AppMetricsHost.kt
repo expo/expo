@@ -9,7 +9,13 @@ import expo.modules.appmetrics.utils.WriteOnce
  */
 internal class AppMetricsHost(
   // Reads the running update. Called when the app metadata is first built and when the main session starts.
-  val updatesInfo: () -> AppUpdatesInfo = { AppUpdatesInfo(updateId = null, runtimeVersion = null, requestHeaders = null) }
+  val updatesInfo: () -> AppUpdatesInfo = { AppUpdatesInfo(updateId = null, runtimeVersion = null, requestHeaders = null) },
+  // Identifies the install in dispatched telemetry.
+  val clientId: String = "",
+  // The install's stable value in [0, 1) that the sample rates compare against.
+  val clientSampleValue: Double = 0.0,
+  // Treats the app as a development build when deciding whether to dispatch.
+  val isDebugBuild: Boolean = false
 )
 
 internal object AppMetrics {
@@ -18,6 +24,10 @@ internal object AppMetrics {
   /** The host values, or the defaults until `configure` runs. */
   val host: AppMetricsHost
     get() = hostValue.value
+
+  /** Whether `configure` ran. */
+  val isConfigured: Boolean
+    get() = hostValue.isSet
 
   /** Sets the host values. Call once at launch, before the main session starts. A second call is ignored with a warning. */
   fun configure(host: AppMetricsHost) {

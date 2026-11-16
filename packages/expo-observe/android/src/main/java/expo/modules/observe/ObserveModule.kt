@@ -51,11 +51,17 @@ class ObserveModule : Module() {
           "AppMetricsModule is required by ObserveModule but is not registered. The expo-observe " +
             "native install is incomplete. Reinstall expo-observe and rebuild the app."
         }
-        val sessionManager = appMetricsModule.sessionManager
+        val manifest = checkNotNull(getManifest(appContext.service<ConstantsInterface>())) {
+          "Manifest is required to initialize ObservabilityManager."
+        }
+        val projectId = checkNotNull(manifest.projectId) {
+          "Project ID is required to send observability metrics. Make sure you have configured it correctly in app.json."
+        }
         observabilityManager = ObservabilityManager(
           context,
-          appContext.service<ConstantsInterface>(),
-          sessionManager = sessionManager
+          projectId = projectId,
+          baseUrl = manifest.baseUrl ?: OBSERVE_DEFAULT_BASE_URL,
+          sessionManager = appMetricsModule.sessionManager
         )
       }
 
