@@ -426,7 +426,7 @@ fun LogEvent.toOTLogRecord(): OTLogRecord {
   var encodeTimeDrops = 0
   this.attributes?.let { attrs ->
     val (typed, dropped) = otAttributesFromJsonObject(attrs)
-    // The ingest keeps only the first 128 attributes, so SDK `expo.*` keys go first.
+    // The ingest keeps only the first `MAX_LOG_ATTRIBUTE_COUNT` attributes, so SDK `expo.*` keys go first.
     attributes.addAll(typed.sortedWith(compareBy({ !it.key.startsWith("expo.") }, { it.key })))
     encodeTimeDrops = dropped
   }

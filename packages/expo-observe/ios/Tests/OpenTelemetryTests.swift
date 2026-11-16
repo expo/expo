@@ -205,20 +205,48 @@ struct OpenTelemetryTests {
   func `toOTLogRecord keeps the first 128 attributes with the expo attributes first`() {
     let otherKeys = (0..<100).map { String(format: "a%03d", $0) } + (0..<100).map { String(format: "z%03d", $0) }
     let expoKeys = ["expo.feedback.id", "expo.feedback.rating", "expo.feedback.scale.max", "expo.feedback.scale.min"]
+    // Mixes the expo keys in between the other keys.
+    let inputKeys =
+      [expoKeys[0]] + otherKeys[0..<50]
+      + [expoKeys[1]] + otherKeys[50..<100]
+      + [expoKeys[2]] + otherKeys[100..<200]
+      + expoKeys[3...]
     let log = Event.Log(
       name: "auth.login_failed",
       body: nil,
       timestamp: "2026-01-09T12:08:09.123Z",
       severity: .info,
-      attributes: AnyCodable(Dictionary(uniqueKeysWithValues: (otherKeys + expoKeys).map { ($0, 1 as Any) })),
+      attributes: AnyCodable(Dictionary(uniqueKeysWithValues: inputKeys.map { ($0, 1 as Any) })),
       droppedAttributesCount: 2,
       sessionId: testSessionId
     )
     let otLog = log.toOTLogRecord(inSampleRate: true)
 
-    let expectedKeys = ["session.id", "event.name", "expo.in_sample_rate"] + expoKeys + Array(otherKeys.prefix(121))
-    #expect(otLog.attributes.map(\.key) == expectedKeys)
+    let keys = otLog.attributes.map(\.key)
+    #expect(keys.count == 128)
+    #expect(Set(keys).count == keys.count)
+    #expect(Array(keys.prefix(3)) == ["session.id", "event.name", "expo.in_sample_rate"])
+    #expect(Set(keys.dropFirst(3).prefix(expoKeys.count)) == Set(expoKeys))
     #expect(otLog.droppedAttributesCount == 2 + 207 - 128)
+  }
+
+  @Test
+  func `toOTLogRecord keeps all attributes when there are exactly 128`() {
+    // 125 record attributes plus `session.id`, `event.name` and `expo.in_sample_rate`.
+    let recordKeys = (0..<125).map { String(format: "k%03d", $0) }
+    let log = Event.Log(
+      name: "auth.login_failed",
+      body: nil,
+      timestamp: "2026-01-09T12:08:09.123Z",
+      severity: .info,
+      attributes: AnyCodable(Dictionary(uniqueKeysWithValues: recordKeys.map { ($0, 1 as Any) })),
+      droppedAttributesCount: 0,
+      sessionId: testSessionId
+    )
+    let otLog = log.toOTLogRecord(inSampleRate: true)
+
+    #expect(otLog.attributes.map(\.key) == ["session.id", "event.name", "expo.in_sample_rate"] + recordKeys)
+    #expect(otLog.droppedAttributesCount == nil)
   }
 
   private func makeLog(name: String) -> Event.Log {

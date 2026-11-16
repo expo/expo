@@ -294,7 +294,7 @@ extension Event.Log {
     var encodeTimeDrops = 0
     if let userDict = self.attributes?.value as? [String: Any] {
       let (typed, dropped) = otAttributesFromUserDict(userDict)
-      // The ingest keeps only the first 128 attributes, so SDK `expo.*` keys go first.
+      // The ingest keeps only the first `maxLogAttributeCount` attributes, so SDK `expo.*` keys go first.
       // Sorting also makes the cut deterministic, because dictionary order is random.
       let sorted = typed.sorted {
         let (lhsIsExpo, rhsIsExpo) = ($0.key.hasPrefix("expo."), $1.key.hasPrefix("expo."))

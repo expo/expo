@@ -585,13 +585,34 @@ class LogEventToOTLogRecordTest {
       "expo.feedback.scale.min",
       "expo.in_sample_rate"
     )
+    // Mixes the expo keys in between the other keys.
+    val inputKeys = listOf(expoKeys[0]) + otherKeys.subList(0, 50) +
+      expoKeys[1] + otherKeys.subList(50, 100) +
+      expoKeys[2] + otherKeys.subList(100, 200) +
+      expoKeys.drop(3)
     val ot = makeLog(severity = "info").copy(
-      attributes = JsonObject((otherKeys.reversed() + expoKeys.reversed()).associateWith { JsonPrimitive(1) }),
+      attributes = JsonObject(inputKeys.associateWith { JsonPrimitive(1) }),
       droppedAttributesCount = 2
     ).toOTLogRecord()
 
-    val expectedKeys = listOf("session.id", "event.name") + expoKeys + otherKeys.take(121)
-    assertEquals(expectedKeys, ot.attributes.map { it.key })
+    val keys = ot.attributes.map { it.key }
+    assertEquals(128, keys.size)
+    assertEquals(keys.size, keys.toSet().size)
+    assertEquals(listOf("session.id", "event.name"), keys.take(2))
+    assertEquals(expoKeys.toSet(), keys.drop(2).take(expoKeys.size).toSet())
     assertEquals(2 + 207 - 128, ot.droppedAttributesCount)
+  }
+
+  @Test
+  fun `keeps all attributes when there are exactly 128`() {
+    // 126 record attributes plus `session.id` and `event.name`.
+    val recordKeys = (0 until 126).map { "k%03d".format(it) }
+    val ot = makeLog(severity = "info").copy(
+      attributes = JsonObject(recordKeys.associateWith { JsonPrimitive(1) }),
+      droppedAttributesCount = 0
+    ).toOTLogRecord()
+
+    assertEquals(listOf("session.id", "event.name") + recordKeys, ot.attributes.map { it.key })
+    assertNull(ot.droppedAttributesCount)
   }
 }
