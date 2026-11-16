@@ -10,18 +10,23 @@ struct FeedbackReportTests {
     id: String = "checkout",
     message: String? = nil,
     rating: Int? = nil,
-    scaleMin: Int? = nil,
-    scaleMax: Int? = nil,
+    scale: FeedbackScale? = nil,
     attributes: [String: Any]? = nil
   ) -> FeedbackReport {
     var report = FeedbackReport()
     report.id = id
     report.message = message
     report.rating = rating
-    report.scaleMin = scaleMin
-    report.scaleMax = scaleMax
+    report.scale = scale
     report.attributes = attributes
     return report
+  }
+
+  private func scale(min: Int, max: Int) -> FeedbackScale {
+    var scale = FeedbackScale()
+    scale.min = min
+    scale.max = max
+    return scale
   }
 
   @Test
@@ -39,7 +44,7 @@ struct FeedbackReportTests {
 
   @Test
   func `records the rating scale`() throws {
-    let record = report(rating: 4, scaleMin: 1, scaleMax: 5).toLogRecord()
+    let record = report(rating: 4, scale: scale(min: 1, max: 5)).toLogRecord()
 
     let attributes = try #require(record.attributes?.value as? [String: Any])
     #expect(attributes["expo.feedback.rating"] as? Int == 4)
@@ -51,8 +56,7 @@ struct FeedbackReportTests {
   func `user attributes cannot overwrite the feedback attributes`() throws {
     let record = report(
       rating: 3,
-      scaleMin: 0,
-      scaleMax: 10,
+      scale: scale(min: 0, max: 10),
       attributes: [
         "expo.feedback.id": "spoofed",
         "expo.feedback.rating": 10,

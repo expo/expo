@@ -33,7 +33,7 @@ class FeedbackReportTest {
 
   @Test
   fun `records the rating scale`() {
-    val attributes = attributesOf(FeedbackReport(id = "checkout", rating = 4, scaleMin = 1, scaleMax = 5))
+    val attributes = attributesOf(FeedbackReport(id = "checkout", rating = 4, scale = FeedbackScale(min = 1, max = 5)))
 
     assertEquals(JsonPrimitive(4), attributes["expo.feedback.rating"])
     assertEquals(JsonPrimitive(1), attributes["expo.feedback.scale.min"])
@@ -45,8 +45,7 @@ class FeedbackReportTest {
     val report = FeedbackReport(
       id = "checkout",
       rating = 3,
-      scaleMin = 0,
-      scaleMax = 10,
+      scale = FeedbackScale(min = 0, max = 10),
       attributes = mapOf(
         "expo.feedback.id" to "spoofed",
         "expo.feedback.rating" to 10,

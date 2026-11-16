@@ -15,8 +15,7 @@ data class FeedbackReport(
   @Field val id: String = "",
   @Field val message: String? = null,
   @Field val rating: Long? = null,
-  @Field val scaleMin: Long? = null,
-  @Field val scaleMax: Long? = null,
+  @Field val scale: FeedbackScale? = null,
   @Field val attributes: Map<String, Any?>? = null
 ) : Record {
   fun toLogRecord(sessionId: String): LogRecord {
@@ -26,8 +25,10 @@ data class FeedbackReport(
       sanitized.attributes?.let { putAll(it) }
       put("expo.feedback.id", id)
       rating?.let { put("expo.feedback.rating", it) }
-      scaleMin?.let { put("expo.feedback.scale.min", it) }
-      scaleMax?.let { put("expo.feedback.scale.max", it) }
+      scale?.let {
+        put("expo.feedback.scale.min", it.min)
+        put("expo.feedback.scale.max", it.max)
+      }
     }
     return LogRecord(
       sessionId = sessionId,
@@ -40,3 +41,9 @@ data class FeedbackReport(
     )
   }
 }
+
+@OptimizedRecord
+data class FeedbackScale(
+  @Field val min: Long = 0,
+  @Field val max: Long = 0
+) : Record

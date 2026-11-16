@@ -675,8 +675,7 @@ describe('module Proxy', () => {
     Observe.reportFeedback(feedback);
     expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith({
       ...feedback,
-      scaleMin: 0,
-      scaleMax: 10,
+      scale: { min: 0, max: 10 },
     });
     expect(warnSpy).not.toHaveBeenCalled();
   });
@@ -694,15 +693,15 @@ describe('module Proxy', () => {
   it.each([
     [
       { id: 'checkout', rating: 0 },
-      { id: 'checkout', rating: 0, scaleMin: 0, scaleMax: 10 },
+      { id: 'checkout', rating: 0, scale: { min: 0, max: 10 } },
     ],
     [
       { id: 'checkout', rating: 1, scale: { min: 1, max: 5 } },
-      { id: 'checkout', rating: 1, scaleMin: 1, scaleMax: 5 },
+      { id: 'checkout', rating: 1, scale: { min: 1, max: 5 } },
     ],
     [
       { id: 'checkout', rating: 5, scale: { min: 1, max: 5 } },
-      { id: 'checkout', rating: 5, scaleMin: 1, scaleMax: 5 },
+      { id: 'checkout', rating: 5, scale: { min: 1, max: 5 } },
     ],
   ])('forwards a rating with its scale: %o', (feedback, expected) => {
     const Observe = loadModule();
@@ -777,8 +776,7 @@ describe('module Proxy', () => {
     expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith({
       id: 'checkout',
       rating: 5,
-      scaleMin: 0,
-      scaleMax: 10,
+      scale: { min: 0, max: 10 },
     });
     expect(mockAppMetrics.reportFeedback.mock.calls[0][0]).not.toHaveProperty('message');
     expect(warnSpy).not.toHaveBeenCalled();

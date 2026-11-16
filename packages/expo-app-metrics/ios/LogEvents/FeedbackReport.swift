@@ -9,8 +9,7 @@ struct FeedbackReport: Record {
   @Field var id: String = ""
   @Field var message: String?
   @Field var rating: Int?
-  @Field var scaleMin: Int?
-  @Field var scaleMax: Int?
+  @Field var scale: FeedbackScale?
   @Field var attributes: [String: Any]?
 
   func toLogRecord() -> LogRecord {
@@ -21,11 +20,9 @@ struct FeedbackReport: Record {
     if let rating {
       attributes["expo.feedback.rating"] = rating
     }
-    if let scaleMin {
-      attributes["expo.feedback.scale.min"] = scaleMin
-    }
-    if let scaleMax {
-      attributes["expo.feedback.scale.max"] = scaleMax
+    if let scale {
+      attributes["expo.feedback.scale.min"] = scale.min
+      attributes["expo.feedback.scale.max"] = scale.max
     }
     return LogRecord(
       name: feedbackLogName,
@@ -34,4 +31,9 @@ struct FeedbackReport: Record {
       droppedAttributesCount: sanitized.droppedCount
     )
   }
+}
+
+struct FeedbackScale: Record {
+  @Field var min: Int = 0
+  @Field var max: Int = 0
 }

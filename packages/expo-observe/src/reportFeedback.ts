@@ -57,12 +57,11 @@ export function reportFeedback(feedback: ObserveFeedback): void {
       return;
     }
     const { message, scale, ...rest } = feedback;
-    const { min, max } = scale ?? DEFAULT_SCALE;
     AppMetrics.reportFeedback({
       ...rest,
       ...(message?.trim() ? { message } : null),
       // Sent with every rating, also the default one, so the dashboard can compare ratings.
-      ...(rest.rating != null ? { scaleMin: min, scaleMax: max } : null),
+      ...(rest.rating != null ? { scale: scale ?? DEFAULT_SCALE } : null),
     });
   } catch (error) {
     if (__DEV__) {
