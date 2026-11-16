@@ -1,6 +1,6 @@
-import { UnavailabilityError } from 'expo';
 import type { EventSubscription } from 'expo';
 
+import * as Contacts from './Contacts';
 import expoContactsModule from './ExpoContactsNext';
 import { FallbackContainer } from './types/Container';
 import { FallbackGroup } from './types/Group';
@@ -41,53 +41,29 @@ export class Group extends (expoContactsModule.Group || FallbackGroup) {}
 export class Container extends (expoContactsModule.Container || FallbackContainer) {}
 
 /**
- * Adds a listener that is called when contacts are added, updated, or deleted.
- *
- * **Platform differences:**
- * - **Android**: Uses `ContentObserver`, which may delay notifications by 5-7 seconds. Because it observes both `RawContacts` and `Contacts`, some changes may emit two events.
- * - **iOS**: Uses `CNContactStoreDidChangeNotification` and emits updates immediately.
- *
- * On Android, the delay comes from the system contact provider batching notifications for performance and battery life.
- * If your app needs fresher data after returning from the native Contacts app, consider refreshing contacts when the app comes back to the foreground.
- *
- * @param listener A callback invoked when contacts change. The callback receives no arguments.
- * @returns A subscription object with a `remove` method that stops listening for changes.
- * @example
- * ```jsx
- * const subscription = Contacts.addContactChangeListener(() => {
- *   console.log('Contacts changed - refreshing contact list');
- *   loadContacts();
- * });
- *
- * subscription.remove();
- * ```
+ * @deprecated Use `Contacts.addContactsChangeListener()` instead.
  */
 export function addContactsChangeListener(listener: () => void): EventSubscription {
-  if (!expoContactsModule.addListener) {
-    throw new UnavailabilityError('Contacts', 'addContactsChangeListener');
-  }
-  return expoContactsModule.addListener('contactsDidChange', listener);
+  return Contacts.addContactsChangeListener(listener);
 }
 
 /**
- * Removes all contact change listeners registered with `addContactsChangeListener`.
+ * @deprecated Use `Contacts.removeAllContactsChangeListeners()` instead.
  */
 export function removeAllContactsChangeListeners(): void {
-  expoContactsModule.removeAllListeners('contactsDidChange');
+  Contacts.removeAllContactsChangeListeners();
 }
 
 /**
- * Checks user's permissions for accessing contacts data.
- * @returns A promise that resolves to a [`ContactsPermissionResponse`](#contactspermissionresponse) object.
+ * @deprecated Use `Contacts.getPermissions()` instead.
  */
 export async function getPermissionsAsync() {
-  return expoContactsModule.getPermissionsAsync();
+  return Contacts.getPermissions();
 }
 
 /**
- * Asks the user to grant permissions for accessing contacts data.
- * @returns A promise that resolves to a [`ContactsPermissionResponse`](#contactspermissionresponse) object.
+ * @deprecated Use `Contacts.requestPermissions()` instead.
  */
 export async function requestPermissionsAsync() {
-  return expoContactsModule.requestPermissionsAsync();
+  return Contacts.requestPermissions();
 }
