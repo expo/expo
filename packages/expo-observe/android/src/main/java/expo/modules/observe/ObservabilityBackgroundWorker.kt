@@ -17,6 +17,7 @@ import androidx.work.WorkerParameters
 import androidx.work.await
 import androidx.work.workDataOf
 import expo.modules.appmetrics.ObserveConsent
+import expo.modules.appmetrics.configureAppMetricsHost
 import expo.modules.appmetrics.storage.SessionManager
 
 /**
@@ -66,6 +67,7 @@ class ObservabilityBackgroundWorker(
     if (!ObserveConsent.isGranted) {
       return Result.success()
     }
+    configureAppMetricsHost(applicationContext)
     return try {
       if (observabilityManager == null) {
         Log.e(OBSERVE_TAG, "ObservabilityManager is null - missing projectId or baseUrl")

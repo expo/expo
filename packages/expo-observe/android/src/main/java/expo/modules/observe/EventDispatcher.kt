@@ -1,9 +1,8 @@
 package expo.modules.observe
 
-import android.content.Context
 import android.util.Log
+import expo.modules.appmetrics.AppMetrics
 import expo.modules.appmetrics.ObserveConsent
-import expo.modules.easclient.EASClientID
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -13,7 +12,6 @@ import kotlin.coroutines.resume
 
 // TODO: Make this safe for concurrent usage
 internal class EventDispatcher(
-  val context: Context,
   val projectId: String,
   val baseUrl: String,
   private val httpClient: OkHttpClient = OkHttpClient()
@@ -42,10 +40,10 @@ internal class EventDispatcher(
         continuation.resume(DispatchResult.Success)
         return@suspendCancellableCoroutine Unit
       }
-      val easId = EASClientID(context).uuid.toString()
+      val clientId = AppMetrics.host.clientId()
       val body = try {
         OTRequestBody(
-          resourceMetrics = events.map { it.toOTEvent(easId) }
+          resourceMetrics = events.map { it.toOTEvent(clientId) }
         ).toJson()
       } catch (e: Exception) {
         Log.w(OBSERVE_TAG, "Encoding metrics request body failed: ${e.message}")
@@ -61,10 +59,10 @@ internal class EventDispatcher(
    */
   suspend fun dispatchLogs(events: List<Event>): DispatchResult =
     suspendCancellableCoroutine { continuation ->
-      val easId = EASClientID(context).uuid.toString()
+      val clientId = AppMetrics.host.clientId()
       val resourceLogs = events
         .filter { it.logs.isNotEmpty() }
-        .map { it.toOTResourceLogs(easId) }
+        .map { it.toOTResourceLogs(clientId) }
       if (resourceLogs.isEmpty()) {
         continuation.resume(DispatchResult.Success)
         return@suspendCancellableCoroutine Unit
@@ -90,10 +88,10 @@ internal class EventDispatcher(
         continuation.resume(DispatchResult.Success)
         return@suspendCancellableCoroutine Unit
       }
-      val easId = EASClientID(context).uuid.toString()
+      val clientId = AppMetrics.host.clientId()
       val body = try {
         OTTracesRequestBody(
-          resourceSpans = batches.map { it.event.toOTResourceSpans(easId, it.spans) }
+          resourceSpans = batches.map { it.event.toOTResourceSpans(clientId, it.spans) }
         ).toJson()
       } catch (e: Exception) {
         Log.w(OBSERVE_TAG, "Encoding traces request body failed: ${e.message}")

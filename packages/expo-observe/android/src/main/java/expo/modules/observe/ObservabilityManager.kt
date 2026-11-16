@@ -2,13 +2,12 @@ package expo.modules.observe
 
 import android.content.Context
 import android.util.Log
+import expo.modules.appmetrics.AppMetrics
 import expo.modules.appmetrics.ObserveConsent
-import expo.modules.easclient.EASClientID
 import expo.modules.appmetrics.logevents.FEEDBACK_LOG_NAME
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.storage.Span
 import expo.modules.appmetrics.utils.TimeUtils
-import expo.modules.interfaces.constants.ConstantsInterface
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.sync.Mutex
@@ -17,32 +16,17 @@ import kotlinx.coroutines.sync.withLock
 internal class ObservabilityManager(
   // TODO(@lukmccall): Consider saving context as weak reference to avoid potential memory leaks
   private val context: Context,
-  constants: ConstantsInterface?,
+  projectId: String,
+  baseUrl: String,
   val sessionManager: SessionManager
 ) {
-  private val baseManager: BaseObservabilityManager
-
-  // TODO: Can this information change during expo module lifecycle?
-  init {
-    val manifest = getManifest(constants)
-    checkNotNull(manifest) {
-      "Manifest is required to initialize ObservabilityManager."
-    }
-
-    val projectId = manifest.projectId
-    checkNotNull(projectId) {
-      "Project ID is required to send observability metrics. Make sure you have configured it correctly in app.json."
-    }
-    val baseUrl = manifest.baseUrl ?: OBSERVE_DEFAULT_BASE_URL
-
-    baseManager = BaseObservabilityManager(
-      context = context,
-      sessionManager = sessionManager,
-      projectId = projectId,
-      baseUrl = baseUrl,
-      isDebugBuild = BuildConfig.DEBUG
-    )
-  }
+  private val baseManager = BaseObservabilityManager(
+    context = context,
+    sessionManager = sessionManager,
+    projectId = projectId,
+    baseUrl = baseUrl,
+    isDebugBuild = BuildConfig.DEBUG
+  )
 
   suspend fun dispatchUnsentMetrics() {
     baseManager.dispatchUnsentMetrics()
@@ -74,14 +58,10 @@ internal class BaseObservabilityManager(
   val projectId: String,
   val baseUrl: String,
   private val isDebugBuild: Boolean = false,
-  private val deterministicUniformValueProvider: () -> Double = {
-    EASClientID.deterministicUniformValue(EASClientID(context).uuid)
-  },
   private val currentTimeMs: () -> Long = { TimeUtils.getWallClockMillis() },
   private val dispatchChunkSize: Int = DISPATCH_CHUNK_SIZE
 ) {
   private val eventDispatcher = EventDispatcher(
-    context = context,
     projectId = projectId,
     baseUrl = baseUrl
   )
@@ -409,7 +389,7 @@ internal class BaseObservabilityManager(
   private fun isInSample(rate: Double?): Boolean {
     rate ?: return true
     val clamped = rate.coerceIn(0.0, 1.0)
-    return deterministicUniformValueProvider() < clamped
+    return AppMetrics.host.clientSampleValue() < clamped
   }
 
   private fun shouldDispatch(config: PersistedConfig?, rate: Double?): Boolean {

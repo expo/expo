@@ -1,6 +1,8 @@
 package expo.modules.observe
 
 import android.content.Context
+import expo.modules.appmetrics.AppMetrics
+import expo.modules.appmetrics.AppMetricsHost
 import expo.modules.appmetrics.ObserveConsent
 import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.Metric
@@ -1293,13 +1295,14 @@ class BaseObservabilityManagerTest {
     deterministicUniformValue: Double = 0.0,
     deterministicUniformValueProvider: () -> Double = { deterministicUniformValue }
   ): BaseObservabilityManager {
+    mockkObject(AppMetrics)
+    every { AppMetrics.host } returns AppMetricsHost(clientSampleValue = deterministicUniformValueProvider)
     val manager = BaseObservabilityManager(
       context = context,
       sessionManager = sessionManager,
       projectId = "project",
       baseUrl = "https://example.com/",
       isDebugBuild = isDebugBuild,
-      deterministicUniformValueProvider = deterministicUniformValueProvider,
       currentTimeMs = currentTimeMs,
       dispatchChunkSize = chunkSize
     )
