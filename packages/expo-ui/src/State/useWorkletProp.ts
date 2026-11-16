@@ -1,12 +1,7 @@
-import {
-  requireNativeModule,
-  type SharedObject,
-  useReleasingSharedObjectWithLifecycle,
-} from 'expo';
+import { type SharedObject, useReleasingSharedObjectWithLifecycle } from 'expo';
 
+import { ExpoUIModule as ExpoUI } from '../ExpoUIModule';
 import { worklets } from './optionalWorklets';
-
-const ExpoUI = requireNativeModule('ExpoUI');
 
 function createSerializable(callback?: (...args: any[]) => void, propName?: string) {
   if (!callback || !worklets) {

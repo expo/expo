@@ -1,10 +1,7 @@
-import { requireNativeModule } from 'expo';
-
+import { ExpoUIModule as ExpoUI } from '../ExpoUIModule';
 import { worklets } from '../State';
 import { VALUE_SYMBOL } from './modifiers/animation/constants';
 import type { AnimationObject, ChainableAnimationType } from './modifiers/animation/types';
-
-const ExpoUI = requireNativeModule('ExpoUI');
 
 /**
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/animationcompletioncriteria).

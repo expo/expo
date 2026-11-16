@@ -1,8 +1,8 @@
 import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
+import { ExpoUIModule } from '../../ExpoUIModule';
 import type { ModifierConfig, ViewEvent } from '../../types';
-import { ExpoUIModule } from '../ExpoUIModule';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**

@@ -1,9 +1,8 @@
-import { requireNativeModule, type SharedObject, useReleasingSharedObject } from 'expo';
+import { type SharedObject, useReleasingSharedObject } from 'expo';
 import { useRef } from 'react';
 
+import { ExpoUIModule as ExpoUI } from '../ExpoUIModule';
 import { worklets } from './optionalWorklets';
-
-const ExpoUI = requireNativeModule('ExpoUI');
 
 /**
  * Observable state shared between JavaScript and native views (Jetpack Compose
