@@ -1,4 +1,9 @@
-import { DISABLE_MOTION_PERMISSION_KEY, setMotionPermissionDisabled } from '../withSensors';
+import {
+  DISABLE_MOTION_PERMISSION_KEY,
+  PEDOMETER_PLAY_SERVICES_KEY,
+  setMotionPermissionDisabled,
+  setPedometerPlayServicesEnabled,
+} from '../withSensors';
 
 describe(setMotionPermissionDisabled, () => {
   it(`sets the opt-out when motionPermission is false`, () => {
@@ -22,4 +27,24 @@ describe(setMotionPermissionDisabled, () => {
       )
     ).toEqual({ CFBundleName: 'app' });
   });
+});
+
+describe(setPedometerPlayServicesEnabled, () => {
+  it(`enables the Play services libraries when pedometerPlayServicesEnabled is true`, () => {
+    expect(setPedometerPlayServicesEnabled({ pedometerPlayServicesEnabled: true }, [])).toEqual([
+      { type: 'property', key: PEDOMETER_PLAY_SERVICES_KEY, value: 'true' },
+    ]);
+  });
+
+  it.each([undefined, false])(
+    `removes the property when pedometerPlayServicesEnabled is %p`,
+    (pedometerPlayServicesEnabled) => {
+      expect(
+        setPedometerPlayServicesEnabled({ pedometerPlayServicesEnabled }, [
+          { type: 'property', key: PEDOMETER_PLAY_SERVICES_KEY, value: 'true' },
+          { type: 'property', key: 'android.useAndroidX', value: 'true' },
+        ])
+      ).toEqual([{ type: 'property', key: 'android.useAndroidX', value: 'true' }]);
+    }
+  );
 });
