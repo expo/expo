@@ -14,7 +14,6 @@ import android.os.SystemClock
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 import com.google.android.gms.fitness.FitnessLocal
 import com.google.android.gms.fitness.LocalRecordingClient
 import com.google.android.gms.fitness.data.LocalDataType
@@ -29,14 +28,20 @@ import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.sensors.UseSensorProxy
 import expo.modules.sensors.createSensorProxy
-import java.util.concurrent.CancellationException
-import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
+import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withTimeout
 
 private const val EventName = "Exponent.pedometerUpdate"
 private const val EventNameEvent = "Exponent.pedometerEvent"
@@ -83,6 +88,7 @@ class PedometerModule : Module() {
   private var transitionPendingIntent: PendingIntent? = null
   private var transitionsReceiver: BroadcastReceiver? = null
   private var isEventUpdatesActive = false
+  private val eventUpdatesMutex = Mutex()
 
   override fun definition() = ModuleDefinition {
     val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
@@ -95,24 +101,26 @@ class PedometerModule : Module() {
       ) == ConnectionResult.SUCCESS
     }
 
-    fun <T> awaitTask(task: Task<T>, operationName: String): T {
+    suspend fun <T> awaitTask(task: Task<T>, operationName: String): T {
       try {
-        return Tasks.await(task, TaskTimeoutSeconds, TimeUnit.SECONDS)
-      } catch (e: TimeoutException) {
+        return withTimeout(TimeUnit.SECONDS.toMillis(TaskTimeoutSeconds)) {
+          suspendCancellableCoroutine { continuation ->
+            task.addOnSuccessListener { continuation.resume(it) }
+            task.addOnFailureListener { continuation.resumeWithException(it) }
+            task.addOnCanceledListener { continuation.cancel() }
+          }
+        }
+      } catch (e: TimeoutCancellationException) {
         throw TaskTimeoutException(operationName)
+      } catch (e: CancellationException) {
+        if (task.isCanceled) {
+          throw TaskCancelledException(operationName)
+        }
+        throw e
       } catch (e: SecurityException) {
         throw Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
-      } catch (e: CancellationException) {
-        throw TaskCancelledException(operationName)
-      } catch (e: InterruptedException) {
-        Thread.currentThread().interrupt()
+      } catch (e: Exception) {
         throw TaskFailedException(operationName, e)
-      } catch (e: ExecutionException) {
-        val cause = e.cause
-        if (cause is SecurityException) {
-          throw Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
-        }
-        throw TaskFailedException(operationName, cause ?: e)
       }
     }
 
@@ -246,67 +254,68 @@ class PedometerModule : Module() {
     }
 
     AsyncFunction("isRecordingAvailableAsync") {
-      GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
-        context,
-        LocalRecordingClient.LOCAL_RECORDING_CLIENT_MIN_VERSION_CODE
-      ) == ConnectionResult.SUCCESS
+      isRecordingAvailable()
     }
 
     AsyncFunction("isEventTrackingAvailableAsync") {
       GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
     }
 
-    AsyncFunction("startEventUpdatesAsync") {
-      if (isEventUpdatesActive) {
-        return@AsyncFunction true
-      }
+    AsyncFunction("startEventUpdatesAsync") Coroutine { ->
+      eventUpdatesMutex.withLock {
+        if (isEventUpdatesActive) {
+          return@withLock true
+        }
 
-      if (!ensureTransitionsReceiver()) {
-        return@AsyncFunction false
-      }
+        if (!ensureTransitionsReceiver()) {
+          return@withLock false
+        }
 
-      val pendingIntent = ensureTransitionPendingIntent()
+        val pendingIntent = ensureTransitionPendingIntent()
 
-      val transitions = listOf(
-        ActivityTransition.Builder()
-          .setActivityType(DetectedActivity.WALKING)
-          .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-          .build(),
-        ActivityTransition.Builder()
-          .setActivityType(DetectedActivity.WALKING)
-          .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
-          .build(),
-        ActivityTransition.Builder()
-          .setActivityType(DetectedActivity.RUNNING)
-          .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-          .build(),
-        ActivityTransition.Builder()
-          .setActivityType(DetectedActivity.RUNNING)
-          .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
-          .build()
-      )
-
-      val request = ActivityTransitionRequest(transitions)
-
-      try {
-        awaitTask(
-          activityRecognitionClient.requestActivityTransitionUpdates(request, pendingIntent),
-          "start event updates"
+        val transitions = listOf(
+          ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.WALKING)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+            .build(),
+          ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.WALKING)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+            .build(),
+          ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.RUNNING)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+            .build(),
+          ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.RUNNING)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+            .build()
         )
-      } catch (e: CodedException) {
-        stopActivityTransitionUpdates()
-        throw e
+
+        val request = ActivityTransitionRequest(transitions)
+
+        try {
+          awaitTask(
+            activityRecognitionClient.requestActivityTransitionUpdates(request, pendingIntent),
+            "start event updates"
+          )
+        } catch (e: CodedException) {
+          stopActivityTransitionUpdates()
+          throw e
+        }
+
+        isEventUpdatesActive = true
+        true
       }
-
-      isEventUpdatesActive = true
-      true
     }
 
-    AsyncFunction("stopEventUpdatesAsync") {
-      stopActivityTransitionUpdates()
+    AsyncFunction("stopEventUpdatesAsync") Coroutine { ->
+      eventUpdatesMutex.withLock {
+        stopActivityTransitionUpdates()
+      }
     }
 
-    AsyncFunction("subscribeRecordingAsync") {
+    AsyncFunction("subscribeRecordingAsync") Coroutine { ->
       if (!isRecordingAvailable()) {
         throw NotSupportedException("Pedometer Recording API is not available on this device.")
       }
@@ -316,23 +325,28 @@ class PedometerModule : Module() {
         localRecordingClient.subscribe(LocalDataType.TYPE_STEP_COUNT_DELTA),
         "subscribe to recording updates"
       )
+      Unit
     }
 
-    AsyncFunction("unsubscribeRecordingAsync") {
-      if (!isRecordingAvailable()) {
-        return@AsyncFunction null
+    AsyncFunction("unsubscribeRecordingAsync") Coroutine { ->
+      if (isRecordingAvailable()) {
+        val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
+        awaitTask(
+          localRecordingClient.unsubscribe(LocalDataType.TYPE_STEP_COUNT_DELTA),
+          "unsubscribe from recording updates"
+        )
       }
-
-      val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
-      awaitTask(
-        localRecordingClient.unsubscribe(LocalDataType.TYPE_STEP_COUNT_DELTA),
-        "unsubscribe from recording updates"
-      )
+      Unit
     }
 
-    AsyncFunction("getStepCountAsync") { startTime: Long, endTime: Long ->
+    AsyncFunction("getStepCountAsync") Coroutine { startTime: Long, endTime: Long ->
       if (!isRecordingAvailable()) {
         throw NotSupportedException("Pedometer Recording API is not available on this device.")
+      }
+
+      // `LocalDataReadRequest.Builder.build()` throws when the end time is not after the start time.
+      if (endTime <= startTime) {
+        return@Coroutine mapOf("steps" to 0L)
       }
 
       val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
