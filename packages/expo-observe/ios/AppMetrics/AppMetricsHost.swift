@@ -1,13 +1,17 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 /// Values that only the host app knows. The host passes them to `AppMetrics.configure(_:)` once at
-/// launch, before the main session starts. The defaults describe a host without expo-updates.
+/// launch, before the main session starts. The defaults describe a host without React Native and
+/// expo-updates.
 struct AppMetricsHost: Sendable {
   /// Reads the running update. Called when the app info is first built and again when the host
   /// reports an updates state change.
   var updatesInfo: @Sendable () -> AppInfo.UpdatesInfo = {
     AppInfo.UpdatesInfo(updateId: nil, runtimeVersion: nil, requestHeaders: nil)
   }
+
+  /// Duration of the JS bundle evaluation in seconds, or `nil` while unknown.
+  var bundleLoadTime: @Sendable () -> TimeInterval? = { nil }
 }
 
 extension AppMetrics {
