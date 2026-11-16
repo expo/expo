@@ -1,5 +1,5 @@
 ---
-'expo-sensors': minor
+'expo-sensors': patch
 ---
 
 Added pedometer pause and resume event helpers to `Pedometer`: `isEventTrackingAvailableAsync`, `startEventUpdatesAsync`, `stopEventUpdatesAsync`, and `watchEventUpdates`.
