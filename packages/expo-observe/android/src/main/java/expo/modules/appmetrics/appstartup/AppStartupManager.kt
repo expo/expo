@@ -5,8 +5,6 @@ import android.app.ActivityManager
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import com.facebook.react.bridge.ReactMarker
-import com.facebook.react.bridge.ReactMarkerConstants
 import expo.modules.appmetrics.AppStartupMetric
 import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.frames.FrameMetricsRecord
@@ -78,32 +76,27 @@ internal object AppStartupManager {
 
   init {
     Log.d(TAG, "Creating manager")
-    ReactMarker.addListener { name, _, _ ->
-      when (name) {
-        ReactMarkerConstants.RUN_JS_BUNDLE_START -> {
-          bundleLoadStartTime = getCurrentTimeInMillis()
-        }
+  }
 
-        ReactMarkerConstants.RUN_JS_BUNDLE_END -> {
-          if (startupState != StartupState.LAUNCHING) {
-            return@addListener
-          }
-          val loadStartTime = bundleLoadStartTime
-          if (loadStartTime == null) {
-            Log.w(
-              TAG,
-              "Received RUN_JS_BUNDLE_END, when bundleLoadStartTime is null "
-            )
-          } else {
-            addMetric(
-              AppStartupMetric.BundleLoadTime,
-              valueInMs = getCurrentTimeInMillis() - loadStartTime
-            )
-          }
-        }
+  fun markBundleLoadStart() {
+    bundleLoadStartTime = getCurrentTimeInMillis()
+  }
 
-        else -> {}
-      }
+  fun markBundleLoadEnd() {
+    if (startupState != StartupState.LAUNCHING) {
+      return
+    }
+    val loadStartTime = bundleLoadStartTime
+    if (loadStartTime == null) {
+      Log.w(
+        TAG,
+        "Received RUN_JS_BUNDLE_END, when bundleLoadStartTime is null "
+      )
+    } else {
+      addMetric(
+        AppStartupMetric.BundleLoadTime,
+        valueInMs = getCurrentTimeInMillis() - loadStartTime
+      )
     }
   }
 
