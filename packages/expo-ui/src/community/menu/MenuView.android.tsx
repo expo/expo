@@ -78,31 +78,37 @@ function buildSelectableColors(
   };
 }
 
+type MenuGroup = { key: string; actions: MenuAction[] };
+
 /**
  * Splits actions into the groups of a Material 3 Expressive menu. A `displayInline` action
  * becomes a group of its own. Other actions that follow each other share a group.
  */
-function groupActions(actions: MenuAction[]): MenuAction[][] {
-  const groups: MenuAction[][] = [];
+function groupActions(actions: MenuAction[], keyPrefix = ''): MenuGroup[] {
+  const groups: MenuGroup[] = [];
   let run: MenuAction[] = [];
-  const endRun = () => {
-    if (run.length > 0) {
-      groups.push(run);
-      run = [];
-    }
-  };
+  // The key of a run of actions comes from the inline action before it, not from its first action.
+  // So the group does not remount, and an open submenu in it does not close, when an action hides.
+  let runKey = `${keyPrefix}^`;
   for (const action of actions) {
     if (action.attributes?.hidden) {
       continue;
     }
     if (action.displayInline && action.subactions && action.subactions.length > 0) {
-      endRun();
-      groups.push(...groupActions(action.subactions));
+      if (run.length > 0) {
+        groups.push({ key: runKey, actions: run });
+        run = [];
+      }
+      const sectionKey = `${keyPrefix}${actionId(action)}`;
+      groups.push(...groupActions(action.subactions, `${sectionKey}/`));
+      runKey = `${sectionKey}$`;
     } else {
       run.push(action);
     }
   }
-  endRun();
+  if (run.length > 0) {
+    groups.push({ key: runKey, actions: run });
+  }
   return groups;
 }
 
@@ -115,14 +121,14 @@ type MenuHandlers = {
 function MenuGroups({ actions, ...handlers }: MenuHandlers & { actions: MenuAction[] }) {
   const groups = groupActions(actions);
   return groups.map((group, groupIndex) => (
-    <React.Fragment key={actionId(group[0])}>
+    <React.Fragment key={group.key}>
       {groupIndex > 0 && <Spacer modifiers={[height(MENU_GROUP_SPACING)]} />}
       <DropdownMenuGroup shapes={{ index: groupIndex, count: groups.length }}>
-        {group.map((action, index) => (
+        {group.actions.map((action, index) => (
           <MenuActionItem
             key={actionId(action)}
             action={action}
-            shape={{ index, count: group.length }}
+            shape={{ index, count: group.actions.length }}
             {...handlers}
           />
         ))}
@@ -139,7 +145,6 @@ function MenuActionItem({
   destructiveColor,
 }: MenuHandlers & { action: MenuAction; shape: MenuShapePosition }) {
   const [submenuExpanded, setSubmenuExpanded] = React.useState(false);
-  const materialColors = useMaterialColors();
 
   const { subactions, state, attributes, title, image, imageColor } = action;
   // `image` is non-string only when caller passes an ImageSourcePropType
@@ -212,12 +217,7 @@ function MenuActionItem({
           </SelectableDropdownMenuItem.LeadingIcon>
         )}
         <SelectableDropdownMenuItem.SelectedLeadingIcon>
-          {/* An untinted icon in this slot is not drawn, so tint it like the selected container text. */}
-          <Icon
-            source={CHECK_ICON}
-            size={MENU_ITEM_ICON_SIZE}
-            tint={colors?.selectedLeadingIconColor ?? materialColors.onTertiaryContainer}
-          />
+          <Icon source={CHECK_ICON} size={MENU_ITEM_ICON_SIZE} />
         </SelectableDropdownMenuItem.SelectedLeadingIcon>
       </SelectableDropdownMenuItem>
     );
