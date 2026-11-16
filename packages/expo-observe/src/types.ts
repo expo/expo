@@ -496,11 +496,9 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    */
   setBundleDefaults(defaults: { environment: string; isJsDev: boolean }): void;
   /**
-   * Returns whether the app privacy manifest declares user content. `reportFeedback` uses it to
-   * warn in development. Optional because Android, web, and iOS binaries built before this
-   * version do not have it.
+   * Returns whether the app privacy manifest declares user content.
    *
-   * @internal
+   * @private
    * @platform ios
    */
   hasUserContentPrivacyEntry?(): boolean;
