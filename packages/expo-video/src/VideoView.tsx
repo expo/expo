@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { PureComponent, createRef } from 'react';
 
-import NativeVideoModule from './NativeVideoModule';
+import NativeVideoModule from './ExpoVideo';
 import NativeVideoView, { NativeTextureVideoView } from './NativeVideoView';
 import type { VideoPlayer } from './VideoPlayer.types';
 import type { VideoViewProps } from './VideoView.types';

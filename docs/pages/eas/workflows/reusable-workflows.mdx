@@ -1,0 +1,143 @@
+---
+title: Reusable workflows in Expo Workflows
+sidebar_title: Reusable workflows
+description: Learn how to call a workflow from another workflow to reuse its jobs.
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+
+A reusable workflow is a workflow file that other workflows can call. Use it to share whole jobs between workflow files. To share a sequence of steps inside a job, use [custom functions](/eas/workflows/custom-functions/).
+
+For the YAML syntax of the reusable workflow and the calling job, see [`on.workflow_call`](/eas/workflows/syntax/#onworkflow_call) and [Workflow call jobs](/eas/workflows/syntax/#workflow-call-jobs) in the syntax reference.
+
+## How it works
+
+A workflow can call another workflow only if that workflow declares [`on.workflow_call`](/eas/workflows/syntax/#onworkflow_call).
+
+A calling job sets [`uses`](/eas/workflows/syntax/#jobsjob_iduses) to the path of the reusable workflow, and [`with`](/eas/workflows/syntax/#jobsjob_idwith) to its input values. Both workflow files must be in the **.eas/workflows** directory of the same project:
+
+<FileTree
+  files={[
+    'my-app/.eas/workflows/build.yml',
+    'my-app/.eas/workflows/release.yml',
+    'my-app/eas.json',
+  ]}
+/>
+
+When the calling job runs, it starts the called run and waits for its result.
+
+## Inputs and outputs
+
+The reusable workflow declares its inputs in [`on.workflow_call.inputs`](/eas/workflows/syntax/#onworkflow_callinputs) and reads them as `${{ inputs.<input_name> }}`. The calling job sets their values in `with`. For the expressions and value types that `with` accepts, see [`jobs.<job_id>.with`](/eas/workflows/syntax/#jobsjob_idwith).
+
+The reusable workflow declares its outputs in [`on.workflow_call.outputs`](/eas/workflows/syntax/#onworkflow_calloutputs). Expo Workflows evaluates them after the called run succeeds. The calling run reads them through the `needs` context of the calling job.
+
+## Context of a called run
+
+A called run uses the same commit, Git ref, and [`github`](/eas/workflows/syntax/#github) context as the run that calls it. It gets its own [`inputs`](/eas/workflows/syntax/#inputs) and [`workflow`](/eas/workflows/syntax/#workflow) contexts.
+
+Environment variables do not carry over. Each job in the reusable workflow reads [`env`](/eas/workflows/syntax/#env) from its own [`environment`](/eas/workflows/syntax/#jobsjob_idenvironment).
+
+A called run uses the [`run_name`](/eas/workflows/syntax/#run_name) and [`concurrency`](/eas/workflows/syntax/#concurrency) settings from the reusable workflow file. If the called run's [`concurrency.group`](/eas/workflows/syntax/#concurrencygroup) matches a run above it in the call chain, Expo Workflows does not start it, and the calling job fails. For example, this happens when both workflows use a group built only from `github` values, such as `${{ github.ref_name }}`, because both runs share that context.
+
+## Status and cancellation
+
+The calling job ends with the status of the called run: success, failure, or canceled. If the called run fails, its errors appear on the calling job.
+
+When you cancel the calling run, Expo Workflows also cancels the called run.
+
+## Nesting and limits
+
+A reusable workflow can call other reusable workflows. The following limits apply:
+
+- You can nest calls up to 4 levels deep.
+- A workflow cannot call itself, directly or through other workflows.
+
+## Example
+
+**.eas/workflows/build.yml** builds the app for one environment. It reuses an existing build when one matches the project fingerprint, creates a new build otherwise, and returns the IDs of new builds.
+
+```yaml .eas/workflows/build.yml
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: environment
+        required: true
+    outputs:
+      android_build_id:
+        value: ${{ jobs.build_android.outputs.build_id }}
+      ios_build_id:
+        value: ${{ jobs.build_ios.outputs.build_id }}
+
+jobs:
+  fingerprint:
+    type: fingerprint
+    environment: ${{ inputs.environment }}
+  get_android_build:
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      platform: android
+      profile: ${{ inputs.environment }}
+  get_ios_build:
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      platform: ios
+      profile: ${{ inputs.environment }}
+  build_android:
+    needs: [get_android_build]
+    if: ${{ !needs.get_android_build.outputs.build_id }}
+    type: build
+    params:
+      platform: android
+      profile: ${{ inputs.environment }}
+  build_ios:
+    needs: [get_ios_build]
+    if: ${{ !needs.get_ios_build.outputs.build_id }}
+    type: build
+    params:
+      platform: ios
+      profile: ${{ inputs.environment }}
+```
+
+**.eas/workflows/release.yml** calls the reusable workflow twice on each push to `main`. The first call builds for `preview`. After an approval, the second call builds for `production`, and the workflow submits each new production build to the app stores. If a production build with the same fingerprint already exists, the workflow skips both the build and the submission for that platform:
+
+```yaml .eas/workflows/release.yml
+name: Release
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_preview:
+    uses: ./.eas/workflows/build.yml
+    with:
+      environment: preview
+  approve_production:
+    needs: [build_preview]
+    type: require-approval
+  build_production:
+    needs: [approve_production]
+    uses: ./.eas/workflows/build.yml
+    with:
+      environment: production
+  submit_android:
+    needs: [build_production]
+    if: ${{ needs.build_production.outputs.android_build_id }}
+    type: submit
+    params:
+      build_id: ${{ needs.build_production.outputs.android_build_id }}
+  submit_ios:
+    needs: [build_production]
+    if: ${{ needs.build_production.outputs.ios_build_id }}
+    type: submit
+    params:
+      build_id: ${{ needs.build_production.outputs.ios_build_id }}
+```

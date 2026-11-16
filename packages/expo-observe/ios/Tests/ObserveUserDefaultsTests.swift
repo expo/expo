@@ -65,6 +65,26 @@ struct ObserveUserDefaultsTests {
   }
 
   @Test
+  func `ignored names persist and omitted lists reset them`() {
+    ObserveUserDefaults.setConfig(
+      PersistedConfig(ignoredMetrics: ["expo.app_startup.tti"], ignoredEvents: ["custom.event"])
+    )
+    #expect(ObserveUserDefaults.config?.ignoredMetrics == ["expo.app_startup.tti"])
+    #expect(ObserveUserDefaults.config?.ignoredEvents == ["custom.event"])
+    ObserveUserDefaults.setConfig(PersistedConfig())
+    #expect(ObserveUserDefaults.config?.ignoredMetrics == nil)
+    #expect(ObserveUserDefaults.config?.ignoredEvents == nil)
+  }
+
+  @Test
+  func `old persisted JSON decodes with nil ignored lists`() throws {
+    let oldData = Data(#"{"dispatchingEnabled":true,"sampleRate":0.5}"#.utf8)
+    let config = try JSONDecoder().decode(PersistedConfig.self, from: oldData)
+    #expect(config.ignoredMetrics == nil)
+    #expect(config.ignoredEvents == nil)
+  }
+
+  @Test
   func `dispatchInDebug defaults to nil`() {
     #expect(ObserveUserDefaults.config?.dispatchInDebug == nil)
   }
@@ -135,5 +155,23 @@ struct ObserveUserDefaultsTests {
     ObserveUserDefaults.setConfig(PersistedConfig(dispatchingEnabled: true))
     #expect(ObserveUserDefaults.bundleDefaults?.environment == "development")
     #expect(ObserveUserDefaults.bundleDefaults?.isJsDev == true)
+  }
+
+  @Test
+  func `cleanUpLegacyKeys removes only the legacy keys`() throws {
+    let suiteName = "dev.expo.observe.tests.legacy-keys"
+    let defaults = try #require(UserDefaults(suiteName: suiteName))
+    defer {
+      defaults.removePersistentDomain(forName: suiteName)
+    }
+    defaults.set(true, forKey: "dispatchingEnabled")
+    defaults.set(3, forKey: "lastDispatchedEntryId")
+    defaults.set(4, forKey: "lastDispatchedLogEntryId")
+    defaults.set(Int64(5), forKey: "lastDispatchedMetricId")
+    ObserveUserDefaults.cleanUpLegacyKeys(from: defaults)
+    #expect(defaults.object(forKey: "dispatchingEnabled") == nil)
+    #expect(defaults.object(forKey: "lastDispatchedEntryId") == nil)
+    #expect(defaults.object(forKey: "lastDispatchedLogEntryId") == nil)
+    #expect(defaults.object(forKey: "lastDispatchedMetricId") as? Int64 == 5)
   }
 }

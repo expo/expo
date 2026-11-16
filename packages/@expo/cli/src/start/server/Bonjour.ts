@@ -4,8 +4,6 @@ import { getConfig } from '@expo/config';
 import { getSession } from '../../api/user/UserSettings';
 import { env } from '../../utils/env';
 
-const debug = require('debug')('expo:start:server:bonjour') as typeof console.log;
-
 export class Bonjour {
   private stopAdvertising?: () => Promise<void>;
 
@@ -34,7 +32,6 @@ export class Bonjour {
       await this.stopAdvertising();
     }
 
-    debug('Started Bonjour service');
     this.stopAdvertising = dnssd.advertise({
       name: `${exp.name}`,
       type: 'expo',
@@ -56,7 +53,6 @@ export class Bonjour {
     if (!this.stopAdvertising) {
       return false;
     } else {
-      debug('Stopped Bonjour service');
       await this.stopAdvertising?.();
       this.stopAdvertising = undefined;
       return true;

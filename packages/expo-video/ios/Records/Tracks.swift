@@ -189,7 +189,7 @@ internal struct VideoTrack: Record, Equatable {
       frameRate = Float(frameRateString)
     }
 
-    // Use the default Andorid behavior for reporting the bitrate
+    // Use the default Android behavior for reporting the bitrate
     let bitrate = peakBitrage ?? averageBitrate
 
     return VideoTrack(

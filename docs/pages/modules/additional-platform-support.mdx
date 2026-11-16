@@ -75,7 +75,7 @@ If you are writing a local module and your app is already set up, you can skip t
 
 Platform APIs may differ between Apple platforms. The most noticeable difference comes from relying on different UI frameworks —`UIKit` on iOS/tvOS and `AppKit` on macOS.
 
-Both `react-native-macos` and `expo-modules-core` provide aliases and polyfills to reference`UIKit` classes on macOS target (for example, `UIView` is an alias to `NSView`, `UIApplication` is an alias to `NSApplication`), but it's usually not enough for iOS-first libraries to support other platforms out of the box. You may need to write conditionally compiled code that uses different implementations depending on the platform.
+Both `react-native-macos` and `expo-modules-core` provide aliases and polyfills to reference `UIKit` classes on macOS target (for example, `UIView` is an alias to `NSView`, `UIApplication` is an alias to `NSApplication`), but it's usually not enough for iOS-first libraries to support other platforms out of the box. You may need to write conditionally compiled code that uses different implementations depending on the platform.
 
 To do this, use Swift compiler directives with the `os` condition, which includes a given piece of code when our app is being built for a specific platform. In combination with the `#if` and `#else` directives, lets you set up platform-specific branches within the cross-platform code.
 

@@ -22,6 +22,7 @@ struct ObservabilityClassifyResponseTests {
     let partial = OTPartialSuccess(
       rejectedDataPoints: 3,
       rejectedLogRecords: nil,
+      rejectedSpans: nil,
       errorMessage: "metric_kind_mismatch"
     )
     let result = DispatchUtils.classifyResponse(
@@ -39,6 +40,7 @@ struct ObservabilityClassifyResponseTests {
     let partial = OTPartialSuccess(
       rejectedDataPoints: nil,
       rejectedLogRecords: 1,
+      rejectedSpans: nil,
       errorMessage: "log_too_large"
     )
     let result = DispatchUtils.classifyResponse(
@@ -56,6 +58,7 @@ struct ObservabilityClassifyResponseTests {
     let partial = OTPartialSuccess(
       rejectedDataPoints: 0,
       rejectedLogRecords: 0,
+      rejectedSpans: nil,
       errorMessage: "deprecation_warning"
     )
     let result = DispatchUtils.classifyResponse(
@@ -128,6 +131,16 @@ struct ObservabilityClassifyResponseTests {
   }
 
   // MARK: - Non-retryable 4xx / other 5xx
+
+  @Test
+  func `413 returns payloadTooLarge`() {
+    let result = DispatchUtils.classifyResponse(
+      statusCode: 413,
+      retryAfterHeader: nil,
+      partialSuccess: nil
+    )
+    #expect(result == .payloadTooLarge)
+  }
 
   @Test
   func `400 returns nonRetryable`() {
@@ -245,8 +258,8 @@ struct ObservabilityParseRetryAfterTests {
     // Neither a Double nor an RFC 7231 HTTP-date — caller should fall through to backoff.
     let cases = [
       "tomorrow morning",
-      "Mon Jun 16",  // partial date, missing time + year + zone
-      "30 minutes",  // delta-seconds doesn't accept units
+      "Mon Jun 16", // partial date, missing time + year + zone
+      "30 minutes", // delta-seconds doesn't accept units
       "30s",
       "abc",
       "300/600",

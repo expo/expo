@@ -99,4 +99,57 @@ internal final class InvalidRequestHeadersOverrideException: Exception {
   }
 }
 
+/**
+ * Base class for exceptions that wrap an underlying error and need its description to reach
+ * JavaScript. Subclasses override `reason` to include the underlying error's description.
+ */
+internal class UpdatesUnderlyingErrorException: Exception, @unchecked Sendable {
+  internal let underlyingError: Error
+
+  internal init(_ underlyingError: Error, file: String = #fileID, line: UInt = #line, function: String = #function) {
+    self.underlyingError = underlyingError
+    super.init(file: file, line: line, function: function)
+  }
+}
+
+internal final class CheckForUpdateException: UpdatesUnderlyingErrorException, @unchecked Sendable {
+  override var code: String {
+    "ERR_UPDATES_CHECK"
+  }
+
+  override var reason: String {
+    "Failed to check for update: \(underlyingError.localizedDescription)"
+  }
+}
+
+internal final class FetchUpdateException: UpdatesUnderlyingErrorException, @unchecked Sendable {
+  override var code: String {
+    "ERR_UPDATES_FETCH"
+  }
+
+  override var reason: String {
+    "Failed to download new update: \(underlyingError.localizedDescription)"
+  }
+}
+
+internal final class ReadLogEntriesException: UpdatesUnderlyingErrorException, @unchecked Sendable {
+  override var code: String {
+    "ERR_UPDATES_READ_LOGS"
+  }
+
+  override var reason: String {
+    "Failed to read log entries: \(underlyingError.localizedDescription)"
+  }
+}
+
+internal final class ClearLogEntriesException: UpdatesUnderlyingErrorException, @unchecked Sendable {
+  override var code: String {
+    "ERR_UPDATES_READ_LOGS"
+  }
+
+  override var reason: String {
+    "Failed to clear log entries: \(underlyingError.localizedDescription)"
+  }
+}
+
 // swiftlint:enable line_length

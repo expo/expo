@@ -1,12 +1,8 @@
 import type { NativePlatform } from '@expo/config';
-import { parse } from 'url';
+import { KNOWN_PLATFORMS } from '@expo/platforms';
 
 import { CommandError } from '../../../utils/errors';
 import type { ServerRequest } from './server.types';
-
-const debug = require('debug')(
-  'expo:start:server:middleware:resolvePlatform'
-) as typeof console.log;
 
 /** Supported native runtime platforms. */
 export type RuntimePlatform = NativePlatform;
@@ -20,9 +16,11 @@ export type RuntimePlatform = NativePlatform;
  * Returns first item in the case of an array.
  */
 export function parsePlatformHeader(req: ServerRequest): string | null {
-  const url = parse(req.url!, /* parseQueryString */ true);
+  const searchParams = URL.parse(req.url!, 'file:')?.searchParams;
   const platform =
-    url.query?.platform || req.headers['expo-platform'] || req.headers['exponent-platform'];
+    searchParams?.get('platform') ||
+    req.headers['expo-platform'] ||
+    req.headers['exponent-platform'];
   return (Array.isArray(platform) ? platform[0] : platform) ?? null;
 }
 
@@ -39,7 +37,6 @@ export function resolvePlatformFromUserAgentHeader(req: ServerRequest): string |
   if (userAgent?.match(/iPhone|iPad/i)) {
     platform = 'ios';
   }
-  debug(`Resolved platform ${platform} from user-agent header: ${userAgent}`);
   return platform;
 }
 
@@ -56,7 +53,7 @@ export function assertMissingRuntimePlatform(platform?: any): asserts platform {
 /** Assert if the runtime platform is not correct. */
 export function assertRuntimePlatform(platform: string): asserts platform is RuntimePlatform {
   const stringifiedPlatform = String(platform);
-  if (!['android', 'ios', 'web', 'tvos', 'macos'].includes(stringifiedPlatform)) {
+  if (!(KNOWN_PLATFORMS as readonly string[]).includes(stringifiedPlatform)) {
     throw new CommandError(
       'PLATFORM_HEADER',
       `platform must be "android", "ios", "web", "tvos", or "macos". Received: "${platform}"`

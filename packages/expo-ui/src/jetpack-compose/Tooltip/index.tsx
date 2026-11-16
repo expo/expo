@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { type Ref } from 'react';
 import { type ColorValue } from 'react-native';
 
+import { PresentedContent } from '../../PresentedContentContext';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -146,7 +147,7 @@ function RichTooltipComponent(props: RichTooltipProps) {
         modifiers={modifiers}
         {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
         {...restProps}>
-        {children}
+        <PresentedContent>{children}</PresentedContent>
       </RichTooltipNativeView>
     </SlotNativeView>
   );

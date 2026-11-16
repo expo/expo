@@ -27,6 +27,15 @@ enum APIError: LocalizedError {
     }
   }
 
+  // Cancellation happens whenever SwiftUI tears down a refreshable or task modifier; it is
+  // never worth surfacing to the user.
+  var isCancellation: Bool {
+    if case .networkError(let error) = self {
+      return error is CancellationError || (error as? URLError)?.code == .cancelled
+    }
+    return false
+  }
+
   var isAuthenticationError: Bool {
     if case .httpError(let statusCode, _) = self, statusCode == 401 {
       return true

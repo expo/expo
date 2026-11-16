@@ -1,7 +1,7 @@
-import type { ExpoConfig } from '@expo/config';
+import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import chalk from 'chalk';
 import type { MiddlewareMatcher } from 'expo-server';
-import { sync as globSync } from 'glob';
+import fs from 'node:fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -10,8 +10,16 @@ import { directoryExistsSync, isPathInside } from '../../../utils/dir';
 import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
 import { learnMore } from '../../../utils/link';
+import type { EnvironmentMode } from '../../../utils/nodeEnv';
+import { event } from './routerEvents';
 
-const debug = require('debug')('expo:start:server:metro:router') as typeof console.log;
+/** Check the app's declared dependencies, since Router may also resolve from a parent workspace. */
+export function isExpoRouterApp(pkg: PackageJSONConfig): boolean {
+  return (
+    typeof pkg.dependencies?.['expo-router'] === 'string' ||
+    typeof pkg.devDependencies?.['expo-router'] === 'string'
+  );
+}
 
 /**
  * Get the relative path for requiring the `/app` folder relative to the `expo-router/entry` file.
@@ -30,7 +38,11 @@ export function getAppRouterRelativeEntryPath(
   // It doesn't matter if the app folder exists.
   const appFolder = path.join(projectRoot, routerDirectory);
   const appRoot = path.relative(path.dirname(routerEntry), appFolder);
-  debug('expo-router entry', routerEntry, appFolder, appRoot);
+  event('entry_resolved', {
+    routerEntry: event.path(routerEntry),
+    appFolder: event.path(appFolder),
+    appRoot,
+  });
   return appRoot;
 }
 
@@ -75,38 +87,74 @@ export function getRouterDirectory(projectRoot: string): string {
     return path.join('src', 'app');
   }
 
-  debug('Using app as the root directory for Expo Router.');
   return 'app';
+}
+
+export function isApiRoutesEnabled(exp: ExpoConfig): boolean {
+  const apiRoutes = exp.extra?.router?.apiRoutes;
+  if (apiRoutes != null) {
+    return apiRoutes === true;
+  }
+
+  return (
+    exp.web?.output === 'server' ||
+    !!exp.experiments?.reactServerComponentRoutes ||
+    !!exp.experiments?.reactServerFunctions
+  );
 }
 
 export function isApiRouteConvention(name: string): boolean {
   return /\+api\.[tj]sx?$/.test(name);
 }
 
-export function getApiRoutesForDirectory(cwd: string) {
-  return globSync('**/*+api.@(ts|tsx|js|jsx)', {
-    cwd,
-    absolute: true,
-    dot: true,
-  });
+async function listRouteFiles(
+  parentPath: string,
+  include: (name: string) => boolean,
+  recursive = true
+): Promise<string[]> {
+  const files: string[] = [];
+  const queue = [path.resolve(parentPath)];
+  let targetPath: string | undefined;
+  while ((targetPath = queue.shift()) != null) {
+    try {
+      const entries = (await fs.promises.readdir(targetPath, { withFileTypes: true })).sort(
+        (a, b) => b.name.localeCompare(a.name)
+      );
+      for (const entry of entries) {
+        const filePath = path.join(targetPath, entry.name);
+        if (entry.isDirectory()) {
+          if (recursive) queue.push(filePath);
+        } else if ((entry.isFile() || entry.isSymbolicLink()) && include(entry.name)) {
+          files.push(filePath);
+        }
+      }
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code !== 'ENOENT' && code !== 'ENOTDIR') throw error;
+    }
+  }
+  return files;
+}
+
+export async function getApiRoutesForDirectory(cwd: string) {
+  return listRouteFiles(cwd, isApiRouteConvention);
 }
 
 /**
- * Gets the +middleware file for a given directory. In
+ * Gets the +middleware file for a given directory.
  * @param cwd
  */
-export function getMiddlewareForDirectory(cwd: string): string | null {
-  const files = globSync('+middleware.@(ts|tsx|js|jsx)', {
-    cwd,
-    absolute: true,
-    dot: true,
-  });
+export async function getMiddlewareForDirectory(
+  cwd: string,
+  mode: EnvironmentMode
+): Promise<string | null> {
+  const files = await listRouteFiles(cwd, (name) => /^\+middleware\.[tj]sx?$/.test(name), false);
 
   if (files.length === 0) return null;
 
   if (files.length > 1) {
     // In development, throw an error if there are multiple root-level middleware files
-    if (process.env.NODE_ENV !== 'production') {
+    if (mode === 'development') {
       const relativePaths = files.map((f) => './' + path.relative(cwd, f)).sort();
       throw new Error(
         `Only one middleware file is allowed. Keep one of the conflicting files: ${relativePaths.map((p) => `"${p}"`).join(' or ')}`
@@ -118,15 +166,10 @@ export function getMiddlewareForDirectory(cwd: string): string | null {
 }
 
 // Used to emulate a context module, but way faster. TODO: May need to adjust the extensions to stay in sync with Metro.
-export function getRoutePaths(cwd: string) {
-  return globSync('**/*.@(ts|tsx|js|jsx)', {
-    cwd,
-    dot: true,
-  }).map((p) => './' + normalizePaths(p));
-}
-
-function normalizePaths(p: string) {
-  return p.replace(/\\/g, '/');
+export async function getRoutePaths(cwd: string) {
+  return (await listRouteFiles(cwd, (name) => /\.[tj]sx?$/.test(name))).map(
+    (file) => './' + toPosixPath(path.relative(cwd, file))
+  );
 }
 
 let hasWarnedAboutApiRouteOutput = false;
@@ -140,11 +183,11 @@ export function hasWarnedAboutMiddleware() {
   return hasWarnedAboutMiddlewareOutput;
 }
 
-export function warnInvalidWebOutput() {
+export function warnInvalidWebOutput(apiRoutes: string[] = []) {
   if (!hasWarnedAboutApiRouteOutput) {
     Log.warn(
-      chalk.yellow`Using API routes requires the {bold web.output} to be set to {bold "server"} in the project {bold app.json}. ${learnMore(
-        'https://docs.expo.dev/router/reference/api-routes/'
+      chalk.yellow`API routes are disabled. Remove the API routes or set {bold apiRoutes: true} in the {bold expo-router} config plugin to enable them.${apiRoutes.length ? ` Routes: ${apiRoutes.join(', ')}.` : ''} ${learnMore(
+        'https://docs.expo.dev/router/web/api-routes/'
       )}`
     );
   }
@@ -155,7 +198,7 @@ export function warnInvalidWebOutput() {
 export function warnInvalidMiddlewareOutput() {
   if (!hasWarnedAboutMiddlewareOutput) {
     Log.warn(
-      chalk.yellow`Using middleware requires the {bold web.output} to be set to {bold "server"} in the project {bold app.json}. ${learnMore(
+      chalk.yellow`Using middleware requires {bold web.output: "server"} or {bold apiRoutes: true} in the {bold expo-router} config plugin. ${learnMore(
         'https://docs.expo.dev/router/reference/api-routes/'
       )}`
     );

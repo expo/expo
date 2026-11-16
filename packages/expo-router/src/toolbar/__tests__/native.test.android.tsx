@@ -1,7 +1,15 @@
 import { render, within } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
+import { requireExpoUI } from '../../optional-libraries/expo-ui';
 import { RouterToolbarHost } from '../native';
+
+jest.mock('../../optional-libraries/expo-ui', () => ({
+  requireExpoUI: jest.fn(() => ({
+    expoUI: jest.requireMock('@expo/ui/jetpack-compose'),
+    modifiers: jest.requireMock('@expo/ui/jetpack-compose/modifiers'),
+  })),
+}));
 
 jest.mock('@expo/ui/jetpack-compose', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -27,10 +35,33 @@ jest.mock('react-native-safe-area-context', () => ({
 
 const flatten = (style: unknown) =>
   Object.assign({}, ...(Array.isArray(style) ? style : [style]).filter(Boolean));
+const mockedRequireExpoUI = jest.mocked(requireExpoUI);
+
+beforeEach(() => {
+  mockedRequireExpoUI.mockImplementation(() => ({
+    expoUI: jest.requireMock('@expo/ui/jetpack-compose'),
+    modifiers: jest.requireMock('@expo/ui/jetpack-compose/modifiers'),
+  }));
+});
 
 describe('RouterToolbarHost (Android bottom toolbar)', () => {
-  it('does not cover the full screen so touches above the toolbar pass through', () => {
-    const { getByTestId } = render(
+  it("throws when @expo/ui isn't installed", async () => {
+    mockedRequireExpoUI.mockImplementation(() => {
+      throw new Error(
+        "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+      );
+    });
+
+    await expect(async () => await render(<RouterToolbarHost />)).rejects.toThrow(
+      "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+    );
+    expect(mockedRequireExpoUI).toHaveBeenCalledWith(
+      "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+    );
+  });
+
+  it('does not cover the full screen so touches above the toolbar pass through', async () => {
+    const { getByTestId } = await render(
       <RouterToolbarHost>
         <Text>item</Text>
       </RouterToolbarHost>
@@ -47,8 +78,8 @@ describe('RouterToolbarHost (Android bottom toolbar)', () => {
     expect(host.props.matchContents.vertical).toBe(true);
   });
 
-  it('renders its children inside the floating toolbar', () => {
-    const { getByTestId } = render(
+  it('renders its children inside the floating toolbar', async () => {
+    const { getByTestId } = await render(
       <RouterToolbarHost>
         <Text testID="toolbar-child">item</Text>
       </RouterToolbarHost>
@@ -62,14 +93,17 @@ describe('RouterToolbarHost (Android bottom toolbar)', () => {
     [true, true],
     [false, false],
     [undefined, false],
-  ])('includes the imePadding modifier only when withImePadding is %s', (withImePadding, expected) => {
-    const { getByTestId } = render(
-      <RouterToolbarHost withImePadding={withImePadding}>
-        <Text>item</Text>
-      </RouterToolbarHost>
-    );
+  ])(
+    'includes the imePadding modifier only when withImePadding is %s',
+    async (withImePadding, expected) => {
+      const { getByTestId } = await render(
+        <RouterToolbarHost withImePadding={withImePadding}>
+          <Text>item</Text>
+        </RouterToolbarHost>
+      );
 
-    const modifiers = getByTestId('Box').props.modifiers as { type: string }[];
-    expect(modifiers.some((m) => m.type === 'imePadding')).toBe(expected);
-  });
+      const modifiers = getByTestId('Box').props.modifiers as { type: string }[];
+      expect(modifiers.some((m) => m.type === 'imePadding')).toBe(expected);
+    }
+  );
 });

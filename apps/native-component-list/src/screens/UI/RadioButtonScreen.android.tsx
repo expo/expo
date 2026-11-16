@@ -43,6 +43,40 @@ export default function RadioButtonScreen() {
             </Column>
           </Host>
         </Section>
+        <Section title="Custom Colors">
+          <Host matchContents>
+            <Row horizontalArrangement={{ spacedBy: 16 }}>
+              <RadioButton
+                selected
+                colors={{
+                  selectedColor: '#6200EE',
+                  unselectedColor: '#9CA3AF',
+                }}
+              />
+              <RadioButton
+                selected={false}
+                colors={{
+                  selectedColor: '#6200EE',
+                  unselectedColor: '#9CA3AF',
+                }}
+              />
+            </Row>
+          </Host>
+        </Section>
+        <Section title="Disabled">
+          <Host matchContents>
+            <Row horizontalArrangement={{ spacedBy: 16 }}>
+              <RadioButton selected enabled={false} />
+              <RadioButton selected={false} enabled={false} />
+              <RadioButton selected enabled={false} colors={{ disabledSelectedColor: '#E91E63' }} />
+              <RadioButton
+                selected={false}
+                enabled={false}
+                colors={{ disabledUnselectedColor: '#FF9800' }}
+              />
+            </Row>
+          </Host>
+        </Section>
       </Page>
     </ScrollView>
   );

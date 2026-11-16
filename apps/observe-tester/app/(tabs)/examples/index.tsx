@@ -33,6 +33,21 @@ export default function ExamplesIndex() {
         description="modal / formSheet / pageSheet presentations"
         onPress={() => router.push('/examples/modals')}
       />
+      <Button
+        title="Event flood"
+        description="Generate high-volume log events"
+        onPress={() => router.push('/examples/event-flood')}
+      />
+      <Button
+        title="Reanimated"
+        description="Report Reanimated warnings and errors from both runtimes"
+        onPress={() => router.push('/examples/reanimated')}
+      />
+      <Button
+        title="Trace spans"
+        description="Custom spans (startSpan / withSpan / recordSpan) and network span capture"
+        onPress={() => router.push('/examples/traces')}
+      />
     </ScrollView>
   );
 }

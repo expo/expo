@@ -5,19 +5,27 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -43,9 +51,6 @@ sealed interface Destination {
 
   @Serializable
   object Snacks : Destination
-
-  @Serializable
-  object Account : Destination
 
   @Serializable
   class Branches(val appId: String) : Destination
@@ -86,18 +91,35 @@ fun RootNavigation(
   val navController = rememberNavController()
 
   val themeSetting by viewModel.selectedTheme.collectAsStateWithLifecycle()
+  var openUriError by remember { mutableStateOf<String?>(null) }
 
   HomeAppTheme(themeSetting = themeSetting) {
-    Box(
-      modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.background)
-    ) {
-      AppNavHost(
-        navController = navController,
-        startDestination = Destination.Home,
-        viewModel = viewModel
+    openUriError?.let { error ->
+      AlertDialog(
+        onDismissRequest = { openUriError = null },
+        title = { Text("Can't open this project") },
+        text = { Text(error) },
+        confirmButton = {
+          TextButton(onClick = { openUriError = null }) {
+            Text("OK")
+          }
+        }
       )
+    }
+    CompositionLocalProvider(
+      LocalUriHandler provides rememberLocalNetworkGatedUriHandler(viewModel, onOpenError = { openUriError = it })
+    ) {
+      Box(
+        modifier = Modifier
+          .fillMaxSize()
+          .background(MaterialTheme.colorScheme.background)
+      ) {
+        AppNavHost(
+          navController = navController,
+          startDestination = Destination.Home,
+          viewModel = viewModel
+        )
+      }
     }
   }
 }
@@ -109,13 +131,21 @@ fun AppNavHost(
   viewModel: HomeAppViewModel
 ) {
   val selectedAccount by viewModel.selectedAccount.collectAsStateWithLifecycle()
+  var showsAccountSheet by rememberSaveable { mutableStateOf(false) }
+
+  fun goBack(backStackEntry: NavBackStackEntry) {
+    // Ignore callbacks from outgoing screens and never pop the last destination.
+    if (navController.currentBackStackEntry == backStackEntry && navController.previousBackStackEntry != null) {
+      navController.popBackStack()
+    }
+  }
 
   @Composable
   fun NavAccountHeaderAction() {
     AccountHeaderAction(
       account = selectedAccount,
       onLoginClick = { viewModel.login() },
-      onAccountClick = { navController.navigate(Destination.Account) }
+      onAccountClick = { showsAccountSheet = true }
     )
     Spacer(Modifier.padding(8.dp))
   }
@@ -159,10 +189,10 @@ fun AppNavHost(
       )
     }
 
-    composable<Destination.Projects> {
+    composable<Destination.Projects> { backStackEntry ->
       ProjectsScreen(
         viewModel = viewModel,
-        onGoBack = { navController.popBackStack() },
+        onGoBack = { goBack(backStackEntry) },
         bottomBar = {
           BottomBar(
             navController = navController,
@@ -175,10 +205,10 @@ fun AppNavHost(
       )
     }
 
-    composable<Destination.Snacks> {
+    composable<Destination.Snacks> { backStackEntry ->
       SnacksScreen(
         viewModel = viewModel,
-        onGoBack = { navController.popBackStack() },
+        onGoBack = { goBack(backStackEntry) },
         bottomBar = {
           BottomBar(
             navController = navController,
@@ -188,17 +218,10 @@ fun AppNavHost(
       )
     }
 
-    composable<Destination.Feedback> {
+    composable<Destination.Feedback> { backStackEntry ->
       FeedbackScreen(
         viewModel = viewModel,
-        onGoBack = { navController.popBackStack() }
-      )
-    }
-
-    composable<Destination.Account> {
-      AccountScreen(
-        viewModel = viewModel,
-        goBack = { navController.popBackStack() }
+        onGoBack = { goBack(backStackEntry) }
       )
     }
 
@@ -207,7 +230,7 @@ fun AppNavHost(
       val appFlow = remember { viewModel.app(args.appId) }
       ProjectDetailsScreen(
         viewModel = viewModel,
-        onGoBack = { navController.popBackStack() },
+        onGoBack = { goBack(backStackEntry) },
         appFlow = appFlow,
         onBranchClick = { branchName ->
           navController.navigate(
@@ -228,7 +251,7 @@ fun AppNavHost(
 
       BranchesScreen(
         viewModel = viewModel,
-        onGoBack = { navController.popBackStack() },
+        onGoBack = { goBack(backStackEntry) },
         appId = args.appId,
         navigateToBranchDetails = { appId, branchName ->
           navController.navigate(Destination.BranchDetails(branchName, appId))
@@ -249,7 +272,7 @@ fun AppNavHost(
       }
 
       BranchDetailsScreen(
-        onGoBack = { navController.popBackStack() },
+        onGoBack = { goBack(backStackEntry) },
         branchRefreshableFlow = branchRefreshableFlow,
         bottomBar = {
           BottomBar(
@@ -259,6 +282,13 @@ fun AppNavHost(
         }
       )
     }
+  }
+
+  if (showsAccountSheet) {
+    AccountSwitcherSheet(
+      viewModel = viewModel,
+      onDismiss = { showsAccountSheet = false }
+    )
   }
 }
 

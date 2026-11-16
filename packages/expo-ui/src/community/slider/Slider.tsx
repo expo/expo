@@ -21,6 +21,8 @@ export function Slider(props: SliderProps) {
     minimumTrackTintColor,
     onValueChange,
     style,
+    accessibilityLabel,
+    testID,
   } = props;
   const clamp = (v: number) =>
     Math.min(upperLimit ?? Infinity, Math.max(lowerLimit ?? -Infinity, v));
@@ -32,6 +34,8 @@ export function Slider(props: SliderProps) {
       step={step && step > 0 ? step : 'any'}
       value={clamp(value ?? 0)}
       disabled={disabled}
+      aria-label={accessibilityLabel}
+      data-testid={testID}
       onChange={(e) => onValueChange?.(clamp(e.target.valueAsNumber))}
       style={{
         ...(StyleSheet.flatten(style) as React.CSSProperties),

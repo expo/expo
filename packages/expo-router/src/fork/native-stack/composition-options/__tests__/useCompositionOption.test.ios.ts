@@ -32,24 +32,24 @@ function createWrapper(contextValue: CompositionContextValue | null) {
 }
 
 describe('useCompositionOption', () => {
-  it('throws when used outside CompositionContext', () => {
+  it('throws when used outside CompositionContext', async () => {
     // Suppress console.error from React for the expected error
     const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    expect(() => {
-      renderHook(() => useCompositionOption({ title: 'Test' }));
-    }).toThrow(
+    await expect(async () => {
+      await renderHook(() => useCompositionOption({ title: 'Test' }));
+    }).rejects.toThrow(
       'useCompositionOption must be used within a RouterCompositionOptionsProvider. This is likely a bug in Expo Router.'
     );
 
     spy.mockRestore();
   });
 
-  it('registers options on mount', () => {
+  it('registers options on mount', async () => {
     const context = createMockContext();
     const options = { title: 'Hello' };
 
-    renderHook(() => useCompositionOption(options), {
+    await renderHook(() => useCompositionOption(options), {
       wrapper: createWrapper(context),
     });
 
@@ -57,43 +57,43 @@ describe('useCompositionOption', () => {
     expect(context.set).toHaveBeenCalledWith('test-route', options);
   });
 
-  it('unregisters on unmount', () => {
+  it('unregisters on unmount', async () => {
     const context = createMockContext();
     const options = { title: 'Hello' };
 
-    const { unmount } = renderHook(() => useCompositionOption(options), {
+    const { unmount } = await renderHook(() => useCompositionOption(options), {
       wrapper: createWrapper(context),
     });
 
     expect(context.unset).not.toHaveBeenCalled();
 
-    unmount();
+    await unmount();
 
     expect(context.unset).toHaveBeenCalledTimes(1);
     expect(context.unset).toHaveBeenCalledWith('test-route', options);
   });
 
-  it('skips re-assigning when options reference is stable', () => {
+  it('skips re-assigning when options reference is stable', async () => {
     const context = createMockContext();
     const stableOptions = { title: 'Same', headerShown: true as const };
 
-    const { rerender } = renderHook(() => useCompositionOption(stableOptions), {
+    const { rerender } = await renderHook(() => useCompositionOption(stableOptions), {
       wrapper: createWrapper(context),
     });
 
     expect(context.set).toHaveBeenCalledTimes(1);
 
     // Re-render with the same options reference
-    rerender({});
+    await rerender({});
 
     // Should not call set again
     expect(context.set).toHaveBeenCalledTimes(1);
   });
 
-  it('re-assigns when options reference changes', () => {
+  it('re-assigns when options reference changes', async () => {
     const context = createMockContext();
 
-    const { rerender } = renderHook(
+    const { rerender } = await renderHook(
       ({ title }: { title: string }) => useCompositionOption({ title }),
       {
         wrapper: createWrapper(context),
@@ -104,7 +104,7 @@ describe('useCompositionOption', () => {
     expect(context.set).toHaveBeenCalledTimes(1);
     expect(context.set).toHaveBeenCalledWith('test-route', { title: 'First' });
 
-    rerender({ title: 'Second' });
+    await rerender({ title: 'Second' });
 
     // Old options should be cleaned up before new ones are set
     expect(context.unset).toHaveBeenCalledTimes(1);

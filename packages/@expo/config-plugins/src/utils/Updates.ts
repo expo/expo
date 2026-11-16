@@ -2,12 +2,12 @@ import type { Android, ExpoConfig, IOS } from '@expo/config-types';
 import { resolveFrom } from '@expo/require-utils';
 import { getRuntimeVersionForSDKVersion } from '@expo/sdk-runtime-versions';
 import fs from 'fs';
-import { boolish } from 'getenv';
 import path from 'path';
 import semver from 'semver';
 
 import * as AndroidVersion from '../android/Version';
 import * as IOSVersion from '../ios/Version';
+import { env } from './env';
 
 export type ExpoConfigUpdates = Pick<
   ExpoConfig,
@@ -77,7 +77,7 @@ export async function getRuntimeVersionNullableAsync(
   try {
     return await getRuntimeVersionAsync(projectRoot, config, platform);
   } catch (e) {
-    if (boolish('EXPO_DEBUG', false)) {
+    if (env.EXPO_DEBUG) {
       console.log(e);
     }
     return null;
@@ -172,6 +172,17 @@ export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): n
   return config.updates?.fallbackToCacheTimeout ?? 0;
 }
 
+export function getUpdatesMaxUpdatesToKeep(
+  config: Pick<ExpoConfigUpdates, 'updates'>
+): number | undefined {
+  const value = config.updates?.maxUpdatesToKeep;
+  // Android manifest integer metadata is limited to signed 32-bit values.
+  if (value !== undefined && (!Number.isInteger(value) || value < 2 || value > 2147483647)) {
+    throw new Error('updates.maxUpdatesToKeep must be an integer between 2 and 2147483647.');
+  }
+  return value;
+}
+
 export function getUpdatesCheckOnLaunch(
   config: Pick<ExpoConfigUpdates, 'updates'>,
   expoUpdatesPackageVersion?: string | null
@@ -247,4 +258,8 @@ export function getDisableAntiBrickingMeasures(
   config: Pick<ExpoConfigUpdates, 'updates'>
 ): boolean | undefined {
   return config.updates?.disableAntiBrickingMeasures;
+}
+
+export function getUpdatesExcludeFromBackup(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
+  return config.updates?.excludeFromBackup ?? false;
 }

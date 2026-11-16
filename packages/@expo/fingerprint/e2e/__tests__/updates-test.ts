@@ -1,9 +1,11 @@
 import spawnAsync from '@expo/spawn-async';
+import { realpathSync } from 'fs';
 import fs from 'fs/promises';
+import os from 'os';
 import path from 'path';
 
-import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import { createProjectHashAsync } from '../../src/Fingerprint';
+import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import { E2E_TEMPLATE_SDK_VERSION } from './utils/constants';
 
 jest.mock('../../src/ExpoConfigLoader', () => ({
@@ -15,7 +17,7 @@ jest.mock('../../src/ExpoConfigLoader', () => ({
 
 describe('updates managed support', () => {
   jest.setTimeout(600000);
-  const tmpDir = require('temp-dir');
+  const tmpDir = realpathSync(os.tmpdir());
   const projectName = 'fingerprint-e2e-updates';
   const projectRoot = path.join(tmpDir, projectName);
 
@@ -76,7 +78,7 @@ describe('updates managed support', () => {
         ...process.env,
         // NOTE(cedric): for some reason older version of `@expo/image-utils` find a binary of sharp on Windows.
         // Unfortunately, this doesn't mean we can use Sharp and will cause prebuild to fail.
-        // Manually disable Sharp for this test to avoid falky test behavior on Windows CI.
+        // Manually disable Sharp for this test to avoid flaky test behavior on Windows CI.
         EXPO_IMAGE_UTILS_NO_SHARP: '1',
       },
     });

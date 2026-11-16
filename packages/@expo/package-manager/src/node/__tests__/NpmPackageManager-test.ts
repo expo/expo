@@ -11,7 +11,7 @@ jest.mock('fs', () => require('memfs').fs);
 jest.mock('node:fs', () => require('memfs').fs);
 
 beforeAll(() => {
-  // Disable logging to clean up test ouput
+  // Disable logging to clean up test output
   jest.spyOn(console, 'log').mockImplementation();
 });
 

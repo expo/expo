@@ -145,11 +145,19 @@ fun FunctionalComposableScope.BasicTextFieldContent(
   )
 
   val singleLine = props.singleLine
-  val maxLines = props.maxLines ?: if (singleLine) 1 else Int.MAX_VALUE
+  val maxLines = props.maxLines ?: if (singleLine) {
+    1
+  } else {
+    Int.MAX_VALUE
+  }
   val minLines = props.minLines ?: 1
 
   val textStyle = props.textStyle.toTextStyle(appContext.reactContext).let {
-    if (it.color.isUnspecified) it.copy(color = MaterialTheme.colorScheme.onSurface) else it
+    if (it.color.isUnspecified) {
+      it.copy(color = MaterialTheme.colorScheme.onSurface)
+    } else {
+      it
+    }
   }
   val visualTransformation = props.visualTransformation.toVisualTransformation()
   val cursorBrush = SolidColor(props.cursorColor.composeOrNull ?: MaterialTheme.colorScheme.primary)

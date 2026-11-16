@@ -40,7 +40,7 @@ export function warnSystemUIMissing(
     WarningAggregator.addWarningIOS(
       'ios.backgroundColor',
       'Install expo-system-ui to enable this feature',
-      'https://docs.expo.dev/build-reference/migrating/#expo-config--backgroundcolor--depends-on'
+      'https://docs.expo.dev/versions/latest/sdk/system-ui/'
     );
   }
 }

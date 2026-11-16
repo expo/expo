@@ -3,8 +3,7 @@ import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 
 import { CommandError } from '../../../utils/errors';
-
-const debug = require('debug')('expo:start:platforms:ios:xcrun') as typeof console.log;
+import { event } from '../events';
 
 export function isSpawnResultError(obj: any): obj is Error & SpawnResult {
   return (
@@ -17,7 +16,7 @@ export function isSpawnResultError(obj: any): obj is Error & SpawnResult {
 }
 
 export async function xcrunAsync(args: (string | undefined)[], options?: SpawnOptions) {
-  debug('Running: xcrun ' + args.join(' '));
+  event('xcrun_run', { command: 'xcrun ' + args.join(' ') });
   try {
     return await spawnAsync('xcrun', args.filter(Boolean) as string[], options);
   } catch (e) {

@@ -24,6 +24,7 @@ import {
   getCommentOrSignatureComment,
   getTagData,
   resolveTypeName,
+  unwrapPropsWithChildren,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
@@ -74,13 +75,13 @@ const renderInheritedProps = (
   sdkVersion: string,
   exposeInSidebar?: boolean
 ) => {
-  const inheritedData = data?.type?.types ?? data?.extendedTypes ?? [];
+  const inheritedData = unwrapPropsWithChildren(data?.type)?.types ?? data?.extendedTypes ?? [];
   const inheritedProps =
     inheritedData.filter((ip: TypeDefinitionData) => ip.type === 'reference') ?? [];
   if (inheritedProps.length > 0) {
     return (
       <div className={mergeClasses('border-t border-palette-gray4 px-4 py-3')}>
-        {exposeInSidebar ? <H3>Inherited Props</H3> : <H4>Inherited Props</H4>}
+        {exposeInSidebar ? <H3>Inherited props</H3> : <H4>Inherited props</H4>}
         <UL>{inheritedProps.map(prop => renderInheritedProp(prop, sdkVersion))}</UL>
       </div>
     );
@@ -93,10 +94,11 @@ const getPropsBaseTypes = (def: PropsDefinitionData) => {
     if (def.children?.length) {
       return [def.children];
     }
-    const baseTypes = def?.type?.types
-      ? def.type.types?.filter((t: TypeDefinitionData) => t.declaration)
-      : [def.type];
-    return baseTypes.map(def => def?.declaration?.children);
+    const propsType = unwrapPropsWithChildren(def.type);
+    const baseTypes = propsType?.types
+      ? propsType.types.filter((t: TypeDefinitionData) => t.declaration)
+      : [propsType];
+    return baseTypes.map(baseType => baseType?.declaration?.children);
   } else if (def.kind === TypeDocKind.Interface) {
     return def.children?.filter(child => !child.inheritedFrom) ?? [];
   }
@@ -117,7 +119,11 @@ const renderProps = (
   return (
     <div
       key={`props-definition-${def.name}`}
-      className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:mb-0!')}>
+      className={mergeClasses(
+        STYLES_APIBOX,
+        !exposeInSidebar && 'mb-0 rounded-none border-0 shadow-none',
+        '[&>*:last-child]:mb-0!'
+      )}>
       {propsDeclarations?.map(prop =>
         prop
           ? renderProp(
@@ -171,7 +177,7 @@ export const renderProp = (
       />
       <div className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, 'mb-2.5')}>
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
-        {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}
+        {flags?.isReadonly && <>Read only&emsp;&bull;&emsp;</>}
         {definedLiteralGeneric && <>Literal type: {definedLiteralGeneric}</>}
         {!isLiteralLike && (
           <>

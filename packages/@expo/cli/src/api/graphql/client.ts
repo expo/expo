@@ -151,15 +151,12 @@ export const { query, mutate } = (() => {
       }
     }
 
-    // Store the data in the cache, and only return a result if we have any values
-    if (data) {
+    // Store and return a result if the response included a non-null `data` payload.
+    if (data != null) {
       if (useCache) {
         queryCache.set(variablesKey, data);
       }
-      const keys = Object.keys(data);
-      if (keys.some((key) => data[key as keyof typeof data] != null)) {
-        return data;
-      }
+      return data;
     }
 
     // If we have an error, rethrow it wrapped in our custom errors

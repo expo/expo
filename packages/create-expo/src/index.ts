@@ -1,11 +1,11 @@
 #!/usr/bin/env node
+import { boolish } from '@expo/env';
 import Debug from 'debug';
-import { boolish } from 'getenv';
 
-import { CLI_NAME } from './cmd';
+import { PACKAGE_NAME } from './utils/update-check';
 
 // Set the title of the process
-process.title = CLI_NAME;
+process.title = PACKAGE_NAME;
 
 // Setup before requiring `debug`.
 if (boolish('EXPO_DEBUG', false)) {

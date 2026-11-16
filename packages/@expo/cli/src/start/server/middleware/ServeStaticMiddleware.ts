@@ -1,11 +1,8 @@
 import send from 'send';
-import { parse } from 'url';
 
 import { getPublicFolderPath } from '../../../export/publicFolder';
 import { parsePlatformHeader } from './resolvePlatform';
 import type { ServerRequest, ServerResponse } from './server.types';
-
-const debug = require('debug')('expo:start:server:middleware:serveStatic') as typeof console.log;
 
 /**
  * Adds support for serving the files in the static `public/` folder to web apps.
@@ -15,7 +12,6 @@ export class ServeStaticMiddleware {
   getHandler() {
     const publicPath = getPublicFolderPath(this.projectRoot);
 
-    debug(`Serving static files from:`, publicPath);
     const opts = {
       root: publicPath,
     };
@@ -30,12 +26,11 @@ export class ServeStaticMiddleware {
         return next();
       }
 
-      const pathname = parse(req.url).pathname;
+      const pathname = URL.parse(req.url, 'file:')?.pathname;
       if (!pathname) {
         return next();
       }
 
-      debug(`Maybe serve static:`, pathname);
       const stream = send(req, pathname, opts);
 
       // add file listener for fallthrough

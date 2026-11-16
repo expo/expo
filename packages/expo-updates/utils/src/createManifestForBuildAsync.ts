@@ -1,9 +1,9 @@
 import type { HashedAssetData } from '@expo/metro-config/build/transform-worker/getAssets';
+import { drawableFileTypes, getAndroidResourceIdentifier } from '@react-native/asset-utils';
 import crypto from 'crypto';
 import type { EmbeddedManifest } from 'expo-manifests';
 import { resolveEntryPoint } from 'expo/config/paths';
 import {
-  drawableFileTypes,
   createMetroServerAndBundleRequestAsync,
   exportEmbedAssetsAsync,
 } from 'expo/internal/unstable-expo-updates-cli-exports';
@@ -64,7 +64,11 @@ export async function createManifestForBuildAsync(
         'The hashAssetFiles Metro plugin is not configured. You need to add a metro.config.js to your project that configures Metro to use this plugin. See https://github.com/expo/expo/blob/main/packages/expo-updates/README.md#metroconfigjs for an example.'
       );
     }
-    filterPlatformAssetScales(platform, asset.scales).forEach(function (scale, index) {
+    const platformScales = new Set(filterPlatformAssetScales(platform, asset.scales));
+    asset.scales.forEach(function (scale, index) {
+      if (!platformScales.has(scale)) {
+        return;
+      }
       const baseAssetInfoForManifest = {
         name: asset.name,
         type: asset.type,
@@ -93,17 +97,7 @@ export async function createManifestForBuildAsync(
 }
 
 function getAndroidResourceFolderName(asset: HashedAssetData) {
-  return (drawableFileTypes as Set<string>).has(asset.type) ? 'drawable' : 'raw';
-}
-
-// copied from react-native/Libraries/Image/assetPathUtils.js
-function getAndroidResourceIdentifier(asset: HashedAssetData) {
-  const folderPath = getBasePath(asset);
-  return (folderPath + '/' + asset.name)
-    .toLowerCase()
-    .replace(/\//g, '_') // Encode folder structure in file name
-    .replace(/([^a-z0-9_])/g, '') // Remove illegal chars
-    .replace(/^assets_/, ''); // Remove "assets_" prefix
+  return drawableFileTypes.has(asset.type) ? 'drawable' : 'raw';
 }
 
 function getIosDestinationDir(asset: HashedAssetData) {
@@ -112,11 +106,7 @@ function getIosDestinationDir(asset: HashedAssetData) {
   return getBasePath(asset).replace(/\.\.\//g, '_');
 }
 
-// copied from react-native/Libraries/Image/assetPathUtils.js
 function getBasePath(asset: HashedAssetData) {
-  let basePath = asset.httpServerLocation;
-  if (basePath[0] === '/') {
-    basePath = basePath.substr(1);
-  }
-  return basePath;
+  const basePath = asset.httpServerLocation;
+  return basePath.startsWith('/') ? basePath.slice(1) : basePath;
 }

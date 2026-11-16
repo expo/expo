@@ -1,7 +1,7 @@
-import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar/legacy';
+import { type NativeStackScreenProps } from 'expo-router';
 import React from 'react';
-import { Alert, Button, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Button, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import { BodyText } from '../components/BodyText';
 
@@ -29,13 +29,15 @@ const ReminderRow: React.FunctionComponent<RowProps> = ({
 
 interface State {
   reminders: Calendar.Reminder[];
+  calendar: Calendar.Calendar | null;
 }
 
+// Route params must stay serializable, so this screen receives the id and refetches the calendar.
 type Links = {
-  Reminders: { calendar: Calendar.Calendar };
+  Reminders: { calendarId: string };
 };
 
-type Props = StackScreenProps<Links, 'Reminders'>;
+type Props = NativeStackScreenProps<Links, 'Reminders'>;
 
 export default class RemindersScreen extends React.Component<Props, State> {
   static navigationOptions = {
@@ -44,14 +46,24 @@ export default class RemindersScreen extends React.Component<Props, State> {
 
   readonly state: State = {
     reminders: [],
+    calendar: null,
   };
 
   componentDidMount() {
-    const { params } = this.props.route;
-    if (params) {
-      this._findReminders(params.calendar.id!);
+    if (Platform.OS !== 'ios') {
+      return;
+    }
+    const calendarId = this.props.route.params?.calendarId;
+    if (calendarId) {
+      this._loadCalendar(calendarId);
+      this._findReminders(calendarId);
     }
   }
+
+  _loadCalendar = async (calendarId: string) => {
+    const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.REMINDER);
+    this.setState({ calendar: calendars.find(({ id }) => id === calendarId) ?? null });
+  };
 
   _findReminders = async (id: string) => {
     const reminders = await Calendar.getRemindersAsync([id], null, new Date(), new Date());
@@ -59,7 +71,11 @@ export default class RemindersScreen extends React.Component<Props, State> {
   };
 
   _addReminder = async () => {
-    const { calendar } = this.props.route.params!;
+    const { calendar } = this.state;
+    if (!calendar) {
+      Alert.alert('Calendar is not loaded yet');
+      return;
+    }
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
       return;
@@ -92,7 +108,11 @@ export default class RemindersScreen extends React.Component<Props, State> {
   };
 
   _updateReminder = async (reminder: Calendar.Reminder) => {
-    const { calendar } = this.props.route.params!;
+    const { calendar } = this.state;
+    if (!calendar) {
+      Alert.alert('Calendar is not loaded yet');
+      return;
+    }
     if (!calendar.allowsModifications) {
       Alert.alert('This calendar does not allow modifications');
       return;
@@ -112,17 +132,20 @@ export default class RemindersScreen extends React.Component<Props, State> {
 
   _deleteReminder = async (reminderId: string) => {
     try {
-      const { calendar } = this.props.route.params!;
+      const { calendarId } = this.props.route.params!;
       await Calendar.deleteReminderAsync(reminderId);
       Alert.alert('Reminder deleted successfully');
-      this._findReminders(calendar.id!);
+      this._findReminders(calendarId);
     } catch (e: any) {
       Alert.alert('Reminder not deleted successfully', e.message);
     }
   };
 
   render() {
-    if (!this.props.route.params?.calendar) {
+    if (Platform.OS !== 'ios') {
+      return <BodyText>Reminders are only available on iOS.</BodyText>;
+    }
+    if (!this.props.route.params?.calendarId) {
       return <BodyText>Access this screen from the "Calendars" screen.</BodyText>;
     }
     if (this.state.reminders.length) {

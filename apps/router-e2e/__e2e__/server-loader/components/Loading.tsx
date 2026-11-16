@@ -3,10 +3,12 @@ import { StyleSheet, Text, View } from 'react-native';
 export const Loading = () => {
   return (
     <View style={styles.container}>
-      <Text testID="suspense-fallback" style={styles.text}>Loading...</Text>
+      <Text testID="suspense-fallback" style={styles.text}>
+        Loading...
+      </Text>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

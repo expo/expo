@@ -13,6 +13,7 @@ import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.asset.delegates.AssetDelegate
 import expo.modules.medialibrary.next.objects.asset.delegates.AssetModernDelegate
+import expo.modules.medialibrary.next.objects.asset.AssetDimensionsResolver
 import expo.modules.medialibrary.next.objects.asset.AssetMapper
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.asset.movers.AssetMover
@@ -28,6 +29,7 @@ class AssetModernFactory(
   val assetDeleter: AssetDeleter,
   val assetMover: AssetMover,
   val assetMapper: AssetMapper,
+  val assetDimensionsResolver: AssetDimensionsResolver,
   val mediaStorePermissionsDelegate: MediaStorePermissionsDelegate,
   context: Context
 ) : AssetFactory {
@@ -44,6 +46,7 @@ class AssetModernFactory(
       assetDeleter,
       assetMover,
       assetMapper,
+      assetDimensionsResolver,
       mediaStorePermissionsDelegate,
       this,
       contextRef.getOrThrow()

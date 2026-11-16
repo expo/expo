@@ -1,1 +1,1 @@
-../../../../expo/ios/AppDelegates/ExpoAppDelegate.swift
+../../../../expo/ios/Expo/ExpoAppDelegate.swift

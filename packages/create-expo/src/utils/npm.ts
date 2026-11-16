@@ -162,8 +162,9 @@ async function npmPackAsync(
 
   try {
     const json = JSON.parse(results);
-    if (Array.isArray(json) && json.every(isNpmPackageInfo)) {
-      return json.map(sanitizeNpmPackageFilename);
+    const packages = normalizeNpmPackResult(json);
+    if (packages?.every(isNpmPackageInfo)) {
+      return packages.map(sanitizeNpmPackageFilename);
     } else {
       throw new Error(`Invalid response from npm: ${results}`);
     }
@@ -171,6 +172,17 @@ async function npmPackAsync(
     throw new Error(
       `Could not parse JSON returned from "${cmdString}".\n\n${results}\n\nError: ${error.message}`
     );
+  }
+}
+
+/** Normalize the npm pack JSON formats used before and after npm 12 */
+export function normalizeNpmPackResult(result: unknown): unknown[] | null {
+  if (Array.isArray(result)) {
+    return result;
+  } else if (result && typeof result === 'object') {
+    return Object.values(result);
+  } else {
+    return null;
   }
 }
 

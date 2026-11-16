@@ -1,10 +1,9 @@
-/* eslint-env jest */
 import fs from 'fs';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { executeExpoAsync } from '../../utils/expo';
 import { findProjectFiles, getPageHtml, getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -63,10 +62,7 @@ describe('static-rendering with a custom base path', () => {
       expect.stringMatching(/\/one\/two\/_expo\/static\/js\/web\/entry-.*\.js/),
     ]);
 
-    const links = indexHtml.querySelectorAll('html > head > link').filter((link) => {
-      // Fonts are tested elsewhere
-      return link.attributes.as !== 'font';
-    });
+    const links = indexHtml.querySelectorAll('head link[rel="stylesheet"], head link[as="style"]');
 
     const cssFiles = links
       .map((link) => link.attributes.href)
@@ -99,7 +95,7 @@ describe('static-rendering with a custom base path', () => {
     }
   });
 
-  it('supports usePathname in +html files', async () => {
+  it('supports the pathname and params props in +html files', async () => {
     const page = await fs.promises.readFile(path.join(outputDir, 'index.html'), 'utf8');
 
     expect(page).toContain('<meta name="custom-value" content="value"/>');
@@ -124,6 +120,12 @@ describe('static-rendering with a custom base path', () => {
         'html > head > meta[name="expo-e2e-pathname"]'
       )?.attributes.content
     ).toBe('/welcome-to-the-universe');
+
+    expect(
+      (await getPageHtml(outputDir, 'welcome-to-the-universe.html')).querySelector(
+        'html > head > meta[name="expo-e2e-params"]'
+      )?.attributes.content
+    ).toBe('{"post":"welcome-to-the-universe"}');
   });
 
   it('supports baseUrl in Links', async () => {

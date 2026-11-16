@@ -22,7 +22,29 @@ When using the `AuthSession` API, the following rules apply to all authenticatio
 
 Most providers use the [OAuth 2](https://oauth.net/2/) standard for secure authentication and authorization. In the authorization code grant, the identity provider returns a one-time code. This code is then exchanged for the user's access token.
 
-Since [your client application code is not a secure place to store secrets](https://reactnative.dev/docs/security#storing-sensitive-info), it is necessary to exchange the authorization code in a server such as with [API routes](/router/web/api-routes) or [React Server Components](/guides/server-components). This will allow you to securely store and use a client secret to access the provider's token endpoint.
+[Your client application code is not a secure place to store secrets](https://reactnative.dev/docs/security#storing-sensitive-info). If the provider requires a client secret, exchange the authorization code on a server, such as with [API routes](/router/web/api-routes) or [React Server Components](/guides/server-components). The server stores the client secret and sends it to the provider's token endpoint.
+
+Use [`AuthSession.exchangeCodeAsync()`](/versions/latest/sdk/auth-session/#authsessionexchangecodeasyncconfig-discovery) to exchange that `code` for an access token. If the provider accepts Proof Key for Code Exchange (PKCE) without a client secret, you can exchange the code in the app. Check your provider's documentation to find out if it requires a client secret. Pass `request.codeVerifier` in `extraParams.code_verifier`. The Okta example below exchanges the code in the app with PKCE.
+
+```tsx
+import { exchangeCodeAsync } from 'expo-auth-session';
+
+if (request?.codeVerifier) {
+  const tokenResponse = await exchangeCodeAsync(
+    {
+      clientId: 'CLIENT_ID',
+      code,
+      redirectUri,
+      extraParams: {
+        code_verifier: request.codeVerifier,
+      },
+    },
+    discovery
+  );
+
+  const accessToken = tokenResponse.accessToken;
+}
+```
 
 ## Examples
 
@@ -34,7 +56,7 @@ The following examples show how to use the `AuthSession` API to authenticate wit
   image={ASSETS.github}
 >
 
-| Website                                                   | Provider  | PKCE      | Auto Discovery |
+| Website                                                   | Provider  | PKCE      | Auto discovery |
 | --------------------------------------------------------- | --------- | --------- | -------------- |
 | [Get Your Config](https://github.com/settings/developers) | OAuth 2.0 | Supported | Not Available  |
 
@@ -78,7 +100,7 @@ export default function App() {
 
   useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. */
+      /* @info GitHub requires a client secret, so exchange the code for an access token on your server. */
       const { code } = response.params;
       /* @end */
     }
@@ -108,7 +130,7 @@ export default function App() {
   image={ASSETS.okta}
 >
 
-| Website                                                      | Provider | PKCE      | Auto Discovery |
+| Website                                                      | Provider | PKCE      | Auto discovery |
 | ------------------------------------------------------------ | -------- | --------- | -------------- |
 | [Sign-up](https://developer.okta.com/signup/) > Applications | OpenID   | Supported | Available      |
 
@@ -118,7 +140,7 @@ export default function App() {
 ```tsx Okta Auth Example
 import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
+import { exchangeCodeAsync, makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
 import { Button, Platform } from 'react-native';
 
 /* @info **Web only:** This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
@@ -141,12 +163,28 @@ export default function App() {
   );
 
   useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. */
-      const { code } = response.params;
-      /* @end */
+    async function getAccessToken() {
+      if (response?.type === 'success' && request?.codeVerifier && discovery) {
+        const { code } = response.params;
+        /* @info Exchange the authorization code for an access token. Providers that require a client secret must do this on a server. */
+        const tokenResponse = await exchangeCodeAsync(
+          {
+            clientId: 'CLIENT_ID',
+            code,
+            redirectUri: request.redirectUri,
+            extraParams: {
+              code_verifier: request.codeVerifier,
+            },
+          },
+          discovery
+        );
+        const accessToken = tokenResponse.accessToken;
+        /* @end */
+      }
     }
-  }, [response]);
+
+    getAccessToken();
+  }, [response, request, discovery]);
 
   return (
     <Button
@@ -278,7 +316,7 @@ function App() {
 
 ### Storing data
 
-On native platforms such as Android and iOS, you can secure things like access tokens locally using a library called [`expo-secure-store`](/versions/latest/sdk/securestore) (This is different to `AsyncStorage` which is not secure). It provides native access to encrypted [`SharedPreferences`](https://developer.android.com/training/basics/data-storage/shared-preferences.html) on Android and [keychain services](https://developer.apple.com/documentation/security/keychain_services) on iOS and . There is no web equivalent to this functionality.
+On native platforms such as Android and iOS, you can secure things like access tokens locally using a library called [`expo-secure-store`](/versions/latest/sdk/securestore) (this is different from `AsyncStorage`, which is not secure). It provides native access to encrypted [`SharedPreferences`](https://developer.android.com/training/basics/data-storage/shared-preferences.html) on Android and [keychain services](https://developer.apple.com/documentation/security/keychain_services) on iOS. There is no web equivalent to this functionality.
 
 You can store your authentication results and rehydrate them later to avoid having to prompt the user to login again.
 

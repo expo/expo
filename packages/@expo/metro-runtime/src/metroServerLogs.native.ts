@@ -1,6 +1,10 @@
 import React from 'react';
 
-const HMRClient = require('react-native/Libraries/Utilities/HMRClient').default;
+const { HMRClient } = require('react-native/unstable-internals-do-not-use') as {
+  HMRClient: {
+    log: (level: string, data: unknown[]) => void;
+  };
+};
 
 type ReactWithOwnerStack = typeof React & {
   captureOwnerStack?: () => string | null;
@@ -22,7 +26,7 @@ export function captureStackForServerLogs() {
     );
     if (preventSymbolication) {
       // NOTE(krystofwoldrich): Although a generic flag, it's only used for compilation errors for which symbolication will fail.
-      // If the error would be send back to metro it would be printed multiple times, once by Metro and once from here.
+      // If the error would be sent back to metro it would be printed multiple times, once by Metro and once from here.
       // https://github.com/facebook/react-native/blob/a8bc74c0099252cb1d11ad3b80f3deac71dcc0d5/packages/react-native/Libraries/Utilities/HMRClient.js#L367
       return;
     }

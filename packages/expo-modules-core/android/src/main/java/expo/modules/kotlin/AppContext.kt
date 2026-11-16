@@ -6,11 +6,9 @@ import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
 import android.view.View
-import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.modules.network.OkHttpClientProvider
-import com.facebook.react.uimanager.UIManagerHelper
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.interfaces.ActivityProvider
@@ -34,6 +32,8 @@ import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.services.Service
 import expo.modules.kotlin.services.ServicesRegistry
 import expo.modules.kotlin.tracing.trace
+import expo.modules.kotlin.types.ConverterContext
+import expo.modules.v2.ExpoModulesV2Host
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -48,10 +48,21 @@ class AppContext(
   modulesProvider: ModulesProvider,
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   reactContextHolder: WeakReference<ReactApplicationContext>
-) : CurrentActivityProvider {
+) : CurrentActivityProvider, ConverterContext {
   // The main context used in the app.
   // Modules attached to this context will be available on the main js context.
-  val runtime = MainRuntime(this, reactContextHolder)
+  override val runtime = MainRuntime(this, reactContextHolder)
+
+  override val applicationContext: Context
+    get() {
+      return requireNotNull(reactContext) {
+        "The app context should be created with valid react context."
+      }.applicationContext
+    }
+
+  override fun <T : View> findView(viewTag: Int): T? = super.findView(viewTag)
+
+  override fun assertMainThread() = super.assertMainThread()
 
   private val uiRuntimeHolder = lazy { WorkletRuntime(this, reactContextHolder) }
   val uiRuntime
@@ -148,6 +159,7 @@ class AppContext(
    */
   fun installJSIInterop() {
     runtime.install()
+    runtime.reactContext?.let(ExpoModulesV2Host::install)
   }
 
   /**
@@ -279,6 +291,8 @@ class AppContext(
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
 
+    ExpoModulesV2Host.uninstall()
+
     runtime.deallocate()
     if (uiRuntimeHolder.isInitialized()) {
       uiRuntime.deallocate()
@@ -350,19 +364,6 @@ class AppContext(
       EventName.ON_NEW_INTENT,
       intent
     )
-  }
-
-  @Suppress("UNCHECKED_CAST")
-  @UiThread
-  fun <T : View> findView(viewTag: Int): T? {
-    val reactContext = runtime.reactContext ?: return null
-    return UIManagerHelper
-      .getUIManagerForReactTag(reactContext, viewTag)
-      ?.resolveView(viewTag) as? T
-  }
-
-  internal fun assertMainThread() {
-    Utils.assertMainThread()
   }
 
   /**

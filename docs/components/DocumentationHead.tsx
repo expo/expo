@@ -13,6 +13,18 @@ type HeadProps = PropsWithChildren<{
 
 const BASE_OG_URL = 'https://og.expo.dev/?theme=docs';
 
+export function getOGImageURL({
+  title,
+  description,
+  locale = 'en',
+}: Pick<HeadProps, 'title' | 'description' | 'locale'>) {
+  const ogImageContent = {
+    title: title ?? SITE_NAMES[locale],
+    description: description ?? BASE_DESCRIPTIONS[locale],
+  };
+  return `${BASE_OG_URL}&title=${encodeURIComponent(ogImageContent.title)}&description=${encodeURIComponent(ogImageContent.description)}`;
+}
+
 const DocumentationHead = ({
   title,
   description,
@@ -24,11 +36,7 @@ const DocumentationHead = ({
   const siteName = SITE_NAMES[locale];
   const baseDescription = BASE_DESCRIPTIONS[locale];
   const resolvedDescription = description === '' ? baseDescription : description;
-  const ogImageContent = {
-    title: title ?? siteName,
-    description: description ?? baseDescription,
-  };
-  const OGImageURL = `${BASE_OG_URL}&title=${encodeURIComponent(ogImageContent.title)}&description=${encodeURIComponent(ogImageContent.description)}`;
+  const OGImageURL = getOGImageURL({ title, description, locale });
 
   return (
     <NextHead>
@@ -36,9 +44,31 @@ const DocumentationHead = ({
       <meta charSet="utf-8" />
       <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="icon" type="image/png" href="/static/images/favicon.ico" sizes="32x32" />
+      <link
+        rel="apple-touch-icon"
+        href="https://static.expo.dev/static/brand/app-icon-512x512.png"
+      />
+      <link
+        rel="icon"
+        href="/static/images/favicons/favicon-48x48.png"
+        type="image/png"
+        sizes="48x48"
+      />
+      <link
+        rel="icon"
+        href="/static/images/favicons/favicon-32x32.png"
+        type="image/png"
+        sizes="32x32"
+      />
+      <link
+        rel="icon"
+        href="/static/images/favicons/favicon-16x16.png"
+        type="image/png"
+        sizes="16x16"
+      />
       {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
       {markdownPath && <link rel="alternate" type="text/markdown" href={markdownPath} />}
+      <link rel="llms-txt" href="/llms.txt" />
 
       <meta name="description" content={resolvedDescription} />
       <meta property="og:title" content={title} />

@@ -4,10 +4,12 @@ import type { ModuleDescriptor, ModuleDescriptorIos, SupportedPlatform } from '.
 interface GenerateModulesProviderParams {
   platform: SupportedPlatform;
   targetPath: string;
+  targetName?: string;
   entitlementPath: string | null;
   watchedDirectories: string[];
   inlineModulesTargets: { mainTarget?: string; targets: string[] };
   appRoot: string;
+  corePath?: string | null;
 }
 
 /** Generates ExpoModulesProvider file listing all packages to link (Apple-only)

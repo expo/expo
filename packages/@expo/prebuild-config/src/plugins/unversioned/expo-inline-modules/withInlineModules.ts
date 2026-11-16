@@ -13,7 +13,7 @@ function escapeXMLCharacters(original: string): string {
 }
 
 // Note that this main target name is based on how `@expo/cli/src/prebuild/renameTemplateAppNameAsync.ts` preprocesses the ios project template.
-// It is neccesary to match the target name in the path to ExpoModulesProvider.swift for the main target as is used when generating it.
+// It is necessary to match the target name in the path to ExpoModulesProvider.swift for the main target as is used when generating it.
 function getMainTargetName(config: ExpoConfig): string {
   const name = config.name;
   const safeName = escapeXMLCharacters(name);

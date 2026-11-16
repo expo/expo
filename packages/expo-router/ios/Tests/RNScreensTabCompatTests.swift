@@ -187,11 +187,38 @@ struct RNScreensTabCompatUnitTests {
 struct RNScreensAPIContractTests {
 
   @Test
+  func `screen view responds to screenId`() throws {
+    let cls = try #require(NSClassFromString("RNSScreenView"), "RNSScreenView class not found")
+    let view = try #require((cls as? UIView.Type)?.init(), "Failed to instantiate RNSScreenView")
+    #expect(view.responds(to: NSSelectorFromString("screenId")))
+  }
+
+  @Test
+  func `screen view responds to activityState`() throws {
+    let cls = try #require(NSClassFromString("RNSScreenView"), "RNSScreenView class not found")
+    let view = try #require((cls as? UIView.Type)?.init(), "Failed to instantiate RNSScreenView")
+    #expect(view.responds(to: NSSelectorFromString("activityState")))
+  }
+
+  @Test
+  func `screen stack view responds to screenIds`() throws {
+    let cls = try #require(
+      NSClassFromString("RNSScreenStackView"),
+      "RNSScreenStackView class not found"
+    )
+    let view = try #require((cls as? UIView.Type)?.init(), "Failed to instantiate RNSScreenStackView")
+    #expect(view.responds(to: NSSelectorFromString("screenIds")))
+  }
+
+  @Test
   func `tab screen class responds to screenKey`() throws {
-    let cls = NSClassFromString("RNSTabsScreenComponentView")
+    let cls =
+      NSClassFromString("RNSTabsScreenComponentView")
       ?? NSClassFromString("RNSBottomTabsScreenComponentView")
     guard let cls else {
-      Issue.record("No tab screen class found — neither RNSTabsScreenComponentView nor RNSBottomTabsScreenComponentView")
+      Issue.record(
+        "No tab screen class found — neither RNSTabsScreenComponentView nor RNSBottomTabsScreenComponentView"
+      )
       return
     }
     let view = try #require((cls as? UIView.Type)?.init(), "Failed to instantiate tab screen class")
@@ -200,7 +227,8 @@ struct RNScreensAPIContractTests {
 
   @Test
   func `tab host class responds to controller`() throws {
-    let cls = NSClassFromString("RNSTabsHostComponentView")
+    let cls =
+      NSClassFromString("RNSTabsHostComponentView")
       ?? NSClassFromString("RNSBottomTabsHostComponentView")
     guard let cls else {
       Issue.record("No tab host class found — neither RNSTabsHostComponentView nor RNSBottomTabsHostComponentView")
@@ -212,7 +240,8 @@ struct RNScreensAPIContractTests {
 
   @Test
   func `tab screen class responds to reactViewController`() throws {
-    let cls = NSClassFromString("RNSTabsScreenComponentView")
+    let cls =
+      NSClassFromString("RNSTabsScreenComponentView")
       ?? NSClassFromString("RNSBottomTabsScreenComponentView")
     guard let cls else {
       Issue.record("No tab screen class found")

@@ -1,5 +1,3 @@
-/* eslint-env jest */
-import { runExportSideEffects } from './export-side-effects';
 import {
   prepareServers,
   RUNTIME_EXPO_SERVE,
@@ -7,17 +5,13 @@ import {
   setupServer,
 } from '../../utils/runtime';
 import { getHtml } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
 describe('middleware matchers', () => {
   const configs = prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START], {
     fixtureName: 'server-middleware-matcher-async',
-    export: {
-      env: {
-        E2E_ROUTER_SERVER_MIDDLEWARE: 'true',
-      },
-    },
   });
 
   describe('pattern matching', () => {

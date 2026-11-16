@@ -1,7 +1,5 @@
-'use strict';
-
-import { EventSubscription } from 'expo-modules-core';
 import {
+  AudioTrack,
   createVideoPlayer,
   SourceLoadEventPayload,
   SubtitleTrack,
@@ -11,10 +9,12 @@ import {
   VideoPlayerStatus,
   VideoSource,
   VideoSourceObject,
+  VideoTrack,
   VideoView,
 } from 'expo-video';
 import React from 'react';
 
+import type { JasmineInterface } from '../types';
 import { mountAndWaitFor } from './helpers';
 
 export const name = 'Video';
@@ -73,7 +73,16 @@ const brokenSource = {
 };
 
 // START: Expected return values from SourceLoadEventPayload
-const bigBuckBunnySourceData: SourceLoadEventPayload = {
+
+/** Samples recorded from real `sourceLoad` events. `url` and `videoRange` vary per run. */
+type ExpectedSourceLoadPayload = {
+  duration: number;
+  availableVideoTracks: Omit<VideoTrack, 'url' | 'videoRange'>[];
+  availableAudioTracks: AudioTrack[];
+  availableSubtitleTracks: SubtitleTrack[];
+};
+
+const bigBuckBunnySourceData: ExpectedSourceLoadPayload = {
   availableVideoTracks: [
     {
       bitrate: 1676863,
@@ -86,32 +95,12 @@ const bigBuckBunnySourceData: SourceLoadEventPayload = {
       averageBitrate: 1676863,
     },
   ],
-  videoSource: {
-    uri: 'https://expo-test-media.com/big_buck_bunny/bbb_720p.mp4',
-    metadata: {
-      artist: 'The Open Movie Project',
-      title: 'Big Buck Bunny',
-      artwork: 'https://expo-test-media.com/big_buck_bunny/artwork.jpg',
-    },
-    drm: null,
-    headers: null,
-    useCaching: false,
-    contentType: 'auto',
-  },
   availableAudioTracks: [],
   availableSubtitleTracks: [],
   duration: 634.533333,
 };
 
-const localVideoSourceData: SourceLoadEventPayload = {
-  videoSource: {
-    headers: null,
-    contentType: 'auto',
-    drm: null,
-    uri: 'http://192.168.93.59:8081/assets/?unstable_path=.%2F..%2Ftest-suite%2Fassets/big_buck_bunny.mp4?platform=ios&hash=708733b3eb889d0a85427b938591c6b1',
-    useCaching: false,
-    metadata: { artwork: null, artist: 'Blender Foundation', title: 'Local Big Buck Bunny' },
-  },
+const localVideoSourceData: ExpectedSourceLoadPayload = {
   availableSubtitleTracks: [],
   availableAudioTracks: [{ language: 'und', label: 'Unknown language' }],
   availableVideoTracks: [
@@ -129,19 +118,7 @@ const localVideoSourceData: SourceLoadEventPayload = {
   duration: 15,
 };
 
-const hlsSourceData: SourceLoadEventPayload = {
-  videoSource: {
-    uri: 'https://expo-test-media.com/tos_hls/master.m3u8',
-    drm: null,
-    contentType: 'auto',
-    metadata: {
-      title: 'Sintel',
-      artist: 'Blender Foundation',
-      artwork: 'https://expo-test-media.com/tos_hls/artwork.jpg',
-    },
-    headers: null,
-    useCaching: false,
-  },
+const hlsSourceData: ExpectedSourceLoadPayload = {
   duration: 734.167,
   availableSubtitleTracks: [
     { language: 'en', label: 'English' },
@@ -216,8 +193,13 @@ interface TestOptions {
   expectSubtitleTracks: boolean;
 }
 
-export async function test({ describe, expect, it, ...t }, { setPortalChild, cleanupPortal }: any) {
-  let player: VideoPlayer | null = null;
+export async function test(
+  { describe, expect, it, ...t }: JasmineInterface,
+  { setPortalChild, cleanupPortal }: any
+) {
+  // Assigned in `beforeEach` before any spec runs, and reassigned by specs that
+  // need a player built from a specific source.
+  let player!: VideoPlayer;
 
   t.beforeEach(() => {
     player = createVideoPlayer(null);
@@ -226,14 +208,12 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
   });
 
   t.afterEach(async () => {
-    if (player) {
-      try {
-        player.release();
-        cleanupPortal();
-      } catch (error: any) {
-        console.warn('Player release error:', error.message);
-      }
-      player = null;
+    try {
+      player.release();
+    } catch (error: any) {
+      console.warn('Player release error:', error.message);
+    } finally {
+      cleanupPortal();
     }
   });
 
@@ -250,7 +230,7 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
   const runSourceTest = (
     label: string,
     source: VideoSourceObject,
-    expectedData: SourceLoadEventPayload,
+    expectedData: ExpectedSourceLoadPayload,
     options: Partial<TestOptions> = {}
   ) => {
     const opts = { ...defaultOptions, ...options };
@@ -514,13 +494,13 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
         const payload = await promise;
 
         expect(payload.subtitleTrack).toBeTruthy();
-        expect(payload.subtitleTrack.label).toEqual(availableSubtitleTracks[2].label);
-        expect(payload.subtitleTrack.language).toEqual(availableSubtitleTracks[2].language);
+        expect(payload.subtitleTrack?.label).toEqual(availableSubtitleTracks[2].label);
+        expect(payload.subtitleTrack?.language).toEqual(availableSubtitleTracks[2].language);
       });
     });
 
     describe('Audio Tracks Events', () => {
-      let availableAudioTracks: SubtitleTrack[];
+      let availableAudioTracks: AudioTrack[];
       it('Receives availableAudioTracksChange event', async () => {
         const promise = waitForEvent(player, 'availableAudioTracksChange');
         player.replaceAsync(hlsSource);
@@ -539,8 +519,8 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
         const payload = await promise;
 
         expect(payload.audioTrack).toBeTruthy();
-        expect(payload.audioTrack.label).toEqual(availableAudioTracks[1].label);
-        expect(payload.audioTrack.language).toEqual(availableAudioTracks[1].language);
+        expect(payload.audioTrack?.label).toEqual(availableAudioTracks[1].label);
+        expect(payload.audioTrack?.language).toEqual(availableAudioTracks[1].language);
       });
     });
 
@@ -555,10 +535,10 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
         );
 
         expect(payload.videoTrack).toBeTruthy();
-        expect(payload.videoTrack.size).toBeDefined();
-        expect(payload.videoTrack.mimeType).toBeDefined();
-        expect(payload.videoTrack.frameRate).toBeDefined();
-        expect(payload.videoTrack.mimeType).toBeDefined();
+        expect(payload.videoTrack?.size).toBeDefined();
+        expect(payload.videoTrack?.mimeType).toBeDefined();
+        expect(payload.videoTrack?.frameRate).toBeDefined();
+        expect(payload.videoTrack?.mimeType).toBeDefined();
       });
     });
   });
@@ -821,18 +801,21 @@ type EventPayload<Func> = Func extends (...args: any[]) => any
 async function waitForEvent<EventName extends keyof VideoPlayerEvents>(
   player: VideoPlayer,
   eventName: EventName,
-  postAddListenerCallback: () => void | null = null
+  postAddListenerCallback: (() => void) | null = null
 ): Promise<EventPayload<VideoPlayerEvents[EventName]>> {
-  let subscription: EventSubscription | null = null;
+  let resolveEvent!: (payload: EventPayload<VideoPlayerEvents[EventName]>) => void;
+  const eventPromise = new Promise<EventPayload<VideoPlayerEvents[EventName]>>((resolve) => {
+    resolveEvent = resolve;
+  });
+  const subscription = player.addListener(eventName, ((payload: any) => {
+    resolveEvent(payload);
+  }) as VideoPlayerEvents[EventName]);
+
   try {
-    return await new Promise((resolve) => {
-      subscription = player.addListener(eventName, ((payload: any) => {
-        resolve(payload);
-      }) as VideoPlayerEvents[EventName]);
-      postAddListenerCallback?.();
-    });
+    postAddListenerCallback?.();
+    return await eventPromise;
   } finally {
-    subscription?.remove();
+    subscription.remove();
   }
 }
 
@@ -842,27 +825,33 @@ async function waitForEventTo<EventName extends keyof VideoPlayerEvents>(
   comparator: (payload: EventPayload<VideoPlayerEvents[EventName]>) => boolean,
   retries: number = 3
 ): Promise<EventPayload<VideoPlayerEvents[EventName]>> {
-  let subscription: EventSubscription | null = null;
   let retriesLeft = retries;
+  let resolveEvent!: (payload: EventPayload<VideoPlayerEvents[EventName]>) => void;
+  let rejectEvent!: (error: Error) => void;
+  const eventPromise = new Promise<EventPayload<VideoPlayerEvents[EventName]>>(
+    (resolve, reject) => {
+      resolveEvent = resolve;
+      rejectEvent = reject;
+    }
+  );
+  const subscription = player.addListener(eventName, ((payload: any) => {
+    if (comparator(payload)) {
+      resolveEvent(payload);
+    } else {
+      if (retriesLeft <= 0) {
+        rejectEvent(
+          new Error(
+            `waitForEventToEqual: Comparator failed to return true after ${retries} retries.`
+          )
+        );
+      }
+      retriesLeft--;
+    }
+  }) as VideoPlayerEvents[EventName]);
 
   try {
-    return await new Promise((resolve, reject) => {
-      subscription = player.addListener(eventName, ((payload: any) => {
-        if (comparator(payload)) {
-          resolve(payload);
-        } else {
-          if (retriesLeft <= 0) {
-            reject(
-              new Error(
-                `waitForEventToEqual: Comparator failed to return true after ${retries} retries.`
-              )
-            );
-          }
-          retriesLeft--;
-        }
-      }) as VideoPlayerEvents[EventName]);
-    });
+    return await eventPromise;
   } finally {
-    subscription?.remove();
+    subscription.remove();
   }
 }

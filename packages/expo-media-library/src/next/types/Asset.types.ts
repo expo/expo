@@ -20,7 +20,36 @@ export enum MediaSubtype {
   TIME_LAPSE = 'timelapse',
   SPATIAL_MEDIA = 'spatialMedia',
   VIDEO_CINEMATIC = 'videoCinematic',
+  ANIMATION = 'animation',
+  SCREEN_RECORDING = 'screenRecording',
 }
+
+/**
+ * Selects which version of an asset to resolve.
+ * @platform ios
+ */
+export enum AssetUriVersion {
+  /**
+   * The asset as it currently appears in the Photos app, including any edits applied to it.
+   */
+  CURRENT = 'current',
+  /**
+   * The asset the edits were applied to. For an asset that was never edited this is the same
+   * file as `CURRENT`.
+   */
+  ORIGINAL = 'original',
+}
+
+/**
+ * @platform ios
+ */
+export type AssetUriOptions = {
+  /**
+   * Which version of the asset to resolve.
+   * @default AssetUriVersion.CURRENT
+   */
+  version?: AssetUriVersion;
+};
 
 export type Location = {
   latitude: number;
@@ -43,6 +72,10 @@ export type AssetInfo = {
   creationTime: number | null;
   modificationTime: number | null;
   isFavorite?: boolean;
+  /**
+   * @platform ios
+   */
+  mediaSubtypes?: MediaSubtype[];
 };
 
 /**
@@ -63,4 +96,8 @@ export type AssetMetadata = {
   creationTime: number | null;
   modificationTime: number | null;
   isFavorite: boolean;
+  /**
+   * @platform ios
+   */
+  mediaSubtypes?: MediaSubtype[];
 };

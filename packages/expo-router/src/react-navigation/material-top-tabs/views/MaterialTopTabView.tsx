@@ -1,23 +1,21 @@
-import {
-  CommonActions,
-  type ParamListBase,
-  type Route,
-  type TabNavigationState,
-  useLocale,
-  useTheme,
-} from '../../native';
+import { useContext } from 'react';
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
+import type { TabViewProps } from 'react-native-tab-view';
+
+import { type Route, useLocale, useTheme } from '../../native';
 import type {
   MaterialTopTabBarProps,
   MaterialTopTabDescriptorMap,
+  MaterialTopTabEmitter,
   MaterialTopTabNavigationConfig,
-  MaterialTopTabNavigationHelpers,
+  MaterialTopTabViewState,
 } from '../types';
 import { TabAnimationContext } from '../utils/TabAnimationContext';
 import { MaterialTopTabBar } from './MaterialTopTabBar';
 
 // Use dynamic import to avoid having direct dependency on react-native-tab-view.
 // import { TabView } from 'react-native-tab-view';
-let TabView: any;
+let TabView: typeof import('react-native-tab-view').TabView;
 try {
   const tabViewModule = require('react-native-tab-view');
   TabView = tabViewModule.TabView;
@@ -28,9 +26,11 @@ try {
 }
 
 type Props = MaterialTopTabNavigationConfig & {
-  state: TabNavigationState<ParamListBase>;
-  navigation: MaterialTopTabNavigationHelpers;
+  state: MaterialTopTabViewState;
   descriptors: MaterialTopTabDescriptorMap;
+  emitter: MaterialTopTabEmitter;
+  navigateToTab: (routeKey: string) => void;
+  navigateToTabSync: (routeKey: string) => void;
 };
 
 const renderTabBarDefault = (props: MaterialTopTabBarProps) => <MaterialTopTabBar {...props} />;
@@ -38,26 +38,39 @@ const renderTabBarDefault = (props: MaterialTopTabBarProps) => <MaterialTopTabBa
 export function MaterialTopTabView({
   tabBar = renderTabBarDefault,
   state,
-  navigation,
   descriptors,
+  emitter,
+  navigateToTab,
+  navigateToTabSync,
+  safeAreaInsets,
   ...rest
 }: Props) {
   const { colors } = useTheme();
   const { direction } = useLocale();
+  const insets = useContext(SafeAreaInsetsContext);
 
-  const renderTabBar: React.ComponentProps<any>['renderTabBar'] = ({
+  const renderTabBar: NonNullable<TabViewProps<Route<string>>['renderTabBar']> = ({
     /* eslint-disable @typescript-eslint/no-unused-vars */
     navigationState,
     options,
     /* eslint-enable @typescript-eslint/no-unused-vars */
     ...rest
-  }: any) => {
-    return tabBar({
+  }) => {
+    const tabBarProps = {
       ...rest,
       state,
-      navigation,
       descriptors,
-    });
+      emitter,
+      navigateToTab,
+      insets: {
+        top: safeAreaInsets?.top ?? insets?.top ?? 0,
+        right: safeAreaInsets?.right ?? insets?.right ?? 0,
+        bottom: safeAreaInsets?.bottom ?? insets?.bottom ?? 0,
+        left: safeAreaInsets?.left ?? insets?.left ?? 0,
+      },
+    } satisfies MaterialTopTabBarProps;
+
+    return tabBar(tabBarProps);
   };
 
   const focusedOptions = descriptors[state.routes[state.index]!.key]!.options;
@@ -65,31 +78,23 @@ export function MaterialTopTabView({
   return (
     <TabView<Route<string>>
       {...rest}
-      onIndexChange={(index: number) => {
-        navigation.dispatch({
-          ...CommonActions.navigate(state.routes[index]!),
-          target: state.key,
-        });
-      }}
-      renderScene={({ route, position }: any) => (
+      onIndexChange={(index: number) => navigateToTabSync(state.routes[index]!.key)}
+      renderScene={({ route, position }) => (
         <TabAnimationContext.Provider value={{ position }}>
           {descriptors[route.key]!.render()}
         </TabAnimationContext.Provider>
       )}
       navigationState={state}
       renderTabBar={renderTabBar}
-      renderLazyPlaceholder={({ route }: any) =>
+      renderLazyPlaceholder={({ route }) =>
         descriptors[route.key]!.options.lazyPlaceholder?.() ?? null
       }
-      lazy={({ route }: any) =>
-        descriptors[route.key]!.options.lazy === true &&
-        !state.preloadedRouteKeys.includes(route.key)
-      }
+      lazy={({ route }) => descriptors[route.key]!.route.key === undefined}
       lazyPreloadDistance={focusedOptions.lazyPreloadDistance}
       swipeEnabled={focusedOptions.swipeEnabled}
       animationEnabled={focusedOptions.animationEnabled}
-      onSwipeStart={() => navigation.emit({ type: 'swipeStart' })}
-      onSwipeEnd={() => navigation.emit({ type: 'swipeEnd' })}
+      onSwipeStart={() => emitter.emit({ type: 'swipeStart' })}
+      onSwipeEnd={() => emitter.emit({ type: 'swipeEnd' })}
       direction={direction}
       options={Object.fromEntries(
         state.routes.map((route) => {

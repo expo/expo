@@ -37,5 +37,10 @@ Pod::Spec.new do |s|
     test_spec.dependency 'ExpoModulesTestCore'
 
     test_spec.source_files = 'ios/WorkletsTests/**/*.{m,swift}'
+    # The test bundle links libExpoModulesCore.a (C++). ExpoModulesCore adds -lc++ in its
+    # `user_target_xcconfig`, which a test_spec target doesn't inherit, so link libc++ explicitly.
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '$(inherited) -lc++'
+    }
   end
 end

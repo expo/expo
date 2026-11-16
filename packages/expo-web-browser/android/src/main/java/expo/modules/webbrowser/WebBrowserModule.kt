@@ -89,6 +89,12 @@ class WebBrowserModule : Module() {
         throw NoMatchingActivityException()
       }
 
+      if (options.browserPackage.isNullOrEmpty() && tabsIntent.intent.`package` == null) {
+        customTabsResolver.getPreferredCustomTabsResolvingActivity(null)?.let {
+          tabsIntent.intent.setPackage(it)
+        }
+      }
+
       customTabsResolver.startCustomTabs(tabsIntent, options)
 
       return@AsyncFunction bundleOf(
@@ -104,18 +110,14 @@ class WebBrowserModule : Module() {
   private fun createCustomTabsIntent(options: OpenBrowserOptions): CustomTabsIntent {
     val builder = CustomTabsIntent.Builder()
 
-    val color = options.toolbarColor
-    if (color != null) {
+    val toolbarColor = options.toolbarColor
+    val secondaryToolbarColor = options.secondaryToolbarColor
+    if (toolbarColor != null || secondaryToolbarColor != null) {
       val params = CustomTabColorSchemeParams.Builder()
-        .setSecondaryToolbarColor(color)
-        .build()
-      builder.setDefaultColorSchemeParams(params)
-    }
-
-    val secondaryColor = options.secondaryToolbarColor
-    if (secondaryColor != null) {
-      val params = CustomTabColorSchemeParams.Builder()
-        .setSecondaryToolbarColor(secondaryColor)
+        .apply {
+          toolbarColor?.let { setToolbarColor(it) }
+          secondaryToolbarColor?.let { setSecondaryToolbarColor(it) }
+        }
         .build()
       builder.setDefaultColorSchemeParams(params)
     }

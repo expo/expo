@@ -1,12 +1,18 @@
 package expo.modules.maps
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.view.MotionEvent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -33,6 +40,7 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.Polyline
+import com.google.maps.android.compose.widgets.DisappearingScaleBar
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.toKClass
@@ -41,7 +49,6 @@ import expo.modules.kotlin.viewevent.ViewEventCallback
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import kotlinx.coroutines.launch
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.GoogleMapOptions
 import expo.modules.kotlin.views.ComposableScope
@@ -90,9 +97,18 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   private lateinit var markerState: State<List<Pair<MarkerRecord, MarkerState>>>
 
   override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-    if (event.action == MotionEvent.ACTION_DOWN) {
-      lastTouchPoint = Point(event.x.toInt(), event.y.toInt())
+    when (event.actionMasked) {
+      MotionEvent.ACTION_DOWN -> {
+        if (props.uiSettings.value.scrollGesturesEnabled) {
+          parent?.requestDisallowInterceptTouchEvent(true)
+        }
+        lastTouchPoint = Point(event.x.toInt(), event.y.toInt())
+      }
+
+      MotionEvent.ACTION_UP,
+      MotionEvent.ACTION_CANCEL -> parent?.requestDisallowInterceptTouchEvent(false)
     }
+
     return super.dispatchTouchEvent(event)
   }
 
@@ -106,119 +122,130 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
     val circleState by circleStateFromProps()
     val mapOptions = props.mapOptions.value.mapId?.let { GoogleMapOptions().mapId(it) } ?: GoogleMapOptions()
 
-    GoogleMap(
-      googleMapOptionsFactory = { mapOptions },
-      modifier = Modifier.fillMaxSize(),
-      cameraPositionState = cameraState,
-      uiSettings = props.uiSettings.value.toMapUiSettings(),
-      properties = props.properties.value.toMapProperties(),
-      contentPadding = props.contentPadding.value.let {
-        PaddingValues(start = it.start.dp, end = it.end.dp, top = it.top.dp, bottom = it.bottom.dp)
-      },
-      onMapLoaded = {
-        onMapLoaded(Unit)
-        wasLoaded.value = true
-      },
-      onMapClick = { latLng ->
-        onMapClick(
-          MapClickEvent(
-            Coordinates(latLng.latitude, latLng.longitude)
-          )
-        )
-      },
-      onMapLongClick = { latLng ->
-        onMapLongClick(
-          MapClickEvent(
-            Coordinates(latLng.latitude, latLng.longitude)
-          )
-        )
-      },
-      onPOIClick = { poi ->
-        onPOIClick(
-          POIRecord(
-            poi.name,
-            Coordinates(poi.latLng.latitude, poi.latLng.longitude)
-          )
-        )
-      },
-      onMyLocationButtonClick = props.userLocation.value.coordinates?.let { coordinates ->
-        {
-          // Override onMyLocationButtonClick with default behavior to update manualCameraControl
-          appContext.mainQueue.launch {
-            cameraState.animate(CameraUpdateFactory.newLatLng(coordinates.toLatLng()))
-            manualCameraControl = false
-          }
-          true
-        }
-      },
-      mapColorScheme = props.colorScheme.value.toComposeMapColorScheme(),
-      locationSource = locationSource
-    ) {
-      polylineState.forEach { (polyline, coordinates) ->
-        Polyline(
-          points = coordinates,
-          color = Color(polyline.color),
-          geodesic = polyline.geodesic,
-          width = polyline.width,
-          clickable = true,
-          onClick = {
-            onPolylineClick(
-              PolylineRecord(
-                id = polyline.id,
-                coordinates.map { Coordinates(it.latitude, it.longitude) },
-                polyline.geodesic,
-                polyline.color,
-                polyline.width
-              )
-            )
-          }
-        )
-      }
-
-      MapPolygons(
-        polygonState = polygonState,
-        onPolygonClick = onPolygonClick
-      )
-
-      MapCircles(
-        circleState = circleState,
-        onCircleClick = onCircleClick,
-        getClickCoordinates = {
-          lastTouchPoint?.let { point ->
-            cameraState.projection?.fromScreenLocation(point)?.let { latLng ->
+    Box(modifier = Modifier.fillMaxSize()) {
+      GoogleMap(
+        googleMapOptionsFactory = { mapOptions },
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = cameraState,
+        uiSettings = props.uiSettings.value.toMapUiSettings(),
+        properties = props.properties.value.toMapProperties(context.hasLocationPermission()),
+        contentPadding = props.contentPadding.value.let {
+          PaddingValues(start = it.start.dp, end = it.end.dp, top = it.top.dp, bottom = it.bottom.dp)
+        },
+        onMapLoaded = {
+          onMapLoaded(Unit)
+          wasLoaded.value = true
+        },
+        onMapClick = { latLng ->
+          onMapClick(
+            MapClickEvent(
               Coordinates(latLng.latitude, latLng.longitude)
+            )
+          )
+        },
+        onMapLongClick = { latLng ->
+          onMapLongClick(
+            MapClickEvent(
+              Coordinates(latLng.latitude, latLng.longitude)
+            )
+          )
+        },
+        onPOIClick = { poi ->
+          onPOIClick(
+            POIRecord(
+              poi.name,
+              Coordinates(poi.latLng.latitude, poi.latLng.longitude)
+            )
+          )
+        },
+        onMyLocationButtonClick = props.userLocation.value.coordinates?.let { coordinates ->
+          {
+            // Override onMyLocationButtonClick with default behavior to update manualCameraControl
+            appContext.mainQueue.launch {
+              cameraState.animate(CameraUpdateFactory.newLatLng(coordinates.toLatLng()))
+              manualCameraControl = false
             }
+            true
           }
-        }
-      )
-
-      for ((marker, state) in markerState.value) {
-        key(marker.id) {
-          val icon = remember(marker.icon) { getIconDescriptor(marker) }
-
-          Marker(
-            state = state,
-            title = marker.title.takeIf { it.isNotEmpty() },
-            snippet = marker.snippet.takeIf { it.isNotEmpty() },
-            draggable = marker.draggable,
-            anchor = marker.anchor.toOffset(),
-            zIndex = marker.zIndex,
-            icon = icon,
+        },
+        mapColorScheme = props.colorScheme.value.toComposeMapColorScheme(),
+        locationSource = locationSource
+      ) {
+        polylineState.forEach { (polyline, coordinates) ->
+          Polyline(
+            points = coordinates,
+            color = Color(polyline.color),
+            geodesic = polyline.geodesic,
+            width = polyline.width,
+            clickable = true,
             onClick = {
-              onMarkerClick(
-                // We can't send icon to js, because it's not serializable
-                // So we need to remove it from the marker record
-                MarkerRecord(
-                  id = marker.id,
-                  title = marker.title,
-                  snippet = marker.snippet,
-                  coordinates = marker.coordinates
+              onPolylineClick(
+                PolylineRecord(
+                  id = polyline.id,
+                  coordinates.map { Coordinates(it.latitude, it.longitude) },
+                  polyline.geodesic,
+                  polyline.color,
+                  polyline.width
                 )
               )
-              !marker.showCallout
             }
           )
         }
+
+        MapPolygons(
+          polygonState = polygonState,
+          onPolygonClick = onPolygonClick
+        )
+
+        MapCircles(
+          circleState = circleState,
+          onCircleClick = onCircleClick,
+          getClickCoordinates = {
+            lastTouchPoint?.let { point ->
+              cameraState.projection?.fromScreenLocation(point)?.let { latLng ->
+                Coordinates(latLng.latitude, latLng.longitude)
+              }
+            }
+          }
+        )
+
+        for ((marker, state) in markerState.value) {
+          key(marker.id) {
+            val icon = remember(marker.icon) { getIconDescriptor(marker) }
+
+            Marker(
+              state = state,
+              title = marker.title.takeIf { it.isNotEmpty() },
+              snippet = marker.snippet.takeIf { it.isNotEmpty() },
+              draggable = marker.draggable,
+              anchor = marker.anchor.toOffset(),
+              zIndex = marker.zIndex,
+              icon = icon,
+              onClick = {
+                onMarkerClick(
+                  // We can't send icon to js, because it's not serializable
+                  // So we need to remove it from the marker record
+                  MarkerRecord(
+                    id = marker.id,
+                    title = marker.title,
+                    snippet = marker.snippet,
+                    coordinates = marker.coordinates
+                  )
+                )
+                !marker.showCallout
+              }
+            )
+          }
+        }
+      }
+
+      if (props.uiSettings.value.scaleBarEnabled) {
+        DisappearingScaleBar(
+          modifier = Modifier
+            .align(Alignment.TopEnd)
+            .padding(top = 5.dp, end = 15.dp),
+          cameraPositionState = cameraState
+        )
       }
     }
   }
@@ -253,7 +280,11 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
       val latitudeDelta = bounds.northeast.latitude - bounds.southwest.latitude
       val rawLongitudeDelta = bounds.northeast.longitude - bounds.southwest.longitude
       // We need to subtract 360 from longitude delta when crossing the antimeridian to get the correct value
-      val longitudeDelta = if (rawLongitudeDelta < 0) rawLongitudeDelta + 360.0 else rawLongitudeDelta
+      val longitudeDelta = if (rawLongitudeDelta < 0) {
+        rawLongitudeDelta + 360.0
+      } else {
+        rawLongitudeDelta
+      }
 
       onCameraMove(
         CameraMoveEvent(
@@ -362,6 +393,9 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   }
 
   suspend fun setCameraPosition(config: SetCameraPositionConfig?) {
+    val duration = config?.duration ?: Int.MAX_VALUE
+    require(duration >= 0) { "duration must be nonnegative" }
+
     // Stop updating the camera position based on user location.
     manualCameraControl = true
     // If no coordinates are provided, the camera will be centered on the user's location.
@@ -373,7 +407,11 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
       ?: CameraUpdateFactory.newLatLng(coordinates)
 
     // When Int.MAX_VALUE is provided as durationMs, the default animation duration will be used.
-    cameraState.animate(cameraUpdate, config?.duration ?: Int.MAX_VALUE)
+    if (duration == 0) {
+      cameraState.move(cameraUpdate)
+    } else {
+      cameraState.animate(cameraUpdate, duration)
+    }
 
     // If centering on the user's location, stop manual camera control.
     if (config?.coordinates == null) {
@@ -457,3 +495,7 @@ private fun MapCircles(
     )
   }
 }
+
+internal fun Context.hasLocationPermission(): Boolean =
+  ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+    ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED

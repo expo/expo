@@ -25,8 +25,10 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTDevSettings.h>
+#import <React/RCTDevMenu.h>
 #import <React/RCTPackagerConnection.h>
 #import <React/RCTRootView.h>
+#import <Expo/EXBundleConfiguration.h>
 
 #if __has_include(<ExpoModulesCore-Swift.h>)
 #import <ExpoModulesCore-Swift.h>
@@ -134,12 +136,30 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     [self _startObservingNotificationsForHost];
     
     if (!_isHeadless) {
-      _reactRootView = [self.expoAppInstance.reactNativeFactory.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
+      _reactRootView = [self.expoAppInstance.reactNativeFactory.rootViewFactory viewWithModuleName:[self applicationKeyForRootView]
+                                                                                 initialProperties:[self initialPropertiesForRootView]
+                                                                                     launchOptions:nil
+                                                                               bundleConfiguration:[EXBundleConfiguration configurationWithBundleURL:[self bundleUrl]]
+                                                                              devMenuConfiguration:[self _devMenuConfiguration]];
     }
 
     [self setupWebSocketControls];
     [_delegate reactAppManagerIsReadyForLoad:self];
   }
+}
+
+- (RCTDevMenuConfiguration *)_devMenuConfiguration
+{
+#if RCT_DEV_MENU
+  // Expo Go presents its own dev menu, and expo-dev-menu owns the shake gesture and keyboard
+  // shortcuts. RN's dev menu stays constructed so it can be opened programmatically, but must not
+  // respond to those gestures itself.
+  return [[RCTDevMenuConfiguration alloc] initWithDevMenuEnabled:YES
+                                            shakeGestureEnabled:NO
+                                       keyboardShortcutsEnabled:NO];
+#else
+  return [RCTDevMenuConfiguration defaultConfiguration];
+#endif
 }
 
 - (void)_createAppInstance
@@ -227,7 +247,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 - (NSURL *)bundleUrl
 {
-  return [EXApiUtil bundleUrlFromManifest:_appRecord.appLoader.manifest];
+  return [EXApiUtil bundleUrlFromManifest:_appRecord.appLoader.manifest relativeTo:_appRecord.appLoader.manifestUrl];
 }
 
 #pragma mark - EXAppFetcherDataSource

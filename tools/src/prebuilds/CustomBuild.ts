@@ -13,6 +13,7 @@ import logger from '../Logger';
 import type { DownloadedDependencies } from './Artifacts.types';
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
+import { usesPackageLocalBuildPath } from './PackageLocalBuild';
 import type { BuildFlavor } from './Prebuilder.types';
 import type { BuildPlatform, SPMProduct } from './SPMConfig.types';
 import { createAsyncSpinner } from './Utils';
@@ -29,6 +30,9 @@ const PLATFORM_TO_SDK: Partial<Record<BuildPlatform, string>> = {
 
 // Pods that expose React Native source headers via `Pods/Headers/Public/<pod>/`.
 // Tuple is: [source dir relative to react-native package root, exposure path under <pod>/].
+// Also listed in packages/expo-modules-jsi/apple/scripts/build-swiftpm-app-phase.sh (stage_link) and
+// packages/expo-modules-jsi/apple/Package.swift (headerSearchPaths). A header root added to one must
+// be added to the others, or SwiftPM apps fail at build time with a missing header.
 const RN_HEADER_POD_LAYOUT: Record<string, [string, string]> = {
   'React-jsi': ['ReactCommon/jsi/jsi', 'jsi'],
   'React-runtimescheduler': [
@@ -172,6 +176,9 @@ export async function runCustomBuildAsync(
   const podsRoot = await stagePodsRootAsync(pkg, artifacts);
   const sdk = platformFilter && PLATFORM_TO_SDK[platformFilter];
   const env: NodeJS.ProcessEnv = { ...process.env, PODS_ROOT: podsRoot };
+  if (usesPackageLocalBuildPath(pkg)) {
+    env.EXPO_CUSTOM_BUILD_ROOT = path.join(pkg.buildPath, 'custom-build');
+  }
   if (sdk) env.PLATFORM_NAME = sdk;
   else delete env.PLATFORM_NAME;
 
@@ -192,7 +199,9 @@ export async function composeCustomBuildAsync(
   product: SPMProduct,
   flavor: BuildFlavor
 ): Promise<void> {
-  const src = path.resolve(pkg.path, product.customBuild!.output);
+  const src = usesPackageLocalBuildPath(pkg)
+    ? path.join(pkg.buildPath, 'custom-build', 'Products', `${product.name}.xcframework`)
+    : path.resolve(pkg.path, product.customBuild!.output);
   if (!(await fs.pathExists(src))) {
     throw new Error(`customBuild produced no xcframework at ${src}`);
   }

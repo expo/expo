@@ -592,6 +592,30 @@ it(`matches top-level catch-all before +not-found route`, () => {
   }
 });
 
+describe('origin', () => {
+  it.each(['', '   ', 'null', ' null ', 'file:///tmp/app', 'data:text/plain,hello'])(
+    'omits empty or opaque origin %j',
+    (origin) => {
+      expect(getServerManifest(getRoutesFor(['./home.js']), { origin }).origin).toBeUndefined();
+    }
+  );
+
+  it('preserves a configured origin that cannot be parsed as a URL', () => {
+    const manifest = getServerManifest(getRoutesFor(['./home.js']), { origin: 'not-a-url' });
+    expect(manifest.origin).toBe('not-a-url');
+  });
+
+  it('includes a configured origin and omits boolean and absent values', () => {
+    const route = getRoutesFor(['./home.js']);
+    expect(getServerManifest(route, { origin: 'https://app.example/' }).origin).toBe(
+      'https://app.example'
+    );
+    expect(getServerManifest(route, { origin: false }).origin).toBeUndefined();
+    expect(getServerManifest(route, { origin: true }).origin).toBeUndefined();
+    expect(getServerManifest(route).origin).toBeUndefined();
+  });
+});
+
 describe('headers', () => {
   it('applies custom headers to manifest', () => {
     const manifest = getServerManifest(getRoutesFor(['./home.js']), {
@@ -614,7 +638,7 @@ describe('pageHeaders', () => {
         { source: '/blog', headers: { 'Cache-Control': 'public, max-age=3600' } },
         { source: '/blog/[slug]', headers: { 'X-Test': 'a' } },
         { source: '/admin/[...rest]', headers: { 'X-Frame-Options': 'DENY' } },
-        { source: '/array-header', headers: { 'Set-Cookie': ['a=1', 'b=2'] } }
+        { source: '/array-header', headers: { 'Set-Cookie': ['a=1', 'b=2'] } },
       ],
     });
     expect(manifest.pageHeaders).toEqual([
@@ -633,7 +657,7 @@ describe('pageHeaders', () => {
       {
         namedRegex: '^/array\\-header(?:/)?$',
         headers: { 'Set-Cookie': ['a=1', 'b=2'] },
-      }
+      },
     ]);
   });
 

@@ -1,9 +1,8 @@
-import { mergeClasses, useTheme } from '@expo/styleguide';
+import { mergeClasses } from '@expo/styleguide';
 import { useInView } from 'framer-motion';
 import dynamic from 'next/dynamic';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
-import { prefersDarkTheme } from '~/common/window';
 import { DotGrid } from '~/ui/components/Diagram/DotGrid';
 
 import { LightboxImage } from './LightboxImage';
@@ -25,6 +24,8 @@ type ContentSpotlightProps = {
   alt?: string;
   src?: string;
   darkSrc?: string;
+  width?: number;
+  height?: number;
   file?: string;
   videoId?: string;
   caption?: string;
@@ -43,6 +44,8 @@ export function ContentSpotlight({
   alt,
   src,
   darkSrc,
+  width,
+  height,
   file,
   videoId,
   caption,
@@ -57,16 +60,6 @@ export function ContentSpotlight({
   aspect,
 }: ContentSpotlightProps) {
   const [forceShowControls, setForceShowControls] = useState<boolean>();
-  const { themeName } = useTheme();
-  const [isDark, setDark] = useState(themeName === 'dark');
-
-  useEffect(() => {
-    if (themeName === 'auto') {
-      setDark(prefersDarkTheme());
-    } else {
-      setDark(themeName === 'dark');
-    }
-  }, [themeName]);
 
   const resolvedPlayerWidth = playerWidth ?? PLAYER_WIDTH;
   const resolvedPlayerHeight = playerHeight ?? PLAYER_HEIGHT;
@@ -83,12 +76,11 @@ export function ContentSpotlight({
   const shouldAutoplay = isInView && isVideo && (!videoId || autoplayYT);
 
   const isComponentVariant = variant === 'component' && !isVideo;
-  const activeSrc = isDark && darkSrc ? darkSrc : src;
 
   return (
     <figure
       className={mergeClasses(
-        'my-5 cursor-pointer rounded-lg py-2.5 text-center',
+        'my-5 cursor-pointer overflow-hidden rounded-3xl py-2.5 text-center',
         containerClassName,
         !isVideo && !isComponentVariant && 'bg-subtle',
         isComponentVariant &&
@@ -103,15 +95,22 @@ export function ContentSpotlight({
       {src && isComponentVariant ? (
         <>
           <DotGrid />
-          <picture className="relative block size-full">
-            {isDark && darkSrc && <source srcSet={darkSrc} />}
+          <picture className={mergeClasses('relative block size-full', darkSrc && 'dark:hidden')}>
             <img src={src} alt={alt} className="size-full object-cover" />
           </picture>
+          {darkSrc && (
+            <picture className="relative block size-full light:hidden">
+              <img src={darkSrc} alt={alt} className="size-full object-cover" />
+            </picture>
+          )}
         </>
       ) : src ? (
         <LightboxImage
-          src={activeSrc ?? src}
+          src={src}
+          darkSrc={darkSrc}
           alt={alt}
+          width={width}
+          height={height}
           className={mergeClasses(
             'inline rounded-md transition-opacity duration-default ease-in-out hover:opacity-80',
             className
@@ -120,7 +119,7 @@ export function ContentSpotlight({
       ) : isVideo ? (
         <div
           className={mergeClasses(
-            'relative overflow-hidden rounded-lg bg-palette-black',
+            'relative overflow-hidden rounded-3xl bg-palette-black',
             hasCustomPlayerSize ? 'mx-auto' : 'aspect-video'
           )}
           ref={playerRef}

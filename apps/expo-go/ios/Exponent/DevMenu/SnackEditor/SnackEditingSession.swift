@@ -13,9 +13,6 @@ import Combine
 public class SnackEditingSession: ObservableObject {
   public static let shared = SnackEditingSession()
 
-  /// Notification posted when session state changes (ready/cleared)
-  public static let sessionDidChangeNotification = Notification.Name("SnackEditingSessionDidChange")
-
   /// Notification posted when code has been edited
   public static let codeDidChangeNotification = Notification.Name("SnackEditingSessionCodeDidChange")
 
@@ -36,6 +33,9 @@ public class SnackEditingSession: ObservableObject {
   /// The lesson description if this is a lesson session
   @Published public private(set) var lessonDescription: String?
 
+  /// Whether the code has been edited since the session started
+  @Published public private(set) var hasBeenEdited: Bool = false
+
   // MARK: - Non-Published Properties (internal state)
 
   /// The current channel ID
@@ -44,8 +44,16 @@ public class SnackEditingSession: ObservableObject {
   /// The snack identifier (e.g., @username/snackname)
   public private(set) var snackId: String?
 
-  /// The session client connected to Snackpub
-  public private(set) var sessionClient: SnackSessionClient?
+  /// The transport connected to Snackpub (host or viewer mode)
+  private(set) var transport: SnackpubTransport?
+
+  /// Connection state of the transport, mirrored for synchronous UI reads
+  @Published private(set) var connectionState: SnackpubTransport.ConnectionState = .disconnected
+
+  /// MainActor mirrors of the transport's actor-isolated state
+  private var mirroredFiles: [String: SnackFile]?
+  private var transportEventsTask: Task<Void, Never>?
+  private var firstFilesContinuation: CheckedContinuation<Void, Error>?
 
   /// Error if session setup failed
   public private(set) var setupError: Error?
@@ -53,11 +61,8 @@ public class SnackEditingSession: ObservableObject {
   /// Whether this is an embedded session (lessons, playground, demo) that uses direct native transport
   public private(set) var isEmbeddedSession: Bool = false
 
-  /// Files stored locally for embedded sessions (no SnackSessionClient)
-  private var embeddedFiles: [String: SnackSessionClient.SnackFile]?
-
-  /// Original files for embedded sessions (for reset-to-original support)
-  private var originalEmbeddedFiles: [String: SnackSessionClient.SnackFile]?
+  /// Files stored locally for embedded sessions (no Snackpub transport)
+  private var embeddedFiles: [String: SnackFile]?
 
   /// Dependencies stored locally for embedded sessions
   private var embeddedDependencies: [String: [String: Any]] = [:]
@@ -119,7 +124,7 @@ public class SnackEditingSession: ObservableObject {
   ///   - isEmbedded: Whether to use direct native transport instead of Snackpub WebSocket
   public func setupSessionWithCode(
     snackId: String = "new",
-    code: [String: SnackSessionClient.SnackFile],
+    code: [String: SnackFile],
     dependencies: [String: [String: Any]] = [:],
     channel: String,
     isStaging: Bool = false,
@@ -145,7 +150,6 @@ public class SnackEditingSession: ObservableObject {
       // Embedded session: store files locally, skip Snackpub WebSocket entirely.
       // The snack runtime will communicate via SnackDirectTransport native module.
       self.isEmbeddedSession = true
-      self.originalEmbeddedFiles = code
       self.embeddedFiles = code
       self.embeddedDependencies = dependencies
       self.isReady = true
@@ -155,56 +159,101 @@ public class SnackEditingSession: ObservableObject {
       return
     }
 
-    // Create session client in host mode with provided code
-    let client = SnackSessionClient(
+    // Create and connect the host-mode transport. Timeout and reconnection
+    // behavior live inside the transport.
+    let transport = SnackpubTransport(
       channel: channel,
       isStaging: isStaging,
-      hostedFiles: code,
-      hostedDependencies: dependencies
+      mode: .host(files: code, dependencies: dependencies)
     )
+    self.transport = transport
+    self.mirroredFiles = code
+    observeTransportEvents(transport)
 
-    self.sessionClient = client
+    do {
+      try await transport.connect()
+      self.isReady = true
+    } catch {
+      self.setupError = error
+    }
+  }
 
-    // Connect to Snackpub
-    // Use a flag to ensure the continuation is only resumed once.
-    // Both onReady and onError can fire, and onError can fire after onReady
-    // if the WebSocket disconnects later - we only want the first callback to resume.
-    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-      var hasResumed = false
-      client.connectAsHost(
-        onReady: {
-          guard !hasResumed else { return }
-          hasResumed = true
-          self.isReady = true
-          continuation.resume()
-        },
-        onError: { error in
-          guard !hasResumed else { return }
-          hasResumed = true
-          self.setupError = error
-          continuation.resume()
+  /// Joins an existing snack channel as a viewer (deep-linked snacks opened
+  /// via snack.expo.dev, where Expo Go hosts no session of its own). Waits
+  /// for the first CODE message so callers get files or an error.
+  public func setupViewerSession(channel: String, isStaging: Bool) async throws {
+    clearSession()
+    self.channel = channel
+
+    let transport = SnackpubTransport(channel: channel, isStaging: isStaging, mode: .viewer)
+    self.transport = transport
+    observeTransportEvents(transport)
+
+    try await transport.connect()
+
+    if mirroredFiles?.isEmpty == false {
+      isReady = true
+      return
+    }
+
+    let timeoutTask = Task { @MainActor in
+      try? await Task.sleep(nanoseconds: 10_000_000_000)
+      guard !Task.isCancelled else { return }
+      self.firstFilesContinuation?.resume(throwing: SnackpubError.timeout)
+      self.firstFilesContinuation = nil
+    }
+
+    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+      self.firstFilesContinuation = continuation
+    }
+    timeoutTask.cancel()
+    isReady = true
+  }
+
+  /// Sends a file edit through the active session. Returns false only when
+  /// there is no session at all - a disconnected transport queues the edit
+  /// and flushes it after reconnecting.
+  public func sendFileUpdate(path: String, oldContents: String, newContents: String) -> Bool {
+    if isEmbeddedSession {
+      updateEmbeddedFile(path: path, oldContents: oldContents, newContents: newContents)
+      return true
+    }
+    guard let transport else { return false }
+    mirroredFiles?[path] = SnackFile(path: path, contents: newContents, isAsset: false)
+    hasBeenEdited = true
+    Task { await transport.sendFileUpdate(path: path, oldContents: oldContents, newContents: newContents) }
+    return true
+  }
+
+  /// Mirrors transport events into MainActor state and reposts the session
+  /// notifications (the transport itself knows nothing about this class).
+  private func observeTransportEvents(_ transport: SnackpubTransport) {
+    transportEventsTask = Task { [weak self] in
+      for await event in transport.events {
+        guard let self else { return }
+        switch event {
+        case .filesUpdated(let files):
+          self.mirroredFiles = files
+          self.firstFilesContinuation?.resume()
+          self.firstFilesContinuation = nil
+          NotificationCenter.default.post(name: Self.codeDidChangeNotification, object: nil)
+        case .edited:
+          self.hasBeenEdited = true
+          NotificationCenter.default.post(name: Self.codeDidChangeNotification, object: nil)
+        case .stateChanged(let state):
+          self.connectionState = state
         }
-      )
+      }
     }
   }
 
   /// Gets the current files in the session
-  public var currentFiles: [String: SnackSessionClient.SnackFile]? {
+  public var currentFiles: [String: SnackFile]? {
     if isEmbeddedSession {
       return embeddedFiles
     }
-    return sessionClient?.currentFiles
+    return mirroredFiles
   }
-
-  /// Whether the code has been edited since session started
-  public var hasBeenEdited: Bool {
-    if isEmbeddedSession {
-      return embeddedHasBeenEdited
-    }
-    return sessionClient?.hasBeenEdited ?? false
-  }
-
-  private var embeddedHasBeenEdited: Bool = false
 
   /// The display name for this snack, extracted from snackName or snackId
   public var displayName: String {
@@ -225,52 +274,25 @@ public class SnackEditingSession: ObservableObject {
     return "Playground"
   }
 
-  /// Whether this is a lesson-like session (official lesson or snack with "lesson"/"learn"/"playground" in name)
-  /// Official lessons don't need to wait for Snackpub connection - the lesson info is set upfront.
-  /// For snacks detected by name, we need the session to be ready to have the display name.
+  /// Whether this is a lesson or an embedded playground/demo session.
   public var isLessonLikeSession: Bool {
-    // Official lessons are known immediately (set before Snackpub connects)
-    if isLesson { return true }
-    // For name-based detection, need session to be ready
-    guard isReady else { return false }
-    return displayName.localizedCaseInsensitiveContains("lesson") ||
-           displayName.localizedCaseInsensitiveContains("learn") ||
-           displayName.localizedCaseInsensitiveContains("playground")
-  }
-
-  /// Resets files to original (discards edits). Call this on app reload.
-  public func resetFiles() {
-    if isEmbeddedSession {
-      if let originals = originalEmbeddedFiles {
-        embeddedFiles = originals
-      }
-      embeddedHasBeenEdited = false
-      return
-    }
-    sessionClient?.resetToOriginalFiles()
-  }
-
-  /// Resets files to original and broadcasts to the runtime (no reload needed)
-  public func resetAndBroadcast() {
-    if isEmbeddedSession {
-      if let originals = originalEmbeddedFiles {
-        embeddedFiles = originals
-      }
-      embeddedHasBeenEdited = false
-      if let codeMessage = buildCodeMessage() {
-        SnackDirectTransport.shared?.sendCodeUpdate(codeMessage)
-      }
-      NotificationCenter.default.post(name: Self.codeDidChangeNotification, object: nil)
-      return
-    }
-    sessionClient?.resetAndBroadcast()
+    return isLesson || isEmbeddedSession
   }
 
   /// Clears the current session.
   /// Should be called when the snack is closed or a new snack is opened.
   public func clearSession() {
-    sessionClient?.disconnect()
-    sessionClient = nil
+    transportEventsTask?.cancel()
+    transportEventsTask = nil
+    firstFilesContinuation?.resume(throwing: CancellationError())
+    firstFilesContinuation = nil
+    if let transport {
+      Task { await transport.disconnect() }
+    }
+    transport = nil
+    mirroredFiles = nil
+    hasBeenEdited = false
+    connectionState = .disconnected
     channel = nil
     snackId = nil
     setupError = nil
@@ -279,9 +301,7 @@ public class SnackEditingSession: ObservableObject {
     isEmbeddedSession = false
     SnackDirectTransport.isEmbeddedSessionAvailable = false
     embeddedFiles = nil
-    originalEmbeddedFiles = nil
     embeddedDependencies = [:]
-    embeddedHasBeenEdited = false
 
     // Clear @Published properties - SwiftUI will batch these updates
     snackName = nil
@@ -290,13 +310,11 @@ public class SnackEditingSession: ObservableObject {
     lessonId = nil
     lessonDescription = nil
 
-    // Post notification for non-SwiftUI observers
-    NotificationCenter.default.post(name: Self.sessionDidChangeNotification, object: nil)
   }
 
   /// Checks if there's an active session for the given channel
   func hasActiveSession(forChannel channel: String) -> Bool {
-    return self.channel == channel && isReady && (sessionClient != nil || isEmbeddedSession)
+    return self.channel == channel && isReady && (transport != nil || isEmbeddedSession)
   }
 
   // MARK: - Embedded Session Methods
@@ -316,7 +334,7 @@ public class SnackEditingSession: ObservableObject {
         allDiffs[path] = ""
         s3urls[path] = file.contents
       } else {
-        allDiffs[path] = SnackSessionClient.generateUnifiedDiff(oldContents: "", newContents: file.contents)
+        allDiffs[path] = SnackDiff.generateUnifiedDiff(oldContents: "", newContents: file.contents)
       }
     }
 
@@ -334,7 +352,7 @@ public class SnackEditingSession: ObservableObject {
     guard isEmbeddedSession, embeddedFiles != nil else { return }
 
     // Update the stored file
-    embeddedFiles?[path] = SnackSessionClient.SnackFile(path: path, contents: newContents, isAsset: false)
+    embeddedFiles?[path] = SnackFile(path: path, contents: newContents, isAsset: false)
 
     // Build and send updated CODE message via direct transport
     if let codeMessage = buildCodeMessage() {
@@ -342,8 +360,8 @@ public class SnackEditingSession: ObservableObject {
     }
 
     // Mark as edited and notify observers
-    if !embeddedHasBeenEdited {
-      embeddedHasBeenEdited = true
+    if !hasBeenEdited {
+      hasBeenEdited = true
       NotificationCenter.default.post(name: Self.codeDidChangeNotification, object: nil)
     }
   }
@@ -351,33 +369,13 @@ public class SnackEditingSession: ObservableObject {
   // MARK: - Private Methods
 
   /// Fetches snack code from the Snack API
-  private func fetchSnackCode(snackId: String, isStaging: Bool) async throws -> (files: [String: SnackSessionClient.SnackFile], dependencies: [String: [String: Any]], name: String?) {
-    let apiHost = isStaging ? "https://staging.exp.host" : "https://exp.host"
-
-    // Handle @snack/ prefix
-    let cleanId = snackId.hasPrefix("@snack/") ? String(snackId.dropFirst(7)) : snackId
-
-    guard let apiURL = URL(string: "\(apiHost)/--/api/v2/snack/\(cleanId)") else {
-      throw SnackEditingSessionError.invalidURL
-    }
-
-    var request = URLRequest(url: apiURL)
-    request.setValue("3.0.0", forHTTPHeaderField: "Snack-Api-Version")
-    request.setValue("expo-go/1.0", forHTTPHeaderField: "User-Agent")
-
-    let (data, response) = try await URLSession.shared.data(for: request)
-
-    if let httpResponse = response as? HTTPURLResponse,
-       !(200...299).contains(httpResponse.statusCode) {
-      throw SnackEditingSessionError.httpError(httpResponse.statusCode)
-    }
-
-    let snackResponse = try JSONDecoder().decode(SnackApiResponse.self, from: data)
+  private func fetchSnackCode(snackId: String, isStaging: Bool) async throws -> (files: [String: SnackFile], dependencies: [String: [String: Any]], name: String?) {
+    let snackResponse = try await SnackAPIClient.fetch(snackId: snackId, isStaging: isStaging)
 
     // Convert to SnackFile format
-    var files: [String: SnackSessionClient.SnackFile] = [:]
+    var files: [String: SnackFile] = [:]
     for (path, file) in snackResponse.code {
-      files[path] = SnackSessionClient.SnackFile(
+      files[path] = SnackFile(
         path: path,
         contents: file.contents,
         isAsset: file.type == "ASSET"
@@ -408,42 +406,4 @@ public class SnackEditingSession: ObservableObject {
   }
 }
 
-// MARK: - Error Types
-
-enum SnackEditingSessionError: LocalizedError {
-  case invalidURL
-  case httpError(Int)
-  case noFilesReceived
-
-  var errorDescription: String? {
-    switch self {
-    case .invalidURL:
-      return "Invalid Snack API URL"
-    case .httpError(let code):
-      return "Snack API returned error: \(code)"
-    case .noFilesReceived:
-      return "No files received from Snack API"
-    }
-  }
-}
-
 // MARK: - API Response Types
-
-private struct SnackApiResponse: Codable {
-  let id: String
-  let hashId: String
-  let name: String?
-  let code: [String: SnackApiFile]
-  let dependencies: [String: SnackDependency]?
-
-  struct SnackApiFile: Codable {
-    let type: String  // "CODE" or "ASSET"
-    let contents: String
-  }
-
-  struct SnackDependency: Codable {
-    let version: String
-    let handle: String?
-    let peerDependencies: [String: String]?
-  }
-}

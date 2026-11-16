@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { useTheme } from '../theming/useTheme';
 import { useNavigationBuilder } from '../useNavigationBuilder';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter } from './__fixtures__/MockRouter';
 
-test('can get current theme with useTheme', () => {
+test('can get current theme with useTheme', async () => {
   const TestNavigator = (props: any): any => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -37,7 +37,7 @@ test('can get current theme with useTheme', () => {
     },
   };
 
-  render(
+  await render(
     <BaseNavigationContainer theme={theme}>
       <TestNavigator>
         <Screen name="foo" component={Test} />
@@ -46,7 +46,7 @@ test('can get current theme with useTheme', () => {
   );
 });
 
-test("throws if theme isn't passed to BaseNavigationContainer", () => {
+test("throws if theme isn't passed to BaseNavigationContainer", async () => {
   const TestNavigator = (props: any): any => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -64,7 +64,7 @@ test("throws if theme isn't passed to BaseNavigationContainer", () => {
     return null;
   };
 
-  render(
+  await render(
     <BaseNavigationContainer>
       <TestNavigator>
         <Screen name="foo" component={Test} />
@@ -73,7 +73,7 @@ test("throws if theme isn't passed to BaseNavigationContainer", () => {
   );
 });
 
-test('throws if useTheme is used without BaseNavigationContainer', () => {
+test('throws if useTheme is used without BaseNavigationContainer', async () => {
   const Test = () => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     expect(() => useTheme()).toThrow("Couldn't find a theme");
@@ -81,10 +81,10 @@ test('throws if useTheme is used without BaseNavigationContainer', () => {
     return null;
   };
 
-  render(<Test />);
+  await render(<Test />);
 });
 
-test('passes theme to options prop', () => {
+test('passes theme to options prop', async () => {
   const TestNavigator = (props: any): any => {
     const { state, descriptors } = useNavigationBuilder(MockRouter, props);
 
@@ -102,7 +102,7 @@ test('passes theme to options prop', () => {
     },
   };
 
-  render(
+  await render(
     <BaseNavigationContainer theme={theme}>
       <TestNavigator>
         <Screen
@@ -115,7 +115,7 @@ test('passes theme to options prop', () => {
   );
 });
 
-test('passes theme to screenOptions prop', () => {
+test('passes theme to screenOptions prop', async () => {
   const TestNavigator = (props: any): any => {
     const { state, descriptors } = useNavigationBuilder(MockRouter, props);
 
@@ -137,8 +137,10 @@ test('passes theme to screenOptions prop', () => {
     },
   };
 
-  render(
-    <BaseNavigationContainer theme={theme}>
+  await render(
+    <BaseNavigationContainer
+      initialState={{ routes: [{ name: 'foo' }, { name: 'bar' }] }}
+      theme={theme}>
       <TestNavigator screenOptions={({ theme }: any) => ({ title: theme.colors.primary })}>
         <Screen name="foo" component={React.Fragment} />
         <Screen name="bar" component={React.Fragment} />

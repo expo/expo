@@ -17,7 +17,7 @@ export const Checkbox = forwardRef(function Checkbox(
       {checked && (
         <CheckIcon
           aria-hidden="true"
-          className="pointer-events-none absolute w-4 px-0.5 text-palette-white [&_path]:stroke-[3px]!"
+          className="pointer-events-none absolute w-4 px-0.5 text-palette-white [&_path]:[stroke-linejoin:round] [&_path]:stroke-current [&_path]:stroke-1"
         />
       )}
       <input

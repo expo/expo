@@ -12,7 +12,7 @@ import * as path from 'path';
 
 import type { WatcherBackendOptions } from '../types';
 import { AbstractWatcher } from './AbstractWatcher';
-import { includedByGlob, typeFromStat } from './common';
+import { isIncluded, typeFromStat } from './common';
 
 const debug = require('debug')('Metro:NativeWatcher');
 
@@ -24,7 +24,7 @@ const RECRAWL_EVENT = 'recrawl';
  * NativeWatcher uses Node's native fs.watch API with recursive: true.
  *
  * Supported on macOS (and potentially Windows), because both natively have a
- * concept of recurisve watching, via FSEvents and ReadDirectoryChangesW
+ * concept of recursive watching, via FSEvents and ReadDirectoryChangesW
  * respectively. Notably Linux lacks this capability at the OS level.
  *
  * Node.js has at times supported the `recursive` option to fs.watch on Linux
@@ -103,14 +103,14 @@ export default class NativeWatcher extends AbstractWatcher {
         return;
       }
 
-      if (!includedByGlob(type, this.globs, this.dot, relativePath)) {
+      if (!isIncluded(type, this.included, relativePath)) {
         return;
       }
 
       // For directory "rename" events, notify that we need a recrawl since we
-      // wont' receive events for unmodified files underneath a moved (or
+      // won't receive events for unmodified files underneath a moved (or
       // cloned) directory. Renames are fired by the OS on moves, clones, and
-      // creations. We ignore "change" events because they indiciate a change
+      // creations. We ignore "change" events because they indicate a change
       // to directory metadata, rather than its path or existence.
       if (type === 'd' && event === 'rename') {
         debug('Directory rename detected on %s, requesting recrawl', relativePath);

@@ -7,15 +7,19 @@ import type {
 } from 'react-native';
 import type {
   ScreenProps,
+  ScreenStackProps,
   ScreenStackHeaderConfigProps,
   ScrollEdgeEffect,
   SearchBarProps,
 } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import type { StandardNavigatorEmit } from '../../standard-navigation';
+import type { ToolbarAxisBehavior } from '../../toolbar/axisBehavior';
 import type {
   DefaultNavigatorOptions,
   Descriptor,
+  DescriptorRouteProp,
   NavigationHelpers,
   NavigationProp,
   ParamListBase,
@@ -43,7 +47,7 @@ export type NativeStackNavigationEventMap = {
   /**
    * Event which fires when screen is in sheet presentation & it's detent changes.
    *
-   * In payload it caries two fields:
+   * In payload it carries two fields:
    *
    * * `index` - current detent index in the `sheetAllowedDetents` array,
    * * `stable` - on Android `false` value means that the user is dragging the sheet or it is settling; on iOS it is always `true`.
@@ -78,7 +82,8 @@ export type NativeStackOptionsArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList = keyof ParamList,
   NavigatorID extends string | undefined = undefined,
-> = NativeStackScreenProps<ParamList, RouteName, NavigatorID> & {
+> = Omit<NativeStackScreenProps<ParamList, RouteName, NavigatorID>, 'route'> & {
+  route: DescriptorRouteProp<ParamList, RouteName>;
   theme: Theme;
 };
 
@@ -87,9 +92,19 @@ export type NativeStackNavigationHelpers = NavigationHelpers<
   NativeStackNavigationEventMap
 >;
 
-// We want it to be an empty object because navigator does not have any additional props
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export type NativeStackNavigationConfig = {};
+type NativeStackHostNativeProps = Partial<Omit<ScreenStackProps, 'children'>>;
+
+export type NativeStackNavigationConfig = {
+  /**
+   * Props passed to the underlying native stack host implementation in `react-native-screens`.
+   *
+   * > **Note:** This is an unstable API and may change or be removed in minor versions.
+   *
+   * @platform android
+   * @platform ios
+   */
+  unstable_nativeProps?: NativeStackHostNativeProps;
+};
 
 export type NativeStackScreenNativeProps = Partial<
   Omit<ScreenProps, 'children' | 'screenId' | 'activityState'>
@@ -310,8 +325,10 @@ export type NativeStackNavigationOptions = {
    * Boolean indicating whether the navigation bar is translucent.
    * Setting this to `true` makes the header absolutely positioned,
    * and changes the background color to `transparent` unless specified in `headerStyle`.
+   * Pass an object to set a different value on each platform.
+   * Defaults to `{ ios: true, android: false, web: false }`. On iOS, the default applies only on iOS 26+ with Liquid Glass, and only when no header background is set.
    */
-  headerTransparent?: boolean;
+  headerTransparent?: boolean | { ios?: boolean; android?: boolean; web?: boolean };
   /**
    * Blur effect for the translucent header.
    * The `headerTransparent` option needs to be set to `true` for this to work.
@@ -323,6 +340,15 @@ export type NativeStackNavigationOptions = {
    * @platform ios
    */
   headerBlurEffect?: ScreenStackHeaderConfigProps['blurEffect'];
+  /**
+   * Interface style of the native header. Defaults to the navigation theme's style. The native
+   * header does not support changes to this option while the screen is visible.
+   *
+   * Only supported on iOS.
+   *
+   * @platform ios
+   */
+  headerUserInterfaceStyle?: 'light' | 'dark';
   /**
    * Tint color for the header. Changes the color of back button and title.
    */
@@ -384,7 +410,7 @@ export type NativeStackNavigationOptions = {
         tintColor?: ColorValue;
       }) => React.ReactNode);
   /**
-   * How to align the the header title.
+   * How to align the header title.
    * Defaults to `left` on platforms other than iOS.
    *
    * Not supported on iOS. It's always `center` on iOS and cannot be changed.
@@ -678,7 +704,7 @@ export type NativeStackNavigationOptions = {
    * There is also possibility to specify `fitToContents` literal, which intents to set the sheet height
    * to the height of its contents.
    *
-   * Note that the array **must** be sorted in ascending order. This invariant is verified only in developement mode,
+   * Note that the array **must** be sorted in ascending order. This invariant is verified only in development mode,
    * where violation results in error.
    *
    * **Android is limited to up 3 values in the array** -- any surplus values, beside first three are ignored.
@@ -717,10 +743,10 @@ export type NativeStackNavigationOptions = {
    * Index of the detent the sheet should expand to after being opened.
    * Works only when `stackPresentation` is set to `formSheet`.
    *
-   * If the specified index is out of bounds of `sheetAllowedDetents` array, in dev environment more error will be thrown,
+   * If the specified index is out of bounds of `sheetAllowedDetents` array, in dev environment an error will be thrown,
    * in production the value will be reset to default value.
    *
-   * Additionaly there is `last` value available, when set the sheet will expand initially to last (largest) detent.
+   * Additionally there is `last` value available, when set the sheet will expand initially to last (largest) detent.
    *
    * Defaults to `0` - which represents first detent in the detents array.
    */
@@ -737,16 +763,15 @@ export type NativeStackNavigationOptions = {
    * The largest sheet detent for which a view underneath won't be dimmed.
    * Works only when `presentation` is set to `formSheet`.
    *
-   * This prop can be set to an number, which indicates index of detent in `sheetAllowedDetents` array for which
+   * This prop can be set to a number, which indicates index of detent in `sheetAllowedDetents` array for which
    * there won't be a dimming view beneath the sheet.
    *
-   * Additionaly there are following options available:
+   * Additionally there are following options available:
    *
    * * `none` - there will be dimming view for all detents levels,
    * * `last` - there won't be a dimming view for any detent level.
    *
-   * @remark
-   * On iOS, the native implementation might resize the the sheet w/o explicitly changing the detent level, e.g. in case of keyboard appearance.
+   * On iOS, the native implementation might resize the sheet w/o explicitly changing the detent level, e.g. in case of keyboard appearance.
    * In case after such resize the sheet exceeds height for which in regular scenario a dimming view would be applied - it will be applied,
    * even if the detent has not effectively been changed.
    *
@@ -802,12 +827,9 @@ export type NativeStackNavigationOptions = {
    * Only supported on iOS and Android.
    */
   orientation?: ScreenProps['screenOrientation'];
+  // TODO(@ubax): Remove this prop
   /**
-   * Whether inactive screens should be suspended from re-rendering. Defaults to `false`.
-   * Defaults to `true` when `enableFreeze()` is run at the top of the application.
-   * Requires `react-native-screens` version >=3.16.0.
-   *
-   * Only supported on iOS and Android.
+   * @deprecated This option has no effect in Expo Router.
    */
   freezeOnBlur?: boolean;
   /**
@@ -831,7 +853,7 @@ export type NativeStackNavigationOptions = {
    *
    * @platform ios
    *
-   * @supported iOS 26 or higher
+   * Only supported on iOS 26 and later.
    */
   scrollEdgeEffects?: {
     bottom?: ScrollEdgeEffect;
@@ -943,6 +965,21 @@ type SharedHeaderItem = {
    */
   sharesBackground?: boolean;
   /**
+   * Controls whether this item can move into the vertical bar that iOS 27.1 shows on iPhone Duo.
+   * `automatic` lets the system decide from the item's content. `horizontalOnly` keeps the item in
+   * the horizontal bar and hides it when no horizontal bar is present. `verticalPreferred` prefers
+   * the vertical bar when both bars are present.
+   * Only available from iOS 27.1 and later.
+   *
+   * Header items need a `react-native-screens` release that reads `axisBehavior`. Until then, they
+   * stay on `automatic`.
+   *
+   * Read more: https://developer.apple.com/documentation/uikit/uibarbuttonitem/axisbehavior-swift.property
+   *
+   * @default 'automatic'
+   */
+  axisBehavior?: ToolbarAxisBehavior;
+  /**
    * An identifier used to match items across transitions.
    * Only available from iOS 26.0 and later.
    *
@@ -950,7 +987,7 @@ type SharedHeaderItem = {
    */
   identifier?: string;
   /**
-   * A badge to display on a item.
+   * A badge to display on an item.
    * Only available from iOS 26.0 and later.
    *
    * Read more: https://developer.apple.com/documentation/uikit/uibarbuttonitembadge
@@ -1203,6 +1240,17 @@ export type NativeStackHeaderItem =
   | NativeStackHeaderItemMenu
   | NativeStackHeaderItemSpacing
   | NativeStackHeaderItemCustom;
+
+export type NativeStackEmit = NativeStackNavigationHelpers['emit'];
+
+export type NativeStackViewEmit = StandardNavigatorEmit<NativeStackNavigationEventMap>;
+
+/**
+ * The navigator-level state consumed by `NativeStackView`.
+ *
+ * Routes after `index` are preloaded and rendered natively-detached.
+ */
+export type NativeStackViewState = Pick<StackNavigationState<ParamListBase>, 'index' | 'routes'>;
 
 export type NativeStackNavigatorProps = DefaultNavigatorOptions<
   ParamListBase,

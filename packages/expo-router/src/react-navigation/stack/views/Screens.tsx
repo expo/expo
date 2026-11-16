@@ -31,12 +31,12 @@ export const MaybeScreen = ({
   enabled: boolean;
   active: 0 | 1 | Animated.AnimatedInterpolation<0 | 1>;
   children: ReactNode;
-  freezeOnBlur?: boolean;
-  shouldFreeze: boolean;
   homeIndicatorHidden?: boolean;
 }) => {
   if (Screens != null) {
-    return <Screens.Screen enabled={enabled} activityState={active} {...rest} />;
+    return (
+      <Screens.Screen {...rest} enabled={enabled} activityState={active} freezeOnBlur={false} />
+    );
   }
 
   return <View {...rest} />;

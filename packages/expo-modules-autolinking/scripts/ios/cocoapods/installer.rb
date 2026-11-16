@@ -8,6 +8,16 @@
 
 require_relative '../precompiled_modules'
 
+module Expo
+  module CollisionSafeUUIDs
+    def generate_uuid
+      uuid = super
+      uuid = super while objects_by_uuid.key?(uuid)
+      uuid
+    end
+  end
+end
+
 module Pod
   class Podfile
     public
@@ -33,7 +43,13 @@ module Pod
     private
 
     _original_run_podfile_pre_install_hooks = instance_method(:run_podfile_pre_install_hooks)
+    _original_run_podfile_post_install_hooks = instance_method(:run_podfile_post_install_hooks)
     _original_perform_post_install_actions = instance_method(:perform_post_install_actions)
+
+    define_method(:run_podfile_post_install_hooks) do
+      make_pods_project_uuids_collision_safe()
+      _original_run_podfile_post_install_hooks.bind(self).()
+    end
 
     public
 
@@ -41,20 +57,7 @@ module Pod
       # Call original implementation first
       _original_perform_post_install_actions.bind(self).()
 
-      # CocoaPods overrides generate_available_uuid_list to use a fast sequential counter
-      # (Pod::Project#generate_available_uuid_list) that skips collision checks. After
-      # predictabilize_uuids reassigns all UUIDs to deterministic values, the counter resets
-      # and new sequential UUIDs can collide with existing ones, corrupting Pods.xcodeproj.
-      # Fix: replace the sequential generator with collision-safe random UUIDs for any
-      # objects created after predictabilize_uuids has run.
-      project = self.pods_project
-      existing_uuids = project.objects_by_uuid.keys.to_set
-      project.define_singleton_method(:generate_available_uuid_list) do |count = 100|
-        new_uuids = (0..count).map { SecureRandom.hex(12).upcase }
-        uniques = new_uuids.reject { |u| existing_uuids.include?(u) || @generated_uuids.include?(u) }
-        @generated_uuids += uniques
-        @available_uuids += uniques
-      end
+      make_pods_project_uuids_collision_safe()
 
       # Run all precompiled module post-install configuration
       Expo::PrecompiledModules.perform_post_install(self)
@@ -76,6 +79,10 @@ module Pod
       # which fails the build on Xcode 27. Runs after the reconciliation
       # above so bundles of Expo modules pick up the reconciled values.
       reconcile_resource_bundle_deployment_targets()
+
+      # Make React Native's ccache build settings resolve for app targets that
+      # are not integrated with CocoaPods (e.g. custom share/widget extensions).
+      fix_react_native_path_for_non_cocoapods_targets()
     end
 
     define_method(:run_podfile_pre_install_hooks) do
@@ -109,6 +116,18 @@ module Pod
     end
 
     private
+
+    # `Pod::Project` hands out sequential UUIDs without a collision check, and
+    # `stabilize_target_uuids` (run on every install) restarts that counter
+    # near zero. Any object created afterwards, by a Podfile `post_install`
+    # hook or by Expo, can then take a UUID already in use and overwrite it,
+    # in the worst case the root `PBXProject`, leaving a Pods.xcodeproj that
+    # Xcode cannot open (expo/expo#50794). Skipping used UUIDs keeps the ids
+    # deterministic and never changes existing ones. `pods_project` is nil
+    # with the `skip_pods_project_generation` install option.
+    def make_pods_project_uuids_collision_safe
+      self.pods_project&.extend(Expo::CollisionSafeUUIDs)
+    end
 
     # See call site in perform_post_install_actions for rationale.
     # This runs AFTER the user's `post_install` hook, so it will overwrite any
@@ -220,6 +239,55 @@ module Pod
         # `generate_multiple_pod_projects` install option those are per-pod
         # projects rather than `pods_project`.
         dirty_projects.each(&:save)
+      end
+    end
+
+    # See call site in perform_post_install_actions for rationale.
+    # React Native's ccache integration (`USE_CCACHE=1` or `:ccache_enabled =>
+    # true`) points the project-level CC/LD/CXX/LDPLUSPLUS build settings of
+    # the user's Xcode project at
+    # "$(REACT_NATIVE_PATH)/scripts/xcode/ccache-clang.sh", and
+    # react_native_post_install sets REACT_NATIVE_PATH itself at the project
+    # level to "${PODS_ROOT}/../<react-native>". Every target in the project
+    # inherits those settings, but PODS_ROOT is only defined by the
+    # CocoaPods-generated xcconfigs, so in targets that are not integrated
+    # with CocoaPods (custom share extensions, widgets, ...) the wrapper path
+    # resolves to "/../../node_modules/..." and the build fails with
+    # "unable to spawn process". Re-anchor the project-level REACT_NATIVE_PATH
+    # to $(SRCROOT), which Xcode defines for every target. Integrated targets
+    # are unaffected: their xcconfig-level PODS_ROOT never fed a project-level
+    # value other than this same location.
+    def fix_react_native_path_for_non_cocoapods_targets
+      user_projects = self.aggregate_targets.map { |t| t.user_project }.compact.uniq { |p| p.path }
+      user_projects.each do |project|
+        pods_root_from_srcroot = File.join('$(SRCROOT)', self.sandbox.root.relative_path_from(project.path.dirname).to_s)
+        changed = false
+        project.build_configurations.each do |config|
+          react_native_ccache_settings = {
+            'CC' => '$(REACT_NATIVE_PATH)/scripts/xcode/ccache-clang.sh',
+            'LD' => '$(REACT_NATIVE_PATH)/scripts/xcode/ccache-clang.sh',
+            'CXX' => '$(REACT_NATIVE_PATH)/scripts/xcode/ccache-clang++.sh',
+            'LDPLUSPLUS' => '$(REACT_NATIVE_PATH)/scripts/xcode/ccache-clang++.sh',
+          }
+
+          ccache_in_use = react_native_ccache_settings.any? do |key, expected|
+            config.build_settings[key] == expected
+          end
+          next unless ccache_in_use
+
+          react_native_path = config.build_settings['REACT_NATIVE_PATH']
+          next unless react_native_path.is_a?(String) && react_native_path.include?('PODS_ROOT')
+
+          config.build_settings['REACT_NATIVE_PATH'] = react_native_path
+            .gsub('${PODS_ROOT}', pods_root_from_srcroot)
+            .gsub('$(PODS_ROOT)', pods_root_from_srcroot)
+          changed = true
+        end
+
+        if changed
+          Pod::UI.puts '[Expo] '.blue + "Re-anchored REACT_NATIVE_PATH to $(SRCROOT) in #{project.path.basename} so ccache build settings resolve for all targets"
+          project.save
+        end
       end
     end
 

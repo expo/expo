@@ -27,6 +27,8 @@ target_link_libraries(
   ReactAndroid::reactnative
 )
 
+include(${CMAKE_SOURCE_DIR}/cmake/pch-ccache.cmake)
+
 function(use_expo_common target_name)
   target_link_libraries(${target_name} PRIVATE EXPO_COMMON)
 endfunction()
@@ -47,10 +49,12 @@ target_include_directories(
   "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni"
 )
 
+set(EXPO_PCH_INCLUDE_OPTION "$<$<COMPILE_LANGUAGE:CXX>:-idirafter${CMAKE_SOURCE_DIR}/src/main/cpp>")
+target_compile_options(expo-modules-pch PRIVATE ${EXPO_PCH_INCLUDE_OPTION})
 target_precompile_headers(
   expo-modules-pch
   PRIVATE
-  ${CMAKE_SOURCE_DIR}/src/main/cpp/ExpoHeader.pch
+  "<ExpoHeader.pch>"
 )
 
 # Drop the timestamp embedded in the .pch so it stays bit-for-bit stable across
@@ -60,3 +64,11 @@ target_compile_options(
   PRIVATE
   "$<$<COMPILE_LANGUAGE:CXX>:-Xclang;-fno-pch-timestamp>"
 )
+
+pch_ccache_owner(expo-modules-pch)
+
+function(use_expo_pch target_name)
+  target_precompile_headers(${target_name} REUSE_FROM expo-modules-pch)
+  target_compile_options(${target_name} PRIVATE ${EXPO_PCH_INCLUDE_OPTION})
+  pch_ccache_consumer(${target_name} expo-modules-pch)
+endfunction()

@@ -132,25 +132,24 @@ export function BottomSheet(props: BottomSheetProps) {
   useEffect(() => {
     if (indexProp === -1) {
       setIsPresented(false);
-      fireCloseCallbacks();
     } else if (indexProp >= 0) {
       closedRef.current = false;
       setIsPresented(true);
-      const clampedIndex = Math.min(indexProp, detents.length - 1);
-      setCurrentIndex(clampedIndex);
-      currentIndexRef.current = clampedIndex;
     }
-  }, [indexProp, detents.length, fireCloseCallbacks]);
+  }, [indexProp]);
 
-  const handlePresentedChange = useCallback(
-    (presented: boolean) => {
-      if (!presented) {
-        setIsPresented(false);
-        fireCloseCallbacks();
-      }
-    },
-    [fireCloseCallbacks]
-  );
+  useEffect(() => {
+    const requestedIndex = indexProp >= 0 ? indexProp : currentIndexRef.current;
+    const clampedIndex = Math.min(requestedIndex, detents.length - 1);
+    setCurrentIndex(clampedIndex);
+    currentIndexRef.current = clampedIndex;
+  }, [indexProp, detents.length]);
+
+  const handlePresentedChange = useCallback((presented: boolean) => {
+    if (!presented) {
+      setIsPresented(false);
+    }
+  }, []);
 
   const handleDetentChange = useCallback(
     (detent: PresentationDetent) => {
@@ -168,7 +167,6 @@ export function BottomSheet(props: BottomSheetProps) {
     const snapToIndex = (index: number) => {
       if (index === -1) {
         setIsPresented(false);
-        fireCloseCallbacks();
         return;
       }
       const clampedIndex = Math.min(Math.max(index, 0), detents.length - 1);
@@ -179,14 +177,11 @@ export function BottomSheet(props: BottomSheetProps) {
       onChangeRef.current?.(clampedIndex);
     };
 
-    // Fire close callbacks immediately: the native `onIsPresentedChange` event is
-    // suppressed when JS drives the state change (the Swift layer guards against
-    // the feedback loop), so we can't rely on handlePresentedChange here. The
-    // closedRef guard inside fireCloseCallbacks prevents double-firing if a
-    // native user-dismiss event also arrives during the animation.
+    // Close callbacks fire from the native `onDismiss` event, which SwiftUI sends after
+    // the dismissal transition finishes, so they can present another modal without UIKit
+    // rejecting it. Android awaits `hide()` for the same reason.
     const close = () => {
       setIsPresented(false);
-      fireCloseCallbacks();
     };
 
     return {
@@ -200,7 +195,7 @@ export function BottomSheet(props: BottomSheetProps) {
       present: () => snapToIndex(0),
       dismiss: close,
     };
-  }, [detents, fireCloseCallbacks]);
+  }, [detents]);
 
   useImperativeHandle(ref, () => methods, [methods]);
 
@@ -208,8 +203,9 @@ export function BottomSheet(props: BottomSheetProps) {
     const bg = extractBackgroundColor(backgroundStyle);
     return [
       ...(fitToContents
-        ? // Makes the iPad sheet size to that content instead of opening near full height.
-          [presentationSizing('fitted')]
+        ? // Fits the sheet height to the content (iPad opens near full height otherwise) and lets
+          // the system choose the width.
+          [presentationSizing('automatic', { fitted: { horizontal: false, vertical: true } })]
         : [
             presentationDetents(detents, {
               selection: selectedDetent,
@@ -237,13 +233,18 @@ export function BottomSheet(props: BottomSheetProps) {
           <NativeBottomSheet
             isPresented={isPresented}
             onIsPresentedChange={handlePresentedChange}
+            onDismiss={fireCloseCallbacks}
             fitToContents={fitToContents}>
             <Group modifiers={modifiers}>
-              <RNHostView matchContents={fitToContents}>
+              <RNHostView
+                matchContents={fitToContents ? { vertical: true } : false}
+                boundedByHost={fitToContents}>
                 {/* paddingTop compensates for tighter spacing between native drag indicator and content
                     compared to gorhom's handle. flexGrow:1 + height:0 (flex-basis 0) fills the snap-point
-                    height without inheriting the scrollable child's intrinsic content height. Omitted for fitToContents
-                    so RNHostView can measure natural content height. */}
+                    height without inheriting the scrollable child's intrinsic content height. With matchContents,
+                    RNHostView takes the width from the sheet, which can be narrower than the window, and
+                    the height from the content. The first measure runs before SwiftUI reports the sheet
+                    width, so boundedByHost keeps it within the Host width. */}
                 <View
                   style={
                     fitToContents

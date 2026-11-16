@@ -59,7 +59,7 @@ export function AskPageAIChatMessages({
   if (conversation.length === 0) {
     return (
       <div className="rounded-md border border-default bg-subtle px-3 py-2 shadow-xs">
-        <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
+        <FOOTNOTE className="font-medium text-default">AI assistant</FOOTNOTE>
         <div className="mt-1 space-y-3 text-sm text-secondary">
           I'm an SDK AI assistant — ask me a question about the{' '}
           <span className="font-medium text-default">
@@ -129,7 +129,7 @@ export function AskPageAIChatMessages({
               </div>
             </div>
             <div className="px-0">
-              <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
+              <FOOTNOTE className="font-medium text-default">AI assistant</FOOTNOTE>
               <div className="mt-1 space-y-3 text-sm text-secondary">
                 {answerForDisplay ? (
                   <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>

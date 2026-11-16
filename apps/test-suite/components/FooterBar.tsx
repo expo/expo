@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { type ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../common/ThemeProvider';
@@ -18,8 +18,13 @@ export default function FooterBar({ children }: FooterBarProps) {
 
   const isRunningInBareExpo = Constants.expoConfig?.slug === 'bare-expo';
 
+  // On iOS the native tab bar in bare-expo overlays the content and exposes
+  // its height through the bottom safe area inset, so always pad by it.
+  // Android tabs take their own layout space and consume the system inset.
+  const bottomInset = Platform.OS !== 'ios' && isRunningInBareExpo ? 0 : bottom;
+
   const padding = {
-    paddingBottom: 16 + (isRunningInBareExpo ? 0 : bottom),
+    paddingBottom: 16 + bottomInset,
     paddingLeft: 20 + left,
     paddingRight: 20 + right,
   };

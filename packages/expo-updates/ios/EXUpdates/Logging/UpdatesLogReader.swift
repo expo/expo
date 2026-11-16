@@ -47,6 +47,13 @@ public final class UpdatesLogReader {
   }
 
   /**
+   Remove every log entry
+   */
+  public func clearLogEntries(completion: @escaping (Error?) -> Void) {
+    logPersistence.purgeEntriesNotMatchingFilter(filter: { _ in false }, completion)
+  }
+
+  /**
    Purge all log entries written more than one day ago
    */
   public func purgeLogEntries(completion: @escaping (Error?) -> Void) {
@@ -71,11 +78,14 @@ public final class UpdatesLogReader {
   }
 
   private func logStringToFilteredLogEntry(entryString: String, epoch: UInt) -> UpdatesLogEntry? {
-    if entryString.lengthOfBytes(using: .utf8) < 2 {
+    // NOTE: the guard must count Characters, not UTF-8 bytes. Every log line is prefixed
+    // with a multi-byte emoji (see ExpoModulesCore.LogType.prefix), so a truncated line
+    // containing only the prefix passes a byte-length guard and then traps in
+    // index(_:offsetBy:) with "String index is out of bounds" -> SIGABRT.
+    if entryString.count < 2 {
       return nil
     }
-    let suffixFrom = entryString.index(entryString.startIndex, offsetBy: 2)
-    let entryStringSuffix = String(entryString.suffix(from: suffixFrom))
+    let entryStringSuffix = String(entryString.dropFirst(2))
     let entry = UpdatesLogEntry.create(from: entryStringSuffix)
     return entry?.timestamp ?? 0 >= epoch ? entry : nil
   }
@@ -88,6 +98,6 @@ public final class UpdatesLogReader {
     // instead
     let earliestDate = Date().addingTimeInterval(-UpdatesLogReader.MAXIMUM_LOOKBACK_INTERVAL)
     let dateToUse = date.timeIntervalSince1970 < earliestDate.timeIntervalSince1970 ? earliestDate : date
-    return UInt(dateToUse.timeIntervalSince1970) * 1000
+    return UInt(dateToUse.timeIntervalSince1970 * 1000)
   }
 }

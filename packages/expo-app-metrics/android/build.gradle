@@ -64,6 +64,10 @@ android {
     buildConfigField "String", "EXPO_EAS_BUILD_ID",
       easBuildId != null ? "\"${easBuildId}\"" : "null"
   }
+
+  buildFeatures {
+    buildConfig true
+  }
 }
 
 repositories {

@@ -1,4 +1,4 @@
-const createJestPreset = require('expo-module-scripts/createJestPreset');
+const createJestPreset = require('@expo/internal-scripts/createJestPreset');
 const {
   getWebPreset,
   //   getNodePreset,

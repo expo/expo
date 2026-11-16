@@ -4,16 +4,13 @@ import type {
   BuildCacheProvider,
   RunOptions,
 } from '@expo/config';
-import fs from 'fs';
-import path from 'path';
-import resolveFrom from 'resolve-from';
+import { loadModuleSync, resolveFrom } from '@expo/require-utils';
 
 import * as Log from '../../log';
+import { debugEvent } from '../../run/events';
 import { ensureDependenciesAsync } from '../../start/doctor/dependencies/ensureDependenciesAsync';
 import { CommandError } from '../errors';
 import { moduleNameIsDirectFileReference, moduleNameIsPackageReference } from './helpers';
-
-const debug = require('debug')('expo:run:build-cache-provider') as typeof console.log;
 
 export const resolveBuildCacheProvider = async (
   provider: Required<ExpoConfig>['buildCacheProvider'] | undefined,
@@ -29,7 +26,7 @@ export const resolveBuildCacheProvider = async (
         isProjectMutable: true,
         installMessage:
           'eas-build-cache-provider package is required to use the EAS build cache.\n',
-        warningMessage: 'Unable to to use the EAS remote build cache.',
+        warningMessage: 'Unable to use the EAS remote build cache.',
         requiredPackages: [
           {
             pkg: 'eas-build-cache-provider',
@@ -39,11 +36,8 @@ export const resolveBuildCacheProvider = async (
         ],
       });
 
-      // We need to manually load dependencies installed on the fly
-      const plugin = await manuallyLoadDependency(projectRoot, 'eas-build-cache-provider');
-
       return {
-        plugin: plugin.default ?? plugin,
+        plugin: resolvePluginFunction(projectRoot, 'eas-build-cache-provider'),
         options: {},
       };
     } catch (error: any) {
@@ -119,7 +113,7 @@ export async function uploadBuildCache({
     runOptions,
   });
   if (!fingerprintHash) {
-    debug('No fingerprint hash found, skipping upload');
+    debugEvent('build_cache:no_fingerprint', {});
     return;
   }
 
@@ -200,13 +194,17 @@ function importFingerprintForDev(projectRoot: string): null | typeof import('@ex
 function resolvePluginFilePathForModule(projectRoot: string, pluginReference: string) {
   if (moduleNameIsDirectFileReference(pluginReference)) {
     // Only resolve `./file.js`, `package/file.js`, `@org/package/file.js`
-    const pluginScriptFile = resolveFrom.silent(projectRoot, pluginReference);
+    const pluginScriptFile = resolveFrom(projectRoot, pluginReference);
     if (pluginScriptFile) {
       return pluginScriptFile;
     }
   } else if (moduleNameIsPackageReference(pluginReference)) {
-    // Try to resole the `main` entry as config plugin
-    return resolveFrom(projectRoot, pluginReference);
+    // Try to resolve the `main` entry as provider plugin.
+    // Skip the extension/index probes, Node's resolver handles `main`.
+    const packageMainEntry = resolveFrom(projectRoot, pluginReference, { extensions: [] });
+    if (packageMainEntry) {
+      return packageMainEntry;
+    }
   }
 
   throw new Error(
@@ -222,7 +220,7 @@ export function resolvePluginFunction(
   const pluginFile = resolvePluginFilePathForModule(projectRoot, pluginReference);
 
   try {
-    let plugin = require(pluginFile);
+    let plugin = loadModuleSync(pluginFile);
     if (plugin?.default != null) {
       plugin = plugin.default;
     }
@@ -246,21 +244,4 @@ export function resolvePluginFunction(
     }
     throw error;
   }
-}
-
-async function manuallyLoadDependency(projectRoot: string, packageName: string) {
-  const possiblePaths = [
-    path.join(projectRoot, 'node_modules'),
-    ...(require.resolve.paths(packageName) ?? []),
-  ];
-  const nodeModulesFolder = possiblePaths?.find((p) => {
-    const packagePath = path.join(p, packageName);
-    return fs.existsSync(packagePath);
-  });
-  if (!nodeModulesFolder) {
-    throw new Error(`Package ${packageName} not found in ${possiblePaths}`);
-  }
-
-  const { main } = await import(path.join(nodeModulesFolder, packageName, 'package.json'));
-  return import(path.join(nodeModulesFolder, packageName, main));
 }

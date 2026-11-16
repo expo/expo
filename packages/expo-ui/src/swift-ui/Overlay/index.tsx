@@ -30,6 +30,7 @@ export function Overlay(props: OverlayProps) {
   return (
     <OverlayNativeView
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      modifiers={modifiers}
       {...restProps}>
       {children}
     </OverlayNativeView>

@@ -4,14 +4,13 @@ import { Readable, Stream } from 'stream';
 import type { ReadableStream } from 'stream/web';
 import { promisify } from 'util';
 
+import { debugEvent, event } from '../api/events';
 import { createCachedFetch, fetchAsync } from '../api/rest/client';
 import type { FetchLike, ProgressCallback } from '../api/rest/client.types';
 import { createTempFilePath } from './createTempPath';
 import { ensureDirectoryAsync } from './dir';
 import { CommandError } from './errors';
 import { extractAsync } from './tar';
-
-const debug = require('debug')('expo:utils:downloadAppAsync') as typeof console.log;
 
 const pipeline = promisify(Stream.pipeline);
 
@@ -37,7 +36,8 @@ async function downloadAsync({
     });
   }
 
-  debug(`Downloading ${url} to ${outputPath}`);
+  debugEvent('download_started', { url, output: outputPath });
+  const startedAt = Date.now();
   const res = await fetchInstance(url, {
     onProgress,
   });
@@ -47,7 +47,12 @@ async function downloadAsync({
       `Unexpected response: ${res.statusText}. From url: ${url}`
     );
   }
-  return pipeline(Readable.fromWeb(res.body as ReadableStream), fs.createWriteStream(outputPath));
+  await pipeline(Readable.fromWeb(res.body as ReadableStream), fs.createWriteStream(outputPath));
+  event('download', {
+    url,
+    bytes: fs.statSync(outputPath).size,
+    ms: Date.now() - startedAt,
+  });
 }
 
 export async function downloadAppAsync({
@@ -70,7 +75,7 @@ export async function downloadAppAsync({
     // would corrupt the file causing tar to fail with `TAR_BAD_ARCHIVE`.
     const tmpPath = createTempFilePath(path.basename(outputPath));
     await downloadAsync({ url, outputPath: tmpPath, cacheDirectory, onProgress });
-    debug(`Extracting ${tmpPath} to ${outputPath}`);
+    debugEvent('extract_started', { input: tmpPath, output: outputPath });
     await ensureDirectoryAsync(outputPath);
     await extractAsync(tmpPath, outputPath);
   } else {

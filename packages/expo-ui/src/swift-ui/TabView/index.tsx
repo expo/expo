@@ -63,7 +63,7 @@ export type { TabProps } from './Tab';
  * `value` prop, which is used for selection.
  *
  * For routed bottom-tab navigation across full-screen routes, prefer
- * `expo-router/unstable-native-tabs`.
+ * `expo-router/native-tabs`.
  *
  * @platform ios
  */

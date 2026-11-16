@@ -107,4 +107,15 @@ internal class DevLauncherUpdatesHelperTest {
 
     Truth.assertThat((configuration["requestHeaders"] as HashMap<*, *>)["Expo-Dev-Client-ID"]).isEqualTo(installationID)
   }
+
+  @Test
+  fun `createUpdatesConfiguration sets forwarding headers`() {
+    val url = Uri.parse("https://proxy.example.dev/dev/manifest")
+    val configuration = createUpdatesConfigurationWithUrl(url, url, runtimeVersion, null)
+    val requestHeaders = configuration["requestHeaders"] as HashMap<*, *>
+
+    Truth.assertThat(requestHeaders["Forwarded"]).isEqualTo("host=\"proxy.example.dev\";proto=https")
+    Truth.assertThat(requestHeaders["X-Forwarded-Host"]).isEqualTo("proxy.example.dev")
+    Truth.assertThat(requestHeaders["X-Forwarded-Proto"]).isEqualTo("https")
+  }
 }

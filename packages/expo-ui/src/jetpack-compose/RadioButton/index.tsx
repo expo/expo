@@ -1,7 +1,18 @@
 import { requireNativeView } from 'expo';
+import type { ColorValue } from 'react-native';
 
 import { type ModifierConfig, type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
+
+/**
+ * Colors for the radio button in different states.
+ */
+export type RadioButtonColors = {
+  selectedColor?: ColorValue;
+  unselectedColor?: ColorValue;
+  disabledSelectedColor?: ColorValue;
+  disabledUnselectedColor?: ColorValue;
+};
 
 export interface RadioButtonProps {
   /**
@@ -9,9 +20,18 @@ export interface RadioButtonProps {
    */
   selected: boolean;
   /**
+   * Whether the radio button is enabled.
+   * @default true
+   */
+  enabled?: boolean;
+  /**
    * Callback that is called when the radio button is clicked.
    */
   onClick?: () => void;
+  /**
+   * Colors for the radio button in different states.
+   */
+  colors?: RadioButtonColors;
   /**
    * Modifiers for the component.
    */

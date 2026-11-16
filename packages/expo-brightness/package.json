@@ -1,6 +1,6 @@
 {
   "name": "expo-brightness",
-  "version": "56.0.5",
+  "version": "58.0.2",
   "description": "Provides an API to get and set screen brightness.",
   "keywords": [
     "brightness",
@@ -23,29 +23,33 @@
   "main": "build/Brightness.js",
   "types": "build/Brightness.d.ts",
   "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
+    "swift:format": "../../scripts/swift-format.sh",
+    "swift:lint": "../../scripts/swift-format.sh --lint",
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -b tsconfig.all.json"
+    "typecheck": "tsc -b tsconfig.all.json",
+    "prepack": "expo-module prepack"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@expo/internal-scripts": "workspace:*",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

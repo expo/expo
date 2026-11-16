@@ -32,3 +32,7 @@
 
 # Workaround zstd-kmp R8 issue - https://github.com/square/zstd-kmp/issues/108
 -keep class com.squareup.zstd.** { *; }
+
+# Workaround Fresco R8 issue - https://github.com/facebook/fresco/issues/2867
+-keep class com.facebook.animated.gif.GifImageDecoder { public <init>(...); }
+-keep class com.facebook.animated.webp.WebPImageDecoder { public <init>(...); }

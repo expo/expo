@@ -50,16 +50,16 @@ export function BuildEnvironmentSwitch() {
   }
 
   return (
-    <div className="flex items-start gap-3 rounded-lg border border-default bg-subtle px-4 py-3">
+    <div className="flex items-start gap-3 rounded-3xl border border-default bg-subtle px-4 py-3">
       <div className="mt-1">
         <Switch onChange={onSwitchChange} value={!buildEnv} />{' '}
       </div>
       <div>
-        <HEADLINE>Build with Expo Application Services (EAS)</HEADLINE>
+        <HEADLINE>Build with Expo Services</HEADLINE>
         <CALLOUT theme="secondary">
           {' '}
-          EAS compiles your app in the cloud and produces a build that you can install on your
-          device. Alternatively, you can compile your app on your own computer.
+          Expo Build compiles your app in the cloud and produces a build that you can install on
+          your device. Alternatively, you can compile your app on your own computer.
         </CALLOUT>
       </div>
     </div>

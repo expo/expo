@@ -203,7 +203,7 @@ const findNativeTargetSection = (
 
   if (!key) {
     throw new Error(
-      'Native target key mathching predicate cannot be found in native target section of PBXProj'
+      'Native target key matching predicate cannot be found in native target section of PBXProj'
     );
   }
 

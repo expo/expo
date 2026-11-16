@@ -13,11 +13,14 @@ import type Bundler from '@expo/metro/metro/Bundler';
 import type DependencyGraph from '@expo/metro/metro/node-haste/DependencyGraph';
 import path from 'path';
 
-import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
+import {
+  isFailedToResolveNameError,
+  isFailedToResolvePathError,
+  isFailedToResolveUnsupportedError,
+} from './metroErrors';
+import { event } from './resolveEvents';
 import type { StrictResolverFactory } from './withMetroMultiPlatform';
 import type { ExpoCustomMetroResolver } from './withMetroResolvers';
-
-const debug = require('debug')('expo:start:server:metro:typescript-resolver') as typeof console.log;
 
 interface ParsedTsConfig {
   baseUrl?: string;
@@ -140,7 +143,7 @@ function setupTsConfigWatcher(
 const escapePrefix = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 function joinBaseUrl(baseUrl: string, lookup: string): string {
-  return path.join(baseUrl, lookup);
+  return path.resolve(baseUrl, lookup);
 }
 
 /** Attempts to resolve a target module given a pre-processed TypeScript configuration */
@@ -155,14 +158,13 @@ export function _resolveWithTsConfigPaths(
     for (const alias of exactPaths) {
       const result = resolve(alias);
       if (result != null) {
-        debug(`${moduleName} -> ${alias}`);
         return result;
       }
     }
     return null;
   }
 
-  // Widlcard matches contain '*' and we first match the preceding string before it with a regex
+  // Wildcard matches contain '*' and we first match the preceding string before it with a regex
   if (config.prefixRe != null) {
     const match = config.prefixRe.exec(moduleName);
     if (match != null) {
@@ -180,7 +182,6 @@ export function _resolveWithTsConfigPaths(
           const possibleResult = alias.replace('*', star);
           const result = resolve(possibleResult);
           if (result != null) {
-            debug(`${moduleName} -> ${possibleResult}`);
             return result;
           }
         }
@@ -201,7 +202,6 @@ export function _resolveWithTsConfigPaths(
             const possibleResult = alias.replace('*', star);
             const result = resolve(possibleResult);
             if (result != null) {
-              debug(`${moduleName} -> ${possibleResult}`);
               return result;
             }
           }
@@ -220,7 +220,6 @@ export function _resolveWithTsConfigPaths(
     const possibleResult = joinBaseUrl(config.baseUrl, moduleName);
     const result = resolve(possibleResult);
     if (result) {
-      debug(`baseUrl: ${moduleName} -> ${possibleResult}`);
       return result;
     }
   }
@@ -241,7 +240,9 @@ function getOptionalResolve(
       // If the error is directly related to a resolver not being able to resolve a module, then
       // we can ignore the error and try the next resolver. Otherwise, we should throw the error.
       const isResolutionError =
-        isFailedToResolveNameError(error) || isFailedToResolvePathError(error);
+        isFailedToResolveNameError(error) ||
+        isFailedToResolvePathError(error) ||
+        isFailedToResolveUnsupportedError(error);
       if (!isResolutionError) {
         throw error;
       }
@@ -326,7 +327,7 @@ function loadTsConfigPaths(projectRoot: string, depGraph: DependencyGraph): Pars
     return _loadTsConfigWithExtends(projectRoot, configPath, depGraph);
   } catch (error: any) {
     if (error?.isJsonFileError || error?.name === 'SyntaxError') {
-      debug(`Failed to parse ${configPath}: ${error.message}`);
+      event('tsconfig_parse_failed', { path: configPath, error: error.message });
       return null;
     }
     throw error;
@@ -489,6 +490,6 @@ function resolveExtendsPath(
 /** TypeScript's `${configDir}` template prefix for the user config's path */
 function substituteConfigDir(value: string, configDir: string): string {
   return value.startsWith('${configDir}')
-    ? value.replace('${configDir}', configDir.endsWith(path.sep) ? '.' : './')
+    ? path.resolve(configDir, value.replace('${configDir}', './'))
     : value;
 }

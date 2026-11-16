@@ -68,22 +68,39 @@ public:
   }
 
   /**
-   Executes a block of code and catches any C++ exceptions that are thrown.
+   Executes a C++ callable and catches any C++ exceptions that are thrown.
    Caught exceptions are stored in thread-local storage and can be retrieved
    using `getCurrent()`. The function returns `nullptr` when an exception occurs.
+
+   Takes a forwarding reference to a C++ callable (e.g. a lambda) rather than an
+   Objective-C block. Every caller passes a pure C++ body, so no Swift closure
+   crosses this boundary; the block only added a non-inlinable indirect call and
+   a dependency on the Objective-C runtime. This helper is C++-only and is not
+   imported into Swift.
    */
-  template <typename Result>
-  inline static Result tryCatch(jsi::IRuntime &runtime, Result(^block)(void)) {
+  template <typename Fn>
+  inline static auto tryCatch(jsi::IRuntime &runtime, Fn &&block) -> decltype(block()) {
     try {
       return block();
-    } catch (jsi::JSError e) {
-      _current = std::make_unique<CppError>(std::move(e));
-    } catch (const std::exception &e) {
-      _current = std::make_unique<CppError>(jsi::JSError(runtime, e.what()));
     } catch (...) {
-      _current = std::make_unique<CppError>(jsi::JSError(runtime, "Unknown C++ error"));
+      storeCaughtException(runtime);
     }
     return nullptr;
+  }
+
+  /**
+   Like `tryCatch`, for a callable that returns nothing. Returns `false` when an exception was caught
+   and stored, so the caller reads the thread-local error only after a failure.
+   */
+  template <typename Fn>
+  inline static bool tryCatchSucceeded(jsi::IRuntime &runtime, Fn &&block) {
+    try {
+      block();
+      return true;
+    } catch (...) {
+      storeCaughtException(runtime);
+    }
+    return false;
   }
 
   /**
@@ -122,6 +139,22 @@ public:
   }
 
 private:
+  /**
+   Stores the exception that is being handled as the current thread's error. Must be called from
+   a `catch` block.
+   */
+  inline static void storeCaughtException(jsi::IRuntime &runtime) {
+    try {
+      throw;
+    } catch (jsi::JSError e) {
+      _current = std::make_unique<CppError>(std::move(e));
+    } catch (const std::exception &e) {
+      _current = std::make_unique<CppError>(jsi::JSError(runtime, e.what()));
+    } catch (...) {
+      _current = std::make_unique<CppError>(jsi::JSError(runtime, "Unknown C++ error"));
+    }
+  }
+
   /**
    Pointer to the last thrown and caught error. Each thread maintains its own
    error pointer, eliminating the need for synchronization and preventing errors

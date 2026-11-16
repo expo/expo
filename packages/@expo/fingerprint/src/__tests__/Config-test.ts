@@ -116,6 +116,18 @@ module.exports = config;
     });
   });
 
+  it('should support preset from config', async () => {
+    await jest.isolateModulesAsync(async () => {
+      const configContents = `module.exports = { preset: 'relaxed' };`;
+      vol.fromJSON({ '/app/fingerprint.config.js': configContents });
+      jest.doMock('/app/fingerprint.config.js', () => requireString(configContents), {
+        virtual: true,
+      });
+      const config = await loadConfigAsync('/app', true);
+      expect(config).toEqual({ preset: 'relaxed' });
+    });
+  });
+
   it('should support sourceSkips as an array of strings', async () => {
     await jest.isolateModulesAsync(async () => {
       const configContents = `\

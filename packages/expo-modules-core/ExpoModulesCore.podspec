@@ -95,7 +95,7 @@ Pod::Spec.new do |s|
       '"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header"',
       '"$(PODS_ROOT)/Headers/Private/Yoga"', # Expo.h -> ExpoModulesCore-umbrella.h -> Fabric ViewProps.h -> Private Yoga headers
     ],
-    'OTHER_LDFLAGS' => '$(inherited) -lc++', # C++ standard library - will propagate to dependant targets
+    'OTHER_LDFLAGS' => '$(inherited) -lc++', # C++ standard library - will propagate to dependent targets
   }
 
   if use_hermes
@@ -115,14 +115,12 @@ Pod::Spec.new do |s|
 
   install_modules_dependencies(s)
 
-  if (!Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s))
-    s.static_framework = true
-    s.header_dir     = 'ExpoModulesCore'
-    s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
-    s.exclude_files = ['ios/Tests', 'ios/Worklets', 'ios/WorkletsTests', 'ios/WorkletsAdapter']
-    s.compiler_flags = compiler_flags
-    s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
-  end
+  s.static_framework = true
+  s.header_dir     = 'ExpoModulesCore'
+  s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
+  s.exclude_files = ['ios/Tests', 'ios/Benchmarks', 'ios/Worklets', 'ios/WorkletsTests', 'ios/WorkletsAdapter']
+  s.compiler_flags = compiler_flags
+  s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
@@ -143,6 +141,17 @@ Pod::Spec.new do |s|
     test_spec.pod_target_xcconfig = {
       'OTHER_LDFLAGS' => '$(inherited) -lc++',
       'SWIFT_OBJC_BRIDGING_HEADER' => '$(PODS_TARGET_SRCROOT)/ios/Tests/Tests-Bridging-Header.h'
+    }
+  end
+
+  # Performance benchmarks. A separate spec, so unit test runs neither build nor run them.
+  s.test_spec 'Benchmarks' do |test_spec|
+    test_spec.dependency 'ExpoModulesTestCore'
+    # The descriptor benchmarks run `NewComponentDescriptor` through the test double that the tests use.
+    test_spec.source_files = 'ios/Benchmarks/**/*.{h,swift}', 'ios/Tests/Mocks/EXTestNewComponentDescriptor.{h,mm}'
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '$(inherited) -lc++',
+      'SWIFT_OBJC_BRIDGING_HEADER' => '$(PODS_TARGET_SRCROOT)/ios/Benchmarks/Benchmarks-Bridging-Header.h'
     }
   end
 end

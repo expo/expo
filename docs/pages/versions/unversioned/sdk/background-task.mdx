@@ -166,10 +166,10 @@ export default function BackgroundTaskScreen() {
       </View>
       <Button
         disabled={status === BackgroundTask.BackgroundTaskStatus.Restricted}
-        title={isRegistered ? 'Cancel Background Task' : 'Schedule Background Task'}
+        title={isRegistered ? 'Cancel background task' : 'Schedule background task'}
         onPress={toggle}
       />
-      <Button title="Check Background Task Status" onPress={updateAsync} />
+      <Button title="Check background task status" onPress={updateAsync} />
     </View>
   );
 }
@@ -210,7 +210,7 @@ function App() {
     await BackgroundTask.triggerTaskWorkerForTestingAsync();
   };
 
-  return <Button title="Trigger Background Task" onPress={triggerTask} />;
+  return <Button title="Trigger background task" onPress={triggerTask} />;
 }
 ```
 

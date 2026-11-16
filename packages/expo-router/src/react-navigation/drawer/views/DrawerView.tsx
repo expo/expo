@@ -77,12 +77,6 @@ function DrawerViewBase({
     overlayAccessibilityLabel,
   } = descriptors[focusedRouteKey]!.options;
 
-  const [loaded, setLoaded] = React.useState([focusedRouteKey]);
-
-  if (!loaded.includes(focusedRouteKey)) {
-    setLoaded([...loaded, focusedRouteKey]);
-  }
-
   const previousRouteKeyRef = React.useRef(focusedRouteKey);
 
   React.useEffect(() => {
@@ -94,7 +88,8 @@ function DrawerViewBase({
     ) {
       const prevRoute = state.routes.find((route) => route.key === previousRouteKey);
 
-      if (prevRoute?.state?.type === 'stack' && prevRoute.state.key) {
+      if (prevRoute?.state?.key) {
+        // A targeted POP_TO_TOP is a no-op for nested navigators that are not stacks.
         navigation.dispatch({
           ...StackActions.popToTop(),
           target: prevRoute.state.key,
@@ -109,17 +104,17 @@ function DrawerViewBase({
 
   const { colors } = useTheme();
 
-  const drawerStatus = getDrawerStatusFromState(state);
+  const drawerStatus = getDrawerStatusFromState(state, defaultStatus);
 
   const handleDrawerOpen = useLatestCallback(() => {
-    navigation.dispatch({
+    navigation.dispatchSync({
       ...DrawerActions.openDrawer(),
       target: state.key,
     });
   });
 
   const handleDrawerClose = useLatestCallback(() => {
-    navigation.dispatch({
+    navigation.dispatchSync({
       ...DrawerActions.closeDrawer(),
       target: state.key,
     });
@@ -206,17 +201,14 @@ function DrawerViewBase({
       <MaybeScreenContainer enabled={detachInactiveScreens} hasTwoStates style={styles.content}>
         {state.routes.map((route, index) => {
           const descriptor = descriptors[route.key]!;
-          const { lazy = true } = descriptor.options;
           const isFocused = state.index === index;
-          const isPreloaded = state.preloadedRouteKeys.includes(route.key);
 
-          if (lazy && !loaded.includes(route.key) && !isFocused && !isPreloaded) {
-            // Don't render a lazy screen if we've never navigated to it or it wasn't preloaded
+          if (descriptor.route.key === undefined) {
+            // Don't render placeholder screens.
             return null;
           }
 
           const {
-            freezeOnBlur,
             header = ({ layout, options }: DrawerHeaderProps) => (
               <Header
                 {...options}
@@ -245,19 +237,17 @@ function DrawerViewBase({
               key={route.key}
               style={[StyleSheet.absoluteFill, { zIndex: isFocused ? 0 : -1 }]}
               visible={isFocused}
-              enabled={detachInactiveScreens}
-              freezeOnBlur={freezeOnBlur}
-              shouldFreeze={!isFocused && !isPreloaded}>
+              enabled={detachInactiveScreens}>
               <Screen
                 focused={isFocused}
-                route={descriptor.route}
+                route={route}
                 navigation={descriptor.navigation}
                 headerShown={headerShown}
                 headerStatusBarHeight={headerStatusBarHeight}
                 headerTransparent={headerTransparent}
                 header={header({
                   layout: dimensions,
-                  route: descriptor.route,
+                  route,
                   navigation: descriptor.navigation as DrawerNavigationProp<ParamListBase>,
                   options: descriptor.options,
                 })}

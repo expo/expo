@@ -1,6 +1,65 @@
 import ExpoSecureStore from '../ExpoSecureStore';
 import * as SecureStore from '../SecureStore';
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+const confirmationCases: {
+  name: string;
+  options: SecureStore.SecureStoreOptions | undefined;
+  expectedOptions: SecureStore.SecureStoreOptions;
+}[] = [
+  { name: 'when omitted', options: undefined, expectedOptions: {} },
+  {
+    name: 'when confirmation is required',
+    options: { requireConfirmation: true },
+    expectedOptions: { requireConfirmation: true },
+  },
+  {
+    name: 'when confirmation is not required',
+    options: { requireConfirmation: false },
+    expectedOptions: { requireConfirmation: false },
+  },
+];
+
+describe.each(confirmationCases)(
+  'forwards confirmation options $name',
+  ({ options, expectedOptions }) => {
+    it('when setting a value asynchronously', async () => {
+      await SecureStore.setItemAsync('key', 'value', options);
+
+      expect(ExpoSecureStore.setValueWithKeyAsync).toHaveBeenLastCalledWith(
+        'value',
+        'key',
+        expectedOptions
+      );
+    });
+
+    it('when getting a value asynchronously', async () => {
+      await SecureStore.getItemAsync('key', options);
+
+      expect(ExpoSecureStore.getValueWithKeyAsync).toHaveBeenLastCalledWith('key', expectedOptions);
+    });
+
+    it('when setting a value synchronously', () => {
+      SecureStore.setItem('key', 'value', options);
+
+      expect(ExpoSecureStore.setValueWithKeySync).toHaveBeenLastCalledWith(
+        'value',
+        'key',
+        expectedOptions
+      );
+    });
+
+    it('when getting a value synchronously', () => {
+      SecureStore.getItem('key', options);
+
+      expect(ExpoSecureStore.getValueWithKeySync).toHaveBeenLastCalledWith('key', expectedOptions);
+    });
+  }
+);
+
 it(`sets values`, async () => {
   const testKey = 'key-test_0.0';
   const testValue = 'value `~!@#$%^&*();:\'"-_.,<>';
@@ -41,6 +100,37 @@ it(`checks for invalid keys`, async () => {
   await expect(SecureStore.getItemAsync('@')).rejects.toMatchSnapshot();
 
   expect(ExpoSecureStore.getValueWithKeyAsync).not.toHaveBeenCalled();
+});
+
+describe('requireAuthentication option', () => {
+  it(`forwards authentication methods unchanged`, async () => {
+    for (const requireAuthentication of ['none', 'biometry', 'deviceCredentials'] as const) {
+      await SecureStore.setItemAsync('key', 'value', { requireAuthentication });
+
+      expect(ExpoSecureStore.setValueWithKeyAsync).toHaveBeenLastCalledWith('value', 'key', {
+        requireAuthentication,
+      });
+    }
+  });
+
+  it(`maps deprecated boolean values to authentication methods and warns once`, async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await SecureStore.setItemAsync('key', 'value', { requireAuthentication: true });
+    expect(ExpoSecureStore.setValueWithKeyAsync).toHaveBeenLastCalledWith('value', 'key', {
+      requireAuthentication: 'biometry',
+    });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenLastCalledWith(expect.stringContaining('deprecated'));
+
+    await SecureStore.getItemAsync('key', { requireAuthentication: false });
+    expect(ExpoSecureStore.getValueWithKeyAsync).toHaveBeenLastCalledWith('key', {
+      requireAuthentication: 'none',
+    });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+
+    warnSpy.mockRestore();
+  });
 });
 
 it(`checks for invalid values`, async () => {

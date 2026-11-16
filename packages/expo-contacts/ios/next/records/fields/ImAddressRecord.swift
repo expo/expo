@@ -1,14 +1,14 @@
 import ExpoModulesCore
 
 struct NewImAddressRecord: NewRecord {
-  @Field var label: String
+  @Field var label: String?
   @Field var username: String?
   @Field var service: String?
 }
 
 struct ExistingImAddressRecord: ExistingRecord {
   @Field(FieldOption.required) var id: String
-  @Field var label: String
+  @Field var label: String?
   @Field var username: String?
   @Field var service: String?
 

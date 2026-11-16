@@ -95,20 +95,6 @@ internal class NonisolatedUnsafeVar<VarType>: @unchecked Sendable {
   }
 }
 
-/**
- Like ``NonisolatedUnsafeVar``, but holds a weak reference so it can be captured into an isolated
- closure without extending the referenced object's lifetime. Useful for sending a non-`Sendable`
- object across an isolation boundary while keeping weak semantics.
- - TODO: Remove it once the code is refactored to deal better with the concurrency model.
- */
-internal class NonisolatedUnsafeWeakVar<VarType: AnyObject>: @unchecked Sendable {
-  nonisolated(unsafe) weak var value: VarType?
-
-  init(_ value: VarType?) {
-    self.value = value
-  }
-}
-
 internal func performSynchronouslyOnMainActor<Result: Sendable>(_ closure: @MainActor () throws -> Result) rethrows -> Result {
   if Thread.isMainThread {
     return try MainActor.assumeIsolated(closure)
@@ -139,16 +125,13 @@ public struct Utilities {
   }
 
   /**
-   Returns the app's key window. On iOS and tvOS it is resolved across all connected scenes,
-   which is more reliable than the deprecated `UIApplication.keyWindow` once the app has multiple scenes.
+   Returns the app's key window. On iOS and tvOS it is resolved from the foregrounded scene, so
+   callers presenting UI don't reach a window in a scene the user isn't looking at.
    */
   @MainActor
   public static func keyWindow() -> UIWindow? {
 #if os(iOS) || os(tvOS)
-    return UIApplication.shared.connectedScenes
-      .compactMap { $0 as? UIWindowScene }
-      .flatMap { $0.windows }
-      .first { $0.isKeyWindow }
+    return SceneGeometry.keyWindow()
 #elseif os(macOS)
     return NSApplication.shared.keyWindow
 #endif

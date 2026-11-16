@@ -6,12 +6,12 @@ import fs from 'fs/promises';
 import https from 'https';
 import path from 'path';
 import { pipeline } from 'stream/promises';
-import tar from 'tar';
+import * as tar from 'tar';
 
 const SQLITE_DOWNLOAD_URL = 'https://github.com/sqlite/sqlite/archive';
 const SQLCIPHER_DOWNLOAD_URL = 'https://github.com/sqlcipher/sqlcipher/archive';
-const DEFAULT_SQLITE_VERSION = '3.50.3';
-const DEFAULT_SQLCIPHER_VERSION = '4.7.0';
+const DEFAULT_SQLITE_VERSION = '3.53.3';
+const DEFAULT_SQLCIPHER_VERSION = '4.17.0';
 
 async function runAsync() {
   const tarballOutputPath = 'sqlite.tar.gz';

@@ -44,7 +44,7 @@ The `process.env.EXPO_OS` can be used to detect the platform that the JavaScript
 
 ## Remove development-only code
 
-In your project, there might be code designed to help with the development process. It should be excluded from the production bundle. To handle these scenarios, use the `process.env.NODE_ENV `environment variable or the non-standard `__DEV__` global boolean.
+In your project, there might be code designed to help with the development process. It should be excluded from the production bundle. To handle these scenarios, use the `process.env.NODE_ENV` environment variable or the non-standard `__DEV__` global boolean.
 
 <Step label="1">
 
@@ -366,7 +366,7 @@ export { ArrowRight, ArrowLeft } from './icons';
 
 This will be shaken according to standard tree shaking rules. If you only import `ArrowRight`, then `ArrowLeft` will be removed from the production bundle.
 
-If the star export pulls in ambiguous exports such as `module.exports.ArrowUp` or `exports.ArrowDown`, then the optimization pass will not expand the star export and no exports will be removed from the barrel file. You can use [Expo Atlas](/guides/analyzing-bundles/#analyzing-bundle-size-with-atlas) to inspect the expanded exports.
+If the star export pulls in ambiguous exports such as `module.exports.ArrowUp` or `exports.ArrowDown`, then the optimization pass will not expand the star export and no exports will be removed from the barrel file. You can use [Expo Atlas](/guides/analyzing-bundles/#analyzing-bundle-size-with-expo-atlas) to inspect the expanded exports.
 
 You can use this strategy with libraries like `lucide-react` to remove all icons that are not used in your app.
 

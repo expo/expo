@@ -95,6 +95,8 @@ export declare class Contact {
   /**
    * Retrieves specific details for the contact.
    * This method is useful when you want to retrieve only certain fields of the contact.
+   * > On iOS, the note [requires an entitlement](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
+   * > Without it, requesting `ContactField.NOTE` rejects; omitting `fields` leaves the note out.
    * @param fields - An array of field names to retrieve. If omitted, all available fields are fetched.
    * @returns a promise resolving to an object containing the requested details.
    * @example
@@ -857,7 +859,7 @@ export declare class Contact {
    * Retrieves the note associated with the contact.
    * > On iOS the `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
    * > The Expo Go app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple](https://developer.apple.com/contact/request/contact-note-field),
-   * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/create-a-build/).
+   * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build).
    * @returns a promise resolving to the note string or `null` if not set.
    * @example
    * ```ts
@@ -870,7 +872,7 @@ export declare class Contact {
    * Sets the note for the contact.
    * > On iOS the `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
    * > The Expo Go app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple](https://developer.apple.com/contact/request/contact-note-field),
-   * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/create-a-build/).
+   * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build).
    * @param note - The new note string or `null` to clear it.
    * @returns a promise resolving to a boolean indicating whether the operation was successful.
    * @example
@@ -1002,7 +1004,7 @@ export declare class Contact {
    * @returns a promise resolving to `true` if a contact was created, `false` otherwise.
    * @example
    * ```ts
-   * const wasCreated = await Contact.createWithForm({
+   * const wasCreated = await Contact.presentCreateForm({
    *   givenName: 'Jane',
    *   familyName: 'Doe'
    * });
@@ -1059,6 +1061,8 @@ export declare class Contact {
   /**
    * A static method that retrieves specific fields for all contacts or a subset of contacts.
    * This is an optimized method for fetching bulk data; it avoids creating full [`Contact`](#contact) instances.
+   * > On iOS, the note [requires an entitlement](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
+   * > Without it, requesting `ContactField.NOTE` rejects.
    * @param fields - The list of fields to retrieve.
    * @param options - Query options to filter the contacts.
    * @returns a promise resolving to an array of partial contact details objects.

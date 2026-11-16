@@ -1,10 +1,10 @@
 import { useLocalSearchParams, usePathname } from 'expo-router';
 
-import { Table, TableRow } from '../components/Table';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
+import { Table, TableRow } from '../components/Table';
 
 export default function NoLoaderRoute() {
-  return (<NoLoaderScreen />)
+  return <NoLoaderScreen />;
 }
 
 const NoLoaderScreen = () => {
@@ -23,6 +23,4 @@ const NoLoaderScreen = () => {
       </SiteLinks>
     </>
   );
-}
-
-
+};

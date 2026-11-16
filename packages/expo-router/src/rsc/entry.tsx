@@ -8,8 +8,8 @@
 'use client';
 
 import React from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { SafeAreaProvider } from '../SafeAreaProvider';
 import { ErrorBoundary } from '../views/ErrorBoundary';
 import type { ErrorBoundaryProps } from '../views/Try';
 import { Try } from '../views/Try';

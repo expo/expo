@@ -22,9 +22,6 @@ namespace expo {
       return;
     }
 
-    workletRuntime->executeSync([func = std::move(func)](jsi::Runtime &rt) -> jsi::Value {
-      func(rt);
-      return jsi::Value::undefined();
-    });
+    workletRuntime->runSync(func);
   }
 } // namespace expo

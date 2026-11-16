@@ -3,6 +3,7 @@ package expo.modules.observe
 import android.content.Context
 import android.util.Log
 import expo.modules.appmetrics.AppMetricsModule
+import expo.modules.easclient.EASClientID
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
@@ -18,6 +19,9 @@ class Config(
   @Field val dispatchingEnabled: Boolean? = null,
   @Field val dispatchInDebug: Boolean? = null,
   @Field val sampleRate: Double? = null,
+  @Field val errorSampleRate: Double? = null,
+  @Field val ignoredMetrics: List<String> = emptyList(),
+  @Field val ignoredEvents: List<String> = emptyList(),
   @Field val integrations: Map<String, Any?>? = null
 ) : Record
 
@@ -58,9 +62,14 @@ class ObserveModule : Module() {
         observabilityManager.scheduleBackgroundDispatch()
       }
 
+      Constant("clientId") {
+        EASClientID(context).uuid.toString().lowercase()
+      }
+
       AsyncFunction("dispatchEvents") Coroutine { ->
         observabilityManager.dispatchUnsentMetrics()
         observabilityManager.dispatchUnsentLogs()
+        observabilityManager.dispatchUnsentSpans()
       }
 
       Function("configure") { config: Config ->
@@ -69,7 +78,10 @@ class ObserveModule : Module() {
           PersistedConfig(
             dispatchingEnabled = config.dispatchingEnabled,
             dispatchInDebug = config.dispatchInDebug,
-            sampleRate = config.sampleRate
+            sampleRate = config.sampleRate,
+            errorSampleRate = config.errorSampleRate,
+            ignoredMetrics = config.ignoredMetrics,
+            ignoredEvents = config.ignoredEvents
           )
         )
         // Environment falls back to the bundle default (set on JS package import) so an

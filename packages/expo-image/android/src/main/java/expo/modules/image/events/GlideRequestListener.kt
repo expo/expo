@@ -1,7 +1,9 @@
 package expo.modules.image.events
 
+import android.content.ContentResolver
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.util.Log
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -9,6 +11,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import expo.modules.image.ExpoImageModule
 import expo.modules.image.ExpoImageViewWrapper
+import expo.modules.image.ImageViewWrapperTarget
 import expo.modules.image.decodedsource.DecodedModel
 import expo.modules.image.enums.ImageCacheType
 import expo.modules.image.records.ImageErrorEvent
@@ -28,6 +31,11 @@ class GlideRequestListener(
     target: Target<Drawable>,
     isFirstResource: Boolean
   ): Boolean {
+    // A null source is valid while displaying only a placeholder. Glide treats its
+    // empty main request as a failure, but there is no image load error to report.
+    if (model == null) {
+      return false
+    }
     val errorMessage = e
       ?.message
       // Glide always append that line to the end of the message.
@@ -35,10 +43,16 @@ class GlideRequestListener(
       ?.removeSuffix("\n call GlideException#logRootCauses(String) for more detail")
       ?: "Unknown error"
 
-    expoImageViewWrapper
-      .get()
-      ?.onError
-      ?.invoke(ImageErrorEvent(errorMessage))
+    // Glide is still inside its failure callback here, so it forbids starting or clearing loads.
+    // Dispatching the event synchronously lets event listeners (e.g. Reanimated) mount a layout
+    // change that resizes this view and restarts or clears the failed request, so Glide throws.
+    // Post the event, like `onLoad` in `onResourceReady`.
+    val imageWrapper = expoImageViewWrapper.get()
+    if (imageWrapper != null) {
+      imageWrapper.appContext.mainQueue.launch {
+        imageWrapper.onError.invoke(ImageErrorEvent(errorMessage))
+      }
+    }
 
     Log.e("ExpoImage", errorMessage)
     e?.logRootCauses("ExpoImage")
@@ -56,6 +70,15 @@ class GlideRequestListener(
       ?: resource.intrinsicWidth
     val intrinsicHeight = (resource as? SVGPictureDrawable)?.svgIntrinsicHeight
       ?: resource.intrinsicHeight
+
+    // Bundled resources are always instantly available, so treat them as memory hits for
+    // `transition.skipOnCacheHit`, matching iOS. The `onLoad` event keeps the real cache tier.
+    val isBundledResource = model is Uri && model.scheme == ContentResolver.SCHEME_ANDROID_RESOURCE
+    (target as? ImageViewWrapperTarget)?.cacheType = if (isBundledResource) {
+      ImageCacheType.MEMORY
+    } else {
+      ImageCacheType.fromNativeValue(dataSource)
+    }
 
     val imageWrapper = expoImageViewWrapper.get() ?: return false
     val appContext = imageWrapper.appContext

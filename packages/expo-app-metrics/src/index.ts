@@ -1,13 +1,17 @@
 import { installErrorHandler } from './installErrorHandler';
 
 export { default } from './module';
+export { setErrorHandlerEnabled } from './installErrorHandler';
 export { AppMetricsRoot } from './AppMetricsRoot';
+export type { AppMetricsRootProps } from './AppMetricsRoot';
 export { AppMetricsErrorBoundary } from './AppMetricsErrorBoundary';
 export type {
   AppMetricsErrorBoundaryProps,
   AppMetricsErrorBoundaryFallbackProps,
 } from './AppMetricsErrorBoundary';
 export type { Session } from './Session';
+export type { Span } from './Span';
+export { startSpan, withSpan, recordSpan } from './spans';
 export * from './types';
 export * from './useNetworkRequestObserver';
 

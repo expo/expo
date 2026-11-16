@@ -199,7 +199,11 @@ fun injectDevServerHelper(
 }
 
 private fun parseUrl(url: Uri): Pair<String, String> {
-  val port = if (url.port != -1) url.port else HttpUrl.defaultPort(url.scheme ?: "http")
+  val port = if (url.port != -1) {
+    url.port
+  } else {
+    HttpUrl.defaultPort(url.scheme ?: "http")
+  }
   val debugServerHost = url.host + ":" + port
   // We need to remove "/" which is added to begin of the path by the Uri
   // and the bundle type

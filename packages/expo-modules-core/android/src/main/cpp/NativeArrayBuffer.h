@@ -56,7 +56,7 @@ public:
 
   /**
    * Creates a NativeArrayBuffer from the given ArrayBuffer. Uses zero-copy when the
-   * buffer is native-backed (tryGetMutableBuffer), otherwise copies the data.
+   * buffer is native-backed (`expo::tryGetMutableBuffer`), otherwise copies the data.
    */
   static jni::local_ref<NativeArrayBuffer::javaobject> newInstance(
     JSIContext *jsiContext,

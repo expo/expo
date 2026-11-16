@@ -1,3 +1,5 @@
+import type { UnknownInputParams } from './typed-routes/types';
+
 export const INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = '__internal_expo_router_no_animation';
 export const INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME =
   '__internal__expo_router_is_preview_navigation';
@@ -5,6 +7,7 @@ export const INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME =
   '__internal_expo_router_zoom_transition_source_id';
 export const INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME =
   '__internal_expo_router_zoom_transition_screen_id';
+export const INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME = '__internal_expo_router_preview_id';
 
 /**
  * Internal navigation option name used to control gesture-based dismissal independently
@@ -16,6 +19,12 @@ export const INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME =
  */
 export const INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME = 'internal_gestureEnabled';
 
+// A layout `Stack.Screen` reaches the stack navigator only as a screen with `options`. This
+// option carries the `unstable_requiredScreensBelow` prop there, without adding it to the public
+// option types.
+export const INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME =
+  'internal_requiredScreensBelow';
+
 /**
  * Internal navigation options that Expo Router uses to control React Navigation behavior,
  * which are not available to developers directly and do not change user-defined options.
@@ -26,6 +35,11 @@ export interface InternalNavigationOptions {
    * When set, this value overrides the user's `gestureEnabled` option.
    */
   [INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME]?: boolean;
+  // The same type as the `unstable_requiredScreensBelow` prop of `Stack.Screen`.
+  [INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME]?: (
+    | string
+    | { name: string; params?: UnknownInputParams }
+  )[];
 }
 
 const internalExpoRouterParamNames = [
@@ -33,34 +47,51 @@ const internalExpoRouterParamNames = [
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME,
 ] as const;
 
 export type InternalExpoRouterParamName = (typeof internalExpoRouterParamNames)[number];
 export type InternalExpoRouterParams = Partial<Record<InternalExpoRouterParamName, unknown>>;
 
+const paramsObjectsWarnedForScreen = new WeakSet<object>();
+const paramsObjectsWarnedForNestedParams = new WeakSet<object>();
+
+export function warnIfScreenParam(params: object | undefined) {
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    params &&
+    'screen' in params &&
+    !paramsObjectsWarnedForScreen.has(params)
+  ) {
+    paramsObjectsWarnedForScreen.add(params);
+    console.warn(
+      "Navigating with a `screen` param is no longer supported. Expo Router now builds real navigation state for nested destinations, so `screen` and `params` are treated as ordinary user params. Navigate with a full href instead, for example `router.push('/(tabs)/feed')`."
+    );
+  }
+}
+
+// TODO: Decide whether Expo Router should support nested object params and define their URL behavior.
+export function warnIfNestedParams(params: object | undefined) {
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    params &&
+    Object.values(params).some(
+      (value) => value !== null && typeof value === 'object' && !Array.isArray(value)
+    ) &&
+    !paramsObjectsWarnedForNestedParams.has(params)
+  ) {
+    paramsObjectsWarnedForNestedParams.add(params);
+    console.warn(
+      'Navigating with nested object params is not supported. Expo Router URL params must be serializable as strings. Use flat params or serialize the object value.'
+    );
+  }
+}
+
 export function appendInternalExpoRouterParams(
   params: Record<string, unknown> | object | undefined,
   expoParams: InternalExpoRouterParams
 ) {
-  let newParams: Record<string, unknown> = {};
-  // Using nested params is a workaround for the issue with the preview key not being passed to the params
-  // https://github.com/Ubax/react-navigation/blob/main/packages/core/src/useNavigationBuilder.tsx#L573
-  // Another solution would be to propagate the preview key in the useNavigationBuilder,
-  // but that would require us to fork the @react-navigation/core package.
-  let nestedParams: Record<string, unknown> = {};
-  if (params) {
-    newParams = { ...params };
-    if ('params' in params) {
-      if (typeof params.params === 'object' && params.params) {
-        nestedParams = params.params as Record<string, unknown>;
-      }
-    }
-  }
-  nestedParams = { ...nestedParams, ...expoParams };
-  newParams = { ...newParams, ...expoParams };
-  if (Object.keys(nestedParams).length > 0) {
-    newParams.params = nestedParams;
-  }
+  const newParams = { ...params, ...expoParams };
   if (Object.keys(newParams).length === 0 && params === undefined) {
     return undefined;
   }
@@ -72,16 +103,9 @@ export function getInternalExpoRouterParams(
 ): InternalExpoRouterParams {
   const expoParams: InternalExpoRouterParams = {};
   const params: Record<string, unknown> = _params ? (_params as Record<string, unknown>) : {};
-  const nestedParams: Record<string, unknown> =
-    'params' in params && typeof params.params === 'object' && params.params
-      ? (params.params as Record<string, unknown>)
-      : {};
-
   for (const key of internalExpoRouterParamNames) {
     if (key in params) {
       expoParams[key] = params[key];
-    } else if (key in nestedParams) {
-      expoParams[key] = nestedParams[key];
     }
   }
 
@@ -94,9 +118,6 @@ export function hasParam(params: unknown, paramName: string): boolean {
     if (recordParams[paramName] !== undefined) {
       return true;
     }
-    if (recordParams.params && typeof recordParams.params === 'object') {
-      return hasParam(recordParams.params, paramName);
-    }
   }
   return false;
 }
@@ -108,18 +129,7 @@ export function removeParams(
   if (!params) {
     return undefined;
   }
-  const nestedParams =
-    'params' in params && typeof params.params === 'object' && params.params
-      ? (params.params as Record<string, unknown>)
-      : undefined;
-  const newNestedParams = nestedParams ? removeParams(nestedParams, paramName) : undefined;
-  const newParams = Object.fromEntries(
-    Object.entries(params).filter(([key]) => !paramName.includes(key) && key !== 'params')
-  );
-  if (Object.keys(newNestedParams ?? {}).length > 0) {
-    return { ...newParams, params: newNestedParams };
-  }
-  return newParams;
+  return Object.fromEntries(Object.entries(params).filter(([key]) => !paramName.includes(key)));
 }
 
 export function removeInternalExpoRouterParams(
@@ -134,5 +144,5 @@ export function removeInternalExpoRouterParams(
   if (!params) {
     return undefined;
   }
-  return removeParams(params, [...internalExpoRouterParamNames, 'params']);
+  return removeParams(params, internalExpoRouterParamNames);
 }

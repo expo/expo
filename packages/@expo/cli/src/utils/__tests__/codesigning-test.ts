@@ -1,11 +1,11 @@
 import { vol } from 'memfs';
 
-import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 import { getProjectDevelopmentCertificateAsync } from '../../api/getProjectDevelopmentCertificate';
 import { getUserAsync } from '../../api/user/user';
 import { getCodeSigningInfoAsync, signManifestString } from '../codesigning';
 import { isInteractive } from '../interactive';
 import { selectAsync } from '../prompts';
+import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 
 jest.mock('../../utils/prompts');
 jest.mock('../../utils/interactive', () => ({
@@ -59,7 +59,15 @@ beforeEach(() => {
     id: 'userwat',
     username: 'wat',
     primaryAccount: { id: 'blah-account' },
-    accounts: [],
+    accounts: [
+      {
+        id: 'blah-account',
+        viewerUserPermission2: {
+          permissions: ['OWN', 'ADMIN', 'PUBLISH_PROTECTED', 'PUBLISH', 'RUN', 'VIEW'],
+          effectivePermissions: ['OWN', 'ADMIN', 'PUBLISH_PROTECTED', 'PUBLISH', 'RUN', 'VIEW'],
+        },
+      },
+    ],
   }));
 });
 
@@ -114,6 +122,58 @@ describe(getCodeSigningInfoAsync, () => {
           undefined
         );
         expect(result).toMatchSnapshot();
+      });
+
+      it('gets a development certificate when the credential scopes allow RUN but not PUBLISH', async () => {
+        jest.mocked(getUserAsync).mockImplementationOnce(async () => ({
+          __typename: 'User',
+          id: 'userwat',
+          username: 'wat',
+          primaryAccount: { id: 'blah-account' },
+          accounts: [
+            {
+              id: 'blah-account',
+              viewerUserPermission2: {
+                permissions: ['RUN', 'VIEW'],
+                effectivePermissions: ['RUN', 'VIEW'],
+              },
+            },
+          ],
+        }));
+
+        const result = await getCodeSigningInfoAsync(
+          { extra: { eas: { projectId: 'testprojectid' } } } as any,
+          'keyid="expo-root", alg="rsa-v1_5-sha256"',
+          undefined
+        );
+        expect(result).not.toBeNull();
+        expect(getProjectDevelopmentCertificateAsync).toHaveBeenCalled();
+      });
+
+      it('does not get a development certificate when the credential scopes remove RUN', async () => {
+        jest.mocked(getUserAsync).mockImplementationOnce(async () => ({
+          __typename: 'User',
+          id: 'userwat',
+          username: 'wat',
+          primaryAccount: { id: 'blah-account' },
+          accounts: [
+            {
+              id: 'blah-account',
+              viewerUserPermission2: {
+                permissions: ['OWN', 'ADMIN', 'PUBLISH_PROTECTED', 'PUBLISH', 'RUN', 'VIEW'],
+                effectivePermissions: ['VIEW'],
+              },
+            },
+          ],
+        }));
+
+        const result = await getCodeSigningInfoAsync(
+          { extra: { eas: { projectId: 'testprojectid' } } } as any,
+          'keyid="expo-root", alg="rsa-v1_5-sha256"',
+          undefined
+        );
+        expect(result).toBeNull();
+        expect(getProjectDevelopmentCertificateAsync).not.toHaveBeenCalled();
       });
 
       it('requires easProjectId to be configured', async () => {
@@ -220,6 +280,24 @@ describe(getCodeSigningInfoAsync, () => {
   });
 
   describe('non expo-root certificate keyid requested', () => {
+    it('returns null when codeSigningCertificate and private key path are not specified', async () => {
+      await expect(
+        getCodeSigningInfoAsync({} as any, 'keyid="test", alg="rsa-v1_5-sha256"', undefined)
+      ).resolves.toBeNull();
+    });
+
+    it('throws when private key path is specified without codeSigningCertificate', async () => {
+      await expect(
+        getCodeSigningInfoAsync(
+          {} as any,
+          'keyid="test", alg="rsa-v1_5-sha256"',
+          'keys/private-key.pem'
+        )
+      ).rejects.toThrow(
+        '--private-key-path was specified, but updates.codeSigningCertificate is not set in the resolved app config'
+      );
+    });
+
     it('normal case gets the configured certificate', async () => {
       vol.fromJSON({
         'certs/cert.pem': mockSelfSigned.certificate,

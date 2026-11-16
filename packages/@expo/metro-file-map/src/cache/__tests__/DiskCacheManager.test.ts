@@ -24,7 +24,6 @@ const buildParameters: BuildParameters = {
   cacheBreaker: '',
   computeSha1: true,
   enableSymlinks: false,
-  forceNodeFilesystemAPI: true,
   ignorePattern: /ignored/,
   retainAllFiles: false,
   extensions: ['js', 'json'],

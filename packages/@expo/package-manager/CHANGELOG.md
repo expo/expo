@@ -1,16 +1,38 @@
 # Changelog
 
-## Unpublished
+## 1.14.2
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Drop legacy Node `url` usage in favor of `URL` ([#51602](https://github.com/expo/expo/pull/51602) by [@byCedric](https://github.com/byCedric))
+
+## 1.14.1
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/json-file@11.2.1
+
+## 1.14.0 — 2026-09-10
+
+### 🎉 New features
+
+- Add [nub](https://nubjs.com/) package manager support ([#48060](https://github.com/expo/expo/pull/48060) by [@colinhacks](https://github.com/colinhacks))
+
+## 1.13.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 1.13.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 1.12.1 - 2026-05-29
 
 ### 🎉 New features
 
 - Support Bundler-managed CocoaPods installations ([#43605](https://github.com/expo/expo/pull/43605) by [@tiwari91](https://github.com/tiwari91), [@kitten](https://github.com/kitten))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 1.12.0 — 2026-05-20
 

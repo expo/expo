@@ -93,7 +93,6 @@ export interface DateTimePickerProps extends Pick<ViewProps, 'style'> {
   locale?: string;
   /**
    * Force a specific color scheme on the picker.
-   * @platform ios
    */
   themeVariant?: 'dark' | 'light';
   /**

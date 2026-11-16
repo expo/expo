@@ -1,0 +1,132 @@
+---
+title: App store privacy declarations for Expo Observe
+sidebar_title: Privacy declarations
+description: Learn what the expo-observe library sends off the device, what Expo stores, and how to declare it in the Google Play Data safety form and the App Store privacy details.
+---
+
+import { NoIcon } from '~/ui/components/DocIcons';
+
+Google Play requires every app with a store listing to complete the [Data safety form](https://support.google.com/googleplay/android-developer/answer/10787469) in Play Console. The App Store requires the same for [app privacy details](https://developer.apple.com/app-store/app-privacy-details/) in App Store Connect. Both cover every library in your app, so your answers include what `expo-observe` sends to Expo Observe. This guide lists that data and the answers that match it.
+
+> **info** You are responsible for the accuracy of your declarations. This guide covers only the data that `expo-observe` and Expo Observe handle. Combine it with the data practices of the rest of your app before you submit either form.
+
+## What expo-observe sends off the device
+
+`expo-observe` sends metrics, events, and logs to Expo Observe over HTTPS using the OpenTelemetry Protocol. Every record carries the same set of resource attributes:
+
+- The [Expo Services client ID](/eas/observe/reference/client-id/), a random identifier for one installation of your app
+- A session ID, generated for each app launch
+- Device model name and identifier
+- Operating system name and version
+- The device language tag
+- App name, bundle identifier or package name, version, and build number
+- The Expo Update channel, runtime version, and the ID of the running update
+- The Expo SDK version, React Native version, and the environment tag
+
+Like every network request, each dispatch also exposes the device's IP address to the server.
+
+What else is sent depends on the features you use:
+
+| Feature                                                                                                                                               | Data sent                                                                                                                                                                                                          | Default |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------- |
+| [Startup metrics](/eas/observe/reference/metrics/) and [update download time](/eas/observe/eas-update/)                                               | Launch, render, interactive, bundle load, and update download timings. The interactive metric also carries battery, thermal, and network state, and a summary of network requests with the slowest request's host. | On      |
+| [Error reporting](/eas/observe/errors/)                                                                                                               | Exception type, message, stack trace, React component stack, native crash signal, and termination reason                                                                                                           | On      |
+| Navigation integrations for [Expo Router](/eas/observe/integrations/expo-router/) and [React Navigation](/eas/observe/integrations/react-navigation/) | Route names, route parameters, and per-route timings. Remove sensitive parameters with `filteredParams`.                                                                                                           | Opt in  |
+| [Network traces](/eas/observe/configuration/#network-traces)                                                                                          | Request method, URL, status code, request and response sizes, and host. The library redacts credentials and a fixed list of signature parameters, and sends other query values unchanged.                          | Off     |
+| [User-defined events](/eas/observe/events/), global attributes, and custom spans                                                                      | The event names, attribute values, and span timings your code passes                                                                                                                                               | Opt in  |
+| Package integrations such as [Expo Image](/eas/observe/integrations/expo-image/) and [Reanimated](/eas/observe/integrations/react-native-reanimated/) | Events and errors that the package reports, such as sanitized URLs of oversized images and Reanimated error messages                                                                                               | Opt in  |
+
+The library does not read the device's location, contacts, or files. It does not send a name, email address, or account ID unless your code adds one to an event, attribute, or error message. Route parameters and request URLs can also carry them when you turn on a navigation integration or network traces. Keep personally identifiable information out of those values.
+
+## What Expo stores
+
+Expo Observe stores every record it receives for 3 calendar months, about 90 days, then deletes it. Deletion runs in the background, so a record can remain for up to 93 days. After deletion, Expo keeps only per-app event counts for billing. See [data retention](/eas/observe/reference/metrics/#data-retention).
+
+Expo stores the IP address of each dispatch, and the country derived from it. Expo does not combine Observe data with data from other apps, does not use it for advertising, and does not share it with data brokers. Expo processes it on your behalf, as your service provider, under Expo's data processing agreement. See [privacy explained](https://expo.dev/privacy-explained) for what Expo collects across its services.
+
+You can stop Expo Observe from accepting data at any time with the [data ingestion toggle](/eas/observe/configuration/#turn-off-data-ingestion) in the Expo dashboard.
+
+The answers below assume you send data to Expo Observe. If you use a [custom endpoint](/eas/observe/configuration/#custom-endpoint), the same records go to your endpoint, and you declare what that backend stores instead.
+
+## Google Play Data safety form
+
+The form has three parts that your Expo Observe usage affects.
+
+### Data collection and security
+
+| Question                                                              | Answer                                                                                                                                                                                                                                                                                                                                                               |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Does your app collect or share any of the required user data types?   | **Yes**. Performance metrics are diagnostics, the client ID is a device identifier, and the IP address is used to infer approximate location.                                                                                                                                                                                                                        |
+| Is all of the user data collected by your app encrypted in transit?   | **Yes** for Expo Observe. The library sends every record over HTTPS. Answer for your whole app.                                                                                                                                                                                                                                                                      |
+| Do you provide a way for users to request that their data is deleted? | Google allows **Yes** when you give users a way to request deletion. It also allows **Yes** when you automatically start deleting or anonymizing collected data within 90 days of collection. Expo Observe deletes data only after 90 days, so it does not meet this condition. The answer covers your whole app, so base it on your own deletion practices as well. |
+
+### Data types
+
+Select these data types for Expo Observe:
+
+- **App info and performance > Diagnostics**: startup, update download, navigation, and network timings. Startup and update download timings are always collected, and the rest only when you turn those features on.
+- **Device or other IDs**: the client ID. Google lists installation identifiers in this category. Always collected.
+- **Location > Approximate location**: Google's definition includes location inferred from an IP address. Always collected.
+- **App info and performance > Crash logs**: JavaScript errors and native crashes. Always collected: the library reports native crashes, `Observe.reportError()` calls, and `ObserveErrorBoundary` errors even when JavaScript error handling is off.
+- **App activity > App interactions**: route names and user-defined events. Collected when you use a navigation integration or log events.
+
+### Data usage and handling
+
+For each selected data type, the form asks how the data is collected and used. Use these answers for every data type above:
+
+| Question                                                                        | Answer                                            |
+| ------------------------------------------------------------------------------- | ------------------------------------------------- |
+| Is this data collected, shared, or both?                                        | Collected                                         |
+| Is this data processed ephemerally?                                             | <NoIcon />                                        |
+| Is this data required for your app, or can users choose whether it's collected? | Required, unless your app lets every user opt out |
+| Why is this user data collected?                                                | Analytics                                         |
+
+The data is **collected** rather than **shared** because Expo acts as your service provider. A service provider processes data only on your behalf and on your instructions. Google's form counts a transfer to a service provider as collection by your app, not as sharing with a third party.
+
+Google's **Analytics** purpose covers monitoring app health, diagnosing crashes, and improving performance, which is what Expo Observe does.
+
+The data is **required** by default because the library dispatches from every release build. You can declare it **optional** only if every user, in every region, can turn it off. To offer that, pass `dispatchingEnabled: false` in every `configure()` call after the user opts out, because each call replaces the previous configuration. [Sampling](/eas/observe/configuration/#sampling) does not make the data optional, because the user does not control it.
+
+## App Store privacy details
+
+In App Store Connect, the **App Privacy** section asks whether you or your third-party partners collect data from the app. It then asks which data types you collect. For each type, it asks for the purposes, whether the data is linked to the user's identity, and whether it is used for tracking.
+
+Apple's definition of "collect" covers data that leaves the device and is stored for longer than it takes to serve the request. Expo Observe stores every record for 90 days, so everything the library sends counts as collected.
+
+### Data types
+
+Answer **Yes, we collect data from this app**, then select these data types for Expo Observe:
+
+- **Diagnostics > Performance Data**: startup, update download, navigation, and network timings. Apple's examples include launch time. Startup and update download timings are always collected, and the rest only when you turn those features on.
+- **Diagnostics > Other Diagnostic Data**: the device, OS, and app attributes on every record, plus battery, thermal, and network state at startup. Always collected.
+- **Identifiers > Device ID**: the client ID. Apple lists other device-level IDs in this category. Always collected.
+- **Location > Coarse Location**: the country derived from the IP address. Always collected.
+- **Diagnostics > Crash Data**: JavaScript errors and native crashes. Always collected: the library reports native crashes, `Observe.reportError()` calls, and `ObserveErrorBoundary` errors even when JavaScript error handling is off.
+- **Usage Data > Product Interaction**: route names and user-defined events. Collected when you use a navigation integration or log events.
+
+### Data usage
+
+For each selected data type, use these answers:
+
+| Data type             | Purposes                     | Linked to the user | Used for tracking |
+| --------------------- | ---------------------------- | ------------------ | ----------------- |
+| Performance Data      | App Functionality            | <NoIcon />         | <NoIcon />        |
+| Other Diagnostic Data | App Functionality            | <NoIcon />         | <NoIcon />        |
+| Crash Data            | App Functionality            | <NoIcon />         | <NoIcon />        |
+| Device ID             | App Functionality, Analytics | <NoIcon />         | <NoIcon />        |
+| Coarse Location       | Analytics                    | <NoIcon />         | <NoIcon />        |
+| Product Interaction   | Analytics                    | <NoIcon />         | <NoIcon />        |
+
+Apple's **App Functionality** purpose covers minimizing app crashes and improving scalability and performance. **Analytics** covers measuring audience size and evaluating product features.
+
+The data is **not linked to the user** because the client ID is random and does not come from an account or hardware identifier. Expo also does not tie it to other datasets. Apple treats data as linked once you or a partner connect it to the user's identity. Declare the data as linked if your code adds a user ID or other account detail to a global attribute or an event. Do the same if your app sends the client ID to your own backend with a user account, as the [client ID guide](/eas/observe/reference/client-id/) describes.
+
+The data is **not used for tracking**. Apple defines tracking as linking app data with data from other companies for advertising, or sharing it with a data broker. Expo does neither.
+
+### Privacy manifest
+
+`expo-observe` ships a [privacy manifest](/guides/apple-privacy/) that declares Crash Data, Performance Data, Other Diagnostic Data, Device ID, and Product Interaction with the purposes above. It declares each type as not linked to the user and not used for tracking. Xcode includes it when you generate a privacy report for an archive, and the report is organized like the App Store privacy details. The manifest does not declare Coarse Location, so add that entry to your answers from this page.
+
+## Apps that also use Expo Update
+
+If your app also includes `expo-updates`, add the declarations in [App store privacy declarations for Expo Update](/eas-update/store-privacy-declarations/). Both libraries use the same client ID. One **Device or other IDs** entry on Google Play and one **Device ID** entry on the App Store cover both. The same applies to the crash data entries.

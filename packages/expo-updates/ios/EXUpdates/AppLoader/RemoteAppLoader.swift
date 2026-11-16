@@ -69,9 +69,7 @@ public final class RemoteAppLoader: AppLoader {
           try self.database.setMetadata(withResponseHeaderData: responseHeaderData, scopeKey: self.config.scopeKey)
           successBlockArg(updateResponse)
         } catch {
-          let cause = UpdatesError.remoteAppLoaderHeaderDataError(cause: error)
-          self.logger.error(cause: cause, code: UpdatesErrorCode.unknown)
-          errorBlockArg(cause)
+          errorBlockArg(UpdatesError.remoteAppLoaderHeaderDataError(cause: error))
         }
       }
     } else {
@@ -105,6 +103,13 @@ public final class RemoteAppLoader: AppLoader {
   }
 
   override public func downloadAsset(_ asset: UpdateAsset, extraHeaders: [String: Any]) {
+    guard UpdatesUtils.isSafeFilename(asset.filename) else {
+      self.handleAssetDownload(
+        withError: UpdatesError.remoteAppLoaderUnsafeAssetFilename(filename: asset.filename),
+        asset: asset
+      )
+      return
+    }
     let urlOnDisk = self.directory.appendingPathComponent(asset.filename)
 
     let progressBlock = { [weak self] fractionCompleted in

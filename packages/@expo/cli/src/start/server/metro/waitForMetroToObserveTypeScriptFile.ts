@@ -4,8 +4,7 @@ import type MetroServer from '@expo/metro/metro/Server';
 import path from 'path';
 
 import type { ServerLike } from '../BundlerDevServer';
-
-const debug = require('debug')('expo:start:server:metro:waitForTypescript') as typeof console.log;
+import { debugEvent } from './typegenEvents';
 
 /**
  * Use the native file watcher / Metro ruleset to detect if a
@@ -31,7 +30,7 @@ export function waitForMetroToObserveTypeScriptFile(
         continue;
       } else if (/\.tsx?$/.test(change[0]) || change[0] === tsconfigPath) {
         // If the user adds a TypeScript file to the observable files in their project.
-        debug('Detected TypeScript file added to the project: ', change[0]);
+        debugEvent('ts_file_added', { path: debugEvent.path(change[0]) });
         callback();
         off();
         return;
@@ -39,7 +38,6 @@ export function waitForMetroToObserveTypeScriptFile(
     }
   };
 
-  debug('Waiting for TypeScript files to be added to the project...');
   watcher.addListener('change', listener);
   const off = () => {
     watcher.removeListener('change', listener);
@@ -65,7 +63,7 @@ export function observeFileChanges(
         // We need to ignore node_modules because Metro will add all of the files in node_modules to the watcher.
         continue;
       } else if (watchFilePaths.has(change[0])) {
-        debug('Observed change:', change[0]);
+        debugEvent('file_observed', { path: debugEvent.path(change[0]) });
         callback();
         return;
       }
@@ -75,14 +73,12 @@ export function observeFileChanges(
         // We need to ignore node_modules because Metro will add all of the files in node_modules to the watcher.
         continue;
       } else if (watchFilePaths.has(change[0])) {
-        debug('Observed change:', change[0]);
+        debugEvent('file_observed', { path: debugEvent.path(change[0]) });
         callback();
         return;
       }
     }
   };
-
-  debug('Watching file changes:', files);
   watcher.addListener('change', listener);
   const off = () => {
     watcher.removeListener('change', listener);

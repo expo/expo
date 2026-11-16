@@ -38,6 +38,13 @@ export const CameraScreens = [
     },
   },
   {
+    name: 'Recording progress',
+    route: 'camera/expo-camera-recording-progress',
+    getComponent() {
+      return optionalRequire(() => require('./CameraScreenRecordingProgress'));
+    },
+  },
+  {
     name: 'Camera Image Ref',
     route: 'camera/expo-camera-image-ref',
     getComponent() {
@@ -49,6 +56,13 @@ export const CameraScreens = [
     route: 'camera/expo-camera-document-scanner',
     getComponent() {
       return optionalRequire(() => require('./CameraScreenDocumentScanner'));
+    },
+  },
+  {
+    name: 'Capture Dimensions',
+    route: 'camera/expo-camera-capture-dimensions',
+    getComponent() {
+      return optionalRequire(() => require('./CameraScreenCaptureDimensions'));
     },
   },
 ];

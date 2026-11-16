@@ -1,8 +1,8 @@
 #!/usr/bin/env node
+import { boolish } from '@expo/env';
 import chalk from 'chalk';
 import Debug from 'debug';
 import { constants, promises as fs } from 'fs';
-import { boolish } from 'getenv';
 import path from 'path';
 
 import { actionAsync } from './doctor';
@@ -29,7 +29,13 @@ if (boolish('EXPO_DEBUG', false)) {
   process.env.EXPO_DEBUG = '1';
 }
 
-const packageJson = () => require('../package.json');
+const packageJson = () => {
+  try {
+    return require('expo-doctor/package.json');
+  } catch {
+    return null;
+  }
+};
 
 async function run() {
   const args = process.argv.slice(2);
@@ -62,13 +68,13 @@ async function run() {
   });
 
   if (showVerboseTestResults) {
-    console.log(`expo-doctor: v${packageJson().version}`);
+    console.log(`expo-doctor: v${packageJson()?.version ?? '0.0.0'}`);
   }
   await actionAsync(projectRoot, showVerboseTestResults);
 }
 
 function logVersionAndExit() {
-  console.log(packageJson().version);
+  console.log(packageJson()?.version ?? '0.0.0');
   process.exit(0);
 }
 

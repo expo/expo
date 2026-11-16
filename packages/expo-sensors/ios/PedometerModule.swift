@@ -18,11 +18,10 @@ public final class PedometerModule: Module {
     Events(EVENT_PEDOMETER_UPDATE)
 
     AsyncFunction("isAvailableAsync") {
-      #if EXPO_DISABLE_MOTION_PERMISSION
-      return false
-      #else
+      if MotionPermissionRequester.isMotionPermissionDisabled() {
+        return false
+      }
       return CMPedometer.isStepCountingAvailable()
-      #endif
     }
 
     AsyncFunction("getStepCountAsync") { (startTime: Double, endTime: Double, promise: Promise) in
@@ -45,7 +44,7 @@ public final class PedometerModule: Module {
         return
       }
       permissionsManager.getPermissionUsingRequesterClass(
-        EXMotionPermissionRequester.self,
+        MotionPermissionRequester.self,
         resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
@@ -56,7 +55,7 @@ public final class PedometerModule: Module {
         return
       }
       permissionsManager.askForPermission(
-        usingRequesterClass: EXMotionPermissionRequester.self,
+        usingRequesterClass: MotionPermissionRequester.self,
         resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
@@ -66,7 +65,7 @@ public final class PedometerModule: Module {
       guard let permissionsManager = appContext?.permissions else {
         return
       }
-      permissionsManager.register([EXMotionPermissionRequester()])
+      permissionsManager.register([MotionPermissionRequester()])
     }
 
     OnStartObserving {
@@ -110,7 +109,7 @@ public final class PedometerModule: Module {
   private func stopUpdates() {
     guard watchHandler != nil,
       let permissions = appContext?.permissions,
-      permissions.hasGrantedPermission(usingRequesterClass: EXMotionPermissionRequester.self) else {
+      permissions.hasGrantedPermission(usingRequesterClass: MotionPermissionRequester.self) else {
       return
     }
 

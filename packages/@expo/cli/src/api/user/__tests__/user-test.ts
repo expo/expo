@@ -22,6 +22,9 @@ jest.mock('../expoSsoLauncher', () => ({
 }));
 
 jest.mock('../../../log');
+jest.mock('../../../utils/interactive', () => ({
+  isInteractive: () => true,
+}));
 jest.unmock('../UserSettings');
 jest.mock('../../graphql/client', () => ({ graphql: (x: string) => `${x}` }));
 jest.mock('../../graphql/queries/UserQuery', () => ({
@@ -55,6 +58,13 @@ const robotStub: Actor = {
   __typename: 'Robot',
   id: 'userId',
   firstName: 'GLaDOS',
+  accounts: [],
+};
+
+const partnerActorStub: Actor = {
+  __typename: 'PartnerActor',
+  id: 'userId',
+  username: 'partner-username',
   accounts: [],
 };
 
@@ -126,6 +136,16 @@ describe(loginAsync, () => {
 });
 
 describe(browserLoginAsync, () => {
+  let write: jest.SpyInstance;
+
+  beforeEach(() => {
+    write = jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+  });
+
+  afterEach(() => {
+    write.mockRestore();
+  });
+
   it('saves user data to ~/.expo/state.json', async () => {
     jest.mocked(getSessionUsingBrowserAuthFlowAsync).mockResolvedValue('SESSION_SECRET');
 
@@ -152,6 +172,20 @@ describe(browserLoginAsync, () => {
     expect(getSessionUsingBrowserAuthFlowAsync).toHaveBeenCalledWith(
       expect.objectContaining({ sso: true })
     );
+  });
+
+  it('reports blocked while waiting for the browser login', async () => {
+    let writesWhileWaiting: unknown[][] = [];
+    jest.mocked(getSessionUsingBrowserAuthFlowAsync).mockImplementation(async () => {
+      writesWhileWaiting = [...write.mock.calls];
+      return 'SESSION_SECRET';
+    });
+
+    await browserLoginAsync({ sso: false });
+
+    expect(writesWhileWaiting).toEqual([
+      ['\x1b]7501;state=blocked:app=expo:kind=auth:msg=V2FpdGluZyBmb3IgYnJvd3NlciBsb2dpbg==\x1b\\'],
+    ]);
   });
 });
 
@@ -235,5 +269,9 @@ describe(getActorDisplayName, () => {
 
   it('returns robot prefix only for robot actors without firstName', () => {
     expect(getActorDisplayName({ ...robotStub, firstName: undefined })).toBe('robot');
+  });
+
+  it('returns username for partner provisioned actors', () => {
+    expect(getActorDisplayName(partnerActorStub)).toBe('partner-username');
   });
 });

@@ -4,6 +4,7 @@ import { requireNativeView, SharedRef } from 'expo';
 import { Fragment, type PropsWithChildren } from 'react';
 import { Platform, StyleSheet, type ViewProps, type ColorValue } from 'react-native';
 
+import type { ToolbarAxisBehavior } from '../../toolbar/axisBehavior';
 import type { BasicTextStyle } from '../../utils/font';
 
 // TODO(@kitten): Replace with `globalThis`, add typings in `expo`
@@ -46,6 +47,7 @@ export interface NativeLinkPreviewActionProps {
   // They're included for API consistency with toolbar items.
   sharesBackground?: boolean;
   hidesSharedBackground?: boolean;
+  axisBehavior?: ToolbarAxisBehavior;
   onSelected: () => void;
   titleStyle?: BasicTextStyle;
 }
@@ -71,15 +73,13 @@ export function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps) {
 // #endregion
 
 // #region Preview View
-export interface TabPath {
-  oldTabKey: string;
-  newTabKey: string;
+export interface PreviewActivationRoute {
+  key: string;
 }
 export interface NativeLinkPreviewProps extends ViewProps {
-  nextScreenId: string | undefined;
-  tabPath:
+  previewActivationPath:
     | {
-        path: TabPath[];
+        path: PreviewActivationRoute[];
       }
     | undefined;
   disableForceFlatten?: boolean;
@@ -87,7 +87,7 @@ export interface NativeLinkPreviewProps extends ViewProps {
   onDidPreviewOpen?: () => void;
   onPreviewWillClose?: () => void;
   onPreviewDidClose?: () => void;
-  onPreviewTapped?: () => void;
+  onPreviewTapped?: (event: { nativeEvent: { screenId?: string } }) => void;
   onPreviewTappedAnimationCompleted?: () => void;
   children: React.ReactNode;
 }
@@ -136,7 +136,10 @@ interface DismissalBoundsRect {
   maxY?: number;
 }
 const LinkZoomTransitionEnablerNativeView: React.ComponentType<
-  ViewProps & { zoomTransitionSourceIdentifier: string; disableForceFlatten?: boolean }
+  ViewProps & {
+    zoomTransitionSourceIdentifier: string;
+    disableForceFlatten?: boolean;
+  }
 > | null = areNativeViewsAvailable
   ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionEnabler')
   : null;
@@ -197,7 +200,11 @@ export function LinkZoomTransitionSource(props: LinkZoomTransitionSourceProps) {
 
 // #region Zoom transition rect detector
 const LinkZoomTransitionAlignmentRectDetectorNative: React.ComponentType<
-  ViewProps & { identifier: string; disableForceFlatten?: boolean; children?: React.ReactNode }
+  ViewProps & {
+    identifier: string;
+    disableForceFlatten?: boolean;
+    children?: React.ReactNode;
+  }
 > | null = areNativeViewsAvailable
   ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionAlignmentRectDetector')
   : Fragment;

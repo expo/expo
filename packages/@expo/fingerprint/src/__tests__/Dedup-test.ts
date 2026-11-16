@@ -94,7 +94,7 @@ describe(dedupSources, () => {
     ]);
   });
 
-  it('should dedup slibings dir', () => {
+  it('should dedup siblings dir', () => {
     const sources: HashSource[] = [
       {
         type: 'dir',

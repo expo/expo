@@ -52,7 +52,7 @@ fun FunctionalComposableScope.ToggleButtonContent(
     onCheckedChange = { onCheckedChange(ToggleButtonValueChangeEvent(it)) },
     enabled = props.enabled,
     modifier = modifier,
-    colors = ToggleButtonDefaults.toggleButtonColors(
+    colors = ToggleButtonDefaults.colors(
       checkedContainerColor = props.colors.checkedContainerColor.compose,
       checkedContentColor = props.colors.checkedContentColor.compose,
       containerColor = props.colors.containerColor.compose,

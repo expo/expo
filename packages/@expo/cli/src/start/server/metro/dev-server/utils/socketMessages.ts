@@ -1,6 +1,6 @@
 import type { RawData as WebSocketRawData } from 'ws';
 
-const debug = require('debug')('expo:metro:dev-server:messages') as typeof console.log;
+import { event } from '../../hmrEvents';
 
 /** The current websocket-based communication between Metro, CLI, and client devices */
 const PROTOCOL_VERSION = 2;
@@ -21,11 +21,9 @@ export function parseRawMessage<T = Record<string, any>>(
       return message;
     }
 
-    debug(
-      `Received message protocol version did not match supported "${PROTOCOL_VERSION}", received: ${message.version}`
-    );
+    event('protocol_version_mismatch', { expected: PROTOCOL_VERSION, received: version });
   } catch (error) {
-    debug(`Failed to parse message: ${error}`);
+    event('message_parse_failed', { error: event.error(error as Error) });
   }
 
   return null;

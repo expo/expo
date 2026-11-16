@@ -3,6 +3,7 @@
 // swiftlint:disable closure_body_length
 // swiftlint:disable force_unwrapping
 
+import EXUpdatesInterface
 import Foundation
 
 public typealias AppLauncherUpdateCompletionBlock = (_ error: UpdatesError?, _ update: Update?) -> Void
@@ -172,7 +173,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
       do {
         try self.database.markUpdateAccessed(self.launchedUpdate!)
       } catch {
-        self.logger.warn(message: "Failed to mark update as recently accessed: \(error.localizedDescription)")
+        self.logger.warn(.localMarkAccessedFailed, cause: error)
       }
     }
   }
@@ -193,7 +194,11 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
       )
 
       completionQueue.async {
-        self.completion!(self.launchAssetError, self.launchAssetUrl != nil)
+        var error = self.launchAssetError
+        if error == nil && self.launchAssetUrl == nil {
+          error = UpdatesError.appLauncherLaunchAssetNotFound(updateId: launchedUpdate.updateId)
+        }
+        self.completion!(error, self.launchAssetUrl != nil)
         self.completion = nil
       }
       return
@@ -211,6 +216,16 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
     self.assetFilesMap = UpdatesUtils.embeddedAssetsMap(withConfig: config, database: database, logger: logger)
 
     let assets = launchedUpdate.assets()!
+    if assets.isEmpty {
+      // a ready update with no assets cannot launch, and an empty loop below would never
+      // invoke the completion
+      completionQueue.async {
+        self.completion!(UpdatesError.appLauncherLaunchAssetNotFound(updateId: launchedUpdate.updateId), false)
+        self.completion = nil
+      }
+      return
+    }
+
     let totalAssetCount = assets.count
     for asset in assets {
       let assetLocalUrl = directory.appendingPathComponent(asset.filename)
@@ -230,7 +245,12 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
 
         if self.completedAssets == totalAssetCount {
           self.completionQueue.async {
-            self.completion!(self.launchAssetError, self.launchAssetUrl != nil)
+            var error = self.launchAssetError
+            if error == nil && self.launchAssetUrl == nil {
+              // completing without an error and without a launch asset would fail the launch silently
+              error = UpdatesError.appLauncherLaunchAssetNotFound(updateId: launchedUpdate.updateId)
+            }
+            self.completion!(error, self.launchAssetUrl != nil)
             self.completion = nil
           }
         }
@@ -252,7 +272,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
         }
 
         if let error = error {
-          self.logger.warn(message: "AppLauncherWithDatabase: Error copying embedded asset \(asset.key ?? ""): \(error.localizedDescription)")
+          self.logger.warn(.embeddedAssetCopyFailed, cause: error, values: ["assetKey": asset.key ?? asset.filename])
         }
 
         self.downloadAsset(asset, withLocalUrl: assetLocalUrl) { downloadAssetError, downloadAssetAsset, _ in
@@ -262,7 +282,13 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
               // so we want to propagate this error
               self.launchAssetError = downloadAssetError
             }
-            self.logger.warn(message: "AppLauncherWithDatabase: Failed to load missing asset \(downloadAssetAsset.key ?? ""): \(downloadAssetError.localizedDescription)")
+            self.logger.error(
+              .localAssetMissing,
+              cause: downloadAssetError,
+              values: ["assetKey": downloadAssetAsset.key ?? downloadAssetAsset.filename],
+              updateId: self.launchedUpdate?.loggingId(),
+              assetId: downloadAssetAsset.key ?? downloadAssetAsset.filename
+            )
             completion(false)
           } else {
             // attempt to update the database record to match the newly downloaded asset
@@ -271,7 +297,11 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
               do {
                 try self.database.updateAsset(downloadAssetAsset)
               } catch {
-                self.logger.warn(message: "AppLauncherWithDatabase: Could not write data for downloaded asset to database: \(error.localizedDescription)")
+                self.logger.warn(
+                  .localAssetDatabaseWriteFailed,
+                  cause: error,
+                  values: ["assetKey": downloadAssetAsset.key ?? downloadAssetAsset.filename]
+                )
               }
             }
             completion(true)
@@ -356,12 +386,9 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
         extraHeaders: asset.extraRequestHeaders ?? [:],
         allowPatch: false,
         launchedUpdate: self.launchedUpdate
-      ) { _, response, base64URLEncodedSHA256Hash in
+      ) { data, _, _ in
         self.launcherQueue.async {
-          if let response = response as? HTTPURLResponse {
-            asset.headers = response.allHeaderFields as? [String: Any]
-          }
-          asset.contentHash = base64URLEncodedSHA256Hash
+          asset.contentHash = UpdatesUtils.hexEncodedSHA256WithData(data)
           asset.downloadTime = Date()
           completion(nil, asset, assetLocalUrl)
         }

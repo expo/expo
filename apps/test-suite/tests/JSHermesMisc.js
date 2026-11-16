@@ -194,6 +194,77 @@ export function test({ describe, it, expect }) {
       });
     });
 
+    describe('classes on both finally completion paths', () => {
+      for (const throws of [false, true]) {
+        it(`initializes fields and private brands when throws=${throws}`, () => {
+          const values = [];
+          const failure = new Error('from try');
+          const key = 'value';
+          function run() {
+            try {
+              if (throws) throw failure;
+              return 'from try';
+            } finally {
+              class C {
+                static [key] = 42;
+                [key] = 52;
+                #value = 82;
+                #method() {
+                  return this[key];
+                }
+                static #staticMethod() {
+                  return C[key];
+                }
+                get #accessor() {
+                  return this.#value;
+                }
+                set #accessor(value) {
+                  this.#value = value;
+                }
+                read() {
+                  this.#accessor += 10;
+                  return [this.#method(), this.#accessor];
+                }
+                static read() {
+                  return C.#staticMethod();
+                }
+              }
+              values.push(C.read(), ...new C().read());
+            }
+          }
+          if (throws) {
+            expect(run).toThrow(failure);
+          } else {
+            expect(run()).toBe('from try');
+          }
+          expect(values).toEqual([42, 52, 92]);
+        });
+
+        it(`initializes a class expression when throws=${throws}`, () => {
+          let instance;
+          function run() {
+            try {
+              if (throws) throw 'from try';
+            } finally {
+              instance = new (class {
+                static value = 42;
+                #value = 7;
+                read() {
+                  return this.#value + this.constructor.value;
+                }
+              })();
+            }
+          }
+          if (throws) {
+            expect(run).toThrow('from try');
+          } else {
+            run();
+          }
+          expect(instance.read()).toBe(49);
+        });
+      }
+    });
+
     describe('super in object literal accessors', () => {
       // See: facebook/hermes 18a963465 (genFunctionExpression home object for accessors)
       it('non-computed getter reads super', () => {
@@ -263,6 +334,39 @@ export function test({ describe, it, expect }) {
         };
         Object.setPrototypeOf(o, { m: 7 });
         expect(o.a).toBe(7);
+      });
+
+      it('inherited accessors keep the receiver through await', async () => {
+        const proto = {
+          get value() {
+            return this.stored;
+          },
+          set value(value) {
+            this.stored = value;
+          },
+        };
+        const home = {
+          get value() {
+            return (() => super.value)();
+          },
+          set value(value) {
+            (() => {
+              super.value = value;
+            })();
+          },
+        };
+        Object.setPrototypeOf(home, proto);
+        const receiver = Object.create(home);
+        receiver.value = 17;
+        await Promise.resolve();
+        expect(receiver.value).toBe(17);
+        expect(home.stored).toBeUndefined();
+        Object.setPrototypeOf(home, {
+          get value() {
+            return this.stored + 1;
+          },
+        });
+        expect(receiver.value).toBe(18);
       });
 
       it('control: computed getter with super', () => {

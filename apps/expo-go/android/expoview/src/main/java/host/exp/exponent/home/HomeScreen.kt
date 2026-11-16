@@ -121,6 +121,7 @@ fun HomeScreen(
           viewModel = viewModel,
           navigateToFeedback = { navigateToFeedback() }
         )
+        LocalNetworkPermissionBanner(viewModel = viewModel)
         LabeledGroup(
           label = "Development servers",
           modifier = Modifier.padding(top = 8.dp),

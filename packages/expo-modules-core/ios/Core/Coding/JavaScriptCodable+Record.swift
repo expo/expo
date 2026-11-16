@@ -14,19 +14,26 @@ import ExpoModulesJSI
 // context never prepared has no such state, so recovery returns `nil` and the conversion throws
 // `Exceptions.AppContextNotFound`.
 //
-// Records only implement the owning `decode` overload (the requirement). They walk an object's
-// properties regardless, so the zero-copy `JavaScriptUnownedValue` fast path offers nothing here;
-// the defaulted overload materializes an owning value and forwards.
+// `decode` reads the object straight from the borrowed value and hands it to
+// `from(object:appContext:)`, so a record argument isn't copied first. An owning value takes the
+// `JavaScriptDecodable` default, which borrows it and calls this `decode`.
 
 extension Record {
+  // A record decodes only from an object.
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Self
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> Self
   {
     guard let appContext = AppContext.from(runtime: runtime) else {
       throw Exceptions.AppContextNotFound()
     }
-    return try from(object: value.asObject(), appContext: appContext)
+    return try from(object: value.asObject(in: runtime), appContext: appContext)
   }
 
   @JavaScriptActor

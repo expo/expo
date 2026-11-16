@@ -33,7 +33,7 @@ internal enum UpdatesStateEvent {
   case checkCompleteWithRollback(rollbackCommitTime: Date)
   case checkError(errorMessage: String)
   case download
-  case downloadComplete
+  case downloadCompleteUnavailable
   case downloadCompleteWithUpdate(manifest: [String: Any])
   case downloadCompleteWithRollback
   case downloadError(errorMessage: String)
@@ -49,7 +49,9 @@ internal enum UpdatesStateEvent {
     case checkError
     case download
     case downloadProgress
-    case downloadComplete
+    case downloadCompleteUnavailable
+    case downloadCompleteWithUpdate
+    case downloadCompleteWithRollback
     case downloadError
     case restart
   }
@@ -74,16 +76,33 @@ internal enum UpdatesStateEvent {
       return .download
     case .downloadProgress:
       return .downloadProgress
-    case .downloadComplete:
-      return .downloadComplete
+    case .downloadCompleteUnavailable:
+      return .downloadCompleteUnavailable
     case .downloadCompleteWithUpdate:
-      return .downloadComplete
+      return .downloadCompleteWithUpdate
     case .downloadCompleteWithRollback:
-      return .downloadComplete
+      return .downloadCompleteWithRollback
     case .downloadError:
       return .downloadError
     case .restart:
       return .restart
+    }
+  }
+
+  /**
+   The failure text carried by an error event. The state machine logs it when it drops an event,
+   so the message does not disappear with the event.
+   */
+  var errorMessage: String? {
+    switch self {
+    case let .checkError(errorMessage):
+      return errorMessage
+    case let .downloadError(errorMessage):
+      return errorMessage
+    case .startStartup, .endStartup, .check, .checkCompleteUnavailable, .checkCompleteWithUpdate,
+      .checkCompleteWithRollback, .download, .downloadCompleteUnavailable, .downloadCompleteWithUpdate,
+      .downloadCompleteWithRollback, .downloadProgress, .restart:
+      return nil
     }
   }
 
@@ -107,7 +126,7 @@ internal enum UpdatesStateEvent {
       fallthrough
     case .download:
       fallthrough
-    case .downloadComplete:
+    case .downloadCompleteUnavailable:
       fallthrough
     case .downloadCompleteWithRollback:
       fallthrough
@@ -210,12 +229,8 @@ public struct UpdatesStateContext {
       "lastCheckForUpdateTimeString": lastCheckForUpdateTimeDateString,
       "rollback": rollback?.json,
       "sequenceNumber": sequenceNumber,
-      "downloadStartTime": downloadStartTime != nil
-        ? Int(floor(downloadStartTime?.timeIntervalSince1970 ?? 0.0 * 1000))
-        : nil,
-      "downloadFinishTime": downloadFinishTime != nil
-        ? Int(floor(downloadFinishTime?.timeIntervalSince1970 ?? 0.0 * 1000))
-        : nil
+      "downloadStartTime": downloadStartTime.map { Int(floor($0.timeIntervalSince1970 * 1000)) },
+      "downloadFinishTime": downloadFinishTime.map { Int(floor($0.timeIntervalSince1970 * 1000)) }
     ] as [String: Any?]
   }
 }
@@ -390,6 +405,7 @@ internal class UpdatesStateMachine {
   private func processEvent(_ event: UpdatesStateEvent) {
     // Execute state transition
     if transition(event) {
+      let previousProgress = context.downloadProgress
       // Only change context if transition succeeds
       context = reducedContext(context, event)
       if event.type != .downloadProgress {
@@ -397,13 +413,13 @@ internal class UpdatesStateMachine {
       }
       // Notify the controller state change listener
       if let controller = UpdatesControllerRegistry.sharedInstance.controller as? EnabledAppController {
-        controller.stateChangeListeners.keys.forEach {subscriptionId in
-          if let listener = controller.stateChangeListeners[subscriptionId] {
-            listener.updatesStateDidChange(event.toMap)
-          }
+        controller.stateChangeListenersSnapshot().forEach { listener in
+          listener.updatesStateDidChange(event.toMap)
         }
       }
-      sendContextToJS()
+      if event.type != .downloadProgress || (context.downloadProgress * 100).rounded(.down) != (previousProgress * 100).rounded(.down) {
+        sendContextToJS()
+      }
     }
   }
   internal func processEventForTesting(_ event: UpdatesStateEvent) {
@@ -418,17 +434,35 @@ internal class UpdatesStateMachine {
   private func transition(_ event: UpdatesStateEvent) -> Bool {
     let allowedEvents: Set<UpdatesStateEvent.InternalType> = UpdatesStateMachine.updatesStateAllowedEvents[state] ?? []
     if !allowedEvents.contains(event.type) {
-      assertionFailure("UpdatesState: invalid transition requested: state = \(state), event = \(event.type)")
+      reportDroppedEvent(event)
       return false
     }
     let newStateValue = UpdatesStateMachine.updatesStateTransitions[event.type] ?? .idle
     if !validUpdatesStateValues.contains(newStateValue) {
-      assertionFailure("UpdatesState: invalid transition requested: state = \(state), event = \(event.type)")
+      reportDroppedEvent(event)
       return false
     }
     // Successful transition
     state = newStateValue
     return true
+  }
+
+  /**
+   Records an event the machine cannot process. The drop is always logged, so it is visible through
+   `readLogEntriesAsync` in a shipping app. With EX_UPDATES_ASSERT_INVALID_STATE the drop also
+   traps, so an invalid transition fails an E2E run instead of passing unnoticed.
+   */
+  private func reportDroppedEvent(_ event: UpdatesStateEvent) {
+    var values = ["state": "\(state)", "event": "\(event.type)"]
+    if let error = event.errorMessage {
+      values["error"] = error
+    }
+    logger.warn(.systemStateMachineEventDropped, values: values)
+    #if EX_UPDATES_ASSERT_INVALID_STATE
+    preconditionFailure(
+      UpdatesLogger.fill(UpdatesLogMessage.systemStateMachineEventDropped.template, with: values)
+    )
+    #endif
   }
 
   /**
@@ -493,11 +527,11 @@ internal class UpdatesStateMachine {
       return context.copyAndIncrementSequenceNumber {
         $0.downloadProgress = progress
       }
-    case .downloadComplete:
+    case .downloadCompleteUnavailable:
       return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = false
         $0.downloadError = nil
-        $0.isUpdatePending = true
+        $0.isUpdatePending = false
         $0.downloadProgress = 1.0
         $0.downloadStartTime = nil
         $0.downloadFinishTime = nil
@@ -507,6 +541,7 @@ internal class UpdatesStateMachine {
         $0.isDownloading = false
         $0.downloadError = nil
         $0.isUpdatePending = true
+        $0.downloadProgress = 1.0
         $0.downloadStartTime = nil
         $0.downloadFinishTime = nil
       }
@@ -514,6 +549,7 @@ internal class UpdatesStateMachine {
       return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = false
         $0.downloadError = nil
+        $0.downloadProgress = 1.0
         $0.latestManifest = manifest
         $0.downloadedManifest = manifest
         $0.rollback = nil
@@ -547,13 +583,13 @@ internal class UpdatesStateMachine {
 
   /**
    For a particular machine state, only certain events may be processed.
-   If the machine receives an unexpected event, an assertion failure will occur
-   and the app will crash.
+   If the machine receives an unexpected event, the event is dropped and a warning
+   is written to the updates log.
    */
   private static let updatesStateAllowedEvents: [UpdatesStateValue: Set<UpdatesStateEvent.InternalType>] = [
     .idle: [.startStartup, .endStartup, .check, .download, .restart],
     .checking: [.checkCompleteAvailable, .checkCompleteUnavailable, .checkError],
-    .downloading: [.downloadComplete, .downloadError, .downloadProgress],
+    .downloading: [.downloadCompleteUnavailable, .downloadCompleteWithUpdate, .downloadCompleteWithRollback, .downloadError, .downloadProgress],
     .restarting: []
   ]
 
@@ -570,7 +606,9 @@ internal class UpdatesStateMachine {
     .checkError: .idle,
     .download: .downloading,
     .downloadProgress: .downloading,
-    .downloadComplete: .idle,
+    .downloadCompleteUnavailable: .idle,
+    .downloadCompleteWithUpdate: .idle,
+    .downloadCompleteWithRollback: .idle,
     .downloadError: .idle,
     .restart: .restarting
   ]

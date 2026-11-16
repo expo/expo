@@ -47,7 +47,7 @@ export function createJsInspectorMiddleware({
       res.writeHead(200, {
         'Content-Type': 'application/json; charset=UTF-8',
         'Cache-Control': 'no-cache',
-        'Content-Length': data.length.toString(),
+        'Content-Length': Buffer.byteLength(data, 'utf8').toString(),
       });
       res.end(data);
     } else if (req.method === 'POST' || req.method === 'PUT') {

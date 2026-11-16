@@ -14,6 +14,7 @@ data class MediaStoreFile(
   val dateModified: Long?,
   val width: Int?,
   val height: Int?,
+  val orientation: Int?,
   val duration: Long?,
   val mediaType: Int?,
   val isFavorite: Int?
@@ -30,6 +31,7 @@ data class MediaStoreFile(
         dateModified = getNullableLong(columnIndexes.dateModified),
         width = getNullableInt(columnIndexes.width),
         height = getNullableInt(columnIndexes.height),
+        orientation = getNullableInt(columnIndexes.orientation),
         duration = columnIndexes.duration?.let { getNullableLong(it) },
         mediaType = getNullableInt(columnIndexes.mediaType),
         isFavorite = columnIndexes.isFavorite?.let { getNullableInt(it) }
@@ -44,6 +46,7 @@ data class MediaStoreFile(
       add(MediaStore.Files.FileColumns.DATE_MODIFIED)
       add(MediaStore.Files.FileColumns.WIDTH)
       add(MediaStore.Files.FileColumns.HEIGHT)
+      add(MediaStore.Images.Media.ORIENTATION)
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         add(MediaStore.Files.FileColumns.DURATION)
       }
@@ -62,6 +65,7 @@ data class MediaStoreFileColumnIndexes(
   val dateModified: Int,
   val width: Int,
   val height: Int,
+  val orientation: Int,
   val duration: Int?,
   val isFavorite: Int?
 ) {
@@ -75,6 +79,7 @@ data class MediaStoreFileColumnIndexes(
         dateModified = getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_MODIFIED),
         width = getColumnIndexOrThrow(MediaStore.Files.FileColumns.WIDTH),
         height = getColumnIndexOrThrow(MediaStore.Files.FileColumns.HEIGHT),
+        orientation = getColumnIndexOrThrow(MediaStore.Images.Media.ORIENTATION),
         duration = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           getColumnIndexOrThrow(MediaStore.Files.FileColumns.DURATION)
         } else {

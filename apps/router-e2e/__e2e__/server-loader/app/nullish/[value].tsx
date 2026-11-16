@@ -51,4 +51,4 @@ const NullishScreen = () => {
       </SiteLinks>
     </>
   );
-}
+};

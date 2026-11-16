@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const Debug = require('debug');
-const { boolish } = require('getenv');
+const { boolish } = require('@expo/env');
 
 if (boolish('EXPO_DEBUG', false)) {
   Debug.enable('create-expo-module:*');

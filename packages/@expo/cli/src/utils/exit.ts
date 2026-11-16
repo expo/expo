@@ -2,9 +2,8 @@ import { ChildProcess } from 'node:child_process';
 import process from 'node:process';
 
 import { warn } from '../log';
+import { event } from './events';
 import { guardAsync } from './fn';
-
-const debug = require('debug')('expo:utils:exit') as typeof console.log;
 
 // NOTE: This is an internal method, not designed to be exposed. It's also our only way to get this info
 declare global {
@@ -50,17 +49,13 @@ export function installExitHooks(asyncExitHook: AsyncExitHook): () => void {
 // Create a function that runs before the process exits and guards against running multiple times.
 function createExitHook(signal: NodeJS.Signals) {
   return guardAsync(async () => {
-    debug(`pre-exit (signal: ${signal}, queue length: ${queue.length})`);
-
     for (const [index, hookAsync] of Object.entries(queue)) {
       try {
         await hookAsync(signal);
       } catch (error: any) {
-        debug(`Error in exit hook: %O (queue: ${index})`, error);
+        event('exit_hook_error', { index, error: event.error(error as Error) });
       }
     }
-
-    debug(`post-exit (code: ${process.exitCode ?? 0})`);
 
     process.exit();
   });
@@ -116,23 +111,16 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 4_000, startedAtM
   );
 
   if (!hasBlockingResources) {
-    debug(
-      unexpectedActiveResources.length
-        ? 'only transient resources remain (CloseReq), process can safely exit'
-        : 'no active resources detected, process can safely exit'
-    );
+    event('exit_safe', {});
     return;
   }
 
-  debug(
-    `process is trying to exit, but is stuck on unexpected active resources:`,
-    unexpectedActiveResources
-  );
+  event('exit_blocked', { resources: unexpectedActiveResources });
 
   // Check if the process needs to be force-closed
   const elapsedTime = Date.now() - startedAtMs;
   if (elapsedTime > waitUntilExitMs) {
-    debug('active handles detected past the exit delay, forcefully exiting:', activeResources);
+    event('exit_forced', { resources: activeResources });
     tryWarnActiveProcesses();
     return process.exit(0);
   }
@@ -194,21 +182,13 @@ function tryWarnActiveProcesses() {
       }
     }
 
-    // Log detailed handle info when debug is enabled
-    debug('active handles by type:', handleSummary);
-    if (timeoutDetails.length) {
-      debug('timeout details:', timeoutDetails);
-    }
+    event('exit_handles', { summary: handleSummary });
   } catch (error) {
-    debug('failed to get active process information:', error);
+    event('exit_handle_info_failed', { error: event.error(error as Error) });
   }
 
   if (!activeProcesses.length) {
     warn('Something prevented Expo from exiting, forcefully exiting now.');
-    // Log handle summary when no specific processes are identified
-    if (Object.keys(handleSummary).length > 0) {
-      debug('handle summary (use DEBUG=expo:utils:exit for details):', handleSummary);
-    }
   } else {
     const singularOrPlural =
       activeProcesses.length === 1 ? '1 process' : `${activeProcesses.length} processes`;

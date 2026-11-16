@@ -23,18 +23,32 @@ TypedArrayKind getTypedArrayKindForName(const std::string &name) {
   return nameToKindMap.at(name);
 }
 
-TypedArrayKind getTypedArrayKind(jsi::IRuntime &runtime, const jsi::Object &jsObj) {
-  auto constructorName = jsObj.getPropertyAsObject(runtime, "constructor")
-                             .getProperty(runtime, "name")
+TypedArrayKind getTypedArrayKind(
+  jsi::IRuntime &runtime,
+  const jsi::Object &jsObj,
+  const jsi::PropNameID &constructorPropName,
+  const jsi::PropNameID &namePropName
+) {
+  auto constructorName = jsObj.getProperty(runtime, constructorPropName)
+                             .asObject(runtime)
+                             .getProperty(runtime, namePropName)
                              .asString(runtime)
                              .utf8(runtime);
   return getTypedArrayKindForName(constructorName);
 }
 
-jsi::ArrayBuffer getTypedArrayBuffer(jsi::IRuntime &runtime, const jsi::Object &jsObj) {
-  auto buffer = jsObj.getProperty(runtime, "buffer");
-  if (buffer.isObject() && buffer.asObject(runtime).isArrayBuffer(runtime)) {
-    return buffer.asObject(runtime).getArrayBuffer(runtime);
+jsi::ArrayBuffer getTypedArrayBuffer(
+  jsi::IRuntime &runtime,
+  const jsi::Object &jsObj,
+  const jsi::PropNameID &bufferPropName
+) {
+  auto buffer = jsObj.getProperty(runtime, bufferPropName);
+  if (buffer.isObject()) {
+    // Move the handle on rather than cloning it, since `buffer` isn't used afterwards.
+    auto bufferObject = std::move(buffer).getObject(runtime);
+    if (bufferObject.isArrayBuffer(runtime)) {
+      return std::move(bufferObject).getArrayBuffer(runtime);
+    }
   }
   throw std::runtime_error("no ArrayBuffer attached");
 }

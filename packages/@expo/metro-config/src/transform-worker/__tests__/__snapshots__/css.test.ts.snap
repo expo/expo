@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`getHotReplaceTemplate should generate the correct template 1`] = `
 "style.setAttribute('data-expo-css-hmr', "foo");

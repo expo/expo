@@ -10,6 +10,7 @@ type AudioPlayerProps = {
   style?: StyleProp<ViewStyle>;
   downloadFirst?: boolean;
   crossOrigin?: 'anonymous' | 'use-credentials';
+  keepAudioSessionActive?: boolean;
 };
 
 const localSource = require('../../../assets/sounds/polonez.mp3');
@@ -20,9 +21,14 @@ export default function AudioPlayer({
   style,
   downloadFirst = false,
   crossOrigin,
+  keepAudioSessionActive = false,
 }: AudioPlayerProps) {
   const [currentSource, setCurrentSource] = React.useState(source);
-  const player = useAudioPlayer(source, { downloadFirst, crossOrigin });
+  const player = useAudioPlayer(source, {
+    downloadFirst,
+    crossOrigin,
+    keepAudioSessionActive,
+  });
   const status = useAudioPlayerStatus(player);
 
   const setVolume = (volume: number) => {

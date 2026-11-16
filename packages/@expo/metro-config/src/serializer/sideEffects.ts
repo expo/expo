@@ -17,10 +17,7 @@ import picomatch from 'picomatch';
 
 import { toPosixPath } from '../utils/filePath';
 import { findUpPackageJsonPath } from '../utils/findUpPackageJsonPath';
-
-const debug = require('debug')('expo:side-effects') as typeof console.log;
-
-// const debug = require('debug')('expo:metro-config:serializer:side-effects') as typeof console.log;
+import { event } from './events';
 
 type AdvancedModule = Module<MixedOutput> & {
   sideEffects?: boolean | null;
@@ -116,7 +113,7 @@ export function _createSideEffectMatcher(
   } else if (typeof packageJson.sideEffects === 'boolean' || !packageJson.sideEffects) {
     sideEffectMatcher = packageJson.sideEffects;
   } else {
-    debug('Invalid sideEffects field in package.json:', packageJsonPath, packageJson.sideEffects);
+    event('side_effects:invalid_field', { path: packageJsonPath });
   }
   return (fp: string) => {
     // Default is that everything is a side-effect unless explicitly marked as not.

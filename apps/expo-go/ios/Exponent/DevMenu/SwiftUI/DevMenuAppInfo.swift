@@ -34,7 +34,7 @@ struct DevMenuAppInfo: View {
             Text(viewModel.clipboardMessage ?? "Copy system info")
               .foregroundColor(.blue)
             Spacer()
-            Image(systemName: "document.on.clipboard")
+            Image(systemName: "doc.on.clipboard")
               .resizable()
               .frame(width: 16, height: 16)
               .opacity(0.6)

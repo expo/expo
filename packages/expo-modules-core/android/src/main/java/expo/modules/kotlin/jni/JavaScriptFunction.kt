@@ -2,7 +2,7 @@ package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
-import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.types.ConverterContext
 import expo.modules.kotlin.types.JSTypeConverterProvider
 import expo.modules.kotlin.types.TypeConverterProviderImpl
 import expo.modules.kotlin.types.descriptors.TypeDescriptor
@@ -18,7 +18,7 @@ class JavaScriptFunction<ReturnType : Any?> @DoNotStrip private constructor(@DoN
 
   private external fun invoke(thisValue: JavaScriptObject?, args: Array<Any?>, expectedReturnType: ExpectedType): Any?
 
-  operator fun invoke(vararg args: Any?, thisValue: JavaScriptObject? = null, appContext: AppContext? = null): ReturnType {
+  operator fun invoke(vararg args: Any?, thisValue: JavaScriptObject? = null, converterContext: ConverterContext): ReturnType {
     // TODO(@lukmccall): check current thread
     val convertedArgs = args
       .map { JSTypeConverterProvider.convertToJSValue(it) }
@@ -32,7 +32,7 @@ class JavaScriptFunction<ReturnType : Any?> @DoNotStrip private constructor(@DoN
     val expectedReturnType = converter.getCppRequiredTypes()
     val result = invoke(thisValue, convertedArgs, expectedReturnType)
     @Suppress("UNCHECKED_CAST")
-    return converter.convert(result, appContext, false) as ReturnType
+    return converter.convert(result, converterContext, false) as ReturnType
   }
 
   @Throws(Throwable::class)

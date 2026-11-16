@@ -77,7 +77,7 @@ export function resolveFrom(
       const resolveType = resolveTypeSync(candidate);
       // (3.1) direct match
       if (resolveType === ResolveType.FILE) {
-        return candidate;
+        return followSymlinks ? maybeResolve(candidate) : candidate;
       } else if (resolveType === ResolveType.ENOENT) {
         // Optimization: If the directory itself doesn't exist, there's no point in us continuing
         // to check for more files in this directory
@@ -112,7 +112,7 @@ export function resolveFrom(
   return !skipNodePath ? nativeResolveFrom(fromDirectory, moduleId) : null;
 }
 
-function nativeResolveFrom(fromDirectory: string, moduleId: string): string | null {
+export function nativeResolveFrom(fromDirectory: string, moduleId: string): string | null {
   try {
     const resolvedDir = maybeResolve(fromDirectory);
     const fromFile = path.join(resolvedDir, 'index.js');

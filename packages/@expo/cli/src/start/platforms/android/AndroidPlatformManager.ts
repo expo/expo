@@ -1,7 +1,3 @@
-import { AndroidAppIdResolver } from './AndroidAppIdResolver';
-import { AndroidDeviceManager } from './AndroidDeviceManager';
-import type { Device } from './adb';
-import { startAdbReverseAsync } from './adbReverse';
 import { CommandError } from '../../../utils/errors';
 import { memoize } from '../../../utils/fn';
 import { learnMore } from '../../../utils/link';
@@ -9,10 +5,11 @@ import { hasDirectDevClientDependency } from '../../detectDevClient';
 import type { AppIdResolver } from '../AppIdResolver';
 import type { BaseOpenInCustomProps, BaseResolveDeviceProps } from '../PlatformManager';
 import { PlatformManager } from '../PlatformManager';
-
-const debug = require('debug')(
-  'expo:start:platforms:platformManager:android'
-) as typeof console.log;
+import { event } from '../events';
+import { AndroidAppIdResolver } from './AndroidAppIdResolver';
+import { AndroidDeviceManager } from './AndroidDeviceManager';
+import type { Device } from './adb';
+import { startAdbReverseAsync } from './adbReverse';
 
 export interface AndroidOpenInCustomProps extends BaseOpenInCustomProps {
   /**
@@ -99,7 +96,7 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
       ? (this.props.getCustomRuntimeUrl({ scheme: options.props.scheme }) ?? undefined)
       : undefined;
 
-    debug(`Opening custom runtime using launch activity: ${launchActivity} --`, options.props);
+    event('android_open_custom_launch_activity', { launchActivity });
 
     const deviceManager = (await this.props.resolveDeviceAsync(
       resolveSettings

@@ -43,7 +43,9 @@ describe('react-navigation navigation config', () => {
   });
 
   it('sets urlHidden when a route param is filtered', () => {
-    expect(getNavigationRouteParams({ filteredParams: ['token'] }, { token: 'secret', tab: 'posts' })).toEqual({
+    expect(
+      getNavigationRouteParams({ filteredParams: ['token'] }, { token: 'secret', tab: 'posts' })
+    ).toEqual({
       routeParams: { tab: 'posts' },
       urlHidden: true,
     });

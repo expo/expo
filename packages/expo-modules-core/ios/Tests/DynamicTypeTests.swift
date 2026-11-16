@@ -488,6 +488,21 @@ struct DynamicTypeTests {
     }
 
     @Test
+    func `does not recurse for a convertible with the default convertResult`() throws {
+      struct SelfConvertible: Convertible {
+        static func convert(from value: Any?, appContext: AppContext) throws -> SelfConvertible {
+          return SelfConvertible()
+        }
+      }
+
+      // The default `convertResult` returns the value unchanged, so redispatching it into
+      // the same dynamic type can never make progress and must fall back to `undefined`.
+      let result = try (~SelfConvertible.self).convertToJS(SelfConvertible(), appContext: appContext)
+
+      #expect(result.isUndefined() == true)
+    }
+
+    @Test
     func `returns formatted record directly to JS while preserving formatter behavior`() throws {
       struct TestRecord: Record {
         @Field var a: String = "a"

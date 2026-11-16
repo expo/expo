@@ -1,7 +1,6 @@
 import * as Log from '../../log';
+import { debugEvent } from '../events';
 import type { FetchLike } from './client.types';
-
-const debug = require('debug')('expo:api:fetch:progress') as typeof console.log;
 
 export function wrapFetchWithProgress(fetch: FetchLike): FetchLike {
   return function fetchWithProgress(url, init) {
@@ -17,7 +16,7 @@ export function wrapFetchWithProgress(fetch: FetchLike): FetchLike {
       const contentLength = response.headers.get('Content-Length');
       const progressTotal = Number(contentLength);
 
-      debug(`Download size: %d`, progressTotal);
+      debugEvent('progress_size', { url: url.toString(), bytes: progressTotal });
 
       // Abort if the `Content-Length` header is missing or invalid
       if (!progressTotal || isNaN(progressTotal) || progressTotal < 0) {
@@ -27,8 +26,6 @@ export function wrapFetchWithProgress(fetch: FetchLike): FetchLike {
         );
         return response;
       }
-
-      debug(`Starting progress animation for: %s`, url);
 
       // Initialize the progression variables
       let progressCurrent = 0;

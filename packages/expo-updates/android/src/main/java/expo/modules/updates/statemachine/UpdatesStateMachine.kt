@@ -1,15 +1,18 @@
 package expo.modules.updates.statemachine
 
 import expo.modules.manifests.core.toMap
+import expo.modules.updates.BuildConfig
 import expo.modules.updates.EnabledUpdatesController
 import expo.modules.updates.events.IUpdatesEventManager
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.procedures.StateMachineProcedure
 import expo.modules.updates.procedures.StateMachineSerialExecutorQueue
 import expo.modules.updatesinterface.UpdatesControllerRegistry
+import expo.modules.updatesinterface.UpdatesLogMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.util.Date
+import kotlin.math.floor
 
 /**
  * The Updates state machine class. There should be only one instance of this class
@@ -79,7 +82,7 @@ class UpdatesStateMachine(
       is UpdatesStateEvent.Check -> mapOf("type" to event.type.type)
       is UpdatesStateEvent.CheckCompleteUnavailable -> mapOf("type" to event.type.type)
       is UpdatesStateEvent.Download -> mapOf("type" to event.type.type)
-      is UpdatesStateEvent.DownloadComplete -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.DownloadCompleteUnavailable -> mapOf("type" to event.type.type)
       is UpdatesStateEvent.DownloadCompleteWithRollback -> mapOf("type" to event.type.type)
       is UpdatesStateEvent.Restart -> mapOf("type" to event.type.type)
       is UpdatesStateEvent.StartStartup -> mapOf("type" to event.type.type)
@@ -92,6 +95,7 @@ class UpdatesStateMachine(
    */
   private fun processEvent(event: UpdatesStateEvent) {
     if (transition(event)) {
+      val previousProgress = context.downloadProgress
       context = reduceContext(context, event)
       if (event !is UpdatesStateEvent.DownloadProgress) {
         logger.info("Updates state change: ${event.type}, context = ${context.json}")
@@ -104,7 +108,9 @@ class UpdatesStateMachine(
           }
         }
       }
-      sendContextToJS()
+      if (event !is UpdatesStateEvent.DownloadProgress || floor(context.downloadProgress * 100) != floor(previousProgress * 100)) {
+        sendContextToJS()
+      }
     }
   }
 
@@ -114,16 +120,35 @@ class UpdatesStateMachine(
   private fun transition(event: UpdatesStateEvent): Boolean {
     val allowedEvents: Set<UpdatesStateEventType> = updatesStateAllowedEvents[state] ?: setOf()
     if (!allowedEvents.contains(event.type)) {
-      assert(false) { "UpdatesState: invalid transition requested: state = $state, event = ${event.type}" }
+      reportDroppedEvent(event)
       return false
     }
     val newStateValue = updatesStateTransitions[event.type] ?: UpdatesStateValue.Idle
     if (!validUpdatesStateValues.contains(newStateValue)) {
-      assert(false) { "UpdatesState: invalid transition requested: state = $state, event = ${event.type}" }
+      reportDroppedEvent(event)
       return false
     }
     state = newStateValue
     return true
+  }
+
+  /**
+   Records an event the machine cannot process. The drop is always logged, so it is visible through
+   `readLogEntriesAsync` in a shipping app. With EX_UPDATES_ASSERT_INVALID_STATE the drop also
+   throws, so an invalid transition fails an E2E run instead of passing unnoticed.
+   */
+  private fun reportDroppedEvent(event: UpdatesStateEvent) {
+    val errorMessage = when (event) {
+      is UpdatesStateEvent.CheckError -> event.error.message
+      is UpdatesStateEvent.DownloadError -> event.error.message
+      else -> null
+    }
+    val values = mapOf("state" to state.toString(), "event" to event.type.toString()) +
+      (errorMessage?.let { mapOf("error" to it) } ?: emptyMap())
+    logger.warn(UpdatesLogMessage.SystemStateMachineEventDropped, values = values)
+    if (BuildConfig.EX_UPDATES_ASSERT_INVALID_STATE) {
+      throw AssertionError(UpdatesLogger.fill(UpdatesLogMessage.SystemStateMachineEventDropped.template, values))
+    }
   }
 
   fun sendContextToJS() {
@@ -137,7 +162,7 @@ class UpdatesStateMachine(
     val updatesStateAllowedEvents: Map<UpdatesStateValue, Set<UpdatesStateEventType>> = mapOf(
       UpdatesStateValue.Idle to setOf(UpdatesStateEventType.StartStartup, UpdatesStateEventType.EndStartup, UpdatesStateEventType.Check, UpdatesStateEventType.Download, UpdatesStateEventType.Restart),
       UpdatesStateValue.Checking to setOf(UpdatesStateEventType.CheckCompleteAvailable, UpdatesStateEventType.CheckCompleteUnavailable, UpdatesStateEventType.CheckError),
-      UpdatesStateValue.Downloading to setOf(UpdatesStateEventType.DownloadComplete, UpdatesStateEventType.DownloadError, UpdatesStateEventType.DownloadProgress),
+      UpdatesStateValue.Downloading to setOf(UpdatesStateEventType.DownloadCompleteUnavailable, UpdatesStateEventType.DownloadCompleteWithUpdate, UpdatesStateEventType.DownloadCompleteWithRollback, UpdatesStateEventType.DownloadError, UpdatesStateEventType.DownloadProgress),
       UpdatesStateValue.Restarting to setOf()
     )
 
@@ -154,7 +179,9 @@ class UpdatesStateMachine(
       UpdatesStateEventType.CheckError to UpdatesStateValue.Idle,
       UpdatesStateEventType.Download to UpdatesStateValue.Downloading,
       UpdatesStateEventType.DownloadProgress to UpdatesStateValue.Downloading,
-      UpdatesStateEventType.DownloadComplete to UpdatesStateValue.Idle,
+      UpdatesStateEventType.DownloadCompleteUnavailable to UpdatesStateValue.Idle,
+      UpdatesStateEventType.DownloadCompleteWithUpdate to UpdatesStateValue.Idle,
+      UpdatesStateEventType.DownloadCompleteWithRollback to UpdatesStateValue.Idle,
       UpdatesStateEventType.DownloadError to UpdatesStateValue.Idle,
       UpdatesStateEventType.Restart to UpdatesStateValue.Restarting
     )
@@ -212,10 +239,10 @@ class UpdatesStateMachine(
         is UpdatesStateEvent.DownloadProgress -> context.copyAndIncrementSequenceNumber(
           downloadProgress = event.progress
         )
-        is UpdatesStateEvent.DownloadComplete -> context.copyAndIncrementSequenceNumber(
+        is UpdatesStateEvent.DownloadCompleteUnavailable -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
           downloadError = null,
-          isUpdatePending = true,
+          isUpdatePending = false,
           downloadProgress = 1.0,
           downloadStartTime = null,
           downloadFinishTime = null
@@ -224,12 +251,14 @@ class UpdatesStateMachine(
           isDownloading = false,
           downloadError = null,
           isUpdatePending = true,
+          downloadProgress = 1.0,
           downloadStartTime = null,
           downloadFinishTime = null
         )
         is UpdatesStateEvent.DownloadCompleteWithUpdate -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
           downloadError = null,
+          downloadProgress = 1.0,
           latestManifest = event.manifest,
           downloadedManifest = event.manifest,
           rollback = null,

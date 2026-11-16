@@ -277,7 +277,7 @@ declare module "expo-router" {
 
   type SearchOrHash = \`?\${string}\` | \`#\${string}\`;
   type UnknownInputParams = Record<string, string | number | (string | number)[]>;
-  type UnknownOutputParams = Record<string, string | string[]>;
+  type UnknownOutputParams = Record<string, string | string[] | undefined>;
 
   /**
    * Return only the RoutePart of a string. If the string has multiple parts return never
@@ -337,7 +337,7 @@ declare module "expo-router" {
     : IsParameter<Path>;
 
   /**
-   * Returns all segements of a route.
+   * Returns all segments of a route.
    *
    * /(group)/123/abc/[id]/[...rest] -> ['(group)', '123', 'abc', '[id]', '[...rest]'
    */

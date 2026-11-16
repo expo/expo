@@ -140,7 +140,9 @@ Every config plugin follows the same pattern: receives configuration and paramet
 <Tab label="Index file">
 
 ```ts plugin/src/index.ts|collapseHeight=480
-import { type ConfigPlugin, withAndroidManifest, withInfoPlist } from 'expo/config-plugins';
+import type { ConfigPlugin } from 'expo/config-plugins';
+import { withAndroidConfiguration } from './withAndroid';
+import { withIosConfiguration } from './withIos';
 
 export interface YourLibraryPluginProps {
   customProperty?: string;
@@ -166,6 +168,7 @@ export default withYourLibrary;
 
 ```ts plugin/src/withAndroid.ts
 import { type ConfigPlugin, withAndroidManifest, AndroidConfig } from 'expo/config-plugins';
+import type { YourLibraryPluginProps } from './index';
 
 export const withAndroidConfiguration: ConfigPlugin<YourLibraryPluginProps> = (config, props) => {
   return withAndroidManifest(config, config => {
@@ -188,6 +191,7 @@ export const withAndroidConfiguration: ConfigPlugin<YourLibraryPluginProps> = (c
 
 ```ts plugin/src/withIos.ts
 import { type ConfigPlugin, withInfoPlist } from 'expo/config-plugins';
+import type { YourLibraryPluginProps } from './index';
 
 export const withIosConfiguration: ConfigPlugin<YourLibraryPluginProps> = (config, props) => {
   return withInfoPlist(config, config => {
@@ -219,11 +223,12 @@ Effective testing for a config plugin can be a combination of one or more of the
 Since unit tests focus on a plugin's transformation logic without involving the file system, you can use Jest to create and run mock configuration objects, pass them through your plugin, and verify expected modifications are made correctly. For example:
 
 ```ts plugin/__tests__/withYourLibrary.test.ts
-import { withYourLibrary } from '../src';
+import type { ExpoConfig } from 'expo/config';
+import withYourLibrary from '../src';
 
 describe('withYourLibrary', () => {
   it('should configure Android with custom property', () => {
-    const config = {
+    const config: ExpoConfig = {
       name: 'test-app',
       slug: 'test-app',
       platforms: ['android', 'ios'],

@@ -25,8 +25,26 @@ class AppMetricsPreferencesTest {
   }
 
   @Test
+  fun `network traces configuration round-trips and defaults to disabled`() {
+    assertEquals(
+      expo.modules.appmetrics.networkrequests.NetworkTracesConfiguration(),
+      AppMetricsPreferences.getNetworkTracesConfiguration(context)
+    )
+    val configured = expo.modules.appmetrics.networkrequests.NetworkTracesConfiguration(
+      enabled = true,
+      hosts = listOf("api.example.com")
+    )
+    AppMetricsPreferences.setNetworkTracesConfiguration(context, configured)
+    assertEquals(configured, AppMetricsPreferences.getNetworkTracesConfiguration(context))
+  }
+
+  @Test
   fun `getEnvironment returns default environment when nothing saved`() {
-    val expected = if (BuildConfig.DEBUG) "development" else null
+    val expected = if (BuildConfig.DEBUG) {
+      "development"
+    } else {
+      null
+    }
     assertEquals(expected, AppMetricsPreferences.getEnvironment(context))
   }
 
@@ -44,7 +62,11 @@ class AppMetricsPreferencesTest {
 
   @Test
   fun `getDefaultEnvironment matches build variant`() {
-    val expected = if (BuildConfig.DEBUG) "development" else null
+    val expected = if (BuildConfig.DEBUG) {
+      "development"
+    } else {
+      null
+    }
     assertEquals(expected, AppMetricsPreferences.getDefaultEnvironment())
   }
 

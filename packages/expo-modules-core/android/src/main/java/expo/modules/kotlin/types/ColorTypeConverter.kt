@@ -8,10 +8,8 @@ import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.DynamicCastException
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
@@ -226,7 +224,9 @@ private fun parseRgbComponent(value: String): Float {
  * Returns a float in 0..1 range.
  */
 private fun parseAlpha(value: String?): Float {
-  if (value == null) return 1f
+  if (value == null) {
+    return 1f
+  }
   return if (value.endsWith("%")) {
     value.dropLast(1).toFloat() / 100f
   } else {
@@ -258,7 +258,11 @@ private fun hslToColor(h: Float, s: Float, l: Float, a: Float): Color {
     g = l
     b = l
   } else {
-    val q = if (l < 0.5f) l * (1f + s) else l + s - l * s
+    val q = if (l < 0.5f) {
+      l * (1f + s)
+    } else {
+      l + s - l * s
+    }
     val p = 2f * l - q
     r = hueToRgb(p, q, hue + 1f / 3f)
     g = hueToRgb(p, q, hue)
@@ -271,8 +275,16 @@ private fun hwbToColor(h: Float, w: Float, b: Float, a: Float): Color {
   val ww = w.coerceIn(0f, 1f)
   val bb = b.coerceIn(0f, 1f)
   val sum = ww + bb
-  val white = if (sum > 1f) ww / sum else ww
-  val black = if (sum > 1f) bb / sum else bb
+  val white = if (sum > 1f) {
+    ww / sum
+  } else {
+    ww
+  }
+  val black = if (sum > 1f) {
+    bb / sum
+  } else {
+    bb
+  }
   val rgb = hslToColor(h, 1f, 0.5f, 1f)
   val r = ColorCompat.red(rgb) * (1f - white - black) + white
   val g = ColorCompat.green(rgb) * (1f - white - black) + white
@@ -358,7 +370,7 @@ private fun parseCssColorFunction(value: String): Color? {
 // endregion
 
 class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Color {
+  override fun convertFromDynamic(value: Dynamic, context: ConverterContext, forceConversion: Boolean): Color {
     return when (value.type) {
       ReadableType.Number -> colorFromInt(value.asDouble().toInt())
       ReadableType.String -> colorFromString(
@@ -384,7 +396,7 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
     }
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Color {
+  override fun convertFromAny(value: Any, context: ConverterContext, forceConversion: Boolean): Color {
     return when (value) {
       is Int -> {
         colorFromInt(value)
@@ -441,13 +453,13 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
     return ColorCompat.valueOf(normalizedValue.toColorInt())
   }
 
-  private fun colorFromReadableMap(value: ReadableMap, context: AppContext?): Color {
-    val reactContext = context?.reactContext ?: throw Exceptions.ReactContextLost()
+  private fun colorFromReadableMap(value: ReadableMap, converterContext: ConverterContext): Color {
+    val context = converterContext.applicationContext
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      return ColorPropConverter.getColorInstance(value, reactContext)
+      return ColorPropConverter.getColorInstance(value, context)
         ?: throw UnexpectedException("ColorPropConverter returned null for a non-null color value.")
     }
-    val colorInt = ColorPropConverter.getColor(value, reactContext)
+    val colorInt = ColorPropConverter.getColor(value, context)
       ?: throw UnexpectedException("ColorPropConverter returned null for a non-null color value.")
     return ColorCompat.valueOf(colorInt)
   }

@@ -13,7 +13,7 @@ react { autolinkLibrariesWithApp() }
 
 android {
   namespace = "${{packageId}}"
-  compileSdk = 36
+  compileSdk = rootProject.extra["compileSdkVersion"] as Int
 
   buildFeatures { buildConfig = true }
 
@@ -49,8 +49,9 @@ android {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
   }
-  kotlinOptions { jvmTarget = "17" }
 }
+
+kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) } }
 
 dependencies {
   api("com.facebook.react:react-android")

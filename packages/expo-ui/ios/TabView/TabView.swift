@@ -27,7 +27,7 @@ internal struct TabView: ExpoSwiftUI.View {
     // No default tabViewStyle — the innermost modifier wins, so a default
     // here would shadow the user's. Callers must supply one explicitly.
     Group {
-      if #available(iOS 18.0, tvOS 18.0, *) {
+      if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
         valueBasedTabView(tabs)
       } else {
         legacyTabView(children, tabs: tabs)
@@ -44,7 +44,7 @@ internal struct TabView: ExpoSwiftUI.View {
 
   // MARK: - iOS 18+: value-based Tab(value:) API
 
-  @available(iOS 18.0, tvOS 18.0, *)
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, *)
   @ViewBuilder
   private func valueBasedTabView(_ tabs: [Tab]) -> some View {
     SwiftUI.TabView(selection: stringBinding) {
@@ -56,7 +56,9 @@ internal struct TabView: ExpoSwiftUI.View {
           systemImage: tab.props.systemImage ?? "",
           value: tab.props.value
         ) {
+          // The tab's own body does not run here, so publish its zero content origin on its content.
           Self.tabContent(for: tab.props.children ?? [])
+            .publishZeroContentOrigin(tab.props.shadowNodeProxy)
         }
 #if !os(tvOS)
         .badge(Self.badgeText(from: tab.props.modifiers))

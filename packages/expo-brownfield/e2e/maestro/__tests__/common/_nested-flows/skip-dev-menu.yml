@@ -9,19 +9,19 @@ name: Close dev menu if visible
 - runFlow:
     when:
       visible:
-        text: "Continue"
+        text: 'Continue'
     commands:
       - tapOn:
-          text: "Continue"
+          text: 'Continue'
 
 # Android — close button with text "Close"
 - runFlow:
     when:
       visible:
-        text: "Close"
+        text: 'Close'
     commands:
       - tapOn:
-          text: "Close"
+          text: 'Close'
 
 # iOS — close button with testID "xmark"
 - runFlow:

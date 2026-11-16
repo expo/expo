@@ -1,9 +1,10 @@
 {
   "platforms": ["apple", "android"],
-  "apple": {
-    "modules": ["KeepAwakeModule"]
-  },
   "android": {
-    "modules": ["expo.modules.keepawake.KeepAwakeModule"]
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.keepawake",
+      "repository": "local-maven-repo"
+    }
   }
 }

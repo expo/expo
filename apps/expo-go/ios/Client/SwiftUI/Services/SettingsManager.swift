@@ -2,6 +2,7 @@
 
 import Foundation
 import UIKit
+import ExpoModulesCore
 
 @MainActor
 class SettingsManager: ObservableObject {
@@ -106,10 +107,7 @@ class SettingsManager: ObservableObject {
   }
 
   private func applyThemeChange(_ themeIndex: Int) {
-    guard let window = UIApplication.shared.connectedScenes
-      .compactMap({ $0 as? UIWindowScene })
-      .flatMap({ $0.windows })
-      .first(where: { $0.isKeyWindow }) else {
+    guard let window = SceneGeometry.keyWindow() else {
       return
     }
 

@@ -14,40 +14,33 @@ add_compile_options(
   ${SQLITE_BUILDFLAGS}
 )
 
-if(${USE_LIBSQL})
-  file(GLOB SOURCES "${SRC_DIR}/libsql/*.cpp")
-  add_library(
-    ${PACKAGE_NAME}
-    SHARED
-    ${SOURCES}
-  )
-  target_include_directories(
-    ${PACKAGE_NAME}
-    PRIVATE
-    "${CMAKE_SOURCE_DIR}/libsql"
-  )
-  find_library(
-    LIBSQL_LIB
-    sql_experimental
-    PATHS "${CMAKE_SOURCE_DIR}/libsql/${ANDROID_ABI}"
-    NO_CMAKE_FIND_ROOT_PATH
-  )
-else()
-  file(GLOB SOURCES "${SRC_DIR}/*.cpp")
-  add_library(
-    ${PACKAGE_NAME}
-    SHARED
-    ${SOURCES}
-    "${SQLITE3_SRC_DIR}/sqlite3.c"
-  )
-  target_include_directories(
-    ${PACKAGE_NAME}
-    PRIVATE
-    ${SRC_DIR}
-    "${SQLITE3_SRC_DIR}"
-  )
-  set(LIBSQL_LIB "")
-endif()
+file(GLOB SOURCES "${SRC_DIR}/*.cpp")
+add_library(
+  ${PACKAGE_NAME}
+  SHARED
+  ${SOURCES}
+  "${SQLITE3_SRC_DIR}/sqlite3.c"
+)
+target_include_directories(
+  ${PACKAGE_NAME}
+  PRIVATE
+  ${SRC_DIR}
+  "${SQLITE3_SRC_DIR}"
+)
+
+# Only `JNI_OnLoad` needs to be public.
+target_compile_options(
+  ${PACKAGE_NAME}
+  PRIVATE
+  -fvisibility=hidden
+)
+
+target_link_options(
+  ${PACKAGE_NAME}
+  PRIVATE
+  "-Wl,--pack-dyn-relocs=android"
+  "$<$<NOT:$<CONFIG:Debug>>:-Wl,-O2>"
+)
 
 find_library(LOG_LIB log)
 find_package(fbjni REQUIRED CONFIG)
@@ -62,7 +55,6 @@ target_link_libraries(
   ${PACKAGE_NAME}
   ${LOG_LIB}
   ${OPENSSL_CRYPTO_LIB}
-  ${LIBSQL_LIB}
   fbjni::fbjni
   android
 )

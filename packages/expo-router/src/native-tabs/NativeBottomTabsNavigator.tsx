@@ -1,15 +1,30 @@
 'use client';
 
-import React, { use, useCallback, useMemo, useRef } from 'react';
-import type { NavigatorArgs } from 'standard-navigation';
+import React, { use, useCallback, useMemo, useRef, useState } from 'react';
 
-import type {
-  ParamListBase,
-  TabNavigationState,
-  TabRouterOptions,
+import { createBaseTabProps } from '../layouts/createBaseTabProps';
+import {
+  CommonActions,
+  type ParamListBase,
+  type TabNavigationState,
+  type TabRouterOptions,
 } from '../react-navigation/native';
-import { unstable_createStandardRouterNavigator } from '../standard-navigation';
-import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
+import { IsWithinNativeNavigator, createStandardRouterNavigator } from '../standard-navigation';
+import {
+  appendMissingPlaceholderTabDescriptors,
+  appendMissingPlaceholderTabRoutes,
+} from '../standard-navigation/appendMissingPlaceholderTabRoutes';
+import type {
+  StandardNavigatorContentProps,
+  StandardNavigatorCreatePropsFactoryDeps,
+} from '../standard-navigation/types';
+import { useNonStackAnchorWarning } from '../standard-navigation/useNonStackAnchorWarning';
+import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
+import { useReconcileTabHistory } from '../standard-navigation/useReconcileTabHistory';
+import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
+import { useWarnOnce } from '../useDeprecated';
+import { filterAllowedChildrenElements, getAllChildrenNotOfType } from '../utils/children';
+import { Protected } from '../views/Protected';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabTrigger } from './NativeTabTrigger';
 import { NativeTabsView } from './NativeTabsView';
@@ -28,11 +43,69 @@ import { convertIconColorPropToObject, convertLabelStylePropToObject } from './u
 const defaultBackBehavior = 'initialRoute';
 export const NativeTabsContext = React.createContext<boolean>(false);
 
+export interface NativeTabsNavigatorCreateProps {
+  isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
+  routeNames: string[];
+  preload: (name: string) => void;
+  navigateSync: (name: string) => void;
+}
+
+/**
+ * Creates the props required to integrate Expo Router's native tabs navigator.
+ *
+ * @param args The navigation state and dispatch functions provided to a `createProps`
+ * factory.
+ * @returns The native tabs navigator props.
+ *
+ * @example
+ * ```tsx
+ * import { TabRouter, integrateWithRouter } from 'expo-router';
+ * import { createNativeTabsProps } from 'expo-router/unstable-native-tabs';
+ * import { navigator } from './navigator';
+ *
+ * export const NativeTabs = integrateWithRouter(navigator, TabRouter, {
+ *   createProps: createNativeTabsProps,
+ * });
+ * ```
+ */
+export function createNativeTabsProps(
+  args: StandardNavigatorCreatePropsFactoryDeps<TabNavigationState<ParamListBase>>
+): NativeTabsNavigatorCreateProps {
+  const { dispatchSync } = args;
+  return {
+    ...createBaseTabProps(args),
+    navigateSync: (name) => dispatchSync(CommonActions.navigate(name)),
+  };
+}
+
+// Store the previous key in state, so the warning sees the change, also in StrictMode.
+function useWarnOnTabConfigurationChange(tabConfigurationKey: string) {
+  const [tabKeys, setTabKeys] = useState({
+    previous: tabConfigurationKey,
+    current: tabConfigurationKey,
+  });
+  if (process.env.NODE_ENV !== 'production' && tabKeys.current !== tabConfigurationKey) {
+    setTabKeys({ previous: tabKeys.current, current: tabConfigurationKey });
+  }
+  const formatTabs = (key: string) => `[${key.split(';').join(', ')}]`;
+  useWarnOnce(
+    `NativeTabs remounted and reset all tab state because the visible tabs changed from ${formatTabs(tabKeys.previous)} to ${formatTabs(tabKeys.current)}. ` +
+      'To keep tab state, keep the same visible tabs, or move the condition to a parent layout, for example a `Protected` guard around the tabs layout.',
+    tabKeys.previous !== tabKeys.current
+  );
+}
+
 function NativeTabsContent({
   state,
+  routeNames,
   descriptors,
-  actions,
+  actions: _actions,
   emitter,
+  preload,
+  navigateSync,
+  isPreloaded: _isPreloaded,
+  isRemovalPrevented: _isRemovalPrevented,
   // These per-tab style props are folded into `screenOptions` by `NativeTabsNavigatorWrapper` and
   // read back per-tab from `descriptors`. Pull them out of `rest` so they aren't forwarded to
   // `NativeTabsView` as top-level props.
@@ -47,50 +120,50 @@ function NativeTabsContent({
   disableIndicator,
   labelVisibilityMode,
   ...rest
-}: NavigatorArgs<NativeTabOptions, NativeTabNavigationEventMap> &
-  Omit<InternalNativeTabsProps, 'screenListeners'>) {
+}: StandardNavigatorContentProps<
+  NativeTabOptions,
+  NativeTabNavigationEventMap,
+  Omit<InternalNativeTabsProps, 'screenListeners'>
+> &
+  NativeTabsNavigatorCreateProps) {
+  useReconcileTabHistory();
   if (use(NativeTabsContext)) {
     throw new Error(
       'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
     );
   }
 
+  useNonStackAnchorWarning(rest.backBehavior);
   const { routes } = state;
 
+  const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
+    routes,
+    routeNames,
+    focusedRouteKey: routes[state.index]?.key,
+    descriptors,
+  });
   const visibleTabs = useMemo(
     () =>
-      routes
-        // The <NativeTab.Trigger> always sets `hidden` to defined boolean value.
-        // If it is not defined, then it was not specified, and we should hide the tab.
-        .filter((route) => descriptors[route.key]!.options?.hidden !== true)
-        .map(
-          (route): NativeTabsViewTabItem => ({
-            options: descriptors[route.key]!.options,
-            routeKey: route.key,
-            name: route.name,
-            contentRenderer: () => descriptors[route.key]!.render(),
-          })
-        ),
-    [routes, descriptors]
+      visibleRoutes.map(
+        (route): NativeTabsViewTabItem => ({
+          options: descriptors[route.key]!.options,
+          name: route.name,
+          routeKey: route.key,
+          contentRenderer: () => descriptors[route.key]!.render(),
+        })
+      ),
+    [descriptors, visibleRoutes]
   );
-  const visibleFocusedTabIndex = useMemo(
-    () => visibleTabs.findIndex((tab) => tab.routeKey === routes[state.index]!.key),
-    [visibleTabs, routes, state.index]
-  );
-  const visibleTabsKeys = useMemo(
-    () => visibleTabs.map((tab) => tab.routeKey).join(';'),
-    [visibleTabs]
-  );
+  const tabConfigurationKey = visibleTabs.map((tab) => tab.name).join(';');
+  usePreloadPlaceholderRoutes({
+    routes: visibleRoutes,
+    descriptors,
+    preload,
+    lazyByDefault: false,
+  });
 
-  if (visibleFocusedTabIndex < 0) {
-    if (process.env.NODE_ENV !== 'production') {
-      const focusedRoute = routes[state.index];
-      throw new Error(
-        `The focused tab in NativeTabsView cannot be displayed. Make sure path is correct and the route is not hidden. Route: "${focusedRoute?.href ?? focusedRoute?.name}"`
-      );
-    }
-  }
-  const focusedIndex = visibleFocusedTabIndex >= 0 ? visibleFocusedTabIndex : 0;
+  useWarnOnTabConfigurationChange(tabConfigurationKey);
+
   const provenanceRef = useRef(0);
 
   const onTabChange = useCallback(
@@ -101,7 +174,7 @@ function NativeTabsContent({
         // so the provenance counter is left untouched.
         emitter.emit({
           type: 'tabPress',
-          target: selectedKey,
+          target: routes.find((route) => route.name === selectedKey)?.key ?? selectedKey,
           data: {
             __internalTabsType: 'native',
             isPrevented: true,
@@ -114,7 +187,7 @@ function NativeTabsContent({
       provenanceRef.current = provenance;
 
       if (isNativeAction) {
-        const selectedRoute = routes.find((route) => route.key === selectedKey);
+        const selectedRoute = routes.find((route) => route.name === selectedKey);
         if (!selectedRoute) {
           if (process.env.NODE_ENV !== 'production') {
             console.warn(
@@ -126,16 +199,16 @@ function NativeTabsContent({
         }
         emitter.emit({
           type: 'tabPress',
-          target: selectedKey,
+          target: selectedRoute.key,
           data: {
             __internalTabsType: 'native',
             isPrevented: false,
           },
         });
-        actions.navigate(selectedRoute.name);
+        navigateSync(selectedRoute.name);
       }
     },
-    [routes, actions, emitter]
+    [routes, navigateSync, emitter]
   );
 
   // Compile-time guard: everything spread onto `<NativeTabsView>` must be a prop it declares. The
@@ -147,11 +220,19 @@ function NativeTabsContent({
   > &
     Record<Exclude<keyof typeof rest, keyof NativeTabsViewProps>, never> = rest;
 
+  if (focusedFallbackRoute) {
+    return descriptors[focusedFallbackRoute.key]?.render() ?? null;
+  }
+
+  if (visibleTabs.length === 0 || focusedIndex < 0) {
+    return null;
+  }
+
   return (
     <NativeTabsContext value>
       <NativeTabsView
         {...nativeTabsViewProps}
-        key={visibleTabsKeys}
+        key={tabConfigurationKey}
         focusedIndex={focusedIndex}
         // Provenance should only be sent with updates, and updates
         // on JS side are only triggered by rerender, so passing ref
@@ -164,18 +245,27 @@ function NativeTabsContent({
   );
 }
 
-const NativeTabsNavigatorWithContext = unstable_createStandardRouterNavigator<
+const NativeTabsNavigatorWithContext = createStandardRouterNavigator<
   NativeTabOptions,
   TabNavigationState<ParamListBase>,
   NativeTabNavigationEventMap,
   Omit<InternalNativeTabsProps, 'screenListeners'>,
-  TabRouterOptions
->(NativeTabsContent, NativeBottomTabsRouter, { useOnlyUserDefinedScreens: true });
+  TabRouterOptions,
+  NativeTabsNavigatorCreateProps
+>(NativeTabsContent, NativeBottomTabsRouter, {
+  activityDefaultThreshold: 1,
+  processDescriptors: appendMissingPlaceholderTabDescriptors,
+  processState: appendMissingPlaceholderTabRoutes,
+  createProps: createNativeTabsProps,
+});
 
 export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
-  const triggerChildren = useMemo(
+  // `Protected` stays wrapped. The navigator's screen filter reads `guard` and records `redirectTo`.
+  const navigatorChildren = useMemo(
     () =>
-      getAllChildrenOfType(props.children, NativeTabTrigger).filter((child) => !child.props.hidden),
+      filterAllowedChildrenElements(props.children, [NativeTabTrigger, Protected]).filter(
+        (child) => !('hidden' in child.props && child.props.hidden)
+      ),
     [props.children]
   );
   const nonTriggerChildren = useMemo(
@@ -247,13 +337,15 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
   ]);
 
   return (
-    <NativeTabsNavigatorWithContext
-      {...props}
-      children={triggerChildren}
-      nonTriggerChildren={nonTriggerChildren}
-      screenOptions={screenOptions}
-      // Passed to TabRouter
-      backBehavior={backBehavior}
-    />
+    <IsWithinNativeNavigator value>
+      <NativeTabsNavigatorWithContext
+        {...props}
+        children={navigatorChildren}
+        nonTriggerChildren={nonTriggerChildren}
+        screenOptions={screenOptions}
+        // Passed to TabRouter
+        backBehavior={backBehavior}
+      />
+    </IsWithinNativeNavigator>
   );
 }

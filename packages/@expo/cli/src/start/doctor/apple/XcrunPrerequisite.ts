@@ -35,7 +35,7 @@ export class XcrunPrerequisite extends Prerequisite {
       }
     }
 
-    // This prompt serves no purpose accept informing the user what to do next, we could just open the App Store but it could be confusing if they don't know what's going on.
+    // This prompt serves no purpose except informing the user what to do next, we could just open the App Store but it could be confusing if they don't know what's going on.
     const confirm = await confirmAsync({
       initial: true,
       message: chalk`Xcode {bold Command Line Tools} needs to be installed (requires {bold sudo}), continue?`,

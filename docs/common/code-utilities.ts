@@ -1,8 +1,7 @@
-import partition from 'lodash/partition';
 import { Language, Prism } from 'prism-react-renderer';
 import { Children, ReactElement, ReactNode, PropsWithChildren, isValidElement } from 'react';
 
-import sdkVersions from '~/ui/components/SDKTables/sdk-versions.json';
+import { sdkVersionValues } from '~/ui/components/SDKTables/utils';
 
 import { toString } from './utilities';
 
@@ -10,7 +9,7 @@ import { toString } from './utilities';
  * Build the code block variables map for a given SDK version entry.
  * Variables can be used in fenced code blocks with the `{{variableName}}` syntax.
  */
-function buildVariablesForSdk(sdk: (typeof sdkVersions.sdkVersions)[0]): Record<string, string> {
+function buildVariablesForSdk(sdk: (typeof sdkVersionValues)[0]): Record<string, string> {
   return {
     '{{iosDeploymentTarget}}': sdk.ios.replace('+', ''),
     '{{androidVersion}}': sdk.android.replace('+', ''),
@@ -35,10 +34,10 @@ function getVariablesForVersion(version?: string): Record<string, string> {
     return cached;
   }
 
-  let sdk = sdkVersions.sdkVersions[0];
+  let sdk = sdkVersionValues[0];
   if (version && version !== 'latest' && version !== 'unversioned') {
     const normalized = version.replace(/^v/, '');
-    const match = sdkVersions.sdkVersions.find(s => s.sdk === normalized);
+    const match = sdkVersionValues.find(s => s.sdk === normalized);
     if (match) {
       sdk = match;
     }
@@ -116,7 +115,7 @@ export function replaceXmlCommentsWithAnnotations(value: string) {
       /<span class="token (comment|plain-text)">&lt;!-- @info (.*?)--><\/span>\s*/g,
       (match, type, content) => {
         return content
-          ? `<span class="code-annotation with-tooltip" data-tippy-content="${escapeHtml(
+          ? `<span class="code-annotation with-tooltip" tabindex="0" data-tooltip="${escapeHtml(
               content
             )}">`
           : '<span class="code-annotation">';
@@ -139,7 +138,7 @@ export function replaceHashCommentsWithAnnotations(value: string) {
       /<span class="token (comment|plain-text)"># @info (.*?)#<\/span>\s*/g,
       (match, type, content) => {
         return content
-          ? `<span class="code-annotation with-tooltip" data-tippy-content="${escapeHtml(
+          ? `<span class="code-annotation with-tooltip" tabindex="0" data-tooltip="${escapeHtml(
               content
             )}">`
           : '<span class="code-annotation">';
@@ -162,7 +161,7 @@ export function replaceSlashCommentsWithAnnotations(value: string) {
       /<span clas{2}="token (com{2}ent|plain-text)">(\s*)\/\* @info (.*?)\*\/\s*<\/span>\s*/g,
       (match, type, beforeWhitespace, content) => {
         return content
-          ? `${beforeWhitespace}<span class="code-annotation with-tooltip" data-tippy-content="${escapeHtml(
+          ? `${beforeWhitespace}<span class="code-annotation with-tooltip" tabindex="0" data-tooltip="${escapeHtml(
               content
             )}">`
           : `${beforeWhitespace}<span class="code-annotation">`;
@@ -188,7 +187,7 @@ export function replaceSlashCommentsWithAnnotationsForTutorial(value: string) {
       /<span clas{2}="token (com{2}ent|plain-text)">(\s*)\/\* @tutinfo (.*?)\*\/\s*<\/span>\s*/g,
       (match, type, beforeWhitespace, content) => {
         return content
-          ? `${beforeWhitespace}<span class="tutorial-code-annotation with-tooltip" data-tippy-content="${escapeHtml(
+          ? `${beforeWhitespace}<span class="tutorial-code-annotation with-tooltip" tabindex="0" data-tooltip="${escapeHtml(
               content
             )}">`
           : `${beforeWhitespace}<span class="tutorial-code-annotation">`;
@@ -206,6 +205,15 @@ export function replaceSlashCommentsWithAnnotationsForTutorial(value: string) {
       /\s*<span clas{2}="token (com{2}ent|plain-text)">\s*\/\* @end \*\/(\s*)<\/span>/g,
       (match, type, afterWhitespace) => `</span>${afterWhitespace}`
     );
+}
+
+function partition<T>(items: T[], predicate: (item: T) => boolean): [T[], T[]] {
+  const matched: T[] = [];
+  const rest: T[] = [];
+  for (const item of items) {
+    (predicate(item) ? matched : rest).push(item);
+  }
+  return [matched, rest];
 }
 
 export function parseValue(value: string) {

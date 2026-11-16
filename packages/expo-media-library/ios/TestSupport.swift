@@ -1,15 +1,22 @@
 import Foundation
 import Photos
+import CoreLocation
 
 class MockPHAsset: PHAsset {
   private var id: Int
+  private var mockLocation: CLLocation?
 
-  init(id: Int) {
+  init(id: Int, location: CLLocation? = nil) {
     self.id = id
+    self.mockLocation = location
   }
 
   override var localIdentifier: String {
     return String(self.id)
+  }
+
+  override var location: CLLocation? {
+    return mockLocation
   }
 }
 

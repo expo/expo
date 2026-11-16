@@ -61,18 +61,17 @@ extension ExpoSwiftUI {
     private let hostingController: UIHostingController<AnyView>
 
     /**
-     Tracks whether safe area has been configured (can only be set once on mount)
-     */
-    private var hasSafeAreaBeenConfigured = false
-
-    /**
      Initializes a SwiftUI hosting view with the given SwiftUI view type.
      */
     init(viewType: ContentView.Type, props: Props, appContext: AppContext) {
       self.contentView = ContentView(props: props)
       let rootView = AnyView(contentView)
       self.props = props
+      #if os(iOS) || os(tvOS)
+      let controller: UIHostingController<AnyView> = AppearanceTrackingHostingController(rootView: rootView)
+      #else
       let controller = UIHostingController(rootView: rootView)
+      #endif
 
       if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
         controller.sizingOptions = [.intrinsicContentSize]
@@ -90,6 +89,7 @@ extension ExpoSwiftUI {
       }
 
       props.shadowNodeProxy = shadowNodeProxy
+      (props as? HostingViewAware)?.hostingView = self
 
       shadowNodeProxy.objectWillChange.send()
 
@@ -121,11 +121,8 @@ extension ExpoSwiftUI {
         log.error("Updating props for \(ContentView.self) has failed: \(error.localizedDescription)")
       }
 
-      if !hasSafeAreaBeenConfigured,
-         let safeAreaProps = props as? SafeAreaControllable,
-         let ignoreSafeArea = safeAreaProps.ignoreSafeArea {
-        hostingController.disableSafeArea(ignoreSafeArea)
-        hasSafeAreaBeenConfigured = true
+      if let safeAreaProps = props as? SafeAreaControllable {
+        hostingController.setSafeAreaRegions(ignoring: safeAreaProps.ignoreSafeArea)
       }
     }
 
@@ -192,6 +189,7 @@ extension ExpoSwiftUI {
       }
 
       if let children = props.children {
+        (children.first(where: { $0.id == childViewId }) as? UIViewHost)?.didUnmount()
         props.children = children.filter({ $0.id != childViewId })
         #if DEBUG
         assert(props.children?.count == children.count - 1, "Failed to remove child view")
@@ -222,27 +220,70 @@ extension ExpoSwiftUI {
     public override func didMoveToWindow() {
       super.didMoveToWindow()
 
-      if window != nil, let parentController = reactViewController() {
-        #if !os(macOS)
-        if parentController as? UINavigationController == nil && parentController as? UITabBarController == nil {
-          // Swift automatically adds the hostingController in the correct place when the parentController
-          // is UINavigationController, since it's children are supposed to be only screens.
-          // Similarly, for UITabBarController we expect its children to be only tabs.
-          parentController.addChild(hostingController)
-        }
-        #else
-        parentController.addChild(hostingController)
-        #endif
-        addSubview(hostingController.view)
-        #if os(iOS) || os(tvOS)
-        hostingController.didMove(toParent: parentController)
-        #endif
-        setupHostingViewConstraints()
-      } else {
+      #if os(iOS)
+      if let window {
+        // SwiftUI content can open a menu, and UIKit passes the tap that closes it through to
+        // React Native underneath. The gate stops that tap from reaching the view below.
+        SystemMenuTouchGate.install(in: window)
+      }
+      #endif
+
+      guard window != nil else {
         hostingController.view.removeFromSuperview()
         hostingController.removeFromParent()
+        return
       }
+
+      let parentController = reactViewController()
+      #if os(macOS)
+      // An `NSHostingController` view renders without a parent controller, and a React root view used
+      // directly as `NSWindow.contentView` has none in its responder chain, so don't require one.
+      parentController?.addChild(hostingController)
+      #else
+      guard let parentController else {
+        hostingController.view.removeFromSuperview()
+        hostingController.removeFromParent()
+        return
+      }
+      // `reactViewController()` walks the responder chain, which may not match the view hierarchy:
+      // UIKit makes an input accessory view's `nextResponder` the text input that owns it. UIKit throws
+      // when a child controller's view is outside its parent's view, so skip containment in that case.
+      if !(parentController.viewIfLoaded.map(isDescendant(of:)) ?? false) {
+        hostingController.removeFromParent()
+        addSubview(hostingController.view)
+        setupHostingViewConstraints()
+        return
+      }
+      if parentController as? UINavigationController == nil && parentController as? UITabBarController == nil {
+        // Swift automatically adds the hostingController in the correct place when the parentController
+        // is UINavigationController, since its children are supposed to be only screens.
+        // Similarly, for UITabBarController we expect its children to be only tabs.
+        parentController.addChild(hostingController)
+      }
+      #endif
+      addSubview(hostingController.view)
+      #if os(iOS) || os(tvOS)
+      hostingController.didMove(toParent: parentController)
+      forwardAppearanceIfMissed(parentController: parentController)
+      #endif
+      setupHostingViewConstraints()
     }
+
+    #if os(iOS) || os(tvOS)
+    // A child added during a transition after its parent appeared never appears, so it gets no safe area (#51288).
+    // TODO: Workaround for https://github.com/software-mansion/react-native-screens/pull/4997, remove once it ships.
+    private func forwardAppearanceIfMissed(parentController: UIViewController) {
+      guard
+        parentController.transitionCoordinator != nil,
+        let controller = hostingController as? AppearanceTrackingHostingController,
+        !controller.isAppearing
+      else {
+        return
+      }
+      controller.beginAppearanceTransition(true, animated: false)
+      controller.endAppearanceTransition()
+    }
+    #endif
 
 #if os(macOS)
     public override func reactViewController() -> NSViewController? {
@@ -259,46 +300,44 @@ extension ExpoSwiftUI {
   }
 }
 
+#if os(iOS) || os(tvOS)
+// Records whether UIKit forwarded appearance, so `HostingView` can forward it when UIKit misses it.
+private final class AppearanceTrackingHostingController: UIHostingController<AnyView> {
+  private(set) var isAppearing = false
+
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    isAppearing = true
+  }
+
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    isAppearing = false
+  }
+}
+#endif
+
 extension UIHostingController {
-  func disableSafeArea(_ mode: ExpoSwiftUI.IgnoreSafeArea) {
-    if #available(iOS 16.4, tvOS 16.4, macOS 13.3, *) {
+  /// Applies the `ignoreSafeArea` mode reactively, restoring the default safe area when `nil` so
+  /// clearing the prop re-enables the safe area without an app reload.
+  func setSafeAreaRegions(ignoring mode: ExpoSwiftUI.IgnoreSafeArea?) {
+    // `safeAreaRegions` needs iOS 16.4+; the precompiled xcframework targets 16.0, so no-op below it.
+    guard #available(iOS 16.4, tvOS 16.4, macOS 13.3, *) else {
+      return
+    }
+    var regions: SafeAreaRegions = .all
+    if let mode {
       switch mode {
       case .all:
-        self.safeAreaRegions.remove(.all)
+        regions = []
+      case .container:
+        regions.remove(.container)
       case .keyboard:
-        self.safeAreaRegions.remove(.keyboard)
-      }
-    } else {
-      // For older versions
-      // https://gist.github.com/steipete/da72299613dcc91e8d729e48b4bb582c
-      // https://developer.apple.com/forums/thread/658432
-      guard let viewClass = object_getClass(view) else { return }
-
-      let suffix = mode == .all ? "_IgnoresSafeArea" : "_IgnoresKeyboard"
-      let viewSubclassName = String(cString: class_getName(viewClass)).appending(suffix)
-      if let viewSubclass = NSClassFromString(viewSubclassName) {
-          object_setClass(view, viewSubclass)
-      } else {
-          guard let viewClassNameUtf8 = (viewSubclassName as NSString).utf8String else { return }
-          guard let viewSubclass = objc_allocateClassPair(viewClass, viewClassNameUtf8, 0) else { return }
-
-          if mode == .all,
-             let method = class_getInstanceMethod(UIView.self, #selector(getter: UIView.safeAreaInsets)) {
-              let safeAreaInsets: @convention(block) (AnyObject) -> UIEdgeInsets = { _ in
-                  return .zero
-              }
-              class_addMethod(viewSubclass, #selector(getter: UIView.safeAreaInsets),
-                              imp_implementationWithBlock(safeAreaInsets), method_getTypeEncoding(method))
-          }
-
-          if let method = class_getInstanceMethod(viewClass, NSSelectorFromString("keyboardWillShowWithNotification:")) {
-              let keyboardWillShow: @convention(block) (AnyObject, AnyObject) -> Void = { _, _ in }
-              class_addMethod(viewSubclass, NSSelectorFromString("keyboardWillShowWithNotification:"),
-                              imp_implementationWithBlock(keyboardWillShow), method_getTypeEncoding(method))
-          }
-          objc_registerClassPair(viewSubclass)
-          object_setClass(view, viewSubclass)
-        }
+        regions.remove(.keyboard)
       }
     }
+    if safeAreaRegions != regions {
+      safeAreaRegions = regions
+    }
+  }
 }

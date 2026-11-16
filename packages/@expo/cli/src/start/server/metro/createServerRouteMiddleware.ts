@@ -17,11 +17,11 @@ import { fetchManifest } from './fetchRouterManifest';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import {
   warnInvalidWebOutput,
+  isApiRoutesEnabled,
   warnInvalidMiddlewareOutput,
   warnInvalidMiddlewareMatcherSettings,
 } from './router';
-
-const debug = require('debug')('expo:start:server:metro') as typeof console.log;
+import { event } from './routerEvents';
 
 export function createRouteHandlerMiddleware(
   projectRoot: string,
@@ -62,7 +62,14 @@ export function createRouteHandlerMiddleware(
     {
       async getRoutesManifest() {
         const manifest = await fetchManifest(projectRoot, options);
-        debug('manifest', manifest);
+        event('manifest_fetched', {});
+
+        if (manifest && !isApiRoutesEnabled(options.config.exp)) {
+          if (options.config.exp.web?.output === 'static' && manifest.apiRoutes.length) {
+            warnInvalidWebOutput(manifest.apiRoutes.map((route) => route.file));
+          }
+          manifest.apiRoutes = [];
+        }
 
         // TODO(@hassankhan): Invert the conditionals for an early return if no manifest if found
 
@@ -80,9 +87,8 @@ export function createRouteHandlerMiddleware(
           });
         }
 
-        const { exp } = options.config;
-
-        if (manifest && exp.extra?.router?.unstable_useServerDataLoaders === true) {
+        const output = options.config.exp.web?.output;
+        if (manifest && (output === 'static' || output === 'server')) {
           // In development, set `loader` property on all HTML routes. We can't know which routes
           // have loaders without bundling via Metro to detect exports. In production, this is
           // populated by `exportStaticAsync.ts` after bundling.
@@ -101,6 +107,7 @@ export function createRouteHandlerMiddleware(
               {
                 file: 'index.js',
                 page: '/index',
+                generated: true,
                 routeKeys: {},
                 namedRegex: /^\/(?:index)?\/?$/i,
               },
@@ -115,13 +122,12 @@ export function createRouteHandlerMiddleware(
       async getHtml(request, route) {
         try {
           const { exp } = options.config;
-          const isSSREnabled =
-            exp.web?.output === 'server' && exp.extra?.router?.unstable_useServerRendering === true;
+          const useServerRendering = exp.web?.output === 'server';
 
           const { content } = await options.getStaticPageAsync(
             request.url,
             route,
-            isSSREnabled ? new ImmutableRequest(request) : undefined
+            useServerRendering ? new ImmutableRequest(request) : undefined
           );
           return content;
         } catch (error: any) {
@@ -142,7 +148,7 @@ export function createRouteHandlerMiddleware(
               }
             );
           } catch (staticError: any) {
-            debug('Failed to render static error overlay:', staticError);
+            event('static_overlay_failed', { error: String(staticError?.message ?? staticError) });
             // Fallback error for when Expo Router is misconfigured in the project.
             return new Response(
               '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
@@ -189,7 +195,7 @@ export function createRouteHandlerMiddleware(
         }
 
         const { exp } = options.config;
-        if (exp.web?.output !== 'server') {
+        if (!isApiRoutesEnabled(exp)) {
           warnInvalidWebOutput();
         }
 
@@ -198,7 +204,7 @@ export function createRouteHandlerMiddleware(
           ? route.file
           : path.join(options.appDir, route.file);
         try {
-          debug(`Bundling API route at: ${resolvedFunctionPath}`);
+          event('api_route_bundling', { path: event.path(resolvedFunctionPath) });
           return await options.bundleApiRoute(resolvedFunctionPath!);
         } catch (error: any) {
           return new Response(
@@ -215,22 +221,12 @@ export function createRouteHandlerMiddleware(
       async getMiddleware(route) {
         const { exp } = options.config;
 
-        if (!options.unstable_useServerMiddleware) {
-          return {
-            default: () => {
-              throw new CommandError(
-                'Server middleware is not enabled. Add unstable_useServerMiddleware: true to your `expo-router` plugin config.'
-              );
-            },
-          };
-        }
-
-        if (exp.web?.output !== 'server') {
+        if (exp.web?.output !== 'server' && !isApiRoutesEnabled(exp)) {
           warnInvalidMiddlewareOutput();
           return {
             default: () => {
               console.warn(
-                'Server middleware is only supported when web.output is set to "server" in your app config'
+                'Server middleware requires server output or apiRoutes: true in the expo-router config plugin'
               );
             },
           };
@@ -241,7 +237,7 @@ export function createRouteHandlerMiddleware(
           ? route.file
           : path.join(options.appDir, route.file);
         try {
-          debug(`Bundling middleware at: ${resolvedFunctionPath}`);
+          event('middleware_bundling', { path: event.path(resolvedFunctionPath) });
           const middlewareModule = (await options.bundleApiRoute(resolvedFunctionPath!)) as any;
 
           if ((middlewareModule.unstable_settings as MiddlewareSettings)?.matcher) {
@@ -263,7 +259,19 @@ export function createRouteHandlerMiddleware(
       },
       async getLoaderData(request, route) {
         const response = await options.executeLoaderAsync(route, new ImmutableRequest(request));
-        return response ?? new Response(null, { status: 404 });
+        const result = response ?? new Response(null, { status: 404 });
+        if (result.headers.has('Cache-Control')) {
+          return result;
+        }
+
+        // Default header-less loader responses to `no-store` in development
+        const headers = new Headers(result.headers);
+        headers.set('Cache-Control', 'no-store');
+        return new Response(result.body, {
+          status: result.status,
+          statusText: result.statusText,
+          headers,
+        });
       },
     }
   );

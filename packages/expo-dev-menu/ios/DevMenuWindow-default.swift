@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 #if !os(macOS)
 
+import ExpoModulesCore
 import React
 
 #if os(tvOS)
@@ -21,7 +22,11 @@ class DevMenuWindow: UIWindow, PresentationControllerDelegate {
     self.manager = manager
     self.devMenuViewController = DevMenuViewController(manager: manager)
 
-    super.init(frame: UIScreen.main.bounds)
+    if let windowScene = SceneGeometry.foregroundActiveScene() {
+      super.init(windowScene: windowScene)
+    } else {
+      super.init(frame: .zero)
+    }
 
     self.rootViewController = UIViewController()
     self.backgroundColor = UIColor(white: 0, alpha: 0.4)
@@ -71,8 +76,11 @@ class DevMenuWindow: UIWindow, PresentationControllerDelegate {
       if let sheet = devMenuViewController.sheetPresentationController {
         if #available(iOS 16.0, *) {
           sheet.detents = [
-            .custom(resolver: { context in
-              return context.maximumDetentValue * 0.6
+            .custom(resolver: { [weak self] context in
+              DevMenuSheetDetent.height(
+                maximum: context.maximumDetentValue,
+                onboardingHeight: self?.manager.onboardingContentHeight
+              )
             }),
             .large()
           ]
@@ -91,6 +99,17 @@ class DevMenuWindow: UIWindow, PresentationControllerDelegate {
       self?.isPresenting = false
     }
   }
+
+  #if !os(tvOS)
+  func invalidateSheetDetents() {
+    guard #available(iOS 16.0, *), let sheet = devMenuViewController.sheetPresentationController else {
+      return
+    }
+    sheet.animateChanges {
+      sheet.invalidateDetents()
+    }
+  }
+  #endif
 
   func closeBottomSheet(_ completion: (() -> Void)? = nil) {
     guard !isDismissing && !isPresenting else {

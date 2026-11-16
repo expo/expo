@@ -1,5 +1,5 @@
-import { StackNavigationProp } from '@react-navigation/stack';
 import * as Location from 'expo-location';
+import { router } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
@@ -12,6 +12,15 @@ type SubscriptionDemoProps = {
   title: string;
   subscribe: (setValue: SetValueType) => Subscription | Promise<Subscription>;
 };
+
+function sortMotionActivities(activity: Location.MotionActivityObject) {
+  const activities: Record<string, { detected: boolean | 'TRUE'; confidence: number }> = {};
+  for (const type of Object.values(Location.MotionActivityType)) {
+    const { detected, confidence } = activity.activities[type];
+    activities[type] = { detected: detected ? 'TRUE' : false, confidence };
+  }
+  return { activities, timestamp: activity.timestamp };
+}
 
 function SubscriptionDemo(props: SubscriptionDemoProps) {
   const [subscription, setSubscription] = React.useState<Subscription | null>(null);
@@ -38,11 +47,7 @@ function SubscriptionDemo(props: SubscriptionDemoProps) {
   return <SimpleActionDemo title={props.title} action={toggle} />;
 }
 
-export default function LocationScreen({
-  navigation,
-}: {
-  navigation: StackNavigationProp<{ BackgroundLocationMap: undefined; Geofencing: undefined }>;
-}) {
+export default function LocationScreen() {
   return (
     <ScrollView style={styles.scrollView}>
       <SimpleActionDemo
@@ -106,11 +111,16 @@ export default function LocationScreen({
       />
       <SubscriptionDemo
         title="watchMotionActivityAsync"
-        subscribe={(setValue) => Location.watchMotionActivityAsync(setValue, setValue)}
+        subscribe={(setValue) =>
+          Location.watchMotionActivityAsync(
+            (activity) => setValue(sortMotionActivities(activity)),
+            setValue
+          )
+        }
       />
 
       <View style={{ marginTop: 30, paddingHorizontal: 10 }}>
-        <ListButton onPress={() => navigation.navigate('Geofencing')} title="Geofencing map" />
+        <ListButton onPress={() => router.push('/apis/geofencing')} title="Geofencing map" />
       </View>
     </ScrollView>
   );

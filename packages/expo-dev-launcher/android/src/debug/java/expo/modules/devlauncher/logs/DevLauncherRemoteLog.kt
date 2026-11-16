@@ -11,7 +11,7 @@ import com.google.gson.annotations.Expose
 internal data class DevLauncherRemoteLog(
   val messages: List<String>,
   @Expose val level: String = "error",
-  @Expose val mode: String = "BRIDGE"
+  @Expose val mode: String = "android"
 ) {
   /**
    * `data` is an array whose members are simply concatenated with a space before printing to the

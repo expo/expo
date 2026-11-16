@@ -3,7 +3,6 @@ package dev.expo.brownfieldintegratedtester
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import expo.modules.brownfield.BrownfieldMessage
 import expo.modules.brownfield.BrownfieldMessaging
 import expo.modules.brownfield.BrownfieldState
@@ -12,7 +11,7 @@ import host.exp.exponent.brownfield.BrownfieldActivity
 import java.util.Timer
 import kotlin.concurrent.timerTask
 
-open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtnHandler {
+open class BrownfieldTestActivity : BrownfieldActivity() {
   // Listeners
   private var messagingListenerId: String? = null
   private var stateListeners: MutableList<Removable?> = mutableListOf()
@@ -140,9 +139,5 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
         java.time.LocalDateTime.now()
             .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"))
     BrownfieldState.set("time", timeString)
-  }
-
-  override fun invokeDefaultOnBackPressed() {
-    TODO("Not yet implemented")
   }
 }

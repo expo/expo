@@ -27,6 +27,19 @@ export type ExpoImageIntegrationConfig = {
    * @default 1.5
    */
   oversizeThreshold?: number;
+  /**
+   * Whether reported events include the image URL's query string and fragment. By default the URL
+   * is truncated at them before it leaves the device, because query parameters often carry
+   * sensitive values such as signing tokens or API keys. Enable this only when your image URLs
+   * are safe to send off-device in full. Regardless of this setting, basic-auth credentials are
+   * always removed from the URL, and only `http(s)`, `file`, and `android.resource` URLs are
+   * reported (other schemes, such as `data:` or `ph://`, never leave the device). URLs are
+   * reported in normalized (WHATWG) form, and the event's `urlSanitized` attribute tells whether
+   * the URL was modified beyond that.
+   *
+   * @default false
+   */
+  includeUrlParams?: boolean;
 };
 
 const DEFAULT_OVERSIZE_THRESHOLD = 1.5;
@@ -38,7 +51,9 @@ let initialized = false;
 export type IntegrationState = {
   enabled: boolean;
   threshold: number;
-  // URLs already reported under the current configuration. Only oversized images are added.
+  includeUrlParams: boolean;
+  // URLs already reported under the current configuration, as they were reported (so without
+  // query and fragment unless `includeUrlParams` is set). Only oversized images are added.
   reported: Set<string>;
   // Subscription to the native `imageLoaded` event, held only while the integration is enabled.
   subscription: { remove: () => void } | null;
@@ -61,22 +76,67 @@ export type LoadedImage = {
   pixelRatio: number;
 };
 
+// Only remote images, local files, and bundled Android resources are reported: those URLs
+// identify developer-owned content that the developer can act on. Every other scheme fails safe,
+// because it carries device-local or user-library content (the whole payload for `data:`, a
+// stable personal-photo identifier for `ph://` and `content://`).
+const REPORTABLE_PROTOCOLS = new Set(['http:', 'https:', 'file:', 'android.resource:']);
+
+// Prepares a loaded image's URL for sending off-device, or returns `null` when the image must not
+// be reported at all (a disallowed scheme, or a string the WHATWG parser rejects). Basic-auth
+// credentials are always removed, and the query string and fragment too unless `includeUrlParams`
+// opts in, so values like signing tokens or API keys never leave the device. The returned URL is
+// in normalized (WHATWG) form; `sanitized` is true only when something was removed, not when
+// normalization alone changed the string.
+function sanitizeUrl(
+  rawUrl: string,
+  includeUrlParams: boolean
+): { url: string; sanitized: boolean } | null {
+  let url: URL;
+  try {
+    url = new URL(rawUrl);
+  } catch {
+    return null;
+  }
+  if (!REPORTABLE_PROTOCOLS.has(url.protocol)) {
+    return null;
+  }
+  const normalized = url.toString();
+  url.username = '';
+  url.password = '';
+  if (!includeUrlParams) {
+    url.search = '';
+    url.hash = '';
+  }
+  const result = url.toString();
+  return { url: result, sanitized: result !== normalized };
+}
+
 // Exported for testing purposes only.
 export function reportIfOversized(state: IntegrationState, image: LoadedImage): void {
   if (!state.enabled || !state.appMetrics) {
     return;
   }
-  const { url, width, height, screenWidth, screenHeight, pixelRatio } = image;
-  if (!url || !(width > 0) || !(height > 0)) {
-    return;
-  }
-  if (state.reported.has(url)) {
+  const { width, height, screenWidth, screenHeight, pixelRatio } = image;
+  if (!image.url || !(width > 0) || !(height > 0)) {
     return;
   }
   // Screen area is in points; the decoded image is in pixels, so convert with pixelRatio² to get
   // the screen's physical pixel count.
   const budget = screenWidth * screenHeight * pixelRatio * pixelRatio;
   if (!(budget > 0) || width * height <= budget * state.threshold) {
+    return;
+  }
+  // Sanitizing after the size check keeps the common per-load path cheap: only oversized images
+  // pay for the URL parse.
+  const sanitizedUrl = sanitizeUrl(image.url, state.includeUrlParams);
+  if (!sanitizedUrl) {
+    return;
+  }
+  // Deduping on the reported form also collapses variants of one image that differ only in their
+  // query parameters (such as rotating signed URLs) into a single event.
+  const url = sanitizedUrl.url;
+  if (state.reported.has(url)) {
     return;
   }
   state.reported.add(url);
@@ -87,6 +147,8 @@ export function reportIfOversized(state: IntegrationState, image: LoadedImage): 
       body: `Image loaded at ${width}×${height}px is far larger than this device's screen (${screenWidth}×${screenHeight}pt @${pixelRatio}x). Constrain it with the maxWidth/maxHeight load options.`,
       attributes: {
         url,
+        // True when sanitization changed the URL; WHATWG normalization alone does not count.
+        urlSanitized: sanitizedUrl.sanitized,
         imageWidth: width,
         imageHeight: height,
         screenWidth,
@@ -122,11 +184,10 @@ export function activate(
   handle = handleImageLoaded
 ): void {
   const config = integrations['expo-image'];
+  const configObject = typeof config === 'object' && config !== null ? config : {};
   state.enabled = !!config;
-  state.threshold =
-    typeof config === 'object' && config !== null
-      ? (config.oversizeThreshold ?? DEFAULT_OVERSIZE_THRESHOLD)
-      : DEFAULT_OVERSIZE_THRESHOLD;
+  state.threshold = configObject.oversizeThreshold ?? DEFAULT_OVERSIZE_THRESHOLD;
+  state.includeUrlParams = configObject.includeUrlParams ?? false;
   // A new configure may change the threshold (or enable the integration), so start a fresh dedup
   // set: images already reported under the previous settings become eligible to report again.
   state.reported = new Set<string>();
@@ -151,6 +212,7 @@ export function initObserveIntegrationIfNeededImpl(
   const state: IntegrationState = {
     enabled: false,
     threshold: DEFAULT_OVERSIZE_THRESHOLD,
+    includeUrlParams: false,
     reported: new Set<string>(),
     subscription: null,
     appMetrics: requireOptionalNativeModule<ExpoAppMetricsModuleType>('ExpoAppMetrics'),

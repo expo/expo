@@ -12,10 +12,9 @@ import {
   extractLocalNpmTarballAsync,
   extractNpmTarballFromUrlAsync,
 } from '../utils/npm';
+import { event, debugEvent } from './events';
 import { resolveLocalTemplateAsync } from './resolveLocalTemplate';
 import type { ResolvedTemplateOption } from './resolveOptions';
-
-const debug = require('debug')('expo:prebuild:resolveTemplate') as typeof console.log;
 
 type RepoInfo = {
   username: string;
@@ -41,24 +40,30 @@ export async function cloneTemplateAsync({
     const expName = exp.name;
     const { type, uri } = template;
     if (type === 'file') {
+      event('template:resolved', { source: 'local', name: uri });
       return await extractLocalNpmTarballAsync(uri, templateDirectory, {
         expName,
       });
     } else if (type === 'npm') {
+      event('template:resolved', { source: 'npm', name: uri });
       return await downloadAndExtractNpmModuleAsync(uri, templateDirectory, {
         expName,
       });
     } else if (type === 'repository') {
+      event('template:resolved', { source: 'git', name: uri });
       return await resolveAndDownloadRepoTemplateAsync(templateDirectory, ora, expName, uri);
     } else {
       throw new Error(`Unknown template type: ${type}`);
     }
   } else {
     try {
-      return await resolveLocalTemplateAsync({ templateDirectory, projectRoot, exp });
+      const result = await resolveLocalTemplateAsync({ templateDirectory, projectRoot, exp });
+      event('template:resolved', { source: 'local', name: 'expo-template-bare-minimum' });
+      return result;
     } catch (error: any) {
       const templatePackageName = getTemplateNpmPackageNameFromSdkVersion(exp.sdkVersion);
-      debug('Fallback to SDK template:', templatePackageName);
+      debugEvent('sdk_template_fallback', { name: templatePackageName });
+      event('template:resolved', { source: 'npm', name: templatePackageName });
       return await downloadAndExtractNpmModuleAsync(templatePackageName, templateDirectory, {
         expName: exp.name,
       });
@@ -122,14 +127,14 @@ async function downloadAndExtractRepoAsync(
 ): Promise<string> {
   const url = `https://codeload.github.com/${username}/${name}/tar.gz/${branch}`;
 
-  debug('Downloading tarball from:', url);
+  debugEvent('repo_tarball_download', { url });
 
   // Extract the (sub)directory into non-empty path segments
   const directory = filePath.replace(/^\//, '').split('/').filter(Boolean);
   // Remove the (sub)directory paths, and the root folder added by GitHub
   const strip = directory.length + 1;
   // Only extract the relevant (sub)directories, ignoring irrelevant files
-  // The filder auto-ignores dotfiles, unless explicitly included
+  // The filter auto-ignores dotfiles, unless explicitly included
   const filter = createGlobFilter(
     !directory.length
       ? ['*/**', '*/ios/.xcode.env']

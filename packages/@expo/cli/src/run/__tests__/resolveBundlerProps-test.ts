@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 
-import { resolvePortAsync } from '../../utils/port';
+import { resolveMetroPortAsync } from '../../utils/port';
 import { resolveBundlerPropsAsync } from '../resolveBundlerProps';
 
 jest.mock('../../utils/port');
@@ -13,8 +13,20 @@ describe(resolveBundlerPropsAsync, () => {
       /mutually exclusive arguments/
     );
   });
+  it(`ignores an invalid port when the bundler is skipped`, async () => {
+    expect(await resolveBundlerPropsAsync('/', { bundler: false, port: NaN })).toEqual({
+      port: 8081,
+      shouldStartBundler: false,
+    });
+  });
+  it(`ignores an invalid port when the bundler is started`, async () => {
+    expect(await resolveBundlerPropsAsync('/', { port: NaN })).toEqual({
+      port: 8081,
+      shouldStartBundler: true,
+    });
+  });
   it(`skips bundling if the port is busy`, async () => {
-    jest.mocked(resolvePortAsync).mockResolvedValueOnce(null);
+    jest.mocked(resolveMetroPortAsync).mockResolvedValueOnce(null);
 
     expect(await resolveBundlerPropsAsync('/', {})).toEqual({
       port: 8081,
@@ -32,7 +44,7 @@ describe(resolveBundlerPropsAsync, () => {
     });
   });
   it(`resolves default port`, async () => {
-    jest.mocked(resolvePortAsync).mockResolvedValueOnce(19006);
+    jest.mocked(resolveMetroPortAsync).mockResolvedValueOnce(19006);
 
     expect(
       await resolveBundlerPropsAsync('/', {

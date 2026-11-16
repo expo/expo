@@ -12,11 +12,11 @@ export function prependMiddleware(app: ConnectServer, middleware: HandleFunction
 }
 
 /**
- * Replaces source middleware with a new middlware in connect app
+ * Replaces source middleware with a new middleware in connect app
  *
  * @param app connect app server instance
- * @param sourceMiddleware source middlware to be matched and replaces
- * @param targetMiddleware new middlware
+ * @param sourceMiddleware source middleware to be matched and replaces
+ * @param targetMiddleware new middleware
  */
 export function replaceMiddlewareWith(
   app: ConnectServer,

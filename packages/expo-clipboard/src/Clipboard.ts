@@ -45,8 +45,14 @@ export async function setStringAsync(
   if (!ExpoClipboard.setStringAsync) {
     throw new UnavailabilityError('Clipboard', 'setStringAsync');
   }
-  const flattenedOptions = flattenPlatformOptions(options);
-  return ExpoClipboard.setStringAsync(text, flattenedOptions);
+  const { ios, ...commonOptions } = options;
+  return ExpoClipboard.setStringAsync(
+    text,
+    flattenPlatformOptions({
+      ...commonOptions,
+      ios: ios && { ...ios, expiresAt: ios.expiresAt?.getTime() },
+    })
+  );
 }
 
 /**
@@ -214,7 +220,7 @@ export function removeClipboardListener(subscription: EventSubscription) {
 /**
  * Property that determines if the `ClipboardPasteButton` is available.
  *
- * This requires the users device to be using at least iOS 16.
+ * This requires the user's device to be using at least iOS 16.
  *
  * `true` if the component is available, and `false` otherwise.
  */

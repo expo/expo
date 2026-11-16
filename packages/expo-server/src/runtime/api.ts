@@ -27,7 +27,7 @@ export { StatusError } from './error';
 
 /** Returns the current request's URL.
  *
- * This typically returns the request's URL, or on certain platform,
+ * This typically returns the request's URL, or on certain platforms,
  * the origin of the request. This does not use the `Origin` header
  * in development as it may contain an untrusted value.
  * @returns A request origin
@@ -44,7 +44,7 @@ export function requestHeaders(): ImmutableHeaders {
 
 /** Returns the request's environment, if the server runtime supports this.
  *
- * In EAS Hosting, the returned environment name is the
+ * In Expo Hosting, the returned environment name is the
  * [alias or deployment identifier](https://docs.expo.dev/eas/hosting/deployments-and-aliases/),
  * but the value may differ for other providers.
  *

@@ -38,8 +38,6 @@ export const expoServe: Command = async (argv) => {
   ] = await Promise.all([import('./serveAsync.js'), import('../utils/errors.js')]);
 
   const projectRoot = getProjectRoot(args);
-  const { installEventLogger } = await import('2g');
-  installEventLogger({ command: 'expo serve', version: process.env.__EXPO_VERSION });
 
   return serveAsync(projectRoot, {
     isDefaultDirectory: !args._[0],

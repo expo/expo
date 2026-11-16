@@ -1,5 +1,7 @@
 import { Host } from '../../jetpack-compose/Host';
 import { Slider as ComposeSlider } from '../../jetpack-compose/Slider';
+import { semantics, testID as testIDModifier } from '../../jetpack-compose/modifiers';
+import type { ModifierConfig } from '../../types';
 import { type SliderProps } from './types';
 
 /**
@@ -21,6 +23,8 @@ export function Slider(props: SliderProps) {
     thumbTintColor,
     onValueChange,
     style,
+    accessibilityLabel,
+    testID,
   } = props;
   const min = minimumValue ?? 0;
   const max = maximumValue ?? 1;
@@ -31,6 +35,12 @@ export function Slider(props: SliderProps) {
     inactiveTrackColor: maximumTrackTintColor,
     thumbColor: thumbTintColor,
   };
+  // `accessibilityHint` has no Compose semantics counterpart, so it is iOS-only.
+  const modifiers: ModifierConfig[] = [];
+  if (accessibilityLabel !== undefined) {
+    modifiers.push(semantics({ contentDescription: accessibilityLabel }));
+  }
+  if (testID !== undefined) modifiers.push(testIDModifier(testID));
   return (
     <Host matchContents={{ vertical: true }} style={hostStyle}>
       <ComposeSlider
@@ -43,6 +53,7 @@ export function Slider(props: SliderProps) {
         enabled={disabled === undefined ? undefined : !disabled}
         colors={colors}
         onValueChange={onValueChange}
+        modifiers={modifiers.length > 0 ? modifiers : undefined}
       />
     </Host>
   );

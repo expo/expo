@@ -32,7 +32,9 @@ public class ExpoSystemUIModule: Module {
     var color: String?
     EXUtilities.performSynchronously {
       // Get the root view controller of the delegate window.
-      if let window = UIApplication.shared.delegate?.window, let backgroundColor = window?.rootViewController?.view.backgroundColor?.cgColor {
+      if let window = UIApplication.shared.delegate?.window,
+        let backgroundColor = window?.rootViewController?.view.backgroundColor?.cgColor
+      {
         color = EXUtilities.hexString(with: backgroundColor)
       }
     }

@@ -1,4 +1,4 @@
-import { Group, ScrollView as SwiftUIScrollView } from '@expo/ui/swift-ui';
+import { HStack, ScrollView as SwiftUIScrollView, VStack } from '@expo/ui/swift-ui';
 import { frame, padding } from '@expo/ui/swift-ui/modifiers';
 import type { ModifierConfig } from '@expo/ui/swift-ui/modifiers';
 
@@ -18,7 +18,7 @@ export function ScrollView({
   testID,
   modifiers: extraModifiers,
 }: ScrollViewProps) {
-  // Extract padding from style — it goes on the inner Group so content is
+  // Extract padding from style — it goes on the inner stack so content is
   // inset after stretching to full width.
   const {
     padding: paddingAll,
@@ -34,7 +34,8 @@ export function ScrollView({
   const scrollModifiers = transformToModifiers(
     Object.keys(styleWithoutPadding).length > 0 ? (styleWithoutPadding as typeof style) : undefined,
     { onPress, onAppear, onDisappear, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'ScrollView' }
   );
 
   // SwiftUI ScrollView centers content by default. Stretch content to fill
@@ -64,13 +65,24 @@ export function ScrollView({
     );
   }
 
+  const stack =
+    direction === 'horizontal' ? (
+      <HStack alignment="top" modifiers={innerModifiers}>
+        {children}
+      </HStack>
+    ) : (
+      <VStack alignment="leading" modifiers={innerModifiers}>
+        {children}
+      </VStack>
+    );
+
   return (
     <SwiftUIScrollView
       axes={direction}
       showsIndicators={showsIndicators}
       modifiers={scrollModifiers}
       testID={testID}>
-      <Group modifiers={innerModifiers}>{children}</Group>
+      {stack}
     </SwiftUIScrollView>
   );
 }

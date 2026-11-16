@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from '../hooks';
+import { useRouter } from '../hooks/useRouter';
 import type { Href } from '../types';
 import { useFocusEffect } from '../useFocusEffect';
 import { useIsPreview } from './preview/PreviewRouteContext';

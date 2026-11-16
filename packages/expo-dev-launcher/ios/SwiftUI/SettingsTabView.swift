@@ -9,7 +9,6 @@ private let selectedGesturesInfoMessage = "Selected gestures will toggle the dev
 struct SettingsTabView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
   @State private var showCopiedMessage = false
-  @State private var defaultPageSize: Int = 10
   @State private var showCacheClearedMessage = false
 
   private func createBuildInfoJSON() -> String {
@@ -32,8 +31,6 @@ struct SettingsTabView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24) {
-        SafeAreaTopPadding(manualInset: viewModel.topSafeAreaInset)
-        titleSection
         launchBehaviour
         gestures
 
@@ -41,27 +38,13 @@ struct SettingsTabView: View {
           .font(.system(size: 13))
           .foregroundStyle(.secondary)
 
+        DevServerFiltersView()
+
         #if !targetEnvironment(simulator)
         localNetworkDebugSettings
         #endif
 
-        VStack(alignment: .leading, spacing: 8) {
-          Text("system".uppercased())
-            .font(.caption)
-            .foregroundColor(.primary.opacity(0.6))
-
-          VStack(spacing: 0) {
-            version
-            if let expiration = viewModel.buildInfo["appExpirationDate"] as? String {
-              Divider()
-              expirationRow(expiration)
-            }
-            Divider()
-            copyToClipboardButton
-          }
-          .background(Color.expoSecondarySystemBackground)
-          .cornerRadius(12)
-        }
+        systemSection
 
         if isAdminUser {
           debugSettings
@@ -69,19 +52,17 @@ struct SettingsTabView: View {
         }
       }
       .padding()
+      .maxContentWidth()
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     #if os(tvOS)
     .background()
     #endif
-    #if !os(macOS)
-    .navigationBarHidden(true)
-    #endif
     #if os(iOS) && !targetEnvironment(simulator)
     .task {
       viewModel.refreshPermissionStatus()
     }
-    .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+    .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
       viewModel.refreshPermissionStatus()
     }
     #endif
@@ -91,7 +72,7 @@ struct SettingsTabView: View {
     VStack(alignment: .leading) {
       Text("Launch behaviour".uppercased())
         .font(.caption)
-        .foregroundColor(.primary.opacity(0.6))
+        .foregroundStyle(Color.primary.opacity(0.6))
 
       VStack(spacing: 0) {
         HStack {
@@ -119,22 +100,15 @@ struct SettingsTabView: View {
         .padding(.vertical, 12)
       }
       .background(Color.expoSecondarySystemBackground)
-      .cornerRadius(12)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
     }
-  }
-
-  private var titleSection: some View {
-    Text("Settings")
-      .font(.largeTitle)
-      .fontWeight(.bold)
-      .frame(maxWidth: .infinity, alignment: .leading)
   }
 
   private var gestures: some View {
     VStack(alignment: .leading) {
       Text("Menu Gestures".uppercased())
         .font(.caption)
-        .foregroundColor(.primary.opacity(0.6))
+        .foregroundStyle(Color.primary.opacity(0.6))
 
       VStack(spacing: 0) {
         HStack {
@@ -160,7 +134,27 @@ struct SettingsTabView: View {
         .padding(.vertical, 12)
       }
       .background(Color.expoSecondarySystemBackground)
-      .cornerRadius(12)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+  }
+
+  private var systemSection: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      Text("system".uppercased())
+        .font(.caption)
+        .foregroundStyle(Color.primary.opacity(0.6))
+
+      VStack(spacing: 0) {
+        version
+        if let expiration = viewModel.buildInfo["appExpirationDate"] as? String {
+          Divider()
+          expirationRow(expiration)
+        }
+        Divider()
+        copyToClipboardButton
+      }
+      .background(Color.expoSecondarySystemBackground)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
     }
   }
 
@@ -169,7 +163,7 @@ struct SettingsTabView: View {
       Text("Version")
       Spacer()
       Text(viewModel.buildInfo["appVersion"] as? String ?? "")
-        .foregroundColor(.secondary)
+        .foregroundStyle(Color.secondary)
     }
     .padding(.horizontal)
     .padding(.vertical, 12)
@@ -180,7 +174,7 @@ struct SettingsTabView: View {
       Text("Expires in")
       Spacer()
       Text(text)
-        .foregroundColor(.secondary)
+        .foregroundStyle(Color.secondary)
     }
     .padding(.horizontal)
     .padding(.vertical, 12)
@@ -204,12 +198,12 @@ struct SettingsTabView: View {
         Text(showCopiedMessage ? "Copied to clipboard!" : "Copy system info")
         Spacer()
         Image(systemName: showCopiedMessage ? "checkmark" : "clipboard")
-          .foregroundColor(.secondary)
+          .foregroundStyle(Color.secondary)
       }
       .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
-    .foregroundColor(showCopiedMessage ? .green : .primary)
+    .foregroundStyle(showCopiedMessage ? Color.green : Color.primary)
     .padding(.horizontal)
     .padding(.vertical, 12)
 #endif
@@ -223,7 +217,7 @@ struct SettingsTabView: View {
     VStack(alignment: .leading, spacing: 8) {
       Text("Debug Settings".uppercased())
         .font(.caption)
-        .foregroundColor(.primary.opacity(0.6))
+        .foregroundStyle(Color.primary.opacity(0.6))
 
       VStack(spacing: 0) {
         clearNetworkCacheRow
@@ -231,7 +225,7 @@ struct SettingsTabView: View {
         defaultPageSizeRow
       }
       .background(Color.expoSecondarySystemBackground)
-      .cornerRadius(12)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
     }
   }
 
@@ -243,12 +237,12 @@ struct SettingsTabView: View {
         Text(showCacheClearedMessage ? "Network cache cleared!" : "Clear network cache")
         Spacer()
         Image(systemName: showCacheClearedMessage ? "checkmark" : "trash")
-          .foregroundColor(showCacheClearedMessage ? .green : .secondary)
+          .foregroundStyle(showCacheClearedMessage ? Color.green : Color.secondary)
       }
       .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
-    .foregroundColor(showCacheClearedMessage ? .green : .primary)
+    .foregroundStyle(showCacheClearedMessage ? Color.green : Color.primary)
     .padding(.horizontal)
     .padding(.vertical, 12)
   }
@@ -259,7 +253,7 @@ struct SettingsTabView: View {
       Text("Sets the number of items fetched for branches and updates")
         .foregroundStyle(.secondary)
         .font(.footnote)
-      Picker("", selection: $defaultPageSize) {
+      Picker("", selection: $viewModel.updatesPageSize) {
         Text("1").tag(1)
         Text("5").tag(5)
         Text("10").tag(10)
@@ -274,7 +268,7 @@ struct SettingsTabView: View {
     VStack(alignment: .leading, spacing: 8) {
       Text("EAS Update Configuration".uppercased())
         .font(.caption)
-        .foregroundColor(.primary.opacity(0.6))
+        .foregroundStyle(Color.primary.opacity(0.6))
 
       VStack(alignment: .leading, spacing: 8) {
         Text(createEASConfigJSON())
@@ -287,7 +281,7 @@ struct SettingsTabView: View {
       .padding(.horizontal)
       .padding(.vertical, 12)
       .background(Color.expoSecondarySystemBackground)
-      .cornerRadius(12)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
     }
   }
 
@@ -323,6 +317,8 @@ struct SettingsTabView: View {
       return ("Allowed", "checkmark.circle.fill", .green)
     case .denied:
       return ("Not allowed", "xmark.circle.fill", .red)
+    case .misconfigured:
+      return ("Not configured", "exclamationmark.triangle.fill", .orange)
     case .checking, .unknown:
       return nil
     }
@@ -339,7 +335,7 @@ struct SettingsTabView: View {
         }
       }
       .background(Color.expoSecondarySystemBackground)
-      .cornerRadius(12)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
     }
   }
 
@@ -349,9 +345,9 @@ struct SettingsTabView: View {
       Spacer()
       if let status = localNetworkStatus {
         Text(status.text)
-          .foregroundColor(.secondary)
+          .foregroundStyle(Color.secondary)
         Image(systemName: status.icon)
-          .foregroundColor(status.color)
+          .foregroundStyle(status.color)
       } else {
         ProgressView()
       }
@@ -372,12 +368,12 @@ struct SettingsTabView: View {
         Text("Open App Settings")
         Spacer()
         Image(systemName: "gear")
-          .foregroundColor(.secondary)
+          .foregroundStyle(Color.secondary)
       }
       .contentShape(Rectangle())
     }
     .buttonStyle(.plain)
-    .foregroundColor(.primary)
+    .foregroundStyle(Color.primary)
     .padding(.horizontal)
     .padding(.vertical, 12)
     #endif

@@ -10,10 +10,14 @@ import Foundation
 @objcMembers
 public final class SelectionPolicyFactory: NSObject {
   public static func filterAwarePolicy(withRuntimeVersion runtimeVersion: String, config: UpdatesConfig) -> SelectionPolicy {
+    return filterAwarePolicy(withRuntimeVersion: runtimeVersion, config: config, embeddedUpdateId: nil)
+  }
+
+  public static func filterAwarePolicy(withRuntimeVersion runtimeVersion: String, config: UpdatesConfig, embeddedUpdateId: UUID?) -> SelectionPolicy {
     return SelectionPolicy.init(
       launcherSelectionPolicy: LauncherSelectionPolicyFilterAware.init(runtimeVersion: runtimeVersion, config: config),
       loaderSelectionPolicy: LoaderSelectionPolicyFilterAware(config: config),
-      reaperSelectionPolicy: ReaperSelectionPolicyFilterAware()
+      reaperSelectionPolicy: ReaperSelectionPolicyFilterAware(maxUpdatesToKeep: config.maxUpdatesToKeep, embeddedUpdateId: embeddedUpdateId)
     )
   }
 }

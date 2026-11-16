@@ -1,9 +1,10 @@
 'use client';
 
-import { useCallback, type ReactElement, type ReactNode } from 'react';
+import { use, useCallback, type ReactElement, type ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { useIsPreview } from '../link/preview/PreviewRouteContext';
+import { NavigatorTypeContext } from '../react-navigation/core';
 import { useNavigation, useRoute } from '../react-navigation/native';
 import { useFocusEffect } from '../useFocusEffect';
 import { filterAllowedChildrenElements, isChildOfType } from '../utils/children';
@@ -26,7 +27,7 @@ import { appendIconOptions } from './utils/optionsIconConverter';
  *
  * @example
  * ```tsx app/_layout.tsx
- * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ * import { NativeTabs } from 'expo-router/native-tabs';
  *
  * export default function Layout() {
  *   return (
@@ -40,7 +41,7 @@ import { appendIconOptions } from './utils/optionsIconConverter';
  *
  * @example
  * ```tsx app/home.tsx
- * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ * import { NativeTabs } from 'expo-router/native-tabs';
  *
  * export default function HomeScreen() {
  *   return (
@@ -58,6 +59,7 @@ function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
   const route = useRoute();
   const navigation = useNavigation();
   const isInPreview = useIsPreview();
+  const navigatorType = use(NavigatorTypeContext);
 
   useFocusEffect(
     useCallback(() => {
@@ -65,15 +67,22 @@ function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
       // As long as all tabs are loaded at the start, we don't need this check.
       // It is here to ensure similar behavior to stack
       if (!isInPreview) {
-        if (navigation.getState()?.type !== 'tab') {
+        if (navigatorType !== 'tab') {
           throw new Error(
             `Trigger component can only be used in the tab screen. Current route: ${route.name}`
+          );
+        }
+        if (process.env.NODE_ENV !== 'production' && props.prominent) {
+          console.warn(
+            `NativeTabs ignores \`prominent\` on the \`NativeTabs.Trigger\` inside the "${route.name}" screen. ` +
+              'The prominent tab can be set only in the layout. ' +
+              `Set \`prominent\` on \`<NativeTabs.Trigger name="${route.name}">\` in the layout file.`
           );
         }
         const options = convertTabPropsToOptions(props, true);
         navigation.setOptions(options);
       }
-    }, [props, isInPreview])
+    }, [props, isInPreview, navigatorType])
   );
 
   return null;
@@ -91,6 +100,8 @@ export function convertTabPropsToOptions(
     hidden,
     children,
     role,
+    prominent,
+    disableAutomaticSearchActivation,
     disablePopToTop,
     disableScrollToTop,
     unstable_nativeProps,
@@ -111,6 +122,9 @@ export function convertTabPropsToOptions(
     ? {
         ...(unstable_nativeProps ? { nativeProps: unstable_nativeProps } : {}),
         ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
+        ...(disableAutomaticSearchActivation !== undefined
+          ? { disableAutomaticSearchActivation }
+          : {}),
         ...(disabled !== undefined ? { disabled } : {}),
         ...(rippleColor !== undefined ? { rippleColor } : {}),
         ...(indicatorColor !== undefined ? { indicatorColor } : {}),
@@ -131,9 +145,13 @@ export function convertTabPropsToOptions(
         },
         contentStyle,
         role,
+        ...(prominent !== undefined ? { prominent } : {}),
         nativeProps: unstable_nativeProps,
         disableAutomaticContentInsets,
         ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
+        ...(disableAutomaticSearchActivation !== undefined
+          ? { disableAutomaticSearchActivation }
+          : {}),
         ...(disabled !== undefined ? { disabled } : {}),
         ...(rippleColor !== undefined ? { rippleColor } : {}),
         ...(indicatorColor !== undefined ? { indicatorColor } : {}),

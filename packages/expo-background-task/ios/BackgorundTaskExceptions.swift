@@ -37,7 +37,7 @@ internal final class CouldNotRegisterWorker: Exception {
 
 internal final class ErrorInvokingTaskHandler: Exception {
   override var reason: String {
-    "Expo BackgroundTasks: An error occured when running the task handler"
+    "Expo BackgroundTasks: An error occurred when running the task handler"
   }
 }
 

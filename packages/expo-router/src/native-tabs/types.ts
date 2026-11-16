@@ -16,6 +16,7 @@ import type {
 } from '../react-navigation/native';
 import type { StandardUseNavigationBuilderOptions } from '../standard-navigation';
 import type { ScreenProps } from '../useScreens';
+import type { ErrorBoundaryProps } from '../views/Try';
 
 /**
  * Event map for `NativeTabs` navigation events.
@@ -84,6 +85,14 @@ export interface NativeTabOptions extends DefaultRouterOptions {
    * @platform iOS
    */
   role?: NativeTabsTabBarItemRole;
+  /**
+   * @platform iOS
+   */
+  disableAutomaticSearchActivation?: boolean;
+  /**
+   * @platform iOS
+   */
+  prominent?: boolean;
   /**
    * @platform android
    * @platform iOS
@@ -204,6 +213,7 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   contentStyle?: Pick<
     ViewStyle,
     | 'backgroundColor'
+    | 'backgroundImage'
     | 'experimental_backgroundImage'
     | 'padding'
     | 'paddingTop'
@@ -228,6 +238,13 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   >;
 }
 
+/**
+ * How a tab icon is drawn: `template` draws the icon in the tab's icon color,
+ * `original` keeps the icon's own colors. For SF Symbols, `template` is the monochrome
+ * rendering and `original` is the multicolor rendering.
+ */
+export type IconRenderingMode = 'template' | 'original';
+
 export type SymbolOrImageSource =
   | {
       /**
@@ -245,6 +262,10 @@ export type SymbolOrImageSource =
        * @platform android
        */
       drawable?: string;
+      /**
+       * Controls how the SF Symbol or drawable icon is drawn. `xcasset` icons ignore it.
+       */
+      renderingMode?: IconRenderingMode;
     }
   | {
       /**
@@ -252,11 +273,13 @@ export type SymbolOrImageSource =
        */
       src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
       /**
-       * Controls how the icon is rendered on iOS.
-       * @platform ios
-       * @default 'template'
+       * Controls how the icon is drawn.
+       *
+       * When not set:
+       * - iOS uses `template` if the tab state has an icon color, and `original` if it does not.
+       * - Android always uses `template`.
        */
-      renderingMode?: 'template' | 'original';
+      renderingMode?: IconRenderingMode;
     };
 
 export type NativeTabsLabelStyle = Pick<
@@ -295,6 +318,13 @@ export const SUPPORTED_BLUR_EFFECTS = [
 export type NativeTabsBlurEffect = (typeof SUPPORTED_BLUR_EFFECTS)[number];
 
 export interface NativeTabsProps extends PropsWithChildren {
+  /** A component to render when an individual tab screen throws an error. */
+  unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
+  /**
+   * Enables React Activity for tab screens. Inactive tabs are hidden while preserving their state.
+   * @default false
+   */
+  activityEnabled?: boolean;
   // #region common props
   /**
    * The style of the every tab label in the tab bar.
@@ -317,6 +347,8 @@ export interface NativeTabsProps extends PropsWithChildren {
   tintColor?: ColorValue;
   /**
    * The background color of the tab bar.
+   *
+   * On iOS 26 and later, the system draws the tab bar background and this prop has no effect.
    */
   backgroundColor?: ColorValue;
   /**
@@ -355,11 +387,15 @@ export interface NativeTabsProps extends PropsWithChildren {
   /**
    * The blur effect applied to the tab bar.
    *
+   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
+   *
    * @platform iOS
    */
   blurEffect?: NativeTabsBlurEffect;
   /**
    * The color of the shadow.
+   *
+   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarappearance/shadowcolor)
    *
@@ -378,15 +414,32 @@ export interface NativeTabsProps extends PropsWithChildren {
   /**
    * When set to `true`, the tab bar will not become transparent when scrolled to the edge.
    *
+   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
+   *
    * @platform iOS
    */
   disableTransparentOnScrollEdge?: boolean;
   /**
-   * When set to `true`, enables the sidebarAdaptable tab bar style on iPadOS and macOS. This prop has no effect on iPhone.
+   * When set to `true`, the tab bar can turn into a sidebar. The sidebar shows only on iPad, and on iOS 27 and later on larger iPhone models in landscape orientation.
    *
    * @platform iOS 18+
    */
   sidebarAdaptable?: boolean;
+  /**
+   * Selects whether the sidebar or the tab bar shows.
+   * When `sidebarAdaptable` is not set, this prop also enables it.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/sidebar-swift.class/preferredplacement)
+   * @platform iOS 27+
+   */
+  preferredPlacement?: 'automatic' | 'sidebar' | 'tabBar';
+  /**
+   * When set to `true`, the tab bar hides and shows without animation when `hidden` changes.
+   *
+   * @default false
+   * @platform iOS 18+
+   */
+  disableHiddenAnimation?: boolean;
   // #endregion iOS props
   // #region android props
   /**
@@ -529,8 +582,9 @@ export interface NativeTabsViewProps extends Omit<
 }
 
 export interface NativeTabsViewTabItem {
+  /** Internal navigation identity, separate from the native tab selection name. */
+  routeKey?: string;
   options: NativeTabOptions;
-  routeKey: string;
   name: string;
   contentRenderer: () => React.ReactNode;
 }
@@ -574,6 +628,11 @@ export interface NativeTabTriggerProps {
    * When used in a route it has no effect.
    */
   name?: string;
+  /**
+   * Overrides React Activity behavior inherited from `NativeTabs` for this route when declared in
+   * a layout.
+   */
+  activityEnabled?: boolean;
   /**
    * If true, the tab will be hidden from the tab bar.
    *
@@ -660,10 +719,38 @@ export interface NativeTabTriggerProps {
    * properties will override the system icon, but the system-defined title cannot
    * be customized.
    *
+   * The `"search"` role makes this tab the system search tab
+   * ([`UISearchTab`](https://developer.apple.com/documentation/uikit/uisearchtab)) on iOS 26.1 and later.
+   * Changing `role` to or from `"search"` remounts the tab and resets its state.
+   *
    * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem).
    * @platform ios
    */
   role?: NativeTabsTabBarItemRole;
+  /**
+   * When set to `true`, selecting the search tab does not activate its search field.
+   *
+   * By default, selecting a tab with `role="search"` focuses the header search bar
+   * of the stack nested in the tab and opens the keyboard.
+   *
+   * This prop has an effect only when `role` is `"search"`.
+   * On iOS 27, setting this prop to `true` also removes the separate placement of the search tab.
+   * A screen-level trigger applies this prop only after the screen first renders.
+   * To affect the first selection, set it on the layout trigger.
+   *
+   * @default false
+   * @platform ios 26.1+
+   */
+  disableAutomaticSearchActivation?: boolean;
+  /**
+   * Shows the tab on its own surface in the tab bar, which stays visible when the tab bar minimizes.
+   * Only one tab can be prominent. Has effect only on the layout trigger.
+   *
+   * @see The official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/prominenttabidentifier).
+   * @default false
+   * @platform ios 27+
+   */
+  prominent?: boolean;
   /**
    * The default behavior differs between iOS and Android.
    *
@@ -689,6 +776,8 @@ export interface NativeTabTriggerProps {
   contentStyle?: NativeTabOptions['contentStyle'];
   /**
    * When set to `true`, the tab bar will not become transparent when scrolled to the edge.
+   *
+   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
    *
    * When set on a trigger, it takes precedence over the value set on `NativeTabs`.
    *

@@ -11,6 +11,8 @@ export const HELP_MESSAGE = {
  * Common build outputs
  */
 export const BUILD = {
+  PREBUILD_AUTO: (platform: 'android' | 'ios') =>
+    `Non-interactive shell detected; running \`npx expo prebuild --platform ${platform}\` automatically`,
   PREBUILD_PROMPT: `Do you want to run the prebuild now?`,
   PREBUILD_WARNING: (platform: 'android' | 'ios') =>
     `Prebuild for platform: ${platform} is missing`,
@@ -24,6 +26,9 @@ export const BUILD_ANDROID = {
   BUILD_VARIANT_ALL: `- Build variant: All`,
   BUILD_VARIANT_DEBUG: `- Build variant: Debug`,
   BUILD_VARIANT_RELEASE: `- Build variant: Release`,
+  DEFAULT_REPOSITORIES: (repos: string) =>
+    `No --repo or --task specified; defaulting to local repositories from the app config: ${repos}`,
+  FUSED: `- Fused: true`,
   LIBRARY: `- Library: brownfieldlib`,
   TASK: [`- Tasks:`, `- task1`],
   TASKS: [`- Tasks:`, `- task1`, `- task2`, `- task3`],
@@ -90,6 +95,7 @@ export const ERROR = {
     `error: too many arguments for '${command}'. Expected 0 arguments but got 1.`,
   MISSING_ARGUMENT: (short: string, full: string, argumentName: string) =>
     `error: option '-${short}, --${full} <${argumentName}>' argument missing`,
+  MISSING_POD_INSTALL: () => `Brownfield cannot be built without installing CocoaPods`,
   MISSING_PREBUILD: () => `Brownfield cannot be built without prebuilding the native project`,
   MISSING_TASKS_OR_REPOSITORIES: () => `Error: At least one task or repository must be specified`,
   UNKNOWN_COMMAND: (command: string) => `error: unknown command '${command}'`,

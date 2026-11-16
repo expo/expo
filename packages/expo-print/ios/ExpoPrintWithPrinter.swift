@@ -76,15 +76,20 @@ public class ExpoPrintWithPrinter {
     let printerUrl = options.printerUrl ?? ""
     let candidateUrl = URL(string: printerUrl) ?? URL(fileURLWithPath: printerUrl)
 
-    guard let rootController = UIApplication.shared.keyWindow?.rootViewController else {
+    guard let rootController = SceneGeometry.keyWindow()?.rootViewController else {
       promise.reject(ViewControllerNotFoundException())
       return
     }
 
-    let printInteractionController = makePrintInteractionController(options: options)
+    let paperDelegate = options.preferredPaperSize.map {
+      ExpoPrintPaperDelegate(paperSize: CGSize(width: $0.width, height: $0.height), fallback: self.delegate)
+    }
+    let printInteractionController = makePrintInteractionController(options: options, delegate: paperDelegate ?? self.delegate)
     printInteractionController.printingItem = printingData
 
     let completionHandler = { (_: UIPrintInteractionController, completed: Bool, error: Error?) in
+      // The controller holds its delegate weakly, so this job's delegate lives as long as the job.
+      withExtendedLifetime(paperDelegate) {}
       if error != nil {
         promise.reject(PrintingJobFailedException(error?.localizedDescription))
       }
@@ -113,17 +118,17 @@ public class ExpoPrintWithPrinter {
           promise.reject(PrintingJobFailedException("Provided printer is not available."))
         }
       }
-    } else if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
+    } else if rootController.traitCollection.horizontalSizeClass == .regular {
       printInteractionController.present(from: rootController.view.frame, in: rootController.view, animated: true, completionHandler: completionHandler)
     } else {
       printInteractionController.present(animated: true, completionHandler: completionHandler)
     }
   }
 
-  private func makePrintInteractionController(options: PrintOptions) -> UIPrintInteractionController {
+  private func makePrintInteractionController(options: PrintOptions, delegate: ExpoPrintModuleDelegate) -> UIPrintInteractionController {
     let uri = options.uri ?? ""
     let printInteractionController = UIPrintInteractionController()
-    printInteractionController.delegate = self.delegate
+    printInteractionController.delegate = delegate
 
     let printInfo = UIPrintInfo.printInfo()
     printInfo.outputType = UIPrintInfo.OutputType.general
@@ -146,7 +151,7 @@ public class ExpoPrintWithPrinter {
       return
     }
 
-    // Assume that URLs without a scheme eq. /home/user/file.pdf will be local file urls
+    // Assume that URLs without a scheme e.g. /home/user/file.pdf will be local file urls
     if url.scheme == nil {
       url = URL(fileURLWithPath: uri)
     }

@@ -1,3 +1,4 @@
+import { getOriginalEnv, loadProjectEnv, logLoadedEnv } from '@expo/env';
 import assert from 'assert';
 
 import { createFingerprintForBuildAsync } from './createFingerprintForBuildAsync';
@@ -29,6 +30,10 @@ import { findUpProjectRoot } from './findUpProjectRoot';
   }
 
   const entryFileArg = process.argv[6];
+  const mode = process.argv[7];
+
+  process.env = getOriginalEnv();
+  logLoadedEnv(loadProjectEnv(possibleProjectRoot, { mode }));
 
   await Promise.all([
     createUpdatesResourcesMode === 'all'

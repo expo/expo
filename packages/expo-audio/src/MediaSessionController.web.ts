@@ -1,5 +1,6 @@
 import type { AudioMetadata } from './Audio.types';
 import type { AudioLockScreenOptions } from './AudioConstants';
+import { normalizeLockScreenOptions } from './utils/lockScreenOptions';
 
 interface MediaSessionPlayer {
   play(): void;
@@ -12,8 +13,6 @@ interface MediaSessionPlayer {
   readonly duration: number;
   readonly playbackRate: number;
 }
-
-const SKIP_SECONDS = 10;
 
 class MediaSessionController {
   private activePlayer: MediaSessionPlayer | null = null;
@@ -33,7 +32,7 @@ class MediaSessionController {
 
     this.activePlayer = player;
     this.metadata = metadata ?? null;
-    this.options = options ?? null;
+    this.options = normalizeLockScreenOptions(options);
 
     this._applyMetadata();
     this._applyActionHandlers();
@@ -159,14 +158,14 @@ class MediaSessionController {
     });
 
     const seekForward = (details: MediaSessionActionDetails) => {
-      const skipTime = details.seekOffset ?? SKIP_SECONDS;
+      const skipTime = details.seekOffset ?? this.options?.seekForwardIntervalSeconds ?? 10;
       const newTime = Math.min(player.currentTime + skipTime, player.duration || 0);
       player.seekTo(newTime);
       this.updatePositionState(player);
     };
 
     const seekBackward = (details: MediaSessionActionDetails) => {
-      const skipTime = details.seekOffset ?? SKIP_SECONDS;
+      const skipTime = details.seekOffset ?? this.options?.seekBackwardIntervalSeconds ?? 10;
       const newTime = Math.max(player.currentTime - skipTime, 0);
       player.seekTo(newTime);
       this.updatePositionState(player);

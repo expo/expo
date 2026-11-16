@@ -8,7 +8,7 @@ import type {
 import type { AudioLockScreenOptions } from './AudioConstants';
 import { PLAYLIST_STATUS_UPDATE, TRACK_CHANGED } from './AudioEventKeys';
 import type { AudioPlaylist, AudioPlaylistEvents } from './AudioModule.types';
-import { getSourceUri, nextId } from './AudioUtils.web';
+import { getSourceUri, isPlayInterrupted, nextId } from './AudioUtils.web';
 import { mediaSessionController } from './MediaSessionController.web';
 import { resolveSource } from './utils/resolveSource';
 
@@ -152,7 +152,7 @@ export class AudioPlaylistWeb
     if (!this._currentMedia || this._sources.length === 0) {
       return;
     }
-    this._currentMedia.play();
+    this._playCurrentMedia();
     this._isPlaying = true;
   }
 
@@ -278,7 +278,7 @@ export class AudioPlaylistWeb
       if (source) {
         this._currentMedia = this._createMediaElement(source);
         if (wasPlaying) {
-          this._currentMedia.play();
+          this._playCurrentMedia();
         }
       }
       this._preloadNext();
@@ -359,7 +359,7 @@ export class AudioPlaylistWeb
     }
 
     if (this._currentMedia && wasPlaying) {
-      this._currentMedia.play();
+      this._playCurrentMedia();
       this._isPlaying = true;
     }
 
@@ -521,7 +521,7 @@ export class AudioPlaylistWeb
     if (this._loopMode === 'single') {
       if (this._currentMedia) {
         this._currentMedia.currentTime = 0;
-        this._currentMedia.play();
+        this._playCurrentMedia();
       }
       return;
     }
@@ -542,6 +542,17 @@ export class AudioPlaylistWeb
     } else {
       this._transitionToTrack(this._currentIndex + 1, this._currentIndex);
     }
+  }
+
+  private _playCurrentMedia(): void {
+    const media = this._currentMedia;
+    media?.play().catch((error) => {
+      if (isPlayInterrupted(error) || media !== this._currentMedia) {
+        return;
+      }
+      this._isPlaying = false;
+      this._emitStatus();
+    });
   }
 
   private _getStatus(): AudioPlaylistStatus {

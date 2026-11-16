@@ -5,11 +5,11 @@ import { EOL } from 'os';
 import path from 'path';
 import wrapAnsi from 'wrap-ansi';
 
-import type { Device } from './simctl';
-import { getContainerPathAsync } from './simctl';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
+import type { Device } from './simctl';
+import { getContainerPathAsync } from './simctl';
 
 export type SimControlLog = {
   /**

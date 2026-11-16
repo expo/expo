@@ -4,26 +4,22 @@ let defaultScreenOrientationMaskKey = "EXDefaultScreenOrientationMask"
 let supportedOrientationsKey = "UISupportedInterfaceOrientations"
 let ipadSupportedOrientationsKey = "UISupportedInterfaceOrientations~ipad"
 
-class ScreenOrientationViewController: UIViewController {
+class ScreenOrientationViewController: ExpoRootViewController {
   let screenOrientationRegistry = ScreenOrientationRegistry.shared
   private var defaultOrientationMask: UIInterfaceOrientationMask
   private var previousInterfaceOrientation: UIInterfaceOrientation = .unknown
   private var windowInterfaceOrientation: UIInterfaceOrientation? {
-    let keyWindow = UIApplication
-      .shared
-      .connectedScenes
-      .flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
-      .last { $0.isKeyWindow }
-
-    return keyWindow?.windowScene?.interfaceOrientation
+    let orientation = SceneGeometry.interfaceOrientation(for: view)
+    return orientation == .unknown ? nil : orientation
   }
 
   init(defaultOrientationMask: UIInterfaceOrientationMask = doesDeviceHaveNotch ? .allButUpsideDown : .all) {
     self.defaultOrientationMask = defaultOrientationMask
     super.init(nibName: nil, bundle: nil)
 
-    // For iPads traitCollectionDidChange will not be called (it's always in the same size class). It is necessary
-    // to init it in here, so it's possible to return it in the didUpdateDimensionsEvent of the module
+    // traitCollectionDidChange doesn't fire for every geometry change, such as a window resized
+    // within one size class, so seed the registry here to have a value ready for the module's
+    // didUpdateDimensionsEvent.
     if self.screenOrientationRegistry.currentTraitCollection == nil {
       self.screenOrientationRegistry.traitCollectionDidChange(to: self.traitCollection)
     }
@@ -79,6 +75,11 @@ class ScreenOrientationViewController: UIViewController {
     // (set via lockAsync) or the default from Info.plist.
     let mask = screenOrientationRegistry.requiredOrientationMask()
     return !mask.isEmpty ? mask : defaultOrientationMask
+  }
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    screenOrientationRegistry.updateCurrentScreenOrientationIfUnknown()
   }
 
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

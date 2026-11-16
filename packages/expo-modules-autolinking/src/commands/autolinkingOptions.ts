@@ -179,9 +179,9 @@ interface ArgumentsAutolinkingOptions {
   commandRoot: string;
   /** The platform to autolink against. If not passed or unknown, no specific autolinking search logic will be applied */
   platform?: SupportedPlatform;
-  /** Added search paths to search for native modules (Usually passed as CLI rest argument. */
+  /** Added search paths to search for native modules (Usually passed as CLI rest argument). */
   extraSearchPaths?: string[];
-  /** Added native module names to exclude from autolined native modules (Usually passed as CLI argument) */
+  /** Added native module names to exclude from autolinked native modules (Usually passed as CLI argument) */
   extraExclude?: string[];
 }
 

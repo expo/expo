@@ -9,8 +9,14 @@ import resolveFrom from 'resolve-from';
 import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { toPosixPath } from '../utils/Path';
+import { profile } from '../utils/Profile';
+import { normalizeAutolinkingConfig } from './AutolinkingConfig';
 import { SourceSkips } from './SourceSkips';
-import { getFileBasedHashSourceAsync, maybeGetRealPathAsync } from './Utils';
+import {
+  createAutolinkingHashSourceAsync,
+  getFileBasedHashSourceAsync,
+  maybeGetRealPathAsync,
+} from './Utils';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Bare');
 
@@ -100,6 +106,7 @@ export async function getCoreAutolinkingSourcesFromRncCliAsync(
       config,
       contentsId: 'rncoreAutolinkingConfig',
       reasons: ['rncoreAutolinking'],
+      options,
     });
     return results;
   } catch (e) {
@@ -133,6 +140,7 @@ export async function getCoreAutolinkingSourcesFromExpoAndroid(
       config,
       contentsId: 'rncoreAutolinkingConfig:android',
       reasons: ['rncoreAutolinkingAndroid'],
+      options,
       platform: 'android',
     });
     return results;
@@ -167,6 +175,7 @@ export async function getCoreAutolinkingSourcesFromExpoIos(
       config,
       contentsId: 'rncoreAutolinkingConfig:ios',
       reasons: ['rncoreAutolinkingIos'],
+      options,
       platform: 'ios',
     });
     return results;
@@ -181,11 +190,13 @@ async function parseCoreAutolinkingSourcesAsync({
   reasons,
   contentsId,
   platform,
+  options,
 }: {
   config: any;
   reasons: string[];
   contentsId: string;
   platform?: string;
+  options: NormalizedOptions;
 }): Promise<HashSource[]> {
   const logTag = platform
     ? `react-native core autolinking dir for ${platform}`
@@ -198,7 +209,14 @@ async function parseCoreAutolinkingSourcesAsync({
       stripRncoreAutolinkingAbsolutePaths(depData, root);
       const filePath = toPosixPath(depData.root);
       debug(`Adding ${logTag} - ${chalk.dim(filePath)}`);
-      results.push({ type: 'dir', filePath, reasons });
+      results.push(
+        await createAutolinkingHashSourceAsync(
+          root,
+          filePath,
+          reasons,
+          options.nativeModuleSourceType
+        )
+      );
 
       autolinkingConfig[depName] = depData;
     } catch (e) {
@@ -209,7 +227,12 @@ async function parseCoreAutolinkingSourcesAsync({
   results.push({
     type: 'contents',
     id: contentsId,
-    contents: JSON.stringify(autolinkingConfig),
+    contents: JSON.stringify(
+      profile(options, normalizeAutolinkingConfig)(autolinkingConfig, {
+        stripPaths: !!(options.sourceSkips & SourceSkips.AutolinkingConfigPaths),
+        roots: [root],
+      })
+    ),
     reasons,
   });
   return results;

@@ -1,42 +1,12 @@
 ---
-title: Configure EAS Observe
+title: Configure Expo Observe
 sidebar_title: Configuration
-description: Control how EAS Observe collects and dispatches metrics, including environment settings, development mode, and custom endpoints.
+description: Control how Expo Observe collects and dispatches metrics, including environment settings, development mode, custom endpoints, and data ingestion.
 ---
 
-Configure EAS Observe at runtime to fit your app's build setup, environment, and data routing. This page covers the `configure()` and `dispatchEvents()`, enabling metrics in development, using a custom endpoint, and separating data by environment.
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-## `configure()`
-
-Use the `configure()` method to control how EAS Observe behaves at runtime:
-
-```tsx
-import { Observe } from 'expo-observe';
-
-Observe.configure({
-  environment: 'production',
-  dispatchingEnabled: true,
-});
-```
-
-| Option               | Type      | Default                | Description                                                                                        |
-| -------------------- | --------- | ---------------------- | -------------------------------------------------------------------------------------------------- |
-| `environment`        | `string`  | `process.env.NODE_ENV` | The environment label for observability events                                                     |
-| `dispatchingEnabled` | `boolean` | `true`                 | Whether to send collected events to the server                                                     |
-| `dispatchInDebug`    | `boolean` | `false`                | Whether to dispatch metrics that were collected in a debug build. Has no effect on release builds. |
-| `sampleRate`         | `number`  | `undefined`            | Fraction of installations that dispatch metrics, in `[0, 1]`. See [Sampling](#sampling).           |
-
-## `dispatchEvents()`
-
-Events are automatically dispatched when the app moves to the background. On Android, a background worker dispatches events once network connectivity is available. On iOS, this happens when the app resigns active state or is about to terminate.
-
-To flush events manually (for example, during testing or to ensure events are sent before a specific point), call `dispatchEvents()`:
-
-```tsx
-import { Observe } from 'expo-observe';
-
-await Observe.dispatchEvents();
-```
+Configure Expo Observe at runtime to fit your app's build setup, environment, and data routing. This page covers enabling metrics in development, sampling, ignoring selected metrics and events, using a custom endpoint, separating data by environment, and turning off data ingestion from the dashboard. For the runtime methods themselves, see the [`configure()`](/versions/latest/sdk/observe/#configureconfig) and [`dispatchEvents()`](/versions/latest/sdk/observe/#dispatchevents) API references.
 
 ## Sampling
 
@@ -57,11 +27,42 @@ A few details worth knowing:
 
 - Values outside the `[0, 1]` range are clamped to the nearest edge. `0` always drops; `1` always dispatches.
 - Out-of-sample devices drop pending metrics rather than accumulating them. Lowering the rate later does not retroactively send earlier sessions.
-- Sampling depends on [`dispatchingEnabled`](#configure). If `dispatchingEnabled` is `false`, nothing is dispatched regardless of `sampleRate`.
+- Sampling depends on [`dispatchingEnabled`](/versions/latest/sdk/observe/#observeconfig). If `dispatchingEnabled` is `false`, nothing is dispatched regardless of `sampleRate`.
+
+### Sample errors separately
+
+To keep more errors than other events, set `errorSampleRate`. Errors include unhandled JavaScript errors, errors from `reportError` and `ObserveErrorBoundary`, and native crash reports. All other events follow `sampleRate`:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+// Dispatch metrics from ~3% of installations, and errors from all installations.
+Observe.configure({
+  sampleRate: 0.03,
+  errorSampleRate: 1,
+});
+```
+
+`errorSampleRate` is a minimum. Installations in-sample for `sampleRate` always send errors. A lower value has no effect, and `configure()` prints a warning. An unset `sampleRate` counts as `1`.
+
+## Ignore metrics and events
+
+If you don't use some metrics or events, skip them with `ignoredMetrics` and `ignoredEvents` to send less data:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  ignoredMetrics: ['expo.app_startup.tti'],
+  ignoredEvents: ['reanimated.warning', 'checkout.completed'],
+});
+```
+
+`ignoredMetrics` matches metric names such as `expo.app_startup.tti`. `ignoredEvents` matches event names, including custom names passed to [`Observe.logEvent`](/eas/observe/events/). Ignored data is still recorded on the device but never sent.
 
 ## Enable metrics in development
 
-By default, metrics collected from debug builds are not dispatched. To dispatch them anyway (for example, while testing your EAS Observe integration), set `dispatchInDebug` to `true` when calling `configure()`:
+By default, metrics collected from debug builds are not dispatched. To dispatch them anyway (for example, while testing your Expo Observe integration), set `dispatchInDebug` to `true` when calling `configure()`:
 
 ```tsx
 import { Observe } from 'expo-observe';
@@ -73,13 +74,13 @@ Observe.configure({
 
 A build is treated as a debug build if either the native app is a debug build or the JS bundle is a development bundle (`__DEV__` is `true`). This detection is independent of the `environment` value (see [Environments](#environments)).
 
-`dispatchInDebug` has no effect on release builds, which always dispatch (subject to [`dispatchingEnabled`](#configure) and [`sampleRate`](#sampling)). If `dispatchingEnabled` is `false` or this installation is out-of-sample, nothing dispatches regardless of `dispatchInDebug`.
+`dispatchInDebug` has no effect on release builds, which always dispatch (subject to [`dispatchingEnabled`](/versions/latest/sdk/observe/#observeconfig) and [`sampleRate`](#sampling)). If `dispatchingEnabled` is `false`, nothing dispatches regardless of `dispatchInDebug`. `sampleRate` and `errorSampleRate` also apply in debug builds.
 
-> **warning** Enable this only when testing your EAS Observe integration. Development/debug performance differs significantly from production, so collecting development/debug metrics may distort the results shown in your dashboard.
+> **warning** Enable this only when testing your Expo Observe integration. Development/debug performance differs significantly from production, so collecting development/debug metrics may distort the results shown in your dashboard.
 
 ## Custom endpoint
 
-EAS Observe sends data using the OpenTelemetry Protocol (OTLP) over HTTP with a JSON payload. It posts metrics to `<endpointUrl>/<project-id>/v1/metrics` and logs to `<endpointUrl>/<project-id>/v1/logs`, where `<project-id>` is your EAS project ID. This means you can set `endpointUrl` to an OpenTelemetry-compatible backend or an OpenTelemetry Collector to route your observability data there.
+Expo Observe sends data using the OpenTelemetry Protocol (OTLP) over HTTP with a JSON payload. It posts metrics to `<endpointUrl>/<project-id>/v1/metrics` and logs to `<endpointUrl>/<project-id>/v1/logs`, where `<project-id>` is your Expo Services project ID. This means you can set `endpointUrl` to an OpenTelemetry-compatible backend or an OpenTelemetry Collector to route your observability data there.
 
 To change the endpoint, set the `endpointUrl` value in your **app config**:
 
@@ -103,6 +104,49 @@ The path includes your project ID before the standard `/v1/metrics` and `/v1/log
 
 ## Environments
 
-All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default (falling back to `'production'` if unset). To override it, use [`configure({ environment })`](#configure).
+All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default (falling back to `'production'` if unset). To override it, use [`configure({ environment })`](/versions/latest/sdk/observe/#configureconfig).
 
 The environment is a metadata tag attached to each metric and is independent of how the bundle was built. To control whether debug-build metrics are dispatched, see [Enable metrics in development](#enable-metrics-in-development). To disable all dispatching globally, use `configure({ dispatchingEnabled: false })`.
+
+## Network traces
+
+> **info** Network traces require SDK 58 and later.
+
+Completed network requests can be recorded as trace spans. Recording is off by default, because each span counts toward your event quota. Turn it on with:
+
+```ts
+import { Observe } from 'expo-observe';
+
+Observe.configure({ networkTraces: true });
+```
+
+Pass an object to record only the requests you care about. Hosts match exactly and case-insensitively, so subdomains are not implied. An omitted field matches every request, and an empty array matches none:
+
+```ts
+Observe.configure({
+  networkTraces: { filter: { hosts: ['api.myapp.com'], methods: ['GET', 'POST'] } },
+});
+```
+
+The object form records unless you say otherwise, so set `enabled: false` to keep a filter configured while recording nothing.
+
+A request that is turned off or filtered out never reaches the local database, so nothing is stored and nothing is exported. The setting applies to future requests, so spans recorded earlier in the launch are still sent. It also persists across launches, so requests observed before `configure` runs on the next launch follow the last value you set.
+
+Because the value persists, removing the option takes effect the next time `configure` runs, not immediately. The same applies to a narrow `hosts` list: it keeps suppressing early-startup requests until a `configure` widens it.
+
+URLs are redacted before they are stored. A username and password in the URL are replaced with `REDACTED`, as are the query parameters `AWSAccessKeyId`, `Signature`, `sig`, `X-Amz-Signature`, `X-Amz-Credential`, `X-Amz-Security-Token`, and `X-Goog-Signature`. A secret in any other query parameter is stored as-is.
+
+## Turn off data ingestion
+
+The options above control what your app sends. You can also stop Expo Observe from accepting data on the server side, without shipping an app update, using the **Observe data ingestion** toggle in the Expo dashboard:
+
+- **Account level**: open [Account settings](https://expo.dev/accounts/[account]/settings) and turn off **Observe data ingestion**. This pauses ingestion for all projects in the account.
+- **Project level**: open [Project settings](https://expo.dev/accounts/[account]/projects/[project]/settings) and turn off **Observe data ingestion**. This pauses ingestion for that project only.
+
+<ContentSpotlight
+  alt="The Observe data ingestion toggle in the Expo dashboard account settings."
+  src="/static/images/expo-observe/observe-data-ingestion-light.webp"
+  darkSrc="/static/images/expo-observe/observe-data-ingestion-dark.webp"
+/>
+
+While ingestion is paused, Expo Observe does not accept events, metrics, or logs sent by your apps. Data that was already ingested stays available in the dashboard and the CLI. Turn the toggle back on to resume ingestion.

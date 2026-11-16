@@ -6,6 +6,7 @@ description: Learn how to create a debug build for your Expo app locally.
 
 import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
@@ -109,7 +110,7 @@ To learn more about how compilation and prebuild works, see the following guides
   title="Prebuild"
   description="Learn how Expo CLI generates native code of your project before compiling it."
   href="/workflow/continuous-native-generation"
-  Icon={BookOpen02Icon}
+  Icon={CodeSquare01Icon}
 />
 
 ## Local builds with `expo-dev-client`
@@ -171,13 +172,13 @@ The `--app-id` flag can be used to launch the app after building using a customi
 
 > **info** Customizing the Android build type is also possible, but that would break Expo's assumption that the build type **release** is used for production. You might build unoptimized code in your app using a different build type instead of **release**.
 
-## Local builds with EAS
+## Local builds with Expo Build
 
 <BoxLink
   title="Run builds on your infrastructure"
   description={
     <>
-      Learn how to run EAS Build on your custom infrastructure or locally on your machine with the{' '}
+      Learn how to run Expo Build on your custom infrastructure or locally on your machine with the{' '}
       <CODE>--local</CODE> flag.
     </>
   }

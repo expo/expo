@@ -3,7 +3,6 @@ package expo.modules.kotlin.types
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableType
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CollectionElementCastException
 import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.exceptionDecorator
@@ -21,7 +20,7 @@ class ListTypeConverter(
     }
   )
 
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): List<*> {
+  override fun convertFromDynamic(value: Dynamic, context: ConverterContext, forceConversion: Boolean): List<*> {
     if (value.type != ReadableType.Array) {
       return listOf(
         exceptionDecorator({ cause ->
@@ -41,7 +40,7 @@ class ListTypeConverter(
     return convertFromReadableArray(jsArray, context, forceConversion)
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): List<*> {
+  override fun convertFromAny(value: Any, context: ConverterContext, forceConversion: Boolean): List<*> {
     return if (elementConverter.isTrivial() && !forceConversion) {
       value as List<*>
     } else {
@@ -60,7 +59,7 @@ class ListTypeConverter(
     }
   }
 
-  private fun convertFromReadableArray(jsArray: ReadableArray, context: AppContext?, forceConversion: Boolean): List<*> {
+  private fun convertFromReadableArray(jsArray: ReadableArray, context: ConverterContext, forceConversion: Boolean): List<*> {
     return List(jsArray.size()) { index ->
       jsArray.getDynamic(index).recycle {
         exceptionDecorator({ cause ->

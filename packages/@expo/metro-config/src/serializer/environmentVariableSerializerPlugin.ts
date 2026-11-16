@@ -15,8 +15,6 @@ import countLines from '@expo/metro/metro/lib/countLines';
 
 import type { SerializerParameters } from './withExpoSerializers';
 
-const debug = require('debug')('expo:metro-config:serializer:env-var') as typeof console.log;
-
 export function getTransformEnvironment(url: string): string | null {
   const match = url.match(/[&?]transform\.environment=([^&]+)/);
   return match?.[1] ?? null;
@@ -60,7 +58,6 @@ export function serverPreludeSerializerPlugin(
   if (isServerEnvironment(graph, options)) {
     const prelude = preModules.find((module) => module.path === '__prelude__');
     if (prelude) {
-      debug('Stripping environment variable polyfill in server environment.');
       // TODO: The module output type should be upcast
       const data = prelude.output[0]?.data as any;
       data.code = data.code
@@ -69,6 +66,7 @@ export function serverPreludeSerializerPlugin(
           /process\.env=process\.env\|\|{};process\.env\.NODE_ENV=process\.env\.NODE_ENV\|\|"\w+";/,
           ''
         );
+      data.lineCount = countLines(data.code);
     }
   }
   return [entryPoint, preModules, graph, options];
@@ -82,16 +80,12 @@ export function environmentVariableSerializerPlugin(
 ): SerializerParameters {
   // Skip replacement in Node.js environments.
   if (isServerEnvironment(graph, options)) {
-    debug('Skipping environment variable inlining in Node.js environment.');
     return [entryPoint, preModules, graph, options];
   }
 
   // In development, we need to add the process.env object to ensure it
   // persists between Fast Refresh updates.
   if (!options.dev) {
-    debug(
-      'Skipping environment variable inlining in production environment in favor of babel-preset-expo inlining with source maps.'
-    );
     return [entryPoint, preModules, graph, options];
   }
 
@@ -99,12 +93,12 @@ export function environmentVariableSerializerPlugin(
 
   const prelude = preModules.find((module) => module.path === '\0polyfill:environment-variables');
   if (prelude) {
-    debug('Injecting environment variables in virtual module.');
-
     // TODO: The module type should be upcast
     const data = prelude.output[0]?.data as any;
     // !!MUST!! be one line in order to ensure Metro's asymmetric serializer system can handle it.
     data.code = code;
+    data.lineCount = countLines(data.code);
+    data.map = { mappings: '', names: [] };
     return [entryPoint, preModules, graph, options];
   }
 
@@ -158,7 +152,7 @@ function getEnvPrelude(code: string): Module<MixedOutput> {
         type: 'js/script/virtual',
         data: {
           code,
-          lineCount: 1,
+          lineCount: countLines(code),
           map: [],
         },
       },

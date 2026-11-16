@@ -20,14 +20,14 @@ import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
-import kotlin.time.toJavaDuration
 
 private const val SERVICE_TYPE = "_expo._tcp."
 
 internal val HEALTH_CHECK_INTERVAL = 3.toDuration(DurationUnit.SECONDS)
-private val HEALTH_CHECK_TIMEOUT = 5.toDuration(DurationUnit.SECONDS).toJavaDuration()
+private const val HEALTH_CHECK_TIMEOUT_SECONDS = 5L
 
 internal abstract class NsdDiscoveryBase(
   application: Application,
@@ -37,9 +37,9 @@ internal abstract class NsdDiscoveryBase(
 
   protected val healthCheckClient: OkHttpClient = httpClient
     .newBuilder()
-    .connectTimeout(HEALTH_CHECK_TIMEOUT)
-    .readTimeout(HEALTH_CHECK_TIMEOUT)
-    .writeTimeout(HEALTH_CHECK_TIMEOUT)
+    .connectTimeout(HEALTH_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+    .readTimeout(HEALTH_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+    .writeTimeout(HEALTH_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
     .build()
 
   private val _manager: NsdManager? =

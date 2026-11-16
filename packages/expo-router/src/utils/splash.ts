@@ -3,6 +3,24 @@ import { requireOptionalNativeModule } from 'expo';
 const SplashModule = requireOptionalNativeModule('ExpoSplashScreen');
 
 let _initializedErrorHandler = false;
+let splashScreenAnimationFrame: number | undefined;
+let hasAttemptedToHideSplash = false;
+
+export function maybeHideSplashScreen() {
+  if (!hasAttemptedToHideSplash) {
+    hasAttemptedToHideSplash = true;
+    splashScreenAnimationFrame = requestAnimationFrame(() => {
+      _internal_maybeHideAsync();
+    });
+  }
+}
+
+export function cancelSplashScreenAnimationFrame() {
+  if (splashScreenAnimationFrame !== undefined) {
+    cancelAnimationFrame(splashScreenAnimationFrame);
+    splashScreenAnimationFrame = undefined;
+  }
+}
 
 export function hide() {
   if (!SplashModule) {

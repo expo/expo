@@ -77,6 +77,7 @@ public enum UpdateStatus: Int {
 public enum UpdateError: Error, Sendable, LocalizedError {
   case invalidExpoProtocolVersion(protocolVersion: Int)
   case legacyManifestInstantiationInvalid
+  case unsafeAssetFilename(updateId: String, filename: String)
 
   public var errorDescription: String? {
     switch self {
@@ -84,6 +85,10 @@ public enum UpdateError: Error, Sendable, LocalizedError {
       return "Invalid Expo Updates protocol version: \(protocolVersion)"
     case .legacyManifestInstantiationInvalid:
       return "This version of expo-updates can no longer load legacy manifests"
+    case let .unsafeAssetFilename(updateId, filename):
+      return "Update \(updateId) could not be loaded because the asset filename \"\(filename)\" " +
+        "is not a valid filename. Assets are stored under their key and file extension, so neither " +
+        "may contain a path separator. Check the server that produced this manifest."
     }
   }
 }
@@ -157,12 +162,21 @@ public class Update: NSObject {
     }
     switch protocolVersion {
     case 0, 1:
-      return ExpoUpdatesUpdate.update(
+      let update = ExpoUpdatesUpdate.update(
         withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: withManifest),
         extensions: extensions,
         config: config,
         database: database
       )
+      try update.assets()?.forEach { asset in
+        guard UpdatesUtils.isSafeFilename(asset.filename) else {
+          throw UpdateError.unsafeAssetFilename(
+            updateId: update.updateId.uuidString,
+            filename: asset.filename
+          )
+        }
+      }
+      return update
     default:
       throw UpdateError.invalidExpoProtocolVersion(protocolVersion: protocolVersion)
     }

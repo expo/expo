@@ -72,5 +72,5 @@ export type PackageName = string;
 /** Version expression. Not to be confused with an exact semver version. @example `^4.0.14` */
 export type VersionSpec = string;
 
-/** Exact NPM package semver version. Not to be confused with an version range or expression. @example `1.0.0` */
+/** Exact NPM package semver version. Not to be confused with a version range or expression. @example `1.0.0` */
 export type ExactVersion = string;

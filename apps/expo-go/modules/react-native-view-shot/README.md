@@ -1,59 +1,91 @@
-# react-native-view-shot ![](https://img.shields.io/npm/v/react-native-view-shot.svg) ![](https://img.shields.io/badge/react--native-%2040+-05F561.svg)
+# react-native-view-shot ![](https://img.shields.io/npm/v/react-native-view-shot.svg) ![](https://img.shields.io/badge/react--native-0.80%2B-05F561.svg)
 
 Capture a React Native view to an image.
 
 <img src="./.readme/recursive.gif" width=300 />
 
+## New Architecture Support
+
+This library fully supports React Native's **new architecture** (Fabric + TurboModules) from version 4.0+.
+
+**Requirements:**
+
+- React Native >= 0.80.0
+- Node.js >= 20
+
+Both old and new architectures are supported for seamless migration.
+
 ## Install
 
 ```bash
+npm install react-native-view-shot
+
+# or with Yarn
 yarn add react-native-view-shot
 
 # In Expo
-
-expo install react-native-view-shot
+npx expo install react-native-view-shot
 ```
 
-Make sure `react-native-view-shot` is correctly linked in Xcode (might require a manual installation, refer to [React Native doc](https://reactnative.dev/docs/linking-libraries-ios.html)).
-
-**Before React Native 0.60.x you would have to:**
-
-```bash
-react-native link react-native-view-shot
-```
-
-**Since 0.60.x, [autolink](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md) should just work**, on iOS, you'll need to ensure the CocoaPods are installed with:
+**Since React Native 0.60+, [autolink](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md) handles the linking automatically.** On iOS, install the CocoaPods dependencies:
 
 ```bash
 npx pod-install
 ```
 
+### Web
+
+On web (`react-native-web`, Expo web), captures are rendered with [html2canvas-pro](https://github.com/yorickshan/html2canvas-pro). It is an optional peer dependency, so it is not installed on native-only projects — add it yourself when targeting the web:
+
+```bash
+npm install html2canvas-pro
+```
+
+It is loaded lazily on the first capture. If it is missing, your bundler (webpack, Metro) fails at build time with `Can't resolve 'html2canvas-pro'`; in environments that resolve modules at runtime, `captureRef` rejects with an explicit install hint instead.
+
+`react-native` is also an optional peer dependency, so a web-only project can install `react-native-web` without pulling `react-native` (alias `react-native` to `react-native-web` in your bundler as usual).
+
+The library reads the `__DEV__` global, as React Native code does. Metro and Expo define it for you; with a custom webpack/esbuild setup you must define it yourself, otherwise the page throws `ReferenceError: __DEV__ is not defined`:
+
+```js
+// webpack.config.js
+new webpack.DefinePlugin({ __DEV__: JSON.stringify(process.env.NODE_ENV !== "production") })
+// esbuild
+--define:__DEV__=false
+```
+
 ## High Level API
 
 ```js
+import React, {useCallback, useEffect, useRef} from "react";
+import {Image, ScrollView, Text} from "react-native";
 import ViewShot from "react-native-view-shot";
 
-function ExampleCaptureOnMountManually {
+function ExampleCaptureOnMountManually() {
   const ref = useRef();
 
   useEffect(() => {
     // on mount
-    ref.current.capture().then(uri => {
-      console.log("do something with ", uri);
-    });
+    ref.current
+      .capture()
+      .then(uri => {
+        console.log("do something with ", uri);
+      })
+      .catch(console.error);
   }, []);
 
   return (
-    <ViewShot ref={ref} options={{ fileName: "Your-File-Name", format: "jpg", quality: 0.9 }}>
+    <ViewShot
+      ref={ref}
+      options={{fileName: "Your-File-Name", format: "jpg", quality: 0.9}}
+    >
       <Text>...Something to rasterize...</Text>
     </ViewShot>
   );
 }
 
 // alternative
-function ExampleCaptureOnMountSimpler {
-  const ref = useRef();
-
+function ExampleCaptureOnMountSimpler() {
   const onCapture = useCallback(uri => {
     console.log("do something with ", uri);
   }, []);
@@ -67,28 +99,29 @@ function ExampleCaptureOnMountSimpler {
 
 // waiting an image
 
-function ExampleWaitingCapture {
+function ExampleWaitingCapture({imageSource}) {
   const ref = useRef();
 
   const onImageLoad = useCallback(() => {
-    ref.current.capture().then(uri => {
-      console.log("do something with ", uri);
-    })
+    ref.current
+      .capture()
+      .then(uri => {
+        console.log("do something with ", uri);
+      })
+      .catch(console.error);
   }, []);
 
   return (
     <ViewShot ref={ref}>
       <Text>...Something to rasterize...</Text>
-      <Image ... onLoad={onImageLoad} />
+      <Image source={imageSource} onLoad={onImageLoad} />
     </ViewShot>
   );
 }
 
 // capture ScrollView content
 // NB: you may need to go the "imperative way" to use snapshotContentContainer with the scrollview ref instead
-function ExampleCaptureOnMountSimpler {
-  const ref = useRef();
-
+function ExampleCaptureScrollContent() {
   const onCapture = useCallback(uri => {
     console.log("do something with ", uri);
   }, []);
@@ -109,7 +142,7 @@ function ExampleCaptureOnMountSimpler {
 - **`options`**: the same options as in `captureRef` method.
 - **`captureMode`** (string):
   - if not defined (default). the capture is not automatic and you need to use the ref and call `capture()` yourself.
-  - `"mount"`. Capture the view once at mount. (It is important to understand image loading won't be waited, in such case you want to use `"none"` with `viewShotRef.capture()` after `Image#onLoad`.)
+  - `"mount"`. Capture the view once at mount. Image loading is not awaited; omit `captureMode` and call `viewShotRef.current.capture()` after `Image#onLoad` when needed.
   - `"continuous"` EXPERIMENTAL, this will capture A LOT of images continuously. For very specific use-cases.
   - `"update"` EXPERIMENTAL, this will capture images each time React redraw (on did update). For very specific use-cases.
 - **`onCapture`**: when a `captureMode` is defined, this callback will be called with the capture result.
@@ -118,14 +151,14 @@ function ExampleCaptureOnMountSimpler {
 ## `captureRef(view, options)` lower level imperative API
 
 ```js
-import { captureRef } from "react-native-view-shot";
+import {captureRef} from "react-native-view-shot";
 
 captureRef(viewRef, {
   format: "jpg",
   quality: 0.8,
 }).then(
-  (uri) => console.log("Image saved to", uri),
-  (error) => console.error("Oops, snapshot failed", error)
+  uri => console.log("Image saved to", uri),
+  error => console.error("Oops, snapshot failed", error),
 );
 ```
 
@@ -135,13 +168,13 @@ Returns a Promise of the image URI.
 - **`options`** may include:
   - **`fileName`** _(string)_: (Android only) the file name of the file. Must be at least 3 characters long.
   - **`width`** / **`height`** _(number)_: the width and height of the final image (resized from the View bound. don't provide it if you want the original pixel size).
-  - **`format`** _(string)_: either `png` or `jpg` or `webm` (Android). Defaults to `png`.
+  - **`format`** _(string)_: `png` or `jpg`, plus `webp` and `raw` on Android. Defaults to `png`. `webm` is a deprecated alias for `webp`; it produces WebP image data, not a video.
   - **`quality`** _(number)_: the quality. 0.0 - 1.0 (default). (only available on lossy formats like jpg)
   - **`result`** _(string)_, the method you want to use to save the snapshot, one of:
     - `"tmpfile"` (default): save to a temporary file _(that will only exist for as long as the app is running)_.
     - `"base64"`: encode as base64 and returns the raw string. Use only with small images as this may result of lags (the string is sent over the bridge). _N.B. This is not a data uri, use `data-uri` instead_.
     - `"data-uri"`: same as `base64` but also includes the [Data URI scheme](https://en.wikipedia.org/wiki/Data_URI_scheme) header.
-  - **`snapshotContentContainer`** _(bool)_: if true and when view is a ScrollView, the "content container" height will be evaluated instead of the container height.
+  - **`snapshotContentContainer`** _(bool)_: if true and when the captured ref is a `ScrollView`, the entire scrollable content is captured rather than just the visible viewport. Works on both iOS and Android (the lib temporarily expands the ScrollView to its full content size during the draw, then restores). **Android caveat**: only vertical `<ScrollView>` is supported — horizontal scroll views (`<ScrollView horizontal>`, backed by `HorizontalScrollView`) are not expanded and will fall back to capturing the visible bounds. iOS handles both axes via `UIScrollView`. **Windows: not supported** — UWP's `RenderTargetBitmap` respects the live `ScrollViewer` clip and we have no reliable way to capture the full scrollable area; the option is ignored and only the visible viewport is captured (a `console.warn` fires in `__DEV__`). **FlatList note**: virtualization (`removeClippedSubviews`, `windowSize`) means off-screen items aren't mounted at the React layer and will be missing from the capture. Set `removeClippedSubviews={false}` and a large `windowSize`, or use a plain `<ScrollView>` for content up to a few hundred items. See `example/src/screens/ScrollViewTestScreen.tsx` for a working demo.
   - [iOS] **`useRenderInContext`** _(bool)_: change the iOS snapshot strategy to use method `renderInContext` instead of `drawViewHierarchyInRect` which may help for some use cases.
 
 ## `releaseCapture(uri)`
@@ -150,17 +183,17 @@ This method release a previously captured `uri`. For tmpfile it will clean them 
 
 NB: the tmpfile captures are automatically cleaned out after the app closes, so you might not have to worry about this unless advanced usecases. The `ViewShot` component will use it each time you capture more than once (useful for continuous capture to not leak files).
 
-## `captureScreen()` Android and iOS Only
+## `captureScreen()` Android, iOS, and Windows
 
 ```js
-import { captureScreen } from "react-native-view-shot";
+import {captureScreen} from "react-native-view-shot";
 
 captureScreen({
   format: "jpg",
   quality: 0.8,
 }).then(
-  (uri) => console.log("Image saved to", uri),
-  (error) => console.error("Oops, snapshot failed", error)
+  uri => console.log("Image saved to", uri),
+  error => console.error("Oops, snapshot failed", error),
 );
 ```
 
@@ -170,9 +203,15 @@ Returns a Promise of the image URI.
 
 - **`options`**: the same options as in `captureRef` method.
 
-### Advanced Examples
+## Examples
 
-[Checkout react-native-view-shot-example](example)
+### Native Example (iOS & Android)
+
+[Checkout react-native-view-shot-example](example) - Comprehensive example app demonstrating all features on iOS and Android.
+
+### Web Example
+
+[Checkout react-native-view-shot-web-example](example-web) - Web example demonstrating how the library works in browsers using html2canvas-pro.
 
 ## Interoperability Table
 
@@ -180,15 +219,15 @@ Returns a Promise of the image URI.
 
 Model tested: iPhone 6 (iOS), Nexus 5 (Android).
 
-| System                | iOS              | Android           | Windows                |
-| --------------------- | ---------------- | ----------------- | ---------------------- |
-| View,Text,Image,..    | YES              | YES               | YES                    |
-| WebView               | YES              | YES<sup>1</sup>   | YES                    |
-| gl-react v2           | YES              | NO<sup>2</sup>    | NO<sup>3</sup>         |
-| react-native-video    | NO               | NO                | NO                     |
-| react-native-maps     | YES              | NO<sup>4</sup>    | NO<sup>3</sup>         |
-| react-native-svg      | YES              | YES               | maybe?                 |
-| react-native-camera   | NO               | YES               | NO <sup>3</sup>        |
+| System              | iOS | Android         | Windows         | Web                 |
+| ------------------- | --- | --------------- | --------------- | ------------------- |
+| View,Text,Image,..  | YES | YES             | YES             | YES                 |
+| WebView             | YES | YES<sup>1</sup> | YES             | N/A                 |
+| gl-react v2         | YES | NO<sup>2</sup>  | NO<sup>3</sup>  | NO<sup>3</sup>      |
+| react-native-video  | NO  | NO              | NO              | NO                  |
+| react-native-maps   | YES | NO<sup>4</sup>  | NO<sup>3</sup>  | NO<sup>3</sup>      |
+| react-native-svg    | YES | YES             | maybe?          | LIMITED<sup>5</sup> |
+| react-native-camera | NO  | YES             | NO <sup>3</sup> | NO<sup>3</sup>      |
 
 >
 
@@ -196,6 +235,7 @@ Model tested: iPhone 6 (iOS), Nexus 5 (Android).
 2. It returns an empty image (not a failure Promise).
 3. Component itself lacks platform support.
 4. But you can just use the react-native-maps snapshot function: https://github.com/airbnb/react-native-maps#take-snapshot-of-map
+5. Web support via html2canvas-pro has limitations with SVG rendering. Basic SVG works, complex SVG may have issues.
 
 ## Performance Optimization
 
@@ -220,11 +260,11 @@ Introduced a new image format RAW. it correspond a ARGB array of pixels.
 
 Advantages:
 
-- no compression, so its supper quick. Screenshot taking is less than 16ms;
+- avoids PNG/JPEG compression; capture time still depends on the view and device.
 
 RAW format supported for `zip-base64`, `base64` and `tmpfile` result types.
 
-RAW file on disk saved in format: `${width}:${height}|${base64}` string.
+RAW files contain an ASCII `${width}:${height}|` header followed by binary pixel bytes. The `base64` result instead returns that header followed by base64-encoded pixels; `zip-base64` returns the header followed by base64-encoded, zlib-compressed pixels.
 
 ### zip-base64
 
@@ -234,46 +274,60 @@ approach for capturing screen views and deliver them to the react side.
 
 ### How to work with zip-base64 and RAW format?
 
+Capture in React Native, then send the result and format to a Node.js process for conversion. Node's `fs` and `zlib` modules are not built into React Native.
+
 ```js
-const fs = require("fs");
-const zlib = require("zlib");
-const PNG = require("pngjs").PNG;
-const Buffer = require("buffer").Buffer;
+import {Platform} from "react-native";
+import {captureRef} from "react-native-view-shot";
 
 const format = Platform.OS === "android" ? "raw" : "png";
 const result = Platform.OS === "android" ? "zip-base64" : "base64";
 
-captureRef(this.ref, { result, format }).then((data) => {
-  // expected pattern 'width:height|', example: '1080:1731|'
-  const resolution = /^(\d+):(\d+)\|/g.exec(data);
-  const width = (resolution || ["", 0, 0])[1];
-  const height = (resolution || ["", 0, 0])[2];
-  const base64 = data.substr((resolution || [""])[0].length || 0);
+captureRef(viewRef, {result, format})
+  .then(data => {
+    // Send {data, format} to your Node.js conversion process.
+  })
+  .catch(console.error);
+```
 
-  // convert from base64 to Buffer
-  const buffer = Buffer.from(base64, "base64");
-  // un-compress data
-  const inflated = zlib.inflateSync(buffer);
-  // compose PNG
-  const png = new PNG({ width, height });
-  png.data = inflated;
-  const pngData = PNG.sync.write(png);
-  // save composed PNG
-  fs.writeFileSync(output, pngData);
-});
+In Node.js:
+
+```js
+const fs = require("node:fs");
+const zlib = require("node:zlib");
+const {PNG} = require("pngjs");
+
+function saveCapture(data, format, outputPath) {
+  let pngData;
+  if (format === "raw") {
+    const resolution = /^(\d+):(\d+)\|/.exec(data);
+    if (!resolution) throw new Error("Missing RAW dimensions");
+    const width = Number(resolution[1]);
+    const height = Number(resolution[2]);
+    const compressed = Buffer.from(data.slice(resolution[0].length), "base64");
+    const pixels = zlib.inflateSync(compressed);
+    if (!width || !height || pixels.length !== width * height * 4) {
+      throw new Error("Invalid RAW dimensions or pixel data");
+    }
+    const png = new PNG({width, height});
+    png.data = pixels;
+    pngData = PNG.sync.write(png);
+  } else {
+    // The iOS/Windows fallback is already PNG, not zlib-compressed RAW.
+    pngData = Buffer.from(data, "base64");
+  }
+  fs.writeFileSync(outputPath, pngData);
+}
 ```
 
 Keep in mind that packaging PNG data is a CPU consuming operation as a `zlib.inflate`.
 
 Hint: use `process.fork()` approach for converting raw data into PNGs.
 
-> Note: code is tested in large commercial project.
-
-> Note #2: Don't forget to add packages into your project:
+> Install the PNG encoder in your Node.js conversion project (`zlib` is built in):
 >
-> ```js
-> yarn add pngjs
-> yarn add zlib
+> ```bash
+> npm install pngjs
 > ```
 
 ## Troubleshooting / FAQ
@@ -317,20 +371,23 @@ This is because the snapshot image result is in real pixel size where the width/
 A prop may be necessary to properly capture GL Surface View in the view tree:
 
 ```js
-/**
-  * if true and when view is a SurfaceView or have it in the view tree, view will be captured.
-  * False by default, because it can have signoficant performance impact
-  */
-handleGLSurfaceViewOnAndroid?: boolean;
+// Opt in to SurfaceView capture; it can have a significant performance cost.
+captureRef(viewRef, {handleGLSurfaceViewOnAndroid: true});
 ```
 
 ### Trying to share the capture result with `expo-sharing`?
 
-`tmpfile` or the default capture result works best for this. Just be sure to prepend `file://` to result before you call `shareAsync`.
+`tmpfile` or the default capture result works best for this. Add `file://` only when it is absent; Android already returns a file URI.
 
 ```js
 captureRef(viewRef)
-  .then((uri) => Sharing.shareAsync(`file://${uri}`, options)
+  .then(uri =>
+    Sharing.shareAsync(
+      uri.startsWith("file://") ? uri : `file://${uri}`,
+      options,
+    ),
+  )
+  .catch(console.error);
 ```
 
 ---

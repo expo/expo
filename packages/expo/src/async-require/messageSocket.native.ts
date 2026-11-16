@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import getDevServer from './getDevServer';
+import getDevServer from '../utils/getDevServer';
 
 declare namespace globalThis {
   const __EXPO_RSC_RELOAD_LISTENERS__: (() => unknown)[] | undefined;

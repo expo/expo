@@ -1,14 +1,12 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package versioned.host.exp.exponent
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 import com.facebook.common.logging.FLog
+import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.packagerconnection.NotificationOnlyHandler
 import com.facebook.react.packagerconnection.RequestHandler
+import expo.modules.devmenu.api.CustomPerformanceMonitor
 import expo.modules.jsonutils.getNullable
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.ReactNativeActivity
@@ -28,21 +26,23 @@ object VersionedUtils {
     }
   }
 
-  fun reloadExpoApp() = synchronized(this) {
-    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return run {
-      FLog.e(
-        ReactConstants.TAG,
-        "Unable to reload the app because the current activity could not be found."
-      )
-    }
-    val devSupportManager = currentActivity.devSupportManager ?: return run {
-      FLog.e(
-        ReactConstants.TAG,
-        "Unable to get the DevSupportManager from current activity."
-      )
-    }
+  // The packager sends its reload command on a WebSocket thread and handleReloadJS has to run on the
+  // UI thread. Hopping threads here also serialises repeated reloads, such as holding "r" in the CLI.
+  fun reloadExpoApp() {
+    UiThreadUtil.runOnUiThread {
+      val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity
+        ?: return@runOnUiThread FLog.e(
+          ReactConstants.TAG,
+          "Unable to reload the app because the current activity could not be found."
+        )
+      val devSupportManager = currentActivity.devSupportManager
+        ?: return@runOnUiThread FLog.e(
+          ReactConstants.TAG,
+          "Unable to get the DevSupportManager from current activity."
+        )
 
-    devSupportManager.reloadExpoApp()
+      devSupportManager.handleReloadJS()
+    }
   }
 
   private fun toggleElementInspector() {
@@ -62,26 +62,6 @@ object VersionedUtils {
     devSupportManager.toggleElementInspector()
   }
 
-  private fun requestOverlayPermission(context: Context) {
-    // From the unexposed DebugOverlayController static helper
-    // Get permission to show debug overlay in dev builds.
-    if (!Settings.canDrawOverlays(context)) {
-      val intent = Intent(
-        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-        Uri.parse("package:" + context.packageName)
-      ).apply {
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-      }
-      FLog.w(
-        ReactConstants.TAG,
-        "Overlay permissions needs to be granted in order for React Native apps to run in development mode"
-      )
-      if (intent.resolveActivity(context.packageManager) != null) {
-        context.startActivity(intent)
-      }
-    }
-  }
-
   private fun togglePerformanceMonitor() {
     val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return run {
       FLog.e(
@@ -96,14 +76,10 @@ object VersionedUtils {
       )
     }
 
-    val devSettings = devSupportManager.devSettings
-    if (devSettings != null) {
-      if (!devSettings.isFpsDebugEnabled) {
-        // Request overlay permission if needed when "Show Perf Monitor" option is selected
-        requestOverlayPermission(currentActivity)
-      }
-      devSettings.isFpsDebugEnabled = !devSettings.isFpsDebugEnabled
-    }
+    val isShown = (devSupportManager as? CustomPerformanceMonitor)?.isPerformanceMonitorShown
+      ?: devSupportManager.devSettings?.isFpsDebugEnabled
+      ?: false
+    devSupportManager.setFpsDebugEnabled(!isShown)
   }
 
   fun createPackagerCommandHelpers(): Map<String, RequestHandler> {

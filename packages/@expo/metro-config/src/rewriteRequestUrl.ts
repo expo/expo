@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-const debug = require('debug')('expo:metro:config:rewriteRequestUrl');
+import { event } from './events';
 
 function directoryExistsSync(file: string): boolean {
   try {
@@ -55,11 +55,11 @@ function getRouterDirectoryModuleIdWithManifest(projectRoot: string, exp: ExpoCo
 export function getRouterDirectory(projectRoot: string): string {
   // more specific directories first
   if (directoryExistsSync(path.join(projectRoot, 'src', 'app'))) {
-    debug('Using src/app as the root directory for Expo Router.');
+    event('router:root_directory', { dir: 'src/app' });
     return path.join('src', 'app');
   }
 
-  debug('Using app as the root directory for Expo Router.');
+  event('router:root_directory', { dir: 'app' });
   return 'app';
 }
 
@@ -76,7 +76,7 @@ export function getRewriteRequestUrl(projectRoot: string) {
       const isDev = searchParams.has('dev') ? searchParams.get('dev') === 'true' : true;
       const platform = searchParams.get('platform') ?? 'web';
 
-      debug('Rewriting magic request url to entry point', { url, platform });
+      event('rewrite_url:rewriting', { url, platform });
 
       const entry = resolveEntryPoint(projectRoot, {
         platform,
@@ -117,7 +117,7 @@ export function getRewriteRequestUrl(projectRoot: string) {
       if (!ensured.searchParams.has('transform.engine')) {
         const isHermesEnabled = isEnableHermesManaged(exp, platform);
         if (isHermesEnabled) {
-          debug('Enabling Hermes for managed project');
+          event('rewrite_url:hermes_enabled', {});
           ensured.searchParams.set('transform.engine', 'hermes');
           ensured.searchParams.set('transform.bytecode', '1');
           ensured.searchParams.set('unstable_transformProfile', 'hermes-stable');
@@ -126,7 +126,7 @@ export function getRewriteRequestUrl(projectRoot: string) {
 
       const serverRoot = getMetroServerRoot(projectRoot);
       const relativeEntry = path.relative(serverRoot, entry).replace(/\.[tj]sx?$/, '');
-      debug('Resolved entry point', { entry, relativeEntry, serverRoot });
+      event('rewrite_url:resolved_entry', { entry, relativeEntry, serverRoot });
 
       // Only return the pathname when url is relative
       if (url.startsWith('/')) {
@@ -138,7 +138,7 @@ export function getRewriteRequestUrl(projectRoot: string) {
       ensured.pathname = '/' + relativeEntry + '.bundle';
 
       const outputUrl = ensured.toString();
-      debug('Redirected:', outputUrl);
+      event('rewrite_url:redirected', { url: outputUrl });
       // Like: `http://localhost:19001/index.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.bacon.test-custom-entry`
       return outputUrl;
     }

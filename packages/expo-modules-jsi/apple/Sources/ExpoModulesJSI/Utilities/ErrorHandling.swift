@@ -19,6 +19,15 @@ internal func capturingCppErrors<R: ~Copyable>(_ block: () throws -> R) throws -
   return result
 }
 
+/// Throws the error that a C++ helper stored when it returned `false`.
+@inline(__always)
+internal func throwCppErrorUnlessSucceeded(_ succeeded: Bool) throws {
+  // A call that succeeded reads no thread-local storage.
+  if !succeeded, let cppError = getCurrentCppError() {
+    throw cppError
+  }
+}
+
 /// Runs a Swift trampoline body called from a C++ host callback and forwards any thrown error
 /// to `expo::CppError`'s thread-local storage so the C++ side can rethrow it as a `jsi::JSError`.
 /// On the failure branch returns `undefined`, since the C++ side will overwrite it by throwing
@@ -32,40 +41,47 @@ internal func forwardingSwiftErrorsToJS(
 ) -> facebook.jsi.Value {
   do {
     return try body()
-  } catch let jsError as JavaScriptError {
-    // Relay the wrapped `jsi::JSError` directly so the thrown value reaches JS as-is, which may be
-    // an arbitrary value rather than an `Error` instance.
-    expo.CppError.setCurrent(jsError.toJSError())
-  } catch let throwable as JavaScriptThrowable {
-    expo.CppError.setCurrent(JavaScriptError(runtime, from: throwable).toJSError())
-  } catch let cppError as expo.CppError {
-    // Re-thrown by `capturingCppErrors` when nested JSI work raised a JS error; relay
-    // the original so its `jsi::JSError` (with stack, code, custom properties) survives.
-    expo.CppError.setCurrent(cppError)
-  } catch let error {
-    expo.CppError.setCurrent(runtime.pointee, std.string(String(describing: error)))
+  } catch {
+    storeSwiftError(error, runtime: runtime)
+    return .undefined()
   }
-  return .undefined()
 }
 
-/// Void overload of `forwardingSwiftErrorsToJS` for host object setter trampolines, which
-/// have no return value to propagate.
+/// Overload for trampolines that write their result into the caller's slot themselves. Returns
+/// whether an error was stored, so the C++ caller reads the thread-local error slot only then and
+/// skips the thread-local access on every successful call.
 @_transparent
 internal func forwardingSwiftErrorsToJS(
   runtime: JavaScriptRuntime,
   _ body: () throws -> Void
-) {
+) -> Bool {
   do {
     try body()
-  } catch let jsError as JavaScriptError {
+    return false
+  } catch {
+    storeSwiftError(error, runtime: runtime)
+    return true
+  }
+}
+
+/// Stores an error thrown by a host callback in `expo::CppError`'s thread-local slot for the C++
+/// side to rethrow as a `jsi::JSError`. Kept out of line on purpose: the trampolines above inline
+/// into every host callback, and with the error handling in their bodies the hot path carried the
+/// stack frame and register saves that only these branches need.
+@inline(never)
+internal func storeSwiftError(_ error: any Error, runtime: JavaScriptRuntime) {
+  switch error {
+  case let jsError as JavaScriptError:
     // Relay the wrapped `jsi::JSError` directly so the thrown value reaches JS as-is, which may be
     // an arbitrary value rather than an `Error` instance.
     expo.CppError.setCurrent(jsError.toJSError())
-  } catch let throwable as JavaScriptThrowable {
+  case let throwable as JavaScriptThrowable:
     expo.CppError.setCurrent(JavaScriptError(runtime, from: throwable).toJSError())
-  } catch let cppError as expo.CppError {
+  case let cppError as expo.CppError:
+    // Re-thrown by `capturingCppErrors` when nested JSI work raised a JS error; relay
+    // the original so its `jsi::JSError` (with stack, code, custom properties) survives.
     expo.CppError.setCurrent(cppError)
-  } catch let error {
+  default:
     expo.CppError.setCurrent(runtime.pointee, std.string(String(describing: error)))
   }
 }

@@ -1,5 +1,10 @@
 import type { NativeModule } from 'expo';
-import type { LogAttributeValue, LogEventOptions, MetricAttributes } from 'expo-app-metrics';
+import type {
+  LogAttributeValue,
+  LogEventOptions,
+  MetricAttributes,
+  NetworkRequestFilter,
+} from 'expo-app-metrics';
 
 /**
  * Value types accepted as attribute values in `setGlobalAttributes` and the
@@ -13,6 +18,32 @@ export type ObserveAttribute = LogAttributeValue;
  * other Observe APIs that take a free-form attributes payload.
  */
 export type ObserveAttributes = Record<string, ObserveAttribute>;
+
+// Keep in sync with `metricNameMap` in `ios/OpenTelemetry.swift` and `android/.../OpenTelemetry.kt` (except legacy entries).
+/**
+ * Name of a metric that EAS Observe sends.
+ */
+export type ObserveMetricName =
+  | 'expo.app_startup.tti'
+  | 'expo.app_startup.ttr'
+  | 'expo.app_startup.cold_launch_time'
+  | 'expo.app_startup.warm_launch_time'
+  | 'expo.app_startup.bundle_load_time'
+  | 'expo.updates.download_time'
+  | 'expo.navigation.cold_ttr'
+  | 'expo.navigation.warm_ttr'
+  | 'expo.navigation.tti'
+  | 'expo.navigation.tbt';
+
+/**
+ * Name of an event that EAS Observe sends. Custom names passed to `logEvent` are allowed.
+ */
+export type ObserveEventName =
+  | 'js.exception'
+  | 'native.exception'
+  | 'reanimated.warning'
+  | 'expo-image.oversized'
+  | (string & {});
 
 export type ObserveConfig = {
   /**
@@ -38,8 +69,8 @@ export type ObserveConfig = {
    *
    * Has no effect on release builds.
    *
-   * If `dispatchingEnabled` is `false` or this device is out-of-sample for `sampleRate`, nothing
-   * is dispatched regardless of `dispatchInDebug`.
+   * If `dispatchingEnabled` is `false`, nothing is dispatched regardless of `dispatchInDebug`.
+   * `sampleRate` and `errorSampleRate` also apply in debug builds.
    *
    * @default false
    */
@@ -56,15 +87,90 @@ export type ObserveConfig = {
    * - If `dispatchingEnabled` is `true` (or unset), metrics are dispatched only when this device
    *   is in-sample.
    *
+   * Errors follow `errorSampleRate` when it is set and higher.
+   *
    * > Note: Devices that end up out-of-sample drop pending metrics rather than accumulating them.
    *
    * @default undefined - metrics from all devices are sent
    */
   sampleRate?: number;
   /**
-   * Opt in to per-integration behavior.
+   * Fraction of installations that should dispatch errors, in `[0, 1]`. Values outside that range
+   * are clamped. Use it to keep more errors than other events, for example, `sampleRate: 0.03` with
+   * `errorSampleRate: 1`.
+   *
+   * Errors include unhandled JavaScript errors, errors from `reportError` and
+   * `ObserveErrorBoundary`, and native crash reports. All other events follow `sampleRate`.
+   *
+   * `errorSampleRate` is a minimum. Installations in-sample for `sampleRate` always send errors. A
+   * lower value has no effect, and `configure()` prints a warning. An unset `sampleRate` counts as
+   * `1`.
+   *
+   * `dispatchingEnabled` and `dispatchInDebug` apply to errors the same way as to other events.
+   *
+   * @default undefined - errors follow `sampleRate`
+   */
+  errorSampleRate?: number;
+  /**
+   * Metric names that are not sent. Each `configure` call replaces the list.
+   *
+   * @default []
+   */
+  ignoredMetrics?: ObserveMetricName[];
+  /**
+   * Event names that are not sent, including custom names passed to `logEvent`. Each `configure`
+   * call replaces the list.
+   *
+   * @default []
+   */
+  ignoredEvents?: ObserveEventName[];
+  /**
+   * Whether to record unhandled JavaScript errors as `exception` log events.
+   *
+   * When `false`, unhandled errors are no longer recorded. React Native's own handling is
+   * unaffected either way: the red box in development and fatal termination in production still
+   * happen. Errors you report yourself with `reportError`, and render-phase errors captured by
+   * `ObserveErrorBoundary`, are also unaffected.
+   *
+   * > Note: The handler is installed when the package is first imported, which is earlier than any
+   * > `configure` call. An error thrown before `configure` runs is therefore still recorded.
+   *
+   * @default true
+   */
+  errorHandlingEnabled?: boolean;
+  /**
+   * Opt in to per-integration behavior. See the [Expo Router](/eas/observe/integrations/expo-router/)
+   * and [React Navigation](/eas/observe/integrations/react-navigation/) integrations, or
+   * [integrate your own package](/eas/observe/integrations/third-party/).
    */
   integrations?: ObserveIntegrationsConfig;
+  /**
+   * Whether network requests are recorded as trace spans. Pass `true` to record every request,
+   * or an object to record only the ones matching a filter.
+   *
+   * Off by default, because each recorded span counts toward your event quota. This controls
+   * recording, not just export: a request that's turned off or filtered out never reaches the
+   * local database. It applies to future requests only, so anything recorded earlier in the
+   * launch still gets sent. The setting persists across launches.
+   *
+   * @default false
+   */
+  networkTraces?: boolean | ObserveNetworkTracesConfig;
+};
+
+export type ObserveNetworkTracesConfig = {
+  /**
+   * Whether network requests are recorded at all. Set it to `false` to keep a filter configured
+   * while recording nothing.
+   *
+   * @default true
+   */
+  enabled?: boolean;
+  /**
+   * Only requests matching the filter are recorded. An omitted field matches every request; an
+   * empty array matches none.
+   */
+  filter?: NetworkRequestFilter | null;
 };
 
 export type ObserveNavigationIntegrationConfig = {
@@ -75,12 +181,20 @@ export type ObserveNavigationIntegrationConfig = {
    * Does not affect `routeName`.
    */
   filteredParams?: string[];
+  /**
+   * Experimental. Enables the `tbt` (total blocking time) navigation metric.
+   * May change or be removed in a patch release.
+   *
+   * @default false
+   */
+  experimental_totalBlockingTime?: boolean;
 };
 
 export interface ObserveIntegrationsConfig {
   /**
    * Enables the `expo-router` integration, which records navigation metrics
-   * (`cold_ttr`, `warm_ttr`, `tti`) from router state changes.
+   * (`cold_ttr`, `warm_ttr`, `tti`) from router state changes. The `tbt`
+   * metric needs `experimental_totalBlockingTime`.
    *
    * Requires `expo-router` to be installed.
    *
@@ -91,7 +205,8 @@ export interface ObserveIntegrationsConfig {
   'expo-router'?: boolean | ObserveNavigationIntegrationConfig;
   /**
    * Enables the `@react-navigation/native` integration, which records
-   * navigation metrics (`cold_ttr`, `warm_ttr`, `tti`).
+   * navigation metrics (`cold_ttr`, `warm_ttr`, `tti`). The `tbt` metric
+   * needs `experimental_totalBlockingTime`.
    *
    * Requires `@react-navigation/native` to be installed and the app tree
    * to be wrapped in `<ObserveNavigationContainer>` instead of the stock
@@ -102,7 +217,48 @@ export interface ObserveIntegrationsConfig {
    * @default false
    */
   'react-navigation'?: boolean | ObserveNavigationIntegrationConfig;
+  /**
+   * Enables the `react-native-reanimated` integration, which reports Reanimated errors to Observe
+   * as errors named `reanimated.error`. To also report Reanimated warnings as events named
+   * `reanimated.warning`, set `reportWarnings`. Reanimated still prints errors and warnings to the
+   * console. The integration reports each distinct message at most once every 15 minutes. It
+   * reports at most 20 distinct errors and 20 distinct warnings in any 15-minute period.
+   *
+   * Requires `react-native-reanimated` 4.7.0 or later to be installed.
+   *
+   * The integration configures Reanimated's logger with `configureReanimatedLogger`. To set the
+   * logger's `level` and `strict` options, pass an object here. Don't call
+   * `configureReanimatedLogger` in your app. A later call removes the integration's callback, and
+   * the integration replaces the `level` and `strict` options of an earlier call.
+   *
+   * @default false
+   */
+  'react-native-reanimated'?: boolean | ObserveReanimatedIntegrationConfig;
 }
+
+export type ObserveReanimatedIntegrationConfig = {
+  /**
+   * The minimum log level that Reanimated prints and reports. Pass a `ReanimatedLogLevel` value
+   * from `react-native-reanimated`: `ReanimatedLogLevel.warn` (`1`) or `ReanimatedLogLevel.error`
+   * (`2`).
+   *
+   * @default ReanimatedLogLevel.warn
+   */
+  level?: 1 | 2;
+  /**
+   * Whether Reanimated also prints and reports its strict-mode warnings.
+   *
+   * @default true
+   */
+  strict?: boolean;
+  /**
+   * Whether the integration also reports Reanimated warnings to Observe, as events named
+   * `reanimated.warning`. Reanimated prints warnings to the console either way.
+   *
+   * @default false
+   */
+  reportWarnings?: boolean;
+};
 
 /**
  * Events emitted by the native `ExpoObserve` module.
@@ -116,9 +272,82 @@ export type ObserveModuleEvents = {
 };
 
 export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
+  /**
+   * The Expo Services client id: a random, pseudonymous identifier for this app installation, shared by all
+   * Expo Services client libraries. Observe records it on every metric and log event as the
+   * `expo.eas_client.id` attribute, so use it to correlate Observe data with another service.
+   *
+   * The id is stored in native preferences and is stable across app launches and app updates. It
+   * changes when the app's data is cleared or the app is reinstalled, although a backup restore
+   * can carry the previous id over. It identifies an installation, not a user or a device.
+   *
+   * `null` on web, where there is no Expo Services client id.
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * // Attach the same id to data you send elsewhere to line it up with Observe.
+   * await fetch('https://example.com/events', {
+   *   method: 'POST',
+   *   body: JSON.stringify({ easClientId: Observe.clientId }),
+   * });
+   * ```
+   *
+   * @platform android
+   * @platform ios
+   */
+  readonly clientId: string | null;
+  /**
+   * Dispatches pending events to the server immediately.
+   *
+   * Events are dispatched automatically when the app moves to the background. On Android,
+   * a background worker dispatches events once network connectivity is available. On iOS,
+   * dispatching happens when the app resigns active state or is about to terminate. Call
+   * this method to flush events manually, for example, during testing or to ensure events
+   * are sent before a specific point.
+   *
+   * @returns A promise that resolves once the events have been dispatched. A call made while
+   * another dispatch is running waits for it to finish first.
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * await Observe.dispatchEvents();
+   * ```
+   */
   dispatchEvents(): Promise<void>;
   /**
-   * Configures observability settings.
+   * Starts a trace span measuring an operation that is underway. See `startSpan` in
+   * `expo-app-metrics` for the full contract.
+   */
+  startSpan: typeof import('expo-app-metrics').startSpan;
+  /**
+   * Runs a callback inside a span that ends automatically. See `withSpan` in
+   * `expo-app-metrics` for the full contract.
+   */
+  withSpan: typeof import('expo-app-metrics').withSpan;
+  /**
+   * Records a span for an already-measured operation. See `recordSpan` in `expo-app-metrics`
+   * for the full contract.
+   */
+  recordSpan: typeof import('expo-app-metrics').recordSpan;
+  /**
+   * Configures how observability events are collected and dispatched at runtime, such as
+   * the environment label, dispatching behavior, sampling, and integrations.
+   *
+   * @param config Observability settings to apply.
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * Observe.configure({
+   *   environment: 'production',
+   *   dispatchingEnabled: true,
+   * });
+   * ```
    */
   configure(config: ObserveConfig): void;
   /**
@@ -126,6 +355,23 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * call, or an empty object if `configure` has not run yet.
    */
   getIntegrations(): ObserveIntegrationsConfig;
+  /**
+   * Invokes a callback once when the named integration configuration becomes available.
+   *
+   * @param name Integration name.
+   * @param callback Function called with the integration configuration.
+   *
+   * @example
+   * ```ts
+   * Observe.registerIntegration('expo-router', config => {
+   *   console.log(config);
+   * });
+   * ```
+   */
+  registerIntegration<K extends keyof ObserveIntegrationsConfig>(
+    name: K,
+    callback: (config: ObserveIntegrationsConfig[K]) => void
+  ): void;
   /**
    * Records a log event against the current main session. The event is
    * persisted locally and dispatched on the next `dispatchEvents()` flush.
@@ -136,6 +382,27 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * @param options Optional body, attributes, and severity overrides.
    */
   logEvent(name: string, options?: LogEventOptions): void;
+  /**
+   * Reports an error your code caught and handled, recorded as a non-fatal `exception` event. Use it
+   * to keep visibility into failures you recover from, which never reach the automatic global handler
+   * or an error boundary.
+   *
+   * The thrown value is normalized: an `Error`'s `name`, `message`, and `stack` are captured; any
+   * other value (a string, a plain object) is stringified as the message.
+   *
+   * @param error The caught value. An `Error` is preferred, but any thrown value is accepted.
+   *
+   * @example
+   * ```ts
+   * try {
+   *   await syncCart();
+   * } catch (error) {
+   *   Observe.reportError(error);
+   * }
+   * ```
+   */
+  // eslint-disable-next-line handle-callback-err -- `error` is the caught value to report, not a Node callback error.
+  reportError(error: unknown): void;
   /**
    * Marks the first render of the app. Used to compute the `cold_ttr` and
    * `warm_ttr` metrics.

@@ -84,6 +84,17 @@ public class TestModule: Module {
       return a + b
     }
 
+    AsyncFunction("TestAsyncFunctionPromiseArgument1") { (promise: Promise) async ->  String in
+      "some string"
+    }
+
+    AsyncFunction("TestAsyncFunctionPromiseArgument2") { (_: Promise) async -> Void in
+    }
+
+    AsyncFunction("TestAsyncFunctionPromiseArgument3") { (promise: Promise) async in
+      return 123
+    }
+
     AsyncFunction("TestUnderscore") { (url: URL, _  /* Comment 10 */: [BarcodeType]) in
     }
 
@@ -209,6 +220,22 @@ enum IntBackedEnum1: Int {
 enum IntBackedEnum2: Something, Int, SomethingElse {
   case simpleCase
 }
+
+protocol SimpleProtocol: Record {
+  var id: String { get }
+}
+
+struct StructConformingToProtocol: SimpleProtocol {
+  @Field
+  var id: String { get }
+  @Field
+  var someInt: Int
+}
+
+struct EmptyStruct: Record {
+  init(){}
+}
+
 // Global variable names
 let globalEventName = "onGlobalEvent"
 

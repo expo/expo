@@ -34,10 +34,20 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
   private var updateInterval = 1.0f / 60.0f
   private val rotationMatrix = FloatArray(9)
   private val rotationResult = FloatArray(3)
+
+  @Volatile
   private var accelerationEvent: SensorEvent? = null
+
+  @Volatile
   private var accelerationIncludingGravityEvent: SensorEvent? = null
+
+  @Volatile
   private var rotationEvent: SensorEvent? = null
+
+  @Volatile
   private var rotationRateEvent: SensorEvent? = null
+
+  @Volatile
   private var gravityEvent: SensorEvent? = null
   private lateinit var uiManager: UIManager
 
@@ -105,7 +115,6 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
     OnStartObserving {
       subscriptions.forEach { it.startObserving() }
       isObserving = true
-      currentFrameCallback.maybePostFromNonUI()
     }
 
     OnActivityEntersForeground {
@@ -125,6 +134,12 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
         subscriptions.forEach { it.stopObserving() }
       }
       currentFrameCallback.stop()
+      isObserving = false
+      accelerationEvent = null
+      accelerationIncludingGravityEvent = null
+      rotationEvent = null
+      rotationRateEvent = null
+      gravityEvent = null
     }
 
     AsyncFunction<Boolean>("isAvailableAsync") {
@@ -210,41 +225,43 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
 
   private fun eventsToMap(): Bundle {
     val map = Bundle()
-    if (accelerationEvent != null) {
+    accelerationEvent?.let { acceleration ->
       map.putBundle(
         "acceleration",
         Bundle().apply {
-          putDouble("x", accelerationEvent!!.values[0].toDouble())
-          putDouble("y", accelerationEvent!!.values[1].toDouble())
-          putDouble("z", accelerationEvent!!.values[2].toDouble())
-          putDouble("timestamp", accelerationEvent!!.timestamp / 1_000_000_000.0)
+          putDouble("x", acceleration.values[0].toDouble())
+          putDouble("y", acceleration.values[1].toDouble())
+          putDouble("z", acceleration.values[2].toDouble())
+          putDouble("timestamp", acceleration.timestamp / 1_000_000_000.0)
         }
       )
     }
-    if (accelerationIncludingGravityEvent != null && gravityEvent != null) {
-      map.putBundle(
-        "accelerationIncludingGravity",
-        Bundle().apply {
-          putDouble("x", (accelerationIncludingGravityEvent!!.values[0] - 2 * gravityEvent!!.values[0]).toDouble())
-          putDouble("y", (accelerationIncludingGravityEvent!!.values[1] - 2 * gravityEvent!!.values[1]).toDouble())
-          putDouble("z", (accelerationIncludingGravityEvent!!.values[2] - 2 * gravityEvent!!.values[2]).toDouble())
-          putDouble("timestamp", accelerationIncludingGravityEvent!!.timestamp / 1_000_000_000.0)
-        }
-      )
+    accelerationIncludingGravityEvent?.let { accelerationIncludingGravity ->
+      gravityEvent?.let { gravity ->
+        map.putBundle(
+          "accelerationIncludingGravity",
+          Bundle().apply {
+            putDouble("x", (accelerationIncludingGravity.values[0] - 2 * gravity.values[0]).toDouble())
+            putDouble("y", (accelerationIncludingGravity.values[1] - 2 * gravity.values[1]).toDouble())
+            putDouble("z", (accelerationIncludingGravity.values[2] - 2 * gravity.values[2]).toDouble())
+            putDouble("timestamp", accelerationIncludingGravity.timestamp / 1_000_000_000.0)
+          }
+        )
+      }
     }
-    if (rotationRateEvent != null) {
+    rotationRateEvent?.let { rotationRate ->
       map.putBundle(
         "rotationRate",
         Bundle().apply {
-          putDouble("alpha", Math.toDegrees(rotationRateEvent!!.values[0].toDouble()))
-          putDouble("beta", Math.toDegrees(rotationRateEvent!!.values[1].toDouble()))
-          putDouble("gamma", Math.toDegrees(rotationRateEvent!!.values[2].toDouble()))
-          putDouble("timestamp", rotationRateEvent!!.timestamp / 1_000_000_000.0)
+          putDouble("alpha", Math.toDegrees(rotationRate.values[0].toDouble()))
+          putDouble("beta", Math.toDegrees(rotationRate.values[1].toDouble()))
+          putDouble("gamma", Math.toDegrees(rotationRate.values[2].toDouble()))
+          putDouble("timestamp", rotationRate.timestamp / 1_000_000_000.0)
         }
       )
     }
-    if (rotationEvent != null) {
-      SensorManager.getRotationMatrixFromVector(rotationMatrix, rotationEvent!!.values)
+    rotationEvent?.let { rotation ->
+      SensorManager.getRotationMatrixFromVector(rotationMatrix, rotation.values)
       SensorManager.getOrientation(rotationMatrix, rotationResult)
       map.putBundle(
         "rotation",
@@ -252,7 +269,7 @@ class DeviceMotionModule : Module(), SensorEventListener2 {
           putDouble("alpha", (-rotationResult[0]).toDouble())
           putDouble("beta", (-rotationResult[1]).toDouble())
           putDouble("gamma", rotationResult[2].toDouble())
-          putDouble("timestamp", rotationEvent!!.timestamp / 1_000_000_000.0)
+          putDouble("timestamp", rotation.timestamp / 1_000_000_000.0)
         }
       )
     }

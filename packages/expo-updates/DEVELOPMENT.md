@@ -26,7 +26,7 @@ Configuration for iOS should be done in Expo.plist. On Android, most options can
 
 If you are using expo-updates to test a server you're developing, you may want to tell expo-updates to ignore the embedded update. Otherwise, each time you make a new build, it will create a new bundle with a new creation time and will refuse to load any updates published previously.
 
-You can do tell expo-updates to ignore the embedded bundle and force a remote update by setting `EXUpdatesHasEmbeddedUpdate` and `expo.modules.updates.HAS_EMBEDDED_UPDATE` to false.
+You can tell expo-updates to ignore the embedded bundle and force a remote update by setting `EXUpdatesHasEmbeddedUpdate` and `expo.modules.updates.HAS_EMBEDDED_UPDATE` to false.
 
 ### Additional Headers
 
@@ -63,6 +63,21 @@ sed -i '' 's/SKIP_BUNDLING/FORCE_BUNDLING/g;' ios/<project name>.xcodeproj/proje
 - You must reinstall Cocoapods (`npx pod-install` from the top-level project directory).
 
 Now you can make a debug build of your app which behaves as if it were a release build (but without an embedded update).
+
+### Fail loudly on an invalid state transition
+
+When the updates state machine receives an event that is not allowed from its current state, it
+drops the event and writes a warning to the updates log. To make such a drop stop the app instead --
+for example so an E2E run fails rather than passing unnoticed -- set this environment variable
+before building:
+
+```bash
+export EX_UPDATES_ASSERT_INVALID_STATE=true
+```
+
+On iOS you must reinstall Cocoapods (`npx pod-install` from the top-level project directory) so the
+flag reaches the compiler. On Android the same name also works as a Gradle property, either on the
+command line (`-PEX_UPDATES_ASSERT_INVALID_STATE=true`) or in `gradle.properties`.
 
 # BSPatch and BZip2
 

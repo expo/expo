@@ -169,7 +169,7 @@ try {
   }
 }
 
-jest.mock('@react-native/assets-registry/registry', () => ({
+jest.mock('react-native/asset-registry', () => ({
   registerAsset: jest.fn(() => 1),
   getAssetByID: jest.fn(() => ({
     fileSystemLocation: '/full/path/to/directory',
@@ -185,6 +185,18 @@ jest.mock('@react-native/assets-registry/registry', () => ({
     height: 1,
   })),
 }));
+
+// `import { AssetRegistry } from 'react-native'` loads this private module directly, not
+// `react-native/asset-registry`. It is not in the `exports` map, so it needs an absolute path.
+const reactNativeAssetRegistryPath = path.join(
+  path.dirname(require.resolve('react-native/package.json')),
+  'src/private/assets/AssetRegistry.js'
+);
+if (fs.existsSync(reactNativeAssetRegistryPath)) {
+  jest.doMock(reactNativeAssetRegistryPath, () => ({
+    AssetRegistry: jest.requireMock('react-native/asset-registry'),
+  }));
+}
 
 jest.doMock('react-native/Libraries/BatchedBridge/NativeModules', () => ({
   __esModule: true,
@@ -216,6 +228,10 @@ function attemptLookup(moduleName) {
       return true;
     }
 
+    // Jest's own files never call requireNativeModule, and reading them dominates the lookup cost.
+    if (/[\\/]node_modules[\\/](?:@jest[\\/]|jest-[^\\/]+[\\/])/.test(line.fileName)) {
+      return false;
+    }
     if (!fs.existsSync(line.fileName)) {
       return false;
     }

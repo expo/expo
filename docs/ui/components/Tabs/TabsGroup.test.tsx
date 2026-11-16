@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 
+import { axe } from '~/common/test-utilities';
+
 import { Tab } from './Tab';
 import { Tabs } from './Tabs';
 import { TabsGroup } from './TabsGroup';
@@ -60,6 +62,18 @@ describe('TabsGroup', () => {
     expect(screen.getByText('AlphaTwo')).toBeVisible();
     expect(screen.getByText('BetaTwo')).not.toBeVisible();
     expect(screen.getByText('BetaOne')).toBeVisible();
+  });
+
+  it('has no axe violations', async () => {
+    const { container } = renderWithIntl(
+      <TabsGroup>
+        <Tabs>
+          <Tab label="One">FirstOne</Tab>
+          <Tab label="Two">FirstTwo</Tab>
+        </Tabs>
+      </TabsGroup>
+    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 });
 

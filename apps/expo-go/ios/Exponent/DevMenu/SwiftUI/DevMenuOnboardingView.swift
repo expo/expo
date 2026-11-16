@@ -2,8 +2,17 @@
 
 import SwiftUI
 
+struct DevMenuContentBottomKey: PreferenceKey {
+  static var defaultValue: CGFloat = 0
+
+  static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+    value = max(value, nextValue())
+  }
+}
+
 struct DevMenuOnboardingView: View {
   let onFinish: () -> Void
+  var onContentBottomChange: (CGFloat) -> Void = { _ in }
   @State private var isVisible = true
 
   var body: some View {
@@ -11,6 +20,11 @@ struct DevMenuOnboardingView: View {
       .fill(.ultraThinMaterial)
       .ignoresSafeArea()
       .overlay(OnboardingOverlay(onFinish: onFinish, isVisible: $isVisible))
+      .onPreferenceChange(DevMenuContentBottomKey.self) { bottom in
+        if isVisible {
+          onContentBottomChange(bottom)
+        }
+      }
       .offset(x: 0, y: isVisible ? 0.0 : 650.0)
       .animation(.easeInOut(duration: 0.5), value: isVisible)
   }
@@ -58,6 +72,14 @@ private struct OnboardingOverlay: View {
         ContinueButton(onFinish: onFinish, isVisible: $isVisible)
       }
       .padding()
+      .background(
+        GeometryReader { proxy in
+          Color.clear.preference(
+            key: DevMenuContentBottomKey.self,
+            value: proxy.frame(in: .named(DevMenuRootView.coordinateSpace)).maxY
+          )
+        }
+      )
     }
   }
 }

@@ -26,6 +26,17 @@ function mapReturnKeyType(value: ReturnKeyTypeOptions): TextFieldImeAction {
   return value as TextFieldImeAction;
 }
 
+function mapSecureKeyboardType(value: KeyboardTypeOptions | undefined): TextFieldKeyboardType {
+  switch (value) {
+    case 'numeric':
+    case 'number-pad':
+    case 'decimal-pad':
+      return 'numberPassword';
+    default:
+      return 'password';
+  }
+}
+
 function mapKeyboardType(value: KeyboardTypeOptions): TextFieldKeyboardType {
   switch (value) {
     case 'default':
@@ -59,6 +70,7 @@ export function TextInput({
   value,
   onChangeText,
   placeholder,
+  accessibilityLabel,
   autoFocus,
   editable: editableProp,
   multiline,
@@ -133,12 +145,23 @@ export function TextInput({
     else onBlur?.();
   };
 
+  // `visualTransformation` only masks the text. The keyboard reads the keyboard type,
+  // so a secure field also needs a password type.
+  const resolvedKeyboardType = secureTextEntry
+    ? mapSecureKeyboardType(keyboardType)
+    : keyboardType
+      ? mapKeyboardType(keyboardType)
+      : undefined;
+  const resolvedAutoCorrect = secureTextEntry ? false : autoCorrect;
+
   const keyboardOptions =
-    keyboardType || autoCapitalize || autoCorrect !== undefined || returnKeyType
+    resolvedKeyboardType || autoCapitalize || resolvedAutoCorrect !== undefined || returnKeyType
       ? {
-          ...(keyboardType ? { keyboardType: mapKeyboardType(keyboardType) } : null),
+          ...(resolvedKeyboardType ? { keyboardType: resolvedKeyboardType } : null),
           ...(autoCapitalize ? { capitalization: autoCapitalize } : null),
-          ...(autoCorrect !== undefined ? { autoCorrectEnabled: autoCorrect } : null),
+          ...(resolvedAutoCorrect !== undefined
+            ? { autoCorrectEnabled: resolvedAutoCorrect }
+            : null),
           ...(returnKeyType ? { imeAction: mapReturnKeyType(returnKeyType) } : null),
         }
       : undefined;
@@ -158,8 +181,7 @@ export function TextInput({
     <BasicTextField
       ref={innerRef}
       modifiers={[
-        ...(userModifiers ?? []),
-        ...transformToModifiers(style, {}),
+        ...transformToModifiers(style, {}, userModifiers, { componentName: 'TextInput' }),
         ...(testID ? [testIDModifier(testID)] : []),
         ...(autoComplete ? [semantics({ contentType: autoComplete })] : []),
         ...(onContentSizeChange ? [onSizeChanged(onContentSizeChange)] : []),
@@ -197,7 +219,12 @@ export function TextInput({
       onSelectionChange={onSelectionChange}>
       <BasicTextField.DecorationBox>
         <Box
-          modifiers={[fillMaxWidth()]}
+          modifiers={[
+            fillMaxWidth(),
+            ...(accessibilityLabel !== undefined
+              ? [semantics({ contentDescription: accessibilityLabel })]
+              : []),
+          ]}
           contentAlignment={
             textAlign === 'center' ? 'topCenter' : textAlign === 'right' ? 'topEnd' : undefined
           }>
@@ -206,7 +233,14 @@ export function TextInput({
               <Text
                 color={placeholderTextColor as string | undefined}
                 modifiers={[fillMaxWidth()]}
-                style={textAlign && textAlign !== 'auto' ? { textAlign } : undefined}>
+                style={
+                  textStyle || (textAlign && textAlign !== 'auto')
+                    ? {
+                        ...textStyle,
+                        ...(textAlign && textAlign !== 'auto' ? { textAlign } : null),
+                      }
+                    : undefined
+                }>
                 {placeholder}
               </Text>
             </BasicTextField.Placeholder>

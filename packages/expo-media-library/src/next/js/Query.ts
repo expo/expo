@@ -1,5 +1,15 @@
+import { UnavailabilityError } from 'expo';
+import { Platform } from 'react-native';
+
 import { NativeAlbum, NativeQuery } from '../native';
-import type { AssetField, AssetFieldValueMap, AssetMetadata, SortDescriptor } from '../types';
+import type {
+  AssetField,
+  AssetFieldValueMap,
+  AssetMetadata,
+  CollectionAssetField,
+  SortDescriptor,
+  SortableAssetField,
+} from '../types';
 import { Asset, type Album } from './AssetAlbum';
 
 /**
@@ -21,7 +31,10 @@ export class Query {
    * @param value - The value that the field should equal. Each field has a specific unique type.
    * @returns The updated query object for chaining.
    */
-  eq<T extends AssetField>(field: T, value: AssetFieldValueMap[T]): Query {
+  eq<T extends Exclude<AssetField, CollectionAssetField>>(
+    field: T,
+    value: AssetFieldValueMap[T]
+  ): Query {
     this.nativeQuery.eq(field, value);
     return this;
   }
@@ -32,8 +45,26 @@ export class Query {
    * @param value - An array of values that the field should match. Each field has a specific unique type.
    * @returns The updated query object for chaining.
    */
-  within<T extends AssetField>(field: T, value: AssetFieldValueMap[T][]): Query {
+  within<T extends Exclude<AssetField, CollectionAssetField>>(
+    field: T,
+    value: AssetFieldValueMap[T][]
+  ): Query {
     this.nativeQuery.within(field, value);
+    return this;
+  }
+
+  /**
+   * Filters assets where the specified field contains the given value.
+   * @param field - an [`AssetField`](#assetfield) to filter by.
+   * @param value - The value that the field should contain.
+   * @returns The updated query object for chaining.
+   * @platform ios
+   */
+  contains<T extends CollectionAssetField>(field: T, value: AssetFieldValueMap[T][number]): Query {
+    if (Platform.OS !== 'ios') {
+      throw new UnavailabilityError('MediaLibrary', 'Query.contains');
+    }
+    this.nativeQuery.contains(field, value);
     return this;
   }
 
@@ -106,7 +137,7 @@ export class Query {
    * @param sortDescriptors - An instance of SortDescriptor or an AssetField. If an AssetField is provided, the sorting will be done in ascending order by default.
    * @returns The updated query object for chaining.
    */
-  orderBy(sortDescriptors: SortDescriptor | AssetField): Query {
+  orderBy(sortDescriptors: SortDescriptor | SortableAssetField): Query {
     this.nativeQuery.orderBy(sortDescriptors);
     return this;
   }
@@ -146,7 +177,7 @@ export class Query {
    * Returns fields that can be read cheaply from the media store, without resolving file paths or
    * decoding files.
    *
-   * @returns A promise that resolves to an array of [`AssetMetadata`](#assetmetadata) objects that match the query criteria.
+   * @returns A promise that resolves to an array of `AssetMetadata` objects that match the query criteria.
    *
    * @example
    * ```ts
