@@ -12,6 +12,6 @@ class ExpoRuleSetProviderTest {
 
     val ruleIds = provider.getRuleProviders().map { it.createNewRuleInstance().ruleId.value }
 
-    assertEquals(listOf("expo:if-braces"), ruleIds)
+    assertEquals(listOf("expo:if-braces", "expo:observe-shared-imports"), ruleIds)
   }
 }
