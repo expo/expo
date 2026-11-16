@@ -9,7 +9,11 @@ import java.util.concurrent.atomic.AtomicReference
  */
 internal class AppMetricsHost(
   // Reads the running update.
-  val updatesInfo: () -> AppUpdatesInfo = { AppUpdatesInfo.EMPTY }
+  val updatesInfo: () -> AppUpdatesInfo = { AppUpdatesInfo.EMPTY },
+  // Identifies the install in dispatched telemetry.
+  val clientId: () -> String = { "" },
+  // The install's stable value in [0, 1) that the sample rates compare against.
+  val clientSampleValue: () -> Double = { 0.0 }
 )
 
 internal object AppMetrics {
