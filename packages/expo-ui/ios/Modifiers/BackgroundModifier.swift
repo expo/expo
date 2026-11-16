@@ -9,6 +9,7 @@ internal struct BackgroundModifier: ViewModifier, Record {
   @Field var cornerRadius: CGFloat = 0
   @Field var roundedCornerStyle: RoundedCornerStyle?
   @Field var cornerSize: CornerSize?
+  @Field var cornerRadii: CornerRadii?
   @Field var ignoresSafeAreaEdges: EdgeOptions = .all
 
   @ViewBuilder
@@ -28,6 +29,8 @@ internal struct BackgroundModifier: ViewModifier, Record {
           content.background(shapeStyle, in: Rectangle())
         case .roundedRectangle:
           content.background(shapeStyle, in: makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle))
+        case .unevenRoundedRectangle:
+          content.background(shapeStyle, in: makeUnevenRoundedRectangle(cornerRadii: cornerRadii, style: roundedCornerStyle))
         }
       } else {
         content.background(shapeStyle, ignoresSafeAreaEdges: ignoresSafeAreaEdges.toEdge())

@@ -1,7 +1,7 @@
 /**
  * Shape builders for modifiers that accept shapes, such as `background` and `containerShape`.
  *
- * Shapes: `roundedRectangle`, `capsule`, `rectangle`, `ellipse`, `circle`, `containerRelativeShape`.
+ * Shapes: `roundedRectangle`, `unevenRoundedRectangle`, `capsule`, `rectangle`, `ellipse`, `circle`, `containerRelativeShape`.
  *
  * @example
  * ```tsx
@@ -35,6 +35,22 @@ export const shapes = {
     cornerSize: params.cornerSize,
     shape: 'roundedRectangle',
   }),
+  unevenRoundedRectangle: (params: {
+    topLeadingRadius?: number;
+    topTrailingRadius?: number;
+    bottomLeadingRadius?: number;
+    bottomTrailingRadius?: number;
+    roundedCornerStyle?: 'continuous' | 'circular';
+  }) => ({
+    cornerRadii: {
+      topLeading: params.topLeadingRadius,
+      topTrailing: params.topTrailingRadius,
+      bottomLeading: params.bottomLeadingRadius,
+      bottomTrailing: params.bottomTrailingRadius,
+    },
+    roundedCornerStyle: params.roundedCornerStyle,
+    shape: 'unevenRoundedRectangle',
+  }),
   capsule: (params?: { roundedCornerStyle?: 'continuous' | 'circular' }) => ({
     roundedCornerStyle: params?.roundedCornerStyle,
     shape: 'capsule',
@@ -55,6 +71,7 @@ export const shapes = {
 
 export type Shape =
   | ReturnType<typeof shapes.roundedRectangle>
+  | ReturnType<typeof shapes.unevenRoundedRectangle>
   | ReturnType<typeof shapes.capsule>
   | ReturnType<typeof shapes.rectangle>
   | ReturnType<typeof shapes.ellipse>

@@ -8,6 +8,7 @@ internal struct ContainerShapeModifier: ViewModifier, Record {
   @Field var cornerRadius: CGFloat = 0
   @Field var roundedCornerStyle: RoundedCornerStyle?
   @Field var cornerSize: CornerSize?
+  @Field var cornerRadii: CornerRadii?
 
   @ViewBuilder
   func body(content: Content) -> some View {
@@ -24,6 +25,8 @@ internal struct ContainerShapeModifier: ViewModifier, Record {
       content.containerShape(Rectangle())
     case .roundedRectangle:
       content.containerShape(makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle))
+    case .unevenRoundedRectangle:
+      content.containerShape(makeUnevenRoundedRectangle(cornerRadii: cornerRadii, style: roundedCornerStyle))
     }
   }
 }

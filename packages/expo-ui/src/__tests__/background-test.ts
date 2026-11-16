@@ -64,6 +64,27 @@ describe(background, () => {
     });
   });
 
+  it('sends the corner radii of an uneven rounded rectangle', () => {
+    expect(
+      background(
+        '#FF0000',
+        shapes.unevenRoundedRectangle({
+          topLeadingRadius: 16,
+          topTrailingRadius: 16,
+          bottomLeadingRadius: 4,
+          bottomTrailingRadius: 16,
+          roundedCornerStyle: 'continuous',
+        })
+      )
+    ).toEqual({
+      $type: 'background',
+      style: { type: 'color', color: '#FF0000' },
+      shape: 'unevenRoundedRectangle',
+      cornerRadii: { topLeading: 16, topTrailing: 16, bottomLeading: 4, bottomTrailing: 16 },
+      roundedCornerStyle: 'continuous',
+    });
+  });
+
   it('accepts an undefined shape', () => {
     expect(background('#FF0000', undefined)).toEqual({
       $type: 'background',
