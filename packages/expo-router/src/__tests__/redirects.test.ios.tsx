@@ -550,3 +550,30 @@ it('not existing nested route redirects correctly', async () => {
     type: 'stack',
   });
 });
+
+it('guard fallback skips a redirect route and renders the first unguarded screen', async () => {
+  // The app config has no `destinationContextKey`. Route generation adds it.
+  mockRedirects.mockReturnValue([{ source: '/old', destination: '/secret' } as RedirectConfig]);
+
+  await renderRouter(
+    {
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard={false}>
+            <Stack.Screen name="(auth)" />
+          </Stack.Protected>
+          <Stack.Protected guard>
+            <Stack.Screen name="login" />
+          </Stack.Protected>
+        </Stack>
+      ),
+      '(auth)/_layout': () => <Stack />,
+      '(auth)/index': () => <Text testID="index" />,
+      '(auth)/secret': () => <Text testID="secret" />,
+      login: () => <Text testID="login" />,
+    },
+    { initialUrl: '/' }
+  );
+
+  expect(screen.getByTestId('login')).toBeVisible();
+});
