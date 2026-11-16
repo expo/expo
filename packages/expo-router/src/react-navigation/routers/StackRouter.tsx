@@ -59,6 +59,8 @@ export type StackActionType =
         routeNames: string[];
         // Replaces the stack when no route survives. Without it, the first route stays.
         fallback?: { name: string; params?: object };
+        // A route with one of `routeNames` that stays.
+        keptRouteKey?: string;
       };
     };
 
@@ -506,11 +508,11 @@ function stackRouterExtension({
         }
 
         case 'REMOVE_ROUTES': {
-          const { routeNames, fallback } = action.payload;
-          const survivingRoutes = activeRoutes.filter((route) => !routeNames.includes(route.name));
-          const nextPreloadedRoutes = preloadedRoutes.filter(
-            (route) => !routeNames.includes(route.name)
-          );
+          const { routeNames, fallback, keptRouteKey } = action.payload;
+          const isKept = (route: Route<string>) =>
+            route.key === keptRouteKey || !routeNames.includes(route.name);
+          const survivingRoutes = activeRoutes.filter(isKept);
+          const nextPreloadedRoutes = preloadedRoutes.filter(isKept);
           // The stack is never empty.
           const routes = survivingRoutes.length
             ? survivingRoutes
