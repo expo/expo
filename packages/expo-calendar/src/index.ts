@@ -1,2 +1,4 @@
 export * from './Calendar';
-export * as Calendar from './CalendarNamespace';
+export * from './usePermissions';
+export * from './deprecated';
+export * as Calendars from './Calendars';

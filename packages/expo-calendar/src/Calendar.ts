@@ -1,12 +1,6 @@
-import {
-  createPermissionHook,
-  PermissionStatus,
-  UnavailabilityError,
-  type PermissionHookOptions,
-} from 'expo';
+import { UnavailabilityError } from 'expo';
 import { Platform, processColor } from 'react-native';
 
-import * as CalendarNamespace from './CalendarNamespace';
 import InternalExpoCalendar from './ExpoCalendar';
 import type {
   ExtendedProperty,
@@ -25,8 +19,6 @@ import type {
   RecurringEventOptions,
   Reminder,
   ReminderStatus,
-  PermissionResponse,
-  Source,
 } from './legacy/Calendar';
 import { stringifyDateValues, stringifyIfDate, getNullableDetailsFields } from './utils';
 
@@ -111,6 +103,32 @@ export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
     const event = await InternalExpoCalendar.getEventById(eventId);
     Object.setPrototypeOf(event, ExpoCalendarEvent.prototype);
     return event;
+  }
+
+  /**
+   * Lists events from the device's calendar. It can be used to search events in multiple calendars.
+   * > **Note:** If you want to search events in a single calendar, you can use [`ExpoCalendar.listEvents`](#listeventsstartdate-enddate) instead.
+   * @param calendars An array of calendar IDs (`string[]`) or [`ExpoCalendar`](#expocalendar) objects to search for events.
+   * @param startDate The start date of the time range to search for events.
+   * @param endDate The end date of the time range to search for events.
+   * @returns An array of [`ExpoCalendarEvent`](#expocalendarevent) objects representing the events found.
+   */
+  static async list(
+    calendars: (string | ExpoCalendar)[],
+    startDate: Date,
+    endDate: Date
+  ): Promise<ExpoCalendarEvent[]> {
+    if (!InternalExpoCalendar.listEvents) {
+      throw new UnavailabilityError('ExpoCalendarEvent', 'list');
+    }
+    const calendarIds = Array.isArray(calendars)
+      ? calendars.map((c) => (typeof c === 'string' ? c : c.id))
+      : [];
+    return InternalExpoCalendar.listEvents(
+      calendarIds,
+      stringifyIfDate(startDate),
+      stringifyIfDate(endDate)
+    );
   }
 }
 
@@ -229,80 +247,78 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
     return calendar;
   }
-}
 
-/**
- * @deprecated Use `Calendar.getDefaultCalendarSync()` instead.
- */
-export function getDefaultCalendarSync(): ExpoCalendar {
-  return CalendarNamespace.getDefaultCalendarSync();
-}
+  /**
+   * Gets an array of [`ExpoCalendar`](#expocalendar) shared objects with details about the
+   * calendars available to the app.
+   *
+   * > **iOS 17+:** With write-only calendar access, requesting `EntityTypes.EVENT` returns a
+   * > single virtual calendar, which can be used to create events but does not expose the user's
+   * > real calendars.
+   *
+   * @param entityType __iOS Only.__ Not required, but if defined, filters the returned calendars to a specific [entity type](#entitytypes).
+   * > **Note:** If not defined, both calendar (write-only is enough) and reminders permissions are required.
+   * @return An array of [`ExpoCalendar`](#expocalendar) shared objects matching the provided entity type, if provided.
+   */
+  static async getAll(entityType?: EntityTypes): Promise<ExpoCalendar[]> {
+    if (!InternalExpoCalendar.getCalendars) {
+      throw new UnavailabilityError('ExpoCalendar', 'getAll');
+    }
+    const calendars = await InternalExpoCalendar.getCalendars(entityType);
+    return calendars.map((calendar) => {
+      Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
+      return calendar;
+    });
+  }
 
-/**
- * @deprecated Use `Calendar.getCalendars()` instead.
- */
-export async function getCalendars(entityType?: EntityTypes): Promise<ExpoCalendar[]> {
-  return CalendarNamespace.getCalendars(entityType);
-}
+  /**
+   * Creates a new calendar on the device, allowing events to be added later and displayed in the OS Calendar app.
+   * @param details A map of details for the calendar to be created.
+   * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
+   */
+  static async create(details: Partial<Calendar> = {}): Promise<ExpoCalendar> {
+    const color = details.color ? processColor(details.color) : undefined;
+    const newDetails = { ...details, id: undefined, color: color || undefined };
+    const createdCalendar = await InternalExpoCalendar.createCalendar(newDetails);
+    Object.setPrototypeOf(createdCalendar, ExpoCalendar.prototype);
+    return createdCalendar;
+  }
 
-/**
- * @deprecated Use `Calendar.createCalendar()` instead.
- */
-export async function createCalendar(details: Partial<Calendar> = {}): Promise<ExpoCalendar> {
-  return CalendarNamespace.createCalendar(details);
-}
+  /**
+   * Gets an instance of the default calendar object.
+   *
+   * > **iOS 17+:** With write-only calendar access, this returns EventKit's virtual calendar,
+   * > which can be used to create events but does not expose existing calendar data.
+   *
+   * > **Android:** This function is not available on Android. Android does not expose a single
+   * > system-managed default calendar. Use `ExpoCalendar.getAll()` and choose an appropriate writable
+   * > calendar for your app; `isPrimary` can help identify per-account primary calendars.
+   * @return An [`ExpoCalendar`](#expocalendar) object that is the user's default calendar.
+   * @platform ios
+   */
+  static getDefaultSync(): ExpoCalendar {
+    if (Platform.OS === 'android' || !InternalExpoCalendar.getDefaultCalendarSync) {
+      throw new UnavailabilityError('ExpoCalendar', 'getDefaultSync');
+    }
+    const defaultCalendar = InternalExpoCalendar.getDefaultCalendarSync();
+    return Object.setPrototypeOf(defaultCalendar, ExpoCalendar.prototype);
+  }
 
-/**
- * @deprecated Use `Calendar.presentPicker()` instead.
- */
-export async function presentPicker(): Promise<ExpoCalendar | null> {
-  return CalendarNamespace.presentPicker();
-}
-
-/**
- * @deprecated Use `Calendar.listEvents()` instead.
- */
-export async function listEvents(
-  calendars: (string | ExpoCalendar)[],
-  startDate: Date,
-  endDate: Date
-): Promise<ExpoCalendarEvent[]> {
-  return CalendarNamespace.listEvents(calendars, startDate, endDate);
-}
-
-/**
- * @deprecated Use `Calendar.requestCalendarPermissions()` instead.
- */
-export async function requestCalendarPermissions(writeOnly?: boolean): Promise<PermissionResponse> {
-  return CalendarNamespace.requestCalendarPermissions(writeOnly);
-}
-
-/**
- * @deprecated Use `Calendar.getCalendarPermissions()` instead.
- */
-export async function getCalendarPermissions(writeOnly?: boolean): Promise<PermissionResponse> {
-  return CalendarNamespace.getCalendarPermissions(writeOnly);
-}
-
-/**
- * @deprecated Use `Calendar.requestRemindersPermissions()` instead.
- */
-export async function requestRemindersPermissions(): Promise<PermissionResponse> {
-  return CalendarNamespace.requestRemindersPermissions();
-}
-
-/**
- * @deprecated Use `Calendar.getRemindersPermissions()` instead.
- */
-export async function getRemindersPermissions(): Promise<PermissionResponse> {
-  return CalendarNamespace.getRemindersPermissions();
-}
-
-/**
- * @deprecated Use `Calendar.getSourcesSync()` instead.
- */
-export function getSourcesSync(): Source[] {
-  return CalendarNamespace.getSourcesSync();
+  /**
+   * Presents the OS calendar picker and returns the selected calendar.
+   * @return An [`ExpoCalendar`](#expocalendar) object or `null` when the picker is cancelled.
+   * @platform ios
+   */
+  static async presentPicker(): Promise<ExpoCalendar | null> {
+    if (!InternalExpoCalendar.presentPicker) {
+      throw new UnavailabilityError('ExpoCalendar', 'presentPicker');
+    }
+    const calendar = await InternalExpoCalendar.presentPicker();
+    if (calendar) {
+      Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
+    }
+    return calendar;
+  }
 }
 
 export type {
@@ -347,58 +363,5 @@ export {
   ReminderStatus,
   SourceType,
 } from './legacy/Calendar';
-
-/**
- * Check or request permissions to access the user's calendars.
- * This uses both `getCalendarPermissions` and `requestCalendarPermissions` to interact
- * with the permissions.
- * On iOS, `writeOnly` requests permission to create calendar events without reading
- * existing calendars or events. It does not grant permission to create, update, or delete calendars.
- *
- * @example
- * ```ts
- * const [status, requestPermission] = Calendar.useCalendarPermissions();
- * ```
- */
-export const useCalendarPermissions = createPermissionHook<
-  PermissionResponse,
-  { writeOnly?: boolean }
->({
-  getMethod: (options) => getCalendarPermissions(options?.writeOnly),
-  requestMethod: (options) => requestCalendarPermissions(options?.writeOnly),
-});
-
-/**
- * Check or request permissions to access the user's reminders.
- * This uses both `getRemindersPermissions` and `requestRemindersPermissions` to interact
- * with the permissions.
- *
- * @example
- * ```ts
- * const [status, requestPermission] = Calendar.useRemindersPermissions();
- * ```
- * @platform ios
- */
-export function useRemindersPermissions(
-  options?: PermissionHookOptions<object>
-): ReturnType<typeof createRemindersPermissionHook> {
-  if (Platform.OS !== 'ios') {
-    // While for getRemindersPermissions and other iOS-specific functions we throw UnavailabilityError,
-    // returning a denied permission response is a deliberate choice to make it work without needing to wrap it in try/catch.
-    const response: PermissionResponse = {
-      canAskAgain: false,
-      expires: 'never',
-      granted: false,
-      status: PermissionStatus.DENIED,
-    };
-    return [response, async () => response, async () => response];
-  }
-  return createRemindersPermissionHook(options);
-}
-
-const createRemindersPermissionHook = createPermissionHook({
-  getMethod: getRemindersPermissions,
-  requestMethod: requestRemindersPermissions,
-});
 
 export * from './legacyWarnings';
