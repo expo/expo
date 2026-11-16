@@ -373,6 +373,31 @@ globalThis.expo.modules.ExpoFetchModule = {
   },
 };
 
+// `@expo/ui` constructs these SharedObject classes, which the generated module
+// mocks cannot describe. This object shadows the generated `ExpoUI` mock, so it
+// also repeats that mock's functions.
+globalThis.expo.modules.ExpoUI = {
+  completeRefresh: jest.fn(async () => {}),
+  withAnimation: jest.fn(),
+  ObservableState: class extends globalThis.expo.SharedObject {
+    #value;
+    constructor({ value }) {
+      super();
+      this.#value = value;
+    }
+    getValue() {
+      return this.#value;
+    }
+    setValue({ value }) {
+      this.#value = value;
+    }
+    setOnChange() {}
+  },
+  WorkletCallback: class extends globalThis.expo.SharedObject {
+    setWorklet() {}
+  },
+};
+
 jest.doMock('expo/src/winter/FormData', () => ({
   // The `installFormDataPatch` function is for native runtime only,
   // so we don't need to patch `FormData` for the jest runtime.
