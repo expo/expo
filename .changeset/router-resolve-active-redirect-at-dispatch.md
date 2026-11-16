@@ -1,5 +1,5 @@
 ---
-'expo-router': patch
+'expo-router': major
 ---
 
-Open the navigation that the app starts together with a guard change, instead of the `redirectTo` target of the protected screen in a stack.
+Replace a blocked stack screen with its `redirectTo` route and remove other blocked screens as soon as the guard changes, before navigation started in the same handler. Breaking: the stack `createProps` factories no longer return `removeRoutes`.

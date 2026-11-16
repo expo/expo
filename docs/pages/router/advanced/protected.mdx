@@ -175,6 +175,43 @@ When a user navigates to a protected route with `redirectTo`, the router opens t
 
 When protected screens are nested, the outermost guard that fails decides the redirect. If that guard has no `redirectTo`, the router uses the [default redirect](#use-the-default-redirect), even if an inner guard has a `redirectTo`.
 
+### When a guard changes
+
+When a `guard` changes, each stack updates the screens that are already open. The stack does this before any navigation that starts in the same function:
+
+- If the visible screen is blocked and has `redirectTo`, the stack replaces it with the `redirectTo` route.
+- The stack removes all other blocked screens. These include a blocked screen below the top screen, the top screen in a tab that is not focused, a screen under a modal, and a preloaded screen.
+- If no screens remain, the router uses the [default redirect](#use-the-default-redirect).
+
+The stack replaces the visible screen first, then removes the other blocked screens. A removed screen does not redirect later, for example, when its tab is focused again.
+
+```tsx src/app/_layout.tsx
+import { router, Stack } from 'expo-router';
+import { useState } from 'react';
+
+export default function RootLayout() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  function signIn() {
+    setIsLoggedIn(true);
+    // Opens /home first, then pushes /profile on top of it.
+    router.push('/profile');
+  }
+
+  return (
+    <Stack>
+      <Stack.Protected guard={!isLoggedIn} redirectTo="/home">
+        <Stack.Screen name="login" />
+      </Stack.Protected>
+    </Stack>
+  );
+}
+```
+
+An `await` between the `guard` change and the navigation gives the same result.
+
+> **tip** If a modal can change a guard, for example, with a sign-out button, put the modal in the protected group. In a stack with `(tabs)` and `account-modal`, where only `(tabs)` is protected, sign-out removes `(tabs)` and `account-modal` stays open.
+
 ## Tabs and Drawer
 
 Protected routes are also available for [Tabs](/router/advanced/tabs/) and [Drawer](/router/advanced/drawer/) navigators.
