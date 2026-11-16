@@ -339,4 +339,98 @@ struct AppContextTests {
       }
     }
   }
+
+  @Suite("Attached runtimes")
+  @JavaScriptActor
+  struct AttachedRuntimeTests {
+    let appContext = AppContext.create()
+
+    func attachRuntime() throws -> JavaScriptRuntime {
+      let runtime = JavaScriptRuntime()
+      try appContext.attach(runtime: runtime)
+      return runtime
+    }
+
+    @Test
+    func `attaches several runtimes to one app context`() throws {
+      let firstRuntime = try attachRuntime()
+      let secondRuntime = try attachRuntime()
+      #expect(AppContext.from(runtime: firstRuntime) === appContext)
+      #expect(AppContext.from(runtime: secondRuntime) === appContext)
+      #expect(AppContext.from(runtime: try appContext.runtime) === appContext)
+    }
+
+    @Test
+    func `an attached runtime does not own the app context lifecycle`() throws {
+      let attachedRuntime = try attachRuntime()
+      let coreObject = try attachedRuntime.global().getPropertyAsObject("expo")
+      #expect(coreObject.getNativeState(as: AppContext.NativeState.self)?.ownsLifecycle == false)
+    }
+
+    @Test
+    func `attaching a runtime again does nothing`() throws {
+      let attachedRuntime = try attachRuntime()
+      try attachedRuntime.eval("expo.marker = 1")
+      try appContext.attach(runtime: attachedRuntime)
+      #expect(try attachedRuntime.eval("expo.marker").asInt() == 1)
+      #expect(AppContext.from(runtime: attachedRuntime) === appContext)
+    }
+
+    @Test
+    func `rejects a runtime of another app context`() throws {
+      let otherAppContext = AppContext.create()
+      let attachedRuntime = JavaScriptRuntime()
+      try otherAppContext.attach(runtime: attachedRuntime)
+      #expect(throws: RuntimeAttachedToAnotherAppContextException.self) {
+        try appContext.attach(runtime: attachedRuntime)
+      }
+      #expect(throws: RuntimeAttachedToAnotherAppContextException.self) {
+        try appContext.attach(runtime: try otherAppContext.runtime)
+      }
+      #expect(AppContext.from(runtime: attachedRuntime) === otherAppContext)
+    }
+
+    @Test
+    func `rejects a runtime of a released app context`() throws {
+      let attachedRuntime = JavaScriptRuntime()
+      weak var weakOtherAppContext: AppContext?
+      do {
+        let otherAppContext = AppContext.create()
+        weakOtherAppContext = otherAppContext
+        try otherAppContext.attach(runtime: attachedRuntime)
+      }
+      #expect(weakOtherAppContext == nil)
+      #expect(AppContext.from(runtime: attachedRuntime) == nil)
+      #expect(throws: RuntimeAttachedToAnotherAppContextException.self) {
+        try appContext.attach(runtime: attachedRuntime)
+      }
+    }
+
+    @Test
+    func `installs the base classes in an attached runtime`() throws {
+      let attachedRuntime = try attachRuntime()
+      #expect(try attachedRuntime.eval("typeof expo.EventEmitter").asString() == "function")
+      #expect(try attachedRuntime.eval("typeof expo.SharedObject").asString() == "function")
+      #expect(try attachedRuntime.eval("typeof expo.SharedRef").asString() == "function")
+      #expect(try attachedRuntime.eval("typeof expo.NativeModule").asString() == "function")
+      #expect(try attachedRuntime.eval("typeof expo.modules").asString() == "object")
+    }
+
+    @Test
+    func `gives an empty module object for a module without macro members in an attached runtime`() throws {
+      appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
+        Name("DefinitionOnly")
+        Function("ping") { "pong" }
+      })
+      let attachedRuntime = try attachRuntime()
+      #expect(try attachedRuntime.eval("typeof expo.modules.DefinitionOnly").asString() == "object")
+      #expect(try attachedRuntime.eval("typeof expo.modules.DefinitionOnly.ping").asString() == "undefined")
+    }
+
+    @Test
+    func `binds the macro members of the core module in an attached runtime`() throws {
+      let attachedRuntime = try attachRuntime()
+      #expect(try attachedRuntime.eval("typeof expo.installOnUIRuntime").asString() == "function")
+    }
+  }
 }
