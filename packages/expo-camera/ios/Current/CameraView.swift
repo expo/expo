@@ -161,6 +161,19 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     SceneGeometry.interfaceOrientation(for: self)
   }
 
+  // The angle that levels a capture with the horizon, from the same RotationCoordinator that
+  // rotates the preview, so the saved photo matches what the preview showed. Nil when
+  // responsive orientation is on (that path follows the accelerometer by design) or below iOS 17.
+  internal var captureRotationAngle: CGFloat? {
+    guard !responsiveWhenOrientationLocked else {
+      return nil
+    }
+    if #available(iOS 17.0, *), let coordinator = rotationCoordinator as? AVCaptureDevice.RotationCoordinator {
+      return coordinator.videoRotationAngleForHorizonLevelCapture
+    }
+    return nil
+  }
+
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
     lifecycleManager = appContext?.legacyModule(implementing: EXAppLifecycleService.self)

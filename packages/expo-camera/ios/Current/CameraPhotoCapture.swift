@@ -8,6 +8,8 @@ protocol CameraPhotoCaptureDelegate: AnyObject {
   var deviceOrientation: UIInterfaceOrientation { get }
   var responsiveWhenOrientationLocked: Bool { get }
   var physicalOrientation: UIDeviceOrientation { get }
+  // The RotationCoordinator's capture angle (iOS 17+), or nil to use the orientation path.
+  var captureRotationAngle: CGFloat? { get }
   var presetCamera: AVCaptureDevice.Position { get }
   var mirror: Bool { get }
   var flashMode: FlashMode { get }
@@ -29,6 +31,9 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
 
   private var photoCaptureOptions: TakePictureOptions?
   private var photoCapturedContinuation: CheckedContinuation<Any, Error>?
+  // Whether the capture in flight is turned a quarter turn from the preview, which decides
+  // how the preview's size maps onto the unrotated buffer when cropping.
+  private var swapsPreviewSize = false
 
   init(delegate: CameraPhotoCaptureDelegate) {
     self.captureDelegate = delegate
@@ -74,11 +79,17 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
       photoCaptureOptions = options
 
       let connection = photoOutput.connection(with: .video)
-      connection?.videoOrientation = ExpoCameraUtils.captureOrientation(
-        responsiveWhenOrientationLocked: captureDelegate?.responsiveWhenOrientationLocked == true,
-        physicalOrientation: captureDelegate?.physicalOrientation ?? .unknown,
-        interfaceOrientation: captureDelegate?.deviceOrientation ?? .unknown
-      )
+      if let connection {
+        swapsPreviewSize = ExpoCameraUtils.applyCaptureRotation(
+          to: connection,
+          angle: captureDelegate?.captureRotationAngle,
+          fallback: ExpoCameraUtils.captureOrientation(
+            responsiveWhenOrientationLocked: captureDelegate?.responsiveWhenOrientationLocked == true,
+            physicalOrientation: captureDelegate?.physicalOrientation ?? .unknown,
+            interfaceOrientation: captureDelegate?.deviceOrientation ?? .unknown
+          )
+        )
+      }
 
       // options.mirror is deprecated but should continue to work until removed
       connection?.isVideoMirrored = captureDelegate?.presetCamera == .front &&
@@ -175,7 +186,7 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
       return .zero
     }
     let size = captureDelegate.previewLayer.frame.size
-    return captureDelegate.deviceOrientation == .portrait
+    return swapsPreviewSize
       ? CGSize(width: size.height, height: size.width)
       : size
   }

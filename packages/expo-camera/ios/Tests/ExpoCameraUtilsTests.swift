@@ -109,6 +109,33 @@ struct ExpoCameraUtilsTests {
     ) == expected)
   }
 
+  // The iPhone Duo's inner display reports a landscape interface while the coordinator
+  // asks for a 90° capture, so the swap has to follow the angle, not the interface.
+  @Test(arguments: [
+    (CGFloat(0), false),
+    (90, true),
+    (180, false),
+    (270, true),
+    (360, false),
+    (-90, true),
+  ] as [(CGFloat, Bool)])
+  func `a capture angle swaps the preview size on a quarter turn`(angle: CGFloat, expected: Bool) {
+    #expect(ExpoCameraUtils.isQuarterTurn(angle: angle) == expected)
+  }
+
+  @Test(arguments: [
+    (AVCaptureVideoOrientation.portrait, true),
+    (.portraitUpsideDown, true),
+    (.landscapeLeft, false),
+    (.landscapeRight, false),
+  ] as [(AVCaptureVideoOrientation, Bool)])
+  func `a capture orientation swaps the preview size when portrait`(
+    orientation: AVCaptureVideoOrientation,
+    expected: Bool
+  ) {
+    #expect(ExpoCameraUtils.isQuarterTurn(orientation: orientation) == expected)
+  }
+
   @Test(arguments: [
     (UIDeviceOrientation.portrait, "portrait"),
     (.landscapeLeft, "landscapeLeft"),
