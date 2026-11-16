@@ -747,6 +747,33 @@ describe('pipes in table cells', () => {
   });
 });
 
+describe('lists in table cells', () => {
+  it('keeps a cell with a list on one row', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>',
+      '<tbody>',
+      '<tr><td><code>assets</code></td><td><code>[]</code></td><td>',
+      '<p>Supported file types:</p>',
+      '<ul><li>Images: <code>.png</code></li><li>Media: <code>.mp4</code></li></ul>',
+      '</td></tr>',
+      '<tr><td><code>next</code></td><td><code>string</code></td><td>The next row.</td></tr>',
+      '</tbody>',
+      '</table></main>',
+    ].join('');
+    const rows = convertHtmlToMarkdown(html)
+      .split('\n')
+      .filter(line => line.startsWith('|'));
+
+    expect(rows).toEqual([
+      '| Name | Type | Description |',
+      '| --- | --- | --- |',
+      '| `assets` | `[]` | Supported file types: Images: `.png`. Media: `.mp4` |',
+      '| `next` | `string` | The next row. |',
+    ]);
+  });
+});
+
 describe('platform indicators in table cells', () => {
   it('keeps "Only for: iOS" on same line as description in table cells', () => {
     const html = [
