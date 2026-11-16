@@ -141,7 +141,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
     expect(markdown).toContain('**Troubleshooting**');
     expect(markdown).toContain('```sh\nnpm install -g eas-cli\necho done\n```');
     expect(markdown).toContain('Download link: [https://example.dev/download]');
-    expect(markdown).toContain('Press <kbd>Y</kbd> when prompted.');
+    expect(markdown).toContain('Press Y when prompted.');
     expect(markdown).not.toMatch(
       /<BuildEnvironmentSwitch|<Terminal|<Step|<ContentSpotlight|import\s/
     );
@@ -171,6 +171,27 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
     expect(markdown).toContain('## A heading\n\n## B heading');
     expect(markdown).not.toMatch(/<A\s*\/>|<B\s*\/>/);
+  });
+
+  it('writes keyboard keys as text and line breaks as Markdown hard breaks', () => {
+    const markdown = convertMdxInstructionToMarkdown(
+      [
+        'Press <kbd>Cmd ⌘</kbd> + <kbd>,</kbd> to open the settings.',
+        '',
+        '> (\\*) Requires a paid account. <br />',
+        '> (\\*\\*) Possible with WSL.',
+        '',
+        '| Field | Notes |',
+        '| --- | --- |',
+        '| `message` | The text.<br /> <br />Required. |',
+      ].join('\n'),
+      () => null
+    );
+
+    expect(markdown).toContain('Press Cmd ⌘ + , to open the settings.');
+    expect(markdown).toContain('> (\\*) Requires a paid account.  \n> (\\*\\*) Possible with WSL.');
+    expect(markdown).toContain('| `message` | The text. Required. |');
+    expect(markdown).not.toMatch(/<\/?(kbd|br)\b/);
   });
 });
 
