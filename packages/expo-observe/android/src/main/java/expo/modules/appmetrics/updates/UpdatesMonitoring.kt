@@ -1,15 +1,13 @@
 package expo.modules.appmetrics.updates
 
 import android.util.Log
+import expo.modules.appmetrics.AppMetrics
 import expo.modules.appmetrics.AppUpdatesInfo
 import expo.modules.appmetrics.MetricCategory
 import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.SessionHandle
 import expo.modules.appmetrics.utils.TimeUtils
-import expo.modules.updatesinterface.UpdatesControllerRegistry
-import expo.modules.updatesinterface.UpdatesNativeInterfaceStateContext
-import expo.modules.updatesinterface.UpdatesStateChangeSubscription
 
 /**
  * Provides updates-related metric helpers.
@@ -24,21 +22,8 @@ internal class UpdatesMonitoring(
    * launched app, or an empty info object when updates is not available.
    */
   fun getUpdatesMetricsInfo(): AppUpdatesInfo {
-    val controller = UpdatesControllerRegistry.controller?.get()
-      ?: return AppUpdatesInfo(updateId = null, runtimeVersion = null, requestHeaders = null)
-    val launchedUpdateId = controller.launchedUpdateId
-    val embeddedUpdateId = controller.embeddedUpdateId
-    // Ignore embedded launches – they are not available on the website anyway.
-    val updateId = if (launchedUpdateId == embeddedUpdateId) {
-      null
-    } else {
-      launchedUpdateId?.toString()?.lowercase()
-    }
-    return AppUpdatesInfo(
-      updateId = updateId,
-      runtimeVersion = controller.runtimeVersion,
-      requestHeaders = controller.requestHeaders
-    )
+    val info = AppMetrics.host.updatesInfo()
+    return info.copy(updateId = info.updateId?.lowercase())
   }
 
   /**
@@ -59,25 +44,8 @@ internal class UpdatesMonitoring(
     return currentMetadata.copy(appUpdatesInfo = updatesInfo)
   }
 
-  /**
-   * Builds a download time metric from the current subscription context, or returns null
-   * if the required data is not available.
-   */
-  fun downloadTimeMetric(subscription: UpdatesStateChangeSubscription?): Metric? {
-    val context = subscription?.getContext() as? UpdatesNativeInterfaceStateContext ?: return null
-    val downloadedManifest = context.downloadedManifest ?: return null
-    val updateId = downloadedManifest["id"] as? String ?: return null
-    val startTime = context.downloadStartTime ?: return null
-    val finishTime = context.downloadFinishTime ?: return null
-    // expo-updates emits `downloadCompleteWithUpdate` for an update that is already downloaded and
-    // ready on disk too. We don't want to write metrics for those events, so check for
-    // downloadProgress > 0, which only happens on real asset downloads.
-    if (context.downloadProgress <= 0) {
-      return null
-    }
-
-    val downloadTimeSeconds = (finishTime.time - startTime.time).toDouble() / 1000.0
-
+  /** Builds the metric for an update download that took `downloadTimeSeconds`. */
+  fun downloadTimeMetric(downloadTimeSeconds: Double, updateId: String): Metric {
     return Metric(
       sessionId = session.sessionId,
       timestamp = TimeUtils.getCurrentTimestampInISOFormat(),
