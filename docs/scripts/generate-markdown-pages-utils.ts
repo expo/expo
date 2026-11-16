@@ -83,6 +83,10 @@ function findAncestor(node: HTMLElement, nodeNames: string[]): HTMLElement | nul
   return null;
 }
 
+function escapeTableCellPipes(content: string): string {
+  return content.replace(/\|/g, '\\|');
+}
+
 function createTurndownService(): TurndownService {
   const turndown = new TurndownService({
     headingStyle: 'atx',
@@ -90,6 +94,14 @@ function createTurndownService(): TurndownService {
     bulletListMarker: '-',
   });
   turndown.use(gfm);
+  turndown.addRule('tableCellWithEscapedPipes', {
+    filter: ['th', 'td'],
+    replacement: (content: string, node: HTMLElement) => {
+      const isFirstCell =
+        Array.prototype.indexOf.call(node.parentNode?.childNodes ?? [], node) === 0;
+      return (isFirstCell ? '| ' : ' ') + escapeTableCellPipes(content) + ' |';
+    },
+  });
 
   // Ensure pre>code blocks are rendered as fenced code blocks
   turndown.addRule('codeBlocks', {
@@ -135,7 +147,7 @@ function createTurndownService(): TurndownService {
           const title = (card.textContent ?? '').trim();
           const href = card.getAttribute('href') ?? '';
           const description = card.getAttribute('data-md-description') ?? '';
-          return title ? `| [\`${title}\`](${href}) | ${description} |` : '';
+          return title ? `| [\`${title}\`](${href}) | ${escapeTableCellPipes(description)} |` : '';
         })
         .filter(Boolean);
 
