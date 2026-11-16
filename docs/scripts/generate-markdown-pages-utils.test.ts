@@ -707,6 +707,46 @@ describe('platform indicators', () => {
   });
 });
 
+describe('pipes in table cells', () => {
+  const unescapedPipeCount = (row: string) => row.split(/(?<!\\)\|/).length - 1;
+
+  it('escapes pipes in text and in code spans so each row keeps its cells', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>',
+      '<tbody>',
+      '<tr><td>getTrigger</td><td>(name: string) =&gt; <a href="#trigger">Trigger</a> | undefined</td><td>Returns the trigger.</td></tr>',
+      '<tr><td>name</td><td><code>string | undefined</code></td><td>The name.</td></tr>',
+      '</tbody>',
+      '</table></main>',
+    ].join('');
+    const rows = convertHtmlToMarkdown(html)
+      .split('\n')
+      .filter(line => line.startsWith('|'));
+
+    expect(rows).toContain(
+      '| getTrigger | (name: string) => [Trigger](#trigger) \\| undefined | Returns the trigger. |'
+    );
+    expect(rows).toContain('| name | `string \\| undefined` | The name. |');
+    expect(rows.map(unescapedPipeCount)).toEqual([4, 4, 4, 4]);
+  });
+
+  it('escapes pipes in the UI component grid table', () => {
+    const html = [
+      '<main><div data-md="ui-component-grid">',
+      '<a href="/picker/" data-md-description="Single | multiple selection">Picker</a>',
+      '</div></main>',
+    ].join('');
+    const row = convertHtmlToMarkdown(html)
+      .split('\n')
+      .find(line => line.includes('Picker'));
+
+    expect(row).toBe(
+      '| [`Picker`](https://docs.expo.dev/picker.md) | Single \\| multiple selection |'
+    );
+  });
+});
+
 describe('platform indicators in table cells', () => {
   it('keeps "Only for: iOS" on same line as description in table cells', () => {
     const html = [
