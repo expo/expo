@@ -91,7 +91,7 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
 
       // There is no event for when the bundle finished loading,
       // but we're sure it's already available once the first render occurs.
-      if let bundleLoadTime = markers.getBundleLoadTime() {
+      if let bundleLoadTime = AppMetrics.host.bundleLoadTime() {
         reportMetric(category: .appStartup, name: "bundleLoadTime", value: bundleLoadTime)
       }
       if let ttfr = markers.getTTFR() {
@@ -157,7 +157,7 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       launchTime: markers.getLaunchTime(),
       timeToFirstRender: markers.getTTFR(),
       timeToInteractive: markers.getTTI(),
-      bundleLoadTime: markers.getBundleLoadTime()
+      bundleLoadTime: AppMetrics.host.bundleLoadTime()
     )
   }
 
