@@ -10,6 +10,8 @@ import expo.modules.core.interfaces.ApplicationLifecycleListener
 internal class AppMetricsApplicationLifecycleListeners : ApplicationLifecycleListener {
   override fun onCreate(application: Application) {
     super.onCreate(application)
+    // Set before the main session starts: the session reads these values when it builds its row.
+    AppMetrics.configure(AppMetricsHost(updatesInfo = ::expoUpdatesInfo))
     ObserveConsent.load(application)
     if (!ObserveConsent.isGranted) {
       deleteStoredData(application)
