@@ -21,6 +21,14 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 
 private const val KEEP_ALIVE_CONNECTION_TIMEOUT_MS = 1000L
+private const val KEEP_ALIVE_WARMUP_TIMEOUT_MS = 2000L
+private const val ON_WARMUP_COMPLETED = "onWarmupCompleted"
+private val WARMUP_CALLBACK_PACKAGES = setOf(
+  "com.android.chrome",
+  "com.chrome.beta",
+  "com.chrome.dev",
+  "com.chrome.canary"
+)
 
 internal class CustomTabsConnectionHelper(
   private val context: Context
@@ -31,6 +39,17 @@ internal class CustomTabsConnectionHelper(
   private val handler = Handler(Looper.getMainLooper())
   private var pendingBrowserOpen: PendingBrowserOpen? = null
   private var keepAliveSession: CustomTabsSession? = null
+
+  @Volatile
+  private var onWarmupCompleted: Runnable? = null
+
+  private val keepAliveCallback = object : CustomTabsCallback() {
+    override fun extraCallback(callbackName: String, args: Bundle?) {
+      if (callbackName == ON_WARMUP_COMPLETED) {
+        onWarmupCompleted?.let { handler.post(it) }
+      }
+    }
+  }
 
   private class PendingBrowserOpen(
     val promise: Promise,
@@ -168,7 +187,11 @@ internal class CustomTabsConnectionHelper(
 
   /**
    * Gets a session to launch the Custom Tab with, so that the browser keeps this app alive
-   * (`KEEP_ALIVE`) while the tab is open. Binds to the browser if needed.
+   * (`KEEP_ALIVE`) while the tab is open. Binds to the browser if needed and warms it up.
+   *
+   * Chrome only binds the app once a warm-up has completed, and it cancels a pending warm-up when
+   * it handles the tab intent. For Chrome, this waits for `onWarmupCompleted` before returning.
+   * It does not wait for other browsers: Firefox, for one, never sends that callback.
    *
    * Calls [onReady] exactly once, on the main thread, with the session, or with `null` when the
    * browser does not answer in time. The caller then opens the tab without keep-alive.
@@ -186,6 +209,7 @@ internal class CustomTabsConnectionHelper(
       if (!finished) {
         finished = true
         handler.removeCallbacks(timeout)
+        onWarmupCompleted = null
         onReady(session)
       }
     }
@@ -200,8 +224,16 @@ internal class CustomTabsConnectionHelper(
       if (finished || !isConnectionStarted(packageName)) {
         return@executeOrQueueAction
       }
-      session = keepAliveSession ?: client.newSession(null)?.also { keepAliveSession = it }
-      finish()
+      session = keepAliveSession ?: client.newSession(keepAliveCallback)?.also { keepAliveSession = it }
+      if (session == null || packageName !in WARMUP_CALLBACK_PACKAGES) {
+        client.warmup(0)
+        finish()
+        return@executeOrQueueAction
+      }
+      handler.removeCallbacks(timeout)
+      handler.postDelayed(timeout, KEEP_ALIVE_WARMUP_TIMEOUT_MS)
+      onWarmupCompleted = Runnable { finish() }
+      client.warmup(0)
     }
   }
 
