@@ -12,6 +12,15 @@ struct AppMetricsHost: Sendable {
 
   /// Duration of the JS bundle evaluation in seconds, or `nil` while unknown.
   var bundleLoadTime: @Sendable () -> TimeInterval? = { nil }
+
+  /// Identifies the install in dispatched telemetry.
+  var clientId = ""
+
+  /// The install's stable value in [0, 1) that the sample rates compare against.
+  var clientSampleValue = 0.0
+
+  /// Treats the app as a development build when deciding whether to dispatch.
+  var isDebugBuild = false
 }
 
 extension AppMetrics {

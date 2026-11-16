@@ -1,9 +1,7 @@
-import EASClient
-import ExpoModulesCore
+import Foundation
 
 @AppMetricsActor
 internal struct ObservabilityManager {
-  private static let easClientId = EASClientID.uuid().uuidString
   private static var metricsEndpointUrl: URL? = nil
   private static var logsEndpointUrl: URL? = nil
   private static var tracesEndpointUrl: URL? = nil
@@ -129,7 +127,7 @@ internal struct ObservabilityManager {
         guard !events.isEmpty else {
           return nil
         }
-        let body = OTRequestBody(resourceMetrics: events.map { $0.toOTEvent(easClientId) })
+        let body = OTRequestBody(resourceMetrics: events.map { $0.toOTEvent(AppMetrics.host.clientId) })
         return await DispatchUtils.sendRequest(to: endpointUrl, body: body)
       },
       onResult: { result, batchCount, highestId in
@@ -218,7 +216,7 @@ internal struct ObservabilityManager {
           guard !event.logs.isEmpty else {
             return nil
           }
-          return event.toOTResourceLogs(easClientId, inSampleRate: shouldDispatch)
+          return event.toOTResourceLogs(AppMetrics.host.clientId, inSampleRate: shouldDispatch)
         }
         guard !resourceLogs.isEmpty else {
           return nil
@@ -362,7 +360,7 @@ internal struct ObservabilityManager {
   private static func buildResourceSpans(forSpans spans: [SpanRow]) throws -> [OTResourceSpans] {
     return try buildPerSession(spans, sessionId: \.sessionId) { session, sessionSpans in
       let event = Event.from(session: session, metrics: [], logs: [])
-      return event.toOTResourceSpans(easClientId, spans: sessionSpans.map { $0.toOTSpan() })
+      return event.toOTResourceSpans(AppMetrics.host.clientId, spans: sessionSpans.map { $0.toOTSpan() })
     }
   }
 
@@ -408,7 +406,7 @@ internal struct ObservabilityManager {
 
   private static func shouldDispatch(config: PersistedConfig?, rate: Double?) -> Bool {
     let isJsDev = ObserveUserDefaults.bundleDefaults?.isJsDev ?? false
-    let isDev = EXAppDefines.APP_DEBUG || isJsDev
+    let isDev = AppMetrics.host.isDebugBuild || isJsDev
     return Self.shouldDispatch(config: config, isDev: isDev, isInSample: isInSample(rate: rate))
   }
 
@@ -437,6 +435,6 @@ internal struct ObservabilityManager {
       return true
     }
     let clamped = min(max(rate, 0.0), 1.0)
-    return EASClientID.deterministicUniformValue(EASClientID.uuid()) < clamped
+    return AppMetrics.host.clientSampleValue < clamped
   }
 }
