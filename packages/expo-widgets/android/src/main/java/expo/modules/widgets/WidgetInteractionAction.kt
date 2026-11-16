@@ -54,13 +54,12 @@ internal fun WidgetInteraction.toGlanceAction(context: Context): Action {
 }
 
 /**
- * Opens [url] in the app. The view intent is the click's own PendingIntent: a broadcast receiver
+ * Opens [url]. The view intent is the click's own PendingIntent: a broadcast receiver
  * cannot start an activity from the background on Android 10+, so a button that opens a deep link
  * cannot go through the interaction broadcast.
  */
-internal fun openUrlAction(context: Context, url: String): Action {
-  val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-    .setPackage(context.packageName)
+internal fun openUrlAction(url: String): Action {
+  val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url).normalizeScheme())
     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
   return actionStartActivity(intent)
 }
