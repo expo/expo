@@ -10,7 +10,6 @@ import androidx.core.os.bundleOf
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import androidx.core.net.toUri
@@ -124,11 +123,11 @@ class WebBrowserModule : Module() {
       val packageName = givenOrPreferredPackageName(options.browserPackage)
       val origin = uri.buildUpon().scheme("https").path(null).query(null).fragment(null).build()
       connectionHelper.openWithHeaders(packageName, origin, promise, open)
-    }.runOnQueue(Queues.MAIN)
+    }
 
     AsyncFunction("cancelPendingBrowserOpen") {
       connectionHelper.cancelPendingBrowserOpen()
-    }.runOnQueue(Queues.MAIN)
+    }
   }
 
   // these must be `internal` to be able to be injected in tests

@@ -411,9 +411,9 @@ async function _openAuthSessionPolyfillAsync(
   } finally {
     if (Platform.OS === 'android' && browserParams.additionalHeaderFields != null) {
       // Keep the auth guard until validation cannot launch and the old waiter has cleaned up.
-      await ExponentWebBrowser.cancelPendingBrowserOpen().then(() => {
-        _onWebBrowserCloseAndroid?.();
-      });
+      await Promise.resolve(ExponentWebBrowser.cancelPendingBrowserOpen?.())
+        .catch(() => {})
+        .then(() => _onWebBrowserCloseAndroid?.());
       await browserPromise?.catch(() => {});
     }
     // We can't dismiss the browser on Android, only call this when it's available.

@@ -68,10 +68,16 @@ class CustomTabsHeadersTest {
     assertThrows(BrowserHeadersException::class.java) { open() }
 
     session.callback!!.onRelationshipValidationResult(
-      CustomTabsService.RELATION_USE_AS_ORIGIN, Uri.parse("https://other.example"), true, null
+      CustomTabsService.RELATION_USE_AS_ORIGIN,
+      Uri.parse("https://other.example"),
+      true,
+      null
     )
     session.callback!!.onRelationshipValidationResult(
-      CustomTabsService.RELATION_HANDLE_ALL_URLS, origin, true, null
+      CustomTabsService.RELATION_HANDLE_ALL_URLS,
+      origin,
+      true,
+      null
     )
     shadowOf(Looper.getMainLooper()).idle()
     assertTrue(opened.isEmpty())

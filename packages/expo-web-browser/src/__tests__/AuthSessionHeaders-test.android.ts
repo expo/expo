@@ -57,6 +57,22 @@ it('cancels pending validation before allowing another authentication session', 
   expect(mockRemoveRedirect).toHaveBeenCalledTimes(2);
 });
 
+it('cleans up a rejected cancellation and allows another authentication session', async () => {
+  ExpoWebBrowser.cancelPendingBrowserOpen.mockRejectedValueOnce(new Error('Cancellation failed'));
+  const first = openAuthSessionAsync(startUrl, returnUrl, options);
+  jest.mocked(Linking.addEventListener).mock.calls[0]![1]({ url: returnUrl });
+
+  await expect(first).resolves.toEqual({ type: 'success', url: returnUrl });
+  expect(removeAppState).toHaveBeenCalledTimes(1);
+  expect(mockRemoveRedirect).toHaveBeenCalledTimes(1);
+
+  const retry = openAuthSessionAsync(startUrl, returnUrl, options);
+  jest.mocked(Linking.addEventListener).mock.calls[1]![1]({ url: returnUrl });
+  await expect(retry).resolves.toEqual({ type: 'success', url: returnUrl });
+  expect(removeAppState).toHaveBeenCalledTimes(2);
+  expect(mockRemoveRedirect).toHaveBeenCalledTimes(2);
+});
+
 it('ignores foregrounding before verification finishes and dismisses after opening', async () => {
   const pendingOpen = Promise.withResolvers<{ type: WebBrowserResultType.OPENED }>();
   ExpoWebBrowser.openBrowserAsync.mockReturnValueOnce(pendingOpen.promise);
