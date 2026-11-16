@@ -426,11 +426,13 @@ fun LogEvent.toOTLogRecord(): OTLogRecord {
   var encodeTimeDrops = 0
   this.attributes?.let { attrs ->
     val (typed, dropped) = otAttributesFromJsonObject(attrs)
-    attributes.addAll(typed)
+    // The ingest keeps only the first 128 attributes, so SDK `expo.*` keys go first.
+    attributes.addAll(typed.sortedWith(compareBy({ !it.key.startsWith("expo.") }, { it.key })))
     encodeTimeDrops = dropped
   }
+  val limitDrops = maxOf(attributes.size - MAX_LOG_ATTRIBUTE_COUNT, 0)
 
-  val totalDrops = droppedAttributesCount + encodeTimeDrops
+  val totalDrops = droppedAttributesCount + encodeTimeDrops + limitDrops
   val timeNs = timestampToDateNS(timestamp)
   // Both `severityNumber` and `severityText` come off the same enum case so
   // they can't disagree. Unknown raw values (e.g. a future case shipped on JS
@@ -443,7 +445,7 @@ fun LogEvent.toOTLogRecord(): OTLogRecord {
     severityNumber = resolvedSeverity.severityNumber,
     severityText = resolvedSeverity.severityText,
     body = OTStringValue(stringValue = body ?: ""),
-    attributes = attributes,
+    attributes = attributes.take(MAX_LOG_ATTRIBUTE_COUNT),
     droppedAttributesCount = if (totalDrops > 0) {
       totalDrops
     } else {
@@ -489,6 +491,9 @@ fun Event.toOTResourceSpans(easClientId: String, spans: List<OTSpan>): OTResourc
  * shipping payload that is guaranteed to be discarded.
  */
 private const val MAX_SPAN_EVENT_COUNT = 32
+
+// Maximum attributes the ingestion endpoint keeps per log record.
+private const val MAX_LOG_ATTRIBUTE_COUNT = 128
 
 /**
  * Converts a persisted unix-epoch millisecond timestamp to nanoseconds, saturating instead of

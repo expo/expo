@@ -294,11 +294,18 @@ extension Event.Log {
     var encodeTimeDrops = 0
     if let userDict = self.attributes?.value as? [String: Any] {
       let (typed, dropped) = otAttributesFromUserDict(userDict)
-      attributes.append(contentsOf: typed)
+      // The ingest keeps only the first 128 attributes, so SDK `expo.*` keys go first.
+      // Sorting also makes the cut deterministic, because dictionary order is random.
+      let sorted = typed.sorted {
+        let (lhsIsExpo, rhsIsExpo) = ($0.key.hasPrefix("expo."), $1.key.hasPrefix("expo."))
+        return lhsIsExpo != rhsIsExpo ? lhsIsExpo : $0.key < $1.key
+      }
+      attributes.append(contentsOf: sorted)
       encodeTimeDrops = dropped
     }
+    let limitDrops = max(attributes.count - maxLogAttributeCount, 0)
 
-    let totalDrops = droppedAttributesCount + encodeTimeDrops
+    let totalDrops = droppedAttributesCount + encodeTimeDrops + limitDrops
     let timeNs = nsFromISOString(timestamp)
     return OTLogRecord(
       timeUnixNano: timeNs,
@@ -306,11 +313,14 @@ extension Event.Log {
       severityNumber: severity.severityNumber,
       severityText: severity.severityText,
       body: OTStringValue(stringValue: body ?? ""),
-      attributes: attributes,
+      attributes: Array(attributes.prefix(maxLogAttributeCount)),
       droppedAttributesCount: totalDrops > 0 ? totalDrops : nil
     )
   }
 }
+
+// Maximum attributes the ingestion endpoint keeps per log record.
+private let maxLogAttributeCount = 128
 
 /// Maximum span events the ingestion endpoint keeps per span; anything past it is counted as
 /// dropped server-side, so the SDK truncates locally and reports the loss itself instead of

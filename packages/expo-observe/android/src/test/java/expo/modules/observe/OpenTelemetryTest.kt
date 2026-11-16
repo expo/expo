@@ -574,4 +574,24 @@ class LogEventToOTLogRecordTest {
     assertEquals(1_767_960_489_123_000_000L, ot.timeUnixNano)
     assertEquals(1_767_960_489_123_000_000L, ot.observedTimeUnixNano)
   }
+
+  @Test
+  fun `keeps the first 128 attributes with the expo attributes first`() {
+    val otherKeys = (0 until 100).map { "a%03d".format(it) } + (0 until 100).map { "z%03d".format(it) }
+    val expoKeys = listOf(
+      "expo.feedback.id",
+      "expo.feedback.rating",
+      "expo.feedback.scale.max",
+      "expo.feedback.scale.min",
+      "expo.in_sample_rate"
+    )
+    val ot = makeLog(severity = "info").copy(
+      attributes = JsonObject((otherKeys.reversed() + expoKeys.reversed()).associateWith { JsonPrimitive(1) }),
+      droppedAttributesCount = 2
+    ).toOTLogRecord()
+
+    val expectedKeys = listOf("session.id", "event.name") + expoKeys + otherKeys.take(121)
+    assertEquals(expectedKeys, ot.attributes.map { it.key })
+    assertEquals(2 + 207 - 128, ot.droppedAttributesCount)
+  }
 }

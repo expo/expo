@@ -201,6 +201,26 @@ struct OpenTelemetryTests {
     }
   }
 
+  @Test
+  func `toOTLogRecord keeps the first 128 attributes with the expo attributes first`() {
+    let otherKeys = (0..<100).map { String(format: "a%03d", $0) } + (0..<100).map { String(format: "z%03d", $0) }
+    let expoKeys = ["expo.feedback.id", "expo.feedback.rating", "expo.feedback.scale.max", "expo.feedback.scale.min"]
+    let log = Event.Log(
+      name: "auth.login_failed",
+      body: nil,
+      timestamp: "2026-01-09T12:08:09.123Z",
+      severity: .info,
+      attributes: AnyCodable(Dictionary(uniqueKeysWithValues: (otherKeys + expoKeys).map { ($0, 1 as Any) })),
+      droppedAttributesCount: 2,
+      sessionId: testSessionId
+    )
+    let otLog = log.toOTLogRecord(inSampleRate: true)
+
+    let expectedKeys = ["session.id", "event.name", "expo.in_sample_rate"] + expoKeys + Array(otherKeys.prefix(121))
+    #expect(otLog.attributes.map(\.key) == expectedKeys)
+    #expect(otLog.droppedAttributesCount == 2 + 207 - 128)
+  }
+
   private func makeLog(name: String) -> Event.Log {
     Event.Log(
       name: name,
