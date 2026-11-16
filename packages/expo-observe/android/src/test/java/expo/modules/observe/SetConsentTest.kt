@@ -7,8 +7,10 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.work.Configuration
 import androidx.work.testing.SynchronousExecutor
 import androidx.work.testing.WorkManagerTestInitHelper
-import expo.modules.appmetrics.AppMetricsModule
-import expo.modules.appmetrics.ObserveConsent
+import expo.modules.observe.shared.ObserveConsent
+import expo.modules.observe.shared.dispatch.LEGACY_DATABASE_NAME
+import expo.modules.observe.shared.dispatch.ObservePreferences
+import expo.modules.observe.shared.dispatch.PersistedConfig
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
