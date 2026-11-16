@@ -6,6 +6,7 @@ protocol CameraVideoRecordingDelegate: AnyObject {
   var responsiveWhenOrientationLocked: Bool { get }
   var physicalOrientation: UIDeviceOrientation { get }
   var deviceOrientation: UIInterfaceOrientation { get }
+  var captureRotationAngle: CGFloat? { get }
   var mirror: Bool { get }
   var appContext: AppContext? { get }
   var videoBitrate: Int? { get }
@@ -35,11 +36,13 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
     }
 
     if let connection = videoFileOutput.connection(with: .video) {
-      connection.videoOrientation = await ExpoCameraUtils.captureOrientation(
+      let fallback = await ExpoCameraUtils.captureOrientation(
         responsiveWhenOrientationLocked: delegate?.responsiveWhenOrientationLocked == true,
         physicalOrientation: delegate?.physicalOrientation ?? .unknown,
         interfaceOrientation: delegate?.deviceOrientation ?? .unknown
       )
+      let angle = await delegate?.captureRotationAngle
+      ExpoCameraUtils.applyCaptureRotation(to: connection, angle: angle, fallback: fallback)
       do {
         try await setVideoOptions(options: options, for: connection, videoFileOutput: videoFileOutput)
       } catch {
