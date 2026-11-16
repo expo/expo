@@ -496,7 +496,7 @@ function GuardedRouteRedirect({
 
 function GuardRedirect({ navigation, href }: { navigation: GuardNavigation; href: Href }) {
   const cleanupNavigatorId = use(GuardedRoutesCleanupContext);
-  // A stack that removes its blocked routes resolves an internal `redirectTo` itself, after navigation queued with the guard change.
+  // A stack that removes its blocked routes opens an internal `redirectTo` itself, before navigation started with the guard change.
   const isRedirectedByStack =
     cleanupNavigatorId !== undefined &&
     cleanupNavigatorId === navigation.getId() &&

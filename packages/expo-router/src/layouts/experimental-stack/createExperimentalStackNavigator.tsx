@@ -20,7 +20,6 @@ export interface ExperimentalStackNavigatorCreateProps {
   isPreloaded: (key: string) => boolean;
   isRemovalPrevented: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
-  removeRoutes: (routeNames: string[], fallback?: { name: string; params?: object }) => void;
   subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
 }
 
