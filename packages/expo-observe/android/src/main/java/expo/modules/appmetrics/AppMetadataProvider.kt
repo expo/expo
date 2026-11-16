@@ -5,9 +5,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
-import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.observe.BuildConfig
-import expo.modules.updatesinterface.UpdatesControllerRegistry
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import java.util.Locale
@@ -16,19 +14,13 @@ import java.util.Locale
  * Provides app and device metadata from the Expo manifest for tagging sessions.
  */
 internal object AppMetadataProvider {
-  fun getAppMetadata(constants: ConstantsInterface?, context: Context): AppMetadata? {
-    val manifest = getManifest(constants) ?: return null
-    return createMetadata(manifest, context)
+  fun getAppMetadata(manifest: String?, context: Context): AppMetadata? {
+    val parsedManifest = parseManifest(manifest) ?: return null
+    return createMetadata(parsedManifest, context)
   }
 
-  private fun getManifest(constants: ConstantsInterface?): JsonObject? {
-    val constantsMap = constants?.constants
-    val manifestString = constantsMap?.get("manifest") ?: run {
-      Log.d(TAG, "Manifest is null in ConstantsInterface")
-      return null
-    }
-    val manifest = manifestString as? String ?: run {
-      Log.d(TAG, "Manifest value is not a String")
+  private fun parseManifest(manifest: String?): JsonObject? {
+    if (manifest == null) {
       return null
     }
     val rawManifest = runCatching {
@@ -47,7 +39,7 @@ internal object AppMetadataProvider {
       appIdentifier = context.packageName,
       appVersion = packageInfo.versionName,
       appBuildNumber = getAppBuildNumber(packageInfo),
-      appUpdatesInfo = getAppUpdatesInfo(),
+      appUpdatesInfo = AppMetrics.host.updatesInfo(),
       appEasBuildId = BuildConfig.EXPO_EAS_BUILD_ID,
       languageTag = Locale.getDefault().getLanguageTag(),
       deviceOs = DEVICE_OS,
@@ -79,24 +71,6 @@ internal fun getAppBuildNumber(packageInfo: PackageInfo): String =
     @Suppress("DEPRECATION")
     packageInfo.versionCode.toString()
   }
-
-internal fun getAppUpdatesInfo(): AppUpdatesInfo {
-  val controller = UpdatesControllerRegistry.controller?.get()
-    ?: return AppUpdatesInfo(updateId = null, runtimeVersion = null, requestHeaders = null)
-  val launchedUpdateId = controller.launchedUpdateId
-  val embeddedUpdateId = controller.embeddedUpdateId
-  // Ignore embedded launches – they are not available on the website anyway.
-  val updateId = if (launchedUpdateId == embeddedUpdateId) {
-    null
-  } else {
-    launchedUpdateId?.toString()
-  }
-  return AppUpdatesInfo(
-    updateId = updateId,
-    runtimeVersion = controller.runtimeVersion,
-    requestHeaders = controller.requestHeaders
-  )
-}
 
 internal fun getModelName(): String {
   val manufacturer = Build.MANUFACTURER
