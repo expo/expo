@@ -64,6 +64,25 @@ class FeedbackReportTest {
   }
 
   @Test
+  fun `keeps 124 caller attributes so the feedback attributes fit in 128`() {
+    val report = FeedbackReport(
+      id = "checkout",
+      rating = 3,
+      scaleMin = 0,
+      scaleMax = 10,
+      attributes = (0 until 130).associate { "k%03d".format(it) to it }
+    )
+    val attributes = attributesOf(report)
+
+    assertEquals(128, attributes.size)
+    assertEquals(JsonPrimitive("checkout"), attributes["expo.feedback.id"])
+    assertEquals(JsonPrimitive(3), attributes["expo.feedback.rating"])
+    assertEquals(JsonPrimitive(0), attributes["expo.feedback.scale.min"])
+    assertEquals(JsonPrimitive(10), attributes["expo.feedback.scale.max"])
+    assertEquals(6, report.toLogRecord(sessionId = "s").droppedAttributesCount)
+  }
+
+  @Test
   fun `omits the rating and scale attributes when no rating is set`() {
     val attributes = attributesOf(FeedbackReport(id = "checkout", message = "Great"))
 

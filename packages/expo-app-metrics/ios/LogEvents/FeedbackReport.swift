@@ -14,7 +14,8 @@ struct FeedbackReport: Record {
   @Field var attributes: [String: Any]?
 
   func toLogRecord() -> LogRecord {
-    let sanitized = sanitizeLogEventAttributes(attributes, source: "reportFeedback")
+    // The ingest keeps only the first 128 attributes, so leave room for the 4 `expo.feedback.*` keys.
+    let sanitized = sanitizeLogEventAttributes(attributes, source: "reportFeedback", maxCount: maxAttributeCount - 4)
     // Added after sanitization, so caller attributes cannot replace them.
     var attributes = sanitized.attributes ?? [:]
     attributes["expo.feedback.id"] = id

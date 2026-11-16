@@ -34,7 +34,7 @@ internal const val DISPLAY_NAME_ATTRIBUTE_KEY = "expo.log.display_name"
  *
  * Spec: https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/configuration/sdk-environment-variables.md#logrecord-limits
  */
-private const val MAX_ATTRIBUTE_COUNT = 128
+internal const val MAX_ATTRIBUTE_COUNT = 128
 
 /**
  * Result of sanitizing caller-provided log-event attributes.
@@ -93,7 +93,8 @@ private fun withoutNonFiniteNumbers(value: Any?): Any? = when {
  */
 internal fun sanitizeLogEventAttributes(
   attributes: Map<String, Any?>?,
-  source: String = "logEvent"
+  source: String = "logEvent",
+  maxCount: Int = MAX_ATTRIBUTE_COUNT
 ): SanitizedLogAttributes {
   if (attributes == null) {
     return SanitizedLogAttributes(attributes = null, droppedCount = 0)
@@ -130,10 +131,10 @@ internal fun sanitizeLogEventAttributes(
   // map iteration order would make this nondeterministic. Note this biases
   // retention toward alphabetically-earlier keys when the cap is hit —
   // acceptable for accidental-overflow cases (loop bug, typo); a caller that
-  // genuinely needs >128 attributes should split them across multiple events.
+  // genuinely needs more than `maxCount` attributes should split them across multiple events.
   var overflowDrops = 0
-  if (sanitized.size > MAX_ATTRIBUTE_COUNT) {
-    val droppedKeys = sanitized.keys.sorted().drop(MAX_ATTRIBUTE_COUNT).toSet()
+  if (sanitized.size > maxCount) {
+    val droppedKeys = sanitized.keys.sorted().drop(maxCount).toSet()
     overflowDrops = droppedKeys.size
     sanitized.keys.removeAll(droppedKeys)
   }
@@ -161,7 +162,7 @@ internal fun sanitizeLogEventAttributes(
   if (overflowDrops > 0) {
     Log.w(
       TAG,
-      "[AppMetrics] $source dropped $overflowDrops attribute(s) past the $MAX_ATTRIBUTE_COUNT-attribute per-record cap."
+      "[AppMetrics] $source dropped $overflowDrops attribute(s) past the $maxCount-attribute per-record cap."
     )
   }
 

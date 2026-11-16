@@ -24,6 +24,10 @@ function invalidFeedbackReason(feedback: ObserveFeedback): string | null {
       return '`scale.min` and `scale.max` must be whole numbers';
     }
     const { min, max } = scale ?? DEFAULT_SCALE;
+    // The ingest drops records with a scale outside this range.
+    if (min < 0 || max > 10) {
+      return '`scale.min` and `scale.max` must be from 0 to 10';
+    }
     if (min >= max) {
       return '`scale.min` must be less than `scale.max`';
     }

@@ -704,14 +704,6 @@ describe('module Proxy', () => {
       { id: 'checkout', rating: 5, scale: { min: 1, max: 5 } },
       { id: 'checkout', rating: 5, scaleMin: 1, scaleMax: 5 },
     ],
-    [
-      { id: 'checkout', rating: -3, scale: { min: -5, max: 5 } },
-      { id: 'checkout', rating: -3, scaleMin: -5, scaleMax: 5 },
-    ],
-    [
-      { id: 'checkout', rating: 750, scale: { min: 0, max: 1000 } },
-      { id: 'checkout', rating: 750, scaleMin: 0, scaleMax: 1000 },
-    ],
   ])('forwards a rating with its scale: %o', (feedback, expected) => {
     const Observe = loadModule();
     Observe.reportFeedback(feedback);
@@ -724,6 +716,7 @@ describe('module Proxy', () => {
   const ratingReason = '`rating` must be a whole number';
   const scaleReason = '`scale.min` and `scale.max` must be whole numbers';
   const scaleOrderReason = '`scale.min` must be less than `scale.max`';
+  const scaleRangeReason = '`scale.min` and `scale.max` must be from 0 to 10';
   const scaleWithoutRatingReason = 'set `rating` when you set `scale`';
   const emptyReason = 'set `message` or `rating`';
 
@@ -745,6 +738,8 @@ describe('module Proxy', () => {
     [{ id: 'checkout', rating: 1, scale: { min: '0', max: 1 } }, scaleReason],
     [{ id: 'checkout', rating: 1, scale: { min: 0 } }, scaleReason],
     [{ id: 'checkout', rating: 1, scale: 'stars' }, scaleReason],
+    [{ id: 'checkout', rating: 0, scale: { min: -1, max: 1 } }, scaleRangeReason],
+    [{ id: 'checkout', rating: 5, scale: { min: 0, max: 11 } }, scaleRangeReason],
     [{ id: 'checkout', rating: 1, scale: { min: 1, max: 1 } }, scaleOrderReason],
     [{ id: 'checkout', rating: 1, scale: { min: 5, max: 1 } }, scaleOrderReason],
     [{ id: 'checkout', message: 'Great', scale: { min: 1, max: 5 } }, scaleWithoutRatingReason],

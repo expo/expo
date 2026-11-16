@@ -70,6 +70,20 @@ struct FeedbackReportTests {
   }
 
   @Test
+  func `keeps 124 caller attributes so the feedback attributes fit in 128`() throws {
+    let callerAttributes = Dictionary(uniqueKeysWithValues: (0..<130).map { (String(format: "k%03d", $0), $0 as Any) })
+    let record = report(rating: 3, scaleMin: 0, scaleMax: 10, attributes: callerAttributes).toLogRecord()
+
+    let attributes = try #require(record.attributes?.value as? [String: Any])
+    #expect(attributes.count == 128)
+    #expect(attributes["expo.feedback.id"] as? String == "checkout")
+    #expect(attributes["expo.feedback.rating"] as? Int == 3)
+    #expect(attributes["expo.feedback.scale.min"] as? Int == 0)
+    #expect(attributes["expo.feedback.scale.max"] as? Int == 10)
+    #expect(record.droppedAttributesCount == 6)
+  }
+
+  @Test
   func `omits the rating and scale attributes when no rating is set`() throws {
     let record = report(message: "Great").toLogRecord()
 

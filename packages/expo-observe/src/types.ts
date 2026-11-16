@@ -64,15 +64,16 @@ export type ObserveFeedback = {
    */
   rating?: number;
   /**
-   * The lowest and the highest `rating` your UI allows, as whole numbers. `min` must be less than
-   * `max`. Set it only with a `rating`. Sent as the `expo.feedback.scale.min` and
+   * The lowest and the highest `rating` your UI allows, as whole numbers from 0 to 10. `min` must
+   * be less than `max`. Set it only with a `rating`. Sent as the `expo.feedback.scale.min` and
    * `expo.feedback.scale.max` attributes. The dashboard uses the scale to compare ratings.
    *
    * @default { min: 0, max: 10 }
    */
   scale?: { min: number; max: number };
   /**
-   * Attributes attached to the event. They follow the same rules as `logEvent` attributes.
+   * Attributes attached to the event, up to 124 for feedback. The other `logEvent` attribute
+   * rules apply.
    */
   attributes?: ObserveAttributes;
 };
