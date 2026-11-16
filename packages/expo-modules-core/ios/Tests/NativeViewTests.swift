@@ -29,6 +29,12 @@ private final class OtherCardView: ExpoNativeView {}
 @ExpoModule("NativeCards", views: [NativeCardView.self])
 private final class NativeCardsModule: Module {}
 
+@ExpoView<NativeCardProps>("FancyCard")
+private final class RenamedCardView: ExpoNativeView {}
+
+@ExpoModule("RenamedCards", views: [RenamedCardView.self])
+private final class RenamedCardsModule: Module {}
+
 private enum First {
   @ExpoView<NativeCardProps>
   final class MarkerView: ExpoNativeView {}
@@ -151,6 +157,16 @@ struct NativeViewTests {
     #expect(ObjectIdentifier(viewType) == ObjectIdentifier(NativeCardView.self))
     #expect(viewType.propNames == ["title", "radius"])
     #expect(viewType.eventNames == ["onTap"])
+  }
+
+  @Test
+  func `module registers a view under the name from the macro argument`() throws {
+    let appContext = AppContext()
+    let holder = ModuleHolder(appContext: appContext, module: RenamedCardsModule(appContext: appContext), name: nil)
+    let viewType = try #require(holder.nativeViewTypes["FancyCard"])
+
+    #expect(holder.nativeViewTypes.keys.sorted() == [DEFAULT_MODULE_VIEW, "FancyCard"])
+    #expect(ObjectIdentifier(viewType) == ObjectIdentifier(RenamedCardView.self))
   }
 
   @Test
@@ -364,6 +380,7 @@ struct PackageViewComponentTests {
       inPackage: "other-cards"
     )
     appContext.packageRegistry.register(views: [OtherCardView.self], inPackage: "other-cards")
+    appContext.packageRegistry.register(views: [RenamedCardView.self], inPackage: "fancy-cards")
     try runtime.eval(
       """
       configs = [];
@@ -397,6 +414,16 @@ struct PackageViewComponentTests {
   }
 
   @Test
+  func `package exports a view under the name from the macro argument`() throws {
+    #expect(try runtime.eval("Object.keys(expo.packages['fancy-cards']).join(',')").asString() == "FancyCard")
+    #expect(try runtime.eval("typeof expo.packages['fancy-cards'].FancyCard").asString() == "function")
+
+    let config = try runtime.eval("configs[0]").asObject()
+    #expect(try config.getProperty("name").asString() == "fancy_cards_FancyCard")
+    #expect(try config.getProperty("displayName").asString() == "FancyCard")
+  }
+
+  @Test
   func `module takes precedence over a view with the same name`() throws {
     #expect(try runtime.eval("typeof expo.packages['other-cards'].OtherCardView").asString() == "object")
     #expect(try runtime.eval("Object.keys(expo.packages['other-cards']).join(',')").asString() == "OtherCardView")
@@ -416,6 +443,6 @@ struct PackageViewComponentTests {
   @Test
   func `app context registers the views of packages`() {
     let views = appContext.packageRegistry.views.map { "\($0.packageName) \(unqualifiedTypeName($0.viewType))" }
-    #expect(views.sorted() == ["@expo/cards NativeCardView", "other-cards OtherCardView"])
+    #expect(views.sorted() == ["@expo/cards NativeCardView", "fancy-cards RenamedCardView", "other-cards OtherCardView"])
   }
 }

@@ -18,7 +18,7 @@ internal struct NativeViewComponentConfig: Sendable {
 
   init(viewType: any AnyNativeView.Type, componentName: String) {
     self.name = componentName
-    self.displayName = unqualifiedTypeName(viewType)
+    self.displayName = viewType._jsName
     self.propNames = viewType.propNames
     self.eventNames = viewType.eventNames
   }

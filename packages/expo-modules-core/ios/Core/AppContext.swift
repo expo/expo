@@ -539,7 +539,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       for (packageName, viewType) in packageRegistry.views {
         ExpoNativeView.registerComponent(
           viewType,
-          componentName: ExpoNativeView.packageComponentName(packageName: packageName, viewName: unqualifiedTypeName(viewType))
+          componentName: ExpoNativeView.packageComponentName(packageName: packageName, viewName: viewType._jsName)
         )
       }
     }

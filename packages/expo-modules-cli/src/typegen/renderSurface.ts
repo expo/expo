@@ -575,8 +575,12 @@ function renderProperty(
   { includeStatic }: MemberOptions
 ): string | null {
   const ctx = makeContext(owner.file, `${owner.name}.${property.name}`);
-  if (!names.claimProperty(memberKey(property.jsName, includeStatic && property.static))) {
-    ctx.warn('skipped', memberTakenWarning(property.jsName));
+  const key = jsKey(property, ctx);
+  if (!key) {
+    return null;
+  }
+  if (!names.claimProperty(memberKey(key.name, includeStatic && property.static))) {
+    ctx.warn('skipped', memberTakenWarning(key.name));
     return null;
   }
   let type: string;
@@ -587,7 +591,7 @@ function renderProperty(
     type = 'unknown';
   }
   const modifiers = `${includeStatic && property.static ? 'static ' : ''}${property.readonly ? 'readonly ' : ''}`;
-  return `${modifiers}${memberName(property.jsName)}: ${type};`;
+  return `${modifiers}${key.declaration}: ${type};`;
 }
 
 /** Renders one function, or `null` when a property already owns its name in the body. */
@@ -599,13 +603,43 @@ function renderFunction(
   { includeStatic }: MemberOptions
 ): string | null {
   const location = `${owner.name}.${fn.name}`;
-  if (!names.claimFunction(memberKey(fn.jsName, includeStatic && fn.static))) {
-    makeContext(owner.file, location).warn('skipped', memberTakenWarning(fn.jsName));
+  const key = jsKey(fn, makeContext(owner.file, location));
+  if (!key) {
+    return null;
+  }
+  if (!names.claimFunction(memberKey(key.name, includeStatic && fn.static))) {
+    makeContext(owner.file, location).warn('skipped', memberTakenWarning(key.name));
     return null;
   }
   const parameters = renderParameters(fn.parameters, owner.file, location, makeContext);
   const returns = renderReturnType(fn.returns, fn.async, makeContext(owner.file, `${location}()`));
-  return `${includeStatic && fn.static ? 'static ' : ''}${memberName(fn.jsName)}(${parameters}): ${returns};`;
+  return `${includeStatic && fn.static ? 'static ' : ''}${key.declaration}(${parameters}): ${returns};`;
+}
+
+/**
+ * The key a member binds under: its JS name, or a well-known symbol as `[Symbol.iterator]`. `name`
+ * identifies the key among the body's members, and `declaration` is how the member declares it. A
+ * member bound under a registered symbol (`Symbol.for("app.id")`) is skipped with a warning, because
+ * a class declaration can't name that symbol.
+ */
+function jsKey(
+  member: ExportedFunction | ExportedProperty,
+  ctx: RenderContext
+): { name: string; declaration: string } | null {
+  if (member.jsName !== undefined) {
+    return { name: member.jsName, declaration: memberName(member.jsName) };
+  }
+  if (member.symbol?.kind === 'wellKnown') {
+    const name = `[Symbol.${member.symbol.name}]`;
+    return { name, declaration: name };
+  }
+  ctx.warn(
+    'skipped',
+    member.symbol
+      ? `binds under Symbol.for(${JSON.stringify(member.symbol.name)}), which a TypeScript declaration can't name, so it was skipped`
+      : 'has neither a JS name nor a symbol, so it was skipped'
+  );
+  return null;
 }
 
 function renderParameters(
@@ -664,13 +698,13 @@ function withoutBackticks(surface: ExportedSurface): ExportedSurface {
   const fn = (f: ExportedFunction): ExportedFunction => ({
     ...f,
     name: stripBackticks(f.name),
-    jsName: stripBackticks(f.jsName),
+    jsName: f.jsName === undefined ? undefined : stripBackticks(f.jsName),
     parameters: f.parameters.map(parameter),
   });
   const property = (p: ExportedProperty): ExportedProperty => ({
     ...p,
     name: stripBackticks(p.name),
-    jsName: stripBackticks(p.jsName),
+    jsName: p.jsName === undefined ? undefined : stripBackticks(p.jsName),
   });
   const event = (e: ExportedEvent): ExportedEvent => ({
     ...e,
