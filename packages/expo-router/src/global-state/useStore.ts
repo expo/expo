@@ -5,11 +5,10 @@ import type { ComponentType } from 'react';
 import { Fragment, useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
 
-import { routePatternToRegex } from '../fork/getStateFromPath-forks';
 import type { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConfig';
 import { getLinkingConfig } from '../getLinkingConfig';
-import { parseRouteSegments } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
+import { getRedirectSourceRegex } from '../getRoutesRedirects';
 import type { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
 import { cancelSplashScreenAnimationFrame } from '../utils/splash';
@@ -40,7 +39,7 @@ export function useRouterConfig(
       .flat()
       .map((route) => {
         return [
-          routePatternToRegex(parseRouteSegments(route.source)),
+          getRedirectSourceRegex(route.source),
           route,
           shouldLinkExternally(route.destination),
         ];
