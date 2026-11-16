@@ -1,6 +1,6 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
 import type { Dispatch, SetStateAction } from 'react';
-import { createContext, use, useEffect, useState } from 'react';
+import { act as reactAct, createContext, use, useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
 import { navigationRef } from '../global-state/navigationRef';
@@ -11,6 +11,7 @@ import Tabs from '../layouts/Tabs';
 import { StackRouter } from '../react-navigation/native';
 import { createStandardRouterNavigator, type NavigatorContentProps } from '../standard-navigation';
 import { renderRouter } from '../testing-library';
+import { lazyModule } from './lazyModule';
 
 it('redirects a guarded route to the anchor default during the initial load', async () => {
   let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
@@ -920,7 +921,7 @@ it('replaces every blocked route with the fallback in one state change when no r
   expect(router.canGoBack()).toBe(false);
 });
 
-it('keeps a blocked focused route with redirectTo and redirects it', async () => {
+it('replaces a blocked focused route with its redirectTo route in place', async () => {
   let setGuard: Dispatch<SetStateAction<boolean>>;
 
   await renderRouter({
@@ -1328,7 +1329,7 @@ it('throws when the redirectTo targets of blocked routes form a chain longer tha
   );
 });
 
-it('opens the navigation from the same handler instead of the redirectTo of the blocked screen', async () => {
+it('opens the redirectTo route of the blocked screen before the navigation from the same handler', async () => {
   let setSignedIn: Dispatch<SetStateAction<boolean>>;
 
   await renderRouter(
@@ -1352,6 +1353,7 @@ it('opens the navigation from the same handler instead of the redirectTo of the 
     { initialUrl: '/login' }
   );
 
+  // The navigator tree renders before `RoutingQueueDrainer`, so the guard runs before the push.
   await act(() => {
     setSignedIn(true);
     router.push('/profile');
@@ -1360,11 +1362,12 @@ it('opens the navigation from the same handler instead of the redirectTo of the 
   expect(screen.getByTestId('profile')).toBeVisible();
   expect(screen).toHavePathname('/profile');
   expect(navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+    'home',
     'profile',
   ]);
 });
 
-it('opens another tab from the same handler instead of the redirectTo of the blocked screen', async () => {
+it('replaces the blocked screen with its redirectTo route before opening another tab from the same handler', async () => {
   const SignedInContext = createContext(false);
   let setSignedIn: Dispatch<SetStateAction<boolean>>;
 
@@ -1407,12 +1410,387 @@ it('opens another tab from the same handler instead of the redirectTo of the blo
 
   expect(screen.getByTestId('settings')).toBeVisible();
   expect(screen).toHavePathname('/settings');
-  expect(screen.queryByTestId('profile')).toBeNull();
+  expect(
+    navigationRef
+      .getRootState()
+      .routes[0]!.state!.routes[0]!.state!.routes.map((route) => route.name)
+  ).toEqual(['profile']);
 
-  // The blocked screen redirects when its tab opens again.
   await fireEvent.press(screen.getByLabelText('(home), tab, 1 of 2'));
   expect(screen.getByTestId('profile')).toBeVisible();
   expect(screen).toHavePathname('/profile');
+});
+
+it('removes the blocked screen without redirectTo before the navigation from the same handler', async () => {
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter(
+    {
+      _layout: function Layout() {
+        const [signedIn, setState] = useState(false);
+        setSignedIn = setState;
+        return (
+          <Stack>
+            <Stack.Protected guard={!signedIn}>
+              <Stack.Screen name="login" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      profile: () => <Text testID="profile">profile</Text>,
+      login: () => <Text testID="login">login</Text>,
+    },
+    { initialUrl: '/login' }
+  );
+
+  await act(() => {
+    setSignedIn(true);
+    router.push('/profile');
+  });
+
+  expect(screen.getByTestId('profile')).toBeVisible();
+  expect(screen).toHavePathname('/profile');
+  expect(navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+    'index',
+    'profile',
+  ]);
+});
+
+it('opens the redirectTo route of the blocked screen before a navigation that follows an await in the same handler', async () => {
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter(
+    {
+      _layout: function Layout() {
+        const [signedIn, setState] = useState(false);
+        setSignedIn = setState;
+        return (
+          <Stack>
+            <Stack.Protected guard={!signedIn} redirectTo="/home">
+              <Stack.Screen name="login" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      home: () => <Text testID="home">home</Text>,
+      profile: () => <Text testID="profile">profile</Text>,
+      login: () => <Text testID="login">login</Text>,
+    },
+    { initialUrl: '/login' }
+  );
+
+  await act(async () => {
+    setSignedIn(true);
+    await Promise.resolve();
+    router.push('/profile');
+  });
+
+  expect(screen.getByTestId('profile')).toBeVisible();
+  expect(screen).toHavePathname('/profile');
+  expect(navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+    'home',
+    'profile',
+  ]);
+});
+
+it('removes a blocked screen with redirectTo from a hidden tab and does not redirect when the tab opens again', async () => {
+  const SignedInContext = createContext(false);
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter({
+    _layout: function Layout() {
+      const [signedIn, setState] = useState(false);
+      setSignedIn = setState;
+      return (
+        <SignedInContext value={signedIn}>
+          <Tabs>
+            <Tabs.Screen name="(home)" />
+            <Tabs.Screen name="settings" />
+          </Tabs>
+        </SignedInContext>
+      );
+    },
+    '(home)/_layout': function HomeLayout() {
+      const signedIn = use(SignedInContext);
+      return (
+        <Stack>
+          <Stack.Protected guard={!signedIn} redirectTo="/profile">
+            <Stack.Screen name="login" />
+          </Stack.Protected>
+        </Stack>
+      );
+    },
+    '(home)/index': () => <Text testID="index">index</Text>,
+    '(home)/login': () => <Text testID="login">login</Text>,
+    '(home)/profile': () => <Text testID="profile">profile</Text>,
+    settings: () => <Text testID="settings">settings</Text>,
+  });
+
+  await act(() => router.push('/login'));
+  await act(() => router.navigate('/settings'));
+
+  await act(() => setSignedIn(true));
+
+  expect(screen.getByTestId('settings')).toBeVisible();
+  expect(
+    navigationRef
+      .getRootState()
+      .routes[0]!.state!.routes[0]!.state!.routes.map((route) => route.name)
+  ).toEqual(['index']);
+
+  await fireEvent.press(screen.getByLabelText('(home), tab, 1 of 2'));
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+});
+
+it('replaces the blocked focused route and removes the other blocked routes in one state change', async () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter({
+    _layout: function Layout() {
+      const [guard, setState] = useState(true);
+      setGuard = setState;
+      return (
+        <Stack>
+          <Stack.Protected guard={guard} redirectTo="/home">
+            <Stack.Screen name="secret-a" />
+            <Stack.Screen name="secret-b" />
+          </Stack.Protected>
+        </Stack>
+      );
+    },
+    index: () => <Text testID="index">index</Text>,
+    home: () => <Text testID="home">home</Text>,
+    'secret-a': () => <Text testID="secret-a">secret a</Text>,
+    'secret-b': () => <Text testID="secret-b">secret b</Text>,
+  });
+
+  await act(() => router.push('/secret-a'));
+  await act(() => router.push('/secret-b'));
+
+  const committedRouteNames: string[][] = [];
+  const unsubscribe = navigationRef.addListener('state', () => {
+    committedRouteNames.push(
+      navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+    );
+  });
+  try {
+    await act(() => setGuard(false));
+  } finally {
+    unsubscribe();
+  }
+
+  expect(committedRouteNames).toEqual([['index', 'home']]);
+  expect(screen.getByTestId('home')).toBeVisible();
+  expect(screen).toHavePathname('/home');
+});
+
+it('resolves a relative redirectTo against a blocked layout route, not the nested route it shows', async () => {
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter(
+    {
+      _layout: function Layout() {
+        const [signedIn, setState] = useState(true);
+        setSignedIn = setState;
+        return (
+          <Stack>
+            <Stack.Protected guard={signedIn} redirectTo="./login">
+              <Stack.Screen name="account" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      login: () => <Text testID="login">login</Text>,
+      'account/_layout': {
+        unstable_settings: { anchor: 'settings' },
+        default: () => <Stack />,
+      },
+      'account/index': () => <Text testID="account">account</Text>,
+      'account/settings': () => <Text testID="account-settings">account settings</Text>,
+      'account/login': () => <Text testID="account-login">account login</Text>,
+    },
+    { initialUrl: '/account/settings' }
+  );
+
+  await act(() => setSignedIn(false));
+
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(screen).toHavePathname('/login');
+  expect(navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+    'login',
+  ]);
+});
+
+it('resolves a relative redirectTo against a blocked layout route with the params of its parent routes', async () => {
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter(
+    {
+      _layout: () => <Stack />,
+      '[org]/_layout': function OrgLayout() {
+        const [signedIn, setState] = useState(true);
+        setSignedIn = setState;
+        return (
+          <Stack>
+            <Stack.Protected guard={signedIn} redirectTo="./login">
+              <Stack.Screen name="projects" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      '[org]/index': () => <Text testID="org">org</Text>,
+      '[org]/login': () => <Text testID="org-login">org login</Text>,
+      '[org]/projects/_layout': {
+        unstable_settings: { anchor: 'settings' },
+        default: () => <Stack />,
+      },
+      '[org]/projects/index': () => <Text testID="projects">projects</Text>,
+      '[org]/projects/settings': () => <Text testID="project-settings">project settings</Text>,
+    },
+    { initialUrl: '/acme/projects/settings' }
+  );
+
+  await act(() => setSignedIn(false));
+
+  expect(screen.getByTestId('org-login')).toBeVisible();
+  expect(screen).toHavePathname('/acme/login');
+});
+
+it('waits for the layout of the redirectTo route to read its anchor before the navigation from the same handler', async () => {
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+  const dashboard = lazyModule({
+    unstable_settings: { anchor: 'overview' },
+    default: () => <Stack />,
+  });
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  try {
+    await renderRouter(
+      {
+        _layout: function Layout() {
+          const [signedIn, setState] = useState(false);
+          setSignedIn = setState;
+          return (
+            <Stack>
+              <Stack.Protected guard={!signedIn} redirectTo="/dashboard/stats">
+                <Stack.Screen name="login" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        index: () => <Text testID="index">index</Text>,
+        login: () => <Text testID="login">login</Text>,
+        settings: () => <Text testID="settings">settings</Text>,
+        'dashboard/_layout': dashboard.load,
+        'dashboard/index': () => <Text testID="dashboard">dashboard</Text>,
+        'dashboard/overview': () => <Text testID="overview">overview</Text>,
+        'dashboard/stats': () => <Text testID="stats">stats</Text>,
+      },
+      { initialUrl: '/login' }
+    );
+
+    await act(() => {
+      setSignedIn(true);
+      router.push('/settings');
+    });
+    expect(screen).toHavePathname('/login');
+
+    await act(async () => dashboard.resolve());
+
+    expect(warn).not.toHaveBeenCalled();
+    expect(screen.getByTestId('settings')).toBeVisible();
+    expect(screen).toHavePathname('/settings');
+    const state = navigationRef.getRootState().routes[0]!.state!;
+    expect(state.routes.map((route) => route.name)).toEqual(['dashboard', 'settings']);
+    expect(state.routes[0]!.state!.routes.map((route) => route.name)).toEqual(['stats']);
+    expect(state.routes[0]!.state!.routeNames).toEqual(['overview', 'index', 'stats']);
+  } finally {
+    warn.mockRestore();
+  }
+});
+
+it('removes a blocked preloaded route', async () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter({
+    _layout: function Layout() {
+      const [guard, setState] = useState(true);
+      setGuard = setState;
+      return (
+        <Stack>
+          <Stack.Protected guard={guard}>
+            <Stack.Screen name="secret" />
+          </Stack.Protected>
+        </Stack>
+      );
+    },
+    index: () => <Text testID="index">index</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+  });
+
+  await act(() => router.prefetch('/secret'));
+  expect(navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+    'index',
+    'secret',
+  ]);
+
+  await act(() => setGuard(false));
+
+  expect(navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+    'index',
+  ]);
+});
+
+it('opens the redirectTo route of the blocked screen before a push in a transition to a suspending route', async () => {
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+  let resolve!: (value: string) => void;
+  const pending = new Promise<string>((done) => {
+    resolve = done;
+  });
+
+  await renderRouter(
+    {
+      _layout: function Layout() {
+        const [signedIn, setState] = useState(false);
+        setSignedIn = setState;
+        return (
+          <Stack>
+            <Stack.Protected guard={!signedIn} redirectTo="/home">
+              <Stack.Screen name="login" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      home: () => <Text testID="home">home</Text>,
+      login: () => <Text testID="login">login</Text>,
+      profile: function Profile() {
+        return <Text testID="profile">{use(pending)}</Text>;
+      },
+    },
+    { initialUrl: '/login' }
+  );
+
+  const transition = reactAct(() => {
+    setSignedIn(true);
+    router.push('/profile', { inTransition: true });
+  });
+  expect(screen).toHavePathname('/home');
+
+  await act(() => resolve('profile'));
+  await transition;
+
+  expect(screen.getByTestId('profile')).toBeVisible();
+  expect(screen).toHavePathname('/profile');
+  expect(navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+    'home',
+    'profile',
+  ]);
 });
 
 it('removes the blocked focused screen when its redirectTo chain ends at a route without redirectTo', async () => {

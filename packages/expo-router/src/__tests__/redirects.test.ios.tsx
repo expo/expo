@@ -1,5 +1,6 @@
 import { screen, act, fireEvent } from '@testing-library/react-native';
-import { use } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
+import { use, useState } from 'react';
 import { Text } from 'react-native';
 
 import type { RedirectConfig } from '../exports';
@@ -423,6 +424,39 @@ it('opens an external redirectTo of a protected route', async () => {
   await act(() => router.push('/secret'));
 
   expect(mockOpenURL).toHaveBeenCalledWith('https://example.com/login');
+});
+
+it('keeps only the focused blocked screen with an external redirectTo when a guard changes', async () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter({
+    _layout: function Layout() {
+      const [guard, setState] = useState(true);
+      setGuard = setState;
+      return (
+        <Stack>
+          <Stack.Protected guard={guard} redirectTo="https://example.com/login">
+            <Stack.Screen name="account/[id]" />
+          </Stack.Protected>
+        </Stack>
+      );
+    },
+    index: () => <Text testID="index">index</Text>,
+    'account/[id]': () => <Text testID="account">account</Text>,
+  });
+
+  await act(() => router.push('/account/1'));
+  await act(() => router.push('/account/2'));
+
+  await act(() => setGuard(false));
+
+  expect(mockOpenURL).toHaveBeenCalledWith('https://example.com/login');
+  expect(
+    navigationRef.getRootState().routes[0]!.state!.routes.map((route) => [route.name, route.params])
+  ).toEqual([
+    ['index', undefined],
+    ['account/[id]', { id: '2' }],
+  ]);
 });
 
 it('redirects will override existing routes', async () => {

@@ -101,3 +101,58 @@ it('stays on the fallback when Back is pressed after every blocked route is repl
     jest.useRealTimers();
   }
 });
+
+it('goes back to the redirectTo route and forward to the navigation from the same handler', async () => {
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+
+  const result = await renderRouter(
+    {
+      _layout: function Layout() {
+        const [signedIn, setState] = useState(false);
+        setSignedIn = setState;
+        return (
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Protected guard={!signedIn} redirectTo="/home">
+              <Stack.Screen name="login" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => null,
+      home: () => null,
+      login: () => null,
+      profile: () => null,
+    },
+    { initialUrl: '/login' }
+  );
+
+  try {
+    await act(() => {
+      setSignedIn(true);
+      router.push('/profile');
+    });
+    await act(() => jest.runAllTimersAsync());
+
+    expect(screen).toHavePathname('/profile');
+    expect(window.location.pathname).toBe('/profile');
+
+    await act(async () => {
+      window.history.back();
+      await jest.runAllTimersAsync();
+    });
+
+    expect(screen).toHavePathname('/home');
+    expect(window.location.pathname).toBe('/home');
+
+    await act(async () => {
+      window.history.forward();
+      await jest.runAllTimersAsync();
+    });
+
+    expect(screen).toHavePathname('/profile');
+    expect(window.location.pathname).toBe('/profile');
+  } finally {
+    await result.unmount();
+    jest.useRealTimers();
+  }
+});
