@@ -1,7 +1,7 @@
 import AppMetrics from 'expo-app-metrics';
 
 import { warnIfUserContentEntryMissing } from './privacyManifestWarning';
-import type { ObserveFeedback } from './types';
+import type { ObserveFeedback, ObserveModule } from './types';
 
 const DEFAULT_SCALE = { min: 0, max: 10 };
 
@@ -48,7 +48,7 @@ function invalidFeedbackReason(feedback: ObserveFeedback): string | null {
  * Validates the feedback and records it through the AppMetrics module. Never throws, like
  * `reportCaughtError`.
  */
-export function reportFeedback(feedback: ObserveFeedback, native: object): void {
+export function reportFeedback(feedback: ObserveFeedback, native: ObserveModule): void {
   try {
     const reason = invalidFeedbackReason(feedback);
     if (reason) {

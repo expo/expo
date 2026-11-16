@@ -1,16 +1,14 @@
+import type { ObserveModule } from './types';
+
 let checked = false;
 
 // Feedback is user content, so the app privacy manifest should declare it. Checks one time.
-export function warnIfUserContentEntryMissing(native: object): void {
+export function warnIfUserContentEntryMissing(native: ObserveModule): void {
   if (checked) {
     return;
   }
   checked = true;
-  // `ObserveModule` does not declare this iOS-only function. Binaries built before this version
-  // do not have it.
-  if (
-    (native as { hasUserContentPrivacyEntry?(): boolean }).hasUserContentPrivacyEntry?.() === false
-  ) {
+  if (native.hasUserContentPrivacyEntry?.() === false) {
     console.warn(
       '[expo-observe] The app privacy manifest declares no user content, which `Observe.reportFeedback` sends. ' +
         'Add an `NSPrivacyCollectedDataTypeOtherUserContent` entry to `NSPrivacyCollectedDataTypes`, ' +
