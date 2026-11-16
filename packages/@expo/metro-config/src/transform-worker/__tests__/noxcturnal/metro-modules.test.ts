@@ -2869,7 +2869,7 @@ it('preserves native script function maps and compact output behavior', async ()
 });
 
 it.each(
-  ['react-native', 'expo-modules-core', 'react-native-web'].flatMap((sourceModule) =>
+  ['react-native', 'expo-modules-core', 'react-native-web', 'expo'].flatMap((sourceModule) =>
     ['ios', 'android', 'web'].map((platform) => ({ sourceModule, platform }))
   )
 )(
@@ -2894,7 +2894,7 @@ it.each(
     if (result.status !== 'complete') return;
     expect(result.result.code).toContain('Platform.OS');
     expect(result.dependencies.map(({ name }) => name)).toEqual([
-      platform === 'web' && sourceModule !== 'expo-modules-core'
+      platform === 'web' && ['react-native', 'react-native-web'].includes(sourceModule)
         ? 'react-native-web/dist/exports/Platform'
         : sourceModule,
       'winner',

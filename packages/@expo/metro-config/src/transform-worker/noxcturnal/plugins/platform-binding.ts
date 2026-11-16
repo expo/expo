@@ -8,7 +8,9 @@ export function createPlatformBindingChecker(nox: Noxcturnal) {
   const visitor = nox.defineVisitor(
     'ImportDeclaration',
     {
-      where: { source: { oneOf: ['react-native', 'expo-modules-core', 'react-native-web'] } },
+      where: {
+        source: { oneOf: ['react-native', 'expo-modules-core', 'react-native-web', 'expo'] },
+      },
       fields: ['source', 'importKind'],
       children: {
         specifiers: { route: 'ImportSpecifier', fields: ['imported', 'importKind'] },
