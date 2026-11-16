@@ -30,7 +30,11 @@ import {
 import { getNavigateAction, MAX_REDIRECT_CHAIN_LENGTH } from './getNavigationAction';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
 import type { RouterRegistry } from './routerRegistry';
-import { markActionEnqueuedAndReturnId, type QueuedRoutingIntent } from './routingQueue';
+import {
+  markActionEnqueuedAndReturnId,
+  type QueuedRoutingIntent,
+  type RoutingIntent,
+} from './routingQueue';
 import { findStateByKey, resetNavigatorState } from './stateUtils';
 import type { StoreRedirects } from './types';
 
@@ -565,6 +569,16 @@ export function useNavigationTreeReducer({
       actionId: markActionEnqueuedAndReturnId(),
     });
   });
+  // Skips the routing queue, but waits for missing layouts like queued navigation.
+  const handleIntent = useLatestCallback(
+    (intent: Exclude<RoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }>) => {
+      reactDispatch({
+        ...intent,
+        actionId: markActionEnqueuedAndReturnId(),
+        deferrable: { inTransition: false },
+      });
+    }
+  );
   const resetNavigator = useLatestCallback((stateKey: string, routerType: string | undefined) => {
     reactDispatch({ type: 'NAVIGATOR_CHANGED', stateKey, routerType });
   });
@@ -619,6 +633,7 @@ export function useNavigationTreeReducer({
     consumeReportEvents,
     resetNavigator,
     handleAction,
+    handleIntent,
     processIntent,
   };
 }

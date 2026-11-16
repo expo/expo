@@ -105,6 +105,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     consumeReportEvents,
     resetNavigator,
     handleAction,
+    handleIntent,
     processIntent,
   } = useNavigationTreeReducer({
     initialState,
@@ -223,9 +224,10 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     () => ({
       addListener,
       handleAction,
+      handleIntent,
       resetNavigator,
     }),
-    [addListener, handleAction, resetNavigator]
+    [addListener, handleAction, handleIntent, resetNavigator]
   );
 
   const context = React.useMemo(
@@ -337,6 +339,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
                 enqueue={routingQueue.enqueue}
                 setTransitionMode={routingQueue.setTransitionMode}
               />
+              {/* The navigator tree renders first, so guard effects dispatch before queued navigation. */}
               <RoutingQueueDrainer processIntent={processIntent} />
               <BrowserHistorySync adapter={browserHistory} />
             </RootNavigationStateContext.Provider>
