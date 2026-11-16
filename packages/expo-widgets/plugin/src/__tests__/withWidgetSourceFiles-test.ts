@@ -64,7 +64,10 @@ describe(withWidgetSourceFiles, () => {
 
       widget.ios!.supportedFamilies = [WidgetFamily.systemSmall, WidgetFamily.systemLarge];
       const existing = await generate();
-      expect(existing).toContain('.supportedFamilies([.systemSmall, .systemLarge])');
+      expect(existing).toContain(
+        'var supportedFamilies: [WidgetFamily] = [.systemSmall, .systemLarge]'
+      );
+      expect(existing).toContain('.supportedFamilies(supportedFamilies)');
       expect(existing).not.toContain('if #available(iOS 27.0, *)');
     }
   );

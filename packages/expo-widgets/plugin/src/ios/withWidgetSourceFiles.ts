@@ -351,16 +351,15 @@ const widgetSwift = (widget: WidgetConfig): string => {
   const otherFamilies = supportedFamilies.filter(
     (family) => family !== WidgetFamily.systemExtraLargePortrait
   );
-  const familiesDeclaration = hasExtraLargePortrait
-    ? `    var supportedFamilies: [WidgetFamily] = [${otherFamilies.map((family) => `.${family}`).join(', ')}]
-    if #available(iOS 27.0, *) {
+  const familiesDeclaration = `    var supportedFamilies: [WidgetFamily] = [${otherFamilies.length ? '.' + otherFamilies.join(', .') : ''}]
+${
+  hasExtraLargePortrait
+    ? `    if #available(iOS 27.0, *) {
       supportedFamilies.append(.systemExtraLargePortrait)
     }
 `
-    : '';
-  const familiesArgument = hasExtraLargePortrait
-    ? 'supportedFamilies'
-    : `[.${supportedFamilies.join(', .')}]`;
+    : ''
+}`;
   const contentMarginsDisabled =
     widget.ios?.contentMarginsDisabled ?? widget.contentMarginsDisabled;
   if (!configuration)
@@ -372,12 +371,12 @@ struct ${widget.name}: Widget {
   let name: String = "${widget.name}"
 
   var body: some WidgetConfiguration {
-${familiesDeclaration}    ${hasExtraLargePortrait ? 'return ' : ''}StaticConfiguration(kind: name, provider: WidgetsTimelineProvider(name: name)) { entry in
+${familiesDeclaration}    return StaticConfiguration(kind: name, provider: WidgetsTimelineProvider(name: name)) { entry in
       WidgetsEntryView(entry: entry)
     }
     .configurationDisplayName(${JSON.stringify(widget.displayName)})
     .description(${JSON.stringify(widget.description)})
-    .supportedFamilies(${familiesArgument})${contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
+    .supportedFamilies(supportedFamilies)${contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
   }
 }`;
   return `import WidgetKit
@@ -503,7 +502,7 @@ ${familiesDeclaration}    return AppIntentConfiguration(kind: name, intent: ${wi
     }
     .configurationDisplayName(${JSON.stringify(widget.displayName)})
     .description(${JSON.stringify(widget.description)})
-    .supportedFamilies(${familiesArgument})${contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
+    .supportedFamilies(supportedFamilies)${contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
   }
 }`;
 };
