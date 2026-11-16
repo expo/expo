@@ -206,11 +206,12 @@ struct OpenTelemetryTests {
     let otherKeys = (0..<100).map { String(format: "a%03d", $0) } + (0..<100).map { String(format: "z%03d", $0) }
     let expoKeys = ["expo.feedback.id", "expo.feedback.rating", "expo.feedback.scale.max", "expo.feedback.scale.min"]
     // Mixes the expo keys in between the other keys.
-    let inputKeys =
-      [expoKeys[0]] + otherKeys[0..<50]
-      + [expoKeys[1]] + otherKeys[50..<100]
-      + [expoKeys[2]] + otherKeys[100..<200]
-      + expoKeys[3...]
+    let inputKeys: [String] = [
+      [expoKeys[0]], Array(otherKeys[0..<50]),
+      [expoKeys[1]], Array(otherKeys[50..<100]),
+      [expoKeys[2]], Array(otherKeys[100..<200]),
+      Array(expoKeys[3...]),
+    ].flatMap { $0 }
     let log = Event.Log(
       name: "auth.login_failed",
       body: nil,
