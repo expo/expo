@@ -233,7 +233,21 @@ export async function createSessionAsync<const T extends readonly ObjectSchema[]
   options: SessionOptions<T> = {}
 ): Promise<LanguageModelSession> {
   try {
-    return await openSessionAsync(options);
+    return await openSessionAsync(options, undefined, false);
+  } catch (cause) {
+    throw normalizeError(cause);
+  }
+}
+
+/** @hidden */
+export type AppleGuardrails = 'default' | 'permissiveContentTransformations';
+
+/** @hidden */
+export async function createAppleSessionAsync<const T extends readonly ObjectSchema[]>(
+  options: SessionOptions<T> & { guardrails?: AppleGuardrails } = {}
+): Promise<LanguageModelSession> {
+  try {
+    return await openSessionAsync(options, undefined, true);
   } catch (cause) {
     throw normalizeError(cause);
   }
@@ -246,8 +260,9 @@ export async function createOwnedSessionAsync(options: SessionOptions, operation
 }
 
 async function openSessionAsync(
-  options: SessionOptions,
-  operation?: Operation
+  options: SessionOptions & { guardrails?: AppleGuardrails },
+  operation: Operation | undefined,
+  allowAppleGuardrails = false
 ): Promise<LanguageModelSession> {
   options = snapshotRequirements(options);
   const keys = new Set([
@@ -257,6 +272,7 @@ async function openSessionAsync(
     'requires',
     'instructions',
     'tools',
+    ...(allowAppleGuardrails ? ['guardrails'] : []),
   ]);
   for (const key of Object.keys(options)) {
     if (!keys.has(key))
@@ -264,6 +280,13 @@ async function openSessionAsync(
   }
   if (options.instructions !== undefined && typeof options.instructions !== 'string') {
     throw new LanguageModelError('ERR_OPTIONS_INVALID', 'Session instructions must be a string.');
+  }
+  if (
+    options.guardrails !== undefined &&
+    options.guardrails !== 'default' &&
+    options.guardrails !== 'permissiveContentTransformations'
+  ) {
+    throw new LanguageModelError('ERR_OPTIONS_INVALID', 'Unknown Apple guardrails mode.');
   }
   const tools = getTools(options.tools);
   const availability = await getAvailabilityAsync(options);
@@ -282,6 +305,12 @@ async function openSessionAsync(
         : 'The requested system language model is not ready.'
     );
   }
+  if (allowAppleGuardrails && availability.capabilities.provider !== 'apple-foundation-models') {
+    throw new LanguageModelError(
+      'ERR_UNSUPPORTED_FEATURE',
+      'Apple guardrails require Apple Foundation Models. Use expo-ai to create a session on this provider.'
+    );
+  }
   const nativeModule = ExpoAI;
   if (
     tools.some((tool) => tool.builtin) &&
@@ -295,6 +324,7 @@ async function openSessionAsync(
   }
   const sessionOptions = {
     instructions: options.instructions,
+    ...(allowAppleGuardrails ? { guardrails: options.guardrails } : {}),
     ...(nativeModule.supportsSessionLanguages
       ? {
           inputLanguages: options.inputLanguages,
