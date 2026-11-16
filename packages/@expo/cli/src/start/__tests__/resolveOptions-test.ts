@@ -232,6 +232,13 @@ describe(resolvePortsAsync, () => {
       metroPort: 8081,
     });
   });
+  it(`checks Metro's loopback bind in localhost mode`, async () => {
+    await resolvePortsAsync('/noop', { host: 'localhost' }, ['metro']);
+    expect(resolveMetroPortAsync).toHaveBeenCalledWith(
+      '/noop',
+      expect.objectContaining({ host: '127.0.0.1' })
+    );
+  });
   it(`resolves default port with given port`, async () => {
     await expect(resolvePortsAsync('/noop', { port: 1234 }, ['metro'])).resolves.toStrictEqual({
       metroPort: 1234,
