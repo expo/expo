@@ -850,9 +850,9 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   main.find('td, th').each((_, cell) => {
     const $cell = $(cell);
 
-    // Remove <br> tags — they create newlines that break GFM table rows.
-    // PlatformTags renders {prefix && <br />} after badges which is decorative only.
-    $cell.find('br').remove();
+    // Replace <br> tags with a space. A newline breaks GFM table rows, and removing them
+    // joins the words around them.
+    $cell.find('br').replaceWith(' ');
 
     // data-md="callout" — inline the callout text (e.g. deprecation warnings).
     // The callout's visible text (like "Deprecated: use X instead") is already meaningful;
