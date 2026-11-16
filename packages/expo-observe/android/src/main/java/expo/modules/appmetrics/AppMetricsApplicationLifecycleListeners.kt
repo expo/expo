@@ -8,12 +8,22 @@ import expo.modules.appmetrics.crashreporting.CrashFileWriter
 import expo.modules.appmetrics.crashreporting.JvmCrashHandler
 import expo.modules.appmetrics.networkrequests.OkHttpClientProviderHook
 import expo.modules.core.interfaces.ApplicationLifecycleListener
+import expo.modules.easclient.EASClientID
+import expo.modules.observe.BuildConfig
 
 internal class AppMetricsApplicationLifecycleListeners : ApplicationLifecycleListener {
   override fun onCreate(application: Application) {
     super.onCreate(application)
     // Set before the main session starts: the session reads these values when it builds its row.
-    AppMetrics.configure(AppMetricsHost(updatesInfo = ::expoUpdatesInfo))
+    val clientId = EASClientID(application).uuid
+    AppMetrics.configure(
+      AppMetricsHost(
+        updatesInfo = ::expoUpdatesInfo,
+        clientId = clientId.toString(),
+        clientSampleValue = EASClientID.deterministicUniformValue(clientId),
+        isDebugBuild = BuildConfig.DEBUG
+      )
+    )
     ReactMarker.addListener { name, _, _ ->
       when (name) {
         ReactMarkerConstants.RUN_JS_BUNDLE_START -> AppStartupManager.markBundleLoadStart()

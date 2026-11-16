@@ -3,7 +3,9 @@ package expo.modules.appmetrics.utils
 /** A value that can be set once. Reads before the set return the initial value and do not block the set. */
 internal class WriteOnce<T>(initialValue: T) {
   private var current = initialValue
-  private var isSet = false
+  var isSet = false
+    @Synchronized get
+    private set
 
   val value: T
     @Synchronized get() = current

@@ -1,7 +1,7 @@
 package expo.modules.observe
 
-import android.content.Context
-import expo.modules.easclient.EASClientID
+import expo.modules.appmetrics.AppMetrics
+import expo.modules.appmetrics.AppMetricsHost
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import okhttp3.OkHttpClient
@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit
 @Config(manifest = Config.NONE, sdk = [28])
 class EventDispatcherTest {
   private lateinit var mockServer: MockWebServer
-  private lateinit var mockContext: Context
   private lateinit var eventDispatcher: EventDispatcher
   private lateinit var httpClient: OkHttpClient
   private val testProjectId = "test-project-123"
@@ -37,16 +36,11 @@ class EventDispatcherTest {
     // Create a real OkHttpClient for testing
     httpClient = OkHttpClient()
 
-    // Mock Android Context
-    mockContext = mockk(relaxed = true)
-
-    // Mock EASClientID to return a predictable UUID
-    mockkConstructor(EASClientID::class)
-    every { anyConstructed<EASClientID>().uuid } returns testEasClientId
+    mockkObject(AppMetrics)
+    every { AppMetrics.host } returns AppMetricsHost(clientId = testEasClientId.toString())
 
     // Create EventDispatcher with test dependencies
     eventDispatcher = EventDispatcher(
-      context = mockContext,
       projectId = testProjectId,
       httpClient = httpClient,
       baseUrl = mockServer.url("/").toString()
