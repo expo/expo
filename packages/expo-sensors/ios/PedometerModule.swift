@@ -57,7 +57,7 @@ public final class PedometerModule: Module {
 
       let authorizationStatus = CMPedometer.authorizationStatus()
       guard authorizationStatus == .authorized else {
-        promise.reject(PedometerMotionPermissionException(status: authorizationStatus))
+        promise.reject(PedometerMotionPermissionException(authorizationStatus))
         return
       }
 
@@ -214,20 +214,14 @@ internal final class PedometerQueryException: Exception {
   }
 }
 
-internal final class PedometerMotionPermissionException: Exception {
-  private let status: CMAuthorizationStatus
-
-  init(status: CMAuthorizationStatus) {
-    self.status = status
-  }
-
+internal final class PedometerMotionPermissionException: GenericException<CMAuthorizationStatus>, @unchecked Sendable {
   override var reason: String {
-    switch status {
+    switch param {
     case .notDetermined:
       return "Motion permission is required to start pedometer event updates. Call `Pedometer.requestPermissionsAsync()` first."
     case .denied, .restricted:
       return "Motion permission has not been granted for pedometer event updates."
-    @unknown default:
+    default:
       return "Motion permission is required to start pedometer event updates."
     }
   }
