@@ -20,6 +20,8 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 
+private const val KEEP_ALIVE_CONNECTION_TIMEOUT_MS = 1000L
+
 internal class CustomTabsConnectionHelper(
   private val context: Context
 ) : CustomTabsServiceConnection() {
@@ -28,6 +30,7 @@ internal class CustomTabsConnectionHelper(
   private val sessionActions = DeferredClientActionsQueue<CustomTabsSession?>()
   private val handler = Handler(Looper.getMainLooper())
   private var pendingBrowserOpen: PendingBrowserOpen? = null
+  private var keepAliveSession: CustomTabsSession? = null
 
   private class PendingBrowserOpen(
     val promise: Promise,
@@ -163,6 +166,45 @@ internal class CustomTabsConnectionHelper(
     }
   }
 
+  /**
+   * Gets a session to launch the Custom Tab with, so that the browser keeps this app alive
+   * (`KEEP_ALIVE`) while the tab is open. Binds to the browser if needed.
+   *
+   * Calls [onReady] exactly once, on the main thread, with the session, or with `null` when the
+   * browser does not answer in time. The caller then opens the tab without keep-alive.
+   */
+  fun requestKeepAliveSession(packageName: String, onReady: (CustomTabsSession?) -> Unit) {
+    handler.post { startKeepAliveSessionRequest(packageName, onReady) }
+  }
+
+  @Synchronized
+  private fun startKeepAliveSessionRequest(packageName: String, onReady: (CustomTabsSession?) -> Unit) {
+    var finished = false
+    var session: CustomTabsSession? = null
+    lateinit var timeout: Runnable
+    val finish = {
+      if (!finished) {
+        finished = true
+        handler.removeCallbacks(timeout)
+        onReady(session)
+      }
+    }
+    timeout = Runnable { finish() }
+
+    if (!ensureConnection(packageName)) {
+      finish()
+      return
+    }
+    handler.postDelayed(timeout, KEEP_ALIVE_CONNECTION_TIMEOUT_MS)
+    clientActions.executeOrQueueAction { client: CustomTabsClient ->
+      if (finished || !isConnectionStarted(packageName)) {
+        return@executeOrQueueAction
+      }
+      session = keepAliveSession ?: client.newSession(null)?.also { keepAliveSession = it }
+      finish()
+    }
+  }
+
   @Synchronized
   fun cancelPendingBrowserOpen() {
     pendingBrowserOpen?.let {
@@ -269,6 +311,7 @@ internal class CustomTabsConnectionHelper(
     }
 
     currentPackageName = null
+    keepAliveSession = null
     clientActions.clear()
     sessionActions.clear()
   }
