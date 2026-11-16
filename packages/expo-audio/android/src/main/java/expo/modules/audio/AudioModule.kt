@@ -1009,7 +1009,9 @@ class AudioModule : Module() {
       }
 
       Property("loop") { playlist ->
-        playlist.loopMode.value
+        runOnMain {
+          playlist.loopMode.value
+        }
       }.set { playlist, mode: LoopMode ->
         runOnMain {
           playlist.loopMode = mode
