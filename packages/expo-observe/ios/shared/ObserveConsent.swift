@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
+import Foundation
 import os
 
 /// Whether the user consented to Observe collecting data. While not granted, app metrics stores
