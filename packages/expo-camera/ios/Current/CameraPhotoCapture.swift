@@ -8,7 +8,6 @@ protocol CameraPhotoCaptureDelegate: AnyObject {
   var deviceOrientation: UIInterfaceOrientation { get }
   var responsiveWhenOrientationLocked: Bool { get }
   var physicalOrientation: UIDeviceOrientation { get }
-  // The RotationCoordinator's capture angle (iOS 17+), or nil to use the orientation path.
   var captureRotationAngle: CGFloat? { get }
   var presetCamera: AVCaptureDevice.Position { get }
   var mirror: Bool { get }
@@ -31,8 +30,6 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
 
   private var photoCaptureOptions: TakePictureOptions?
   private var photoCapturedContinuation: CheckedContinuation<Any, Error>?
-  // Whether the capture in flight is turned a quarter turn from the preview, which decides
-  // how the preview's size maps onto the unrotated buffer when cropping.
   private var swapsPreviewSize = false
 
   init(delegate: CameraPhotoCaptureDelegate) {

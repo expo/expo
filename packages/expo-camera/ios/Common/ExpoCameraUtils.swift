@@ -90,11 +90,6 @@ struct ExpoCameraUtils {
       : videoOrientation(for: interfaceOrientation)
   }
 
-  // Rotates a photo or movie connection for capture. On iOS 17+ the device's
-  // RotationCoordinator angle is used when given: it knows how the camera is mounted
-  // relative to the display, which the interface orientation does not (on the iPhone Duo's
-  // inner display the two differ by 90°). Returns whether the captured buffer is turned a
-  // quarter turn from the preview, i.e. whether the preview's width and height swap.
   @discardableResult
   static func applyCaptureRotation(
     to connection: AVCaptureConnection,
@@ -109,8 +104,6 @@ struct ExpoCameraUtils {
     return isQuarterTurn(orientation: fallback)
   }
 
-  // Whether a capture rotated by `angle` (degrees, as RotationCoordinator reports it) is
-  // turned a quarter turn from the sensor's landscape buffer.
   static func isQuarterTurn(angle: CGFloat) -> Bool {
     let degrees = Int(angle.rounded()) % 360
     return (degrees + 360) % 180 == 90

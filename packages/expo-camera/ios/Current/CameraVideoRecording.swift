@@ -6,7 +6,6 @@ protocol CameraVideoRecordingDelegate: AnyObject {
   var responsiveWhenOrientationLocked: Bool { get }
   var physicalOrientation: UIDeviceOrientation { get }
   var deviceOrientation: UIInterfaceOrientation { get }
-  // The RotationCoordinator's capture angle (iOS 17+), or nil to use the orientation path.
   var captureRotationAngle: CGFloat? { get }
   var mirror: Bool { get }
   var appContext: AppContext? { get }
