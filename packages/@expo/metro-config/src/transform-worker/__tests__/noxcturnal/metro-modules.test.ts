@@ -2224,7 +2224,7 @@ it.each([
   ['binding collision', `const _pkg = 1; import { value } from 'pkg'; run(_pkg, value);`],
   ['directive prologue', `"use strict"; import { value } from 'pkg'; run(value);`],
   ['duplicate export all', `export * from 'pkg'; export * from 'pkg';`],
-])('matches folded importExportLiveBindings syntax for %s', async (_name, source) => {
+])('matches production importExportLiveBindings syntax for %s', async (_name, source) => {
   const native = await transformFileFullyWithNoxcturnal({
     filename,
     projectRoot: '/app',
@@ -2239,7 +2239,7 @@ it.each([
     comments: false,
     configFile: false,
     filename,
-    plugins: [[importExportLiveBindingsPlugin, { performConstantFolding: true, resolve: false }]],
+    plugins: [[importExportLiveBindingsPlugin, { performConstantFolding: false, resolve: false }]],
   });
   if (!expected?.code) throw new Error('Babel live-bindings transform produced no output');
   expect(
@@ -2869,16 +2869,24 @@ it('preserves native script function maps and compact output behavior', async ()
 });
 
 it.each(
-  ['react-native', 'expo-modules-core', 'react-native-web', 'expo'].flatMap((sourceModule) =>
-    ['ios', 'android', 'web'].map((platform) => ({ sourceModule, platform }))
-  )
+  [
+    ...['react-native', 'expo-modules-core', 'react-native-web', 'expo'].map((sourceModule) => ({
+      sourceModule,
+      importBinding: '{ Platform }',
+    })),
+    ...['../../Utilities/Platform', 'react-native/Libraries/Utilities/Platform'].map(
+      (sourceModule) => ({ sourceModule, importBinding: 'Platform' })
+    ),
+    { sourceModule: './Platform', importBinding: '* as Platform' },
+    { sourceModule: './platform-reexport', importBinding: '{ Platform }' },
+  ].flatMap((input) => ['ios', 'android', 'web'].map((platform) => ({ ...input, platform })))
 )(
-  'folds imported Platform branches from $sourceModule for $platform',
-  async ({ sourceModule, platform }) => {
+  'folds imported Platform branches from $sourceModule with $importBinding for $platform',
+  async ({ sourceModule, importBinding, platform }) => {
     const input = {
       filename: workspaceFilename,
       projectRoot: '/app',
-      source: `import { Platform } from '${sourceModule}';
+      source: `import ${importBinding} from '${sourceModule}';
       module.exports = [
         Platform.OS === '${platform}' ? require('winner') : require('loser'),
         Platform.select({ ${platform}: require('selected'), native: require('native'), default: require('fallback') })
@@ -2909,6 +2917,41 @@ it.each(
     expect(dev.status).toBe('complete');
     if (dev.status !== 'complete') return;
     expect(dev.dependencies.map(({ name }) => name)).toContain('loser');
+  }
+);
+
+it.each(['Platform', '{ Platform }', '* as Platform'])(
+  'preserves import side effects after folding %s',
+  async (importBinding) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename: workspaceFilename,
+      projectRoot: '/app',
+      source: `import ${importBinding} from './Platform';
+        module.exports = [Platform.OS, Platform.select({ ios: 'selected', android: 'discarded' })];`,
+      options: options(),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    const module = { exports: undefined };
+    const loaded: string[] = [];
+    new Function('__d', result.result.code)((factory: Function) =>
+      factory(
+        {},
+        (index: number) => {
+          loaded.push(result.dependencies[index]!.name);
+          return {};
+        },
+        undefined,
+        undefined,
+        module,
+        module.exports,
+        result.dependencies.map((_, index) => index)
+      )
+    );
+    expect(module.exports).toEqual(['ios', 'selected']);
+    expect(loaded).toEqual(['./Platform']);
   }
 );
 
