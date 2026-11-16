@@ -122,7 +122,10 @@ function findDefaultRedirectRouteInNavigator(
     return anchor;
   }
 
-  return children.find((child) => !isRouteGuarded(child.route, guardedRedirects));
+  // A redirect route has no screen to show, so it cannot be the fallback.
+  return children.find(
+    (child) => child.type !== 'redirect' && !isRouteGuarded(child.route, guardedRedirects)
+  );
 }
 
 export function isRouteGuarded(routeName: string, guards: ReadonlyMap<string, unknown>): boolean {
