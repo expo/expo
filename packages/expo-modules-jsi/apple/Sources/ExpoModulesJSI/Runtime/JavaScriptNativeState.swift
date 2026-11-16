@@ -76,6 +76,14 @@ open class JavaScriptNativeState {
     }
   }
 
+  /// Returns a `shared_ptr` to the underlying `expo::NativeState` while it is alive, or `nil`
+  /// when no JS object holds it. Unlike `acquireShared()`, it never materializes a new one.
+  internal func acquireSharedIfAlive() -> expo.NativeStateShared? {
+    return weakPointee.withLockUnchecked { weakPointee in
+      return weakPointee?.lock()
+    }
+  }
+
   private static let contextDeallocator: @convention(c) (UnsafeMutableRawPointer?) -> Void = { context in
     guard let context else {
       return

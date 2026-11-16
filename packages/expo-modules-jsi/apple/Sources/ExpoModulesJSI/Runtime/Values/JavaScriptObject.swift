@@ -690,6 +690,23 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     expo.setNativeState(jsiRuntime, self.pointee, nativeState.acquireShared())
   }
 
+  /// Sets the native state of this object only while its underlying C++ native state is alive, that is, while
+  /// another object holds it, in this runtime or in another one. Unlike `setNativeState(_:)`, it never creates
+  /// a new C++ native state. Use it when the destructor of the C++ native state has side effects, which must not
+  /// apply to this object when the previous C++ native state is being destroyed on another thread.
+  /// Returns `false`, and leaves the object unchanged, when the C++ native state isn't alive.
+  @discardableResult
+  public func setNativeStateIfAlive<T: JavaScriptNativeState>(_ nativeState: T) -> Bool {
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    guard let shared = nativeState.acquireSharedIfAlive() else {
+      return false
+    }
+    expo.setNativeState(jsiRuntime, self.pointee, shared)
+    return true
+  }
+
   /// Unsets the native state of this object. Does nothing when the engine doesn't allow it, for example when
   /// the object is frozen; use `tryUnsetNativeState()` to find out.
   public func unsetNativeState() {
