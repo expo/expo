@@ -160,6 +160,11 @@ class PedometerModule : Module() {
       }
 
       val receiver = object : BroadcastReceiver() {
+        // A change from walking to running is an exit and an enter, but the user did not stop.
+        // Send an event only when the user changes between moving and not moving.
+        private val activeActivityTypes = mutableSetOf<Int>()
+        private var isMoving: Boolean? = null
+
         override fun onReceive(context: Context?, intent: Intent?) {
           if (intent == null) {
             return
@@ -169,31 +174,44 @@ class PedometerModule : Module() {
           }
 
           val result = ActivityTransitionResult.extractResult(intent) ?: return
+          val events = result.transitionEvents
+            .filter { it.activityType == DetectedActivity.WALKING || it.activityType == DetectedActivity.RUNNING }
+            .sortedBy { it.elapsedRealTimeNanos }
+          if (events.isEmpty()) {
+            return
+          }
 
-          for (event in result.transitionEvents) {
-            when (event.activityType) {
-              DetectedActivity.WALKING, DetectedActivity.RUNNING -> {
-                val type = if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
-                  "resume"
-                } else {
-                  "pause"
-                }
-
-                val elapsedNow = SystemClock.elapsedRealtimeNanos()
-                val eventAgeNanos = elapsedNow - event.elapsedRealTimeNanos
-                val eventTimestamp = System.currentTimeMillis() - TimeUnit.NANOSECONDS.toMillis(eventAgeNanos)
-
-                val bundle = Bundle().apply {
-                  putString("type", type)
-                  putDouble("date", eventTimestamp.toDouble())
-                }
-
-                sendEvent(EventNameEvent, bundle)
-              }
-
-              else -> Unit
+          for (event in events) {
+            if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
+              activeActivityTypes.add(event.activityType)
+            } else {
+              activeActivityTypes.remove(event.activityType)
             }
           }
+
+          val isMovingNow = activeActivityTypes.isNotEmpty()
+          if (isMovingNow == isMoving) {
+            return
+          }
+          isMoving = isMovingNow
+
+          val (type, transitionType) = if (isMovingNow) {
+            "resume" to ActivityTransition.ACTIVITY_TRANSITION_ENTER
+          } else {
+            "pause" to ActivityTransition.ACTIVITY_TRANSITION_EXIT
+          }
+          val event = events.lastOrNull { it.transitionType == transitionType } ?: events.last()
+
+          val elapsedNow = SystemClock.elapsedRealtimeNanos()
+          val eventAgeNanos = elapsedNow - event.elapsedRealTimeNanos
+          val eventTimestamp = System.currentTimeMillis() - TimeUnit.NANOSECONDS.toMillis(eventAgeNanos)
+
+          val bundle = Bundle().apply {
+            putString("type", type)
+            putDouble("date", eventTimestamp.toDouble())
+          }
+
+          sendEvent(EventNameEvent, bundle)
         }
       }
 
