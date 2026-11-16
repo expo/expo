@@ -1,16 +1,5 @@
 {
   "platforms": ["apple", "android"],
-  "apple": {
-    "modules": [
-      "AccelerometerModule",
-      "BarometerModule",
-      "DeviceMotionModule",
-      "GyroscopeModule",
-      "MagnetometerModule",
-      "MagnetometerUncalibratedModule",
-      "PedometerModule"
-    ]
-  },
   "android": {
     "modules": [
       "expo.modules.sensors.modules.AccelerometerModule",
