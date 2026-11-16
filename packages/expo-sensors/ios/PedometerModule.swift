@@ -29,20 +29,28 @@ public final class PedometerModule: Module {
     AsyncFunction("isRecordingAvailableAsync") {
       // iOS keeps collecting history automatically (up to seven days), so recording is
       // effectively "available" whenever step counting is available.
+      if MotionPermissionRequester.isMotionPermissionDisabled() {
+        return false
+      }
       return CMPedometer.isStepCountingAvailable()
     }
 
     AsyncFunction("isEventTrackingAvailableAsync") {
+      if MotionPermissionRequester.isMotionPermissionDisabled() {
+        return false
+      }
       return CMPedometer.isPedometerEventTrackingAvailable()
     }
 
-    AsyncFunction("startEventUpdates") { (promise: Promise) in
+    // CoreMotion calls the event handler on its own queue, so `eventHandler` is only used on the main queue.
+    AsyncFunction("startEventUpdatesAsync") { (promise: Promise) in
       if eventHandler != nil {
         promise.resolve(true)
         return
       }
 
-      guard CMPedometer.isPedometerEventTrackingAvailable() else {
+      guard !MotionPermissionRequester.isMotionPermissionDisabled(),
+        CMPedometer.isPedometerEventTrackingAvailable() else {
         promise.resolve(false)
         return
       }
@@ -54,9 +62,11 @@ public final class PedometerModule: Module {
       }
 
       let handler: CMPedometerEventHandler = { [weak self] event, error in
-        if let error {
-          self?.pedometer.stopEventUpdates()
-          self?.eventHandler = nil
+        if error != nil {
+          DispatchQueue.main.async {
+            self?.pedometer.stopEventUpdates()
+            self?.eventHandler = nil
+          }
           return
         }
 
@@ -86,12 +96,12 @@ public final class PedometerModule: Module {
       pedometer.startEventUpdates(handler: handler)
       eventHandler = handler
       promise.resolve(true)
-    }
+    }.runOnQueue(.main)
 
-    AsyncFunction("stopEventUpdates") {
+    AsyncFunction("stopEventUpdatesAsync") {
       pedometer.stopEventUpdates()
       eventHandler = nil
-    }
+    }.runOnQueue(.main)
 
     // iOS does not expose a way to start recording history
     AsyncFunction("subscribeRecordingAsync") { (promise: Promise) in
@@ -147,7 +157,7 @@ public final class PedometerModule: Module {
       permissionsManager.register([MotionPermissionRequester()])
     }
 
-    OnStartObserving {
+    OnStartObserving(EVENT_PEDOMETER_UPDATE) {
       let startDate = Date()
       let handler: CMPedometerHandler = { [weak self] data, _ in
         guard let data else {
@@ -163,7 +173,7 @@ public final class PedometerModule: Module {
       watchHandler = handler
     }
 
-    OnStopObserving {
+    OnStopObserving(EVENT_PEDOMETER_UPDATE) {
       stopUpdates()
       watchStartDate = nil
       watchHandler = nil

@@ -109,14 +109,17 @@ export async function isEventTrackingAvailableAsync(): Promise<boolean> {
 /**
  * Start pedometer pause/resume event tracking.
  *
+ * @return a promise that fulfills with `true` when event tracking started, or `false` when
+ * event tracking is not available on this device.
+ *
  * @platform android
  * @platform ios
  */
-export async function startEventUpdatesAsync(): Promise<void> {
-  if (!ExponentPedometer.startEventUpdates) {
-    return;
+export async function startEventUpdatesAsync(): Promise<boolean> {
+  if (!ExponentPedometer.startEventUpdatesAsync) {
+    return false;
   }
-  await ExponentPedometer.startEventUpdates();
+  return await ExponentPedometer.startEventUpdatesAsync();
 }
 
 /**
@@ -126,10 +129,10 @@ export async function startEventUpdatesAsync(): Promise<void> {
  * @platform ios
  */
 export async function stopEventUpdatesAsync(): Promise<void> {
-  if (!ExponentPedometer.stopEventUpdates) {
+  if (!ExponentPedometer.stopEventUpdatesAsync) {
     return;
   }
-  await ExponentPedometer.stopEventUpdates();
+  await ExponentPedometer.stopEventUpdatesAsync();
 }
 
 /**

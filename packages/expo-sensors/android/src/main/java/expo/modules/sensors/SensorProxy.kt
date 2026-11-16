@@ -83,12 +83,12 @@ internal fun ModuleDefinitionBuilder.UseSensorProxy(
 ) {
   Events(eventName)
 
-  OnStartObserving {
+  OnStartObserving(eventName) {
     listenerDecorator?.invoke()
     sensorProxyGetter().startObserving()
   }
 
-  OnStopObserving {
+  OnStopObserving(eventName) {
     listenerDecorator?.invoke()
     sensorProxyGetter().stopObserving()
   }

@@ -8391,7 +8391,7 @@ historical step count data is available on this device.
         Start pedometer pause/resume event tracking.
       </p>
       <div
-        class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
+        class="flex flex-row items-start gap-2"
         data-md="api-returns"
       >
         <div
@@ -8437,7 +8437,7 @@ historical step count data is available on this device.
             &lt;
           </span>
           <span>
-            void
+            boolean
           </span>
           <span
             class="text-quaternary"
@@ -8445,6 +8445,35 @@ historical step count data is available on this device.
             &gt;
           </span>
         </code>
+      </div>
+      <div
+        class="mt-1.5 mb-1 flex flex-col pl-6"
+      >
+        <div
+          class=""
+        >
+          <p
+            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+            data-text="true"
+          >
+            a promise that fulfills with 
+            <code
+              class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+              data-text="true"
+            >
+              true
+            </code>
+             when event tracking started, or 
+            <code
+              class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
+              data-text="true"
+            >
+              false
+            </code>
+             when
+event tracking is not available on this device.
+          </p>
+        </div>
       </div>
     </div>
   </div>

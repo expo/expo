@@ -36,16 +36,24 @@ import expo.modules.sensors.createSensorProxy
 import java.util.concurrent.CancellationException
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 private const val EventName = "Exponent.pedometerUpdate"
 private const val EventNameEvent = "Exponent.pedometerEvent"
 private const val TransitionAction = "expo.modules.sensors.PEDOMETER_TRANSITION"
+private const val TaskTimeoutSeconds = 30L
 
 class NotSupportedException(message: String) : CodedException(message)
 
 class TaskCancelledException(operationName: String) : CodedException(
   "TASK_CANCELLED",
   "The pedometer operation was cancelled while attempting to $operationName.",
+  null
+)
+class TaskTimeoutException(operationName: String) : CodedException(
+  "TASK_TIMEOUT",
+  "Google Play services did not respond within $TaskTimeoutSeconds seconds while attempting to $operationName. " +
+    "Check that Google Play services is up to date on the device, then try again.",
   null
 )
 class TaskFailedException(operationName: String, cause: Throwable) : CodedException(
@@ -89,7 +97,9 @@ class PedometerModule : Module() {
 
     fun <T> awaitTask(task: Task<T>, operationName: String): T {
       try {
-        return Tasks.await(task)
+        return Tasks.await(task, TaskTimeoutSeconds, TimeUnit.SECONDS)
+      } catch (e: TimeoutException) {
+        throw TaskTimeoutException(operationName)
       } catch (e: SecurityException) {
         throw Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
       } catch (e: CancellationException) {
@@ -195,9 +205,7 @@ class PedometerModule : Module() {
       val pendingIntent = transitionPendingIntent
       if (pendingIntent != null) {
         if (isEventUpdatesActive) {
-          activityRecognitionClient
-            .removeActivityTransitionUpdates(pendingIntent)
-            .addOnCompleteListener { pendingIntent.cancel() }
+          activityRecognitionClient.removeActivityTransitionUpdates(pendingIntent)
         } else {
           pendingIntent.cancel()
         }
@@ -248,7 +256,7 @@ class PedometerModule : Module() {
       GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
     }
 
-    AsyncFunction("startEventUpdates") {
+    AsyncFunction("startEventUpdatesAsync") {
       if (isEventUpdatesActive) {
         return@AsyncFunction true
       }
@@ -280,16 +288,21 @@ class PedometerModule : Module() {
 
       val request = ActivityTransitionRequest(transitions)
 
-      awaitTask(
-        activityRecognitionClient.requestActivityTransitionUpdates(request, pendingIntent),
-        "start event updates"
-      )
+      try {
+        awaitTask(
+          activityRecognitionClient.requestActivityTransitionUpdates(request, pendingIntent),
+          "start event updates"
+        )
+      } catch (e: CodedException) {
+        stopActivityTransitionUpdates()
+        throw e
+      }
 
       isEventUpdatesActive = true
       true
     }
 
-    AsyncFunction("stopEventUpdates") {
+    AsyncFunction("stopEventUpdatesAsync") {
       stopActivityTransitionUpdates()
     }
 

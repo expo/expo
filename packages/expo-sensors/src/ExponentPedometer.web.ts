@@ -8,10 +8,10 @@ export default {
   async isEventTrackingAvailableAsync(): Promise<boolean> {
     return false;
   },
-  async startEventUpdates(): Promise<void> {
-    // no-op on web
+  async startEventUpdatesAsync(): Promise<boolean> {
+    return false;
   },
-  async stopEventUpdates(): Promise<void> {
+  async stopEventUpdatesAsync(): Promise<void> {
     // no-op on web
   },
   async subscribeRecordingAsync(): Promise<void> {
