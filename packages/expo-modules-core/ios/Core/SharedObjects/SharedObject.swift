@@ -115,14 +115,23 @@ open class SharedObject: AnySharedObject {
   }
 
   /// Calls the listeners of the event in the given runtime with the payload, and its JS object in that runtime as
-  /// `this`. Returns `false` when the object has no JS object in that runtime or was released.
+  /// `this`. Logs a warning when the object was released or has no JS object in that runtime.
   @JavaScriptActor
-  internal func dispatchEvent(event: String, payload: borrowing JavaScriptValue, in runtime: JavaScriptRuntime) -> Bool {
-    guard let nativeState = unreleasedNativeState, let target = nativeState.javaScriptObject(in: runtime) else {
-      return false
+  @usableFromInline
+  internal func dispatchEvent(event: String, payload: borrowing JavaScriptValue, in runtime: JavaScriptRuntime) {
+    guard let nativeState = unreleasedNativeState else {
+      warnEventTargetLost(event: event)
+      return
     }
-    nativeState.listeners(in: runtime)?.call(event, this: target, payload: payload, in: runtime)
-    return true
+    // Only a JS object can add listeners, so without listeners there is nothing to look up.
+    guard let listeners = nativeState.listeners(in: runtime), listeners.count(of: event) > 0 else {
+      return
+    }
+    guard let target = nativeState.javaScriptObject(in: runtime) else {
+      warnEventTargetLost(event: event)
+      return
+    }
+    listeners.call(event, this: target, payload: payload, in: runtime)
   }
 
   /**

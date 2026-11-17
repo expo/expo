@@ -81,7 +81,7 @@ internal enum EventEmitterMethods {
       nativeState = found
     case .missing:
       // A shared object that was released has no native state. Like the C++ emitter, give it one.
-      nativeState = EventEmitterNativeState()
+      nativeState = EventEmitterNativeState(primaryRuntimeId: runtime.id)
       emitter.setNativeState(nativeState)
     case .foreign:
       let methodArguments = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 2)
@@ -91,7 +91,7 @@ internal enum EventEmitterMethods {
       return
     }
     if nativeState.listenersCreatingIfNeeded(in: runtime).add(listener, to: event) == 1 {
-      try notifyListening(emitter, event: event, isListening: true)
+      try notifyListening(emitter, event: event, isListening: true, in: runtime)
     }
   }
 
@@ -137,7 +137,7 @@ internal enum EventEmitterMethods {
     switch EmitterNativeState(of: emitter) {
     case .found(let nativeState):
       if let listeners = nativeState.listeners(in: runtime), listeners.removeAll(from: event) > 0 {
-        try notifyListening(emitter, event: event, isListening: false)
+        try notifyListening(emitter, event: event, isListening: false, in: runtime)
       }
     case .missing:
       return
@@ -244,7 +244,7 @@ internal enum EventEmitterMethods {
       }
       let count = listeners.remove(listener, from: event)
       if count.before > 0 && count.after == 0 {
-        try notifyListening(emitter, event: event, isListening: false)
+        try notifyListening(emitter, event: event, isListening: false, in: runtime)
       }
     case .missing:
       return
@@ -259,23 +259,48 @@ internal enum EventEmitterMethods {
   /// Calls the observing functions of the emitter, when it has them, after the first listener of the event is added
   /// (`isListening` is `true`) or the last one is removed.
   @JavaScriptActor
-  private static func notifyListening(_ emitter: borrowing JavaScriptObject, event: String, isListening: Bool) throws {
-    try callObservingFunction(
-      isListening ? "__expo_onStartListeningToEvent" : "__expo_onStopListeningToEvent",
-      of: emitter,
-      event: event
-    )
-    try callObservingFunction(isListening ? "startObserving" : "stopObserving", of: emitter, event: event)
+  private static func notifyListening(
+    _ emitter: borrowing JavaScriptObject,
+    event: String,
+    isListening: Bool,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    let names = runtime.cached(observingFunctionNamesKey) {
+      return ObservingFunctionNames(runtime)
+    }
+    try callObservingFunction(isListening ? names.startListening : names.stopListening, of: emitter, event: event)
+    try callObservingFunction(isListening ? names.startObserving : names.stopObserving, of: emitter, event: event)
   }
 
   @JavaScriptActor
-  private static func callObservingFunction(_ name: String, of emitter: borrowing JavaScriptObject, event: String) throws {
+  private static func callObservingFunction(
+    _ name: JavaScriptPropNameID,
+    of emitter: borrowing JavaScriptObject,
+    event: String
+  ) throws {
     let function = emitter.getProperty(name)
     guard function.isObject() else {
       return
     }
     try function.asFunction().call(this: emitter, arguments: event)
   }
+
+  /// The names of the observing functions, made once for each runtime.
+  private final class ObservingFunctionNames {
+    let startListening: JavaScriptPropNameID
+    let stopListening: JavaScriptPropNameID
+    let startObserving: JavaScriptPropNameID
+    let stopObserving: JavaScriptPropNameID
+
+    init(_ runtime: borrowing JavaScriptRuntime) {
+      startListening = JavaScriptPropNameID(runtime, string: "__expo_onStartListeningToEvent")
+      stopListening = JavaScriptPropNameID(runtime, string: "__expo_onStopListeningToEvent")
+      startObserving = JavaScriptPropNameID(runtime, string: "startObserving")
+      stopObserving = JavaScriptPropNameID(runtime, string: "stopObserving")
+    }
+  }
+
+  private static let observingFunctionNamesKey = JavaScriptRuntime.Cache.Key<ObservingFunctionNames>()
 
   /// Calls a method of `expo.EventEmitter.prototype`, the C++ emitter.
   @JavaScriptActor

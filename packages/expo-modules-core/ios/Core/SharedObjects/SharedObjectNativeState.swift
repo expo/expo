@@ -61,7 +61,7 @@ internal final class SharedObjectNativeState: EventEmitterNativeState, @unchecke
     self.mainRuntimeId = mainRuntimeId
     self.flags = OSAllocatedUnfairLock(initialState: Flags(isPairedInOtherRuntime: isPairedInOtherRuntime))
     self.listeners = listeners
-    super.init { context, deallocator in
+    super.init(primaryRuntimeId: mainRuntimeId) { context, deallocator in
       return SharedObjectUtils.makeSharedObjectNativeStatePtr(
         objectId: objectId,
         releaser: releaser,

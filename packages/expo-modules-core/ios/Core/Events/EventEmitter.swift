@@ -45,21 +45,19 @@ public extension EventEmitter {
     // The payload is moved into a `JavaScriptRef` so the scheduled closure can capture it.
     let payload = payload.ref()
     // The emitter is not necessarily `Sendable` - some modules hold non-sendable state — so we can't let
-    // the compiler send `self` into the `@JavaScriptActor` region. Wrapping it in a weak, `@unchecked
-    // Sendable` reference is safe here because the scheduled closure only calls `withEventTarget`, which touches
-    // `@JavaScriptActor`-isolated or `Sendable` state (the JS object, the registry, `appContext`) and the
-    // emitter's identity - never the module's own mutable state.
-    let emitter = WeakEventEmitterReference(value: self)
+    // the compiler send `self` into the `@JavaScriptActor` region. Wrapping it in an `@unchecked Sendable`
+    // reference is safe here because the scheduled closure only reaches `@JavaScriptActor`-isolated or
+    // `Sendable` state through it (the JS object, the native state, `appContext`) and the emitter's
+    // identity - never the module's own mutable state. The reference keeps the emitter alive until the
+    // closure runs.
+    let emitter = EventEmitterReference(self)
 
     runtime.schedule {
-      guard let emitter = emitter.value else {
-        return
-      }
       // The event is dispatched once, so the payload can be moved out of the ref.
       guard let payload = payload.take() else {
         return
       }
-      dispatchEvent(event: event, payload: payload, from: emitter, in: runtime)
+      dispatchEvent(event: event, payload: payload, from: emitter.value, in: runtime)
     }
   }
 
@@ -74,15 +72,12 @@ public extension EventEmitter {
     guard let runtime = eventRuntime(forEvent: event) else {
       return
     }
-    // See the note in `emit(event:payload:)` above - the emitter is captured in a weak, `@unchecked
-    // Sendable` reference because it isn't necessarily `Sendable`, and the scheduled closure only reaches
+    // See the note in `emit(event:payload:)` above - the emitter is captured in an `@unchecked Sendable`
+    // reference because it isn't necessarily `Sendable`, and the scheduled closure only reaches
     // `@JavaScriptActor`-isolated or `Sendable` state through it.
-    let emitter = WeakEventEmitterReference(value: self)
+    let emitter = EventEmitterReference(self)
 
     runtime.schedule {
-      guard let emitter = emitter.value else {
-        return
-      }
       let jsPayload: JavaScriptValue
       do {
         jsPayload = try P.encode(payload, in: runtime)
@@ -90,7 +85,7 @@ public extension EventEmitter {
         warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
         return
       }
-      dispatchEvent(event: event, payload: jsPayload, from: emitter, in: runtime)
+      dispatchEvent(event: event, payload: jsPayload, from: emitter.value, in: runtime)
     }
   }
 
@@ -109,12 +104,9 @@ public extension EventEmitter {
       return
     }
     // See the note in `emit(event:payload:)` above.
-    let emitter = WeakEventEmitterReference(value: self)
+    let emitter = EventEmitterReference(self)
 
     runtime.schedule {
-      guard let emitter = emitter.value else {
-        return
-      }
       let jsPayload: JavaScriptValue
       do {
         jsPayload = try JavaScriptValue.encoding(in: runtime) { slot in
@@ -124,7 +116,7 @@ public extension EventEmitter {
         warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
         return
       }
-      dispatchEvent(event: event, payload: jsPayload, from: emitter, in: runtime)
+      dispatchEvent(event: event, payload: jsPayload, from: emitter.value, in: runtime)
     }
   }
 
@@ -139,13 +131,13 @@ public extension EventEmitter {
       log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
       return
     }
-    // See the note in `emit(event:payload:)` above - the emitter is captured in a weak, `@unchecked
-    // Sendable` reference because it isn't necessarily `Sendable`, and the scheduled closure only reaches
+    // See the note in `emit(event:payload:)` above - the emitter is captured in an `@unchecked Sendable`
+    // reference because it isn't necessarily `Sendable`, and the scheduled closure only reaches
     // `@JavaScriptActor`-isolated or `Sendable` state through it.
-    let emitter = WeakEventEmitterReference(value: self)
+    let emitter = EventEmitterReference(self)
 
     runtime.schedule { [weak appContext] in
-      guard let emitter = emitter.value, let appContext else {
+      guard let appContext else {
         return
       }
       let jsPayload: JavaScriptValue
@@ -155,7 +147,7 @@ public extension EventEmitter {
         log.warn("Failed to convert payload for event '\(event)' on \(P.self); the event will not be emitted: \(error)")
         return
       }
-      dispatchEvent(event: event, payload: jsPayload, from: emitter, in: runtime)
+      dispatchEvent(event: event, payload: jsPayload, from: emitter.value, in: runtime)
     }
   }
 }
@@ -198,15 +190,12 @@ public extension EventEmitter {
       return
     }
     // See the note in `emit(event:payload:)` above.
-    let emitter = WeakEventEmitterReference(value: self)
+    let emitter = EventEmitterReference(self)
     var payload: P? = payload
     if runtime.isOnJavaScriptThread() {
       // Emits right away, without the closure and the box that scheduling needs.
       JavaScriptActor.assumeIsolated {
-        guard let emitter = emitter.value else {
-          return
-        }
-        emitEventNow(event: event, payload: &payload, encode: encode, from: emitter, in: runtime)
+        emitEventNow(event: event, payload: &payload, encode: encode, from: emitter.value, in: runtime)
       }
       return
     }
@@ -214,10 +203,7 @@ public extension EventEmitter {
     let box = EventPayloadBox(payload)
 
     runtime.schedule {
-      guard let emitter = emitter.value else {
-        return
-      }
-      emitEventNow(event: event, payload: &box.value, encode: encode, from: emitter, in: runtime)
+      emitEventNow(event: event, payload: &box.value, encode: encode, from: emitter.value, in: runtime)
     }
   }
 
@@ -268,15 +254,12 @@ public extension EventEmitter {
       return
     }
     // See the note in `emit(event:payload:)` above.
-    let emitter = WeakEventEmitterReference(value: self)
+    let emitter = EventEmitterReference(self)
     var payload: P? = payload
     if runtime.isOnJavaScriptThread() {
       // See the note in `emitInline(event:payload:encode:)` above.
       JavaScriptActor.assumeIsolated {
-        guard let emitter = emitter.value else {
-          return
-        }
-        emitEventNow(event: event, payload: &payload, encode: encode, from: emitter, in: runtime)
+        emitEventNow(event: event, payload: &payload, encode: encode, from: emitter.value, in: runtime)
       }
       return
     }
@@ -285,10 +268,7 @@ public extension EventEmitter {
 
     do {
       try runtime.execute {
-        guard let emitter = emitter.value else {
-          return
-        }
-        emitEventNow(event: event, payload: &box.value, encode: encode, from: emitter, in: runtime)
+        emitEventNow(event: event, payload: &box.value, encode: encode, from: emitter.value, in: runtime)
       }
     } catch {
       warnRuntimeLost(event: event, emitterType: type(of: self))
@@ -315,11 +295,11 @@ internal final class EventPayloadBox<P: ~Copyable>: @unchecked Sendable {
 /// the emitter. Logs a warning when the conversion fails.
 @JavaScriptActor
 @inlinable
-internal func emitEventNow<P: ~Copyable>(
+internal func emitEventNow<Emitter: EventEmitter, P: ~Copyable>(
   event: String,
   payload: inout P?,
   encode: (consuming P, borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime) throws -> Void,
-  from emitter: any EventEmitter,
+  from emitter: Emitter,
   in runtime: JavaScriptRuntime
 ) {
   guard payload != nil else {
@@ -338,17 +318,19 @@ internal func emitEventNow<P: ~Copyable>(
   dispatchEvent(event: event, payload: jsPayload, from: emitter, in: runtime)
 }
 
-/// A weak reference to an event emitter that the scheduled `emit` closures capture by value, so it is stored
-/// in the closure context without an allocation of its own. Frozen, because with library evolution the
-/// inlinable initializer can't assign the stored property of a struct whose layout isn't fixed.
+/// A reference to an event emitter that the scheduled `emit` closures capture by value, so it is stored in the
+/// closure context without an allocation of its own. It is strong: a weak reference would give the emitter a side
+/// table, which makes every later retain and release of the emitter slower. Generic, so the closures keep the
+/// concrete type of the emitter and `dispatchEvent(event:payload:from:in:)` specializes for it. Frozen, because with
+/// library evolution the inlinable initializer can't assign the stored property of a struct whose layout isn't fixed.
 @frozen
 @usableFromInline
-internal struct WeakEventEmitterReference: @unchecked Sendable {
+internal struct EventEmitterReference<Emitter: EventEmitter>: @unchecked Sendable {
   @usableFromInline
-  weak var value: (any EventEmitter)?
+  let value: Emitter
 
   @inlinable
-  init(value: any EventEmitter) {
+  init(_ value: Emitter) {
     self.value = value
   }
 }
@@ -389,29 +371,47 @@ internal func warnNonCopyablePayloadNotEncoded(event: String, payloadType: any (
 }
 
 /// Sends a pre-converted event payload to the JavaScript object of the given emitter. Logs a warning
-/// when the emitter is no longer associated with a JavaScript object.
+/// when the emitter is no longer associated with a JavaScript object. A shared object keeps its listeners in its
+/// Swift native state, and the listeners of other emitters are in the C++ state of their JS object. Inlinable, so
+/// for a concrete emitter type the check for a shared object is resolved at compile time.
+@JavaScriptActor
+@inlinable
+internal func dispatchEvent<Emitter: EventEmitter>(
+  event: String,
+  payload: borrowing JavaScriptValue,
+  from emitter: Emitter,
+  in runtime: JavaScriptRuntime
+) {
+  if let sharedObject = emitter as? SharedObject {
+    sharedObject.dispatchEvent(event: event, payload: payload, in: runtime)
+  } else {
+    dispatchEventToTarget(event: event, payload: payload, from: emitter, in: runtime)
+  }
+}
+
+/// Sends a pre-converted event payload to the JavaScript object that `withEventTarget` of the emitter lends. Logs a
+/// warning when the emitter is no longer associated with a JavaScript object.
 @JavaScriptActor
 @usableFromInline
-internal func dispatchEvent(
+internal func dispatchEventToTarget(
   event: String,
   payload: borrowing JavaScriptValue,
   from emitter: any EventEmitter,
   in runtime: JavaScriptRuntime
 ) {
-  // A shared object keeps its listeners in its Swift native state. The listeners of other emitters are in the C++
-  // state of their JS object.
-  let dispatched =
-    if let sharedObject = emitter as? SharedObject {
-      sharedObject.dispatchEvent(event: event, payload: payload, in: runtime)
-    } else {
-      emitter.withEventTarget { target in
-        dispatchEvent(event: event, payload: payload, to: target, in: runtime)
-        return true
-      } ?? false
-    }
-  if !dispatched {
-    log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
+  let dispatched = emitter.withEventTarget { target in
+    dispatchEvent(event: event, payload: payload, to: target, in: runtime)
+    return true
   }
+  if dispatched == nil {
+    warnEventTargetLost(event: event)
+  }
+}
+
+/// Logs that the emitter is no longer associated with a JavaScript object, so the event is not emitted.
+@usableFromInline
+internal func warnEventTargetLost(event: String) {
+  log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
 }
 
 /**
