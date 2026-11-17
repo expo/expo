@@ -371,8 +371,8 @@ export default class FileMap extends EventEmitter {
         const rootDir = this.#options.rootDir;
         const ignorePattern = this.#options.ignorePattern;
         this.#startupPerfLogger?.point('constructFileSystem_start');
-        const processFile: ProcessFileFunction = async (normalPath, metadata, opts) => {
-          const result = await this.#fileProcessor.processRegularFile(normalPath, metadata, {
+        const processFile: ProcessFileFunction = (normalPath, metadata, opts) => {
+          const result = this.#fileProcessor.processRegularFile(normalPath, metadata, {
             computeSha1: opts.computeSha1,
             maybeReturnContent: true,
           });
@@ -921,7 +921,7 @@ export default class FileMap extends EventEmitter {
               if (change.metadata.type === 'l') {
                 await this.#maybeReadLink(relativeFilePath, fileMetadata);
               } else {
-                await this.#fileProcessor.processRegularFile(relativeFilePath, fileMetadata, {
+                this.#fileProcessor.processRegularFile(relativeFilePath, fileMetadata, {
                   computeSha1: this.#options.computeSha1,
                   maybeReturnContent: false,
                 });
