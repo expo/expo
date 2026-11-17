@@ -1,52 +1,87 @@
-import { ExpoCalendar, ExpoCalendarEvent } from './Calendar';
-import * as Calendars from './Calendars';
+import { Calendar, CalendarAttendee, CalendarEvent, CalendarReminder } from './Calendar';
 
 /**
- * @deprecated Use `ExpoCalendar.getDefaultSync()` instead.
+ * @deprecated Use `Calendar` instead.
  */
-export const getDefaultCalendarSync = ExpoCalendar.getDefaultSync;
+export const ExpoCalendar = Calendar;
+/**
+ * @deprecated Use `Calendar` instead.
+ */
+export type ExpoCalendar = Calendar;
 
 /**
- * @deprecated Use `ExpoCalendar.getAll()` instead.
+ * @deprecated Use `CalendarEvent` instead.
  */
-export const getCalendars = ExpoCalendar.getAll;
+export const ExpoCalendarEvent = CalendarEvent;
+/**
+ * @deprecated Use `CalendarEvent` instead.
+ */
+export type ExpoCalendarEvent = CalendarEvent;
 
 /**
- * @deprecated Use `ExpoCalendar.create()` instead.
+ * @deprecated Use `CalendarReminder` instead.
  */
-export const createCalendar = ExpoCalendar.create;
+export const ExpoCalendarReminder = CalendarReminder;
+/**
+ * @deprecated Use `CalendarReminder` instead.
+ */
+export type ExpoCalendarReminder = CalendarReminder;
 
 /**
- * @deprecated Use `ExpoCalendar.presentPicker()` instead.
+ * @deprecated Use `CalendarAttendee` instead.
  */
-export const presentPicker = ExpoCalendar.presentPicker;
+export const ExpoCalendarAttendee = CalendarAttendee;
+/**
+ * @deprecated Use `CalendarAttendee` instead.
+ */
+export type ExpoCalendarAttendee = CalendarAttendee;
 
 /**
- * @deprecated Use `ExpoCalendarEvent.list()` instead.
+ * @deprecated Use `Calendar.getDefaultSync()` instead.
  */
-export const listEvents = ExpoCalendarEvent.list;
+export const getDefaultCalendarSync = Calendar.getDefaultSync;
 
 /**
- * @deprecated Use `Calendars.requestCalendarPermissions()` instead.
+ * @deprecated Use `Calendar.getAll()` instead.
  */
-export const requestCalendarPermissions = Calendars.requestCalendarPermissions;
+export const getCalendars = Calendar.getAll;
 
 /**
- * @deprecated Use `Calendars.getCalendarPermissions()` instead.
+ * @deprecated Use `Calendar.create()` instead.
  */
-export const getCalendarPermissions = Calendars.getCalendarPermissions;
+export const createCalendar = Calendar.create;
 
 /**
- * @deprecated Use `Calendars.requestRemindersPermissions()` instead.
+ * @deprecated Use `Calendar.presentPicker()` instead.
  */
-export const requestRemindersPermissions = Calendars.requestRemindersPermissions;
+export const presentPicker = Calendar.presentPicker;
 
 /**
- * @deprecated Use `Calendars.getRemindersPermissions()` instead.
+ * @deprecated Use `CalendarEvent.list()` instead.
  */
-export const getRemindersPermissions = Calendars.getRemindersPermissions;
+export const listEvents = CalendarEvent.list;
 
 /**
- * @deprecated Use `Calendars.getSourcesSync()` instead.
+ * @deprecated Use `Calendar.requestPermissions()` instead.
  */
-export const getSourcesSync = Calendars.getSourcesSync;
+export const requestCalendarPermissions = Calendar.requestPermissions;
+
+/**
+ * @deprecated Use `Calendar.getPermissions()` instead.
+ */
+export const getCalendarPermissions = Calendar.getPermissions;
+
+/**
+ * @deprecated Use `Calendar.requestRemindersPermissions()` instead.
+ */
+export const requestRemindersPermissions = Calendar.requestRemindersPermissions;
+
+/**
+ * @deprecated Use `Calendar.getRemindersPermissions()` instead.
+ */
+export const getRemindersPermissions = Calendar.getRemindersPermissions;
+
+/**
+ * @deprecated Use `Calendar.getSourcesSync()` instead.
+ */
+export const getSourcesSync = Calendar.getSourcesSync;

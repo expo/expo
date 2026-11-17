@@ -1,42 +1,37 @@
 import { createPermissionHook, PermissionStatus, type PermissionHookOptions } from 'expo';
 import { Platform } from 'react-native';
 
-import {
-  getCalendarPermissions,
-  getRemindersPermissions,
-  requestCalendarPermissions,
-  requestRemindersPermissions,
-} from './Calendars';
+import { Calendar } from './Calendar';
 import type { PermissionResponse } from './legacy/Calendar';
 
 /**
  * Check or request permissions to access the user's calendars.
- * This uses both `getCalendarPermissions` and `requestCalendarPermissions` to interact
+ * This uses both `Calendar.getPermissions` and `Calendar.requestPermissions` to interact
  * with the permissions.
  * On iOS, `writeOnly` requests permission to create calendar events without reading
  * existing calendars or events. It does not grant permission to create, update, or delete calendars.
  *
  * @example
  * ```ts
- * const [status, requestPermission] = Calendar.useCalendarPermissions();
+ * const [status, requestPermission] = useCalendarPermissions();
  * ```
  */
 export const useCalendarPermissions = createPermissionHook<
   PermissionResponse,
   { writeOnly?: boolean }
 >({
-  getMethod: (options) => getCalendarPermissions(options?.writeOnly),
-  requestMethod: (options) => requestCalendarPermissions(options?.writeOnly),
+  getMethod: (options) => Calendar.getPermissions(options?.writeOnly),
+  requestMethod: (options) => Calendar.requestPermissions(options?.writeOnly),
 });
 
 /**
  * Check or request permissions to access the user's reminders.
- * This uses both `getRemindersPermissions` and `requestRemindersPermissions` to interact
+ * This uses both `Calendar.getRemindersPermissions` and `Calendar.requestRemindersPermissions` to interact
  * with the permissions.
  *
  * @example
  * ```ts
- * const [status, requestPermission] = Calendar.useRemindersPermissions();
+ * const [status, requestPermission] = useRemindersPermissions();
  * ```
  * @platform ios
  */
@@ -58,6 +53,6 @@ export function useRemindersPermissions(
 }
 
 const createRemindersPermissionHook = createPermissionHook({
-  getMethod: getRemindersPermissions,
-  requestMethod: requestRemindersPermissions,
+  getMethod: () => Calendar.getRemindersPermissions(),
+  requestMethod: () => Calendar.requestRemindersPermissions(),
 });
