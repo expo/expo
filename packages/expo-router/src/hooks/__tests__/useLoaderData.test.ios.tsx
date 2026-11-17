@@ -11,7 +11,7 @@ import {
 } from 'react';
 import { Text } from 'react-native';
 
-import { clearLoaderError, type ErrorBoundaryProps, router, Slot } from '../../exports';
+import { type ErrorBoundaryProps, router, Slot } from '../../exports';
 import Tabs from '../../layouts/Tabs';
 import { LoaderClient } from '../../loaders/LoaderClient';
 import {
@@ -863,20 +863,16 @@ describe(useLoaderData, () => {
     expect(fetchLoaderMock).toHaveBeenCalledTimes(1);
   });
 
-  it('sends one loader request for each reset of a user error boundary that clears the error', async () => {
+  it('sends one loader request when a failed load reaches a user error boundary', async () => {
     const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
     fetchLoaderMock.mockRejectedValue(new Error('boom'));
     // React has not tracked this promise, so reading it yields the render to the microtask queue
     // after the screen threw and before the boundary commits.
     const yieldRender = Promise.resolve();
 
-    function Fallback({ onReset }: { onReset: () => void }) {
+    function Fallback({ error }: { error: Error }) {
       use(yieldRender);
-      return (
-        <Text testID="reset" onPress={onReset}>
-          Reset
-        </Text>
-      );
+      return <Text testID="error">{error.message}</Text>;
     }
     class UserBoundary extends Component<{ children: ReactNode }, { error?: Error }> {
       state: { error?: Error } = {};
@@ -885,17 +881,7 @@ describe(useLoaderData, () => {
       }
       render() {
         const { error } = this.state;
-        if (!error) {
-          return this.props.children;
-        }
-        return (
-          <Fallback
-            onReset={() => {
-              clearLoaderError(error);
-              this.setState({ error: undefined });
-            }}
-          />
-        );
+        return error ? <Fallback error={error} /> : this.props.children;
       }
     }
     function Data() {
@@ -915,13 +901,11 @@ describe(useLoaderData, () => {
     jest.useRealTimers();
 
     await act(async () => router.push('/fail'));
-    expect(await screen.findByTestId('reset')).toBeVisible();
+
+    expect(await screen.findByTestId('error')).toHaveTextContent(
+      'Failed to load loader data for route: /fail'
+    );
     expect(fetchLoaderMock).toHaveBeenCalledTimes(1);
-
-    await fireEvent.press(screen.getByTestId('reset'));
-
-    expect(await screen.findByTestId('reset')).toBeVisible();
-    expect(fetchLoaderMock).toHaveBeenCalledTimes(2);
   });
 
   it(`uses the loader function's return types`, async () => {

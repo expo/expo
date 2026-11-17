@@ -17,7 +17,6 @@ export {
   useCurrentRouteInfo,
 } from './hooks';
 
-export { clearLoaderError } from './loaders/clearLoaderError';
 export { router, type ImperativeRouter, type NavigationTransitionMode } from './imperative-api';
 export { useIsNavigating as unstable_useIsNavigating } from './global-state/useIsNavigating';
 
