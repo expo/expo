@@ -890,6 +890,14 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
         $(el).replaceWith('%%MD_SEP%%' + ($(el).html() ?? ''));
         hasBlocks = true;
       });
+      $cell.find('ul, ol').each((_, el) => {
+        $(el).replaceWith($(el).html() ?? '');
+        hasBlocks = true;
+      });
+      $cell.find('li').each((_, el) => {
+        $(el).replaceWith('%%MD_SEP%%' + ($(el).html() ?? ''));
+        hasBlocks = true;
+      });
     }
     const blocks: string[] = [];
     let cellHtml = $cell.html()!.replace(/<(code|pre)\b[^>]*>[\S\s]*?<\/\1>/gi, match => {
@@ -897,8 +905,9 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       return `%%MD_CODE_${blocks.length - 1}%%`;
     });
     cellHtml = cellHtml
-      .replace(/(?:%%MD_SEP%%)+/g, '%%MD_SEP%%')
+      .replace(/(?:\s*%%MD_SEP%%)+/g, '%%MD_SEP%%')
       .replace(/^\s*%%MD_SEP%%\s*/, '')
+      .replace(/:\s*%%MD_SEP%%/g, ': ')
       .replace(/\.\s*%%MD_SEP%%/g, '. ')
       .replace(/%%MD_SEP%%/g, '. ')
       .replace(/\.\s*-\s*$/, '.')
