@@ -32,7 +32,8 @@
             "expo-modules-core/ExpoModulesCore",
             "ExpoApplicationObjC"
           ],
-          "linkedFrameworks": ["Foundation", "UIKit"]
+          "linkedFrameworks": ["Foundation", "UIKit"],
+          "resources": [{ "path": "ios/ExpoApplication/PrivacyInfo.xcprivacy", "rule": "copy" }]
         }
       ]
     }
