@@ -151,6 +151,7 @@ sealed class CopyMoveStrategy(
           if (!spec.overwrite) {
             throw DestinationAlreadyExistsException()
           }
+          validateDestinationDoesNotContainSource(source, file)
           file.deleteRecursively()
         }
         return DestinationSink.SAF(spec, file, isContainer = false)
@@ -173,11 +174,30 @@ sealed class CopyMoveStrategy(
         if (!spec.overwrite) {
           throw DestinationAlreadyExistsException()
         }
+        validateDestinationDoesNotContainSource(source, existingChild)
         existingChild.deleteRecursively()
       }
 
       return DestinationSink.SAF(spec, file, isContainer = true)
     }
+
+    // Overwriting deletes the existing target first. When the target is the source
+    // or one of its ancestors, that delete would remove the source too.
+    // One document can have several URIs (other tree roots, single-document URIs), so documents
+    // are compared by document ID. The target is walked instead of calling
+    // `DocumentsContract.isChildDocument`, which needs API 29 and a provider with `FLAG_SUPPORTS_IS_CHILD`.
+    private fun validateDestinationDoesNotContainSource(source: UnifiedFileInterface, target: SAFDocumentFile) {
+      if (source !is SAFDocumentFile || source.uri.authority != target.uri.authority) {
+        return
+      }
+      val sourceId = source.documentId ?: return
+      if (target.walkTopDown().any { it.documentId == sourceId }) {
+        throw DestinationContainsSourceException()
+      }
+    }
+
+    private val SAFDocumentFile.documentId: String?
+      get() = documentFile?.uri?.let { runCatching { DocumentsContract.getDocumentId(it) }.getOrNull() }
 
     /**
      * Attempts to use native SAF move operation.
