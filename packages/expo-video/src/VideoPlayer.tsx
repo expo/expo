@@ -1,4 +1,4 @@
-import { useReleasingSharedObjectWithLifecycle } from 'expo-modules-core';
+import { useReleasingSharedObjectWithLifecycle } from 'expo';
 import { useState } from 'react';
 
 import NativeVideoModule from './ExpoVideo';

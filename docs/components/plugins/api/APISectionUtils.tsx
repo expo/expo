@@ -510,7 +510,7 @@ export const getAllTagData = (tagName: string, comment?: CommentData) =>
           content: [
             {
               kind: 'text',
-              text: '`' + tag.name + '`',
+              text: tag.name.includes('`') ? tag.name : '`' + tag.name + '`',
             } as CommentContentData,
           ],
         };

@@ -352,6 +352,12 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
+    title: 'How to build mobile apps with Expo Simulators',
+    event: 'Expo Live Stream',
+    videoId: 'vbdGfqeq0Dc',
+    uploadDate: '2026-11-16',
+  },
+  {
     title: 'Expo SDK 58: iOS 27, iPhone Duo, App Intents & @expo/agent-cli',
     event: 'Expo Live Stream',
     videoId: '45YfqOL56FI',

@@ -1,9 +1,9 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 
 import { flattenPlatformOptions } from '../options';
 
-jest.mock('expo-modules-core', () => ({
-  ...jest.requireActual('expo-modules-core'),
+jest.mock('expo', () => ({
+  ...jest.requireActual('expo'),
   Platform: {
     OS: 'android',
   },

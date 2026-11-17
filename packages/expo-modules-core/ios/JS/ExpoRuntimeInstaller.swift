@@ -48,17 +48,33 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
    Installs `expo.modules`, the host object that returns module objects.
    */
   @JavaScriptActor
-  internal func installExpoModulesHostObject() throws {
+  internal func installExpoModulesHostObject(isMainRuntime: Bool) throws {
     let coreObject = try runtime.global().getPropertyAsObject(globalCoreObjectPropertyName)
 
     if coreObject.hasProperty("modules") {
       // Host object already installed
       return
     }
-    let modulesHostObject = runtime.createHostObject(
-      get: { [weak appContext] moduleName in
+    // The getter is chosen here, so accessing a module doesn't check which runtime it is in.
+    let getModule: @JavaScriptActor (_ moduleName: String) throws -> JavaScriptValue
+    if isMainRuntime {
+      getModule = { [weak appContext] moduleName in
         return appContext?.getNativeModuleObject(moduleName) ?? .undefined()
-      },
+      }
+    } else {
+      // The getter reaches the runtime through its handle instead of capturing it. The runtime owns the host object,
+      // so a capture would keep a runtime that owns its engine alive, and the wrapper can be freed before the engine
+      // runtime (for example, when attaching the runtime fails).
+      let runtimeHandle = runtime.handle
+      getModule = { [weak appContext] moduleName in
+        guard let runtime = runtimeHandle.runtime else {
+          return .undefined()
+        }
+        return appContext?.getNativeModuleObject(moduleName, inAttachedRuntime: runtime) ?? .undefined()
+      }
+    }
+    let modulesHostObject = runtime.createHostObject(
+      get: getModule,
       set: { propertyName, _ in
         throw ReadOnlyExpoModulesPropertyException(propertyName)
       },
@@ -83,12 +99,13 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
       // Host object already installed
       return
     }
-    let runtime = self.runtime
+    // The getters reach the runtime through its handle, like the getter of `expo.modules`.
+    let runtimeHandle = runtime.handle
     let packageObjects = JavaScriptValuesCache()
 
     let packagesHostObject = runtime.createHostObject(
       get: { [weak appContext] packageName in
-        guard let appContext else {
+        guard let appContext, let runtime = runtimeHandle.runtime else {
           return .undefined()
         }
         if let packageObject = packageObjects.store[packageName]?.withUnwrappedValue({ $0.copy() }) {
@@ -130,6 +147,7 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
 
     // The React components of the package's views, created on the first access.
     let viewComponents = JavaScriptValuesCache()
+    let runtimeHandle = runtime.handle
 
     return runtime.createHostObject(
       get: { [weak appContext] exportName in
@@ -146,7 +164,7 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
           return component
         }
         // Only the React runtime can create components, so a view is `undefined` in the UI runtime.
-        guard NativeViewComponentFactory.isAvailable(in: runtime) else {
+        guard let runtime = runtimeHandle.runtime, NativeViewComponentFactory.isAvailable(in: runtime) else {
           return .undefined()
         }
         let config = NativeViewComponentConfig(

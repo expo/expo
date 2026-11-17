@@ -68,6 +68,16 @@ private final class CollidingCardsModule: Module {
 
 // MARK: - Tests
 
+private extension ExpoNativeView {
+  /// Applies decoded props the way `ExpoNativeViewObjC` does in `finalizeUpdates:`, as an unretained pointer.
+  func update(_ decodedProps: AnyObject?) {
+    withExtendedLifetime(decodedProps) {
+      updateDecodedProps(decodedProps.map { UnsafeRawPointer(Unmanaged.passUnretained($0).toOpaque()) })
+    }
+  }
+}
+
+
 /// Applies decoded props to an `@ExpoView` the way `ExpoNativeViewObjC` does when Fabric mounts them.
 @Suite
 @MainActor
@@ -90,7 +100,7 @@ struct NativeViewTests {
 
   @Test
   func `first update without decoded props applies the defaults`() {
-    view.updateDecodedProps(nil)
+    view.update(nil)
 
     #expect(view.diffs.count == 1)
     #expect(view.diffs[0].isInitial)
@@ -98,7 +108,7 @@ struct NativeViewTests {
     #expect(view.props.radius == 4)
 
     // Later props without decoded props have nothing to apply.
-    view.updateDecodedProps(nil)
+    view.update(nil)
     #expect(view.diffs.count == 1)
   }
 
@@ -107,11 +117,11 @@ struct NativeViewTests {
     var props = NativeCardProps()
     props.title = "Card"
     let created = decoded(props, changed: .title)
-    view.updateDecodedProps(created)
+    view.update(created)
 
     props.radius = 8
     let updated = decoded(props, changed: .radius, previous: created)
-    view.updateDecodedProps(updated)
+    view.update(updated)
 
     #expect(view.diffs.count == 2)
     #expect(view.diffs[0].isInitial)
@@ -124,13 +134,13 @@ struct NativeViewTests {
 
   @Test
   func `first decoded props after the defaults change all props`() {
-    view.updateDecodedProps(nil)
+    view.update(nil)
 
     // The defaults aren't decoded props that the decoder knows about, so the first decoded props
     // can't be compared with them and all props count as changed.
     var props = NativeCardProps()
     props.title = "Card"
-    view.updateDecodedProps(decoded(props, changed: .title))
+    view.update(decoded(props, changed: .title))
 
     #expect(view.diffs.count == 2)
     #expect(!view.diffs[1].isInitial)
@@ -141,8 +151,8 @@ struct NativeViewTests {
   @Test
   func `the same decoded props are applied once`() {
     let created = decoded(NativeCardProps(), changed: [])
-    view.updateDecodedProps(created)
-    view.updateDecodedProps(created)
+    view.update(created)
+    view.update(created)
 
     #expect(view.diffs.count == 1)
   }
@@ -202,7 +212,7 @@ struct NativeViewTests {
     // `RCTComponentViewFactory` creates the views with `+new`.
     let object = (viewClass as AnyObject).perform(NSSelectorFromString("new"))?.takeRetainedValue()
     let view = try #require(object as? NativeCardView)
-    view.updateDecodedProps(nil)
+    view.update(nil)
 
     #expect(view.diffs.count == 1)
   }

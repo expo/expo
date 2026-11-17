@@ -6,9 +6,31 @@ description: Learn how to automate and maintain your app store presence from the
 
 import { EasMetadataIcon } from '@expo/styleguide-icons/custom/EasMetadataIcon';
 
+import { AgentPrompt } from '~/ui/components/AgentPrompt';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
+
+<AgentPrompt
+  title="Set up Expo Metadata with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent.">
+
+```text wrap
+Set up Expo Metadata for my iOS app. Use https://docs.expo.dev/eas/metadata/getting-started.md as the source for each command.
+
+1. Check that EAS CLI is installed and up to date. If it is not, run `npm install -g eas-cli`.
+2. Check that I am logged in with `eas whoami`. If I am not, stop and ask me to run `eas login` or to set `EXPO_TOKEN`. Do not print a token.
+3. If the project has no eas.json, ask me to run `eas build:configure --platform ios` in my terminal, because the command asks questions. Continue when eas.json exists.
+4. The store config is store.config.json in the project root, unless the `metadataPath` property in eas.json sets another path. If the store config does not exist, ask me if the app is already on App Store Connect. If it is, run `eas metadata:pull --non-interactive`. If it is not, create the store config from the example on the page.
+5. If `eas metadata:pull` or `eas metadata:push` fails with "No App Store Connect API Key found", stop. Ask me to run the same command without `--non-interactive` in my terminal, because it asks me to sign in to my Apple Developer account. Do not ask for my Apple ID or password.
+6. Ask me which app information to change. Update the store config. Use https://docs.expo.dev/eas/metadata/schema.md for the field names.
+7. Run `eas metadata:lint` and fix each error that it reports.
+8. Ask me if a new binary of this app version is uploaded to App Store Connect and processed. If it is not, stop and tell me to upload one first.
+9. Run `eas metadata:push --non-interactive`. If some items fail to upload, fix them in the store config and run the command again.
+10. Give me the App Store Connect link from the command output. Tell me which commands you ran and which fields you changed.
+```
+
+</AgentPrompt>
 
 > **important** **Expo Metadata** is in [beta](/more/release-statuses/#beta) and subject to breaking changes.
 

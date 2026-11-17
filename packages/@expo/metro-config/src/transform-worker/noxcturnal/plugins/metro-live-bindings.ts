@@ -178,7 +178,7 @@ export function createMetroLiveBindingsPlugin(
           },
         },
         (importPath, state) => {
-          const { collectOnly, shared, input } = metroPluginData(importPath.context);
+          const { collectOnly, shared } = metroPluginData(importPath.context);
           state.sawEsm = true;
           if (importPath.node.importKind && importPath.node.importKind !== 'value') {
             if (!collectOnly) importPath.remove();
@@ -234,9 +234,7 @@ export function createMetroLiveBindingsPlugin(
               referenced: false,
               defaultReferenced: false,
               namespaceReferenced: false,
-              sideEffect:
-                input.options.dev &&
-                importPath.context.metadata.get('performConstantFolding') !== true,
+              sideEffect: importPath.context.metadata.get('performConstantFolding') !== true,
             };
             state.modules.set(source, module);
             state.moduleOrder.push(module);
