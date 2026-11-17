@@ -356,16 +356,16 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
   dispatchEvents(): Promise<void>;
   /**
    * Starts a trace span measuring an operation that is underway. See `startSpan` in
-   * `expo-app-metrics` for the full contract.
+   * `expo-observe` for the full contract.
    */
   startSpan: typeof import('./app-metrics').startSpan;
   /**
    * Runs a callback inside a span that ends automatically. See `withSpan` in
-   * `expo-app-metrics` for the full contract.
+   * `expo-observe` for the full contract.
    */
   withSpan: typeof import('./app-metrics').withSpan;
   /**
-   * Records a span for an already-measured operation. See `recordSpan` in `expo-app-metrics`
+   * Records a span for an already-measured operation. See `recordSpan` in `expo-observe`
    * for the full contract.
    */
   recordSpan: typeof import('./app-metrics').recordSpan;
