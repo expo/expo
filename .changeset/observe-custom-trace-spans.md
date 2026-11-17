@@ -1,4 +1,5 @@
 ---
+'expo-app-metrics': patch
 'expo-observe': patch
 ---
 

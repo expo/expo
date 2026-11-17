@@ -9,4 +9,3 @@ Move the JavaScript code of `expo-app-metrics` into `expo-observe`. `expo-observ
 - `startSpan`, `withSpan`, `recordSpan` -> `Observe.startSpan`, `Observe.withSpan`, `Observe.recordSpan`.
 - `useNetworkRequestObserver` and the debug types -> `expo-observe/debug`.
 - `setErrorHandlerEnabled` -> the `errorHandlingEnabled` option of `Observe.configure`.
-- The types `AppStartupTimes`, `CallStack`, `FrameRateMetrics`, `MemoryUsageSnapshot`, `MetricInput`, `NetworkRequestObserverEvents`, `NetworkTracesConfig`, and `UseNetworkRequestObserverOptions` are no longer exported.
