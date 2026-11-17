@@ -37,7 +37,7 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
     super.init()
   }
 
-  func takePictureRef(options: TakePictureOptions, photoOutput: AVCapturePhotoOutput) async throws -> PictureRef {
+  @MainActor func takePictureRef(options: TakePictureOptions, photoOutput: AVCapturePhotoOutput) async throws -> PictureRef {
     let optionsCopy = options
     optionsCopy.pictureRef = true
 
@@ -49,7 +49,7 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
     throw CameraImageCaptureException()
   }
 
-  func takePicturePromise(options: TakePictureOptions, photoOutput: AVCapturePhotoOutput) async throws -> [String: Any] {
+  @MainActor func takePicturePromise(options: TakePictureOptions, photoOutput: AVCapturePhotoOutput) async throws -> [String: Any] {
     let optionsCopy = options
     optionsCopy.pictureRef = false
 
@@ -66,7 +66,7 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
     throw CameraImageCaptureException()
   }
 
-  func takePicture(options: TakePictureOptions, photoOutput: AVCapturePhotoOutput) async throws -> Any {
+  @MainActor func takePicture(options: TakePictureOptions, photoOutput: AVCapturePhotoOutput) async throws -> Any {
     guard photoCapturedContinuation == nil else {
       throw CameraNotReadyException()
     }

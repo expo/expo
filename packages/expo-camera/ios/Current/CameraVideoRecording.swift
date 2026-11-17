@@ -29,19 +29,19 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
     super.init()
   }
 
-  func record(options: CameraRecordingOptions, videoFileOutput: AVCaptureMovieFileOutput, promise: Promise) async {
+  @MainActor func record(options: CameraRecordingOptions, videoFileOutput: AVCaptureMovieFileOutput, promise: Promise) async {
     guard !videoFileOutput.isRecording && videoRecordedPromise == nil else {
       promise.reject(CameraAlreadyRecordingException())
       return
     }
 
     if let connection = videoFileOutput.connection(with: .video) {
-      let fallback = await ExpoCameraUtils.captureOrientation(
+      let fallback = ExpoCameraUtils.captureOrientation(
         responsiveWhenOrientationLocked: delegate?.responsiveWhenOrientationLocked == true,
         physicalOrientation: delegate?.physicalOrientation ?? .unknown,
         interfaceOrientation: delegate?.deviceOrientation ?? .unknown
       )
-      let angle = await delegate?.captureRotationAngle
+      let angle = delegate?.captureRotationAngle
       ExpoCameraUtils.applyCaptureRotation(to: connection, angle: angle, fallback: fallback)
       do {
         try await setVideoOptions(options: options, for: connection, videoFileOutput: videoFileOutput)
