@@ -5,3 +5,4 @@ export * from './LocationTask.types';
 export * from './BackgroundSession.types';
 export * from './LocationUpdates.types';
 export * from './Geocoding.types';
+export * from './Geofencing.types';

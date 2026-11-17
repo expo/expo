@@ -1,16 +1,19 @@
 import {
+  GeofencingHandle,
   Location,
   LocationProfile,
   LocationProvider,
   LocationUpdatesHandle,
   PositionWatchHandle,
   type BackgroundTaskStatus,
+  type GeofencingRegion,
   type Position,
   type PositionWatchStatus,
 } from 'expo-location/next';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
@@ -19,6 +22,7 @@ import {
   getBackgroundFixesAsync,
   type BackgroundFixEntry,
 } from './backgroundLocationStore';
+import { setGeofencingTaskListener, type GeofencingTaskEntry } from './geofencingTask';
 import { setLocationTaskListener } from './locationTask';
 
 const PERMISSION_SHAPE = '{ status, granted, canAskAgain, scope, accuracy, expires }';
@@ -40,6 +44,15 @@ const SESSION_SHAPE = '{ state, stopOnTaskRemoved, unthrottled }';
 
 const TASK_STATUS_SHAPE = '{ isRegistered, isRunning, lastError, lastFixAt }';
 
+const GEOFENCING_EVENT_SHAPE = '{ identifier, state: "inside" | "outside", timestamp }';
+
+// Apple Park and the default simulator location, so "Apple" or "City Run" in the Simulator's
+// Features > Location menu flips the state of one of them.
+const GEOFENCE_REGIONS: GeofencingRegion[] = [
+  { identifier: 'apple-park', latitude: 37.3349, longitude: -122.009, radius: 200 },
+  { identifier: 'san-francisco', latitude: 37.785834, longitude: -122.406417, radius: 500 },
+];
+
 const BACKGROUND_PROFILES: { label: string; profile: LocationProfile }[] = [
   { label: 'default', profile: LocationProfile.DEFAULT },
   { label: 'automotive', profile: LocationProfile.AUTOMOTIVE_NAVIGATION },
@@ -55,6 +68,14 @@ type LoggedFix = {
   longitude: number;
   at: number;
   source: string;
+};
+
+type LoggedGeofencingFix = {
+  n: number;
+  identifier: string;
+  state: string;
+  timestamp: number;
+  at: number;
 };
 
 function formatClock(at: number) {
@@ -87,6 +108,21 @@ function FixHistory({ fixes }: { fixes: LoggedFix[] }) {
         </View>
       ))}
     </ScrollView>
+  );
+}
+
+function GeofencingFixHistory({ fixes }: { fixes: LoggedGeofencingFix[] }) {
+  if (fixes.length === 0) {
+    return <Text style={{ fontSize: 11, marginTop: 6 }}>No geofencing fixes recorded yet.</Text>;
+  }
+  return (
+    <View style={{ width: '100%', marginTop: 8, gap: 4 }}>
+      {fixes.map((fix) => (
+        <Text key={fix.n} style={{ fontSize: 11, fontVariant: ['tabular-nums'] }}>
+          {`#${fix.n} ${fix.identifier} ${fix.state}  event ${formatClock(fix.timestamp)}  arrived ${formatClock(fix.at)}`}
+        </Text>
+      ))}
+    </View>
   );
 }
 
@@ -260,6 +296,7 @@ function WatchIndicator({ status }: { status: PositionWatchStatus | null }) {
 }
 
 export default function LocationNextScreen() {
+  const insets = useSafeAreaInsets();
   const [output, setOutput] = useState({
     actual: 'No output yet',
     expected: '',
@@ -267,9 +304,13 @@ export default function LocationNextScreen() {
   const [watchStatus, setWatchStatus] = useState<PositionWatchStatus | null>(null);
   const watcher = useRef<PositionWatchHandle | null>(null);
   const updates = useRef<LocationUpdatesHandle | null>(null);
+  const geofencing = useRef<GeofencingHandle | null>(null);
   const fixCount = useRef(0);
   const [fixes, setFixes] = useState<LoggedFix[]>([]);
   const [showFixes, setShowFixes] = useState(false);
+  const geofencingFixCount = useRef(0);
+  const [geofencingFixes, setGeofencingFixes] = useState<LoggedGeofencingFix[]>([]);
+  const [showGeofencingFixes, setShowGeofencingFixes] = useState(true);
   const [backgroundProfile, setBackgroundProfile] = useState(LocationProfile.DEFAULT);
   const [backgroundStatus, setBackgroundStatus] = useState<BackgroundTaskStatus | null>(null);
   const [backgroundFixes, setBackgroundFixes] = useState<BackgroundFixEntry[]>([]);
@@ -307,8 +348,35 @@ export default function LocationNextScreen() {
     setLocationTaskListener((message) =>
       setOutput({ actual: `[task] ${message}`, expected: 'One call per delivered position.' })
     );
+    setGeofencingTaskListener((entry: GeofencingTaskEntry) => {
+      if ('error' in entry) {
+        setOutput({
+          actual: `[geofencing task] Error: ${entry.error}`,
+          expected: `${GEOFENCING_EVENT_SHAPE}\nOne call per region state change.`,
+        });
+        return;
+      }
+      setOutput({
+        actual: `[geofencing task] ${JSON.stringify(entry.event, null, 2)}`,
+        expected: `${GEOFENCING_EVENT_SHAPE}\nOne call per region state change.`,
+      });
+      geofencingFixCount.current += 1;
+      setGeofencingFixes((previous) =>
+        [
+          {
+            n: geofencingFixCount.current,
+            identifier: entry.event.identifier,
+            state: entry.event.state,
+            timestamp: entry.event.timestamp,
+            at: Date.now(),
+          },
+          ...previous,
+        ].slice(0, 200)
+      );
+    });
     return () => {
       setLocationTaskListener(null);
+      setGeofencingTaskListener(null);
       watcher.current?.dispose();
       watcher.current = null;
     };
@@ -664,6 +732,74 @@ export default function LocationNextScreen() {
         </Section>
 
         <Section
+          title="Geofencing"
+          note="iOS only. Durable region monitoring; events arrive through the geofencing task. Needs the background permission. Simulator: Features > Location > Apple or City Run flips the state of one of the two regions.">
+          <GridButton
+            label="geofence start"
+            onPress={run(
+              'geofencing',
+              'Registers the monitoring; resolves with nothing.\n' +
+                'Then an event per region as the system determines its state.\n' +
+                'Throws without the background permission or with location services off.',
+              () => {
+                geofencing.current ??= new GeofencingHandle();
+                return geofencing.current.start(GEOFENCE_REGIONS);
+              }
+            )}
+          />
+          <GridButton
+            label="geofence one"
+            onPress={run(
+              'geofencing',
+              'done. Replaces the monitored set with apple-park only;\nsan-francisco stops delivering events.',
+              () => {
+                geofencing.current ??= new GeofencingHandle();
+                return geofencing.current.start(GEOFENCE_REGIONS.slice(0, 1));
+              }
+            )}
+          />
+          <GridButton
+            label="geofence stop"
+            onPress={run(
+              'geofencing',
+              'Unregisters the monitoring; resolves with nothing.\nDoes nothing when not started.',
+              () => {
+                geofencing.current ??= new GeofencingHandle();
+                return geofencing.current.stop();
+              }
+            )}
+          />
+          <GridButton
+            label="has started?"
+            onPress={run(
+              'geofencing',
+              'true after start, false after stop.\nSurvives an app restart, so true again on relaunch until stop is called.',
+              () => {
+                geofencing.current ??= new GeofencingHandle();
+                return geofencing.current.hasStarted();
+              }
+            )}
+          />
+        </Section>
+
+        <Section
+          title="Geofencing fixes"
+          note="Every event the geofencing task received, newest first. 'event' is the event's own timestamp, 'arrived' is when the task ran; the same event timestamp twice means CoreLocation re-sent it."
+          footer={showGeofencingFixes ? <GeofencingFixHistory fixes={geofencingFixes} /> : null}>
+          <GridButton
+            label={showGeofencingFixes ? 'hide list' : `show list (${geofencingFixes.length})`}
+            onPress={() => setShowGeofencingFixes((previous) => !previous)}
+          />
+          <GridButton
+            label="clear list"
+            onPress={() => {
+              geofencingFixCount.current = 0;
+              setGeofencingFixes([]);
+            }}
+          />
+        </Section>
+
+        <Section
           title="Foreground session"
           note="Keeps background tasks unthrottled and watchers alive while the app is backgrounded. Start it from the foreground.">
           <GridButton
@@ -743,7 +879,7 @@ export default function LocationNextScreen() {
           gap: 12,
           paddingHorizontal: 16,
           paddingTop: 10,
-          paddingBottom: 16,
+          paddingBottom: 16 + insets.bottom,
           borderTopWidth: 4,
           borderTopColor: Colors.border,
         }}>
