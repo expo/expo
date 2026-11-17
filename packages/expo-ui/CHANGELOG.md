@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.29
+
+### Patch Changes
+
+- [iOS] Fix text in a community `BottomSheet` without snap points not wrapping beside other views, such as an icon or a button. ([#53401](https://github.com/expo/expo/pull/53401) by [@mazenchami](https://github.com/mazenchami))
+- [Android] The community `MenuView` now shows an action with a `state` as a selectable Material 3 Expressive menu item. A selected item has a leading check icon and a highlighted container. Before, it showed a "✓" text character after the label. An action with `displayInline` is now its own group, and a long menu scrolls. Leading icons are now 20 dp instead of 24 dp, to match the Material 3 menu item size. ([#53485](https://github.com/expo/expo/pull/53485) by [@benjaminkomen](https://github.com/benjaminkomen))
+
 ## 58.0.28
 
 ### Patch Changes

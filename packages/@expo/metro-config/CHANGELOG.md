@@ -1,5 +1,20 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- Fix production folding of `Platform.OS` and `Platform.select` through named, default, and namespace imports in the Rust transformer, including `expo` re-exports and React Native subpaths. Preserve import side effects when folding removes all uses of an imported value. ([#53565](https://github.com/expo/expo/pull/53565) by [@kitten](https://github.com/kitten))
+- Omit module debug names consistently in production native transforms while preserving optional dependency diagnostics.
+
+  Preserve source-based dependency calls when module wrapping is disabled.
+
+  ([#53054](https://github.com/expo/expo/pull/53054) by [@kitten](https://github.com/kitten))
+
+- Fix production folding of Platform.OS and Platform.select imports from React Native, React Native Web, and Expo Modules Core. Preserve statement boundaries and safely remove losing branches and their dependencies. ([#53052](https://github.com/expo/expo/pull/53052) by [@kitten](https://github.com/kitten))
+- Bump to `noxcturnal@^0.1.13` ([#53274](https://github.com/expo/expo/pull/53274) by [@kitten](https://github.com/kitten))
+- Bump to `noxcturnal@^0.1.14` ([#53578](https://github.com/expo/expo/pull/53578) by [@kitten](https://github.com/kitten))
+
 ## 58.0.22
 
 ### Patch Changes

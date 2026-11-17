@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- Mock the `ObservableState` and `WorkletCallback` classes of `@expo/ui`. Before, tests that rendered a component using `useNativeState` or `withAnimation`, such as `PagerView`, failed with `ExpoUI.ObservableState is not a constructor`. ([#53569](https://github.com/expo/expo/pull/53569) by [@expo-bot](https://github.com/expo-bot))
+
 ## 58.0.14
 
 ### Patch Changes

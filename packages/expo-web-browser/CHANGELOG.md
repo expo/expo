@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.1.0
+
+### Minor Changes
+
+- Add optional authentication-session HTTP headers on Android, iOS 17.4 and later, and macOS 14.4 and later. ([#53527](https://github.com/expo/expo/pull/53527) by [@thomasvo-replit](https://github.com/thomasvo-replit))
+
 ## 58.0.8
 
 ### Patch Changes
