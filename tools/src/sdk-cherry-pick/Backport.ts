@@ -4,6 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { GitDirectory } from '../Git';
+import { spawnErrorOutput } from '../Utils';
 import { convertChangesetsAsync } from '../changesets/BackportChangelog';
 import { isChangesetPath } from '../code-review/Changesets';
 import { GitHub } from './GitHub';
@@ -34,12 +35,24 @@ const GIT_CONFIG = [
   'user.name=Expo Bot',
   '-c',
   'user.email=34669131+expo-bot@users.noreply.github.com',
-  // Reads the token from the environment, so that it is not written to .git/config.
   '-c',
   'credential.helper=',
-  '-c',
-  'credential.helper=!f() { echo username=x-access-token; echo "password=$GH_TOKEN"; }; f',
 ];
+
+// The environment keeps the token out of .git/config and out of the command line, which spawn errors print.
+function gitAuthEnv(): NodeJS.ProcessEnv {
+  const token = process.env.GH_TOKEN;
+  if (!token) {
+    return process.env;
+  }
+  const basic = Buffer.from(`x-access-token:${token}`).toString('base64');
+  return {
+    ...process.env,
+    GIT_CONFIG_COUNT: '1',
+    GIT_CONFIG_KEY_0: 'http.https://github.com/.extraheader',
+    GIT_CONFIG_VALUE_0: `AUTHORIZATION: basic ${basic}`,
+  };
+}
 
 /**
  * Appends a `See:` line for the pull request to each changeset that has none outside a code fence,
@@ -78,7 +91,17 @@ async function linkChangesetsAsync(
 
 function gitIn(dir: string) {
   const repo = new GitDirectory(dir);
-  return async (...args: string[]) => (await repo.runAsync([...GIT_CONFIG, ...args])).stdout.trim();
+  return async (...args: string[]) => {
+    try {
+      return (await repo.runAsync([...GIT_CONFIG, ...args], { env: gitAuthEnv() })).stdout.trim();
+    } catch (error) {
+      const output = spawnErrorOutput(error);
+      if (error instanceof Error && output) {
+        error.message += `\n${output}`;
+      }
+      throw error;
+    }
+  };
 }
 
 /**
