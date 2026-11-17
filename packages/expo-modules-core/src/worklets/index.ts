@@ -26,8 +26,11 @@ function registerSharedObjectSerializer() {
     name: 'ExpoSharedObject',
     determine: (value: object): value is SharedObject => {
       'worklet';
+      // It runs in every worklet runtime, also in one without Expo Modules.
+      const SharedObjectClass = (globalThis as any).expo?.SharedObject;
       return (
-        value instanceof (globalThis as any).expo.SharedObject &&
+        SharedObjectClass != null &&
+        value instanceof SharedObjectClass &&
         (value as any).__expo_shared_object_id__ !== 0
       );
     },
