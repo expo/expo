@@ -308,17 +308,22 @@ public macro Union() =
 /// optional type, unless the struct declares its own `init()`. When needed, the macro generates
 /// `init()`, which sets each event prop without an initial value to an empty closure.
 ///
+/// An event prop takes no parameter or one, the payload that JavaScript gets, whose type is
+/// `JavaScriptEncodable`. Calling it dispatches the event to the view's event handler in JavaScript.
+///
 /// Usage:
 ///
 ///     @ViewProps
 ///     struct CardProps {
 ///       var title = "Untitled"
 ///       var radius: Double = 0
+///       var onTap: () -> Void
 ///     }
 @attached(
   member,
   names: named(PropName), named(PropSet), named(_eventNames), named(Diff), named(init), named(_resetViewProp))
-@attached(extension, conformances: AnyViewProps, names: named(allProps), named(propSet), named(_decode))
+@attached(
+  extension, conformances: AnyViewProps, names: named(allProps), named(propSet), named(_decode), named(_bindEvents))
 public macro ViewProps() =
   #externalMacro(module: "ExpoModulesMacros", type: "ViewPropsMacro")
 

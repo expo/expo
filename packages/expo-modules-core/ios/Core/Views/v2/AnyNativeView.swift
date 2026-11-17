@@ -106,12 +106,18 @@ internal func applyDecodedProps<View: AnyNativeView>(
     new = unsafeDowncast(object, to: DecodedViewProps<View.Props>.self)
   } else if old == nil {
     // React set none of the props, so the view gets the defaults.
-    new = DecodedViewProps(props: View.Props(), changedProps: [], previous: nil)
+    let (props, events) = initialViewProps(View.Props.self)
+    new = DecodedViewProps(props: props, changedProps: [], previous: nil, events: events)
   } else {
     return
   }
   if new === old {
     return
+  }
+  // New props from another lineage come with their own dispatcher. It's connected before `didUpdateProps`, which
+  // can dispatch events.
+  if let events = new.events, events !== old?.events {
+    events.connect(nativeView)
   }
   nativeView.decodedProps = new
   unsafeDowncast(nativeView, to: View.self).didUpdateProps(
