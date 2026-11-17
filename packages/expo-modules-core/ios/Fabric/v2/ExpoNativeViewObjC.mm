@@ -2,6 +2,7 @@
 
 #import <ExpoModulesCore/ExpoNativeViewObjC.h>
 #import <ExpoModulesCore/NewComponentDescriptor.h>
+#import <ExpoModulesCore/NewComponentRegistry.h>
 #import <ExpoModulesCore/ObjCPropsDecoder.h>
 #import <ExpoModulesCore/ViewEventDispatch.h>
 
@@ -58,6 +59,25 @@ std::unordered_map<std::string, std::shared_ptr<const views::NewComponentFlavor>
 
 } // namespace
 
+namespace expo::views {
+
+react::ComponentDescriptorProvider componentDescriptorProvider(Class viewClass)
+{
+  std::string className([NSStringFromClass(viewClass) UTF8String]);
+  auto &flavor = componentFlavors()[className];
+
+  if (!flavor) {
+    RCTLogError(@"The view class '%s' isn't registered with a props decoder, so its props aren't decoded", className.c_str());
+    flavor = std::make_shared<const NewComponentFlavor>(NewComponentFlavor{
+      .name = className,
+      .decoder = std::make_shared<NoPropsDecoder>(),
+    });
+  }
+  return NewComponentDescriptor::provider(flavor);
+}
+
+} // namespace expo::views
+
 // The header adopts the protocol in a category without an implementation, which doesn't register the conformance at
 // runtime. This class extension registers it, so `conformsToProtocol:` and Swift's dynamic casts find it.
 @interface ExpoNativeViewObjC () <EXViewEventEmitting>
@@ -81,17 +101,7 @@ std::unordered_map<std::string, std::shared_ptr<const views::NewComponentFlavor>
 
 + (react::ComponentDescriptorProvider)componentDescriptorProvider
 {
-  std::string className([NSStringFromClass(self) UTF8String]);
-  auto &flavor = componentFlavors()[className];
-
-  if (!flavor) {
-    RCTLogError(@"The view class '%s' isn't registered with a props decoder, so its props aren't decoded", className.c_str());
-    flavor = std::make_shared<const views::NewComponentFlavor>(views::NewComponentFlavor{
-      .name = className,
-      .decoder = std::make_shared<NoPropsDecoder>(),
-    });
-  }
-  return views::NewComponentDescriptor::provider(flavor);
+  return views::componentDescriptorProvider(self);
 }
 
 + (BOOL)shouldBeRecycled

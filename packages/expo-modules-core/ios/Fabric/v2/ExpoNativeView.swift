@@ -36,10 +36,10 @@ open class ExpoNativeView: ExpoNativeViewObjC {
     fatalError("init(coder:) has not been implemented")
   }
 
-  /// The view's type as an `AnyNativeView`, found on the first props update, so later updates skip the
+  /// The view's type as an `AnyNativeUIKitView`, found on the first props update, so later updates skip the
   /// conformance check. Accessed only on the main thread, in `updateDecodedProps(_:)`.
   @exclusivity(unchecked)
-  nonisolated(unsafe) private var nativeViewType: (any AnyNativeView.Type)?
+  nonisolated(unsafe) private var nativeViewType: (any AnyNativeUIKitView.Type)?
 
   public nonisolated final override func updateDecodedProps(_ decodedProps: UnsafeRawPointer?) {
     assert(Thread.isMainThread, "Fabric mounts the props of a view on the main thread")
@@ -50,10 +50,10 @@ open class ExpoNativeView: ExpoNativeViewObjC {
     viewType._applyDecodedProps(object, to: self)
   }
 
-  private nonisolated func findNativeViewType() -> (any AnyNativeView.Type)? {
-    guard let viewType = type(of: self) as? any AnyNativeView.Type else {
+  private nonisolated func findNativeViewType() -> (any AnyNativeUIKitView.Type)? {
+    guard let viewType = type(of: self) as? any AnyNativeUIKitView.Type else {
       log.error(
-        "The view '\(type(of: self))' doesn't conform to AnyNativeView, so its props aren't applied. Add @ExpoView<Props> to the class"
+        "The view '\(type(of: self))' doesn't conform to AnyNativeUIKitView, so its props aren't applied. Add @ExpoView<Props> to the class"
       )
       return nil
     }
@@ -73,12 +73,15 @@ open class ExpoNativeView: ExpoNativeViewObjC {
   /// `packageComponentName`.
   ///
   /// `RCTComponentViewFactory` maps each component to a class and creates the views with `+[viewClass new]`.
-  /// So the registered class is a subclass of the view type that is named after the component, the same way
-  /// that `ExpoFabricView.viewClass` does it. The subclass adds no methods.
+  /// So the registered class is a subclass of the component view class that is named after the component, the
+  /// same way that `ExpoFabricView.viewClass` does it. The subclass adds no methods. The component view class is
+  /// the view type itself, or for a SwiftUI view the class that renders it.
   @MainActor
   internal static func registerComponent(_ viewType: any AnyNativeView.Type, componentName: String) {
-    guard viewType is ExpoNativeView.Type else {
-      log.error("The view '\(viewType)' isn't registered as '\(componentName)', because it isn't an ExpoNativeView")
+    guard let componentViewClass = componentViewClass(of: viewType) else {
+      log.error(
+        "The view '\(viewType)' isn't registered as '\(componentName)', because it isn't an ExpoNativeView or a SwiftUI view"
+      )
       return
     }
     if let registeredViewType = registeredViewTypes[componentName] {
@@ -89,7 +92,7 @@ open class ExpoNativeView: ExpoNativeViewObjC {
       }
       return
     }
-    guard let viewClass = objc_allocateClassPair(viewType, componentName, 0) else {
+    guard let viewClass = objc_allocateClassPair(componentViewClass, componentName, 0) else {
       log.error("Cannot register the view '\(viewType)' because a class named '\(componentName)' already exists")
       return
     }
@@ -98,6 +101,19 @@ open class ExpoNativeView: ExpoNativeViewObjC {
 
     let propsDecoder = viewType._makePropsDecoder(viewName: unqualifiedTypeName(viewType))
     ExpoNativeViewObjC.registerComponentViewClass(viewClass, propsDecoder: propsDecoder)
+  }
+
+  /// Returns the class of the Fabric component views of the given view type, or `nil` when the type is neither an
+  /// `ExpoNativeView` nor a SwiftUI view.
+  @MainActor
+  private static func componentViewClass(of viewType: any AnyNativeView.Type) -> AnyClass? {
+    if let viewClass = viewType as? ExpoNativeView.Type {
+      return viewClass
+    }
+    if let swiftUIViewType = viewType as? any AnyNativeSwiftUIView.Type {
+      return swiftUIComponentViewClass(of: swiftUIViewType)
+    }
+    return nil
   }
 
   /// Returns the component name of a view that the package with the given name exports, for example
