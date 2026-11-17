@@ -774,6 +774,53 @@ describe('lists in table cells', () => {
   });
 });
 
+describe('line breaks in table cells', () => {
+  it('keeps a space where a cell has a line break', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Type</th><th>Description</th></tr></thead>',
+      '<tbody>',
+      '<tr><td><code>CGColor</code><br><code>UIColor</code></td><td>Two letter code.<br>For example, <code>US</code>.</td></tr>',
+      '</tbody>',
+      '</table></main>',
+    ].join('');
+    const row = convertHtmlToMarkdown(html)
+      .split('\n')
+      .find(line => line.includes('CGColor'));
+
+    expect(row).toBe('| `CGColor` `UIColor` | Two letter code. For example, `US`. |');
+  });
+});
+
+describe('code blocks in table cells', () => {
+  it('moves code blocks below the table and points to them from the cell', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Name</th><th>Description</th></tr></thead>',
+      '<tbody>',
+      '<tr><td><code>tabBarBackground</code></td><td>',
+      '<p>Function which returns a React Element.</p>',
+      '<div class="rounded-3xl border"><pre data-md-lang="js"><code>const a = 1;\nconst b = 2;</code></pre></div>',
+      '</td></tr>',
+      '<tr><td><code>next</code></td><td>The next row.</td></tr>',
+      '</tbody>',
+      '</table></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    const rows = md.split('\n').filter(line => line.startsWith('|'));
+
+    expect(rows).toEqual([
+      '| Name | Description |',
+      '| --- | --- |',
+      '| `tabBarBackground` | Function which returns a React Element. See example 1 below the table. |',
+      '| `next` | The next row. |',
+    ]);
+    expect(md).toMatch(
+      /\| `next` \| The next row\. \|\n\nExample 1 for `tabBarBackground`:\n\n```js\nconst a = 1;\nconst b = 2;\n```/
+    );
+  });
+});
+
 describe('platform indicators in table cells', () => {
   it('keeps "Only for: iOS" on same line as description in table cells', () => {
     const html = [

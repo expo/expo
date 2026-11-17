@@ -395,6 +395,30 @@ function escapeHtml(value: string) {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+function moveCodeBlocksBelowTables($: CheerioAPI, main: Cheerio<AnyNode>): void {
+  main.find('table').each((_, table) => {
+    const $table = $(table);
+    if ($table.is('table.diff') || $table.closest('[data-md="diff"]').length > 0) {
+      return;
+    }
+    const examples: string[] = [];
+    $table.find('td pre, th pre').each((_, pre) => {
+      const $pre = $(pre);
+      const $parent = $pre.parent();
+      const $block = $parent.children().length === 1 && !$parent.is('td, th') ? $parent : $pre;
+      const rowName = $pre.closest('tr').children('td, th').first().text().trim();
+      const number = examples.length + 1;
+      examples.push(
+        `<p>Example ${number} for <code>${escapeHtml(rowName)}</code>:</p>${$.html($block)}`
+      );
+      $block.replaceWith(` See example ${number} below the table.`);
+    });
+    if (examples.length > 0) {
+      $table.after(examples.join(''));
+    }
+  });
+}
+
 export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // Keep every tab panel, each prefixed with its label as an h4 (ENG-21907).
   // Must run before the button removal below, since labels live in the buttons.
@@ -840,6 +864,8 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     }
   });
 
+  moveCodeBlocksBelowTables($, main);
+
   // Flatten block elements inside table cells to prevent newlines breaking markdown tables.
   // Turndown converts <p>, <div>, and <blockquote> to blocks with newlines, which breaks
   // GFM table syntax.
@@ -850,9 +876,9 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   main.find('td, th').each((_, cell) => {
     const $cell = $(cell);
 
-    // Remove <br> tags — they create newlines that break GFM table rows.
-    // PlatformTags renders {prefix && <br />} after badges which is decorative only.
-    $cell.find('br').remove();
+    // Replace <br> tags with a space. A newline breaks GFM table rows, and removing them
+    // joins the words around them.
+    $cell.find('br').replaceWith(' ');
 
     // data-md="callout" — inline the callout text (e.g. deprecation warnings).
     // The callout's visible text (like "Deprecated: use X instead") is already meaningful;
