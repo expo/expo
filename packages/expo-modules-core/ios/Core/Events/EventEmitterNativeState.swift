@@ -95,11 +95,32 @@ internal final class EventListeners {
     var listeners: ContiguousArray<JavaScriptEventListener>
   }
 
+  /// Finds the entry of the event. It compares the UTF-8 bytes of the names, like JavaScript compares strings. Swift
+  /// `==` treats canonically equivalent strings as equal, so it would merge `"\u{E9}"` and `"e\u{301}"` into one event.
   private func index(of event: String) -> Int? {
-    for index in events.indices where events[index].name == event {
-      return index
+    var event = event
+    return event.withUTF8 { eventBytes in
+      for index in events.indices {
+        // A copy of a short string, which Swift stores inline, takes no reference counting.
+        var name = events[index].name
+        let isEqual = name.withUTF8 { nameBytes in
+          return nameBytes.elementsEqual(eventBytes)
+        }
+        if isEqual {
+          return index
+        }
+      }
+      return nil
     }
-    return nil
+  }
+
+  /// Returns the listeners of the event, or `nil` when it has none. The array is a copy, so the listeners that calls
+  /// add or remove don't change it.
+  internal func listeners(of event: String) -> ContiguousArray<JavaScriptEventListener>? {
+    guard let index = index(of: event) else {
+      return nil
+    }
+    return events[index].listeners
   }
 
   /// Returns the number of listeners of the event.
@@ -145,19 +166,15 @@ internal final class EventListeners {
     return events.remove(at: index).listeners.count
   }
 
-  /// Calls the listeners of the event with `this` and one argument, the payload.
-  internal func call(
-    _ event: String,
+  /// Calls the listeners, which `listeners(of:)` returned, with `this` and one argument, the payload.
+  internal static func call(
+    _ listeners: ContiguousArray<JavaScriptEventListener>,
     this: borrowing JavaScriptObject,
     payload: borrowing JavaScriptValue,
     in runtime: JavaScriptRuntime
   ) {
-    guard let index = index(of: event) else {
-      return
-    }
-    let listeners = events[index].listeners
     payload.withUnsafePointee { payloadPointer in
-      Self.call(listeners, this: this, argumentsPointer: payloadPointer, argumentCount: 1, in: runtime)
+      call(listeners, this: this, argumentsPointer: payloadPointer, argumentCount: 1, in: runtime)
     }
   }
 

@@ -152,24 +152,11 @@ open class SharedObject: AnySharedObject {
     return unreleasedNativeState?.javaScriptObject(in: runtime)
   }
 
-  /// Calls the listeners of the event in the given runtime with the payload, and its JS object in that runtime as
-  /// `this`. Logs a warning when the object was released or has no JS object in that runtime.
-  @JavaScriptActor
+  /// The native state that an event emitted now is dispatched through, or `nil` when the object isn't paired. The
+  /// dispatch checks whether the object was released. See `EventEmitterReference`.
   @usableFromInline
-  internal func dispatchEvent(event: String, payload: borrowing JavaScriptValue, in runtime: JavaScriptRuntime) {
-    guard let nativeState = unreleasedNativeState else {
-      warnEventTargetLost(event: event)
-      return
-    }
-    // Only a JS object can add listeners, so without listeners there is nothing to look up.
-    guard let listeners = nativeState.listeners(in: runtime), listeners.count(of: event) > 0 else {
-      return
-    }
-    guard let target = nativeState.javaScriptObject(in: runtime) else {
-      warnEventTargetLost(event: event)
-      return
-    }
-    listeners.call(event, this: target, payload: payload, in: runtime)
+  internal var eventDispatchState: AnyObject? {
+    return nativeState
   }
 
   /**
@@ -280,6 +267,27 @@ extension SharedObject {
     override var reason: String {
       "Expected the native shared object to be '\(param.expected)', but found '\(param.actual)'"
     }
+  }
+}
+
+extension SharedObjectNativeState {
+  /// Calls the listeners of the event in the given runtime with the payload, and the JS object in that runtime as
+  /// `this`. Logs a warning when the native object was released or has no JS object in that runtime.
+  @JavaScriptActor
+  internal func dispatchEvent(event: String, payload: borrowing JavaScriptValue, in runtime: JavaScriptRuntime) {
+    guard !isReleased else {
+      warnEventTargetLost(event: event)
+      return
+    }
+    // Only a JS object can add listeners, so without listeners there is nothing to look up.
+    guard let eventListeners = listeners(in: runtime)?.listeners(of: event) else {
+      return
+    }
+    guard let target = javaScriptObject(in: runtime) else {
+      warnEventTargetLost(event: event)
+      return
+    }
+    EventListeners.call(eventListeners, this: target, payload: payload, in: runtime)
   }
 }
 
