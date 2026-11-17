@@ -10,7 +10,7 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
     minSdkVersion: 21,
     compileSdkVersion: 31,
     targetSdkVersion: 31,
-    kotlinVersion: '1.6.10',
+    kotlinVersion: '2.3.21',
   },
   ios: {
     deploymentTarget: '16.4',
