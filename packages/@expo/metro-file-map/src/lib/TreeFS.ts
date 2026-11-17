@@ -28,7 +28,6 @@ import type {
   ProcessFileFunction,
 } from '../types';
 import { RootPathUtils, getAncestorOfRootIdx, pathsToPattern } from './RootPathUtils';
-import normalizePathSeparatorsToPosix from './normalizePathSeparatorsToPosix';
 import normalizePathSeparatorsToSystem from './normalizePathSeparatorsToSystem';
 
 type DirectoryNode = Map<string, MixedNode | null>;
@@ -908,12 +907,8 @@ export default class TreeFS implements MutableFileSystem {
 
         // Symlink in a directory path. Targets are stored already lexically
         // resolved to a normal path, with POSIX separators so that the
-        // snapshot is portable between operating systems. A target that
-        // hasn't been read yet is read now.
-        const normalSymlinkTarget = this.#resolveSymlinkTargetToNormalPath(
-          segmentNode,
-          currentPath
-        );
+        // snapshot is portable between operating systems.
+        const normalSymlinkTarget = this.#resolveSymlinkTargetToNormalPath(segmentNode);
         if (normalSymlinkTarget == null) {
           return {
             canonicalMissingPath: currentPath,
@@ -1509,27 +1504,9 @@ export default class TreeFS implements MutableFileSystem {
     }
   }
 
-  #resolveSymlinkTargetToNormalPath(
-    symlinkNode: FileMetadata,
-    canonicalPathOfSymlink: Path
-  ): Path | null | undefined {
+  #resolveSymlinkTargetToNormalPath(symlinkNode: FileMetadata): Path | null | undefined {
     const symlinkTarget = symlinkNode[H.SYMLINK];
-    if (symlinkTarget === 1) {
-      // Symlink target not yet resolved — read it lazily on first traversal
-      const absoluteSymlink = this.#pathUtils.normalToAbsolute(canonicalPathOfSymlink);
-      try {
-        const literalSymlinkTarget = fs.readlinkSync(absoluteSymlink);
-        const normalTarget = this.#pathUtils.resolveSymlinkToNormal(
-          canonicalPathOfSymlink,
-          literalSymlinkTarget
-        );
-        symlinkNode[H.SYMLINK] = normalizePathSeparatorsToPosix(normalTarget);
-        symlinkNode[H.VISITED] = 1;
-        return normalTarget;
-      } catch {
-        return null;
-      }
-    } else if (symlinkTarget === 0 || symlinkTarget == null) {
+    if (symlinkTarget === 0 || symlinkTarget == null) {
       // WARN: We shouldn't call this method on non-symlinks. Outside of tests
       // this condition shouldn't trigger. It's fine not to resolve a symlink if
       // it does trigger however
