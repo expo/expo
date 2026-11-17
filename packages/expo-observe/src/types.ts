@@ -495,4 +495,11 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * @internal
    */
   setBundleDefaults(defaults: { environment: string; isJsDev: boolean }): void;
+  /**
+   * Returns whether the app privacy manifest declares user content.
+   *
+   * @private
+   * @platform ios
+   */
+  hasUserContentPrivacyEntry?(): boolean;
 }

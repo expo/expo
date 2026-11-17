@@ -44,7 +44,7 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
     reportCaughtError(error);
   }
   reportFeedback(feedback: ObserveFeedback): void {
-    reportFeedback(feedback);
+    reportFeedback(feedback, this);
   }
   markFirstRender(): void {
     AppMetrics.markFirstRender();

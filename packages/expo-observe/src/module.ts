@@ -16,7 +16,12 @@ import { initReactNavigationIntegration } from './integrations/react-navigation/
 import { isReactNavigationInstalled } from './integrations/react-navigation/reactNavigation';
 import { reportCaughtError } from './reportCaughtError';
 import { reportFeedback } from './reportFeedback';
-import type { ObserveConfig, ObserveIntegrationsConfig, ObserveModule } from './types';
+import type {
+  ObserveConfig,
+  ObserveFeedback,
+  ObserveIntegrationsConfig,
+  ObserveModule,
+} from './types';
 
 /**
  * Normalizes the `networkTraces` sugar (`true` / `false` / `{ enabled, filter }`) into the config
@@ -122,7 +127,7 @@ const Observe: ObserveModule = new Proxy(native, {
       return (error: unknown) => reportCaughtError(error);
     }
     if (prop === 'reportFeedback') {
-      return reportFeedback;
+      return (feedback: ObserveFeedback) => reportFeedback(feedback, target);
     }
 
     // The span wrappers add JS-side behavior over the raw native functions (`parent` folding,
