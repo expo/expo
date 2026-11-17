@@ -298,8 +298,9 @@ private fun ImageContentScale.toGlanceContentScale(): ContentScale {
 private fun ReadableMap.toPeekButton(converterContext: WidgetConverterContext, source: InteractionSource): Emittable {
   val props = props<WidgetButtonProps>(converterContext)
   val children = children()
-  val action =
-    props.target?.let { target -> WidgetInteraction(source, target).toGlanceAction(converterContext.applicationContext) }
+  val opensUrl = props.modifiers.any { it["\$type"]?.asString() == "openURL" }
+  val action = props.target?.takeUnless { opensUrl }
+    ?.let { target -> WidgetInteraction(source, target).toGlanceAction(converterContext.applicationContext) }
   val modifier = props.buttonModifier(converterContext)
   val contentColor = props.contentColorProvider()
   val textContent = children.textContent(converterContext) ?: props.label
@@ -427,6 +428,7 @@ private fun ModifierType.toPeekModifier(converterContext: WidgetConverterContext
         WidgetInteraction(converterContext.source, target).toGlanceAction(converterContext.applicationContext)
       )
     }
+    "openURL" -> asRecord<WidgetOpenUrlParams>(converterContext)?.url?.let { GlanceModifier.clickable(openUrlAction(it)) }
     // Unsupported Expo UI modifiers are ignored until they have exact Glance semantics.
     else -> null
   } ?: GlanceModifier
@@ -704,4 +706,9 @@ internal data class WidgetImageProps(
 @OptimizedRecord
 internal data class WidgetClickableParams(
   @Field val target: String? = null
+) : Record
+
+@OptimizedRecord
+internal data class WidgetOpenUrlParams(
+  @Field val url: String? = null
 ) : Record
