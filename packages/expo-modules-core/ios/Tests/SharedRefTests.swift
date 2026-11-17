@@ -99,6 +99,12 @@ struct SharedRefInAttachedRuntimeTests {
   }
 
   @Test
+  func `a Class function returns the JS object of the attached runtime`() throws {
+    let attachedRuntime = try resolveSharedString()
+    #expect(try attachedRuntime.eval("sharedString.returnThis() === sharedString").getBool())
+  }
+
+  @Test
   func `returns a shared ref without the Class definition`() throws {
     let appContext = self.appContext
     let attachedRuntime = try appContext.addRuntime()
@@ -162,6 +168,10 @@ private class SharedStringModule: Module {
     Class(SharedString.self) {
       Property("value") { shared in
         return shared.ref
+      }
+
+      Function("returnThis") { (this: SharedString) -> SharedString in
+        return this
       }
     }
 
