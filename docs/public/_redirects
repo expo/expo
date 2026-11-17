@@ -1021,6 +1021,9 @@
 # Agent skill files keep their own .md paths, so this rule must come before the /*.md rewrite
 /.well-known/agent-skills/* /.well-known/agent-skills/:splat 200
 
+# expo.dev owns pricing, so this rule must come before the /*.md rewrite
+/pricing.md https://expo.dev/pricing.md 301
+
 # Serve markdown at the sibling /<slug>.md path that AI agents typically request,
 # rewriting to the canonical /<slug>/index.md the build script writes.
 # The first two rules are pass-throughs that preserve canonical URLs (root /index.md
@@ -1051,6 +1054,8 @@
 /privacy/ https://expo.dev/privacy 301
 /about https://expo.dev/about 301
 /about/ https://expo.dev/about 301
+/pricing https://expo.dev/pricing 301
+/pricing/ https://expo.dev/pricing 301
 
 # ARD reads the catalog at ard.json; MCP Server Card discovery reads it at ai-catalog.json
 /.well-known/ard.json /.well-known/ai-catalog.json 200

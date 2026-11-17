@@ -606,6 +606,26 @@ async function testAgentDiscoveryRedirectsAsync(): Promise<void> {
     );
   }
   console.log('✓ /developers redirects to the docs home');
+
+  const pricingCases: { from: string; to: string; headers: Record<string, string> }[] = [
+    { from: '/pricing', to: 'https://expo.dev/pricing', headers: {} },
+    { from: '/pricing/', to: 'https://expo.dev/pricing', headers: {} },
+    { from: '/pricing.md', to: 'https://expo.dev/pricing.md', headers: {} },
+    { from: '/pricing', to: 'https://expo.dev/pricing', headers: { Accept: 'text/markdown' } },
+  ];
+
+  for (const { from, to, headers } of pricingCases) {
+    const response = await fetch(`${BASE_URL}${from}`, { headers, redirect: 'manual' });
+    const location = response.headers.get('location') ?? '';
+    const accept = headers.Accept ? ` with Accept: ${headers.Accept}` : '';
+
+    if (response.status !== 301 || location !== to) {
+      throw new Error(
+        `Expected ${from}${accept} to 301 to ${to}, got: HTTP ${response.status} -> ${location}`
+      );
+    }
+    console.log(`✓ ${from}${accept} redirects to ${to}`);
+  }
 }
 
 async function testHtmlNotFoundAsync(): Promise<void> {
