@@ -1,6 +1,7 @@
 export {
   getPosition,
   watchPosition,
+  watchHeading,
   hasLocationServicesEnabled,
   enableLocationServices,
   getForegroundPermissions,

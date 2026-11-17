@@ -14,6 +14,7 @@ import type {
   ReverseGeocodeOptions,
 } from '../../types';
 import type { NativeBackgroundSessionClass } from './NativeBackgroundSessionClass.types';
+import type { NativeHeadingWatchHandleClass } from './NativeHeadingWatchHandleClass.types';
 import type { NativeLocationProviderClass } from './NativeLocationProviderClass.types';
 import type { NativeLocationUpdatesHandleClass } from './NativeLocationUpdatesHandleClass.types';
 import type { NativePositionWatchHandleClass } from './NativePositionWatchHandleClass.types';
@@ -37,8 +38,10 @@ export declare class NativeLocationModuleNextClass extends NativeModule {
   watchPosition(profile?: LocationProfile): NativePositionWatchHandleClass;
   geocode(address: string, options?: GeocodeOptions): Promise<Address[]>;
   reverseGeocode(coordinates: Coordinates, options?: ReverseGeocodeOptions): Promise<Address[]>;
+  watchHeading(filter?: number): NativeHeadingWatchHandleClass;
   LocationProvider: typeof NativeLocationProviderClass;
   PositionWatchHandle: typeof NativePositionWatchHandleClass;
+  HeadingWatchHandle: typeof NativeHeadingWatchHandleClass;
   LocationUpdatesHandle: typeof NativeLocationUpdatesHandleClass;
   BackgroundSession: typeof NativeBackgroundSessionClass;
 }

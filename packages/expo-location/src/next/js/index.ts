@@ -5,6 +5,7 @@ export {
   useLocationServices,
 } from './locationServices';
 export { PositionWatchHandle, watchPosition } from './PositionWatchHandle';
+export { HeadingWatchHandle, watchHeading } from './HeadingWatchHandle';
 export {
   LocationProvider,
   setLocationProvider,
