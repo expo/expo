@@ -52,6 +52,17 @@ function decorateNode(
     context.nextTargetIndex.current += 1;
   }
 
+  if (Array.isArray(props.modifiers)) {
+    props.modifiers = props.modifiers.map((modifier) => {
+      if (modifier?.$type !== 'clickable' || modifier.target != null) {
+        return modifier;
+      }
+      const target = buildButtonTargetId(context.nextTargetIndex.current, context.nearestParentKey);
+      context.nextTargetIndex.current += 1;
+      return { ...modifier, target };
+    });
+  }
+
   if ('children' in props) {
     props.children = decorateNode(props.children, {
       nearestParentKey: node.key ?? context.nearestParentKey,
