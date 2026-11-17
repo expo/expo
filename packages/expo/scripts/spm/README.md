@@ -94,7 +94,9 @@ The plugin decides each module in this order:
    compiles against the `ExpoModulesCoreHeaders` and `ExpoModulesJSIHeaders`
    xcframeworks. `ExpoModulesCoreHeaders` depends on the `expo-modules-macros`
    package, so SwiftPM builds the Expo macro plugin and loads it into the module
-   with no compiler flags in its manifest.
+   with no compiler flags in its manifest. `ExpoModulesCoreHeaders` also depends
+   on React Native's header products, so a module that imports React gets them
+   through it and does not name React Native in its manifest.
 3. Otherwise its `Package.swift` is mirrored into a generated package, or a
    pure-Swift module gets a generated package over its sources.
 

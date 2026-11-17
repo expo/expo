@@ -464,4 +464,27 @@ private struct MacroModuleTests {
       #expect(try message.asString().contains("TypeError"))
     }
   }
+
+  // MARK: - Attached runtimes
+
+  @Test
+  func `binds the module in an attached runtime`() throws {
+    register(MacroGreeter(appContext: appContext))
+    let attachedRuntime = JavaScriptRuntime()
+    try appContext.attach(runtime: attachedRuntime)
+    #expect(try attachedRuntime.eval("expo.modules.MacroGreeter.greet('Expo')").asString() == "Hi, Expo")
+  }
+
+  @Test
+  func `rebuilds the module object in an attached runtime when the module is replaced`() throws {
+    register(MacroGreeter(appContext: appContext))
+    let attachedRuntime = JavaScriptRuntime()
+    try appContext.attach(runtime: attachedRuntime)
+    try attachedRuntime.eval("first = expo.modules.MacroGreeter")
+    #expect(try attachedRuntime.eval("expo.modules.MacroGreeter === first").getBool())
+
+    register(MacroGreeter(appContext: appContext))
+    #expect(try attachedRuntime.eval("expo.modules.MacroGreeter !== first").getBool())
+  }
+
 }

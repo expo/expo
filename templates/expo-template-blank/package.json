@@ -19,6 +19,6 @@
     "expo": "workspace:~",
     "expo-status-bar": "workspace:~",
     "react": "19.3.0",
-    "react-native": "0.88.1"
+    "react-native": "0.89.0-rc.0"
   }
 }

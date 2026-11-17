@@ -3,6 +3,7 @@ export const WidgetFamily = {
   systemMedium: 'systemMedium',
   systemLarge: 'systemLarge',
   systemExtraLarge: 'systemExtraLarge',
+  systemExtraLargePortrait: 'systemExtraLargePortrait',
   accessoryCircular: 'accessoryCircular',
   accessoryRectangular: 'accessoryRectangular',
   accessoryInline: 'accessoryInline',

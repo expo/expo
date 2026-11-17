@@ -90,6 +90,29 @@ struct ExpoCameraUtils {
       : videoOrientation(for: interfaceOrientation)
   }
 
+  @discardableResult
+  static func applyCaptureRotation(
+    to connection: AVCaptureConnection,
+    angle: CGFloat?,
+    fallback: AVCaptureVideoOrientation
+  ) -> Bool {
+    if #available(iOS 17.0, *), let angle, connection.isVideoRotationAngleSupported(angle) {
+      connection.videoRotationAngle = angle
+      return isQuarterTurn(angle: angle)
+    }
+    connection.videoOrientation = fallback
+    return isQuarterTurn(orientation: fallback)
+  }
+
+  static func isQuarterTurn(angle: CGFloat) -> Bool {
+    let degrees = Int(angle.rounded()) % 360
+    return (degrees + 360) % 180 == 90
+  }
+
+  static func isQuarterTurn(orientation: AVCaptureVideoOrientation) -> Bool {
+    return orientation == .portrait || orientation == .portraitUpsideDown
+  }
+
   static func toOrientationString(orientation: UIDeviceOrientation) -> String {
     switch orientation {
     case .portrait:

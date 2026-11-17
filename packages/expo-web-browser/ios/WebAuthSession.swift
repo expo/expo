@@ -23,7 +23,13 @@ final internal class WebAuthSession {
   // It must be initialized before hand as `ASWebAuthenticationSession` holds it as a weak property
   private var presentationContextProvider = PresentationContextProvider()
 
-  init(authUrl: URL, redirectUrl: URL?, options: AuthSessionOptions) {
+  init(authUrl: URL, redirectUrl: URL?, options: AuthSessionOptions) throws {
+    if options.additionalHeaderFields != nil {
+      guard #available(iOS 17.4, macOS 14.4, *) else {
+        throw WebAuthSessionHeadersUnsupportedException()
+      }
+    }
+
     let completionHandler: ASWebAuthenticationSession.CompletionHandler = { callbackUrl, error in
       self.finish(with: WebAuthSession.result(callbackUrl: callbackUrl, error: error))
     }
@@ -53,6 +59,9 @@ final internal class WebAuthSession {
       )
     }
     self.authSession?.prefersEphemeralWebBrowserSession = options.preferEphemeralSession
+    if #available(iOS 17.4, macOS 14.4, *) {
+      self.authSession?.additionalHeaderFields = options.additionalHeaderFields
+    }
   }
 
   @MainActor

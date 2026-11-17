@@ -44,6 +44,30 @@ describe('BottomSheet', () => {
     });
   });
 
+  itIOS(
+    'bounds the hosted content by the host only when the sheet sizes to its content',
+    async () => {
+      const view = await render(
+        <BottomSheet index={0}>
+          <View />
+        </BottomSheet>
+      );
+
+      expect(latestNativeViewProps('RNHostView')?.expoInternalBoundedByHost).toBe(true);
+
+      await view.rerender(
+        <BottomSheet index={0} snapPoints={['50%']}>
+          <View />
+        </BottomSheet>
+      );
+
+      expect(latestNativeViewProps('RNHostView')).toEqual(
+        expect.objectContaining({ matchContentsVertical: false })
+      );
+      expect(latestNativeViewProps('RNHostView')?.expoInternalBoundedByHost).toBeFalsy();
+    }
+  );
+
   itAndroid(
     'gives the hosted content the window width when the sheet sizes to its content',
     async () => {

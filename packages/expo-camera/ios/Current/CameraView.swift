@@ -161,6 +161,17 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     SceneGeometry.interfaceOrientation(for: self)
   }
 
+  internal var captureRotationAngle: CGFloat? {
+    guard !responsiveWhenOrientationLocked else {
+      return nil
+    }
+    if #available(iOS 17.0, *), let coordinator = rotationCoordinator as? AVCaptureDevice.RotationCoordinator {
+      // The capture angle follows gravity; this one follows the interface, Duo offset included.
+      return coordinator.videoRotationAngleForHorizonLevelPreview
+    }
+    return nil
+  }
+
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
     lifecycleManager = appContext?.legacyModule(implementing: EXAppLifecycleService.self)

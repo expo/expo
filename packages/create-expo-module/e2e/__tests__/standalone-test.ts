@@ -1,10 +1,24 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { createFakeProject, executePassing, projectRoot } from './utils';
+import {
+  createFakeProject,
+  createLocalTemplateAsync,
+  executePassing,
+  getTemporaryPath,
+  projectRoot,
+} from './utils';
+
+const localTemplateRoot = getTemporaryPath();
+let localTemplatePath: string;
+
+beforeAll(async () => {
+  localTemplatePath = await createLocalTemplateAsync(localTemplateRoot);
+});
 
 afterAll(async () => {
   await fs.promises.rm(projectRoot, { recursive: true, force: true });
+  await fs.promises.rm(localTemplateRoot, { recursive: true, force: true });
 });
 
 it('creates a standalone module at an absolute destination with repository metadata', async () => {
@@ -34,7 +48,7 @@ it('creates a standalone module at an absolute destination with repository metad
       '--features',
       'Function',
       '--source',
-      path.resolve(__dirname, '../../../expo-module-template'),
+      localTemplatePath,
     ],
     { cwd }
   );

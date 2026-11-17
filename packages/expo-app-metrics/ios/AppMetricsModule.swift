@@ -171,6 +171,13 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }
     }
 
+    Function("reportFeedback") { (report: FeedbackReport) in
+      let record = report.toLogRecord()
+      AppMetricsActor.isolated {
+        AppMetrics.mainSession.receiveLog(record)
+      }
+    }
+
     Class(NetworkRequestObserver.self) {
       Constructor { (filter: NetworkRequestFilter?) in
         return NetworkRequestObserver(filter: filter)

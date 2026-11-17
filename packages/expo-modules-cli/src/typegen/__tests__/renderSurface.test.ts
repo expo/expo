@@ -458,6 +458,187 @@ export declare class M extends NativeModule {
     expect(result.source).toContain('"with\\nnewline": number;');
   });
 
+  it('declares a member bound under a well-known symbol with a computed name', () => {
+    const result = render({
+      ...emptySurface,
+      sharedObjects: [
+        {
+          name: 'Cache',
+          jsName: 'Cache',
+          file: FILE,
+          events: [],
+          properties: [
+            {
+              name: 'tag',
+              symbol: { kind: 'wellKnown', name: 'toStringTag' },
+              type: Str,
+              readonly: true,
+              static: false,
+            },
+          ],
+          functions: [
+            {
+              name: 'makeIterator',
+              symbol: { kind: 'wellKnown', name: 'iterator' },
+              parameters: [],
+              returns: Int,
+              async: false,
+              throws: false,
+              static: false,
+            },
+            {
+              name: 'isCache',
+              symbol: { kind: 'wellKnown', name: 'hasInstance' },
+              parameters: [{ label: '_', name: 'value', type: Int, optional: false }],
+              returns: Bool,
+              async: false,
+              throws: false,
+              static: true,
+            },
+            // A symbol never takes the name of a member with the same text.
+            {
+              name: 'iterator',
+              jsName: 'iterator',
+              parameters: [],
+              returns: Int,
+              async: false,
+              throws: false,
+              static: false,
+            },
+          ],
+        },
+      ],
+    });
+    expect(result.warnings).toEqual([]);
+    expect(result.source).toContain('readonly [Symbol.toStringTag]: string;');
+    expect(result.source).toContain('[Symbol.iterator](): number;');
+    expect(result.source).toContain('static [Symbol.hasInstance](value: number): boolean;');
+    expect(result.source).toContain('  iterator(): number;');
+  });
+
+  it('types a symbol iterator that returns a JavaScript value as an iterator', () => {
+    const JSValue: TypeNode = { kind: 'ref', name: 'JavaScriptValue', typeof: 'object' };
+    const JSObject: TypeNode = { kind: 'ref', name: 'JavaScriptObject', typeof: 'object' };
+    const iterator = (name: string, symbol: string, returns: TypeNode, isStatic = false) => ({
+      name,
+      symbol: { kind: 'wellKnown' as const, name: symbol },
+      parameters: [],
+      returns,
+      async: false,
+      throws: false,
+      static: isStatic,
+    });
+    const result = render({
+      ...emptySurface,
+      sharedObjects: [
+        {
+          name: 'List',
+          jsName: 'List',
+          file: FILE,
+          events: [],
+          properties: [],
+          functions: [
+            iterator('makeIterator', 'iterator', JSValue),
+            iterator('makeAsyncIterator', 'asyncIterator', JSObject),
+            // Another symbol keeps its rendered return type.
+            iterator('primitive', 'toPrimitive', JSValue),
+          ],
+        },
+      ],
+    });
+    expect(result.source).toContain('[Symbol.iterator](): Iterator<unknown>;');
+    expect(result.source).toContain('[Symbol.asyncIterator](): AsyncIterator<unknown>;');
+    expect(result.source).toContain('[Symbol.toPrimitive](): unknown;');
+    expect(result.warnings).toEqual([
+      {
+        kind: 'unknown',
+        file: FILE,
+        location: 'List.primitive()',
+        message: "unresolved type 'JavaScriptValue' rendered as unknown",
+      },
+    ]);
+  });
+
+  it('skips a member under a symbol that a member before it already uses and warns', () => {
+    const fn = (name: string) => ({
+      name,
+      symbol: { kind: 'wellKnown' as const, name: 'iterator' },
+      parameters: [],
+      returns: Int,
+      async: false,
+      throws: false,
+      static: false,
+    });
+    const result = render({
+      ...emptySurface,
+      sharedObjects: [
+        {
+          name: 'List',
+          jsName: 'List',
+          file: FILE,
+          events: [],
+          properties: [
+            {
+              name: 'iterator',
+              symbol: { kind: 'wellKnown', name: 'iterator' },
+              type: Int,
+              readonly: true,
+              static: false,
+            },
+          ],
+          functions: [fn('makeIterator')],
+        },
+      ],
+    });
+    expect(result.source).toContain('readonly [Symbol.iterator]: number;');
+    expect(result.source).not.toContain('[Symbol.iterator](): number;');
+    expect(result.warnings).toEqual([
+      {
+        kind: 'skipped',
+        file: FILE,
+        location: 'List.makeIterator',
+        message:
+          "another member already uses the symbol 'Symbol.iterator', so this one was skipped",
+      },
+    ]);
+  });
+
+  it('skips a member bound under a registered symbol and warns', () => {
+    const result = render({
+      ...emptySurface,
+      sharedObjects: [
+        {
+          name: 'Cache',
+          jsName: 'Cache',
+          file: FILE,
+          events: [],
+          properties: [],
+          functions: [
+            {
+              name: 'id',
+              symbol: { kind: 'registered', name: 'app.id' },
+              parameters: [],
+              returns: Str,
+              async: false,
+              throws: false,
+              static: false,
+            },
+          ],
+        },
+      ],
+    });
+    expect(result.source).not.toContain('app.id');
+    expect(result.warnings).toEqual([
+      {
+        kind: 'skipped',
+        file: FILE,
+        location: 'Cache.id',
+        message:
+          "TypeScript can't declare a class member under 'Symbol.for(\"app.id\")', so this one was skipped",
+      },
+    ]);
+  });
+
   it('skips a member whose JS name is already taken by another member and warns', () => {
     const result = render({
       ...emptySurface,

@@ -26,6 +26,11 @@ public protocol AnyModule: AnyObject, AnyArgument {
   /// underscore). Modules that don't use the macro fall back to the default empty list.
   static var _classTypes: [SharedObject.Type] { get }
 
+  /// The `@ExpoView` classes the module registers as native components, emitted as a static constant
+  /// by the `@ExpoModule` macro from its `views:` argument. Framework-internal (leading underscore).
+  /// Modules that don't use the macro fall back to the default empty list.
+  static var _viewTypes: [any AnyNativeView.Type] { get }
+
   /// Returns definitions that core merges into the module's definition. The `@ExpoModule` macro no
   /// longer emits it. It stays so that module binaries built with earlier macros keep loading and
   /// keep their classes. Framework-internal (leading underscore).
@@ -82,6 +87,10 @@ extension AnyModule {
   public func definition() -> ModuleDefinition {}
 
   public static var _classTypes: [SharedObject.Type] {
+    return []
+  }
+
+  public static var _viewTypes: [any AnyNativeView.Type] {
     return []
   }
 

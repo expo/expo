@@ -2,14 +2,19 @@ import { NativeModule } from 'expo';
 import type { PermissionResponse, SharedRef } from 'expo';
 
 import type {
+  Address,
+  Coordinates,
+  GeocodeOptions,
   GetPositionOptions,
   LocationPermissionResponse,
   LocationProfile,
   LocationProviderRefType,
   Position,
   RequestPermissionsOptions,
+  ReverseGeocodeOptions,
 } from '../../types';
 import type { NativeBackgroundSessionClass } from './NativeBackgroundSessionClass.types';
+import type { NativeHeadingWatchHandleClass } from './NativeHeadingWatchHandleClass.types';
 import type { NativeLocationProviderClass } from './NativeLocationProviderClass.types';
 import type { NativeLocationUpdatesHandleClass } from './NativeLocationUpdatesHandleClass.types';
 import type { NativePositionWatchHandleClass } from './NativePositionWatchHandleClass.types';
@@ -31,8 +36,12 @@ export declare class NativeLocationModuleNextClass extends NativeModule {
   enableLocationServices(): Promise<boolean>;
   getPosition(options?: GetPositionOptions): Promise<Position | null>;
   watchPosition(profile?: LocationProfile): NativePositionWatchHandleClass;
+  geocode(address: string, options?: GeocodeOptions): Promise<Address[]>;
+  reverseGeocode(coordinates: Coordinates, options?: ReverseGeocodeOptions): Promise<Address[]>;
+  watchHeading(filter?: number): NativeHeadingWatchHandleClass;
   LocationProvider: typeof NativeLocationProviderClass;
   PositionWatchHandle: typeof NativePositionWatchHandleClass;
+  HeadingWatchHandle: typeof NativeHeadingWatchHandleClass;
   LocationUpdatesHandle: typeof NativeLocationUpdatesHandleClass;
   BackgroundSession: typeof NativeBackgroundSessionClass;
 }

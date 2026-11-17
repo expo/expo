@@ -9,6 +9,7 @@ private final class MockCameraVideoRecordingDelegate: CameraVideoRecordingDelega
   var responsiveWhenOrientationLocked = false
   var physicalOrientation: UIDeviceOrientation = .portrait
   var deviceOrientation: UIInterfaceOrientation = .portrait
+  var captureRotationAngle: CGFloat?
   var mirror = false
   var appContext: AppContext?
   var videoBitrate: Int?

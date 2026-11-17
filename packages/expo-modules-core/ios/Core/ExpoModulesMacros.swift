@@ -87,6 +87,23 @@ public macro JS(_ jsName: String? = nil, _ options: JSOptions...) =
 public macro JS(_ options: JSOptions...) =
   #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
 
+/// Binds the member under a well-known symbol instead of a name, for example `@JS(symbol: .iterator)` binds
+/// a function as `[Symbol.iterator]`, and `@JS(symbol: .toStringTag)` binds a property as
+/// `[Symbol.toStringTag]`. Applies to a function or property, not to an initializer.
+///
+///     @JS(symbol: .iterator)
+///     func makeIterator() -> JavaScriptObject { ... }
+@attached(peer, names: arbitrary)
+public macro JS(symbol: JavaScriptSymbol.WellKnown, _ options: JSOptions...) =
+  #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
+
+/// Binds the member under the symbol that the global symbol registry holds for the key, like
+/// `Symbol.for(key)` in JavaScript, for example `@JS(symbol: "app.id")`. The key must be a string literal.
+/// Applies to a function or property, not to an initializer.
+@attached(peer, names: arbitrary)
+public macro JS(symbol: String, _ options: JSOptions...) =
+  #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
+
 /// Options passed to `@Event` after the optional JS name, e.g. `@Event(.inline)` or
 /// `@Event("tick", .blocking)`. The macro reads them from the source, so spell them as `.option`
 /// literals rather than constants. Without an option, the event is scheduled on the JavaScript thread
@@ -141,6 +158,8 @@ public macro Event(_ options: EventOptions...) =
 /// marked with `@JS` and binds them directly into the module's JS object by a synthesized
 /// `_decorateModule(object:in:)`. The `@SharedObject` classes in the `classes:` argument are
 /// emitted as a `_classTypes` static, and core adds their JavaScript classes to the module's JS object.
+/// The `@ExpoView` classes in the `views:` argument are emitted as a `_viewTypes` static, and core
+/// registers them as native components.
 ///
 /// The module's JavaScript name is synthesized into a `_jsName` static and read by core, so there
 /// is no `Name(…)` DSL entry. It defaults to the class name; pass `@ExpoModule("CustomName")` to
@@ -161,11 +180,11 @@ public macro Event(_ options: EventOptions...) =
 @attached(
   member,
   names:
-    named(_jsName), named(_classTypes), named(appContext), named(init),
+    named(_jsName), named(_classTypes), named(_viewTypes), named(appContext), named(init),
     named(_decorateModule), named(_assertTypesConformance))
 @attached(memberAttribute)
 @attached(extension, conformances: AnyModule, Sendable)
-public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
+public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = [], views: [Any.Type] = []) =
   #externalMacro(module: "ExpoModulesMacros", type: "ExpoModuleMacro")
 
 /// Member macro applied to a `SharedObject` subclass. Scans the class body for declarations
@@ -302,3 +321,26 @@ public macro Union() =
 @attached(extension, conformances: AnyViewProps, names: named(allProps), named(propSet), named(_decode))
 public macro ViewProps() =
   #externalMacro(module: "ExpoModulesMacros", type: "ViewPropsMacro")
+
+/// Member + extension macro applied to an `ExpoNativeView` subclass, the view class of Expo Modules v2.
+/// It binds the class to its `@ViewProps` type, which is the generic argument, and conforms it to
+/// `AnyNativeView`. The module registers the view with `@ExpoModule(views:)`.
+///
+/// The view's name defaults to the class name; pass `@ExpoView<Props>("CustomName")` to override it.
+///
+/// Usage:
+///
+///     @ExpoView<CardProps>
+///     final class CardView: ExpoNativeView {
+///       let titleLabel = UILabel()
+///
+///       func didUpdateProps(_ diff: CardProps.Diff) {
+///         if diff.changed(.title) {
+///           titleLabel.text = props.title
+///         }
+///       }
+///     }
+@attached(member, names: named(Props), named(_jsName))
+@attached(extension, conformances: AnyNativeView)
+public macro ExpoView<Props: AnyViewProps>(_ name: String? = nil) =
+  #externalMacro(module: "ExpoModulesMacros", type: "ExpoViewMacro")

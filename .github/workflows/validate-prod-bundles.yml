@@ -1,0 +1,74 @@
+name: Validate prod bundle dependencies
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - .github/workflows/validate-prod-bundles.yml
+      - apps/minimal-tester/**
+      - packages/@expo/cli/**
+      - packages/@expo/metro-config/**
+      - packages/@expo/metro-runtime/**
+      - packages/babel-preset-expo/**
+      - packages/expo/**
+      - package.json
+      - pnpm-lock.yaml
+      - '!**.md'
+  pull_request:
+    paths:
+      - .github/workflows/validate-prod-bundles.yml
+      - apps/minimal-tester/**
+      - packages/@expo/cli/**
+      - packages/@expo/metro-config/**
+      - packages/@expo/metro-runtime/**
+      - packages/babel-preset-expo/**
+      - packages/expo/**
+      - package.json
+      - pnpm-lock.yaml
+      - '!**.md'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SKIP_SKIA_DOWNLOAD: '1'
+
+jobs:
+  validate-prod-bundles:
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name != github.repository ||
+      !startsWith(github.head_ref, 'changeset-release/')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: 🏗️ Setup pnpm
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          install: false
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+
+      - name: 🔨 Build the CLI
+        run: pnpm turbo run build --filter=@expo/cli
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+
+      - name: 🧐 Check production bundle packages
+        run: node apps/minimal-tester/scripts/gen-prod-bundle-deps.js --check
