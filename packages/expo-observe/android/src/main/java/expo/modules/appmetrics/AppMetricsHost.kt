@@ -1,27 +1,28 @@
 package expo.modules.appmetrics
 
 import android.util.Log
-import expo.modules.appmetrics.utils.WriteOnce
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Values that only the host app knows. The host passes them to `AppMetrics.configure` once in
  * `Application.onCreate`, before the main session starts. The defaults describe a host without expo-updates.
  */
 internal class AppMetricsHost(
-  // Reads the running update. Called when the app metadata is first built and when the main session starts.
-  val updatesInfo: () -> AppUpdatesInfo = { AppUpdatesInfo(updateId = null, runtimeVersion = null, requestHeaders = null) }
+  // Reads the running update.
+  val updatesInfo: () -> AppUpdatesInfo = { AppUpdatesInfo.EMPTY }
 )
 
 internal object AppMetrics {
-  private val hostValue = WriteOnce(AppMetricsHost())
+  private val defaultHost = AppMetricsHost()
+  private val configuredHost = AtomicReference<AppMetricsHost?>(null)
 
   /** The host values, or the defaults until `configure` runs. */
   val host: AppMetricsHost
-    get() = hostValue.value
+    get() = configuredHost.get() ?: defaultHost
 
   /** Sets the host values. Call once at launch, before the main session starts. A second call is ignored with a warning. */
   fun configure(host: AppMetricsHost) {
-    if (!hostValue.set(host)) {
+    if (!configuredHost.compareAndSet(null, host)) {
       Log.w(
         TAG,
         "[AppMetrics] Ignoring `configure`: the host values were already set. Call it once at launch, before the main session starts."
