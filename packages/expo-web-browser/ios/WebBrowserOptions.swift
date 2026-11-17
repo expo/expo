@@ -27,6 +27,9 @@ struct WebBrowserOptions: Record {
 
 struct AuthSessionOptions: Record {
   @Field
+  var additionalHeaderFields: [String: String]?
+
+  @Field
   var preferEphemeralSession: Bool = false
 
   @Field

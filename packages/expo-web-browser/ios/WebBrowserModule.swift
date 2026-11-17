@@ -63,7 +63,7 @@ final public class WebBrowserModule: Module {
       guard self.currentAuthSession?.isOpen != true else {
         throw WebBrowserAlreadyOpenException()
       }
-      self.currentAuthSession = WebAuthSession(authUrl: authUrl, redirectUrl: redirectUrl, options: options)
+      self.currentAuthSession = try WebAuthSession(authUrl: authUrl, redirectUrl: redirectUrl, options: options)
       self.currentAuthSession?.open(promise)
     }
     .runOnQueue(.main)
