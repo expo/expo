@@ -35,8 +35,7 @@ public final class SharedObjectRegistry: Sendable {
     var pairs = [SharedObjectId: SharedObjectNativeState]()
 
     /**
-     The native states that were released on a thread other than the thread of the main runtime, for example by
-     `release()` in another runtime, while another runtime pairs a JS object with them. That JS object can hold
+     The native states that were released while another runtime pairs a JS object with them. That JS object can hold
      the C++ state, with values of the main runtime in it, after the main runtime is destroyed. `clear()` releases
      those values. An entry is removed when its C++ state is destroyed.
      */
@@ -196,8 +195,8 @@ public final class SharedObjectRegistry: Sendable {
   }
 
   /// Deletes the pair with the given ID, for `release()` called in JS. When another runtime pairs a JS object with the
-  /// native state, the values of the main runtime in it are released right away on the thread of the main runtime,
-  /// and by `clear()` otherwise.
+  /// native state, `clear()` releases the values of the main runtime in it. A release in the main runtime also releases
+  /// them right away, on the thread of the main runtime.
   internal func release(_ id: SharedObjectId, inMainRuntime: Bool) {
     delete(id, reason: inMainRuntime ? .releasedInMainRuntime : .released)
   }
@@ -224,8 +223,9 @@ public final class SharedObjectRegistry: Sendable {
       // Delete the entry from the dictionary.
       state.pairs[id] = nil
 
-      // A JS object of another runtime can hold the C++ state after the main runtime is destroyed.
-      if reason == .released && isPairedInOtherRuntime {
+      // A JS object of another runtime can hold the C++ state after the main runtime is destroyed. A frozen JS object
+      // of the main runtime keeps the native state after the release, so its listeners can come back.
+      if reason != .nativeStateDestroyed && isPairedInOtherRuntime {
         state.releasedNativeStates[id] = nativeState
       }
 
