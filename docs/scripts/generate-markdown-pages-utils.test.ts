@@ -742,6 +742,120 @@ describe('platform indicators', () => {
   });
 });
 
+describe('pipes in table cells', () => {
+  const unescapedPipeCount = (row: string) => row.split(/(?<!\\)\|/).length - 1;
+
+  it('escapes pipes in text and in code spans so each row keeps its cells', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>',
+      '<tbody>',
+      '<tr><td>getTrigger</td><td>(name: string) =&gt; <a href="#trigger">Trigger</a> | undefined</td><td>Returns the trigger.</td></tr>',
+      '<tr><td>name</td><td><code>string | undefined</code></td><td>The name.</td></tr>',
+      '</tbody>',
+      '</table></main>',
+    ].join('');
+    const rows = convertHtmlToMarkdown(html)
+      .split('\n')
+      .filter(line => line.startsWith('|'));
+
+    expect(rows).toContain(
+      '| getTrigger | (name: string) => [Trigger](#trigger) \\| undefined | Returns the trigger. |'
+    );
+    expect(rows).toContain('| name | `string \\| undefined` | The name. |');
+    expect(rows.map(unescapedPipeCount)).toEqual([4, 4, 4, 4]);
+  });
+
+  it('escapes pipes in the UI component grid table', () => {
+    const html = [
+      '<main><div data-md="ui-component-grid">',
+      '<a href="/picker/" data-md-description="Single | multiple selection">Picker</a>',
+      '</div></main>',
+    ].join('');
+    const row = convertHtmlToMarkdown(html)
+      .split('\n')
+      .find(line => line.includes('Picker'));
+
+    expect(row).toBe(
+      '| [`Picker`](https://docs.expo.dev/picker.md) | Single \\| multiple selection |'
+    );
+  });
+});
+
+describe('lists in table cells', () => {
+  it('keeps a cell with a list on one row', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>',
+      '<tbody>',
+      '<tr><td><code>assets</code></td><td><code>[]</code></td><td>',
+      '<p>Supported file types:</p>',
+      '<ul><li>Images: <code>.png</code></li><li>Media: <code>.mp4</code></li></ul>',
+      '</td></tr>',
+      '<tr><td><code>next</code></td><td><code>string</code></td><td>The next row.</td></tr>',
+      '</tbody>',
+      '</table></main>',
+    ].join('');
+    const rows = convertHtmlToMarkdown(html)
+      .split('\n')
+      .filter(line => line.startsWith('|'));
+
+    expect(rows).toEqual([
+      '| Name | Type | Description |',
+      '| --- | --- | --- |',
+      '| `assets` | `[]` | Supported file types: Images: `.png`. Media: `.mp4` |',
+      '| `next` | `string` | The next row. |',
+    ]);
+  });
+});
+
+describe('line breaks in table cells', () => {
+  it('keeps a space where a cell has a line break', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Type</th><th>Description</th></tr></thead>',
+      '<tbody>',
+      '<tr><td><code>CGColor</code><br><code>UIColor</code></td><td>Two letter code.<br>For example, <code>US</code>.</td></tr>',
+      '</tbody>',
+      '</table></main>',
+    ].join('');
+    const row = convertHtmlToMarkdown(html)
+      .split('\n')
+      .find(line => line.includes('CGColor'));
+
+    expect(row).toBe('| `CGColor` `UIColor` | Two letter code. For example, `US`. |');
+  });
+});
+
+describe('code blocks in table cells', () => {
+  it('moves code blocks below the table and points to them from the cell', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Name</th><th>Description</th></tr></thead>',
+      '<tbody>',
+      '<tr><td><code>tabBarBackground</code></td><td>',
+      '<p>Function which returns a React Element.</p>',
+      '<div class="rounded-3xl border"><pre data-md-lang="js"><code>const a = 1;\nconst b = 2;</code></pre></div>',
+      '</td></tr>',
+      '<tr><td><code>next</code></td><td>The next row.</td></tr>',
+      '</tbody>',
+      '</table></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    const rows = md.split('\n').filter(line => line.startsWith('|'));
+
+    expect(rows).toEqual([
+      '| Name | Description |',
+      '| --- | --- |',
+      '| `tabBarBackground` | Function which returns a React Element. See example 1 below the table. |',
+      '| `next` | The next row. |',
+    ]);
+    expect(md).toMatch(
+      /\| `next` \| The next row\. \|\n\nExample 1 for `tabBarBackground`:\n\n```js\nconst a = 1;\nconst b = 2;\n```/
+    );
+  });
+});
+
 describe('platform indicators in table cells', () => {
   it('keeps "Only for: iOS" on same line as description in table cells', () => {
     const html = [
