@@ -7,8 +7,8 @@
  *   direct/<package>     → relative symlink to the module root
  *   direct/<stand-in>    → compile-only Expo product: a relative symlink to its prebuilt
  *                          headers xcframework, plus dependencies on the packages its
- *                          interface needs, as HEADERS_STAND_INS lists them, and on React
- *                          Native's header products
+ *                          interface needs, as HEADERS_STAND_INS lists them, and, when its
+ *                          entry sets `reactHeaders`, on React Native's header products
  */
 
 'use strict';
