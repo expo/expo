@@ -95,7 +95,9 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     }
 
     AsyncFunction("clearStoredEntries") {
-      // no-op
+      try await AppMetricsActor.isolated {
+        try AppMetrics.database?.deleteAllSessions()
+      }.value
     }
 
     // Debug-only: the inactive (ended) sessions
