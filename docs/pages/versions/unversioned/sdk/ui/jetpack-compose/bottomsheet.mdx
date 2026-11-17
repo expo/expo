@@ -594,6 +594,88 @@ export default function ScrollableContentBottomSheetExample() {
 
 </ComponentExample>
 
+### Sheet sizing
+
+Set `fitToContents` to `true` to size the sheet to its content. This is the default and preserves the existing Android sizing behavior. Set it to `false` to fill the available height.
+
+Content with a `fillMaxHeight` modifier still fills the available height when `fitToContents` is `true`. Use content that measures to its own height, or `RNHostView` with `matchContents`, for a short sheet.
+
+```tsx
+<ModalBottomSheet fitToContents onDismissRequest={closeSheet}>
+  <Column modifiers={[paddingAll(24)]}>
+    <Text>A short sheet</Text>
+  </Column>
+</ModalBottomSheet>
+```
+
+### Footer
+
+Use `ModalBottomSheet.Footer` to place actions outside the main content. Put the slot directly inside `ModalBottomSheet`, alongside the main content and any custom drag handle.
+
+The footer stays at the visible bottom of the sheet with either `fitToContents` value, including while the sheet is partially expanded. It follows `contentWindowInsets`, which keeps it above system bars and the keyboard by default. If you set custom insets, include the bottom inset you want the footer to respect. The main content receives the visible height above the footer, so its last item can scroll into view. The slot does not make the content scrollable or expand the sheet when an input receives focus.
+
+```tsx
+import { useState } from 'react';
+import {
+  Button,
+  Column,
+  Host,
+  ModalBottomSheet,
+  RNHostView,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+import { FlatList, Text as RNText } from 'react-native';
+
+const ITEMS = Array.from(
+  { length: 50 },
+  (_, index) => `Item ${index + 1}`
+);
+
+export default function FooterBottomSheetExample() {
+  const [visible, setVisible] = useState(false);
+  const colors = useMaterialColors();
+
+  return (
+    <Host matchContents>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open sheet</Text>
+      </Button>
+      {visible && (
+        <ModalBottomSheet
+          fitToContents={false}
+          onDismissRequest={() => setVisible(false)}>
+          <RNHostView>
+            <FlatList
+              nestedScrollEnabled
+              style={{ flex: 1 }}
+              data={ITEMS}
+              keyExtractor={item => item}
+              renderItem={({ item }) => (
+                <RNText
+                  style={{ padding: 16, color: colors.onSurface }}>
+                  {item}
+                </RNText>
+              )}
+            />
+          </RNHostView>
+          <ModalBottomSheet.Footer>
+            <Column modifiers={[paddingAll(16)]}>
+              <Button onClick={() => setVisible(false)}>
+                <Text>Confirm selection</Text>
+              </Button>
+            </Column>
+          </ModalBottomSheet.Footer>
+        </ModalBottomSheet>
+      )}
+    </Host>
+  );
+}
+```
+
+With `fitToContents={true}`, the sheet measures the main content and footer together to determine its height. A short sheet fits that combined height. A taller sheet still keeps the footer visible when partially expanded. Use `fitToContents={false}` when you want the sheet to fill the available height regardless of its content.
+
 ### Non-dismissible sheet
 
 Combine `properties`, `sheetGesturesEnabled` to create a sheet that can only be closed programmatically.
