@@ -795,7 +795,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     }
     let basePrototype = try runtime.global()
       .getPropertyAsObject(globalCoreObjectPropertyName)
-      .getPropertyAsObject("SharedObject")
+      .getPropertyAsObject(nativeType is AnySharedRef.Type ? "SharedRef" : "SharedObject")
       .getPropertyAsObject("prototype")
     let prototype = try buildWorkletPrototype(for: nativeType, in: runtime, basePrototype: basePrototype)
     let instance = runtime.createObject(prototype: prototype)
@@ -804,7 +804,8 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   }
 
   /// Builds the worklet prototype for a native shared object class, from the `ClassDefinition` of a module
-  /// that defines it or from a module that registers it in `_classTypes`.
+  /// that defines it or from a module that registers it in `_classTypes`. Returns the base prototype for a class that
+  /// no module registers, as the main runtime does.
   @JavaScriptActor
   private func buildWorkletPrototype(
     for nativeType: SharedObject.Type,
@@ -819,7 +820,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     if let classType = findClassType(for: typeId) {
       return try JavaScriptBindings.buildSharedObjectPrototype(classType, in: runtime, basePrototype: basePrototype)
     }
-    throw SharedObjectClassNotRegisteredException(String(describing: nativeType))
+    return basePrototype
   }
 
   /**
@@ -1127,12 +1128,6 @@ internal final class RuntimeAttachedToAnotherAppContextException: Exception, @un
 internal final class SharedObjectListenersUnsupportedException: Exception, @unchecked Sendable {
   override var reason: String {
     "Shared objects support events only in the main runtime"
-  }
-}
-
-internal final class SharedObjectClassNotRegisteredException: GenericException<String>, @unchecked Sendable {
-  override var reason: String {
-    "No class definition registered for SharedObject type '\(param)'"
   }
 }
 

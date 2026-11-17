@@ -168,14 +168,7 @@ public final class SharedObjectRegistry: Sendable {
       jsObject.defineProperty(sharedObjectIdPropertyName, value: id, options: .writable)
     }
 
-    if let sharedRefType = nativeObject.sharedRefType {
-      jsObject.defineProperty("nativeRefType", value: sharedRefType, options: JavaScriptObject.PropertyOptions())
-    }
-
-    let memoryPressure = nativeObject.getAdditionalMemoryPressure()
-    if memoryPressure > 0 {
-      jsObject.setExternalMemoryPressure(memoryPressure)
-    }
+    Self.setUpJavaScriptObject(jsObject, of: nativeObject)
 
     // The registry is scoped to its app context, so the JS object being paired here lives in that
     // context's runtime. Record the pairing under that runtime so the native object can recover this
@@ -185,6 +178,19 @@ public final class SharedObjectRegistry: Sendable {
     }
 
     return id
+  }
+
+  /// Defines `nativeRefType` on the JS object of a shared ref, and reports the memory that the native object holds to
+  /// the garbage collector of the JS object's runtime. Each JS object of the native object needs it, in every runtime.
+  internal static func setUpJavaScriptObject(_ jsObject: borrowing JavaScriptObject, of nativeObject: SharedObject) {
+    if let sharedRefType = nativeObject.sharedRefType {
+      jsObject.defineProperty("nativeRefType", value: sharedRefType, options: JavaScriptObject.PropertyOptions())
+    }
+
+    let memoryPressure = nativeObject.getAdditionalMemoryPressure()
+    if memoryPressure > 0 {
+      jsObject.setExternalMemoryPressure(memoryPressure)
+    }
   }
 
   /**
