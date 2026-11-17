@@ -144,4 +144,25 @@ describe('Watcher.crawl ignoreForCrawl composition', () => {
 
     expect(sorted(changedFiles.keys())).toEqual(['keep.js']);
   });
+
+  test('recrawls rootDir into the files it changed or lost, and nothing under another watch root', async () => {
+    vol.fromJSON({
+      '/project/a.js': 'changed',
+      '/packages/lib/c.js': 'changed',
+    });
+    const fileSystem = makeTreeFS(
+      new Map([
+        ['a.js', [1, 1, 0, null, 0]],
+        ['b.js', [1, 1, 0, null, 0]],
+        ['../packages/lib/c.js', [1, 1, 0, null, 0]],
+      ])
+    );
+
+    const { changedFiles, removedFiles } = await makeWatcher({
+      roots: [rootDir, '/packages'],
+    }).recrawl('', fileSystem);
+
+    expect(sorted(changedFiles.keys())).toEqual(['a.js']);
+    expect(sorted(removedFiles.values())).toEqual(['b.js']);
+  });
 });
