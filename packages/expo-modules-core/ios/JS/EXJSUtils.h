@@ -42,6 +42,25 @@ void EXJSUtilsEmitEvent(const char *_Nonnull eventName,
   NS_SWIFT_NAME(emitJSEvent(utf8Name:runtimePointer:objectPointer:argumentsPointer:argumentCount:));
 
 /**
+ Calls an event listener with the given `this` object and arguments. The listenerPointer is a raw pointer to the
+ `facebook::jsi::Value` of the listener function, the thisPointer to a `facebook::jsi::Object`, and the
+ argumentsPointer to `argumentCount` values of `facebook::jsi::Value`. An error that the listener throws doesn't
+ reach the caller: it goes to the React Native error handler, so the other listeners of the event still run.
+ */
+void EXJSUtilsCallEventListener(void *_Nonnull runtimePointer,
+                                const void *_Nonnull listenerPointer,
+                                const void *_Nonnull thisPointer,
+                                const void *_Nullable argumentsPointer,
+                                size_t argumentCount)
+  NS_SWIFT_NAME(callJSEventListener(runtimePointer:listenerPointer:thisPointer:argumentsPointer:argumentCount:));
+
+/**
+ Returns a raw pointer to the `facebook::jsi::Value` at `index` in the values that `valuesPointer` points to.
+ */
+const void *_Nullable EXJSUtilsValuePointerAtIndex(const void *_Nullable valuesPointer, size_t index)
+  NS_SWIFT_NAME(jsValuePointer(_:at:));
+
+/**
  Function that an event emitter calls when the first listener for an event is added (`isListening` is `true`)
  and when the last listener for an event is removed (`isListening` is `false`).
  */

@@ -682,7 +682,9 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     // Install `global.expo.SharedObject.__resolveInWorklet`.
     try installSharedObjectResolver(in: runtime, isMainRuntime: isMainRuntime)
 
-    if !isMainRuntime {
+    if isMainRuntime {
+      try installSharedObjectEventMethods(in: runtime)
+    } else {
       try disableSharedObjectListeners(in: runtime)
     }
   }
@@ -751,6 +753,17 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       ?? (try self.runtime).createBaseSharedObject(isSharedRef: nativeType is AnySharedRef.Type)
     sharedObjectRegistry.add(native: native, javaScript: jsObject, inheritsBaseClass: true, in: runtime)
     return jsObject
+  }
+
+  /// Defines the event emitter methods of shared objects, which keep the listeners in the Swift native state of the
+  /// shared object.
+  @JavaScriptActor
+  private func installSharedObjectEventMethods(in runtime: JavaScriptRuntime) throws {
+    let prototype = try runtime.global()
+      .getPropertyAsObject(globalCoreObjectPropertyName)
+      .getPropertyAsObject("SharedObject")
+      .getPropertyAsObject("prototype")
+    try EventEmitterMethods.install(on: prototype, in: runtime)
   }
 
   /// Makes the event emitter methods of shared objects throw in a runtime other than the main runtime. The JS objects

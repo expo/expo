@@ -147,6 +147,26 @@ struct SharedObjectTests {
     #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
   }
 
+  @Test
+  func `releases the native object after removing a listener with removeListener`() throws {
+    let registrySizeBefore = appContext.sharedObjectRegistry.size
+    // The listener's closure can reach the subscription, which is never removed. It must not keep the listener nor the
+    // shared object alive.
+    try runtime.eval(
+      """
+      (() => {
+        const sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample();
+        let subscription;
+        const listener = () => subscription;
+        subscription = sharedObject.addListener('test event', listener);
+        sharedObject.removeListener('test event', listener);
+      })()
+      """
+    )
+    try runtime.collectGarbage { appContext.sharedObjectRegistry.size == registrySizeBefore }
+    #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
+  }
+
   // MARK: - Native object
 
   @Test
@@ -209,6 +229,26 @@ struct SharedObjectTests {
 
     #expect(try runtime.eval("callCount").asInt() == 1)
     #expect(try runtime.eval("receivedPayload").isUndefined() == true)
+  }
+
+  @Test
+  func `calls the other listeners when a listener throws`() throws {
+    let jsObject = try runtime
+      .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
+      .asObject()
+
+    try runtime.eval(
+      """
+      callCount = 0;
+      sharedObject.addListener('ping', () => { throw new Error('listener error') });
+      sharedObject.addListener('ping', () => { callCount += 1 });
+      """
+    )
+
+    let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
+    nativeObject?.emit(event: "ping")
+
+    #expect(try runtime.eval("callCount").asInt() == 1)
   }
 
   @Test

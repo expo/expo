@@ -114,6 +114,17 @@ open class SharedObject: AnySharedObject {
     return unreleasedNativeState?.javaScriptObject(in: runtime)
   }
 
+  /// Calls the listeners of the event in the given runtime with the payload, and its JS object in that runtime as
+  /// `this`. Returns `false` when the object has no JS object in that runtime or was released.
+  @JavaScriptActor
+  internal func dispatchEvent(event: String, payload: borrowing JavaScriptValue, in runtime: JavaScriptRuntime) -> Bool {
+    guard let nativeState = unreleasedNativeState, let target = nativeState.javaScriptObject(in: runtime) else {
+      return false
+    }
+    nativeState.listeners(in: runtime)?.call(event, this: target, payload: payload, in: runtime)
+    return true
+  }
+
   /**
    Backwards-compatible overload that forwards to `emit(event:payload:)`. Existing single-argument
    call sites keep working unchanged; the parameter has been renamed to `payload` to make the

@@ -59,13 +59,7 @@ public extension EventEmitter {
       guard let payload = payload.take() else {
         return
       }
-      let dispatched = emitter.withEventTarget { target in
-        dispatchEvent(event: event, payload: payload, to: target, in: runtime)
-        return true
-      }
-      if dispatched == nil {
-        log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
-      }
+      dispatchEvent(event: event, payload: payload, from: emitter, in: runtime)
     }
   }
 
@@ -161,13 +155,7 @@ public extension EventEmitter {
         log.warn("Failed to convert payload for event '\(event)' on \(P.self); the event will not be emitted: \(error)")
         return
       }
-      let dispatched = emitter.withEventTarget { target in
-        dispatchEvent(event: event, payload: jsPayload, to: target, in: runtime)
-        return true
-      }
-      if dispatched == nil {
-        log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
-      }
+      dispatchEvent(event: event, payload: jsPayload, from: emitter, in: runtime)
     }
   }
 }
@@ -410,11 +398,18 @@ internal func dispatchEvent(
   from emitter: any EventEmitter,
   in runtime: JavaScriptRuntime
 ) {
-  let dispatched = emitter.withEventTarget { target in
-    dispatchEvent(event: event, payload: payload, to: target, in: runtime)
-    return true
-  }
-  if dispatched == nil {
+  // A shared object keeps its listeners in its Swift native state. The listeners of other emitters are in the C++
+  // state of their JS object.
+  let dispatched =
+    if let sharedObject = emitter as? SharedObject {
+      sharedObject.dispatchEvent(event: event, payload: payload, in: runtime)
+    } else {
+      emitter.withEventTarget { target in
+        dispatchEvent(event: event, payload: payload, to: target, in: runtime)
+        return true
+      } ?? false
+    }
+  if !dispatched {
     log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
   }
 }

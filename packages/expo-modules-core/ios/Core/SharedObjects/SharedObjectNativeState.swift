@@ -12,14 +12,14 @@ import os
 /// object, when the last of these JS objects is collected. The first JS object creates the C++ state. The others get
 /// this native state only while that C++ state is alive (`setNativeStateIfAlive`), so it has one C++ state.
 ///
-/// Only the main runtime can have event listeners in the C++ state (`addListener` throws in the other runtimes), and
-/// only its JS object is kept here, so the native state holds values of the main runtime only. The app context
-/// releases them before the main runtime is destroyed (see ``releaseRuntimeValues()``).
+/// Only the main runtime can have event listeners (`addListener` throws in the other runtimes), and only its JS object
+/// is kept here, so the native state holds values of the main runtime only. The app context releases them before the
+/// main runtime is destroyed (see ``releaseRuntimeValues()``).
 ///
 /// `@unchecked Sendable`: the native object is immutable. The JS objects are read and written only on the thread of
 /// the runtime they belong to. The flags are behind a lock, because the threads of all runtimes read them and
 /// a release can come from any of them or from a garbage collector thread.
-internal final class SharedObjectNativeState: JavaScriptNativeState, @unchecked Sendable {
+internal final class SharedObjectNativeState: EventEmitterNativeState, @unchecked Sendable {
   internal let native: SharedObject
 
   /// The main runtime of the app context. The JS object in that runtime is kept in `pairedObject`. JS objects in
@@ -30,7 +30,7 @@ internal final class SharedObjectNativeState: JavaScriptNativeState, @unchecked 
   /// The JS object paired with the native object in the main runtime, held weakly.
   private var pairedObject: JavaScriptWeakObject?
 
-  /// The listeners in the C++ state, which belong to the main runtime.
+  /// The listeners in the C++ state, which `expo.EventEmitter.prototype` methods called with a shared object add.
   private let listeners: SharedObjectListeners
 
   private struct Flags {
@@ -99,6 +99,9 @@ internal final class SharedObjectNativeState: JavaScriptNativeState, @unchecked 
   /// longer.
   internal func releaseRuntimeValues() {
     listeners.clear()
+    if let mainRuntimeId {
+      removeListeners(inRuntime: mainRuntimeId)
+    }
     pairedObject = nil
   }
 
