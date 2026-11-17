@@ -16,7 +16,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 > **warning** Pedometer is not available in Expo Go for Android. Expo Go does not include the `ACTIVITY_RECOGNITION` permission that Pedometer needs. With this permission, Google Play could classify Expo Go as a health app. To use Pedometer on Android, create a [development build](/develop/development-builds/introduction/).
 
-> **Note:** iOS keeps collecting step history automatically (up to seven days). On Android, step history requires the [`pedometerPlayServicesEnabled`](#configurable-properties) config plugin option, Google Play Services Recording API support, and an active `subscribeRecordingAsync()` subscription. Unsubscribing makes previously collected history inaccessible, and Android retains up to 10 days since the latest subscription. The subscription helpers (`subscribeRecordingAsync()` / `unsubscribeRecordingAsync()`) are no-ops on iOS.
+iOS keeps collecting step history automatically (up to seven days). On Android, step history requires the [`pedometerPlayServicesEnabled`](#configurable-properties) config plugin option, Google Play services Recording API support, and an active `subscribeRecordingAsync()` subscription. Unsubscribing makes previously collected history inaccessible, and Android retains up to 10 days since the latest subscription. The subscription helpers (`subscribeRecordingAsync()` / `unsubscribeRecordingAsync()`) are no-ops on iOS.
 
 ## Installation
 
@@ -59,7 +59,7 @@ You can configure `Pedometer` from `expo-sensors` using its built-in [config plu
       name: 'pedometerPlayServicesEnabled',
       platform: 'android',
       description:
-        'Whether to include the Google Play services libraries that step history needs. They increase the app size. Without them, `isRecordingAvailableAsync()` returns `false`.',
+        'Whether to include the Google Play services libraries that step history needs. They increase the app size. Without them, `isRecordingAvailableAsync()` returns `false`, and `getStepCountAsync()` and `subscribeRecordingAsync()` reject with `ERR_PEDOMETER_PLAY_SERVICES_NOT_LINKED`.',
       default: 'false',
     },
   ]}
