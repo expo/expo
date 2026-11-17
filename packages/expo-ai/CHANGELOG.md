@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0
+
+### Minor Changes
+
+- Add Apple Foundation Models guardrail selection through the `expo-ai/apple` entrypoint. ([#53547](https://github.com/expo/expo/pull/53547) by [@chrfalch](https://github.com/chrfalch))
+
 ## 0.2.0
 
 ### Minor Changes

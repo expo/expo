@@ -1,5 +1,16 @@
 # Changelog
 
+## 58.0.26
+
+### Patch Changes
+
+- [iOS] Connect to the development server's `/message` socket and network inspector on port 443 when the bundle URL is `https` with no port, such as an `expo start --tunnel` URL. ([#53466](https://github.com/expo/expo/pull/53466) by [@vonovak](https://github.com/vonovak))
+- Updated dependencies. ([#53385](https://github.com/expo/expo/pull/53385), [#53384](https://github.com/expo/expo/pull/53384), [#53235](https://github.com/expo/expo/pull/53235), [#53565](https://github.com/expo/expo/pull/53565), [#53054](https://github.com/expo/expo/pull/53054), [#53052](https://github.com/expo/expo/pull/53052), [#53274](https://github.com/expo/expo/pull/53274), [#53578](https://github.com/expo/expo/pull/53578))
+  - expo-file-system@58.0.14
+  - @expo/cli@58.1.21
+  - @expo/metro-config@58.0.23
+  - babel-preset-expo@58.0.26
+
 ## 58.0.25
 
 ### Patch Changes

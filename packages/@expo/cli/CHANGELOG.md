@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.1.21
+
+### Patch Changes
+
+- Fix dev server port selection for localhost and LAN connections, and avoid repeated network discovery during startup. ([#53235](https://github.com/expo/expo/pull/53235) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#52311](https://github.com/expo/expo/pull/52311), [#53565](https://github.com/expo/expo/pull/53565), [#53054](https://github.com/expo/expo/pull/53054), [#53052](https://github.com/expo/expo/pull/53052), [#53274](https://github.com/expo/expo/pull/53274), [#53578](https://github.com/expo/expo/pull/53578))
+  - @expo/router-server@58.0.23
+  - @expo/metro-config@58.0.23
+
 ## 58.1.20
 
 ### Patch Changes
