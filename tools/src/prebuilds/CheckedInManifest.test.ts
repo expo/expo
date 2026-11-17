@@ -670,6 +670,33 @@ it('direct stand-ins: rejects a product of a stand-in package that has no stand-
   );
 });
 
+function withWorkletsStandIn(externalDependencies: string[]) {
+  const input = fixture(
+    '.target(name: "Main", dependencies: [.product(name: "ExpoModulesWorkletsHeaders", package: "ExpoModulesWorkletsHeaders")], path: "ios")',
+    undefined,
+    {
+      dependencies:
+        '.package(name: "ExpoModulesWorkletsHeaders", path: "../ExpoModulesWorkletsHeaders")',
+    }
+  );
+  input.product.externalDependencies = externalDependencies;
+  return input;
+}
+
+it('direct stand-ins: replaces ExpoModulesWorkletsHeaders with expo-modules-core/ExpoModulesWorklets', async () => {
+  const input = withWorkletsStandIn(['expo-modules-core/ExpoModulesWorklets']);
+  assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, [
+    'expo-modules-core/ExpoModulesWorklets',
+  ]);
+});
+
+it('direct stand-ins: requires externalDependencies to list "expo-modules-core/ExpoModulesWorklets"', async () => {
+  await rejectsManifest(
+    withWorkletsStandIn(['expo-modules-core/ExpoModulesCore']),
+    /: it names unknown dependency "expo-modules-core\/ExpoModulesWorklets", which the generated package/
+  );
+});
+
 it('product dependency: rejects a .product naming a product absent from spm.config.json', async () => {
   await rejectsManifest(
     withPackages(
