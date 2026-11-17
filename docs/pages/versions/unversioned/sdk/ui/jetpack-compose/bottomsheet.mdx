@@ -596,7 +596,7 @@ export default function ScrollableContentBottomSheetExample() {
 
 ### Sheet sizing
 
-Set `fitToContents` to `true` to size the sheet to its content. This is the default and preserves the existing Android sizing behavior. Set it to `false` to fill the available height.
+Set `fitToContents` to `true` to size the sheet to its content. This is the default. Set it to `false` to fill the available height.
 
 Content with a `fillMaxHeight` modifier still fills the available height when `fitToContents` is `true`. Use content that measures to its own height, or `RNHostView` with `matchContents`, for a short sheet.
 
@@ -608,13 +608,13 @@ Content with a `fillMaxHeight` modifier still fills the available height when `f
 </ModalBottomSheet>
 ```
 
-### Footer
+### Sticky footer
 
 Use `ModalBottomSheet.Footer` to place actions outside the main content. Put the slot directly inside `ModalBottomSheet`, alongside the main content and any custom drag handle.
 
 The footer stays at the visible bottom of the sheet with either `fitToContents` value, including while the sheet is partially expanded. It follows `contentWindowInsets`, which keeps it above system bars and the keyboard by default. If you set custom insets, include the bottom inset you want the footer to respect. The main content receives the visible height above the footer, so its last item can scroll into view. The slot does not make the content scrollable or expand the sheet when an input receives focus.
 
-```tsx
+```tsx FooterBottomSheetExample.tsx
 import { useState } from 'react';
 import {
   Button,
@@ -674,7 +674,7 @@ export default function FooterBottomSheetExample() {
 }
 ```
 
-With `fitToContents={true}`, the sheet measures the main content and footer together to determine its height. A short sheet fits that combined height. A taller sheet still keeps the footer visible when partially expanded. Use `fitToContents={false}` when you want the sheet to fill the available height regardless of its content.
+With `fitToContents={true}`, the sheet measures the main content and footer together to determine its height. A short sheet fits that combined height.
 
 ### Non-dismissible sheet
 
