@@ -755,6 +755,24 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
           .sort()
       );
     });
+
+    test('skips paths the fallback filesystem has found missing', () => {
+      const mockFallback = {
+        lookup: jest.fn().mockReturnValue(null),
+        readdir: jest.fn().mockReturnValue(null),
+      };
+      const fallbackTfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([[p('src/a.js'), [123, 0, 0, null, 0, null]]]),
+        fallbackFilesystem: mockFallback,
+        processFile: () => {
+          throw new Error('Not implemented');
+        },
+      });
+      expect(fallbackTfs.lookup(p('/project/missing.js')).exists).toBe(false);
+      expect(mockFallback.lookup).toHaveBeenCalled();
+      expect([...fallbackTfs.pathsOutsideRoots([p('/project/src')])]).toEqual([]);
+    });
   });
 
   describe('resolveSymlinks', () => {

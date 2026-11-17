@@ -294,6 +294,9 @@ export default class TreeFS implements MutableFileSystem {
     rootPrefixes: readonly string[]
   ): Iterable<string> {
     for (const [name, child] of node) {
+      if (child == null) {
+        continue;
+      }
       const childPath = prefix === '' ? name : prefix + path.sep + name;
       if (name === '..' && isDirectory(child)) {
         // Past the top of a Windows drive, '..' holds the other drives, which
