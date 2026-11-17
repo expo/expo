@@ -160,11 +160,12 @@ internal enum EventEmitterMethods {
 
     switch EmitterNativeState(of: emitter) {
     case .found(let nativeState):
+      let payloadArguments = arguments.slice(1...)
       nativeState.listeners(in: runtime)?.call(
         event,
         this: emitter,
-        argumentsPointer: jsValuePointer(arguments.rawBaseAddress, at: 1),
-        argumentCount: arguments.count - 1,
+        argumentsPointer: payloadArguments.rawBaseAddress,
+        argumentCount: payloadArguments.count,
         in: runtime
       )
     case .missing:

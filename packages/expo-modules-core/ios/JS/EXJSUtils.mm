@@ -77,11 +77,6 @@ void EXJSUtilsCallEventListener(void *runtimePointer,
   }
 }
 
-const void *EXJSUtilsValuePointerAtIndex(const void *valuesPointer, size_t index)
-{
-  return static_cast<const jsi::Value *>(valuesPointer) + index;
-}
-
 void EXJSUtilsSetListeningHook(void *runtimePointer,
                                const void *objectPointer,
                                void *context,

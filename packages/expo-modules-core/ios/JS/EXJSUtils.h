@@ -55,12 +55,6 @@ void EXJSUtilsCallEventListener(void *_Nonnull runtimePointer,
   NS_SWIFT_NAME(callJSEventListener(runtimePointer:listenerPointer:thisPointer:argumentsPointer:argumentCount:));
 
 /**
- Returns a raw pointer to the `facebook::jsi::Value` at `index` in the values that `valuesPointer` points to.
- */
-const void *_Nullable EXJSUtilsValuePointerAtIndex(const void *_Nullable valuesPointer, size_t index)
-  NS_SWIFT_NAME(jsValuePointer(_:at:));
-
-/**
  Function that an event emitter calls when the first listener for an event is added (`isListening` is `true`)
  and when the last listener for an event is removed (`isListening` is `false`).
  */
