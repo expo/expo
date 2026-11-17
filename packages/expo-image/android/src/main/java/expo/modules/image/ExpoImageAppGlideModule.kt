@@ -11,6 +11,11 @@ import com.bumptech.glide.load.resource.gif.ByteBufferGifDecoder
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.load.resource.gif.StreamGifDecoder
 import com.bumptech.glide.module.AppGlideModule
+import com.bumptech.glide.request.RequestOptions
+import com.github.penfeizhou.animation.decode.FrameSeqDecoder
+import com.github.penfeizhou.animation.glide.AnimationDecoderOption
+import com.github.penfeizhou.animation.glide.ByteBufferAnimationDecoder
+import com.github.penfeizhou.animation.glide.StreamAnimationDecoder
 import java.io.InputStream
 import java.nio.ByteBuffer
 
@@ -34,6 +39,12 @@ class ExpoImageAppGlideModule : AppGlideModule() {
         Log.ERROR
       }
     )
+
+    // APNG4Android's AVIF decoder claims still AVIFs too. Only animated ones go through it, with the
+    // decoders registered in `registerComponents`.
+    builder.setDefaultRequestOptions(
+      RequestOptions().set(AnimationDecoderOption.DISABLE_ANIMATION_AVIF_DECODER, true)
+    )
   }
 
   override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
@@ -47,5 +58,18 @@ class ExpoImageAppGlideModule : AppGlideModule() {
 
     registry.prepend(InputStream::class.java, GifDrawable::class.java, streamDecoder)
     registry.prepend(ByteBuffer::class.java, GifDrawable::class.java, byteBufferDecoder)
+
+    // Still AVIFs fall through to Glide's avif-integration, see `AnimatedAvifDecoders.kt`.
+    val animationDecoder = ByteBufferAnimationDecoder()
+    registry.prepend(
+      InputStream::class.java,
+      FrameSeqDecoder::class.java,
+      AnimatedAvifStreamDecoder(parsers, glide.arrayPool, StreamAnimationDecoder(animationDecoder))
+    )
+    registry.prepend(
+      ByteBuffer::class.java,
+      FrameSeqDecoder::class.java,
+      AnimatedAvifByteBufferDecoder(parsers, animationDecoder)
+    )
   }
 }
