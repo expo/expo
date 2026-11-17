@@ -32,6 +32,26 @@ describe(LoaderSuspenseStore, () => {
     expect(store.get('/p')).toBeUndefined();
   });
 
+  it('clears only errors with the same identity', () => {
+    const store = new LoaderSuspenseStore();
+    const error = new Error('boom');
+    const otherError = new Error('boom');
+    const pending = Promise.resolve('pending');
+    store.set('/first', { error });
+    store.set('/second', { error });
+    store.set('/other', { error: otherError });
+    store.set('/data', { data: 'fresh' });
+    store.set('/pending', pending);
+
+    store.clearError(error);
+
+    expect(store.get('/first')).toBeUndefined();
+    expect(store.get('/second')).toBeUndefined();
+    expect(store.get('/other')).toEqual({ error: otherError });
+    expect(store.get('/data')).toEqual({ data: 'fresh' });
+    expect(store.get('/pending')).toBe(pending);
+  });
+
   it('removes entries only after both disposal and teardown', () => {
     const store = new LoaderSuspenseStore();
     store.set('/disposed', { data: 'disposed' });

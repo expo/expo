@@ -2,6 +2,7 @@
 
 import { Component, type ComponentType, type PropsWithChildren } from 'react';
 
+import { LoaderContext, type LoaderContextValue } from '../loaders/LoaderContext';
 import { MetroServerError } from '../rsc/router/errors';
 import * as SplashScreen from './Splash';
 
@@ -20,6 +21,8 @@ export class Try extends Component<
   }>,
   { error?: Error }
 > {
+  static contextType = LoaderContext;
+
   state = { error: undefined };
 
   static getDerivedStateFromError(error: Error) {
@@ -35,6 +38,7 @@ export class Try extends Component<
   }
 
   retry = () => {
+    (this.context as LoaderContextValue).store.clearError(this.state.error);
     return new Promise<void>((resolve) => {
       this.setState({ error: undefined }, () => {
         resolve();

@@ -13,11 +13,6 @@ export function readLoaderData<T>(
   }
   if (suspended) {
     if ('error' in suspended) {
-      queueMicrotask(() => {
-        if (store.get(resolvedPath) === suspended) {
-          store.clear(resolvedPath);
-        }
-      });
       throw suspended.error;
     }
     return suspended.data;

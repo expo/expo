@@ -30,6 +30,14 @@ export class LoaderSuspenseStore {
     this.entries.delete(key);
   }
 
+  clearError(error: unknown) {
+    for (const [key, entry] of this.entries) {
+      if (!(entry instanceof Promise) && 'error' in entry && entry.error === error) {
+        this.clear(key);
+      }
+    }
+  }
+
   dispose(key: string) {
     this.reclaim.add(key);
   }

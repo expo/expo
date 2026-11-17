@@ -1,8 +1,12 @@
 import type { LoaderContextValue } from './LoaderContext';
 
-/** Abandons an unobserved pending loader without disturbing settled or replacement state. */
+/** Abandons an unobserved pending or failed loader without disturbing data or replacement state. */
 export function abandonLoaderPath({ client, store }: LoaderContextValue, path: string): void {
   const entry = store.get(path);
+  if (entry && !(entry instanceof Promise) && 'error' in entry) {
+    store.clear(path);
+    return;
+  }
   if (!(entry instanceof Promise)) {
     return;
   }
