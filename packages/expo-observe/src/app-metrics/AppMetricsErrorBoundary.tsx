@@ -65,7 +65,7 @@ export class AppMetricsErrorBoundary extends React.Component<AppMetricsErrorBoun
 
   componentDidCatch(error: unknown, errorInfo: React.ErrorInfo): void {
     if (__DEV__) {
-      console.warn('[expo-app-metrics] AppMetricsErrorBoundary caught a render error:', error);
+      console.warn('[expo-observe] AppMetricsErrorBoundary caught a render error:', error);
     }
 
     // The thrown value may not be an `Error`, so read its fields defensively.
@@ -90,7 +90,7 @@ export class AppMetricsErrorBoundary extends React.Component<AppMetricsErrorBoun
       // inside `reportError`. Losing one report is better than crashing. Surface it in dev so a
       // dropped report is at least noticeable while developing.
       if (__DEV__) {
-        console.warn('[expo-app-metrics] Failed to report a caught error:', reportingError);
+        console.warn('[expo-observe] Failed to report a caught error:', reportingError);
       }
     }
   }
