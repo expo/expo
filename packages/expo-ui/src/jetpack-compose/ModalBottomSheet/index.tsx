@@ -46,7 +46,7 @@ export type ModalBottomSheetProperties = {
 export interface ModalBottomSheetProps {
   /**
    * The children of the `ModalBottomSheet` component.
-   * Can include a `ModalBottomSheet.DragHandle` slot for a custom drag handle.
+   * Can include `ModalBottomSheet.DragHandle` and `ModalBottomSheet.Footer` slots.
    */
   children: ReactNode;
   /**
@@ -69,6 +69,14 @@ export interface ModalBottomSheetProps {
    * @platform android
    */
   initialFullyExpanded?: boolean;
+  /**
+   * Whether the sheet sizes itself to its content, including the footer when provided.
+   * Set to `false` to fill the available height.
+   * Content that fills the available height still fills the sheet when this is `true`.
+   * @default true
+   * @platform android
+   */
+  fitToContents?: boolean;
   /**
    * The background color of the bottom sheet.
    */
@@ -119,6 +127,7 @@ function transformProps(props: ModalBottomSheetProps): NativeModalBottomSheetPro
     ...restProps,
     skipPartiallyExpanded: props.skipPartiallyExpanded ?? false,
     initialFullyExpanded: props.initialFullyExpanded ?? false,
+    fitToContents: props.fitToContents ?? true,
     onDismissRequest: () => {
       onDismissRequest?.();
     },
@@ -148,6 +157,18 @@ function ModalBottomSheetComponent(props: ModalBottomSheetProps) {
   );
 }
 
+/**
+ * A footer pinned to the visible bottom of the sheet, above system bars and the keyboard.
+ * The main content receives the remaining visible height in either sizing mode.
+ * With `fitToContents={true}`, the footer also contributes to the sheet's measured content height.
+ *
+ * @platform android
+ */
+function Footer(props: { children: ReactNode }) {
+  return <SlotNativeView slotName="footer">{props.children}</SlotNativeView>;
+}
+
 ModalBottomSheetComponent.DragHandle = DragHandle;
+ModalBottomSheetComponent.Footer = Footer;
 
 export const ModalBottomSheet = ModalBottomSheetComponent;

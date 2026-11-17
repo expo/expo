@@ -7,7 +7,10 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.view.KeyEvent
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -18,7 +21,9 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.takeOrElse
@@ -44,6 +49,7 @@ data class ModalBottomSheetPropertiesRecord(
 data class ModalBottomSheetViewProps(
   val skipPartiallyExpanded: Boolean = false,
   val initialFullyExpanded: Boolean = false,
+  val fitToContents: Boolean = true,
   val containerColor: Color? = null,
   val contentColor: Color? = null,
   val scrimColor: Color? = null,
@@ -151,8 +157,23 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
         ComposeColor.White
       }
     }
+  // Children invalidates its own scope; slot selection must also observe child changes.
+  val contentRecomposeScope = currentRecomposeScope
+  DisposableEffect(view, contentRecomposeScope) {
+    view.setOnHierarchyChangeListener(object : ViewGroup.OnHierarchyChangeListener {
+      override fun onChildViewAdded(parent: View?, child: View?) {
+        contentRecomposeScope.invalidate()
+      }
+      override fun onChildViewRemoved(parent: View?, child: View?) {
+        contentRecomposeScope.invalidate()
+      }
+    })
+    onDispose { view.setOnHierarchyChangeListener(null) }
+  }
+
   val resolvedScrimColor = props.scrimColor.composeOrNull ?: BottomSheetDefaults.ScrimColor
   val dragHandleSlotView = findChildSlotView(view, "dragHandle")
+  val footerSlotView = findChildSlotView(view, "footer")
 
   ModalBottomSheet(
     sheetState = sheetState,
@@ -175,9 +196,26 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
       shouldDismissOnClickOutside = props.properties.shouldDismissOnClickOutside
     ),
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+      // Reserve IME space before Material computes anchors for the sticky viewport.
+      .then(
+        if (footerSlotView != null || !props.fitToContents) {
+          Modifier.imePadding()
+        } else {
+          Modifier
+        }
+      )
   ) {
     ForwardKeyEventsToActivity(appContext.currentActivity)
-    Children(UIComposableScope(), filter = { !isSlotView(it) })
+    if (footerSlotView == null && props.fitToContents) {
+      Children(UIComposableScope(), filter = { !isSlotView(it) })
+    } else {
+      ModalBottomSheetLayout(
+        sheetState = sheetState,
+        fitToContents = props.fitToContents,
+        content = { Children(UIComposableScope(), filter = { !isSlotView(it) }) },
+        footer = { footerSlotView?.renderSlot() }
+      )
+    }
   }
 
   LaunchedEffect(Unit) {
