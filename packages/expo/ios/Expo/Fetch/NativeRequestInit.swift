@@ -17,4 +17,7 @@ internal struct NativeRequestInit: Record {
 
   @Field
   var redirect: NativeRequestRedirect = .follow
+
+  @Field
+  var devToolsRequestId: String?
 }
