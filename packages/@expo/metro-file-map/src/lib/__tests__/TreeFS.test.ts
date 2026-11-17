@@ -115,6 +115,15 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
     expect(deserialized.exists(p('/project/foo/another.js'))).toBe(true);
   });
 
+  test('getSerializableSnapshot returns a copy, getSerializableState does not', () => {
+    const snapshot = tfs.getSerializableSnapshot();
+    const state = tfs.getSerializableState();
+    expect(snapshot).toEqual(state);
+    tfs.addOrModify(p('/project/foo/new.js'), [0, 1, 0, null, 0, null]);
+    expect(snapshot).not.toEqual(tfs.getSerializableSnapshot());
+    expect(state).toEqual(tfs.getSerializableSnapshot());
+  });
+
   describe('linkStats edge cases (followLeaf=false)', () => {
     test('returns type "l" for a symlink to a directory', () => {
       // link-to-foo → foo (a directory). followLeaf=false returns the symlink.
@@ -2536,8 +2545,8 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       });
     });
 
-    describe('getSerializableSnapshot excludes fallback data', () => {
-      test('does not include fallback-populated directories in snapshot', () => {
+    describe('getSerializableState excludes fallback data', () => {
+      test('does not include fallback-populated directories in the state', () => {
         const files = new Map<CanonicalPath, FileMetadata>([
           [p('src/real.js'), [100, 5, 0, null, 0, null]],
         ]);
@@ -2549,29 +2558,31 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         mockFallback.lookup.mockReturnValue(outsideDir);
         fbTfs.lookup(p('/project/outside/external.js'));
 
-        // Snapshot should only contain data within watched roots
-        const snapshot = fbTfs.getSerializableSnapshot() as Map<string, any>;
-        // 'src' should be in the snapshot
-        expect(snapshot.has('src')).toBe(true);
-        // 'outside' should NOT be in the snapshot (directory outside roots)
-        expect(snapshot.has('outside')).toBe(false);
+        // The state should only contain data within watched roots
+        const state = fbTfs.getSerializableState() as Map<string, any>;
+        // 'src' should be in the state
+        expect(state.has('src')).toBe(true);
+        // 'outside' should NOT be in the state (directory outside roots)
+        expect(state.has('outside')).toBe(false);
+        // The snapshot is a copy of the same data
+        expect(fbTfs.getSerializableSnapshot()).toEqual(state);
       });
 
-      test('includes all watched root data in snapshot', () => {
+      test('includes all watched root data in the state', () => {
         const files = new Map<CanonicalPath, FileMetadata>([
           [p('src/a.js'), [100, 5, 0, null, 0, null]],
           [p('src/b.js'), [200, 3, 0, null, 0, null]],
         ]);
         const fbTfs = makeFallbackTfs({ files, roots: [p('/project/src')] });
 
-        const snapshot = fbTfs.getSerializableSnapshot() as Map<string, any>;
-        const srcDir = snapshot.get('src') as Map<string, any>;
+        const state = fbTfs.getSerializableState() as Map<string, any>;
+        const srcDir = state.get('src') as Map<string, any>;
         expect(srcDir).toBeInstanceOf(Map);
         expect(srcDir.has('a.js')).toBe(true);
         expect(srcDir.has('b.js')).toBe(true);
       });
 
-      test('includes roots above rootDir in snapshot', () => {
+      test('includes roots above rootDir in the state', () => {
         const files = new Map<CanonicalPath, FileMetadata>([
           [p('src/app.js'), [100, 5, 0, null, 0, null]],
           [p('../packages/expo/index.js'), [200, 3, 0, null, 0, null]],
@@ -2581,9 +2592,9 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
           roots: [p('/project/src'), p('/packages/expo')],
         });
 
-        const snapshot = fbTfs.getSerializableSnapshot() as Map<string, any>;
-        expect(snapshot.has('src')).toBe(true);
-        const dotdot = snapshot.get('..') as Map<string, any>;
+        const state = fbTfs.getSerializableState() as Map<string, any>;
+        expect(state.has('src')).toBe(true);
+        const dotdot = state.get('..') as Map<string, any>;
         expect(dotdot).toBeInstanceOf(Map);
         const pkgs = dotdot.get('packages') as Map<string, any>;
         expect(pkgs).toBeInstanceOf(Map);
@@ -2591,6 +2602,14 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         expect(expo).toBeInstanceOf(Map);
         expect(expo.has('index.js')).toBe(true);
       });
+    });
+
+    test('getSerializableSnapshot copies entries for paths the fallback found missing', () => {
+      const fbTfs = makeFallbackTfs({ roots: [] });
+      expect(fbTfs.lookup(p('/project/missing.js')).exists).toBe(false);
+      const state = fbTfs.getSerializableState() as Map<string, any>;
+      expect(state.get('missing.js')).toBeNull();
+      expect(fbTfs.getSerializableSnapshot()).toEqual(state);
     });
 
     describe('rootPattern consistency with trailing separator', () => {
@@ -2765,8 +2784,8 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       });
     });
 
-    describe('#cloneTree excludes ".." when rootDir is a watched root', () => {
-      test('fallback-discovered ".." directories are excluded from snapshot', () => {
+    describe('getSerializableState excludes ".." when rootDir is a watched root', () => {
+      test('fallback-discovered ".." directories are excluded from the state', () => {
         const fbTfs = makeFallbackTfs({ roots: [p('/project')] });
 
         // Trigger fallback to create a '..' directory entry via lookup above root
@@ -2781,9 +2800,9 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         );
         fbTfs.lookup(p('/project/../something/file.js'));
 
-        const snapshot = fbTfs.getSerializableSnapshot() as Map<string, any>;
-        // '..' should NOT be in the snapshot (negative-lookahead pattern excludes it)
-        expect(snapshot.has('..')).toBe(false);
+        const state = fbTfs.getSerializableState() as Map<string, any>;
+        // '..' should NOT be in the state (negative-lookahead pattern excludes it)
+        expect(state.has('..')).toBe(false);
       });
     });
 

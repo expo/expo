@@ -77,7 +77,9 @@ export interface CacheManager {
    * crawler - i.e. internal state reflects the current file system state.
    *
    * getSnapshot may be retained and called at any time before end(), such as
-   * in response to eventSource 'change' events.
+   * in response to eventSource 'change' events. What it returns is the file
+   * map's own state, not a copy, and may change at the next `await`.
+   * Serialize it synchronously, or copy it to keep it.
    */
   write(getSnapshot: () => CacheData, opts: CacheManagerWriteOptions): Promise<void>;
 
@@ -302,6 +304,7 @@ export interface FileSystem {
     removedFiles: Set<string>;
   };
 
+  // A copy of the file system's data, which later changes don't affect.
   getSerializableSnapshot(): CacheData['fileSystemData'];
   getMtimeByNormalPath(file: Path): number | undefined | null;
   getSha1(file: Path): string | undefined | null;
@@ -499,6 +502,12 @@ export interface ReadonlyFileSystemChanges<T = FileMetadata> {
 }
 
 export interface MutableFileSystem extends FileSystem {
+  /**
+   * The file system's own data, not a copy, so it changes with the file
+   * system. Serialize it synchronously (see `CacheManager.write`), or use
+   * `getSerializableSnapshot()` for a copy.
+   */
+  getSerializableState(): CacheData['fileSystemData'];
   remove(filePath: Path, listener?: FileSystemListener | undefined): void;
   addOrModify(
     filePath: Path,

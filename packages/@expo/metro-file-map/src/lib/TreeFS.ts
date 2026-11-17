@@ -245,7 +245,11 @@ export default class TreeFS implements MutableFileSystem {
   }
 
   getSerializableSnapshot(): CacheData['fileSystemData'] {
-    return this.#cloneTree(this.#rootNode);
+    return this.#cloneTree(this.#treeUnderRoots(this.#rootNode));
+  }
+
+  getSerializableState(): CacheData['fileSystemData'] {
+    return this.#treeUnderRoots(this.#rootNode);
   }
 
   static fromDeserializedSnapshot(args: DeserializedSnapshotInput): TreeFS {
@@ -1548,18 +1552,29 @@ export default class TreeFS implements MutableFileSystem {
     return result.node;
   }
 
+  #cloneTree(root: DirectoryNode): DirectoryNode {
+    const clone: DirectoryNode = new Map();
+    for (const [name, node] of root) {
+      if (isDirectory(node)) {
+        clone.set(name, this.#cloneTree(node));
+      } else {
+        clone.set(name, node == null ? null : [...node]);
+      }
+    }
+    return clone;
+  }
+
   /**
    * Return a filtered view of the tree containing only content under watched
-   * roots. Walk each root path from #rootNode, creating intermediate directory
-   * nodes as needed, and reference the subtree at each root endpoint directly.
-   * Since roots are non-overlapping, each contributes independently.
+   * roots, sharing its nodes rather than copying them. The rest of the tree
+   * was filled in by the fallback filesystem, including entries for paths it
+   * found missing, and nothing watches it to keep it current between runs.
+   *
+   * Walk each root path from #rootNode, creating intermediate directory nodes
+   * as needed, and reference the subtree at each root endpoint directly. Since
+   * roots are non-overlapping, each contributes independently.
    */
-  #cloneTree(rootNode: DirectoryNode): DirectoryNode {
-    // NOTE(@kitten): The upstream version deeply clones this structure, but this
-    // isn't necessary since it's serialized right away by the DiskCacheManager.
-    // Even if it isn't, the intention is to store it faithfully, so we're okay
-    // with more modifications
-
+  #treeUnderRoots(rootNode: DirectoryNode): DirectoryNode {
     function copyRootInto(normalRoot: string, source: DirectoryNode, clone: DirectoryNode): void {
       let currentSource = source;
       let currentClone = clone;
