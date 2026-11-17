@@ -72,14 +72,22 @@ public final class ExpoFetchModule: Module {
       Property("redirected", \.redirected)
 
       AsyncFunction("arrayBuffer") { (response: NativeResponse, promise: Promise) in
-        response.waitFor(states: [.bodyCompleted]) { _ in
+        response.waitFor(states: [.bodyCompleted, .errorReceived]) { state in
+          if state == .errorReceived {
+            promise.reject(response.error ?? FetchUnknownException())
+            return
+          }
           let data = response.sink.finalize()
           promise.resolve(NativeArrayBuffer.wrap(dataWithoutCopy: data))
         }
       }.runOnQueue(fetchRequestQueue)
 
       AsyncFunction("text") { (response: NativeResponse, promise: Promise) in
-        response.waitFor(states: [.bodyCompleted]) { _ in
+        response.waitFor(states: [.bodyCompleted, .errorReceived]) { state in
+          if state == .errorReceived {
+            promise.reject(response.error ?? FetchUnknownException())
+            return
+          }
           let data = response.sink.finalize()
           let text = String(decoding: data, as: UTF8.self)
           promise.resolve(text)
