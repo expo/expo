@@ -147,6 +147,7 @@ internal final class SharedObjectNativeState: JavaScriptNativeState, @unchecked 
     guard jsObject.setNativeStateIfAlive(self) else {
       return nil
     }
+    SharedObjectRegistry.setUpJavaScriptObject(jsObject, of: native)
     runtime.cached(pairedObjectsCacheKey, PairedObjects.init).set(jsObject, for: self)
     return jsObject
   }

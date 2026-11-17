@@ -795,7 +795,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     }
     let basePrototype = try runtime.global()
       .getPropertyAsObject(globalCoreObjectPropertyName)
-      .getPropertyAsObject("SharedObject")
+      .getPropertyAsObject(nativeType is AnySharedRef.Type ? "SharedRef" : "SharedObject")
       .getPropertyAsObject("prototype")
     let prototype = try buildWorkletPrototype(for: nativeType, in: runtime, basePrototype: basePrototype)
     let instance = runtime.createObject(prototype: prototype)
@@ -804,22 +804,30 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   }
 
   /// Builds the worklet prototype for a native shared object class, from the `ClassDefinition` of a module
-  /// that defines it or from a module that registers it in `_classTypes`.
+  /// that defines it or from a module that registers it in `_classTypes`. A subclass that no module registers gets
+  /// the prototype of its nearest registered superclass, because a function that declares the superclass as its
+  /// return type gives it that class in the main runtime. Returns the base prototype when no module registers any of
+  /// these classes, as the main runtime does.
   @JavaScriptActor
   private func buildWorkletPrototype(
     for nativeType: SharedObject.Type,
     in runtime: JavaScriptRuntime,
     basePrototype: consuming JavaScriptObject
   ) throws -> JavaScriptObject {
-    let typeId = ObjectIdentifier(nativeType)
+    var type: SharedObject.Type? = nativeType
 
-    if let classDefinition = findClassDefinition(for: typeId) {
-      return try classDefinition.buildPrototype(in: runtime, appContext: self, basePrototype: basePrototype)
+    while let currentType = type {
+      let typeId = ObjectIdentifier(currentType)
+
+      if let classDefinition = findClassDefinition(for: typeId) {
+        return try classDefinition.buildPrototype(in: runtime, appContext: self, basePrototype: basePrototype)
+      }
+      if let classType = findClassType(for: typeId) {
+        return try JavaScriptBindings.buildSharedObjectPrototype(classType, in: runtime, basePrototype: basePrototype)
+      }
+      type = class_getSuperclass(currentType) as? SharedObject.Type
     }
-    if let classType = findClassType(for: typeId) {
-      return try JavaScriptBindings.buildSharedObjectPrototype(classType, in: runtime, basePrototype: basePrototype)
-    }
-    throw SharedObjectClassNotRegisteredException(String(describing: nativeType))
+    return basePrototype
   }
 
   /**
@@ -1127,12 +1135,6 @@ internal final class RuntimeAttachedToAnotherAppContextException: Exception, @un
 internal final class SharedObjectListenersUnsupportedException: Exception, @unchecked Sendable {
   override var reason: String {
     "Shared objects support events only in the main runtime"
-  }
-}
-
-internal final class SharedObjectClassNotRegisteredException: GenericException<String>, @unchecked Sendable {
-  override var reason: String {
-    "No class definition registered for SharedObject type '\(param)'"
   }
 }
 
