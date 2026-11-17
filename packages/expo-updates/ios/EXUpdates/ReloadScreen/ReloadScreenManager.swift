@@ -63,7 +63,7 @@ public class ReloadScreenManager: Reloadable {
     viewController.view = reloadScreenView
 
     window.rootViewController = viewController
-    window.makeKeyAndVisible()
+    window.isHidden = false
 
     currentReloadScreen = reloadScreenView
   }
