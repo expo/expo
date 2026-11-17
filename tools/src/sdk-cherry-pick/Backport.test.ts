@@ -260,7 +260,8 @@ describe('backportAsync', () => {
     try {
       const run = await backport(49, 90, shas.changeset);
 
-      assert.ok(run.error);
+      assert.ok(run.error instanceof Error);
+      assert.match(run.error.message, /does not appear to be a git repository/);
       assert.equal(run.comments.length, 1);
       assert.match(run.comments[0], /^#49 The backport to `sdk-90` failed\./);
       assert.match(run.comments[0], /To backport it by hand:/);
