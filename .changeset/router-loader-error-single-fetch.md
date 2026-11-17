@@ -2,4 +2,4 @@
 'expo-router': patch
 ---
 
-Fix a failed `loader` being fetched more than once. A failed `loader` result now stays cached until the route's `ErrorBoundary` calls `retry` or the user leaves the route.
+Prevent failed `loader` requests from being fetched more than once. Failed `loader` results now stay cached until the route's `ErrorBoundary` explicitly calls `retry` or the user leaves the route.
