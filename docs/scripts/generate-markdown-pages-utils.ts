@@ -246,6 +246,13 @@ function extractTerminalCommands(arrayLiteral: string): string[] {
   return commands;
 }
 
+function replaceLineBreakTags(line: string): string {
+  if (line.trimStart().startsWith('|')) {
+    return line.replace(/(\s*<br\s*\/?>\s*)+/g, ' ');
+  }
+  return line.replace(/[\t ]*<br\s*\/?>[\t ]*$/, '  ').replace(/[\t ]*<br\s*\/?>[\t ]*/g, '  \n');
+}
+
 /**
  * Convert raw MDX instruction content to markdown.
  * Handles JSX patterns used by set-up-your-environment instruction scenes.
@@ -360,6 +367,9 @@ export function convertMdxInstructionToMarkdown(
 
   content = content.replace(/<div[^>]*>/g, '');
   content = content.replace(/<\/div>/g, '');
+
+  content = content.replace(/<\/?kbd>/g, '');
+  content = content.split('\n').map(replaceLineBreakTags).join('\n');
 
   content = content.replace(/<\/?[A-Z][^>]*>/g, '');
   content = content.replace(/{\/\*[\S\s]*?\*\/}/g, '');
