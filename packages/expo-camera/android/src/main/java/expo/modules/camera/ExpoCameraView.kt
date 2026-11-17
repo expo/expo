@@ -48,6 +48,7 @@ import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import expo.modules.camera.analyzers.BarcodeAnalyzer
 import expo.modules.camera.analyzers.toByteArray
 import expo.modules.camera.common.BarcodeScannedEvent
@@ -685,17 +686,30 @@ class ExpoCameraView(
     camera?.cameraControl?.setZoomRatio(targetZoomRatio)
   }
 
-  private fun observeCameraState(cameraInfo: CameraInfo) {
-    cameraInfo.cameraState.observe(currentActivity) {
-      when (it.type) {
-        CameraState.Type.OPEN -> {
-          onCameraReady(Unit)
-          setTorchEnabled(enableTorch)
-        }
+  private var observedCameraInfo: CameraInfo? = null
 
-        else -> {}
+  private val cameraStateObserver = Observer<CameraState> {
+    when (it.type) {
+      CameraState.Type.OPEN -> {
+        onCameraReady(Unit)
+        setTorchEnabled(enableTorch)
       }
+
+      else -> {}
     }
+  }
+
+  // The activity is the lifecycle owner, so the observer stays registered until the activity
+  // is destroyed unless it is removed here.
+  private fun observeCameraState(cameraInfo: CameraInfo) {
+    stopObservingCameraState()
+    observedCameraInfo = cameraInfo
+    cameraInfo.cameraState.observe(currentActivity, cameraStateObserver)
+  }
+
+  private fun stopObservingCameraState() {
+    observedCameraInfo?.cameraState?.removeObserver(cameraStateObserver)
+    observedCameraInfo = null
   }
 
   @OptIn(ExperimentalCamera2Interop::class)
@@ -895,6 +909,7 @@ class ExpoCameraView(
   }
 
   fun cleanupCamera() {
+    stopObservingCameraState()
     orientationEventListener.disable()
     cancelCoroutineScope()
     cameraProvider?.unbindAll()
