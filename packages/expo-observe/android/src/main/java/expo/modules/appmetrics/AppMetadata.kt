@@ -24,4 +24,8 @@ internal data class AppUpdatesInfo(
 ) {
   val channel: String?
     get() = requestHeaders?.get("expo-channel-name")
+
+  companion object {
+    val EMPTY = AppUpdatesInfo(updateId = null, runtimeVersion = null, requestHeaders = null)
+  }
 }

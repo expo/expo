@@ -1,12 +1,13 @@
 package expo.modules.appmetrics
 
+import expo.modules.appmetrics.updates.UpdateDownload
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesNativeInterfaceStateContext
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
 
 internal fun expoUpdatesInfo(): AppUpdatesInfo {
   val controller = UpdatesControllerRegistry.controller?.get()
-    ?: return AppUpdatesInfo(updateId = null, runtimeVersion = null, requestHeaders = null)
+    ?: return AppUpdatesInfo.EMPTY
   val launchedUpdateId = controller.launchedUpdateId
   val embeddedUpdateId = controller.embeddedUpdateId
   // Ignore embedded launches – they are not available on the website anyway.
@@ -22,11 +23,8 @@ internal fun expoUpdatesInfo(): AppUpdatesInfo {
   )
 }
 
-/**
- * The download time in seconds and the update id of the download that the subscription context
- * reports, or null if the required data is not available.
- */
-internal fun updateDownload(subscription: UpdatesStateChangeSubscription?): Pair<Double, String>? {
+/** The update download that the subscription context reports, or null if the required data is not available. */
+internal fun updateDownload(subscription: UpdatesStateChangeSubscription?): UpdateDownload? {
   val context = subscription?.getContext() as? UpdatesNativeInterfaceStateContext ?: return null
   val downloadedManifest = context.downloadedManifest ?: return null
   val updateId = downloadedManifest["id"] as? String ?: return null
@@ -38,5 +36,8 @@ internal fun updateDownload(subscription: UpdatesStateChangeSubscription?): Pair
   if (context.downloadProgress <= 0) {
     return null
   }
-  return (finishTime.time - startTime.time).toDouble() / 1000.0 to updateId
+  return UpdateDownload(
+    timeSeconds = (finishTime.time - startTime.time).toDouble() / 1000.0,
+    updateId = updateId
+  )
 }
