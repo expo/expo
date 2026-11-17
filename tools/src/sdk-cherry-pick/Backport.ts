@@ -244,16 +244,22 @@ If \`${targetBranch}\` has no \`.changeset/config.json\`, move the summary of ea
       return;
     }
 
-    await git('push', '--quiet', 'origin', `HEAD:refs/heads/${botBranch}`);
+    // A bot branch with no pull request would block the next run, which stops when the branch exists.
+    const deleteBotBranchAsync = async (error: unknown) => {
+      await git('push', '--quiet', 'origin', '--delete', botBranch).catch((deleteError) =>
+        log(`Could not delete ${botBranch}: ${deleteError}`)
+      );
+      throw error;
+    };
+    // A new branch with the sdk-NN history in one push timed out in GitHub's `workflows` scope check.
+    // So the branch starts at the sdk-NN tip, and a fast-forward adds the backport commits.
+    await git('push', '--quiet', 'origin', `origin/${targetBranch}:refs/heads/${botBranch}`);
+    await git('push', '--quiet', 'origin', `HEAD:refs/heads/${botBranch}`).catch(
+      deleteBotBranchAsync
+    );
     const number = await github
       .createPullRequestAsync({ base: targetBranch, head: botBranch, title, body })
-      .catch(async (error) => {
-        // A bot branch with no pull request would block the next run, which stops when the branch exists.
-        await git('push', '--quiet', 'origin', '--delete', botBranch).catch((deleteError) =>
-          log(`Could not delete ${botBranch}: ${deleteError}`)
-        );
-        throw error;
-      });
+      .catch(deleteBotBranchAsync);
     await github
       .addLabelAsync(number, BACKPORT_LABEL)
       .catch((error) => log(`Could not add the "${BACKPORT_LABEL}" label to #${number}: ${error}`));
