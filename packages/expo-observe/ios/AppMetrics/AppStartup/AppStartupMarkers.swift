@@ -57,10 +57,6 @@ final class AppStartupMarkers: Sendable {
     }
     return nil
   }
-
-  func getBundleLoadTime() -> TimeInterval? {
-    return AppMetrics.host.bundleLoadTime()
-  }
 }
 
 struct AppStartupTimes: Metrics {

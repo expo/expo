@@ -72,11 +72,10 @@ public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   }
 }
 
-/// Duration of JS bundle evaluation, which also covers synchronous setup of the native modules
-/// eagerly required during that evaluation. React Native logs `APP_STARTUP_STOP` right after
-/// evaluation finishes, so it stands in for the bundle end time.
+/// Returns the JS bundle evaluation time in seconds, or `nil` until React Native logs both markers.
 private func reactBundleLoadTime() -> TimeInterval? {
   let bundleStartTime = ReactMarker.getRunJSBundleStartTime()
+  // React Native logs `APP_STARTUP_STOP` right after the bundle evaluation ends.
   let bundleEndTime = ReactMarker.getAppStartupEndTime()
   // The markers are `NaN` until React Native logs them (e.g. no logger attached), and any
   // arithmetic on `NaN` stays `NaN`. Skip the metric rather than report a bogus value.
