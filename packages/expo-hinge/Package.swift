@@ -14,14 +14,14 @@ let package = Package(
   ],
   dependencies: [
     .package(path: "../ExpoModulesCoreHeaders"),
-    .package(path: "../ExpoModulesWorkletsHeaders")
+    .package(path: "../ExpoModulesWorkletsHeaders"),
   ],
   targets: [
     .target(
       name: "ExpoHinge",
       dependencies: [
         .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders"),
-        .product(name: "ExpoModulesWorkletsHeaders", package: "ExpoModulesWorkletsHeaders")
+        .product(name: "ExpoModulesWorkletsHeaders", package: "ExpoModulesWorkletsHeaders"),
       ],
       path: "ios",
       exclude: ["ExpoHinge.podspec"]
