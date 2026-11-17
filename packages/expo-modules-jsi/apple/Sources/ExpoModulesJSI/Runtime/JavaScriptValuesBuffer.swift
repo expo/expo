@@ -90,6 +90,24 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
     return JavaScriptValue(runtime, copying: bufferPointer[index])
   }
 
+  /// Returns a buffer of the values in `range`, without copying them. Like the arguments of a host function, the
+  /// returned buffer doesn't own its values, so it is valid only while this buffer is alive. Use it within the scope of
+  /// this buffer, for example to pass the arguments after the first one to another function. `range` must be within
+  /// `0..<count`, or end at `count`.
+  public func slice(_ range: Range<Int>) -> JavaScriptValuesBuffer {
+    guard range.lowerBound >= 0, range.upperBound <= count else {
+      FatalError.valuesBufferIndexOutRange(index: range.upperBound, capacity: count)
+    }
+    return JavaScriptValuesBuffer(runtime, start: baseAddress.map { $0 + range.lowerBound }, count: range.count)
+  }
+
+  /// Returns a buffer of the values in `range`, without copying them, for example `arguments.slice(1...)`. See
+  /// `slice(_:)` with a `Range<Int>`.
+  @inlinable
+  public func slice(_ range: some RangeExpression<Int>) -> JavaScriptValuesBuffer {
+    return slice(range.relative(to: 0..<count))
+  }
+
   /// Returns a non-owning, non-copyable value borrowing the element at `index` for the zero-copy decode
   /// path. It borrows the `jsi::Value` this buffer owns, so it is valid only while the buffer is alive
   /// and must not be stored or escaped — see ``JavaScriptUnownedValue``.

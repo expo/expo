@@ -783,15 +783,25 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   /// Returns the Swift `JavaScriptNativeState` wrapper attached to this object via
   /// `setNativeState`, or `nil` if there is no native state, the state was
   /// produced C++-side without a Swift back-pointer, or its concrete type doesn't
-  /// match `T`.
+  /// match `T`. Inlinable, so the cast to `T` is specialized in the caller's module.
+  @inlinable
   public func getNativeState<T: JavaScriptNativeState>(as: T.Type = JavaScriptNativeState.self) -> T? {
+    return swiftNativeState() as? T
+  }
+
+  /// Returns the Swift `JavaScriptNativeState` wrapper attached to this object, of any type, or `nil`.
+  @usableFromInline
+  internal func swiftNativeState() -> JavaScriptNativeState? {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    guard let cxxNativeState = expo.getExpoNativeState(jsiRuntime, pointee) else {
+    guard let cxxNativeState = expo.getExpoNativeState(jsiRuntime, pointee),
+      let context = cxxNativeState.pointee.getContext()
+    else {
       return nil
     }
-    return T.from(cxx: cxxNativeState)
+    // The context is a retained pointer to the wrapper (see `JavaScriptNativeState.acquireShared()`).
+    return Unmanaged<JavaScriptNativeState>.fromOpaque(context).takeUnretainedValue()
   }
 
   /// Sets the internal native state property of this object, overwriting any old value.
