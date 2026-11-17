@@ -103,6 +103,10 @@ NativeState::~NativeState() {
   setListeningHook(nullptr, nullptr, nullptr);
 }
 
+void NativeState::clearListeners() noexcept {
+  listeners.clear();
+}
+
 void NativeState::setListeningHook(void *context, ListeningHook hook, void (*releaseContext)(void *)) noexcept {
   if (releaseListeningHookContext != nullptr) {
     releaseListeningHookContext(listeningHookContext);

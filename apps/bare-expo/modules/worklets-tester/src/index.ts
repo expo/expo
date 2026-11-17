@@ -1,5 +1,5 @@
 import { installOnUIRuntime } from 'expo';
-import { createSerializable, getUIRuntimeHolder } from 'react-native-worklets';
+import { createSerializable, getUIRuntimeHolder, scheduleOnRN, scheduleOnUI } from 'react-native-worklets';
 
 import WorkletsTesterModule from './WorkletsTesterModule';
 
@@ -30,6 +30,18 @@ export const WorkletsTester = {
 
   evaluateOnUIRuntime(source: string): Promise<string> {
     return WorkletsTesterModule!.evaluateOnUIRuntime(source);
+  },
+
+  /**
+   * Passes the value to a worklet on the UI runtime, which passes it back to the React Native runtime.
+   */
+  passThroughUIRuntime<T>(value: T): Promise<T> {
+    return new Promise((resolve) => {
+      scheduleOnUI(() => {
+        'worklet';
+        scheduleOnRN(resolve, value);
+      });
+    });
   },
 
   createCounter() {

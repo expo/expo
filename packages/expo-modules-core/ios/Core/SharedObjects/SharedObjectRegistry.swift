@@ -94,12 +94,15 @@ public final class SharedObjectRegistry: Sendable {
    Adds a pair of native and JS shared object to the registry. Assigns a new shared object ID to these objects.
    Pass `inheritsBaseClass: true` when `jsObject` inherits from `expo.SharedObject.prototype`, whose getter
    already reads the ID from the native state. A plain object gets the ID as its own property instead.
+   Pass `reusing` to pair `jsObject` with that native state of the native object and keep its ID.
    */
   @discardableResult
   internal func add(
     native nativeObject: SharedObject,
     javaScript jsObject: borrowing JavaScriptObject,
-    inheritsBaseClass: Bool = false
+    inheritsBaseClass: Bool = false,
+    in runtime: JavaScriptRuntime? = nil,
+    reusing reusedNativeState: SharedObjectNativeState? = nil
   ) -> SharedObjectId {
     // Reuse the native state, and with it the ID, only while a live JS object in this runtime holds it.
     // That JS object keeps the C++ native state alive until `setNativeState` attaches it to `jsObject`.
@@ -107,9 +110,10 @@ public final class SharedObjectRegistry: Sendable {
     // apply to `jsObject`, so the native object gets a new native state and ID.
     // Loaded once: each read of the weak reference to the app context costs an atomic operation.
     let appContext = self.appContext
-    let runtime = try? appContext?.runtime
+    let mainRuntime = try? appContext?.runtime
+    let runtime = runtime ?? mainRuntime
     let pairedObject = pairedObjectHoldingNativeState(of: nativeObject, in: runtime)
-    let existingNativeState = pairedObject != nil ? nativeObject.nativeState : nil
+    let existingNativeState = reusedNativeState ?? (pairedObject != nil ? nativeObject.nativeState : nil)
     let id = existingNativeState != nil ? nativeObject.sharedObjectId : pullNextId()
 
     // Assign the app context to the object.
@@ -136,18 +140,11 @@ public final class SharedObjectRegistry: Sendable {
     // inherits from `expo::EventEmitter::NativeState`, later `addListener` calls see an
     // existing native state (via the inheritance check) and don't overwrite it.
     let nativeState = existingNativeState ?? {
+      // Runs when the JS objects of all runtimes are collected.
       let releaser: ObjectReleaser = { [weak self] id in
         self?.delete(id)
       }
-      let state = SharedObjectNativeState(native: nativeObject) { context, deallocator in
-        return SharedObjectUtils.makeSharedObjectNativeStatePtr(
-          objectId: id,
-          releaser: releaser,
-          context: context,
-          contextDeallocator: deallocator
-        )
-      }
-      return state
+      return SharedObjectNativeState(native: nativeObject, objectId: id, mainRuntimeId: mainRuntime?.id, releaser: releaser)
     }()
 
     // Index the native state by ID. `delete(_:)` reads the native object's ID and native state on any
@@ -218,18 +215,7 @@ public final class SharedObjectRegistry: Sendable {
    */
   @JavaScriptActor
   internal func toNativeObject(_ jsObject: borrowing JavaScriptObject) -> SharedObject? {
-    if let native = try? SharedObject.native(from: jsObject) {
-      return native
-    }
-    // Fallback to the id-based lookup for cases where the JS object was registered
-    // through a path that doesn't attach a `SharedObjectNativeState` (e.g. worklet
-    // proxies that currently rely on the `__expo_shared_object_id__` property).
-    if let objectId = try? jsObject.getProperty(sharedObjectIdPropertyName).asInt() {
-      return state.withLock { state in
-        return state.pairs[objectId]?.native
-      }
-    }
-    return nil
+    return try? SharedObject.native(from: jsObject)
   }
 
   /**
@@ -296,9 +282,16 @@ public final class SharedObjectRegistry: Sendable {
     return createSharedJavaScriptObject(runtime: runtime, nativeObject: nativeObject)
   }
 
+  /// Removes all pairs. Before that, the native states release the values of the runtime that created them, because
+  /// a JS object of another runtime can keep a native state alive after that runtime is destroyed.
+  @JavaScriptActor
   internal func clear() {
-    state.withLock { state in
-      state.pairs.removeAll()
+    let nativeStates = state.withLock { state in
+      defer { state.pairs.removeAll() }
+      return Array(state.pairs.values)
+    }
+    for nativeState in nativeStates {
+      nativeState.releaseRuntimeValues()
     }
   }
 }
