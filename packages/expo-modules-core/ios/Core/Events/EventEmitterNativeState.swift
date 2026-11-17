@@ -193,10 +193,13 @@ internal final class EventListeners {
     in runtime: JavaScriptRuntime
   ) {
     for listener in listeners {
-      runtime.withUnsafePointees(object: this, value: listener.function) { runtimePointer, thisPointer, listenerPointer in
+      runtime.withUnsafePointees(
+        object: this,
+        value: listener.function
+      ) { runtimePointer, thisPointer, functionPointer in
         callJSEventListener(
           runtimePointer: runtimePointer,
-          listenerPointer: listenerPointer,
+          listenerPointer: functionPointer,
           thisPointer: thisPointer,
           argumentsPointer: argumentsPointer,
           argumentCount: argumentCount

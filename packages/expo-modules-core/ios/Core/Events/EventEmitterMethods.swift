@@ -52,7 +52,8 @@ internal enum EventEmitterMethods {
         }.addListener;
       })
       """
-    let makeAddListener = try runtime.eval(label: "expo-modules-core/event-emitter-add-listener.js", source).asFunction()
+    let label = "expo-modules-core/event-emitter-add-listener.js"
+    let makeAddListener = try runtime.eval(label: label, source).asFunction()
     let arguments = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 2)
     arguments.emplace(runtime.createFunction("addListener", nativeAddListener).asValue(), at: 0)
     arguments.emplace(runtime.createFunction("removeListener", nativeRemoveListener).asValue(), at: 1)
@@ -326,7 +327,7 @@ internal enum EventEmitterMethods {
     in arguments: borrowing JavaScriptValuesBuffer
   ) throws {
     if arguments.count < count {
-      throw MissingArgumentsException((method: method, expected: count, received: arguments.count))
+      throw MissingArgumentsException((method: method, count: count))
     }
   }
 }
@@ -337,10 +338,8 @@ internal final class InvalidListenerException: GenericException<String>, @unchec
   }
 }
 
-internal final class MissingArgumentsException: GenericException<(method: String, expected: Int, received: Int)>,
-  @unchecked Sendable
-{
+internal final class MissingArgumentsException: GenericException<(method: String, count: Int)>, @unchecked Sendable {
   override var reason: String {
-    "The event emitter method `\(param.method)` takes \(param.expected) arguments, but it received \(param.received)"
+    "The event emitter method `\(param.method)` takes \(param.count) arguments, but it received fewer"
   }
 }
