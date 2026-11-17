@@ -1,6 +1,7 @@
 package expo.modules.appmetrics
 
 import android.app.Application
+import android.content.Context
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
 import expo.modules.appmetrics.appstartup.AppStartupManager
@@ -9,21 +10,13 @@ import expo.modules.appmetrics.crashreporting.JvmCrashHandler
 import expo.modules.appmetrics.networkrequests.OkHttpClientProviderHook
 import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.easclient.EASClientID
-import expo.modules.observe.BuildConfig
+import java.util.concurrent.atomic.AtomicBoolean
 
 internal class AppMetricsApplicationLifecycleListeners : ApplicationLifecycleListener {
   override fun onCreate(application: Application) {
     super.onCreate(application)
     // Set before the main session starts: the session reads these values when it builds its row.
-    val clientId = EASClientID(application).uuid
-    AppMetrics.configure(
-      AppMetricsHost(
-        updatesInfo = ::expoUpdatesInfo,
-        clientId = clientId.toString(),
-        clientSampleValue = EASClientID.deterministicUniformValue(clientId),
-        isDebugBuild = BuildConfig.DEBUG
-      )
-    )
+    configureAppMetricsHost(application)
     ReactMarker.addListener { name, _, _ ->
       when (name) {
         ReactMarkerConstants.RUN_JS_BUNDLE_START -> AppStartupManager.markBundleLoadStart()
@@ -48,4 +41,22 @@ internal class AppMetricsApplicationLifecycleListeners : ApplicationLifecycleLis
     // our interceptor.
     OkHttpClientProviderHook.installIfNeeded()
   }
+}
+
+private val isHostConfigured = AtomicBoolean(false)
+
+// `ObservabilityBackgroundWorker` also calls this, because WorkManager can start it before `Application.onCreate`.
+internal fun configureAppMetricsHost(context: Context) {
+  if (!isHostConfigured.compareAndSet(false, true)) {
+    return
+  }
+  // `uuid` reads SharedPreferences on first use, so the read happens at dispatch time, not on the main thread here.
+  val easClientId = EASClientID(context.applicationContext)
+  AppMetrics.configure(
+    AppMetricsHost(
+      updatesInfo = ::expoUpdatesInfo,
+      clientId = { easClientId.uuid.toString() },
+      clientSampleValue = { EASClientID.deterministicUniformValue(easClientId.uuid) }
+    )
+  )
 }

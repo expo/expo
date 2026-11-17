@@ -39,7 +39,7 @@ internal class EventDispatcher(
         continuation.resume(DispatchResult.Success)
         return@suspendCancellableCoroutine Unit
       }
-      val clientId = AppMetrics.host.clientId
+      val clientId = AppMetrics.host.clientId()
       val body = try {
         OTRequestBody(
           resourceMetrics = events.map { it.toOTEvent(clientId) }
@@ -58,7 +58,7 @@ internal class EventDispatcher(
    */
   suspend fun dispatchLogs(events: List<Event>): DispatchResult =
     suspendCancellableCoroutine { continuation ->
-      val clientId = AppMetrics.host.clientId
+      val clientId = AppMetrics.host.clientId()
       val resourceLogs = events
         .filter { it.logs.isNotEmpty() }
         .map { it.toOTResourceLogs(clientId) }
@@ -87,7 +87,7 @@ internal class EventDispatcher(
         continuation.resume(DispatchResult.Success)
         return@suspendCancellableCoroutine Unit
       }
-      val clientId = AppMetrics.host.clientId
+      val clientId = AppMetrics.host.clientId()
       val body = try {
         OTTracesRequestBody(
           resourceSpans = batches.map { it.event.toOTResourceSpans(clientId, it.spans) }
@@ -118,7 +118,7 @@ internal class EventDispatcher(
       .post(body.toRequestBody("application/json".toMediaType()))
       .build()
 
-    if (AppMetrics.host.isDebugBuild) {
+    if (BuildConfig.DEBUG) {
       Log.d(OBSERVE_TAG, body)
     }
 

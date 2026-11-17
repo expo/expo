@@ -23,7 +23,8 @@ internal class ObservabilityManager(
     context = context,
     sessionManager = sessionManager,
     projectId = projectId,
-    baseUrl = baseUrl
+    baseUrl = baseUrl,
+    isDebugBuild = BuildConfig.DEBUG
   )
 
   suspend fun dispatchUnsentMetrics() {
@@ -52,6 +53,7 @@ internal class BaseObservabilityManager(
   private val sessionManager: SessionManager,
   val projectId: String,
   val baseUrl: String,
+  private val isDebugBuild: Boolean = false,
   private val currentTimeMs: () -> Long = { TimeUtils.getWallClockMillis() },
   private val dispatchChunkSize: Int = DISPATCH_CHUNK_SIZE
 ) {
@@ -374,7 +376,7 @@ internal class BaseObservabilityManager(
   private fun isInSample(rate: Double?): Boolean {
     rate ?: return true
     val clamped = rate.coerceIn(0.0, 1.0)
-    return AppMetrics.host.clientSampleValue < clamped
+    return AppMetrics.host.clientSampleValue() < clamped
   }
 
   private fun shouldDispatch(config: PersistedConfig?, rate: Double?): Boolean {
@@ -384,7 +386,7 @@ internal class BaseObservabilityManager(
     // package import) and the native build's debug flag. Either being true means the
     // bundle should be treated as dev for dispatch-gating.
     val isJsDev = ObservePreferences.getBundleDefaults(context)?.isJsDev ?: false
-    val isDev = AppMetrics.host.isDebugBuild || isJsDev
+    val isDev = isDebugBuild || isJsDev
     return dispatchingEnabled && isInSample(rate) && (!isDev || dispatchInDebug)
   }
 

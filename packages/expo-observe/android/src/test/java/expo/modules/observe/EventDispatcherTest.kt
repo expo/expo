@@ -37,7 +37,7 @@ class EventDispatcherTest {
     httpClient = OkHttpClient()
 
     mockkObject(AppMetrics)
-    every { AppMetrics.host } returns AppMetricsHost(clientId = testEasClientId.toString())
+    every { AppMetrics.host } returns AppMetricsHost(clientId = { testEasClientId.toString() })
 
     // Create EventDispatcher with test dependencies
     eventDispatcher = EventDispatcher(

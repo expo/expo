@@ -1265,15 +1265,13 @@ class BaseObservabilityManagerTest {
     deterministicUniformValue: Double = 0.0
   ): BaseObservabilityManager {
     mockkObject(AppMetrics)
-    every { AppMetrics.host } returns AppMetricsHost(
-      clientSampleValue = deterministicUniformValue,
-      isDebugBuild = isDebugBuild
-    )
+    every { AppMetrics.host } returns AppMetricsHost(clientSampleValue = { deterministicUniformValue })
     val manager = BaseObservabilityManager(
       context = context,
       sessionManager = sessionManager,
       projectId = "project",
       baseUrl = "https://example.com/",
+      isDebugBuild = isDebugBuild,
       currentTimeMs = currentTimeMs,
       dispatchChunkSize = chunkSize
     )
