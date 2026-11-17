@@ -7,7 +7,6 @@ description: Collect feedback from your users with Observe.reportFeedback and vi
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ConfigReactNative } from '~/ui/components/ConfigSection';
 import { FileTree } from '~/ui/components/FileTree';
-import { Terminal } from '~/ui/components/Snippet';
 
 `Observe.reportFeedback` sends feedback from your users to Expo Observe. The API has no UI. You build the feedback form, and the API sends what the user enters. `expo-observe` sends each report as an event named `expo.feedback`. The dashboard shows the reports on the [**Observe > Feedback**](#view-feedback) page.
 
@@ -31,10 +30,10 @@ Observe.reportFeedback({
 | Field        | Description                                                                                                                                                                                                                     |
 | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `id`         | Where your app collects the feedback, for example, `checkout`. Many reports can use the same `id`. Sent as `expo.feedback.id`.                                                                                                  |
-| `message`    | Text that the user wrote. Sent as the event body. Text longer than 4096 characters is cut.                                                                                                                                      |
+| `message`    | Text that the user wrote. Sent as the event body. `expo-observe` cuts text longer than 4096 characters.                                                                                                                         |
 | `rating`     | A whole number from `scale.min` to `scale.max`. Sent as `expo.feedback.rating`.                                                                                                                                                 |
 | `scale`      | The lowest and the highest rating that your UI allows, as whole numbers from 0 to 10, for example, `{ min: 1, max: 5 }`. The default is `{ min: 0, max: 10 }`. Sent as `expo.feedback.scale.min` and `expo.feedback.scale.max`. |
-| `attributes` | Extra context. The same rules as [`logEvent` attributes](/eas/observe/events/#attach-attributes) apply. If the event has more than 128 attributes in total, the `expo.*` attributes are kept first.                             |
+| `attributes` | Extra context. The same rules as [`logEvent` attributes](/eas/observe/events/#attach-attributes) apply. If the event has more than 128 attributes in total, `expo-observe` keeps the `expo.*` attributes first.                 |
 
 The dashboard uses the scale to compare ratings from different scales. Set `scale` to match your UI, and send the value that the user selected as the `rating`.
 
@@ -336,12 +335,6 @@ export function StarFeedback() {
 The [**Observe > Feedback**](https://expo.dev/accounts/[account]/projects/[project]/observe/feedback) page of the dashboard lists your feedback by `id`. For each `id`, the page shows how your users rate it.
 
 Select an `id` to see its totals, the spread of its ratings, and its reports. Select a report to see the full message, the rating, and the device and app details. You can also open a report as its own page.
-
-From the CLI:
-
-<Terminal cmd={['$ eas observe:events expo.feedback']} />
-
-Each event shows the message as its body, and `expo.feedback.id`, `expo.feedback.rating`, `expo.feedback.scale.min`, `expo.feedback.scale.max`, and your attributes. See [Querying with EAS CLI](/eas/observe/eas-cli/) for more `eas observe` commands.
 
 ## Privacy
 
