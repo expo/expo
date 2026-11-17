@@ -491,8 +491,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
   override fun updatesStateDidChange(event: Map<String, Any>) {
     if (UpdatesStateEvent.fromMap(event)?.type == UpdatesStateEvent.EventType.DownloadCompleteWithUpdate) {
-      updateDownload(subscription)?.let { (downloadTimeSeconds, updateId) ->
-        val metric = updatesMonitoring.downloadTimeMetric(downloadTimeSeconds, updateId)
+      updateDownload(subscription)?.let { download ->
+        val metric = updatesMonitoring.downloadTimeMetric(download)
         scope.launch {
           // Attach any pending startup metrics first so the download-time
           // metric lands alongside them. The session waits for its row before
