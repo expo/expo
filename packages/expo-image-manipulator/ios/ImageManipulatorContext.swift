@@ -66,7 +66,7 @@ public final class ImageManipulatorContext: SharedObject {
     return addTransformer(ImageCropTransformer(options: rect))
   }
 
-  @JS
+  @JS(.concurrent)
   func renderAsync() async throws -> ImageRef {
     let image = try await render()
     return ImageRef(image)
