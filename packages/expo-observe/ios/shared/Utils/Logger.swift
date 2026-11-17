@@ -10,7 +10,7 @@ internal struct ObserveLogger: Sendable {
   private let osLogger = os.Logger(subsystem: "dev.expo.modules", category: "expo")
 
   func debug(_ message: String) {
-    #if DEBUG
+    #if DEBUG || EXPO_CONFIGURATION_DEBUG
     log(.debug, prefix: "🔵", message)
     #endif
   }

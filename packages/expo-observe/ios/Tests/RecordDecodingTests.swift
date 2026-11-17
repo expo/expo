@@ -13,7 +13,7 @@ struct RecordDecodingTests {
   @Test
   func `an empty error report object decodes to the defaults`() throws {
     let runtime = try appContext.runtime
-    let report = try ErrorReportRecord.decode(runtime.eval("({})"), in: runtime).toErrorReport()
+    let report = try JsErrorReport.decode(runtime.eval("({})"), in: runtime).toErrorReport()
     #expect(report.source == .global)
     #expect(report.type == nil)
     #expect(report.message == "")
@@ -31,7 +31,7 @@ struct RecordDecodingTests {
          componentStack: 'at App', isFatal: true })
       """
     )
-    let report = try ErrorReportRecord.decode(value, in: runtime).toErrorReport()
+    let report = try JsErrorReport.decode(value, in: runtime).toErrorReport()
     #expect(report.source == .errorBoundary)
     #expect(report.type == "TypeError")
     #expect(report.message == "boom")
@@ -44,14 +44,14 @@ struct RecordDecodingTests {
   func `an unknown error source is rejected`() throws {
     let runtime = try appContext.runtime
     #expect(throws: (any Error).self) {
-      try ErrorReportRecord.decode(runtime.eval("({ source: 'somewhere' })"), in: runtime)
+      try JsErrorReport.decode(runtime.eval("({ source: 'somewhere' })"), in: runtime)
     }
   }
 
   @Test
   func `an empty feedback report object decodes to the defaults`() throws {
     let runtime = try appContext.runtime
-    let report = try FeedbackReportRecord.decode(runtime.eval("({})"), in: runtime).toFeedbackReport()
+    let report = try JsFeedbackReport.decode(runtime.eval("({})"), in: runtime).toFeedbackReport()
     #expect(report.id == "")
     #expect(report.message == nil)
     #expect(report.rating == nil)
@@ -68,7 +68,7 @@ struct RecordDecodingTests {
          attributes: { plan: 'pro' } })
       """
     )
-    let report = try FeedbackReportRecord.decode(value, in: runtime).toFeedbackReport()
+    let report = try JsFeedbackReport.decode(value, in: runtime).toFeedbackReport()
     #expect(report.id == "checkout")
     #expect(report.message == "Great")
     #expect(report.rating == 4)
@@ -80,11 +80,11 @@ struct RecordDecodingTests {
   @Test
   func `an omitted filter field stays nil and an empty one stays empty`() throws {
     let runtime = try appContext.runtime
-    let omitted = try NetworkRequestFilterRecord.decode(runtime.eval("({})"), in: runtime).toFilter()
+    let omitted = try JsNetworkRequestFilter.decode(runtime.eval("({})"), in: runtime).toFilter()
     #expect(omitted.hosts == nil)
     #expect(omitted.methods == nil)
 
-    let empty = try NetworkRequestFilterRecord.decode(runtime.eval("({ hosts: [], methods: [] })"), in: runtime)
+    let empty = try JsNetworkRequestFilter.decode(runtime.eval("({ hosts: [], methods: [] })"), in: runtime)
       .toFilter()
     #expect(empty.hosts == [])
     #expect(empty.methods == [])
@@ -94,7 +94,7 @@ struct RecordDecodingTests {
   func `a populated filter keeps its values`() throws {
     let runtime = try appContext.runtime
     let value = try runtime.eval("({ hosts: ['expo.dev'], methods: ['GET', 'POST'] })")
-    let filter = try NetworkRequestFilterRecord.decode(value, in: runtime).toFilter()
+    let filter = try JsNetworkRequestFilter.decode(value, in: runtime).toFilter()
     #expect(filter.hosts == ["expo.dev"])
     #expect(filter.methods == ["GET", "POST"])
   }

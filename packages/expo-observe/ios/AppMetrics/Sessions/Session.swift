@@ -120,16 +120,9 @@ class Session: MetricsReceiver, @unchecked Sendable {
     return decodeLogs(from: rows)
   }
 
-  /// Records a metric against this session. JS-facing: errors propagate so the caller's promise rejects.
+  /// Records a metric against this session. Errors propagate, so a JS caller's promise rejects.
   @AppMetricsActor
   func addMetric(_ metric: Metric) throws {
-    try insert(metric)
-  }
-
-  // Persists a metric row for this session. Shared by the throwing JS path (`addMetric`) and the
-  // fire-and-forget native push path (`receiveMetric`), which differ only in error handling.
-  @AppMetricsActor
-  private func insert(_ metric: Metric) throws {
     try AppMetrics.database?.insert(metric: MetricRow.from(metric: metric, sessionId: id))
   }
 
@@ -138,7 +131,7 @@ class Session: MetricsReceiver, @unchecked Sendable {
   @AppMetricsActor
   func receiveMetric(_ metric: Metric) {
     do {
-      try insert(metric)
+      try addMetric(metric)
     } catch {
       logger.warn(
         "[AppMetrics] Failed to insert metric \"\(metric.getMetricKey())\" for session \(self.id): \(error.localizedDescription)"

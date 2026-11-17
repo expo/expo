@@ -161,7 +161,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     // write race the shutdown. We write it to disk synchronously here (on the JS thread, no actor/DB)
     // and ingest it on the next launch. Non-fatal errors aren't racing termination, so they go through
     // the normal async log path.
-    Function("reportError") { (record: ErrorReportRecord) in
+    Function("reportError") { (record: JsErrorReport) in
       let report = record.toErrorReport()
       if report.isFatal {
         PendingErrorStore.write(report.toPendingError(sessionId: AppMetrics.mainSession.id))
@@ -172,7 +172,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }
     }
 
-    Function("reportFeedback") { (report: FeedbackReportRecord) in
+    Function("reportFeedback") { (report: JsFeedbackReport) in
       let record = report.toFeedbackReport().toLogRecord()
       AppMetricsActor.isolated {
         AppMetrics.mainSession.receiveLog(record)
@@ -180,11 +180,11 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     }
 
     Class("NetworkRequestObserver", NetworkRequestObserverObject.self) {
-      Constructor { (filter: NetworkRequestFilterRecord?) in
+      Constructor { (filter: JsNetworkRequestFilter?) in
         return NetworkRequestObserverObject(filter: filter?.toFilter())
       }
 
-      Function("setFilter") { (observer: NetworkRequestObserverObject, filter: NetworkRequestFilterRecord?) in
+      Function("setFilter") { (observer: NetworkRequestObserverObject, filter: JsNetworkRequestFilter?) in
         observer.setFilter(filter?.toFilter())
       }
     }
@@ -267,11 +267,11 @@ private func storedSession(id: String) throws -> StoredSession? {
 @Record
 internal struct NetworkTracesConfigParam {
   var enabled: Bool = true
-  var filter: NetworkRequestFilterRecord?
+  var filter: JsNetworkRequestFilter?
 }
 
 @Record
-internal struct NetworkRequestFilterRecord {
+internal struct JsNetworkRequestFilter {
   var hosts: [String]?
   var methods: [String]?
 
@@ -281,7 +281,7 @@ internal struct NetworkRequestFilterRecord {
 }
 
 @Record
-internal struct ErrorReportRecord {
+internal struct JsErrorReport {
   var source: ErrorReport.Source = .global
   var type: String?
   var message: String = ""
@@ -302,11 +302,11 @@ internal struct ErrorReportRecord {
 }
 
 @Record
-internal struct FeedbackReportRecord {
+internal struct JsFeedbackReport {
   var id: String = ""
   var message: String?
   var rating: Int?
-  var scale: FeedbackScaleRecord?
+  var scale: JsFeedbackScale?
   var attributes: [String: Any]?
 
   func toFeedbackReport() -> FeedbackReport {
@@ -321,7 +321,7 @@ internal struct FeedbackReportRecord {
 }
 
 @Record
-internal struct FeedbackScaleRecord {
+internal struct JsFeedbackScale {
   var min: Int = 0
   var max: Int = 0
 }
