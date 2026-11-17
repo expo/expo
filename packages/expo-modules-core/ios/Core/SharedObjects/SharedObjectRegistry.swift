@@ -253,10 +253,11 @@ public final class SharedObjectRegistry: Sendable {
     // The hooks run without the lock: they can emit events whose listeners run inline on the JavaScript
     // thread and use the registry again, and the lock isn't reentrant.
     native.sharedObjectWillRelease()
-    // Reset an ID on the object, unless the hook paired it again.
+    // Reset an ID on the object and end the pair, unless the hook paired it again.
     state.withLock { _ in
       if native.nativeState === nativeState {
         native.sharedObjectId = 0
+        native.endPairing(with: nativeState)
       }
     }
     native.sharedObjectDidRelease()
@@ -347,6 +348,7 @@ public final class SharedObjectRegistry: Sendable {
     }
     for nativeState in nativeStates {
       nativeState.releaseRuntimeValues()
+      nativeState.native.endPairing(with: nativeState)
     }
   }
 }

@@ -1,6 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 import ExpoModulesJSI
+import os
 
 public protocol AnySharedObject: AnyArgument, AnyObject {
   var sharedObjectId: SharedObjectId { get }
@@ -25,11 +26,48 @@ open class SharedObject: AnySharedObject {
   public internal(set) weak var appContext: AppContext?
 
   /**
-   Weak reference to the native state that owns this `SharedObject` and bridges
-   it to its JS counterpart. Populated by `SharedObjectRegistry.add` and used to
-   recover the paired JS object without going through the registry's id table.
+   The native state that owns this `SharedObject` and bridges it to its JS counterpart, or `nil` when the object
+   isn't paired. Populated by `SharedObjectRegistry.add` and used to recover the paired JS object without going
+   through the registry's id table.
+
+   The reference is strong: a weak reference would give the native state a side table, which makes every retain and
+   release of it slower, also when a JS method finds it on its JS object. The native state holds this object too, so
+   the registry ends the pair with `endPairing(with:)` when the object is released, when its JS objects are collected
+   and when the registry is cleared. The registry changes it on any thread, so it is behind a lock.
    */
-  internal weak var nativeState: SharedObjectNativeState?
+  internal var nativeState: SharedObjectNativeState? {
+    get {
+      return SharedObjectLock.withLock(for: self) {
+        return pairedNativeState
+      }
+    }
+    set {
+      let oldValue = SharedObjectLock.withLock(for: self) {
+        let oldValue = pairedNativeState
+        pairedNativeState = newValue
+        return oldValue
+      }
+      // The old native state can be deallocated here, so it is released after the lock is unlocked.
+      withExtendedLifetime(oldValue) {}
+    }
+  }
+
+  /// The storage of `nativeState`. Use it only under the lock.
+  private var pairedNativeState: SharedObjectNativeState?
+
+  /// Ends the pair with the native state: clears `nativeState` when it is the given native state. Another native state
+  /// can be there already, when the object was paired again.
+  internal func endPairing(with nativeState: SharedObjectNativeState) {
+    let oldValue: SharedObjectNativeState? = SharedObjectLock.withLock(for: self) {
+      guard pairedNativeState === nativeState else {
+        return nil
+      }
+      let oldValue = pairedNativeState
+      pairedNativeState = nil
+      return oldValue
+    }
+    withExtendedLifetime(oldValue) {}
+  }
 
   /**
    The default public initializer of the shared object.
@@ -242,5 +280,30 @@ extension SharedObject {
     override var reason: String {
       "Expected the native shared object to be '\(param.expected)', but found '\(param.actual)'"
     }
+  }
+}
+
+/// The locks of the `nativeState` property of shared objects, picked by the address of the object. A lock of its own
+/// would cost an allocation for every shared object. A lock is never held while another one is taken, so two objects
+/// that share a lock can't deadlock.
+private enum SharedObjectLock {
+  private static let count = 64
+
+  // The locks are never deallocated, and an `os_unfair_lock` is safe to use from any thread.
+  private nonisolated(unsafe) static let locks: UnsafeMutablePointer<os_unfair_lock> = {
+    let locks = UnsafeMutablePointer<os_unfair_lock>.allocate(capacity: count)
+    locks.initialize(repeating: os_unfair_lock(), count: count)
+    return locks
+  }()
+
+  static func withLock<R>(for object: SharedObject, _ body: () -> R) -> R {
+    // Objects are aligned to 16 bytes, so the low bits of the address are always zero.
+    let index = Int(truncatingIfNeeded: UInt(bitPattern: ObjectIdentifier(object)) >> 4) & (count - 1)
+    let lock = locks + index
+    os_unfair_lock_lock(lock)
+    defer {
+      os_unfair_lock_unlock(lock)
+    }
+    return body()
   }
 }
