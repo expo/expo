@@ -698,6 +698,137 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         new Set([p('../outside/external.js'), p('bar.js')])
       );
     });
+
+    test('treats files as unchanged when both old and new mtime are null', () => {
+      const nullMtimeTfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([[p('a.js'), [null, 0, 0, null, 0, null]]]),
+        processFile: () => {
+          throw new Error('Not implemented');
+        },
+      });
+
+      const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
+        [p('a.js'), [null, 0, 0, null, 0, null]],
+      ]);
+
+      expect(nullMtimeTfs.getDifference(newFiles)).toEqual({
+        changedFiles: new Map(),
+        removedFiles: new Set(),
+      });
+    });
+
+    test('treats files as unchanged when both old and new mtime are 0', () => {
+      const zeroMtimeTfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([[p('a.js'), [0, 0, 0, null, 0, null]]]),
+        processFile: () => {
+          throw new Error('Not implemented');
+        },
+      });
+
+      const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
+        [p('a.js'), [0, 0, 0, null, 0, null]],
+      ]);
+
+      expect(zeroMtimeTfs.getDifference(newFiles)).toEqual({
+        changedFiles: new Map(),
+        removedFiles: new Set(),
+      });
+    });
+
+    test('treats file as changed when old has mtime but new does not', () => {
+      const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
+        [p('bar.js'), [null, 0, 0, null, 0, null]],
+      ]);
+
+      const result = tfs.getDifference(newFiles);
+      expect(result.changedFiles.has(p('bar.js'))).toBe(true);
+    });
+
+    test('treats file as changed when new has mtime but old does not', () => {
+      const nullMtimeTfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([[p('a.js'), [null, 0, 0, null, 0, null]]]),
+        processFile: () => {
+          throw new Error('Not implemented');
+        },
+      });
+
+      const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
+        [p('a.js'), [500, 10, 0, null, 0, null]],
+      ]);
+
+      expect(nullMtimeTfs.getDifference(newFiles)).toEqual({
+        changedFiles: new Map<CanonicalPath, FileMetadata>([
+          [p('a.js'), [500, 10, 0, null, 0, null]],
+        ]),
+        removedFiles: new Set(),
+      });
+    });
+
+    test('detects type change even when both mtimes are null', () => {
+      const symlinkTfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([
+          [p('a.js'), [null, 0, 0, null, 'b.js', null]],
+        ]),
+        processFile: () => {
+          throw new Error('Not implemented');
+        },
+      });
+
+      const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
+        [p('a.js'), [null, 0, 0, null, 0, null]],
+      ]);
+
+      const result = symlinkTfs.getDifference(newFiles);
+      expect(result.changedFiles.has(p('a.js'))).toBe(true);
+    });
+
+    test('treats unresolved symlink (1) as unchanged vs resolved symlink with null mtime', () => {
+      // Simulates re-crawl: old state has a resolved symlink target, new crawl
+      // produces an unresolved lazy marker (1) with null mtime
+      const resolvedTfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([
+          [p('my-link'), [0, 0, 0, null, 'target.js', null]],
+        ]),
+        processFile: () => {
+          throw new Error('Not implemented');
+        },
+      });
+
+      const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
+        // Re-crawl produces unresolved symlink with null mtime
+        [p('my-link'), [null, 0, 0, null, 1, null]],
+      ]);
+
+      const result = resolvedTfs.getDifference(newFiles);
+      // Both are symlinks (not regular files), both have null/0 mtime → unchanged
+      expect(result.changedFiles.has(p('my-link'))).toBe(false);
+      expect(result.removedFiles.size).toBe(0);
+    });
+
+    test('treats re-crawled file with null mtime as unchanged when old mtime was also null', () => {
+      // Simulates warm re-crawl where a file was previously lazy and is still lazy
+      const lazyTfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([[p('file.js'), [null, 0, 0, null, 0, null]]]),
+        processFile: () => {
+          throw new Error('Not implemented');
+        },
+      });
+
+      const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
+        [p('file.js'), [null, 0, 0, null, 0, null]],
+      ]);
+
+      expect(lazyTfs.getDifference(newFiles)).toEqual({
+        changedFiles: new Map(),
+        removedFiles: new Set(),
+      });
+    });
   });
 
   describe('pathsOutsideRoots', () => {
