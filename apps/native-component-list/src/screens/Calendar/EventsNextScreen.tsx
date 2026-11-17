@@ -1,10 +1,14 @@
-import * as Calendar from 'expo-calendar';
 import {
   AddEventWithFormOptions,
+  AttendeeRole,
+  AttendeeStatus,
+  AttendeeType,
+  Calendar,
+  CalendarEvent,
   EntityTypes,
-  ExpoCalendar,
-  ExpoCalendarEvent,
-  getCalendars,
+  Frequency,
+  createEventAsync,
+  getEventAsync,
 } from 'expo-calendar';
 import { type NativeStackScreenProps } from 'expo-router';
 import React, { useState, useEffect } from 'react';
@@ -16,14 +20,14 @@ import ListButton from '../../components/ListButton';
 import MonoText from '../../components/MonoText';
 
 type EventRowProps = {
-  event: ExpoCalendarEvent;
-  getEvent: (event: ExpoCalendarEvent) => void;
-  getAttendees: (event: ExpoCalendarEvent) => void;
-  createAttendee: (event: ExpoCalendarEvent) => void;
-  updateEvent: (event: ExpoCalendarEvent) => void;
-  deleteEvent: (event: ExpoCalendarEvent) => void;
-  openEventInCalendar: (event: ExpoCalendarEvent) => void;
-  editEventInCalendar: (event: ExpoCalendarEvent) => void;
+  event: CalendarEvent;
+  getEvent: (event: CalendarEvent) => void;
+  getAttendees: (event: CalendarEvent) => void;
+  createAttendee: (event: CalendarEvent) => void;
+  updateEvent: (event: CalendarEvent) => void;
+  deleteEvent: (event: CalendarEvent) => void;
+  openEventInCalendar: (event: CalendarEvent) => void;
+  editEventInCalendar: (event: CalendarEvent) => void;
 };
 
 const EventRow = ({
@@ -59,7 +63,7 @@ type Props = NativeStackScreenProps<Links, 'Events'>;
 function prepareEvent(calendarId: string, recurring: boolean = false) {
   const timeInOneHour = new Date();
   timeInOneHour.setHours(timeInOneHour.getHours() + 1);
-  const newEvent: Parameters<typeof Calendar.createEventAsync>[1] = {
+  const newEvent: Parameters<typeof createEventAsync>[1] = {
     title: 'Celebrate Expo',
     location: '420 Florence St',
     startDate: new Date(),
@@ -71,17 +75,17 @@ function prepareEvent(calendarId: string, recurring: boolean = false) {
   if (recurring) {
     newEvent.recurrenceRule = {
       occurrence: 5,
-      frequency: Calendar.Frequency.DAILY,
+      frequency: Frequency.DAILY,
     };
   }
   return newEvent;
 }
 
 const EventsScreen = ({ route }: Props) => {
-  const [events, setEvents] = useState<ExpoCalendarEvent[]>([]);
-  const [calendar, setCalendar] = useState<ExpoCalendar | null>(null);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [calendar, setCalendar] = useState<Calendar | null>(null);
 
-  const findEvents = async (calendar: ExpoCalendar) => {
+  const findEvents = async (calendar: Calendar) => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const nextYear = new Date();
@@ -98,7 +102,7 @@ const EventsScreen = ({ route }: Props) => {
       return;
     }
     (async () => {
-      const calendars = await getCalendars(EntityTypes.EVENT);
+      const calendars = await Calendar.getAll(EntityTypes.EVENT);
       const calendar = calendars.find(({ id }) => id === calendarId) ?? null;
       setCalendar(calendar);
       if (calendar) {
@@ -128,9 +132,9 @@ const EventsScreen = ({ route }: Props) => {
     }
   };
 
-  const getEvent = async (event: ExpoCalendarEvent) => {
+  const getEvent = async (event: CalendarEvent) => {
     try {
-      const newEvent = await Calendar.getEventAsync(event.id!, {
+      const newEvent = await getEventAsync(event.id!, {
         futureEvents: false,
         instanceStartDate: event.startDate,
       });
@@ -140,7 +144,7 @@ const EventsScreen = ({ route }: Props) => {
     }
   };
 
-  const getAttendees = async (event: ExpoCalendarEvent) => {
+  const getAttendees = async (event: CalendarEvent) => {
     try {
       const attendees = await event.getAttendees();
       Alert.alert('Attendees found using getAttendees', JSON.stringify(attendees));
@@ -149,7 +153,7 @@ const EventsScreen = ({ route }: Props) => {
     }
   };
 
-  const createAttendee = async (event: ExpoCalendarEvent) => {
+  const createAttendee = async (event: CalendarEvent) => {
     try {
       if (Platform.OS !== 'android') {
         Alert.alert('createAttendee is not supported on this platform');
@@ -158,9 +162,9 @@ const EventsScreen = ({ route }: Props) => {
       const attendee = await event.createAttendee({
         email: 'test@example.com',
         name: 'Test Attendee',
-        type: Calendar.AttendeeType.RESOURCE,
-        status: Calendar.AttendeeStatus.PENDING,
-        role: Calendar.AttendeeRole.SPEAKER,
+        type: AttendeeType.RESOURCE,
+        status: AttendeeStatus.PENDING,
+        role: AttendeeRole.SPEAKER,
       });
       Alert.alert('Attendee created using createAttendee', JSON.stringify(attendee));
     } catch (e: any) {
@@ -168,7 +172,7 @@ const EventsScreen = ({ route }: Props) => {
     }
   };
 
-  const updateEvent = async (event: ExpoCalendarEvent) => {
+  const updateEvent = async (event: CalendarEvent) => {
     if (!calendar) {
       Alert.alert('Calendar is not loaded yet');
       return;
@@ -198,7 +202,7 @@ const EventsScreen = ({ route }: Props) => {
     }
   };
 
-  const deleteEvent = async (event: ExpoCalendarEvent) => {
+  const deleteEvent = async (event: CalendarEvent) => {
     try {
       event
         .getOccurrenceSync({
@@ -215,7 +219,7 @@ const EventsScreen = ({ route }: Props) => {
     }
   };
 
-  const openEventInCalendar = async (event: ExpoCalendarEvent) => {
+  const openEventInCalendar = async (event: CalendarEvent) => {
     const result = await event.openInCalendar({
       startNewActivityTask: false,
       allowsEditing: true,
@@ -228,7 +232,7 @@ const EventsScreen = ({ route }: Props) => {
     }, 200);
   };
 
-  const editEventInCalendar = async (event: ExpoCalendarEvent) => {
+  const editEventInCalendar = async (event: CalendarEvent) => {
     const result = await event.editInCalendar();
     setTimeout(() => {
       Alert.alert('editEventInCalendarAsync result', JSON.stringify(result), undefined, {
@@ -244,7 +248,7 @@ const EventsScreen = ({ route }: Props) => {
           title="get permissions"
           onPress={async () => {
             try {
-              const permissions = await Calendar.requestCalendarPermissions();
+              const permissions = await Calendar.requestPermissions();
               Alert.alert('Calendar permissions', permissions.status);
             } catch (error) {
               Alert.alert('Could not request calendar permissions', String(error));

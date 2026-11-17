@@ -1,14 +1,21 @@
 import {
-  createCalendar,
-  ExpoCalendar,
-  ExpoCalendarEvent,
-  getCalendars,
-  listEvents,
-  ExpoCalendarReminder,
-  ExpoCalendarAttendee,
+  AlarmMethod,
+  AttendeeRole,
+  AttendeeStatus,
+  AttendeeType,
+  Availability,
+  Calendar,
+  CalendarAttendee,
+  CalendarDialogResultActions,
+  CalendarEvent,
+  CalendarReminder,
+  CalendarType,
   EntityTypes,
+  EventAccessLevel,
+  EventStatus,
+  Frequency,
+  ReminderStatus,
 } from 'expo-calendar';
-import * as Calendar from 'expo-calendar';
 import { PermissionStatus, UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
@@ -22,21 +29,21 @@ export const name = 'Calendar';
 const defaultCalendarData = {
   title: `Expo test-suite calendar ${new Date().toISOString()}`,
   color: '#4B968A',
-  entityType: Calendar.EntityTypes.EVENT,
+  entityType: EntityTypes.EVENT,
   name: 'expo-test-suite-calendar',
   source: {
     isLocalAccount: true,
     name: 'expo',
     type: 'local',
   },
-} satisfies Partial<ExpoCalendar>;
+} satisfies Partial<Calendar>;
 
-function createTestCalendar(patch: Partial<ExpoCalendar> = {}): Promise<ExpoCalendar> {
-  return createCalendar({
+function createTestCalendar(patch: Partial<Calendar> = {}): Promise<Calendar> {
+  return Calendar.create({
     ...defaultCalendarData,
     sourceId: pickCalendarSourceId(),
     ...patch,
-  } satisfies Partial<ExpoCalendar>);
+  } satisfies Partial<Calendar>);
 }
 
 function pickCalendarSourceId() {
@@ -56,8 +63,8 @@ const defaultEventData = {
   allDay: false,
   location: 'Qubus Hotel, Nadwiślańska 6, 30-527 Kraków, Poland',
   notes: 'The very first Expo & React Native conference in Europe',
-  availability: Calendar.Availability.BUSY,
-} satisfies Partial<ExpoCalendarEvent>;
+  availability: Availability.BUSY,
+} satisfies Partial<CalendarEvent>;
 
 function createEventData(customArgs = {}) {
   return {
@@ -67,15 +74,15 @@ function createEventData(customArgs = {}) {
 }
 
 async function createTestEvent(
-  calendar: ExpoCalendar,
-  customArgs: Partial<ExpoCalendarEvent> = {}
-): Promise<ExpoCalendarEvent> {
+  calendar: Calendar,
+  customArgs: Partial<CalendarEvent> = {}
+): Promise<CalendarEvent> {
   const eventData = createEventData(customArgs);
   return await calendar.createEvent(eventData);
 }
 
 async function fetchCreatedEvent(
-  calendar: ExpoCalendar,
+  calendar: Calendar,
   startDate: Date,
   endDate: Date,
   eventId: string
@@ -91,23 +98,23 @@ async function fetchCreatedEvent(
 const defaultAttendeeData = {
   email: 'test@test.com',
   name: 'Test Attendee',
-  role: Calendar.AttendeeRole.ATTENDEE,
-  status: Calendar.AttendeeStatus.ACCEPTED,
-  type: Calendar.AttendeeType.RESOURCE,
-} satisfies Partial<ExpoCalendarAttendee>;
+  role: AttendeeRole.ATTENDEE,
+  status: AttendeeStatus.ACCEPTED,
+  type: AttendeeType.RESOURCE,
+} satisfies Partial<CalendarAttendee>;
 
 async function createTestReminder(
-  calendar: ExpoCalendar,
-  customArgs: Partial<ExpoCalendarReminder> = {}
-): Promise<ExpoCalendarReminder> {
+  calendar: Calendar,
+  customArgs: Partial<CalendarReminder> = {}
+): Promise<CalendarReminder> {
   const reminderData = createEventData(customArgs);
   return await calendar.createReminder(reminderData);
 }
 
 async function createTestAttendee(
-  event: ExpoCalendarEvent,
-  customArgs: Partial<ExpoCalendarAttendee> = {}
-): Promise<ExpoCalendarAttendee> {
+  event: CalendarEvent,
+  customArgs: Partial<CalendarAttendee> = {}
+): Promise<CalendarAttendee> {
   const attendeeData = {
     ...defaultAttendeeData,
     ...customArgs,
@@ -116,7 +123,7 @@ async function createTestAttendee(
 }
 
 async function getReminderCalendar() {
-  const calendars = await getCalendars();
+  const calendars = await Calendar.getAll();
   const reminderCalendar = calendars.find((c) => c.entityType === EntityTypes.REMINDER);
   if (!reminderCalendar) {
     throw new Error('This device has no reminder calendar, so reminder specs cannot run.');
@@ -124,7 +131,7 @@ async function getReminderCalendar() {
   return reminderCalendar;
 }
 
-function reminderExists(reminders: ExpoCalendarReminder[], reminderId: string | undefined) {
+function reminderExists(reminders: CalendarReminder[], reminderId: string | undefined) {
   return reminderId !== undefined && reminders.some((r) => r.id === reminderId);
 }
 
@@ -136,7 +143,7 @@ export async function test(t: JasmineInterface) {
   const shouldSkipUItest = true;
   const describeWithUiTest = shouldSkipUItest ? t.xdescribe : t.describe;
 
-  function testCalendarShape(calendar: ExpoCalendar) {
+  function testCalendarShape(calendar: Calendar) {
     t.expect(calendar).withContext('calendar should be defined').toBeDefined();
     t.expect(typeof calendar.id)
       .withContext('calendar.id should be a string')
@@ -163,7 +170,7 @@ export async function test(t: JasmineInterface) {
       .withContext('calendar.allowedAvailabilities should be an array')
       .toBe(true);
     calendar.allowedAvailabilities.forEach((availability) => {
-      t.expect(Object.values(Calendar.Availability))
+      t.expect(Object.values(Availability))
         .withContext('calendar availability should be a valid Availability value')
         .toContain(availability);
     });
@@ -172,20 +179,20 @@ export async function test(t: JasmineInterface) {
       t.expect(typeof calendar.entityType)
         .withContext('calendar.entityType should be a string')
         .toBe('string');
-      t.expect(Object.values(Calendar.EntityTypes))
+      t.expect(Object.values(EntityTypes))
         .withContext('calendar.entityType should be a valid EntityType')
         .toContain(calendar.entityType);
 
       t.expect(typeof calendar.type)
         .withContext('calendar.type should be a string')
         .toBe('string');
-      t.expect(Object.values(Calendar.CalendarType))
+      t.expect(Object.values(CalendarType))
         .withContext('calendar.type should be a valid CalendarType')
         .toContain(calendar.type);
     }
   }
 
-  function testEventShape(event: ExpoCalendarEvent) {
+  function testEventShape(event: CalendarEvent) {
     t.expect(event).withContext('event should be defined').toBeDefined();
     t.expect(typeof event.id)
       .withContext('event.id should be a string')
@@ -217,7 +224,7 @@ export async function test(t: JasmineInterface) {
         .expect(typeof event.recurrenceRule)
         .withContext('event.recurrenceRule should be an object')
         .toBe('object');
-    t.expect(Object.values(Calendar.Availability))
+    t.expect(Object.values(Availability))
       .withContext('event.availability should be a valid Availability value')
       .toContain(event.availability);
     event.timeZone &&
@@ -244,7 +251,7 @@ export async function test(t: JasmineInterface) {
       t.expect(typeof event.isDetached)
         .withContext('event.isDetached should be a boolean')
         .toBe('boolean');
-      t.expect(Object.values(Calendar.EventStatus))
+      t.expect(Object.values(EventStatus))
         .withContext('event.status should be a valid EventStatus')
         .toContain(event.status);
 
@@ -257,7 +264,7 @@ export async function test(t: JasmineInterface) {
     }
   }
 
-  function testCalendarSourceShape(source: ExpoCalendar['source']) {
+  function testCalendarSourceShape(source: Calendar['source']) {
     t.expect(source).withContext('source should be defined').toBeDefined();
     t.expect(typeof source.type)
       .withContext('source.type should be a string')
@@ -283,7 +290,7 @@ export async function test(t: JasmineInterface) {
    * live in `testAttendeeShape` instead.
    */
   function testAttendeeLikeShape(
-    attendee: ExpoCalendarAttendee | NonNullable<ExpoCalendarEvent['organizer']>
+    attendee: CalendarAttendee | NonNullable<CalendarEvent['organizer']>
   ) {
     t.expect(attendee).withContext('attendee should be defined').toBeDefined();
     t.expect(typeof attendee.name)
@@ -292,19 +299,19 @@ export async function test(t: JasmineInterface) {
     t.expect(typeof attendee.role)
       .withContext('attendee.role should be a string')
       .toBe('string');
-    t.expect(Object.values(Calendar.AttendeeRole))
+    t.expect(Object.values(AttendeeRole))
       .withContext('attendee.role should be a valid AttendeeRole')
       .toContain(attendee.role);
     t.expect(typeof attendee.status)
       .withContext('attendee.status should be a string')
       .toBe('string');
-    t.expect(Object.values(Calendar.AttendeeStatus))
+    t.expect(Object.values(AttendeeStatus))
       .withContext('attendee.status should be a valid AttendeeStatus')
       .toContain(attendee.status);
     t.expect(typeof attendee.type)
       .withContext('attendee.type should be a string')
       .toBe('string');
-    t.expect(Object.values(Calendar.AttendeeType))
+    t.expect(Object.values(AttendeeType))
       .withContext('attendee.type should be a valid AttendeeType')
       .toContain(attendee.type);
 
@@ -318,7 +325,7 @@ export async function test(t: JasmineInterface) {
     }
   }
 
-  function testAttendeeShape(attendee: ExpoCalendarAttendee) {
+  function testAttendeeShape(attendee: CalendarAttendee) {
     testAttendeeLikeShape(attendee);
 
     if (Platform.OS === 'android') {
@@ -333,9 +340,9 @@ export async function test(t: JasmineInterface) {
 
   describeWithPermissions('Calendar@next', () => {
     t.describe('Global functions', () => {
-      t.describe('requestCalendarPermissions()', () => {
+      t.describe('Calendar.requestPermissions()', () => {
         t.it('requests for Calendar permissions', async () => {
-          const results = await Calendar.requestCalendarPermissions();
+          const results = await Calendar.requestPermissions();
 
           t.expect(results.granted).toBe(true);
           t.expect(results.status).toBe(PermissionStatus.GRANTED);
@@ -353,8 +360,8 @@ export async function test(t: JasmineInterface) {
         });
       }
 
-      t.describe('createCalendar()', () => {
-        let calendar: ExpoCalendar;
+      t.describe('Calendar.create()', () => {
+        let calendar: Calendar;
 
         t.it('creates a calendar', async () => {
           calendar = await createTestCalendar();
@@ -385,14 +392,14 @@ export async function test(t: JasmineInterface) {
       });
 
       t.describe('getCalendarsAsync()', () => {
-        let calendar: ExpoCalendar;
+        let calendar: Calendar;
 
         t.beforeAll(async () => {
           calendar = await createTestCalendar();
         });
 
         t.it('returns an array of calendars with correct shape', async () => {
-          const calendars = await getCalendars();
+          const calendars = await Calendar.getAll();
 
           t.expect(Array.isArray(calendars)).toBeTruthy();
 
@@ -403,12 +410,12 @@ export async function test(t: JasmineInterface) {
 
         if (Platform.OS === 'ios') {
           t.it('returns an array of calendars for reminders', async () => {
-            const calendars = await getCalendars(Calendar.EntityTypes.REMINDER);
+            const calendars = await Calendar.getAll(EntityTypes.REMINDER);
 
             t.expect(Array.isArray(calendars)).toBeTruthy();
 
             for (const calendar of calendars) {
-              t.expect(calendar.entityType).toBe(Calendar.EntityTypes.REMINDER);
+              t.expect(calendar.entityType).toBe(EntityTypes.REMINDER);
             }
           });
         }
@@ -418,9 +425,9 @@ export async function test(t: JasmineInterface) {
         });
       });
 
-      t.describe('listEvents()', () => {
-        let calendar1: ExpoCalendar;
-        let calendar2: ExpoCalendar;
+      t.describe('CalendarEvent.list()', () => {
+        let calendar1: Calendar;
+        let calendar2: Calendar;
 
         t.beforeEach(async () => {
           calendar1 = await createTestCalendar();
@@ -428,7 +435,7 @@ export async function test(t: JasmineInterface) {
         });
 
         t.it('returns an array of events', async () => {
-          const events = await listEvents(
+          const events = await CalendarEvent.list(
             [calendar1.id, calendar2.id],
             new Date(2019, 3, 1),
             new Date(2019, 3, 29)
@@ -438,7 +445,7 @@ export async function test(t: JasmineInterface) {
 
           const event1 = await createTestEvent(calendar1);
           const event2 = await createTestEvent(calendar2);
-          const updatedEvents = await listEvents(
+          const updatedEvents = await CalendarEvent.list(
             [calendar1.id, calendar2.id],
             new Date(2019, 3, 1),
             new Date(2019, 3, 29)
@@ -448,7 +455,7 @@ export async function test(t: JasmineInterface) {
           t.expect(updatedEvents.map((e) => e.id)).toContain(event1.id);
           t.expect(updatedEvents.map((e) => e.id)).toContain(event2.id);
 
-          const singleCalendarEvents = await listEvents(
+          const singleCalendarEvents = await CalendarEvent.list(
             [calendar1.id],
             new Date(2019, 3, 1),
             new Date(2019, 3, 29)
@@ -458,12 +465,12 @@ export async function test(t: JasmineInterface) {
         });
 
         t.it(
-          'returns an array of events when calendars are provided as ExpoCalendar objects',
+          'returns an array of events when calendars are provided as Calendar objects',
           async () => {
             const event1 = await createTestEvent(calendar1);
             const event2 = await createTestEvent(calendar2);
 
-            const events = await listEvents(
+            const events = await CalendarEvent.list(
               [calendar1, calendar2],
               new Date(2019, 3, 1),
               new Date(2019, 3, 29)
@@ -484,7 +491,7 @@ export async function test(t: JasmineInterface) {
       if (Platform.OS === 'ios') {
         t.describe('getDefaultCalendar()', () => {
           t.it('get default calendar', async () => {
-            const calendar = Calendar.getDefaultCalendarSync();
+            const calendar = Calendar.getDefaultSync();
 
             testCalendarShape(calendar);
           });
@@ -505,7 +512,7 @@ export async function test(t: JasmineInterface) {
       const dontStartNewTask = {
         startNewActivityTask: false,
       };
-      let calendar: ExpoCalendar;
+      let calendar: Calendar;
 
       t.beforeEach(async () => {
         originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -521,9 +528,9 @@ export async function test(t: JasmineInterface) {
           ...dontStartNewTask,
         });
         if (Platform.OS === 'ios') {
-          t.expect(result.action).toBe(Calendar.CalendarDialogResultActions.saved);
+          t.expect(result.action).toBe(CalendarDialogResultActions.saved);
           t.expect(typeof result.id).toBe('string');
-          const storedEvent = ExpoCalendarEvent.get(requireNotNull(result.id));
+          const storedEvent = CalendarEvent.get(requireNotNull(result.id));
 
           t.expect(storedEvent).toEqual(
             t.jasmine.objectContaining({
@@ -546,7 +553,7 @@ export async function test(t: JasmineInterface) {
           allowsEditing: true,
           allowsCalendarPreview: true,
         });
-        t.expect(result).toEqual({ action: Calendar.CalendarDialogResultActions.done });
+        t.expect(result).toEqual({ action: CalendarDialogResultActions.done });
       });
 
       t.it('can edit an event', async () => {
@@ -565,14 +572,14 @@ export async function test(t: JasmineInterface) {
 
     t.describe('Calendar', () => {
       t.describe('Calendar.get()', () => {
-        let calendar: ExpoCalendar;
+        let calendar: Calendar;
 
         t.beforeEach(async () => {
           calendar = await createTestCalendar();
         });
 
         t.it('returns a calendar by its ID', async () => {
-          const fetchedCalendar = await ExpoCalendar.get(calendar.id);
+          const fetchedCalendar = await Calendar.get(calendar.id);
           t.expect(fetchedCalendar).toBeDefined();
           t.expect(fetchedCalendar).toEqual(calendar);
           testCalendarShape(fetchedCalendar);
@@ -580,14 +587,14 @@ export async function test(t: JasmineInterface) {
 
         t.it('throws an error when getting a non-existent calendar', async () => {
           try {
-            await ExpoCalendar.get('non-existent-calendar-id');
+            await Calendar.get('non-existent-calendar-id');
           } catch (e) {
             t.expect(e).toBeDefined();
           }
         });
 
         t.it('retrieves a specific calendar by ID from the list of all calendars', async () => {
-          const calendars = await getCalendars();
+          const calendars = await Calendar.getAll();
           const fetchedCalendar = calendars.find((c) => c.id === calendar.id);
           t.expect(fetchedCalendar).toBeDefined();
           t.expect(fetchedCalendar?.id).toBe(calendar.id);
@@ -599,7 +606,7 @@ export async function test(t: JasmineInterface) {
       });
 
       t.describe('Calendar.update()', () => {
-        let calendar: ExpoCalendar;
+        let calendar: Calendar;
 
         t.beforeEach(async () => {
           calendar = await createTestCalendar();
@@ -612,7 +619,7 @@ export async function test(t: JasmineInterface) {
             title: newTitle,
             color: newColor,
           });
-          const updatedCalendar = await ExpoCalendar.get(calendar.id);
+          const updatedCalendar = await Calendar.get(calendar.id);
 
           t.expect(updatedCalendar.id).toBe(calendar.id);
           t.expect(updatedCalendar.color).toBe(newColor);
@@ -651,7 +658,7 @@ export async function test(t: JasmineInterface) {
             color: newColor,
           });
 
-          const updatedCalendar = await ExpoCalendar.get(calendar.id);
+          const updatedCalendar = await Calendar.get(calendar.id);
           t.expect(updatedCalendar.id).toBe(calendar.id);
           t.expect(updatedCalendar.color).toBe(newColor);
           t.expect(updatedCalendar.title).toBe(newTitle);
@@ -659,7 +666,7 @@ export async function test(t: JasmineInterface) {
 
         t.it('throws an error when updating a non-existent calendar', async () => {
           try {
-            const calendar = await ExpoCalendar.get('non-existent-calendar-id');
+            const calendar = await Calendar.get('non-existent-calendar-id');
             await calendar.update({
               title: 'New title',
             });
@@ -674,7 +681,7 @@ export async function test(t: JasmineInterface) {
       });
 
       t.describe('await calendar.delete()', () => {
-        let calendar: ExpoCalendar;
+        let calendar: Calendar;
 
         t.beforeEach(async () => {
           calendar = await createTestCalendar();
@@ -683,7 +690,7 @@ export async function test(t: JasmineInterface) {
         t.it('deletes a calendar', async () => {
           await calendar.delete();
 
-          const calendars = getCalendars();
+          const calendars = Calendar.getAll();
           t.expect((await calendars).findIndex((c) => c.id === calendar.id)).toBe(-1);
         });
 
@@ -706,7 +713,7 @@ export async function test(t: JasmineInterface) {
       });
 
       t.describe('Calendar.createEvent()', () => {
-        let calendar: ExpoCalendar;
+        let calendar: Calendar;
 
         t.beforeAll(async () => {
           calendar = await createTestCalendar();
@@ -729,7 +736,7 @@ export async function test(t: JasmineInterface) {
         t.it('creates an event with a recurrence rule', async () => {
           const recurrenceRule = {
             endDate: new Date(2021, 3, 5).toISOString(),
-            frequency: Calendar.Frequency.DAILY,
+            frequency: Frequency.DAILY,
             interval: 1,
           };
           const event = await createTestEvent(calendar, {
@@ -747,11 +754,9 @@ export async function test(t: JasmineInterface) {
         if (Platform.OS === 'android') {
           t.it('creates an event with alarms', async () => {
             const event = await createTestEvent(calendar, {
-              alarms: [{ relativeOffset: -60, method: Calendar.AlarmMethod.ALARM }],
+              alarms: [{ relativeOffset: -60, method: AlarmMethod.ALARM }],
             });
-            t.expect(event.alarms).toEqual([
-              { relativeOffset: -60, method: Calendar.AlarmMethod.ALARM },
-            ]);
+            t.expect(event.alarms).toEqual([{ relativeOffset: -60, method: AlarmMethod.ALARM }]);
           });
         }
 
@@ -774,9 +779,9 @@ export async function test(t: JasmineInterface) {
 
       if (Platform.OS === 'ios') {
         t.describe('Calendar.createReminder()', () => {
-          let eventCalendar: ExpoCalendar;
-          let reminderCalendar: ExpoCalendar;
-          let reminder: ExpoCalendarReminder;
+          let eventCalendar: Calendar;
+          let reminderCalendar: Calendar;
+          let reminder: CalendarReminder;
 
           t.beforeEach(async () => {
             eventCalendar = await createTestCalendar();
@@ -795,7 +800,7 @@ export async function test(t: JasmineInterface) {
 
           t.it('reminder calendar exists', async () => {
             t.expect(reminderCalendar).toBeDefined();
-            t.expect(reminderCalendar.entityType).toBe(Calendar.EntityTypes.REMINDER);
+            t.expect(reminderCalendar.entityType).toBe(EntityTypes.REMINDER);
           });
 
           t.it('creates a reminder in the reminder calendar', async () => {
@@ -822,8 +827,8 @@ export async function test(t: JasmineInterface) {
         });
 
         t.describe('Calendar.listReminders()', () => {
-          let reminderCalendar: ExpoCalendar;
-          let reminder: ExpoCalendarReminder;
+          let reminderCalendar: Calendar;
+          let reminder: CalendarReminder;
 
           t.beforeEach(async () => {
             reminderCalendar = await getReminderCalendar();
@@ -846,13 +851,13 @@ export async function test(t: JasmineInterface) {
             const preRemindersIncomplete = await reminderCalendar.listReminders(
               new Date(2025, 0, 1),
               new Date(2025, 0, 3),
-              Calendar.ReminderStatus.INCOMPLETE
+              ReminderStatus.INCOMPLETE
             );
             t.expect(reminderExists(preRemindersIncomplete, reminder.id)).toBe(true);
             const preRemindersComplete = await reminderCalendar.listReminders(
               new Date(2025, 0, 1),
               null,
-              Calendar.ReminderStatus.COMPLETED
+              ReminderStatus.COMPLETED
             );
             t.expect(reminderExists(preRemindersComplete, reminder.id)).toBe(false);
             const preAllReminders = await reminderCalendar.listReminders(
@@ -870,13 +875,13 @@ export async function test(t: JasmineInterface) {
             const remindersIncomplete = await reminderCalendar.listReminders(
               new Date(2025, 0, 1),
               new Date(2025, 0, 3),
-              Calendar.ReminderStatus.INCOMPLETE
+              ReminderStatus.INCOMPLETE
             );
             t.expect(reminderExists(remindersIncomplete, reminder.id)).toBe(false);
             const remindersComplete = await reminderCalendar.listReminders(
               new Date(2025, 0, 1),
               new Date(2025, 0, 3),
-              Calendar.ReminderStatus.COMPLETED
+              ReminderStatus.COMPLETED
             );
             t.expect(reminderExists(remindersComplete, reminder.id)).toBe(true);
             const allReminders = await reminderCalendar.listReminders(
@@ -893,7 +898,7 @@ export async function test(t: JasmineInterface) {
             const reminders = await reminderCalendar.listReminders(
               new Date(2025, 0, 1),
               new Date(2025, 0, 3),
-              Calendar.ReminderStatus.COMPLETED
+              ReminderStatus.COMPLETED
             );
             t.expect(reminderExists(reminders, reminder.id)).toBe(false);
           });
@@ -907,7 +912,7 @@ export async function test(t: JasmineInterface) {
       }
 
       t.describe('Calendar.listEvents()', () => {
-        let calendar: ExpoCalendar;
+        let calendar: Calendar;
 
         t.beforeEach(async () => {
           calendar = await createTestCalendar();
@@ -950,7 +955,7 @@ export async function test(t: JasmineInterface) {
         t.it('returns a list of recurring events', async () => {
           await createTestEvent(calendar, {
             recurrenceRule: {
-              frequency: Calendar.Frequency.DAILY,
+              frequency: Frequency.DAILY,
             },
           });
 
@@ -968,7 +973,7 @@ export async function test(t: JasmineInterface) {
 
     t.describe('Event', () => {
       t.describe('Event.get()', () => {
-        let calendar: ExpoCalendar;
+        let calendar: Calendar;
 
         t.beforeEach(async () => {
           calendar = await createTestCalendar();
@@ -976,14 +981,14 @@ export async function test(t: JasmineInterface) {
 
         t.it('gets an event by id', async () => {
           const event = await createTestEvent(calendar);
-          const fetchedEvent = await ExpoCalendarEvent.get(event.id);
+          const fetchedEvent = await CalendarEvent.get(event.id);
           t.expect(fetchedEvent).toEqual(event);
           testEventShape(fetchedEvent);
         });
 
         t.it('throws an error when getting a non-existent event', async () => {
           try {
-            await ExpoCalendarEvent.get('non-existent-event-id');
+            await CalendarEvent.get('non-existent-event-id');
           } catch (e) {
             t.expect(e).toBeDefined();
           }
@@ -996,7 +1001,7 @@ export async function test(t: JasmineInterface) {
             location: 'New location',
           });
 
-          const event2 = await ExpoCalendarEvent.get(event.id);
+          const event2 = await CalendarEvent.get(event.id);
           t.expect(event2).toBeDefined();
           t.expect(event2.title).toBe('New title');
           t.expect(event2.location).toBe('New location');
@@ -1008,7 +1013,7 @@ export async function test(t: JasmineInterface) {
       });
 
       t.describe('Event.update()', () => {
-        let calendar: ExpoCalendar;
+        let calendar: Calendar;
 
         t.beforeEach(async () => {
           calendar = await createTestCalendar();
@@ -1105,7 +1110,7 @@ export async function test(t: JasmineInterface) {
           const event = await createTestEvent(calendar);
           const updatedData = {
             title: 'New title ' + new Date().toISOString(),
-          } satisfies Partial<ExpoCalendarEvent>;
+          } satisfies Partial<CalendarEvent>;
           await event.update(updatedData);
 
           t.expect(event.title).toBe(updatedData.title);
@@ -1123,7 +1128,7 @@ export async function test(t: JasmineInterface) {
           const event = await createTestEvent(calendar);
           const updatedData = {
             location: 'New location ' + new Date().toISOString(),
-          } satisfies Partial<ExpoCalendarEvent>;
+          } satisfies Partial<CalendarEvent>;
           await event.update(updatedData);
 
           t.expect(event.location).toBe(updatedData.location);
@@ -1175,15 +1180,15 @@ export async function test(t: JasmineInterface) {
             location: 'Updated location',
             notes: 'Updated notes',
             url: 'https://swmansion.com',
-            alarms: [{ relativeOffset: -60, method: Calendar.AlarmMethod.ALARM }],
+            alarms: [{ relativeOffset: -60, method: AlarmMethod.ALARM }],
             startDate: new Date(2023, 2, 3),
             endDate: new Date(2023, 2, 4),
             timeZone: 'GMT+1',
             endTimeZone: 'GMT+1',
-            accessLevel: Calendar.EventAccessLevel.PUBLIC,
+            accessLevel: EventAccessLevel.PUBLIC,
             guestsCanModify: true,
             guestsCanInviteOthers: true,
-          } satisfies Partial<ExpoCalendarEvent>;
+          } satisfies Partial<CalendarEvent>;
 
           await event.update(updatedData);
 
@@ -1221,7 +1226,7 @@ export async function test(t: JasmineInterface) {
           t.it('handles detached events', async () => {
             const event = await createTestEvent(calendar, {
               recurrenceRule: {
-                frequency: Calendar.Frequency.DAILY,
+                frequency: Frequency.DAILY,
               },
             });
 
@@ -1247,7 +1252,7 @@ export async function test(t: JasmineInterface) {
           t.it('updates future occurrences in a recurring event', async () => {
             const event = await createTestEvent(calendar, {
               recurrenceRule: {
-                frequency: Calendar.Frequency.DAILY,
+                frequency: Frequency.DAILY,
               },
             });
 
@@ -1285,7 +1290,7 @@ export async function test(t: JasmineInterface) {
           const event = await createTestEvent(calendar);
 
           const newRecurrenceRule = {
-            frequency: Calendar.Frequency.WEEKLY,
+            frequency: Frequency.WEEKLY,
             interval: 1,
             occurrence: 3,
           };
@@ -1304,7 +1309,7 @@ export async function test(t: JasmineInterface) {
           const event = await createTestEvent(calendar);
 
           const newRecurrenceRule = {
-            frequency: Calendar.Frequency.WEEKLY,
+            frequency: Frequency.WEEKLY,
             interval: 1,
             endDate: new Date(2021, 6, 5).toISOString(),
           };
@@ -1323,7 +1328,7 @@ export async function test(t: JasmineInterface) {
           const event = await createTestEvent(calendar);
 
           const newRecurrenceRule = {
-            frequency: Calendar.Frequency.WEEKLY,
+            frequency: Frequency.WEEKLY,
             interval: 1,
             endDate: new Date(2021, 6, 5).toISOString(),
             occurrence: 3,
@@ -1402,13 +1407,13 @@ export async function test(t: JasmineInterface) {
         t.it('clears a recurrence rule when set to null', async () => {
           const event = await createTestEvent(calendar, {
             recurrenceRule: {
-              frequency: Calendar.Frequency.DAILY,
+              frequency: Frequency.DAILY,
               interval: 1,
               occurrence: 3,
             },
           });
           t.expect(event.recurrenceRule).toBeDefined();
-          t.expect(event.recurrenceRule?.frequency).toBe(Calendar.Frequency.DAILY);
+          t.expect(event.recurrenceRule?.frequency).toBe(Frequency.DAILY);
           await event.update({
             recurrenceRule: null,
           });
@@ -1452,7 +1457,7 @@ export async function test(t: JasmineInterface) {
 
       if (Platform.OS === 'ios') {
         t.describe('Event.getOccurrenceSync()', () => {
-          let calendar: ExpoCalendar;
+          let calendar: Calendar;
 
           t.beforeEach(async () => {
             calendar = await createTestCalendar();
@@ -1461,7 +1466,7 @@ export async function test(t: JasmineInterface) {
           t.it('returns an instance of a recurring event', async () => {
             const recurringEvent = await createTestEvent(calendar, {
               recurrenceRule: {
-                frequency: Calendar.Frequency.DAILY,
+                frequency: Frequency.DAILY,
               },
             });
 
@@ -1485,7 +1490,7 @@ export async function test(t: JasmineInterface) {
       }
 
       t.describe('Event.delete()', () => {
-        let calendar: ExpoCalendar;
+        let calendar: Calendar;
 
         t.beforeEach(async () => {
           calendar = await createTestCalendar();
@@ -1497,7 +1502,7 @@ export async function test(t: JasmineInterface) {
           let error;
 
           try {
-            await ExpoCalendar.get(event.id);
+            await Calendar.get(event.id);
           } catch (e) {
             error = e;
           }
@@ -1520,7 +1525,7 @@ export async function test(t: JasmineInterface) {
         t.it('deletes a recurring event', async () => {
           const recurringEvent = await createTestEvent(calendar, {
             recurrenceRule: {
-              frequency: Calendar.Frequency.DAILY,
+              frequency: Frequency.DAILY,
             },
           });
 
@@ -1547,7 +1552,7 @@ export async function test(t: JasmineInterface) {
           t.it('deletes an instance of a recurring event', async () => {
             const recurringEvent = await createTestEvent(calendar, {
               recurrenceRule: {
-                frequency: Calendar.Frequency.DAILY,
+                frequency: Frequency.DAILY,
               },
             });
 
@@ -1583,7 +1588,7 @@ export async function test(t: JasmineInterface) {
             async () => {
               const recurringEvent = await createTestEvent(calendar, {
                 recurrenceRule: {
-                  frequency: Calendar.Frequency.DAILY,
+                  frequency: Frequency.DAILY,
                 },
               });
 
@@ -1620,7 +1625,7 @@ export async function test(t: JasmineInterface) {
             async () => {
               const recurringEvent = await createTestEvent(calendar, {
                 recurrenceRule: {
-                  frequency: Calendar.Frequency.DAILY,
+                  frequency: Frequency.DAILY,
                 },
               });
 
@@ -1669,8 +1674,8 @@ export async function test(t: JasmineInterface) {
       });
 
       t.describe('Event.getAttendeesAsync()', () => {
-        let calendar: ExpoCalendar;
-        let event: ExpoCalendarEvent;
+        let calendar: Calendar;
+        let event: CalendarEvent;
 
         t.beforeAll(async () => {
           calendar = await createTestCalendar();
@@ -1686,7 +1691,7 @@ export async function test(t: JasmineInterface) {
         t.it('lists attendees for a recurring event', async () => {
           const recurringEvent = await createTestEvent(calendar, {
             recurrenceRule: {
-              frequency: Calendar.Frequency.DAILY,
+              frequency: Frequency.DAILY,
             },
           });
           const attendees = await recurringEvent.getAttendees();
@@ -1703,8 +1708,8 @@ export async function test(t: JasmineInterface) {
     if (Platform.OS === 'ios') {
       t.describe('Reminder', () => {
         t.describe('Reminder.get()', () => {
-          let calendar: ExpoCalendar;
-          let reminder: ExpoCalendarReminder;
+          let calendar: Calendar;
+          let reminder: CalendarReminder;
 
           t.beforeEach(async () => {
             calendar = await getReminderCalendar();
@@ -1712,14 +1717,14 @@ export async function test(t: JasmineInterface) {
           });
 
           t.it('returns a reminder by its ID', async () => {
-            const fetchedReminder = await ExpoCalendarReminder.get(requireNotNull(reminder.id));
+            const fetchedReminder = await CalendarReminder.get(requireNotNull(reminder.id));
             t.expect(fetchedReminder).toBeDefined();
             t.expect(fetchedReminder).toEqual(reminder);
           });
 
           t.it('throws an error when getting a non-existent reminder', async () => {
             try {
-              await ExpoCalendarReminder.get('non-existent-reminder-id');
+              await CalendarReminder.get('non-existent-reminder-id');
             } catch (e) {
               t.expect(e).toBeDefined();
             }
@@ -1730,7 +1735,7 @@ export async function test(t: JasmineInterface) {
               title: 'New title',
             });
 
-            const fetchedReminder = await ExpoCalendarReminder.get(requireNotNull(reminder.id));
+            const fetchedReminder = await CalendarReminder.get(requireNotNull(reminder.id));
             t.expect(fetchedReminder).toBeDefined();
             t.expect(fetchedReminder.title).toBe('New title');
           });
@@ -1749,9 +1754,9 @@ export async function test(t: JasmineInterface) {
         });
 
         t.describe('Reminder.update()', () => {
-          let eventCalendar: ExpoCalendar;
-          let reminderCalendar: ExpoCalendar;
-          let reminder: ExpoCalendarReminder;
+          let eventCalendar: Calendar;
+          let reminderCalendar: Calendar;
+          let reminder: CalendarReminder;
 
           t.beforeEach(async () => {
             eventCalendar = await createTestCalendar();
@@ -1761,7 +1766,7 @@ export async function test(t: JasmineInterface) {
           t.it('updates a reminder', async () => {
             reminder = await createTestReminder(reminderCalendar);
 
-            const updatedData: Partial<ExpoCalendarReminder> = {
+            const updatedData: Partial<CalendarReminder> = {
               title: `New title ${new Date().toISOString()}`,
               location: `New location ${new Date().toISOString()}`,
               url: 'https://swmansion.com',
@@ -1888,13 +1893,13 @@ export async function test(t: JasmineInterface) {
           t.it('clears recurrenceRule when set to null', async () => {
             reminder = await createTestReminder(reminderCalendar, {
               recurrenceRule: {
-                frequency: Calendar.Frequency.WEEKLY,
+                frequency: Frequency.WEEKLY,
                 interval: 1,
               },
               dueDate: new Date(2025, 0, 2),
             });
             t.expect(reminder.recurrenceRule).toBeDefined();
-            t.expect(reminder.recurrenceRule?.frequency).toBe(Calendar.Frequency.WEEKLY);
+            t.expect(reminder.recurrenceRule?.frequency).toBe(Frequency.WEEKLY);
 
             await reminder.update({
               recurrenceRule: null,
@@ -1961,8 +1966,8 @@ export async function test(t: JasmineInterface) {
         });
 
         t.describe('Reminder.delete()', () => {
-          let reminderCalendar: ExpoCalendar;
-          let reminder: ExpoCalendarReminder;
+          let reminderCalendar: Calendar;
+          let reminder: CalendarReminder;
 
           t.beforeAll(async () => {
             reminderCalendar = await getReminderCalendar();
@@ -2002,8 +2007,8 @@ export async function test(t: JasmineInterface) {
     }
 
     t.describe('Attendee', () => {
-      let calendar: ExpoCalendar;
-      let event: ExpoCalendarEvent;
+      let calendar: Calendar;
+      let event: CalendarEvent;
 
       t.beforeEach(async () => {
         calendar = await createTestCalendar();
@@ -2021,7 +2026,7 @@ export async function test(t: JasmineInterface) {
             }
             t.expect(error instanceof UnavailabilityError).toBe(true);
             t.expect((error as UnavailabilityError).message).toBe(
-              new UnavailabilityError('ExpoCalendarEvent', 'createAttendee').message
+              new UnavailabilityError('CalendarEvent', 'createAttendee').message
             );
           });
         });
@@ -2083,9 +2088,9 @@ export async function test(t: JasmineInterface) {
 
         t.it('updates attendee role/status/type', async () => {
           const attendee = await createTestAttendee(event);
-          const nextRole = Calendar.AttendeeRole.ORGANIZER;
-          const nextStatus = Calendar.AttendeeStatus.TENTATIVE;
-          const nextType = Calendar.AttendeeType.NONE;
+          const nextRole = AttendeeRole.ORGANIZER;
+          const nextStatus = AttendeeStatus.TENTATIVE;
+          const nextType = AttendeeType.NONE;
 
           await attendee.update({
             role: nextRole,
@@ -2155,7 +2160,7 @@ export async function test(t: JasmineInterface) {
             // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
             role: null,
           });
-          t.expect(attendee.role).toBe(Calendar.AttendeeRole.NONE);
+          t.expect(attendee.role).toBe(AttendeeRole.NONE);
         });
 
         t.it('clears attendee status when set to null', async () => {
@@ -2164,7 +2169,7 @@ export async function test(t: JasmineInterface) {
             // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
             status: null,
           });
-          t.expect(attendee.status).toBe(Calendar.AttendeeStatus.NONE);
+          t.expect(attendee.status).toBe(AttendeeStatus.NONE);
         });
 
         t.it('clears attendee type when set to null', async () => {
@@ -2173,7 +2178,7 @@ export async function test(t: JasmineInterface) {
             // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
             type: null,
           });
-          t.expect(attendee.type).toBe(Calendar.AttendeeType.NONE);
+          t.expect(attendee.type).toBe(AttendeeType.NONE);
         });
 
         t.it('creates many attendees', async () => {
