@@ -6,11 +6,7 @@ import Foundation
 /// Reads the running update from expo-updates.
 func expoUpdatesInfo() -> AppInfo.UpdatesInfo {
   guard let updatesController = UpdatesControllerRegistry.sharedInstance.controller else {
-    return AppInfo.UpdatesInfo(
-      updateId: nil,
-      runtimeVersion: nil,
-      requestHeaders: nil
-    )
+    return .empty
   }
   let launchedUpdateId = updatesController.launchedUpdateId
   let embeddedUpdateId = updatesController.embeddedUpdateId

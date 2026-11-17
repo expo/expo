@@ -22,6 +22,8 @@ struct AppInfo: Codable, Equatable, Sendable {
       return requestHeaders?["expo-channel-name"]
     }
 
+    static let empty = UpdatesInfo(updateId: nil, runtimeVersion: nil, requestHeaders: nil)
+
     /// True when none of the carried fields are populated. Lets callers omit the whole struct from
     /// wire payloads instead of sending `{ updateId: null, runtimeVersion: null, requestHeaders: null }`,
     /// matching the pre-SQLite shape where `AppInfo.updatesInfo` was itself optional.
