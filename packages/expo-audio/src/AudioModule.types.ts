@@ -169,7 +169,9 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   currentStatus: AudioStatus;
 
   /**
-   * A boolean describing whether the player is active for lock screen controls. See [`setActiveForLockScreen()`](#setactiveforlockscreenactive-metadata-options).
+   * Boolean value indicating whether the player is active for lock screen controls. See [`setActiveForLockScreen()`](#setactiveforlockscreenactive-metadata-options).
+   *
+   * > **Note:** On web, this is always `false` when the browser does not support the [Media Session API](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API).
    */
   readonly isActiveForLockScreen: boolean;
 
@@ -478,7 +480,9 @@ export declare class AudioPlaylist extends SharedObject<AudioPlaylistEvents> {
   currentStatus: AudioPlaylistStatus;
 
   /**
-   * A boolean describing whether the player is active for lock screen controls. See [`setActiveForLockScreen()`](#setactiveforlockscreenactive-metadata-options-1).
+   * Boolean value indicating whether the playlist is active for lock screen controls. See [`setActiveForLockScreen()`](#setactiveforlockscreenactive-metadata-options-1).
+   *
+   * > **Note:** On web, this is always `false` when the browser does not support the [Media Session API](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API).
    */
   readonly isActiveForLockScreen: boolean;
 
