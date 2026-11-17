@@ -61,6 +61,11 @@ export type ImageSource = {
    */
   cacheKey?: string;
   /**
+   * @hidden
+   * iOS associates this download with a React Native DevTools initiator captured on the JS thread.
+   */
+  devToolsRequestId?: string;
+  /**
    * The max width of the viewport for which this source should be selected.
    * Has no effect if `source` prop is not an array or has only 1 element.
    * Has no effect if `responsivePolicy` is not set to `static`.
