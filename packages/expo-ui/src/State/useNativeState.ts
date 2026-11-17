@@ -1,5 +1,6 @@
 import { requireNativeModule, type SharedObject, useReleasingSharedObject } from 'expo';
 import { useRef } from 'react';
+import { Platform } from 'react-native';
 
 import { worklets } from './optionalWorklets';
 
@@ -61,7 +62,10 @@ export function useNativeState<T>(initialValue: T): ObservableState<T> {
   const initialValueRef = useRef(initialValue);
   return useReleasingSharedObject(() => {
     const state = new ExpoUI.ObservableState({ value: initialValueRef.current });
-    defineValueProperty(state);
+    // On iOS, `value`, `get` and `set` are defined natively.
+    if (Platform.OS !== 'ios') {
+      defineValueProperty(state);
+    }
     defineOnChangeProperty(state);
     return state;
   }, []) as ObservableState<T>;
