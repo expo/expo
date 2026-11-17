@@ -16,4 +16,8 @@ android {
 
 dependencies {
   implementation 'androidx.core:core:1.17.0'
+
+  if (project.findProject(':expo-modules-test-core')) {
+    testImplementation project(':expo-modules-test-core')
+  }
 }

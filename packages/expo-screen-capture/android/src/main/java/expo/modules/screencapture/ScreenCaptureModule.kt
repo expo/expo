@@ -2,10 +2,10 @@ package expo.modules.screencapture
 
 import android.Manifest
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import android.view.WindowManager
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -32,6 +32,8 @@ class ScreenCaptureModule : Module() {
   private var screenCaptureCallback: Activity.ScreenCaptureCallback? = null
   private var screenshotEventEmitter: ScreenshotEventEmitter? = null
   private var isRegistered = false
+  private val secureFlagManager = SecureFlagManager()
+  private var application: Application? = null
 
   private fun emitEvent() {
     try {
@@ -47,6 +49,9 @@ class ScreenCaptureModule : Module() {
     Events(eventName)
 
     OnCreate {
+      application = (context.applicationContext as Application).apply {
+        registerActivityLifecycleCallbacks(secureFlagManager)
+      }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         screenCaptureCallback = Activity.ScreenCaptureCallback {
           emitEvent()
@@ -85,11 +90,11 @@ class ScreenCaptureModule : Module() {
     }
 
     AsyncFunction<Unit>("preventScreenCapture") {
-      currentActivity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+      secureFlagManager.setScreenCapturePrevented(true, safeCurrentActivity)
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction<Unit>("allowScreenCapture") {
-      currentActivity.window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+      secureFlagManager.setScreenCapturePrevented(false, safeCurrentActivity)
     }.runOnQueue(Queues.MAIN)
 
     OnActivityEntersForeground {
@@ -103,6 +108,7 @@ class ScreenCaptureModule : Module() {
     }
 
     OnDestroy {
+      application?.unregisterActivityLifecycleCallbacks(secureFlagManager)
       screenshotEventEmitter?.onHostDestroy()
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         screenCaptureCallback?.let {
