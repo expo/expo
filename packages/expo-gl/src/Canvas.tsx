@@ -1,7 +1,7 @@
 import * as React from 'react';
 import type { LayoutChangeEvent, ViewProps } from 'react-native';
 import { PixelRatio, StyleSheet, View } from 'react-native';
-import createElement from 'react-native-web/dist/exports/createElement';
+import { unstable_createElement as createElement } from 'react-native-web';
 
 interface Size {
   width: number;

@@ -1732,7 +1732,7 @@ it('rewrites React Native named imports on the native web path', async () => {
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
   expect(result.dependencies.map(({ name }) => name)).toEqual([
-    'react-native-web/dist/index',
+    'react-native-web/dist/index.js',
     'react-native-web/dist/exports/View',
     'react-native-web/dist/exports/createElement',
     'react-native-web/dist/exports/Text',
@@ -1765,7 +1765,7 @@ it('rewrites React Native CommonJS bindings on the native web path', async () =>
   expect(result.dependencies.map(({ name }) => name)).toEqual([
     'react-native-web/dist/exports/View',
     'react-native-web/dist/exports/Text',
-    'react-native-web/dist/index',
+    'react-native-web/dist/index.js',
   ]);
 });
 

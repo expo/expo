@@ -1,9 +1,9 @@
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/exports/createElement/index.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/exports/createElement/index.js
 declare module 'react-native-web/dist/exports/createElement' {
   export { createElement as default } from 'react';
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/exports/StyleSheet/index.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/exports/StyleSheet/index.js
 declare module 'react-native-web/dist/exports/StyleSheet' {
   type StyleProps = [string, { [key: string]: any } | null];
   type Options = {
@@ -27,19 +27,19 @@ declare module 'react-native-web/dist/exports/StyleSheet' {
   export default stylesheet;
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/exports/Text/TextAncestorContext.js
-declare module 'react-native-web/dist/exports/Text/TextAncestorContext' {
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/exports/Text/TextAncestorContext.js
+declare module 'react-native-web/dist/exports/Text/TextAncestorContext.js' {
   import type { Context } from 'react';
   const textAncestorContext: Context<boolean>;
   export default textAncestorContext;
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/exports/View/index.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/exports/View/index.js
 declare module 'react-native-web/dist/exports/View' {
   export type { ViewProps } from 'react-native-web/dist/exports/View/types';
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/exports/View/types.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/exports/View/types.js
 declare module 'react-native-web/dist/exports/View/types' {
   import type { ColorValue, GenericStyleProp, LayoutEvent } from 'react-native-web/dist/types';
   import type {
@@ -263,188 +263,31 @@ declare module 'react-native-web/dist/exports/View/types' {
     };
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/modules/forwardedProps/index.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/modules/forwardedProps/index.js
 declare module 'react-native-web/dist/modules/forwardedProps' {
-  export const defaultProps = {
-    children: true,
-    dataSet: true,
-    dir: true,
-    id: true,
-    ref: true,
-    suppressHydrationWarning: true,
-    tabIndex: true,
-    testID: true,
-    // @deprecated
-    focusable: true,
-    nativeID: true,
-  };
-
-  export const accessibilityProps = {
-    'aria-activedescendant': true,
-    'aria-atomic': true,
-    'aria-autocomplete': true,
-    'aria-busy': true,
-    'aria-checked': true,
-    'aria-colcount': true,
-    'aria-colindex': true,
-    'aria-colspan': true,
-    'aria-controls': true,
-    'aria-current': true,
-    'aria-describedby': true,
-    'aria-details': true,
-    'aria-disabled': true,
-    'aria-errormessage': true,
-    'aria-expanded': true,
-    'aria-flowto': true,
-    'aria-haspopup': true,
-    'aria-hidden': true,
-    'aria-invalid': true,
-    'aria-keyshortcuts': true,
-    'aria-label': true,
-    'aria-labelledby': true,
-    'aria-level': true,
-    'aria-live': true,
-    'aria-modal': true,
-    'aria-multiline': true,
-    'aria-multiselectable': true,
-    'aria-orientation': true,
-    'aria-owns': true,
-    'aria-placeholder': true,
-    'aria-posinset': true,
-    'aria-pressed': true,
-    'aria-readonly': true,
-    'aria-required': true,
-    role: true,
-    'aria-roledescription': true,
-    'aria-rowcount': true,
-    'aria-rowindex': true,
-    'aria-rowspan': true,
-    'aria-selected': true,
-    'aria-setsize': true,
-    'aria-sort': true,
-    'aria-valuemax': true,
-    'aria-valuemin': true,
-    'aria-valuenow': true,
-    'aria-valuetext': true,
-    // @deprecated
-    accessibilityActiveDescendant: true,
-    accessibilityAtomic: true,
-    accessibilityAutoComplete: true,
-    accessibilityBusy: true,
-    accessibilityChecked: true,
-    accessibilityColumnCount: true,
-    accessibilityColumnIndex: true,
-    accessibilityColumnSpan: true,
-    accessibilityControls: true,
-    accessibilityCurrent: true,
-    accessibilityDescribedBy: true,
-    accessibilityDetails: true,
-    accessibilityDisabled: true,
-    accessibilityErrorMessage: true,
-    accessibilityExpanded: true,
-    accessibilityFlowTo: true,
-    accessibilityHasPopup: true,
-    accessibilityHidden: true,
-    accessibilityInvalid: true,
-    accessibilityKeyShortcuts: true,
-    accessibilityLabel: true,
-    accessibilityLabelledBy: true,
-    accessibilityLevel: true,
-    accessibilityLiveRegion: true,
-    accessibilityModal: true,
-    accessibilityMultiline: true,
-    accessibilityMultiSelectable: true,
-    accessibilityOrientation: true,
-    accessibilityOwns: true,
-    accessibilityPlaceholder: true,
-    accessibilityPosInSet: true,
-    accessibilityPressed: true,
-    accessibilityReadOnly: true,
-    accessibilityRequired: true,
-    accessibilityRole: true,
-    accessibilityRoleDescription: true,
-    accessibilityRowCount: true,
-    accessibilityRowIndex: true,
-    accessibilityRowSpan: true,
-    accessibilitySelected: true,
-    accessibilitySetSize: true,
-    accessibilitySort: true,
-    accessibilityValueMax: true,
-    accessibilityValueMin: true,
-    accessibilityValueNow: true,
-    accessibilityValueText: true,
-  };
-
-  export const clickProps = {
-    onClick: true,
-    onAuxClick: true,
-    onContextMenu: true,
-    onGotPointerCapture: true,
-    onLostPointerCapture: true,
-    onPointerCancel: true,
-    onPointerDown: true,
-    onPointerEnter: true,
-    onPointerMove: true,
-    onPointerLeave: true,
-    onPointerOut: true,
-    onPointerOver: true,
-    onPointerUp: true,
-  };
-
-  export const focusProps = {
-    onBlur: true,
-    onFocus: true,
-  };
-
-  export const keyboardProps = {
-    onKeyDown: true,
-    onKeyDownCapture: true,
-    onKeyUp: true,
-    onKeyUpCapture: true,
-  };
-
-  export const mouseProps = {
-    onMouseDown: true,
-    onMouseEnter: true,
-    onMouseLeave: true,
-    onMouseMove: true,
-    onMouseOver: true,
-    onMouseOut: true,
-    onMouseUp: true,
-  };
-
-  export const touchProps = {
-    onTouchCancel: true,
-    onTouchCancelCapture: true,
-    onTouchEnd: true,
-    onTouchEndCapture: true,
-    onTouchMove: true,
-    onTouchMoveCapture: true,
-    onTouchStart: true,
-    onTouchStartCapture: true,
-  };
-
-  export const styleProps = {
-    style: true,
-  };
+  export const defaultProps: readonly string[];
+  export const accessibilityProps: readonly string[];
+  export const clickProps: readonly string[];
+  export const focusProps: readonly string[];
+  export const keyboardProps: readonly string[];
+  export const mouseProps: readonly string[];
+  export const touchProps: readonly string[];
+  export const styleProps: readonly string[];
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/modules/mergeRefs/index.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/modules/mergeRefs/index.js
 declare module 'react-native-web/dist/modules/mergeRefs' {
   export default function mergeRefs(
     ...args: readonly React.ElementRef<any>[]
   ): (node: HTMLElement | null) => void;
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/modules/pick/index.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/modules/pick/index.js
 declare module 'react-native-web/dist/modules/pick' {
-  export default function pick<T extends Record<string, any>, L extends Record<string, boolean>>(
-    obj: T,
-    list: L
-  ): { [K in Extract<keyof T, keyof L> as L[K] extends true ? K : never]: T[K] };
+  export default function pick(obj: Record<string, any>, list: Set<string>): Record<string, any>;
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/modules/useElementLayout/index.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/modules/useElementLayout/index.js
 declare module 'react-native-web/dist/modules/useElementLayout' {
   import type { ElementType } from 'react';
   import type { LayoutEvent } from 'react-native-web/dist/types';
@@ -455,7 +298,7 @@ declare module 'react-native-web/dist/modules/useElementLayout' {
   ): void;
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/modules/useLocale/index.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/modules/useLocale/index.js
 declare module 'react-native-web/dist/modules/useLocale' {
   import type { PropsWithChildren } from 'react';
 
@@ -473,34 +316,28 @@ declare module 'react-native-web/dist/modules/useLocale' {
   export function useLocaleContext(): LocaleValue;
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/modules/useMergeRefs/index.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/modules/useMergeRefs/index.js
 declare module 'react-native-web/dist/modules/useMergeRefs' {
-  export { default } from 'react-native-web/dist/modules/mergeRefs';
+  export { default } from 'react-native-web/dist/modules/mergeRefs/index.js';
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/modules/usePlatformMethods/index.js
-declare module 'react-native-web/dist/modules/usePlatformMethods' {
-  import type { ViewProps } from 'react-native-web/dist/exports/View/types';
-  import type { GenericStyleProp } from 'react-native-web/dist/types';
-
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/modules/setPlatformMethods/index.js
+declare module 'react-native-web/dist/modules/setPlatformMethods' {
   /**
    * Adds non-standard methods to the host element. This is temporarily until an
    * API like `ReactNative.measure(hostRef, callback)` is added to React Native.
    */
-  export default function usePlatformMethods(methods: {
-    style?: GenericStyleProp<any>;
-    pointerEvents?: ViewProps['pointerEvents'];
-  });
+  export default function setPlatformMethods(hostNode: HTMLElement | null): void;
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/modules/useResponderEvents/index.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/modules/useResponderEvents/index.js
 declare module 'react-native-web/dist/modules/useResponderEvents' {
   import type { ResponderConfig } from 'react-native-web/dist/modules/useResponderEvents/ResponderSystem';
 
   export default function useResponderEvents(hostRef: any, config?: ResponderConfig): void;
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/modules/useResponderEvents/createResponderEvent.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/modules/useResponderEvents/createResponderEvent.js
 declare module 'react-native-web/dist/modules/useResponderEvents/createResponderEvent' {
   import type { TouchEvent } from 'react-native-web/src/modules/useResponderEvents/ResponderEventTypes';
   import type { TouchHistory } from 'react-native-web/src/modules/useResponderEvents/ResponderTouchHistoryStore';
@@ -531,7 +368,7 @@ declare module 'react-native-web/dist/modules/useResponderEvents/createResponder
   };
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/modules/useResponderEvents/ResponderEventTypes.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/modules/useResponderEvents/ResponderEventTypes.js
 declare module 'react-native-web/src/modules/useResponderEvents/ResponderEventTypes' {
   export type Touch = {
     force: number;
@@ -568,7 +405,7 @@ declare module 'react-native-web/src/modules/useResponderEvents/ResponderEventTy
   };
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/modules/useResponderEvents/ResponderSystem.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/modules/useResponderEvents/ResponderSystem.js
 declare module 'react-native-web/dist/modules/useResponderEvents/ResponderSystem' {
   import type { ResponderEvent } from 'react-native-web/dist/modules/useResponderEvents/createResponderEvent';
 
@@ -597,7 +434,7 @@ declare module 'react-native-web/dist/modules/useResponderEvents/ResponderSystem
   };
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/modules/useResponderEvents/ResponderTouchHistoryStore.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/modules/useResponderEvents/ResponderTouchHistoryStore.js
 declare module 'react-native-web/src/modules/useResponderEvents/ResponderTouchHistoryStore' {
   type TouchRecord = {
     currentPageX: number;
@@ -620,7 +457,7 @@ declare module 'react-native-web/src/modules/useResponderEvents/ResponderTouchHi
   }>;
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/types/index.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/types/index.js
 declare module 'react-native-web/dist/types' {
   export type ColorValue = null | string;
 
@@ -672,7 +509,7 @@ declare module 'react-native-web/dist/types' {
 
   type MeasureInWindowCallback = (left: number, top: number, width: number, height: number) => void;
 
-  // Mixin to HTMLElement that represents additions from the `usePlatformMethods` hook
+  // Mixin to HTMLElement that represents additions from `setPlatformMethods`
   export interface PlatformMethods {
     blur: () => void;
     focus: () => void;
@@ -686,7 +523,7 @@ declare module 'react-native-web/dist/types' {
   }
 }
 
-// See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/types/styles.js
+// See: https://github.com/necolas/react-native-web/commit/0cbcdded/packages/react-native-web/src/types/styles.js
 declare module 'react-native-web/dist/types/styles' {
   import type { ColorValue, DimensionValue } from 'react-native-web/dist/types';
 

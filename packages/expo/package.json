@@ -258,6 +258,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-native": "0.89.0-rc.2",
+    "react-native-web": "0.22.0-canary-20261119-0cbcdde",
     "rimraf": "^6.1.2",
     "web-streams-polyfill": "^3.3.2"
   },

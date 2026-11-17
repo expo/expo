@@ -25,7 +25,7 @@ export function RouterToolbarHost(props: RouterToolbarHostProps) {
 }
 
 const RouterToolbarItemView: React.ComponentType<
-  ViewProps & {
+  Omit<ViewProps, 'type'> & {
     identifier: string;
     title?: string;
     systemImageName?: SFSymbol;

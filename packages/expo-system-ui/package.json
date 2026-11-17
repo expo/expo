@@ -46,7 +46,8 @@
     "@expo/internal-scripts": "workspace:*",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "expo": "workspace:*"
+    "expo": "workspace:*",
+    "react-native-web": "0.22.0-canary-20261119-0cbcdde"
   },
   "peerDependencies": {
     "expo": "*",

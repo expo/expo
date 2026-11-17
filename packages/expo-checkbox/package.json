@@ -36,7 +36,8 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^14.0.1",
-    "@types/react": "~19.3.0"
+    "@types/react": "~19.3.0",
+    "react-native-web": "0.22.0-canary-20261119-0cbcdde"
   },
   "peerDependencies": {
     "react": "*",
