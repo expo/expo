@@ -5,15 +5,16 @@ import expo.modules.appmetrics.jserrors.ErrorSource
 import expo.modules.appmetrics.logevents.FeedbackReport
 import expo.modules.appmetrics.logevents.FeedbackScale
 import expo.modules.appmetrics.logevents.JsSeverity
+import expo.modules.appmetrics.logevents.Severity
 import expo.modules.appmetrics.memory.MemoryUsageSnapshot
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class JsRecordConversionTest {
   @Test
-  fun `JsSeverity converts to the Severity with the same JS value`() {
+  fun `JsSeverity has every Severity and converts to the one with the same JS value`() {
     assertEquals(
-      listOf("trace", "debug", "info", "warn", "error", "fatal"),
+      Severity.entries.map { it.rawValue },
       JsSeverity.entries.map { it.rawValue }
     )
     JsSeverity.entries.forEach {
@@ -22,9 +23,9 @@ class JsRecordConversionTest {
   }
 
   @Test
-  fun `JsErrorSource values match the JS strings`() {
+  fun `JsErrorSource has every ErrorSource`() {
     assertEquals(
-      listOf("global", "errorBoundary", "reportedByUser", "integration"),
+      ErrorSource.entries.map { it.rawValue },
       JsErrorSource.entries.map { it.rawValue }
     )
   }

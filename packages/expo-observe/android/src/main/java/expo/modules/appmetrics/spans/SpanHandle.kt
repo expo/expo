@@ -5,9 +5,8 @@ package expo.modules.appmetrics.spans
 import expo.modules.appmetrics.storage.Span
 
 /**
- * The native span returned by `startSpan`. A thin shell around
- * `SpanRecorder`: JS mutators forward to the recorder, and `end` hands the completed row to
- * `onEnd` (the module wires this to the database insert). Mirrors the iOS `SpanHandle`.
+ * A started span. A thin shell around `SpanRecorder`: `end` hands the completed row to `onEnd`
+ * (the module wires this to the database insert). Mirrors the iOS `SpanHandle`.
  *
  * A handle garbage-collected without `end` simply drops its span: the recorder holds the
  * only state, so nothing lingers. That is deliberate: an unended span has no meaningful end
