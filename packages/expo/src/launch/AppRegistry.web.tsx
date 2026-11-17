@@ -27,7 +27,8 @@ const runnables: Record<string, Runnable> = {};
 // TODO: Remove react-native-web optional integration once we have a standalone web stylesheet solution.
 function tryRequireStyleSheet(): { getSheet?: () => { textContent: string; id: string } } | null {
   try {
-    return require('react-native-web/dist/exports/StyleSheet');
+    const mod = require('react-native-web/dist/exports/StyleSheet/index.js');
+    return mod?.default ?? mod;
   } catch {
     return null;
   }
@@ -35,7 +36,7 @@ function tryRequireStyleSheet(): { getSheet?: () => { textContent: string; id: s
 
 function tryRequireCreateSheet(): ((root?: HTMLElement) => any) | null {
   try {
-    const mod = require('react-native-web/dist/exports/StyleSheet/dom');
+    const mod = require('react-native-web/dist/exports/StyleSheet/dom/index.js');
     return mod?.createSheet ?? null;
   } catch {
     return null;

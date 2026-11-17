@@ -54,7 +54,8 @@
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "expo": "workspace:*",
-    "expo-observe": "workspace:*"
+    "expo-observe": "workspace:*",
+    "react-native-web": "0.22.0-canary-20261119-0cbcdde"
   },
   "peerDependencies": {
     "expo": "*",
