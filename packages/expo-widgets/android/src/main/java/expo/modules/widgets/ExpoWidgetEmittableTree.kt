@@ -105,6 +105,7 @@ import androidx.glance.unit.ColorProvider
 import androidx.glance.appwidget.lazy.EmittableLazyColumn
 import androidx.glance.appwidget.lazy.EmittableLazyListItem
 import androidx.glance.appwidget.lazy.ReservedItemIdRangeEnd
+import androidx.glance.color.ColorProvider as DayNightColorProvider
 import io.github.expo.peek.glance.determinateCircularProgressIndicatorEmittable
 import kotlin.math.roundToInt
 
@@ -115,13 +116,97 @@ private val DefaultUncheckedTrackColor = ColorProvider(Color(0xffe7e0ec))
 
 private class WidgetConverterContext(
   override val applicationContext: Context,
-  val widgetSize: DpSize
+  val widgetSize: DpSize,
+  val dayNightColors: DayNightColors? = null
 ) : ConverterContext {
   override val runtime: Runtime? = null
+
+  // The dark pass only records colors; its tree is thrown away, so decoding its images is wasted work.
+  val skipsImages: Boolean
+    get() = dayNightColors?.isRecording == true
+
+  fun colorProvider(site: String, color: AndroidColor?): ColorProvider? {
+    val composeColor = colorToComposeColorOrNull(color)
+    return dayNightColors?.resolve(site, composeColor) ?: composeColor?.let(::ColorProvider)
+  }
+}
+
+/**
+ * Pairs every color of the light render with the same color of the dark render.
+ *
+ * A widget is drawn once and then shown by the launcher, which never asks for it again when the
+ * system switches between light and dark. A color fixed at render time therefore keeps the scheme
+ * of the last update. A day/night ColorProvider hands RemoteViews both colors (Android 12+), and
+ * the launcher picks the right one itself.
+ *
+ * The dark tree is converted first and records its colors in order; the light tree is then
+ * converted and takes them back in the same order. Each color is tagged with its call site, so two
+ * trees that differ in more than their colors are detected rather than mispaired.
+ */
+private class DayNightColors {
+  private val night = mutableListOf<Pair<String, Color?>>()
+  private var index = 0
+  private var matched = true
+
+  var isRecording = true
+    private set
+
+  fun startPairing() {
+    isRecording = false
+  }
+
+  val isComplete: Boolean
+    get() = matched && index == night.size
+
+  fun resolve(site: String, day: Color?): ColorProvider? {
+    if (isRecording) {
+      night += site to day
+      return null
+    }
+    val (nightSite, nightColor) = night.getOrNull(index++) ?: return mismatch()
+    if (nightSite != site || (day == null) != (nightColor == null)) {
+      return mismatch()
+    }
+    return if (day != null && nightColor != null) DayNightColorProvider(day = day, night = nightColor) else null
+  }
+
+  private fun mismatch(): ColorProvider? {
+    matched = false
+    return null
+  }
 }
 
 internal fun ReadableMap.toPeekRoot(context: Context, source: InteractionSource, size: DpSize): Emittable {
-  val converterContext = WidgetConverterContext(context, size)
+  return toPeekRoot(WidgetConverterContext(context, size), source)
+}
+
+/**
+ * Converts a layout rendered for both color schemes into one tree that follows the system theme.
+ * Falls back to the tree for the current scheme when the two renders differ in more than color.
+ */
+internal fun toDayNightPeekRoot(
+  context: Context,
+  light: ReadableMap,
+  dark: ReadableMap,
+  isNight: Boolean,
+  source: InteractionSource,
+  size: DpSize
+): Emittable {
+  if (light.toHashMap() == dark.toHashMap()) {
+    return light.toPeekRoot(context, source, size)
+  }
+
+  val colors = DayNightColors()
+  dark.toPeekRoot(WidgetConverterContext(context, size, colors), source)
+  colors.startPairing()
+  val root = light.toPeekRoot(WidgetConverterContext(context, size, colors), source)
+  if (colors.isComplete) {
+    return root
+  }
+  return (if (isNight) dark else light).toPeekRoot(context, source, size)
+}
+
+private fun ReadableMap.toPeekRoot(converterContext: WidgetConverterContext, source: InteractionSource): Emittable {
   return EmittableColumn().also { root ->
     root.children += toPeekNodes(converterContext, source)
   }
@@ -207,20 +292,20 @@ private fun ReadableMap.toPeekLazyColumn(converterContext: WidgetConverterContex
   }
 }
 
-private fun ReadableMap.toPeekSpacer(converterContext: ConverterContext): EmittableSpacer {
+private fun ReadableMap.toPeekSpacer(converterContext: WidgetConverterContext): EmittableSpacer {
   return EmittableSpacer().also {
     it.modifier = props<SpacerProps>(converterContext).modifiers.toPeekModifier(converterContext)
   }
 }
 
-private fun ReadableMap.toPeekText(converterContext: ConverterContext): EmittableText {
+private fun ReadableMap.toPeekText(converterContext: WidgetConverterContext): EmittableText {
   val props = props<TextProps>(converterContext)
   val typography = props.typography?.toGlanceTypography()
   return EmittableText().also {
     it.text = props.textContent()
     it.modifier = props.textModifier(converterContext)
     it.style = TextStyle(
-      color = props.color.toGlanceColorProvider() ?: typography?.color ?: TextDefaults.defaultTextColor,
+      color = converterContext.colorProvider("text.color", props.color) ?: typography?.color ?: TextDefaults.defaultTextColor,
       fontSize = props.fontSize?.sp ?: typography?.fontSize,
       fontWeight = props.fontWeight?.toGlanceFontWeight() ?: typography?.fontWeight,
       fontStyle = props.fontStyle?.toGlanceFontStyle(),
@@ -235,6 +320,12 @@ private fun ReadableMap.toPeekImage(converterContext: WidgetConverterContext): E
   val props = props<WidgetImageProps>(converterContext)
   val source = props.source
     ?: return createErrorText("Image has no source. Pass source={{ uri }} with a drawable resource name or a file URI.")
+  if (converterContext.skipsImages) {
+    return EmittableImage().also {
+      it.modifier = props.imageModifier(converterContext)
+      it.colorFilterParams = converterContext.colorProvider("image.tint", props.tint)?.let(::TintColorFilterParams)
+    }
+  }
   val provider = runCatching {
     loadWidgetImage(converterContext.applicationContext, source, props.imageTarget(converterContext))
   }.getOrElse { error ->
@@ -245,12 +336,12 @@ private fun ReadableMap.toPeekImage(converterContext: WidgetConverterContext): E
     it.provider = provider
     it.modifier = props.imageModifier(converterContext)
     it.contentScale = props.contentScale.toGlanceContentScale()
-    it.colorFilterParams = props.tint.toGlanceColorProvider()?.let(::TintColorFilterParams)
+    it.colorFilterParams = converterContext.colorProvider("image.tint", props.tint)?.let(::TintColorFilterParams)
     it.alpha = props.alpha.coerceIn(0f, 1f)
   }
 }
 
-private fun WidgetImageProps.imageModifier(converterContext: ConverterContext): GlanceModifier {
+private fun WidgetImageProps.imageModifier(converterContext: WidgetConverterContext): GlanceModifier {
   val modifier = modifiers.toPeekModifier(converterContext)
   val description = contentDescription ?: return modifier
   return modifier.semantics { contentDescription = description }
@@ -298,7 +389,7 @@ private fun ReadableMap.toPeekButton(converterContext: WidgetConverterContext, s
   val action =
     props.target?.let { target -> WidgetInteraction(source, target).toGlanceAction(converterContext.applicationContext) }
   val modifier = props.buttonModifier(converterContext)
-  val contentColor = props.contentColorProvider()
+  val contentColor = props.contentColorProvider(converterContext)
   val textContent = children.textContent(converterContext) ?: props.label
   if (textContent != null && (children.isEmpty() || children.isTextOnlyContent())) {
     return EmittableButton().also {
@@ -320,23 +411,23 @@ private fun ReadableMap.toPeekButton(converterContext: WidgetConverterContext, s
   }
 }
 
-private fun ReadableMap.toPeekCheckBox(converterContext: ConverterContext): EmittableCheckBox {
+private fun ReadableMap.toPeekCheckBox(converterContext: WidgetConverterContext): EmittableCheckBox {
   val props = props<CheckboxProps>(converterContext)
-  val checked = props.colors.checkedColor.toGlanceColorProvider() ?: DefaultCheckedColor
-  val unchecked = props.colors.uncheckedColor.toGlanceColorProvider() ?: DefaultUncheckedColor
+  val checked = converterContext.colorProvider("checkbox.checked", props.colors.checkedColor) ?: DefaultCheckedColor
+  val unchecked = converterContext.colorProvider("checkbox.unchecked", props.colors.uncheckedColor) ?: DefaultUncheckedColor
   return EmittableCheckBox(CheckboxDefaults.checkBoxColors(checked, unchecked)).also {
     it.checked = props.value
     it.modifier = props.modifiers.toPeekModifier(converterContext)
   }
 }
 
-private fun ReadableMap.toPeekSwitch(converterContext: ConverterContext): EmittableSwitch {
+private fun ReadableMap.toPeekSwitch(converterContext: WidgetConverterContext): EmittableSwitch {
   val props = props<SwitchProps>(converterContext)
   val colors = SwitchDefaults.switchColors(
-    checkedThumbColor = props.colors.checkedThumbColor.toGlanceColorProvider() ?: DefaultCheckedColor,
-    uncheckedThumbColor = props.colors.uncheckedThumbColor.toGlanceColorProvider() ?: DefaultUncheckedColor,
-    checkedTrackColor = props.colors.checkedTrackColor.toGlanceColorProvider() ?: DefaultCheckedTrackColor,
-    uncheckedTrackColor = props.colors.uncheckedTrackColor.toGlanceColorProvider() ?: DefaultUncheckedTrackColor
+    checkedThumbColor = converterContext.colorProvider("switch.checkedThumb", props.colors.checkedThumbColor) ?: DefaultCheckedColor,
+    uncheckedThumbColor = converterContext.colorProvider("switch.uncheckedThumb", props.colors.uncheckedThumbColor) ?: DefaultUncheckedColor,
+    checkedTrackColor = converterContext.colorProvider("switch.checkedTrack", props.colors.checkedTrackColor) ?: DefaultCheckedTrackColor,
+    uncheckedTrackColor = converterContext.colorProvider("switch.uncheckedTrack", props.colors.uncheckedTrackColor) ?: DefaultUncheckedTrackColor
   )
   return EmittableSwitch(colors).also {
     it.checked = props.value
@@ -344,7 +435,7 @@ private fun ReadableMap.toPeekSwitch(converterContext: ConverterContext): Emitta
   }
 }
 
-private fun ReadableMap.toPeekRadioButton(converterContext: ConverterContext): EmittableRadioButton {
+private fun ReadableMap.toPeekRadioButton(converterContext: WidgetConverterContext): EmittableRadioButton {
   val props = props<RadioButtonProps>(converterContext)
   return EmittableRadioButton(
     RadioButtonDefaults.colors(DefaultCheckedColor, DefaultUncheckedColor)
@@ -355,43 +446,43 @@ private fun ReadableMap.toPeekRadioButton(converterContext: ConverterContext): E
   }
 }
 
-private fun ReadableMap.toPeekLinearProgress(converterContext: ConverterContext): EmittableLinearProgressIndicator {
+private fun ReadableMap.toPeekLinearProgress(converterContext: WidgetConverterContext): EmittableLinearProgressIndicator {
   val props = props<LinearProgressIndicatorProps>(converterContext)
   return EmittableLinearProgressIndicator().also {
     it.progress = props.progress ?: 0f
     it.indeterminate = props.progress == null
     it.modifier = props.modifiers.toPeekModifier(converterContext)
-    it.color = props.color.toGlanceColorProvider() ?: it.color
-    it.backgroundColor = props.trackColor.toGlanceColorProvider() ?: it.backgroundColor
+    it.color = converterContext.colorProvider("progress.color", props.color) ?: it.color
+    it.backgroundColor = converterContext.colorProvider("progress.track", props.trackColor) ?: it.backgroundColor
   }
 }
 
-private fun ReadableMap.toPeekCircularProgress(converterContext: ConverterContext): Emittable {
+private fun ReadableMap.toPeekCircularProgress(converterContext: WidgetConverterContext): Emittable {
   val props = props<CircularProgressIndicatorProps>(converterContext)
   val progress = props.progress
   if (progress == null) {
     return EmittableCircularProgressIndicator().also {
       it.modifier = props.modifiers.toPeekModifier(converterContext)
-      it.color = props.color.toGlanceColorProvider() ?: it.color
+      it.color = converterContext.colorProvider("progress.color", props.color) ?: it.color
     }
   }
   return determinateCircularProgressIndicatorEmittable(
     progress = progress,
     modifier = props.modifiers.toPeekModifier(converterContext),
-    color = props.color.toGlanceColorProvider() ?: ProgressIndicatorDefaults.IndicatorColorProvider,
-    trackColor = props.trackColor.toGlanceColorProvider() ?: ProgressIndicatorDefaults.BackgroundColorProvider
+    color = converterContext.colorProvider("progress.color", props.color) ?: ProgressIndicatorDefaults.IndicatorColorProvider,
+    trackColor = converterContext.colorProvider("progress.track", props.trackColor) ?: ProgressIndicatorDefaults.BackgroundColorProvider
   )
 }
 
-private fun ReadableMap.toPeekLoadingIndicator(converterContext: ConverterContext): EmittableCircularProgressIndicator {
+private fun ReadableMap.toPeekLoadingIndicator(converterContext: WidgetConverterContext): EmittableCircularProgressIndicator {
   val props = props<LoadingIndicatorProps>(converterContext)
   return EmittableCircularProgressIndicator().also {
     it.modifier = props.modifiers.toPeekModifier(converterContext)
-    it.color = props.color.toGlanceColorProvider() ?: it.color
+    it.color = converterContext.colorProvider("progress.color", props.color) ?: it.color
   }
 }
 
-private fun ModifierList.toPeekModifier(converterContext: ConverterContext): GlanceModifier {
+private fun ModifierList.toPeekModifier(converterContext: WidgetConverterContext): GlanceModifier {
   var result: GlanceModifier = GlanceModifier
   for (config in this) {
     result = result.then(config.toPeekModifier(converterContext))
@@ -399,7 +490,7 @@ private fun ModifierList.toPeekModifier(converterContext: ConverterContext): Gla
   return result
 }
 
-private fun ModifierType.toPeekModifier(converterContext: ConverterContext): GlanceModifier {
+private fun ModifierType.toPeekModifier(converterContext: WidgetConverterContext): GlanceModifier {
   return when (this["\$type"]?.asString()) {
     "paddingAll" -> asRecord<PaddingAllParams>(converterContext)?.let { GlanceModifier.padding(it.all.dp) }
     "padding" -> asRecord<PaddingParams>(converterContext)?.let {
@@ -416,7 +507,8 @@ private fun ModifierType.toPeekModifier(converterContext: ConverterContext): Gla
     "fillMaxSize" -> asRecord<FillMaxSizeParams>(converterContext)?.let { GlanceModifier.fillMaxSize() }
     "fillMaxWidth" -> asRecord<FillMaxWidthParams>(converterContext)?.let { GlanceModifier.fillMaxWidth() }
     "fillMaxHeight" -> asRecord<FillMaxHeightParams>(converterContext)?.let { GlanceModifier.fillMaxHeight() }
-    "background" -> asRecord<BackgroundParams>(converterContext)?.color?.toGlanceColorProvider()
+    "background" -> asRecord<BackgroundParams>(converterContext)
+      ?.let { converterContext.colorProvider("modifier.background", it.color) }
       ?.let { GlanceModifier.background(it) }
     "cornerRadius" -> asRecord<CornerRadiusParams>(converterContext)?.let { GlanceModifier.cornerRadius(it.radius.dp) }
     // Unsupported Expo UI modifiers are ignored until they have exact Glance semantics.
@@ -428,22 +520,22 @@ private inline fun <reified T : Record> ModifierType.asRecord(converterContext: 
   return runCatching { recordFromMap<T>(this, converterContext) }.getOrNull()
 }
 
-private fun TextProps.textModifier(converterContext: ConverterContext): GlanceModifier {
+private fun TextProps.textModifier(converterContext: WidgetConverterContext): GlanceModifier {
   var modifier = modifiers.toPeekModifier(converterContext)
-  background.toGlanceColorProvider()?.let {
+  converterContext.colorProvider("text.background", background)?.let {
     modifier = modifier.background(it)
   }
   return modifier
 }
 
-private fun WidgetButtonProps.buttonModifier(converterContext: ConverterContext): GlanceModifier {
+private fun WidgetButtonProps.buttonModifier(converterContext: WidgetConverterContext): GlanceModifier {
   var modifier = modifiers.toPeekModifier(converterContext)
   val color = if (enabled) {
     colors.containerColor
   } else {
     colors.disabledContainerColor ?: colors.containerColor
   }
-  color.toGlanceColorProvider()?.let {
+  converterContext.colorProvider("button.container", color)?.let {
     modifier = modifier.background(it)
   }
   contentPadding?.let {
@@ -452,13 +544,13 @@ private fun WidgetButtonProps.buttonModifier(converterContext: ConverterContext)
   return modifier
 }
 
-private fun WidgetButtonProps.contentColorProvider(): ColorProvider? {
+private fun WidgetButtonProps.contentColorProvider(converterContext: WidgetConverterContext): ColorProvider? {
   val color = if (enabled) {
     colors.contentColor
   } else {
     colors.disabledContentColor ?: colors.contentColor
   }
-  return color.toGlanceColorProvider()
+  return converterContext.colorProvider("button.content", color)
 }
 
 private fun ContentPaddingRecord.toPeekModifier(): GlanceModifier {
@@ -468,10 +560,6 @@ private fun ContentPaddingRecord.toPeekModifier(): GlanceModifier {
     end = (end ?: 0.0).toFloat().dp,
     bottom = (bottom ?: 0.0).toFloat().dp
   )
-}
-
-private fun AndroidColor?.toGlanceColorProvider(): ColorProvider? {
-  return colorToComposeColorOrNull(this)?.let(::ColorProvider)
 }
 
 private fun LayoutProps.toPeekHorizontalAlignment(): Alignment.Horizontal {
@@ -660,12 +748,12 @@ private fun ReadableMap.isTextOnlyContent(): Boolean {
   }
 }
 
-private fun List<ReadableMap>.textContent(converterContext: ConverterContext): String? {
+private fun List<ReadableMap>.textContent(converterContext: WidgetConverterContext): String? {
   return mapNotNull { it.textFromTextNode(converterContext) }.joinToString(separator = "")
     .takeIf { it.isNotEmpty() }
 }
 
-private fun ReadableMap.textFromTextNode(converterContext: ConverterContext): String? {
+private fun ReadableMap.textFromTextNode(converterContext: WidgetConverterContext): String? {
   return when (typeName()) {
     "TextView" -> propsMap()?.let { createComposeProps<TextProps>(it, converterContext).textContent() }
     "react.fragment" -> children().textContent(converterContext)
