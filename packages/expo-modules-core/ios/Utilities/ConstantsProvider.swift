@@ -34,7 +34,7 @@ internal final class ConstantsProvider: EXConstantsInterface {
     ]
     // Deprecated, but still used internally. We need to check if the manifest is set, otherwise it will result in
     // an error where the whole manifest is null since we cannot wrap an Optional null in JS correctly.
-    if let manifest = getManifest() {
+    if let manifest = EmbeddedAppConfig.read() {
       result["manifest"] = manifest
     }
     return result
@@ -116,18 +116,20 @@ private func findEXConstantsBundle() -> Bundle? {
   return nil
 }
 
-private func getManifest() -> [String: Any]? {
-  guard let bundle = findEXConstantsBundle(),
-        let url = bundle.url(forResource: "app", withExtension: "config") else {
-    log.error("Unable to find the embedded app config")
-    return nil
-  }
-  do {
-    let configData = try Data(contentsOf: url)
-    return try JSONSerialization.jsonObject(with: configData, options: []) as? [String: Any]
-  } catch {
-    log.error("Error reading the embedded app config: \(error)")
-    return nil
+public enum EmbeddedAppConfig {
+  public static func read() -> [String: Any]? {
+    guard let bundle = findEXConstantsBundle(),
+          let url = bundle.url(forResource: "app", withExtension: "config") else {
+      log.error("Unable to find the embedded app config")
+      return nil
+    }
+    do {
+      let configData = try Data(contentsOf: url)
+      return try JSONSerialization.jsonObject(with: configData, options: []) as? [String: Any]
+    } catch {
+      log.error("Error reading the embedded app config: \(error)")
+      return nil
+    }
   }
 }
 
