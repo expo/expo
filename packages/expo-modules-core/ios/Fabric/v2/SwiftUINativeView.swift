@@ -34,7 +34,7 @@ internal final class SwiftUINativeView<Content: AnyNativeSwiftUIView>: ExpoSwift
 
   @MainActor
   var body: some View {
-    SwiftUINativeViewRoot(model: model)
+    ExpoSwiftUI.NativeChild(model: model)
   }
 
   @MainActor
@@ -49,10 +49,15 @@ internal final class SwiftUINativeView<Content: AnyNativeSwiftUIView>: ExpoSwift
   var uiView: UIView? {
     nil
   }
+
+  @MainActor
+  func `as`<Requested: AnyNativeSwiftUIView>(_ type: Requested.Type) -> ExpoSwiftUI.NativeChild<Requested>? {
+    return model.nativeChild(as: type)
+  }
 }
 
 /// The props and the children of a SwiftUI view of Expo Modules v2, which its component view updates on the main
-/// thread. `SwiftUINativeViewRoot` observes it and creates `Content` again when they change.
+/// thread. `ExpoSwiftUI.NativeChild` observes it and creates `Content` again when they change.
 internal final class SwiftUINativeViewModel<Content: AnyNativeSwiftUIView>: ObservableObject {
   // Stored so `objectWillChange` is a plain property read instead of Combine's O(live objects) side-table lookup.
   let objectWillChange = ObservableObjectPublisher()
@@ -61,7 +66,7 @@ internal final class SwiftUINativeViewModel<Content: AnyNativeSwiftUIView>: Obse
   private(set) var decodedProps: DecodedViewProps<Content.Props>?
 
   /// The React children, in order: the component views of SwiftUI views, and `UIViewHost` for the other views.
-  private(set) var children: [any ExpoSwiftUI.AnyChild] = []
+  private(set) var children: [ExpoSwiftUI.Child] = []
 
   var props: Content.Props {
     return decodedProps?.props ?? Content.Props()
@@ -102,7 +107,7 @@ internal final class SwiftUINativeViewModel<Content: AnyNativeSwiftUIView>: Obse
       child = ExpoSwiftUI.UIViewHost(view: childComponentView)
     }
     objectWillChange.send()
-    children.insert(child, at: index)
+    children.insert(ExpoSwiftUI.Child(child), at: index)
   }
 
   @MainActor
@@ -111,10 +116,10 @@ internal final class SwiftUINativeViewModel<Content: AnyNativeSwiftUIView>: Obse
     childComponentView.removeFromSuperview()
 
     let childId = (childComponentView as AnyObject as? (any ExpoSwiftUI.AnyChild))?.id ?? ObjectIdentifier(childComponentView)
-    guard let index = children.firstIndex(where: { $0.id == childId }) else {
+    guard let index = children.firstIndex(where: { $0.base.id == childId }) else {
       return
     }
-    (children[index] as? ExpoSwiftUI.UIViewHost)?.didUnmount()
+    (children[index].base as? ExpoSwiftUI.UIViewHost)?.didUnmount()
     objectWillChange.send()
     children.remove(at: index)
   }
@@ -124,17 +129,18 @@ internal final class SwiftUINativeViewModel<Content: AnyNativeSwiftUIView>: Obse
   @MainActor
   func resignFirstResponderInChildren() {
     for child in children {
-      (child as? any ExpoSwiftUI.FocusableViewContainer)?.resignFirstResponderInSubtree()
+      (child.base as? any ExpoSwiftUI.FocusableViewContainer)?.resignFirstResponderInSubtree()
     }
   }
-}
 
-/// The SwiftUI view of a component view of Expo Modules v2. It creates `Content` with the current props and children.
-internal struct SwiftUINativeViewRoot<Content: AnyNativeSwiftUIView>: View {
-  @ObservedObject var model: SwiftUINativeViewModel<Content>
-
-  var body: Content {
-    Content(props: model.props, children: ExpoSwiftUI.Children(model.children))
+  /// Returns the view as a child of the given type, or `nil` when `Content` is another type.
+  @MainActor
+  func nativeChild<Requested: AnyNativeSwiftUIView>(as type: Requested.Type) -> ExpoSwiftUI.NativeChild<Requested>? {
+    guard Requested.self == Content.self else {
+      return nil
+    }
+    // `Requested` is `Content`, so the model is a `SwiftUINativeViewModel<Requested>`.
+    return ExpoSwiftUI.NativeChild(model: unsafeDowncast(self, to: SwiftUINativeViewModel<Requested>.self))
   }
 }
 
