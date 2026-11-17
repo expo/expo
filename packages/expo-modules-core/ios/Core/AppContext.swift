@@ -664,7 +664,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
     // Install `global.expo.SharedObject`.
     installer.installSharedObjectClass() { [weak sharedObjectRegistry] objectId in
-      sharedObjectRegistry?.delete(objectId)
+      sharedObjectRegistry?.release(objectId, inMainRuntime: isMainRuntime)
     }
 
     // Install `global.expo.SharedRef`.
@@ -724,6 +724,9 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       let instance = try nativeState.javaScriptObject(in: runtime) {
         return try self.newSharedObjectInstance(of: nativeType, in: runtime)
       }
+      guard let instance else {
+        throw SharedObjectNotFoundException(String(objectId))
+      }
       result.emplace(instance.asValue())
     }
 
@@ -746,7 +749,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     let jsObject =
       try newObject(nativeClassId: ObjectIdentifier(nativeType))
       ?? (try self.runtime).createBaseSharedObject(isSharedRef: nativeType is AnySharedRef.Type)
-    sharedObjectRegistry.add(native: native, javaScript: jsObject, inheritsBaseClass: true, in: runtime, reusing: nativeState)
+    sharedObjectRegistry.add(native: native, javaScript: jsObject, inheritsBaseClass: true, in: runtime)
     return jsObject
   }
 
@@ -767,13 +770,11 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   }
 
   /// Returns the JS object of the shared object in the given runtime, a runtime other than the main runtime, and
-  /// creates one when there is none. A native object that has no native state yet gets one.
+  /// creates one when there is none.
   @JavaScriptActor
   internal func javaScriptObject(for sharedObject: SharedObject, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
-    if let nativeState = sharedObject.unreleasedNativeState {
-      return try nativeState.javaScriptObject(in: runtime) {
-        return try newSharedObjectInstance(of: type(of: sharedObject), in: runtime)
-      }
+    if let jsObject = sharedObject.object(in: runtime) {
+      return jsObject
     }
     let jsObject = try newSharedObjectInstance(of: type(of: sharedObject), in: runtime)
     sharedObjectRegistry.add(native: sharedObject, javaScript: jsObject, inheritsBaseClass: true, in: runtime)
