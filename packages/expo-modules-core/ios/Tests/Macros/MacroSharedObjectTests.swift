@@ -154,6 +154,26 @@ private final class MacroSymbolList: SharedObject {
   }
 }
 
+/// Runs `onFirstNativeStateRead` in the first read of its native state, before the read returns. In that closure,
+/// another runtime can pair the object while `SharedObjectRegistry.add` pairs it in the runtime that read it.
+private final class InterleavedSharedObject: SharedObject {
+  var onFirstNativeStateRead: (() -> Void)?
+
+  override var nativeState: SharedObjectNativeState? {
+    get {
+      let nativeState = super.nativeState
+      if let onFirstNativeStateRead {
+        self.onFirstNativeStateRead = nil
+        onFirstNativeStateRead()
+      }
+      return nativeState
+    }
+    set {
+      super.nativeState = newValue
+    }
+  }
+}
+
 @ExpoModule(
   classes: [MacroCounter.self, MacroNamedCounter.self, MacroUnconstructableCounter.self, MacroSymbolList.self])
 private final class MacroSharedObjectModule: Module {}
@@ -750,5 +770,36 @@ private struct MacroSharedObjectTests {
     #expect(try result.asInt() == 3)
     let addedObject = try attachedRuntime.eval("added").asObject()
     #expect(try SharedObject.native(from: addedObject) is MacroCounter)
+  }
+
+  @Test
+  func `two runtimes that pair a native object at the same time share one native state`() throws {
+    let mainRuntime = try runtime
+    let attachedRuntime = try appContext.addRuntime()
+    let nativeObject = InterleavedSharedObject()
+
+    // The attached runtime pairs the native object after the main runtime reads its native state, and before
+    // the main runtime pairs it.
+    nativeObject.onFirstNativeStateRead = { [appContext] in
+      _ = try? attachedRuntime.execute {
+        let jsObject = try appContext.javaScriptObject(for: nativeObject, in: attachedRuntime)
+        attachedRuntime.global().setProperty("attachedObject", value: jsObject.asValue())
+      }
+    }
+    try mainRuntime.execute { [appContext] in
+      let jsObject = try mainRuntime.createBaseSharedObject(isSharedRef: false)
+      appContext.sharedObjectRegistry.add(native: nativeObject, javaScript: jsObject, inheritsBaseClass: true)
+      mainRuntime.global().setProperty("mainObject", value: jsObject.asValue())
+    }
+    let mainObject = try mainRuntime.eval("mainObject").asObject()
+    let attachedObject = try attachedRuntime.eval("attachedObject").asObject()
+    let mainNativeState = mainObject.getNativeState(as: SharedObjectNativeState.self)
+    #expect(mainNativeState === attachedObject.getNativeState(as: SharedObjectNativeState.self))
+
+    // A release in the main runtime releases the object in the attached runtime too.
+    try mainRuntime.eval("mainObject.release()")
+    #expect(throws: (any Error).self) {
+      try SharedObject.native(from: try attachedRuntime.eval("attachedObject").asObject())
+    }
   }
 }

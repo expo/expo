@@ -122,39 +122,38 @@ public final class SharedObjectRegistry: Sendable {
     // The existing C++ native state is attached only while it is alive. When it is destroyed on another
     // thread, its release must not apply to `jsObject`, so the native object gets a new native state and ID.
     let isMainRuntime = runtime?.id == mainRuntime?.id
+    var newPair: (nativeState: SharedObjectNativeState, id: SharedObjectId)?
     let nativeState: SharedObjectNativeState
     let id: SharedObjectId
-    if let registered = registeredNativeState(of: nativeObject),
-      isMainRuntime || registered.nativeState.markPairedInOtherRuntime(),
-      jsObject.setNativeStateIfAlive(registered.nativeState)
-    {
-      nativeState = registered.nativeState
-      id = registered.id
-    } else {
-      id = pullNextId()
-      // Runs when the JS objects of all runtimes are collected.
-      let releaser: ObjectReleaser = { [weak self] id in
-        self?.delete(id, reason: .nativeStateDestroyed)
+    // Another runtime can pair the native object on its own thread at the same time. Only one new native state
+    // is published, and the JS objects of all runtimes get that one.
+    while true {
+      let registered = registeredNativeState(of: nativeObject)
+      if let registered,
+        isMainRuntime || registered.nativeState.markPairedInOtherRuntime(),
+        jsObject.setNativeStateIfAlive(registered.nativeState)
+      {
+        nativeState = registered.nativeState
+        id = registered.id
+        break
       }
-      nativeState = SharedObjectNativeState(
-        native: nativeObject,
-        objectId: id,
-        mainRuntimeId: mainRuntime?.id,
-        isPairedInOtherRuntime: !isMainRuntime,
-        releaser: releaser
-      )
-
-      // Index the native state by ID. `delete(_:)` reads the native object's ID and native state on any
-      // thread, so they change under the same lock.
-      state.withLock { state in
-        state.pairs[id] = nativeState
-        nativeObject.sharedObjectId = id
-        nativeObject.nativeState = nativeState
+      let pair =
+        newPair ?? makeNativeState(of: nativeObject, mainRuntimeId: mainRuntime?.id, isMainRuntime: isMainRuntime)
+      if newPair == nil {
+        newPair = pair
+        // Attached before it is published, so a published native state always has its C++ native state, and
+        // another thread can attach it with `setNativeStateIfAlive`.
+        // setNativeState calls acquireShared() synchronously, which retains the native state
+        // via Unmanaged.passRetained. Once the C++ pointee dies, the contextDeallocator releases it.
+        jsObject.setNativeState(pair.nativeState)
       }
-
-      // setNativeState calls acquireShared() synchronously, which retains `nativeState`
-      // via Unmanaged.passRetained. Once the C++ pointee dies, the contextDeallocator releases it.
-      jsObject.setNativeState(nativeState)
+      if publish(pair.nativeState, id: pair.id, of: nativeObject, replacing: registered?.nativeState) {
+        nativeState = pair.nativeState
+        id = pair.id
+        break
+      }
+      // Another thread published a native state first. The next iteration attaches it, which destroys the C++
+      // native state of `pair`. Its release finds no pair with its ID.
     }
 
     // Assign the app context to the object.
@@ -178,6 +177,51 @@ public final class SharedObjectRegistry: Sendable {
     }
 
     return id
+  }
+
+  /// Makes a native state with a new ID for the native object. Not published yet.
+  private func makeNativeState(
+    of nativeObject: SharedObject,
+    mainRuntimeId: JavaScriptRuntime.ID?,
+    isMainRuntime: Bool
+  ) -> (nativeState: SharedObjectNativeState, id: SharedObjectId) {
+    let id = pullNextId()
+    // Runs when the JS objects of all runtimes are collected.
+    let releaser: ObjectReleaser = { [weak self] id in
+      self?.delete(id, reason: .nativeStateDestroyed)
+    }
+    let nativeState = SharedObjectNativeState(
+      native: nativeObject,
+      objectId: id,
+      mainRuntimeId: mainRuntimeId,
+      isPairedInOtherRuntime: !isMainRuntime,
+      releaser: releaser
+    )
+    return (nativeState, id)
+  }
+
+  /// Publishes the native state as the native state of the native object, unless another native state is registered
+  /// for it. A registered native state that `add` could not attach, `dyingNativeState`, is being destroyed, and the
+  /// new native state replaces it. Returns `false` when another thread published a native state first.
+  private func publish(
+    _ nativeState: SharedObjectNativeState,
+    id: SharedObjectId,
+    of nativeObject: SharedObject,
+    replacing dyingNativeState: SharedObjectNativeState?
+  ) -> Bool {
+    // Index the native state by ID. `delete(_:)` reads the native object's ID and native state on any
+    // thread, so they change under the same lock.
+    return state.withLock { state in
+      if let registered = nativeObject.nativeState, registered !== dyingNativeState,
+        state.pairs[nativeObject.sharedObjectId] === registered
+      {
+        return false
+      }
+      state.pairs[id] = nativeState
+      nativeObject.sharedObjectId = id
+      nativeObject.nativeState = nativeState
+      return true
+    }
   }
 
   /// Defines `nativeRefType` on the JS object of a shared ref, and reports the memory that the native object holds to
