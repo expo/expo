@@ -67,6 +67,7 @@ import androidx.glance.EmittableImage
 import androidx.glance.ImageProvider
 import androidx.glance.TintColorFilterParams
 import androidx.glance.GlanceModifier
+import androidx.glance.action.ActionModifier
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.CheckboxDefaults
 import androidx.glance.appwidget.cornerRadius
@@ -298,27 +299,30 @@ private fun ImageContentScale.toGlanceContentScale(): ContentScale {
 private fun ReadableMap.toPeekButton(converterContext: WidgetConverterContext, source: InteractionSource): Emittable {
   val props = props<WidgetButtonProps>(converterContext)
   val children = children()
-  val opensUrl = props.modifiers.any { it["\$type"]?.asString() == "openURL" }
-  val action = props.target?.takeUnless { opensUrl }
-    ?.let { target -> WidgetInteraction(source, target).toGlanceAction(converterContext.applicationContext) }
-  val modifier = props.buttonModifier(converterContext)
+  val action =
+    props.target?.let { target -> WidgetInteraction(source, target).toGlanceAction(converterContext.applicationContext) }
+  // Glance uses the last click action. The press action goes first, so a click modifier such as
+  // `openURL` replaces it.
+  val modifier = props.buttonModifier(converterContext).let {
+    when {
+      !props.enabled -> it.withoutActions()
+      action != null -> GlanceModifier.clickable(action).then(it)
+      else -> it
+    }
+  }
   val contentColor = props.contentColorProvider()
   val textContent = children.textContent(converterContext) ?: props.label
   if (textContent != null && (children.isEmpty() || children.isTextOnlyContent())) {
     return EmittableButton().also {
       it.text = textContent
-      it.modifier = if (props.enabled && action != null) modifier.clickable(action) else modifier
+      it.modifier = modifier
       it.enabled = props.enabled
       it.style = TextStyle(color = contentColor ?: TextDefaults.defaultTextColor)
     }
   }
 
   return EmittableBox().also {
-    it.modifier = if (props.enabled && action != null) {
-      modifier.clickable(action)
-    } else {
-      modifier
-    }
+    it.modifier = modifier
     it.contentAlignment = Alignment.Center
     it.children += children.flatMap { child -> child.toPeekNodes(converterContext, source) }
   }
@@ -444,6 +448,12 @@ private fun TextProps.textModifier(converterContext: WidgetConverterContext): Gl
     modifier = modifier.background(it)
   }
   return modifier
+}
+
+private fun GlanceModifier.withoutActions(): GlanceModifier {
+  return foldIn<GlanceModifier>(GlanceModifier) { result, element ->
+    if (element is ActionModifier) result else result.then(element)
+  }
 }
 
 private fun WidgetButtonProps.buttonModifier(converterContext: WidgetConverterContext): GlanceModifier {
