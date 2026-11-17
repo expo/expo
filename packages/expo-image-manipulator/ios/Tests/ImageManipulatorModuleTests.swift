@@ -104,6 +104,24 @@ struct ImageManipulatorModuleTests {
   }
 
   @Test
+  func `reset doesn't run the loader inside the call`() async throws {
+    var loadsInsideReset: [Bool] = []
+    let context = ImageManipulatorContext {
+      loadsInsideReset.append(Self.isInsideReset())
+      return UIImage()
+    }
+    _ = try await context.render()
+
+    // Only the calling thread holds the marker, so the loader sees it only when `reset` runs it inline.
+    Self.setInsideReset(true)
+    context.reset()
+    Self.setInsideReset(false)
+    _ = try await context.render()
+
+    #expect(loadsInsideReset == [false, false])
+  }
+
+  @Test
   func `manipulate accepts a rendered image as the source`() async throws {
     let result = try await runtime.evalAsync(
       """
@@ -157,5 +175,16 @@ struct ImageManipulatorModuleTests {
       """
     )
     #expect(try result.asString() == "ERR_IMAGE_INVALID_CROP")
+  }
+
+  private static let insideResetKey = "ImageManipulatorModuleTests.insideReset"
+
+  // `Thread.current` isn't available in async code, so these helpers are synchronous.
+  private nonisolated static func isInsideReset() -> Bool {
+    return Thread.current.threadDictionary[insideResetKey] != nil
+  }
+
+  private nonisolated static func setInsideReset(_ value: Bool) {
+    Thread.current.threadDictionary[insideResetKey] = value ? true : nil
   }
 }

@@ -84,10 +84,12 @@ public final class ImageManipulatorContext: SharedObject {
    */
   @JS
   @discardableResult
-  internal func reset() -> ImageManipulatorContext {
+  nonisolated internal func reset() -> ImageManipulatorContext {
     // Firstly cancel currently running manipulations.
     currentTask.cancel()
 
+    // `nonisolated` keeps this task off `JavaScriptActor`. That actor's executor would run the loader
+    // inline, on the JavaScript thread.
     currentTask = Task(priority: .background) {
       return try await loader()
     }
