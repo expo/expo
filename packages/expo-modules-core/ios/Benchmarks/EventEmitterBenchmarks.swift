@@ -9,7 +9,7 @@ import Testing
 /// no-op JS listener. The standalone test runtime runs scheduled work synchronously, so every operation
 /// covers the whole path: scheduling, converting the payload, reaching the emitter's JavaScript object
 /// and calling the listener. Read the payload cases and `emit: no payload to a JS-only EventEmitter`
-/// against `emit: no payload`.
+/// against `emit: no payload`, and `emit: Int payload without listeners` against `emit: Int payload`.
 extension Benchmarks {
   @Test
   func `emit: no payload`() async throws {
@@ -154,6 +154,17 @@ extension Benchmarks {
   }
 
   @Test
+  func `emit: Int payload without listeners`() async throws {
+    try await eventBenchmarkCase { module, runtime in
+      try benchmark("emit: Int payload without listeners", runtime: runtime) { iterations in
+        for index in 0..<iterations {
+          module.emit(event: "unheard", payload: index)
+        }
+      }
+    }
+  }
+
+  @Test
   func `emit: no payload to a JS-only EventEmitter`() async throws {
     try await appContextBenchmarkCase { appContext in
       let runtime = try appContext.runtime
@@ -179,6 +190,8 @@ extension Benchmarks {
 ///   subscription, so each operation also tells the emitter that it starts and stops listening. A module
 ///   gets that through its native listening hook. The other emitters look up the observing functions,
 ///   such as `startObserving`, on their JavaScript object.
+/// - `JS: addListener and remove with another listener` does the same for an event that has one more
+///   listener, so the emitter doesn't start or stop listening.
 /// - `JS: emit` emits a number payload to no-op listeners.
 extension Benchmarks {
   @Test(arguments: EventEmitterBenchmarkTarget.allCases)
@@ -186,6 +199,16 @@ extension Benchmarks {
     let body = "emitter.addListener('ping', listener).remove();"
     try await javaScriptEventBenchmarkCase(target: target, body: body) { run, runtime in
       try benchmark("JS: addListener and remove on \(target)", runtime: runtime) { iterations in
+        _ = try run.call(arguments: iterations)
+      }
+    }
+  }
+
+  @Test(arguments: EventEmitterBenchmarkTarget.allCases)
+  func `JS: addListener and remove with another listener`(target: EventEmitterBenchmarkTarget) async throws {
+    let body = "emitter.addListener('ping', listener).remove();"
+    try await javaScriptEventBenchmarkCase(target: target, listenerCount: 1, body: body) { run, runtime in
+      try benchmark("JS: addListener and remove with another listener on \(target)", runtime: runtime) { iterations in
         _ = try run.call(arguments: iterations)
       }
     }
