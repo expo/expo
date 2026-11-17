@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Image } from './Image';
 import type { ImageLoadOptions, ImageRef, ImageSource } from './Image.types';
+import { captureDevToolsRequestId } from './utils/captureDevToolsRequestId';
 import { resolveSource } from './utils/resolveSources';
 
 /**
@@ -54,6 +55,15 @@ export function useImage(
 ): ImageRef | null {
   const resolvedSource = resolveSource(source) as ImageSource;
   const [image, setImage] = useState<ImageRef | null>(null);
+  // Captured during render, while the calling component is on the stack, and used by the first load
+  // of `uri` only: React Native consumes an id with its request, so a retry captures its own.
+  const initiator = useRef<{ uri?: string; devToolsRequestId?: string }>({});
+  if (initiator.current.uri !== resolvedSource?.uri) {
+    initiator.current = {
+      uri: resolvedSource?.uri,
+      devToolsRequestId: captureDevToolsRequestId(resolvedSource?.uri),
+    };
+  }
 
   // Since options are not dependencies of the below effect, we store them in a ref.
   // Once the image is asynchronously loaded, the effect will use the most recent options,
@@ -67,7 +77,15 @@ export function useImage(
     let isEffectValid = true;
 
     function loadImage() {
-      Image.loadAsync(resolvedSource, options)
+      let devToolsRequestId: string | undefined;
+      if (initiator.current.uri === resolvedSource.uri) {
+        devToolsRequestId = initiator.current.devToolsRequestId;
+        initiator.current.devToolsRequestId = undefined;
+      }
+      Image.loadAsync(
+        devToolsRequestId ? { ...resolvedSource, devToolsRequestId } : resolvedSource,
+        options
+      )
         .then((image) => {
           if (isEffectValid) {
             setImage(image);

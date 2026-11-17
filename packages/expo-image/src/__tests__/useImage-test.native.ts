@@ -3,8 +3,10 @@ import { act, renderHook } from '@testing-library/react-native';
 import { Image } from '../Image';
 import type { ImageRef } from '../Image.types';
 import { useImage } from '../useImage';
+import { captureDevToolsRequestId } from '../utils/captureDevToolsRequestId';
 
 jest.mock('../Image', () => ({ Image: { loadAsync: jest.fn() } }));
+jest.mock('../utils/captureDevToolsRequestId', () => ({ captureDevToolsRequestId: jest.fn() }));
 
 function createImageLoad() {
   const image = { release: jest.fn() } as unknown as ImageRef;
@@ -88,4 +90,26 @@ it('releases a stale load without replacing the current image', async () => {
   expect(second.image.release).not.toHaveBeenCalled();
   await unmount();
   expect(second.image.release).toHaveBeenCalledTimes(1);
+});
+
+test('passes the request id captured during render to the first load only', async () => {
+  jest.mocked(captureDevToolsRequestId).mockReturnValueOnce('from-render');
+  jest.mocked(Image.loadAsync).mockRejectedValueOnce(new Error('offline'));
+  let retry: (() => void) | undefined;
+  await renderHook(() =>
+    useImage('https://example.com/a.jpg', {
+      onError: (_, retryLoad) => {
+        retry = retryLoad;
+      },
+    })
+  );
+  await act(async () => {});
+
+  jest.mocked(Image.loadAsync).mockReturnValueOnce(createImageLoad().promise);
+  await act(async () => retry?.());
+
+  expect(jest.mocked(Image.loadAsync).mock.calls.map(([source]) => source)).toEqual([
+    { uri: 'https://example.com/a.jpg', devToolsRequestId: 'from-render' },
+    { uri: 'https://example.com/a.jpg' },
+  ]);
 });
