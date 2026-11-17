@@ -148,6 +148,20 @@ import { Collapsible } from '~/ui/components/Collapsible';
     expect(markdown).not.toContain('# comment');
   });
 
+  it('writes YesIcon and NoIcon as Yes and No', () => {
+    const mdx = `
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+
+|           | Android    | iOS        |
+| --------- | ---------- | ---------- |
+| **macOS** | <YesIcon/> | <NoIcon /> |
+`;
+
+    const markdown = convertMdxInstructionToMarkdown(mdx, () => null);
+
+    expect(markdown).toContain('| **macOS** | Yes | No |');
+  });
+
   it('avoids recursive import loops', () => {
     const files = new Map<string, string>([
       ['/tmp/main.mdx', "import A from './A.mdx';\n\n<A />\n"],

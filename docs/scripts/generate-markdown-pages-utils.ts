@@ -368,6 +368,8 @@ export function convertMdxInstructionToMarkdown(
   content = content.replace(/<div[^>]*>/g, '');
   content = content.replace(/<\/div>/g, '');
 
+  content = content.replace(/<YesIcon\s*\/>/g, 'Yes');
+  content = content.replace(/<NoIcon\s*\/>/g, 'No');
   content = content.replace(/<\/?kbd>/g, '');
   content = content.split('\n').map(replaceLineBreakTags).join('\n');
 
