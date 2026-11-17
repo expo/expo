@@ -804,21 +804,28 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   }
 
   /// Builds the worklet prototype for a native shared object class, from the `ClassDefinition` of a module
-  /// that defines it or from a module that registers it in `_classTypes`. Returns the base prototype for a class that
-  /// no module registers, as the main runtime does.
+  /// that defines it or from a module that registers it in `_classTypes`. A subclass that no module registers gets
+  /// the prototype of its nearest registered superclass, because a function that declares the superclass as its
+  /// return type gives it that class in the main runtime. Returns the base prototype when no module registers any of
+  /// these classes, as the main runtime does.
   @JavaScriptActor
   private func buildWorkletPrototype(
     for nativeType: SharedObject.Type,
     in runtime: JavaScriptRuntime,
     basePrototype: consuming JavaScriptObject
   ) throws -> JavaScriptObject {
-    let typeId = ObjectIdentifier(nativeType)
+    var type: SharedObject.Type? = nativeType
 
-    if let classDefinition = findClassDefinition(for: typeId) {
-      return try classDefinition.buildPrototype(in: runtime, appContext: self, basePrototype: basePrototype)
-    }
-    if let classType = findClassType(for: typeId) {
-      return try JavaScriptBindings.buildSharedObjectPrototype(classType, in: runtime, basePrototype: basePrototype)
+    while let currentType = type {
+      let typeId = ObjectIdentifier(currentType)
+
+      if let classDefinition = findClassDefinition(for: typeId) {
+        return try classDefinition.buildPrototype(in: runtime, appContext: self, basePrototype: basePrototype)
+      }
+      if let classType = findClassType(for: typeId) {
+        return try JavaScriptBindings.buildSharedObjectPrototype(classType, in: runtime, basePrototype: basePrototype)
+      }
+      type = class_getSuperclass(currentType) as? SharedObject.Type
     }
     return basePrototype
   }

@@ -108,6 +108,17 @@ struct SharedRefInAttachedRuntimeTests {
     }
     #expect(try attachedRuntime.eval("sharedData instanceof expo.SharedRef").getBool())
   }
+
+  @Test
+  func `a subclass without the Class definition has the members of its registered superclass`() throws {
+    let appContext = self.appContext
+    let attachedRuntime = try appContext.addRuntime()
+    try attachedRuntime.execute {
+      let jsObject = try appContext.javaScriptObject(for: SharedSubstring("substring"), in: attachedRuntime)
+      attachedRuntime.global().setProperty("sharedSubstring", value: jsObject.asValue())
+    }
+    #expect(try attachedRuntime.eval("sharedSubstring.value").asString() == "substring")
+  }
 }
 
 // MARK: - Test Helpers
@@ -121,6 +132,9 @@ private class SharedString: SharedRef<String> {
     }
   }
 }
+
+/// A subclass that no module registers.
+private final class SharedSubstring: SharedString {}
 
 private class FirstModule: Module {
   public func definition() -> ModuleDefinition {
@@ -145,7 +159,11 @@ private class SecondModule: Module {
 
 private class SharedStringModule: Module {
   public func definition() -> ModuleDefinition {
-    Class(SharedString.self) {}
+    Class(SharedString.self) {
+      Property("value") { shared in
+        return shared.ref
+      }
+    }
 
     Function("createSharedString") {
       SharedString("string")
