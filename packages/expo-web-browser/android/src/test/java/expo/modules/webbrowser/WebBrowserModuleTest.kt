@@ -18,6 +18,7 @@ import io.mockk.slot
 import io.mockk.verify
 import junit.framework.ComparisonFailure
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -220,7 +221,7 @@ internal class WebBrowserModuleTest {
     // then
     val keepAlive = intentSlot.captured.intent.getParcelableExtra<Intent>(KEEP_ALIVE_EXTRA)
     assertEquals(KeepAliveService::class.java.name, keepAlive?.component?.className)
-    assertTrue(intentSlot.captured.intent.hasExtra(CustomTabsIntent.EXTRA_SESSION))
+    assertNotNull(intentSlot.captured.intent.extras?.getBinder(CustomTabsIntent.EXTRA_SESSION))
   }
 
   @Test
