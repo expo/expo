@@ -2,9 +2,13 @@ package expo.modules.webbrowser
 
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.IBinder
 import android.os.Looper
 import android.os.SystemClock
 import androidx.browser.customtabs.CustomTabsCallback
@@ -28,7 +32,9 @@ internal class CustomTabsConnectionHelper(
   private class PendingBrowserOpen(
     val promise: Promise,
     var open: ((CustomTabsSession) -> Bundle)?
-  )
+  ) {
+    var priorityConnection: ServiceConnection? = null
+  }
 
   // region lifecycle methods
   @Synchronized
@@ -86,6 +92,36 @@ internal class CustomTabsConnectionHelper(
       pending,
       SystemClock.uptimeMillis() + 30_000
     )
+    // A separate connection keeps verification online without raising the prewarm binding's priority.
+    val connection = object : ServiceConnection {
+      override fun onServiceConnected(name: ComponentName, service: IBinder) {
+        verifyOrigin(pending, origin)
+      }
+
+      override fun onServiceDisconnected(name: ComponentName) = Unit
+    }
+    pending.priorityConnection = connection
+    val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      Context.BIND_AUTO_CREATE or Context.BIND_NOT_PERCEPTIBLE
+    } else {
+      Context.BIND_AUTO_CREATE
+    }
+    try {
+      val intent = Intent(CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION).setPackage(packageName)
+      if (!context.bindService(intent, connection, flags)) {
+        releasePriorityConnection(pending)
+        verifyOrigin(pending, origin)
+      }
+    } catch (error: Exception) {
+      rejectPendingOpen(pending, error.toCodedException())
+    }
+  }
+
+  @Synchronized
+  private fun verifyOrigin(pending: PendingBrowserOpen, origin: Uri) {
+    if (pendingBrowserOpen !== pending) {
+      return
+    }
     clientActions.executeOrQueueAction { client ->
       if (pendingBrowserOpen !== pending) {
         return@executeOrQueueAction
@@ -172,6 +208,8 @@ internal class CustomTabsConnectionHelper(
       pending.promise.resolve(open(session))
     } catch (error: Exception) {
       pending.promise.reject(error.toCodedException())
+    } finally {
+      releasePriorityConnection(pending)
     }
   }
 
@@ -183,7 +221,15 @@ internal class CustomTabsConnectionHelper(
     pending.open = null
     pendingBrowserOpen = null
     handler.removeCallbacksAndMessages(pending)
+    releasePriorityConnection(pending)
     pending.promise.reject(error)
+  }
+
+  private fun releasePriorityConnection(pending: PendingBrowserOpen) {
+    val connection = pending.priorityConnection ?: return
+    pending.priorityConnection = null
+    // Android registers the connection even when bindService returns false.
+    context.unbindService(connection)
   }
 
   private fun ensureSession() {
