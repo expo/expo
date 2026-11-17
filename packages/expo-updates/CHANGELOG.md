@@ -1,5 +1,11 @@
 # Changelog
 
+## Unpublished
+
+### 🐛 Bug fixes
+
+- [iOS] Avoid making the reload overlay window the key window during `Updates.reloadAsync()` so `RCTDeviceInfo` continues observing the main application window frame across rotations.
+  
 ## 58.0.18
 
 ### Patch Changes
