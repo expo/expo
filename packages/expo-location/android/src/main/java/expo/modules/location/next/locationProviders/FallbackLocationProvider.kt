@@ -29,6 +29,14 @@ class FallbackLocationProvider(val locationProviders: List<LocationProvider>) : 
     return firstAvailable { it.getRegisteredTaskConsumerClass(taskManager, taskName) }
   }
 
+  override fun getGeofencingTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> {
+    return firstAvailable { it.getGeofencingTaskConsumerClass() }
+  }
+
+  override fun getRegisteredGeofencingTaskConsumerClass(taskManager: TaskManagerInterface, taskName: String): ProviderResult<Class<out TaskConsumer>> {
+    return firstAvailable { it.getRegisteredGeofencingTaskConsumerClass(taskManager, taskName) }
+  }
+
   private inline fun <T> firstAvailable(providerOperation: (LocationProvider) -> ProviderResult<T>): ProviderResult<T> {
     var outcome: ProviderResult<T> = ProviderResult.Unsupported
     for (locationProvider in locationProviders) {
