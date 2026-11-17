@@ -273,6 +273,42 @@ describe('backportAsync', () => {
     }
   });
 
+  it('creates the bot branch at the target branch, then pushes the backport commits to it', async () => {
+    git(origin, 'config', 'core.logAllRefUpdates', 'always');
+    const run = await backport(53, 90, shas.changeset);
+
+    assert.equal(run.error, undefined);
+    const tip = remoteBranch('bot/sdk-90-cherry-pick-53');
+    assert.ok(tip);
+    assert.deepEqual(
+      git(origin, 'reflog', 'show', '--format=%H', 'refs/heads/bot/sdk-90-cherry-pick-53').split(
+        '\n'
+      ),
+      [tip, git(origin, 'rev-parse', 'sdk-90')]
+    );
+  });
+
+  it('deletes the bot branch and comments once when the push of the backport commits fails', async () => {
+    const hook = path.join(origin, 'hooks', 'update');
+    fs.writeFileSync(
+      hook,
+      '#!/bin/sh\ncase "$2 $3" in *0000000000000000000000000000000000000000*) exit 0;; esac\nexit 1\n',
+      { mode: 0o755 }
+    );
+    try {
+      const run = await backport(54, 90, shas.changeset);
+
+      assert.ok(run.error instanceof Error);
+      assert.equal(run.comments.length, 1);
+      assert.match(run.comments[0], /^#54 The backport to `sdk-90` failed\./);
+      assert.deepEqual(run.pullRequests, []);
+      assert.equal(remoteBranch('bot/sdk-90-cherry-pick-54'), null);
+      assertNoTemporaryWorktree();
+    } finally {
+      fs.rmSync(hook);
+    }
+  });
+
   it('deletes the pushed branch and comments once when opening the pull request fails', async () => {
     const comments: string[] = [];
     const run = await backport(52, 90, shas.changeset, {
