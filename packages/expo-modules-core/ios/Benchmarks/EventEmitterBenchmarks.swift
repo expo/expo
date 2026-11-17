@@ -5,10 +5,11 @@ import Testing
 
 @testable import ExpoModulesCore
 
-/// Benchmarks for emitting module events to JavaScript. Each case emits from Swift in a loop to a
+/// Benchmarks for emitting events from Swift to JavaScript. Each case emits from Swift in a loop to a
 /// no-op JS listener. The standalone test runtime runs scheduled work synchronously, so every operation
-/// covers the whole path: scheduling, converting the payload, reaching the module's JavaScript object
-/// and calling the listener. Read the payload cases against `emit: no payload`.
+/// covers the whole path: scheduling, converting the payload, reaching the emitter's JavaScript object
+/// and calling the listener. Read the payload cases and `emit: no payload to a JS-only EventEmitter`
+/// against `emit: no payload`.
 extension Benchmarks {
   @Test
   func `emit: no payload`() async throws {
@@ -151,6 +152,66 @@ extension Benchmarks {
       }
     }
   }
+
+  @Test
+  func `emit: no payload to a JS-only EventEmitter`() async throws {
+    try await appContextBenchmarkCase { appContext in
+      let runtime = try appContext.runtime
+      try runtime.eval("var emitter = new expo.EventEmitter(); emitter.addListener('ping', () => {})")
+      let object = try runtime.eval("emitter").asObject()
+      let emitter = JavaScriptOnlyEventEmitter(appContext: appContext, object: object)
+
+      try benchmark("emit: no payload to a JS-only EventEmitter", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          emitter.emit(event: "ping")
+        }
+      }
+    }
+  }
+}
+
+/// Benchmarks for JavaScript using an `EventEmitter`. Each case runs on three emitters: one that
+/// JavaScript created with `new expo.EventEmitter()`, a module and a shared object. A JavaScript driver
+/// runs the measured loop, so read these results against `JS: empty driver loop`.
+///
+/// Notes on reading the results:
+/// - `JS: addListener and remove` adds the only listener of an event and removes it with the
+///   subscription, so each operation also tells the emitter that it starts and stops listening. A module
+///   gets that through its native listening hook. The other emitters look up the observing functions,
+///   such as `startObserving`, on their JavaScript object.
+/// - `JS: emit` emits a number payload to no-op listeners.
+extension Benchmarks {
+  @Test(arguments: EventEmitterBenchmarkTarget.allCases)
+  func `JS: addListener and remove`(target: EventEmitterBenchmarkTarget) async throws {
+    let body = "emitter.addListener('ping', listener).remove();"
+    try await javaScriptEventBenchmarkCase(target: target, body: body) { run, runtime in
+      try benchmark("JS: addListener and remove on \(target)", runtime: runtime) { iterations in
+        _ = try run.call(arguments: iterations)
+      }
+    }
+  }
+
+  @Test(arguments: EventEmitterBenchmarkTarget.allCases, [1, 5])
+  func `JS: emit`(target: EventEmitterBenchmarkTarget, listenerCount: Int) async throws {
+    let listeners = listenerCount == 1 ? "1 listener" : "\(listenerCount) listeners"
+    let body = "emitter.emit('ping', i);"
+    try await javaScriptEventBenchmarkCase(target: target, listenerCount: listenerCount, body: body) { run, runtime in
+      try benchmark("JS: emit with \(listeners) on \(target)", runtime: runtime) { iterations in
+        _ = try run.call(arguments: iterations)
+      }
+    }
+  }
+}
+
+/// The emitters that the JavaScript event cases run on.
+enum EventEmitterBenchmarkTarget: String, CaseIterable, CustomStringConvertible, Sendable {
+  case javaScriptOnly = "a JS-only EventEmitter"
+  case module = "a module"
+  case sharedObject = "a shared object"
+
+  var description: String {
+    return rawValue
+  }
 }
 
 @Record
@@ -210,4 +271,54 @@ private func eventBenchmarkCase(
 /// also `JavaScriptEncodable`.
 private func emitAsAnyArgument<P: AnyArgument>(_ module: EventBenchmarkModule, event: String, payload: sending P) {
   module.emit(event: event, payload: payload)
+}
+
+/// A native emitter for an object that `new expo.EventEmitter()` created in JavaScript. It has no module
+/// or shared object, so it holds the JavaScript object itself.
+private final class JavaScriptOnlyEventEmitter: EventEmitter {
+  weak var appContext: AppContext?
+  private let object: JavaScriptObject
+
+  init(appContext: AppContext, object: consuming JavaScriptObject) {
+    self.appContext = appContext
+    self.object = object
+  }
+
+  @JavaScriptActor
+  func withEventTarget<R>(_ body: (borrowing JavaScriptObject) throws -> R) rethrows -> R? {
+    return try body(object)
+  }
+}
+
+/// Runs one case with `EventBenchmarkModule` registered and a JavaScript driver that runs `body` in a
+/// loop, with the emitter of `target` in `emitter` and a no-op function in `listener`. The emitter has
+/// `listenerCount` no-op listeners of the `ping` event.
+private func javaScriptEventBenchmarkCase(
+  target: EventEmitterBenchmarkTarget,
+  listenerCount: Int = 0,
+  body: String,
+  _ measure: @escaping @JavaScriptActor (borrowing JavaScriptFunction, JavaScriptRuntime) throws -> Void
+) async throws {
+  try await moduleBenchmarkCase { appContext in
+    return EventBenchmarkModule(appContext: appContext)
+  } _: { _, runtime in
+    switch target {
+    case .javaScriptOnly:
+      try runtime.eval("var benchmarkEmitter = new expo.EventEmitter()")
+    case .module:
+      try runtime.eval("var benchmarkEmitter = expo.modules.EventBenchmarkModule")
+    case .sharedObject:
+      // The global keeps the JavaScript object, and with it the pair with the native object, alive across
+      // garbage collections.
+      let object = try EventPayloadObject.encode(EventPayloadObject(), in: runtime)
+      runtime.global().setProperty("benchmarkEmitter", value: object)
+    }
+    try runtime.eval("for (var k = 0; k < \(listenerCount); k++) { benchmarkEmitter.addListener('ping', () => {}); }")
+    let run = try javaScriptDriver(
+      runtime,
+      setup: "var emitter = benchmarkEmitter; var listener = () => {};",
+      body: body
+    )
+    try measure(run, runtime)
+  }
 }
