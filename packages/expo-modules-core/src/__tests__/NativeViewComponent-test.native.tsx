@@ -1,8 +1,10 @@
 import { render } from '@testing-library/react-native';
 import { createRef } from 'react';
+import { NativeComponentRegistry } from 'react-native';
 
 import { createNativeViewComponent } from '../NativeViewComponent';
 import { requireNativeViewManager } from '../NativeViewManagerAdapter';
+import { SharedObject } from '../SharedObject';
 import '../setUpNativeViewComponentFactory.fx';
 
 describe('createNativeViewComponent', () => {
@@ -63,6 +65,27 @@ describe('createNativeViewComponent', () => {
     expect(ref.current.props.title).toBe('Card');
     expect(typeof ariaRef.current.measure).toBe('function');
     expect(ariaRef.current.props.accessibilityElementsHidden).toBe(true);
+  });
+
+  it(`passes a shared object prop to native as the object`, () => {
+    const getViewConfig = jest.spyOn(NativeComponentRegistry, 'get');
+    createNativeViewComponent(
+      'ViewManagerAdapter_ExpoTestCards_ImageView',
+      'ImageView',
+      { image: true },
+      {}
+    );
+    const { validAttributes } = getViewConfig.mock.calls.at(-1)![1]();
+    getViewConfig.mockRestore();
+
+    const image = new SharedObject();
+    Object.defineProperty(image, '__expo_shared_object_id__', { value: 7 });
+
+    // The renderer builds the props that native gets with this function.
+    const {
+      create: createAttributePayload,
+    } = require('react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload');
+    expect(createAttributePayload({ image }, validAttributes).image).toBe(image);
   });
 
   it(`is returned by requireNativeViewManager when the module has it`, () => {

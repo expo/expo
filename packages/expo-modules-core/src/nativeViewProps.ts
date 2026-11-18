@@ -1,7 +1,8 @@
 import { SharedObject } from './SharedObject';
 
-// The processing of the attributes of a native view that the views of Expo Modules v1 and v2 share:
-// the class wrapper of `requireNativeViewManager` and the components of `createNativeViewComponent`.
+// The processing of the attributes of the views of Expo Modules v1, which the class wrapper of
+// `requireNativeViewManager` uses. Views of Expo Modules v2 don't need it: their props decoder reads
+// the native state of a shared object.
 
 /**
  * Unwraps a shared object to its id so that native receives the registry id
