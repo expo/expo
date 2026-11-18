@@ -3,7 +3,7 @@
 import SwiftUI
 
 /// A SwiftUI view of Expo Modules v2. `@ExpoView<Props>` conforms a SwiftUI view struct to it, and adds the `props`
-/// and `children` constants and the initializer:
+/// and `children` constants, the weak `appContext` property and the initializer:
 ///
 ///     @ExpoView<CardProps>
 ///     struct CardView: View {
@@ -17,11 +17,10 @@ import SwiftUI
 ///
 /// Core creates the struct again with the current props and children when either changes, and SwiftUI keeps the
 /// view's `@State` as long as the view stays mounted. The view renders inside a `Host`, and it can contain, or be
-/// contained by, the SwiftUI views of `ExpoSwiftUI.View`. The view and its subviews read the app context with
-/// `@Environment(\.appContext)`.
+/// contained by, the SwiftUI views of `ExpoSwiftUI.View`.
 @MainActor
 public protocol AnyNativeSwiftUIView: AnyNativeView, SwiftUI.View {
-  init(props: Props, children: ExpoSwiftUI.Children)
+  init(props: Props, children: ExpoSwiftUI.Children, appContext: AppContext?)
 }
 
 extension ExpoSwiftUI {
@@ -100,13 +99,13 @@ extension ExpoSwiftUI {
       return Children(model.children)
     }
 
-    /// The view struct with the current props and children, for example to call a method of the view.
+    /// The view struct with the current props, children and app context, for example to call a method of the view.
     public var content: Content {
-      return Content(props: model.props, children: children)
+      return Content(props: model.props, children: children, appContext: model.appContext)
     }
 
-    public var body: some SwiftUI.View {
-      content.environment(\.appContext, model.appContext)
+    public var body: Content {
+      return content
     }
   }
 }
@@ -123,21 +122,4 @@ extension ExpoSwiftUI.Child: SwiftUI.View {
     let view: any SwiftUI.View = base.childView
     AnyView(view)
   }
-}
-
-extension EnvironmentValues {
-  /// The app context of the SwiftUI view of Expo Modules v2 that contains the view, or `nil` outside of such a view.
-  /// A view reads it with `@Environment(\.appContext)`. Like `ExpoNativeView.appContext`, it's a weak reference.
-  public var appContext: AppContext? {
-    get { self[AppContextEnvironmentKey.self].appContext }
-    set { self[AppContextEnvironmentKey.self] = WeakAppContext(appContext: newValue) }
-  }
-}
-
-private struct WeakAppContext: Equatable {
-  weak var appContext: AppContext?
-}
-
-private struct AppContextEnvironmentKey: EnvironmentKey {
-  static let defaultValue = WeakAppContext()
 }

@@ -34,15 +34,8 @@ private struct RenamedSwiftUICardView: View {
 
 @ExpoView<SwiftUICardProps>
 private struct AppContextReadingView: View {
-  /// The app context that the last rendered view read from the environment.
-  static weak var renderedAppContext: AppContext?
-
-  @Environment(\.appContext) private var appContext
-
   var body: some View {
-    Color.clear.onAppear {
-      Self.renderedAppContext = appContext
-    }
+    Text(appContext == nil ? "No app context" : "App context")
   }
 }
 
@@ -118,6 +111,20 @@ struct SwiftUINativeViewTests {
   private func newComponentView(of viewClass: AnyClass) throws -> AnyObject {
     let view = (viewClass as AnyObject).perform(NSSelectorFromString("new"))?.takeRetainedValue()
     return try #require(view)
+  }
+
+  /// Creates a component view the way Fabric does while the given app context mounts the components of a surface.
+  private func newComponentView<Content: AnyNativeSwiftUIView>(
+    of type: Content.Type,
+    mountedBy appContext: AppContext
+  ) throws -> SwiftUINativeView<Content> {
+    let observer = SurfacePresenterObserver(appContext: appContext)
+    observer.willMountComponents(withRootTag: 1)
+    defer {
+      observer.didMountComponents(withRootTag: 1)
+    }
+    let view = try newComponentView(of: SwiftUINativeView<Content>.self)
+    return try #require(view as? SwiftUINativeView<Content>)
   }
 
   @Test
@@ -300,22 +307,34 @@ struct SwiftUINativeViewTests {
     #expect(hostedView.window == nil)
   }
 
+  // A parent can call a method of the view struct outside of rendering, so the struct itself holds the app context.
   @Test
-  func `view struct reads the app context of its component view from the environment`() async throws {
+  func `view struct gets the app context of its component view`() throws {
     let appContext = AppContext()
-    let observer = SurfacePresenterObserver(appContext: appContext)
-    observer.willMountComponents(withRootTag: 1)
-    let componentView = try newComponentView(of: SwiftUINativeView<AppContextReadingView>.self)
-    observer.didMountComponents(withRootTag: 1)
-    let view = try #require(componentView as? SwiftUINativeView<AppContextReadingView>)
-    view.update(nil)
+    let view = try newComponentView(of: AppContextReadingView.self, mountedBy: appContext)
 
+    #expect(ExpoSwiftUI.NativeChild(model: view.model).content.appContext === appContext)
+  }
+
+  @Test
+  func `rendered view doesn't keep its app context alive`() async throws {
+    weak var weakAppContext: AppContext?
     let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
-    window.rootViewController = UIHostingController(rootView: view.body)
-    window.makeKeyAndVisible()
+    var view: SwiftUINativeView<AppContextReadingView>?
+
+    do {
+      let appContext = AppContext()
+      weakAppContext = appContext
+      view = try newComponentView(of: AppContextReadingView.self, mountedBy: appContext)
+      view?.update(nil)
+      window.rootViewController = UIHostingController(rootView: try #require(view).body)
+      window.makeKeyAndVisible()
+      try await render(window)
+    }
     try await render(window)
 
-    #expect(AppContextReadingView.renderedAppContext === appContext)
+    #expect(weakAppContext == nil)
+    withExtendedLifetime(view) {}
   }
 
   @Test

@@ -346,8 +346,9 @@ public macro ViewProps() =
 ///       }
 ///     }
 ///
-/// For a SwiftUI view, the macro adds the `props` and `children` constants and `init(props:children:)`. Core
-/// creates the struct again with the current props and children when either changes:
+/// For a SwiftUI view, the macro adds the `props` and `children` constants, the weak `appContext` property and
+/// `init(props:children:appContext:)`. Core creates the struct again with the current props and children when either
+/// changes:
 ///
 ///     @ExpoView<CardProps>
 ///     struct CardView: View {
@@ -358,7 +359,7 @@ public macro ViewProps() =
 ///         }
 ///       }
 ///     }
-@attached(member, names: named(Props), named(_jsName), named(props), named(children), named(init))
+@attached(member, names: named(Props), named(_jsName), named(props), named(children), named(appContext), named(init))
 @attached(extension, conformances: AnyNativeUIKitView, AnyNativeSwiftUIView)
 public macro ExpoView<Props: AnyViewProps>(_ name: String? = nil) =
   #externalMacro(module: "ExpoModulesMacros", type: "ExpoViewMacro")

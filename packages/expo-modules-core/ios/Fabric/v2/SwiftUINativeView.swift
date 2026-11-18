@@ -62,7 +62,7 @@ internal final class SwiftUINativeViewModel<Content: AnyNativeSwiftUIView>: Obse
   // Stored so `objectWillChange` is a plain property read instead of Combine's O(live objects) side-table lookup.
   let objectWillChange = ObservableObjectPublisher()
 
-  /// The app context that the view belongs to. `ExpoSwiftUI.NativeChild` puts it in the environment of `Content`.
+  /// The app context that the view belongs to. `ExpoSwiftUI.NativeChild` passes it to `Content`.
   private(set) weak var appContext: AppContext?
 
   init() {
