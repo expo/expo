@@ -1,1 +1,1 @@
-export { MaskedView } from './MaskedViewNative';
+export { isMaskedViewAvailable, MaskedView } from './MaskedViewNative';
