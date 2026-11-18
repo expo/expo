@@ -100,7 +100,8 @@ That's it. Ref types (`useRef<BottomSheet>`, `useRef<BottomSheetModal>`), method
 | `onChange`                    | Yes       |                                                                                                                                                 |
 | `onClose`                     | Yes       |                                                                                                                                                 |
 | `onDismiss`                   | Yes       | Alias for `onClose` (gorhom `BottomSheetModal` compat)                                                                                          |
-| `enablePanDownToClose`        | Yes       | iOS: enables swipe + backdrop tap. Android: swipe + back button + scrim tap.                                                                    |
+| `enablePanDownToClose`        | Yes       | iOS: enables swipe + backdrop tap. Android: swipe + scrim tap, and back button unless `shouldDismissOnBackPress` is set.                        |
+| `shouldDismissOnBackPress`    | Yes       | Android only. Whether the back button dismisses the sheet. Defaults to `enablePanDownToClose`. Not a `@gorhom/bottom-sheet` prop.               |
 | `enableDynamicSizing`         | Yes       | Fit-to-content when no `snapPoints`. Cannot combine with explicit snap points.                                                                  |
 | `handleComponent`             | Partial   | `null` hides handle, non-null shows native/web handle. Custom components not rendered.                                                          |
 | `backgroundStyle`             | Partial   | Android: `backgroundColor` extracted for `containerColor`. iOS: not applied (SwiftUI sheet uses system background). Web: full style is applied. |
