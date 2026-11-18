@@ -35,6 +35,11 @@ struct NewComponentFlavor {
    views need it, because each direct child is an element of their `children`.
    */
   bool keepsDirectChildren = false;
+  /**
+   SwiftUI places the views, not Yoga, so their layout origin isn't where they are drawn. `measure()` of a descendant
+   skips that origin, as for the SwiftUI views of `ExpoSwiftUI.View`, which publish a zero content origin.
+   */
+  bool isPlacedBySwiftUI = false;
 };
 
 /**
@@ -63,9 +68,9 @@ public:
     facebook::react::RawProps rawProps
   ) const override;
 
-private:
   const NewComponentFlavor &componentFlavor() const;
 
+private:
 #if REACT_NATIVE_TARGET_VERSION < 87
   DecodedProps decodeProps(const facebook::react::RawProps &rawProps, const DecodedProps &previous) const;
 #endif

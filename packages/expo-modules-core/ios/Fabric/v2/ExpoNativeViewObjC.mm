@@ -58,7 +58,7 @@ std::unordered_map<std::string, std::shared_ptr<const views::NewComponentFlavor>
   return flavors;
 }
 
-bool keepsDirectChildren(Class viewClass)
+bool isSwiftUIViewClass(Class viewClass)
 {
   return [viewClass isSubclassOfClass:[ExpoSwiftUIViewObjC class]];
 }
@@ -77,7 +77,8 @@ react::ComponentDescriptorProvider componentDescriptorProvider(Class viewClass)
     flavor = std::make_shared<const NewComponentFlavor>(NewComponentFlavor{
       .name = className,
       .decoder = std::make_shared<NoPropsDecoder>(),
-      .keepsDirectChildren = keepsDirectChildren(viewClass),
+      .keepsDirectChildren = isSwiftUIViewClass(viewClass),
+      .isPlacedBySwiftUI = isSwiftUIViewClass(viewClass),
     });
   }
   return NewComponentDescriptor::provider(flavor);
@@ -165,7 +166,8 @@ react::ComponentDescriptorProvider componentDescriptorProvider(Class viewClass)
     flavor = std::make_shared<const views::NewComponentFlavor>(views::NewComponentFlavor{
       .name = className,
       .decoder = std::make_shared<views::ObjCPropsDecoder>(propsDecoder),
-      .keepsDirectChildren = keepsDirectChildren(viewClass),
+      .keepsDirectChildren = isSwiftUIViewClass(viewClass),
+      .isPlacedBySwiftUI = isSwiftUIViewClass(viewClass),
     });
   }
   [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];

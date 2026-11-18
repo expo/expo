@@ -21,6 +21,11 @@ class NewViewShadowNode final
   : public facebook::react::ConcreteViewShadowNode<placeholderComponentName, NewViewProps, NewViewEventEmitter> {
 public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
+
+  /**
+   For a view that SwiftUI places, takes the layout origin of the view away, so `measure()` of a descendant skips it.
+   */
+  facebook::react::Point getContentOriginOffset(bool includeTransform) const override;
 };
 
 } // namespace expo::views
