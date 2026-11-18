@@ -1,7 +1,9 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/ExpoNativeViewObjC.h>
+#import <ExpoModulesCore/ExpoSwiftUIViewObjC.h>
 #import <ExpoModulesCore/NewComponentDescriptor.h>
+#import <ExpoModulesCore/NewComponentRegistry.h>
 #import <ExpoModulesCore/ObjCPropsDecoder.h>
 #import <ExpoModulesCore/ViewEventDispatch.h>
 
@@ -56,7 +58,32 @@ std::unordered_map<std::string, std::shared_ptr<const views::NewComponentFlavor>
   return flavors;
 }
 
+bool keepsDirectChildren(Class viewClass)
+{
+  return [viewClass isSubclassOfClass:[ExpoSwiftUIViewObjC class]];
+}
+
 } // namespace
+
+namespace expo::views {
+
+react::ComponentDescriptorProvider componentDescriptorProvider(Class viewClass)
+{
+  std::string className([NSStringFromClass(viewClass) UTF8String]);
+  auto &flavor = componentFlavors()[className];
+
+  if (!flavor) {
+    RCTLogError(@"The view class '%s' isn't registered with a props decoder, so its props aren't decoded", className.c_str());
+    flavor = std::make_shared<const NewComponentFlavor>(NewComponentFlavor{
+      .name = className,
+      .decoder = std::make_shared<NoPropsDecoder>(),
+      .keepsDirectChildren = keepsDirectChildren(viewClass),
+    });
+  }
+  return NewComponentDescriptor::provider(flavor);
+}
+
+} // namespace expo::views
 
 // The header adopts the protocol in a category without an implementation, which doesn't register the conformance at
 // runtime. This class extension registers it, so `conformsToProtocol:` and Swift's dynamic casts find it.
@@ -81,17 +108,7 @@ std::unordered_map<std::string, std::shared_ptr<const views::NewComponentFlavor>
 
 + (react::ComponentDescriptorProvider)componentDescriptorProvider
 {
-  std::string className([NSStringFromClass(self) UTF8String]);
-  auto &flavor = componentFlavors()[className];
-
-  if (!flavor) {
-    RCTLogError(@"The view class '%s' isn't registered with a props decoder, so its props aren't decoded", className.c_str());
-    flavor = std::make_shared<const views::NewComponentFlavor>(views::NewComponentFlavor{
-      .name = className,
-      .decoder = std::make_shared<NoPropsDecoder>(),
-    });
-  }
-  return views::NewComponentDescriptor::provider(flavor);
+  return views::componentDescriptorProvider(self);
 }
 
 + (BOOL)shouldBeRecycled
@@ -148,6 +165,7 @@ std::unordered_map<std::string, std::shared_ptr<const views::NewComponentFlavor>
     flavor = std::make_shared<const views::NewComponentFlavor>(views::NewComponentFlavor{
       .name = className,
       .decoder = std::make_shared<views::ObjCPropsDecoder>(propsDecoder),
+      .keepsDirectChildren = keepsDirectChildren(viewClass),
     });
   }
   [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
