@@ -375,13 +375,14 @@ it('redirects nested guarded routes to the anchor and unlocks them as guards fli
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
 
+  // A blocked replacement without a redirect keeps the current screen.
   await act(() => router.replace('/b'));
-  expect(screen.getByTestId('index')).toBeVisible();
-  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
 
   await act(() => router.replace('/c'));
-  expect(screen.getByTestId('index')).toBeVisible();
-  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
 
   // change the guard for route B to true: should make B available and also C
   // should be available now as all its parents guards are true

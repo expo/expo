@@ -13,7 +13,6 @@ import { useLocalSearchParams, useRouter } from '../../hooks';
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/Stack';
 import { NativeTabs } from '../../native-tabs';
-import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import { renderRouter } from '../../testing-library';
 import { useNavigation } from '../../useNavigation';
 import { Slot } from '../../views/Navigator';
@@ -672,7 +671,7 @@ describe('prefetch', () => {
     });
   });
 
-  it.each([false, true])('prefetches a protected route when guard is %s', async (guard) => {
+  it('does not preload a blocked route', async () => {
     const result = await renderRouter({
       index: () => {
         return <Link prefetch href="/test" />;
@@ -680,24 +679,40 @@ describe('prefetch', () => {
       test: () => <Text testID="guarded-content">guarded</Text>,
       _layout: () => (
         <Stack>
-          <Stack.Protected guard={guard}>
+          <Stack.Protected guard={false}>
             <Stack.Screen name="test" />
           </Stack.Protected>
         </Stack>
       ),
     });
 
-    // The preloaded guarded route must not leak its content.
     expect(screen.queryByTestId('guarded-content')).toBeNull();
+    expect(result.getRouterState()?.routes[0]?.state?.routes).toEqual([
+      {
+        key: expect.stringMatching(/^index:/),
+        name: 'index',
+        path: '/',
+      },
+    ]);
+  });
 
-    // Guarded routes stay registered in the navigator, so the prefetch preloads
-    // the route like any other. Its content still renders nothing while guarded.
-    const innerState = result.getRouterState()?.routes[0]?.state;
-    if (!innerState) {
-      throw new Error('Expected a stack navigator');
-    }
-    // The complete initial state stays typeless until this navigator dispatches an action.
-    expect((innerState as StackNavigationState<ParamListBase>).routes).toEqual([
+  it('preloads a route when its guard passes', async () => {
+    const result = await renderRouter({
+      index: () => {
+        return <Link prefetch href="/test" />;
+      },
+      test: () => <Text testID="guarded-content">guarded</Text>,
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard>
+            <Stack.Screen name="test" />
+          </Stack.Protected>
+        </Stack>
+      ),
+    });
+
+    expect(screen.queryByTestId('guarded-content')).toBeNull();
+    expect(result.getRouterState()?.routes[0]?.state?.routes).toEqual([
       {
         key: expect.stringMatching(/^index:/),
         name: 'index',

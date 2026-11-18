@@ -1,7 +1,7 @@
 import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import { applyRedirects } from '../getRoutesRedirects';
-import { resolveHrefStringWithSegments } from '../link/href';
+import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import {
   INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME,
   type InternalExpoRouterParams,
@@ -10,12 +10,15 @@ import type { NavigationAction } from '../react-navigation/native';
 import type { NavigationState } from '../react-navigation/routers';
 import type { SingularOptions } from '../useScreens';
 import { getRouteInfoFromState } from './getRouteInfoFromState';
-import { resolveNavigationDestination } from './resolveNavigationDestination';
+import { findDestinationGuard, resolveNavigationDestination } from './resolveNavigationDestination';
 import type { RouterRegistry } from './routerRegistry';
 import type { LinkToOptions, StoreRedirects } from './types';
 
 export type NavigationResolution =
   | { status: 'action'; action: NavigationAction }
+  // A failed guard without a redirect blocks the request. The current history stays unchanged.
+  | { status: 'blocked' }
+  | { status: 'redirect-loop'; href: string }
   | { status: 'invalid'; href: string };
 
 export type NavigateActionConfig = {
@@ -39,13 +42,32 @@ export function getNavigateAction(
     throw new Error('Attempted to link to route when no routes are present');
   }
 
-  const routeInfo = getRouteInfoFromState(navigationState);
-  const href = applyRedirects(
-    resolveHrefStringWithSegments(baseHref, routeInfo, options),
-    config.redirects
-  )!;
-
-  const state = config.linking.getStateFromPath!(href, config.linking.config, routeInfo.segments);
+  const { linking } = config;
+  const parse = (destination: string, routeInfo: ReturnType<typeof getRouteInfoFromState>) => {
+    const href = applyRedirects(
+      resolveHrefStringWithSegments(destination, routeInfo, options),
+      config.redirects
+    )!;
+    return { href, state: linking.getStateFromPath!(href, linking.config, routeInfo.segments) };
+  };
+  let { href, state } = parse(baseHref, getRouteInfoFromState(navigationState));
+  // Follow explicit guard redirects. A relative redirect resolves from the guarded destination.
+  const visited = new Set<string>();
+  while (state?.routes.length) {
+    const guard = findDestinationGuard(state, navigationState, config.registry);
+    if (!guard) {
+      break;
+    }
+    if (guard.redirectTo === undefined) {
+      return { status: 'blocked' };
+    }
+    const identity = JSON.stringify([guard.navigatorKey, guard.name]);
+    if (visited.has(identity)) {
+      return { status: 'redirect-loop', href };
+    }
+    visited.add(identity);
+    ({ href, state } = parse(resolveHref(guard.redirectTo), getRouteInfoFromState(state)));
+  }
   if (!state || state.routes.length === 0) {
     return { status: 'invalid', href };
   }

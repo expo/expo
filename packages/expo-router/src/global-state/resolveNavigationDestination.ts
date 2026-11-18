@@ -3,6 +3,7 @@ import isEqual from 'react-fast-compare';
 import type { RouteNode } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
+import type { FailedGuard } from '../layouts/GuardContext';
 import { appendInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
 import { createInitialState } from '../react-navigation/core/createInitialState';
 import type {
@@ -49,6 +50,36 @@ const supportedActionTypes = new Set([
   'PRELOAD',
   'JUMP_TO',
 ]);
+
+export type DestinationGuard = FailedGuard & { navigatorKey: string };
+
+/**
+ * Returns the first failed guard on the path to `target`. Only mounted navigators on the focused
+ * path have rendered their layout guards, so a guard below an unmounted layout is not found.
+ */
+export function findDestinationGuard(
+  target: PartialState<NavigationState>,
+  current: NavigationState,
+  registry: RouterRegistry
+): DestinationGuard | undefined {
+  const targetRoute = getFocusedRoute(target);
+  if (!targetRoute) {
+    return undefined;
+  }
+  const guard = registry.get(current.key)?.guardForRoute?.(targetRoute.name);
+  if (guard) {
+    return { ...guard, navigatorKey: current.key };
+  }
+  const currentRoute = current.routes[current.index];
+  if (
+    targetRoute.state &&
+    currentRoute?.state?.stale === false &&
+    routesMatch(targetRoute, currentRoute)
+  ) {
+    return findDestinationGuard(targetRoute.state, currentRoute.state, registry);
+  }
+  return undefined;
+}
 
 export function resolveNavigationDestination({
   targetState,

@@ -8,7 +8,7 @@ import { GuardContext, normalizeRouteName } from './GuardContext';
  * Lets a stack navigator clear its own guarded routes from history, based on the guard context.
  */
 export function useClearGuardedRoutes(removeRoutesFromState: (routeNames: string[]) => void) {
-  const guards = use(GuardContext);
+  const guards = use(GuardContext)?.guards;
   const removeRoutes = useEffectEvent(removeRoutesFromState);
 
   useEffect(() => {

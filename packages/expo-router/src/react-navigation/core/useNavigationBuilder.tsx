@@ -9,6 +9,7 @@ import { useComponent } from '../../fork/useComponent';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { findStateByKey, resetNavigatorState } from '../../global-state/stateUtils';
+import { getFailedGuard, useLayoutGuards } from '../../layouts/GuardContext';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   type DefaultRouterOptions,
@@ -363,6 +364,8 @@ export function useNavigationBuilder<
       routeGetIdList,
     })
   );
+  const guards = useLayoutGuards(routeNode);
+  const guardForRoute = useLatestCallback((name: string) => getFailedGuard(guards, name));
   const emitter = useEventEmitter<EventMapCore<State>>((e) => {
     const routeNames = [];
 
@@ -436,6 +439,7 @@ export function useNavigationBuilder<
   const registryEntry = React.useMemo<RouterRegistryEntry>(
     () => ({
       reduce,
+      guardForRoute,
       shouldActionChangeFocus: router.shouldActionChangeFocus,
       getStateForRouteFocus: (registryState, routeKey) =>
         router.getStateForRouteFocus(registryState as State, routeKey),
@@ -443,7 +447,7 @@ export function useNavigationBuilder<
         router.getBrowserHistoryForRouteFocus?.(previous as State, next as State, childAction),
       routeNode: routeNode ?? undefined,
     }),
-    [reduce, routeNode, router]
+    [reduce, guardForRoute, routeNode, router]
   );
 
   useRegisterRouter(committedState.key, registryEntry);

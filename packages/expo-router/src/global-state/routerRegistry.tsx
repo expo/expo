@@ -3,6 +3,7 @@
 import { createContext, use } from 'react';
 
 import type { RouteNode } from '../Route';
+import type { FailedGuard } from '../layouts/GuardContext';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import type {
   NavigationAction,
@@ -17,6 +18,8 @@ export type RouterRegistryEntry = {
     state: NavigationState,
     action: NavigationAction
   ) => RouterActionResult<NavigationState> | RouterActionHandling.Unhandled | null;
+  // Returns the failed guard for a route declared by this navigator's layout.
+  guardForRoute?: (name: string) => FailedGuard | undefined;
   shouldActionChangeFocus?: (action: NavigationAction) => boolean;
   getStateForRouteFocus?: (state: NavigationState, routeKey: string) => NavigationState;
   getBrowserHistoryForRouteFocus?: (

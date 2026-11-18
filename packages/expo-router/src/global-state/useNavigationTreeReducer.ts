@@ -28,6 +28,7 @@ import {
   createSeededNavigationState,
 } from './createSeededNavigationState';
 import { getNavigateAction } from './getNavigationAction';
+import { findActionGuard } from './protectedAction';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
 import type { RouterRegistry } from './routerRegistry';
 import { markActionEnqueuedAndReturnId, type QueuedRoutingIntent } from './routingQueue';
@@ -292,6 +293,14 @@ function reduceTree(
         );
         return result;
       }
+      if (resolution.status === 'blocked') {
+        return result;
+      }
+      if (resolution.status === 'redirect-loop') {
+        throw new Error(
+          `Protected route redirects form a loop at "${resolution.href}": each \`redirectTo\` leads to another blocked route. Set \`redirectTo\` to a route that is accessible.`
+        );
+      }
       if (resolution.status === 'invalid') {
         const invalidHref = operation.payload.originalHref ?? resolution.href;
         // TODO(@ubax): move console side effects out of the reducer.
@@ -304,7 +313,7 @@ function reduceTree(
         result,
         {
           type: 'ACTION',
-          payload: { action: resolution.action },
+          payload: { action: resolution.action, guardsChecked: true },
           actionId: operation.actionId,
         },
         config
@@ -346,6 +355,23 @@ function reduceTree(
       );
       if (!origin) {
         return reportUnhandledAction(result, operation.payload.action);
+      }
+      const guard = operation.payload.guardsChecked
+        ? undefined
+        : findActionGuard(operation.payload.action, origin, tree.nodes, config.registry);
+      if (guard) {
+        // Keep the requested push, replace, or navigate. A guard without a redirect blocks it.
+        return guard.href === undefined
+          ? result
+          : reduceTree(
+              result,
+              {
+                type: 'NAVIGATE_TO_HREF',
+                payload: { href: guard.href, options: { event: operation.payload.action.type } },
+                actionId: operation.actionId,
+              },
+              config
+            );
       }
 
       const reduction = reduceNavigationTree(operation.payload.action, config.registry, {

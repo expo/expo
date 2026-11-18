@@ -27,7 +27,8 @@ export type RoutingIntent = (
     }
   | {
       type: 'ACTION';
-      payload: { action: NavigationAction; originKey?: string };
+      // `guardsChecked` marks an action resolved from an href, which already consulted guards.
+      payload: { action: NavigationAction; originKey?: string; guardsChecked?: boolean };
     }
   | {
       // The browser moved on its own (back, forward, hash link); `id` is the entry id stored in

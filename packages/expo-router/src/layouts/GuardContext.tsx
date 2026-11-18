@@ -8,14 +8,22 @@ import { getContextKey } from '../matchers';
 import { getValidInitialRoute } from '../routeNode';
 import type { Href } from '../types';
 
+// Per route name, the explicit redirect of its outermost failed guard. A missing entry means the
+// route is accessible; an `undefined` value means the failed guard has no redirect.
 export type GuardedRedirects = Map<string, Href | undefined>;
 // `Href` = guarded with a redirect, `null` = guarded with no available destination.
 export type GuardRedirect = Href | null;
-// Per route name; a missing entry means the route is unguarded.
-export type ResolvedGuards = Map<string, GuardRedirect>;
+export type FailedGuard = { name: string; redirectTo?: Href };
 
-export const GuardContext = createContext<ResolvedGuards | null>(null);
-const GuardRedirectFallbackContext = createContext<GuardRedirectFallback[]>([]);
+type GuardContextValue = {
+  // The layout that declared `guards`. A navigator builder applies only its own layout's guards.
+  node: RouteNode | null;
+  guards: GuardedRedirects;
+  fallbacks: GuardRedirectFallback[];
+};
+
+export const GuardContext = createContext<GuardContextValue | null>(null);
+const noFallbacks: GuardRedirectFallback[] = [];
 
 export function GuardContextProvider({
   node,
@@ -26,19 +34,15 @@ export function GuardContextProvider({
   guardedRedirects: GuardedRedirects;
   children: ReactNode;
 }) {
-  const parentFallbacks = use(GuardRedirectFallbackContext);
+  const parentFallbacks = use(GuardContext)?.fallbacks ?? noFallbacks;
   const params = use(LocalRouteParamsContext);
   const guardConfigurationKey = serializeGuardedRedirects(guardedRedirects);
-  const { fallbacks, resolvedGuards } = useMemo(
+  const value = useMemo(
     () => computeGuardState(node, guardedRedirects, params, parentFallbacks),
     [node, node?.children, node?.contextKey, params, parentFallbacks, guardConfigurationKey]
   );
 
-  return (
-    <GuardRedirectFallbackContext value={fallbacks}>
-      <GuardContext value={resolvedGuards}>{children}</GuardContext>
-    </GuardRedirectFallbackContext>
-  );
+  return <GuardContext value={value}>{children}</GuardContext>;
 }
 
 function computeGuardState(
@@ -46,31 +50,34 @@ function computeGuardState(
   guardedRedirects: GuardedRedirects,
   params: object | undefined,
   parentFallbacks: GuardRedirectFallback[]
-) {
+): GuardContextValue {
   const navigatorFallback = getNavigatorFallback(node, guardedRedirects, params);
   const inheritedFallbacks = removeFallbacksTargetingNavigator(parentFallbacks, node);
   const fallbacks = navigatorFallback
     ? [navigatorFallback, ...inheritedFallbacks]
     : inheritedFallbacks;
 
-  return {
-    fallbacks,
-    resolvedGuards: resolveGuardRedirects(guardedRedirects, fallbacks[0]?.href),
-  };
+  return { node, guards: guardedRedirects, fallbacks };
 }
 
 export function useGuardRedirect(routeName: string): GuardRedirect | undefined {
-  const guards = use(GuardContext);
-  if (!guards) {
-    return undefined;
-  }
+  const owner = use(GuardContext);
+  const guard = getFailedGuard(owner?.guards, routeName);
+  return guard ? (guard.redirectTo ?? owner?.fallbacks[0]?.href ?? null) : undefined;
+}
 
-  if (guards.has(routeName)) {
-    return guards.get(routeName) ?? null;
-  }
+/** Returns the failed guards declared by `node`, ignoring guards of an enclosing layout. */
+export function useLayoutGuards(node: RouteNode | null): GuardedRedirects | undefined {
+  const owner = use(GuardContext);
+  return owner?.node === node ? owner.guards : undefined;
+}
 
-  const normalizedRouteName = normalizeRouteName(routeName);
-  return guards.has(normalizedRouteName) ? (guards.get(normalizedRouteName) ?? null) : undefined;
+export function getFailedGuard(
+  guards: GuardedRedirects | undefined,
+  routeName: string
+): FailedGuard | undefined {
+  const name = guards?.has(routeName) ? routeName : normalizeRouteName(routeName);
+  return guards?.has(name) ? { name, redirectTo: guards.get(name) } : undefined;
 }
 
 export function normalizeRouteName(routeName: string): string {
@@ -130,18 +137,6 @@ function findDefaultRedirectRouteInNavigator(
 
 export function isRouteGuarded(routeName: string, guards: ReadonlyMap<string, unknown>): boolean {
   return guards.has(routeName) || guards.has(normalizeRouteName(routeName));
-}
-
-function resolveGuardRedirects(
-  guardedRedirects: GuardedRedirects,
-  fallbackHref: Href | undefined
-): ResolvedGuards {
-  return new Map<string, GuardRedirect>(
-    Array.from(
-      guardedRedirects,
-      ([name, redirectTo]) => [name, redirectTo ?? fallbackHref ?? null] as const
-    )
-  );
 }
 
 function serializeGuardedRedirects(guardedRedirects: GuardedRedirects): string {

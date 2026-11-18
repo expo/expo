@@ -63,7 +63,8 @@ export function useFilterScreenChildren<
       if (isProtectedReactElement(child)) {
         const guardFails = !child.props.guard;
         const excludeChildren = exclude || guardFails;
-        const childRedirectTo = guardFails ? child.props.redirectTo : redirectTo;
+        // The outermost failed guard decides, even when it has no redirect.
+        const childRedirectTo = !exclude && guardFails ? child.props.redirectTo : redirectTo;
         Children.forEach(child.props.children, (protectedChild) => {
           flattenChild(protectedChild, excludeChildren, childRedirectTo);
         });

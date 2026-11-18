@@ -4,6 +4,7 @@ import { getNavigateAction, type NavigateActionConfig } from '../getNavigationAc
 import { resolveNavigationDestination } from '../resolveNavigationDestination';
 
 jest.mock('../resolveNavigationDestination', () => ({
+  ...jest.requireActual('../resolveNavigationDestination'),
   resolveNavigationDestination: jest.fn(({ action }) => ({
     ...action,
     target: 'root-nav',
