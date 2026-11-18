@@ -1,5 +1,4 @@
-import AppMetrics from 'expo-app-metrics';
-
+import AppMetrics from './app-metrics';
 import { isExpoRouterInitialized, useObserveForRouter } from './integrations/expo-router';
 import {
   isReactNavigationInitialized,

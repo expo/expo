@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { renderHook } from '@testing-library/react-native';
-import AppMetrics from 'expo-app-metrics';
 
+import AppMetrics from '../app-metrics';
 import * as routerIntegration from '../integrations/expo-router';
 import * as reactNavigationIntegration from '../integrations/react-navigation';
 import { useObserve } from '../useObserve';
 
-jest.mock('expo-app-metrics', () => ({
+jest.mock('../app-metrics', () => ({
   __esModule: true,
   default: {
     markInteractive: jest.fn(),

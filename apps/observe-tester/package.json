@@ -10,7 +10,7 @@
     "ios": "expo run:ios",
     "eas:build": "./scripts/eas-build.sh",
     "test:ios": "bash scripts/test-ios.sh",
-    "test:android": "cd android && ./gradlew :expo-app-metrics:testDebugUnitTest :expo-observe:testDebugUnitTest",
+    "test:android": "cd android && ./gradlew :expo-observe:testDebugUnitTest",
     "web": "expo start --web",
     "lint": "expo lint"
   },

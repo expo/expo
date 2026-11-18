@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { renderHook, act } from '@testing-library/react-native';
-import AppMetrics from 'expo-app-metrics';
 import { type ReactNode } from 'react';
 
+import AppMetrics from '../../../app-metrics';
 import { ObserveReactNavigationIntegrationContext } from '../context';
 import {
   createReactNavigationIntegrationStorage,
@@ -10,7 +10,7 @@ import {
 } from '../storage';
 import { useObserveForReactNavigation } from '../useObserveForReactNavigation';
 
-jest.mock('expo-app-metrics', () => {
+jest.mock('../../../app-metrics', () => {
   const mainSession = {
     id: 'session-1',
     type: 'main',

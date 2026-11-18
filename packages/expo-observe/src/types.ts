@@ -1,10 +1,11 @@
 import type { NativeModule } from 'expo';
+
 import type {
   LogAttributeValue,
   LogEventOptions,
   MetricAttributes,
   NetworkRequestFilter,
-} from 'expo-app-metrics';
+} from './app-metrics';
 
 /**
  * Value types accepted as attribute values in `setGlobalAttributes` and the
@@ -355,19 +356,19 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
   dispatchEvents(): Promise<void>;
   /**
    * Starts a trace span measuring an operation that is underway. See `startSpan` in
-   * `expo-app-metrics` for the full contract.
+   * `expo-observe` for the full contract.
    */
-  startSpan: typeof import('expo-app-metrics').startSpan;
+  startSpan: typeof import('./app-metrics').startSpan;
   /**
    * Runs a callback inside a span that ends automatically. See `withSpan` in
-   * `expo-app-metrics` for the full contract.
+   * `expo-observe` for the full contract.
    */
-  withSpan: typeof import('expo-app-metrics').withSpan;
+  withSpan: typeof import('./app-metrics').withSpan;
   /**
-   * Records a span for an already-measured operation. See `recordSpan` in `expo-app-metrics`
+   * Records a span for an already-measured operation. See `recordSpan` in `expo-observe`
    * for the full contract.
    */
-  recordSpan: typeof import('expo-app-metrics').recordSpan;
+  recordSpan: typeof import('./app-metrics').recordSpan;
   /**
    * Configures how observability events are collected and dispatched at runtime, such as
    * the environment label, dispatching behavior, sampling, and integrations.
