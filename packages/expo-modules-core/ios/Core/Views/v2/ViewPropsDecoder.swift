@@ -16,9 +16,10 @@
 /// builds the type without a lookup. This works only while this function stays generic: an inlined or specialized
 /// copy would build the type from its mangled name again. `@inline(never)` prevents inlining, and `@_semantics`
 /// prevents specialization.
+@usableFromInline
 @inline(never)
 @_semantics("optimize.sil.specialize.generic.never")
-public func _makeViewPropsDecoder<Props: AnyViewProps>(
+internal func makeViewPropsDecoder<Props: AnyViewProps>(
   _ propsType: Props.Type,
   viewName: String
 ) -> ViewPropsDecoder<Props> {

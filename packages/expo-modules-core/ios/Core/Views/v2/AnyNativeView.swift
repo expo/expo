@@ -26,7 +26,7 @@ public protocol AnyNativeView {
 extension AnyNativeView {
   @inlinable
   public nonisolated static func _makePropsDecoder(viewName: String) -> ViewPropsDecoderAdapter {
-    return ViewPropsDecoderAdapter(_makeViewPropsDecoder(Props.self, viewName: viewName))
+    return ViewPropsDecoderAdapter(makeViewPropsDecoder(Props.self, viewName: viewName))
   }
 
   public nonisolated static var _jsName: String {
