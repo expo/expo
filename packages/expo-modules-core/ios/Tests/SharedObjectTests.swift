@@ -1,5 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore
@@ -252,6 +253,31 @@ struct SharedObjectTests {
   }
 
   @Test
+  func `keeps canonically equivalent event names apart`() throws {
+    let jsObject = try runtime
+      .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
+      .asObject()
+
+    try runtime.eval(
+      """
+      callCount = 0;
+      sharedObject.addListener('\\u00e9', () => { callCount += 1 });
+      """
+    )
+
+    let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
+    nativeObject?.emit(event: "e\u{301}")
+    try runtime.eval([
+      "sharedObject.emit('e\\u0301')",
+      "sharedObject.removeAllListeners('e\\u0301')"
+    ])
+
+    #expect(try runtime.eval("callCount").asInt() == 0)
+    #expect(try runtime.eval("sharedObject.listenerCount('e\\u0301')").asInt() == 0)
+    #expect(try runtime.eval("sharedObject.listenerCount('\\u00e9')").asInt() == 1)
+  }
+
+  @Test
   func `emits events with a pre-converted JavaScriptValue payload`() throws {
     let jsObject = try runtime
       .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
@@ -308,6 +334,23 @@ struct SharedObjectTests {
     detached.emit(event: "ignored")
     detached.emit(event: "ignored", payload: ["key": "value"])
     detached.emit(event: "ignored", payload: .undefined())
+  }
+
+  @Test
+  func `emits from deinit without keeping the shared object`() throws {
+    // The runtime of a `TestAppContext` runs scheduled work on its own thread, after `deinit` returns.
+    let appContext = TestAppContext()
+    weak var weakObject: DeinitEmittingSharedObject?
+    do {
+      let object = DeinitEmittingSharedObject()
+      object.appContext = appContext
+      weakObject = object
+    }
+    #expect(weakObject == nil)
+
+    // Waits for the scheduled emit.
+    let runtime = try appContext.runtime
+    try runtime.execute {}
   }
 
   // MARK: - native(from:)
@@ -424,3 +467,10 @@ private final class SharedObjectExample: SharedObject {}
 
 /// A second, unrelated subclass used to exercise the type-mismatch path of `native(from:)`.
 private final class OtherSharedObjectExample: SharedObject {}
+
+/// Emits from `deinit`, like `AudioStream` in `expo-audio`.
+private final class DeinitEmittingSharedObject: SharedObject {
+  deinit {
+    emit(event: "stopped", payload: 1)
+  }
+}
