@@ -155,7 +155,7 @@ struct ConsentGatedDefaultsTests {
     let granted = OSAllocatedUnfairLock(initialState: true)
     let suiteName = suiteName
 
-    // Closes the gate under the lock, then deletes the settings.
+    // The steps of a revoke: close the gate under the lock, then delete the settings.
     try runInSetterGap(granted: granted, set: { $0.set("set-during-revoke", forKey: "racing") }) {
       ConsentGatedDefaults.transitionLock.withLock {
         granted.withLock { $0 = false }

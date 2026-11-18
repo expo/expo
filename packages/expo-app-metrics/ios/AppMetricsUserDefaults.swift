@@ -55,7 +55,7 @@ public final class AppMetricsUserDefaults: UserDefaults {
     }
   }
 
-  /// Deletes every saved value. Runs at a launch without consent.
+  /// Deletes every saved value. Runs at a launch without consent and at a revoke.
   static func deleteStoredSettings() {
     UserDefaults.standard.removePersistentDomain(forName: suiteName)
   }

@@ -177,6 +177,34 @@ struct ObserveUserDefaultsTests {
     #expect(ObserveUserDefaults.lastDispatchDate == nil)
   }
 
+  // MARK: - Revoke
+
+  private struct SaveFailed: Error {}
+
+  @Test
+  func `a revoke deletes every Observe setting, also when saving it fails`() async {
+    ObserveUserDefaults.lastDispatchedMetricId = 5
+    ObserveUserDefaults.lastDispatchedLogId = 7
+    ObserveUserDefaults.lastDispatchDate = Date()
+
+    await #expect(throws: SaveFailed.self) {
+      try await applyConsent(.notGranted) { _ in throw SaveFailed() }
+    }
+
+    #expect(ObserveUserDefaults.lastDispatchedMetricId == -1)
+    #expect(ObserveUserDefaults.lastDispatchedLogId == -1)
+    #expect(ObserveUserDefaults.lastDispatchDate == nil)
+  }
+
+  @Test
+  func `a grant keeps the Observe settings`() async throws {
+    ObserveUserDefaults.lastDispatchedMetricId = 5
+
+    try await applyConsent(.granted) { _ in }
+
+    #expect(ObserveUserDefaults.lastDispatchedMetricId == 5)
+  }
+
   @Test
   func `cleanUpLegacyKeys removes only the legacy keys`() throws {
     let suiteName = "dev.expo.observe.tests.legacy-keys"

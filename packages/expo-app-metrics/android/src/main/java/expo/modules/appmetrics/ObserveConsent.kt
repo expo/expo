@@ -143,7 +143,7 @@ class ConsentGatedPreferences(private val name: String) {
   }
 
   // `update` changes the gate under the same lock. So a write cannot land in memory after the first
-  // grant saved those values, or in storage after a revoke closed the gate.
+  // grant saved those values, or in storage after a revoke closed the gate and deleted the settings.
   private inline fun write(inMemory: () -> Unit, stored: () -> Unit) {
     synchronized(ObserveConsent) {
       if (ObserveConsent.isGranted) {
@@ -167,7 +167,7 @@ class ConsentGatedPreferences(private val name: String) {
     return stored()
   }
 
-  /** Deletes the settings file. Runs at a launch without consent. */
+  /** Deletes the settings file. Runs at a launch without consent and at a revoke. */
   fun delete(context: Context) {
     context.deleteSharedPreferences(name)
   }

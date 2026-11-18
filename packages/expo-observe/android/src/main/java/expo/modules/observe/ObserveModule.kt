@@ -80,7 +80,15 @@ class ObserveModule : Module() {
       }
 
       AsyncFunction("setConsent") Coroutine { consent: ConsentValue ->
-        appMetricsModule.setConsent(consent == ConsentValue.GRANTED)
+        try {
+          appMetricsModule.setConsent(consent == ConsentValue.GRANTED)
+        } finally {
+          // Also when the save fails, because the revoke still applies. After the gate closes, so
+          // nothing saves the settings again.
+          if (consent == ConsentValue.NOT_GRANTED) {
+            deleteObserveData(context)
+          }
+        }
       }
 
       AsyncFunction("dispatchEvents") Coroutine { ->
@@ -135,4 +143,11 @@ class ObserveModule : Module() {
         appMetricsModule.setEnvironment(defaults.environment)
       }
     }
+}
+
+/** Deletes the Observe settings, the dispatch cursors among them, and the scheduled dispatch. Runs at a revoke. */
+internal suspend fun deleteObserveData(context: Context) {
+  ObservabilityBackgroundWorker.cancelBackgroundDispatch(context)
+  context.deleteDatabase(LEGACY_DATABASE_NAME)
+  ObservePreferences.deleteStoredSettings(context)
 }
