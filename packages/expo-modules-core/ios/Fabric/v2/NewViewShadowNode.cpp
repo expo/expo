@@ -16,7 +16,7 @@ react::Point NewViewShadowNode::getContentOriginOffset(bool includeTransform) co
   }
   // Only `NewComponentDescriptor` creates these nodes.
   const auto &descriptor = static_cast<const NewComponentDescriptor &>(getFamily().getComponentDescriptor());
-  if (!descriptor.componentFlavor().isPlacedBySwiftUI) {
+  if (!descriptor.componentFlavor().hasZeroContentOrigin) {
     return ConcreteViewShadowNode::getContentOriginOffset(includeTransform);
   }
   // `computeRelativeLayoutMetrics` adds the layout origin of the view before it asks for this offset.

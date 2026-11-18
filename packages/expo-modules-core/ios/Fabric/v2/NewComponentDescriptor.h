@@ -36,10 +36,10 @@ struct NewComponentFlavor {
    */
   bool keepsDirectChildren = false;
   /**
-   SwiftUI places the views, not Yoga, so their layout origin isn't where they are drawn. `measure()` of a descendant
-   skips that origin, as for the SwiftUI views of `ExpoSwiftUI.View`, which publish a zero content origin.
+   Another layout system places the views, not Yoga, so their layout origin isn't where they are drawn. `measure()` of a
+   descendant skips that origin, as when a view publishes a zero content origin to `ContentOriginRegistry`.
    */
-  bool isPlacedBySwiftUI = false;
+  bool hasZeroContentOrigin = false;
 };
 
 /**

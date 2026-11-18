@@ -78,7 +78,7 @@ react::ComponentDescriptorProvider componentDescriptorProvider(Class viewClass)
       .name = className,
       .decoder = std::make_shared<NoPropsDecoder>(),
       .keepsDirectChildren = isSwiftUIViewClass(viewClass),
-      .isPlacedBySwiftUI = isSwiftUIViewClass(viewClass),
+      .hasZeroContentOrigin = isSwiftUIViewClass(viewClass),
     });
   }
   return NewComponentDescriptor::provider(flavor);
@@ -167,7 +167,7 @@ react::ComponentDescriptorProvider componentDescriptorProvider(Class viewClass)
       .name = className,
       .decoder = std::make_shared<views::ObjCPropsDecoder>(propsDecoder),
       .keepsDirectChildren = isSwiftUIViewClass(viewClass),
-      .isPlacedBySwiftUI = isSwiftUIViewClass(viewClass),
+      .hasZeroContentOrigin = isSwiftUIViewClass(viewClass),
     });
   }
   [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
