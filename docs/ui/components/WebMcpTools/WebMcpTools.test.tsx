@@ -62,7 +62,9 @@ describe(WebMcpTools, () => {
     expect(Object.keys(tools)).toEqual([
       'search_docs',
       'get_page_markdown',
+      'get_page_info',
       'get_site_overview',
+      'list_sections',
       'read_skill',
       'navigate_page',
       'send_feedback',
@@ -171,6 +173,76 @@ describe(WebMcpTools, () => {
     ]);
     expect(routerPush).toHaveBeenCalledWith('/guides/overview/#top');
     expect(JSON.parse(fetchMock.mock.calls[2][1]?.body ?? '').url).toBe('/guides/overview/');
+  });
+
+  it('returns page details without the code block lines that look like headings', async () => {
+    responses.set(
+      '/versions/latest/sdk/camera/index.md',
+      [
+        '---',
+        'title: Camera',
+        "packageName: 'expo-camera'",
+        '---',
+        '',
+        '# Expo Camera',
+        '## Installation',
+        '```sh',
+        '# npm',
+        '```',
+        '### Usage',
+      ].join('\n')
+    );
+    const { tools } = renderTools();
+
+    const info = await tools.get_page_info.execute(
+      { path: 'https://docs.expo.dev/versions/latest/sdk/camera/' },
+      { signal }
+    );
+
+    expect(JSON.parse(info)).toEqual({
+      path: '/versions/latest/sdk/camera/',
+      title: 'Camera',
+      packageName: 'expo-camera',
+      headings: [
+        { level: 1, text: 'Expo Camera' },
+        { level: 2, text: 'Installation' },
+        { level: 3, text: 'Usage' },
+      ],
+    });
+  });
+
+  it('lists the sidebar areas, then the pages of one section', async () => {
+    const { tools } = renderTools();
+
+    const areas = JSON.parse(await tools.list_sections.execute({}, { signal }));
+    const pages = JSON.parse(
+      await tools.list_sections.execute({ area: 'eas', section: 'Expo Build' }, { signal })
+    );
+
+    expect(areas.map(({ area }: { area: string }) => area)).toEqual([
+      'home',
+      'general',
+      'eas',
+      'learn',
+      'reference',
+      'preview',
+      'archive',
+    ]);
+    expect(areas.find(({ area }: { area: string }) => area === 'eas').sections).toContain(
+      'Expo Build'
+    );
+    expect(pages[0]).toEqual({
+      section: 'Expo Build',
+      title: 'Introduction',
+      path: '/build/introduction',
+    });
+    await expect(tools.list_sections.execute({ area: 'nope' }, { signal })).rejects.toThrow(
+      'area must be one of'
+    );
+    await expect(
+      tools.list_sections.execute({ area: 'eas', section: 'Nope' }, { signal })
+    ).rejects.toThrow('Sections: ');
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('rejects paths that leave the docs site before any request or navigation', async () => {

@@ -1,6 +1,8 @@
 import Router from 'next/router';
 
 import { getVersionFromPath } from '~/providers/page-api-version';
+import navigation from '~/public/static/constants/navigation.json';
+import { NavigationRoute } from '~/types/common';
 import { FEEDBACK_URL } from '~/ui/components/Footer/feedbackUrl';
 import { getMarkdownFilePath } from '~/ui/components/MarkdownActions/paths';
 
@@ -24,8 +26,20 @@ const SEARCH = {
 const SKILLS_INDEX_URL = '/.well-known/agent-skills/index.json';
 const DOCS_ORIGIN = 'https://docs.expo.dev';
 
+const NAVIGATION_AREAS = [
+  'home',
+  'general',
+  'eas',
+  'learn',
+  'reference',
+  'preview',
+  'archive',
+] as const;
+
 type SearchHit = { url: string; hierarchy: Record<string, string | null> };
 type SkillsIndex = { skills: { name: string; url: string }[] };
+type NavigationArea = (typeof NAVIGATION_AREAS)[number];
+type PageEntry = { section: string; group?: string; title: string; path: string };
 
 function toSiteUrl(path: unknown) {
   if (typeof path !== 'string' || !(path.startsWith('/') || /^https?:\/\//.test(path))) {
@@ -55,14 +69,105 @@ async function fetchTextAsync(url: string, signal: AbortSignal) {
   return await response.text();
 }
 
-async function getPageMarkdownAsync(
-  { path = window.location.pathname }: ToolInput,
-  { signal }: { signal: AbortSignal }
-) {
+async function readPageMarkdownAsync(path: unknown, signal: AbortSignal) {
   const url = toSiteUrl(path);
   return await fetchTextAsync(
     getMarkdownFilePath(`${url.pathname}${url.search}`) ?? '/index.md',
     signal
+  );
+}
+
+async function getPageMarkdownAsync(
+  { path = window.location.pathname }: ToolInput,
+  { signal }: { signal: AbortSignal }
+) {
+  return await readPageMarkdownAsync(path, signal);
+}
+
+function parsePageInfo(markdown: string) {
+  const frontmatter = /^---\n([\S\s]*?)\n---\n/.exec(markdown);
+  const details: Record<string, string> = {};
+  for (const line of frontmatter?.[1].split('\n') ?? []) {
+    const field = /^([A-Za-z]\w*):\s*(.*)$/.exec(line);
+    if (field) {
+      details[field[1]] = field[2].replace(/^(["'])(.*)\1$/, '$2');
+    }
+  }
+
+  const headings: { level: number; text: string }[] = [];
+  let inCodeBlock = false;
+  for (const line of markdown.slice(frontmatter?.[0].length ?? 0).split('\n')) {
+    if (/^\s*(```|~~~)/.test(line)) {
+      inCodeBlock = !inCodeBlock;
+      continue;
+    }
+    const heading = inCodeBlock ? null : /^(#{1,6})\s+(.+?)\s*#*$/.exec(line);
+    if (heading) {
+      headings.push({ level: heading[1].length, text: heading[2] });
+    }
+  }
+  return { ...details, headings };
+}
+
+async function getPageInfoAsync(
+  { path = window.location.pathname }: ToolInput,
+  { signal }: { signal: AbortSignal }
+) {
+  const info = parsePageInfo(await readPageMarkdownAsync(path, signal));
+  return JSON.stringify({ path: toSiteUrl(path).pathname, ...info });
+}
+
+function sectionName(section: NavigationRoute) {
+  return section.name || 'Top level';
+}
+
+function sectionsOf(area: NavigationArea) {
+  const version = getVersionFromPath(window.location.pathname) ?? 'latest';
+  const routes =
+    area === 'reference'
+      ? (navigation.reference as Record<string, unknown>)[version]
+      : navigation[area];
+  return ((routes ?? []) as NavigationRoute[]).filter(route => !route.hidden);
+}
+
+function listPages(route: NavigationRoute, section: string, group?: string): PageEntry[] {
+  if (route.hidden) {
+    return [];
+  }
+  if (route.type === 'page') {
+    return [
+      {
+        section,
+        ...(group && { group }),
+        title: route.sidebarTitle ?? route.name,
+        path: route.href,
+      },
+    ];
+  }
+  return (route.children ?? []).flatMap(child => listPages(child, section, route.name));
+}
+
+async function listSectionsAsync({ area, section }: ToolInput) {
+  if (area === undefined) {
+    return JSON.stringify(
+      NAVIGATION_AREAS.map(name => ({ area: name, sections: sectionsOf(name).map(sectionName) }))
+    );
+  }
+  if (!NAVIGATION_AREAS.includes(area as NavigationArea)) {
+    throw new TypeError(`area must be one of: ${NAVIGATION_AREAS.join(', ')}.`);
+  }
+
+  const sections = sectionsOf(area as NavigationArea);
+  const matches = sections.filter(node => section === undefined || sectionName(node) === section);
+  if (!matches.length) {
+    throw new Error(
+      `No section named "${String(section)}" in ${String(area)}. Sections: ${sections.map(sectionName).join(', ')}.`
+    );
+  }
+  return JSON.stringify(
+    matches.flatMap(node =>
+      (node.children ?? []).flatMap(child => listPages(child, sectionName(node)))
+    )
   );
 }
 
@@ -180,6 +285,17 @@ export const webMcpTools: WebMcpTool[] = [
     execute: getPageMarkdownAsync,
   },
   {
+    name: 'get_page_info',
+    title: 'Get Expo docs page details',
+    description:
+      'Returns the title, description, other frontmatter fields, and headings of an Expo ' +
+      'documentation page as JSON, without the page text. Use it to find a section before ' +
+      'reading the page with get_page_markdown.',
+    inputSchema: { type: 'object', properties: { path: pathProperty } },
+    annotations: { readOnlyHint: true },
+    execute: getPageInfoAsync,
+  },
+  {
     name: 'get_site_overview',
     title: 'Get Expo docs overview',
     description:
@@ -187,6 +303,23 @@ export const webMcpTools: WebMcpTool[] = [
     inputSchema: { type: 'object', properties: {} },
     annotations: { readOnlyHint: true },
     execute: getSiteOverviewAsync,
+  },
+  {
+    name: 'list_sections',
+    title: 'List Expo docs sections',
+    description:
+      'Without input, returns each area of the Expo docs sidebar with its section names as JSON. ' +
+      'With an area, returns the pages of that area, or of one section when you also pass ' +
+      'section, with a title and a path for each page.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        area: { type: 'string', enum: [...NAVIGATION_AREAS] },
+        section: { type: 'string', description: 'A section name returned without input.' },
+      },
+    },
+    annotations: { readOnlyHint: true },
+    execute: listSectionsAsync,
   },
   {
     name: 'read_skill',
