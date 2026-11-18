@@ -122,21 +122,22 @@ public final class SharedObjectRegistry: Sendable {
     // The existing C++ native state is attached only while it is alive. When it is destroyed on another
     // thread, its release must not apply to `jsObject`, so the native object gets a new native state and ID.
     let isMainRuntime = runtime?.id == mainRuntime?.id
-    let nativeState: SharedObjectNativeState
-    let id: SharedObjectId
-    if let registered = registeredNativeState(of: nativeObject),
-      isMainRuntime || registered.nativeState.markPairedInOtherRuntime(),
-      jsObject.setNativeStateIfAlive(registered.nativeState)
-    {
-      nativeState = registered.nativeState
-      id = registered.id
-    } else {
-      id = pullNextId()
+    var paired: (nativeState: SharedObjectNativeState, id: SharedObjectId)?
+    repeat {
+      let registered = registeredNativeState(of: nativeObject)
+      if let registered,
+        isMainRuntime || registered.nativeState.markPairedInOtherRuntime(),
+        jsObject.setNativeStateIfAlive(registered.nativeState)
+      {
+        paired = registered
+        continue
+      }
+      let id = pullNextId()
       // Runs when the JS objects of all runtimes are collected.
       let releaser: ObjectReleaser = { [weak self] id in
         self?.delete(id, reason: .nativeStateDestroyed)
       }
-      nativeState = SharedObjectNativeState(
+      let nativeState = SharedObjectNativeState(
         native: nativeObject,
         objectId: id,
         mainRuntimeId: mainRuntime?.id,
@@ -144,18 +145,31 @@ public final class SharedObjectRegistry: Sendable {
         releaser: releaser
       )
 
+      // setNativeState calls acquireShared() synchronously, which retains `nativeState`
+      // via Unmanaged.passRetained. Once the C++ pointee dies, the contextDeallocator releases it.
+      // It runs before the native state is indexed: another runtime attaches an indexed native state only while
+      // a JS object holds its C++ state.
+      jsObject.setNativeState(nativeState)
+
       // Index the native state by ID. `delete(_:)` reads the native object's ID and native state on any
-      // thread, so they change under the same lock.
-      state.withLock { state in
+      // thread, so they change under the same lock. Another runtime can index a native state of the native object
+      // on its thread after `registeredNativeState(of:)` above. Then the loop attaches that native state instead,
+      // so the JS objects of all runtimes share one native state.
+      let isIndexed = state.withLock { state in
+        let indexed = state.pairs[nativeObject.sharedObjectId].flatMap { $0.native === nativeObject ? $0 : nil }
+        guard indexed === registered?.nativeState else {
+          return false
+        }
         state.pairs[id] = nativeState
         nativeObject.sharedObjectId = id
         nativeObject.nativeState = nativeState
+        return true
       }
-
-      // setNativeState calls acquireShared() synchronously, which retains `nativeState`
-      // via Unmanaged.passRetained. Once the C++ pointee dies, the contextDeallocator releases it.
-      jsObject.setNativeState(nativeState)
-    }
+      if isIndexed {
+        paired = (nativeState, id)
+      }
+    } while paired == nil
+    let (nativeState, id) = paired!
 
     // Assign the app context to the object.
     nativeObject.appContext = appContext
