@@ -67,7 +67,7 @@ for (const outputMode of outputModes) {
 
       await expect(page.locator('[data-testid="secret-text"]')).toHaveText('Secret: test-secret');
 
-      await expect(page.locator('[data-testid="index-path"]')).toHaveText('/');
+      await expect(page.locator('[data-testid="index-path"]')).toHaveText('/__TEMP_FAIL_ARTIFACT_PROOF__');
       await expect(page.locator('[data-testid="index-query"]')).toHaveText('');
 
       expect(pageErrors.all).toEqual([]);
