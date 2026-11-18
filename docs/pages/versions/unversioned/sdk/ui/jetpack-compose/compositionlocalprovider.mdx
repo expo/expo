@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 
 Expo UI CompositionLocalProvider matches the official Jetpack Compose [`CompositionLocalProvider`](<https://developer.android.com/reference/kotlin/androidx/compose/runtime/package-summary#CompositionLocalProvider(kotlin.Array,kotlin.Function0)>) API. It provides values to all components inside it. It adds no layout of its own, so children keep modifiers such as `weight` from the parent `Row` or `Column`.
 
@@ -20,6 +21,12 @@ Expo UI CompositionLocalProvider matches the official Jetpack Compose [`Composit
 ### Smaller touch targets
 
 Material components such as `Button`, `IconButton`, `Checkbox`, `RadioButton`, and `Switch` reserve at least 48dp of space for touch, even when they are drawn smaller. Set `minimumInteractiveComponentSize` to `0` to remove this minimum. Make sure that the controls are still easy to tap.
+
+<ComponentExample
+  title="SmallTouchTargetsExample.tsx"
+  src="/static/images/expo-ui/examples/compositionlocalprovider-small-touch-targets-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/compositionlocalprovider-small-touch-targets-android-dark.webp"
+  alt="A plus icon button and an empty checkbox next to each other in a row">
 
 ```tsx
 import {
@@ -55,6 +62,8 @@ export default function SmallTouchTargetsExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
