@@ -81,7 +81,7 @@ struct SwiftUINativeViewTests {
 
   /// The view struct that the component view renders now.
   private func content(of view: SwiftUINativeView<SwiftUICardView>) -> SwiftUICardView {
-    return SwiftUINativeViewRoot(model: view.model).body
+    return ExpoSwiftUI.NativeChild(model: view.model).content
   }
 
   private func render(_ window: UIWindow) async throws {
@@ -190,13 +190,75 @@ struct SwiftUINativeViewTests {
     view.mountChildComponentView(componentView(swiftUIView), index: 1)
 
     #expect(content(of: view).children.count == 2)
-    #expect((content(of: view).children[0] as? ExpoSwiftUI.UIViewHost)?.view === uiView)
-    #expect(content(of: view).children[1] as AnyObject === swiftUIView)
+    #expect((content(of: view).children[0].base as? ExpoSwiftUI.UIViewHost)?.view === uiView)
+    #expect(content(of: view).children[1].base as AnyObject === swiftUIView)
 
     view.unmountChildComponentView(uiView, index: 0)
 
     #expect(content(of: view).children.count == 1)
-    #expect(content(of: view).children[0] as AnyObject === swiftUIView)
+    #expect(content(of: view).children[0].base as AnyObject === swiftUIView)
+  }
+
+  @Test
+  func `parent finds a child by its type`() {
+    let cardView = SwiftUINativeView<SwiftUICardView>()
+    let renamedView = SwiftUINativeView<RenamedSwiftUICardView>()
+    var props = SwiftUICardProps()
+    props.title = "Child"
+    cardView.update(decoded(props, changed: .title))
+
+    view.mountChildComponentView(UIView(), index: 0)
+    view.mountChildComponentView(componentView(renamedView), index: 1)
+    view.mountChildComponentView(componentView(cardView), index: 2)
+    let children = content(of: view).children
+
+    let cards = children.compactMap { $0.as(SwiftUICardView.self) }
+    #expect(cards.count == 1)
+    #expect(cards.first?.props.title == "Child")
+    #expect(children[0].as(SwiftUICardView.self) == nil)
+    #expect(children[1].as(RenamedSwiftUICardView.self) != nil)
+  }
+
+  // The views of `ExpoSwiftUI.View` find a v2 child through `AnyChild`.
+  @Test
+  func `component view is found by the type of its view struct`() throws {
+    let componentView = try newComponentView(of: SwiftUINativeView<SwiftUICardView>.self)
+    let child = try #require(componentView as? any ExpoSwiftUI.AnyChild)
+
+    #expect(child.as(SwiftUICardView.self) != nil)
+    #expect(child.as(RenamedSwiftUICardView.self) == nil)
+  }
+
+  @Test
+  func `child of a known type gives its current props and children`() {
+    let cardView = SwiftUINativeView<SwiftUICardView>()
+    view.mountChildComponentView(componentView(cardView), index: 0)
+    let card = content(of: view).children[0].as(SwiftUICardView.self)
+
+    var props = SwiftUICardProps()
+    props.title = "Updated"
+    cardView.update(decoded(props, changed: .title))
+    cardView.mountChildComponentView(UIView(), index: 0)
+
+    #expect(card?.props.title == "Updated")
+    #expect(card?.children.count == 1)
+    #expect(card?.content.props.title == "Updated")
+  }
+
+  @Test
+  func `children keep their identity when the props change`() {
+    let cardView = SwiftUINativeView<SwiftUICardView>()
+    view.mountChildComponentView(UIView(), index: 0)
+    view.mountChildComponentView(componentView(cardView), index: 1)
+    let ids = content(of: view).children.map(\.id)
+
+    var props = SwiftUICardProps()
+    props.title = "Updated"
+    cardView.update(decoded(props, changed: .title))
+    view.update(decoded(props, changed: .title))
+
+    #expect(content(of: view).children.map(\.id) == ids)
+    #expect(ids[0] != ids[1])
   }
 
   @Test
