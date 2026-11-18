@@ -6,6 +6,7 @@ import expo.modules.kotlin.types.OptimizedRecord
 
 @OptimizedRecord
 internal data class OpenBrowserOptions(
+  @Field val additionalHeaderFields: Map<String, String>? = null,
   @Field val toolbarColor: Int? = null,
   @Field val secondaryToolbarColor: Int? = null,
   @Field val browserPackage: String? = null,

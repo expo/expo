@@ -153,7 +153,17 @@ class PrintModule : Module() {
     // @tsapeta: Unfortunately these attributes might be ignored on some devices or Android versions,
     // in other words it might not change the default orientation in the print dialog,
     // however the user can change it there.
-    if (ORIENTATION_LANDSCAPE == orientation) {
+    val isLandscape = ORIENTATION_LANDSCAPE == orientation
+    val paperSize = options.preferredPaperSize?.toPortraitMediaSize()
+    if (paperSize != null) {
+      builder.setMediaSize(
+        if (isLandscape) {
+          paperSize.asLandscape()
+        } else {
+          paperSize
+        }
+      )
+    } else if (isLandscape) {
       builder.setMediaSize(PrintAttributes.MediaSize.UNKNOWN_LANDSCAPE)
     } else {
       builder.setMediaSize(PrintAttributes.MediaSize.UNKNOWN_PORTRAIT)

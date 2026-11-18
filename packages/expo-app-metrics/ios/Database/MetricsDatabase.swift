@@ -295,6 +295,19 @@ final class MetricsDatabase: Sendable {
     }
   }
 
+  /// Deletes every metric, log, span and crash report, along with the sessions that have ended. Active
+  /// sessions keep their rows, since the sessions running in this process keep recording into them.
+  @AppMetricsActor
+  func clearStoredEntries() throws {
+    try database.transaction {
+      try database.execute("DELETE FROM metrics")
+      try database.execute("DELETE FROM logs")
+      try database.execute("DELETE FROM spans")
+      try database.execute("DELETE FROM crash_reports")
+      try database.execute("DELETE FROM sessions WHERE isActive = 0")
+    }
+  }
+
   /// Returns the `main` sessions — newest first — for crash-report attribution. Crashes from past
   /// launches (delivered by MetricKit on a later launch) are matched against these.
   @AppMetricsActor

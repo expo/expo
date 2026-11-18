@@ -190,7 +190,7 @@ export interface DateTimePickerProps {
   elementColors?: DatePickerElementColors & TimePickerElementColors;
   /**
    * Determines what format the clock should be displayed in on Android.
-   * @default true
+   * Defaults to the device's 12-hour or 24-hour setting.
    */
   is24Hour?: boolean;
   /**

@@ -79,7 +79,7 @@ final public class WebBrowserModule: Module {
     guard currentAuthSession?.isOpen != true else {
       throw WebBrowserAlreadyOpenException()
     }
-    let session = WebAuthSession(authUrl: authUrl, redirectUrl: redirectUrl, options: options)
+    let session = try WebAuthSession(authUrl: authUrl, redirectUrl: redirectUrl, options: options)
     currentAuthSession = session
     return try await session.open()
   }

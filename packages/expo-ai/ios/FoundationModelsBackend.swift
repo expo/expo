@@ -22,10 +22,12 @@ internal actor FoundationModelsBackend: LanguageModelBackend {
   private let instructions: String?
   private let tools: [NativeToolDefinition]
   private let hasImageTools: Bool
+  private let guardrails: LanguageModelGuardrails
   private let history = TranscriptHistory()
 
   init(options: LanguageModelSessionOptions) throws {
     instructions = options.instructions
+    guardrails = options.guardrails
     hasImageTools = options.tools.contains { $0.builtin != nil }
     tools = try options.tools.enumerated().map { index, definition in
       NativeToolDefinition(
@@ -46,11 +48,16 @@ internal actor FoundationModelsBackend: LanguageModelBackend {
     try request.checkActive()
     let schema = try options.schema.map { try LanguageModelSchema.compile($0, name: "Response") }
     let nativeTools: [any Tool] = tools.map { RuntimeTool(definition: $0, request: request) }
+    let model = SystemLanguageModel(
+      guardrails: options.schema == nil && guardrails == .permissiveContentTransformations
+        ? .permissiveContentTransformations
+        : .default
+    )
     let session: FoundationModels.LanguageModelSession
     if let transcript = history.snapshot {
-      session = FoundationModels.LanguageModelSession(model: SystemLanguageModel.default, tools: nativeTools, transcript: transcript)
+      session = FoundationModels.LanguageModelSession(model: model, tools: nativeTools, transcript: transcript)
     } else {
-      session = FoundationModels.LanguageModelSession(model: SystemLanguageModel.default, tools: nativeTools, instructions: instructions)
+      session = FoundationModels.LanguageModelSession(model: model, tools: nativeTools, instructions: instructions)
     }
     let nativePrompt = try makePrompt(prompt, images: options.images, request: request)
     let generationOptions = GenerationOptions(maximumResponseTokens: options.maximumOutputTokens)
@@ -100,7 +107,7 @@ internal actor FoundationModelsBackend: LanguageModelBackend {
       // must not turn a successful response into an inference failure.
       #if compiler(>=6.3)
       if #available(iOS 26.4, macOS 26.4, *) {
-        usage.contextTokens = try? await SystemLanguageModel.default.tokenCount(for: session.transcript)
+        usage.contextTokens = try? await model.tokenCount(for: session.transcript)
       }
       #endif
       try request.recordUsage(usage)

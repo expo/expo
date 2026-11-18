@@ -13,7 +13,7 @@
 namespace expo::views {
 
 /**
- The props of a view of the Expo Modules API 2.0: the base view props that React Native parses
+ The props of a view of Expo Modules v2: the base view props that React Native parses
  (layout, style, accessibility) and the view's own props, decoded by its `NewPropsDecoder`.
  */
 class NewViewProps final : public facebook::react::ViewProps {
@@ -22,8 +22,9 @@ public:
 
   /**
    Parses only the base view props and keeps the decoded props of `sourceProps`. React Native uses it
-   to collect the keys of the base view props (`RawPropsParser::prepare`).
-   `NewComponentDescriptor` uses the constructor that takes the decoded props.
+   to collect the keys of the base view props (`RawPropsParser::prepare`). Since React Native 0.87,
+   `NewComponentDescriptor` copies the source props instead and sets the props of the update with
+   `setProp`. Before, it uses the constructor that takes the decoded props.
    */
   NewViewProps(
     const facebook::react::PropsParserContext &context,
@@ -40,8 +41,10 @@ public:
 
   /**
    The view's own props, or `nullptr` when nothing was decoded yet and all props have their defaults.
+   Not `const`, so `NewComponentDescriptor` can set it on a copy of the source props. It's written only
+   before the props are shared.
    */
-  const DecodedProps decodedProps;
+  DecodedProps decodedProps;
 };
 
 } // namespace expo::views

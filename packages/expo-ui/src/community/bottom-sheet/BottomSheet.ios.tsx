@@ -92,6 +92,7 @@ export function BottomSheet(props: BottomSheetProps) {
     enableDynamicSizing = true,
     handleComponent,
     backgroundStyle,
+    modifiers: modifiersProp,
     children,
   } = props;
   const { width } = useWindowDimensions();
@@ -226,6 +227,8 @@ export function BottomSheet(props: BottomSheetProps) {
       presentationDragIndicator(handleComponent === null ? 'hidden' : 'visible'),
       interactiveDismissDisabled(!enablePanDownToClose),
       ...(bg ? [presentationBackground(bg)] : []),
+      // The app's modifiers go last, so they can add to or override the ones above.
+      ...(modifiersProp ?? []),
     ];
   }, [
     fitToContents,
@@ -235,6 +238,7 @@ export function BottomSheet(props: BottomSheetProps) {
     handleComponent,
     enablePanDownToClose,
     backgroundStyle,
+    modifiersProp,
   ]);
 
   return (
@@ -247,12 +251,15 @@ export function BottomSheet(props: BottomSheetProps) {
             onDismiss={fireCloseCallbacks}
             fitToContents={fitToContents}>
             <Group modifiers={modifiers}>
-              <RNHostView matchContents={fitToContents ? { vertical: true } : false}>
+              <RNHostView
+                matchContents={fitToContents ? { vertical: true } : false}
+                boundedByHost={fitToContents}>
                 {/* paddingTop compensates for tighter spacing between native drag indicator and content
                     compared to gorhom's handle. flexGrow:1 + height:0 (flex-basis 0) fills the snap-point
                     height without inheriting the scrollable child's intrinsic content height. With matchContents,
                     RNHostView takes the width from the sheet, which can be narrower than the window, and
-                    the height from the content. */}
+                    the height from the content. The first measure runs before SwiftUI reports the sheet
+                    width, so boundedByHost keeps it within the Host width. */}
                 <View
                   style={
                     fitToContents

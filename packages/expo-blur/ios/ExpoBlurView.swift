@@ -2,11 +2,19 @@
 
 import ExpoModulesCore
 
-public final class ExpoBlurView: ExpoView {
+@ViewProps
+public struct BlurViewProps {
+  var tint: TintStyle = .default
+  /// The blur intensity from 0 to 100.
+  var intensity: Double = 50
+}
+
+@ExpoView<BlurViewProps>
+public final class ExpoBlurView: ExpoNativeView {
   private let blurEffectView = BlurEffectView()
 
-  public required init(appContext: AppContext? = nil) {
-    super.init(appContext: appContext)
+  public override init(frame: CGRect) {
+    super.init(frame: frame)
 
     blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     clipsToBounds = true
@@ -14,11 +22,12 @@ public final class ExpoBlurView: ExpoView {
     addSubview(blurEffectView)
   }
 
-  public func setTint(_ tint: TintStyle) {
-    blurEffectView.tint = tint
-  }
-
-  public func setIntensity(_ intensity: Double) {
-    blurEffectView.intensity = intensity
+  public func didUpdateProps(_ diff: BlurViewProps.Diff) {
+    if diff.changed(.tint) {
+      blurEffectView.tint = props.tint
+    }
+    if diff.changed(.intensity) {
+      blurEffectView.intensity = props.intensity / 100
+    }
   }
 }

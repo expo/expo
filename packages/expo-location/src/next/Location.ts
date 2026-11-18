@@ -1,6 +1,7 @@
 export {
   getPosition,
   watchPosition,
+  watchHeading,
   hasLocationServicesEnabled,
   enableLocationServices,
   getForegroundPermissions,
@@ -14,4 +15,6 @@ export {
   ensureBackgroundSessionStarted,
   stopBackgroundSession,
   getBackgroundSessionStatus,
+  geocode,
+  reverseGeocode,
 } from './js';

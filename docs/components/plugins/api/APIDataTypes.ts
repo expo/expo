@@ -64,6 +64,7 @@ export type TypeDefinitionData = {
   elementType?: {
     name?: string;
     type: string;
+    package?: string;
     types?: TypeDefinitionData[];
     declaration?: TypeDeclarationContentData;
   };

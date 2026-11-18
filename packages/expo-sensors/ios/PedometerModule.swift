@@ -4,6 +4,7 @@ import CoreMotion
 import ExpoModulesCore
 
 private let EVENT_PEDOMETER_UPDATE = "Exponent.pedometerUpdate"
+private let EVENT_PEDOMETER_EVENT = "Exponent.pedometerEvent"
 
 // This class should always be kept in sync with PedometerModuleDisabled
 public final class PedometerModule: Module {
@@ -11,17 +12,105 @@ public final class PedometerModule: Module {
 
   private var watchStartDate: Date?
   private var watchHandler: CMPedometerHandler?
+  private var eventHandler: CMPedometerEventHandler?
 
   public func definition() -> ModuleDefinition {
     Name("ExponentPedometer")
 
-    Events(EVENT_PEDOMETER_UPDATE)
+    Events(EVENT_PEDOMETER_UPDATE, EVENT_PEDOMETER_EVENT)
 
     AsyncFunction("isAvailableAsync") {
       if MotionPermissionRequester.isMotionPermissionDisabled() {
         return false
       }
       return CMPedometer.isStepCountingAvailable()
+    }
+
+    AsyncFunction("isRecordingAvailableAsync") {
+      // iOS keeps collecting history automatically (up to seven days), so recording is
+      // effectively "available" whenever step counting is available.
+      if MotionPermissionRequester.isMotionPermissionDisabled() {
+        return false
+      }
+      return CMPedometer.isStepCountingAvailable()
+    }
+
+    AsyncFunction("isEventTrackingAvailableAsync") {
+      if MotionPermissionRequester.isMotionPermissionDisabled() {
+        return false
+      }
+      return CMPedometer.isPedometerEventTrackingAvailable()
+    }
+
+    // CoreMotion calls the event handler on its own queue, so `eventHandler` is only used on the main queue.
+    AsyncFunction("startEventUpdatesAsync") { (promise: Promise) in
+      if eventHandler != nil {
+        promise.resolve(true)
+        return
+      }
+
+      guard !MotionPermissionRequester.isMotionPermissionDisabled(),
+        CMPedometer.isPedometerEventTrackingAvailable() else {
+        promise.resolve(false)
+        return
+      }
+
+      let authorizationStatus = CMPedometer.authorizationStatus()
+      guard authorizationStatus == .authorized else {
+        promise.reject(PedometerMotionPermissionException(authorizationStatus))
+        return
+      }
+
+      let handler: CMPedometerEventHandler = { [weak self] event, error in
+        if error != nil {
+          DispatchQueue.main.async {
+            self?.pedometer.stopEventUpdates()
+            self?.eventHandler = nil
+          }
+          return
+        }
+
+        guard let self, let event else {
+          return
+        }
+
+        let type: String
+        switch event.type {
+        case .pause:
+          type = "pause"
+        case .resume:
+          type = "resume"
+        @unknown default:
+          return
+        }
+
+        self.sendEvent(
+          EVENT_PEDOMETER_EVENT,
+          [
+            "type": type,
+            "date": event.date.timeIntervalSince1970 * 1000
+          ]
+        )
+      }
+
+      pedometer.startEventUpdates(handler: handler)
+      eventHandler = handler
+      promise.resolve(true)
+    }.runOnQueue(.main)
+
+    AsyncFunction("stopEventUpdatesAsync") {
+      pedometer.stopEventUpdates()
+      eventHandler = nil
+    }.runOnQueue(.main)
+
+    // iOS does not expose a way to start recording history
+    AsyncFunction("subscribeRecordingAsync") { (promise: Promise) in
+      promise.resolve(nil)
+    }
+
+    // iOS does not expose a way to stop recording history
+    AsyncFunction("unsubscribeRecordingAsync") { (promise: Promise) in
+      promise.resolve(nil)
     }
 
     AsyncFunction("getStepCountAsync") { (startTime: Double, endTime: Double, promise: Promise) in
@@ -68,7 +157,7 @@ public final class PedometerModule: Module {
       permissionsManager.register([MotionPermissionRequester()])
     }
 
-    OnStartObserving {
+    OnStartObserving(EVENT_PEDOMETER_UPDATE) {
       let startDate = Date()
       let handler: CMPedometerHandler = { [weak self] data, _ in
         guard let data else {
@@ -84,7 +173,7 @@ public final class PedometerModule: Module {
       watchHandler = handler
     }
 
-    OnStopObserving {
+    OnStopObserving(EVENT_PEDOMETER_UPDATE) {
       stopUpdates()
       watchStartDate = nil
       watchHandler = nil
@@ -103,6 +192,8 @@ public final class PedometerModule: Module {
 
     OnDestroy {
       stopUpdates()
+      pedometer.stopEventUpdates()
+      eventHandler = nil
     }
   }
 
@@ -120,5 +211,18 @@ public final class PedometerModule: Module {
 internal final class PedometerQueryException: Exception {
   override var reason: String {
     "An error occurred while querying pedometer data"
+  }
+}
+
+internal final class PedometerMotionPermissionException: GenericException<CMAuthorizationStatus>, @unchecked Sendable {
+  override var reason: String {
+    switch param {
+    case .notDetermined:
+      return "Motion permission is required to start pedometer event updates. Call `Pedometer.requestPermissionsAsync()` first."
+    case .denied, .restricted:
+      return "Motion permission has not been granted for pedometer event updates."
+    default:
+      return "Motion permission is required to start pedometer event updates."
+    }
   }
 }

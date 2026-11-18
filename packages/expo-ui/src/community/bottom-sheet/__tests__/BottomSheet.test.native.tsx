@@ -4,6 +4,8 @@ import { Dimensions, Platform, StyleSheet, View } from 'react-native';
 
 import { BottomSheetModal } from '..';
 import { findNativeViewProps, renderedNativeViews } from '../../../__mocks__/expo';
+import { fillMaxWidth } from '../../../jetpack-compose/modifiers';
+import { ignoreSafeArea } from '../../../swift-ui/modifiers';
 import { BottomSheet } from '../BottomSheet';
 
 jest.mock('expo', () => jest.requireActual('../../../__mocks__/expo'));
@@ -43,6 +45,30 @@ describe('BottomSheet', () => {
       fitted: { horizontal: false, vertical: true },
     });
   });
+
+  itIOS(
+    'bounds the hosted content by the host only when the sheet sizes to its content',
+    async () => {
+      const view = await render(
+        <BottomSheet index={0}>
+          <View />
+        </BottomSheet>
+      );
+
+      expect(latestNativeViewProps('RNHostView')?.expoInternalBoundedByHost).toBe(true);
+
+      await view.rerender(
+        <BottomSheet index={0} snapPoints={['50%']}>
+          <View />
+        </BottomSheet>
+      );
+
+      expect(latestNativeViewProps('RNHostView')).toEqual(
+        expect.objectContaining({ matchContentsVertical: false })
+      );
+      expect(latestNativeViewProps('RNHostView')?.expoInternalBoundedByHost).toBeFalsy();
+    }
+  );
 
   itAndroid(
     'gives the hosted content the window width when the sheet sizes to its content',
@@ -90,6 +116,30 @@ describe('BottomSheet', () => {
     }
   );
 
+  itIOS('applies the modifiers prop to the sheet content after its own modifiers', async () => {
+    const modifier = ignoreSafeArea({ edges: 'horizontal' });
+    await render(
+      <BottomSheet index={0} modifiers={[modifier]}>
+        <View />
+      </BottomSheet>
+    );
+
+    const modifiers = findNativeViewProps('GroupView')?.modifiers;
+    expect(modifiers.at(-1)).toEqual(modifier);
+    expect(modifiers).toContainEqual(expect.objectContaining({ $type: 'presentationSizing' }));
+  });
+
+  itAndroid('passes the modifiers prop to the ModalBottomSheet', async () => {
+    const modifier = fillMaxWidth();
+    await render(
+      <BottomSheet index={0} modifiers={[modifier]}>
+        <View />
+      </BottomSheet>
+    );
+
+    expect(findNativeViewProps('ModalBottomSheetView')?.modifiers).toEqual([modifier]);
+  });
+
   it('fills the snap point height when snap points are set', async () => {
     await render(
       <BottomSheet index={0} snapPoints={['50%']}>
@@ -102,6 +152,28 @@ describe('BottomSheet', () => {
     );
     expect(hostedViewStyle()).toEqual(expect.objectContaining({ flexGrow: 1, height: 0 }));
   });
+
+  itAndroid(
+    'stays closed when the snap points change after the user dismisses the sheet',
+    async () => {
+      const view = await render(
+        <BottomSheet index={0} snapPoints={['40%']}>
+          <View />
+        </BottomSheet>
+      );
+      expect(view.toJSON()).not.toBeNull();
+
+      await act(() => latestNativeViewProps('ModalBottomSheetView')?.onDismissRequest());
+      expect(view.toJSON()).toBeNull();
+
+      await view.rerender(
+        <BottomSheet index={0} snapPoints={['40%', '80%']}>
+          <View />
+        </BottomSheet>
+      );
+      expect(view.toJSON()).toBeNull();
+    }
+  );
 });
 
 describe('BottomSheetModal', () => {
@@ -161,4 +233,39 @@ describe('BottomSheetModal', () => {
       );
     }
   );
+
+  itAndroid.each([
+    { change: 'added', initial: ['40%'], next: ['40%', '80%'] },
+    { change: 'removed', initial: ['40%', '80%'], next: ['40%'] },
+  ])('keeps an open modal open when snap points are $change', async ({ initial, next }) => {
+    const ref = createRef<BottomSheetModal>();
+    const onChange = jest.fn();
+    const onClose = jest.fn();
+    const onDismiss = jest.fn();
+    const renderModal = (snapPoints: string[]) => (
+      <BottomSheetModal
+        ref={ref}
+        snapPoints={snapPoints}
+        onChange={onChange}
+        onClose={onClose}
+        onDismiss={onDismiss}>
+        <View />
+      </BottomSheetModal>
+    );
+
+    const view = await render(renderModal(initial));
+    await act(() => ref.current?.present());
+    expect(view.toJSON()).not.toBeNull();
+
+    onChange.mockClear();
+    onClose.mockClear();
+    onDismiss.mockClear();
+
+    await view.rerender(renderModal(next));
+
+    expect(view.toJSON()).not.toBeNull();
+    expect(onChange).not.toHaveBeenCalledWith(-1);
+    expect(onClose).not.toHaveBeenCalled();
+    expect(onDismiss).not.toHaveBeenCalled();
+  });
 });

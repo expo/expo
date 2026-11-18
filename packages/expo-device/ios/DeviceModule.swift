@@ -135,7 +135,7 @@ func osBuildId() -> String? {
 
 func cpuArchitectures() -> [String]? {
   // Credit: https://stackoverflow.com/a/70134518
-  guard let archRaw = NXGetLocalArchInfo().pointee.name else {
+  guard let archInfo = NXGetLocalArchInfo(), let archRaw = archInfo.pointee.name else {
     return nil
   }
   return [String(cString: archRaw)]

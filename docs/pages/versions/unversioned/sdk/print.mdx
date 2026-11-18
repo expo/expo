@@ -206,3 +206,5 @@ await Print.printAsync({
 Before the user selects a printer, the dialog offers a fixed list of standard papers and keeps its default paper.
 
 With `printerUrl`, `printAsync` prints without the dialog. The job then prints on the printer's paper that best fits `preferredPaperSize`.
+
+**On Android**, the print dialog also starts on the printer's default paper. With `preferredPaperSize`, the dialog starts on the [standard paper size](https://developer.android.com/reference/android/print/PrintAttributes.MediaSize) that best fits this size. That is the paper within one point of this size, or else the smallest paper that contains this size. For example, `{ width: 595, height: 842 }` selects A4. An app cannot read the papers of a printer on Android. If the printer does not have the selected paper, the dialog keeps the printer's default paper.
