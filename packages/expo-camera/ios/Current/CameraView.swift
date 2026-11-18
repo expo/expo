@@ -184,12 +184,6 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
 
     setupPreview()
     barcodeScanner = createBarcodeScanner()
-    UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(orientationChanged),
-      name: UIDevice.orientationDidChangeNotification,
-      object: nil)
     lifecycleManager?.register(self)
     sessionManager.initializeCaptureSessionInput()
   }
@@ -338,9 +332,35 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   public override func didMoveToWindow() {
     super.didMoveToWindow()
     if window != nil {
+      startObservingDeviceOrientation()
       configurePreviewRotation()
       startSessionIfNeeded()
+    } else {
+      stopObservingDeviceOrientation()
     }
+  }
+
+  // UIKit counts the `begin` and `end` calls and autorotates the app only while the count is above
+  // zero. Call these only from `didMoveToWindow`: UIKit pairs the window transitions, so the calls
+  // stay balanced.
+  private func startObservingDeviceOrientation() {
+    if #available(iOS 17.0, *) {
+      return
+    }
+    UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(orientationChanged),
+      name: UIDevice.orientationDidChangeNotification,
+      object: nil)
+  }
+
+  private func stopObservingDeviceOrientation() {
+    if #available(iOS 17.0, *) {
+      return
+    }
+    UIDevice.current.endGeneratingDeviceOrientationNotifications()
+    NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
   }
 
   public override func removeFromSuperview() {
@@ -359,8 +379,6 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     }
     motionManager.stopAccelerometerUpdates()
     lifecycleManager?.unregisterAppLifecycleListener(self)
-    UIDevice.current.endGeneratingDeviceOrientationNotifications()
-    NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
     previewRotationObservation?.invalidate()
     previewRotationObservation = nil
     rotationCoordinator = nil
