@@ -5,10 +5,12 @@ import org.junit.Rule
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.appmetrics.spans.SpanWriter
 import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.Session
 import expo.modules.appmetrics.storage.Span
+import io.mockk.every
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asExecutor
@@ -776,6 +778,26 @@ class NetworkRequestPersistenceTest {
       JSONObject(checkNotNull(it.attributes)).getString("url.full").endsWith("/live")
     }
     assertEquals("a live-persisted request must be written exactly once", 1, live)
+  }
+
+  @Test
+  fun `a request recorded while consent is not granted is not written after a grant`() = runTest(testDispatcher) {
+    insertSession("s")
+    val monitor = NetworkRequestMonitor()
+    every { ObserveConsent.isGranted } returns false
+    monitor.record(makeRequest(method = "GET", url = "https://api.example.com/before"))
+    every { ObserveConsent.isGranted } returns true
+
+    monitor.installPersistence(
+      NetworkRequestPersistence(
+        writer = SpanWriter(database = database, scope = this),
+        initialConfiguration = NetworkTracesConfiguration(enabled = true),
+        sessionId = "s"
+      )
+    )
+    testScheduler.advanceUntilIdle()
+
+    assertTrue(allSpans().isEmpty())
   }
 
   @Test

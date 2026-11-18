@@ -313,7 +313,8 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * changes when the app's data is cleared or the app is reinstalled, although a backup restore
    * can carry the previous id over. It identifies an installation, not a user or a device.
    *
-   * `null` on web, where there is no Expo Services client id.
+   * `null` on web, where there is no Expo Services client id, and while consent is not granted.
+   * Observe does not create the id until consent is granted. A revoke keeps the id.
    *
    * @example
    * ```ts
@@ -335,7 +336,8 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * it overrides the `extra.eas.observe.consent` key of the app config on later launches.
    *
    * A grant starts collection and saves the startup metrics of the current launch. A revoke stops
-   * collection. A call with the current value changes nothing.
+   * collection and deletes the Observe data stored on the device, but keeps `clientId`. A call
+   * with the current value changes nothing.
    *
    * Observe starts collection at most one time in each app launch. After a revoke, a grant only
    * saves the value, and collection starts at the next launch.
@@ -343,7 +345,7 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * @param consent The new consent value.
    * @returns A promise that resolves when the change is applied. Calls are applied one at a time,
    * in call order. The promise rejects when the device cannot save the value. A revoke still stops
-   * collection, but a grant then changes nothing.
+   * collection and deletes the stored data, but a grant then changes nothing.
    *
    * @example
    * ```ts

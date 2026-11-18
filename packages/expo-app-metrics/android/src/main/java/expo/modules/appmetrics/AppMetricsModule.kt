@@ -57,6 +57,7 @@ import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -68,8 +69,15 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   // TODO(@lukmccall): Consider using appContext.backgroundCoroutineScope instead
-  private val scope: CoroutineScope
-    get() = appContext.modulesQueue
+  // A revoke deletes the database while a fire-and-forget write can still run. Such a write logs
+  // and drops instead of crashing the app.
+  private val scope: CoroutineScope by lazy {
+    CoroutineScope(
+      appContext.modulesQueue.coroutineContext + CoroutineExceptionHandler { _, error ->
+        Log.w(TAG, "[AppMetrics] Failed to store telemetry", error)
+      }
+    )
+  }
 
   lateinit var memoryMetricsManager: MemoryMetricsManager
   lateinit var updatesMonitoring: UpdatesMonitoring
@@ -490,6 +498,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         sessionManager.startSessionWithIdAt(mainSession.sessionId, mainSession.startDate, metadata)
         saveStartupMetrics()
         skipExitRecords(ExitInfoProviderImpl(context), PreferencesLastProcessedExitStore(context))
+      } else if (update.changed) {
+        deleteStoredData(context)
       }
       if (!update.isSaved) {
         throw ConsentNotSavedException(granted)
@@ -735,8 +745,8 @@ private class ConsentNotSavedException(granted: Boolean) : CodedException(
     "Observe could not save the consent value 'granted' on the device, so collection did not start. " +
       "The device storage may be full or unavailable. Free storage and call setConsent('granted') again."
   } else {
-    "Observe could not save the consent value 'not-granted' on the device. Collection stopped, but " +
-      "the next launch may read the earlier value. The device storage may be full or unavailable. " +
-      "Free storage and call setConsent('not-granted') again."
+    "Observe could not save the consent value 'not-granted' on the device. Collection stopped and " +
+      "the stored data was deleted, but the next launch may read the earlier value. The device " +
+      "storage may be full or unavailable. Free storage and call setConsent('not-granted') again."
   }
 )

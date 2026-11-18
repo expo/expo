@@ -14,6 +14,7 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import androidx.work.await
 import androidx.work.workDataOf
 import expo.modules.appmetrics.ObserveConsent
 import expo.modules.appmetrics.storage.SessionManager
@@ -87,7 +88,11 @@ class ObservabilityBackgroundWorker(
   }
 
   companion object {
-    private const val WORK_NAME = "eas-observe-dispatch"
+    internal const val WORK_NAME = "eas-observe-dispatch"
+
+    suspend fun cancelBackgroundDispatch(context: Context) {
+      WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME).await()
+    }
 
     fun scheduleBackgroundDispatch(
       context: Context,
