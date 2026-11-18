@@ -97,15 +97,11 @@ export async function backportAsync(options: BackportOptions): Promise<void> {
     }
   };
   const runLog = options.runLogUrl ? ` [Run log](${options.runLogUrl})` : '';
-  const manualSteps = `To backport it by hand:
-
-\`\`\`sh
-git fetch origin ${targetBranch}
+  const pickCommands = `git fetch origin ${targetBranch}
 git checkout ${targetBranch}
 git pull --ff-only origin ${targetBranch}
-git cherry-pick -x ${mergeSha}
-git push origin ${targetBranch}
-\`\`\``;
+git cherry-pick -x ${mergeSha}`;
+  const manualSteps = `To backport it by hand:\n\n\`\`\`sh\n${pickCommands}\ngit push origin ${targetBranch}\n\`\`\``;
 
   const repo = gitIn(options.repoDir);
   let tempDir: string | undefined;
@@ -142,8 +138,9 @@ git push origin ${targetBranch}
     for (let attempt = 1; ; attempt++) {
       if (!fs.existsSync(path.join(worktree, '.changeset/config.json'))) {
         const reason = `\`${targetBranch}\` has no \`.changeset/config.json\`, so the bot did not backport this pull request. On that branch, a person must turn the changesets into \`CHANGELOG.md\` entries and rebuild the \`build/\` output.`;
+        // The push stays out of the block, so that running the block does not push a backport without its rebuild.
         await commentAsync(
-          `${reason}\n\n${manualSteps}\n\nBefore \`git push\`, move the summary of each \`.changeset/*.md\` file that this pull request adds into an entry under \`## Unpublished\` in the \`CHANGELOG.md\` of each package that it names, and delete the file. Then rebuild the \`build/\` output of each package that the change touches, and commit the result.`
+          `${reason}\n\nTo backport it by hand:\n\n\`\`\`sh\n${pickCommands}\n\`\`\`\n\nNext, move the summary of each \`.changeset/*.md\` file that this pull request adds into an entry under \`## Unpublished\` in the \`CHANGELOG.md\` of each package that it names, and delete the file. Then rebuild the \`build/\` output of each package that the change touches, commit the result, and run \`git push origin ${targetBranch}\`.`
         );
         throw new Error(reason);
       }
