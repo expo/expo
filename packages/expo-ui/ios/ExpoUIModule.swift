@@ -3,10 +3,9 @@
 import ExpoModulesCore
 import SwiftUI
 
+@ExpoModule("ExpoUI", views: [NamespaceView.self, GridRowView.self])
 public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("ExpoUI")
-
     View(RNHostView.self)
 
     OnDestroy {
@@ -128,8 +127,6 @@ public final class ExpoUIModule: Module {
     // MARK: - Views that don't support common view modifiers
 
     View(SlotView.self)
-    View(NamespaceView.self)
-    View(GridRowView.self)
 
     // MARK: - Expo UI Views
 

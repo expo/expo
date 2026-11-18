@@ -3,25 +3,21 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class NamespaceViewProps: ExpoSwiftUI.ViewProps {
-  @Field var namespaceId: String
+@ViewProps
+internal struct NamespaceViewProps {
+  var namespaceId: String = ""
 }
 
-internal struct NamespaceView: ExpoSwiftUI.View {
-  @ObservedObject var props: NamespaceViewProps
+@ExpoView<NamespaceViewProps>
+internal struct NamespaceView: View {
   @Namespace var namespace
-
-  init(props: NamespaceViewProps) {
-    self.props = props
-  }
 
   var body: some View {
     // We should register the namespace right after view updating.
     // That allows children views to reference the namespace immediately.
     NamespaceRegistry.shared.registerNamespace(namespace, forKey: props.namespaceId)
 
-    return Children()
-      .publishZeroContentOrigin(props.shadowNodeProxy)
+    return children
       .onDisappear {
         NamespaceRegistry.shared.unregisterNamespace(forKey: props.namespaceId)
       }
