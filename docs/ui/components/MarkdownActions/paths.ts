@@ -51,7 +51,7 @@ export function getVersionedMarkdownPath(path?: string) {
   return `${UPGRADE_HELPER_PATH}/${from}-to-${to}/index.md`;
 }
 
-export function getMarkdownPath(pagePath?: string) {
+export function getMarkdownFilePath(pagePath?: string) {
   if (!pagePath) {
     return null;
   }

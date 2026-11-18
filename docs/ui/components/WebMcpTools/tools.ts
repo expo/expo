@@ -2,7 +2,7 @@ import Router from 'next/router';
 
 import { getVersionFromPath } from '~/providers/page-api-version';
 import { FEEDBACK_URL } from '~/ui/components/Footer/feedbackUrl';
-import { getMarkdownPath } from '~/ui/components/MarkdownActions/paths';
+import { getMarkdownFilePath } from '~/ui/components/MarkdownActions/paths';
 
 type ToolInput = Record<string, unknown>;
 
@@ -60,7 +60,7 @@ async function getPageMarkdownAsync(
 ) {
   const url = toSiteUrl(path);
   return await fetchTextAsync(
-    getMarkdownPath(`${url.pathname}${url.search}`) ?? '/index.md',
+    getMarkdownFilePath(`${url.pathname}${url.search}`) ?? '/index.md',
     signal
   );
 }

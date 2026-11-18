@@ -201,6 +201,21 @@ A single page (for example, `/get-started/set-up-your-environment/`) is reachabl
 | `/get-started/set-up-your-environment/index.md`  | static asset (canonical path) |
 | Following `<link rel="alternate">` from the HTML | discovery hint                |
 
+## WebMCP tools
+
+[WebMCP](https://github.com/webmachinelearning/webmcp) lets a web page give tools to an AI agent that runs in the browser. `WebMcpTools` in `ui/components/WebMcpTools/` registers the docs tools with `document.modelContext.registerTool()` on every page. Browsers without WebMCP skip the registration. The tool definitions are in `ui/components/WebMcpTools/tools.ts`.
+
+| Tool                | Input                       | What it does                                                                                                                            | Read-only |
+| ------------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| `search_docs`       | `query`, optional `limit`   | Searches the Algolia index for the current SDK version. Returns a title and a path for each result.                                     | Yes       |
+| `get_page_markdown` | optional `path`             | Returns a page as markdown. Without a `path`, it returns the current page.                                                              | Yes       |
+| `get_site_overview` | none                        | Returns `/llms.txt`.                                                                                                                    | Yes       |
+| `read_skill`        | `skill_name`                | Returns the `SKILL.md` of a skill listed in `/.well-known/agent-skills/index.json`.                                                     | Yes       |
+| `navigate_page`     | `path`                      | Opens a docs page in the current tab.                                                                                                   | No        |
+| `send_feedback`     | `feedback`, optional `path` | Sends feedback about a page to the endpoint that the footer feedback form uses. Agents must send only feedback that the user asked for. | No        |
+
+Tools that take a `path` accept only a docs.expo.dev path that starts with `/`. They reject other origins before any request or navigation.
+
 ## Search
 
 We use Algolia as the main search results provider for our docs. This is set up in the `@expo/styleguide` library, which provides a universal search component that is used in the docs, expo.dev, and EAS dashboard.

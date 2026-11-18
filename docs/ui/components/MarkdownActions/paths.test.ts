@@ -1,5 +1,5 @@
 import {
-  getMarkdownPath,
+  getMarkdownFilePath,
   getVersionedMarkdownPath,
   hasDynamicData,
   normalizePath,
@@ -87,16 +87,16 @@ describe(getVersionedMarkdownPath, () => {
   });
 });
 
-describe(getMarkdownPath, () => {
+describe(getMarkdownFilePath, () => {
   it('maps page paths to the markdown file the build writes', () => {
-    expect(getMarkdownPath('/')).toBe('/index.md');
-    expect(getMarkdownPath('/get-started/create-a-project/#next-step')).toBe(
+    expect(getMarkdownFilePath('/')).toBe('/index.md');
+    expect(getMarkdownFilePath('/get-started/create-a-project/#next-step')).toBe(
       '/get-started/create-a-project/index.md'
     );
-    expect(getMarkdownPath('/bare/upgrade/?fromSdk=52&toSdk=57')).toBe(
+    expect(getMarkdownFilePath('/bare/upgrade/?fromSdk=52&toSdk=57')).toBe(
       '/bare/upgrade/52-to-57/index.md'
     );
-    expect(getMarkdownPath(undefined)).toBeNull();
+    expect(getMarkdownFilePath(undefined)).toBeNull();
   });
 });
 
