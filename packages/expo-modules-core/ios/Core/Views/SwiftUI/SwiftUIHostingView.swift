@@ -189,6 +189,7 @@ extension ExpoSwiftUI {
       }
 
       if let children = props.children {
+        (children.first(where: { $0.id == childViewId }) as? UIViewHost)?.didUnmount()
         props.children = children.filter({ $0.id != childViewId })
         #if DEBUG
         assert(props.children?.count == children.count - 1, "Failed to remove child view")

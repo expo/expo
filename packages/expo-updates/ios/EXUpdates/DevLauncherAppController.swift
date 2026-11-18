@@ -220,7 +220,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
       _ = try createUpdatesConfiguration(configuration)
       return true
     } catch let error {
-      logger.warn(message: "Invalid updates configuration: \(error.localizedDescription)")
+      logger.warn(.devLauncherConfigInvalid, cause: error)
     }
     return false
   }

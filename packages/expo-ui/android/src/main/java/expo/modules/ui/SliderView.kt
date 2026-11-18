@@ -18,6 +18,7 @@ import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.views.OptimizedComposeProps
+import androidx.compose.material3.SliderColors as MaterialSliderColors
 
 @OptimizedRecord
 class SliderColors : Record {
@@ -35,7 +36,36 @@ class SliderColors : Record {
 
   @Field
   val inactiveTickColor: Color? = null
+
+  @Field
+  val disabledThumbColor: Color? = null
+
+  @Field
+  val disabledActiveTrackColor: Color? = null
+
+  @Field
+  val disabledInactiveTrackColor: Color? = null
+
+  @Field
+  val disabledActiveTickColor: Color? = null
+
+  @Field
+  val disabledInactiveTickColor: Color? = null
 }
+
+@Composable
+internal fun SliderColors.toComposeColors(): MaterialSliderColors = SliderDefaults.colors(
+  thumbColor = thumbColor.compose,
+  activeTrackColor = activeTrackColor.compose,
+  inactiveTrackColor = inactiveTrackColor.compose,
+  activeTickColor = activeTickColor.compose,
+  inactiveTickColor = inactiveTickColor.compose,
+  disabledThumbColor = disabledThumbColor.compose,
+  disabledActiveTrackColor = disabledActiveTrackColor.compose,
+  disabledInactiveTrackColor = disabledInactiveTrackColor.compose,
+  disabledActiveTickColor = disabledActiveTickColor.compose,
+  disabledInactiveTickColor = disabledInactiveTickColor.compose
+)
 
 @OptimizedComposeProps
 data class SliderProps(
@@ -89,13 +119,7 @@ fun FunctionalComposableScope.SliderContent(
   val thumbSlotView = findChildSlotView(view, "thumb")
   val trackSlotView = findChildSlotView(view, "track")
 
-  val sliderColors = SliderDefaults.colors(
-    thumbColor = props.colors.thumbColor.compose,
-    activeTrackColor = props.colors.activeTrackColor.compose,
-    inactiveTrackColor = props.colors.inactiveTrackColor.compose,
-    activeTickColor = props.colors.activeTickColor.compose,
-    inactiveTickColor = props.colors.inactiveTickColor.compose
-  )
+  val sliderColors = props.colors.toComposeColors()
 
   SideEffect {
     val target = localValue.coerceIn(effectiveLower, effectiveUpper)

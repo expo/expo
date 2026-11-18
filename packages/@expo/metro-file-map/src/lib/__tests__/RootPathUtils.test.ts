@@ -255,6 +255,21 @@ describe.each([['win32'], ['posix']] as const)('RootPathUtils on %s', (platform)
       expect(pattern.test('..')).toBe(false);
     });
 
+    test('an ancestor root matches only paths inside it, never a deeper escape', () => {
+      // rootDir is an app inside a workspace package; that package is a root above rootDir
+      // ('..'), and the package manager's store lives further up ('../../../…').
+      pathUtils = new RootPathUtils(p('/monorepo/packages/app'));
+      const pattern = pathsToPattern(
+        [p('/monorepo/packages'), p('/monorepo/packages/app')],
+        pathUtils
+      )!;
+      expect(pattern.test(p('../other/foo.js'))).toBe(true);
+      expect(pattern.test(p('src/foo.js'))).toBe(true);
+      expect(pattern.test(p('../../node_modules/pkg/index.js'))).toBe(false);
+      expect(pattern.test(p('../../../store/pkg/index.js'))).toBe(false);
+      expect(pattern.test('..')).toBe(false);
+    });
+
     test('handles multiple roots', () => {
       const pattern = pathsToPattern([p('/project/src'), p('/project/lib')], pathUtils)!;
       expect(pattern.test(p('src/foo.js'))).toBe(true);

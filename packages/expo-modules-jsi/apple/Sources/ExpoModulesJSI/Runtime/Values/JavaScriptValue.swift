@@ -204,17 +204,25 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
   }
 
   public func isArray() -> Bool {
+    // A value without a runtime is a primitive, so it can't be an array.
+    guard pointee.isObject() else {
+      return false
+    }
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return pointee.isObject() && pointee.getObject(jsiRuntime).isArray(jsiRuntime)
+    return pointee.getObject(jsiRuntime).isArray(jsiRuntime)
   }
 
   public func isFunction() -> Bool {
+    // A value without a runtime is a primitive, so it can't be a function.
+    guard pointee.isObject() else {
+      return false
+    }
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return pointee.isObject() && pointee.getObject(jsiRuntime).isFunction(jsiRuntime)
+    return pointee.getObject(jsiRuntime).isFunction(jsiRuntime)
   }
 
   /// Whether the value is a thenable: an object with a callable `then`, such as a promise.
@@ -232,18 +240,26 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
   }
 
   public func isTypedArray() -> Bool {
+    // A value without a runtime is a primitive, so it can't be a typed array.
+    guard pointee.isObject() else {
+      return false
+    }
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return pointee.isObject() && expo.isTypedArray(jsiRuntime, pointee.getObject(jsiRuntime))
+    return expo.isTypedArray(jsiRuntime, pointee.getObject(jsiRuntime))
   }
 
   /// Checks whether the value is an `ArrayBuffer`.
   public func isArrayBuffer() -> Bool {
+    // A value without a runtime is a primitive, so it can't be an `ArrayBuffer`.
+    guard pointee.isObject() else {
+      return false
+    }
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return pointee.isObject() && pointee.getObject(jsiRuntime).isArrayBuffer(jsiRuntime)
+    return pointee.getObject(jsiRuntime).isArrayBuffer(jsiRuntime)
   }
 
   /// Checks whether the value is an instance of a global class of the given name.

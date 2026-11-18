@@ -1,5 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore
@@ -57,6 +58,75 @@ struct SharedRefTests {
   }
 }
 
+@Suite("SharedRef in an attached runtime")
+@JavaScriptActor
+struct SharedRefInAttachedRuntimeTests {
+  let appContext: TestAppContext
+  var runtime: ExpoRuntime {
+    get throws {
+      try appContext.runtime
+    }
+  }
+
+  init() {
+    appContext = TestAppContext()
+    appContext.moduleRegistry.register(moduleType: SharedStringModule.self, name: nil)
+  }
+
+  /// Creates a shared string in the main runtime, resolves it in an attached runtime as the `sharedString` global, and
+  /// returns the attached runtime.
+  private func resolveSharedString() throws -> JavaScriptRuntime {
+    let id = try runtime.eval(
+      """
+      sharedString = expo.modules.SharedStringModule.createSharedString()
+      sharedString.__expo_shared_object_id__
+      """).asInt()
+    let attachedRuntime = try appContext.addRuntime()
+    try attachedRuntime.eval("sharedString = expo.SharedObject.__resolveInWorklet(\(id))")
+    return attachedRuntime
+  }
+
+  @Test
+  func `is an instance of SharedRef`() throws {
+    let attachedRuntime = try resolveSharedString()
+    #expect(try attachedRuntime.eval("sharedString instanceof expo.SharedRef").getBool())
+  }
+
+  @Test
+  func `has native ref type`() throws {
+    let attachedRuntime = try resolveSharedString()
+    #expect(try attachedRuntime.eval("sharedString.nativeRefType").asString() == "string")
+  }
+
+  @Test
+  func `a Class function returns the JS object of the attached runtime`() throws {
+    let attachedRuntime = try resolveSharedString()
+    #expect(try attachedRuntime.eval("sharedString.returnThis() === sharedString").getBool())
+  }
+
+  @Test
+  func `returns a shared ref without the Class definition`() throws {
+    let appContext = self.appContext
+    let attachedRuntime = try appContext.addRuntime()
+    try attachedRuntime.execute {
+      let jsObject = try appContext.javaScriptObject(for: SharedRef<Data>(Data()), in: attachedRuntime)
+      attachedRuntime.global().setProperty("sharedData", value: jsObject.asValue())
+    }
+    #expect(try attachedRuntime.eval("sharedData instanceof expo.SharedRef").getBool())
+  }
+
+  @Test
+  func `a subclass without the Class definition has the members of its registered superclass`() throws {
+    let appContext = self.appContext
+    let attachedRuntime = try appContext.addRuntime()
+    try attachedRuntime.execute {
+      let jsObject = try appContext.javaScriptObject(for: SharedSubstring("substring"), in: attachedRuntime)
+      attachedRuntime.global().setProperty("sharedSubstring", value: jsObject.asValue())
+    }
+    #expect(try attachedRuntime.eval("sharedSubstring.value").asString() == "substring")
+  }
+}
+
 // MARK: - Test Helpers
 
 private let sharedDataString = "I can be shared among independent modules"
@@ -68,6 +138,9 @@ private class SharedString: SharedRef<String> {
     }
   }
 }
+
+/// A subclass that no module registers.
+private final class SharedSubstring: SharedString {}
 
 private class FirstModule: Module {
   public func definition() -> ModuleDefinition {
@@ -86,6 +159,24 @@ private class SecondModule: Module {
   public func definition() -> ModuleDefinition {
     Function("stringFromSharedData") { (data: SharedRef<Data>) -> String in
       return String(decoding: data.ref, as: UTF8.self)
+    }
+  }
+}
+
+private class SharedStringModule: Module {
+  public func definition() -> ModuleDefinition {
+    Class(SharedString.self) {
+      Property("value") { shared in
+        return shared.ref
+      }
+
+      Function("returnThis") { (this: SharedString) -> SharedString in
+        return this
+      }
+    }
+
+    Function("createSharedString") {
+      SharedString("string")
     }
   }
 }

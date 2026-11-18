@@ -1,5 +1,6 @@
 import './ts-declarations/global';
 import './sweet/setUpJsLogger.fx';
+import './setUpNativeViewComponentFactory.fx';
 import './polyfill';
 
 export type * from './ts-declarations/global';
@@ -16,6 +17,7 @@ export type { ProxyNativeModule } from './NativeModulesProxy.types';
 export { requireNativeViewManager } from './NativeViewManagerAdapter';
 
 export * from './requireNativeModule';
+export * from './requireNative';
 export * from './registerWebModule';
 export * from './TypedArrays.types';
 

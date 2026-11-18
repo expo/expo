@@ -11,6 +11,17 @@ import Testing
 @Suite("Apple image requests and usage")
 struct LanguageModelAppleAdditionsTests {
   @Test
+  func sessionOptionsParseGuardrails() throws {
+    let permissive = try LanguageModelSessionOptions(json: #"{"guardrails":"permissiveContentTransformations"}"#)
+    #expect(permissive.guardrails == .permissiveContentTransformations)
+    let defaults = try LanguageModelSessionOptions(json: "{}")
+    #expect(defaults.guardrails == .default)
+    #expect(throws: LanguageModelException.self) {
+      try LanguageModelSessionOptions(json: #"{"guardrails":"unknown"}"#)
+    }
+  }
+
+  @Test
   func imageOptionsRejectRemoteOrAmbiguousReferences() throws {
     for uri in [
       "https://example.test/image.png", "data:image/png;base64,AA", "file://server/image.png", "file:///tmp/image.png?x=1", "file:///tmp/image.png#fragment",

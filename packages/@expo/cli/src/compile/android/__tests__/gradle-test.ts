@@ -1,13 +1,13 @@
 import { vol } from 'memfs';
 
-import { getApkPath, getGradleArgs } from '../gradle';
+import { getAabPath, getApkPath, getGradleArgs } from '../gradle';
 
 describe(getGradleArgs, () => {
   it.each([
-    { variant: 'debug', task: 'app:assembleDebug' },
-    { variant: 'release', task: 'app:assembleRelease' },
-  ])(`returns the $task arguments`, ({ variant, task }) => {
-    expect(getGradleArgs({ variant })).toEqual([
+    { variant: 'debug', outputType: 'apk', task: 'app:assembleDebug' },
+    { variant: 'release', outputType: 'apk', task: 'app:assembleRelease' },
+  ] as const)(`returns the $task arguments`, ({ variant, outputType, task }) => {
+    expect(getGradleArgs({ variant, outputType })).toEqual([
       task,
       '-x',
       'lint',
@@ -89,6 +89,32 @@ describe(getApkPath, () => {
 
     expect(() => getApkPath('/app', { variant: 'debug' })).toThrow(
       /Could not parse JSON in "\/app\/android\/app\/build\/outputs\/apk\/debug\/output-metadata\.json"\.\n\nnot json\n\nError: /
+    );
+  });
+});
+
+describe(getAabPath, () => {
+  afterEach(() => vol.reset());
+
+  it(`throws when several AABs are found`, () => {
+    vol.fromJSON(
+      {
+        'android/app/build/outputs/bundle/release/app-release.aab': '',
+        'android/app/build/outputs/bundle/release/myapp-release.aab': '',
+      },
+      '/app'
+    );
+
+    expect(() => getAabPath('/app', { variant: 'release' })).toThrow(
+      "Found several AABs in /app/android/app/build/outputs/bundle/release: app-release.aab, myapp-release.aab. An old build may have left one behind, for example after renaming the archive. Delete the ones you don't want and build again."
+    );
+  });
+
+  it(`throws when the AAB isn't found`, () => {
+    vol.fromJSON({ 'android/app/build/outputs/bundle/debug/app-debug.aab': '' }, '/app');
+
+    expect(() => getAabPath('/app', { variant: 'release' })).toThrow(
+      'Could not find the built AAB in /app/android/app/build/outputs/bundle/release.'
     );
   });
 });

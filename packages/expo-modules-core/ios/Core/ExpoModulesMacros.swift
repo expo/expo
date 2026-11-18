@@ -87,6 +87,46 @@ public macro JS(_ jsName: String? = nil, _ options: JSOptions...) =
 public macro JS(_ options: JSOptions...) =
   #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
 
+/// Binds the member under a well-known symbol instead of a name, for example `@JS(symbol: .iterator)` binds
+/// a function as `[Symbol.iterator]`, and `@JS(symbol: .toStringTag)` binds a property as
+/// `[Symbol.toStringTag]`. Applies to a function or property, not to an initializer.
+///
+///     @JS(symbol: .iterator)
+///     func makeIterator() -> JavaScriptObject { ... }
+@attached(peer, names: arbitrary)
+public macro JS(symbol: JavaScriptSymbol.WellKnown, _ options: JSOptions...) =
+  #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
+
+/// Binds the member under the symbol that the global symbol registry holds for the key, like
+/// `Symbol.for(key)` in JavaScript, for example `@JS(symbol: "app.id")`. The key must be a string literal.
+/// Applies to a function or property, not to an initializer.
+@attached(peer, names: arbitrary)
+public macro JS(symbol: String, _ options: JSOptions...) =
+  #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
+
+/// Options passed to `@Event` after the optional JS name, e.g. `@Event(.inline)` or
+/// `@Event("tick", .blocking)`. The macro reads them from the source, so spell them as `.option`
+/// literals rather than constants. Without an option, the event is scheduled on the JavaScript thread
+/// and the listeners run later. An event property is callable from any thread with each option.
+public enum EventOptions {
+  /// Runs the listeners before the call returns when it is made on the JavaScript thread, for example
+  /// from a synchronous function. On any other thread, the event is scheduled, the same as without an
+  /// option. It never blocks. The listeners can call back into the module or shared object before the
+  /// call returns, so emit after its state is up to date. On the JavaScript thread, the event can reach
+  /// the listeners before events emitted earlier without an option. An event emitted before the shared
+  /// object is paired with its JavaScript object, for example from its initializer, is dropped.
+  case inline
+
+  /// Runs the listeners before the call returns, on any thread. A call from another thread blocks until
+  /// the JavaScript thread runs them: from the main thread it freezes the UI while the JavaScript thread
+  /// is busy, and it deadlocks when the JavaScript thread is waiting for the calling thread, for example
+  /// in `DispatchQueue.main.sync` while the main thread emits. The event can reach the listeners before
+  /// events emitted earlier without an option. Don't call the property from an `async` function: it
+  /// would block a thread of the cooperative pool, and the compiler doesn't report it. Prefer `.inline`
+  /// unless the caller must wait for the listeners.
+  case blocking
+}
+
 /// Turns a function-typed `var` on a module or shared object into a typed JavaScript event.
 /// Calling the property emits the event to JavaScript, with the closure's parameter as the payload.
 ///
@@ -101,15 +141,25 @@ public macro JS(_ options: JSOptions...) =
 ///
 ///     // Emit it from anywhere:
 ///     onProgress(ProgressEvent(percent: 50))
+///
+/// Trailing `EventOptions` tune the event. The options-only overload exists because an option can't
+/// fill the unlabeled `name` slot.
 @attached(accessor)
 @attached(peer, names: arbitrary)
-public macro Event(_ name: String? = nil, sync: Bool = false) =
+public macro Event(_ name: String? = nil, _ options: EventOptions...) =
+  #externalMacro(module: "ExpoModulesMacros", type: "EventMacro")
+
+@attached(accessor)
+@attached(peer, names: arbitrary)
+public macro Event(_ options: EventOptions...) =
   #externalMacro(module: "ExpoModulesMacros", type: "EventMacro")
 
 /// Member macro applied to a `Module` subclass. Scans the class body for declarations
 /// marked with `@JS` and binds them directly into the module's JS object by a synthesized
 /// `_decorateModule(object:in:)`. The `@SharedObject` classes in the `classes:` argument are
 /// emitted as a `_classTypes` static, and core adds their JavaScript classes to the module's JS object.
+/// The `@ExpoView` classes in the `views:` argument are emitted as a `_viewTypes` static, and core
+/// registers them as native components.
 ///
 /// The module's JavaScript name is synthesized into a `_jsName` static and read by core, so there
 /// is no `Name(…)` DSL entry. It defaults to the class name; pass `@ExpoModule("CustomName")` to
@@ -130,11 +180,11 @@ public macro Event(_ name: String? = nil, sync: Bool = false) =
 @attached(
   member,
   names:
-    named(_jsName), named(_classTypes), named(appContext), named(init),
+    named(_jsName), named(_classTypes), named(_viewTypes), named(appContext), named(init),
     named(_decorateModule), named(_assertTypesConformance))
 @attached(memberAttribute)
 @attached(extension, conformances: AnyModule, Sendable)
-public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
+public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = [], views: [Any.Type] = []) =
   #externalMacro(module: "ExpoModulesMacros", type: "ExpoModuleMacro")
 
 /// Member macro applied to a `SharedObject` subclass. Scans the class body for declarations
@@ -250,3 +300,47 @@ public macro Record() =
 @attached(extension, conformances: JavaScriptDecodable, JavaScriptEncodable)
 public macro Union() =
   #externalMacro(module: "ExpoModulesMacros", type: "UnionMacro")
+
+/// Member + extension macro applied to a struct with the props of a view of Expo Modules v2. Every stored property
+/// is a prop: a function-typed property is an event, and every other property is a value prop that
+/// core decodes from the props that React sends. A prop's default is its value in `Self()`, which it has
+/// until React sets it and after React removes it. So each value prop needs an initial value or an
+/// optional type, unless the struct declares its own `init()`. When needed, the macro generates
+/// `init()`, which sets each event prop without an initial value to an empty closure.
+///
+/// Usage:
+///
+///     @ViewProps
+///     struct CardProps {
+///       var title = "Untitled"
+///       var radius: Double = 0
+///     }
+@attached(
+  member,
+  names: named(PropName), named(PropSet), named(_eventNames), named(Diff), named(init), named(_resetViewProp))
+@attached(extension, conformances: AnyViewProps, names: named(allProps), named(propSet), named(_decode))
+public macro ViewProps() =
+  #externalMacro(module: "ExpoModulesMacros", type: "ViewPropsMacro")
+
+/// Member + extension macro applied to an `ExpoNativeView` subclass, the view class of Expo Modules v2.
+/// It binds the class to its `@ViewProps` type, which is the generic argument, and conforms it to
+/// `AnyNativeView`. The module registers the view with `@ExpoModule(views:)`.
+///
+/// The view's name defaults to the class name; pass `@ExpoView<Props>("CustomName")` to override it.
+///
+/// Usage:
+///
+///     @ExpoView<CardProps>
+///     final class CardView: ExpoNativeView {
+///       let titleLabel = UILabel()
+///
+///       func didUpdateProps(_ diff: CardProps.Diff) {
+///         if diff.changed(.title) {
+///           titleLabel.text = props.title
+///         }
+///       }
+///     }
+@attached(member, names: named(Props), named(_jsName))
+@attached(extension, conformances: AnyNativeView)
+public macro ExpoView<Props: AnyViewProps>(_ name: String? = nil) =
+  #externalMacro(module: "ExpoModulesMacros", type: "ExpoViewMacro")

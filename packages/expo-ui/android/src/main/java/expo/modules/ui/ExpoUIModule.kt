@@ -373,6 +373,15 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<RangeSliderProps>("RangeSliderView") {
+      val onValueChange by Event<RangeSliderRange>()
+      val onValueChangeFinished by Event<Unit>()
+
+      Content { props ->
+        RangeSliderContent(props, { onValueChange(it) }, { onValueChangeFinished(it) })
+      }
+    }
+
     ExpoUIView<VerticalSliderProps>("VerticalSliderView") {
       val onValueChange by Event<SliderValueChangedEvent>()
       val onValueChangeFinished by Event<Unit>()

@@ -106,6 +106,9 @@ public class LinkPreviewNativeModule: Module {
       Prop("sharesBackground") { (view: LinkPreviewNativeActionView, sharesBackground: Bool?) in
         view.sharesBackground = sharesBackground
       }
+      Prop("axisBehavior") { (view: LinkPreviewNativeActionView, axisBehavior: AxisBehavior?) in
+        view.axisBehavior = axisBehavior
+      }
       Prop("hidesSharedBackground") { (view: LinkPreviewNativeActionView, hidesSharedBackground: Bool?) in
         view.hidesSharedBackground = hidesSharedBackground
       }

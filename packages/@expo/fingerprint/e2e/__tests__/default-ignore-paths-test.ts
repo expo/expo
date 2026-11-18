@@ -1,4 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
+import { realpathSync } from 'fs';
 import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';
@@ -17,7 +18,7 @@ const macosDescribe = os.platform() === 'darwin' ? describe : describe.skip;
 
 describe('default template ignore paths', () => {
   jest.setTimeout(600000);
-  const tmpDir = require('temp-dir');
+  const tmpDir = realpathSync(os.tmpdir());
   const projectName = 'fingerprint-e2e-default-ignore-paths';
   const projectRoot = path.join(tmpDir, projectName);
 
@@ -137,7 +138,7 @@ export default ({ config }) => ({
 });
 
 macosDescribe('CocoaPods generated files', () => {
-  const tmpDir = require('temp-dir');
+  const tmpDir = realpathSync(os.tmpdir());
   const projectName = 'fingerprint-e2e-cocoapods-generated-files';
   const projectRoot = path.join(tmpDir, projectName);
 

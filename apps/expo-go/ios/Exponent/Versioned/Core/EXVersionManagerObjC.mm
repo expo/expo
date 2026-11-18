@@ -19,7 +19,6 @@
 #import <React/RCTLog.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTPackagerConnection.h>
-#import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
 #import <React/RCTDataRequestHandler.h>
 #import <React/RCTFileRequestHandler.h>

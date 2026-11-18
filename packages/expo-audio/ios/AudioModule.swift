@@ -37,8 +37,8 @@ public class AudioModule: Module {
       try setAudioMode(mode: mode.merged(into: lastConfiguredMode ?? AudioMode()))
     }
 
-    AsyncFunction("setIsAudioActiveAsync") { (isActive: Bool) in
-      try setIsAudioActive(isActive)
+    AsyncFunction("setIsAudioActiveAsync") { (isActive: Bool, promise: Promise) in
+      setIsAudioActive(isActive, promise: promise)
     }
 
     AsyncFunction("requestRecordingPermissionsAsync") { (promise: Promise) in
@@ -233,7 +233,10 @@ public class AudioModule: Module {
         }
         let rate = player.currentRate > 0 ? player.currentRate : 1.0
         player.play(at: rate)
-        self.activateSession(for: player)
+        self.activateSession(for: player) { [weak self, weak player] message in
+          player?.pause()
+          self?.appContext?.jsLogger.warn("[expo-audio] Playback was paused because the audio session could not be activated: \(message). Another app may hold a higher-priority session (for example, a phone call), or the app tried to activate a non-mixable session in the background. Call `play()` again later.")
+        }
       }
 
       Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
@@ -660,15 +663,18 @@ public class AudioModule: Module {
   }
 
   private func handleInterruptionBegan() {
-    interruptedPlayers.removeAll()
-    playerVolumes.removeAll()
+    // Capture which players are playing before dispatching work to the `sessionQueue`.
+    // If a player is auto-paused while the `sessionQueue` is busy, a later check would
+    // miss it and it would never resume.
+    var interrupted = Set<String>()
+    var volumes = [String: Float]()
 
     registry.allPlayables.forEach { playable in
       if playable.isPlaying {
-        interruptedPlayers.insert(playable.id)
+        interrupted.insert(playable.id)
         switch interruptionMode {
         case .duckOthers:
-          playerVolumes[playable.id] = playable.volume
+          volumes[playable.id] = playable.volume
           playable.volume *= 0.5
         case .doNotMix, .doNotMixPersistent, .mixWithOthers:
           playable.pause()
@@ -682,12 +688,19 @@ public class AudioModule: Module {
     }
 #endif
 
-    recordSessionActive(false)
+    sessionQueue.async { [weak self] in
+      guard let self else {
+        return
+      }
+      self.interruptedPlayers = interrupted
+      self.playerVolumes = volumes
+      self.sessionIsActive = false
+    }
   }
 
   private func handleInterruptionEnded(with options: AVAudioSession.InterruptionOptions) {
     sessionQueue.async { [weak self] in
-      guard let self, self.audioEnabled.withLock({ $0 }), self.applySessionActive(true) else {
+      guard let self, self.audioEnabled.withLock({ $0 }), self.applySessionActive(true) == nil else {
         return
       }
       if options.contains(.shouldResume) {
@@ -815,22 +828,23 @@ public class AudioModule: Module {
     return URL(fileURLWithPath: path)
   }
 
-  private func setIsAudioActive(_ isActive: Bool) throws {
+  private func setIsAudioActive(_ isActive: Bool, promise: Promise) {
     audioEnabled.withLock { $0 = isActive }
     if !isActive {
       pauseAllPlayers()
     }
 
-    do {
-      try sessionQueue.sync {
-        try AVAudioSession.sharedInstance().setActive(isActive, options: activationOptions(isActive: isActive))
+    sessionQueue.async {
+      do {
+        try AVAudioSession.sharedInstance().setActive(isActive, options: self.activationOptions(isActive: isActive))
         self.sessionIsActive = isActive
         if !isActive {
-          audioSessionActivityKeepers.removeAll()
+          self.audioSessionActivityKeepers.removeAll()
         }
+        promise.resolve()
+      } catch {
+        promise.reject(AudioStateException(error.localizedDescription))
       }
-    } catch {
-      throw AudioStateException(error.localizedDescription)
     }
   }
 
@@ -921,7 +935,7 @@ public class AudioModule: Module {
     }
   }
 
-  private func activateSession(for player: AudioPlayer) {
+  private func activateSession(for player: AudioPlayer, onError: ((String) -> Void)? = nil) {
     let playerId = player.id
     let shouldKeepSessionActive = player.keepAudioSessionActive
     sessionQueue.async { [weak self] in
@@ -933,8 +947,11 @@ public class AudioModule: Module {
       guard !self.sessionIsActive else {
         return
       }
-      if !self.applySessionActive(true), didRegisterActivityKeeper {
-        self.audioSessionActivityKeepers.remove(playerId)
+      if let error = self.applySessionActive(true) {
+        if didRegisterActivityKeeper {
+          self.audioSessionActivityKeepers.remove(playerId)
+        }
+        onError?(error.localizedDescription)
       }
     }
   }
@@ -973,14 +990,14 @@ public class AudioModule: Module {
   }
 
   @discardableResult
-  private func applySessionActive(_ isActive: Bool) -> Bool {
+  private func applySessionActive(_ isActive: Bool) -> Error? {
     do {
       try AVAudioSession.sharedInstance().setActive(isActive, options: activationOptions(isActive: isActive))
       sessionIsActive = isActive
-      return true
+      return nil
     } catch {
       log.warn("[expo-audio] Failed to \(isActive ? "activate" : "deactivate") the audio session: \(error.localizedDescription)")
-      return false
+      return error
     }
   }
 

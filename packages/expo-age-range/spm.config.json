@@ -16,8 +16,6 @@
         {
           "type": "swift",
           "name": "ExpoAgeRange",
-          "path": "ios",
-          "pattern": "*.swift",
           "dependencies": [
             "Hermes",
             "React",

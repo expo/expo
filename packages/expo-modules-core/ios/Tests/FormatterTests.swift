@@ -38,16 +38,26 @@ struct FormatterTests {
 
     @Test
     func `can be used in async functions`() async throws {
-      let r1 = try await appContext.runtime.evalAsync("expo.modules.FormatterModule.f1Async()").asObject()
-      let r2 = try await appContext.runtime.evalAsync("expo.modules.FormatterModule.f2Async()").asObject()
+      let runtime = try appContext.runtime
+      let r1 = try await runtime.evalAsync("expo.modules.FormatterModule.f1Async()").ref()
+      let r2 = try await runtime.evalAsync("expo.modules.FormatterModule.f2Async()").ref()
+      // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+      let (isR1AUndefined, r1B, r1C) = try await runtime.execute {
+        let r1 = try r1.take().asObject()
+        return (r1.getProperty("a").isUndefined(), r1.getProperty("b").getString(), r1.getProperty("c").getString())
+      }
+      let (r2A, r2B, isR2CUndefined) = try await runtime.execute {
+        let r2 = try r2.take().asObject()
+        return (r2.getProperty("a").getString(), r2.getProperty("b").getString(), r2.getProperty("c").isUndefined())
+      }
 
-      #expect(r1.getProperty("a").isUndefined() == true)
-      #expect(r1.getProperty("b").getString() == "b")
-      #expect(r1.getProperty("c").getString() == "c")
+      #expect(isR1AUndefined == true)
+      #expect(r1B == "b")
+      #expect(r1C == "c")
 
-      #expect(r2.getProperty("a").getString() == "d")
-      #expect(r2.getProperty("b").getString() == "default")
-      #expect(r2.getProperty("c").isUndefined() == true)
+      #expect(r2A == "d")
+      #expect(r2B == "default")
+      #expect(isR2CUndefined == true)
     }
   }
 }

@@ -48,6 +48,8 @@ internal struct ObservabilityManager {
         config: config,
         rate: config?.errorSampleRate ?? config?.sampleRate
       )
+      // Feedback uses no rate, so it is sent whenever this installation can send any logs.
+      let shouldDispatchAnyLogs = Self.shouldDispatch(config: config, rate: nil)
 
       await dispatchMetrics(
         shouldDispatch: shouldDispatch,
@@ -56,6 +58,7 @@ internal struct ObservabilityManager {
       await dispatchLogs(
         shouldDispatch: shouldDispatch,
         shouldDispatchErrors: shouldDispatchErrors,
+        shouldDispatchAnyLogs: shouldDispatchAnyLogs,
         ignoredEvents: Set(config?.ignoredEvents ?? [])
       )
       await dispatchTraces(shouldDispatch: shouldDispatch)
@@ -164,6 +167,7 @@ internal struct ObservabilityManager {
   private static func dispatchLogs(
     shouldDispatch: Bool,
     shouldDispatchErrors: Bool,
+    shouldDispatchAnyLogs: Bool,
     ignoredEvents: Set<String>
   ) async {
     guard let endpointUrl = logsEndpointUrl else {
@@ -176,7 +180,7 @@ internal struct ObservabilityManager {
     repairLogCursorIfStale()
 
     let cursor = ObserveUserDefaults.lastDispatchedLogId
-    if !shouldDispatch && !shouldDispatchErrors {
+    if !shouldDispatchAnyLogs {
       do {
         if let highestId = try AppMetrics.getMaxLogId() {
           ObserveUserDefaults.lastDispatchedLogId = highestId
@@ -187,7 +191,7 @@ internal struct ObservabilityManager {
       return
     }
 
-    // Fewer than `batchCount` when only errors are sent.
+    // Fewer than `batchCount` when only errors and feedback are sent.
     var sentCount = 0
     await DispatchLoop.drain(
       startCursor: cursor,
@@ -200,7 +204,12 @@ internal struct ObservabilityManager {
       },
       rowId: { $0.id },
       send: { fetchedLogs in
-        let logs = sampledLogs(fetchedLogs, shouldDispatch: shouldDispatch, ignoredEvents: ignoredEvents)
+        let logs = sampledLogs(
+          fetchedLogs,
+          shouldDispatch: shouldDispatch,
+          shouldDispatchErrors: shouldDispatchErrors,
+          ignoredEvents: ignoredEvents
+        )
         guard !logs.isEmpty else {
           return nil
         }
@@ -416,9 +425,11 @@ internal struct ObservabilityManager {
   internal nonisolated static func sampledLogs(
     _ logs: [LogRow],
     shouldDispatch: Bool,
+    shouldDispatchErrors: Bool,
     ignoredEvents: Set<String>
   ) -> [LogRow] {
-    let eligible = shouldDispatch ? logs : logs.filter { errorLogNames.contains($0.name) }
+    let supportedLogNames = (shouldDispatchErrors ? errorLogNames : []).union([feedbackLogName])
+    let eligible = shouldDispatch ? logs : logs.filter { supportedLogNames.contains($0.name) }
     return eligible.filter { !ignoredEvents.contains($0.name) }
   }
 

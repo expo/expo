@@ -229,12 +229,8 @@ public struct UpdatesStateContext {
       "lastCheckForUpdateTimeString": lastCheckForUpdateTimeDateString,
       "rollback": rollback?.json,
       "sequenceNumber": sequenceNumber,
-      "downloadStartTime": downloadStartTime != nil
-        ? Int(floor(downloadStartTime?.timeIntervalSince1970 ?? 0.0 * 1000))
-        : nil,
-      "downloadFinishTime": downloadFinishTime != nil
-        ? Int(floor(downloadFinishTime?.timeIntervalSince1970 ?? 0.0 * 1000))
-        : nil
+      "downloadStartTime": downloadStartTime.map { Int(floor($0.timeIntervalSince1970 * 1000)) },
+      "downloadFinishTime": downloadFinishTime.map { Int(floor($0.timeIntervalSince1970 * 1000)) }
     ] as [String: Any?]
   }
 }
@@ -409,6 +405,7 @@ internal class UpdatesStateMachine {
   private func processEvent(_ event: UpdatesStateEvent) {
     // Execute state transition
     if transition(event) {
+      let previousProgress = context.downloadProgress
       // Only change context if transition succeeds
       context = reducedContext(context, event)
       if event.type != .downloadProgress {
@@ -420,7 +417,9 @@ internal class UpdatesStateMachine {
           listener.updatesStateDidChange(event.toMap)
         }
       }
-      sendContextToJS()
+      if event.type != .downloadProgress || (context.downloadProgress * 100).rounded(.down) != (previousProgress * 100).rounded(.down) {
+        sendContextToJS()
+      }
     }
   }
   internal func processEventForTesting(_ event: UpdatesStateEvent) {
@@ -454,21 +453,16 @@ internal class UpdatesStateMachine {
    traps, so an invalid transition fails an E2E run instead of passing unnoticed.
    */
   private func reportDroppedEvent(_ event: UpdatesStateEvent) {
-    let message = droppedEventWarning(event)
-    logger.warn(message: message)
+    var values = ["state": "\(state)", "event": "\(event.type)"]
+    if let error = event.errorMessage {
+      values["error"] = error
+    }
+    logger.warn(.systemStateMachineEventDropped, values: values)
     #if EX_UPDATES_ASSERT_INVALID_STATE
-    preconditionFailure(message)
+    preconditionFailure(
+      UpdatesLogger.fill(UpdatesLogMessage.systemStateMachineEventDropped.template, with: values)
+    )
     #endif
-  }
-
-  /**
-   The warning written when an event is dropped. It carries the error text of an error event,
-   because some callers do not log the failure themselves before sending the event, which would
-   leave the updates log with no record of what was lost.
-   */
-  private func droppedEventWarning(_ event: UpdatesStateEvent) -> String {
-    let error = event.errorMessage.map { ", error = \($0)" } ?? ""
-    return "UpdatesState: invalid transition requested, event dropped: state = \(state), event = \(event.type)\(error)"
   }
 
   /**
@@ -547,6 +541,7 @@ internal class UpdatesStateMachine {
         $0.isDownloading = false
         $0.downloadError = nil
         $0.isUpdatePending = true
+        $0.downloadProgress = 1.0
         $0.downloadStartTime = nil
         $0.downloadFinishTime = nil
       }
@@ -554,6 +549,7 @@ internal class UpdatesStateMachine {
       return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = false
         $0.downloadError = nil
+        $0.downloadProgress = 1.0
         $0.latestManifest = manifest
         $0.downloadedManifest = manifest
         $0.rollback = nil

@@ -22,6 +22,10 @@ final class SealedData: SharedObject {
   }
 
   init(ivLength: Int, tagLength: Int, content: Data) throws {
+    // Compare without adding the lengths, so that huge values can't overflow and trap.
+    guard ivLength >= 0, tagLength >= 0, ivLength <= content.count, tagLength <= content.count - ivLength else {
+      throw InvalidSealedDataConfigException()
+    }
     // SealedBox(combined:) works only if IV length is 12 (default)
     // otherwise this needs to be done manually
     if ivLength == DEFAULT_IV_LENGTH {
@@ -46,6 +50,9 @@ final class SealedData: SharedObject {
   }
 
   convenience init(iv: Data, ciphertextWithTag: Data, tagLength: Int) throws {
+    guard tagLength >= 0, ciphertextWithTag.count >= tagLength else {
+      throw InvalidSealedDataConfigException()
+    }
     try self.init(
       iv: iv,
       ciphertext: ciphertextWithTag.dropLast(tagLength),
@@ -143,7 +150,7 @@ final class SealedData: SharedObject {
   @JS
   func ciphertext(options: CiphertextOptions?) async -> BinaryOutput {
     return ciphertext(withTag: options?.includeTag ?? false)
-      .formatted(with: options?.outputFormat)
+      .formatted(with: options?.encoding)
   }
 
   var nativeValue: AES.GCM.SealedBox { inner }

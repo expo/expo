@@ -1,5 +1,6 @@
 internal import ExpoModulesJSI_Cxx
 internal import jsi
+import os
 
 /// Base class for JS object's native state.
 open class JavaScriptNativeState {
@@ -31,7 +32,9 @@ open class JavaScriptNativeState {
   /// the first `setNativeState` call materializes a pointee, and stays populated
   /// afterward (though its contents may expire when the last JSI slot drops the
   /// strong ref). `acquireShared()` transparently re-allocates if expired.
-  private var weakPointee: WeakPointer? = nil
+  /// Behind a lock, because objects of several runtimes can share the native state,
+  /// so it can be attached on their threads at the same time.
+  private let weakPointee = OSAllocatedUnfairLock<WeakPointer?>(uncheckedState: nil)
 
   private let factory: InternalFactory
 
@@ -60,20 +63,25 @@ open class JavaScriptNativeState {
 
   /// Returns a `shared_ptr` to the underlying `expo::NativeState`, materializing
   /// one lazily if there's no live pointee. Called by `JavaScriptObject.setNativeState`
-  /// to obtain the value to pass to JSI.
-  ///
-  /// Reads then writes `weakPointee` without synchronization — safe only because
-  /// every call site today runs on `JavaScriptActor`. A cross-runtime sharing
-  /// path (e.g. worklets attaching the same native state from a different
-  /// runtime/thread) must add locking before reusing this entry point.
+  /// to obtain the value to pass to JSI. Can be called on the threads of several runtimes.
   internal func acquireShared() -> expo.NativeStateShared {
-    if let alive = weakPointee?.lock() {
-      return alive
+    return weakPointee.withLockUnchecked { weakPointee in
+      if let alive = weakPointee?.lock() {
+        return alive
+      }
+      let context = Unmanaged.passRetained(self).toOpaque()
+      let shared = factory(context, JavaScriptNativeState.contextDeallocator)
+      weakPointee = WeakPointer(shared)
+      return shared
     }
-    let context = Unmanaged.passRetained(self).toOpaque()
-    let shared = factory(context, JavaScriptNativeState.contextDeallocator)
-    self.weakPointee = WeakPointer(shared)
-    return shared
+  }
+
+  /// Returns a `shared_ptr` to the underlying `expo::NativeState` while it is alive, or `nil`
+  /// when no JS object holds it. Unlike `acquireShared()`, it never materializes a new one.
+  internal func acquireSharedIfAlive() -> expo.NativeStateShared? {
+    return weakPointee.withLockUnchecked { weakPointee in
+      return weakPointee?.lock()
+    }
   }
 
   private static let contextDeallocator: @convention(c) (UnsafeMutableRawPointer?) -> Void = { context in

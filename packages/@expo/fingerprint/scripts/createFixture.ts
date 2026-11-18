@@ -3,48 +3,74 @@
  *
  * Usage: npx ts-node scripts/createFixture /path/to/app /path/to/output.json
  */
-import realFS from 'fs';
-import { glob as globAsync } from 'glob';
+
 import { fs, vol } from 'memfs';
+import { Minimatch } from 'minimatch';
+import realFS from 'node:fs';
 import path from 'path';
 
 async function createFixtureAsync(targetDir: string, outputFile: string) {
-  const files = await globAsync('**/*', {
+  const ignoredPatterns = [
+    // binary files
+    '**/*.{jpg,png,ttf}',
+
+    // lock files
+    '**/*.lock',
+    '**/bun.lockb',
+
+    // node files
+    '**/node_modules/**',
+
+    // generated files
+    '**/build/**',
+
+    // ios files
+    'ios/Pods/**',
+    'vendor/**',
+    '**/xcuserdata/**',
+    '**/*.xcassets/**',
+    '**/IDEWorkspaceChecks.plist',
+
+    // android files
+    '**/*.jar',
+    '**/*.keystore',
+    '**/gradlew',
+    '**/gradlew.bat',
+    '**/gradle/wrapper/**',
+  ];
+  const ignored = ignoredPatterns.map(
+    (pattern) =>
+      new Minimatch(pattern, {
+        dot: true,
+        nocase: process.platform === 'darwin' || process.platform === 'win32',
+      })
+  );
+  for await (const entry of realFS.promises.glob('**/*', {
     cwd: targetDir,
-    ignore: [
-      // binary files
-      '**/*.{jpg,png,ttf}',
-
-      // lock files
-      '**/*.lock',
-      '**/bun.lockb',
-
-      // node files
-      '**/node_modules/**',
-
-      // generated files
-      '**/build/**',
-
-      // ios files
-      'ios/Pods/**',
-      'vendor/**',
-      '**/xcuserdata/**',
-      '**/*.xcassets/**',
-      '**/IDEWorkspaceChecks.plist',
-
-      // android files
-      '**/*.jar',
-      '**/*.keystore',
-      '**/gradlew',
-      '**/gradlew.bat',
-      '**/gradle/wrapper/**',
-    ],
-    nodir: true,
-  });
-  for (const file of files) {
-    const content = realFS.readFileSync(path.join(targetDir, file), 'utf8');
-    fs.mkdirSync(path.join('/', path.dirname(file)), { recursive: true });
-    fs.writeFileSync(path.join('/', file), content);
+    withFileTypes: true,
+    exclude: (entry) => {
+      const file = path.join(entry.parentPath, entry.name);
+      const relative = path.relative(targetDir, file);
+      return (
+        ignored.some((pattern) => pattern.match(entry.isDirectory() ? `${relative}/` : relative)) ||
+        (entry.isSymbolicLink() && !realFS.statSync(file, { throwIfNoEntry: false })?.isFile())
+      );
+    },
+  })) {
+    if (entry.isDirectory()) continue;
+    const file = path.join(entry.parentPath, entry.name);
+    const relative = path.relative(targetDir, file);
+    // Older Node versions may yield files without applying exclude.
+    if (
+      ignored.some((pattern) => pattern.match(relative)) ||
+      (!entry.isFile() &&
+        (!entry.isSymbolicLink() || !realFS.statSync(file, { throwIfNoEntry: false })?.isFile()))
+    ) {
+      continue;
+    }
+    const content = realFS.readFileSync(file, 'utf8');
+    fs.mkdirSync(path.join('/', path.dirname(relative)), { recursive: true });
+    fs.writeFileSync(path.join('/', relative), content);
   }
   const resultJSON: Record<string, string | null> = {};
   for (const [key, value] of Object.entries(vol.toJSON())) {

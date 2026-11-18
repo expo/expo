@@ -69,6 +69,7 @@ jobs:
         uses: vale-cli/vale-action@518a9136acc6e6668ce7c00d367051e0941e87ff # 3.0.0
         with:
           version: ${{ steps.vale-version.outputs.version }}
+          reviewdog_version: 0.21.3
           reporter: github-pr-check
           files: '["docs/pages", "docs/scenes", "docs/README.md"]'
           vale_flags: --config=./docs/.vale.ini

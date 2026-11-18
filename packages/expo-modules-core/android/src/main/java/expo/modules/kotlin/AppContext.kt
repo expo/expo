@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.modules.network.OkHttpClientProvider
@@ -58,6 +59,10 @@ class AppContext(
         "The app context should be created with valid react context."
       }.applicationContext
     }
+
+  override fun <T : View> findView(viewTag: Int): T? = super.findView(viewTag)
+
+  override fun assertMainThread() = super.assertMainThread()
 
   private val uiRuntimeHolder = lazy { WorkletRuntime(this, reactContextHolder) }
   val uiRuntime

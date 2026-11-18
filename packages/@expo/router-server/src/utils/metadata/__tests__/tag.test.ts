@@ -59,7 +59,7 @@ describe(pushLink, () => {
     pushLink(tags, {
       rel: 'alternate',
       href: 'https://example.dev',
-      hreflang: undefined,
+      hrefLang: undefined,
       media: '',
     });
 

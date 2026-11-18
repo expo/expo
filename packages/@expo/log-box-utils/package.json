@@ -31,7 +31,7 @@
   },
   "scripts": {
     "build": "expo-build cjs:src",
-    "clean": "rimraf build",
+    "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
     "prepublishOnly": "run-s clean build",

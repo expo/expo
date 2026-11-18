@@ -24,15 +24,6 @@ jest.mock('react-native-screens', () => {
 jest.mock('@expo/ui/jetpack-compose', () => {
   const { Text, View }: typeof import('react-native') = jest.requireActual('react-native');
 
-  const DropdownMenu = jest.fn((props) => (
-    <View testID="DropdownMenu" {...props} />
-  )) as unknown as jest.MockedFunction<React.FC<Record<string, unknown>>> & {
-    Trigger: jest.MockedFunction<React.FC<Record<string, unknown>>>;
-    Items: jest.MockedFunction<React.FC<Record<string, unknown>>>;
-  };
-  DropdownMenu.Trigger = jest.fn((props) => <View testID="DropdownMenu.Trigger" {...props} />);
-  DropdownMenu.Items = jest.fn((props) => <View testID="DropdownMenu.Items" {...props} />);
-
   const DropdownMenuItem = jest.fn((props) => (
     <View testID="DropdownMenuItem" {...props} />
   )) as unknown as jest.MockedFunction<React.FC<Record<string, unknown>>> & {
@@ -54,8 +45,10 @@ jest.mock('@expo/ui/jetpack-compose', () => {
     HorizontalFloatingToolbar: jest.fn((props) => (
       <View testID="HorizontalFloatingToolbar" {...props} />
     )),
-    DropdownMenu,
+    DropdownMenuGroup: jest.fn((props) => <View testID="DropdownMenuGroup" {...props} />),
     DropdownMenuItem,
+    DropdownMenuPopup: jest.fn((props) => <View testID="DropdownMenuPopup" {...props} />),
+    Spacer: jest.fn((props) => <View testID="Spacer" {...props} />),
     Divider: jest.fn(() => <View testID="Divider" />),
     Icon: jest.fn((props) => <View testID="Icon" {...props} />),
     IconButton: jest.fn((props) => <View testID="IconButton" {...props} />),
@@ -74,6 +67,7 @@ jest.mock('@expo/ui/jetpack-compose/modifiers', () => ({
   padding: jest.fn((...args: number[]) => ({ type: 'padding', values: args })),
   imePadding: jest.fn(() => ({ type: 'imePadding' })),
   width: jest.fn((w: number) => ({ type: 'width', width: w })),
+  verticalScroll: jest.fn(() => ({ type: 'verticalScroll' })),
 }));
 
 jest.mock('../../../color', () => ({
@@ -291,7 +285,7 @@ describe('Stack.Toolbar Android integration tests', () => {
   });
 
   it.each(['left', 'right'] as const)(
-    'renders menu with DropdownMenu inside %s toolbar',
+    'renders menu with DropdownMenuPopup inside %s toolbar',
     async (placement) => {
       await renderRouter({
         _layout: () => (
@@ -312,7 +306,7 @@ describe('Stack.Toolbar Android integration tests', () => {
 
       const host = screen.getByTestId('Host');
       expect(host).toBeDefined();
-      expect(within(host).getByTestId('DropdownMenu')).toBeDefined();
+      expect(within(host).getByTestId('DropdownMenuPopup')).toBeDefined();
       expect(within(host).getByTestId('IconButton')).toBeDefined();
 
       if (placement === 'left') {
@@ -442,7 +436,7 @@ describe('Stack.Toolbar Android integration tests', () => {
 
   describe('menu badge support in left/right placement', () => {
     it.each(['left', 'right'] as const)(
-      'renders Box with Badge when menu has a Badge child in %s placement',
+      'renders a badge Box next to the menu Box when menu has a Badge child in %s placement',
       async (placement) => {
         await renderRouter({
           _layout: () => (
@@ -461,7 +455,8 @@ describe('Stack.Toolbar Android integration tests', () => {
         });
 
         expect(screen.getByTestId('index')).toBeVisible();
-        expect(screen.getByTestId('Box')).toBeDefined();
+        // One Box holds the menu trigger and popup. The other Box holds the badge.
+        expect(screen.getAllByTestId('Box')).toHaveLength(2);
         const badge = screen.getByTestId('Badge');
         expect(badge).toBeDefined();
         expect(within(badge).getByTestId('ComposeText')).toBeDefined();
@@ -510,11 +505,11 @@ describe('Stack.Toolbar Android integration tests', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      const icon = within(screen.getByTestId('Box')).getByTestId('Icon');
+      const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
       expect(icon.props.contentDescription).toBe('Notifications, 5');
     });
 
-    it('does not render Box when menu has no Badge child', async () => {
+    it('does not render a badge Box when menu has no Badge child', async () => {
       await renderRouter({
         _layout: () => (
           <Stack>
@@ -531,7 +526,8 @@ describe('Stack.Toolbar Android integration tests', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(screen.queryByTestId('Box')).toBeNull();
+      // Only the Box that holds the menu trigger and popup.
+      expect(screen.getAllByTestId('Box')).toHaveLength(1);
     });
   });
 });
