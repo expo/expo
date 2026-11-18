@@ -214,7 +214,7 @@ A single page (for example, `/get-started/set-up-your-environment/`) is reachabl
 | `navigate_page`     | `path`                      | Opens a docs page in the current tab.                                                                                                   | No        |
 | `send_feedback`     | `feedback`, optional `path` | Sends feedback about a page to the endpoint that the footer feedback form uses. Agents must send only feedback that the user asked for. | No        |
 
-Tools that take a `path` accept only a docs.expo.dev path that starts with `/`. They reject other origins before any request or navigation.
+Tools that take a `path` accept a path that starts with `/` or a full `https://docs.expo.dev` URL. They read or open that path on the current site, so the same input works on previews and in local development. They reject other origins before any request or navigation.
 
 ## Search
 

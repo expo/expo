@@ -22,21 +22,22 @@ const SEARCH = {
 };
 
 const SKILLS_INDEX_URL = '/.well-known/agent-skills/index.json';
+const DOCS_ORIGIN = 'https://docs.expo.dev';
 
 type SearchHit = { url: string; hierarchy: Record<string, string | null> };
 type SkillsIndex = { skills: { name: string; url: string }[] };
 
 function toSiteUrl(path: unknown) {
-  if (typeof path !== 'string' || !path.startsWith('/')) {
-    throw new TypeError('path must be a docs.expo.dev path that starts with "/".');
+  if (typeof path !== 'string' || !(path.startsWith('/') || /^https?:\/\//.test(path))) {
+    throw new TypeError('path must be a docs.expo.dev URL or a path that starts with "/".');
   }
 
   const url = new URL(path, window.location.origin);
-  if (url.origin !== window.location.origin) {
+  if (url.origin !== window.location.origin && url.origin !== DOCS_ORIGIN) {
     throw new TypeError('path must stay on docs.expo.dev.');
   }
 
-  return url;
+  return new URL(`${url.pathname}${url.search}${url.hash}`, window.location.origin);
 }
 
 function requireText(value: unknown, field: string) {
@@ -147,7 +148,7 @@ async function sendFeedbackAsync(
 
 const pathProperty = {
   type: 'string',
-  description: 'A docs.expo.dev path that starts with "/". Defaults to the current page.',
+  description: 'A docs.expo.dev URL or a path that starts with "/". Defaults to the current page.',
 };
 
 export const webMcpTools: WebMcpTool[] = [
@@ -210,7 +211,10 @@ export const webMcpTools: WebMcpTool[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        path: { type: 'string', description: 'A docs.expo.dev path that starts with "/".' },
+        path: {
+          type: 'string',
+          description: 'A docs.expo.dev URL or a path that starts with "/".',
+        },
       },
       required: ['path'],
     },

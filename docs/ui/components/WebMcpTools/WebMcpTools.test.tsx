@@ -143,9 +143,47 @@ describe(WebMcpTools, () => {
     });
   });
 
+  it('accepts full docs.expo.dev links and keeps them on the current site', async () => {
+    responses.set('https://api.expo.dev/v2/feedback/docs-send', {});
+    const { tools } = renderTools();
+
+    await tools.get_page_markdown.execute(
+      { path: 'https://docs.expo.dev/get-started/create-a-project/' },
+      { signal }
+    );
+    await tools.get_page_markdown.execute(
+      { path: `${window.location.origin}/guides/overview/` },
+      { signal }
+    );
+    await tools.navigate_page.execute(
+      { path: 'https://docs.expo.dev/guides/overview/#top' },
+      { signal }
+    );
+    await tools.send_feedback.execute(
+      { feedback: 'Typo', path: 'https://docs.expo.dev/guides/overview/' },
+      { signal }
+    );
+
+    expect(fetchMock.mock.calls.map(([url]) => url)).toEqual([
+      '/get-started/create-a-project/index.md',
+      '/guides/overview/index.md',
+      'https://api.expo.dev/v2/feedback/docs-send',
+    ]);
+    expect(routerPush).toHaveBeenCalledWith('/guides/overview/#top');
+    expect(JSON.parse(fetchMock.mock.calls[2][1]?.body ?? '').url).toBe('/guides/overview/');
+  });
+
   it('rejects paths that leave the docs site before any request or navigation', async () => {
     const { tools } = renderTools();
-    const offSitePaths = ['https://example.com/', '//example.com/', '/\\example.com/', 42];
+    const offSitePaths = [
+      'https://example.com/',
+      'https://docs.expo.dev.example.com/',
+      'http://docs.expo.dev/',
+      '//example.com/',
+      '/\\example.com/',
+      'get-started/',
+      42,
+    ];
 
     for (const path of offSitePaths) {
       await expect(tools.get_page_markdown.execute({ path }, { signal })).rejects.toThrow(
