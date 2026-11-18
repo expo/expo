@@ -213,6 +213,7 @@ A single page (for example, `/get-started/set-up-your-environment/`) is reachabl
 | `get_site_overview` | none                                | Returns `/llms.txt`.                                                                                                                    | Yes       |
 | `list_sections`     | optional `area`, optional `section` | Without input, returns each sidebar area with its section names. With an `area`, returns the pages of that area or of one section.      | Yes       |
 | `read_skill`        | `skill_name`                        | Returns the `SKILL.md` of a skill listed in `/.well-known/agent-skills/index.json`.                                                     | Yes       |
+| `ask_docs`          | `query`                             | Asks the Kapa AI assistant that powers Ask AI, and returns its answer with source links.                                                | Yes       |
 | `navigate_page`     | `path`                              | Opens a docs page in the current tab.                                                                                                   | No        |
 | `send_feedback`     | `feedback`, optional `path`         | Sends feedback about a page to the endpoint that the footer feedback form uses. Agents must send only feedback that the user asked for. | No        |
 

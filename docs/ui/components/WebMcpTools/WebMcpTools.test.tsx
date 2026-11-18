@@ -4,7 +4,12 @@ import { render } from '@testing-library/react';
 import type { WebMcpTool } from './tools';
 
 const routerPush = jest.fn(async (_url: string) => true);
+const askKapaAsync = jest.fn(async (_question: string, _signal: AbortSignal) => ({
+  answer: 'Run npx expo install expo-camera.',
+  sources: [{ title: 'Camera', url: 'https://docs.expo.dev/versions/latest/sdk/camera/' }],
+}));
 jest.unstable_mockModule('next/router', () => ({ default: { push: routerPush } }));
+jest.unstable_mockModule('~/ui/components/WebMcpTools/askDocs', () => ({ askKapaAsync }));
 
 const { WebMcpTools } = await import('./WebMcpTools');
 
@@ -66,6 +71,7 @@ describe(WebMcpTools, () => {
       'get_site_overview',
       'list_sections',
       'read_skill',
+      'ask_docs',
       'navigate_page',
       'send_feedback',
     ]);
@@ -209,6 +215,20 @@ describe(WebMcpTools, () => {
         { level: 3, text: 'Usage' },
       ],
     });
+  });
+
+  it('asks the Kapa assistant and returns its answer with sources', async () => {
+    askKapaAsync.mockClear();
+    const { tools } = renderTools();
+
+    const answer = await tools.ask_docs.execute({ query: 'How do I add a camera?' }, { signal });
+
+    expect(askKapaAsync).toHaveBeenCalledWith('How do I add a camera?', signal);
+    expect(JSON.parse(answer).sources[0].title).toBe('Camera');
+    await expect(tools.ask_docs.execute({ query: ' ' }, { signal })).rejects.toThrow(
+      'query must be a non-empty string.'
+    );
+    expect(askKapaAsync).toHaveBeenCalledTimes(1);
   });
 
   it('lists the sidebar areas, then the pages of one section', async () => {

@@ -224,6 +224,12 @@ async function readSkillAsync({ skill_name }: ToolInput, { signal }: { signal: A
   return await fetchTextAsync(toSiteUrl(skill.url).pathname, signal);
 }
 
+async function askDocsAsync({ query }: ToolInput, { signal }: { signal: AbortSignal }) {
+  const question = requireText(query, 'query');
+  const { askKapaAsync } = await import('./askDocs');
+  return JSON.stringify(await askKapaAsync(question, signal));
+}
+
 async function navigatePageAsync({ path }: ToolInput) {
   const url = toSiteUrl(path);
   const target = `${url.pathname}${url.search}${url.hash}`;
@@ -336,6 +342,21 @@ export const webMcpTools: WebMcpTool[] = [
     },
     annotations: { readOnlyHint: true },
     execute: readSkillAsync,
+  },
+  {
+    name: 'ask_docs',
+    title: 'Ask the Expo docs AI assistant',
+    description:
+      'Asks the Expo documentation AI assistant (Kapa) a question and returns its answer with ' +
+      'source links as JSON. An answer can take several seconds. Use search_docs or ' +
+      'get_page_markdown when you need the exact text of a page.',
+    inputSchema: {
+      type: 'object',
+      properties: { query: { type: 'string', description: 'The question to ask.' } },
+      required: ['query'],
+    },
+    annotations: { readOnlyHint: true },
+    execute: askDocsAsync,
   },
   {
     name: 'navigate_page',
