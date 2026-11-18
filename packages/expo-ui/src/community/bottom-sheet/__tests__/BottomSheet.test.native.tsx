@@ -4,6 +4,8 @@ import { Dimensions, Platform, StyleSheet, View } from 'react-native';
 
 import { BottomSheetModal } from '..';
 import { findNativeViewProps, renderedNativeViews } from '../../../__mocks__/expo';
+import { fillMaxWidth } from '../../../jetpack-compose/modifiers';
+import { ignoreSafeArea } from '../../../swift-ui/modifiers';
 import { BottomSheet } from '../BottomSheet';
 
 jest.mock('expo', () => jest.requireActual('../../../__mocks__/expo'));
@@ -83,6 +85,30 @@ describe('BottomSheet', () => {
       expect(hostedViewStyle()?.width).toBe(Dimensions.get('window').width);
     }
   );
+
+  itIOS('applies the modifiers prop to the sheet content after its own modifiers', async () => {
+    const modifier = ignoreSafeArea({ edges: 'horizontal' });
+    await render(
+      <BottomSheet index={0} modifiers={[modifier]}>
+        <View />
+      </BottomSheet>
+    );
+
+    const modifiers = findNativeViewProps('GroupView')?.modifiers;
+    expect(modifiers.at(-1)).toEqual(modifier);
+    expect(modifiers).toContainEqual(expect.objectContaining({ $type: 'presentationSizing' }));
+  });
+
+  itAndroid('passes the modifiers prop to the ModalBottomSheet', async () => {
+    const modifier = fillMaxWidth();
+    await render(
+      <BottomSheet index={0} modifiers={[modifier]}>
+        <View />
+      </BottomSheet>
+    );
+
+    expect(findNativeViewProps('ModalBottomSheetView')?.modifiers).toEqual([modifier]);
+  });
 
   it('fills the snap point height when snap points are set', async () => {
     await render(
