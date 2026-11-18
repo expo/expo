@@ -1,33 +1,47 @@
 import { jest } from '@jest/globals';
 import { render } from '@testing-library/react';
 
-import { WebMcpTools } from './WebMcpTools';
+import type { WebMcpTool } from './tools';
 
-type RegisteredTool = {
-  name: string;
-  annotations: { readOnlyHint: boolean };
-  execute: (input: { path?: unknown }, options: { signal: AbortSignal }) => Promise<string>;
-};
+const routerPush = jest.fn(async (_url: string) => true);
+jest.unstable_mockModule('next/router', () => ({ default: { push: routerPush } }));
+
+const { WebMcpTools } = await import('./WebMcpTools');
+
+type FetchCall = [url: string, init?: { method?: string; body?: string }];
 
 const registerTool =
-  jest.fn<(tool: RegisteredTool, options: { signal: AbortSignal }) => Promise<void>>();
-const fetchMock = jest.fn(async (_url: string) => ({ ok: true, text: async () => '# Page' }));
+  jest.fn<(tool: WebMcpTool, options: { signal: AbortSignal }) => Promise<void>>();
+const responses = new Map<string, unknown>();
+const fetchMock = jest.fn(async (...[url]: FetchCall) => {
+  const body = responses.get(url) ?? `# ${url}`;
+  return {
+    ok: true,
+    status: 200,
+    text: async () => (typeof body === 'string' ? body : JSON.stringify(body)),
+    json: async () => body,
+  };
+});
+const signal = new AbortController().signal;
 
 function setModelContext(value?: { registerTool: typeof registerTool }) {
   Object.defineProperty(document, 'modelContext', { configurable: true, value });
 }
 
-function renderAndGetTool() {
+function renderTools() {
+  setModelContext({ registerTool });
   const { unmount } = render(<WebMcpTools />);
-  const [tool, options] = registerTool.mock.calls[0];
-  return { unmount, tool, options, signal: new AbortController().signal };
+  const tools = Object.fromEntries(registerTool.mock.calls.map(([tool]) => [tool.name, tool]));
+  return { unmount, tools, options: registerTool.mock.calls.map(([, options]) => options) };
 }
 
 beforeEach(() => {
   registerTool.mockReset();
   registerTool.mockResolvedValue(undefined);
   fetchMock.mockClear();
+  responses.clear();
   global.fetch = fetchMock as unknown as typeof fetch;
+  routerPush.mockClear();
 });
 
 afterEach(() => {
@@ -42,42 +56,107 @@ describe(WebMcpTools, () => {
     expect(registerTool).not.toHaveBeenCalled();
   });
 
-  it('registers one read-only tool and unregisters it on unmount', () => {
-    setModelContext({ registerTool });
-    const { tool, options, unmount } = renderAndGetTool();
+  it('registers each tool once and unregisters all of them on unmount', () => {
+    const { tools, options, unmount } = renderTools();
 
-    expect(registerTool).toHaveBeenCalledTimes(1);
-    expect(tool.name).toBe('get_page_markdown');
-    expect(tool.annotations.readOnlyHint).toBe(true);
-    expect(options.signal.aborted).toBe(false);
+    expect(Object.keys(tools)).toEqual([
+      'search_docs',
+      'get_page_markdown',
+      'get_site_overview',
+      'read_skill',
+      'navigate_page',
+      'send_feedback',
+    ]);
+    expect(tools.navigate_page.annotations.readOnlyHint).toBe(false);
+    expect(tools.send_feedback.annotations).toEqual({
+      readOnlyHint: false,
+      consequentialHint: true,
+    });
 
     unmount();
 
-    expect(options.signal.aborted).toBe(true);
+    expect(options.every(({ signal: toolSignal }) => toolSignal.aborted)).toBe(true);
   });
 
-  it('returns the Markdown of the requested page and of the current page', async () => {
-    setModelContext({ registerTool });
-    const { tool, signal } = renderAndGetTool();
+  it('reads page Markdown, the site overview, and a skill', async () => {
+    responses.set('/.well-known/agent-skills/index.json', {
+      skills: [{ name: 'expo', url: '/.well-known/agent-skills/expo/SKILL.md' }],
+    });
+    const { tools } = renderTools();
 
-    await expect(
-      tool.execute({ path: '/get-started/create-a-project/' }, { signal })
-    ).resolves.toBe('# Page');
-    await expect(tool.execute({}, { signal })).resolves.toBe('# Page');
+    await tools.get_page_markdown.execute({ path: '/get-started/create-a-project/' }, { signal });
+    await tools.get_page_markdown.execute({}, { signal });
+    await tools.get_site_overview.execute({}, { signal });
+    await tools.read_skill.execute({ skill_name: 'expo' }, { signal });
 
     expect(fetchMock.mock.calls.map(([url]) => url)).toEqual([
       '/get-started/create-a-project/index.md',
       '/index.md',
+      '/llms.txt',
+      '/.well-known/agent-skills/index.json',
+      '/.well-known/agent-skills/expo/SKILL.md',
     ]);
+    await expect(tools.read_skill.execute({ skill_name: 'nope' }, { signal })).rejects.toThrow(
+      'Available skills: expo.'
+    );
   });
 
-  it('rejects paths that leave the docs site without fetching them', async () => {
-    setModelContext({ registerTool });
-    const { tool, signal } = renderAndGetTool();
+  it('searches the docs index for the current version and returns titles with paths', async () => {
+    responses.set('https://QEX7PB7D46-dsn.algolia.net/1/indexes/expo/query', {
+      hits: [
+        {
+          url: 'https://docs.expo.dev/versions/latest/sdk/camera/#permissions',
+          hierarchy: { lvl0: 'Expo Camera', lvl1: 'Permissions', lvl2: null },
+        },
+      ],
+    });
+    const { tools } = renderTools();
 
-    for (const path of ['https://example.com/', '//example.com/', '/\\example.com/', 42]) {
-      await expect(tool.execute({ path }, { signal })).rejects.toThrow(TypeError);
+    const results = await tools.search_docs.execute({ query: 'camera', limit: 50 }, { signal });
+
+    expect(JSON.parse(results)).toEqual([
+      { title: 'Expo Camera > Permissions', path: '/versions/latest/sdk/camera/#permissions' },
+    ]);
+    const [, init] = fetchMock.mock.calls[0];
+    expect(JSON.parse(init?.body ?? '')).toEqual({
+      params: 'query=camera&hitsPerPage=20',
+      facetFilters: [['version:none', 'version:latest']],
+    });
+  });
+
+  it('opens a docs page and sends feedback for a page', async () => {
+    responses.set('https://api.expo.dev/v2/feedback/docs-send', {});
+    const { tools } = renderTools();
+
+    await tools.navigate_page.execute({ path: '/guides/overview/#top' }, { signal });
+    await tools.send_feedback.execute(
+      { feedback: 'Typo in step 2', path: '/guides/overview/' },
+      { signal }
+    );
+
+    expect(routerPush).toHaveBeenCalledWith('/guides/overview/#top');
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe('https://api.expo.dev/v2/feedback/docs-send');
+    expect(JSON.parse(init?.body ?? '')).toEqual({
+      feedback: 'Typo in step 2',
+      url: '/guides/overview/',
+    });
+  });
+
+  it('rejects paths that leave the docs site before any request or navigation', async () => {
+    const { tools } = renderTools();
+    const offSitePaths = ['https://example.com/', '//example.com/', '/\\example.com/', 42];
+
+    for (const path of offSitePaths) {
+      await expect(tools.get_page_markdown.execute({ path }, { signal })).rejects.toThrow(
+        TypeError
+      );
+      await expect(tools.navigate_page.execute({ path }, { signal })).rejects.toThrow(TypeError);
+      await expect(
+        tools.send_feedback.execute({ feedback: 'x', path }, { signal })
+      ).rejects.toThrow(TypeError);
     }
     expect(fetchMock).not.toHaveBeenCalled();
+    expect(routerPush).not.toHaveBeenCalled();
   });
 });
