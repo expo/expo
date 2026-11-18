@@ -18,6 +18,7 @@ import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.TimePickerState
+import android.text.format.DateFormat
 import android.view.WindowManager
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
@@ -28,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.window.DialogWindowProvider
@@ -171,7 +173,7 @@ data class DateTimePickerProps(
   val showVariantToggle: Boolean = true,
   val showTitle: Boolean = true,
   val showHeadline: Boolean = true,
-  val is24Hour: Boolean = true,
+  val is24Hour: Boolean? = null,
   val color: AndroidColor? = null,
   val elementColors: DateTimePickerColorOverrides = DateTimePickerColorOverrides(),
   val selectableDates: SelectableDatesRecord? = null,
@@ -195,7 +197,7 @@ data class DatePickerDialogProps(
 @OptimizedComposeProps
 data class TimePickerDialogProps(
   val initialDate: Long? = null,
-  val is24Hour: Boolean = true,
+  val is24Hour: Boolean? = null,
   val confirmButtonLabel: String? = null,
   val dismissButtonLabel: String? = null,
   val color: AndroidColor? = null,
@@ -431,8 +433,9 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
 @Composable
 fun ExpoTimePickerDialogContent(props: TimePickerDialogProps, onDateSelected: (DatePickerResult) -> Unit, onDismissRequest: () -> Unit) {
   val initialDate = props.initialDate
+  val is24Hour = props.is24Hour ?: DateFormat.is24HourFormat(LocalContext.current)
 
-  val state = remember(initialDate, props.is24Hour) {
+  val state = remember(initialDate, is24Hour) {
     val cal = Calendar.getInstance()
     if (initialDate != null) {
       cal.timeInMillis = initialDate
@@ -440,7 +443,7 @@ fun ExpoTimePickerDialogContent(props: TimePickerDialogProps, onDateSelected: (D
     TimePickerState(
       initialHour = cal.get(Calendar.HOUR_OF_DAY),
       initialMinute = cal.get(Calendar.MINUTE),
-      is24Hour = props.is24Hour
+      is24Hour = is24Hour
     )
   }
 
@@ -563,8 +566,9 @@ private fun MaterialDatePicker(
 @Composable
 fun ExpoTimePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, onDateSelected: (DatePickerResult) -> Unit) {
   val initialDate = props.initialDate
+  val is24Hour = props.is24Hour ?: DateFormat.is24HourFormat(LocalContext.current)
 
-  val state = remember(initialDate, props.is24Hour) {
+  val state = remember(initialDate, is24Hour) {
     val cal = Calendar.getInstance()
     cal.isLenient = false
     if (initialDate != null) {
@@ -573,7 +577,7 @@ fun ExpoTimePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
     TimePickerState(
       initialHour = cal.get(Calendar.HOUR_OF_DAY),
       initialMinute = cal.get(Calendar.MINUTE),
-      is24Hour = props.is24Hour
+      is24Hour = is24Hour
     )
   }
 
