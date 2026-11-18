@@ -153,7 +153,7 @@ describe('createFallbackFilesystem', () => {
       expect(result!.get('sub')).toBeInstanceOf(Map);
     });
 
-    test('includes symlinks with unresolved marker when includeSymlinks is true', () => {
+    test('includes symlinks with their targets when includeSymlinks is true', () => {
       vol.fromJSON({ '/project/src/target.js': 'target' });
       vol.symlinkSync('/project/src/target.js', '/project/src/link.js');
       const fallback = createFallback({ includeSymlinks: true });
@@ -161,7 +161,7 @@ describe('createFallbackFilesystem', () => {
 
       expect(result).toBeInstanceOf(Map);
       const linkMeta = result!.get('link.js') as any[];
-      expect(linkMeta[4]).toBe(1); // unresolved symlink marker
+      expect(linkMeta[4]).toBe('src/target.js');
     });
 
     test('skips symlinks when includeSymlinks is false', () => {

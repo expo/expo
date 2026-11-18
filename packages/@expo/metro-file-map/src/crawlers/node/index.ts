@@ -96,8 +96,12 @@ function find(
             continue;
           }
 
-          const mtime = previousFileSystem?.getMtimeByNormalPath(childNormal);
-          if (mtime == null || mtime === 0) {
+          // Symlinks are always stat'd, so a link repointed while Metro was stopped has a new
+          // mtime and is read again.
+          const mtime = isSymbolicLink
+            ? null
+            : previousFileSystem?.getMtimeByNormalPath(childNormal);
+          if (!isSymbolicLink && (mtime == null || mtime === 0)) {
             // When we're in a cold start or a previous file doesn't exist, we can skip
             // the mtime/size lstat now and treat the file as new
             result.set(childNormal, [null, 0, 0, null, isSymbolicLink ? 1 : 0, null]);
