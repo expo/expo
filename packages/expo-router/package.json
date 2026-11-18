@@ -298,7 +298,6 @@
     "@expo/schema-utils": "workspace:^",
     "@radix-ui/react-slot": "^1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
-    "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native/normalize-colors": "0.88.1",
     "client-only": "^0.0.1",
     "expo-glass-effect": "workspace:^",
@@ -343,6 +342,7 @@
     "@expo/log-box": "workspace:^",
     "@expo/metro-runtime": "workspace:^",
     "@expo/ui": "workspace:^",
+    "@react-native-masked-view/masked-view": "^0.3.2",
     "@testing-library/react-native": ">= 14.0.0",
     "expo": "*",
     "expo-constants": "workspace:^",
@@ -364,6 +364,9 @@
       "optional": true
     },
     "expo-symbols": {
+      "optional": true
+    },
+    "@react-native-masked-view/masked-view": {
       "optional": true
     },
     "@testing-library/react-native": {
