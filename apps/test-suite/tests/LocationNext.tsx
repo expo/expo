@@ -58,6 +58,8 @@ const VIENNA = {
   coordinates: { latitude: 48.2082, longitude: 16.3738 },
 };
 
+let localeSpecRanInThisProcess = false;
+
 const ANDROID_BACKGROUND_UPDATES = {
   [LocationProfile.DEFAULT]: {
     priority: 'BALANCED_POWER_ACCURACY',
@@ -366,6 +368,13 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
       if (isAndroid) {
         t.it('resolves with true when services are already on', async () => {
           t.expect(await Location.enableLocationServices()).toBe(true);
+        });
+      } else {
+        t.it('is unavailable', async () => {
+          await TestUtils.expectMethodToBeUnavailableAsync(
+            t.expect,
+            Location.enableLocationServices
+          );
         });
       }
     });
@@ -691,6 +700,13 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
       t.it(
         'varies the country name by locale',
         async () => {
+          if (!isAndroid && localeSpecRanInThisProcess) {
+            t.pending(
+              'the Apple geocoder reuses the language of an earlier request for the same query in this process'
+            );
+            return;
+          }
+          localeSpecRanInThisProcess = true;
           const [english] = await geocodingOrPending(() =>
             Location.geocode(VIENNA.query, { locale: 'en-US' })
           );

@@ -64,7 +64,9 @@ export function expectPosition(t: JasmineInterface, position: Position) {
   ] as const;
   for (const field of nullableFields) {
     const value = position[field];
-    t.expect(value === null || typeof value === 'number').toBe(true);
+    t.expect(value === null || typeof value === 'number')
+      .withContext(field)
+      .toBe(true);
   }
 
   const nonNegativeFields = [
@@ -76,11 +78,13 @@ export function expectPosition(t: JasmineInterface, position: Position) {
   ] as const;
   for (const field of nonNegativeFields) {
     const value = position[field];
-    t.expect(value === null || value >= 0).toBe(true);
+    t.expect(value === null || value >= 0)
+      .withContext(field)
+      .toBe(true);
   }
-  t.expect(position.heading === null || (position.heading >= 0 && position.heading <= 360)).toBe(
-    true
-  );
+  t.expect(position.heading === null || (position.heading >= 0 && position.heading <= 360))
+    .withContext('heading')
+    .toBe(true);
 }
 
 export function selectDefaultProvider() {
