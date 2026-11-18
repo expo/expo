@@ -161,6 +161,21 @@ class ObserveConsentTest {
     assertFalse(ObserveConsent.isGranted)
   }
 
+  @Test
+  fun `the first grant saves the settings kept in memory, and a grant after a revoke does not`() {
+    ObserveConsent.update(context, granted = false)
+    ObserveConsent.load(context)
+    AppMetricsPreferences.setEnvironment(context, "staging")
+
+    ObserveConsent.update(context, granted = true)
+    assertEquals("staging", settings().getString("environment", null))
+
+    ObserveConsent.update(context, granted = false)
+    AppMetricsPreferences.setEnvironment(context, "production")
+    ObserveConsent.update(context, granted = true)
+    assertEquals("staging", settings().getString("environment", null))
+  }
+
   // Pauses the "setter" thread after its first gate read and runs `transition` on another thread in
   // that gap. Resumes the setter once the transition finished or waits for the gate lock.
   private fun runInSetterGap(setter: () -> Unit, transition: () -> Unit) {
@@ -184,6 +199,19 @@ class ObserveConsentTest {
     resume.countDown()
     setterThread.join()
     transitionThread.join()
+  }
+
+  @Test
+  fun `a setter that reads the gate before the first grant still saves its value`() {
+    ObserveConsent.update(context, granted = false)
+    ObserveConsent.load(context)
+
+    runInSetterGap(
+      setter = { AppMetricsPreferences.setEnvironment(context, "set-during-grant") },
+      transition = { ObserveConsent.update(context, granted = true) }
+    )
+
+    assertEquals("set-during-grant", settings().getString("environment", null))
   }
 
   @Test

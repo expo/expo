@@ -105,8 +105,29 @@ public struct AppMetrics {
   @AppMetricsActor
   public static func setConsent(granted: Bool) throws {
     let update = ObserveConsent.update(granted: granted)
+    if update.changed {
+      apply(granted: granted)
+    }
     if !update.isSaved {
       throw ConsentNotSavedException(granted)
+    }
+  }
+
+  @AppMetricsActor
+  private static func apply(granted: Bool) {
+    if granted {
+      // The launch inserts did nothing without consent, so the session rows are inserted now.
+      mainSession.insertRow()
+      foregroundSession?.insertRow()
+      mainSession.saveUnsavedStartupMetrics()
+      #if !os(tvOS) && !targetEnvironment(simulator)
+      // Past payloads are from before the grant, so they are not processed.
+      MXMetricManager.shared.add(metricKitSubscriber)
+      #endif
+    } else {
+      #if !os(tvOS) && !targetEnvironment(simulator)
+      MXMetricManager.shared.remove(metricKitSubscriber)
+      #endif
     }
   }
 

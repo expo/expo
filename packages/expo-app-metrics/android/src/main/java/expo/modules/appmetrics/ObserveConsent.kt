@@ -8,6 +8,7 @@ import expo.modules.appmetrics.crashreporting.CrashFileFormat
 import expo.modules.appmetrics.jserrors.PendingErrorStore
 import expo.modules.appmetrics.storage.MetricsDatabase
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Whether the user consented to Observe collecting data. While not granted, app metrics stores
@@ -48,6 +49,10 @@ object ObserveConsent {
     )
     if (granted == isGranted || (granted && (hasRevoked || !isSaved))) {
       return Update(changed = false, isSaved = isSaved)
+    }
+    if (granted) {
+      // Before the gate opens, so no reader sees the stored settings without them.
+      ConsentGatedPreferences.saveUnsavedValues(context)
     }
     isGranted = granted
     hasRevoked = hasRevoked || !granted
@@ -105,8 +110,13 @@ internal fun deleteStoredData(context: Context) {
 
 /** Shared preferences that save nothing while consent is not granted. */
 class ConsentGatedPreferences(private val name: String) {
-  // Values set without consent. They are kept only in memory, and reads return them.
+  // Values set without consent. The app sends its config at startup, before the user can grant
+  // consent. The first grant saves these values, so Observe does not send with the defaults.
   private val unsavedValues = ConcurrentHashMap<String, Any>()
+
+  init {
+    stores.add(this)
+  }
 
   fun getString(context: Context, key: String): String? =
     read(inMemory = { unsavedValues[key] as? String }, stored = { preferences(context).getString(key, null) })
@@ -126,8 +136,8 @@ class ConsentGatedPreferences(private val name: String) {
     write(inMemory = { unsavedValues[key] = value }, stored = { preferences(context).edit(commit = true) { putLong(key, value) } })
   }
 
-  // `update` changes the gate under the same lock. So a write cannot land in storage after a revoke
-  // closed the gate.
+  // `update` changes the gate under the same lock. So a write cannot land in memory after the first
+  // grant saved those values, or in storage after a revoke closed the gate.
   private inline fun write(inMemory: () -> Unit, stored: () -> Unit) {
     synchronized(ObserveConsent) {
       if (ObserveConsent.isGranted) {
@@ -157,4 +167,27 @@ class ConsentGatedPreferences(private val name: String) {
   }
 
   private fun preferences(context: Context) = context.getSharedPreferences(name, Context.MODE_PRIVATE)
+
+  companion object {
+    // A store that was never created holds no values in memory, so this list has every such value.
+    private val stores = CopyOnWriteArrayList<ConsentGatedPreferences>()
+
+    /** Saves the values kept in memory, then forgets them. Runs at the first grant. */
+    internal fun saveUnsavedValues(context: Context) {
+      for (store in stores) {
+        if (store.unsavedValues.isEmpty()) {
+          continue
+        }
+        store.preferences(context).edit(commit = true) {
+          for ((key, value) in store.unsavedValues) {
+            when (value) {
+              is String -> putString(key, value)
+              is Long -> putLong(key, value)
+            }
+          }
+        }
+        store.unsavedValues.clear()
+      }
+    }
+  }
 }

@@ -79,6 +79,10 @@ public enum ObserveConsent {
         guard isSaved || !granted, var next = gate, next.apply(granted: granted) else {
           return false
         }
+        if granted {
+          // Before the gate opens, so no reader sees the stored settings without them.
+          ConsentGatedDefaults.saveUnsavedValues()
+        }
         gate = next
         return true
       }
@@ -130,7 +134,8 @@ public final class ConsentGatedDefaults: @unchecked Sendable {
   // `UserDefaults` is thread-safe, and the in-memory values are behind a mutex.
   private let defaults: UserDefaults
   private let isGranted: @Sendable () -> Bool
-  // Values set without consent. They are kept only in memory, and reads return them.
+  // Values set without consent. The app sends its config at startup, before the user can grant
+  // consent. The first grant saves these values, so Observe does not send with the defaults.
   private let unsavedValues = Mutex<[String: Any]>([:])
 
   public convenience init(_ defaults: UserDefaults) {
@@ -140,11 +145,28 @@ public final class ConsentGatedDefaults: @unchecked Sendable {
   init(_ defaults: UserDefaults, isGranted: @escaping @Sendable () -> Bool) {
     self.defaults = defaults
     self.isGranted = isGranted
+    Self.stores.withLock { $0.append(self) }
   }
+
+  // A store that was never created holds no values in memory, so this list has every such value.
+  private static let stores = Mutex<[ConsentGatedDefaults]>([])
 
   // Taken before the consent gate lock. `ObserveConsent.update` changes the gate under it, and the
   // writes and the not-granted reads check the gate under it.
   static let transitionLock = OSAllocatedUnfairLock()
+
+  /// Saves the values kept in memory, then forgets them. Runs at the first grant.
+  static func saveUnsavedValues() {
+    for store in stores.withLock({ $0 }) {
+      let values = store.unsavedValues.withLock { values in
+        defer { values = [:] }
+        return values
+      }
+      for (key, value) in values {
+        store.defaults.set(value, forKey: key)
+      }
+    }
+  }
 
   public func object(forKey key: String) -> Any? {
     var value: Any?
@@ -154,8 +176,8 @@ public final class ConsentGatedDefaults: @unchecked Sendable {
     return defaults.object(forKey: key)
   }
 
-  // `ObserveConsent.update` changes the gate under the same lock. So a write cannot land in the
-  // suite after a revoke closed the gate.
+  // `ObserveConsent.update` changes the gate under the same lock. So a write cannot land in memory
+  // after the first grant saved those values, or in the suite after a revoke closed the gate.
   public func set(_ value: Any?, forKey key: String) {
     Self.transitionLock.withLockUnchecked {
       if isGranted() {

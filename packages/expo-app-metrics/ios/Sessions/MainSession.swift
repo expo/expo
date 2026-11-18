@@ -28,6 +28,27 @@ public final class MainSession: Session, @unchecked Sendable {
     }
   }
 
+  /// Startup metrics received while consent is not granted. A grant saves them.
+  @AppMetricsActor
+  private var unsavedStartupMetrics: [Metric] = []
+
+  @AppMetricsActor
+  public override func receiveMetric(_ metric: Metric) {
+    if !ObserveConsent.isGranted && metric.category == .appStartup {
+      unsavedStartupMetrics.append(metric)
+      return
+    }
+    super.receiveMetric(metric)
+  }
+
+  @AppMetricsActor
+  func saveUnsavedStartupMetrics() {
+    for metric in unsavedStartupMetrics {
+      super.receiveMetric(metric)
+    }
+    unsavedStartupMetrics = []
+  }
+
   /// Test-only initializer that builds a session with explicit values and skips registering it
   /// with the global storage. Do not use from production code.
   init(id: String, startDate: Date, endDate: Date?) {
