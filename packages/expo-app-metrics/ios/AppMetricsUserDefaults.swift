@@ -1,8 +1,7 @@
 /// Class that manages a custom `UserDefaults` database with `"dev.expo.app-metrics"` suite name.
 public final class AppMetricsUserDefaults: UserDefaults {
   /// Singleton instance of the user defaults for AppMetrics.
-  /// It is not isolated, but UserDefaults is thread-safe.
-  nonisolated(unsafe) private static let defaults = AppMetricsUserDefaults()
+  private static let defaults = ConsentGatedDefaults(AppMetricsUserDefaults())
 
   /// Enum with keys used within this user defaults database.
   private enum Keys: String {
@@ -19,7 +18,7 @@ public final class AppMetricsUserDefaults: UserDefaults {
 
   public static var environment: String? {
     get {
-      return defaults.string(forKey: Keys.environment.rawValue)
+      return defaults.object(forKey: Keys.environment.rawValue) as? String
     }
     set {
       defaults.set(newValue, forKey: Keys.environment.rawValue)
