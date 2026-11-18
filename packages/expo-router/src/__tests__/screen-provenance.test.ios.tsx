@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Text } from 'react-native';
 import type { NavigatorArgs } from 'standard-navigation';
 
@@ -13,7 +14,7 @@ import {
   type StandardNavigatorDescriptor,
 } from '../standard-navigation';
 import { appendMissingPlaceholderTabDescriptors } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
-import { renderRouter, screen } from '../testing-library';
+import { act, renderRouter, screen } from '../testing-library';
 import { TabList, TabTrigger, useTabsWithChildren } from '../ui';
 
 const probeContent = jest.fn((args: NavigatorArgs<object, Record<string, never>>) =>
@@ -91,15 +92,20 @@ it('marks all screens as filesystem when the layout declares none', async () => 
 });
 
 it('keeps layout provenance when redirecting from a screen behind a failing guard', async () => {
+  let reopen: () => void;
   await renderRouter(
     {
-      _layout: () => (
-        <Probe>
-          <Probe.Protected guard={false} redirectTo="/b">
-            <Probe.Screen name="a" />
-          </Probe.Protected>
-        </Probe>
-      ),
+      _layout: function Layout() {
+        const [open, setOpen] = useState(false);
+        reopen = () => setOpen(true);
+        return (
+          <Probe>
+            <Probe.Protected guard={open} redirectTo="/b">
+              <Probe.Screen name="a" />
+            </Probe.Protected>
+          </Probe>
+        );
+      },
       a: () => <Text testID="a">A</Text>,
       b: () => <Text testID="b">B</Text>,
     },
@@ -108,6 +114,8 @@ it('keeps layout provenance when redirecting from a screen behind a failing guar
 
   expect(screen.getByTestId('b')).toBeVisible();
   expect(screen).toHavePathname('/b');
+  expect(descriptorByRouteName('a')).toBeUndefined();
+  await act(() => reopen());
   expect(descriptorByRouteName('a')?.routeSource).toBe('layout');
   expect(descriptorByRouteName('b')?.routeSource).toBe('filesystem');
 });

@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, use, useMemo, type ReactNode } from 'react';
+import { createContext, use, useEffect, useMemo, type ReactNode } from 'react';
 
 import type { RouteNode } from '../Route';
 import { LocalRouteParamsContext, sortRoutesWithInitial } from '../Route';
@@ -20,6 +20,8 @@ type GuardContextValue = {
   node: RouteNode | null;
   guards: GuardedRedirects;
   fallbacks: GuardRedirectFallback[];
+  // The accessible route that this layout's navigator opens when no visit survives.
+  fallbackName?: string;
 };
 
 export const GuardContext = createContext<GuardContextValue | null>(null);
@@ -57,7 +59,7 @@ function computeGuardState(
     ? [navigatorFallback, ...inheritedFallbacks]
     : inheritedFallbacks;
 
-  return { node, guards: guardedRedirects, fallbacks };
+  return { node, guards: guardedRedirects, fallbacks, fallbackName: navigatorFallback?.name };
 }
 
 export function useGuardRedirect(routeName: string): GuardRedirect | undefined {
@@ -66,10 +68,37 @@ export function useGuardRedirect(routeName: string): GuardRedirect | undefined {
   return guard ? (guard.redirectTo ?? owner?.fallbacks[0]?.href ?? null) : undefined;
 }
 
-/** Returns the failed guards declared by `node`, ignoring guards of an enclosing layout. */
-export function useLayoutGuards(node: RouteNode | null): GuardedRedirects | undefined {
+/**
+ * Returns the failed guards declared by `node`, ignoring guards of an enclosing layout, and the
+ * declared route names that the navigator may show.
+ */
+export function useLayoutGuards(
+  node: RouteNode | null,
+  declaredNames: string[],
+  focusedName: string | undefined
+) {
   const owner = use(GuardContext);
-  return owner?.node === node ? owner.guards : undefined;
+  const guards = owner?.node === node ? owner.guards : undefined;
+  const eligible = guards?.size
+    ? declaredNames.filter((name) => !isRouteGuarded(name, guards))
+    : declaredNames;
+  const focused = focusedName === undefined ? undefined : getFailedGuard(guards, focusedName);
+  // Keep a focused blocked screen until its explicit redirect or the parent fallback runs.
+  const keepFocused =
+    focused !== undefined &&
+    (focused.redirectTo !== undefined || (eligible.length === 0 && !!owner?.fallbacks.length));
+  const routeNames = keepFocused
+    ? declaredNames.filter((name) => name === focusedName || eligible.includes(name))
+    : eligible;
+  const allBlocked = routeNames.length === 0;
+  useEffect(() => {
+    if (__DEV__ && allBlocked) {
+      console.warn(
+        'All routes in this navigator are protected. Ensure at least one route is accessible.'
+      );
+    }
+  }, [allBlocked]);
+  return { routeNames, guards, fallbackName: guards && owner?.fallbackName };
 }
 
 export function getFailedGuard(
@@ -85,6 +114,7 @@ export function normalizeRouteName(routeName: string): string {
 }
 
 type GuardRedirectFallback = {
+  name?: string;
   href: Href;
   targetRouteContextKey: string | null;
 };
@@ -107,6 +137,7 @@ function getNavigatorFallback(
   return {
     href: Object.keys(params ?? {}).length ? ({ pathname, params } as Href) : (pathname as Href),
     targetRouteContextKey: route.contextKey,
+    name: route.route,
   };
 }
 

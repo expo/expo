@@ -112,7 +112,9 @@ export function getRouteSegmentsFromState(state?: StrictState): string[] {
   const segments: string[] = [];
   state = route.state;
   while (state) {
-    route = state.routes['index' in state && state.index ? state.index : 0]!;
+    const child = state.routes['index' in state ? (state.index ?? 0) : 0];
+    if (!child) break;
+    route = child;
     warnIfNestedParams(route.params);
 
     const routeName = route.name.startsWith('/') ? route.name.slice(1) : route.name;
@@ -131,7 +133,8 @@ function collectRouteState(state?: StrictState) {
   const params: Record<string, unknown> = Object.create(null);
 
   while (state) {
-    const route = state.routes['index' in state && state.index ? state.index : 0]!;
+    const route = state.routes['index' in state ? (state.index ?? 0) : 0];
+    if (!route) break;
     warnIfNestedParams(route.params);
 
     Object.assign(params, route.params);

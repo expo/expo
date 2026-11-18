@@ -216,7 +216,7 @@ it('settles a queued push and prunes guarded history when a guard flips in the J
   expect(router.canGoBack()).toBe(false);
 });
 
-it('redirects a focused guarded route to the anchor and prunes guarded history in one flip', async () => {
+it('reveals the surviving home route and prunes guarded history in one flip', async () => {
   let setGuard: Dispatch<SetStateAction<boolean>>;
 
   await renderRouter(
@@ -261,10 +261,9 @@ it('redirects a focused guarded route to the anchor and prunes guarded history i
   expect(screen.getByTestId('home')).toBeVisible();
   expect(screen).toHavePathname('/home');
   expect(screen.getByTestId('is-navigating')).toHaveTextContent('false');
-  // The redirect replaces `secret` with `home`; the cleanup removes `vault` from history.
   expect(
     navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
-  ).toStrictEqual(['home', 'home']);
+  ).toStrictEqual(['home']);
 });
 
 it('redirects a guarded route to the anchor default during the initial load', async () => {
@@ -921,7 +920,7 @@ describe('all routes guarded', () => {
     expect(JSON.stringify(screen.toJSON())).toContain('RNSScreenStack');
   });
 
-  it('keeps navigation state when all guards flip false and back to true', async () => {
+  it('starts fresh at the anchor when all guards reopen', async () => {
     let setGuard: Dispatch<SetStateAction<boolean>>;
 
     await renderRouter({
@@ -946,7 +945,7 @@ describe('all routes guarded', () => {
     expect(screen).toHavePathname('/second');
 
     const stateBefore = navigationRef.getRootState().routes[0]!.state!;
-    const focusedKeyBefore = stateBefore.routes[stateBefore.index!]!.key;
+    const homeKeyBefore = stateBefore.routes[0]!.key;
 
     // Guard everything: content hides but the navigator must stay mounted.
     await act(() => {
@@ -956,17 +955,17 @@ describe('all routes guarded', () => {
     expect(screen.queryByTestId('index')).toBeNull();
     expect(screen.queryByTestId('second')).toBeNull();
 
-    // Restore access: the same navigation state is still there, not reinitialized.
+    expect(navigationRef.getRootState().routes[0]!.state!.routes).toEqual([]);
+
+    // Restore access: the navigator starts fresh at the anchor.
     await act(() => {
       setGuard(true);
     });
 
-    expect(screen.getByTestId('second')).toBeVisible();
-    expect(screen).toHavePathname('/second');
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen).toHavePathname('/');
     const stateAfter = navigationRef.getRootState().routes[0]!.state!;
-    expect(stateAfter.routes[stateAfter.index!]!.key).toBe(focusedKeyBefore);
-    // Non-focused guarded history entries are pruned while the guard is down,
-    // so only the focused route survives the flip.
+    expect(stateAfter.routes[0]!.key).not.toBe(homeKeyBefore);
     expect(stateAfter.routes).toHaveLength(1);
   });
 

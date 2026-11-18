@@ -2,17 +2,21 @@
 
 import { use, useEffect, useEffectEvent } from 'react';
 
-import { GuardContext, normalizeRouteName } from './GuardContext';
+import { NavigatorStateContext } from '../react-navigation/core/useNavigationState';
+import { GuardContext, isRouteGuarded, normalizeRouteName } from './GuardContext';
 
 /**
  * Lets a stack navigator clear its own guarded routes from history, based on the guard context.
  */
 export function useClearGuardedRoutes(removeRoutesFromState: (routeNames: string[]) => void) {
   const guards = use(GuardContext)?.guards;
+  const state = use(NavigatorStateContext);
+  const hasGuardedRoutes =
+    guards && state?.routes.some((route) => isRouteGuarded(route.name, guards));
   const removeRoutes = useEffectEvent(removeRoutesFromState);
 
   useEffect(() => {
-    if (!guards?.size) {
+    if (!guards?.size || hasGuardedRoutes === false) {
       return;
     }
 
@@ -22,5 +26,5 @@ export function useClearGuardedRoutes(removeRoutesFromState: (routeNames: string
     });
 
     removeRoutes(routeNames);
-  }, [guards]);
+  }, [guards, hasGuardedRoutes]);
 }

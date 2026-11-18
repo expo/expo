@@ -340,7 +340,7 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
     expect(routeSourceByName).toEqual({ index: 'layout', second: 'filesystem' });
   });
 
-  it('keeps Protected screens whose guard is false registered but hidden', async () => {
+  it('excludes blocked screens from placeholder descriptors', async () => {
     await renderRouter({
       _layout: () => (
         <StandardTabs>
@@ -356,7 +356,7 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
 
     const args = lastArgs();
     expect(args.state.routes.map((route) => route.name)).toEqual(['index']);
-    expect(args.descriptors.second!.options).toMatchObject({ hidden: true });
+    expect(args.descriptors.second).toBeUndefined();
     expect(screen.queryByTestId('second')).toBeNull();
   });
 

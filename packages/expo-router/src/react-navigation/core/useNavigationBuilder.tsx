@@ -21,6 +21,7 @@ import {
   type RouterConfigOptions,
   type RouterFactory,
 } from '../routers';
+import { isActionHandled } from '../routers/utils';
 import { Group } from './Group';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationHelpersContext } from './NavigationHelpersContext';
@@ -309,24 +310,6 @@ export function useNavigationBuilder<
     return acc;
   }, {});
 
-  const routeNames = routeConfigs.map((config) => config.props.name);
-  const routeGetIdList = routeNames.reduce<RouterConfigOptions['routeGetIdList']>(
-    (acc, curr) =>
-      Object.assign(acc, {
-        [curr]: screens[curr]!.props.getId,
-      }),
-    {}
-  );
-
-  if (!routeNames.length) {
-    throw new Error(
-      "Couldn't find any screens for the navigator. Have you defined any screens as its children?"
-    );
-  }
-
-  // Track screen-list changes without recalculating state when only the array identity changes.
-  const routeNamesKey = routeNames.join('\0');
-
   const { state: currentState } = use(NavigationStateContext);
   const rootState = use(RootNavigationStateContext);
 
@@ -350,21 +333,69 @@ export function useNavigationBuilder<
   const committedState = (
     isForeignType ? resetNavigatorState(treeState, router.type) : treeState
   ) as State;
+
+  const declaredNames = routeConfigs.map((config) => config.props.name);
+  if (!declaredNames.length) {
+    throw new Error(
+      "Couldn't find any screens for the navigator. Have you defined any screens as its children?"
+    );
+  }
+  // Blocked routes stay declared but are not passed to the router or the descriptors.
+  const { routeNames, guards, fallbackName } = useLayoutGuards(
+    routeNode,
+    declaredNames,
+    committedState.routes[committedState.index]?.name
+  );
+  // Track screen-list changes without recalculating state when only the array identity changes.
+  const routeNamesKey = routeNames.join('\0');
+  const routeGetIdList = routeNames.reduce<RouterConfigOptions['routeGetIdList']>(
+    (acc, name) => Object.assign(acc, { [name]: screens[name]!.props.getId }),
+    {}
+  );
+  const routerConfig = { routeNames, routeGetIdList };
+  // Removes blocked visits with the router's own route-name rules. Render and the root reducer run
+  // it on the same input, so a minted fallback key matches. A state that is already correct is
+  // returned unchanged.
+  const reconcile = (input: State): State => {
+    if (!guards || isArrayEqual(input.routeNames, routeNames)) {
+      return input;
+    }
+    // A router that must mint a visit uses the first name. Prefer the layout's fallback route.
+    const prioritizeFallback =
+      fallbackName !== undefined &&
+      routeNames[0] !== fallbackName &&
+      routeNames.includes(fallbackName) &&
+      !input.routes.some((route) => !route.isPreloaded && routeNames.includes(route.name));
+    const names = prioritizeFallback
+      ? [fallbackName, ...routeNames.filter((name) => name !== fallbackName)]
+      : routeNames;
+    const result = router.getStateForAction(
+      input,
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: names } },
+      routerConfig
+    );
+    if (!isActionHandled(result)) {
+      return input;
+    }
+    return names === routeNames ? result.state : { ...result.state, routeNames };
+  };
   const state = React.useMemo(() => {
-    const declaredState = router.getStateForDeclaredRoutes(committedState, routeNames);
+    const declaredState = router.getStateForDeclaredRoutes(reconcile(committedState), routeNames);
     // The seeded state cannot know the order declared by mounted screens yet.
     return isArrayEqual(declaredState.routeNames, routeNames)
       ? declaredState
       : { ...declaredState, routeNames };
-  }, [committedState, routeNamesKey, router]);
-  const reduce = useLatestCallback<RouterRegistryEntry['reduce']>((registryState, action) =>
+  }, [committedState, routeNamesKey, fallbackName, router]);
+  const reduce = useLatestCallback<RouterRegistryEntry['reduce']>((registryState, action) => {
     // The registry stores states from different router types; this entry only receives its own state key.
-    router.getStateForAction(registryState as State, action, {
-      routeNames,
-      routeGetIdList,
-    })
-  );
-  const guards = useLayoutGuards(routeNode);
+    const input = registryState as State;
+    // The committed slice can still contain blocked visits until the queued route-name update runs.
+    const reconciled = reconcile(input);
+    if (reconciled !== input && action.type === 'ROUTE_NAMES_CHANGED') {
+      return { state: reconciled, affectedRouteKey: reconciled.routes[reconciled.index]?.key };
+    }
+    return router.getStateForAction(reconciled, action, routerConfig);
+  });
   const guardForRoute = useLatestCallback((name: string) => getFailedGuard(guards, name));
   const emitter = useEventEmitter<EventMapCore<State>>((e) => {
     const routeNames = [];
@@ -447,7 +478,7 @@ export function useNavigationBuilder<
         router.getBrowserHistoryForRouteFocus?.(previous as State, next as State, childAction),
       routeNode: routeNode ?? undefined,
     }),
-    [reduce, guardForRoute, routeNode, router]
+    [reduce, guardForRoute, routeNode, router, routeNamesKey]
   );
 
   useRegisterRouter(committedState.key, registryEntry);
@@ -469,16 +500,20 @@ export function useNavigationBuilder<
 
     if (isArrayEqual(committed.routeNames, routeNames)) {
       pendingRouteNamesRef.current = undefined;
-    } else if (!isArrayEqual(pendingRouteNamesRef.current ?? [], routeNames)) {
+    } else if (
+      !pendingRouteNamesRef.current ||
+      !isArrayEqual(pendingRouteNamesRef.current, routeNames)
+    ) {
       pendingRouteNamesRef.current = routeNames;
       enqueue({
-        type: 'ACTION',
+        type: 'COMPUTED_ACTION',
         payload: {
-          action: {
-            type: 'ROUTE_NAMES_CHANGED',
-            payload: { routeNames },
-            target: committed.key,
-          },
+          // The navigator can unmount before the queue drains, for example when a parent guard
+          // removes it. Skip the update when this entry no longer owns the state.
+          compute: (root, registry) =>
+            registry.get(committed.key) === registryEntry && findStateByKey(root, committed.key)
+              ? { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames }, target: committed.key }
+              : undefined,
           originKey: committed.key,
         },
       });

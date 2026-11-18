@@ -138,7 +138,7 @@ export function getStackBrowserHistoryAction(
   if (delta > 0) {
     return { type: 'push' };
   }
-  if (delta < 0) {
+  if (delta < 0 && next.routes[next.index]) {
     return {
       type: 'pop',
       count: -delta,
@@ -315,7 +315,7 @@ function stackRouterExtension({
             routeNames.includes(route.name)
           );
 
-          if (routes.length === 0) {
+          if (routes.length === 0 && routeNames.length > 0) {
             const fallbackName =
               initialRouteName !== undefined && routeNames.includes(initialRouteName)
                 ? initialRouteName

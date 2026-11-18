@@ -45,6 +45,18 @@ describe('state without router type', () => {
     ).toBe('stack');
   });
 
+  test('removing every route name leaves an empty stack without minting a route', () => {
+    const state = createState();
+    const result = expectHandled(
+      StackRouter({}).getStateForAction(
+        state,
+        { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: [] } },
+        { routeNames: [], routeGetIdList: {} }
+      )
+    );
+    expect(result.state).toMatchObject({ index: -1, routes: [], routeNames: [], routeKeySeq: 0 });
+  });
+
   test('stamps stack state on route focus', () => {
     expect(StackRouter({}).getStateForRouteFocus(createState(0), 'baz').type).toBe('stack');
   });

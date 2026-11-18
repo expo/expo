@@ -159,9 +159,7 @@ describe('ExperimentalStack — basic navigation', () => {
     await act(() => setGuard(false));
     await act(() => router.back());
 
-    expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining("ignoring unsupported screenOption 'hidden'")
-    );
+    expect(warnSpy).not.toHaveBeenCalled();
     expect(screen).toHavePathname('/');
     expect(router.canGoBack()).toBe(false);
   });
