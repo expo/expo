@@ -940,6 +940,115 @@ jobs:
 
 </Collapsible>
 
+## AppDrop
+
+Publish an Android or iOS build to [AppDrop](https://appdrop.app/) and get a share link for it. Unless you set `environment` on the job, the job runs in the build's environment, or in `production` if the build has none.
+
+iOS builds must be device builds. AppDrop cannot install iOS Simulator builds, so the job fails for them.
+
+Each share link has an update link. Anyone who has the update link can publish new versions to the share link. For this reason, the job never prints or outputs an update link.
+
+If you don't set `update_link`, each run creates a new share link. Later runs cannot publish to that share link.
+
+### Syntax
+
+```yaml
+jobs:
+  appdrop:
+    type: appdrop
+    params:
+      build_id: string # required
+      update_link: string # optional
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter   | Type   | Description                                                                                                                                                      |
+| ----------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id    | string | Required. The ID of the build to publish.                                                                                                                        |
+| update_link | string | Optional. The update link of an existing share link. The job publishes the build as a new version of that share link. Store it in a secret environment variable. |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output    | Type   | Description                            |
+| --------- | ------ | -------------------------------------- |
+| share_url | string | The share link of the published build. |
+
+### Publish every build to one share link
+
+To keep one share link for all builds, create the share link on your computer first:
+
+- Run `npx appdrop` with a build of your app, for example `npx appdrop app.apk`.
+- Run `npx appdrop links` to print the update link of the new share link.
+- Create a [secret environment variable](/eas/environment-variables/#visibility-settings-for-environment-variables) named `APPDROP_UPDATE_LINK` with the update link as its value. Create it in the environment of the builds that the job publishes.
+
+Then pass the variable as `update_link`.
+
+AppDrop rejects a new version that has the same build number as the current version. Set [`autoIncrement`](/build-reference/app-versions/#remote-version-source) in the build profile to give each build a new build number.
+
+### Examples
+
+Here are some practical examples of using the AppDrop job:
+
+<Collapsible summary="Publish a build to a new share link">
+
+This workflow builds an Android app for internal distribution and publishes it to a new share link on each run.
+
+```yaml .eas/workflows/appdrop-new-link.yml
+name: Share Android Build
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: preview
+
+  appdrop:
+    name: Publish to AppDrop
+    needs: [build_android]
+    type: appdrop
+    params:
+      build_id: ${{ needs.build_android.outputs.build_id }}
+```
+
+</Collapsible>
+
+<Collapsible summary="Publish every build to one share link">
+
+This workflow builds an Android app for internal distribution on each push to `main`. It publishes each build as a new version of the share link that `APPDROP_UPDATE_LINK` refers to.
+
+```yaml .eas/workflows/appdrop-update-link.yml
+name: Share Android Build on Main
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: preview
+
+  appdrop:
+    name: Publish to AppDrop
+    needs: [build_android]
+    type: appdrop
+    params:
+      build_id: ${{ needs.build_android.outputs.build_id }}
+      update_link: ${{ env.APPDROP_UPDATE_LINK }}
+```
+
+</Collapsible>
+
 ## Update
 
 Publish an update using [Expo Update](/eas-update/introduction/).
