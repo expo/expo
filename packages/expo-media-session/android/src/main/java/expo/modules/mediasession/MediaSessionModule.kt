@@ -24,12 +24,16 @@ class MediaSessionModule : Module() {
     override fun mediaSessionDidFail(error: CodedException, client: String) {
       sendEvent(ACTIVATION_ERROR, mapOf("message" to error.message, "client" to client))
     }
+
+    override fun mediaSessionNowPlayingOwnerChanged(id: String?) {
+      sendEvent(NOW_PLAYING_OWNER_CHANGE, mapOf("id" to id))
+    }
   }
 
   override fun definition() = ModuleDefinition {
     Name("ExpoMediaSession")
 
-    Events(INTERRUPTION, ROUTE_CHANGE, ACTIVATION_ERROR)
+    Events(INTERRUPTION, ROUTE_CHANGE, ACTIVATION_ERROR, NOW_PLAYING_OWNER_CHANGE)
 
     OnStartObserving {
       val context = appContext.reactContext ?: return@OnStartObserving
@@ -60,5 +64,6 @@ class MediaSessionModule : Module() {
     const val INTERRUPTION = "interruption"
     const val ROUTE_CHANGE = "routeChange"
     const val ACTIVATION_ERROR = "activationError"
+    const val NOW_PLAYING_OWNER_CHANGE = "nowPlayingOwnerChange"
   }
 }

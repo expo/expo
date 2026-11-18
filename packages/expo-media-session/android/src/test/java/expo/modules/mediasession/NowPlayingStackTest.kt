@@ -37,6 +37,20 @@ class NowPlayingStackTest {
   }
 
   @Test
+  fun throwingPreviousOwnerDoesNotBlockTakeover() {
+    val podcast = object : NowPlayingOwner by FakeNowPlayingOwner("podcast") {
+      override fun pauseForTakeover() = throw IllegalStateException("The player was released")
+    }
+    val video = FakeNowPlayingOwner("video", NowPlayingMediaType.VIDEO)
+    stack.offer(podcast, NowPlayingInfo(title = "Podcast"), playback)
+
+    stack.offer(video, NowPlayingInfo(title = "Video"), playback)
+
+    assertEquals("video", stack.ownerId)
+    assertEquals("Video", center.state?.info?.title)
+  }
+
+  @Test
   fun userPausedOwnerReturnsPaused() {
     val podcast = FakeNowPlayingOwner("podcast", isPlaying = false)
     val video = FakeNowPlayingOwner("video", NowPlayingMediaType.VIDEO)
