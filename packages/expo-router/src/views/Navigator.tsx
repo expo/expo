@@ -76,15 +76,47 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
 
   const sortedScreens = useSortedScreens(screens ?? [], guardedRedirects);
 
-  router ||= StackRouter as unknown as T;
+  // The builder runs below this layout's guard provider, so it applies this layout's guards.
+  return (
+    <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+      <NavigatorContent
+        // `T` defaults to the stack router type, which is the fallback when no router is passed.
+        router={router || (StackRouter as unknown as T)}
+        routerOptions={routerOptions}
+        screens={sortedScreens}
+        screenOptions={screenOptions}
+        activityEnabled={activityEnabled}
+        activityDefaultThreshold={activityDefaultThreshold}
+        unstable_screenErrorBoundary={unstable_screenErrorBoundary}>
+        {nonScreenChildren}
+      </NavigatorContent>
+    </GuardContextProvider>
+  );
+}
 
+function NavigatorContent<T extends UseNavigationBuilderRouter>({
+  router,
+  routerOptions,
+  screens,
+  screenOptions,
+  activityEnabled,
+  activityDefaultThreshold,
+  unstable_screenErrorBoundary,
+  children,
+}: Omit<NavigatorProps<T>, 'children' | 'router'> & {
+  router: T;
+  screens: React.ReactNode[];
+  children: React.ReactNode;
+}) {
+  const contextKey = useContextKey();
+  const node = useRouteNode();
   const navigation = useNavigationBuilder(
     router,
     {
       // Used for getting the parent with navigation.getParent('/normalized/path')
       ...routerOptions,
       id: contextKey,
-      children: sortedScreens || [<Screen key="default" />],
+      children: screens || [<Screen key="default" />],
       activityEnabled,
       screenOptions,
       initialRouteName: getValidInitialRouteName(node),
@@ -93,16 +125,10 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
   );
 
   // useNavigationBuilder requires at least one screen to be defined otherwise it will throw.
-  if (!sortedScreens.length) {
+  if (!screens.length) {
     console.warn(`Navigator at "${contextKey}" has no children.`);
     return null;
   }
-
-  const content = (
-    <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
-      {nonScreenChildren}
-    </GuardContextProvider>
-  );
 
   return (
     <NavigatorContext.Provider
@@ -113,10 +139,10 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
       }}>
       {unstable_screenErrorBoundary ? (
         <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
-          {content}
+          {children}
         </ScreenErrorBoundaryContext>
       ) : (
-        content
+        children
       )}
     </NavigatorContext.Provider>
   );

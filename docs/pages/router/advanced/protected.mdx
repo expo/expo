@@ -15,7 +15,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 ## Overview
 
-Protected screens allow you to prevent users from accessing certain routes using client-side navigation. If a user tries to navigate to a protected screen, or if a screen becomes protected while it is active, they will be redirected to the anchor route (usually the index screen) or the first available screen in the stack.
+Protected screens allow you to prevent users from accessing certain routes using client-side navigation. If a user tries to navigate to a protected screen, the navigation does not happen. If a screen becomes protected while it is active, the user returns to the previous accessible screen. When no accessible screen remains, the navigator opens its anchor route (usually the index screen) or the first available screen.
 
 <FileTree
   files={[
@@ -50,11 +50,11 @@ export function AppLayout() {
 }
 ```
 
-In this example, the `/private` route is inaccessible because the `guard` is false. When a user attempts to access `/private`, they are redirected to the anchor route, which is the **index** screen.
+In this example, the `/private` route is inaccessible because the `guard` is false. When a user attempts to navigate to `/private`, the current screen stays. A deep link to `/private` opens the anchor route, which is the **index** screen.
 
-Additionally, if the user is on `/private/page` and the `guard` condition changes to **false**, they will be redirected automatically.
+Additionally, if the user is on `/private/page` and the `guard` condition changes to **false**, the **private** screens are removed and the previous screen is shown again.
 
-When a screen's **guard** is changed from **true** to **false**, all of its history entries will be removed from the navigation history.
+When a screen's **guard** is changed from **true** to **false**, all of its history entries will be removed from the navigation history. Screens that remain keep their state.
 
 ## Multiple protected screens
 
@@ -110,9 +110,21 @@ In this case:
 - `/private` is only protected if the user is logged in and is an admin.
 - `/about` is protected to any logged-in user.
 
+## What happens when access changes
+
+The following rules apply when a guard is **false** and the screen has no `redirectTo`:
+
+- A push, replace, or prefetch of the protected screen does nothing. The current screen and history stay the same.
+- When the active screen becomes protected, the navigator removes it and shows the screen below it. It does not open another copy of the anchor route.
+- When no accessible screen remains in the history, the navigator opens its anchor route once.
+- When every screen of a navigator is protected, the navigator stays mounted, shows no screen, and logs a warning in development. When access returns, the navigator starts again at its anchor route.
+- When guards in a parent layout and a child layout both fail, the parent guard decides. When nested `Protected` groups in one layout both fail, the outermost group decides.
+
+> **warning** The router can check a guard only after its layout has rendered. Navigation into a layout that has not rendered yet opens that layout first. The guard then applies, but a replace has already removed the previous screen.
+
 ## Use the default redirect
 
-If access is denied, the navigator redirects to its anchor route or the first available screen.
+If access is denied and no accessible screen remains, the navigator opens its anchor route or the first available screen.
 
 <FileTree
   files={[
@@ -171,6 +183,12 @@ export function AppLayout() {
 }
 ```
 
+With `redirectTo`, a push or replace of the protected screen opens the redirect destination with the same action. When the active screen becomes protected, the navigator removes it and opens the destination as a new screen, even if the same route is already in the history. A relative `redirectTo`, such as `./upgrade`, resolves from the protected route.
+
+If `redirectTo` points to another protected screen, the router follows that screen's `redirectTo`. If the redirects form a loop, the router throws an error.
+
+If your code navigates in the same event handler that changes the guard, that navigation runs instead of the redirect.
+
 ## Tabs and Drawer
 
 Protected routes are also available for [Tabs](/router/advanced/tabs/) and [Drawer](/router/advanced/drawer/) navigators.
@@ -201,7 +219,7 @@ export default function TabLayout() {
 
 > **info** The stable custom navigator APIs are available in **SDK 58 and later**.
 
-Navigators created with `createStandardRouterNavigator` or `integrateWithRouter` include a `.Protected` child. See [Custom navigators](/router/advanced/custom-navigators/) to create or integrate one.
+Navigators created with `createStandardRouterNavigator` or `integrateWithRouter` include a `.Protected` child. The navigator receives only the routes and descriptors of accessible screens. See [Custom navigators](/router/advanced/custom-navigators/) to create or integrate one.
 
 ## Static rendering considerations
 

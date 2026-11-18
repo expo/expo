@@ -12,6 +12,8 @@ import { createStandardRouterNavigator } from '../standard-navigation';
 import { appendMissingPlaceholderTabDescriptors } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 import { act, renderRouter, screen } from '../testing-library';
 import { useNavigation } from '../useNavigation';
+import { Navigator, Slot } from '../views/Navigator';
+import { Protected } from '../views/Protected';
 
 // Records every call so that an intermediate blocked descriptor cannot pass an assertion on the
 // settled state. Arguments: navigator args, the navigator state context, the root state context.
@@ -809,6 +811,61 @@ describe('focused explicit redirect on a guard flip', () => {
     expect(rendered).not.toContainEqual(['index', 'account']);
     expect(rendered).not.toContainEqual(['index']);
     expect(upgrade).not.toHaveBeenCalled();
+  });
+});
+
+describe('legacy Navigator', () => {
+  it('reveals the same Settings when the guard of the active screen fails', async () => {
+    let close: () => void;
+    await renderRouter({
+      _layout: function Layout() {
+        const [open, setOpen] = useState(true);
+        close = () => setOpen(false);
+        return (
+          <Navigator>
+            <Protected guard={open}>
+              <Navigator.Screen name="login" />
+            </Protected>
+            <Slot />
+          </Navigator>
+        );
+      },
+      index: () => null,
+      settings: () => null,
+      login: () => null,
+    });
+    await act(() => router.push('/settings'));
+    await act(() => router.push('/login'));
+    const [home, settings] = navigationRef.getRootState().routes[0]!.state!.routes;
+
+    await act(() => close());
+
+    expect(navigationRef.getRootState().routes[0]!.state!.routes).toEqual([home, settings]);
+    expect(screen).toHavePathname('/settings');
+  });
+
+  it('rejects a push to a blocked route without changing Settings', async () => {
+    const login = jest.fn(() => null);
+    await renderRouter({
+      _layout: () => (
+        <Navigator>
+          <Protected guard={false}>
+            <Navigator.Screen name="login" />
+          </Protected>
+          <Slot />
+        </Navigator>
+      ),
+      index: () => null,
+      settings: () => null,
+      login,
+    });
+    await act(() => router.push('/settings'));
+    const before = navigationRef.getRootState().routes[0]!.state!;
+
+    await act(() => router.push('/login'));
+
+    expect(navigationRef.getRootState().routes[0]!.state).toBe(before);
+    expect(login).not.toHaveBeenCalled();
   });
 });
 
