@@ -8,11 +8,14 @@ type PullRequestView = {
   state: string;
   mergeCommit: { oid: string };
   baseRefName: string;
+  author: { login: string };
 };
 
 /** Calls GitHub with the `gh` CLI, which reads the token from GH_TOKEN. */
 export function ghCli(repo: string): GitHub & {
-  viewPullRequestAsync(prNumber: number): Promise<{ mergeSha: string; baseBranch: string }>;
+  viewPullRequestAsync(
+    prNumber: number
+  ): Promise<{ mergeSha: string; baseBranch: string; author: string }>;
 } {
   const gh = async (...args: string[]) =>
     (await spawnAsync('gh', [...args, '--repo', repo])).stdout.trim();
@@ -22,12 +25,16 @@ export function ghCli(repo: string): GitHub & {
     },
     async viewPullRequestAsync(prNumber) {
       const view: PullRequestView = JSON.parse(
-        await gh('pr', 'view', String(prNumber), '--json', 'state,mergeCommit,baseRefName')
+        await gh('pr', 'view', String(prNumber), '--json', 'state,mergeCommit,baseRefName,author')
       );
       if (view.state !== 'MERGED') {
         throw new Error(`#${prNumber} is not merged, so there is nothing to backport.`);
       }
-      return { mergeSha: view.mergeCommit.oid, baseBranch: view.baseRefName };
+      return {
+        mergeSha: view.mergeCommit.oid,
+        baseBranch: view.baseRefName,
+        author: view.author.login,
+      };
     },
   };
 }
