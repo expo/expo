@@ -32,6 +32,20 @@ private struct RenamedSwiftUICardView: View {
   }
 }
 
+@ExpoView<SwiftUICardProps>
+private struct AppContextReadingView: View {
+  /// The app context that the last rendered view read from the environment.
+  static weak var renderedAppContext: AppContext?
+
+  @Environment(\.appContext) private var appContext
+
+  var body: some View {
+    Color.clear.onAppear {
+      Self.renderedAppContext = appContext
+    }
+  }
+}
+
 @ExpoModule("SwiftUICards", views: [SwiftUICardView.self])
 private final class SwiftUICardsModule: Module {}
 
@@ -69,7 +83,12 @@ private extension SwiftUINativeView {
 @MainActor
 @Suite
 struct SwiftUINativeViewTests {
-  private let view = SwiftUINativeView<SwiftUICardView>()
+  private let view: SwiftUINativeView<SwiftUICardView>
+
+  // An initial value of `view` would be created off the main thread, but Fabric creates component views on it.
+  init() {
+    view = SwiftUINativeView<SwiftUICardView>()
+  }
 
   private func decoded(
     _ props: SwiftUICardProps,
@@ -279,6 +298,24 @@ struct SwiftUINativeViewTests {
     try await render(window)
 
     #expect(hostedView.window == nil)
+  }
+
+  @Test
+  func `view struct reads the app context of its component view from the environment`() async throws {
+    let appContext = AppContext()
+    let observer = SurfacePresenterObserver(appContext: appContext)
+    observer.willMountComponents(withRootTag: 1)
+    let componentView = try newComponentView(of: SwiftUINativeView<AppContextReadingView>.self)
+    observer.didMountComponents(withRootTag: 1)
+    let view = try #require(componentView as? SwiftUINativeView<AppContextReadingView>)
+    view.update(nil)
+
+    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
+    window.rootViewController = UIHostingController(rootView: view.body)
+    window.makeKeyAndVisible()
+    try await render(window)
+
+    #expect(AppContextReadingView.renderedAppContext === appContext)
   }
 
   @Test

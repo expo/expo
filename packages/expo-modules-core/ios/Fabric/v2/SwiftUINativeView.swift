@@ -62,6 +62,14 @@ internal final class SwiftUINativeViewModel<Content: AnyNativeSwiftUIView>: Obse
   // Stored so `objectWillChange` is a plain property read instead of Combine's O(live objects) side-table lookup.
   let objectWillChange = ObservableObjectPublisher()
 
+  /// The app context that the view belongs to. `ExpoSwiftUI.NativeChild` puts it in the environment of `Content`.
+  private(set) weak var appContext: AppContext?
+
+  init() {
+    // Fabric creates the component views, and so their models, on the main thread.
+    appContext = MainActor.assumeIsolated { AppContext.appContextForNewViews }
+  }
+
   /// The mounted props, or `nil` before Fabric mounts the first props.
   private(set) var decodedProps: DecodedViewProps<Content.Props>?
 
