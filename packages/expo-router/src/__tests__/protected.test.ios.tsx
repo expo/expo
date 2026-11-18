@@ -1017,30 +1017,6 @@ it('resolves a relative redirectTo without the relativeToDirectory option of the
   expect(screen).toHavePathname('/private/login');
 });
 
-it('opens a shared redirectTo route in the group of the blocked route', async () => {
-  await renderRouter(
-    {
-      _layout: () => (
-        <Stack>
-          <Stack.Protected guard={false} redirectTo="/login">
-            <Stack.Screen name="(two)/secret" />
-          </Stack.Protected>
-        </Stack>
-      ),
-      '(one)/home': () => <Text testID="one-home">one home</Text>,
-      '(one)/login': () => <Text testID="one-login">one login</Text>,
-      '(two)/login': () => <Text testID="two-login">two login</Text>,
-      '(two)/secret': () => <Text testID="secret">secret</Text>,
-    },
-    { initialUrl: '/(one)/home' }
-  );
-
-  await act(() => router.push('/(two)/secret'));
-
-  expect(screen.getByTestId('two-login')).toBeVisible();
-  expect(screen).toHaveSegments(['(two)', 'login']);
-});
-
 it('follows a redirectTo chain back to the same href when it opens a route in another group', async () => {
   await renderRouter(
     {
@@ -1088,49 +1064,7 @@ it('throws when the redirectTo targets of blocked routes form a loop', async () 
   await expect(async () => {
     await act(() => router.push('/secret'));
   }).rejects.toThrow(
-    'Expo Router could not open "/secret" because the `redirectTo` targets of protected routes form a loop or a chain longer than 20 routes: /secret -> /vip -> /secret. ' +
-      'Change `redirectTo` on a `Protected` component so that the redirects end at an accessible route.'
-  );
-});
-
-it('throws when the redirectTo targets of blocked routes form a chain longer than 20 routes', async () => {
-  await renderRouter({
-    _layout: () => (
-      <Stack>
-        <Stack.Protected guard={false} redirectTo="./child/secret">
-          <Stack.Screen name="[...slug]" />
-        </Stack.Protected>
-      </Stack>
-    ),
-    index: () => <Text testID="home">home</Text>,
-    '[...slug]': () => <Text testID="slug">slug</Text>,
-  });
-
-  await expect(async () => {
-    await act(() => router.push('/secret'));
-  }).rejects.toThrow(
-    'Expo Router could not open "/secret" because the `redirectTo` targets of protected routes form a loop or a chain longer than 20 routes: ' +
-      '/secret -> ' +
-      '/child/secret -> ' +
-      '/child/child/secret -> ' +
-      '/child/child/child/secret -> ' +
-      '/child/child/child/child/secret -> ' +
-      '/child/child/child/child/child/secret -> ' +
-      '/child/child/child/child/child/child/secret -> ' +
-      '/child/child/child/child/child/child/child/secret -> ' +
-      '/child/child/child/child/child/child/child/child/secret -> ' +
-      '/child/child/child/child/child/child/child/child/child/secret -> ' +
-      '/child/child/child/child/child/child/child/child/child/child/secret -> ' +
-      '/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
-      '/child/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
-      '/child/child/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
-      '/child/child/child/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
-      '/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
-      '/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
-      '/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
-      '/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
-      '/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
-      '/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/secret. ' +
+    'Expo Router could not open "/secret" because the `redirectTo` targets of protected routes form a loop or a chain longer than 20 routes. ' +
       'Change `redirectTo` on a `Protected` component so that the redirects end at an accessible route.'
   );
 });

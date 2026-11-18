@@ -170,4 +170,92 @@ describe(getNavigateAction, () => {
       })
     );
   });
+
+  it('blocks a route that a nested mounted navigator guards', () => {
+    mockResolveNavigationDestination.mockReturnValueOnce({
+      type: 'PUSH',
+      target: 'root-nav',
+      payload: { name: 'app', state: { key: 'app-nav', routes: [{ name: 'secret' }] } },
+    });
+
+    const result = getNavigateAction(
+      '/app/secret',
+      { event: 'PUSH' },
+      {
+        ...config,
+        registry: new Map([
+          ['root-nav', { reduce: () => null, getGuard: () => undefined }],
+          ['app-nav', { reduce: () => null, getGuard: () => ({ type: 'noDestination' }) }],
+        ]),
+      },
+      'PUSH',
+      undefined,
+      undefined,
+      undefined,
+      navigationState
+    );
+
+    expect(result).toEqual({ status: 'blocked' });
+  });
+
+  it('uses the guard of the outermost mounted navigator', () => {
+    mockResolveNavigationDestination.mockReturnValueOnce({
+      type: 'PUSH',
+      target: 'root-nav',
+      payload: { name: 'app', state: { key: 'app-nav', routes: [{ name: 'secret' }] } },
+    });
+    const getInnerGuard = jest.fn(() => undefined);
+
+    const result = getNavigateAction(
+      '/app/secret',
+      { event: 'PUSH' },
+      {
+        ...config,
+        registry: new Map([
+          ['root-nav', { reduce: () => null, getGuard: () => ({ type: 'noDestination' }) }],
+          ['app-nav', { reduce: () => null, getGuard: getInnerGuard }],
+        ]),
+      },
+      'PUSH',
+      undefined,
+      undefined,
+      undefined,
+      navigationState
+    );
+
+    expect(result).toEqual({ status: 'blocked' });
+    expect(getInnerGuard).not.toHaveBeenCalled();
+  });
+
+  it('does not check the routes of a navigator that is not mounted', () => {
+    mockResolveNavigationDestination.mockReturnValueOnce({
+      type: 'PUSH',
+      target: 'root-nav',
+      // A navigator that is not mounted has no state key yet.
+      payload: { name: 'app', state: { routes: [{ name: 'secret' }] } },
+    });
+    const getGuard = jest.fn(() => undefined);
+
+    const result = getNavigateAction(
+      '/app/secret',
+      { event: 'PUSH' },
+      { ...config, registry: new Map([['root-nav', { reduce: () => null, getGuard }]]) },
+      'PUSH',
+      undefined,
+      undefined,
+      undefined,
+      navigationState
+    );
+
+    expect(result).toEqual({
+      status: 'action',
+      action: {
+        type: 'PUSH',
+        target: 'root-nav',
+        payload: { name: 'app', state: { routes: [{ name: 'secret' }] } },
+      },
+    });
+    expect(getGuard).toHaveBeenCalledTimes(1);
+    expect(getGuard).toHaveBeenCalledWith('app');
+  });
 });

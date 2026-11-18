@@ -27,9 +27,8 @@ import {
   completeNavigationState,
   createSeededNavigationState,
 } from './createSeededNavigationState';
-import { getNavigateAction } from './getNavigationAction';
+import { getNavigateAction, MAX_GUARD_REDIRECTS } from './getNavigationAction';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
-import { MAX_REDIRECT_CHAIN_LENGTH } from './resolveGuardedNavigation';
 import type { RouterRegistry } from './routerRegistry';
 import { markActionEnqueuedAndReturnId, type QueuedRoutingIntent } from './routingQueue';
 import { findStateByKey, resetNavigatorState } from './stateUtils';
@@ -295,7 +294,7 @@ function reduceTree(
       }
       if (resolution.status === 'redirect-loop') {
         throw new Error(
-          `Expo Router could not open "${resolution.hrefs[0]}" because the \`redirectTo\` targets of protected routes form a loop or a chain longer than ${MAX_REDIRECT_CHAIN_LENGTH} routes: ${resolution.hrefs.join(' -> ')}. ` +
+          `Expo Router could not open "${operation.payload.originalHref ?? href}" because the \`redirectTo\` targets of protected routes form a loop or a chain longer than ${MAX_GUARD_REDIRECTS} routes. ` +
             'Change `redirectTo` on a `Protected` component so that the redirects end at an accessible route.'
         );
       }
