@@ -100,6 +100,16 @@ public struct AppMetrics {
     MetricsDatabase.cleanUpLegacyStorage()
   }
 
+  /// Applies a consent change from `Observe.setConsent`. It runs on the actor without suspending,
+  /// so the changes run one at a time.
+  @AppMetricsActor
+  public static func setConsent(granted: Bool) throws {
+    let update = ObserveConsent.update(granted: granted)
+    if !update.isSaved {
+      throw ConsentNotSavedException(granted)
+    }
+  }
+
   // MARK: - Read API for downstream consumers (e.g. expo-observe)
 
   /// Returns metric rows whose `id` is greater than `cursor`, in ascending id order. Consumers persist
@@ -225,5 +235,17 @@ public struct AppMetrics {
       foregroundSession?.stop()
       foregroundSession = nil
     }
+  }
+}
+
+internal final class ConsentNotSavedException: GenericException<Bool>, @unchecked Sendable {
+  override var reason: String {
+    if param {
+      return "Observe could not save the consent value 'granted' on the device, so collection did not start. "
+        + "The device storage may be full or unavailable. Free storage and call setConsent('granted') again."
+    }
+    return "Observe could not save the consent value 'not-granted' on the device. Collection stopped, but the "
+      + "next launch may read the earlier value. The device storage may be full or unavailable. Free storage "
+      + "and call setConsent('not-granted') again."
   }
 }

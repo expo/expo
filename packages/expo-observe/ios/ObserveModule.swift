@@ -17,6 +17,11 @@ internal struct Config: Record {
   @Field var integrations: [String: Any]?
 }
 
+internal enum ConsentValue: String, Enumerable {
+  case granted
+  case notGranted = "not-granted"
+}
+
 internal struct BundleDefaults: Record {
   @Field var environment: String = ""
   @Field var isJsDev: Bool = false
@@ -46,6 +51,10 @@ public final class ObserveModule: Module {
 
     Constant("clientId") {
       EASClientID.uuid().uuidString.lowercased()
+    }
+
+    AsyncFunction("setConsent") { (consent: ConsentValue) in
+      try await AppMetrics.setConsent(granted: consent == .granted)
     }
 
     AsyncFunction("dispatchEvents") {

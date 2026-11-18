@@ -65,7 +65,7 @@ object AppMetricsPreferences {
     preferences.putString(context, KEY_NETWORK_TRACES_CONFIGURATION, configuration.toJson(), commit = false)
   }
 
-  // Keeps the saved consent value.
+  // Keeps the consent value, the one value saved without consent.
   internal fun deleteStoredSettings(context: Context) {
     val consent = getObserveConsent(context) ?: return preferences.delete(context)
     context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit(commit = true) {
@@ -74,7 +74,7 @@ object AppMetricsPreferences {
     }
   }
 
-  /** The saved consent value. `null` when no value was saved. */
+  /** The consent value saved by `Observe.setConsent`. `null` until the first call. */
   internal fun getObserveConsent(context: Context): String? =
     context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getString(KEY_OBSERVE_CONSENT, null)
 

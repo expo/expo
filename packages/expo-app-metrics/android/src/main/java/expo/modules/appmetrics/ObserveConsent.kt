@@ -19,9 +19,39 @@ object ObserveConsent {
   var isGranted: Boolean = false
     private set
 
+  // After a revoke, a grant in the same process only saves the value.
+  private var hasRevoked = false
+
   /** Reads the saved consent value, else the manifest value that the `expo-observe` config plugin writes. */
+  @Synchronized
   fun load(context: Context) {
     isGranted = resolve(AppMetricsPreferences.getObserveConsent(context), readManifestConsent(context))
+    hasRevoked = false
+  }
+
+  internal data class Update(val changed: Boolean, val isSaved: Boolean)
+
+  /**
+   * Saves the value and changes the gate. A grant after a revoke changes it only at the next launch.
+   * When the save fails, a revoke still closes the gate, but a grant changes nothing: the next
+   * launch would read the earlier value.
+   */
+  @Synchronized
+  internal fun update(context: Context, granted: Boolean): Update {
+    val isSaved = AppMetricsPreferences.setObserveConsent(
+      context,
+      if (granted) {
+        GRANTED
+      } else {
+        NOT_GRANTED
+      }
+    )
+    if (granted == isGranted || (granted && (hasRevoked || !isSaved))) {
+      return Update(changed = false, isSaved = isSaved)
+    }
+    isGranted = granted
+    hasRevoked = hasRevoked || !granted
+    return Update(changed = true, isSaved = isSaved)
   }
 
   // Null when the manifest has no value. An empty string, which is an unknown value, when the
@@ -79,34 +109,46 @@ class ConsentGatedPreferences(private val name: String) {
   private val unsavedValues = ConcurrentHashMap<String, Any>()
 
   fun getString(context: Context, key: String): String? =
-    if (ObserveConsent.isGranted) {
-      preferences(context).getString(key, null)
-    } else {
-      unsavedValues[key] as? String
-    }
+    read(inMemory = { unsavedValues[key] as? String }, stored = { preferences(context).getString(key, null) })
 
   fun getLong(context: Context, key: String, defaultValue: Long): Long =
-    if (ObserveConsent.isGranted) {
-      preferences(context).getLong(key, defaultValue)
-    } else {
-      unsavedValues[key] as? Long ?: defaultValue
-    }
+    read(
+      inMemory = { unsavedValues[key] as? Long ?: defaultValue },
+      stored = { preferences(context).getLong(key, defaultValue) }
+    )
 
   /** With `commit`, the value is on disk when this returns. */
   fun putString(context: Context, key: String, value: String, commit: Boolean = true) {
-    if (ObserveConsent.isGranted) {
-      preferences(context).edit(commit) { putString(key, value) }
-    } else {
-      unsavedValues[key] = value
-    }
+    write(inMemory = { unsavedValues[key] = value }, stored = { preferences(context).edit(commit) { putString(key, value) } })
   }
 
   fun putLong(context: Context, key: String, value: Long) {
-    if (ObserveConsent.isGranted) {
-      preferences(context).edit(commit = true) { putLong(key, value) }
-    } else {
-      unsavedValues[key] = value
+    write(inMemory = { unsavedValues[key] = value }, stored = { preferences(context).edit(commit = true) { putLong(key, value) } })
+  }
+
+  // `update` changes the gate under the same lock. So a write cannot land in storage after a revoke
+  // closed the gate.
+  private inline fun write(inMemory: () -> Unit, stored: () -> Unit) {
+    synchronized(ObserveConsent) {
+      if (ObserveConsent.isGranted) {
+        stored()
+      } else {
+        inMemory()
+      }
     }
+  }
+
+  // Like `write`, but a read with consent does not wait for the lock: a stale value read during a
+  // transition changes nothing on disk.
+  private inline fun <T> read(inMemory: () -> T, stored: () -> T): T {
+    if (!ObserveConsent.isGranted) {
+      synchronized(ObserveConsent) {
+        if (!ObserveConsent.isGranted) {
+          return inMemory()
+        }
+      }
+    }
+    return stored()
   }
 
   /** Deletes the settings file. Runs at a launch without consent. */
