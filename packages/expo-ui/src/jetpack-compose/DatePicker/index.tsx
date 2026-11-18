@@ -476,6 +476,7 @@ export function DateRangePickerDialog(props: DateRangePickerDialogProps) {
 
 export interface TimePickerDialogProps {
   initialDate?: string | null;
+  variant?: AndroidVariant;
   is24Hour?: boolean;
   confirmButtonLabel?: string;
   dismissButtonLabel?: string;
