@@ -113,7 +113,20 @@ export default function ColumnAlignmentExample() {
 
 `style.width` and `style.height` take a fixed size in density-independent pixels, or a percentage of the parent, such as `'50%'`. On Android and iOS, the parent has to be a universal `Row`, `Column`, or `Host` with a size on that axis. A universal `ScrollView` resolves the cross axis only, because the scroll axis is unbounded. If the column takes its size from its children, it ignores a child percentage on that axis. A Jetpack Compose `Column` or a SwiftUI `VStack` ignores a child percentage.
 
-```tsx ColumnSizeExample.tsx
+<ComponentExample
+  title="ColumnSizeExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-column-size-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-column-size-android-dark.webp',
+    alt: 'A full-width light blue bar above a dark blue bar at half the width',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-column-size-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-column-size-ios-dark.webp',
+    alt: 'A full-width light blue bar above a dark blue bar at half the width',
+  }}>
+
+```tsx
 import { Host, Column } from '@expo/ui';
 
 export default function ColumnSizeExample() {
@@ -127,6 +140,8 @@ export default function ColumnSizeExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
