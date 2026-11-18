@@ -5,13 +5,23 @@
 /// Decodes the props that React sends to the views of one type into their `@ViewProps` struct. The
 /// component descriptor of the view type calls it from `cloneProps`, on the thread that commits the
 /// props, which for JavaScript props objects is the runtime's JavaScript thread.
-/// Creates the decoder of the given props type. `AnyNativeView._makePropsDecoder` is specialized for the props type,
-/// and specialized code would create `ViewPropsDecoder<Props>` from a mangled name: the runtime then looks up the
-/// conformance of `Props` to `AnyViewProps`, which in a large app costs more than the rest of registering the view.
-/// A caller of this function passes the conformance, so it must not be inlined or specialized.
+/// Creates the decoder of the given props type.
+///
+/// `AnyNativeView._makePropsDecoder` is specialized for a concrete props type. When specialized code creates
+/// `ViewPropsDecoder<Props>`, the Swift runtime builds the type from its mangled name. A mangled name has no
+/// conformances, so the runtime looks up the conformance of `Props` to `AnyViewProps`. In a large app, a lookup that
+/// isn't cached yet takes much longer than the rest of registering the view.
+///
+/// When `_makePropsDecoder` calls this function instead, it passes the conformance as an argument, and the runtime
+/// builds the type without a lookup. This works only while this function stays generic: an inlined or specialized
+/// copy would build the type from its mangled name again. `@inline(never)` prevents inlining, and `@_semantics`
+/// prevents specialization.
 @inline(never)
 @_semantics("optimize.sil.specialize.generic.never")
-public func _makeViewPropsDecoder<Props: AnyViewProps>(_ propsType: Props.Type, viewName: String) -> ViewPropsDecoder<Props> {
+public func _makeViewPropsDecoder<Props: AnyViewProps>(
+  _ propsType: Props.Type,
+  viewName: String
+) -> ViewPropsDecoder<Props> {
   return ViewPropsDecoder<Props>(viewName: viewName)
 }
 
