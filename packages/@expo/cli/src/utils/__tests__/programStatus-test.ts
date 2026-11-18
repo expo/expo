@@ -43,4 +43,29 @@ describe(withProgramStatus, () => {
 
     write.mockRestore();
   });
+
+  it('removes escape sequences from the message', async () => {
+    jest.mocked(isInteractive).mockReturnValue(true);
+    const write = jest.spyOn(process.stdout, 'write').mockReturnValue(true);
+
+    await withProgramStatus(
+      { state: 'working', msg: 'See \x1b]8;;https://expo.dev\x1b\\docs\x1b]8;;\x1b\\ now' },
+      async () => {}
+    );
+    const msg = /:msg=([^:\x1b]+)/.exec(String(write.mock.calls[0]![0]))![1]!;
+    expect(Buffer.from(msg, 'base64').toString()).toBe('See docs now');
+
+    write.mockRestore();
+  });
+
+  it('stays fast on a message full of unterminated escape sequences', async () => {
+    jest.mocked(isInteractive).mockReturnValue(true);
+    const write = jest.spyOn(process.stdout, 'write').mockReturnValue(true);
+
+    const start = performance.now();
+    await withProgramStatus({ state: 'working', msg: '\x1b]'.repeat(100_000) }, async () => {});
+    expect(performance.now() - start).toBeLessThan(1000);
+
+    write.mockRestore();
+  });
 });
