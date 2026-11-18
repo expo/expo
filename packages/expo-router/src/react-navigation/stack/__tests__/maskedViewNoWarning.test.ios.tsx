@@ -32,6 +32,78 @@ it('does not warn with the forFade header interpolator', async () => {
   expect(warnSpy).not.toHaveBeenCalled();
 });
 
+it('does not warn with the default header interpolator', async () => {
+  await renderRouter({
+    _layout: () => <JSStack />,
+    index: () => <View />,
+    second: () => <View />,
+  });
+
+  await act(() => router.push('/second'));
+
+  expect(warnSpy).not.toHaveBeenCalled();
+});
+
+it('does not warn with the forSlideLeft header interpolator', async () => {
+  await renderRouter({
+    _layout: () => (
+      <JSStack screenOptions={{ headerStyleInterpolator: HeaderStyleInterpolators.forSlideLeft }} />
+    ),
+    index: () => <View />,
+    second: () => <View />,
+  });
+
+  await act(() => router.push('/second'));
+
+  expect(warnSpy).not.toHaveBeenCalled();
+});
+
+it('does not warn with the forSlideRight header interpolator', async () => {
+  await renderRouter({
+    _layout: () => (
+      <JSStack
+        screenOptions={{ headerStyleInterpolator: HeaderStyleInterpolators.forSlideRight }}
+      />
+    ),
+    index: () => <View />,
+    second: () => <View />,
+  });
+
+  await act(() => router.push('/second'));
+
+  expect(warnSpy).not.toHaveBeenCalled();
+});
+
+it('does not warn with the forSlideUp header interpolator', async () => {
+  await renderRouter({
+    _layout: () => (
+      <JSStack screenOptions={{ headerStyleInterpolator: HeaderStyleInterpolators.forSlideUp }} />
+    ),
+    index: () => <View />,
+    second: () => <View />,
+  });
+
+  await act(() => router.push('/second'));
+
+  expect(warnSpy).not.toHaveBeenCalled();
+});
+
+it('does not warn with the forNoAnimation header interpolator', async () => {
+  await renderRouter({
+    _layout: () => (
+      <JSStack
+        screenOptions={{ headerStyleInterpolator: HeaderStyleInterpolators.forNoAnimation }}
+      />
+    ),
+    index: () => <View />,
+    second: () => <View />,
+  });
+
+  await act(() => router.push('/second'));
+
+  expect(warnSpy).not.toHaveBeenCalled();
+});
+
 it('does not warn when the masked view is available', async () => {
   jest.replaceProperty(MaskedViewNative, 'isMaskedViewAvailable', true);
 
