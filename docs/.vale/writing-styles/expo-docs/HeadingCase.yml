@@ -42,6 +42,7 @@ exceptions:
   - '.*APNs.*'
   - '.*App Links.*'
   - '.*AppDelegate.*'
+  - '.*AppDrop.*'
   - '.*App Store.*'
   - '.*App Store Connect.*'
   - '.*Appium.*'

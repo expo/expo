@@ -997,7 +997,7 @@ In [`on.<trigger>.if`](#ontriggerif), the `workflow` context has only `name` and
 
 At the job level, `env` becomes available after Expo Workflows determines the job's [`environment`](#jobsjob_idenvironment). You cannot use `env` in `jobs.<job_id>.environment` itself.
 
-If a `build`, `repack`, `submit`, or `testflight` job has no explicit `environment`, Expo Workflows first evaluates its `params` to determine which environment to use. These parameters cannot use `env`. For example, a `submit` job inherits its source build's environment, but Expo Workflows must evaluate `params.build_id` before it can find that build. Set `environment` explicitly on the job to use `env` in its parameters.
+If a `build`, `repack`, `submit`, or `testflight` job has no explicit `environment`, Expo Workflows first evaluates its `params` to determine which environment to use. These parameters cannot use `env`. For example, a `submit` job inherits its source build's environment, but Expo Workflows must evaluate `params.build_id` before it can find that build. Set `environment` explicitly on the job to use `env` in its parameters. For an `appdrop` job, Expo Workflows evaluates only `params.build_id` this way. Its `params.update_link` can use `env`.
 
 A condition in [`jobs.<job_id>.if`](#jobsjob_idif) that references `env` fails the job if Expo Workflows cannot determine the environment, for example because the job's parameters are invalid. Set `environment` explicitly to make `env` available to the condition without relying on those parameters.
 
@@ -1766,6 +1766,29 @@ This job outputs the following properties, where `asc_build_id` is only set when
   "apple_app_id": string | null, // Apple App ID. https://expo.fyi/asc-app-id
   "ios_bundle_identifier": string | null, // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
   "asc_build_id": string | null // App Store Connect build ID. Only when submitting an already uploaded build.
+}
+```
+
+#### `appdrop`
+
+Publishes an Android or iOS build to [AppDrop](https://appdrop.app/) and outputs its share link. See [AppDrop job documentation](/eas/workflows/pre-packaged-jobs#appdrop) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: appdrop
+    # @end #
+    params:
+      build_id: string # required
+      update_link: string # optional
+```
+
+This job outputs the following properties:
+
+```json
+{
+  "share_url": string // Share link of the published build.
 }
 ```
 
