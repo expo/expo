@@ -18,6 +18,110 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
+it.each([
+  ['forFade', HeaderStyleInterpolators.forFade],
+  ['forSlideLeft', HeaderStyleInterpolators.forSlideLeft],
+  ['forSlideRight', HeaderStyleInterpolators.forSlideRight],
+  ['forSlideUp', HeaderStyleInterpolators.forSlideUp],
+  ['forNoAnimation', HeaderStyleInterpolators.forNoAnimation],
+])('does not warn with the %s header interpolator', async (_name, headerStyleInterpolator) => {
+  await renderRouter({
+    _layout: () => <JSStack screenOptions={{ headerStyleInterpolator }} />,
+    index: () => <View />,
+    second: () => <View />,
+  });
+
+  await act(() => router.push('/second'));
+
+  expect(warnSpy).not.toHaveBeenCalled();
+});
+
+it('does not warn with the default header interpolator', async () => {
+  await renderRouter({
+    _layout: () => <JSStack />,
+    index: () => <View />,
+    second: () => <View />,
+  });
+
+  await act(() => router.push('/second'));
+
+  expect(warnSpy).not.toHaveBeenCalled();
+});
+
+it('does not warn when the masked view is available', async () => {
+  jest.replaceProperty(MaskedViewNative, 'isMaskedViewAvailable', true);
+
+  await renderRouter({
+    _layout: () => (
+      <JSStack screenOptions={{ headerStyleInterpolator: HeaderStyleInterpolators.forUIKit }} />
+    ),
+    index: () => <View />,
+    second: () => <View />,
+  });
+
+  await act(() => router.push('/second'));
+
+  expect(warnSpy).not.toHaveBeenCalled();
+});
+
+it('does not warn with a custom back image', async () => {
+  await renderRouter({
+    _layout: () => (
+      <JSStack
+        screenOptions={{
+          headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
+          headerBackImage: () => <View />,
+        }}
+      />
+    ),
+    index: () => <View />,
+    second: () => <View />,
+  });
+
+  await act(() => router.push('/second'));
+
+  expect(warnSpy).not.toHaveBeenCalled();
+});
+
+it('does not warn with a custom headerLeft', async () => {
+  await renderRouter({
+    _layout: () => (
+      <JSStack
+        screenOptions={{
+          headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
+          headerLeft: () => null,
+        }}
+      />
+    ),
+    index: () => <View />,
+    second: () => <View />,
+  });
+
+  await act(() => router.push('/second'));
+
+  expect(warnSpy).not.toHaveBeenCalled();
+});
+
+it('does not warn with the minimal back button display mode', async () => {
+  await renderRouter({
+    _layout: () => (
+      <JSStack
+        screenOptions={{
+          headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
+          headerBackButtonDisplayMode: 'minimal',
+        }}
+      />
+    ),
+    index: () => <View />,
+    second: () => <View />,
+  });
+
+  await act(() => router.push('/second'));
+
+  expect(warnSpy).not.toHaveBeenCalled();
+});
+
+// `useWarnOnce` remembers shown warnings for the whole file, so this test runs last.
 it('warns once with the forUIKit header interpolator when the masked view is unavailable', async () => {
   await renderRouter({
     _layout: () => (

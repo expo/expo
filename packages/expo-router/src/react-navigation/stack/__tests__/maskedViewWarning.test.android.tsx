@@ -18,22 +18,32 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-it('does not warn on Android with the forUIKit header interpolator when the masked view is unavailable', async () => {
-  await renderRouter({
-    _layout: () => (
-      <JSStack
-        screenOptions={{
-          headerMode: 'float',
-          headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
-          headerBackButtonDisplayMode: 'default',
-        }}
-      />
-    ),
-    index: () => <View />,
-    second: () => <View />,
-  });
+it.each([
+  ['forUIKit', HeaderStyleInterpolators.forUIKit],
+  ['forFade', HeaderStyleInterpolators.forFade],
+  ['forSlideLeft', HeaderStyleInterpolators.forSlideLeft],
+  ['forSlideRight', HeaderStyleInterpolators.forSlideRight],
+  ['forSlideUp', HeaderStyleInterpolators.forSlideUp],
+  ['forNoAnimation', HeaderStyleInterpolators.forNoAnimation],
+])(
+  'does not warn on Android with the %s header interpolator when the masked view is unavailable',
+  async (_name, headerStyleInterpolator) => {
+    await renderRouter({
+      _layout: () => (
+        <JSStack
+          screenOptions={{
+            headerMode: 'float',
+            headerStyleInterpolator,
+            headerBackButtonDisplayMode: 'default',
+          }}
+        />
+      ),
+      index: () => <View />,
+      second: () => <View />,
+    });
 
-  await act(() => router.push('/second'));
+    await act(() => router.push('/second'));
 
-  expect(warnSpy).not.toHaveBeenCalled();
-});
+    expect(warnSpy).not.toHaveBeenCalled();
+  }
+);
