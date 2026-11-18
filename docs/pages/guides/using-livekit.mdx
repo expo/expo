@@ -24,10 +24,10 @@ This guide uses the [Expo LiveKit template](https://github.com/expo/expo-livekit
     Install the [LiveKit CLI](https://docs.livekit.io/reference/developer-tools/livekit-cli/). This
     guide uses it to sign in and to write your credentials.
   </Requirement>
-  <Requirement title="Android Studio or Xcode">
+  <Requirement title="A development build">
     The app uses WebRTC, which Expo Go does not include, so it runs in a [development
-    build](/develop/development-builds/introduction/). See [Set up your
-    environment](/get-started/set-up-your-environment/) to install Android Studio or Xcode.
+    build](/develop/development-builds/introduction/). This guide creates one with [Expo
+    Build](/build/introduction/) or on your computer.
   </Requirement>
   <Requirement title="Node.js 22.13 or newer">The voice agent runs on Node.js.</Requirement>
 </Prerequisites>
@@ -79,9 +79,27 @@ The agent connects to LiveKit Cloud and waits for a conversation. It uses a spee
 
 ### Run the app
 
-In a second terminal, create a development build and start the development server:
+The app runs in a development build. To create one in the cloud, use [Expo Build](/build/introduction/) with [EAS CLI](/eas/cli/). You do not need Android Studio or Xcode. In a second terminal, run:
+
+<Terminal
+  cmd={[
+    '# Build for Android',
+    '$ eas build --platform android --profile development',
+    '',
+    '# Build for iOS',
+    '$ eas build --platform ios --profile development',
+  ]}
+/>
+
+When the build finishes, install it on your device. Then start the development server:
+
+<Terminal cmd={['$ npm start']} />
+
+To create the development build on your computer instead, you need Android Studio or Xcode. See [Set up your environment](/get-started/set-up-your-environment/). These commands create the build and start the development server:
 
 <Terminal cmd={['# Run on Android', '$ npm run android', '', '# Run on iOS', '$ npm run ios']} />
+
+To compare the two methods, see [Introduction to development builds](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build).
 
 Tap **Start conversation** and allow microphone access. The agent greets you, and the transcript appears while you talk.
 
@@ -302,7 +320,7 @@ Deploy the agent in the **agent** directory to LiveKit Cloud with the LiveKit CL
 
 ### The app does not open in Expo Go
 
-LiveKit uses WebRTC, which needs native code that Expo Go does not include. Run the app in a [development build](/develop/development-builds/introduction/) with `npm run android` or `npm run ios`.
+LiveKit uses WebRTC, which needs native code that Expo Go does not include. Run the app in a [development build](/develop/development-builds/introduction/). See [Run the app](#run-the-app).
 
 ### The app stays on "Connecting"
 
