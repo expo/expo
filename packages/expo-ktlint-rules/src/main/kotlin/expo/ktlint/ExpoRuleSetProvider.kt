@@ -17,6 +17,7 @@ internal val EXPO_RULE_ABOUT =
 class ExpoRuleSetProvider : RuleSetProviderV3(id = RuleSetId(EXPO_RULE_SET_ID)) {
   override fun getRuleProviders(): Set<RuleProvider> =
     setOf(
-      RuleProvider { IfBracesRule() }
+      RuleProvider { IfBracesRule() },
+      RuleProvider { ObserveSharedImportsRule() }
     )
 }

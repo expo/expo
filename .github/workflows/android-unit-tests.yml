@@ -8,6 +8,7 @@ on:
       - .github/workflows/android-unit-tests.yml
       - fastlane/**
       - packages/**/android/**
+      - packages/expo-ktlint-rules/**
       - tools/**
       - pnpm-lock.yaml
       - '!packages/@expo/cli/**'
