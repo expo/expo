@@ -56,7 +56,7 @@ import { Host, LazyRow, Text } from '@expo/ui/jetpack-compose';
 export default function MatchContentsCrash() {
   return (
     <Host matchContents>
-      <LazyRow>
+      <LazyRow horizontalArrangement={{ spacedBy: 8 }}>
         {Array.from({ length: 5 }).map((_, i) => (
           <Text key={i}>Item {i}</Text>
         ))}
@@ -82,7 +82,7 @@ export default function MatchContentsFix() {
     <Host
       matchContents={{ vertical: true }}
       style={{ width: '100%' }}>
-      <LazyRow>
+      <LazyRow horizontalArrangement={{ spacedBy: 8 }}>
         {Array.from({ length: 5 }).map((_, i) => (
           <Text key={i}>Item {i}</Text>
         ))}
