@@ -1,5 +1,5 @@
+import { boolish } from '@expo/env';
 import { defineConfig, devices } from '@playwright/test';
-import { boolish } from 'getenv';
 import process from 'node:process';
 
 const isCI = boolish('CI', false);

@@ -36,6 +36,15 @@ internal func exportLocation(_ location: CLLocation) -> [String: Any] {
   ]
 }
 
+internal func exportHeading(_ heading: CLHeading) -> [String: Any?] {
+  return [
+    "trueHeading": heading.trueHeading,
+    "magHeading": heading.magneticHeading,
+    "accuracy": normalizeAccuracy(heading.headingAccuracy),
+    "headingAccuracy": heading.headingAccuracy < 0 ? nil : heading.headingAccuracy
+  ]
+}
+
 internal func handleCLError<ReturnType>(error: NSError, defaultValue: ReturnType) throws -> ReturnType {
   switch CLError.Code(rawValue: error.code) {
   case CLError.geocodeFoundNoResult, CLError.geocodeFoundPartialResult:

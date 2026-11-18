@@ -9,6 +9,7 @@ import {
   useCallback,
   useEffect,
   useRef,
+  useState,
 } from 'react';
 
 import { ScrollContainer, type ScrollContainerHandle } from '~/components/ScrollContainer';
@@ -56,6 +57,11 @@ export default function DocumentationNestedScrollLayout({
   const sidebarRef = useRef<ScrollContainerHandle | null>(null);
   const contentRef = useRef<ScrollContainerHandle | null>(null);
   const sidebarRightRef = useRef<ScrollContainerHandle | null>(null);
+  const [isMounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const getSidebarScrollTop = useCallback(() => sidebarRef.current?.getScrollTop() ?? 0, []);
   const getContentScrollTop = useCallback(() => contentRef.current?.getScrollTop() ?? 0, []);
@@ -74,6 +80,30 @@ export default function DocumentationNestedScrollLayout({
     };
   }, [layoutRef, getSidebarScrollTop, getContentScrollTop]);
 
+  useEffect(() => {
+    // pages/_document.tsx adds the ios-webkit class.
+    if (!document.documentElement.classList.contains('ios-webkit')) {
+      return;
+    }
+    // overflow: hidden on the root does not stop hash links and scrollIntoView from scrolling
+    // the document and hiding the header. The keyboard and zoom need the document scroll.
+    const resetDocumentScroll = () => {
+      if (
+        window.scrollY === 0 ||
+        (window.visualViewport?.scale ?? 1) > 1 ||
+        isEditableElement(document.activeElement)
+      ) {
+        return;
+      }
+      window.scrollTo(0, 0);
+    };
+    resetDocumentScroll();
+    window.addEventListener('scroll', resetDocumentScroll);
+    return () => {
+      window.removeEventListener('scroll', resetDocumentScroll);
+    };
+  }, []);
+
   const scrollHandler = () => {
     if (onContentScroll) {
       onContentScroll(getContentScrollTop());
@@ -81,10 +111,51 @@ export default function DocumentationNestedScrollLayout({
   };
 
   return (
-    <div className="mx-auto flex h-dvh w-full flex-col overflow-hidden">
+    <div
+      data-nested-scroll-layout
+      className="mx-auto flex h-(--nested-scroll-layout-height) w-full flex-col overflow-hidden">
       <div className="max-lg:sticky">{header}</div>
-      <div className="mx-auto flex h-[calc(100dvh-60px)] w-full items-center justify-between">
-        <div className="relative h-full max-lg:hidden">
+      <div
+        className={mergeClasses(
+          'mx-auto flex h-[calc(100dvh-60px)] w-full items-center justify-between',
+          'lg:[reading-flow:grid-rows] lg:grid lg:grid-rows-1',
+          isMounted
+            ? 'lg:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1fr)_auto]'
+            : 'lg:grid-cols-[17.5rem_minmax(0,1fr)]',
+          !isMounted && !hideTOC && 'xl:grid-cols-[17.5rem_minmax(0,1fr)_17.5rem]'
+        )}>
+        <div
+          className={mergeClasses(
+            'relative flex h-[calc(var(--nested-scroll-layout-height)-60px)] w-full self-start overflow-hidden',
+            'lg:col-start-2 lg:row-start-1',
+            'max-lg:overflow-auto',
+            isMobileMenuVisible && 'hidden'
+          )}>
+          <ScrollContainer ref={contentRef} scrollHandler={scrollHandler}>
+            <div
+              className={mergeClasses(
+                'mx-auto max-w-screen-xl pb-[calc(var(--nested-scroll-layout-height)-100dvh)] transition-[padding,max-width,margin] duration-200 ease-out will-change-[padding,max-width,margin]',
+                isChatExpanded && 'max-lg:max-w-screen-xl max-lg:pr-0 max-lg:pl-0'
+              )}>
+              {children}
+            </div>
+          </ScrollContainer>
+        </div>
+        {!hideTOC && (
+          <div
+            className={mergeClasses(
+              'flex h-[calc(100dvh-60px)] max-w-70 shrink-0 flex-col overflow-hidden border-l border-l-default',
+              'xl:col-start-3 xl:row-start-1 max-xl:hidden'
+            )}>
+            <ScrollContainer ref={sidebarRightRef}>
+              {cloneElement(sidebarRight, {
+                selfRef: sidebarRightRef,
+                contentRef,
+              })}
+            </ScrollContainer>
+          </div>
+        )}
+        <div className="relative h-full lg:col-start-1 lg:row-start-1 max-lg:hidden">
           {onSidebarToggle ? (
             <div
               className={mergeClasses(
@@ -145,37 +216,14 @@ export default function DocumentationNestedScrollLayout({
             )}
           </div>
         </div>
-        <div
-          className={mergeClasses(
-            'relative flex h-[calc(100dvh-60px)] w-full overflow-hidden',
-            'max-lg:overflow-auto',
-            isMobileMenuVisible && 'hidden'
-          )}>
-          <ScrollContainer ref={contentRef} scrollHandler={scrollHandler}>
-            <div
-              className={mergeClasses(
-                'mx-auto max-w-screen-xl transition-[padding,max-width,margin] duration-200 ease-out will-change-[padding,max-width,margin]',
-                isChatExpanded && 'max-lg:max-w-screen-xl max-lg:pr-0 max-lg:pl-0'
-              )}>
-              {children}
-            </div>
-          </ScrollContainer>
-        </div>
-        {!hideTOC && (
-          <div
-            className={mergeClasses(
-              'flex h-[calc(100dvh-60px)] max-w-70 shrink-0 flex-col overflow-hidden border-l border-l-default',
-              'max-xl:hidden'
-            )}>
-            <ScrollContainer ref={sidebarRightRef}>
-              {cloneElement(sidebarRight, {
-                selfRef: sidebarRightRef,
-                contentRef,
-              })}
-            </ScrollContainer>
-          </div>
-        )}
       </div>
     </div>
+  );
+}
+
+function isEditableElement(element: Element | null) {
+  return (
+    element instanceof HTMLElement &&
+    (element.isContentEditable || element.matches('input, textarea, select'))
   );
 }

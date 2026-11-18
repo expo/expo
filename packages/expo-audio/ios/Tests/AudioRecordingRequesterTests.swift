@@ -45,6 +45,29 @@ struct AudioRecordingRequesterTests {
     #expect(resolved?["status"] as? UInt32 == EXPermissionStatusDenied.rawValue)
   }
 
+  @Test(arguments: [
+    (true, EXPermissionStatusGranted),
+    (false, EXPermissionStatusDenied),
+  ] as [(Bool, EXPermissionStatus)])
+  func `resolves from the request callback rather than the session status`(
+    granted: Bool,
+    expected: EXPermissionStatus
+  ) {
+    let requester = AudioRecordingRequester()
+    var resolved: [AnyHashable: Any]?
+
+    requester.requestPermissions(
+      usageDescription: "Allow $(PRODUCT_NAME) to access your microphone",
+      requestSystemPermission: { handler in handler(granted) }
+    ) { result in
+      resolved = result as? [AnyHashable: Any]
+    } rejecter: { _, _, _ in
+      Issue.record("requestPermissions rejected instead of resolving")
+    }
+
+    #expect(resolved?["status"] as? UInt32 == expected.rawValue)
+  }
+
   @Test
   func `requireUsageDescription throws when the usage description is missing`() {
     #expect(throws: MicrophoneUsageDescriptionException.self) {

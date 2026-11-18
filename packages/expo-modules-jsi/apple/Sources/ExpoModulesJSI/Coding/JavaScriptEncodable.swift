@@ -12,4 +12,37 @@
 public protocol JavaScriptEncodable: ~Copyable {
   @JavaScriptActor
   static func encode(_ value: consuming Self, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue
+
+  /// Encodes `value` straight into `slot`, for example an argument of a JavaScript function call or an
+  /// element of a new array. See `JavaScriptValue.Slot` for what the encode must write.
+  ///
+  /// The default implementation moves the result of ``encode(_:in:)`` into the slot. Numbers, booleans,
+  /// strings and optionals of them override it to construct the value in the slot: each move or destroy
+  /// of a `JavaScriptValue` calls out-of-line `jsi::Value` code in the engine library, which costs more
+  /// than the encode itself for these types.
+  @JavaScriptActor
+  static func encode(
+    _ value: consuming Self,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws
+}
+
+extension JavaScriptEncodable where Self: ~Copyable {
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: consuming Self,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    // The value is encoded in a closure that the slot calls, rather than passed to `emplace(_:)`: in a
+    // client module `JavaScriptValue` is a resilient type that is handled through its type metadata, which
+    // made `JavaScriptValuesBuffer.emplace(_:at:in:)` about 10% slower. The closure can't consume a
+    // captured value, so the value moves out of an optional instead.
+    var pending: Self? = .some(value)
+    try slot.emplace {
+      return try encode(pending.take()!, in: runtime)
+    }
+  }
 }

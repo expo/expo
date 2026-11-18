@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- [Android] Fix `Paths.availableDiskSpace` returning space reserved for the system. It now returns the space the app can use. ([#51922](https://github.com/expo/expo/pull/51922) by [@eleddie](https://github.com/eleddie))
+
 ## 58.0.10
 
 ### Patch Changes

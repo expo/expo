@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- On web, loading several fonts no longer fails with a timeout after 12 seconds in WebKit (Safari). Each `@font-face` rule now goes into the same `<style>` element through `insertRule`, so the browser does not parse the style sheet again for every font. ([#52093](https://github.com/expo/expo/pull/52093) by [@fixfon](https://github.com/fixfon))
+
 ## 58.0.9
 
 ### Patch Changes

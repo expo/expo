@@ -15,7 +15,7 @@ A `DateTimePicker` component with an API compatible with `@react-native-communit
 
 `DateTimePicker` component is fully declarative. Use the `presentation` prop to render the picker `'inline'` directly in the view hierarchy or as a `'dialog'` on Android. There is no Android imperative API (`DateTimePickerAndroid.open()`).
 
-On Android, the inline picker shows no title or headline, as on iOS. To show Material 3's "Select date" title and selected-date headline, use the [Jetpack Compose `DateTimePicker`](../jetpack-compose/datetimepicker#datetimepicker) directly.
+On Android, the inline picker shows no title, headline, or container color, as on iOS. The view behind the picker shows through. If your app's color scheme can differ from the device's, set `themeVariant` to your app's color scheme. Then the picker's text stays readable on your background. To show Material 3's "Select date" title, selected-date headline, and container color, use the [Jetpack Compose `DateTimePicker`](../jetpack-compose/datetimepicker#datetimepicker) directly.
 
 Under the hood this component wraps the platform-specific `@expo/ui` primitives:
 

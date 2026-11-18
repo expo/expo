@@ -163,6 +163,22 @@ struct CdpNetwork {
     }
   }
 
+  struct LoadingFailedParams: EventParams {
+    let requestId: RequestId
+    let timestamp: MonotonicTime
+    let type: ResourceType
+    let errorText: String
+    let canceled: Bool
+
+    init(now: TimeInterval, requestId: RequestId, error: Error) {
+      self.requestId = requestId
+      self.timestamp = now
+      self.type = ResourceType.other
+      self.errorText = error.localizedDescription
+      self.canceled = (error as? URLError)?.code == .cancelled
+    }
+  }
+
   struct ExpoReceivedResponseBodyParams: EventParams {
     let requestId: RequestId
     let body: String

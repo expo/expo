@@ -17,6 +17,7 @@
           "name": "ExpoCrypto",
           "path": "ios",
           "pattern": "**/*.swift",
+          "exclude": ["Tests/**", "Benchmarks/**"],
           "dependencies": [
             "Hermes",
             "React",

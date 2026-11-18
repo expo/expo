@@ -1,5 +1,6 @@
 import Testing
 import AVFoundation
+import ExpoModulesCore
 
 @testable import ExpoAudio
 
@@ -40,5 +41,11 @@ struct AudioRecordsTests {
 
     #expect(options.seekForwardIntervalSeconds == 10.0)
     #expect(options.seekBackwardIntervalSeconds == 10.0)
+  }
+
+  @Test func `plays in silent mode when the audio mode omits playsInSilentMode`() throws {
+    let mode = try AudioMode(from: [:], appContext: AppContext())
+
+    #expect(mode.playsInSilentMode == true)
   }
 }

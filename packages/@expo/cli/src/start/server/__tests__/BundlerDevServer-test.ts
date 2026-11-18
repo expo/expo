@@ -608,15 +608,16 @@ describe('getDevServerUrl', () => {
     expect(devServer.getDevServerUrl()).toBe('http://localhost:3000');
   });
 
-  it('returns proxy url for ws tunnel', async () => {
+  it('returns proxy url instead of the app scheme for ws tunnel', async () => {
     // Enable the auto-ws tunnel
     jest.mocked(envIsWebcontainer).mockReturnValue(true);
 
     const devServer = new MockMetroBundlerDevServer(
       '/',
-      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+      getPlatformBundlers('/', { web: { bundler: 'metro' } }),
+      { isDevClient: true }
     );
-    await devServer.startAsync({ location: { hostType: 'tunnel' } });
+    await devServer.startAsync({ location: { hostType: 'tunnel', scheme: 'myapp' } });
     expect(devServer.getDevServerUrl()).toBe('http://exp.ws-tunnel.dev');
     // Also return the proxied URL for localhost types, as webcontainers can't connect through `http://localhost` URLs
     expect(devServer.getDevServerUrl({ hostType: 'localhost' })).toBe('http://exp.ws-tunnel.dev');

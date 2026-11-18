@@ -1,11 +1,11 @@
 import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
-import { glob } from 'glob';
 import assert from 'node:assert/strict';
 import { after, afterEach, before, describe, it, mock } from 'node:test';
 import os from 'os';
 import path from 'path';
+import { glob } from 'tinyglobby';
 
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
@@ -147,7 +147,7 @@ async function writeFixtureAsync(slices: FixtureSlice[], platforms?: ProductPlat
 }
 
 async function listFilesAsync(dir: string): Promise<string[]> {
-  return (await glob('**/*', { cwd: dir, nodir: true, dot: true })).sort();
+  return (await glob('**/*', { cwd: dir, onlyFiles: true, dot: true })).sort();
 }
 
 async function readPlistAsync(file: string) {

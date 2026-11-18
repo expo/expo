@@ -8,10 +8,18 @@ const mockRenderContent = jest.fn<ReactNode, []>();
 
 // Metro provides these require.context modules when bundling an app.
 jest.mock('expo-router/_ctx', () => {
+  const { useLoaderData } = require('expo-router');
+
+  function LocaleIndex() {
+    const data = useLoaderData();
+    return data?.message ?? 'MISSING';
+  }
+
   const routes = {
     './index.tsx': { default: () => 'Index route' },
     './post.tsx': { default: () => 'Post route' },
     './suspense.tsx': { default: () => mockRenderContent() },
+    './[locale]/index.tsx': { default: LocaleIndex },
   };
   return {
     ctx: Object.assign((key: keyof typeof routes) => routes[key], {
@@ -62,6 +70,69 @@ it.each(['server', 'static'] as const)(
     });
   }
 );
+
+describe.each(['server', 'static'] as const)('%s output with loader data', (output) => {
+  it.each([
+    ['plain query', '?page=2', '/en/index?page=2'],
+    ['re-encoded comma', '?a=b,c', '/en/index?a=b%2Cc'],
+    ['re-encoded space', '?a=b%20c', '/en/index?a=b+c'],
+    ['re-encoded at sign', '?foo=a@b.example', '/en/index?foo=a%40b.example'],
+    ['re-encoded colon', '?a=x:y', '/en/index?a=x%3Ay'],
+    ['repeated keys', '?a=1&b=2&a=3', '/en/index?a=1&a=3&b=2'],
+    ['integer-like keys', '?2=x&1=y', '/en/index?1=y&2=x'],
+  ])('renders and stores loader data for a %s', async (_name, search, expectedKey) => {
+    const location = new URL(`http://localhost/en${search}`);
+    const loaderData = { message: 'LOADER DATA RENDERED' };
+    const options = {
+      route: { file: './[locale]/index.tsx', page: '/[locale]/index' },
+      params: { locale: 'en' },
+      loader: { key: '/en/index', data: loaderData },
+    };
+    const content =
+      output === 'static'
+        ? await getStreamingContent(location, { ...options, output: 'static' })
+        : await new Response(await getStreamingContent(location, options)).text();
+    const html = parse(content);
+
+    expect(html.querySelector('#root')?.textContent).toContain(loaderData.message);
+    const bootstrap = html.querySelector('script:not([src])');
+    expect(bootstrap).not.toBeNull();
+    const globals: Record<string, unknown> = {};
+    runInNewContext(bootstrap!.textContent, globals);
+    expect(globals.__EXPO_ROUTER_LOADER_DATA__).toEqual({ [expectedKey]: loaderData });
+  });
+
+  it('omits the query separator when only a route parameter is in the query', async () => {
+    const location = new URL('http://localhost/en?locale=fr');
+    const loaderData = { message: 'LOADER DATA RENDERED' };
+    const options = {
+      route: { file: './[locale]/index.tsx', page: '/[locale]/index' },
+      params: { locale: 'en' },
+      loader: { key: '/en/index', data: loaderData },
+    };
+    const consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    try {
+      const content =
+        output === 'static'
+          ? await getStreamingContent(location, { ...options, output: 'static' })
+          : await new Response(await getStreamingContent(location, options)).text();
+      const html = parse(content);
+
+      expect(html.querySelector('#root')?.textContent).toContain(loaderData.message);
+      const bootstrap = html.querySelector('script:not([src])');
+      expect(bootstrap).not.toBeNull();
+      const globals: Record<string, unknown> = {};
+      runInNewContext(bootstrap!.textContent, globals);
+      expect(globals.__EXPO_ROUTER_LOADER_DATA__).toEqual({ '/en/index': loaderData });
+      expect(consoleWarn).toHaveBeenCalledWith(
+        "Route '/[locale]/index' with param 'locale' was specified both in the path and as a param, removing from path"
+      );
+    } finally {
+      consoleWarn.mockRestore();
+    }
+  });
+});
 
 function createDeferred<T>() {
   let resolve!: (value: T) => void;
@@ -144,6 +215,74 @@ it('returns the live shell while Suspense is still pending', async () => {
     deferred.resolve('Finished live content');
     while (!(await reader.read()).done) {}
     reader.releaseLock();
+  }
+});
+
+it('waits for complete HTML for crawlers', async () => {
+  const deferred = createDeferred<string>();
+  function Content() {
+    return <p>{use(deferred.promise)}</p>;
+  }
+  mockRenderContent.mockReturnValue(
+    <Suspense fallback={<p>Loading live content</p>}>
+      <Content />
+    </Suspense>
+  );
+  const location = new URL('http://localhost/suspense');
+  let returned = false;
+  const result = getStreamingContent(location, {
+    request: new Request(location, { headers: { 'User-Agent': 'Twitterbot/1.0' } }),
+    route: { file: './suspense.tsx', page: '/suspense' },
+  }).then((stream) => {
+    returned = true;
+    return stream;
+  });
+  try {
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    expect(returned).toBe(false);
+
+    deferred.resolve('Finished live content');
+    const content = await new Response(await result).text();
+    expect(parse(content).querySelector('#root p')?.textContent).toBe('Finished live content');
+    expect(content).not.toContain('Loading live content');
+    expect(content).not.toContain('<template');
+  } finally {
+    deferred.resolve('Finished live content');
+  }
+});
+
+it('stops waiting for crawler content when the request is aborted', async () => {
+  const deferred = createDeferred<string>();
+  function Content() {
+    return <p>{use(deferred.promise)}</p>;
+  }
+  mockRenderContent.mockReturnValue(
+    <Suspense fallback={<p>Loading live content</p>}>
+      <Content />
+    </Suspense>
+  );
+  const controller = new AbortController();
+  const location = new URL('http://localhost/suspense');
+  let returned = false;
+  const result = getStreamingContent(location, {
+    request: new Request(location, {
+      headers: { 'User-Agent': 'Twitterbot/1.0' },
+      signal: controller.signal,
+    }),
+    route: { file: './suspense.tsx', page: '/suspense' },
+  }).then((stream) => {
+    returned = true;
+    return stream;
+  });
+  try {
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    expect(returned).toBe(false);
+
+    controller.abort();
+    const content = await new Response(await result).text();
+    expect(parse(content).querySelector('#root p')?.textContent).toBe('Loading live content');
+  } finally {
+    deferred.resolve('Finished live content');
   }
 });
 

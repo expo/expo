@@ -41,6 +41,23 @@
                 },
                 "version": {
                     "$ref": "#/definitions/spmPackageVersion"
+                },
+                "manifestPatches": {
+                    "type": "array",
+                    "description": "Exact text replacements applied to the package's Package.swift before it is built as a shared dependency. The build fails when a 'find' string is missing.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "find": {
+                                "type": "string"
+                            },
+                            "replace": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [ "find", "replace" ],
+                        "additionalProperties": false
+                    }
                 }
             },
             "required": [ "url", "productName", "version" ],

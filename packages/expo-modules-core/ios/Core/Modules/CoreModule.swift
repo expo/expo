@@ -49,15 +49,26 @@ internal final class CoreModule: Module {
     Function("getViewConfig") { (moduleName: String, viewName: String?) -> [String: Any]? in
       var validAttributes: [String: Any] = [:]
       var directEventTypes: [String: Any] = [:]
-      let moduleHolder = appContext?.moduleRegistry.get(moduleHolderForName: getHolderName(moduleName))
+      let moduleHolder = appContext?.moduleRegistry.get(moduleHolderForName: moduleName)
 
-      guard let viewDefinition = moduleHolder?.definition.views[viewName ?? DEFAULT_MODULE_VIEW] else {
+      let propNames: [String]
+      let eventNames: [String]
+
+      if let viewDefinition = moduleHolder?.definition.views[viewName ?? DEFAULT_MODULE_VIEW] {
+        // A view of Expo Modules v1, declared with `View` in the module definition.
+        propNames = viewDefinition.getSupportedPropNames()
+        eventNames = viewDefinition.getSupportedEventNames()
+      } else if let viewType = moduleHolder?.nativeViewTypes[viewName ?? DEFAULT_MODULE_VIEW] {
+        // A view of Expo Modules v2, an `@ExpoView` class in `@ExpoModule(views:)`.
+        propNames = viewType.propNames
+        eventNames = viewType.eventNames
+      } else {
         return nil
       }
-      for propName in viewDefinition.getSupportedPropNames() {
+      for propName in propNames {
         validAttributes[propName] = true
       }
-      for eventName in viewDefinition.getSupportedEventNames() {
+      for eventName in eventNames {
         guard let normalizedEventName = RCTNormalizeInputEventName(eventName) else {
           continue
         }
@@ -77,20 +88,13 @@ internal final class CoreModule: Module {
     }
   }
 
-  private func getHolderName(_ viewName: String) -> String {
-    if let appIdentifier = appContext?.appIdentifier, viewName.hasSuffix("_\(appIdentifier)") {
-      return String(viewName.dropLast("_\(appIdentifier)".count))
-    }
-
-    return viewName
-  }
-
   /**
    Installs the worklet UI runtime from the holder object that the worklets JS code passes to
-   `global.expo.installOnUIRuntime`.
+   `global.expo.installOnUIRuntime`. The holder belongs to the runtime that calls the function, which is also
+   the runtime that the factory reads it with.
    */
   @JS
-  nonisolated internal func installOnUIRuntime(_ uiRuntimeHolder: borrowing JavaScriptValue) throws {
+  nonisolated internal func installOnUIRuntime(_ uiRuntimeHolder: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws {
     guard let appContext else {
       throw Exceptions.AppContextLost()
     }
@@ -100,7 +104,7 @@ internal final class CoreModule: Module {
       return
     }
 
-    let runtime = try appContext.runtime
+    let runtime = copy runtime
     guard uiRuntimeHolder.isObject() else {
       throw WorkletUIRuntimeException()
     }
@@ -109,17 +113,36 @@ internal final class CoreModule: Module {
       throw WorkletUIRuntimeException()
     }
 
-    // The runtime is created and stored on the main thread: setting `_uiRuntime` prepares it there.
+    // The runtime is created, prepared and stored on the main thread, which is the thread of the UI runtime.
     // `DispatchQueue.main.sync` doesn't escape its closure and rethrows, so the closure can borrow the
     // holder and the error reaches the caller directly.
     if Thread.isMainThread {
-      appContext._uiRuntime = try factory(appContext, uiRuntimeHolder, runtime)
+      try installUIRuntime(factory: factory, holder: uiRuntimeHolder, runtime: runtime, appContext: appContext)
     } else {
       try DispatchQueue.main.sync {
-        appContext._uiRuntime = try factory(appContext, uiRuntimeHolder, runtime)
+        try installUIRuntime(factory: factory, holder: uiRuntimeHolder, runtime: runtime, appContext: appContext)
       }
     }
   }
+}
+
+private func installUIRuntime(
+  factory: AppContext.UIRuntimeFactory,
+  holder: borrowing JavaScriptValue,
+  runtime: JavaScriptRuntime,
+  appContext: AppContext
+) throws {
+  // Another call can install the UI runtime between the check of the caller and this function, which runs on
+  // the main thread. A second wrapper would replace the one that the getters of the UI runtime use.
+  if appContext._uiRuntime != nil {
+    return
+  }
+  let uiRuntime = try factory(appContext, holder, runtime)
+
+  try JavaScriptActor.assumeIsolated {
+    try appContext.attach(runtime: uiRuntime)
+  }
+  appContext._uiRuntime = uiRuntime
 }
 
 internal final class WorkletUIRuntimeException: Exception, @unchecked Sendable {

@@ -149,17 +149,17 @@ struct SharedObjectRegistryTests {
 
   @Test
   func `re-adding a still-paired native object reuses its id and single registry entry`() throws {
-    let primaryRuntime = try runtime
-    let secondaryRuntime = JavaScriptRuntime()
-
     let nativeObject = TestSharedObject()
-    let firstId = registry.add(native: nativeObject, javaScript: primaryRuntime.createObject())
+    let firstObject = try runtime.createObject()
+    let firstId = registry.add(native: nativeObject, javaScript: firstObject)
 
-    // Pair the same, still-alive native object again (e.g. from a second runtime). Because it already
-    // carries a native state, `add` must reuse that state's id rather than mint a new one — otherwise
-    // the C++ `NativeState.objectId` (which drives the releaser/`delete`) would disagree with
-    // `sharedObjectId`, leaking the first registry entry.
-    let secondId = registry.add(native: nativeObject, javaScript: secondaryRuntime.createObject())
+    // Pair the same, still-alive native object again. Because its JS object still holds its native state,
+    // `add` must reuse that state's id rather than mint a new one — otherwise the C++ `NativeState.objectId`
+    // (which drives the releaser/`delete`) would disagree with `sharedObjectId`, leaking the first registry entry.
+    let secondObject = try runtime.createObject()
+    let secondId = withExtendedLifetime(firstObject) {
+      registry.add(native: nativeObject, javaScript: secondObject)
+    }
 
     #expect(secondId == firstId)
     #expect(nativeObject.sharedObjectId == firstId)
@@ -209,26 +209,26 @@ struct SharedObjectRegistryTests {
   }
 
   @Test
-  func `encoding a native object whose JS object was collected pairs it again under a new id`() throws {
+  func `encoding a native object whose JS object was collected reuses its live native state`() throws {
     let runtime = try runtime
     let nativeObject = TestSharedObject()
     let firstJSObject = runtime.createObject()
-    let firstId = registry.add(native: nativeObject, javaScript: firstJSObject)
-    let firstNativeState = try #require(nativeObject.nativeState)
-    // Keeps the first C++ native state alive after its JS object is collected, like a finalizer that has not run yet.
+    let id = registry.add(native: nativeObject, javaScript: firstJSObject)
+    let nativeState = try #require(nativeObject.nativeState)
+    // Keeps the C++ native state alive after its JS object is collected, like a finalizer that has not run yet
+    // or a JS object of another runtime.
     let holder = runtime.createObject()
-    holder.setNativeState(firstNativeState)
+    holder.setNativeState(nativeState)
     _ = consume firstJSObject
-    try runtime.collectGarbage { firstNativeState.javaScriptObject(in: runtime) == nil }
+    try runtime.collectGarbage { nativeState.javaScriptObject(in: runtime) == nil }
     let secondJSObject = try TestSharedObject.encode(nativeObject, in: runtime).asObject()
-    let secondId = nativeObject.sharedObjectId
-    // Destroying the first C++ native state releases the first id, after the native object was paired again.
+    // The second JS object keeps the native object after the holder is collected.
     _ = consume holder
-    try runtime.collectGarbage { registry.get(firstId) == nil }
+    try runtime.collectGarbage()
     let resolved = try SharedObject.native(from: secondJSObject)
-    #expect(secondId != firstId)
-    #expect(registry.get(firstId) == nil)
-    #expect(nativeObject.sharedObjectId == secondId)
+    #expect(secondJSObject.getNativeState(as: SharedObjectNativeState.self) === nativeState)
+    #expect(registry.get(id) === nativeState)
+    #expect(nativeObject.sharedObjectId == id)
     #expect(resolved === nativeObject)
   }
 

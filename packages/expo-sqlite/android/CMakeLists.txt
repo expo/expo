@@ -28,6 +28,20 @@ target_include_directories(
   "${SQLITE3_SRC_DIR}"
 )
 
+# Only `JNI_OnLoad` needs to be public.
+target_compile_options(
+  ${PACKAGE_NAME}
+  PRIVATE
+  -fvisibility=hidden
+)
+
+target_link_options(
+  ${PACKAGE_NAME}
+  PRIVATE
+  "-Wl,--pack-dyn-relocs=android"
+  "$<$<NOT:$<CONFIG:Debug>>:-Wl,-O2>"
+)
+
 find_library(LOG_LIB log)
 find_package(fbjni REQUIRED CONFIG)
 if(${USE_SQLCIPHER})

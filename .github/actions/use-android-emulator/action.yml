@@ -47,7 +47,7 @@ runs:
         disable-animations: true
         target: google_apis
         profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
-        disk-size: 4G # Reduced disk size to avoid running out of disk space when setting up the emulator
+        disk-size: 6G # The emulator raises the data partition of a new AVD to at least 6G.
         # gpu hw acceleration is not available on GitHub-hosted runners
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
@@ -70,7 +70,7 @@ runs:
         disable-animations: true
         target: google_apis
         profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
-        disk-size: 4G # Reduced disk size to avoid running out of disk space when setting up the emulator
+        disk-size: 6G # The emulator raises the data partition of a new AVD to at least 6G.
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
           # Try to close SystemUI ANR prompt
@@ -92,7 +92,7 @@ runs:
         disable-animations: true
         target: google_apis
         profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
-        disk-size: 4G # Reduced disk size to avoid running out of disk space when setting up the emulator
+        disk-size: 6G # The emulator raises the data partition of a new AVD to at least 6G.
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
           # Try to close SystemUI ANR prompt

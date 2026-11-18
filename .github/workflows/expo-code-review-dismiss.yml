@@ -13,10 +13,10 @@ on:
   issue_comment:
     types: [created]
 
+# Every write uses an expo-bot token (see GH_TOKEN in the steps), never GITHUB_TOKEN,
+# so GITHUB_TOKEN only needs to read the repository for the checkout.
 permissions:
   contents: read
-  pull-requests: write
-  issues: write
 
 jobs:
   dismiss:
@@ -118,7 +118,7 @@ jobs:
       - name: Reply to a rejected command
         if: always() && steps.cmd.outputs.reject != ''
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           REJECT: ${{ steps.cmd.outputs.reject }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: gh issue comment "${{ github.event.issue.number }}" -R "${{ github.repository }}" --body "⚠️ $REJECT ([run log]($RUN_URL))"
@@ -126,7 +126,7 @@ jobs:
       - name: Acknowledge
         if: steps.cmd.outputs.run == 'true'
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
         run: gh api -X POST "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=eyes
 
       # Base ref only (issue_comment runs with base-repo context). Dismiss just edits
@@ -154,7 +154,7 @@ jobs:
       - name: Apply dismissal
         if: steps.cmd.outputs.run == 'true'
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           SUB: ${{ steps.cmd.outputs.sub }}
           IDS: ${{ steps.cmd.outputs.ids }}
           REASON: ${{ steps.cmd.outputs.reason }}

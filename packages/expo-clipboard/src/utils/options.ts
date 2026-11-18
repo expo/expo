@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 
 /**
  * Flattens platform-specific options into a single options object for native modules.

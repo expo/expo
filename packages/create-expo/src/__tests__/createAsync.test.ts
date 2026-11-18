@@ -17,9 +17,6 @@ jest.mock('../Examples', () => ({
   fetchMetadataAsync: jest.fn(async () => ({ aliases: {}, deprecated: {} })),
   promptExamplesAsync: jest.fn(),
 }));
-jest.mock('../promptSdkVersion', () => ({
-  applySdkVersionToTemplateAsync: jest.fn(async (template: string) => template),
-}));
 jest.mock('../resolveProjectRoot', () => ({
   assertFolderEmpty: jest.fn(),
   assertValidName: jest.fn(),
@@ -39,6 +36,7 @@ jest.mock('../resolvePackageManager', () => ({
   resolvePackageManager: jest.fn(() => 'npm'),
   configurePackageManager: jest.fn(),
   installDependenciesAsync: jest.fn(),
+  formatSelfCommand: jest.fn(() => 'npx create-expo'),
 }));
 jest.mock('../Template', () => ({
   extractAndPrepareTemplateAppAsync: jest.fn(),

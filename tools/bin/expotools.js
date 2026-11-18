@@ -135,13 +135,11 @@ function loadCommand(program, commandFile) {
 
 async function loadAllCommandsAsync(callback) {
   const program = require('@expo/commander');
-  const { glob } = require('glob');
-
-  const commandFiles = await glob('build/commands/*.js', {
-    cwd: ROOT_PATH,
-    absolute: true,
-    ignore: '**/*.test.js',
-  });
+  const commandFiles = (
+    await Array.fromAsync(fs.promises.glob('build/commands/*.js', { cwd: ROOT_PATH }))
+  )
+    .filter((name) => !name.endsWith('.test.js'))
+    .map((name) => path.join(ROOT_PATH, name));
 
   for (const commandFile of commandFiles) {
     loadCommand(program, commandFile);

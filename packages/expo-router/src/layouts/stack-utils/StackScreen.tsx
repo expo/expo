@@ -1,11 +1,16 @@
 'use client';
 import { Children, isValidElement, useMemo, type PropsWithChildren } from 'react';
 
+import {
+  INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME,
+  type InternalNavigationOptions,
+} from '../../navigationParams';
 import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import type {
   NativeStackNavigationOptions,
   NativeStackNavigationEventMap,
 } from '../../react-navigation/native-stack';
+import type { UnknownInputParams } from '../../types';
 import type { ScreenProps as BaseScreenProps } from '../../useScreens';
 import { isChildOfType } from '../../utils/children';
 import { Screen } from '../../views/Screen';
@@ -62,6 +67,17 @@ export interface StackScreenProps extends PropsWithChildren {
    * Only supported when used inside a Layout component.
    */
   dangerouslySingular?: StackBaseScreenProps['dangerouslySingular'];
+
+  /**
+   * Screen names from this navigator that must be below this screen. When a deep link or a
+   * navigation opens this screen, the stack adds the missing ones directly below it.
+   *
+   * @example
+   * ```tsx app/_layout.tsx
+   * <Stack.Screen name="[id]/comments" unstable_requiredScreensBelow={['index', '[id]']} />
+   * ```
+   */
+  unstable_requiredScreensBelow?: (string | { name: string; params?: UnknownInputParams })[];
 }
 
 /**
@@ -161,7 +177,14 @@ export function appendScreenStackPropsToOptions(
   options: NativeStackNavigationOptions,
   props: StackScreenProps
 ): NativeStackNavigationOptions {
-  let updatedOptions = { ...options, ...props.options };
+  let updatedOptions: NativeStackNavigationOptions & InternalNavigationOptions = {
+    ...options,
+    ...props.options,
+  };
+  if (props.unstable_requiredScreensBelow) {
+    updatedOptions[INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME] =
+      props.unstable_requiredScreensBelow;
+  }
 
   validateStackPresentation(updatedOptions);
 

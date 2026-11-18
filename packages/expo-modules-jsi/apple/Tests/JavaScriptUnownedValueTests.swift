@@ -175,4 +175,14 @@ struct JavaScriptUnownedValueTests {
       #expect(buffer.unownedValue(at: 0).kind == expected, "kind of \(source)")
     }
   }
+
+  @Test
+  func `borrows a value from a raw pointer`() throws {
+    let value = try runtime.eval("({ name: 'expo' })")
+    let name = value.withUnsafePointee { pointer in
+      JavaScriptUnownedValue(runtime, unsafeValuePointer: pointer).getObject(in: runtime).getProperty("name")
+        .getString()
+    }
+    #expect(name == "expo")
+  }
 }

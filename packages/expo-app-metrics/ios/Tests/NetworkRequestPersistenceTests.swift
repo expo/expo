@@ -463,7 +463,7 @@ struct NetworkRequestPersistenceTests {
     try withTemporaryDatabase { database in
       try insertSession(id: "s", into: database)
       let persistence = NetworkRequestPersistence(
-        database: database,
+        writer: SpanWriter(database: database),
         configuration: NetworkTracesConfiguration(enabled: false)
       ) {
         return "s"
@@ -478,7 +478,7 @@ struct NetworkRequestPersistenceTests {
     try withTemporaryDatabase { database in
       try insertSession(id: "s", into: database)
       let persistence = NetworkRequestPersistence(
-        database: database,
+        writer: SpanWriter(database: database),
         configuration: NetworkTracesConfiguration(enabled: true, hosts: ["API.myapp.com"], methods: nil)
       ) {
         return "s"
@@ -498,7 +498,7 @@ struct NetworkRequestPersistenceTests {
     try withTemporaryDatabase { database in
       try insertSession(id: "s", into: database)
       let persistence = NetworkRequestPersistence(
-        database: database,
+        writer: SpanWriter(database: database),
         configuration: NetworkTracesConfiguration(enabled: true)
       ) {
         return "s"
@@ -515,7 +515,7 @@ struct NetworkRequestPersistenceTests {
     try withTemporaryDatabase { database in
       try insertSession(id: "main-session", into: database)
       let persistence = NetworkRequestPersistence(
-        database: database,
+        writer: SpanWriter(database: database),
         configuration: NetworkTracesConfiguration(enabled: true)
       ) {
         return "main-session"
@@ -535,7 +535,7 @@ struct NetworkRequestPersistenceTests {
       try insertSession(id: "main-session", into: database)
       let monitor = NetworkRequestMonitor()
       monitor.persistence = NetworkRequestPersistence(
-        database: database,
+        writer: SpanWriter(database: database),
         configuration: NetworkTracesConfiguration(enabled: true)
       ) {
         return "main-session"
@@ -553,7 +553,7 @@ struct NetworkRequestPersistenceTests {
     // row rather than throw into the monitor's record path.
     try withTemporaryDatabase { database in
       let persistence = NetworkRequestPersistence(
-        database: database,
+        writer: SpanWriter(database: database),
         configuration: NetworkTracesConfiguration(enabled: true)
       ) {
         return "never-inserted"

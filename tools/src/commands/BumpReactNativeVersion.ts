@@ -3,10 +3,10 @@ import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs/promises';
-import { glob } from 'glob';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import path from 'path';
+import { glob } from 'tinyglobby';
 
 import { EXPO_DIR } from '../Constants';
 import Git from '../Git';
@@ -112,9 +112,9 @@ async function findAllPackageJsonPaths(): Promise<string[]> {
   const appsIgnore = [...ignore, 'expo-go/modules/**'];
 
   const [appPaths, packagePaths, templatePaths] = await Promise.all([
-    glob('**/package.json', { cwd: APPS_DIR, ignore: appsIgnore }),
-    glob('**/package.json', { cwd: PACKAGES_DIR, ignore }),
-    glob('*/package.json', { cwd: TEMPLATES_DIR, ignore }),
+    glob('**/package.json', { cwd: APPS_DIR, ignore: appsIgnore, followSymbolicLinks: false }),
+    glob('**/package.json', { cwd: PACKAGES_DIR, ignore, followSymbolicLinks: false }),
+    glob('*/package.json', { cwd: TEMPLATES_DIR, ignore, followSymbolicLinks: false }),
   ]);
 
   return [

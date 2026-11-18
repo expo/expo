@@ -9,7 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Base64
-import androidx.core.os.bundleOf
+import io.github.expo.modules.v2.Record
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.yield
@@ -31,14 +31,17 @@ data class ImageResult(
   val width: Int,
   val height: Int
 ) {
-  fun toBundle() = bundleOf(
-    "data" to base64Image,
-    "size" to bundleOf(
-      "width" to width,
-      "height" to height
-    )
+  fun toClipboardImage() = ClipboardImage(
+    data = base64Image,
+    size = ClipboardImageSize(width = width, height = height)
   )
 }
+
+@Record
+data class ClipboardImage(val data: String, val size: ClipboardImageSize)
+
+@Record
+data class ClipboardImageSize(val width: Int, val height: Int)
 // endregion
 
 // region Module functions
@@ -79,7 +82,7 @@ internal suspend fun imageFromContentUri(
   val bitmap = bitmapFromContentUriAsync(context, imageUri)
 
   // 2. Compress it to target format
-  val format = options.imageFormat
+  val format = options.format
   val quality = (options.jpegQuality * 100).toInt()
   val outputStream = ByteArrayOutputStream().also {
     bitmap.compress(format.compressFormat, quality, it)

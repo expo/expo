@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use, useEffect, useMemo } from 'react';
+import React, { use, useEffect, useLayoutEffect, useMemo } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
 import {
@@ -46,8 +46,7 @@ import type { UnknownOutputParams } from './types';
 import { useIsFocused } from './useIsFocused';
 import { getSingularId } from './utils/getSingularId';
 import { EmptyRoute } from './views/EmptyRoute';
-import { useActivityThreshold } from './views/NavigationActivityContext';
-import { NavigationAwareActivity } from './views/NavigationAwareActivity';
+import { RouteActivity } from './views/NavigationAwareActivity';
 import {
   SuspenseFallback as DefaultSuspenseFallback,
   type SuspenseFallbackProps,
@@ -277,26 +276,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
   if (process.env.EXPO_ROUTER_IMPORT_MODE === 'lazy') {
-    ScreenComponent = React.lazy<React.ComponentType<any>>(() => {
-      const res = value.loadRoute() as LoadedRoute | PromiseLike<LoadedRoute>;
-      // NOTE(@kitten): React.lazy supports promise likes, which we can use to ensure that
-      // the route is synchronously available, if the `loadRoute` method returns a loaded route
-      // synchronously
-      if (!('then' in res)) {
-        return {
-          then(resolve) {
-            const ret = fromImport(value, res);
-            return Promise.resolve(resolve ? resolve(ret) : ret);
-          },
-        } as PromiseLike<{ default: React.ComponentType<any> }>;
-      } else {
-        return res.then(fromImport.bind(null, value));
-      }
-    });
-
-    if (__DEV__) {
-      ScreenComponent.displayName = `AsyncRoute(${value.route})`;
-    }
+    ScreenComponent = createAsyncScreenComponent(value);
   } else {
     const res = value.loadRoute() as LoadedRoute;
     const result = fromImport(value, res);
@@ -334,7 +314,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const routeInfo = useCurrentRouteInfo();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
-    const activityThreshold = useActivityThreshold();
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
     const isRouteType = value.type === 'route';
@@ -423,13 +402,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
                   params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
                 />
               }>
-              {isRouteType && typeof activityThreshold === 'number' ? (
-                <NavigationAwareActivity hideWhenNestedAtLevel={activityThreshold}>
-                  {screenContent}
-                </NavigationAwareActivity>
-              ) : (
-                screenContent
-              )}
+              <RouteActivity type={value.type}>{screenContent}</RouteActivity>
             </React.Suspense>
           </ZoomTransitionTargetContextProvider>
         </SuspenseFallbackContext>
@@ -443,6 +416,54 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
   qualifiedStore.set(value, BaseRoute);
   return BaseRoute;
+}
+
+/** Loads the route with `React.lazy` when the screen renders, and again after a failed load. */
+export function createAsyncScreenComponent(value: RouteNode): React.ComponentType<any> {
+  const createLazyScreen = () => {
+    const Lazy: React.ComponentType<any> = React.lazy<React.ComponentType<any>>(() => {
+      const res = value.loadRoute() as LoadedRoute | PromiseLike<LoadedRoute>;
+      // NOTE(@kitten): React.lazy supports promise likes, which we can use to ensure that
+      // the route is synchronously available, if the `loadRoute` method returns a loaded route
+      // synchronously
+      if (!('then' in res)) {
+        return {
+          then(resolve) {
+            const ret = fromImport(value, res);
+            return Promise.resolve(resolve ? resolve(ret) : ret);
+          },
+        } as PromiseLike<{ default: React.ComponentType<any> }>;
+      } else {
+        return res.then(fromImport.bind(null, value), (error: unknown) => ({
+          default: createFailedScreen(error, () => {
+            LazyScreen = createLazyScreen();
+          }),
+        }));
+      }
+    });
+
+    if (__DEV__) {
+      Lazy.displayName = `AsyncRoute(${value.route})`;
+    }
+    return Lazy;
+  };
+  let LazyScreen = createLazyScreen();
+
+  return function AsyncScreen(props: object) {
+    return <LazyScreen {...props} />;
+  };
+}
+
+/** Throws a failed route load to the nearest error boundary after commit, once `reset` has prepared the next load. */
+function createFailedScreen(error: unknown, reset: () => void) {
+  return function FailedAsyncRoute() {
+    useLayoutEffect(() => {
+      // A rejected `React.lazy` stays rejected, and a reset before commit makes React load the route again at once.
+      reset();
+      throw error;
+    }, []);
+    return null;
+  };
 }
 
 // A separate component, so reading focus does not rerender the screen on focus changes.

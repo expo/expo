@@ -2,6 +2,8 @@ package expo.modules.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.text.Spanned
+import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -24,6 +26,8 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInRoot
@@ -31,6 +35,7 @@ import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.NestedScrollingChild
 import androidx.core.view.NestedScrollingChild3
 import androidx.core.view.NestedScrollingChildHelper
 import androidx.core.view.ViewCompat
@@ -39,10 +44,16 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.uimanager.JSPointerDispatcher
 import com.facebook.react.uimanager.JSTouchDispatcher
+import com.facebook.react.uimanager.ReactCompoundView
+import com.facebook.react.uimanager.ReactCompoundViewGroup
 import com.facebook.react.uimanager.RootView
 import com.facebook.react.uimanager.ThemedReactContext
+import com.facebook.react.uimanager.TouchTargetHelper
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.EventDispatcher
+import com.facebook.react.views.image.ReactImageView
+import com.facebook.react.views.text.ReactTextView
+import com.facebook.react.views.view.ReactViewGroup
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
@@ -204,6 +215,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
       val modifiers = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, scope, globalEventDispatcher)
         .then(sizingModifier)
         .then(publishContentOriginModifier())
+        .then(reportComposeClaimModifier(wrapper))
 
       // `addView` creates a new wrapper for each mounted child, and `AndroidView` only calls `factory` once.
       key(wrapper) {
@@ -295,6 +307,23 @@ internal class RNHostView(context: Context, appContext: AppContext) :
       }
     }
   }
+
+  // After every handler has run, a consumed change means Compose claimed the gesture.
+  private fun reportComposeClaimModifier(wrapper: TouchDispatchingRootViewGroup): Modifier =
+    Modifier.pointerInput(wrapper) {
+      awaitPointerEventScope {
+        while (true) {
+          val event = awaitPointerEvent(PointerEventPass.Final)
+          if (event.changes.any { it.isConsumed }) {
+            wrapper.onComposeClaimedGesture()
+          }
+          // Also covers gestures whose down never reached the wrapper.
+          if (event.changes.all { !it.pressed }) {
+            wrapper.clearGestureLeftToCompose()
+          }
+        }
+      }
+    }
 
   // Sets Yoga node size from Compose view size
   // Listens to Compose view size changes and updates the Yoga node size
@@ -440,6 +469,9 @@ private class TouchDispatchingRootViewGroup(
    */
   var dispatchesTouchesToJS: Boolean = false
 
+  // The down of a gesture this view left to Compose, until Compose claims it or the next gesture.
+  private var gestureLeftToCompose: MotionEvent? = null
+
   private val reactContext: ThemedReactContext
     get() = context as ThemedReactContext
 
@@ -478,7 +510,23 @@ private class TouchDispatchingRootViewGroup(
     composeOwnerView?.let { keepLastForTouchTargeting(it, hostedViewsContainer) }
   }
 
+  override fun onDetachedFromWindow() {
+    super.onDetachedFromWindow()
+    clearGestureLeftToCompose()
+  }
+
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+    if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+      // This view handles the JS side of its gestures, so the `Host` must not cancel them.
+      findAncestorHostView()?.reactNativeContentHit = true
+      // Like a native view that doesn't handle touches, plain hosted content lets the Compose
+      // parent handle the gesture. Only a host that dispatches to JavaScript must own its gestures.
+      clearGestureLeftToCompose()
+      if (!dispatchesTouchesToJS && !hasNativeTouchTarget(ev.x, ev.y)) {
+        gestureLeftToCompose = MotionEvent.obtain(ev)
+        return false
+      }
+    }
     if (
       ev.actionMasked == MotionEvent.ACTION_CANCEL &&
       !dispatchesTouchesToJS &&
@@ -544,14 +592,102 @@ private class TouchDispatchingRootViewGroup(
    * reporting it as a native one would cancel the press it belongs to.
    */
   private fun isCancelFromReactNative(): Boolean {
+    return findAncestorHostView()?.isDispatchingCancelFromParent ?: false
+  }
+
+  /**
+   * Whether a view under the point handles touches natively, like a scroll view, a text input, a
+   * switch, or a nested `Host`. Plain views, text and images only reach JavaScript through the
+   * ancestor root, so they don't count.
+   */
+  private fun hasNativeTouchTarget(x: Float, y: Float): Boolean {
+    // React Native's own hit test, so `hitSlop`, transforms, `zIndex`, `pointerEvents` and children
+    // drawn outside their parent pick the same target that JavaScript gets.
+    // `targetPoint` ends up relative to the deepest view under the point.
+    val targetPoint = FloatArray(2)
+    val path = TouchTargetHelper.findTargetPathAndCoordinatesForTouch(x, y, this, targetPoint)
+    val targetView = path.firstNotNullOfOrNull { it.getView() }
+    return path.any { target ->
+      val view = target.getView()
+      val localPoint = targetPoint.takeIf { view === targetView }
+      view != null && view !== this && handlesTouchesNatively(view, localPoint)
+    }
+  }
+
+  private fun handlesTouchesNatively(view: View, localPoint: FloatArray?): Boolean {
+    return when {
+      // React Native makes a `Pressable` clickable. `accessible` alone only makes a view focusable.
+      view is ReactViewGroup || view is ReactImageView -> view.isClickable || view.isLongClickable
+      // A `Text` with `onPress` is focusable on Android, and a nested one is a link span.
+      view is ReactTextView ->
+        view.isClickable ||
+          view.isLongClickable ||
+          view.isFocusable ||
+          hasLinkSpanAt(view, localPoint)
+      // `PreparedLayoutTextView` is internal, so it's matched as React Native's other text view type.
+      view is ReactCompoundView && view !is ReactCompoundViewGroup ->
+        view.isClickable || view.isLongClickable || view.isFocusable
+      // A nested `Host` can hold Compose controls.
+      view is ExpoComposeView<*> -> true
+      // Other native views: controls, text inputs and scroll views handle touches. Views that only
+      // draw, like an image or a gradient, don't.
+      else ->
+        view.isClickable ||
+          view.isLongClickable ||
+          view.isFocusable ||
+          view.isScrollContainer ||
+          view is NestedScrollingChild ||
+          view.canScrollVertically(1) || view.canScrollVertically(-1) ||
+          view.canScrollHorizontally(1) || view.canScrollHorizontally(-1)
+    }
+  }
+
+  // Only a link under the point counts, so the rest of the text still lets the parent handle it.
+  private fun hasLinkSpanAt(view: ReactTextView, localPoint: FloatArray?): Boolean {
+    if (localPoint == null) {
+      return false
+    }
+    val text = view.text as? Spanned ?: return false
+    val layout = view.layout ?: return false
+    val lineX = localPoint[0] - view.totalPaddingLeft + view.scrollX
+    val lineY = (localPoint[1] - view.totalPaddingTop + view.scrollY).toInt()
+    if (lineY < 0 || lineY > layout.height) {
+      return false
+    }
+    val line = layout.getLineForVertical(lineY)
+    if (lineX < layout.getLineLeft(line) || lineX > layout.getLineRight(line)) {
+      return false
+    }
+    val offset = layout.getOffsetForHorizontal(line, lineX)
+    return text.getSpans(offset, offset, ClickableSpan::class.java).isNotEmpty()
+  }
+
+  /**
+   * A gesture this view left to Compose reaches JavaScript through the ancestor root. When Compose
+   * takes it, for example a `clickable` press or a `LazyColumn` scroll, tell the root, so JavaScript
+   * cancels its touch the same way it does for a native child that claims a gesture.
+   */
+  fun onComposeClaimedGesture() {
+    val down = gestureLeftToCompose ?: return
+    gestureLeftToCompose = null
+    notifyAncestorRootViews { it.onChildStartedNativeGesture(null, down) }
+    down.recycle()
+  }
+
+  fun clearGestureLeftToCompose() {
+    gestureLeftToCompose?.recycle()
+    gestureLeftToCompose = null
+  }
+
+  private fun findAncestorHostView(): HostView? {
     var current: ViewParent? = parent
     while (current != null) {
       if (current is HostView) {
-        return current.isDispatchingCancelFromParent
+        return current
       }
       current = current.parent
     }
-    return false
+    return null
   }
 
   private inline fun notifyAncestorRootViews(block: (RootView) -> Unit) {

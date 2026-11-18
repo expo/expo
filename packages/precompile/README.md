@@ -315,21 +315,6 @@ Create `packages/<package-name>/spm.config.json`:
 
 Most podspecs are **auto-patched** at pod install time by `sandbox.rb`. The system intercepts `store_podspec` and applies `patch_spec_for_prebuilt` on-the-fly — no manual podspec changes required.
 
-The only exception is `expo-modules-core`, which uses the inline pattern:
-
-```ruby
-Pod::Spec.new do |s|
-  # ... metadata ...
-  s.dependency 'ExpoModulesCore'
-
-  if (!Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s))
-    s.static_framework = true
-    s.source_files = "**/*.{h,m,swift}"
-    s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
-  end
-end
-```
-
 ### Step 4: Build and Verify
 
 ```bash
@@ -555,10 +540,6 @@ The Ruby code in `packages/expo-modules-autolinking/scripts/ios/` handles all Co
 
 This means **most podspecs don't need manual modification** to support precompiled modules.
 
-#### Inline Patching (expo-modules-core only)
-
-`ExpoModulesCore.podspec` calls `try_link_with_prebuilt_xcframework(spec)` directly, which sets `spec.source`, `vendored_frameworks`, `prepare_command`, and script phases inline.
-
 ### Key Functions
 
 | Function | Purpose |
@@ -569,7 +550,7 @@ This means **most podspecs don't need manual modification** to support precompil
 | `pod_registration_options(...)` | Returns `:podspec` options for prebuilt pods, `:path` for source |
 | `register_external_pods(...)` | Registers 3rd-party prebuilt pods BEFORE RN CLI's `use_native_modules!` |
 | `patch_spec_for_prebuilt(spec)` | Auto-patches specs on-the-fly (called from sandbox.rb) |
-| `try_link_with_prebuilt_xcframework(spec)` | Inline spec patching (used by ExpoModulesCore) |
+| `try_link_with_prebuilt_xcframework(spec)` | Inline spec patching from a podspec |
 | `perform_pre_install(installer)` | Downgrades `USE_FRAMEWORKS` for incompatible pods |
 | `perform_post_install(installer)` | Runs all post-install configuration steps |
 | `ensure_artifacts(installer)` | Copies flavor tarballs into `Pods/<Pod>/artifacts/` |

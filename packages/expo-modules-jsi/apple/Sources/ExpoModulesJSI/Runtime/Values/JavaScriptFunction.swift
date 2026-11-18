@@ -6,7 +6,8 @@ internal import jsi
 public struct JavaScriptFunction: JavaScriptType, ~Copyable {
   /// Handle to the runtime the function belongs to.
   internal let runtimeHandle: JavaScriptRuntimeHandle
-  internal let pointee: facebook.jsi.Function
+  /// Mutable so that ``takeValue()`` can move the engine value out of a consumed function.
+  internal var pointee: facebook.jsi.Function
 
   /// The runtime the function belongs to, or `nil` if it has been deallocated. Prefer ``jsiRuntime``
   /// on hot paths: it costs no reference counting.
@@ -121,6 +122,102 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
     return try self.call(arguments: argumentsBuffer)
   }
 
+  /// Calls the function with `argumentCount` arguments. The `emplacing` closure encodes the arguments and
+  /// moves each one into the buffer with ``JavaScriptValuesBuffer/emplace(_:at:in:)``. Slots that it
+  /// doesn't fill pass `undefined`.
+  @discardableResult
+  public func call(
+    argumentCount: Int,
+    emplacing: @JavaScriptActor (borrowing JavaScriptValuesBuffer, borrowing JavaScriptRuntime) throws -> Void
+  ) throws -> JavaScriptValue {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    return try JavaScriptValuesBuffer.withEmplacedValues(
+      count: argumentCount,
+      in: runtime,
+      emplacing: emplacing
+    ) { arguments in
+      return try call(arguments: arguments)
+    }
+  }
+
+  /// Calls the function like ``call(argumentCount:emplacing:)`` and decodes its result as `R`.
+  public func call<R: JavaScriptDecodable & ~Copyable>(
+    argumentCount: Int,
+    returning: R.Type,
+    emplacing: @JavaScriptActor (borrowing JavaScriptValuesBuffer, borrowing JavaScriptRuntime) throws -> Void
+  ) throws -> R {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    return try JavaScriptValuesBuffer.withEmplacedValues(
+      count: argumentCount,
+      in: runtime,
+      emplacing: emplacing
+    ) { arguments in
+      let result = try call(arguments: arguments)
+      return try JavaScriptActor.assumeIsolated {
+        try R.decode(result, in: runtime)
+      }
+    }
+  }
+
+  /// Calls the function like ``call(argumentCount:emplacing:)`` in `runtime`, the runtime of the function,
+  /// and passes its result to `withResult` without making an owned value of it.
+  @usableFromInline
+  internal func call(
+    argumentCount: Int,
+    in runtime: JavaScriptRuntime,
+    emplacing: @JavaScriptActor (borrowing JavaScriptValuesBuffer, borrowing JavaScriptRuntime) throws -> Void,
+    withResult:
+      @JavaScriptActor (borrowing JavaScriptUnownedValue, borrowing JavaScriptRuntime) throws
+      -> Void = { _, _ in }
+  ) throws {
+    // The arguments and the result live on the stack. All slots hold `undefined` first, so they stay
+    // valid to destroy when an encode or the call throws. This part is nonisolated: an isolated closure
+    // passed to the standard library checks the current executor on every call.
+    try withUnsafeTemporaryAllocation(of: facebook.jsi.Value.self, capacity: argumentCount + 1) { storage in
+      // The isolated closures below run synchronously on this thread.
+      nonisolated(unsafe) let arguments = storage.baseAddress!
+      nonisolated(unsafe) let result = arguments + argumentCount
+      for index in 0...argumentCount {
+        expo.emplaceUndefined(arguments + index)
+      }
+      defer {
+        expo.destroyValues(arguments, argumentCount + 1)
+      }
+      try JavaScriptActor.assumeIsolated {
+        try emplacing(JavaScriptValuesBuffer(runtime, start: arguments, count: argumentCount), runtime)
+      }
+      try throwCppErrorUnlessSucceeded(
+        expo.callFunctionInto(runtime.pointee, pointee, arguments, argumentCount, result)
+      )
+      try JavaScriptActor.assumeIsolated {
+        try withResult(JavaScriptUnownedValue(runtime.pointee, result), runtime)
+      }
+    }
+  }
+
+  /// Calls the function like ``call(argumentCount:in:emplacing:withResult:)`` and returns what
+  /// `withResult` returns.
+  @inlinable
+  @JavaScriptActor
+  internal func call<R: ~Copyable>(
+    argumentCount: Int,
+    in runtime: JavaScriptRuntime,
+    emplacing: @JavaScriptActor (borrowing JavaScriptValuesBuffer, borrowing JavaScriptRuntime) throws -> Void,
+    withResult: @JavaScriptActor (borrowing JavaScriptUnownedValue, borrowing JavaScriptRuntime) throws -> R
+  ) throws -> R {
+    // Inlinable, so it specializes in the caller's module, while the call it wraps stays non-generic.
+    var value: R?
+    try call(argumentCount: argumentCount, in: runtime, emplacing: emplacing) { result, runtime in
+      value = try withResult(result, runtime)
+    }
+    // `call` returns only after `withResult` set the value.
+    return value.take()!
+  }
+
   /// Calls the function as a constructor with the given buffer of arguments. It's like calling a function with the `new` keyword.
   public func callAsConstructor(_ arguments: consuming JavaScriptValuesBuffer? = nil) throws -> JavaScriptValue {
     guard let jsiRuntime else {
@@ -167,6 +264,11 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
     return JavaScriptValue(runtimeHandle, expo.valueFromFunction(jsiRuntime, pointee))
   }
 
+  /// Moves the function into a `JavaScriptValue`, without the clone that ``asValue()`` makes.
+  public consuming func takeValue() -> JavaScriptValue {
+    return JavaScriptValue(runtimeHandle, expo.takeValueFromFunction(&pointee))
+  }
+
   /// Returns the function as a `facebook.jsi.Value` instance.
   internal func asJSIValue() -> facebook.jsi.Value {
     guard let jsiRuntime else {
@@ -190,6 +292,46 @@ extension JavaScriptFunction: JavaScriptRepresentable {
 
   public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
     return asValue()
+  }
+}
+
+// MARK: - JavaScriptCodable
+
+// A `JavaScriptFunction` argument receives the JS value unconverted, like `JavaScriptValue`, but checked for
+// its kind: decoding anything else throws a `TypeError`. A function is an object to `JavaScriptValueKinds`,
+// so the kind check alone can't skip the other objects.
+//
+// The unowned overload is the one a host function argument takes: it reads the kind off the borrowed
+// `jsi::Value` and clones it straight into the wrapper, where the default would first clone it into an
+// owning `JavaScriptValue` and then again into the wrapper.
+extension JavaScriptFunction: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptFunction
+  {
+    return try value.asFunction()
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptFunction
+  {
+    return try value.asFunction(in: runtime)
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(_ value: consuming JavaScriptFunction, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptValue
+  {
+    return value.takeValue()
   }
 }
 

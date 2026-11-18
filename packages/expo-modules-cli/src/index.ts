@@ -1,13 +1,20 @@
 import { parseArgs } from './commands/args';
-import { generateTypesCommand } from './commands/generateTypesCommand';
+import { swiftCheckCommand, swiftExpandCommand } from './commands/swiftExpandCommands';
+import { typegenCommand } from './commands/typegenCommand';
 
 const HELP = `Usage: expo-modules [options] <command>
 
 Command-line tools for developing Expo modules.
 
 Commands:
-  generate-types [packageDir]  Generates TypeScript types for the native API an
+  typegen [packageDir]         Generates TypeScript types for the native API an
                                Expo module exports to JavaScript.
+  swift:expand <path...>       Prints the code that the Swift macros generate.
+  swift:check [path...]        Checks Swift sources for macro errors without a
+                               build.
+
+A command with a language prefix, such as swift:, uses the tools of that
+language. A command without one gives the same result for every language.
 
 Options:
   -v, --version  Display the version number.
@@ -38,8 +45,14 @@ async function main(argv: string[]) {
     commandArgv.push('--help');
   }
   switch (command) {
-    case 'generate-types':
-      await generateTypesCommand(commandArgv);
+    case 'typegen':
+      await typegenCommand(commandArgv);
+      break;
+    case 'swift:expand':
+      await swiftExpandCommand(commandArgv);
+      break;
+    case 'swift:check':
+      await swiftCheckCommand(commandArgv);
       break;
     case undefined:
       if (args['--help']) {

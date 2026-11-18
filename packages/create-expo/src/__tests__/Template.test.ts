@@ -1,5 +1,5 @@
 import fs from 'fs';
-import * as Glob from 'glob';
+import { vol } from 'memfs';
 import path from 'path';
 
 import {
@@ -9,9 +9,6 @@ import {
 } from '../Template';
 
 jest.mock('fs');
-jest.mock('glob');
-const ActualFs = jest.requireActual('fs') as typeof fs;
-const ActualGlob = jest.requireActual('glob') as typeof Glob;
 const cwd = path.resolve(__dirname, 'fixtures/contrived-template');
 
 describe(resolvePackageModuleId, () => {
@@ -83,50 +80,24 @@ describe('getTemplateFilesToRenameAsync', () => {
   });
 
   it('returns no files when passed an empty rename config', async () => {
-    const spyGlob = jest.spyOn(Glob, 'glob').mockImplementation(async (source, options) => {
-      return await ActualGlob.glob(source, { ...options, fs: ActualFs });
-    });
-
     const files = await getTemplateFilesToRenameAsync({ cwd, renameConfig: [] });
     expect(files).toHaveLength(0);
-    expect(spyGlob).toHaveBeenCalledTimes(1);
   });
 });
 
 describe('getTemplateFilesToRenameAsync — nested patterns via custom rename config', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+  afterEach(() => vol.reset());
 
   it('lets a template-supplied config reach app.json files inside apps/*', async () => {
-    const monorepoFixture = path.resolve(__dirname, 'fixtures/monorepo-template');
-    jest
-      .spyOn(Glob, 'glob')
-      .mockImplementation(async (source, options) =>
-        ActualGlob.glob(source, { ...options, fs: ActualFs })
-      );
-
-    // Fixture is created on-demand below if it doesn't already exist.
-    await ActualFs.promises.mkdir(path.join(monorepoFixture, 'apps/mobile'), { recursive: true });
-    await ActualFs.promises.mkdir(path.join(monorepoFixture, 'apps/tv'), { recursive: true });
-    await ActualFs.promises.writeFile(
-      path.join(monorepoFixture, 'apps/mobile/app.json'),
-      '{ "name": "HelloWorld" }'
-    );
-    await ActualFs.promises.writeFile(
-      path.join(monorepoFixture, 'apps/tv/app.json'),
-      '{ "name": "HelloWorld" }'
-    );
-
-    try {
-      const files = await getTemplateFilesToRenameAsync({
-        cwd: monorepoFixture,
-        renameConfig: ['apps/*/app.json'],
-      });
-      expect(files.sort()).toEqual(['apps/mobile/app.json', 'apps/tv/app.json']);
-    } finally {
-      await ActualFs.promises.rm(monorepoFixture, { recursive: true, force: true });
-    }
+    vol.fromJSON({
+      '/template/apps/mobile/app.json': '{ "name": "HelloWorld" }',
+      '/template/apps/tv/app.json': '{ "name": "HelloWorld" }',
+    });
+    const files = await getTemplateFilesToRenameAsync({
+      cwd: '/template',
+      renameConfig: ['apps/*/app.json'],
+    });
+    expect(files.sort()).toEqual(['apps/mobile/app.json', 'apps/tv/app.json']);
   });
 });
 

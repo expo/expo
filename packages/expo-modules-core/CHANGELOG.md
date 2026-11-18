@@ -1,5 +1,24 @@
 # Changelog
 
+## 58.0.26
+
+### Patch Changes
+
+- [iOS] Reduce the overhead of creating shared objects in JavaScript and of returning them from native functions. ([#52096](https://github.com/expo/expo/pull/52096) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#52095](https://github.com/expo/expo/pull/52095))
+  - expo-modules-jsi@58.0.19
+
+## 58.0.25
+
+### Patch Changes
+
+- [iOS] Support `static` and `class` `@JS` members on `@SharedObject` classes. They are bound onto the JavaScript class itself, for example `Cache.open(name)`. ([#51966](https://github.com/expo/expo/pull/51966) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fix "Cannot use shared object that was already released" errors when a view with a shared object prop, such as the `@expo/ui` `TextInput`, is remounted right after its first render. ([#51934](https://github.com/expo/expo/pull/51934) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [iOS] Fix apps running out of memory when native functions return many new `ArrayBuffer` values to JavaScript, because the garbage collector did not count their memory. ([#52124](https://github.com/expo/expo/pull/52124) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix `ArrayBuffer.wrap(dataWithoutCopy:)` keeping the bytes of released buffers alive until the current autorelease pool drains, which could make apps run out of memory when JavaScript calls a native function in a loop. ([#52123](https://github.com/expo/expo/pull/52123) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#52125](https://github.com/expo/expo/pull/52125), [#52031](https://github.com/expo/expo/pull/52031), [#52133](https://github.com/expo/expo/pull/52133), [#52122](https://github.com/expo/expo/pull/52122), [#52055](https://github.com/expo/expo/pull/52055))
+  - expo-modules-jsi@58.0.18
+
 ## 58.0.24
 
 ### Patch Changes

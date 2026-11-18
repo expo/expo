@@ -11,7 +11,9 @@
   // Add or remove files to change the roster — no list needed here.
   // shared.md (prepended to every agent + coordinator) and coordinator.md are
   // reserved filenames. Per-agent overrides go in each file's YAML frontmatter,
-  // e.g. `---\nmodel: anthropic/claude-opus-5-5\n---`.
+  // e.g. `---\nmodel: anthropic/claude-opus-5-5\n---`. `paths: ["packages/ios/**"]`
+  // there limits an agent to changes that touch those globs, and `mention: [octocat]`
+  // names the people the review mentions when that agent asks for a human review.
 
   // @ref LLP 0009#config-and-prompt-templates [implements] — suggestions off by default, not a schema limit
   "policy": {
@@ -102,16 +104,29 @@
   //   "trigger": "all"   — review every PR, unless it has the `skipLabel`.
   //   "trigger": "label" — review only PRs labeled `label` (or `label:<agent>`).
   //
-  // OPT-IN ONLY here: a PR is reviewed when a maintainer adds `ai-review`, and never
-  // otherwise. expo-code-review.yml ALSO gates its job on that label, so a runner does
-  // not spin up for every PR in a repo this busy. Both must agree — this file is the
-  // real policy and `ecr ci` re-checks it, but if the workflow gate were dropped the
-  // config alone would still prevent an unlabeled review.
+  // OPT-IN here: a PR is reviewed when a maintainer adds `ai-review`.
+  // expo-code-review.yml ALSO gates its job on that label, so a runner does not spin up
+  // for every PR in a repo this busy. Both must agree — this file is the real policy
+  // and `ecr ci` re-checks it, but if the workflow gate were dropped the config alone
+  // would still prevent an unlabeled review. The one exception is the workflow's
+  // automatic review of fork PRs (repo variable AI_REVIEW_FORK_PRS, off by default),
+  // which passes `--force`.
   //
   // `ai-review:<agent>` narrows a run to one agent (e.g. `ai-review:security`).
   // `skipLabel` is write-gated (only maintainers can add labels), so a PR author
   // cannot opt their own PR out — or in.
-  "review": { "trigger": "label", "label": "ai-review", "skipLabel": "ai-review:skip" },
+  //
+  // `readyForHumanLabel` is added when the decision is "Ready for human review", with
+  // or without comments, and every pass finished. The reviewer removes it when a later
+  // review is not ready or new commits arrive, but only when it added the label
+  // itself, and it never adds it back after a person removed it. It is advisory:
+  // never use it as a merge gate.
+  "review": {
+    "trigger": "label",
+    "label": "ai-review",
+    "skipLabel": "ai-review:skip",
+    "readyForHumanLabel": "ready for human",
+  },
 
   // A maintainer comment containing this marker skips the CI review.
   "breakGlass": { "marker": "/skip-review" },
@@ -207,13 +222,15 @@
 
   // Inline PR comments (ROOT-ONLY). Each finding anchored to a line in the PR
   // diff is posted as an inline review comment on that line (full rationale and
-  // suggestion there); the main comment lists it short — title, links, one-line
-  // rationale — with a link to the thread. The main comment stays the single
-  // source of truth: /dismiss, embedded state, and reply handling are unchanged.
+  // suggestion there); the main comment does not list it again, and shows only
+  // its id, linked to the thread, and its location. The main comment stays the
+  // single source of truth for /dismiss, embedded state, and reply handling.
   // Threads update in place across re-reviews; a retired thread with human
   // replies is stubbed, never deleted. Replying in a thread counts as author
   // feedback for that finding (clearing still needs the unquoted `id:` token).
-  // Requires cli-version >= 0.14.2. maxComments caps create-notification fan-out.
+  // A run's new inline comments go out in one COMMENT review, so each run puts one
+  // review entry and one notification on the PR. maxComments caps inline comments
+  // per PR.
   "inline": {
     "enabled": true,
     "maxComments": 20

@@ -45,7 +45,7 @@ class EventDispatcher(
       val body = try {
         OTRequestBody(
           resourceMetrics = events.map { it.toOTEvent(easId) }
-        ).toJson(prettyPrint = true)
+        ).toJson()
       } catch (e: Exception) {
         Log.w(OBSERVE_TAG, "Encoding metrics request body failed: ${e.message}")
         continuation.resume(DispatchResult.NonRetryableFailure("encoding error: ${e.message}"))
@@ -69,7 +69,7 @@ class EventDispatcher(
         return@suspendCancellableCoroutine Unit
       }
       val body = try {
-        OTLogsRequestBody(resourceLogs = resourceLogs).toJson(prettyPrint = true)
+        OTLogsRequestBody(resourceLogs = resourceLogs).toJson()
       } catch (e: Exception) {
         Log.w(OBSERVE_TAG, "Encoding logs request body failed: ${e.message}")
         continuation.resume(DispatchResult.NonRetryableFailure("encoding error: ${e.message}"))
@@ -93,7 +93,7 @@ class EventDispatcher(
       val body = try {
         OTTracesRequestBody(
           resourceSpans = batches.map { it.event.toOTResourceSpans(easId, it.spans) }
-        ).toJson(prettyPrint = true)
+        ).toJson()
       } catch (e: Exception) {
         Log.w(OBSERVE_TAG, "Encoding traces request body failed: ${e.message}")
         continuation.resume(DispatchResult.NonRetryableFailure("encoding error: ${e.message}"))
@@ -122,7 +122,9 @@ class EventDispatcher(
       .post(body.toRequestBody("application/json".toMediaType()))
       .build()
 
-    Log.d(OBSERVE_TAG, body)
+    if (BuildConfig.DEBUG) {
+      Log.d(OBSERVE_TAG, body)
+    }
 
     val call = httpClient.newCall(request)
 

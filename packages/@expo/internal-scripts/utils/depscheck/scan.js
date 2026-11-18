@@ -1,6 +1,7 @@
 // @ts-check
-import { glob } from 'glob';
+import fs from 'node:fs';
 import { isBuiltin } from 'node:module';
+import path from 'node:path';
 import ts from 'typescript';
 
 /**
@@ -26,20 +27,23 @@ const REGEXP_REPLACE_SLASHES = /\\/g;
  * @returns {Promise<SourceFile[]>}
  */
 export async function getSourceFilesAsync(packagePath, type) {
-  const files = await glob('src/**/*.{ts,tsx,js,jsx}', {
+  /** @type {SourceFile[]} */
+  const files = [];
+  for await (const entry of fs.promises.glob('src/**/*.{ts,tsx,js,jsx}', {
     cwd: getSourceFilePath(packagePath, type),
-    absolute: true,
-    nodir: true,
-  });
-
-  return files
-    .filter((filePath) => !filePath.endsWith('.d.ts'))
-    .map((filePath) => toPosixPath(filePath))
-    .map((filePath) =>
-      filePath.includes('/__tests__/') || filePath.includes('/__mocks__/')
-        ? { path: filePath, type: 'test' }
-        : { path: filePath, type: 'source' }
-    );
+    withFileTypes: true,
+  })) {
+    if ((!entry.isFile() && !entry.isSymbolicLink()) || entry.name.endsWith('.d.ts')) continue;
+    const sourcePath = toPosixPath(path.join(entry.parentPath, entry.name));
+    files.push({
+      path: sourcePath,
+      type:
+        sourcePath.includes('/__tests__/') || sourcePath.includes('/__mocks__/')
+          ? 'test'
+          : 'source',
+    });
+  }
+  return files;
 }
 
 /**

@@ -8,8 +8,15 @@ Observe.configure({
   environment: 'custom-env',
   dispatchingEnabled: true,
   dispatchInDebug: true,
+  sampleRate: 1,
+  errorSampleRate: 1,
+  // ignoredMetrics: ['expo.app_startup.tti'],
+  // ignoredEvents: ['debug.info_button_pressed'],
   integrations: {
-    'expo-router': { filteredParams: ['accountId', 'firstName'] },
+    'expo-router': {
+      filteredParams: ['accountId', 'firstName'],
+      experimental_totalBlockingTime: true,
+    },
     'expo-image': {
       oversizeThreshold: 1.5,
       includeUrlParams: false,
@@ -20,6 +27,7 @@ Observe.configure({
       reportWarnings: true,
     },
   },
+  networkTraces: true,
 });
 
 // Passing `errorBoundaryFallback` opts the root into capturing render-phase errors: the boundary

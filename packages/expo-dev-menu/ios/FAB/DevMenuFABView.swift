@@ -223,6 +223,8 @@ struct DevMenuFABView: View {
         .animation(didPosition ? (isDragging ? dragSpring : FABConstants.snapAnimation) : nil, value: position)
     }
     .ignoresSafeArea()
+    // DevMenuFABWindow.hitTest uses unmirrored screen coordinates, so the layout must not flip under RTL.
+    .environment(\.layoutDirection, .leftToRight)
   }
 
   private func dragGesture(bounds: CGSize, safeArea: EdgeInsets) -> some Gesture {

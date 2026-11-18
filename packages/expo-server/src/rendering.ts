@@ -23,17 +23,17 @@ export interface ResolveMetadataOptions {
 /**
  * The legacy SSR render module exported from `_expo/server/render.js`.
  *
- * {@link import('@expo/router-server/src/static/renderStaticContent')}
+ * @deprecated Use {@link ServerRenderModule}.
  */
 export interface LegacyServerRenderModule {
-  /** {@type import('@expo/router-server/src/static/renderStaticContent').getStaticContent} */
+  /** @deprecated Use {@link ServerRenderModule.getStreamingContent}. */
   getStaticContent(location: URL, options: GetStaticContentOptions): Promise<string>;
 }
 
 /**
  * The SSR render module exported from `_expo/server/render.js`.
  *
- * {@link import('@expo/router-server/src/static/renderStreamingContent')}
+ * {@link import('@expo/router-server/src/server/renderStreamingContent')}
  */
 export interface ServerRenderModule {
   resolveMetadata?(options: ResolveMetadataOptions): Promise<ResolvedMetadata | null>;

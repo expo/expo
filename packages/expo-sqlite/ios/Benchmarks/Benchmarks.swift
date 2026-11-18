@@ -21,11 +21,11 @@ struct Benchmarks {}
 
 /// Runs one case with a fresh app context whose runtime has the `ExpoSQLite` module installed, so
 /// JavaScript drivers reach it as `expo.modules.ExpoSQLite`.
-func sqliteBenchmarkCase(_ body: @escaping @JavaScriptActor (AppContext) throws -> Void) async throws {
-  try await benchmarkCase {
-    let appContext = AppContext.create()
-    appContext.moduleRegistry.register(module: SQLiteModule(appContext: appContext), name: nil)
-    try body(appContext)
+func sqliteBenchmarkCase(_ body: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> Void) async throws {
+  try await moduleBenchmarkCase { appContext in
+    return SQLiteModule(appContext: appContext)
+  } _: { _, runtime in
+    try body(runtime)
   }
 }
 

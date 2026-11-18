@@ -1,11 +1,17 @@
 import fs from 'fs-extra';
-import { glob } from 'glob';
+import { glob } from 'node:fs/promises';
 import path from 'node:path';
 import semver from 'semver';
 
 import { EXPO_DIR } from '../Constants';
 import { runTurboTasksAsync } from '../Turbo';
-import { getReleaseTagAsync, packChangesetsAsync, runChangesetsAsync } from './Changesets';
+import { spawnAsync } from '../Utils';
+import {
+  getReleasePublishEnv,
+  getReleaseTagAsync,
+  packChangesetsAsync,
+  runChangesetsAsync,
+} from './Changesets';
 import {
   refreshPnpmLockfileAsync,
   updateVersionDerivedFilesAsync,
@@ -52,7 +58,11 @@ export async function runCanaryAsync(options: CanaryOptions): Promise<void> {
     await packChangesetsAsync('expo-canary-pack-');
   } else {
     const tag = await getReleaseTagAsync(options.branchName, 'canary');
-    await runChangesetsAsync(['publish', '--tag', tag, '--no-git-tag']);
+    await runChangesetsAsync(
+      ['publish', '--tag', tag, '--no-git-tag'],
+      spawnAsync,
+      getReleasePublishEnv()
+    );
   }
 }
 
@@ -84,10 +94,14 @@ export async function normalizeCanaryVersionsAsync(
 }
 
 async function readPublicManifestsAsync(root: string): Promise<Manifest[]> {
-  const manifestPaths = await glob(
-    ['packages/*/package.json', 'packages/@expo/*/package.json', 'templates/*/package.json'],
-    { cwd: root, absolute: true }
-  );
+  const manifestPaths = (
+    await Array.fromAsync(
+      glob(
+        ['packages/*/package.json', 'packages/@expo/*/package.json', 'templates/*/package.json'],
+        { cwd: root }
+      )
+    )
+  ).map((file) => path.resolve(root, file));
   const manifests = await Promise.all(
     manifestPaths.map(async (file) => ({ ...(await fs.readJson(file)), path: path.dirname(file) }))
   );

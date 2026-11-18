@@ -1,13 +1,13 @@
 {
   "branches": {
     "main": {
-      "publish": "latest",
-      "canary": "canary",
-      "allowMajor": false
-    },
-    "sdk-58": {
       "publish": null,
       "canary": "canary",
+      "allowMajor": true
+    },
+    "sdk-58": {
+      "publish": "latest",
+      "canary": null,
       "allowMajor": false
     }
   },

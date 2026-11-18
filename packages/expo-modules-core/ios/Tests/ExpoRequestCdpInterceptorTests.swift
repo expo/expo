@@ -66,6 +66,15 @@ struct ExpoRequestCdpInterceptorTests {
   }
 
   @Test
+  func `skips requests reported by ExpoNetworkReporter`() {
+    let request = NSMutableURLRequest(url: URL(string: "https://example.com/data")!)
+    #expect(ExpoRequestInterceptorProtocol.canInit(with: request as URLRequest))
+
+    ExpoNetworkReporter().mark(request)
+    #expect(!ExpoRequestInterceptorProtocol.canInit(with: request as URLRequest))
+  }
+
+  @Test
   func `simple json data`() async throws {
     mockDelegate.events.removeAll()
 
@@ -246,5 +255,36 @@ struct ExpoRequestCdpInterceptorTests {
 
     json = Self.parseJSON(data: mockDelegate.events[3])
     #expect(json["method"] as! String == "Network.loadingFinished")
+  }
+
+  @Test
+  func `failed request`() async throws {
+    mockDelegate.events.removeAll()
+
+    let result = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<(Data?, URLResponse?, Error?), Error>) in
+      session.dataTask(with: URL(string: "http://127.0.0.1:9/")!) { (data, response, error) in
+        continuation.resume(returning: (data, response, error))
+      }.resume()
+    }
+    #expect(result.2 != nil)
+
+    // Give time for events to be dispatched
+    try await Task.sleep(nanoseconds: 100_000_000) // 100ms
+
+    try #require(mockDelegate.events.count == 3)
+
+    var json = Self.parseJSON(data: mockDelegate.events[0])
+    let requestId = (json["params"] as! [String: Any])["requestId"] as! String
+    #expect(json["method"] as! String == "Network.requestWillBeSent")
+
+    json = Self.parseJSON(data: mockDelegate.events[1])
+    #expect(json["method"] as! String == "Network.requestWillBeSentExtraInfo")
+
+    json = Self.parseJSON(data: mockDelegate.events[2])
+    let params = json["params"] as! [String: Any]
+    #expect(json["method"] as! String == "Network.loadingFailed")
+    #expect(params["requestId"] as? String == requestId)
+    #expect((params["errorText"] as? String)?.isEmpty == false)
+    #expect(params["canceled"] as? Bool == false)
   }
 }

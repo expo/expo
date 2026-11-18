@@ -328,6 +328,21 @@ export async function test({ describe, it, expect, beforeAll }: JasmineInterface
         expect(ciphertext.byteLength).toBe(plaintextSize);
         expect(ciphertextWithTag.byteLength).toBe(plaintextSize + sealedData.tagSize);
       });
+
+      it('returns base64 ciphertext with the encoding option', async () => {
+        const ciphertext = await sealedData.ciphertext({ encoding: 'base64' });
+        const ciphertextWithTag = await sealedData.ciphertext({
+          includeTag: true,
+          encoding: 'base64',
+        });
+        expect(typeof ciphertext).toBe('string');
+        expect(typeof ciphertextWithTag).toBe('string');
+
+        const reconstructed = AESSealedData.fromParts(await sealedData.iv(), ciphertextWithTag);
+        expect(areArraysEqual(await reconstructed.combined(), await sealedData.combined())).toBe(
+          true
+        );
+      });
     });
 
     describe('Key size compatibility', () => {

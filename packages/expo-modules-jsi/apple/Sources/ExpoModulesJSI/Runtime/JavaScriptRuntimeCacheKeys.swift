@@ -16,11 +16,14 @@ extension JavaScriptRuntime {
     /// The global `Date` constructor and the `Date` functions that the conversions call.
     static let date = Cache.Key<DateFunctions>()
 
-    /// `Object.defineProperty` and the property names of a descriptor.
-    static let objectDefineProperty = Cache.Key<DefinePropertyFunction>()
+    /// `Reflect.defineProperty` and the property names of a descriptor.
+    static let reflectDefineProperty = Cache.Key<DefinePropertyFunction>()
 
     /// The global `Set` constructor.
     static let setConstructor = Cache.Key<JavaScriptFunction.Ref>()
+
+    /// The global `Symbol` function, `Symbol.for`, and the well-known symbols read so far.
+    static let symbol = Cache.Key<JavaScriptSymbol.Cache>()
 
     /// The global `Uint8Array` constructor.
     static let uint8ArrayConstructor = Cache.Key<JavaScriptFunction.Ref>()

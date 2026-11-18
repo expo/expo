@@ -697,7 +697,7 @@ NS_ASSUME_NONNULL_BEGIN
     // already showing, just update
     _errorView.type = type;
     _errorView.error = error;
-  } {
+  } else {
     [_contentView removeFromSuperview];
     if (!_errorView) {
       _errorView = [[EXErrorView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];

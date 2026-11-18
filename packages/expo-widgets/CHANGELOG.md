@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- Updated dependencies. ([#51934](https://github.com/expo/expo/pull/51934), [#51118](https://github.com/expo/expo/pull/51118), [#51119](https://github.com/expo/expo/pull/51119), [#52047](https://github.com/expo/expo/pull/52047), [#51117](https://github.com/expo/expo/pull/51117), [#51120](https://github.com/expo/expo/pull/51120), [#52010](https://github.com/expo/expo/pull/52010))
+  - @expo/ui@58.0.23
+
 ## 58.0.22
 
 ### Patch Changes

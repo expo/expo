@@ -474,6 +474,6 @@ class ReactActivityDelegateWrapper(
   //endregion
 
   companion object {
-    private val TAG = ReactActivityDelegate::class.simpleName
+    private val TAG = ReactActivityDelegate::class.java.simpleName
   }
 }

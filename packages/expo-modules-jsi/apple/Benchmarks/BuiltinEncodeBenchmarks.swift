@@ -5,7 +5,7 @@ import Foundation
 import Testing
 
 /// Encoding the Foundation types that map to JavaScript built-in classes. Each encode creates an
-/// instance with the runtime's global constructor.
+/// instance of the matching built-in class.
 extension JSIBenchmarks {
   @Test
   func `encode a date`() async throws {
@@ -24,6 +24,18 @@ extension JSIBenchmarks {
     try await benchmarkCase { runtime in
       let data = Data(repeating: 7, count: 16)
       try benchmark("Data.encode: 16 bytes", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try Data.encode(data, in: runtime)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `encode large data`() async throws {
+    try await benchmarkCase { runtime in
+      let data = Data(repeating: 7, count: 1 << 20)
+      try benchmark("Data.encode: 1 MB", runtime: runtime) { iterations in
         for _ in 0..<iterations {
           _ = try Data.encode(data, in: runtime)
         }

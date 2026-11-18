@@ -1,4 +1,5 @@
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react-native';
+import { Asset } from 'expo-asset';
 // @ts-ignore-next-line: no @types/node
 import fs from 'fs/promises';
 import React from 'react';
@@ -61,6 +62,121 @@ describe(useSQLiteContext, () => {
     // Flush the providers' deferred open/state updates so they settle inside act().
     await act(async () => {});
     openDatabaseSpy.mockRestore();
+  });
+
+  it('should re-render when only `children` changes', async () => {
+    function App({ flag }: { flag: boolean }) {
+      return (
+        <SQLiteProvider databaseName=":memory:">
+          {flag ? <Text>after</Text> : <Text>before</Text>}
+        </SQLiteProvider>
+      );
+    }
+
+    const { rerender } = await render(<App flag={false} />);
+    await waitFor(() => {
+      expect(screen.queryByText('before')).not.toBeNull();
+    });
+
+    await rerender(<App flag />);
+    await waitFor(() => {
+      expect(screen.queryByText('after')).not.toBeNull();
+    });
+    expect(screen.queryByText('before')).toBeNull();
+  });
+
+  it('should re-import when the asset source changes and ignore a new object with the same contents', async () => {
+    const openDatabaseSpy = jest.spyOn(require('../SQLiteDatabase'), 'openDatabaseAsync');
+    const assetModuleSpy = jest.spyOn(Asset, 'fromModule').mockImplementation((assetId) => {
+      return {
+        downloadAsync: async () => ({ localUri: `file:///asset-${assetId}.db` }),
+      } as Asset;
+    });
+    const importSpy = jest.fn(async (..._args: unknown[]) => {});
+    require('../ExpoSQLite').default.importAssetDatabaseAsync = importSpy;
+
+    function App({ assetId, forceOverwrite }: { assetId: number; forceOverwrite?: boolean }) {
+      return (
+        <SQLiteProvider
+          databaseName=":memory:"
+          options={{ enableChangeListener: true }}
+          assetSource={{ assetId, forceOverwrite }}>
+          <Text>ready</Text>
+        </SQLiteProvider>
+      );
+    }
+
+    const { rerender } = await render(<App assetId={1} />);
+    await waitFor(() => {
+      expect(screen.queryByText('ready')).not.toBeNull();
+    });
+    expect(openDatabaseSpy).toHaveBeenCalledTimes(1);
+    expect(importSpy).toHaveBeenCalledTimes(1);
+
+    await rerender(<App assetId={1} />);
+    expect(openDatabaseSpy).toHaveBeenCalledTimes(1);
+    expect(importSpy).toHaveBeenCalledTimes(1);
+
+    await rerender(<App assetId={2} />);
+    await waitFor(() => {
+      expect(importSpy).toHaveBeenCalledTimes(2);
+    });
+    expect(openDatabaseSpy).toHaveBeenCalledTimes(2);
+    expect(assetModuleSpy).toHaveBeenLastCalledWith(2);
+
+    await rerender(<App assetId={2} forceOverwrite />);
+    await waitFor(() => {
+      expect(importSpy).toHaveBeenCalledTimes(3);
+    });
+    expect(importSpy.mock.lastCall?.[2]).toBe(true);
+
+    openDatabaseSpy.mockRestore();
+    assetModuleSpy.mockRestore();
+  });
+
+  it('should re-import a suspense database when the asset source changes', async () => {
+    const assetModuleSpy = jest.spyOn(Asset, 'fromModule').mockImplementation((assetId) => {
+      return {
+        downloadAsync: async () => ({ localUri: `file:///asset-${assetId}.db` }),
+      } as Asset;
+    });
+    const importSpy = jest.fn(async () => {});
+    require('../ExpoSQLite').default.importAssetDatabaseAsync = importSpy;
+
+    function App({ assetId }: { assetId: number }) {
+      return (
+        <React.Suspense fallback={<Text>loading</Text>}>
+          <SQLiteProvider
+            databaseName=":memory:"
+            options={{ enableChangeListener: true }}
+            assetSource={{ assetId }}
+            useSuspense>
+            <Text>ready</Text>
+          </SQLiteProvider>
+        </React.Suspense>
+      );
+    }
+
+    const { rerender } = await render(<App assetId={1} />);
+    await waitFor(() => {
+      expect(screen.queryByText('ready')).not.toBeNull();
+    });
+    expect(importSpy).toHaveBeenCalledTimes(1);
+
+    await rerender(<App assetId={1} />);
+    expect(importSpy).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText('ready')).not.toBeNull();
+
+    await rerender(<App assetId={2} />);
+    await waitFor(() => {
+      expect(importSpy).toHaveBeenCalledTimes(2);
+    });
+    expect(assetModuleSpy).toHaveBeenLastCalledWith(2);
+    await waitFor(() => {
+      expect(screen.queryByText('ready')).not.toBeNull();
+    });
+
+    assetModuleSpy.mockRestore();
   });
 
   it('should return the same SQLite instance on subsequent calls', async () => {

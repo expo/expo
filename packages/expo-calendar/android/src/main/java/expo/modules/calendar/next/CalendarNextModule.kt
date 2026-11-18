@@ -11,12 +11,14 @@ import expo.modules.calendar.next.domain.repositories.instance.InstanceRepositor
 import expo.modules.calendar.next.domain.repositories.attendee.AttendeeRepository
 import expo.modules.calendar.next.domain.repositories.reminder.ReminderRepository
 import expo.modules.calendar.next.domain.repositories.calendar.CalendarRepository
+import expo.modules.calendar.next.domain.repositories.extendedproperty.ExtendedPropertyRepository
 import expo.modules.calendar.next.exceptions.CalendarNotFoundException
 import expo.modules.calendar.next.mappers.AttendeeMapper
 import expo.modules.calendar.next.records.AttendeeRecord
 import expo.modules.calendar.next.records.AddEventWithFormOptionsRecord
 import expo.modules.calendar.next.mappers.CalendarMapper
 import expo.modules.calendar.next.mappers.EventMapper
+import expo.modules.calendar.next.mappers.ExtendedPropertyMapper
 import expo.modules.calendar.next.mappers.ReminderMapper
 import expo.modules.calendar.next.records.EventUpdateRecord
 import expo.modules.calendar.next.records.RecurringEventOptions
@@ -50,6 +52,7 @@ class CalendarNextModule : Module() {
   private val eventMapper = EventMapper()
   private val attendeeMapper = AttendeeMapper()
   private val reminderMapper = ReminderMapper()
+  private val extendedPropertyMapper = ExtendedPropertyMapper()
 
   private val calendarRepository by lazy {
     CalendarRepository(context.contentResolver)
@@ -71,6 +74,10 @@ class CalendarNextModule : Module() {
     ReminderRepository(context.contentResolver)
   }
 
+  private val extendedPropertyRepository by lazy {
+    ExtendedPropertyRepository(context.contentResolver)
+  }
+
   private val expoCalendarFactory by lazy {
     ExpoCalendarFactory(
       calendarRepository = calendarRepository,
@@ -89,9 +96,12 @@ class CalendarNextModule : Module() {
       eventRepository = eventRepository,
       instanceRepository = instanceRepository,
       attendeeRepository = attendeeRepository,
+      calendarRepository = calendarRepository,
+      extendedPropertyRepository = extendedPropertyRepository,
       eventMapper = eventMapper,
       attendeeMapper = attendeeMapper,
       reminderMapper = reminderMapper,
+      extendedPropertyMapper = extendedPropertyMapper,
       reminderRepository = reminderRepository
     )
   }
@@ -362,6 +372,21 @@ class CalendarNextModule : Module() {
       AsyncFunction("getAttendees") Coroutine { expoCalendarEvent: ExpoCalendarEvent ->
         permissionsDelegate.requireSystemPermissions(false)
         expoCalendarEvent.getAttendees()
+      }
+
+      AsyncFunction("getExtendedProperties") Coroutine { expoCalendarEvent: ExpoCalendarEvent ->
+        permissionsDelegate.requireSystemPermissions(false)
+        expoCalendarEvent.getExtendedProperties()
+      }
+
+      AsyncFunction("setExtendedProperty") Coroutine { expoCalendarEvent: ExpoCalendarEvent, name: String, value: String ->
+        permissionsDelegate.requireSystemPermissions(true)
+        expoCalendarEvent.setExtendedProperty(name, value)
+      }
+
+      AsyncFunction("deleteExtendedProperty") Coroutine { expoCalendarEvent: ExpoCalendarEvent, name: String ->
+        permissionsDelegate.requireSystemPermissions(true)
+        expoCalendarEvent.deleteExtendedProperty(name)
       }
 
       Function("getOccurrenceSync") { expoCalendarEvent: ExpoCalendarEvent, options: RecurringEventOptions? ->

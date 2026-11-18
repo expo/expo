@@ -1,5 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
+import { realpathSync } from 'fs';
 import fs from 'fs/promises';
+import os from 'os';
 import path from 'path';
 
 import { createProjectHashAsync } from '../../src/Fingerprint';
@@ -15,7 +17,7 @@ jest.mock('../../src/ExpoConfigLoader', () => ({
 
 describe('updates managed support', () => {
   jest.setTimeout(600000);
-  const tmpDir = require('temp-dir');
+  const tmpDir = realpathSync(os.tmpdir());
   const projectName = 'fingerprint-e2e-updates';
   const projectRoot = path.join(tmpDir, projectName);
 

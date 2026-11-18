@@ -1,5 +1,6 @@
 import { ImmutableRequest } from '../ImmutableRequest';
 import type { Manifest, MiddlewareInfo, Route } from '../manifest';
+import { isForbiddenOrigin } from '../utils/checkOrigin';
 import { getRedirectRewriteLocation, isResponse, parseParams } from '../utils/matchers';
 import { MiddlewareModule, shouldRunMiddleware } from '../utils/middleware';
 import { appendHeadersRecord, mergeHeaderInputs } from '../utils/headers';
@@ -45,6 +46,8 @@ function noopBeforeResponse(
 }
 
 export interface RequestHandlerParams {
+  /** Check cross-origin form submissions. Defaults to true; 'sec-only' skips the Origin fallback. */
+  checkOrigin?: boolean | 'sec-only';
   /** Before handler response 4XX, not before unhandled error */
   beforeErrorResponse?: BeforeResponseCallback;
   /** Before handler responses */
@@ -56,6 +59,7 @@ export interface RequestHandlerParams {
 }
 
 export interface RequestHandlerInput {
+  isDevelopment?: boolean;
   getHtml(request: Request, route: Route): Promise<string | ReadableStream | Response | null>;
   getRoutesManifest(): Promise<Manifest | null>;
   getApiRoute(route: Route): Promise<any>;
@@ -69,11 +73,17 @@ export function createRequestHandler({
   getApiRoute,
   getMiddleware,
   getLoaderData,
+  isDevelopment = false,
+  checkOrigin = true,
   beforeErrorResponse = noopBeforeResponse,
   beforeResponse = noopBeforeResponse,
   beforeHTMLResponse = noopBeforeResponse,
   beforeAPIResponse = noopBeforeResponse,
 }: RequestHandlerParams & RequestHandlerInput) {
+  if (isDevelopment && checkOrigin) {
+    checkOrigin = 'sec-only';
+  }
+
   let manifest: Manifest | null = null;
 
   return async function handler(request: Request): Promise<Response> {
@@ -96,6 +106,21 @@ export function createRequestHandler({
 
     let request = incomingRequest;
     let url = new URL(request.url);
+
+    if (isForbiddenOrigin(request, checkOrigin, manifest.origin)) {
+      return createResponse(
+        null,
+        null,
+        'This request was blocked because it came from a different origin.',
+        {
+          status: 403,
+          headers: new Headers({
+            'Content-Type': 'text/plain',
+          }),
+        }
+      );
+    }
+
     const globalOverrides = manifest.headers ? { headers: manifest.headers } : undefined;
     // `pageHeaders` rules apply to HTML and loader responses, matched on the request pathname.
     const pageOverrides = { headers: resolveRouteHeaders(url.pathname) };

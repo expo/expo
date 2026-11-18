@@ -49,21 +49,28 @@ extension String {
   /// property API turns its name into a key: JSI's `const char*` overloads treat the bytes as ASCII
   /// and would mangle any non-ASCII name.
   internal func toJSIPropNameID(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.PropNameID {
-    // The `(pointer, length)` overload needs the UTF-8 *byte* count, which `withUTF8` provides
-    // exactly; `String.count` would be wrong here because it counts grapheme clusters (e.g. `"café"`
-    // reports 4 for 5 UTF-8 bytes). `withUTF8` is mutating (it makes a bridged string contiguous
-    // first), hence the local copy, and the result leaves the closure through an optional because
-    // it has to be a `Copyable` type.
-    var string = self
+    // The result leaves the closure through an optional because it has to be a `Copyable` type.
     var propNameID: facebook.jsi.PropNameID? = nil
-    string.withUTF8 { utf8 in
-      guard let base = utf8.baseAddress else {
-        propNameID = facebook.jsi.PropNameID.forAscii(runtime, "", 0)
-        return
-      }
-      propNameID = facebook.jsi.PropNameID.forUtf8(runtime, base, utf8.count)
+    withJSIUTF8 { utf8, count in
+      propNameID = facebook.jsi.PropNameID.forUtf8(runtime, utf8, count)
     }
     return propNameID.take()!
+  }
+
+  /// Calls `body` with the string's UTF-8 bytes, for the engine calls that create a string from a pointer
+  /// and a length. The engine copies the bytes right away, so they're read straight from the string's
+  /// storage, with no `std::string` in between.
+  ///
+  /// The count is in UTF-8 *bytes*, which the engine calls need; `String.count` would be wrong here
+  /// because it counts grapheme clusters (e.g. `"café"` reports 4 for 5 UTF-8 bytes). The pointer is
+  /// never null: an empty string may have no storage, and any non-null pointer works with a zero count.
+  internal func withJSIUTF8(_ body: (_ utf8: UnsafePointer<UInt8>, _ count: Int) -> Void) {
+    // `withUTF8` is mutating (it makes a bridged string contiguous first), hence the local copy. Native
+    // strings are already contiguous and pay nothing.
+    var string = self
+    string.withUTF8 { utf8 in
+      body(utf8.baseAddress ?? UnsafePointer(bitPattern: 1)!, utf8.count)
+    }
   }
 }
 

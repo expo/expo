@@ -1,6 +1,6 @@
-import { glob } from 'glob';
 import { isBuiltin } from 'node:module';
 import path from 'node:path';
+import { glob } from 'tinyglobby';
 import ts from 'typescript';
 
 import { DependencyKind, type PackageDependency, type Package } from '../Packages';
@@ -126,7 +126,7 @@ export async function getSourceFilesAsync(
   const files = await glob('src/**/*.{ts,tsx,js,jsx}', {
     cwd: getSourceFilePaths(pkg, type),
     absolute: true,
-    nodir: true,
+    onlyFiles: true,
   });
 
   return files

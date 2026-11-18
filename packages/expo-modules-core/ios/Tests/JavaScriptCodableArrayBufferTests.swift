@@ -103,6 +103,22 @@ struct JavaScriptCodableArrayBufferTests {
   }
 
   @Test
+  func `encoding an ArrayBuffer reports its memory to the garbage collector once`() throws {
+    let runtime = try runtime
+    let size = 1 << 20
+    let externalBytes = "HermesInternal.getInstrumentedStats().js_externalBytes"
+    let buffer = ArrayBuffer(size: size)
+    let bytesBefore = try runtime.eval(externalBytes).getDouble()
+    let first = try ArrayBuffer.encode(buffer, in: runtime)
+    let second = try ArrayBuffer.encode(buffer, in: runtime)
+    let bytesAfter = try runtime.eval(externalBytes).getDouble()
+    #expect(first.isArrayBuffer() == true)
+    #expect(second.isArrayBuffer() == true)
+    #expect(bytesAfter - bytesBefore >= Double(size))
+    #expect(bytesAfter - bytesBefore < Double(2 * size))
+  }
+
+  @Test
   func `decodes dictionary values as ArrayBuffer`() throws {
     let runtime = try runtime
     let value = try runtime.eval("({ payload: new Uint8Array([7, 8, 9]).buffer })")

@@ -163,6 +163,10 @@ static BOOL isEASUpdateHost(NSString * _Nullable host)
     // TODO: fix inside of RN
     return;
   }
+  // Drop the bundle we already hold so `status` reports `kEXAppLoaderStatusHasManifest` until the
+  // new one arrives. Otherwise the app manager sees `kEXAppLoaderStatusHasManifestAndBundle`,
+  // finishes the reload with the old bundle, and the app runs one reload behind the dev server.
+  _bundle = nil;
   [self _loadDevelopmentJavaScriptResource];
 }
 

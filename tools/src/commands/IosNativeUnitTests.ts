@@ -231,6 +231,11 @@ async function runTestsAsync(
     path.join(RESULTS_DIR, `${scheme}.xcresult`),
     'CODE_SIGN_IDENTITY=',
     'CODE_SIGNING_REQUIRED=NO',
+    // After a full run, xcodebuild collects simulator diagnostics (a sysdiagnose and a log
+    // archive). On Blacksmith runners that collection stalls until a 600s timeout, which
+    // doubles the job time. The result bundle still keeps the test logs and failures.
+    '-collect-test-diagnostics',
+    'never',
   ];
   if (benchmarks) {
     args.push(

@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "EXDevMenuInterface",
+      "podName": "expo-dev-menu-interface",
+      "platforms": ["iOS(\"16.4\")"],
+      "externalDependencies": [],
+      "swiftLanguageVersions": ["5"],
+      "targets": [
+        {
+          "type": "swift",
+          "name": "EXDevMenuInterface",
+          "dependencies": [],
+          "linkedFrameworks": ["Foundation", "UIKit"]
+        }
+      ]
+    }
+  ]
+}

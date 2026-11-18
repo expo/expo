@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.1.15
+
+### Patch Changes
+
+- Pass the matched route and its params to the server renderer. ([#51961](https://github.com/expo/expo/pull/51961) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([`4a6ae65`](https://github.com/expo/expo/commit/4a6ae6527e2e46e2b0cbc5af1151a82e30c844d4), [#51961](https://github.com/expo/expo/pull/51961))
+  - @expo/config@58.0.8
+  - @expo/router-server@58.0.17
+  - expo-server@58.0.6
+  - @expo/prebuild-config@58.0.16
+  - @expo/metro-config@58.0.17
+
 ## 58.1.14
 
 ### Patch Changes

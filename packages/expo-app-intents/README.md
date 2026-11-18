@@ -45,6 +45,29 @@ export function AppIntentHandler() {
 }
 ```
 
+## Running a background task as the intent handler
+
+When the answer to an intent comes from JavaScript, run a JavaScript task from `perform()` and wait for its result. This requires [`expo-task-manager`](https://docs.expo.dev/versions/latest/sdk/task-manager) (`npx expo install expo-task-manager`), so it is available on iOS and tvOS. Define the task in the global scope of a module that your app imports at startup, because no component is mounted when the intent launches the app in the background:
+
+```ts
+import type { AppIntentInvocation } from 'expo-app-intents';
+import * as TaskManager from 'expo-task-manager';
+
+TaskManager.defineTask<AppIntentInvocation>('log-water', async ({ data: invocation }) => {
+  await saveWaterIntake(Number(invocation.params.amount));
+  return 'Water logged.';
+});
+```
+
+```swift
+let result = try await AppIntentDispatcher.shared.runBackgroundTask(
+  name: "log-water",
+  params: ["amount": .int(amount)]
+)
+```
+
+`runBackgroundTask(name:)` returns the value the task returned as an `AppIntentValue`. It throws when `expo-task-manager` is not installed, when the task throws or is not defined, and when the task does not finish within the timeout (30 seconds by default).
+
 ## Donating intents
 
 Donate an intent when the user performs its action inside your app, so the system can suggest it later on the Lock Screen, in Siri Suggestions, and in Spotlight. Make the intent donatable in Swift and register it in the `OnCreate` of your `AppIntentsSetup` module. JavaScript donates by the registered name. Nothing requires it to match the name the intent dispatches, but reusing that name gives each intent one name in JavaScript. The params that JavaScript passes are converted to the intent's `DonationParams` record, so a missing required field or a field of the wrong type rejects the donation. An intent without params only needs to conform to `DonatableAppIntent`. Declare the record with `@Field` properties, because the `@Record` macro is not available in the app target:

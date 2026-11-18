@@ -1,5 +1,5 @@
+import { boolish } from '@expo/env';
 import execa from 'execa';
-import { boolish } from 'getenv';
 import fs from 'node:fs';
 import path from 'node:path';
 

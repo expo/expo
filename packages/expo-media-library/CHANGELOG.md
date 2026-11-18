@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- Restore `accessPrivileges` on the `PermissionResponse` returned by `getPermissionsAsync`, `requestPermissionsAsync`, and `usePermissions`. ([#52053](https://github.com/expo/expo/pull/52053) by [@Wenszel](https://github.com/Wenszel))
+
 ## 58.0.11
 
 ### Patch Changes

@@ -116,6 +116,7 @@ export default function TextInputScreen() {
               ref={inputRef}
               value={text}
               placeholder="Type here..."
+              accessibilityLabel={secureTextEntry ? 'Example password' : 'Example text'}
               editable={editable}
               multiline={multiline}
               keyboardType={keyboardType}

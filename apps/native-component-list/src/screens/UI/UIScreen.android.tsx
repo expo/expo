@@ -235,6 +235,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'RangeSlider component',
+    route: 'ui/range-slider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./RangeSliderScreen'));
+    },
+  },
+  {
     name: 'DropdownMenu component',
     route: 'ui/dropdown-menu',
     options: {},
@@ -304,6 +312,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./NavigationBarScreen'));
+    },
+  },
+  {
+    name: 'BottomSheet in a list',
+    route: 'ui/bottom-sheet-in-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BottomSheetInListScreen'));
     },
   },
   {
@@ -427,6 +443,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'SplitButtonLayout component',
+    route: 'ui/split-button-layout',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SplitButtonLayoutScreen'));
+    },
+  },
+  {
     name: 'Surface component',
     route: 'ui/surface',
     options: {},
@@ -464,6 +488,22 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ExtendingExpoUIScreen'));
+    },
+  },
+  {
+    name: 'Host in a Pressable',
+    route: 'ui/host-in-pressable',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HostInPressableScreen'));
+    },
+  },
+  {
+    name: 'RNHostView in a clickable',
+    route: 'ui/rnhostview-in-clickable',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./RNHostViewInClickableScreen'));
     },
   },
   {

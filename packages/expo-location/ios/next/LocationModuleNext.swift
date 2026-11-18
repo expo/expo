@@ -5,6 +5,13 @@ public final class LocationModuleNext: Module {
   private lazy var permissions = LocationPermissionsDelegate(appContext: appContext)
   private lazy var accessGuard = LocationAccessGuard(appContext: appContext)
 
+  private lazy var geocoder: any GeocoderNext = {
+    if #available(iOS 26.0, *) {
+      return MapKitGeocoder()
+    }
+    return CompatibilityGeocoder()
+  }()
+
   public func definition() -> ModuleDefinition {
     Name("LocationModuleNext")
 
@@ -42,6 +49,14 @@ public final class LocationModuleNext: Module {
       return location?.toPosition()
     }
 
+    AsyncFunction("geocode") { (address: String, options: GeocodeOptions?) -> [Address] in
+      try await geocoder.geocode(address, options: options ?? GeocodeOptions())
+    }
+
+    AsyncFunction("reverseGeocode") { (coordinates: Coordinates, options: ReverseGeocodeOptions?) -> [Address] in
+      try await geocoder.reverseGeocode(coordinates, options: options ?? ReverseGeocodeOptions())
+    }
+
     Function("watchPosition") { (profile: Profile?) -> PositionWatcher in
       guard CLLocationManager.locationServicesEnabled() else {
         throw LocationServicesDisabledGlobally()
@@ -77,6 +92,40 @@ public final class LocationModuleNext: Module {
       }
 
       Function("status") { (watcher: PositionWatcher) -> PositionWatchStatus in
+        watcher.status()
+      }
+    }
+
+    Function("watchHeading") { (filter: Double?) throws -> HeadingWatchHandle in
+      guard CLLocationManager.headingAvailable() else {
+        throw HeadingUnavailable()
+      }
+
+      let source = HeadingUpdatesSource()
+      let watcher = try HeadingWatchHandle(filter: filter, source: source)
+      watcher.start()
+      return watcher
+    }
+
+    Class(HeadingWatchHandle.self) {
+      Function("pause") { (watcher: HeadingWatchHandle) in
+        watcher.pause()
+      }
+
+      Function("resume") { (watcher: HeadingWatchHandle) -> Bool in
+        watcher.resume()
+      }
+
+      Function("withFilter") { (watcher: HeadingWatchHandle, degrees: Double) throws -> HeadingWatchHandle in
+        try watcher.withFilter(degrees)
+        return watcher
+      }
+
+      Function("restart") { (watcher: HeadingWatchHandle) -> Bool in
+        watcher.restart()
+      }
+
+      Function("status") { (watcher: HeadingWatchHandle) -> HeadingWatchStatus in
         watcher.status()
       }
     }

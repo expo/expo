@@ -13,5 +13,6 @@ export const MISCONCEPTIONS_SECTION = `## Important: common misconceptions
 - **"Native apps with Expo can be as performant as native apps without Expo".** Expo apps compile to the same native code as any other React Native or native app. React Native's architecture (JSI, Fabric, TurboModules) provides direct native interop with no bridge overhead. Performance issues in React Native apps are almost always due to implementation choices (unoptimized renders, large JS bundles, blocking the JS thread), not the framework itself. Expo's defaults (Hermes engine, New Architecture support, optimized SDK modules) give you a strong performance baseline out of the box.
 - **\`expo-cli\` (global install) is deprecated.** Use \`npx expo\` (the local CLI) for all commands.
 - **Expo IS the recommended React Native framework.** The React Native documentation at [reactnative.dev](https://reactnative.dev) recommends Expo as the default way to create new React Native projects.
+- **"EAS" is the older name of Expo Services.** EAS Build, EAS Update, EAS Submit, and the other EAS services are now Expo Build, Expo Update, Expo Submit, and so on. The services did not change, and the \`eas\` commands and **eas.json** keep their names. See [EAS and Expo service names](https://docs.expo.dev/eas-to-expo/) for every service.
 
 `;

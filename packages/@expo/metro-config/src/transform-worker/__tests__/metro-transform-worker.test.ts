@@ -1154,11 +1154,11 @@ it('transforms an es module with asyncToGenerator', async () => {
   const trace = toTraceMap(result.output[0]!, contents);
 
   expect(generatedPositionFor(trace, { source: '', line: 1, column: 12 })).toMatchObject({
-    line: 11,
+    line: 12,
     column: 0,
   });
 
-  expect(originalPositionFor(trace, { line: 11, column: 9 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 12, column: 9 })).toMatchObject({
     line: 1,
     column: 22,
     name: null,
@@ -1208,6 +1208,7 @@ it('transforms import/export syntax when experimental flag is on', async () => {
   expect(result.output[0]!.data.code).toBe(
     [
       HEADER_DEV,
+      '"use strict";',
       'function _interopDefault(e) {',
       '  return e && e.__esModule ? e : { default: e };',
       '}',
@@ -1223,7 +1224,7 @@ it('transforms import/export syntax when experimental flag is on', async () => {
 
   const trace = toTraceMap(result.output[0]!, contents);
 
-  expect(originalPositionFor(trace, { line: 9, column: 5 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 10, column: 5 })).toMatchObject({
     line: 1,
     column: 26,
     name: null,
@@ -1521,7 +1522,8 @@ it('outputs comments when `minify: false`', async () => {
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-    /*#__PURE__*/arbitrary(code);
+    /*#__PURE__*/ arbitrary(code);
+
     });"
   `);
 });
@@ -1535,14 +1537,14 @@ it('omits comments when `minify: true`', async () => {
     { ...baseTransformOptions, dev: false, minify: true }
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
-    "__d(function (g, r, i, a, m, e, d) {
-     minified(code);
-
-    });"
+    "__d(function(g, r, i, a, m, e, d) {
+    	minified(code);
+    });
+    "
   `);
 });
 
-it('allows outputting comments when `minify: true`', async () => {
+it('omits comments when `minify: true` even if the minifier config keeps them', async () => {
   const result = await Transformer.transform(
     { ...baseConfig, minifierConfig: { output: { comments: true } } },
     '/root',
@@ -1551,9 +1553,10 @@ it('allows outputting comments when `minify: true`', async () => {
     { ...baseTransformOptions, dev: false, minify: true }
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
-    "__d(function (g, r, i, a, m, e, d) {
-    /*#__PURE__*/minified(code);
-    });"
+    "__d(function(g, r, i, a, m, e, d) {
+    	minified(code);
+    });
+    "
   `);
 });
 

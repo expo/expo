@@ -1,7 +1,7 @@
 ---
-title: 'Automate production deployments with EAS Workflows'
+title: 'Automate production deployments with Expo Workflows'
 sidebar_title: Production deployments
-description: Learn how to automate production builds and over-the-air updates with EAS Workflows from a release branch for Android and iOS.
+description: Learn how to automate production builds and over-the-air updates with Expo Workflows from a release branch for Android and iOS.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -21,7 +21,7 @@ Rebuilding the app for every production change is wasteful when most changes are
 
 <Prerequisites>
 
-<Requirement title="EAS Build configured for production">
+<Requirement title="Expo Build configured for production">
 
 [EAS CLI](/eas/cli/) prompts to generate credentials the first time we trigger a build for a profile. Trigger the production build manually for both Android and iOS so the credentials exist before the workflow runs:
 
@@ -51,7 +51,7 @@ The above files coexist inside a project's GitHub repository without any conflic
 
 ## The `build` job type for production builds
 
-Let's start by creating a production workflow. It uses the [pre-packaged](/tutorial/cicd/first-workflow/#types-of-jobs-in-eas-workflows) `build` job type from EAS Workflows and runs for both Android and iOS.
+Let's start by creating a production workflow. It uses the [pre-packaged](/tutorial/cicd/first-workflow/#types-of-jobs-in-expo-workflows) `build` job type from Expo Workflows and runs for both Android and iOS.
 
 <Step label="1">
 
@@ -147,7 +147,7 @@ jobs:
 
 In the above workflow, the `fingerprint` job runs first and generates a hash based on the changes in the codebase. The `get-build` jobs then check if there are existing builds for Android and iOS with the same fingerprint hash. If there are no existing builds, the `build` jobs run to create new builds for production.
 
-The [`environment`](/eas/workflows/syntax/#jobsjob_idenvironment) field on the `fingerprint` job tells EAS which environment variables to load when computing the fingerprint. Our production environment may have different values for variables such as `API_URL` or feature flags. Those values can affect the native layer when EAS bakes them into the build. Setting `environment: production` ensures the fingerprint reflects what ships.
+The [`environment`](/eas/workflows/syntax/#jobsjob_idenvironment) field on the `fingerprint` job tells Expo Workflows which environment variables to load when computing the fingerprint. Our production environment may have different values for variables such as `API_URL` or feature flags. Those values can affect the native layer when Expo Build bakes them into the build. Setting `environment: production` ensures the fingerprint reflects what ships.
 
 The [`if`](/eas/workflows/syntax/#jobsjob_idif) field used on the `build_android` and `build_ios` jobs is a boolean expression. When it evaluates to `false`, the build jobs are skipped. The `!` operator means the build job runs only when `get-build` did not find a matching build.
 
@@ -214,10 +214,10 @@ To test our workflow, let's create a release branch and push it to our GitHub re
   cmdCopy="git checkout -b release/1.0.0 && git push origin release/1.0.0"
 />
 
-Open the EAS dashboard and find the workflow run. Since no build exists yet for this fingerprint, the `build` jobs should run, and the `update` jobs should be grayed out.
+Open the Expo dashboard and find the workflow run. Since no build exists yet for this fingerprint, the `build` jobs should run, and the `update` jobs should be grayed out.
 
 <ContentSpotlight
-  alt="EAS Workflows dashboard showing a release-branch production run with fingerprint, get-build, and Android plus iOS build jobs."
+  alt="Expo Workflows dashboard showing a release-branch production run with fingerprint, get-build, and Android plus iOS build jobs."
   src="/static/images/tutorial/cicd/eas-workflows-production-build-jobs.png"
   className="max-w-160"
 />
@@ -231,10 +231,10 @@ Now, let's make a TypeScript/JavaScript only change in our example project on th
   cmdCopy="git add . && git commit -m 'Update welcome text' && git push origin release/1.0.0"
 />
 
-After the workflow runs, notice in the EAS dashboard that the fingerprint matches the build from the last push. The `build` jobs are skipped entirely, and the `update` jobs publish an OTA update.
+After the workflow runs, notice in the Expo dashboard that the fingerprint matches the build from the last push. The `build` jobs are skipped entirely, and the `update` jobs publish an OTA update.
 
 <ContentSpotlight
-  alt="EAS Workflows production run reusing existing native builds via fingerprint match and publishing Android and iOS over-the-air updates."
+  alt="Expo Workflows production run reusing existing native builds via fingerprint match and publishing Android and iOS over-the-air updates."
   src="/static/images/tutorial/cicd/eas-workflows-production-update-jobs.png"
   className="max-w-160"
 />
@@ -245,7 +245,7 @@ After the workflow runs, notice in the EAS dashboard that the fingerprint matche
 
 The workflow we have built in this chapter only builds production-ready app binaries or publishes OTA updates to an existing production app. [Automating store submission](/build/automate-submissions/) is a common next step in a production release workflow.
 
-EAS Workflows provides a `submit` pre-packaged job for automating app store submissions. It requires us to manage our app store credentials with EAS CLI. It also requires us to fulfill app store requirements, such as manually uploading the first Android release (**.aab**) to the Google Play Store. iOS has its own Apple Developer Program enrollment and signing credentials to set up.
+Expo Workflows provides a `submit` pre-packaged job for automating app store submissions. It requires us to manage our app store credentials with EAS CLI. It also requires us to fulfill app store requirements, such as manually uploading the first Android release (**.aab**) to the Google Play Store. iOS has its own Apple Developer Program enrollment and signing credentials to set up.
 
 Once the app store requirements are in place, we can add two new jobs `submit_android` and `submit_ios` to our workflow that run after the `build` jobs:
 

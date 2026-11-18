@@ -7,6 +7,7 @@ import {
   useNativeState,
 } from '@expo/ui/swift-ui';
 import {
+  accessibilityLabel as accessibilityLabelMod,
   autocorrectionDisabled,
   disabled as disabledMod,
   foregroundStyle,
@@ -61,6 +62,7 @@ export function TextInput({
   value,
   onChangeText,
   placeholder,
+  accessibilityLabel,
   autoFocus,
   editable: editableProp,
   multiline,
@@ -151,6 +153,7 @@ export function TextInput({
     ...(userModifiers ?? []),
     ...transformToModifiers(style, {}, undefined, { componentName: 'TextInput', textStyle }),
   ];
+  if (accessibilityLabel !== undefined) modifiers.push(accessibilityLabelMod(accessibilityLabel));
   if (editable === false) modifiers.push(disabledMod(true));
   if (keyboardType) modifiers.push(keyboardTypeMod(mapKeyboardType(keyboardType)));
   if (autoCapitalize) {

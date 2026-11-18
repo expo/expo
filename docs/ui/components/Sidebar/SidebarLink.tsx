@@ -93,8 +93,8 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
           className={mergeClasses(
             'ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-blue10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
             isSelected
-              ? 'bg-palette-blue10 text-palette-white dark:text-palette-black'
-              : 'border-palette-blue10 bg-none text-palette-blue10 dark:border-palette-blue9 dark:text-palette-blue9'
+              ? 'border-palette-blue11 bg-palette-blue11 text-palette-white dark:text-palette-black'
+              : 'border-palette-blue10 bg-none text-palette-blue11 dark:border-palette-blue9 dark:text-palette-blue9'
           )}>
           NEW
         </div>

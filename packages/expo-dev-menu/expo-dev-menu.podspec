@@ -48,8 +48,6 @@ Pod::Spec.new do |s|
     ]
   }
 
-  s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'EX_DEV_MENU_ENABLED=1', 'OTHER_SWIFT_FLAGS' => '-DEX_DEV_MENU_ENABLED' }
-
   s.user_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/Swift Compatibility Header\"",
   }
@@ -112,14 +110,8 @@ Pod::Spec.new do |s|
     test_spec.dependency 'React-CoreModules'
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
-    test_spec.pod_target_xcconfig = {
-      'OTHER_LDFLAGS' => '$(inherited) -lc++'
-    }
     test_spec.platforms = {
       :ios => '16.4'
-    }
-    test_spec.pod_target_xcconfig = {
-      'OTHER_LDFLAGS' => '$(inherited) -lc++'
     }
   end
 

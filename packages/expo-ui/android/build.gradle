@@ -12,13 +12,13 @@ apply plugin: 'expo-module-gradle-plugin'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 group = 'expo.modules.ui'
-version = '58.0.22'
+version = '58.0.23'
 
 android {
   namespace "expo.modules.ui"
   defaultConfig {
     versionCode 1
-    versionName "58.0.22"
+    versionName "58.0.23"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
   buildFeatures {
@@ -42,8 +42,6 @@ dependencies {
   implementation 'androidx.compose.ui:ui-android:1.12.1'
   implementation "androidx.compose.material3:material3:1.5.0-beta01"
   implementation 'androidx.compose.material3:material3-android:1.5.0-beta01'
-  implementation 'androidx.lifecycle:lifecycle-runtime:2.10.0'
-  implementation 'androidx.fragment:fragment-ktx:1.8.9'
   implementation "androidx.graphics:graphics-shapes:1.1.0"
   implementation "com.squareup.okhttp3:okhttp:4.9.2"
   implementation "com.google.android.material:material:1.13.0"

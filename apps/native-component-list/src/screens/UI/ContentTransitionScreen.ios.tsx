@@ -1,4 +1,4 @@
-import { Host, Section, Text, VStack, HStack, Button, Form } from '@expo/ui/swift-ui';
+import { Host, Section, Text, VStack, HStack, Button, Form, Image } from '@expo/ui/swift-ui';
 import {
   animation,
   Animation,
@@ -12,6 +12,7 @@ import { useRef, useState } from 'react';
 
 export default function ContentTransitionScreen() {
   const [count, setCount] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
   const countsDown = useRef(false);
 
   return (
@@ -47,6 +48,25 @@ export default function ContentTransitionScreen() {
                 }}
               />
             </HStack>
+          </VStack>
+        </Section>
+        <Section title="Symbol Effect (Replace)" modifiers={[contentShape(shapes.rectangle())]}>
+          <VStack spacing={16}>
+            <Image
+              systemName={isMuted ? 'speaker.slash.fill' : 'speaker.wave.3.fill'}
+              size={48}
+              modifiers={[
+                contentTransition('symbolEffect', {
+                  symbolEffect: { effect: 'replace', direction: 'downUp' },
+                }),
+                animation(Animation.default, isMuted),
+              ]}
+            />
+            <Button
+              label="Toggle"
+              modifiers={[buttonStyle('bordered')]}
+              onPress={() => setIsMuted((muted) => !muted)}
+            />
           </VStack>
         </Section>
       </Form>

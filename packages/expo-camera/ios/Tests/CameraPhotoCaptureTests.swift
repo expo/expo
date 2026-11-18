@@ -13,6 +13,7 @@ private final class MockCameraViewDelegate: CameraPhotoCaptureDelegate {
   var deviceOrientation: UIInterfaceOrientation = .portrait
   var responsiveWhenOrientationLocked = false
   var physicalOrientation: UIDeviceOrientation = .portrait
+  var captureRotationAngle: CGFloat?
   var presetCamera: AVCaptureDevice.Position = .back
   var mirror = false
   var flashMode: FlashMode = .off

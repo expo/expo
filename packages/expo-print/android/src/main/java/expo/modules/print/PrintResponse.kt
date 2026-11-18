@@ -1,13 +1,10 @@
 package expo.modules.print
 
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import java.io.Serializable
-import expo.modules.kotlin.types.OptimizedRecord
+import io.github.expo.modules.v2.Record
 
-@OptimizedRecord
-internal class FilePrintResult(
-  @Field var uri: String = "",
-  @Field var numberOfPages: Int = 0,
-  @Field var base64: String? = null
-) : Record, Serializable
+@Record
+internal data class FilePrintResult(
+  val uri: String,
+  val numberOfPages: Int,
+  val base64: String? = null
+)

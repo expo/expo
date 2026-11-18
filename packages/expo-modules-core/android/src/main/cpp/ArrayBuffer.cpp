@@ -282,7 +282,13 @@ jni::local_ref<jni::JByteBuffer> ByteBufferArrayBufferStorage::toDirectBuffer() 
 }
 
 std::shared_ptr<jsi::MutableBuffer> ByteBufferArrayBufferStorage::jsiMutableBuffer() {
-  return std::make_shared<ByteBufferJSIMutableBuffer>(jni::make_local(_byteBuffer));
+  // All JS array buffers of this storage share one mutable buffer. Each mutable buffer holds a
+  // JNI global reference, and Android aborts the app when the global reference table overflows.
+  std::lock_guard<std::mutex> lock(_jsiMutableBufferMutex);
+  if (_jsiMutableBuffer == nullptr) {
+    _jsiMutableBuffer = std::make_shared<ByteBufferJSIMutableBuffer>(jni::make_local(_byteBuffer));
+  }
+  return _jsiMutableBuffer;
 }
 
 jsi::Value ByteBufferArrayBufferStorage::toJSIValue(jsi::Runtime &runtime) {

@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.6
+
+### Patch Changes
+
+- Pass the matched route and its params to the server renderer. ([#51961](https://github.com/expo/expo/pull/51961) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.5
 
 ### Patch Changes

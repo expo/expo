@@ -1,5 +1,4 @@
 import fs from 'fs';
-import { globSync } from 'glob';
 import path from 'path';
 import semver from 'semver';
 
@@ -37,7 +36,8 @@ export function resolveInstalledPackage(
   const patterns = opts.workspacePatterns ?? WORKSPACE_GLOBS;
   let best: { path: string; version: string } | null = null;
   for (const pattern of patterns) {
-    for (const ws of globSync(pattern, { cwd: repoRoot, absolute: true })) {
+    for (const relativeWorkspace of fs.globSync(pattern, { cwd: repoRoot })) {
+      const ws = path.resolve(repoRoot, relativeWorkspace);
       let pkgJson: string;
       let version: string | undefined;
       try {

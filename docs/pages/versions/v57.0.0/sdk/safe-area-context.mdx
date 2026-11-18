@@ -7,10 +7,10 @@ platforms: ['android', 'ios', 'web', 'tvos', 'expo-go']
 inExpoGo: true
 ---
 
-import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
-
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
+import { APIBoxExampleHeader } from '~/components/plugins/api/components/APIBoxExampleHeader';
+import { APIBoxReturns } from '~/components/plugins/api/components/APIBoxReturns';
 import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
 import { CALLOUT, A } from '~/ui/components/Text';
 
@@ -93,7 +93,7 @@ On iOS 10+, emulate the safe area using the status bar height and home indicator
 
 Hook gives you direct access to the safe area insets. This is a more advanced use-case, and might perform worse than `SafeAreaView` when rotating the device.
 
-<APIBoxSectionHeader text="Example" />
+<APIBoxExampleHeader />
 
 ```jsx
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -105,13 +105,7 @@ function HookComponent() {
 }
 ```
 
-<APIBoxSectionHeader text="Returns" />
-
-<CornerDownRightIcon
-  aria-hidden="true"
-  className="icon-sm text-icon-secondary mr-2 inline-block align-middle"
-/>
-[`EdgeInsets`](#edgeinsets)
+<APIBoxReturns>[`EdgeInsets`](#edgeinsets)</APIBoxReturns>
 
 </PaddedAPIBox>
 

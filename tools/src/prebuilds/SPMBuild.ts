@@ -24,7 +24,7 @@ import {
 } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
 import { derivePackageNameFromUrl, normalizeGitUrl } from './SPMGitUrl';
-import { assertSafeSPMIdentifier } from './SPMIdentifier';
+import { assertSafeSPMIdentifier, swiftPMPackageName } from './SPMIdentifier';
 import { createAsyncSpinner } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
 
@@ -360,7 +360,7 @@ export const buildXcodeBuildArgs = (
 
   return [
     '-scheme',
-    pkg.packageName,
+    swiftPMPackageName(pkg.packageName),
     '-destination',
     `generic/platform=${buildPlatform}`,
     '-derivedDataPath',
@@ -531,6 +531,20 @@ async function resolveSPMDependenciesAndPatch(packageDir: string): Promise<void>
       logger.verbose('🩹 Patched Reachability.swift (library evolution typealias fix)');
     }
   }
+}
+
+export function applyManifestPatches(content: string, dep: SPMPackageDependencyConfig): string {
+  for (const { find, replace } of dep.manifestPatches ?? []) {
+    if (!content.includes(find)) {
+      throw new Error(
+        `Could not patch the Package.swift of ${dep.productName}: it does not contain ${JSON.stringify(find)}. ` +
+          `The upstream manifest probably changed in a new version. ` +
+          `Update "manifestPatches" for ${dep.productName} in spm.config.json to match the new Package.swift.`
+      );
+    }
+    content = content.replace(find, replace);
+  }
+  return content;
 }
 
 /**
@@ -1071,6 +1085,7 @@ export async function buildSharedSPMDependencyAsync(
     /\.library\(\s*name:\s*"([^"]+)",\s*targets:/g,
     '.library(name: "$1", type: .dynamic, targets:'
   );
+  pkgSwiftContent = applyManifestPatches(pkgSwiftContent, dep);
   await fs.writeFile(pkgSwift, pkgSwiftContent, 'utf-8');
 
   // Detect inter-dependencies with other shared SPM deps.

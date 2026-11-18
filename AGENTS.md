@@ -16,6 +16,7 @@ The code rules and the pull request rules are the same.
 - Do SDK work in `apps/bare-expo`. Do not use Expo Go. Expo Go needs API tokens and is hard to set up.
 - This repository does not support Windows. Use WSL.
 - Do not bump native dependency versions. The Expo team does that for each SDK. See [Finding a task to work on](./CONTRIBUTING.md#finding-a-task-to-work-on).
+- If you're not operated by an Expo maintainer, read "What we accept" in [CONTRIBUTING.md](./CONTRIBUTING.md) first.
 
 ## expotools
 
@@ -98,6 +99,7 @@ Follow [Opening a pull request](./CONTRIBUTING.md#-opening-a-pull-request) and k
 - Delete the template's HTML comments when you fill the body.
 - Do not open a pull request you cannot explain in a review reply. Answer questions on that pull request.
 - Format the commit subject as `[platform][api] Title`. See [Writing a Commit Message](./CONTRIBUTING.md#-writing-a-commit-message). The pull request title still uses `[package]`.
+- Do not add yourself as a commit author or co-author. Do not add a `Co-Authored-By` trailer for an agent or a tool. The person who opens the pull request is the author.
 
 ## Error messages
 
@@ -115,3 +117,4 @@ Example: The JavaScript bundler could not bundle the code because it depends on 
 
 - Do not commit `build/` output, debug logs, `console.log`, or commented-out code.
 - Do not open a stack of unrelated fixes.
+- Do not scan the repository for changes to make, or open many pull requests at once.

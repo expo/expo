@@ -20,14 +20,6 @@ struct DevServer: Hashable {
   let bundleIdentifier: String?
   let username: String?
 
-  static func == (lhs: Self, rhs: Self) -> Bool {
-    return lhs.url == rhs.url
-  }
-
-  func hash(into hasher: inout Hasher) {
-    hasher.combine(url)
-  }
-
   static func < (lhs: Self, rhs: Self) -> Bool {
     return lhs.url < rhs.url
   }
@@ -50,9 +42,12 @@ struct BuildInfo {
 }
 
 struct RecentlyOpenedApp: Identifiable {
-  let id = UUID().uuidString
   let name: String
   let url: String
   let timestamp: Date
   let isEasUpdate: Bool?
+
+  var id: String {
+    "\(name)|\(url)"
+  }
 }
