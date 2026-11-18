@@ -4,6 +4,10 @@ import Foundation
 import BackgroundTasks
 import ExpoModulesCore
 
+#if canImport(ExpoBackgroundTaskObjC)
+import ExpoBackgroundTaskObjC
+#endif
+
 public class BackgroundTaskAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
     if BackgroundTaskScheduler.supportsBackgroundTasks() {
