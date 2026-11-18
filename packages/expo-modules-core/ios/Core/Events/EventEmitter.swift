@@ -42,14 +42,17 @@ public extension EventEmitter {
       log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
       return
     }
-    // The payload is moved into a `JavaScriptRef` so the scheduled closure can capture it.
-    let payload = payload.ref()
     // The emitter is not necessarily `Sendable` - some modules hold non-sendable state — so we can't let
     // the compiler send `self` into the `@JavaScriptActor` region. Wrapping it in an `@unchecked Sendable`
     // reference is safe here because the scheduled closure only reaches `@JavaScriptActor`-isolated or
     // `Sendable` state through it (the JS object, the native state, `appContext`) and the emitter's
     // identity - never the module's own mutable state.
     let emitter = EventEmitterReference(self)
+    guard emitter.canReachTarget(forEvent: event) else {
+      return
+    }
+    // The payload is moved into a `JavaScriptRef` so the scheduled closure can capture it.
+    let payload = payload.ref()
 
     runtime.schedule {
       // The event is dispatched once, so the payload can be moved out of the ref.
@@ -75,6 +78,9 @@ public extension EventEmitter {
     // reference because it isn't necessarily `Sendable`, and the scheduled closure only reaches
     // `@JavaScriptActor`-isolated or `Sendable` state through it.
     let emitter = EventEmitterReference(self)
+    guard emitter.canReachTarget(forEvent: event) else {
+      return
+    }
 
     runtime.schedule {
       let jsPayload: JavaScriptValue
@@ -104,6 +110,9 @@ public extension EventEmitter {
     }
     // See the note in `emit(event:payload:)` above.
     let emitter = EventEmitterReference(self)
+    guard emitter.canReachTarget(forEvent: event) else {
+      return
+    }
 
     runtime.schedule {
       let jsPayload: JavaScriptValue
@@ -134,6 +143,9 @@ public extension EventEmitter {
     // reference because it isn't necessarily `Sendable`, and the scheduled closure only reaches
     // `@JavaScriptActor`-isolated or `Sendable` state through it.
     let emitter = EventEmitterReference(self)
+    guard emitter.canReachTarget(forEvent: event) else {
+      return
+    }
 
     runtime.schedule { [weak appContext] in
       guard let appContext else {
@@ -190,6 +202,9 @@ public extension EventEmitter {
     }
     // See the note in `emit(event:payload:)` above.
     let emitter = EventEmitterReference(self)
+    guard emitter.canReachTarget(forEvent: event) else {
+      return
+    }
     var payload: P? = payload
     if runtime.isOnJavaScriptThread() {
       // Emits right away, without the closure and the box that scheduling needs.
@@ -254,6 +269,9 @@ public extension EventEmitter {
     }
     // See the note in `emit(event:payload:)` above.
     let emitter = EventEmitterReference(self)
+    guard emitter.canReachTarget(forEvent: event) else {
+      return
+    }
     var payload: P? = payload
     if runtime.isOnJavaScriptThread() {
       // See the note in `emitInline(event:payload:encode:)` above.
@@ -346,6 +364,22 @@ internal enum EventEmitterReference: @unchecked Sendable {
       self = .module(module.eventDispatchState)
     } else {
       self = .other(WeakEventEmitterReference(value: emitter))
+    }
+  }
+
+  /// Whether the reference can reach a JavaScript object, or `false` after logging a warning when the shared object
+  /// isn't paired or the module isn't registered. `emit` drops such an event without a task, so an emit from `deinit`
+  /// doesn't schedule work. A host scheduler can destroy a task, and with it the last reference to the emitter, while
+  /// it holds the lock that scheduling takes: React Native 0.88 does so when a JavaScript error clears its queues. The
+  /// weak reference to any other emitter is read only at dispatch.
+  @inlinable
+  func canReachTarget(forEvent event: String) -> Bool {
+    switch self {
+    case .sharedObject(nil), .module(nil):
+      warnEventTargetLost(event: event)
+      return false
+    default:
+      return true
     }
   }
 }
