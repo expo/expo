@@ -132,6 +132,8 @@ type NavigationTreeResult = {
   // Web only; browser entries tracked by this page.
   history: BrowserHistory | undefined;
   browserHistoryAction?: RouterBrowserHistoryAction;
+  // A protected route redirect loop found by the last navigation. The next navigation clears it.
+  error?: ProtectedRedirectLoopError;
   // Queued operations that wait for layout modules, in order.
   deferred?: {
     operations: QueuedOperation[];
@@ -230,6 +232,22 @@ function reduceQueuedOperation(
 // Browser changes restore a saved navigation state. Other operations update navigation first,
 // then queue the matching browser command to run after React commits.
 function reduceOperation(
+  result: NavigationTreeResult,
+  operation: Exclude<TreeOperation, { type: 'RESUME' }>,
+  config: ReducerConfig
+): NavigationTreeResult {
+  try {
+    return reduceNavigationOperation({ ...result, error: undefined }, operation, config);
+  } catch (error) {
+    // Keep the state unchanged and report the loop through the root navigator's render.
+    if (error instanceof ProtectedRedirectLoopError) {
+      return { ...result, error };
+    }
+    throw error;
+  }
+}
+
+function reduceNavigationOperation(
   result: NavigationTreeResult,
   operation: Exclude<TreeOperation, { type: 'RESUME' }>,
   config: ReducerConfig
@@ -627,6 +645,7 @@ export function useNavigationTreeReducer({
   return {
     state: result.state,
     isWaitingForLayouts: result.deferred !== undefined,
+    error: result.error,
     report: result.report,
     consumeReportEvents,
     resetNavigator,

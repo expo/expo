@@ -1,4 +1,5 @@
 import { createContext, Fragment, use, useEffect, useLayoutEffect, useState } from 'react';
+import { Text } from 'react-native';
 import type { NavigatorArgs } from 'standard-navigation';
 
 import { navigationRef } from '../global-state/navigationRef';
@@ -302,6 +303,35 @@ describe('incoming request to a mounted guarded route', () => {
     const org = navigationRef.getRootState().routes[0]!.state!.routes[0]!;
     expect(org.state!.routes.map((route) => route.name)).toEqual(['settings/[tab]', 'upgrade']);
   });
+});
+
+it('shows a redirect loop in the root layout error boundary', async () => {
+  await renderRouter({
+    _layout: {
+      default: () => (
+        <Stack>
+          <Stack.Protected guard={false} redirectTo="/billing">
+            <Stack.Screen name="login" />
+          </Stack.Protected>
+          <Stack.Protected guard={false} redirectTo="/login">
+            <Stack.Screen name="billing" />
+          </Stack.Protected>
+        </Stack>
+      ),
+      ErrorBoundary: ({ error }: { error: Error }) => (
+        <Text testID="root-error">{error.message}</Text>
+      ),
+    },
+    index: () => null,
+    login: () => null,
+    billing: () => null,
+  });
+
+  await act(() => router.push('/login'));
+
+  expect(screen.getByTestId('root-error')).toHaveTextContent(
+    'Protected route redirects form a loop at "/login": each `redirectTo` leads to another blocked route. Set `redirectTo` to a route that is accessible.'
+  );
 });
 
 describe('direct navigator action to a mounted guarded route', () => {

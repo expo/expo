@@ -11,6 +11,7 @@ import {
   areUrlObjectsEqual,
   getRouteInfoFromState,
 } from '../../global-state/getRouteInfoFromState';
+import { NavigationErrorContext } from '../../global-state/navigationErrorContext';
 import { GlobalRoutesWithRemovalPreventedContext } from '../../global-state/removalPrevention';
 import { RouteInfoContext } from '../../global-state/routeInfoContext';
 import { RouterConfigContext } from '../../global-state/routerConfigContext';
@@ -106,6 +107,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     resetNavigator,
     handleAction,
     processIntent,
+    error,
   } = useNavigationTreeReducer({
     initialState,
     routeNode: UNSTABLE_routeNode,
@@ -327,7 +329,9 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
                   <RouterRegistrySettersContext.Provider value={registrySetters}>
                     <EnsureSingleNavigator>
                       <NavigationPendingContext value={isNavigationPending || isWaitingForLayouts}>
-                        <ThemeProvider value={theme}>{children}</ThemeProvider>
+                        <ThemeProvider value={theme}>
+                          <NavigationErrorContext value={error}>{children}</NavigationErrorContext>
+                        </ThemeProvider>
                       </NavigationPendingContext>
                     </EnsureSingleNavigator>
                   </RouterRegistrySettersContext.Provider>

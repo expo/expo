@@ -6,6 +6,7 @@ import { isValidElementType } from 'react-is';
 
 import { useRouteNode } from '../../Route';
 import { useComponent } from '../../fork/useComponent';
+import { NavigationErrorContext } from '../../global-state/navigationErrorContext';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { findStateByKey, resetNavigatorState } from '../../global-state/stateUtils';
@@ -329,6 +330,12 @@ export function useNavigationBuilder<
   const treeState = rootState
     ? (findStateByKey(rootState, currentState.key) ?? currentState)
     : currentState;
+  const navigationError = use(NavigationErrorContext);
+  // The root state belongs to an internal slot; its child is the root layout's navigator, which
+  // renders inside the root layout's error boundary.
+  if (navigationError && rootState?.routes[rootState.index]?.state?.key === treeState.key) {
+    throw navigationError;
+  }
   const isForeignType = treeState.type !== undefined && treeState.type !== router.type;
   // The reset keeps the complete fields required by every navigator state.
   const committedState = (
