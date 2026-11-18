@@ -600,23 +600,75 @@ private struct MacroSharedObjectTests {
     #expect(nativeObject.sharedObjectId == 0)
   }
 
-  @Test
-  func `event emitter methods throw in an attached runtime`() throws {
-    let id = try createCounter()
+  /// Resolves the counter in an attached runtime as the `attachedCounter` global, and adds a listener of the `change`
+  /// event there that appends the payloads to the `received` global.
+  private func addListenerInAttachedRuntime(counterId id: Int) throws -> JavaScriptRuntime {
     let attachedRuntime = try appContext.addRuntime()
-    try attachedRuntime.eval("attachedCounter = expo.SharedObject.__resolveInWorklet(\(id))")
-    for call in ["addListener('change', () => {})", "removeAllListeners('change')", "emit('change')", "listenerCount('change')"] {
-      let message = try attachedRuntime.eval(
-        """
-        try {
-          attachedCounter.\(call)
-          ''
-        } catch (error) {
-          error.message
-        }
-        """).asString()
-      #expect(message.contains("only in the main runtime"), "\(call)")
-    }
+    try attachedRuntime.eval(
+      """
+      attachedCounter = expo.SharedObject.__resolveInWorklet(\(id))
+      received = []
+      subscription = attachedCounter.addListener('change', (value) => { received.push(value) })
+      """)
+    return attachedRuntime
+  }
+
+  /// Waits until the runtime has run the work that was scheduled on it before.
+  private func waitForScheduledWork(in runtime: JavaScriptRuntime) throws {
+    try runtime.execute {}
+  }
+
+  @Test
+  func `a listener in an attached runtime gets a native event`() throws {
+    let id = try createCounter()
+    let nativeObject = try SharedObject.native(from: try runtime.eval("counter").asObject())
+    let attachedRuntime = try addListenerInAttachedRuntime(counterId: id)
+
+    nativeObject.emit(event: "change", payload: 5)
+    try waitForScheduledWork(in: attachedRuntime)
+    #expect(try attachedRuntime.eval("received.join()").asString() == "5")
+  }
+
+  @Test
+  func `listeners in the main runtime and an attached runtime get a native event once each`() throws {
+    let id = try createCounter()
+    let mainRuntime = try runtime
+    let nativeObject = try SharedObject.native(from: try mainRuntime.eval("counter").asObject())
+    try mainRuntime.eval("mainReceived = []; counter.addListener('change', (value) => { mainReceived.push(value) })")
+    let attachedRuntime = try addListenerInAttachedRuntime(counterId: id)
+
+    nativeObject.emit(event: "change", payload: 5)
+    nativeObject.emit(event: "change", payload: 6)
+    try waitForScheduledWork(in: mainRuntime)
+    try waitForScheduledWork(in: attachedRuntime)
+    #expect(try mainRuntime.eval("mainReceived.join()").asString() == "5,6")
+    #expect(try attachedRuntime.eval("received.join()").asString() == "5,6")
+  }
+
+  @Test
+  func `a listener removed in an attached runtime doesn't get native events`() throws {
+    let id = try createCounter()
+    let nativeObject = try SharedObject.native(from: try runtime.eval("counter").asObject())
+    let attachedRuntime = try addListenerInAttachedRuntime(counterId: id)
+    try attachedRuntime.eval("subscription.remove()")
+
+    nativeObject.emit(event: "change", payload: 5)
+    try waitForScheduledWork(in: attachedRuntime)
+    #expect(try attachedRuntime.eval("received.length").asInt() == 0)
+    #expect(try attachedRuntime.eval("attachedCounter.listenerCount('change')").asInt() == 0)
+  }
+
+  @Test
+  func `emit in an attached runtime calls only the listeners of that runtime`() throws {
+    let id = try createCounter()
+    let mainRuntime = try runtime
+    try mainRuntime.eval("mainReceived = []; counter.addListener('change', (value) => { mainReceived.push(value) })")
+    let attachedRuntime = try addListenerInAttachedRuntime(counterId: id)
+
+    try attachedRuntime.eval("attachedCounter.emit('change', 5)")
+    #expect(try attachedRuntime.eval("received.join()").asString() == "5")
+    #expect(try attachedRuntime.eval("attachedCounter.listenerCount('change')").asInt() == 1)
+    #expect(try mainRuntime.eval("mainReceived.length").asInt() == 0)
   }
 
   @Test

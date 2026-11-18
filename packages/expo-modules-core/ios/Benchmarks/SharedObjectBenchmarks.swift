@@ -18,6 +18,8 @@ import Testing
 /// - The `emit` cases emit from Swift in a loop, without the JavaScript driver. Read
 ///   `emit: Int payload from a @SharedObject` against `emit: Int payload`, which emits the same payload from a
 ///   module, and the other `@SharedObject` emit cases against it.
+/// - `with a listener in another runtime too` attaches a second runtime, which runs scheduled work on the calling
+///   thread like the main runtime here, so each emit includes the dispatch in both runtimes.
 extension Benchmarks {
   @Test
   func `@SharedObject: new instance`() async throws {
@@ -127,6 +129,24 @@ extension Benchmarks {
   func `emit: Int payload from a @SharedObject to 5 listeners`() async throws {
     try await counterEventBenchmarkCase(listenerCount: 5) { counter, runtime in
       try benchmark("emit: Int payload from a @SharedObject to 5 listeners", runtime: runtime) { iterations in
+        for index in 0..<iterations {
+          counter.emit(event: "count", payload: index)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `emit: Int payload from a @SharedObject with a listener in another runtime too`() async throws {
+    try await counterEventBenchmarkCase(listenerCount: 1) { counter, runtime in
+      let otherRuntime = JavaScriptRuntime()
+      try counter.appContext?.attach(runtime: otherRuntime)
+      try otherRuntime.eval(
+        "var counter = expo.SharedObject.__resolveInWorklet(\(counter.sharedObjectId))",
+        "counter.addListener('count', () => {})"
+      )
+      try benchmark("emit: Int payload from a @SharedObject with a listener in another runtime too", runtime: runtime) {
+        iterations in
         for index in 0..<iterations {
           counter.emit(event: "count", payload: index)
         }

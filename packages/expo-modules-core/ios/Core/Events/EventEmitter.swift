@@ -36,6 +36,8 @@ public extension EventEmitter {
    Schedules an event with the given name and a pre-converted JavaScript payload to be emitted
    to the associated JavaScript object. This is the lowest-level emit overload - use it when the
    value is already a `JavaScriptValue` to skip the native-to-JS conversion step.
+
+   The payload is a value of the main runtime, so only the listeners in the main runtime get the event.
    */
   func emit(event: String, payload: consuming JavaScriptValue) {
     guard let appContext, let runtime = try? appContext.runtime else {
@@ -65,6 +67,7 @@ public extension EventEmitter {
 
   /**
    Schedules an event with the given name and payload to be emitted to the associated JavaScript object.
+   A shared object also sends the event to its listeners in the other runtimes, converting the payload in each of them.
    */
   @inlinable
   func emit<P: JavaScriptEncodable>(event: String, payload: sending P) {
@@ -82,6 +85,14 @@ public extension EventEmitter {
       return
     }
 
+    if case .sharedObjectInManyRuntimes(let state) = emitter {
+      let sharedPayload = SharedEventPayload(payload)
+      dispatchEventToAllRuntimes(event: event, toSharedObjectState: state, mainRuntime: runtime, payloadType: P.self) {
+        runtime in
+        return try P.encode(sharedPayload.value, in: runtime)
+      }
+      return
+    }
     runtime.schedule {
       let jsPayload: JavaScriptValue
       do {
@@ -114,6 +125,16 @@ public extension EventEmitter {
       return
     }
 
+    if case .sharedObjectInManyRuntimes(let state) = emitter {
+      let sharedPayload = SharedEventPayload(payload)
+      dispatchEventToAllRuntimes(event: event, toSharedObjectState: state, mainRuntime: runtime, payloadType: P.self) {
+        runtime in
+        return try JavaScriptValue.encoding(in: runtime) { slot in
+          try encode(sharedPayload.value, slot, runtime)
+        }
+      }
+      return
+    }
     runtime.schedule {
       let jsPayload: JavaScriptValue
       do {
@@ -147,6 +168,16 @@ public extension EventEmitter {
       return
     }
 
+    if case .sharedObjectInManyRuntimes(let state) = emitter {
+      dispatchAnyArgumentEventToAllRuntimes(
+        event: event,
+        payload: payload,
+        toSharedObjectState: state,
+        mainRuntime: runtime,
+        appContext: appContext
+      )
+      return
+    }
     runtime.schedule { [weak appContext] in
       guard let appContext else {
         return
@@ -179,7 +210,8 @@ public extension EventEmitter {
   /// Listeners that run inline can call back into the emitter before this function returns, so emit
   /// after the emitter's state is up to date. On the JavaScript thread, the event can reach the
   /// listeners before events that `emit` scheduled earlier. An event emitted before the emitter is paired
-  /// with its JavaScript object, for example from a shared object's initializer, is dropped.
+  /// with its JavaScript object, for example from a shared object's initializer, is dropped. Only the
+  /// listeners in the main runtime get the event.
   @inlinable
   func emitInline<P: JavaScriptEncodable & ~Copyable>(event: String, payload: consuming sending P) {
     emitInline(event: event, payload: payload) { payload, slot, runtime in
@@ -240,7 +272,7 @@ public extension EventEmitter {
   /// a synchronous function waits for the main thread with `DispatchQueue.main.sync` while the main
   /// thread emits. The event is scheduled with immediate priority, so it can reach the listeners before
   /// events that `emit` scheduled earlier. Use `emitInline(event:payload:)` when the caller doesn't need
-  /// to wait.
+  /// to wait. Only the listeners in the main runtime get the event.
   ///
   /// `noasync` covers direct calls only. An `@Event(.blocking)` property calls this method from the
   /// closure it returns, so calling the property from an `async` function compiles and blocks a thread
@@ -351,6 +383,8 @@ internal func emitEventNow<P: ~Copyable>(
 internal enum EventEmitterReference: @unchecked Sendable {
   /// The native state of a shared object, or `nil` when the shared object isn't paired.
   case sharedObject(AnyObject?)
+  /// The native state of a shared object that has listeners in runtimes other than the main runtime too.
+  case sharedObjectInManyRuntimes(AnyObject)
   /// The holder of a module, or `nil` when the module isn't registered.
   case module(AnyObject?)
   /// An emitter that is neither a shared object nor a module.
@@ -359,7 +393,7 @@ internal enum EventEmitterReference: @unchecked Sendable {
   @inlinable
   init<Emitter: EventEmitter>(_ emitter: Emitter) {
     if let sharedObject = emitter as? SharedObject {
-      self = .sharedObject(sharedObject.eventDispatchState)
+      self = sharedObject.eventEmitterReference
     } else if let module = emitter as? BaseModule {
       self = .module(module.eventDispatchState)
     } else {
@@ -446,6 +480,8 @@ internal func dispatchEvent(
   switch emitter {
   case .sharedObject(let state):
     dispatchEvent(event: event, payload: payload, toSharedObjectState: state, in: runtime)
+  case .sharedObjectInManyRuntimes(let state):
+    dispatchEvent(event: event, payload: payload, toSharedObjectState: state, in: runtime)
   case .module(let holder):
     dispatchEvent(event: event, payload: payload, toModuleHolder: holder, in: runtime)
   case .other(let reference):
@@ -472,6 +508,75 @@ internal func dispatchEvent(
     return
   }
   unsafeDowncast(state, to: SharedObjectNativeState.self).dispatchEvent(event: event, payload: payload, in: runtime)
+}
+
+/// Sends an event to the listeners of a shared object in all runtimes, on the thread of each runtime: the main runtime,
+/// `mainRuntime`, and the other runtimes that have listeners. `encode` converts the payload in a runtime, in another
+/// runtime only when the event has listeners there.
+@usableFromInline
+internal func dispatchEventToAllRuntimes(
+  event: String,
+  toSharedObjectState state: AnyObject,
+  mainRuntime: JavaScriptRuntime,
+  payloadType: Any.Type,
+  encode: @escaping @JavaScriptActor @Sendable (JavaScriptRuntime) throws -> JavaScriptValue
+) {
+  let nativeState = unsafeDowncast(state, to: SharedObjectNativeState.self)
+  for scheduler in nativeState.listeningRuntimeSchedulers() {
+    scheduler.schedule { runtime in
+      do {
+        try nativeState.dispatchEvent(event: event, inOtherRuntime: runtime) {
+          return try encode(runtime)
+        }
+      } catch {
+        warnPayloadNotEncoded(event: event, payloadType: payloadType, error: error)
+      }
+    }
+  }
+  mainRuntime.schedule {
+    let payload: JavaScriptValue
+    do {
+      payload = try encode(mainRuntime)
+    } catch {
+      warnPayloadNotEncoded(event: event, payloadType: payloadType, error: error)
+      return
+    }
+    nativeState.dispatchEvent(event: event, payload: payload, in: mainRuntime)
+  }
+}
+
+/// `dispatchEventToAllRuntimes` for the `emit` overload with an `AnyArgument` payload. That overload isn't specialized,
+/// and with this code inline its path without other runtimes was about 9% slower, so it is a function of its own.
+@inline(never)
+internal func dispatchAnyArgumentEventToAllRuntimes<P: AnyArgument>(
+  event: String,
+  payload: sending P,
+  toSharedObjectState state: AnyObject,
+  mainRuntime: JavaScriptRuntime,
+  appContext: AppContext
+) {
+  let sharedPayload = SharedEventPayload(payload)
+  dispatchEventToAllRuntimes(event: event, toSharedObjectState: state, mainRuntime: mainRuntime, payloadType: P.self) {
+    [weak appContext] runtime in
+    guard let appContext else {
+      throw Exceptions.AppContextLost()
+    }
+    return try (~P.self).castToJS(sharedPayload.value, appContext: appContext, in: runtime)
+  }
+}
+
+/// A payload that the closures of an event sent to several runtimes share. Each closure only reads it, on the thread of
+/// its runtime, so it can be read on several threads at once.
+@frozen
+@usableFromInline
+internal struct SharedEventPayload<P>: @unchecked Sendable {
+  @usableFromInline
+  let value: P
+
+  @inlinable
+  init(_ value: P) {
+    self.value = value
+  }
 }
 
 /// Sends a pre-converted event payload to the JavaScript object of a module, which its holder, `holder`, lends. Logs a

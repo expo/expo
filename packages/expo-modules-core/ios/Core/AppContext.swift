@@ -682,11 +682,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     // Install `global.expo.SharedObject.__resolveInWorklet`.
     try installSharedObjectResolver(in: runtime, isMainRuntime: isMainRuntime)
 
-    if isMainRuntime {
-      try installSharedObjectEventMethods(in: runtime)
-    } else {
-      try disableSharedObjectListeners(in: runtime)
-    }
+    try installSharedObjectEventMethods(in: runtime)
   }
 
   /**
@@ -755,8 +751,8 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     return jsObject
   }
 
-  /// Defines the event emitter methods of shared objects, which keep the listeners in the Swift native state of the
-  /// shared object.
+  /// Defines the event emitter methods of shared objects, which keep the listeners of the main runtime in the Swift
+  /// native state of the shared object, and the listeners of another runtime in the cache of that runtime.
   @JavaScriptActor
   private func installSharedObjectEventMethods(in runtime: JavaScriptRuntime) throws {
     let prototype = try runtime.global()
@@ -764,22 +760,6 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       .getPropertyAsObject("SharedObject")
       .getPropertyAsObject("prototype")
     try EventEmitterMethods.install(on: prototype, in: runtime)
-  }
-
-  /// Makes the event emitter methods of shared objects throw in a runtime other than the main runtime. The JS objects
-  /// of a shared object in all runtimes share one native state, and its listeners can belong to the main runtime only.
-  @JavaScriptActor
-  private func disableSharedObjectListeners(in runtime: JavaScriptRuntime) throws {
-    let prototype = try runtime.global()
-      .getPropertyAsObject(globalCoreObjectPropertyName)
-      .getPropertyAsObject("SharedObject")
-      .getPropertyAsObject("prototype")
-    let throwListenersUnsupported: JavaScriptRuntime.VoidFunctionClosure = { _, _ in
-      throw SharedObjectListenersUnsupportedException()
-    }
-    for name in ["addListener", "removeListener", "removeAllListeners", "emit", "listenerCount", "removeSubscription"] {
-      prototype.setProperty(name, value: runtime.createFunction(name, throwListenersUnsupported).asObject())
-    }
   }
 
   /// Returns the JS object of the shared object in the given runtime, a runtime other than the main runtime, and
@@ -1142,12 +1122,6 @@ internal final class SharedObjectNotFoundException: GenericException<String>, @u
 internal final class RuntimeAttachedToAnotherAppContextException: Exception, @unchecked Sendable {
   override var reason: String {
     "The runtime already has `global.expo` of another app context"
-  }
-}
-
-internal final class SharedObjectListenersUnsupportedException: Exception, @unchecked Sendable {
-  override var reason: String {
-    "Shared objects support events only in the main runtime"
   }
 }
 

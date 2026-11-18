@@ -1,17 +1,14 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 @_spi(Internal) import ExpoModulesJSI
-import os
 
-/// Native state of a JS object that emits events. It keeps the event listeners of each runtime that has a JS object
-/// with this native state: the JS objects of a shared object in all runtimes share one native state.
+/// Native state of a JS object that emits events. It keeps the event listeners of its primary runtime, the runtime of
+/// the JS object, in a field that only the thread of that runtime uses, so emitting there takes no lock.
 ///
-/// The listeners of the primary runtime, which is the main runtime for a shared object, are kept in a field that only
-/// the thread of that runtime uses, so emitting there takes no lock. The listeners of the other runtimes are in a map
-/// behind a lock, because the threads of all runtimes use it.
+/// The JS objects of a shared object in all runtimes share one native state. Its primary runtime is the main runtime,
+/// and a subclass keeps the listeners of the other runtimes (see `listeners(inOtherRuntime:creatingIfNeeded:)`).
 ///
-/// `@unchecked Sendable`: the listeners of a runtime are used only on the thread of that runtime, and the map of the
-/// other runtimes is behind a lock.
+/// `@unchecked Sendable`: the listeners of a runtime are used only on the thread of that runtime.
 internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendable {
   /// The runtime whose listeners are in `primaryListeners`.
   private let primaryRuntimeId: JavaScriptRuntime.ID?
@@ -19,9 +16,6 @@ internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendab
   /// The listeners of the primary runtime. Used only on the thread of that runtime.
   @exclusivity(unchecked)
   private var primaryListeners: EventListeners?
-
-  /// The listeners of the runtimes other than the primary runtime, by runtime ID.
-  private let otherListeners = OSAllocatedUnfairLock<[JavaScriptRuntime.ID: EventListeners]>(uncheckedState: [:])
 
   /// Creates a native state whose C++ state `factory` makes. See `JavaScriptNativeState.init(factory:)`.
   internal init(primaryRuntimeId: JavaScriptRuntime.ID?, factory: @escaping Factory) {
@@ -31,21 +25,19 @@ internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendab
 
   /// Returns the listeners of the given runtime, or `nil` when the runtime has no listeners. Call it on the thread of
   /// that runtime.
-  internal func listeners(in runtime: borrowing JavaScriptRuntime) -> EventListeners? {
-    let runtimeId = runtime.id
-    if runtimeId == primaryRuntimeId {
+  @JavaScriptActor
+  internal final func listeners(in runtime: JavaScriptRuntime) -> EventListeners? {
+    if runtime.id == primaryRuntimeId {
       return primaryListeners
     }
-    return otherListeners.withLockUnchecked { listeners in
-      return listeners[runtimeId]
-    }
+    return listeners(inOtherRuntime: runtime, creatingIfNeeded: false)
   }
 
-  /// Returns the listeners of the given runtime, and creates them when the runtime has none. Call it on the thread of
-  /// that runtime.
-  internal func listenersCreatingIfNeeded(in runtime: borrowing JavaScriptRuntime) -> EventListeners {
-    let runtimeId = runtime.id
-    if runtimeId == primaryRuntimeId {
+  /// Returns the listeners of the given runtime, and creates them when the runtime has none. Returns `nil` when the
+  /// runtime can't have listeners. Call it on the thread of that runtime.
+  @JavaScriptActor
+  internal final func listenersCreatingIfNeeded(in runtime: JavaScriptRuntime) -> EventListeners? {
+    if runtime.id == primaryRuntimeId {
       if let primaryListeners {
         return primaryListeners
       }
@@ -53,27 +45,24 @@ internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendab
       primaryListeners = created
       return created
     }
-    return otherListeners.withLockUnchecked { listeners in
-      if let existing = listeners[runtimeId] {
-        return existing
-      }
-      let created = EventListeners()
-      listeners[runtimeId] = created
-      return created
-    }
+    return listeners(inOtherRuntime: runtime, creatingIfNeeded: true)
   }
 
-  /// Removes all listeners of the runtime with the given ID, without calling the observing functions. Call it on the
-  /// thread of that runtime, or while the runtime is destroyed, because it releases the listener functions.
-  internal func removeListeners(inRuntime runtimeId: JavaScriptRuntime.ID) {
-    if runtimeId == primaryRuntimeId {
-      primaryListeners = nil
-      return
-    }
-    // The removed listeners are released after the lock is unlocked.
-    _ = otherListeners.withLockUnchecked { listeners in
-      return listeners.removeValue(forKey: runtimeId)
-    }
+  /// Returns the listeners of a runtime other than the primary runtime. This class keeps no listeners of other runtimes,
+  /// so it returns `nil`.
+  @JavaScriptActor
+  internal func listeners(inOtherRuntime runtime: JavaScriptRuntime, creatingIfNeeded: Bool) -> EventListeners? {
+    return nil
+  }
+
+  /// Called after the runtime got its first listener of any event (`hasListeners` is `true`), or lost its last one.
+  @JavaScriptActor
+  internal func listenersDidChange(in runtime: JavaScriptRuntime, hasListeners: Bool) {}
+
+  /// Removes all listeners of the primary runtime, without calling the observing functions. Call it on the thread of
+  /// that runtime, or while the runtime is destroyed, because it releases the listener functions.
+  internal func removePrimaryListeners() {
+    primaryListeners = nil
   }
 }
 
@@ -115,6 +104,11 @@ internal final class EventListeners {
       return nil
     }
     return events[index].listeners
+  }
+
+  /// Whether there are no listeners of any event. An event without listeners has no entry.
+  internal var isEmpty: Bool {
+    return events.isEmpty
   }
 
   /// Returns the number of listeners of the event.

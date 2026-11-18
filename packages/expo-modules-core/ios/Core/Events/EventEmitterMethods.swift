@@ -76,10 +76,18 @@ internal enum EventEmitterMethods {
     guard listener.isFunction() else {
       throw InvalidListenerException(event)
     }
-    guard let nativeState = emitter.getNativeState(as: EventEmitterNativeState.self) else {
+    guard
+      let nativeState = emitter.getNativeState(as: EventEmitterNativeState.self),
+      let listeners = nativeState.listenersCreatingIfNeeded(in: runtime)
+    else {
       return
     }
-    if nativeState.listenersCreatingIfNeeded(in: runtime).add(listener, to: event) == 1 {
+    let hadListeners = !listeners.isEmpty
+    let count = listeners.add(listener, to: event)
+    if !hadListeners {
+      nativeState.listenersDidChange(in: runtime, hasListeners: true)
+    }
+    if count == 1 {
       try notifyListening(emitter, event: event, isListening: true, in: runtime)
     }
   }
@@ -123,10 +131,16 @@ internal enum EventEmitterMethods {
     let emitter = try this.asObject(in: runtime)
     let event = try arguments.unownedValue(at: 0).asString()
 
-    guard let listeners = emitter.getNativeState(as: EventEmitterNativeState.self)?.listeners(in: runtime) else {
+    guard
+      let nativeState = emitter.getNativeState(as: EventEmitterNativeState.self),
+      let listeners = nativeState.listeners(in: runtime)
+    else {
       return
     }
     if listeners.removeAll(from: event) > 0 {
+      if listeners.isEmpty {
+        nativeState.listenersDidChange(in: runtime, hasListeners: false)
+      }
       try notifyListening(emitter, event: event, isListening: false, in: runtime)
     }
   }
@@ -194,11 +208,17 @@ internal enum EventEmitterMethods {
     from emitter: borrowing JavaScriptObject,
     in runtime: borrowing JavaScriptRuntime
   ) throws {
-    guard let listeners = emitter.getNativeState(as: EventEmitterNativeState.self)?.listeners(in: runtime) else {
+    guard
+      let nativeState = emitter.getNativeState(as: EventEmitterNativeState.self),
+      let listeners = nativeState.listeners(in: runtime)
+    else {
       return
     }
     let count = listeners.remove(listener, from: event)
     if count.before > 0 && count.after == 0 {
+      if listeners.isEmpty {
+        nativeState.listenersDidChange(in: runtime, hasListeners: false)
+      }
       try notifyListening(emitter, event: event, isListening: false, in: runtime)
     }
   }
