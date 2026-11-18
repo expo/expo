@@ -103,6 +103,10 @@ type MountedAnimationNode = {
   status: NodeStatus;
 };
 
+const subscribeToNothing = () => () => {};
+const getFalse = () => false;
+const getTrue = () => true;
+
 export default function AnimationManager({
   children: renderFunction,
   initial,
@@ -117,9 +121,17 @@ export default function AnimationManager({
   const animation = getAnimatorFromTransition(transition);
 
   const initialNode = useAnimationManagerNode(initial, 'active');
+  // In server rendering and while hydrating, the image is shown as it is (`active`): the browser
+  // can load it before the page hydrates, and React then gets no `load` event (see `ImageWrapper`).
+  // As `mounted`, it would hide when the transition's CSS loads. The memoized node keeps this
+  // status once hydrated.
+  const isHydrating = React.useSyncExternalStore(subscribeToNothing, getFalse, getTrue);
+  const newNode = useAnimationManagerNode(renderFunction, isHydrating ? 'active' : undefined);
 
+  // Without a placeholder, start with the image. Effects do not run in server rendering,
+  // so the image must be in the first render to be in the HTML.
   const [nodes, setNodes] = React.useState<MountedAnimationNode[]>(
-    initialNode ? [initialNode] : []
+    initialNode ? [initialNode] : newNode ? [newNode] : []
   );
 
   const [prevRecyclingKey, setPrevRecyclingKey] = React.useState<string>(recyclingKey ?? '');
@@ -139,11 +151,11 @@ export default function AnimationManager({
     );
   };
 
-  const newNode = useAnimationManagerNode(renderFunction);
-
   React.useEffect(() => {
     setNodes((n) => {
-      if (!newNode) {
+      // The initial state can already hold this node, or a copy of it with another status (made by
+      // its callbacks, e.g. `onReady` before this effect): it stays as it is.
+      if (!newNode || n.some((node) => node.persistedElement === newNode.persistedElement)) {
         return n;
       }
       const existingNodeIndex = n.findIndex((node) => node.animationKey === newNode.animationKey);
