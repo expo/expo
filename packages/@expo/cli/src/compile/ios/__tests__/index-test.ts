@@ -95,6 +95,7 @@ it('builds the app for the simulator', async () => {
       'ReactNativeProject',
       '-destination',
       'generic/platform=iOS Simulator',
+      '-hideShellScriptEnvironment',
       'COCOAPODS_PARALLEL_CODE_SIGN=true',
       'COMPILER_INDEX_STORE_ENABLE=NO',
     ],

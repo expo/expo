@@ -16,6 +16,7 @@ export function getXcodeBuildArgs(
     props.scheme,
     '-destination',
     'generic/platform=iOS Simulator',
+    '-hideShellScriptEnvironment',
     'COCOAPODS_PARALLEL_CODE_SIGN=true',
     'COMPILER_INDEX_STORE_ENABLE=NO',
   ];
