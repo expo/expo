@@ -1,10 +1,13 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 internal import SDWebImage
+#if EXPO_IMAGE_ENABLE_WEBP_CODER && canImport(SDWebImageWebPCoder)
 internal import SDWebImageWebPCoder
+#endif
 
 internal let imageCoderOptionUseAppleWebpCodec = SDImageCoderOption(rawValue: "useAppleWebpCodec")
 
+#if EXPO_IMAGE_ENABLE_WEBP_CODER && canImport(SDWebImageWebPCoder)
 /**
  A composite WebP coder that uses either `SDImageAWebPCoder` or `SDImageWebPCoder`
  based on the passed `imageCoderOptionUseAppleWebpCodec` option.
@@ -71,3 +74,4 @@ internal final class WebPCoder: NSObject, SDAnimatedImageCoder {
     return self.coder.animatedImageDuration(at: index)
   }
 }
+#endif
