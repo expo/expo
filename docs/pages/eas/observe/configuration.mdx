@@ -170,10 +170,11 @@ The device saves the value. On later launches, the saved value overrides the app
 
 ### While consent is not granted
 
-- Expo Observe does not write data to the device and does not send data.
+- Expo Observe does not write data or settings to the device and does not send data. The only value it saves is the consent value from `setConsent()`.
+- A launch without consent deletes the Expo Observe data and settings that an earlier launch stored.
 - `Observe.clientId` is `null`, and Expo Observe does not create the [client ID](/eas/observe/reference/client-id/).
 - Startup metrics of the current launch stay in memory. A grant in the same launch saves them.
-- `configure()` still saves its settings on the device. The settings do not contain user data.
+- Settings from `configure()` stay in memory. A grant in the same launch saves them.
 
 On iOS, Expo Observe also stays inactive for a launch when it cannot read the saved value, for example before the first unlock after a device restart. That launch keeps the data that is already stored.
 
@@ -181,7 +182,7 @@ On iOS, Expo Observe also stays inactive for a launch when it cannot read the sa
 
 A grant starts collection in the current launch. Native crashes from before the grant are not reported.
 
-A revoke stops collection and deletes the Expo Observe data that is stored on the device. A revoke keeps the client ID, because other Expo libraries use the same ID.
+A revoke stops collection and deletes the Expo Observe data and settings that are stored on the device. A revoke keeps the client ID, because other Expo libraries use the same ID.
 
 Expo Observe starts collection at most one time in each app launch. After a revoke, a grant only saves the value, and collection starts at the next launch.
 
