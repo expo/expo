@@ -395,7 +395,7 @@ function formatLocation(failure: TestFailure): string | null {
 }
 
 async function reportTestFailuresAsync(failures: TestFailure[]) {
-  console.log(chalk.red.bold(`\nFailed tests (${failures.length}):`));
+  console.log(chalk.red.bold(`\nTest failures (${failures.length}):`));
   for (const failure of failures) {
     const location = formatLocation(failure);
     console.log(`- ${chalk.bold(`${failure.target}: ${failure.test}`)}`);
