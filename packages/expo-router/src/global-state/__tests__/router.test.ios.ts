@@ -25,7 +25,6 @@ jest.mock('../navigationRef', () => ({
     getRootState: jest.fn(),
     current: {
       canGoBack: jest.fn(),
-      setParams: jest.fn(),
       goBack: jest.fn(),
       getRootState: jest.fn(),
       dispatch: jest.fn(),
@@ -419,10 +418,13 @@ describe('router action functions', () => {
     expect(navigationRef.current!.canGoBack).toHaveBeenCalled();
   });
 
-  it('setParams forwards when the container is mounted', () => {
+  it('setParams dispatches SET_PARAMS when the container is mounted', () => {
     setParams({ name: 'test' });
 
-    expect(navigationRef.current!.setParams).toHaveBeenCalledWith({ name: 'test' });
+    expect(navigationRef.current!.dispatch).toHaveBeenCalledWith({
+      type: 'SET_PARAMS',
+      payload: { params: { name: 'test' } },
+    });
   });
 
   it('setParams throws when the container is not mounted', () => {

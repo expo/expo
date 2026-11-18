@@ -3,7 +3,7 @@ import {
   Stack,
   unstable_enablePerformanceIntegration,
   unstable_PerformanceObserver,
-  useSegments,
+  useRootNavigationState,
   type RouterPerformanceMark,
 } from 'expo-router';
 import { DefaultTheme, ThemeProvider } from 'expo-router/react-navigation';
@@ -18,7 +18,12 @@ new unstable_PerformanceObserver((list) => {
 }).observe({ type: 'mark' });
 
 export default function Layout() {
-  const segments = useSegments();
+  const rootState = useRootNavigationState();
+  // A native Stack renders every route in its history, so use a Slot while any of them is a SplitView demo.
+  const hasSplitView =
+    rootState.routes[rootState.index]?.state?.routes.some((route) =>
+      route.name.startsWith('split-view')
+    ) ?? false;
   return (
     <ThemeProvider
       value={{
@@ -29,11 +34,7 @@ export default function Layout() {
         },
       }}>
       {/* SplitView cannot be inside a native navigator. */}
-      {segments[0] === 'split-view-mail' ? (
-        <Slot />
-      ) : (
-        <Stack screenOptions={{ headerShown: false }} />
-      )}
+      {hasSplitView ? <Slot /> : <Stack screenOptions={{ headerShown: false }} />}
     </ThemeProvider>
   );
 }
