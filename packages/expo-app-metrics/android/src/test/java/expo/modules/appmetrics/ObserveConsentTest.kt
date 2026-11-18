@@ -29,23 +29,30 @@ class ObserveConsentTest {
 
   @Test
   fun `absent consent value grants consent`() {
-    assertTrue(ObserveConsent.resolve(null))
+    assertTrue(ObserveConsent.resolve(null, null))
   }
 
   @Test
   fun `consent value granted grants consent`() {
-    assertTrue(ObserveConsent.resolve("granted"))
+    assertTrue(ObserveConsent.resolve(null, "granted"))
   }
 
   @Test
   fun `consent value not-granted denies consent`() {
-    assertFalse(ObserveConsent.resolve("not-granted"))
+    assertFalse(ObserveConsent.resolve(null, "not-granted"))
   }
 
   @Test
   fun `unknown consent value denies consent`() {
-    assertFalse(ObserveConsent.resolve("pending"))
-    assertFalse(ObserveConsent.resolve(""))
+    assertFalse(ObserveConsent.resolve(null, "pending"))
+    assertFalse(ObserveConsent.resolve(null, ""))
+  }
+
+  @Test
+  fun `saved value overrides the manifest value`() {
+    assertFalse(ObserveConsent.resolve("not-granted", "granted"))
+    assertTrue(ObserveConsent.resolve("granted", "not-granted"))
+    assertFalse(ObserveConsent.resolve("not-granted", null))
   }
 
   @Test
