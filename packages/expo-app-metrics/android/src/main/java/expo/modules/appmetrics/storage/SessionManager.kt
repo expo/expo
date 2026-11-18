@@ -5,6 +5,7 @@ import androidx.room.withTransaction
 import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.AppMetricsPreferences
 import expo.modules.appmetrics.GlobalAttributes
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
 import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.appmetrics.utils.TimeUtils
@@ -14,11 +15,17 @@ import kotlinx.serialization.json.Json
 import java.util.UUID
 
 class SessionManager(
-  context: Context,
-  database: MetricsDatabase? = null
+  private val context: Context,
+  private val injectedDatabase: MetricsDatabase? = null
 ) {
-  private val context: Context = context
-  private val database: MetricsDatabase = database ?: MetricsDatabase.getDatabase(context)
+  // Every database access goes through this. While consent is not granted, it is null and the
+  // database is never opened, so writes do nothing and reads are empty.
+  private val database: MetricsDatabase?
+    get() = if (ObserveConsent.isGranted) {
+      injectedDatabase ?: MetricsDatabase.getDatabase(context)
+    } else {
+      null
+    }
 
   fun createSessionId(): String = UUID.randomUUID().toString()
 
@@ -53,11 +60,11 @@ class SessionManager(
       clientVersion = metadata?.clientVersion,
       languageTag = metadata?.languageTag
     )
-    database.sessionDao().insert(session)
+    database?.sessionDao()?.insert(session)
   }
 
   suspend fun stopSession(sessionId: String) {
-    database.sessionDao().stopSessionAt(
+    database?.sessionDao()?.stopSessionAt(
       sessionId,
       endTimestamp = TimeUtils.getCurrentTimestampInISOFormat()
     )
@@ -73,7 +80,7 @@ class SessionManager(
         params = mergeGlobalAttributesIntoJsonString(metric.params)
       )
     }
-    database.metricDao().insertAll(metricsWithSession)
+    database?.metricDao()?.insertAll(metricsWithSession)
   }
 
   /**
@@ -82,7 +89,7 @@ class SessionManager(
    * attributed reports map back; orphans (null sessionId) are excluded.
    */
   suspend fun getInactiveSessions(): List<SessionWithChildren> =
-    database.sessionDao().getInactive()
+    database?.sessionDao()?.getInactive() ?: emptyList()
 
   /**
    * Persists a crash report. A non-null `sessionId` attributes the report to an
@@ -95,7 +102,7 @@ class SessionManager(
     payload: String,
     createdAt: String = TimeUtils.getCurrentTimestampInISOFormat()
   ) {
-    database.crashReportDao().upsert(
+    database?.crashReportDao()?.upsert(
       CrashReportEntity(sessionId = sessionId, payload = payload, createdAt = createdAt)
     )
   }
@@ -105,6 +112,7 @@ class SessionManager(
    * has no report yet. Reprocessing the same crash must not add a second log.
    */
   suspend fun storeCrashReportIfNew(sessionId: String, payload: String, log: LogRecord) {
+    val database = database ?: return
     database.withTransaction {
       if (database.crashReportDao().getBySessionId(sessionId) == null) {
         database.crashReportDao().upsert(
@@ -120,7 +128,7 @@ class SessionManager(
   }
 
   suspend fun getCrashReport(sessionId: String): String? =
-    database.crashReportDao().getBySessionId(sessionId)?.payload
+    database?.crashReportDao()?.getBySessionId(sessionId)?.payload
 
   /**
    * Every stored crash report, newest first — both reports attributed to a
@@ -129,11 +137,11 @@ class SessionManager(
    * read each report's `sessionId` (null for an orphan) alongside its payload.
    */
   suspend fun getAllCrashReports(): List<CrashReportEntity> =
-    database.crashReportDao().getAll()
+    database?.crashReportDao()?.getAll() ?: emptyList()
 
-  suspend fun getSessionById(id: String): SessionWithMetrics? = database.sessionDao().getSessionWithMetricsBySessionId(id)
+  suspend fun getSessionById(id: String): SessionWithMetrics? = database?.sessionDao()?.getSessionWithMetricsBySessionId(id)
 
-  suspend fun getSessionRow(id: String): Session? = database.sessionDao().getById(id)
+  suspend fun getSessionRow(id: String): Session? = database?.sessionDao()?.getById(id)
 
   /**
    * The most recent main session other than `currentSessionId`, or `null` when
@@ -143,35 +151,38 @@ class SessionManager(
    * every stored session is treated as main.
    */
   suspend fun getPreviousMainSessionId(currentSessionId: String?): String? =
-    database.sessionDao().getPreviousMainSessionId(currentSessionId)
+    database?.sessionDao()?.getPreviousMainSessionId(currentSessionId)
 
   suspend fun getMetricsForSession(sessionId: String): List<Metric> =
-    database.metricDao().getMetricsForSession(sessionId)
+    database?.metricDao()?.getMetricsForSession(sessionId) ?: emptyList()
 
   suspend fun getMetrics(afterId: Long, limit: Int): List<Metric> =
-    database.metricDao().getAfterId(afterId, limit)
+    database?.metricDao()?.getAfterId(afterId, limit) ?: emptyList()
 
-  suspend fun getMaxMetricId(): Long? = database.metricDao().getMaxId()
+  suspend fun getMaxMetricId(): Long? = database?.metricDao()?.getMaxId()
 
   suspend fun getSpansForSession(sessionId: String): List<Span> =
-    database.spanDao().getSpansForSession(sessionId)
+    database?.spanDao()?.getSpansForSession(sessionId) ?: emptyList()
 
   suspend fun getSpans(afterId: Long, limit: Int): List<Span> =
-    database.spanDao().getSpans(afterId, limit)
+    database?.spanDao()?.getSpans(afterId, limit) ?: emptyList()
 
-  suspend fun getMaxSpanId(): Long? = database.spanDao().getMaxId()
+  suspend fun getMaxSpanId(): Long? = database?.spanDao()?.getMaxId()
 
-  suspend fun deleteSpansUpTo(rowId: Long) = database.spanDao().deleteUpTo(rowId)
+  suspend fun deleteSpansUpTo(rowId: Long) {
+    database?.spanDao()?.deleteUpTo(rowId)
+  }
 
   suspend fun getLogsForSession(sessionId: String): List<LogRecord> =
-    database.logDao().getLogsForSession(sessionId)
+    database?.logDao()?.getLogsForSession(sessionId) ?: emptyList()
 
   suspend fun getLogs(afterId: Long, limit: Int): List<LogRecord> =
-    database.logDao().getAfterId(afterId, limit)
+    database?.logDao()?.getAfterId(afterId, limit) ?: emptyList()
 
-  suspend fun getMaxLogId(): Long? = database.logDao().getMaxId()
+  suspend fun getMaxLogId(): Long? = database?.logDao()?.getMaxId()
 
   suspend fun clearAllData() {
+    val database = database ?: return
     database.sessionDao().deleteAll()
     // Deleting the sessions cascades to their attributed reports, but orphan
     // reports (null sessionId) don't cascade, so wipe the table explicitly too.
@@ -179,7 +190,7 @@ class SessionManager(
   }
 
   suspend fun deactivateAllSessionsBefore(timestamp: String) {
-    database.sessionDao().deactivateAllSessionsBefore(timestamp)
+    database?.sessionDao()?.deactivateAllSessionsBefore(timestamp)
   }
 
   /**
@@ -189,6 +200,7 @@ class SessionManager(
    * cascade from and are aged out separately by `createdAt`.
    */
   suspend fun cleanupOldSessions() {
+    val database = database ?: return
     val cutoffTimestamp = TimeUtils.getTimestampInISOFormatFromPast(MetricsConstants.SECONDS_TO_REMOVE_OLD_METRICS)
     database.crashReportDao().deleteOrphansOlderThan(cutoffTimestamp)
     database.sessionDao().deleteSessionsOlderThan(cutoffTimestamp)
@@ -198,7 +210,7 @@ class SessionManager(
     logs: List<LogRecord>,
     sessionId: String
   ) {
-    database.logDao().insertAll(logsWithSession(logs, sessionId))
+    database?.logDao()?.insertAll(logsWithSession(logs, sessionId))
   }
 
   private fun logsWithSession(logs: List<LogRecord>, sessionId: String): List<LogRecord> =
@@ -211,15 +223,15 @@ class SessionManager(
 
   suspend fun cleanupOldLogs() {
     val cutoffTimestamp = TimeUtils.getTimestampInISOFormatFromPast(MetricsConstants.SECONDS_TO_REMOVE_OLD_METRICS)
-    database.logDao().deleteLogsOlderThan(cutoffTimestamp)
+    database?.logDao()?.deleteLogsOlderThan(cutoffTimestamp)
   }
 
   suspend fun updateEnvironmentForActiveSessions(environment: String) {
-    database.sessionDao().updateEnvironmentForActiveSessions(environment)
+    database?.sessionDao()?.updateEnvironmentForActiveSessions(environment)
   }
 
   suspend fun getSessions(sessionIds: Collection<String>): List<Session> =
-    sessionIds.chunked(SQLITE_MAX_BIND_VARIABLES).flatMap { database.sessionDao().getByIds(it) }
+    sessionIds.chunked(SQLITE_MAX_BIND_VARIABLES).flatMap { database?.sessionDao()?.getByIds(it) ?: emptyList() }
 
   /**
    * Decodes a JSON-encoded `params` / `attributes` column, folds the current

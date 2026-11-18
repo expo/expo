@@ -50,12 +50,19 @@ public struct AppMetrics {
     }
   }
 
-  /// The shared metrics database, or `nil` in release builds if the database could not be opened even
-  /// after a wipe-and-retry. In DEBUG we trap with `assertionFailure` so developers see the failure
-  /// immediately; in release we keep the host app running because telemetry should never be
-  /// load-bearing for the user's primary work — callers degrade naturally via `?.`.
+  /// The shared metrics database. Every database access goes through it. `nil` while consent is not
+  /// granted, so the database is never opened, writes do nothing and reads are empty.
   @AppMetricsActor
-  static let database: MetricsDatabase? = {
+  static var database: MetricsDatabase? {
+    return ObserveConsent.isGranted ? openedDatabase : nil
+  }
+
+  /// `nil` in release builds if the database could not be opened even after a wipe-and-retry. In
+  /// DEBUG we trap with `assertionFailure` so developers see the failure immediately; in release we
+  /// keep the host app running because telemetry should never be load-bearing for the user's
+  /// primary work — callers degrade naturally via `?.`.
+  @AppMetricsActor
+  private static let openedDatabase: MetricsDatabase? = {
     do {
       return try MetricsDatabase.openWipingOnFailure()
     } catch {
