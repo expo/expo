@@ -131,15 +131,10 @@ Pod::Spec.new do |s|
     # config. It reaches them through the library's `compiler_flags`, which test specs
     # inherit and CocoaPods applies per-file to C-family sources.
     #
-    # OTHER_LDFLAGS: the library's -lc++ lives in `user_target_xcconfig` (for consuming
-    # apps), which a test_spec target doesn't inherit. The test bundle links
-    # libExpoModulesCore.a (C++), so link libc++ explicitly.
-    #
     # SWIFT_OBJC_BRIDGING_HEADER: a test target has no module for its own Obj-C sources,
     # so the Swift tests see the Obj-C test doubles (`ios/Tests/Mocks`) through the
     # bridging header.
     test_spec.pod_target_xcconfig = {
-      'OTHER_LDFLAGS' => '$(inherited) -lc++',
       'SWIFT_OBJC_BRIDGING_HEADER' => '$(PODS_TARGET_SRCROOT)/ios/Tests/Tests-Bridging-Header.h'
     }
   end
@@ -150,7 +145,6 @@ Pod::Spec.new do |s|
     # The descriptor benchmarks run `NewComponentDescriptor` through the test double that the tests use.
     test_spec.source_files = 'ios/Benchmarks/**/*.{h,swift}', 'ios/Tests/Mocks/EXTestNewComponentDescriptor.{h,mm}'
     test_spec.pod_target_xcconfig = {
-      'OTHER_LDFLAGS' => '$(inherited) -lc++',
       'SWIFT_OBJC_BRIDGING_HEADER' => '$(PODS_TARGET_SRCROOT)/ios/Benchmarks/Benchmarks-Bridging-Header.h'
     }
   end
