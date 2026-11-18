@@ -46,7 +46,6 @@
     "expo-age-range": "workspace:*",
     "expo-ai": "workspace:*",
     "expo-app-intents": "workspace:*",
-    "expo-app-metrics": "workspace:*",
     "expo-apple-authentication": "workspace:*",
     "expo-application": "workspace:*",
     "expo-asset": "workspace:*",

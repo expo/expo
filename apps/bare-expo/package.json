@@ -35,7 +35,6 @@
     "expo": "workspace:*",
     "expo-ai": "workspace:*",
     "expo-app-intents": "workspace:*",
-    "expo-app-metrics": "workspace:*",
     "expo-audio": "workspace:*",
     "expo-background-fetch": "workspace:*",
     "expo-brownfield": "workspace:*",
