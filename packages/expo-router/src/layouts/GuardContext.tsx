@@ -1,9 +1,10 @@
 'use client';
 
-import { createContext, use, useEffect, useMemo, type ReactNode } from 'react';
+import { createContext, use, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import type { RouteNode } from '../Route';
 import { LocalRouteParamsContext, sortRoutesWithInitial } from '../Route';
+import { PendingIntentsContext } from '../global-state/routingQueueContext';
 import { getContextKey } from '../matchers';
 import { getValidInitialRoute } from '../routeNode';
 import type { Href } from '../types';
@@ -84,20 +85,37 @@ export function useLayoutGuards(
   const eligible = guards?.size
     ? declaredNames.filter((name) => !isRouteGuarded(name, guards))
     : declaredNames;
-  const focused = focusedName === undefined ? undefined : getFailedGuard(guards, focusedName);
-  const focusedRedirect = useFocusedGuardRedirect(focused?.redirectTo, navigatorKey, eligible);
-  const redirect = typeof focusedRedirect === 'object' ? focusedRedirect : undefined;
-  // Keep a focused blocked screen for one render when the screen applies a redirect to another
-  // navigator or the parent fallback, or when navigation queued in the same handler, such as a
-  // replace, must act on it.
-  const keepFocused =
-    focused !== undefined &&
-    !redirect &&
-    (focused.redirectTo !== undefined || (eligible.length === 0 && !!owner?.fallbacks.length));
-  const routeNames = keepFocused
-    ? declaredNames.filter((name) => name === focusedName || eligible.includes(name))
-    : eligible;
-  const allBlocked = routeNames.length === 0;
+  const focusedGuard = focusedName === undefined ? undefined : getFailedGuard(guards, focusedName);
+  // App navigation queued before the guard failed, for example in the handler that changed the
+  // guard, acts on the blocked screen. Record that boundary once per guard change, because the
+  // queue also receives later actions before the root catches up. `use` is read only while the
+  // focused route is blocked, so other navigators do not re-render when the queue changes.
+  const guardChange = focusedGuard
+    ? [navigatorKey, focusedName, ...eligible].join('\0')
+    : undefined;
+  const [boundary, setBoundary] = useState<{ guardChange?: string; actionId?: number }>({});
+  let queuedBeforeGuard = boundary.actionId;
+  if (boundary.guardChange !== guardChange) {
+    queuedBeforeGuard = focusedGuard
+      ? use(PendingIntentsContext).reduce<number | undefined>(
+          (last, intent) =>
+            intent.type === 'COMPUTED_ACTION' ? last : Math.max(last ?? 0, intent.actionId),
+          undefined
+        )
+      : undefined;
+    setBoundary({ guardChange, actionId: queuedBeforeGuard });
+  }
+  const redirect = useFocusedGuardRedirect(
+    queuedBeforeGuard === undefined ? focusedGuard?.redirectTo : undefined,
+    navigatorKey,
+    eligible
+  );
+  // With no accessible route left, the nearest ancestor opens its fallback by route identity.
+  const ancestorFallback =
+    focusedGuard && eligible.length === 0 ? owner?.fallbacks.find((f) => f.name) : undefined;
+  // No warning when the root opens an explicit redirect or an ancestor fallback instead.
+  const allBlocked =
+    eligible.length === 0 && !ancestorFallback && focusedGuard?.redirectTo === undefined;
   useEffect(() => {
     if (__DEV__ && allBlocked) {
       console.warn(
@@ -105,7 +123,15 @@ export function useLayoutGuards(
       );
     }
   }, [allBlocked]);
-  return { routeNames, guards, fallbackName: guards && owner?.fallbackName, redirect };
+  return {
+    routeNames: eligible,
+    guards,
+    fallbackName: guards && owner?.fallbackName,
+    focusedGuard,
+    redirect,
+    ancestorFallback,
+    queuedBeforeGuard,
+  };
 }
 
 export function getFailedGuard(
@@ -120,8 +146,11 @@ export function normalizeRouteName(routeName: string): string {
   return routeName.replace(/\/index$/, '');
 }
 
-type GuardRedirectFallback = {
+export type GuardRedirectFallback = {
+  // The route of `ownerNode`'s navigator to open, by identity.
   name?: string;
+  params?: object;
+  ownerNode?: RouteNode;
   href: Href;
   targetRouteContextKey: string | null;
 };
@@ -145,6 +174,8 @@ function getNavigatorFallback(
     href: Object.keys(params ?? {}).length ? ({ pathname, params } as Href) : (pathname as Href),
     targetRouteContextKey: route.contextKey,
     name: route.route,
+    params,
+    ownerNode: node,
   };
 }
 

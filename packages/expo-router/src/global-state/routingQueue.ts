@@ -1,5 +1,6 @@
 import { mark } from '../performance';
 import type { NavigationAction, NavigationState } from '../react-navigation/native';
+import type { NavigateActionConfig } from './getNavigationAction';
 import type { RouterRegistry } from './routerRegistry';
 import type { LinkToOptions } from './types';
 
@@ -21,7 +22,11 @@ export type RoutingIntent = (
   | {
       type: 'COMPUTED_ACTION';
       payload: {
-        compute: (state: NavigationState, registry: RouterRegistry) => NavigationAction | undefined;
+        compute: (
+          state: NavigationState,
+          registry: RouterRegistry,
+          config: NavigateActionConfig
+        ) => NavigationAction | undefined;
         originKey?: string;
       };
     }

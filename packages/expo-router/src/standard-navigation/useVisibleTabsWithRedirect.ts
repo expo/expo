@@ -84,7 +84,13 @@ export function useVisibleTabsWithRedirect<
   useEffect(() => {
     // TODO(@ubax): Consider throwing in __DEV__ instead of warning.
     // TODO: Skip this during HMR while placeholder descriptors lack `routeSource`.
-    if (__DEV__ && visibleRoutes.length === 0 && guardRedirect === undefined) {
+    // An empty `routeNames` means that guards block every route, which the guard warns about.
+    if (
+      __DEV__ &&
+      visibleRoutes.length === 0 &&
+      routeNames.length > 0 &&
+      guardRedirect === undefined
+    ) {
       const undeclaredRoutes = routes
         .filter((route) => !isDeclaredInLayout(descriptors[route.key]))
         .map((route) => route.name)
@@ -97,7 +103,7 @@ export function useVisibleTabsWithRedirect<
       );
     }
     // Route names are diagnostic; only rerun when the warning's eligibility changes.
-  }, [guardRedirect, routeNode?.contextKey, visibleRoutes.length]);
+  }, [guardRedirect, routeNames.length, routeNode?.contextKey, visibleRoutes.length]);
 
   useEffect(() => {
     // The focused route can be hidden or have no trigger at all — for example a path pointing at a

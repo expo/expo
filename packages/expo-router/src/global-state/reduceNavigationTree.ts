@@ -93,7 +93,8 @@ function findActionHandler(
   origin: TreeNode,
   nodes: Map<string, TreeNode>,
   action: NavigationAction,
-  registry: RouterRegistry
+  registry: RouterRegistry,
+  actionId: number | undefined
 ): Handler | undefined {
   let handler: Handler | undefined;
   const attempt = (node: TreeNode): boolean => {
@@ -102,7 +103,7 @@ function findActionHandler(
       return false;
     }
 
-    const reduced = entry.reduce(node.state, action);
+    const reduced = entry.reduce(node.state, action, actionId);
     const result = isActionHandled(reduced) ? reduced : undefined;
     // Unsupported untargeted actions bubble. An action explicitly addressed to this navigator
     // stops here as a handled no-op instead of escaping to another navigator.
@@ -175,9 +176,9 @@ function rebuildTreeWithSlice(handler: Handler, registry: RouterRegistry) {
 export function reduceNavigationTree(
   action: NavigationAction,
   registry: RouterRegistry,
-  { origin, tree }: { origin: TreeNode; tree: NavigationTreeIndex }
+  { origin, tree, actionId }: { origin: TreeNode; tree: NavigationTreeIndex; actionId?: number }
 ): NavigationTreeReduction {
-  const handler = findActionHandler(origin, tree.nodes, action, registry);
+  const handler = findActionHandler(origin, tree.nodes, action, registry, actionId);
   if (!handler) {
     return { handled: false };
   }

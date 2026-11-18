@@ -6,6 +6,14 @@ import { getRouteInfoFromState, type StrictState } from './getRouteInfoFromState
 import type { TreeNode } from './reduceNavigationTree';
 import type { RouterRegistry } from './routerRegistry';
 
+export class ProtectedRedirectLoopError extends Error {
+  constructor(href: string) {
+    super(
+      `Protected route redirects form a loop at "${href}": each \`redirectTo\` leads to another blocked route. Set \`redirectTo\` to a route that is accessible.`
+    );
+  }
+}
+
 const routeActionTypes = new Set(['NAVIGATE', 'PUSH', 'REPLACE', 'PRELOAD', 'JUMP_TO']);
 
 type ActionGuard = FailedGuard & { href?: string };

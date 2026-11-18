@@ -719,10 +719,10 @@ describe('focused explicit redirect on a guard flip', () => {
     const rendered = renderProbe.mock.calls.map(([args]) =>
       args.state.routes.map((route) => route.name)
     );
-    // The replace from the handler acts on Login, so Login stays for the first render.
-    expect(rendered[0]).toEqual(['index', 'settings', 'login']);
+    // Login is not shown, but the replace from the handler still replaces Login, not Settings.
+    expect(rendered[0]).toEqual(['index', 'settings']);
+    expect(rendered).not.toContainEqual(['index', 'settings', 'login']);
     expect(rendered).not.toContainEqual(['index', 'settings', 'account']);
-    expect(rendered).not.toContainEqual(['index', 'settings', 'login', 'account']);
     expect(account).not.toHaveBeenCalled();
     expect(
       navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
@@ -811,6 +811,171 @@ describe('focused explicit redirect on a guard flip', () => {
     expect(rendered).not.toContainEqual(['index', 'account']);
     expect(rendered).not.toContainEqual(['index']);
     expect(upgrade).not.toHaveBeenCalled();
+  });
+});
+
+describe('explicit redirect or fallback outside the navigator', () => {
+  it('opens a redirect to a parent navigator without rendering the blocked screen', async () => {
+    let close: () => void;
+    const login = jest.fn(() => null);
+    await renderRouter({
+      _layout: function Layout() {
+        const [open, setOpen] = useState(true);
+        close = () => setOpen(false);
+        return (
+          <SignedInContext value={open}>
+            <Stack />
+          </SignedInContext>
+        );
+      },
+      index: () => null,
+      settings: () => null,
+      login,
+      'account/_layout': function Account() {
+        const open = use(SignedInContext);
+        return (
+          <Stack>
+            <Stack.Protected guard={open} redirectTo="/login">
+              <Stack.Screen name="billing" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      'account/index': () => null,
+      'account/billing': () => null,
+    });
+    await act(() => router.push('/settings'));
+    await act(() => router.push('/account/billing'));
+    const [home, settings] = navigationRef.getRootState().routes[0]!.state!.routes;
+    renderProbe.mockClear();
+
+    await act(() => close());
+
+    const rendered = renderProbe.mock.calls.map(([args]) =>
+      args.state.routes.map((route) => route.name)
+    );
+    expect(rendered).not.toContainEqual(['billing']);
+    expect(navigationRef.getRootState().routes[0]!.state!.routes).toEqual([
+      home,
+      settings,
+      expect.objectContaining({ name: 'login' }),
+    ]);
+    expect(login).toHaveBeenCalled();
+    expect(screen).toHavePathname('/login');
+  });
+
+  it('opens a nested redirect destination without rendering the blocked screen', async () => {
+    let close: () => void;
+    await renderRouter({
+      _layout: () => <Stack />,
+      index: () => null,
+      'account/_layout': function Account() {
+        const [open, setOpen] = useState(true);
+        close = () => setOpen(false);
+        return (
+          <Stack>
+            <Stack.Protected guard={open} redirectTo="/account/plans/pro">
+              <Stack.Screen name="billing" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      'account/index': () => null,
+      'account/billing': () => null,
+      'account/plans/_layout': () => <Stack />,
+      'account/plans/[plan]': () => null,
+    });
+    await act(() => router.push('/account'));
+    await act(() => router.push('/account/billing'));
+    renderProbe.mockClear();
+
+    await act(() => close());
+
+    const rendered = renderProbe.mock.calls.map(([args]) =>
+      args.state.routes.map((route) => route.name)
+    );
+    expect(rendered).not.toContainEqual(['index', 'billing']);
+    const account = navigationRef.getRootState().routes[0]!.state!.routes[1]!.state!;
+    expect(account.routes.map((route) => route.name)).toEqual(['index', 'plans']);
+    expect(screen).toHavePathname('/account/plans/pro');
+  });
+
+  it('opens the parent fallback by route identity when every child route is blocked', async () => {
+    let close: () => void;
+    await renderRouter(
+      {
+        _layout: () => <Stack />,
+        index: () => null,
+        '[org]/_layout': () => <Stack />,
+        '[org]/index': () => null,
+        '[org]/team/_layout': function Team() {
+          const [open, setOpen] = useState(true);
+          close = () => setOpen(false);
+          return (
+            <Stack>
+              <Stack.Protected guard={open}>
+                <Stack.Screen name="index" />
+                <Stack.Screen name="members" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        '[org]/team/index': () => null,
+        '[org]/team/members': () => null,
+      },
+      { initialUrl: '/acme/team/members' }
+    );
+    renderProbe.mockClear();
+
+    await act(() => close());
+
+    const rendered = renderProbe.mock.calls.map(([args]) =>
+      args.state.routes.map((route) => route.name)
+    );
+    expect(rendered).not.toContainEqual(['members']);
+    const org = navigationRef.getRootState().routes[0]!.state!.routes[0]!;
+    expect(org.params).toMatchObject({ org: 'acme' });
+    expect(org.state!.routes.map((route) => route.name)).toEqual(['index']);
+    expect(screen).toHavePathname('/acme');
+  });
+  it('throws when the redirect of a blocked active screen enters a redirect loop', async () => {
+    let close: () => void;
+    await renderRouter({
+      _layout: function Layout() {
+        const [open, setOpen] = useState(true);
+        close = () => setOpen(false);
+        return (
+          <SignedInContext value={open}>
+            <Stack>
+              <Stack.Protected guard={false} redirectTo="/account/billing">
+                <Stack.Screen name="login" />
+              </Stack.Protected>
+            </Stack>
+          </SignedInContext>
+        );
+      },
+      index: () => null,
+      login: () => null,
+      'account/_layout': function Account() {
+        const open = use(SignedInContext);
+        return (
+          <Stack>
+            <Stack.Protected guard={open} redirectTo="/login">
+              <Stack.Screen name="billing" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      'account/index': () => null,
+      'account/billing': () => null,
+    });
+    await act(() => router.push('/account/billing'));
+
+    await expect(async () => {
+      await act(() => close());
+    }).rejects.toThrow(
+      'Protected route redirects form a loop at "/login": each `redirectTo` leads to another blocked route. Set `redirectTo` to a route that is accessible.'
+    );
   });
 });
 

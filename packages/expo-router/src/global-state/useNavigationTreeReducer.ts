@@ -28,7 +28,7 @@ import {
   createSeededNavigationState,
 } from './createSeededNavigationState';
 import { getNavigateAction } from './getNavigationAction';
-import { findActionGuard } from './protectedAction';
+import { findActionGuard, ProtectedRedirectLoopError } from './protectedAction';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
 import type { RouterRegistry } from './routerRegistry';
 import { markActionEnqueuedAndReturnId, type QueuedRoutingIntent } from './routingQueue';
@@ -297,9 +297,7 @@ function reduceTree(
         return result;
       }
       if (resolution.status === 'redirect-loop') {
-        throw new Error(
-          `Protected route redirects form a loop at "${resolution.href}": each \`redirectTo\` leads to another blocked route. Set \`redirectTo\` to a route that is accessible.`
-        );
+        throw new ProtectedRedirectLoopError(resolution.href);
       }
       if (resolution.status === 'invalid') {
         const invalidHref = operation.payload.originalHref ?? resolution.href;
@@ -322,8 +320,11 @@ function reduceTree(
     case 'COMPUTED_ACTION': {
       let action: NavigationAction | undefined;
       try {
-        action = operation.payload.compute(state, config.registry);
+        action = operation.payload.compute(state, config.registry, config);
       } catch (error) {
+        if (error instanceof ProtectedRedirectLoopError) {
+          throw error;
+        }
         const message =
           typeof error === 'object' && error != null && 'message' in error ? error.message : error;
         // TODO(@ubax): move console side effects out of the reducer.
@@ -377,6 +378,7 @@ function reduceTree(
       const reduction = reduceNavigationTree(operation.payload.action, config.registry, {
         origin,
         tree,
+        actionId: operation.actionId,
       });
       if (!reduction.handled) {
         return reportUnhandledAction(result, operation.payload.action);

@@ -14,9 +14,11 @@ import type {
 } from '../react-navigation/routers';
 
 export type RouterRegistryEntry = {
+  // `actionId` identifies the queued operation, when the action comes from the routing queue.
   reduce: (
     state: NavigationState,
-    action: NavigationAction
+    action: NavigationAction,
+    actionId?: number
   ) => RouterActionResult<NavigationState> | RouterActionHandling.Unhandled | null;
   // Returns the failed guard for a route declared by this navigator's layout.
   guardForRoute?: (name: string) => FailedGuard | undefined;

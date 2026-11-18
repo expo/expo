@@ -10,6 +10,7 @@ import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { findStateByKey, resetNavigatorState } from '../../global-state/stateUtils';
 import { getFailedGuard, useLayoutGuards } from '../../layouts/GuardContext';
+import { getGuardUpdateAction } from '../../layouts/getGuardUpdateAction';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   type DefaultRouterOptions,
@@ -342,12 +343,15 @@ export function useNavigationBuilder<
   }
   // Blocked routes stay declared but are not passed to the router or the descriptors.
   const focusedRoute = committedState.routes[committedState.index];
-  const { routeNames, guards, fallbackName, redirect } = useLayoutGuards(
-    routeNode,
-    declaredNames,
-    committedState.key,
-    focusedRoute?.name
-  );
+  const {
+    routeNames,
+    guards,
+    fallbackName,
+    focusedGuard,
+    redirect,
+    ancestorFallback,
+    queuedBeforeGuard,
+  } = useLayoutGuards(routeNode, declaredNames, committedState.key, focusedRoute?.name);
   // Track screen-list changes without recalculating state when only the array identity changes.
   const routeNamesKey = routeNames.join('\0');
   const routeGetIdList = routeNames.reduce<RouterConfigOptions['routeGetIdList']>(
@@ -409,29 +413,42 @@ export function useNavigationBuilder<
       redirectAction,
     };
   }, [committedState, routeNamesKey, fallbackName, router, redirectKey]);
-  const reduce = useLatestCallback<RouterRegistryEntry['reduce']>((registryState, action) => {
-    // The registry stores states from different router types; this entry only receives its own state key.
-    const input = registryState as State;
-    // The committed slice can still contain blocked visits until the queued route-name update runs.
-    const reconciled = reconcile(input);
-    if (reconciled === input) {
-      return router.getStateForAction(input, action, routerConfig);
+  const reduce = useLatestCallback<RouterRegistryEntry['reduce']>(
+    (registryState, action, actionId) => {
+      // The registry stores states from different router types; this entry only receives its own state key.
+      const input = registryState as State;
+      // The committed slice can still contain blocked visits until the queued route-name update runs.
+      const reconciled = reconcile(input);
+      if (reconciled === input) {
+        return router.getStateForAction(input, action, routerConfig);
+      }
+      // App navigation queued before the guard failed, such as a replace in the same handler,
+      // acts on the screen the app saw. Later actions act on the eligible routes.
+      const queuedBefore =
+        actionId !== undefined && queuedBeforeGuard !== undefined && actionId <= queuedBeforeGuard;
+      const acted = queuedBefore
+        ? router.getStateForAction(input, action, routerConfig)
+        : undefined;
+      const result =
+        acted !== undefined
+          ? isActionHandled(acted)
+            ? { ...acted, state: reconcile(acted.state) }
+            : acted
+          : action.type === 'ROUTE_NAMES_CHANGED'
+            ? { state: reconciled, affectedRouteKey: reconciled.routes[reconciled.index]?.key }
+            : router.getStateForAction(reconciled, action, routerConfig);
+      if (!isActionHandled(result)) {
+        return result;
+      }
+      // The browser still has entries for the removed visits, so derive the browser change from
+      // the committed slice. Removing the active blocked visit pops its entry; a redirect that
+      // replaces it in the same step replaces the entry.
+      return {
+        ...result,
+        browserHistory: router.getBrowserHistoryForAction?.(input, result.state, action),
+      };
     }
-    const result =
-      action.type === 'ROUTE_NAMES_CHANGED'
-        ? { state: reconciled, affectedRouteKey: reconciled.routes[reconciled.index]?.key }
-        : router.getStateForAction(reconciled, action, routerConfig);
-    if (!isActionHandled(result)) {
-      return result;
-    }
-    // The browser still has entries for the removed visits, so derive the browser change from
-    // the committed slice. Removing the active blocked visit pops its entry; a redirect that
-    // replaces it in the same step replaces the entry.
-    return {
-      ...result,
-      browserHistory: router.getBrowserHistoryForAction?.(input, result.state, action),
-    };
-  });
+  );
   const guardForRoute = useLatestCallback((name: string) => getFailedGuard(guards, name));
   const emitter = useEventEmitter<EventMapCore<State>>((e) => {
     const routeNames = [];
@@ -533,7 +550,7 @@ export function useNavigationBuilder<
       return;
     }
     const committed = committedState;
-    const blockedKey = focusedRoute?.key;
+    const blockedKey = focusedGuard ? focusedRoute?.key : undefined;
 
     if (isArrayEqual(committed.routeNames, routeNames)) {
       pendingRouteNamesRef.current = undefined;
@@ -545,19 +562,19 @@ export function useNavigationBuilder<
       enqueue({
         type: 'COMPUTED_ACTION',
         payload: {
-          // The navigator can unmount before the queue drains, for example when a parent guard
-          // removes it. Skip the update when this entry no longer owns the state.
-          compute: (root, registry) => {
-            const slice = findStateByKey(root, committed.key);
-            if (registry.get(committed.key) !== registryEntry || !slice) {
-              return undefined;
-            }
-            // Apply the redirect only while the blocked route that requested it is still focused.
-            // Navigation that ran first, such as a replace in the same handler, wins.
-            return redirectAction && slice.routes[slice.index]?.key === blockedKey
-              ? { ...redirectAction, target: committed.key }
-              : { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames }, target: committed.key };
-          },
+          compute: (root, registry, config) =>
+            getGuardUpdateAction({
+              root,
+              registry,
+              config,
+              navigatorKey: committed.key,
+              entry: registryEntry,
+              routeNames,
+              blockedKey,
+              redirectAction,
+              redirectTo: focusedGuard?.redirectTo,
+              ancestorFallback,
+            }),
           originKey: committed.key,
         },
       });
