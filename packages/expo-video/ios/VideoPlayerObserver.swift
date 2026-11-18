@@ -241,8 +241,10 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
     playerStatusObserver = player.observe(\.status, options: [.initial, .new, .old]) { [weak self] player, change in
       self?.onPlayerStatusChanged(player, change)
     }
-    playerTimeControlStatusObserver = player.observe(\.timeControlStatus, options: [.new, .old]) { [weak self] player, change in
-      self?.onTimeControlStatusChanged(player, change)
+    playerTimeControlStatusObserver = player.observe(\.timeControlStatus) { [weak self] player, _ in
+      runOnMainThread { [weak self] in
+        self?.onTimeControlStatusChanged(player)
+      }
     }
     playerVolumeObserver = player.observe(\.volume, options: [.initial, .new, .old]) { [weak self] player, change in
       self?.onPlayerVolumeChanged(player, change)
@@ -496,7 +498,7 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
     }
   }
 
-  private func onTimeControlStatusChanged(_ player: AVPlayer, _ change: NSKeyValueObservedChange<AVPlayer.TimeControlStatus>) {
+  private func onTimeControlStatusChanged(_ player: AVPlayer) {
     // iOS changes timeControlStatus after an error, so we need to check for errors.
     if player.status == .failed || player.currentItem?.status == .failed {
       isPlaying = false

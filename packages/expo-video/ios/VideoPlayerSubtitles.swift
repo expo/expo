@@ -44,7 +44,9 @@ class VideoPlayerSubtitles {
       let option = group.options.first {
         $0.displayName == subtitleTrack?.label && $0.locale?.identifier == subtitleTrack?.language
       }
-      currentItem.select(option, in: group)
+      runOnMainThread {
+        currentItem.select(option, in: group)
+      }
     }
   }
 

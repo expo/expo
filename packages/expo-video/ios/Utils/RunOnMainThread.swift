@@ -2,9 +2,9 @@
 
 import Foundation
 
-internal func runOnMainThread(_ operation: @escaping () -> Void) {
+internal func runOnMainThread(_ operation: @escaping @MainActor () -> Void) {
   if Thread.isMainThread {
-    operation()
+    MainActor.assumeIsolated { operation() }
   } else {
     DispatchQueue.main.async(execute: operation)
   }

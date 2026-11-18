@@ -46,7 +46,9 @@ class VideoPlayerAudioTracks {
       let option = group.options.first {
         $0.displayName == audioTrack?.label && $0.locale?.identifier == audioTrack?.language
       }
-      currentItem.select(option, in: group)
+      runOnMainThread {
+        currentItem.select(option, in: group)
+      }
     }
   }
 
