@@ -40,15 +40,36 @@ This guide uses the [Expo LiveKit template](https://github.com/expo/expo-livekit
 Create a new project with `create-expo-app`:
 
 <Terminal
-  cmd={[
-    '$ npx create-expo-app@latest my-voice-app --template https://github.com/expo/expo-livekit-template',
-    '$ cd my-voice-app',
-  ]}
+  cmd={{
+    npm: [
+      '$ npx create-expo-app@latest my-voice-app --template https://github.com/expo/expo-livekit-template',
+      '$ cd my-voice-app',
+    ],
+    yarn: [
+      '$ yarn create expo-app my-voice-app --template https://github.com/expo/expo-livekit-template',
+      '$ cd my-voice-app',
+    ],
+    pnpm: [
+      '$ pnpm create expo-app my-voice-app --template https://github.com/expo/expo-livekit-template',
+      '$ cd my-voice-app',
+    ],
+    bun: [
+      '$ bun create expo my-voice-app --template https://github.com/expo/expo-livekit-template',
+      '$ cd my-voice-app',
+    ],
+  }}
 />
 
 The voice agent is a separate Node.js project in the **agent** directory. Install its dependencies:
 
-<Terminal cmd={['$ npm --prefix agent install']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm --prefix agent install'],
+    yarn: ['$ yarn --cwd agent install'],
+    pnpm: ['$ pnpm --dir agent install'],
+    bun: ['$ bun install --cwd agent'],
+  }}
+/>
 
 </Step>
 
@@ -192,7 +213,7 @@ export default function VoiceScreen() {
 }
 ```
 
-The template's own screen also shows an audio visualizer from [LiveKit Agents UI](https://livekit.com/products/agents-ui). The visualizers are web components that run in a [DOM component](/guides/dom-components/).
+The template's own screen also shows an audio visualizer from [LiveKit Agents UI](https://livekit.com/products/agents-ui). The visualizers are React components for the web, and they run in a [DOM component](/guides/dom-components/).
 
 ### Voice agent
 
@@ -247,9 +268,17 @@ To change how the agent behaves, edit its instructions, voice, and model in this
 
 ## Deploy to production
 
-In development, the app gets tokens from the Expo development server and the agent runs on your computer. Before you ship, deploy the token endpoint and the agent.
+In development, the app gets tokens from the Expo development server and the agent runs on your computer. Before you ship, protect and deploy the token endpoint, then deploy the agent.
 
 <Step label="1">
+
+### Protect the token endpoint
+
+The token endpoint in the template issues a token to anyone who calls it. Before you deploy it, add a check to **src/app/token+api.ts** that the request comes from a signed-in user. See [Authentication](/develop/authentication/) for the options.
+
+</Step>
+
+<Step label="2">
 
 ### Deploy the token endpoint
 
@@ -261,11 +290,11 @@ Export the server and deploy it to [Expo Hosting](/eas/hosting/get-started/) wit
 
 </Step>
 
-<Step label="2">
+<Step label="3">
 
 ### Set the origin
 
-A release build has no development server, so tell the app where the token endpoint is. Set the deployed URL as the `origin` of the `expo-router` config plugin in **app.json**, then create a new build:
+A production build has no development server, so tell the app where the token endpoint is. Set the deployed URL as the `origin` of the `expo-router` config plugin in **app.json**, then create a new build:
 
 ```json app.json
 {
@@ -285,14 +314,6 @@ A release build has no development server, so tell the app where the token endpo
 ```
 
 See [Native deployment](/router/web/api-routes/#native-deployment) for more information about API routes in native apps.
-
-</Step>
-
-<Step label="3">
-
-### Protect the token endpoint
-
-The token endpoint in the template issues a token to anyone who calls it. Before you ship, check in **src/app/token+api.ts** that the request comes from a signed-in user. See [Authentication](/develop/authentication/) for the options.
 
 </Step>
 
@@ -327,14 +348,14 @@ The app waits for the agent to join the room. Check that `npm run agent` is stil
 
 ### The agent does not hear you on an Android Emulator
 
-The Android Emulator does not use your computer's microphone by default. After the emulator starts, turn it on:
+The Android Emulator does not use your computer's microphone by default. After the emulator starts, turn on the microphone input:
 
 <Terminal cmd={['$ adb emu avd hostmicon']} />
 
-### A release build shows "No token server"
+### A production build shows "No token server"
 
 The app has no `origin` for the token endpoint. See [Set the origin](#set-the-origin).
 
-### A release build fails with "requireNativeComponent is not a function"
+### A production build fails with "requireNativeComponent is not a function"
 
 Expo loads the root layout in Node.js when it exports the token endpoint, and the LiveKit native modules cannot load there. The template has **src/app/\_layout.web.tsx** for this case. Keep this file, and do not import `@livekit/react-native` in a layout file without a web version.
