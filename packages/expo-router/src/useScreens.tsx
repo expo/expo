@@ -14,11 +14,11 @@ import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
 import {
+  dispatchReplaceInNavigator,
   dispatchReplaceWithGuardFallback,
   isRouteGuarded,
   useResolvedGuard,
   type GuardedRedirects,
-  type GuardFallback,
   type ResolvedGuard,
 } from './layouts/GuardContext';
 import { Redirect } from './link/Redirect';
@@ -322,7 +322,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const routeInfo = useCurrentRouteInfo();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
-    const guard = useResolvedGuard(value.route);
+    const guard = useResolvedGuard({ routeName: value.route });
     const isGuarded = guard !== undefined;
     const isRouteType = value.type === 'route';
     const resolvedLoaderPath = useMemo(() => {
@@ -471,38 +471,51 @@ function createFailedScreen(error: unknown, reset: () => void) {
   };
 }
 
+type GuardScreenNavigation = Pick<NavigationProp<ParamListBase>, 'getParent' | 'dispatch'> & {
+  getState(): NavigationState | undefined;
+};
+
 function GuardedRouteRedirect({
   guard,
   navigation,
 }: {
   guard: ResolvedGuard;
-  navigation: Pick<NavigationProp<ParamListBase>, 'getParent'>;
+  navigation: GuardScreenNavigation;
 }) {
-  if (guard.redirectTo !== undefined) {
-    return <Redirect href={guard.redirectTo} />;
+  switch (guard.type) {
+    case 'redirect':
+      return <Redirect href={guard.href} />;
+    case 'noDestination':
+      // With no destination (every candidate is also guarded), render nothing but keep
+      // the screen registered so the navigator and its state stay mounted.
+      return <AllRoutesProtectedWarning />;
+    default:
+      return <GuardFallbackReplace navigation={navigation} guard={guard} />;
   }
-  if (guard.fallback) {
-    return <GuardFallbackReplace navigation={navigation} fallback={guard.fallback} />;
-  }
-  // With no destination (every candidate is also guarded), render nothing but keep
-  // the screen registered so the navigator and its state stay mounted.
-  return <AllRoutesProtectedWarning />;
 }
 
 function GuardFallbackReplace({
   navigation,
-  fallback,
+  guard,
 }: {
-  navigation: Pick<NavigationProp<ParamListBase>, 'getParent'>;
-  fallback: GuardFallback;
+  navigation: GuardScreenNavigation;
+  guard: Extract<ResolvedGuard, { type: 'ownFallback' | 'parentFallback' }>;
 }) {
   const isFocused = useIsFocused();
   const isPreview = useIsPreview();
   useEffect(() => {
-    if (isFocused && !isPreview) {
-      dispatchReplaceWithGuardFallback(navigation, fallback);
+    if (!isFocused || isPreview) {
+      return;
     }
-  }, [fallback, isFocused, isPreview, navigation]);
+    if (guard.type === 'parentFallback') {
+      dispatchReplaceWithGuardFallback(navigation, guard.fallback);
+      return;
+    }
+    const navigatorKey = navigation.getState()?.key;
+    if (navigatorKey) {
+      dispatchReplaceInNavigator(navigation, navigatorKey, guard.name, guard.params);
+    }
+  }, [guard, isFocused, isPreview, navigation]);
   return null;
 }
 

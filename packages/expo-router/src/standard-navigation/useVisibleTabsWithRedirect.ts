@@ -6,6 +6,7 @@ import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
 import { useRouterActions } from '../global-state/useRouterActions';
 import { dispatchReplaceWithGuardFallback, useResolvedGuard } from '../layouts/GuardContext';
 import { useIsPreview } from '../link/preview/PreviewRouteContext';
+import { getContextKey } from '../matchers';
 import { NavigatorStateContext } from '../react-navigation/core/useNavigationState';
 import {
   type Descriptor,
@@ -54,7 +55,7 @@ export function useVisibleTabsWithRedirect<
   const isFocused = useIsFocused();
   const routeNode = useRouteNode();
   const focusedRoute = routes.find((route) => route.key === focusedRouteKey);
-  const guard = useResolvedGuard(focusedRoute?.name ?? '');
+  const guard = useResolvedGuard({ routeName: focusedRoute?.name });
   // The screen that holds this navigator. It reaches the navigator that owns an ancestor fallback.
   const parentNavigation = use(NavigationContext);
 
@@ -108,8 +109,8 @@ export function useVisibleTabsWithRedirect<
     // falling back to the first visible tab. `replace` keeps the unreachable route out of history.
     // TODO(@ubax): Show a formsheet for hidden tabs which are focused (Tabs + Stack in one).
     if (!isPreview && isFocused && visibleFocusedIndex < 0 && focusedFallbackRoute === undefined) {
-      if (guard?.redirectTo !== undefined) {
-        router.replace(guard.redirectTo);
+      if (guard?.type === 'redirect') {
+        router.replace(guard.href);
       } else if (redirectRoute) {
         // TODO(@ubax): Investigate if this should use `dispatchSync` instead of `enqueue` (ENG-29147).
         enqueue({
@@ -122,8 +123,15 @@ export function useVisibleTabsWithRedirect<
             originKey: key,
           },
         });
-      } else if (guard?.fallback && parentNavigation) {
-        // No tab is visible, so an ancestor navigator owns the fallback.
+      } else if (guard?.type === 'ownFallback') {
+        if (__DEV__) {
+          const navigatorId = getContextKey(routeNode?.contextKey ?? '') || '/';
+          console.warn(
+            `Expo Router could not open the fallback route "${guard.name}" of a protected route in "${navigatorId}", because every visible tab is protected and "${guard.name}" has no visible tab. ` +
+              `Add a visible screen for "${guard.name}", or set \`redirectTo\` on the \`Protected\` component.`
+          );
+        }
+      } else if (guard?.type === 'parentFallback' && parentNavigation) {
         dispatchReplaceWithGuardFallback(parentNavigation, guard.fallback);
       }
     }
@@ -136,6 +144,7 @@ export function useVisibleTabsWithRedirect<
     key,
     parentNavigation,
     redirectRoute,
+    routeNode?.contextKey,
     router,
     visibleFocusedIndex,
   ]);
