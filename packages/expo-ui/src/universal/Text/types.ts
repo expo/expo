@@ -1,3 +1,5 @@
+import type { ColorValue } from 'react-native';
+
 import type { UniversalBaseProps } from '../types';
 
 /**
@@ -39,9 +41,9 @@ export interface UniversalTextStyle {
   fontFamily?: string;
 
   /**
-   * Text color. Accepts any CSS color string.
+   * Text color.
    */
-  color?: string;
+  color?: ColorValue;
 
   /**
    * Line height in points.
