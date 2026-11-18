@@ -672,6 +672,22 @@ private struct MacroSharedObjectTests {
   }
 
   @Test
+  func `a native event with an AnyArgument payload reaches only the main runtime`() throws {
+    let id = try createCounter()
+    let mainRuntime = try runtime
+    let nativeObject = try SharedObject.native(from: try mainRuntime.eval("counter").asObject())
+    try mainRuntime.eval("mainReceived = []; counter.addListener('change', (value) => { mainReceived.push(value) })")
+    let attachedRuntime = try addListenerInAttachedRuntime(counterId: id)
+
+    let payload: [String: Any] = ["value": 5]
+    nativeObject.emit(event: "change", payload: payload)
+    try waitForScheduledWork(in: mainRuntime)
+    try waitForScheduledWork(in: attachedRuntime)
+    #expect(try mainRuntime.eval("mainReceived[0].value").asInt() == 5)
+    #expect(try attachedRuntime.eval("received.length").asInt() == 0)
+  }
+
+  @Test
   func `resolves a shared object to its JS object in the main runtime`() throws {
     let id = try createCounter()
     _ = try appContext.addRuntime()

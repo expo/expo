@@ -153,6 +153,9 @@ public extension EventEmitter {
    Schedules an event with the given name and payload to be emitted to the associated JavaScript object.
    Payloads that are `JavaScriptEncodable` use the `emit(event:payload:)` overload for them, which converts
    them statically.
+
+   Only the listeners in the main runtime get the event: the conversions of these payloads create some values in the
+   main runtime, whichever runtime they are given.
    */
   @_disfavoredOverload
   func emit<P: AnyArgument>(event: String, payload: sending P) {
@@ -168,16 +171,6 @@ public extension EventEmitter {
       return
     }
 
-    if case .sharedObjectInManyRuntimes(let state) = emitter {
-      dispatchAnyArgumentEventToAllRuntimes(
-        event: event,
-        payload: payload,
-        toSharedObjectState: state,
-        mainRuntime: runtime,
-        appContext: appContext
-      )
-      return
-    }
     runtime.schedule { [weak appContext] in
       guard let appContext else {
         return
@@ -545,28 +538,9 @@ internal func dispatchEventToAllRuntimes(
   }
 }
 
-/// `dispatchEventToAllRuntimes` for the `emit` overload with an `AnyArgument` payload. That overload isn't specialized,
-/// and with this code inline its path without other runtimes was about 9% slower, so it is a function of its own.
-@inline(never)
-internal func dispatchAnyArgumentEventToAllRuntimes<P: AnyArgument>(
-  event: String,
-  payload: sending P,
-  toSharedObjectState state: AnyObject,
-  mainRuntime: JavaScriptRuntime,
-  appContext: AppContext
-) {
-  let sharedPayload = SharedEventPayload(payload)
-  dispatchEventToAllRuntimes(event: event, toSharedObjectState: state, mainRuntime: mainRuntime, payloadType: P.self) {
-    [weak appContext] runtime in
-    guard let appContext else {
-      throw Exceptions.AppContextLost()
-    }
-    return try (~P.self).castToJS(sharedPayload.value, appContext: appContext, in: runtime)
-  }
-}
-
-/// A payload that the closures of an event sent to several runtimes share. Each closure only reads it, on the thread of
-/// its runtime, so it can be read on several threads at once.
+/// A payload that the closures of an event sent to several runtimes share. The closures encode it on the threads of
+/// their runtimes at the same time, so encoding must only read it. Encoding a shared object pairs it with a JS object of
+/// the runtime, which `SharedObjectRegistry.add` does under one lock.
 @frozen
 @usableFromInline
 internal struct SharedEventPayload<P>: @unchecked Sendable {
