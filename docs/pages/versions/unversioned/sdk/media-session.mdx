@@ -1,0 +1,262 @@
+---
+title: MediaSession
+description: A library that owns audio focus, the audio session, and Now Playing controls for the media libraries in an app.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-media-session'
+packageName: 'expo-media-session'
+platforms: ['android', 'ios', 'web']
+isNew: true
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import {
+  ConfigPluginExample,
+  ConfigPluginProperties,
+  ConfigReactNative,
+} from '~/ui/components/ConfigSection';
+
+`expo-media-session` is the single owner of audio focus on Android and the app's audio session on iOS. It also owns the lock screen and notification media controls on both platforms. A media library that uses it requests what it needs instead of configuring the system itself. Two such libraries in one app then do not fight over the session.
+
+Use the JavaScript API to set the app-wide audio policy, keep the session active between sounds, and listen for interruptions and route changes. Library authors use the [native API](#for-library-authors).
+
+## Installation
+
+<APIInstallSection />
+
+## Configuration in app config
+
+You can configure `expo-media-session` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
+
+On Android, the Now Playing controls need the `expo-media-session` entry in the `plugins` array, with or without options. The plugin declares the media playback service in **AndroidManifest.xml**, and the library does not declare it. Without the service, the module sends an `activationError` event when a media library offers Now Playing.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-media-session",
+        {
+          "supportsBackgroundPlayback": true
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'supportsBackgroundPlayback',
+      description:
+        'A boolean that determines whether audio can keep playing in the background. On Android, `true` declares the media playback service with the `mediaPlayback` foreground service type and adds the `FOREGROUND_SERVICE` and `FOREGROUND_SERVICE_MEDIA_PLAYBACK` permissions. On iOS, `true` adds the `audio` background mode. With `false`, Android still shows the media notification while a player owns it. It does not start a foreground service, so the system can stop playback in the background.',
+      default: 'false',
+    },
+  ]}
+/>
+
+<ConfigReactNative>
+
+On Android, declare the media playback service in **AndroidManifest.xml**. For background playback, add the foreground service type and permissions:
+
+```xml android/app/src/main/AndroidManifest.xml
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+
+<application>
+  <service
+    android:name="expo.modules.mediasession.service.MediaPlaybackService"
+    android:exported="false"
+    android:foregroundServiceType="mediaPlayback" />
+</application>
+```
+
+The service reads its own declared `foregroundServiceType` to decide whether it can run in the foreground. Below Android 10 (API level 29), where service types do not exist, it follows the app's `FOREGROUND_SERVICE_MEDIA_PLAYBACK` permission instead.
+
+On iOS, add the `audio` background mode to **Info.plist** if the app plays audio in the background:
+
+```xml ios/[app]/Info.plist
+<key>UIBackgroundModes</key>
+<array>
+  <string>audio</string>
+</array>
+```
+
+</ConfigReactNative>
+
+## Usage
+
+### Set the audio policy
+
+The audio policy applies to every media library that uses this module. Fields that you leave out keep their current values.
+
+```tsx
+import { setAudioPolicyAsync } from 'expo-media-session';
+
+await setAudioPolicyAsync({
+  interruptionMode: 'doNotMix',
+  shouldPlayInBackground: true,
+});
+```
+
+On iOS, the promise rejects when the merged policy is invalid, for example `interruptionMode: 'duckOthers'` with `playsInSilentMode: false`. The error message says which field to change.
+
+### Keep the session active between sounds
+
+The module deactivates the session 1 second after the last library stops using it. In `mixWithOthers` mode on iOS, it never deactivates the session automatically. To keep the session active for longer, hold it with a key and release it with the same key. For example, hold it between the clips of a game level:
+
+```tsx
+import { holdSession, releaseSession } from 'expo-media-session';
+
+holdSession('level');
+// ...
+releaseSession('level');
+```
+
+The module releases every hold when the JavaScript runtime reloads.
+
+### Listen for interruptions
+
+```tsx
+import { useEffect } from 'react';
+import { addInterruptionListener } from 'expo-media-session';
+
+export function useInterruptionLog() {
+  useEffect(() => {
+    const subscription = addInterruptionListener(event => {
+      if (event.type === 'began') {
+        console.log('Interrupted:', event.reason);
+      } else {
+        console.log('Interruption ended, can resume:', event.shouldResume);
+      }
+    });
+    return () => subscription.remove();
+  }, []);
+}
+```
+
+The events differ between platforms:
+
+- On Android, the module learns about interruptions from audio focus. It requests no focus when the effective interruption mode is `mixWithOthers`, which is the default. The module calls the interruption listener only in the other modes, and only while a media library or a hold uses the session. The reason is always `default`.
+- On Android, the module calls the route change listener only with `oldDeviceUnavailable`, when the output device disconnects. Android does not report a device that connects.
+- On iOS, the module can call the interruption listener with `began` while no media library uses the session.
+- On web, the module never calls the listeners.
+
+`InterruptionReason` and `RouteChangeReason` can get new values, so handle unknown values with a default case.
+
+### Web
+
+On web, `setAudioPolicyAsync` stores the policy and does not change browser audio, and holds do nothing. The module never calls the interruption, route change, or activation error listeners.
+
+## For library authors
+
+A media library uses the Swift and Kotlin API to get the session and to show Now Playing controls. Only this module writes the system state: `AVAudioSession` category and activation, Android audio focus, `MPNowPlayingInfoCenter`, `MPRemoteCommandCenter` targets, and the Media3 session service. A library that writes them directly breaks the other libraries in the app.
+
+### Uses and holds
+
+Begin a use when the player starts. The call returns at once, and the module activates the session or requests audio focus in the background. Keep the token while the audio plays.
+
+<Tabs>
+
+<Tab label="Kotlin">
+
+```kotlin
+val use = MediaSessionManager.get(context).beginUse("my-player", SessionRequirements(mixing = MixingRequirement.DO_NOT_MIX))
+use.awaitActivation() // A suspend function. Call it from a coroutine.
+// ...
+use.close()
+```
+
+</Tab>
+
+<Tab label="Swift">
+
+```swift
+import ExpoMediaSession
+
+let use = MediaSessionManager.shared.beginUse(client: "my-player", requirements: SessionRequirements(mixing: .doNotMix))
+try await use.activated()
+// ...
+use.end()
+```
+
+</Tab>
+
+</Tabs>
+
+- On Android, call `close()` to end a `SessionUse` or a `SessionHold`. On iOS, deinit ends them.
+- `awaitActivation()` (Android) and `activated()` (iOS) wait for the first activation. They stay pending while writes are suspended, and on Android while a delayed focus grant is pending. They throw if the use ends first.
+- Requirements can only make the policy stricter. The mixing order is `doNotMixPersistent`, `doNotMix`, `duckOthers`, then `mixWithOthers`.
+- `hold(client:)` keeps the session active without requirements, like the JavaScript `holdSession`.
+
+### Getting the session back
+
+- `beginUse` and `hold` activate the session and request focus. The module also does this when it resumes writes, after an iOS media services reset, and when an iOS interruption ends and playback can resume. On iOS, it activates the session before it sends `mediaSessionInterruptionEnded(shouldResume: true)`.
+- On iOS, the module activates the session again when the app returns to the foreground with a live use. The system can deactivate the session while the app is suspended. The module does not do this during an interruption that has not ended.
+- On iOS, when the last use ends, the module restores the policy configuration if a use changed the category, for example after a recording. Without an active use, the module makes only this write and the delayed deactivation.
+- `update` and `setPolicy` reconfigure the session. On Android, a reconfigure for an active use requests focus again with the new attributes, which can win focus back after a transient loss.
+- After a permanent focus loss, only `beginUse` and `hold` get the session back. End the use and begin a new one, for example when the user presses play.
+
+### Observers
+
+Add an observer with `addObserver`, and keep the returned `ObserverRegistration`. Every observer method has a default implementation, so implement only the events you need.
+
+- Observer methods run on the coordinator thread (Android) or the coordinator queue (iOS). Switch to your own isolation before you touch UI or player state.
+- `mediaSessionDucked` and `mediaSessionFocusLost` are Android only. The Swift protocol declares them, but iOS never sends them. `mediaSessionServicesReset()` is iOS only.
+- Every `mediaSessionDucked(true)` gets exactly one `mediaSessionDucked(false)`. The Swift method is `mediaSessionDucked(_:)`, and the Kotlin method is `mediaSessionDucked(isDucked)`.
+- Every `mediaSessionInterruptionBegan(reason:)` gets at most one `mediaSessionInterruptionEnded(shouldResume:)` before the next `mediaSessionInterruptionBegan(reason:)`. A permanent loss (`mediaSessionFocusLost(transient: false)` and `mediaSessionInterruptionBegan(reason:)`) may never get a `mediaSessionInterruptionEnded(shouldResume:)`.
+- The module sends `mediaSessionInterruptionEnded(shouldResume: true)` only when live uses remain and it holds the session or focus again, or when the policy no longer needs focus (`mixWithOthers`).
+- `mediaSessionSilentModeChanged(isSilent:)` is Android only and reports the raw ringer state. Apply `playsInSilentMode` yourself.
+
+### Suspended writes
+
+`suspendWrites(reason:)` stops all writes to the session until the matching `resumeWrites()`. While writes are suspended:
+
+- Android sends no focus events, and reports one net change after `mediaSessionDidResumeWrites()`. It can still send `mediaSessionDidFail(error, client)` when the media service or the foreground start fails, because the service is not a session write.
+- iOS still sends `mediaSessionInterruptionBegan(reason:)`, `mediaSessionRouteChanged(reason:)`, and `mediaSessionServicesReset()`. It defers `mediaSessionInterruptionEnded(shouldResume:)` until writes resume. It sends no `mediaSession(didFail:client:)`, because it writes nothing.
+- A library that mirrors an interrupted state rebuilds it from the events after `mediaSessionDidResumeWrites()`.
+
+### Platform differences
+
+- Android sends `mediaSessionInterruptionBegan(reason:)` only while a use is live. iOS can send it while no use is live.
+- On Android, the module tells a use that begins during an interruption about the ongoing transient loss. On iOS, the use gets no signal that it is interrupted.
+- iOS does not report the "app was suspended" interruption reason.
+
+### Now playing
+
+Begin the session use first, then offer Now Playing. The module reads the live requirements when the offer arrives to decide whether the previous owner pauses.
+
+```swift
+let claim = MediaSessionManager.shared.offerNowPlaying(
+  player,
+  info: NowPlayingInfo(title: "Episode 12", duration: 1800, elapsedTime: 0, playbackRate: 1),
+  commands: [.play, .pause, .togglePlayPause, .seek]
+)
+// On every play, pause, seek, rate, or metadata change:
+claim.update(NowPlayingInfo(title: "Episode 12", duration: 1800, elapsedTime: 42, playbackRate: 0))
+// When the player stops:
+claim.withdraw(.ended)
+```
+
+- The newest offer goes on top. A pause keeps ownership. A withdraw removes that owner from anywhere in the stack.
+- The module pauses the previous owner for the takeover, unless the effective interruption mode is `mixWithOthers`. When the newer owner withdraws, the previous owner resumes only if the takeover paused it. If the user plays and then pauses that owner during the takeover, it stays paused. Call `update` from `pauseForTakeover` so the module sees the pause.
+- The defaults for `pauseForTakeover` and `resumeAfterTakeover` handle a `pause` and a `play` command.
+- Commands go only to the top owner, and only for the kinds it offered. Do not offer `seek` for content that cannot seek. A live stream never shows `seek`.
+- When you offer both skip and track commands, iOS shows next and previous instead of skip. iOS always answers commands with success.
+- The module can write Now Playing at any time, for example when another owner withdraws. Keep `isPlaying` consistent with the `elapsedTime` and `playbackRate` of your last update.
+- Owner callbacks run on the coordinator queue or thread. On iOS, the module switches to the main thread for the system writes, in order.
+- On Android, call `close()` to withdraw a `NowPlayingClaim`. On iOS, deinit withdraws it.
+- On Android, the `NowPlayingInfo` you send drives the owner. An owner that implements `MediaPlayerOwner` exposes its Media3 `Player` instead.
+
+## API
+
+```ts
+import * as MediaSession from 'expo-media-session';
+```
+
+<APISection packageName="expo-media-session" apiName="MediaSession" />

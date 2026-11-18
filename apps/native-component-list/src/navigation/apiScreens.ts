@@ -359,6 +359,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/MediaSessionScreen'));
+    },
+    name: 'MediaSession',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/MediaLibraryLegacy/MediaLibraryScreen'));
     },
     name: 'MediaLibrary@legacy',
