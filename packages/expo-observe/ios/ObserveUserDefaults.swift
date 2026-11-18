@@ -24,7 +24,7 @@ internal struct PersistedBundleDefaults: Codable {
 @AppMetricsActor
 internal final class ObserveUserDefaults: UserDefaults {
   /// Singleton instance of the user defaults for EAS Observe.
-  private static let defaults = ObserveUserDefaults()
+  private static let defaults = ConsentGatedDefaults(ObserveUserDefaults())
 
   /// Enum with keys used within this user defaults database.
   private enum Keys: String {
@@ -45,7 +45,7 @@ internal final class ObserveUserDefaults: UserDefaults {
   /// Date when events with metrics were last sent and received by the backend.
   static var lastDispatchDate: Date? {
     get {
-      if let dateString = defaults.string(forKey: Keys.lastDispatchDate.rawValue) {
+      if let dateString = defaults.object(forKey: Keys.lastDispatchDate.rawValue) as? String {
         let formatter = ISO8601DateFormatter()
         return formatter.date(from: dateString)
       }
@@ -80,7 +80,7 @@ internal final class ObserveUserDefaults: UserDefaults {
   }
 
   static var config: PersistedConfig? {
-    guard let data = defaults.data(forKey: Keys.config.rawValue) else { return nil }
+    guard let data = defaults.object(forKey: Keys.config.rawValue) as? Data else { return nil }
     return try? JSONDecoder().decode(PersistedConfig.self, from: data)
   }
 
@@ -90,7 +90,7 @@ internal final class ObserveUserDefaults: UserDefaults {
   }
 
   static var bundleDefaults: PersistedBundleDefaults? {
-    guard let data = defaults.data(forKey: Keys.bundleDefaults.rawValue) else { return nil }
+    guard let data = defaults.object(forKey: Keys.bundleDefaults.rawValue) as? Data else { return nil }
     return try? JSONDecoder().decode(PersistedBundleDefaults.self, from: data)
   }
 

@@ -1,7 +1,6 @@
 package expo.modules.appmetrics
 
 import android.content.Context
-import androidx.core.content.edit
 import expo.modules.appmetrics.networkrequests.NetworkTracesConfiguration
 
 private const val PREFS_NAME = "dev.expo.app-metrics"
@@ -10,34 +9,30 @@ private const val KEY_LAST_PROCESSED_EXIT_MILLIS = "lastProcessedExitMillis"
 private const val KEY_NETWORK_TRACES_CONFIGURATION = "networkTracesConfiguration"
 
 object AppMetricsPreferences {
+  private val preferences = ConsentGatedPreferences(PREFS_NAME)
+
   /**
    * Timestamp (epoch millis) of the newest `ApplicationExitInfo` record already
    * turned into a crash report. `0` (the default) means none processed yet.
    */
-  fun getLastProcessedExitTimestampMillis(context: Context): Long {
-    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    return prefs.getLong(KEY_LAST_PROCESSED_EXIT_MILLIS, 0L)
-  }
+  fun getLastProcessedExitTimestampMillis(context: Context): Long =
+    preferences.getLong(context, KEY_LAST_PROCESSED_EXIT_MILLIS, 0L)
 
   fun setLastProcessedExitTimestampMillis(
     context: Context,
     millis: Long
   ) {
-    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    prefs.edit(commit = true) { putLong(KEY_LAST_PROCESSED_EXIT_MILLIS, millis) }
+    preferences.putLong(context, KEY_LAST_PROCESSED_EXIT_MILLIS, millis)
   }
 
-  fun getEnvironment(context: Context): String? {
-    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    return prefs.getString(KEY_ENVIRONMENT, null) ?: getDefaultEnvironment()
-  }
+  fun getEnvironment(context: Context): String? =
+    preferences.getString(context, KEY_ENVIRONMENT) ?: getDefaultEnvironment()
 
   fun setEnvironment(
     context: Context,
     environment: String
   ) {
-    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    prefs.edit(commit = true) { putString(KEY_ENVIRONMENT, environment) }
+    preferences.putString(context, KEY_ENVIRONMENT, environment)
   }
 
   fun getDefaultEnvironment(): String? {
@@ -54,8 +49,7 @@ object AppMetricsPreferences {
    * the next launch) follow the last-known setting.
    */
   fun getNetworkTracesConfiguration(context: Context): NetworkTracesConfiguration {
-    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    val json = prefs.getString(KEY_NETWORK_TRACES_CONFIGURATION, null)
+    val json = preferences.getString(context, KEY_NETWORK_TRACES_CONFIGURATION)
       ?: return NetworkTracesConfiguration()
     return NetworkTracesConfiguration.fromJson(json)
   }
@@ -64,9 +58,8 @@ object AppMetricsPreferences {
     context: Context,
     configuration: NetworkTracesConfiguration
   ) {
-    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     // `apply()` rather than `commit()`: this runs inline on the JS thread, and iOS persists
     // through `UserDefaults` without a synchronous flush either.
-    prefs.edit { putString(KEY_NETWORK_TRACES_CONFIGURATION, configuration.toJson()) }
+    preferences.putString(context, KEY_NETWORK_TRACES_CONFIGURATION, configuration.toJson(), commit = false)
   }
 }

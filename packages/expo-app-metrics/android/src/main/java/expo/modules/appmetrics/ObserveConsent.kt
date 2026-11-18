@@ -2,7 +2,9 @@ package expo.modules.appmetrics
 
 import android.content.Context
 import android.util.Log
+import androidx.core.content.edit
 import java.io.FileNotFoundException
+import java.util.concurrent.ConcurrentHashMap
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -56,4 +58,45 @@ object ObserveConsent {
       Log.w(TAG, "[AppMetrics] Failed to read the embedded app config", e)
       null
     }
+}
+
+/** Shared preferences that save nothing while consent is not granted. */
+class ConsentGatedPreferences(private val name: String) {
+  // Values set without consent. They are kept only in memory, and reads return them.
+  private val unsavedValues = ConcurrentHashMap<String, Any>()
+
+  fun getString(context: Context, key: String): String? =
+    read(inMemory = { unsavedValues[key] as? String }, stored = { preferences(context).getString(key, null) })
+
+  fun getLong(context: Context, key: String, defaultValue: Long): Long =
+    read(
+      inMemory = { unsavedValues[key] as? Long ?: defaultValue },
+      stored = { preferences(context).getLong(key, defaultValue) }
+    )
+
+  /** With `commit`, the value is on disk when this returns. */
+  fun putString(context: Context, key: String, value: String, commit: Boolean = true) {
+    write(inMemory = { unsavedValues[key] = value }, stored = { preferences(context).edit(commit) { putString(key, value) } })
+  }
+
+  fun putLong(context: Context, key: String, value: Long) {
+    write(inMemory = { unsavedValues[key] = value }, stored = { preferences(context).edit(commit = true) { putLong(key, value) } })
+  }
+
+  private inline fun write(inMemory: () -> Unit, stored: () -> Unit) {
+    if (ObserveConsent.isGranted) {
+      stored()
+    } else {
+      inMemory()
+    }
+  }
+
+  private inline fun <T> read(inMemory: () -> T, stored: () -> T): T =
+    if (ObserveConsent.isGranted) {
+      stored()
+    } else {
+      inMemory()
+    }
+
+  private fun preferences(context: Context) = context.getSharedPreferences(name, Context.MODE_PRIVATE)
 }

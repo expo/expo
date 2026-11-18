@@ -2,7 +2,12 @@ package expo.modules.observe
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import expo.modules.appmetrics.ObserveConsent
+import io.mockk.every
+import io.mockk.mockkObject
+import io.mockk.unmockkAll
 import kotlinx.serialization.json.Json
+import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -194,6 +199,34 @@ class ObservePreferencesTest {
 
     assertEquals(126L, ObservePreferences.getLastDispatchedMetricId(context))
     assertEquals(84L, ObservePreferences.getLastDispatchedLogId(context))
+  }
+
+  // endregion
+
+  // region Consent
+
+  @After
+  fun tearDown() {
+    unmockkAll()
+  }
+
+  private fun storedSettings() = context.getSharedPreferences("dev.expo.observe", Context.MODE_PRIVATE).all
+
+  @Test
+  fun `setters save nothing while consent is not granted and the values stay in memory`() {
+    mockkObject(ObserveConsent)
+    every { ObserveConsent.isGranted } returns false
+
+    ObservePreferences.setConfig(context, PersistedConfig(sampleRate = 0.5))
+    ObservePreferences.setBundleDefaults(context, PersistedBundleDefaults(environment = "staging", isJsDev = true))
+    ObservePreferences.setLastDispatchedMetricId(context, 42)
+    ObservePreferences.setLastDispatchedLogId(context, 84)
+
+    assertEquals(0.5, ObservePreferences.getConfig(context)?.sampleRate)
+    assertEquals(PersistedBundleDefaults(environment = "staging", isJsDev = true), ObservePreferences.getBundleDefaults(context))
+    assertEquals(42L, ObservePreferences.getLastDispatchedMetricId(context))
+    assertEquals(84L, ObservePreferences.getLastDispatchedLogId(context))
+    assertTrue(storedSettings().isEmpty())
   }
 
   // endregion

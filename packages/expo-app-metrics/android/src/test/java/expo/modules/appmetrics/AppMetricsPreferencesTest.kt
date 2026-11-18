@@ -2,6 +2,11 @@ package expo.modules.appmetrics
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import expo.modules.appmetrics.networkrequests.NetworkTracesConfiguration
+import io.mockk.every
+import io.mockk.mockkObject
+import io.mockk.unmockkAll
+import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -22,6 +27,27 @@ class AppMetricsPreferencesTest {
       .edit()
       .clear()
       .commit()
+  }
+
+  @After
+  fun tearDown() {
+    unmockkAll()
+  }
+
+  @Test
+  fun `setters save nothing while consent is not granted and the values stay in memory`() {
+    mockkObject(ObserveConsent)
+    every { ObserveConsent.isGranted } returns false
+    val configured = NetworkTracesConfiguration(enabled = true, hosts = listOf("api.example.com"))
+
+    AppMetricsPreferences.setEnvironment(context, "staging")
+    AppMetricsPreferences.setLastProcessedExitTimestampMillis(context, 5)
+    AppMetricsPreferences.setNetworkTracesConfiguration(context, configured)
+
+    assertEquals("staging", AppMetricsPreferences.getEnvironment(context))
+    assertEquals(5L, AppMetricsPreferences.getLastProcessedExitTimestampMillis(context))
+    assertEquals(configured, AppMetricsPreferences.getNetworkTracesConfiguration(context))
+    assertTrue(context.getSharedPreferences("dev.expo.app-metrics", Context.MODE_PRIVATE).all.isEmpty())
   }
 
   @Test
