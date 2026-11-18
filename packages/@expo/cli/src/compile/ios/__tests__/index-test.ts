@@ -128,16 +128,25 @@ it('copies the app to the output directory', async () => {
   );
 });
 
-it('refuses production before loading env files', async () => {
+it('builds a production app', async () => {
+  await expoCompileIos(['--prod', '--output-type', 'app']);
+
+  expect(loadEnvFiles).toHaveBeenCalledWith('/app', { mode: 'production' });
+  expect(spawnAsync).toHaveBeenCalledWith(
+    'xcodebuild',
+    expect.arrayContaining(['-configuration', 'Release']),
+    { stdio: 'inherit', env: expect.objectContaining({ RCT_NO_LAUNCH_PACKAGER: 'true' }) }
+  );
+});
+
+it('refuses the default production store file', async () => {
   await expect(expoCompileIos([])).rejects.toThrow(/EXIT_CALLED/);
 
   expect(Log.exit).toHaveBeenCalledWith(
     expect.objectContaining({
-      message: 'Production builds are not supported yet. Pass --dev to build in development mode.',
+      message: 'Building an ipa is not supported yet. Pass --output-type app to build an app.',
     })
   );
-  expect(loadEnvFiles).not.toHaveBeenCalled();
-  expect(spawnAsync).not.toHaveBeenCalled();
 });
 
 it('refuses unsupported flags before finding the project', async () => {
@@ -147,7 +156,7 @@ it('refuses unsupported flags before finding the project', async () => {
 
   expect(Log.exit).toHaveBeenCalledWith(
     expect.objectContaining({
-      message: 'Building an ipa is not supported yet. Omit --output-type to build an app.',
+      message: 'Building an ipa is not supported yet. Pass --output-type app to build an app.',
     })
   );
   expect(loadEnvFiles).not.toHaveBeenCalled();
