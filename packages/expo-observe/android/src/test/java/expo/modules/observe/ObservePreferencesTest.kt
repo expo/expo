@@ -229,5 +229,15 @@ class ObservePreferencesTest {
     assertTrue(storedSettings().isEmpty())
   }
 
+  @Test
+  fun `deleteStoredSettings removes every Observe setting`() {
+    ObservePreferences.setConfig(context, PersistedConfig(sampleRate = 0.5))
+    ObservePreferences.setLastDispatchedMetricId(context, 42)
+
+    ObservePreferences.deleteStoredSettings(context)
+
+    assertTrue(storedSettings().isEmpty())
+  }
+
   // endregion
 }

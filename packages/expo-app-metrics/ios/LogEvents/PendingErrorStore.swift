@@ -29,7 +29,7 @@ enum PendingErrorStore {
   /// Writes a fatal error to disk synchronously. Best-effort: any failure is swallowed (we're on the
   /// way to a crash and must not throw out of the error handler).
   static func write(_ error: PendingError) {
-    guard ObserveConsent.isGranted, let directory = try? directoryUrl() else {
+    guard ObserveConsent.isGranted, let directory = try? createdDirectoryUrl() else {
       return
     }
     write(error, in: directory)
@@ -51,7 +51,7 @@ enum PendingErrorStore {
   /// Reads all pending errors oldest-first and removes their files. Returns the decoded errors so the
   /// caller can ingest them into the database. Corrupt files are deleted and skipped.
   static func drain() -> [PendingError] {
-    guard let directory = try? directoryUrl() else {
+    guard let directory = try? createdDirectoryUrl() else {
       return []
     }
     return drain(in: directory)
@@ -93,14 +93,18 @@ enum PendingErrorStore {
   }
 
   /// The directory holding pending-error files, under the caches directory so they're not backed up.
-  private static func directoryUrl() throws -> URL {
+  static func directoryUrl() throws -> URL {
     let base = try FileManager.default.url(
       for: .cachesDirectory,
       in: .userDomainMask,
       appropriateFor: nil,
       create: true
     )
-    let directory = base.appendingPathComponent("ExpoAppMetrics/pending-errors")
+    return base.appendingPathComponent("ExpoAppMetrics/pending-errors")
+  }
+
+  private static func createdDirectoryUrl() throws -> URL {
+    let directory = try directoryUrl()
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     return directory
   }

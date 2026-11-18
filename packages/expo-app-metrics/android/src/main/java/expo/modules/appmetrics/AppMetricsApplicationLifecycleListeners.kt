@@ -11,6 +11,9 @@ class AppMetricsApplicationLifecycleListeners : ApplicationLifecycleListener {
   override fun onCreate(application: Application) {
     super.onCreate(application)
     ObserveConsent.load(application)
+    if (!ObserveConsent.isGranted) {
+      deleteStoredData(application)
+    }
     AppStartupManager.recordAppCreated(application)
     // Crash capture starts at process start, not at module creation: the module
     // system spins up lazily (when JS first touches a module), and a crash

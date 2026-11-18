@@ -71,3 +71,43 @@ struct ConsentGatedDefaultsTests {
     #expect(UserDefaults.standard.persistentDomain(forName: suiteName)?["string"] as? String == "production")
   }
 }
+
+@Suite("AppMetrics.deleteStoredData", .serialized)
+struct DeleteStoredDataTests {
+  @Test
+  func `deletes the database, the pending-error files, and the settings`() throws {
+    try withTemporaryDirectory { directory in
+      let databaseDirectory = directory.appendingPathComponent("ExpoAppMetrics")
+      let pendingErrorsDirectory = directory.appendingPathComponent("pending-errors")
+      try FileManager.default.createDirectory(at: databaseDirectory, withIntermediateDirectories: true)
+      try FileManager.default.createDirectory(at: pendingErrorsDirectory, withIntermediateDirectories: true)
+      let files = [
+        databaseDirectory.appendingPathComponent("metrics.db"),
+        databaseDirectory.appendingPathComponent("metrics.db-wal"),
+        pendingErrorsDirectory.appendingPathComponent("error.json"),
+      ]
+      for file in files {
+        try Data("x".utf8).write(to: file)
+      }
+      let settings = try #require(UserDefaults(suiteName: "dev.expo.app-metrics"))
+      settings.set("value", forKey: "deleteStoredDataTest")
+
+      AppMetrics.deleteStoredData(databaseDirectory: databaseDirectory, pendingErrorsDirectory: pendingErrorsDirectory)
+
+      for file in files {
+        #expect(!FileManager.default.fileExists(atPath: file.path))
+      }
+      #expect(settings.object(forKey: "deleteStoredDataTest") == nil)
+    }
+  }
+}
+
+private func withTemporaryDirectory(_ body: (URL) throws -> Void) throws {
+  let directory = FileManager.default.temporaryDirectory
+    .appendingPathComponent("ObserveConsentTests-\(UUID().uuidString)")
+  try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+  defer {
+    try? FileManager.default.removeItem(at: directory)
+  }
+  try body(directory)
+}

@@ -1,5 +1,7 @@
 /// Class that manages a custom `UserDefaults` database with `"dev.expo.app-metrics"` suite name.
 public final class AppMetricsUserDefaults: UserDefaults {
+  private static let suiteName = "dev.expo.app-metrics"
+
   /// Singleton instance of the user defaults for AppMetrics.
   private static let defaults = ConsentGatedDefaults(AppMetricsUserDefaults())
 
@@ -13,7 +15,7 @@ public final class AppMetricsUserDefaults: UserDefaults {
   private init() {
     // It's safe to force-unwrap as `init?(suiteName:)` fails only if `suiteName`
     // is the same as the app's main bundle identifier or the global domain.
-    super.init(suiteName: "dev.expo.app-metrics")!
+    super.init(suiteName: Self.suiteName)!
   }
 
   public static var environment: String? {
@@ -51,5 +53,10 @@ public final class AppMetricsUserDefaults: UserDefaults {
     set {
       defaults.set(codable: newValue, forKey: Keys.networkTracesConfiguration.rawValue)
     }
+  }
+
+  /// Deletes every saved value. Runs at a launch without consent.
+  static func deleteStoredSettings() {
+    UserDefaults.standard.removePersistentDomain(forName: suiteName)
   }
 }
