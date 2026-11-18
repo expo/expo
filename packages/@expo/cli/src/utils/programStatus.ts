@@ -1,4 +1,5 @@
-import { stripAnsi } from './ansi';
+import { stripVTControlCharacters } from 'node:util';
+
 import { isInteractive } from './interactive';
 
 export type ProgramStatus =
@@ -31,8 +32,8 @@ function writeProgramStatus(status: ProgramStatus | ProgramResult | 'clear', id?
 
 function formatProgramStatus(status: ProgramStatus | ProgramResult): string {
   const text = status.msg
-    ? stripAnsi(status.msg)
-        ?.replace(/[\s\p{Cc}]+/gu, ' ')
+    ? stripVTControlCharacters(status.msg.slice(0, 8192))
+        .replace(/[\s\p{Cc}]+/gu, ' ')
         .trim()
     : undefined;
   const msg = new Uint8Array(2048);
