@@ -18,7 +18,7 @@ on:
         required: true
         type: number
       dry_run:
-        description: 'Show what would happen. Do not push, open a pull request, or comment.'
+        description: 'Show what would happen. Do not push or comment.'
         type: boolean
         default: true
 
@@ -44,9 +44,6 @@ jobs:
       PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr }}
       SDK_VERSION: ${{ inputs.sdk }}
       LABELS: ${{ github.event.action == 'labeled' && toJSON(github.event.label.name) || toJSON(github.event.pull_request.labels.*.name) }}
-      MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
-      PR_TITLE: ${{ github.event.pull_request.title }}
-      PR_AUTHOR: ${{ github.event.pull_request.user.login }}
       DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
       REPO_DIR: ${{ github.workspace }}
       SKIP_SKIA_DOWNLOAD: '1'
@@ -85,6 +82,6 @@ jobs:
       - name: 💬 Comment that the backport failed
         if: failure() && github.event_name == 'pull_request_target' && steps.backport.outcome != 'failure'
         run: |
-          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "The SDK backport failed before it started, so no backport pull request was opened. [Run log]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
+          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "The SDK backport failed before it started, so this change did not land on any sdk-NN branch. The [run log]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID) has the details."
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
