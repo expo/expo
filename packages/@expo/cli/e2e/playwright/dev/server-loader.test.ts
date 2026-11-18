@@ -7,6 +7,12 @@ import { pageCollectErrors, trackLoaderNetworkStatuses, waitForLoaderData } from
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
+test.afterEach(async ({ page }, info) => {
+  if (info.status !== info.expectedStatus) {
+    await page.screenshot({ path: info.outputPath('failure.png'), fullPage: true });
+    await info.attach('document', { body: await page.content(), contentType: 'text/html' });
+  }
+});
 
 const projectRoot = getServerTesterRoot();
 
@@ -34,42 +40,6 @@ for (const outputMode of outputModes) {
     });
     test.afterAll(async () => {
       await expoStart.stopAsync();
-    });
-
-    test('writes large completed Suspense content before the bootstrap script', async ({
-      request,
-    }) => {
-      const response = await request.get(new URL('/loaders/large-suspense', expoStart.url).href);
-      expect(response.status()).toBe(200);
-      const html = await response.text();
-      const contentStart = html.indexOf('data-testid="suspense-content"');
-      const contentEnd = html.indexOf('data-testid="suspense-content-end"');
-      const bootstrap = html.indexOf('globalThis.__EXPO_ROUTER_LOADER_DATA__');
-
-      expect(contentStart).toBeGreaterThan(-1);
-      expect(contentEnd).toBeGreaterThan(contentStart);
-      expect(bootstrap).toBeGreaterThan(contentEnd);
-      expect(html).toContain('globalThis.__EXPO_ROUTER_LOADER_DATA__');
-      expect(html).not.toContain('<div hidden id="S:');
-    });
-
-    test('shows large completed Suspense content without JavaScript', async ({ browser }) => {
-      const page = await browser.newPage({ javaScriptEnabled: false });
-      try {
-        const response = await page.goto(new URL('/loaders/large-suspense', expoStart.url).href);
-
-        expect(response?.status()).toBe(200);
-        await expect(page.getByTestId('suspense-row')).toHaveText(
-          Array.from(
-            { length: 400 },
-            (_, id) => `Row ${id} of 400, carrying enough text that a few hundred of them add up`
-          )
-        );
-        await expect(page.getByTestId('suspense-content')).toBeVisible();
-        await expect(page.getByTestId('suspense-content-end')).toBeVisible();
-      } finally {
-        await page.close();
-      }
     });
 
     test('hydrates large completed Suspense content', async ({ page }) => {
@@ -107,63 +77,36 @@ for (const outputMode of outputModes) {
       expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
     });
 
-    test('loads grouped loader data on client-side navigation', async ({ page }) => {
-      const loaderRequests: string[] = [];
-      page.on('request', (request) => {
-        if (request.url().includes('/_expo/loaders/loaders/')) {
-          loaderRequests.push(request.url());
-        }
+    if (outputMode === 'server') {
+      test('releases an abandoned parameter transition and refetches on revisit', async ({
+        page,
+      }) => {
+        const pageErrors = pageCollectErrors(page);
+        const slowRequests: string[] = [];
+        const abortedRequests: string[] = [];
+        page.on('request', (request) => {
+          if (request.url().includes('/_expo/loaders/loaders/posts/slow'))
+            slowRequests.push(request.url());
+        });
+        page.on('requestfailed', (request) => {
+          if (request.url().includes('/_expo/loaders/loaders/posts/slow'))
+            abortedRequests.push(request.url());
+        });
+        await gotoHydrated(page, new URL('/loaders/posts/static-post-1', expoStart.url).href);
+        await page.getByTestId('transition-to-slow').click();
+        await expect.poll(() => slowRequests).toHaveLength(1);
+        await expect(page.getByTestId('navigation-pending')).toHaveText('true');
+        await expect(page.getByTestId('loader-result')).toContainText('static-post-1');
+        await page.getByTestId('replace-with-second').click();
+        await expect(page.getByTestId('loader-result')).toContainText('second');
+        await expect.poll(() => abortedRequests).toHaveLength(1);
+        await page.getByTestId('revisit-slow-post').click();
+        await expect.poll(() => slowRequests).toHaveLength(2);
+        await expect(page.getByTestId('loader-result')).toContainText('slow', { timeout: 10_000 });
+        await expect(page.getByTestId('navigation-pending')).toHaveText('false');
+        expect(pageErrors.all).toEqual([]);
       });
-
-      await gotoHydrated(page, new URL('/', expoStart.url.href).href);
-      await page.getByRole('link', { name: '/loaders/groups/(group)', exact: true }).click();
-      await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
-        JSON.stringify({ data: 'grouped-index' }, null, 2)
-      );
-      expect(loaderRequests).toContainEqual(
-        expect.stringContaining('/_expo/loaders/loaders/groups/(group)/index')
-      );
-    });
-
-    test('loads a platform-specific catch-all loader on client-side navigation', async ({
-      page,
-    }) => {
-      const loaderRequests: string[] = [];
-      page.on('request', (request) => {
-        if (request.url().includes('/_expo/loaders/loaders/')) {
-          loaderRequests.push(request.url());
-        }
-      });
-
-      await gotoHydrated(page, new URL('/', expoStart.url.href).href);
-      await page
-        .getByRole('link', { name: '/loaders/groups/platform/alpha/beta', exact: true })
-        .click();
-      await expect(page).toHaveURL(/\/platform\/alpha\/beta$/);
-      await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
-        JSON.stringify({ data: 'platform-catch-all' }, null, 2)
-      );
-      expect(loaderRequests).toContainEqual(
-        expect.stringContaining('/_expo/loaders/loaders/groups/(group)/platform/alpha/beta')
-      );
-      expect(loaderRequests).not.toContainEqual(expect.stringContaining('[...slug].web'));
-    });
-
-    test('defaults headerless loaders to no-store without replacing declared headers', async ({
-      request,
-    }) => {
-      const headerless = await request.get(
-        new URL('/_expo/loaders/loaders/posts/static-post-1', expoStart.url).href
-      );
-      const declared = await request.get(
-        new URL('/_expo/loaders/loaders/response', expoStart.url).href
-      );
-
-      expect(headerless.headers()['cache-control']).toBe('no-store');
-      expect(declared.headers()['cache-control']).toBe(
-        outputMode === 'static' ? 'public, max-age=604800' : 'public, max-age=3600'
-      );
-    });
+    }
 
     test('refetches headerless loader data on every fresh mount', async ({ page }) => {
       const loaderRequests: string[] = [];

@@ -22,6 +22,9 @@ export async function loader(
   _: ImmutableRequest | undefined,
   params: Record<string, string | string[]>
 ) {
+  if (params.postId === 'slow') {
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+  }
   return Promise.resolve({
     params,
   });

@@ -1,6 +1,7 @@
 import { useLoaderData } from 'expo-router';
 import { Suspense } from 'react';
 
+import { LoaderActivity } from '@/components/LoaderActivity';
 import { LoaderData } from '@/components/LoaderData';
 import { Loading } from '@/components/Loading';
 import { Page } from '@/components/Page';
@@ -18,7 +19,9 @@ export default function SlowRoute() {
   return (
     <Page title="Slow" testID="loaders-slow">
       <Suspense fallback={<Loading />}>
-        <SlowScreen />
+        <LoaderActivity>
+          <SlowScreen />
+        </LoaderActivity>
       </Suspense>
     </Page>
   );

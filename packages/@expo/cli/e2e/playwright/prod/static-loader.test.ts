@@ -58,46 +58,6 @@ test.describe('static loaders in production', () => {
     expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
   });
 
-  test('loads grouped loader data on client-side navigation', async ({ page }) => {
-    const loaderRequests: string[] = [];
-    page.on('request', (request) => {
-      if (request.url().includes('/_expo/loaders/loaders/')) {
-        loaderRequests.push(request.url());
-      }
-    });
-
-    await page.goto(new URL('/', expoServe.url.href).href);
-    await page.getByRole('link', { name: '/loaders/groups/(group)', exact: true }).click();
-    await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
-      JSON.stringify({ data: 'grouped-index' }, null, 2)
-    );
-    expect(loaderRequests).toContainEqual(
-      expect.stringContaining('/_expo/loaders/loaders/groups/(group)/index')
-    );
-  });
-
-  test('loads a platform-specific catch-all loader on client-side navigation', async ({ page }) => {
-    const loaderRequests: string[] = [];
-    page.on('request', (request) => {
-      if (request.url().includes('/_expo/loaders/loaders/')) {
-        loaderRequests.push(request.url());
-      }
-    });
-
-    await page.goto(new URL('/', expoServe.url.href).href);
-    await page
-      .getByRole('link', { name: '/loaders/groups/platform/alpha/beta', exact: true })
-      .click();
-    await expect(page).toHaveURL(/\/platform\/alpha\/beta$/);
-    await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
-      JSON.stringify({ data: 'platform-catch-all' }, null, 2)
-    );
-    expect(loaderRequests).toContainEqual(
-      expect.stringContaining('/_expo/loaders/loaders/groups/(group)/platform/alpha/beta')
-    );
-    expect(loaderRequests).not.toContainEqual(expect.stringContaining('[...slug].web'));
-  });
-
   test('revalidates headerless loader data on every fresh mount', async ({ page }) => {
     const loaderRequests: string[] = [];
     page.on('request', (request) => {

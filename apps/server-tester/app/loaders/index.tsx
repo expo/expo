@@ -3,6 +3,7 @@ import { Suspense, useState } from 'react';
 import { Button } from 'react-native';
 
 import { Json } from '@/components/Json';
+import { LoaderActivity } from '@/components/LoaderActivity';
 import { LoaderData } from '@/components/LoaderData';
 import { Loading } from '@/components/Loading';
 import { Page } from '@/components/Page';
@@ -21,7 +22,9 @@ export default function LoadersIndexRoute() {
   return (
     <Page title="Loaders" testID="loaders-index">
       <Suspense fallback={<Loading />}>
-        <LoadersIndexScreen />
+        <LoaderActivity>
+          <LoadersIndexScreen />
+        </LoaderActivity>
       </Suspense>
       <Section title="Posts">
         <RouteLinks>
