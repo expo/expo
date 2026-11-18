@@ -1,7 +1,7 @@
 ---
 title: Expo Simulators devices
 sidebar_title: Devices
-description: See which Android Emulator, iPhone, and iPad devices Expo Simulators can start, the default Android profile, and how to select a device.
+description: Learn how to select a device in Expo Simulators, including experimental Apple TV and Android TV devices.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -22,7 +22,7 @@ Pass the profile ID to `--device`:
 | `pixel_9_pro_xl` | Pixel 9 Pro XL         |
 | `pixel_9a`       | Pixel 9a               |
 
-Every Android profile uses a 720 x 1600 screen at density 300. The profile selects the hardware definition of the device, not its screen size.
+The phone profiles above use a 720 x 1600 screen at density 300. The profile selects the hardware definition of the device, not its screen size.
 
 By default, Android sessions use the `system-images;android-35;google_apis;x86_64` system image, which is Android API level 35 with Google APIs. Install an APK that includes the architecture of the selected image.
 
@@ -74,11 +74,41 @@ The iOS image also includes these iPad simulators:
 - `iPad Pro 11-inch (M5)`
 - `iPad Pro 13-inch (M5)`
 
-The image also includes Apple Vision Pro and Apple TV simulators. The list can change, so [list the devices in a session](#list-the-devices-in-a-session) to get the exact names. To start an iPad, pass its exact name:
+The image also includes Apple Vision Pro and [Apple TV simulators](#experimental-tv-support). To see the current inventory, [list the devices in a session](#list-the-devices-in-a-session). To start an iPad, pass its exact name:
 
 <Terminal
   cmd={[
     '$ eas simulator:start --platform ios --type agent-device --device "iPad mini (A17 Pro)" --name "iPad layout check" --non-interactive',
+  ]}
+/>
+
+## Experimental TV support
+
+Apple TV and Android TV sessions are experimental. Preview and controls can behave differently from phone sessions.
+
+### Apple TV
+
+Use `--platform ios` and pass one of these tvOS simulator names to `--device`:
+
+- `Apple TV`
+- `Apple TV 4K (3rd generation)`
+- `Apple TV 4K (3rd generation) (at 1080p)`
+
+To install your app, use a build for the tvOS simulator.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --device "Apple TV 4K (3rd generation)" --name "Apple TV check" --non-interactive',
+  ]}
+/>
+
+### Android TV
+
+Use `--platform android --device tv_1080p`. Pass an Android TV system image with `--system-image`; the default Android image is not a TV image.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform android --type agent-device --device tv_1080p --system-image "system-images;android-36;android-tv;x86_64" --name "Android TV check" --non-interactive',
   ]}
 />
 
