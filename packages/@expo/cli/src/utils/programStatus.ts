@@ -10,6 +10,7 @@ export type ProgramStatus =
     }
   | {
       state: 'working';
+      title?: string;
       msg?: string;
     };
 
@@ -31,15 +32,20 @@ function writeProgramStatus(status: ProgramStatus | ProgramResult | 'clear', id?
 }
 
 function formatProgramStatus(status: ProgramStatus | ProgramResult): string {
-  const text = status.msg
-    ? stripVTControlCharacters(status.msg.slice(0, 8192))
-        .replace(/[\s\p{Cc}]+/gu, ' ')
-        .trim()
-    : undefined;
-  const msg = new Uint8Array(2048);
-  const { written } = new TextEncoder().encodeInto(text ?? '', msg);
   const kind = status.state === 'blocked' ? `:kind=${status.kind}` : '';
-  return `state=${status.state}:app=expo${kind}${written ? `:msg=${Buffer.from(msg.subarray(0, written)).toString('base64')}` : ''}`;
+  const title =
+    status.state === 'working' && status.title ? encodeProgramStatusText(status.title, 192) : '';
+  const msg = status.msg ? encodeProgramStatusText(status.msg, 2048) : '';
+  return `state=${status.state}:app=expo${kind}${title ? `:title=${title}` : ''}${msg ? `:msg=${msg}` : ''}`;
+}
+
+function encodeProgramStatusText(text: string, maxBytes: number): string {
+  const line = stripVTControlCharacters(text.slice(0, 8192))
+    .replace(/[\s\p{Cc}]+/gu, ' ')
+    .trim();
+  const bytes = new Uint8Array(maxBytes);
+  const { written } = new TextEncoder().encodeInto(line, bytes);
+  return Buffer.from(bytes.subarray(0, written)).toString('base64');
 }
 
 export async function withProgramStatus<T>(

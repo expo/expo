@@ -148,7 +148,7 @@ async function installPackagesAsync(
   Log.log();
   const installingPackageStep = logNewSection(`Installing ${packagesStr}`);
   try {
-    await installAsync(packages, { projectRoot, dev });
+    await installAsync(packages, { projectRoot, dev, title: packages.join(', ') });
   } catch (e: any) {
     installingPackageStep.fail(`Failed to install ${packagesStr} with error: ${e.message}`);
     throw e;

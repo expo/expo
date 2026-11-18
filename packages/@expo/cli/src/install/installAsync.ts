@@ -28,7 +28,7 @@ import { checkPackagesCompatibility } from './utils/checkPackagesCompatibility';
  */
 export async function installAsync(
   packages: string[],
-  options: Options & { projectRoot?: string },
+  options: Options & { projectRoot?: string; title?: string },
   packageManagerArguments: string[] = []
 ) {
   // Locate the project root based on the process current working directory.
@@ -99,6 +99,7 @@ export async function installPackagesAsync(
     fix,
     check,
     dev,
+    title,
   }: Options & {
     /**
      * List of packages to version, grouped by the type of dependency.
@@ -117,6 +118,7 @@ export async function installPackagesAsync(
      * @example ['--no-save']
      */
     packageManagerArguments: string[];
+    title?: string;
   }
 ): Promise<void> {
   // Read the project Expo config without plugins.
@@ -195,7 +197,7 @@ export async function installPackagesAsync(
   }
 
   const done = event.span();
-  await withProgramStatus({ state: 'working', msg: 'Installing packages' }, async () => {
+  await withProgramStatus({ state: 'working', title, msg: 'Installing packages' }, async () => {
     if (dev) {
       await packageManager.addDevAsync([...packageManagerArguments, ...versioning.packages]);
     } else {
