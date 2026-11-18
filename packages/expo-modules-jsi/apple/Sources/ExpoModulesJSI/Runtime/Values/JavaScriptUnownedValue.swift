@@ -268,6 +268,17 @@ public struct JavaScriptUnownedValue: ~Copyable {
     return unsafeBitCast(runtime.pointee, to: UnsafeRawPointer.self) == rawRuntime
   }
 
+  // MARK: - Equality
+
+  /// Tests whether the borrowed value and `another` are strictly equal, like `===` in JavaScript
+  /// (https://262.ecma-international.org/11.0/#sec-strict-equality-comparison). The zero-copy
+  /// counterpart of ``JavaScriptValue/isEqual(to:)``: the engine compares two strings, without a Swift
+  /// `String` or a copy of the borrowed value. `another` must belong to the runtime that owns the
+  /// borrowed value, unless it belongs to no runtime, like a number.
+  public func isEqual(to another: borrowing JavaScriptValue) -> Bool {
+    return facebook.jsi.Value.strictEquals(runtime, pointer.pointee, another.pointee)
+  }
+
   // MARK: - Throwing conversions ("as functions")
 
   /// Returns the value as a boolean, or throws `TypeError` if it is not a boolean.

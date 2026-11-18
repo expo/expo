@@ -185,4 +185,61 @@ struct JavaScriptUnownedValueTests {
     }
     #expect(name == "expo")
   }
+
+  @Test
+  func `isEqual(to:) compares strings by content`() throws {
+    // Built at run time, so the borrowed string and `name` are different strings with the same content.
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("'pi' + 'ng'").ref())
+    let name = try runtime.eval("'ping'")
+    let otherName = try runtime.eval("'pong'")
+
+    let isEqualToName = buffer.unownedValue(at: 0).isEqual(to: name)
+    let isEqualToOtherName = buffer.unownedValue(at: 0).isEqual(to: otherName)
+    #expect(isEqualToName == true)
+    #expect(isEqualToOtherName == false)
+    #expect(buffer.unownedValue(at: 0).getString() == "ping")
+  }
+
+  @Test
+  func `isEqual(to:) follows strict equality`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: 42,
+      try runtime.eval("NaN").ref(),
+      try runtime.eval("-0").ref(),
+      "42",
+      JavaScriptValue.null().ref(),
+      JavaScriptValue.undefined().ref()
+    )
+
+    let numbers = buffer.unownedValue(at: 0).isEqual(to: .number(42))
+    let nans = buffer.unownedValue(at: 1).isEqual(to: try runtime.eval("NaN"))
+    let zeros = buffer.unownedValue(at: 2).isEqual(to: .number(0))
+    let stringAndNumber = buffer.unownedValue(at: 3).isEqual(to: .number(42))
+    let nulls = buffer.unownedValue(at: 4).isEqual(to: .null())
+    let nullAndUndefined = buffer.unownedValue(at: 4).isEqual(to: .undefined())
+    let undefineds = buffer.unownedValue(at: 5).isEqual(to: .undefined())
+    #expect(numbers == true)
+    #expect(nans == false)
+    #expect(zeros == true)
+    #expect(stringAndNumber == false)
+    #expect(nulls == true)
+    #expect(nullAndUndefined == false)
+    #expect(undefineds == true)
+  }
+
+  @Test
+  func `isEqual(to:) compares objects by identity`() throws {
+    let object = try runtime.eval("globalThis.object = { a: 1 }")
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: try runtime.eval("object").ref(),
+      try runtime.eval("({ a: 1 })").ref()
+    )
+
+    let sameObject = buffer.unownedValue(at: 0).isEqual(to: object)
+    let equalObject = buffer.unownedValue(at: 1).isEqual(to: object)
+    #expect(sameObject == true)
+    #expect(equalObject == false)
+  }
 }
