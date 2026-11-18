@@ -5,6 +5,8 @@
 // The tests decode props with a Hermes runtime, which a build without Hermes doesn't have.
 #ifdef USE_HERMES
 #import <ExpoModulesCore/ExpoNativeViewObjC.h>
+#import <ExpoModulesCore/ExpoSwiftUIViewObjC.h>
+#import <ExpoModulesCore/NewComponentRegistry.h>
 #import <ExpoModulesCore/NewViewProps.h>
 
 #include <memory>
@@ -35,6 +37,36 @@ namespace views = expo::views;
 }
 
 @end
+
+/**
+ The component view of a SwiftUI view.
+ */
+@interface TestSwiftUIViewObjC : ExpoSwiftUIViewObjC
+@end
+
+@implementation TestSwiftUIViewObjC
+@end
+
+namespace {
+
+/**
+ Returns the traits of a shadow node that the descriptor of the given component creates.
+ */
+react::ShadowNodeTraits shadowNodeTraits(const react::ComponentDescriptorProvider &provider)
+{
+  auto contextContainer = std::make_shared<react::ContextContainer>();
+  auto descriptor = provider.constructor(react::ComponentDescriptorParameters{
+    .eventDispatcher = {},
+    .contextContainer = contextContainer,
+    .flavor = provider.flavor,
+  });
+  react::PropsParserContext context{-1, *contextContainer};
+  auto props = descriptor->cloneProps(context, nullptr, react::RawProps());
+  auto family = descriptor->createFamily({.tag = 1, .surfaceId = 1, .instanceHandle = nullptr});
+  return descriptor->createShadowNode({.props = props}, family)->getTraits();
+}
+
+} // namespace
 
 /**
  Decodes the `title` prop into a new object.
@@ -119,6 +151,20 @@ namespace views = expo::views;
   // Updates without new props don't pass the decoded props again.
   [view finalizeUpdates:RNComponentViewUpdateMaskNone];
   XCTAssertEqual(view.updateCount, 1);
+}
+
+- (void)testOnlySwiftUIViewsKeepTheirDirectChildren
+{
+  [ExpoNativeViewObjC registerComponentViewClass:[TestSwiftUIViewObjC class]
+                                    propsDecoder:[NewObjectViewPropsDecoder new]];
+  auto keepsDirectChildren = [](Class viewClass) {
+    return shadowNodeTraits(views::componentDescriptorProvider(viewClass))
+      .check(react::ShadowNodeTraits::Trait::ChildrenFormStackingContext);
+  };
+
+  // Each direct child of a SwiftUI view is an element of its `children`, so Fabric must not flatten it.
+  XCTAssertTrue(keepsDirectChildren([TestSwiftUIViewObjC class]));
+  XCTAssertFalse(keepsDirectChildren([RecordingNativeViewObjC class]));
 }
 
 @end

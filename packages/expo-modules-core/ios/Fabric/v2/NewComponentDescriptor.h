@@ -21,7 +21,8 @@
 namespace expo::views {
 
 /**
- What tells the descriptors of different view types apart: the component name and the props decoder.
+ What tells the descriptors of different view types apart: the component name, the props decoder, and whether Fabric
+ keeps the direct children of the views.
  Fabric uses `name.c_str()` as the component handle. For a short name, that buffer is inside the flavor
  object itself, so the flavor must stay alive at the same address, and `name` must not change, for as
  long as views of its type can exist, also across reloads.
@@ -29,6 +30,11 @@ namespace expo::views {
 struct NewComponentFlavor {
   std::string name;
   std::shared_ptr<const NewPropsDecoder> decoder;
+  /**
+   Stops Fabric from flattening the direct children of the views, as `collapsableChildren={false}` does. The SwiftUI
+   views need it, because each direct child is an element of their `children`.
+   */
+  bool keepsDirectChildren = false;
 };
 
 /**
@@ -48,6 +54,8 @@ public:
   facebook::react::ComponentHandle getComponentHandle() const override;
 
   facebook::react::ComponentName getComponentName() const override;
+
+  facebook::react::ShadowNodeTraits getTraits() const override;
 
   facebook::react::Props::Shared cloneProps(
     const facebook::react::PropsParserContext &context,

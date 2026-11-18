@@ -1,6 +1,7 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/ExpoNativeViewObjC.h>
+#import <ExpoModulesCore/ExpoSwiftUIViewObjC.h>
 #import <ExpoModulesCore/NewComponentDescriptor.h>
 #import <ExpoModulesCore/NewComponentRegistry.h>
 #import <ExpoModulesCore/ObjCPropsDecoder.h>
@@ -57,6 +58,11 @@ std::unordered_map<std::string, std::shared_ptr<const views::NewComponentFlavor>
   return flavors;
 }
 
+bool keepsDirectChildren(Class viewClass)
+{
+  return [viewClass isSubclassOfClass:[ExpoSwiftUIViewObjC class]];
+}
+
 } // namespace
 
 namespace expo::views {
@@ -71,6 +77,7 @@ react::ComponentDescriptorProvider componentDescriptorProvider(Class viewClass)
     flavor = std::make_shared<const NewComponentFlavor>(NewComponentFlavor{
       .name = className,
       .decoder = std::make_shared<NoPropsDecoder>(),
+      .keepsDirectChildren = keepsDirectChildren(viewClass),
     });
   }
   return NewComponentDescriptor::provider(flavor);
@@ -158,6 +165,7 @@ react::ComponentDescriptorProvider componentDescriptorProvider(Class viewClass)
     flavor = std::make_shared<const views::NewComponentFlavor>(views::NewComponentFlavor{
       .name = className,
       .decoder = std::make_shared<views::ObjCPropsDecoder>(propsDecoder),
+      .keepsDirectChildren = keepsDirectChildren(viewClass),
     });
   }
   [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
