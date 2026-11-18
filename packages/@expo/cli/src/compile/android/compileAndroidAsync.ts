@@ -4,7 +4,7 @@ import * as Log from '../../log';
 import { copyBinaryToOutputAsync } from '../copyBinaryToOutputAsync';
 import { debugEvent, event } from '../events';
 import type { ResolvedOptions } from '../resolveOptions';
-import { buildAsync, getApkPath } from './gradle';
+import { buildAsync, getAabPath, getApkPath } from './gradle';
 import { resolveOptionsAsync } from './resolveOptions';
 
 export async function compileAndroidAsync(projectRoot: string, options: ResolvedOptions) {
@@ -24,7 +24,8 @@ export async function compileAndroidAsync(projectRoot: string, options: Resolved
   }
   doneBuild('build:done', { platform: 'android', mode: props.mode });
 
-  let binaryPath = getApkPath(projectRoot, props);
+  let binaryPath =
+    props.outputType === 'aab' ? getAabPath(projectRoot, props) : getApkPath(projectRoot, props);
   if (props.outputDir) {
     binaryPath = await copyBinaryToOutputAsync(binaryPath, props.outputDir);
   }
