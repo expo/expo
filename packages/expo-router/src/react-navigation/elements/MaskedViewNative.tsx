@@ -4,13 +4,13 @@
 import * as React from 'react';
 import { UIManager } from 'react-native';
 
-type MaskedViewType = typeof import('@react-native-masked-view/masked-view').default;
-
-type Props = React.ComponentProps<MaskedViewType> & {
+// Keep the prop type independent of the optional native package.
+type Props = {
+  maskElement: React.ReactElement;
   children: React.ReactElement;
 };
 
-let RNCMaskedView: MaskedViewType | undefined;
+let RNCMaskedView: React.ComponentType<Props> | undefined;
 
 try {
   // Add try/catch to support usage even if it's not installed, since it's optional.
@@ -20,7 +20,8 @@ try {
   // Ignore
 }
 
-const isMaskedViewAvailable = UIManager.getViewManagerConfig('RNCMaskedView') != null;
+export const isMaskedViewAvailable =
+  RNCMaskedView != null && UIManager.getViewManagerConfig('RNCMaskedView') != null;
 
 export function MaskedView({ children, ...rest }: Props) {
   if (isMaskedViewAvailable && RNCMaskedView) {
