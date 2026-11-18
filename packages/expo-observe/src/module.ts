@@ -18,6 +18,7 @@ import { reportCaughtError } from './reportCaughtError';
 import { reportFeedback } from './reportFeedback';
 import type {
   ObserveConfig,
+  ObserveConsent,
   ObserveFeedback,
   ObserveIntegrationsConfig,
   ObserveModule,
@@ -68,6 +69,10 @@ function warnIfErrorSampleRateIsLower({ sampleRate, errorSampleRate }: ObserveCo
 }
 
 const native = requireNativeModule<ObserveModule>('ExpoObserve');
+
+// Native code can apply two concurrent calls in either order, so each call starts after the
+// previous one settles. A rejected call does not stop the calls after it.
+let consentQueue: Promise<unknown> = Promise.resolve();
 
 const Observe: ObserveModule = new Proxy(native, {
   get(target, prop, receiver) {
@@ -120,6 +125,14 @@ const Observe: ObserveModule = new Proxy(native, {
         }
         warnIfErrorSampleRateIsLower(config);
         return target.configure(config);
+      };
+    }
+
+    if (prop === 'setConsent') {
+      return (consent: ObserveConsent) => {
+        const call = consentQueue.then(() => target.setConsent(consent));
+        consentQueue = call.catch(() => {});
+        return call;
       };
     }
 

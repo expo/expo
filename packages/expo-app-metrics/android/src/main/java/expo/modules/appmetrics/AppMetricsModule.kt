@@ -486,6 +486,17 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
     }
   }
 
+  /** Applies a consent change from `Observe.setConsent`. Changes run one at a time. */
+  suspend fun setConsent(granted: Boolean) =
+    consentMutex.withLock {
+      val update = ObserveConsent.update(context, granted)
+      if (!update.isSaved) {
+        throw ConsentNotSavedException(granted)
+      }
+    }
+
+  private val consentMutex = Mutex()
+
   override fun updatesStateDidChange(event: Map<String, Any>) {
     if (UpdatesStateEvent.fromMap(event)?.type == UpdatesStateEvent.EventType.DownloadCompleteWithUpdate) {
       updatesMonitoring.downloadTimeMetric(subscription)?.let { metric ->
@@ -716,4 +727,15 @@ internal fun spanStatusCode(status: String?): Int? = when (status) {
 private class SpanConstructorUnavailableException : CodedException(
   "Span objects can't be constructed directly because a span's identity and session " +
     "attribution are assigned natively at start time. Get one from AppMetrics.startSpan() instead."
+)
+
+private class ConsentNotSavedException(granted: Boolean) : CodedException(
+  if (granted) {
+    "Observe could not save the consent value 'granted' on the device, so collection did not start. " +
+      "The device storage may be full or unavailable. Free storage and call setConsent('granted') again."
+  } else {
+    "Observe could not save the consent value 'not-granted' on the device. Collection stopped, but " +
+      "the next launch may read the earlier value. The device storage may be full or unavailable. " +
+      "Free storage and call setConsent('not-granted') again."
+  }
 )

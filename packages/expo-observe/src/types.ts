@@ -78,6 +78,12 @@ export type ObserveFeedback = {
   attributes?: ObserveAttributes;
 };
 
+/**
+ * Whether the user consents to Observe collecting data. The `extra.eas.observe.consent` key of the
+ * app config sets the value for the first launch, and `setConsent` changes it at runtime.
+ */
+export type ObserveConsent = 'not-granted' | 'granted';
+
 export type ObserveConfig = {
   /**
    * The environment for observability events
@@ -324,6 +330,32 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * @platform ios
    */
   readonly clientId: string | null;
+  /**
+   * Changes whether the user consents to Observe collecting data. The device saves the value, and
+   * it overrides the `extra.eas.observe.consent` key of the app config on later launches.
+   *
+   * A grant starts collection, and a revoke stops collection. A call with the current value
+   * changes nothing.
+   *
+   * Observe starts collection at most one time in each app launch. After a revoke, a grant only
+   * saves the value, and collection starts at the next launch.
+   *
+   * @param consent The new consent value.
+   * @returns A promise that resolves when the change is applied. Calls are applied one at a time,
+   * in call order. The promise rejects when the device cannot save the value. A revoke still stops
+   * collection, but a grant then changes nothing.
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * await Observe.setConsent(userAccepted ? 'granted' : 'not-granted');
+   * ```
+   *
+   * @platform android
+   * @platform ios
+   */
+  setConsent(consent: ObserveConsent): Promise<void>;
   /**
    * Dispatches pending events to the server immediately.
    *
