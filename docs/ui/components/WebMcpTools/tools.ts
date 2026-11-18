@@ -320,7 +320,11 @@ export const webMcpTools: WebMcpTool[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        area: { type: 'string', enum: [...NAVIGATION_AREAS] },
+        area: {
+          type: 'string',
+          enum: [...NAVIGATION_AREAS],
+          description: 'A sidebar area. reference lists the SDK version of the current page.',
+        },
         section: { type: 'string', description: 'A section name returned without input.' },
       },
     },
@@ -348,8 +352,7 @@ export const webMcpTools: WebMcpTool[] = [
     title: 'Ask the Expo docs AI assistant',
     description:
       'Asks the Expo documentation AI assistant (Kapa) a question and returns its answer with ' +
-      'source links as JSON. An answer can take several seconds. Use search_docs or ' +
-      'get_page_markdown when you need the exact text of a page.',
+      'source links as JSON. The answer is generated and can take several seconds.',
     inputSchema: {
       type: 'object',
       properties: { query: { type: 'string', description: 'The question to ask.' } },
@@ -379,8 +382,8 @@ export const webMcpTools: WebMcpTool[] = [
     name: 'send_feedback',
     title: 'Send feedback on an Expo docs page',
     description:
-      'Sends written feedback about a documentation page to the Expo documentation team. ' +
-      'Only send feedback that the user asked you to send.',
+      'Sends written feedback about a documentation page to the Expo documentation team, and ' +
+      'returns a confirmation.',
     inputSchema: {
       type: 'object',
       properties: {
