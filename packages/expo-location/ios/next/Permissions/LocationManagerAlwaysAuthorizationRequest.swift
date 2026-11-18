@@ -19,6 +19,9 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
   func request() async throws {
     let beginStatus = locationManager.authorizationStatus
     self.beginStatus = beginStatus
+    defer {
+      finishAuthorizationChanges()
+    }
     if beginStatus == .authorizedWhenInUse {
       try await requestUpgradeFromWhenInUse()
     } else {
@@ -28,13 +31,7 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
 
   @MainActor
   private func requestFirstAuthorization() async throws {
-    let authorizationChanges = makeAuthorizationChanges()
-    defer {
-      finishAuthorizationChanges()
-    }
-
-    locationManager.perform(Self.alwaysAuthorizationSelector)
-
+    let authorizationChanges = sendAlwaysAuthorizationRequest()
     try await authorizationChanges.waitForNext()
   }
 
@@ -42,12 +39,9 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
   private func requestUpgradeFromWhenInUse() async throws {
     await Self.waitForAppToBecomeActive()
 
-    let authorizationChanges = makeAuthorizationChanges()
-    defer {
-      finishAuthorizationChanges()
-    }
     let appWillResignActive = NotificationCenter.default.notifications(named: UIApplication.willResignActiveNotification)
     let appDidBecomeActive = NotificationCenter.default.notifications(named: UIApplication.didBecomeActiveNotification)
+    let authorizationChanges = sendAlwaysAuthorizationRequest()
 
     try await withThrowingTaskGroup(of: Void.self) { group in
       group.addTask {
@@ -60,17 +54,18 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
         )
       }
 
-      locationManager.perform(Self.alwaysAuthorizationSelector)
-
       try await group.next()
       group.cancelAll()
     }
   }
 
-  private func makeAuthorizationChanges() -> AsyncThrowingStream<Void, Error> {
-    return AsyncThrowingStream { continuation in
+  @MainActor
+  private func sendAlwaysAuthorizationRequest() -> AsyncThrowingStream<Void, Error> {
+    let authorizationChanges = AsyncThrowingStream<Void, Error> { continuation in
       self.authorizationChanges = continuation
     }
+    locationManager.perform(Self.alwaysAuthorizationSelector)
+    return authorizationChanges
   }
 
   private func finishAuthorizationChanges() {
