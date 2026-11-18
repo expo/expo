@@ -426,8 +426,7 @@ class BaseObservabilityManager(
   suspend fun cleanup() {
     // TODO(@ubax): Move sessionManager.cleanupOldSessions out of eas observe
     sessionManager.cleanupOldSessions()
-    // Remove the database used by the old pending telemetry queues.
-    context.deleteDatabase("eas_observe")
+    context.deleteDatabase(LEGACY_DATABASE_NAME)
     sessionManager.cleanupOldLogs()
   }
 

@@ -157,6 +157,26 @@ struct ObserveUserDefaultsTests {
     #expect(ObserveUserDefaults.bundleDefaults?.isJsDev == true)
   }
 
+  // MARK: - Launch without consent
+
+  @Test
+  func `deleteStoredSettings removes every Observe setting`() {
+    ObserveUserDefaults.setConfig(PersistedConfig(dispatchingEnabled: false))
+    ObserveUserDefaults.setBundleDefaults(PersistedBundleDefaults(environment: "production", isJsDev: false))
+    ObserveUserDefaults.lastDispatchedMetricId = 5
+    ObserveUserDefaults.lastDispatchedLogId = 7
+    ObserveUserDefaults.lastDispatchDate = Date()
+
+    ObserveUserDefaults.deleteStoredSettings()
+
+    #expect(UserDefaults.standard.persistentDomain(forName: "dev.expo.observe")?.isEmpty ?? true)
+    #expect(ObserveUserDefaults.config == nil)
+    #expect(ObserveUserDefaults.bundleDefaults == nil)
+    #expect(ObserveUserDefaults.lastDispatchedMetricId == -1)
+    #expect(ObserveUserDefaults.lastDispatchedLogId == -1)
+    #expect(ObserveUserDefaults.lastDispatchDate == nil)
+  }
+
   @Test
   func `cleanUpLegacyKeys removes only the legacy keys`() throws {
     let suiteName = "dev.expo.observe.tests.legacy-keys"

@@ -23,6 +23,8 @@ internal struct PersistedBundleDefaults: Codable {
 /// Class that manages a custom `UserDefaults` database with `"dev.expo.observe"` suite name.
 @AppMetricsActor
 internal final class ObserveUserDefaults: UserDefaults {
+  private nonisolated static let suiteName = "dev.expo.observe"
+
   /// Singleton instance of the user defaults for EAS Observe.
   private static let defaults = ConsentGatedDefaults(ObserveUserDefaults())
 
@@ -38,7 +40,7 @@ internal final class ObserveUserDefaults: UserDefaults {
   private init() {
     // It's safe to force-unwrap as `init?(suiteName:)` fails only if `suiteName`
     // is the same as the app's main bundle identifier or the global domain.
-    super.init(suiteName: "dev.expo.observe")!
+    super.init(suiteName: Self.suiteName)!
     Self.cleanUpLegacyKeys(from: self)
   }
 
@@ -97,6 +99,11 @@ internal final class ObserveUserDefaults: UserDefaults {
   static func setBundleDefaults(_ newValue: PersistedBundleDefaults) {
     guard let data = try? JSONEncoder().encode(newValue) else { return }
     defaults.set(data, forKey: Keys.bundleDefaults.rawValue)
+  }
+
+  /// Deletes every saved value. Runs at a launch without consent.
+  nonisolated static func deleteStoredSettings() {
+    UserDefaults.standard.removePersistentDomain(forName: suiteName)
   }
 
   // MARK: - Legacy keys

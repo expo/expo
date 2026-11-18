@@ -67,4 +67,8 @@ object ObservePreferences {
   fun setLastDispatchedLogId(context: Context, id: Long) {
     preferences.putLong(context, KEY_LAST_DISPATCHED_LOG_ID, id)
   }
+
+  internal fun deleteStoredSettings(context: Context) {
+    preferences.delete(context)
+  }
 }

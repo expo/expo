@@ -62,4 +62,8 @@ object AppMetricsPreferences {
     // through `UserDefaults` without a synchronous flush either.
     preferences.putString(context, KEY_NETWORK_TRACES_CONFIGURATION, configuration.toJson(), commit = false)
   }
+
+  internal fun deleteStoredSettings(context: Context) {
+    preferences.delete(context)
+  }
 }

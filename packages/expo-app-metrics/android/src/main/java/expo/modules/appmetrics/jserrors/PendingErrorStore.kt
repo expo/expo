@@ -89,6 +89,6 @@ object PendingErrorStore {
   }
 
   /** The directory holding pending-error files, under `noBackupFilesDir` so they're not backed up. */
-  private fun directory(context: Context): File =
+  internal fun directory(context: Context): File =
     File(context.noBackupFilesDir, "ExpoAppMetrics/pending-errors").apply { mkdirs() }
 }

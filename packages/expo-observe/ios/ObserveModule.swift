@@ -31,6 +31,11 @@ public final class ObserveModule: Module {
     Events("configure")
 
     OnCreate {
+      // Deletes what a build with consent stored. Module start is late enough, because nothing is
+      // sent without consent.
+      if !ObserveConsent.isGranted {
+        ObserveUserDefaults.deleteStoredSettings()
+      }
       // The observability manager needs to know the project id. Currently it's available only through `expo-constants`,
       // which is not great as it requires the app context. Ideally if we move EAS-specific config to `expo-eas-client` at some point.
       if let manifest = getManifest(appContext), let projectId = getProjectId(manifest: manifest) {
