@@ -8,6 +8,9 @@ import { ScreenErrorBoundaryContext, useContextKey, useRouteNode } from '../Rout
 import { GuardContextProvider } from '../layouts/GuardContext';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
+import { LoaderContext } from '../loaders/LoaderContext';
+import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
+import { useNavigationState } from '../react-navigation/core/useNavigationState';
 import type { RouterFactory } from '../react-navigation/native';
 import { useNavigationBuilder } from '../react-navigation/native';
 import { getValidInitialRouteName } from '../routeNode';
@@ -135,6 +138,12 @@ export function useNavigatorContext() {
 
 function SlotContent({ state, descriptors }: NavigatorContentProps<any>) {
   const focusedRouteKey = state.routes[state.index]?.key;
+  const runtime = React.use(LoaderContext);
+  const navigatorKey = useNavigationState((state) => state.key);
+  useClientLayoutEffect(
+    () => runtime.setRetention(navigatorKey, 'focused'),
+    [runtime, navigatorKey]
+  );
 
   return focusedRouteKey ? (descriptors[focusedRouteKey]?.render() ?? null) : null;
 }
@@ -182,6 +191,8 @@ function NavigatorSlot() {
 
   const { state, descriptors } = context;
   const focusedRouteKey = state.routes[state.index]?.key;
+  const runtime = React.use(LoaderContext);
+  useClientLayoutEffect(() => runtime.setRetention(state.key, 'focused'), [runtime, state.key]);
 
   return focusedRouteKey ? (descriptors[focusedRouteKey]?.render() ?? null) : null;
 }

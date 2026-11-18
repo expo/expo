@@ -1,9 +1,10 @@
 import { act, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
-import { useLocalSearchParams } from '../hooks';
+import { useLoaderData, useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
+import * as loaderUtils from '../loaders/utils';
 import { renderRouter } from '../testing-library';
 
 afterEach(() => {
@@ -96,4 +97,34 @@ it('warns in development when a second root mounts', async () => {
     'Your app mounted a second time while the first instance was still handling deep links. This can happen during an Android Activity relaunch when a configuration change is not listed in `android:configChanges`. Expo Router keeps working, but the app state may reset.'
   );
   expect(error).not.toHaveBeenCalled();
+});
+
+it('keeps the new root loader alive when the old root unmounts', async () => {
+  jest.spyOn(console, 'warn').mockImplementation(() => {});
+  const signals: AbortSignal[] = [];
+  const resolvers: ((value: unknown) => void)[] = [];
+  jest.spyOn(loaderUtils, 'fetchLoader').mockImplementation((_path, init) => {
+    signals.push(init!.signal!);
+    return new Promise((resolve) => resolvers.push(resolve));
+  });
+  const oldRoot = await renderRouter({
+    index: function Index() {
+      return <Text>{JSON.stringify(useLoaderData())}</Text>;
+    },
+  });
+  await renderRouter({
+    index: function Index() {
+      return <Text>{JSON.stringify(useLoaderData())}</Text>;
+    },
+  });
+  jest.useRealTimers();
+  expect(signals).toHaveLength(2);
+
+  await oldRoot.unmount();
+  await act(async () => {});
+  expect(signals[0]!.aborted).toBe(true);
+  expect(signals[1]!.aborted).toBe(false);
+
+  await act(async () => resolvers[1]!({ root: 'new' }));
+  expect(screen.getByText('{"root":"new"}')).toBeVisible();
 });
