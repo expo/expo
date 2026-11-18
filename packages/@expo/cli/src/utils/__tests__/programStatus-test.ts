@@ -6,6 +6,23 @@ jest.mock('../interactive', () => ({
 }));
 
 describe(withProgramStatus, () => {
+  it('clears only its own status when another is still active', async () => {
+    jest.mocked(isInteractive).mockReturnValue(true);
+    const write = jest.spyOn(process.stdout, 'write').mockReturnValue(true);
+
+    await withProgramStatus({ state: 'blocked', kind: 'question' }, async () => {
+      await withProgramStatus({ state: 'working' }, async () => {});
+    });
+    expect(write.mock.calls.map(([data]) => data)).toEqual([
+      '\x1b]7501;state=blocked:app=expo:kind=question:id=1\x1b\\',
+      '\x1b]7501;state=working:app=expo:id=2\x1b\\',
+      '\x1b]7501;state=clear:id=2\x1b\\',
+      '\x1b]7501;state=clear:id=1\x1b\\',
+    ]);
+
+    write.mockRestore();
+  });
+
   it('still runs the action when reporting the status throws', async () => {
     jest.mocked(isInteractive).mockImplementation(() => {
       throw new Error('Invalid value');
