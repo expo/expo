@@ -202,7 +202,7 @@ public final class SharedObjectRegistry: Sendable {
 
   /// Deletes the pair with the given ID, for `release()` called in JS. When another runtime pairs a JS object with the
   /// native state, `clear()` releases the values of the main runtime in it. A release in the main runtime also releases
-  /// them right away, on the thread of the main runtime.
+  /// them right away, on the thread of the main runtime. The other runtimes release their values on their threads.
   internal func release(_ id: SharedObjectId, inMainRuntime: Bool) {
     delete(id, reason: inMainRuntime ? .releasedInMainRuntime : .released)
   }
@@ -245,6 +245,9 @@ public final class SharedObjectRegistry: Sendable {
     let nativeState = deleted.nativeState
     if reason == .releasedInMainRuntime && deleted.isPairedInOtherRuntime {
       nativeState.releaseRuntimeValues()
+    }
+    if reason != .nativeStateDestroyed && deleted.isPairedInOtherRuntime {
+      nativeState.releaseOtherRuntimeValues()
     }
     guard deleted.isCurrent else {
       return

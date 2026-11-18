@@ -15,7 +15,8 @@ import os
 /// The native state keeps the JS object and the event listeners of the main runtime only, so it holds values of the
 /// main runtime only. The app context releases them before the main runtime is destroyed (see
 /// ``releaseRuntimeValues()``). Each other runtime keeps its JS object and its listeners in its own cache (see
-/// `PairedObjects`), and releases them when it is destroyed.
+/// `PairedObjects`), and releases them when it is destroyed or the native object is released (see
+/// ``releaseOtherRuntimeValues()``).
 ///
 /// `@unchecked Sendable`: the native object is immutable. The JS objects and the listeners are read and written only on
 /// the thread of the runtime they belong to. The flags are behind a lock, because the threads of all runtimes read them
@@ -109,6 +110,25 @@ internal final class SharedObjectNativeState: EventEmitterNativeState, @unchecke
     listeners.clear()
     removePrimaryListeners()
     pairedObject = nil
+  }
+
+  /// Removes the JS objects and the event listeners that the runtimes with listeners, other than the main runtime, keep
+  /// for this native state, on the thread of each runtime. Call it when the native object is released. A released
+  /// native state gets no events, and a JS object released in its runtime has no native state, so JS can't remove its
+  /// listeners. A listener that captures its JS object would keep both until the runtime is destroyed.
+  internal func releaseOtherRuntimeValues() {
+    let schedulers = SharedObjectLock.withLock(for: native) {
+      defer {
+        listeningRuntimes.removeAll()
+      }
+      return Array(listeningRuntimes.values)
+    }
+    for scheduler in schedulers {
+      // The task holds the native state, so no new native state gets its identifier before the task runs.
+      scheduler.schedule { runtime in
+        runtime.cached(pairedObjectsCacheKey, PairedObjects.init).remove(self)
+      }
+    }
   }
 
   // MARK: - Listeners in other runtimes
@@ -254,6 +274,11 @@ private final class PairedObjects {
       pruneThreshold = max(64, pairings.count * 2)
     }
     pairings[ObjectIdentifier(nativeState)] = Pairing(object: jsObject.createWeak().ref())
+  }
+
+  /// Removes the JS object of the native state and its listeners.
+  func remove(_ nativeState: SharedObjectNativeState) {
+    pairings[ObjectIdentifier(nativeState)] = nil
   }
 
   func object(for nativeState: SharedObjectNativeState) -> JavaScriptObject? {

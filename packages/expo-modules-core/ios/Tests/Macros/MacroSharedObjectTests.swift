@@ -688,6 +688,16 @@ private struct MacroSharedObjectTests {
   }
 
   @Test
+  func `release in the main runtime removes the listeners in an attached runtime`() throws {
+    let id = try createCounter()
+    let attachedRuntime = try addListenerInAttachedRuntime(counterId: id)
+
+    try runtime.eval("counter.release()")
+    try waitForScheduledWork(in: attachedRuntime)
+    #expect(try attachedRuntime.eval("attachedCounter.listenerCount('change')").asInt() == 0)
+  }
+
+  @Test
   func `resolves a shared object to its JS object in the main runtime`() throws {
     let id = try createCounter()
     _ = try appContext.addRuntime()
