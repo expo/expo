@@ -34,6 +34,7 @@ import { createExpoInlineManifestPlugin } from './plugins/expo-inline-manifest';
 import { createExpoRouterServerExportsPlugin } from './plugins/expo-router-server-exports';
 import { createExpoUiPlugin } from './plugins/expo-ui';
 import { createExpoWidgetsPlugin, hasExpoWidgets } from './plugins/expo-widgets';
+import { createFixHermesV1AsyncArrowRestPatternPlugin } from './plugins/fix-hermes-v1-async-arrow-rest-pattern';
 import { createImportMetaPlugin } from './plugins/import-meta';
 import { createInlineRequiresPlugin } from './plugins/inline-requires';
 import { createMetroDependencyPlugin } from './plugins/metro-dependency';
@@ -760,12 +761,13 @@ function stableSourcePlugin(
 function stableSourcePhase(
   nox: Noxcturnal,
   keys: readonly string[],
-  plugins: readonly DefinedNativePlugin<any>[]
+  plugins: readonly DefinedNativePlugin<any>[],
+  name = 'expo-source'
 ): PipelinePhase {
-  const key = keys.join('\u001f');
+  const key = [name, ...keys].join('\u001f');
   const cached = stableSourcePhases.get(key);
   if (cached) return cached;
-  const phase = nox.definePipelinePhase({ name: 'expo-source', plugins });
+  const phase = nox.definePipelinePhase({ name, plugins });
   if (stableSourcePhases.size < 128) stableSourcePhases.set(key, phase);
   return phase;
 }
@@ -808,6 +810,11 @@ function createPipeline(
       );
     }
     addPlugin('cjs-detection', () => createCjsDetectionPlugin(nox));
+  }
+  if (isHermesV1 && sourceFacts.hasAsync && sourceFacts.hasSpread) {
+    addPlugin('fix-hermes-v1-async-arrow-rest-pattern', () =>
+      createFixHermesV1AsyncArrowRestPatternPlugin(nox)
+    );
   }
   if (baseProfile === 'hermes-v0' || baseProfile === 'webview') {
     addPlugin('display-name', () => createReactDisplayNamePlugin(nox));
@@ -929,6 +936,22 @@ function createPipeline(
           createClientServerDirectiveBoundaryPlugin(nox)
         ),
       ];
+  // Apply defines before select discards ranges that may contain define edits.
+  const selectIndex = sourcePluginKeys.findIndex((key) => key.startsWith('platform-select:'));
+  const sourcePhases =
+    selectIndex <= 0
+      ? plugins.length === 0
+        ? []
+        : [stableSourcePhase(nox, sourcePluginKeys, plugins)]
+      : [
+          stableSourcePhase(
+            nox,
+            sourcePluginKeys.slice(0, selectIndex),
+            plugins.slice(0, selectIndex),
+            'expo-source-defines'
+          ),
+          stableSourcePhase(nox, sourcePluginKeys.slice(selectIndex), plugins.slice(selectIndex)),
+        ];
   return nox.defineNativePipeline({
     phases: [
       ...(reactNativeCodegenEligibility == null
@@ -966,7 +989,7 @@ function createPipeline(
       // Type syntax must be erased before ordinary Expo visitors run. Besides
       // matching Babel's ordering, this lets the native language plan lower
       // the JavaScript emitted from TypeScript before Expo visitors observe it.
-      ...(plugins.length === 0 ? [] : [stableSourcePhase(nox, sourcePluginKeys, plugins)]),
+      ...sourcePhases,
       ...(options.inlineRequires ? [getMetroInlineRequiresPhase(nox)] : []),
     ],
   });

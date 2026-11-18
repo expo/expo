@@ -42,8 +42,8 @@ export function getMarkdownUrl(href: string): string {
   return `${DOCS_BASE_URL}${getMarkdownHref(href)}`;
 }
 
-function rewriteMarkdownLinks(line: string): string {
-  return line.replace(
+function rewriteMarkdownLinks(text: string): string {
+  return text.replace(
     /(!?\[(?:[^\n[\]]|\[[^\n[\]]*])+]\()([^\s)]+)((?:\s+["'][^\n)]*["'])?\))/g,
     (match, prefix: string, url: string, suffix: string) => {
       if (prefix.startsWith('!')) {
@@ -63,32 +63,48 @@ function rewriteMarkdownLinks(line: string): string {
   );
 }
 
-export function rewriteDocsLinksToMarkdown(content: string): string {
+function transformOutsideCodeFences(content: string, transform: (text: string) => string): string {
   // The fence marker (`` ` `` or `~`) that opened the current code block, or null when outside one.
   // Tracking the marker keeps a ``` line from prematurely closing a ~~~ block and vice versa.
   let fenceMarker: string | null = null;
+  let proseLines: string[] = [];
+  const output: string[] = [];
 
-  return content
-    .split('\n')
-    .map(line => {
-      const fenceMatch = line.match(CODE_FENCE_REGEX);
-      if (fenceMatch) {
-        const marker = fenceMatch[1][0];
-        if (fenceMarker === null) {
-          fenceMarker = marker;
-          return line;
-        }
-        if (marker === fenceMarker) {
-          fenceMarker = null;
-          return line;
-        }
+  const flushProse = () => {
+    if (proseLines.length > 0) {
+      output.push(transform(proseLines.join('\n')));
+      proseLines = [];
+    }
+  };
+
+  for (const line of content.split('\n')) {
+    const marker = line.match(CODE_FENCE_REGEX)?.[1][0];
+    if (fenceMarker === null && marker) {
+      flushProse();
+      fenceMarker = marker;
+      output.push(line);
+    } else if (fenceMarker !== null) {
+      if (marker === fenceMarker) {
+        fenceMarker = null;
       }
+      output.push(line);
+    } else {
+      proseLines.push(line);
+    }
+  }
+  flushProse();
 
-      if (fenceMarker !== null) {
-        return line;
-      }
+  return output.join('\n');
+}
 
-      return rewriteMarkdownLinks(line);
-    })
-    .join('\n');
+export function joinWrappedLinkText(content: string): string {
+  return transformOutsideCodeFences(content, text =>
+    text.replace(/\[[^[\]]*]\(/g, linkText =>
+      /\n\s*\n/.test(linkText) ? linkText : linkText.replace(/\s*\n\s*/g, ' ')
+    )
+  );
+}
+
+export function rewriteDocsLinksToMarkdown(content: string): string {
+  return transformOutsideCodeFences(content, rewriteMarkdownLinks);
 }

@@ -70,6 +70,8 @@ export async function logCmdError(error: any): Promise<never> {
     await flushEventLogger();
     process.exit(1);
   }
+  const { reportProgramResult } = require('./programStatus') as typeof import('./programStatus');
+  reportProgramResult({ state: 'error', msg: error.message });
   event('error', { error: event.error(error) });
   await flushEventLogger();
   if (

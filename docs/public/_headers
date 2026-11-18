@@ -2,9 +2,9 @@
 /_next/*
   Cache-Control: public, max-age=31536000, immutable
 
-# llms.txt discovery for AI agents that fetch pages without content negotiation
+# llms.txt and sitemap discovery for AI agents that fetch pages without content negotiation
 /*
-  Link: </llms.txt>; rel="llms-txt"
+  Link: </llms.txt>; rel="llms-txt", </sitemap.xml>; rel="sitemap"
   X-Llms-Txt: /llms.txt
 
 /.well-known/ai-catalog.json

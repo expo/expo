@@ -41,7 +41,7 @@ describe('processBatch', () => {
       setup: () => {},
       processFile: mockWorkerFn,
       Worker: class {
-        processFile: (msg: WorkerMessage) => Promise<WorkerMetadata> = mockWorkerFn;
+        processFile: (msg: WorkerMessage) => WorkerMetadata = mockWorkerFn;
       },
     }));
     FileProcessor = require('../FileProcessor').FileProcessor;
@@ -306,22 +306,20 @@ describe('processRegularFile', () => {
     jest.clearAllMocks();
     jest.unmock('../../worker');
     jest.mock('fs', () => ({
-      promises: {
-        readFile: mockReadFile,
-      },
+      readFileSync: mockReadFile,
     }));
     FileProcessor = require('../FileProcessor').FileProcessor;
   });
 
-  test('asynchronously populates metadata', async () => {
+  test('synchronously populates metadata', () => {
     const processor = new FileProcessor(defaultOptions);
     const [normalFilePath, metadata] = getNMockFiles(1)[0]!;
     expect(metadata[H.SHA1]).toBeFalsy();
 
     const fileContent = Buffer.from('hello world');
-    mockReadFile.mockResolvedValue(fileContent);
+    mockReadFile.mockReturnValue(fileContent);
 
-    const result = await processor.processRegularFile(normalFilePath, metadata, {
+    const result = processor.processRegularFile(normalFilePath, metadata, {
       computeSha1: true,
       maybeReturnContent: true,
     });

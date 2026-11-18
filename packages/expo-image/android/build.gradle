@@ -44,6 +44,7 @@ dependencies {
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.robolectric:robolectric:4.16'
+  testImplementation 'io.mockk:mockk:1.14.9'
 
   implementation 'com.facebook.react:react-android'
 

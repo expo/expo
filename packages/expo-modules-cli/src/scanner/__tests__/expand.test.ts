@@ -2,7 +2,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import { buildExpandArgs, resolveExpandBinary, runExpand } from '../expand';
+import { buildExpandArgs, buildFixArgs, resolveExpandBinary, runExpand } from '../expand';
 
 let tmpDir: string;
 
@@ -75,6 +75,17 @@ describe(buildExpandArgs, () => {
       '--diagnostics-only',
       'ios',
       'Other.swift',
+    ]);
+  });
+});
+
+describe(buildFixArgs, () => {
+  it('passes the symbols before the paths', () => {
+    expect(buildFixArgs({ paths: ['ios'], symbols: ['MyModule'] })).toEqual([
+      'fix',
+      '--symbol',
+      'MyModule',
+      'ios',
     ]);
   });
 });

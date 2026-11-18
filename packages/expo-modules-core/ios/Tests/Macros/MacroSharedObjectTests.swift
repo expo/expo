@@ -113,14 +113,55 @@ private final class MacroUnconstructableCounter: SharedObject {
   }
 }
 
+/// Binds members under symbols with `@JS(symbol:)`.
+@SharedObject
+private final class MacroSymbolList: SharedObject {
+  private let items: [Int]
+
+  @JS
+  init(items: [Int]) {
+    self.items = items
+  }
+
+  // Makes an instance iterable with `for...of` and spread.
+  @JS(symbol: .iterator)
+  func makeIterator(in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    let array = try [Int].encode(items, in: runtime)
+    return try array.getObject().callFunction("values")
+  }
+
+  @JS(symbol: .toStringTag)
+  var tag: String {
+    return "SymbolList(\(items.count))"
+  }
+
+  @JS(symbol: "macro.count")
+  var count: Int {
+    return items.count
+  }
+
+  // Shares its text with the symbol above, but a name never collides with a symbol.
+  @JS
+  func iterator() -> String {
+    return "named"
+  }
+
+  // `Function.prototype[Symbol.hasInstance]` is read-only, so this binding replaces an inherited
+  // read-only property.
+  @JS(symbol: .hasInstance)
+  static func hasInstance(_ value: borrowing JavaScriptValue) -> Bool {
+    return value.isNumber()
+  }
+}
+
 @ExpoModule(
-  classes: [MacroCounter.self, MacroNamedCounter.self, MacroUnconstructableCounter.self])
+  classes: [MacroCounter.self, MacroNamedCounter.self, MacroUnconstructableCounter.self, MacroSymbolList.self])
 private final class MacroSharedObjectModule: Module {}
 
 @Suite("Macro shared object")
 @JavaScriptActor
 private struct MacroSharedObjectTests {
-  let appContext: AppContext
+  let appContext: TestAppContext
   var runtime: ExpoRuntime {
     get throws {
       try appContext.runtime
@@ -171,6 +212,51 @@ private struct MacroSharedObjectTests {
       Object.prototype.toString.call(new JSCounter(1))
       """)
     #expect(try tag.asString() == "[object JSCounter]")
+  }
+
+  // MARK: - Symbols
+
+  @Test
+  func `binds a @JS(symbol:) method under a well-known symbol`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let value = try runtime.eval(
+      """
+      (() => {
+        const list = new expo.modules.MacroSharedObjectModule.MacroSymbolList([1, 2, 3])
+        return [[...list].join(','), list[Symbol.iterator].name, list.iterator()]
+      })()
+      """)
+    let result = try value.asArray()
+    #expect(try result[0].asString() == "1,2,3")
+    #expect(try result[1].asString() == "[Symbol.iterator]")
+    #expect(try result[2].asString() == "named")
+  }
+
+  @Test
+  func `binds a @JS(symbol:) property under well-known and registered symbols`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let value = try runtime.eval(
+      """
+      (() => {
+        const list = new expo.modules.MacroSharedObjectModule.MacroSymbolList([1, 2])
+        return [Object.prototype.toString.call(list), list[Symbol.for('macro.count')]]
+      })()
+      """)
+    let result = try value.asArray()
+    #expect(try result[0].asString() == "[object SymbolList(2)]")
+    #expect(try result[1].asInt() == 2)
+  }
+
+  @Test
+  func `binds a static @JS(symbol:) method over a read-only inherited one`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let value = try runtime.eval(
+      """
+      [1 instanceof expo.modules.MacroSharedObjectModule.MacroSymbolList, 'a' instanceof expo.modules.MacroSharedObjectModule.MacroSymbolList]
+      """)
+    let result = try value.asArray()
+    #expect(try result[0].asBool() == true)
+    #expect(try result[1].asBool() == false)
   }
 
   // MARK: - Construction
@@ -435,5 +521,234 @@ private struct MacroSharedObjectTests {
     let hasProperty = prototype.hasProperty("current")
     #expect(hasMethod)
     #expect(hasProperty)
+  }
+
+  // MARK: - Attached runtimes
+
+  /// Creates a counter in the main runtime as the `counter` global and returns its ID.
+  private func createCounter() throws -> Int {
+    register(MacroSharedObjectModule(appContext: appContext))
+    return try runtime.eval(
+      """
+      counter = new expo.modules.MacroSharedObjectModule.MacroCounter(1)
+      counter.__expo_shared_object_id__
+      """).asInt()
+  }
+
+  @Test
+  func `resolves a shared object to the same JS object in an attached runtime`() throws {
+    let id = try createCounter()
+    let attachedRuntime = try appContext.addRuntime()
+    let isSame = try attachedRuntime.eval(
+      "expo.SharedObject.__resolveInWorklet(\(id)) === expo.SharedObject.__resolveInWorklet(\(id))"
+    ).getBool()
+    #expect(isSame)
+  }
+
+  @Test
+  func `a shared object resolved in an attached runtime holds the native object`() throws {
+    let id = try createCounter()
+    let nativeObject = try SharedObject.native(from: try runtime.eval("counter").asObject())
+    let attachedRuntime = try appContext.addRuntime()
+    let resolvedObject = try attachedRuntime.eval("expo.SharedObject.__resolveInWorklet(\(id))").asObject()
+    #expect(try SharedObject.native(from: resolvedObject) === nativeObject)
+  }
+
+  @Test
+  func `release() in an attached runtime releases the native object`() throws {
+    let id = try createCounter()
+    let nativeObject = try SharedObject.native(from: try runtime.eval("counter").asObject())
+    let attachedRuntime = try appContext.addRuntime()
+    try attachedRuntime.eval("expo.SharedObject.__resolveInWorklet(\(id)).release()")
+    #expect(nativeObject.sharedObjectId == 0)
+  }
+
+  @Test
+  func `keeps the native object while an attached runtime has its JS object`() throws {
+    let id = try createCounter()
+    let nativeObject = try SharedObject.native(from: try runtime.eval("counter").asObject())
+    let nativeState = try #require(nativeObject.nativeState)
+    let attachedRuntime = try appContext.addRuntime()
+    try attachedRuntime.eval("attachedCounter = expo.SharedObject.__resolveInWorklet(\(id))")
+
+    // Collect the JS object in the main runtime.
+    let mainRuntime = try runtime
+    try mainRuntime.eval("counter = undefined")
+    try mainRuntime.execute {
+      mainRuntime.collectGarbage { nativeState.javaScriptObject(in: mainRuntime) == nil }
+    }
+    #expect(nativeObject.sharedObjectId == id)
+    #expect(try attachedRuntime.eval("attachedCounter.increment(1)").asInt() == 2)
+  }
+
+  @Test
+  func `releases the native object when the JS objects of all runtimes are collected`() throws {
+    let id = try createCounter()
+    let nativeObject = try SharedObject.native(from: try runtime.eval("counter").asObject())
+    let attachedRuntime = try appContext.addRuntime()
+    try attachedRuntime.eval("attachedCounter = expo.SharedObject.__resolveInWorklet(\(id))")
+
+    let mainRuntime = try runtime
+    try mainRuntime.eval("counter = undefined")
+    try mainRuntime.execute {
+      mainRuntime.collectGarbage()
+    }
+    try attachedRuntime.eval("attachedCounter = undefined")
+    try attachedRuntime.execute {
+      attachedRuntime.collectGarbage { nativeObject.sharedObjectId == 0 }
+    }
+    #expect(nativeObject.sharedObjectId == 0)
+  }
+
+  @Test
+  func `event emitter methods throw in an attached runtime`() throws {
+    let id = try createCounter()
+    let attachedRuntime = try appContext.addRuntime()
+    try attachedRuntime.eval("attachedCounter = expo.SharedObject.__resolveInWorklet(\(id))")
+    for call in ["addListener('change', () => {})", "removeAllListeners('change')", "emit('change')", "listenerCount('change')"] {
+      let message = try attachedRuntime.eval(
+        """
+        try {
+          attachedCounter.\(call)
+          ''
+        } catch (error) {
+          error.message
+        }
+        """).asString()
+      #expect(message.contains("only in the main runtime"), "\(call)")
+    }
+  }
+
+  @Test
+  func `resolves a shared object to its JS object in the main runtime`() throws {
+    let id = try createCounter()
+    _ = try appContext.addRuntime()
+    let isSame = try runtime.eval("expo.SharedObject.__resolveInWorklet(\(id)) === counter").getBool()
+    #expect(isSame)
+  }
+
+  @Test
+  func `resolves a shared object in the main runtime after its JS object there was collected`() throws {
+    let id = try createCounter()
+    let nativeObject = try SharedObject.native(from: try runtime.eval("counter").asObject())
+    let nativeState = try #require(nativeObject.nativeState)
+    let attachedRuntime = try appContext.addRuntime()
+    try attachedRuntime.eval("attachedCounter = expo.SharedObject.__resolveInWorklet(\(id))")
+
+    let mainRuntime = try runtime
+    try mainRuntime.eval("counter = undefined")
+    try mainRuntime.execute {
+      mainRuntime.collectGarbage { nativeState.javaScriptObject(in: mainRuntime) == nil }
+    }
+    let resolvedObject = try mainRuntime.eval("resolved = expo.SharedObject.__resolveInWorklet(\(id))").asObject()
+    #expect(try SharedObject.native(from: resolvedObject) === nativeObject)
+    #expect(resolvedObject.getNativeState(as: SharedObjectNativeState.self) === nativeState)
+    #expect(try mainRuntime.eval("resolved.__expo_shared_object_id__").asInt() == id)
+    #expect(try mainRuntime.eval("resolved.increment(1)").asInt() == 2)
+    #expect(appContext.sharedObjectRegistry.size == 1)
+  }
+
+  @Test
+  func `clearing the registry removes the listeners in the main runtime`() throws {
+    _ = try createCounter()
+    try runtime.eval("counter.addListener('change', () => {})")
+    #expect(try runtime.eval("counter.listenerCount('change')").asInt() == 1)
+    appContext.sharedObjectRegistry.clear()
+    #expect(try runtime.eval("counter.listenerCount('change')").asInt() == 0)
+  }
+
+  /// Adds a listener to the counter in the main runtime, also as the `listener` global, and returns a weak reference
+  /// to it.
+  private func addListener() throws -> JavaScriptWeakObject.Ref {
+    return try runtime.eval(
+      """
+      listener = () => {}
+      counter.addListener('change', listener)
+      listener
+      """
+    ).asObject().createWeak().ref()
+  }
+
+  /// Collects garbage in the main runtime and returns whether the object of the weak reference was collected.
+  private func isCollected(_ weakObject: JavaScriptWeakObject.Ref) throws -> Bool {
+    let mainRuntime = try runtime
+    return try mainRuntime.execute {
+      mainRuntime.collectGarbage { weakObject.withValue { $0?.lock() } == nil }
+      return weakObject.withValue { $0?.lock() } == nil
+    }
+  }
+
+  @Test
+  func `release() in the main runtime removes the listeners of a shared object that an attached runtime has`() throws {
+    let id = try createCounter()
+    let attachedRuntime = try appContext.addRuntime()
+    try attachedRuntime.eval("attachedCounter = expo.SharedObject.__resolveInWorklet(\(id))")
+    let listener = try addListener()
+    try runtime.eval("counter.release(); listener = undefined")
+    #expect(try isCollected(listener))
+  }
+
+  @Test
+  func `clearing the registry removes a listener added after release() in the main runtime`() throws {
+    let id = try createCounter()
+    let attachedRuntime = try appContext.addRuntime()
+    try attachedRuntime.eval("attachedCounter = expo.SharedObject.__resolveInWorklet(\(id))")
+    // A frozen JS object keeps its native state after `release()`, so `addListener` still finds it.
+    try runtime.eval("Object.freeze(counter); counter.release()")
+    let listener = try addListener()
+    try runtime.eval("listener = undefined")
+    appContext.sharedObjectRegistry.clear()
+    #expect(try isCollected(listener))
+  }
+
+  @Test
+  func `clearing the registry removes the listeners of a shared object released in an attached runtime`() throws {
+    let id = try createCounter()
+    let attachedRuntime = try appContext.addRuntime()
+    let listener = try addListener()
+    try attachedRuntime.eval("expo.SharedObject.__resolveInWorklet(\(id)).release()")
+    try runtime.eval("listener = undefined")
+    appContext.sharedObjectRegistry.clear()
+    #expect(try isCollected(listener))
+  }
+
+  @Test
+  func `returns a shared object to the main runtime with the native state of an attached runtime`() throws {
+    let id = try createCounter()
+    let nativeObject = try SharedObject.native(from: try runtime.eval("counter").asObject(), as: MacroCounter.self)
+    let nativeState = try #require(nativeObject.nativeState)
+    let attachedRuntime = try appContext.addRuntime()
+    try attachedRuntime.eval("attachedCounter = expo.SharedObject.__resolveInWorklet(\(id))")
+
+    let mainRuntime = try runtime
+    try mainRuntime.eval("counter = undefined")
+    try mainRuntime.execute {
+      mainRuntime.collectGarbage { nativeState.javaScriptObject(in: mainRuntime) == nil }
+    }
+    let returnedObject = try MacroCounter.encode(nativeObject, in: mainRuntime).asObject()
+    #expect(returnedObject.getNativeState(as: SharedObjectNativeState.self) === nativeState)
+    #expect(nativeObject.sharedObjectId == id)
+
+    // A release in the main runtime releases the object in the attached runtime too.
+    mainRuntime.global().setProperty("returnedCounter", value: returnedObject.asValue())
+    try mainRuntime.eval("returnedCounter.release()")
+    #expect(throws: (any Error).self) {
+      try attachedRuntime.eval("attachedCounter.increment(1)")
+    }
+  }
+
+  @Test
+  func `returns a new shared object to an attached runtime`() throws {
+    let id = try createCounter()
+    let attachedRuntime = try appContext.addRuntime()
+    let result = try attachedRuntime.eval(
+      """
+      attachedCounter = expo.SharedObject.__resolveInWorklet(\(id))
+      added = attachedCounter.added(attachedCounter)
+      added.increment(1)
+      """)
+    #expect(try result.asInt() == 3)
+    let addedObject = try attachedRuntime.eval("added").asObject()
+    #expect(try SharedObject.native(from: addedObject) is MacroCounter)
   }
 }

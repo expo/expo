@@ -17,8 +17,20 @@ public final class ViewPropsDecoder<Props: AnyViewProps>: @unchecked Sendable {
   /// The props that were skipped and already reported, to report each one only once.
   private let reportedSkippedProps = Mutex<Set<String>>([])
 
+  /// The names of the props, in the order that
+  /// ``decode(valuePointers:indexes:count:runtimePointer:previous:)`` indexes them.
+  @usableFromInline
+  internal let propNames: [Props.PropName]
+
   public init(viewName: String) {
     self.viewName = viewName
+    self.propNames = Array(Props.PropName.allCases)
+  }
+
+  /// The names of the props in JavaScript, in the order that
+  /// ``decode(valuePointers:indexes:count:runtimePointer:previous:)`` indexes them.
+  public var propNameStrings: [String] {
+    return propNames.map(\.rawValue)
   }
 
   /// Decodes the JavaScript props object at `propsPointer`, a `jsi::Value` of the `jsi::Runtime` at
@@ -40,7 +52,8 @@ public final class ViewPropsDecoder<Props: AnyViewProps>: @unchecked Sendable {
     // The props object lives only during this synchronous call, on this thread.
     nonisolated(unsafe) let propsPointer = propsPointer
     return JavaScriptActor.assumeIsolated {
-      var props = previous?.props ?? Props()
+      let (startProps, events) = startingProps(previous)
+      var props = startProps
       var changedProps = Props.PropSet()
 
       let object = JavaScriptUnownedValue(runtime, unsafeValuePointer: propsPointer).getObject(in: runtime)
@@ -59,8 +72,63 @@ public final class ViewPropsDecoder<Props: AnyViewProps>: @unchecked Sendable {
       if changedProps.isEmpty, let previous {
         return previous
       }
-      return DecodedViewProps(props: props, changedProps: changedProps, previous: previous)
+      return DecodedViewProps(props: props, changedProps: changedProps, previous: previous, events: events)
     }
+  }
+
+  /// Decodes `count` values of the props of `Props` into a copy of `previous`. `valuePointers[i]` points
+  /// to a `jsi::Value` of the `jsi::Runtime` at `runtimePointer`, and `indexes[i]` is the index of its
+  /// prop name in ``propNameStrings``. The caller already picked these values out of the props object,
+  /// so unlike ``decode(propsPointer:runtimePointer:previous:)`` it doesn't look up the keys. Returns
+  /// `previous` when no prop changes.
+  ///
+  /// A value that doesn't decode leaves the prop as it was and logs a warning. `null` and `undefined`
+  /// reset the prop to its value in `Props()`, because React sends `null` for a removed prop.
+  @inlinable
+  public func decode(
+    valuePointers: UnsafePointer<UnsafeRawPointer>,
+    indexes: UnsafePointer<Int>,
+    count: Int,
+    runtimePointer: UnsafeRawPointer,
+    previous: DecodedViewProps<Props>?
+  ) -> DecodedViewProps<Props>? {
+    guard let runtime = runtime(for: runtimePointer) else {
+      return previous
+    }
+    // The values live only during this synchronous call, on this thread.
+    nonisolated(unsafe) let valuePointers = valuePointers
+    nonisolated(unsafe) let indexes = indexes
+    return JavaScriptActor.assumeIsolated {
+      let (startProps, events) = startingProps(previous)
+      var props = startProps
+      var changedProps = Props.PropSet()
+
+      for i in 0..<count {
+        let name = propNames[indexes[i]]
+        let value = JavaScriptUnownedValue(runtime, unsafeValuePointer: valuePointers[i])
+        do {
+          try props._decode(name, from: value, in: runtime)
+          changedProps.insert(Props.propSet(for: name))
+        } catch {
+          reportUndecodableProp(name.rawValue, of: viewName, error: error)
+        }
+      }
+
+      if changedProps.isEmpty, let previous {
+        return previous
+      }
+      return DecodedViewProps(props: props, changedProps: changedProps, previous: previous, events: events)
+    }
+  }
+
+  /// Returns the props that a decode changes: a copy of the previous props, or the initial props with the events bound
+  /// to a new dispatcher.
+  @inlinable
+  internal func startingProps(_ previous: DecodedViewProps<Props>?) -> (props: Props, events: ViewEventDispatcher?) {
+    if let previous {
+      return (previous.props, previous.events)
+    }
+    return initialViewProps(Props.self)
   }
 
   /// Returns the runtime at the given address, or reports once that there is none.

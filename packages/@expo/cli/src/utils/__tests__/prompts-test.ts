@@ -23,9 +23,9 @@ describe(promptAsync, () => {
 
     expect(write.mock.calls).toEqual([
       [
-        '\x1b]7501;state=blocked:app=expo:kind=permission:msg=SW5zdGFsbCBleHBvLWRldi1jbGllbnQ/\x1b\\',
+        '\x1b]7501;state=blocked:app=expo:kind=permission:msg=SW5zdGFsbCBleHBvLWRldi1jbGllbnQ/:id=1\x1b\\',
       ],
-      ['\x1b]7501;state=clear\x1b\\'],
+      ['\x1b]7501;state=clear:id=1\x1b\\'],
     ]);
   });
 
@@ -36,7 +36,7 @@ describe(promptAsync, () => {
     );
 
     expect(write.mock.calls[0]).toEqual([
-      '\x1b]7501;state=blocked:app=expo:kind=auth:msg=T25lLXRpbWUgcGFzc3dvcmQ=\x1b\\',
+      '\x1b]7501;state=blocked:app=expo:kind=auth:msg=T25lLXRpbWUgcGFzc3dvcmQ=:id=2\x1b\\',
     ]);
   });
 
@@ -54,8 +54,8 @@ describe(promptAsync, () => {
     await confirmAsync({ message: 'Continue?' });
 
     expect(writesWhilePrompting).toEqual([
-      ['\x1b]7501;state=blocked:app=expo:kind=permission:msg=Q29udGludWU/\x1b\\'],
-      ['\x1b]7501;state=clear\x1b\\'],
+      ['\x1b]7501;state=blocked:app=expo:kind=permission:msg=Q29udGludWU/:id=3\x1b\\'],
+      ['\x1b]7501;state=clear:id=3\x1b\\'],
     ]);
   });
 });

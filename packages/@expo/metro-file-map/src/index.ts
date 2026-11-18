@@ -371,8 +371,8 @@ export default class FileMap extends EventEmitter {
         const rootDir = this.#options.rootDir;
         const ignorePattern = this.#options.ignorePattern;
         this.#startupPerfLogger?.point('constructFileSystem_start');
-        const processFile: ProcessFileFunction = async (normalPath, metadata, opts) => {
-          const result = await this.#fileProcessor.processRegularFile(normalPath, metadata, {
+        const processFile: ProcessFileFunction = (normalPath, metadata, opts) => {
+          const result = this.#fileProcessor.processRegularFile(normalPath, metadata, {
             computeSha1: opts.computeSha1,
             maybeReturnContent: true,
           });
@@ -705,7 +705,7 @@ export default class FileMap extends EventEmitter {
    * 4. Serialize a snapshot of our raw data via the configured cache manager
    */
   async #takeSnapshotAndPersist(
-    fileSystem: FileSystem,
+    fileSystem: MutableFileSystem,
     clocks: WatchmanClocks,
     plugins: readonly IndexedPlugin[],
     changedSinceCacheRead: boolean
@@ -715,7 +715,7 @@ export default class FileMap extends EventEmitter {
     await this.#cacheManager.write(
       () => ({
         clocks: new Map(clocks),
-        fileSystemData: fileSystem.getSerializableSnapshot(),
+        fileSystemData: fileSystem.getSerializableState(),
         plugins: new Map(
           plugins.map(({ plugin }) => [plugin.name, plugin.getSerializableSnapshot()])
         ),
@@ -921,7 +921,7 @@ export default class FileMap extends EventEmitter {
               if (change.metadata.type === 'l') {
                 await this.#maybeReadLink(relativeFilePath, fileMetadata);
               } else {
-                await this.#fileProcessor.processRegularFile(relativeFilePath, fileMetadata, {
+                this.#fileProcessor.processRegularFile(relativeFilePath, fileMetadata, {
                   computeSha1: this.#options.computeSha1,
                   maybeReturnContent: false,
                 });

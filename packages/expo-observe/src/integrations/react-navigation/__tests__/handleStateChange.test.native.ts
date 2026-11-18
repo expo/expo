@@ -61,7 +61,7 @@ function flushAsync() {
 }
 
 let storage: ReactNavigationIntegrationStorage;
-let handle: (state: NavigationStateLike | undefined) => void;
+let handle: ReturnType<typeof createStateChangeHandler>;
 let appLaunchTime: number;
 let logSpy: jest.SpyInstance;
 let warnSpy: jest.SpyInstance;
@@ -84,7 +84,7 @@ afterEach(() => {
 describe('createStateChangeHandler', () => {
   it('records cold_ttr with isAppLaunch=true on the first focused state', async () => {
     jest.spyOn(performance, 'now').mockReturnValue(appLaunchTime + 100);
-    handle(stackState([{ key: 'a' }]));
+    handle(stackState([{ key: 'a' }]), undefined);
     await flushAsync();
 
     expect(mockAddMetric).toHaveBeenCalledTimes(1);
@@ -99,12 +99,12 @@ describe('createStateChangeHandler', () => {
   });
 
   it('records cold_ttr with isAppLaunch=false on subsequent navigations to a new screen', async () => {
-    handle(stackState([{ key: 'a' }], 0));
+    handle(stackState([{ key: 'a' }], 0), undefined);
     await flushAsync();
     mockAddMetric.mockClear();
 
     storage.pendingActions.push({ actionType: 'NAVIGATE', dispatchTime: performance.now() });
-    handle(stackState([{ key: 'a' }, { key: 'b' }], 1));
+    handle(stackState([{ key: 'a' }, { key: 'b' }], 1), undefined);
     await flushAsync();
 
     expect(mockAddMetric).toHaveBeenCalledTimes(1);
@@ -116,15 +116,15 @@ describe('createStateChangeHandler', () => {
   });
 
   it('records warm_ttr when revisiting a previously focused screen', async () => {
-    handle(stackState([{ key: 'a' }], 0));
+    handle(stackState([{ key: 'a' }], 0), undefined);
     await flushAsync();
 
     storage.pendingActions.push({ actionType: 'NAVIGATE', dispatchTime: performance.now() });
-    handle(stackState([{ key: 'a' }, { key: 'b' }], 1));
+    handle(stackState([{ key: 'a' }, { key: 'b' }], 1), undefined);
     await flushAsync();
 
     storage.pendingActions.push({ actionType: 'GO_BACK', dispatchTime: performance.now() });
-    handle(stackState([{ key: 'a' }], 0));
+    handle(stackState([{ key: 'a' }], 0), undefined);
     await flushAsync();
 
     expect(mockAddMetric).toHaveBeenCalledTimes(3);
@@ -153,33 +153,33 @@ describe('createStateChangeHandler', () => {
       stale: false,
       key: 'root',
     } as NavigationStateLike;
-    handle(nested);
+    handle(nested, undefined);
     await flushAsync();
 
     expect(mockAddMetric.mock.calls[0][0].routeName).toBe('/Group/Details');
   });
 
   it('does not emit when the focused key is unchanged (param-only state update)', async () => {
-    handle(stackState([{ key: 'a' }]));
+    handle(stackState([{ key: 'a' }]), undefined);
     await flushAsync();
     mockAddMetric.mockClear();
 
-    handle(stackState([{ key: 'a', params: { x: '1' } }]));
+    handle(stackState([{ key: 'a', params: { x: '1' } }]), undefined);
     await flushAsync();
     expect(mockAddMetric).not.toHaveBeenCalled();
   });
 
   it('emits cold_ttr for first focus of each tab; tab siblings are not preemptively marked', async () => {
-    handle(tabState([{ key: 'home' }, { key: 'settings' }], 0));
+    handle(tabState([{ key: 'home' }, { key: 'settings' }], 0), undefined);
     await flushAsync();
     mockAddMetric.mockClear();
 
     storage.pendingActions.push({ actionType: 'JUMP_TO', dispatchTime: performance.now() });
-    handle(tabState([{ key: 'home' }, { key: 'settings' }], 1));
+    handle(tabState([{ key: 'home' }, { key: 'settings' }], 1), undefined);
     await flushAsync();
 
     storage.pendingActions.push({ actionType: 'JUMP_TO', dispatchTime: performance.now() });
-    handle(tabState([{ key: 'home' }, { key: 'settings' }], 0));
+    handle(tabState([{ key: 'home' }, { key: 'settings' }], 0), undefined);
     await flushAsync();
 
     expect(mockAddMetric).toHaveBeenCalledTimes(2);
@@ -188,7 +188,7 @@ describe('createStateChangeHandler', () => {
   });
 
   it('passes the focused route params through as routeParams on the emitted metric', async () => {
-    handle(stackState([{ key: 'a', name: 'A', params: { id: '42' } }]));
+    handle(stackState([{ key: 'a', name: 'A', params: { id: '42' } }]), undefined);
     await flushAsync();
 
     expect(mockAddMetric.mock.calls[0][0].params).toEqual({
@@ -211,7 +211,8 @@ describe('createStateChangeHandler', () => {
           key: 'a',
           params: { userId: '1', tab: 'home', callback: () => {}, circular },
         },
-      ])
+      ]),
+      undefined
     );
     await flushAsync();
 
@@ -228,12 +229,12 @@ describe('createStateChangeHandler', () => {
   });
 
   it('backfills dispatchTime on every mounted screen during a warm focus change', async () => {
-    handle(stackState([{ key: 'a' }], 0));
+    handle(stackState([{ key: 'a' }], 0), undefined);
     await flushAsync();
 
     const dispatchTime = performance.now();
     storage.pendingActions.push({ actionType: 'NAVIGATE', dispatchTime });
-    handle(stackState([{ key: 'a' }, { key: 'b' }], 1));
+    handle(stackState([{ key: 'a' }, { key: 'b' }], 1), undefined);
     await flushAsync();
 
     expect(storage.screenTimes['a']?.dispatchTime).toBe(appLaunchTime);
@@ -241,20 +242,20 @@ describe('createStateChangeHandler', () => {
   });
 
   it('treats undefined state as a no-op', async () => {
-    handle(undefined);
+    handle(undefined, undefined);
     await flushAsync();
     expect(mockAddMetric).not.toHaveBeenCalled();
   });
 
   it('adds non-focused mounted stack screens to renderedScreensIds so revisits become warm_ttr', async () => {
-    handle(stackState([{ key: 'a' }, { key: 'b' }], 1));
+    handle(stackState([{ key: 'a' }, { key: 'b' }], 1), undefined);
     await flushAsync();
     expect(storage.renderedScreensIds.has('a')).toBe(true);
     expect(storage.renderedScreensIds.has('b')).toBe(true);
 
     mockAddMetric.mockClear();
     storage.pendingActions.push({ actionType: 'GO_BACK', dispatchTime: performance.now() });
-    handle(stackState([{ key: 'a' }], 0));
+    handle(stackState([{ key: 'a' }], 0), undefined);
     await flushAsync();
 
     expect(mockAddMetric).toHaveBeenCalledTimes(1);
@@ -263,7 +264,7 @@ describe('createStateChangeHandler', () => {
 
   it('emits tti alongside the TTR when a pending interactive was waiting (post-cold-launch)', async () => {
     // Cold-launch the first screen so the next focus runs through the warm branch.
-    handle(stackState([{ key: 'a' }], 0));
+    handle(stackState([{ key: 'a' }], 0), undefined);
     await flushAsync();
     mockAddMetric.mockClear();
 
@@ -274,7 +275,7 @@ describe('createStateChangeHandler', () => {
     const dispatchTime = performance.now();
     storage.pendingActions.push({ actionType: 'NAVIGATE', dispatchTime });
     jest.spyOn(performance, 'now').mockReturnValue(dispatchTime + 50);
-    handle(stackState([{ key: 'a' }, { key: 'b' }], 1));
+    handle(stackState([{ key: 'a' }, { key: 'b' }], 1), undefined);
     await flushAsync();
 
     expect(mockAddMetric).toHaveBeenCalledTimes(2);
@@ -291,7 +292,7 @@ describe('createStateChangeHandler', () => {
   it('emits tti = cold_ttr when a pending interactive was waiting during cold launch', async () => {
     storage.screenTimes['a'] = { lastInteractiveCall: performance.now() };
     jest.spyOn(performance, 'now').mockReturnValue(appLaunchTime + 200);
-    handle(stackState([{ key: 'a' }], 0));
+    handle(stackState([{ key: 'a' }], 0), undefined);
     await flushAsync();
 
     expect(mockAddMetric).toHaveBeenCalledTimes(2);
@@ -303,13 +304,13 @@ describe('createStateChangeHandler', () => {
   });
 
   it('marks lastInteractiveCall after a deferred emit so a follow-up markInteractive is deduped', async () => {
-    handle(stackState([{ key: 'a' }], 0));
+    handle(stackState([{ key: 'a' }], 0), undefined);
     await flushAsync();
 
     storage.screenTimes['b'] = { lastInteractiveCall: 1000 };
     storage.pendingActions.push({ actionType: 'NAVIGATE', dispatchTime: 2000 });
     jest.spyOn(performance, 'now').mockReturnValue(2100);
-    handle(stackState([{ key: 'a' }, { key: 'b' }], 1));
+    handle(stackState([{ key: 'a' }, { key: 'b' }], 1), undefined);
     await flushAsync();
 
     // After handleStateChange: lastInteractiveCall > dispatchTime, which
@@ -322,15 +323,88 @@ describe('createStateChangeHandler', () => {
   });
 
   it('does not emit tti when no pending interactive is waiting', async () => {
-    handle(stackState([{ key: 'a' }], 0));
+    handle(stackState([{ key: 'a' }], 0), undefined);
     await flushAsync();
     mockAddMetric.mockClear();
 
     storage.pendingActions.push({ actionType: 'NAVIGATE', dispatchTime: performance.now() });
-    handle(stackState([{ key: 'a' }, { key: 'b' }], 1));
+    handle(stackState([{ key: 'a' }, { key: 'b' }], 1), undefined);
     await flushAsync();
 
     const ttiCalls = mockAddMetric.mock.calls.filter((c) => c[0].name === 'tti');
     expect(ttiCalls).toHaveLength(0);
+  });
+
+  describe('navigation total blocking time', () => {
+    let blockingTime: { start: jest.Mock; setMetric: jest.Mock; dispose: jest.Mock };
+
+    beforeEach(async () => {
+      blockingTime = { start: jest.fn(), setMetric: jest.fn(), dispose: jest.fn() };
+      handle(tabState([{ key: 'home' }, { key: 'settings' }], 0), blockingTime);
+      await flushAsync();
+    });
+
+    it('sets the tbt metric for the destination route at the focus time', async () => {
+      storage.pendingActions.push({ actionType: 'NAVIGATE', dispatchTime: 1000 });
+      jest.spyOn(performance, 'now').mockReturnValue(1250);
+      handle(
+        stackState([{ key: 'a' }, { key: 'b', name: 'B', params: { q: '1' } }], 1),
+        blockingTime
+      );
+      await flushAsync();
+
+      expect(blockingTime.setMetric).toHaveBeenCalledWith(
+        {
+          timestamp: expect.any(String),
+          category: 'navigation',
+          name: 'tbt',
+          routeName: '/B',
+          params: { routeParams: { q: '1' } },
+        },
+        1250
+      );
+    });
+
+    it('filters route params from tbt', async () => {
+      initModule.getReactNavigationIntegrationConfig.mockReturnValue({ filteredParams: ['token'] });
+      storage.pendingActions.push({ actionType: 'NAVIGATE', dispatchTime: performance.now() });
+      handle(
+        stackState([{ key: 'a' }, { key: 'b', params: { token: 'secret' } }], 1),
+        blockingTime
+      );
+      await flushAsync();
+
+      expect(blockingTime.setMetric.mock.lastCall[0].params).toEqual({
+        routeParams: {},
+        urlHidden: true,
+      });
+    });
+
+    it('sets the tbt metric only on the first focus of a screen after app launch', async () => {
+      for (const index of [1, 0, 1]) {
+        storage.pendingActions.push({ actionType: 'JUMP_TO', dispatchTime: performance.now() });
+        handle(tabState([{ key: 'home' }, { key: 'settings' }], index), blockingTime);
+        await flushAsync();
+      }
+
+      expect(blockingTime.setMetric).toHaveBeenCalledTimes(1);
+      expect(blockingTime.setMetric).toHaveBeenCalledWith(
+        expect.objectContaining({ routeName: '/settings' }),
+        expect.any(Number)
+      );
+    });
+
+    it('sets the tbt metric on the first focus of a screen that was mounted unfocused', async () => {
+      for (const index of [0, 1]) {
+        storage.pendingActions.push({ actionType: 'NAVIGATE', dispatchTime: performance.now() });
+        handle(stackState([{ key: 'a' }, { key: 'b' }], index), blockingTime);
+        await flushAsync();
+      }
+
+      expect(blockingTime.setMetric.mock.calls.map(([metric]) => metric.routeName)).toEqual([
+        '/a',
+        '/b',
+      ]);
+    });
   });
 });

@@ -11,6 +11,11 @@ public final class DecodedViewProps<Props: AnyViewProps>: @unchecked Sendable {
   /// The props.
   public let props: Props
 
+  /// The dispatcher that the event props are bound to, or `nil` when the props have no events. All decodes in the
+  /// lineage share it.
+  @usableFromInline
+  internal let events: ViewEventDispatcher?
+
   /// Identifies the chain of decodes that this one belongs to. Every decode from previous props keeps
   /// it, and a decode without previous props starts a new one.
   @usableFromInline
@@ -27,19 +32,34 @@ public final class DecodedViewProps<Props: AnyViewProps>: @unchecked Sendable {
   // A designated initializer of a class can't be `@inlinable` with library evolution (the precompiled
   // XCFrameworks), so the inlinable initializer below computes the values and delegates to this one.
   @usableFromInline
-  internal init(props: Props, lineage: UInt64, revision: UInt64, propRevisions: [UInt64]) {
+  internal init(
+    props: Props,
+    events: ViewEventDispatcher?,
+    lineage: UInt64,
+    revision: UInt64,
+    propRevisions: [UInt64]
+  ) {
     self.props = props
+    self.events = events
     self.lineage = lineage
     self.revision = revision
     self.propRevisions = propRevisions
   }
 
+  /// Creates the next decode of `previous`, or the first decode of a lineage when `previous` is `nil`. Then `events` is
+  /// the dispatcher that the event props of `props` are bound to. Later decodes take the one of `previous`.
   @inlinable
-  internal convenience init(props: Props, changedProps: Props.PropSet, previous: DecodedViewProps<Props>?) {
+  internal convenience init(
+    props: Props,
+    changedProps: Props.PropSet,
+    previous: DecodedViewProps<Props>?,
+    events: ViewEventDispatcher? = nil
+  ) {
     guard let previous else {
       // `allProps` has one bit for each prop. `PropName.allCases` would make an array on each call.
       self.init(
         props: props,
+        events: events,
         lineage: nextViewPropsLineage(),
         revision: 1,
         propRevisions: Array(repeating: 1, count: Props.allProps.rawValue.nonzeroBitCount)
@@ -54,7 +74,13 @@ public final class DecodedViewProps<Props: AnyViewProps>: @unchecked Sendable {
       propRevisions[changedBits.trailingZeroBitCount] = revision
       changedBits &= changedBits - 1
     }
-    self.init(props: props, lineage: previous.lineage, revision: revision, propRevisions: propRevisions)
+    self.init(
+      props: props,
+      events: previous.events,
+      lineage: previous.lineage,
+      revision: revision,
+      propRevisions: propRevisions
+    )
   }
 
   /// Returns the props that changed since the given props. All props when `older` is `nil` or isn't an

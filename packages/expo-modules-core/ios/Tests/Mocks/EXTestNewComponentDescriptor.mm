@@ -66,6 +66,11 @@ namespace views = expo::views;
   return (__bridge id)static_cast<const views::NewViewProps &>(*_props).decodedProps.get();
 }
 
+- (void)reset
+{
+  _props = nullptr;
+}
+
 - (float)opacity
 {
   return _props ? static_cast<const views::NewViewProps &>(*_props).opacity : 1;

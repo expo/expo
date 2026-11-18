@@ -11,7 +11,7 @@ import expo.modules.widgets.WIDGET_INTERACTION_TARGET_EXTRA
 import expo.modules.widgets.WidgetsEvents
 import expo.modules.widgets.WidgetsStorage
 import expo.modules.widgets.evaluateWidgetButtonPress
-import expo.modules.widgets.getWidgetEnvironment
+import expo.modules.widgets.getCommonEnvironment
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -44,7 +44,7 @@ class ExpoWidgetsNotificationReceiver : BroadcastReceiver() {
       CustomNotifications.shared.update(context, name, notificationId) { active ->
         val layout = WidgetsStorage.getString(context, "__expo_widgets_notification_${name}_layout")
           ?.takeIf { it.isNotEmpty() } ?: return@update null
-        val environment = getWidgetEnvironment(context) + ("target" to target)
+        val environment = getCommonEnvironment(context) + ("target" to target)
         val updatedProps = evaluateWidgetButtonPress(context, layout, active.props, environment) ?: return@update null
         active.copy(props = active.props.orEmpty() + updatedProps)
       }

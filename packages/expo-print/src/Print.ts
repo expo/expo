@@ -15,6 +15,7 @@ export type {
   FilePrintResult,
   OrientationType,
   PageMargins,
+  PaperSize,
   PrintOptions,
   Printer,
 } from './Print.types';

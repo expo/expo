@@ -1,5 +1,5 @@
 import NativeModule from '../ExpoAI';
-import { Tools } from '../apple';
+import { createSessionAsync as createAppleSessionAsync, Guardrails, Tools } from '../apple';
 import { createSessionAsync, generateAsync, getAvailabilityAsync, schema } from '../index';
 import { availableModel, FakeSession, nativeResult } from './fixtures/FakeSession';
 
@@ -21,6 +21,26 @@ beforeEach(() => {
   nativeModule.getAvailabilityAsync
     .mockReset()
     .mockResolvedValue(availableModel({ imageTools: 'supported' }));
+});
+
+it('passes Apple guardrails only through the Apple session entrypoint', async () => {
+  await createAppleSessionAsync({ guardrails: 'permissiveContentTransformations' });
+  expect(JSON.parse(nativeModule.createSessionAsync.mock.calls[0]![0])).toMatchObject({
+    guardrails: 'permissiveContentTransformations',
+  });
+
+  nativeModule.createSessionAsync.mockClear();
+  await createAppleSessionAsync({ guardrails: Guardrails.default });
+  expect(JSON.parse(nativeModule.createSessionAsync.mock.calls[0]![0])).toMatchObject({
+    guardrails: 'default',
+  });
+
+  await expect(createAppleSessionAsync({ guardrails: 'unknown' as never })).rejects.toMatchObject({
+    code: 'ERR_OPTIONS_INVALID',
+  });
+  await expect(
+    createSessionAsync({ guardrails: Guardrails.default } as never)
+  ).rejects.toMatchObject({ code: 'ERR_OPTIONS_INVALID' });
 });
 
 it('reports image tools independently of model vision and checks both requirements', async () => {
@@ -306,3 +326,14 @@ it.each([
     code: 'ERR_PROVIDER_RESPONSE_INVALID',
   });
 });
+
+it.each(['browser-prompt-api', 'android-ml-kit'] as const)(
+  'rejects Apple guardrails on %s before creating a session',
+  async (provider) => {
+    nativeModule.getAvailabilityAsync.mockResolvedValue(availableModel({ provider }));
+    await expect(
+      createAppleSessionAsync({ guardrails: 'permissiveContentTransformations' })
+    ).rejects.toMatchObject({ code: 'ERR_UNSUPPORTED_FEATURE' });
+    expect(nativeModule.createSessionAsync).not.toHaveBeenCalled();
+  }
+);

@@ -593,6 +593,9 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
   }
 
   func onLoadingFailed(loader: VideoSourceLoader, videoSource: VideoSource?, error: Error) {
+    // AVPlayer calls the removal's callbacks synchronously. They set `idle` and clear `error`, so remove
+    // the item while `isLoadingAsynchronously` still blocks `idle`, and set the error after it.
+    player?.replaceCurrentItem(with: nil)
     isLoadingAsynchronously = false
     self.error = error as? Exception ?? PlayerItemLoadException(error.localizedDescription)
     status = .error

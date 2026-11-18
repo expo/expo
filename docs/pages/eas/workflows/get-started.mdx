@@ -5,9 +5,29 @@ description: Learn how to use Expo Workflows to automate your React Native CI/CD
 searchRank: 10
 ---
 
+import { AgentPrompt } from '~/ui/components/AgentPrompt';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+
+<AgentPrompt
+  title="Run your first workflow with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent.">
+
+```text wrap
+Create and run my first workflow with Expo Workflows. The workflow creates development builds for Android and iOS. Use https://docs.expo.dev/eas/workflows/get-started.md as the source for each command.
+
+1. Check that EAS CLI is installed and up to date. If it is not, run `npm install -g eas-cli`.
+2. Check that I am logged in with `eas whoami`. If I am not, stop and ask me to run `eas login` or to set `EXPO_TOKEN`. Do not print a token.
+3. If .eas/workflows/build.yml does not exist, ask me to run `eas workflow:create --template build` in my terminal, because the command asks questions. Continue when the file exists.
+4. Ask me if I want to install the iOS development build on a physical device. If I do, ask me to run `eas credentials:configure-build -p ios -e development` in my terminal, because it asks me to sign in to my Apple Developer account and to register my device. Do not ask for my Apple ID or password. If I do not, remove the `ios_device_development_build` job from .eas/workflows/build.yml, because that job fails when the project has no iOS credentials.
+5. Run `eas workflow:run .eas/workflows/build.yml --non-interactive --wait --json`.
+6. If the run fails, find the failed job in the JSON output, run `eas workflow:logs <job ID> --non-interactive`, and tell me which job failed and why. Do not change credentials or eas.json without asking me.
+7. Give me the workflow run link from the command output. Tell me which commands you ran.
+8. Give me the commands from the page to install the builds on an Android Emulator or iOS Simulator, and to start the development server.
+```
+
+</AgentPrompt>
 
 This page walks you through creating your first workflow with Expo Workflows: development builds of your app for Android emulators, iOS simulators, physical devices, and production builds for the app stores.
 
@@ -22,10 +42,10 @@ This page walks you through creating your first workflow with Expo Workflows: de
 
     <Terminal
       cmd={{
-        npm: ['$ npx create-expo-app@latest --template default@sdk-58'],
-        yarn: ['$ yarn create expo-app --template default@sdk-58'],
-        pnpm: ['$ pnpm create expo-app --template default@sdk-58'],
-        bun: ['$ bun create expo --template default@sdk-58'],
+        npm: ['$ npx create-expo-app@latest'],
+        yarn: ['$ yarn create expo-app'],
+        pnpm: ['$ pnpm create expo-app'],
+        bun: ['$ bun create expo'],
       }}
     />
 

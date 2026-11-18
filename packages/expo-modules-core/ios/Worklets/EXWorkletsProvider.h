@@ -29,6 +29,14 @@ NS_SWIFT_NAME(WorkletsProvider)
                                          holderPointer:(const void *)holderPointer
     NS_SWIFT_NAME(uiRuntimePointer(runtimePointer:holderPointer:));
 
+// Returns an opaque scheduler handle for the worklet runtime with the given `jsi::Runtime` pointer and sets
+// `dispatch` to a `void (*)(void *scheduler, int priority, void (^callback)())` function that runs the callback
+// on the thread of that runtime. Both go to `JavaScriptRuntime.init(unsafePointer:scheduler:dispatch:)`. The
+// handle stays valid for the lifetime of the process. Returns NULL when the pointer isn't a live worklet runtime.
+- (void * _Nullable)schedulerWithRuntimePointer:(void *)runtimePointer
+                                       dispatch:(const void * _Nullable * _Nonnull)dispatch
+    NS_SWIFT_NAME(scheduler(runtimePointer:dispatch:));
+
 - (void)scheduleWorkletWithRuntimeHandle:(id)runtimeHandle
                             serializable:(EXJavaScriptSerializable *)serializable
                                arguments:(NSArray *)arguments

@@ -83,6 +83,8 @@ Environment variables are not the only thing a job can interpolate. The same `${
 
 Fields from the GitHub event that triggered the workflow. When you start a run with `eas workflow:run`, `event_name` is `workflow_dispatch` and the other fields are empty.
 
+If you pass `--git-branch` and `--git-commit-hash`, `event_name` is `push` instead. The `sha` and `commit_message` fields come from the commit, and `ref`, `ref_name`, and `ref_type` come from the branch. The `repository` and `repository_owner` fields stay empty. The `event` field is not set, so read run inputs from the [`inputs`](#inputs) context, not from `github.event.inputs`.
+
 ```js
 github {
   triggering_actor,   // User who triggered the run, e.g. jonexpo
