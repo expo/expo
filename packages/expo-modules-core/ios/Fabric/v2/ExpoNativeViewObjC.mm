@@ -14,6 +14,7 @@
 #include <mutex>
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 namespace react = facebook::react;
 namespace jsi = facebook::jsi;
@@ -58,9 +59,20 @@ std::unordered_map<std::string, std::shared_ptr<const views::NewComponentFlavor>
   return flavors;
 }
 
-bool keepsDirectChildren(Class viewClass)
+std::shared_ptr<const views::NewComponentFlavor> makeComponentFlavor(
+  Class viewClass,
+  std::string name,
+  std::shared_ptr<const views::NewPropsDecoder> decoder
+)
 {
-  return [viewClass isSubclassOfClass:[ExpoSwiftUIViewObjC class]];
+  // SwiftUI renders the children of these views and places the views.
+  const bool isSwiftUIView = [viewClass isSubclassOfClass:[ExpoSwiftUIViewObjC class]];
+  return std::make_shared<const views::NewComponentFlavor>(views::NewComponentFlavor{
+    .name = std::move(name),
+    .decoder = std::move(decoder),
+    .keepsDirectChildren = isSwiftUIView,
+    .hasZeroContentOrigin = isSwiftUIView,
+  });
 }
 
 } // namespace
@@ -74,11 +86,7 @@ react::ComponentDescriptorProvider componentDescriptorProvider(Class viewClass)
 
   if (!flavor) {
     RCTLogError(@"The view class '%s' isn't registered with a props decoder, so its props aren't decoded", className.c_str());
-    flavor = std::make_shared<const NewComponentFlavor>(NewComponentFlavor{
-      .name = className,
-      .decoder = std::make_shared<NoPropsDecoder>(),
-      .keepsDirectChildren = keepsDirectChildren(viewClass),
-    });
+    flavor = makeComponentFlavor(viewClass, className, std::make_shared<NoPropsDecoder>());
   }
   return NewComponentDescriptor::provider(flavor);
 }
@@ -162,11 +170,7 @@ react::ComponentDescriptorProvider componentDescriptorProvider(Class viewClass)
   auto &flavor = componentFlavors()[className];
 
   if (!flavor) {
-    flavor = std::make_shared<const views::NewComponentFlavor>(views::NewComponentFlavor{
-      .name = className,
-      .decoder = std::make_shared<views::ObjCPropsDecoder>(propsDecoder),
-      .keepsDirectChildren = keepsDirectChildren(viewClass),
-    });
+    flavor = makeComponentFlavor(viewClass, className, std::make_shared<views::ObjCPropsDecoder>(propsDecoder));
   }
   [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
 }

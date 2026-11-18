@@ -13,6 +13,7 @@
 #include <string>
 
 #include <hermes/hermes.h>
+#include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/utils/ContextContainer.h>
 
@@ -50,9 +51,15 @@ namespace views = expo::views;
 namespace {
 
 /**
- Returns the traits of a shadow node that the descriptor of the given component creates.
+ A shadow node that the descriptor of a component creates. It keeps the descriptor, because the family of the node
+ refers to it.
  */
-react::ShadowNodeTraits shadowNodeTraits(const react::ComponentDescriptorProvider &provider)
+struct TestShadowNode {
+  react::ComponentDescriptor::Unique descriptor;
+  std::shared_ptr<react::ShadowNode> node;
+};
+
+TestShadowNode createShadowNode(const react::ComponentDescriptorProvider &provider)
 {
   auto contextContainer = std::make_shared<react::ContextContainer>();
   auto descriptor = provider.constructor(react::ComponentDescriptorParameters{
@@ -63,7 +70,8 @@ react::ShadowNodeTraits shadowNodeTraits(const react::ComponentDescriptorProvide
   react::PropsParserContext context{-1, *contextContainer};
   auto props = descriptor->cloneProps(context, nullptr, react::RawProps());
   auto family = descriptor->createFamily({.tag = 1, .surfaceId = 1, .instanceHandle = nullptr});
-  return descriptor->createShadowNode({.props = props}, family)->getTraits();
+  auto node = descriptor->createShadowNode({.props = props}, family);
+  return {.descriptor = std::move(descriptor), .node = std::move(node)};
 }
 
 } // namespace
@@ -158,13 +166,43 @@ react::ShadowNodeTraits shadowNodeTraits(const react::ComponentDescriptorProvide
   [ExpoNativeViewObjC registerComponentViewClass:[TestSwiftUIViewObjC class]
                                     propsDecoder:[NewObjectViewPropsDecoder new]];
   auto keepsDirectChildren = [](Class viewClass) {
-    return shadowNodeTraits(views::componentDescriptorProvider(viewClass))
+    return createShadowNode(views::componentDescriptorProvider(viewClass))
+      .node->getTraits()
       .check(react::ShadowNodeTraits::Trait::ChildrenFormStackingContext);
   };
 
   // Each direct child of a SwiftUI view is an element of its `children`, so Fabric must not flatten it.
   XCTAssertTrue(keepsDirectChildren([TestSwiftUIViewObjC class]));
   XCTAssertFalse(keepsDirectChildren([RecordingNativeViewObjC class]));
+}
+
+- (void)testMeasuringSkipsTheLayoutOriginOfSwiftUIViews
+{
+  [ExpoNativeViewObjC registerComponentViewClass:[TestSwiftUIViewObjC class]
+                                    propsDecoder:[NewObjectViewPropsDecoder new]];
+  // The offset that `measure()` adds for a view to the positions of its descendants, for a view at (30, 40).
+  auto contentOriginOffset = [](Class viewClass, bool includeTransform) {
+    auto shadowNode = createShadowNode(views::componentDescriptorProvider(viewClass));
+    auto &node = static_cast<react::LayoutableShadowNode &>(*shadowNode.node);
+    auto layoutMetrics = node.getLayoutMetrics();
+    layoutMetrics.frame.origin = {.x = 30, .y = 40};
+    node.setLayoutMetrics(layoutMetrics);
+    return node.getContentOriginOffset(includeTransform);
+  };
+
+  // SwiftUI places the view, not Yoga, so the offset takes its layout origin away.
+  auto swiftUIOffset = contentOriginOffset([TestSwiftUIViewObjC class], true);
+  XCTAssertEqual(swiftUIOffset.x, -30);
+  XCTAssertEqual(swiftUIOffset.y, -40);
+
+  // Without the transform, the caller asks for a scroll offset, which the view doesn't have.
+  auto scrollOffset = contentOriginOffset([TestSwiftUIViewObjC class], false);
+  XCTAssertEqual(scrollOffset.x, 0);
+  XCTAssertEqual(scrollOffset.y, 0);
+
+  auto uiKitOffset = contentOriginOffset([RecordingNativeViewObjC class], true);
+  XCTAssertEqual(uiKitOffset.x, 0);
+  XCTAssertEqual(uiKitOffset.y, 0);
 }
 
 @end
