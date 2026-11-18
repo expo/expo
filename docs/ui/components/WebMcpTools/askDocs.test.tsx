@@ -11,23 +11,25 @@ type ChatState = {
   };
 };
 
-const executeCaptchaBeforeReady = async () => null;
-const executeCaptchaWhenReady = async () => ({
+type ExecuteCaptcha = () => Promise<{ token: string; key: string } | null>;
+
+const executeCaptchaBeforeReadyAsync: ExecuteCaptcha = async () => null;
+const executeCaptchaWhenReadyAsync: ExecuteCaptcha = async () => ({
   token: 'token',
   key: 'X-RECAPTCHA-ENTERPRISE-TOKEN',
 });
-let currentExecuteCaptcha = executeCaptchaBeforeReady;
+let currentExecuteCaptcha = executeCaptchaBeforeReadyAsync;
 const submitQuery = jest.fn(
-  (_question: string) => currentExecuteCaptcha === executeCaptchaWhenReady
+  (_question: string) => currentExecuteCaptcha === executeCaptchaWhenReadyAsync
 );
 let chatState: ChatState;
 
 jest.unstable_mockModule('@kapaai/react-sdk', () => ({
   KapaProvider: ({ children }: PropsWithChildren) => children,
   useCaptcha: () => {
-    const [executeCaptcha, setExecuteCaptcha] = useState(() => executeCaptchaBeforeReady);
+    const [executeCaptcha, setExecuteCaptcha] = useState(() => executeCaptchaBeforeReadyAsync);
     useEffect(() => {
-      setExecuteCaptcha(() => executeCaptchaWhenReady);
+      setExecuteCaptcha(() => executeCaptchaWhenReadyAsync);
     }, []);
     currentExecuteCaptcha = executeCaptcha;
     return { executeCaptcha };
