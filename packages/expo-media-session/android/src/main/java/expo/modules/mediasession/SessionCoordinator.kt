@@ -84,6 +84,10 @@ internal class SessionCoordinator(
   val pendingActivationCount: Int
     get() = snapshot.pendingActivationCount
 
+  // Coordinator thread only.
+  val effectiveInterruptionMode: InterruptionMode
+    get() = SessionResolver.resolve(policy, entries.map { it.requirements }).interruptionMode
+
   init {
     backend.onFocusChange = ::onFocusChange
   }
