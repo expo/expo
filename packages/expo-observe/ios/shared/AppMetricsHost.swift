@@ -21,17 +21,24 @@ struct AppMetricsHost: Sendable {
 }
 
 extension AppMetrics {
-  private static let hostValue = WriteOnce(AppMetricsHost())
+  private static let hostState = Mutex<(host: AppMetricsHost, isSet: Bool)>((AppMetricsHost(), false))
 
   /// The host values, or the defaults until `configure(_:)` runs.
   static var host: AppMetricsHost {
-    return hostValue.value
+    return hostState.withLock { $0.host }
   }
 
   /// Sets the host values. Call once at launch, before the main session starts. A second call is
   /// ignored with a warning.
   static func configure(_ host: AppMetricsHost) {
-    if !hostValue.set(host) {
+    let didSet = hostState.withLock { state in
+      guard !state.isSet else {
+        return false
+      }
+      state = (host, true)
+      return true
+    }
+    if !didSet {
       logger.warn(
         "[AppMetrics] Ignoring `configure`: the host values were already set. Call it once at launch, before the main session starts."
       )
