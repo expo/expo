@@ -209,6 +209,21 @@ module Expo
         }
       end
 
+      def prebuild_disabled_condition(pod_name)
+        conditions = pod_lookup_map[pod_name]&.dig(:prebuild_disabled_when)
+        return nil unless conditions.is_a?(Array) && conditions.any?
+
+        properties = read_podfile_properties(Pod::Config.instance.installation_root)
+        conditions.find do |condition|
+          next false unless condition.is_a?(Hash)
+
+          property = condition['podfileProperty']
+          next false unless property
+
+          properties[property] == condition['value']
+        end
+      end
+
       # @react-native-community/cli autolinking output (same shape as RN CLI's `config`).
       # Used to locate 3rd-party packages via real node resolution so non-flat node_modules
       # layouts (pnpm non-hoisted, yarn PnP, aliased specifiers) resolve correctly.
@@ -1710,7 +1725,8 @@ module Expo
             spm_dependency_frameworks: spm_dependency_frameworks,
             spm_dependency_versions: spm_dependency_versions,
             prebuilt_dependency_pods: prebuilt_dependency_pods(product['externalDependencies']),
-            autolink_when: product['autolinkWhen']
+            autolink_when: product['autolinkWhen'],
+            prebuild_disabled_when: product['prebuildDisabledWhen']
           }
         end
       rescue JSON::ParserError, StandardError => e
@@ -1792,7 +1808,8 @@ module Expo
           spm_dependency_frameworks: spm_dependency_frameworks,
           spm_dependency_versions: spm_dependency_versions,
           prebuilt_dependency_pods: prebuilt_dependency_pods(product['externalDependencies']),
-          autolink_when: product['autolinkWhen']
+          autolink_when: product['autolinkWhen'],
+          prebuild_disabled_when: product['prebuildDisabledWhen']
         }
       end
 
@@ -2141,6 +2158,9 @@ module Expo
 
       def _resolve_prebuilt_status_uncached(pod_name, visiting)
         return { available: false, reason: :build_from_source } if build_from_source?(pod_name)
+        if (condition = prebuild_disabled_condition(pod_name))
+          return { available: false, reason: :prebuild_disabled_by_property, condition: condition }
+        end
         return { available: true } if visiting.include?(pod_name)
 
         own_resolution = resolve_own_prebuilt_info(pod_name)
@@ -2619,6 +2639,9 @@ module Expo
         case info[:reason]
         when :build_from_source
           'configured by buildFromSource'
+        when :prebuild_disabled_by_property
+          condition = info[:condition] || {}
+          "disabled by #{condition['podfileProperty']}"
         when :missing_config
           'prebuilt config not found'
         when :missing_tarball

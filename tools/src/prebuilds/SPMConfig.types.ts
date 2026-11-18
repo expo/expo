@@ -229,6 +229,11 @@ export type AutolinkWhen =
       npmPackage?: never;
     };
 
+export interface PrebuildDisabledWhen {
+  podfileProperty: string;
+  value: string;
+}
+
 /** Escape hatch: have a package-owned script produce the xcframework instead of the SPM generator. */
 export interface CustomBuild {
   /** Path to the build script, relative to the package root. */
@@ -266,6 +271,9 @@ export interface SPMProduct {
   /** When set, this product's pod is registered as a companion pod and linked only when the
    * condition holds. Consumed by `precompiled_modules.rb`, not by the prebuild pipeline. */
   autolinkWhen?: AutolinkWhen;
+  /** When any condition matches, CocoaPods builds this product from source instead of using
+   * its prebuilt XCFramework. */
+  prebuildDisabledWhen?: PrebuildDisabledWhen[];
   /** The React Native codegen module name (from package.json codegenConfig.name). Only required for packages that use React Native codegen. */
   codegenName?: string;
   /** Supported platforms for this product */
