@@ -2,8 +2,6 @@ import Animated, { getAnimatedStyle, setUpTests, useAnimatedStyle } from 'react-
 
 import { renderRouter, screen } from '../testing-library';
 
-const { getAnimatedStyle, setUpTests } = require('react-native-reanimated');
-
 setUpTests();
 
 it('supports Reanimated animated style assertions in routes', async () => {
