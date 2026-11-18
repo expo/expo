@@ -29,7 +29,7 @@ enum PendingErrorStore {
   /// Writes a fatal error to disk synchronously. Best-effort: any failure is swallowed (we're on the
   /// way to a crash and must not throw out of the error handler).
   static func write(_ error: PendingError) {
-    guard let directory = try? directoryUrl() else {
+    guard ObserveConsent.isGranted, let directory = try? directoryUrl() else {
       return
     }
     write(error, in: directory)

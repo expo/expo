@@ -52,8 +52,12 @@ public final class NetworkRequestMonitor: Sendable {
   /// observer of it.
   var persistence: NetworkRequestPersistence?
 
+  private let isGranted: @Sendable () -> Bool
+
   /// Internal so tests can construct dedicated instances; production code uses `shared`.
-  init() {}
+  init(isGranted: @escaping @Sendable () -> Bool = { ObserveConsent.isGranted }) {
+    self.isGranted = isGranted
+  }
 
   /// Confirms the URLSessionTask swizzles are installed. The app-delegate subscriber already
   /// installs them synchronously at launch (before the first request); this re-asserts the install
@@ -101,6 +105,9 @@ public final class NetworkRequestMonitor: Sendable {
   /// from `NetworkRequestTaskSwizzling.recordCompletion` (which fires from either the delegate proxy's
   /// metrics callback or the `setState:` fallback) on the `AppMetricsActor`.
   func record(_ request: NetworkRequest) {
+    guard isGranted() else {
+      return
+    }
     recentRequests.append(request)
     if recentRequests.count > recentCapacity {
       recentRequests.removeFirst(recentRequests.count - recentCapacity)
@@ -121,6 +128,9 @@ public final class NetworkRequestMonitor: Sendable {
   /// notification used to surface in-flight state to subscribers. The corresponding completion
   /// event will arrive later with a matching `id`.
   func recordStart(_ request: NetworkRequestStarted) {
+    guard isGranted() else {
+      return
+    }
     pruneDelegates()
     for entry in delegates {
       guard let delegate = entry.value else {

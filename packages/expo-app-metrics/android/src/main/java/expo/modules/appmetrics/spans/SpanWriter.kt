@@ -3,6 +3,7 @@
 package expo.modules.appmetrics.spans
 
 import android.util.Log
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.Span
 import kotlinx.coroutines.CancellationException
@@ -40,6 +41,9 @@ class SpanWriter(
    * A `null` return skips the write, for a snapshot that cannot make a valid row.
    */
   fun write(produce: () -> Span?) {
+    if (!ObserveConsent.isGranted) {
+      return
+    }
     scope.launch {
       var span: Span? = null
       try {
@@ -64,6 +68,11 @@ class SpanWriter(
    * report completion, so its caller can retry the batch later.
    */
   fun writeAll(onComplete: () -> Unit = {}, produce: () -> List<Span>) {
+    if (!ObserveConsent.isGranted) {
+      // Dropped rather than kept for a retry: nothing may be stored without consent.
+      onComplete()
+      return
+    }
     scope.launch {
       try {
         awaitSessionPersisted()

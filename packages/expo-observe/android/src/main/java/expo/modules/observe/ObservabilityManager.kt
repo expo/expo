@@ -2,6 +2,7 @@ package expo.modules.observe
 
 import android.content.Context
 import android.util.Log
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.easclient.EASClientID
 import expo.modules.appmetrics.logevents.FEEDBACK_LOG_NAME
 import expo.modules.appmetrics.storage.SessionManager
@@ -56,6 +57,9 @@ class ObservabilityManager(
   }
 
   fun scheduleBackgroundDispatch() {
+    if (!ObserveConsent.isGranted) {
+      return
+    }
     ObservabilityBackgroundWorker.scheduleBackgroundDispatch(
       context = context,
       projectId = baseManager.projectId,
@@ -131,6 +135,9 @@ class BaseObservabilityManager(
   )
 
   suspend fun dispatchUnsentMetrics(): Unit = metricsDispatchMutex.withLock {
+    if (!ObserveConsent.isGranted) {
+      return
+    }
     if (retryGateBlocks(metricsRetryGate, "metrics")) {
       return
     }
@@ -214,6 +221,9 @@ class BaseObservabilityManager(
    * a logs failure doesn't affect the metrics cursor and vice versa.
    */
   suspend fun dispatchUnsentLogs(): Unit = logsDispatchMutex.withLock {
+    if (!ObserveConsent.isGranted) {
+      return
+    }
     if (retryGateBlocks(logsRetryGate, "logs")) {
       return
     }
@@ -317,6 +327,9 @@ class BaseObservabilityManager(
    * server's per-request span limit.
    */
   suspend fun dispatchUnsentSpans(): Unit = spansDispatchMutex.withLock {
+    if (!ObserveConsent.isGranted) {
+      return
+    }
     if (retryGateBlocks(spansRetryGate, "spans")) {
       return
     }

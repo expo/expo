@@ -2,6 +2,7 @@
 
 package expo.modules.appmetrics.networkrequests
 
+import expo.modules.appmetrics.ObserveConsent
 import java.lang.ref.WeakReference
 import java.util.Date
 import java.util.UUID
@@ -142,6 +143,9 @@ class NetworkRequestMonitor internal constructor(
 
   /** Records a completed request: appends to the ring buffer, persists it, and fans out. */
   fun record(request: NetworkRequest) {
+    if (!ObserveConsent.isGranted) {
+      return
+    }
     val (persistence, snapshot) = synchronized(lock) {
       recentRequests.addLast(request)
       while (recentRequests.size > recentCapacity) {
@@ -171,6 +175,9 @@ class NetworkRequestMonitor internal constructor(
    * event will arrive later with a matching `id`.
    */
   fun recordStart(request: NetworkRequestStarted) {
+    if (!ObserveConsent.isGranted) {
+      return
+    }
     val snapshot = synchronized(lock) {
       delegates.removeAll { it.get() == null }
       delegates.mapNotNull { it.get() }
