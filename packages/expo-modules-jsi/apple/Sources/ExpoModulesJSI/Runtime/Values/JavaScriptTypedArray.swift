@@ -31,6 +31,12 @@ public struct JavaScriptTypedArray: ~Copyable {
     return runtimeHandle.pointee
   }
 
+  /// Whether the typed array belongs to the given runtime, the runtime that created it. Use it only with the runtime it
+  /// belongs to, on the thread of that runtime.
+  public func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
+    return runtimeHandle === runtime.handle
+  }
+
   /// Creates a typed array from an existing JSI object, which belongs to `runtime`.
   @JavaScriptActor
   init(_ runtime: borrowing JavaScriptRuntime, _ object: consuming facebook.jsi.Object) {
