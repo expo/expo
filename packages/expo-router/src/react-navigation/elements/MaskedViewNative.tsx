@@ -2,12 +2,11 @@
  * The native MaskedView that we explicitly re-export for supported platforms: Android, iOS.
  */
 import * as React from 'react';
-import { UIManager, type ViewProps } from 'react-native';
+import { UIManager } from 'react-native';
 
 // Keep the prop type independent of the optional native package.
-type Props = ViewProps & {
+type Props = {
   maskElement: React.ReactElement;
-  androidRenderingMode?: 'software' | 'hardware';
   children: React.ReactElement;
 };
 
@@ -21,7 +20,8 @@ try {
   // Ignore
 }
 
-const isMaskedViewAvailable = UIManager.getViewManagerConfig('RNCMaskedView') != null;
+export const isMaskedViewAvailable =
+  RNCMaskedView != null && UIManager.getViewManagerConfig('RNCMaskedView') != null;
 
 export function MaskedView({ children, ...rest }: Props) {
   if (isMaskedViewAvailable && RNCMaskedView) {

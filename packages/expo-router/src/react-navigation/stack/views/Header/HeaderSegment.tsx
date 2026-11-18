@@ -10,12 +10,14 @@ import {
   HeaderTitle,
 } from '../../../elements';
 import { useLocale } from '../../../native';
+import { forUIKit } from '../../TransitionConfigs/HeaderStyleInterpolators';
 import type {
   Layout,
   SceneProgress,
   StackHeaderOptions,
   StackHeaderStyleInterpolator,
 } from '../../types';
+import { warnIfMaskedViewMissing } from './warnIfMaskedViewMissing';
 
 type Props = Omit<StackHeaderOptions, 'headerStatusBarHeight'> & {
   headerStatusBarHeight: number;
@@ -85,6 +87,20 @@ export function HeaderSegment(props: Props) {
     styleInterpolator,
     ...rest
   } = props;
+
+  // `forUIKit` slides the back label behind the back icon, so it is masked.
+  const masksBackLabel =
+    styleInterpolator === forUIKit &&
+    onGoBack != null &&
+    props.headerLeft === undefined &&
+    !headerBackImage &&
+    headerBackButtonDisplayMode !== 'minimal';
+
+  React.useEffect(() => {
+    if (masksBackLabel) {
+      warnIfMaskedViewMissing();
+    }
+  }, [masksBackLabel]);
 
   const defaultHeight = getDefaultHeaderHeight(layout, modal, headerStatusBarHeight);
 
