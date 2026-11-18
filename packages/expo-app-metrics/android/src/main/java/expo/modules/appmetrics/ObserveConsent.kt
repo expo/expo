@@ -19,9 +19,9 @@ object ObserveConsent {
   var isGranted: Boolean = false
     private set
 
-  /** Reads the consent value that the `expo-observe` config plugin writes to the manifest. */
+  /** Reads the saved consent value, else the manifest value that the `expo-observe` config plugin writes. */
   fun load(context: Context) {
-    isGranted = resolve(readManifestConsent(context))
+    isGranted = resolve(AppMetricsPreferences.getObserveConsent(context), readManifestConsent(context))
   }
 
   // Null when the manifest has no value. An empty string, which is an unknown value, when the
@@ -41,8 +41,11 @@ object ObserveConsent {
       ""
     }
 
-  /** Consent from the manifest `meta-data` value, granted when the value is absent. */
-  internal fun resolve(consent: String?): Boolean {
+  /** Consent from the saved value, else from the manifest `meta-data` value, granted when both are absent. */
+  internal fun resolve(savedConsent: String?, consent: String?): Boolean {
+    if (savedConsent != null) {
+      return savedConsent == GRANTED
+    }
     if (consent == null) {
       return true
     }
@@ -76,37 +79,35 @@ class ConsentGatedPreferences(private val name: String) {
   private val unsavedValues = ConcurrentHashMap<String, Any>()
 
   fun getString(context: Context, key: String): String? =
-    read(inMemory = { unsavedValues[key] as? String }, stored = { preferences(context).getString(key, null) })
+    if (ObserveConsent.isGranted) {
+      preferences(context).getString(key, null)
+    } else {
+      unsavedValues[key] as? String
+    }
 
   fun getLong(context: Context, key: String, defaultValue: Long): Long =
-    read(
-      inMemory = { unsavedValues[key] as? Long ?: defaultValue },
-      stored = { preferences(context).getLong(key, defaultValue) }
-    )
+    if (ObserveConsent.isGranted) {
+      preferences(context).getLong(key, defaultValue)
+    } else {
+      unsavedValues[key] as? Long ?: defaultValue
+    }
 
   /** With `commit`, the value is on disk when this returns. */
   fun putString(context: Context, key: String, value: String, commit: Boolean = true) {
-    write(inMemory = { unsavedValues[key] = value }, stored = { preferences(context).edit(commit) { putString(key, value) } })
+    if (ObserveConsent.isGranted) {
+      preferences(context).edit(commit) { putString(key, value) }
+    } else {
+      unsavedValues[key] = value
+    }
   }
 
   fun putLong(context: Context, key: String, value: Long) {
-    write(inMemory = { unsavedValues[key] = value }, stored = { preferences(context).edit(commit = true) { putLong(key, value) } })
-  }
-
-  private inline fun write(inMemory: () -> Unit, stored: () -> Unit) {
     if (ObserveConsent.isGranted) {
-      stored()
+      preferences(context).edit(commit = true) { putLong(key, value) }
     } else {
-      inMemory()
+      unsavedValues[key] = value
     }
   }
-
-  private inline fun <T> read(inMemory: () -> T, stored: () -> T): T =
-    if (ObserveConsent.isGranted) {
-      stored()
-    } else {
-      inMemory()
-    }
 
   /** Deletes the settings file. Runs at a launch without consent. */
   fun delete(context: Context) {

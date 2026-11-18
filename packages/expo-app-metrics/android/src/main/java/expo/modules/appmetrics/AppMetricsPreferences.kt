@@ -1,12 +1,14 @@
 package expo.modules.appmetrics
 
 import android.content.Context
+import androidx.core.content.edit
 import expo.modules.appmetrics.networkrequests.NetworkTracesConfiguration
 
 private const val PREFS_NAME = "dev.expo.app-metrics"
 private const val KEY_ENVIRONMENT = "environment"
 private const val KEY_LAST_PROCESSED_EXIT_MILLIS = "lastProcessedExitMillis"
 private const val KEY_NETWORK_TRACES_CONFIGURATION = "networkTracesConfiguration"
+private const val KEY_OBSERVE_CONSENT = "observeConsent"
 
 object AppMetricsPreferences {
   private val preferences = ConsentGatedPreferences(PREFS_NAME)
@@ -63,7 +65,20 @@ object AppMetricsPreferences {
     preferences.putString(context, KEY_NETWORK_TRACES_CONFIGURATION, configuration.toJson(), commit = false)
   }
 
+  // Keeps the saved consent value.
   internal fun deleteStoredSettings(context: Context) {
-    preferences.delete(context)
+    val consent = getObserveConsent(context) ?: return preferences.delete(context)
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit(commit = true) {
+      clear()
+      putString(KEY_OBSERVE_CONSENT, consent)
+    }
   }
+
+  /** The saved consent value. `null` when no value was saved. */
+  internal fun getObserveConsent(context: Context): String? =
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getString(KEY_OBSERVE_CONSENT, null)
+
+  /** Returns whether the value was written to disk. */
+  internal fun setObserveConsent(context: Context, consent: String): Boolean =
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putString(KEY_OBSERVE_CONSENT, consent).commit()
 }

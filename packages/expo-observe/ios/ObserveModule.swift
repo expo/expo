@@ -33,7 +33,7 @@ public final class ObserveModule: Module {
     OnCreate {
       // Deletes what a build with consent stored. Module start is late enough, because nothing is
       // sent without consent.
-      if !ObserveConsent.isGranted {
+      if ObserveConsent.state == .notGranted {
         ObserveUserDefaults.deleteStoredSettings()
       }
       // The observability manager needs to know the project id. Currently it's available only through `expo-constants`,

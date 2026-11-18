@@ -1,12 +1,79 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import os
 
 /// Whether the user consented to Observe collecting data. While not granted, app metrics stores
 /// nothing and Observe sends nothing.
 public enum ObserveConsent {
-  /// Read on first access from the `Info.plist` value that the `expo-observe` config plugin writes.
-  public static let isGranted: Bool = isGranted(consent: Bundle.main.object(forInfoDictionaryKey: "EXObserveConsent"))
+  public enum State: Sendable {
+    case granted
+    case notGranted
+    /// The saved value could not be read, for example before the first unlock after a restart.
+    /// Nothing is stored, and the launch cleanup keeps the stored data, because it can belong to
+    /// a user who granted consent.
+    case unknown
+  }
+
+  /// The consent of this process.
+  struct Gate: Sendable {
+    private(set) var state: State
+
+    init(state: State) {
+      self.state = state
+    }
+  }
+
+  /// Resolved on first access: the saved value, else the `Info.plist` value that the `expo-observe` config plugin writes.
+  private static let gate = OSAllocatedUnfairLock<Gate?>(initialState: nil)
+
+  private static let savedValueUrl = try? MetricsDatabase.defaultDirectoryUrl().appendingPathComponent("observe-consent")
+
+  public static var isGranted: Bool {
+    return state == .granted
+  }
+
+  public static var state: State {
+    return gate.withLock { gate in
+      if let gate {
+        return gate.state
+      }
+      let state = resolveState()
+      gate = Gate(state: state)
+      return state
+    }
+  }
+
+  private static func resolveState() -> State {
+    guard let savedValueUrl else {
+      return .unknown
+    }
+    return readSavedState(at: savedValueUrl) ?? (isGranted(consent: Bundle.main.object(forInfoDictionaryKey: "EXObserveConsent")) ? .granted : .notGranted)
+  }
+
+  /// `nil` when no value was saved, `.unknown` when the saved value cannot be read.
+  static func readSavedState(at url: URL) -> State? {
+    do {
+      return try String(contentsOf: url, encoding: .utf8) == "granted" ? .granted : .notGranted
+    } catch CocoaError.fileReadNoSuchFile {
+      return nil
+    } catch {
+      logger.warn("[AppMetrics] Failed to read the saved Observe consent: \(error.localizedDescription)")
+      return .unknown
+    }
+  }
+
+  /// Returns whether the value was written.
+  static func save(granted: Bool, to url: URL) -> Bool {
+    do {
+      try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+      try Data((granted ? "granted" : "not-granted").utf8).write(to: url, options: .atomic)
+      return true
+    } catch {
+      logger.warn("[AppMetrics] Failed to save the Observe consent: \(error.localizedDescription)")
+      return false
+    }
+  }
 
   /// Consent from the `EXObserveConsent` value of `Info.plist`, granted when the value is absent.
   static func isGranted(consent: Any?) -> Bool {
@@ -48,10 +115,10 @@ public final class ConsentGatedDefaults: @unchecked Sendable {
   }
 
   public func set(_ value: Any?, forKey key: String) {
-    if isGranted() {
-      defaults.set(value, forKey: key)
-    } else {
+    guard isGranted() else {
       unsavedValues.withLock { $0[key] = value }
+      return
     }
+    defaults.set(value, forKey: key)
   }
 }
