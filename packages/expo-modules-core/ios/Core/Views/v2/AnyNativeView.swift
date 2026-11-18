@@ -15,12 +15,18 @@ public protocol AnyNativeView {
   /// The name that the module registers the view under. The `@ExpoView<Props>("CustomName")` macro
   /// overrides it; it's the unqualified type name by default.
   nonisolated static var _jsName: String { get }
+
+  /// The class that the Fabric component views of the view type are based on: the view type itself for a UIKit
+  /// view, or the class that renders a SwiftUI view. Core registers a subclass of it for each component.
+  /// Framework-internal (leading underscore). `AnyNativeUIKitView` and `AnyNativeSwiftUIView` implement it, so core
+  /// gets the class without a dynamic cast, which would look up the conformance of the view type at launch.
+  static var _componentViewBaseClass: AnyClass { get }
 }
 
 extension AnyNativeView {
   @inlinable
   public nonisolated static func _makePropsDecoder(viewName: String) -> ViewPropsDecoderAdapter {
-    return ViewPropsDecoderAdapter(ViewPropsDecoder<Props>(viewName: viewName))
+    return ViewPropsDecoderAdapter(_makeViewPropsDecoder(Props.self, viewName: viewName))
   }
 
   public nonisolated static var _jsName: String {
@@ -29,7 +35,9 @@ extension AnyNativeView {
 
   /// The names of the view's props, for the view config in JavaScript.
   nonisolated internal static var propNames: [String] {
-    return Props.PropName.allCases.map(\.rawValue)
+    // A closure, not `\.rawValue`: in generic code, a key path finds its type from a mangled name, which looks up
+    // the conformance of `Props`.
+    return Props.PropName.allCases.map { $0.rawValue }
   }
 
   /// The names of the view's events, for the view config in JavaScript.
@@ -58,6 +66,10 @@ public protocol AnyNativeUIKitView: AnyNativeView, AnyObject {
 
 extension AnyNativeUIKitView {
   public func didUpdateProps(_ diff: PropsDiff<Props>) {}
+
+  public static var _componentViewBaseClass: AnyClass {
+    return self
+  }
 
   /// The current props of the view. Before the first `didUpdateProps(_:)`, they are `Props()`.
   /// `@inlinable`, so the access is specialized for `Props` in the module that declares the view.
