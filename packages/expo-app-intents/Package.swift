@@ -14,14 +14,14 @@ let package = Package(
   ],
   dependencies: [
     .package(path: "../ExpoModulesCoreHeaders"),
-    .package(path: "../ExpoUIHeaders")
+    .package(path: "../ExpoUIHeaders"),
   ],
   targets: [
     .target(
       name: "ExpoAppIntents",
       dependencies: [
         .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders"),
-        .product(name: "ExpoUIHeaders", package: "ExpoUIHeaders")
+        .product(name: "ExpoUIHeaders", package: "ExpoUIHeaders"),
       ],
       path: "ios",
       exclude: ["ExpoAppIntents.podspec", "Tests"]
