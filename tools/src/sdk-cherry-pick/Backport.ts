@@ -155,16 +155,13 @@ export async function backportAsync(options: BackportOptions): Promise<BackportR
     }
   };
   const runLog = options.runLogUrl ? ` [Run log](${options.runLogUrl})` : '';
-  const pickSteps = `To backport it by hand:
-
-\`\`\`sh
-git fetch origin ${targetBranch}
+  const pickCommands = `git fetch origin ${targetBranch}
 git checkout ${targetBranch}
 git pull --ff-only origin ${targetBranch}
-git cherry-pick -x ${mergeSha}
-git push origin ${targetBranch}
-\`\`\``;
-  const rebuildSteps = `${pickSteps}\n\nBefore \`git push\`, move the summary of each \`.changeset/*.md\` file that this pull request adds into an entry under \`## Unpublished\` in the \`CHANGELOG.md\` of each package that it names, and delete the file. Then rebuild the \`build/\` output of each package that the change touches, and commit the result.`;
+git cherry-pick -x ${mergeSha}`;
+  const pickSteps = `To backport it by hand:\n\n\`\`\`sh\n${pickCommands}\ngit push origin ${targetBranch}\n\`\`\``;
+  // The push stays out of the block, so that running the block does not push a backport without its rebuild.
+  const rebuildSteps = `To backport it by hand:\n\n\`\`\`sh\n${pickCommands}\n\`\`\`\n\nNext, move the summary of each \`.changeset/*.md\` file that this pull request adds into an entry under \`## Unpublished\` in the \`CHANGELOG.md\` of each package that it names, and delete the file. Then rebuild the \`build/\` output of each package that the change touches, commit the result, and run \`git push origin ${targetBranch}\`.`;
 
   const repo = gitIn(options.repoDir);
   let usesChangesets: boolean | undefined;

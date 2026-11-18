@@ -217,10 +217,9 @@ jobs:
         git checkout ${{ matrix.branch }}
         git pull --ff-only origin ${{ matrix.branch }}
         git cherry-pick -x ${{ needs.cherry-pick.outputs.merge-sha }}
-        git push origin ${{ matrix.branch }}
         ```
 
-        Before `git push`, move the summary of each `.changeset/*.md` file that this pull request adds into an entry under `## Unpublished` in the `CHANGELOG.md` of each package that it names, and delete the file. Then rebuild the `build/` output of each package that the change touches, and commit the result.
+        Next, move the summary of each `.changeset/*.md` file that this pull request adds into an entry under `## Unpublished` in the `CHANGELOG.md` of each package that it names, and delete the file. Then rebuild the `build/` output of each package that the change touches, commit the result, and run `git push origin ${{ matrix.branch }}`.
     steps:
       # SECURITY: the default branch, never the pull request head. No token is stored in .git/config.
       - name: 👀 Checkout
