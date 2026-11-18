@@ -334,8 +334,8 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * Changes whether the user consents to Observe collecting data. The device saves the value, and
    * it overrides the `extra.eas.observe.consent` key of the app config on later launches.
    *
-   * A grant starts collection, and a revoke stops collection. A call with the current value
-   * changes nothing.
+   * A grant starts collection and saves the startup metrics of the current launch. A revoke stops
+   * collection. A call with the current value changes nothing.
    *
    * Observe starts collection at most one time in each app launch. After a revoke, a grant only
    * saves the value, and collection starts at the next launch.

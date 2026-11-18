@@ -79,6 +79,23 @@ struct ConsentGatedDefaultsTests {
     #expect(UserDefaults.standard.persistentDomain(forName: suiteName)?["string"] as? String == "production")
   }
 
+  @Test
+  func `the first grant saves the values kept in memory`() throws {
+    let granted = OSAllocatedUnfairLock(initialState: false)
+    let defaults = ConsentGatedDefaults(
+      try #require(UserDefaults(suiteName: suiteName)),
+      isGranted: { granted.withLock { $0 } }
+    )
+    defaults.set("staging", forKey: "string")
+
+    ConsentGatedDefaults.saveUnsavedValues()
+    granted.withLock { $0 = true }
+
+    #expect(UserDefaults.standard.persistentDomain(forName: suiteName)?["string"] as? String == "staging")
+    granted.withLock { $0 = false }
+    #expect(defaults.object(forKey: "string") == nil)
+  }
+
   // Pauses the setter after its first gate read and runs `transition` on another thread in that
   // gap. Resumes the setter once the transition finished, or after 0.2 s when it waits for the lock.
   private func runInSetterGap(
@@ -117,6 +134,20 @@ struct ConsentGatedDefaultsTests {
     if !transitionFinished {
       #expect(transitionDone.wait(timeout: .now() + 5) == .success)
     }
+  }
+
+  @Test
+  func `a setter that reads the gate before the first grant still saves its value`() throws {
+    let granted = OSAllocatedUnfairLock(initialState: false)
+
+    try runInSetterGap(granted: granted, set: { $0.set("set-during-grant", forKey: "racing") }) {
+      ConsentGatedDefaults.transitionLock.withLock {
+        ConsentGatedDefaults.saveUnsavedValues()
+        granted.withLock { $0 = true }
+      }
+    }
+
+    #expect(UserDefaults.standard.persistentDomain(forName: suiteName)?["racing"] as? String == "set-during-grant")
   }
 
   @Test
