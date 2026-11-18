@@ -9,7 +9,7 @@ Use it to look up an installation's Observe data from another tool, such as your
 
 ## Read the client ID
 
-`Observe.clientId` is a string on Android and iOS, and `null` on web:
+`Observe.clientId` is a string on Android and iOS, and `null` on web. It is also `null` while the user has not granted [consent](/eas/observe/configuration/#ask-for-user-consent):
 
 ```tsx
 import { Observe } from 'expo-observe';
@@ -47,6 +47,7 @@ To go the other direction, run [`eas observe:metrics`](/eas/observe/eas-cli/#eas
 ## How the client ID behaves
 
 - The ID is generated on the device the first time an Expo Services client library needs it, and is stored in native preferences. It is not derived from any hardware or account identifier.
+- Expo Observe does not create the ID while consent is not granted. Other Expo Services client libraries, such as `expo-updates`, can still create it. A revoke keeps the ID.
 - It is stable across app launches, app updates, and updates from Expo Update.
 - It is shared with the other Expo Services client libraries in your app, such as `expo-updates`. The same installation has one ID across all of them.
 - It changes when the app's data is cleared or when the app is reinstalled, although a backup restore (including Android Auto Backup on reinstall) can carry the previous ID over.

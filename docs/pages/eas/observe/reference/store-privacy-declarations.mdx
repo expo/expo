@@ -85,7 +85,7 @@ The data is **collected** rather than **shared** because Expo acts as your servi
 
 Google's **Analytics** purpose covers monitoring app health, diagnosing crashes, and improving performance, which is what Expo Observe does.
 
-The data is **required** by default because the library dispatches from every release build. You can declare it **optional** only if every user, in every region, can turn it off. To offer that, pass `dispatchingEnabled: false` in every `configure()` call after the user opts out, because each call replaces the previous configuration. [Sampling](/eas/observe/configuration/#sampling) does not make the data optional, because the user does not control it.
+The data is **required** by default because the library dispatches from every release build. You can declare it **optional** only if every user, in every region, can turn it off. To offer that, pass `dispatchingEnabled: false` in every `configure()` call after the user opts out, because each call replaces the previous configuration. You can also call `Observe.setConsent('not-granted')`, which also stops collection on the device and deletes the stored data. See [Ask for user consent](/eas/observe/configuration/#ask-for-user-consent). [Sampling](/eas/observe/configuration/#sampling) does not make the data optional, because the user does not control it.
 
 ## App Store privacy details
 
