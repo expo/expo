@@ -2,6 +2,10 @@ package expo.modules.appmetrics.jserrors
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import expo.modules.appmetrics.ObserveConsent
+import io.mockk.every
+import io.mockk.mockkObject
+import io.mockk.unmockkAll
 import java.io.File
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -20,6 +24,7 @@ class PendingErrorStoreTest {
 
   @After
   fun cleanup() {
+    unmockkAll()
     directory.deleteRecursively()
   }
 
@@ -59,6 +64,16 @@ class PendingErrorStoreTest {
     val drained = PendingErrorStore.drain(context)
     assertEquals(listOf("valid"), drained.map { it.message })
     assertFalse(corrupt.exists())
+  }
+
+  @Test
+  fun `write does nothing while consent is not granted`() {
+    mockkObject(ObserveConsent)
+    every { ObserveConsent.isGranted } returns false
+
+    PendingErrorStore.write(context, makePendingError(message = "boom", sessionId = "s"))
+
+    assertTrue(directory.listFiles().isNullOrEmpty())
   }
 
   private fun makePendingError(

@@ -15,6 +15,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.appmetrics.storage.SessionManager
 
 /**
@@ -61,6 +62,9 @@ class ObservabilityBackgroundWorker(
   }
 
   override suspend fun doWork(): Result {
+    if (!ObserveConsent.isGranted) {
+      return Result.success()
+    }
     return try {
       if (observabilityManager == null) {
         Log.e(OBSERVE_TAG, "ObservabilityManager is null - missing projectId or baseUrl")

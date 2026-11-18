@@ -1,6 +1,7 @@
 package expo.modules.appmetrics.crashreporting
 
 import android.util.AtomicFile
+import expo.modules.appmetrics.ObserveConsent
 import kotlinx.serialization.encodeToString
 import java.io.File
 
@@ -24,6 +25,9 @@ class CrashFileWriter(private val directory: File) {
     pid: Int,
     crashedAtMillis: Long
   ): File? {
+    if (!ObserveConsent.isGranted) {
+      return null
+    }
     return try {
       if (!directory.isDirectory && !directory.mkdirs()) {
         return null

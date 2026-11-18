@@ -3,6 +3,7 @@ package expo.modules.observe
 import android.content.Context
 import android.util.Log
 import expo.modules.appmetrics.AppMetricsModule
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.easclient.EASClientID
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.exception.Exceptions

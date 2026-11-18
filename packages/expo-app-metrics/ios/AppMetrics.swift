@@ -14,6 +14,9 @@ public struct AppMetrics {
   /// that are piped to the terminal when using the `expo run:ios` command.
   /// To avoid them, we explicitly don't register the subscriber on the simulator.
   static func registerMetricKitSubscriber() {
+    guard ObserveConsent.isGranted else {
+      return
+    }
     #if !targetEnvironment(simulator)
     MXMetricManager.shared.add(metricKitSubscriber)
     metricKitSubscriber.processPastPayloads()
@@ -25,6 +28,9 @@ public struct AppMetrics {
   /// previous launch (see `PendingErrorStore`). Reads the files synchronously, then inserts each as an
   /// `js.exception` log attributed to the session it was captured in. Called once at launch.
   static func ingestPendingErrors() {
+    guard ObserveConsent.isGranted else {
+      return
+    }
     let pendingErrors = PendingErrorStore.drain()
     guard !pendingErrors.isEmpty else {
       return
