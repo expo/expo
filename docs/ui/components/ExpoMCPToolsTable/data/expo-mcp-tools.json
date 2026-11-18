@@ -2,9 +2,9 @@
   "source": {
     "server": "https://mcp.expo.dev/mcp",
     "localRepo": "expo/expo-mcp",
-    "fetchedAt": "2026-10-27T18:04:29.713Z"
+    "fetchedAt": "2026-11-18T07:25:20.356Z"
   },
-  "totalTools": 56,
+  "totalTools": 62,
   "totalPrompts": 1,
   "tools": [
     {
@@ -34,73 +34,73 @@
     },
     {
       "name": "workflow_info",
-      "description": "Fetches detailed information about a specific EAS workflow run by ID. Use this to check the status, job results, errors, and artifacts of a workflow run. If workflow has multiple jobs, draw them in a diagram to show the dependencies between jobs.",
+      "description": "Fetches detailed information about a specific workflow run by ID. Use this to check the status, job results, errors, and artifacts of a workflow run. If workflow has multiple jobs, draw them in a diagram to show the dependencies between jobs.",
       "examplePrompt": "get the status of the latest workflow run",
       "availability": "Server"
     },
     {
       "name": "workflow_list",
-      "description": "Lists recent EAS workflow runs for a project. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\").",
+      "description": "Lists recent workflow runs for a project. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\").",
       "examplePrompt": "list the recent workflow runs",
       "availability": "Server"
     },
     {
       "name": "workflow_logs",
-      "description": "Fetches logs for a specific job in an EAS workflow run. Call without sectionIndex or phase to get a summary of log sections (phase names and line ranges); then call again with sectionIndex or phase to fetch that section.",
+      "description": "Fetches logs for a specific job in a workflow run. Call without sectionIndex or phase to get a summary of log sections (phase names and line ranges); then call again with sectionIndex or phase to fetch that section.",
       "examplePrompt": "show me the logs for the build job in the workflow",
       "availability": "Server"
     },
     {
       "name": "workflow_run",
-      "description": "Triggers an EAS workflow run from a git reference. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\"). The workflow file must exist at the specified git reference.",
+      "description": "Triggers a workflow run from a git reference. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\"). The workflow file must exist at the specified git reference.",
       "examplePrompt": "run the build-and-deploy workflow",
       "availability": "Server"
     },
     {
       "name": "workflow_cancel",
-      "description": "Cancels a running EAS workflow. Use workflow_info to get the workflow run ID.",
+      "description": "Cancels a running workflow. Use workflow_info to get the workflow run ID.",
       "examplePrompt": "cancel the running workflow",
       "availability": "Server"
     },
     {
       "name": "workflow_validate",
-      "description": "Validates EAS workflow YAML syntax and configuration. Use this after creating a workflow to ensure it is valid. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\").",
+      "description": "Validates workflow YAML syntax and configuration. Use this after creating a workflow to ensure it is valid. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\").",
       "examplePrompt": "validate my workflow file",
       "availability": "Server"
     },
     {
       "name": "build_list",
-      "description": "Lists EAS builds for a project. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\"). Use this to see recent builds, their status, and available artifacts.",
+      "description": "Lists builds for a project, newest first. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\"). Use this to see recent builds, their status, and available artifacts.",
       "examplePrompt": "list the recent builds for this project",
       "availability": "Server"
     },
     {
       "name": "build_info",
-      "description": "Fetches the status and detailed information about a specific EAS build by ID. Use this to check build status, errors, artifacts, and other details.",
+      "description": "Fetches the status and detailed information about a specific build by ID. Use this to check build status, errors, artifacts, and other details.",
       "examplePrompt": "get the status of my latest iOS build",
       "availability": "Server"
     },
     {
       "name": "build_logs",
-      "description": "Fetches the logs for a specific EAS build. The build must be completed (finished or errored) to have logs available.",
+      "description": "Fetches the logs for a specific build. The build must be completed (finished or errored) to have logs available.",
       "examplePrompt": "show me the logs for the failed build",
       "availability": "Server"
     },
     {
       "name": "build_submit",
-      "description": "Submits an EAS build to the app store (Google Play Store for Android, App Store for iOS). The build must be a finished build with the appropriate distribution type. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\").",
+      "description": "Submits a build to the app store (Google Play Store for Android, App Store for iOS). The build must be a finished build with the appropriate distribution type. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\").",
       "examplePrompt": "submit the latest build to the App Store",
       "availability": "Server"
     },
     {
       "name": "build_run",
-      "description": "Triggers a new EAS build using a build profile from eas.json. Requires a GitHub repository to be connected to the project. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\").",
+      "description": "Triggers a new build using a build profile from eas.json. Requires a GitHub repository to be connected to the project. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\").",
       "examplePrompt": "run a production build for iOS",
       "availability": "Server"
     },
     {
       "name": "build_cancel",
-      "description": "Cancels an EAS build that is queued or in progress. Use build_info to check the current status first.",
+      "description": "Cancels a build that is queued or in progress. Use build_info to check the current status first.",
       "examplePrompt": "cancel the build that is currently in progress",
       "availability": "Server"
     },
@@ -112,13 +112,13 @@
     },
     {
       "name": "sandbox_list",
-      "description": "List sandboxes for an EAS project, newest first. Optionally filter by status. Pass nextCursor as cursor to fetch the next page with the same project and filter.",
+      "description": "List sandboxes for a project, newest first. Optionally filter by status. Pass nextCursor as cursor to fetch the next page with the same project and filter.",
       "examplePrompt": "",
       "availability": "Server"
     },
     {
       "name": "sandbox_create",
-      "description": "Create an EAS sandbox for a project. This starts a billable environment. Set waitForReady to wait for startup, or use sandbox_wait after creation. Execute commands only when RUNNING. Do not automatically repeat creation after a lost response.",
+      "description": "Create a sandbox for a project. This starts a billable environment. Set waitForReady to wait for startup, or use sandbox_wait after creation. Execute commands only when RUNNING. Do not automatically repeat creation after a lost response.",
       "examplePrompt": "",
       "availability": "Server"
     },
@@ -130,7 +130,7 @@
     },
     {
       "name": "sandbox_exec",
-      "description": "Execute a shell command in a running EAS sandbox. Use sandbox_write_stdin to continue a running command. A lost response does not mean the command failed; do not automatically repeat it.",
+      "description": "Execute a shell command in a running sandbox. Use sandbox_write_stdin to continue a running command. A lost response does not mean the command failed; do not automatically repeat it.",
       "examplePrompt": "",
       "availability": "Server"
     },
@@ -142,7 +142,7 @@
     },
     {
       "name": "sandbox_artifact_create",
-      "description": "Upload one file from a running EAS sandbox as a sandbox artifact. Waits up to yieldTimeMs for the upload to finish and returns its status; if it is still uploading, use sandbox_artifact_get to check it later. To upload a directory, create an archive first with sandbox_exec, for example tar -czf out.tgz dir. A sandbox can have 20 artifacts, each up to 4.995GiB in size. Stopping the sandbox fails unfinished uploads. After a lost response, call sandbox_artifact_list before you try again; do not automatically repeat the call.",
+      "description": "Upload one file from a running sandbox as a sandbox artifact. Waits up to yieldTimeMs for the upload to finish and returns its status; if it is still uploading, use sandbox_artifact_get to check it later. To upload a directory, create an archive first with sandbox_exec, for example tar -czf out.tgz dir. A sandbox can have 20 artifacts, each up to 4.995GiB in size. Stopping the sandbox fails unfinished uploads. After a lost response, call sandbox_artifact_list before you try again; do not automatically repeat the call.",
       "examplePrompt": "",
       "availability": "Server"
     },
@@ -160,25 +160,25 @@
     },
     {
       "name": "sandbox_read_file",
-      "description": "Read a UTF-8 text file or a PNG, JPEG, GIF, or WebP image from a running EAS sandbox. Images are returned as image content, up to 3000000 bytes. Text is returned up to 40000 bytes; use sandbox_exec to read past that. Other files return an error.",
+      "description": "Read a UTF-8 text file or a PNG, JPEG, GIF, or WebP image from a running sandbox. Images are returned as image content, up to 3000000 bytes. Text is returned up to 40000 bytes; use sandbox_exec to read past that. Other files return an error.",
       "examplePrompt": "",
       "availability": "Server"
     },
     {
       "name": "observe_versions",
-      "description": "List app versions seen by EAS Observe, with build numbers, EAS build/update IDs, event counts and unique-user counts. Use these versions and IDs to investigate releases.",
+      "description": "List app versions seen by Expo Observe, with build numbers, build/update IDs, event counts and unique-user counts. Use these versions and IDs to investigate releases.",
       "examplePrompt": "list the app versions Observe has seen in the last 30 days",
       "availability": "Server"
     },
     {
       "name": "observe_metrics_summary",
-      "description": "Compare EAS Observe performance metrics by app version and platform. Returns event counts, min, max, median, average, p80, p90 and p99; timing values are in seconds. Defaults to app-startup metrics.",
+      "description": "Compare Expo Observe performance metrics by app version and platform. Returns event counts, min, max, median, average, p80, p90 and p99; timing values are in seconds. Defaults to app-startup metrics.",
       "examplePrompt": "did startup get slower in the latest iOS release",
       "availability": "Server"
     },
     {
       "name": "observe_metrics",
-      "description": "Find individual EAS Observe performance samples, including the slowest startup/navigation events. Timing values are in seconds. Filter by release and platform; returned session IDs can identify sessions to investigate. Results are paginated.",
+      "description": "Find individual Expo Observe performance samples, including the slowest startup/navigation events. Timing values are in seconds. Filter by release and platform; returned session IDs can identify sessions to investigate. Results are paginated.",
       "examplePrompt": "find the slowest cold launches this week",
       "availability": "Server"
     },
@@ -202,61 +202,97 @@
     },
     {
       "name": "observe_session",
-      "description": "Read a session’s metric samples and logs (custom events and errors). Each stream is oldest first and independently paginated; entries are sorted within this response, not across pages. Pass nextCursor with the streams to continue; omit source to avoid repeating other streams. Metric timing values are seconds.",
+      "description": "Read a session’s metric samples, logs (custom events and errors) and request trace spans. Each stream is oldest first and independently paginated; entries are sorted within this response, not across pages. Pass nextCursor with the streams to continue; omit source to avoid repeating other streams. Metric timing values are seconds; span durations are milliseconds.",
       "examplePrompt": "show the timeline for session <session-id>",
       "availability": "Server"
     },
     {
+      "name": "observe_span_names",
+      "description": "Discover request trace span names (HTTP methods such as GET or POST) with kinds and counts, most frequent first. Spans come from the expo-observe networkTraces option. Returns isTruncated when the API caps the list; narrow the time range or filters in that case.",
+      "examplePrompt": "which kinds of network requests does the app record",
+      "availability": "Server"
+    },
+    {
+      "name": "observe_spans",
+      "description": "Find request trace spans, such as slow or failed requests, by name, host, HTTP status, span status, minimum duration or session. Each span carries traceId for observe_trace and sessionId for observe_session; a span without parentSpanId is a root span, and one without http is not an HTTP request. Results are paginated.",
+      "examplePrompt": "find network requests that took longer than 2 seconds today",
+      "availability": "Server"
+    },
+    {
+      "name": "observe_trace",
+      "description": "Read every span of one request trace by trace ID, oldest first. The span without parentSpanId is the root; nest the others by parentSpanId. isTruncated is true when the trace has more spans than were returned.",
+      "examplePrompt": "show every span of trace <trace-id>",
+      "availability": "Server"
+    },
+    {
+      "name": "observe_errors",
+      "description": "List error groups (JS errors and native crashes grouped by fingerprint) with occurrence, user and session counts, first/last seen and per-platform counts, most frequent first. Pass a fingerprint to observe_error_occurrences for stack traces or to observe_error_breakdown for a split by version, OS, device or country.",
+      "examplePrompt": "list the most common errors and crashes from the last 7 days",
+      "availability": "Server"
+    },
+    {
+      "name": "observe_error_occurrences",
+      "description": "Read individual errors and crashes with their stack traces, newest first. Filter by an error group fingerprint from observe_errors, by session, or by kind. Each occurrence carries a sessionId for observe_session. Results are paginated.",
+      "examplePrompt": "show the stack trace of the latest occurrence of error <fingerprint>",
+      "availability": "Server"
+    },
+    {
+      "name": "observe_error_breakdown",
+      "description": "Split one error group by app version, OS, device model or country, with occurrence and unique-user counts per value, most frequent first. Returns isTruncated when the API caps the list.",
+      "examplePrompt": "which app versions and devices have error <fingerprint>",
+      "availability": "Server"
+    },
+    {
       "name": "simulator_start",
-      "description": "Start a billed EAS Simulator session in the cloud. Returns simulatorSessionId right away while the device boots. Poll simulator_get until status is IN_PROGRESS, then pass simulatorSessionId to the automation_* tools. To load a dev server, set openUrl to a tunnel deep link (see the openUrl parameter). Idle sessions stop after maxIdleTimeMinutes (default 10). Do not start again after a lost response; call simulator_list to find the session.",
+      "description": "Start a billed cloud simulator session. Returns simulatorSessionId right away while the device boots. Poll simulator_get until status is IN_PROGRESS, then pass simulatorSessionId to the automation_* tools. To load a dev server, set openUrl to a tunnel deep link (see the openUrl parameter). Idle sessions stop after maxIdleTimeMinutes (default 10). Do not start again after a lost response; call simulator_list to find the session.",
       "examplePrompt": "",
       "availability": "Server"
     },
     {
       "name": "simulator_get",
-      "description": "Fetch an EAS Simulator session by id. Returns status and dashboardUrl, where you can view the device after logging in. Never returns device credentials. Set waitSeconds (max 20) to poll until status is IN_PROGRESS.",
+      "description": "Fetch a cloud simulator session by id. Returns status and dashboardUrl, where you can view the device after logging in. Never returns device credentials. Set waitSeconds (max 20) to poll until status is IN_PROGRESS.",
       "examplePrompt": "",
       "availability": "Server"
     },
     {
       "name": "simulator_list",
-      "description": "List EAS Simulator sessions for a project, newest first. Pass appId or appFullName. Filter by platform or status. Pass nextCursor as cursor to fetch the next page.",
+      "description": "List cloud simulator sessions for a project, newest first. Pass appId or appFullName. Filter by platform or status. Pass nextCursor as cursor to fetch the next page.",
       "examplePrompt": "",
       "availability": "Server"
     },
     {
       "name": "simulator_stop",
-      "description": "Stop an EAS Simulator session. Safe to call again: a session that already finished is returned unchanged.",
+      "description": "Stop a cloud simulator session. Safe to call again: a session that already finished is returned unchanged.",
       "examplePrompt": "",
       "availability": "Server"
     },
     {
       "name": "automation_tap",
-      "description": "Tap the connected device. Target: pass simulatorSessionId for an EAS Simulator session, or projectRoot for the local device through the expo-mcp tunnel. Pass testID, or both x and y. x and y are points on iOS and physical pixels on Android, not pixels of a scaled screenshot. On EAS Simulator a testID tap waits up to waitMs (default 2000) for the view, then presses it. Coordinate taps never wait.",
+      "description": "Tap the connected device. Target: pass simulatorSessionId for a cloud simulator session, or projectRoot for the local device through the expo-mcp tunnel. Pass testID, or both x and y. x and y are points on iOS and physical pixels on Android, not pixels of a scaled screenshot. On a cloud simulator, a testID tap waits up to waitMs (default 2000) for the view, then presses it. Coordinate taps never wait.",
       "examplePrompt": "",
       "availability": "Server"
     },
     {
       "name": "automation_take_screenshot",
-      "description": "Take a screenshot of the connected device. Target: pass simulatorSessionId for an EAS Simulator session, or projectRoot for the local device through the expo-mcp tunnel. Captures the full screen at 0.3 scale. The text next to the image gives imageScale and tapUnit (points on iOS, physical pixels on Android). When the device reports both sizes, tapX = imageX * tapSpace.width / imageWidth. With testID, waits up to waitMs (default 2000) for that view on EAS Simulator and returns its frame next to the image so a client can crop.",
+      "description": "Take a screenshot of the connected device. Target: pass simulatorSessionId for a cloud simulator session, or projectRoot for the local device through the expo-mcp tunnel. Captures the full screen at 0.3 scale. The text next to the image gives imageScale and tapUnit (points on iOS, physical pixels on Android). When the device reports both sizes, tapX = imageX * tapSpace.width / imageWidth. With testID, waits up to waitMs (default 2000) for that view on a cloud simulator and returns its frame next to the image so a client can crop.",
       "examplePrompt": "",
       "availability": "Server"
     },
     {
       "name": "automation_find_view",
-      "description": "Find a view on the connected device by React Native testID or accessibility label. Target: pass simulatorSessionId for an EAS Simulator session, or projectRoot for the local device through the expo-mcp tunnel. Returns data with frame, is_visible, is_hittable, and is_enabled. Waits up to waitMs (default 2000).",
+      "description": "Find a view on the connected device by React Native testID or accessibility label. Target: pass simulatorSessionId for a cloud simulator session, or projectRoot for the local device through the expo-mcp tunnel. Returns data with frame, is_visible, is_hittable, and is_enabled. Waits up to waitMs (default 2000).",
       "examplePrompt": "",
       "availability": "Server"
     },
     {
       "name": "automation_type",
-      "description": "Type text on the connected device. Target: pass simulatorSessionId for an EAS Simulator session, or projectRoot for the local device through the expo-mcp tunnel. With testID, clears that field and fills it. Without testID, types into the focused field. On EAS Simulator a testID waits up to waitMs (default 2000).",
+      "description": "Type text on the connected device. Target: pass simulatorSessionId for a cloud simulator session, or projectRoot for the local device through the expo-mcp tunnel. With testID, clears that field and fills it. Without testID, types into the focused field. On a cloud simulator, a testID waits up to waitMs (default 2000).",
       "examplePrompt": "",
       "availability": "Server"
     },
     {
       "name": "automation_scroll",
-      "description": "Scroll the connected device screen. Target: pass simulatorSessionId for an EAS Simulator session, or projectRoot for the local device through the expo-mcp tunnel. direction is up, down, left, or right. amount is a fraction of the screen (default 0.5). pixels scrolls a fixed distance instead.",
+      "description": "Scroll the connected device screen. Target: pass simulatorSessionId for a cloud simulator session, or projectRoot for the local device through the expo-mcp tunnel. direction is up, down, left, or right. amount is a fraction of the screen (default 0.5). pixels scrolls a fixed distance instead.",
       "examplePrompt": "",
       "availability": "Server"
     },
