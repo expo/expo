@@ -118,6 +118,8 @@ export function useTriggersToScreens(
   const hasRelativeTrigger = triggers.some(
     (trigger) => trigger.type === 'internal' && resolveHref(trigger.href).startsWith('.')
   );
+  // Only relative hrefs read layout params when they resolve. Absolute hrefs ignore params, so a
+  // param change must not rebuild their triggers.
   const paramsKey = JSON.stringify(
     hasRelativeTrigger
       ? segmentsWithoutGroups.flatMap((segment) => {
@@ -128,47 +130,49 @@ export function useTriggersToScreens(
   );
   const previewSegmentsKey = JSON.stringify(previewSegments);
 
-  const { screenProps, triggerMap } = useMemo(() => {
-    // The serialized keys contain string hrefs and only the referenced layout params.
-    const stableTriggers = JSON.parse(triggerKey) as (ScreenTrigger & { href: string })[];
-    const referencedParams = Object.fromEntries(JSON.parse(paramsKey)) as typeof params;
-    return createTriggerMap(
-      stableTriggers,
+  const { screenProps, triggerMap } = useMemo(
+    () =>
+      createTriggerMap(
+        triggers,
+        layoutRouteNode,
+        linking,
+        parentTriggerMap,
+        params,
+        contextKey,
+        previewSegments,
+        segmentsWithoutGroups
+      ),
+    // `triggers`, `params`, and `previewSegments` are new objects on every render. The string keys
+    // hold their values that the trigger map reads, so they replace them as deps.
+    [
+      contextKey,
       layoutRouteNode,
       linking,
       parentTriggerMap,
-      referencedParams,
-      contextKey,
-      previewSegments,
-      segmentsWithoutGroups
-    );
-  }, [
-    contextKey,
-    layoutRouteNode,
-    linking,
-    parentTriggerMap,
-    paramsKey,
-    previewSegmentsKey,
-    triggerKey,
-  ]);
+      paramsKey,
+      previewSegmentsKey,
+      triggerKey,
+    ]
+  );
 
   const children = useSortedScreens(screenProps);
   return { children, triggerMap };
 }
 
 function createTriggerMap(
-  stableTriggers: (ScreenTrigger & { href: string })[],
+  triggers: ScreenTrigger[],
   layoutRouteNode: RouteNode,
   linking: LinkingOptions<ParamListBase>,
   parentTriggerMap: TriggerMap,
-  referencedParams: Record<string, string | string[] | undefined>,
+  params: Record<string, string | string[] | undefined>,
   contextKey: string,
   previewSegments: string[] | undefined,
   segmentsWithoutGroups: string[]
 ) {
   const configs: TriggerConfig[] = [];
+  const stateSegments = previewSegments ?? contextKey.split('/').filter(Boolean);
 
-  for (const trigger of stableTriggers) {
+  for (const trigger of triggers) {
     if (trigger.name in parentTriggerMap) {
       const parentTrigger = parentTriggerMap[trigger.name]!;
       throw new Error(
@@ -187,7 +191,7 @@ function createTriggerMap(
       continue;
     }
 
-    let resolvedHref = trigger.href;
+    let resolvedHref = resolveHref(trigger.href);
 
     if (resolvedHref.startsWith('../')) {
       throw new Error('Trigger href cannot link to a parent directory');
@@ -197,16 +201,12 @@ function createTriggerMap(
       resolvedHref,
       {
         segments: segmentsWithoutGroups,
-        params: referencedParams,
+        params,
       },
       { relativeToDirectory: true }
     );
 
-    let state = linking.getStateFromPath?.(
-      resolvedHref,
-      linking.config,
-      previewSegments ?? contextKey.split('/').filter(Boolean)
-    )?.routes[0];
+    let state = linking.getStateFromPath?.(resolvedHref, linking.config, stateSegments)?.routes[0];
 
     if (!state) {
       // This shouldn't occur, as you should get the global +not-found
