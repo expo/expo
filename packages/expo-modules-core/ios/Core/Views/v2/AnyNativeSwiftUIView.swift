@@ -3,7 +3,7 @@
 import SwiftUI
 
 /// A SwiftUI view of Expo Modules v2. `@ExpoView<Props>` conforms a SwiftUI view struct to it, and adds the `props`
-/// and `children` constants and the initializer:
+/// and `children` constants, the weak `appContext` property and the initializer:
 ///
 ///     @ExpoView<CardProps>
 ///     struct CardView: View {
@@ -20,7 +20,7 @@ import SwiftUI
 /// contained by, the SwiftUI views of `ExpoSwiftUI.View`.
 @MainActor
 public protocol AnyNativeSwiftUIView: AnyNativeView, SwiftUI.View {
-  init(props: Props, children: ExpoSwiftUI.Children)
+  init(props: Props, children: ExpoSwiftUI.Children, appContext: AppContext?)
 }
 
 extension ExpoSwiftUI {
@@ -99,9 +99,9 @@ extension ExpoSwiftUI {
       return Children(model.children)
     }
 
-    /// The view struct with the current props and children, for example to call a method of the view.
+    /// The view struct with the current props, children and app context, for example to call a method of the view.
     public var content: Content {
-      return Content(props: model.props, children: children)
+      return Content(props: model.props, children: children, appContext: model.appContext)
     }
 
     public var body: Content {
