@@ -180,6 +180,12 @@ export interface SplitViewHeader {
    * @default true
    */
   backVisible?: boolean;
+  /**
+   * Whether the navigation bar of the column is hidden. This also hides the buttons of the bar, such as the
+   * sidebar button and the back button.
+   * @default false
+   */
+  hidden?: boolean;
 }
 
 export interface SplitViewColumnProps {
@@ -236,11 +242,7 @@ export function getSplitColumnChildren(
       <SafeAreaProvider>{otherChildren}</SafeAreaProvider>
     </SafeAreaView>
   );
-  return [
-    ...nativeChildren,
-    content,
-    header && <SplitViewColumnHeader key="header" header={header} />,
-  ];
+  return [...nativeChildren, content, <SplitViewColumnHeader key="header" header={header} />];
 }
 
 /**
@@ -250,7 +252,7 @@ export function SplitViewInspector({ children, header }: SplitViewColumnProps) {
   return (
     <Split.Inspector>
       {children}
-      {header && <SplitViewColumnHeader header={header} />}
+      <SplitViewColumnHeader header={header} />
     </Split.Inspector>
   );
 }

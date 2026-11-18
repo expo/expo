@@ -1,4 +1,4 @@
-import { act, screen, within } from '@testing-library/react-native';
+import { act, render, screen, within } from '@testing-library/react-native';
 import { Children, isValidElement, type ReactNode } from 'react';
 import { Text, type NativeSyntheticEvent } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -176,7 +176,7 @@ it('passes each SplitView.Column to Split.Host as a direct Split.Column', async 
   ).toEqual([Split.Column, Split.Column]);
 });
 
-it('renders a Split.Stack as the only direct child of its Split.Column', async () => {
+it('renders a Split.Stack and header as direct children of its Split.Column', async () => {
   await renderRouter(
     {
       _layout: () => (
@@ -195,7 +195,7 @@ it('renders a Split.Stack as the only direct child of its Split.Column', async (
   const columnProps = jest.mocked(Split.Column).mock.calls[0]![0];
   expect(
     Children.toArray(columnProps.children).map((child) => isValidElement(child) && child.type)
-  ).toEqual([SplitStack]);
+  ).toEqual([SplitStack, SplitViewColumnHeader]);
 });
 
 it('renders a Split.HeaderConfig as a direct child of its Split.Column', async () => {
@@ -218,7 +218,7 @@ it('renders a Split.HeaderConfig as a direct child of its Split.Column', async (
   const columnProps = jest.mocked(Split.Column).mock.calls[0]![0];
   expect(
     Children.toArray(columnProps.children).map((child) => isValidElement(child) && child.type)
-  ).toEqual([SplitHeaderConfig, SafeAreaView]);
+  ).toEqual([SplitHeaderConfig, SafeAreaView, SplitViewColumnHeader]);
 });
 
 it('wraps SplitView.Column content in a horizontal SafeAreaView around a SafeAreaProvider', async () => {
@@ -240,7 +240,7 @@ it('wraps SplitView.Column content in a horizontal SafeAreaView around a SafeAre
   const columnProps = jest.mocked(Split.Column).mock.calls[0]![0];
   expect(
     Children.toArray(columnProps.children).map((child) => isValidElement(child) && child.type)
-  ).toEqual([SafeAreaView]);
+  ).toEqual([SafeAreaView, SplitViewColumnHeader]);
   // The first SafeAreaView is in the sidebar column.
   const safeAreaViewProps = jest.mocked(SafeAreaView).mock.calls[0]![0];
   expect(safeAreaViewProps.edges).toEqual({ left: true, right: true });
@@ -268,7 +268,7 @@ it('wraps the detail column content in a horizontal SafeAreaView', async () => {
   const columnProps = jest.mocked(Split.Column).mock.calls[1]![0];
   expect(
     Children.toArray(columnProps.children).map((child) => isValidElement(child) && child.type)
-  ).toEqual([SafeAreaView]);
+  ).toEqual([SafeAreaView, SplitViewColumnHeader]);
   // The second SafeAreaView is in the detail column.
   expect(jest.mocked(SafeAreaView).mock.calls[1]![0].edges).toEqual({ left: true, right: true });
 });
@@ -294,7 +294,7 @@ it('wraps SplitView.Inspector content in a horizontal SafeAreaView', async () =>
   const inspectorProps = jest.mocked(Split.Inspector).mock.calls[0]![0];
   expect(
     Children.toArray(inspectorProps.children).map((child) => isValidElement(child) && child.type)
-  ).toEqual([SafeAreaView]);
+  ).toEqual([SafeAreaView, SplitViewColumnHeader]);
   // The sidebar column has only a Split.Stack, so the first SafeAreaView is in the detail column and the second is in
   // the inspector.
   expect(jest.mocked(SafeAreaView).mock.calls[1]![0].edges).toEqual({ left: true, right: true });
@@ -394,7 +394,7 @@ it('keeps the SafeAreaView without insets in expanded mode when horizontalSafeAr
     Children.toArray(sidebarColumnProps.children).map(
       (child) => isValidElement(child) && child.type
     )
-  ).toEqual([SafeAreaView]);
+  ).toEqual([SafeAreaView, SplitViewColumnHeader]);
   // The SafeAreaViews are in the sidebar column, the detail column, and the inspector.
   expect(jest.mocked(SafeAreaView).mock.calls[0]![0].edges).toEqual({ left: false, right: false });
   expect(jest.mocked(SafeAreaView).mock.calls[1]![0].edges).toEqual({ left: false, right: false });
@@ -470,7 +470,10 @@ it('passes the SplitView.Column header to the native header as flat props', asyn
     { initialUrl: '/' }
   );
 
-  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0]).toEqual({
+  const props = jest
+    .mocked(SplitViewNativeHeader)
+    .mock.calls.find(([props]) => props.title === 'Mailboxes')![0];
+  expect(props).toEqual({
     title: 'Mailboxes',
     largeTitle: true,
     leftToolbarItems: [{ id: 'left.0', title: 'Edit' }],
@@ -493,7 +496,10 @@ it('passes the SplitView.Column header subtitle to the native header', async () 
     { initialUrl: '/' }
   );
 
-  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].subtitle).toBe('3 unread');
+  const props = jest
+    .mocked(SplitViewNativeHeader)
+    .mock.calls.find(([props]) => props.title === 'Inbox')![0];
+  expect(props.subtitle).toBe('3 unread');
 });
 
 it('passes the title colors of the SplitView.Column header to the native header', async () => {
@@ -517,7 +523,9 @@ it('passes the title colors of the SplitView.Column header to the native header'
     { initialUrl: '/' }
   );
 
-  const props = jest.mocked(SplitViewNativeHeader).mock.lastCall![0];
+  const props = jest
+    .mocked(SplitViewNativeHeader)
+    .mock.calls.find(([props]) => props.title === 'Inbox')![0];
   expect(props.titleColor).toBe('red');
   expect(props.largeTitleColor).toBe('blue');
 });
@@ -543,10 +551,28 @@ it('passes the back button options of the SplitView.Column header to the native 
     { initialUrl: '/' }
   );
 
-  const props = jest.mocked(SplitViewNativeHeader).mock.lastCall![0];
-  expect(props.title).toBe('Inbox');
+  const props = jest
+    .mocked(SplitViewNativeHeader)
+    .mock.calls.find(([props]) => props.title === 'Inbox')![0];
   expect(props.backTitle).toBe('Mail');
   expect(props.backVisible).toBe(false);
+});
+
+it('passes the hidden option of the SplitView.Column header to the native header', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column header={{ hidden: true }} />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  expect(jest.mocked(SplitViewNativeHeader).mock.calls[0]![0]).toMatchObject({ hidden: true });
 });
 
 it('passes the toolbar item menu to the native header with an id for each action', async () => {
@@ -581,7 +607,7 @@ it('passes the toolbar item menu to the native header with an id for each action
     { initialUrl: '/' }
   );
 
-  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].rightToolbarItems).toEqual([
+  expect(jest.mocked(SplitViewNativeHeader).mock.calls[0]![0].rightToolbarItems).toEqual([
     { id: 'right.0', title: 'Edit' },
     {
       id: 'right.1',
@@ -622,7 +648,7 @@ it('passes disabled and selected of toolbar items to the native header', async (
   );
 
   const { leftToolbarItems, rightToolbarItems } =
-    jest.mocked(SplitViewNativeHeader).mock.lastCall![0];
+    jest.mocked(SplitViewNativeHeader).mock.calls[0]![0];
   expect(leftToolbarItems).toEqual([{ id: 'left.0', title: 'Edit', disabled: true }]);
   expect(rightToolbarItems).toEqual([
     { id: 'right.0', title: 'Unread', selected: true },
@@ -658,7 +684,7 @@ it('passes tintColor, hidesSharedBackground and accessibility props of toolbar i
     { initialUrl: '/' }
   );
 
-  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].rightToolbarItems).toEqual([
+  expect(jest.mocked(SplitViewNativeHeader).mock.calls[0]![0].rightToolbarItems).toEqual([
     {
       id: 'right.0',
       title: 'Compose',
@@ -693,7 +719,7 @@ it('passes the variant of toolbar items to the native header as barButtonItemSty
     { initialUrl: '/' }
   );
 
-  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].rightToolbarItems).toEqual([
+  expect(jest.mocked(SplitViewNativeHeader).mock.calls[0]![0].rightToolbarItems).toEqual([
     { id: 'right.0', title: 'Cancel', barButtonItemStyle: 'plain' },
     { id: 'right.1', title: 'Done', barButtonItemStyle: 'prominent' },
     { id: 'right.2', title: 'Send', barButtonItemStyle: 'prominent' },
@@ -721,7 +747,7 @@ it('passes separateBackground of toolbar items to the native header as sharesBac
     { initialUrl: '/' }
   );
 
-  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].rightToolbarItems).toEqual([
+  expect(jest.mocked(SplitViewNativeHeader).mock.calls[0]![0].rightToolbarItems).toEqual([
     { id: 'right.0', title: 'Search', sharesBackground: false },
     { id: 'right.1', title: 'Move', sharesBackground: true },
   ]);
@@ -762,7 +788,7 @@ it('passes the badge of toolbar items to the native header as a flat badgeConfig
     { initialUrl: '/' }
   );
 
-  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].rightToolbarItems).toEqual([
+  expect(jest.mocked(SplitViewNativeHeader).mock.calls[0]![0].rightToolbarItems).toEqual([
     {
       id: 'right.0',
       title: 'Inbox',
@@ -798,7 +824,7 @@ it('passes an xcasset icon of toolbar items to the native header as xcassetName'
     { initialUrl: '/' }
   );
 
-  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].rightToolbarItems).toEqual([
+  expect(jest.mocked(SplitViewNativeHeader).mock.calls[0]![0].rightToolbarItems).toEqual([
     { id: 'right.0', title: 'Logo', xcassetName: 'logo', imageRenderingMode: 'original' },
   ]);
 });
@@ -830,7 +856,7 @@ it('renders xcasset icons of toolbar items as template when tintColor is set', a
     { initialUrl: '/' }
   );
 
-  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].rightToolbarItems).toEqual([
+  expect(jest.mocked(SplitViewNativeHeader).mock.calls[0]![0].rightToolbarItems).toEqual([
     {
       id: 'right.0',
       title: 'Logo',
@@ -896,7 +922,7 @@ it('calls onPress of the pressed native toolbar item', async () => {
     { initialUrl: '/' }
   );
 
-  const { onToolbarItemPress } = jest.mocked(SplitViewNativeHeader).mock.lastCall![0];
+  const { onToolbarItemPress } = jest.mocked(SplitViewNativeHeader).mock.calls[0]![0];
   onToolbarItemPress({ nativeEvent: { id: 'right.1' } });
 
   expect(onArchivePress).toHaveBeenCalledTimes(1);
@@ -936,7 +962,7 @@ it('calls onPress of the pressed native menu action', async () => {
     { initialUrl: '/' }
   );
 
-  const { onToolbarItemPress } = jest.mocked(SplitViewNativeHeader).mock.lastCall![0];
+  const { onToolbarItemPress } = jest.mocked(SplitViewNativeHeader).mock.calls[0]![0];
   onToolbarItemPress({ nativeEvent: { id: 'left.0.1' } });
 
   expect(onFlaggedPress).toHaveBeenCalledTimes(1);
@@ -966,7 +992,7 @@ it('passes the search bar placeholder to the native header without callbacks', a
     { initialUrl: '/' }
   );
 
-  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].searchBar).toEqual({
+  expect(jest.mocked(SplitViewNativeHeader).mock.calls[0]![0].searchBar).toEqual({
     placeholder: 'Search mailboxes',
   });
 });
@@ -989,7 +1015,7 @@ it('calls onChangeText of the search bar when the native search text changes', a
 
   // The test sends only the fields that the native header sends.
   const event = { nativeEvent: { text: 'Inbox' } } as NativeSyntheticEvent<{ text: string }>;
-  jest.mocked(SplitViewNativeHeader).mock.lastCall![0].onSearchBarChangeText!(event);
+  jest.mocked(SplitViewNativeHeader).mock.calls[0]![0].onSearchBarChangeText!(event);
 
   expect(onChangeText).toHaveBeenCalledTimes(1);
   expect(onChangeText).toHaveBeenCalledWith(event);
@@ -1014,7 +1040,7 @@ it('calls onSearchButtonPress of the search bar when the native search button is
 
   // The test sends only the fields that the native header sends.
   const event = { nativeEvent: { text: 'Inbox' } } as NativeSyntheticEvent<{ text: string }>;
-  jest.mocked(SplitViewNativeHeader).mock.lastCall![0].onSearchBarSearchButtonPress!(event);
+  jest.mocked(SplitViewNativeHeader).mock.calls[0]![0].onSearchBarSearchButtonPress!(event);
 
   expect(onSearchButtonPress).toHaveBeenCalledTimes(1);
   expect(onSearchButtonPress).toHaveBeenCalledWith(event);
@@ -1111,7 +1137,7 @@ it('renders the SplitView.Inspector header as the last child of the inspector', 
   ).toEqual([SafeAreaView, SplitViewColumnHeader]);
 });
 
-it('renders no native header for a SplitView.Column without header', async () => {
+it('renders native headers for columns without header options', async () => {
   await renderRouter(
     {
       _layout: () => (
@@ -1120,6 +1146,9 @@ it('renders no native header for a SplitView.Column without header', async () =>
             <Text>Sidebar</Text>
           </SplitView.Column>
           <SplitView.Content />
+          <SplitView.Inspector>
+            <Text>Inspector</Text>
+          </SplitView.Inspector>
         </SplitView>
       ),
       index: () => <Text>Index</Text>,
@@ -1127,8 +1156,23 @@ it('renders no native header for a SplitView.Column without header', async () =>
     { initialUrl: '/' }
   );
 
-  expect(screen.queryByTestId('SplitViewNativeHeader')).toBeNull();
-  expect(SplitViewNativeHeader).not.toHaveBeenCalled();
+  expect(screen.getAllByTestId('SplitViewNativeHeader')).toHaveLength(3);
+});
+
+it('passes undefined header options when the header prop is removed', async () => {
+  const result = await render(<SplitView.Column header={{ title: 'Inbox', hidden: true }} />);
+
+  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0]).toMatchObject({
+    title: 'Inbox',
+    hidden: true,
+  });
+
+  await result.rerender(<SplitView.Column />);
+
+  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0]).toMatchObject({
+    title: undefined,
+    hidden: undefined,
+  });
 });
 
 it('rejects two SplitView.Content in a SplitView', async () => {
