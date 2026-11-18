@@ -7,6 +7,7 @@ import { LocalRouteParamsContext, sortRoutesWithInitial } from '../Route';
 import { getContextKey } from '../matchers';
 import { getValidInitialRoute } from '../routeNode';
 import type { Href } from '../types';
+import { useFocusedGuardRedirect } from './useFocusedGuardRedirect';
 
 // Per route name, the explicit redirect of its outermost failed guard. A missing entry means the
 // route is accessible; an `undefined` value means the failed guard has no redirect.
@@ -75,6 +76,7 @@ export function useGuardRedirect(routeName: string): GuardRedirect | undefined {
 export function useLayoutGuards(
   node: RouteNode | null,
   declaredNames: string[],
+  navigatorKey: string,
   focusedName: string | undefined
 ) {
   const owner = use(GuardContext);
@@ -83,9 +85,14 @@ export function useLayoutGuards(
     ? declaredNames.filter((name) => !isRouteGuarded(name, guards))
     : declaredNames;
   const focused = focusedName === undefined ? undefined : getFailedGuard(guards, focusedName);
-  // Keep a focused blocked screen until its explicit redirect or the parent fallback runs.
+  const focusedRedirect = useFocusedGuardRedirect(focused?.redirectTo, navigatorKey, eligible);
+  const redirect = typeof focusedRedirect === 'object' ? focusedRedirect : undefined;
+  // Keep a focused blocked screen for one render when the screen applies a redirect to another
+  // navigator or the parent fallback, or when navigation queued in the same handler, such as a
+  // replace, must act on it.
   const keepFocused =
     focused !== undefined &&
+    !redirect &&
     (focused.redirectTo !== undefined || (eligible.length === 0 && !!owner?.fallbacks.length));
   const routeNames = keepFocused
     ? declaredNames.filter((name) => name === focusedName || eligible.includes(name))
@@ -98,7 +105,7 @@ export function useLayoutGuards(
       );
     }
   }, [allBlocked]);
-  return { routeNames, guards, fallbackName: guards && owner?.fallbackName };
+  return { routeNames, guards, fallbackName: guards && owner?.fallbackName, redirect };
 }
 
 export function getFailedGuard(

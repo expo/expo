@@ -1,7 +1,8 @@
-import { Fragment, use, useLayoutEffect, useState } from 'react';
+import { createContext, Fragment, use, useEffect, useLayoutEffect, useState } from 'react';
 import type { NavigatorArgs } from 'standard-navigation';
 
 import { navigationRef } from '../global-state/navigationRef';
+import { usePathname } from '../hooks';
 import { router } from '../imperative-api';
 import { RootNavigationStateContext } from '../react-navigation/core/RootNavigationStateContext';
 import { NavigatorStateContext } from '../react-navigation/core/useNavigationState';
@@ -33,6 +34,7 @@ function Content(args: NavigatorArgs<object, Record<never, never>>) {
   ));
 }
 
+const SignedInContext = createContext(true);
 const Stack = createStandardRouterNavigator(Content, StackRouter);
 const Tabs = createStandardRouterNavigator(Content, TabRouter, {
   processDescriptors: appendMissingPlaceholderTabDescriptors,
@@ -619,6 +621,194 @@ describe('mounted guard flip', () => {
       { name: 'index' },
     ]);
     expect(router.canGoBack()).toBe(false);
+  });
+});
+
+describe('focused explicit redirect on a guard flip', () => {
+  it('opens a fresh Home on the first render without focusing Settings', async () => {
+    let close: () => void;
+    const settingsFocus = jest.fn();
+    const homePathnames = jest.fn();
+    await renderRouter({
+      _layout: function Layout() {
+        const [open, setOpen] = useState(true);
+        close = () => setOpen(false);
+        return (
+          <Stack>
+            <Stack.Protected guard={open} redirectTo="/">
+              <Stack.Screen name="login" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: function Home() {
+        homePathnames(usePathname());
+        return null;
+      },
+      settings: function Settings() {
+        const navigation = useNavigation<NavigationProp<ParamListBase>>();
+        useEffect(() => navigation.addListener('focus', settingsFocus), [navigation]);
+        return null;
+      },
+      login: () => null,
+    });
+    await act(() => router.push('/settings'));
+    await act(() => router.push('/login'));
+    const [home, settings] = navigationRef.getRootState().routes[0]!.state!.routes;
+    renderProbe.mockClear();
+    settingsFocus.mockClear();
+    homePathnames.mockClear();
+
+    await act(() => close());
+
+    const first = renderProbe.mock.calls[0]![0];
+    expect(first.state.routes.map((route) => route.name)).toEqual(['index', 'settings', 'index']);
+    expect(first.state.index).toBe(2);
+    const freshHomeKey = first.state.routes[2]!.key;
+    expect(freshHomeKey).not.toBe(home!.key);
+    expect(Object.keys(first.descriptors)).toEqual([home!.key, settings!.key, freshHomeKey]);
+    expect(navigationRef.getRootState().routes[0]!.state!.routes).toEqual([
+      home,
+      settings,
+      expect.objectContaining({ key: freshHomeKey, name: 'index' }),
+    ]);
+    expect(settingsFocus).not.toHaveBeenCalled();
+    // Root readers lag on the first projected render, then agree with the projection. The URL
+    // never switches to Settings.
+    expect(homePathnames.mock.calls[0]).toEqual(['/login']);
+    expect(homePathnames).not.toHaveBeenCalledWith('/settings');
+    expect(homePathnames).toHaveBeenLastCalledWith('/');
+    expect(screen).toHavePathname('/');
+  });
+
+  it('gives an explicit replacement from the same handler priority over the guard redirect', async () => {
+    let finish: () => void;
+    const inHandler = jest.fn();
+    const account = jest.fn(() => null);
+    await renderRouter({
+      _layout: function Layout() {
+        const [open, setOpen] = useState(true);
+        finish = () => {
+          setOpen(false);
+          router.replace('/welcome');
+          inHandler(navigationRef.getRootState().routes[0]!.state!.routes.map((r) => r.name));
+        };
+        return (
+          <Stack>
+            <Stack.Protected guard={open} redirectTo="/account">
+              <Stack.Screen name="login" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => null,
+      settings: () => null,
+      login: () => null,
+      account,
+      welcome: () => null,
+    });
+    await act(() => router.push('/settings'));
+    await act(() => router.push('/login'));
+    renderProbe.mockClear();
+
+    await act(() => finish());
+
+    expect(inHandler).toHaveBeenCalledWith(['index', 'settings', 'login']);
+    const rendered = renderProbe.mock.calls.map(([args]) =>
+      args.state.routes.map((route) => route.name)
+    );
+    // The replace from the handler acts on Login, so Login stays for the first render.
+    expect(rendered[0]).toEqual(['index', 'settings', 'login']);
+    expect(rendered).not.toContainEqual(['index', 'settings', 'account']);
+    expect(rendered).not.toContainEqual(['index', 'settings', 'login', 'account']);
+    expect(account).not.toHaveBeenCalled();
+    expect(
+      navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+    ).toEqual(['index', 'settings', 'welcome']);
+  });
+
+  it('resolves a relative redirect from the guarded route on a guard flip', async () => {
+    let close: () => void;
+    await renderRouter(
+      {
+        _layout: () => <Stack />,
+        index: () => null,
+        '[org]/_layout': function Org() {
+          const [open, setOpen] = useState(true);
+          close = () => setOpen(false);
+          return (
+            <Stack>
+              <Stack.Protected guard={open} redirectTo="./upgrade">
+                <Stack.Screen name="billing" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        '[org]/index': () => null,
+        '[org]/settings/[tab]': () => null,
+        '[org]/billing': () => null,
+        '[org]/upgrade': () => null,
+      },
+      { initialUrl: '/acme/settings/profile' }
+    );
+    await act(() => router.push('/acme/billing'));
+    renderProbe.mockClear();
+
+    await act(() => close());
+
+    // The first call after the flip renders the organization stack.
+    expect(renderProbe.mock.calls[0]![0].state.routes.map((route) => route.name)).toEqual([
+      'settings/[tab]',
+      'upgrade',
+    ]);
+    expect(screen).toHavePathname('/acme/upgrade');
+  });
+
+  it('lets a failed parent guard discard the child guard redirect', async () => {
+    let signOut: () => void;
+    const upgrade = jest.fn(() => null);
+    await renderRouter({
+      _layout: function Layout() {
+        const [signedIn, setSignedIn] = useState(true);
+        signOut = () => setSignedIn(false);
+        return (
+          <SignedInContext value={signedIn}>
+            <Stack>
+              <Stack.Protected guard={signedIn} redirectTo="/login">
+                <Stack.Screen name="account" />
+              </Stack.Protected>
+            </Stack>
+          </SignedInContext>
+        );
+      },
+      index: () => null,
+      login: () => null,
+      'account/_layout': function Account() {
+        const signedIn = use(SignedInContext);
+        return (
+          <Stack>
+            <Stack.Protected guard={signedIn} redirectTo="/account/upgrade">
+              <Stack.Screen name="billing" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      'account/index': () => null,
+      'account/billing': () => null,
+      'account/upgrade': upgrade,
+    });
+    await act(() => router.push('/account/billing'));
+    renderProbe.mockClear();
+
+    await act(() => signOut());
+
+    const rendered = renderProbe.mock.calls.map(([args]) =>
+      args.state.routes.map((route) => route.name)
+    );
+    expect(rendered[0]).toEqual(['index', 'login']);
+    expect(rendered).not.toContainEqual(['index', 'account']);
+    expect(rendered).not.toContainEqual(['index']);
+    expect(upgrade).not.toHaveBeenCalled();
   });
 });
 

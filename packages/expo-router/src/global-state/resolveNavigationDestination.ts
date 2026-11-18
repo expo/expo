@@ -364,7 +364,7 @@ function getFocusedRoute(
   return state.routes[state.index ?? state.routes.length - 1];
 }
 
-function routesMatch(
+export function routesMatch(
   targetRoute: PartialRoute<Route<string>>,
   currentRoute: Route<string> & {
     state?: NavigationState | PartialState<NavigationState>;

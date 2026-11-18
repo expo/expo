@@ -341,10 +341,12 @@ export function useNavigationBuilder<
     );
   }
   // Blocked routes stay declared but are not passed to the router or the descriptors.
-  const { routeNames, guards, fallbackName } = useLayoutGuards(
+  const focusedRoute = committedState.routes[committedState.index];
+  const { routeNames, guards, fallbackName, redirect } = useLayoutGuards(
     routeNode,
     declaredNames,
-    committedState.routes[committedState.index]?.name
+    committedState.key,
+    focusedRoute?.name
   );
   // Track screen-list changes without recalculating state when only the array identity changes.
   const routeNamesKey = routeNames.join('\0');
@@ -379,13 +381,34 @@ export function useNavigationBuilder<
     }
     return names === routeNames ? result.state : { ...result.state, routeNames };
   };
-  const state = React.useMemo(() => {
-    const declaredState = router.getStateForDeclaredRoutes(reconcile(committedState), routeNames);
+  const redirectKey = redirect && JSON.stringify(redirect);
+  // A focused explicit redirect to this navigator opens a fresh destination after the blocked
+  // visits are removed. The queued update below repeats the same action on the same slice, so the
+  // destination keeps the key shown on the first render.
+  const { state, redirectAction } = React.useMemo(() => {
+    const reconciled = reconcile(committedState);
+    let projected = reconciled;
+    let redirectAction: NavigationAction | undefined;
+    if (redirect) {
+      for (const type of ['PUSH', 'NAVIGATE']) {
+        const action = { type, payload: redirect };
+        const result = router.getStateForAction(reconciled, action, routerConfig);
+        if (isActionHandled(result)) {
+          projected = result.state;
+          redirectAction = action;
+          break;
+        }
+      }
+    }
+    const declaredState = router.getStateForDeclaredRoutes(projected, routeNames);
     // The seeded state cannot know the order declared by mounted screens yet.
-    return isArrayEqual(declaredState.routeNames, routeNames)
-      ? declaredState
-      : { ...declaredState, routeNames };
-  }, [committedState, routeNamesKey, fallbackName, router]);
+    return {
+      state: isArrayEqual(declaredState.routeNames, routeNames)
+        ? declaredState
+        : { ...declaredState, routeNames },
+      redirectAction,
+    };
+  }, [committedState, routeNamesKey, fallbackName, router, redirectKey]);
   const reduce = useLatestCallback<RouterRegistryEntry['reduce']>((registryState, action) => {
     // The registry stores states from different router types; this entry only receives its own state key.
     const input = registryState as State;
@@ -497,6 +520,7 @@ export function useNavigationBuilder<
       return;
     }
     const committed = committedState;
+    const blockedKey = focusedRoute?.key;
 
     if (isArrayEqual(committed.routeNames, routeNames)) {
       pendingRouteNamesRef.current = undefined;
@@ -510,10 +534,17 @@ export function useNavigationBuilder<
         payload: {
           // The navigator can unmount before the queue drains, for example when a parent guard
           // removes it. Skip the update when this entry no longer owns the state.
-          compute: (root, registry) =>
-            registry.get(committed.key) === registryEntry && findStateByKey(root, committed.key)
-              ? { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames }, target: committed.key }
-              : undefined,
+          compute: (root, registry) => {
+            const slice = findStateByKey(root, committed.key);
+            if (registry.get(committed.key) !== registryEntry || !slice) {
+              return undefined;
+            }
+            // Apply the redirect only while the blocked route that requested it is still focused.
+            // Navigation that ran first, such as a replace in the same handler, wins.
+            return redirectAction && slice.routes[slice.index]?.key === blockedKey
+              ? { ...redirectAction, target: committed.key }
+              : { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames }, target: committed.key };
+          },
           originKey: committed.key,
         },
       });
