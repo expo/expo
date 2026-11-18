@@ -20,6 +20,9 @@ export async function generateStaticParams(params: {
 }
 
 export async function loader(_: ImmutableRequest, params: Record<string, string | string[]>) {
+  if (params.postId === 'slow') {
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+  }
   return Promise.resolve({
     params,
   });
