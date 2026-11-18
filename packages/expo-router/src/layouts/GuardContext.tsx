@@ -18,8 +18,14 @@ export type GuardFallback = {
   navigatorId: string;
   targetRouteContextKey: string;
 };
-// Neither field means guarded with no available destination.
-export type ResolvedGuard = { redirectTo?: Href; fallback?: GuardFallback };
+export type ResolvedGuard =
+  | { type: 'redirect'; href: Href }
+  // The fallback is a route in the same navigator.
+  | { type: 'ownFallback'; name: string; params: object | undefined }
+  // The fallback is a route in an ancestor navigator.
+  | { type: 'parentFallback'; fallback: GuardFallback }
+  // Guarded with no available destination.
+  | { type: 'noDestination' };
 // Per route name; a missing entry means the route is unguarded.
 export type ResolvedGuards = Map<string, ResolvedGuard>;
 
@@ -71,13 +77,33 @@ function computeGuardState(
 
   return {
     fallbacks,
-    resolvedGuards: resolveGuardRedirects(guardedRedirects, fallbacks[0]),
+    resolvedGuards: resolveGuardRedirects(
+      guardedRedirects,
+      getFallbackGuard(navigatorFallback, inheritedFallbacks[0])
+    ),
   };
 }
 
-export function useResolvedGuard(routeName: string): ResolvedGuard | undefined {
+function getFallbackGuard(
+  navigatorFallback: GuardFallback | undefined,
+  inheritedFallback: GuardFallback | undefined
+): ResolvedGuard {
+  if (navigatorFallback) {
+    return { type: 'ownFallback', name: navigatorFallback.name, params: navigatorFallback.params };
+  }
+  if (inheritedFallback) {
+    return { type: 'parentFallback', fallback: inheritedFallback };
+  }
+  return { type: 'noDestination' };
+}
+
+export function useResolvedGuard({
+  routeName,
+}: {
+  routeName: string | undefined;
+}): ResolvedGuard | undefined {
   const guards = use(GuardContext);
-  if (!guards) {
+  if (!guards || routeName === undefined) {
     return undefined;
   }
 
@@ -95,20 +121,20 @@ export function dispatchReplaceWithGuardFallback(
   fallback: GuardFallback
 ) {
   const owner = navigation.getParent(fallback.navigatorId);
-  if (!owner) {
-    if (__DEV__) {
-      console.warn(
-        `Expo Router could not open the fallback route "${fallback.name}" of a protected route in "${fallback.navigatorId}", because every visible tab is protected and "${fallback.name}" has no visible tab. ` +
-          `Add a visible screen for "${fallback.name}", or set \`redirectTo\` on the \`Protected\` component.`
-      );
-    }
-    return;
+  if (owner) {
+    dispatchReplaceInNavigator(owner, owner.getState().key, fallback.name, fallback.params);
   }
-  // Stack, tab, and drawer routers handle `REPLACE`. The target stops other navigators from handling it.
-  owner.dispatch({
-    ...StackActions.replace(fallback.name, fallback.params),
-    target: owner.getState().key,
-  });
+}
+
+export function dispatchReplaceInNavigator(
+  navigation: Pick<NavigationProp<ParamListBase>, 'dispatch'>,
+  navigatorKey: string,
+  name: string,
+  params: object | undefined
+) {
+  // Stack, tab, and drawer routers handle `REPLACE`. The target stops other navigators that have
+  // a route with the same name from handling it.
+  navigation.dispatch({ ...StackActions.replace(name, params), target: navigatorKey });
 }
 
 export function normalizeRouteName(routeName: string): string {
@@ -164,14 +190,13 @@ export function isRouteGuarded(routeName: string, guards: ReadonlyMap<string, un
 
 function resolveGuardRedirects(
   guardedRedirects: GuardedRedirects,
-  fallback: GuardFallback | undefined
+  fallbackGuard: ResolvedGuard
 ): ResolvedGuards {
   return new Map(
-    Array.from(
-      guardedRedirects,
-      ([name, redirectTo]) =>
-        [name, redirectTo !== undefined ? { redirectTo } : { fallback }] as const
-    )
+    Array.from(guardedRedirects, ([name, redirectTo]): [string, ResolvedGuard] => [
+      name,
+      redirectTo !== undefined ? { type: 'redirect', href: redirectTo } : fallbackGuard,
+    ])
   );
 }
 

@@ -331,3 +331,22 @@ it('warns when every tab is guarded and the fallback route has no tab', async ()
       'Add a visible screen for "settings", or set `redirectTo` on the `Protected` component.'
   );
 });
+
+it('warns when every tab of a root tab navigator is guarded and the fallback route has no tab', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Tabs>
+        <Tabs.Protected guard={false}>
+          <Tabs.Screen name="index" />
+        </Tabs.Protected>
+      </Tabs>
+    ),
+    index: () => <Text testID="home">Home</Text>,
+    settings: () => <Text testID="settings">Settings</Text>,
+  });
+
+  expect(warnSpy).toHaveBeenCalledWith(
+    'Expo Router could not open the fallback route "settings" of a protected route in "/", because every visible tab is protected and "settings" has no visible tab. ' +
+      'Add a visible screen for "settings", or set `redirectTo` on the `Protected` component.'
+  );
+});
