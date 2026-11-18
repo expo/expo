@@ -20,7 +20,7 @@ let package = Package(
       name: "ExpoApplication",
       dependencies: [
         "ExpoApplicationObjC",
-        .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders")
+        .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders"),
       ],
       path: "ios/ExpoApplication",
       sources: ["ApplicationExceptions.swift", "ApplicationModule.swift"],
@@ -30,7 +30,7 @@ let package = Package(
       name: "ExpoApplicationObjC",
       path: "ios/ExpoApplicationObjC",
       publicHeadersPath: "include"
-    )
+    ),
   ],
   swiftLanguageModes: [.v5]
 )
