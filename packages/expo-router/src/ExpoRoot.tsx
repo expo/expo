@@ -15,6 +15,7 @@ import { RoutingQueueProvider } from './global-state/routingQueueContext';
 import { useRouterConfig } from './global-state/useStore';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
+import { LoaderContextProvider } from './loaders/LoaderContextProvider';
 import { Screen } from './primitives';
 import type { LinkingOptions } from './react-navigation/native';
 import { StackRouter, useNavigationBuilder } from './react-navigation/native';
@@ -60,9 +61,11 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
   // like in the browser.
   return (
     <ParentWrapper>
-      <RoutingQueueProvider>
-        <ContextNavigator {...props} wrapper={AppWrapper} />
-      </RoutingQueueProvider>
+      <LoaderContextProvider>
+        <RoutingQueueProvider>
+          <ContextNavigator {...props} wrapper={AppWrapper} />
+        </RoutingQueueProvider>
+      </LoaderContextProvider>
     </ParentWrapper>
   );
 }
