@@ -1,4 +1,3 @@
-import { Platform, UnavailabilityError } from 'expo';
 import type { EventSubscription } from 'expo';
 
 import { NativeLocationModuleNext } from '../native';
@@ -9,9 +8,6 @@ export class HeadingWatchHandle {
   private readonly nativeHandle: NativeHeadingWatchHandleClass;
 
   constructor(filter?: number) {
-    if (Platform.OS !== 'ios') {
-      throw new UnavailabilityError('expo-location', 'watchHeading');
-    }
     this.nativeHandle = NativeLocationModuleNext.watchHeading(filter);
   }
 

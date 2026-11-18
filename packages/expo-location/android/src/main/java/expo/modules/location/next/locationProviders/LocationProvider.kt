@@ -4,8 +4,10 @@ import android.app.Activity
 import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.location.next.DEFAULT_HEADING_FILTER
 import expo.modules.location.next.LocationProfile
 import expo.modules.location.next.Position
+import expo.modules.location.next.WatchEvent
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -16,10 +18,11 @@ enum class LocationPriority {
   PASSIVE
 }
 
-data class WatchPositionParameters(
+data class WatchParameters(
   val priority: LocationPriority,
   val interval: Duration,
-  val maxUpdateDelay: Duration
+  val maxUpdateDelay: Duration,
+  val filter: Double = DEFAULT_HEADING_FILTER
 )
 
 data class BackgroundUpdatesParameters(
@@ -61,11 +64,6 @@ fun Map<String, Any?>.toBackgroundUpdatesParameters(): BackgroundUpdatesParamete
   )
 }
 
-sealed interface WatchUpdate {
-  data class Fix(val position: Position) : WatchUpdate
-  data class Failure(val cause: Throwable) : WatchUpdate
-}
-
 data class GetCurrentPositionOptions(
   val maxCachedAge: Duration,
   val timeout: Duration,
@@ -96,8 +94,8 @@ sealed interface EnableLocationServicesResult {
   object ResolutionPending : EnableLocationServicesResult
 }
 
-interface PositionUpdatesSession {
-  fun startUpdates(parameters: WatchPositionParameters, onUpdate: (WatchUpdate) -> Unit): Boolean
+interface UpdatesSession {
+  fun startUpdates(parameters: WatchParameters, onUpdate: (WatchEvent) -> Unit)
   fun stopUpdates()
   fun isSubscribed(): Boolean
   fun canDeliverUpdates(): Boolean
@@ -106,7 +104,7 @@ interface PositionUpdatesSession {
 interface LocationProvider {
   val name: String
   suspend fun getPosition(options: GetCurrentPositionOptions): ProviderResult<Position>
-  fun watchPosition(): ProviderResult<PositionUpdatesSession>
+  fun watchPosition(): ProviderResult<UpdatesSession>
 
   // Prompt user to enable location services.
   // The caller guarantees the location services are turned off, so there is no reason to check the

@@ -13,7 +13,7 @@ import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.location.next.locationProviders.BackgroundUpdatesParameters
 import expo.modules.location.next.locationProviders.GetCurrentPositionOptions
 import expo.modules.location.next.locationProviders.LocationPriority
-import expo.modules.location.next.locationProviders.WatchPositionParameters
+import expo.modules.location.next.locationProviders.WatchParameters
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Duration.Companion.hours
@@ -92,14 +92,14 @@ enum class LocationProfile(val value: String) : Enumerable {
     }
   }
 
-  fun watchParameters(): WatchPositionParameters {
+  fun watchParameters(): WatchParameters {
     return when (this) {
-      DEFAULT -> WatchPositionParameters(LocationPriority.BALANCED_POWER_ACCURACY, 5.seconds, Duration.ZERO)
-      AUTOMOTIVE_NAVIGATION -> WatchPositionParameters(LocationPriority.HIGH_ACCURACY, 1.seconds, Duration.ZERO)
-      OTHER_NAVIGATION -> WatchPositionParameters(LocationPriority.HIGH_ACCURACY, 2.seconds, Duration.ZERO)
-      FITNESS -> WatchPositionParameters(LocationPriority.HIGH_ACCURACY, 2.seconds, Duration.ZERO)
-      AIRBORNE -> WatchPositionParameters(LocationPriority.HIGH_ACCURACY, 1.seconds, Duration.ZERO)
-      LOW_POWER -> WatchPositionParameters(LocationPriority.LOW_POWER, 60.seconds, 300.seconds)
+      DEFAULT -> WatchParameters(LocationPriority.BALANCED_POWER_ACCURACY, 5.seconds, Duration.ZERO)
+      AUTOMOTIVE_NAVIGATION -> WatchParameters(LocationPriority.HIGH_ACCURACY, 1.seconds, Duration.ZERO)
+      OTHER_NAVIGATION -> WatchParameters(LocationPriority.HIGH_ACCURACY, 2.seconds, Duration.ZERO)
+      FITNESS -> WatchParameters(LocationPriority.HIGH_ACCURACY, 2.seconds, Duration.ZERO)
+      AIRBORNE -> WatchParameters(LocationPriority.HIGH_ACCURACY, 1.seconds, Duration.ZERO)
+      LOW_POWER -> WatchParameters(LocationPriority.LOW_POWER, 60.seconds, 300.seconds)
     }
   }
 

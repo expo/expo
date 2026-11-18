@@ -1,6 +1,7 @@
 package expo.modules.location.next
 
 import android.content.Context
+import android.hardware.SensorManager
 import android.location.LocationManager
 import android.os.Build
 import androidx.core.location.LocationManagerCompat
@@ -30,13 +31,15 @@ import expo.modules.location.next.locationForegroundService.SessionState
 import expo.modules.location.next.locationProviders.AndroidLocationProvider
 import expo.modules.location.next.locationProviders.EnableLocationServicesResult
 import expo.modules.location.next.locationProviders.FallbackLocationProvider
+import expo.modules.location.next.locationProviders.GetCurrentPositionOptions
 import expo.modules.location.next.locationProviders.GmsLocationProvider
+import expo.modules.location.next.locationProviders.LocationPriority
 import expo.modules.location.next.locationProviders.LocationProvider
 import expo.modules.location.next.locationProviders.ProviderResult
+import expo.modules.location.next.locationProviders.UpdatesSession
+import expo.modules.location.next.locationProviders.WatchParameters
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
-import expo.modules.location.next.locationProviders.WatchPositionParameters
-import expo.modules.location.next.locationProviders.PositionUpdatesSession
 import java.lang.ref.WeakReference
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -100,11 +103,34 @@ class LocationModuleNext : Module() {
     }
   }
 
-  fun createPositionWatchHandle(initialParameters: WatchPositionParameters, session: PositionUpdatesSession): PositionWatchHandle = synchronized(watchSessions) {
-    val areUpdatesAllowed = shouldWatchersRun()
-    val pausableSession = PausableWatchSession(initialParameters, session, areUpdatesAllowed)
+  private fun registerWatch(parameters: WatchParameters, source: UpdatesSession): PausableWatchSession = synchronized(watchSessions) {
+    val pausableSession = PausableWatchSession(parameters, source, shouldWatchersRun())
     watchSessions.add(WeakReference(pausableSession))
-    return@synchronized PositionWatchHandle(pausableSession)
+    return@synchronized pausableSession
+  }
+
+  private fun refreshHeadingReferencePosition() {
+    val hasPermissions = runCatching { permissionsManager.hasForegroundPermissions() }.getOrDefault(false)
+    if (!hasPermissions) {
+      return
+    }
+    val options = GetCurrentPositionOptions(
+      maxCachedAge = Duration.INFINITE,
+      timeout = Duration.ZERO,
+      priority = LocationPriority.PASSIVE
+    )
+    appContext.backgroundCoroutineScope.launch {
+      val position = try {
+        currentLocationProvider.getPosition(options).getOrNull("getPosition")
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        null
+      }
+      if (position != null) {
+        headingDeclination = position.declination()
+      }
+    }
   }
 
   override fun definition() = ModuleDefinition {
@@ -200,7 +226,19 @@ class LocationModuleNext : Module() {
     Function("watchPosition") { profile: LocationProfile? ->
       permissionsManager.ensureForegroundPermissions()
       val parameters = (profile ?: LocationProfile.DEFAULT).watchParameters()
-      return@Function createPositionWatchHandle(parameters, currentLocationProvider.watchPosition().getOrThrow("watchPosition"))
+      return@Function PositionWatchHandle(registerWatch(parameters, currentLocationProvider.watchPosition().getOrThrow("watchPosition")))
+    }
+
+    Function("watchHeading") { degrees: Double? ->
+      val filter = validatedHeadingFilter(degrees ?: DEFAULT_HEADING_FILTER)
+      val parameters = LocationProfile.DEFAULT.watchParameters().copy(filter = filter)
+      val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+      val source = HeadingUpdatesSession(sensorManager)
+      if (!source.canDeliverUpdates()) {
+        throw HeadingUnavailableException()
+      }
+      refreshHeadingReferencePosition()
+      return@Function HeadingWatchHandle(registerWatch(parameters, source))
     }
 
     Function("hasLocationServicesEnabled") { ->
@@ -327,38 +365,70 @@ class LocationModuleNext : Module() {
 
     Class(PositionWatchHandle::class) {
       Constructor {
-        throw PositionWatchHandleCreationException()
+        throw WatchHandleCreationException("PositionWatchHandle")
       }
 
       Events(POSITION_CHANGED)
 
-      Function("pause") { locationWatchHandle: PositionWatchHandle ->
-        locationWatchHandle.session.pause()
+      Function("pause") { handle: PositionWatchHandle ->
+        handle.session.pause()
       }
 
-      Function("resume") { locationWatchHandle: PositionWatchHandle ->
-        return@Function locationWatchHandle.session.resume()
+      Function("resume") { handle: PositionWatchHandle ->
+        return@Function handle.session.resume()
       }
 
-      Function("withProfile") { locationWatchHandle: PositionWatchHandle, profile: LocationProfile ->
-        locationWatchHandle.session.withProfile(profile)
-        locationWatchHandle
+      Function("withProfile") { handle: PositionWatchHandle, profile: LocationProfile ->
+        handle.session.stage { profile.watchParameters().copy(filter = it.filter) }
+        handle
       }
 
-      Function("withInterval") { locationWatchHandle: PositionWatchHandle, interval: Duration ->
+      Function("withInterval") { handle: PositionWatchHandle, interval: Duration ->
         if (interval < Duration.ZERO || interval == Duration.INFINITE) {
           throw InvalidWatchIntervalException(interval)
         }
-        locationWatchHandle.session.withInterval(interval)
-        locationWatchHandle
+        handle.session.stage { it.copy(interval = interval) }
+        handle
       }
 
-      Function("restart") { locationWatchHandle: PositionWatchHandle ->
-        return@Function locationWatchHandle.session.restart()
+      Function("restart") { handle: PositionWatchHandle ->
+        return@Function handle.session.restart()
       }
 
-      Function("status") { locationWatchHandle: PositionWatchHandle ->
-        locationWatchHandle.session.status(isForegrounded)
+      Function("status") { handle: PositionWatchHandle ->
+        handle.session.status(isForegrounded)
+      }
+    }
+
+    Class(HeadingWatchHandle::class) {
+      Constructor {
+        throw WatchHandleCreationException("HeadingWatchHandle")
+      }
+
+      Events(HEADING_CHANGED)
+
+      Function("pause") { handle: HeadingWatchHandle ->
+        handle.session.pause()
+      }
+
+      Function("resume") { handle: HeadingWatchHandle ->
+        refreshHeadingReferencePosition()
+        return@Function handle.session.resume()
+      }
+
+      Function("withFilter") { handle: HeadingWatchHandle, degrees: Double ->
+        val filter = validatedHeadingFilter(degrees)
+        handle.session.stage { it.copy(filter = filter) }
+        handle
+      }
+
+      Function("restart") { handle: HeadingWatchHandle ->
+        refreshHeadingReferencePosition()
+        return@Function handle.session.restart()
+      }
+
+      Function("status") { handle: HeadingWatchHandle ->
+        handle.session.status(isForegrounded)
       }
     }
 
@@ -434,5 +504,7 @@ class LocationModuleNext : Module() {
 
   companion object {
     @Volatile var modulesStarted = AtomicInteger(0)
+
+    @Volatile var headingDeclination: Double? = null
   }
 }
