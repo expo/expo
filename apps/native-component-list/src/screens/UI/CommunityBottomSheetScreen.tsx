@@ -4,6 +4,7 @@ import BottomSheet, {
   BottomSheetView,
   useBottomSheet,
 } from '@expo/ui/community/bottom-sheet'; // can replace with `@gorhom/bottom-sheet` to check compatibility
+import { ignoreSafeArea } from '@expo/ui/swift-ui/modifiers';
 import { useRef, useState } from 'react';
 import { Button, Modal, Platform, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -32,6 +33,7 @@ export default function CommunityBottomSheetScreen() {
   const modalRef = useRef<BottomSheetModal>(null);
   const fitRef = useRef<BottomSheetModal>(null);
   const modalFromDismissRef = useRef<BottomSheetModal>(null);
+  const edgeToEdgeRef = useRef<BottomSheetModal>(null);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [log, setLog] = useState<string[]>([]);
@@ -77,6 +79,15 @@ export default function CommunityBottomSheetScreen() {
           </BodyText>
           <View style={styles.buttonRow}>
             <Button title="Open" onPress={() => modalFromDismissRef.current?.present()} />
+          </View>
+
+          {/* 5. Content up to the sheet's edges through the modifiers prop */}
+          <BodyText style={styles.heading}>Edge-to-edge content (modifiers)</BodyText>
+          <BodyText style={styles.hint}>
+            iOS: ignoreSafeArea(horizontal) lets the content fill the sheet on a folded iPhone Duo
+          </BodyText>
+          <View style={styles.buttonRow}>
+            <Button title="Open" onPress={() => edgeToEdgeRef.current?.present()} />
           </View>
 
           {/* Event log */}
@@ -154,6 +165,20 @@ export default function CommunityBottomSheetScreen() {
             </BottomSheetView>
           </BottomSheetModal>
 
+          {/* Sheet 5: the modifiers prop, applied to the sheet content on iOS */}
+          <BottomSheetModal
+            ref={edgeToEdgeRef}
+            modifiers={
+              Platform.OS === 'ios' ? [ignoreSafeArea({ edges: 'horizontal' })] : undefined
+            }
+            enablePanDownToClose>
+            <BottomSheetView style={styles.edgeToEdge}>
+              <Text style={styles.sheetTitle}>Edge to edge</Text>
+              <Text style={styles.hint}>This view fills the sheet's width</Text>
+              <SheetControls />
+            </BottomSheetView>
+          </BottomSheetModal>
+
           <Modal visible={isModalVisible} transparent animationType="fade">
             <View style={styles.modalBackdrop}>
               <View style={styles.modalCard}>
@@ -214,6 +239,9 @@ const styles = StyleSheet.create({
   },
   sheetView: {
     flex: 1,
+  },
+  edgeToEdge: {
+    backgroundColor: '#ffe0d6',
   },
   sheetContent: {
     padding: 16,
