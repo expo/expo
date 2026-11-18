@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import type { PropsWithChildren } from 'react';
+import { useEffect, useState, type PropsWithChildren } from 'react';
 
 type ChatState = {
   error: string | null;
@@ -11,11 +11,27 @@ type ChatState = {
   };
 };
 
-const submitQuery = jest.fn<(question: string) => void>();
+const executeCaptchaBeforeReady = async () => null;
+const executeCaptchaWhenReady = async () => ({
+  token: 'token',
+  key: 'X-RECAPTCHA-ENTERPRISE-TOKEN',
+});
+let currentExecuteCaptcha = executeCaptchaBeforeReady;
+const submitQuery = jest.fn(
+  (_question: string) => currentExecuteCaptcha === executeCaptchaWhenReady
+);
 let chatState: ChatState;
 
 jest.unstable_mockModule('@kapaai/react-sdk', () => ({
   KapaProvider: ({ children }: PropsWithChildren) => children,
+  useCaptcha: () => {
+    const [executeCaptcha, setExecuteCaptcha] = useState(() => executeCaptchaBeforeReady);
+    useEffect(() => {
+      setExecuteCaptcha(() => executeCaptchaWhenReady);
+    }, []);
+    currentExecuteCaptcha = executeCaptcha;
+    return { executeCaptcha };
+  },
   useChat: () => ({
     submitQuery,
     error: chatState.error,
@@ -46,7 +62,9 @@ describe(askKapaAsync, () => {
 
     const answer = await askKapaAsync('How do I add a camera?', new AbortController().signal);
 
+    expect(submitQuery).toHaveBeenCalledTimes(1);
     expect(submitQuery).toHaveBeenCalledWith('How do I add a camera?');
+    expect(submitQuery).toHaveReturnedWith(true);
     expect(answer).toEqual({
       answer: 'Use expo-camera.',
       sources: [{ title: 'Camera', url: 'https://docs.expo.dev/versions/latest/sdk/camera/' }],

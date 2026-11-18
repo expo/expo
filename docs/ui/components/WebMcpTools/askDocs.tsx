@@ -1,10 +1,18 @@
-import { KapaProvider, useChat } from '@kapaai/react-sdk';
-import { useEffect } from 'react';
+import { KapaProvider, useCaptcha, useChat } from '@kapaai/react-sdk';
+import { useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { KAPA_INTEGRATION_ID } from '~/ui/components/AskPageAI/kapaIntegrationId';
 
 export type DocsAnswer = { answer: string; sources: { title: string; url: string }[] };
+
+const ANSWER_TIMEOUT_MS = 60_000;
+
+function useIsCaptchaReady() {
+  const { executeCaptcha } = useCaptcha();
+  const executeCaptchaBeforeReady = useRef(executeCaptcha);
+  return executeCaptcha !== executeCaptchaBeforeReady.current;
+}
 
 type QuestionProps = {
   question: string;
@@ -14,12 +22,20 @@ type QuestionProps = {
 
 function Question({ question, onAnswer, onError }: QuestionProps) {
   const { submitQuery, conversation, isGeneratingAnswer, error } = useChat();
+  const isCaptchaReady = useIsCaptchaReady();
+  const hasSubmitted = useRef(false);
 
   useEffect(() => {
-    submitQuery(question);
-  }, [question, submitQuery]);
+    if (isCaptchaReady && !hasSubmitted.current) {
+      hasSubmitted.current = true;
+      submitQuery(question);
+    }
+  }, [isCaptchaReady, question, submitQuery]);
 
   useEffect(() => {
+    if (!hasSubmitted.current) {
+      return;
+    }
     if (error) {
       onError(new Error(`Kapa could not answer: ${error}`));
       return;
@@ -50,6 +66,7 @@ export function askKapaAsync(question: string, signal: AbortSignal) {
       }
       settled = true;
       signal.removeEventListener('abort', onAbort);
+      clearTimeout(timeout);
       finish();
       queueMicrotask(() => {
         root.unmount();
@@ -62,6 +79,11 @@ export function askKapaAsync(question: string, signal: AbortSignal) {
       });
     };
     signal.addEventListener('abort', onAbort, { once: true });
+    const timeout = setTimeout(() => {
+      settle(() => {
+        reject(new Error(`Kapa did not answer within ${ANSWER_TIMEOUT_MS / 1000} seconds.`));
+      });
+    }, ANSWER_TIMEOUT_MS);
 
     root.render(
       <KapaProvider integrationId={KAPA_INTEGRATION_ID} callbacks={{}}>
