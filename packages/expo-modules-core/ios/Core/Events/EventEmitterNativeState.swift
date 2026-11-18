@@ -23,12 +23,6 @@ internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendab
   /// The listeners of the runtimes other than the primary runtime, by runtime ID.
   private let otherListeners = OSAllocatedUnfairLock<[JavaScriptRuntime.ID: EventListeners]>(uncheckedState: [:])
 
-  /// Creates a native state with a plain `expo::NativeState`, for example for a JS object that isn't a shared object.
-  internal init(primaryRuntimeId: JavaScriptRuntime.ID?) {
-    self.primaryRuntimeId = primaryRuntimeId
-    super.init()
-  }
-
   /// Creates a native state whose C++ state `factory` makes. See `JavaScriptNativeState.init(factory:)`.
   internal init(primaryRuntimeId: JavaScriptRuntime.ID?, factory: @escaping Factory) {
     self.primaryRuntimeId = primaryRuntimeId

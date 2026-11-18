@@ -4,8 +4,8 @@
 
 /// The JS methods of an event emitter whose listeners an `EventEmitterNativeState` keeps: `addListener`,
 /// `removeListener`, `removeAllListeners`, `emit`, `listenerCount` and `removeSubscription`. They shadow the methods of
-/// `expo.EventEmitter.prototype`, and call them only for an object with a native state of another kind, whose
-/// listeners the C++ emitter keeps.
+/// `expo.EventEmitter.prototype`. An object without an `EventEmitterNativeState`, for example a shared object after
+/// `release()`, has no listeners: the methods do nothing, and `listenerCount` returns 0.
 internal enum EventEmitterMethods {
   /// Defines the methods on the prototype.
   @JavaScriptActor
@@ -76,19 +76,7 @@ internal enum EventEmitterMethods {
     guard listener.isFunction() else {
       throw InvalidListenerException(event)
     }
-    let nativeState: EventEmitterNativeState
-    switch EmitterNativeState(of: emitter) {
-    case .found(let found):
-      nativeState = found
-    case .missing:
-      // A shared object that was released has no native state. Like the C++ emitter, give it one.
-      nativeState = EventEmitterNativeState(primaryRuntimeId: runtime.id)
-      emitter.setNativeState(nativeState)
-    case .foreign:
-      let methodArguments = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 2)
-      methodArguments.emplace(arguments[1], at: 0)
-      methodArguments.emplace(listener, at: 1)
-      try callEventEmitterMethod("addListener", this: emitter, arguments: methodArguments, in: runtime)
+    guard let nativeState = emitter.getNativeState(as: EventEmitterNativeState.self) else {
       return
     }
     if nativeState.listenersCreatingIfNeeded(in: runtime).add(listener, to: event) == 1 {
@@ -135,15 +123,11 @@ internal enum EventEmitterMethods {
     let emitter = try this.asObject(in: runtime)
     let event = try arguments.unownedValue(at: 0).asString()
 
-    switch EmitterNativeState(of: emitter) {
-    case .found(let nativeState):
-      if let listeners = nativeState.listeners(in: runtime), listeners.removeAll(from: event) > 0 {
-        try notifyListening(emitter, event: event, isListening: false, in: runtime)
-      }
-    case .missing:
+    guard let listeners = emitter.getNativeState(as: EventEmitterNativeState.self)?.listeners(in: runtime) else {
       return
-    case .foreign:
-      try callEventEmitterMethod("removeAllListeners", this: emitter, arguments: arguments, in: runtime)
+    }
+    if listeners.removeAll(from: event) > 0 {
+      try notifyListening(emitter, event: event, isListening: false, in: runtime)
     }
   }
 
@@ -159,21 +143,17 @@ internal enum EventEmitterMethods {
     let emitter = try this.asObject(in: runtime)
     let event = try arguments.unownedValue(at: 0).asString()
 
-    switch EmitterNativeState(of: emitter) {
-    case .found(let nativeState):
-      let payloadArguments = arguments.slice(1...)
-      nativeState.listeners(in: runtime)?.call(
-        event,
-        this: emitter,
-        argumentsPointer: payloadArguments.rawBaseAddress,
-        argumentCount: payloadArguments.count,
-        in: runtime
-      )
-    case .missing:
+    guard let listeners = emitter.getNativeState(as: EventEmitterNativeState.self)?.listeners(in: runtime) else {
       return
-    case .foreign:
-      try callEventEmitterMethod("emit", this: emitter, arguments: arguments, in: runtime)
     }
+    let payloadArguments = arguments.slice(1...)
+    listeners.call(
+      event,
+      this: emitter,
+      argumentsPointer: payloadArguments.rawBaseAddress,
+      argumentCount: payloadArguments.count,
+      in: runtime
+    )
   }
 
   /// `emitter.listenerCount(eventName)`.
@@ -188,14 +168,8 @@ internal enum EventEmitterMethods {
     let emitter = try this.asObject(in: runtime)
     let event = try arguments.unownedValue(at: 0).asString()
 
-    switch EmitterNativeState(of: emitter) {
-    case .found(let nativeState):
-      result.emplace(number: Double(nativeState.listeners(in: runtime)?.count(of: event) ?? 0))
-    case .missing:
-      result.emplace(number: 0)
-    case .foreign:
-      result.emplace(try callEventEmitterMethod("listenerCount", this: emitter, arguments: arguments, in: runtime))
-    }
+    let listeners = emitter.getNativeState(as: EventEmitterNativeState.self)?.listeners(in: runtime)
+    result.emplace(number: Double(listeners?.count(of: event) ?? 0))
   }
 
   /// `emitter.removeSubscription(subscription)`, from the API of the old event emitter. Calls `subscription.remove()`.
@@ -213,25 +187,6 @@ internal enum EventEmitterMethods {
 
   // MARK: - Helpers
 
-  /// The native state of an emitter object.
-  private enum EmitterNativeState {
-    /// The object has an `EventEmitterNativeState`.
-    case found(EventEmitterNativeState)
-    /// The object has no native state.
-    case missing
-    /// The object has a native state of another kind, for example the C++ state of a module object.
-    case foreign
-
-    @JavaScriptActor
-    init(of emitter: borrowing JavaScriptObject) {
-      if let nativeState = emitter.getNativeState(as: EventEmitterNativeState.self) {
-        self = .found(nativeState)
-      } else {
-        self = emitter.hasNativeState() ? .foreign : .missing
-      }
-    }
-  }
-
   @JavaScriptActor
   private static func removeListener(
     _ listener: consuming JavaScriptValue,
@@ -239,22 +194,12 @@ internal enum EventEmitterMethods {
     from emitter: borrowing JavaScriptObject,
     in runtime: borrowing JavaScriptRuntime
   ) throws {
-    switch EmitterNativeState(of: emitter) {
-    case .found(let nativeState):
-      guard let listeners = nativeState.listeners(in: runtime) else {
-        return
-      }
-      let count = listeners.remove(listener, from: event)
-      if count.before > 0 && count.after == 0 {
-        try notifyListening(emitter, event: event, isListening: false, in: runtime)
-      }
-    case .missing:
+    guard let listeners = emitter.getNativeState(as: EventEmitterNativeState.self)?.listeners(in: runtime) else {
       return
-    case .foreign:
-      let methodArguments = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 2)
-      methodArguments.emplace(JavaScriptValue(runtime, event), at: 0)
-      methodArguments.emplace(listener, at: 1)
-      try callEventEmitterMethod("removeListener", this: emitter, arguments: methodArguments, in: runtime)
+    }
+    let count = listeners.remove(listener, from: event)
+    if count.before > 0 && count.after == 0 {
+      try notifyListening(emitter, event: event, isListening: false, in: runtime)
     }
   }
 
@@ -303,23 +248,6 @@ internal enum EventEmitterMethods {
   }
 
   private static let observingFunctionNamesKey = JavaScriptRuntime.Cache.Key<ObservingFunctionNames>()
-
-  /// Calls a method of `expo.EventEmitter.prototype`, the C++ emitter.
-  @JavaScriptActor
-  @discardableResult
-  private static func callEventEmitterMethod(
-    _ name: String,
-    this emitter: borrowing JavaScriptObject,
-    arguments: consuming JavaScriptValuesBuffer,
-    in runtime: borrowing JavaScriptRuntime
-  ) throws -> JavaScriptValue {
-    return try runtime.global()
-      .getPropertyAsObject(globalCoreObjectPropertyName)
-      .getPropertyAsObject("EventEmitter")
-      .getPropertyAsObject("prototype")
-      .getPropertyAsFunction(name)
-      .call(this: emitter, arguments: arguments)
-  }
 
   private static func requireArguments(
     _ count: Int,
