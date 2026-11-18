@@ -2,7 +2,9 @@
 
 import ExpoModulesCore
 internal import SDWebImage
+#if EXPO_IMAGE_ENABLE_AVIF_CODER && canImport(SDWebImageAVIFCoder)
 internal import SDWebImageAVIFCoder
+#endif
 internal import SDWebImageSVGCoder
 
 public final class ImageModule: Module {
@@ -368,9 +370,13 @@ public final class ImageModule: Module {
   }
 
   static func registerCoders() {
+    #if EXPO_IMAGE_ENABLE_WEBP_CODER && canImport(SDWebImageWebPCoder)
     SDImageCodersManager.shared.addCoder(WebPCoder.shared)
+    #endif
     SDImageCodersManager.shared.addCoder(PSDCoder.shared)
+    #if EXPO_IMAGE_ENABLE_AVIF_CODER && canImport(SDWebImageAVIFCoder)
     SDImageCodersManager.shared.addCoder(SDImageAVIFCoder.shared)
+    #endif
     SDImageCodersManager.shared.addCoder(SVGCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageHEICCoder.shared)
   }
