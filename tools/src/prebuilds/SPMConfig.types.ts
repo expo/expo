@@ -181,6 +181,7 @@ export interface SPMPackageDependencyConfig {
   packageName?: string;
   /** Version requirement. Use `exact` for reproducible builds. */
   version: SPMPackageVersionConfig;
+  manifestPatches?: { find: string; replace: string }[];
 }
 
 /**

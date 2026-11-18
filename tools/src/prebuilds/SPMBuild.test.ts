@@ -22,6 +22,7 @@ import {
   findFirstExisting,
   findXCFrameworkInDir,
   getBuildPlatformsFromProductPlatform,
+  applyManifestPatches,
 } from './SPMBuild';
 import type { SPMProduct, SPMTarget } from './SPMConfig.types';
 
@@ -32,6 +33,37 @@ import type { SPMProduct, SPMTarget } from './SPMConfig.types';
 describe('getBuildPlatformsFromProductPlatform', () => {
   it('expands iOS 16.4 to device and simulator build platforms', () => {
     assert.deepEqual(getBuildPlatformsFromProductPlatform('iOS("16.4")'), ['iOS', 'iOS Simulator']);
+  });
+});
+
+describe('applyManifestPatches', () => {
+  const dep = {
+    url: 'https://github.com/SDWebImage/libavif-Xcode.git',
+    productName: 'libavif',
+    version: { exact: '1.0.0' },
+    manifestPatches: [
+      { find: 'dependencies: ["libaom"]', replace: 'dependencies: ["libdav1d"]' },
+      { find: '"src/codec_dav1d.c"', replace: '"src/codec_aom.c"' },
+    ],
+  };
+
+  it('applies each patch in order', () => {
+    assert.equal(
+      applyManifestPatches('dependencies: ["libaom"], exclude: ["src/codec_dav1d.c"]', dep),
+      'dependencies: ["libdav1d"], exclude: ["src/codec_aom.c"]'
+    );
+  });
+
+  it('throws when the manifest does not contain a find string', () => {
+    assert.throws(
+      () => applyManifestPatches('dependencies: ["libaom"]', dep),
+      /Update "manifestPatches" for libavif/
+    );
+  });
+
+  it('leaves the manifest unchanged when the package has no patches', () => {
+    const manifest = 'dependencies: ["libaom"]';
+    assert.equal(applyManifestPatches(manifest, { ...dep, manifestPatches: undefined }), manifest);
   });
 });
 
