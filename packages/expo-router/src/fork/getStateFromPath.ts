@@ -306,11 +306,10 @@ const matchAgainstConfigs = (remaining: string, configs: RouteConfig[]) => {
 
       routes = config.routeNames.map((name, routeIndex) => {
         const routeConfig = configs.find((c) => {
-          // Match the route's ancestry when a child reuses a screen name.
+          // Match the same chain of route names from the root when a child reuses a screen name.
           return (
             c.screen === name &&
-            c.routeNames.length === routeIndex + 1 &&
-            c.routeNames.every((routeName, index) => routeName === config.routeNames[index]) &&
+            c.routeNames.join('/') === config.routeNames.slice(0, routeIndex + 1).join('/') &&
             config.pattern.startsWith(c.pattern)
           );
         });
