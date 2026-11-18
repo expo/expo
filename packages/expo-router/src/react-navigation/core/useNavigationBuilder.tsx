@@ -414,10 +414,23 @@ export function useNavigationBuilder<
     const input = registryState as State;
     // The committed slice can still contain blocked visits until the queued route-name update runs.
     const reconciled = reconcile(input);
-    if (reconciled !== input && action.type === 'ROUTE_NAMES_CHANGED') {
-      return { state: reconciled, affectedRouteKey: reconciled.routes[reconciled.index]?.key };
+    if (reconciled === input) {
+      return router.getStateForAction(input, action, routerConfig);
     }
-    return router.getStateForAction(reconciled, action, routerConfig);
+    const result =
+      action.type === 'ROUTE_NAMES_CHANGED'
+        ? { state: reconciled, affectedRouteKey: reconciled.routes[reconciled.index]?.key }
+        : router.getStateForAction(reconciled, action, routerConfig);
+    if (!isActionHandled(result)) {
+      return result;
+    }
+    // The browser still has entries for the removed visits, so derive the browser change from
+    // the committed slice. Removing the active blocked visit pops its entry; a redirect that
+    // replaces it in the same step replaces the entry.
+    return {
+      ...result,
+      browserHistory: router.getBrowserHistoryForAction?.(input, result.state, action),
+    };
   });
   const guardForRoute = useLatestCallback((name: string) => getFailedGuard(guards, name));
   const emitter = useEventEmitter<EventMapCore<State>>((e) => {
