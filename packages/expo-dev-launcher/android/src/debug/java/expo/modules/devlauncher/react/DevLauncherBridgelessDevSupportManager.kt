@@ -49,6 +49,19 @@ class DevLauncherBridgelessDevSupportManager(
   @get:JvmName("getjSBundleURLForRemoteDebugging")
   override val jSBundleURLForRemoteDebugging: String? = null
 
+  override fun handleReloadJS() {
+    // `loadApp` has destroyed the ReactHost and is starting a new activity, which creates the
+    // React context. `ReactHost.reload()` waits for the destroy and then creates a context too,
+    // so the new activity finds a context and the app loader throws. The new activity loads the
+    // latest bundle, so this reload is not needed.
+    if (controller?.isLoadingApp == true) {
+      Log.i("DevLauncher", "Ignoring a reload request because an app load is in progress.")
+      hideRedboxDialog()
+      return
+    }
+    super.handleReloadJS()
+  }
+
   override fun showNewJavaError(message: String?, e: Throwable) {
     Log.e("DevLauncher", "$message", e)
     if (!DevLauncherController.wasInitialized()) {
