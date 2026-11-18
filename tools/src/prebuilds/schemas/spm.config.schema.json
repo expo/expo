@@ -255,6 +255,25 @@
                         }
                     ],
                     "additionalProperties": false
+                },
+                "prebuildDisabledWhen": {
+                    "type": "array",
+                    "description": "Build this product from source instead of using its prebuilt XCFramework when any listed Podfile property equals the given value. Consumed by precompiled_modules.rb.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "podfileProperty": {
+                                "type": "string",
+                                "description": "Podfile.properties.json key to read."
+                            },
+                            "value": {
+                                "type": "string",
+                                "description": "Property value that disables the prebuilt XCFramework."
+                            }
+                        },
+                        "required": [ "podfileProperty", "value" ],
+                        "additionalProperties": false
+                    }
                 }
             },
             "required": [ "name", "podName", "targets" ],
