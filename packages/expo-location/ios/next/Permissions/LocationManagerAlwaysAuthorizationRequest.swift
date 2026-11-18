@@ -35,7 +35,7 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
 
     locationManager.perform(Self.alwaysAuthorizationSelector)
 
-    try await Self.waitForAuthorizationChange(authorizationChanges)
+    try await authorizationChanges.waitForNext()
   }
 
   @MainActor
@@ -51,7 +51,7 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
 
     try await withThrowingTaskGroup(of: Void.self) { group in
       group.addTask {
-        try await Self.waitForAuthorizationChange(authorizationChanges)
+        try await authorizationChanges.waitForNext()
       }
       group.addTask { @MainActor in
         await Self.waitForDialogToCloseWithoutChange(
@@ -78,20 +78,12 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
     authorizationChanges = nil
   }
 
-  private static func waitForAuthorizationChange(_ changes: AsyncThrowingStream<Void, Error>) async throws {
-    for try await _ in changes {
-      return
-    }
-  }
-
   @MainActor
   private static func waitForAppToBecomeActive() async {
     guard UIApplication.shared.applicationState != .active else {
       return
     }
-    for await _ in NotificationCenter.default.notifications(named: UIApplication.didBecomeActiveNotification) {
-      return
-    }
+    await NotificationCenter.default.notifications(named: UIApplication.didBecomeActiveNotification).waitForNext()
   }
 
   @MainActor
@@ -103,9 +95,7 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
     guard dialogDidOpen else {
       return
     }
-    for await _ in appDidBecomeActive {
-      return
-    }
+    await appDidBecomeActive.waitForNext()
   }
 
   private static func receivedNotification(
@@ -114,10 +104,7 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
   ) async -> Bool {
     return await withTaskGroup(of: Bool.self) { group in
       group.addTask {
-        for await _ in notifications {
-          return true
-        }
-        return false
+        await notifications.waitForNext()
       }
       group.addTask {
         try? await Task.sleep(for: timeout)
@@ -138,5 +125,15 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
 
   func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
     authorizationChanges?.finish(throwing: error)
+  }
+}
+
+private extension AsyncSequence {
+  @discardableResult
+  func waitForNext() async rethrows -> Bool {
+    for try await _ in self {
+      return true
+    }
+    return false
   }
 }
