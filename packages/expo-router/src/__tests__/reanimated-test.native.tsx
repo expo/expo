@@ -1,4 +1,4 @@
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { getAnimatedStyle, setUpTests, useAnimatedStyle } from 'react-native-reanimated';
 
 import { renderRouter, screen } from '../testing-library';
 
