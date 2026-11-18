@@ -16,7 +16,7 @@ class MainActivity : ReactActivity() {
   }
 
   override fun createReactActivityDelegate(): ReactActivityDelegate {
-    return ReactActivityDelegateWrapper(this, MainActivityDelegate(this, mainComponentName))
+    return ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED, MainActivityDelegate(this, mainComponentName))
   }
 
   class MainActivityDelegate(activity: ReactActivity?, mainComponentName: String?)
