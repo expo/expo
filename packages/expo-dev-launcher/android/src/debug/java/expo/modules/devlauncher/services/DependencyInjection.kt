@@ -47,7 +47,7 @@ object DependencyInjection {
   var errorRegistryService: ErrorRegistryService? = null
     private set
 
-  fun init(context: Context, devLauncherController: DevLauncherController) = synchronized(this) {
+  fun init(context: Context, devLauncherController: DevLauncherController): Unit = synchronized(this) {
     if (wasInitialized) {
       return
     }
