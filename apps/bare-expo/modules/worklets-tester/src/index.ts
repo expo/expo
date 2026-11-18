@@ -1,10 +1,5 @@
 import { installOnUIRuntime } from 'expo';
-import {
-  createSerializable,
-  getUIRuntimeHolder,
-  scheduleOnRN,
-  scheduleOnUI,
-} from 'react-native-worklets';
+import { createSerializable, getUIRuntimeHolder, scheduleOnRN, scheduleOnUI } from 'react-native-worklets';
 
 import WorkletsTesterModule from './WorkletsTesterModule';
 
