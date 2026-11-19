@@ -11,6 +11,11 @@ import {
 import { Text, useHeaderHeight } from '../../elements';
 import { createNativeStackNavigator, type NativeStackScreenProps } from '../index';
 
+// These tests cover the pre-Liquid Glass header heights, see headerHeight.liquidGlass.test.ios.tsx
+jest.mock('expo-glass-effect', () => ({
+  isLiquidGlassAvailable: () => false,
+}));
+
 // The native screens debug container mounts React Native's unrelated LogBox subscription UI.
 jest.mock('react-native/Libraries/LogBox/LogBoxNotificationContainer', () => () => null);
 
