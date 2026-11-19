@@ -17,7 +17,10 @@ jest.mock('../../rest/client', () => {
 jest.mock('../otp');
 jest.mock('../user');
 
+const originalCI = process.env.CI;
+
 beforeEach(() => {
+  delete process.env.CI;
   jest.mocked(promptAsync).mockClear();
   jest.mocked(promptAsync).mockImplementation(() => {
     throw new Error('Should not be called');
@@ -29,6 +32,10 @@ beforeEach(() => {
   // Default to a non-interactive environment so the credential prompt path is
   // exercised unless a test opts into an interactive terminal.
   jest.mocked(isInteractive).mockReturnValue(false);
+});
+
+afterAll(() => {
+  process.env.CI = originalCI;
 });
 
 describe(showLoginPromptAsync, () => {
@@ -103,6 +110,15 @@ describe(showLoginPromptAsync, () => {
 
     expect(browserLoginAsync).toHaveBeenCalledTimes(1);
     expect(browserLoginAsync).toHaveBeenCalledWith({ sso: false });
+  });
+
+  it('refuses browser login in CI', async () => {
+    process.env.CI = '1';
+
+    await expect(showLoginPromptAsync({ sso: true })).rejects.toThrow(
+      "Browser login can't be completed in CI."
+    );
+    expect(browserLoginAsync).not.toHaveBeenCalled();
   });
 
   it('defaults to browser login in an interactive terminal when browser is unset', async () => {
