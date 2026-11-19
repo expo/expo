@@ -8,7 +8,7 @@ import ExpoModulesJSI
 @ExpoModule
 internal final class CoreModule: Module {
   @JS
-  var expoModulesCoreVersion: ExpoModulesCoreVersion {
+  lazy var expoModulesCoreVersion: ExpoModulesCoreVersion = {
     let version = CoreModuleHelper.getVersion()
     let components = version.split(separator: "-")[0].split(separator: ".").compactMap { Int($0) }
 
@@ -18,22 +18,16 @@ internal final class CoreModule: Module {
       minor: components[1],
       patch: components[2]
     )
-  }
+  }()
 
   @JS
-  var cacheDir: String {
-    FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?.path ?? ""
-  }
+  lazy var cacheDir: String = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?.path ?? ""
 
   @JS
-  var documentsDir: String {
-    FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? ""
-  }
+  lazy var documentsDir: String = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? ""
 
   @JS
-  var isRunningOnQuest: Bool {
-    false
-  }
+  lazy var isRunningOnQuest: Bool = false
 
   @JS
   func uuidv4() -> String {

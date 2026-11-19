@@ -48,6 +48,11 @@ struct CoreModuleTests {
   }
 
   @Test
+  func `expoModulesCoreVersion returns the same object on every read`() throws {
+    #expect(try runtime.eval("expo.expoModulesCoreVersion === expo.expoModulesCoreVersion").asBool())
+  }
+
+  @Test
   func `cacheDir is the path to the caches directory`() throws {
     let path = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?.path
     #expect(try runtime.eval("expo.cacheDir").asString() == path)
