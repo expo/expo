@@ -15,7 +15,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 ## Overview
 
-Protected screens allow you to prevent users from accessing certain routes using client-side navigation. If a user tries to navigate to a protected screen, or if a screen becomes protected while it is active, they will be redirected to the anchor route (usually the index screen) or the first available screen in the stack.
+Protected screens allow you to prevent users from accessing certain routes using client-side navigation. If a user navigates to a protected screen in a navigator that is already open, the navigation does nothing, or opens the [`redirectTo`](#redirect-to-a-specific-route) route when the screen has one. If a screen becomes protected while it is open, the stack replaces it with its `redirectTo` route, or removes it when it has none. If no screen remains, the stack opens the anchor route (usually the index screen) or the first available screen.
 
 <FileTree
   files={[
@@ -50,7 +50,7 @@ export function AppLayout() {
 }
 ```
 
-In this example, the `/private` route is inaccessible because the `guard` is false. When a user attempts to access `/private`, they are redirected to the anchor route, which is the **index** screen.
+In this example, the `/private` route is inaccessible because the `guard` is false. When a user opens the app at `/private`, they are redirected to the anchor route, which is the **index** screen. When a user navigates to `/private` while its stack is mounted, the navigation does nothing.
 
 Additionally, if the user is on `/private/page` and the `guard` condition changes to **false**, they will be redirected automatically.
 
@@ -112,7 +112,7 @@ In this case:
 
 ## Use the default redirect
 
-If access is denied, the navigator redirects to its anchor route or the first available screen.
+When the app opens at a protected route without `redirectTo`, or when no screen remains after a guard change, the navigator opens its anchor route or the first available screen. If no route is accessible and no parent navigator has a fallback, the first screen stays and shows nothing.
 
 <FileTree
   files={[
@@ -151,7 +151,7 @@ In this example, the **index** screen is protected and the `guard` is **false**,
 
 > **info** Available in **SDK 58 and later**.
 
-Use the `redirectTo` prop when a protected route should redirect to a specific route. It accepts the same string or object href as [`Link`](/router/basics/navigation/#links-and-buttons).
+Use the `redirectTo` prop when a protected route should redirect to a specific route. It accepts a string or object href, like [`Link`](/router/basics/navigation/#links-and-buttons), but only for routes of the app. An external URL in `redirectTo` throws an error. To send a user to an external URL, call [`Linking.openURL`](/versions/latest/sdk/linking/#linkingopenurlurl) from your app code.
 
 ```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
@@ -170,6 +170,47 @@ export function AppLayout() {
   );
 }
 ```
+
+When a user navigates to a protected route with `redirectTo`, the router opens the `redirectTo` route instead. A push stays a push and a replace stays a replace. If the `redirectTo` route is also protected, the router follows its `redirectTo`. If a route in this chain is protected, has no `redirectTo`, and is in a navigator that is already open, the navigation does nothing. If the redirects form a loop or a chain of more than 20 redirects, the router throws an error.
+
+When protected screens are nested, the outermost guard that fails decides the redirect. If that guard has no `redirectTo`, the router does not use the `redirectTo` of an inner guard. Navigation to the screen in a navigator that is already open does nothing, and a guard change removes the screen.
+
+### When a guard changes
+
+When a `guard` changes, each stack updates the screens that are already open. The stack does this before navigation that starts in the same function with `router` or `Link`:
+
+- If the visible screen is blocked and has `redirectTo`, the stack replaces it with the `redirectTo` route. If the `redirectTo` chain ends at a protected route without `redirectTo`, the stack removes the screen instead.
+- The stack removes all other blocked screens. These include a blocked screen below the top screen, the top screen in a tab that is not focused, a screen under a modal, and a preloaded screen.
+- If no screens remain, the router uses the [default redirect](#use-the-default-redirect). If no route is accessible and no parent navigator has a fallback, the first screen stays and shows nothing.
+
+The focused stack replaces the visible screen first, then removes the other blocked screens. A removed screen does not redirect later, for example, when its tab is focused again.
+
+```tsx src/app/_layout.tsx
+import { router, Stack } from 'expo-router';
+import { useState } from 'react';
+
+export default function RootLayout() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  function signIn() {
+    setIsLoggedIn(true);
+    // Opens /home first, then pushes /profile on top of it.
+    router.push('/profile');
+  }
+
+  return (
+    <Stack>
+      <Stack.Protected guard={!isLoggedIn} redirectTo="/home">
+        <Stack.Screen name="login" />
+      </Stack.Protected>
+    </Stack>
+  );
+}
+```
+
+An `await` between the `guard` change and the navigation gives the same result.
+
+> **tip** If a modal can change a guard, for example, with a sign-out button, put the modal in the protected group. In a stack with `(tabs)` and `account-modal`, where only `(tabs)` is protected, sign-out removes `(tabs)` and `account-modal` stays open.
 
 ## Tabs and Drawer
 
