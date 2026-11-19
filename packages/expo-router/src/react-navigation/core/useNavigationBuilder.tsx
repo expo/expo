@@ -469,11 +469,12 @@ export function useNavigationBuilder<
 
   // Runs after the registry entry above updates, and before queued navigation from the same handler.
   // A layout effect, so the blocked screen is never painted empty before the guards apply.
+  // A new state key registers the guards again, so it also applies them.
   useClientLayoutEffect(() => {
     if (getRouteGuard && !isPreview) {
       handleGuardsChanged();
     }
-  }, [getRouteGuard, handleGuardsChanged, isPreview]);
+  }, [committedState.key, getRouteGuard, handleGuardsChanged, isPreview]);
 
   useClientLayoutEffect(() => {
     if (isForeignType) {

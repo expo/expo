@@ -341,10 +341,26 @@ function getAncestorRemoval(
     child = ancestor, ancestor = ancestor.parent
   ) {
     const entry = registry.get(ancestor.state.key);
+    if (!entry) {
+      continue;
+    }
     const holder = ancestor.state.routes[child.routeIndex!]!;
-    const fallback = entry && findFallback(entry.routeNode, entry.getGuard);
+    const fallback = findFallback(entry.routeNode, entry.getGuard);
     // A fallback that opens the route being removed would show the same navigator again.
-    if (!entry || !fallback || fallback.route === holder.name) {
+    if (!fallback || fallback.route === holder.name) {
+      // Without a fallback, the removal still helps when another route of the ancestor survives.
+      const removal = {
+        type: 'REMOVE_ROUTES',
+        payload: { routeKeys: [holder.key] },
+        target: ancestor.state.key,
+      };
+      const result = entry.reduce(ancestor.state, removal);
+      if (
+        isActionHandled(result) &&
+        result.state.routes.every((route) => route.key !== holder.key)
+      ) {
+        return removal;
+      }
       continue;
     }
     const payload = { name: fallback.route, params: getHolderParams(ancestor) };
