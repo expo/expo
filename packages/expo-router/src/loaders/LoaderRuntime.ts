@@ -183,6 +183,7 @@ export class LoaderRuntime {
     let waiters = this.refreshes.get(path);
     if (!waiters) this.refreshes.set(path, (waiters = new Set()));
     const completion = new Promise<void>((resolve) => waiters.add(resolve));
+    // Native fetch does not implement RequestInit.cache, so also send the HTTP directive.
     this.start(record, { cache: 'no-cache', headers: { 'Cache-Control': 'no-cache' } });
     this.notifyStatus(path);
     return completion;

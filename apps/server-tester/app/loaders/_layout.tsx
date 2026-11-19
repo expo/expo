@@ -4,6 +4,7 @@ import {
   Stack,
   unstable_useIsNavigating,
   useNavigationContainerRef,
+  usePathname,
 } from 'expo-router';
 import { useState, useTransition } from 'react';
 import { Button, Text } from 'react-native';
@@ -19,6 +20,10 @@ export default function LoadersLayout() {
   const [isChangingPost, startPostTransition] = useTransition();
   const navigation = useNavigationContainerRef();
   const isNavigating = unstable_useIsNavigating();
+  const pathname = usePathname();
+  if (pathname === '/loaders/revalidate') {
+    return <Slot />;
+  }
   return (
     <>
       <Stack.Screen options={{ title: 'Loaders' }} />

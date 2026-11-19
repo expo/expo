@@ -56,6 +56,9 @@ test.describe('server loaders in production', () => {
     await page.getByTestId('refresh-button').click();
     await expect(page.getByTestId('refresh-data')).not.toHaveText(initial!);
     await expect.poll(() => statuses).toEqual([200]);
+    await expect(page.getByTestId('refresh-data')).toContainText(
+      '"requestCacheControl":"no-cache"'
+    );
     const firstRefresh = await page.getByTestId('refresh-data').textContent();
     await page.getByTestId('refresh-toggle').click();
     await expect(page.getByTestId('refresh-data')).toBeHidden();
