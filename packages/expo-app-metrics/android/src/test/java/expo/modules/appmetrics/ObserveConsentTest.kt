@@ -4,7 +4,15 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.os.bundleOf
 import androidx.test.core.app.ApplicationProvider
+import android.app.ApplicationExitInfo
 import expo.modules.appmetrics.crashreporting.CrashFileFormat
+import expo.modules.appmetrics.crashreporting.CrashFileReader
+import expo.modules.appmetrics.crashreporting.CrashReportProcessor
+import expo.modules.appmetrics.crashreporting.ExitInfoProvider
+import expo.modules.appmetrics.crashreporting.ExitRecord
+import expo.modules.appmetrics.crashreporting.PreferencesLastProcessedExitStore
+import expo.modules.appmetrics.utils.TimeUtils
+import kotlinx.coroutines.test.runTest
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -139,12 +147,42 @@ class ObserveConsentTest {
     assertTrue(ObserveConsent.update(context, granted = true).changed)
     assertTrue(ObserveConsent.update(context, granted = false).changed)
     assertFalse(ObserveConsent.update(context, granted = true).changed)
-    assertEquals("granted", savedConsent())
+    assertEquals("granted-at-next-launch", savedConsent())
     assertFalse(ObserveConsent.isGranted)
 
     ObserveConsent.load(context)
     assertTrue(ObserveConsent.isGranted)
+    assertEquals("granted", savedConsent())
   }
+
+  @Test
+  fun `after a deferred grant, the next launch reports only crashes from after the launch`() = runTest {
+    ObserveConsent.load(context)
+    ObserveConsent.update(context, granted = false)
+    ObserveConsent.update(context, granted = true)
+    val inactiveProcessCrash = crashRecord(System.currentTimeMillis())
+
+    ObserveConsent.load(context)
+    val activeProcessCrash = crashRecord(System.currentTimeMillis() + 1_000)
+    val reported = mutableListOf<String?>()
+    CrashReportProcessor(
+      crashFileReader = CrashFileReader(File(context.cacheDir, "crashes")),
+      exitInfoProvider = ExitInfoProvider { listOf(inactiveProcessCrash, activeProcessCrash) },
+      lastProcessedExitStore = PreferencesLastProcessedExitStore(context),
+      appVersion = "1.0.0"
+    ) { _, _, report, _ -> reported += report.timestampBegin }.process()
+
+    assertTrue(ObserveConsent.isGranted)
+    assertEquals(listOf(TimeUtils.millisToTimestamp(activeProcessCrash.timestampMillis)), reported)
+  }
+
+  private fun crashRecord(timestampMillis: Long) = ExitRecord(
+    reason = ApplicationExitInfo.REASON_CRASH,
+    status = 0,
+    description = null,
+    timestampMillis = timestampMillis,
+    pid = 1
+  )
 
   @Test
   fun `a failed save still revokes, and a grant changes nothing`() {

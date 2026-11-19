@@ -81,4 +81,13 @@ object AppMetricsPreferences {
   /** Returns whether the value was written to disk. */
   internal fun setObserveConsent(context: Context, consent: String): Boolean =
     context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putString(KEY_OBSERVE_CONSENT, consent).commit()
+
+  /** Saves the consent value and the crash cursor in one write. Returns whether it was written to disk. */
+  internal fun saveGrant(context: Context, consent: String, lastProcessedExitMillis: Long): Boolean =
+    context
+      .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+      .edit()
+      .putString(KEY_OBSERVE_CONSENT, consent)
+      .putLong(KEY_LAST_PROCESSED_EXIT_MILLIS, lastProcessedExitMillis)
+      .commit()
 }
