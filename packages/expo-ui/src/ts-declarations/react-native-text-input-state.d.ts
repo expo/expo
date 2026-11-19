@@ -1,5 +1,5 @@
 declare module 'react-native/Libraries/Components/TextInput/TextInputState' {
-  import type { ReactNativeElement } from 'react-native';
+  import type { HostInstance } from 'react-native';
 
   /**
    * React Native's registry of focusable text inputs. `ScrollView` reads it to
@@ -8,18 +8,18 @@ declare module 'react-native/Libraries/Components/TextInput/TextInputState' {
    * subset publicly, so participating in the registry requires this module.
    */
   const TextInputState: {
-    currentlyFocusedInput(): ReactNativeElement | null;
+    currentlyFocusedInput(): HostInstance | null;
     /** Marks an instance as focused. Does not dispatch a native focus command. */
-    focusInput(instance: ReactNativeElement | null): void;
+    focusInput(instance: HostInstance | null): void;
     /** Clears the focused instance, but only if it is the one passed in. */
-    blurInput(instance: ReactNativeElement | null): void;
-    registerInput(instance: ReactNativeElement): void;
-    unregisterInput(instance: ReactNativeElement): void;
-    isTextInput(instance: ReactNativeElement): boolean;
+    blurInput(instance: HostInstance | null): void;
+    registerInput(instance: HostInstance): void;
+    unregisterInput(instance: HostInstance): void;
+    isTextInput(instance: HostInstance): boolean;
     /** Marks an instance as focused, then dispatches a native `focus` command. */
-    focusTextInput(instance: ReactNativeElement | null): void;
+    focusTextInput(instance: HostInstance | null): void;
     /** Clears the focused instance, then dispatches a native `blur` command. */
-    blurTextInput(instance: ReactNativeElement | null): void;
+    blurTextInput(instance: HostInstance | null): void;
   };
 
   export default TextInputState;
