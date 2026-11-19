@@ -7,5 +7,9 @@
   Link: </llms.txt>; rel="llms-txt", </sitemap.xml>; rel="sitemap"
   X-Llms-Txt: /llms.txt
 
+# WebMCP origin trial token for https://docs.expo.dev. It expires on 30-Mar-2027 (Chrome 149 to 162)
+/*
+  Origin-Trial: Agy7pYNUr+ZTg4d2QR2stXYUUWavpsz/EyYSBXbksPhEwIsohP/dFVkP0v4vBihtHE2uqw29vvd9W9oztgOnswsAAABNeyJvcmlnaW4iOiJodHRwczovL2RvY3MuZXhwby5kZXY6NDQzIiwiZmVhdHVyZSI6IldlYk1DUCIsImV4cGlyeSI6MTgwNjM2NDgwMH0=
+
 /.well-known/ai-catalog.json
   Content-Type: application/ai-catalog+json
