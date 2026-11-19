@@ -8,6 +8,7 @@ import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
   extractIconRenderingMode,
   extractXcassetName,
+  warnIfHeaderItemHasImage,
 } from '../shared';
 import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from '../toolbar-primitives';
 import { NativeToolbarButton } from './native';
@@ -96,6 +97,7 @@ export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => 
   return (
     <NativeToolbarButton
       {...sharedProps}
+      axisBehavior={props.axisBehavior}
       icon={icon}
       source={source}
       xcassetName={xcassetName}
@@ -111,6 +113,7 @@ export function convertStackToolbarButtonPropsToRNHeaderItem(
   if (props.hidden) {
     return undefined;
   }
+  warnIfHeaderItemHasImage('Stack.Toolbar.Button', props.image);
 
   return {
     ...convertStackHeaderSharedPropsToRNSharedHeaderItem(props),

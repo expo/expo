@@ -7,10 +7,33 @@ description: Learn how to set up and run E2E tests on Expo Workflows with Maestr
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 
+import { AgentPrompt } from '~/ui/components/AgentPrompt';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+
+<AgentPrompt
+  title="Run E2E tests with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent.">
+
+```text wrap
+Set up and run E2E tests with Maestro on Expo Workflows. Use https://docs.expo.dev/eas/workflows/examples/e2e-tests.md as the source for each command and file.
+
+1. Check that EAS CLI is installed and up to date. If it is not, run `npm install -g eas-cli`.
+2. Check that I am logged in with `eas whoami`. If I am not, stop and ask me to run `eas login` or to set `EXPO_TOKEN`. Do not print a token.
+3. If the project does not have an Expo Services project ID, ask me before you run `eas init`.
+4. Ask me which platforms to test: Android, iOS, or both.
+5. Read the screens of my app. Write two or more Maestro flows in the .maestro directory that launch the app and check text that my app shows. The flows on the page match only the default Expo template. Set `appId` in each flow to `android.package` or `ios.bundleIdentifier` from the app config. If the value is not set, ask me for it. If I test both platforms and the two values are different, ask me how to continue.
+6. Add the `e2e-test` build profile from the page to eas.json. Create eas.json if it does not exist. Do not change the other profiles.
+7. For each platform, write the workflow from the page to .eas/workflows/e2e-test-android.yml or .eas/workflows/e2e-test-ios.yml. Put the paths of my flows in `flow_path`.
+8. For each workflow, run `eas workflow:run .eas/workflows/<file name> --non-interactive --wait --json`.
+9. If a run fails, find the failed job in the JSON output, run `eas workflow:logs <job ID> --non-interactive`, and tell me which job failed and why. If a Maestro flow fails, tell me which step failed and suggest a change to the flow. Do not change my app code without asking me.
+10. Give me the workflow run links from the command output. Tell me which files you changed and which commands you ran.
+11. Tell me that the workflows run on each pull request only when my GitHub repository is linked to the project in the Expo dashboard.
+```
+
+</AgentPrompt>
 
 In this guide, you'll learn how to run end-to-end (E2E) tests on Expo Workflows using [Maestro](https://maestro.dev/). The example demonstrates how to configure your E2E tests workflow using the [default Expo template](/more/create-expo/#--template). For your own app, you'll need to adjust the flows to match your app's UI.
 

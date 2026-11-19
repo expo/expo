@@ -14,7 +14,6 @@
 #import <EXConstants/EXConstantsService.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTEventDispatcher.h>
-#import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
 @interface EXKernel ()
 @end

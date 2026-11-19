@@ -1,5 +1,4 @@
 import fs from 'fs';
-import * as Glob from 'glob';
 import path from 'path';
 
 import {
@@ -8,9 +7,6 @@ import {
 } from '../renameTemplateAppName';
 
 jest.mock('fs');
-jest.mock('glob');
-const ActualFs = jest.requireActual('fs') as typeof fs;
-const ActualGlob = jest.requireActual('glob') as typeof Glob;
 const cwd = path.resolve(__dirname, 'fixtures/contrived-template');
 
 describe('getTemplateFilesToRenameAsync', () => {
@@ -19,13 +15,8 @@ describe('getTemplateFilesToRenameAsync', () => {
   });
 
   it('returns no files when passed an empty rename config', async () => {
-    const spyGlob = jest.spyOn(Glob, 'glob').mockImplementation(async (source, options) => {
-      return await ActualGlob.glob(source, { ...options, fs: ActualFs });
-    });
-
     const files = await getTemplateFilesToRenameAsync(cwd, { renameConfig: [] });
     expect(files).toHaveLength(0);
-    expect(spyGlob).toHaveBeenCalledTimes(1);
   });
 });
 

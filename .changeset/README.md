@@ -22,7 +22,7 @@ Fix asset URLs when the development server uses a custom origin.
 See: [#123](https://github.com/expo/expo/pull/123)
 ```
 
-Documentation, tests, apps, CI, and private tooling do not need a changeset. Do not add entries directly to package `CHANGELOG.md` files.
+Documentation, tests, CI, and private packages (`"private": true`, such as apps and internal tooling) do not need a changeset. Do not list them in one: `changeset version` fails when a changeset lists both private and published packages. Do not add entries directly to package `CHANGELOG.md` files.
 
 For pull requests targeting `main`, code review checks the release policy in [`expo.json`](./expo.json):
 

@@ -6,6 +6,7 @@ import type { OSType } from '../../start/platforms/ios/simctl';
 import { isOSType } from '../../start/platforms/ios/simctl';
 import { CommandError } from '../../utils/errors';
 import type { ResolvedOptions } from '../resolveOptions';
+import { resolveOutputDir } from '../resolveOptions';
 
 export type BuildProps = ResolvedOptions & {
   configuration: XcodeConfiguration;
@@ -18,21 +19,8 @@ export async function resolveOptionsAsync(
   projectRoot: string,
   options: ResolvedOptions
 ): Promise<BuildProps> {
-  if (options.device) {
-    throw new CommandError(
-      'BAD_ARGS',
-      'Device builds are not supported yet. Omit --device to build for the simulator.'
-    );
-  }
-  if (options.outputType !== 'app') {
-    throw new CommandError(
-      'BAD_ARGS',
-      `Building an ${options.outputType} is not supported yet. Omit --output-type to build an app.`
-    );
-  }
-
   const configuration: XcodeConfiguration = options.mode === 'production' ? 'Release' : 'Debug';
-  const xcodeProject = resolveXcodeProject(projectRoot);
+  const xcodeProject = await resolveXcodeProject(projectRoot);
   if (!(await hasRequiredIOSFilesAsync(projectRoot))) {
     throw new CommandError(
       'IOS_MALFORMED',
@@ -52,5 +40,12 @@ export async function resolveOptionsAsync(
     );
   }
 
-  return { ...options, configuration, xcodeProject, scheme, osType };
+  return {
+    ...options,
+    outputDir: resolveOutputDir(projectRoot, options.outputDir),
+    configuration,
+    xcodeProject,
+    scheme,
+    osType,
+  };
 }

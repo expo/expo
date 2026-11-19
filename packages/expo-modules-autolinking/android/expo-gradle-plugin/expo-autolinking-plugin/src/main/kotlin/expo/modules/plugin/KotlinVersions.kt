@@ -4,7 +4,7 @@ package expo.modules.plugin
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
 
-internal const val defaultKotlinVersion = "2.2.0"
+internal const val defaultKotlinVersion = "2.3.21"
 
 internal fun resolveKotlinVersion(kotlinGradlePluginVersion: String?, catalogVersion: String?): String {
   return kotlinGradlePluginVersion ?: catalogVersion ?: defaultKotlinVersion

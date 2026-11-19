@@ -352,6 +352,18 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
+    title: 'How to build mobile apps with Expo Simulators',
+    event: 'Expo Live Stream',
+    videoId: 'vbdGfqeq0Dc',
+    uploadDate: '2026-11-16',
+  },
+  {
+    title: 'Expo SDK 58: iOS 27, iPhone Duo, App Intents & @expo/agent-cli',
+    event: 'Expo Live Stream',
+    videoId: '45YfqOL56FI',
+    uploadDate: '2026-11-04',
+  },
+  {
     title: 'Agentic CI for Expo apps with TesterArmy',
     event: 'Expo Live Stream',
     videoId: 'yrtWWbhTsHE',
@@ -540,6 +552,12 @@ export const LIVE_STREAMS = [
 ] as Talk[];
 
 export const YOUTUBE_VIDEOS = [
+  {
+    title: 'Apple Developer account: free vs paid explained',
+    event: 'Expo Tutorials',
+    videoId: 'ELPS37cMrCQ',
+    uploadDate: '2026-10-29',
+  },
   {
     title: 'Expo SDK 58 just dropped. Here are the 24 biggest updates',
     event: 'Expo Tutorials',

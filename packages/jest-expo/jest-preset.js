@@ -5,14 +5,17 @@ const isEqual = require('lodash/isEqual');
 const path = require('node:path');
 
 let jestPreset;
+let jestPresetPath;
 try {
-  jestPreset = require('@react-native/jest-preset');
+  jestPresetPath = require.resolve('@react-native/jest-preset');
+  jestPreset = require(jestPresetPath);
 } catch (error) {
   if (error.code === 'MODULE_NOT_FOUND') {
     try {
       // NOTE(@kitten): We can still try the old import to see if it
       // works, in case there's some kind of version mismatch
-      jestPreset = require('react-native/jest-preset');
+      jestPresetPath = require.resolve('react-native/jest-preset');
+      jestPreset = require(jestPresetPath);
     } catch {
       throw new Error(
         'The React Native Jest preset that jest-expo relies on has moved to a separate package.\n' +
@@ -60,8 +63,12 @@ jestPreset.moduleNameMapper = {
   '^react-native-vector-icons/(.*)': '@expo/vector-icons/$1',
 };
 
+// React Native 0.89 sets the transformer to `babel-jest` resolved from the preset's directory.
+const upstreamBabelJestPath = resolveFromUpstreamPreset('babel-jest');
 const upstreamBabelJest = Object.keys(jestPreset.transform).find(
-  (key) => jestPreset.transform[key] === 'babel-jest'
+  (key) =>
+    jestPreset.transform[key] === 'babel-jest' ||
+    jestPreset.transform[key] === upstreamBabelJestPath
 );
 if (upstreamBabelJest) {
   delete jestPreset.transform[upstreamBabelJest];
@@ -162,3 +169,12 @@ Object.assign(jestPreset, require('jest-expo/config/maxWorkers'));
 
 // Add typescript custom mapping
 module.exports = withTypescriptMapping(jestPreset);
+
+function resolveFromUpstreamPreset(request) {
+  try {
+    return require.resolve(request, { paths: [path.dirname(jestPresetPath)] });
+  } catch {
+    // Older presets use the bare `'babel-jest'` name and may not resolve it from their directory.
+    return null;
+  }
+}

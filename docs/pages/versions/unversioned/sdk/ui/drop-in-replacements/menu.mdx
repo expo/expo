@@ -43,7 +43,7 @@ If you need lower-level control, use those primitives directly.
 
 - Update the import from `import { MenuView } from '@react-native-menu/menu'` to `import { MenuView } from '@expo/ui/community/menu'`.
 - `action.image` on Android differs from upstream. `@react-native-menu/menu` expects a **drawable resource name** string (for example, `'ic_menu_add'`) that it resolves against `android/app/src/main/res/drawable/`. This drop-in does **not** resolve drawable resource names — pass an `ImageSourcePropType` instead (for example, `require('@expo/material-symbols/edit.xml')`). String values are accepted on iOS as SF Symbol names. Use [`Icon.select`](../universal/icon) to define both per call site so the unused side tree-shakes out per platform.
-- `title` is rendered as a section header on iOS only; Android's Material `DropdownMenu` has no title slot.
+- `title` is rendered as a section header on iOS only; Android's Material menu has no title slot.
 - On Android, `MenuView` wraps the trigger in its own `Pressable` to open the menu, so an `onPress`/`onLongPress` handler attached to a `Pressable` you pass as `children` won't fire — the outer wrapper claims the gesture. Move that handler into your `onPressAction` switch instead, or use the lower-level [`DropdownMenu`](../jetpack-compose/dropdownmenu) primitive if you need to keep separate tap and long-press actions on the trigger.
 - The imperative `ref.show()` API is **Android-only**. SwiftUI `Menu`/`ContextMenu` have no programmatic open API, so on iOS the call is a no-op (with a one-time dev warning).
 - The following props from `@react-native-menu/menu` are not supported: `themeVariant`, `hitSlop`, `isAnchoredToRight`, `subtitle`, `keepsMenuPresented`, `preferredElementSize`, and `state: 'mixed'`.
@@ -101,7 +101,7 @@ export default function MenuExample() {
 
 ## Long-press (context menu)
 
-Set `shouldOpenOnLongPress` to render as a context menu. On Android, the same controlled `DropdownMenu` opens from a long press on the trigger instead of a tap. On iOS, this uses SwiftUI's `ContextMenu` and shows the trigger as a blurred preview.
+Set `shouldOpenOnLongPress` to render as a context menu. On Android, the same controlled menu opens from a long press on the trigger instead of a tap. On iOS, this uses SwiftUI's `ContextMenu` and shows the trigger as a blurred preview.
 
 <ComponentExample
   title="LongPressMenuExample.tsx"
@@ -153,7 +153,7 @@ export default function LongPressMenuExample() {
 
 ## Submenus and inline sections
 
-`subactions` renders nested actions as a submenu by default. Set `displayInline: true` on the parent to render the children as an inline section instead, which is useful for grouping. On Android, only the divider appears (Material's `DropdownMenu` has no section primitive). On iOS, the parent's `title` becomes the section header.
+`subactions` renders nested actions as a submenu by default. Set `displayInline: true` on the parent to render the children as an inline section instead, which is useful for grouping. On Android, the children appear as a separate group in the menu. On iOS, the parent's `title` becomes the section header.
 
 <ComponentExample
   title="SubmenuExample.tsx"

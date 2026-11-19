@@ -32,14 +32,15 @@ import expo.modules.location.AppForegroundedSingleton
 import expo.modules.location.LocationHelpers
 import expo.modules.location.records.LocationOptions
 import expo.modules.location.records.LocationResponse
+import expo.modules.location.services.BaseForegroundTaskService
+import expo.modules.location.services.BaseForegroundTaskService.ServiceBinder
 import expo.modules.location.services.LocationTaskService
-import expo.modules.location.services.LocationTaskService.ServiceBinder
 import kotlin.math.abs
 
 class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsInterface?) : TaskConsumer(context, taskManagerUtils), TaskConsumerInterface, LifecycleEventListener {
   private var mTask: TaskInterface? = null
   private var mPendingIntent: PendingIntent? = null
-  private var mService: LocationTaskService? = null
+  private var mService: BaseForegroundTaskService? = null
   private var mServiceConnection: ServiceConnection? = null
   private var mLocationRequest: LocationRequest? = null
   private var mLastReportedLocation: Location? = null
@@ -183,12 +184,12 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
     }
   }
 
-  private fun maybeStartForegroundService() {
+  private fun maybeStartForegroundService(isForegrounded: Boolean = AppForegroundedSingleton.isForegrounded) {
     // Foreground service is available as of Android Oreo.
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       return
     }
-    if (!AppForegroundedSingleton.isForegrounded) {
+    if (!isForegrounded) {
       Log.w(TAG, "Foreground location task cannot be started while the app is in the background!")
       return
     }
@@ -230,7 +231,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       try {
         context.startForegroundService(serviceIntent)
       } catch (e: RuntimeException) {
-        if (!LocationTaskService.isStartRejected(e)) {
+        if (!BaseForegroundTaskService.isStartRejected(e)) {
           throw e
         }
         Log.w(TAG, "Foreground location task could not be started", e)
@@ -260,7 +261,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       try {
         mService?.startForeground(options.getArguments(FOREGROUND_SERVICE_KEY).toBundle())
       } catch (e: RuntimeException) {
-        if (!LocationTaskService.isStartRejected(e)) {
+        if (!BaseForegroundTaskService.isStartRejected(e)) {
           throw e
         }
         Log.w(TAG, "Foreground location task could not be restarted", e)
@@ -391,7 +392,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
   override fun onHostResume() {
     mIsHostPaused = false
     if (mTask != null && mService?.isPromoted != true) {
-      maybeStartForegroundService()
+      maybeStartForegroundService(isForegrounded = true)
     }
     maybeReportDeferredLocations()
   }

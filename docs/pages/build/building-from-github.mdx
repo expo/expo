@@ -128,8 +128,9 @@ you want to trigger a production build for Android, add the label `eas-build-and
   src="/static/images/eas-build/build-from-github/eas-build-label.png"
 />
 
-The build will be triggered for the latest commit on the PR's base branch. You can view the status
-of the build in the PR's checks. A link to the build will be available in the check's details.
+The build will be triggered for the PR's head commit, which is the latest commit on the PR's branch.
+While the label is on the PR, each new commit that you push triggers a new build. You can view the
+status of the build in the PR's checks. A link to the build will be available in the check's details.
 
 <ContentSpotlight
   alt="Expo Build check details on a GitHub PR"

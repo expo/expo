@@ -56,11 +56,17 @@ struct BlobConvertiblesTests {
       .evalAsync(
         "expo.modules.BlobModule.echoAsync(new Uint8Array([0x00, 0xff])).then((result) => globalThis.result = result)"
       )
-    #expect(try runtime.eval("globalThis.result instanceof Uint8Array").asBool() == true)
-
-    let array = try runtime.eval("Array.from(globalThis.result)").asArray()
-    #expect(array[0].getInt() == 0x00)
-    #expect(array[1].getInt() == 0xff)
+    // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+    let (isUint8Array, values) = try await runtime.execute {
+      let array = try runtime.eval("Array.from(globalThis.result)").asArray()
+      return (
+        try runtime.eval("globalThis.result instanceof Uint8Array").asBool(),
+        [array[0].getInt(), array[1].getInt()]
+      )
+    }
+    #expect(isUint8Array == true)
+    #expect(values[0] == 0x00)
+    #expect(values[1] == 0xff)
   }
 
   @Test
@@ -69,11 +75,16 @@ struct BlobConvertiblesTests {
       .evalAsync(
         "expo.modules.BlobModule.echoMapAsync({ key: new Uint8Array([0x00, 0xff]) }).then((result) => globalThis.result = result)"
       )
-    #expect(try runtime.eval("globalThis.result.key instanceof Uint8Array").asBool() == true)
-
-    let array = try runtime.eval("Array.from(globalThis.result.key)").asArray()
-    #expect(array[0].getInt() == 0x00)
-    #expect(array[1].getInt() == 0xff)
+    let (isUint8Array, values) = try await runtime.execute {
+      let array = try runtime.eval("Array.from(globalThis.result.key)").asArray()
+      return (
+        try runtime.eval("globalThis.result.key instanceof Uint8Array").asBool(),
+        [array[0].getInt(), array[1].getInt()]
+      )
+    }
+    #expect(isUint8Array == true)
+    #expect(values[0] == 0x00)
+    #expect(values[1] == 0xff)
   }
 }
 

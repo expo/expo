@@ -17,6 +17,7 @@ import kotlinx.coroutines.Deferred
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.Update
+import expo.modules.updatesinterface.UpdatesLogMessage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -156,7 +157,7 @@ abstract class Loader protected constructor(
     // but different scope keys, we should try to launch something rather than show a cryptic
     // error to the user.
     if (existingUpdateEntity != null && existingUpdateEntity.scopeKey != newUpdateEntity.scopeKey) {
-      logger.warn("Loaded an update with the same ID but a different scopeKey than one we already have on disk. This is a server error. Overwriting the scopeKey and loading the existing update.")
+      logger.warn(UpdatesLogMessage.LocalScopeKeyMismatch)
       database.updateDao().setUpdateScopeKey(existingUpdateEntity, newUpdateEntity.scopeKey)
     }
 

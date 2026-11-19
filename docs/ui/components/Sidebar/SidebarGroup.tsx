@@ -2,6 +2,7 @@ import { Button, RouterLogo } from '@expo/styleguide';
 import { EasMetadataIcon } from '@expo/styleguide-icons/custom/EasMetadataIcon';
 import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
 import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
+import { Smartphone02Icon } from '@expo/styleguide-icons/custom/Smartphone02Icon';
 import { StoplightIcon } from '@expo/styleguide-icons/custom/StoplightIcon';
 import { PlaySquareDuotoneIcon } from '@expo/styleguide-icons/duotone/PlaySquareDuotoneIcon';
 import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
@@ -242,6 +243,8 @@ function getIconElement(iconName?: string) {
       return Cloud01Icon;
     case 'Expo Observe':
       return ActivityIcon;
+    case 'Expo Simulators':
+      return Smartphone02Icon;
     case 'Expo Modules API':
       return CpuChip01Icon;
     case 'Expo Router':

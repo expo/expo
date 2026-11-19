@@ -87,9 +87,10 @@ struct ExpoAppIntentsModuleTests {
   func `donation calls reject what they cannot act on`(call: String, expectedMessage: String) async throws {
     let outcome = try await runtime.evalAsync(
       "expo.modules.ExpoAppIntents.\(call).then(() => 'resolved', (error) => error.message)"
-    )
+    ).ref()
 
-    let message = outcome.getString()
+    // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+    let message = try await runtime.execute { try outcome.take().getString() }
     #expect(message.contains(expectedMessage), "\(call) settled with: \(message)")
   }
 
@@ -105,9 +106,9 @@ struct ExpoAppIntentsModuleTests {
 
     let outcome = try await runtime.evalAsync(
       "expo.modules.ExpoAppIntents.\(call).then(() => 'resolved', (error) => error.message)"
-    )
+    ).ref()
 
-    let message = outcome.getString()
+    let message = try await runtime.execute { try outcome.take().getString() }
     #expect(message.contains("DonationParams"), "\(call) settled with: \(message)")
     #expect(message.contains(expectedMessage), "\(call) settled with: \(message)")
   }

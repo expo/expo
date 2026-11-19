@@ -198,10 +198,17 @@ type SpawnChangesetsAsync = typeof spawnAsync;
 
 export async function runChangesetsAsync(
   args: string[],
-  spawnChangesetsAsync: SpawnChangesetsAsync = spawnAsync
+  spawnChangesetsAsync: SpawnChangesetsAsync = spawnAsync,
+  env?: NodeJS.ProcessEnv
 ): Promise<void> {
   await spawnChangesetsAsync('pnpm', ['exec', 'changeset', ...args], {
     cwd: EXPO_DIR,
     stdio: 'inherit',
+    ...(env && { env }),
   });
+}
+
+// Changesets publishes packages concurrently; a package's `clean` would delete a build another package is reading.
+export function getReleasePublishEnv(): NodeJS.ProcessEnv {
+  return { ...process.env, EXPO_PUBLISH_SKIP_CLEAN: '1' };
 }

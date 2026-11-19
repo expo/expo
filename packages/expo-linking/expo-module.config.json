@@ -1,7 +1,6 @@
 {
   "platforms": ["apple", "android", "web"],
   "apple": {
-    "modules": ["ExpoLinkingModule"],
     "appDelegateSubscribers": ["LinkingAppDelegateSubscriber"]
   },
   "android": {

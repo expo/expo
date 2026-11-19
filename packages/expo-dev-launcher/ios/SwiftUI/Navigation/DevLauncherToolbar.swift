@@ -16,7 +16,7 @@ extension View {
 extension ToolbarContent {
   @ToolbarContentBuilder
   func verticalBarPreferred() -> some ToolbarContent {
-#if os(iOS) && compiler(>=6.4)
+#if os(iOS) && canImport(UIKit, _version: 9127.0.85) // iOS 27.1 SDK
     if #available(iOS 27.1, *) {
       axisBehavior(.verticalPreferred)
     } else {
@@ -64,7 +64,7 @@ private struct AccountAvatar: View {
 
   var body: some View {
     let isOrganization = account.ownerUserActor == nil
-    let profilePhoto = account.ownerUserActor?.profilePhoto
+    let profilePhoto = account.ownerUserActor?.primaryAccountProfileImageUrl
     let name = account.ownerUserActor?.fullName ?? account.name
 
     if isOrganization {

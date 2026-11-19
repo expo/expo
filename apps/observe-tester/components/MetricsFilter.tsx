@@ -1,9 +1,6 @@
+import { BottomSheetModal, BottomSheetView } from '@expo/ui/community/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
-import {
-  BottomSheetModal,
-  BottomSheetView,
-} from '@expo/ui/community/bottom-sheet';
-import type { Metric } from 'expo-app-metrics';
+import type { Metric } from 'expo-observe/debug';
 import { useMemo, useRef } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -109,7 +106,9 @@ export function MetricsFilter({ metrics, selected, onChange }: MetricsFilterProp
             <Pressable
               onPress={() => onChange(new Set(allNames))}
               style={({ pressed }) => [styles.footerLink, pressed && { opacity: 0.6 }]}>
-              <Text style={[styles.footerLinkLabel, { color: theme.text.default }]}>Select all</Text>
+              <Text style={[styles.footerLinkLabel, { color: theme.text.default }]}>
+                Select all
+              </Text>
             </Pressable>
           </View>
         </BottomSheetView>

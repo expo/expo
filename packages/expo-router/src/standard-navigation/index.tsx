@@ -10,14 +10,17 @@ import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
   type DefaultRouterOptions,
+  type DescriptorRouteProp,
   type NavigationAction,
   type NavigationState,
+  type ParamListBase,
   type RouterFactory,
 } from '../react-navigation/native';
 import { getValidInitialRouteName } from '../routeNode';
 import type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
+  PlaceholderDescriptorMap,
   StandardNavigator,
   StandardNavigatorEventMapBase,
   StandardRouterNavigatorProps,
@@ -162,6 +165,45 @@ export function integrateWithRouter<
     EventMap
   >
 ) {
+  return integrateWithRouterInternal<
+    NavigatorOptions,
+    State,
+    EventMap,
+    NavigatorProps,
+    RouterOptions,
+    CreateProps
+  >(navigator, router, options);
+}
+
+// With `create`, describes a keyed route that is not in the state yet. See `useDescriptors`.
+export type DescribeRouteInternal<NavigatorOptions extends object> = (
+  route: DescriptorRouteProp<ParamListBase, string>,
+  options?: { create?: boolean }
+) => NonNullable<PlaceholderDescriptorMap<NavigatorOptions>[string]>;
+
+/** Like `integrateWithRouter`, plus an internal `useProcessState` hook that runs before the public processors. */
+export function integrateWithRouterInternal<
+  NavigatorOptions extends object,
+  State extends NavigationState,
+  EventMap extends StandardNavigatorEventMapBase,
+  NavigatorProps extends object,
+  RouterOptions extends DefaultRouterOptions,
+  CreateProps extends object = object,
+>(
+  navigator: StandardNavigator<NavigatorOptions, EventMap, NavigatorProps & CreateProps>,
+  router: RouterFactory<State, NavigationAction, RouterOptions>,
+  options:
+    | IntegrateWithRouterOptions<State, NoInfer<CreateProps>, NavigatorOptions, EventMap>
+    | undefined,
+  useProcessState: (
+    state: State,
+    descriptors: PlaceholderDescriptorMap<NavigatorOptions>,
+    describe: DescribeRouteInternal<NavigatorOptions>
+  ) => {
+    state: State;
+    descriptors: PlaceholderDescriptorMap<NavigatorOptions>;
+  } = useUnprocessedState
+) {
   assertStandardNavigator(navigator);
   const { NavigatorContent } = navigator;
 
@@ -184,7 +226,13 @@ export function integrateWithRouter<
       NavigatorProps,
       RouterOptions
     >(props, getValidInitialRouteName(routeNode));
-    const { state, navigation, describe, descriptors, NavigationContent } = useNavigationBuilder<
+    const {
+      state: builderState,
+      navigation,
+      describe,
+      descriptors: builderDescriptors,
+      NavigationContent,
+    } = useNavigationBuilder<
       State,
       RouterOptions,
       Record<string, (...args: unknown[]) => void>,
@@ -193,6 +241,7 @@ export function integrateWithRouter<
     >(router, useNavigationBuilderProps, {
       activityDefaultThreshold: options?.activityDefaultThreshold,
     });
+    const { state, descriptors } = useProcessState(builderState, builderDescriptors, describe);
 
     const { dispatch, dispatchSync } = navigation;
     const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
@@ -261,6 +310,10 @@ export function integrateWithRouter<
     StandardRouterNavigator,
     options?.processScreens
   );
+}
+
+function useUnprocessedState<State, Descriptors>(state: State, descriptors: Descriptors) {
+  return { state, descriptors };
 }
 
 /** @deprecated Use `createStandardRouterNavigator` instead. */

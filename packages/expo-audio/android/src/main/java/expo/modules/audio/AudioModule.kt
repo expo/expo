@@ -454,12 +454,13 @@ class AudioModule : Module() {
     }
 
     AsyncFunction("preload") Coroutine { source: AudioSource, _: Double ->
-      val uri = source.uri ?: return@Coroutine
-      val factory = when (uri.toUri().scheme) {
+      val uriString = source.uri ?: return@Coroutine
+      val uri = resolveSourceUri(uriString)
+      val factory = when (uri.scheme) {
         "http", "https" -> httpDataSourceFactory(source.headers)
         else -> DefaultDataSource.Factory(context)
       }
-      AudioPreloadManager.preload(uri, factory)
+      AudioPreloadManager.preload(uriString, uri, factory)
     }
 
     AsyncFunction("clearPreloadedSource") Coroutine { source: AudioSource ->
@@ -661,6 +662,10 @@ class AudioModule : Module() {
         runOnMain {
           player.ref.playbackParameters.speed
         }
+      }.set { player: AudioPlayer, rate: Float ->
+        appContext.mainQueue.launch {
+          player.setPlaybackRate(rate)
+        }
       }
 
       Property("volume") { player ->
@@ -669,6 +674,12 @@ class AudioModule : Module() {
         }
       }.set { ref, volume: Float? ->
         ref.setVolume(volume)
+      }
+
+      Property("isActiveForLockScreen") { player ->
+        runOnMain {
+          player.isActiveForLockScreen
+        }
       }
 
       Function("play") { player: AudioPlayer ->
@@ -903,21 +914,11 @@ class AudioModule : Module() {
             context,
             appContext,
             sources,
-            updateInterval,
-            DefaultDataSource.Factory(context)
+            updateInterval
           )
           playlist.loopMode = loop
-          playlist.setMediaItemCreator { source ->
-            source.uri?.let { uriString ->
-              val uri = uriString.toUri()
-              when {
-                isRawResource(uri) -> {
-                  val file = getResourceName(uri, uriString)
-                  MediaItem.fromUri(getRawResourceURI(file))
-                }
-                else -> MediaItem.fromUri(uri)
-              }
-            }
+          playlist.setMediaSourceCreator { source ->
+            createMediaItem(source)
           }
           playlist.loadInitialPlaylist()
           playlist.onPlaybackStateChange = { isPlaying ->
@@ -1014,7 +1015,9 @@ class AudioModule : Module() {
       }
 
       Property("loop") { playlist ->
-        playlist.loopMode.value
+        runOnMain {
+          playlist.loopMode.value
+        }
       }.set { playlist, mode: LoopMode ->
         runOnMain {
           playlist.loopMode = mode
@@ -1024,6 +1027,12 @@ class AudioModule : Module() {
       Property("currentStatus") { playlist ->
         runOnMain {
           playlist.currentStatus()
+        }
+      }
+
+      Property("isActiveForLockScreen") { playlist ->
+        runOnMain {
+          playlist.isActiveForLockScreen
         }
       }
 
@@ -1123,13 +1132,7 @@ class AudioModule : Module() {
 
   private fun createMediaItem(source: AudioSource?): MediaSource? = source?.uri?.let { uriString ->
     val uri = uriString.toUri()
-    val mediaItem = when {
-      isRawResource(uri) -> {
-        val file = getResourceName(uri, uriString)
-        MediaItem.fromUri(getRawResourceURI(file))
-      }
-      else -> MediaItem.fromUri(uri)
-    }
+    val mediaItem = MediaItem.fromUri(resolveSourceUri(uriString))
 
     val preloadedBytes = AudioPreloadManager.get(uriString)
     val factory: DataSource.Factory = if (preloadedBytes != null) {
@@ -1148,6 +1151,17 @@ class AudioModule : Module() {
       headers?.let { headers ->
         setDefaultRequestProperties(headers)
       }
+    }
+  }
+
+  // Bundled assets arrive as a bare resource name (embedded bundle) or as
+  // `file:///android_res/raw/...` (expo-updates). Neither can be opened as a file.
+  private fun resolveSourceUri(uriString: String): Uri {
+    val uri = uriString.toUri()
+    return if (isRawResource(uri)) {
+      getRawResourceURI(getResourceName(uri, uriString))
+    } else {
+      uri
     }
   }
 

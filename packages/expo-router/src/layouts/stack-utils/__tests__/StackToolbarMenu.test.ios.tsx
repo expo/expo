@@ -5,6 +5,8 @@ import {
   StackToolbarMenuAction,
   convertStackToolbarMenuPropsToRNHeaderItem,
   convertStackToolbarMenuActionPropsToRNHeaderItem,
+  type StackToolbarMenuProps,
+  type StackToolbarMenuActionProps,
 } from '../toolbar/StackToolbarMenu';
 import { ToolbarPlacementContext, type ToolbarPlacement } from '../toolbar/context';
 import {
@@ -132,6 +134,39 @@ describe(convertStackToolbarMenuPropsToRNHeaderItem, () => {
       label: 'Submenu',
     });
   });
+
+  describe('image prop warning', () => {
+    let consoleSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleSpy.mockRestore();
+    });
+
+    it('warns when image is set', () => {
+      // The conversion only checks that `image` is set, so an empty object can stand in for an `ImageRef`.
+      const image = {} as StackToolbarMenuProps['image'];
+
+      convertStackToolbarMenuPropsToRNHeaderItem({ image });
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Stack.Toolbar.Menu does not support the image prop in header toolbars (placement="left" or "right") on iOS. Use the icon prop instead.'
+      );
+      expect(consoleSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not warn when hidden is true', () => {
+      // The conversion only checks that `image` is set, so an empty object can stand in for an `ImageRef`.
+      const image = {} as StackToolbarMenuProps['image'];
+
+      convertStackToolbarMenuPropsToRNHeaderItem({ image, hidden: true });
+
+      expect(consoleSpy).not.toHaveBeenCalled();
+    });
+  });
 });
 
 describe(convertStackToolbarMenuActionPropsToRNHeaderItem, () => {
@@ -231,6 +266,30 @@ describe(convertStackToolbarMenuActionPropsToRNHeaderItem, () => {
         source: { uri: 'https://example.com/icon.png' },
         tinted: true,
       });
+    });
+  });
+
+  describe('image prop warning', () => {
+    let consoleSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleSpy.mockRestore();
+    });
+
+    it('warns when image is set', () => {
+      // The conversion only checks that `image` is set, so an empty object can stand in for an `ImageRef`.
+      const image = {} as StackToolbarMenuActionProps['image'];
+
+      convertStackToolbarMenuActionPropsToRNHeaderItem({ image });
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Stack.Toolbar.MenuAction does not support the image prop in header toolbars (placement="left" or "right") on iOS. Use the icon prop instead.'
+      );
+      expect(consoleSpy).toHaveBeenCalledTimes(1);
     });
   });
 });
@@ -448,6 +507,51 @@ describe('submenu conversion', () => {
       });
     });
   });
+
+  describe('image prop warning', () => {
+    let consoleSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleSpy.mockRestore();
+    });
+
+    it('warns when image is set', () => {
+      // The conversion only checks that `image` is set, so an empty object can stand in for an `ImageRef`.
+      const image = {} as StackToolbarMenuProps['image'];
+
+      convertStackToolbarMenuPropsToRNHeaderItem({
+        children: (
+          <StackToolbarMenu title="Submenu" image={image}>
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        ),
+      });
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Stack.Toolbar.Menu does not support the image prop in header toolbars (placement="left" or "right") on iOS. Use the icon prop instead.'
+      );
+      expect(consoleSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not warn when hidden is true', () => {
+      // The conversion only checks that `image` is set, so an empty object can stand in for an `ImageRef`.
+      const image = {} as StackToolbarMenuProps['image'];
+
+      convertStackToolbarMenuPropsToRNHeaderItem({
+        children: (
+          <StackToolbarMenu title="Submenu" image={image} hidden>
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        ),
+      });
+
+      expect(consoleSpy).not.toHaveBeenCalled();
+    });
+  });
 });
 
 describe('StackToolbarMenu component', () => {
@@ -480,6 +584,23 @@ describe('StackToolbarMenu component', () => {
 
     expect(screen.getByTestId('NativeLinkPreviewAction')).toBeVisible();
     expect(MockedNativeLinkPreviewAction).toHaveBeenCalled();
+  });
+
+  it('passes axisBehavior to NativeLinkPreviewAction', async () => {
+    await render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarMenu axisBehavior="verticalPreferred">
+          <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        axisBehavior: 'verticalPreferred',
+      }),
+      undefined
+    );
   });
 
   it('passes icon to NativeLinkPreviewAction', async () => {

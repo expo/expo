@@ -1,20 +1,22 @@
-import { useEffect, useMemo } from 'react';
+import { use, useEffect, useMemo } from 'react';
 
 import { useRouteNode } from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
+import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
 import { useRouterActions } from '../global-state/useRouterActions';
 import { useGuardRedirect } from '../layouts/GuardContext';
 import { useIsPreview } from '../link/preview/PreviewRouteContext';
+import { NavigatorStateContext } from '../react-navigation/core/useNavigationState';
 import {
   type Descriptor,
   type ParamListBase,
   type RouteProp,
   useIsFocused,
 } from '../react-navigation/native';
+import { TabActions } from '../react-navigation/routers/TabRouter';
 import { getValidInitialRouteName } from '../routeNode';
 import { orderRoutesByRouteNames } from '../utils/orderRoutesByRouteNames';
 import type { StandardNavigatorDescriptor } from './types';
-import { useBuildHref } from './useBuildHref';
 
 export type TabRoute = RouteProp<ParamListBase, string>;
 
@@ -35,14 +37,18 @@ export function useVisibleTabsWithRedirect<
   routeNames,
   focusedRouteKey,
   descriptors,
+  navigatorKey,
 }: {
   routes: Route[];
   routeNames: string[];
   focusedRouteKey: string | undefined;
   descriptors: Record<string, TabDescriptor<Options>>;
+  navigatorKey?: string;
 }) {
-  const buildHref = useBuildHref();
   const router = useRouterActions();
+  const enqueue = useEnqueueRoutingIntent();
+  const navigatorState = use(NavigatorStateContext);
+  const key = navigatorKey ?? navigatorState?.key;
   const isPreview = useIsPreview();
   const isFocused = useIsFocused();
   const routeNode = useRouteNode();
@@ -72,17 +78,8 @@ export function useVisibleTabsWithRedirect<
 
   const initialRouteName = getValidInitialRouteName(routeNode);
 
-  const redirectHref = useMemo(() => {
-    if (guardRedirect !== undefined) {
-      return guardRedirect;
-    }
-    const redirectRoute =
-      visibleRoutes.find((route) => route.name === initialRouteName) ?? visibleRoutes[0];
-    if (redirectRoute) {
-      return buildHref(redirectRoute);
-    }
-    return null;
-  }, [buildHref, guardRedirect, initialRouteName, visibleRoutes]);
+  const redirectRoute =
+    visibleRoutes.find((route) => route.name === initialRouteName) ?? visibleRoutes[0];
 
   useEffect(() => {
     // TODO(@ubax): Consider throwing in __DEV__ instead of warning.
@@ -112,11 +109,34 @@ export function useVisibleTabsWithRedirect<
       isFocused &&
       visibleFocusedIndex < 0 &&
       focusedFallbackRoute === undefined &&
-      redirectHref != null
+      (guardRedirect != null || redirectRoute !== undefined)
     ) {
-      router.replace(redirectHref);
+      if (guardRedirect != null) {
+        router.replace(guardRedirect);
+      } else if (redirectRoute) {
+        enqueue({
+          type: 'ACTION',
+          payload: {
+            action: {
+              ...TabActions.replace(redirectRoute.name, redirectRoute.params),
+              target: key,
+            },
+            originKey: key,
+          },
+        });
+      }
     }
-  }, [focusedFallbackRoute, isFocused, isPreview, redirectHref, router, visibleFocusedIndex]);
+  }, [
+    enqueue,
+    focusedFallbackRoute,
+    guardRedirect,
+    isFocused,
+    isPreview,
+    key,
+    redirectRoute,
+    router,
+    visibleFocusedIndex,
+  ]);
 
   return { visibleRoutes, focusedIndex, focusedFallbackRoute };
 }

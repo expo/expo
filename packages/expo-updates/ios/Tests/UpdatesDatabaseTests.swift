@@ -780,6 +780,32 @@ class UpdatesDatabaseTests {
         #expect(NSDictionary(dictionary: actual!).isEqual(to: expected) == true)
       }
     }
+
+    @Test
+    func `deleteJsonDataForAllScopeKeys deletes only the given keys`() throws {
+      let responseHeaderData = ResponseHeaderData(
+        protocolVersionRaw: nil,
+        serverDefinedHeadersRaw: "test-header=\"value\"",
+        manifestFiltersRaw: "branch-name=\"rollout-1\""
+      )
+
+      db.databaseQueue.sync {
+        try! db.setMetadata(withResponseHeaderData: responseHeaderData, scopeKey: "test")
+        try! db.setExtraParam(key: "wat", value: "hello", withScopeKey: "test")
+        try! db.setStaticBuildData(["key": "value"], withScopeKey: "test")
+
+        try! db.deleteJsonDataForAllScopeKeys(withKeys: [
+          UpdatesDatabase.JSONDataKey.ExtraParmasKey,
+          UpdatesDatabase.JSONDataKey.ServerDefinedHeadersKey,
+          UpdatesDatabase.JSONDataKey.ManifestFiltersKey
+        ])
+
+        #expect(try! db.serverDefinedHeaders(withScopeKey: "test") == nil)
+        #expect(try! db.manifestFilters(withScopeKey: "test") == nil)
+        #expect(try! db.extraParams(withScopeKey: "test") == nil)
+        #expect(try! db.staticBuildData(withScopeKey: "test") != nil)
+      }
+    }
   }
 
   // MARK: - delete unused assets

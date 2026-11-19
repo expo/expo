@@ -21,6 +21,7 @@ import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOption
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
+import { reportProgramResult } from '../utils/programStatus';
 import { compileHermesArtifactsAsync } from './compileHermesArtifacts';
 import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
 import { event } from './events';
@@ -211,6 +212,10 @@ export async function exportAppAsync(
               Log.error('Failed to bundle the app');
               Log.log(error as any);
             }
+            reportProgramResult({
+              state: 'error',
+              msg: error instanceof Error ? error.message : 'Failed to bundle the app',
+            });
             process.exit(1);
           }
 
