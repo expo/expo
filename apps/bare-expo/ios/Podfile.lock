@@ -3293,7 +3293,7 @@ PODS:
     - ReactNativeDependencies
     - RNWorklets (>= 0.8.0)
     - Yoga
-  - RNReanimated (4.7.1):
+  - RNReanimated (4.8.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3308,7 +3308,6 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -3317,12 +3316,12 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNReanimated/apple (= 4.7.1)
-    - RNReanimated/common (= 4.7.1)
-    - RNReanimated/view (= 4.7.1)
+    - RNReanimated/apple (= 4.8.0)
+    - RNReanimated/common (= 4.8.0)
+    - RNReanimated/view (= 4.8.0)
     - RNWorklets
     - Yoga
-  - RNReanimated/apple (4.7.1):
+  - RNReanimated/apple (4.8.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3337,33 +3336,6 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - React-jsitooling
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/core
-    - ReactNativeDependencies
-    - RNWorklets
-    - Yoga
-  - RNReanimated/common (4.7.1):
-    - hermes-engine
-    - RCTRequired
-    - RCTTypeSafety
-    - React-bridging
-    - React-Core
-    - React-Core-prebuilt
-    - React-cxxstableapi
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -3374,7 +3346,7 @@ PODS:
     - ReactNativeDependencies
     - RNWorklets
     - Yoga
-  - RNReanimated/view (4.7.1):
+  - RNReanimated/common (4.8.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3389,7 +3361,31 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - React-jsitooling
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - RNWorklets
+    - Yoga
+  - RNReanimated/view (4.8.0):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-Core-prebuilt
+    - React-cxxstableapi
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -3496,7 +3492,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNWorklets (0.13.0):
+  - RNWorklets (0.14.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3511,7 +3507,6 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -3520,10 +3515,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/apple (= 0.13.0)
-    - RNWorklets/common (= 0.13.0)
+    - RNWorklets/apple (= 0.14.0)
+    - RNWorklets/common (= 0.14.0)
     - Yoga
-  - RNWorklets/apple (0.13.0):
+  - RNWorklets/apple (0.14.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3538,7 +3533,6 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -3548,7 +3542,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNWorklets/common (0.13.0):
+  - RNWorklets/common (0.14.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3563,7 +3557,6 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -3817,12 +3810,12 @@ DEPENDENCIES:
   - "React-Mapbuffer (from `../../../node_modules/.pnpm/react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+co_e23066d660638cbf0f656fd2f8856cd6/node_modules/react-native/ReactCommon`)"
   - "React-microtasksnativemodule (from `../../../node_modules/.pnpm/react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+co_e23066d660638cbf0f656fd2f8856cd6/node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)"
   - "React-mutationobservernativemodule (from `../../../node_modules/.pnpm/react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+co_e23066d660638cbf0f656fd2f8856cd6/node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver`)"
-  - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.22.7_react-native-reanimated@4.7.1_patch_hash=0f735c_2aa68ff8bb5e21033a1cf92020642d20/node_modules/react-native-keyboard-controller`)"
+  - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.22.7_react-native-reanimated@4.8.0_react-native-work_d0d446d9064bc4438c6aad8bd36c1a2c/node_modules/react-native-keyboard-controller`)"
   - "react-native-netinfo (from `../../../node_modules/.pnpm/@react-native-community+netinfo@12.0.1_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_a3f08f8a2d355db85c2c932c8ae21593/node_modules/@react-native-community/netinfo`)"
   - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@9.0.7_react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-native_0271870fe4112c59cd587f7468b2cebf/node_modules/react-native-pager-view`)"
   - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.11.1_react-native@0.89.0-rc.2_@babel+core@7.29.7_@reac_a15033d5846b9eb1f5c456622c589398/node_modules/react-native-safe-area-context`)"
   - "react-native-segmented-control (from `../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.89.0-rc.2_@babel_a82237648303fb75abf73fe3fff32fb2/node_modules/@react-native-segmented-control/segmented-control`)"
-  - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.14.0_f00e4d3d138633110b9968140205b241/node_modules/@shopify/react-native-skia`)"
+  - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.14.0_react-native-reanimated@4.8.0_react-native-worklets@0_a414044a2d83d953141c07ed70000264/node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `../../../node_modules/.pnpm/@react-native-community+slider@5.2.1/node_modules/@react-native-community/slider`)"
   - "react-native-view-shot (from `../../../node_modules/.pnpm/react-native-view-shot@6.1.1_react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-native+_d93fb6132341c252b2f1b47819504bc1/node_modules/react-native-view-shot`)"
   - "react-native-webview (from `../../../node_modules/.pnpm/react-native-webview@14.0.1_react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-native+m_49c3ed4887a99eed7de5f8e77ca1ac0d/node_modules/react-native-webview`)"
@@ -3868,10 +3861,10 @@ DEPENDENCIES:
   - "RNCPicker (from `../../../node_modules/.pnpm/@react-native-picker+picker@2.11.4_react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-n_93280046ae91e07d5f196d29813ae058/node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../../../node_modules/.pnpm/@react-native-community+datetimepicker@9.2.2_expo@packages+expo_react-native@0.89.0-rc._ebd1da75a6bb375dd80ebd0ff898c8c7/node_modules/@react-native-community/datetimepicker`)"
   - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@3.3.0_react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-n_3176f2f1cdd8579994386740239db015/node_modules/react-native-gesture-handler`)"
-  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.7.1_patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f1_297d63ed7fd3f16780e7a8e158255a1a/node_modules/react-native-reanimated`)"
+  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.8.0_react-native-worklets@0.14.0_@babel+core@7.29.7_@react-na_bb8c7e247accc74bf0a3481045585070/node_modules/react-native-reanimated`)"
   - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.30.1_react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-native+m_a8cb05a6295ffe76dfae4fcd7fce4138/node_modules/react-native-screens`)"
   - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.16.1_react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-native+metr_b8c7f8b4e80f616a06eb9809a650073c/node_modules/react-native-svg`)"
-  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.13.0_patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec88_ded913a06bf4714887ab6e710e5da08a/node_modules/react-native-worklets`)"
+  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.14.0_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babe_695375972a79b07273d09b738dfc5232/node_modules/react-native-worklets`)"
   - SocketRocket (from `build/rndeps-facades/SocketRocket`)
   - TestExpoUi (from `../modules/test-expo-ui/ios`)
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
@@ -4267,7 +4260,7 @@ EXTERNAL SOURCES:
   React-mutationobservernativemodule:
     :path: "../../../node_modules/.pnpm/react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+co_e23066d660638cbf0f656fd2f8856cd6/node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver"
   react-native-keyboard-controller:
-    :path: "../../../node_modules/.pnpm/react-native-keyboard-controller@1.22.7_react-native-reanimated@4.7.1_patch_hash=0f735c_2aa68ff8bb5e21033a1cf92020642d20/node_modules/react-native-keyboard-controller"
+    :path: "../../../node_modules/.pnpm/react-native-keyboard-controller@1.22.7_react-native-reanimated@4.8.0_react-native-work_d0d446d9064bc4438c6aad8bd36c1a2c/node_modules/react-native-keyboard-controller"
   react-native-netinfo:
     :path: "../../../node_modules/.pnpm/@react-native-community+netinfo@12.0.1_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_a3f08f8a2d355db85c2c932c8ae21593/node_modules/@react-native-community/netinfo"
   react-native-pager-view:
@@ -4277,7 +4270,7 @@ EXTERNAL SOURCES:
   react-native-segmented-control:
     :path: "../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.89.0-rc.2_@babel_a82237648303fb75abf73fe3fff32fb2/node_modules/@react-native-segmented-control/segmented-control"
   react-native-skia:
-    :path: "../../../node_modules/.pnpm/@shopify+react-native-skia@2.14.0_f00e4d3d138633110b9968140205b241/node_modules/@shopify/react-native-skia"
+    :path: "../../../node_modules/.pnpm/@shopify+react-native-skia@2.14.0_react-native-reanimated@4.8.0_react-native-worklets@0_a414044a2d83d953141c07ed70000264/node_modules/@shopify/react-native-skia"
   react-native-slider:
     :path: "../../../node_modules/.pnpm/@react-native-community+slider@5.2.1/node_modules/@react-native-community/slider"
   react-native-view-shot:
@@ -4369,13 +4362,13 @@ EXTERNAL SOURCES:
   RNGestureHandler:
     :path: "../../../node_modules/.pnpm/react-native-gesture-handler@3.3.0_react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-n_3176f2f1cdd8579994386740239db015/node_modules/react-native-gesture-handler"
   RNReanimated:
-    :path: "../../../node_modules/.pnpm/react-native-reanimated@4.7.1_patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f1_297d63ed7fd3f16780e7a8e158255a1a/node_modules/react-native-reanimated"
+    :path: "../../../node_modules/.pnpm/react-native-reanimated@4.8.0_react-native-worklets@0.14.0_@babel+core@7.29.7_@react-na_bb8c7e247accc74bf0a3481045585070/node_modules/react-native-reanimated"
   RNScreens:
     :path: "../../../node_modules/.pnpm/react-native-screens@4.30.1_react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-native+m_a8cb05a6295ffe76dfae4fcd7fce4138/node_modules/react-native-screens"
   RNSVG:
     :path: "../../../node_modules/.pnpm/react-native-svg@15.16.1_react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-native+metr_b8c7f8b4e80f616a06eb9809a650073c/node_modules/react-native-svg"
   RNWorklets:
-    :path: "../../../node_modules/.pnpm/react-native-worklets@0.13.0_patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec88_ded913a06bf4714887ab6e710e5da08a/node_modules/react-native-worklets"
+    :path: "../../../node_modules/.pnpm/react-native-worklets@0.14.0_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babe_695375972a79b07273d09b738dfc5232/node_modules/react-native-worklets"
   SocketRocket:
     :path: build/rndeps-facades/SocketRocket
   TestExpoUi:
@@ -4456,7 +4449,7 @@ SPEC CHECKSUMS:
   ExpoModulesJSI: d9f7f7a1625c1a29cb116a6c264f1752230d4783
   ExpoModulesTestCore: 6a0e96b5e20076c1a5f4d18863474bb98853c6d9
   ExpoModulesWorklets: 208e6112a0467df1cc21530e280d650a3adf6261
-  ExpoModulesWorkletsAdapter: f9923edf68df9df2ff38c4c99655b7dd998489f0
+  ExpoModulesWorkletsAdapter: c271bd0a83983953c6d2796b63fff73902a6d7b0
   ExpoNetwork: 92aefa9d2d62c48f5f2820f728ac9f537841cf05
   ExpoNotifications: c2f9208d081c4e83fb57542a495c8c212f44723c
   ExpoObserve: 7be2ac3a9e099c593fd6b93a8fcb12ce28afd300
@@ -4589,10 +4582,10 @@ SPEC CHECKSUMS:
   RNCPicker: 81310764c8f60aa4a6738a49906834e299a66652
   RNDateTimePicker: 7dca176bb61853389c91e669ae5f78d71318cd88
   RNGestureHandler: 369fc3ce61727d74e5a2d802b60199377d850c77
-  RNReanimated: f81b67a03a2b079f1f3dd956ea66a8811f217390
+  RNReanimated: 5a5b1f651d23fbfd0f575773d64133bf444997df
   RNScreens: 2a2dc4a9812d59b4427a830b6f93dc025fc35907
   RNSVG: ac4b01d92ed3f87daea3b4041738a9269d1a96cc
-  RNWorklets: d83846a4db779a1de9445b60aacb54ec512a84d9
+  RNWorklets: bb8aea0a992d63679bbd96739204d3821a985835
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
@@ -4607,4 +4600,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 85ea483d5a5a8adbc6b2f87fdd4924b045909a57
 
-COCOAPODS: 1.17.0
+COCOAPODS: 1.16.2
