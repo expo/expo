@@ -32,7 +32,18 @@ object ObserveConsent {
   /** Reads the saved consent value, else the manifest value that the `expo-observe` config plugin writes. */
   @Synchronized
   fun load(context: Context) {
-    granted = resolve(AppMetricsPreferences.getObserveConsent(context), readManifestConsent(context))
+    var savedConsent = AppMetricsPreferences.getObserveConsent(context)
+    if (savedConsent == GRANTED_AT_NEXT_LAUNCH) {
+      // Exit records from before this launch are from processes without consent, so the crash
+      // cursor skips them. Without that cursor, consent stays not granted until a later launch.
+      val isSaved = AppMetricsPreferences.saveGrant(context, GRANTED, lastProcessedExitMillis = System.currentTimeMillis())
+      savedConsent = if (isSaved) {
+        GRANTED
+      } else {
+        NOT_GRANTED
+      }
+    }
+    granted = resolve(savedConsent, readManifestConsent(context))
     hasRevoked = false
   }
 
@@ -45,14 +56,12 @@ object ObserveConsent {
    */
   @Synchronized
   internal fun update(context: Context, granted: Boolean): Update {
-    val isSaved = AppMetricsPreferences.setObserveConsent(
-      context,
-      if (granted) {
-        GRANTED
-      } else {
-        NOT_GRANTED
-      }
-    )
+    val consent = when {
+      granted && !isGranted && hasRevoked -> GRANTED_AT_NEXT_LAUNCH
+      granted -> GRANTED
+      else -> NOT_GRANTED
+    }
+    val isSaved = AppMetricsPreferences.setObserveConsent(context, consent)
     if (granted == isGranted || (granted && (hasRevoked || !isSaved))) {
       return Update(changed = false, isSaved = isSaved)
     }
@@ -104,6 +113,9 @@ object ObserveConsent {
   private const val CONSENT_META_DATA = "expo.modules.observe.CONSENT"
   private const val GRANTED = "granted"
   private const val NOT_GRANTED = "not-granted"
+
+  // Saved by a grant after a revoke. The next launch saves `GRANTED` in its place.
+  private const val GRANTED_AT_NEXT_LAUNCH = "granted-at-next-launch"
 }
 
 /** Deletes the metrics database, the crash files, the pending-error files, and the settings. */
