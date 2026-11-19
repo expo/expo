@@ -147,7 +147,9 @@ export interface DateTimePickerProps {
    */
   variant?: AndroidVariant;
   /**
-   * Show a button to toggle between variants on Android.
+   * Show a button to toggle between variants on Android. This prop has no effect when
+   * `displayedComponents` is `'hourAndMinute'`, because the Material 3 `TimePicker` and `TimeInput`
+   * have no toggle. Use `TimePickerDialog` for a time picker with a toggle.
    * @default true
    */
   showVariantToggle?: boolean;
@@ -476,7 +478,23 @@ export function DateRangePickerDialog(props: DateRangePickerDialogProps) {
 
 export interface TimePickerDialogProps {
   initialDate?: string | null;
+  /**
+   * The variant of the picker. `'picker'` shows the clock dial and `'input'` shows text fields for
+   * the hour and the minute.
+   * @default 'picker'
+   */
   variant?: AndroidVariant;
+  /**
+   * Whether the dialog shows Material 3's button that toggles between the clock dial and the text
+   * fields.
+   * @default true
+   */
+  showVariantToggle?: boolean;
+  /**
+   * Whether the dialog shows its title, such as "Select time" or "Enter time".
+   * @default true
+   */
+  showTitle?: boolean;
   is24Hour?: boolean;
   confirmButtonLabel?: string;
   dismissButtonLabel?: string;

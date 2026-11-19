@@ -1,6 +1,5 @@
 package expo.modules.ui
 
-import androidx.compose.material3.AlertDialog
 import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
@@ -19,6 +18,9 @@ import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimeInputColors
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDefaults
+import androidx.compose.material3.TimePickerDialog
+import androidx.compose.material3.TimePickerDialogDefaults
+import androidx.compose.material3.TimePickerDisplayMode
 import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.TimePickerState
 import android.text.format.DateFormat
@@ -28,7 +30,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -68,6 +73,13 @@ enum class Variant(val value: String) : Enumerable {
     return when (this) {
       PICKER -> DisplayMode.Picker
       INPUT -> DisplayMode.Input
+    }
+  }
+
+  fun toTimePickerDisplayMode(): TimePickerDisplayMode {
+    return when (this) {
+      PICKER -> TimePickerDisplayMode.Picker
+      INPUT -> TimePickerDisplayMode.Input
     }
   }
 }
@@ -201,6 +213,8 @@ data class DatePickerDialogProps(
 data class TimePickerDialogProps(
   val initialDate: Long? = null,
   val variant: Variant = Variant.PICKER,
+  val showVariantToggle: Boolean = true,
+  val showTitle: Boolean = true,
   val is24Hour: Boolean? = null,
   val confirmButtonLabel: String? = null,
   val dismissButtonLabel: String? = null,
@@ -470,12 +484,35 @@ fun ExpoTimePickerDialogContent(props: TimePickerDialogProps, onDateSelected: (D
     )
   }
 
+  var displayMode by remember(props.variant) { mutableStateOf(props.variant.toTimePickerDisplayMode()) }
+
   val timePickerColors = buildTimePickerColors(props.elementColors, props.color.composeOrNull, TimePickerDefaults.colors())
   val buttonColors = props.color.composeOrNull
     ?.let { ButtonDefaults.textButtonColors(contentColor = it) } ?: ButtonDefaults.textButtonColors()
 
-  AlertDialog(
+  TimePickerDialog(
     onDismissRequest = { onDismissRequest() },
+    title = {
+      if (props.showTitle) {
+        TimePickerDialogDefaults.Title(displayMode = displayMode)
+      }
+    },
+    modeToggleButton = if (props.showVariantToggle) {
+      {
+        TimePickerDialogDefaults.DisplayModeToggle(
+          onDisplayModeChange = {
+            displayMode = if (displayMode == TimePickerDisplayMode.Picker) {
+              TimePickerDisplayMode.Input
+            } else {
+              TimePickerDisplayMode.Picker
+            }
+          },
+          displayMode = displayMode
+        )
+      }
+    } else {
+      null
+    },
     confirmButton = {
       TextButton(onClick = {
         val cal = Calendar.getInstance()
@@ -494,19 +531,18 @@ fun ExpoTimePickerDialogContent(props: TimePickerDialogProps, onDateSelected: (D
         Text(props.dismissButtonLabel ?: stringResource(android.R.string.cancel))
       }
     },
-    containerColor = timePickerColors.containerColor,
-    text = {
-      if (props.variant == Variant.INPUT) {
-        TimeInput(state = state, colors = timePickerColors.toTimeInputColors())
-      } else {
-        TimePicker(
-          state = state,
-          layoutType = TimePickerLayoutType.Vertical,
-          colors = timePickerColors
-        )
-      }
+    containerColor = timePickerColors.containerColor
+  ) {
+    if (displayMode == TimePickerDisplayMode.Input) {
+      TimeInput(state = state, colors = timePickerColors.toTimeInputColors())
+    } else {
+      TimePicker(
+        state = state,
+        layoutType = TimePickerLayoutType.Vertical,
+        colors = timePickerColors
+      )
     }
-  )
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
