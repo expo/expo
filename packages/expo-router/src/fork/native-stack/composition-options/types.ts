@@ -24,4 +24,14 @@ export interface CompositionContextValue {
    * Remove a composition component's options by reference (should be called on unmount).
    */
   unset(routeKey: string, options: Partial<NativeStackNavigationOptions>): void;
+
+  /**
+   * Keep the route's options while React `Activity` hides its contents, until `showRoute`.
+   */
+  hideRoute(routeKey: string): void;
+
+  /**
+   * Remove the options kept by `hideRoute` that no component registered again.
+   */
+  showRoute(routeKey: string): void;
 }

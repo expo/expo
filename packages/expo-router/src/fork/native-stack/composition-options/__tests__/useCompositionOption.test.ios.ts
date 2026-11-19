@@ -22,6 +22,8 @@ function createMockContext(): CompositionContextValue {
   return {
     set: jest.fn(),
     unset: jest.fn(),
+    hideRoute: jest.fn(),
+    showRoute: jest.fn(),
   };
 }
 

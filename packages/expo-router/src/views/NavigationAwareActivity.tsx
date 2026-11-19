@@ -2,6 +2,7 @@
 import { use, type ReactNode } from 'react';
 
 import { useRouteNode, type RouteNode } from '../Route';
+import { CompositionActivityScope } from '../fork/native-stack/composition-options';
 import { useIsFocused, useNavigationState, useRoute } from '../react-navigation/native';
 import { ActivityContents } from './ActivityContents';
 import { AncestorHiddenContext, useActivityThreshold } from './NavigationActivityContext';
@@ -77,7 +78,11 @@ function NavigationAwareScreenActivity({
   const mode = useActivityMode(hideWhenNestedAtLevel ?? Infinity);
   const hidden = forceHidden === true || mode === 'hidden';
 
-  return <ActivityContents mode={hidden ? 'hidden' : 'visible'}>{children}</ActivityContents>;
+  return (
+    <ActivityContents mode={hidden ? 'hidden' : 'visible'}>
+      <CompositionActivityScope>{children}</CompositionActivityScope>
+    </ActivityContents>
+  );
 }
 
 function LayoutAncestorHiddenProvider({
