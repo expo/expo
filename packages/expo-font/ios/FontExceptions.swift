@@ -63,7 +63,7 @@ internal final class SaveImageException: GenericException<String> {
   }
 }
 
-internal final class RenderToImageUnavailableException: Exception {
+internal final class RenderToImageUnavailableException: Exception, @unchecked Sendable {
   override var reason: String {
     "Rendering glyphs to an image is not available on macOS"
   }

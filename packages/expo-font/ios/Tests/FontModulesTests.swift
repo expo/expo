@@ -16,40 +16,30 @@ struct FontModulesTests {
   let appContext: AppContext
   let runtime: ExpoRuntime
 
-  init() throws {
+  init() async throws {
     appContext = TestAppContext()
     runtime = try appContext.runtime
-    appContext.moduleRegistry.register(
-      holder: ModuleHolder(
-        appContext: appContext,
-        module: FontLoaderModule(appContext: appContext),
-        name: "ExpoFontLoader"
+    appContext.moduleRegistry.register(module: FontLoaderModule(appContext: appContext), name: nil)
+    appContext.moduleRegistry.register(module: FontUtilsModule(appContext: appContext), name: nil)
+    try await runtime.execute { [runtime] in
+      _ = try runtime.eval(
+        """
+        var FontLoader = expo.modules.ExpoFontLoader;
+        var FontUtils = expo.modules.ExpoFontUtils;
+        // Resolves to the code of the error that rejects the promise, or to 'resolved'.
+        function rejectionCode(promise) {
+          return promise.then(
+            function () {
+              return 'resolved';
+            },
+            function (error) {
+              return String(error.code);
+            }
+          );
+        }
+        """
       )
-    )
-    appContext.moduleRegistry.register(
-      holder: ModuleHolder(
-        appContext: appContext,
-        module: FontUtilsModule(appContext: appContext),
-        name: "ExpoFontUtils"
-      )
-    )
-    _ = try runtime.eval(
-      """
-      var FontLoader = expo.modules.ExpoFontLoader;
-      var FontUtils = expo.modules.ExpoFontUtils;
-      // Resolves to the code of the error that rejects the promise, or to 'resolved'.
-      function rejectionCode(promise) {
-        return promise.then(
-          function () {
-            return 'resolved';
-          },
-          function (error) {
-            return String(error.code);
-          }
-        );
-      }
-      """
-    )
+    }
   }
 
   /// The file URL of a font that ships with the system, so the tests don't need a font fixture.
@@ -63,6 +53,12 @@ struct FontModulesTests {
     return "ExpoFontTest-\(UUID().uuidString)"
   }
 
+  func isLoaded(_ alias: String) async throws -> Bool {
+    try await runtime.execute {
+      try runtime.eval("FontLoader.getLoadedFonts().includes('\(alias)')").asBool()
+    }
+  }
+
   // MARK: - ExpoFontLoader
 
   @Test
@@ -70,9 +66,11 @@ struct FontModulesTests {
     let alias = uniqueAlias()
     let fontUrl = try systemFontUrl()
 
-    _ = try await runtime.evalAsync("FontLoader.loadAsync('\(alias)', '\(fontUrl.absoluteString)')")
+    try await runtime.execute {
+      _ = try await runtime.evalAsync("FontLoader.loadAsync('\(alias)', '\(fontUrl.absoluteString)')")
+    }
 
-    #expect(try runtime.eval("FontLoader.getLoadedFonts().includes('\(alias)')").asBool() == true)
+    #expect(try await isLoaded(alias))
     #expect(!UIFont.fontNames(forFamilyName: alias).isEmpty)
   }
 
@@ -81,44 +79,54 @@ struct FontModulesTests {
     let alias = uniqueAlias()
     let fontUrl = try systemFontUrl()
 
-    _ = try await runtime.evalAsync(
-      """
-      FontLoader.loadFontFamilyAsync('\(alias)', [
-        { localUri: '\(fontUrl.absoluteString)', weight: 400, style: 'normal' },
-      ])
-      """
-    )
+    try await runtime.execute {
+      _ = try await runtime.evalAsync(
+        """
+        FontLoader.loadFontFamilyAsync('\(alias)', [
+          { localUri: '\(fontUrl.absoluteString)', weight: 400, style: 'normal' },
+        ])
+        """
+      )
+    }
 
-    #expect(try runtime.eval("FontLoader.getLoadedFonts().includes('\(alias)')").asBool() == true)
+    #expect(try await isLoaded(alias))
     #expect(!UIFont.fontNames(forFamilyName: alias).isEmpty)
   }
 
   @Test
   func `loadFontFamilyAsync rejects a family without faces`() async throws {
-    let result = try await runtime.evalAsync("rejectionCode(FontLoader.loadFontFamilyAsync('\(uniqueAlias())', []))")
-    #expect(try result.asString() == FontFamilyEmptyFacesException("").code)
+    let alias = uniqueAlias()
+    let code = try await runtime.execute {
+      try await runtime.evalAsync("rejectionCode(FontLoader.loadFontFamilyAsync('\(alias)', []))").asString()
+    }
+    #expect(code == FontFamilyEmptyFacesException("").code)
   }
 
   @Test
   func `loadFontFamilyAsync rejects a face without localUri`() async throws {
-    let result = try await runtime.evalAsync(
-      "rejectionCode(FontLoader.loadFontFamilyAsync('\(uniqueAlias())', [{ weight: 400 }]))"
-    )
-    #expect(try result.asString() == FontFaceMissingUriException("").code)
+    let alias = uniqueAlias()
+    let code = try await runtime.execute {
+      try await runtime.evalAsync(
+        "rejectionCode(FontLoader.loadFontFamilyAsync('\(alias)', [{ weight: 400 }]))"
+      ).asString()
+    }
+    #expect(code == FontFaceMissingUriException("").code)
   }
 
   // MARK: - ExpoFontUtils
 
   @Test
   func `renderToImageAsync resolves to a PNG file and its size`() async throws {
-    let result = try await runtime.evalAsync(
-      """
-      FontUtils.renderToImageAsync('Ag', { size: 32, color: 'red', lineHeight: 40 }).then(function (image) {
-        return [image.uri, image.width, image.height, image.scale].join(' ');
-      })
-      """
-    )
-    let parts = try result.asString().split(separator: " ").map(String.init)
+    let joined = try await runtime.execute {
+      try await runtime.evalAsync(
+        """
+        FontUtils.renderToImageAsync('Ag', { size: 32, color: 'red', lineHeight: 40 }).then(function (image) {
+          return [image.uri, image.width, image.height, image.scale].join(' ');
+        })
+        """
+      ).asString()
+    }
+    let parts = joined.split(separator: " ").map(String.init)
     try #require(parts.count == 4)
 
     let fileUrl = try #require(URL(string: parts[0]))
