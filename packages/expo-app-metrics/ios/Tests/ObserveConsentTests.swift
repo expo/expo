@@ -128,12 +128,16 @@ struct ConsentGatedDefaultsTests {
   func `a setter that reads the gate before the first grant still saves its value`() throws {
     let granted = OSAllocatedUnfairLock(initialState: false)
 
-    try runInSetterGap(granted: granted, set: { $0.set("set-during-grant", forKey: "racing") }) {
-      ConsentGatedDefaults.transitionLock.withLock {
-        ConsentGatedDefaults.saveUnsavedValues()
-        granted.withLock { $0 = true }
+    try runInSetterGap(
+      granted: granted,
+      set: { $0.set("set-during-grant", forKey: "racing") },
+      transition: {
+        ConsentGatedDefaults.transitionLock.withLock {
+          ConsentGatedDefaults.saveUnsavedValues()
+          granted.withLock { $0 = true }
+        }
       }
-    }
+    )
 
     #expect(UserDefaults.standard.persistentDomain(forName: suiteName)?["racing"] as? String == "set-during-grant")
   }
@@ -144,12 +148,16 @@ struct ConsentGatedDefaultsTests {
     let suiteName = suiteName
 
     // The steps of a revoke: close the gate under the lock, then delete the settings.
-    try runInSetterGap(granted: granted, set: { $0.set("set-during-revoke", forKey: "racing") }) {
-      ConsentGatedDefaults.transitionLock.withLock {
-        granted.withLock { $0 = false }
+    try runInSetterGap(
+      granted: granted,
+      set: { $0.set("set-during-revoke", forKey: "racing") },
+      transition: {
+        ConsentGatedDefaults.transitionLock.withLock {
+          granted.withLock { $0 = false }
+        }
+        UserDefaults.standard.removePersistentDomain(forName: suiteName)
       }
-      UserDefaults.standard.removePersistentDomain(forName: suiteName)
-    }
+    )
 
     #expect(UserDefaults.standard.persistentDomain(forName: suiteName)?["racing"] == nil)
   }

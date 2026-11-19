@@ -164,7 +164,10 @@ internal func hasUserContentEntry(privacyManifest: Data?) -> Bool {
 
 /// Applies a consent change to App Metrics. A revoke also deletes the Observe settings, the dispatch
 /// cursors among them.
-func applyConsent(_ consent: ConsentValue, toAppMetrics setAppMetricsConsent: @Sendable (Bool) async throws -> Void) async throws {
+func applyConsent(
+  _ consent: ConsentValue,
+  toAppMetrics setAppMetricsConsent: @Sendable (Bool) async throws -> Void
+) async throws {
   // Also when the save fails, because the revoke still applies. After the gate closes, so nothing
   // saves the settings again.
   defer {
