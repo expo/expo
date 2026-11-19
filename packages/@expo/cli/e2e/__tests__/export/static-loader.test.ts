@@ -415,6 +415,10 @@ describe.each(
           headers: { 'Cache-Control': 'public, max-age=604800' },
         },
         {
+          namedRegex: '^/loaders/revalidate(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=3600' },
+        },
+        {
           namedRegex: '^/loaders/second(?:/)?$',
           headers: { 'Cache-Control': 'private, no-store' },
         },
@@ -425,6 +429,10 @@ describe.each(
         {
           namedRegex: '^/_expo/loaders/loaders/response(?:/)?$',
           headers: { 'Cache-Control': 'public, max-age=604800' },
+        },
+        {
+          namedRegex: '^/_expo/loaders/loaders/revalidate(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=3600' },
         },
         {
           namedRegex: '^/_expo/loaders/loaders/second(?:/)?$',
