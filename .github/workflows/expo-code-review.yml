@@ -203,9 +203,11 @@ jobs:
         run: |
           printf 'Pull request title: %s\n\nPull request body:\n%s\n' "$PR_TITLE" "$PR_BODY" > "$RUNNER_TEMP/pr-description.md"
 
-      # This checkout is the base branch, so a PR cannot change the scope it is checked against.
+      # This checkout is the default branch, so a PR cannot change the scope it is checked
+      # against. If this step fails, the review runs without a sandbox.
       - name: Find files in the autonomous review scope
         id: scope
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           REPO: ${{ github.repository }}
@@ -218,13 +220,13 @@ jobs:
       # the sandbox, and the tools listed here.
       # Minting creates no sandbox. If it fails, the review runs without one.
       # Only the autonomous scope has sandbox rules, so other PRs get no token.
-      # A fork PR gets a sandbox only after a maintainer labels it, even when
-      # AI_REVIEW_FORK_PRS starts its review without a label.
+      # A fork PR gets a sandbox only on the review a maintainer starts with the label.
+      # A later push to a labeled fork PR, which AI_REVIEW_FORK_PRS can review, gets none.
       - name: Mint sandbox token
         if: >-
           steps.scope.outputs.autonomous == 'true'
           && (github.event.pull_request.head.repo.full_name == github.repository
-          || contains(github.event.pull_request.labels.*.name, 'ai-review'))
+          || (github.event.action == 'labeled' && github.event.label.name == 'ai-review'))
         continue-on-error: true
         env:
           EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}

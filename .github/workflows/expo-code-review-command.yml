@@ -293,7 +293,8 @@ jobs:
 
       # The same sandbox as expo-code-review.yml, under the same rules: only for a PR
       # with files in the autonomous scope, and on a fork PR only with the ai-review
-      # label. If this step fails, the review runs without a sandbox.
+      # label. The comment gate admits any collaborator, so a commenter also needs write
+      # access. If this step fails, the review runs without a sandbox.
       - name: Check whether the review gets a sandbox
         id: scope
         if: steps.cmd.outputs.run == 'true'
@@ -302,7 +303,16 @@ jobs:
           GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           REPO: ${{ github.repository }}
           PR: ${{ github.event.issue.number || inputs.pr }}
+          COMMENTER: ${{ github.event.comment.user.login }}
         run: |
+          writer=true
+          if [ -n "$COMMENTER" ]; then
+            case "$(gh api "repos/$REPO/collaborators/$COMMENTER/permission" --jq .permission 2>/dev/null || true)" in
+              admin | maintain | write) ;;
+              *) writer=false ;;
+            esac
+          fi
+          echo "writer=$writer" >> "$GITHUB_OUTPUT"
           bash .github/scripts/ai-review-scope.sh
           gh pr view "$PR" --repo "$REPO" --json isCrossRepository,labels \
             --jq '"fork=\(.isCrossRepository)", "labeled=\(any(.labels[]; .name == "ai-review"))"' >> "$GITHUB_OUTPUT"
@@ -310,6 +320,7 @@ jobs:
       - name: Mint sandbox token
         if: >-
           steps.cmd.outputs.run == 'true'
+          && steps.scope.outputs.writer == 'true'
           && steps.scope.outputs.autonomous == 'true'
           && (steps.scope.outputs.fork == 'false' || steps.scope.outputs.labeled == 'true')
         continue-on-error: true
