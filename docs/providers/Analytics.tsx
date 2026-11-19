@@ -141,14 +141,14 @@ type DocsClickParams = HomeClickParams & {
 
 export function reportDocsClick(params: DocsClickParams) {
   if (isAnalyticsConsented()) {
-    window?.gtag?.('event', 'docs_click', params);
+    window?.gtag?.('event', 'eas_docs_click', params);
     return;
   }
 
   if (getAnalyticsConsentStatus() === 'pending') {
     enqueueAnalyticsEvent({
       type: 'track',
-      args: ['docs_click', params],
+      args: ['eas_docs_click', params],
       timestamp: Date.now(),
     });
   }
@@ -208,9 +208,9 @@ setAnalyticsReplayFn((events: QueuedEvent[]) => {
         window?.gtag?.('event', 'home_click', params);
         break;
       }
-      case 'docs_click': {
+      case 'eas_docs_click': {
         const params = data as Record<string, unknown>;
-        window?.gtag?.('event', 'docs_click', params);
+        window?.gtag?.('event', 'eas_docs_click', params);
         break;
       }
       case 'home_section_view': {
