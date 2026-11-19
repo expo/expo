@@ -27,6 +27,15 @@ struct JavaScriptUnownedValueTests {
   }
 
   @Test
+  func `withUnsafePointee lends the address of the borrowed value`() {
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: 42, "hello")
+    let string = buffer.unownedValue(at: 1).withUnsafePointee { pointer in
+      return JavaScriptUnownedValue(runtime, unsafeValuePointer: pointer).getString()
+    }
+    #expect(string == "hello")
+  }
+
+  @Test
   func `getString preserves non-ASCII, empty and long strings`() {
     let long = String(repeating: "ą", count: 2000)
     let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: "żółć 世界 🎉", "", long)
