@@ -47,7 +47,7 @@ function ExperimentalStackNavigatorContent({
   removeRoutes,
   subscribePopToTopOnParentTabPress,
 }: ExperimentalStackNavigatorContentProps) {
-  const { registry, contextValue } = useCompositionRegistry();
+  const { registry, contextValue } = useCompositionRegistry(state.routes);
 
   const mergedDescriptors = useMemo(
     () => mergeOptions(descriptors, registry, state),

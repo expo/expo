@@ -99,7 +99,7 @@ function NativeStackNavigatorContent({
     }
     return needsNewMap ? result : fullDescriptors;
   }, [fullDescriptors]);
-  const { registry, contextValue } = useCompositionRegistry();
+  const { registry, contextValue } = useCompositionRegistry(computedState.routes);
 
   const mergedDescriptors = React.useMemo(
     () => mergeOptions(finalDescriptors, registry, computedState),
