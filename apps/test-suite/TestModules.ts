@@ -87,11 +87,6 @@ export function getTestModules() {
     modules.push(require('./tests/LinearGradient'));
   }
 
-  // Reads the consent file that only iOS saves.
-  if (Platform.OS === 'ios') {
-    modules.push(require('./tests/ObserveConsent'));
-  }
-
   if (['android', 'ios'].includes(Platform.OS)) {
     modules.push(require('./tests/ExpoUIMeasurement'));
     modules.push(require('./tests/ExpoUIHostSize'));
