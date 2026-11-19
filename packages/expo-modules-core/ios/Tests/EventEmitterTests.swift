@@ -340,6 +340,91 @@ struct EventEmitterTests {
     #expect(try errorMessage(of: "emitter.removeSubscription(subscription)") == "getter error")
   }
 
+  @Test
+  func `calls a listener with the emitter as this`() throws {
+    let result = try runtime.eval([
+      "emitter = new expo.EventEmitter()",
+      "result = null",
+      "emitter.addListener('test', function () { result = this === emitter })",
+      "emitter.emit('test')",
+      "result"
+    ])
+    #expect(try result.asBool() == true)
+  }
+
+  @Test(arguments: [
+    "emitter.addListener(1, () => {})",
+    "emitter.addListener('test', 1)",
+    "emitter.removeListener('test')",
+    "emitter.emit()",
+    "emitter.listenerCount()",
+    "expo.EventEmitter.prototype.emit.call(5, 'test')",
+  ])
+  func `throws for invalid arguments`(code: String) throws {
+    _ = try runtime.eval("emitter = new expo.EventEmitter()")
+    #expect(try errorMessage(of: code) != nil)
+  }
+
+  @Test(arguments: ["{}", "5"])
+  func `creates an emitter when the argument isn't an event emitter`(argument: String) throws {
+    let result = try runtime.eval([
+      "value = \(argument)",
+      "emitter = new expo.EventEmitter(value)",
+      "emitter !== value && emitter instanceof expo.EventEmitter"
+    ])
+    #expect(try result.asBool() == true)
+  }
+
+  @Test
+  func `supports subclasses`() throws {
+    let result = try runtime.eval([
+      "Emitter = class extends expo.EventEmitter {}",
+      "emitter = new Emitter()",
+      "result = 0",
+      "emitter.addListener('test', () => result += 1)",
+      "emitter.emit('test')",
+      "result"
+    ])
+    #expect(try result.asInt() == 1)
+    #expect(try runtime.eval("new Emitter(emitter) === emitter").asBool() == true)
+    #expect(try runtime.eval("emitter instanceof expo.EventEmitter").asBool() == true)
+  }
+
+  @Test
+  func `finds the listeners of an event name built at runtime`() throws {
+    let result = try runtime.eval([
+      "emitter = new expo.EventEmitter()",
+      "result = 0",
+      "emitter.addListener(['te', 'st'].join(''), () => result += 1)",
+      "emitter.emit('test')",
+      "emitter.emit(['t', 'est'].join(''))",
+      "result"
+    ])
+    #expect(try result.asInt() == 2)
+    #expect(try runtime.eval("emitter.listenerCount('test')").asInt() == 1)
+  }
+
+  @Test(arguments: ["new expo.EventEmitter()", "expo.modules.TestModule"])
+  func `adds and calls listeners in an attached runtime`(emitter: String) throws {
+    appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
+      Name("TestModule")
+    })
+    let attachedRuntime = JavaScriptRuntime()
+    try appContext.attach(runtime: attachedRuntime)
+    let result = try attachedRuntime.eval(
+      """
+      (() => {
+        const emitter = \(emitter);
+        let calls = 0;
+        emitter.addListener('test', () => { calls += 1 });
+        emitter.emit('test');
+        return calls * 10 + emitter.listenerCount('test');
+      })()
+      """
+    )
+    #expect(try result.asInt() == 11)
+  }
+
   /// Runs the JS code in a `try` statement, and returns the message of the error that it throws, or `nil`.
   private func errorMessage(of code: String) throws -> String? {
     let message = try runtime.eval("(() => { try { \(code); return null } catch (error) { return error.message } })()")
