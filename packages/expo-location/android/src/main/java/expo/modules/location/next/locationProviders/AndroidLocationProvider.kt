@@ -146,10 +146,7 @@ class AndroidLocationProvider(
   }
 
   override fun getRegisteredTaskConsumerClass(taskManager: TaskManagerInterface, taskName: String): ProviderResult<Class<out TaskConsumer>> {
-    if (!taskManager.taskHasConsumerOfClass(taskName, AndroidLocationTaskConsumer::class.java)) {
-      return ProviderResult.Unavailable
-    }
-    return ProviderResult.Available(AndroidLocationTaskConsumer::class.java)
+    return taskManager.registeredConsumerClass(taskName, AndroidLocationTaskConsumer::class.java)
   }
 
   // On plain android we can only move user to settings.

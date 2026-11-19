@@ -77,6 +77,15 @@ sealed interface ProviderResult<out T> {
   object Unavailable : ProviderResult<Nothing>
   object Unsupported : ProviderResult<Nothing>
 
+  companion object {
+    fun <T> availableIf(condition: Boolean, value: T): ProviderResult<T> {
+      if (!condition) {
+        return Unavailable
+      }
+      return Available(value)
+    }
+  }
+
   fun getOrThrow(operationName: String): T = when (this) {
     is Available -> value
     Unavailable -> throw OperationUnavailableException(operationName)
@@ -116,14 +125,19 @@ interface LocationProvider {
   // being called with payload.requestCode == SETTINGS_REQUEST_CODE
   suspend fun enableLocationServices(activity: Activity): ProviderResult<EnableLocationServicesResult> = ProviderResult.Unsupported
 
-  // This class must have (Context, TaskManagerUtilsInterface?) constructor as it will be constructed like this by TaskManager.
+  // The returned consumer classes must have a (Context, TaskManagerUtilsInterface?) constructor, because TaskManager constructs them that way.
   fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> = ProviderResult.Unsupported
-
   fun getRegisteredTaskConsumerClass(taskManager: TaskManagerInterface, taskName: String): ProviderResult<Class<out TaskConsumer>> = ProviderResult.Unsupported
 
   fun getGeofencingTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> = ProviderResult.Unsupported
-
   fun getRegisteredGeofencingTaskConsumerClass(taskManager: TaskManagerInterface, taskName: String): ProviderResult<Class<out TaskConsumer>> = ProviderResult.Unsupported
+}
+
+fun TaskManagerInterface.registeredConsumerClass(taskName: String, consumerClass: Class<out TaskConsumer>): ProviderResult<Class<out TaskConsumer>> {
+  return ProviderResult.availableIf(
+    condition = taskHasConsumerOfClass(taskName, consumerClass),
+    value = consumerClass
+  )
 }
 
 class OperationUnavailableException(functionName: String) : CodedException("$functionName is currently unavailable")

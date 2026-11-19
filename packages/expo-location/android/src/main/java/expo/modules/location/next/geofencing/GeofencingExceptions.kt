@@ -23,6 +23,6 @@ class GeofencingPreciseLocationNotGranted :
 
 class GeofencingUnsupported :
   CodedException(
-    "Geofencing needs Google Play services, which are not available on this device, so the regions " +
-      "cannot be monitored"
+    "The selected location provider cannot monitor regions. On Android, geofencing needs Google Play " +
+      "services, so select the Gms or the Fallback provider on a device that has them"
   )
