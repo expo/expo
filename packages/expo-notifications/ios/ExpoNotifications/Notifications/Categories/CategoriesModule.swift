@@ -33,13 +33,13 @@ actor CategoryManager {
     updateCategories(incoming)
   }
 
-  func updateCategories(
+  func replaceCategories(
     _ records: [CategoryRecord],
-    merging merge: @Sendable (Set<UNNotificationCategory>, Set<UNNotificationCategory>) -> Set<UNNotificationCategory>
+    replacing replaces: @Sendable (String) -> Bool
   ) async throws {
     let incoming = try validatedCategories(records)
-    let current = await loadCategories()
-    updateCategories(merge(current, incoming))
+    let kept = await loadCategories().filter { !replaces($0.identifier) }
+    updateCategories(kept.union(incoming))
   }
 
   private func loadCategories() async -> Set<UNNotificationCategory> {
@@ -99,11 +99,11 @@ open class CategoriesModule: Module {
     try await categoryManager.setCategories(categories)
   }
 
-  public final func updateNotificationCategories(
+  public final func replaceNotificationCategories(
     _ categories: [CategoryRecord],
-    merging merge: @Sendable (Set<UNNotificationCategory>, Set<UNNotificationCategory>) -> Set<UNNotificationCategory>
+    replacing replaces: @Sendable (String) -> Bool
   ) async throws {
-    try await categoryManager.updateCategories(categories, merging: merge)
+    try await categoryManager.replaceCategories(categories, replacing: replaces)
   }
 
   open func setNotificationCategoryAsync(identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?) async -> CategoryRecord {
