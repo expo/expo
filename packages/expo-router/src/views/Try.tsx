@@ -2,6 +2,7 @@
 
 import { Component, type ComponentType, type PropsWithChildren } from 'react';
 
+import { retryLoaderError } from '../loaders/LoaderRuntime';
 import { MetroServerError } from '../rsc/router/errors';
 import * as SplashScreen from './Splash';
 
@@ -35,6 +36,7 @@ export class Try extends Component<
   }
 
   retry = () => {
+    retryLoaderError(this.state.error);
     return new Promise<void>((resolve) => {
       this.setState({ error: undefined }, () => {
         resolve();

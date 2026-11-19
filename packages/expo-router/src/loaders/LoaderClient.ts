@@ -9,7 +9,7 @@ export class LoaderClient {
 
   constructor(private fetcher: LoaderFetcher = fetchLoader) {}
 
-  start(path: string, onSettle: (result: LoaderResult) => void) {
+  start(path: string, onSettle: (result: LoaderResult) => void, init?: RequestInit) {
     const previous = this.requests.get(path);
     const request = new AbortController();
     this.requests.set(path, request);
@@ -19,7 +19,7 @@ export class LoaderClient {
 
     let promise: Promise<unknown>;
     try {
-      promise = this.fetcher(path, { signal: request.signal });
+      promise = this.fetcher(path, { ...init, signal: request.signal });
     } catch (error) {
       promise = Promise.reject(error);
     }

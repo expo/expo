@@ -1,4 +1,9 @@
-import { activeLoaderRuntimes, LoaderRuntime, ROOT_LOADER_OWNER } from '../LoaderRuntime';
+import {
+  activeLoaderRuntimes,
+  LoaderRuntime,
+  ROOT_LOADER_OWNER,
+  retryLoaderError,
+} from '../LoaderRuntime';
 
 afterEach(() => {
   delete globalThis.__EXPO_ROUTER_LOADER_DATA__;
@@ -157,7 +162,8 @@ describe(LoaderRuntime, () => {
       error: new Error('Failed to load loader data for route: /p', { cause }),
     });
     await Promise.resolve();
-    expect(runtime.peek('/p')).toBeUndefined();
+    expect(() => read.get()).toThrow('Failed to load loader data for route: /p');
+    retryLoaderError(Reflect.get(runtime.peek('/p')!, 'error'));
     const retry = runtime.read('one', '/p');
     await retry.ready;
 
@@ -175,7 +181,7 @@ describe(LoaderRuntime, () => {
     expect(() => read.get()).toThrow('Failed to load loader data for route: /p');
   });
 
-  it('can refresh an error after its deferred eviction', async () => {
+  it('can refresh a retained error', async () => {
     const fetcher = jest
       .fn<Promise<unknown>, [string, RequestInit]>()
       .mockRejectedValueOnce(new Error('offline'))
