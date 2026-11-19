@@ -8,7 +8,6 @@ class SplashScreenManager: NSObject, RCTReloadListener {
   private var rootView: UIView?
   private var options = SplashScreenOptions()
   var preventAutoHideCalled = false
-  private var launchScreenCaptured = false
 
   private override init() {}
 
@@ -20,7 +19,7 @@ class SplashScreenManager: NSObject, RCTReloadListener {
     self.rootView = rootView
     let prerender = SplashScreenPrerender.shared()
     prerender.setAppRootView(rootView)
-    if !prerender.hasTemplate() {
+    if !prerender.isShown {
       showSplashScreen()
     }
     NotificationCenter.default.addObserver(
@@ -49,10 +48,9 @@ class SplashScreenManager: NSObject, RCTReloadListener {
     let prerender = SplashScreenPrerender.shared()
     let fadeDuration = options.fade ? options.duration / 1000 : 0
     prerender.dismiss(withFadeDuration: fadeDuration)
-    if prerender.isEnabled && !launchScreenCaptured {
+    if prerender.isEnabled {
       // The screen that replaces the splash is, by definition, the one to prerender next time.
       // Capture it once it has settled behind the fade.
-      launchScreenCaptured = true
       prerender.captureLaunchScreen(afterDelay: fadeDuration + 0.25)
     }
     DispatchQueue.main.async { [weak self] in

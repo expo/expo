@@ -1,6 +1,58 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "SplashScreenPrerender.h"
+
+#import <TargetConditionals.h>
+
+#if TARGET_OS_TV
+
+// tvOS has no prerender. The snapshot code uses UIKit colors that tvOS does not have.
+@implementation SplashScreenPrerender
+
++ (instancetype)shared
+{
+  static SplashScreenPrerender *instance;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    instance = [SplashScreenPrerender new];
+  });
+  return instance;
+}
+
+- (BOOL)isShown
+{
+  return NO;
+}
+
+- (void)mountIfPrepared
+{
+}
+
+- (void)showInWindowScene:(UIWindowScene *)windowScene
+{
+}
+
+- (void)dismissWithFadeDuration:(NSTimeInterval)duration
+{
+}
+
+- (BOOL)isPrerenderRootView:(UIView *)view
+{
+  return NO;
+}
+
+- (void)setAppRootView:(nullable UIView *)rootView
+{
+}
+
+- (void)captureLaunchScreenAfterDelay:(NSTimeInterval)delay
+{
+}
+
+@end
+
+#else
+
 #import "SplashScreenSnapshot.h"
 
 #import <CoreText/CoreText.h>
@@ -9,8 +61,6 @@
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTParagraphComponentView.h>
-#import <React/RCTSafeAreaViewComponentView.h>
-#import <React/RCTScrollViewComponentView.h>
 #import <React/RCTViewComponentView.h>
 #import <React/RCTUtils.h>
 
@@ -41,6 +91,15 @@ namespace {
 
 // Root tags end in 1; this one is far above anything React allocates.
 const SurfaceId kSurfaceId = 900001;
+
+// Increment when the snapshot format changes. A rebuild with the same build number keeps old snapshots.
+NSNumber *const kSnapshotFormat = @2;
+
+NSString *appBuild()
+{
+  NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
+  return [NSString stringWithFormat:@"%@ %@", info[@"CFBundleShortVersionString"], info[@"CFBundleVersion"]];
+}
 
 /**
  Builds shadow nodes from a template node `{ "name": "View", "props": {...}, "children": [...] }`.
@@ -143,7 +202,11 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   UIWindow *_window;
   CFTimeInterval _loadTime;
   NSDictionary<NSString *, NSString *> *_snapshotFonts;
+  NSDictionary *_snapshotEnvironment;
   __weak UIView *_appRootView;
+  BOOL _dismissed;
+  BOOL _capturePending;
+  BOOL _captured;
 }
 
 + (instancetype)shared
@@ -192,6 +255,8 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
  `RCTReactNativeFactory` overrides them in its init, inside `didFinishLaunching`, and the renderer
  reads them everywhere. Running the factory's one-time setup here, with the release level it would
  use, lets the renderer run before the factory exists; the factory's later call is then a no-op.
+ The later call raises an exception when its release level is different. An app that creates
+ `RCTReactNativeFactory` with a release level must set the same level in `ReactNativeReleaseLevel`.
  */
 - (BOOL)setUpFeatureFlagsEarly
 {
@@ -208,14 +273,16 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 
 - (void)prepare
 {
-  if (_prepared || ![self setUpFeatureFlagsEarly]) {
+  if (_prepared) {
+    return;
+  }
+  // The feature flags are set up only when there is a snapshot to draw.
+  if (![[NSFileManager defaultManager] fileExistsAtPath:[self snapshotURL].path] || ![self setUpFeatureFlagsEarly]) {
+    [self log:@"no snapshot for this launch"];
     return;
   }
   _prepared = dispatch_group_create();
   dispatch_group_enter(_prepared);
-  _bounds = UIScreen.mainScreen.bounds;
-  CGFloat scale = UIScreen.mainScreen.scale;
-  CGRect bounds = _bounds;
   LayoutDirection layoutDirection =
       [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:UISemanticContentAttributeUnspecified] ==
           UIUserInterfaceLayoutDirectionRightToLeft
@@ -223,21 +290,26 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
       : LayoutDirection::LeftToRight;
 
   dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
-    [self prepareWithBounds:bounds scale:scale layoutDirection:layoutDirection];
+    [self prepareWithLayoutDirection:layoutDirection];
     dispatch_group_leave(self->_prepared);
   });
 }
 
-- (void)prepareWithBounds:(CGRect)bounds scale:(CGFloat)scale layoutDirection:(LayoutDirection)layoutDirection
+/// Background thread. The main thread reads what this writes only after `_prepared` is done.
+- (void)prepareWithLayoutDirection:(LayoutDirection)layoutDirection
 {
   NSDictionary *json = [self loadTemplate];
   if (!json) {
-    // First launch, or the snapshot does not match this launch.
     [self log:@"no snapshot for this launch"];
     return;
   }
   folly::dynamic templateDynamic = convertIdToFollyDynamic(json);
   [self registerFontsUsedByTemplate:templateDynamic];
+
+  // The layout uses the size and the scale of the snapshot. `showInWindowScene:` compares them with the window.
+  CGRect bounds = CGRectMake(0, 0, [_snapshotEnvironment[@"width"] doubleValue], [_snapshotEnvironment[@"height"] doubleValue]);
+  CGFloat scale = [_snapshotEnvironment[@"scale"] doubleValue];
+  _bounds = bounds;
 
   auto contextContainer = std::make_shared<ContextContainer>();
   _contextContainer = contextContainer;
@@ -269,14 +341,10 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
     // mounting manager can only create views for classes it has registered.
     RCTComponentViewFactory *viewFactory = [RCTComponentViewFactory currentComponentViewFactory];
     [viewFactory registerComponentViewClass:[RCTViewComponentView class]];
-    [viewFactory registerComponentViewClass:[RCTScrollViewComponentView class]];
-    [viewFactory registerComponentViewClass:[RCTSafeAreaViewComponentView class]];
 
     auto providerRegistry = std::make_shared<ComponentDescriptorProviderRegistry>();
     providerRegistry->add([RCTViewComponentView componentDescriptorProvider]);
     providerRegistry->add([RCTParagraphComponentView componentDescriptorProvider]);
-    providerRegistry->add([RCTScrollViewComponentView componentDescriptorProvider]);
-    providerRegistry->add([RCTSafeAreaViewComponentView componentDescriptorProvider]);
     providerRegistry->add(concreteComponentDescriptorProvider<TextComponentDescriptor>());
     providerRegistry->add(concreteComponentDescriptorProvider<RawTextComponentDescriptor>());
     _providerRegistry = providerRegistry;
@@ -299,37 +367,39 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 
 #pragma mark - Snapshot file
 
-/// Where the snapshot of the last launch's first screen lives: `Application Support/expo-splash-screen`.
+/// Where the snapshot of the last launch's first screen lives: `Caches/expo-splash-screen`.
+/// The file is a cache: the system does not back it up and can delete it.
 - (NSURL *)snapshotURL
 {
-  NSURL *support = [[NSFileManager defaultManager] URLForDirectory:NSApplicationSupportDirectory
-                                                          inDomain:NSUserDomainMask
-                                                 appropriateForURL:nil
-                                                            create:NO
-                                                             error:nil];
-  return [[support URLByAppendingPathComponent:@"expo-splash-screen" isDirectory:YES]
+  NSURL *caches = [[NSFileManager defaultManager] URLForDirectory:NSCachesDirectory
+                                                         inDomain:NSUserDomainMask
+                                                appropriateForURL:nil
+                                                           create:NO
+                                                            error:nil];
+  return [[caches URLByAppendingPathComponent:@"expo-splash-screen" isDirectory:YES]
       URLByAppendingPathComponent:@"launch-snapshot.json"];
 }
 
 /**
  What a snapshot was taken under. A snapshot replays only when all of it still matches: frames are
  absolute, so a different window, text size or appearance would draw the wrong screen.
+ The capture and `showInWindowScene:` both read the traits of the window scene.
  */
-- (NSDictionary *)environmentKeyForTraits:(UITraitCollection *)traits bounds:(CGRect)bounds scale:(CGFloat)scale
+- (NSDictionary *)environmentKeyForSize:(CGSize)size windowScene:(UIWindowScene *)windowScene
 {
-  NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
+  UITraitCollection *traits = windowScene.traitCollection;
   return @{
-    @"width" : @(bounds.size.width),
-    @"height" : @(bounds.size.height),
-    @"scale" : @(scale),
+    @"width" : @(size.width),
+    @"height" : @(size.height),
+    @"scale" : @(windowScene.screen.scale),
     @"appearance" : @(traits.userInterfaceStyle),
     @"contentSize" : traits.preferredContentSizeCategory ?: @"",
-    @"build" : [NSString stringWithFormat:@"%@ %@", info[@"CFBundleShortVersionString"], info[@"CFBundleVersion"]],
-    // Increment when the snapshot format changes. A rebuild with the same build number keeps old snapshots.
-    @"format" : @1,
+    @"build" : appBuild(),
+    @"format" : kSnapshotFormat,
   };
 }
 
+/// Background thread. Uses no UIKit state: the window is compared in `showInWindowScene:`.
 - (nullable NSDictionary *)loadTemplate
 {
   NSURL *snapshotURL = [self snapshotURL];
@@ -340,14 +410,13 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
     return nil;
   }
   id snapshot = [NSJSONSerialization JSONObjectWithData:snapshotData options:0 error:nil];
-  NSDictionary *expected = [self environmentKeyForTraits:UIScreen.mainScreen.traitCollection
-                                                  bounds:UIScreen.mainScreen.bounds
-                                                   scale:UIScreen.mainScreen.scale];
-  if (![snapshot isKindOfClass:[NSDictionary class]] || ![snapshot[@"environment"] isEqualToDictionary:expected] ||
-      ![snapshot[@"template"] isKindOfClass:[NSDictionary class]]) {
-    [self log:@"snapshot does not match this environment"];
+  NSDictionary *environment = [snapshot isKindOfClass:[NSDictionary class]] ? snapshot[@"environment"] : nil;
+  if (![environment isKindOfClass:[NSDictionary class]] || ![environment[@"build"] isEqual:appBuild()] ||
+      ![environment[@"format"] isEqual:kSnapshotFormat] || ![snapshot[@"template"] isKindOfClass:[NSDictionary class]]) {
+    [self log:@"snapshot does not match this build"];
     return nil;
   }
+  _snapshotEnvironment = environment;
   _snapshotFonts = [snapshot[@"fonts"] isKindOfClass:[NSDictionary class]] ? snapshot[@"fonts"] : nil;
   return snapshot[@"template"];
 }
@@ -361,49 +430,66 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 
 - (void)captureLaunchScreenAfterDelay:(NSTimeInterval)delay
 {
+  if (_captured || _capturePending) {
+    return;
+  }
+  _capturePending = YES;
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    self->_capturePending = NO;
     [self saveLaunchScreen];
   });
 }
 
 /**
  Serializes what is on screen in the app's root view, with the frames UIKit resolved, and stores it
- in the app container for the next launch.
+ in the Caches directory for the next launch.
  */
 - (void)saveLaunchScreen
 {
   RCTAssertMainQueue();
   UIView *rootView = _appRootView;
-  if (!_isEnabled || !rootView || !rootView.window) {
+  UIWindowScene *windowScene = rootView.window.windowScene;
+  if (!_isEnabled || !rootView || !windowScene) {
     return;
   }
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSURL *url = [self snapshotURL];
+  // The marker file stays when the capture crashes. This build then does not capture again,
+  // so a crash in the capture cannot repeat on every launch.
+  NSURL *markerURL = [url.URLByDeletingLastPathComponent URLByAppendingPathComponent:@"capture-started"];
+  NSString *build = appBuild();
+  if ([[NSString stringWithContentsOfURL:markerURL encoding:NSUTF8StringEncoding error:nil] isEqualToString:build]) {
+    _captured = YES;
+    [self log:@"snapshot: skipped, the last capture of this build did not finish"];
+    return;
+  }
+  [fileManager createDirectoryAtURL:url.URLByDeletingLastPathComponent withIntermediateDirectories:YES attributes:nil error:nil];
+  [build writeToURL:markerURL atomically:NO encoding:NSUTF8StringEncoding error:nil];
+
+  CFTimeInterval start = CACurrentMediaTime();
   int budget = 5000;
   bool debug = [[NSUserDefaults standardUserDefaults] boolForKey:@"ExpoSplashScreenPrerenderLog"];
   folly::dynamic templateDynamic = expo::serializeSplashScreenSnapshot(rootView, budget, debug);
   if (templateDynamic.isNull() || templateDynamic["children"].empty()) {
+    [fileManager removeItemAtURL:markerURL error:nil];
     [self log:@"snapshot: nothing on screen"];
     return;
   }
   templateDynamic["props"].erase("position");
   templateDynamic["props"].erase("left");
   templateDynamic["props"].erase("top");
-  NSDictionary *environment = [self environmentKeyForTraits:rootView.traitCollection
-                                                     bounds:UIScreen.mainScreen.bounds
-                                                      scale:UIScreen.mainScreen.scale];
-  NSURL *url = [self snapshotURL];
   NSDictionary *fonts = [[self class] fontFilesForFamilies:[[self class] fontFamiliesUsedByTemplate:templateDynamic]];
   NSDictionary *snapshot = @{
-    @"environment" : environment,
+    @"environment" : [self environmentKeyForSize:rootView.bounds.size windowScene:windowScene],
     @"fonts" : fonts,
     @"template" : convertFollyDynamicToId(templateDynamic)
   };
-  [self log:[NSString stringWithFormat:@"snapshot serialized (%d views)", 5000 - budget]];
+  [fileManager removeItemAtURL:markerURL error:nil];
+  _captured = YES;
+  [self log:[NSString stringWithFormat:@"snapshot serialized (%d views) in %.1f ms", 5000 - budget,
+                                       (CACurrentMediaTime() - start) * 1000.0]];
   dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
     NSData *data = [NSJSONSerialization dataWithJSONObject:snapshot options:0 error:nil];
-    [[NSFileManager defaultManager] createDirectoryAtURL:url.URLByDeletingLastPathComponent
-                             withIntermediateDirectories:YES
-                                              attributes:nil
-                                                   error:nil];
     BOOL written = [data writeToURL:url options:NSDataWritingAtomic | NSDataWritingFileProtectionComplete error:nil];
     [self log:[NSString stringWithFormat:@"snapshot %@ (%lu bytes)", written ? @"saved" : @"not saved", (unsigned long)data.length]];
   });
@@ -462,54 +548,31 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 {
   NSSet<NSString *> *families = [[self class] fontFamiliesUsedByTemplate:node];
   for (NSString *family in families) {
-    if ([UIFont fontNamesForFamilyName:family].count > 0) {
+    NSString *file = _snapshotFonts[family];
+    if (!file || [UIFont fontNamesForFamilyName:family].count > 0) {
       continue;
     }
-    NSString *knownFile = _snapshotFonts[family];
-    if (knownFile) {
-      NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle].bundlePath stringByAppendingString:knownFile]];
-      bool registered = CTFontManagerRegisterFontsForURL((__bridge CFURLRef)url, kCTFontManagerScopeProcess, NULL);
-      [self log:[NSString stringWithFormat:@"font %@ %@ from %@", family, registered ? @"registered" : @"not registered", knownFile]];
-      if (registered) {
-        continue;
-      }
-    }
-    NSDirectoryEnumerator *files = [[NSFileManager defaultManager] enumeratorAtURL:[NSBundle mainBundle].bundleURL
-                                                        includingPropertiesForKeys:nil
-                                                                           options:NSDirectoryEnumerationSkipsHiddenFiles
-                                                                      errorHandler:nil];
-    for (NSURL *url in files) {
-      NSString *extension = url.pathExtension.lowercaseString;
-      if (([extension isEqualToString:@"ttf"] || [extension isEqualToString:@"otf"]) &&
-          [url.lastPathComponent.stringByDeletingPathExtension caseInsensitiveCompare:family] == NSOrderedSame) {
-        CFErrorRef error = NULL;
-        bool registered = CTFontManagerRegisterFontsForURL((__bridge CFURLRef)url, kCTFontManagerScopeProcess, &error);
-        [self log:[NSString stringWithFormat:@"font %@ %@", family, registered ? @"registered" : @"not registered"]];
-        if (error) CFRelease(error);
-        break;
-      }
-    }
+    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle].bundlePath stringByAppendingString:file]];
+    bool registered = CTFontManagerRegisterFontsForURL((__bridge CFURLRef)url, kCTFontManagerScopeProcess, NULL);
+    [self log:[NSString stringWithFormat:@"font %@ %@ from %@", family, registered ? @"registered" : @"not registered", file]];
   }
 }
 
 #pragma mark - Main thread
 
-- (BOOL)hasTemplate
+- (BOOL)isShown
 {
-  if (!_prepared) {
-    return NO;
-  }
-  dispatch_group_wait(_prepared, dispatch_time(DISPATCH_TIME_NOW, 50 * NSEC_PER_MSEC));
-  return _preparedRoot != nullptr || _containerView != nil;
+  return _window != nil;
 }
 
 - (void)mountIfPrepared
 {
   RCTAssertMainQueue();
   [self log:_containerView ? @"mountIfPrepared (already mounted)" : @"mountIfPrepared"];
-  if (_containerView || !_prepared) {
+  if (_containerView || !_prepared || _dismissed) {
     return;
   }
+  // `_preparedRoot` and the other objects of the preparation are read only after the group is done.
   if (dispatch_group_wait(_prepared, dispatch_time(DISPATCH_TIME_NOW, 50 * NSEC_PER_MSEC)) != 0 || !_preparedRoot) {
     return;
   }
@@ -537,6 +600,12 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   [self log:@"scene connect"];
   [self mountIfPrepared];
   if (!_containerView || _window) {
+    return;
+  }
+  NSDictionary *expected = [self environmentKeyForSize:windowScene.coordinateSpace.bounds.size windowScene:windowScene];
+  if (![_snapshotEnvironment isEqualToDictionary:expected]) {
+    [self log:[NSString stringWithFormat:@"snapshot does not match this window: %@ is not %@", _snapshotEnvironment, expected]];
+    [self dismiss];
     return;
   }
   UIWindow *window = [[UIWindow alloc] initWithWindowScene:windowScene];
@@ -592,13 +661,20 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   _window.hidden = YES;
   _window = nil;
   _containerView = nil;
-  _preparedRoot = nullptr;
-  _tree.reset();
-  _treeDelegate.reset();
-  _mountingManager = nil;
-  _registry.reset();
-  _providerRegistry.reset();
-  _contextContainer.reset();
+  _dismissed = YES;
+  if (!_prepared) {
+    return;
+  }
+  // The background preparation can still run when a wait for it timed out. Release its objects after it is done.
+  dispatch_group_notify(_prepared, dispatch_get_main_queue(), ^{
+    self->_preparedRoot = nullptr;
+    self->_tree.reset();
+    self->_treeDelegate.reset();
+    self->_mountingManager = nil;
+    self->_registry.reset();
+    self->_providerRegistry.reset();
+    self->_contextContainer.reset();
+  });
 }
 
 - (BOOL)isPrerenderRootView:(UIView *)view
@@ -607,3 +683,5 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 }
 
 @end
+
+#endif // TARGET_OS_TV

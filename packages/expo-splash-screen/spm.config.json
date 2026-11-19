@@ -13,6 +13,22 @@
       ],
       "targets": [
         {
+          "type": "objc",
+          "name": "ExpoSplashScreen_ios_objc",
+          "moduleName": "ExpoSplashScreen",
+          "path": "ios",
+          "pattern": "**/*.mm",
+          "headerPattern": "**/*.h",
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React",
+            "Hermes",
+            "expo-modules-core/ExpoModulesCore"
+          ],
+          "linkedFrameworks": ["Foundation", "UIKit", "CoreText"],
+          "includeDirectories": ["."]
+        },
+        {
           "type": "swift",
           "name": "ExpoSplashScreen",
           "path": "ios",
@@ -21,7 +37,8 @@
             "Hermes",
             "React",
             "ReactNativeDependencies",
-            "expo-modules-core/ExpoModulesCore"
+            "expo-modules-core/ExpoModulesCore",
+            "ExpoSplashScreen_ios_objc"
           ],
           "linkedFrameworks": ["Foundation", "UIKit"]
         }

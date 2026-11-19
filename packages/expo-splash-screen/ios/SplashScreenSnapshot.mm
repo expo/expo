@@ -1,12 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import <TargetConditionals.h>
+
+#if !TARGET_OS_TV
+
 #import "SplashScreenSnapshot.h"
 
 #import <objc/runtime.h>
 
 #import <React/RCTParagraphComponentView.h>
-#import <React/RCTSafeAreaViewComponentView.h>
-#import <React/RCTScrollViewComponentView.h>
 #import <React/RCTViewComponentView.h>
 
 #import <react/renderer/attributedstring/conversions.h>
@@ -145,10 +147,16 @@ void serializeViewProps(const ViewProps &props, const LayoutMetrics &metrics, fo
   }
 }
 
-const LayoutMetrics &layoutMetricsOf(RCTViewComponentView *view)
+/// NULL when React Native renames or removes the ivar. The capture must not run then.
+Ivar layoutMetricsIvar()
 {
   static Ivar ivar = class_getInstanceVariable([RCTViewComponentView class], "_layoutMetrics");
-  return *(const LayoutMetrics *)((const char *)(__bridge const void *)view + ivar_getOffset(ivar));
+  return ivar;
+}
+
+const LayoutMetrics &layoutMetricsOf(RCTViewComponentView *view)
+{
+  return *(const LayoutMetrics *)((const char *)(__bridge const void *)view + ivar_getOffset(layoutMetricsIvar()));
 }
 
 /**
@@ -341,7 +349,12 @@ namespace expo {
 
 folly::dynamic serializeSplashScreenSnapshot(UIView *rootView, int &budget, bool debug)
 {
+  if (!layoutMetricsIvar()) {
+    return nullptr;
+  }
   return serializeView(rootView, rootView, rootView.bounds, 0, budget, debug, Scope{});
 }
 
 } // namespace expo
+
+#endif // !TARGET_OS_TV
