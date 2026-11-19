@@ -85,6 +85,7 @@ after(() => {
 });
 
 type Run = {
+  result?: Awaited<ReturnType<typeof backportAsync>>;
   error?: unknown;
   comments: string[];
   log: string;
@@ -103,12 +104,13 @@ async function backport(
     },
   };
   try {
-    await backportAsync({
+    run.result = await backportAsync({
       repoDir: clone,
       prNumber,
       sdkVersion,
       mergeSha,
       baseBranch: 'main',
+      author: 'octocat',
       dryRun: false,
       github,
       log: (message) => {
@@ -275,6 +277,23 @@ exec "${REAL_GIT}" "$@"
     }
   }
 
+  /** Runs `fn` with a `git` on PATH that fails each call of `command`. */
+  async function withGitFailing(command: string, fn: () => Promise<void>): Promise<void> {
+    const bin = fs.mkdtempSync(path.join(root, 'bin-'));
+    fs.writeFileSync(
+      path.join(bin, 'git'),
+      `#!/bin/sh\ncase " $* " in *" ${command} "*) exit 1 ;; esac\nexec "${REAL_GIT}" "$@"\n`,
+      { mode: 0o755 }
+    );
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${bin}${path.delimiter}${originalPath}`;
+    try {
+      await fn();
+    } finally {
+      process.env.PATH = originalPath;
+    }
+  }
+
   it('counts the push as done when the remote took it but git exited with an error', async () => {
     const before = createTargetBranch('sdk-66', 'sdk-90');
     await withGitOnPush('sdk-66', `"${REAL_GIT}" "$@"; exit 1`, async () => {
@@ -319,7 +338,7 @@ exec "${REAL_GIT}" "$@"
     assertNoTemporaryWorktree();
   });
 
-  it('pushes nothing and comments the manual steps when sdk-NN drops .changeset/config.json during the run', async () => {
+  it('pushes nothing and returns what to rebuild when sdk-NN drops .changeset/config.json during the run', async () => {
     const before = createTargetBranch('sdk-69', 'sdk-90');
     const seed = path.join(root, 'seed');
     git(seed, 'checkout', '-q', '--detach', before);
@@ -333,11 +352,15 @@ exec "${REAL_GIT}" "$@"
       async () => {
         const run = await backport(45, 69, shas.changeset);
 
-        assert.ok(run.error);
+        assert.equal(run.error, undefined);
         assert.equal(remoteBranch('sdk-69'), withoutConfig);
-        assert.equal(run.comments.length, 1);
-        assert.match(run.comments[0], /has no `\.changeset\/config\.json`/);
-        assert.match(run.comments[0], new RegExp(`git cherry-pick -x ${shas.changeset}`));
+        assert.deepEqual(run.comments, []);
+        assert.deepEqual(run.result, {
+          sdk: 69,
+          branch: 'sdk-69',
+          packages: ['expo-foo'],
+          dirs: ['packages/expo-foo'],
+        });
         assertNoTemporaryWorktree();
       }
     );
@@ -407,18 +430,201 @@ exec "${REAL_GIT}" "$@"
     });
   });
 
-  it('pushes nothing and comments the manual steps on a branch without .changeset/config.json', async () => {
+  it('pushes nothing, comments nothing, and returns the changed packages to rebuild on a branch without .changeset/config.json', async () => {
     const before = createTargetBranch('sdk-63', 'sdk-91');
     const run = await backport(45, 63, shas.changeset);
 
-    assert.ok(run.error);
-    assert.equal(remoteBranch('bot/sdk-63-cherry-pick-45'), null);
+    assert.equal(run.error, undefined);
     assert.equal(remoteBranch('sdk-63'), before);
+    assert.deepEqual(run.comments, []);
+    assert.deepEqual(run.result, {
+      sdk: 63,
+      branch: 'sdk-63',
+      packages: ['expo-foo'],
+      dirs: ['packages/expo-foo'],
+    });
+    assertNoTemporaryWorktree();
+  });
+
+  it('comments the CHANGELOG and rebuild steps when the cherry-pick conflicts on a branch without .changeset/config.json', async () => {
+    createTargetBranch('sdk-77', 'sdk-91');
+    const run = await backport(1, 77, shas.conflict);
+
     assert.equal(run.comments.length, 1);
-    assert.match(run.comments[0], /git checkout sdk-63/);
-    assert.match(run.comments[0], new RegExp(`git cherry-pick -x ${shas.changeset}`));
-    assert.match(run.comments[0], /build\/.*rebuil|rebuil.*build\//i);
-    assert.match(run.comments[0], /git push/);
+    assert.match(run.comments[0], /has conflicts[\s\S]*rebuild the `build\/` output/);
+  });
+
+  it('pushes the cherry-pick on a branch without .changeset/config.json when it changes no package', async () => {
+    const before = createTargetBranch('sdk-76', 'sdk-91');
+    const docsSha = commitOnMain({ 'docs.md': 'docs\n' }, 'Add docs (#57)');
+    const run = await backport(57, 76, docsSha);
+
+    assert.equal(run.error, undefined);
+    assert.equal(run.result, undefined);
+    const tip = remoteBranch('sdk-76');
+    assert.ok(tip);
+    assert.equal(git(origin, 'rev-parse', `${tip}^`), before);
+    assert.deepEqual(run.comments, [`#57 Backported to \`sdk-76\` as ${tip}`]);
+  });
+
+  describe('with the rebuilt build/ patch', () => {
+    const BUILD_PATCH = `diff --git a/packages/expo-foo/build/index.js b/packages/expo-foo/build/index.js
+new file mode 100644
+--- /dev/null
++++ b/packages/expo-foo/build/index.js
+@@ -0,0 +1 @@
++export const foo = 1;
+`;
+
+    function writePatch(content: string): string {
+      const file = path.join(fs.mkdtempSync(path.join(root, 'patch-')), 'build.patch');
+      fs.writeFileSync(file, content);
+      return file;
+    }
+
+    function assertBackportWithRebuild(tip: string, parent: string) {
+      assert.equal(git(origin, 'log', '-1', '--format=%s', tip), 'Rebuild build/');
+      assert.equal(git(origin, 'rev-parse', `${tip}~2`), parent);
+      assert.match(
+        git(origin, 'diff', '--name-only', parent, `${tip}^`),
+        /^packages\/expo-foo\/CHANGELOG\.md$/m
+      );
+    }
+
+    it('pushes the cherry-pick with CHANGELOG entries and a "Rebuild build/" commit on top in one push', async () => {
+      const before = createTargetBranch('sdk-72', 'sdk-91');
+      await withCommitsLandingBeforePush('sdk-72', 0, async (pushAttempts) => {
+        const run = await backport(45, 72, shas.changeset, {
+          buildPatch: writePatch(BUILD_PATCH),
+          buildBase: before,
+        });
+
+        assert.equal(run.error, undefined);
+        assert.equal(run.result, undefined);
+        assert.equal(pushAttempts(), 1);
+        const tip = remoteBranch('sdk-72');
+        assert.ok(tip);
+        assertBackportWithRebuild(tip, before);
+        assert.deepEqual(run.comments, [`#45 Backported to \`sdk-72\` as ${tip}`]);
+        assertNoTemporaryWorktree();
+      });
+    });
+
+    it('pushes nothing and comments the rebuild steps when sdk-NN moves after the rebuild', async () => {
+      const before = createTargetBranch('sdk-73', 'sdk-91');
+      await withCommitsLandingBeforePush('sdk-73', 1, async (pushAttempts, landed) => {
+        const run = await backport(45, 73, shas.changeset, {
+          buildPatch: writePatch(BUILD_PATCH),
+          buildBase: before,
+        });
+
+        assert.ok(run.error);
+        assert.equal(pushAttempts(), 1);
+        assert.equal(remoteBranch('sdk-73'), landed()[0]);
+        assert.equal(run.comments.length, 1);
+        assert.match(
+          run.comments[0],
+          /`sdk-73` moved after the rebuild[\s\S]*rebuild the `build\/` output/
+        );
+        assertNoTemporaryWorktree();
+      });
+    });
+
+    it('pushes nothing and comments the manual steps once when the patch does not apply or the rebuild left none', async () => {
+      const patches = {
+        74: writePatch(
+          BUILD_PATCH.replaceAll(
+            'new file mode 100644\n--- /dev/null',
+            '--- a/packages/expo-foo/build/index.js'
+          )
+        ),
+        75: path.join(root, 'missing.patch'),
+      };
+      for (const [sdkVersion, buildPatch] of Object.entries(patches)) {
+        const before = createTargetBranch(`sdk-${sdkVersion}`, 'sdk-91');
+        const run = await backport(45, Number(sdkVersion), shas.changeset, {
+          buildPatch,
+          buildBase: before,
+          runLogUrl: 'https://example.com/run',
+        });
+
+        assert.ok(run.error);
+        assert.equal(remoteBranch(`sdk-${sdkVersion}`), before);
+        assert.equal(run.comments.length, 1);
+        assert.match(
+          run.comments[0],
+          /^#45 [^\n]*`build\/`[^\n]*\[Run log\]\(https:\/\/example\.com\/run\)/
+        );
+        assert.match(run.comments[0], new RegExp(`git cherry-pick -x ${shas.changeset}`));
+        assert.match(run.comments[0], /rebuild the `build\/` output/);
+        assertNoTemporaryWorktree();
+      }
+    });
+
+    it('pushes only the backport commit when the rebuild changed no build/ file', async () => {
+      const before = createTargetBranch('sdk-80', 'sdk-91');
+      const run = await backport(45, 80, shas.changeset, {
+        buildPatch: writePatch(''),
+        buildBase: before,
+      });
+
+      assert.equal(run.error, undefined);
+      const tip = remoteBranch('sdk-80');
+      assert.ok(tip);
+      assert.equal(git(origin, 'rev-parse', `${tip}^`), before);
+      assert.match(git(origin, 'log', '-1', '--format=%B', tip), /cherry picked from commit/);
+      assert.match(
+        git(origin, 'diff', '--name-only', before, tip),
+        /^packages\/expo-foo\/CHANGELOG\.md$/m
+      );
+    });
+
+    it('comments that the patch failed the safety check when the workflow rejected it', async () => {
+      const before = createTargetBranch('sdk-82', 'sdk-91');
+      const run = await backport(45, 82, shas.changeset, {
+        buildPatch: path.join(root, 'missing.patch'),
+        buildPatchRejected: true,
+      });
+
+      assert.ok(run.error);
+      assert.equal(remoteBranch('sdk-82'), before);
+      assert.equal(run.comments.length, 1);
+      assert.match(
+        run.comments[0],
+        /failed the bot's safety check[\s\S]*rebuild the `build\/` output/
+      );
+    });
+  });
+
+  it('pushes nothing and comments once when it cannot read .changeset/config.json after the fetch', async () => {
+    const before = createTargetBranch('sdk-81', 'sdk-91');
+    await withGitFailing('ls-tree', async () => {
+      const run = await backport(45, 81, shas.changeset);
+
+      assert.ok(run.error);
+      assert.equal(remoteBranch('sdk-81'), before);
+      assert.equal(run.result, undefined);
+      assert.equal(run.comments.length, 1);
+      assert.match(run.comments[0], /^#45 The backport to `sdk-81` failed\./);
+      assertNoTemporaryWorktree();
+    });
+  });
+
+  it('pushes nothing and comments the rebuild steps when a CHANGELOG.md is a symlink on a branch without .changeset/config.json', async () => {
+    const seed = path.join(root, 'seed');
+    git(seed, 'checkout', '-q', '--detach', 'sdk-91');
+    fs.rmSync(path.join(seed, 'packages/expo-foo/CHANGELOG.md'));
+    fs.symlinkSync('../../outside/CHANGELOG.md', path.join(seed, 'packages/expo-foo/CHANGELOG.md'));
+    const linked = commit(seed, { 'outside/CHANGELOG.md': CHANGELOG }, 'Link the changelog');
+    git(seed, 'checkout', '-q', 'main');
+    git(seed, 'push', '-q', origin, `${linked}:refs/heads/sdk-79`);
+    const run = await backport(45, 79, shas.changeset);
+
+    assert.ok(run.error);
+    assert.equal(remoteBranch('sdk-79'), linked);
+    assert.equal(run.comments.length, 1);
+    assert.match(run.comments[0], /`packages\/expo-foo\/CHANGELOG\.md` is not a regular file/);
+    assert.match(run.comments[0], /rebuild the `build\/` output/);
     assertNoTemporaryWorktree();
   });
 
