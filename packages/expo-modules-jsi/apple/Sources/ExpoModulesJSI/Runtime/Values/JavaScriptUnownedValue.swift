@@ -32,6 +32,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   // why both are kept as raw pointers and rebuilt into their C++ views on access.
 
   // The address of the borrowed `jsi::Value`. The value is not owned and must not outlive its owner.
+  @usableFromInline
   internal let rawPointer: UnsafeRawPointer
 
   // The JSI runtime, stored as the raw `facebook.jsi.IRuntime` rather than the `JavaScriptRuntime`
@@ -266,6 +267,16 @@ public struct JavaScriptUnownedValue: ~Copyable {
   /// Whether the borrowed value belongs to `runtime`: the runtime that owns the value it borrows.
   private func belongs(to runtime: JavaScriptRuntime) -> Bool {
     return unsafeBitCast(runtime.pointee, to: UnsafeRawPointer.self) == rawRuntime
+  }
+
+  // MARK: - Pointer access
+
+  /// Provides scoped access to a raw pointer to the borrowed `facebook.jsi.Value`, like
+  /// ``JavaScriptValue/withUnsafePointee(_:)``. The pointer is valid only for the duration of the closure and must
+  /// not be stored or escaped. Inlinable, so it costs nothing in the caller's module.
+  @inlinable
+  public func withUnsafePointee<R: ~Copyable, E: Error>(_ body: (UnsafeRawPointer) throws(E) -> R) throws(E) -> R {
+    return try body(rawPointer)
   }
 
   // MARK: - Equality
