@@ -152,11 +152,21 @@ open class SharedObject: AnySharedObject {
     return unreleasedNativeState?.javaScriptObject(in: runtime)
   }
 
-  /// The native state that an event emitted now is dispatched through, or `nil` when the object isn't paired. The
-  /// dispatch checks whether the object was released. See `EventEmitterReference`.
+  /// The reference that an event emitted now is dispatched through: the native state, or `nil` when the object isn't
+  /// paired, and whether runtimes other than the main runtime have listeners. Both are read under one lock. The dispatch
+  /// checks whether the object was released. See `EventEmitterReference`.
   @usableFromInline
-  internal var eventDispatchState: AnyObject? {
-    return nativeState
+  internal var eventEmitterReference: EventEmitterReference {
+    return SharedObjectLock.withLock(for: self) {
+      guard let nativeState = pairedNativeState else {
+        return .sharedObject(nil)
+      }
+      // The native state of this object is behind the lock of this object too.
+      if nativeState.hasListeningRuntimesUnderLock {
+        return .sharedObjectInManyRuntimes(nativeState)
+      }
+      return .sharedObject(nativeState)
+    }
   }
 
   /**
@@ -293,8 +303,8 @@ extension SharedObjectNativeState {
 
 /// The locks of the `nativeState` property of shared objects, picked by the address of the object. A lock of its own
 /// would cost an allocation for every shared object. A lock is never held while another one is taken, so two objects
-/// that share a lock can't deadlock.
-private enum SharedObjectLock {
+/// that share a lock can't deadlock. The listening runtimes of a native state are behind the lock of its native object.
+internal enum SharedObjectLock {
   private static let count = 64
 
   // The locks are never deallocated, and an `os_unfair_lock` is safe to use from any thread.
