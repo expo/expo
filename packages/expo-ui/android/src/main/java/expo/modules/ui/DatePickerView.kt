@@ -11,9 +11,12 @@ import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimeInputColors
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerLayoutType
@@ -197,6 +200,7 @@ data class DatePickerDialogProps(
 @OptimizedComposeProps
 data class TimePickerDialogProps(
   val initialDate: Long? = null,
+  val variant: Variant = Variant.PICKER,
   val is24Hour: Boolean? = null,
   val confirmButtonLabel: String? = null,
   val dismissButtonLabel: String? = null,
@@ -349,6 +353,25 @@ fun buildTimePickerColors(
   )
 }
 
+// Material 3 keeps its `TimePickerColors` to `TimeInputColors` conversion internal. This copies it.
+@Composable
+private fun androidx.compose.material3.TimePickerColors.toTimeInputColors(): TimeInputColors {
+  return TimeInputColors(
+    containerColor = containerColor,
+    periodSelectorBorderColor = periodSelectorBorderColor,
+    periodSelectorSelectedContainerColor = periodSelectorSelectedContainerColor,
+    periodSelectorContainerColor = periodSelectorContainerColor,
+    periodSelectorSelectedContentColor = periodSelectorSelectedContentColor,
+    periodSelectorContentColor = periodSelectorContentColor,
+    timeTextFieldColors = OutlinedTextFieldDefaults.colors(
+      focusedContainerColor = timeSelectorSelectedContainerColor,
+      unfocusedContainerColor = timeSelectorContainerColor,
+      focusedTextColor = timeSelectorSelectedContentColor,
+      unfocusedTextColor = timeSelectorContentColor
+    )
+  )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ApplyDatePickerDialogKeyboardBehavior(displayMode: DisplayMode) {
@@ -473,11 +496,15 @@ fun ExpoTimePickerDialogContent(props: TimePickerDialogProps, onDateSelected: (D
     },
     containerColor = timePickerColors.containerColor,
     text = {
-      TimePicker(
-        state = state,
-        layoutType = TimePickerLayoutType.Vertical,
-        colors = timePickerColors
-      )
+      if (props.variant == Variant.INPUT) {
+        TimeInput(state = state, colors = timePickerColors.toTimeInputColors())
+      } else {
+        TimePicker(
+          state = state,
+          layoutType = TimePickerLayoutType.Vertical,
+          colors = timePickerColors
+        )
+      }
     }
   )
 }
@@ -592,10 +619,15 @@ fun ExpoTimePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
     onDateSelected(DatePickerResult(date = cal.time.time))
   }
 
-  TimePicker(
-    modifier = modifier,
-    state = state,
-    layoutType = TimePickerLayoutType.Vertical,
-    colors = buildTimePickerColors(props.elementColors, props.color.composeOrNull)
-  )
+  val colors = buildTimePickerColors(props.elementColors, props.color.composeOrNull)
+  if (props.variant == Variant.INPUT) {
+    TimeInput(modifier = modifier, state = state, colors = colors.toTimeInputColors())
+  } else {
+    TimePicker(
+      modifier = modifier,
+      state = state,
+      layoutType = TimePickerLayoutType.Vertical,
+      colors = colors
+    )
+  }
 }

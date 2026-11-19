@@ -56,6 +56,6 @@
     "react-native": "0.89.0-rc.2"
   },
   "peerDependencies": {
-    "eslint": ">=8.10"
+    "eslint": ">=8.10 <10"
   }
 }

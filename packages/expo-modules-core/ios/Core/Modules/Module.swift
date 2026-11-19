@@ -68,6 +68,15 @@ open class BaseModule {
   open func appDidEnterBackground() {}
 }
 
+extension BaseModule {
+  /// The holder that an event emitted now is dispatched through, or `nil` when the module isn't registered. See
+  /// `EventEmitterReference`.
+  @usableFromInline
+  internal var eventDispatchState: AnyObject? {
+    return holder
+  }
+}
+
 extension BaseModule: EventEmitter {
   /**
    Lends the module's JavaScript object for the duration of `body`.

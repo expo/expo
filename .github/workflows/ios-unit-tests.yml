@@ -108,3 +108,12 @@ jobs:
         with:
           name: ios-unit-tests-results
           path: /tmp/ios-unit-tests-results
+      # The result bundle of a parallel run doesn't include crash reports, but macOS writes them
+      # here, also for the test processes in the simulator.
+      - name: 📤 Upload crash reports
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ios-unit-tests-crash-reports
+          path: ~/Library/Logs/DiagnosticReports/xctest-*.ips
+          if-no-files-found: ignore

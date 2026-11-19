@@ -31,6 +31,13 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
   internal var jsiRuntime: facebook.jsi.IRuntime? {
     return runtimeHandle.pointee
   }
+
+  /// Whether the symbol belongs to the given runtime, the runtime that created it. Use it only with the runtime it
+  /// belongs to, on the thread of that runtime.
+  public func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
+    return runtimeHandle === runtime.handle
+  }
+
   /// Mutable so that ``takeValue()`` can move the engine value out of a consumed symbol.
   internal var pointee: facebook.jsi.Symbol
 

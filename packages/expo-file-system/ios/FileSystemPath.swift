@@ -66,12 +66,24 @@ internal class FileSystemPath: SharedObject {
     return destination.url
   }
 
+  // Overwriting deletes the existing destination first. When the destination is the source
+  // or one of its ancestors, that delete would remove the source too.
+  // Symlinks and aliases such as `/private/var` are resolved, so they cannot hide the overlap.
+  private func validateDestinationDoesNotContainSource(_ destinationUrl: URL) throws {
+    let sourceComponents = url.resolvingSymlinksInPath().standardizedFileURL.pathComponents
+    let destinationComponents = destinationUrl.resolvingSymlinksInPath().standardizedFileURL.pathComponents
+    if sourceComponents.starts(with: destinationComponents) {
+      throw DestinationContainsSourceException()
+    }
+  }
+
   func copy(to destination: FileSystemPath, options: RelocationOptions) throws {
     try validatePermission(.read)
     try destination.validatePermission(.write)
     let destinationUrl = try getMoveOrCopyPath(to: destination)
  
     if options.overwrite && FileManager.default.fileExists(atPath: destinationUrl.path) {
+      try validateDestinationDoesNotContainSource(destinationUrl)
       try FileManager.default.removeItem(at: destinationUrl)
     }
 
@@ -84,6 +96,7 @@ internal class FileSystemPath: SharedObject {
     let destinationUrl = try getMoveOrCopyPath(to: destination)
 
     if options.overwrite && FileManager.default.fileExists(atPath: destinationUrl.path) {
+      try validateDestinationDoesNotContainSource(destinationUrl)
       try FileManager.default.removeItem(at: destinationUrl)
     }
 

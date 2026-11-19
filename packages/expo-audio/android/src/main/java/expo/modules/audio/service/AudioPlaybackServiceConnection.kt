@@ -89,7 +89,13 @@ class AudioPlaybackServiceConnection(
     super.onServiceDisconnected(componentName)
   }
 
+  override fun onBindingFailed(message: String, reason: Throwable?) {
+    playable.get()?.isActiveForLockScreen = false
+    super.onBindingFailed(message, reason)
+  }
+
   override fun onServiceDied() {
+    playable.get()?.isActiveForLockScreen = false
     super.onServiceDied()
   }
 

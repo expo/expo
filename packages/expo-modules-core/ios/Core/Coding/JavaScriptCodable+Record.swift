@@ -36,12 +36,26 @@ extension Record {
     return try from(object: value.asObject(in: runtime), appContext: appContext)
   }
 
+  /// Used only by records without the `@Record` macro, for example records with `@Field` properties. The macro gives
+  /// each record its own `encode(_:in:)`, which uses the runtime it gets.
   @JavaScriptActor
   @inlinable
   public static func encode(_ value: Self, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     guard let appContext = AppContext.from(runtime: runtime) else {
       throw Exceptions.AppContextNotFound()
     }
+    // `toObject(appContext:)` creates the object in the main runtime. In another runtime, for example the worklet UI
+    // runtime, it would use the main runtime from the thread of that runtime.
+    guard runtime.id == (try appContext.runtime).id else {
+      throw RecordInAnotherRuntimeException(String(describing: Self.self))
+    }
     return try value.toObject(appContext: appContext).asValue()
+  }
+}
+
+@usableFromInline
+internal final class RecordInAnotherRuntimeException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "Cannot convert the record '\(param)' in a JavaScript runtime other than the main runtime, for example the worklet UI runtime. A record that the `@Record` macro doesn't convert creates its object in the main runtime. Use the `@Record` macro on a struct instead: its records convert in any runtime"
   }
 }

@@ -73,7 +73,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   /// different runtime would clone a handle from another heap and corrupt it; the assert guards that.
   public func copied(in runtime: JavaScriptRuntime) -> JavaScriptValue {
     assert(
-      isOwned(by: runtime),
+      belongs(to: runtime),
       "`copied(in:)` must be passed the runtime that owns the borrowed value"
     )
     return JavaScriptValue(runtime, copying: pointer.pointee)
@@ -158,7 +158,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   public func getObject(in runtime: JavaScriptRuntime) -> JavaScriptObject {
     assert(isObject(), "Value is not an object")
     assert(
-      isOwned(by: runtime),
+      belongs(to: runtime),
       "`getObject(in:)` must be passed the runtime that owns the borrowed value"
     )
     return JavaScriptObject(runtime, pointer.pointee.getObject(self.runtime))
@@ -175,7 +175,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   public func getArray(in runtime: JavaScriptRuntime) -> JavaScriptArray {
     assert(isArray(), "Value is not an array")
     assert(
-      isOwned(by: runtime),
+      belongs(to: runtime),
       "`getArray(in:)` must be passed the runtime that owns the borrowed value"
     )
     return JavaScriptArray(runtime, pointer.pointee.getObject(self.runtime).getArray(self.runtime))
@@ -190,7 +190,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   /// counterpart of ``JavaScriptValue/getFunction()``, with the same runtime contract as ``getObject(in:)``.
   public func getFunction(in runtime: JavaScriptRuntime) -> JavaScriptFunction {
     assert(isFunction(), "Value is not a function")
-    assert(isOwned(by: runtime), "`getFunction(in:)` must be passed the runtime that owns the borrowed value")
+    assert(belongs(to: runtime), "`getFunction(in:)` must be passed the runtime that owns the borrowed value")
     return JavaScriptFunction(runtime, expo.functionFromValue(self.runtime, pointer.pointee))
   }
 
@@ -210,7 +210,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   @JavaScriptActor
   public func getTypedArray(in runtime: JavaScriptRuntime) -> JavaScriptTypedArray {
     assert(isTypedArray(), "Value is not a typed array")
-    assert(isOwned(by: runtime), "`getTypedArray(in:)` must be passed the runtime that owns the borrowed value")
+    assert(belongs(to: runtime), "`getTypedArray(in:)` must be passed the runtime that owns the borrowed value")
     return JavaScriptTypedArray(runtime, pointer.pointee.getObject(self.runtime))
   }
 
@@ -219,7 +219,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   /// ``getObject(in:)``.
   public func getArrayBuffer(in runtime: JavaScriptRuntime) -> JavaScriptArrayBuffer {
     assert(isArrayBuffer(), "Value is not an array buffer")
-    assert(isOwned(by: runtime), "`getArrayBuffer(in:)` must be passed the runtime that owns the borrowed value")
+    assert(belongs(to: runtime), "`getArrayBuffer(in:)` must be passed the runtime that owns the borrowed value")
     return JavaScriptArrayBuffer(runtime, expo.arrayBufferFromValue(self.runtime, pointer.pointee))
   }
 
@@ -227,7 +227,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   /// counterpart of ``JavaScriptValue/getBigInt()``, with the same runtime contract as ``getObject(in:)``.
   public func getBigInt(in runtime: JavaScriptRuntime) -> JavaScriptBigInt {
     assert(isBigInt(), "Value is not a BigInt")
-    assert(isOwned(by: runtime), "`getBigInt(in:)` must be passed the runtime that owns the borrowed value")
+    assert(belongs(to: runtime), "`getBigInt(in:)` must be passed the runtime that owns the borrowed value")
     return JavaScriptBigInt(runtime, pointer.pointee.getBigInt(self.runtime))
   }
 
@@ -235,7 +235,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   /// counterpart of ``JavaScriptValue/getSymbol()``, with the same runtime contract as ``getObject(in:)``.
   public func getSymbol(in runtime: JavaScriptRuntime) -> JavaScriptSymbol {
     assert(isSymbol(), "Value is not a symbol")
-    assert(isOwned(by: runtime), "`getSymbol(in:)` must be passed the runtime that owns the borrowed value")
+    assert(belongs(to: runtime), "`getSymbol(in:)` must be passed the runtime that owns the borrowed value")
     return JavaScriptSymbol(runtime, pointer.pointee.getSymbol(self.runtime))
   }
 
@@ -263,9 +263,20 @@ public struct JavaScriptUnownedValue: ~Copyable {
     }
   }
 
-  /// Whether `runtime` is the runtime that owns the borrowed value.
-  private func isOwned(by runtime: JavaScriptRuntime) -> Bool {
+  /// Whether the borrowed value belongs to `runtime`: the runtime that owns the value it borrows.
+  private func belongs(to runtime: JavaScriptRuntime) -> Bool {
     return unsafeBitCast(runtime.pointee, to: UnsafeRawPointer.self) == rawRuntime
+  }
+
+  // MARK: - Equality
+
+  /// Tests whether the borrowed value and `another` are strictly equal, like `===` in JavaScript
+  /// (https://262.ecma-international.org/11.0/#sec-strict-equality-comparison). The zero-copy
+  /// counterpart of ``JavaScriptValue/isEqual(to:)``: the engine compares two strings, without a Swift
+  /// `String` or a copy of the borrowed value. `another` must belong to the runtime that owns the
+  /// borrowed value, unless it belongs to no runtime, like a number.
+  public func isEqual(to another: borrowing JavaScriptValue) -> Bool {
+    return facebook.jsi.Value.strictEquals(runtime, pointer.pointee, another.pointee)
   }
 
   // MARK: - Throwing conversions ("as functions")

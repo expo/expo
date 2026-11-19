@@ -54,6 +54,12 @@ internal final class AudioRecordingException: GenericException<String> {
   }
 }
 
+internal final class RecorderStartRejectedException: Exception {
+  override var reason: String {
+    "The recorder could not start because iOS refused to record. Another app or a phone call may be using the microphone. Try again later"
+  }
+}
+
 internal final class InvalidRecordingFileNameException: GenericException<String> {
   override var reason: String {
     "Invalid recording file name '\(param)': must not contain '/', '\\', or '..'"
