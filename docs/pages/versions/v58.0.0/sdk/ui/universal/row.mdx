@@ -154,7 +154,20 @@ export default function RowSpacerExample() {
 
 > **info** Percentage sizes require `@expo/ui` 58.0.23 or later. On earlier versions, a percentage throws an error on Android.
 
-```tsx RowSizeExample.tsx
+<ComponentExample
+  title="RowSizeExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-row-size-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-row-size-android-dark.webp',
+    alt: 'A row split into a light blue column at 30 percent width and a dark blue column at 70 percent width',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-row-size-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-row-size-ios-dark.webp',
+    alt: 'A row split into a light blue column at 30 percent width and a dark blue column at 70 percent width',
+  }}>
+
+```tsx
 import { Host, Column, Row } from '@expo/ui';
 
 export default function RowSizeExample() {
@@ -168,6 +181,8 @@ export default function RowSizeExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
