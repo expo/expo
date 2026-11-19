@@ -1,5 +1,4 @@
 'use client';
-import { useVerticalBarEdgeIOS } from 'expo-status-bar';
 import * as React from 'react';
 import { use } from 'react';
 import {
@@ -14,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import searchIcon from '../../../../assets/react-navigation/elements/search-icon.png';
 import { alpha } from '../../../utils/color';
+import { useVerticalBarEdgeIOS } from '../../../utils/useVerticalBarEdgeIOS';
 import { useNavigation, useTheme } from '../../native';
 import type { HeaderOptions, Layout } from '../types';
 import { useFrameSize } from '../useFrameSize';
