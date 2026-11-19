@@ -15,7 +15,6 @@ Observe.configure({
   integrations: {
     'expo-router': {
       filteredParams: ['accountId', 'firstName'],
-      experimental_totalBlockingTime: true,
     },
     'expo-image': {
       oversizeThreshold: 1.5,
