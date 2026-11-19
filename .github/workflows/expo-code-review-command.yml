@@ -291,6 +291,34 @@ jobs:
           gh pr view "$PR" --repo "${{ github.repository }}" --json title,body \
             --jq '"Pull request title: \(.title // "")\n\nPull request body:\n\(.body // "")"' > "$RUNNER_TEMP/pr-description.md"
 
+      # The same sandbox as expo-code-review.yml, under the same rules: only for a PR
+      # with files in the autonomous scope, and on a fork PR only with the ai-review
+      # label. If this step fails, the review runs without a sandbox.
+      - name: Check whether the review gets a sandbox
+        id: scope
+        if: steps.cmd.outputs.run == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.issue.number || inputs.pr }}
+        run: |
+          bash .github/scripts/ai-review-scope.sh
+          gh pr view "$PR" --repo "$REPO" --json isCrossRepository,labels \
+            --jq '"fork=\(.isCrossRepository)", "labeled=\(any(.labels[]; .name == "ai-review"))"' >> "$GITHUB_OUTPUT"
+
+      - name: Mint sandbox token
+        if: >-
+          steps.cmd.outputs.run == 'true'
+          && steps.scope.outputs.autonomous == 'true'
+          && (steps.scope.outputs.fork == 'false' || steps.scope.outputs.labeled == 'true')
+        continue-on-error: true
+        env:
+          EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
+          SANDBOX_MCP_CONFIG: ${{ runner.temp }}/review-sandbox-mcp.json
+          RUN_ID: ${{ github.run_id }}
+        run: bash .github/scripts/ai-review-sandbox-token.sh mint
+
       - name: Run AI review
         if: steps.cmd.outputs.run == 'true'
         continue-on-error: true
@@ -311,6 +339,7 @@ jobs:
           DISPATCH: ${{ github.event_name == 'workflow_dispatch' }}
           PR_NUMBER: ${{ inputs.pr }}
           CONFIG_FROM_CHECKOUT: ${{ inputs.config-from-checkout }}
+          SANDBOX_MCP_CONFIG: ${{ runner.temp }}/review-sandbox-mcp.json
         # NOTE: running via `issue_comment` makes this a manual review command, which
         # the CLI detects (GITHUB_EVENT_NAME=issue_comment) and treats as a trigger-gate bypass
         # — it reviews even when the config trigger policy or an `ai-review:skip` label
@@ -346,7 +375,27 @@ jobs:
               ARGS+=(--config-dir "$GITHUB_WORKSPACE/.expo-agents/code-review")
             fi
           fi
+          # REVIEW_SANDBOX_TOKEN is the child token. The config's mcpServers.sandbox reads it.
+          if [ -f "$SANDBOX_MCP_CONFIG" ]; then
+            REVIEW_SANDBOX_TOKEN=$(jq -r '.mcpServers.sandbox.headers.Authorization | sub("^Bearer "; "")' "$SANDBOX_MCP_CONFIG")
+            export REVIEW_SANDBOX_TOKEN
+          fi
           ./scripts/expo-code-review ecr ci --context-file "$RUNNER_TEMP/pr-description.md" "${ARGS[@]}"
+
+      - name: Destroy review sandbox
+        if: always() && steps.cmd.outputs.run == 'true'
+        continue-on-error: true
+        env:
+          SANDBOX_MCP_CONFIG: ${{ runner.temp }}/review-sandbox-mcp.json
+        run: bash .github/scripts/cleanup-agent-sandboxes.sh "$SANDBOX_MCP_CONFIG"
+
+      - name: Revoke sandbox token
+        if: always() && steps.cmd.outputs.run == 'true'
+        continue-on-error: true
+        env:
+          EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
+          SANDBOX_MCP_CONFIG: ${{ runner.temp }}/review-sandbox-mcp.json
+        run: bash .github/scripts/ai-review-sandbox-token.sh revoke
 
       # Same ephemeral per-run log as expo-code-review.yml — a review command
       # runs the full `ecr ci`, whose .expo-agents/code-review/.runs/ log is gone when the

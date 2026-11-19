@@ -203,33 +203,14 @@ jobs:
         run: |
           printf 'Pull request title: %s\n\nPull request body:\n%s\n' "$PR_TITLE" "$PR_BODY" > "$RUNNER_TEMP/pr-description.md"
 
-      # routing.jsonc is the one list of autonomous review paths. This checkout is the
-      # default branch, so a PR cannot change the list it is checked against.
-      # Only full-line `//` comments are stripped, so keep the file free of trailing ones.
+      # This checkout is the base branch, so a PR cannot change the scope it is checked against.
       - name: Find files in the autonomous review scope
         id: scope
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           REPO: ${{ github.repository }}
           PR: ${{ github.event.pull_request.number }}
-        run: |
-          mapfile -t globs < <(sed 's#^[[:space:]]*//.*##' .expo-agents/code-review/routing.jsonc \
-            | jq -r '.scopes[] | select(.name == "autonomous") | .paths[]')
-          if [ "${#globs[@]}" -eq 0 ]; then
-            echo "::warning::Could not read the autonomous scope paths from routing.jsonc."
-          fi
-          files=$(gh api --paginate "repos/$REPO/pulls/$PR/files" --jq '.[].filename' || true)
-          autonomous=false
-          while IFS= read -r file; do
-            for glob in "${globs[@]}"; do
-              # Unquoted on purpose: the right side is a glob pattern.
-              if [[ -n $file && $file == $glob ]]; then
-                autonomous=true
-                break 2
-              fi
-            done
-          done <<< "$files"
-          echo "autonomous=$autonomous" >> "$GITHUB_OUTPUT"
+        run: bash .github/scripts/ai-review-scope.sh
 
       # A sandbox lets reviewers check how a tool behaves by running it. The parent
       # EXPO_SANDBOX_MCP_TOKEN reaches only this step and the revoke step. The review
@@ -246,28 +227,10 @@ jobs:
           || contains(github.event.pull_request.labels.*.name, 'ai-review'))
         continue-on-error: true
         env:
-          MCP_URL: https://agile-minnow-543.convex.site
           EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
           SANDBOX_MCP_CONFIG: ${{ runner.temp }}/review-sandbox-mcp.json
           RUN_ID: ${{ github.run_id }}
-        run: |
-          body=$(jq -cn --arg name "ecr-review-$RUN_ID" '{
-            sandboxBudget: 1, buildBudget: 0, ttlSeconds: 6000, name: $name,
-            network: false, sudo: false,
-            allowedTools: ["list_sandboxes", "create_sandbox", "sandbox_write_file", "sandbox_exec", "destroy_sandbox"]
-          }')
-          token=$(curl -sf -m 30 "$MCP_URL/tokens/scoped" \
-            -H "Authorization: Bearer $EXPO_SANDBOX_MCP_TOKEN" \
-            -H 'Content-Type: application/json' -d "$body" | jq -r '.token // empty')
-          if [ -z "$token" ]; then
-            echo "::warning::Could not mint a sandbox token. The review runs without a sandbox."
-            exit 0
-          fi
-          echo "::add-mask::$token"
-          umask 077
-          jq -n --arg url "$MCP_URL/mcp" --arg auth "Bearer $token" \
-            '{mcpServers: {sandbox: {type: "http", url: $url, headers: {Authorization: $auth}}}}' \
-            > "$SANDBOX_MCP_CONFIG"
+        run: bash .github/scripts/ai-review-sandbox-token.sh mint
 
       - name: Run AI review
         # The launcher selects the SAME checked-in package version the guard cleared.
@@ -318,18 +281,9 @@ jobs:
         if: always()
         continue-on-error: true
         env:
-          MCP_URL: https://agile-minnow-543.convex.site
           EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
           SANDBOX_MCP_CONFIG: ${{ runner.temp }}/review-sandbox-mcp.json
-        run: |
-          if [ -f "$SANDBOX_MCP_CONFIG" ]; then
-            child=$(jq -r '.mcpServers.sandbox.headers.Authorization | sub("^Bearer "; "")' "$SANDBOX_MCP_CONFIG")
-            jq -cn --arg token "$child" '{token: $token}' |
-              curl -sf -m 30 "$MCP_URL/tokens/revoke" \
-                -H "Authorization: Bearer $EXPO_SANDBOX_MCP_TOKEN" \
-                -H 'Content-Type: application/json' --data-binary @- > /dev/null
-            rm -f "$SANDBOX_MCP_CONFIG"
-          fi
+        run: bash .github/scripts/ai-review-sandbox-token.sh revoke
 
       # Observability: the per-run log (token/cache/cost totals + per-pass timing +
       # coverage notes) is written under .expo-agents/code-review/.runs/ but git-ignored, so
