@@ -200,7 +200,7 @@ function appendLabelOptions(options: NativeTabOptions, props: NativeTabsTriggerL
   } else {
     options.title = props.children;
     if (props.selectedStyle) {
-      options.selectedLabelStyle = StyleSheet.flatten(props.selectedStyle);
+      options.selectedLabelStyle = StyleSheet.flatten(props.selectedStyle) ?? undefined;
     }
   }
 }

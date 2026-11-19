@@ -284,7 +284,7 @@ export function BottomTabItem({
 
   const backgroundColor = focused ? activeBackgroundColor : inactiveBackgroundColor;
 
-  const { flex } = StyleSheet.flatten(style || {});
+  const flex = StyleSheet.flatten(style)?.flex;
   const borderRadius =
     variant === 'material' ? (horizontal ? 56 : 16) : sidebar && horizontal ? 10 : 0;
 

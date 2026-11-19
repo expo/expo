@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 import { use } from 'react';
-import { View, type LayoutChangeEvent, Platform } from 'react-native';
+import { type LayoutChangeEvent, Platform, type ViewInstance } from 'react-native';
 
 import useLatestCallback from '../../utils/useLatestCallback';
 import { useSyncExternalStoreWithSelector } from '../../utils/useSyncExternalStoreWithSelector';
@@ -43,7 +43,7 @@ export function useFrameSize<T>(selector: (frame: Frame) => T, throttle?: boolea
 type FrameSizeProviderProps = {
   initialFrame: Frame;
   render: (props: {
-    ref: React.RefObject<View | null>;
+    ref: React.RefObject<ViewInstance | null>;
     onLayout: (event: LayoutChangeEvent) => void;
   }) => React.ReactNode;
 };
@@ -124,7 +124,7 @@ export function FrameSizeProvider({ initialFrame, render }: FrameSizeProviderPro
     listeners.current.forEach((listener) => listener());
   });
 
-  const viewRef = React.useRef<View>(null);
+  const viewRef = React.useRef<ViewInstance>(null);
 
   React.useEffect(() => {
     if (Platform.OS === 'web') {

@@ -359,11 +359,11 @@ export type BottomTabSceneStyleInterpolator = (
 export type TransitionSpec =
   | {
       animation: 'timing';
-      config: Omit<Animated.TimingAnimationConfig, 'toValue' | keyof Animated.AnimationConfig>;
+      config: Omit<Animated.TimingAnimationConfig, 'toValue' | 'isInteraction' | 'useNativeDriver'>;
     }
   | {
       animation: 'spring';
-      config: Omit<Animated.SpringAnimationConfig, 'toValue' | keyof Animated.AnimationConfig>;
+      config: Omit<Animated.SpringAnimationConfig, 'toValue' | 'isInteraction' | 'useNativeDriver'>;
     };
 
 export type BottomTabTransitionPreset = {
