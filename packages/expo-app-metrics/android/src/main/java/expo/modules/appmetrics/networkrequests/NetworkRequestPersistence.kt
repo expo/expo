@@ -159,8 +159,8 @@ internal fun NetworkRequest.toSpan(sessionId: String): Span? {
     // `expo.`-namespaced: the naming guidelines advise against application-specific names under
     // a semconv namespace. The status code reuses the registry attribute it matches.
     val eventAttributes = JSONObject()
-    eventAttributes.put("expo.http.redirect.from", redirect.fromUrl)
-    eventAttributes.put("expo.http.redirect.to", redirect.toUrl)
+    eventAttributes.put("expo.http.redirect.from", redactedUrlFull(redirect.fromUrl))
+    eventAttributes.put("expo.http.redirect.to", redactedUrlFull(redirect.toUrl))
     eventAttributes.put("http.response.status_code", redirect.statusCode)
     event.put("attributes", eventAttributes)
     events.put(event)
@@ -217,7 +217,7 @@ private val SENSITIVE_QUERY_PARAMETERS = setOf(
 /**
  * Redacts userinfo and default-sensitive query values, so secrets never reach disk or the wire.
  */
-private fun redactedUrlFull(url: String, parsed: okhttp3.HttpUrl?): String {
+private fun redactedUrlFull(url: String, parsed: okhttp3.HttpUrl? = url.toHttpUrlOrNull()): String {
   // An unparseable URL can't prove it carries no secrets, so drop the query outright.
   // `parsed` is passed in so each URL is parsed once on the OkHttp dispatcher thread.
   if (parsed == null) {
