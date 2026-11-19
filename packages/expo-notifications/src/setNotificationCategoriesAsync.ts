@@ -5,7 +5,6 @@ import type { NotificationCategory } from './Notifications.types';
 
 /**
  * Replaces all notification categories with the provided categories. Pass an empty array to remove all categories.
- * In Expo Go, this replaces only the categories of the current project.
  * This is the recommended way to register notification categories. Call it during app initialization
  * with the complete list of categories your app supports.
  * @param categories The complete set of notification categories. Each category must have a unique identifier.
