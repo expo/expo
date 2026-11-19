@@ -145,7 +145,7 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
     let packageObject = runtime.createObject()
 
     for exportName in package.exportNames {
-      packageObject.defineLazyProperty(exportName, options: [.enumerable]) {
+      packageObject.defineLazyProperty(exportName, options: .enumerable) {
         [weak appContext] (_: borrowing JavaScriptUnownedValue, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue in
         guard let appContext, let package = appContext.package(named: packageName) else {
           return .undefined()
