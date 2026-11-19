@@ -705,7 +705,11 @@ describe('NAVIGATE_TO_HREF', () => {
   it('reduces the resolved action against the current state', async () => {
     const action = { type: 'NEXT' };
     const dangerouslySingular = () => 'singular';
-    mockGetNavigateAction.mockReturnValue({ status: 'action', action });
+    mockGetNavigateAction.mockReturnValue({
+      status: 'action',
+      action,
+      targetState: { routes: [] },
+    });
     const reduce = jest.fn((state: NavigationState, _action: NavigationAction) => ({
       state: { ...state, index: state.index + 1 },
       affectedRouteKey: state.routes[state.index + 1]!.key,
@@ -740,7 +744,9 @@ describe('NAVIGATE_TO_HREF', () => {
       true,
       dangerouslySingular,
       'preview',
-      initialState
+      initialState,
+      // No `redirectTo` is resolved, so there is no blocked route to resolve against.
+      undefined
     );
   });
 });

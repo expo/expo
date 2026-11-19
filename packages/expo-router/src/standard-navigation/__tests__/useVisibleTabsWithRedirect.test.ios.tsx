@@ -3,6 +3,7 @@ import { use, type PropsWithChildren } from 'react';
 
 import { useRouteNode } from '../../Route';
 import { node } from '../../global-state/__tests__/__fixtures__/routeNode';
+import type { RouterRegistry } from '../../global-state/routerRegistry';
 import type { RoutingIntent } from '../../global-state/routingQueue';
 import {
   PendingIntentsContext,
@@ -64,11 +65,21 @@ function PendingIntentsProbe() {
   return null;
 }
 
+// The tab navigator is mounted, so its router is registered.
+const registry: RouterRegistry = new Map([['tabs-key', { reduce: () => null }]]);
+const tabsState = {
+  stale: false as const,
+  routeKeySeq: 0,
+  key: 'tabs-key',
+  index: 2,
+  routeNames,
+  routes,
+};
+
 function wrapper({ children }: PropsWithChildren) {
   return (
     <RoutingQueueProvider>
-      <NavigatorStateContext.Provider
-        value={{ stale: false, routeKeySeq: 0, key: 'tabs-key', index: 2, routeNames, routes }}>
+      <NavigatorStateContext.Provider value={tabsState}>
         {children}
         <PendingIntentsProbe />
       </NavigatorStateContext.Provider>
@@ -134,18 +145,53 @@ describe('useVisibleTabsWithRedirect', () => {
 
     expect(pendingIntents).toEqual([
       {
-        type: 'ACTION',
+        type: 'COMPUTED_ACTION',
         actionId: expect.any(Number),
-        payload: {
-          action: {
-            type: 'REPLACE',
-            payload: { name: 'settings/index', params: undefined },
-            target: 'tabs-key',
-          },
-          originKey: 'tabs-key',
-        },
+        payload: { compute: expect.any(Function), originKey: 'tabs-key' },
       },
     ]);
+    // The only pending intent is the `COMPUTED_ACTION` checked above.
+    const { compute } = (pendingIntents[0] as Extract<RoutingIntent, { type: 'COMPUTED_ACTION' }>)
+      .payload;
+    expect(compute(tabsState, registry)).toEqual({
+      type: 'REPLACE',
+      payload: { name: 'settings/index', params: undefined },
+      target: 'tabs-key',
+    });
+  });
+
+  it('does not replace the hidden route after the focus moved to another route', async () => {
+    mockedUseRouteNode.mockReturnValue(routeNode('settings'));
+    await renderHook(() =>
+      useVisibleTabsWithRedirect({
+        routes,
+        routeNames,
+        focusedRouteKey: 'hidden-key',
+        descriptors,
+      })
+    );
+
+    // The only pending intent is the `COMPUTED_ACTION` that replaces the hidden route.
+    const { compute } = (pendingIntents[0] as Extract<RoutingIntent, { type: 'COMPUTED_ACTION' }>)
+      .payload;
+    expect(compute({ ...tabsState, index: 0 }, registry)).toBeUndefined();
+  });
+
+  it('does not replace the hidden route after its navigator unmounted', async () => {
+    mockedUseRouteNode.mockReturnValue(routeNode('settings'));
+    await renderHook(() =>
+      useVisibleTabsWithRedirect({
+        routes,
+        routeNames,
+        focusedRouteKey: 'hidden-key',
+        descriptors,
+      })
+    );
+
+    // The only pending intent is the `COMPUTED_ACTION` that replaces the hidden route.
+    const { compute } = (pendingIntents[0] as Extract<RoutingIntent, { type: 'COMPUTED_ACTION' }>)
+      .payload;
+    expect(compute(tabsState, new Map())).toBeUndefined();
   });
 
   it('keeps a focused filesystem +not-found route as fallback content', async () => {
@@ -204,18 +250,19 @@ describe('useVisibleTabsWithRedirect', () => {
 
     expect(pendingIntents).toEqual([
       {
-        type: 'ACTION',
+        type: 'COMPUTED_ACTION',
         actionId: expect.any(Number),
-        payload: {
-          action: {
-            type: 'REPLACE',
-            payload: { name: 'home', params: undefined },
-            target: 'tabs-key',
-          },
-          originKey: 'tabs-key',
-        },
+        payload: { compute: expect.any(Function), originKey: 'tabs-key' },
       },
     ]);
+    // The only pending intent is the `COMPUTED_ACTION` checked above.
+    const { compute } = (pendingIntents[0] as Extract<RoutingIntent, { type: 'COMPUTED_ACTION' }>)
+      .payload;
+    expect(compute(tabsState, registry)).toEqual({
+      type: 'REPLACE',
+      payload: { name: 'home', params: undefined },
+      target: 'tabs-key',
+    });
   });
 
   it('does not redirect when the focused route is visible', async () => {
@@ -261,18 +308,19 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(result.current.visibleRoutes).toEqual([routes[1], routes[0]]);
     expect(pendingIntents).toEqual([
       {
-        type: 'ACTION',
+        type: 'COMPUTED_ACTION',
         actionId: expect.any(Number),
-        payload: {
-          action: {
-            type: 'REPLACE',
-            payload: { name: 'settings/index', params: undefined },
-            target: 'tabs-key',
-          },
-          originKey: 'tabs-key',
-        },
+        payload: { compute: expect.any(Function), originKey: 'tabs-key' },
       },
     ]);
+    // The only pending intent is the `COMPUTED_ACTION` checked above.
+    const { compute } = (pendingIntents[0] as Extract<RoutingIntent, { type: 'COMPUTED_ACTION' }>)
+      .payload;
+    expect(compute(tabsState, registry)).toEqual({
+      type: 'REPLACE',
+      payload: { name: 'settings/index', params: undefined },
+      target: 'tabs-key',
+    });
   });
 
   it('does not redirect inside a link preview', async () => {

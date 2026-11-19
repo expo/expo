@@ -1,9 +1,10 @@
-import { screen } from '@testing-library/react-native';
-import { useEffect, type PropsWithChildren } from 'react';
+import { act, screen } from '@testing-library/react-native';
+import { useEffect, useState, type PropsWithChildren } from 'react';
 import { View, Text } from 'react-native';
 import { ScreenStackItem as _ScreenStackItem } from 'react-native-screens';
 
 import { useCompositionOption } from '../../../fork/native-stack/composition-options';
+import { navigationRef } from '../../../global-state/navigationRef';
 import {
   useGlobalSearchParams,
   useLocalSearchParams,
@@ -11,8 +12,10 @@ import {
   useRouter,
   useSegments,
 } from '../../../hooks';
+import { router } from '../../../imperative-api';
 import { Stack } from '../../../layouts/Stack';
 import type { NavigationProp } from '../../../react-navigation/native';
+import { StackActions } from '../../../react-navigation/routers';
 import { renderRouter } from '../../../testing-library';
 import { useNavigation } from '../../../useNavigation';
 import { Redirect } from '../../Redirect';
@@ -628,4 +631,103 @@ describe('ZoomTransitionEnabler in preview', () => {
     expect(addEnabler).not.toHaveBeenCalled();
     expect(setDismissalBoundsRect).not.toHaveBeenCalled();
   });
+});
+
+it('does not render a protected route in the preview', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Protected guard={false}>
+          <Stack.Screen name="secret" />
+        </Stack.Protected>
+      </Stack>
+    ),
+    index: () => (
+      <View testID="index">
+        <HrefPreview href="/secret" />
+      </View>
+    ),
+    secret: () => <View testID="secret" />,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.queryByTestId('secret')).toBeNull();
+});
+
+it('does not render a route that the destination instance of a navigator protects', async () => {
+  await renderRouter({
+    _layout: () => <Stack />,
+    index: () => <View testID="index" />,
+    'accounts/[id]/_layout': function AccountLayout() {
+      const { id } = useLocalSearchParams<{ id: string }>();
+      return (
+        <Stack>
+          <Stack.Protected guard={id !== '2'}>
+            <Stack.Screen name="private" />
+          </Stack.Protected>
+        </Stack>
+      );
+    },
+    'accounts/[id]/index': function AccountIndex() {
+      const { id } = useLocalSearchParams<{ id: string }>();
+      return <HrefPreview href={`/accounts/${id}/private`} />;
+    },
+    'accounts/[id]/private': function Private() {
+      const { id } = useLocalSearchParams<{ id: string }>();
+      return <View testID={`private-${id}`} />;
+    },
+  });
+
+  await act(() => router.push('/accounts/1'));
+  await act(() => router.push('/accounts/2'));
+
+  expect(screen).toHavePathname('/accounts/2');
+  expect(screen.queryByTestId('private-2')).toBeNull();
+});
+
+it('does not mount a protected route in the preview before the guards register', async () => {
+  const onSecretMount = jest.fn();
+  await renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Protected guard={false}>
+          <Stack.Screen name="secret" />
+        </Stack.Protected>
+      </Stack>
+    ),
+    index: () => <HrefPreview href="/secret" />,
+    secret: function Secret() {
+      useEffect(() => onSecretMount(), []);
+      return <View testID="secret" />;
+    },
+  });
+
+  expect(onSecretMount).not.toHaveBeenCalled();
+});
+
+it('does not render a route that one of several matching navigator instances protects', async () => {
+  let accountLayoutCount = 0;
+  await renderRouter({
+    _layout: () => <Stack />,
+    index: () => <View testID="index" />,
+    'accounts/[id]/_layout': function AccountLayout() {
+      // Only the first instance of this layout allows `private`.
+      const [isFirstInstance] = useState(() => accountLayoutCount++ === 0);
+      return (
+        <Stack>
+          <Stack.Protected guard={isFirstInstance}>
+            <Stack.Screen name="private" />
+          </Stack.Protected>
+        </Stack>
+      );
+    },
+    'accounts/[id]/index': () => <HrefPreview href="/accounts/2/private" />,
+    'accounts/[id]/private': () => <View testID="private" />,
+  });
+
+  await act(() => router.push('/accounts/2'));
+  // A second instance of the same route, with the same params.
+  await act(() => navigationRef.dispatch(StackActions.push('accounts/[id]', { id: '2' })));
+
+  expect(screen.queryByTestId('private')).toBeNull();
 });

@@ -101,23 +101,16 @@ describe('navigator props helpers', () => {
     });
   });
 
-  it('creates native stack props that remove routes', () => {
-    const dispatchSync = jest.fn();
+  it('creates native stack props', () => {
     const props = createNativeStackProps({
       dispatch: jest.fn(),
-      dispatchSync,
+      dispatchSync: jest.fn(),
       isPreloaded,
       isRemovalPrevented: jest.fn(),
       navigation: {} as NavigationHelpers<ParamListBase>,
       state: { key: 'stack-key', index: 0 } as StackNavigationState<ParamListBase>,
     });
 
-    props.removeRoutes(['settings-key']);
-
-    expect(dispatchSync).toHaveBeenCalledWith({
-      type: 'REMOVE_ROUTES',
-      payload: { routeKeys: ['settings-key'] },
-    });
     expect(props.isPreloaded).toBe(isPreloaded);
   });
 
@@ -143,9 +136,6 @@ describe('navigator props helpers', () => {
     }>();
     expectTypeOf(createNativeTabsProps).returns.toMatchTypeOf<{
       navigateSync: (name: string) => void;
-    }>();
-    expectTypeOf(createNativeStackProps).returns.toMatchTypeOf<{
-      removeRoutes: (routeKeys: string[]) => void;
     }>();
     expectTypeOf(createJSStackProps).returns.toEqualTypeOf<StackNavigatorCreateProps>();
   });

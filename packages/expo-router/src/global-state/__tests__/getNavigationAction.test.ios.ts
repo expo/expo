@@ -156,6 +156,7 @@ describe(getNavigateAction, () => {
     expect(result).toEqual({
       status: 'action',
       action: expect.objectContaining({ type: 'PUSH', target: 'root-nav' }),
+      targetState: { routes: [{ name: 'home' }] },
     });
     expect(mockResolveNavigationDestination).toHaveBeenCalledWith(
       expect.objectContaining({

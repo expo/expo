@@ -1,6 +1,6 @@
 import { act, fireEvent, screen, userEvent } from '@testing-library/react-native';
 import type { Ref } from 'react';
-import React, { act as reactAct, forwardRef, useEffect, useState } from 'react';
+import React, { act as reactAct, forwardRef, use, useEffect, useState } from 'react';
 import type { ViewProps } from 'react-native';
 import { View, Text, Button } from 'react-native';
 
@@ -8,7 +8,7 @@ import { unstable_useIsNavigating } from '../exports';
 import { internalNavigationEvents } from '../global-state/internalNavigationEvents';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
-import { useGuardRedirect } from '../layouts/GuardContext';
+import { GuardContext } from '../layouts/GuardContext';
 import { Stack } from '../layouts/Stack';
 import { Tabs as JSTabs } from '../layouts/Tabs';
 import { Link, Redirect } from '../link/Link';
@@ -1869,9 +1869,9 @@ it('renders an external trigger without a navigator route', async () => {
 });
 
 it('does not use a parent guard redirect for a tab with the same route name', async () => {
-  let inheritedGuardRedirect: ReturnType<typeof useGuardRedirect>;
+  let layoutGuards: unknown;
   function TabsLayout() {
-    inheritedGuardRedirect = useGuardRedirect('settings');
+    layoutGuards = use(GuardContext);
     return (
       <Tabs>
         <TabList>
@@ -1905,7 +1905,7 @@ it('does not use a parent guard redirect for a tab with the same route name', as
     login: () => <Text testID="login">Login</Text>,
   });
 
-  expect(inheritedGuardRedirect).toBe('/login');
+  expect(layoutGuards).toBe(null);
   await act(() => router.push('/(tabs)/settings'));
 
   expect(screen).toHavePathname('/');
