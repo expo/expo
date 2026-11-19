@@ -9,8 +9,6 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-> **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
-
 Each agentic workflow guide uses the same project setup. Do the steps on this page one time for your project. Then add the workflows from the guides.
 
 Agentic CI and QA Swarm need the steps from [Add a build profile for the remote device](#add-a-build-profile-for-the-remote-device) to [Push the files](#push-the-files). Issue to PR and Bug triage also need [Add a GitHub token to Expo Services](#add-a-github-token-to-expo-services).
@@ -80,8 +78,8 @@ Agentic CI and QA Swarm need the steps from [Add a build profile for the remote 
 
     <Terminal cmd={['$ eas login', '$ eas init', '$ eas simulator:availability --json']} />
 
-    An account with access returns `"available": true`. If the value is `false`, [join the
-    waitlist](https://expo.dev/services/simulators) to request access.
+    An account with access returns `"available": true`. If the value is `false`, upgrade the
+    account to a paid plan. See [Expo Simulators access](/eas/simulators/reference/usage-and-billing/#access).
 
   </Requirement>
   <Requirement title="A coding agent that can run in CI">

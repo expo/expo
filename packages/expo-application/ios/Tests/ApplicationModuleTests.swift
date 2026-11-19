@@ -72,13 +72,17 @@ struct ApplicationModuleTests {
   func `getIosIdForVendorAsync resolves to the identifier for vendor`() async throws {
     let expected = await MainActor.run { UIDevice.current.identifierForVendor?.uuidString }
 
-    let result = try await runtime.evalAsync("expo.modules.ExpoApplication.getIosIdForVendorAsync()")
+    let result = try await runtime.evalAsync("expo.modules.ExpoApplication.getIosIdForVendorAsync()").ref()
 
-    if let expected {
-      #expect(try result.asString() == expected)
-    } else {
-      #expect(result.isNull() == true)
+    // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+    let identifier = try await runtime.execute { () throws -> String? in
+      let value: JavaScriptValue = try result.take()
+      if value.isNull() {
+        return nil
+      }
+      return try value.asString()
     }
+    #expect(identifier == expected)
   }
 
   @Test
@@ -90,9 +94,16 @@ struct ApplicationModuleTests {
 
   @Test
   func `getStoreEnvironmentAsync resolves to null or xcode on the simulator`() async throws {
-    let result = try await runtime.evalAsync("expo.modules.ExpoApplication.getStoreEnvironmentAsync()")
+    let result = try await runtime.evalAsync("expo.modules.ExpoApplication.getStoreEnvironmentAsync()").ref()
 
-    #expect(try result.isNull() || result.asString() == "xcode")
+    let environment = try await runtime.execute { () throws -> String? in
+      let value: JavaScriptValue = try result.take()
+      if value.isNull() {
+        return nil
+      }
+      return try value.asString()
+    }
+    #expect(environment == nil || environment == "xcode")
   }
 
   @Test(arguments: [

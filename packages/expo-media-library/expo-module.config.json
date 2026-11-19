@@ -1,6 +1,7 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
+    "podspecPath": "ios/ExpoMediaLibrary.podspec",
     "modules": ["MediaLibraryModule", "MediaLibraryNextModule"]
   },
   "android": {

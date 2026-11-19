@@ -1,6 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import ExpoModulesJSI
 
 /**
  A wrapper class for worklets from react-native-worklets.
@@ -38,6 +39,21 @@ public class Worklet: AnySerializable {
 
   public static func getDynamicType() -> AnyDynamicType {
     return DynamicWorkletType()
+  }
+}
+
+extension Worklet: JavaScriptDecodable {
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
+  @JavaScriptActor
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Self {
+    let serializable = Serializable(try extractSerializable(value, in: runtime, as: Self.self))
+    guard let worklet = try Worklet(serializable) as? Self else {
+      throw NotSerializableException(Self.self)
+    }
+    return worklet
   }
 }
 

@@ -142,6 +142,10 @@ async function collectIgnorePathsAsync(
     }
   } catch {}
 
+  // NOTE(@kitten): CVE-2026-118764 does not apply here: fingerprint creates ignore matchers with
+  // { dot: true }, leaving optimizationLevel at its default of 1. The vulnerable preprocessing
+  // requires optimizationLevel >= 2, which fingerprint config does not expose.
+  // https://github.com/advisories/GHSA-g3hv-75wg-m249
   return buildPathMatchObjects(ignorePaths);
 }
 

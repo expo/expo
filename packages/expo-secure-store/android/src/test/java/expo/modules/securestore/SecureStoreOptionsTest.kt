@@ -13,39 +13,36 @@ class SecureStoreOptionsTest {
   @Test
   fun `write prompt uses the current authentication options`() {
     val options = SecureStoreOptions(
-      requireAuthentication = true,
+      requireAuthentication = AuthenticationMethod.BIOMETRY,
       requireConfirmation = false
     )
 
     val promptOptions = options.toAuthenticationPromptOptions()
 
-    assertTrue(promptOptions.requireAuthentication)
+    assertTrue(promptOptions.authenticationMethod.isAuthenticationRequired)
     assertFalse(promptOptions.requireConfirmation)
   }
 
   @Test
   fun `read prompt uses stored authentication and current confirmation options`() {
-    val options = SecureStoreOptions(
-      requireAuthentication = false,
-      requireConfirmation = false
-    )
+    val options = SecureStoreOptions(requireConfirmation = false)
 
-    val promptOptions = options.toAuthenticationPromptOptions(requireAuthentication = true)
+    val promptOptions = options.toAuthenticationPromptOptions(AuthenticationMethod.BIOMETRY)
 
-    assertTrue(promptOptions.requireAuthentication)
+    assertTrue(promptOptions.authenticationMethod.isAuthenticationRequired)
     assertFalse(promptOptions.requireConfirmation)
   }
 
   @Test
   fun `stored unauthenticated reads remain prompt-free`() {
     val options = SecureStoreOptions(
-      requireAuthentication = true,
+      requireAuthentication = AuthenticationMethod.BIOMETRY,
       requireConfirmation = false
     )
 
-    val promptOptions = options.toAuthenticationPromptOptions(requireAuthentication = false)
+    val promptOptions = options.toAuthenticationPromptOptions(AuthenticationMethod.NONE)
 
-    assertFalse(promptOptions.requireAuthentication)
+    assertFalse(promptOptions.authenticationMethod.isAuthenticationRequired)
     assertFalse(promptOptions.requireConfirmation)
   }
 }

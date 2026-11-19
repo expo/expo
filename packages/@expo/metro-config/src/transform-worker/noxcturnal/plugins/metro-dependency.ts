@@ -14,10 +14,49 @@ export interface MetroDependencyState {
     string,
     Dependency & { index: number; imports: number; exportNameSet?: Set<string> }
   >;
+  keepRequireNames: boolean;
+  disableModuleWrapping: boolean;
+  hasAsyncRequireShim: boolean;
   requireName: string;
   importDefaultName: string;
   importAllName: string;
   dependencyMapName: string;
+}
+
+export function nativeModuleNameArgument(
+  state: MetroDependencyState,
+  name: string,
+  optional = false
+): string {
+  return state.keepRequireNames || optional ? `, ${JSON.stringify(name)}` : '';
+}
+
+export function nativeRequireCall(
+  state: MetroDependencyState,
+  index: number,
+  name: string,
+  optional = false,
+  callee = state.requireName
+): string {
+  if (state.disableModuleWrapping) return `${callee}(${JSON.stringify(name)})`;
+  return `${callee}(${state.dependencyMapName}[${index}]${nativeModuleNameArgument(state, name, optional)})`;
+}
+
+function addUnwrappedAsyncRequireShim(
+  call: Pick<NativeNodePath, 'getSource' | 'replaceWith'>,
+  state: MetroDependencyState,
+  runtimeName: string
+) {
+  if (state.hasAsyncRequireShim) return;
+  state.hasAsyncRequireShim = true;
+  call.replaceWith({
+    kind: 'composite',
+    parts: [
+      `(function (promise) { ${state.requireName}(${JSON.stringify(runtimeName)}); return promise; })(`,
+      call.getSource(),
+      ')',
+    ],
+  });
 }
 
 const OPTIONAL_DEPENDENCY_ANCESTRY = {
@@ -240,18 +279,6 @@ function dependencyKeyHash(key: string): string {
 export function createMetroDependencyPlugin(
   nox: Noxcturnal
 ): DefinedNativePlugin<MetroDependencyState> {
-  const nativeRequire = (
-    context: { pluginData: unknown },
-    state: MetroDependencyState,
-    index: number,
-    name: string,
-    keepName = false
-  ) => {
-    const { input } = metroPluginData(context);
-    return `${state.requireName}(${state.dependencyMapName}[${index}]${
-      input.options.dev || keepName ? `, ${JSON.stringify(name)}` : ''
-    })`;
-  };
   return nox.defineNativePlugin<MetroDependencyState>({
     name: 'metro-collect-static-commonjs-dependencies',
     contract: {
@@ -279,10 +306,13 @@ export function createMetroDependencyPlugin(
       });
     },
     createState: (context) => {
-      const { shared } = metroPluginData(context);
+      const { input, shared } = metroPluginData(context);
       shared.sawImportSyntax = false;
       return (shared.state = {
         dependencies: new Map(),
+        keepRequireNames: input.options.dev,
+        disableModuleWrapping: input.config.unstable_disableModuleWrapping === true,
+        hasAsyncRequireShim: false,
         requireName: 'require',
         importDefaultName: '$$_IMPORT_DEFAULT',
         importAllName: '$$_IMPORT_ALL',
@@ -306,7 +336,7 @@ export function createMetroDependencyPlugin(
               state.importAllName = program.scope.hasBinding('a')
                 ? program.scope.generateUid('a')
                 : 'a';
-            } else if (input.config.unstable_disableModuleWrapping !== true) {
+            } else if (!state.disableModuleWrapping) {
               state.requireName = 'require';
               state.importDefaultName = program.scope.hasGlobal('_$$_IMPORT_DEFAULT')
                 ? '_$$_IMPORT_DEFAULT'
@@ -388,9 +418,12 @@ export function createMetroDependencyPlugin(
           }
           runtime.imports++;
           (runtime.data.locs as any[]).push(call.getLocation());
-          if (!collectOnly && input.config.unstable_disableModuleWrapping !== true) {
+          if (!collectOnly && state.disableModuleWrapping) {
+            addUnwrappedAsyncRequireShim(call, state, runtimeName);
+          }
+          if (!collectOnly && !state.disableModuleWrapping) {
             call.replaceWith({
-              code: `${nativeRequire(call.context, state, runtime.index, runtimeName)}(${state.dependencyMapName}[${target.index}], ${state.dependencyMapName}.paths, ${JSON.stringify(name)})`,
+              code: `${nativeRequireCall(state, runtime.index, runtimeName)}(${state.dependencyMapName}[${target.index}], ${state.dependencyMapName}.paths${nativeModuleNameArgument(state, name, target.data.isOptional)})`,
               mapping: 'anchor-boundaries',
             });
           }
@@ -454,7 +487,7 @@ export function createMetroDependencyPlugin(
           (runtime.data.locs as any[]).push(worker.getLocation());
           if (collectOnly) return;
 
-          const requireRuntime = nativeRequire(worker.context, state, runtime.index, runtimeName);
+          const requireRuntime = nativeRequireCall(state, runtime.index, runtimeName);
           const resolved = `${requireRuntime}.unstable_resolve(${state.dependencyMapName}[${target.index}], ${state.dependencyMapName}.paths)`;
           const rewritten = source
             .replace(
@@ -507,7 +540,7 @@ export function createMetroDependencyPlugin(
             const dependency = registerNativeEsmDependency(state, name, call.getLocation());
             if (!collectOnly) {
               call.replaceWith({
-                code: nativeRequire(call.context, state, dependency.index, name),
+                code: nativeRequireCall(state, dependency.index, name),
                 mapping: 'anchor-boundaries',
               });
             }
@@ -594,14 +627,24 @@ export function createMetroDependencyPlugin(
             }
             dependency.imports++;
             (dependency.data.locs as any[]).push(call.getLocation());
-            if (!collectOnly) {
+            if (!collectOnly && state.disableModuleWrapping) {
               call.replaceWith({
-                code: nativeRequire(
-                  call.context,
+                kind: 'composite',
+                parts: [
+                  `${state.requireName}(`,
+                  ...args.flatMap((argument, index) =>
+                    index === 0 ? [argument.getSource()] : [', ', argument.getSource()]
+                  ),
+                  ')',
+                ],
+              });
+            } else if (!collectOnly) {
+              call.replaceWith({
+                code: nativeRequireCall(
                   state,
                   dependency.index,
                   directory as string,
-                  optional
+                  dependency.data.isOptional
                 ),
                 mapping: 'anchor-boundaries',
               });
@@ -695,7 +738,7 @@ export function createMetroDependencyPlugin(
             (runtime.data.locs as any[]).push(call.getLocation());
             if (!collectOnly) {
               call.replaceWith({
-                code: `${nativeRequire(call.context, state, runtime.index, runtimeName)}.unstable_resolve(${state.dependencyMapName}[${target.index}], ${state.dependencyMapName}.paths)`,
+                code: `${nativeRequireCall(state, runtime.index, runtimeName)}.unstable_resolve(${state.dependencyMapName}[${target.index}], ${state.dependencyMapName}.paths)`,
                 mapping: 'anchor-boundaries',
               });
             }
@@ -760,16 +803,19 @@ export function createMetroDependencyPlugin(
             runtime.imports++;
             (runtime.data.locs as any[]).push(call.getLocation());
 
-            const runtimeRequire = nativeRequire(call.context, state, runtime.index, runtimeName);
+            const runtimeRequire = nativeRequireCall(state, runtime.index, runtimeName);
             const method =
               asyncType === 'prefetch'
                 ? '.prefetch'
                 : asyncType === 'maybeSync'
                   ? '.unstable_importMaybeSync'
                   : '';
-            if (!collectOnly) {
+            if (!collectOnly && state.disableModuleWrapping && asyncType === 'async') {
+              addUnwrappedAsyncRequireShim(call, state, runtimeName);
+            }
+            if (!collectOnly && !state.disableModuleWrapping) {
               call.replaceWith({
-                code: `${runtimeRequire}${method}(${state.dependencyMapName}[${target.index}], ${state.dependencyMapName}.paths, ${JSON.stringify(name)})`,
+                code: `${runtimeRequire}${method}(${state.dependencyMapName}[${target.index}], ${state.dependencyMapName}.paths${nativeModuleNameArgument(state, name, target.data.isOptional)})`,
                 mapping: 'anchor-boundaries',
               });
             }
@@ -790,11 +836,16 @@ export function createMetroDependencyPlugin(
           const name = call.node.staticArgument as string;
           const optional = isOptionalMetroDependency(input, name, call);
           const registered = registerCommonJsDependency(state, name, call.getLocation(), optional);
-          if (!collectOnly && input.config.unstable_disableModuleWrapping !== true) {
-            const dependencyArgument = `${state.dependencyMapName}[${registered.index}]`;
+          if (!collectOnly && !state.disableModuleWrapping) {
             const replacement = /^@babel\/runtime\/helpers\/[^/]+$/.test(name)
-              ? `${state.importDefaultName}(${dependencyArgument}, ${JSON.stringify(name)})`
-              : nativeRequire(call.context, state, registered.index, name, optional);
+              ? nativeRequireCall(
+                  state,
+                  registered.index,
+                  name,
+                  registered.data.isOptional,
+                  state.importDefaultName
+                )
+              : nativeRequireCall(state, registered.index, name, registered.data.isOptional);
             call.replaceWith({
               code: replacement,
               mapping: 'anchor-boundaries',
@@ -821,7 +872,7 @@ export function createMetroDependencyPlugin(
       context.metadata.set('metroRequireName', state.requireName);
       context.metadata.set('metroImportDefaultName', state.importDefaultName);
       context.metadata.set('metroImportAllName', state.importAllName);
-      if (!collectOnly && input.config.unstable_disableModuleWrapping !== true) {
+      if (!collectOnly && !state.disableModuleWrapping) {
         const pseudoGlobals = metroPluginData(context).pseudoGlobals;
         const parameters = [
           normalizePseudoGlobals ? pseudoGlobals.global : 'global',

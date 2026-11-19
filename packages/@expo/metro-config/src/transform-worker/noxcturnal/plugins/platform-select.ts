@@ -1,15 +1,18 @@
 import type { DefinedNativePlugin } from 'noxcturnal';
 
 import type { Noxcturnal } from '../noxcturnal-transformer';
+import { createPlatformBindingChecker } from './platform-binding';
 
 export function createPlatformSelectPlugin(
   nox: Noxcturnal,
   platform: string | null | undefined
 ): DefinedNativePlugin {
+  const { isPlatformBinding, visitor } = createPlatformBindingChecker(nox);
   return nox.defineNativePlugin({
     name: 'expo-minify-platform-select',
     contract: { syntax: { anyOf: ['CallExpression'] } },
     visitors: [
+      visitor,
       nox.defineVisitor(
         {
           route: 'CallExpression',
@@ -17,7 +20,9 @@ export function createPlatformSelectPlugin(
           children: { arguments: { route: 'ObjectExpression' } },
         },
         {
+          ancestry: { mode: 'findParent' },
           scope: true,
+          controlFlow: ['dynamic-subscriptions', 'skip'],
           children: {
             callee: { route: 'Expression', fields: ['memberPath', 'name'] },
             arguments: {
@@ -25,7 +30,7 @@ export function createPlatformSelectPlugin(
               children: {
                 properties: {
                   route: 'ObjectProperty',
-                  fields: ['key', 'computed'],
+                  fields: ['key', 'computed', 'method', 'kind'],
                   children: { value: { route: 'Expression' } },
                 },
               },
@@ -34,7 +39,10 @@ export function createPlatformSelectPlugin(
         },
         (call) => {
           const callee = call.getChild('callee');
-          if (!callee?.matchesPattern('Platform.select') || call.scope.hasBinding('Platform'))
+          if (
+            !callee?.matchesPattern('Platform.select') ||
+            !isPlatformBinding(call.scope, call.context)
+          )
             return;
           const argument = call.getChildList('arguments')[0];
           if (!argument?.is('ObjectExpression')) return;
@@ -42,7 +50,10 @@ export function createPlatformSelectPlugin(
           if (
             properties.some(
               (property) =>
-                property.node.type !== 'ObjectProperty' || property.node.computed === true
+                property.node.type !== 'ObjectProperty' ||
+                property.node.computed === true ||
+                property.node.method === true ||
+                property.node.kind !== 'init'
             )
           ) {
             return;
@@ -58,9 +69,26 @@ export function createPlatformSelectPlugin(
             (platform ? find(platform) : undefined) ??
             (platform === 'web' ? undefined : find('native')) ??
             find('default');
+          for (const property of properties) {
+            if (property !== selected) property.skip();
+          }
           const value = selected?.getChild('value');
+          const replacement = value
+            ? value.is('Identifier') ||
+              value.is('StringLiteral') ||
+              value.is('BooleanLiteral') ||
+              value.is('NullLiteral')
+              ? value.getSource()
+              : call.context.code.template`(${value.getSource()})`
+            : call.context.code.parseExpression('undefined');
+          const statement = call.findParent(
+            (parent) => parent.start !== call.start || parent.is('ExpressionStatement')
+          );
+          // A safe leading token preserves ASI, including single-statement if/loop bodies.
           call.replaceWith(
-            value ? value.getSource() : call.context.code.parseExpression('undefined')
+            statement?.is('ExpressionStatement') && statement.start === call.start
+              ? call.context.code.template`0, ${replacement}`
+              : replacement
           );
         }
       ),

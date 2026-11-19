@@ -8,13 +8,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSDictionary *)exportLocation:(CLLocation *)location
 {
+  BOOL hasAltitude = location.verticalAccuracy > 0;
   return @{
     @"coords": @{
         @"latitude": @(location.coordinate.latitude),
         @"longitude": @(location.coordinate.longitude),
-        @"altitude": @(location.ellipsoidalAltitude),
+        @"altitude": hasAltitude ? @(location.ellipsoidalAltitude) : [NSNull null],
+        @"mslAltitude": hasAltitude ? @(location.altitude) : [NSNull null],
         @"accuracy": @(location.horizontalAccuracy),
-        @"altitudeAccuracy": @(location.verticalAccuracy),
+        @"altitudeAccuracy": hasAltitude ? @(location.verticalAccuracy) : [NSNull null],
         @"heading": @(location.course),
         @"speed": @(location.speed),
         },

@@ -1,5 +1,4 @@
-import { useEventListener } from 'expo';
-import { useReleasingSharedObject } from 'expo-modules-core';
+import { useEventListener, useReleasingSharedObject } from 'expo';
 import { useEffect, useRef } from 'react';
 
 import AppMetrics from './module';

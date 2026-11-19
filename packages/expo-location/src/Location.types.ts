@@ -194,6 +194,21 @@ export type LocationTaskOptions = LocationOptions & {
 };
 
 // @needsAudit
+/**
+ * Type representing background motion activity task options.
+ */
+export type MotionActivityTaskOptions = {
+  /**
+   * Configuration for running motion activity updates through a foreground service, the same
+   * way `LocationTaskOptions.foregroundService` keeps background location updates running. When
+   * omitted, updates are only guaranteed to be delivered while the OS happens to keep the app
+   * process alive.
+   * @platform android
+   */
+  foregroundService?: LocationTaskServiceOptions;
+};
+
+// @needsAudit
 export type LocationTaskServiceOptions = {
   /**
    * Title of the foreground service notification.
@@ -288,15 +303,24 @@ export type LocationObjectCoords = {
    */
   longitude: number;
   /**
-   * The altitude in meters above the WGS 84 reference ellipsoid. Can be `null` on Web if it's not available.
+   * The altitude in meters above the WGS 84 reference ellipsoid.
+   * `null` when the location fix has no valid altitude.
    */
   altitude: number | null;
+  /**
+   * The altitude in meters above mean sea level.
+   * `null` when the location fix has no valid altitude, and always `null` on Web and on Android 13 and lower.
+   * @platform android 14+
+   * @platform ios
+   */
+  mslAltitude: number | null;
   /**
    * The radius of uncertainty for the location, measured in meters. Can be `null` on Web if it's not available.
    */
   accuracy: number | null;
   /**
-   * The accuracy of the altitude value, in meters. Can be `null` on Web if it's not available.
+   * The accuracy of `altitude`, in meters. On iOS, it also applies to `mslAltitude`.
+   * `null` when the location fix has no valid altitude.
    */
   altitudeAccuracy: number | null;
   /**

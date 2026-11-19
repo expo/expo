@@ -8,6 +8,8 @@ type Props = {
   children: React.ReactElement;
 };
 
+export const isMaskedViewAvailable = false;
+
 export function MaskedView({ children }: Props) {
   return children;
 }

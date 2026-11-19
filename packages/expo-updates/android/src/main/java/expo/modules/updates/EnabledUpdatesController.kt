@@ -249,14 +249,14 @@ class EnabledUpdatesController(
   }
 
   override suspend fun checkForUpdate() = suspendCancellableCoroutine { continuation ->
-    val procedure = CheckForUpdateProcedure(context, updatesConfiguration, database, logger, fileDownloader, selectionPolicy, launchedUpdate) {
+    val procedure = CheckForUpdateProcedure(context, updatesConfiguration, database, logger, fileDownloader, selectionPolicy, { launchedUpdate }) {
       continuation.resume(it)
     }
     stateMachine.queueExecution(procedure)
   }
 
   override suspend fun fetchUpdate() = suspendCancellableCoroutine { continuation ->
-    val procedure = FetchUpdateProcedure(context, updatesConfiguration, logger, database, updatesDirectory, fileDownloader, selectionPolicy, launchedUpdate, controllerScope) {
+    val procedure = FetchUpdateProcedure(context, updatesConfiguration, logger, database, updatesDirectory, fileDownloader, selectionPolicy, { launchedUpdate }, controllerScope) {
       continuation.resume(it)
     }
     stateMachine.queueExecution(procedure)
@@ -267,7 +267,8 @@ class EnabledUpdatesController(
       try {
         val result = ManifestMetadata.getExtraParams(
           database,
-          updatesConfiguration
+          updatesConfiguration,
+          logger
         )
         val resultMap = when (result) {
           null -> Bundle()

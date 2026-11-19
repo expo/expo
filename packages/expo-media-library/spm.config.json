@@ -14,18 +14,6 @@
       ],
       "targets": [
         {
-          "type": "objc",
-          "name": "ExpoMediaLibrary_ios_objc",
-          "moduleName": "ExpoMediaLibrary",
-          "path": "ios",
-          "pattern": "**/*.m",
-          "headerPattern": "**/*.h",
-          "dependencies": ["ReactNativeDependencies", "React", "Hermes"],
-          "linkedFrameworks": ["Foundation", "UIKit", "Photos", "PhotosUI"],
-          "includeDirectories": ["."],
-          "exclude": ["Tests/**"]
-        },
-        {
           "type": "swift",
           "name": "ExpoMediaLibrary",
           "path": "ios",
@@ -34,8 +22,7 @@
             "ReactNativeDependencies",
             "React",
             "Hermes",
-            "expo-modules-core/ExpoModulesCore",
-            "ExpoMediaLibrary_ios_objc"
+            "expo-modules-core/ExpoModulesCore"
           ],
           "linkedFrameworks": ["Foundation", "UIKit", "Photos", "PhotosUI"],
           "exclude": ["Tests/**"],

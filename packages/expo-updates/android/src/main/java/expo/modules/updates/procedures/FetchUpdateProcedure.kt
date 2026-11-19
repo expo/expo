@@ -6,12 +6,13 @@ import expo.modules.updates.IUpdatesController
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.loader.AssetsFailedToLoadException
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updatesinterface.UpdatesLogMessage
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import kotlinx.coroutines.CancellationException
@@ -26,7 +27,7 @@ class FetchUpdateProcedure(
   private val updatesDirectory: File,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
-  private val launchedUpdate: UpdateEntity?,
+  private val getLaunchedUpdate: () -> UpdateEntity?,
   private val scope: CoroutineScope,
   private val callback: (IUpdatesController.FetchUpdateResult) -> Unit
 ) : StateMachineProcedure() {
@@ -34,15 +35,21 @@ class FetchUpdateProcedure(
 
   override suspend fun run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEvent.Download())
+    val launchedUpdate = getLaunchedUpdate()
 
     try {
-      val loaderResult = startRemoteLoader(database, procedureContext)
-      processSuccessLoaderResult(loaderResult, procedureContext)
+      val loaderResult = startRemoteLoader(database, procedureContext, launchedUpdate)
+      processSuccessLoaderResult(loaderResult, procedureContext, launchedUpdate)
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
       val message = "Failed to download new update: ${e.localizedMessageWithCauseLocalizedMessage()}"
-      logger.errorForLoadFailure("Failed to download new update", e, UpdatesErrorCode.UpdateFailedToLoad)
+      logger.errorForLoadFailure(
+        UpdatesLogMessage.RemoteFetchFailed,
+        UpdatesLogMessage.RemoteFetchUnreachable,
+        e,
+        AssetsFailedToLoadException.failureGroups(e)
+      )
       procedureContext.processStateEvent(UpdatesStateEvent.DownloadError(message))
       callback(IUpdatesController.FetchUpdateResult.ErrorResult(e))
     } finally {
@@ -50,7 +57,7 @@ class FetchUpdateProcedure(
     }
   }
 
-  private suspend fun startRemoteLoader(database: UpdatesDatabase, procedureContext: ProcedureContext): Loader.LoaderResult {
+  private suspend fun startRemoteLoader(database: UpdatesDatabase, procedureContext: ProcedureContext, launchedUpdate: UpdateEntity?): Loader.LoaderResult {
     val remoteLoader = RemoteLoader(
       context,
       updatesConfiguration,
@@ -97,7 +104,7 @@ class FetchUpdateProcedure(
     }
   }
 
-  private suspend fun processSuccessLoaderResult(loaderResult: Loader.LoaderResult, procedureContext: ProcedureContext) {
+  private suspend fun processSuccessLoaderResult(loaderResult: Loader.LoaderResult, procedureContext: ProcedureContext, launchedUpdate: UpdateEntity?) {
     val result = RemoteLoader.processSuccessLoaderResult(
       context,
       updatesConfiguration,

@@ -103,6 +103,33 @@ struct JavaScriptNativeStateTests {
     #expect(object2.getNativeState() === nativeState)
   }
 
+  @Test
+  func `setNativeStateIfAlive attaches a native state that another object holds`() {
+    let object1 = runtime.createObject()
+    let object2 = runtime.createObject()
+    let nativeState = CustomNativeState()
+    object1.setNativeState(nativeState)
+    #expect(object2.setNativeStateIfAlive(nativeState) == true)
+    #expect(object2.getNativeState() === nativeState)
+  }
+
+  @Test
+  func `setNativeStateIfAlive does not attach a native state that no object holds`() throws {
+    let object1 = runtime.createObject()
+    let object2 = runtime.createObject()
+    var isPointeeReleased = false
+    let nativeState = CustomNativeState()
+    nativeState.setDeallocator { _ in
+      isPointeeReleased = true
+    }
+    #expect(object1.setNativeStateIfAlive(nativeState) == false)
+    object1.setNativeState(nativeState)
+    object1.unsetNativeState()
+    runtime.collectGarbage { isPointeeReleased }
+    #expect(object2.setNativeStateIfAlive(nativeState) == false)
+    #expect(object2.hasNativeState() == false)
+  }
+
   // MARK: - Deallocator
 
   @Test

@@ -1,0 +1,7 @@
+extends: existence
+message: "Use exactly one space after punctuation. Check '%s'."
+level: error
+nonword: true
+tokens:
+  - '[a-z][.?!,][A-Z][a-z]'
+  - '[\w.?!,\(\)\-":] {2,}[\w.?!,\(\)\-":]'

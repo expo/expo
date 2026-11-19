@@ -119,6 +119,12 @@ public:
   void setListeningHook(void *context, ListeningHook hook, void (*releaseContext)(void *)) noexcept;
 
   /**
+   Removes all listeners of all events, without calling the listening hooks. Use it to destroy the listeners
+   while their runtime still exists, when the native state can outlive the runtime.
+   */
+  void clearListeners() noexcept;
+
+  /**
    Gets event emitter's native state from the given object.
    If `createIfMissing` is set to `true`, the state will be automatically created.
    */

@@ -38,7 +38,8 @@ class Env {
 
   /** Is running in non-interactive CI mode */
   get CI() {
-    return boolish('CI', false);
+    const ci = process.env.CI;
+    return ci === '1' || ci?.toLowerCase() === 'true';
   }
 
   /** Disable telemetry (analytics) */
@@ -308,6 +309,16 @@ class Env {
   /** Enable Expo Log Box for iOS and Android (Web is enabled by default) */
   get EXPO_UNSTABLE_LOG_BOX(): boolean {
     return boolish('EXPO_UNSTABLE_LOG_BOX', false);
+  }
+
+  /**
+   * Disable Expo's custom network inspection (the `/inspector/network` relay, response body
+   * storage, and the "Expo Network" DevTools tab), leaving the React Native DevTools Network
+   * panel to React Native's core network reporting. Temporary until the custom network
+   * inspection is removed.
+   */
+  get EXPO_UNSTABLE_CORE_NETWORK_INSPECTOR(): boolean {
+    return boolish('EXPO_UNSTABLE_CORE_NETWORK_INSPECTOR', false);
   }
 
   /**

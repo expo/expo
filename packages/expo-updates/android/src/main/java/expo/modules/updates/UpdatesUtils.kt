@@ -6,8 +6,8 @@ import android.util.Base64
 import android.util.Log
 import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
 import expo.modules.updates.db.entity.AssetEntity
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updatesinterface.UpdatesLogMessage
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
@@ -212,7 +212,7 @@ object UpdatesUtils {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
         if (cm == null) {
           val cause = Exception("Null ConnectivityManager system service")
-          logger.error("Could not determine active network connection is metered; not checking for updates", cause, UpdatesErrorCode.Unknown)
+          logger.error(UpdatesLogMessage.SystemMeteredNetworkCheckFailed, cause)
           return false
         }
         !cm.isActiveNetworkMetered

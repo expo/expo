@@ -31,6 +31,21 @@ export function buildExpandArgs({
   return [...args, ...paths];
 }
 
+/** The options of the `fix` subcommand of the Expo Modules binary. */
+export type FixArgs = {
+  paths: string[];
+  symbols?: string[];
+};
+
+/** The arguments for `fix`, with the paths last, as for `expand`. */
+export function buildFixArgs({ paths, symbols = [] }: FixArgs): string[] {
+  const args = ['fix'];
+  for (const symbol of symbols) {
+    args.push('--symbol', symbol);
+  }
+  return [...args, ...paths];
+}
+
 /**
  * The Expo Modules executable of the `expo-modules-macros` version that the module at `packageDir`
  * compiles with. That version must have `expand`, which `expo-modules-macros` 0.27.0 added.
@@ -48,9 +63,9 @@ export function resolveExpandBinary(packageDir: string): string {
 }
 
 /**
- * Runs `expand` with the Expo Modules executable at `binaryPath`. Its output goes to this
+ * Runs `expand` or `fix` with the Expo Modules executable at `binaryPath`. Its output goes to this
  * process's stdout and stderr as it is, and the promise resolves with its exit code: `0`, `1` for an
- * error diagnostic (as text), or `2` for a usage error.
+ * error diagnostic (as text) or a file that `fix` can't write, or `2` for a usage error.
  */
 export function runExpand(binaryPath: string, args: string[]): Promise<number> {
   if (!fs.existsSync(binaryPath)) {

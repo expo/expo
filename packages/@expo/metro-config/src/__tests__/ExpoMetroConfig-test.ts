@@ -1,4 +1,5 @@
 import { Cache } from '@expo/metro/metro-cache';
+import { mergeConfig } from '@expo/metro/metro-config';
 import { vol } from 'memfs';
 import os from 'os';
 import path from 'path';
@@ -145,8 +146,13 @@ describe(getDefaultConfig, () => {
     );
   });
 
-  it("neutralizes Metro's `useWatchman` default so the Node watcher is used by default", () => {
-    expect(getDefaultConfig(projectRoot).resolver?.useWatchman).toBeNull();
+  it("turns off Watchman by default, overriding Metro's default", () => {
+    expect(getDefaultConfig(projectRoot).resolver?.useWatchman).toBe(false);
+  });
+
+  it('lets a user config turn Watchman on', () => {
+    const config = mergeConfig(getDefaultConfig(projectRoot), { resolver: { useWatchman: true } });
+    expect(config.resolver.useWatchman).toBe(true);
   });
 });
 

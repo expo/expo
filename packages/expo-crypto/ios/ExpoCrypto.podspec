@@ -33,9 +33,6 @@ Pod::Spec.new do |s|
     test_spec.dependency 'ExpoModulesTestCore'
 
     test_spec.source_files = 'Tests/**/*.{m,swift}'
-    # The test bundle links C++ code from ExpoModulesCore but does not inherit its
-    # user_target_xcconfig (-lc++), so link the C++ runtime explicitly.
-    test_spec.libraries = 'c++'
   end
 
   # Performance benchmarks, run with `et native-unit-tests --benchmarks`. A separate spec, so unit
@@ -43,6 +40,5 @@ Pod::Spec.new do |s|
   s.test_spec 'Benchmarks' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
     test_spec.source_files = 'Benchmarks/**/*.swift'
-    test_spec.libraries = 'c++'
   end
 end

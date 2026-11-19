@@ -66,8 +66,8 @@ describe('APISection', () => {
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(12);
-    expect(screen.getAllByRole('table')).toHaveLength(5);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(21);
+    expect(screen.getAllByRole('table')).toHaveLength(8);
 
     expect(screen.queryByText('Methods'));
     expect(screen.queryByText('Enums'));
@@ -114,8 +114,8 @@ describe('APISection', () => {
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(12);
-    expect(screen.getAllByRole('table')).toHaveLength(5);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(21);
+    expect(screen.getAllByRole('table')).toHaveLength(8);
   });
 
   test('renders the fallback when provider data is missing', () => {

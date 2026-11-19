@@ -50,6 +50,17 @@ struct JavaScriptValuesBufferTests {
   }
 
   @Test
+  func `slice passes the values of a range without taking them`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: "first", 2, 3, "last")
+    let sum = try runtime.eval("(function (a, b) { return a + b; })").getFunction()
+
+    #expect(try sum.call(arguments: buffer.slice(1..<3)).asInt() == 5)
+    #expect(buffer.slice(1...).count == 3)
+    #expect(buffer.slice(4...).count == 0)
+    #expect(try buffer[1].asInt() == 2)
+  }
+
+  @Test
   func `map enumerates values in order`() {
     let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: 1, 2, 3)
     let values = buffer.map { value, _ in (try? value.asInt()) ?? 0 }

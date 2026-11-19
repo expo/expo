@@ -16,31 +16,30 @@ data class UpdatesLogEntry(
   val duration: Long?,
   val updateId: String?,
   val assetId: String?,
-  val stacktrace: List<String>?
+  val stacktrace: List<String>?,
+  val key: String? = null,
+  val values: Map<String, String>? = null
 ) {
-  fun asString(): String {
-    return JSONObject(
-      mapOf(
-        "timestamp" to timestamp,
-        "message" to message,
-        "code" to code,
-        "level" to level
-      )
-    ).apply {
-      if (duration != null) {
-        put("duration", duration)
-      }
-      if (updateId != null) {
-        put("updateId", updateId)
-      }
-      if (assetId != null) {
-        put("assetId", assetId)
-      }
+  fun asString(): String = JSONObject(asMap()).toString()
+
+  /**
+   * The entry as a map with the same keys as the JSON string.
+   */
+  fun asMap(): Map<String, Any> =
+    buildMap {
+      put("timestamp", timestamp)
+      put("message", message)
+      put("code", code)
+      put("level", level)
+      duration?.let { put("duration", it) }
+      updateId?.let { put("updateId", it) }
+      assetId?.let { put("assetId", it) }
       if (!stacktrace.isNullOrEmpty()) {
-        put("stacktrace", JSONArray(stacktrace))
+        put("stacktrace", stacktrace)
       }
-    }.toString()
-  }
+      key?.let { put("key", it) }
+      this@UpdatesLogEntry.values?.let { put("values", it) }
+    }
 
   companion object {
     fun create(json: String): UpdatesLogEntry? {
@@ -56,6 +55,10 @@ data class UpdatesLogEntry(
           jsonObject.getNullable("assetId"),
           jsonObject.getNullable<JSONArray>("stacktrace")?.let { jsonArray ->
             List(jsonArray.length()) { i -> jsonArray.getString(i) }
+          },
+          jsonObject.getNullable("key"),
+          jsonObject.getNullable<JSONObject>("values")?.let { valuesObject ->
+            valuesObject.keys().asSequence().associateWith { valuesObject.getString(it) }
           }
         )
       } catch (e: Exception) {

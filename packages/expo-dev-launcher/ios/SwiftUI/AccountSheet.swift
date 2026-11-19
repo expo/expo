@@ -204,7 +204,7 @@ struct AccountSheet: View {
   @ViewBuilder
   private func createAvatar(account: UserAccount) -> some View {
     let isOrganization = account.ownerUserActor == nil
-    let profilePhoto = account.ownerUserActor?.profilePhoto
+    let profilePhoto = account.ownerUserActor?.primaryAccountProfileImageUrl
     let name = account.ownerUserActor?.fullName ?? account.name
 
     if isOrganization {

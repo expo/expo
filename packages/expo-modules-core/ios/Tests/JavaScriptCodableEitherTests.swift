@@ -45,8 +45,8 @@ struct JavaScriptCodableEitherTests {
     #expect(value == [1, 2, 3])
   }
 
-  // Convertibles have no `JavaScriptCodable` conformance of their own, so this covers the types that
-  // only the dynamic converters can handle.
+  // `Either` decodes through the dynamic converters, so a convertible decodes through its `Convertible`
+  // conversion.
   @Test
   func `decodes a convertible`() throws {
     let runtime = try runtime

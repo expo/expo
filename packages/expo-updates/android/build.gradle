@@ -173,7 +173,6 @@ dependencies {
   ksp "androidx.room:room-compiler:$room_version"
 
   implementation("com.squareup.okhttp3:okhttp:4.9.2")
-  implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.2")
   implementation("com.squareup.zstd:zstd-kmp-okio:0.4.0")
   implementation("org.brotli:dec:0.1.2")
 
@@ -196,6 +195,4 @@ dependencies {
   androidTestImplementation "androidx.room:room-testing:$room_version"
   androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2'
   androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit:${kotlinVersion}"
-
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
 }

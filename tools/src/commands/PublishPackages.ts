@@ -1,12 +1,14 @@
 import { Command } from '@expo/commander';
 
 import { runTurboTasksAsync } from '../Turbo';
+import { spawnAsync } from '../Utils';
 import {
   assertCleanWorkingTreeAsync,
   assertChangesetPrerequisiteAsync,
   assertReleaseBranch,
   assertVersionCommitAsync,
   getReleaseBranchAsync,
+  getReleasePublishEnv,
   getPublishPlanAsync,
   getStablePublishArgsAsync,
   packChangesetsAsync,
@@ -45,7 +47,11 @@ export default (program: Command) => {
         return;
       }
       if (publishPlan.length) {
-        await runChangesetsAsync(await getStablePublishArgsAsync(branchName));
+        await runChangesetsAsync(
+          await getStablePublishArgsAsync(branchName),
+          spawnAsync,
+          getReleasePublishEnv()
+        );
       }
     });
 };

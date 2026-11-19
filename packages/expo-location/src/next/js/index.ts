@@ -5,6 +5,7 @@ export {
   useLocationServices,
 } from './locationServices';
 export { PositionWatchHandle, watchPosition } from './PositionWatchHandle';
+export { HeadingWatchHandle, watchHeading } from './HeadingWatchHandle';
 export {
   LocationProvider,
   setLocationProvider,
@@ -27,3 +28,4 @@ export {
   stopBackgroundSession,
   getBackgroundSessionStatus,
 } from './BackgroundSession';
+export { geocode, reverseGeocode } from './geocoding';

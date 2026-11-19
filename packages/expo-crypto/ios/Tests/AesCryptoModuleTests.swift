@@ -105,8 +105,9 @@ struct AesCryptoModuleTests {
         return join([encryptionKey instanceof AES.EncryptionKey, encryptionKey.size]);
       })
       """
-    )
-    #expect(try result.asString() == "true 256")
+    ).ref()
+    // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+    #expect(try await runtime.execute { try result.take().asString() } == "true 256")
   }
 
   @Test
@@ -121,8 +122,8 @@ struct AesCryptoModuleTests {
         }));
       })
       """
-    )
-    #expect(try result.asString() == "128 192 256")
+    ).ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "128 192 256")
   }
 
   @Test
@@ -143,8 +144,8 @@ struct AesCryptoModuleTests {
         }));
       })
       """
-    )
-    #expect(try result.asString() == "128 192 256")
+    ).ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "128 192 256")
   }
 
   @Test
@@ -160,8 +161,8 @@ struct AesCryptoModuleTests {
         }));
       }).then(join)
       """
-    )
-    #expect(try result.asString() == "\(Reference.keyHex) \(Reference.keyHex)")
+    ).ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "\(Reference.keyHex) \(Reference.keyHex)")
   }
 
   @Test
@@ -176,46 +177,58 @@ struct AesCryptoModuleTests {
         ]);
       }).then(join)
       """
+    ).ref()
+    #expect(
+      try await runtime.execute { try result.take().asString() }
+        == "\(Reference.keyHex) \(Reference.keyHex) \(Reference.keyBase64)"
     )
-    #expect(try result.asString() == "\(Reference.keyHex) \(Reference.keyHex) \(Reference.keyBase64)")
   }
 
   @Test
   func `import rejects a key of an unsupported length`() async throws {
-    let result = try await runtime.evalAsync("rejectionCode(AES.EncryptionKey.import(new Uint8Array(15)))")
-    #expect(try result.asString() == "ERR_INVALID_KEY_SIZE")
+    let result = try await runtime.evalAsync("rejectionCode(AES.EncryptionKey.import(new Uint8Array(15)))").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "ERR_INVALID_KEY_SIZE")
   }
 
   @Test
   func `import rejects a string key without an encoding`() async throws {
-    let result = try await runtime.evalAsync("rejectionCode(AES.EncryptionKey.import('\(Reference.keyHex)'))")
-    #expect(try result.asString() == "ERR_MISSING_ENCODING")
+    let result = try await runtime.evalAsync("rejectionCode(AES.EncryptionKey.import('\(Reference.keyHex)'))").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "ERR_MISSING_ENCODING")
   }
 
   @Test
   func `import rejects a string key that isn't valid base64`() async throws {
-    let result = try await runtime.evalAsync("rejectionCode(AES.EncryptionKey.import('not base64', 'base64'))")
-    #expect(try result.asString() == "ERR_INVALID_KEY_FORMAT")
+    let result = try await runtime.evalAsync("rejectionCode(AES.EncryptionKey.import('not base64', 'base64'))").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "ERR_INVALID_KEY_FORMAT")
   }
 
   // MARK: - encryptAsync
 
   @Test
   func `encryptAsync matches the reference output`() async throws {
-    let result = try await runtime.evalAsync("encrypt(plaintext, { nonce: nonce }).then(partsInHex)")
-    #expect(try result.asString() == "\(Reference.nonceHex) \(Reference.ciphertextHex) \(Reference.tagHex)")
+    let result = try await runtime.evalAsync("encrypt(plaintext, { nonce: nonce }).then(partsInHex)").ref()
+    #expect(
+      try await runtime.execute { try result.take().asString() }
+        == "\(Reference.nonceHex) \(Reference.ciphertextHex) \(Reference.tagHex)"
+    )
   }
 
   @Test
   func `encryptAsync accepts the nonce as a base64 string`() async throws {
-    let result = try await runtime.evalAsync("encrypt(plaintext, { nonce: '\(Reference.nonceBase64)' }).then(partsInHex)")
-    #expect(try result.asString() == "\(Reference.nonceHex) \(Reference.ciphertextHex) \(Reference.tagHex)")
+    let result = try await runtime.evalAsync("encrypt(plaintext, { nonce: '\(Reference.nonceBase64)' }).then(partsInHex)").ref()
+    #expect(
+      try await runtime.execute { try result.take().asString() }
+        == "\(Reference.nonceHex) \(Reference.ciphertextHex) \(Reference.tagHex)"
+    )
   }
 
   @Test
   func `encryptAsync accepts the plaintext as a base64 string`() async throws {
-    let result = try await runtime.evalAsync("encrypt('\(Reference.plaintextBase64)', { nonce: nonce }).then(partsInHex)")
-    #expect(try result.asString() == "\(Reference.nonceHex) \(Reference.ciphertextHex) \(Reference.tagHex)")
+    let result = try await runtime.evalAsync("encrypt('\(Reference.plaintextBase64)', { nonce: nonce }).then(partsInHex)").ref()
+    #expect(
+      try await runtime.execute { try result.take().asString() }
+        == "\(Reference.nonceHex) \(Reference.ciphertextHex) \(Reference.tagHex)"
+    )
   }
 
   @Test
@@ -231,8 +244,8 @@ struct AesCryptoModuleTests {
         ]);
       })
       """
-    )
-    #expect(try result.asString() == "true 12 16 33")
+    ).ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "true 12 16 33")
   }
 
   @Test
@@ -243,8 +256,8 @@ struct AesCryptoModuleTests {
         return Promise.all([sealedData.ivSize, decrypt(sealedData).then(hex)]);
       }).then(join)
       """
-    )
-    #expect(try result.asString() == "16 \(Reference.plaintextHex)")
+    ).ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "16 \(Reference.plaintextHex)")
   }
 
   @Test
@@ -260,20 +273,23 @@ struct AesCryptoModuleTests {
         }));
       }).then(join)
       """
+    ).ref()
+    #expect(
+      try await runtime.execute { try result.take().asString() }
+        == "\(Reference.tagWithAdditionalDataHex) \(Reference.tagWithAdditionalDataHex)"
     )
-    #expect(try result.asString() == "\(Reference.tagWithAdditionalDataHex) \(Reference.tagWithAdditionalDataHex)")
   }
 
   @Test
   func `encryptAsync rejects a plaintext string that isn't valid base64`() async throws {
-    let result = try await runtime.evalAsync("rejectionCode(encrypt('not base64'))")
-    #expect(try result.asString() == "ERR_INVALID_BASE64")
+    let result = try await runtime.evalAsync("rejectionCode(encrypt('not base64'))").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "ERR_INVALID_BASE64")
   }
 
   @Test
   func `encryptAsync rejects an empty nonce`() async throws {
-    let result = try await runtime.evalAsync("rejectionCode(encrypt(plaintext, { nonce: new Uint8Array(0) }))")
-    #expect(try result.asString() == "ERR_ENCRYPTION_FAILED")
+    let result = try await runtime.evalAsync("rejectionCode(encrypt(plaintext, { nonce: new Uint8Array(0) }))").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "ERR_ENCRYPTION_FAILED")
   }
 
   // MARK: - decryptAsync
@@ -290,8 +306,11 @@ struct AesCryptoModuleTests {
         ]);
       }).then(join)
       """
+    ).ref()
+    #expect(
+      try await runtime.execute { try result.take().asString() }
+        == "\(Reference.plaintextHex) \(Reference.plaintextHex) \(Reference.plaintextBase64)"
     )
-    #expect(try result.asString() == "\(Reference.plaintextHex) \(Reference.plaintextHex) \(Reference.plaintextBase64)")
   }
 
   @Test
@@ -306,8 +325,11 @@ struct AesCryptoModuleTests {
         ]);
       }).then(join)
       """
+    ).ref()
+    #expect(
+      try await runtime.execute { try result.take().asString() }
+        == "\(Reference.plaintextHex) ERR_DECRYPTION_FAILED ERR_DECRYPTION_FAILED"
     )
-    #expect(try result.asString() == "\(Reference.plaintextHex) ERR_DECRYPTION_FAILED ERR_DECRYPTION_FAILED")
   }
 
   @Test
@@ -318,8 +340,8 @@ struct AesCryptoModuleTests {
         return rejectionCode(AES.decryptAsync(values[0], values[1]));
       })
       """
-    )
-    #expect(try result.asString() == "ERR_DECRYPTION_FAILED")
+    ).ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "ERR_DECRYPTION_FAILED")
   }
 
   // MARK: - SealedData
@@ -337,9 +359,9 @@ struct AesCryptoModuleTests {
         ]);
       }).then(join)
       """
-    )
+    ).ref()
     #expect(
-      try result.asString()
+      try await runtime.execute { try result.take().asString() }
         == "\(Reference.nonceBase64) \(Reference.ciphertextBase64) \(Reference.tagBase64) \(Reference.combinedBase64)"
     )
   }
@@ -357,8 +379,11 @@ struct AesCryptoModuleTests {
         return join(values.map(hex));
       })
       """
+    ).ref()
+    #expect(
+      try await runtime.execute { try result.take().asString() }
+        == "\(Reference.ciphertextHex) \(Reference.ciphertextHex)\(Reference.tagHex)"
     )
-    #expect(try result.asString() == "\(Reference.ciphertextHex) \(Reference.ciphertextHex)\(Reference.tagHex)")
   }
 
   @Test
@@ -370,9 +395,9 @@ struct AesCryptoModuleTests {
         AES.SealedData.fromCombined('\(Reference.combinedBase64)'),
       ].map(partsInHex)).then(join)
       """
-    )
+    ).ref()
     let parts = "\(Reference.nonceHex) \(Reference.ciphertextHex) \(Reference.tagHex)"
-    #expect(try result.asString() == "\(parts) \(parts)")
+    #expect(try await runtime.execute { try result.take().asString() } == "\(parts) \(parts)")
   }
 
   @Test
@@ -388,9 +413,9 @@ struct AesCryptoModuleTests {
         ]).then(join);
       })()
       """
-    )
+    ).ref()
     #expect(
-      try result.asString()
+      try await runtime.execute { try result.take().asString() }
         == "\(Reference.longNonceHex) \(Reference.longNonceCiphertextHex) \(Reference.longNonceTagHex) \(Reference.longNonceCombinedBase64) \(Reference.plaintextHex)"
     )
   }
@@ -404,8 +429,11 @@ struct AesCryptoModuleTests {
         return Promise.all([sealedData.combined('base64'), decrypt(sealedData).then(hex)]).then(join);
       })()
       """
+    ).ref()
+    #expect(
+      try await runtime.execute { try result.take().asString() }
+        == "\(Reference.combinedBase64) \(Reference.plaintextHex)"
     )
-    #expect(try result.asString() == "\(Reference.combinedBase64) \(Reference.plaintextHex)")
   }
 
   @Test
@@ -421,9 +449,9 @@ struct AesCryptoModuleTests {
         ].map(partsInHex)).then(join);
       })()
       """
-    )
+    ).ref()
     let parts = "\(Reference.nonceHex) \(Reference.ciphertextHex) \(Reference.tagHex)"
-    #expect(try result.asString() == "\(parts) \(parts) \(parts)")
+    #expect(try await runtime.execute { try result.take().asString() } == "\(parts) \(parts) \(parts)")
   }
 
   @Test
@@ -493,8 +521,8 @@ struct AesCryptoModuleTests {
 
   @Test
   func `encryptAsync rejects a negative nonce length`() async throws {
-    let result = try await runtime.evalAsync("rejectionCode(encrypt(plaintext, { nonce: -1 }))")
-    #expect(try result.asString() == "ERR_NONCE_GENERATION_FAILED")
+    let result = try await runtime.evalAsync("rejectionCode(encrypt(plaintext, { nonce: -1 }))").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "ERR_NONCE_GENERATION_FAILED")
   }
 }
 

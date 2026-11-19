@@ -3,6 +3,7 @@
 // swiftlint:disable legacy_objc_type
 // swiftlint:disable force_unwrapping
 
+import EXUpdatesInterface
 import Foundation
 import React
 
@@ -186,7 +187,7 @@ public final class ErrorRecovery: NSObject {
       logger.info(message: "ErrorRecovery: launching a cached update")
       tryRelaunchFromCache()
     case .crash:
-      logger.error(cause: UpdatesError.errorRecoveryCrashing, code: .updateFailedToLoad)
+      logger.error(.errorRecoveryCrash)
       crash()
     }
   }
@@ -361,20 +362,20 @@ public final class ErrorRecovery: NSObject {
     do {
       try FileManager.default.removeItem(at: errorLogFile)
     } catch {
-      logger.warn(message: "Could not delete error log: \(error.localizedDescription)", code: UpdatesErrorCode.unknown)
+      logger.warn(.errorRecoveryLogReadFailed, cause: error)
     }
 
     return String(data: data, encoding: .utf8)
   }
 
   public static func writeErrorOrExceptionToLog(_ errorOrException: Any, _ logger: UpdatesLogger, dispatchQueue: DispatchQueue = DispatchQueue.global()) {
-    writeErrorOrExceptionToLog(errorOrException, logger, code: .jsRuntimeError, dispatchQueue: dispatchQueue)
+    writeErrorOrExceptionToLog(errorOrException, logger, message: .errorRecoveryJsException, dispatchQueue: dispatchQueue)
   }
 
   internal static func writeErrorOrExceptionToLog(
     _ errorOrException: Any,
     _ logger: UpdatesLogger,
-    code: UpdatesErrorCode,
+    message: UpdatesLogMessage,
     dispatchQueue: DispatchQueue = DispatchQueue.global()
   ) {
     dispatchQueue.async {
@@ -389,7 +390,7 @@ public final class ErrorRecovery: NSObject {
         return
       }
 
-      logger.error(cause: UpdatesError.errorRecoveryFatalException(serializedError: serializedError), code: code)
+      logger.error(message, values: ["error": serializedError])
       let data = serializedError.data(using: .utf8)!
       let errorLogFile = ErrorRecovery.errorLogFile()
       if FileManager.default.fileExists(atPath: errorLogFile.path) {
@@ -402,7 +403,7 @@ public final class ErrorRecovery: NSObject {
         do {
           try data.write(to: errorLogFile, options: .atomic)
         } catch {
-          logger.error(cause: UpdatesError.errorRecoveryCouldNotWriteToLog(cause: error))
+          logger.error(.errorRecoveryLogWriteFailed, cause: error)
         }
       }
     }
