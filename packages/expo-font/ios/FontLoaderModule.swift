@@ -4,21 +4,16 @@ import ExpoModulesCore
 @ExpoModule("ExpoFontLoader")
 public final class FontLoaderModule: Module {
   // could be a Set, but to be able to pass to JS we keep it as an array
-  private var registeredFonts: [String]?
-  private let registeredFontsLock = NSLock()
-
-  // Loads run on the concurrent thread pool. Each load reads and then replaces the alias registry
-  // and the CoreText registrations, so loads must not overlap.
-  private let loadLock = NSLock()
+  private let registeredFonts = Mutex<[String]?>(nil)
 
   // NOTE: this is exposed in JS as globalThis.expo.modules.ExpoFontLoader.loadedFonts
   // and potentially consumed outside of Expo (e.g. RN vector icons)
   // do NOT change the property as it'll break consumers!
   @JS
   func getLoadedFonts() -> [String] {
-    return registeredFontsLock.withLock {
-      let fonts = registeredFonts ?? queryCustomNativeFonts()
-      registeredFonts = fonts
+    return registeredFonts.withLock { cachedFonts in
+      let fonts = cachedFonts ?? queryCustomNativeFonts()
+      cachedFonts = fonts
       return fonts
     }
   }
@@ -26,18 +21,16 @@ public final class FontLoaderModule: Module {
   // NOTE: this is exposed in JS as globalThis.expo.modules.ExpoFontLoader.loadAsync
   // and potentially consumed outside of Expo (e.g. RN vector icons)
   // do NOT change the function signature as it'll break consumers!
-  @JS(.concurrent)
+  @JS
+  @FontLoaderActor
   func loadAsync(fontFamilyAlias: String, localUri: URL) async throws {
-    try loadLock.withLock {
-      try loadFont(alias: fontFamilyAlias, localUri: localUri)
-    }
+    try loadFont(alias: fontFamilyAlias, localUri: localUri)
   }
 
-  @JS(.concurrent)
+  @JS
+  @FontLoaderActor
   func loadFontFamilyAsync(fontFamilyAlias: String, faces: [FontFaceRecord]) async throws {
-    try loadLock.withLock {
-      try loadFontFamily(alias: fontFamilyAlias, faces: faces)
-    }
+    try loadFontFamily(alias: fontFamilyAlias, faces: faces)
   }
 
   private func loadFont(alias fontFamilyAlias: String, localUri: URL) throws {
@@ -79,9 +72,9 @@ public final class FontLoaderModule: Module {
   }
 
   private func addRegisteredFont(_ fontFamilyAlias: String) {
-    registeredFontsLock.withLock {
-      let fonts = registeredFonts ?? queryCustomNativeFonts()
-      registeredFonts = Array(Set(fonts).union([fontFamilyAlias]))
+    registeredFonts.withLock { cachedFonts in
+      let fonts = cachedFonts ?? queryCustomNativeFonts()
+      cachedFonts = Array(Set(fonts).union([fontFamilyAlias]))
     }
   }
 
