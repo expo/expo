@@ -111,6 +111,37 @@ function expectSamePayloads(attributes: object, defaultAttributes: object) {
   expect(mismatches).toEqual([]);
 }
 
+/**
+ * Returns pairs of values that differ only in a shared object of the same class.
+ */
+function createSharedObjectChanges(): [unknown, unknown][] {
+  const sharedObject = new SharedObject();
+  const otherSharedObject = new SharedObject();
+  return [
+    [sharedObject, otherSharedObject],
+    [[sharedObject], [otherSharedObject]],
+    [{ a: sharedObject }, { a: otherSharedObject }],
+  ];
+}
+
+/**
+ * Expects that React Native drops each change from `createSharedObjectChanges` with the default
+ * attribute config, and sends the processed next value with the attribute config.
+ */
+function expectSentSharedObjectChanges(
+  attributes: object,
+  defaultAttributes: object,
+  process: (value: unknown) => unknown
+) {
+  for (const [prevValue, nextValue] of createSharedObjectChanges()) {
+    const prevProps = { value: prevValue };
+    const nextProps = { value: nextValue };
+    // React Native sees no change between shared objects of the same class.
+    expect(diffAttributePayload(prevProps, nextProps, defaultAttributes)).toBeNull();
+    expect(diffAttributePayload(prevProps, nextProps, attributes)?.value).toBe(process(nextValue));
+  }
+}
+
 describe('deepDiffPropValue', () => {
   it(`matches deepDiffer of React Native for values without shared objects`, () => {
     const prevValues = createValues();
@@ -127,14 +158,15 @@ describe('deepDiffPropValue', () => {
     expect(mismatches).toEqual([]);
   });
 
+  it(`finds a new shared object of the same class, unlike deepDiffer of React Native`, () => {
+    for (const [prevValue, nextValue] of createSharedObjectChanges()) {
+      expect(deepDiffer(prevValue, nextValue, deepDifferOptions)).toBe(false);
+      expect(deepDiffPropValue(prevValue, nextValue)).toBe(true);
+    }
+  });
+
   it(`compares shared objects by identity`, () => {
     const sharedObject = new SharedObject();
-    const otherSharedObject = new SharedObject();
-    // React Native sees no change between two shared objects of the same class.
-    expect(deepDiffer(sharedObject, otherSharedObject, deepDifferOptions)).toBe(false);
-    expect(deepDiffPropValue(sharedObject, otherSharedObject)).toBe(true);
-    expect(deepDiffPropValue([sharedObject], [otherSharedObject])).toBe(true);
-    expect(deepDiffPropValue({ a: sharedObject }, { a: otherSharedObject })).toBe(true);
     expect(deepDiffPropValue(new Array(1), [sharedObject])).toBe(true);
     expect(deepDiffPropValue(sharedObject, sharedObject)).toBe(false);
     expect(deepDiffPropValue([sharedObject], [sharedObject])).toBe(false);
@@ -148,10 +180,26 @@ describe('addAttributeProcessing', () => {
       value: { process: processPropValue },
     });
   });
+
+  it(`sends a new shared object that an attribute with only process drops`, () => {
+    expectSentSharedObjectChanges(
+      addAttributeProcessing({ value: true }),
+      { value: { process: processPropValue } },
+      processPropValue
+    );
+  });
 });
 
 describe('addAttributeDiffing', () => {
   it(`builds the same payloads as an attribute without process and diff`, () => {
     expectSamePayloads(addAttributeDiffing({ value: true }), { value: true });
+  });
+
+  it(`sends a new shared object that an attribute without process and diff drops`, () => {
+    expectSentSharedObjectChanges(
+      addAttributeDiffing({ value: true }),
+      { value: true },
+      (value) => value
+    );
   });
 });
