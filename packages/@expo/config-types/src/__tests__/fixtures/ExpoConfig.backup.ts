@@ -568,6 +568,19 @@ export interface Android {
    */
   blockedPermissions?: string[];
   /**
+   * A list of hardware or software features to declare with `<uses-feature>` elements in the app `AndroidManifest.xml` during prebuild. Set `required` to `false` to keep Google Play from hiding the app on devices without the feature, such as a feature implied by a permission or by a fixed screen orientation. An entry replaces a `<uses-feature>` element with the same name in the app manifest. The manifest merger still merges `<uses-feature>` elements from libraries, so this field only controls the app manifest. For example: `[{ "name": "android.hardware.wifi", "required": false }]`
+   */
+  usesFeatures?: {
+    /**
+     * The name of the feature, such as `android.hardware.wifi`.
+     */
+    name: string;
+    /**
+     * Whether the app requires the feature. Defaults to `true`, which is the Android default.
+     */
+    required?: boolean;
+  }[];
+  /**
    * [Firebase Configuration File](https://support.google.com/firebase/answer/7015592) Location of the `google-services.json` file for configuring Firebase. Including this key automatically enables FCM in your standalone app.
    */
   googleServicesFile?: string;
