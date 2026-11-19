@@ -385,8 +385,14 @@ inline void defineProperty(
     descriptor.setProperty(runtime, enumerableKey, enumerable);
     descriptor.setProperty(runtime, writableKey, writable);
     if (hasValue) {
-      // `Object::setProperty` clones a `const Value &` before it sets it; `setPropertyValue` doesn't.
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+      // `Object::setProperty` clones a `const Value &` before it sets it; `setPropertyValue` doesn't. Before
+      // React Native 0.86, `setPropertyValue` is protected.
       runtime.setPropertyValue(descriptor, valueKey, value);
+#else
+      descriptor.setProperty(runtime, valueKey, value);
+#endif
     }
     defineProperty.call(runtime, object, jsi::String::createFromUtf8(runtime, nameUtf8, nameLength), descriptor);
     return jsi::Value::undefined();
