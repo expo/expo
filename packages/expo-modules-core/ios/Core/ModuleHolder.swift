@@ -203,7 +203,7 @@ public final class ModuleHolder {
       // (the direct-JSI path). A no-op for modules that don't use the macro.
       try module._decorateModule(object: object, in: appContext.runtime)
 
-      try installNativeViewComponents(on: object, in: appContext.runtime)
+      installNativeViewComponents(on: object)
 
       try installListeningHooks(on: object, in: appContext.runtime)
 
@@ -228,7 +228,7 @@ public final class ModuleHolder {
    so later reads don't call native. The default view is a separate component under the module's own component name.
    */
   @JavaScriptActor
-  private func installNativeViewComponents(on object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) {
+  private func installNativeViewComponents(on object: borrowing JavaScriptObject) {
     for (viewName, viewType) in nativeViewTypes {
       let isDefaultView = viewName == DEFAULT_MODULE_VIEW
       let propertyName = isDefaultView ? ModuleHolder.defaultViewPropertyName : viewName
@@ -241,30 +241,10 @@ public final class ModuleHolder {
         viewType: viewType,
         componentName: ExpoFabricView.componentName(moduleName: name, viewName: viewName)
       )
-      let getter = runtime.createFunction(propertyName) {
-        (
-          this: borrowing JavaScriptUnownedValue,
-          arguments: consuming JavaScriptValuesBuffer,
-          result: borrowing JavaScriptValue.Slot,
-          runtime: borrowing JavaScriptRuntime
-        ) in
-        let component = try NativeViewComponentFactory.create(config, in: runtime)
-
-        // `this` is the module object. The getter doesn't capture it, which would keep it alive.
-        if this.isObject() {
-          this.getObject(in: runtime).defineProperty(
-            propertyName,
-            value: component,
-            options: isDefaultView ? [.configurable] : [.configurable, .enumerable]
-          )
-        }
-        result.emplace(component)
+      let options: JavaScriptObject.PropertyOptions = isDefaultView ? [.configurable] : [.configurable, .enumerable]
+      object.defineLazyProperty(propertyName, options: options) { runtime in
+        try NativeViewComponentFactory.create(config, in: runtime)
       }
-      let descriptor = runtime.createObject()
-      descriptor.setProperty("get", value: getter.asValue())
-      descriptor.setProperty("configurable", value: true)
-      descriptor.setProperty("enumerable", value: !isDefaultView)
-      object.defineProperty(propertyName, descriptor: descriptor)
     }
   }
 
