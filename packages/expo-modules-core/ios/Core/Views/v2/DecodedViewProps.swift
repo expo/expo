@@ -7,7 +7,11 @@
 /// mounted, the view goes from its mounted props straight to the newest ones. So the view can't use
 /// the props that the last decode changed. It asks which props changed since its mounted props with
 /// ``changedProps(since:)``, which compares the revision in which each prop last changed.
-public final class DecodedViewProps<Props: AnyViewProps>: @unchecked Sendable {
+///
+/// `Props` has no `AnyViewProps` constraint on the class, only on the extension below. The decode code is specialized
+/// for a concrete props type, and it builds this type from its mangled name. With the constraint, the mangled name has
+/// a conformance requirement, and the Swift runtime looks up the conformance on the first decode of each view type.
+public final class DecodedViewProps<Props>: @unchecked Sendable {
   /// The props.
   public let props: Props
 
@@ -45,7 +49,9 @@ public final class DecodedViewProps<Props: AnyViewProps>: @unchecked Sendable {
     self.revision = revision
     self.propRevisions = propRevisions
   }
+}
 
+extension DecodedViewProps where Props: AnyViewProps {
   /// Creates the next decode of `previous`, or the first decode of a lineage when `previous` is `nil`. Then `events` is
   /// the dispatcher that the event props of `props` are bound to. Later decodes take the one of `previous`.
   @inlinable
