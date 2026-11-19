@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.20
+
+### Patch Changes
+
+- Add experimental navigation total blocking time (`tbt`) metric, enabled with `experimental_totalBlockingTime`. ([#51505](https://github.com/expo/expo/pull/51505) by [@Ubax](https://github.com/Ubax))
+- Send at most 128 attributes for each log event, and keep the `expo.*` attributes first, so the server does not drop them. ([#53615](https://github.com/expo/expo/pull/53615) by [@Ubax](https://github.com/Ubax))
+
 ## 58.0.19
 
 ### Patch Changes

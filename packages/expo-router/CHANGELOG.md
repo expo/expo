@@ -1,5 +1,16 @@
 # Changelog
 
+## 58.0.33
+
+### Patch Changes
+
+- Fix unhandled `REMOVE_ROUTES` warning when a stack with `Stack.Protected` unmounts during startup. ([#53415](https://github.com/expo/expo/pull/53415) by [@Ubax](https://github.com/Ubax))
+- Fix an infinite loop when a `Stack.Protected` guard falls back to a route from the `redirects` config. ([#53632](https://github.com/expo/expo/pull/53632) by [@Ubax](https://github.com/Ubax))
+- Keep the module-level `router` and `useNavigationContainerRef()` working after an Android Activity relaunch. ([#53447](https://github.com/expo/expo/pull/53447) by [@Ubax](https://github.com/Ubax))
+- Match redirect and rewrite sources against the full path in the app, the same as the server. Use a catch-all source such as `/old/[...path]` to redirect child paths. ([#53634](https://github.com/expo/expo/pull/53634) by [@Ubax](https://github.com/Ubax))
+- Updated dependencies. ([#53210](https://github.com/expo/expo/pull/53210))
+  - expo-glass-effect@58.0.6
+
 ## 58.0.32
 
 ### Patch Changes

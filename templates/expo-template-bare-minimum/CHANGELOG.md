@@ -1,5 +1,13 @@
 # expo-template-bare-minimum
 
+## 58.0.36
+
+### Patch Changes
+
+- [iOS] Remove the unused `FB_SONARKIT_ENABLED` preprocessor define from the Xcode project. ([#53748](https://github.com/expo/expo/pull/53748) by [@chrfalch](https://github.com/chrfalch))
+- Updated dependencies. ([#53323](https://github.com/expo/expo/pull/53323))
+  - expo@58.1.0
+
 ## 58.0.35
 
 ### Patch Changes

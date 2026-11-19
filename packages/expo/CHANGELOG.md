@@ -1,5 +1,18 @@
 # Changelog
 
+## 58.1.0
+
+### Minor Changes
+
+- [iOS] A module built from its checked-in Package.swift can depend on the `ExpoModulesWorkletsHeaders` package at `../ExpoModulesWorkletsHeaders`. The SwiftPM plugin emits that package over the `ExpoModulesWorkletsHeaders.xcframework` from `expo-modules-core`, together with the `ExpoModulesCoreHeaders` package it depends on. ([#53323](https://github.com/expo/expo/pull/53323) by [@chrfalch](https://github.com/chrfalch))
+
+### Patch Changes
+
+- Updated dependencies. ([#53393](https://github.com/expo/expo/pull/53393), [#53322](https://github.com/expo/expo/pull/53322))
+  - @expo/cli@58.1.22
+  - expo-modules-core@58.2.0
+  - babel-preset-expo@58.0.27
+
 ## 58.0.26
 
 ### Patch Changes

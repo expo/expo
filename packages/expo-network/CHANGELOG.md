@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.6
+
+### Patch Changes
+
+- [Android] Emit a network state event when the OS blocks or unblocks the app's network access (`onBlockedStatusChanged`). On Android 15 and newer, a backgrounded app now receives `isConnected: false` while the OS blocks it and `isConnected: true` when the app returns to the foreground. ([#52815](https://github.com/expo/expo/pull/52815) by [@Subhash-Dhandhukiya](https://github.com/Subhash-Dhandhukiya))
+
 ## 58.0.5
 
 ### Patch Changes

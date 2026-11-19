@@ -1,5 +1,16 @@
 # expo-template-default
 
+## 58.0.36
+
+### Patch Changes
+
+- Updated dependencies. ([#51972](https://github.com/expo/expo/pull/51972), [#53210](https://github.com/expo/expo/pull/53210), [#53323](https://github.com/expo/expo/pull/53323), [#53781](https://github.com/expo/expo/pull/53781), [#53765](https://github.com/expo/expo/pull/53765), [#53399](https://github.com/expo/expo/pull/53399), [#53573](https://github.com/expo/expo/pull/53573), [#53767](https://github.com/expo/expo/pull/53767), [#51607](https://github.com/expo/expo/pull/51607), [#52640](https://github.com/expo/expo/pull/52640), [#53415](https://github.com/expo/expo/pull/53415), [#53632](https://github.com/expo/expo/pull/53632), [#53447](https://github.com/expo/expo/pull/53447), [#53634](https://github.com/expo/expo/pull/53634), [#52899](https://github.com/expo/expo/pull/52899), [#53294](https://github.com/expo/expo/pull/53294))
+  - @expo/ui@58.0.30
+  - expo-glass-effect@58.0.6
+  - expo@58.1.0
+  - expo-image@58.0.19
+  - expo-router@58.0.33
+
 ## 58.0.35
 
 ### Patch Changes

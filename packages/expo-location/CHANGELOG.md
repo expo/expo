@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- [next][iOS] Send `null` instead of omitting the unavailable `Position` fields in task and watcher payloads. ([#53093](https://github.com/expo/expo/pull/53093) by [@Wenszel](https://github.com/Wenszel))
+
 ## 58.0.22
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.19
+
+### Patch Changes
+
+- [iOS] Decode AVIF with libdav1d instead of libaom in the precompiled framework, to match source builds and reduce memory use. ([#52640](https://github.com/expo/expo/pull/52640) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.18
 
 ### Patch Changes
