@@ -2,30 +2,32 @@
 
 import ExpoModulesCore
 
+@ExpoModule("ExpoSystemUI")
 public class ExpoSystemUIModule: Module {
   private static let colorKey = "ExpoSystemUI.backgroundColor"
-  public func definition() -> ModuleDefinition {
-    Name("ExpoSystemUI")
 
-    OnCreate {
-      let color = UserDefaults.standard.integer(forKey: Self.colorKey)
-      if color > 0 {
-        Self.setBackgroundColorAsync(color: color)
-      } else {
-        // TODO: Maybe read from the app manifest instead of from Info.plist.
-        // Set / reset the initial color on reload and app start.
-        let colorFromPlugin = Bundle.main.object(forInfoDictionaryKey: "RCTRootViewBackgroundColor") as? Int
-        Self.setBackgroundColorAsync(color: colorFromPlugin)
-      }
-    }
-
-    AsyncFunction("getBackgroundColorAsync") { () -> String? in
-      Self.getBackgroundColor()
-    }
-
-    AsyncFunction("setBackgroundColorAsync") { (color: Int?) in
+  public override func didCreate() {
+    let color = UserDefaults.standard.integer(forKey: Self.colorKey)
+    if color > 0 {
       Self.setBackgroundColorAsync(color: color)
+    } else {
+      // TODO: Maybe read from the app manifest instead of from Info.plist.
+      // Set / reset the initial color on reload and app start.
+      let colorFromPlugin = Bundle.main.object(forInfoDictionaryKey: "RCTRootViewBackgroundColor") as? Int
+      Self.setBackgroundColorAsync(color: colorFromPlugin)
     }
+  }
+
+  @JS
+  @MainActor
+  func getBackgroundColorAsync() async -> String? {
+    Self.getBackgroundColor()
+  }
+
+  @JS
+  @MainActor
+  func setBackgroundColorAsync(color: Int?) async {
+    Self.setBackgroundColorAsync(color: color)
   }
 
   static func getBackgroundColor() -> String? {
