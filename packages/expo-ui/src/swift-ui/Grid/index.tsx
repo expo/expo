@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { requireNativeView, requireOptionalNative } from 'expo';
 import React from 'react';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -37,10 +37,9 @@ export interface GridProps extends CommonViewModifierProps {
 
 const GridNativeView: React.ComponentType<GridProps> = requireNativeView('ExpoUI', 'GridView');
 
-const GridRowNativeView: React.ComponentType<{ children: React.ReactNode }> = requireNativeView(
-  'ExpoUI',
-  'GridRowView'
-);
+// `expo.packages` exists only on iOS, and other platforms can import this file.
+const GridRowNativeView: React.ComponentType<{ children: React.ReactNode }> =
+  requireOptionalNative('@expo/ui')?.GridRowView;
 
 const GridRow: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <GridRowNativeView>{children}</GridRowNativeView>;
