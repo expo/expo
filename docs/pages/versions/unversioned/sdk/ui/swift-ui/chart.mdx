@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 
 Expo UI Chart wraps Apple's [Swift Charts](https://developer.apple.com/documentation/charts) framework, and supports rendering line, point, bar, area, pie, and rectangle charts with reference lines.
 
@@ -19,7 +20,13 @@ Expo UI Chart wraps Apple's [Swift Charts](https://developer.apple.com/documenta
 
 ### Line chart
 
-```tsx LineChartExample.tsx
+<ComponentExample
+  title="LineChartExample.tsx"
+  src="/static/images/expo-ui/examples/chart-line-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/chart-line-ios-dark.webp"
+  alt="A line chart of 4 months from Jan to Apr, with values from 15 to 32">
+
+```tsx
 import { Host, Chart } from '@expo/ui/swift-ui';
 
 export default function LineChartExample() {
@@ -39,9 +46,17 @@ export default function LineChartExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Bar chart
 
-```tsx BarChartExample.tsx
+<ComponentExample
+  title="BarChartExample.tsx"
+  src="/static/images/expo-ui/examples/chart-bar-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/chart-bar-ios-dark.webp"
+  alt="A bar chart of 4 quarters with a different color for each bar and a legend below">
+
+```tsx
 import { Host, Chart } from '@expo/ui/swift-ui';
 
 export default function BarChartExample() {
@@ -62,11 +77,19 @@ export default function BarChartExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Pie chart
 
 Pie charts require iOS 17 and later, or tvOS 17 and later. On older versions, the chart shows no slices.
 
-```tsx PieChartExample.tsx
+<ComponentExample
+  title="PieChartExample.tsx"
+  src="/static/images/expo-ui/examples/chart-pie-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/chart-pie-ios-dark.webp"
+  alt="A donut chart with Direct, Social, and Email slices and a legend below">
+
+```tsx
 import { Host, Chart } from '@expo/ui/swift-ui';
 
 export default function PieChartExample() {
@@ -87,9 +110,17 @@ export default function PieChartExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Point and area charts
 
-```tsx PointAreaExample.tsx
+<ComponentExample
+  title="PointAreaExample.tsx"
+  src="/static/images/expo-ui/examples/chart-point-area-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/chart-point-area-ios-dark.webp"
+  alt="A point chart with small diamond points above a green area chart">
+
+```tsx
 import { Host, Chart, VStack } from '@expo/ui/swift-ui';
 import { frame } from '@expo/ui/swift-ui/modifiers';
 
@@ -122,11 +153,19 @@ export default function PointAreaExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Per-point colors
 
 Set `color` on a data point to choose its color in `bar`, `pie`, `point`, and `rectangle` charts. `line` and `area` charts ignore it. In `bar` and `pie` charts, any per-point `color` turns off the automatic category colors and the legend.
 
-```tsx PerPointColorExample.tsx
+<ComponentExample
+  title="PerPointColorExample.tsx"
+  src="/static/images/expo-ui/examples/chart-per-point-color-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/chart-per-point-color-ios-dark.webp"
+  alt="A bar chart of Mon, Tue, and Wed with a blue, a teal, and a green bar">
+
+```tsx
 import { Host, Chart } from '@expo/ui/swift-ui';
 
 export default function PerPointColorExample() {
@@ -145,11 +184,19 @@ export default function PerPointColorExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Reference lines
 
 Use `referenceLines` to draw a horizontal rule at each entry's `y` value, for example to highlight a target or average value. The chart does not draw an entry's `x` value, but each entry needs a unique `x`. Style the rules with `ruleStyle`.
 
-```tsx ReferenceLinesExample.tsx
+<ComponentExample
+  title="ReferenceLinesExample.tsx"
+  src="/static/images/expo-ui/examples/chart-reference-lines-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/chart-reference-lines-ios-dark.webp"
+  alt="A line chart with a dashed red reference line at 22.5">
+
+```tsx
 import { Host, Chart } from '@expo/ui/swift-ui';
 
 export default function ReferenceLinesExample() {
@@ -175,11 +222,19 @@ export default function ReferenceLinesExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Styling and animation
 
 Pass `showGrid`, `showLegend`, and `animate` to control the chart's appearance, and use the per-type style props (`lineStyle`, `barStyle`, `pieStyle`, and so on) to customize individual mark types.
 
-```tsx StyledChartExample.tsx
+<ComponentExample
+  title="StyledChartExample.tsx"
+  src="/static/images/expo-ui/examples/chart-styled-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/chart-styled-ios-dark.webp"
+  alt="A dashed purple line chart with no grid and no axes">
+
+```tsx
 import { Host, Chart } from '@expo/ui/swift-ui';
 
 export default function StyledChartExample() {
@@ -207,6 +262,8 @@ export default function StyledChartExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
