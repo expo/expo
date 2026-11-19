@@ -2,6 +2,8 @@ import spawnAsync from '@expo/spawn-async';
 
 export type GitHub = {
   commentAsync(prNumber: number, body: string): Promise<void>;
+  /** Asks GitHub, because the bot's shallow clone does not hold the history to check it. */
+  branchContainsAsync(branch: string, sha: string): Promise<boolean>;
 };
 
 type PullRequestView = {
@@ -22,6 +24,16 @@ export function ghCli(repo: string): GitHub & {
   return {
     async commentAsync(prNumber, body) {
       await gh('pr', 'comment', String(prNumber), '--body', body);
+    },
+    async branchContainsAsync(branch, sha) {
+      const { stdout } = await spawnAsync('gh', [
+        'api',
+        `repos/${repo}/compare/${sha}...${branch}`,
+        '--jq',
+        '.status',
+      ]);
+      // "ahead" or "identical": every commit up to `sha` is on `branch`.
+      return ['ahead', 'identical'].includes(stdout.trim());
     },
     async viewPullRequestAsync(prNumber) {
       const view: PullRequestView = JSON.parse(
