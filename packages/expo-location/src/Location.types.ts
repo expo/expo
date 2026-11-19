@@ -304,7 +304,7 @@ export type LocationObjectCoords = {
    */
   accuracy: number | null;
   /**
-   * The accuracy of the altitude values, in meters.
+   * The accuracy of `altitude`, in meters. On iOS, it also applies to `mslAltitude`.
    * `null` when the location fix has no valid altitude.
    */
   altitudeAccuracy: number | null;

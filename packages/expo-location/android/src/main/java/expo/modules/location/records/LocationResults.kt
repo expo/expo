@@ -12,6 +12,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.location.ConversionException
 import expo.modules.location.LocationModule
+import expo.modules.location.next.verticalAccuracy
 import java.io.Serializable
 
 @OptimizedRecord
@@ -147,18 +148,18 @@ internal class LocationObjectCoords(
   constructor(location: Location) : this(
     latitude = location.latitude,
     longitude = location.longitude,
-    altitude = location.altitude,
+    altitude = if (location.hasAltitude()) {
+      location.altitude
+    } else {
+      null
+    },
     mslAltitude = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && location.hasMslAltitude()) {
       location.mslAltitudeMeters
     } else {
       null
     },
     accuracy = location.accuracy.toDouble(),
-    altitudeAccuracy = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && location.hasVerticalAccuracy()) {
-      location.verticalAccuracyMeters.toDouble()
-    } else {
-      null
-    },
+    altitudeAccuracy = location.verticalAccuracy(),
     heading = location.bearing.toDouble(),
     speed = location.speed.toDouble()
   )
@@ -172,16 +173,22 @@ internal class LocationObjectCoords(
   }
 
   private fun BaseBundle.putLocationObjectCoordsFields() {
-    latitude?.let { putDouble("latitude", it) }
-    longitude?.let { putDouble("longitude", it) }
-    altitude?.let { putDouble("altitude", it) }
-    mslAltitude?.let { putDouble("mslAltitude", it) }
-      ?: putString("mslAltitude", null)
-    accuracy?.let { putDouble("accuracy", it) }
-    altitudeAccuracy?.let { putDouble("altitudeAccuracy", it) }
-      ?: putString("altitudeAccuracy", null)
-    heading?.let { putDouble("heading", it) }
-    speed?.let { putDouble("speed", it) }
+    putNullableDouble("latitude", latitude)
+    putNullableDouble("longitude", longitude)
+    putNullableDouble("altitude", altitude)
+    putNullableDouble("mslAltitude", mslAltitude)
+    putNullableDouble("accuracy", accuracy)
+    putNullableDouble("altitudeAccuracy", altitudeAccuracy)
+    putNullableDouble("heading", heading)
+    putNullableDouble("speed", speed)
+  }
+
+  private fun BaseBundle.putNullableDouble(key: String, value: Double?) {
+    if (value != null) {
+      putDouble(key, value)
+    } else {
+      putString(key, null)
+    }
   }
 }
 
