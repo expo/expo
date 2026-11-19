@@ -100,6 +100,8 @@ class AppContext(
 
   val services = ServicesRegistry(this.weak())
 
+  private val expoModulesV2Host = ExpoModulesV2Host()
+
   internal var legacyModulesProxyHolder: WeakReference<NativeModulesProxy>? = null
 
   private val activityResultsManager = ActivityResultsManager(this)
@@ -154,7 +156,7 @@ class AppContext(
    */
   fun installJSIInterop() {
     runtime.install()
-    runtime.reactContext?.let(ExpoModulesV2Host::install)
+    runtime.reactContext?.let { expoModulesV2Host.install(this, it) }
   }
 
   /**
@@ -286,7 +288,7 @@ class AppContext(
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
 
-    ExpoModulesV2Host.uninstall()
+    expoModulesV2Host.uninstall()
 
     runtime.deallocate()
     if (uiRuntimeHolder.isInitialized()) {
