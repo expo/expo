@@ -15,8 +15,9 @@ import Testing
 ///   exact cost of finalizing one instance.
 /// - `existing instance returned from a function` includes decoding the argument, which
 ///   `instance passed as an argument` measures alone.
-/// - `emit: Int payload from a @SharedObject` emits from Swift in a loop, without the JavaScript driver.
-///   Read it against `emit: Int payload`, which emits the same payload from a module.
+/// - The `emit` cases emit from Swift in a loop, without the JavaScript driver. Read
+///   `emit: Int payload from a @SharedObject` against `emit: Int payload`, which emits the same payload from a
+///   module, and the other `@SharedObject` emit cases against it.
 extension Benchmarks {
   @Test
   func `@SharedObject: new instance`() async throws {
@@ -102,19 +103,43 @@ extension Benchmarks {
 
   @Test
   func `emit: Int payload from a @SharedObject`() async throws {
-    try await moduleBenchmarkCase { appContext in
-      return SharedObjectBenchmarkModule(appContext: appContext)
-    } _: { _, runtime in
-      let counterObject = try runtime.eval([
-        "var counter = new expo.modules.SharedObjectBenchmarkModule.BenchmarkCounter(0)",
-        "counter.addListener('count', () => {})",
-        "counter"
-      ]).asObject()
-      let counter = try SharedObject.native(from: counterObject)
-
+    try await counterEventBenchmarkCase(listenerCount: 1) { counter, runtime in
       try benchmark("emit: Int payload from a @SharedObject", runtime: runtime) { iterations in
         for index in 0..<iterations {
           counter.emit(event: "count", payload: index)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `emit: Int payload from a @SharedObject without listeners`() async throws {
+    try await counterEventBenchmarkCase(listenerCount: 0) { counter, runtime in
+      try benchmark("emit: Int payload from a @SharedObject without listeners", runtime: runtime) { iterations in
+        for index in 0..<iterations {
+          counter.emit(event: "count", payload: index)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `emit: Int payload from a @SharedObject to 5 listeners`() async throws {
+    try await counterEventBenchmarkCase(listenerCount: 5) { counter, runtime in
+      try benchmark("emit: Int payload from a @SharedObject to 5 listeners", runtime: runtime) { iterations in
+        for index in 0..<iterations {
+          counter.emit(event: "count", payload: index)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `emit: Int payload from a @SharedObject through @Event(.inline)`() async throws {
+    try await counterEventBenchmarkCase(listenerCount: 1) { counter, runtime in
+      try benchmark("emit: Int payload from a @SharedObject through @Event(.inline)", runtime: runtime) { iterations in
+        for index in 0..<iterations {
+          counter.onCount(index)
         }
       }
     }
@@ -142,6 +167,9 @@ extension Benchmarks {
 @SharedObject
 private final class BenchmarkCounter: SharedObject {
   private var value: Int
+
+  @Event(.inline)
+  var onCount: (Int) -> Void
 
   @JS
   init(value: Int) {
@@ -198,5 +226,23 @@ private func sharedObjectBenchmarkCase(
       body: body
     )
     try measure(run, runtime)
+  }
+}
+
+/// Runs one case with `SharedObjectBenchmarkModule` registered and a counter in JavaScript that has
+/// `listenerCount` no-op listeners of the `count` event. `body` gets the native counter.
+private func counterEventBenchmarkCase(
+  listenerCount: Int,
+  _ body: @escaping @JavaScriptActor (BenchmarkCounter, JavaScriptRuntime) throws -> Void
+) async throws {
+  try await moduleBenchmarkCase { appContext in
+    return SharedObjectBenchmarkModule(appContext: appContext)
+  } _: { _, runtime in
+    try runtime.eval(
+      "var counter = new expo.modules.SharedObjectBenchmarkModule.BenchmarkCounter(0)",
+      "for (var k = 0; k < \(listenerCount); k++) { counter.addListener('count', () => {}); }"
+    )
+    let counterObject = try runtime.eval("counter").asObject()
+    try body(try SharedObject.native(from: counterObject, as: BenchmarkCounter.self), runtime)
   }
 }
