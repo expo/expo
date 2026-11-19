@@ -6,9 +6,12 @@ import { isValidElementType } from 'react-is';
 
 import { useRouteNode } from '../../Route';
 import { useComponent } from '../../fork/useComponent';
+import { getGuard } from '../../global-state/guards';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { findStateByKey, resetNavigatorState } from '../../global-state/stateUtils';
+import { GuardContext } from '../../layouts/GuardContext';
+import { useIsPreview } from '../../link/preview/PreviewRouteContext';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   type DefaultRouterOptions,
@@ -255,6 +258,21 @@ export function useNavigationBuilder<
 ) {
   useRegisterNavigator();
   const routeNode = useRouteNode();
+  const layoutGuards = use(GuardContext);
+  const guards = layoutGuards?.size ? layoutGuards : null;
+  // A preview shows a screen without navigating, so it hides blocked screens but changes no state.
+  const isPreview = useIsPreview();
+  // The layout creates a new map on every render, so the content decides when the guards change.
+  const guardsKey = guards ? JSON.stringify([...guards]) : undefined;
+  const [declared, setDeclared] = React.useState({ key: guardsKey, guards });
+  if (declared.key !== guardsKey) {
+    setDeclared({ key: guardsKey, guards });
+  }
+  const currentGuards = declared.guards;
+  const getRouteGuard = React.useMemo(
+    () => (currentGuards ? (routeName: string) => getGuard(currentGuards, routeName) : undefined),
+    [currentGuards]
+  );
   const enqueue = useEnqueueRoutingIntent();
 
   const {
@@ -442,8 +460,9 @@ export function useNavigationBuilder<
       getBrowserHistoryForRouteFocus: (previous, next, childAction) =>
         router.getBrowserHistoryForRouteFocus?.(previous as State, next as State, childAction),
       routeNode: routeNode ?? undefined,
+      getGuard: isPreview ? undefined : getRouteGuard,
     }),
-    [reduce, routeNode, router]
+    [getRouteGuard, isPreview, reduce, routeNode, router]
   );
 
   useRegisterRouter(committedState.key, registryEntry);
@@ -514,6 +533,7 @@ export function useNavigationBuilder<
     router,
     emitter,
     routeNode,
+    getGuard: getRouteGuard,
   });
   useCurrentRender({
     state,

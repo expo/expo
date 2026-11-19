@@ -11,6 +11,7 @@ import type {
   RouterActionResult,
   RouterBrowserHistoryAction,
 } from '../react-navigation/routers';
+import type { Guard } from './guards';
 
 export type RouterRegistryEntry = {
   reduce: (
@@ -25,6 +26,8 @@ export type RouterRegistryEntry = {
     childAction?: RouterBrowserHistoryAction
   ) => RouterBrowserHistoryAction | undefined;
   routeNode?: RouteNode;
+  // Set when the navigator declares guards. Returns the guard that blocks a route.
+  getGuard?: (routeName: string) => Guard | undefined;
 };
 
 // Entries appear after the first commit and state keys can change when navigation state is reset.

@@ -6,7 +6,6 @@ import { StyleSheet, View } from 'react-native';
 import { useRouteNode, useContextKey } from '../Route';
 import { useComponent } from '../fork/useComponent';
 import { useRouteInfo } from '../hooks';
-import { GuardContextProvider, type GuardedRedirects } from '../layouts/GuardContext';
 import { resolveHref } from '../link/href';
 import type {
   DefaultNavigatorOptions,
@@ -42,8 +41,6 @@ export * from './TabContext';
 export * from './TabList';
 export * from './TabSlot';
 export * from './TabTrigger';
-
-const emptyGuardedRedirects: GuardedRedirects = new Map();
 
 /**
  * Options to provide to the Tab Router.
@@ -235,8 +232,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   );
 
   const NavigationContent = useComponent((children: React.ReactNode) => (
-    // Headless tabs have no guards, so shadow parent guards whose route names may collide.
-    <GuardContextProvider node={routeNode} guardedRedirects={emptyGuardedRedirects}>
+    <>
       <TabVisibilityRedirect state={state} descriptors={descriptors} backBehavior={backBehavior} />
       <TabTriggerMapContext.Provider value={triggerMap}>
         <TabNavigatorStatesContext.Provider value={navigatorStates}>
@@ -245,7 +241,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
           </NavigatorContext.Provider>
         </TabNavigatorStatesContext.Provider>
       </TabTriggerMapContext.Provider>
-    </GuardContextProvider>
+    </>
   )) as TabsContextValue['NavigationContent'];
 
   return { state, describe, descriptors, navigation, NavigationContent };

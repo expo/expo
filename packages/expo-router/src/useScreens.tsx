@@ -10,11 +10,11 @@ import {
   sortRoutesWithInitial,
   useRouteNode,
 } from './Route';
+import { getGuard, type GuardedRedirects } from './global-state/guards';
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
-import { isRouteGuarded, useGuardRedirect, type GuardedRedirects } from './layouts/GuardContext';
-import { Redirect } from './link/Redirect';
+import { RouteBlockedContext } from './layouts/GuardContext';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
 import { LoaderRouteLifecycle } from './loaders/LoaderRouteLifecycle';
@@ -192,7 +192,7 @@ export function useSortedScreens<
   return React.useMemo(() => {
     const screensWithGuarded = sorted.map((value) => {
       const route = value.route.route;
-      return { ...value, isGuarded: isRouteGuarded(route, guardedRedirects) };
+      return { ...value, isGuarded: getGuard(guardedRedirects, route) !== undefined };
     });
     return screensWithGuarded.map((value) => {
       return routeToScreen(value.route, value.props, value.isGuarded, value.routeSource);
@@ -314,8 +314,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const routeInfo = useCurrentRouteInfo();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
-    const redirectHref = useGuardRedirect(value.route);
-    const isGuarded = redirectHref !== undefined;
+    const isGuarded = use(RouteBlockedContext);
     const isRouteType = value.type === 'route';
     const resolvedLoaderPath = useMemo(() => {
       if (!isRouteType || isGuarded) {
@@ -353,15 +352,10 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
     const hasRouteKey = !!route?.key;
 
+    // The navigation reducer removes a blocked route. Until then, or when it is the last route
+    // of its navigator, the screen shows nothing.
     if (isGuarded) {
-      // A `null` href means guarded with no destination to redirect to (every
-      // candidate is also guarded): render nothing but keep the screen registered
-      // so the navigator and its state stay mounted.
-      return (
-        <Route node={value} params={route?.params}>
-          {redirectHref != null ? <Redirect href={redirectHref} /> : <AllRoutesProtectedWarning />}
-        </Route>
-      );
+      return null;
     }
 
     const screenComponent = (
@@ -464,19 +458,6 @@ function createFailedScreen(error: unknown, reset: () => void) {
     }, []);
     return null;
   };
-}
-
-// A separate component, so reading focus does not rerender the screen on focus changes.
-function AllRoutesProtectedWarning() {
-  const isFocused = useIsFocused();
-  useEffect(() => {
-    if (__DEV__ && isFocused) {
-      console.warn(
-        'All routes in this navigator are protected. Ensure at least one route is accessible.'
-      );
-    }
-  }, [isFocused]);
-  return null;
 }
 
 function AnalyticsListeners({

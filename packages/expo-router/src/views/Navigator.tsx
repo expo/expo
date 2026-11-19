@@ -5,7 +5,7 @@ import * as React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ScreenErrorBoundaryContext, useContextKey, useRouteNode } from '../Route';
-import { GuardContextProvider } from '../layouts/GuardContext';
+import { GuardContext } from '../layouts/GuardContext';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
 import type { RouterFactory } from '../react-navigation/native';
@@ -53,26 +53,37 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
  * @hidden
  */
 export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRouter>({
-  screenOptions,
   children,
+  ...props
+}: NavigatorProps<T>) {
+  const contextKey = useContextKey();
+  // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
+  const filtered = useFilterScreenChildren(children, {
+    isCustomNavigator: true,
+    contextKey,
+  });
+
+  // The provider is above `useNavigationBuilder`, so the builder reads the guards of this navigator.
+  return (
+    <GuardContext value={filtered.guardedRedirects}>
+      <NavigatorContent {...props} {...filtered} />
+    </GuardContext>
+  );
+}
+
+function NavigatorContent<T extends UseNavigationBuilderRouter>({
+  screenOptions,
   activityEnabled,
   activityDefaultThreshold = 2,
   router,
   routerOptions,
   unstable_screenErrorBoundary,
-}: NavigatorProps<T>) {
+  screens,
+  children: nonScreenChildren,
+  guardedRedirects,
+}: Omit<NavigatorProps<T>, 'children'> & ReturnType<typeof useFilterScreenChildren>) {
   const contextKey = useContextKey();
   const node = useRouteNode();
-
-  // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
-  const {
-    screens,
-    children: nonScreenChildren,
-    guardedRedirects,
-  } = useFilterScreenChildren(children, {
-    isCustomNavigator: true,
-    contextKey,
-  });
 
   const sortedScreens = useSortedScreens(screens ?? [], guardedRedirects);
 
@@ -98,12 +109,6 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
     return null;
   }
 
-  const content = (
-    <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
-      {nonScreenChildren}
-    </GuardContextProvider>
-  );
-
   return (
     <NavigatorContext.Provider
       value={{
@@ -113,10 +118,10 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
       }}>
       {unstable_screenErrorBoundary ? (
         <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
-          {content}
+          {nonScreenChildren}
         </ScreenErrorBoundaryContext>
       ) : (
-        content
+        nonScreenChildren
       )}
     </NavigatorContext.Provider>
   );

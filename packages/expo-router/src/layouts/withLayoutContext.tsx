@@ -8,7 +8,8 @@ import type {
 } from 'react';
 import { Children, forwardRef, useMemo } from 'react';
 
-import { useContextKey, useRouteNode } from '../Route';
+import { useContextKey } from '../Route';
+import { normalizeRouteName } from '../global-state/guards';
 import { resolveHref } from '../link/href';
 import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
 import type { EventMapBase, NavigationState } from '../react-navigation/native';
@@ -18,7 +19,7 @@ import { useSortedScreens } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
-import { GuardContextProvider, normalizeRouteName, type GuardedRedirects } from './GuardContext';
+import { GuardContext } from './GuardContext';
 
 export function useFilterScreenChildren<
   TOptions extends object = Record<string, any>,
@@ -39,7 +40,7 @@ export function useFilterScreenChildren<
     const customChildren: any[] = [];
 
     const screens: (ScreenProps<TOptions, TState, TEventMap> & { name: string })[] = [];
-    const guardedRedirects: GuardedRedirects = new Map();
+    const guardedRedirects = new Map<string, Href | undefined>();
 
     function flattenChild(child: ReactNode, exclude = false, redirectTo?: Href) {
       if (isScreen(child, contextKey)) {
@@ -74,7 +75,8 @@ export function useFilterScreenChildren<
               'Set `redirectTo` to a route of the app, and open the external URL from your app code, for example with `Linking.openURL`.'
           );
         }
-        const guardFails = !child.props.guard;
+        // The outermost failing guard decides the redirect, so inner guards are not read.
+        const guardFails = !exclude && !child.props.guard;
         const excludeChildren = exclude || guardFails;
         const childRedirectTo = guardFails ? child.props.redirectTo : redirectTo;
         Children.forEach(child.props.children, (protectedChild) => {
@@ -171,7 +173,6 @@ export function withLayoutContext<
   return Object.assign(
     forwardRef(({ children: userDefinedChildren, ...props }: any, ref) => {
       const contextKey = useContextKey();
-      const node = useRouteNode();
 
       const { screens, guardedRedirects } = useFilterScreenChildren<TOptions, TState, TEventMap>(
         userDefinedChildren,
@@ -208,9 +209,9 @@ export function withLayoutContext<
       }
 
       return (
-        <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+        <GuardContext value={guardedRedirects}>
           <Nav {...props} id={contextKey} ref={ref} children={sorted} />
-        </GuardContextProvider>
+        </GuardContext>
       );
     }),
     {

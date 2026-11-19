@@ -4,6 +4,8 @@ import { use } from 'react';
 
 import type { RouteNode } from '../../Route';
 import { createSeededNavigationState } from '../../global-state/createSeededNavigationState';
+import type { RouterRegistryEntry } from '../../global-state/routerRegistry';
+import { GuardContext, RouteBlockedContext } from '../../layouts/GuardContext';
 import { findRouteNodeByName } from '../../routeNode';
 import { NavigationActivityProvider } from '../../views/NavigationActivityContext';
 import type {
@@ -80,6 +82,7 @@ type Options<
   router: Router<State, NavigationAction>;
   emitter: NavigationEventEmitter<EventMapCore<State>>;
   routeNode: RouteNode | null;
+  getGuard: RouterRegistryEntry['getGuard'];
 };
 
 /**
@@ -110,19 +113,21 @@ export function useDescriptors<
   router,
   emitter,
   routeNode,
+  getGuard,
 }: Options<State, ScreenOptions, EventMap>) {
   const theme = use(ThemeContext);
   const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
-  const { handleAction, resetNavigator } = use(NavigationBuilderContext);
+  const { handleAction, handleGuardsChanged, resetNavigator } = use(NavigationBuilderContext);
 
   const context = React.useMemo(
     () => ({
       navigation,
       handleAction,
+      handleGuardsChanged,
       resetNavigator,
       addListener,
     }),
-    [navigation, handleAction, resetNavigator, addListener]
+    [navigation, handleAction, handleGuardsChanged, resetNavigator, addListener]
   );
 
   const getNavigation = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
@@ -250,7 +255,11 @@ export function useDescriptors<
         activityDisabled={screenActivityEnabled === false}>
         <NavigationBuilderContext.Provider value={context}>
           <NavigationProvider route={route} navigation={navigation}>
-            {element}
+            <GuardContext value={null}>
+              <RouteBlockedContext value={getGuard?.(route.name) !== undefined}>
+                {element}
+              </RouteBlockedContext>
+            </GuardContext>
           </NavigationProvider>
         </NavigationBuilderContext.Provider>
       </NavigationActivityProvider>
