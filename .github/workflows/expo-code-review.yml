@@ -26,7 +26,8 @@ concurrency:
   # - On a PR from this repository: a label event for a label other than `ai-review*`,
   #   such as `contributor: external` or the `ready for human` label the reviewer adds.
   # - On a PR from a fork: everything except adding or removing `ai-review`, adding
-  #   `ai-review:skip`, and, while AI_REVIEW_FORK_PRS is on, the non-label events. A
+  #   `ai-review:skip`, and the non-label events that can review: on a PR with both
+  #   `ai-review` and `ai-autonomous`, or while AI_REVIEW_FORK_PRS is on. Any other
   #   push to a fork PR cannot start a review (see the job `if`), so it must not cancel
   #   the review a maintainer started with the label.
   group: >-
@@ -38,8 +39,10 @@ concurrency:
     && !(((github.event.action == 'labeled' || github.event.action == 'unlabeled')
     && github.event.label.name == 'ai-review')
     || (github.event.action == 'labeled' && github.event.label.name == 'ai-review:skip')
-    || (vars.AI_REVIEW_FORK_PRS == 'true'
-    && github.event.action != 'labeled' && github.event.action != 'unlabeled'))))
+    || (github.event.action != 'labeled' && github.event.action != 'unlabeled'
+    && (vars.AI_REVIEW_FORK_PRS == 'true'
+    || (contains(github.event.pull_request.labels.*.name, 'ai-review')
+    && contains(github.event.pull_request.labels.*.name, 'ai-autonomous')))))))
     && github.run_id || 'review' }}
   cancel-in-progress: true
 
@@ -67,6 +70,10 @@ jobs:
     #    that and removes the `ready for human` label: with routing.jsonc, a "not
     #    reviewed" note would replace the aggregate comment. The `/review` path reviews
     #    the PR's head when `ecr ci` starts.
+    #    The exception is a fork PR that also has `ai-autonomous`, which
+    #    expo-code-review-request.yml adds. It reviews again on each push, like a PR
+    #    from this repository, but only while every changed file is in the autonomous
+    #    scope (see the scope step).
     #
     # 3. AUTOMATIC for a non-draft PR from a fork, only while the repo variable
     #    AI_REVIEW_FORK_PRS is 'true'. It is off by default. `ecr ci` gets `--force`
@@ -82,6 +89,11 @@ jobs:
       || (github.event.pull_request.head.repo.full_name != github.repository
       && github.event.action == 'labeled'
       && github.event.label.name == 'ai-review')
+      || (github.event.pull_request.head.repo.full_name != github.repository
+      && contains(github.event.pull_request.labels.*.name, 'ai-review')
+      && contains(github.event.pull_request.labels.*.name, 'ai-autonomous')
+      && github.event.action != 'labeled'
+      && github.event.action != 'unlabeled')
       || (github.event.pull_request.head.repo.full_name != github.repository
       && vars.AI_REVIEW_FORK_PRS == 'true'
       && !github.event.pull_request.draft
@@ -205,6 +217,8 @@ jobs:
 
       # This checkout is the default branch, so a PR cannot change the scope it is checked
       # against. If this step fails, the review runs without a sandbox.
+      # A push to an `ai-autonomous` fork PR reviews only while every changed file is in
+      # the scope, so a contributor cannot widen an automatic review after the label.
       - name: Find files in the autonomous review scope
         id: scope
         continue-on-error: true
@@ -212,7 +226,18 @@ jobs:
           GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           REPO: ${{ github.repository }}
           PR: ${{ github.event.pull_request.number }}
-        run: bash .github/scripts/ai-review-scope.sh
+          FORK_PUSH: >-
+            ${{ github.event.pull_request.head.repo.full_name != github.repository
+            && github.event.action != 'labeled' && github.event.action != 'unlabeled'
+            && vars.AI_REVIEW_FORK_PRS != 'true' }}
+        run: |
+          bash .github/scripts/ai-review-scope.sh
+          skip_review=false
+          if [ "$FORK_PUSH" = true ] && ! grep -qx only_autonomous=true "$GITHUB_OUTPUT"; then
+            echo "::notice::Not reviewing this push: the fork PR changes files outside the autonomous scope, or its files could not be read. A maintainer can comment /review."
+            skip_review=true
+          fi
+          echo "skip_review=$skip_review" >> "$GITHUB_OUTPUT"
 
       # A sandbox lets reviewers check how a tool behaves by running it. The parent
       # EXPO_SANDBOX_MCP_TOKEN reaches only this step and the revoke step. The review
@@ -225,6 +250,7 @@ jobs:
       - name: Mint sandbox token
         if: >-
           steps.scope.outputs.autonomous == 'true'
+          && steps.scope.outputs.skip_review != 'true'
           && (github.event.pull_request.head.repo.full_name == github.repository
           || (github.event.action == 'labeled' && github.event.label.name == 'ai-review'))
         continue-on-error: true
@@ -239,6 +265,7 @@ jobs:
         # `--force` only on the automatic fork path (see the job `if`), never from PR input.
         # `--expect-head`: review only the commit this event is for.
         # REVIEW_SANDBOX_TOKEN is the child token. The config's mcpServers.sandbox reads it.
+        if: steps.scope.outputs.skip_review != 'true'
         run: |
           if [ -f "$SANDBOX_MCP_CONFIG" ]; then
             REVIEW_SANDBOX_TOKEN=$(jq -r '.mcpServers.sandbox.headers.Authorization | sub("^Bearer "; "")' "$SANDBOX_MCP_CONFIG")

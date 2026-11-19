@@ -6,7 +6,9 @@
 # ecr reads routing.jsonc from the PR's base commit, so a PR into another branch can
 # get a different answer from ecr. ecr still gates the sandbox on its own.
 #
-# Env: GH_TOKEN, REPO, PR. Writes autonomous=true|false to $GITHUB_OUTPUT.
+# Env: GH_TOKEN, REPO, PR. Writes to $GITHUB_OUTPUT:
+#   autonomous=true|false       some changed file is in the scope
+#   only_autonomous=true|false  every changed file is in the scope
 # It does not fail: if it cannot read the scope or the files, it writes false.
 set -euo pipefail
 
@@ -54,10 +56,15 @@ files=$(gh api --paginate "repos/$REPO/pulls/$PR/files" \
   --jq '.[].filename | if test("[\\n\\r]") then error("line break in a file name") else . end') ||
   files=""
 autonomous=false
+only_autonomous=false
+[ -z "$files" ] || [ "${#globs[@]}" -eq 0 ] || only_autonomous=true
 while IFS= read -r file; do
-  if [ -n "$file" ] && in_scope "$file"; then
+  [ -n "$file" ] || continue
+  if in_scope "$file"; then
     autonomous=true
-    break
+  else
+    only_autonomous=false
   fi
 done <<< "$files"
 echo "autonomous=$autonomous" >> "$GITHUB_OUTPUT"
+echo "only_autonomous=$only_autonomous" >> "$GITHUB_OUTPUT"
