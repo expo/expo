@@ -202,7 +202,7 @@ public final class SharedObjectRegistry: Sendable {
 
   /// Deletes the pair with the given ID, for `release()` called in JS. When another runtime pairs a JS object with the
   /// native state, `clear()` releases the values of the main runtime in it. A release in the main runtime also releases
-  /// them right away, on the thread of the main runtime.
+  /// them right away, on the thread of the main runtime. The other runtimes release their values on their threads.
   internal func release(_ id: SharedObjectId, inMainRuntime: Bool) {
     delete(id, reason: inMainRuntime ? .releasedInMainRuntime : .released)
   }
@@ -246,6 +246,9 @@ public final class SharedObjectRegistry: Sendable {
     if reason == .releasedInMainRuntime && deleted.isPairedInOtherRuntime {
       nativeState.releaseRuntimeValues()
     }
+    if reason != .nativeStateDestroyed && deleted.isPairedInOtherRuntime {
+      nativeState.releaseOtherRuntimeValues()
+    }
     guard deleted.isCurrent else {
       return
     }
@@ -253,10 +256,11 @@ public final class SharedObjectRegistry: Sendable {
     // The hooks run without the lock: they can emit events whose listeners run inline on the JavaScript
     // thread and use the registry again, and the lock isn't reentrant.
     native.sharedObjectWillRelease()
-    // Reset an ID on the object, unless the hook paired it again.
+    // Reset an ID on the object and end the pair, unless the hook paired it again.
     state.withLock { _ in
       if native.nativeState === nativeState {
         native.sharedObjectId = 0
+        native.endPairing(with: nativeState)
       }
     }
     native.sharedObjectDidRelease()
@@ -347,6 +351,7 @@ public final class SharedObjectRegistry: Sendable {
     }
     for nativeState in nativeStates {
       nativeState.releaseRuntimeValues()
+      nativeState.native.endPairing(with: nativeState)
     }
   }
 }

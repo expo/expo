@@ -49,7 +49,11 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// ``JavaScriptRuntimeHandle`` for why.
   public let handle: JavaScriptRuntimeHandle
 
-  internal let scheduler: Scheduler
+  /// Runs work on the JavaScript thread of this runtime. Keep it instead of the runtime to schedule
+  /// work from another thread later. It's a helper for `expo-modules-core`, so it isn't part of the
+  /// public API.
+  @_spi(Internal)
+  public let scheduler: Scheduler
 
   /// Whether this wrapper owns the underlying `jsi::Runtime` and must destroy it on `deinit`. True
   /// only for the standalone `init()`, which creates the runtime via `createHermesRuntime()`. The

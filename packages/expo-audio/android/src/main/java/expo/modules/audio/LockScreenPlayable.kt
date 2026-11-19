@@ -34,7 +34,6 @@ interface LockScreenPlayable : Playable {
     if (active) {
       this.metadata = metadata
       this.lockScreenOptions = options
-      this.isActiveForLockScreen = true
 
       if (serviceConnection.bindingState == ServiceBindingState.UNBOUND) {
         serviceConnection.bindWithService()
@@ -42,8 +41,13 @@ interface LockScreenPlayable : Playable {
 
       val serviceBinder = serviceConnection.playbackServiceBinder
       if (serviceBinder != null && serviceConnection.bindingState == ServiceBindingState.BOUND) {
+        this.isActiveForLockScreen = true
         serviceBinder.service.setPlayableOptions(this, metadata, options)
-      } else if (serviceConnection.bindingState != ServiceBindingState.BINDING) {
+      } else if (serviceConnection.bindingState == ServiceBindingState.BINDING) {
+        // The connection registers this playable with the service once it binds, and clears the flag if it can't
+        this.isActiveForLockScreen = true
+      } else {
+        this.isActiveForLockScreen = false
         appContext?.jsLogger?.error(
           getPlaybackServiceErrorMessage("Failed to activate lock screen controls - service binding failed")
         )

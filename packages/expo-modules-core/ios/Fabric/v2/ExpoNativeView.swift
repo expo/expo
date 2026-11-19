@@ -73,17 +73,10 @@ open class ExpoNativeView: ExpoNativeViewObjC {
   /// `packageComponentName`.
   ///
   /// `RCTComponentViewFactory` maps each component to a class and creates the views with `+[viewClass new]`.
-  /// So the registered class is a subclass of the component view class that is named after the component, the
-  /// same way that `ExpoFabricView.viewClass` does it. The subclass adds no methods. The component view class is
-  /// the view type itself, or for a SwiftUI view the class that renders it.
+  /// So the registered class is a subclass of `_componentViewBaseClass` that is named after the component, the
+  /// same way that `ExpoFabricView.viewClass` does it. The subclass adds no methods.
   @MainActor
   internal static func registerComponent(_ viewType: any AnyNativeView.Type, componentName: String) {
-    guard let componentViewClass = componentViewClass(of: viewType) else {
-      log.error(
-        "The view '\(viewType)' isn't registered as '\(componentName)', because it isn't an ExpoNativeView or a SwiftUI view"
-      )
-      return
-    }
     if let registeredViewType = registeredViewTypes[componentName] {
       if registeredViewType != ObjectIdentifier(viewType) {
         log.error(
@@ -92,7 +85,7 @@ open class ExpoNativeView: ExpoNativeViewObjC {
       }
       return
     }
-    guard let viewClass = objc_allocateClassPair(componentViewClass, componentName, 0) else {
+    guard let viewClass = objc_allocateClassPair(viewType._componentViewBaseClass, componentName, 0) else {
       log.error("Cannot register the view '\(viewType)' because a class named '\(componentName)' already exists")
       return
     }
@@ -101,19 +94,6 @@ open class ExpoNativeView: ExpoNativeViewObjC {
 
     let propsDecoder = viewType._makePropsDecoder(viewName: unqualifiedTypeName(viewType))
     ExpoNativeViewObjC.registerComponentViewClass(viewClass, propsDecoder: propsDecoder)
-  }
-
-  /// Returns the class of the Fabric component views of the given view type, or `nil` when the type is neither an
-  /// `ExpoNativeView` nor a SwiftUI view.
-  @MainActor
-  private static func componentViewClass(of viewType: any AnyNativeView.Type) -> AnyClass? {
-    if let viewClass = viewType as? ExpoNativeView.Type {
-      return viewClass
-    }
-    if let swiftUIViewType = viewType as? any AnyNativeSwiftUIView.Type {
-      return swiftUIComponentViewClass(of: swiftUIViewType)
-    }
-    return nil
   }
 
   /// Returns the component name of a view that the package with the given name exports, for example

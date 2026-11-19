@@ -202,6 +202,14 @@ git cherry-pick -x ${mergeSha}`;
       return tip;
     };
     let base = await fetchTargetAsync();
+    // A branch made from main after the merge already holds the change. When it changed the same
+    // lines later, the cherry-pick conflicts instead of coming out empty.
+    if (await github.branchContainsAsync(targetBranch, mergeSha)) {
+      await commentAsync(
+        `This change is already on \`${targetBranch}\`: the branch contains ${mergeSha}. No backport was made.`
+      );
+      return;
+    }
     if (options.buildPatch !== undefined && !fs.existsSync(options.buildPatch)) {
       const reason = options.buildPatchRejected
         ? `The rebuilt \`build/\` patch for \`${targetBranch}\` failed the bot's safety check, so the bot did not backport this pull request. A person must rebuild \`build/\` and push the backport.`

@@ -23,6 +23,12 @@ public protocol AnyNativeSwiftUIView: AnyNativeView, SwiftUI.View {
   init(props: Props, children: ExpoSwiftUI.Children, appContext: AppContext?)
 }
 
+extension AnyNativeSwiftUIView {
+  public static var _componentViewBaseClass: AnyClass {
+    return SwiftUINativeView<Self>.self
+  }
+}
+
 extension ExpoSwiftUI {
   /// The React children of a SwiftUI view of Expo Modules v2, in order. As a view, it renders all of them, so a body
   /// can place them with `VStack { children }`. As a collection, it gives each child, for example to find one by its

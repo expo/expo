@@ -91,9 +91,10 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
     self.pointee = value.toJSIValue(in: runtime.pointee)
   }
 
-  /// Whether the value may be used with the given runtime: it belongs to it, or it is runtime-free
-  /// (undefined, null, a boolean or a number) and so fits any runtime.
-  internal func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
+  /// Whether the value belongs to the given runtime, the runtime that created it. A value created without a runtime,
+  /// for example with ``number(_:)`` or ``undefined()``, belongs to every runtime, because every runtime can use it.
+  /// Use a value only with a runtime it belongs to, on the thread of that runtime.
+  public func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
     return runtimeHandle == nil || runtimeHandle === runtime.handle
   }
 
