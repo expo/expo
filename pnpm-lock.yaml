@@ -2101,7 +2101,7 @@ importers:
         specifier: ^1.3.8
         version: 1.3.8
       agent-cli-detector:
-        specifier: 0.1.8
+        specifier: ^0.1.8
         version: 0.1.8
       arg:
         specifier: ^5.0.2
