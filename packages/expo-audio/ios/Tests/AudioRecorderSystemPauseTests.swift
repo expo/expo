@@ -39,23 +39,27 @@ private func isRecording(_ recorder: AudioRecorder) -> Bool {
 @Suite("AudioRecorder rejected start")
 struct AudioRecorderRejectedStartTests {
   @Test
-  func `does not report recording when iOS rejects a timed start`() throws {
+  func `throws and stays idle when iOS rejects a timed start`() throws {
     let recorder = try makeStubbedRecorder()
     let avRecorder = try #require(recorder.ref as? StubRecorder)
     avRecorder.acceptsRecord = false
 
-    recorder.recordForDuration(10)
+    #expect(throws: RecorderStartRejectedException.self) {
+      try recorder.recordForDuration(10)
+    }
 
     #expect(!isRecording(recorder))
   }
 
   @Test
-  func `does not report recording when iOS rejects a scheduled start`() throws {
+  func `throws and stays idle when iOS rejects a scheduled start`() throws {
     let recorder = try makeStubbedRecorder()
     let avRecorder = try #require(recorder.ref as? StubRecorder)
     avRecorder.acceptsRecord = false
 
-    recorder.record(atTime: recorder.ref.deviceCurrentTime + 1)
+    #expect(throws: RecorderStartRejectedException.self) {
+      try recorder.record(atTime: recorder.ref.deviceCurrentTime + 1)
+    }
 
     #expect(!isRecording(recorder))
   }
@@ -86,7 +90,9 @@ struct AudioRecorderSystemPauseTests {
 
     recorder.pauseForSystem()
     avRecorder.acceptsRecord = false
-    try recorder.resumeAfterSystemPause()
+    #expect(throws: RecorderStartRejectedException.self) {
+      try recorder.resumeAfterSystemPause()
+    }
     #expect(!isRecording(recorder))
 
     avRecorder.acceptsRecord = true

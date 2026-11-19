@@ -137,7 +137,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     // boundaries instead.
   }
 
-  func recordForDuration(_ seconds: TimeInterval, atTime absoluteTime: TimeInterval? = nil) {
+  func recordForDuration(_ seconds: TimeInterval, atTime absoluteTime: TimeInterval? = nil) throws {
     if currentState == .paused && ref.currentTime >= seconds {
       stopRecording()
       return
@@ -149,15 +149,15 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       ref.record(forDuration: seconds)
     }
     guard started else {
-      return
+      throw RecorderStartRejectedException()
     }
     updateStateForDirectRecording()
     durationLimitSeconds = seconds
   }
 
-  func record(atTime absoluteTime: TimeInterval) {
+  func record(atTime absoluteTime: TimeInterval) throws {
     guard ref.record(atTime: absoluteTime) else {
-      return
+      throw RecorderStartRejectedException()
     }
     updateStateForDirectRecording()
     durationLimitSeconds = nil
@@ -186,7 +186,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     }
 
     guard started else {
-      return getRecordingStatus()
+      throw RecorderStartRejectedException()
     }
 
     isPausedBySystem = false

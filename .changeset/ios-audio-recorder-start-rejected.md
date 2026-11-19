@@ -2,4 +2,4 @@
 'expo-audio': patch
 ---
 
-[iOS] Fix `getStatus().isRecording` reporting `true` when iOS refuses to start or resume the recorder.
+[iOS] Throw an error when iOS refuses to start the recorder, as Android does, instead of reporting `isRecording: true`.
