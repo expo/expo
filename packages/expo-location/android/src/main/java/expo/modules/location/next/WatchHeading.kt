@@ -10,7 +10,6 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.location.next.locationProviders.UpdatesSession
-import expo.modules.location.next.locationProviders.WatchParameters
 import kotlin.math.abs
 
 @OptimizedRecord
@@ -30,6 +29,8 @@ internal fun Position.declination(): Double {
   ).declination.toDouble()
 }
 
+data class WatchHeadingParameters(val filter: Double)
+
 private fun normalizedDegrees(degrees: Double): Double = (degrees % 360.0 + 360.0) % 360.0
 
 private fun angularDistance(from: Double, to: Double): Double = abs((to - from + 540.0) % 360.0 - 180.0)
@@ -43,7 +44,7 @@ internal fun validatedHeadingFilter(degrees: Double): Double {
 
 class HeadingUpdatesSession(
   private val sensorManager: SensorManager
-) : UpdatesSession, SensorEventListener {
+) : UpdatesSession<WatchHeadingParameters>, SensorEventListener {
 
   @Volatile
   private var onUpdate: ((WatchEvent) -> Unit)? = null
@@ -89,7 +90,7 @@ class HeadingUpdatesSession(
   }
 
   @Synchronized
-  override fun startUpdates(parameters: WatchParameters, onUpdate: (WatchEvent) -> Unit) {
+  override fun startUpdates(parameters: WatchHeadingParameters, onUpdate: (WatchEvent) -> Unit) {
     clearSubscription()
     val sensor = rotationVectorSensor() ?: throw HeadingUnavailableException()
     if (!sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI)) {
@@ -125,7 +126,7 @@ class HeadingUpdatesSession(
   }
 }
 
-class HeadingWatchHandle(session: PausableWatchSession) : WatchHandle(session, HEADING_CHANGED)
+class HeadingWatchHandle(override val session: PausableWatchSession<WatchHeadingParameters>) : WatchHandle(HEADING_CHANGED)
 
 class HeadingUnavailableException :
   CodedException("This device has no rotation vector sensor, so it cannot report its heading. Catch this error where the app starts watching the heading, and hide compass features on this device")

@@ -1,9 +1,10 @@
 package expo.modules.location.next
 
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.location.next.locationProviders.WatchPositionParameters
 import kotlin.time.Duration
 
-class PositionWatchHandle(session: PausableWatchSession) : WatchHandle(session, POSITION_CHANGED)
+class PositionWatchHandle(override val session: PausableWatchSession<WatchPositionParameters>) : WatchHandle(POSITION_CHANGED)
 
 class PositionWatchSubscriptionException : CodedException("Could not subscribe to location updates")
 class InvalidWatchIntervalException(interval: Duration) :

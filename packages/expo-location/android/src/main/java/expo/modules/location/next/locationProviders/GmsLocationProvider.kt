@@ -94,7 +94,7 @@ class GmsLocationProvider(
     } ?: ProviderResult.Unavailable
   }
 
-  override fun watchPosition(): ProviderResult<UpdatesSession> {
+  override fun watchPosition(): ProviderResult<PositionUpdatesSession> {
     if (!isServiceAvailable()) {
       return ProviderResult.Unsupported
     }
@@ -152,7 +152,7 @@ class GmsLocationProvider(
 
 private class GmsPositionUpdatesSession(
   private val fusedLocationProvider: FusedLocationProviderClient
-) : UpdatesSession {
+) : PositionUpdatesSession {
   @Volatile
   private var callback: LocationCallback? = null
 
@@ -164,7 +164,7 @@ private class GmsPositionUpdatesSession(
 
   @SuppressLint("MissingPermission")
   @Synchronized
-  override fun startUpdates(parameters: WatchParameters, onUpdate: (WatchEvent) -> Unit) {
+  override fun startUpdates(parameters: WatchPositionParameters, onUpdate: (WatchEvent) -> Unit) {
     clearCallback()
     val locationRequest = LocationRequest
       .Builder(parameters.priority.toGmsPriority(), parameters.interval.inWholeMilliseconds)

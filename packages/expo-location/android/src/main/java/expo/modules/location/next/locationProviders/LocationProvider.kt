@@ -4,7 +4,6 @@ import android.app.Activity
 import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.exception.CodedException
-import expo.modules.location.next.DEFAULT_HEADING_FILTER
 import expo.modules.location.next.LocationProfile
 import expo.modules.location.next.Position
 import expo.modules.location.next.WatchEvent
@@ -18,11 +17,10 @@ enum class LocationPriority {
   PASSIVE
 }
 
-data class WatchParameters(
+data class WatchPositionParameters(
   val priority: LocationPriority,
   val interval: Duration,
-  val maxUpdateDelay: Duration,
-  val filter: Double = DEFAULT_HEADING_FILTER
+  val maxUpdateDelay: Duration
 )
 
 data class BackgroundUpdatesParameters(
@@ -94,17 +92,19 @@ sealed interface EnableLocationServicesResult {
   object ResolutionPending : EnableLocationServicesResult
 }
 
-interface UpdatesSession {
-  fun startUpdates(parameters: WatchParameters, onUpdate: (WatchEvent) -> Unit)
+interface UpdatesSession<Parameters> {
+  fun startUpdates(parameters: Parameters, onUpdate: (WatchEvent) -> Unit)
   fun stopUpdates()
   fun isSubscribed(): Boolean
   fun canDeliverUpdates(): Boolean
 }
 
+typealias PositionUpdatesSession = UpdatesSession<WatchPositionParameters>
+
 interface LocationProvider {
   val name: String
   suspend fun getPosition(options: GetCurrentPositionOptions): ProviderResult<Position>
-  fun watchPosition(): ProviderResult<UpdatesSession>
+  fun watchPosition(): ProviderResult<PositionUpdatesSession>
 
   // Prompt user to enable location services.
   // The caller guarantees the location services are turned off, so there is no reason to check the

@@ -7,7 +7,6 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.location.next.locationProviders.UpdatesSession
-import expo.modules.location.next.locationProviders.WatchParameters
 
 @OptimizedRecord
 class WatchError(
@@ -35,14 +34,14 @@ class WatchStatus(
   @Field val isInForeground: Boolean = true
 ) : Record
 
-class PausableWatchSession(
-  initialParameters: WatchParameters,
-  private val source: UpdatesSession,
+class PausableWatchSession<Parameters>(
+  initialParameters: Parameters,
+  private val source: UpdatesSession<Parameters>,
   private var areUpdatesAllowed: Boolean
 ) {
 
-  private var activeParameters: WatchParameters = initialParameters
-  private var stagedParameters: WatchParameters = initialParameters
+  private var activeParameters: Parameters = initialParameters
+  private var stagedParameters: Parameters = initialParameters
 
   var isPaused: Boolean = false
   var isStarted: Boolean = false
@@ -75,7 +74,7 @@ class PausableWatchSession(
   }
 
   @Synchronized
-  fun stage(transform: (WatchParameters) -> WatchParameters) {
+  fun stage(transform: (Parameters) -> Parameters) {
     stagedParameters = transform(stagedParameters)
   }
 
@@ -138,10 +137,8 @@ class PausableWatchSession(
   }
 }
 
-abstract class WatchHandle(
-  val session: PausableWatchSession,
-  private val eventName: String
-) : SharedObject() {
+abstract class WatchHandle(private val eventName: String) : SharedObject() {
+  abstract val session: PausableWatchSession<*>
 
   override fun onStartListeningToEvent(eventName: String) {
     if (eventName == this.eventName) {

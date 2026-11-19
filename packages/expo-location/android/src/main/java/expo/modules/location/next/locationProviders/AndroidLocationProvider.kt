@@ -137,7 +137,7 @@ class AndroidLocationProvider(
     return ProviderResult.Available(currentPosition)
   }
 
-  override fun watchPosition(): ProviderResult<UpdatesSession> {
+  override fun watchPosition(): ProviderResult<PositionUpdatesSession> {
     if (getValidSystemProviders(context, locationManager).isEmpty()) {
       return ProviderResult.Unavailable
     }
@@ -174,8 +174,8 @@ private class AndroidPositionUpdatesSession(
   private val context: Context,
   private val locationManager: LocationManager,
   private val jsLogger: Logger?
-) : UpdatesSession, BroadcastReceiver() {
-  private class SessionConfig(val parameters: WatchParameters, val onUpdate: (WatchEvent) -> Unit)
+) : PositionUpdatesSession, BroadcastReceiver() {
+  private class SessionConfig(val parameters: WatchPositionParameters, val onUpdate: (WatchEvent) -> Unit)
   private class SessionState(val listener: LocationListenerCompat, val provider: String)
 
   private var config: SessionConfig? = null
@@ -216,7 +216,7 @@ private class AndroidPositionUpdatesSession(
   }
 
   @Synchronized
-  override fun startUpdates(parameters: WatchParameters, onUpdate: (WatchEvent) -> Unit) {
+  override fun startUpdates(parameters: WatchPositionParameters, onUpdate: (WatchEvent) -> Unit) {
     clearConfig()
     clearState()
 

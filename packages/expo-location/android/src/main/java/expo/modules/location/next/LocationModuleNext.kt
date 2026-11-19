@@ -37,7 +37,6 @@ import expo.modules.location.next.locationProviders.LocationPriority
 import expo.modules.location.next.locationProviders.LocationProvider
 import expo.modules.location.next.locationProviders.ProviderResult
 import expo.modules.location.next.locationProviders.UpdatesSession
-import expo.modules.location.next.locationProviders.WatchParameters
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import java.lang.ref.WeakReference
@@ -63,7 +62,7 @@ class LocationModuleNext : Module() {
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw NoPermissionsModuleException()
 
-  val watchSessions: MutableList<WeakReference<PausableWatchSession>> = mutableListOf()
+  val watchSessions: MutableList<WeakReference<PausableWatchSession<*>>> = mutableListOf()
   val fusedLocationProviderInstance: SharedRef<LocationProvider> by lazy {
     val fusedLocationProvider = LocationServices.getFusedLocationProviderClient(context)
 
@@ -103,7 +102,7 @@ class LocationModuleNext : Module() {
     }
   }
 
-  private fun registerWatch(parameters: WatchParameters, source: UpdatesSession): PausableWatchSession = synchronized(watchSessions) {
+  private fun <Parameters> registerWatch(parameters: Parameters, source: UpdatesSession<Parameters>): PausableWatchSession<Parameters> = synchronized(watchSessions) {
     val pausableSession = PausableWatchSession(parameters, source, shouldWatchersRun())
     watchSessions.add(WeakReference(pausableSession))
     return@synchronized pausableSession
@@ -231,7 +230,7 @@ class LocationModuleNext : Module() {
 
     Function("watchHeading") { degrees: Double? ->
       val filter = validatedHeadingFilter(degrees ?: DEFAULT_HEADING_FILTER)
-      val parameters = LocationProfile.DEFAULT.watchParameters().copy(filter = filter)
+      val parameters = WatchHeadingParameters(filter)
       val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
       val source = HeadingUpdatesSession(sensorManager)
       if (!source.canDeliverUpdates()) {
@@ -379,7 +378,7 @@ class LocationModuleNext : Module() {
       }
 
       Function("withProfile") { handle: PositionWatchHandle, profile: LocationProfile ->
-        handle.session.stage { profile.watchParameters().copy(filter = it.filter) }
+        handle.session.stage { profile.watchParameters() }
         handle
       }
 
@@ -418,7 +417,7 @@ class LocationModuleNext : Module() {
 
       Function("withFilter") { handle: HeadingWatchHandle, degrees: Double ->
         val filter = validatedHeadingFilter(degrees)
-        handle.session.stage { it.copy(filter = filter) }
+        handle.session.stage { WatchHeadingParameters(filter) }
         handle
       }
 
