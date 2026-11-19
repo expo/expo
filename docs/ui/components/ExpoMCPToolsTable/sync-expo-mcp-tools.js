@@ -72,6 +72,7 @@ const SERVER_EXAMPLE_PROMPTS = {
   observe_span_names: 'which kinds of network requests does the app record',
   observe_spans: 'find network requests that took longer than 2 seconds today',
   observe_trace: 'show every span of trace <trace-id>',
+  sentry_issue: 'show the stack trace and tags of Sentry issue <issue-id>',
 };
 
 /**
