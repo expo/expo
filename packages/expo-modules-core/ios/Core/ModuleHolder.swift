@@ -256,6 +256,8 @@ public final class ModuleHolder {
    */
   @JavaScriptActor
   private func installNativeViewComponents(on object: borrowing JavaScriptObject) {
+    let moduleName = name
+
     for (viewName, viewType) in nativeViewTypes {
       let isDefaultView = viewName == DEFAULT_MODULE_VIEW
       let propertyName = isDefaultView ? ModuleHolder.defaultViewPropertyName : viewName
@@ -264,13 +266,13 @@ public final class ModuleHolder {
         log.error("The view '\(viewName)' isn't added to the module '\(name)', because the module already has a property with this name")
         continue
       }
-      let config = NativeViewComponentConfig(
-        viewType: viewType,
-        componentName: ExpoFabricView.componentName(moduleName: name, viewName: viewName)
-      )
       let options: JavaScriptObject.PropertyOptions = isDefaultView ? [.configurable] : [.configurable, .enumerable]
       object.defineLazyProperty(propertyName, options: options) { _, runtime in
-        try NativeViewComponentFactory.create(config, in: runtime)
+        let config = NativeViewComponentConfig(
+          viewType: viewType,
+          componentName: ExpoFabricView.componentName(moduleName: moduleName, viewName: viewName)
+        )
+        return try NativeViewComponentFactory.create(config, in: runtime)
       }
     }
   }
