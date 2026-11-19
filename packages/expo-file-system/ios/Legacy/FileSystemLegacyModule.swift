@@ -15,7 +15,7 @@ public final class FileSystemLegacyModule: Module {
     let session = createUrlSession(type: .background, delegate: sessionTaskDispatcher)
     if let identifier = session.configuration.identifier {
       ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)?
-        .registerLegacySession(identifier)
+        .registerSession(identifier)
     }
     return session
   }()

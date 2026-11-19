@@ -8,25 +8,21 @@ public final class FileSystemBackgroundSessionHandler: ExpoAppDelegateSubscriber
   // Bounds event delivery plus JS processing; completion still waits for URLSession's final event.
   private static let backgroundCompletionTimeout: TimeInterval = 25
   private let completion = BackgroundSessionCompletion()
-  // Legacy background sessions have random identifiers, so they are registered when created.
-  private let legacySessionsLock = NSLock()
-  private var legacySessionIdentifiers: Set<String> = []
+  // Only sessions created in this process receive their final event. After a cold relaunch,
+  // a session is not created again until JS uses it, so it must not be registered before that.
+  private let sessionsLock = NSLock()
+  private var sessionIdentifiers: Set<String> = []
 
-  func registerLegacySession(_ identifier: String) {
-    legacySessionsLock.lock()
-    defer { legacySessionsLock.unlock() }
-    legacySessionIdentifiers.insert(identifier)
+  func registerSession(_ identifier: String) {
+    sessionsLock.lock()
+    defer { sessionsLock.unlock() }
+    sessionIdentifiers.insert(identifier)
   }
 
   private func ownsSession(_ identifier: String) -> Bool {
-    #if os(iOS)
-    if identifier == NetworkTaskSessionManager.backgroundSessionIdentifier {
-      return true
-    }
-    #endif
-    legacySessionsLock.lock()
-    defer { legacySessionsLock.unlock() }
-    return legacySessionIdentifiers.contains(identifier)
+    sessionsLock.lock()
+    defer { sessionsLock.unlock() }
+    return sessionIdentifiers.contains(identifier)
   }
 
   func registerDownload(_ task: FileSystemDownloadTask, forSessionIdentifier identifier: String) {
