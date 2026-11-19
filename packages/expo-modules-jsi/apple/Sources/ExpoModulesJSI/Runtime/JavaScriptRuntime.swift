@@ -620,7 +620,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// Creates a host function from a ``HostFunctionClosure``, which every other closure type is adapted
   /// to. A function without a name gets an empty one.
   @JavaScriptActor
-  private func createHostFunction(_ name: String?, _ function: sending @escaping HostFunctionClosure)
+  internal func createHostFunction(_ name: String?, _ function: sending @escaping HostFunctionClosure)
     -> JavaScriptFunction
   {
     let closure = createFunctionClosure(runtime: self, function)

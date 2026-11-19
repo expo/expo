@@ -145,6 +145,103 @@ struct JavaScriptObjectTests {
   }
 
   @Test
+  func `defineProperty sets false attributes of an existing property`() throws {
+    let object = JavaScriptObject(runtime)
+    object.defineProperty("test", value: 1, options: [.configurable, .enumerable, .writable])
+    object.defineProperty("test", value: 2)
+    runtime.global().setProperty("obj", object)
+
+    let descriptor = try runtime.eval("Object.getOwnPropertyDescriptor(obj, 'test')").getObject()
+    #expect(descriptor.getProperty("value").getInt() == 2)
+    #expect(descriptor.getProperty("configurable").getBool() == false)
+    #expect(descriptor.getProperty("enumerable").getBool() == false)
+    #expect(descriptor.getProperty("writable").getBool() == false)
+  }
+
+  // MARK: - Lazy properties
+
+  @Test
+  func `defineLazyProperty creates the value on the first read only`() throws {
+    let object = runtime.createObject()
+    object.defineLazyProperty("value") { runtime in
+      try runtime.eval("++globalThis.calls")
+    }
+    runtime.global().setProperty("obj", object)
+    try runtime.eval("globalThis.calls = 0")
+
+    #expect(try runtime.eval("Object.keys(obj).join()").getString() == "value")
+    #expect(try runtime.eval("calls").getInt() == 0)
+    #expect(try runtime.eval("obj.value").getInt() == 1)
+    #expect(try runtime.eval("obj.value").getInt() == 1)
+    #expect(try runtime.eval("calls").getInt() == 1)
+  }
+
+  @Test
+  func `defineLazyProperty replaces the getter with a read-only data property`() throws {
+    let object = runtime.createObject()
+    object.defineLazyProperty("value") { _ in
+      "lazy"
+    }
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("typeof Object.getOwnPropertyDescriptor(obj, 'value').get").getString() == "function")
+    #expect(try runtime.eval("obj.value").getString() == "lazy")
+
+    let descriptor = try runtime.eval("Object.getOwnPropertyDescriptor(obj, 'value')").getObject()
+    #expect(descriptor.getProperty("value").getString() == "lazy")
+    #expect(descriptor.getProperty("writable").getBool() == false)
+    #expect(descriptor.getProperty("enumerable").getBool() == true)
+    #expect(descriptor.getProperty("configurable").getBool() == true)
+  }
+
+  @Test
+  func `defineLazyProperty defines a non-enumerable property`() throws {
+    let object = runtime.createObject()
+    object.defineLazyProperty("hidden", options: [.configurable]) { _ in
+      1
+    }
+    runtime.global().setProperty("obj", object)
+
+    #expect(try runtime.eval("Object.keys(obj).length").getInt() == 0)
+    #expect(try runtime.eval("obj.hidden").getInt() == 1)
+    #expect(try runtime.eval("Object.keys(obj).length").getInt() == 0)
+  }
+
+  @Test
+  func `defineLazyProperty makes the data property non-configurable`() throws {
+    let object = runtime.createObject()
+    object.defineLazyProperty("value", options: [.enumerable]) { _ in
+      1
+    }
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("Object.getOwnPropertyDescriptor(obj, 'value').configurable").getBool() == true)
+    #expect(try runtime.eval("obj.value").getInt() == 1)
+
+    let descriptor = try runtime.eval("Object.getOwnPropertyDescriptor(obj, 'value')").getObject()
+    #expect(descriptor.getProperty("value").getInt() == 1)
+    #expect(descriptor.getProperty("writable").getBool() == false)
+    #expect(descriptor.getProperty("enumerable").getBool() == true)
+    #expect(descriptor.getProperty("configurable").getBool() == false)
+    #expect(try runtime.eval("delete obj.value").getBool() == false)
+    #expect(try runtime.eval("obj.value").getInt() == 1)
+  }
+
+  @Test
+  func `defineLazyProperty calls the factory again after it throws`() throws {
+    let object = runtime.createObject()
+    object.defineLazyProperty("value") { runtime in
+      try runtime.eval("if (++globalThis.calls === 1) throw new Error('first read'); globalThis.calls")
+    }
+    runtime.global().setProperty("obj", object)
+    try runtime.eval("globalThis.calls = 0")
+
+    #expect(throws: (any Error).self) {
+      try runtime.eval("obj.value")
+    }
+    #expect(try runtime.eval("obj.value").getInt() == 2)
+    #expect(try runtime.eval("obj.value").getInt() == 2)
+  }
+
+  @Test
   func `getPropertyAsFunction finds a non-ASCII name`() throws {
     let object = try runtime.eval("({ 'zażółć': () => 'gęślą jaźń' })").getObject()
     let function = try object.getPropertyAsFunction("zażółć")
