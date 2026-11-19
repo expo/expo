@@ -28,7 +28,7 @@ export interface NativeStackNavigatorCreateProps {
   isPreloaded: (key: string) => boolean;
   isRemovalPrevented: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
-  removeRoutes: (routeNames: string[]) => void;
+  removeRoutes: (routeKeys: string[]) => void;
   /** Registers pop-to-top on parent tab press, or returns undefined without a tab parent. */
   subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
 }

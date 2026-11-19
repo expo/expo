@@ -16,7 +16,7 @@ export interface StackNavigatorCreateProps {
   isPreloaded: (key: string) => boolean;
   isRemovalPrevented: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
-  removeRoutes: (routeNames: string[]) => void;
+  removeRoutes: (routeKeys: string[]) => void;
   restoreRoute: (route: Route<string>) => boolean;
   subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
 }

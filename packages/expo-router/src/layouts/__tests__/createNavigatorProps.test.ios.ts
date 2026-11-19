@@ -112,11 +112,11 @@ describe('navigator props helpers', () => {
       state: { key: 'stack-key', index: 0 } as StackNavigationState<ParamListBase>,
     });
 
-    props.removeRoutes(['settings']);
+    props.removeRoutes(['settings-key']);
 
     expect(dispatchSync).toHaveBeenCalledWith({
       type: 'REMOVE_ROUTES',
-      payload: { routeNames: ['settings'] },
+      payload: { routeKeys: ['settings-key'] },
     });
     expect(props.isPreloaded).toBe(isPreloaded);
   });
@@ -145,7 +145,7 @@ describe('navigator props helpers', () => {
       navigateSync: (name: string) => void;
     }>();
     expectTypeOf(createNativeStackProps).returns.toMatchTypeOf<{
-      removeRoutes: (routeNames: string[]) => void;
+      removeRoutes: (routeKeys: string[]) => void;
     }>();
     expectTypeOf(createJSStackProps).returns.toEqualTypeOf<StackNavigatorCreateProps>();
   });
