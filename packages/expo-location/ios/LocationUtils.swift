@@ -20,7 +20,7 @@ internal func normalizeAccuracy(_ accuracy: CLLocationDirection) -> Int {
 }
 
 internal func exportLocation(_ location: CLLocation) -> [String: Any] {
-  let hasAltitude = location.verticalAccuracy >= 0
+  let hasAltitude = location.verticalAccuracy > 0
   let altitude: Any = hasAltitude ? location.ellipsoidalAltitude : NSNull()
   let mslAltitude: Any = hasAltitude ? location.altitude : NSNull()
   let altitudeAccuracy: Any = hasAltitude ? location.verticalAccuracy : NSNull()

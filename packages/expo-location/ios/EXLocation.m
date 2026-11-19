@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSDictionary *)exportLocation:(CLLocation *)location
 {
-  BOOL hasAltitude = location.verticalAccuracy >= 0;
+  BOOL hasAltitude = location.verticalAccuracy > 0;
   return @{
     @"coords": @{
         @"latitude": @(location.coordinate.latitude),
