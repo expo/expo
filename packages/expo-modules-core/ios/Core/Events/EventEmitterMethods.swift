@@ -89,10 +89,10 @@ internal enum EventEmitterMethods {
     runtime: borrowing JavaScriptRuntime
   ) throws {
     let emitter = try arguments.unownedValue(at: 0).asObject(in: runtime)
-    let event = try arguments.unownedValue(at: 1).asString()
-    let listener = arguments[2]
-    guard listener.isFunction() else {
-      throw InvalidListenerException(event)
+    let event = arguments.unownedValue(at: 1)
+    try requireString(event)
+    guard arguments.unownedValue(at: 2).isFunction() else {
+      throw InvalidListenerException(try event.asString())
     }
     guard
       let nativeState = nativeStateCreatingIfNeeded(of: emitter, in: runtime),
@@ -101,12 +101,13 @@ internal enum EventEmitterMethods {
       return
     }
     let hadListeners = !listeners.isEmpty
-    let count = listeners.add(listener, to: event)
+    let functionPointer = argumentPointer(at: 2, in: arguments)
+    let firstListenerEvent = try listeners.add(functionAt: functionPointer, to: event, in: runtime)
     if !hadListeners {
       nativeState.listenersDidChange(in: runtime, hasListeners: true)
     }
-    if count == 1 {
-      try nativeState.listeningDidChange(emitter, event: event, isListening: true, in: runtime)
+    if let firstListenerEvent {
+      try nativeState.listeningDidChange(emitter, event: firstListenerEvent, isListening: true, in: runtime)
     }
   }
 
@@ -138,8 +139,9 @@ internal enum EventEmitterMethods {
     runtime: borrowing JavaScriptRuntime
   ) throws {
     let emitter = try arguments.unownedValue(at: 0).asObject(in: runtime)
-    let event = try arguments.unownedValue(at: 1).asString()
-    try removeListener(arguments[2], event: event, from: emitter, in: runtime)
+    let event = arguments.unownedValue(at: 1)
+    try requireString(event)
+    try removeListener(functionAt: argumentPointer(at: 2, in: arguments), event: event, from: emitter, in: runtime)
   }
 
   /// `emitter.removeListener(eventName, listener)`.
@@ -152,8 +154,9 @@ internal enum EventEmitterMethods {
   ) throws {
     try requireArguments(2, of: "removeListener", in: arguments)
     let emitter = try this.asObject(in: runtime)
-    let event = try arguments.unownedValue(at: 0).asString()
-    try removeListener(arguments[1], event: event, from: emitter, in: runtime)
+    let event = arguments.unownedValue(at: 0)
+    try requireString(event)
+    try removeListener(functionAt: argumentPointer(at: 1, in: arguments), event: event, from: emitter, in: runtime)
   }
 
   /// `emitter.removeAllListeners(eventName)`.
@@ -166,7 +169,8 @@ internal enum EventEmitterMethods {
   ) throws {
     try requireArguments(1, of: "removeAllListeners", in: arguments)
     let emitter = try this.asObject(in: runtime)
-    let event = try arguments.unownedValue(at: 0).asString()
+    let event = arguments.unownedValue(at: 0)
+    try requireString(event)
 
     guard
       let nativeState = emitter.getNativeState(as: EventEmitterNativeState.self),
@@ -174,11 +178,11 @@ internal enum EventEmitterMethods {
     else {
       return
     }
-    if listeners.removeAll(from: event) > 0 {
+    if let removedEvent = listeners.removeAll(from: event) {
       if listeners.isEmpty {
         nativeState.listenersDidChange(in: runtime, hasListeners: false)
       }
-      try nativeState.listeningDidChange(emitter, event: event, isListening: false, in: runtime)
+      try nativeState.listeningDidChange(emitter, event: removedEvent, isListening: false, in: runtime)
     }
   }
 
@@ -192,19 +196,23 @@ internal enum EventEmitterMethods {
   ) throws {
     try requireArguments(1, of: "emit", in: arguments)
     let emitter = try this.asObject(in: runtime)
-    let event = try arguments.unownedValue(at: 0).asString()
+    let event = arguments.unownedValue(at: 0)
+    try requireString(event)
 
     guard let listeners = emitter.getNativeState(as: EventEmitterNativeState.self)?.listeners(in: runtime) else {
       return
     }
-    let payloadArguments = arguments.slice(1...)
-    listeners.call(
-      event,
-      this: emitter,
-      argumentsPointer: payloadArguments.rawBaseAddress,
-      argumentCount: payloadArguments.count,
-      in: runtime
-    )
+    // The arguments after the event name are the payload.
+    let argumentsPointer = argumentPointer(at: 1, in: arguments)
+    let argumentCount = arguments.count - 1
+    this.withUnsafePointee { thisValuePointer in
+      listeners.call(
+        event,
+        thisValuePointer: thisValuePointer,
+        argumentsPointer: argumentsPointer,
+        argumentCount: argumentCount
+      )
+    }
   }
 
   /// `emitter.listenerCount(eventName)`.
@@ -217,7 +225,8 @@ internal enum EventEmitterMethods {
   ) throws {
     try requireArguments(1, of: "listenerCount", in: arguments)
     let emitter = try this.asObject(in: runtime)
-    let event = try arguments.unownedValue(at: 0).asString()
+    let event = arguments.unownedValue(at: 0)
+    try requireString(event)
 
     let listeners = emitter.getNativeState(as: EventEmitterNativeState.self)?.listeners(in: runtime)
     result.emplace(number: Double(listeners?.count(of: event) ?? 0))
@@ -240,8 +249,8 @@ internal enum EventEmitterMethods {
 
   @JavaScriptActor
   private static func removeListener(
-    _ listener: consuming JavaScriptValue,
-    event: String,
+    functionAt functionPointer: UnsafeRawPointer,
+    event: borrowing JavaScriptUnownedValue,
     from emitter: borrowing JavaScriptObject,
     in runtime: borrowing JavaScriptRuntime
   ) throws {
@@ -251,12 +260,27 @@ internal enum EventEmitterMethods {
     else {
       return
     }
-    let count = listeners.remove(listener, from: event)
-    if count.before > 0 && count.after == 0 {
+    if let removedEvent = listeners.remove(functionAt: functionPointer, from: event) {
       if listeners.isEmpty {
         nativeState.listenersDidChange(in: runtime, hasListeners: false)
       }
-      try nativeState.listeningDidChange(emitter, event: event, isListening: false, in: runtime)
+      try nativeState.listeningDidChange(emitter, event: removedEvent, isListening: false, in: runtime)
+    }
+  }
+
+  /// Returns a pointer to the `facebook::jsi::Value` of the argument at the given index. An index equal to the number
+  /// of arguments gives the end of the arguments.
+  private static func argumentPointer(
+    at index: Int,
+    in arguments: borrowing JavaScriptValuesBuffer
+  ) -> UnsafeRawPointer {
+    return jsValuePointer(in: arguments.rawBaseAddress!, at: index)
+  }
+
+  /// Throws the error of `asString()` when the event name isn't a string, without decoding a string.
+  private static func requireString(_ event: borrowing JavaScriptUnownedValue) throws {
+    if !event.isString() {
+      _ = try event.asString()
     }
   }
 

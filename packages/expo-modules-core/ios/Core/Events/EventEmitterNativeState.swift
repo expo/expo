@@ -49,7 +49,7 @@ internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendab
       if let primaryListeners {
         return primaryListeners
       }
-      let created = EventListeners()
+      let created = EventListeners(in: runtime)
       primaryListeners = created
       return created
     }
@@ -122,14 +122,34 @@ private let observingFunctionNamesKey = JavaScriptRuntime.Cache.Key<ObservingFun
 
 /// The event listeners of one runtime. Used only on the thread of that runtime.
 internal final class EventListeners {
+  /// The `facebook::jsi::Runtime` of the listeners. The listeners are used only while their runtime exists.
+  private let runtimePointer: UnsafeMutableRawPointer
+
   /// The listeners of each event that has any. An emitter usually has listeners of a few events, so a linear search
   /// is faster than hashing the event name.
   @exclusivity(unchecked)
   private var events = ContiguousArray<EventEntry>()
 
-  private struct EventEntry {
+  internal init(in runtime: JavaScriptRuntime) {
+    runtimePointer = runtime.withUnsafePointee { $0 }
+  }
+
+  /// An event that has listeners. A class, because the JS name isn't copyable.
+  private final class EventEntry {
     let name: String
+
+    /// The name as a JS string of the runtime of the listeners, from the `addListener` call that added the event. The
+    /// JS methods find the event by it, so they don't decode the name that they get.
+    let jsName: JavaScriptValue
+
+    @exclusivity(unchecked)
     var listeners: ContiguousArray<JavaScriptEventListener>
+
+    init(name: String, jsName: consuming JavaScriptValue, listener: JavaScriptEventListener) {
+      self.name = name
+      self.jsName = jsName
+      self.listeners = [listener]
+    }
   }
 
   /// Finds the entry of the event. It compares the UTF-8 bytes of the names, like JavaScript compares strings. Swift
@@ -151,6 +171,17 @@ internal final class EventListeners {
     }
   }
 
+  /// Finds the entry of the event whose JS name is strictly equal to `event`, a JS string of the runtime of the
+  /// listeners. The engine compares the strings, usually by pointer, because it interns string literals.
+  private func index(of event: borrowing JavaScriptUnownedValue) -> Int? {
+    return events.withUnsafeBufferPointer { entries in
+      for index in entries.indices where event.isEqual(to: entries[index].jsName) {
+        return index
+      }
+      return nil
+    }
+  }
+
   /// Returns the listeners of the event, or `nil` when it has none. The array is a copy, so the listeners that calls
   /// add or remove don't change it.
   internal func listeners(of event: String) -> ContiguousArray<JavaScriptEventListener>? {
@@ -165,47 +196,60 @@ internal final class EventListeners {
     return events.isEmpty
   }
 
-  /// Returns the number of listeners of the event.
-  internal func count(of event: String) -> Int {
+  /// Returns the number of listeners of the event, a JS string.
+  internal func count(of event: borrowing JavaScriptUnownedValue) -> Int {
     guard let index = index(of: event) else {
       return 0
     }
     return events[index].listeners.count
   }
 
-  /// Adds a listener of the event and returns the number of listeners of the event.
-  internal func add(_ function: consuming JavaScriptValue, to event: String) -> Int {
-    let listener = JavaScriptEventListener(function)
+  /// Adds a listener of the event, a JS string. `functionPointer` points to the `facebook::jsi::Value` of the listener
+  /// function. Returns the name of the event when it is its first listener.
+  internal func add(
+    functionAt functionPointer: UnsafeRawPointer,
+    to event: borrowing JavaScriptUnownedValue,
+    in runtime: JavaScriptRuntime
+  ) throws -> String? {
+    let listener = JavaScriptEventListener(functionAt: functionPointer, runtimePointer: runtimePointer)
     guard let index = index(of: event) else {
-      events.append(EventEntry(name: event, listeners: [listener]))
-      return 1
+      let name = try event.asString()
+      events.append(EventEntry(name: name, jsName: event.copied(in: runtime), listener: listener))
+      return name
     }
     events[index].listeners.append(listener)
-    return events[index].listeners.count
+    return nil
   }
 
-  /// Removes every copy of the listener of the event. Returns the number of listeners of the event before and after.
-  internal func remove(_ function: borrowing JavaScriptValue, from event: String) -> (before: Int, after: Int) {
+  /// Removes every copy of the listener of the event, a JS string. `functionPointer` points to the
+  /// `facebook::jsi::Value` of the listener function. Returns the name of the event when it removed its last listener.
+  internal func remove(functionAt functionPointer: UnsafeRawPointer, from event: borrowing JavaScriptUnownedValue)
+    -> String?
+  {
     guard let index = index(of: event) else {
-      return (0, 0)
+      return nil
     }
-    let before = events[index].listeners.count
-    events[index].listeners.removeAll { listener in
-      return listener.function == function
+    let entry = events[index]
+    entry.listeners.removeAll { listener in
+      return isJSEventListenerFunction(
+        runtimePointer: runtimePointer,
+        listenerPointer: listener.pointer,
+        valuePointer: functionPointer
+      )
     }
-    let after = events[index].listeners.count
-    if after == 0 {
-      events.remove(at: index)
+    guard entry.listeners.isEmpty else {
+      return nil
     }
-    return (before, after)
+    events.remove(at: index)
+    return entry.name
   }
 
-  /// Removes all listeners of the event and returns how many it had.
-  internal func removeAll(from event: String) -> Int {
+  /// Removes all listeners of the event, a JS string. Returns the name of the event when it had listeners.
+  internal func removeAll(from event: borrowing JavaScriptUnownedValue) -> String? {
     guard let index = index(of: event) else {
-      return 0
+      return nil
     }
-    return events.remove(at: index).listeners.count
+    return events.remove(at: index).name
   }
 
   /// Calls the listeners, which `listeners(of:)` returned, with `this` and one argument, the payload.
@@ -220,25 +264,27 @@ internal final class EventListeners {
     }
   }
 
-  /// Calls the listeners of the event with `this` and the arguments, `argumentCount` values of `facebook::jsi::Value`
-  /// that `argumentsPointer` points to.
+  /// Calls the listeners of the event, a JS string, with `this` and the arguments, `argumentCount` values of
+  /// `facebook::jsi::Value` that `argumentsPointer` points to. `thisValuePointer` points to the `facebook::jsi::Value`
+  /// of `this`. Like `call(_:this:payload:in:)`, it calls the listeners that the event has before the first call.
   internal func call(
-    _ event: String,
-    this: borrowing JavaScriptObject,
+    _ event: borrowing JavaScriptUnownedValue,
+    thisValuePointer: UnsafeRawPointer,
     argumentsPointer: UnsafeRawPointer?,
-    argumentCount: Int,
-    in runtime: JavaScriptRuntime
+    argumentCount: Int
   ) {
     guard let index = index(of: event) else {
       return
     }
-    Self.call(
-      events[index].listeners,
-      this: this,
-      argumentsPointer: argumentsPointer,
-      argumentCount: argumentCount,
-      in: runtime
-    )
+    for listener in events[index].listeners {
+      callJSEventListener(
+        runtimePointer: runtimePointer,
+        listenerPointer: listener.pointer,
+        thisValuePointer: thisValuePointer,
+        argumentsPointer: argumentsPointer,
+        argumentCount: argumentCount
+      )
+    }
   }
 
   /// Calls the listeners. `listeners` is a copy, so the listeners that the calls add or remove don't change it: a
@@ -251,28 +297,35 @@ internal final class EventListeners {
     argumentCount: Int,
     in runtime: JavaScriptRuntime
   ) {
-    for listener in listeners {
-      runtime.withUnsafePointees(
-        object: this,
-        value: listener.function
-      ) { runtimePointer, thisPointer, functionPointer in
-        callJSEventListener(
-          runtimePointer: runtimePointer,
-          listenerPointer: functionPointer,
-          thisPointer: thisPointer,
-          argumentsPointer: argumentsPointer,
-          argumentCount: argumentCount
-        )
+    runtime.withUnsafePointee { runtimePointer in
+      this.withUnsafePointee { thisPointer in
+        for listener in listeners {
+          callJSEventListener(
+            runtimePointer: runtimePointer,
+            listenerPointer: listener.pointer,
+            thisPointer: thisPointer,
+            argumentsPointer: argumentsPointer,
+            argumentCount: argumentCount
+          )
+        }
       }
     }
   }
 }
 
-/// A listener function. A class, so arrays of listeners can be copied.
+/// A listener function, kept as a `facebook::jsi::Function` that the C++ helpers call without a copy. A class, so
+/// arrays of listeners can be copied.
 internal final class JavaScriptEventListener {
-  internal let function: JavaScriptValue
+  /// The `facebook::jsi::Function` of the listener.
+  internal let pointer: UnsafeMutableRawPointer
 
-  internal init(_ function: consuming JavaScriptValue) {
-    self.function = function
+  /// Creates a listener of the function that `functionPointer`, a pointer to a `facebook::jsi::Value`, points to.
+  internal init(functionAt functionPointer: UnsafeRawPointer, runtimePointer: UnsafeMutableRawPointer) {
+    pointer = createJSEventListener(runtimePointer: runtimePointer, functionPointer: functionPointer)
+  }
+
+  // Like a `JavaScriptValue`, a listener must be released while its runtime exists.
+  deinit {
+    destroyJSEventListener(pointer)
   }
 }
