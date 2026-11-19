@@ -24,10 +24,7 @@ async function action() {
   }
   const repo = env.GITHUB_REPOSITORY || 'expo/expo';
   const github = ghCli(repo);
-  const pullRequest =
-    env.MERGE_SHA && env.PR_TITLE && env.PR_AUTHOR
-      ? { mergeSha: env.MERGE_SHA, title: env.PR_TITLE, author: env.PR_AUTHOR }
-      : await github.viewPullRequestAsync(prNumber);
+  const pullRequest = await github.viewPullRequestAsync(prNumber);
   const runLogUrl = env.GITHUB_RUN_ID
     ? `${env.GITHUB_SERVER_URL}/${repo}/actions/runs/${env.GITHUB_RUN_ID}`
     : undefined;
@@ -61,10 +58,9 @@ export default (program: Command) => {
     PR_NUMBER                       The pull request on main.
     SDK_VERSION                     The NN of sdk-NN. Without it, LABELS names the branches.
     LABELS                          JSON of the label added, or of every label of the pull request.
-    MERGE_SHA, PR_TITLE, PR_AUTHOR  Read with "gh pr view" when one of them is missing.
-    DRY_RUN                         "false" pushes, opens the pull request, and comments. Default: "true".
+    DRY_RUN                         "false" pushes and comments. Default: "true".
     REPO_DIR                        A clone with an "origin" remote. Default: the current directory.
-    GH_TOKEN                        A token that can push, open pull requests, and comment.`
+    GH_TOKEN                        A token that can push to sdk-NN and comment.`
     )
     .asyncAction(action);
 };

@@ -1,12 +1,9 @@
-import { parseChangesetFile } from '@changesets/parse';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
 import { GitDirectory } from '../Git';
 import { spawnErrorOutput } from '../Utils';
-import { convertChangesetsAsync } from '../changesets/BackportChangelog';
-import { isChangesetPath } from '../code-review/Changesets';
 import { GitHub } from './GitHub';
 
 export type BackportOptions = {
@@ -15,9 +12,9 @@ export type BackportOptions = {
   prNumber: number;
   sdkVersion: number;
   mergeSha: string;
-  title: string;
-  author: string;
-  /** Logs the pull request and each comment instead of pushing, opening, and commenting. */
+  /** The branch that the pull request merged into. The bot backports only from `main`. */
+  baseBranch: string;
+  /** Logs the commit that it would push and each comment, instead of pushing and commenting. */
   dryRun: boolean;
   github: GitHub;
   runLogUrl?: string;
@@ -25,7 +22,7 @@ export type BackportOptions = {
 };
 
 const MIN_SDK_VERSION = 55;
-const BACKPORT_LABEL = 'bot: backport';
+const MAX_PUSH_ATTEMPTS = 3;
 
 const GIT_CONFIG = [
   // The worktree holds the merged change, so a hooks path inside it would run code from that change.
@@ -45,48 +42,22 @@ function gitAuthEnv(): NodeJS.ProcessEnv {
   if (!token) {
     return process.env;
   }
-  const basic = Buffer.from(`x-access-token:${token}`).toString('base64');
   return {
     ...process.env,
     GIT_CONFIG_COUNT: '1',
     GIT_CONFIG_KEY_0: 'http.https://github.com/.extraheader',
-    GIT_CONFIG_VALUE_0: `AUTHORIZATION: basic ${basic}`,
+    GIT_CONFIG_VALUE_0: `AUTHORIZATION: basic ${basicAuth(token)}`,
   };
 }
 
-/**
- * Appends a `See:` line for the pull request to each changeset that has none outside a code fence,
- * so that the changelog script credits the original pull request instead of the backport one.
- * The patterns follow `scripts/changesets/changelog.cjs`.
- */
-async function linkChangesetsAsync(
-  repoDir: string,
-  changesetPaths: readonly string[],
-  prNumber: number
-): Promise<boolean> {
-  let changed = false;
-  for (const changesetPath of changesetPaths) {
-    const filePath = path.join(repoDir, changesetPath);
-    const content = await fs.promises.readFile(filePath, 'utf8');
-    let inFence = false;
-    const hasSeeLine = parseChangesetFile(content)
-      .summary.split(/\r?\n/)
-      .some((line) => {
-        if (/^\s*```/.test(line)) {
-          inFence = !inFence;
-          return false;
-        }
-        return !inFence && /^\s*See:/i.test(line);
-      });
-    if (!hasSeeLine) {
-      await fs.promises.writeFile(
-        filePath,
-        `${content.trimEnd()}\n\nSee: [#${prNumber}](https://github.com/expo/expo/pull/${prNumber})\n`
-      );
-      changed = true;
-    }
-  }
-  return changed;
+function basicAuth(token: string): string {
+  return Buffer.from(`x-access-token:${token}`).toString('base64');
+}
+
+// GitHub Actions masks the token in the run log, but not in a comment.
+function redactToken(text: string): string {
+  const token = process.env.GH_TOKEN;
+  return token ? text.replaceAll(token, '***').replaceAll(basicAuth(token), '***') : text;
 }
 
 function gitIn(dir: string) {
@@ -105,13 +76,12 @@ function gitIn(dir: string) {
 }
 
 /**
- * Cherry-picks the merge commit of a pull request on main onto `sdk-NN` and opens a pull request
- * into that branch. When the bot cannot open it, it comments on the original pull request once.
+ * Cherry-picks the merge commit of a pull request on main onto `sdk-NN` and pushes it to that
+ * branch. When the bot cannot push it, it comments the manual steps on the original pull request once.
  */
 export async function backportAsync(options: BackportOptions): Promise<void> {
   const { prNumber, sdkVersion, mergeSha, dryRun, github, log = console.log } = options;
   const targetBranch = `sdk-${sdkVersion}`;
-  const botBranch = `bot/sdk-${sdkVersion}-cherry-pick-${prNumber}`;
   if (sdkVersion < MIN_SDK_VERSION) {
     log(`The bot backports only to SDK ${MIN_SDK_VERSION} and later, so it skips ${targetBranch}.`);
     return;
@@ -126,147 +96,112 @@ export async function backportAsync(options: BackportOptions): Promise<void> {
       await github.commentAsync(prNumber, body);
     }
   };
-  const manualSteps = `To backport it by hand:
-
-\`\`\`sh
-git fetch origin main ${targetBranch}
-git checkout -b ${botBranch} origin/${targetBranch}
-git cherry-pick -x ${mergeSha}
-\`\`\`
-
-If \`${targetBranch}\` has no \`.changeset/config.json\`, move the summary of each \`.changeset/*.md\` file that this pull request adds into an entry under \`## Unpublished\` in the \`CHANGELOG.md\` of each package that it names, and delete the file.`;
+  const runLog = options.runLogUrl ? ` [Run log](${options.runLogUrl})` : '';
+  const pickCommands = `git fetch origin ${targetBranch}
+git checkout ${targetBranch}
+git pull --ff-only origin ${targetBranch}
+git cherry-pick -x ${mergeSha}`;
+  const manualSteps = `To backport it by hand:\n\n\`\`\`sh\n${pickCommands}\ngit push origin ${targetBranch}\n\`\`\``;
 
   const repo = gitIn(options.repoDir);
   let tempDir: string | undefined;
   try {
-    const heads = await repo(
-      'ls-remote',
-      'origin',
-      `refs/heads/${targetBranch}`,
-      `refs/heads/${botBranch}`
-    );
-    const exists = (branch: string) =>
-      heads.split('\n').some((line) => line.endsWith(`\trefs/heads/${branch}`));
-    if (!exists(targetBranch)) {
+    if (!(await repo('ls-remote', 'origin', `refs/heads/${targetBranch}`))) {
       log(`${targetBranch} does not exist, so there is nothing to backport to.`);
       return;
     }
-    if (exists(botBranch)) {
-      await commentAsync(
-        `The branch \`${botBranch}\` already exists, so the bot did not backport this pull request to \`${targetBranch}\`. Delete the branch, then remove the \`${targetBranch}\` label and add it again to retry.`
-      );
-      return;
+    if (options.baseBranch !== 'main') {
+      const reason = `The bot backports only pull requests that merged into \`main\`. This pull request merged into \`${options.baseBranch}\`, so the bot did not backport it to \`${targetBranch}\`.`;
+      await commentAsync(`${reason}\n\n${manualSteps}`);
+      throw new Error(reason);
     }
 
     tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'sdk-cherry-pick-'));
     const worktree = path.join(tempDir, targetBranch);
     const shallow = (await repo('rev-parse', '--is-shallow-repository')) === 'true';
-    await repo(
-      'fetch',
-      '--quiet',
-      '--no-tags',
-      ...(shallow ? ['--depth=2'] : []),
-      'origin',
-      mergeSha,
-      `+refs/heads/${targetBranch}:refs/remotes/origin/${targetBranch}`
-    );
-    await repo('worktree', 'add', '--quiet', '--detach', worktree, `origin/${targetBranch}`);
+    const fetchTargetAsync = async () => {
+      await repo(
+        'fetch',
+        '--quiet',
+        '--no-tags',
+        ...(shallow ? ['--depth=2'] : []),
+        'origin',
+        mergeSha,
+        `+refs/heads/${targetBranch}:refs/remotes/origin/${targetBranch}`
+      );
+      return repo('rev-parse', `refs/remotes/origin/${targetBranch}`);
+    };
+    let base = await fetchTargetAsync();
+    await repo('worktree', 'add', '--quiet', '--detach', worktree, base);
     const git = gitIn(worktree);
 
-    try {
-      await git('cherry-pick', '-x', mergeSha);
-    } catch (error) {
-      if (!(await git('rev-parse', '--quiet', '--verify', 'CHERRY_PICK_HEAD').catch(() => ''))) {
-        throw error;
-      }
-      // A backtick in a file name would end the code block of the comment.
-      const conflicts = (await git('diff', '--name-only', '--diff-filter=U')).replace(/`/g, '');
-      await git('cherry-pick', '--abort');
-      await commentAsync(
-        conflicts
-          ? `The cherry-pick of ${mergeSha} onto \`${targetBranch}\` has conflicts, so no backport pull request was opened. These files conflict:\n\n\`\`\`\n${conflicts}\n\`\`\`\n\n${manualSteps}`
-          : `This change is already on \`${targetBranch}\`: the cherry-pick of ${mergeSha} is empty. No backport was made.`
-      );
-      return;
-    }
-
-    const addedChangesets = (
-      await git('diff-tree', '-r', '-z', '--name-only', '--no-commit-id', '--diff-filter=A', 'HEAD')
-    )
-      .split('\0')
-      .filter(isChangesetPath);
-    let changesetNote = '';
-    if (fs.existsSync(path.join(worktree, '.changeset/config.json'))) {
-      if (await linkChangesetsAsync(worktree, addedChangesets, prNumber)) {
-        await git('add', '-A');
-        await git(
-          'commit',
-          '--quiet',
-          '-m',
-          `Link changesets to #${prNumber}`,
-          '-m',
-          'The changelog script credits the pull request in the `See:` line, not the backport pull request.'
+    for (let attempt = 1; ; attempt++) {
+      if (!fs.existsSync(path.join(worktree, '.changeset/config.json'))) {
+        const reason = `\`${targetBranch}\` has no \`.changeset/config.json\`, so the bot did not backport this pull request. On that branch, a person must turn the changesets into \`CHANGELOG.md\` entries and rebuild the \`build/\` output.`;
+        // The push stays out of the block, so that running the block does not push a backport without its rebuild.
+        await commentAsync(
+          `${reason}\n\nTo backport it by hand:\n\n\`\`\`sh\n${pickCommands}\n\`\`\`\n\nNext, move the summary of each \`.changeset/*.md\` file that this pull request adds into an entry under \`## Unpublished\` in the \`CHANGELOG.md\` of each package that it names, and delete the file. Then rebuild the \`build/\` output of each package that the change touches, commit the result, and run \`git push origin ${targetBranch}\`.`
         );
-        changesetNote = `\nA second commit added a \`See:\` line for #${prNumber} to each changeset that had none, so that the changelog credits #${prNumber} and its author, not this pull request.\n`;
+        throw new Error(reason);
       }
-    } else if (addedChangesets.length > 0) {
-      await convertChangesetsAsync(worktree, addedChangesets, {
-        number: prNumber,
-        author: options.author,
-      });
-      await git('add', '-A');
-      await git(
-        'commit',
-        '--quiet',
-        '-m',
-        'Convert changesets to CHANGELOG entries',
-        '-m',
-        `${targetBranch} does not use changesets. This commit moves the changesets of #${prNumber} into CHANGELOG.md entries.`
-      );
-      changesetNote = `\n\`${targetBranch}\` does not use changesets, so a second commit moved the changesets of #${prNumber} into \`CHANGELOG.md\` entries. Each entry is in the section for its bump type. Check that the section fits the change.\n`;
+
+      try {
+        await git('cherry-pick', '-x', mergeSha);
+      } catch (error) {
+        if (!(await git('rev-parse', '--quiet', '--verify', 'CHERRY_PICK_HEAD').catch(() => ''))) {
+          throw error;
+        }
+        // A backtick in a file name would end the code block of the comment.
+        const conflicts = (await git('diff', '--name-only', '--diff-filter=U')).replace(/`/g, '');
+        await git('cherry-pick', '--abort');
+        await commentAsync(
+          conflicts
+            ? `The cherry-pick of ${mergeSha} onto \`${targetBranch}\` has conflicts, so the bot did not backport it. These files conflict:\n\n\`\`\`\n${conflicts}\n\`\`\`\n\n${manualSteps}`
+            : `This change is already on \`${targetBranch}\`: the cherry-pick of ${mergeSha} is empty. No backport was made.`
+        );
+        return;
+      }
+
+      if (dryRun) {
+        log(
+          `Would push to ${targetBranch}:\n${await git('show', '--stat', '--format=%s%n', 'HEAD')}`
+        );
+        return;
+      }
+
+      try {
+        await git('push', '--quiet', 'origin', `HEAD:refs/heads/${targetBranch}`);
+        break;
+      } catch (error) {
+        const head = await git('rev-parse', 'HEAD');
+        const pushedOnto = base;
+        base = await fetchTargetAsync();
+        // The remote took the push, but git lost its reply.
+        if (base === head) {
+          break;
+        }
+        // An unchanged tip means the remote refused the commit itself, so a retry would fail the same way.
+        if (base === pushedOnto) {
+          // A backtick in the output would end the code block of the comment.
+          const output = redactToken(spawnErrorOutput(error)).replace(/`/g, "'");
+          await commentAsync(
+            `The bot could not push the backport to \`${targetBranch}\`, so a person must push it.${runLog} Git printed:\n\n\`\`\`\n${output}\n\`\`\`\n\n${manualSteps}`
+          );
+          throw error;
+        }
+        if (attempt === MAX_PUSH_ATTEMPTS) {
+          const reason = `\`${targetBranch}\` moved before each of ${MAX_PUSH_ATTEMPTS} pushes, so the bot did not backport this pull request. A person must push it.`;
+          await commentAsync(`${reason}${runLog}\n\n${manualSteps}`);
+          throw new Error(reason);
+        }
+        log(`${targetBranch} moved during push attempt ${attempt}, so the bot cherry-picks again.`);
+        await git('reset', '--quiet', '--hard', base);
+      }
     }
 
-    const diffStat = await git('diff', '--stat', `origin/${targetBranch}`, 'HEAD');
-    if (!diffStat) {
-      await commentAsync(`This change is already on \`${targetBranch}\`. No backport was made.`);
-      return;
-    }
-
-    // `et check-sdk-prs` reads the first `(#N)` of the subject, so the title must not have one.
-    let originalTitle = options.title;
-    while (/\(#\d+\)/.test(originalTitle)) {
-      originalTitle = originalTitle.replace(/\((#\d+)\)/g, '$1');
-    }
-    const title = `[${targetBranch}] ${originalTitle} (#${prNumber})`;
-    const body = `Backport of #${prNumber} to \`${targetBranch}\`. The bot cherry-picked ${mergeSha} with \`git cherry-pick -x\`.\n${changesetNote}`;
-    if (dryRun) {
-      log(`Pull request into ${targetBranch}:\n${title}\n\n${body}\n${diffStat}`);
-      return;
-    }
-
-    // A bot branch with no pull request would block the next run, which stops when the branch exists.
-    const deleteBotBranchAsync = async (error: unknown) => {
-      await git('push', '--quiet', 'origin', '--delete', botBranch).catch((deleteError) =>
-        log(`Could not delete ${botBranch}: ${deleteError}`)
-      );
-      throw error;
-    };
-    // A new branch with the sdk-NN history in one push timed out in GitHub's `workflows` scope check.
-    // So the branch starts at the sdk-NN tip, and a fast-forward adds the backport commits.
-    await git('push', '--quiet', 'origin', `origin/${targetBranch}:refs/heads/${botBranch}`);
-    await git('push', '--quiet', 'origin', `HEAD:refs/heads/${botBranch}`).catch(
-      deleteBotBranchAsync
-    );
-    const number = await github
-      .createPullRequestAsync({ base: targetBranch, head: botBranch, title, body })
-      .catch(deleteBotBranchAsync);
-    await github
-      .addLabelAsync(number, BACKPORT_LABEL)
-      .catch((error) => log(`Could not add the "${BACKPORT_LABEL}" label to #${number}: ${error}`));
-    await commentAsync(`Backport PR ${targetBranch}: #${number}`);
+    await commentAsync(`Backported to \`${targetBranch}\` as ${await git('rev-parse', 'HEAD')}`);
   } catch (error) {
     if (!commented) {
-      const runLog = options.runLogUrl ? ` [Run log](${options.runLogUrl})` : '';
       await commentAsync(`The backport to \`${targetBranch}\` failed.${runLog}\n\n${manualSteps}`);
     }
     throw error;
@@ -274,6 +209,7 @@ If \`${targetBranch}\` has no \`.changeset/config.json\`, move the summary of ea
     if (tempDir) {
       await repo('worktree', 'remove', '--force', path.join(tempDir, targetBranch)).catch(() => {});
       await fs.promises.rm(tempDir, { recursive: true, force: true });
+      await repo('worktree', 'prune').catch(() => {});
     }
   }
 }
