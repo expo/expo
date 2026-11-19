@@ -149,7 +149,7 @@ export interface DateTimePickerProps {
   /**
    * Show a button to toggle between variants on Android. This prop has no effect when
    * `displayedComponents` is `'hourAndMinute'`, because the Material 3 `TimePicker` and `TimeInput`
-   * have no toggle. Use `TimePickerDialog` for a time picker with a toggle.
+   * have no toggle.
    * @default true
    */
   showVariantToggle?: boolean;
