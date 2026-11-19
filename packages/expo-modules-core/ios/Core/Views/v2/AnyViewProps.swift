@@ -35,9 +35,17 @@ public protocol AnyViewProps {
     from value: borrowing JavaScriptUnownedValue,
     in runtime: borrowing JavaScriptRuntime
   ) throws
+
+  /// Sets each event prop to a closure that dispatches the event through the given dispatcher. Core calls it on the
+  /// props that a view starts from.
+  mutating func _bindEvents(to events: ViewEventDispatcher)
 }
 
 extension AnyViewProps {
+  /// Props without event props have nothing to bind. `@ViewProps` generates `_bindEvents(to:)` only for props with
+  /// events.
+  public mutating func _bindEvents(to events: ViewEventDispatcher) {}
+
   /// Decodes a view prop. `@ViewProps` calls it from `_decode(_:from:in:)` as `Self._decodeViewProp`, so a
   /// prop with the same name doesn't hide it. The type comes from the property that the value is assigned to.
   @JavaScriptActor

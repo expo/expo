@@ -48,3 +48,15 @@ public protocol ExpoAppDelegateSubscriberProtocol: UIApplicationDelegate {
  Typealias merging the base class for app delegate subscribers and protocol inheritance to `UIApplicationDelegate`.
  */
 public typealias ExpoAppDelegateSubscriber = BaseExpoAppDelegateSubscriber & ExpoAppDelegateSubscriberProtocol
+
+#if os(iOS) || os(tvOS)
+/**
+ Protocol that an app delegate subscriber adopts to get window scene events from `ExpoAppSceneDelegate`.
+ It gets only the events that have no app delegate counterpart: `scene(_:willConnectTo:options:)`,
+ before the window is created and React Native is started in it, and `sceneDidDisconnect(_:)`.
+ The other scene events reach the subscriber through its `UIApplicationDelegate` methods.
+ One subscriber instance gets the events of all scenes.
+ */
+@objc(EXSceneDelegateSubscriberProtocol)
+public protocol ExpoSceneDelegateSubscriberProtocol: UIWindowSceneDelegate {}
+#endif

@@ -308,25 +308,30 @@ public macro Union() =
 /// optional type, unless the struct declares its own `init()`. When needed, the macro generates
 /// `init()`, which sets each event prop without an initial value to an empty closure.
 ///
+/// An event prop takes no parameter or one, the payload that JavaScript gets, whose type is
+/// `JavaScriptEncodable`. Calling it dispatches the event to the view's event handler in JavaScript.
+///
 /// Usage:
 ///
 ///     @ViewProps
 ///     struct CardProps {
 ///       var title = "Untitled"
 ///       var radius: Double = 0
+///       var onTap: () -> Void
 ///     }
 @attached(
   member,
   names: named(PropName), named(PropSet), named(_eventNames), named(Diff), named(init), named(_resetViewProp))
-@attached(extension, conformances: AnyViewProps, names: named(allProps), named(propSet), named(_decode))
+@attached(
+  extension, conformances: AnyViewProps, names: named(allProps), named(propSet), named(_decode), named(_bindEvents))
 public macro ViewProps() =
   #externalMacro(module: "ExpoModulesMacros", type: "ViewPropsMacro")
 
-/// Member + extension macro applied to an `ExpoNativeView` subclass, the view class of Expo Modules v2.
-/// It binds the class to its `@ViewProps` type, which is the generic argument, and conforms it to
-/// `AnyNativeView`. The module registers the view with `@ExpoModule(views:)`.
+/// Member + extension macro applied to a view of Expo Modules v2: an `ExpoNativeView` subclass or a SwiftUI view
+/// struct. It binds the view to its `@ViewProps` type, which is the generic argument, and conforms it to
+/// `AnyNativeUIKitView` or `AnyNativeSwiftUIView`. The module registers the view with `@ExpoModule(views:)`.
 ///
-/// The view's name defaults to the class name; pass `@ExpoView<Props>("CustomName")` to override it.
+/// The view's name defaults to the type name; pass `@ExpoView<Props>("CustomName")` to override it.
 ///
 /// Usage:
 ///
@@ -340,7 +345,21 @@ public macro ViewProps() =
 ///         }
 ///       }
 ///     }
-@attached(member, names: named(Props), named(_jsName))
-@attached(extension, conformances: AnyNativeView)
+///
+/// For a SwiftUI view, the macro adds the `props` and `children` constants, the weak `appContext` property and
+/// `init(props:children:appContext:)`. Core creates the struct again with the current props and children when either
+/// changes:
+///
+///     @ExpoView<CardProps>
+///     struct CardView: View {
+///       var body: some View {
+///         VStack {
+///           Text(props.title)
+///           children
+///         }
+///       }
+///     }
+@attached(member, names: named(Props), named(_jsName), named(props), named(children), named(appContext), named(init))
+@attached(extension, conformances: AnyNativeUIKitView, AnyNativeSwiftUIView)
 public macro ExpoView<Props: AnyViewProps>(_ name: String? = nil) =
   #externalMacro(module: "ExpoModulesMacros", type: "ExpoViewMacro")

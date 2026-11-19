@@ -5,12 +5,35 @@ description: Learn how to create development builds with Expo Workflows.
 hideTOC: true
 ---
 
+import { AgentPrompt } from '~/ui/components/AgentPrompt';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { HandWaveIcon } from '~/ui/components/CustomIcons/HandWaveIcon';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+<AgentPrompt
+  title="Create development builds with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent.">
+
+```text wrap
+Create development builds for Android and iOS with Expo Workflows. Use https://docs.expo.dev/eas/workflows/examples/create-development-builds.md as the source for each command and file.
+
+1. Check that EAS CLI is installed and up to date. If it is not, run `npm install -g eas-cli`.
+2. Check that I am logged in with `eas whoami`. If I am not, stop and ask me to run `eas login` or to set `EXPO_TOKEN`. Do not print a token.
+3. If the project does not have an Expo Services project ID, ask me before you run `eas init`.
+4. If expo-dev-client is not in the dependencies in package.json, run `npx expo install expo-dev-client`. A development build fails without it.
+5. Add the `development` and `development-simulator` build profiles from the page to eas.json. Create eas.json if it does not exist. Do not change the other profiles.
+6. Ask me if I want to install the iOS development build on a physical device. If I do, ask me to run `eas credentials:configure-build -p ios -e development` in my terminal, because it asks me to sign in to my Apple Developer account and to register my device. Do not ask for my Apple ID or password. If I do not, leave out the `ios_device_development_build` job in the next step, because that job fails when the project has no iOS credentials.
+7. Write the workflow from the page to .eas/workflows/create-development-builds.yml.
+8. Run `eas workflow:run .eas/workflows/create-development-builds.yml --non-interactive --wait --json`.
+9. If the run fails, find the failed job in the JSON output, run `eas workflow:logs <job ID> --non-interactive`, and tell me which job failed and why. Do not change credentials without asking me.
+10. Give me the workflow run link from the command output. Tell me which files you changed and which commands you ran.
+11. Tell me to run `eas build:dev` in my terminal to install a build on an Android Emulator or iOS Simulator and to start the development server.
+```
+
+</AgentPrompt>
 
 [Development builds](/develop/development-builds/introduction/) are specialized builds of your project that include Expo's developer tools. These types of builds include all native dependencies inside your project, enabling you to run a production-like build of your project on a simulator, emulator, or a physical device. This workflow allows you to create development builds for each platform and for both physical devices, Android emulators, and iOS simulators, which your team can access with `eas build:dev`.
 

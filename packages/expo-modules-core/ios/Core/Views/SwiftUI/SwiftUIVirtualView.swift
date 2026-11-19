@@ -367,7 +367,7 @@ private func virtualViewDidUpdateProps(viewDefinition: AnyViewDefinition?, apple
 private func virtualViewMountChild<Props: ExpoSwiftUI.ViewProps>(_ childComponentView: UIView, index: Int, props: Props) {
   var children = props.children ?? []
   let child: any ExpoSwiftUI.AnyChild
-  if let view = childComponentView as AnyObject as? (any ExpoSwiftUI.View) {
+  if let view = childComponentView as AnyObject as? (any ExpoSwiftUI.AnyChild) {
     child = view
   } else {
     child = ExpoSwiftUI.UIViewHost(view: childComponentView)

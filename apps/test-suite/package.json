@@ -20,7 +20,6 @@
     "@react-native-vector-icons/material-design-icons": "^13.1.2",
     "async-retry": "^1.1.4",
     "expo": "workspace:*",
-    "expo-app-metrics": "workspace:*",
     "expo-application": "workspace:*",
     "expo-asset": "workspace:*",
     "expo-audio": "workspace:*",

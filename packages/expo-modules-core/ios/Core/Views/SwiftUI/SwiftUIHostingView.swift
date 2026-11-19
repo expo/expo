@@ -162,7 +162,7 @@ extension ExpoSwiftUI {
     public override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
       var children = props.children ?? []
       let child: any AnyChild
-      if let view = childComponentView as AnyObject as? (any ExpoSwiftUI.View) {
+      if let view = childComponentView as AnyObject as? (any ExpoSwiftUI.AnyChild) {
         child = view
       } else {
         child = UIViewHost(view: childComponentView)
