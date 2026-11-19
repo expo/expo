@@ -10,12 +10,14 @@ internal enum EventEmitterMethods {
   /// Installs the class as `EventEmitter` on the core object, `global.expo`.
   @JavaScriptActor
   static func installClass(on coreObject: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
-    let eventEmitterClass = try runtime.createClass(name: "EventEmitter") { this, arguments in
+    let eventEmitterClass = try runtime.createClass(name: "EventEmitter") { [weak runtime] this, arguments in
       // The old event emitter wrapped the native module that its constructor got. A module is an event emitter now,
       // so the constructor returns an event emitter that it gets.
       if arguments.count > 0 && arguments[0].isObject() {
-        let constructor = try this.asObject().getProperty("constructor")
-        if constructor.isFunction() && arguments[0].getObject().instanceOf(constructor) {
+        guard let runtime else {
+          throw Exceptions.RuntimeLost()
+        }
+        if try isInstance(arguments.unownedValue(at: 0), ofConstructorOf: this.asObject(), in: runtime) {
           return arguments[0]
         }
       }
@@ -28,7 +30,9 @@ internal enum EventEmitterMethods {
   /// Defines the methods on the prototype.
   @JavaScriptActor
   private static func install(on prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
-    prototype.setProperty("addListener", value: try createAddListener(in: runtime))
+    let jsMethods = try createJSMethods(in: runtime)
+    prototype.setProperty("addListener", value: jsMethods.getProperty("addListener"))
+    prototype.setProperty("removeSubscription", value: jsMethods.getProperty("removeSubscription"))
     prototype.setProperty("removeListener", value: runtime.createFunction("removeListener", removeListener).asValue())
     prototype.setProperty(
       "removeAllListeners",
@@ -36,18 +40,17 @@ internal enum EventEmitterMethods {
     )
     prototype.setProperty("emit", value: runtime.createFunction("emit", emit).asValue())
     prototype.setProperty("listenerCount", value: runtime.createFunction("listenerCount", listenerCount).asValue())
-    prototype.setProperty(
-      "removeSubscription",
-      value: runtime.createFunction("removeSubscription", removeSubscription).asValue()
-    )
   }
 
-  /// Creates `addListener`. It is a JS function, so the subscription that it returns keeps the emitter and the
-  /// listener in a JS closure, which the garbage collector can collect even when the listener references the
-  /// subscription. Values that a host function captures are roots that the garbage collector can't collect. `remove()`
-  /// clears them before it removes the listener, so a second call does nothing, also when an observing function throws.
+  /// Creates the methods that are JS functions:
+  /// - `addListener`. The subscription that it returns keeps the emitter and the listener in a JS closure, which the
+  ///   garbage collector can collect even when the listener references the subscription. Values that a host function
+  ///   captures are roots that the garbage collector can't collect. `remove()` clears them before it removes the
+  ///   listener, so a second call does nothing, also when an observing function throws.
+  /// - `removeSubscription(subscription)`, from the API of the old event emitter. It calls `subscription.remove()`, and
+  ///   a getter of `remove` can throw.
   @JavaScriptActor
-  private static func createAddListener(in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
+  private static func createJSMethods(in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
     let source = """
       (function (nativeAddListener, nativeRemoveListener) {
         return {
@@ -67,15 +70,18 @@ internal enum EventEmitterMethods {
               },
             };
           },
-        }.addListener;
+          removeSubscription(subscription) {
+            subscription.remove();
+          },
+        };
       })
       """
-    let label = "expo-modules-core/event-emitter-add-listener.js"
-    let makeAddListener = try runtime.eval(label: label, source).asFunction()
+    let label = "expo-modules-core/event-emitter-methods.js"
+    let makeMethods = try runtime.eval(label: label, source).asFunction()
     let arguments = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 2)
     arguments.emplace(runtime.createFunction("addListener", nativeAddListener).asValue(), at: 0)
     arguments.emplace(runtime.createFunction("removeListener", nativeRemoveListener).asValue(), at: 1)
-    return try makeAddListener.call(arguments: arguments)
+    return try makeMethods.call(arguments: arguments).asObject()
   }
 
   // MARK: - Host functions
@@ -95,7 +101,7 @@ internal enum EventEmitterMethods {
       throw InvalidListenerException(try event.asString())
     }
     guard
-      let nativeState = nativeStateCreatingIfNeeded(of: emitter, in: runtime),
+      let nativeState = try nativeStateCreatingIfNeeded(of: emitter, in: runtime),
       let listeners = nativeState.listenersCreatingIfNeeded(in: runtime)
     else {
       return
@@ -107,18 +113,24 @@ internal enum EventEmitterMethods {
       nativeState.listenersDidChange(in: runtime, hasListeners: true)
     }
     if let firstListenerEvent {
-      try nativeState.listeningDidChange(emitter, event: firstListenerEvent, isListening: true, in: runtime)
+      try nativeState.listeningDidChange(
+        emitter,
+        event: firstListenerEvent,
+        eventValue: event,
+        isListening: true,
+        in: runtime
+      )
     }
   }
 
   /// Returns the native state of the emitter. Attaches a plain one when the emitter has no native state, for example
   /// an object of `expo.EventEmitter` or a module object in a runtime other than the main runtime. Returns `nil` when
-  /// the emitter has another native state.
+  /// the emitter has another native state. Throws when the engine doesn't allow a native state on the emitter.
   @JavaScriptActor
   private static func nativeStateCreatingIfNeeded(
     of emitter: borrowing JavaScriptObject,
     in runtime: JavaScriptRuntime
-  ) -> EventEmitterNativeState? {
+  ) throws -> EventEmitterNativeState? {
     if let nativeState = emitter.getNativeState(as: EventEmitterNativeState.self) {
       return nativeState
     }
@@ -126,7 +138,9 @@ internal enum EventEmitterMethods {
       return nil
     }
     let nativeState = EventEmitterNativeState(primaryRuntimeId: runtime.id)
-    emitter.setNativeState(nativeState)
+    guard emitter.trySetNativeState(nativeState) else {
+      throw EventListenersNotSupportedException()
+    }
     return nativeState
   }
 
@@ -182,7 +196,13 @@ internal enum EventEmitterMethods {
       if listeners.isEmpty {
         nativeState.listenersDidChange(in: runtime, hasListeners: false)
       }
-      try nativeState.listeningDidChange(emitter, event: removedEvent, isListening: false, in: runtime)
+      try nativeState.listeningDidChange(
+        emitter,
+        event: removedEvent,
+        eventValue: event,
+        isListening: false,
+        in: runtime
+      )
     }
   }
 
@@ -232,20 +252,37 @@ internal enum EventEmitterMethods {
     result.emplace(number: Double(listeners?.count(of: event) ?? 0))
   }
 
-  /// `emitter.removeSubscription(subscription)`, from the API of the old event emitter. Calls `subscription.remove()`.
-  @JavaScriptActor
-  private static func removeSubscription(
-    this _: borrowing JavaScriptUnownedValue,
-    arguments: consuming JavaScriptValuesBuffer,
-    result _: borrowing JavaScriptValue.Slot,
-    runtime: borrowing JavaScriptRuntime
-  ) throws {
-    try requireArguments(1, of: "removeSubscription", in: arguments)
-    let subscription = try arguments.unownedValue(at: 0).asObject(in: runtime)
-    try subscription.getProperty("remove").asFunction().call(this: subscription)
-  }
-
   // MARK: - Helpers
+
+  /// Returns whether the value is an instance of the constructor of the object, `value instanceof object.constructor`.
+  /// A getter of `constructor` or a Proxy trap can throw, so the check runs in C++, which catches the error, and this
+  /// function rethrows it.
+  @JavaScriptActor
+  private static func isInstance(
+    _ value: borrowing JavaScriptUnownedValue,
+    ofConstructorOf object: borrowing JavaScriptObject,
+    in runtime: JavaScriptRuntime
+  ) throws -> Bool {
+    let constructorName = EventEmitterPropNames.of(runtime).constructor
+    var isInstance = false
+    let errorPointer = runtime.withUnsafePointee { runtimePointer in
+      return object.withUnsafePointee { objectPointer in
+        return value.withUnsafePointee { valuePointer in
+          return constructorName.withUnsafePointee { constructorNamePointer in
+            return isInstanceOfConstructor(
+              runtimePointer: runtimePointer,
+              objectPointer: objectPointer,
+              valuePointer: valuePointer,
+              constructorNamePointer: constructorNamePointer,
+              isInstance: &isInstance
+            )
+          }
+        }
+      }
+    }
+    try throwJSError(caughtAt: errorPointer, in: runtime)
+    return isInstance
+  }
 
   @JavaScriptActor
   private static func removeListener(
@@ -264,7 +301,13 @@ internal enum EventEmitterMethods {
       if listeners.isEmpty {
         nativeState.listenersDidChange(in: runtime, hasListeners: false)
       }
-      try nativeState.listeningDidChange(emitter, event: removedEvent, isListening: false, in: runtime)
+      try nativeState.listeningDidChange(
+        emitter,
+        event: removedEvent,
+        eventValue: event,
+        isListening: false,
+        in: runtime
+      )
     }
   }
 
@@ -304,5 +347,15 @@ internal final class InvalidListenerException: GenericException<String>, @unchec
 internal final class MissingArgumentsException: GenericException<(method: String, count: Int)>, @unchecked Sendable {
   override var reason: String {
     "The event emitter method `\(param.method)` takes \(param.count) arguments, but it received fewer"
+  }
+}
+
+internal final class EventListenersNotSupportedException: Exception, @unchecked Sendable {
+  override var reason: String {
+    """
+    The object can't keep event listeners, so the listener wasn't added. The JS engine doesn't allow them on a Proxy, \
+    a host object, or an object that can't get new properties, for example a frozen one. Call `addListener` on the \
+    event emitter itself, and add the first listener before you freeze the emitter
+    """
   }
 }

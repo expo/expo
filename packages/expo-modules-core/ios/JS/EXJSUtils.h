@@ -68,4 +68,37 @@ void EXJSUtilsCallEventListenerWithThisValue(void *_Nonnull runtimePointer,
 const void *_Nonnull EXJSUtilsValueAtIndex(const void *_Nonnull valuesPointer, size_t index)
   NS_SWIFT_NAME(jsValuePointer(in:at:));
 
+/**
+ Calls the observing functions of an event emitter in the two properties, in order, with the event name. Skips a
+ property that isn't an object. The objectPointer is a raw pointer to the `facebook::jsi::Object` of the emitter, the
+ name pointers to `facebook::jsi::PropNameID`s, and the eventPointer to the `facebook::jsi::Value` of the event name.
+ A getter or a function can throw, and a C++ exception can't cross into Swift. So it returns the thrown value as a new
+ `facebook::jsi::Value`, which the caller destroys with `EXJSUtilsDestroyValue`, or `NULL` when nothing throws.
+ */
+void *_Nullable EXJSUtilsCallObservingFunctions(void *_Nonnull runtimePointer,
+                                                const void *_Nonnull objectPointer,
+                                                const void *_Nonnull firstNamePointer,
+                                                const void *_Nonnull secondNamePointer,
+                                                const void *_Nonnull eventPointer)
+  NS_SWIFT_NAME(callObservingFunctions(runtimePointer:objectPointer:firstNamePointer:secondNamePointer:eventPointer:));
+
+/**
+ Sets `isInstance` to whether the value is an instance of the constructor of the object, that is
+ `value instanceof object.constructor`. The objectPointer is a raw pointer to a `facebook::jsi::Object`, the
+ valuePointer to a `facebook::jsi::Value`, and the constructorNamePointer to the `facebook::jsi::PropNameID` of
+ `"constructor"`. Returns the thrown value like `EXJSUtilsCallObservingFunctions`.
+ */
+void *_Nullable EXJSUtilsIsInstanceOfConstructor(void *_Nonnull runtimePointer,
+                                                 const void *_Nonnull objectPointer,
+                                                 const void *_Nonnull valuePointer,
+                                                 const void *_Nonnull constructorNamePointer,
+                                                 bool *_Nonnull isInstance)
+  NS_SWIFT_NAME(isInstanceOfConstructor(runtimePointer:objectPointer:valuePointer:constructorNamePointer:isInstance:));
+
+/**
+ Destroys a `facebook::jsi::Value` that an `EXJSUtils` function returned.
+ */
+void EXJSUtilsDestroyValue(void *_Nonnull valuePointer)
+  NS_SWIFT_NAME(destroyJSValue(_:));
+
 EX_EXTERN_C_END

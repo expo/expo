@@ -365,6 +365,7 @@ internal final class ModuleEventEmitterNativeState: EventEmitterNativeState, @un
   override func listeningDidChange(
     _ emitter: borrowing JavaScriptObject,
     event: String,
+    eventValue: borrowing JavaScriptUnownedValue,
     isListening: Bool,
     in runtime: JavaScriptRuntime
   ) {

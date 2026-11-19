@@ -92,3 +92,80 @@ void EXJSUtilsCallEventListenerWithThisValue(void *runtimePointer,
     handleEventListenerError(runtime, error);
   }
 }
+
+/**
+ Returns the thrown value of the exception that is being handled, as a new `jsi::Value`. Call it in a `catch` block.
+ */
+static void *newValueOfCaughtException(jsi::Runtime &runtime)
+{
+  try {
+    throw;
+  } catch (jsi::JSError &error) {
+    return new jsi::Value(runtime, error.value());
+  } catch (const std::exception &error) {
+    return new jsi::Value(runtime, jsi::JSError(runtime, error.what()).value());
+  } catch (...) {
+    return new jsi::Value(runtime, jsi::JSError(runtime, "Unknown C++ error").value());
+  }
+}
+
+static void callObservingFunction(jsi::Runtime &runtime,
+                                  const jsi::Object &object,
+                                  const jsi::PropNameID &name,
+                                  const jsi::Value &event)
+{
+  jsi::Value function = object.getProperty(runtime, name);
+  if (function.isObject()) {
+    function.getObject(runtime).asFunction(runtime).callWithThis(runtime, object, &event, static_cast<size_t>(1));
+  }
+}
+
+void *EXJSUtilsCallObservingFunctions(void *runtimePointer,
+                                      const void *objectPointer,
+                                      const void *firstNamePointer,
+                                      const void *secondNamePointer,
+                                      const void *eventPointer)
+{
+  auto &runtime = *static_cast<jsi::Runtime *>(runtimePointer);
+  auto &object = *static_cast<const jsi::Object *>(objectPointer);
+  auto &event = *static_cast<const jsi::Value *>(eventPointer);
+
+  try {
+    callObservingFunction(runtime, object, *static_cast<const jsi::PropNameID *>(firstNamePointer), event);
+    callObservingFunction(runtime, object, *static_cast<const jsi::PropNameID *>(secondNamePointer), event);
+    return nullptr;
+  } catch (...) {
+    return newValueOfCaughtException(runtime);
+  }
+}
+
+void *EXJSUtilsIsInstanceOfConstructor(void *runtimePointer,
+                                       const void *objectPointer,
+                                       const void *valuePointer,
+                                       const void *constructorNamePointer,
+                                       bool *isInstance)
+{
+  auto &runtime = *static_cast<jsi::Runtime *>(runtimePointer);
+  auto &object = *static_cast<const jsi::Object *>(objectPointer);
+  auto &value = *static_cast<const jsi::Value *>(valuePointer);
+  auto &constructorName = *static_cast<const jsi::PropNameID *>(constructorNamePointer);
+
+  *isInstance = false;
+  try {
+    jsi::Value constructor = object.getProperty(runtime, constructorName);
+    if (value.isObject() && constructor.isObject()) {
+      jsi::Object constructorObject = constructor.getObject(runtime);
+      if (constructorObject.isFunction(runtime)) {
+        *isInstance = value.getObject(runtime).instanceOf(runtime, constructorObject.getFunction(runtime));
+      }
+    }
+    return nullptr;
+  } catch (...) {
+    return newValueOfCaughtException(runtime);
+  }
+}
+
+void EXJSUtilsDestroyValue(void *valuePointer)
+{
+  delete static_cast<jsi::Value *>(valuePointer);
+}

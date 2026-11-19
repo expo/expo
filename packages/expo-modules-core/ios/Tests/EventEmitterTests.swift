@@ -292,6 +292,59 @@ struct EventEmitterTests {
     ])
     #expect(try result.asInt() == 5)
   }
+
+  @Test
+  func `throws when adding a listener to a frozen emitter`() throws {
+    _ = try runtime.eval("emitter = Object.freeze(new expo.EventEmitter())")
+    let message = try errorMessage(of: "emitter.addListener('test', () => {})")
+    #expect(message?.contains("can't keep event listeners") == true)
+  }
+
+  @Test
+  func `throws when adding a listener through a Proxy`() throws {
+    _ = try runtime.eval("emitter = new Proxy(new expo.EventEmitter(), {})")
+    let message = try errorMessage(of: "emitter.addListener('test', () => {})")
+    #expect(message?.contains("can't keep event listeners") == true)
+  }
+
+  @Test
+  func `rethrows the error of an observing function getter`() throws {
+    _ = try runtime.eval([
+      "emitter = new expo.EventEmitter()",
+      "Object.defineProperty(emitter, 'startObserving', { get() { throw new Error('getter error') } })",
+    ])
+    #expect(try errorMessage(of: "emitter.addListener('test', () => {})") == "getter error")
+  }
+
+  @Test
+  func `rethrows the error of a constructor getter`() throws {
+    _ = try runtime.eval([
+      "Emitter = class extends expo.EventEmitter {}",
+      "Object.defineProperty(Emitter.prototype, 'constructor', { get() { throw new Error('getter error') } })",
+    ])
+    #expect(try errorMessage(of: "new Emitter({})") == "getter error")
+  }
+
+  @Test
+  func `rethrows the error that instanceof throws in the constructor`() throws {
+    _ = try runtime.eval("value = new Proxy({}, { getPrototypeOf() { throw new Error('trap error') } })")
+    #expect(try errorMessage(of: "new expo.EventEmitter(value)") == "trap error")
+  }
+
+  @Test
+  func `rethrows the error of a remove getter in removeSubscription`() throws {
+    _ = try runtime.eval([
+      "emitter = new expo.EventEmitter()",
+      "subscription = { get remove() { throw new Error('getter error') } }",
+    ])
+    #expect(try errorMessage(of: "emitter.removeSubscription(subscription)") == "getter error")
+  }
+
+  /// Runs the JS code in a `try` statement, and returns the message of the error that it throws, or `nil`.
+  private func errorMessage(of code: String) throws -> String? {
+    let message = try runtime.eval("(() => { try { \(code); return null } catch (error) { return error.message } })()")
+    return message.isNull() ? nil : try message.asString()
+  }
 }
 
 // MARK: - Helpers

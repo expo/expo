@@ -68,32 +68,38 @@ internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendab
   internal func listenersDidChange(in runtime: JavaScriptRuntime, hasListeners: Bool) {}
 
   /// Called after `emitter`, a JS object in `runtime`, got the first listener of the event (`isListening` is `true`),
-  /// or lost the last one. It calls the observing functions of the JS object, when it has them.
+  /// or lost the last one. `eventValue` is the event name as a JS string. It calls the observing functions of the JS
+  /// object, when it has them. A getter or an observing function can throw, so they run in C++, which catches the
+  /// error, and this method rethrows it.
   @JavaScriptActor
   internal func listeningDidChange(
     _ emitter: borrowing JavaScriptObject,
     event: String,
+    eventValue: borrowing JavaScriptUnownedValue,
     isListening: Bool,
     in runtime: JavaScriptRuntime
   ) throws {
-    let names = runtime.cached(observingFunctionNamesKey) {
-      return ObservingFunctionNames(runtime)
+    let names = EventEmitterPropNames.of(runtime)
+    let listeningName = isListening ? names.startListening : names.stopListening
+    let observingName = isListening ? names.startObserving : names.stopObserving
+    let errorPointer = runtime.withUnsafePointee { runtimePointer in
+      return emitter.withUnsafePointee { objectPointer in
+        return listeningName.withUnsafePointee { listeningNamePointer in
+          return observingName.withUnsafePointee { observingNamePointer in
+            return eventValue.withUnsafePointee { eventPointer in
+              return callObservingFunctions(
+                runtimePointer: runtimePointer,
+                objectPointer: objectPointer,
+                firstNamePointer: listeningNamePointer,
+                secondNamePointer: observingNamePointer,
+                eventPointer: eventPointer
+              )
+            }
+          }
+        }
+      }
     }
-    try callObservingFunction(isListening ? names.startListening : names.stopListening, of: emitter, event: event)
-    try callObservingFunction(isListening ? names.startObserving : names.stopObserving, of: emitter, event: event)
-  }
-
-  @JavaScriptActor
-  private func callObservingFunction(
-    _ name: JavaScriptPropNameID,
-    of emitter: borrowing JavaScriptObject,
-    event: String
-  ) throws {
-    let function = emitter.getProperty(name)
-    guard function.isObject() else {
-      return
-    }
-    try function.asFunction().call(this: emitter, arguments: event)
+    try throwJSError(caughtAt: errorPointer, in: runtime)
   }
 
   /// Removes all listeners of the primary runtime, without calling the observing functions. Call it on the thread of
@@ -103,22 +109,46 @@ internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendab
   }
 }
 
-/// The names of the observing functions, made once for each runtime.
-private final class ObservingFunctionNames {
+/// The property names that the event emitter reads, made once for each runtime.
+internal final class EventEmitterPropNames {
   let startListening: JavaScriptPropNameID
   let stopListening: JavaScriptPropNameID
   let startObserving: JavaScriptPropNameID
   let stopObserving: JavaScriptPropNameID
+  let constructor: JavaScriptPropNameID
 
-  init(_ runtime: borrowing JavaScriptRuntime) {
+  private init(_ runtime: borrowing JavaScriptRuntime) {
     startListening = JavaScriptPropNameID(runtime, string: "__expo_onStartListeningToEvent")
     stopListening = JavaScriptPropNameID(runtime, string: "__expo_onStopListeningToEvent")
     startObserving = JavaScriptPropNameID(runtime, string: "startObserving")
     stopObserving = JavaScriptPropNameID(runtime, string: "stopObserving")
+    constructor = JavaScriptPropNameID(runtime, string: "constructor")
+  }
+
+  private static let cacheKey = JavaScriptRuntime.Cache.Key<EventEmitterPropNames>()
+
+  /// Returns the names of the runtime, and makes them on the first call.
+  @JavaScriptActor
+  static func of(_ runtime: JavaScriptRuntime) -> EventEmitterPropNames {
+    return runtime.cached(cacheKey) {
+      return EventEmitterPropNames(runtime)
+    }
   }
 }
 
-private let observingFunctionNamesKey = JavaScriptRuntime.Cache.Key<ObservingFunctionNames>()
+/// Throws the value that an `EXJSUtils` function caught, as a `JavaScriptError` that rethrows the value unchanged to
+/// JS, and destroys the value. Does nothing when the pointer is `nil`.
+@JavaScriptActor
+internal func throwJSError(caughtAt errorPointer: UnsafeMutableRawPointer?, in runtime: JavaScriptRuntime) throws {
+  guard let errorPointer else {
+    return
+  }
+  defer {
+    destroyJSValue(errorPointer)
+  }
+  let value = JavaScriptUnownedValue(runtime, unsafeValuePointer: UnsafeRawPointer(errorPointer)).copied(in: runtime)
+  throw JavaScriptError(runtime, value: value)
+}
 
 /// The event listeners of one runtime. Used only on the thread of that runtime.
 internal final class EventListeners {
