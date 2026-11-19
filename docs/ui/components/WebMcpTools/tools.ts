@@ -60,6 +60,7 @@ function toSiteUrl(path: unknown) {
 
 const SEARCH_QUERY_MAX_LENGTH = 200;
 const FEEDBACK_MAX_LENGTH = 1000;
+const SECTION_MAX_LENGTH = 200;
 
 function requireText(value: unknown, field: string, maxLength = Infinity) {
   if (typeof value !== 'string' || !value.trim()) {
@@ -87,36 +88,77 @@ async function readPageMarkdownAsync(path: unknown, signal: AbortSignal) {
   );
 }
 
+function parseMarkdown(markdown: string) {
+  const frontmatter = /^---\n([\S\s]*?)\n---\n/.exec(markdown);
+  const lines = markdown.slice(frontmatter?.[0].length ?? 0).split('\n');
+  const headings: { level: number; text: string; line: number }[] = [];
+  let inCodeBlock = false;
+  lines.forEach((line, index) => {
+    if (/^\s*(```|~~~)/.test(line)) {
+      inCodeBlock = !inCodeBlock;
+      return;
+    }
+    const heading = inCodeBlock ? null : /^(#{1,6})\s+(.+?)\s*#*$/.exec(line);
+    if (heading) {
+      headings.push({ level: heading[1].length, text: heading[2], line: index });
+    }
+  });
+  return { frontmatter: frontmatter?.[1] ?? '', lines, headings };
+}
+
+function normalizeHeading(text: string) {
+  return text.replaceAll('`', '').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
+function readSections(markdown: string, section: string, pagePath: string) {
+  const { lines, headings } = parseMarkdown(markdown);
+  const wanted = normalizeHeading(section);
+  const sections = headings.flatMap((heading, index) => {
+    if (normalizeHeading(heading.text) !== wanted) {
+      return [];
+    }
+    const parentLines: string[] = [];
+    let level = heading.level;
+    for (const earlier of headings.slice(0, index).reverse()) {
+      if (earlier.level < level) {
+        parentLines.unshift(lines[earlier.line]);
+        level = earlier.level;
+      }
+    }
+    const end =
+      headings.slice(index + 1).find(next => next.level <= heading.level)?.line ?? lines.length;
+    return [[...parentLines, ...lines.slice(heading.line, end)].join('\n').trimEnd()];
+  });
+  if (sections.length === 0) {
+    throw new Error(
+      `No heading on ${pagePath} matches "${section}". Pass a heading that get_page_info returns for this page.`
+    );
+  }
+  return sections.join('\n\n');
+}
+
 async function getPageMarkdownAsync(
-  { path = window.location.pathname }: ToolInput,
+  { path = window.location.pathname, section }: ToolInput,
   { signal }: { signal: AbortSignal }
 ) {
-  return await readPageMarkdownAsync(path, signal);
+  const heading =
+    section === undefined ? undefined : requireText(section, 'section', SECTION_MAX_LENGTH);
+  const markdown = await readPageMarkdownAsync(path, signal);
+  return heading === undefined
+    ? markdown
+    : readSections(markdown, heading, toSiteUrl(path).pathname);
 }
 
 function parsePageInfo(markdown: string) {
-  const frontmatter = /^---\n([\S\s]*?)\n---\n/.exec(markdown);
+  const { frontmatter, headings } = parseMarkdown(markdown);
   const details: Record<string, string> = {};
-  for (const line of frontmatter?.[1].split('\n') ?? []) {
+  for (const line of frontmatter.split('\n')) {
     const field = /^([A-Za-z]\w*):\s*(.*)$/.exec(line);
     if (field) {
       details[field[1]] = field[2].replace(/^(["'])(.*)\1$/, '$2');
     }
   }
-
-  const headings: { level: number; text: string }[] = [];
-  let inCodeBlock = false;
-  for (const line of markdown.slice(frontmatter?.[0].length ?? 0).split('\n')) {
-    if (/^\s*(```|~~~)/.test(line)) {
-      inCodeBlock = !inCodeBlock;
-      continue;
-    }
-    const heading = inCodeBlock ? null : /^(#{1,6})\s+(.+?)\s*#*$/.exec(line);
-    if (heading) {
-      headings.push({ level: heading[1].length, text: heading[2] });
-    }
-  }
-  return { ...details, headings };
+  return { ...details, headings: headings.map(({ level, text }) => ({ level, text })) };
 }
 
 async function getPageInfoAsync(
@@ -301,10 +343,20 @@ export const webMcpTools: WebMcpTool[] = [
     title: 'Get Expo docs page as Markdown',
     description:
       'Returns an Expo documentation page as Markdown. Pass a path such as ' +
-      '/get-started/create-a-project/, or omit it to read the current page.',
+      '/get-started/create-a-project/, or omit it to read the current page. With section, ' +
+      'it returns only the parts under the headings that match, each with its parent headings.',
     inputSchema: {
       type: 'object',
-      properties: { path: pathProperty },
+      properties: {
+        path: pathProperty,
+        section: {
+          type: 'string',
+          maxLength: SECTION_MAX_LENGTH,
+          description:
+            'A heading that get_page_info returns, such as "Installation". The match ignores ' +
+            'case and backticks.',
+        },
+      },
       additionalProperties: false,
     },
     annotations: { readOnlyHint: true },

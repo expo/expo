@@ -221,6 +221,76 @@ describe(WebMcpTools, () => {
     });
   });
 
+  it('returns each section that matches a heading, with its parent headings', async () => {
+    responses.set(
+      '/versions/latest/sdk/camera/index.md',
+      [
+        '---',
+        'title: Camera',
+        '---',
+        '',
+        '# Expo Camera',
+        '## Installation',
+        'Run the install command.',
+        '```sh',
+        '# npm',
+        '```',
+        '### Usage',
+        'Usage text.',
+        '## CameraView',
+        '### Props',
+        '#### `children`',
+        'Camera children.',
+        '## CameraPreview',
+        '### Props',
+        '#### `children`',
+        'Preview children.',
+      ].join('\n')
+    );
+    const { tools } = renderTools();
+    const path = '/versions/latest/sdk/camera/';
+
+    const installation = await tools.get_page_markdown.execute(
+      { path, section: 'installation' },
+      { signal }
+    );
+    const children = await tools.get_page_markdown.execute(
+      { path, section: 'children' },
+      { signal }
+    );
+
+    expect(installation).toBe(
+      [
+        '# Expo Camera',
+        '## Installation',
+        'Run the install command.',
+        '```sh',
+        '# npm',
+        '```',
+        '### Usage',
+        'Usage text.',
+      ].join('\n')
+    );
+    expect(children).toBe(
+      [
+        '# Expo Camera',
+        '## CameraView',
+        '### Props',
+        '#### `children`',
+        'Camera children.',
+        '',
+        '# Expo Camera',
+        '## CameraPreview',
+        '### Props',
+        '#### `children`',
+        'Preview children.',
+      ].join('\n')
+    );
+    await expect(
+      tools.get_page_markdown.execute({ path, section: 'Permissions' }, { signal })
+    ).rejects.toThrow('No heading on /versions/latest/sdk/camera/ matches "Permissions".');
+  });
+
   it('asks the Kapa assistant and returns its answer with sources', async () => {
     askKapaAsync.mockClear();
     const { tools } = renderTools();
