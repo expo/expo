@@ -484,17 +484,6 @@ export interface TimePickerDialogProps {
    * @default 'picker'
    */
   variant?: AndroidVariant;
-  /**
-   * Whether the dialog shows Material 3's button that toggles between the clock dial and the text
-   * fields.
-   * @default true
-   */
-  showVariantToggle?: boolean;
-  /**
-   * Whether the dialog shows its title, such as "Select time" or "Enter time".
-   * @default true
-   */
-  showTitle?: boolean;
   is24Hour?: boolean;
   confirmButtonLabel?: string;
   dismissButtonLabel?: string;

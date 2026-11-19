@@ -213,8 +213,6 @@ data class DatePickerDialogProps(
 data class TimePickerDialogProps(
   val initialDate: Long? = null,
   val variant: Variant = Variant.PICKER,
-  val showVariantToggle: Boolean = true,
-  val showTitle: Boolean = true,
   val is24Hour: Boolean? = null,
   val confirmButtonLabel: String? = null,
   val dismissButtonLabel: String? = null,
@@ -492,26 +490,18 @@ fun ExpoTimePickerDialogContent(props: TimePickerDialogProps, onDateSelected: (D
 
   TimePickerDialog(
     onDismissRequest = { onDismissRequest() },
-    title = {
-      if (props.showTitle) {
-        TimePickerDialogDefaults.Title(displayMode = displayMode)
-      }
-    },
-    modeToggleButton = if (props.showVariantToggle) {
-      {
-        TimePickerDialogDefaults.DisplayModeToggle(
-          onDisplayModeChange = {
-            displayMode = if (displayMode == TimePickerDisplayMode.Picker) {
-              TimePickerDisplayMode.Input
-            } else {
-              TimePickerDisplayMode.Picker
-            }
-          },
-          displayMode = displayMode
-        )
-      }
-    } else {
-      null
+    title = { TimePickerDialogDefaults.Title(displayMode = displayMode) },
+    modeToggleButton = {
+      TimePickerDialogDefaults.DisplayModeToggle(
+        onDisplayModeChange = {
+          displayMode = if (displayMode == TimePickerDisplayMode.Picker) {
+            TimePickerDisplayMode.Input
+          } else {
+            TimePickerDisplayMode.Picker
+          }
+        },
+        displayMode = displayMode
+      )
     },
     confirmButton = {
       TextButton(onClick = {
