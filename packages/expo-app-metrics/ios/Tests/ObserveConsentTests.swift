@@ -5,30 +5,25 @@ import Testing
 
 @Suite("ObserveConsent")
 struct ObserveConsentTests {
-  private func appConfig(consent: Any) -> [String: Any] {
-    return ["extra": ["eas": ["observe": ["consent": consent]]]]
+  @Test
+  func `absent consent value grants consent`() {
+    #expect(ObserveConsent.isGranted(consent: nil))
   }
 
   @Test
-  func `app config without the consent key grants consent`() {
-    #expect(ObserveConsent.isGranted(appConfig: nil))
-    #expect(ObserveConsent.isGranted(appConfig: ["extra": ["eas": ["projectId": "id"]]]))
+  func `consent value granted grants consent`() {
+    #expect(ObserveConsent.isGranted(consent: "granted"))
   }
 
   @Test
-  func `consent key granted grants consent`() {
-    #expect(ObserveConsent.isGranted(appConfig: appConfig(consent: "granted")))
-  }
-
-  @Test
-  func `consent key not-granted denies consent`() {
-    #expect(!ObserveConsent.isGranted(appConfig: appConfig(consent: "not-granted")))
+  func `consent value not-granted denies consent`() {
+    #expect(!ObserveConsent.isGranted(consent: "not-granted"))
   }
 
   @Test
   func `unknown consent value denies consent`() {
-    #expect(!ObserveConsent.isGranted(appConfig: appConfig(consent: "pending")))
-    #expect(!ObserveConsent.isGranted(appConfig: appConfig(consent: false)))
+    #expect(!ObserveConsent.isGranted(consent: "pending"))
+    #expect(!ObserveConsent.isGranted(consent: false))
   }
 }
 

@@ -2,4 +2,4 @@
 'expo-app-metrics': minor
 ---
 
-Store no data when the app config sets `extra.eas.observe.consent` to `'not-granted'`.
+Store no data when the `expo-observe` config plugin sets the `consent` option to `'not-granted'`.
