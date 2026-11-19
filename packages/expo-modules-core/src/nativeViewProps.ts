@@ -53,10 +53,16 @@ export function diffPropValue(prevValue: unknown, nextValue: unknown): boolean {
       return true;
     }
     const nextArray = nextValue as unknown[];
-    return (
-      prevValue.length !== nextArray.length ||
-      prevValue.some((item, index) => diffPropValue(item, nextArray[index]))
-    );
+    if (prevValue.length !== nextArray.length) {
+      return true;
+    }
+    // An index loop, not `some`, which skips the holes of a sparse array.
+    for (let index = 0; index < prevValue.length; index++) {
+      if (diffPropValue(prevValue[index], nextArray[index])) {
+        return true;
+      }
+    }
+    return false;
   }
   const prevObject = prevValue as Record<string, unknown>;
   const nextObject = nextValue as Record<string, unknown>;
