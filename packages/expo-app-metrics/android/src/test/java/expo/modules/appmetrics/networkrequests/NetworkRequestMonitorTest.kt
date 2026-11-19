@@ -1,5 +1,7 @@
 package expo.modules.appmetrics.networkrequests
 
+import expo.modules.appmetrics.ObserveConsentGrantedRule
+import org.junit.Rule
 import expo.modules.appmetrics.ObserveConsent
 import io.mockk.every
 import io.mockk.mockkObject
@@ -13,6 +15,9 @@ import java.util.Date
 import java.util.UUID
 
 class NetworkRequestMonitorTest {
+  @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
   @After
   fun tearDown() {
     unmockkAll()

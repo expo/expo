@@ -1,5 +1,6 @@
 package expo.modules.appmetrics.crashreporting
 
+import expo.modules.appmetrics.ObserveConsentGrantedRule
 import expo.modules.appmetrics.ObserveConsent
 import io.mockk.every
 import io.mockk.mockkObject
@@ -20,6 +21,9 @@ import java.io.File
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class CrashFileWriterTest {
+  @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
   @get:Rule
   val tmp = TemporaryFolder()
 

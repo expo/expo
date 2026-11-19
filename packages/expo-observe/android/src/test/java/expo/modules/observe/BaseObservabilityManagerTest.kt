@@ -41,6 +41,8 @@ class BaseObservabilityManagerTest {
 
   @Before
   fun setUp() {
+    mockkObject(ObserveConsent)
+    every { ObserveConsent.isGranted } returns true
     mockkObject(ObservePreferences)
     every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = true)
     every { ObservePreferences.getBundleDefaults(any()) } returns null

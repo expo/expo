@@ -1,5 +1,7 @@
 package expo.modules.appmetrics.appstartup
 
+import expo.modules.appmetrics.ObserveConsentGrantedRule
+import org.junit.Rule
 import android.app.Activity
 import expo.modules.appmetrics.AppStartupMetric
 import expo.modules.appmetrics.networkrequests.NetworkRequest
@@ -26,6 +28,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class AppStartupManagerTest {
+  @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
   @Before
   fun resumeRecording() {
     // The manager is a singleton shared across tests, so undo a stop from an earlier test.

@@ -1,5 +1,7 @@
 package expo.modules.appmetrics.jserrors
 
+import expo.modules.appmetrics.ObserveConsentGrantedRule
+import org.junit.Rule
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.ObserveConsent
@@ -19,6 +21,9 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class PendingErrorStoreTest {
+  @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
   private val context: Context = ApplicationProvider.getApplicationContext()
   private val directory = File(context.noBackupFilesDir, "ExpoAppMetrics/pending-errors")
 

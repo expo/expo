@@ -1,5 +1,6 @@
 package expo.modules.appmetrics
 
+import org.junit.Rule
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.networkrequests.NetworkTracesConfiguration
@@ -17,6 +18,9 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class AppMetricsPreferencesTest {
+  @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
   private lateinit var context: Context
 
   @Before
