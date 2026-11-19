@@ -41,8 +41,10 @@ final class ExpoGoNotificationsCategoriesModule: CategoriesModule {
       }
       return scopedCategory
     }
-    try await replaceNotificationCategories(scopedCategories) {
-      EXScopedNotificationsUtils.isId($0, scopedByExperience: scopeKey)
+    try await updateNotificationCategories(scopedCategories) { current, incoming in
+      current.filter {
+        !EXScopedNotificationsUtils.isId($0.identifier, scopedByExperience: scopeKey)
+      }.union(incoming)
     }
   }
 
