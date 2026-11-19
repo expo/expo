@@ -135,7 +135,7 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
    shared object classes and view components of the package by their names.
    */
   @JavaScriptActor
-  private static func createPackageObject(
+  static func createPackageObject(
     _ package: PackageHolder,
     appContext: AppContext,
     runtime: JavaScriptRuntime
