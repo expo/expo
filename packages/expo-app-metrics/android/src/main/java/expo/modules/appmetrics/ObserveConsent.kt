@@ -1,16 +1,13 @@
 package expo.modules.appmetrics
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.edit
 import expo.modules.appmetrics.crashreporting.CrashFileFormat
 import expo.modules.appmetrics.jserrors.PendingErrorStore
 import expo.modules.appmetrics.storage.MetricsDatabase
-import java.io.FileNotFoundException
 import java.util.concurrent.ConcurrentHashMap
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * Whether the user consented to Observe collecting data. While not granted, app metrics stores
@@ -22,45 +19,35 @@ object ObserveConsent {
   var isGranted: Boolean = false
     private set
 
-  /** Reads the consent value from the app config embedded in the app. */
+  /** Reads the consent value that the `expo-observe` config plugin writes to the manifest. */
   fun load(context: Context) {
-    isGranted = resolve(readEmbeddedAppConfig(context))
+    val metaData = context.packageManager
+      .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+      .metaData
+    // `get` is deprecated, but the typed getters cannot return a value of an unknown type for the warning.
+    @Suppress("DEPRECATION")
+    isGranted = resolve(metaData?.get(CONSENT_META_DATA))
   }
 
-  // TODO(ENG-29293): Take the already parsed config when expo-constants has a public reader.
-  /** Consent from the `extra.eas.observe.consent` key of the app config JSON, granted when the key is missing. */
-  internal fun resolve(appConfig: String?): Boolean {
-    val consent = (appConfig?.let { runCatching { Json.parseToJsonElement(it) }.getOrNull() } as? JsonObject)
-      ?.let { it["extra"] as? JsonObject }
-      ?.let { it["eas"] as? JsonObject }
-      ?.let { it["observe"] as? JsonObject }
-      ?.get("consent")
-      ?: return true
-    val value = (consent as? JsonPrimitive)?.takeIf { it.isString }?.content
-    if (value != GRANTED && value != NOT_GRANTED) {
+  /** Consent from the manifest `meta-data` value, granted when the value is absent. */
+  internal fun resolve(consent: Any?): Boolean {
+    if (consent == null) {
+      return true
+    }
+    if (consent != GRANTED && consent != NOT_GRANTED) {
       Log.w(
         TAG,
-        "[AppMetrics] The app config value `extra.eas.observe.consent` is $consent, which is not " +
-          "'granted' or 'not-granted', so Observe stays inactive. Set it to 'granted' or 'not-granted'."
+        "[AppMetrics] The `$CONSENT_META_DATA` meta-data in `AndroidManifest.xml` is $consent, which is not " +
+          "'granted' or 'not-granted', so Observe stays inactive. Set the `consent` option of the " +
+          "`expo-observe` config plugin to 'granted' or 'not-granted', then run prebuild again."
       )
     }
-    return value == GRANTED
+    return consent == GRANTED
   }
 
+  private const val CONSENT_META_DATA = "expo.modules.observe.CONSENT"
   private const val GRANTED = "granted"
   private const val NOT_GRANTED = "not-granted"
-
-  // TODO(ENG-29293): Use a public reader from expo-constants when it exists.
-  // `load` runs before the Expo modules start, so read the asset that expo-constants reads.
-  private fun readEmbeddedAppConfig(context: Context): String? =
-    try {
-      context.assets.open("app.config").bufferedReader().use { it.readText() }
-    } catch (_: FileNotFoundException) {
-      null
-    } catch (e: Exception) {
-      Log.w(TAG, "[AppMetrics] Failed to read the embedded app config", e)
-      null
-    }
 }
 
 /** Deletes the metrics database, the crash files, the pending-error files, and the settings. */

@@ -2,4 +2,4 @@
 'expo-observe': minor
 ---
 
-Keep Observe inactive when the app config sets `extra.eas.observe.consent` to `'not-granted'`. Observe then sends no data.
+Keep Observe inactive when the config plugin sets the `consent` option to `'not-granted'`. Observe then sends no data.

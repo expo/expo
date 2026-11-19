@@ -1,6 +1,7 @@
 package expo.modules.appmetrics
 
 import android.content.Context
+import androidx.core.os.bundleOf
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.crashreporting.CrashFileFormat
 import java.io.File
@@ -10,6 +11,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
@@ -22,29 +24,42 @@ class ObserveConsentTest {
     context.getSharedPreferences("dev.expo.app-metrics", Context.MODE_PRIVATE).edit().clear().commit()
   }
 
-  private fun appConfig(consent: String) = """{"extra":{"eas":{"observe":{"consent":$consent}}}}"""
-
   @Test
-  fun `app config without the consent key grants consent`() {
+  fun `absent consent value grants consent`() {
     assertTrue(ObserveConsent.resolve(null))
-    assertTrue(ObserveConsent.resolve("""{"extra":{"eas":{"projectId":"id"}}}"""))
-    assertTrue(ObserveConsent.resolve("not json"))
   }
 
   @Test
-  fun `consent key granted grants consent`() {
-    assertTrue(ObserveConsent.resolve(appConfig("\"granted\"")))
+  fun `consent value granted grants consent`() {
+    assertTrue(ObserveConsent.resolve("granted"))
   }
 
   @Test
-  fun `consent key not-granted denies consent`() {
-    assertFalse(ObserveConsent.resolve(appConfig("\"not-granted\"")))
+  fun `consent value not-granted denies consent`() {
+    assertFalse(ObserveConsent.resolve("not-granted"))
   }
 
   @Test
   fun `unknown consent value denies consent`() {
-    assertFalse(ObserveConsent.resolve(appConfig("\"pending\"")))
-    assertFalse(ObserveConsent.resolve(appConfig("false")))
+    assertFalse(ObserveConsent.resolve("pending"))
+    assertFalse(ObserveConsent.resolve(false))
+  }
+
+  @Test
+  fun `load reads the consent value from the manifest meta-data`() {
+    setManifestConsent("granted")
+    ObserveConsent.load(context)
+    assertTrue(ObserveConsent.isGranted)
+
+    // Last, so the other tests still start without consent.
+    setManifestConsent("not-granted")
+    ObserveConsent.load(context)
+    assertFalse(ObserveConsent.isGranted)
+  }
+
+  private fun setManifestConsent(consent: String) {
+    shadowOf(context.packageManager).getInternalMutablePackageInfo(context.packageName).applicationInfo!!.metaData =
+      bundleOf("expo.modules.observe.CONSENT" to consent)
   }
 
   @Test
