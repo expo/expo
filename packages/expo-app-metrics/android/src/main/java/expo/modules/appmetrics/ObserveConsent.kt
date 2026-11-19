@@ -17,9 +17,9 @@ import kotlinx.serialization.json.JsonPrimitive
  * nothing and Observe sends nothing.
  */
 object ObserveConsent {
-  // Granted until the application start hook calls `load`.
+  // Not granted until the application start hook calls `load`, so nothing is collected if it never runs.
   @Volatile
-  var isGranted: Boolean = true
+  var isGranted: Boolean = false
     private set
 
   /** Reads the consent value from the app config embedded in the app. */

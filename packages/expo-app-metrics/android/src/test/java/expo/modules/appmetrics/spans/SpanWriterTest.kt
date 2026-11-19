@@ -1,5 +1,7 @@
 package expo.modules.appmetrics.spans
 
+import expo.modules.appmetrics.ObserveConsentGrantedRule
+import org.junit.Rule
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -34,6 +36,9 @@ private fun makeRow(name: String = "checkout", sessionId: String = "s"): Span {
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class SpanWriterTest {
+  @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
   // Shared by `runTest` and Room's executors, so `advanceUntilIdle` waits for the inserts the
   // writer launches instead of racing them.
   private val testDispatcher = StandardTestDispatcher()

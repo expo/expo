@@ -22,6 +22,8 @@ class ObservePreferencesTest {
 
   @Before
   fun setUp() {
+    mockkObject(ObserveConsent)
+    every { ObserveConsent.isGranted } returns true
     context = ApplicationProvider.getApplicationContext()
     // Clear preferences before each test
     context
