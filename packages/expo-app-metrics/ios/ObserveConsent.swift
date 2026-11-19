@@ -42,10 +42,12 @@ public enum ObserveConsent {
     }
   }
 
-  /// Resolved on first access: the saved value, else the `Info.plist` value that the `expo-observe` config plugin writes.
+  /// Resolved on first access: the saved value, else the `Info.plist` value that the `expo-observe`
+  /// config plugin writes.
   private static let gate = OSAllocatedUnfairLock<Gate?>(initialState: nil)
 
-  private static let savedValueUrl = try? MetricsDatabase.defaultDirectoryUrl().appendingPathComponent("observe-consent")
+  private static let savedValueUrl = try? MetricsDatabase.defaultDirectoryUrl()
+    .appendingPathComponent("observe-consent")
 
   public static var isGranted: Bool {
     return state == .granted
@@ -66,7 +68,8 @@ public enum ObserveConsent {
     guard let savedValueUrl else {
       return .unknown
     }
-    return readSavedState(at: savedValueUrl) ?? (isGranted(settings: Bundle.main.object(forInfoDictionaryKey: "ExpoObserve")) ? .granted : .notGranted)
+    let settings = Bundle.main.object(forInfoDictionaryKey: "ExpoObserve")
+    return readSavedState(at: savedValueUrl) ?? (isGranted(settings: settings) ? .granted : .notGranted)
   }
 
   /// Saves the value and changes the gate. When the save fails, a revoke still closes the gate,
