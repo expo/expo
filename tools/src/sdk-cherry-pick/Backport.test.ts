@@ -102,6 +102,14 @@ async function backport(
     commentAsync: async (number, body) => {
       run.comments.push(`#${number} ${body}`);
     },
+    branchContainsAsync: async (branch, sha) => {
+      try {
+        git(origin, 'merge-base', '--is-ancestor', sha, `refs/heads/${branch}`);
+        return true;
+      } catch {
+        return false;
+      }
+    },
   };
   try {
     run.result = await backportAsync({
@@ -310,6 +318,22 @@ exec "${REAL_GIT}" "$@"
       assert.deepEqual(run.comments, [`#45 Backported to \`sdk-66\` as ${tip}`]);
       assertNoTemporaryWorktree();
     });
+  });
+
+  it('comments that the change is already on sdk-NN when the branch contains the merge commit and later changed its lines', async () => {
+    const merged = commitOnMain({ 'stand-in.txt': 'first\n' }, 'Add the stand-in (#74)');
+    const before = createTargetBranch(
+      'sdk-84',
+      commitOnMain({ 'stand-in.txt': 'second\n' }, 'Change the stand-in (#75)')
+    );
+    const run = await backport(74, 84, merged);
+
+    assert.equal(run.error, undefined);
+    assert.deepEqual(run.comments, [
+      `#74 This change is already on \`sdk-84\`: the branch contains ${merged}. No backport was made.`,
+    ]);
+    assert.equal(remoteBranch('sdk-84'), before);
+    assertNoTemporaryWorktree();
   });
 
   it('cherry-picks onto the remote tip when a local branch is also named origin/sdk-NN', async () => {
