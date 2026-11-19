@@ -86,6 +86,11 @@ struct CoreModuleTests {
   }
 
   @Test
+  func `getViewConfig returns null for an unknown module`() throws {
+    #expect(try runtime.eval("expo.getViewConfig('UnknownModule')").isNull())
+  }
+
+  @Test
   func `reloadAppAsync is a function on the core object`() throws {
     #expect(try runtime.eval("typeof expo.reloadAppAsync").asString() == "function")
   }
