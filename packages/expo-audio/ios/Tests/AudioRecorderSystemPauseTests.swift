@@ -14,25 +14,59 @@ private final class StubRecorder: AVAudioRecorder, @unchecked Sendable {
   override func record(forDuration duration: TimeInterval) -> Bool {
     acceptsRecord
   }
+
+  override func record(atTime time: TimeInterval) -> Bool {
+    acceptsRecord
+  }
+}
+
+private func makeStubbedRecorder() throws -> AudioRecorder {
+  let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).m4a")
+  let avRecorder = try StubRecorder(url: url, settings: [
+    AVFormatIDKey: kAudioFormatMPEG4AAC,
+    AVSampleRateKey: 44_100,
+    AVNumberOfChannelsKey: 1
+  ])
+  let recorder = AudioRecorder(avRecorder, options: RecordingOptions())
+  recorder.allowsRecording = true
+  return recorder
+}
+
+private func isRecording(_ recorder: AudioRecorder) -> Bool {
+  recorder.getRecordingStatus()["isRecording"] as? Bool ?? false
+}
+
+@Suite("AudioRecorder rejected start")
+struct AudioRecorderRejectedStartTests {
+  @Test
+  func `does not report recording when iOS rejects a timed start`() throws {
+    let recorder = try makeStubbedRecorder()
+    let avRecorder = try #require(recorder.ref as? StubRecorder)
+    avRecorder.acceptsRecord = false
+
+    recorder.recordForDuration(10)
+
+    #expect(!isRecording(recorder))
+  }
+
+  @Test
+  func `does not report recording when iOS rejects a scheduled start`() throws {
+    let recorder = try makeStubbedRecorder()
+    let avRecorder = try #require(recorder.ref as? StubRecorder)
+    avRecorder.acceptsRecord = false
+
+    recorder.record(atTime: recorder.ref.deviceCurrentTime + 1)
+
+    #expect(!isRecording(recorder))
+  }
 }
 
 @Suite("AudioRecorder system pause")
 struct AudioRecorderSystemPauseTests {
   private func makeRecordingRecorder() throws -> AudioRecorder {
-    let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).m4a")
-    let avRecorder = try StubRecorder(url: url, settings: [
-      AVFormatIDKey: kAudioFormatMPEG4AAC,
-      AVSampleRateKey: 44_100,
-      AVNumberOfChannelsKey: 1
-    ])
-    let recorder = AudioRecorder(avRecorder, options: RecordingOptions())
-    recorder.allowsRecording = true
+    let recorder = try makeStubbedRecorder()
     recorder.updateStateForDirectRecording()
     return recorder
-  }
-
-  private func isRecording(_ recorder: AudioRecorder) -> Bool {
-    recorder.getRecordingStatus()["isRecording"] as? Bool ?? false
   }
 
   @Test
