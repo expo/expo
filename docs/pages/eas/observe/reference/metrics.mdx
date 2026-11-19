@@ -306,9 +306,9 @@ On a healthy screen, `cold_ttr` and `tti` both land inside the 2-second window, 
 | TTR  | TBT  | TTI            | What it usually means                                                                                                      |
 | ---- | ---- | -------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | Low  | Low  | Close to TTR   | Healthy: fast to appear and smooth right away.                                                                             |
-| High | Low  | Close to TTR   | Slow to appear but smooth once it does. Usually waiting on data, a lazy-loaded chunk, or a heavy first render.             |
-| Low  | High | Well after TTR | Looks ready but feels frozen. Heavy JavaScript runs right after mount: effects, parsing, state hydration, analytics.       |
-| Low  | Low  | Well after TTR | Not blocked, just not ready: handlers wait on a second request, or the blocking happens after the 2-second window.         |
+| High | Low  | Close to TTR   | Slow to appear but smooth once it does. Usually waiting on a heavy first render.             |
+| Low  | High | Well after TTR | Looks ready but feels frozen. Heavy JavaScript runs right after mount: effects, re-renders, parsing, state hydration.       |
+| Low  | Low  | Well after TTR | Not blocked, just not ready: handlers wait on a request, or the blocking happens after the 2 second window.         |
 | High | High | Late           | The JavaScript thread is overloaded throughout the transition. Profile first, because there is usually one dominant cause. |
 
 > **info** The worst user experience is a low TTR with a high TBT. Users tap as soon as they see content. A screen that looks ready but ignores input feels more broken than one that is slow to appear.

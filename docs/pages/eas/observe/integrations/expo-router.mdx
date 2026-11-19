@@ -155,7 +155,7 @@ Observe.configure({
 });
 ```
 
-The metric is recorded for user navigations after the first screen has focused, so app launch is not included. It is emitted once per screen instance, on the screen's first focus, and only when that focus happens inside the 2 second window. A new navigation inside the window replaces the measurement, and the earlier one is not reported. Nothing is recorded while the app is in the background, or when the runtime does not report long tasks through `PerformanceObserver`.
+The metric is recorded for user navigations after the first screen has focused, so app launch is not included. It is emitted once per screen instance, on the screen's first focus, and only when that focus happens inside the 2 second window. 
 
 **Event params:**
 
