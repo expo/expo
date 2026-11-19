@@ -289,4 +289,16 @@ describe(WebMcpTools, () => {
     expect(fetchMock).not.toHaveBeenCalled();
     expect(routerPush).not.toHaveBeenCalled();
   });
+
+  it('rejects a search query or feedback over its length limit before any request', async () => {
+    const { tools } = renderTools();
+
+    await expect(tools.search_docs.execute({ query: 'a'.repeat(201) }, { signal })).rejects.toThrow(
+      'query must be at most 200 characters.'
+    );
+    await expect(
+      tools.send_feedback.execute({ feedback: 'a'.repeat(1001) }, { signal })
+    ).rejects.toThrow('feedback must be at most 1000 characters.');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 });

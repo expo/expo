@@ -54,9 +54,15 @@ function toSiteUrl(path: unknown) {
   return new URL(`${url.pathname}${url.search}${url.hash}`, window.location.origin);
 }
 
-function requireText(value: unknown, field: string) {
+const SEARCH_QUERY_MAX_LENGTH = 200;
+const FEEDBACK_MAX_LENGTH = 1000;
+
+function requireText(value: unknown, field: string, maxLength = Infinity) {
   if (typeof value !== 'string' || !value.trim()) {
     throw new TypeError(`${field} must be a non-empty string.`);
+  }
+  if (value.trim().length > maxLength) {
+    throw new TypeError(`${field} must be at most ${maxLength} characters.`);
   }
   return value.trim();
 }
@@ -178,7 +184,7 @@ async function searchDocsAsync(
   const hitsPerPage = typeof limit === 'number' ? Math.min(Math.max(Math.trunc(limit), 1), 20) : 5;
   const version = getVersionFromPath(window.location.pathname) ?? 'latest';
   const params = new URLSearchParams({
-    query: requireText(query, 'query'),
+    query: requireText(query, 'query', SEARCH_QUERY_MAX_LENGTH),
     hitsPerPage: `${hitsPerPage}`,
   });
 
@@ -246,7 +252,7 @@ async function sendFeedbackAsync(
     signal,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      feedback: requireText(feedback, 'feedback'),
+      feedback: requireText(feedback, 'feedback', FEEDBACK_MAX_LENGTH),
       url: toSiteUrl(path).pathname,
     }),
   });
@@ -259,6 +265,7 @@ async function sendFeedbackAsync(
 
 const pathProperty = {
   type: 'string',
+  maxLength: 500,
   description: 'A docs.expo.dev URL or a path that starts with "/". Defaults to the current page.',
 };
 
@@ -272,10 +279,15 @@ export const webMcpTools: WebMcpTool[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        query: { type: 'string', description: 'What to search for.' },
+        query: {
+          type: 'string',
+          maxLength: SEARCH_QUERY_MAX_LENGTH,
+          description: 'What to search for.',
+        },
         limit: { type: 'integer', minimum: 1, maximum: 20, description: 'Defaults to 5.' },
       },
       required: ['query'],
+      additionalProperties: false,
     },
     annotations: { readOnlyHint: true },
     execute: searchDocsAsync,
@@ -286,7 +298,11 @@ export const webMcpTools: WebMcpTool[] = [
     description:
       'Returns an Expo documentation page as Markdown. Pass a path such as ' +
       '/get-started/create-a-project/, or omit it to read the current page.',
-    inputSchema: { type: 'object', properties: { path: pathProperty } },
+    inputSchema: {
+      type: 'object',
+      properties: { path: pathProperty },
+      additionalProperties: false,
+    },
     annotations: { readOnlyHint: true },
     execute: getPageMarkdownAsync,
   },
@@ -297,7 +313,11 @@ export const webMcpTools: WebMcpTool[] = [
       'Returns the title, description, other frontmatter fields, and headings of an Expo ' +
       'documentation page as JSON, without the page text. Use it to find a section before ' +
       'reading the page with get_page_markdown.',
-    inputSchema: { type: 'object', properties: { path: pathProperty } },
+    inputSchema: {
+      type: 'object',
+      properties: { path: pathProperty },
+      additionalProperties: false,
+    },
     annotations: { readOnlyHint: true },
     execute: getPageInfoAsync,
   },
@@ -306,7 +326,7 @@ export const webMcpTools: WebMcpTool[] = [
     title: 'Get Expo docs overview',
     description:
       'Returns llms.txt: an index of every Expo documentation page with a short summary.',
-    inputSchema: { type: 'object', properties: {} },
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
     annotations: { readOnlyHint: true },
     execute: getSiteOverviewAsync,
   },
@@ -325,8 +345,13 @@ export const webMcpTools: WebMcpTool[] = [
           enum: [...NAVIGATION_AREAS],
           description: 'A sidebar area. reference lists the SDK version of the current page.',
         },
-        section: { type: 'string', description: 'A section name returned without input.' },
+        section: {
+          type: 'string',
+          maxLength: 100,
+          description: 'A section name returned without input.',
+        },
       },
+      additionalProperties: false,
     },
     annotations: { readOnlyHint: true },
     execute: listSectionsAsync,
@@ -340,9 +365,14 @@ export const webMcpTools: WebMcpTool[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        skill_name: { type: 'string', description: 'The skill name, such as "expo".' },
+        skill_name: {
+          type: 'string',
+          maxLength: 100,
+          description: 'The skill name, such as "expo".',
+        },
       },
       required: ['skill_name'],
+      additionalProperties: false,
     },
     annotations: { readOnlyHint: true },
     execute: readSkillAsync,
@@ -357,6 +387,7 @@ export const webMcpTools: WebMcpTool[] = [
       type: 'object',
       properties: { query: { type: 'string', description: 'The question to ask.' } },
       required: ['query'],
+      additionalProperties: false,
     },
     annotations: { readOnlyHint: true },
     execute: askDocsAsync,
@@ -370,10 +401,12 @@ export const webMcpTools: WebMcpTool[] = [
       properties: {
         path: {
           type: 'string',
+          maxLength: 500,
           description: 'A docs.expo.dev URL or a path that starts with "/".',
         },
       },
       required: ['path'],
+      additionalProperties: false,
     },
     annotations: { readOnlyHint: false },
     execute: navigatePageAsync,
@@ -387,10 +420,15 @@ export const webMcpTools: WebMcpTool[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        feedback: { type: 'string', description: 'The feedback text.' },
+        feedback: {
+          type: 'string',
+          maxLength: FEEDBACK_MAX_LENGTH,
+          description: 'The feedback text.',
+        },
         path: pathProperty,
       },
       required: ['feedback'],
+      additionalProperties: false,
     },
     annotations: { readOnlyHint: false, consequentialHint: true },
     execute: sendFeedbackAsync,
