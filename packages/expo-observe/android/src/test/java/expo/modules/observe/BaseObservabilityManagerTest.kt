@@ -770,7 +770,10 @@ class BaseObservabilityManagerTest {
     every { ObserveConsent.isGranted } returns false
     every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.5)
     var sampleReads = 0
-    val manager = createManager(deterministicUniformValueProvider = { sampleReads += 1; 0.0 })
+    val manager = createManager(deterministicUniformValueProvider = {
+      sampleReads += 1
+      0.0
+    })
 
     manager.dispatchUnsentMetrics()
     manager.dispatchUnsentLogs()
