@@ -20,7 +20,9 @@ import { resolveOptionsAsync } from './resolveOptions';
 
 export async function runAndroidAsync(projectRoot: string, { install, ...options }: Options) {
   // Guess the mode from the selected native build variant.
-  const isProduction = options.variant?.toLowerCase().endsWith('release');
+  const isProduction = !['debug', 'debugoptimized'].includes(
+    (options.variant ?? 'debug').toLowerCase()
+  );
   const mode = isProduction ? 'production' : 'development';
   loadEnvFiles(projectRoot, {
     mode,

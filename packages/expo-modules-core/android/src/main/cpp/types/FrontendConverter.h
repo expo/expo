@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include "../ExpoHeader.pch"
 #include "CppType.h"
 
@@ -35,6 +37,16 @@ public:
     JNIEnv *env,
     const jsi::Value &value
   ) const = 0;
+
+  /**
+   * Whether the JS value has to stay alive until an async call that received it is settled.
+   * It's true for converters that pass only a reference to Kotlin, like the shared object id.
+   * The native body works with the object behind that reference, so the JS value must not be
+   * garbage collected before the call ends. Composite converters ask their element converters.
+   */
+  virtual bool retainsJSValue() const {
+    return false;
+  }
 };
 
 /**
@@ -281,6 +293,10 @@ public:
   ) const override;
 
   bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+
+  bool retainsJSValue() const override {
+    return true;
+  }
 };
 
 /**
@@ -316,6 +332,12 @@ public:
     JNIEnv *env,
     const jsi::Value &value
   ) const override;
+
+  bool retainsJSValue() const override {
+    return std::any_of(converters.begin(), converters.end(), [](const auto &converter) {
+      return converter->retainsJSValue();
+    });
+  }
 
 private:
   std::vector<std::shared_ptr<FrontendConverter>> converters;
@@ -370,6 +392,10 @@ public:
 
   bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
 
+  bool retainsJSValue() const override {
+    return parameterConverter->retainsJSValue();
+  }
+
 private:
   /**
    * A string representation of desired Java type.
@@ -401,6 +427,10 @@ public:
   ) const override;
 
   bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+
+  bool retainsJSValue() const override {
+    return parameterConverter->retainsJSValue();
+  }
 private:
   /**
    * Converter used to convert array elements.
@@ -430,6 +460,10 @@ public:
   ) const override;
 
   bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+
+  bool retainsJSValue() const override {
+    return valueConverter->retainsJSValue();
+  }
 private:
   /**
    * Converter used to convert values.
@@ -469,6 +503,10 @@ public:
   ) const override;
 
   bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+
+  bool retainsJSValue() const override {
+    return parameterConverter->retainsJSValue();
+  }
 private:
   std::shared_ptr<FrontendConverter> parameterConverter;
 };
@@ -486,6 +524,10 @@ public:
   ) const override;
 
   bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+
+  bool retainsJSValue() const override {
+    return parameterConverter->retainsJSValue();
+  }
 private:
   std::shared_ptr<FrontendConverter> parameterConverter;
 };

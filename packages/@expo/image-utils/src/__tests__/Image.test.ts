@@ -8,6 +8,9 @@ describe(getMimeType, () => {
       ['https://example.com/image.png?query=1', 'image/png'],
       ['../foo.jpg', 'image/jpeg'],
       ['more.ios.jpeg', 'image/jpeg'],
+      ['icon.PNG', 'image/png'],
+      ['splash.JPG', 'image/jpeg'],
+      ['https://example.com/Icon.Webp?query=1', 'image/webp'],
       // Invalid
       ['more.ios.jpeg?foo', null],
       // Unsupported

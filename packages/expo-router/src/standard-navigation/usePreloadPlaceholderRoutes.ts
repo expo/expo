@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react';
+import { useEffect } from 'react';
 
 type Route = { key: string; name: string };
 type Descriptor = {
@@ -18,7 +18,7 @@ export function usePreloadPlaceholderRoutes({
   /** Used when a route does not specify `options.lazy`. */
   lazyByDefault: boolean;
 }) {
-  useLayoutEffect(() => {
+  useEffect(() => {
     for (const route of routes) {
       const descriptor = descriptors[route.key];
       // Options stay generic so navigators without `lazy` remain assignable; tab options may define it.

@@ -2,6 +2,7 @@ package expo.modules.observe
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import kotlinx.serialization.json.Json
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -78,6 +79,29 @@ class ObservePreferencesTest {
     assertNull(ObservePreferences.getConfig(context)?.sampleRate)
   }
 
+  @Test
+  fun `ignored names persist and omitted lists reset them`() {
+    ObservePreferences.setConfig(
+      context,
+      PersistedConfig(
+        ignoredMetrics = listOf("expo.app_startup.tti"),
+        ignoredEvents = listOf("custom.event")
+      )
+    )
+    assertEquals(listOf("expo.app_startup.tti"), ObservePreferences.getConfig(context)?.ignoredMetrics)
+    assertEquals(listOf("custom.event"), ObservePreferences.getConfig(context)?.ignoredEvents)
+    ObservePreferences.setConfig(context, PersistedConfig())
+    assertEquals(emptyList<String>(), ObservePreferences.getConfig(context)?.ignoredMetrics)
+    assertEquals(emptyList<String>(), ObservePreferences.getConfig(context)?.ignoredEvents)
+  }
+
+  @Test
+  fun `old persisted JSON decodes with empty ignored lists`() {
+    val config = Json.decodeFromString<PersistedConfig>("""{"dispatchingEnabled":true,"sampleRate":0.5}""")
+    assertEquals(emptyList<String>(), config.ignoredMetrics)
+    assertEquals(emptyList<String>(), config.ignoredEvents)
+  }
+
   // region PersistedBundleDefaults
 
   @Test
@@ -136,6 +160,40 @@ class ObservePreferencesTest {
     val defaults = ObservePreferences.getBundleDefaults(context)
     assertEquals("development", defaults?.environment)
     assertEquals(true, defaults?.isJsDev)
+  }
+
+  // endregion
+
+  // region Dispatch cursors
+
+  @Test
+  fun `dispatch cursors default to -1`() {
+    assertEquals(-1L, ObservePreferences.getLastDispatchedMetricId(context))
+    assertEquals(-1L, ObservePreferences.getLastDispatchedLogId(context))
+  }
+
+  @Test
+  fun `metric dispatch cursor round trips`() {
+    ObservePreferences.setLastDispatchedMetricId(context, 42)
+
+    assertEquals(42L, ObservePreferences.getLastDispatchedMetricId(context))
+  }
+
+  @Test
+  fun `log dispatch cursor round trips`() {
+    ObservePreferences.setLastDispatchedLogId(context, 84)
+
+    assertEquals(84L, ObservePreferences.getLastDispatchedLogId(context))
+  }
+
+  @Test
+  fun `dispatch cursor keys are independent`() {
+    ObservePreferences.setLastDispatchedMetricId(context, 42)
+    ObservePreferences.setLastDispatchedLogId(context, 84)
+    ObservePreferences.setLastDispatchedMetricId(context, 126)
+
+    assertEquals(126L, ObservePreferences.getLastDispatchedMetricId(context))
+    assertEquals(84L, ObservePreferences.getLastDispatchedLogId(context))
   }
 
   // endregion

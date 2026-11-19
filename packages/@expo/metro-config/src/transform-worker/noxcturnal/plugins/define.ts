@@ -2,6 +2,8 @@ import type { DefinedNativePlugin } from 'noxcturnal';
 
 import { expoPluginInput, isNodeModule, mappedLiteral } from '../noxcturnal-transformer';
 import type { Noxcturnal } from '../noxcturnal-transformer';
+import { addCacheVary } from './cache-vary';
+import { createPlatformBindingChecker } from './platform-binding';
 
 interface DefineState {
   identifiers: Map<string, unknown>;
@@ -10,6 +12,7 @@ interface DefineState {
 }
 
 export function createDefinePlugin(nox: Noxcturnal): DefinedNativePlugin<DefineState> {
+  const { isPlatformBinding, visitor } = createPlatformBindingChecker(nox);
   return nox.defineNativePlugin<DefineState>({
     name: 'expo-define-globals',
     createState: (context) => {
@@ -47,6 +50,7 @@ export function createDefinePlugin(nox: Noxcturnal): DefinedNativePlugin<DefineS
       return { identifiers, members, typeofValues };
     },
     visitors: [
+      visitor,
       nox.defineVisitor(
         'ReferencedIdentifier',
         {
@@ -80,13 +84,25 @@ export function createDefinePlugin(nox: Noxcturnal): DefinedNativePlugin<DefineS
             write: { equals: false },
           },
           scope: true,
+          controlFlow: ['dynamic-subscriptions'],
         },
         (path, state: DefineState) => {
           const { members } = state;
           const pattern = String(path.node.memberPath ?? '');
           if (!members.has(pattern)) return;
           const root = pattern.slice(0, pattern.indexOf('.'));
-          if (path.scope.hasBinding(root)) return;
+          if (
+            root === 'Platform'
+              ? !isPlatformBinding(path.scope, path.context)
+              : path.scope.hasBinding(root)
+          )
+            return;
+          if (pattern.startsWith('process.env.EXPO_PUBLIC_')) {
+            addCacheVary(path.context, {
+              scheme: 'env',
+              name: pattern.slice('process.env.'.length),
+            });
+          }
           path.replaceWith(mappedLiteral(path.context, members.get(pattern)));
         }
       ),

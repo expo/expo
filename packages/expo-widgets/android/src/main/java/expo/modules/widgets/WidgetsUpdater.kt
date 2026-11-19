@@ -45,7 +45,7 @@ internal object WidgetsUpdater {
     val widget = ExpoWidgetsPeekWidget(name)
 
     appWidgetManager.getAppWidgetIds(componentName).forEach { appWidgetId ->
-      widget.update(context, AppWidgetId(appWidgetId))
+      widget.refresh(context, AppWidgetId(appWidgetId))
     }
   }
 

@@ -1,7 +1,7 @@
 ---
-title: 'EAS Workflows で本番デプロイを自動化する'
+title: 'Expo Workflows で本番デプロイを自動化する'
 sidebar_title: 本番デプロイ
-description: EAS Workflows を使って、リリースブランチから Android と iOS の本番ビルドと無線経由のアップデートを自動化する方法を学びます。
+description: Expo Workflows を使って、リリースブランチから Android と iOS の本番ビルドと無線経由のアップデートを自動化する方法を学びます。
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -21,7 +21,7 @@ import { Step } from '~/ui/components/Step';
 
 <Prerequisites>
 
-<Requirement title="production プロファイル向けの EAS Build の設定">
+<Requirement title="production プロファイル向けの Expo Build の設定">
 
 [EAS CLI](/eas/cli/) は、あるプロファイルで初めてビルドをトリガーしたときに認証情報の生成を促します。ワークフローが走る前に認証情報が用意されているよう、Android と iOS の両方で本番ビルドを手動でトリガーしておきます。
 
@@ -51,7 +51,7 @@ import { Step } from '~/ui/components/Step';
 
 ## 本番ビルド向けの `build` ジョブタイプ
 
-まずは本番ワークフローを作成することから始めましょう。EAS Workflows の[事前パッケージ済み](/ja/tutorial/cicd/first-workflow/#eas-workflows-のジョブの種類)の `build` ジョブタイプを使い、Android と iOS の両方で実行します。
+まずは本番ワークフローを作成することから始めましょう。Expo Workflows の[事前パッケージ済み](/ja/tutorial/cicd/first-workflow/#expo-workflows-のジョブの種類)の `build` ジョブタイプを使い、Android と iOS の両方で実行します。
 
 <Step label="1">
 
@@ -147,7 +147,7 @@ jobs:
 
 上のワークフローでは、まず `fingerprint` ジョブが実行され、コードベースの変更に基づいたハッシュを生成します。続いて `get-build` ジョブが、同じフィンガープリントのハッシュを持つ Android と iOS の既存のビルドがあるかどうかを確認します。既存のビルドがなければ、`build` ジョブが実行されて本番向けの新しいビルドを作成します。
 
-`fingerprint` ジョブの [`environment`](/eas/workflows/syntax/#jobsjob_idenvironment) フィールドは、フィンガープリントを計算するときにどの環境変数を読み込むかを EAS に伝えます。本番環境では `API_URL` や機能フラグといった変数の値が異なることがあります。EAS がそれらの値をビルドに埋め込むと、ネイティブの層にも影響が及びます。`environment: production` を指定しておけば、フィンガープリントが実際に出荷される内容を反映できます。
+`fingerprint` ジョブの [`environment`](/eas/workflows/syntax/#jobsjob_idenvironment) フィールドは、フィンガープリントを計算するときにどの環境変数を読み込むかを Expo Workflows に伝えます。本番環境では `API_URL` や機能フラグといった変数の値が異なることがあります。Expo Build がそれらの値をビルドに埋め込むと、ネイティブの層にも影響が及びます。`environment: production` を指定しておけば、フィンガープリントが実際に出荷される内容を反映できます。
 
 `build_android` と `build_ios` のジョブで使っている [`if`](/eas/workflows/syntax/#jobsjob_idif) フィールドは、真偽値の式です。`false` と評価された場合、ビルドジョブはスキップされます。`!` 演算子によって、`get-build` が一致するビルドを見つけられなかったときにだけビルドジョブが実行されます。
 
@@ -214,10 +214,10 @@ jobs:
   cmdCopy="git checkout -b release/1.0.0 && git push origin release/1.0.0"
 />
 
-EAS ダッシュボードを開いて、このワークフローの実行を探します。このフィンガープリントに対応するビルドはまだ存在しないので、`build` ジョブが実行され、`update` ジョブはグレーアウトされているはずです。
+Expo ダッシュボードを開いて、このワークフローの実行を探します。このフィンガープリントに対応するビルドはまだ存在しないので、`build` ジョブが実行され、`update` ジョブはグレーアウトされているはずです。
 
 <ContentSpotlight
-  alt="リリースブランチによる本番実行で、fingerprint、get-build、そして Android と iOS のビルドジョブを表示している EAS Workflows ダッシュボード。"
+  alt="リリースブランチによる本番実行で、fingerprint、get-build、そして Android と iOS のビルドジョブを表示している Expo Workflows ダッシュボード。"
   src="/static/images/tutorial/cicd/eas-workflows-production-build-jobs.png"
   className="max-w-160"
 />
@@ -231,10 +231,10 @@ Android と iOS のビルドは並列に実行されます。各ジョブが完�
   cmdCopy="git add . && git commit -m 'Update welcome text' && git push origin release/1.0.0"
 />
 
-ワークフローが実行されたら、EAS ダッシュボードで、フィンガープリントが前回のプッシュのビルドと一致していることを確認しましょう。`build` ジョブは完全にスキップされ、`update` ジョブが OTA アップデートを公開します。
+ワークフローが実行されたら、Expo ダッシュボードで、フィンガープリントが前回のプッシュのビルドと一致していることを確認しましょう。`build` ジョブは完全にスキップされ、`update` ジョブが OTA アップデートを公開します。
 
 <ContentSpotlight
-  alt="フィンガープリントの一致によって既存のネイティブビルドを再利用し、Android と iOS の無線経由のアップデートを公開している EAS Workflows の本番実行。"
+  alt="フィンガープリントの一致によって既存のネイティブビルドを再利用し、Android と iOS の無線経由のアップデートを公開している Expo Workflows の本番実行。"
   src="/static/images/tutorial/cicd/eas-workflows-production-update-jobs.png"
   className="max-w-160"
 />
@@ -245,7 +245,7 @@ Android と iOS のビルドは並列に実行されます。各ジョブが完�
 
 この章で作ってきたワークフローは、本番向けのアプリバイナリを作成するか、既存の本番アプリへ OTA アップデートを公開するだけのものです。[ストアへの提出の自動化](/build/automate-submissions/)は、本番リリースのワークフローでこの次によく行われるステップです。
 
-EAS Workflows は、アプリストアへの提出を自動化するための事前パッケージ済み `submit` ジョブを提供しています。使用するには、アプリストアの認証情報を EAS CLI で管理する必要があります。また、最初の Android リリース（**.aab**）を Google Play Store に手動でアップロードするなど、アプリストア側の要件も満たしておく必要があります。iOS には、Apple Developer Program への登録と署名用の認証情報の設定という、iOS 独自の準備があります。
+Expo Workflows は、アプリストアへの提出を自動化するための事前パッケージ済み `submit` ジョブを提供しています。使用するには、アプリストアの認証情報を EAS CLI で管理する必要があります。また、最初の Android リリース（**.aab**）を Google Play Store に手動でアップロードするなど、アプリストア側の要件も満たしておく必要があります。iOS には、Apple Developer Program への登録と署名用の認証情報の設定という、iOS 独自の準備があります。
 
 アプリストア側の要件が整ったら、`build` ジョブのあとに実行される `submit_android` と `submit_ios` の 2 つのジョブをワークフローに追加できます。
 
@@ -274,7 +274,7 @@ submit_ios:
   currentChapterSlug="/tutorial/cicd/production"
   name="CICD_TUTORIAL"
   chapterTitle="第 5 章：本番デプロイ"
-  summary="リリースブランチへのプッシュでトリガーされる Android と iOS の本番ワークフローを作成し、フィンガープリントでネイティブビルドと OTA アップデートを使い分け、EAS Submit がアプリストアへの提出をどう自動化するかを確認しました。"
+  summary="リリースブランチへのプッシュでトリガーされる Android と iOS の本番ワークフローを作成し、フィンガープリントでネイティブビルドと OTA アップデートを使い分け、Expo Submit がアプリストアへの提出をどう自動化するかを確認しました。"
   nextChapterDescription="次の章では、本番デプロイをリリースブランチからバージョンタグへ切り替える方法を学びます。"
   nextChapterTitle="タグベースのリリース"
   nextChapterLink="/ja/tutorial/cicd/tag-based-releases"

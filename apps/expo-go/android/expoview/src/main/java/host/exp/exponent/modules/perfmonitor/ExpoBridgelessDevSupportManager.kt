@@ -14,6 +14,7 @@ import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
+import expo.modules.devmenu.api.CustomPerformanceMonitor
 import host.exp.exponent.factories.ExpoGoDevSupportManager
 import host.exp.exponent.kernel.Kernel
 
@@ -43,10 +44,30 @@ internal class ExpoBridgelessDevSupportManager(
     devLoadingViewManager,
     pausedInDebuggerOverlayManager
   ),
-  ExpoGoDevSupportManager {
+  ExpoGoDevSupportManager,
+  CustomPerformanceMonitor {
 
   private val perfController = PerfMonitorController(applicationContext) {
-    devSettings.isFpsDebugEnabled = false
+    setFpsDebugEnabled(false)
+  }
+
+  // Expo Go's monitor state lives in its own preferences. RN's isFpsDebugEnabled must stay false,
+  // because DevSupportManagerBase shows its own FPS overlay whenever that flag is true on reload.
+  private val perfMonitorState =
+    applicationContext.getSharedPreferences("expo.perfmonitor", Context.MODE_PRIVATE)
+
+  override val isPerformanceMonitorShown: Boolean
+    get() = perfMonitorState.getBoolean("enabled", false)
+
+  init {
+    // Older versions stored the monitor state in RN's flag. Clear it so the built-in overlay
+    // never shows, and carry the enabled state over.
+    UiThreadUtil.runOnUiThread {
+      if (devSettings.isFpsDebugEnabled) {
+        devSettings.isFpsDebugEnabled = false
+        perfMonitorState.edit().putBoolean("enabled", true).apply()
+      }
+    }
   }
 
   override var exponentActivityId: Int = -1
@@ -60,7 +81,13 @@ internal class ExpoBridgelessDevSupportManager(
   fun setDevServer(bundleUrl: String) {
     val uri = Uri.parse(bundleUrl)
     val host = uri.host ?: return
-    val port = if (uri.port != -1) uri.port else if (uri.scheme == "https") 443 else 80
+    val port = if (uri.port != -1) {
+      uri.port
+    } else if (uri.scheme == "https") {
+      443
+    } else {
+      80
+    }
 
     val settings = devSettings.packagerConnectionSettings
     settings.debugServerHost = "$host:$port"
@@ -106,18 +133,22 @@ internal class ExpoBridgelessDevSupportManager(
     super.handleException(e)
   }
 
+  // The packager command handler calls this from the WebSocket thread, and the controller
+  // attaches views, so hop to the UI thread first.
   override fun setFpsDebugEnabled(isFpsDebugEnabled: Boolean) {
-    devSettings.isFpsDebugEnabled = isFpsDebugEnabled
-    perfController.syncEnabledState(
-      isFpsDebugEnabled,
-      currentReactContext
-    )
+    UiThreadUtil.runOnUiThread {
+      perfMonitorState.edit().putBoolean("enabled", isFpsDebugEnabled).apply()
+      perfController.syncEnabledState(
+        isFpsDebugEnabled,
+        currentReactContext
+      )
+    }
   }
 
   override fun onNewReactContextCreated(reactContext: ReactContext) {
     super.onNewReactContextCreated(reactContext)
     perfController.onContextCreated(reactContext)
-    if (devSettings.isFpsDebugEnabled) {
+    if (isPerformanceMonitorShown) {
       perfController.enable(reactContext)
     }
   }

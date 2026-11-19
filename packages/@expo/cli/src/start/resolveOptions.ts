@@ -23,19 +23,23 @@ export type Options = {
   devClient: boolean;
   scheme: string | null;
   host: 'localhost' | 'lan' | 'tunnel';
+  tunnelProvider: 'expo' | 'ngrok' | null;
 };
 
 export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {
   if (args['--dev-client'] && args['--go']) {
     throw new CommandError('BAD_ARGS', 'Cannot use both --dev-client and --go together.');
   }
+
   const host = resolveHostType({
     host: args['--host'],
     offline: args['--offline'],
     lan: args['--lan'],
     localhost: args['--localhost'],
-    tunnel: args['--tunnel'],
+    tunnel: !!args['--tunnel'],
   });
+
+  const tunnelProvider = resolveTunnelProvider(args['--tunnel'], host);
 
   if (args['--https']) {
     Log.warn(chalk`{bold --https} option is deprecated in favor of {bold --tunnel}`);
@@ -79,6 +83,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
 
     scheme,
     host,
+    tunnelProvider,
   };
 }
 
@@ -159,11 +164,12 @@ export function resolveHostType(options: {
 /** Resolve the port options for all supported bundlers. */
 export async function resolvePortsAsync(
   projectRoot: string,
-  options: Partial<Pick<Options, 'port' | 'devClient'>>,
+  options: Partial<Pick<Options, 'port' | 'devClient' | 'host'>>,
   bundlers: ('metro' | 'webpack')[]
 ): Promise<{ metroPort: number; webpackPort?: number }> {
   const metroPort = await resolveMetroPortAsync(projectRoot, {
     defaultPort: options.port,
+    host: options.host === 'localhost' ? '127.0.0.1' : undefined,
     fallbackPort: 8081,
   });
   if (metroPort == null) {
@@ -183,4 +189,24 @@ export async function resolvePortsAsync(
   }
 
   return { metroPort };
+}
+
+/** Resolve the optional tunnel provider, including legacy boolean arguments. */
+function resolveTunnelProvider(value: unknown, host: Options['host']): Options['tunnelProvider'] {
+  switch (value) {
+    case 'ngrok':
+      return 'ngrok';
+    case true:
+    case 'expo':
+      return 'expo';
+    case null:
+    case false:
+    case undefined:
+      return host === 'tunnel' ? 'expo' : null;
+    default:
+      throw new CommandError(
+        'BAD_ARGS',
+        `Invalid tunnel provider: ${value}. Expected expo or ngrok.`
+      );
+  }
 }

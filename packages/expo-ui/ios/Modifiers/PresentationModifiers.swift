@@ -160,6 +160,16 @@ internal struct PresentationDragIndicatorModifier: ViewModifier, Record {
   }
 }
 
+// MARK: - Presentation Corner Radius
+
+internal struct PresentationCornerRadiusModifier: ViewModifier, Record {
+  @Field var cornerRadius: Double?
+
+  func body(content: Content) -> some View {
+    content.presentationCornerRadius(cornerRadius.map { CGFloat($0) })
+  }
+}
+
 // MARK: - Presentation Background Interaction
 
 internal enum PresentationBackgroundInteractionTypeModifier: String, Enumerable {
@@ -208,11 +218,11 @@ internal struct InteractiveDismissDisabledModifier: ViewModifier, Record {
 // MARK: - Presentation Background
 
 internal struct PresentationBackgroundModifier: ViewModifier, Record {
-  @Field var color: Color?
+  @Field var style: ShapeStyleValue?
 
   func body(content: Content) -> some View {
-    if #available(iOS 16.4, tvOS 16.4, *), let color {
-      content.presentationBackground(color)
+    if let shapeStyle = style?.toAnyShapeStyle() {
+      content.presentationBackground(shapeStyle)
     } else {
       content
     }
@@ -228,23 +238,39 @@ internal enum PresentationSizingOption: String, Enumerable {
   case page
 }
 
+internal struct PresentationSizingFittedAxes: Record {
+  @Field var horizontal: Bool = false
+  @Field var vertical: Bool = false
+}
+
 internal struct PresentationSizingModifier: ViewModifier, Record {
   @Field var sizing: PresentationSizingOption = .automatic
+  @Field var fitted: PresentationSizingFittedAxes?
 
   func body(content: Content) -> some View {
     if #available(iOS 18.0, tvOS 18.0, macOS 15.0, *) {
       switch sizing {
       case .automatic:
-        content.presentationSizing(.automatic)
+        applySizing(content, .automatic)
       case .fitted:
-        content.presentationSizing(.fitted)
+        applySizing(content, .fitted)
       case .form:
-        content.presentationSizing(.form)
+        applySizing(content, .form)
       case .page:
-        content.presentationSizing(.page)
+        applySizing(content, .page)
       }
     } else {
       content
+    }
+  }
+
+  @available(iOS 18.0, tvOS 18.0, macOS 15.0, *)
+  @ViewBuilder
+  private func applySizing(_ content: Content, _ sizing: some PresentationSizing) -> some View {
+    if let fitted {
+      content.presentationSizing(sizing.fitted(horizontal: fitted.horizontal, vertical: fitted.vertical))
+    } else {
+      content.presentationSizing(sizing)
     }
   }
 }

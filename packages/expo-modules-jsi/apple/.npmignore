@@ -1,0 +1,8 @@
+# pnpm pack ignores the nested .gitignore, so local build output would otherwise ship in the npm package.
+/.build/
+/.DerivedData/
+/.generated/
+/.swiftpm/
+/.xcframework-slices/
+/.test-frameworks/
+/Products/

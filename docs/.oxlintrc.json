@@ -255,6 +255,7 @@
       "error",
       {
         "allowlist": [
+          "code-block-wrapper",
           "dark-theme",
           "react-player",
           "table-wrapper",

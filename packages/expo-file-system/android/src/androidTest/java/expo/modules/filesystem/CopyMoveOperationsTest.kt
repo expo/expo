@@ -9,7 +9,9 @@ import expo.modules.filesystem.unifiedfile.JavaFile
 import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -490,4 +492,134 @@ class CopyMoveOperationsTest {
     assertTrue(dstDir.exists() && dstDir.isDirectory)
     assertTrue(File(dstDir, "file.txt").exists())
   }
+
+  // With overwrite, the existing target is deleted before the write.
+  // When the target is the source or contains it, that delete would remove the source.
+
+  @Test
+  fun testCopySAFFile_IntoItsOwnDirectory_WithOverwrite_Throws() = runBlocking {
+    val dir = getSAFRootDir().createDirectory("dir")!!
+    val srcDoc = dir.createFile("text/plain", "source.txt")!!
+    resolver.openOutputStream(srcDoc.uri)?.use { it.write("source".toByteArray()) }
+
+    val source = SAFDocumentFile(context, srcDoc.uri)
+    val dest = SAFDocumentFile(context, dir.uri)
+
+    val result = runCatching {
+      source.copyTo(DestinationSpec(path = dest, overwrite = true, isDirectory = true))
+    }
+
+    assertTrue(result.exceptionOrNull() is DestinationContainsSourceException)
+    assertEquals("source", readText(srcDoc.uri))
+  }
+
+  @Test
+  fun testCopySAFFile_OntoItself_WithOverwrite_Throws() = runBlocking {
+    val srcDoc = getSAFRootDir().createFile("text/plain", "source.txt")!!
+    resolver.openOutputStream(srcDoc.uri)?.use { it.write("source".toByteArray()) }
+
+    val source = SAFDocumentFile(context, srcDoc.uri)
+    val dest = SAFDocumentFile(context, srcDoc.uri)
+
+    val result = runCatching {
+      source.copyTo(DestinationSpec(path = dest, overwrite = true, isDirectory = false))
+    }
+
+    assertTrue(result.exceptionOrNull() is DestinationContainsSourceException)
+    assertEquals("source", readText(srcDoc.uri))
+  }
+
+  @Test
+  fun testMoveSAFDirectory_OntoDirectoryThatContainsIt_WithOverwrite_Throws() = runBlocking {
+    // Moving `a/x/x` into `a` targets `a/x`, the parent of the source.
+    val a = getSAFRootDir().createDirectory("a")!!
+    val srcDir = a.createDirectory("x")!!.createDirectory("x")!!
+    val srcFile = srcDir.createFile("text/plain", "file.txt")!!
+    resolver.openOutputStream(srcFile.uri)?.use { it.write("source".toByteArray()) }
+
+    val source = SAFDocumentFile(context, srcDir.uri)
+    val dest = SAFDocumentFile(context, a.uri)
+
+    val result = runCatching {
+      source.moveTo(DestinationSpec(path = dest, overwrite = true, isDirectory = true))
+    }
+
+    assertTrue(result.exceptionOrNull() is DestinationContainsSourceException)
+    assertEquals("source", readText(srcFile.uri))
+  }
+
+  @Test
+  fun testCopySAFFile_IntoItsOwnDirectory_ThroughAnotherTreeUri_WithOverwrite_Throws() = runBlocking {
+    val dir = getSAFRootDir().createDirectory("dir")!!
+    val srcDoc = dir.createFile("text/plain", "source.txt")!!
+    resolver.openOutputStream(srcDoc.uri)?.use { it.write("source".toByteArray()) }
+
+    // The same document, reached through a tree that starts at `dir` instead of the root.
+    val dirTreeUri = DocumentsContract.buildTreeDocumentUri(
+      TestStorageProvider.AUTHORITY,
+      DocumentsContract.getDocumentId(dir.uri)
+    )
+    val sourceUri = DocumentsContract.buildDocumentUriUsingTree(
+      dirTreeUri,
+      DocumentsContract.getDocumentId(srcDoc.uri)
+    )
+    assertNotEquals(srcDoc.uri, sourceUri)
+
+    val source = SAFDocumentFile(context, sourceUri)
+    val dest = SAFDocumentFile(context, dir.uri)
+
+    val result = runCatching {
+      source.copyTo(DestinationSpec(path = dest, overwrite = true, isDirectory = true))
+    }
+
+    assertTrue(result.exceptionOrNull() is DestinationContainsSourceException)
+    assertEquals("source", readText(srcDoc.uri))
+  }
+
+  @Test
+  fun testCopySAFFile_IntoItsOwnDirectory_ThroughSingleDocumentUri_WithOverwrite_Throws() = runBlocking {
+    val dir = getSAFRootDir().createDirectory("dir")!!
+    val srcDoc = dir.createFile("text/plain", "source.txt")!!
+    resolver.openOutputStream(srcDoc.uri)?.use { it.write("source".toByteArray()) }
+
+    // The same document, as a `content://<authority>/document/<id>` URI without a tree.
+    val sourceUri = DocumentsContract.buildDocumentUri(
+      TestStorageProvider.AUTHORITY,
+      DocumentsContract.getDocumentId(srcDoc.uri)
+    )
+    assertNotEquals(srcDoc.uri, sourceUri)
+
+    val source = SAFDocumentFile(context, sourceUri)
+    val dest = SAFDocumentFile(context, dir.uri)
+
+    val result = runCatching {
+      source.copyTo(DestinationSpec(path = dest, overwrite = true, isDirectory = true))
+    }
+
+    assertTrue(result.exceptionOrNull() is DestinationContainsSourceException)
+    assertEquals("source", readText(srcDoc.uri))
+  }
+
+  @Test
+  fun testMoveSAFDirectory_IntoAncestorOfItsParent_WithOverwrite_ReplacesTarget() = runBlocking {
+    // Moving `a/b/c` into `a` replaces `a/c`, which does not contain the source.
+    val a = getSAFRootDir().createDirectory("a")!!
+    a.createDirectory("c")!!.createFile("text/plain", "old.txt")!!
+    val srcDir = a.createDirectory("b")!!.createDirectory("c")!!
+    val srcFile = srcDir.createFile("text/plain", "new.txt")!!
+    resolver.openOutputStream(srcFile.uri)?.use { it.write("new".toByteArray()) }
+
+    val source = SAFDocumentFile(context, srcDir.uri)
+    val dest = SAFDocumentFile(context, a.uri)
+
+    source.moveTo(DestinationSpec(path = dest, overwrite = true, isDirectory = true))
+
+    val movedDir = a.findFile("c")!!
+    assertNull(movedDir.findFile("old.txt"))
+    assertEquals("new", readText(movedDir.findFile("new.txt")!!.uri))
+    assertNull(a.findFile("b")!!.findFile("c"))
+  }
+
+  private fun readText(uri: Uri): String? =
+    resolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
 }

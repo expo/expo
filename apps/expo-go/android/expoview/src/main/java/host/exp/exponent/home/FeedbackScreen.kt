@@ -40,7 +40,7 @@ fun FeedbackScreen(
 ) {
   val feedbackState by viewModel.feedbackState.collectAsStateWithLifecycle()
   var feedback by remember { mutableStateOf("") }
-  var email by remember { mutableStateOf(viewModel.account.dataFlow.value?.bestContactEmail ?: "") }
+  var email by remember { mutableStateOf(viewModel.account.dataFlow.value?.onUserActor?.bestContactEmail ?: "") }
 
   if (feedbackState.isSubmitted) {
     SubmittedFeedback(viewModel, onGoBack)

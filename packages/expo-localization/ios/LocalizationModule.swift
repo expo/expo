@@ -1,64 +1,84 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-import Foundation
 import ExpoModulesCore
+import Foundation
 import React
-
-let LOCALE_SETTINGS_CHANGED = "onLocaleSettingsChanged"
-let CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
 
 let OBSERVED_EVENTS: Set<Notification.Name> = [
   // swiftlint:disable legacy_objc_type
   UIApplication.significantTimeChangeNotification,
-  NSLocale.currentLocaleDidChangeNotification
+  NSLocale.currentLocaleDidChangeNotification,
   // swiftlint:enable legacy_objc_type
 ]
 
+@ExpoModule("ExpoLocalization")
 public class LocalizationModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoLocalization")
+  // The number of events that have listeners. The listening hooks change it on the JavaScript thread only.
+  private var listenedEventsCount = 0
 
-    Function("getLocales", Self.getLocales)
-    Function("getCalendars", Self.getCalendars)
+  @Event("onLocaleSettingsChanged")
+  var onLocaleSettingsChanged: () -> Void
 
-    OnCreate {
-      setRTLPreferences()
+  @Event("onCalendarSettingsChanged")
+  var onCalendarSettingsChanged: () -> Void
+
+  public override func didCreate() {
+    setRTLPreferences()
+  }
+
+  // Both events share the notification observers, so they are added when the first event gets a listener
+  // and removed when no event has listeners.
+  public override func didStartListening(event: String) {
+    listenedEventsCount += 1
+    guard listenedEventsCount == 1 else {
+      return
     }
-
-    Events(LOCALE_SETTINGS_CHANGED, CALENDAR_SETTINGS_CHANGED)
-
-    OnStartObserving {
-      OBSERVED_EVENTS.forEach {
-        NotificationCenter.default.addObserver(
-          self,
-          selector: #selector(LocalizationModule.localeChanged),
-          name: $0,
-          object: nil
-        )
-      }
+    OBSERVED_EVENTS.forEach {
+      NotificationCenter.default.addObserver(
+        self,
+        selector: #selector(LocalizationModule.localeChanged),
+        name: $0,
+        object: nil
+      )
     }
+  }
 
-    OnStopObserving {
-      OBSERVED_EVENTS.forEach {
-        NotificationCenter.default.removeObserver(
-          self,
-          name: $0,
-          object: nil
-        )
-      }
+  public override func didStopListening(event: String) {
+    listenedEventsCount -= 1
+    guard listenedEventsCount == 0 else {
+      return
+    }
+    OBSERVED_EVENTS.forEach {
+      NotificationCenter.default.removeObserver(
+        self,
+        name: $0,
+        object: nil
+      )
     }
   }
 
   func setRTLPreferences() {
-    let supportsRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_supportsRTL") as? Bool ?? true
-    let forcesRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_forcesRTL") as? Bool ?? false
+    let supportsRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_supportsRTL") as? Bool
+    let forcesRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_forcesRTL") as? Bool
 
     // We call these methods before React loads to ensure it gets rendered correctly the first time the app is opened.
     // Uses required reason API based on the following reason: CA92.1
     if let i18nUtil = RCTI18nUtil.sharedInstance() {
-      i18nUtil.allowRTL(supportsRTL)
-      i18nUtil.forceRTL(forcesRTL)
+      if let allowRTL = resolveRTL("ExpoLocalization_supportsRTLSetByConfig", supportsRTL, true) {
+        i18nUtil.allowRTL(allowRTL)
+      }
+      if let forceRTL = resolveRTL("ExpoLocalization_forcesRTLSetByConfig", forcesRTL, false) {
+        i18nUtil.forceRTL(forceRTL)
+      }
     }
+  }
+
+  // The config plugin writes only non-default values. When an option is removed, apply the default once,
+  // then leave the value to the app's own I18nManager calls.
+  private func resolveRTL(_ key: String, _ configValue: Bool?, _ defaultValue: Bool) -> Bool? {
+    let wasSetByConfig = UserDefaults.standard.object(forKey: key) as? Bool ?? true
+    UserDefaults.standard.set(configValue != nil, forKey: key)
+    return configValue ?? (wasSetByConfig ? defaultValue : nil)
   }
 
   // If the application isn't manually localized for the device language then the
@@ -111,7 +131,9 @@ public class LocalizationModule: Module {
     case .iso8601:
       return "iso8601"
     @unknown default:
-      log.error("Unhandled `Calendar.Identifier` value: \(calendar.identifier), returning `iso8601` as fallback. Add the missing case as soon as possible.")
+      log.error(
+        "Unhandled `Calendar.Identifier` value: \(calendar.identifier), returning `iso8601` as fallback. Add the missing case as soon as possible."
+      )
       return "iso8601"
     }
   }
@@ -121,94 +143,85 @@ public class LocalizationModule: Module {
       let measurementSystems = [
         Locale.MeasurementSystem.us: "us",
         Locale.MeasurementSystem.uk: "uk",
-        Locale.MeasurementSystem.metric: "metric"
+        Locale.MeasurementSystem.metric: "metric",
       ]
       return measurementSystems[locale.measurementSystem] ?? "metric"
     }
     return locale.usesMetricSystem ? "metric" : "us"
   }
 
-  static func getLocales() -> [[String: Any?]] {
+  @JS
+  func getLocales() -> [LocaleInfo] {
     let userSettingsLocale = Locale.current
 
     return (Locale.preferredLanguages.isEmpty ? [Locale.current.identifier] : Locale.preferredLanguages)
-      .map { languageTag -> [String: Any?] in
+      .map { languageTag -> LocaleInfo in
         let languageLocale = Locale.init(identifier: languageTag)
 
         if #available(iOS 16, tvOS 16, *) {
-          return [
-            "languageTag": languageTag,
-            "languageCode": languageLocale.language.languageCode?.identifier,
-            "languageScriptCode": languageLocale.language.script?.identifier,
-            "languageRegionCode": languageLocale.region?.identifier,
-            "regionCode": userSettingsLocale.region?.identifier,
-            "textDirection": languageLocale.language.characterDirection == .rightToLeft ? "rtl" : "ltr",
-            "decimalSeparator": userSettingsLocale.decimalSeparator,
-            "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
-            "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),
-            "currencyCode": userSettingsLocale.currencyCode,
-            "currencySymbol": userSettingsLocale.currencySymbol,
-            "languageCurrencyCode": languageLocale.currencyCode,
-            "languageCurrencySymbol": languageLocale.currencySymbol,
-            "temperatureUnit": getTemperatureUnit()
-          ]
+          return LocaleInfo(
+            languageTag: languageTag,
+            languageCode: languageLocale.language.languageCode?.identifier,
+            languageScriptCode: languageLocale.language.script?.identifier,
+            languageRegionCode: languageLocale.region?.identifier,
+            regionCode: userSettingsLocale.region?.identifier,
+            textDirection: languageLocale.language.characterDirection == .rightToLeft ? "rtl" : "ltr",
+            decimalSeparator: userSettingsLocale.decimalSeparator,
+            digitGroupingSeparator: userSettingsLocale.groupingSeparator,
+            measurementSystem: Self.getMeasurementSystemForLocale(userSettingsLocale),
+            currencyCode: userSettingsLocale.currencyCode,
+            currencySymbol: userSettingsLocale.currencySymbol,
+            languageCurrencyCode: languageLocale.currencyCode,
+            languageCurrencySymbol: languageLocale.currencySymbol,
+            temperatureUnit: Self.getTemperatureUnit()
+          )
         }
-        return [
-          "languageTag": languageTag,
-          "languageCode": languageLocale.languageCode,
-          "languageScriptCode": languageLocale.scriptCode,
-          "languageRegionCode": languageLocale.regionCode,
-          "regionCode": userSettingsLocale.regionCode,
-          "textDirection": Locale.characterDirection(forLanguage: languageTag) == .rightToLeft ? "rtl" : "ltr",
-          "decimalSeparator": userSettingsLocale.decimalSeparator,
-          "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
-          "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),
-          "currencyCode": userSettingsLocale.currencyCode,
-          "currencySymbol": userSettingsLocale.currencySymbol,
-          "languageCurrencyCode": languageLocale.currencyCode,
-          "languageCurrencySymbol": languageLocale.currencySymbol,
-          "temperatureUnit": getTemperatureUnit()
-        ]
+        return LocaleInfo(
+          languageTag: languageTag,
+          languageCode: languageLocale.languageCode,
+          languageScriptCode: languageLocale.scriptCode,
+          languageRegionCode: languageLocale.regionCode,
+          regionCode: userSettingsLocale.regionCode,
+          textDirection: Locale.characterDirection(forLanguage: languageTag) == .rightToLeft ? "rtl" : "ltr",
+          decimalSeparator: userSettingsLocale.decimalSeparator,
+          digitGroupingSeparator: userSettingsLocale.groupingSeparator,
+          measurementSystem: Self.getMeasurementSystemForLocale(userSettingsLocale),
+          currencyCode: userSettingsLocale.currencyCode,
+          currencySymbol: userSettingsLocale.currencySymbol,
+          languageCurrencyCode: languageLocale.currencyCode,
+          languageCurrencySymbol: languageLocale.currencySymbol,
+          temperatureUnit: Self.getTemperatureUnit()
+        )
       }
   }
 
   @objc
   private func localeChanged() {
     // we send both events since on iOS it means both calendar and locale needs an update
-    sendEvent(LOCALE_SETTINGS_CHANGED)
-    sendEvent(CALENDAR_SETTINGS_CHANGED)
+    onLocaleSettingsChanged()
+    onCalendarSettingsChanged()
   }
 
   static func getTemperatureUnit() -> String? {
-    let formatter = MeasurementFormatter()
-    formatter.locale = Locale.current
-
-    let temperature = Measurement(value: 0, unit: UnitTemperature.celsius)
-    let formatted = formatter.string(from: temperature)
-
-    guard let unitCharacter = formatted.last else {
-      return nil
-    }
-
-    return unitCharacter == "F" ? "fahrenheit" : "celsius"
+    let unit = UnitTemperature(forLocale: .current, usage: .weather)
+    return unit == .fahrenheit ? "fahrenheit" : "celsius"
   }
 
-  // https://stackoverflow.com/a/28183182
-  static func uses24HourClock() -> Bool {
-    let dateFormat = DateFormatter.dateFormat(fromTemplate: "j", options: 0, locale: Locale.current)!
-
-    return dateFormat.firstIndex(of: "a") == nil
+  static func uses24HourClock(locale: Locale = .current) -> Bool {
+    let hourCycle = locale.hourCycle
+    return hourCycle == .zeroToTwentyThree || hourCycle == .oneToTwentyFour
   }
 
-  static func getCalendars() -> [[String: Any?]] {
+  @JS
+  func getCalendars() -> [CalendarInfo] {
     let calendar = Locale.current.calendar
     return [
-      [
-        "calendar": getUnicodeCalendarIdentifier(calendar: calendar),
-        "timeZone": "\(calendar.timeZone.identifier)",
-        "uses24hourClock": uses24HourClock(),
-        "firstWeekday": calendar.firstWeekday
-      ]
+      CalendarInfo(
+        calendar: Self.getUnicodeCalendarIdentifier(calendar: calendar),
+        timeZone: "\(calendar.timeZone.identifier)",
+        uses24hourClock: Self.uses24HourClock(),
+        firstWeekday: calendar.firstWeekday
+      )
     ]
   }
 }

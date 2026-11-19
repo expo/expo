@@ -1,6 +1,6 @@
 import { getWebNativeTabsTheme, useTheme } from 'ThemeProvider';
 import { Drawer } from 'expo-router/drawer';
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 import * as React from 'react';
 import { Platform, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

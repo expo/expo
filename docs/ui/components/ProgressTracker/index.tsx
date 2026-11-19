@@ -62,7 +62,7 @@ export function ProgressTracker({
 
   return (
     <>
-      <div className="mx-auto flex w-full flex-col gap-4 rounded-lg border-2 border-palette-gray4 px-4 py-5">
+      <div className="mx-auto flex w-full flex-col gap-4 rounded-3xl border-2 border-palette-gray4 px-4 py-5">
         <SuccessCheckmark
           size="sm"
           className={mergeClasses(

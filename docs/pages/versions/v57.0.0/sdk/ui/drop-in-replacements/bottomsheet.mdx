@@ -9,10 +9,27 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A `BottomSheet` component with an API compatible with `@gorhom/bottom-sheet`. It wraps the platform-specific `@expo/ui` primitives: [Jetpack Compose ModalBottomSheet](../jetpack-compose/bottomsheet) on Android and [SwiftUI BottomSheet](../swift-ui/bottomsheet) on iOS. On web, it uses a [vaul](https://github.com/emilkowalski/vaul) drawer.
 
 If you need lower-level control over platform-specific styling, modifiers, or layout behavior, use the native primitives directly.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/community-bottomsheet/android-light.webp',
+    darkSrc: '/static/images/expo-ui/community-bottomsheet/android-dark.webp',
+    alt: 'A bottom sheet presented over a dimmed screen',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/community-bottomsheet/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/community-bottomsheet/ios-dark.webp',
+    alt: 'A bottom sheet presented over a dimmed screen',
+  }}
+/>
 
 ## Installation
 
@@ -37,12 +54,27 @@ If you need lower-level control over platform-specific styling, modifiers, or la
 
 ## Basic usage
 
-```tsx BottomSheetExample.tsx
+<ComponentExample
+  title="BottomSheetExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-bottomsheet-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-bottomsheet-basic-android-dark.webp',
+    alt: 'A sheet at its smallest snap point below an Open button',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-bottomsheet-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-bottomsheet-basic-ios-dark.webp',
+    alt: 'A sheet at its smallest snap point below an Open button',
+  }}>
+
+```tsx
 import { useRef } from 'react';
-import { Button, Text, View } from 'react-native';
+import { Button, Text, useColorScheme, View } from 'react-native';
 import BottomSheet, { BottomSheetView } from '@expo/ui/community/bottom-sheet';
 
 export default function BottomSheetExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
   const sheetRef = useRef<BottomSheet>(null);
 
   return (
@@ -61,7 +93,7 @@ export default function BottomSheetExample() {
         }}
         enablePanDownToClose>
         <BottomSheetView style={{ flex: 1, padding: 24, alignItems: 'center' }}>
-          <Text>Sheet content</Text>
+          <Text style={ink}>Sheet content</Text>
         </BottomSheetView>
       </BottomSheet>
     </View>
@@ -69,16 +101,33 @@ export default function BottomSheetExample() {
 }
 ```
 
+</ComponentExample>
+
 ## `BottomSheetModal`
 
 Use `BottomSheetModal` when migrating from `@gorhom/bottom-sheet` modal APIs. It starts closed and opens with `present()`.
 
-```tsx BottomSheetModalExample.tsx
+<ComponentExample
+  title="BottomSheetModalExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-bottomsheet-modal-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-bottomsheet-modal-android-dark.webp',
+    alt: 'A half-height modal sheet with Modal content and a Dismiss button',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-bottomsheet-modal-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-bottomsheet-modal-ios-dark.webp',
+    alt: 'A half-height modal sheet with Modal content and a Dismiss button',
+  }}>
+
+```tsx
 import { useRef } from 'react';
-import { Button, Text, View } from 'react-native';
+import { Button, Text, useColorScheme, View } from 'react-native';
 import { BottomSheetModal, BottomSheetView } from '@expo/ui/community/bottom-sheet';
 
 export default function BottomSheetModalExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
   const modalRef = useRef<BottomSheetModal>(null);
 
   return (
@@ -87,7 +136,7 @@ export default function BottomSheetModalExample() {
 
       <BottomSheetModal ref={modalRef} snapPoints={['50%', '90%']} enablePanDownToClose>
         <BottomSheetView style={{ padding: 24 }}>
-          <Text>Modal content</Text>
+          <Text style={ink}>Modal content</Text>
           <Button title="Dismiss" onPress={() => modalRef.current?.dismiss()} />
         </BottomSheetView>
       </BottomSheetModal>
@@ -96,16 +145,33 @@ export default function BottomSheetModalExample() {
 }
 ```
 
+</ComponentExample>
+
 ## Dynamic sizing
 
 When `snapPoints` is not provided, the sheet sizes to fit its content by default. Use `BottomSheetView` for the sheet content wrapper.
 
-```tsx DynamicBottomSheetExample.tsx
+<ComponentExample
+  title="DynamicBottomSheetExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-bottomsheet-dynamic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-bottomsheet-dynamic-android-dark.webp',
+    alt: 'A sheet sized to one line of content',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-bottomsheet-dynamic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-bottomsheet-dynamic-ios-dark.webp',
+    alt: 'A sheet sized to one line of content',
+  }}>
+
+```tsx
 import { useRef } from 'react';
-import { Button, Text, View } from 'react-native';
+import { Button, Text, useColorScheme, View } from 'react-native';
 import BottomSheet, { BottomSheetView } from '@expo/ui/community/bottom-sheet';
 
 export default function DynamicBottomSheetExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
   const sheetRef = useRef<BottomSheet>(null);
 
   return (
@@ -114,13 +180,15 @@ export default function DynamicBottomSheetExample() {
 
       <BottomSheet ref={sheetRef} index={-1} enablePanDownToClose>
         <BottomSheetView style={{ padding: 24 }}>
-          <Text>This sheet sizes itself to its content.</Text>
+          <Text style={ink}>This sheet sizes itself to its content.</Text>
         </BottomSheetView>
       </BottomSheet>
     </View>
   );
 }
 ```
+
+</ComponentExample>
 
 ## Platform behavior
 
@@ -167,3 +235,5 @@ import BottomSheet from '@expo/ui/community/bottom-sheet';
 ```
 
 <APISection packageName="expo-ui/community/bottom-sheet" apiName="BottomSheet" />
+
+</PlatformTabsGroup>

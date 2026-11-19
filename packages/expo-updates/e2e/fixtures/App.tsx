@@ -6,7 +6,17 @@ import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
 import { UpdatesLogEntry } from 'expo-updates';
 import React from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StatusBar as RNStatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 const ExpoUpdatesE2ETestModule = requireNativeModule('ExpoUpdatesE2ETest');
 
@@ -95,6 +105,9 @@ function TestButton(props: { testID: string; onPress: () => void }) {
 }
 
 export default function App() {
+  const [cachedUpdateIds, setCachedUpdateIds] = React.useState<string[] | null>(null);
+  const [cachedUpdateReadError, setCachedUpdateReadError] = React.useState<string | null>(null);
+  const [isReadingCachedUpdates, setIsReadingCachedUpdates] = React.useState(false);
   const [numAssetFiles, setNumAssetFiles] = React.useState(0);
   const [logs, setLogs] = React.useState<UpdatesLogEntry[]>([]);
   const [numActive, setNumActive] = React.useState(0);
@@ -187,13 +200,29 @@ export default function App() {
     }
   });
 
+  const handleReadCachedUpdateIds = runBlockAsync(async () => {
+    // Mount the result row even if the first read fails, so polling can retry.
+    setCachedUpdateIds([]);
+    setCachedUpdateReadError(null);
+    setIsReadingCachedUpdates(true);
+    try {
+      setCachedUpdateIds(await ExpoUpdatesE2ETestModule.readCachedUpdateIdsAsync());
+    } catch (error) {
+      setCachedUpdateReadError(String(error));
+    } finally {
+      setIsReadingCachedUpdates(false);
+    }
+  });
+
   const handleReadAssetFiles = runBlockAsync(async () => {
+    setCachedUpdateIds(null);
     const numFiles = await ExpoUpdatesE2ETestModule.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
   });
 
   const handleClearAssetFiles = runBlockAsync(async () => {
     await ExpoUpdatesE2ETestModule.clearInternalAssetsFolderAsync();
+    setCachedUpdateIds(null);
     const numFiles = await ExpoUpdatesE2ETestModule.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
   });
@@ -264,7 +293,7 @@ export default function App() {
     );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TestValue testID="numActive" value={`${numActive}`} />
       <TestValue
         testID="didCheckAndDownloadHappenInParallel"
@@ -272,7 +301,19 @@ export default function App() {
       />
       <TestValue testID="updateString" value="test" />
       <TestValue testID="updateID" value={`${Updates.updateId}`} />
-      <TestValue testID="numAssetFiles" value={`${numAssetFiles}`} />
+      {/* Reuse this row so startup diagnostics still fit on smaller emulators. */}
+      {cachedUpdateIds ? (
+        <Text testID="cachedUpdates" style={styles.logEntriesText}>
+          {JSON.stringify({
+            maxUpdatesToKeep: Constants.expoConfig?.updates?.maxUpdatesToKeep ?? 2,
+            updateIds: cachedUpdateIds,
+            pending: isReadingCachedUpdates,
+            error: cachedUpdateReadError,
+          })}
+        </Text>
+      ) : (
+        <TestValue testID="numAssetFiles" value={`${numAssetFiles}`} />
+      )}
       <TestValue testID="runtimeVersion" value={`${currentlyRunning.runtimeVersion}`} />
       <TestValue testID="checkAutomatically" value={`${Updates.checkAutomatically}`} />
       <TestValue testID="isEmbeddedLaunch" value={`${currentlyRunning.isEmbeddedLaunch}`} />
@@ -345,6 +386,7 @@ export default function App() {
       {numActive > 0 ? <ActivityIndicator testID="activity" size="small" color="#0000ff" /> : null}
       <View style={{ flexDirection: 'row' }}>
         <View>
+          <TestButton testID="readCachedUpdateIds" onPress={handleReadCachedUpdateIds} />
           <TestButton testID="readAssetFiles" onPress={handleReadAssetFiles} />
           <TestButton testID="clearAssetFiles" onPress={handleClearAssetFiles} />
           <TestButton testID="readLogEntries" onPress={handleReadLogEntries} />
@@ -371,15 +413,20 @@ export default function App() {
       </View>
 
       <StatusBar style="auto" />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 100,
-    marginBottom: 100,
+    // `SafeAreaView` keeps the content clear of the notch and home indicator on iOS. On Android it
+    // renders a plain `View`, so the status bar height is applied here instead. The fixed 100
+    // margins this replaces left too little room for the rows below, and the overflow of the
+    // centered content reached under the status bar, where Maestro could read a value but could
+    // not reliably tap it.
+    paddingTop: Platform.OS === 'android' ? (RNStatusBar.currentHeight ?? 0) : 0,
+    paddingBottom: 24,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
@@ -399,14 +446,14 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontSize: 10,
+    fontSize: 8,
   },
   labelText: {
-    fontSize: 10,
+    fontSize: 8,
   },
   logEntriesContainer: {
-    margin: 10,
-    height: 20,
+    margin: 8,
+    height: 16,
     paddingVertical: 5,
     paddingHorizontal: 10,
     width: '90%',

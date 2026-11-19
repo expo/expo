@@ -1,5 +1,4 @@
 import send from 'send';
-import { parse } from 'url';
 
 import { getPublicFolderPath } from '../../../export/publicFolder';
 import { parsePlatformHeader } from './resolvePlatform';
@@ -27,7 +26,7 @@ export class ServeStaticMiddleware {
         return next();
       }
 
-      const pathname = parse(req.url).pathname;
+      const pathname = URL.parse(req.url, 'file:')?.pathname;
       if (!pathname) {
         return next();
       }

@@ -1,3 +1,5 @@
+import { useContext } from 'react';
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 import type { TabViewProps } from 'react-native-tab-view';
 
 import { type Route, useLocale, useTheme } from '../../native';
@@ -28,6 +30,7 @@ type Props = MaterialTopTabNavigationConfig & {
   descriptors: MaterialTopTabDescriptorMap;
   emitter: MaterialTopTabEmitter;
   navigateToTab: (routeKey: string) => void;
+  navigateToTabSync: (routeKey: string) => void;
 };
 
 const renderTabBarDefault = (props: MaterialTopTabBarProps) => <MaterialTopTabBar {...props} />;
@@ -38,10 +41,13 @@ export function MaterialTopTabView({
   descriptors,
   emitter,
   navigateToTab,
+  navigateToTabSync,
+  safeAreaInsets,
   ...rest
 }: Props) {
   const { colors } = useTheme();
   const { direction } = useLocale();
+  const insets = useContext(SafeAreaInsetsContext);
 
   const renderTabBar: NonNullable<TabViewProps<Route<string>>['renderTabBar']> = ({
     /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -56,6 +62,12 @@ export function MaterialTopTabView({
       descriptors,
       emitter,
       navigateToTab,
+      insets: {
+        top: safeAreaInsets?.top ?? insets?.top ?? 0,
+        right: safeAreaInsets?.right ?? insets?.right ?? 0,
+        bottom: safeAreaInsets?.bottom ?? insets?.bottom ?? 0,
+        left: safeAreaInsets?.left ?? insets?.left ?? 0,
+      },
     } satisfies MaterialTopTabBarProps;
 
     return tabBar(tabBarProps);
@@ -66,7 +78,7 @@ export function MaterialTopTabView({
   return (
     <TabView<Route<string>>
       {...rest}
-      onIndexChange={(index: number) => navigateToTab(state.routes[index]!.key)}
+      onIndexChange={(index: number) => navigateToTabSync(state.routes[index]!.key)}
       renderScene={({ route, position }) => (
         <TabAnimationContext.Provider value={{ position }}>
           {descriptors[route.key]!.render()}

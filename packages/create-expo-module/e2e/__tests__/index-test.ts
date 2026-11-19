@@ -3,6 +3,7 @@ import path from 'path';
 
 import {
   createFakeProject,
+  createLocalTemplateAsync,
   createTestPath,
   ensureFolderExists,
   execute,
@@ -13,13 +14,15 @@ import {
   getTestPath,
   projectRoot,
   readJson,
+  runScriptPassing,
 } from './utils';
 
-/** Absolute path to the local expo-module-template package */
-const localTemplatePath = path.resolve(__dirname, '../../../expo-module-template');
+const localTemplateRoot = getTemporaryPath();
+let localTemplatePath: string;
 
 beforeAll(async () => {
   ensureFolderExists(projectRoot);
+  localTemplatePath = await createLocalTemplateAsync(localTemplateRoot);
 });
 
 afterAll(async () => {
@@ -27,6 +30,7 @@ afterAll(async () => {
   if (fs.existsSync(projectRoot)) {
     await fs.promises.rm(projectRoot, { recursive: true, force: true });
   }
+  await fs.promises.rm(localTemplateRoot, { recursive: true, force: true });
 });
 
 describe('CLI flags', () => {
@@ -263,7 +267,16 @@ describe('--platform option', () => {
     const fakeProject = createFakeProject('local-platform-project');
 
     await executePassing(
-      ['my-module', '--local', '--platform', 'android', '--source', localTemplatePath],
+      [
+        'my-module',
+        '--local',
+        '--platform',
+        'android',
+        '--source',
+        localTemplatePath,
+        '--package-manager',
+        'pnpm',
+      ],
       { cwd: fakeProject }
     );
 
@@ -278,6 +291,9 @@ describe('--platform option', () => {
     // android/ should exist, ios/ should not
     expectFileExists('local-platform-project/modules/my-module', 'android');
     expectFileNotExists('local-platform-project/modules/my-module', 'ios');
+
+    // Local modules never get their own pnpm-workspace.yaml
+    expectFileNotExists('local-platform-project/modules/my-module', 'pnpm-workspace.yaml');
 
     // Web stub should be present
     expect(
@@ -312,6 +328,8 @@ describe('non-interactive module creation', () => {
       'https://github.com/test',
       '--repo',
       'https://github.com/test/ci-module',
+      '--package-manager',
+      'pnpm',
     ]);
 
     // Check essential files exist
@@ -333,6 +351,23 @@ describe('non-interactive module creation', () => {
 
     // The module should be built (TypeScript compiled)
     expectFileExists(projectName, 'build');
+
+    // The template's lint and test setup should work with its dependencies
+    await runScriptPassing(projectName, 'lint');
+    fs.mkdirSync(getTestPath(projectName, 'src/__tests__'));
+    fs.writeFileSync(
+      getTestPath(projectName, 'src/__tests__/smoke-test.ts'),
+      [
+        `import { Platform } from 'react-native';`,
+        ``,
+        `it('runs with the jest-expo preset', () => {`,
+        `  expect(Platform.OS).toBe('ios');`,
+        `});`,
+        ``,
+      ].join('\n')
+    );
+    const testResult = await runScriptPassing(projectName, 'test');
+    expect(testResult.stderr).toMatch(/Tests:\s+1 passed/);
   });
 
   it('warns when target directory is not empty but continues', async () => {
@@ -905,5 +940,33 @@ export default requireNativeModule<NativeModuleShape>('ExpoImage');
     const ktContent = fs.readFileSync(path.join(pkgDir, moduleKt), 'utf-8');
     expect(ktContent).toContain('View(');
     expect(ktContent).not.toContain('AsyncFunction(');
+  });
+});
+
+describe('standalone SharedObject imports', () => {
+  it('installs and builds outside an Expo app', async () => {
+    const projectName = 'shared-object-standalone';
+    await executePassing([
+      projectName,
+      '--no-example',
+      '--name',
+      'DependencyProbe',
+      '--package-manager',
+      'npm',
+      '--author-name',
+      'Test',
+      '--author-email',
+      'test@example.com',
+      '--author-url',
+      'https://example.com',
+      '--repo',
+      'https://example.com/module',
+      '--features',
+      'SharedObject',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    expectFileExists(projectName, 'build/DependencyProbeModuleSharedObject.d.ts');
   });
 });

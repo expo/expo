@@ -41,9 +41,9 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   val bodyUsed: Boolean
     get() = this.sink.bodyUsed
 
-  override fun deallocate() {
+  override fun sharedObjectDidRelease() {
     this.sink.finalize(directBuffer = false)
-    super.deallocate()
+    super.sharedObjectDidRelease()
   }
 
   fun onStarted() {
@@ -69,8 +69,21 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   }
 
   fun cancelStreaming() {
-    if (isInvalidState(ResponseState.BODY_STREAMING_STARTED)) {
+    if (state == ResponseState.BODY_COMPLETED ||
+      state == ResponseState.BODY_STREAMING_CANCELED ||
+      state == ResponseState.ERROR_RECEIVED
+    ) {
       return
+    }
+    if (isInvalidState(
+        ResponseState.RESPONSE_RECEIVED,
+        ResponseState.BODY_STREAMING_STARTED
+      )
+    ) {
+      return
+    }
+    if (state == ResponseState.RESPONSE_RECEIVED) {
+      sink.discard()
     }
     state = ResponseState.BODY_STREAMING_CANCELED
   }
@@ -195,7 +208,11 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     try {
       while (true) {
         val data = withContext(Dispatchers.IO) {
-          if (stream.exhausted()) null else stream.buffer.readByteArray()
+          if (stream.exhausted()) {
+            null
+          } else {
+            stream.buffer.readByteArray()
+          }
         } ?: break
 
         if (isInvalidState(

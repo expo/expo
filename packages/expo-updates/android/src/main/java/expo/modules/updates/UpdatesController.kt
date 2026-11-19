@@ -4,9 +4,9 @@ import android.content.Context
 import com.facebook.react.ReactApplication
 import expo.modules.updates.events.IUpdatesEventManagerObserver
 import expo.modules.updates.loader.LoaderTask
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updatesinterface.UpdatesControllerRegistry
+import expo.modules.updatesinterface.UpdatesLogMessage
 import java.lang.ref.WeakReference
 
 /**
@@ -52,34 +52,28 @@ object UpdatesController {
     val updatesDirectory = try {
       UpdatesUtils.getOrCreateUpdatesDirectory(context)
     } catch (e: Exception) {
-      logger.error(
-        "The expo-updates system is disabled due to a storage access error",
-        e,
-        UpdatesErrorCode.InitializationError
-      )
+      logger.error(UpdatesLogMessage.ControllerInitializationFailed, e)
       singletonInstance = DisabledUpdatesController(context, e)
       return
     }
 
     val updatesConfiguration: UpdatesConfiguration? = overrideConfiguration ?: run {
-      when (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, null)) {
+      val validationResult = UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, null)
+      when (validationResult) {
         UpdatesConfigurationValidationResult.VALID -> {
           return@run UpdatesConfiguration(context, null)
         }
 
-        UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> logger.warn(
-          "The expo-updates system is explicitly disabled. To enable it, set the enabled setting to true.",
-          UpdatesErrorCode.InitializationError
-        )
+        UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> logger.warn(UpdatesLogMessage.ConfigDisabledExplicitly)
 
         UpdatesConfigurationValidationResult.INVALID_MISSING_URL -> logger.warn(
-          "The expo-updates system is disabled due to an invalid configuration. Ensure a valid URL is supplied.",
-          UpdatesErrorCode.InitializationError
+          UpdatesLogMessage.ConfigDisabledInvalidConfiguration,
+          values = mapOf("reason" to validationResult.logReason, "cause" to "Ensure a valid URL is supplied.")
         )
 
         UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION -> logger.warn(
-          "The expo-updates system is disabled due to an invalid configuration. Ensure a runtime version is supplied.",
-          UpdatesErrorCode.InitializationError
+          UpdatesLogMessage.ConfigDisabledInvalidConfiguration,
+          values = mapOf("reason" to validationResult.logReason, "cause" to "Ensure a runtime version is supplied.")
         )
       }
       return@run null
@@ -164,7 +158,10 @@ object UpdatesController {
       overrideConfiguration = UpdatesConfiguration(context, configuration)
     } else {
       val logger = UpdatesLogger(context.filesDir)
-      logger.warn("Failed to overrideConfiguration: invalid configuration: ${updatesConfigurationValidationResult.name}")
+      logger.warn(
+        UpdatesLogMessage.ConfigOverrideInvalid,
+        values = mapOf("reason" to updatesConfigurationValidationResult.logReason)
+      )
     }
   }
 

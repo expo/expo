@@ -8,49 +8,30 @@
  * Fork of the upstream transformer, but with modifications made for web production hashing.
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/utils/assetTransformer.js#L1
  */
-import { type ParseResult, template, types as t } from '@babel/core';
-import type { BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
-import { generateAssetCodeFileAst } from '@expo/metro/metro/Bundler/util';
+import { template, types as t } from '@babel/core';
+import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import path from 'node:path';
 import url from 'node:url';
 
 import { toPosixPath } from '../utils/filePath';
 import { getUniversalAssetData } from './getAssets';
+import type { ExpoCustomTransformOptions } from './types';
 
-// Register client components for assets in server component environments.
-const buildClientReferenceRequire = template.statement(
-  `module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(FILE_PATH);`
-);
-
-const buildStringRef = template.statement(`module.exports = FILE_PATH;`);
-
-// The React Server Component version cannot have a function otherwise we'd be passing a function to the client component <Image />.
-// TODO: Make react-native Image and expo-image server components that can simplify the asset before passing to the client component.
-const buildStaticObjectRef = template.statement(
-  // Matches the `ImageSource` type from React Native: https://reactnative.dev/docs/image#source
-  `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT };`
-);
-
-const buildStaticObjectClientRef = template.statement(
-  // Matches the `ImageSource` type from React Native: https://reactnative.dev/docs/image#source
-  `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, toString() { return this.uri } };`
-);
-
-export async function transform(
+export async function transformToSource(
   {
     filename,
     options,
   }: {
     filename: string;
-    options: Pick<
-      BabelTransformerArgs['options'],
-      'platform' | 'projectRoot' | 'customTransformOptions' | 'publicPath'
-    >;
+    options: Pick<JsTransformOptions, 'platform' | 'customTransformOptions'> & {
+      projectRoot: string;
+      publicPath: string;
+    };
   },
   assetRegistryPath: string,
   assetDataPlugins: readonly string[]
 ): Promise<{
-  ast: ParseResult;
+  code: string;
   reactClientReference?: string;
 }> {
   options ??= options || {
@@ -58,14 +39,17 @@ export async function transform(
     projectRoot: '',
   };
 
+  const customTransformOptions = options.customTransformOptions as
+    | ExpoCustomTransformOptions
+    | undefined;
+
   // Is bundling for webview.
-  const isDomComponent = options.platform === 'web' && options.customTransformOptions?.dom;
-  const useMd5Filename = options.customTransformOptions?.useMd5Filename;
+  const isDomComponent = options.platform === 'web' && customTransformOptions?.dom;
+  const useMd5Filename = customTransformOptions?.useMd5Filename;
   const isExport = options.publicPath.includes('?export_path=');
-  const isHosted =
-    options.platform === 'web' || (options.customTransformOptions?.hosted && isExport);
-  const isReactServer = options.customTransformOptions?.environment === 'react-server';
-  const isServerEnv = isReactServer || options.customTransformOptions?.environment === 'node';
+  const isHosted = options.platform === 'web' || (customTransformOptions?.hosted && isExport);
+  const isReactServer = customTransformOptions?.environment === 'react-server';
+  const isServerEnv = isReactServer || customTransformOptions?.environment === 'node';
 
   const absolutePath = path.resolve(options.projectRoot, filename);
 
@@ -81,19 +65,9 @@ export async function transform(
     isReactServer
   ) {
     return {
-      ast: {
-        comments: null,
-        ...t.file(
-          t.program([
-            buildClientReferenceRequire({
-              FILE_PATH: JSON.stringify(
-                `./${toPosixPath(path.relative(options.projectRoot, absolutePath))}`
-              ),
-            }),
-          ])
-        ),
-        errors: [],
-      },
+      code: `module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(${JSON.stringify(
+        `./${toPosixPath(path.relative(options.projectRoot, absolutePath))}`
+      )});`,
       reactClientReference: getClientReference()!,
     };
   }
@@ -124,19 +98,13 @@ export async function transform(
 
     // If size data is known then it should be passed back to ensure the correct dimensions are used.
     if (data.width != null || data.height != null) {
-      const options: Parameters<typeof buildStaticObjectRef>[0] = {
-        FILE_PATH: JSON.stringify(assetPath),
-        WIDTH: data.width != null ? t.numericLiteral(data.width) : t.buildUndefinedNode(),
-        HEIGHT: data.height != null ? t.numericLiteral(data.height) : t.buildUndefinedNode(),
-      };
-      const creatorFunction = isReactServer ? buildStaticObjectRef : buildStaticObjectClientRef;
-
+      // React Server Component image sources cannot contain functions.
       return {
-        ast: {
-          comments: null,
-          ...t.file(t.program([creatorFunction(options)])),
-          errors: [],
-        },
+        code: `module.exports = { uri: ${JSON.stringify(assetPath)}, width: ${
+          data.width != null ? String(data.width) : 'undefined'
+        }, height: ${data.height != null ? String(data.height) : 'undefined'}${
+          isReactServer ? '' : ', toString() { return this.uri; }'
+        } };`,
         reactClientReference: getClientReference(),
       };
     }
@@ -144,20 +112,27 @@ export async function transform(
     // Use single string references outside of client-side React Native.
     // module.exports = "/foo/bar.png";
     return {
-      ast: {
-        comments: null,
-        ...t.file(t.program([buildStringRef({ FILE_PATH: JSON.stringify(assetPath) })])),
-        errors: [],
-      },
+      code: `module.exports = ${JSON.stringify(assetPath)};`,
       reactClientReference: getClientReference(),
     };
   }
 
+  const descriptor = { ...data };
+  for (const key of ['files', 'fileSystemLocation', 'path']) {
+    delete (descriptor as Record<string, unknown>)[key];
+  }
   return {
-    ast: {
-      comments: null,
-      ...generateAssetCodeFileAst(assetRegistryPath, data),
-      errors: [],
-    },
+    code: `module.exports = require(${JSON.stringify(assetRegistryPath)}).registerAsset(${JSON.stringify(descriptor)});`,
+  };
+}
+
+export async function transform(...args: Parameters<typeof transformToSource>): Promise<{
+  ast: t.File;
+  reactClientReference?: string;
+}> {
+  const { code, reactClientReference } = await transformToSource(...args);
+  return {
+    ast: t.file(template.program.ast(code)),
+    reactClientReference,
   };
 }

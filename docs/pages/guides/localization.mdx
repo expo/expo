@@ -217,7 +217,7 @@ Several regions around the world write text from right to left (RTL). To make yo
 
 > **info** This section describes the behavior in **SDK 58 and later**. On previous versions, RTL support was enabled by default, except in Expo Go where it was disabled.
 
-RTL support is enabled by default. Layout direction follows React Native's [`I18nManager`](https://reactnative.dev/docs/i18nmanager). The app renders in RTL when the device is set to an RTL language (such as Arabic or Hebrew), and in left-to-right (LTR) otherwise. On iOS, the device language must also be one of your app's supported locales, declared with the [`supportedLocales`](#enabling-per-app-language-selection-via-system-settings) option. This applies in Expo Go, in development builds, and in apps built with EAS Build or `npx expo prebuild`.
+RTL support is enabled by default. Layout direction follows React Native's [`I18nManager`](https://reactnative.dev/docs/i18nmanager). The app renders in RTL when the device is set to an RTL language (such as Arabic or Hebrew), and in left-to-right (LTR) otherwise. On iOS, the device language must also be one of your app's supported locales, declared with the [`supportedLocales`](#enabling-per-app-language-selection-via-system-settings) option. This applies in Expo Go, in development builds, and in apps built with Expo Build or `npx expo prebuild`.
 
 ### Disabling RTL support
 
@@ -309,6 +309,28 @@ const styles = StyleSheet.create({
 </SnackInline>
 
 </Collapsible>
+
+### Changing Expo Router direction at runtime
+
+If your app lets users change languages without restarting, wrap the navigator in `LocaleProvider` in the root **app/\_layout.tsx**. Pass the direction for the selected locale to update navigation headers, transitions, and gestures.
+
+```tsx app/_layout.tsx
+import { LocaleProvider, Stack } from 'expo-router';
+
+import { useAppLocale } from '../providers/AppLocaleProvider';
+
+export default function RootLayout() {
+  const { direction } = useAppLocale();
+
+  return (
+    <LocaleProvider direction={direction}>
+      <Stack />
+    </LocaleProvider>
+  );
+}
+```
+
+`LocaleProvider` configures Expo Router's navigation components. Continue to set the layout direction for your app content separately.
 
 ## Making an app behave correctly on RTL locales
 

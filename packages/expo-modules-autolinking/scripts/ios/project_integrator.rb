@@ -112,6 +112,11 @@ module Expo
       project.native_targets.each do |native_target|
         native_target.build_configurations.each do |build_configuration|
           configuration_flag = "-D #{CONFIGURATION_FLAG_PREFIX}#{build_configuration.debug? ? "DEBUG" : "RELEASE"}"
+          resolved_flags = build_configuration.resolve_build_setting(SWIFT_FLAGS, native_target)
+
+          # Respect flags inherited from xcconfig files instead of duplicating them in the project file.
+          next if Array(resolved_flags).join(' ').include?(configuration_flag)
+
           build_settings = build_configuration.build_settings
 
           # For some targets it might be `nil` by default which is an equivalent to `$(inherited)`
@@ -143,7 +148,14 @@ module Expo
           core_src_root = Expo::PrecompiledModules.package_root_for('ExpoModulesCore') ||
             File.realpath(core_pod_target.sandbox.pod_dir(core_pod_target.root_spec.name).to_s)
           macros_plugin_dir = resolve_macros_plugin_dir(core_src_root)
-          macro_flags = "-Xfrontend -load-plugin-executable -Xfrontend \"#{macros_plugin_dir}/ExpoModulesMacros-tool#ExpoModulesMacros\""
+          # Swift driver resolves the plugin path so it stays out of the compilation cache key.
+          macro_flags = "-load-plugin-executable \"#{macros_plugin_dir}/ExpoModulesMacros#ExpoModulesMacros\""
+        end
+
+        # Inline modules compile in the app target itself, so its xcconfigs need the plugin too.
+        target.user_build_configurations.each_key do |build_configuration_name|
+          xcconfig_path = target.xcconfig_path(build_configuration_name)
+          append_macro_flags(target.build_settings(build_configuration_name), xcconfig_path, macro_flags)
         end
 
         target.pod_targets.each do |pod_target|
@@ -187,13 +199,15 @@ module Expo
     end
 
     def self.resolve_macros_plugin_dir(core_src_root)
-      js = "require.resolve('@expo/expo-modules-macros-plugin/package.json', { paths: #{[core_src_root].to_json} })"
+      js = "require.resolve('expo-modules-macros/package.json', { paths: #{[core_src_root].to_json} })"
       stdout, stderr, status = Open3.capture3('node', '--print', js)
       pkg_json_path = stdout.strip
 
       if !status.success? || pkg_json_path.empty?
         node_error = stderr.lines.find { |line| line.start_with?('Error:') }&.strip
-        raise "[Expo] Could not resolve `@expo/expo-modules-macros-plugin` from #{core_src_root}.#{node_error ? " (#{node_error})" : ''} Reinstall your JavaScript dependencies and rerun `pod install`."
+        raise "[Expo] Could not resolve `expo-modules-macros` from #{core_src_root}.#{node_error ? " (#{node_error})" : ''} " \
+          "`expo-modules-core` must be a version that depends on `expo-modules-macros`, the new name of `@expo/expo-modules-macros-plugin`. " \
+          "Run `npx expo install --fix` to align the Expo package versions, then rerun `pod install`."
       end
 
       File.join(File.dirname(pkg_json_path), 'apple')
@@ -314,6 +328,8 @@ module Expo
       entitlement_param = entitlement_path.nil? ? '' : "--entitlement \"#{entitlement_path}\""
       app_root_param = autolinking_manager.custom_app_root.nil? ? '' : "--app-root \"#{autolinking_manager.custom_app_root}\""
       podfile_properties_param = "--podfile-properties-file-path \"#{autolinking_manager.get_podfile_properties_path()}\""
+      # Links only the scanned classes that compile for this platform.
+      target_platform_param = "--target-platform \"#{platform}\""
 
       <<~SUPPORT_SCRIPT
       #!/usr/bin/env bash
@@ -370,6 +386,7 @@ module Expo
         #{app_root_param} \\
         #{podfile_properties_param} \\
         --platform "apple" \\
+        #{target_platform_param} \\
         --packages #{package_names.join(' ')}
       SUPPORT_SCRIPT
     end

@@ -1,8 +1,10 @@
 ---
-title: Environment variables in EAS Workflows
+title: Environment variables in Expo Workflows
 sidebar_title: Environment variables
-description: Reference for the environment variables available inside EAS Workflows jobs, including the env context and additional worker variables.
+description: Reference for the environment variables available inside Expo Workflows jobs, including the env context and additional worker variables.
 ---
+
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 
@@ -27,17 +29,17 @@ jobs:
 
 The variables available in a job are merged from three sources. When the same name is defined in more than one source, the one higher in this list wins:
 
-| Source                                                                     | Description                                                                                                                            |
-| -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| [Job `env`](/eas/workflows/syntax/#jobsjob_idenv)                          | Variables you set on the job with the `env` key. These are plain text and defined directly in your workflow file.                      |
-| [**eas.json** build profile `env`](/build/eas-json/#environment-variables) | For [`build`](/eas/workflows/pre-packaged-jobs/#build) jobs, the `env` from the profile selected by `params.profile` in **eas.json**.  |
-| [EAS environment variables](/eas/environment-variables/)                   | Variable names and values stored on EAS for the job's [environment](#the-job-environment) (`production`, `preview`, or `development`). |
+| Source                                                                     | Description                                                                                                                                      |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [Job `env`](/eas/workflows/syntax/#jobsjob_idenv)                          | Variables you set on the job with the `env` key. These are plain text and defined directly in your workflow file.                                |
+| [**eas.json** build profile `env`](/build/eas-json/#environment-variables) | For [`build`](/eas/workflows/pre-packaged-jobs/#build) jobs, the `env` from the profile selected by `params.profile` in **eas.json**.            |
+| [Expo Services environment variables](/eas/environment-variables/)         | Variable names and values stored in Expo Services for the job's [environment](#the-job-environment) (`production`, `preview`, or `development`). |
 
 On top of these, the worker sets a number of [additional variables](#additional-environment-variables) such as `EAS_BUILD_ID` and `CI`. Avoid naming your own variables with the `EAS_` prefix so these don't shadow them.
 
 ## The job environment
 
-Which EAS environment variables a job can read depends on its [environment](/eas/workflows/syntax/#jobsjob_idenvironment): `production` (the default), `preview`, or `development`. Only variables assigned to that environment are exposed to the job.
+Which Expo Services environment variables a job can read depends on its [environment](/eas/workflows/syntax/#jobsjob_idenvironment): `production` (the default), `preview`, or `development`. Only variables assigned to that environment are exposed to the job.
 
 Each job resolves its environment differently:
 
@@ -46,7 +48,7 @@ Each job resolves its environment differently:
 - [`maestro`](/eas/workflows/pre-packaged-jobs/#maestro) and [`maestro-cloud`](/eas/workflows/pre-packaged-jobs/#maestro-cloud) jobs default to `preview`.
 - Other jobs default to `production`.
 
-Set [`jobs.<job_id>.environment`](/eas/workflows/syntax/#jobsjob_idenvironment) explicitly to override the default and keep a job in sync with the build profile it pairs with. For more details on selecting an environment for a job, see [Using environment variables in EAS Workflows](/eas/environment-variables/usage/#using-environment-variables-in-eas-workflows).
+Set [`jobs.<job_id>.environment`](/eas/workflows/syntax/#jobsjob_idenvironment) explicitly to override the default and keep a job in sync with the build profile it pairs with. For more details on selecting an environment for a job, see [Using environment variables in Expo Workflows](/eas/environment-variables/usage/#using-environment-variables-in-expo-workflows).
 
 ## The `${{ env }}` context
 
@@ -57,19 +59,19 @@ jobs:
   notify:
     type: slack
     params:
-      # Reads the SLACK_WEBHOOK_URL EAS environment variable.
+      # Reads the SLACK_WEBHOOK_URL Expo Services environment variable.
       webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
       message: 'Deploy finished'
 ```
 
 Interpolation happens in two places, which changes what `${{ env.NAME }}` can resolve:
 
-- **Job configuration** (`params`, `if`, `outputs`, and the value of `env` itself) is interpolated before the job is dispatched to a worker. At this point, `env` contains your [EAS environment variables](/eas/environment-variables/) for the resolved [environment](#the-job-environment). The additional worker variables and the job's own `env` values are not yet available here.
-- **`run` commands** are interpolated on the worker, where `env` reflects the full runtime environment: EAS environment variables, the job's `env`, and the [additional variables](#additional-environment-variables).
+- **Job configuration** (`params`, `if`, `outputs`, and the value of `env` itself) is interpolated before the job is dispatched to a worker. At this point, `env` contains your [Expo Services environment variables](/eas/environment-variables/) for the resolved [environment](#the-job-environment). The additional worker variables and the job's own `env` values are not yet available here.
+- **`run` commands** are interpolated on the worker, where `env` reflects the full runtime environment: Expo Services environment variables, the job's `env`, and the [additional variables](#additional-environment-variables).
 
 Because of this, read variables like `EAS_BUILD_ID` inside a `run` step rather than in a job's `params`. Inside a `run` step, `${{ env.EAS_BUILD_ID }}` and `$EAS_BUILD_ID` are equivalent.
 
-> **info** Values interpolated from EAS environment variables of type secret or sensitive are redacted in workflow logs.
+> **info** Values interpolated from Expo Services environment variables of type secret or sensitive are redacted in workflow logs.
 
 ## Context variables
 
@@ -80,6 +82,8 @@ Environment variables are not the only thing a job can interpolate. The same `${
 ### `github`
 
 Fields from the GitHub event that triggered the workflow. When you start a run with `eas workflow:run`, `event_name` is `workflow_dispatch` and the other fields are empty.
+
+If you pass `--git-branch` and `--git-commit-hash`, `event_name` is `push` instead. The `sha` and `commit_message` fields come from the commit, and `ref`, `ref_name`, and `ref_type` come from the branch. The `repository` and `repository_owner` fields stay empty. The `event` field is not set, so read run inputs from the [`inputs`](#inputs) context, not from `github.event.inputs`.
 
 ```js
 github {
@@ -113,7 +117,7 @@ github {
       merged_at,
       // ... and other fields from the GitHub Pull Request webhook payload
     },
-    inputs,           // workflow_dispatch inputs
+    inputs,           // workflow_dispatch or workflow_call inputs
     schedule,         // Cron expression, for scheduled runs
     number,
   }
@@ -124,7 +128,7 @@ The `event` object contains the full [GitHub webhook payload](https://docs.githu
 
 ### `inputs`
 
-A record of the inputs provided when you start the workflow manually with [`workflow_dispatch`](/eas/workflows/syntax/#onworkflow_dispatchinputs). Empty when the workflow is triggered another way.
+A record of the inputs provided when you start the workflow manually with [`workflow_dispatch`](/eas/workflows/syntax/#onworkflow_dispatchinputs). In a [called run](/eas/workflows/reusable-workflows/#context-of-a-called-run), it contains the inputs of that run. Empty when another trigger starts the workflow.
 
 ```yaml
 jobs:
@@ -180,7 +184,7 @@ metadata {
   appVersion,       // App version, e.g. 1.0.0
   appBuildVersion,  // Build number (iOS) or version code (Android)
   sdkVersion,       // Expo SDK version, e.g. 54.0.0
-  runtimeVersion,   // Runtime version for EAS Update
+  runtimeVersion,   // Runtime version for Expo Update
   gitCommitHash,    // Git commit the build ran against
   distribution,     // 'store' or 'internal'
 }
@@ -195,7 +199,7 @@ workflow {
   id,        // ID of the workflow run
   name,      // Name of the workflow
   filename,  // Name of the workflow file, e.g. deploy.yml
-  url,       // URL of the run on the EAS dashboard
+  url,       // URL of the run on the Expo dashboard
 }
 ```
 
@@ -289,13 +293,14 @@ jobs:
 ```
 
 <BoxLink
-  title="EAS environment variables"
+  title="Expo Services environment variables"
   description="Create and manage environment variables and secrets for your project's environments."
   href="/eas/environment-variables/"
 />
 
 <BoxLink
-  title="Syntax for EAS Workflows"
+  title="Syntax for Expo Workflows"
   description="Reference for the full set of interpolation contexts and functions available in workflows."
   href="/eas/workflows/syntax/#interpolation"
+  Icon={Dataflow03Icon}
 />

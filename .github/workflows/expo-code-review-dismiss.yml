@@ -13,15 +13,15 @@ on:
   issue_comment:
     types: [created]
 
+# Every write uses an expo-bot token (see GH_TOKEN in the steps), never GITHUB_TOKEN,
+# so GITHUB_TOKEN only needs to read the repository for the checkout.
 permissions:
   contents: read
-  pull-requests: write
-  issues: write
 
 jobs:
   dismiss:
     # PR comments starting with /dismiss, /undismiss, or the @expo-bot forms.
-    # PREFIX matching, deliberately loose (see agent-commands.yml): expression
+    # PREFIX matching, deliberately loose (see verify-comment.yml): expression
     # literals cannot express a newline, so an exact-body match misses
     # `@expo-bot dismiss\n<ids>` and the command dies without a trace. This
     # gate only decides "command-shaped, from a maintainer"; the parse step
@@ -55,7 +55,7 @@ jobs:
           COMMENT: ${{ github.event.comment.body }}
         run: |
           # Reject an ill-formed command out loud (same contract as
-          # agent-commands.yml): the reply step below posts `reject` to the
+          # verify-comment.yml): the reply step below posts `reject` to the
           # thread. Reasons must be single-line — they pass through
           # GITHUB_OUTPUT.
           fail_cmd() {
@@ -73,7 +73,7 @@ jobs:
               *)
                 # Prefix-matched but not this workflow's verb: a work task
                 # (`dismiss-flaky-test`) or prose (`dismissed`).
-                # agent-commands.yml owns those shapes — stay silent.
+                # verify-comment.yml owns those shapes — stay silent.
                 echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
                 ;;
             esac
@@ -113,12 +113,12 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       # A maintainer typed a command and it did not launch — say so where it
-      # was typed (same contract as agent-commands.yml). Silent skips stay
-      # silent: those shapes belong to agent-commands.yml.
+      # was typed (same contract as verify-comment.yml). Silent skips stay
+      # silent: those shapes belong to verify-comment.yml.
       - name: Reply to a rejected command
         if: always() && steps.cmd.outputs.reject != ''
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           REJECT: ${{ steps.cmd.outputs.reject }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: gh issue comment "${{ github.event.issue.number }}" -R "${{ github.repository }}" --body "⚠️ $REJECT ([run log]($RUN_URL))"
@@ -126,7 +126,7 @@ jobs:
       - name: Acknowledge
         if: steps.cmd.outputs.run == 'true'
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
         run: gh api -X POST "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=eyes
 
       # Base ref only (issue_comment runs with base-repo context). Dismiss just edits
@@ -154,7 +154,7 @@ jobs:
       - name: Apply dismissal
         if: steps.cmd.outputs.run == 'true'
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           SUB: ${{ steps.cmd.outputs.sub }}
           IDS: ${{ steps.cmd.outputs.ids }}
           REASON: ${{ steps.cmd.outputs.reason }}

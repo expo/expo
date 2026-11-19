@@ -15,9 +15,14 @@ import host.exp.exponent.generated.ExponentBuildConstants
 import host.exp.exponent.graphql.BranchDetailsQuery
 import host.exp.exponent.graphql.BranchesForProjectQuery
 
-private fun isUpdateCompatible(sdkVersion: String?): Boolean {
-  if (sdkVersion == null) return false
-  val expoGoMajorVersion = ExponentBuildConstants.TEMPORARY_SDK_VERSION.split(".").firstOrNull()
+internal fun isSdkVersionCompatible(
+  sdkVersion: String?,
+  expoGoSdkVersion: String = ExponentBuildConstants.TEMPORARY_SDK_VERSION
+): Boolean {
+  if (sdkVersion == null) {
+    return false
+  }
+  val expoGoMajorVersion = expoGoSdkVersion.split(".").firstOrNull()
   val updateMajorVersion = sdkVersion.split(".").firstOrNull()
   return expoGoMajorVersion != null && expoGoMajorVersion == updateMajorVersion
 }
@@ -43,10 +48,10 @@ private fun openUpdateManifestPermalink(
 private fun UpdateRowContents(
   message: String?,
   createdAt: String?,
-  runtimeVersion: String?,
+  sdkVersion: String?,
   omitCompatibility: Boolean
 ) {
-  val isCompatible = isUpdateCompatible(runtimeVersion)
+  val isCompatible = isSdkVersionCompatible(sdkVersion)
 
   Text(
     text = message ?: "No message",
@@ -73,7 +78,7 @@ fun UpdateRow(
   omitCompatibility: Boolean = false
 ) {
   val uriHandler = LocalUriHandler.current
-  val isCompatible = isUpdateCompatible(update.updateData.runtimeVersion)
+  val isCompatible = isSdkVersionCompatible(update.updateData.expoGoSDKVersion)
 
   val modifier = if (isCompatible) {
     Modifier.clickable {
@@ -89,7 +94,7 @@ fun UpdateRow(
     UpdateRowContents(
       message = update.updateData.message,
       createdAt = update.updateData.createdAt as? String,
-      runtimeVersion = update.updateData.runtimeVersion,
+      sdkVersion = update.updateData.expoGoSDKVersion,
       omitCompatibility = omitCompatibility
     )
   }
@@ -101,7 +106,7 @@ fun UpdateRow(
   omitCompatibility: Boolean = false
 ) {
   val uriHandler = LocalUriHandler.current
-  val isCompatible = isUpdateCompatible(update.updateData.runtimeVersion)
+  val isCompatible = isSdkVersionCompatible(update.updateData.expoGoSDKVersion)
 
   val modifier = if (isCompatible) {
     Modifier.clickable {
@@ -117,7 +122,7 @@ fun UpdateRow(
     UpdateRowContents(
       message = update.updateData.message,
       createdAt = update.updateData.createdAt as? String,
-      runtimeVersion = update.updateData.runtimeVersion,
+      sdkVersion = update.updateData.expoGoSDKVersion,
       omitCompatibility = omitCompatibility
     )
   }

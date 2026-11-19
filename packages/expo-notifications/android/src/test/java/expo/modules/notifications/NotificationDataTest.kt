@@ -22,6 +22,7 @@ class NotificationDataTest {
       "body" to "{\"key\":\"value\"}",
       "color" to "#FF0000",
       "categoryId" to "myCategory",
+      "threadIdentifier" to "my-thread",
       "subtitle" to "My Subtitle",
       "badge" to "1"
     )
@@ -31,6 +32,7 @@ class NotificationDataTest {
     assertEquals("default", notificationData.sound)
     assertNotNull(notificationData.body)
     assertEquals("myCategory", notificationData.categoryId)
+    assertEquals("my-thread", notificationData.group)
     assertEquals("My Subtitle", notificationData.subText)
     assertEquals("#FF0000", notificationData.color)
     assertEquals(1, notificationData.badge)
@@ -48,6 +50,12 @@ class NotificationDataTest {
   fun testVibrationPatternInvalidFormat() {
     val notificationData = NotificationData(mapOf("vibrate" to "invalid"))
     assertNull(notificationData.vibrationPattern)
+  }
+
+  @Test
+  fun testGroupEmptyString() {
+    val notificationData = NotificationData(mapOf("threadIdentifier" to ""))
+    assertNull(notificationData.group)
   }
 
   @Test

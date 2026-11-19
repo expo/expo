@@ -1,3 +1,6 @@
 compatibility_date = "2026-02-07"
 name = "expo-docs"
 pages_build_output_dir = "out"
+
+[ai]
+binding = "AI"

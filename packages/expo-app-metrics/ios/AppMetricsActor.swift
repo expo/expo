@@ -18,8 +18,8 @@ public actor AppMetricsActor: GlobalActor {
   public static func isolated<Success: Sendable>(_ action: @AppMetricsActor @escaping () async throws -> Success)
     -> Task<Success, Error>
   {
-    return Task(name: "ExpoAppMetrics") {
-      return try await action()
-    }
+    // `Task` enqueues an isolated operation directly on its actor, so tasks created one after
+    // another start in that order.
+    return Task(name: "ExpoAppMetrics", operation: action)
   }
 }

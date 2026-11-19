@@ -79,6 +79,12 @@ internal final class DestinationAlreadyExistsException: Exception {
   }
 }
 
+internal final class DestinationContainsSourceException: Exception {
+  override var reason: String {
+    "Destination is the source or contains it, overwriting it would delete the source"
+  }
+}
+
 internal final class MissingPermissionException: GenericException<String> {
   override var reason: String {
     "Missing permission for uri: \(param)"
@@ -202,5 +208,23 @@ internal final class FilePreviewUnsupportedException: GenericException<URL>, @un
 internal final class FilePreviewFileNotFoundException: GenericException<URL>, @unchecked Sendable {
   override var reason: String {
     "File does not exist: \(param.absoluteString)"
+  }
+}
+
+internal final class FilePreviewInvalidInputException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    param
+  }
+}
+
+internal final class FilePreviewPresentationException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Unable to present file preview"
+  }
+}
+
+internal final class BackgroundDownloadNotFinishedException: Exception {
+  override var reason: String {
+    "Background completion can only be acknowledged after the download finishes"
   }
 }

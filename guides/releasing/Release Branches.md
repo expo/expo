@@ -11,7 +11,7 @@
   - [Prerelease Versions](#prerelease-versions)
   - [Shortcomings](#shortcomings)
 
-The release process begins when we decide that Expo Go and the libraries on the main branch are ready for the next release. This happens after we have created versioned code for the next SDK. We try to keep the tests always passing on main so that we can release at any time but we don’t release from main. Instead, we create a release branch.
+The release process begins when we decide that Expo Go and the libraries on `main` are ready for the next release. During an SDK beta we may publish version-package merges from `main` under the `next` npm dist-tag. Once the beta ends, stable package publishing from `main` is disabled and releases move to the SDK branch.
 
 The release branch is named `sdk-XX` and is based on main. The main purpose of the release branch is to release new versions of Expo Go and the SDK libraries; we use the release branch to build the Expo Go apps we submit to the app stores and to publish our JS libraries to npm.
 
@@ -19,17 +19,19 @@ After creating the release branch, we usually will need to fix bugs. These bug f
 
 These are three guidelines to achieve this:
 
-1. Release from the release branch, not from main.
+1. After the beta cutoff, release from the release branch, not from `main`.
 2. Commit bug fixes first to main, not to the release branch.
 3. Cherry-pick the bug fixes from main to the release branch.
 
 In addition to preserving the invariant, these guidelines help set expectations for our team as to the latest versions of packages and which commits need to be cherry-picked to which branches.
 
+Package release intent is recorded in `.changeset/*.md` files. The release workflow creates a `Version packages (sdk-XX)` pull request that calculates versions and generated files; merging that pull request publishes the new package versions. Do not manually edit package versions or package changelogs.
+
 ## Example
 
-Here’s what a typical bug fix would look like. If we find that there is a bug with the release that we want to fix, we’d check out main and look to fix the bug there. Assuming that we can reproduce and fix the bug on main, we commit the fix and then cherry-pick it to the release branch. If we need to publish a new patch or minor version, we make a commit to increment the relevant versions on the release branch and publish the new Expo Go apps or libraries.
+Here’s what a typical bug fix would look like. If we find a bug in the release, we fix it on `main` and include a changeset for the affected packages. We then cherry-pick the fix and its changeset to the release branch. The release workflow updates the branch's version pull request, which we merge when the fix is ready to publish.
 
-This way, the bug-fix commit is on both main and the release branch, and the version-incrementing commit is only on the release branch. The next time we publish another release, the release branch will show us the exact code and version used for the prior release.
+This way, the bug-fix commit and its changeset are on both `main` and the release branch. The generated version commit is merged only on the release branch. The next release can then calculate its package updates from new changesets while the branch continues to represent the code published for that SDK.
 
 ## Edge cases
 
@@ -57,17 +59,17 @@ When we version the native SDK code, we need to be able to test that versioned c
 
 (This section is under development as we figure out what works well for us.)
 
-This section is intended for people responsible for the release in particular. Due to the number of projects we have and our release scripts, incrementing version numbers requires careful thought. There is one invariant we want to maintain: **when we create the next release branch, all of the versions on the newest release branch must be equal to or greater than the greatest versions we've published.** This is so the libraries published from the next release branch will have greater version numbers than the libraries on older release branches.
+This section is intended for people responsible for the release. Package versions are calculated by Changesets from committed release intent and dependency propagation. There is one invariant we still need to maintain: **when we create the next release branch, all versions on that branch must be equal to or greater than the greatest versions already published.**
 
 These are some general guidelines to achieve this:
 
-When the new version of a library is compatible with a version of Expo Go we have already released (or plan to release), increment the version on the release branch and publish from there. For our JS packages, these will typically be patch versions because we use the minor version number to communicate that the JS API doesn't have breaking changes but the native-to-JS API does.
+When a library change is compatible with an SDK we have already released or plan to release, add the appropriate changeset on the release branch and let the version pull request calculate its new version. These will typically be patch changes.
 
-Otherwise, when the new version is not compatible with an already released version of Expo Go, we sometimes want to increment the version on main and other times on the next, future release branch. Commit major-version changes to main so the versions on main stay up to date over time; create the next release branch after incrementing the major versions. For minor-version changes, we can commit them either to main or, if we haven't released a version of Expo Go yet, to the release branch since the native-to-JS API for the next SDK version has not yet been frozen. The branch to choose depends on the code we want to publish; if we want to publish the code on the release branch, we should increment the version on the release branch, and if we want to publish the code on main, we should increment the version on main.
+Changes requiring a package major bump belong on `main`; major changesets are rejected on `sdk-*` release branches. Major package versions are normally advanced while preparing a new SDK line. Compatible features may use a minor changeset, while fixes use a patch changeset.
 
 ## Prerelease Versions
 
-Prerelease versions are treated similarly. Increment the version to the prerelease version on the branch whose code you are publishing. Compared to non-prerelease versions, we will likely publish more prerelease versions from main (especially major and minor prereleases), so prerelease commits will likely be more common on main.
+During beta, version-package merges from `main` are published under the `next` npm dist-tag. The packages do not all need prerelease suffixes: templates install the intended Expo version, and workspace dependencies are materialized when packages are packed. Canary snapshots are published separately under the configured canary tag.
 
 ## Shortcomings
 

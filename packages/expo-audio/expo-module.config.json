@@ -4,6 +4,11 @@
     "modules": ["AudioModule"]
   },
   "android": {
-    "modules": ["expo.modules.audio.AudioModule"]
+    "modules": ["expo.modules.audio.AudioModule"],
+    "publication": {
+      "groupId": "expo.modules.audio",
+      "artifactId": "expo.modules.audio",
+      "repository": "local-maven-repo"
+    }
   }
 }

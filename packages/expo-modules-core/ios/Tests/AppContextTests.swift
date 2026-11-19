@@ -1,5 +1,6 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 import ExpoModulesJSI
@@ -26,6 +27,30 @@ struct AppContextTests {
     // A bare runtime that was never prepared by an app context has no `global.expo`.
     let bareRuntime = JavaScriptRuntime()
     #expect(AppContext.from(runtime: bareRuntime) == nil)
+  }
+
+  @Test
+  func `an app context with its own runtime is deallocated once released`() {
+    weak var weakAppContext: AppContext?
+    do {
+      let appContext = AppContext.create()
+      weakAppContext = appContext
+    }
+    #expect(weakAppContext == nil)
+  }
+
+  @Test
+  func `the native state pins an app context that does not own its runtime`() {
+    weak var weakAppContext: AppContext?
+    let runtime = JavaScriptRuntime()
+    do {
+      let appContext = AppContext()
+      weakAppContext = appContext
+      let coreObject = runtime.createObject()
+      coreObject.setNativeState(AppContext.NativeState(appContext: appContext, ownsLifecycle: false))
+      runtime.global().defineProperty(globalCoreObjectPropertyName, value: coreObject, options: [.enumerable])
+    }
+    #expect(weakAppContext != nil)
   }
 
   // MARK: - moduleProviderClassNames
@@ -86,6 +111,33 @@ struct AppContextTests {
     ])
   }
 
+  // MARK: - appIdentifier
+
+  @Test
+  func `app contexts get increasing indices`() {
+    let first = AppContext()
+    let second = AppContext()
+    #expect(second.appIndex > first.appIndex)
+  }
+
+  @Test
+  func `app contexts get distinct identifiers`() {
+    let first = AppContext()
+    let second = AppContext()
+    #expect(first.appIdentifier != second.appIdentifier)
+  }
+
+  @Test
+  func `the first app context has no identifier`() {
+    #expect(AppContext.appIdentifier(forIndex: 0) == nil)
+  }
+
+  @Test
+  func `later app contexts use their index as the identifier`() {
+    #expect(AppContext.appIdentifier(forIndex: 1) == "1")
+    #expect(AppContext.appIdentifier(forIndex: 42) == "42")
+  }
+
   // MARK: - NativeState
 
   @Suite("NativeState")
@@ -141,7 +193,7 @@ struct AppContextTests {
       coreObject.setNativeState(nativeState)
 
       coreObject.unsetNativeState()
-      try runtime.eval("gc() && gc() && gc()")
+      runtime.collectGarbage { deallocatorCallCount == 1 }
 
       #expect(deallocatorCallCount == 1)
     }
@@ -160,13 +212,16 @@ struct AppContextTests {
       secondObject.setNativeState(nativeState)
 
       // Releasing the first holder must not fire the deallocator while the second still holds it.
+      // `secondObject` keeps a strong ref, so no number of collections may release the pointee;
+      // this assertion needs a fixed number of passes, not a retry loop, because it is waiting for
+      // something that must never happen.
       firstObject.unsetNativeState()
-      try runtime.eval("gc() && gc() && gc()")
+      runtime.collectGarbage()
       #expect(deallocatorCallCount == 0)
 
       // Releasing the last holder fires it exactly once.
       secondObject.unsetNativeState()
-      try runtime.eval("gc() && gc() && gc()")
+      runtime.collectGarbage { deallocatorCallCount == 1 }
       #expect(deallocatorCallCount == 1)
     }
 
@@ -205,7 +260,7 @@ struct AppContextTests {
 
       // Tear the subordinate runtime down.
       try subordinateRuntime.global().getPropertyAsObject(globalCoreObjectPropertyName).unsetNativeState()
-      try subordinateRuntime.eval("gc() && gc() && gc()")
+      subordinateRuntime.collectGarbage()
 
       // The app context survived: its main runtime is still recoverable.
       #expect(throws: Never.self) {
@@ -225,7 +280,7 @@ struct AppContextTests {
 
       // Tearing it down runs `destroy()`, which unpins the app context's runtime.
       try mainRuntime.global().getPropertyAsObject(globalCoreObjectPropertyName).unsetNativeState()
-      try mainRuntime.eval("gc() && gc() && gc()")
+      mainRuntime.collectGarbage { (try? appContext.runtime) == nil }
 
       #expect(throws: Exceptions.RuntimeLost.self) {
         _ = try appContext.runtime
@@ -255,7 +310,7 @@ struct AppContextTests {
 
       // Tear the subordinate down first: it must not destroy the shared app context.
       try subordinateRuntime.global().getPropertyAsObject(globalCoreObjectPropertyName).unsetNativeState()
-      try subordinateRuntime.eval("gc() && gc() && gc()")
+      subordinateRuntime.collectGarbage()
 
       #expect(throws: Never.self) {
         _ = try appContext.runtime
@@ -264,7 +319,7 @@ struct AppContextTests {
 
       // Now tear the main runtime down: this one owns the lifecycle, so it destroys the context.
       try mainRuntime.global().getPropertyAsObject(globalCoreObjectPropertyName).unsetNativeState()
-      try mainRuntime.eval("gc() && gc() && gc()")
+      mainRuntime.collectGarbage { (try? appContext.runtime) == nil }
 
       #expect(throws: Exceptions.RuntimeLost.self) {
         _ = try appContext.runtime
@@ -285,4 +340,126 @@ struct AppContextTests {
       }
     }
   }
+
+  @Suite("Attached runtimes")
+  @JavaScriptActor
+  struct AttachedRuntimeTests {
+    let appContext = AppContext.create()
+
+    func attachRuntime() throws -> JavaScriptRuntime {
+      let runtime = JavaScriptRuntime()
+      try appContext.attach(runtime: runtime)
+      return runtime
+    }
+
+    @Test
+    func `attaches several runtimes to one app context`() throws {
+      let firstRuntime = try attachRuntime()
+      let secondRuntime = try attachRuntime()
+      #expect(AppContext.from(runtime: firstRuntime) === appContext)
+      #expect(AppContext.from(runtime: secondRuntime) === appContext)
+      #expect(AppContext.from(runtime: try appContext.runtime) === appContext)
+    }
+
+    @Test
+    func `an attached runtime does not own the app context lifecycle`() throws {
+      let attachedRuntime = try attachRuntime()
+      let coreObject = try attachedRuntime.global().getPropertyAsObject("expo")
+      #expect(coreObject.getNativeState(as: AppContext.NativeState.self)?.ownsLifecycle == false)
+    }
+
+    @Test
+    func `attaching a runtime again does nothing`() throws {
+      let attachedRuntime = try attachRuntime()
+      try attachedRuntime.eval("expo.marker = 1")
+      try appContext.attach(runtime: attachedRuntime)
+      #expect(try attachedRuntime.eval("expo.marker").asInt() == 1)
+      #expect(AppContext.from(runtime: attachedRuntime) === appContext)
+    }
+
+    @Test
+    func `rejects a runtime of another app context`() throws {
+      let otherAppContext = AppContext.create()
+      let attachedRuntime = JavaScriptRuntime()
+      try otherAppContext.attach(runtime: attachedRuntime)
+      #expect(throws: RuntimeAttachedToAnotherAppContextException.self) {
+        try appContext.attach(runtime: attachedRuntime)
+      }
+      #expect(throws: RuntimeAttachedToAnotherAppContextException.self) {
+        try appContext.attach(runtime: try otherAppContext.runtime)
+      }
+      #expect(AppContext.from(runtime: attachedRuntime) === otherAppContext)
+    }
+
+    @Test
+    func `rejects a runtime of a released app context`() throws {
+      let attachedRuntime = JavaScriptRuntime()
+      weak var weakOtherAppContext: AppContext?
+      do {
+        let otherAppContext = AppContext.create()
+        weakOtherAppContext = otherAppContext
+        try otherAppContext.attach(runtime: attachedRuntime)
+      }
+      #expect(weakOtherAppContext == nil)
+      #expect(AppContext.from(runtime: attachedRuntime) == nil)
+      #expect(throws: RuntimeAttachedToAnotherAppContextException.self) {
+        try appContext.attach(runtime: attachedRuntime)
+      }
+    }
+
+    @Test
+    func `installs the base classes in an attached runtime`() throws {
+      let attachedRuntime = try attachRuntime()
+      #expect(try attachedRuntime.eval("typeof expo.EventEmitter").asString() == "function")
+      #expect(try attachedRuntime.eval("typeof expo.SharedObject").asString() == "function")
+      #expect(try attachedRuntime.eval("typeof expo.SharedRef").asString() == "function")
+      #expect(try attachedRuntime.eval("typeof expo.NativeModule").asString() == "function")
+      #expect(try attachedRuntime.eval("typeof expo.modules").asString() == "object")
+    }
+
+    @Test
+    func `gives an empty module object for a module without macro members in an attached runtime`() throws {
+      appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
+        Name("DefinitionOnly")
+        Function("ping") { "pong" }
+      })
+      let attachedRuntime = try attachRuntime()
+      #expect(try attachedRuntime.eval("typeof expo.modules.DefinitionOnly").asString() == "object")
+      #expect(try attachedRuntime.eval("typeof expo.modules.DefinitionOnly.ping").asString() == "undefined")
+    }
+
+    @Test
+    func `binds the macro members of the core module in an attached runtime`() throws {
+      let attachedRuntime = try attachRuntime()
+      #expect(try attachedRuntime.eval("typeof expo.installOnUIRuntime").asString() == "function")
+    }
+  }
+
+  @Suite("Added runtimes")
+  @JavaScriptActor
+  struct AddedRuntimeTests {
+    let appContext = TestAppContext()
+
+    @Test
+    func `an added runtime runs scheduled work on its own thread`() throws {
+      let addedRuntime = try appContext.addRuntime()
+      let mainThreadID = try appContext.runtime.execute { currentThreadID() }
+      let addedThreadID = try addedRuntime.execute { currentThreadID() }
+      #expect(mainThreadID != addedThreadID)
+      #expect(addedThreadID != currentThreadID())
+    }
+
+    @Test
+    func `an added runtime settles promises`() async throws {
+      let addedRuntime = try appContext.addRuntime()
+      let result = try await addedRuntime.evalAsync("Promise.resolve('settled')")
+      #expect(try result.asString() == "settled")
+    }
+  }
+}
+
+private func currentThreadID() -> UInt64 {
+  var threadID: UInt64 = 0
+  pthread_threadid_np(nil, &threadID)
+  return threadID
 }

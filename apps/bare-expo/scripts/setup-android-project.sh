@@ -11,9 +11,3 @@ else
     echo " ⚠️  Cannot find node modules for this project, installing..."
     pnpm install
 fi
-
-if [ ! -d "android/app/src/androidTest/assets" ]; then
-  mkdir -p android/app/src/androidTest/assets
-fi
-yarn --silent ts-node --print --transpile-only -e 'JSON.stringify(require("./e2e/TestSuite-test.native.js").TESTS, null, 2)' > android/app/src/androidTest/assets/TestSuite.json
-echo " ✅ Generate e2e test cases"

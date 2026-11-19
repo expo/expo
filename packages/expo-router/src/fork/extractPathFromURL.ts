@@ -1,4 +1,6 @@
-import { safeDecodeURI, safeDecodeURIComponent } from '../utils/url';
+import { unwrapDevLaunchURL } from 'expo-linking';
+
+import { safeDecodeURIComponent } from '../utils/url';
 
 export function parsePathAndParamsFromExpoGoLink(url: string): {
   pathname: string;
@@ -23,6 +25,9 @@ export function parsePathFromExpoGoLink(url: string): string {
 
 // This is only run on native.
 function extractExactPathFromURL(url: string): string {
+  // Resolve launch URLs to the URL the app should route, dropping the reserved `__expo_*` params.
+  url = unwrapDevLaunchURL(url);
+
   if (
     // If a universal link / app link / web URL is used, we should use the path
     // from the URL, while stripping the origin.
@@ -61,14 +66,7 @@ function extractExactPathFromURL(url: string): string {
     return '';
   }
 
-  // TODO: Support dev client URLs
-
   return fromDeepLink(url);
-}
-
-/** Major hack to support the makeshift expo-development-client system. */
-function isExpoDevelopmentClient(url: URL): boolean {
-  return url.hostname === 'expo-development-client';
 }
 
 function fromDeepLink(url: string): string {
@@ -94,14 +92,6 @@ function fromDeepLink(url: string): string {
      * We need to strip the scheme from these URLs
      */
     return url.replace(/^[^:]+:\/\//, '');
-  }
-
-  if (isExpoDevelopmentClient(res)) {
-    if (!res.searchParams.get('url')) {
-      return '';
-    }
-    const incomingUrl = res.searchParams.get('url')!;
-    return extractExactPathFromURL(safeDecodeURI(incomingUrl));
   }
 
   let results = '';

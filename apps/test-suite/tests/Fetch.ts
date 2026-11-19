@@ -3,12 +3,18 @@ import { fetch } from 'expo/fetch';
 import { Platform } from 'react-native';
 
 import type { JasmineInterface } from '../types';
+import { gateOnHostAsync } from '../utils/HostReachability';
 import { requireNotNull } from '../utils/requireNotNull';
 
 export const name = 'Fetch';
 
-export function test({ describe, expect, it, ...t }: JasmineInterface) {
-  describe('Response types', () => {
+export async function test({ describe, expect, it, ...t }: JasmineInterface) {
+  const httpbin = await gateOnHostAsync(
+    { describe, it, pending: t.pending },
+    'https://httpbin.io/get'
+  );
+
+  httpbin.describe('Response types', () => {
     setupTestTimeout(t);
 
     it('should support redirect and contain basic properties', async () => {
@@ -86,7 +92,7 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
     });
   });
 
-  describe('Response clone', () => {
+  httpbin.describe('Response clone', () => {
     setupTestTimeout(t);
 
     it('should clone a response and read both bodies independently', async () => {
@@ -168,7 +174,7 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
     });
   });
 
-  describe('Redirect handling', () => {
+  httpbin.describe('Redirect handling', () => {
     setupTestTimeout(t);
 
     it('should follow redirects by default', async () => {
@@ -245,7 +251,7 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
     });
   });
 
-  describe('Request body', () => {
+  httpbin.describe('Request body', () => {
     setupTestTimeout(t);
 
     it('should post with json', async () => {
@@ -303,7 +309,7 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
     });
   });
 
-  describe('Headers', () => {
+  httpbin.describe('Headers', () => {
     setupTestTimeout(t);
 
     it('should process request and response headers', async () => {
@@ -318,7 +324,7 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
     });
   });
 
-  describe('Cookies', () => {
+  httpbin.describe('Cookies', () => {
     setupTestTimeout(t);
 
     it('should include cookies when credentials are set to include', async () => {
@@ -339,7 +345,7 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
     });
   });
 
-  describe('Error handling', () => {
+  httpbin.describe('Error handling', () => {
     setupTestTimeout(t);
 
     it('should process 404', async () => {
@@ -461,7 +467,7 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
     });
   });
 
-  describe('Streaming', () => {
+  httpbin.describe('Streaming', () => {
     setupTestTimeout(t);
 
     it('should stream response', async () => {
@@ -524,7 +530,7 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
     });
   });
 
-  describe('Concurrent requests', () => {
+  httpbin.describe('Concurrent requests', () => {
     setupTestTimeout(t);
 
     it('should process multiple requests concurrently', async () => {
@@ -638,7 +644,7 @@ function setupTestTimeout(t: Record<string, any>, timeout: number = 30000) {
   let originalTimeout: number;
 
   t.beforeAll(() => {
-    // Increase the timeout in general because httpbin.test.k6.io can be slow.
+    // Increase the timeout in general because httpbin.io can be slow.
     originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
     t.jasmine.DEFAULT_TIMEOUT_INTERVAL = timeout;
   });

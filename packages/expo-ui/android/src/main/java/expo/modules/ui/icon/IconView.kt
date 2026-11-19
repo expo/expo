@@ -83,7 +83,11 @@ class IconView(context: Context, appContext: AppContext) :
     // Render icon if painter available
     if (painter != null) {
       val resolvedTint = tint?.compose
-        ?: if (inheritTint) LocalContentColor.current else androidx.compose.ui.graphics.Color.Unspecified
+        ?: if (inheritTint) {
+          LocalContentColor.current
+        } else {
+          androidx.compose.ui.graphics.Color.Unspecified
+        }
       Icon(
         painter = painter,
         contentDescription = contentDescription,

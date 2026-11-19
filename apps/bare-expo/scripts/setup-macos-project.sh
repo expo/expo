@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export PNPM_CONFIG_FROZEN_LOCKFILE=false
+
 remove_dependencies() {
   local packages=("$@")
   local filter=""
@@ -18,7 +20,7 @@ remove_dependencies() {
 echo " ☛  Ensuring macOS project is setup..."
 
 echo " Removing macOS incompatible dependencies..."
-remove_dependencies "react-native-svg"
+remove_dependencies "react-native-reanimated" "react-native-svg"
 
 echo " Copying macOS patches..."
 cp -r ./scripts/fixtures/macos/patches/* ../../patches/
@@ -31,6 +33,13 @@ node -e "
 
   const files = fs.readdirSync(patchDir).filter(f => f.endsWith('.patch'));
   let yaml = fs.readFileSync(workspaceFile, 'utf8');
+
+  // 'react-native-screens@4.26.0' -> 'react-native-screens', '@scope/pkg@1.2.3' -> '@scope/pkg'
+  const packageNameOf = (key) => {
+    const unquoted = key.trim().replace(/^['\"]|['\"]\$/g, '');
+    const versionAt = unquoted.lastIndexOf('@');
+    return versionAt > 0 ? unquoted.slice(0, versionAt) : unquoted;
+  };
 
   for (const file of files) {
     if (yaml.includes('patches/' + file)) continue;
@@ -47,9 +56,12 @@ node -e "
     const quotedKey = pkg.includes('/') || pkg.includes('@') ? \"'\" + pkg + \"'\" : pkg;
     const entry = '  ' + quotedKey + ': patches/' + file;
 
-    // Insert after the last entry in patchedDependencies
+    // Insert after the last entry in patchedDependencies, or replace an entry that already patches
+    // this package. pnpm applies at most one patch per package and fails with ERR_PNPM_UNUSED_PATCH
+    // when a second, version-pinned entry for the same package is left behind.
     const lines = yaml.split('\n');
     let insertIdx = -1;
+    let replaceIdx = -1;
     let inSection = false;
     for (let i = 0; i < lines.length; i++) {
       if (lines[i] === 'patchedDependencies:') {
@@ -59,13 +71,19 @@ node -e "
       if (inSection) {
         if (lines[i].startsWith('  ') && lines[i].trim()) {
           insertIdx = i + 1;
+          if (packageNameOf(lines[i].split(':')[0]) === pkg) {
+            replaceIdx = i;
+          }
         } else if (lines[i].trim() && !lines[i].startsWith('  ')) {
           break;
         }
       }
     }
 
-    if (insertIdx !== -1) {
+    if (replaceIdx !== -1) {
+      lines.splice(replaceIdx, 1, entry);
+      yaml = lines.join('\n');
+    } else if (insertIdx !== -1) {
       lines.splice(insertIdx, 0, entry);
       yaml = lines.join('\n');
     }
@@ -93,17 +111,20 @@ else
     fi
 fi
 
-EXPECTED_REACT_VERSION=$(jq -r '.peerDependencies.react' node_modules/react-native-macos/package.json)
+EXPECTED_REACT_VERSION=$(jq -r '.peerDependencies.react' node_modules/react-native-macos/package.json | sed -E 's/^[~^]//')
 CURRENT_REACT_VERSION=$(jq -r '.dependencies.react' package.json)
 if [[ "$EXPECTED_REACT_VERSION" == "null" || -z "$EXPECTED_REACT_VERSION" ]]; then
     echo " ⚠️  Could not determine react peer dependency from react-native-macos, skipping react install"
 elif [[ "$CURRENT_REACT_VERSION" == "$EXPECTED_REACT_VERSION" ]]; then
     echo " ✅ react@$CURRENT_REACT_VERSION already matches react-native-macos peer dependency"
 else
-    echo " ⚠️  Installing react@$EXPECTED_REACT_VERSION to match react-native-macos peer dependency (was $CURRENT_REACT_VERSION)..."
-    pnpm add "react@$EXPECTED_REACT_VERSION" --silent
+    echo " ⚠️  Pinning react@$EXPECTED_REACT_VERSION to match the react-native-macos renderer (was $CURRENT_REACT_VERSION)..."
+    # Write the exact version instead of `pnpm add`: pnpm treats an existing range that already
+    # covers the version (e.g. "^19.1.4") as satisfied and keeps it. The root `pnpm install` below
+    # resolves the pin.
+    tmp_file=$(mktemp) && jq --arg v "$EXPECTED_REACT_VERSION" '.dependencies.react = $v' package.json > "$tmp_file" && mv "$tmp_file" package.json
 fi
 
 echo " Running pnpm from root..."
 cd ../../
-pnpm install --ignore-scripts --frozen-lockfile=false
+pnpm install --ignore-scripts

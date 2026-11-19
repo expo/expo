@@ -32,6 +32,7 @@ export const APIBox = ({
         STYLES_APIBOX,
         STYLES_APIBOX_WRAPPER,
         headerNestingLevel > 3 && STYLES_APIBOX_NESTED,
+        headerNestingLevel > 3 && 'rounded-lg',
         className,
         'pb-4! [&>*:last-child]:mb-1!'
       )}>

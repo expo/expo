@@ -8,7 +8,8 @@ import { profile } from '../utils/profile';
 
 export async function ensureNativeProjectAsync(
   projectRoot: string,
-  { platform, install }: { platform: ModPlatform; install?: boolean }
+  { platform, install }: { platform: ModPlatform; install?: boolean },
+  onProjectReady?: () => Promise<void>
 ) {
   // If the user has an empty android folder then the project won't build, this can happen when they delete the prebuild files in git.
   // Check to ensure most of the core files are in place, and prompt to remove the folder if they aren't.
@@ -16,11 +17,9 @@ export async function ensureNativeProjectAsync(
 
   // If the project doesn't have native code, prebuild it...
   if (!fs.existsSync(path.join(projectRoot, platform))) {
-    await prebuildAsync(projectRoot, {
-      install: !!install,
-      platforms: [platform],
-    });
+    await prebuildAsync(projectRoot, { install: !!install, platforms: [platform] }, onProjectReady);
   } else {
+    await onProjectReady?.();
     return true;
   }
   return false;

@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "dev.expo.brownfieldintegratedtester"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "dev.expo.brownfieldintegratedtester"

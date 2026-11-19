@@ -9,12 +9,9 @@ public class LinkPreviewNativeModule: Module {
     Name(LinkPreviewNativeModule.moduleName)
 
     View(NativeLinkPreviewView.self) {
-      Prop("nextScreenId") { (view: NativeLinkPreviewView, nextScreenId: String) in
-        view.nextScreenId = nextScreenId
-      }
-
-      Prop("tabPath") { (view: NativeLinkPreviewView, tabPath: TabPathPayload) in
-        view.tabPath = tabPath
+      Prop("previewActivationPath") {
+        (view: NativeLinkPreviewView, previewActivationPath: PreviewActivationPathPayload?) in
+        view.previewActivationPath = previewActivationPath
       }
 
       Prop("disableForceFlatten") { (_: NativeLinkPreviewView, _: Bool) in
@@ -109,6 +106,9 @@ public class LinkPreviewNativeModule: Module {
       Prop("sharesBackground") { (view: LinkPreviewNativeActionView, sharesBackground: Bool?) in
         view.sharesBackground = sharesBackground
       }
+      Prop("axisBehavior") { (view: LinkPreviewNativeActionView, axisBehavior: AxisBehavior?) in
+        view.axisBehavior = axisBehavior
+      }
       Prop("hidesSharedBackground") { (view: LinkPreviewNativeActionView, hidesSharedBackground: Bool?) in
         view.hidesSharedBackground = hidesSharedBackground
       }
@@ -174,13 +174,12 @@ public class LinkPreviewNativeModule: Module {
   }
 }
 
-struct TabPathPayload: Record {
-  @Field var path: [TabStatePath]
+struct PreviewActivationPathPayload: Record {
+  @Field var path: [PreviewActivationRouteRecord]
 }
 
-struct TabStatePath: Record {
-  @Field var oldTabKey: String
-  @Field var newTabKey: String
+struct PreviewActivationRouteRecord: Record {
+  @Field var key: String
 }
 
 struct LinkSourceAlignmentRect: Record {

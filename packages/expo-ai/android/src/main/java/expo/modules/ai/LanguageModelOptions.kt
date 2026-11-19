@@ -1,0 +1,119 @@
+package expo.modules.ai
+
+import org.json.JSONArray
+import org.json.JSONObject
+import java.net.URLDecoder
+
+internal data class LanguageModelSessionOptions(val instructions: String?) {
+  companion object {
+    fun parse(json: String): LanguageModelSessionOptions {
+      val value = parseObject(json, setOf("instructions", "tools"))
+      val instructions = if (value.has("instructions")) {
+        value.get("instructions") as? String ?: throw LanguageModelException.invalid("instructions must be a string.")
+      } else {
+        null
+      }
+      if (value.has("tools")) {
+        val tools = value.get("tools") as? JSONArray ?: throw LanguageModelException.invalid("tools must be an array.")
+        if (tools.length() > 0) {
+          throw LanguageModelException("ERR_UNSUPPORTED_FEATURE", "ML Kit does not support native runtime tool declarations. Tools are handled by the shared library.")
+        }
+      }
+      return LanguageModelSessionOptions(instructions)
+    }
+  }
+}
+
+internal data class LanguageModelImage(val uri: String, val label: String)
+
+internal data class LanguageModelRequestOptions(
+  val stream: Boolean,
+  val maximumOutputTokens: Int?,
+  val images: List<LanguageModelImage> = emptyList()
+) {
+  companion object {
+    fun parse(json: String): LanguageModelRequestOptions {
+      val value = parseObject(json, setOf("schema", "stream", "maximumOutputTokens", "maximumToolCalls", "images"))
+      if (value.has("schema")) {
+        throw LanguageModelException("ERR_SCHEMA_UNSUPPORTED", "ML Kit does not support native runtime output schemas. Structured output is handled by the shared library.")
+      }
+      val stream = if (value.has("stream")) {
+        value.get("stream") as? Boolean ?: throw LanguageModelException.invalid("stream must be a boolean.")
+      } else {
+        false
+      }
+      val maximumToolCalls = value.optionalInteger("maximumToolCalls", 0) ?: 0
+      if (maximumToolCalls > 16) {
+        throw LanguageModelException.invalid("maximumToolCalls must not exceed 16.")
+      }
+      return LanguageModelRequestOptions(stream, value.optionalInteger("maximumOutputTokens", 1), parseImages(value))
+    }
+
+    private fun parseImages(options: JSONObject): List<LanguageModelImage> {
+      if (!options.has("images")) {
+        return emptyList()
+      }
+      val values = options.get("images") as? JSONArray
+      if (values == null || values.length() > 8) {
+        throw LanguageModelException.invalid("images must be an array containing at most eight images.")
+      }
+      val labels = mutableSetOf<String>()
+      return (0 until values.length()).map { index ->
+        val image = values.get(index) as? JSONObject ?: throw LanguageModelException.invalid("Each image must be an object.")
+        val uri = image.opt("uri") as? String
+        val label = image.opt("label") as? String
+        if (
+          image.keys().asSequence().any { it != "uri" && it != "label" } ||
+          uri == null || !isLocalFileUrl(uri) ||
+          label == null || label.isEmpty() || label.length > 128 || label.any(Char::isISOControl) ||
+          !labels.add(label)
+        ) {
+          throw LanguageModelException.invalid("Images need local file URLs and unique labels of 1–128 characters without control characters.")
+        }
+        LanguageModelImage(uri, label)
+      }
+    }
+  }
+}
+
+private fun parseObject(json: String, allowed: Set<String>): JSONObject {
+  val value = try {
+    JSONObject(json)
+  } catch (error: Exception) {
+    throw LanguageModelException.invalid("Options must be a JSON object.")
+  }
+  val unknown = value.keys().asSequence().filter { it !in allowed }.toList()
+  if (unknown.isNotEmpty()) {
+    throw LanguageModelException.invalid("Unsupported options: ${unknown.joinToString()}.")
+  }
+  return value
+}
+
+private fun isLocalFileUrl(uri: String): Boolean {
+  if (!uri.startsWith("file://") || uri.any { it == '?' || it == '#' || it.isISOControl() }) {
+    return false
+  }
+  val hostAndPath = uri.removePrefix("file://")
+  val pathStart = hostAndPath.indexOf('/')
+  if (pathStart < 0 || hostAndPath.substring(0, pathStart) !in setOf("", "localhost")) {
+    return false
+  }
+  val path = try {
+    URLDecoder.decode(hostAndPath.substring(pathStart), "UTF-8")
+  } catch (_: IllegalArgumentException) {
+    return false
+  }
+  return path.none(Char::isISOControl)
+}
+
+private fun JSONObject.optionalInteger(key: String, minimum: Int): Int? {
+  if (!has(key)) {
+    return null
+  }
+  val number = (get(key) as? Number)?.toDouble()
+    ?: throw LanguageModelException.invalid("$key must be an integer of at least $minimum.")
+  if (!number.isFinite() || number % 1 != 0.0 || number < minimum || number > Int.MAX_VALUE) {
+    throw LanguageModelException.invalid("$key must be an integer from $minimum through ${Int.MAX_VALUE}.")
+  }
+  return number.toInt()
+}

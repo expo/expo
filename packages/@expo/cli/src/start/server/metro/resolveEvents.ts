@@ -7,7 +7,6 @@ declare module '2g' {
     'resolve:fallback_failed': { module: string; error: string };
     'resolve:fallback_resolved': { platform: string | null; module: string; origin: string };
     'resolve:fallback_app_resolved': { platform: string | null; projectRoot: string };
-    'resolve:fallback_self_resolved': { platform: string | null; module: string; root: string };
     'resolve:tsconfig_alias': { module: string; resolved: string };
     'resolve:tsconfig_baseurl': { module: string; resolved: string };
     'resolve:tsconfig_parse_failed': { path: string; error: string };

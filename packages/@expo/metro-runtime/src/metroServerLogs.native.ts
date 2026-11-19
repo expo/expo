@@ -1,6 +1,10 @@
 import React from 'react';
 
-const HMRClient = require('react-native/Libraries/Utilities/HMRClient').default;
+const { HMRClient } = require('react-native/unstable-internals-do-not-use') as {
+  HMRClient: {
+    log: (level: string, data: unknown[]) => void;
+  };
+};
 
 type ReactWithOwnerStack = typeof React & {
   captureOwnerStack?: () => string | null;

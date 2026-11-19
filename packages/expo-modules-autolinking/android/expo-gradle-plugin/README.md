@@ -27,6 +27,7 @@ This plugin should be applied to the root `build.gradle` file of the application
 
 Responsibilities:
 - Define default versions shared across all projects (`compileSdkVersion`, `minSdkVersion`, `targetSdkVersion`, `buildToolsVersion`, `ndkVersion`, `kotlinVersion`, `kspVersion`), sourced from React Native's version catalog when available.
+- Apply the root project's `ndkVersion` to every Android library module, so the app and its modules build with one NDK instead of AGP's default. A module that declares its own `ndkVersion` keeps it.
 - Skip lint-vital analysis for autolinked native modules unless linting is enabled with the `expo.android.enableLint` Gradle property or the `EXPO_ANDROID_ENABLE_LINT` environment variable.
 - Override the CMake version for every module when the `android.cmakeVersion` Gradle property is set.
 - Set `CMAKE_OBJECT_PATH_MAX=1024` for every module that builds native code with CMake. CMake limits the length of object file paths (250 characters on Windows, 1000 elsewhere) and fails the build when paths exceed the limit, which commonly happens on Windows with deeply nested project structures such as pnpm monorepos.

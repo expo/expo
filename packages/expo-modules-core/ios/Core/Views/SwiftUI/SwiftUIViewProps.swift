@@ -19,10 +19,21 @@ extension ExpoSwiftUI {
   }
 
   /**
+   Protocol for view props that receive the view hosting their SwiftUI view, so they can resolve
+   their own window. Declare the property `weak`.
+   */
+  public protocol HostingViewAware: AnyObject {
+    var hostingView: UIView? { get set }
+  }
+
+  /**
    Base implementation of the view props object for SwiftUI views.
    It's a record that can be observed by SwiftUI to re-render on its changes.
    */
   open class ViewProps: ObservableObject, Record {
+    // Stored so `objectWillChange` is a plain property read instead of Combine's O(live objects) side-table lookup.
+    public let objectWillChange = ObservableObjectPublisher()
+
     public required init() {}
 
     public required init(rawProps: [String: Any], context: AppContext) throws {
@@ -47,9 +58,31 @@ extension ExpoSwiftUI {
      */
     public let globalEventDispatcher = EventDispatcher(GLOBAL_EVENT_NAME)
 
+    /**
+     A dictionary to store previous raw prop values for change detection.
+     */
+    private var previousRawProps: [String: Any] = [:]
+
     internal func updateRawProps(_ rawProps: [String: Any], appContext: AppContext) throws {
-      // Update the props just like the records
-      try update(withDict: rawProps, appContext: appContext)
+      try fieldsOf(self).forEach { field in
+        guard let key = field.key else {
+          return
+        }
+        guard rawProps.keys.contains(key) else {
+          if field.isRequired {
+            try field.set(nil, appContext: appContext)
+          }
+          return
+        }
+        let newValue = rawProps[key]
+        let previousValue = previousRawProps[key]
+
+        if !Conversions.areValuesEqual(previousValue, newValue) {
+          try field.set(newValue, appContext: appContext)
+
+          previousRawProps[key] = newValue
+        }
+      }
 
       // Notify subscribed views about the change to re-render them.
       objectWillChange.send()

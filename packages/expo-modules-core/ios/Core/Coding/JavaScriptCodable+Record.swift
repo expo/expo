@@ -14,27 +14,48 @@ import ExpoModulesJSI
 // context never prepared has no such state, so recovery returns `nil` and the conversion throws
 // `Exceptions.AppContextNotFound`.
 //
-// Records only implement the owning `decode` overload (the requirement). They walk an object's
-// properties regardless, so the zero-copy `JavaScriptUnownedValue` fast path offers nothing here;
-// the defaulted overload materializes an owning value and forwards.
+// `decode` reads the object straight from the borrowed value and hands it to
+// `from(object:appContext:)`, so a record argument isn't copied first. An owning value takes the
+// `JavaScriptDecodable` default, which borrows it and calls this `decode`.
 
 extension Record {
+  // A record decodes only from an object.
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Self
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> Self
   {
     guard let appContext = AppContext.from(runtime: runtime) else {
       throw Exceptions.AppContextNotFound()
     }
-    return try from(object: value.asObject(), appContext: appContext)
+    return try from(object: value.asObject(in: runtime), appContext: appContext)
   }
 
+  /// Used only by records without the `@Record` macro, for example records with `@Field` properties. The macro gives
+  /// each record its own `encode(_:in:)`, which uses the runtime it gets.
   @JavaScriptActor
   @inlinable
   public static func encode(_ value: Self, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     guard let appContext = AppContext.from(runtime: runtime) else {
       throw Exceptions.AppContextNotFound()
     }
+    // `toObject(appContext:)` creates the object in the main runtime. In another runtime, for example the worklet UI
+    // runtime, it would use the main runtime from the thread of that runtime.
+    guard runtime.id == (try appContext.runtime).id else {
+      throw RecordInAnotherRuntimeException(String(describing: Self.self))
+    }
     return try value.toObject(appContext: appContext).asValue()
+  }
+}
+
+@usableFromInline
+internal final class RecordInAnotherRuntimeException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "Cannot convert the record '\(param)' in a JavaScript runtime other than the main runtime, for example the worklet UI runtime. A record that the `@Record` macro doesn't convert creates its object in the main runtime. Use the `@Record` macro on a struct instead: its records convert in any runtime"
   }
 }

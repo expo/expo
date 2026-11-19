@@ -45,7 +45,7 @@ export const manufacturer: string | null = ExpoDevice ? ExpoDevice.manufacturer 
  * ```
  * @platform ios
  */
-export const modelId = ExpoDevice ? ExpoDevice.modelId || null : null;
+export const modelId: string | null = ExpoDevice ? ExpoDevice.modelId || null : null;
 
 /**
  * The human-friendly name of the device model. This is the name that people would typically use to refer to the device rather than a programmatic model identifier.
@@ -97,7 +97,13 @@ export const productName: string | null = ExpoDevice ? ExpoDevice.productName ||
 export const deviceType: DeviceType | null = ExpoDevice ? ExpoDevice.deviceType : null;
 
 /**
- * The [device year class](https://github.com/facebook/device-year-class) of this device. On web, this value is always `null`.
+ * The year in which this device was a high-end device, or would have been one. On web, this value is always `null`.
+ *
+ * On iOS, the value is the year in which Apple released the device model. A model that is newer than the library reports the current year.
+ *
+ * On Android 12 and newer, a known high-end chip gives the year of the devices that it was made for.
+ * Other devices get the memory tiers of the [device year class](https://github.com/facebook/device-year-class) library.
+ * These tiers stop at 2016.
  */
 export const deviceYearClass: number | null = ExpoDevice ? ExpoDevice.deviceYearClass : null;
 

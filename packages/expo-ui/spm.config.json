@@ -4,7 +4,8 @@
     {
       "name": "ExpoUI",
       "podName": "ExpoUI",
-      "platforms": ["iOS(.v16)"],
+      "headersXCFramework": true,
+      "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",

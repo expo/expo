@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString * const EXRuntimeErrorDomain;
 extern NSString * const EXFixInstructionsKey;
 extern NSString * const EXShowTryAgainButtonKey;
+extern NSString * const EXAccountMismatchUsernameKey;
 
 @interface EXManifestResource : EXCachedResource
 
@@ -33,7 +34,7 @@ extern NSString * const EXShowTryAgainButtonKey;
 
 - (NSError *)verifyManifestSdkVersion:(EXManifestsManifest *)maybeManifest;
 - (NSError *)formatError:(NSError *)error;
-+ (NSString * _Nonnull)formatHeader:(NSError * _Nonnull)error;
++ (NSString * _Nullable)formatHeader:(NSError * _Nonnull)error;
 + (NSAttributedString *)parseUrlsInAttributedString:(NSAttributedString *)inputString;
 + (NSAttributedString *)parseBoldInAttributedString:(NSAttributedString *)inputString withFont:(UIFont *)font;
 + (NSAttributedString *)parseUrlsAndBoldInAttributedString:(NSAttributedString *)inputString withFont:(UIFont *)font;

@@ -1,10 +1,12 @@
 import type { EventSubscription } from 'expo-modules-core';
+import { Platform } from 'react-native';
 
 import { Directory } from './Directory';
 import ExpoFileSystem from './ExpoFileSystem';
 import { File } from './File';
 import type {
   DownloadProgress,
+  DownloadResponse,
   DownloadPauseState,
   DownloadTaskOptions,
   DownloadTaskState,
@@ -247,10 +249,42 @@ export class DownloadTask {
   }
 
   /**
+   * HTTP status and headers of the latest response, or `{ status: null, headers: {} }` before one arrives.
+   * Stays available after completion, failure, pause or cancel, until `release()`. Resuming clears it.
+   * Reading does not wait for the response, so read it after `downloadAsync()` or `resumeAsync()` settles.
+   * @platform android
+   * @platform ios
+   */
+  get response(): DownloadResponse {
+    return this._nativeTask.response;
+  }
+
+  /**
    * The current state of the download task.
    */
   get state(): DownloadTaskState {
     return this._state;
+  }
+
+  /**
+   * Acknowledges that processing this successful download has finished.
+   * Requires `deferBackgroundSessionCompletion`. Call after `downloadAsync()` or `resumeAsync()`
+   * resolves, normally in a `finally` block around processing. Early calls reject; repeated calls
+   * after completion are harmless. Android and foreground sessions require no acknowledgment.
+   * @platform ios
+   */
+  async acknowledgeBackgroundCompletionAsync(): Promise<void> {
+    if (
+      Platform.OS !== 'ios' ||
+      !this._options?.deferBackgroundSessionCompletion ||
+      this._options?.sessionType === 'foreground'
+    ) {
+      return;
+    }
+    if (this._state !== 'completed') {
+      throw new Error('Background completion can only be acknowledged after a successful download');
+    }
+    await this._nativeTask.acknowledgeBackgroundCompletionAsync();
   }
 
   /**
@@ -272,6 +306,7 @@ export class DownloadTask {
       this._nativeTask.start(this._url, this._destination, {
         headers: this._options?.headers,
         sessionType: this._options?.sessionType,
+        deferBackgroundSessionCompletion: this._options?.deferBackgroundSessionCompletion,
       })
     );
     this._inFlightOperation = operation;
@@ -328,6 +363,7 @@ export class DownloadTask {
       this._nativeTask.resume(this._url, this._destination, this._resumeData!, {
         headers: this._options?.headers,
         sessionType: this._options?.sessionType,
+        deferBackgroundSessionCompletion: this._options?.deferBackgroundSessionCompletion,
       })
     );
     this._inFlightOperation = operation;

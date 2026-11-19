@@ -1,12 +1,17 @@
 package host.exp.exponent.services
 
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.ApolloResponse
+import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.apolloStore
 import com.apollographql.apollo.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.apollographql.apollo.cache.normalized.normalizedCache
 import com.apollographql.apollo.network.okHttpClient
 import host.exp.exponent.apollo.AuthInterceptor
+import host.exp.exponent.apollo.CursorPage
+import host.exp.exponent.apollo.CursorPaginator
 import host.exp.exponent.apollo.Paginator
 import host.exp.exponent.graphql.BranchDetailsQuery
 import host.exp.exponent.graphql.BranchesForProjectQuery
@@ -15,7 +20,6 @@ import host.exp.exponent.graphql.Home_AccountSnacksQuery
 import host.exp.exponent.graphql.Home_CurrentUserActorQuery
 import host.exp.exponent.graphql.Home_ViewerPrimaryAccountNameQuery
 import host.exp.exponent.graphql.ProjectsQuery
-import host.exp.exponent.graphql.fragment.CurrentUserActorData
 import host.exp.exponent.graphql.type.AppPlatform
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.last
@@ -37,12 +41,13 @@ class ApolloClientService(
     .fetchPolicy(FetchPolicy.CacheAndNetwork)
     .build()
 
-  fun currentUser(): Flow<CurrentUserActorData?> {
-    return apolloClient.query(Home_CurrentUserActorQuery())
+  fun currentUser(): Flow<ApolloResponse<Home_CurrentUserActorQuery.Data>> =
+    apolloClient.query(Home_CurrentUserActorQuery())
+      .fetchPolicy(FetchPolicy.NetworkOnly)
       .toFlow()
-      .map { response ->
-        response.data?.meUserActor?.currentUserActorData
-      }
+
+  fun clearCache() {
+    apolloClient.apolloStore.clearAll()
   }
 
   fun branchDetails(
@@ -102,37 +107,42 @@ class ApolloClientService(
 
   fun apps(
     accountName: String
-  ): Paginator<Home_AccountAppsQuery.App> {
-    return Paginator(
-      fetch = { limit, offset ->
-        apolloClient.query(
+  ): CursorPaginator<Home_AccountAppsQuery.Node> {
+    return CursorPaginator(
+      fetch = { first, after ->
+        val connection = apolloClient.query(
           Home_AccountAppsQuery(
             accountName = accountName,
             platform = AppPlatform.ANDROID,
-            limit = limit,
-            offset = offset
+            first = first,
+            after = Optional.presentIfNotNull(after)
           )
         )
           .toFlow().last()
           .dataOrThrow()
           .account
           .byName
-          .apps
+          .appsPaginated
+        CursorPage(
+          items = connection.edges.map { it.node },
+          hasNextPage = connection.pageInfo.hasNextPage,
+          endCursor = connection.pageInfo.endCursor
+        )
       }
     )
   }
 
-  fun apps(accountName: String, count: Int = 10): Flow<List<Home_AccountAppsQuery.App>> {
+  fun apps(accountName: String, count: Int = 10): Flow<List<Home_AccountAppsQuery.Node>> {
     return apolloClient.query(
       Home_AccountAppsQuery(
         accountName = accountName,
         platform = AppPlatform.ANDROID,
-        limit = count,
-        offset = 0
+        first = count,
+        after = Optional.absent()
       )
     ).toFlow()
       .map { response ->
-        response.data?.account?.byName?.apps ?: emptyList()
+        response.data?.account?.byName?.appsPaginated?.edges?.map { it.node } ?: emptyList()
       }
   }
 
@@ -150,31 +160,36 @@ class ApolloClientService(
 
   fun snacks(
     accountName: String
-  ): Paginator<Home_AccountSnacksQuery.Snack> {
-    return Paginator(
-      fetch = { limit, offset ->
-        apolloClient.query(
+  ): CursorPaginator<Home_AccountSnacksQuery.Node> {
+    return CursorPaginator(
+      fetch = { first, after ->
+        val connection = apolloClient.query(
           Home_AccountSnacksQuery(
             accountName = accountName,
-            limit = limit,
-            offset = offset
+            first = first,
+            after = Optional.presentIfNotNull(after)
           )
         )
-          .toFlow().last().dataOrThrow().account.byName.snacks
+          .toFlow().last().dataOrThrow().account.byName.snacksPaginated
+        CursorPage(
+          items = connection.edges.map { it.node },
+          hasNextPage = connection.pageInfo.hasNextPage,
+          endCursor = connection.pageInfo.endCursor
+        )
       }
     )
   }
 
-  fun snacks(accountName: String, count: Int = 10): Flow<List<Home_AccountSnacksQuery.Snack>> {
+  fun snacks(accountName: String, count: Int = 10): Flow<List<Home_AccountSnacksQuery.Node>> {
     return apolloClient.query(
       Home_AccountSnacksQuery(
         accountName = accountName,
-        limit = count,
-        offset = 0
+        first = count,
+        after = Optional.absent()
       )
     ).toFlow()
       .map { response ->
-        response.data?.account?.byName?.snacks ?: emptyList()
+        response.data?.account?.byName?.snacksPaginated?.edges?.map { it.node } ?: emptyList()
       }
   }
 

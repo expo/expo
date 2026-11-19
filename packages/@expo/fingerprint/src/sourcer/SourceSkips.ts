@@ -29,7 +29,7 @@ export enum SourceSkips {
   /** Schemes in app.json. */
   ExpoConfigSchemes = 1 << 5,
 
-  /** EAS project information in app.json. */
+  /** Expo Services project information in app.json. */
   ExpoConfigEASProject = 1 << 6,
 
   /** Assets in app.json, including icons and splash assets. */
@@ -76,10 +76,20 @@ export enum SourceSkips {
 
   /**
    * Skip .easignore.
-   * The file only controls which files are uploaded to EAS Build.
+   * The file only controls which files are uploaded to Expo Build.
    * Note that excluding a file that does affect the native build will not change the fingerprint.
    */
   Easignore = 1 << 14,
 
   //#endregion - EAS Build source
+
+  /**
+   * Path fields in the resolved autolinking config from `expo-modules-autolinking` and
+   * `react-native-config`.
+   * The config itself is still hashed. Filesystem paths, and values that sit under the project
+   * root, are omitted, including `scriptPhases[].path` and `sourceDir` / `podspecPath` overrides
+   * from the project's **react-native.config.js**. Those overrides will not change the fingerprint.
+   * Linked module names and `scriptPhases` names remain.
+   */
+  AutolinkingConfigPaths = 1 << 15,
 }

@@ -21,14 +21,18 @@ internal enum ContentShapeKind: String, Enumerable {
       return .dragPreview
       #endif
     case .contextMenuPreview:
+      #if !os(macOS)
       if #available(iOS 15.0, tvOS 17.0, *) {
         return .contextMenuPreview
       }
+      #endif
       return .interaction
     case .hoverEffect:
+      #if !os(macOS)
       if #available(iOS 15.0, tvOS 18.0, *) {
         return .hoverEffect
       }
+      #endif
       return .interaction
     case .accessibility:
       if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {

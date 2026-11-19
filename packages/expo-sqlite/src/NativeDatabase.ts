@@ -13,7 +13,7 @@ export declare class NativeDatabase {
   public isInTransactionAsync(): Promise<boolean>;
   public closeAsync(): Promise<void>;
   public execAsync(source: string): Promise<void>;
-  public serializeAsync(databaseName: string): Promise<Uint8Array>;
+  public serializeAsync(databaseName: string): Promise<Uint8Array | ArrayBuffer>;
   public prepareAsync(nativeStatement: NativeStatement, source: string): Promise<NativeStatement>;
   public createSessionAsync(nativeSession: NativeSession, dbName: string): Promise<NativeSession>;
   public loadExtensionAsync(libPath: string, entryPoint?: string): Promise<void>;
@@ -25,8 +25,9 @@ export declare class NativeDatabase {
   public initSync(): void;
   public isInTransactionSync(): boolean;
   public closeSync(): void;
+  public interruptSync(): void;
   public execSync(source: string): void;
-  public serializeSync(databaseName: string): Uint8Array;
+  public serializeSync(databaseName: string): Uint8Array | ArrayBuffer;
   public prepareSync(nativeStatement: NativeStatement, source: string): NativeStatement;
   public createSessionSync(nativeSession: NativeSession, dbName: string): NativeSession;
   public loadExtensionSync(libPath: string, entryPoint?: string): void;

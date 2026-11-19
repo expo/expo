@@ -5,6 +5,7 @@ import type {
   ChainableAnimationType,
   InterpolatingSpringAnimationParams,
   SpringAnimationParams,
+  SpringPresetAnimationParams,
   TimingAnimationParams,
 } from './types';
 
@@ -16,6 +17,8 @@ import type {
  * - `spring` accepts [`SpringAnimationParams`](#springanimationparams).
  * - `interpolatingSpring` accepts
  * [`InterpolatingSpringAnimationParams`](#interpolatingspringanimationparams).
+ * - Spring presets (`smooth`, `snappy`, `bouncy`) accept
+ * [`SpringPresetAnimationParams`](#springpresetanimationparams).
  * - Chaining returns [`ChainableAnimationType`](#chainableanimationtype).
  *
  * @example
@@ -80,23 +83,33 @@ export const Animation = {
       duration: params?.duration,
       bounce: params?.bounce,
     }),
+  smooth: (params?: SpringPresetAnimationParams) =>
+    ChainableAnimation({
+      type: 'smooth',
+      duration: params?.duration,
+      extraBounce: params?.extraBounce,
+    }),
+  snappy: (params?: SpringPresetAnimationParams) =>
+    ChainableAnimation({
+      type: 'snappy',
+      duration: params?.duration,
+      extraBounce: params?.extraBounce,
+    }),
+  bouncy: (params?: SpringPresetAnimationParams) =>
+    ChainableAnimation({
+      type: 'bouncy',
+      duration: params?.duration,
+      extraBounce: params?.extraBounce,
+    }),
 
   default: ChainableAnimation({ type: 'default' }),
 };
 
 function ChainableAnimation(animation: AnimationObject): ChainableAnimationType {
-  let _animation: AnimationObject = animation;
-
   return {
-    delay: (delay) => {
-      _animation = { ..._animation, delay };
-      return ChainableAnimation(_animation);
-    },
-    repeat: (params) => {
-      _animation = { ..._animation, ...params };
-      return ChainableAnimation(_animation);
-    },
-    [VALUE_SYMBOL]: () => _animation,
+    delay: (delay) => ChainableAnimation({ ...animation, delay }),
+    repeat: (params) => ChainableAnimation({ ...animation, ...params }),
+    [VALUE_SYMBOL]: () => animation,
   };
 }
 

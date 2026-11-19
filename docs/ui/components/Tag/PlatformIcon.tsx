@@ -2,6 +2,7 @@ import { ExpoGoLogo, mergeClasses } from '@expo/styleguide';
 import { AndroidIcon } from '@expo/styleguide-icons/custom/AndroidIcon';
 import { AppleIcon } from '@expo/styleguide-icons/custom/AppleIcon';
 import { AtSignIcon } from '@expo/styleguide-icons/outline/AtSignIcon';
+import { LayoutGrid01Icon } from '@expo/styleguide-icons/outline/LayoutGrid01Icon';
 
 import { PlatformName } from '~/types/common';
 
@@ -41,6 +42,13 @@ export const PlatformIcon = ({ platform }: PlatformIconProps) => {
     case 'expo':
       return (
         <ExpoGoLogo aria-hidden="true" className="icon-2xs shrink-0 text-current opacity-80" />
+      );
+    case 'expo-widgets':
+      return (
+        <LayoutGrid01Icon
+          aria-hidden="true"
+          className="icon-2xs shrink-0 text-current opacity-80"
+        />
       );
     default:
       return null;

@@ -107,6 +107,10 @@ class DeviceDiscovery {
   }
 
   var defaultBackCamera: AVCaptureDevice? {
+    if let macroBack = macroBackCamera {
+      return macroBack
+    }
+
     if let standardBack = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
       if self.backCameraLenses.contains(standardBack) {
         return standardBack
@@ -137,6 +141,25 @@ class DeviceDiscovery {
     }
 
     // The device has no available rear cameras
+    return nil
+  }
+
+  // AVFoundation switches to the ultra-wide for close-ups only when it focuses closer than the wide lens.
+  private var macroBackCamera: AVCaptureDevice? {
+    let backLenses = backCameraLenses
+    for type in [AVCaptureDevice.DeviceType.builtInTripleCamera, .builtInDualWideCamera] {
+      guard let virtualBack = backLenses.first(where: { $0.deviceType == type }) else {
+        continue
+      }
+      let constituents = virtualBack.constituentDevices
+      guard let ultraWide = constituents.first(where: { $0.deviceType == .builtInUltraWideCamera }),
+        let wide = constituents.first(where: { $0.deviceType == .builtInWideAngleCamera }),
+        ultraWide.minimumFocusDistance > 0,
+        ultraWide.minimumFocusDistance < wide.minimumFocusDistance else {
+        continue
+      }
+      return virtualBack
+    }
     return nil
   }
 

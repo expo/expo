@@ -129,7 +129,9 @@ class ExpectedType(
   }
 
   override operator fun equals(other: Any?): Boolean {
-    if (other !is ExpectedType) return false
+    if (other !is ExpectedType) {
+      return false
+    }
 
     if (this.innerPossibleTypes.size != other.innerPossibleTypes.size) {
       return false

@@ -1,6 +1,6 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
-import { resolveTypeName } from './APISectionUtils';
+import { APISectionPackageContext, resolveTypeName } from './APISectionUtils';
 
 describe('APISectionUtils.resolveTypeName', () => {
   test('void', () => {
@@ -477,5 +477,36 @@ describe('APISectionUtils.resolveTypeName', () => {
       </>
     );
     expect(container).toMatchSnapshot();
+  });
+
+  describe('on a page that declares a Date type', () => {
+    const renderOnPage = (typeDefinition: Parameters<typeof resolveTypeName>[0]) =>
+      render(
+        <APISectionPackageContext.Provider
+          value={{ packageNames: ['expo-contacts'], typeNames: new Set(['Date']) }}>
+          {resolveTypeName(typeDefinition, 'v58.0.0')}
+        </APISectionPackageContext.Provider>
+      );
+
+    test('library type with the name of a global type', () => {
+      renderOnPage({ type: 'reference', name: 'Date', package: 'expo-contacts' });
+      expect(screen.getByRole('link', { name: 'Date' })).toHaveAttribute('href', '#date');
+    });
+
+    test('array of a library type with the name of a global type', () => {
+      renderOnPage({
+        type: 'array',
+        elementType: { type: 'reference', name: 'Date', package: 'expo-contacts' },
+      });
+      expect(screen.getByRole('link', { name: 'Date[]' })).toHaveAttribute('href', '#date');
+    });
+
+    test('type of another package with the name of a global type', () => {
+      renderOnPage({ type: 'reference', name: 'MouseEvent', package: '@types/react' });
+      expect(screen.getByRole('link', { name: 'MouseEvent' })).toHaveAttribute(
+        'href',
+        'https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent'
+      );
+    });
   });
 });

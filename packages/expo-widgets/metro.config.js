@@ -40,6 +40,9 @@ const buildConfig = {
       if (fileSpecifierRe.test(moduleName)) {
         return context.resolveRequest(context, moduleName, platform);
       }
+      if (moduleName.startsWith('react-native/')) {
+        return { type: 'empty' };
+      }
       switch (moduleName) {
         case 'expo':
           return { type: 'sourceFile', filePath: expoStubPath };

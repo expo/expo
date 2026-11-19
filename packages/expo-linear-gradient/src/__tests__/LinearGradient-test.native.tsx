@@ -3,8 +3,8 @@ import { PlatformColor } from 'react-native';
 
 import { LinearGradient } from '../LinearGradient';
 
-it(`renders a complex gradient`, () => {
-  render(
+it(`renders a complex gradient`, async () => {
+  await render(
     <LinearGradient
       colors={['red', 'blue']}
       start={{ x: 0, y: 0 }}
@@ -16,12 +16,12 @@ it(`renders a complex gradient`, () => {
   expect(screen.toJSON()).toMatchSnapshot();
 });
 
-it(`fails to typecheck with less than two colors`, () => {
+it(`fails to typecheck with less than two colors`, async () => {
   // @ts-expect-error
-  render(<LinearGradient colors={['red']} />);
+  await render(<LinearGradient colors={['red']} />);
 
   // @ts-expect-error
-  render(<LinearGradient colors={[]} />);
+  await render(<LinearGradient colors={[]} />);
 
   // colors not provided inline need to be marked `as const`
   const colors = [
@@ -31,7 +31,7 @@ it(`fails to typecheck with less than two colors`, () => {
     'rgba(0,255,255,0.5)',
     PlatformColor('systemRed'),
   ] as const;
-  render(<LinearGradient colors={colors} />);
+  await render(<LinearGradient colors={colors} />);
 
-  render(<LinearGradient colors={['red', 'green']} />);
+  await render(<LinearGradient colors={['red', 'green']} />);
 });

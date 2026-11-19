@@ -11,12 +11,18 @@ import type {
   ReadOnlyGraph,
   Options as GraphOptions,
 } from '@expo/metro/metro/DeltaBundler/types';
+import {
+  OUT_OF_TREE_PLATFORMS,
+  getReactNativeHostPackage as getHostPackageForPlatform,
+  isOutOfTreePlatform,
+} from '@expo/platforms';
+import { resolveFrom } from '@expo/require-utils';
 import chalk from 'chalk';
 import os from 'os';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
 import { FileStore } from './binary-file-store';
+import { BuildCacheStore } from './build-cache-store';
 import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { env } from './env';
 import { event } from './events';
@@ -58,23 +64,15 @@ export interface DefaultConfigOptions {
 let hasWarnedAboutReactNative = false;
 
 function getReactNativeHostPackage(platform?: string | null): string {
-  // NOTE(@kitten): Duplicated as `getSupportPackageForPlatform` in expo-modules-autolinking
-  switch (platform) {
-    case 'tvos':
-      return 'react-native-tvos';
-    case 'macos':
-      return 'react-native-macos';
-    default:
-      return 'react-native';
-  }
+  return isOutOfTreePlatform(platform) ? getHostPackageForPlatform(platform)! : 'react-native';
 }
 
 function getReactNativeHostPath(projectRoot: string, platform?: string | null): string {
   const hostPackage = getReactNativeHostPackage(platform);
   // TODO(@kitten): Switch to `@expo/require-utils` / assess manual require.resolve
   return path.dirname(
-    resolveFrom.silent(projectRoot, `${hostPackage}/package.json`) ??
-      resolveFrom.silent(projectRoot, 'react-native/package.json') ??
+    resolveFrom(projectRoot, `${hostPackage}/package.json`) ??
+      resolveFrom(projectRoot, 'react-native/package.json') ??
       'react-native/package.json'
   );
 }
@@ -218,7 +216,7 @@ export function getDefaultConfig(
   }
 
   const reactNativePath = path.dirname(
-    resolveFrom.silent(projectRoot, 'react-native/package.json') ?? 'react-native/package.json'
+    resolveFrom(projectRoot, 'react-native/package.json') ?? 'react-native/package.json'
   );
   if (reactNativePath === 'react-native' && !hasWarnedAboutReactNative) {
     hasWarnedAboutReactNative = true;
@@ -236,8 +234,12 @@ export function getDefaultConfig(
   sourceExts.push('cjs');
 
   const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
-  const workletsVersion = getPkgVersion(projectRoot, 'react-native-worklets');
   const babelRuntimeVersion = getPkgVersion(projectRoot, '@babel/runtime');
+  const workletsVersion = getPkgVersion(
+    projectRoot,
+    'react-native-worklets',
+    'react-native-reanimated'
+  );
 
   let sassVersion: string | null = null;
   if (isCSSEnabled) {
@@ -281,13 +283,18 @@ export function getDefaultConfig(
 
   const metroDefaultValues = getDefaultMetroConfig.getDefaultValues(projectRoot);
 
-  const cacheStore = new FileStore<any>({
-    root: path.join(os.tmpdir(), 'metro-cache'),
-  });
+  const restoredRoot = env.EXPO_METRO_CACHE_RESTORE_DIR;
+  const outputRoot = env.EXPO_METRO_CACHE_OUTPUT_DIR;
+  // The build runner supplies separate absolute directories and starts each job with
+  // an empty output directory. Keep output across Metro invocations in the same job.
+  // After bundling processes exit, archive only output to exclude unused restored entries.
+  // One store keeps these directories together when projects reorder cacheStores.
+  const cacheStores =
+    restoredRoot && outputRoot
+      ? [new BuildCacheStore<any>({ restoredRoot, outputRoot })]
+      : [new FileStore<any>({ root: outputRoot || path.join(os.tmpdir(), 'metro-cache') })];
 
   const serverRoot = getMetroServerRoot(projectRoot);
-
-  const routerPackageRoot = resolveFrom.silent(projectRoot, 'expo-router');
 
   const expoMetroConfig = asMetroConfigInput({
     reporter: {
@@ -302,13 +309,14 @@ export function getDefaultConfig(
       unstable_conditionsByPlatform: {
         ios: ['react-native'],
         android: ['react-native'],
-        tvos: ['react-native'],
-        macos: ['react-native'],
+        ...Object.fromEntries(
+          OUT_OF_TREE_PLATFORMS.map((platform) => [platform, ['react-native']])
+        ),
         // This is removed for server platforms.
         web: ['browser'],
       },
       resolverMainFields: ['react-native', 'browser', 'main'],
-      platforms: ['ios', 'android', 'tvos', 'macos'],
+      platforms: ['ios', 'android', ...OUT_OF_TREE_PLATFORMS],
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(
           // Additional font files missing from default values
@@ -331,7 +339,7 @@ export function getDefaultConfig(
         /^(?:android[\\/]app[\\/]build|android[\\/]\.gradle|ios[\\/]Pods)$/,
       ],
     },
-    cacheStores: [cacheStore],
+    cacheStores,
     watcher: {
       // strip starting dot from env files. We only support watching development variants of env files as production is inlined using a different system.
       additionalExts: ['env', 'local', 'development'],
@@ -354,15 +362,20 @@ export function getDefaultConfig(
         : createNumericModuleIdFactory,
 
       getModulesRunBeforeMainModule: () => {
+        const reactNativeHostPath = getReactNativeHostPath(projectRoot);
         const preModules: string[] = [
           // NOTE(@kitten): `getModulesRunBeforeMainModule` is deprecated, but still partially expected
           // We instead add the canonical path, but don't expect or enforce Metro to re-order modules
-          require.resolve(
-            path.join(getReactNativeHostPath(projectRoot), 'Libraries/Core/InitializeCore')
-          ),
-        ];
+          // Out-of-tree platforms on React Native < 0.87 ship only `InitializeCore`
+          resolveFrom(projectRoot, `react-native/setup-env`, { followSymlinks: true }) ??
+            resolveFrom(reactNativeHostPath, './src/setup-env.js', { followSymlinks: true }) ??
+            resolveFrom(reactNativeHostPath, 'Libraries/Core/InitializeCore'),
+        ].filter((x): x is string => !!x);
 
-        const stdRuntime = resolveFrom.silent(projectRoot, 'expo/src/winter/index.ts');
+        // NOTE(@kitten): This matches a package.json:exports entry exactly, but also mirrors the
+        // `expo/build/winter/index.js` file via Node resolution. This is brittle, but only has
+        // to stay in place until `getModulesRunBeforeMainModule` will be removed
+        const stdRuntime = resolveFrom(projectRoot, 'expo/build/winter', { followSymlinks: true });
         if (stdRuntime) {
           preModules.push(stdRuntime);
         } else {
@@ -405,8 +418,6 @@ export function getDefaultConfig(
     transformer: {
       unstable_workerThreads: true,
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
-      unstable_renameRequire: false,
-      _expoRouterPath: routerPackageRoot ? path.relative(serverRoot, routerPackageRoot) : undefined,
       postcssHash: getPostcssConfigHash(projectRoot),
       browserslistHash: pkg?.browserslist
         ? stableHash(JSON.stringify(pkg?.browserslist)).toString('hex')
@@ -426,7 +437,7 @@ export function getDefaultConfig(
       asyncRequireModulePath: getExpoOptional(projectRoot, 'internal/async-require-module')
         ? 'expo/internal/async-require-module'
         : metroDefaultValues.transformer.asyncRequireModulePath,
-      assetRegistryPath: '@react-native/assets-registry/registry',
+      assetRegistryPath: 'react-native/asset-registry',
       // Determines the minimum version of `@babel/runtime`, so we default it to the project's installed version of `@babel/runtime`
       enableBabelRuntime: babelRuntimeVersion ?? undefined,
       // Allows additional babelrc lookups (mostly unused). The default of `undefined` enables the project's custom Babel config without enabling babelrc/configFile discovery
@@ -471,25 +482,25 @@ export { MetroConfig, INTERNAL_CALLSITES_REGEX };
 // re-export for legacy cases.
 export const EXPO_DEBUG = env.EXPO_DEBUG;
 
-function getExpoOptional(projectRoot: string, subModule = 'package.json'): string | undefined {
-  return resolveFrom.silent(projectRoot, `expo/${subModule}`);
+function getExpoOptional(projectRoot: string, subModule = 'package.json'): string | null {
+  return resolveFrom(projectRoot, `expo/${subModule}`);
 }
 
-function getExpoMetroRuntimeOptional(projectRoot: string): string | undefined {
+function getExpoMetroRuntimeOptional(projectRoot: string): string | null {
   const EXPO_METRO_RUNTIME = '@expo/metro-runtime';
-  const metroRuntime = resolveFrom.silent(projectRoot, EXPO_METRO_RUNTIME);
+  const metroRuntime = resolveFrom(projectRoot, EXPO_METRO_RUNTIME);
   if (metroRuntime) {
     return metroRuntime;
   }
   // NOTE(@kitten): While `@expo/metro-runtime` is a peer, auto-installing this peer is valid and expected
   // When it's auto-installed it may not be hoisted or not accessible from the project root, so we need to
   // try to also resolve it via `expo-router`, where it's a required peer
-  const baseExpoRouter = resolveFrom.silent(projectRoot, 'expo-router/package.json');
+  const baseExpoRouter = resolveFrom(projectRoot, 'expo-router/package.json');
   if (baseExpoRouter) {
-    return resolveFrom.silent(baseExpoRouter, EXPO_METRO_RUNTIME);
+    return resolveFrom(baseExpoRouter, EXPO_METRO_RUNTIME);
   }
   // When expo-router isn't installed, however, we instead try to resolve it from `expo`, where it's an
   // optional peer dependency
   const baseExpo = getExpoOptional(projectRoot);
-  return baseExpo ? resolveFrom.silent(baseExpo, EXPO_METRO_RUNTIME) : undefined;
+  return baseExpo ? resolveFrom(baseExpo, EXPO_METRO_RUNTIME) : null;
 }

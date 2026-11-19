@@ -47,7 +47,11 @@ function fullConfig() {
 
 const filename = '/app/node_modules/example/index.js';
 const workspaceFilename = '/app/packages/expo/build/value.js';
-function canonicalModuleBody(code: string, unwrapMetroFactory = false): string {
+function canonicalModuleBody(
+  code: string,
+  unwrapMetroFactory = false,
+  names: string[] = []
+): string {
   const file = babel.parseSync(code, { sourceType: 'script' });
   if (!file) throw new Error('Failed to parse transformed module');
   if (unwrapMetroFactory) {
@@ -64,9 +68,17 @@ function canonicalModuleBody(code: string, unwrapMetroFactory = false): string {
     file.program.directives = factoryBody.directives;
     babel.traverse(file, {
       CallExpression(path) {
+        const argument = path.node.arguments[0];
         if (
-          babel.types.isIdentifier(path.node.callee) &&
-          /REQUIRE$/.test(path.node.callee.name) &&
+          babel.types.isIdentifier(path.node.callee, { name: 'require' }) &&
+          babel.types.isMemberExpression(argument) &&
+          babel.types.isNumericLiteral(argument.property) &&
+          names[argument.property.value] != null
+        ) {
+          path.node.arguments = [babel.types.stringLiteral(names[argument.property.value]!)];
+        }
+        if (
+          babel.types.isIdentifier(path.node.callee, { name: 'require' }) &&
           babel.types.isStringLiteral(path.node.arguments[1])
         ) {
           path.replaceWith(
@@ -671,7 +683,7 @@ it('collects a Flow side-effect import in the complete Metro dependency graph', 
 
   if (result.status === 'fallback') throw new Error(result.reason);
   expect(result.dependencies.map(({ name }) => name)).toEqual(['../Core/InitializeCore']);
-  expect(result.result.code).toContain('_$$_REQUIRE(_dependencyMap[0], "../Core/InitializeCore")');
+  expect(result.result.code).toContain('require(_dependencyMap[0], "../Core/InitializeCore")');
 });
 
 it('continues Flow JSX through the consumer-owned native JSX capability', async () => {
@@ -735,7 +747,7 @@ it('collects static CommonJS dependencies and wraps a module without Babel', asy
   expect(result).toMatchObject({ status: 'complete' });
   if (result.status !== 'complete') return;
   expect(result.result.code).toMatch(
-    /__d\(function \(global,[\s\S]*var first = _\$\$_REQUIRE\(_dependencyMap\[0\], "one"\);[\s\S]*module\.exports = \[\s*first,\s*_\$\$_REQUIRE\(_dependencyMap\[0\], "one"\),\s*_\$\$_REQUIRE\(_dependencyMap\[1\], "two"\)\s*\];[\s\S]*\}\);/
+    /__d\(function \(global,[\s\S]*var first = require\(_dependencyMap\[0\], "one"\);[\s\S]*module\.exports = \[\s*first,\s*require\(_dependencyMap\[0\], "one"\),\s*require\(_dependencyMap\[1\], "two"\)\s*\];[\s\S]*\}\);/
   );
   expect(result.dependencies.map(({ name, data }) => [name, (data as any).imports])).toEqual([
     ['one', 2],
@@ -743,6 +755,26 @@ it('collects static CommonJS dependencies and wraps a module without Babel', asy
   ]);
   expect(result.result.metadata.hasCjsExports).toBe(true);
   expect(result.result.map.mappings.length).toBeGreaterThan(0);
+});
+
+it.each([
+  ['(Object).assign(exports, { value: 1 });', true],
+  ["((Object))['assign'](module.exports, { value: 1 });", true],
+  ['(function () { (Object).assign(exports, { value: 1 }); })();', true],
+  ['(function (Object) { (Object).assign(exports, { value: 1 }); })({});', false],
+  ['(Object.assign)(exports, { value: 1 });', false],
+])('preserves CommonJS detection for %s', async (source, hasCjsExports) => {
+  const result = await transformNodeModuleWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.metadata.hasCjsExports).toBe(hasCjsExports);
 });
 
 it('inlines stable top-level require aliases before native dependency collection', async () => {
@@ -759,7 +791,7 @@ it('inlines stable top-level require aliases before native dependency collection
   if (result.status !== 'complete') return;
   expect(result.result.code).not.toMatch(/\bone\s*=/);
   expect(result.result.code).toContain('var kept = 2;');
-  expect(result.result.code.match(/_\$\$_REQUIRE\(_dependencyMap\[0\], "one"\)/g)).toHaveLength(2);
+  expect(result.result.code.match(/require\(_dependencyMap\[0\], "one"\)/g)).toHaveLength(2);
   expect(result.dependencies.map(({ name }) => name)).toEqual(['one']);
 });
 
@@ -781,8 +813,8 @@ it('inlines require member aliases and respects nonInlinedRequires', async () =>
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
   expect(result.result.code).not.toMatch(/\bmember\s*=/);
-  expect(result.result.code).toContain(`_$$_REQUIRE(_dependencyMap[1], "one").value`);
-  expect(result.result.code).toContain(`var ignored = _$$_REQUIRE`);
+  expect(result.result.code).toContain(`require(_dependencyMap[1], "one").value`);
+  expect(result.result.code).toContain(`var ignored = require`);
   expect(result.dependencies.map(({ name }) => name)).toEqual(['two', 'one']);
 });
 
@@ -851,7 +883,7 @@ it.each([
 
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
-  expect(result.result.code).toContain('var binding = _$$_REQUIRE');
+  expect(result.result.code).toContain('var binding = require');
   expect(result.dependencies.map(({ name }) => name)).toEqual(['one']);
 });
 
@@ -867,9 +899,9 @@ it('retains a mutated root while inlining an alias used only as its computed key
 
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
-  expect(result.result.code).toContain('var binding = _$$_REQUIRE');
+  expect(result.result.code).toContain('var binding = require');
   expect(result.result.code).not.toMatch(/\bkey\s*=/);
-  expect(result.result.code).toContain('binding[_$$_REQUIRE');
+  expect(result.result.code).toContain('binding[require');
   expect(result.dependencies.map(({ name }) => name)).toEqual(['one', 'key']);
 });
 
@@ -925,7 +957,7 @@ it('compacts the complete Metro output without falling back to Babel', async () 
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
   expect(result.result.code).not.toContain('\n');
-  expect(result.result.code).toContain('_$$_REQUIRE(_dependencyMap[0])');
+  expect(result.result.code).toContain('require(_dependencyMap[0])');
   expect(result.dependencies.map(({ name }) => name)).toEqual(['one']);
 });
 
@@ -983,9 +1015,45 @@ it('completes production constant folding and DCE in native code', async () => {
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
   expect(result.result.code).toContain('"production"');
-  expect(result.result.code).toContain('_$$_REQUIRE(_dependencyMap[0])');
+  expect(result.result.code).toContain('require(_dependencyMap[0])');
   expect(result.dependencies.map(({ name }) => name)).toEqual(['one']);
 });
+
+it.each([
+  ['minify is off', false],
+  ['minify is on', true],
+])(
+  'drops a production __DEV__ require when %s and the source has a comment',
+  async (_label, minify) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename,
+      projectRoot: '/app',
+      source: `// A normal source comment.
+if (__DEV__) {
+  require("./dev-only");
+}
+console.log("production entry");
+`,
+      options: options({ dev: false, minify }),
+      isDefaultExpoTransformer: true,
+      config: {
+        ...fullConfig(),
+        minifierConfig: { output: { comments: true } },
+      },
+    });
+
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.dependencies).toEqual([]);
+    expect(result.result.code).toContain('production entry');
+    expect(result.result.code).not.toContain('dev-only');
+    if (minify) {
+      expect(result.result.code).not.toContain('A normal source comment');
+    } else {
+      expect(result.result.code).toContain('// A normal source comment.');
+    }
+  }
+);
 
 it.each([
   ['nested arithmetic', `const value = 1 + 2 * 3; module.exports = value;`],
@@ -1023,6 +1091,7 @@ it.each([
             optimize: {
               constantFolding: true,
               deadCodeElimination: true,
+              moduleContext: true,
             },
           },
         },
@@ -1123,7 +1192,7 @@ it('collects and rewrites weak dependencies without conflating them with sync re
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
   expect(result.result.code).toContain(
-    `module.exports = [_dependencyMap[0], _$$_REQUIRE(_dependencyMap[1], "one"), _dependencyMap[0]];`
+    `module.exports = [_dependencyMap[0], require(_dependencyMap[1], "one"), _dependencyMap[0]];`
   );
   expect(
     result.dependencies.map(({ name, data }) => [name, data.asyncType, (data as any).imports])
@@ -1172,7 +1241,7 @@ it('collects and rewrites worker resolution through the Metro async runtime', as
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
   expect(result.result.code).toContain(
-    `module.exports = _$$_REQUIRE(_dependencyMap[1], "metro-runtime").unstable_resolve(_dependencyMap[0], _dependencyMap.paths);`
+    `module.exports = require(_dependencyMap[1], "metro-runtime").unstable_resolve(_dependencyMap[0], _dependencyMap.paths);`
   );
   expect(
     result.dependencies.map(({ name, data }) => [name, data.asyncType, data.isESMImport])
@@ -1228,7 +1297,7 @@ it('collects require.context parameters and keeps distinct contexts separate', a
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
   expect(result.result.code).toContain(
-    `module.exports = [_$$_REQUIRE(_dependencyMap[0], "./views"), _$$_REQUIRE(_dependencyMap[1], "./views")];`
+    `module.exports = [require(_dependencyMap[0], "./views"), require(_dependencyMap[1], "./views")];`
   );
   expect(result.dependencies.map(({ name, data }) => [name, data.contextParams])).toEqual([
     ['./views', { recursive: true, filter: { pattern: '.*', flags: '' }, mode: 'sync' }],
@@ -1293,7 +1362,7 @@ it.each([
 
     if (result.status === 'fallback') throw new Error(result.reason);
     expect(result.result.code).toContain(
-      `module.exports = _$$_REQUIRE(_dependencyMap[1], "metro-runtime")${method}(_dependencyMap[0], _dependencyMap.paths, "one");`
+      `module.exports = require(_dependencyMap[1], "metro-runtime")${method}(_dependencyMap[0], _dependencyMap.paths, "one");`
     );
     expect(
       result.dependencies.map(({ name, data }) => [name, data.asyncType, data.isESMImport])
@@ -1485,7 +1554,23 @@ it('collects optional weak and context dependencies', async () => {
     ['weak-entry', 'weak', true],
     ['./routes', null, true],
   ]);
-  expect(result.result.code).toContain(`_$$_REQUIRE(_dependencyMap[1], "./routes")`);
+  expect(result.result.code).toContain(`require(_dependencyMap[1], "./routes")`);
+});
+
+it('keeps an ignored dynamic import uncollected after minified comment stripping', async () => {
+  const source = `module.exports = import(/* webpackIgnore: true */ 'one');`;
+  const result = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options({ dev: false, minify: true }),
+    isDefaultExpoTransformer: true,
+    config: fullConfig(),
+  });
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.dependencies).toEqual([]);
+  expect(result.result.code).not.toContain('webpackIgnore');
 });
 
 it.each([`import(/* @metro-ignore */ 'one')`, `import(/* webpackIgnore: true */ 'one')`])(
@@ -1560,7 +1645,7 @@ it('mirrors Expo define and import-meta transforms for eligible dependencies', a
     source: `
       var values = [process.env.EXPO_OS, process['env']['EXPO_OS'], process.env.EXPO_SERVER, process.env.NODE_ENV, __DEV__, Platform.OS];
       var registry = import.meta.url;
-      var router = [process.env.EXPO_PROJECT_ROOT, process.env.EXPO_ROUTER_APP_ROOT, process.env.EXPO_ROUTER_IMPORT_MODE];
+      var router = [process.env.EXPO_ROUTER_APP_ROOT, process.env.EXPO_ROUTER_IMPORT_MODE];
       var selected = Platform.select({ web: 'web', native: 'native', ios: 'ios' });
       function shadow(process, Platform, __DEV__) {
         return [process.env.EXPO_OS, Platform.OS, __DEV__];
@@ -1586,7 +1671,7 @@ it('mirrors Expo define and import-meta transforms for eligible dependencies', a
     `var values = ["ios", "ios", false, "production", false, "ios"]`
   );
   expect(result.result.code).toContain('globalThis.__ExpoImportMetaRegistry.url');
-  expect(result.result.code).toContain(`var router = ["/app", "../../app", "sync"]`);
+  expect(result.result.code).toContain(`var router = ["../../app", "sync"]`);
   expect(result.result.code).toContain(`var selected = 'ios'`);
   expect(result.result.code).toContain('return [process.env.EXPO_OS, Platform.OS, __DEV__]');
   expect(result.result.code).toContain(`process.env.NODE_ENV = 'test'`);
@@ -1638,6 +1723,49 @@ it('uses the last duplicate Platform.select entry while preserving fallback prec
   expect(result.result.code).toContain(`var spread = Platform.select`);
 });
 
+it.each([
+  ['parenthesized receiver', '(Platform).select', "{ ios: 'selected' }"],
+  ['nested parenthesized receiver', '((Platform)).select', "{ ios: 'selected' }"],
+  ['computed member', "Platform['select']", "{ ios: 'selected' }"],
+  ['optional call', 'Platform.select?.', "{ ios: 'selected' }"],
+  ['optional member', 'Platform?.select', "{ ios: 'selected' }"],
+])('folds Platform.select with a %s', async (_name, callee, args) => {
+  const result = await transformNodeModuleWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source: `var selected = ${callee}(${args});`,
+    options: options(),
+    isDefaultExpoTransformer: true,
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toContain(`var selected = 'selected'`);
+});
+
+it('preserves shadowed Platform.select calls and calls without object arguments', async () => {
+  const source = `
+    var selected = Platform.select(value);
+    var later = Platform.select(other, { ios: 'later' });
+    function shadow(Platform) {
+      return Platform.select({ ios: 'shadowed' });
+    }
+  `;
+  const result = await transformNodeModuleWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toContain(`Platform.select(value)`);
+  expect(result.result.code).toContain(`Platform.select(other, { ios: 'later' })`);
+  expect(result.result.code).toContain(`Platform.select({ ios: 'shadowed' })`);
+});
+
 it('inlines EXPO_PUBLIC environment variables in production and preserves assignments', async () => {
   const previous = process.env.EXPO_PUBLIC_NOXCTURNAL_TEST;
   process.env.EXPO_PUBLIC_NOXCTURNAL_TEST = 'native-value';
@@ -1680,7 +1808,6 @@ it('resolves only encountered public and Router environment properties', async (
           process.env[key],
           (() => { const process = { env: { EXPO_PUBLIC_NOXCTURNAL_I19: 'shadow' } }; return process.env.EXPO_PUBLIC_NOXCTURNAL_I19; })(),
           process.env.EXPO_ROUTER_APP_ROOT,
-          process['env'].EXPO_ROUTER_ABS_APP_ROOT
         ];
       `,
       options: options({
@@ -1697,7 +1824,6 @@ it('resolves only encountered public and Router environment properties', async (
     expect(result.result.code).toContain('process.env[key]');
     expect(result.result.code).toContain('EXPO_PUBLIC_NOXCTURNAL_I19: "shadow"');
     expect(result.result.code).toContain('"../../../routes"');
-    expect(result.result.code).toContain('"/app/routes"');
   } finally {
     if (previous === undefined) delete process.env.EXPO_PUBLIC_NOXCTURNAL_I19;
     else process.env.EXPO_PUBLIC_NOXCTURNAL_I19 = previous;
@@ -2079,7 +2205,17 @@ it.each([
   });
   if (!expected?.code) throw new Error('Babel live-bindings transform produced no output');
 
-  expect(canonicalModuleBody(native.result.code, true)).toBe(canonicalModuleBody(expected.code));
+  expect(
+    canonicalModuleBody(
+      native.result.code,
+      true,
+      native.dependencies.map(({ name }) => name)
+    )
+  ).toBe(
+    canonicalModuleBody(
+      expected.code.startsWith('"use strict";') ? expected.code : `"use strict";\n${expected.code}`
+    )
+  );
 });
 
 it.each([
@@ -2088,7 +2224,7 @@ it.each([
   ['binding collision', `const _pkg = 1; import { value } from 'pkg'; run(_pkg, value);`],
   ['directive prologue', `"use strict"; import { value } from 'pkg'; run(value);`],
   ['duplicate export all', `export * from 'pkg'; export * from 'pkg';`],
-])('matches folded importExportLiveBindings syntax for %s', async (_name, source) => {
+])('matches production importExportLiveBindings syntax for %s', async (_name, source) => {
   const native = await transformFileFullyWithNoxcturnal({
     filename,
     projectRoot: '/app',
@@ -2103,10 +2239,20 @@ it.each([
     comments: false,
     configFile: false,
     filename,
-    plugins: [[importExportLiveBindingsPlugin, { performConstantFolding: true, resolve: false }]],
+    plugins: [[importExportLiveBindingsPlugin, { performConstantFolding: false, resolve: false }]],
   });
   if (!expected?.code) throw new Error('Babel live-bindings transform produced no output');
-  expect(canonicalModuleBody(native.result.code, true)).toBe(canonicalModuleBody(expected.code));
+  expect(
+    canonicalModuleBody(
+      native.result.code,
+      true,
+      native.dependencies.map(({ name }) => name)
+    )
+  ).toBe(
+    canonicalModuleBody(
+      expected.code.startsWith('"use strict";') ? expected.code : `"use strict";\n${expected.code}`
+    )
+  );
 });
 
 it('uses static import and export values when live bindings are disabled', async () => {
@@ -2173,7 +2319,7 @@ it('lowers static ESM imports and exports through the full native path', async (
 
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
-  expect(result.result.code).toContain(`var _pkg = _$$_REQUIRE(_dependencyMap[0], "pkg");`);
+  expect(result.result.code).toContain(`var _pkg = require(_dependencyMap[0], "pkg");`);
   expect(result.result.code).toContain(`var value = _interopDefault(_pkg);`);
   expect(result.result.code).toContain(`return _default;`);
   expect(result.dependencies).toMatchObject([
@@ -2393,7 +2539,7 @@ it('preserves live imported references, direct-call semantics, and live local ex
 
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
-  expect(result.result.code).toContain('var _pkg = _$$_REQUIRE(_dependencyMap[0], "pkg")');
+  expect(result.result.code).toContain('var _pkg = require(_dependencyMap[0], "pkg")');
   expect(result.result.code).not.toContain('var _pkg2 =');
   expect(result.result.code).toContain('var ns = _interopNamespace(_pkg)');
   expect(result.result.code).toContain('var local = _pkg.value');
@@ -2469,26 +2615,60 @@ it('preserves constructor semantics for a member of a default import', async () 
   expect(result.result.code).toContain(`new Animated.default.Value(1)`);
 });
 
-it("loads Babel runtime helpers through Metro's default-import ABI", async () => {
-  const result = await transformFileFullyWithNoxcturnal({
-    filename,
-    projectRoot: '/app',
-    source: `import Base from './Base'; class Derived extends Base {} module.exports = new Derived();`,
-    options: options({
-      dev: true,
-      experimentalImportSupport: true,
-      unstable_transformProfile: 'default',
-    }),
-    isDefaultExpoTransformer: true,
-    config: fullConfig(),
-  });
-  expect(result.status).toBe('complete');
-  if (result.status !== 'complete') return;
-  expect(result.result.code).toContain('var Base = _interopDefault(_Base)');
-  expect(result.result.code).toMatch(
-    /construct: _\$\$_IMPORT_DEFAULT\(_dependencyMap\[\d+\], "@babel\/runtime\/helpers\/construct"\)/
-  );
-});
+it.each(['CommonJS', 'ES module'])(
+  'loads %s Babel runtime helpers through Metro',
+  async (format) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename,
+      projectRoot: '/app',
+      source: `import Base from './Base'; class Derived extends Base {} module.exports = new Derived('value');`,
+      options: options({
+        dev: true,
+        experimentalImportSupport: true,
+        unstable_transformProfile: 'default',
+      }),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.result.code).toContain('var Base = _interopDefault(_Base)');
+    const construct = requireFromMetroConfig('@babel/runtime/helpers/construct');
+    class Base {
+      constructor(readonly value: string) {}
+    }
+    const load = (name: string) => {
+      if (name === './Base') return Base;
+      if (name === '@babel/runtime/helpers/construct') {
+        return format === 'ES module' ? { __esModule: true, default: construct } : construct;
+      }
+      throw new Error(`Unexpected dependency: ${name}`);
+    };
+    let factory: Function | undefined;
+    new Function('__d', result.result.code)((value: Function) => {
+      factory = value;
+    });
+    expect(factory).toBeDefined();
+    const module = { exports: {} };
+    factory!(
+      globalThis,
+      load,
+      (name: string) => {
+        const value = load(name);
+        return value.__esModule ? value.default : value;
+      },
+      () => {
+        throw new Error('Unexpected namespace import');
+      },
+      module,
+      module.exports,
+      result.dependencies.map(({ name }) => name)
+    );
+    expect(module.exports).toBeInstanceOf(Base);
+    expect(module.exports).toMatchObject({ value: 'value' });
+    expect(module.exports.constructor.name).toBe('Derived');
+  }
+);
 
 it('lowers named, namespace, and export-all re-exports with live getters', async () => {
   const result = await transformFileFullyWithNoxcturnal({
@@ -2686,4 +2866,490 @@ it('preserves native script function maps and compact output behavior', async ()
   const runtimeGlobal: { value?: number } = {};
   new Function('globalThis', compact.result.code)(runtimeGlobal);
   expect(runtimeGlobal.value).toBe(1);
+});
+
+it.each(
+  [
+    ...['react-native', 'expo-modules-core', 'react-native-web', 'expo'].map((sourceModule) => ({
+      sourceModule,
+      importBinding: '{ Platform }',
+    })),
+    ...['../../Utilities/Platform', 'react-native/Libraries/Utilities/Platform'].map(
+      (sourceModule) => ({ sourceModule, importBinding: 'Platform' })
+    ),
+    { sourceModule: './Platform', importBinding: '* as Platform' },
+    { sourceModule: './platform-reexport', importBinding: '{ Platform }' },
+  ].flatMap((input) => ['ios', 'android', 'web'].map((platform) => ({ ...input, platform })))
+)(
+  'folds imported Platform branches from $sourceModule with $importBinding for $platform',
+  async ({ sourceModule, importBinding, platform }) => {
+    const input = {
+      filename: workspaceFilename,
+      projectRoot: '/app',
+      source: `import ${importBinding} from '${sourceModule}';
+      module.exports = [
+        Platform.OS === '${platform}' ? require('winner') : require('loser'),
+        Platform.select({ ${platform}: require('selected'), native: require('native'), default: require('fallback') })
+      ];
+      module.exports.shadow = function(Platform) { return [Platform.OS, Platform.select({ ios: require('shadowed') })]; };
+      module.exports.fallback = Platform.select({ native: require('native-fallback'), default: require('default-fallback') });`,
+      options: options({ platform, minify: true }),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    };
+    const result = await transformFileFullyWithNoxcturnal(input);
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.result.code).toContain('Platform.OS');
+    expect(result.dependencies.map(({ name }) => name)).toEqual([
+      platform === 'web' && ['react-native', 'react-native-web'].includes(sourceModule)
+        ? 'react-native-web/dist/exports/Platform'
+        : sourceModule,
+      'winner',
+      'selected',
+      'shadowed',
+      platform === 'web' ? 'default-fallback' : 'native-fallback',
+    ]);
+    const dev = await transformFileFullyWithNoxcturnal({
+      ...input,
+      options: options({ platform, dev: true }),
+    });
+    expect(dev.status).toBe('complete');
+    if (dev.status !== 'complete') return;
+    expect(dev.dependencies.map(({ name }) => name)).toContain('loser');
+  }
+);
+
+it.each(['Platform', '{ Platform }', '* as Platform'])(
+  'preserves import side effects after folding %s',
+  async (importBinding) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename: workspaceFilename,
+      projectRoot: '/app',
+      source: `import ${importBinding} from './Platform';
+        module.exports = [Platform.OS, Platform.select({ ios: 'selected', android: 'discarded' })];`,
+      options: options(),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    const module = { exports: undefined };
+    const loaded: string[] = [];
+    new Function('__d', result.result.code)((factory: Function) =>
+      factory(
+        {},
+        (index: number) => {
+          loaded.push(result.dependencies[index]!.name);
+          return {};
+        },
+        undefined,
+        undefined,
+        module,
+        module.exports,
+        result.dependencies.map((_, index) => index)
+      )
+    );
+    expect(module.exports).toEqual(['ios', 'selected']);
+    expect(loaded).toEqual(['./Platform']);
+  }
+);
+
+it.each(["ios() { return 'ios'; }", "get ios() { return 'ios'; }"])(
+  'preserves Platform.select objects with %s',
+  async (property) => {
+    const source = `import { Platform } from 'react-native';
+    module.exports = Platform.select({ ${property}, default: 'default' });`;
+    const result = await transformNodeModuleWithNoxcturnal({
+      filename,
+      projectRoot: '/app',
+      source,
+      options: options(),
+      isDefaultExpoTransformer: true,
+    });
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.result.code).toContain('Platform.select');
+  }
+);
+
+it.each([
+  "Platform.select({ ios: () => 'ios' })()",
+  'Platform.select({ ios: 1 + 2 }) * 3',
+  "Platform.select({ ios: true ? 'ios' : 'android' }).length",
+  'Platform.select({ ios: 1 }).toString()',
+])('matches Babel when replacing %s', async (expression) => {
+  const source = `module.exports = ${expression};`;
+  const result = await transformNodeModuleWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+  });
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  const babelCode = transformWithBabelPlugin(
+    source,
+    path.join(
+      __dirname,
+      '../../../../../../babel-preset-expo/src/plugins/minify-platform-select-plugin'
+    ),
+    { platform: 'ios' }
+  );
+  const evaluate = (code: string) => {
+    const module = { exports: undefined as unknown };
+    new Function('module', code)(module);
+    return module.exports;
+  };
+  expect(evaluate(result.result.code)).toEqual(evaluate(babelCode));
+});
+
+it.each(['ios', 'android', 'web'])(
+  'composes defines with discarded Platform.select values on %s',
+  async (platform) => {
+    for (const losingKey of ['default', 'native', platform === 'ios' ? 'android' : 'ios']) {
+      for (const losingValue of [
+        'Platform.OS',
+        'process.env.NODE_ENV',
+        'Platform.select({ default: Platform.OS })',
+      ]) {
+        const result = await transformFileFullyWithNoxcturnal({
+          filename: workspaceFilename,
+          projectRoot: '/app',
+          source: `import { Platform } from 'react-native';
+            module.exports = Platform.select({
+              ${platform}: [Platform.OS, Platform.select({ ${platform}: Platform.OS }), require('winner')],
+              ${losingKey}: [${losingValue}, require('loser')]
+            });`,
+          options: options({ platform }),
+          isDefaultExpoTransformer: true,
+          config: fullConfig(),
+        });
+        expect(result.status).toBe('complete');
+        if (result.status !== 'complete') return;
+        expect(result.dependencies.map(({ name }) => name)).toEqual([
+          platform === 'web' ? 'react-native-web/dist/exports/Platform' : 'react-native',
+          'winner',
+        ]);
+      }
+    }
+  }
+);
+
+it.each([
+  'Platform.select({ ios: 1 + 2 })',
+  'Platform.select({ ios: { a: 1 } })',
+  'Platform.select({ ios: [1, 2] })',
+  "Platform.select({ ios: function() { events.push('selected'); } })()",
+])('preserves semicolon-less statement boundaries for %s', async (expression) => {
+  const source = `var events = []; function foo() { events.push('foo'); return 'value'; }
+    foo()
+    if (false) ${expression}
+    foo()
+    ${expression}
+    module.exports = events;`;
+  const result = await transformNodeModuleWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+  });
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  const babelCode = transformWithBabelPlugin(
+    source,
+    path.join(
+      __dirname,
+      '../../../../../../babel-preset-expo/src/plugins/minify-platform-select-plugin'
+    ),
+    { platform: 'ios' }
+  );
+  const evaluate = (code: string) => {
+    const module = { exports: undefined as unknown };
+    new Function('module', code)(module);
+    return module.exports;
+  };
+  expect(evaluate(result.result.code)).toEqual(evaluate(babelCode));
+});
+
+it.each([false, true])('applies module-name retention consistently (dev=%s)', async (dev) => {
+  const source = `import value from 'name-default';
+import 'name-side';
+export { value } from 'name-export';
+export * from 'name-star';
+export * as namespace from 'name-namespace';
+const helper = require('@babel/runtime/helpers/construct');
+import('name-async');
+require.unstable_importMaybeSync('name-maybe');
+__prefetchImport('name-prefetch');
+try {
+  require('name-optional');
+  require('@babel/runtime/helpers/typeof');
+  import('name-optional-async');
+  require.unstable_importMaybeSync('name-optional-maybe');
+  __prefetchImport('name-optional-prefetch');
+} catch {}
+module.exports = [value, helper];`;
+  const result = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options({ dev }),
+    isDefaultExpoTransformer: true,
+    config: { ...fullConfig(), allowOptionalDependencies: true },
+  });
+  if (result.status !== 'complete') throw new Error(result.reason);
+  const calls: unknown[][] = [];
+  const load = (...args: unknown[]) => {
+    calls.push(args);
+    return Object.assign(
+      (...args: unknown[]) => {
+        calls.push(args);
+      },
+      {
+        prefetch: (...args: unknown[]) => {
+          calls.push(args);
+        },
+        unstable_importMaybeSync: (...args: unknown[]) => {
+          calls.push(args);
+        },
+      }
+    );
+  };
+  let factory: Function | undefined;
+  new Function('__d', result.result.code)((value: Function) => {
+    factory = value;
+  });
+  const dependencyMap = Object.assign(
+    result.dependencies.map((_, index) => index),
+    { paths: {} }
+  );
+  factory!(globalThis, load, load, load, {}, {}, dependencyMap);
+  for (const [index, dependency] of result.dependencies.entries()) {
+    const call = calls.find(([id]) => id === index);
+    expect(call).toBeDefined();
+    const keepName = dev || dependency.data.isOptional;
+    expect(call).toHaveLength(dependency.data.asyncType ? (keepName ? 3 : 2) : keepName ? 2 : 1);
+    if (keepName) expect(call!.at(-1)).toBe(dependency.name);
+    if (dependency.data.asyncType) expect(call![1]).toBe(dependencyMap.paths);
+  }
+});
+
+it.each([
+  "require('pkg')",
+  "require('@babel/runtime/helpers/construct')",
+  "import('pkg')",
+  "require.unstable_importMaybeSync('pkg')",
+  "__prefetchImport('pkg')",
+])('matches Babel name retention after a mandatory use: %s', async (expression) => {
+  const source = `${expression}; try { ${expression}; } catch {}`;
+  const collectDependencies = require('../../collect-dependencies').default;
+  const collected = collectDependencies(babel.parseSync(source), {
+    asyncRequireModulePath: 'metro-runtime',
+    dynamicRequires: 'reject',
+    inlineableCalls: [],
+    keepRequireNames: false,
+    allowOptionalDependencies: true,
+    unstable_allowRequireContext: false,
+  });
+  const babelCode = babel.transformFromAstSync(collected.ast, undefined, {
+    babelrc: false,
+    configFile: false,
+  })!.code!;
+  const native = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+    config: { ...fullConfig(), allowOptionalDependencies: true },
+  });
+  if (native.status !== 'complete') throw new Error(native.reason);
+
+  function calls(code: string, wrapped: boolean) {
+    const result: unknown[][] = [];
+    const load = (...args: unknown[]) => {
+      result.push(args);
+      return Object.assign(load, { prefetch: load, unstable_importMaybeSync: load });
+    };
+    const map = Object.assign(
+      collected.dependencies.map(({ name }: { name: string }) => name),
+      { paths: {} }
+    );
+    if (wrapped) {
+      new Function('__d', code)((factory: Function) =>
+        factory(globalThis, load, load, load, {}, {}, map)
+      );
+    } else {
+      new Function('require', collected.dependencyMapName, code)(load, map);
+    }
+    return result;
+  }
+  expect(calls(native.result.code, true)).toEqual(calls(babelCode, false));
+  expect(!!native.dependencies[0]!.data.isOptional).toBe(
+    !!collected.dependencies[0].data.isOptional
+  );
+});
+
+it.each([false, true])(
+  'matches Babel source-based loads without a wrapper (dev=%s)',
+  async (dev) => {
+    const source = `import value from 'pkg';
+import 'side';
+export { value };
+export { other } from 'reexport';
+export * from 'star';
+export * as ns from 'namespace';`;
+    const expected = babel.transformSync(source, {
+      babelrc: false,
+      configFile: false,
+      plugins: [[importExportLiveBindingsPlugin, { performConstantFolding: !dev, resolve: false }]],
+    })!.code!;
+    const native = await transformFileFullyWithNoxcturnal({
+      filename,
+      projectRoot: '/app',
+      source,
+      options: options({ dev }),
+      isDefaultExpoTransformer: true,
+      config: { ...fullConfig(), unstable_disableModuleWrapping: true },
+    });
+    if (native.status !== 'complete') throw new Error(native.reason);
+    function run(code: string) {
+      const loads: unknown[][] = [];
+      const exports = {};
+      new Function('require', 'exports', code)((...args: unknown[]) => {
+        loads.push(args);
+        return { __esModule: true, default: 'value', other: 'other' };
+      }, exports);
+      return { loads, exports: JSON.parse(JSON.stringify(exports)) };
+    }
+    expect(run(native.result.code)).toEqual(run(expected));
+    expect(native.result.code).not.toContain(native.dependencyMapName);
+  }
+);
+
+it.each(["require.unstable_importMaybeSync('pkg');", "__prefetchImport('pkg');"])(
+  'preserves Babel async calls without wrapping: %s',
+  async (source) => {
+    const native = await transformFileFullyWithNoxcturnal({
+      filename,
+      projectRoot: '/app',
+      source,
+      options: options(),
+      isDefaultExpoTransformer: true,
+      config: { ...fullConfig(), unstable_disableModuleWrapping: true },
+    });
+    if (native.status !== 'complete') throw new Error(native.reason);
+    expect(canonicalModuleBody(native.result.code)).toBe(canonicalModuleBody(source));
+    expect(native.result.code).not.toContain(native.dependencyMapName);
+  }
+);
+
+it('preserves unwrapped require.context arguments natively', async () => {
+  const source =
+    "module.exports = require /* comment */ .context('./routes', false, /route/i, 'lazy');";
+  const native = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+    config: {
+      ...fullConfig(),
+      unstable_disableModuleWrapping: true,
+      unstable_allowRequireContext: true,
+    },
+  });
+  if (native.status !== 'complete') throw new Error(native.reason);
+  expect(canonicalModuleBody(native.result.code)).toBe(
+    canonicalModuleBody("module.exports = require('./routes', false, /route/i, 'lazy');")
+  );
+  expect(native.dependencies[0]!.data.contextParams).toEqual({
+    recursive: false,
+    filter: { pattern: 'route', flags: 'i' },
+    mode: 'lazy',
+  });
+});
+
+it.each([
+  "module.exports = import('pkg');",
+  "module.exports = () => import('pkg');",
+  "module.exports = function (value = import('pkg')) { return value; };",
+  "class Value { value = import('pkg'); } module.exports = () => new Value().value;",
+  "module.exports = async () => await import('pkg');",
+  "import('first'); module.exports = import('second');",
+  "module.exports = () => { if (false) return import('first'); return import('second'); };",
+])('matches Babel unwrapped import values and shim timing natively: %s', async (source) => {
+  const collectDependencies = require('../../collect-dependencies').default;
+  let shimAdded = false;
+  const collected = collectDependencies(babel.parseSync(source), {
+    asyncRequireModulePath: 'metro-runtime',
+    dynamicRequires: 'reject',
+    inlineableCalls: [],
+    keepRequireNames: false,
+    allowOptionalDependencies: false,
+    unstable_allowRequireContext: false,
+    dependencyTransformer: {
+      transformSyncRequire() {},
+      transformImportMaybeSyncCall() {},
+      transformPrefetch() {},
+      transformIllegalDynamicRequire() {},
+      transformImportCall(call: babel.NodePath) {
+        if (shimAdded) return;
+        call.insertAfter(
+          babel.types.callExpression(babel.types.identifier('require'), [
+            babel.types.stringLiteral('metro-runtime'),
+          ])
+        );
+        shimAdded = true;
+      },
+    },
+  });
+  const expected = babel.transformFromAstSync(collected.ast, undefined, {
+    babelrc: false,
+    configFile: false,
+  })!.code!;
+  const native = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options({ dev: true }),
+    isDefaultExpoTransformer: true,
+    config: { ...fullConfig(), unstable_disableModuleWrapping: true },
+  });
+  if (native.status !== 'complete') throw new Error(native.reason);
+  async function run(code: string) {
+    const events: string[] = [];
+    const token = {};
+    const ast = babel.parseSync(code)!;
+    babel.traverse(ast, {
+      CallExpression(call) {
+        if (call.node.callee.type === 'Import') call.node.callee = babel.types.identifier('__load');
+      },
+    });
+    const executable = babel.transformFromAstSync(ast, undefined, {
+      babelrc: false,
+      configFile: false,
+    })!.code!;
+    const module: { exports: unknown } = { exports: null };
+    new Function('require', 'module', '__load', executable)(
+      (name: string) => {
+        events.push('require:' + name);
+      },
+      module,
+      (name: string) => {
+        events.push('import:' + name);
+        return token;
+      }
+    );
+    const value = await (typeof module.exports === 'function' ? module.exports() : module.exports);
+    return { events, preserved: value === token };
+  }
+  expect(await run(native.result.code)).toEqual(await run(expected));
+  expect(native.result.code).not.toContain(native.dependencyMapName);
+  expect(native.dependencies.map(({ name }) => name).sort()).toEqual(
+    collected.dependencies.map(({ name }: { name: string }) => name).sort()
+  );
 });

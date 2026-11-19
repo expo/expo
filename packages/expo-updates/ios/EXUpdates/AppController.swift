@@ -119,9 +119,9 @@ public protocol AppControllerInterface {
   @objc weak var delegate: AppControllerDelegate? { get set }
 
   /**
-   The URL on disk to source asset for the RCTBridge.
+   The URL on disk of the JavaScript bundle to launch.
    Will be null until the AppController delegate method is called.
-   This should be provided in the `sourceURLForBridge:` method of RCTBridgeDelegate.
+   Return this URL from the React Native factory delegate's `bundleURL()` method.
    */
   @objc func launchAssetUrl() -> URL?
 
@@ -246,23 +246,25 @@ public class AppController: NSObject {
         return config
       case .InvalidPlistError:
         logger.warn(
-          message: "The expo-updates system is disabled due to an invalid configuration. Ensure a valid Expo.plist is present in the application bundle.",
-          code: .initializationError
+          .configDisabledInvalidConfiguration,
+          values: ["reason": updatesConfigurationValidationResult.logReason, "cause": "Ensure a valid Expo.plist is present in the application bundle."]
         )
       case .InvalidNotEnabled:
-        logger.warn(
-          message: "The expo-updates system is explicitly disabled. To enable it, set the enabled setting to true.",
-          code: .initializationError
-        )
+        logger.warn(.configDisabledExplicitly)
       case .InvalidMissingURL:
         logger.warn(
-          message: "The expo-updates system is disabled due to an invalid configuration. Ensure a valid URL is supplied.",
-          code: .initializationError
+          .configDisabledInvalidConfiguration,
+          values: ["reason": updatesConfigurationValidationResult.logReason, "cause": "Ensure a valid URL is supplied."]
+        )
+      case .InvalidMaxUpdatesToKeep:
+        logger.warn(
+          .configDisabledInvalidConfiguration,
+          values: ["reason": updatesConfigurationValidationResult.logReason, "cause": "Ensure EXUpdatesMaxUpdatesToKeep is an integer of at least 2."]
         )
       case .InvalidMissingRuntimeVersion:
         logger.warn(
-          message: "The expo-updates system is disabled due to an invalid configuration. Ensure a runtime version is supplied.",
-          code: .initializationError
+          .configDisabledInvalidConfiguration,
+          values: ["reason": updatesConfigurationValidationResult.logReason, "cause": "Ensure a runtime version is supplied."]
         )
       }
       return nil
@@ -279,10 +281,7 @@ public class AppController: NSObject {
         UpdatesControllerRegistry.sharedInstance.controller = _sharedInstance as? (any UpdatesInterface)
       } catch {
         let cause = UpdatesError.appControllerInitializationError(cause: error)
-        logger.error(
-          cause: cause,
-          code: .initializationError
-        )
+        logger.error(.controllerInitializationFailed, cause: error)
         _sharedInstance = DisabledAppController(error: cause)
         UpdatesControllerRegistry.sharedInstance.controller = _sharedInstance as? (any UpdatesInterface)
         return
@@ -301,10 +300,10 @@ public class AppController: NSObject {
       do {
         _overrideConfig = try UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: configuration)
       } catch {
-        UpdatesLogger().warn(message: "Failed to overrideConfiguration: invalid configuration: Cannot load configuration from Expo.plist")
+        UpdatesLogger().warn(.configOverrideInvalid, values: ["reason": UpdatesConfigurationValidationResult.InvalidPlistError.logReason])
       }
     } else {
-      UpdatesLogger().warn(message: "Failed to overrideConfiguration: \(updatesConfigurationValidationResult)")
+      UpdatesLogger().warn(.configOverrideInvalid, values: ["reason": updatesConfigurationValidationResult.logReason])
     }
   }
 

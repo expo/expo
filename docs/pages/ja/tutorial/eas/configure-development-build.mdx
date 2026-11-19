@@ -1,7 +1,7 @@
 ---
 title: クラウドで開発ビルドを設定する
 sidebar_title: 開発ビルドを設定する
-description: EAS Build を使ってプロジェクトの開発ビルドを設定する方法を学びます。
+description: Expo Build を使ってプロジェクトの開発ビルドを設定する方法を学びます。
 hasVideoLink: true
 ---
 
@@ -13,12 +13,12 @@ import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-この章では、サンプルアプリ向けに EAS で開発ビルドをセットアップして設定します。
+この章では、サンプルアプリ向けに Expo Build で開発ビルドをセットアップして設定します。
 
 <VideoBoxLink
   videoId="uQCE9zl3dXU"
   title="視聴：開発ビルドを設定する方法"
-  description="expo-dev-client のインストール、eas.json でのビルドプロファイルの設定、そして EAS Build による最初の開発ビルド作成までを学びます。"
+  description="expo-dev-client のインストール、eas.json でのビルドプロファイルの設定、そして Expo Build による最初の開発ビルド作成までを学びます。"
 />
 
 ---
@@ -27,7 +27,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 まずは、開発ビルドとは何か、なぜ必要なのかを学びましょう。
 
-[開発ビルド](/develop/development-builds/introduction/) は、プロジェクトのデバッグビルドです。アプリ作成時に素早く試行錯誤を繰り返せるように最適化されています。堅牢で完全な開発環境を提供する [`expo-dev-client`](/versions/latest/sdk/dev-client/) ライブラリを含んでいます。この構成なら、任意のネイティブライブラリを組み込んだり、必要に応じて [ネイティブディレクトリ](/workflow/overview/#android-and-ios-native-projects) 内のコードを変更したりできます。
+[開発ビルド](/develop/development-builds/introduction/) は、プロジェクトのデバッグビルドです。アプリ作成時に素早く試行錯誤を繰り返せるように最適化されています。完全な開発環境を提供する [`expo-dev-client`](/versions/latest/sdk/dev-client/) ライブラリを含んでいます。この構成なら、任意のネイティブライブラリを組み込んだり、必要に応じて [ネイティブディレクトリ](/workflow/overview/#android-and-ios-native-projects) 内のコードを変更したりできます。
 
 ### 主なポイント
 
@@ -69,17 +69,17 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
   }}
 />
 
-このコマンドは Metro バンドラーを起動します。ターミナルウィンドウには QR コードに続いて `Metro waiting on...` とマニフェスト URL が表示されます。
+このコマンドは Metro バンドラーを起動します。ターミナルウィンドウには QR コードに続いて `Metro:` とマニフェスト URL が表示されます。
 
 <ContentSpotlight
   alt="Running development server"
-  src="/static/images/tutorial/eas/development-server.webp"
+  src="/static/images/tutorial/eas/configure-development-build-development-server.webp"
   className="max-w-[600px]"
 />
 
 `expo-dev-client` ライブラリをインストールしたことによる変化に注目しましょう。
 
-- マニフェスト URL にアプリのスキームとともに `expo-development-client` が含まれる
+- マニフェスト URL にアプリのスキームとともに `__expo_url` が含まれる
 - 開発サーバーが（Expo Go ではなく）開発ビルド向けに動作するようになる
 
 実機やエミュレーター/シミュレーターに開発ビルドがまだインストールされていないため、この時点ではプロジェクトを実行できません。
@@ -113,39 +113,41 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 このコマンドは、ログインを完了するために Expo アカウントのメールアドレスまたはユーザー名とパスワードを尋ねます。
 
-### プロジェクトを初期化して EAS にリンクする
+### プロジェクトを初期化して Expo Services にリンクする
 
-新しいプロジェクトではまず、初期化して EAS サーバーにリンクします。次のコマンドを実行しましょう。
+新しいプロジェクトではまず、初期化して Expo サーバーにリンクします。次のコマンドを実行しましょう。
 
 <Terminal cmd={['$ eas init']} />
 
 実行すると、このコマンドは次のことを行います。
 
-- Expo アカウントの認証情報を入力してアカウント所有者の確認を求め、新しい EAS プロジェクトを作成するか尋ねます。
+- どのアカウントをプロジェクトの所有者にするか（複数のアカウントがある場合）と、Expo Services プロジェクトを作成するかを尋ねます。
 
 <Terminal
   cmd={[
     '# Output after running eas init',
-    '✔ Which account should own this project? > your-username',
+    '✔ Which account should own this project? › your-username',
     '✔ Would you like to create a project for @your-username/sticker-smash? … yes',
     '✔ Created @your-username/sticker-smash',
     '✔ Project successfully linked (ID: XXXX-XX-XX-XXXX) (modified app.json)',
+    '✔ Set the project icon from icon in your app config',
   ]}
 />
 
-- EAS プロジェクトを作成し、EAS ダッシュボードで開けるリンクを表示します。
+- Expo Services プロジェクトを作成し、Expo ダッシュボードで開けるリンクを表示します。
 
 <ContentSpotlight
-  alt="New project in EAS dashboard"
-  src="/static/images/tutorial/eas/new-project.png"
+  alt="New project in Expo dashboard"
+  src="/static/images/tutorial/eas/configure-development-build-new-project.webp"
 />
 
-- 一意の `projectId` を生成し、この EAS プロジェクトを開発マシン上のサンプルアプリにリンクします。
-- **app.json** を変更して [`extra.eas.projectId`](/versions/latest/sdk/constants/#easconfig) を追加し、生成された一意の ID をその値に設定します。
+- 一意の `projectId` を生成し、この Expo Services プロジェクトを開発マシン上のサンプルアプリにリンクします。
+- **app.json** を変更して [`extra.eas.projectId`](/versions/latest/sdk/constants/#easconfig) に生成された一意の ID を、[`owner`](/versions/latest/config/app/#owner) にプロジェクトを所有するアカウント名を追加します。
+- プロジェクトにまだアイコンがない場合、**app.json** の `icon` を Expo ダッシュボードのプロジェクトアイコンとしてアップロードします。
 
 <Collapsible summary={<>app.json の <CODE>projectId</CODE> とは？</>}>
 
-`eas init` を実行すると、**app.json** の `extra.eas.projectId` にプロジェクトの一意な識別子が関連付けられます。このプロパティの値は、EAS サーバー上でプロジェクトを識別するために使われます。
+`eas init` を実行すると、**app.json** の `extra.eas.projectId` にプロジェクトの一意な識別子が関連付けられます。このプロパティの値は、Expo サーバー上でプロジェクトを識別するために使われます。
 
 ```json
 {
@@ -163,9 +165,9 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <Step label="3">
 
-## EAS Build 向けにプロジェクトを設定する
+## Expo Build 向けにプロジェクトを設定する
 
-EAS Build 用にプロジェクトをセットアップするには、次のコマンドを実行します。
+Expo Build 用にプロジェクトをセットアップするには、次のコマンドを実行します。
 
 <Terminal cmd={['$ eas build:configure']} />
 
@@ -177,7 +179,7 @@ EAS Build 用にプロジェクトをセットアップするには、次のコ�
 ```json eas.json
 {
   "cli": {
-    "version": ">= 16.18.0",
+    "version": ">= 24.12.1",
     "appVersionSource": "remote"
   },
   "build": {
@@ -224,7 +226,7 @@ EAS Build 用にプロジェクトをセットアップするには、次のコ�
   name="EAS_TUTORIAL"
   currentChapterSlug="/tutorial/eas/configure-development-build"
   chapterTitle="第 1 章：クラウドで開発ビルドを設定する"
-  summary="EAS CLI を使ってプロジェクトを初期化・設定し、EAS サーバーにリンクして、開発ビルドの準備を整えました。"
+  summary="EAS CLI を使ってプロジェクトを初期化・設定し、Expo サーバーにリンクして、開発ビルドの準備を整えました。"
   nextChapterDescription="次の章では、Android 向けの開発ビルドを作成し、実機とエミュレーターにインストールして、開発サーバーにつないで実行してみましょう。"
   nextChapterTitle="Android 向けのクラウドビルドを作成して実行する"
   nextChapterLink="/ja/tutorial/eas/android-development-build/"

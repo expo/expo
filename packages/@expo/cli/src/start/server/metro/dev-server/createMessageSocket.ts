@@ -1,5 +1,4 @@
 import { events, SerializedError } from '2g';
-import { parse } from 'node:url';
 import { type WebSocket, WebSocketServer, type RawData as WebSocketRawData } from 'ws';
 
 import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
@@ -50,7 +49,7 @@ export function createMessagesSocket(options: MessageSocketOptions) {
     // NOTE(cedric): this looks like a legacy feature, might be able to drop it
     if (req.url) {
       Object.defineProperty(socket, '_upgradeQuery', {
-        value: parse(req.url).query,
+        value: URL.parse(req.url, 'file:')?.search.slice(1) || null,
       });
     }
 

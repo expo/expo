@@ -166,7 +166,9 @@ internal object CacheVariantIndex {
    */
   @OptIn(UnstableApi::class)
   private fun pruneEvicted(context: Context, url: String, variants: List<CacheVariant>): List<CacheVariant> {
-    if (variants.isEmpty()) return variants
+    if (variants.isEmpty()) {
+      return variants
+    }
     val keys = try {
       VideoManager.cache.instance.keys
     } catch (e: IllegalStateException) {
@@ -177,7 +179,11 @@ internal object CacheVariantIndex {
       return variants
     }
     val live = variants.filter { variant ->
-      val key = if (variant.storageKey.isEmpty()) url else "$url#${variant.storageKey}"
+      val key = if (variant.storageKey.isEmpty()) {
+        url
+      } else {
+        "$url#${variant.storageKey}"
+      }
       key in keys
     }
     if (live.size != variants.size) {

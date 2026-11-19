@@ -3,14 +3,14 @@ import { render, screen } from '@testing-library/react-native';
 import { BlurView } from '..';
 
 it(`renders a native blur view`, async () => {
-  render(<BlurView tint="light" intensity={0.65} testID="blur" />);
+  await render(<BlurView tint="light" intensity={0.65} testID="blur" />);
   const view = await screen.findByTestId('blur');
   expect(view).toBeDefined();
   expect(screen.toJSON()).toMatchSnapshot();
 });
 
 it(`passes radius styles to the native blur view`, async () => {
-  render(
+  await render(
     <BlurView
       tint="light"
       intensity={80}

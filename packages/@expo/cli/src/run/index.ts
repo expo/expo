@@ -66,6 +66,6 @@ export const expoRun: Command = async (argv) => {
         throw new CommandError('UNSUPPORTED_PLATFORM', `Unsupported platform: ${platform}`);
     }
   } catch (error: any) {
-    logCmdError(error);
+    return logCmdError(error);
   }
 };

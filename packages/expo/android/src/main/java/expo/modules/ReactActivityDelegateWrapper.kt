@@ -19,7 +19,6 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactHost
-import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 import com.facebook.react.modules.core.PermissionListener
 import expo.modules.core.interfaces.ReactActivityHandler.DelayLoadAppHandler
@@ -30,13 +29,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class ReactActivityDelegateWrapper(
   private val activity: ReactActivity,
@@ -64,6 +63,7 @@ class ReactActivityDelegateWrapper(
    * A deferred that indicates when the app loading is ready
    */
   private val loadAppReady = CompletableDeferred<Unit>()
+  private var localNetworkPermissionResult: CompletableDeferred<Unit>? = null
 
   /**
    * A mutex to ensure all coroutines in a scope are running in atomic way.
@@ -97,10 +97,6 @@ class ReactActivityDelegateWrapper(
 
   override fun getReactHost(): ReactHost? {
     return _reactHost
-  }
-
-  override fun getReactInstanceManager(): ReactInstanceManager {
-    return delegate.reactInstanceManager
   }
 
   override fun getMainComponentName(): String? {
@@ -161,6 +157,7 @@ class ReactActivityDelegateWrapper(
         mReactDelegate.isAccessible = true
         mReactDelegate.set(delegate, reactDelegate)
         if (mainComponentName != null) {
+          awaitLocalNetworkPermission()
           loadAppImpl(mainComponentName, supportsDelayLoad = false)
         }
       }
@@ -329,6 +326,10 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    if (requestCode == LocalNetworkPermission.REQUEST_CODE) {
+      localNetworkPermissionResult?.complete(Unit)
+      return
+    }
     launchLifecycleScopeWithLock {
       loadAppReady.await()
       delegate.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -431,11 +432,22 @@ class ReactActivityDelegateWrapper(
     }
   }
 
+  private suspend fun awaitLocalNetworkPermission() {
+    if (!LocalNetworkPermission.shouldRequest(activity)) {
+      return
+    }
+    val result = CompletableDeferred<Unit>()
+    localNetworkPermissionResult = result
+    activity.requestPermissions(arrayOf(LocalNetworkPermission.PERMISSION), LocalNetworkPermission.REQUEST_CODE)
+    result.await()
+    localNetworkPermissionResult = null
+  }
+
   private suspend fun awaitDelayLoadAppWhenReady(delayLoadAppHandler: DelayLoadAppHandler?) {
     if (delayLoadAppHandler == null) {
       return
     }
-    suspendCoroutine { continuation ->
+    suspendCancellableCoroutine { continuation ->
       delayLoadAppHandler.whenReady {
         Utils.assertMainThread()
         continuation.resume(Unit)
@@ -466,6 +478,6 @@ class ReactActivityDelegateWrapper(
   //endregion
 
   companion object {
-    private val TAG = ReactActivityDelegate::class.simpleName
+    private val TAG = ReactActivityDelegate::class.java.simpleName
   }
 }

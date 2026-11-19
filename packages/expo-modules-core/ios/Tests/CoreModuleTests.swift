@@ -24,4 +24,16 @@ struct CoreModuleTests {
     let coreObjectValue = try runtime.eval("expo")
     #expect(coreObjectValue.kind == .object)
   }
+
+  @Test
+  func `installOnUIRuntime is a function on the core object`() throws {
+    #expect(try runtime.eval("typeof expo.installOnUIRuntime").asString() == "function")
+  }
+
+  @Test
+  func `installOnUIRuntime throws for a holder that is not an object`() throws {
+    #expect(throws: (any Error).self) {
+      _ = try runtime.eval("expo.installOnUIRuntime(1)")
+    }
+  }
 }

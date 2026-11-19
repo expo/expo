@@ -389,10 +389,10 @@ abstract class ReactNativeActivity :
 
     val reactHost = ReactHostFactory.getDefaultReactHost(
       context = application,
-      packageList = nativeHost.packages,
-      jsMainModulePath = nativeHost.jsMainModuleName,
-      jsBundleFilePath = nativeHost.jsBundleFile,
-      useDevSupport = nativeHost.useDeveloperSupport,
+      packageList = nativeHost.getPackages(),
+      jsMainModulePath = nativeHost.getJSMainModuleName(),
+      jsBundleFilePath = nativeHost.getJSBundleFile(),
+      useDevSupport = nativeHost.getUseDeveloperSupport(),
       devBundleDownloadListener = devBundleDownloadListener,
       devServerBundleUrl = ExponentUrls.bundleUrlFromManifest(manifest!!, manifestUrl!!)
     )

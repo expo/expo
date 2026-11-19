@@ -1,18 +1,13 @@
 'use client';
 
-import { useSyncExternalStore } from 'react';
+import { use } from 'react';
 
 import { usePreviewInfo } from '../link/preview/PreviewRouteContext';
 import type { UrlObject } from './getRouteInfoFromState';
-import { routeInfoSubscribe } from './routeInfoCache';
-import { store } from './store';
+import { RouteInfoContext } from './routeInfoContext';
 
 export function useRouteInfo(): UrlObject {
-  const routeInfo = useSyncExternalStore(
-    routeInfoSubscribe,
-    store.getRouteInfo,
-    store.getRouteInfo
-  );
+  const routeInfo = use(RouteInfoContext);
   const { isPreview, segments, params, pathname } = usePreviewInfo();
   if (isPreview) {
     return {

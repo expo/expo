@@ -544,7 +544,11 @@ class NetworkRequestSummaryTest {
       requestEnd = null,
       responseStart = responseStart,
       responseEnd = responseEnd,
-      measuredResponseEnd = if (endWasMeasured) responseEnd else null,
+      measuredResponseEnd = if (endWasMeasured) {
+        responseEnd
+      } else {
+        null
+      },
       totalDuration = totalDuration
     ),
     errorDescription = errorDescription,

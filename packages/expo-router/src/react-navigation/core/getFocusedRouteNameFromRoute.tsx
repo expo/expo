@@ -4,8 +4,6 @@ import { CHILD_STATE } from './useRouteCache';
 export function getFocusedRouteNameFromRoute(route: Partial<Route<string>>): string | undefined {
   // @ts-expect-error: this isn't in type definitions coz we want this private
   const state = route[CHILD_STATE] ?? route.state;
-  const params = route.params as { screen?: unknown } | undefined;
-
   // TODO(@ubax): https://github.com/expo/expo/pull/48757 - remove the stack.type check from here
   const routeName = state
     ? // Get the currently active route name in the nested navigator
@@ -15,10 +13,7 @@ export function getFocusedRouteNameFromRoute(route: Partial<Route<string>>): str
         state.index ??
           (typeof state.type === 'string' && state.type !== 'stack' ? 0 : state.routes.length - 1)
       ].name
-    : // If state doesn't exist, we need to default to `screen` param if available
-      typeof params?.screen === 'string'
-      ? params.screen
-      : undefined;
+    : undefined;
 
   return routeName;
 }

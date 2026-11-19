@@ -212,6 +212,6 @@ export async function actionAsync(projectRoot: string, showVerboseTestResults: b
       );
     }
   } catch (e: any) {
-    Log.exception(e);
+    Log.exit(e);
   }
 }

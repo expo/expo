@@ -54,8 +54,8 @@ afterEach(() => {
   warn = undefined;
 });
 
-it('push switches JS tabs without duplicating routes and follows back behavior', () => {
-  const result = renderRouter({
+it('push switches JS tabs without duplicating routes and follows back behavior', async () => {
+  const result = await renderRouter({
     _layout: () => (
       <Tabs backBehavior="history">
         <Tabs.Screen name="index" />
@@ -68,23 +68,23 @@ it('push switches JS tabs without duplicating routes and follows back behavior',
     third: () => null,
   });
 
-  act(() => router.push('/second'));
-  act(() => router.push('/third'));
+  await act(() => router.push('/second'));
+  await act(() => router.push('/third'));
 
   const tabState = result.getRouterState()!.routes[0]!.state;
   expect(tabState?.routes).toHaveLength(3);
   expect(screen).toHavePathname('/third');
 
-  act(() => router.push('/third'));
+  await act(() => router.push('/third'));
   const tabStateAfterDuplicatePush = result.getRouterState()!.routes[0]!.state;
   expect(tabStateAfterDuplicatePush?.routes).toHaveLength(3);
   expect(tabStateAfterDuplicatePush?.index).toBe(2);
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/second');
 });
 
-it('push closes a drawer when switching routes', () => {
+it('push closes a drawer when switching routes', async () => {
   function Index() {
     const navigation = useNavigation();
     return (
@@ -96,7 +96,7 @@ it('push closes a drawer when switching routes', () => {
     );
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Drawer>
         <Drawer.Screen name="index" />
@@ -107,15 +107,15 @@ it('push closes a drawer when switching routes', () => {
     second: () => null,
   });
 
-  fireEvent.press(screen.getByTestId('open-drawer'));
+  await fireEvent.press(screen.getByTestId('open-drawer'));
   expect(drawerOpen()).toBe(true);
 
-  act(() => router.push('/second'));
+  await act(() => router.push('/second'));
   expect(screen).toHavePathname('/second');
   expect(drawerOpen()).toBe(false);
 });
 
-it('push closes a parent drawer when switching nested tabs', () => {
+it('push closes a parent drawer when switching nested tabs', async () => {
   function First() {
     const navigation = useNavigation();
     return (
@@ -127,7 +127,7 @@ it('push closes a parent drawer when switching nested tabs', () => {
     );
   }
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => (
         <Drawer>
@@ -146,15 +146,15 @@ it('push closes a parent drawer when switching nested tabs', () => {
     { initialUrl: '/first' }
   );
 
-  fireEvent.press(screen.getByTestId('open-parent-drawer'));
+  await fireEvent.press(screen.getByTestId('open-parent-drawer'));
   expect(drawerOpen()).toBe(true);
 
-  act(() => router.push('/second'));
+  await act(() => router.push('/second'));
   expect(screen).toHavePathname('/second');
   expect(drawerOpen()).toBe(false);
 });
 
-it('push closes a parent drawer when switching a nested stack', () => {
+it('push closes a parent drawer when switching a nested stack', async () => {
   function First() {
     const navigation = useNavigation();
     return (
@@ -166,7 +166,7 @@ it('push closes a parent drawer when switching a nested stack', () => {
     );
   }
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => (
         <Drawer>
@@ -180,16 +180,16 @@ it('push closes a parent drawer when switching a nested stack', () => {
     { initialUrl: '/first' }
   );
 
-  fireEvent.press(screen.getByTestId('open-parent-drawer'));
+  await fireEvent.press(screen.getByTestId('open-parent-drawer'));
   expect(drawerOpen()).toBe(true);
 
-  act(() => router.push('/second'));
+  await act(() => router.push('/second'));
   expect(screen).toHavePathname('/second');
   expect(drawerOpen()).toBe(false);
 });
 
-it('push switches headless tabs to a nested route and anchors the target stack', () => {
-  const result = renderRouter({
+it('push switches headless tabs to a nested route and anchors the target stack', async () => {
+  const result = await renderRouter({
     _layout: () => (
       <HeadlessTabs>
         <TabList>
@@ -208,7 +208,7 @@ it('push switches headless tabs to a nested route and anchors the target stack',
     'fruit/details': () => <Text>Details</Text>,
   });
 
-  act(() => router.push('/fruit/details', { withAnchor: true }));
+  await act(() => router.push('/fruit/details', { withAnchor: true }));
 
   expect(screen).toHavePathname('/fruit/details');
 
@@ -218,9 +218,9 @@ it('push switches headless tabs to a nested route and anchors the target stack',
   expect(fruitRoute.state!.routes.map((route) => route.name)).toEqual(['index', 'details']);
 });
 
-it('push switches native tabs and warns about zoom params', () => {
+it('push switches native tabs and warns about zoom params', async () => {
   warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" />
@@ -231,7 +231,7 @@ it('push switches native tabs and warns about zoom params', () => {
     second: () => <View />,
   });
 
-  act(() =>
+  await act(() =>
     router.push({
       pathname: '/second',
       params: {

@@ -13,7 +13,7 @@ import type { CrawlerOptions, FileData } from '../types';
 jest.mock('path', () => jest.requireActual<typeof import('path')>('path').posix);
 
 const rootDir = '/project';
-const processFile = async () => null;
+const processFile = () => null;
 
 function makeTreeFS(files?: FileData): TreeFS {
   return new TreeFS({ rootDir, files, processFile });
@@ -32,7 +32,6 @@ function makeWatcher(
     console,
     enableSymlinks: false,
     extensions: ['js'],
-    forceNodeFilesystemAPI: true,
     healthCheckFilePrefix: overrides.healthCheckFilePrefix ?? null,
     ignoreForCrawl: overrides.ignoreForCrawl ?? (() => false),
     ignorePatternForWatch: null,

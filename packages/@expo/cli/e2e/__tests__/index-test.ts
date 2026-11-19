@@ -40,6 +40,13 @@ it('runs `npx expo --help`', async () => {
         install, customize, config, serve
         login, logout, whoami, register
 
+      Agent Commands
+        command, command:ps, command:events
+        Discover recorded Expo CLI sessions and replay structured events:
+        $ npx expo command:ps --active --json
+        $ npx expo command:events <session-id> --since 5m
+        Add --help to either command for selectors and filtering options.
+
       Options
         --version, -v   Version number
         --help, -h      Usage info

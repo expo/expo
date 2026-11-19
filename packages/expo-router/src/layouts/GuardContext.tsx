@@ -3,8 +3,9 @@
 import { createContext, use, useMemo, type ReactNode } from 'react';
 
 import type { RouteNode } from '../Route';
-import { getValidInitialRoute, LocalRouteParamsContext, sortRoutesWithInitial } from '../Route';
+import { LocalRouteParamsContext, sortRoutesWithInitial } from '../Route';
 import { getContextKey } from '../matchers';
+import { getValidInitialRoute } from '../routeNode';
 import type { Href } from '../types';
 
 export type GuardedRedirects = Map<string, Href | undefined>;
@@ -30,15 +31,7 @@ export function GuardContextProvider({
   const guardConfigurationKey = serializeGuardedRedirects(guardedRedirects);
   const { fallbacks, resolvedGuards } = useMemo(
     () => computeGuardState(node, guardedRedirects, params, parentFallbacks),
-    [
-      node,
-      node?.children,
-      node?.contextKey,
-      node?.initialRouteName,
-      params,
-      parentFallbacks,
-      guardConfigurationKey,
-    ]
+    [node, node?.children, node?.contextKey, params, parentFallbacks, guardConfigurationKey]
   );
 
   return (
@@ -129,7 +122,10 @@ function findDefaultRedirectRouteInNavigator(
     return anchor;
   }
 
-  return children.find((child) => !isRouteGuarded(child.route, guardedRedirects));
+  // A redirect route has no screen to show, so it cannot be the fallback.
+  return children.find(
+    (child) => child.type !== 'redirect' && !isRouteGuarded(child.route, guardedRedirects)
+  );
 }
 
 export function isRouteGuarded(routeName: string, guards: ReadonlyMap<string, unknown>): boolean {

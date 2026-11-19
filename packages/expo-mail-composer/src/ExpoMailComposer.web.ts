@@ -45,6 +45,10 @@ export default {
       mailtoUrl.searchParams.append(key, '' + value);
     });
 
+    // URLSearchParams encodes spaces as '+', but mailto URIs require '%20' (RFC 6068).
+    // A literal '+' is already encoded as '%2B', so every remaining '+' is a space.
+    mailtoUrl.search = mailtoUrl.searchParams.toString().replace(/\+/g, '%20');
+
     window.open(mailtoUrl.toString());
 
     return { status: MailComposerStatus.UNDETERMINED };

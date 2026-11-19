@@ -13,7 +13,6 @@ const urlParams = "${`?${string}` | `#${string}` | ''}";
 export type GetTypedRoutesDeclarationFileOptions = {
   partialTypedGroups?: boolean;
   testIgnoreComments?: boolean;
-  unstable_useServerMiddleware?: boolean;
 };
 
 export function getTypedRoutesDeclarationFile(
@@ -21,7 +20,6 @@ export function getTypedRoutesDeclarationFile(
   {
     partialTypedGroups = false,
     testIgnoreComments = false,
-    unstable_useServerMiddleware = false,
   }: GetTypedRoutesDeclarationFileOptions = {}
 ) {
   let routeNode: RouteNode | null = null;
@@ -34,8 +32,6 @@ export function getTypedRoutesDeclarationFile(
       ignoreEntryPoints: true,
       ignoreRequireErrors: true,
       importMode: 'async', // Don't load the file
-      // NOTE(@hassankhan): We should ensure that getRoutes() doesn't have optional options in the future
-      unstable_useServerMiddleware,
     });
   } catch {
     // Ignore errors from `getRoutes`. This is also called inside the app, which has
@@ -44,6 +40,7 @@ export function getTypedRoutesDeclarationFile(
 
   const groupedNodes = groupRouteNodes(routeNode);
   const staticRoutesStrings: string[] = ['Router.RelativePathString', 'Router.ExternalPathString'];
+  const staticPathnames: string[] = ['Router.RelativePathString', 'Router.ExternalPathString'];
   const staticRouteInputObjects: string[] = [
     '{ pathname: Router.RelativePathString, params?: Router.UnknownInputParams }',
     '{ pathname: Router.ExternalPathString, params?: Router.UnknownInputParams }',
@@ -55,6 +52,7 @@ export function getTypedRoutesDeclarationFile(
 
   for (const type of groupedNodes.static) {
     staticRoutesStrings.push(contextKeyToType(type + urlParams, partialTypedGroups));
+    staticPathnames.push(contextKeyToType(type, partialTypedGroups));
     staticRouteInputObjects.push(
       `{ pathname: ${contextKeyToType(type, partialTypedGroups)}; params?: Router.UnknownInputParams; }`
     );
@@ -84,11 +82,13 @@ export function getTypedRoutesDeclarationFile(
       })
       .join('');
 
+    // A trailing parameter already accepts a query string or a hash
+    const suffix = dynamicRouteTemplate.endsWith(']') ? '' : urlParams;
     dynamicRouteStrings.push(
       contextKeyToType(
         dynamicRouteTemplate
           .replaceAll(CATCH_ALL, '${string}')
-          .replaceAll(SLUG, '${Router.SingleRoutePart<T>}') + urlParams,
+          .replaceAll(SLUG, '${Router.SingleRoutePart<T>}') + suffix,
         partialTypedGroups
       )
     );
@@ -101,9 +101,11 @@ export function getTypedRoutesDeclarationFile(
     );
   }
 
+  // One object for all static routes keeps the union small. TypeScript compares every pair of
+  // members when it combines two `Href` values and fails with TS2590 on large unions.
   const href = [
     ...staticRoutesStrings,
-    ...staticRouteInputObjects,
+    `{ pathname: ${staticPathnames.join(' | ')}; params?: Router.UnknownInputParams; }`,
     ...dynamicRouteStrings,
     ...dynamicRouteInputObjects,
   ].join(' | ');

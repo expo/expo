@@ -157,7 +157,11 @@ fun PullToRefreshContainer(
       ) {
         CircularProgressBar(
           size = INDICATOR_SIZE,
-          progress = if (isRefreshing) null else progress
+          progress = if (isRefreshing) {
+            null
+          } else {
+            progress
+          }
         )
       }
     }

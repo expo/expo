@@ -1,14 +1,52 @@
 # Changelog
 
-## Unpublished
+## 58.0.7
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Android] Fix async functions rejecting with `NoSuchMethodError` on `expo-modules-core` 58.0.18 and later. The prebuilt Android library is now built against Expo Modules v2 runtime 0.2.5. ([#51693](https://github.com/expo/expo/pull/51693) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.6
+
+### Patch Changes
+
+- [iOS] Remove the module class declarations from `expo-module.config.json`. Autolinking now detects the `@ExpoModule`-annotated classes. ([#49784](https://github.com/expo/expo/pull/49784) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.5
+
+### Patch Changes
+
+- [Android] Migrate to the Expo Modules API 2.0. ([#51088](https://github.com/expo/expo/pull/51088) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.4
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-28
+
+### 💡 Others
+
+- [iOS] Derive the prebuilt XCFramework's target layout from a checked-in `Package.swift` instead of generating it at build time. The built artifact is unchanged. ([#50417](https://github.com/expo/expo/pull/50417) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- [iOS] Migrate to the Expo Modules API 2.0 macros. ([#50047](https://github.com/expo/expo/pull/50047) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.0 — 2026-09-10
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [android] Fix `performAndroidHapticsAsync` doing nothing by running it on the main queue. ([#49263](https://github.com/expo/expo/pull/49263) by [@KAMRONBEK](https://github.com/KAMRONBEK))
 
 ## 57.0.1 - 2026-07-15
 

@@ -33,7 +33,10 @@ export function ListItem(props: ListItemProps) {
   const supporting = slots.supporting ?? supportingText;
 
   return (
-    <Pressable onPress={onPress} style={styles.row} testID={testID}>
+    <Pressable
+      onPress={onPress}
+      style={[styles.row, onPress != null ? styles.rowIsPressable : styles.rowIsStatic]}
+      testID={testID}>
       {leading != null ? <View style={styles.slot}>{leading}</View> : null}
       <View style={styles.main}>
         <Text style={isDark && styles.darkText}>{slots.headline}</Text>
@@ -52,7 +55,13 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingVertical: 12,
     paddingHorizontal: 16,
+  },
+  // Pressable defaults to cursor: pointer; override it when not pressable.
+  rowIsPressable: {
     cursor: 'pointer',
+  },
+  rowIsStatic: {
+    cursor: 'auto',
   },
   main: {
     flexDirection: 'column',

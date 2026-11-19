@@ -1,5 +1,6 @@
 package expo.modules.audio
 
+import android.media.AudioManager
 import android.media.MediaRecorder
 import android.os.Build
 import expo.modules.kotlin.records.Field
@@ -23,11 +24,11 @@ enum class LoopMode(val value: String) : Enumerable {
 
 @OptimizedRecord
 class AudioMode(
-  @Field val shouldPlayInBackground: Boolean = false,
+  @Field val shouldPlayInBackground: Boolean?,
   @Field val shouldRouteThroughEarpiece: Boolean?,
   @Field val interruptionMode: InterruptionMode?,
-  @Field val allowsBackgroundRecording: Boolean = false,
-  @Field val playsInSilentMode: Boolean = true
+  @Field val allowsBackgroundRecording: Boolean?,
+  @Field val playsInSilentMode: Boolean?
 ) : Record
 
 // Data class because we want `equals`
@@ -113,13 +114,23 @@ class AudioLockScreenOptions(
   @Field val showSeekBackward: Boolean,
   @Field val showNextTrack: Boolean = false,
   @Field val showPreviousTrack: Boolean = false,
-  @Field val isLiveStream: Boolean? = null
+  @Field val isLiveStream: Boolean? = null,
+  @Field val seekForwardIntervalSeconds: Double = 10.0,
+  @Field val seekBackwardIntervalSeconds: Double = 10.0
 ) : Record
 
 enum class InterruptionMode(val value: String) : Enumerable {
   DO_NOT_MIX("doNotMix"),
+  DO_NOT_MIX_PERSISTENT("doNotMixPersistent"),
   DUCK_OTHERS("duckOthers"),
-  MIX_WITH_OTHERS("mixWithOthers")
+  MIX_WITH_OTHERS("mixWithOthers");
+
+  fun toAudioFocusGain(): Int? = when (this) {
+    DO_NOT_MIX_PERSISTENT -> AudioManager.AUDIOFOCUS_GAIN
+    DO_NOT_MIX -> AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+    DUCK_OTHERS -> AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
+    MIX_WITH_OTHERS -> null
+  }
 }
 
 @OptimizedRecord

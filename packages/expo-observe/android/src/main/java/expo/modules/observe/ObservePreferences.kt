@@ -8,6 +8,8 @@ import kotlinx.serialization.json.Json
 private const val PREFS_NAME = "dev.expo.observe"
 private const val KEY_CONFIG = "config"
 private const val KEY_BUNDLE_DEFAULTS = "bundleDefaults"
+private const val KEY_LAST_DISPATCHED_METRIC_ID = "lastDispatchedMetricId"
+private const val KEY_LAST_DISPATCHED_LOG_ID = "lastDispatchedLogId"
 
 /**
  * Snapshot of the last `configure(...)` payload
@@ -16,7 +18,10 @@ private const val KEY_BUNDLE_DEFAULTS = "bundleDefaults"
 data class PersistedConfig(
   val dispatchingEnabled: Boolean? = null,
   val dispatchInDebug: Boolean? = null,
-  val sampleRate: Double? = null
+  val sampleRate: Double? = null,
+  val errorSampleRate: Double? = null,
+  val ignoredMetrics: List<String> = emptyList(),
+  val ignoredEvents: List<String> = emptyList()
 )
 
 /**
@@ -52,6 +57,26 @@ object ObservePreferences {
     val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     prefs.edit {
       putString(KEY_BUNDLE_DEFAULTS, Json.encodeToString(defaults))
+    }
+  }
+
+  fun getLastDispatchedMetricId(context: Context): Long =
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+      .getLong(KEY_LAST_DISPATCHED_METRIC_ID, -1)
+
+  fun setLastDispatchedMetricId(context: Context, id: Long) {
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit(commit = true) {
+      putLong(KEY_LAST_DISPATCHED_METRIC_ID, id)
+    }
+  }
+
+  fun getLastDispatchedLogId(context: Context): Long =
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+      .getLong(KEY_LAST_DISPATCHED_LOG_ID, -1)
+
+  fun setLastDispatchedLogId(context: Context, id: Long) {
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit(commit = true) {
+      putLong(KEY_LAST_DISPATCHED_LOG_ID, id)
     }
   }
 }

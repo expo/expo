@@ -1,7 +1,7 @@
 ---
 title: Configure a development build in cloud
 sidebar_title: Configure development build
-description: Learn how to configure a development build for a project using EAS Build.
+description: Learn how to configure a development build for a project using Expo Build.
 hasVideoLink: true
 ---
 
@@ -13,12 +13,12 @@ import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-In this chapter, we'll set up and configure a development build with EAS for our example app.
+In this chapter, we'll set up and configure a development build with Expo Build for our example app.
 
 <VideoBoxLink
   videoId="uQCE9zl3dXU"
   title="Watch: How to configure a development build"
-  description="Learn how to install expo-dev-client, configure build profiles in eas.json, and create your first development build with EAS Build."
+  description="Learn how to install expo-dev-client, configure build profiles in eas.json, and create your first development build with Expo Build."
 />
 
 ---
@@ -27,7 +27,7 @@ In this chapter, we'll set up and configure a development build with EAS for our
 
 Let's start by learning about what are development builds and why we need them.
 
-A [development build](/develop/development-builds/introduction/) is a debug version of our project. It is optimized for quick iterations when creating an app. It contains the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library, which offers a robust and complete development environment. This setup allows us to integrate any native library or change code inside the [native directories](/workflow/overview/#android-and-ios-native-projects) as required.
+A [development build](/develop/development-builds/introduction/) is a debug version of our project. It is optimized for quick iterations when creating an app. It contains the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library, which provides a full development environment. This setup allows us to integrate any native library or change code inside the [native directories](/workflow/overview/#android-and-ios-native-projects) as required.
 
 ### Key highlights
 
@@ -69,17 +69,17 @@ Run the `npx expo start` to start the [development server](/get-started/start-de
   }}
 />
 
-This command starts the metro bundler. In the terminal window, we see the QR code followed by the `Metro waiting on...` and a manifest URL:
+This command starts the Metro bundler. In the terminal window, we see the QR code followed by `Metro:` and a manifest URL:
 
 <ContentSpotlight
   alt="Running development server"
-  src="/static/images/tutorial/eas/development-server.webp"
+  src="/static/images/tutorial/eas/configure-development-build-development-server.webp"
   className="max-w-[600px]"
 />
 
 Let's notice the changes installing the `expo-dev-client` library:
 
-- The manifest URL contains `expo-development-client` along with the app scheme
+- The manifest URL contains `__expo_url` along with the app scheme
 - The development server now operates for a development build (instead of Expo Go).
 
 Since we do not have a development build installed on one of our devices or an emulator/simulator, we can't run our project yet.
@@ -113,39 +113,41 @@ To log in, run the following command:
 
 This command asks for our Expo account email or username and password to complete the login.
 
-### Initialize and link the project to EAS
+### Initialize and link the project to Expo Services
 
-For any new project, the first step is to initialize and link it to the EAS servers. Run the following command:
+For any new project, the first step is to initialize and link it to the Expo servers. Run the following command:
 
 <Terminal cmd={['$ eas init']} />
 
 On running, this command:
 
-- Requests verification of the account owner by entering our Expo account credentials and asks if we want to create a new EAS project:
+- Asks which account should own the project (when we have more than one) and if we want to create an Expo Services project:
 
 <Terminal
   cmd={[
     '# Output after running eas init',
-    '✔ Which account should own this project? > your-username',
+    '✔ Which account should own this project? › your-username',
     '✔ Would you like to create a project for @your-username/sticker-smash? … yes',
     '✔ Created @your-username/sticker-smash',
     '✔ Project successfully linked (ID: XXXX-XX-XX-XXXX) (modified app.json)',
+    '✔ Set the project icon from icon in your app config',
   ]}
 />
 
-- Creates EAS project and provides a link to that project which we can open in the EAS dashboard:
+- Creates Expo Services project and provides a link to that project which we can open in the Expo dashboard:
 
 <ContentSpotlight
-  alt="New project in EAS dashboard"
-  src="/static/images/tutorial/eas/new-project.png"
+  alt="New project in Expo dashboard"
+  src="/static/images/tutorial/eas/configure-development-build-new-project.webp"
 />
 
-- Generates a unique `projectId` and links this EAS project to the example app on our development machine.
-- Modifies **app.json** to include [`extra.eas.projectId`](/versions/latest/sdk/constants/#easconfig) and updates its value with the unique ID created.
+- Generates a unique `projectId` and links this Expo Services project to the example app on our development machine.
+- Modifies **app.json** to include [`extra.eas.projectId`](/versions/latest/sdk/constants/#easconfig) with the unique ID created, and [`owner`](/versions/latest/config/app/#owner) with the name of the account that owns the project.
+- Uploads the `icon` from **app.json** as the project icon in the Expo dashboard, if the project does not have an icon yet.
 
 <Collapsible summary={<>What is <CODE>projectId</CODE> in app.json?</>}>
 
-When `eas init` runs, it associates a unique identifier for our project in **app.json** under `extra.eas.projectId`. The value of this property is used to identify our project on EAS servers.
+When `eas init` runs, it associates a unique identifier for our project in **app.json** under `extra.eas.projectId`. The value of this property is used to identify our project on Expo servers.
 
 ```json
 {
@@ -163,9 +165,9 @@ When `eas init` runs, it associates a unique identifier for our project in **app
 
 <Step label="3">
 
-## Configure project for EAS Build
+## Configure project for Expo Build
 
-To set up our project for EAS Build, run the following command:
+To set up our project for Expo Build, run the following command:
 
 <Terminal cmd={['$ eas build:configure']} />
 
@@ -177,7 +179,7 @@ On running, this command:
 ```json eas.json
 {
   "cli": {
-    "version": ">= 16.18.0",
+    "version": ">= 24.12.1",
     "appVersionSource": "remote"
   },
   "build": {

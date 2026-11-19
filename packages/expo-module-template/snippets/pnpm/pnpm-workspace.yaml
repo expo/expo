@@ -1,0 +1,9 @@
+# Lets collaborators on pnpm versions before 11, which require this field, install the module
+packages:
+  - '.'
+
+# Jest's dependencies below ship prebuilt binaries, so their install scripts aren't needed.
+# pnpm fails the install when build scripts are neither allowed nor disallowed.
+allowBuilds:
+  '@parcel/watcher': false
+  unrs-resolver: false

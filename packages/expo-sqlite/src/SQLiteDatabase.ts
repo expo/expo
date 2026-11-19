@@ -63,8 +63,8 @@ export class SQLiteDatabase {
    *
    * @param databaseName The name of the current attached databases. The default value is `main` which is the default database name.
    */
-  public serializeAsync(databaseName: string = 'main'): Promise<Uint8Array> {
-    return this.nativeDatabase.serializeAsync(databaseName);
+  public async serializeAsync(databaseName: string = 'main'): Promise<Uint8Array> {
+    return toUint8Array(await this.nativeDatabase.serializeAsync(databaseName));
   }
 
   /**
@@ -143,7 +143,12 @@ export class SQLiteDatabase {
       await task();
       await this.execAsync('COMMIT');
     } catch (e) {
-      await this.execAsync('ROLLBACK');
+      try {
+        await this.execAsync('ROLLBACK');
+      } catch {
+        // SQLite may already have rolled back (for example, after an interrupted write).
+        // Preserve the original error if rollback also fails.
+      }
       throw e;
     }
   }
@@ -156,6 +161,8 @@ export class SQLiteDatabase {
    * the other async write queries will abort with `database is locked` error.
    *
    * > **Note:** This function is not supported on web.
+   *
+   * > **Note:** This method runs on a new database connection, so connection settings made on the original database, such as `PRAGMA foreign_keys = ON`, do not apply inside the transaction.
    *
    * @param task An async function to execute within a transaction. Any queries inside the transaction must be executed on the `txn` object.
    * The `txn` object has the same interfaces as the [`SQLiteDatabase`](#sqlitedatabase) object. You can use `txn` like a [`SQLiteDatabase`](#sqlitedatabase) object.
@@ -185,7 +192,11 @@ export class SQLiteDatabase {
       await task(transaction);
       await transaction.execAsync('COMMIT');
     } catch (e) {
-      await transaction.execAsync('ROLLBACK');
+      try {
+        await transaction.execAsync('ROLLBACK');
+      } catch {
+        // SQLite may already have rolled back; preserve the original error.
+      }
       error = e;
     } finally {
       await transaction.closeAsync();
@@ -200,6 +211,28 @@ export class SQLiteDatabase {
    */
   public isInTransactionSync(): boolean {
     return this.nativeDatabase.isInTransactionSync();
+  }
+
+  /**
+   * Interrupt running async operations on this connection. Returns immediately; await the operations
+   * to observe their errors before closing or reusing the connection.
+   *
+   * Affects all running statements on the connection, including shared cached handles. Interrupting
+   * a write rolls back its entire explicit transaction. Has no effect when idle; an operation that
+   * is nearly finished may still complete successfully.
+   *
+   * Throws if closing is already in progress. Interrupt and await pending operations before calling
+   * `closeAsync()` or `closeSync()`. Closing does not automatically cancel operations.
+   * For `withExclusiveTransactionAsync()`, call this on the callback's `txn` connection.
+   *
+   * @see https://www.sqlite.org/c3ref/interrupt.html
+   * @platform android
+   * @platform ios
+   * @platform macos
+   * @platform tvos
+   */
+  public interruptSync(): void {
+    return this.nativeDatabase.interruptSync();
   }
 
   /**
@@ -233,7 +266,7 @@ export class SQLiteDatabase {
    * @param databaseName The name of the current attached databases. The default value is `main` which is the default database name.
    */
   public serializeSync(databaseName: string = 'main'): Uint8Array {
-    return this.nativeDatabase.serializeSync(databaseName);
+    return toUint8Array(this.nativeDatabase.serializeSync(databaseName));
   }
 
   /**
@@ -301,7 +334,11 @@ export class SQLiteDatabase {
       task();
       this.execSync('COMMIT');
     } catch (e) {
-      this.execSync('ROLLBACK');
+      try {
+        this.execSync('ROLLBACK');
+      } catch {
+        // SQLite may already have rolled back; preserve the original error.
+      }
       throw e;
     }
   }
@@ -583,6 +620,9 @@ export async function openDatabaseAsync(
  * Open a database.
  *
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+ * > On web, this package starts the SQLite worker on the next turn.
+ * > While the worker is loading, this call throws immediately and does not block the main thread.
+ * > A later call works only after the worker has finished loading.
  *
  * @param databaseName The name of the database file to open.
  * @param options Open options.
@@ -766,4 +806,12 @@ class Transaction extends SQLiteDatabase {
     await nativeDatabase.initAsync();
     return new Transaction(db.databasePath, options, nativeDatabase);
   }
+}
+
+/**
+ * The native database hands serialized bytes over as a `Uint8Array` on iOS and as an `ArrayBuffer`
+ * on Android.
+ */
+function toUint8Array(data: Uint8Array | ArrayBuffer): Uint8Array {
+  return data instanceof Uint8Array ? data : new Uint8Array(data);
 }

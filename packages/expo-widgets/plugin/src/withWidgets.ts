@@ -11,7 +11,7 @@ export type ExpoWidgetsConfigPluginProps = {
   bundleIdentifier?: string;
   // App group identifier used for communication between the main app and widgets. Defaults to `group.<main app bundle identifier>`.
   groupIdentifier?: string;
-  // Enable push notifications for widgets. Defaults to false.
+  // Enable push notifications for Live Activities and custom notifications. Defaults to false.
   enablePushNotifications?: boolean;
   // Enable frequent updates for widgets. Defaults to false.
   frequentUpdates?: boolean;
@@ -27,7 +27,7 @@ const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps | undefined> = (con
   const enableAndroid = props?.enableAndroid ?? false;
   const widgets = props?.widgets ?? [];
 
-  const nextConfig = enableAndroid ? withAndroidWidgets(config, { widgets }) : config;
+  const nextConfig = enableAndroid ? withAndroidWidgets(config, { ...props, widgets }) : config;
   return withIosWidgets(nextConfig, { ...props, widgets });
 };
 

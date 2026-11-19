@@ -15,7 +15,7 @@ export async function resolveOptionsAsync(
   projectRoot: string,
   options: Options
 ): Promise<BuildProps> {
-  const xcodeProject = resolveXcodeProject(projectRoot);
+  const xcodeProject = await resolveXcodeProject(projectRoot);
 
   const bundlerProps = await resolveBundlerPropsAsync(projectRoot, options);
 

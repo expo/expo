@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 import { installEventLogger } from '2g';
+import { boolish } from '@expo/env';
 import arg from 'arg';
 import chalk from 'chalk';
-import { boolish } from 'getenv';
+
+import { markAsParentCommand } from './utils/parentCommand';
 
 // Bridge the legacy `EXPO_DEBUG`/`DEBUG=expo:*` switches onto `2g`'s `LOG_DEBUG` so existing
 // muscle memory keeps surfacing debug events. This must run before `installEventLogger()` so the
@@ -22,6 +24,10 @@ const commands: { [command: string]: () => Promise<Command> } = {
   run: () => import('../src/run/index.js').then((i) => i.expoRun),
   'run:ios': () => import('../src/run/ios/index.js').then((i) => i.expoRunIos),
   'run:android': () => import('../src/run/android/index.js').then((i) => i.expoRunAndroid),
+  compile: () => import('../src/compile/index.js').then((i) => i.expoCompile),
+  'compile:ios': () => import('../src/compile/ios/index.js').then((i) => i.expoCompileIos),
+  'compile:android': () =>
+    import('../src/compile/android/index.js').then((i) => i.expoCompileAndroid),
   start: () => import('../src/start/index.js').then((i) => i.expoStart),
   prebuild: () => import('../src/prebuild/index.js').then((i) => i.expoPrebuild),
   config: () => import('../src/config/index.js').then((i) => i.expoConfig),
@@ -30,6 +36,11 @@ const commands: { [command: string]: () => Promise<Command> } = {
   'export:embed': () => import('../src/export/embed/index.js').then((i) => i.expoExportEmbed),
 
   serve: () => import('../src/serve/index.js').then((i) => i.expoServe),
+
+  // Recorded command sessions (primarily for agents).
+  command: () => import('../src/command/index.js').then((i) => i.expoCommand),
+  'command:ps': () => import('../src/command/ps/index.js').then((i) => i.expoCommandPs),
+  'command:events': () => import('../src/command/events/index.js').then((i) => i.expoCommandEvents),
 
   // Auxiliary commands
   install: () => import('../src/install/index.js').then((i) => i.expoInstall),
@@ -66,17 +77,24 @@ const args = arg(
 const isSubcommand = !!(args._[0] && commands[args._[0]]);
 const command = isSubcommand ? args._[0]! : defaultCmd;
 const commandArgs = isSubcommand ? args._.slice(1) : args._;
+const isCommandInspection =
+  command === 'command' || command === 'command:ps' || command === 'command:events';
 
 // Setup event logger output before any console output. This single install handles explicit
 // LOG_EVENTS targets, parent IPC, and bounded command sessions in 2g's precedence order.
-installEventLogger({
-  command: args['--version']
-    ? 'expo --version'
-    : args['--help'] && !isSubcommand
-      ? 'expo --help'
-      : `expo ${command}`,
-  version: process.env.__EXPO_VERSION,
-});
+// Inspectors must not create sessions or mix their own events into JSON/JSONL output.
+if (!isCommandInspection) {
+  installEventLogger({
+    command: args['--version']
+      ? 'expo --version'
+      : args['--help'] && !isSubcommand
+        ? 'expo --help'
+        : `expo ${command}`,
+    metadata: {
+      version: process.env.__EXPO_VERSION,
+    },
+  });
+}
 
 if (args['--version']) {
   // Version is added in the build script.
@@ -119,6 +137,9 @@ if (!isSubcommand && args['--help']) {
     prebuild,
     'run:ios': runIos,
     'run:android': runAndroid,
+    command: commandInspect,
+    'command:ps': commandPs,
+    'command:events': commandEvents,
     // NOTE(EvanBacon): Don't document this command as it's a temporary
     // workaround until we can use `expo export` for all production bundling.
     // https://github.com/expo/expo/pull/21396/files#r1121025873
@@ -129,6 +150,9 @@ if (!isSubcommand && args['--help']) {
     run: _run,
     // NOTE(cedric): Still pending the migration to ESLint's flat config
     lint: _lint,
+    compile: _compile,
+    'compile:ios': _compileIos,
+    'compile:android': _compileAndroid,
     serve,
     // All other commands
     ...others
@@ -143,6 +167,13 @@ if (!isSubcommand && args['--help']) {
     ${Object.keys({ 'run:ios': runIos, 'run:android': runAndroid, prebuild }).join(', ')}
     ${Object.keys({ install, customize, config, serve }).join(', ')}
     {dim ${Object.keys({ login, logout, whoami, register }).join(', ')}}
+
+  {bold Agent Commands}
+    ${Object.keys({ command: commandInspect, 'command:ps': commandPs, 'command:events': commandEvents }).join(', ')}
+    Discover recorded Expo CLI sessions and replay structured events:
+    {dim $} npx expo command:ps --active --json
+    {dim $} npx expo command:events <session-id> --since 5m
+    Add {bold --help} to either command for selectors and filtering options.
 
   {bold Options}
     --version, -v   Version number
@@ -230,13 +261,16 @@ if (args['--help']) {
 process.on('SIGINT', () => process.exit(0));
 process.on('SIGTERM', () => process.exit(0));
 
+// Child CLI invocations inherit this command, including those launched through build tools.
+markAsParentCommand(`expo ${command}`);
+
 commands[command]!().then((exec) => {
   exec(commandArgs);
 
   // NOTE(EvanBacon): Track some basic telemetry events indicating the command
   // that was run. This can be disabled with the $EXPO_NO_TELEMETRY environment variable.
   // We do this to determine how well deprecations are going before removing a command.
-  if (!boolish('EXPO_NO_TELEMETRY', false)) {
+  if (!isCommandInspection && !boolish('EXPO_NO_TELEMETRY', false)) {
     const { recordCommand } =
       require('../src/utils/telemetry') as typeof import('../src/utils/telemetry');
     recordCommand(command);

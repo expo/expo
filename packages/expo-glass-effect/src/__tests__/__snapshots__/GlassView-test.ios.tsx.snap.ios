@@ -1,9 +1,45 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`renders a clear liquid glass view 1`] = `
 <ViewManagerAdapter_ExpoGlassEffect
   glassEffectStyle="clear"
   testID="glass-view"
+/>
+`;
+
+exports[`renders a liquid glass view tinted with a DynamicColorIOS 1`] = `
+<ViewManagerAdapter_ExpoGlassEffect
+  testID="glass-view"
+  tintColor={
+    {
+      "dynamic": {
+        "dark": "black",
+        "highContrastDark": undefined,
+        "highContrastLight": undefined,
+        "light": "white",
+      },
+    }
+  }
+/>
+`;
+
+exports[`renders a liquid glass view tinted with a PlatformColor 1`] = `
+<ViewManagerAdapter_ExpoGlassEffect
+  testID="glass-view"
+  tintColor={
+    {
+      "semantic": [
+        "systemBlue",
+      ],
+    }
+  }
+/>
+`;
+
+exports[`renders a liquid glass view tinted with a string 1`] = `
+<ViewManagerAdapter_ExpoGlassEffect
+  testID="glass-view"
+  tintColor="rgba(255, 59, 48, 0.7)"
 />
 `;
 

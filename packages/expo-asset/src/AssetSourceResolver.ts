@@ -1,6 +1,5 @@
-import type { PackagerAsset } from '@react-native/assets-registry/registry';
 import { Platform } from 'expo-modules-core';
-import { PixelRatio } from 'react-native';
+import { PixelRatio, type PackagerAsset } from 'react-native';
 
 import type { AssetMetadata } from './AssetSources';
 

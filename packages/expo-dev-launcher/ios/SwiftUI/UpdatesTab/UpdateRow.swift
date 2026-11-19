@@ -24,7 +24,7 @@ struct UpdateRow: View {
     }
     .padding()
     .background(Color.expoSecondarySystemBackground)
-    .cornerRadius(12)
+    .clipShape(RoundedRectangle(cornerRadius: 12))
   }
 
   private var openButton: some View {

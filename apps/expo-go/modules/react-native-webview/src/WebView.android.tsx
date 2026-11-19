@@ -1,3 +1,4 @@
+import invariant from 'invariant';
 import React, {
   forwardRef,
   ReactElement,
@@ -6,16 +7,13 @@ import React, {
   useImperativeHandle,
   useRef,
 } from 'react';
-
 import { Image, View, ImageSourcePropType, HostComponent } from 'react-native';
-
 import BatchedBridge from 'react-native/Libraries/BatchedBridge/BatchedBridge';
 import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
-import invariant from 'invariant';
-
-import RNCWebView, { Commands, NativeProps } from './RNCWebViewNativeComponent';
 import RNCWebViewModule from './NativeRNCWebViewModule';
+import RNCWebView, { Commands, NativeProps } from './RNCWebViewNativeComponent';
+import styles from './WebView.styles';
 import {
   defaultOriginWhitelist,
   defaultRenderError,
@@ -29,13 +27,11 @@ import {
   type ShouldStartLoadRequestEvent,
 } from './WebViewTypes';
 
-import styles from './WebView.styles';
-
-const { resolveAssetSource } = Image;
+const resolveAssetSource = (source: ImageSourcePropType) => Image.resolveAssetSource(source);
 
 const directEventEmitter = new EventEmitter();
 
-const registerCallableModule: (name: string, module: Object) => void =
+const registerCallableModule: (name: string, module: object) => void =
   // `registerCallableModule()` is available in React Native 0.74 and above.
   // Fallback to use `BatchedBridge.registerCallableModule()` for older versions.
 
@@ -48,9 +44,7 @@ registerCallableModule('RNCWebViewMessagingModule', {
   ) => {
     directEventEmitter.emit('onShouldStartLoadWithRequest', event);
   },
-  onMessage: (
-    event: WebViewMessageEvent & { messagingModuleName?: string }
-  ) => {
+  onMessage: (event: WebViewMessageEvent & { messagingModuleName?: string }) => {
     directEventEmitter.emit('onMessage', event);
   },
 });
@@ -60,7 +54,7 @@ registerCallableModule('RNCWebViewMessagingModule', {
  */
 let uniqueRef = 0;
 
-const WebViewComponent = forwardRef<{}, AndroidWebViewProps>(
+const WebViewComponent = forwardRef<unknown, AndroidWebViewProps>(
   (
     {
       overScrollMode = 'always',
@@ -101,20 +95,13 @@ const WebViewComponent = forwardRef<{}, AndroidWebViewProps>(
     },
     ref
   ) => {
-    const messagingModuleName = useRef<string>(
-      `WebViewMessageHandler${(uniqueRef += 1)}`
-    ).current;
-    const webViewRef = useRef<React.ComponentRef<
-      HostComponent<NativeProps>
-    > | null>(null);
+    const messagingModuleName = useRef<string>(`WebViewMessageHandler${(uniqueRef += 1)}`).current;
+    const webViewRef = useRef<React.ComponentRef<HostComponent<NativeProps>> | null>(null);
 
     const onShouldStartLoadWithRequestCallback = useCallback(
       (shouldStart: boolean, url: string, lockIdentifier?: number) => {
         if (lockIdentifier) {
-          RNCWebViewModule.shouldStartLoadWithLockIdentifier(
-            shouldStart,
-            lockIdentifier
-          );
+          RNCWebViewModule.shouldStartLoadWithLockIdentifier(shouldStart, lockIdentifier);
         } else if (shouldStart && webViewRef.current) {
           Commands.loadUrl(webViewRef.current, url);
         }
@@ -157,8 +144,7 @@ const WebViewComponent = forwardRef<{}, AndroidWebViewProps>(
     useImperativeHandle(
       ref,
       () => ({
-        goForward: () =>
-          webViewRef.current && Commands.goForward(webViewRef.current),
+        goForward: () => webViewRef.current && Commands.goForward(webViewRef.current),
         goBack: () => webViewRef.current && Commands.goBack(webViewRef.current),
         reload: () => {
           setViewState('LOADING');
@@ -166,42 +152,35 @@ const WebViewComponent = forwardRef<{}, AndroidWebViewProps>(
             Commands.reload(webViewRef.current);
           }
         },
-        stopLoading: () =>
-          webViewRef.current && Commands.stopLoading(webViewRef.current),
+        stopLoading: () => webViewRef.current && Commands.stopLoading(webViewRef.current),
         postMessage: (data: string) =>
           webViewRef.current && Commands.postMessage(webViewRef.current, data),
         injectJavaScript: (data: string) =>
-          webViewRef.current &&
-          Commands.injectJavaScript(webViewRef.current, data),
-        requestFocus: () =>
-          webViewRef.current && Commands.requestFocus(webViewRef.current),
-        clearFormData: () =>
-          webViewRef.current && Commands.clearFormData(webViewRef.current),
+          webViewRef.current && Commands.injectJavaScript(webViewRef.current, data),
+        requestFocus: () => webViewRef.current && Commands.requestFocus(webViewRef.current),
+        clearFormData: () => webViewRef.current && Commands.clearFormData(webViewRef.current),
         clearCache: (includeDiskFiles: boolean) =>
-          webViewRef.current &&
-          Commands.clearCache(webViewRef.current, includeDiskFiles),
-        clearHistory: () =>
-          webViewRef.current && Commands.clearHistory(webViewRef.current),
+          webViewRef.current && Commands.clearCache(webViewRef.current, includeDiskFiles),
+        clearHistory: () => webViewRef.current && Commands.clearHistory(webViewRef.current),
       }),
       [setViewState, webViewRef]
     );
 
     useEffect(() => {
-      const onShouldStartLoadWithRequestSubscription =
-        directEventEmitter.addListener(
-          'onShouldStartLoadWithRequest',
-          (
-            event: ShouldStartLoadRequestEvent & {
-              messagingModuleName?: string;
-            }
-          ) => {
-            if (event.messagingModuleName === messagingModuleName) {
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              const { messagingModuleName: _, ...rest } = event;
-              onShouldStartLoadWithRequest(rest);
-            }
+      const onShouldStartLoadWithRequestSubscription = directEventEmitter.addListener(
+        'onShouldStartLoadWithRequest',
+        (
+          event: ShouldStartLoadRequestEvent & {
+            messagingModuleName?: string;
           }
-        );
+        ) => {
+          if (event.messagingModuleName === messagingModuleName) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { messagingModuleName: _, ...rest } = event;
+            onShouldStartLoadWithRequest(rest);
+          }
+        }
+      );
 
       const onMessageSubscription = directEventEmitter.addListener(
         'onMessage',
@@ -224,10 +203,7 @@ const WebViewComponent = forwardRef<{}, AndroidWebViewProps>(
     if (viewState === 'LOADING') {
       otherView = (renderLoading || defaultRenderLoading)();
     } else if (viewState === 'ERROR') {
-      invariant(
-        lastErrorEvent != null,
-        'lastErrorEvent expected to be non-null'
-      );
+      invariant(lastErrorEvent != null, 'lastErrorEvent expected to be non-null');
       if (lastErrorEvent) {
         otherView = (renderError || defaultRenderError)(
           lastErrorEvent.domain,
@@ -235,8 +211,6 @@ const WebViewComponent = forwardRef<{}, AndroidWebViewProps>(
           lastErrorEvent.description
         );
       }
-    } else if (viewState !== 'IDLE') {
-      console.error(`RNCWebView invalid state encountered: ${viewState}`);
     }
 
     const webViewStyles = [styles.container, styles.webView, style];
@@ -244,17 +218,16 @@ const WebViewComponent = forwardRef<{}, AndroidWebViewProps>(
 
     if (typeof source !== 'number' && source && 'method' in source) {
       if (source.method === 'POST' && source.headers) {
-        console.warn(
-          'WebView: `source.headers` is not supported when using POST.'
-        );
+        console.warn('WebView: `source.headers` is not supported when using POST.');
       } else if (source.method === 'GET' && source.body) {
         console.warn('WebView: `source.body` is not supported when using GET.');
       }
     }
 
-    const NativeWebView =
-      (nativeConfig?.component as typeof RNCWebView | undefined) || RNCWebView;
+    // oxlint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    const NativeWebView = (nativeConfig?.component as typeof RNCWebView | undefined) || RNCWebView;
 
+    // oxlint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const sourceResolved = resolveAssetSource(source as ImageSourcePropType);
     const newSource =
       typeof sourceResolved === 'object'
@@ -263,9 +236,7 @@ const WebViewComponent = forwardRef<{}, AndroidWebViewProps>(
               return {
                 ...prev,
                 [currKey]:
-                  currKey === 'headers' &&
-                  currValue &&
-                  typeof currValue === 'object'
+                  currKey === 'headers' && currValue && typeof currValue === 'object'
                     ? Object.entries(currValue).map(([key, value]) => {
                         return {
                           name: key,
@@ -330,8 +301,7 @@ const WebViewComponent = forwardRef<{}, AndroidWebViewProps>(
   }
 );
 
-// native implementation should return "true" only for Android 5+
-const { isFileUploadSupported } = RNCWebViewModule;
+const isFileUploadSupported = async () => true;
 
 const WebView = Object.assign(WebViewComponent, { isFileUploadSupported });
 

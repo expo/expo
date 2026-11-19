@@ -2,6 +2,8 @@ import assert from 'assert';
 import { URL } from 'url';
 
 import * as Log from '../../log';
+import { env } from '../../utils/env';
+import { isInteractive } from '../../utils/interactive';
 import type { GatewayInfo } from '../../utils/ip';
 import { getGateway, getGatewayAsync } from '../../utils/ip';
 import { debugEvent } from './events';
@@ -16,6 +18,22 @@ export interface CreateURLOptions {
   hostname?: string | null;
   /** Address the client used to reach the dev server, from a forwarded request */
   forwarded?: ForwardedRequestInfo | null;
+}
+
+/** Reserved launch URL params that keep the dev menu closed for that launch. Only `__expo_disable_onboarding` is persisted. */
+const NO_DEV_MENU_LAUNCH_QUERY =
+  '__expo_disable_fab=1&__expo_disable_auto_launch=1&__expo_disable_onboarding=1';
+
+/** `EXPO_NO_DEV_MENU` wins when set; otherwise hide the dev menu in non-interactive runs (CI, agents, piped output). */
+function shouldHideDevMenu(): boolean {
+  return process.env.EXPO_NO_DEV_MENU == null ? !isInteractive() : env.EXPO_NO_DEV_MENU;
+}
+
+function withDevMenuLaunchParams(url: string): string {
+  if (!shouldHideDevMenu()) {
+    return url;
+  }
+  return url + (url.includes('?') ? '&' : '?') + NO_DEV_MENU_LAUNCH_QUERY;
 }
 
 interface UrlComponents {
@@ -37,11 +55,11 @@ export class UrlCreator {
   constructor(
     public defaults: CreateURLOptions,
     private bundlerInfo: BundlerInfo,
-    private gatewayInfo: GatewayInfo = getGateway()
+    private gatewayInfo?: GatewayInfo
   ) {}
 
   static async init(defaults: CreateURLOptions | undefined | null, bundlerInfo: BundlerInfo) {
-    const gatewayInfo = await getGatewayAsync();
+    const gatewayInfo = defaults?.hostType === 'localhost' ? undefined : await getGatewayAsync();
     return new UrlCreator(defaults || {}, bundlerInfo, gatewayInfo);
   }
 
@@ -80,14 +98,24 @@ export class UrlCreator {
       return null;
     }
 
-    // We fallback to the assumed scheme based on whether we have our own proxy (a tunnel)
-    const scheme =
-      options?.forwarded?.protocol ?? (this.defaults?.hostType === 'tunnel' ? 'https' : 'http');
+    const scheme = options?.forwarded?.protocol ?? 'http';
     const manifestUrl = this.constructUrl({ ...options, scheme });
     const manifestUrlEncoded = encodeURIComponent(manifestUrl);
-    const devClientUrl = `${protocol}://expo-development-client/?url=${manifestUrlEncoded}`;
+    const devClientUrl = withDevMenuLaunchParams(`${protocol}://?__expo_url=${manifestUrlEncoded}`);
     debugEvent('dev_client_url', { url: devClientUrl, manifestUrl });
     return devClientUrl;
+  }
+
+  /** Create a URL for launching in Expo Go, e.g. `exp://192.168.1.10:8081`. */
+  public constructExpoGoUrl(
+    options?: Partial<CreateURLOptions> | null,
+    scheme: 'exp' | 'exps' = 'exp'
+  ): string {
+    const url = this.constructUrl({
+      ...options,
+      scheme: scheme === 'exps' ? 'https' : (options?.forwarded?.protocol ?? 'http'),
+    });
+    return withDevMenuLaunchParams(url.replace(/^http/, 'exp'));
   }
 
   /** Create a generic URL. */
@@ -101,7 +129,7 @@ export class UrlCreator {
   }
 
   public getDefaultRouteAddress(): string {
-    return this.gatewayInfo.address;
+    return (this.gatewayInfo ??= getGateway()).address;
   }
 
   /** URL scheme configured for development-build deep links (e.g. `myapp`). `null` when unset. */
@@ -109,7 +137,7 @@ export class UrlCreator {
     return this.defaults?.scheme ?? null;
   }
 
-  /** Get the URL components from the Ngrok server URL. */
+  /** Get the URL components from the tunnel URL. */
   private getTunnelUrlComponents(options: Pick<CreateURLOptions, 'scheme'>): UrlComponents | null {
     const tunnelUrl = this.bundlerInfo.getTunnelUrl?.();
     if (!tunnelUrl) {
@@ -119,7 +147,10 @@ export class UrlCreator {
     return {
       port: parsed.port,
       hostname: parsed.hostname,
-      protocol: options.scheme ?? 'http',
+      protocol:
+        parsed.protocol === 'https:' && (options.scheme == null || options.scheme === 'http')
+          ? 'https'
+          : (options.scheme ?? 'http'),
     };
   }
 
@@ -152,7 +183,7 @@ export class UrlCreator {
     return {
       hostname: getDefaultHostname(
         options,
-        this.gatewayInfo,
+        () => this.getDefaultRouteAddress(),
         this.bundlerInfo.getHostnameOverride?.()
       ),
       port: this.bundlerInfo.getPort().toString(),
@@ -201,7 +232,7 @@ function getUrlComponentsFromProxyUrl(
 
 const getDefaultHostname = (
   options: CreateURLOptions,
-  gateway: GatewayInfo,
+  getGatewayAddress: () => string,
   hostnameOverride?: string | null
 ) => {
   if (hostnameOverride) {
@@ -211,8 +242,7 @@ const getDefaultHostname = (
     // to normalize to an address that's consistent
     return '127.0.0.1';
   } else {
-    // Fall back to local address
-    return options.hostname || gateway.address;
+    return options.hostname || getGatewayAddress();
   }
 };
 

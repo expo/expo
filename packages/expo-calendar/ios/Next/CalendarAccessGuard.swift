@@ -30,31 +30,31 @@ public class CalendarAccessGuard {
     self.permittedEntities = permittedEntities
   }
 
-  public func checkCalendarPermissions() throws {
-    try self.checkPermissions(
+  public func ensureCalendarFullAccess() throws {
+    try self.ensurePermissions(
       entity: .event,
       requester: CalendarNextPermissionsRequester.self,
       permissionName: "CALENDAR"
     )
   }
 
-  public func checkCalendarWritePermissions() throws {
-    try self.checkPermissions(
+  public func ensureCalendarWriteOnlyOrFullAccess() throws {
+    try self.ensurePermissions(
       entity: .event,
       requester: CalendarWriteOnlyNextPermissionsRequester.self,
       permissionName: "CALENDARWRITEONLY"
     )
   }
 
-  public func checkRemindersPermissions() throws {
-    try self.checkPermissions(
+  public func ensureRemindersAccess() throws {
+    try self.ensurePermissions(
       entity: .reminder,
       requester: RemindersNextPermissionRequester.self,
       permissionName: "REMINDERS"
     )
   }
 
-  private func checkPermissions(
+  private func ensurePermissions(
     entity: EKEntityType,
     requester: EXPermissionsRequester.Type,
     permissionName: String

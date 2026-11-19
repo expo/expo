@@ -34,12 +34,12 @@ export function englishSourceFor(jaPath: string): string {
   return path.join(DOCS_ROOT, 'pages', path.relative(JA_DIR, jaPath));
 }
 
+export function hashContent(content: string | Buffer): string {
+  return crypto.createHash('sha256').update(content).digest('hex').slice(0, 16);
+}
+
 export function hashEnglishSource(englishPath: string): string {
-  return crypto
-    .createHash('sha256')
-    .update(fs.readFileSync(englishPath))
-    .digest('hex')
-    .slice(0, 16);
+  return hashContent(fs.readFileSync(englishPath));
 }
 
 export function readManifest(): Record<string, string> {
@@ -47,4 +47,13 @@ export function readManifest(): Record<string, string> {
     return {};
   }
   return JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+}
+
+export function findStalePages(): { checked: number; stale: string[] } {
+  const manifest = readManifest();
+  const jaPages = listJaPages();
+  const stale = jaPages
+    .filter(jaPath => manifest[relKey(jaPath)] !== hashEnglishSource(englishSourceFor(jaPath)))
+    .map(relKey);
+  return { checked: jaPages.length, stale };
 }

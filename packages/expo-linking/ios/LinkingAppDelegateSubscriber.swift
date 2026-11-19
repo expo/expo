@@ -6,6 +6,11 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:])
     -> Bool
   {
+    // Code below does not run for the trigger URL.
+    // Put anything that must run for every URL above this return.
+    if isFingerprintCheckURL(url) {
+      return false
+    }
     ExpoLinkingRegistry.shared.initialURL = url
     NotificationCenter.default.post(name: onURLReceivedNotification, object: self, userInfo: ["url": url])
     return false
@@ -13,6 +18,11 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   #elseif os(macOS)
   public func application(_ application: NSApplication, open urls: [URL]) {
     guard let url = urls.first else {
+      return
+    }
+    // Code below does not run for the trigger URL.
+    // Put anything that must run for every URL above this return.
+    if isFingerprintCheckURL(url) {
       return
     }
     ExpoLinkingRegistry.shared.initialURL = url
@@ -37,4 +47,12 @@ public class LinkingAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     }
     return false
   }
+}
+
+private func isFingerprintCheckURL(_ url: URL) -> Bool {
+  #if DEBUG
+  return EmbeddedFingerprint.CheckProtocol.isCheckURL(url)
+  #else
+  return false
+  #endif
 }

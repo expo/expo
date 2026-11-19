@@ -40,7 +40,7 @@ export class AsyncWsTunnel {
           if (status === 'disconnected') {
             Log.error(
               chalk.red(
-                'Tunnel connection has been closed. This is often related to intermittent connection problems with the ws proxy servers. Restart the dev server to try connecting again.'
+                'Tunnel connection has been closed. This is often related to intermittent connection problems with the tunnel service. Restart the dev server to try connecting again.'
               ) + chalk.gray('\nCheck the Expo status page for outages: https://status.expo.dev/')
             );
           }
@@ -72,7 +72,7 @@ export class AsyncWsTunnel {
       throw new CommandError(
         'WS_TUNNEL_SIGNED_URL',
         `Couldn't create a signed tunnel URL for this project. ${cause} ` +
-          `Unset EXPO_UNSTABLE_TUNNEL_V2 to use an ngrok tunnel instead.`
+          `Run 'npx expo start --tunnel ngrok' to use an ngrok tunnel instead.`
       );
     }
     return { apiUrl, targetUrl: `http://localhost:${this.port}` };

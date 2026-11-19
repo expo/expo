@@ -54,9 +54,9 @@ describe(ZoomTransitionSourceContextProvider, () => {
     return <Text>Test</Text>;
   }
 
-  test('provides context with identifier when conditions are met', () => {
+  test('provides context with identifier when conditions are met', async () => {
     const onContextValueChange = jest.fn<void, [ZoomTransitionSourceContextValueType]>();
-    render(
+    await render(
       <ZoomTransitionSourceContextProvider linkProps={{ href: '/test', asChild: true }}>
         <TestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionSourceContextProvider>
@@ -72,9 +72,9 @@ describe(ZoomTransitionSourceContextProvider, () => {
     expect(capturedValue.hasZoomSource).toBe(false);
   });
 
-  test('provides addSource and removeSource functions', () => {
+  test('provides addSource and removeSource functions', async () => {
     const onContextValueChange = jest.fn<void, [ZoomTransitionSourceContextValueType]>();
-    render(
+    await render(
       <ZoomTransitionSourceContextProvider linkProps={{ href: '/test', asChild: true }}>
         <TestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionSourceContextProvider>
@@ -90,9 +90,9 @@ describe(ZoomTransitionSourceContextProvider, () => {
     expect(typeof capturedValue.removeSource).toBe('function');
   });
 
-  test('addSource updates hasZoomSource to true', () => {
+  test('addSource updates hasZoomSource to true', async () => {
     const onContextValueChange = jest.fn<void, [ZoomTransitionSourceContextValueType]>();
-    render(
+    await render(
       <ZoomTransitionSourceContextProvider linkProps={{ href: '/test', asChild: true }}>
         <TestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionSourceContextProvider>
@@ -104,7 +104,7 @@ describe(ZoomTransitionSourceContextProvider, () => {
     if (!capturedValue) throw new Error('Expected capturedValue to be defined');
     expect(capturedValue.hasZoomSource).toBe(false);
 
-    act(() => {
+    await act(() => {
       capturedValue.addSource();
     });
 
@@ -116,9 +116,9 @@ describe(ZoomTransitionSourceContextProvider, () => {
     expect(updatedValue.hasZoomSource).toBe(true);
   });
 
-  test('removeSource updates hasZoomSource back to false', () => {
+  test('removeSource updates hasZoomSource back to false', async () => {
     const onContextValueChange = jest.fn<void, [ZoomTransitionSourceContextValueType]>();
-    render(
+    await render(
       <ZoomTransitionSourceContextProvider linkProps={{ href: '/test', asChild: true }}>
         <TestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionSourceContextProvider>
@@ -128,7 +128,7 @@ describe(ZoomTransitionSourceContextProvider, () => {
     const capturedValue = onContextValueChange.mock.calls[0]![0];
     // Narrows type for TypeScript
     if (!capturedValue) throw new Error('Expected capturedValue to be defined');
-    act(() => {
+    await act(() => {
       capturedValue.addSource();
     });
 
@@ -138,7 +138,7 @@ describe(ZoomTransitionSourceContextProvider, () => {
     if (!afterAddValue) throw new Error('Expected afterAddValue to be defined');
     expect(afterAddValue.hasZoomSource).toBe(true);
 
-    act(() => {
+    await act(() => {
       afterAddValue.removeSource();
     });
     const afterRemoveValue = onContextValueChange.mock.calls[2]![0];
@@ -147,9 +147,9 @@ describe(ZoomTransitionSourceContextProvider, () => {
     expect(afterRemoveValue.hasZoomSource).toBe(false);
   });
 
-  test('retains identifier between rerenders', () => {
+  test('retains identifier between rerenders', async () => {
     const onContextValueChange = jest.fn<void, [ZoomTransitionSourceContextValueType]>();
-    render(
+    await render(
       <ZoomTransitionSourceContextProvider linkProps={{ href: '/test', asChild: true }}>
         <TestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionSourceContextProvider>
@@ -163,7 +163,7 @@ describe(ZoomTransitionSourceContextProvider, () => {
     const addSource = initialValue.addSource;
     expect(initialId).toBeDefined();
 
-    act(() => {
+    await act(() => {
       addSource();
     });
 
@@ -174,9 +174,9 @@ describe(ZoomTransitionSourceContextProvider, () => {
     expect(updatedValue.identifier).toBe(initialId);
   });
 
-  test('throws error when more than one source is added', () => {
+  test('throws error when more than one source is added', async () => {
     const onContextValueChange = jest.fn<void, [ZoomTransitionSourceContextValueType]>();
-    render(
+    await render(
       <ZoomTransitionSourceContextProvider linkProps={{ href: '/test', asChild: true }}>
         <TestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionSourceContextProvider>
@@ -187,19 +187,19 @@ describe(ZoomTransitionSourceContextProvider, () => {
     // Narrows type for TypeScript
     if (!capturedValue) throw new Error('Expected capturedValue to be defined');
 
-    expect(() => {
-      act(() => {
+    await expect(async () => {
+      await act(() => {
         capturedValue.addSource();
         capturedValue.addSource();
       });
-    }).toThrow(
+    }).rejects.toThrow(
       '[expo-router] Only one Link.ZoomTransitionSource can be used within a single Link component.'
     );
   });
 
-  test('throws error when asChild is false', () => {
+  test('throws error when asChild is false', async () => {
     const onContextValueChange = jest.fn<void, [ZoomTransitionSourceContextValueType]>();
-    render(
+    await render(
       <ZoomTransitionSourceContextProvider linkProps={{ href: '/test', asChild: false }}>
         <TestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionSourceContextProvider>
@@ -209,18 +209,20 @@ describe(ZoomTransitionSourceContextProvider, () => {
     const capturedValue = onContextValueChange.mock.calls[0]![0];
     // Narrows type for TypeScript
     if (!capturedValue) throw new Error('Expected capturedValue to be defined');
-    expect(() => {
-      act(() => {
+    await expect(async () => {
+      await act(() => {
         capturedValue.addSource();
       });
-    }).toThrow('[expo-router] Link must be used with `asChild` prop to enable zoom transitions.');
+    }).rejects.toThrow(
+      '[expo-router] Link must be used with `asChild` prop to enable zoom transitions.'
+    );
   });
 
-  test('throws error when zoom transitions are disabled', () => {
+  test('throws error when zoom transitions are disabled', async () => {
     mockIsZoomTransitionEnabled.mockReturnValue(false);
 
     const onContextValueChange = jest.fn<void, [ZoomTransitionSourceContextValueType]>();
-    render(
+    await render(
       <ZoomTransitionSourceContextProvider linkProps={{ href: '/test', asChild: true }}>
         <TestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionSourceContextProvider>
@@ -230,16 +232,16 @@ describe(ZoomTransitionSourceContextProvider, () => {
     const capturedValue = onContextValueChange.mock.calls[0]![0];
     // Narrows type for TypeScript
     if (!capturedValue) throw new Error('Expected capturedValue to be defined');
-    expect(() => {
-      act(() => {
+    await expect(async () => {
+      await act(() => {
         capturedValue.addSource();
       });
-    }).toThrow('[expo-router] Zoom transitions are not enabled.');
+    }).rejects.toThrow('[expo-router] Zoom transitions are not enabled.');
   });
 
-  test('throws error when href is external', () => {
+  test('throws error when href is external', async () => {
     const onContextValueChange = jest.fn<void, [ZoomTransitionSourceContextValueType]>();
-    render(
+    await render(
       <ZoomTransitionSourceContextProvider
         linkProps={{ href: 'https://external.com', asChild: true }}>
         <TestComponent onContextValueChange={onContextValueChange} />
@@ -250,11 +252,11 @@ describe(ZoomTransitionSourceContextProvider, () => {
     const capturedValue = onContextValueChange.mock.calls[0]![0];
     // Narrows type for TypeScript
     if (!capturedValue) throw new Error('Expected capturedValue to be defined');
-    expect(() => {
-      act(() => {
+    await expect(async () => {
+      await act(() => {
         capturedValue.addSource();
       });
-    }).toThrow('[expo-router] Zoom transitions can only be used with internal links.');
+    }).rejects.toThrow('[expo-router] Zoom transitions can only be used with internal links.');
   });
 });
 
@@ -295,9 +297,9 @@ describe(ZoomTransitionTargetContextProvider, () => {
     return <Text>Target Test</Text>;
   }
 
-  test('provides context with addEnabler, removeEnabler, and hasEnabler', () => {
+  test('provides context with addEnabler, removeEnabler, and hasEnabler', async () => {
     const onContextValueChange = jest.fn<void, [ZoomTransitionTargetContextValueType]>();
-    render(
+    await render(
       <ZoomTransitionTargetContextProvider route={makeRouteForTarget('route-1')}>
         <TargetTestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionTargetContextProvider>
@@ -310,9 +312,9 @@ describe(ZoomTransitionTargetContextProvider, () => {
     expect(capturedValue.hasEnabler).toBe(false);
   });
 
-  test('addEnabler sets hasEnabler to true', () => {
+  test('addEnabler sets hasEnabler to true', async () => {
     const onContextValueChange = jest.fn<void, [ZoomTransitionTargetContextValueType]>();
-    render(
+    await render(
       <ZoomTransitionTargetContextProvider route={makeRouteForTarget('route-1')}>
         <TargetTestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionTargetContextProvider>
@@ -321,7 +323,7 @@ describe(ZoomTransitionTargetContextProvider, () => {
     const capturedValue = onContextValueChange.mock.calls[0]![0];
     expect(capturedValue.hasEnabler).toBe(false);
 
-    act(() => {
+    await act(() => {
       capturedValue.addEnabler();
     });
 
@@ -330,9 +332,9 @@ describe(ZoomTransitionTargetContextProvider, () => {
     expect(updatedValue.hasEnabler).toBe(true);
   });
 
-  test('removeEnabler sets hasEnabler back to false', () => {
+  test('removeEnabler sets hasEnabler back to false', async () => {
     const onContextValueChange = jest.fn<void, [ZoomTransitionTargetContextValueType]>();
-    render(
+    await render(
       <ZoomTransitionTargetContextProvider route={makeRouteForTarget('route-1')}>
         <TargetTestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionTargetContextProvider>
@@ -340,14 +342,14 @@ describe(ZoomTransitionTargetContextProvider, () => {
 
     const capturedValue = onContextValueChange.mock.calls[0]![0];
 
-    act(() => {
+    await act(() => {
       capturedValue.addEnabler();
     });
 
     const afterAddValue = onContextValueChange.mock.calls[1]![0];
     expect(afterAddValue.hasEnabler).toBe(true);
 
-    act(() => {
+    await act(() => {
       afterAddValue.removeEnabler();
     });
 
@@ -355,9 +357,9 @@ describe(ZoomTransitionTargetContextProvider, () => {
     expect(afterRemoveValue.hasEnabler).toBe(false);
   });
 
-  test('tracks multiple enablers correctly', () => {
+  test('tracks multiple enablers correctly', async () => {
     const onContextValueChange = jest.fn<void, [ZoomTransitionTargetContextValueType]>();
-    render(
+    await render(
       <ZoomTransitionTargetContextProvider route={makeRouteForTarget('route-1')}>
         <TargetTestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionTargetContextProvider>
@@ -366,38 +368,38 @@ describe(ZoomTransitionTargetContextProvider, () => {
     const capturedValue = onContextValueChange.mock.calls[0]![0];
 
     // Add two enablers
-    act(() => {
+    await act(() => {
       capturedValue.addEnabler();
     });
     const afterFirstAdd = onContextValueChange.mock.calls[1]![0];
     expect(afterFirstAdd.hasEnabler).toBe(true);
 
-    act(() => {
+    await act(() => {
       afterFirstAdd.addEnabler();
     });
     const afterSecondAdd = onContextValueChange.mock.calls[2]![0];
     expect(afterSecondAdd.hasEnabler).toBe(true);
 
     // Remove one - still has enabler
-    act(() => {
+    await act(() => {
       afterSecondAdd.removeEnabler();
     });
     const afterFirstRemove = onContextValueChange.mock.calls[3]![0];
     expect(afterFirstRemove.hasEnabler).toBe(true);
 
     // Remove second - no more enablers
-    act(() => {
+    await act(() => {
       afterFirstRemove.removeEnabler();
     });
     const afterSecondRemove = onContextValueChange.mock.calls[4]![0];
     expect(afterSecondRemove.hasEnabler).toBe(false);
   });
 
-  test('identifier is null when route has no zoom params', () => {
+  test('identifier is null when route has no zoom params', async () => {
     const onContextValueChange = jest.fn<void, [ZoomTransitionTargetContextValueType]>();
     const routeWithoutParams = { key: 'route-1', name: 'test', params: {} };
 
-    render(
+    await render(
       <ZoomTransitionTargetContextProvider route={routeWithoutParams}>
         <TargetTestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionTargetContextProvider>
@@ -409,9 +411,9 @@ describe(ZoomTransitionTargetContextProvider, () => {
     expect(capturedValue.identifier).toBeNull();
   });
 
-  test('provides identifier from route zoom transition params', () => {
+  test('provides identifier from route zoom transition params', async () => {
     const onContextValueChange = jest.fn<void, [ZoomTransitionTargetContextValueType]>();
-    render(
+    await render(
       <ZoomTransitionTargetContextProvider route={makeRouteForTarget('route-1', 'source-abc')}>
         <TargetTestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionTargetContextProvider>
@@ -422,10 +424,10 @@ describe(ZoomTransitionTargetContextProvider, () => {
     expect(capturedValue.identifier).toBe('source-abc');
   });
 
-  test('identifier is null when isPreview is true', () => {
+  test('identifier is null when isPreview is true', async () => {
     mockUseIsPreview.mockReturnValue(true);
     const onContextValueChange = jest.fn<void, [ZoomTransitionTargetContextValueType]>();
-    render(
+    await render(
       <ZoomTransitionTargetContextProvider route={makeRouteForTarget('route-1')}>
         <TargetTestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionTargetContextProvider>
@@ -436,10 +438,10 @@ describe(ZoomTransitionTargetContextProvider, () => {
     expect(capturedValue.identifier).toBeNull();
   });
 
-  test('identifier is null when zoom transitions are disabled', () => {
+  test('identifier is null when zoom transitions are disabled', async () => {
     mockIsZoomTransitionEnabled.mockReturnValue(false);
     const onContextValueChange = jest.fn<void, [ZoomTransitionTargetContextValueType]>();
-    render(
+    await render(
       <ZoomTransitionTargetContextProvider route={makeRouteForTarget('route-1')}>
         <TargetTestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionTargetContextProvider>

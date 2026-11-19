@@ -4,6 +4,11 @@
     "modules": ["LinearGradientModule"]
   },
   "android": {
-    "modules": ["expo.modules.lineargradient.LinearGradientModule"]
+    "modules": ["expo.modules.lineargradient.LinearGradientModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.lineargradient",
+      "repository": "local-maven-repo"
+    }
   }
 }

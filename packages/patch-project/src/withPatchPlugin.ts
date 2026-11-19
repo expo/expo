@@ -5,11 +5,11 @@ import {
   type ConfigPlugin,
   type ModPlatform,
 } from 'expo/config-plugins';
-import { glob as globAsync } from 'glob';
 import path from 'path';
 
 import * as env from './env';
 import { applyPatchAsync, getPatchChangedLinesAsync, isPatchAppliedAsync } from './gitPatch';
+import { getPatchFilesAsync } from './patchFiles';
 
 const DEFAULT_PATCH_ROOT = 'cng-patches';
 const DEFAULT_CHANGED_LINES_LIMIT = 300;
@@ -54,7 +54,7 @@ const withPatchMod: ConfigPlugin<{ platform: ModPlatform; props: PatchPluginProp
           return config;
         }
 
-        const changedLines = await getPatchChangedLinesAsync(patchFilePath);
+        const changedLines = await getPatchChangedLinesAsync(projectRoot, patchFilePath);
         const changedLinesLimit = props?.changedLinesLimit ?? DEFAULT_CHANGED_LINES_LIMIT;
         if (changedLines > changedLinesLimit) {
           WarningAggregator.addWarningForPlatform(
@@ -126,8 +126,4 @@ async function determinePatchFilePathAsync(
     return null;
   }
   return patchFilePath;
-}
-
-async function getPatchFilesAsync(patchRoot: string, platform: ModPlatform): Promise<string[]> {
-  return await globAsync(`${platform}*.patch`, { cwd: patchRoot });
 }

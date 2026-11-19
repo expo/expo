@@ -29,7 +29,7 @@ struct DevServerInfoModal: View {
       } label: {
         Image(systemName: "xmark.circle.fill")
           .font(.title2)
-          .foregroundColor(.secondary)
+          .foregroundStyle(Color.secondary)
       }
       .buttonStyle(.plain)
     }
@@ -57,7 +57,7 @@ struct DevServerInfoModal: View {
 
       Text("Alternatively, open the Camera app and scan the QR code that appears in your terminal.")
         .font(.subheadline)
-        .foregroundColor(.secondary)
+        .foregroundStyle(Color.secondary)
     }
   }
 }

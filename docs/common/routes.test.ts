@@ -1,6 +1,11 @@
 import type { NavigationRoute } from '~/types/common';
 
-import { getBreadcrumbTrail, getLatestVersionPath, isReferencePath } from './routes';
+import {
+  getBreadcrumbTrail,
+  getCanonicalUrl,
+  getLatestVersionPath,
+  isReferencePath,
+} from './routes';
 
 describe(isReferencePath, () => {
   it('returns true for unversioned pathname', () => {
@@ -17,6 +22,34 @@ describe(isReferencePath, () => {
 
   it('returns false for non-versioned pathname', () => {
     expect(isReferencePath('/build-reference/how-tos/')).toBe(false);
+  });
+});
+
+describe(getCanonicalUrl, () => {
+  it('points a versioned page at its counterpart in latest', () => {
+    expect(getCanonicalUrl('/versions/v55.0.0/sdk/media-library-next')).toBe(
+      'https://docs.expo.dev/versions/latest/sdk/media-library-next/'
+    );
+  });
+
+  it('points a page under more at itself', () => {
+    expect(getCanonicalUrl('/more/expo-cli')).toBe('https://docs.expo.dev/more/expo-cli/');
+  });
+
+  it('points a technical spec at itself', () => {
+    expect(getCanonicalUrl('/technical-specs/expo-sfv-0')).toBe(
+      'https://docs.expo.dev/technical-specs/expo-sfv-0/'
+    );
+  });
+
+  it('points a general page at itself', () => {
+    expect(getCanonicalUrl('/build-reference/how-tos')).toBe(
+      'https://docs.expo.dev/build-reference/how-tos/'
+    );
+  });
+
+  it('points the home page at the site root', () => {
+    expect(getCanonicalUrl('/')).toBe('https://docs.expo.dev');
   });
 });
 
@@ -116,15 +149,18 @@ describe(getBreadcrumbTrail, () => {
   it('returns 2-item trail for page directly under a section', () => {
     const trail = getBreadcrumbTrail(mockRoutes, '/develop/tools');
 
-    expect(trail).toEqual([{ name: 'Develop', url: 'https://docs.expo.dev' }, { name: 'Tools' }]);
+    expect(trail).toEqual([
+      { name: 'Develop', url: 'https://docs.expo.dev/develop/tools/' },
+      { name: 'Tools' },
+    ]);
   });
 
   it('returns 3-item trail for page nested in a group', () => {
     const trail = getBreadcrumbTrail(mockRoutes, '/develop/user-interface/fonts');
 
     expect(trail).toEqual([
-      { name: 'Develop', url: 'https://docs.expo.dev' },
-      { name: 'User interface', url: 'https://docs.expo.dev' },
+      { name: 'Develop', url: 'https://docs.expo.dev/develop/tools/' },
+      { name: 'User interface', url: 'https://docs.expo.dev/develop/user-interface/fonts/' },
       { name: 'Fonts' },
     ]);
   });
@@ -186,7 +222,10 @@ describe(getBreadcrumbTrail, () => {
     ] as unknown as NavigationRoute[];
 
     const trail = getBreadcrumbTrail(routes, '/section/page');
-    expect(trail).toEqual([{ name: 'Section', url: 'https://docs.expo.dev' }, { name: 'Page' }]);
+    expect(trail).toEqual([
+      { name: 'Section', url: 'https://docs.expo.dev/section/page/' },
+      { name: 'Page' },
+    ]);
   });
 
   it('filters out empty-name ancestors', () => {
@@ -203,7 +242,7 @@ describe(getBreadcrumbTrail, () => {
     expect(trail).toEqual([{ name: 'Overview' }]);
   });
 
-  it('falls back to docs root for sections without an index page', () => {
+  it('uses the first page for sections without an index page', () => {
     const routes: NavigationRoute[] = [
       {
         type: 'section',
@@ -216,7 +255,7 @@ describe(getBreadcrumbTrail, () => {
     const trail = getBreadcrumbTrail(routes, '/app-signing/app-credentials');
     expect(trail[0]).toEqual({
       name: 'App signing',
-      url: 'https://docs.expo.dev',
+      url: 'https://docs.expo.dev/app-signing/app-credentials/',
     });
   });
 
@@ -248,7 +287,7 @@ describe(getBreadcrumbTrail, () => {
     const trail = getBreadcrumbTrail(routes, '/eas/environment-variables/manage');
     expect(trail[1]).toEqual({
       name: 'Environment variables',
-      url: 'https://docs.expo.dev/eas/environment-variables',
+      url: 'https://docs.expo.dev/eas/environment-variables/',
     });
   });
 });

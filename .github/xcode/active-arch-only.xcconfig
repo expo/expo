@@ -1,0 +1,5 @@
+// Loaded through the `XCODE_XCCONFIG_FILE` environment variable by the iOS e2e builds in CI.
+// The e2e app is built in the Release configuration, where `ONLY_ACTIVE_ARCH` defaults to `NO`,
+// so Xcode compiles and links every target for both arm64 and x86_64. The simulators on the
+// Apple silicon runners only run the arm64 slice, so build only the destination's architecture.
+ONLY_ACTIVE_ARCH = YES

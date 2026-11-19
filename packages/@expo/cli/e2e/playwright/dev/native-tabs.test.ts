@@ -19,7 +19,6 @@ test.describe(inputDir, () => {
     env: {
       NODE_ENV: 'production',
       EXPO_USE_STATIC: 'single',
-      E2E_ROUTER_JS_ENGINE: 'hermes',
       E2E_ROUTER_SRC: inputDir,
       E2E_ROUTER_ASYNC: 'development',
 

@@ -20,7 +20,7 @@ internal struct DynamicConvertibleType: AnyDynamicType {
   }
 
   @JavaScriptActor
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     // `from(object:)` dispatches dynamically: reflection-based hydration for `@Field` records,
     // a direct statically-typed factory for `@Record`-synthesized ones.
     if let recordType = innerType as? any Record.Type {
@@ -36,9 +36,6 @@ internal struct DynamicConvertibleType: AnyDynamicType {
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
     if let directJSValue = try directJSValueIfPossible(value, appContext: appContext) {
       return directJSValue
-    }
-    if let jsValue = value as? JavaScriptValue {
-      return jsValue
     }
     if value is AnyArgument {
       return try convertOriginalValueToJS(value, appContext: appContext)
@@ -97,9 +94,6 @@ internal struct DynamicConvertibleType: AnyDynamicType {
   }
 
   private func serializeConvertedValue(_ value: Any, appContext: AppContext) throws -> JavaScriptValue {
-    if let result = value as? JavaScriptValue {
-      return result
-    }
     if let result = value as? AnyArgument {
       let dynamicType = type(of: result).getDynamicType()
       // A `Convertible` that keeps the default `convertResult` returns the value unchanged,

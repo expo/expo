@@ -82,32 +82,14 @@ object DispatchUtils {
       429, 502, 503, 504 -> DispatchResult.RetryableFailure(parseRetryAfter(retryAfterHeader))
       else -> {
         val excerpt = bodyExcerpt()
-        val suffix = if (excerpt.isEmpty()) "" else ": $excerpt"
+        val suffix = if (excerpt.isEmpty()) {
+          ""
+        } else {
+          ": $excerpt"
+        }
         DispatchResult.NonRetryableFailure(reason = "HTTP $statusCode$suffix")
       }
     }
-  }
-
-  /**
-   * Whether the dispatch caller should remove the just-sent pending IDs from the queue.
-   *
-   * - `Success` and `PartialSuccess` remove them — the rows have been accepted by the server
-   *   (partial success rejects a subset server-side, but the bytes still landed; re-sending
-   *   them would just re-trip the same rejection).
-   * - `NonRetryableFailure` ALSO removes them — the server has refused these rows
-   *   permanently, so retrying would produce the same answer; removing them drops the batch
-   *   so it can't wedge subsequent rounds. This is the acceptance-criterion behavior: a
-   *   400/403 must not be re-sent on the next cycle.
-   * - `PayloadTooLarge` removes the pending ID because multi-record batches are retried with
-   *   smaller chunks before this check, so reaching it means a single record exceeded the limit.
-   * - `RetryableFailure` keeps them so they can be retried.
-   */
-  fun shouldRemovePending(result: DispatchResult): Boolean = when (result) {
-    is DispatchResult.Success,
-    is DispatchResult.PartialSuccess,
-    is DispatchResult.NonRetryableFailure,
-    is DispatchResult.PayloadTooLarge -> true
-    is DispatchResult.RetryableFailure -> false
   }
 
   /**
@@ -128,11 +110,15 @@ object DispatchUtils {
     cap: Long = backoffCapMs
   ): Long? {
     val raw = header?.trim() ?: return null
-    if (raw.isEmpty()) return null
+    if (raw.isEmpty()) {
+      return null
+    }
 
     raw.toLongOrNull()?.let { return clampToBounds(it * 1000L, base, cap) }
     raw.toDoubleOrNull()?.let {
-      if (!it.isFinite()) return null
+      if (!it.isFinite()) {
+        return null
+      }
       return clampToBounds((it * 1000L).toLong(), base, cap)
     }
 
@@ -159,8 +145,14 @@ object DispatchUtils {
    * diagnostic excerpt.
    */
   internal fun bodyExcerpt(body: String?, limit: Int = 512): String {
-    if (body.isNullOrEmpty()) return ""
-    return if (body.length <= limit) body else body.substring(0, limit)
+    if (body.isNullOrEmpty()) {
+      return ""
+    }
+    return if (body.length <= limit) {
+      body
+    } else {
+      body.substring(0, limit)
+    }
   }
 
   private val responseJson = Json { ignoreUnknownKeys = true }
@@ -192,7 +184,9 @@ object DispatchUtils {
     cap: Long = backoffCapMs,
     random: () -> Double = { Random.nextDouble() }
   ): Long {
-    if (attempt < 1) return 0L
+    if (attempt < 1) {
+      return 0L
+    }
     val unjittered = minOf((base.toDouble() * 2.0.pow(attempt - 1)).toLong(), cap)
     return (unjittered.toDouble() * random()).toLong()
   }

@@ -77,9 +77,9 @@ class ProjectsListViewModel: ObservableObject {
   @Published var hasMore = false
 
   private let accountName: String
-  private var currentOffset = 0
+  private var endCursor: String?
   private let pageSize = 20
-  private var totalCount = 0
+  private var fetchGeneration = 0
 
   init(accountName: String) {
     self.accountName = accountName
@@ -87,48 +87,60 @@ class ProjectsListViewModel: ObservableObject {
 
   func loadInitial() async {
     guard projects.isEmpty else { return }
-    currentOffset = 0
+    endCursor = nil
     await fetchProjects()
   }
 
   func refresh() async {
-    currentOffset = 0
+    endCursor = nil
     await fetchProjects()
   }
 
   func loadMore() async {
     guard !isLoading, hasMore else { return }
-    currentOffset += pageSize
     await fetchProjects()
   }
 
   private func fetchProjects() async {
+    fetchGeneration += 1
+    let generation = fetchGeneration
     isLoading = true
-    defer { isLoading = false }
+    defer {
+      if generation == fetchGeneration {
+        isLoading = false
+      }
+    }
+
+    let isFirstPage = endCursor == nil
+    var variables: [String: Any] = [
+      "accountName": accountName,
+      "first": pageSize,
+      "platform": "IOS"
+    ]
+    if let endCursor {
+      variables["after"] = endCursor
+    }
 
     do {
       let response: ProjectsListResponse = try await APIClient.shared.request(
         Queries.getProjectsList(),
-        variables: [
-          "accountName": accountName,
-          "limit": pageSize,
-          "offset": currentOffset,
-          "platform": "IOS"
-        ]
+        variables: variables
       )
+      guard generation == fetchGeneration else { return }
 
-      let newProjects = response.data.account.byName.apps.map { $0.toExpoProject() }
-      totalCount = response.data.account.byName.appCount
+      let connection = response.data.account.byName.appsPaginated
+      let newProjects = connection.edges.map { $0.node.toExpoProject() }
 
-      if currentOffset == 0 {
+      if isFirstPage {
         projects = newProjects
       } else {
         projects.append(contentsOf: newProjects)
       }
 
-      hasMore = projects.count < totalCount
+      hasMore = connection.pageInfo?.hasNextPage ?? false
+      endCursor = connection.pageInfo?.endCursor
     } catch {
-      if (error as? APIError)?.isCancellation == true {
+      if (error as? APIError)?.isCancellation == true || generation != fetchGeneration {
         return
       }
       self.error = error

@@ -1,6 +1,5 @@
-import { nanoid } from 'nanoid/non-secure';
-
 type Options = {
+  key: string;
   action: {
     payload: {
       name: string;
@@ -9,11 +8,11 @@ type Options = {
   };
 };
 
-export function createRouteFromAction({ action }: Options) {
+export function createRouteFromAction({ action, key }: Options) {
   const { name, params } = action.payload;
 
   return {
-    key: `${name}-${nanoid()}`,
+    key,
     name,
     params,
   };

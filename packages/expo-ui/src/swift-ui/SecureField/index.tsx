@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import type { Ref } from 'react';
 
 import { getStateId, type ObservableState, useWorkletProp, worklets } from '../../State';
+import { useHostedTextInput } from '../../keyboard';
 import type { ViewEvent } from '../../types';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -74,14 +75,19 @@ function Placeholder({ children }: { children: React.ReactNode }) {
  * Renders a SwiftUI `SecureField` for password input.
  */
 export function SecureField(props: SecureFieldProps) {
-  const { text, onTextChange, onFocusChange, modifiers, ...restProps } = props;
+  const { text, onTextChange, onFocusChange, modifiers, ref, ...restProps } = props;
 
   const isWorklet = !!onTextChange && !!worklets?.isWorkletFunction?.(onTextChange);
   const workletCallback = useWorkletProp(isWorklet ? onTextChange : undefined, 'onTextChange');
+  // `blurOnUnmount`: a field left first responder while its row is removed makes UIKit
+  // assert ("refused to resign"); native teardown hooks run too late to clear SwiftUI's
+  // `@FocusState`. https://github.com/expo/expo/issues/49348
+  const hosted = useHostedTextInput<SecureFieldRef>(ref, onFocusChange, { blurOnUnmount: true });
 
   return (
     <SecureFieldNativeView
       {...restProps}
+      ref={hosted.ref}
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       text={getStateId(text)}
@@ -89,7 +95,7 @@ export function SecureField(props: SecureFieldProps) {
       onTextChange={
         !isWorklet && onTextChange ? (event) => onTextChange(event.nativeEvent.value) : undefined
       }
-      onFocusChange={onFocusChange ? (event) => onFocusChange(event.nativeEvent.value) : undefined}
+      onFocusChange={(event) => hosted.onFocusChange(event.nativeEvent.value)}
     />
   );
 }

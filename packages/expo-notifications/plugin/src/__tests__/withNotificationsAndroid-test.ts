@@ -1,7 +1,11 @@
 import { fs, vol } from 'memfs';
 import * as path from 'path';
 
-import { setNotificationIconAsync, setNotificationSounds } from '../withNotificationsAndroid';
+import {
+  setNotificationIconAsync,
+  setNotificationLargeIconAsync,
+  setNotificationSounds,
+} from '../withNotificationsAndroid';
 
 export function getDirFromFS(fsJSON: Record<string, string | null>, rootDir: string) {
   return Object.entries(fsJSON)
@@ -40,6 +44,17 @@ const LIST_OF_GENERATED_NOTIFICATION_FILES = [
   'android/app/src/main/res/raw/notification_sound.wav',
 ];
 
+const LIST_OF_GENERATED_LARGE_ICON_FILES = [
+  'android/app/src/main/res/drawable-mdpi/notification_large_icon.png',
+  'android/app/src/main/res/drawable-hdpi/notification_large_icon.png',
+  'android/app/src/main/res/drawable-xhdpi/notification_large_icon.png',
+  'android/app/src/main/res/drawable-xxhdpi/notification_large_icon.png',
+  'android/app/src/main/res/drawable-xxxhdpi/notification_large_icon.png',
+  'android/app/src/main/res/values/colors.xml',
+  'assets/notificationIcon.png',
+  'assets/notification_sound.wav',
+];
+
 const iconPath = path.resolve(__dirname, './fixtures/icon.png');
 const soundPath = path.resolve(__dirname, './fixtures/cat.wav');
 
@@ -74,6 +89,25 @@ describe('Android notifications configuration', () => {
 
     const after = getDirFromFS(vol.toJSON(), projectRoot);
     expect(Object.keys(after).sort()).toEqual(LIST_OF_GENERATED_NOTIFICATION_FILES.sort());
+  });
+
+  it('writes the large icon files as expected', async () => {
+    await setNotificationLargeIconAsync(projectRoot, '/app/assets/notificationIcon.png');
+
+    const after = getDirFromFS(vol.toJSON(), projectRoot);
+    expect(Object.keys(after).sort()).toEqual(LIST_OF_GENERATED_LARGE_ICON_FILES.sort());
+  });
+
+  it('Safely remove the large icon if it exists, and ignore if it doesnt', async () => {
+    const before = getDirFromFS(vol.toJSON(), projectRoot);
+    await setNotificationLargeIconAsync(projectRoot, '/app/assets/notificationIcon.png');
+
+    await setNotificationLargeIconAsync(projectRoot, null);
+    expect(getDirFromFS(vol.toJSON(), projectRoot)).toMatchObject(before);
+
+    // now remove again to make sure we don't throw in that case
+    await setNotificationLargeIconAsync(projectRoot, null);
+    expect(getDirFromFS(vol.toJSON(), projectRoot)).toMatchObject(before);
   });
 
   it('Safely remove icon if it exists, and ignore if it doesnt', async () => {

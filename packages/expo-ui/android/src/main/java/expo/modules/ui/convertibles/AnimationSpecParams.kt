@@ -87,7 +87,9 @@ internal data class KeyframesSpecParams(
 
 @Suppress("UNCHECKED_CAST")
 internal fun parseAnimationSpec(raw: Any?, converterContext: ConverterContext): AnimationSpec<Float>? {
-  if (raw !is Map<*, *>) return null
+  if (raw !is Map<*, *>) {
+    return null
+  }
   val map = raw as Map<String, Any?>
   return when (raw["\$type"]) {
     "spring" -> recordFromMap<SpringSpecParams>(map, converterContext).toAnimationSpec()

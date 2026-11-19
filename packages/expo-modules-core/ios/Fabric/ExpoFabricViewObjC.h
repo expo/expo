@@ -41,10 +41,6 @@
 
 #endif // __cplusplus
 
-// Forward declarations for ObjC compatibility - these are Swift classes with @objc(EX...) names
-// We use the protocol for AppContext to allow proper Swift type bridging
-@protocol EXAppContextProtocol;
-
 // Addition to the interface that is visible in both Swift and Objective-C
 @interface ExpoFabricViewObjC (ExpoFabricViewInterface)
 
@@ -54,9 +50,9 @@
 
 - (void)viewDidUpdateProps NS_SWIFT_UI_ACTOR;
 
-- (void)setShadowNodeSize:(float)width height:(float)height;
+- (void)setShadowNodeSize:(float)width height:(float)height NS_SWIFT_UI_ACTOR;
 
-- (void)setStyleSize:(nullable NSNumber *)width height:(nullable NSNumber *)height;
+- (void)setStyleSize:(nullable NSNumber *)width height:(nullable NSNumber *)height NS_SWIFT_UI_ACTOR;
 
 - (BOOL)supportsPropWithName:(nonnull NSString *)name;
 
@@ -67,9 +63,12 @@
 #pragma mark - Component registration
 
 /**
- Registers given view module in the global `RCTComponentViewFactory`.
- Uses `id` types to allow proper bridging of Swift classes with @objc(EX...) names.
+ Registers given view class in the global `RCTComponentViewFactory`.
  */
-+ (void)registerComponent:(nonnull id)viewModule appContext:(nonnull id<EXAppContextProtocol>)appContext;
++ (void)registerComponentViewClass:(nonnull Class)viewClass;
+
+/// Creates the view for the component that this class is registered for. `+new` returns its result,
+/// or falls back to the default behavior when it returns `nil`. Overridden by `ExpoFabricView`.
++ (nullable id)createComponentView;
 
 @end

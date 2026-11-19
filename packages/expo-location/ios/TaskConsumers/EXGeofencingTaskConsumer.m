@@ -9,6 +9,9 @@
 #import <ExpoLocation/EXLocation.h>
 #import <ExpoLocation/EXGeofencingTaskConsumer.h>
 
+// shared by geofences and beacon regions, see https://developer.apple.com/documentation/corelocation/monitoring-the-user-s-proximity-to-geographic-regions
+static const NSUInteger EXMaxMonitoredRegions = 20;
+
 @interface EXGeofencingTaskConsumer ()
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
@@ -71,14 +74,14 @@
     self->_regionStates = regionStates;
 
     locationManager.delegate = self;
-    locationManager.allowsBackgroundLocationUpdates = YES;
     locationManager.pausesLocationUpdatesAutomatically = NO;
 
     for (NSDictionary *regionDict in regions) {
       NSString *identifier = regionDict[@"identifier"] ?: [[NSUUID UUID] UUIDString];
       CLLocationDistance radius = [regionDict[@"radius"] doubleValue];
       CLLocationCoordinate2D center = [self.class coordinateFromDictionary:regionDict];
-      BOOL notifyOnEntry = [self.class boolValueFrom:regionDict[@"notifyOnEntry"] defaultValue:YES];
+      id notifyOnEnterValue = regionDict[@"notifyOnEnter"] ?: regionDict[@"notifyOnEntry"];
+      BOOL notifyOnEntry = [self.class boolValueFrom:notifyOnEnterValue defaultValue:YES];
       BOOL notifyOnExit = [self.class boolValueFrom:regionDict[@"notifyOnExit"] defaultValue:YES];
 
       CLCircularRegion *region = [[CLCircularRegion alloc] initWithCenter:center radius:radius identifier:identifier];
@@ -146,6 +149,9 @@
 - (void)locationManager:(CLLocationManager *)manager monitoringDidFailForRegion:(CLRegion *)region withError:(NSError *)error
 {
   if (error && error.domain == kCLErrorDomain) {
+    if ([self isRegionRejectedByLimit:region]) {
+      return;
+    }
     // This error might happen when the device is not able to find out the location. Try to restart monitoring this region.
     [_locationManager stopMonitoringForRegion:region];
     [_locationManager startMonitoringForRegion:region];
@@ -164,6 +170,14 @@
 }
 
 # pragma mark - helpers
+
+- (BOOL)isRegionRejectedByLimit:(CLRegion *)region
+{
+  NSSet<CLRegion *> *monitored = _locationManager.monitoredRegions;
+  BOOL isRegionMonitored = [monitored containsObject:region];
+  BOOL isMaxCountReached = monitored.count >= EXMaxMonitoredRegions;
+  return isMaxCountReached && !isRegionMonitored;
+}
 
 - (CLRegionState)regionStateForIdentifier:(NSString *)identifier
 {

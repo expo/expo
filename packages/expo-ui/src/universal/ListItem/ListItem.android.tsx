@@ -1,5 +1,5 @@
 import { ListItem as ComposeListItem, Text } from '@expo/ui/jetpack-compose';
-import { clickable } from '@expo/ui/jetpack-compose/modifiers';
+import { clickable, testID as testIDModifier } from '@expo/ui/jetpack-compose/modifiers';
 import { Children, type ReactNode } from 'react';
 
 import { extractListItemSlots } from './ListItemSlots';
@@ -25,16 +25,22 @@ export function ListItem(props: ListItemProps) {
     leading: leadingProp,
     trailing: trailingProp,
     supportingText,
+    testID,
     modifiers,
+    colors,
   } = props;
   const slots = extractListItemSlots(children);
   const leading = slots.leading ?? leadingProp;
   const trailing = slots.trailing ?? trailingProp;
   const supporting = slots.supporting ?? supportingText;
-  const itemModifiers = [...(onPress ? [clickable(onPress)] : []), ...(modifiers ?? [])];
+  const itemModifiers = [
+    ...(onPress ? [clickable(onPress)] : []),
+    ...(testID ? [testIDModifier(testID)] : []),
+    ...(modifiers ?? []),
+  ];
 
   return (
-    <ComposeListItem modifiers={itemModifiers.length ? itemModifiers : undefined}>
+    <ComposeListItem colors={colors} modifiers={itemModifiers.length ? itemModifiers : undefined}>
       <ComposeListItem.HeadlineContent>
         <>{wrapStrings(slots.headline)}</>
       </ComposeListItem.HeadlineContent>

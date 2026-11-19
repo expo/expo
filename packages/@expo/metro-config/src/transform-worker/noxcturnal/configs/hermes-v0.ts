@@ -13,6 +13,7 @@ export function getHermesV0PreflightConfig(facts: ProfilePreflightFacts): Profil
     destructuring: true,
     asyncGeneratorFunctions: facts.hasAsyncGenerator,
     asyncFunctions: facts.hasAsync,
+    objectRestSpread: facts.hasSpread ? { loose: true, useBuiltIns: true } : undefined,
     parameters: true,
   };
 }

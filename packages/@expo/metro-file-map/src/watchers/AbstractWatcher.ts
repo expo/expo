@@ -9,7 +9,12 @@ import EventEmitter from 'events';
 import * as path from 'path';
 
 import isWatcherExcluded from '../lib/isWatcherExcluded';
-import type { WatcherBackend, WatcherBackendChangeEvent, WatcherBackendOptions } from '../types';
+import type {
+  WatcherBackend,
+  WatcherBackendChangeEvent,
+  WatcherBackendOptions,
+  WatcherIncludedFiles,
+} from '../types';
 import { posixPathMatchesPattern } from './common';
 
 // Distributive Omit that works correctly with union types
@@ -24,17 +29,15 @@ export interface Listeners {
 export class AbstractWatcher implements WatcherBackend {
   readonly root: string;
   readonly ignored: RegExp | undefined | null;
-  readonly globs: readonly string[];
-  readonly dot: boolean;
+  readonly included: WatcherIncludedFiles | null | undefined;
   readonly doIgnore: (path: string) => boolean;
 
   #emitter: EventEmitter = new EventEmitter();
 
   constructor(dir: string, opts: WatcherBackendOptions) {
-    const { ignored, globs, dot } = opts;
-    this.dot = dot || false;
+    const { ignored, included } = opts;
     this.ignored = ignored;
-    this.globs = globs;
+    this.included = included;
     this.doIgnore = ignored
       ? (filePath: string) =>
           isWatcherExcluded(filePath) || posixPathMatchesPattern(ignored, filePath)

@@ -5,7 +5,7 @@ import {
   type MetroLiveBindingsState,
   type Noxcturnal,
 } from '../noxcturnal-transformer';
-import { registerNativeEsmDependency } from './metro-dependency';
+import { nativeRequireCall, registerNativeEsmDependency } from './metro-dependency';
 
 export function createMetroLiveBindingsPlugin(
   nox: Noxcturnal,
@@ -36,6 +36,7 @@ export function createMetroLiveBindingsPlugin(
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,
@@ -48,6 +49,16 @@ export function createMetroLiveBindingsPlugin(
 
   return nox.defineNativePlugin<MetroLiveBindingsState>({
     name: 'metro-native-import-export-live-bindings',
+    contract: {
+      syntax: {
+        anyOf: [
+          'ImportDeclaration',
+          'ExportNamedDeclaration',
+          'ExportDefaultDeclaration',
+          'ExportAllDeclaration',
+        ],
+      },
+    },
     createState: () => ({
       sawEsm: false,
       modules: new Map(),
@@ -167,7 +178,7 @@ export function createMetroLiveBindingsPlugin(
           },
         },
         (importPath, state) => {
-          const { collectOnly, shared, input } = metroPluginData(importPath.context);
+          const { collectOnly, shared } = metroPluginData(importPath.context);
           state.sawEsm = true;
           if (importPath.node.importKind && importPath.node.importKind !== 'value') {
             if (!collectOnly) importPath.remove();
@@ -213,20 +224,17 @@ export function createMetroLiveBindingsPlugin(
               source,
               importPath.getLocation()
             );
-            const dependencyArgument = `${dependencyState!.dependencyMapName}[${dependency.index}]`;
             const requiredLocal = generateUid(importPath.scope.getProgramParent(), source);
             module = {
               source,
               requiredLocal,
-              requireCall: `${dependencyState!.requireName}(${dependencyArgument}, ${JSON.stringify(source)})`,
+              requireCall: nativeRequireCall(dependencyState!, dependency.index, source),
               afterImport: [],
               exportAll: false,
               referenced: false,
               defaultReferenced: false,
               namespaceReferenced: false,
-              sideEffect:
-                input.options.dev &&
-                importPath.context.metadata.get('performConstantFolding') !== true,
+              sideEffect: importPath.context.metadata.get('performConstantFolding') !== true,
             };
             state.modules.set(source, module);
             state.moduleOrder.push(module);
@@ -399,12 +407,11 @@ export function createMetroLiveBindingsPlugin(
                 source,
                 exportPath.getLocation()
               );
-              const dependencyArgument = `${dependencyState!.dependencyMapName}[${dependency.index}]`;
               const requiredLocal = generateUid(exportPath.scope.getProgramParent(), source);
               module = {
                 source,
                 requiredLocal,
-                requireCall: `${dependencyState!.requireName}(${dependencyArgument}, ${JSON.stringify(source)})`,
+                requireCall: nativeRequireCall(dependencyState!, dependency.index, source),
                 afterImport: [],
                 exportAll: false,
                 referenced: valueExportSpecifiers.length > 0,
@@ -565,12 +572,11 @@ export function createMetroLiveBindingsPlugin(
               source,
               exportPath.getLocation()
             );
-            const dependencyArgument = `${dependencyState!.dependencyMapName}[${dependency.index}]`;
             const requiredLocal = generateUid(exportPath.scope.getProgramParent(), source);
             module = {
               source,
               requiredLocal,
-              requireCall: `${dependencyState!.requireName}(${dependencyArgument}, ${JSON.stringify(source)})`,
+              requireCall: nativeRequireCall(dependencyState!, dependency.index, source),
               afterImport: [],
               exportAll: false,
               referenced: true,

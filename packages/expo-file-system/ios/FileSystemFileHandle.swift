@@ -20,6 +20,18 @@ enum FileMode: String, Enumerable {
   var writeOnly: Bool {
     return self == .write || self == .append || self == .truncate
   }
+
+  /// Permissions a handle opened in this mode needs. Mirrors `FileMode.requiredPermissions()` on Android.
+  var requiredPermissions: [FileSystemPermissionFlags] {
+    switch self {
+    case .read:
+      return [.read]
+    case .write, .append, .truncate:
+      return [.write]
+    case .readWrite:
+      return [.read, .write]
+    }
+  }
 }
 
 @available(iOS 14, tvOS 14, *)
@@ -32,8 +44,20 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   private let lock = NSLock()  // non-reentrant. Don't use it in recursive calls
 
   init(file: FileSystemFile, mode: FileMode?) throws {
+    // Callers that ask for a specific mode get exactly that mode checked. When no mode is given we
+    // fall back to read-only on a path that is not writable, so opening a bundled file keeps working
+    // without having to pass "r" from JavaScript. A path that permits neither still fails below.
+    let resolvedMode = mode ?? (file.checkPermission(.write) ? FileMode.readWrite : FileMode.read)
     self.file = file
-    self.mode = mode ?? FileMode.readWrite
+    self.mode = resolvedMode
+
+    // Opening a handle hands out raw read/write access to the file, so it has to clear the same
+    // permission check as every other read and write. Without this, JavaScript could open a file
+    // belonging to another Expo Go experience, which the scoped permission service denies.
+    for permission in resolvedMode.requiredPermissions {
+      try file.validatePermission(permission)
+    }
+
     self.didAccessSecurityScope = file.url.startAccessingSecurityScopedResource()
 
     do {

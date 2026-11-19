@@ -1,11 +1,11 @@
 import { useState } from 'react';
 
-export function useCopy(text: string) {
+export function useCopy(text: string | (() => string)) {
   const [copiedIsVisible, setCopiedIsVisible] = useState(false);
 
   async function onCopyAsync() {
     const copy = (await import('clipboard-copy')).default;
-    await copy(text);
+    await copy(typeof text === 'function' ? text() : text);
     if (!copiedIsVisible) {
       setCopiedIsVisible(true);
       setTimeout(() => {

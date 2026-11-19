@@ -103,7 +103,11 @@ class NavigationBarModule : Module(), ExtraWindowEventListener {
         @Suppress("DEPRECATION")
         decorView.setOnSystemUiVisibilityChangeListener { visibility: Int ->
           val isNavigationBarVisible = (visibility and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0
-          val stringVisibility = if (isNavigationBarVisible) "visible" else "hidden"
+          val stringVisibility = if (isNavigationBarVisible) {
+            "visible"
+          } else {
+            "hidden"
+          }
           sendEvent(
             VISIBILITY_EVENT_NAME,
             Bundle().apply {
@@ -146,7 +150,11 @@ class NavigationBarModule : Module(), ExtraWindowEventListener {
         @Suppress("DEPRECATION")
         (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION and currentActivity.window.decorView.systemUiVisibility) == 0
       }
-      return@AsyncFunction if (isVisible) "visible" else "hidden"
+      return@AsyncFunction if (isVisible) {
+        "visible"
+      } else {
+        "hidden"
+      }
     }.runOnQueue(Queues.MAIN)
   }
 

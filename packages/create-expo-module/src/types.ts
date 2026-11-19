@@ -30,6 +30,7 @@ export type CommandOptions = {
   features?: Feature[];
   fullExample?: boolean;
   packageManager?: PackageManagerName;
+  ignoreCompatibilityCheck?: boolean;
 };
 
 /**

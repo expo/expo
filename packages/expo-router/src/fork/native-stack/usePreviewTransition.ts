@@ -16,9 +16,10 @@ import type {
  */
 export function usePreviewTransition(
   state: NativeStackViewState,
-  originalEmit: NativeStackViewEmit
+  originalEmit: NativeStackViewEmit,
+  isPreloaded: (key: string) => boolean
 ) {
-  const { openPreviewKey, setOpenPreviewKey } = useLinkPreviewContext();
+  const { getOpenPreviewKey, setOpenPreviewKey } = useLinkPreviewContext();
 
   // Track the preview screen currently transitioning on the native side
   const [previewTransitioningScreenId, setPreviewTransitioningScreenId] = React.useState<
@@ -38,29 +39,21 @@ export function usePreviewTransition(
     }
   }, [state, previewTransitioningScreenId]);
 
-  const emit = React.useMemo(() => {
-    if (openPreviewKey) {
-      const emit: NativeStackViewEmit = (event) => {
-        const { target, type, data } = event;
-        if (target === openPreviewKey && data && 'closing' in data && !data.closing) {
-          // onWillAppear
-          if (type === 'transitionStart') {
-            // The screen from preview will appear, so we need to start tracking it
-            setPreviewTransitioningScreenId(openPreviewKey);
-          }
-          // onAppear
-          else if (type === 'transitionEnd') {
-            // The screen from preview appeared.
-            // We can now restore the stack animation
-            setOpenPreviewKey(undefined);
-          }
+  const emit = React.useCallback<NativeStackViewEmit>(
+    (event) => {
+      const { target, type, data } = event;
+      const key = getOpenPreviewKey();
+      if (key !== undefined && target === key && data && 'closing' in data && !data.closing) {
+        if (type === 'transitionStart') {
+          setPreviewTransitioningScreenId(key);
+        } else if (type === 'transitionEnd') {
+          setOpenPreviewKey(undefined);
         }
-        return originalEmit(event);
-      };
-      return emit;
-    }
-    return originalEmit;
-  }, [openPreviewKey, originalEmit, setOpenPreviewKey]);
+      }
+      return originalEmit(event);
+    },
+    [getOpenPreviewKey, originalEmit, setOpenPreviewKey]
+  );
 
   const computedState: NativeStackViewState = React.useMemo(() => {
     // The preview screen was pushed on the native side, but react-navigation state was not updated yet
@@ -93,5 +86,10 @@ export function usePreviewTransition(
     return state;
   }, [state, previewTransitioningScreenId]);
 
-  return { computedState, emit };
+  const isComputedRoutePreloaded = React.useCallback(
+    (key: string) => computedState.routes[computedState.index]?.key !== key && isPreloaded(key),
+    [computedState, isPreloaded]
+  );
+
+  return { computedState, emit, isPreloaded: isComputedRoutePreloaded };
 }

@@ -48,17 +48,33 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
    Installs `expo.modules`, the host object that returns module objects.
    */
   @JavaScriptActor
-  internal func installExpoModulesHostObject() throws {
+  internal func installExpoModulesHostObject(isMainRuntime: Bool) throws {
     let coreObject = try runtime.global().getPropertyAsObject(globalCoreObjectPropertyName)
 
     if coreObject.hasProperty("modules") {
       // Host object already installed
       return
     }
+    // The getter is chosen here, so accessing a module doesn't check which runtime it is in.
+    let getModule: @JavaScriptActor (_ moduleName: String) throws -> JavaScriptValue
+    if isMainRuntime {
+      getModule = { [weak appContext] moduleName in
+        return appContext?.getNativeModuleObject(moduleName) ?? .undefined()
+      }
+    } else {
+      // The getter reaches the runtime through its handle instead of capturing it. The runtime owns the host object,
+      // so a capture would keep a runtime that owns its engine alive, and the wrapper can be freed before the engine
+      // runtime (for example, when attaching the runtime fails).
+      let runtimeHandle = runtime.handle
+      getModule = { [weak appContext] moduleName in
+        guard let runtime = runtimeHandle.runtime else {
+          return .undefined()
+        }
+        return appContext?.getNativeModuleObject(moduleName, inAttachedRuntime: runtime) ?? .undefined()
+      }
+    }
     let modulesHostObject = runtime.createHostObject(
-      get: { [weak appContext] moduleName in
-        return appContext?.getNativeModuleObject(moduleName) ?? .undefined
-      },
+      get: getModule,
       set: { propertyName, _ in
         throw ReadOnlyExpoModulesPropertyException(propertyName)
       },
@@ -70,6 +86,113 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
     // Define the `global.expo.modules` object as a non-configurable, read-only and enumerable property.
     coreObject.defineProperty("modules", value: modulesHostObject, options: [.enumerable])
   }
+
+  /**
+   Installs `expo.packages`, the host object that returns the native exports of each npm package
+   (its modules and shared object classes) by the package name, for example `expo.packages['expo-audio']`.
+   */
+  @JavaScriptActor
+  internal func installExpoPackagesHostObject() throws {
+    let coreObject = try runtime.global().getPropertyAsObject(globalCoreObjectPropertyName)
+
+    if coreObject.hasProperty("packages") {
+      // Host object already installed
+      return
+    }
+    // The getters reach the runtime through its handle, like the getter of `expo.modules`.
+    let runtimeHandle = runtime.handle
+    let packageObjects = JavaScriptValuesCache()
+
+    let packagesHostObject = runtime.createHostObject(
+      get: { [weak appContext] packageName in
+        guard let appContext, let runtime = runtimeHandle.runtime else {
+          return .undefined()
+        }
+        if let packageObject = packageObjects.store[packageName]?.withUnwrappedValue({ $0.copy() }) {
+          return packageObject
+        }
+        guard let package = appContext.package(named: packageName) else {
+          return .undefined()
+        }
+        let packageObject = Self.createPackageObject(package, appContext: appContext, runtime: runtime)
+        packageObjects.store[packageName] = packageObject.refToValue()
+        return packageObject.asValue()
+      },
+      set: { packageName, _ in
+        throw ReadOnlyExpoPackagesPropertyException("expo.packages[\"\(packageName)\"]")
+      },
+      getPropertyNames: { [weak appContext] in
+        return appContext?.packageRegistry.packageNames ?? []
+      }
+    )
+
+    // Define the `global.expo.packages` object as a non-configurable, read-only and enumerable property.
+    coreObject.defineProperty("packages", value: packagesHostObject, options: [.enumerable])
+  }
+
+  /**
+   Creates the object that is installed as `expo.packages[packageName]`. It returns the modules,
+   shared object classes and view components of the package by their names.
+   */
+  @JavaScriptActor
+  private static func createPackageObject(
+    _ package: PackageHolder,
+    appContext: AppContext,
+    runtime: JavaScriptRuntime
+  ) -> JavaScriptObject {
+    let packageName = package.name
+
+    // Logs name collisions once, when the package object is created.
+    _ = package.exportNames
+
+    // The React components of the package's views, created on the first access.
+    let viewComponents = JavaScriptValuesCache()
+    let runtimeHandle = runtime.handle
+
+    return runtime.createHostObject(
+      get: { [weak appContext] exportName in
+        guard let appContext, let package = appContext.package(named: packageName) else {
+          return .undefined()
+        }
+        if let export = try package.export(named: exportName, appContext: appContext) {
+          return export
+        }
+        guard let viewType = package.viewType(named: exportName) else {
+          return .undefined()
+        }
+        if let component = viewComponents.store[exportName]?.withUnwrappedValue({ $0.copy() }) {
+          return component
+        }
+        // Only the React runtime can create components, so a view is `undefined` in the UI runtime.
+        guard let runtime = runtimeHandle.runtime, NativeViewComponentFactory.isAvailable(in: runtime) else {
+          return .undefined()
+        }
+        let config = NativeViewComponentConfig(
+          viewType: viewType,
+          componentName: ExpoNativeView.packageComponentName(packageName: packageName, viewName: exportName)
+        )
+        let component = try NativeViewComponentFactory.create(config, in: runtime)
+        viewComponents.store[exportName] = component.copy().ref()
+        return component
+      },
+      set: { exportName, _ in
+        throw ReadOnlyExpoPackagesPropertyException("expo.packages[\"\(packageName)\"].\(exportName)")
+      },
+      getPropertyNames: { [weak appContext] in
+        return appContext?.package(named: packageName)?.exportNames ?? []
+      }
+    )
+  }
+}
+
+/**
+ Caches JavaScript values by name for one runtime, for example the package objects of `expo.packages`,
+ so each access returns the same value.
+ */
+private final class JavaScriptValuesCache {
+  // Values are kept behind `JavaScriptValue.Ref` because `JavaScriptValue` is ~Copyable and cannot be a
+  // Dictionary value.
+  var store: [String: JavaScriptValue.Ref] = [:]
 }
 
 /**
@@ -83,8 +206,19 @@ internal final class ReadOnlyExpoModulesPropertyException: GenericException<Stri
       + "Define or override behavior inside the native module instead."
   }
 
-  // The default `JavaScriptThrowable.message` is `String(reflecting: self)`, which on
-  // `Exception` resolves to `debugDescription` (name + reason + Swift file:line). For a
-  // JS-facing error we want just `reason`, without leaking native source coordinates.
-  var message: String { reason }
+  // `Exception.message` is the `description`, which is just `reason` here (no cause chain).
+  // Override it explicitly so the JS-facing error stays the bare `reason`.
+  override var message: String { reason }
+}
+
+/**
+ Raised when JavaScript code attempts to assign to `expo.packages[...]` or to an export of a package.
+ The parameter is the path that JavaScript assigned to.
+ */
+internal final class ReadOnlyExpoPackagesPropertyException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "Cannot assign to '\(param)': "
+      + "the `expo.packages` object is owned by the native runtime and its bindings cannot be replaced from JavaScript. "
+      + "Define or override behavior inside the native module instead."
+  }
 }

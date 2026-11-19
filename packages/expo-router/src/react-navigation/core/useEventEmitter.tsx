@@ -1,13 +1,14 @@
 'use client';
 import * as React from 'react';
 
+import useLatestCallback from '../../utils/useLatestCallback';
 import type { EventArg, EventConsumer, EventEmitter } from './types';
 
 export type NavigationEventEmitter<T extends Record<string, any>> = EventEmitter<T> & {
   create: (target: string) => EventConsumer<T>;
 };
 
-type Listeners = ((e: any) => void)[];
+type Listeners = Set<(e: any) => void>;
 
 /**
  * Hook to manage the event system used by the navigator to notify screens of various events.
@@ -15,11 +16,7 @@ type Listeners = ((e: any) => void)[];
 export function useEventEmitter<T extends Record<string, any>>(
   listen?: (e: any) => void
 ): NavigationEventEmitter<T> {
-  const listenRef = React.useRef(listen);
-
-  React.useEffect(() => {
-    listenRef.current = listen;
-  });
+  const latestListen = useLatestCallback((e: any) => listen?.(e));
 
   const listeners = React.useRef<Record<string, Record<string, Listeners>>>(Object.create(null));
 
@@ -31,17 +28,13 @@ export function useEventEmitter<T extends Record<string, any>>(
         return;
       }
 
-      const index = callbacks.indexOf(callback);
-
-      if (index > -1) {
-        callbacks.splice(index, 1);
-      }
+      callbacks.delete(callback);
     };
 
     const addListener = (type: string, callback: (data: any) => void) => {
       listeners.current[type] = listeners.current[type] || {};
-      listeners.current[type][target] = listeners.current[type][target] || [];
-      listeners.current[type][target].push(callback);
+      listeners.current[type][target] = listeners.current[type][target] || new Set();
+      listeners.current[type][target].add(callback);
 
       let removed = false;
       return () => {
@@ -78,10 +71,8 @@ export function useEventEmitter<T extends Record<string, any>>(
       // Copy the current list of callbacks in case they are mutated during execution
       const callbacks =
         target !== undefined
-          ? items[target]?.slice()
-          : ([] as Listeners)
-              .concat(...Object.keys(items).map((t) => items[t]!))
-              .filter((cb, i, self) => self.lastIndexOf(cb) === i);
+          ? [...(items[target] ?? [])]
+          : [...new Set(Object.keys(items).flatMap((target) => [...items[target]!]))];
 
       const event: EventArg<any, any, any> = {
         get type() {
@@ -125,7 +116,6 @@ export function useEventEmitter<T extends Record<string, any>>(
           },
         });
       } else if (preventDefault) {
-        // Legacy `beforeRemove` listeners get a throwing shim without making the event preventable.
         Object.defineProperties(event, {
           defaultPrevented: {
             enumerable: true,
@@ -138,13 +128,13 @@ export function useEventEmitter<T extends Record<string, any>>(
         });
       }
 
-      listenRef.current?.(event);
+      latestListen(event);
 
       callbacks?.forEach((cb) => cb(event));
 
       return event as any;
     },
-    []
+    [latestListen]
   );
 
   return React.useMemo(() => ({ create, emit }), [create, emit]);

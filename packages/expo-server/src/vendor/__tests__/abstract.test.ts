@@ -1,7 +1,85 @@
 import type { Manifest } from '../../manifest';
+import { createEnvironment } from '../environment/common';
 import { createRequestHandler, type RequestHandlerInput } from '../abstract';
 
 describe(createRequestHandler, () => {
+  it('checks origins before loading application code and supports the checkOrigin modes', async () => {
+    const input: RequestHandlerInput = {
+      getRoutesManifest: jest.fn(async () => ({
+        htmlRoutes: [], apiRoutes: [], notFoundRoutes: [], redirects: [], rewrites: [],
+      })),
+      getHtml: jest.fn(),
+      getApiRoute: jest.fn(),
+      getMiddleware: jest.fn(),
+      getLoaderData: jest.fn(),
+    };
+    const request = new Request('https://app.example/login', {
+      method: 'POST',
+      headers: { origin: 'https://evil.example', 'content-type': 'text/plain' },
+    });
+
+    const onError = jest.fn();
+    const onResponse = jest.fn();
+    const response = await createRequestHandler({
+      ...input,
+      beforeErrorResponse(init, route) {
+        onError(route);
+        return init;
+      },
+      beforeResponse(init, route) {
+        onResponse(route);
+        return init;
+      },
+    })(request);
+    expect(response.status).toBe(403);
+    expect(response.headers.get('content-type')).toBe('text/plain');
+    expect(await response.text()).toBe(
+      'This request was blocked because it came from a different origin.'
+    );
+    expect(onError).toHaveBeenCalledWith({ type: null });
+    expect(onResponse).toHaveBeenCalledWith({ type: null });
+    expect(input.getRoutesManifest).toHaveBeenCalledTimes(1);
+    expect(input.getMiddleware).not.toHaveBeenCalled();
+    expect(input.getApiRoute).not.toHaveBeenCalled();
+    expect((await createRequestHandler({ ...input, checkOrigin: false })(request)).status).toBe(404);
+    expect((await createRequestHandler({ ...input, checkOrigin: 'sec-only' })(request)).status).toBe(404);
+
+    const crossSite = new Request(request, { headers: { 'sec-fetch-site': 'cross-site' } });
+    expect((await createRequestHandler({ ...input, checkOrigin: 'sec-only' })(crossSite)).status).toBe(403);
+  });
+
+  it('uses Fetch Metadata only in development environments', async () => {
+    const environment = createEnvironment({
+      isDevelopment: true,
+      readText: jest.fn(),
+      readJson: async () => ({ htmlRoutes: [], apiRoutes: [], notFoundRoutes: [] }),
+      loadModule: jest.fn(),
+    });
+    const request = new Request('http://localhost/login', {
+      method: 'POST', headers: { origin: 'https://proxy.example', 'content-type': 'text/plain' },
+    });
+    const handler = createRequestHandler(environment);
+    expect((await handler(request)).status).toBe(404);
+    const crossSite = new Request(request, { headers: { 'sec-fetch-site': 'cross-site' } });
+    expect((await handler(crossSite)).status).toBe(403);
+    expect((await createRequestHandler({ ...environment, checkOrigin: false })(crossSite)).status).toBe(404);
+  });
+
+  it('uses the manifest origin for requests behind a proxy', async () => {
+    const handler = createRequestHandler({
+      getRoutesManifest: async () => ({
+        origin: 'https://app.example',
+        htmlRoutes: [], apiRoutes: [], notFoundRoutes: [], redirects: [], rewrites: [],
+      }),
+      getHtml: jest.fn(), getApiRoute: jest.fn(), getMiddleware: jest.fn(), getLoaderData: jest.fn(),
+    });
+    const response = await handler(new Request('http://app.example/login', {
+      method: 'POST',
+      headers: { origin: 'https://app.example', 'content-type': 'text/plain' },
+    }));
+    expect(response.status).toBe(404);
+  });
+
   it('returns streamed HTML responses for matched routes', async () => {
     const manifest: Manifest = {
       htmlRoutes: [

@@ -76,6 +76,14 @@ This overlay has capabilities to:
 - Network: Show network details
 - Touchables: Highlight touchable elements
 
+### Keep the developer menu closed at launch
+
+For automation or agent-driven runs in SDK 58 and later, keep the developer menu out of the way. Run the following command to launch with the menu closed, the tools button hidden, and onboarding skipped:
+
+<Terminal cmd={['$ EXPO_NO_DEV_MENU=1 npx expo start']} />
+
+The menu and the tools button come back on the next launch without the variable. Onboarding stays dismissed. See [Deep linking to an update's URL](/develop/development-builds/development-workflows/#deep-linking-to-an-updates-url) for the individual query parameters.
+
 ## Debugging with React Native DevTools
 
 > **info** **Starting from React Native 0.76**, React Native DevTools has replaced Chrome DevTools.

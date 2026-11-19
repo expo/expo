@@ -23,13 +23,41 @@ object ThumbhashDecoder {
     val p_scale = (header16 shr 3 and 63).toFloat() / 63.0f
     val q_scale = (header16 shr 9 and 63).toFloat() / 63.0f
     val isLandscape = header16 shr 15 != 0
-    val lx = Math.max(3, if (isLandscape) if (hasAlpha) 5 else 7 else header16 and 7)
-    val ly = Math.max(3, if (isLandscape) header16 and 7 else if (hasAlpha) 5 else 7)
-    val a_dc = if (hasAlpha) (hash[5].toInt() and 15).toFloat() / 15.0f else 1.0f
+    val lx = Math.max(
+      3,
+      if (isLandscape) {
+        if (hasAlpha) {
+          5
+        } else {
+          7
+        }
+      } else {
+        header16 and 7
+      }
+    )
+    val ly = Math.max(
+      3,
+      if (isLandscape) {
+        header16 and 7
+      } else if (hasAlpha) {
+        5
+      } else {
+        7
+      }
+    )
+    val a_dc = if (hasAlpha) {
+      (hash[5].toInt() and 15).toFloat() / 15.0f
+    } else {
+      1.0f
+    }
     val a_scale = (hash[5].toInt() shr 4 and 15).toFloat() / 15.0f
 
     // Read the varying factors (boost saturation by 1.25x to compensate for quantization)
-    val ac_start = if (hasAlpha) 6 else 5
+    val ac_start = if (hasAlpha) {
+      6
+    } else {
+      5
+    }
     var ac_index = 0
     val l_channel = Channel(lx, ly)
     val p_channel = Channel(3, 3)
@@ -45,15 +73,45 @@ object ThumbhashDecoder {
     val l_ac = l_channel.ac
     val p_ac = p_channel.ac
     val q_ac = q_channel.ac
-    val a_ac = if (hasAlpha) a_channel!!.ac else null
+    val a_ac = if (hasAlpha) {
+      a_channel!!.ac
+    } else {
+      null
+    }
 
     // Decode using the DCT into RGB
     val ratio = thumbHashToApproximateAspectRatio(hash)
-    val w = Math.round(if (ratio > 1.0f) 32.0f else 32.0f * ratio)
-    val h = Math.round(if (ratio > 1.0f) 32.0f / ratio else 32.0f)
+    val w = Math.round(
+      if (ratio > 1.0f) {
+        32.0f
+      } else {
+        32.0f * ratio
+      }
+    )
+    val h = Math.round(
+      if (ratio > 1.0f) {
+        32.0f / ratio
+      } else {
+        32.0f
+      }
+    )
     val rgba = ByteArray(w * h * 4)
-    val cx_stop = Math.max(lx, if (hasAlpha) 5 else 3)
-    val cy_stop = Math.max(ly, if (hasAlpha) 5 else 3)
+    val cx_stop = Math.max(
+      lx,
+      if (hasAlpha) {
+        5
+      } else {
+        3
+      }
+    )
+    val cy_stop = Math.max(
+      ly,
+      if (hasAlpha) {
+        5
+      } else {
+        3
+      }
+    )
     val fx = FloatArray(cx_stop)
     val fy = FloatArray(cy_stop)
     var y = 0
@@ -76,7 +134,11 @@ object ThumbhashDecoder {
           var j = 0
           while (cy < ly) {
             val fy2 = fy[cy] * 2.0f
-            var cx = if (cy > 0) 0 else 1
+            var cx = if (cy > 0) {
+              0
+            } else {
+              1
+            }
             while (cx * ly < lx * (ly - cy)) {
               l += l_ac[j] * fx[cx] * fy2
               cx++
@@ -91,7 +153,11 @@ object ThumbhashDecoder {
         var j = 0
         while (cy < 3) {
           val fy2 = fy[cy] * 2.0f
-          var cx = if (cy > 0) 0 else 1
+          var cx = if (cy > 0) {
+            0
+          } else {
+            1
+          }
           while (cx < 3 - cy) {
             val f = fx[cx] * fy2
             p += p_ac[j] * f
@@ -108,7 +174,11 @@ object ThumbhashDecoder {
           var k = 0
           while (cyAlpha < 5) {
             val fy2 = fy[cyAlpha] * 2.0f
-            var cx = if (cyAlpha > 0) 0 else 1
+            var cx = if (cyAlpha > 0) {
+              0
+            } else {
+              1
+            }
             while (cx < 5 - cyAlpha) {
               a += a_ac!![k] * fx[cx] * fy2
               cx++
@@ -166,7 +236,11 @@ object ThumbhashDecoder {
     val p = (header shr 6 and 63).toFloat() / 31.5f - 1.0f
     val q = (header shr 12 and 63).toFloat() / 31.5f - 1.0f
     val hasAlpha = header shr 23 != 0
-    val a = if (hasAlpha) (hash[5].toInt() and 15).toFloat() / 15.0f else 1.0f
+    val a = if (hasAlpha) {
+      (hash[5].toInt() and 15).toFloat() / 15.0f
+    } else {
+      1.0f
+    }
     val b = l - 2.0f / 3.0f * p
     val r = (3.0f * l - b + q) / 2.0f
     val g = r - q
@@ -188,8 +262,22 @@ object ThumbhashDecoder {
     val header = hash[3]
     val hasAlpha = hash[2].toInt() and 0x80 != 0
     val isLandscape = hash[4].toInt() and 0x80 != 0
-    val lx = if (isLandscape) if (hasAlpha) 5 else 7 else header.toInt() and 7
-    val ly = if (isLandscape) header.toInt() and 7 else if (hasAlpha) 5 else 7
+    val lx = if (isLandscape) {
+      if (hasAlpha) {
+        5
+      } else {
+        7
+      }
+    } else {
+      header.toInt() and 7
+    }
+    val ly = if (isLandscape) {
+      header.toInt() and 7
+    } else if (hasAlpha) {
+      5
+    } else {
+      7
+    }
     return lx.toFloat() / ly.toFloat()
   }
 
@@ -200,7 +288,11 @@ object ThumbhashDecoder {
     init {
       var n = 0
       for (cy in 0 until ny) {
-        var cx = if (cy > 0) 0 else 1
+        var cx = if (cy > 0) {
+          0
+        } else {
+          1
+        }
         while (cx * ny < nx * (ny - cy)) {
           n++
           cx++

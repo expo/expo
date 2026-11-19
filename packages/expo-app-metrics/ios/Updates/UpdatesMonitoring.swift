@@ -75,6 +75,12 @@ internal class UpdatesMonitoring: MetricReporter {
     else {
       return nil
     }
+    // expo-updates emits `downloadCompleteWithUpdate` for an update that is already downloaded and
+    // ready on disk too. We don't want to write metrics for those events, so check for
+    // downloadProgress > 0, which only happens on real asset downloads.
+    if context.downloadProgress <= 0 {
+      return nil
+    }
     let lastDownloadTime = finishTime.timeIntervalSince(startTime)
     return Metric(
       category: .updates,

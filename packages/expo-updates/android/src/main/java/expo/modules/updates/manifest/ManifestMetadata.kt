@@ -1,12 +1,13 @@
 package expo.modules.updates.manifest
 
-import android.util.Log
 import expo.modules.jsonutils.require
 import expo.modules.structuredheaders.Dictionary
 import expo.modules.structuredheaders.StringItem
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.dao.JSONDataDao
+import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updatesinterface.UpdatesLogMessage
 import org.json.JSONObject
 
 /**
@@ -14,42 +15,48 @@ import org.json.JSONObject
  * and `manifestFilters`, both used for rollouts) to and from SQLite.
  */
 object ManifestMetadata {
-  private val TAG = ManifestMetadata::class.java.simpleName
-
   private fun getJSONObject(
     key: JSONDataDao.JSONDataKey,
     database: UpdatesDatabase,
-    configuration: UpdatesConfiguration
+    configuration: UpdatesConfiguration,
+    logger: UpdatesLogger
   ): JSONObject? {
     return try {
       val jsonString = database.jsonDataDao()!!
         .loadJSONStringForKey(key, configuration.scopeKey)
-      if (jsonString != null) JSONObject(jsonString) else null
+      if (jsonString != null) {
+        JSONObject(jsonString)
+      } else {
+        null
+      }
     } catch (e: Exception) {
-      Log.e(TAG, "Error retrieving $key from database", e)
+      logger.warn(UpdatesLogMessage.LocalMetadataReadFailed, e, mapOf("field" to key.key))
       null
     }
   }
 
   @JvmStatic fun getServerDefinedHeaders(
     database: UpdatesDatabase,
-    configuration: UpdatesConfiguration
+    configuration: UpdatesConfiguration,
+    logger: UpdatesLogger
   ): JSONObject? {
-    return getJSONObject(JSONDataDao.JSONDataKey.MANIFEST_SERVER_DEFINED_HEADERS, database, configuration)
+    return getJSONObject(JSONDataDao.JSONDataKey.MANIFEST_SERVER_DEFINED_HEADERS, database, configuration, logger)
   }
 
   fun getManifestFilters(
     database: UpdatesDatabase,
-    configuration: UpdatesConfiguration
+    configuration: UpdatesConfiguration,
+    logger: UpdatesLogger
   ): JSONObject? {
-    return getJSONObject(JSONDataDao.JSONDataKey.MANIFEST_FILTERS, database, configuration)
+    return getJSONObject(JSONDataDao.JSONDataKey.MANIFEST_FILTERS, database, configuration, logger)
   }
 
   fun getExtraParams(
     database: UpdatesDatabase,
-    configuration: UpdatesConfiguration
+    configuration: UpdatesConfiguration,
+    logger: UpdatesLogger
   ): Map<String, String>? {
-    return getJSONObject(JSONDataDao.JSONDataKey.EXTRA_PARAMS, database, configuration)?.asStringStringMap()
+    return getJSONObject(JSONDataDao.JSONDataKey.EXTRA_PARAMS, database, configuration, logger)?.asStringStringMap()
   }
 
   fun setExtraParam(

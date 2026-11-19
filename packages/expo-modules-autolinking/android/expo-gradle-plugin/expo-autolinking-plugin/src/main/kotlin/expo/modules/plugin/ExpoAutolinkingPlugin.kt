@@ -6,16 +6,24 @@ import com.android.build.api.variant.AndroidComponentsExtension
 import expo.modules.plugin.configuration.ExpoModule
 import expo.modules.plugin.text.Colors
 import expo.modules.plugin.text.withColor
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.Directory
+import org.gradle.api.plugins.UnknownPluginException
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 
 const val generatedPackageListNamespace = "expo.modules"
 const val generatedPackageListFilename = "ExpoModulesPackageList.kt"
 const val generatedFilesSrcDir = "generated/expo/src/main/java"
+
+/**
+ * The Gradle plugin that registers the Expo Modules v2 Kotlin compiler plugin. It expands the
+ * `discoveredExpoModules()` call in the `expo` package's `ExpoModulesV2ModuleList`.
+ */
+const val expoModulesV2PluginId = "io.github.expo.modules.v2"
 
 open class ExpoAutolinkingPlugin : Plugin<Project> {
   override fun apply(project: Project) {
@@ -51,6 +59,10 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
 
     project.logger.quiet("")
 
+    // The `expo` package's ExpoModulesV2ModuleList is filled in by the compiler, so this project
+    // has to compile with the Expo Modules v2 compiler plugin.
+    applyExpoModulesV2CompilerPlugin(project)
+
     // Creates the tasks that generate the expo module package list and the inline modules list.
     val generatePackagesList = createGeneratePackagesListTask(project, gradleExtension.config.modules, gradleExtension.hash)
     val generateInlineModules = createGenerateInlineModulesTask(project)
@@ -60,29 +72,36 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
       .named("preBuild", Task::class.java)
       .configure { it.dependsOn(generatePackagesList, generateInlineModules) }
 
-    // Registers the generated sources. The right mechanism differs by AGP version:
-    // - AGP 9 disallows Provider instances in the legacy SourceSet API and only compiles .kt from
-    //   the variant `kotlin` sources, so use the Variant Sources API
-    // - AGP 8 does not expose `variant.sources.kotlin`, so fall back to the legacy source set
+    // Registers the generated sources through the Variant Sources API. AGP 9 only compiles .kt
+    // files from the variant `kotlin` sources and disallows Provider instances in the legacy
+    // SourceSet API.
     val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
-    if (androidComponents.pluginVersion.major >= 9) {
-      androidComponents.onVariants { variant ->
-        @Suppress("UnstableApiUsage")
-        val kotlinSource = requireNotNull(variant.sources.kotlin) { "Can't access kotlin source sets" }
+    androidComponents.onVariants { variant ->
+      @Suppress("UnstableApiUsage")
+      val kotlinSource = requireNotNull(variant.sources.kotlin) { "Can't access kotlin source sets" }
 
-        with(kotlinSource) {
-          addGeneratedSourceDirectory(generatePackagesList) { it.outputDirectory }
-          addGeneratedSourceDirectory(generateInlineModules) { it.outputDirectory }
-        }
+      with(kotlinSource) {
+        addGeneratedSourceDirectory(generatePackagesList) { it.outputDirectory }
+        addGeneratedSourceDirectory(generateInlineModules) { it.outputDirectory }
       }
-    } else {
-      androidComponents.finalizeDsl { ext ->
-        ext
-          .sourceSets
-          .getByName("main")
-          .java
-          .srcDirs(getPackageListDir(project), getInlineModulesDir(project))
-      }
+    }
+  }
+
+  private fun applyExpoModulesV2CompilerPlugin(project: Project) {
+    if (project.plugins.hasPlugin(expoModulesV2PluginId)) {
+      return
+    }
+
+    try {
+      project.pluginManager.apply(expoModulesV2PluginId)
+    } catch (e: UnknownPluginException) {
+      throw GradleException(
+        "Expo autolinking cannot apply the `$expoModulesV2PluginId` Gradle plugin to `${project.path}`, " +
+          "so `ExpoModulesV2ModuleList` would not compile. The plugin ships with " +
+          "`expo-module-gradle-plugin`; apply that plugin in `${project.path}` before `expo-autolinking`, " +
+          "or check that `expo-modules-core` and `expo-modules-autolinking` come from the same Expo SDK version.",
+        e
+      )
     }
   }
 

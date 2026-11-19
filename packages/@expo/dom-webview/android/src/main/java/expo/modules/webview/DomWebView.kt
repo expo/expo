@@ -44,7 +44,9 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
 
   var useExpoModulesBridge: Boolean = false
     set(value) {
-      if (field == value) return
+      if (field == value) {
+        return
+      }
       field = value
       needsResetupScripts = true
     }

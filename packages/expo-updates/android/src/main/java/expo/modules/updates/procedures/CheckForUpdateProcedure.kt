@@ -4,13 +4,15 @@ import android.content.Context
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.IUpdatesController
 import expo.modules.updates.UpdatesConfiguration
-import expo.modules.updates.db.DatabaseHolder
+import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.loader.AssetsFailedToLoadException
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.loader.UpdateResponse
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updatesinterface.UpdatesLogMessage
 import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
@@ -20,32 +22,40 @@ import org.json.JSONObject
 class CheckForUpdateProcedure(
   private val context: Context,
   private val updatesConfiguration: UpdatesConfiguration,
-  private val databaseHolder: DatabaseHolder,
+  private val database: UpdatesDatabase,
   private val updatesLogger: UpdatesLogger,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
-  private val launchedUpdate: UpdateEntity?,
+  private val getLaunchedUpdate: () -> UpdateEntity?,
   private val callback: (IUpdatesController.CheckForUpdateResult) -> Unit
 ) : StateMachineProcedure() {
   override val loggerTimerLabel = "timer-check-for-update"
 
   override suspend fun run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEvent.Check())
+    val launchedUpdate = getLaunchedUpdate()
 
     val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, updatesConfiguration)?.updateEntity
     val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
-      databaseHolder.database,
+      database,
       updatesConfiguration,
       launchedUpdate,
-      embeddedUpdate
+      embeddedUpdate,
+      updatesLogger
     )
 
     try {
       val updateResponse = downloadRemoteUpdate(extraHeaders)
-      processUpdatesResponse(updateResponse, procedureContext, embeddedUpdate)
+      processUpdatesResponse(updateResponse, procedureContext, embeddedUpdate, launchedUpdate)
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
+      updatesLogger.errorForLoadFailure(
+        UpdatesLogMessage.RemoteCheckFailed,
+        UpdatesLogMessage.RemoteCheckUnreachable,
+        e,
+        AssetsFailedToLoadException.failureGroups(e)
+      )
       procedureContext.processStateEvent(UpdatesStateEvent.CheckError(e.localizedMessageWithCauseLocalizedMessage()))
       callback(IUpdatesController.CheckForUpdateResult.ErrorResult(e))
       procedureContext.onComplete()
@@ -61,7 +71,12 @@ class CheckForUpdateProcedure(
     }
   }
 
-  private fun processUpdatesResponse(updateResponse: UpdateResponse, procedureContext: ProcedureContext, embeddedUpdate: UpdateEntity?) {
+  private fun processUpdatesResponse(
+    updateResponse: UpdateResponse,
+    procedureContext: ProcedureContext,
+    embeddedUpdate: UpdateEntity?,
+    launchedUpdate: UpdateEntity?
+  ) {
     val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
     val update = updateResponse.manifestUpdateResponsePart?.update
 
@@ -161,7 +176,7 @@ class CheckForUpdateProcedure(
       // only allow the update if it has had no launch failures.
       shouldLaunch = true
       update.updateEntity?.let { updateEntity ->
-        val storedUpdateEntity = databaseHolder.database.updateDao().loadUpdateWithId(
+        val storedUpdateEntity = database.updateDao().loadUpdateWithId(
           updateEntity.id
         )
         storedUpdateEntity?.let {

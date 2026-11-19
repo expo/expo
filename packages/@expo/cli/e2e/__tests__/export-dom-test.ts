@@ -1,8 +1,9 @@
 import JsonFile from '@expo/json-file';
 import fs from 'fs/promises';
-import { sync as globSync } from 'glob';
 import crypto from 'node:crypto';
+import { pathToFileURL } from 'node:url';
 import path from 'path';
+import { globSync } from 'tinyglobby';
 
 import { toPosixPath } from '../../src/utils/filePath';
 import { executeExpoAsync } from '../utils/expo';
@@ -96,13 +97,9 @@ describe('Export DOM Components', () => {
       domEntry.indexOf(`<link rel="preload" href="./${md5DomCss}.css" as="style">`)
     ).toBeGreaterThan(-1);
 
-    // Linked assets should be MD5 named
-    //   - icon.png
-    const iconAssetModule = `__d(function(g,r,i,a,m,e,d){m.exports={uri:"fb960eb5e4eb49ec8786c7f6c4a57ce2.png",`;
-    expect(domJsBundleContent.indexOf(iconAssetModule)).toBeGreaterThan(-1);
-    //   - font.ttf
-    const ttfModule = `__d(function(g,r,i,a,m,e,d){m.exports="3858f62230ac3c915f300c664312c63f.ttf"},`;
-    expect(domJsBundleContent.indexOf(ttfModule)).toBeGreaterThan(-1);
+    // Linked assets should export MD5 filenames regardless of factory parameter names.
+    expect(domJsBundleContent).toContain('.exports={uri:"fb960eb5e4eb49ec8786c7f6c4a57ce2.png",');
+    expect(domJsBundleContent).toContain('.exports="3858f62230ac3c915f300c664312c63f.ttf"');
 
     // Because sourceMappingURL contains path info, we have to remove it and re-generate the MD5 hash files.
     const replacedFiles = await removeSourceMappingURLAsync(path.join(projectRoot, 'dist'));
@@ -191,6 +188,86 @@ describe('Export DOM Components', () => {
         expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.css$/),
       ])
     );
+  });
+
+  it('compiles DOM embed output to Hermes bytecode', async () => {
+    const outputDir = path.join(projectRoot, 'dist-embed');
+    const bundlePath = path.join(outputDir, 'main.jsbundle');
+    await executeExpoAsync(
+      projectRoot,
+      [
+        'export:embed',
+        '--entry-file',
+        'index.js',
+        '--bundle-output',
+        bundlePath,
+        '--assets-dest',
+        outputDir,
+        '--platform',
+        'ios',
+        '--dev',
+        'false',
+        '--bytecode',
+        'true',
+        '--reset-cache',
+      ],
+      {
+        env: {
+          NODE_ENV: 'production',
+          TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
+        },
+      }
+    );
+    const bytecode = await fs.readFile(bundlePath);
+    expect(bytecode.subarray(0, 8).toString('hex')).toBe('c61fbc03c103191f');
+    const reference = pathToFileURL(path.join(await fs.realpath(projectRoot), 'DomView.js')).href;
+    const htmlFilename = `${crypto.createHash('md5').update(reference).digest('hex')}.html`;
+    expect(bytecode.includes(Buffer.from(htmlFilename))).toBe(true);
+    expect(await fs.readFile(path.join(outputDir, 'www.bundle', htmlFilename), 'utf8')).toContain(
+      '<script'
+    );
+  });
+
+  it.each(['ios', 'android'])('preserves overlapping Hermes strings on %s', async (platform) => {
+    const reference = pathToFileURL(path.join(await fs.realpath(projectRoot), 'DomView.js')).href;
+    const placeholder = crypto.createHash('md5').update(reference).digest('hex');
+    const probe = `dom-overlap-probe-${placeholder.slice(0, 16)}`;
+    const appPath = path.join(projectRoot, 'App.js');
+    const originalApp = await fs.readFile(appPath, 'utf8');
+    const outputDir = path.join(projectRoot, `dist-overlap-${platform}`);
+    try {
+      // Keep the probe observable so Hermes packs it next to the HTML placeholder.
+      await fs.appendFile(
+        appPath,
+        `\nglobalThis.domOverlapProbe = ${JSON.stringify(probe)};\nglobalThis.domOverlapControl = 'dom-overlap-control';\n`
+      );
+      await executeExpoAsync(
+        projectRoot,
+        ['export', '--clear', '--platform', platform, '--output-dir', outputDir],
+        {
+          env: {
+            NODE_ENV: 'production',
+            TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
+          },
+        }
+      );
+      const metadata = await JsonFile.readAsync<any>(path.join(outputDir, 'metadata.json'));
+      const { bundle, assets } = metadata.fileMetadata[platform];
+      const bytecode = await fs.readFile(path.join(outputDir, bundle));
+      const htmlPath = assets.find((asset: { ext: string }) => asset.ext === 'html').path;
+      const html = await fs.readFile(path.join(outputDir, htmlPath));
+      const htmlHash = crypto.createHash('md5').update(html).digest('hex');
+
+      expect(bundle).toMatch(/\.hbc$/);
+      expect(bytecode.subarray(0, 8).toString('hex')).toBe('c61fbc03c103191f');
+      expect(path.basename(htmlPath)).toBe(`${htmlHash}.html`);
+      expect(bytecode.includes(Buffer.from(`${htmlHash}.html`))).toBe(true);
+      expect(bytecode.includes(Buffer.from(`${placeholder}.html`))).toBe(false);
+      expect(bytecode.includes(Buffer.from(probe))).toBe(true);
+      expect(bytecode.includes(Buffer.from('dom-overlap-control'))).toBe(true);
+    } finally {
+      await fs.writeFile(appPath, originalApp);
+    }
   });
 });
 

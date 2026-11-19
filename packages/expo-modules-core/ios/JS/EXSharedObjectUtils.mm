@@ -17,25 +17,51 @@
   "are on the framework search path."
 #endif
 
+@implementation EXSharedObjectListeners {
+  std::weak_ptr<expo::SharedObject::NativeState> _nativeState;
+}
+
+- (void)setNativeState:(const std::shared_ptr<expo::SharedObject::NativeState> &)nativeState
+{
+  @synchronized (self) {
+    _nativeState = nativeState;
+  }
+}
+
+- (void)clear
+{
+  std::shared_ptr<expo::SharedObject::NativeState> nativeState;
+  @synchronized (self) {
+    nativeState = _nativeState.lock();
+  }
+  if (nativeState) {
+    nativeState->clearListeners();
+  }
+}
+
+@end
+
 @implementation EXSharedObjectUtils
 
 + (void *)makeSharedObjectNativeStatePtr:(long)objectId
                                 releaser:(ObjectReleaser)releaser
+                               listeners:(EXSharedObjectListeners *)listeners
                                  context:(void *)context
                       contextDeallocator:(void (*)(void *))contextDeallocator
 {
+  auto nativeState = std::make_shared<expo::SharedObject::NativeState>(
+    objectId,
+    [releaser](long id) { releaser(id); },
+    context,
+    contextDeallocator
+  );
+  [listeners setNativeState:nativeState];
+
   // Heap-allocate the `shared_ptr<jsi::NativeState>` itself (not its pointee) so the
   // raw pointer crosses the no-interop boundary into Swift, where `JavaScriptNativeState`
   // adopts it: copies the shared_ptr into Swift-managed storage, then `delete`s this
   // allocation. The shared control block created by `make_shared` is unaffected.
-  return new std::shared_ptr<jsi::NativeState>(
-    std::make_shared<expo::SharedObject::NativeState>(
-      objectId,
-      [releaser](long id) { releaser(id); },
-      context,
-      contextDeallocator
-    )
-  );
+  return new std::shared_ptr<jsi::NativeState>(std::move(nativeState));
 }
 
 @end

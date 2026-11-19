@@ -4,7 +4,7 @@ import { useCallback, type ReactElement } from 'react';
 import { Text } from 'react-native';
 
 import { ExpoRoot } from '../ExpoRoot';
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
@@ -15,69 +15,105 @@ import { getMockContext, renderRouter } from '../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs as HeadlessTabs } from '../ui';
 import { Slot } from '../views/Navigator';
 
-it('does not crash when a route file is removed and the app re-renders', () => {
+it('preserves live navigation state when the initial location changes on re-render', async () => {
+  const routes = {
+    _layout: () => (
+      <Stack>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="second" />
+      </Stack>
+    ),
+    index: () => <Text testID="index">Index</Text>,
+    second: () => <Text testID="second">Second</Text>,
+  };
+  const result = await renderRouter(routes, { initialUrl: '/' });
+  await act(() => router.push('/second'));
+  const navigationState = navigationRef.getRootState();
+
+  await result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />);
+
+  expect(navigationRef.getRootState()).toStrictEqual(navigationState);
+  expect(screen.getByTestId('second')).toBeVisible();
+});
+
+it('does not crash when a route file is removed and the app re-renders', async () => {
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => <Stack />,
     index: () => <Text testID="index">Index</Text>,
     second: () => <Text testID="second">Second</Text>,
   };
 
-  const result = renderRouter(routes, { initialUrl: '/' });
+  const result = await renderRouter(routes, { initialUrl: '/' });
   expect(screen.getByTestId('index')).toBeVisible();
 
   // Simulate the file deletion: `inMemoryContext.keys()` reads this record live.
   delete routes.second;
 
-  expect(() =>
-    result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />)
-  ).not.toThrow();
+  await result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(result.getRouterState()!.routes[0]!.state!.routeNames).toStrictEqual(['index']);
 });
 
-it('does not crash when a route file is added and the app re-renders', () => {
+it('does not crash when a route file is added and the app re-renders', async () => {
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => <Stack />,
     index: () => <Text testID="index">Index</Text>,
   };
 
-  const result = renderRouter(routes, { initialUrl: '/' });
+  const result = await renderRouter(routes, { initialUrl: '/' });
   expect(screen.getByTestId('index')).toBeVisible();
 
   // Simulate a new route file appearing.
   routes.second = () => <Text testID="second">Second</Text>;
 
-  expect(() =>
-    result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />)
-  ).not.toThrow();
+  await result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
 
   // The new route is registered and reachable.
   expect(result.getRouterState()!.routes[0]!.state!.routeNames).toContain('second');
-  act(() => router.navigate('/second'));
+  await act(() => router.navigate('/second'));
   expect(screen.getByTestId('second')).toBeVisible();
 });
 
-it('does not crash when the currently focused route file is removed', () => {
+// TODO(@ubax): seed the new nested navigator before it renders; intent deduplication alone
+// cannot repair the missing child state synchronously.
+// https://linear.app/expo/issue/ENG-26163/fix-hot-module-reloading-by-utilizing-global-state
+it.skip('seeds state when a route gains a nested layout', async () => {
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => <Stack />,
     index: () => <Text testID="index">Index</Text>,
     second: () => <Text testID="second">Second</Text>,
   };
 
-  const result = renderRouter(routes, { initialUrl: '/second' });
+  const result = await renderRouter(routes, { initialUrl: '/second' });
+  expect(screen.getByTestId('second')).toBeVisible();
+
+  delete routes.second;
+  routes['second/_layout'] = () => <Stack />;
+  routes['second/index'] = () => <Text testID="second-index">Second index</Text>;
+
+  await result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />);
+  expect(screen.getByTestId('second-index')).toBeVisible();
+});
+
+it('does not crash when the currently focused route file is removed', async () => {
+  const routes: Record<string, () => ReactElement | null> = {
+    _layout: () => <Stack />,
+    index: () => <Text testID="index">Index</Text>,
+    second: () => <Text testID="second">Second</Text>,
+  };
+
+  const result = await renderRouter(routes, { initialUrl: '/second' });
   expect(screen.getByTestId('second')).toBeVisible();
 
   delete routes.second;
 
-  expect(() =>
-    result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />)
-  ).not.toThrow();
+  await result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />);
 
   expect(result.getRouterState()!.routes[0]!.state!.routeNames).toStrictEqual(['index']);
 });
 
-it('does not allow removal prevention to block route file changes', () => {
+it('does not allow removal prevention to block route file changes', async () => {
   const beforeRemove = jest.fn();
   const Second = () => {
     usePreventRemove(true, beforeRemove);
@@ -89,48 +125,46 @@ it('does not allow removal prevention to block route file changes', () => {
     second: Second,
   };
 
-  const result = renderRouter(routes, { initialUrl: '/second' });
+  const result = await renderRouter(routes, { initialUrl: '/second' });
   delete routes.second;
 
-  result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />);
+  await result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />);
 
   expect(beforeRemove).not.toHaveBeenCalled();
   expect(result.getRouterState()!.routes[0]!.state!.routeNames).toStrictEqual(['index']);
 });
 
-it('does not crash when a route file is renamed after navigation', () => {
+it('does not crash when a route file is renamed after navigation', async () => {
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => <Stack />,
     index: () => <Text testID="index">Index</Text>,
     second: () => <Text testID="second">Second</Text>,
   };
 
-  const result = renderRouter(routes, { initialUrl: '/' });
-  act(() => router.push('/second'));
+  const result = await renderRouter(routes, { initialUrl: '/' });
+  await act(() => router.push('/second'));
   expect(screen.getByTestId('second')).toBeVisible();
 
   delete routes.second;
   routes.third = () => <Text testID="third">Third</Text>;
 
-  expect(() =>
-    result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />)
-  ).not.toThrow();
+  await result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
 
   expect(screen.getByTestId('index')).toBeVisible();
-  expect(store.navigationRef.current?.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
+  expect(navigationRef.current?.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
     'index',
     'third',
   ]);
 });
 
-it('repairs state when all screen files are replaced', () => {
+it('repairs state when all screen files are replaced', async () => {
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => <Stack />,
     index: () => <Text testID="index">Index</Text>,
     second: () => <Text testID="second">Second</Text>,
   };
 
-  const result = renderRouter(routes, { initialUrl: '/second' });
+  const result = await renderRouter(routes, { initialUrl: '/second' });
   expect(screen.getByTestId('second')).toBeVisible();
 
   delete routes.index;
@@ -138,23 +172,21 @@ it('repairs state when all screen files are replaced', () => {
   routes.third = () => <Text testID="third">Third</Text>;
   routes.fourth = () => <Text testID="fourth">Fourth</Text>;
 
-  expect(() =>
-    result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />)
-  ).not.toThrow();
+  await result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />);
 
   const state = result.getRouterState()!.routes[0]!.state!;
   expect(state.routeNames).toStrictEqual(['third', 'fourth']);
   expect(state.routes.map((route) => route.name)).toStrictEqual(['third']);
 });
 
-it('repairs Slot state when all screen files are replaced', () => {
+it('repairs Slot state when all screen files are replaced', async () => {
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => <Slot />,
     index: () => <Text testID="index">Index</Text>,
     second: () => <Text testID="second">Second</Text>,
   };
 
-  const result = renderRouter(routes, { initialUrl: '/second' });
+  const result = await renderRouter(routes, { initialUrl: '/second' });
   expect(screen.getByTestId('second')).toBeVisible();
 
   delete routes.index;
@@ -162,16 +194,15 @@ it('repairs Slot state when all screen files are replaced', () => {
   routes.third = () => <Text testID="third">Third</Text>;
   routes.fourth = () => <Text testID="fourth">Fourth</Text>;
 
-  expect(() =>
-    result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />)
-  ).not.toThrow();
+  await result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />);
 
   const state = result.getRouterState()!.routes[0]!.state!;
   expect(state.routeNames).toStrictEqual(['third', 'fourth']);
   expect(state.routes.map((route) => route.name)).toStrictEqual(['third']);
 });
 
-it('repairs top tabs state when all screen files are replaced', () => {
+it('repairs top tabs state when all screen files are replaced', async () => {
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => {
       const screens = [];
@@ -185,7 +216,7 @@ it('repairs top tabs state when all screen files are replaced', () => {
     second: () => <Text testID="second">Second</Text>,
   };
 
-  const result = renderRouter(routes, { initialUrl: '/second' });
+  const result = await renderRouter(routes, { initialUrl: '/second' });
   expect(screen.getByTestId('second')).toBeVisible();
 
   delete routes.index;
@@ -193,16 +224,16 @@ it('repairs top tabs state when all screen files are replaced', () => {
   routes.third = () => <Text testID="third">Third</Text>;
   routes.fourth = () => <Text testID="fourth">Fourth</Text>;
 
-  expect(() =>
-    result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />)
-  ).not.toThrow();
+  await result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />);
 
   const state = result.getRouterState()!.routes[0]!.state!;
   expect(state.routeNames).toStrictEqual(['third', 'fourth']);
   expect(state.routes.map((route) => route.name)).toStrictEqual(['third', 'fourth']);
+  expect(warn).not.toHaveBeenCalled();
+  warn.mockRestore();
 });
 
-it('preserves surviving stack history when a route file is renamed', () => {
+it('preserves surviving stack history when a route file is renamed', async () => {
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => <Stack />,
     index: () => <Text testID="index">Index</Text>,
@@ -210,28 +241,26 @@ it('preserves surviving stack history when a route file is renamed', () => {
     second: () => <Text testID="second">Second</Text>,
   };
 
-  const result = renderRouter(routes, { initialUrl: '/' });
-  act(() => router.push('/details'));
-  act(() => router.push('/second'));
+  const result = await renderRouter(routes, { initialUrl: '/' });
+  await act(() => router.push('/details'));
+  await act(() => router.push('/second'));
   expect(screen.getByTestId('second')).toBeVisible();
 
   delete routes.second;
   routes.third = () => <Text testID="third">Third</Text>;
 
-  expect(() =>
-    result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />)
-  ).not.toThrow();
+  await result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
 
   expect(screen.getByTestId('details')).toBeVisible();
   expect(
-    store.navigationRef.current?.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+    navigationRef.current?.getRootState().routes[0]!.state!.routes.map((route) => route.name)
   ).toStrictEqual(['index', 'details']);
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('index')).toBeVisible();
 });
 
-it('does not crash when a tab route file is renamed after navigation', () => {
+it('does not crash when a tab route file is renamed after navigation', async () => {
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => {
       const screens = [<Tabs.Screen key="index" name="index" />];
@@ -243,20 +272,18 @@ it('does not crash when a tab route file is renamed after navigation', () => {
     second: () => <Text testID="second">Second</Text>,
   };
 
-  const result = renderRouter(routes, { initialUrl: '/' });
-  act(() => router.push('/second'));
+  const result = await renderRouter(routes, { initialUrl: '/' });
+  await act(() => router.push('/second'));
   expect(screen.getByTestId('second')).toBeVisible();
   const replace = jest.spyOn(router, 'replace');
 
   delete routes.second;
   routes.third = () => <Text testID="third">Third</Text>;
 
-  expect(() =>
-    result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />)
-  ).not.toThrow();
+  await result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
 
   expect(screen.getByTestId('index')).toBeVisible();
-  expect(store.navigationRef.current?.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
+  expect(navigationRef.current?.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
     'index',
     'third',
   ]);
@@ -264,7 +291,7 @@ it('does not crash when a tab route file is renamed after navigation', () => {
   replace.mockRestore();
 });
 
-it('focuses the first tab when the focused third tab is removed', () => {
+it('focuses the first tab when the focused third tab is removed', async () => {
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => {
       const screens = [
@@ -279,12 +306,12 @@ it('focuses the first tab when the focused third tab is removed', () => {
     third: () => <Text testID="third">Third</Text>,
   };
 
-  const result = renderRouter(routes, { initialUrl: '/' });
-  act(() => router.push('/third'));
+  const result = await renderRouter(routes, { initialUrl: '/' });
+  await act(() => router.push('/third'));
   expect(screen.getByTestId('third')).toBeVisible();
 
   delete routes.third;
-  result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
+  await result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
 
   const state = result.getRouterState()!.routes[0]!.state!;
   expect(state.index).toBe(0);
@@ -292,7 +319,7 @@ it('focuses the first tab when the focused third tab is removed', () => {
   expect(screen.getByTestId('index')).toBeVisible();
 });
 
-it('does not redirect when the focused headless tab trigger is removed', () => {
+it('does not redirect when the focused headless tab trigger is removed', async () => {
   let showSecond = true;
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => (
@@ -308,19 +335,19 @@ it('does not redirect when the focused headless tab trigger is removed', () => {
     second: () => <Text testID="second">Second</Text>,
   };
 
-  const result = renderRouter(routes, { initialUrl: '/second' });
+  const result = await renderRouter(routes, { initialUrl: '/second' });
   expect(screen.getByTestId('second')).toBeVisible();
   const replace = jest.spyOn(router, 'replace');
 
   showSecond = false;
   delete routes.second;
-  result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />);
+  await result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />);
 
   expect(replace).not.toHaveBeenCalled();
   replace.mockRestore();
 });
 
-it('does not focus an unrelated tab while reconciling a removed focused tab', () => {
+it('does not focus an unrelated tab while reconciling a removed focused tab', async () => {
   const focusEvents: string[] = [];
   const Screen = ({ name }: { name: string }) => {
     useFocusEffect(
@@ -345,19 +372,19 @@ it('does not focus an unrelated tab while reconciling a removed focused tab', ()
     third: () => <Screen name="third" />,
   };
 
-  const result = renderRouter(routes, { initialUrl: '/' });
-  act(() => router.push('/third'));
+  const result = await renderRouter(routes, { initialUrl: '/' });
+  await act(() => router.push('/third'));
   focusEvents.length = 0;
 
   delete routes.third;
-  result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
+  await result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
 
   // The interim render must not focus `second`: the router focuses `index`, and a stray focus
   // there runs a screen's `useFocusEffect` for a tab the user never selected.
   expect(focusEvents).toStrictEqual(['blur:third', 'focus:index']);
 });
 
-it('focuses the surviving top route when the focused stack route is removed', () => {
+it('focuses the surviving top route when the focused stack route is removed', async () => {
   const focusEvents: string[] = [];
   const Screen = ({ name }: { name: string }) => {
     useFocusEffect(
@@ -375,13 +402,13 @@ it('focuses the surviving top route when the focused stack route is removed', ()
     third: () => <Screen name="third" />,
   };
 
-  const result = renderRouter(routes, { initialUrl: '/' });
-  act(() => router.push('/details'));
-  act(() => router.push('/third'));
+  const result = await renderRouter(routes, { initialUrl: '/' });
+  await act(() => router.push('/details'));
+  await act(() => router.push('/third'));
   focusEvents.length = 0;
 
   delete routes.third;
-  result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
+  await result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
 
   // A stack focuses the survivor below the removed route, so `index` must never be focused.
   expect(focusEvents).toStrictEqual(['blur:third', 'focus:details']);

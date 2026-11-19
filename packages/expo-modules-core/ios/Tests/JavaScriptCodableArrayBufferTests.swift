@@ -37,7 +37,7 @@ struct JavaScriptCodableArrayBufferTests {
         new Uint8Array(buffer, 1, 2);
       """
     )
-    let values = JavaScriptValuesBuffer.copying(in: runtime, values: [value])
+    let values = JavaScriptValuesBuffer.copying(in: runtime, values: [JavaScriptValue.Ref(value)])
 
     let decoded = try ArrayBuffer.decode(values.unownedValue(at: 0), in: runtime)
 
@@ -103,6 +103,22 @@ struct JavaScriptCodableArrayBufferTests {
   }
 
   @Test
+  func `encoding an ArrayBuffer reports its memory to the garbage collector once`() throws {
+    let runtime = try runtime
+    let size = 1 << 20
+    let externalBytes = "HermesInternal.getInstrumentedStats().js_externalBytes"
+    let buffer = ArrayBuffer(size: size)
+    let bytesBefore = try runtime.eval(externalBytes).getDouble()
+    let first = try ArrayBuffer.encode(buffer, in: runtime)
+    let second = try ArrayBuffer.encode(buffer, in: runtime)
+    let bytesAfter = try runtime.eval(externalBytes).getDouble()
+    #expect(first.isArrayBuffer() == true)
+    #expect(second.isArrayBuffer() == true)
+    #expect(bytesAfter - bytesBefore >= Double(size))
+    #expect(bytesAfter - bytesBefore < Double(2 * size))
+  }
+
+  @Test
   func `decodes dictionary values as ArrayBuffer`() throws {
     let runtime = try runtime
     let value = try runtime.eval("({ payload: new Uint8Array([7, 8, 9]).buffer })")
@@ -144,6 +160,42 @@ struct JavaScriptCodableArrayBufferTests {
     #expect(throws: ArrayBufferJavaScriptValueConversionException.self) {
       _ = try ArrayBuffer.decode(runtime.eval("({})"), in: runtime)
     }
+  }
+
+  @Test
+  func `decode of a borrowed value reports the kind of a non-buffer`() throws {
+    let runtime = try runtime
+    let values = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: 42,
+      try runtime.eval("({})").ref(),
+      try runtime.eval("(() => 1)").ref()
+    )
+    let number = try #require(throws: ArrayBufferJavaScriptValueConversionException.self) {
+      _ = try ArrayBuffer.decode(values.unownedValue(at: 0), in: runtime)
+    }
+    #expect(number.param == .number)
+    let object = try #require(throws: ArrayBufferJavaScriptValueConversionException.self) {
+      _ = try ArrayBuffer.decode(values.unownedValue(at: 1), in: runtime)
+    }
+    #expect(object.param == .object)
+    // A function is an object, and the owning decode reports it as one too.
+    let function = try #require(throws: ArrayBufferJavaScriptValueConversionException.self) {
+      _ = try ArrayBuffer.decode(values.unownedValue(at: 2), in: runtime)
+    }
+    #expect(function.param == .object)
+  }
+
+  @Test
+  func `decodes a borrowed ArrayBuffer`() throws {
+    let runtime = try runtime
+    let value = try runtime.eval("new Uint8Array([4, 5, 6]).buffer")
+    let values = JavaScriptValuesBuffer.copying(in: runtime, values: [JavaScriptValue.Ref(value)])
+
+    let decoded = try ArrayBuffer.decode(values.unownedValue(at: 0), in: runtime)
+
+    #expect(decoded.byteLength == 3)
+    #expect(Array(decoded.data) == [4, 5, 6])
   }
 
   // MARK: - Empty and wide-element buffers

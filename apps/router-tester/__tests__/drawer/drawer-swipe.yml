@@ -1,0 +1,20 @@
+appId: dev.expo.routertester
+name: Drawer swipe
+---
+- stopApp: dev.expo.routertester
+# A dev client opens its launcher on a cold deep link. Connect it to Metro on 8081 (from maestro/test.sh) first.
+- openLink: router-tester://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081
+- extendedWaitUntil:
+    visible: "Current Path: /"
+    timeout: 60000
+- openLink: router-tester://drawer
+- runFlow: ../close-warning.yml
+- assertVisible: "Home screen"
+- assertVisible: "closed"
+# The drawer opens only from the 32 pt left edge. On Android, use 3-button navigation: gesture navigation takes this edge.
+- swipe:
+    start: 6%, 50%
+    end: 80%, 50%
+# Tap an item: the items stay in the view hierarchy even under an error overlay.
+- tapOn: "Drawer Second"
+- assertVisible: "Second screen"

@@ -85,7 +85,7 @@ If you have a **SimpleModule.kt**, then the inline module inside it has that fil
 // SimpleModule.kt
 // ...
 class SimpleModule: Module() { // Note that the class name has to match the filename.
-    public func definition() -> ModuleDefinition {
+    override fun definition() = ModuleDefinition {
         // Name("SimpleModule") // Note that `Name` also has to match the filename. So you can just omit it.
     }
 }

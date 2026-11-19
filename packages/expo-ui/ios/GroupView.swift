@@ -7,6 +7,7 @@ public final class GroupViewProps: UIBaseViewProps {}
 
 public struct GroupView: ExpoSwiftUI.View {
   @ObservedObject public var props: GroupViewProps
+  @Environment(\.resolvesOwnPercentage) private var resolvesOwnPercentage
 
   public init(props: GroupViewProps) {
     self.props = props
@@ -16,5 +17,7 @@ public struct GroupView: ExpoSwiftUI.View {
     Group {
       Children()
     }
+    // Group does not size its children, so they keep this view's parent.
+    .environment(\.universalPercentageParent, resolvesOwnPercentage)
   }
 }

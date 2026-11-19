@@ -4,7 +4,7 @@ let defaultScreenOrientationMaskKey = "EXDefaultScreenOrientationMask"
 let supportedOrientationsKey = "UISupportedInterfaceOrientations"
 let ipadSupportedOrientationsKey = "UISupportedInterfaceOrientations~ipad"
 
-class ScreenOrientationViewController: UIViewController {
+class ScreenOrientationViewController: ExpoRootViewController {
   let screenOrientationRegistry = ScreenOrientationRegistry.shared
   private var defaultOrientationMask: UIInterfaceOrientationMask
   private var previousInterfaceOrientation: UIInterfaceOrientation = .unknown
@@ -75,6 +75,11 @@ class ScreenOrientationViewController: UIViewController {
     // (set via lockAsync) or the default from Info.plist.
     let mask = screenOrientationRegistry.requiredOrientationMask()
     return !mask.isEmpty ? mask : defaultOrientationMask
+  }
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    screenOrientationRegistry.updateCurrentScreenOrientationIfUnknown()
   }
 
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`deprecate errors throws a deprecation error after expiration 1`] = `"expo-modules-core: \`foo\` has been removed as of version "1.0.0""`;
 

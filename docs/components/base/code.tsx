@@ -3,8 +3,6 @@ import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
 import { LayoutAlt01Icon } from '@expo/styleguide-icons/outline/LayoutAlt01Icon';
 import { Server03Icon } from '@expo/styleguide-icons/outline/Server03Icon';
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
-import tippy, { roundArrow } from 'tippy.js';
-import 'tippy.js/dist/tippy.css';
 
 import {
   cleanCopyValue,
@@ -23,33 +21,7 @@ import { SettingsAction } from '~/ui/components/Snippet/actions/SettingsAction';
 import { CODE } from '~/ui/components/Text';
 import { TextTheme } from '~/ui/components/Text/types';
 
-// @ts-expect-error Jest ESM issue https://github.com/facebook/jest/issues/9430
-const { default: testTippy } = tippy;
-const tippyFunc = testTippy ?? tippy;
-
-// Builds a tooltip DOM tree from the annotation's data-tippy-content attribute.
-// Recognizes `code` -> <code> and **bold** -> <strong>.
-function buildTooltipContent(raw: string): HTMLSpanElement {
-  const wrapper = document.createElement('span');
-  const parts = raw.split(/(`[^`]+`|\*\*[^*]+\*\*)/);
-  for (const part of parts) {
-    if (!part) {
-      continue;
-    }
-    if (part.startsWith('`') && part.endsWith('`')) {
-      const code = document.createElement('code');
-      code.textContent = part.slice(1, -1);
-      wrapper.appendChild(code);
-    } else if (part.startsWith('**') && part.endsWith('**')) {
-      const strong = document.createElement('strong');
-      strong.textContent = part.slice(2, -2);
-      wrapper.appendChild(strong);
-    } else {
-      wrapper.appendChild(document.createTextNode(part));
-    }
-  }
-  return wrapper;
-}
+import { useCodeAnnotationTooltip } from './code-annotation-tooltip';
 
 const attributes = {
   'data-text': true,
@@ -76,7 +48,6 @@ export function Code({ className, children, title }: CodeProps) {
   const [isExpanded, setExpanded] = useState(false);
   const [collapseBound, setCollapseBound] = useState<number | undefined>(undefined);
   const [blockHeight, setBlockHeight] = useState<number | undefined>(undefined);
-  const [didMount, setDidMount] = useState(false);
   const collapseHeight = getCollapseHeight(params);
   const showExpand = !isExpanded && blockHeight && collapseBound && blockHeight > collapseBound;
   const resolvedVersion = params?.sdkVersion ? `v${params.sdkVersion}` : version;
@@ -89,38 +60,9 @@ export function Code({ className, children, title }: CodeProps) {
         setCollapseBound(collapseHeight);
       }
     }
-    setDidMount(true);
   }, []);
 
-  useEffect(() => {
-    tippyFunc('.code-annotation.with-tooltip', {
-      allowHTML: false,
-      ignoreAttributes: true,
-      aria: { content: 'auto', expanded: false },
-      content: (reference: Element) =>
-        buildTooltipContent(reference.getAttribute('data-tippy-content') ?? ''),
-      theme: 'expo',
-      placement: 'top',
-      arrow: roundArrow,
-      interactive: true,
-      offset: [0, 20],
-      appendTo: () => document.body,
-    });
-
-    tippyFunc('.tutorial-code-annotation.with-tooltip', {
-      allowHTML: false,
-      ignoreAttributes: true,
-      aria: { content: 'auto', expanded: false },
-      content: (reference: Element) =>
-        buildTooltipContent(reference.getAttribute('data-tippy-content') ?? ''),
-      theme: 'expo',
-      placement: 'top',
-      arrow: roundArrow,
-      interactive: true,
-      offset: [0, 20],
-      appendTo: () => document.body,
-    });
-  }, [didMount, isExpanded]);
+  useCodeAnnotationTooltip();
 
   function expandCodeBlock() {
     setExpanded(true);
@@ -129,8 +71,9 @@ export function Code({ className, children, title }: CodeProps) {
 
   const forceWordWrap = params?.wrap === 'true';
   const commonClasses = mergeClasses(
-    (wordWrap || forceWordWrap) && 'wrap-break-word! whitespace-pre-wrap!',
-    showExpand && !isExpanded && `overflow-y-hidden! [&::-webkit-scrollbar-track]:bg-default!`
+    '[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin',
+    (wordWrap || forceWordWrap) && 'wrap-anywhere! whitespace-pre-wrap!',
+    showExpand && !isExpanded && 'overflow-y-hidden!'
   );
 
   return codeBlockTitle ? (
@@ -159,27 +102,29 @@ export function Code({ className, children, title }: CodeProps) {
       </SnippetContent>
     </Snippet>
   ) : (
-    <pre
-      ref={contentRef}
-      data-md-lang={language}
-      style={{
-        maxHeight: collapseBound,
-      }}
+    <div
       className={mergeClasses(
-        'relative my-4 overflow-x-auto rounded-md border border-secondary bg-subtle whitespace-pre',
+        'code-block-wrapper my-4 overflow-clip rounded-3xl border border-secondary bg-subtle',
         preferredTheme === Themes.DARK && 'dark-theme',
-        commonClasses,
         '[p+&]:mt-0'
-      )}
-      {...attributes}>
-      <div className="w-fit p-4">
-        <code
-          className="text-xs text-default"
-          dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-        />
-      </div>
-      {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
-    </pre>
+      )}>
+      <pre
+        ref={contentRef}
+        data-md-lang={language}
+        style={{
+          maxHeight: collapseBound,
+        }}
+        className={mergeClasses('relative overflow-x-auto whitespace-pre', commonClasses)}
+        {...attributes}>
+        <div className="w-fit p-4">
+          <code
+            className="text-xs text-default"
+            dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+          />
+        </div>
+        {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
+      </pre>
+    </div>
   );
 }
 

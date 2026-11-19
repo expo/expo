@@ -58,6 +58,8 @@ function ModifiersExample() {
 }
 ```
 
+> **info** You can also create custom modifiers that work with any Expo UI component. See the [Custom Jetpack Compose components](extending) guide for details.
+
 ## Padding
 
 Control the spacing around a component's content.
@@ -530,6 +532,7 @@ Makes the component respond to both short-tap and long-press gestures. Wraps Com
 | `options.indication`   | `boolean`    | Whether to show a ripple indication. Defaults to `true`. |
 
 ```tsx
+import { Text } from '@expo/ui/jetpack-compose';
 import { combinedClickable } from '@expo/ui/jetpack-compose/modifiers';
 
 <Text

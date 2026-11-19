@@ -4,6 +4,7 @@
 
 import { type Changeset } from '../src/NativeSession';
 import { type SQLiteColumnNames, type SQLiteColumnValues } from '../src/NativeStatement';
+import { type SQLiteWebOptions } from '../src/WebConfiguration';
 import { createSQLAction } from './SQLAction';
 import { SQLiteOptions } from './SQLiteOptions';
 import { sendWorkerResult } from './WorkerChannel';
@@ -21,6 +22,9 @@ import WaSQLiteFactory from './wa-sqlite/wa-sqlite';
 // @ts-expect-error wasm module is not typed
 import wasmModule from './wa-sqlite/wa-sqlite.wasm';
 import {
+  type ConfigureWorkerMessage,
+  type InitWorkerMessage,
+  type ShutdownWorkerMessage,
   type SQLiteWorkerMessage,
   type SQLiteWorkerMessageType,
   type MessageTypeMap,
@@ -40,6 +44,7 @@ interface DatabaseEntity {
 }
 interface StatementEntity {
   pointer: StatementPointer;
+  databasePointer: DatabasePointer;
 }
 interface SessionEntity {
   pointer: SessionPointer;
@@ -52,8 +57,16 @@ const MAX_INT32 = 0x7fffffff;
 const MIN_INT32 = -0x80000000;
 
 let _sqlite3: SQLiteAPI | null = null;
+let _wasmModule: any = null;
 let _vfs: AccessHandlePoolVFS | null = null;
 let _vfsMemory: MemoryVFS | null = null;
+let _webOptions: SQLiteWebOptions = {};
+let wasmPromise: Promise<SQLiteAPI> | null = null;
+let vfsPromise: Promise<{
+  sqlite3: SQLiteAPI;
+  vfs: AccessHandlePoolVFS;
+  vfsMemory: MemoryVFS;
+}> | null = null;
 
 const databaseIdMap = new Map<number, DatabaseEntity>();
 const statementIdMap = new Map<number, StatementEntity>();
@@ -61,7 +74,43 @@ const sessionIdMap = new Map<number, SessionEntity>();
 
 class SQLiteErrorException extends Error {}
 
-self.onmessage = async (event: MessageEvent<SQLiteWorkerMessage>) => {
+self.onmessage = async (
+  event: MessageEvent<
+    SQLiteWorkerMessage | ConfigureWorkerMessage | InitWorkerMessage | ShutdownWorkerMessage
+  >
+) => {
+  if (event.data.type === 'configure') {
+    _webOptions = event.data.data;
+    return;
+  }
+  if (event.data.type === 'shutdown') {
+    try {
+      await wasmPromise?.catch(() => undefined);
+      await vfsPromise?.catch(() => undefined);
+      await _vfs?.close();
+      _vfsMemory?.close();
+    } finally {
+      _sqlite3 = null;
+      _wasmModule = null;
+      _vfs = null;
+      _vfsMemory = null;
+      wasmPromise = null;
+      vfsPromise = null;
+      self.postMessage({ type: 'workerShutdown' });
+    }
+    return;
+  }
+  if (event.data.type === 'init') {
+    try {
+      // Load the wasm module only. The database files stay closed until the first database call.
+      await loadWasmAsync();
+    } catch (e) {
+      const error = e instanceof Error ? e.message || String(e) : String(e);
+      self.postMessage({ type: 'workerReady', error });
+    }
+    return;
+  }
+
   let result: ResultType | null = null;
   let error: Error | null = null;
   try {
@@ -118,7 +167,7 @@ async function handleMessageImpl<T extends SQLiteWorkerMessageType>({
     }
 
     case 'finalize': {
-      await finalize(data.nativeDatabaseId, data.nativeStatementId);
+      await finalize(data.nativeStatementId);
       break;
     }
 
@@ -253,12 +302,20 @@ async function backupDatabase(
 }
 
 async function closeDatabase(nativeDatabaseId: number) {
-  maybeFinalizeAllStatements(nativeDatabaseId);
   const { sqlite3 } = await maybeInitAsync();
   const dbEntity = databaseIdMap.get(nativeDatabaseId);
-  if (dbEntity) {
-    databaseIdMap.delete(nativeDatabaseId);
+  if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
+
+  databaseIdMap.delete(nativeDatabaseId);
+  if ([...databaseIdMap.values()].includes(dbEntity)) {
+    return;
+  }
+  try {
+    await maybeFinalizeAllStatements(sqlite3, dbEntity);
     await sqlite3.close(dbEntity.pointer);
+  } catch (e) {
+    databaseIdMap.set(nativeDatabaseId, dbEntity);
+    throw e;
   }
 }
 
@@ -289,10 +346,9 @@ async function exec(nativeDatabaseId: number, source: string) {
   await sqlite3.exec(dbEntity.pointer, source);
 }
 
-async function finalize(nativeDatabaseId: number, nativeStatementId: number): Promise<void> {
+// A closed handle to a shared connection may still own statements, so don't require its id here.
+async function finalize(nativeStatementId: number): Promise<void> {
   const { sqlite3 } = await maybeInitAsync();
-  const dbEntity = databaseIdMap.get(nativeDatabaseId);
-  if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
   const stmt = statementIdMap.get(nativeStatementId);
   if (!stmt) throw new Error(`Statement not found - nativeStatementId[${nativeStatementId}]`);
 
@@ -429,7 +485,10 @@ async function prepare(
   const { value: statementPointer } = await asyncIterator.next();
   asyncIterator.return?.();
   if (!statementPointer) throw new Error('Failed to prepare statement');
-  statementIdMap.set(nativeStatementId, { pointer: statementPointer });
+  statementIdMap.set(nativeStatementId, {
+    pointer: statementPointer,
+    databasePointer: dbEntity.pointer,
+  });
 }
 
 async function run(
@@ -736,40 +795,49 @@ async function initDb(sqlite3: SQLiteAPI, dbEntity: DatabaseEntity) {
   }
 }
 
-async function maybeFinalizeAllStatements(nativeDatabaseId: number) {
-  const { sqlite3 } = await maybeInitAsync();
-  const dbEntity = databaseIdMap.get(nativeDatabaseId);
-  if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
+async function maybeFinalizeAllStatements(sqlite3: SQLiteAPI, dbEntity: DatabaseEntity) {
   if (!dbEntity.openOptions.finalizeUnusedStatementsBeforeClosing) {
     return;
   }
 
-  let error: Error | null = null;
-  const finalizedStatements: StatementPointer[] = [];
-  let stmt: StatementPointer | null = sqlite3.next_stmt(dbEntity.pointer, null);
-  while (stmt != null && stmt !== 0) {
-    const nextStmt: StatementPointer = sqlite3.next_stmt(dbEntity.pointer, stmt);
-    try {
-      sqlite3.finalize(stmt);
-      finalizedStatements.push(stmt);
-    } catch (e) {
-      error = e;
-    }
-    stmt = nextStmt;
-  }
-
-  // Delete finalized statements from the map
-  const statementsToDelete: number[] = [];
   for (const [nativeStatementId, stmtEntity] of statementIdMap.entries()) {
-    if (finalizedStatements.includes(stmtEntity.pointer)) {
-      statementsToDelete.push(nativeStatementId);
+    if (stmtEntity.databasePointer !== dbEntity.pointer) {
+      continue;
+    }
+    statementIdMap.delete(nativeStatementId);
+    const result = await sqlite3.finalize(stmtEntity.pointer);
+    if (result !== SQLITE_OK) {
+      console.warn(`Finalizing a statement during close failed - error code[${result}]`);
     }
   }
-  for (const nativeStatementId of statementsToDelete) {
-    statementIdMap.delete(nativeStatementId);
-  }
+}
 
-  if (error) throw error;
+async function loadWasmAsync(): Promise<SQLiteAPI> {
+  if (_sqlite3 != null) {
+    return _sqlite3;
+  }
+  // onmessage is async, so init and the first database call can overlap. Share one load.
+  // Post workerReady here so a retry after a failed wasm load clears the stored error.
+  if (wasmPromise == null) {
+    wasmPromise = loadWaSQLiteModuleAsync()
+      .then((module) => {
+        const sqlite3 = SQLite.Factory(module) as SQLiteAPI;
+        if (!sqlite3) {
+          throw new Error('Failed to initialize wa-sqlite');
+        }
+        _wasmModule = module;
+        _sqlite3 = sqlite3;
+        self.postMessage({ type: 'workerReady' });
+        return sqlite3;
+      })
+      .catch((error: unknown) => {
+        wasmPromise = null;
+        _sqlite3 = null;
+        _wasmModule = null;
+        throw error;
+      });
+  }
+  return wasmPromise;
 }
 
 async function maybeInitAsync(): Promise<{
@@ -777,35 +845,60 @@ async function maybeInitAsync(): Promise<{
   vfs: AccessHandlePoolVFS;
   vfsMemory: MemoryVFS;
 }> {
-  if (!_sqlite3) {
-    const module = await WaSQLiteFactory({
-      locateFile: () => wasmModule,
+  if (vfsPromise == null) {
+    vfsPromise = createVfsAsync().catch(async (error: unknown) => {
+      // Drop the failed VFS so the next attempt can open the database files again.
+      const vfs = _vfs;
+      const vfsMemory = _vfsMemory;
+      vfsPromise = null;
+      _vfs = null;
+      _vfsMemory = null;
+      await vfs?.close().catch(() => undefined);
+      vfsMemory?.close();
+      throw error;
     });
-    _sqlite3 = SQLite.Factory(module) as SQLiteAPI;
-    if (!_sqlite3) {
-      throw new Error('Failed to initialize wa-sqlite');
-    }
-
-    if (_vfs == null) {
-      _vfs = await AccessHandlePoolVFS.create(VFS_NAME_PERSISTENT, module);
-      if (_vfs == null) {
-        throw new Error('Failed to initialize AccessHandlePoolVFS');
-      }
-    }
-    _sqlite3.vfs_register(_vfs, true);
-
-    if (_vfsMemory == null) {
-      _vfsMemory = await MemoryVFS.create(VFS_NAME_MEMORY, module);
-      if (_vfsMemory == null) {
-        throw new Error('Failed to initialize MemoryVFS');
-      }
-    }
-    _sqlite3.vfs_register(_vfsMemory, false);
   }
-  if (_vfs == null || _vfsMemory == null) {
-    throw new Error('Invalid VFS state');
+  return vfsPromise;
+}
+
+async function createVfsAsync(): Promise<{
+  sqlite3: SQLiteAPI;
+  vfs: AccessHandlePoolVFS;
+  vfsMemory: MemoryVFS;
+}> {
+  const sqlite3 = await loadWasmAsync();
+  const module = _wasmModule;
+  if (_vfs == null) {
+    const vfs = await AccessHandlePoolVFS.create(VFS_NAME_PERSISTENT, module);
+    if (vfs == null) {
+      throw new Error('Failed to initialize AccessHandlePoolVFS');
+    }
+    _vfs = vfs;
+    sqlite3.vfs_register(_vfs, true);
   }
-  return { sqlite3: _sqlite3, vfs: _vfs, vfsMemory: _vfsMemory };
+  if (_vfsMemory == null) {
+    const vfsMemory = await MemoryVFS.create(VFS_NAME_MEMORY, module);
+    if (vfsMemory == null) {
+      throw new Error('Failed to initialize MemoryVFS');
+    }
+    _vfsMemory = vfsMemory;
+    sqlite3.vfs_register(_vfsMemory, false);
+  }
+  return { sqlite3, vfs: _vfs, vfsMemory: _vfsMemory };
+}
+
+async function loadWaSQLiteModuleAsync(): Promise<any> {
+  const { wasmURL } = _webOptions;
+  try {
+    return await WaSQLiteFactory({ locateFile: () => wasmURL ?? wasmModule });
+  } catch (e) {
+    if (wasmURL == null) throw e;
+    throw new Error(
+      `Failed to load the SQLite WebAssembly module from "${wasmURL}". ` +
+        'Check that the `wasmURL` passed to `configureWeb()` is reachable and built from the `expo/wa-sqlite` revision that this `expo-sqlite` uses. ' +
+        `Cause: ${e instanceof Error ? e.message : String(e)}`
+    );
+  }
 }
 
 //#endregion Internal helpers

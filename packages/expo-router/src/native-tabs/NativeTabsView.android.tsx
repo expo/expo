@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-screens/experimental';
 import {
   type InternalTabScreenProps as SharedInternalTabScreenProps,
   ScreenContent,
+  TabsScreen,
   useOnTabSelectedHandler,
   useOnTabSelectionPreventedHandler,
   useSelectedScreenKey,
@@ -84,13 +85,14 @@ function Screen(props: InternalTabScreenProps) {
 
   const content = <ScreenContent options={options} contentRenderer={contentRenderer} />;
   const wrappedContent = useMemo(() => {
-    if (!options.disableAutomaticContentInsets && !tabBarHidden) {
+    if (!options.disableAutomaticContentInsets) {
       return (
         <SafeAreaView
           // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
           collapsable={false}
           style={{ flex: 1 }}
-          edges={{ bottom: true }}>
+          edges={{ bottom: true }}
+          insetType={tabBarHidden ? 'system' : 'all'}>
           {content}
         </SafeAreaView>
       );
@@ -99,12 +101,13 @@ function Screen(props: InternalTabScreenProps) {
   }, [content, options.disableAutomaticContentInsets, tabBarHidden]);
 
   return (
-    <Tabs.Screen
+    <TabsScreen
       {...shared.options}
       pointerEvents={shared.pointerEvents}
       android={{
-        icon: androidIcon,
-        selectedIcon: androidSelectedIcon,
+        icon: androidIcon?.platform === 'android' ? androidIcon.icon : undefined,
+        selectedIcon:
+          androidSelectedIcon?.platform === 'android' ? androidSelectedIcon.icon : undefined,
         standardAppearance: androidAppearance,
         ...shared.nativeAndroidOverrides,
       }}
@@ -113,7 +116,7 @@ function Screen(props: InternalTabScreenProps) {
       {...shared.nativeRestOverrides}
       screenKey={shared.screenKey}>
       {wrappedContent}
-    </Tabs.Screen>
+    </TabsScreen>
   );
 }
 

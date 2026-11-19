@@ -9,19 +9,15 @@ on:
         default: ''
   push:
     branches: [main, 'sdk-*']
-    paths:
+    paths: &trigger_paths
       - .github/workflows/sdk.yml
       - packages/**
+      - templates/**
       - pnpm-lock.yaml
       - pnpm-workspace.yaml
       - turbo.json
   pull_request:
-    paths:
-      - .github/workflows/sdk.yml
-      - packages/**
-      - pnpm-lock.yaml
-      - pnpm-workspace.yaml
-      - turbo.json
+    paths: *trigger_paths
   schedule:
     - cron: 0 14 * * *
 
@@ -39,19 +35,20 @@ env:
 jobs:
   check-packages:
     if: github.event_name != 'schedule' || github.repository == 'expo/expo'
-    runs-on: ubuntu-24.04
+    # Turbo checks packages in parallel across 90% of the cores.
+    runs-on: blacksmith-8vcpu-ubuntu-2404
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a # v1.8.1
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.base_ref || github.event.before || 'main' }}:${{ github.base_ref || github.event.before || 'main' }} --depth 100
         if: github.event_name == 'pull_request'
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
-          version: 10
+          install: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
@@ -102,16 +99,17 @@ jobs:
 
   check-packages-windows:
     runs-on: windows-latest
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.repository == 'expo/expo') }}
+    # Manual only: every scheduled run hits the 6-hour job limit in "Check all packages".
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 100
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
-          version: 10
+          install: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24

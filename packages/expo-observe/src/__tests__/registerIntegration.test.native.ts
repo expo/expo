@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import type { ObserveModuleEvents } from '../types';
 
-export {};
-
 const CONFIGURE = 'configure' satisfies keyof ObserveModuleEvents;
 const configureListeners = new Set<
   (payload: Parameters<ObserveModuleEvents['configure']>[0]) => void

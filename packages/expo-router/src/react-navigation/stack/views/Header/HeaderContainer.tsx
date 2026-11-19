@@ -3,25 +3,15 @@ import { use } from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { getHeaderTitle, HeaderBackContext } from '../../../elements';
-import {
-  NavigationProvider,
-  type ParamListBase,
-  type Route,
-  useLinkBuilder,
-} from '../../../native';
+import { getUnfocusedScreenProps } from '../../../elements/getUnfocusedScreenProps';
+import { NavigationProvider, type Route, useLinkBuilder } from '../../../native';
 import {
   forNoAnimation,
   forSlideLeft,
   forSlideRight,
   forSlideUp,
 } from '../../TransitionConfigs/HeaderStyleInterpolators';
-import type {
-  Layout,
-  Scene,
-  StackHeaderMode,
-  StackHeaderProps,
-  StackNavigationProp,
-} from '../../types';
+import type { Layout, Scene, StackHeaderMode, StackHeaderProps } from '../../types';
 import { Header } from './Header';
 
 export type Props = {
@@ -77,7 +67,8 @@ export function HeaderContainer({
         let headerBack = parentHeaderBack;
 
         if (previousScene) {
-          const { options, route } = previousScene.descriptor;
+          const { options } = previousScene.descriptor;
+          const { route } = previousScene;
 
           headerBack = previousScene
             ? {
@@ -120,7 +111,8 @@ export function HeaderContainer({
           progress: scene.progress,
           options: scene.descriptor.options,
           route: scene.route,
-          navigation: scene.descriptor.navigation as StackNavigationProp<ParamListBase>,
+          // Expo Router adds route-scoped navigation to standard descriptors.
+          navigation: scene.descriptor.navigation!,
           styleInterpolator:
             mode === 'float'
               ? isHeaderStatic
@@ -138,7 +130,7 @@ export function HeaderContainer({
           <NavigationProvider
             key={scene.route.key}
             route={scene.route}
-            navigation={scene.descriptor.navigation}>
+            navigation={scene.descriptor.navigation!}>
             <View
               onLayout={
                 onContentHeightChange
@@ -152,7 +144,7 @@ export function HeaderContainer({
                     }
                   : undefined
               }
-              aria-hidden={!isFocused}
+              {...getUnfocusedScreenProps(isFocused)}
               style={[
                 {
                   pointerEvents: isFocused ? 'box-none' : 'none',

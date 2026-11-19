@@ -104,7 +104,7 @@ public enum BackgroundUpdateStatus: Int {
  */
 @objc(EXUpdatesAppLoaderTask)
 @objcMembers
-public final class AppLoaderTask: NSObject {
+public class AppLoaderTask: NSObject {
   public weak var delegate: AppLoaderTaskDelegate?
   public weak var swiftDelegate: AppLoaderTaskSwiftDelegate?
 
@@ -126,6 +126,7 @@ public final class AppLoaderTask: NSObject {
   private var isTimerFinished: Bool
   private var hasLaunched: Bool
   private var isUpToDate: Bool
+  private var fallbackLaunchError: UpdatesError = .appLoaderTaskUnexpectedErrorDuringLaunch
   private let loaderTaskQueue: DispatchQueue
 
   public required init(
@@ -153,7 +154,7 @@ public final class AppLoaderTask: NSObject {
   public func start() {
     isRunning = true
 
-    var shouldCheckForUpdate = UpdatesUtils.shouldCheckForUpdate(withConfig: config)
+    var shouldCheckForUpdate = UpdatesUtils.shouldCheckForUpdate(withConfig: config, logger: logger)
     let launchWaitMs = config.launchWaitMs
     if launchWaitMs == 0 || !shouldCheckForUpdate {
       isTimerFinished = true
@@ -166,14 +167,14 @@ public final class AppLoaderTask: NSObject {
     loadEmbeddedUpdate {
       self.launch { error, success in
         if !success {
+          // keep the cause so a launch that finishes without a specific error reports
+          // this failure instead of the generic error
+          let cause = UpdatesError.appLoaderTaskFailedToLaunch(cause: error)
+          self.fallbackLaunchError = cause
           if !shouldCheckForUpdate {
             self.finish(withError: error)
           }
-          let cause = UpdatesError.appLoaderTaskFailedToLaunch(cause: error)
-          self.logger.error(
-            cause: cause,
-            code: .updateFailedToLoad
-          )
+          self.logger.error(.launchFailed, cause: error, values: ["launch": "initial"])
         } else {
           if let delegate = self.delegate,
             !delegate.appLoaderTask(self, didLoadCachedUpdate: self.candidateLauncher!.launchedUpdate!) {
@@ -223,7 +224,7 @@ public final class AppLoaderTask: NSObject {
         } else {
           delegate.appLoaderTask(
             self,
-            didFinishWithError: error ?? UpdatesError.appLoaderTaskUnexpectedErrorDuringLaunch
+            didFinishWithError: error ?? self.fallbackLaunchError
           )
         }
       }
@@ -268,7 +269,7 @@ public final class AppLoaderTask: NSObject {
     }
   }
 
-  private func loadEmbeddedUpdate(withCompletion completion: @escaping () -> Void) {
+  func loadEmbeddedUpdate(withCompletion completion: @escaping () -> Void) {
     AppLauncherWithDatabase.launchableUpdate(
       withConfig: config,
       database: database,
@@ -313,7 +314,8 @@ public final class AppLoaderTask: NSObject {
                 // do nothing for now
               }, success: { _ in
                 completion()
-              }, error: { _ in
+              }, error: { error in
+                self.logger.error(.embeddedUpdateCopyFailed, cause: error)
                 completion()
               }
             )
@@ -325,13 +327,13 @@ public final class AppLoaderTask: NSObject {
     }
   }
 
-  private func launch(withCompletion completion: @escaping (_ error: UpdatesError?, _ success: Bool) -> Void) {
+  func launch(withCompletion completion: @escaping (_ error: UpdatesError?, _ success: Bool) -> Void) {
     let launcher = AppLauncherWithDatabase(config: config, database: database, directory: directory, completionQueue: loaderTaskQueue, logger: self.logger)
     candidateLauncher = launcher
     launcher.launchUpdate(withSelectionPolicy: selectionPolicy, completion: completion)
   }
 
-  private func loadRemoteUpdate(withCompletion completion: @escaping (_ remoteError: UpdatesError?, _ updateResponse: UpdateResponse?) -> Void) {
+  func loadRemoteUpdate(withCompletion completion: @escaping (_ remoteError: UpdatesError?, _ updateResponse: UpdateResponse?) -> Void) {
     remoteAppLoader = RemoteAppLoader(
       config: config,
       logger: logger,
@@ -503,7 +505,10 @@ public final class AppLoaderTask: NSObject {
             }
           } else {
             self.finish(withError: error)
-            self.logger.warn(message: "Downloaded update but failed to relaunch: \(error?.localizedDescription ?? "")")
+            self.logger.error(
+              .launchFailed,
+              values: ["launch": "relaunchAfterDownload", "cause": error?.localizedDescription ?? "Unknown error"]
+            )
           }
           self.didFinishBackgroundUpdate(withStatus: .updateAvailable, update: updateBeingLaunched, error: error)
           self.isRunning = false

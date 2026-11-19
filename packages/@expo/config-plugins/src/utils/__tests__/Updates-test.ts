@@ -15,6 +15,7 @@ import {
   getUpdatesRequestHeadersStringified,
   getUpdatesEnabled,
   getUpdatesTimeout,
+  getUpdatesMaxUpdatesToKeep,
   getUpdatesExcludeFromBackup,
   getUpdatesUseEmbeddedUpdate,
   getUpdateUrl,
@@ -330,4 +331,24 @@ describe(getRuntimeVersionAsync, () => {
       getRuntimeVersionAsync('', { runtimeVersion: { policy: 'unsupportedPlugin' } } as any, 'ios')
     ).rejects.toThrow(`"unsupportedPlugin" is not a valid runtime version policy type.`);
   });
+});
+
+describe('getUpdatesMaxUpdatesToKeep', () => {
+  it('leaves the native default unset', () => {
+    expect(getUpdatesMaxUpdatesToKeep({})).toBeUndefined();
+    expect(getUpdatesMaxUpdatesToKeep({ updates: {} })).toBeUndefined();
+  });
+
+  it.each([2, 5, 2147483647])('accepts %s', (maxUpdatesToKeep) => {
+    expect(getUpdatesMaxUpdatesToKeep({ updates: { maxUpdatesToKeep } })).toBe(maxUpdatesToKeep);
+  });
+
+  it.each([0, 1, -1, 2.5, NaN, Infinity, 2147483648, '3', null, true])(
+    'rejects invalid value %s before generating native config',
+    (maxUpdatesToKeep) => {
+      expect(() =>
+        getUpdatesMaxUpdatesToKeep({ updates: { maxUpdatesToKeep: maxUpdatesToKeep as any } })
+      ).toThrow('updates.maxUpdatesToKeep must be an integer between 2 and 2147483647');
+    }
+  );
 });

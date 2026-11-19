@@ -1,12 +1,14 @@
+@file:SuppressLint("RestrictedApi")
 package expo.modules.widgets
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import androidx.compose.ui.unit.DpSize
 import androidx.glance.Emittable
 import androidx.glance.appwidget.AppWidgetId
 import androidx.glance.appwidget.SizeMode
-import io.github.jakex7.peek.emittables.PeekEmittableAppWidget
+import io.github.expo.peek.emittables.PeekEmittableAppWidget
 
 internal class ExpoWidgetsPeekWidget(
   private val widgetName: String
@@ -23,9 +25,9 @@ internal class ExpoWidgetsPeekWidget(
     val layout = WidgetsLayoutRegistry.layout(appContext, widgetName)
       ?: return createErrorRoot("No layout found for $widgetName")
     val props = WidgetsLayoutRegistry.props(appContext, widgetName)
-    val environment = getWidgetEnvironment(appContext)
+    val environment = getWidgetEnvironment(appContext, size)
     val node = evaluateLayout(appContext, layout, props, environment)
 
-    return node.toPeekRoot(appContext, widgetName)
+    return node.toPeekRoot(appContext, InteractionSource.Widget(widgetName), size)
   }
 }

@@ -1,5 +1,5 @@
 import { getWebNativeTabsTheme, useTheme } from 'ThemeProvider';
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 import * as React from 'react';
 
 import { optionalRequire } from '../../optionalRequire';

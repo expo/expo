@@ -19,5 +19,6 @@ export function getWebViewPreflightConfig(facts: ProfilePreflightFacts): Profile
     optionalChaining: { loose: true },
     nullishCoalescingOperator: { loose: true },
     logicalAssignmentOperators: true,
+    objectRestSpread: facts.hasSpread ? { loose: true, useBuiltIns: true } : undefined,
   };
 }

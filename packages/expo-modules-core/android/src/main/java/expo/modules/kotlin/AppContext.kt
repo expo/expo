@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.modules.network.OkHttpClientProvider
@@ -32,6 +33,7 @@ import expo.modules.kotlin.services.Service
 import expo.modules.kotlin.services.ServicesRegistry
 import expo.modules.kotlin.tracing.trace
 import expo.modules.kotlin.types.ConverterContext
+import expo.modules.v2.ExpoModulesV2Host
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,6 +59,10 @@ class AppContext(
         "The app context should be created with valid react context."
       }.applicationContext
     }
+
+  override fun <T : View> findView(viewTag: Int): T? = super.findView(viewTag)
+
+  override fun assertMainThread() = super.assertMainThread()
 
   private val uiRuntimeHolder = lazy { WorkletRuntime(this, reactContextHolder) }
   val uiRuntime
@@ -98,6 +104,8 @@ class AppContext(
   val registry = ModuleRegistry(this.weak())
 
   val services = ServicesRegistry(this.weak())
+
+  private val expoModulesV2Host = ExpoModulesV2Host()
 
   internal var legacyModulesProxyHolder: WeakReference<NativeModulesProxy>? = null
 
@@ -153,6 +161,7 @@ class AppContext(
    */
   fun installJSIInterop() {
     runtime.install()
+    runtime.reactContext?.let { expoModulesV2Host.install(this, it) }
   }
 
   /**
@@ -283,6 +292,8 @@ class AppContext(
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
+
+    expoModulesV2Host.uninstall()
 
     runtime.deallocate()
     if (uiRuntimeHolder.isInitialized()) {

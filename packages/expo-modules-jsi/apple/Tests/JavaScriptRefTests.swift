@@ -12,7 +12,7 @@ struct JavaScriptRefTests {
 
   @Test
   func `init without value creates empty ref`() {
-    let ref = JavaScriptRef<JavaScriptValue>()
+    let ref = JavaScriptValue.Ref()
     #expect(ref.isEmpty == true)
   }
 
@@ -44,16 +44,16 @@ struct JavaScriptRefTests {
     let ref = JavaScriptRef(JavaScriptValue.number(1))
     let _: JavaScriptValue = try ref.take()
 
-    #expect(throws: JavaScriptRef<JavaScriptValue>.InvalidRefError.self) {
+    #expect(throws: JavaScriptValue.Ref.InvalidRefError.self) {
       let _: JavaScriptValue = try ref.take()
     }
   }
 
   @Test
   func `take throws InvalidRefError on empty ref`() {
-    let ref = JavaScriptRef<JavaScriptValue>()
+    let ref = JavaScriptValue.Ref()
 
-    #expect(throws: JavaScriptRef<JavaScriptValue>.InvalidRefError.self) {
+    #expect(throws: JavaScriptValue.Ref.InvalidRefError.self) {
       let _: JavaScriptValue = try ref.take()
     }
   }
@@ -72,14 +72,16 @@ struct JavaScriptRefTests {
     let ref = JavaScriptRef(JavaScriptValue.number(1))
     let _: JavaScriptValue? = ref.take()
     let second: JavaScriptValue? = ref.take()
-    #expect(second == nil)
+    let isTaken = second == nil
+    #expect(isTaken)
   }
 
   @Test
   func `optional take returns nil on empty ref`() {
-    let ref = JavaScriptRef<JavaScriptValue>()
+    let ref = JavaScriptValue.Ref()
     let value: JavaScriptValue? = ref.take()
-    #expect(value == nil)
+    let isEmpty = value == nil
+    #expect(isEmpty)
   }
 
   // MARK: - reset
@@ -95,7 +97,7 @@ struct JavaScriptRefTests {
 
   @Test
   func `reset on empty ref sets value`() throws {
-    let ref = JavaScriptRef<JavaScriptValue>()
+    let ref = JavaScriptValue.Ref()
     ref.reset(JavaScriptValue(runtime, "set"))
 
     #expect(ref.isEmpty == false)
@@ -117,7 +119,7 @@ struct JavaScriptRefTests {
     let ref = JavaScriptRef(JavaScriptValue.number(1))
     ref.release()
 
-    #expect(throws: JavaScriptRef<JavaScriptValue>.InvalidRefError.self) {
+    #expect(throws: JavaScriptValue.Ref.InvalidRefError.self) {
       let _: JavaScriptValue = try ref.take()
     }
   }
@@ -133,7 +135,7 @@ struct JavaScriptRefTests {
 
   @Test
   func `asValue returns undefined on empty ref`() {
-    let ref = JavaScriptRef<JavaScriptValue>()
+    let ref = JavaScriptValue.Ref()
     let value = ref.asValue()
     #expect(value.isUndefined() == true)
   }
@@ -149,7 +151,7 @@ struct JavaScriptRefTests {
 
   @Test
   func `InvalidRefError description includes type name`() {
-    let error = JavaScriptRef<JavaScriptValue>.InvalidRefError()
+    let error = JavaScriptValue.Ref.InvalidRefError()
     #expect(error.description.contains("JavaScriptValue"))
   }
 

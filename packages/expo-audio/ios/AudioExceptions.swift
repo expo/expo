@@ -18,6 +18,12 @@ internal final class AudioPermissionsException: Exception {
   }
 }
 
+internal final class MicrophoneUsageDescriptionException: Exception {
+  override var reason: String {
+    "Cannot record audio because NSMicrophoneUsageDescription is missing from the app's Info.plist"
+  }
+}
+
 internal final class InvalidAudioModeException: GenericException<String> {
   override var reason: String {
     "Impossible audio mode: \(param)"
@@ -45,6 +51,12 @@ internal final class PreferredInputFoundException: GenericException<String> {
 internal final class AudioRecordingException: GenericException<String> {
   override var reason: String {
     "Audio recording error: \(param)"
+  }
+}
+
+internal final class RecorderStartRejectedException: Exception {
+  override var reason: String {
+    "The recorder could not start because iOS refused to record. Another app or a phone call may be using the microphone. Try again later"
   }
 }
 

@@ -31,8 +31,8 @@ public final class ModuleRegistry: Sequence {
       return true
     }
     if didRegister {
-      // Call the `didCreate` lifecycle hook only after the holder is in the registry, so the module
-      // can already look itself up (e.g. through `withEventTarget`). Rejected registrations don't get it.
+      // Call the `didCreate` lifecycle hook only after the holder is in the registry, so lookups such as
+      // `get(moduleWithName:)` can already find the module. Rejected registrations don't get it.
       holder.module.didCreate()
     }
   }

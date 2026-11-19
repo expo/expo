@@ -18,6 +18,10 @@ export type ExpoTabsProps = ExpoTabsNavigatorOptions;
 export type ExpoTabsNavigatorScreenOptions = {
   detachInactiveScreens?: boolean;
   unmountOnBlur?: boolean;
+  // TODO(@ubax): Remove this prop
+  /**
+   * @deprecated This option has no effect in Expo Router.
+   */
   freezeOnBlur?: boolean;
   lazy?: boolean;
 };
@@ -71,9 +75,10 @@ export type TabNavigationEventMap = {
 };
 
 /**
- * The React Navigation custom navigator.
+ * The result of the tab navigation builder used by Expo Router's custom tabs.
  *
- * @see [`useNavigationBuilder`](https://reactnavigation.org/docs/custom-navigators/#usenavigationbuilder) hook from React Navigation for more information.
+ * @see [Custom tabs](/router/advanced/custom-tabs/) for building a tab bar and
+ * [Custom navigators](/router/advanced/custom-navigators/) for navigator integration.
  */
 export type TabsContextValue = ReturnType<
   typeof useNavigationBuilder<
@@ -95,6 +100,10 @@ export const TabTriggerMapContext = createContext<TriggerMap>({});
 /**
  * @hidden
  */
+export const TabNavigatorStatesContext = createContext<Record<string, TabNavigationState<any>>>({});
+/**
+ * @hidden
+ */
 export const TabsDescriptorsContext = createContext<TabsContextValue['descriptors']>({});
 /**
  * @hidden
@@ -108,6 +117,7 @@ export const TabsStateContext = createContext<TabsContextValue['state']>({
   history: [],
   index: -1,
   key: '',
+  routeKeySeq: 0,
   stale: false,
   routeNames: [],
   routes: [],

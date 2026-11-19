@@ -3,16 +3,22 @@ import { BranchIcon } from '@expo/styleguide-icons/custom/BranchIcon';
 import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
 import { CredentialIcon } from '@expo/styleguide-icons/custom/CredentialIcon';
 import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { Smartphone01Icon } from '@expo/styleguide-icons/custom/Smartphone01Icon';
 import { Cloud01DuotoneIcon } from '@expo/styleguide-icons/duotone/Cloud01DuotoneIcon';
 import { Fingerprint03DuotoneIcon } from '@expo/styleguide-icons/duotone/Fingerprint03DuotoneIcon';
+import { ActivityHeartIcon } from '@expo/styleguide-icons/outline/ActivityHeartIcon';
+import { BarChart01Icon } from '@expo/styleguide-icons/outline/BarChart01Icon';
 import { BracketsXIcon } from '@expo/styleguide-icons/outline/BracketsXIcon';
+import { CpuChip01Icon } from '@expo/styleguide-icons/outline/CpuChip01Icon';
 import { Cube02Icon } from '@expo/styleguide-icons/outline/Cube02Icon';
 import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
+import { Database01Icon } from '@expo/styleguide-icons/outline/Database01Icon';
 import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 import { FileSearch02Icon } from '@expo/styleguide-icons/outline/FileSearch02Icon';
 import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
+import { Monitor01Icon } from '@expo/styleguide-icons/outline/Monitor01Icon';
 import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
 import { Settings01Icon } from '@expo/styleguide-icons/outline/Settings01Icon';
 import type { ComponentType, HTMLAttributes } from 'react';
@@ -60,6 +66,16 @@ export const entries: ExpoItemType[] = [
     Icon: DataIcon,
   },
   {
+    label: 'Project usage',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/usage',
+    Icon: BarChart01Icon,
+  },
+  {
+    label: 'Project observe',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/observe',
+    Icon: ActivityHeartIcon,
+  },
+  {
     label: 'Project workflows',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/workflows',
     Icon: Dataflow03Icon,
@@ -68,6 +84,11 @@ export const entries: ExpoItemType[] = [
     label: 'Project development builds',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/development-builds',
     Icon: Smartphone01Icon,
+  },
+  {
+    label: 'Project simulator sessions',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/simulator-sessions',
+    Icon: Monitor01Icon,
   },
   {
     label: 'Project builds',
@@ -95,6 +116,11 @@ export const entries: ExpoItemType[] = [
     Icon: LayersTwo02Icon,
   },
   {
+    label: 'Project update runtimes',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/runtimes',
+    Icon: CpuChip01Icon,
+  },
+  {
     label: 'Project hosting',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/hosting',
     Icon: Cloud01DuotoneIcon,
@@ -105,8 +131,13 @@ export const entries: ExpoItemType[] = [
     Icon: NotificationBoxIcon,
   },
   {
+    label: 'Project caches',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/caches',
+    Icon: Database01Icon,
+  },
+  {
     label: 'Project fingerprints',
-    url: 'https://expo.dev/accounts/[account]/projects/[project]/distribution',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/fingerprints',
     Icon: Fingerprint03DuotoneIcon,
   },
   {
@@ -123,5 +154,10 @@ export const entries: ExpoItemType[] = [
     label: 'Project environment variables',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/environment-variables',
     Icon: BracketsXIcon,
+  },
+  {
+    label: 'Project GitHub',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/github',
+    Icon: GithubIcon,
   },
 ];

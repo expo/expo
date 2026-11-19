@@ -24,6 +24,7 @@ enum class FlingBehaviorType(val value: String) : Enumerable {
 
 @OptimizedComposeProps
 data class HorizontalCenteredHeroCarouselProps(
+  val preferredItemWidth: Float? = null,
   val maxItemWidth: Float? = null,
   val itemSpacing: Float? = null,
   val contentPadding: Either<Float, PaddingValuesRecord>? = null,
@@ -50,7 +51,7 @@ fun FunctionalComposableScope.HorizontalCenteredHeroCarouselContent(props: Horiz
   HorizontalCenteredHeroCarousel(
     state = carouselState,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
-    maxItemWidth = props.maxItemWidth?.dp ?: Dp.Unspecified,
+    preferredItemWidth = (props.preferredItemWidth ?: props.maxItemWidth)?.dp ?: Dp.Unspecified,
     itemSpacing = (props.itemSpacing ?: 0f).dp,
     flingBehavior = flingBehavior,
     userScrollEnabled = props.userScrollEnabled ?: true,

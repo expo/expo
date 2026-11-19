@@ -13,6 +13,7 @@ internal enum PageIndexBackgroundDisplayMode: String, Enumerable {
   case never
   case interactive
 
+#if !os(macOS)
   var asSwiftUI: PageIndexViewStyle.BackgroundDisplayMode {
     switch self {
     case .automatic: .automatic
@@ -21,6 +22,7 @@ internal enum PageIndexBackgroundDisplayMode: String, Enumerable {
     case .interactive: .interactive
     }
   }
+#endif
 }
 
 internal struct IndexViewStyleModifier: ViewModifier, Record {
@@ -29,9 +31,13 @@ internal struct IndexViewStyleModifier: ViewModifier, Record {
 
   @ViewBuilder
   func body(content: Content) -> some View {
+#if os(macOS)
+    content
+#else
     switch type ?? .page {
     case .page:
       content.indexViewStyle(.page(backgroundDisplayMode: (backgroundDisplayMode ?? .automatic).asSwiftUI))
     }
+#endif
   }
 }

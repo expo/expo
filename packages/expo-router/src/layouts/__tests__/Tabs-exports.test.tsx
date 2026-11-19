@@ -14,6 +14,10 @@ describe('expo-router/js-tabs re-exports', () => {
     expect(TabsEntry.Tabs.Protected).toBeDefined();
   });
 
+  it('exports the JS tabs props helper', () => {
+    expect(TabsEntry.createJSTabsProps).toBeDefined();
+  });
+
   it('resolves transition easing lazily', () => {
     expect(TabsEntry.TransitionSpecs.FadeSpec.config).toMatchObject({
       duration: 150,

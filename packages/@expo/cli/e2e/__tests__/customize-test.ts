@@ -79,6 +79,7 @@ it('runs `npx expo customize`', async () => {
     'metro.config.js',
     'package.json',
     'pnpm-lock.yaml',
+    'pnpm-workspace.yaml',
     'public/index.html',
   ]);
 });

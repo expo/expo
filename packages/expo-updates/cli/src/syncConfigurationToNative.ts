@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { consumeConfigEnvMode, loadProjectEnv } from '@expo/env';
 import chalk from 'chalk';
 
 import { Command } from './cli';
@@ -51,8 +52,11 @@ only needs to be used by the EAS CLI for generic projects that don't use continu
     );
   }
 
+  const projectRoot = getProjectRoot(args);
+  loadProjectEnv(projectRoot, { mode: consumeConfigEnvMode() ?? 'production' });
+
   await syncConfigurationToNativeAsync({
-    projectRoot: getProjectRoot(args),
+    projectRoot,
     platform,
     workflow,
   });

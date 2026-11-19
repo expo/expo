@@ -3,7 +3,7 @@ const path = require('path');
 
 const LLM_CONFIGS_EXPO_APP_TEMPLATE_BASE_URL =
   'https://raw.githubusercontent.com/expo/llm-configs/main/expo-app';
-const AGENT_TEMPLATE_FILE_NAMES = ['AGENTS.md', 'CLAUDE.md'];
+const AGENT_TEMPLATE_FILE_NAMES = ['AGENTS.md'];
 
 async function fetchTemplateAsync(fileName) {
   const url = `${LLM_CONFIGS_EXPO_APP_TEMPLATE_BASE_URL}/${fileName}`;

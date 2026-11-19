@@ -2,6 +2,10 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import type { RouteNode } from '../../Route';
+import { createSeededNavigationState } from '../../global-state/createSeededNavigationState';
+import { findRouteNodeByName } from '../../routeNode';
+import { NavigationActivityProvider } from '../../views/NavigationActivityContext';
 import type {
   NavigationAction,
   NavigationState,
@@ -9,11 +13,8 @@ import type {
   PartialState,
   Router,
 } from '../routers';
-import {
-  type AddKeyedListener,
-  type AddListener,
-  NavigationBuilderContext,
-} from './NavigationBuilderContext';
+import { getChainFromRouteKey } from '../routers/stateKeys';
+import { type AddListener, NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationProvider } from './NavigationProvider';
 import { SceneView } from './SceneView';
 import { ThemeContext } from './theming/ThemeContext';
@@ -21,6 +22,7 @@ import type {
   Descriptor,
   DescriptorRouteProp,
   EventMapBase,
+  EventMapCore,
   NavigationHelpers,
   NavigationProp,
   RouteConfig,
@@ -68,17 +70,16 @@ type Options<
   routes: State['routes'];
   routeNames: State['routeNames'];
   screens: Record<string, ScreenConfigWithParent<State, ScreenOptions, EventMap>>;
+  activityEnabled: boolean | number | undefined;
+  activityDefaultThreshold: number;
   navigation: NavigationHelpers<ParamListBase>;
   screenOptions: ScreenOptionsOrCallback<ScreenOptions> | undefined;
   screenLayout: ScreenLayout<ScreenOptions> | undefined;
-  onAction: (action: NavigationAction) => boolean;
-  getState: () => State;
-  setState: (state: State) => void;
+  state: State;
   addListener: AddListener;
-  addKeyedListener: AddKeyedListener;
-  onRouteFocus: (key: string) => void;
   router: Router<State, NavigationAction>;
-  emitter: NavigationEventEmitter<EventMap>;
+  emitter: NavigationEventEmitter<EventMapCore<State>>;
+  routeNode: RouteNode | null;
 };
 
 /**
@@ -99,61 +100,47 @@ export function useDescriptors<
   routes,
   routeNames,
   screens,
+  activityEnabled,
+  activityDefaultThreshold,
   navigation,
   screenOptions,
   screenLayout,
-  onAction,
-  getState,
-  setState,
+  state,
   addListener,
-  addKeyedListener,
-  onRouteFocus,
   router,
   emitter,
+  routeNode,
 }: Options<State, ScreenOptions, EventMap>) {
   const theme = use(ThemeContext);
   const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
-  const { onDispatchAction, onOptionsChange, scheduleUpdate, flushUpdates, stackRef } =
-    use(NavigationBuilderContext);
+  const { handleAction, resetNavigator } = use(NavigationBuilderContext);
 
   const context = React.useMemo(
     () => ({
       navigation,
-      onAction,
+      handleAction,
+      resetNavigator,
       addListener,
-      addKeyedListener,
-      onRouteFocus,
-      onDispatchAction,
-      onOptionsChange,
-      scheduleUpdate,
-      flushUpdates,
-      stackRef,
     }),
-    [
-      navigation,
-      onAction,
-      addListener,
-      addKeyedListener,
-      onRouteFocus,
-      onDispatchAction,
-      onOptionsChange,
-      scheduleUpdate,
-      flushUpdates,
-      stackRef,
-    ]
+    [navigation, handleAction, resetNavigator, addListener]
   );
 
   const getNavigation = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
     routes,
     routeNames,
-    getState,
     navigation,
     setOptions,
     router,
-    emitter,
+    // The same runtime emitter handles custom events; this generic only exposes core events here.
+    emitter: emitter as unknown as NavigationEventEmitter<EventMap>,
   });
 
-  const cachedRoutes = useRouteCache(routes);
+  const { cachedRoutes, getMissingRoute } = useRouteCache(routes);
+  const emitRemovalEvent = React.useCallback(
+    (routeKey: string, type: 'removePrevented' | 'removed', action: NavigationAction) =>
+      emitter.emit({ type, target: routeKey, data: { action } }),
+    [emitter]
+  );
 
   const getOptions = (
     route: DescriptorRouteProp<ParamListBase, string>,
@@ -235,10 +222,9 @@ export function useDescriptors<
         route={route}
         screen={screen}
         routeState={routeState}
-        getState={getState}
-        setState={setState}
         options={customOptions}
         clearOptions={clearOptions}
+        emitRemovalEvent={emitRemovalEvent}
       />
     );
 
@@ -253,12 +239,21 @@ export function useDescriptors<
       });
     }
 
+    const screenActivityEnabled = screen.activityEnabled ?? activityEnabled;
+    const activityThreshold = getActivityThreshold(screenActivityEnabled, activityDefaultThreshold);
+
     return (
-      <NavigationBuilderContext.Provider key={route.key} value={context}>
-        <NavigationProvider route={route} navigation={navigation}>
-          {element}
-        </NavigationProvider>
-      </NavigationBuilderContext.Provider>
+      <NavigationActivityProvider
+        key={route.key}
+        activityThreshold={activityThreshold}
+        // `false` also stops ancestor navigators from hiding this subtree.
+        activityDisabled={screenActivityEnabled === false}>
+        <NavigationBuilderContext.Provider value={context}>
+          <NavigationProvider route={route} navigation={navigation}>
+            {element}
+          </NavigationProvider>
+        </NavigationBuilderContext.Provider>
+      </NavigationActivityProvider>
     );
   };
 
@@ -273,8 +268,25 @@ export function useDescriptors<
     >
   >;
 
+  const createDescriptor = (
+    route: RouteProp<ParamListBase, string>,
+    navigation: ReturnType<typeof getNavigation>,
+    routeState: NavigationState | PartialState<NavigationState> | undefined
+  ): DescriptorMap[string] => {
+    const customOptions = getOptions(route, navigation, options[route.key] ?? {});
+    const element = render(route, navigation, customOptions, routeState);
+    return {
+      route,
+      // @ts-expect-error: it's missing action helpers, fix later
+      navigation,
+      render: () => element,
+      options: customOptions,
+      routeSource: screens[route.name]?.props.routeSource,
+    };
+  };
+
   const descriptors = cachedRoutes.reduce<DescriptorMap>((acc, route, i) => {
-    const navigation = getNavigation(route);
+    const navigation = getNavigation(route, route.isPreloaded === true);
 
     if (screens[route.name] === undefined) {
       acc[route.key] = {
@@ -288,30 +300,37 @@ export function useDescriptors<
       return acc;
     }
 
-    const customOptions = getOptions(route, navigation, options[route.key]!);
-    const element = render(route, navigation, customOptions, routes[i]!.state);
-
-    acc[route.key] = {
-      route,
-      // @ts-expect-error: it's missing action helpers, fix later
-      navigation,
-      render() {
-        return element;
-      },
-      options: customOptions as ScreenOptions,
-      routeSource: screens[route.name]?.props.routeSource,
-    };
+    acc[route.key] = createDescriptor(route, navigation, routes[i]!.state);
 
     return acc;
   }, {});
+
+  const createMissingDescriptor = (route: RouteProp<ParamListBase, string>) => {
+    // Seed a nested navigator the same way the global state does when the route is added.
+    const childNode = findRouteNodeByName(routeNode, route.name);
+    const routeState = childNode?.children.length
+      ? createSeededNavigationState(undefined, childNode, getChainFromRouteKey(route.key))
+      : undefined;
+    return createDescriptor(route, getNavigation(route, false), routeState);
+  };
 
   // Placeholder descriptors need a cast because `useNavigationCache` adds action helpers at
   // runtime, but its return type omits them.
   // TODO: Fix the `useNavigationCache` return type and remove these casts.
   // TODO: Stabilize screens, options, descriptors, and `describe` without relying on React Compiler.
-  const describe = (route: DescriptorRouteProp<ParamListBase, string>) => {
+  // With `create`, a keyed route that is not in the state yet gets the descriptor it will have
+  // once the route is added. A navigator uses it for routes that it adds before the global state
+  // has them. It is opt-in, so an unknown key from any other caller still throws.
+  const describe = (
+    route: DescriptorRouteProp<ParamListBase, string>,
+    { create = false }: { create?: boolean } = {}
+  ) => {
     if (route.key !== undefined) {
-      const descriptor = descriptors[route.key];
+      const descriptor =
+        descriptors[route.key] ??
+        (create && screens[route.name]
+          ? createMissingDescriptor(getMissingRoute({ ...route, key: route.key }))
+          : undefined);
       if (!descriptor) {
         throw new Error(`Couldn't find a route with the key ${route.key}.`);
       }
@@ -322,13 +341,13 @@ export function useDescriptors<
     if (!config) {
       return {
         route,
-        navigation: getNavigation({ key: route.name, name: route.name }),
+        navigation: getNavigation({ key: route.name, name: route.name }, false),
         options: {} as ScreenOptions,
         render: () => null,
       } as DescriptorMap[string];
     }
 
-    const navigation = getNavigation({ key: route.name, name: route.name });
+    const navigation = getNavigation({ key: route.name, name: route.name }, false);
     return {
       route,
       navigation,
@@ -339,4 +358,25 @@ export function useDescriptors<
   };
 
   return { describe, descriptors };
+}
+
+function getActivityThreshold(
+  activityEnabled: boolean | number | undefined,
+  defaultThreshold: number
+) {
+  if (typeof activityEnabled === 'number') {
+    if (Number.isNaN(activityEnabled) || activityEnabled <= 0) {
+      if (__DEV__) {
+        console.warn(
+          `activityEnabled must be a positive number. Received ${activityEnabled}; disabling React Activity.`
+        );
+      }
+      return undefined;
+    }
+    return activityEnabled;
+  }
+  if (activityEnabled) {
+    return Math.max(1, defaultThreshold);
+  }
+  return undefined;
 }

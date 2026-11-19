@@ -1,5 +1,5 @@
 import Ionicons from '@react-native-vector-icons/ionicons';
-import { useObserve } from 'expo-observe';
+import { isRunningInExpoGo } from 'expo';
 import { Link } from 'expo-router';
 import React from 'react';
 import {
@@ -22,6 +22,10 @@ import { getScreenIdForLinking } from 'test-suite/screens/getScreenIdForLinking'
 
 import { useTheme } from '../../../common/ThemeProvider';
 import type { ScreenConfig } from '../types/ScreenConfig';
+
+const useObserve: typeof import('expo-observe').useObserve = isRunningInExpoGo()
+  ? () => ({ markInteractive: () => {} })
+  : require('expo-observe').useObserve;
 
 export interface ListElement {
   screenName?: string;

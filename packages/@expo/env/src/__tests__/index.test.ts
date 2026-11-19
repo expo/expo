@@ -12,6 +12,7 @@ import {
   LOADED_ENV_NAME,
   loadProjectEnv,
   logLoadedEnv,
+  parseEnv,
   parseEnvFiles,
   parseProjectEnv,
   setNodeEnv,
@@ -46,6 +47,14 @@ describe(setNodeEnv, () => {
 
     expect(setNodeEnv('production')).toBe(process.env);
     expect(process.env.NODE_ENV).toBe('production');
+  });
+
+  it('removes an inherited BABEL_ENV value', () => {
+    process.env.BABEL_ENV = 'development';
+
+    setNodeEnv('production');
+
+    expect(process.env.BABEL_ENV).toBeUndefined();
   });
 
   it('updates a custom environment without changing process.env', () => {
@@ -341,6 +350,12 @@ describe(parseProjectEnv, () => {
 
     expect(parseProjectEnv('/')).toMatchObject({ env: {}, files: ['/.env'] });
   });
+
+  it.each(['BABEL_ENV', 'babel_env'])('ignores %s in env files', (key) => {
+    vol.fromJSON({ '.env': [`${key}=production`, 'FOO=default'].join('\n') }, '/');
+
+    expect(parseProjectEnv('/').env).toEqual({ FOO: 'default' });
+  });
 });
 
 describe(loadProjectEnv, () => {
@@ -525,6 +540,27 @@ describe(getOriginalEnv, () => {
     };
 
     expect(getOriginalEnv(inheritedEnv)).toEqual({ PRE_EXISTING: 'original' });
+  });
+
+  it('keeps inherited dotenv values listed in EXPO_UNSAFE_DOTENV_KEYS', () => {
+    const prev = process.env.EXPO_UNSAFE_DOTENV_KEYS;
+    process.env.EXPO_UNSAFE_DOTENV_KEYS = 'DOTENV_VALUE';
+    try {
+      jest.isolateModules(() => {
+        const mod = require('../');
+        const inheritedEnv = {
+          DOTENV_VALUE: 'from-parent-dotenv',
+          [LOADED_ENV_NAME]: JSON.stringify(['DOTENV_VALUE']),
+        };
+
+        expect(mod.getOriginalEnv(inheritedEnv)).toEqual({
+          DOTENV_VALUE: 'from-parent-dotenv',
+        });
+      });
+    } finally {
+      if (prev === undefined) delete process.env.EXPO_UNSAFE_DOTENV_KEYS;
+      else process.env.EXPO_UNSAFE_DOTENV_KEYS = prev;
+    }
   });
 
   it('removes inherited dotenv values after a forced local load', () => {
@@ -731,6 +767,19 @@ describe(getOriginalEnvValue, () => {
 });
 
 describe('isLocalEnvKey policy', () => {
+  it('tracks mixed-case local-only keys as sensitive without changing their spelling', () => {
+    vol.fromJSON({ '.env.local': 'android_home=/dev/sdk' }, '/');
+    const result = parseEnvFiles(['/.env.local'], { systemEnv: {} });
+    expect(result.env).toEqual({ android_home: '/dev/sdk' });
+    expect(result.sensitiveLoadedKeys).toEqual(['android_home']);
+  });
+
+  it('filters mixed-case protected keys in the single-file parser', () => {
+    expect(parseEnv('npm_config_registry=https://attacker.example/npm\nAPP_VALUE=ok')).toEqual({
+      APP_VALUE: 'ok',
+    });
+  });
+
   it('throws when a local-only key is set in a non-.local file', () => {
     delete process.env.ANDROID_HOME;
     vol.fromJSON({ '.env': 'ANDROID_HOME=/evil/sdk\nUNRELATED=ok' }, '/');
@@ -819,6 +868,22 @@ describe('isLocalEnvKey policy', () => {
     expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/__EXPO_CONFIG_MODE/);
   });
 
+  it('keeps __EXPO_CONFIG_MODE blocked when the unsafe list includes it', () => {
+    const prev = process.env.EXPO_UNSAFE_DOTENV_KEYS;
+    process.env.EXPO_UNSAFE_DOTENV_KEYS = '__EXPO_CONFIG_MODE';
+    try {
+      jest.isolateModules(() => {
+        const mod = require('../');
+        vol.fromJSON({ '.env': '__EXPO_CONFIG_MODE=production' }, '/');
+
+        expect(() => mod.parseProjectEnv('/', { systemEnv: {} })).toThrow(/__EXPO_CONFIG_MODE/);
+      });
+    } finally {
+      if (prev === undefined) delete process.env.EXPO_UNSAFE_DOTENV_KEYS;
+      else process.env.EXPO_UNSAFE_DOTENV_KEYS = prev;
+    }
+  });
+
   it('combines both violation classes into a single thrown error', () => {
     process.env.NODE_ENV = 'development';
     delete process.env.ANDROID_HOME;
@@ -832,6 +897,19 @@ describe('isLocalEnvKey policy', () => {
     expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(
       /NODE_OPTIONS[\s\S]*ANDROID_HOME/
     );
+  });
+
+  it('throws when ignored keys use mixed casing (Windows bypass)', () => {
+    vol.fromJSON({ '.env': 'npm_config_registry=https://attacker.example/npm' }, '/');
+
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/npm_config_registry/);
+  });
+
+  it('throws when local-only keys use mixed casing (Windows bypass)', () => {
+    vol.fromJSON({ '.env': 'android_home=/evil/sdk' }, '/');
+
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/android_home/);
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/\.local/);
   });
 
   it('throws on package-manager registry/install vars even in .local files', () => {

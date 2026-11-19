@@ -12,8 +12,78 @@ import {
   convertMdxInstructionToMarkdown,
   extractFrontmatter,
   findMdxSource,
+  insertAgentInstructionsAfterH1,
   stripCodeBlocks,
 } from './generate-markdown-pages-utils.ts';
+
+describe('insertAgentInstructionsAfterH1', () => {
+  const block =
+    '<AgentInstructions>\n\n## Submitting Feedback\n\nReport it.\n\n</AgentInstructions>\n';
+
+  it('inserts the block below the first H1', () => {
+    const markdown = '# Page title\n\nFirst paragraph.\n\n## First section\n\nMore.';
+    const result = insertAgentInstructionsAfterH1(markdown, block);
+
+    expect(result).toBe(
+      '# Page title\n\n<AgentInstructions>\n\n## Submitting Feedback\n\nReport it.\n\n</AgentInstructions>\n\nFirst paragraph.\n\n## First section\n\nMore.'
+    );
+  });
+
+  it('targets the first H1 even when content precedes it', () => {
+    const markdown = 'Intro line.\n\n# Page title\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(markdown, block);
+
+    expect(result.indexOf('# Page title')).toBeLessThan(result.indexOf('<AgentInstructions>'));
+    expect(result.indexOf('<AgentInstructions>')).toBeLessThan(result.indexOf('Body.'));
+  });
+
+  it('prepends the block when no H1 exists', () => {
+    const markdown = 'This page redirects to another page.';
+    const result = insertAgentInstructionsAfterH1(markdown, block);
+
+    expect(result).toBe(`${block}\n${markdown}`);
+  });
+
+  it('does not treat an H2 as an H1', () => {
+    const markdown = '## Only a section heading\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(markdown, block);
+
+    expect(result).toBe(`${block}\n${markdown}`);
+  });
+
+  it('keeps the description paragraph attached to the title', () => {
+    const markdown = '# Create a project\n\nLearn how to create a new Expo project.\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(
+      markdown,
+      block,
+      'Learn how to create a new Expo project.'
+    );
+
+    expect(result).toBe(
+      '# Create a project\n\nLearn how to create a new Expo project.\n\n<AgentInstructions>\n\n## Submitting Feedback\n\nReport it.\n\n</AgentInstructions>\n\nBody.'
+    );
+  });
+
+  it('matches a description paragraph that turndown escaped', () => {
+    const markdown = '# Page\n\nUse \\[brackets\\] carefully.\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(markdown, block, 'Use [brackets] carefully.');
+
+    expect(result.indexOf('carefully.')).toBeLessThan(result.indexOf('<AgentInstructions>'));
+  });
+
+  it('inserts below the H1 when the next paragraph is not the description', () => {
+    const markdown = '# Page title\n\nRegular first paragraph.\n\nBody.';
+    const result = insertAgentInstructionsAfterH1(
+      markdown,
+      block,
+      'A description not on the page.'
+    );
+
+    expect(result.indexOf('<AgentInstructions>')).toBeLessThan(
+      result.indexOf('Regular first paragraph.')
+    );
+  });
+});
 
 describe('convertMdxInstructionToMarkdown', () => {
   it('converts scene JSX components and inlines helper MDX', () => {
@@ -71,11 +141,25 @@ import { Collapsible } from '~/ui/components/Collapsible';
     expect(markdown).toContain('**Troubleshooting**');
     expect(markdown).toContain('```sh\nnpm install -g eas-cli\necho done\n```');
     expect(markdown).toContain('Download link: [https://example.dev/download]');
-    expect(markdown).toContain('Press <kbd>Y</kbd> when prompted.');
+    expect(markdown).toContain('Press Y when prompted.');
     expect(markdown).not.toMatch(
       /<BuildEnvironmentSwitch|<Terminal|<Step|<ContentSpotlight|import\s/
     );
     expect(markdown).not.toContain('# comment');
+  });
+
+  it('writes YesIcon and NoIcon as Yes and No', () => {
+    const mdx = `
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+
+|           | Android    | iOS        |
+| --------- | ---------- | ---------- |
+| **macOS** | <YesIcon/> | <NoIcon /> |
+`;
+
+    const markdown = convertMdxInstructionToMarkdown(mdx, () => null);
+
+    expect(markdown).toContain('| **macOS** | Yes | No |');
   });
 
   it('avoids recursive import loops', () => {
@@ -101,6 +185,27 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
     expect(markdown).toContain('## A heading\n\n## B heading');
     expect(markdown).not.toMatch(/<A\s*\/>|<B\s*\/>/);
+  });
+
+  it('writes keyboard keys as text and line breaks as Markdown hard breaks', () => {
+    const markdown = convertMdxInstructionToMarkdown(
+      [
+        'Press <kbd>Cmd ⌘</kbd> + <kbd>,</kbd> to open the settings.',
+        '',
+        '> (\\*) Requires a paid account. <br />',
+        '> (\\*\\*) Possible with WSL.',
+        '',
+        '| Field | Notes |',
+        '| --- | --- |',
+        '| `message` | The text.<br /> <br />Required. |',
+      ].join('\n'),
+      () => null
+    );
+
+    expect(markdown).toContain('Press Cmd ⌘ + , to open the settings.');
+    expect(markdown).toContain('> (\\*) Requires a paid account.  \n> (\\*\\*) Possible with WSL.');
+    expect(markdown).toContain('| `message` | The text. Required. |');
+    expect(markdown).not.toMatch(/<\/?(kbd|br)\b/);
   });
 });
 
@@ -445,11 +550,11 @@ describe('convertHtmlToMarkdown', () => {
     </main>`;
     const md = convertHtmlToMarkdown(html);
 
-    expect(md).toContain('[CLI](/more/expo-cli.md#install)');
+    expect(md).toContain('[CLI](https://docs.expo.dev/more/expo-cli.md#install)');
     expect(md).toContain(
       '[Contacts](https://docs.expo.dev/versions/v56.0.0/sdk/contacts.md#contactgetalloptions)'
     );
-    expect(md).toContain('[llms](/llms.txt)');
+    expect(md).toContain('[llms](https://docs.expo.dev/llms.txt)');
     expect(md).toContain('[External](https://expo.dev)');
     expect(md).toContain('[Inside](/more/expo-cli#install)');
   });
@@ -504,7 +609,7 @@ describe('card links', () => {
       </a>
     </main>`;
     const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('[My Guide](/guide.md)');
+    expect(md).toContain('[My Guide](https://docs.expo.dev/guide.md)');
     expect(md).toContain('Guide description.');
   });
 });
@@ -573,7 +678,7 @@ describe('terminal snippet labels', () => {
     expect(md).toContain('yarn add expo');
     expect(md).toContain('pnpm add expo');
     expect(md).toContain('bun add expo');
-    expect(md).not.toContain('# npm comment');
+    expect(md).toContain('# npm comment');
   });
 
   it('skips empty/comment-only manager sections, ignores unknown keys, and preserves angle brackets', () => {
@@ -634,6 +739,120 @@ describe('platform indicators', () => {
     </main>`;
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('Only for: iOS, Android');
+  });
+});
+
+describe('pipes in table cells', () => {
+  const unescapedPipeCount = (row: string) => row.split(/(?<!\\)\|/).length - 1;
+
+  it('escapes pipes in text and in code spans so each row keeps its cells', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>',
+      '<tbody>',
+      '<tr><td>getTrigger</td><td>(name: string) =&gt; <a href="#trigger">Trigger</a> | undefined</td><td>Returns the trigger.</td></tr>',
+      '<tr><td>name</td><td><code>string | undefined</code></td><td>The name.</td></tr>',
+      '</tbody>',
+      '</table></main>',
+    ].join('');
+    const rows = convertHtmlToMarkdown(html)
+      .split('\n')
+      .filter(line => line.startsWith('|'));
+
+    expect(rows).toContain(
+      '| getTrigger | (name: string) => [Trigger](#trigger) \\| undefined | Returns the trigger. |'
+    );
+    expect(rows).toContain('| name | `string \\| undefined` | The name. |');
+    expect(rows.map(unescapedPipeCount)).toEqual([4, 4, 4, 4]);
+  });
+
+  it('escapes pipes in the UI component grid table', () => {
+    const html = [
+      '<main><div data-md="ui-component-grid">',
+      '<a href="/picker/" data-md-description="Single | multiple selection">Picker</a>',
+      '</div></main>',
+    ].join('');
+    const row = convertHtmlToMarkdown(html)
+      .split('\n')
+      .find(line => line.includes('Picker'));
+
+    expect(row).toBe(
+      '| [`Picker`](https://docs.expo.dev/picker.md) | Single \\| multiple selection |'
+    );
+  });
+});
+
+describe('lists in table cells', () => {
+  it('keeps a cell with a list on one row', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>',
+      '<tbody>',
+      '<tr><td><code>assets</code></td><td><code>[]</code></td><td>',
+      '<p>Supported file types:</p>',
+      '<ul><li>Images: <code>.png</code></li><li>Media: <code>.mp4</code></li></ul>',
+      '</td></tr>',
+      '<tr><td><code>next</code></td><td><code>string</code></td><td>The next row.</td></tr>',
+      '</tbody>',
+      '</table></main>',
+    ].join('');
+    const rows = convertHtmlToMarkdown(html)
+      .split('\n')
+      .filter(line => line.startsWith('|'));
+
+    expect(rows).toEqual([
+      '| Name | Type | Description |',
+      '| --- | --- | --- |',
+      '| `assets` | `[]` | Supported file types: Images: `.png`. Media: `.mp4` |',
+      '| `next` | `string` | The next row. |',
+    ]);
+  });
+});
+
+describe('line breaks in table cells', () => {
+  it('keeps a space where a cell has a line break', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Type</th><th>Description</th></tr></thead>',
+      '<tbody>',
+      '<tr><td><code>CGColor</code><br><code>UIColor</code></td><td>Two letter code.<br>For example, <code>US</code>.</td></tr>',
+      '</tbody>',
+      '</table></main>',
+    ].join('');
+    const row = convertHtmlToMarkdown(html)
+      .split('\n')
+      .find(line => line.includes('CGColor'));
+
+    expect(row).toBe('| `CGColor` `UIColor` | Two letter code. For example, `US`. |');
+  });
+});
+
+describe('code blocks in table cells', () => {
+  it('moves code blocks below the table and points to them from the cell', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Name</th><th>Description</th></tr></thead>',
+      '<tbody>',
+      '<tr><td><code>tabBarBackground</code></td><td>',
+      '<p>Function which returns a React Element.</p>',
+      '<div class="rounded-3xl border"><pre data-md-lang="js"><code>const a = 1;\nconst b = 2;</code></pre></div>',
+      '</td></tr>',
+      '<tr><td><code>next</code></td><td>The next row.</td></tr>',
+      '</tbody>',
+      '</table></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    const rows = md.split('\n').filter(line => line.startsWith('|'));
+
+    expect(rows).toEqual([
+      '| Name | Description |',
+      '| --- | --- |',
+      '| `tabBarBackground` | Function which returns a React Element. See example 1 below the table. |',
+      '| `next` | The next row. |',
+    ]);
+    expect(md).toMatch(
+      /\| `next` \| The next row\. \|\n\nExample 1 for `tabBarBackground`:\n\n```js\nconst a = 1;\nconst b = 2;\n```/
+    );
   });
 });
 
@@ -751,6 +970,66 @@ describe('diff tables', () => {
     expect(md).toContain('- old line');
     expect(md).toContain('+ new line');
     expect(md).toMatch(/^\s+unchanged$/m);
+  });
+
+  it('keeps the file name, indentation, and blank lines of a DiffBlock', () => {
+    const row = (type: string, text: string) =>
+      `<tr class="diff-line"><td class="diff-gutter diff-gutter-${type}">1</td>` +
+      `<td class="diff-gutter diff-gutter-${type}">1</td>` +
+      `<td class="diff-code diff-code-${type}">${text}</td></tr>`;
+    const html = [
+      '<main><div data-md="diff">',
+      '<div data-md="snippet-header"><span>metro.config.js</span><button></button></div>',
+      '<div><table class="diff diff-unified"><tbody class="diff-hunk">',
+      row('normal', '  nested: true,'),
+      row('normal', ' '),
+      row('insert', 'server: {'),
+      row('insert', '  port: 8081,'),
+      row('insert', '},'),
+      '</tbody></table></div></div></main>',
+    ].join('');
+
+    expect(convertHtmlToMarkdown(html)).toContain(
+      [
+        '```diff metro.config.js',
+        '    nested: true,',
+        '',
+        '+ server: {',
+        '+   port: 8081,',
+        '+ },',
+        '```',
+      ].join('\n')
+    );
+  });
+
+  it('adds a hunk header to each hunk of a diff with more than one hunk', () => {
+    const row = (type: string, oldLine: string, newLine: string, text: string) =>
+      `<tr class="diff-line"><td class="diff-gutter diff-gutter-${type}">${oldLine}</td>` +
+      `<td class="diff-gutter diff-gutter-${type}">${newLine}</td>` +
+      `<td class="diff-code diff-code-${type}">${text}</td></tr>`;
+    const html = [
+      '<main><div data-md="diff"><table class="diff diff-unified">',
+      '<tbody class="diff-hunk">',
+      row('insert', '', '1', 'first'),
+      row('normal', '1', '2', 'second'),
+      '</tbody><tbody class="diff-hunk">',
+      row('normal', '9', '10', 'tenth'),
+      row('delete', '10', '', 'removed'),
+      '</tbody></table></div></main>',
+    ].join('');
+
+    expect(convertHtmlToMarkdown(html)).toContain(
+      [
+        '```diff',
+        '@@ -1,1 +1,2 @@',
+        '+ first',
+        '  second',
+        '@@ -9,2 +10,1 @@',
+        '  tenth',
+        '- removed',
+        '```',
+      ].join('\n')
+    );
   });
 });
 
@@ -881,7 +1160,9 @@ describe('convertHtmlToMarkdown with real page structure', () => {
     expect(md).toContain('[Node.js (LTS)](https://nodejs.org)');
     expect(md).toContain('```sh\nnpx create-expo-app@latest\n```');
     expect(md).toContain('## Next step');
-    expect(md).toContain('[development environment](/get-started/set-up-your-environment.md)');
+    expect(md).toContain(
+      '[development environment](https://docs.expo.dev/get-started/set-up-your-environment.md)'
+    );
 
     // Non-content is removed
     expect(md).not.toContain('Home');
@@ -1232,6 +1513,20 @@ describe('API platform tags', () => {
     ].join('');
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('Supported platforms: Android, iOS');
+  });
+});
+
+describe('Package version', () => {
+  it('converts package-version to a recommended version line', () => {
+    const html = [
+      '<main><h1>Camera</h1>',
+      '<div data-md="package-version" data-md-version="~58.0.3">',
+      '<svg/>Recommended version:<div><span>~58.0.3</span></div><button><svg/></button>',
+      '</div>',
+      '<p>Camera API.</p></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('Recommended version: ~58.0.3');
   });
 });
 
@@ -1669,5 +1964,64 @@ describe('extractFrontmatter', () => {
   it('returns null when all fields are UI-only', () => {
     const result = extractFrontmatter(path.join(tmpDir, 'only-ui-fields.mdx'));
     expect(result).toBeNull();
+  });
+});
+
+describe('agent prompt blocks', () => {
+  function fence(text: string) {
+    return `<div class="code-block-wrapper"><pre data-md-lang="text" data-text="true"><div><code>${text}</code></div></pre></div>`;
+  }
+
+  function agentPromptHtml(body: string) {
+    return [
+      '<main>',
+      '<h1>Get started with EAS Update</h1>',
+      '<div data-testid="agent-prompt">',
+      '<div><svg viewBox="0 0 24 24"><path d="M0 0"/></svg><div>',
+      '<h2 data-heading="true">Set up EAS Update with an AI agent</h2>',
+      '<p>Paste this into an agent.</p>',
+      '</div><div><button>Copy prompt</button></div></div>',
+      '<div><button data-md="skip" aria-expanded="false">Show prompt</button><div hidden="">',
+      body,
+      '</div></div>',
+      '</div>',
+      '<p>EAS Update ships over-the-air updates.</p>',
+      '</main>',
+    ].join('');
+  }
+
+  it('renders a single prompt as a section with one code block', () => {
+    const md = convertHtmlToMarkdown(
+      agentPromptHtml(fence('Install expo-updates.\n\nRun `eas update:configure`.'))
+    );
+    expect(md).toContain('## Set up EAS Update with an AI agent');
+    expect(md).toContain('Paste this into an agent.');
+    expect(md).toContain('```text\nInstall expo-updates.\n\nRun `eas update:configure`.\n```');
+    expect(md).not.toContain('Show prompt');
+    expect(md).not.toContain('Copy prompt');
+    expect(md).not.toContain('###');
+    expect(md).toContain('EAS Update ships over-the-air updates.');
+  });
+
+  it('keeps every option under its own heading, hidden ones included', () => {
+    const md = convertHtmlToMarkdown(
+      agentPromptHtml(
+        [
+          '<section data-agent-prompt-option="build-locally">',
+          '<h3 class="sr-only">Build locally</h3>',
+          fence('Run `npx expo run:ios`.'),
+          '</section>',
+          '<section data-agent-prompt-option="build-with-eas" hidden="">',
+          '<h3 class="sr-only">Build with EAS</h3>',
+          fence('Run `eas build`.'),
+          '</section>',
+        ].join('')
+      )
+    );
+    expect(md).toContain('### Build locally');
+    expect(md).toContain('### Build with EAS');
+    expect(md).toContain('Run `npx expo run:ios`.');
+    expect(md).toContain('Run `eas build`.');
+    expect(md.indexOf('### Build locally')).toBeLessThan(md.indexOf('Run `npx expo run:ios`.'));
   });
 });

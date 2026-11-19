@@ -8,6 +8,7 @@ import unset from 'lodash/unset';
 import semver from 'semver';
 
 import * as Versions from '../Versions';
+import { formatVersionsDelta } from '../VersionsDiff';
 
 type ActionOptions = {
   sdkVersion: string;
@@ -66,7 +67,7 @@ async function applyChangesToStagingAsync(delta: any, previousVersions: any, new
   console.log(
     `\nHere is the diff of changes to apply on ${chalk.green('staging')} version config:`
   );
-  console.log(jsondiffpatch.formatters.console.format(delta!, previousVersions));
+  console.log(formatVersionsDelta(delta, previousVersions));
 
   const isCorrect = await askForCorrectnessAsync();
 

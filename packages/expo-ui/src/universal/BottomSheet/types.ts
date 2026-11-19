@@ -1,3 +1,5 @@
+import type { ColorValue } from 'react-native';
+
 import type { ModifierConfig } from '../../types';
 
 /**
@@ -89,8 +91,45 @@ export interface BottomSheetProps {
   shouldDismissOnBackPress?: boolean;
 
   /**
+   * Whether tapping the backdrop (scrim) dismisses the bottom sheet.
+   * When `false`, the sheet stays open until the user explicitly closes it (e.g. via a button).
+   * @default true
+   * @platform android
+   */
+  shouldDismissOnClickOutside?: boolean;
+
+  /**
+   * The color of the scrim overlay rendered behind the bottom sheet.
+   * Pass `'transparent'` to make the backdrop invisible while still blocking touches.
+   * @platform android
+   */
+  scrimColor?: ColorValue;
+
+  /**
    * Platform-specific modifier escape hatch. Pass an array of modifier configs
    * from `@expo/ui/swift-ui/modifiers` or `@expo/ui/jetpack-compose/modifiers`.
    */
   modifiers?: ModifierConfig[];
+
+  /**
+   * The sheet's own background color, painting its full chrome (including the
+   * drag-indicator zone and, on iOS, the home-indicator safe-area inset).
+   * When omitted, each platform keeps its own default.
+   *
+   * This only paints the background. `children` are React Native views on
+   * every platform, so they don't pick up a contrasting text color
+   * automatically -- set one explicitly if you use a dark `containerColor`.
+   * @platform android
+   * @platform ios 16.4+
+   * @platform web
+   */
+  containerColor?: ColorValue;
+
+  /**
+   * The preferred color for native Compose content that doesn't set its own
+   * color. Doesn't reach a `BottomSheet`'s (React Native) `children` -- see
+   * `containerColor`'s doc.
+   * @platform android
+   */
+  contentColor?: ColorValue;
 }

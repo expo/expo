@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { useState, type ComponentType, type ReactNode } from 'react';
 import { type NativeSyntheticEvent } from 'react-native';
 
+import { PresentedContent } from '../../PresentedContentContext';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -17,6 +18,12 @@ export interface BottomSheetProps extends CommonViewModifierProps {
    * kept mounted, so presenting the sheet doesn't shift surrounding layout. Optional.
    */
   anchor?: ReactNode;
+  /**
+   * A view that fills the whole sheet behind its content, for example a `Rectangle` filled with a
+   * material. Unlike the `presentationBackground` modifier, a material in a view stays translucent
+   * on iOS 26 and later.
+   */
+  presentationBackground?: ReactNode;
   /**
    * Whether the `BottomSheet` is presented.
    */
@@ -39,7 +46,7 @@ export interface BottomSheetProps extends CommonViewModifierProps {
 
 type NativeBottomSheetProps = Omit<
   BottomSheetProps,
-  'onIsPresentedChange' | 'onDismiss' | 'anchor'
+  'onIsPresentedChange' | 'onDismiss' | 'anchor' | 'presentationBackground'
 > & {
   onIsPresentedChange: (event: NativeSyntheticEvent<{ isPresented: boolean }>) => void;
   onDismiss: (event: NativeSyntheticEvent<object>) => void;
@@ -54,7 +61,15 @@ const BottomSheetNativeView: ComponentType<NativeBottomSheetProps> = requireNati
  * `BottomSheet` presents content from the bottom of the screen.
  */
 function BottomSheet(props: BottomSheetProps) {
-  const { modifiers, onIsPresentedChange, onDismiss, anchor, children, ...restProps } = props;
+  const {
+    modifiers,
+    onIsPresentedChange,
+    onDismiss,
+    anchor,
+    presentationBackground,
+    children,
+    ...restProps
+  } = props;
   const [isMounted, setIsMounted] = useState(props.isPresented);
 
   if (props.isPresented && !isMounted) {
@@ -76,7 +91,16 @@ function BottomSheet(props: BottomSheetProps) {
         onDismiss?.();
       }}>
       {anchor != null ? <Slot name="anchor">{anchor}</Slot> : null}
-      {isMounted ? children : null}
+      {/* Only the sheet's content is presented in its own view controller. The anchor renders in
+          place, in the React Native surface, so it stays outside `PresentedContent`. */}
+      {isMounted ? (
+        <PresentedContent>
+          {presentationBackground != null ? (
+            <Slot name="presentationBackground">{presentationBackground}</Slot>
+          ) : null}
+          {children}
+        </PresentedContent>
+      ) : null}
     </BottomSheetNativeView>
   );
 }

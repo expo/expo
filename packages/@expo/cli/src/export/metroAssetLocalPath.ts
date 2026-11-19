@@ -9,6 +9,10 @@
  * https://github.com/facebook/react-native/blob/d6e0bc714ad4d215ede4949d3c4f44af6dea5dd3/packages/community-cli-plugin/src/commands/bundle/saveAssets.js#L1
  */
 import type { AssetData } from '@expo/metro/metro';
+import {
+  getAndroidResourceFolderName,
+  getAndroidResourceIdentifier,
+} from '@react-native/asset-utils';
 import path from 'path';
 
 export function getAssetLocalPath(
@@ -33,7 +37,7 @@ function getAssetLocalPathAndroid(
   }
 ): string {
   const androidFolder = getAndroidResourceFolderName(asset, scale);
-  const fileName = getResourceIdentifier(asset);
+  const fileName = getAndroidResourceIdentifier(asset);
   return path.join(androidFolder, `${fileName}.${asset.type}`);
 }
 
@@ -72,60 +76,4 @@ export function stripAssetPrefix(path: string, baseUrl?: string) {
     );
   }
   return path;
-}
-
-/**
- * FIXME: using number to represent discrete scale numbers is fragile in essence because of
- * floating point numbers imprecision.
- */
-function getAndroidAssetSuffix(scale: number): string | null {
-  switch (scale) {
-    case 0.75:
-      return 'ldpi';
-    case 1:
-      return 'mdpi';
-    case 1.5:
-      return 'hdpi';
-    case 2:
-      return 'xhdpi';
-    case 3:
-      return 'xxhdpi';
-    case 4:
-      return 'xxxhdpi';
-    default:
-      return null;
-  }
-}
-
-// See https://developer.android.com/guide/topics/resources/drawable-resource.html
-export const drawableFileTypes = new Set<string>(['gif', 'jpeg', 'jpg', 'png', 'webp', 'xml']);
-
-function getAndroidResourceFolderName(asset: Pick<AssetData, 'type'>, scale: number): string {
-  if (!drawableFileTypes.has(asset.type)) {
-    return 'raw';
-  }
-  const suffix = getAndroidAssetSuffix(scale);
-  if (!suffix) {
-    throw new Error(
-      `Asset "${JSON.stringify(asset)}" does not use a supported Android resolution suffix`
-    );
-  }
-  return `drawable-${suffix}`;
-}
-
-function getResourceIdentifier(asset: Pick<AssetData, 'httpServerLocation' | 'name'>): string {
-  const folderPath = getBaseUrl(asset);
-  return `${folderPath}/${asset.name}`
-    .toLowerCase()
-    .replace(/\//g, '_') // Encode folder structure in file name
-    .replace(/([^a-z0-9_])/g, '') // Remove illegal chars
-    .replace(/^assets_/, ''); // Remove "assets_" prefix
-}
-
-function getBaseUrl(asset: Pick<AssetData, 'httpServerLocation'>): string {
-  let baseUrl = asset.httpServerLocation;
-  if (baseUrl[0] === '/') {
-    baseUrl = baseUrl.substring(1);
-  }
-  return baseUrl;
 }

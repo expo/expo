@@ -1,9 +1,31 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import SwiftUI
 import Testing
 import UIKit
 
 @testable import ExpoModulesCore
+
+private final class PrivateImageView: UIImageView {}
+
+private final class PrivateSwiftUIViewProps: ExpoSwiftUI.ViewProps {}
+
+private struct PrivateSwiftUIView: ExpoSwiftUI.View {
+  @ObservedObject var props: PrivateSwiftUIViewProps
+
+  var body: some SwiftUI.View {
+    Text("")
+  }
+}
+
+/**
+ A prop declared outside of `ExpoModulesCore`, so it can't classify itself and relies on the cast fallback.
+ */
+private struct ExternalProp: AnyViewProp {
+  let name = "external"
+
+  func set(value: Any, onView: UIView, appContext: AppContext) throws {}
+}
 
 // `createView` and `ConcreteViewProp.set` call `MainActor.assumeIsolated`, so these tests must
 // run on the main thread. Swift Testing runs tests on the cooperative pool by default, where
@@ -20,6 +42,18 @@ struct ViewDefinitionTests {
       let definition = View(UIImageView.self) {}
       let view = definition.createView(appContext: AppContext())
       #expect((try? view?.toUIView()) is UIImageView)
+    }
+
+    @Test
+    func `names a private view after its type`() {
+      let definition = View(PrivateImageView.self) {}
+      #expect(definition.name == "PrivateImageView")
+    }
+
+    @Test
+    func `names a private SwiftUI view after its type`() {
+      let definition = View(PrivateSwiftUIView.self)
+      #expect(definition.name == "PrivateSwiftUIView")
     }
   }
 
@@ -39,6 +73,12 @@ struct ViewDefinitionTests {
       }
       try definition.propsDict()["content"]?.set(value: content, onView: textView, appContext: appContext)
       #expect(textView.text == content)
+    }
+
+    @Test
+    func `collects a prop declared outside of the module`() {
+      let definition = ExpoSwiftUI.ViewDefinition(PrivateSwiftUIView.self, name: "PrivateSwiftUIView", elements: [ExternalProp()])
+      #expect(definition.propsDict()["external"] != nil)
     }
 
     @Test

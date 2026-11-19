@@ -19,8 +19,13 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   var orientationControllers: [ScreenOrientationController] = []
   var controllerInterfaceMasks: [ObjectIdentifier: UIInterfaceOrientationMask] = [:]
   private let queue = DispatchQueue(label: "expo.screenorientationregistry", attributes: .concurrent)
+  private let notificationQueue = DispatchQueue(label: "expo.screenorientationregistry.notifications")
+  private var _currentTraitCollection: UITraitCollection?
   @objc
-  public var currentTraitCollection: UITraitCollection?
+  public var currentTraitCollection: UITraitCollection? {
+    get { queue.sync { _currentTraitCollection } }
+    set { queue.async(flags: .barrier) { self._currentTraitCollection = newValue } }
+  }
   var lastOrientationMask: UIInterfaceOrientationMask
   var rootViewController: UIViewController? {
     return SceneGeometry.keyWindow()?.rootViewController
@@ -37,7 +42,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
 
   private override init() {
     self.currentScreenOrientation = .unknown
-    self.currentTraitCollection = nil
+    self._currentTraitCollection = nil
     self.lastOrientationMask = []
 
     super.init()
@@ -53,6 +58,21 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
    */
   public func updateCurrentScreenOrientation() {
     self.currentScreenOrientation = SceneGeometry.interfaceOrientation(for: rootViewController?.view)
+  }
+
+  /**
+   Reads the interface orientation again when it is still unknown and notifies the controllers about it.
+   The app delegate reads the orientation before any scene is connected, which gives `.unknown`.
+   Must be called on the main thread.
+   */
+  func updateCurrentScreenOrientationIfUnknown() {
+    guard currentScreenOrientation == .unknown else {
+      return
+    }
+    let orientation = SceneGeometry.interfaceOrientation(for: rootViewController?.view)
+    if orientation != .unknown {
+      screenOrientationDidChange(orientation)
+    }
   }
 
   deinit {
@@ -151,7 +171,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
     let currentDeviceOrientation = UIDevice.current.orientation.toInterfaceOrientation()
     let currentOrientationMask = self.rootViewController?.supportedInterfaceOrientations ?? []
 
-    var newScreenOrientation = UIInterfaceOrientation.unknown
+    var newScreenOrientation = orientation
 
     // We need to deduce what is the new screen orientation based on currentOrientationMask and new dimensions of the view
     if orientation.isPortrait {
@@ -204,23 +224,23 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
    Called at the end of the screen orientation change. Notifies the controllers about the orientation change.
    */
   func screenOrientationDidChange(_ newScreenOrientation: UIInterfaceOrientation) {
-    queue.sync(flags: .barrier) {
+    let controllers = queue.sync(flags: .barrier) {
       // Write with the barrier:
       if self.currentScreenOrientation != newScreenOrientation {
         // Only change if necessary, to prevent listeners from re-calling this method.
         self.currentScreenOrientation = newScreenOrientation
       }
+      return self.orientationControllers
     }
-    queue.async {
-      // Read without the barrier:
-      for controller in self.orientationControllers {
+    notificationQueue.async {
+      for controller in controllers {
         controller.screenOrientationDidChange(newScreenOrientation)
       }
     }
   }
 
   public func registerController(_ controller: ScreenOrientationController) {
-    queue.sync {
+    queue.sync(flags: .barrier) {
       self.orientationControllers.append(controller)
     }
   }
@@ -228,7 +248,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   public func unregisterController(_ controller: ScreenOrientationController) {
     let controllerIdentifier = ObjectIdentifier(controller)
 
-    queue.sync {
+    queue.sync(flags: .barrier) {
       self.controllerInterfaceMasks.removeValue(forKey: controllerIdentifier)
       self.orientationControllers.removeAll(where: { $0 === controller })
     }

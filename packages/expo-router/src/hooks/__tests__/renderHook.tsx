@@ -1,7 +1,4 @@
-import {
-  renderHook as tlRenderHook,
-  renderHookAsync as tlRenderHookAsync,
-} from '@testing-library/react-native';
+import { renderHook as tlRenderHook } from '@testing-library/react-native';
 import React from 'react';
 
 import { ExpoRoot } from '../../exports';
@@ -25,20 +22,6 @@ export function renderHook<T>(
   });
 }
 
-export function renderHookAsync<T>(
-  renderCallback: () => T,
-  routes: string[] = ['index'],
-  {
-    initialUrl = '/',
-    wrapper: RootWrapper,
-  }: { initialUrl?: string; wrapper?: React.ComponentType<{ children: React.ReactNode }> } = {}
-) {
-  // TODO: Remove `renderHookAsync` when we migrate to RNTL v14.
-  return tlRenderHookAsync(renderCallback, {
-    wrapper: createWrapper(routes, initialUrl, RootWrapper),
-  });
-}
-
 function createWrapper(
   routes: string[],
   initialUrl: string,
@@ -58,10 +41,10 @@ function createWrapper(
   };
 }
 
-export function renderHookOnce<T>(
+export async function renderHookOnce<T>(
   renderCallback: () => T,
   routes?: string[],
   options?: { initialUrl?: string }
 ) {
-  return renderHook<T>(renderCallback, routes, options).result.current;
+  return (await renderHook<T>(renderCallback, routes, options)).result.current;
 }

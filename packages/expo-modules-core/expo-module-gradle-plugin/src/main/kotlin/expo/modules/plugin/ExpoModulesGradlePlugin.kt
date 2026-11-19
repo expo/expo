@@ -29,6 +29,10 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
       extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl {
         configurePika(shouldBeEnabled = expoModuleExtension.enableCompileTimeOptimization)
 
+        if (expoModuleExtension.v2) {
+          applyExpoModulesV2Plugin()
+        }
+
         applyPublishing(expoModuleExtension)
       }
     }
@@ -46,11 +50,11 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
 
   private fun getKotlinVersion(project: Project): String {
     return project.rootProject.extra.safeGet<String>("kotlinVersion")
-      ?: project.logger.warnIfNotDefined("kotlinVersion", "2.0.21")
+      ?: project.logger.warnIfNotDefined("kotlinVersion", "2.3.21")
   }
 
   private fun getKSPVersion(project: Project): String {
     return project.rootProject.extra.safeGet<String>("kspVersion")
-      ?: project.logger.warnIfNotDefined("kspVersion", "2.0.21-1.0.28")
+      ?: project.logger.warnIfNotDefined("kspVersion", "2.3.7")
   }
 }

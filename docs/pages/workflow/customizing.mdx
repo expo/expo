@@ -4,6 +4,7 @@ description: Learn how to add custom native code to your Expo project.
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { CpuChip01Icon } from '@expo/styleguide-icons/outline/CpuChip01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -30,7 +31,7 @@ When using [development builds](/develop/development-builds/introduction/), usin
 
 - Install the library with npm, for example: `npx expo install react-native-localize`
 - If the library includes a [config plugin](/config-plugins/introduction/), you can specify your preferred configuration in your app config.
-- Create a new development build (either [locally](/guides/local-app-development/) or with [EAS](/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build)).
+- Create a new development build (either [locally](/guides/local-app-development/) or with [Expo Build](/develop/development-builds/introduction/?buildenv=build-with-expo-services#how-would-you-like-to-build-your-development-build)).
 
 You can now use the library in your application code.
 
@@ -62,7 +63,7 @@ If you intend to write a native module primarily in C++, you may want to explore
   title="Expo Modules API: Overview"
   description="An overview of the APIs and utilities provided by Expo to develop native modules."
   href="/modules/overview/"
-  Icon={BookOpen02Icon}
+  Icon={CpuChip01Icon}
 />
 
 <BoxLink
@@ -104,7 +105,7 @@ The following suggestions are most important when using [CNG](/workflow/continuo
 
 <Collapsible summary="Build locally for the best debugging experience and fast feedback">
 
-By default, Expo projects created with `create-expo-app` use CNG and do not contain **android** or **ios** native directories until you've run the `npx expo prebuild` command in your project. When using CNG, developers typically do not commit the **android** and **ios** directories to source control and do not generate them locally, since EAS Build will do it automatically during the build process. That said, it is common to generate native directories and build locally with `npx expo run` when writing custom native code, to have a fast feedback loop and full access to native debugging tools in Android Studio / Xcode.
+By default, Expo projects created with `create-expo-app` use CNG and do not contain **android** or **ios** native directories until you've run the `npx expo prebuild` command in your project. When using CNG, developers typically do not commit the **android** and **ios** directories to source control and do not generate them locally, since Expo Build will do it automatically during the build process. That said, it is common to generate native directories and build locally with `npx expo run` when writing custom native code, to have a fast feedback loop and full access to native debugging tools in Android Studio / Xcode.
 
 </Collapsible>
 

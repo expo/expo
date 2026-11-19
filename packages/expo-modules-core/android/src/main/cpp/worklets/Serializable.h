@@ -4,7 +4,7 @@
 #include "../JSIContext.h"
 #include "../JNIDeallocator.h"
 
-#include <worklets/SharedItems/Serializable.h>
+#include <worklets/SharedItems/Serializable/Serializable.h>
 
 namespace jni = facebook::jni;
 

@@ -17,12 +17,25 @@ const BARE_EXPO_IOS_DIR = path.join(Directories.getAppsDir(), 'bare-expo', 'ios'
 const WORKSPACE_PATH = path.join(BARE_EXPO_IOS_DIR, 'BareExpo.xcworkspace');
 const RESULTS_DIR = '/tmp/ios-unit-tests-results';
 
+// Benchmarks run natively on the Mac through the Mac Catalyst destination: no simulator boot, and
+// run-to-run spreads of a few percent instead of the 10-25% a simulator shows. The prebuilt React
+// Native xcframeworks ship Catalyst slices, so the regular iOS pods build for it unchanged.
+const CATALYST_DESTINATION = 'platform=macOS,variant=Mac Catalyst';
+
+// A package's benchmarks live in a test spec named `Benchmarks`, separate from its unit tests, so
+// unit test runs neither build nor run them and `--benchmarks` runs nothing else.
+const BENCHMARK_TEST_SPEC_NAME = 'Benchmarks';
+
 // Computes the Xcode unit-test target names for a package by scanning every podspec it
 // declares — a package like expo-modules-core ships several (ExpoModulesCore,
 // ExpoModulesWorklets, …), each potentially with its own test specs. Each test spec becomes
 // `<PodName>-Unit-<TestSpecName>`, named after the podspec that owns it (not the package's
-// primary podspec), which is how CocoaPods generates the targets.
-function getUnitTestTargets(pkg: Packages.Package): string[] {
+// primary podspec), which is how CocoaPods generates the targets. The `Benchmarks` spec is
+// included only when running benchmarks, and is the only one included then.
+function getUnitTestTargets(
+  pkg: Packages.Package,
+  { benchmarks }: { benchmarks: boolean }
+): string[] {
   const targets: string[] = [];
   for (const podspecRelPath of pkg.podspecPaths) {
     const podspecAbsPath = path.join(pkg.path, podspecRelPath);
@@ -32,7 +45,9 @@ function getUnitTestTargets(pkg: Packages.Package): string[] {
     const podName = path.basename(podspecRelPath, '.podspec');
     const contents = fs.readFileSync(podspecAbsPath, 'utf8');
     for (const match of contents.matchAll(/test_spec\s'([^']*)'/g)) {
-      targets.push(`${podName}-Unit-${match[1]}`);
+      if ((match[1] === BENCHMARK_TEST_SPEC_NAME) === benchmarks) {
+        targets.push(`${podName}-Unit-${match[1]}`);
+      }
     }
   }
   return targets;
@@ -188,14 +203,19 @@ const INFRA_PATH_PATTERNS = [
   /^apps\/bare-expo\/ios\//,
   /^\.github\/workflows\/ios-unit-tests\.yml$/,
   /^packages\/expo-modules-autolinking\//,
-  /^packages\/expo-module-scripts\//,
+  /^packages\/@expo\/internal-scripts\//,
   /^packages\/expo-modules-test-core\//,
   /^pnpm-lock\.yaml$/,
   // CocoaPods and xcodeproj come from the bundle, so gem bumps change how pods install.
   /^Gemfile(\.lock)?$/,
 ];
 
-async function runTestsAsync(scheme: string, destination: string, useXcbeautify: boolean) {
+async function runTestsAsync(
+  scheme: string,
+  destination: string,
+  useXcbeautify: boolean,
+  { benchmarks }: { benchmarks: boolean }
+) {
   const args = [
     'test',
     '-workspace',
@@ -203,25 +223,65 @@ async function runTestsAsync(scheme: string, destination: string, useXcbeautify:
     '-scheme',
     scheme,
     '-configuration',
-    'Debug',
+    // Benchmark numbers are meaningless without optimizations.
+    benchmarks ? 'Release' : 'Debug',
     '-destination',
     destination,
-    // Spread parallelizable testables across multiple simulator clones. Without an explicit
-    // worker count, xcodebuild tends to stick to a single clone for this kind of load.
-    '-parallel-testing-enabled',
-    'YES',
-    '-parallel-testing-worker-count',
-    '3',
     '-resultBundlePath',
-    path.join(RESULTS_DIR, `${scheme}.xcresult`),
+    getResultBundlePath(scheme),
     'CODE_SIGN_IDENTITY=',
     'CODE_SIGNING_REQUIRED=NO',
+    // After a full run, xcodebuild collects simulator diagnostics (a sysdiagnose and a log
+    // archive). On Blacksmith runners that collection stalls until a 600s timeout, which
+    // doubles the job time. The result bundle still keeps the test logs and failures.
+    '-collect-test-diagnostics',
+    'never',
   ];
+  if (benchmarks) {
+    args.push(
+      // Benchmarks measure wall time, so their bundles must not share the Mac. The merged scheme
+      // marks every testable parallelizable, which xcodebuild would otherwise honor.
+      '-parallel-testing-enabled',
+      'NO',
+      // Coverage instrumentation puts profile counters inside the measured code.
+      '-enableCodeCoverage',
+      'NO',
+      // The suites `@testable import` the pod under test, which a Release build allows only with
+      // testability kept on.
+      'ENABLE_TESTABILITY=YES',
+      // The test bundles carry no macOS deployment target and would default to the SDK version,
+      // which xcodebuild refuses to launch on a Mac running an older macOS.
+      'MACOSX_DEPLOYMENT_TARGET=14.0',
+      // Release builds every architecture by default; the benchmarks run only on this Mac.
+      'ONLY_ACTIVE_ARCH=YES'
+    );
+  } else {
+    // Spread parallelizable testables across multiple simulator clones. Without an explicit
+    // worker count, xcodebuild tends to stick to a single clone for this kind of load.
+    args.push('-parallel-testing-enabled', 'YES', '-parallel-testing-worker-count', '3');
+  }
   const cwd = Directories.getExpoRepositoryRootDir();
 
   // Without NSUnbufferedIO, xcodebuild buffers its output when writing to a pipe, so test
   // results would show up in delayed bursts instead of streaming line by line.
   const env = { ...process.env, NSUnbufferedIO: 'YES' };
+
+  if (benchmarks) {
+    // Print only the `[benchmark]` result lines, errors and the verdict, and keep the full
+    // xcodebuild output in a log file. xcbeautify would drop the result lines, which the test
+    // process prints to stdout. The Catalyst test host logs a CoreData XPC error on every
+    // launch that has nothing to do with the tests.
+    const logPath = path.join(RESULTS_DIR, `${scheme}.log`);
+    await fs.ensureDir(RESULTS_DIR);
+    const command =
+      ['xcodebuild', ...args].map((arg) => `'${arg.replace(/'/g, `'\\''`)}'`).join(' ') +
+      ` 2>&1 | tee '${logPath}'` +
+      ` | grep --line-buffered -E '\\[benchmark\\]|error:|\\*\\* TEST'` +
+      ` | grep --line-buffered -v 'CoreData: error: Failed to create NSXPCConnection'`;
+    console.log(`Full xcodebuild output: ${logPath}\n`);
+    await spawnAsync('bash', ['-o', 'pipefail', '-c', command], { cwd, env, stdio: 'inherit' });
+    return;
+  }
 
   if (useXcbeautify) {
     // The github-actions renderer emits `::error`/`::warning` annotations with file and line
@@ -238,14 +298,162 @@ async function runTestsAsync(scheme: string, destination: string, useXcbeautify:
   }
 }
 
+function getResultBundlePath(scheme: string): string {
+  return path.join(RESULTS_DIR, `${scheme}.xcresult`);
+}
+
+type TestFailure = {
+  target: string;
+  test: string;
+  message: string;
+  /**
+   * Relative to the repository root when the file is in the repository.
+   */
+  file: string | null;
+  line: number | null;
+};
+
+type ResultBundleNode = {
+  nodeType?: string;
+  name?: string;
+  result?: string;
+  sourceLocation?: { filePath: string; lineNumber: number };
+  children?: ResultBundleNode[];
+};
+
+/**
+ * Reads the failed tests from the result bundle, with their failure messages and source
+ * locations. Returns an empty list when the bundle can't be read or has no test results, for
+ * example after a build failure.
+ */
+async function readTestFailuresAsync(resultBundlePath: string): Promise<TestFailure[]> {
+  let testNodes: ResultBundleNode[];
+  try {
+    const { stdout } = await spawnAsync('xcrun', [
+      'xcresulttool',
+      'get',
+      'test-results',
+      'tests',
+      '--path',
+      resultBundlePath,
+    ]);
+    testNodes = JSON.parse(stdout).testNodes;
+  } catch {
+    return [];
+  }
+  const repoRoot = Directories.getExpoRepositoryRootDir();
+  const failures: TestFailure[] = [];
+
+  const collectMessages = (node: ResultBundleNode, messages: ResultBundleNode[]) => {
+    for (const child of node.children ?? []) {
+      if (child.nodeType === 'Failure Message') {
+        messages.push(child);
+      } else if (child.nodeType !== 'Test Value') {
+        collectMessages(child, messages);
+      }
+    }
+    return messages;
+  };
+
+  const visit = (node: ResultBundleNode, target: string) => {
+    if (node.nodeType === 'Unit test bundle') {
+      target = node.name ?? target;
+    }
+    if (node.nodeType === 'Test Case' && node.result === 'Failed') {
+      const messages = collectMessages(node, []);
+      if (!messages.length) {
+        messages.push({ name: 'The test failed.' });
+      }
+      for (const message of messages) {
+        const filePath = message.sourceLocation?.filePath;
+        const relativePath = filePath ? path.relative(repoRoot, filePath) : null;
+        failures.push({
+          target,
+          test: node.name ?? 'unknown test',
+          message: message.name ?? '',
+          file: relativePath && !relativePath.startsWith('..') ? relativePath : (filePath ?? null),
+          line: message.sourceLocation?.lineNumber ?? null,
+        });
+      }
+      return;
+    }
+    for (const child of node.children ?? []) {
+      visit(child, target);
+    }
+  };
+  for (const node of testNodes ?? []) {
+    visit(node, 'unknown target');
+  }
+  return failures;
+}
+
+function formatLocation(failure: TestFailure): string | null {
+  if (!failure.file) {
+    return null;
+  }
+  return failure.line != null ? `${failure.file}:${failure.line}` : failure.file;
+}
+
+async function reportTestFailuresAsync(failures: TestFailure[]) {
+  console.log(chalk.red.bold(`\nTest failures (${failures.length}):`));
+  for (const failure of failures) {
+    const location = formatLocation(failure);
+    console.log(`- ${chalk.bold(`${failure.target}: ${failure.test}`)}`);
+    if (location) {
+      console.log(`  ${location}`);
+    }
+    console.log(`  ${failure.message.replace(/\n/g, '\n  ')}`);
+  }
+  console.log();
+
+  if (!isGithubActions) {
+    return;
+  }
+  // Workflow command values can't contain newlines, and properties can't contain `:` or `,`.
+  const escapeData = (value: string) =>
+    value.replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A');
+  const escapeProperty = (value: string) =>
+    escapeData(value).replace(/:/g, '%3A').replace(/,/g, '%2C');
+  for (const failure of failures) {
+    const properties = [
+      failure.file && `file=${escapeProperty(failure.file)}`,
+      failure.line != null && `line=${failure.line}`,
+      `title=${escapeProperty(`${failure.target}: ${failure.test}`)}`,
+    ].filter(Boolean);
+    console.log(`::error ${properties.join(',')}::${escapeData(failure.message)}`);
+  }
+
+  const summaryPath = process.env.GITHUB_STEP_SUMMARY;
+  if (summaryPath) {
+    const cell = (value: string) => value.replace(/\|/g, '\\|').replace(/\r?\n/g, '<br>');
+    const rows = failures.map((failure) => {
+      const location = formatLocation(failure);
+      return `| ${cell(failure.target)} | ${cell(failure.test)} | ${location ? cell(location) : ''} | ${cell(failure.message)} |`;
+    });
+    await fs.appendFile(
+      summaryPath,
+      [
+        '### iOS unit test failures',
+        '',
+        '| Target | Test | Location | Message |',
+        '| --- | --- | --- | --- |',
+        ...rows,
+        '',
+      ].join('\n')
+    );
+  }
+}
+
 export async function iosNativeUnitTests({
   packages,
   affected,
   since = 'main',
+  benchmarks = false,
 }: {
   packages?: string;
   affected?: boolean;
   since?: string;
+  benchmarks?: boolean;
 }) {
   const allPackages = await Packages.getListOfPackagesAsync();
   const packageNamesFilter = packages ? packages.split(',') : [];
@@ -294,8 +502,17 @@ export async function iosNativeUnitTests({
       continue;
     }
 
-    const pkgTargets = getUnitTestTargets(pkg);
+    const pkgTargets = getUnitTestTargets(pkg, { benchmarks });
     if (!pkgTargets.length) {
+      if (benchmarks) {
+        // Most packages have unit tests and no benchmarks. Only an explicit request is an error.
+        if (packageNamesFilter.includes(pkg.packageName)) {
+          throw new Error(
+            `The package ${pkg.packageName} does not include iOS benchmarks (a \`${BENCHMARK_TEST_SPEC_NAME}\` test spec in its podspec).`
+          );
+        }
+        continue;
+      }
       throw new Error(
         `Failed to test package ${pkg.packageName}: no test specs were found in its podspec file(s).`
       );
@@ -313,6 +530,10 @@ export async function iosNativeUnitTests({
     }
     if (affectedFilter) {
       console.log('✅ No affected packages provide iOS unit tests — nothing to run.');
+      return;
+    }
+    if (benchmarks) {
+      console.log('✅ No packages provide iOS benchmarks — nothing to run.');
       return;
     }
     // Without this guard, an empty target list would generate a scheme with no testables and
@@ -334,23 +555,34 @@ export async function iosNativeUnitTests({
   // invocation.
   const scheme = targetsToTest.length === 1 ? targetsToTest[0] : generateMergedScheme(schemeFiles);
 
-  const destination = await findSimulatorDestinationAsync();
-  const useXcbeautify = await isXcbeautifyAvailableAsync();
-  if (!useXcbeautify) {
+  const destination = benchmarks ? CATALYST_DESTINATION : await findSimulatorDestinationAsync();
+  const useXcbeautify = !benchmarks && (await isXcbeautifyAvailableAsync());
+  if (!benchmarks && !useXcbeautify) {
     console.log(chalk.yellow('xcbeautify not found, falling back to raw xcodebuild output.\n'));
   }
 
-  console.log(`Running tests for targets:\n- ${targetsToTest.join('\n- ')}\n`);
+  const what = benchmarks ? 'benchmarks' : 'tests';
+  console.log(`Running ${what} for targets:\n- ${targetsToTest.join('\n- ')}\n`);
 
   try {
-    await runTestsAsync(scheme, destination, useXcbeautify);
+    await runTestsAsync(scheme, destination, useXcbeautify, { benchmarks });
   } catch {
-    if (isGithubActions) {
-      console.log(`::error title=iOS unit tests::Unit tests failed, see the log for details`);
+    const resultBundlePath = getResultBundlePath(scheme);
+    const failures = await readTestFailuresAsync(resultBundlePath);
+    if (failures.length) {
+      await reportTestFailuresAsync(failures);
+      const failedTargets = [...new Set(failures.map((failure) => failure.target))];
+      throw new Error(
+        `iOS unit ${what} failed in ${failedTargets.join(', ')}. The list above shows each ` +
+          `failure. The result bundle is at ${resultBundlePath}.`
+      );
     }
-    throw new Error(`iOS unit tests failed for packages: ${packagesToTest.join(', ')}`);
+    if (isGithubActions) {
+      console.log(`::error title=iOS unit tests::Unit ${what} failed, see the log for details`);
+    }
+    throw new Error(`iOS unit ${what} failed for packages: ${packagesToTest.join(', ')}`);
   }
-  console.log('✅ All unit tests passed for the following packages:', packagesToTest.join(', '));
+  console.log(`✅ All unit ${what} passed for the following packages:`, packagesToTest.join(', '));
 }
 
 export default (program: any) => {
@@ -369,6 +601,11 @@ export default (program: any) => {
       '-s, --since <ref>',
       '[optional] Git ref to diff against for `--affected`. Defaults to `main`.',
       'main'
+    )
+    .option(
+      '--benchmarks',
+      "[optional] Run the packages' `Benchmarks` test specs instead of their unit tests: Release configuration, natively on the Mac through the Mac Catalyst destination.",
+      false
     )
     .description('Runs iOS native unit tests for each package that provides them.')
     .asyncAction(iosNativeUnitTests);
