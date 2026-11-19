@@ -7,6 +7,7 @@ import android.provider.DocumentsContract
 import androidx.core.net.toUri
 import expo.modules.filesystem.CopyOrMoveDirectoryToFileException
 import expo.modules.filesystem.DestinationAlreadyExistsException
+import expo.modules.filesystem.DestinationContainsSourceException
 import expo.modules.filesystem.DestinationDoesNotExistException
 import expo.modules.filesystem.UnableToMoveException
 import expo.modules.filesystem.unifiedfile.AssetFile
@@ -95,10 +96,24 @@ sealed class CopyMoveStrategy(
         if (!spec.overwrite) {
           throw DestinationAlreadyExistsException()
         }
+        if (source is JavaFile) {
+          validateDestinationDoesNotContainSource(source, it)
+        }
         it.deleteRecursively()
       }
 
       return DestinationSink.LocalFile(spec, target)
+    }
+
+    // Overwriting deletes the existing destination first. When the destination is the source
+    // or one of its ancestors, that delete would remove the source too.
+    // Canonical paths resolve symlinks and aliases such as `/data/data` and `/data/user/0`.
+    private fun validateDestinationDoesNotContainSource(source: JavaFile, destination: JavaFile) {
+      val sourcePath = source.canonicalPath
+      val destinationPath = destination.canonicalPath
+      if (sourcePath == destinationPath || sourcePath.startsWith(destinationPath + File.separator)) {
+        throw DestinationContainsSourceException()
+      }
     }
 
     override fun tryNativeMove(resolved: DestinationSink): Uri? {
