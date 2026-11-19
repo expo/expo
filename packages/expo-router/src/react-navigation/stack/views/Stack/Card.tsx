@@ -71,9 +71,7 @@ const useNativeDriver = Platform.OS !== 'web';
 
 const hasOpacityStyle = (style: Animated.WithAnimatedValue<StyleProp<ViewStyle>>) => {
   if (style) {
-    const flattenedStyle = StyleSheet.flatten(style);
-
-    return 'opacity' in flattenedStyle && flattenedStyle.opacity != null;
+    return StyleSheet.flatten(style)?.opacity != null;
   }
 
   return false;
@@ -460,7 +458,7 @@ function Card({
     [gesture, gestureDirection, gestureEnabled]
   );
 
-  const { backgroundColor } = StyleSheet.flatten(contentStyle || {});
+  const backgroundColor = StyleSheet.flatten(contentStyle)?.backgroundColor;
 
   const isTransparent = typeof backgroundColor === 'string' ? alpha(backgroundColor) === 0 : false;
 

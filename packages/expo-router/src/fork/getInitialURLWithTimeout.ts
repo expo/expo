@@ -11,7 +11,7 @@ export function getInitialURLWithTimeout(): string | null | Promise<string | nul
 
   return Promise.race([
     // TODO: Phase this out in favor of expo-linking on Android.
-    Linking.getInitialURL(),
+    Linking.getInitialURL().then((url) => url ?? null),
     new Promise<null>((resolve) =>
       // Timeout in 150ms if `getInitialState` doesn't resolve
       // Workaround for https://github.com/facebook/react-native/issues/25675
