@@ -1,6 +1,9 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+#if canImport(ExpoFileSystemObjC)
+import ExpoFileSystemObjC
+#endif
 
 public final class FileSystemBackgroundSessionHandler: ExpoAppDelegateSubscriber, EXSessionHandlerProtocol {
   public typealias BackgroundSessionCompletionHandler = () -> Void
