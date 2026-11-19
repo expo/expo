@@ -143,23 +143,27 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       return
     }
 
-    if let absoluteTime {
+    let started = if let absoluteTime {
       ref.record(atTime: absoluteTime, forDuration: seconds)
     } else {
       ref.record(forDuration: seconds)
+    }
+    guard started else {
+      return
     }
     updateStateForDirectRecording()
     durationLimitSeconds = seconds
   }
 
   func record(atTime absoluteTime: TimeInterval) {
-    ref.record(atTime: absoluteTime)
+    guard ref.record(atTime: absoluteTime) else {
+      return
+    }
     updateStateForDirectRecording()
     durationLimitSeconds = nil
   }
 
   func startRecording() throws -> [String: Any] {
-    isPausedBySystem = false
     guard allowsRecording else {
       throw RecordingDisabledException()
     }
@@ -168,22 +172,27 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       return [:]
     }
 
-    if currentState != .paused {
-      resetDurationTracking()
-    }
-
     // If the recording was armed with a duration, re-apply it.
+    let started: Bool
     if let limit = durationLimitSeconds {
       if ref.currentTime >= limit {
         // The allowance is already spent; stop rather than resume.
         stopRecording()
         return getRecordingStatus()
       }
-      ref.record(forDuration: limit)
+      started = ref.record(forDuration: limit)
     } else {
-      ref.record()
+      started = ref.record()
     }
 
+    guard started else {
+      return getRecordingStatus()
+    }
+
+    isPausedBySystem = false
+    if currentState != .paused {
+      resetDurationTracking()
+    }
     startTimestamp = deviceCurrentTime
     currentState = .recording
     return getRecordingStatus()
