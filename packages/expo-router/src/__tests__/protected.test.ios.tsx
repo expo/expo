@@ -1352,6 +1352,78 @@ it('replaces tabs with the stack fallback when every declared tab is guarded and
   expect(screen).toHavePathname('/login');
 });
 
+it('reveals the parent history when a fully guarded navigator is the parent anchor', async () => {
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter(
+    {
+      _layout: {
+        unstable_settings: { anchor: 'account' },
+        default: () => <Stack />,
+      },
+      home: () => <Text testID="home">home</Text>,
+      'account/_layout': function AccountLayout() {
+        const [signedIn, setState] = useState(true);
+        setSignedIn = setState;
+        return (
+          <Stack>
+            <Stack.Protected guard={signedIn}>
+              <Stack.Screen name="index" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      'account/index': () => <Text testID="account">account</Text>,
+    },
+    { initialUrl: '/home' }
+  );
+
+  expect(screen.getByTestId('home')).toBeVisible();
+  await act(() => router.push('/account'));
+  expect(screen.getByTestId('account')).toBeVisible();
+
+  await act(() => setSignedIn(false));
+
+  expect(screen.getByTestId('home')).toBeVisible();
+  expect(screen).toHavePathname('/home');
+});
+
+it('removes a blocked route that a reset with a new navigator key focuses', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Protected guard={false}>
+          <Stack.Screen name="secret" />
+        </Stack.Protected>
+      </Stack>
+    ),
+    index: () => <Text testID="home">home</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+  });
+
+  const stack = navigationRef.getRootState().routes[0]!.state!;
+  await act(() =>
+    navigationRef.dispatch({
+      type: 'RESET',
+      payload: {
+        ...stack,
+        key: 'stack-after-reset',
+        index: 1,
+        routes: [
+          { key: 'index-after-reset', name: 'index' },
+          { key: 'secret-after-reset', name: 'secret' },
+        ],
+      },
+      target: stack.key,
+    })
+  );
+
+  expect(screen.getByTestId('home')).toBeVisible();
+  expect(navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+    'index',
+  ]);
+});
+
 it('replaces every blocked route with the fallback in one state change when no route survives', async () => {
   let setSignedIn: Dispatch<SetStateAction<boolean>>;
 
