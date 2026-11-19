@@ -1,9 +1,12 @@
 package expo.modules.appmetrics
 
 import android.content.Context
+import android.content.pm.PackageManager
 import androidx.core.os.bundleOf
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.crashreporting.CrashFileFormat
+import io.mockk.every
+import io.mockk.mockk
 import java.io.File
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -42,7 +45,7 @@ class ObserveConsentTest {
   @Test
   fun `unknown consent value denies consent`() {
     assertFalse(ObserveConsent.resolve("pending"))
-    assertFalse(ObserveConsent.resolve(false))
+    assertFalse(ObserveConsent.resolve(""))
   }
 
   @Test
@@ -54,6 +57,21 @@ class ObserveConsentTest {
     // Last, so the other tests still start without consent.
     setManifestConsent("not-granted")
     ObserveConsent.load(context)
+    assertFalse(ObserveConsent.isGranted)
+  }
+
+  @Test
+  fun `load denies consent when the manifest cannot be read`() {
+    setManifestConsent("granted")
+    ObserveConsent.load(context)
+    val unreadable = mockk<Context> {
+      every { packageName } returns "missing"
+      every { packageManager.getApplicationInfo("missing", PackageManager.GET_META_DATA) } throws
+        PackageManager.NameNotFoundException()
+    }
+
+    ObserveConsent.load(unreadable)
+
     assertFalse(ObserveConsent.isGranted)
   }
 

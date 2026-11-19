@@ -21,23 +21,35 @@ object ObserveConsent {
 
   /** Reads the consent value that the `expo-observe` config plugin writes to the manifest. */
   fun load(context: Context) {
-    val metaData = context.packageManager
-      .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-      .metaData
-    // `get` is deprecated, but the typed getters cannot return a value of an unknown type for the warning.
-    @Suppress("DEPRECATION")
-    isGranted = resolve(metaData?.get(CONSENT_META_DATA))
+    isGranted = resolve(readManifestConsent(context))
   }
 
+  // Null when the manifest has no value. An empty string, which is an unknown value, when the
+  // value is not a string or the manifest cannot be read.
+  private fun readManifestConsent(context: Context): String? =
+    try {
+      val metaData = context.packageManager
+        .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+        .metaData
+      if (metaData?.containsKey(CONSENT_META_DATA) == true) {
+        metaData.getString(CONSENT_META_DATA).orEmpty()
+      } else {
+        null
+      }
+    } catch (e: Exception) {
+      Log.w(TAG, "[AppMetrics] Failed to read the Observe consent from `AndroidManifest.xml`", e)
+      ""
+    }
+
   /** Consent from the manifest `meta-data` value, granted when the value is absent. */
-  internal fun resolve(consent: Any?): Boolean {
+  internal fun resolve(consent: String?): Boolean {
     if (consent == null) {
       return true
     }
     if (consent != GRANTED && consent != NOT_GRANTED) {
       Log.w(
         TAG,
-        "[AppMetrics] The `$CONSENT_META_DATA` meta-data in `AndroidManifest.xml` is $consent, which is not " +
+        "[AppMetrics] The `$CONSENT_META_DATA` meta-data in `AndroidManifest.xml` is '$consent', which is not " +
           "'granted' or 'not-granted', so Observe stays inactive. Set the `consent` option of the " +
           "`expo-observe` config plugin to 'granted' or 'not-granted', then run prebuild again."
       )
