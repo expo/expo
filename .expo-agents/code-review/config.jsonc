@@ -82,9 +82,6 @@
     ]
   },
 
-  // Bounded documentation research available directly to reviewer and cross-file
-  // passes. The built-in MCP sanitizes agent-authored API queries, restricts discovery
-  // and direct fetches to fixed official providers, and audits accepted results.
   // Reviewers check how a tool behaves in an expo-sandbox-mcp sandbox. The workflow
   // mints REVIEW_SANDBOX_TOKEN, a child token with one sandbox and no builds. The
   // model cannot destroy the sandbox; a workflow step does, so the token also holds
@@ -105,6 +102,9 @@
       "requireNoSudo": true
     }
   },
+  // Bounded documentation research available directly to reviewer and cross-file
+  // passes. The built-in MCP sanitizes agent-authored API queries, restricts discovery
+  // and direct fetches to fixed official providers, and audits accepted results.
   "research": {
     "enabled": true,
     "maxQueries": 20,

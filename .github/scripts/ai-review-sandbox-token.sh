@@ -37,12 +37,14 @@ case "${1:-}" in
   revoke)
     [ -f "$SANDBOX_MCP_CONFIG" ] || exit 0
     : "${EXPO_SANDBOX_MCP_TOKEN:?}"
+    trap 'rm -f "$SANDBOX_MCP_CONFIG"' EXIT
     child=$(jq -r '.mcpServers.sandbox.headers.Authorization | sub("^Bearer "; "")' "$SANDBOX_MCP_CONFIG")
-    jq -cn --arg token "$child" '{token: $token}' |
-      curl -sf -m 30 "$MCP_URL/tokens/revoke" \
+    if ! jq -cn --arg token "$child" '{token: $token}' |
+      curl -sSf -m 30 --retry 3 "$MCP_URL/tokens/revoke" \
         -H "Authorization: Bearer $EXPO_SANDBOX_MCP_TOKEN" \
-        -H 'Content-Type: application/json' --data-binary @- > /dev/null
-    rm -f "$SANDBOX_MCP_CONFIG"
+        -H 'Content-Type: application/json' --data-binary @- > /dev/null; then
+      echo "::warning::Could not revoke the sandbox token. It expires on its own after 100 minutes."
+    fi
     ;;
   *)
     echo "usage: $0 mint|revoke" >&2
