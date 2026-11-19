@@ -295,20 +295,20 @@ When the [Expo Router](/eas/observe/integrations/expo-router/) or [React Navigat
 - **Per-route time to interactive (`tti`)**: Time from a navigation action to when `markInteractive()` is called on the destination screen.
 - **Per-route total blocking time (`tbt`)** ([experimental](/more/release-statuses/#experimental)): Total time that long tasks blocked the JavaScript thread in the 2 seconds after a navigation action. Enable it with `experimental_totalBlockingTime` in the integration config.
 
-`cold_ttr`, `warm_ttr`, and `tti` are durations measured from the navigation action. `tbt` is an amount of blocking, not a time from the navigation action. It tells you how rough the transition felt rather than when it finished. A long task is one that occupies the JavaScript thread for more than 50ms. For each long task in the 2 seconds after the navigation action, only the time past 50ms counts, and `tbt` is the sum of those amounts. A single 250ms task adds 200ms. Ten 50ms tasks add nothing. A task that straddles the end of the window contributes only the part inside it.
+`cold_ttr`, `warm_ttr`, and `tti` are durations measured from the navigation action. `tbt` is an amount of blocking, not a time from the navigation action. It tells you how rough the transition felt rather than when it finished. 
 
 For setup instructions and the full event params for each metric, see the integration page for [Expo Router](/eas/observe/integrations/expo-router/#metrics) or [React Navigation](/eas/observe/integrations/react-navigation/#metrics).
 
 #### Reading navigation metrics together
 
-On a healthy screen, `cold_ttr` and `tti` both land inside the 2 second window, and the gap between them is short. When `tti` lands after the window, `tbt` does not capture all of the blocking that delays it.
+On a healthy screen, `cold_ttr` and `tti` both land inside the 2-second window, and the gap between them is short. When `tti` lands after the window, `tbt` does not capture all of the blocking that delays it.
 
 | TTR  | TBT  | TTI            | What it usually means                                                                                                      |
 | ---- | ---- | -------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | Low  | Low  | Close to TTR   | Healthy: fast to appear and smooth right away.                                                                             |
 | High | Low  | Close to TTR   | Slow to appear but smooth once it does. Usually waiting on data, a lazy-loaded chunk, or a heavy first render.             |
 | Low  | High | Well after TTR | Looks ready but feels frozen. Heavy JavaScript runs right after mount: effects, parsing, state hydration, analytics.       |
-| Low  | Low  | Well after TTR | Not blocked, just not ready: handlers wait on a second request, or the blocking happens after the 2 second window.         |
+| Low  | Low  | Well after TTR | Not blocked, just not ready: handlers wait on a second request, or the blocking happens after the 2-second window.         |
 | High | High | Late           | The JavaScript thread is overloaded throughout the transition. Profile first, because there is usually one dominant cause. |
 
 > **info** The worst user experience is a low TTR with a high TBT. Users tap as soon as they see content. A screen that looks ready but ignores input feels more broken than one that is slow to appear.
