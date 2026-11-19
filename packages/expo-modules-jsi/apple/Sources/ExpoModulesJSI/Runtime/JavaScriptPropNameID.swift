@@ -10,6 +10,13 @@ public final class JavaScriptPropNameID: JavaScriptType {
   internal var jsiRuntime: facebook.jsi.IRuntime? {
     return runtimeHandle.pointee
   }
+
+  /// Whether the property name belongs to the given runtime, the runtime that created it. Use it only with the runtime
+  /// it belongs to, on the thread of that runtime.
+  public func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
+    return runtimeHandle === runtime.handle
+  }
+
   internal let pointee: facebook.jsi.PropNameID
 
   /// Creates a PropNameID from existing `facebook.jsi.PropNameID`.

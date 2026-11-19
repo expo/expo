@@ -21,6 +21,12 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return runtimeHandle.pointee
   }
 
+  /// Whether the object belongs to the given runtime, the runtime that created it. Use it only with the runtime it
+  /// belongs to, on the thread of that runtime.
+  public func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
+    return runtimeHandle === runtime.handle
+  }
+
   /// Creates a new object in the given runtime.
   public init(_ runtime: borrowing JavaScriptRuntime) {
     self.init(runtime, facebook.jsi.Object(runtime.pointee))
