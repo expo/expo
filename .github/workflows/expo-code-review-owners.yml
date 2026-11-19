@@ -47,7 +47,14 @@ jobs:
             esac
           done <<< "$globs"
           want=$(sort -u <<< "$want" | sed '/^$/d')
-          have=$(awk '!/^#/ && /@expo-bot/ { print $1 }' .github/CODEOWNERS | sort -u)
+          # GitHub uses the last rule that matches a file, so a later rule without expo-bot
+          # would take the request away. Keep the expo-bot rules last.
+          rules=$(awk '!/^[[:space:]]*(#|$)/' .github/CODEOWNERS)
+          if awk '/(^|[[:space:]])@expo-bot([[:space:]]|$)/ { seen = 1; next } seen { bad = 1 } END { exit !bad }' <<< "$rules"; then
+            echo "::error file=.github/CODEOWNERS::A CODEOWNERS rule without @expo-bot comes after an @expo-bot rule, and it can take the review request away from expo-bot. Move the @expo-bot rules to the end of the file."
+            exit 1
+          fi
+          have=$(awk '/(^|[[:space:]])@expo-bot([[:space:]]|$)/ { print $1 }' <<< "$rules" | sort -u)
           if [ "$want" != "$have" ]; then
             echo "::error file=.github/CODEOWNERS::The paths that CODEOWNERS gives to @expo-bot do not match the autonomous scope paths in .expo-agents/code-review/routing.jsonc. Add or remove the CODEOWNERS line for each path below."
             diff <(echo "$want") <(echo "$have") | sed -n 's/^< \(..*\)/missing in CODEOWNERS: \1/p; s/^> \(..*\)/not in routing.jsonc: \1/p'

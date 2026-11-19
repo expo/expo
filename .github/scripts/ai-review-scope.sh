@@ -8,7 +8,8 @@
 #
 # Env: GH_TOKEN, REPO, PR. Writes to $GITHUB_OUTPUT:
 #   autonomous=true|false       some changed file is in the scope
-#   only_autonomous=true|false  every changed file is in the scope
+#   only_autonomous=true|false  every changed file is in the scope, apart from changesets
+#                               that name only packages in the scope
 # It does not fail: if it cannot read the scope or the files, it writes false.
 set -euo pipefail
 
@@ -50,21 +51,39 @@ fi
 if [ "${#globs[@]}" -eq 0 ]; then
   echo "::warning::Could not read the autonomous scope paths from $ROUTING."
 fi
+# Each line is `<kind><TAB><path>[<TAB><packages>]`. A rename also lists its old path,
+# as kind `old`. A changeset lists the package names its front matter bumps.
 # A name with a line break would read as two files, so it fails the whole list.
 # A failed page clears the list instead of keeping the pages before it.
-files=$(gh api --paginate "repos/$REPO/pulls/$PR/files" \
-  --jq '.[].filename | if test("[\\n\\r]") then error("line break in a file name") else . end') ||
+files=$(gh api --paginate "repos/$REPO/pulls/$PR/files" --jq '.[] |
+  if ([.filename, .previous_filename // ""] | any(test("[\\n\\r\\t]")))
+  then error("control character in a file name") else . end |
+  if (.filename | test("^\\.changeset/[^/]+\\.md$")) and .status == "added"
+  then "changeset\t\(.filename)\t\([(.patch // "") | scan("(?m)^\\+[\"'\'']?([@A-Za-z0-9._/-]+)[\"'\'']?: *(?:patch|minor|major) *$")[0]] | join(","))"
+  else "file\t\(.filename)", (.previous_filename // empty | "old\t\(.)") end') ||
   files=""
+# The files API stops at 3000 files, so a longer PR cannot be all in the scope.
+changed=$(gh api "repos/$REPO/pulls/$PR" --jq .changed_files) || changed=""
+listed=$(grep -c $'^\\(file\\|changeset\\)\t' <<< "$files" || true)
 autonomous=false
 only_autonomous=false
-[ -z "$files" ] || [ "${#globs[@]}" -eq 0 ] || only_autonomous=true
-while IFS= read -r file; do
+if [ -n "$files" ] && [ "${#globs[@]}" -gt 0 ] && [ "$changed" = "$listed" ]; then
+  only_autonomous=true
+fi
+while IFS=$'\t' read -r kind file packages; do
   [ -n "$file" ] || continue
-  if in_scope "$file"; then
-    autonomous=true
+  if [ "$kind" = changeset ]; then
+    # npm names map to directories here: `patch-project` is packages/patch-project.
+    [ -n "$packages" ] || only_autonomous=false
+    for package in ${packages//,/ }; do
+      in_scope "packages/$package/" || only_autonomous=false
+    done
+  elif in_scope "$file"; then
+    [ "$kind" = old ] || autonomous=true
   else
     only_autonomous=false
   fi
 done <<< "$files"
+[ "$autonomous" = true ] || only_autonomous=false
 echo "autonomous=$autonomous" >> "$GITHUB_OUTPUT"
 echo "only_autonomous=$only_autonomous" >> "$GITHUB_OUTPUT"
