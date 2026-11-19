@@ -109,6 +109,15 @@ export function useNavigationTreeReportEvents(
           case 'browser-history':
             browserHistory.apply(event);
             break;
+          case 'all-routes-protected':
+            if (process.env.NODE_ENV !== 'production') {
+              console.warn(
+                'Expo Router shows an empty screen because every route in this navigator is protected. An app must not protect all routes. ' +
+                  'Make at least one route accessible, or set `redirectTo` on the `Protected` component. ' +
+                  'A future version of Expo Router can throw an error instead of showing an empty screen.'
+              );
+            }
+            break;
           case 'route-preloaded':
             internalNavigationEvents.emit('routePreloaded', {
               routeKey: event.routeKey,

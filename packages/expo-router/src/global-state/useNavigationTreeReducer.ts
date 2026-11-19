@@ -27,7 +27,12 @@ import {
   completeNavigationState,
   createSeededNavigationState,
 } from './createSeededNavigationState';
-import { addsBlockedRoute, createRedirectLoopError, getGuardedNavigateAction } from './guards';
+import {
+  addsBlockedRoute,
+  createRedirectLoopError,
+  getGuardDecision,
+  getGuardedNavigateAction,
+} from './guards';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
 import type { RouterRegistry } from './routerRegistry';
 import { markActionEnqueuedAndReturnId, type QueuedRoutingIntent } from './routingQueue';
@@ -48,6 +53,8 @@ type ReducerConfig = {
 
 type QueuedOperation = (
   | Exclude<QueuedRoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }>
+  // A navigator's guards changed, or `noVisibleTabKey` names a tab navigator without a visible tab.
+  | { type: 'GUARDS_CHANGED'; noVisibleTabKey?: string }
   | (Extract<QueuedRoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }> & {
       /**
        * Browser traversal may interrupt a suspended transition. Restore from the last committed
@@ -118,6 +125,7 @@ type NavigationTreeReportEventData =
       routeKey: string;
       state: NavigationState;
     }
+  | { type: 'all-routes-protected' }
   | BrowserHistoryEvent;
 
 export type NavigationTreeReportEvent = NavigationTreeReportEventData & {
@@ -371,11 +379,15 @@ function reduceTree(
         return result;
       }
 
-      const removedRoutes = getRemovedRouteKeys(state, nextState);
       const preventedRoutes = ACTIONS_WITHOUT_REMOVAL_PREVENTION.has(operation.payload.action.type)
         ? []
-        : removedRoutes.filter((routeKey) => config.routesWithRemovalPrevented.has(routeKey));
-      const committedState = preventedRoutes.length > 0 ? state : deepFreeze(nextState);
+        : getRemovedRouteKeys(state, nextState).filter((routeKey) =>
+            config.routesWithRemovalPrevented.has(routeKey)
+          );
+      // Guards apply in the same state change and ignore removal prevention.
+      const guarded = preventedRoutes.length > 0 ? undefined : applyGuards(nextState, config);
+      const committedState = guarded ? deepFreeze(guarded.state) : state;
+      const removedRoutes = guarded ? getRemovedRouteKeys(state, guarded.state) : [];
       // TODO(@ubax): add dev-only diagnostics to events for dev-tools.
       const eventsWithoutIds: NavigationTreeReportEventData[] =
         preventedRoutes.length > 0
@@ -414,8 +426,40 @@ function reduceTree(
               },
             ];
       return appendReportEvents(
-        { ...result, state: committedState, browserHistoryAction: reduction.browserHistory },
+        {
+          ...result,
+          state: committedState,
+          browserHistoryAction: reduction.browserHistory ?? guarded?.browserHistory,
+        },
         eventsWithoutIds
+      );
+    }
+    case 'GUARDS_CHANGED': {
+      const guarded = applyGuards(state, config, operation.noVisibleTabKey);
+      if (guarded.state === state && !guarded.allRoutesProtected) {
+        return result;
+      }
+      const removedRoutes = getRemovedRouteKeys(state, guarded.state);
+      return appendReportEvents(
+        {
+          ...result,
+          state: guarded.state === state ? state : deepFreeze(guarded.state),
+          browserHistoryAction: guarded.browserHistory,
+        },
+        [
+          ...(removedRoutes.length > 0
+            ? ([
+                {
+                  type: 'removed-routes',
+                  routeKeys: removedRoutes,
+                  action: { type: 'GUARDS_CHANGED' },
+                },
+              ] satisfies NavigationTreeReportEventData[])
+            : []),
+          ...(guarded.allRoutesProtected
+            ? ([{ type: 'all-routes-protected' }] satisfies NavigationTreeReportEventData[])
+            : []),
+        ]
       );
     }
     case 'NAVIGATOR_UNMOUNTED': {
@@ -458,6 +502,52 @@ function reduceTree(
       return { ...result, report: events.length > 0 ? { events } : undefined };
     }
   }
+}
+
+// Each step removes blocked routes or replaces a blocked route with an accessible one, so the
+// policy settles. The limit only stops a bug from freezing the app.
+const MAX_GUARD_STEPS = 1000;
+
+function applyGuards(
+  state: NavigationState,
+  config: ReducerConfig,
+  noVisibleTabKey?: string
+): {
+  state: NavigationState;
+  allRoutesProtected: boolean;
+  browserHistory?: RouterBrowserHistoryAction;
+} {
+  let current = state;
+  let browserHistory: RouterBrowserHistoryAction | undefined;
+  for (let step = 0; step < MAX_GUARD_STEPS; step++) {
+    const decision = getGuardDecision(current, config, noVisibleTabKey);
+    if (decision?.type === 'redirect-loop') {
+      throw createRedirectLoopError(decision.hrefs);
+    }
+    if (decision?.type !== 'action') {
+      return { state: current, allRoutesProtected: decision !== undefined, browserHistory };
+    }
+    const tree = indexNavigationTree(current);
+    const reduction = reduceNavigationTree(decision.action, config.registry, {
+      origin: tree.rootNode,
+      tree,
+    });
+    if (!reduction.handled) {
+      return { state: current, allRoutesProtected: false, browserHistory };
+    }
+    const next = config.routeNode
+      ? completeNavigationState(reduction.nextState, config.routeNode)
+      : reduction.nextState;
+    if (next === current) {
+      return { state: current, allRoutesProtected: false, browserHistory };
+    }
+    current = next;
+    browserHistory = reduction.browserHistory ?? browserHistory;
+  }
+  throw new Error(
+    `Expo Router could not remove protected routes from the navigation state after ${MAX_GUARD_STEPS} changes. ` +
+      'This is likely a bug in Expo Router. Report it at https://github.com/expo/expo/issues with the layouts and `Protected` components of your app.'
+  );
 }
 
 function reportUnhandledAction(
@@ -558,6 +648,11 @@ export function useNavigationTreeReducer({
       actionId: markActionEnqueuedAndReturnId(),
     });
   });
+  // Skips the routing queue, so navigation queued in the same handler runs after the guards apply.
+  // It still waits for missing layouts, so it keeps its order with deferred navigation.
+  const handleGuardsChanged = useLatestCallback((noVisibleTabKey?: string) => {
+    reactDispatch({ type: 'GUARDS_CHANGED', noVisibleTabKey, deferrable: { inTransition: false } });
+  });
   const resetNavigator = useLatestCallback((stateKey: string, routerType: string | undefined) => {
     reactDispatch({ type: 'NAVIGATOR_CHANGED', stateKey, routerType });
   });
@@ -612,6 +707,7 @@ export function useNavigationTreeReducer({
     consumeReportEvents,
     resetNavigator,
     handleAction,
+    handleGuardsChanged,
     processIntent,
   };
 }

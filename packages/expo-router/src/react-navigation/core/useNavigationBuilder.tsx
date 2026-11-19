@@ -347,7 +347,7 @@ export function useNavigationBuilder<
   const { state: currentState } = use(NavigationStateContext);
   const rootState = use(RootNavigationStateContext);
 
-  const { resetNavigator, handleAction } = use(NavigationBuilderContext);
+  const { resetNavigator, handleAction, handleGuardsChanged } = use(NavigationBuilderContext);
   if (
     currentState === undefined ||
     currentState.stale !== false ||
@@ -466,6 +466,14 @@ export function useNavigationBuilder<
   );
 
   useRegisterRouter(committedState.key, registryEntry);
+
+  // Runs after the registry entry above updates, and before queued navigation from the same handler.
+  // A layout effect, so the blocked screen is never painted empty before the guards apply.
+  useClientLayoutEffect(() => {
+    if (getRouteGuard && !isPreview) {
+      handleGuardsChanged();
+    }
+  }, [getRouteGuard, handleGuardsChanged, isPreview]);
 
   useClientLayoutEffect(() => {
     if (isForeignType) {

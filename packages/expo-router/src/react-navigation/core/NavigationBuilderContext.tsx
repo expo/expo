@@ -22,9 +22,11 @@ export type FocusedNavigationListener = <T>(callback: FocusedNavigationCallback<
  */
 export const NavigationBuilderContext = React.createContext<{
   handleAction: (action: NavigationAction, originKey?: string) => void;
+  handleGuardsChanged: (noVisibleTabKey?: string) => void;
   resetNavigator: (stateKey: string, routerType: string | undefined) => void;
   addListener?: AddListener;
 }>({
   handleAction: () => undefined,
+  handleGuardsChanged: () => undefined,
   resetNavigator: () => undefined,
 });

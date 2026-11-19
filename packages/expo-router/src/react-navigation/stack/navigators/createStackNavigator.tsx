@@ -2,7 +2,6 @@
 import * as React from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 
-import { useClearGuardedRoutes } from '../../../layouts/useClearGuardedRoutes';
 import type { NavigatorContentProps } from '../../../standard-navigation';
 import { type Route, useLocale } from '../../native';
 import type {
@@ -16,7 +15,6 @@ export interface StackNavigatorCreateProps {
   isPreloaded: (key: string) => boolean;
   isRemovalPrevented: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
-  removeRoutes: (routeKeys: string[]) => void;
   restoreRoute: (route: Route<string>) => boolean;
   subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
 }
@@ -41,14 +39,12 @@ function StackNavigatorContent({
   isPreloaded,
   isRemovalPrevented: _isRemovalPrevented,
   pop,
-  removeRoutes,
   restoreRoute,
   subscribePopToTopOnParentTabPress,
   ...rest
 }: StackNavigatorContentProps) {
   const { direction } = useLocale();
 
-  useClearGuardedRoutes(removeRoutes);
   React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);
 
   if (state.routes.length === 0) {

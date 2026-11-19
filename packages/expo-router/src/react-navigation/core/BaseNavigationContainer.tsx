@@ -105,6 +105,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     consumeReportEvents,
     resetNavigator,
     handleAction,
+    handleGuardsChanged,
     processIntent,
   } = useNavigationTreeReducer({
     initialState,
@@ -223,9 +224,10 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     () => ({
       addListener,
       handleAction,
+      handleGuardsChanged,
       resetNavigator,
     }),
-    [addListener, handleAction, resetNavigator]
+    [addListener, handleAction, handleGuardsChanged, resetNavigator]
   );
 
   const context = React.useMemo(

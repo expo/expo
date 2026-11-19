@@ -27,9 +27,5 @@ import { createBaseStackProps } from './stack-utils/createBaseStackProps';
 export function createNativeStackProps(
   args: StandardNavigatorCreatePropsFactoryDeps<StackNavigationState<ParamListBase>>
 ): NativeStackNavigatorCreateProps {
-  return {
-    ...createBaseStackProps(args),
-    removeRoutes: (routeKeys) =>
-      args.dispatchSync({ type: 'REMOVE_ROUTES', payload: { routeKeys } }),
-  };
+  return createBaseStackProps(args);
 }

@@ -26,11 +26,7 @@ const RNExperimentalStack = integrateWithRouter<
   ExperimentalStackNavigatorCreateProps
 >(createStandardExperimentalStackNavigator, StackRouter, {
   activityDefaultThreshold: 2,
-  createProps: (args) => ({
-    ...createBaseStackProps(args),
-    removeRoutes: (routeKeys) =>
-      args.dispatchSync({ type: 'REMOVE_ROUTES', payload: { routeKeys } }),
-  }),
+  createProps: createBaseStackProps,
 });
 
 /**

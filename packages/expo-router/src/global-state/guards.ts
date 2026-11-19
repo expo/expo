@@ -1,6 +1,10 @@
+import type { RouteNode } from '../Route';
 import type { ResultState } from '../fork/getStateFromPath';
 import { resolveHref } from '../link/href';
 import type { NavigationAction, NavigationState, PartialState } from '../react-navigation/routers';
+import { isActionHandled } from '../react-navigation/routers/utils';
+import { getValidInitialRoute } from '../routeNode';
+import { sortRoutesWithInitial } from '../sortRoutes';
 import type { Href } from '../types';
 import type { SingularOptions } from '../useScreens';
 import {
@@ -9,6 +13,7 @@ import {
   type NavigationResolution,
 } from './getNavigationAction';
 import { getRouteInfoFromState, type UrlObject } from './getRouteInfoFromState';
+import type { RouterRegistryEntry } from './routerRegistry';
 import type { LinkToOptions } from './types';
 
 // Route name to the `redirectTo` of the outermost failing guard. A missing name is accessible.
@@ -22,6 +27,11 @@ type GuardedNavigation =
   | NavigationResolution
   | { status: 'blocked' }
   | { status: 'redirect-loop'; hrefs: string[] };
+
+type GuardDecision =
+  | { type: 'action'; action: NavigationAction }
+  | { type: 'redirect-loop'; hrefs: string[] }
+  | { type: 'all-routes-protected' };
 
 export function normalizeRouteName(routeName: string): string {
   return routeName.replace(/\/index$/, '');
@@ -208,4 +218,192 @@ function findRouteOwner(state: NavigationState, routeKey: string): NavigationSta
     }
   }
   return undefined;
+}
+
+type NavigatorNode = {
+  state: NavigationState;
+  parent?: NavigatorNode;
+  // Index of the route that holds this navigator in `parent`.
+  routeIndex?: number;
+  focused: boolean;
+};
+
+/**
+ * Returns the next change that removes blocked routes from mounted navigators, outermost first,
+ * or `undefined` when no change is needed. `noVisibleTabKey` names a tab navigator that has no
+ * visible tab, so it counts as a navigator without an accessible route.
+ */
+export function getGuardDecision(
+  root: NavigationState,
+  config: NavigateActionConfig,
+  noVisibleTabKey?: string
+): GuardDecision | undefined {
+  let allRoutesProtected = false;
+  const visit = (node: NavigatorNode): GuardDecision | undefined => {
+    const entry = config.registry.get(node.state.key);
+    if (entry?.getGuard) {
+      const decision = decideNavigator(root, node, entry, entry.getGuard, config, noVisibleTabKey);
+      if (decision?.type === 'all-routes-protected') {
+        allRoutesProtected = true;
+      } else if (decision) {
+        return decision;
+      }
+    }
+    for (const [routeIndex, route] of node.state.routes.entries()) {
+      if (route.state?.stale === false) {
+        const decision = visit({
+          state: route.state,
+          parent: node,
+          routeIndex,
+          focused: node.focused && routeIndex === node.state.index,
+        });
+        if (decision) {
+          return decision;
+        }
+      }
+    }
+    return undefined;
+  };
+  return (
+    visit({ state: root, focused: true }) ??
+    (allRoutesProtected ? { type: 'all-routes-protected' } : undefined)
+  );
+}
+
+function decideNavigator(
+  root: NavigationState,
+  node: NavigatorNode,
+  entry: RouterRegistryEntry,
+  getGuard: (routeName: string) => Guard | undefined,
+  config: NavigateActionConfig,
+  noVisibleTabKey: string | undefined
+): GuardDecision | undefined {
+  const { state } = node;
+  const redirectTo = getGuard(state.routes[state.index]!.name)?.redirectTo;
+  if (node.focused && redirectTo !== undefined) {
+    const resolution = getGuardedNavigateAction(
+      resolveHref(redirectTo),
+      {},
+      config,
+      'REPLACE',
+      undefined,
+      undefined,
+      undefined,
+      root,
+      getRouteInfoFromState(cutFocusedPathAt(root, state.key))
+    );
+    if (resolution.status === 'action') {
+      return { type: 'action', action: resolution.action };
+    }
+    if (resolution.status === 'redirect-loop') {
+      return { type: 'redirect-loop', hrefs: resolution.hrefs };
+    }
+    // A chain that ends at a blocked route without `redirectTo`, or at an invalid href, removes the route like below.
+  }
+
+  const blockedRouteKeys = state.routes
+    .filter((route) => getGuard(route.name))
+    .map((route) => route.key);
+  const fallback =
+    state.key === noVisibleTabKey ? undefined : findFallback(entry.routeNode, getGuard);
+  if (!fallback) {
+    const removal = getAncestorRemoval(node, config);
+    if (removal) {
+      return { type: 'action', action: removal };
+    }
+  }
+  if (blockedRouteKeys.length > 0) {
+    const action = {
+      type: 'REMOVE_ROUTES',
+      payload: {
+        routeKeys: blockedRouteKeys,
+        fallback: fallback && { name: fallback.route, params: getHolderParams(node) },
+      },
+      target: state.key,
+    };
+    // Tab routers keep every route. Their views hide blocked tabs and move the focus.
+    const result = entry.reduce(state, action);
+    if (isActionHandled(result) && result.state !== state) {
+      return { type: 'action', action };
+    }
+  }
+  return !fallback && node.focused ? { type: 'all-routes-protected' } : undefined;
+}
+
+// Removes the route that holds a navigator without an accessible route from the nearest ancestor with a fallback.
+function getAncestorRemoval(
+  node: NavigatorNode,
+  { registry }: NavigateActionConfig
+): NavigationAction | undefined {
+  for (
+    let child = node, ancestor = node.parent;
+    ancestor;
+    child = ancestor, ancestor = ancestor.parent
+  ) {
+    const entry = registry.get(ancestor.state.key);
+    const holder = ancestor.state.routes[child.routeIndex!]!;
+    const fallback = entry && findFallback(entry.routeNode, entry.getGuard);
+    // A fallback that opens the route being removed would show the same navigator again.
+    if (!entry || !fallback || fallback.route === holder.name) {
+      continue;
+    }
+    const payload = { name: fallback.route, params: getHolderParams(ancestor) };
+    const removal = {
+      type: 'REMOVE_ROUTES',
+      payload: { routeKeys: [holder.key], fallback: payload },
+      target: ancestor.state.key,
+    };
+    if (isActionHandled(entry.reduce(ancestor.state, removal))) {
+      return removal;
+    }
+    // A tab router cannot remove a tab, so the fallback replaces the focused tab.
+    return child.routeIndex === ancestor.state.index
+      ? { type: 'REPLACE', payload, target: ancestor.state.key }
+      : undefined;
+  }
+  return undefined;
+}
+
+// The anchor when it is accessible, else the first accessible route.
+function findFallback(
+  node: RouteNode | undefined,
+  getGuard: ((routeName: string) => Guard | undefined) | undefined
+): RouteNode | undefined {
+  if (!node) {
+    return undefined;
+  }
+  const isAccessible = (route: RouteNode) => !getGuard?.(route.route);
+  const anchor = getValidInitialRoute(node);
+  if (anchor && isAccessible(anchor)) {
+    return anchor;
+  }
+  // A redirect route has no screen to show, so it cannot be the fallback.
+  return [...node.children]
+    .sort(sortRoutesWithInitial(anchor?.route))
+    .find((child) => child.type !== 'redirect' && isAccessible(child));
+}
+
+// The params of the route that holds the navigator carry the values of its dynamic segments.
+function getHolderParams(node: NavigatorNode): object | undefined {
+  const params = node.parent?.state.routes[node.routeIndex!]?.params;
+  return params && Object.keys(params).length > 0 ? params : undefined;
+}
+
+// Drops the nested state of the focused route in `stateKey`, so a relative `redirectTo`
+// resolves against the blocked route and keeps the params of its parent routes.
+function cutFocusedPathAt(state: NavigationState, stateKey: string): NavigationState {
+  return {
+    ...state,
+    routes: state.routes.map((route, index) => {
+      if (index !== state.index) {
+        return route;
+      }
+      if (state.key === stateKey) {
+        const { state: _nested, ...blockedRoute } = route;
+        return blockedRoute;
+      }
+      // The policy reaches `stateKey` only through complete focused states.
+      return { ...route, state: cutFocusedPathAt(route.state as NavigationState, stateKey) };
+    }),
+  };
 }

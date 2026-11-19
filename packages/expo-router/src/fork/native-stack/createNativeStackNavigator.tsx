@@ -2,7 +2,6 @@ import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import * as React from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 
-import { useClearGuardedRoutes } from '../../layouts/useClearGuardedRoutes';
 import {
   INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME,
   type InternalNavigationOptions,
@@ -28,7 +27,6 @@ export interface NativeStackNavigatorCreateProps {
   isPreloaded: (key: string) => boolean;
   isRemovalPrevented: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
-  removeRoutes: (routeKeys: string[]) => void;
   /** Registers pop-to-top on parent tab press, or returns undefined without a tab parent. */
   subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
 }
@@ -53,7 +51,6 @@ function NativeStackNavigatorContent({
   isPreloaded,
   isRemovalPrevented,
   pop,
-  removeRoutes,
   subscribePopToTopOnParentTabPress,
   unstable_nativeProps,
 }: ContentArgs) {
@@ -65,7 +62,6 @@ function NativeStackNavigatorContent({
     isPreloaded: isComputedRoutePreloaded,
   } = usePreviewTransition(state, emitter.emit, isPreloaded);
 
-  useClearGuardedRoutes(removeRoutes);
   React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);
 
   // Map internal gesture option to React Navigation's gestureEnabled option

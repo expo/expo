@@ -9,7 +9,6 @@ import {
   useCompositionRegistry,
 } from '../../fork/native-stack/composition-options';
 import type { NavigatorContentProps } from '../../standard-navigation';
-import { useClearGuardedRoutes } from '../useClearGuardedRoutes';
 import { ExperimentalStackView } from './ExperimentalStackView';
 import type {
   ExperimentalStackNavigationEventMap,
@@ -20,7 +19,6 @@ export interface ExperimentalStackNavigatorCreateProps {
   isPreloaded: (key: string) => boolean;
   isRemovalPrevented: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
-  removeRoutes: (routeKeys: string[]) => void;
   subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
 }
 
@@ -44,7 +42,6 @@ function ExperimentalStackNavigatorContent({
   isPreloaded,
   isRemovalPrevented,
   pop,
-  removeRoutes,
   subscribePopToTopOnParentTabPress,
 }: ExperimentalStackNavigatorContentProps) {
   const { registry, contextValue } = useCompositionRegistry();
@@ -54,7 +51,6 @@ function ExperimentalStackNavigatorContent({
     [descriptors, registry, state]
   );
 
-  useClearGuardedRoutes(removeRoutes);
   React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);
 
   return (
