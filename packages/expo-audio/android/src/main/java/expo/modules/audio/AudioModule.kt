@@ -215,10 +215,7 @@ class AudioModule : Module() {
 
   private enum class AudioFocusResult { GRANTED, DELAYED, FAILED, NOT_REQUESTED }
 
-  private fun audioFocusGainForMode(mode: InterruptionMode?): Int? = when (mode) {
-    null -> AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
-    else -> mode.toAudioFocusGain()
-  }
+  private fun audioFocusGainForMode(mode: InterruptionMode?): Int? = mode?.toAudioFocusGain()
 
   private fun requestAudioFocus(): AudioFocusResult {
     if (focusAcquired) {
