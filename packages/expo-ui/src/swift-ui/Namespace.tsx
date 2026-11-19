@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { requireOptionalNative } from 'expo';
 
 export interface NamespaceProps {
   /**
@@ -11,10 +11,9 @@ export interface NamespaceProps {
 
 type NativeNamespaceProps = NamespaceProps;
 
-const NativeNamespaceView: React.ComponentType<NativeNamespaceProps> = requireNativeView(
-  'ExpoUI',
-  'NamespaceView'
-);
+// `expo.packages` exists only on iOS, and other platforms can import this file.
+const NativeNamespaceView: React.ComponentType<NativeNamespaceProps> =
+  requireOptionalNative('@expo/ui')?.NamespaceView;
 
 /**
  * A component that provides a SwiftUI [`Namespace`](https://developer.apple.com/documentation/swiftui/namespace) to its children.
