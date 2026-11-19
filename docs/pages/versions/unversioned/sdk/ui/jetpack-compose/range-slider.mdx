@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 
 `RangeSlider` wraps the Material 3 [RangeSlider](https://developer.android.com/reference/kotlin/androidx/compose/material3/RangeSlider.composable). It lets users select a start and end value on one track. For a single value, use [`Slider`](./slider).
 
@@ -20,6 +21,12 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 ### Select a range
 
 Render `RangeSlider` inside a `Host`. Use `startValue` and `endValue` for the selected endpoints and `trackRange` for the bounds of the entire track. Both bounds are inclusive.
+
+<ComponentExample
+  title="RangeSliderExample.tsx"
+  src="/static/images/expo-ui/examples/range-slider-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/range-slider-basic-android-dark.webp"
+  alt="A label reading 20–80 above a range slider with its thumbs at 20 and 80">
 
 ```tsx
 import { useState } from 'react';
@@ -57,6 +64,8 @@ export default function RangeSliderExample() {
 }
 ```
 
+</ComponentExample>
+
 `onValueChange` receives `{ start, endInclusive }` as the user changes either endpoint. Compose keeps the endpoints within the track bounds and prevents the thumbs from crossing. Native interaction works without updating React state on every change. Changing the endpoint props updates the selection when the user is not dragging.
 
 Use `onValueChangeFinished` for work that should run after an interaction, such as saving a filter. It has no value argument. Read the selection from `onValueChange`. With a keyboard, the completion callback runs each time the user releases a key that moves a thumb.
@@ -65,36 +74,78 @@ Use `onValueChangeFinished` for work that should run after an interaction, such 
 
 `steps` counts the selectable positions **between** the track bounds. On a track from `0` to `100`, `steps={9}` allows `0`, `10`, `20`, and so on through `100`. Use `steps={0}`, the default, for continuous selection.
 
+<ComponentExample
+  title="DiscreteRangeSliderExample.tsx"
+  src="/static/images/expo-ui/examples/range-slider-discrete-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/range-slider-discrete-android-dark.webp"
+  alt="A range slider with tick marks at each step and its thumbs at 20 and 80">
+
 ```tsx
-<RangeSlider
-  startValue={20}
-  endValue={80}
-  trackRange={{ start: 0, endInclusive: 100 }}
-  steps={9}
-/>
+import { Host, RangeSlider } from '@expo/ui/jetpack-compose';
+
+export default function DiscreteRangeSliderExample() {
+  return (
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <RangeSlider
+        startValue={20}
+        endValue={80}
+        trackRange={{ start: 0, endInclusive: 100 }}
+        steps={9}
+      />
+    </Host>
+  );
+}
 ```
+
+</ComponentExample>
 
 ### Customize colors
 
 Use `colors` to override the thumb, track, and tick colors. `RangeSlider` shares [`SliderColors`](./slider#slidercolors) with `Slider` and `VerticalSlider`. The active track is the section between the thumbs. Omitted colors use the Material theme. Set `enabled={false}` to disable interaction and use the disabled colors.
 
+<ComponentExample
+  title="RangeSliderColorsExample.tsx"
+  src="/static/images/expo-ui/examples/range-slider-colors-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/range-slider-colors-android-dark.webp"
+  alt="A range slider with purple thumbs and a purple active track on a light purple inactive track">
+
 ```tsx
-<RangeSlider
-  startValue={0.2}
-  endValue={0.8}
-  colors={{
-    thumbColor: '#6750A4',
-    activeTrackColor: '#6750A4',
-    inactiveTrackColor: '#E8DEF8',
-    disabledThumbColor: '#79747E',
-    disabledActiveTrackColor: '#938F99',
-  }}
-/>
+import { Host, RangeSlider } from '@expo/ui/jetpack-compose';
+
+export default function RangeSliderColorsExample() {
+  return (
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <RangeSlider
+        startValue={0.2}
+        endValue={0.8}
+        colors={{
+          thumbColor: '#6750A4',
+          activeTrackColor: '#6750A4',
+          inactiveTrackColor: '#E8DEF8',
+          disabledThumbColor: '#79747E',
+          disabledActiveTrackColor: '#938F99',
+        }}
+      />
+    </Host>
+  );
+}
 ```
+
+</ComponentExample>
 
 ### Customize thumbs and track
 
 Use `RangeSlider.StartThumb`, `RangeSlider.EndThumb`, and `RangeSlider.Track` to replace each visual part independently. Any slot you omit keeps its native appearance.
+
+<ComponentExample
+  title="CustomThumbsExample.tsx"
+  src="/static/images/expo-ui/examples/range-slider-custom-thumbs-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/range-slider-custom-thumbs-android-dark.webp"
+  alt="A range slider with a purple circle as the start thumb and a teal circle as the end thumb">
 
 ```tsx
 import { Box, Host, RangeSlider } from '@expo/ui/jetpack-compose';
@@ -134,6 +185,8 @@ export default function CustomThumbsExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 A custom `RangeSlider.Track` replaces the entire track, including its active section and tick marks. Use the selection from `onValueChange` if your track needs to reflect the selected range.
 
