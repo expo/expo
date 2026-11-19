@@ -14,7 +14,7 @@ type GhPr = {
   author: { login: string };
   mergedAt: string | null;
   updatedAt: string;
-  reviewDecision: 'APPROVED' | 'CHANGES_REQUESTED' | 'REVIEW_REQUIRED' | '';
+  reviewDecision: 'APPROVED' | 'CHANGES_REQUESTED' | 'REVIEW_REQUIRED' | null;
   url: string;
 };
 
@@ -299,20 +299,27 @@ async function action(sdk: string | undefined, options: ActionOptions) {
 
   let prs: GhPr[];
   try {
-    prs = await spawnJSONCommandAsync<GhPr[]>('gh', [
-      'pr',
-      'list',
-      '--repo',
-      'expo/expo',
-      '--label',
-      label,
-      '--state',
-      'all',
-      '--json',
-      'number,title,state,mergeCommit,author,mergedAt,updatedAt,reviewDecision,url',
-      '--limit',
-      '500',
+    // `gh pr list --label` uses the search API, which returns at most 1000 results.
+    const pages = await spawnJSONCommandAsync<
+      { data: { repository: { pullRequests: { nodes: GhPr[] } } } }[]
+    >('gh', [
+      'api',
+      'graphql',
+      '--paginate',
+      '--slurp',
+      '-f',
+      `label=${label}`,
+      '-f',
+      `query=query($label: String!, $endCursor: String) {
+        repository(owner: "expo", name: "expo") {
+          pullRequests(labels: [$label], first: 100, after: $endCursor) {
+            nodes { number title state mergeCommit { oid } author { login } mergedAt updatedAt reviewDecision url }
+            pageInfo { hasNextPage endCursor }
+          }
+        }
+      }`,
     ]);
+    prs = pages.flatMap((page) => page.data.repository.pullRequests.nodes);
   } catch (error: any) {
     if (error.message?.includes('ENOENT') || error.message?.includes('not found')) {
       throw new Error(`GitHub CLI (gh) is not installed. Install it from https://cli.github.com/`);
