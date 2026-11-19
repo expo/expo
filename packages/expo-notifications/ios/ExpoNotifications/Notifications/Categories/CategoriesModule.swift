@@ -28,12 +28,18 @@ actor CategoryManager {
     return exists
   }
 
-  func setCategories(_ categories: [CategoryRecord], replacing replaces: @Sendable (String) -> Bool) async throws {
-    guard Set(categories.map { Array($0.identifier.utf16) }).count == categories.count else {
-      throw Exception(name: "DuplicateCategoryIdentifier", description: "Could not replace notification categories because identifiers are duplicated. Use a unique identifier for each category.")
-    }
-    let kept = await loadCategories().filter { !replaces($0.identifier) }
-    updateCategories(kept.union(categories.map { $0.toUNNotificationCategory() }))
+  func setCategories(_ records: [CategoryRecord]) throws {
+    let incoming = try validatedCategories(records)
+    updateCategories(incoming)
+  }
+
+  func updateCategories(
+    _ records: [CategoryRecord],
+    merging merge: @Sendable (Set<UNNotificationCategory>, Set<UNNotificationCategory>) -> Set<UNNotificationCategory>
+  ) async throws {
+    let incoming = try validatedCategories(records)
+    let current = await loadCategories()
+    updateCategories(merge(current, incoming))
   }
 
   private func loadCategories() async -> Set<UNNotificationCategory> {
@@ -51,6 +57,13 @@ actor CategoryManager {
   private func updateCategories(_ newCategories: Set<UNNotificationCategory>) {
     categories = newCategories
     UNUserNotificationCenter.current().setNotificationCategories(newCategories)
+  }
+
+  private func validatedCategories(_ records: [CategoryRecord]) throws -> Set<UNNotificationCategory> {
+    guard Set(records.map { Array($0.identifier.utf16) }).count == records.count else {
+      throw Exception(name: "DuplicateCategoryIdentifier", description: "Could not replace notification categories because identifiers are duplicated. Use a unique identifier for each category.")
+    }
+    return Set(records.map { $0.toUNNotificationCategory() })
   }
 }
 
@@ -83,14 +96,14 @@ open class CategoriesModule: Module {
   }
 
   open func setNotificationCategoriesAsync(categories: [CategoryRecord]) async throws {
-    try await replaceNotificationCategories(categories) { _ in true }
+    try await categoryManager.setCategories(categories)
   }
 
-  public final func replaceNotificationCategories(
+  public final func updateNotificationCategories(
     _ categories: [CategoryRecord],
-    replacing replaces: @Sendable (String) -> Bool
+    merging merge: @Sendable (Set<UNNotificationCategory>, Set<UNNotificationCategory>) -> Set<UNNotificationCategory>
   ) async throws {
-    try await categoryManager.setCategories(categories, replacing: replaces)
+    try await categoryManager.updateCategories(categories, merging: merge)
   }
 
   open func setNotificationCategoryAsync(identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?) async -> CategoryRecord {
