@@ -63,8 +63,10 @@ jobs:
     #    `ai-review` itself starts it, so a push after that review does not start a new
     #    run. To review new commits, remove and add the label again, or comment `/review`.
     #    The review is of the commit the maintainer labeled: if a push moves the head
-    #    before `ecr ci` starts, it posts a "not reviewed" note instead (`--expect-head`
-    #    below). The `/review` path reviews the PR's head when `ecr ci` starts.
+    #    before `ecr ci` starts, it does not review (`--expect-head` below). It only logs
+    #    that and removes the `ready for human` label: with routing.jsonc, a "not
+    #    reviewed" note would replace the aggregate comment. The `/review` path reviews
+    #    the PR's head when `ecr ci` starts.
     #
     # 3. AUTOMATIC for a non-draft PR from a fork, only while the repo variable
     #    AI_REVIEW_FORK_PRS is 'true'. It is off by default. `ecr ci` gets `--force`
