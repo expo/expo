@@ -2277,7 +2277,6 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2306,7 +2305,6 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2332,7 +2330,6 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2358,7 +2355,6 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2433,7 +2429,6 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2460,7 +2455,6 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2485,7 +2479,6 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2625,9 +2618,9 @@ DEPENDENCIES:
   - "ReactCommon/turbomodule/core (from `../../../../node_modules/.pnpm/react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+co_e23066d660638cbf0f656fd2f8856cd6/node_modules/react-native/ReactCommon`)"
   - "ReactNativeDependencies (from `../../../../node_modules/.pnpm/react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+co_e23066d660638cbf0f656fd2f8856cd6/node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec`)"
   - "RNGestureHandler (from `../../../../node_modules/.pnpm/react-native-gesture-handler@3.3.0_react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-n_3176f2f1cdd8579994386740239db015/node_modules/react-native-gesture-handler`)"
-  - "RNReanimated (from `../../../../node_modules/.pnpm/react-native-reanimated@4.8.0_patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f1_37bb2278c2555f6b5b2f92e73744e617/node_modules/react-native-reanimated`)"
+  - "RNReanimated (from `../../../../node_modules/.pnpm/react-native-reanimated@4.8.0_react-native-worklets@0.14.0_@babel+core@7.29.7_@react-na_bb8c7e247accc74bf0a3481045585070/node_modules/react-native-reanimated`)"
   - "RNScreens (from `../../../../node_modules/.pnpm/react-native-screens@4.30.1_react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-native+m_a8cb05a6295ffe76dfae4fcd7fce4138/node_modules/react-native-screens`)"
-  - "RNWorklets (from `../../../../node_modules/.pnpm/react-native-worklets@0.14.0_patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec88_7bd8a35eb24a3fec8cf9a102300e2e7d/node_modules/react-native-worklets`)"
+  - "RNWorklets (from `../../../../node_modules/.pnpm/react-native-worklets@0.14.0_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babe_695375972a79b07273d09b738dfc5232/node_modules/react-native-worklets`)"
   - SocketRocket (from `build/rndeps-facades/SocketRocket`)
   - Yoga (from `build/rncore-facades/Yoga`)
 
@@ -2868,11 +2861,11 @@ EXTERNAL SOURCES:
   RNGestureHandler:
     :path: "../../../../node_modules/.pnpm/react-native-gesture-handler@3.3.0_react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-n_3176f2f1cdd8579994386740239db015/node_modules/react-native-gesture-handler"
   RNReanimated:
-    :path: "../../../../node_modules/.pnpm/react-native-reanimated@4.8.0_patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f1_37bb2278c2555f6b5b2f92e73744e617/node_modules/react-native-reanimated"
+    :path: "../../../../node_modules/.pnpm/react-native-reanimated@4.8.0_react-native-worklets@0.14.0_@babel+core@7.29.7_@react-na_bb8c7e247accc74bf0a3481045585070/node_modules/react-native-reanimated"
   RNScreens:
     :path: "../../../../node_modules/.pnpm/react-native-screens@4.30.1_react-native@0.89.0-rc.2_@babel+core@7.29.7_@react-native+m_a8cb05a6295ffe76dfae4fcd7fce4138/node_modules/react-native-screens"
   RNWorklets:
-    :path: "../../../../node_modules/.pnpm/react-native-worklets@0.14.0_patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec88_7bd8a35eb24a3fec8cf9a102300e2e7d/node_modules/react-native-worklets"
+    :path: "../../../../node_modules/.pnpm/react-native-worklets@0.14.0_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babe_695375972a79b07273d09b738dfc5232/node_modules/react-native-worklets"
   SocketRocket:
     :path: build/rndeps-facades/SocketRocket
   Yoga:
@@ -2901,7 +2894,7 @@ SPEC CHECKSUMS:
   ExpoModulesCore: db285f1afd687fdd0a6979b38d8bc6c606248c31
   ExpoModulesJSI: d9f7f7a1625c1a29cb116a6c264f1752230d4783
   ExpoModulesWorklets: 208e6112a0467df1cc21530e280d650a3adf6261
-  ExpoModulesWorkletsAdapter: 72d6cded1ee7f9d8f073760166ef5ccdc49cadf0
+  ExpoModulesWorkletsAdapter: dceb7f034bf08d79c0594033e88acf2420598744
   ExpoRouter: c5f712d2c761df71f8c9a42739f6ecae38ba8315
   ExpoStatusBar: 56aa9746e1bee4d8adbab12f4d7efc97000ac49f
   ExpoSymbols: 1260e741b35b6fd105942779895418db306645c8
@@ -2994,9 +2987,9 @@ SPEC CHECKSUMS:
   ReactCommon: 1b6bc68ce1e75e9a246de642b7b00a561b6787ab
   ReactNativeDependencies: 8137bae289f752602bd72101ccab925c1d4d35c8
   RNGestureHandler: 369fc3ce61727d74e5a2d802b60199377d850c77
-  RNReanimated: 949ca29033a1d0837e5ecc8459a2b6c83bced2ab
+  RNReanimated: da528d1ac81f8b1f3178c3906e13d3d2cbef053a
   RNScreens: 2a2dc4a9812d59b4427a830b6f93dc025fc35907
-  RNWorklets: f096836026054ffff1cfb072bc63edddb00be7d3
+  RNWorklets: 27635b15fdd5f495eb6e06966c4774731a6734d3
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
