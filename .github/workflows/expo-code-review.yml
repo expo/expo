@@ -174,11 +174,31 @@ jobs:
           fi
           echo "skip_review=$skip_review" >> "$GITHUB_OUTPUT"
 
+      # Each push to a labeled PR reviews again, so a PR gets at most AI_REVIEW_MAX_AUTO
+      # automatic reviews (default 5). A label event from a writer does not count and
+      # resets the count: a maintainer, or expo-bot on a review request.
+      # `@expo-bot review` is not limited and also resets it.
+      # If the count cannot be read, the review is skipped, because it would reset it.
+      - name: Check the automatic review limit
+        id: cap
+        if: steps.scope.outputs.skip_review == 'false'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          BOT_LOGIN: expo-bot
+          COMMENT_TAG: expo-ai-code-reviewer
+          COUNTED: ${{ github.event.action != 'labeled' && github.event.action != 'unlabeled' }}
+          SENDER: ${{ github.event.sender.login }}
+          MAX: ${{ vars.AI_REVIEW_MAX_AUTO || '5' }}
+        run: bash .github/scripts/ai-review-auto-count.sh check
+
       # ecr removes its `ready for human` label when new commits arrive, but a skipped
       # push never reaches ecr, so remove it here.
       - name: Remove the ready label from a skipped push
         if: >-
-          steps.scope.outputs.skip_review == 'true'
+          (steps.scope.outputs.skip_review == 'true' || steps.cap.outputs.skip == 'true')
           && github.event.action == 'synchronize'
           && contains(github.event.pull_request.labels.*.name, 'ready for human')
         continue-on-error: true
@@ -189,7 +209,7 @@ jobs:
         run: gh pr edit "$PR" --repo "$REPO" --remove-label "ready for human"
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        if: steps.scope.outputs.skip_review == 'false'
+        if: steps.scope.outputs.skip_review == 'false' && steps.cap.outputs.skip != 'true'
         with:
           node-version: 24
           # The reviewer runs via npx and never installs with a package manager, so
@@ -202,7 +222,7 @@ jobs:
       # would silently drift on every CI run; bump it deliberately. Remove this
       # step if you switch every model to an OpenCode-served provider.
       - name: Install Claude Code CLI
-        if: steps.scope.outputs.skip_review == 'false'
+        if: steps.scope.outputs.skip_review == 'false' && steps.cap.outputs.skip != 'true'
         run: npm install -g @anthropic-ai/claude-code@2.1.280
 
       # SECURITY: the TRUSTED BASE checkout above includes every
@@ -222,7 +242,7 @@ jobs:
       # selects a published package from the registry and never executes PR code.
       # @ref LLP 0009#guard-step-ordering-and-job-budgets [implements] — layer 2; layer 1 is ecr ci's own runtime check
       - name: Guard config tokenEnv (root + routing + all scopes)
-        if: steps.scope.outputs.skip_review == 'false'
+        if: steps.scope.outputs.skip_review == 'false' && steps.cap.outputs.skip != 'true'
         env:
           # (Comma-separated set for a multi-credential auth.providers config.)
           ECR_EXPECTED_TOKEN_ENV: ${{ vars.ECR_EXPECTED_TOKEN_ENV || 'CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN' }}
@@ -232,7 +252,7 @@ jobs:
       # do not re-bind it from secrets.* or this step is overwritten.
       - name: Prepare model env
         id: model-env
-        if: steps.scope.outputs.skip_review == 'false'
+        if: steps.scope.outputs.skip_review == 'false' && steps.cap.outputs.skip != 'true'
         uses: ./.github/actions/prepare-model-env
         with:
           c1: ${{ secrets.ECR_1 }}
@@ -268,7 +288,7 @@ jobs:
       # and body only to the coordinator, so pass them as untrusted context. ecr sanitizes
       # the file like the title and body. The text comes through env, never the script.
       - name: Write the PR title and body for reviewers
-        if: steps.scope.outputs.skip_review == 'false'
+        if: steps.scope.outputs.skip_review == 'false' && steps.cap.outputs.skip != 'true'
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
@@ -289,6 +309,7 @@ jobs:
         if: >-
           steps.scope.outputs.autonomous == 'true'
           && steps.scope.outputs.skip_review == 'false'
+          && steps.cap.outputs.skip != 'true'
           && (github.event.pull_request.head.repo.full_name == github.repository
           || (contains(github.event.pull_request.labels.*.name, 'ai-autonomous')
           && vars.AI_REVIEW_FORK_PRS != 'true')
@@ -305,7 +326,7 @@ jobs:
         # `--force` only on the automatic fork path (see the job `if`), never from PR input.
         # `--expect-head`: review only the commit this event is for.
         # REVIEW_SANDBOX_TOKEN is the child token. The config's mcpServers.sandbox reads it.
-        if: steps.scope.outputs.skip_review == 'false'
+        if: steps.scope.outputs.skip_review == 'false' && steps.cap.outputs.skip != 'true'
         run: |
           if [ -f "$SANDBOX_MCP_CONFIG" ]; then
             REVIEW_SANDBOX_TOKEN=$(jq -r '.mcpServers.sandbox.headers.Authorization | sub("^Bearer "; "")' "$SANDBOX_MCP_CONFIG")
@@ -332,6 +353,20 @@ jobs:
           # Optional: override the model for every agent.
           REVIEWER_MODEL: ${{ vars.REVIEWER_MODEL }}
           SESSION_STORE_REPO: expo/code-review-sessions
+
+      # ecr rewrote its comment, so add the count back. always(), so a review that a new
+      # push cancelled still counts once ecr wrote its comment: it spent model calls.
+      - name: Record the automatic review count
+        if: always() && steps.cap.outputs.next != ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          BOT_LOGIN: expo-bot
+          COMMENT_TAG: expo-ai-code-reviewer
+          NEXT: ${{ steps.cap.outputs.next }}
+        run: bash .github/scripts/ai-review-auto-count.sh record
 
       # The model never destroys the sandbox, so this step does. The child token sees
       # only this run's sandbox.
