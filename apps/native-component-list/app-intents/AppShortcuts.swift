@@ -19,6 +19,24 @@ struct AppShortcuts: AppShortcutsProvider {
     )
 
     AppShortcut(
+      intent: IncreaseCounterInBackgroundIntent(),
+      phrases: [
+        "Increase the counter in the background in \(.applicationName)"
+      ],
+      shortTitle: "Increase Counter in Background",
+      systemImageName: "plus.circle.fill"
+    )
+
+    AppShortcut(
+      intent: GetCurrentTimeIntent(),
+      phrases: [
+        "Get the current time in \(.applicationName)"
+      ],
+      shortTitle: "Get Current Time",
+      systemImageName: "clock"
+    )
+
+    AppShortcut(
       intent: OrderFoodIntent(),
       phrases: [
         "Place an order in \(.applicationName)",

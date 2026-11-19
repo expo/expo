@@ -34,8 +34,7 @@ fun FunctionalComposableScope.MaskViewContent(props: MaskViewProps) {
         drawLayer(maskLayer)
       }
   ) {
-    Children(UIComposableScope(), filter = { !isSlotView(it) })
-
+    // Composed first so the children stay on top and receive touches.
     if (maskSlotView != null) {
       Box(
         modifier = Modifier
@@ -52,5 +51,7 @@ fun FunctionalComposableScope.MaskViewContent(props: MaskViewProps) {
         }
       }
     }
+
+    Children(UIComposableScope(), filter = { !isSlotView(it) })
   }
 }

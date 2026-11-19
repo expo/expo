@@ -1,0 +1,11 @@
+self-hosted-runner:
+  # Blacksmith runners: https://docs.blacksmith.sh/blacksmith-runners/overview#runner-tags
+  labels:
+    - blacksmith-*
+
+paths:
+  .github/workflows/publish-packages.yml:
+    ignore:
+      # `concurrency.queue` shipped in May 2026 and actionlint 1.7.12 doesn't know it yet:
+      # https://github.blog/changelog/2026-05-07-github-actions-concurrency-groups-now-allow-larger-queues
+      - 'unexpected key "queue" for "concurrency" section'

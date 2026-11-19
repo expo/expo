@@ -11,11 +11,31 @@ Instead of providing credentials, you can generate tokens that will allow you to
 
 ## Personal access tokens
 
-You can create Personal access tokens from the [Access tokens](https://expo.dev/settings/access-tokens) on your dashboard. Anyone with this token can perform actions on your behalf. That applies to all content on your Personal Account, as well as any Personal Accounts or Organizations that you have been granted access to.
+You can create Personal access tokens from the [Access tokens](https://expo.dev/settings/access-tokens) on your dashboard. Anyone with this token can perform actions on your behalf. By default, that applies to all content on your Personal Account, as well as any Organizations that you have been granted access to.
+
+### Limit access for a personal access token
+
+When you create a personal access token, you can turn on **Limit access** to give the token less access than your account has. Select one of these options:
+
+- **All accounts**: The token has at most the selected [role](/accounts/account-types/#manage-access) on every account you are a member of.
+- **Only selected accounts**: The token gets access to up to 10 accounts that you select, with a limited [role](/accounts/account-types/#manage-access) for each account.
+
+A limited token never gets more access than you have. If your own role on an account is lower than the role you select, the token gets your role on that account. Tokens for robot users cannot be limited. To limit what a robot user can do, assign a role to the robot user.
 
 ## Robot users and access tokens
 
 Accounts can create Robot users to take actions on resources owned by the Account. Bot Users can be assigned [a role](/accounts/account-types/#manage-access) to limit the actions they are authorized to perform. Bot users cannot sign in to any Expo products, cannot own any projects themselves, and can only authenticate via an access token.
+
+### GitHub App robot
+
+When you install the [Expo GitHub App](/build/building-from-github/) for an account, Expo Services adds a robot user to the account. Its name starts with **GitHub App**, such as **GitHub App · @my-github-org**. Runs and builds that no user starts directly act as this robot. These include:
+
+- [Expo Workflows](/eas/workflows/introduction/) runs triggered by GitHub events, such as pushes and pull requests
+- Scheduled Expo Workflows runs
+- Expo Workflows runs triggered by App Store Connect events
+- Builds triggered from GitHub
+
+The robot has the Developer [role](/accounts/account-types/#manage-access) by default. To change its role, go to [Access tokens](https://expo.dev/accounts/[account]/settings/access-tokens) in your account settings, find the robot, and select **Edit robot**. For example, give it the Release Manager role so that these runs and builds can use [protected resources](/eas/protected-resources/#expo-workflows-and-protected-resources). If you delete the robot or remove it from the account, Expo Services adds it again with the Developer role.
 
 ## Access tokens usage
 
@@ -27,7 +47,7 @@ For example, once you obtain a token, you can run the following EAS CLI command 
 
 <Terminal cmd={['$ EXPO_TOKEN=my_token eas build']} />
 
-> **info** Commands that run with an access token require the project to already be linked to an EAS project. If `extra.eas.projectId` is not set in your [app config](/workflow/configuration), commands such as `eas build` fail with an `EAS project not configured` error. To configure it, run `EXPO_TOKEN=my_token eas init --force --non-interactive` first.
+> **info** Commands that run with an access token require the project to already be linked to an Expo Services project. If `extra.eas.projectId` is not set in your [app config](/workflow/configuration), commands such as `eas build` fail with an `EAS project not configured` error. To configure it, run `EXPO_TOKEN=my_token eas init --force --non-interactive` first.
 
 If you are using GitHub Actions, [you can configure the `token` property](https://github.com/expo/expo-github-action#configuration-options) to include this environment variable in all the job steps.
 

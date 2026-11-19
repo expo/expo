@@ -1,6 +1,7 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Screen() {
   const params = useLocalSearchParams();
@@ -12,8 +13,10 @@ export default function Screen() {
     );
   }, []);
   return (
-    <View style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center' }}>
+    <SafeAreaView
+      edges={['left', 'right']}
+      style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center' }}>
       <Text>Nested Param: {JSON.stringify(params)}</Text>
-    </View>
+    </SafeAreaView>
   );
 }

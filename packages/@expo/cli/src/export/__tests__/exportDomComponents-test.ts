@@ -95,7 +95,7 @@ describe(transformDomEntryForMd5Filename, () => {
 });
 
 describe(transformNativeBundleForMd5Filename, () => {
-  it('should update asset paths and remove leading slashes from filenames', () => {
+  it('renames DOM references in artifacts before output entries are created', () => {
     const domComponentReference = 'file:///app/components/DomView.tsx';
     const nativeBundle1Chunk = `
 __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -188,12 +188,6 @@ __d((function(g,r,i,a,m,e,d){m.exports={uri:"assets/assets/images/react-logo.d88
 
     const files: ExportAssetMap = new Map([
       [
-        '_expo/static/js/ios/entry-native1.js',
-        {
-          contents: nativeBundle1Chunk,
-        },
-      ],
-      [
         '/www.bundle/_expo/static/js/web/entry-dom1.js',
         {
           contents: domBundle1Chunk,
@@ -215,9 +209,44 @@ __d((function(g,r,i,a,m,e,d){m.exports={uri:"assets/assets/images/react-logo.d88
       htmlOutputName,
     });
 
-    const nativeJsContents = files.get('_expo/static/js/ios/entry-native1.js')?.contents;
-    expect(nativeJsContents).not.toEqual(nativeBundle1Chunk);
+    const nativeJsContents = nativeBundle.artifacts[0]?.source;
     expect(nativeJsContents).toContain('MOCK_CONTENTS_MD5_HASH');
+  });
+
+  it('rejects compiled DOM references without modifying them or compiled siblings', () => {
+    const filename = 'index.hbc';
+    const source = Buffer.from(`${mockFilenameMd5()}.html`);
+    const original = Buffer.from(source);
+    const worker = Buffer.from(source);
+    const files: ExportAssetMap = new Map([['www.bundle/dom.html', { contents: '<html />' }]]);
+    expect(() =>
+      transformNativeBundleForMd5Filename({
+        domComponentReference: 'file:///app/DomView.js',
+        nativeBundle: {
+          assets: [],
+          artifacts: [
+            {
+              filename: 'worker.hbc',
+              originFilename: 'worker.js',
+              type: 'js',
+              source: worker as any,
+              metadata: {},
+            },
+            {
+              filename,
+              originFilename: 'index.js',
+              type: 'js',
+              source: source as any,
+              metadata: { expoDomComponentReferences: ['file:///app/DomView.js'] },
+            },
+          ],
+        },
+        files,
+        htmlOutputName: 'www.bundle/dom.html',
+      })
+    ).toThrow(/compiled Hermes bytecode/);
+    expect(source).toEqual(original);
+    expect(worker).toEqual(original);
   });
 });
 

@@ -10,8 +10,8 @@
 import chalk from 'chalk';
 import fs from 'fs';
 import fsExtra from 'fs-extra';
-import { glob } from 'glob';
 import path from 'path';
+import { globSync } from 'tinyglobby';
 
 import { PACKAGES_DIR } from '../../Constants';
 import logger from '../../Logger';
@@ -313,13 +313,11 @@ function collectTargetInputPaths(pkg: SPMPackageSource, target: SPMTarget): stri
     return [targetSourcePath];
   }
 
-  return glob
-    .sync('**/*', {
-      cwd: targetSourcePath,
-      ignore: getTargetExcludePatterns(target),
-      nodir: true,
-    })
-    .map((file) => path.join(targetSourcePath, file));
+  return globSync('**/*', {
+    cwd: targetSourcePath,
+    ignore: getTargetExcludePatterns(target),
+    onlyFiles: true,
+  }).map((file) => path.join(targetSourcePath, file));
 }
 
 /**
@@ -337,9 +335,9 @@ function getResourceInputPaths(pkg: SPMPackageSource, product: SPMProduct): stri
     target.type === 'framework'
       ? []
       : (target.resources ?? []).flatMap((resource) =>
-          glob
-            .sync(resource.path, { cwd: pkg.path, nodir: true })
-            .map((file) => path.join(pkg.path, file))
+          globSync(resource.path, { expandDirectories: false, cwd: pkg.path, onlyFiles: true }).map(
+            (file) => path.join(pkg.path, file)
+          )
         )
   );
 }

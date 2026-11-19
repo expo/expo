@@ -14,6 +14,8 @@ internal struct UpdatesLogEntry: Codable {
   var assetId: String? // EAS asset ID, if any
   var stacktrace: [String]? // Stacktrace (for error and fatal logs)
   var duration: Double? // Duration of timer if applicable
+  var key: String? // One of the UpdatesLogMessage keys, for warn and error logs
+  var values: [String: String]? // The values that fill the template of the key
 
   /**
    Returns a JSON string representation from this UpdatesLogEntry object
@@ -48,6 +50,12 @@ internal struct UpdatesLogEntry: Codable {
     }
     if let stacktrace = stacktrace {
       result["stacktrace"] = stacktrace
+    }
+    if let key = key {
+      result["key"] = key
+    }
+    if let values = values {
+      result["values"] = values
     }
     return result
   }

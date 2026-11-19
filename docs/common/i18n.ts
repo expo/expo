@@ -50,7 +50,6 @@ const JA_TRANSLATED_PAGES: Record<EnglishCanonicalPath, JapaneseSidebarTitle> = 
   '/tutorial/create-a-modal': 'モーダルを作成する',
   '/tutorial/gestures': 'ジェスチャーを追加する',
   '/tutorial/screenshot': 'スクリーンショットを撮影する',
-  '/tutorial/platform-differences': 'プラットフォームの違いに対応する',
   '/tutorial/configuration': 'ステータスバー、スプラッシュスクリーン、アプリアイコンを設定する',
   '/tutorial/follow-up': '学習リソース',
   '/tutorial/build-with-ai/introduction': 'はじめに',
@@ -61,7 +60,7 @@ const JA_TRANSLATED_PAGES: Record<EnglishCanonicalPath, JapaneseSidebarTitle> = 
   '/tutorial/build-with-ai/save-your-creation': '画像を保存する',
   '/tutorial/build-with-ai/finishing-touches': '仕上げ',
   '/tutorial/cicd/introduction': 'はじめに',
-  '/tutorial/cicd/first-workflow': '最初の EAS Workflows ジョブ',
+  '/tutorial/cicd/first-workflow': '最初の Expo Workflows ジョブ',
   '/tutorial/cicd/development-builds': '開発ビルド',
   '/tutorial/cicd/preview-builds': 'プレビュービルド',
   '/tutorial/cicd/e2e-tests': 'E2E テスト',
@@ -102,7 +101,7 @@ const JA_SECTION_TITLES: Record<string, string> = {
   'Expo tutorial': 'Expo チュートリアル',
   'Build with AI tutorial': 'AI エージェントで作るチュートリアル',
   'CI/CD tutorial': 'CI/CD チュートリアル',
-  'EAS tutorial': 'EAS チュートリアル',
+  'Expo Services tutorial': 'Expo Services チュートリアル',
   More: 'その他',
 };
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.9
+
+### Patch Changes
+
+- [Android] Downsample contact photos when decoding instead of loading them at full resolution. ([#50401](https://github.com/expo/expo/pull/50401) by [@dixitpriyanshu](https://github.com/dixitpriyanshu))
+
+## 58.0.8
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.23. ([#51823](https://github.com/expo/expo/pull/51823) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.7
 
 ### Patch Changes

@@ -66,6 +66,39 @@ export default function ScrollViewMatchContents() {
 }
 ```
 
+### Content alignment
+
+A `matchContents` host takes the final size of its content as soon as the content changes. When the change is animated, SwiftUI draws the content at the in-between sizes. Until the animation ends, the content is smaller or larger than the host. The `alignment` prop sets where the content sits in the host during that time. The default is `'topLeading'`. With this default, the content of a host that is anchored to the trailing edge of its row moves while it animates. Set `alignment` to the edge that the host is anchored to.
+
+```tsx ContentAlignmentExample.tsx
+import { Button, Host } from '@expo/ui/swift-ui';
+import { animation, Animation } from '@expo/ui/swift-ui/modifiers';
+import { View } from 'react-native';
+
+export default function ContentAlignmentExample({
+  count,
+}: {
+  count: number;
+}) {
+  return (
+    <View
+      style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+      <Host matchContents alignment="trailing">
+        <Button
+          label={count === 0 ? 'All Photos' : `Add ${count} photos`}
+          modifiers={[
+            animation(
+              Animation.spring({ duration: 0.35, bounce: 0 }),
+              count
+            ),
+          ]}
+        />
+      </Host>
+    </View>
+  );
+}
+```
+
 ### Explicit sizing with style
 
 Use `style` to set explicit sizes on the `Host`, such as filling the available space with `flex: 1`.

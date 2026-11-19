@@ -6,11 +6,28 @@ import {
   contentShape,
   disabled,
   font,
+  frame,
   onTapGesture,
   padding,
   shapes,
 } from '../../swift-ui/modifiers';
 import { transformToModifiers } from '../transformStyle';
+
+function universalLayout(dimensions: {
+  widthPoints?: number;
+  widthFraction?: number;
+  heightPoints?: number;
+  heightFraction?: number;
+}) {
+  return {
+    $type: 'universalLayout',
+    widthPoints: undefined,
+    widthFraction: undefined,
+    heightPoints: undefined,
+    heightFraction: undefined,
+    ...dimensions,
+  };
+}
 
 describe('transformToModifiers (iOS)', () => {
   it('drops a style-derived modifier when the user supplies the same type', () => {
@@ -57,6 +74,28 @@ describe('transformToModifiers (iOS)', () => {
     expect(transformToModifiers(undefined, { disabled: true }, [disabled(false)])).toEqual([
       disabled(true),
       disabled(false),
+    ]);
+  });
+
+  it('emits a fixed size as a frame and as a layout value', () => {
+    expect(transformToModifiers({ width: 12, height: 8 }, {})).toEqual([
+      frame({ width: 12, height: 8, alignment: undefined }),
+      universalLayout({ widthPoints: 12, heightPoints: 8 }),
+    ]);
+  });
+
+  it('emits a percentage as a layout value without a frame', () => {
+    expect(transformToModifiers({ width: '25%' }, {})).toEqual([
+      universalLayout({ widthFraction: 0.25 }),
+    ]);
+  });
+
+  it('keeps the style width when a user frame sets only the height', () => {
+    const userFrame = frame({ height: 12 });
+    expect(transformToModifiers({ width: 30, height: 40 }, {}, [userFrame])).toEqual([
+      frame({ width: 30, height: undefined, alignment: undefined }),
+      universalLayout({ widthPoints: 30 }),
+      userFrame,
     ]);
   });
 });

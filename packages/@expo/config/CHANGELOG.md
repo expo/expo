@@ -1,5 +1,18 @@
 # Changelog
 
+## 58.0.8
+
+### Patch Changes
+
+- Avoid duplicate entries in `updates` arrays, such as `updates.assetPatternsToBeBundled`, when `modifyConfigAsync` merges modifications. ([`4a6ae65`](https://github.com/expo/expo/commit/4a6ae6527e2e46e2b0cbc5af1151a82e30c844d4) by [@douglowder](https://github.com/douglowder))
+
+## 58.0.7
+
+### Patch Changes
+
+- Updated dependencies. ([#51986](https://github.com/expo/expo/pull/51986))
+  - @expo/config-plugins@58.0.10
+
 ## 58.0.6
 
 ### Patch Changes

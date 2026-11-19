@@ -28,7 +28,7 @@ env:
 jobs:
   docs-pr:
     if: github.repository == 'expo/expo'
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -69,6 +69,7 @@ jobs:
         uses: vale-cli/vale-action@518a9136acc6e6668ce7c00d367051e0941e87ff # 3.0.0
         with:
           version: ${{ steps.vale-version.outputs.version }}
+          reviewdog_version: 0.21.3
           reporter: github-pr-check
           files: '["docs/pages", "docs/scenes", "docs/README.md"]'
           vale_flags: --config=./docs/.vale.ini

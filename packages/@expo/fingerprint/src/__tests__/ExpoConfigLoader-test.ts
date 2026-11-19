@@ -1,13 +1,22 @@
 import fs from 'fs';
+import module from 'module';
 import os from 'os';
 import path from 'path';
 import requireString from 'require-from-string';
+import { pathToFileURL } from 'url';
 
 import {
+  createESModuleLoadHook,
   installModuleCaptureHook,
   resolveLoadedModuleSourcesAsync,
   type CapturedModule,
 } from '../ExpoConfigLoader';
+
+const LOAD_CONTEXT: module.LoadHookContext = {
+  conditions: [],
+  format: undefined,
+  importAttributes: {},
+};
 
 const minimatchConstructorSpy = jest.fn();
 jest.mock('minimatch', () => {
@@ -24,14 +33,32 @@ jest.mock('minimatch', () => {
 describe('installModuleCaptureHook', () => {
   let tmpDir: string;
   let hook: ReturnType<typeof installModuleCaptureHook> | null = null;
+  let deregister: jest.Mock;
+  const registerHooksDescriptor = Object.getOwnPropertyDescriptor(module, 'registerHooks');
+
+  // Jest refuses `module.registerHooks`, Node before 22.15 has none; e2e covers the real loader.
+  function stubRegisterHooks(registerHooks: typeof module.registerHooks | undefined) {
+    Object.defineProperty(module, 'registerHooks', {
+      configurable: true,
+      writable: true,
+      value: registerHooks,
+    });
+  }
 
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-fingerprint-hook-'));
+    deregister = jest.fn();
+    stubRegisterHooks(jest.fn(() => ({ deregister })));
   });
 
   afterEach(() => {
     hook?.uninstall();
     hook = null;
+    if (registerHooksDescriptor) {
+      Object.defineProperty(module, 'registerHooks', registerHooksDescriptor);
+    } else {
+      delete (module as { registerHooks?: unknown }).registerHooks;
+    }
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
@@ -87,6 +114,87 @@ describe('installModuleCaptureHook', () => {
     hook.uninstall();
     requireString('module.exports = 1;', path.join(tmpDir, 'after-uninstall.js'));
     expect(hook.getCapturedModules()).toEqual([]);
+  });
+
+  it('should register a load hook that captures a required ES module and deregister it on uninstall', () => {
+    hook = installModuleCaptureHook();
+    expect(module.registerHooks).toHaveBeenCalledWith({ load: expect.any(Function) });
+
+    // Node passes the source of an ES module that `require()` loads as a string.
+    const load = jest.mocked(module.registerHooks).mock.lastCall?.[0].load;
+    const filename = path.join(tmpDir, 'with-plugin.mjs');
+    const content = 'export default (config) => config;';
+    load?.(pathToFileURL(filename).href, LOAD_CONTEXT, () => ({
+      format: 'module',
+      source: content,
+    }));
+    expect(hook.getCapturedModules()).toContainEqual({ id: filename, filename, content });
+
+    hook.uninstall();
+    hook = null;
+    expect(deregister).toHaveBeenCalledTimes(1);
+  });
+
+  it('should patch _compile alone when Node has no module.registerHooks', () => {
+    const moduleProto = (require('module') as { prototype: { _compile: unknown } }).prototype;
+    const originalCompile = moduleProto._compile;
+    stubRegisterHooks(undefined);
+
+    hook = installModuleCaptureHook();
+    expect(moduleProto._compile).not.toBe(originalCompile);
+    const filename = path.join(tmpDir, 'plugin.js');
+    requireString('module.exports = 1;', filename);
+    expect(hook.getCapturedModules()).toContainEqual(expect.objectContaining({ filename }));
+
+    hook.uninstall();
+    hook = null;
+    expect(moduleProto._compile).toBe(originalCompile);
+  });
+});
+
+describe('createESModuleLoadHook', () => {
+  it.each(['module', 'module-typescript'])(
+    'should capture a %s file with its decoded source',
+    (format) => {
+      const capturedModules: CapturedModule[] = [];
+      const filename = path.join(os.tmpdir(), 'with-plugin.mjs');
+      const content = 'export default (config) => config;';
+      const loaded = { format, source: new TextEncoder().encode(content) };
+
+      const result = createESModuleLoadHook(capturedModules)(
+        pathToFileURL(filename).href,
+        LOAD_CONTEXT,
+        () => loaded
+      );
+
+      expect(result).toBe(loaded);
+      expect(capturedModules).toEqual([{ id: filename, filename, content }]);
+    }
+  );
+
+  it('should leave a CommonJS module to the _compile hook', () => {
+    const capturedModules: CapturedModule[] = [];
+    const filename = path.join(os.tmpdir(), 'plugin.js');
+
+    createESModuleLoadHook(capturedModules)(pathToFileURL(filename).href, LOAD_CONTEXT, () => ({
+      format: 'commonjs',
+      source: 'module.exports = 1;',
+    }));
+
+    expect(capturedModules).toEqual([]);
+  });
+
+  it('should skip a module that is not loaded from a file', () => {
+    const capturedModules: CapturedModule[] = [];
+    const load = createESModuleLoadHook(capturedModules);
+
+    load('node:fs', LOAD_CONTEXT, () => ({ format: 'builtin', source: undefined }));
+    load('data:text/javascript,export default 1', LOAD_CONTEXT, () => ({
+      format: 'module',
+      source: 'export default 1',
+    }));
+
+    expect(capturedModules).toEqual([]);
   });
 });
 

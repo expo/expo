@@ -165,6 +165,21 @@ describe('NativeToolbarButton', () => {
         tint: null,
       });
     });
+
+    it('uses context buttonContainerColor for the IconButton container', async () => {
+      await renderWithColors(defaultProps, { buttonContainerColor: 'context-container' });
+
+      expect(MockedIconButton.mock.calls[0]![0].colors).toEqual({
+        containerColor: 'context-container',
+        disabledContainerColor: 'context-container',
+      });
+    });
+
+    it('passes empty IconButton colors when no context buttonContainerColor', async () => {
+      await renderWithColors(defaultProps, {});
+
+      expect(MockedIconButton.mock.calls[0]![0].colors).toEqual({});
+    });
   });
 
   describe('missing source', () => {

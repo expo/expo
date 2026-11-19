@@ -237,12 +237,13 @@ struct DevMenuFABView: View {
     let touchTargetTop = buttonCenterY - touchTargetSize / 2
 
     if showingPanel {
-      // Panel has equal margins on both sides
-      let panelWidth = screenWidth - (screenEdgeMargin * 2)
+      let leadingMargin = max(windowSafeArea.left, screenEdgeMargin)
+      let trailingMargin = max(windowSafeArea.right, screenEdgeMargin)
+      let panelWidth = screenWidth - leadingMargin - trailingMargin
       let panelY = buttonCenterY - FABConstants.iconSize / 2 + panelVerticalOffset
 
       return CGRect(
-        x: screenEdgeMargin,
+        x: leadingMargin,
         y: panelY,
         width: panelWidth,
         height: panelHeight
@@ -293,6 +294,8 @@ struct DevMenuFABView: View {
               snappedEdge: currentEdge,
               gearPosition: position,
               screenWidth: screenWidth,
+              safeAreaLeading: safeArea.leading,
+              safeAreaTrailing: safeArea.trailing,
               isLesson: isLesson,
               isLessonCompleted: isLessonCompleted,
               hasBeenEdited: hasBeenEdited,

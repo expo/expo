@@ -13,10 +13,10 @@ import type { BaseResolveDeviceProps, PlatformManager } from '../platforms/Platf
 import { AsyncNgrok } from './AsyncNgrok';
 import { AsyncWsTunnel } from './AsyncWsTunnel';
 import { Bonjour } from './Bonjour';
-import DevToolsPluginManager from './DevToolsPluginManager';
 import { DevelopmentSession } from './DevelopmentSession';
 import type { CreateURLOptions } from './UrlCreator';
 import { UrlCreator } from './UrlCreator';
+import DevToolsPluginManager from './devtools/DevToolsPluginManager';
 import { debugEvent } from './events';
 import type { PlatformBundlers } from './platformBundlers';
 
@@ -476,7 +476,7 @@ export abstract class BundlerDevServer {
 
     // If we have an active WS tunnel instance, we always need to return the tunnel location.
     if (this.tunnel && this.tunnel instanceof AsyncWsTunnel) {
-      return this.getUrlCreator().constructUrl();
+      return this.getUrlCreator().constructUrl({ scheme: 'http' });
     }
 
     const { location } = instance;

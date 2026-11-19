@@ -15,7 +15,7 @@ class ShareIntoViewController: SLComposeServiceViewController {
     return _hostAppScheme
   }
 
-  private var appGroupId: String {
+  nonisolated private var appGroupId: String {
     guard let _appGroupId = Bundle.main.object(forInfoDictionaryKey: "AppGroupId") as? String else {
       fatalError("Expo-sharing has failed to load the app group ID from `Info.plist`. Make sure the `expo-sharing` config plugin is configured correctly.")
     }
@@ -61,6 +61,7 @@ class ShareIntoViewController: SLComposeServiceViewController {
 
   nonisolated private func processInputItems(_ items: [NSExtensionItem]) async -> [SharePayload] {
     var results: [SharePayload] = []
+    ShareIntoFileStore(appGroupId: appGroupId)?.removeStaleFiles()
 
     for item in items {
       guard let attachments = item.attachments else { continue }
@@ -201,20 +202,16 @@ class ShareIntoViewController: SLComposeServiceViewController {
   // MARK: - File Management
 
   private func copyAndProcessFile(url: URL, type: ShareType) -> SharePayload? {
-    guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupId) else {
+    let fileName = safeShareFileName(url.lastPathComponent, fallback: UUID().uuidString)
+    guard let destinationURL = try? ShareIntoFileStore(appGroupId: appGroupId)?.makeDestination(fileName: fileName) else {
       return nil
     }
 
-    let fileName = url.lastPathComponent.isEmpty ? UUID().uuidString : url.lastPathComponent
-    let destinationURL = containerURL.appendingPathComponent(fileName)
-
     do {
-      if FileManager.default.fileExists(atPath: destinationURL.path) {
-        try FileManager.default.removeItem(at: destinationURL)
-      }
       try FileManager.default.copyItem(at: url, to: destinationURL)
     } catch {
       print("Error copying file: \(error)")
+      try? FileManager.default.removeItem(at: destinationURL.deletingLastPathComponent())
       return nil
     }
 
@@ -236,14 +233,14 @@ class ShareIntoViewController: SLComposeServiceViewController {
   }
 
   private func saveDataToAppGroup(data: Data, fileName: String, type: ShareType, mimeType: String?) -> SharePayload? {
-    guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupId) else {
+    guard let destinationURL = try? ShareIntoFileStore(appGroupId: appGroupId)?.makeDestination(fileName: fileName) else {
       return nil
     }
-    let destinationURL = containerURL.appendingPathComponent(fileName)
 
     do {
       try data.write(to: destinationURL)
     } catch {
+      try? FileManager.default.removeItem(at: destinationURL.deletingLastPathComponent())
       return nil
     }
 

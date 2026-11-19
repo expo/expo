@@ -1,6 +1,7 @@
 import { Link, usePathname, type Href } from 'expo-router';
 import React from 'react';
 import { Text, Pressable, ScrollView, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const HomeIndex = () => {
   const pathname = usePathname();
@@ -8,21 +9,22 @@ const HomeIndex = () => {
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: '#fff' }}
-      contentContainerStyle={{ alignItems: 'center', gap: 16 }}
       contentInsetAdjustmentBehavior="automatic">
-      <View>
-        <Text>Home - Index</Text>
-        <Text>Current Path: {pathname}</Text>
-      </View>
-      <CaseLink href="/link-preview/js-only" text="JS Only" />
-      <CaseLink href="/link-preview/js-only/tabs" text="JS Only Tabs" />
-      <CaseLink href="/link-preview/modals" text="Modals" />
-      <CaseLink href="/link-preview/misc" text="Misc" />
-      <CaseLink href="/link-preview/menu" text="Menu" />
-      <CaseLink href="/link-preview/corner-radius" text="Corner radius" />
-      <CaseLink href="/link-preview/nested" text="Nested" />
-      <CaseLink href="/link-preview/performance" text="Performance" />
-      <CaseLink href="/link-preview/param" text="Param" />
+      <SafeAreaView edges={['left', 'right']} style={{ alignItems: 'center', gap: 16 }}>
+        <View>
+          <Text>Home - Index</Text>
+          <Text>Current Path: {pathname}</Text>
+        </View>
+        <CaseLink href="/link-preview/js-only" text="JS Only" />
+        <CaseLink href="/link-preview/js-only/tabs" text="JS Only Tabs" />
+        <CaseLink href="/link-preview/modals" text="Modals" />
+        <CaseLink href="/link-preview/misc" text="Misc" />
+        <CaseLink href="/link-preview/menu" text="Menu" />
+        <CaseLink href="/link-preview/corner-radius" text="Corner radius" />
+        <CaseLink href="/link-preview/nested" text="Nested" />
+        <CaseLink href="/link-preview/performance" text="Performance" />
+        <CaseLink href="/link-preview/param" text="Param" />
+      </SafeAreaView>
     </ScrollView>
   );
 };

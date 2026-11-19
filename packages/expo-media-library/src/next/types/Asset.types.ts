@@ -72,6 +72,10 @@ export type AssetInfo = {
   creationTime: number | null;
   modificationTime: number | null;
   isFavorite?: boolean;
+  /**
+   * @platform ios
+   */
+  mediaSubtypes?: MediaSubtype[];
 };
 
 /**
@@ -92,4 +96,8 @@ export type AssetMetadata = {
   creationTime: number | null;
   modificationTime: number | null;
   isFavorite: boolean;
+  /**
+   * @platform ios
+   */
+  mediaSubtypes?: MediaSubtype[];
 };

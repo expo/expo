@@ -20,8 +20,13 @@ const mockAppMetrics = {
   markInteractive: jest.fn(),
   setGlobalAttributes: jest.fn(),
   reportError: jest.fn(),
+  reportFeedback: jest.fn(),
   setNetworkTracesConfig: jest.fn(),
 };
+
+const mockStartSpan = jest.fn();
+const mockWithSpan = jest.fn();
+const mockRecordSpan = jest.fn();
 
 const mockSetErrorHandlerEnabled = jest.fn();
 
@@ -33,6 +38,9 @@ jest.mock('expo-app-metrics', () => ({
   __esModule: true,
   default: mockAppMetrics,
   setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
+  startSpan: mockStartSpan,
+  withSpan: mockWithSpan,
+  recordSpan: mockRecordSpan,
 }));
 
 jest.mock('../integrations/expo-router/router', () => ({
@@ -58,6 +66,11 @@ jest.mock('../integrations/react-navigation/init', () => ({
   getReactNavigationIntegrationConfig: jest.fn(() => undefined),
 }));
 
+jest.mock('../integrations/react-native-reanimated/init', () => ({
+  initReanimatedIntegration: jest.fn(),
+  disableReanimatedIntegration: jest.fn(),
+}));
+
 let warnSpy: jest.SpyInstance;
 
 beforeEach(() => {
@@ -69,6 +82,9 @@ beforeEach(() => {
     __esModule: true,
     default: mockAppMetrics,
     setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
+    startSpan: mockStartSpan,
+    withSpan: mockWithSpan,
+    recordSpan: mockRecordSpan,
   }));
   jest.doMock('../integrations/expo-router/router', () => ({
     isRouterInstalled: true,
@@ -89,6 +105,10 @@ beforeEach(() => {
     isInitialized: jest.fn(() => false),
     getReactNavigationIntegrationConfig: jest.fn(() => undefined),
   }));
+  jest.doMock('../integrations/react-native-reanimated/init', () => ({
+    initReanimatedIntegration: jest.fn(),
+    disableReanimatedIntegration: jest.fn(),
+  }));
 });
 
 function loadModule() {
@@ -101,6 +121,10 @@ function loadInit() {
 
 function loadReactNavigationInit() {
   return require('../integrations/react-navigation/init') as typeof import('../integrations/react-navigation/init');
+}
+
+function loadReanimatedInit() {
+  return require('../integrations/react-native-reanimated/init') as typeof import('../integrations/react-native-reanimated/init');
 }
 
 describe('module Proxy', () => {
@@ -155,6 +179,62 @@ describe('module Proxy', () => {
     expect(initRouterIntegration).toHaveBeenCalledTimes(1);
     expect(initRouterIntegration).toHaveBeenCalledWith(true);
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it("calls initReanimatedIntegration when integrations['react-native-reanimated'] is true", () => {
+    const Observe = loadModule();
+    const { initReanimatedIntegration } = loadReanimatedInit();
+    Observe.configure({
+      environment: 'test',
+      integrations: { 'react-native-reanimated': true },
+    });
+    expect(initReanimatedIntegration).toHaveBeenCalledTimes(1);
+    expect(initReanimatedIntegration).toHaveBeenCalledWith(true);
+    expect(mockNative.configure).toHaveBeenCalledWith({
+      environment: 'test',
+      integrations: { 'react-native-reanimated': true },
+    });
+  });
+
+  it("passes integrations['react-native-reanimated'] object config to initReanimatedIntegration", () => {
+    const Observe = loadModule();
+    const { initReanimatedIntegration } = loadReanimatedInit();
+    const reanimatedConfig = { level: 2 as const, strict: false };
+    Observe.configure({
+      environment: 'test',
+      integrations: { 'react-native-reanimated': reanimatedConfig },
+    });
+    expect(initReanimatedIntegration).toHaveBeenCalledWith(reanimatedConfig);
+  });
+
+  it.each([false, undefined])(
+    "disables the Reanimated integration when integrations['react-native-reanimated'] is %s",
+    (value) => {
+      const Observe = loadModule();
+      const { initReanimatedIntegration, disableReanimatedIntegration } = loadReanimatedInit();
+      Observe.configure({
+        environment: 'test',
+        integrations: { 'react-native-reanimated': value },
+      });
+      expect(initReanimatedIntegration).not.toHaveBeenCalled();
+      expect(disableReanimatedIntegration).toHaveBeenCalledTimes(1);
+    }
+  );
+
+  it('disables the Reanimated integration when configure has no integrations', () => {
+    const Observe = loadModule();
+    const { disableReanimatedIntegration } = loadReanimatedInit();
+    Observe.configure({ environment: 'test' });
+    expect(disableReanimatedIntegration).toHaveBeenCalledTimes(1);
+  });
+
+  it('forwards the span wrappers instead of the raw native functions', () => {
+    // The wrappers fold `parent` into the options and implement withSpan's auto-end; reaching
+    // the native members with the same names would silently lose that behavior.
+    const Observe = loadModule();
+    expect(Observe.startSpan).toBe(mockStartSpan);
+    expect(Observe.withSpan).toBe(mockWithSpan);
+    expect(Observe.recordSpan).toBe(mockRecordSpan);
   });
 
   it('records no network traces when configure omits networkTraces', () => {
@@ -232,6 +312,29 @@ describe('module Proxy', () => {
     expect(mockSetErrorHandlerEnabled).toHaveBeenCalledTimes(1);
     expect(mockSetErrorHandlerEnabled).toHaveBeenCalledWith(enabled);
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('warns when errorSampleRate is lower than sampleRate', () => {
+    const Observe = loadModule();
+    Observe.configure({ sampleRate: 0.03, errorSampleRate: 0.01 });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[expo-observe] `errorSampleRate` (0.01) is lower than `sampleRate` (0.03) and has no effect. ' +
+        'Errors are sent from every installation in the `sampleRate` sample. ' +
+        'Set `errorSampleRate` to at least `sampleRate`.'
+    );
+  });
+
+  it('warns when errorSampleRate is set without sampleRate', () => {
+    // An unset `sampleRate` sends every installation, so errors are sent from all of them.
+    const Observe = loadModule();
+    Observe.configure({ errorSampleRate: 0.5 });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[expo-observe] `errorSampleRate` (0.5) is lower than `sampleRate` (1) and has no effect. ' +
+        'Errors are sent from every installation in the `sampleRate` sample. ' +
+        'Set `errorSampleRate` to at least `sampleRate`.'
+    );
   });
 
   it('passes the config through to the native module unchanged', () => {
@@ -563,6 +666,128 @@ describe('module Proxy', () => {
       throw new Error('native rejected the payload');
     });
     expect(() => Observe.reportError(new Error('boom'))).not.toThrow();
+    expect(warnSpy).toHaveBeenCalled();
+  });
+
+  it('forwards valid feedback to AppMetrics with the default scale', () => {
+    const Observe = loadModule();
+    const feedback = { id: 'checkout', message: 'Great', rating: 10, attributes: { plan: 'pro' } };
+    Observe.reportFeedback(feedback);
+    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith({
+      ...feedback,
+      scale: { min: 0, max: 10 },
+    });
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('forwards feedback with only a message', () => {
+    const Observe = loadModule();
+    Observe.reportFeedback({ id: 'checkout', message: 'Great' });
+    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith({
+      id: 'checkout',
+      message: 'Great',
+    });
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [
+      { id: 'checkout', rating: 0 },
+      { id: 'checkout', rating: 0, scale: { min: 0, max: 10 } },
+    ],
+    [
+      { id: 'checkout', rating: 1, scale: { min: 1, max: 5 } },
+      { id: 'checkout', rating: 1, scale: { min: 1, max: 5 } },
+    ],
+    [
+      { id: 'checkout', rating: 5, scale: { min: 1, max: 5 } },
+      { id: 'checkout', rating: 5, scale: { min: 1, max: 5 } },
+    ],
+  ])('forwards a rating with its scale: %o', (feedback, expected) => {
+    const Observe = loadModule();
+    Observe.reportFeedback(feedback);
+    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith(expected);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  const idReason = '`id` must be a non-empty string';
+  const messageReason = '`message` must be a string';
+  const ratingReason = '`rating` must be a whole number';
+  const scaleReason = '`scale.min` and `scale.max` must be whole numbers';
+  const scaleOrderReason = '`scale.min` must be less than `scale.max`';
+  const scaleRangeReason = '`scale.min` and `scale.max` must be from 0 to 10';
+  const scaleWithoutRatingReason = 'set `rating` when you set `scale`';
+  const emptyReason = 'set `message` or `rating`';
+
+  it.each([
+    [{ id: 'checkout' }, emptyReason],
+    [{ id: 42, message: 'Great' }, idReason],
+    [{ id: 'checkout', message: 42 }, messageReason],
+    [{ id: 'checkout', rating: 4.5 }, ratingReason],
+    [{ id: 'checkout', rating: NaN }, ratingReason],
+    [{ id: 'checkout', rating: Infinity }, ratingReason],
+    [{ id: 'checkout', rating: '5' }, ratingReason],
+    [{ id: 'checkout', rating: 2 ** 53 }, ratingReason],
+    [{ id: 'checkout', message: 'Great', rating: 4.5 }, ratingReason],
+    [{ id: 'checkout', rating: -1 }, '`rating` must be from 0 to 10'],
+    [{ id: 'checkout', rating: 11 }, '`rating` must be from 0 to 10'],
+    [{ id: 'checkout', rating: 0, scale: { min: 1, max: 5 } }, '`rating` must be from 1 to 5'],
+    [{ id: 'checkout', rating: 6, scale: { min: 1, max: 5 } }, '`rating` must be from 1 to 5'],
+    [{ id: 'checkout', rating: 1, scale: { min: 0, max: 1.5 } }, scaleReason],
+    [{ id: 'checkout', rating: 1, scale: { min: '0', max: 1 } }, scaleReason],
+    [{ id: 'checkout', rating: 1, scale: { min: 0 } }, scaleReason],
+    [{ id: 'checkout', rating: 1, scale: 'stars' }, scaleReason],
+    [{ id: 'checkout', rating: 0, scale: { min: -1, max: 1 } }, scaleRangeReason],
+    [{ id: 'checkout', rating: 5, scale: { min: 0, max: 11 } }, scaleRangeReason],
+    [{ id: 'checkout', rating: 1, scale: { min: 1, max: 1 } }, scaleOrderReason],
+    [{ id: 'checkout', rating: 1, scale: { min: 5, max: 1 } }, scaleOrderReason],
+    [{ id: 'checkout', message: 'Great', scale: { min: 1, max: 5 } }, scaleWithoutRatingReason],
+    [{ id: '', message: 'Great' }, idReason],
+    [{ id: '  ', message: 'Great' }, idReason],
+    [{ id: 'checkout', message: '' }, emptyReason],
+    [{ id: 'checkout', message: '  ' }, emptyReason],
+  ])('drops feedback with a warning: %o', (feedback, reason) => {
+    const Observe = loadModule();
+    // The cases pass wrong types on purpose, the way an untyped caller can.
+    Observe.reportFeedback(feedback as Parameters<typeof Observe.reportFeedback>[0]);
+    expect(mockAppMetrics.reportFeedback).not.toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      `[expo-observe] \`reportFeedback\` dropped the report: ${reason}.`
+    );
+  });
+
+  it.each([null, undefined, 'Great'])(
+    'drops a non-object feedback argument with a warning: %p',
+    (feedback) => {
+      const Observe = loadModule();
+      // The cases pass wrong types on purpose, the way an untyped caller can.
+      Observe.reportFeedback(feedback as unknown as Parameters<typeof Observe.reportFeedback>[0]);
+      expect(mockAppMetrics.reportFeedback).not.toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalledWith(
+        '[expo-observe] `reportFeedback` dropped the report: the argument must be an object.'
+      );
+    }
+  );
+
+  it('omits an empty message when a rating is set', () => {
+    const Observe = loadModule();
+    Observe.reportFeedback({ id: 'checkout', message: '  ', rating: 5 });
+    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith({
+      id: 'checkout',
+      rating: 5,
+      scale: { min: 0, max: 10 },
+    });
+    expect(mockAppMetrics.reportFeedback.mock.calls[0][0]).not.toHaveProperty('message');
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('never throws when the native reportFeedback call throws', () => {
+    const Observe = loadModule();
+    mockAppMetrics.reportFeedback.mockImplementationOnce(() => {
+      throw new Error('native rejected the payload');
+    });
+    expect(() => Observe.reportFeedback({ id: 'checkout', rating: 5 })).not.toThrow();
     expect(warnSpy).toHaveBeenCalled();
   });
 });

@@ -1,7 +1,7 @@
 ---
-title: Configure EAS Submit with eas.json
+title: Configure Expo Submit with eas.json
 sidebar_title: Configure with eas.json
-description: Learn how to configure your project for EAS Submit with eas.json.
+description: Learn how to configure your project for Expo Submit with eas.json.
 ---
 
 import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
@@ -9,13 +9,13 @@ import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 
-**eas.json** is the configuration file for EAS CLI and services. It is generated when the [`eas build:configure` command](/build/setup/#configure-the-project) runs for the first time in your project and is located next to **package.json** at the root of your project. Even though **eas.json** is not mandatory for using EAS Submit, it makes your life easier if you need to switch between different configurations.
+**eas.json** is the configuration file for EAS CLI and services. It is generated when the [`eas build:configure` command](/build/setup/#configure-the-project) runs for the first time in your project and is located next to **package.json** at the root of your project. Even though **eas.json** is not mandatory for using Expo Submit, it makes your life easier if you need to switch between different configurations.
 
 ## Production profile
 
 Running `eas submit` without specifying a profile name will use the `production` profile if it is already defined in **eas.json** to configure the submission. If no values exist in the `production` profile, EAS CLI will prompt you to provide the values interactively.
 
-The `production` profile shown below is required to run Android and iOS submissions in a CI/CD process, like with [EAS Workflows](/eas/workflows/introduction/):
+The `production` profile shown below is required to run Android and iOS submissions in a CI/CD process, like with [Expo Workflows](/eas/workflows/introduction/):
 
 ```json eas.json
 {
@@ -49,7 +49,7 @@ The JSON object under `submit` can contain multiple submit profiles. Each profil
     "requireCommit": /* @info If true, ensures that all changes are committed before a build. Defaults to false. */boolean/* @end */
   },
   "build": {
-    // EAS Build configuration
+    // Expo Build configuration
     /* @hide ... */ /* @end */
   },
   "submit": {
@@ -95,8 +95,8 @@ You can keep chaining profile extensions up to the depth of 5 as long as you avo
 ## Next step
 
 <BoxLink
-  title="EAS Submit schema reference"
-  description="Learn about available properties for EAS Submit to configure and override their default behavior from within your project."
-  href="/eas/json/#eas-submit"
+  title="Expo Submit schema reference"
+  description="Learn about available properties for Expo Submit to configure and override their default behavior from within your project."
+  href="/eas/json/#expo-submit"
   Icon={EasSubmitIcon}
 />

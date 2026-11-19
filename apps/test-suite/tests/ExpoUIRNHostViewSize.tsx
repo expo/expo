@@ -1,6 +1,6 @@
 import { Column, Host, RNHostView, Text as UIText } from '@expo/ui';
 import React from 'react';
-import { Text, View, type LayoutChangeEvent } from 'react-native';
+import { ScrollView, Text, View, type LayoutChangeEvent } from 'react-native';
 
 import type { JasmineInterface, TestPortal } from '../types';
 import { mountAndWaitForWithTimeout } from './helpers';
@@ -24,10 +24,13 @@ const FONT_SIZE = 24;
 const CONTENT_MAX_WIDTH = 140;
 const CONTENT_MIN_HEIGHT = 60;
 const LOOP_WINDOW_MS = 1500;
+const TALL_HEIGHT = 80;
+const SHORT_HEIGHT = 30;
 
 type Axes = { width: number; height: number };
 type Paired = { hosted: Axes; control: Axes };
 type AcrossChange = { before: Axes; grown: Axes; shrunk: Axes };
+type AcrossReplace = { before: Axes; replaced: Axes };
 
 function useSettledLayout(onSettled: (size: Axes) => void) {
   const size = React.useRef<Axes | undefined>(undefined);
@@ -267,6 +270,40 @@ function NestedHostProbe({ onMeasured }: { onMeasured: (size: Axes) => void }) {
   );
 }
 
+// The replacement is a different native view type, so React Native mounts a new view instead of
+// reusing the old one, and the host has to follow the new view's size.
+function ReplaceProbe({ onMeasured }: { onMeasured: (sizes: AcrossReplace) => void }) {
+  const [replaced, setReplaced] = React.useState(false);
+  const before = React.useRef<Axes | undefined>(undefined);
+
+  const onLayout = useSettledLayout((size) => {
+    if (!replaced) {
+      before.current = size;
+      setReplaced(true);
+    } else if (before.current) {
+      onMeasured({ before: before.current, replaced: size });
+    }
+  });
+
+  return (
+    <View style={{ width: PARENT_WIDTH, alignItems: 'flex-start' }} onLayout={onLayout}>
+      <Host matchContents>
+        <RNHostView matchContents>
+          {replaced ? (
+            <ScrollView
+              key="replaced"
+              scrollEnabled={false}
+              style={{ width: BOX_WIDTH, height: SHORT_HEIGHT }}
+            />
+          ) : (
+            <View key="initial" style={{ width: BOX_WIDTH, height: TALL_HEIGHT }} />
+          )}
+        </RNHostView>
+      </Host>
+    </View>
+  );
+}
+
 export async function test(
   { it, describe, expect, afterEach }: JasmineInterface,
   { setPortalChild, cleanupPortal }: TestPortal
@@ -393,6 +430,19 @@ export async function test(
 
       expect(size.width).toBeGreaterThan(BOX_WIDTH);
       expect(size.height).toBeGreaterThan(0);
+    });
+
+    // Regression test for https://github.com/expo/expo/issues/51717
+    it('follows a hosted child that is replaced by a different native view', async () => {
+      const { before, replaced } = await mountAndWaitForWithTimeout<AcrossReplace>(
+        <ReplaceProbe onMeasured={() => {}} />,
+        'onMeasured',
+        setPortalChild,
+        TIMEOUT_MS
+      );
+
+      expect(Math.abs(before.height - TALL_HEIGHT)).toBeLessThan(TOLERANCE);
+      expect(Math.abs(replaced.height - SHORT_HEIGHT)).toBeLessThan(TOLERANCE);
     });
   });
 }

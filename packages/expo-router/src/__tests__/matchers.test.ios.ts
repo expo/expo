@@ -51,6 +51,14 @@ describe(stripGroupSegmentsFromPath, () => {
     );
     expect(stripGroupSegmentsFromPath('(foo)/(bar)')).toBe('');
   });
+
+  it('preserves parentheses in the query string and hash', () => {
+    expect(stripGroupSegmentsFromPath('/test?a=(a)&b=b')).toBe('/test?a=(a)&b=b');
+    expect(stripGroupSegmentsFromPath('/(foo)/test?a=(a)')).toBe('/test?a=(a)');
+    expect(stripGroupSegmentsFromPath('/test#(x)')).toBe('/test#(x)');
+    expect(stripGroupSegmentsFromPath('/(foo)/test?a=1#(x)')).toBe('/test?a=1#(x)');
+    expect(stripGroupSegmentsFromPath('/(foo)?a=(a)')).toBe('/?a=(a)');
+  });
 });
 
 describe(stripInvisibleSegmentsFromPath, () => {

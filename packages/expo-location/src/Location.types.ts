@@ -194,6 +194,21 @@ export type LocationTaskOptions = LocationOptions & {
 };
 
 // @needsAudit
+/**
+ * Type representing background motion activity task options.
+ */
+export type MotionActivityTaskOptions = {
+  /**
+   * Configuration for running motion activity updates through a foreground service, the same
+   * way `LocationTaskOptions.foregroundService` keeps background location updates running. When
+   * omitted, updates are only guaranteed to be delivered while the OS happens to keep the app
+   * process alive.
+   * @platform android
+   */
+  foregroundService?: LocationTaskServiceOptions;
+};
+
+// @needsAudit
 export type LocationTaskServiceOptions = {
   /**
    * Title of the foreground service notification.
@@ -381,6 +396,22 @@ export type LocationHeadingObject = {
    * - `0`: > 50 degrees
    */
   accuracy: number;
+  /**
+   * Heading accuracy in degrees, or `null` when the reading is invalid.
+   * @platform ios
+   */
+  headingAccuracy?: number | null;
+};
+
+/**
+ * Type representing options object that can be passed to `watchHeadingAsync`.
+ */
+export type LocationHeadingOptions = {
+  /**
+   * Minimum heading change, in degrees, between updates. Pass `0` to receive every reading.
+   * @default `1` on iOS, about `2` on Android
+   */
+  headingFilter?: number;
 };
 
 // @needsAudit

@@ -1,7 +1,7 @@
 ---
-title: 'EAS Workflows で web アプリを EAS Hosting にデプロイする'
+title: 'Expo Workflows で web アプリを Expo Hosting にデプロイする'
 sidebar_title: web デプロイ
-description: 既存の EAS Workflows に web ビルドの EAS Hosting へのデプロイを追加し、Android と iOS のリリースと並行して配信する方法を学びます。
+description: 既存の Expo Workflows に web ビルドの Expo Hosting へのデプロイを追加し、Android と iOS のリリースと並行して配信する方法を学びます。
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -10,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 
-これまでの章で作ったワークフローは、Android と iOS を対象にしたものでした。これを拡張して、同じリリースに合わせて web ビルドも [EAS Hosting](/eas/hosting/introduction/) へデプロイしてみましょう。
+これまでの章で作ったワークフローは、Android と iOS を対象にしたものでした。これを拡張して、同じリリースに合わせて web ビルドも [Expo Hosting](/eas/hosting/introduction/) へデプロイしてみましょう。
 
 ## この章で学べること
 
@@ -18,11 +18,11 @@ import { CODE } from '~/ui/components/Text';
 - **preview.yml** に web デプロイのジョブを追加して、本番以外の web ビルドを作成する
 - **production.yml** に web デプロイのジョブを追加して、本番の web ビルドを作成する
 
-## EAS Hosting と deploy ジョブ
+## Expo Hosting と deploy ジョブ
 
-**EAS Hosting** は、Expo アプリの web ビルドをホスティング・デプロイするためのサービスです。各デプロイには固有の URL が割り当てられ、プロジェクトごとに 1 つの本番 URL があり、最後に本番としてデプロイした内容を配信します。
+**Expo Hosting** は、Expo アプリの web ビルドをホスティング・デプロイするためのサービスです。各デプロイには固有の URL が割り当てられ、プロジェクトごとに 1 つの本番 URL があり、最後に本番としてデプロイした内容を配信します。
 
-EAS Workflows の事前パッケージ済み [`deploy`](/eas/workflows/pre-packaged-jobs/#deploy) ジョブは、web のエクスポートを実行し、その出力を EAS Hosting にアップロードして、デプロイ先の URL をジョブの出力として返します。`deploy` ジョブには 2 つのパラメーターがあります。
+Expo Workflows の事前パッケージ済み [`deploy`](/eas/workflows/pre-packaged-jobs/#deploy) ジョブは、web のエクスポートを実行し、その出力を Expo Hosting にアップロードして、デプロイ先の URL をジョブの出力として返します。`deploy` ジョブには 2 つのパラメーターがあります。
 
 | パラメーター | 型      | 説明                                                                                                         |
 | ------------ | ------- | ------------------------------------------------------------------------------------------------------------ |
@@ -44,7 +44,7 @@ EAS Workflows の事前パッケージ済み [`deploy`](/eas/workflows/pre-packa
 }
 ```
 
-`static` は、EAS Hosting が配信できる静的な HTML・JavaScript・アセットファイルのディレクトリを生成するよう Expo CLI に指示します。Expo は `single` と `server` の出力にも対応していますが、`static` はどのホストでも配信できるプレーンなファイルを生成するので、ここではそれで十分です。
+`static` は、Expo Hosting が配信できる静的な HTML・JavaScript・アセットファイルのディレクトリを生成するよう Expo CLI に指示します。Expo は `single` と `server` の出力にも対応していますが、`static` はどのホストでも配信できるプレーンなファイルを生成するので、ここではそれで十分です。
 
 **app.json** を上のように設定したら、変更をコミットしてリポジトリの `main` ブランチにプッシュします。
 
@@ -77,7 +77,7 @@ jobs:
 
 ### ワークフローの変更をリポジトリにプッシュする
 
-**preview.yml** の変更をコミットして、GitHub リポジトリの `main` ブランチにプッシュします。EAS Workflows はデフォルトブランチからワークフローファイルを読み取るため、これによって変更が有効になります。
+**preview.yml** の変更をコミットして、GitHub リポジトリの `main` ブランチにプッシュします。Expo Workflows はデフォルトブランチからワークフローファイルを読み取るため、これによって変更が有効になります。
 
 <Terminal
   cmd={[
@@ -100,10 +100,10 @@ jobs:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/preview.yml']} />
 
-EAS ダッシュボードでは、プレビューワークフローの実行にビルドジョブと並んで `deploy_web` ジョブが表示されます。
+Expo ダッシュボードでは、プレビューワークフローの実行にビルドジョブと並んで `deploy_web` ジョブが表示されます。
 
 <ContentSpotlight
-  alt="Android と iOS のビルドジョブと並列に deploy_web ジョブが実行されている EAS Workflows のプレビュー実行。"
+  alt="Android と iOS のビルドジョブと並列に deploy_web ジョブが実行されている Expo Workflows のプレビュー実行。"
   src="/static/images/tutorial/cicd/eas-workflows-web-deploy-preview-job.png"
   className="max-w-160"
 />
@@ -111,7 +111,7 @@ EAS ダッシュボードでは、プレビューワークフローの実行に�
 **Deploy web (preview)** の下にある **View Deployment** リンクをクリックすると、デプロイされた web ビルドがブラウザーで開きます。
 
 <ContentSpotlight
-  alt="deploy_web ジョブが出力した EAS Hosting のデプロイ URL。デプロイごとに固有のプレビュー URL が表示されています。"
+  alt="deploy_web ジョブが出力した Expo Hosting のデプロイ URL。デプロイごとに固有のプレビュー URL が表示されています。"
   src="/static/images/tutorial/cicd/eas-hosting-deployment-url-output.webp"
   className="max-w-160"
 />
@@ -191,7 +191,7 @@ jobs:
       ビルドも配信されるようにしました。
     </>
   }
-  nextChapterDescription="EAS Workflows を使いこなすための次のステップを学びましょう。"
-  nextChapterTitle="EAS Workflows を使いこなすための次のステップ"
+  nextChapterDescription="Expo Workflows を使いこなすための次のステップを学びましょう。"
+  nextChapterTitle="Expo Workflows を使いこなすための次のステップ"
   nextChapterLink="/ja/tutorial/cicd/next-steps"
 />

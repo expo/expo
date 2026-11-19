@@ -1,5 +1,10 @@
+
 'use strict';
 
+const { execFile } = require('node:child_process');
+const { promisify } = require('node:util');
+
+const execFileAsync = promisify(execFile);
 const REPOSITORY = 'expo/expo';
 const SEE_DIRECTIVE = /^\s*See:\s*(.*?)\s*$/i;
 const SAFE_URL = /^https:\/\/[^\s<>]+$/;
@@ -87,12 +92,20 @@ async function resolveMetadata(changeset, reference) {
   }
   if (!changeset.commit) return {};
   try {
-    const { getCommitInfo } = await import('@changesets/get-github-info');
-    const info = await getCommitInfo({ repo: REPOSITORY, commit: changeset.commit });
-    const commitReference = `[${changeset.commit.slice(0, 7)}](https://github.com/${REPOSITORY}/commit/${changeset.commit})`;
+    const { stdout: subject } = await execFileAsync(
+      'git',
+      ['show', '-s', '--format=%s', changeset.commit],
+      { encoding: 'utf8' }
+    );
+    // NOTE(@kitten): Cherry-picks preserve the source PR in the subject; associated PRs can include release PRs.
+    const pull = subject.trim().match(/\(#(\d+)\)$/)?.[1];
+    if (pull) {
+      const { getPullRequestInfo } = await import('@changesets/get-github-info');
+      const info = await getPullRequestInfo({ repo: REPOSITORY, pull: Number(pull) });
+      if (info) return { author: info.author?.markdownLink, reference: info.pull.markdownLink };
+    }
     return {
-      author: info?.author?.markdownLink,
-      reference: info?.pull?.markdownLink || info?.commit?.markdownLink || commitReference,
+      reference: `[${changeset.commit.slice(0, 7)}](https://github.com/${REPOSITORY}/commit/${changeset.commit})`,
     };
   } catch {
     return {
@@ -136,3 +149,4 @@ module.exports = {
   ...changelogFunctions,
   default: changelogFunctions,
 };
+

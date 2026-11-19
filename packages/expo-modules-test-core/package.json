@@ -33,15 +33,14 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@types/node": "^22.14.0",
     "expo-type-information": "workspace:^",
-    "glob": "^13.0.0",
     "xml-js": "^1.6.11",
     "yaml": "^2.8.3"
   },
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
-    "@types/jest": "^30.0.0"
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.14.0"
   },
   "peerDependencies": {
     "expo": "*"

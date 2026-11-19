@@ -10,6 +10,8 @@ import type {
   ExpoWidgetsEvents,
   NativeLiveActivity,
   NativeLiveActivityFactory,
+  NativeLiveActivityStartOptions,
+  NativeLiveActivityUpdateOptions,
   NativeWidgetObject,
   WidgetConfigurationEnum,
 } from './Widgets.types';
@@ -35,7 +37,7 @@ class LiveActivityStub {
   getId(): string {
     return '';
   }
-  async update(_props?: string): Promise<void> {}
+  async update(_props: string, _options: NativeLiveActivityUpdateOptions): Promise<void> {}
   async end(
     _dismissalPolicy?: string,
     _afterDate?: number,
@@ -53,7 +55,7 @@ class LiveActivityStub {
 class LiveActivityFactoryStub {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(_name: string, _layout: string) {}
-  start(_props?: string, _url?: string): NativeLiveActivity {
+  start(_props: string, _options: NativeLiveActivityStartOptions): NativeLiveActivity {
     return new LiveActivityStub() as NativeLiveActivity;
   }
   getInstances(): NativeLiveActivity[] {
@@ -97,6 +99,9 @@ class CustomNotificationFactoryStub {
 const ExpoWidgetsModule = {
   widgetsDirectory: '',
   reloadAllWidgets(): void {},
+  areActivitiesEnabled(): boolean {
+    return false;
+  },
   Widget: WidgetStub as typeof NativeWidgetObject,
   LiveActivityFactory: LiveActivityFactoryStub as typeof NativeLiveActivityFactory,
   LiveActivity: LiveActivityStub as typeof NativeLiveActivity,

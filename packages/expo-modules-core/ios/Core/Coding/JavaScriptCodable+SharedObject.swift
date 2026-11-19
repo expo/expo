@@ -35,14 +35,24 @@ extension SharedObject: JavaScriptDecodable, JavaScriptEncodable {
 
   @JavaScriptActor
   public static func encode(_ value: SharedObject, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
-    // Delegates to `DynamicSharedObjectType.castToJS`, which returns the already-paired JS object or
-    // creates and registers a new one. That needs the registry on the app context, recovered from the
-    // runtime; an unprepared runtime throws `Exceptions.AppContextNotFound`.
+    // An object already paired in this runtime is read off its native state, which is how most objects
+    // are encoded (for example, when a module returns or emits an object it got from JavaScript).
+    if let jsObject = value.object(in: runtime) {
+      return jsObject.takeValue()
+    }
+    // Otherwise, delegates to `DynamicSharedObjectType.castToJS`, which mostly creates and registers a
+    // new JS object. It returns an already-paired one only when the object is paired in its app
+    // context's runtime and that isn't `runtime`. That needs the registry on the app context, recovered
+    // from the runtime; an unprepared runtime throws `Exceptions.AppContextNotFound`.
     //
     // TODO: creating the object isn't `encode`'s job. Once creation/pairing moves elsewhere, `encode`
     // would only read the native state, dropping the app-context lookup and becoming `@inlinable` too.
     guard let appContext = AppContext.from(runtime: runtime) else {
       throw Exceptions.AppContextNotFound()
+    }
+    // A runtime other than the main runtime, such as the worklet UI runtime, gets a JS object of its own.
+    if let mainRuntime = try? appContext.runtime, runtime.id != mainRuntime.id {
+      return try appContext.javaScriptObject(for: value, in: copy runtime).takeValue()
     }
     return try DynamicSharedObjectType(innerType: Self.self).castToJS(value, appContext: appContext)
   }

@@ -1,6 +1,7 @@
 import { NativeTabs } from 'expo-router/native-tabs';
 import { useState } from 'react';
 import { Button, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { TabBarHiddenToggle } from '../../components/tab-bar-hidden-context';
@@ -18,7 +19,8 @@ export default function Dynamic() {
   const [iconName, setIconName] = useState(iconNames[0] ?? '');
 
   return (
-    <View
+    <SafeAreaView
+      edges={['left', 'right']}
       style={{
         flex: 1,
         justifyContent: 'center',
@@ -71,6 +73,6 @@ export default function Dynamic() {
           />
         ))}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

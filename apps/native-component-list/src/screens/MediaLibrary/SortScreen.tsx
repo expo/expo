@@ -4,6 +4,7 @@ import {
   requestPermissionsAsync,
   Query,
   AssetField,
+  type SortableAssetField,
   AssetInfo,
 } from 'expo-media-library';
 import { useEffect, useState } from 'react';
@@ -22,7 +23,7 @@ const numColumns = 3;
 const screenWidth = Dimensions.get('window').width;
 const imageSize = screenWidth / numColumns - 8;
 
-const sortLabels: Record<AssetField, string> = {
+const sortLabels: Record<SortableAssetField, string> = {
   [AssetField.CREATION_TIME]: 'Creation Time',
   [AssetField.MODIFICATION_TIME]: 'Modification Time',
   [AssetField.MEDIA_TYPE]: 'Media Type',
@@ -32,10 +33,15 @@ const sortLabels: Record<AssetField, string> = {
   [AssetField.IS_FAVORITE]: 'Is Favorite',
 };
 
+const isSortableAssetField = (field: AssetField): field is SortableAssetField =>
+  field in sortLabels;
+
+const sortFields = Object.values(AssetField).filter(isSortableAssetField);
+
 const SortScreen = () => {
   const [assets, setAssets] = useState<AssetInfo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortingBy, setSortingBy] = useState<AssetField>(AssetField.CREATION_TIME);
+  const [sortingBy, setSortingBy] = useState<SortableAssetField>(AssetField.CREATION_TIME);
   const [ascending, setAscending] = useState<boolean>(false);
 
   const fetchAssets = async () => {
@@ -139,7 +145,6 @@ const SortScreen = () => {
   );
 
   const cycleSortField = () => {
-    const sortFields = Object.values(AssetField);
     const currentIndex = sortFields.indexOf(sortingBy);
     const nextIndex = (currentIndex + 1) % sortFields.length;
     setSortingBy(sortFields[nextIndex]);

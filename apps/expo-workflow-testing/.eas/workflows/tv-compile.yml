@@ -42,6 +42,9 @@ on:
       - packages/expo-system-ui/ios/**
       - packages/expo-ui/ios/**
       - packages/expo-video/ios/**
+      - '!**/ios/Tests/**'
+      - '!**/ios/WorkletsTests/**'
+      - '!**/ios/Benchmarks/**'
   pull_request:
     if: ${{ !startsWith(github.event.pull_request.head.ref, 'changeset-release/') }}
     paths:
@@ -76,6 +79,9 @@ on:
       - packages/expo-system-ui/ios/**
       - packages/expo-ui/ios/**
       - packages/expo-video/ios/**
+      - '!**/ios/Tests/**'
+      - '!**/ios/WorkletsTests/**'
+      - '!**/ios/Benchmarks/**'
   schedule:
     - cron: '0 17 * * SUN' # 22:00 UTC every Sunday
 

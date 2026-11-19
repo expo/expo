@@ -1,4 +1,5 @@
 'use client';
+import { useVerticalBarEdgeIOS } from 'expo-status-bar';
 import * as React from 'react';
 import { use } from 'react';
 import {
@@ -24,6 +25,7 @@ import { HeaderSearchBar } from './HeaderSearchBar';
 import { HeaderShownContext } from './HeaderShownContext';
 import { HeaderTitle } from './HeaderTitle';
 import { getDefaultHeaderHeight } from './getDefaultHeaderHeight';
+import { getHeaderStatusBarHeight } from './getHeaderStatusBarHeight';
 
 // Width of the screen in split layout on portrait mode on iPad Mini
 const IPAD_MINI_MEDIUM_WIDTH = 414;
@@ -74,6 +76,7 @@ const warnIfHeaderStylesDefined = (styles: Record<string, any>) => {
 
 export function Header(props: Props) {
   const insets = useSafeAreaInsets();
+  const verticalBarEdge = useVerticalBarEdgeIOS();
   const frame = useFrameSize((size) => size, true);
   const { colors } = useTheme();
 
@@ -120,7 +123,9 @@ export function Header(props: Props) {
     headerShadowVisible,
     headerPressColor,
     headerPressOpacity,
-    headerStatusBarHeight = isParentHeaderShown ? 0 : insets.top,
+    headerStatusBarHeight = isParentHeaderShown
+      ? 0
+      : getHeaderStatusBarHeight(insets, verticalBarEdge),
   } = props;
 
   const defaultHeight = getDefaultHeaderHeight(layout, modal, headerStatusBarHeight);

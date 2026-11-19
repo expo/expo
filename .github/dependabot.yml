@@ -8,6 +8,7 @@ updates:
       - /.github/actions/expo-caches
       - /.github/actions/slack-notify
       - /.github/actions/use-android-emulator
+      - /.github/actions/detect-platform-change
     schedule:
       interval: weekly
     ignore:

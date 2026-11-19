@@ -5,6 +5,7 @@ import type { PagerViewProps } from 'react-native-pager-view';
 import { TabView, type TabBarProps, type TabViewProps } from 'react-native-tab-view';
 
 import { router } from '../../../imperative-api';
+import { Stack } from '../../../layouts/Stack';
 import { TopTabs } from '../../../layouts/TopTabs';
 import { act, renderRouter, screen } from '../../../testing-library';
 import { useNavigation } from '../../../useNavigation';
@@ -154,6 +155,23 @@ test('renders only declared tabs and redirects from undeclared routes', async ()
   expect(screen).toHavePathname('/');
 });
 
+test('redirects an undeclared root route to the first screen in a group tab', async () => {
+  await renderRouter({
+    _layout: () => (
+      <TopTabs>
+        <TopTabs.Screen name="(feed)" />
+      </TopTabs>
+    ),
+    index: () => <View testID="undeclared-root" />,
+    '(feed)/_layout': () => <Stack />,
+    '(feed)/feed': () => <View testID="feed" />,
+  });
+
+  expect(screen.getByTestId('feed')).toBeVisible();
+  expect(screen).toHavePathname('/feed');
+  expect(screen.queryByTestId('undeclared-root')).toBeNull();
+});
+
 test('removes and redirects from a hidden tab', async () => {
   await renderRouter({
     _layout: () => (
@@ -243,6 +261,26 @@ test('renders a custom tabBar with standard navigation props', async () => {
   await userEvent.press(screen.getByTestId('second-tab'));
 
   expect(screen).toHavePathname('/second');
+});
+
+test('passes safeAreaInsets overrides to a custom tabBar', async () => {
+  let tabBarProps: MaterialTopTabBarProps | undefined;
+
+  await renderRouter({
+    _layout: () => (
+      <TopTabs
+        safeAreaInsets={{ left: 0, right: 0 }}
+        tabBar={(props: MaterialTopTabBarProps) => {
+          tabBarProps = props;
+          return null;
+        }}>
+        <TopTabs.Screen name="index" />
+      </TopTabs>
+    ),
+    index: () => <View testID="index" />,
+  });
+
+  expect(tabBarProps?.insets).toEqual(expect.objectContaining({ left: 0, right: 0 }));
 });
 
 test('lets a tabPress listener prevent navigation from a custom tabBar', async () => {

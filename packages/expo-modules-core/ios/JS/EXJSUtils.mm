@@ -50,3 +50,19 @@ void EXJSUtilsEmitEvent(const char *eventName,
   auto *args = static_cast<const jsi::Value *>(argumentsPointer);
   expo::EventEmitter::emitEvent(runtime, object, eventName, args, argumentCount);
 }
+
+void EXJSUtilsSetListeningHook(void *runtimePointer,
+                               const void *objectPointer,
+                               void *context,
+                               EXJSListeningHook hook,
+                               void (*releaseContext)(void *))
+{
+  auto &runtime = *static_cast<jsi::Runtime *>(runtimePointer);
+  auto &object = *static_cast<const jsi::Object *>(objectPointer);
+
+  if (auto state = expo::EventEmitter::NativeState::get(runtime, object, true)) {
+    state->setListeningHook(context, hook, releaseContext);
+  } else {
+    releaseContext(context);
+  }
+}

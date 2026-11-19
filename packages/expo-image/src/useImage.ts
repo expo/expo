@@ -65,13 +65,11 @@ export function useImage(
     // We're doing some asynchronous action in this effect, so we should keep track
     // if the effect was already cleaned up. In that case, the async action shouldn't change the state.
     let isEffectValid = true;
-    let loadedImage: ImageRef | null = null;
 
     function loadImage() {
       Image.loadAsync(resolvedSource, options)
         .then((image) => {
           if (isEffectValid) {
-            loadedImage = image;
             setImage(image);
           } else {
             image.release();
@@ -96,11 +94,21 @@ export function useImage(
     loadImage();
 
     return () => {
-      // Invalidate the effect and release the shared object to free up memory.
+      // Invalidate the effect. The current image stays rendered until the next one replaces it.
       isEffectValid = false;
-      loadedImage?.release();
     };
   }, [resolvedSource.uri, ...dependencies]);
+
+  useEffect(() => {
+    if (!image) {
+      return;
+    }
+    return () => {
+      // Release the image once it is replaced or the component unmounts. In development, React reads
+      // the previous props after this cleanup, so the release waits until the commit finishes.
+      Promise.resolve().then(() => image.release());
+    };
+  }, [image]);
 
   return image;
 }

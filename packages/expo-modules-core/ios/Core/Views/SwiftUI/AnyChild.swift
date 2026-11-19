@@ -18,6 +18,10 @@ extension ExpoSwiftUI {
 
     // Identity used to reconcile child collections. Defaults to object identity.
     var childIdentity: ExpoSwiftUI.ChildIdentity { get }
+
+    /// Returns the child as a SwiftUI view of Expo Modules v2 of the given type, or `nil` when it's another view. The
+    /// views of `ExpoSwiftUI.View` use it to find a v2 child by its type. The default returns `nil`.
+    func `as`<Content: AnyNativeSwiftUIView>(_ type: Content.Type) -> NativeChild<Content>?
   }
 
   /**
@@ -50,6 +54,10 @@ public extension ExpoSwiftUI.AnyChild where Self == ChildViewType {
 public extension ExpoSwiftUI.AnyChild {
   var childIdentity: ExpoSwiftUI.ChildIdentity {
     .object(id)
+  }
+
+  func `as`<Content: AnyNativeSwiftUIView>(_ type: Content.Type) -> ExpoSwiftUI.NativeChild<Content>? {
+    return nil
   }
 }
 

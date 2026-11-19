@@ -27,6 +27,23 @@ export const MediaLibraryScreens = [
   },
 ];
 
+if (Platform.OS === 'ios') {
+  MediaLibraryScreens.push({
+    name: 'Media Subtype',
+    route: 'medialibrary/media-subtype',
+    getComponent() {
+      return optionalRequire(() => require('./MediaSubtypeScreen'));
+    },
+  });
+  MediaLibraryScreens.push({
+    name: 'React Native Image',
+    route: 'medialibrary/react-native-image',
+    getComponent() {
+      return optionalRequire(() => require('./ReactNativeImageScreen'));
+    },
+  });
+}
+
 if (Platform.OS === 'android' && Platform.Version >= 33) {
   MediaLibraryScreens.push({
     name: 'Granular Permissions',

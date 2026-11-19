@@ -115,7 +115,7 @@ export function replaceXmlCommentsWithAnnotations(value: string) {
       /<span class="token (comment|plain-text)">&lt;!-- @info (.*?)--><\/span>\s*/g,
       (match, type, content) => {
         return content
-          ? `<span class="code-annotation with-tooltip" data-tippy-content="${escapeHtml(
+          ? `<span class="code-annotation with-tooltip" tabindex="0" data-tooltip="${escapeHtml(
               content
             )}">`
           : '<span class="code-annotation">';
@@ -138,7 +138,7 @@ export function replaceHashCommentsWithAnnotations(value: string) {
       /<span class="token (comment|plain-text)"># @info (.*?)#<\/span>\s*/g,
       (match, type, content) => {
         return content
-          ? `<span class="code-annotation with-tooltip" data-tippy-content="${escapeHtml(
+          ? `<span class="code-annotation with-tooltip" tabindex="0" data-tooltip="${escapeHtml(
               content
             )}">`
           : '<span class="code-annotation">';
@@ -161,7 +161,7 @@ export function replaceSlashCommentsWithAnnotations(value: string) {
       /<span clas{2}="token (com{2}ent|plain-text)">(\s*)\/\* @info (.*?)\*\/\s*<\/span>\s*/g,
       (match, type, beforeWhitespace, content) => {
         return content
-          ? `${beforeWhitespace}<span class="code-annotation with-tooltip" data-tippy-content="${escapeHtml(
+          ? `${beforeWhitespace}<span class="code-annotation with-tooltip" tabindex="0" data-tooltip="${escapeHtml(
               content
             )}">`
           : `${beforeWhitespace}<span class="code-annotation">`;
@@ -187,7 +187,7 @@ export function replaceSlashCommentsWithAnnotationsForTutorial(value: string) {
       /<span clas{2}="token (com{2}ent|plain-text)">(\s*)\/\* @tutinfo (.*?)\*\/\s*<\/span>\s*/g,
       (match, type, beforeWhitespace, content) => {
         return content
-          ? `${beforeWhitespace}<span class="tutorial-code-annotation with-tooltip" data-tippy-content="${escapeHtml(
+          ? `${beforeWhitespace}<span class="tutorial-code-annotation with-tooltip" tabindex="0" data-tooltip="${escapeHtml(
               content
             )}">`
           : `${beforeWhitespace}<span class="tutorial-code-annotation">`;

@@ -3,8 +3,9 @@ import fs from 'fs';
 import path from 'path';
 
 import { scanPackage } from '../scanner/scan';
+import { preserveDocComments, type DocCommentWarning } from './docComments';
 import {
-  GENERATED_HEADER_LINE,
+  GENERATED_HEADER_PREFIX,
   renderSurface,
   type DeclarationCounts,
   type RenderedDeclaration,
@@ -34,9 +35,11 @@ export type GenerateTypesOutcome =
   /** With `check`: the file is missing, outdated, or no longer needed, and a run would write or remove it. */
   | { kind: 'stale'; outputPath: string; expected: 'written' | 'removed' };
 
+export type GenerateTypesWarning = RenderWarning | DocCommentWarning;
+
 export type GenerateTypesResult = {
   outcome: GenerateTypesOutcome;
-  warnings: RenderWarning[];
+  warnings: GenerateTypesWarning[];
   stats: ScanStats;
   /** Declarations written, per kind; skipped ones are not counted. */
   counts: DeclarationCounts;
@@ -50,8 +53,9 @@ export type GenerateTypesResult = {
  * written when the package exports no types; a file this tool generated on an earlier run is
  * removed then, so no stale declarations stay behind. The output file is only ever replaced or
  * removed when it carries this tool's header, so a hand-written file at the same path is never
- * lost. With `check`, the file is not touched at all and a pending write or removal is reported as
- * `stale`.
+ * lost. The doc comments of a file this tool generated stay above the declarations and members of
+ * the same names. With `check`, the file is not touched at all and a pending write or removal is
+ * reported as `stale`.
  */
 export async function generateTypes({
   packageDir,
@@ -60,10 +64,20 @@ export async function generateTypes({
   check = false,
 }: GenerateTypesOptions): Promise<GenerateTypesResult> {
   const { exports: surface, stats } = await scanPackage(packageDir, { binaryPath: scannerPath });
-  const { source, warnings, counts, declarations } = renderSurface(surface);
+  const rendered = renderSurface(surface);
   const existing = await readExisting(outputPath);
+  const { source, warnings } =
+    existing.kind === 'owned'
+      ? preserveDocComments(rendered.source, existing.content, outputPath)
+      : { source: rendered.source, warnings: [] };
   const outcome = await settle(outputPath, source, existing, check);
-  return { outcome, warnings, stats, counts, declarations };
+  return {
+    outcome,
+    warnings: [...rendered.warnings, ...warnings],
+    stats,
+    counts: rendered.counts,
+    declarations: rendered.declarations,
+  };
 }
 
 /** Applies the rendered source to the file on disk, or with `check` only says what that would do. */
@@ -112,7 +126,7 @@ type ExistingFile =
 async function readExisting(outputPath: string): Promise<ExistingFile> {
   try {
     const content = await fs.promises.readFile(outputPath, 'utf8');
-    return content.startsWith(GENERATED_HEADER_LINE)
+    return content.startsWith(GENERATED_HEADER_PREFIX)
       ? { kind: 'owned', content }
       : { kind: 'foreign' };
   } catch (error) {

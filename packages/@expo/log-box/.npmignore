@@ -42,3 +42,4 @@ __rsc_tests__
 # This flag file trigger on-demand bundling during native builds in the Expo monorepo
 /.bundle-on-demand
 /CLAUDE.md
+/AGENTS.md

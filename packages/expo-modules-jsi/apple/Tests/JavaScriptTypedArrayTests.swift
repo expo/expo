@@ -303,4 +303,54 @@ struct JavaScriptTypedArrayTests {
     let updated = try runtime.eval("val => val[1]").getFunction().call(arguments: value.refToValue())
     #expect(updated.getInt() == 99)
   }
+
+  // MARK: - JavaScriptCodable
+
+  @Test
+  func `decodes and encodes as JavaScriptCodable`() throws {
+    try runtime.eval("globalThis.array = new Int16Array([1, 2, 3])")
+    let value = try runtime.eval("globalThis.array")
+    let typedArray = try JavaScriptTypedArray.decode(value, in: runtime)
+    #expect(typedArray.kind == .Int16Array)
+    #expect(typedArray.length == 3)
+    let encoded = try JavaScriptTypedArray.encode(typedArray, in: runtime)
+    let isSame = try runtime.eval("(value) => value === globalThis.array").getFunction()
+    #expect(try isSame.call(arguments: encoded.ref()).getBool() == true)
+  }
+
+  @Test
+  func `decodes from an unowned value`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: try runtime.eval("new Float64Array(2)").ref(),
+      try runtime.eval("new ArrayBuffer(16)").ref()
+    )
+    let typedArray = try JavaScriptTypedArray.decode(buffer.unownedValue(at: 0), in: runtime)
+    #expect(typedArray.kind == .Float64Array)
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptTypedArray.decode(buffer.unownedValue(at: 1), in: runtime)
+    }
+  }
+
+  @Test
+  func `decoding rejects a value that is not a typed array`() throws {
+    for source in ["new ArrayBuffer(4)", "[1, 2]", "42"] {
+      let value = try runtime.eval(source)
+      #expect(throws: JavaScriptValue.TypeError.self) {
+        _ = try JavaScriptTypedArray.decode(value, in: runtime)
+      }
+    }
+  }
+
+  @Test
+  func `decodable kinds are objects`() {
+    #expect(JavaScriptTypedArray.decodableKinds == .object)
+  }
+
+  @Test
+  func `decoding rejects a runtime-free value`() throws {
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptTypedArray.decode(JavaScriptValue.number(42), in: runtime)
+    }
+  }
 }

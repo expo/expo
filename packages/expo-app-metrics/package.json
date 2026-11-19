@@ -1,6 +1,6 @@
 {
   "name": "expo-app-metrics",
-  "version": "58.0.12",
+  "version": "58.0.14",
   "description": "Expo module that collects app startup, frame rate, memory, and session metrics",
   "keywords": [
     "ExpoAppMetrics",
@@ -43,7 +43,8 @@
     "prepack": "expo-module prepack",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "typegen": "expo-modules typegen"
   },
   "dependencies": {
     "expo-updates-interface": "workspace:~"

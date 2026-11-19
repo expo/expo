@@ -96,11 +96,11 @@ public final class LocationModule: Module {
       return nil
     }
 
-    AsyncFunction("watchDeviceHeading") { (watchId: Int) in
+    AsyncFunction("watchDeviceHeading") { (watchId: Int, options: HeadingOptions) in
       try ensureForegroundLocationPermissions(appContext)
 
-      let options = LocationOptions(accuracy: .bestForNavigation, distanceInterval: 0)
-      let streamer = await DeviceHeadingStreamer(options: options)
+      let locationOptions = LocationOptions(accuracy: .bestForNavigation, distanceInterval: 0)
+      let streamer = await DeviceHeadingStreamer(options: locationOptions, headingOptions: options)
 
       locationStreamers[watchId] = streamer
 
@@ -110,11 +110,7 @@ public final class LocationModule: Module {
           for try await heading in try streamer.streamDeviceHeading() {
             sendEvent(EVENT_HEADING_CHANGED, [
               "watchId": watchId,
-              "heading": [
-                "trueHeading": heading.trueHeading,
-                "magHeading": heading.magneticHeading,
-                "accuracy": normalizeAccuracy(heading.headingAccuracy)
-              ]
+              "heading": exportHeading(heading)
             ])
           }
         } catch let exception as Exception {
@@ -144,25 +140,9 @@ public final class LocationModule: Module {
       Task {
         do {
           for try await activity in try streamer.streamMotionActivity() {
-            // CMMotionActivity reports one confidence value for the whole reading.
-            // Detected entries receive that confidence; undetected entries receive 0 (Low).
-            let confidence = activity.confidence.rawValue
-            func entry(_ detected: Bool) -> [String: Any] {
-              ["detected": detected, "confidence": detected ? confidence : 0]
-            }
             sendEvent(EVENT_MOTION_ACTIVITY_CHANGED, [
               "watchId": watchId,
-              "activity": [
-                "activities": [
-                  "automotive": entry(activity.automotive),
-                  "cycling":    entry(activity.cycling),
-                  "running":    entry(activity.running),
-                  "walking":    entry(activity.walking),
-                  "stationary": entry(activity.stationary),
-                  "unknown":    entry(activity.unknown),
-                ],
-                "timestamp": activity.startDate.timeIntervalSince1970 * 1000
-              ]
+              "activity": activity.toMotionActivityDict()
             ])
           }
         } catch let exception as Exception {
@@ -305,6 +285,44 @@ public final class LocationModule: Module {
 
     AsyncFunction("hasStartedGeofencingAsync") { (taskName: String) -> Bool in
       return try taskManager.task(withName: taskName, hasConsumerOf: EXGeofencingTaskConsumer.self)
+    }
+
+    // Background motion activity
+
+    AsyncFunction("startMotionActivityUpdatesAsync") { (taskName: String, _: [String: Any]) in
+      #if EXPO_LOCATION_DISABLE_MOTION
+      throw Exceptions.MotionActivityDisabled()
+      #else
+      guard CMMotionActivityManager.isActivityAvailable() else {
+        throw Exceptions.MotionActivityUnavailable()
+      }
+      let authorizationStatus = CMMotionActivityManager.authorizationStatus()
+      guard authorizationStatus != .denied && authorizationStatus != .restricted else {
+        throw Exceptions.MotionActivityUnauthorized()
+      }
+
+      try taskManager.registerTask(withName: taskName, consumer: MotionActivityTaskConsumer.self, options: [:])
+      #endif
+    }
+
+    AsyncFunction("stopMotionActivityUpdatesAsync") { (taskName: String) in
+      #if EXPO_LOCATION_DISABLE_MOTION
+      throw Exceptions.MotionActivityDisabled()
+      #else
+      let taskManager = try taskManager
+
+      try EXUtilities.catchException {
+        taskManager.unregisterTask(withName: taskName, consumerClass: MotionActivityTaskConsumer.self)
+      }
+      #endif
+    }
+
+    AsyncFunction("hasStartedMotionActivityUpdatesAsync") { (taskName: String) -> Bool in
+      #if EXPO_LOCATION_DISABLE_MOTION
+      throw Exceptions.MotionActivityDisabled()
+      #else
+      return try taskManager.task(withName: taskName, hasConsumerOf: MotionActivityTaskConsumer.self)
+      #endif
     }
   }
 }

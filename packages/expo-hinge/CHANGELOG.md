@@ -1,5 +1,11 @@
 # expo-hinge
 
+## 58.0.2
+
+### Patch Changes
+
+- Add the optional `expo-hinge/reanimated` entry. `useAnimatedHinge()` returns the hinge as a Reanimated shared value, and `addHingeWorkletListener()` runs a worklet on each hinge change. The UI thread runs both and does not wait for the JavaScript thread. The entry requires `react-native-reanimated` and `react-native-worklets`. ([#51829](https://github.com/expo/expo/pull/51829) by [@pawicao](https://github.com/pawicao))
+
 ## 58.0.1
 
 ### Patch Changes

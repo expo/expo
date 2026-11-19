@@ -48,9 +48,11 @@ function isBlob(obj: any): obj is Blob {
 /**
  * Normalize a BodyInit object to a Uint8Array for NativeRequest
  */
-export async function normalizeBodyInitAsync(
-  body: BodyInit | null | undefined
-): Promise<{ body: Uint8Array | null; overriddenHeaders?: NativeHeadersType }> {
+export async function normalizeBodyInitAsync(body: BodyInit | null | undefined): Promise<{
+  body: Uint8Array | null;
+  defaultHeaders?: NativeHeadersType;
+  overriddenHeaders?: NativeHeadersType;
+}> {
   if (body == null) {
     return { body: null };
   }
@@ -69,9 +71,11 @@ export async function normalizeBodyInitAsync(
   }
 
   if (body instanceof Blob || isBlob(body)) {
+    // An empty type still sets the header.
+    // On iOS, URLSession sends `application/x-www-form-urlencoded` for a POST body without a Content-Type.
     return {
       body: new Uint8Array(await blobToArrayBufferAsync(body)),
-      overriddenHeaders: [['Content-Type', body.type]],
+      defaultHeaders: [['Content-Type', body.type ?? '']],
     };
   }
 

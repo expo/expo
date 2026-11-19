@@ -3,7 +3,7 @@ package expo.modules.widgets.notifications
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
-import io.github.jakex7.peek.notification.PeekNotificationViews
+import io.github.expo.peek.notification.PeekNotificationViews
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope

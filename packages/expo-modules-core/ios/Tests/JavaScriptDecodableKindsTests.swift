@@ -1,6 +1,7 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 import ExpoModulesJSI
+import SwiftUI
 import Testing
 
 @testable import ExpoModulesCore
@@ -58,6 +59,19 @@ struct JavaScriptDecodableKindsTests {
   @Test
   func `shared objects accept only objects`() throws {
     try expectDecodableKinds(DecodableKindsSharedObject.self, accept: Self.objects)
+  }
+
+  @Test
+  func `URL accepts only strings`() throws {
+    try expectDecodableKinds(URL.self, accept: ["'text'"])
+  }
+
+  @Test
+  func `colors accept numbers, strings and objects`() throws {
+    let accepted = Self.objects.union(["42", "1.5", "'text'"])
+    try expectDecodableKinds(UIColor.self, accept: accepted)
+    try expectDecodableKinds(CGColor.self, accept: accepted)
+    try expectDecodableKinds(Color.self, accept: accepted)
   }
 
   @Test

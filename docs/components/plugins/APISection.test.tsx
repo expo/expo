@@ -66,8 +66,8 @@ describe('APISection', () => {
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(12);
-    expect(screen.getAllByRole('table')).toHaveLength(5);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(21);
+    expect(screen.getAllByRole('table')).toHaveLength(8);
 
     expect(screen.queryByText('Methods'));
     expect(screen.queryByText('Enums'));
@@ -89,9 +89,9 @@ describe('APISection', () => {
       <APISection packageName="expo-asset" forceVersion="unversioned" testRequire={require} />
     );
 
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(3);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(17);
-    expect(screen.getAllByRole('table')).toHaveLength(7);
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(18);
+    expect(screen.getAllByRole('table')).toHaveLength(8);
 
     expect(screen.queryByText('Classes'));
     expect(screen.queryByText('Asset Properties'));
@@ -114,8 +114,8 @@ describe('APISection', () => {
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(12);
-    expect(screen.getAllByRole('table')).toHaveLength(5);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(21);
+    expect(screen.getAllByRole('table')).toHaveLength(8);
   });
 
   test('renders the fallback when provider data is missing', () => {
@@ -140,6 +140,6 @@ describe('APISection', () => {
       0
     );
     expect(container.innerHTML).not.toContain("'discover_tune'");
-    expect(container.innerHTML.length).toBeLessThan(500_000);
+    expect(container.innerHTML.length).toBeLessThan(600_000);
   });
 });

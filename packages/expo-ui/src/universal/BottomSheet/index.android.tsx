@@ -6,6 +6,7 @@ import {
   type ModifierConfig,
 } from '@expo/ui/jetpack-compose/modifiers';
 import { useEffect, useRef, useState } from 'react';
+import { StyleSheet } from 'react-native';
 
 import { useIsInsideNativeTree } from '../../NativeTreeContext';
 import type { BottomSheetProps, SnapPoint } from './types';
@@ -102,7 +103,8 @@ export function BottomSheet({
     return sheet;
   }
   return (
-    <Host style={{ position: 'absolute' }} pointerEvents="none">
+    // Fill the parent, so `removeClippedSubviews` doesn't detach a zero-size host.
+    <Host style={StyleSheet.absoluteFill} pointerEvents="none">
       {sheet}
     </Host>
   );

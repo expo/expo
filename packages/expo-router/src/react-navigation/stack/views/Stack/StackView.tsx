@@ -1,4 +1,5 @@
 'use client';
+import { useVerticalBarEdgeIOS } from 'expo-status-bar';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
@@ -421,7 +422,7 @@ export class StackView extends React.Component<Props, State> {
                 {(isParentModal) => (
                   <HeaderShownContext.Consumer>
                     {(isParentHeaderShown) => (
-                      <CardStack
+                      <CardStackWithVerticalBarEdge
                         insets={insets!}
                         isParentHeaderShown={isParentHeaderShown}
                         isParentModal={isParentModal}
@@ -458,3 +459,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+function CardStackWithVerticalBarEdge(
+  props: Omit<React.ComponentProps<typeof CardStack>, 'verticalBarEdge'>
+) {
+  return <CardStack {...props} verticalBarEdge={useVerticalBarEdgeIOS()} />;
+}

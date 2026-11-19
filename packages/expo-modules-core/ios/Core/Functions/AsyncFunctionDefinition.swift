@@ -17,7 +17,7 @@ internal protocol AnyAsyncFunctionDefinition: AnyFunctionDefinition {
 /**
  The default queue used for module's async function calls.
  */
-private let defaultQueue = DispatchQueue(label: "expo.modules.AsyncFunctionQueue", qos: .userInitiated)
+internal let asyncFunctionQueue = DispatchQueue(label: "expo.modules.AsyncFunctionQueue", qos: .userInitiated)
 
 /**
  Represents a function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
@@ -139,7 +139,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
     let supportsAsyncScheduling = (try? appContext.runtime.supportsAsyncScheduling) ?? false
 
     if supportsAsyncScheduling {
-      let queue = queue ?? defaultQueue
+      let queue = queue ?? asyncFunctionQueue
       dispatchOnQueueUntilViewRegisters(appContext: appContext, arguments: nativeArguments, queue: queue, bodyBlock)
     } else {
       bodyBlock()
@@ -163,6 +163,17 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
     let maxRetryCount = 3
 
     queue.async {
+      // The app context's JS runtime can be torn down between this block being
+      // queued and running — e.g. when iOS deallocates a headless background
+      // task's context after the task finishes. Touching it then (resolving the
+      // promise in `block()`, or the view-registry lookup below) dereferences
+      // freed memory and crashes with EXC_BAD_ACCESS. Bail gracefully instead;
+      // the JS context is gone, so there is nothing to resolve back into.
+      // Mirrors the nil-guards added for ExpoFabricViewObjC (#42634) and
+      // SwiftUIVirtualView (#45175).
+      guard (try? appContext.runtime) != nil else {
+        return
+      }
       // Checks if this is a view function unregistered in the view registry. The check can be performed from the main thread only.
       if retryCount < maxRetryCount,
         let viewTag = arguments.first as? Int,
@@ -197,7 +208,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
         switch consume result {
         case .success(let value):
           promise.resolve(value)
-        case .failure(let error as any Error):
+        case .failure(let error):
           promise.reject(error)
         }
       }

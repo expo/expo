@@ -1,5 +1,24 @@
 # Changelog
 
+## 58.0.18
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo-constants@58.0.13
+
+## 58.0.17
+
+### Patch Changes
+
+- Export the `VirtualAssetModule` type that `Asset.fromModule` accepts. ([#51797](https://github.com/expo/expo/pull/51797) by [@amandeepmittal](https://github.com/amandeepmittal))
+
+## 58.0.16
+
+### Patch Changes
+
+- Use `AssetRegistry` from public API instead of Metro entry point. ([#51302](https://github.com/expo/expo/pull/51302) by [@byCedric](https://github.com/byCedric))
+
 ## 58.0.15
 
 ### Patch Changes

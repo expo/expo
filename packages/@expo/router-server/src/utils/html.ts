@@ -26,7 +26,7 @@ const ESCAPED_CHARACTERS: { [match: string]: string } = {
  * Replaces unsafe characters in a string with their escaped equivalents. This is to safely
  * embed data in an HTML context to prevent XSS.
  */
-export function escapeUnsafeCharacters(str: string): string {
+function escapeUnsafeCharacters(str: string): string {
   return str.replace(UNSAFE_CHARACTERS_REGEX, (match) => ESCAPED_CHARACTERS[match] ?? match);
 }
 
@@ -37,11 +37,8 @@ function escapeHtmlAttribute(value: string): string {
 /**
  * Returns a newline-separated `<link rel="preload">` and `<link rel="stylesheet">` pair for each
  * CSS href.
- *
- * Used by both `renderStaticContent()` and `serializeHtml()` to inject CSS bundles into the HTML
- * document's `<body>` element.
  */
-export function createInjectedCssAsString(hrefs: string[]): string {
+function createInjectedCssAsString(hrefs: string[]): string {
   return hrefs
     .flatMap((href) => {
       const safeHref = escapeHtmlAttribute(href);
@@ -55,20 +52,13 @@ export function createInjectedCssAsString(hrefs: string[]): string {
 
 /**
  * Returns newline-separated `<script defer>` HTML strings for each JavaScript source URL.
- *
- * Used by both `renderStaticContent()` and `serializeHtml()` to inject JavaScript bundles into the
- * HTML document's `<body>` element.
  */
-export function createInjectedScriptsAsString(srcs: string[]): string {
+function createInjectedScriptsAsString(srcs: string[]): string {
   return srcs.map((src) => `<script src="${escapeHtmlAttribute(src)}" defer></script>`).join('\n');
 }
 
 /**
  * Returns a `<link rel="icon" />` HTML string for the given favicon href.
- *
- * Used by the SPA export path, which splices into a pre-rendered template instead of a React
- * tree. Output must stay byte-equivalent to `createFaviconAsNode` (rendered to static markup)
- * so both rendering paths agree on the tag shape.
  */
 export function createFaviconAsString(href: string): string {
   return `<link rel="icon" href="${escapeHtmlAttribute(href)}"/>`;
@@ -91,7 +81,7 @@ export function getHydrationFlagScriptContents(): string {
  *
  * @see packages/expo/src/launch/registerRootComponent.tsx
  */
-export function getHydrationFlagScriptAsString(): string {
+function getHydrationFlagScriptAsString(): string {
   return `<script type="module">${getHydrationFlagScriptContents()}</script>`;
 }
 
@@ -99,31 +89,15 @@ export function getHydrationFlagScriptAsString(): string {
  * Returns the string content of the loader data script, which sets
  * `globalThis.__EXPO_ROUTER_LOADER_DATA__` to the given data using double-serialized JSON.
  *
- * @see {@link createLoaderDataScriptAsString} for the full `<script>` tag wrapper.
+ * Uses double-serialization so the client can fast-parse via native `JSON.parse()`.
+ * @see https://v8.dev/blog/cost-of-javascript-2019#json
  */
 export function getLoaderDataScriptContents(data: Record<string, unknown>): string {
   const safeJson = escapeUnsafeCharacters(JSON.stringify(data));
   return `globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});`;
 }
 
-/**
- * Returns a synchronous inline `<script>` that sets `globalThis.__EXPO_ROUTER_LOADER_DATA__`
- * with the given data, safely embedded as JSON.
- *
- * Uses double-serialization so the client can fast-parse via native `JSON.parse()`.
- * @see https://v8.dev/blog/cost-of-javascript-2019#json
- */
-export function createLoaderDataScriptAsString(data: Record<string, unknown>): string {
-  return `<script id="expo-router-data">${getLoaderDataScriptContents(data)}</script>`;
-}
-
-export function createExternalCssLinkAsString({
-  href,
-  media,
-}: {
-  href: string;
-  media?: string;
-}): string {
+function createExternalCssLinkAsString({ href, media }: { href: string; media?: string }): string {
   let link = `<link rel="stylesheet" href="${escapeHtmlAttribute(href)}"`;
   if (media) {
     link += ` media="${escapeHtmlAttribute(media)}"`;
@@ -176,36 +150,4 @@ export function injectAssetsIntoHtml(
   }
 
   return html;
-}
-
-const HELMET_HEAD_KEYS = ['title', 'priority', 'meta', 'link', 'script', 'style'] as const;
-
-/**
- * Extracts head tags and document attributes from a `react-helmet-async` helmet instance.
- *
- * `<head>` keys are serialized in document order: title, priority, meta, link, script, style.
- * Returns empty strings when `helmet` is `null`/`undefined`.
- */
-export function serializeHelmetToHtml(helmet: any): {
-  headTags: string;
-  htmlAttributes: string;
-  bodyAttributes: string;
-} {
-  if (!helmet) {
-    return { headTags: '', htmlAttributes: '', bodyAttributes: '' };
-  }
-
-  const headParts: string[] = [];
-  for (const key of HELMET_HEAD_KEYS) {
-    const result = helmet[key]?.toString();
-    if (result) {
-      headParts.push(result);
-    }
-  }
-
-  return {
-    headTags: headParts.join(''),
-    htmlAttributes: helmet.htmlAttributes?.toString() ?? '',
-    bodyAttributes: helmet.bodyAttributes?.toString() ?? '',
-  };
 }

@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '58.0.12'
+version = '58.0.13'
 
 expoModule {
   canBePublished false
@@ -18,7 +18,7 @@ android {
   namespace "expo.modules.logbox"
   defaultConfig {
     versionCode 1
-    versionName "58.0.12"
+    versionName "58.0.13"
     buildConfigField "boolean", "EXPO_UNSTABLE_LOG_BOX", isEnabled ? "true" : "false"
   }
 
@@ -45,7 +45,6 @@ android {
 
 dependencies {
   implementation 'com.facebook.react:react-android'
-  implementation 'com.google.android.material:material:1.13.0'
   implementation 'com.squareup.okhttp3:okhttp:3.14.9'
   implementation 'com.google.code.gson:gson:2.8.6'
 }

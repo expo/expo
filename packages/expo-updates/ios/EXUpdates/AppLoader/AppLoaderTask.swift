@@ -154,7 +154,7 @@ public class AppLoaderTask: NSObject {
   public func start() {
     isRunning = true
 
-    var shouldCheckForUpdate = UpdatesUtils.shouldCheckForUpdate(withConfig: config)
+    var shouldCheckForUpdate = UpdatesUtils.shouldCheckForUpdate(withConfig: config, logger: logger)
     let launchWaitMs = config.launchWaitMs
     if launchWaitMs == 0 || !shouldCheckForUpdate {
       isTimerFinished = true
@@ -174,10 +174,7 @@ public class AppLoaderTask: NSObject {
           if !shouldCheckForUpdate {
             self.finish(withError: error)
           }
-          self.logger.error(
-            cause: cause,
-            code: .updateFailedToLoad
-          )
+          self.logger.error(.launchFailed, cause: error, values: ["launch": "initial"])
         } else {
           if let delegate = self.delegate,
             !delegate.appLoaderTask(self, didLoadCachedUpdate: self.candidateLauncher!.launchedUpdate!) {
@@ -317,7 +314,8 @@ public class AppLoaderTask: NSObject {
                 // do nothing for now
               }, success: { _ in
                 completion()
-              }, error: { _ in
+              }, error: { error in
+                self.logger.error(.embeddedUpdateCopyFailed, cause: error)
                 completion()
               }
             )
@@ -507,7 +505,10 @@ public class AppLoaderTask: NSObject {
             }
           } else {
             self.finish(withError: error)
-            self.logger.warn(message: "Downloaded update but failed to relaunch: \(error?.localizedDescription ?? "")")
+            self.logger.error(
+              .launchFailed,
+              values: ["launch": "relaunchAfterDownload", "cause": error?.localizedDescription ?? "Unknown error"]
+            )
           }
           self.didFinishBackgroundUpdate(withStatus: .updateAvailable, update: updateBeingLaunched, error: error)
           self.isRunning = false

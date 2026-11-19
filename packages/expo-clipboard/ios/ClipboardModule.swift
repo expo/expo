@@ -1,6 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import UniformTypeIdentifiers
 
 let onClipboardChanged = "onClipboardChanged"
 
@@ -20,6 +21,26 @@ public class ClipboardModule: Module {
     }
 
     AsyncFunction("setStringAsync") { (content: String?, options: SetStringOptions) -> Bool in
+      #if !os(macOS)
+      if let content, options.localOnly || options.expiresAt != nil {
+        var pasteboardOptions: [UIPasteboard.OptionsKey: Any] = [:]
+        if options.localOnly {
+          pasteboardOptions[.localOnly] = true
+        }
+        if let expiresAt = options.expiresAt {
+          pasteboardOptions[.expirationDate] = Date(timeIntervalSince1970: expiresAt / 1000)
+        }
+        let item: [String: Any]
+        switch options.inputFormat {
+        case .plainText:
+          item = [UTType.utf8PlainText.identifier: content]
+        case .html:
+          item = UIPasteboard.htmlItem(content) ?? [UTType.utf8PlainText.identifier: ""]
+        }
+        UIPasteboard.general.setItems([item], options: pasteboardOptions)
+        return true
+      }
+      #endif
       switch options.inputFormat {
       case .plainText:
         UIPasteboard.general.string = content

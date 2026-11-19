@@ -100,7 +100,7 @@ public final class UpdatesUtils: NSObject {
       resourceValues.isExcludedFromBackup = excluded
       try url.setResourceValues(resourceValues)
     } catch {
-      logger.warn(message: "Failed to set isExcludedFromBackup=\(excluded) on updates directory: \(error.localizedDescription)")
+      logger.warn(.systemExcludeFromBackupFailed, cause: error, values: ["value": "\(excluded)"])
     }
   }
 
@@ -110,11 +110,12 @@ public final class UpdatesUtils: NSObject {
     return UpdatesStateContext().json
   }
 
-  internal static func shouldCheckForUpdate(withConfig config: UpdatesConfig) -> Bool {
+  internal static func shouldCheckForUpdate(withConfig config: UpdatesConfig, logger: UpdatesLogger) -> Bool {
     func isConnectedToWifi() -> Bool {
       do {
         return try Reachability().connection == .wifi
       } catch {
+        logger.error(.systemMeteredNetworkCheckFailed, cause: error)
         return false
       }
     }
@@ -177,7 +178,7 @@ public final class UpdatesUtils: NSObject {
   internal static func purgeUpdatesLogsOlderThanOneDay(logger: UpdatesLogger) {
     UpdatesLogReader().purgeLogEntries { error in
       if let error = error {
-        logger.warn(message: "UpdatesUtils: error in purgeOldUpdatesLogs: \(error.localizedDescription)")
+        logger.warn(.systemLogPurgeFailed, cause: error)
       }
     }
   }

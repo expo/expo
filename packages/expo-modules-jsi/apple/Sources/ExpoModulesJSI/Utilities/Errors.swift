@@ -31,22 +31,19 @@ internal struct FatalError {
     )
   }
 
-  /// Stops program execution when `Object.defineProperty` throws, for example when the property already
-  /// exists and isn't configurable, or the object isn't extensible. `defineProperty` doesn't throw, so
-  /// its callers are expected to define properties that JavaScript accepts.
+  /// Stops program execution when `Reflect.defineProperty` throws, for example when the descriptor isn't
+  /// valid or a proxy trap throws. `defineProperty` doesn't throw, so its callers are expected to pass a
+  /// valid descriptor.
   internal static func definePropertyFailed(_ name: String, _ error: any Error) -> Never {
-    fatalError(
-      "Object.defineProperty failed to define '\(name)': \(error). "
-        + "Make sure the object is extensible and doesn't already have a non-configurable property with this name."
-    )
+    fatalError("Reflect.defineProperty threw while defining '\(name)': \(error).")
   }
 
-  /// Stops program execution when the runtime has no `Object.defineProperty` function, which every
-  /// JavaScript engine provides unless the global `Object` has been replaced.
+  /// Stops program execution when the runtime has no `Reflect.defineProperty` function, which every
+  /// JavaScript engine provides unless the global `Reflect` has been replaced.
   internal static func definePropertyUnavailable(_ error: any Error) -> Never {
     fatalError(
-      "Couldn't look up Object.defineProperty in the JavaScript runtime: \(error). "
-        + "Check whether the global Object has been replaced."
+      "Couldn't look up Reflect.defineProperty in the JavaScript runtime: \(error). "
+        + "Check whether the global Reflect has been replaced."
     )
   }
 }

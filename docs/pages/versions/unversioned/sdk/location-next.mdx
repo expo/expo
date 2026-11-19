@@ -14,7 +14,7 @@ import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permiss
 import { Collapsible } from '~/ui/components/Collapsible';
 import { CODE } from '~/ui/components/Text';
 
-> **info** The `next` version of the Location API is included in the `expo-location` library. It can be used alongside the previous API. It is in beta: the API might change between SDK versions.
+> **info** The `next` version of the Location API is included in the `expo-location` library. It can be used alongside the previous API. Since it is in beta, the API might change between SDK versions.
 
 `expo-location/next` reads the device's location once, watches it while the app is open, and receives it in the background. On Android, it also lets you pick the location provider.
 
@@ -123,6 +123,31 @@ async function getFreshPosition() {
     console.log(`Fell back to a fix from ${Math.round(ageSeconds)} seconds ago`);
   }
   return position;
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Find the address of the current location">
+
+Use `reverseGeocode` to turn the device's coordinates into an address. Set `locale` to request the address in a specific language. On Android, the device must have a geocoding backend, which Google Play services provides.
+
+```tsx
+import { Location } from 'expo-location/next';
+
+async function getCurrentAddress() {
+  const { granted } = await Location.requestForegroundPermissions();
+  if (!granted) {
+    return null;
+  }
+  const position = await Location.getPosition();
+  if (!position) {
+    return null;
+  }
+  const [address] = await Location.reverseGeocode(position.coordinates, {
+    locale: 'en-US',
+  });
+  return address?.formattedAddress ?? null;
 }
 ```
 

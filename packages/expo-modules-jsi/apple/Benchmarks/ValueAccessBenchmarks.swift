@@ -270,4 +270,16 @@ extension JSIBenchmarks {
       }
     }
   }
+
+  @Test
+  func `create an object with a prototype`() async throws {
+    try await benchmarkCase { runtime in
+      let prototype = runtime.createObject()
+      try benchmark("JavaScriptRuntime.createObject(prototype:)", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = runtime.createObject(prototype: prototype)
+        }
+      }
+    }
+  }
 }

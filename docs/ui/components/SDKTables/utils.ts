@@ -55,11 +55,7 @@ export const getThreeVersions = (currentVersion: string) => {
     return [];
   }
 
-  // NOTE(@kitten): This is a temporary exception for SDK 57, which keeps SDK 54 in range
-  // as it was an "off-cycle" release
-  const inRange = normalizedVersion === '57.0.0' ? 4 : 3;
-
-  const endIndex = Math.min(sdkVersionValues.length, currentIndex + inRange);
+  const endIndex = Math.min(sdkVersionValues.length, currentIndex + 3);
   return sdkVersionValues.slice(currentIndex, endIndex);
 };
 

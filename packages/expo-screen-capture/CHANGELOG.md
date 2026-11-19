@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.6
+
+### Patch Changes
+
+- [iOS] Fix the app switcher blur from `enableAppSwitcherProtectionAsync` being drawn behind the app when the app uses native tabs. The blur is now added to the key window. ([#51915](https://github.com/expo/expo/pull/51915) by [@doudejans](https://github.com/doudejans))
+
 ## 58.0.5
 
 ### Patch Changes

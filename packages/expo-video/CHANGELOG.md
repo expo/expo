@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.23. ([#51823](https://github.com/expo/expo/pull/51823) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.11
+
+### Patch Changes
+
+- Use `AssetRegistry` from public API instead of Metro entry point. ([#51302](https://github.com/expo/expo/pull/51302) by [@byCedric](https://github.com/byCedric))
+
 ## 58.0.10
 
 ### Patch Changes

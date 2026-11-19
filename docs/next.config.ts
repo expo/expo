@@ -1,4 +1,4 @@
-import { withSentryConfig } from '@sentry/nextjs';
+import { withSentryConfig } from '@sentry/nextjs/config';
 import frontmatter from 'front-matter';
 import type { NextConfig } from 'next';
 import { event, error } from 'next/dist/build/output/log.js';
@@ -18,6 +18,7 @@ import packageJson from '~/package.json';
 import remarkApiSectionData from './mdx-plugins/remark-api-section-data.js';
 import remarkCodeTitle from './mdx-plugins/remark-code-title.js';
 import remarkCreateStaticProps from './mdx-plugins/remark-create-static-props.js';
+import remarkDiffBlockRaw from './mdx-plugins/remark-diff-block-raw.js';
 import remarkExportHeadings from './mdx-plugins/remark-export-headings.js';
 import remarkImageSize from './mdx-plugins/remark-image-size.js';
 import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.js';
@@ -50,6 +51,8 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: join(__dirname),
   transpilePackages: [
     '@expo/styleguide',
+    '@expo/styleguide-icons',
+    '@expo/styleguide-search-ui',
     '@radix-ui/react-dropdown-menu',
     '@radix-ui/react-select',
     'framer-motion',
@@ -110,6 +113,7 @@ const nextConfig: NextConfig = {
               remarkExportHeadings,
               remarkLinkRewrite,
               remarkImageSize,
+              remarkDiffBlockRaw,
               remarkSDKCompatibility,
               remarkApiSectionData,
               [remarkCreateStaticProps, `{ meta: meta || {}, headings: headings || [] }`],
@@ -118,6 +122,12 @@ const nextConfig: NextConfig = {
           },
         },
       ],
+    });
+
+    config.module.rules.push({
+      test: /[/\\]@expo[/\\]styleguide-icons[/\\].+\.m?js$/,
+      enforce: 'pre',
+      use: [join(__dirname, 'scripts', 'optimize-icon-paths-loader.cjs')],
     });
 
     // Fix inline or browser MDX usage

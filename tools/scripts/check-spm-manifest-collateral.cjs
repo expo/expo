@@ -6,7 +6,7 @@
 // Additional exclusions: --exclude <npm-package>/<product> (repeatable).
 // Another checkout: --repo <dir> (default: the checkout holding this script).
 // Artifacts contain metadata only; this gate compares manifests, not compiled binaries.
-const { globSync } = require('glob');
+const { globSync } = require('node:fs');
 const assert = require('node:assert/strict');
 const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
@@ -63,7 +63,8 @@ function ensureBaselineReachable(base = values.base) {
 function configPaths(root = repo) {
   return globSync('packages/**/spm.config.json', {
     cwd: root,
-    ignore: ['**/node_modules/**', '**/.build/**', '**/build/**'],
+    exclude: (entry) =>
+      entry.split('/').some((part) => ['node_modules', '.build', 'build'].includes(part)),
   }).sort();
 }
 

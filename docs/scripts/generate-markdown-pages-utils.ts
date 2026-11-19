@@ -83,6 +83,10 @@ function findAncestor(node: HTMLElement, nodeNames: string[]): HTMLElement | nul
   return null;
 }
 
+function escapeTableCellPipes(content: string): string {
+  return content.replace(/\|/g, '\\|');
+}
+
 function createTurndownService(): TurndownService {
   const turndown = new TurndownService({
     headingStyle: 'atx',
@@ -90,6 +94,14 @@ function createTurndownService(): TurndownService {
     bulletListMarker: '-',
   });
   turndown.use(gfm);
+  turndown.addRule('tableCellWithEscapedPipes', {
+    filter: ['th', 'td'],
+    replacement: (content: string, node: HTMLElement) => {
+      const isFirstCell =
+        Array.prototype.indexOf.call(node.parentNode?.childNodes ?? [], node) === 0;
+      return (isFirstCell ? '| ' : ' ') + escapeTableCellPipes(content) + ' |';
+    },
+  });
 
   // Ensure pre>code blocks are rendered as fenced code blocks
   turndown.addRule('codeBlocks', {
@@ -100,7 +112,8 @@ function createTurndownService(): TurndownService {
         node.getAttribute('data-md-lang') ?? code.className?.match(/language-(\w+)/)?.[1] ?? '';
       const text = code.textContent ?? '';
       const info = [lang, node.getAttribute('data-md-label')].filter(Boolean).join(' ');
-      return `\n\n\`\`\`${info}\n${text.trim()}\n\`\`\`\n\n`;
+      const body = lang === 'diff' ? text.replace(/^\n+/, '').trimEnd() : text.trim();
+      return `\n\n\`\`\`${info}\n${body}\n\`\`\`\n\n`;
     },
   });
 
@@ -134,7 +147,7 @@ function createTurndownService(): TurndownService {
           const title = (card.textContent ?? '').trim();
           const href = card.getAttribute('href') ?? '';
           const description = card.getAttribute('data-md-description') ?? '';
-          return title ? `| [\`${title}\`](${href}) | ${description} |` : '';
+          return title ? `| [\`${title}\`](${href}) | ${escapeTableCellPipes(description)} |` : '';
         })
         .filter(Boolean);
 
@@ -243,6 +256,13 @@ function extractTerminalCommands(arrayLiteral: string): string[] {
   }
 
   return commands;
+}
+
+function replaceLineBreakTags(line: string): string {
+  if (line.trimStart().startsWith('|')) {
+    return line.replace(/(\s*<br\s*\/?>\s*)+/g, ' ');
+  }
+  return line.replace(/[\t ]*<br\s*\/?>[\t ]*$/, '  ').replace(/[\t ]*<br\s*\/?>[\t ]*/g, '  \n');
 }
 
 /**
@@ -360,6 +380,11 @@ export function convertMdxInstructionToMarkdown(
   content = content.replace(/<div[^>]*>/g, '');
   content = content.replace(/<\/div>/g, '');
 
+  content = content.replace(/<YesIcon\s*\/>/g, 'Yes');
+  content = content.replace(/<NoIcon\s*\/>/g, 'No');
+  content = content.replace(/<\/?kbd>/g, '');
+  content = content.split('\n').map(replaceLineBreakTags).join('\n');
+
   content = content.replace(/<\/?[A-Z][^>]*>/g, '');
   content = content.replace(/{\/\*[\S\s]*?\*\/}/g, '');
 
@@ -380,6 +405,30 @@ const DARK_IMAGE_VARIANTS =
 
 function escapeHtml(value: string) {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function moveCodeBlocksBelowTables($: CheerioAPI, main: Cheerio<AnyNode>): void {
+  main.find('table').each((_, table) => {
+    const $table = $(table);
+    if ($table.is('table.diff') || $table.closest('[data-md="diff"]').length > 0) {
+      return;
+    }
+    const examples: string[] = [];
+    $table.find('td pre, th pre').each((_, pre) => {
+      const $pre = $(pre);
+      const $parent = $pre.parent();
+      const $block = $parent.children().length === 1 && !$parent.is('td, th') ? $parent : $pre;
+      const rowName = $pre.closest('tr').children('td, th').first().text().trim();
+      const number = examples.length + 1;
+      examples.push(
+        `<p>Example ${number} for <code>${escapeHtml(rowName)}</code>:</p>${$.html($block)}`
+      );
+      $block.replaceWith(` See example ${number} below the table.`);
+    });
+    if (examples.length > 0) {
+      $table.after(examples.join(''));
+    }
+  });
 }
 
 export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
@@ -574,6 +623,16 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     }
   });
 
+  main.find('[data-md="package-version"]').each((_, el) => {
+    const $el = $(el);
+    const versionRange = $el.attr('data-md-version');
+    if (versionRange) {
+      $el.replaceWith(`<p>Recommended version: ${escapeHtml(versionRange)}</p>`);
+    } else {
+      $el.remove();
+    }
+  });
+
   // Extract platform text from badge elements BEFORE removing skip/select-none elements.
   // data-md="platform-badge" is the stable marker; fallback matches .select-none.rounded-full.border.
   main.find('[data-md="platform-badge"]').each((_, el) => {
@@ -651,9 +710,9 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const $header = $(el);
     if ($header.closest('[data-md="terminal"]').length === 0) {
       const label = $header.text().trim();
-      const $pre = $header.parent().find('pre').first();
-      if (label && $pre.length > 0) {
-        $pre.attr('data-md-label', label);
+      const $block = $header.parent().find('pre, table.diff').first();
+      if (label && $block.length > 0) {
+        $block.attr('data-md-label', label);
       }
     }
     $header.remove();
@@ -817,6 +876,8 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     }
   });
 
+  moveCodeBlocksBelowTables($, main);
+
   // Flatten block elements inside table cells to prevent newlines breaking markdown tables.
   // Turndown converts <p>, <div>, and <blockquote> to blocks with newlines, which breaks
   // GFM table syntax.
@@ -827,9 +888,9 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   main.find('td, th').each((_, cell) => {
     const $cell = $(cell);
 
-    // Remove <br> tags — they create newlines that break GFM table rows.
-    // PlatformTags renders {prefix && <br />} after badges which is decorative only.
-    $cell.find('br').remove();
+    // Replace <br> tags with a space. A newline breaks GFM table rows, and removing them
+    // joins the words around them.
+    $cell.find('br').replaceWith(' ');
 
     // data-md="callout" — inline the callout text (e.g. deprecation warnings).
     // The callout's visible text (like "Deprecated: use X instead") is already meaningful;
@@ -867,6 +928,14 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
         $(el).replaceWith('%%MD_SEP%%' + ($(el).html() ?? ''));
         hasBlocks = true;
       });
+      $cell.find('ul, ol').each((_, el) => {
+        $(el).replaceWith($(el).html() ?? '');
+        hasBlocks = true;
+      });
+      $cell.find('li').each((_, el) => {
+        $(el).replaceWith('%%MD_SEP%%' + ($(el).html() ?? ''));
+        hasBlocks = true;
+      });
     }
     const blocks: string[] = [];
     let cellHtml = $cell.html()!.replace(/<(code|pre)\b[^>]*>[\S\s]*?<\/\1>/gi, match => {
@@ -874,8 +943,9 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       return `%%MD_CODE_${blocks.length - 1}%%`;
     });
     cellHtml = cellHtml
-      .replace(/(?:%%MD_SEP%%)+/g, '%%MD_SEP%%')
+      .replace(/(?:\s*%%MD_SEP%%)+/g, '%%MD_SEP%%')
       .replace(/^\s*%%MD_SEP%%\s*/, '')
+      .replace(/:\s*%%MD_SEP%%/g, ': ')
       .replace(/\.\s*%%MD_SEP%%/g, '. ')
       .replace(/%%MD_SEP%%/g, '. ')
       .replace(/\.\s*-\s*$/, '.')
@@ -892,13 +962,29 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   main.find('[data-md="diff"] table, table.diff').each((_, el) => {
     const $table = $(el);
     const lines: string[] = [];
+    const hunkCount = $table.find('tbody.diff-hunk').length;
+    let currentHunk: AnyNode | undefined;
     $table.find('tr').each((_, row) => {
       const $row = $(row);
       const codeCell = $row.find('td').last();
-      const text = codeCell.text().trim();
-      if (!text) {
+      if (codeCell.length === 0) {
         return;
       }
+      const hunk = $row.closest('tbody.diff-hunk').get(0);
+      if (hunkCount > 1 && hunk && hunk !== currentHunk) {
+        currentHunk = hunk;
+        const lineNumbers = (column: number) =>
+          $(hunk)
+            .find('tr')
+            .map((_, hunkRow) => Number($(hunkRow).find('td').eq(column).text()))
+            .get()
+            .filter(Boolean);
+        const [oldLines, newLines] = [lineNumbers(0), lineNumbers(1)];
+        lines.push(
+          `@@ -${oldLines[0] ?? 0},${oldLines.length} +${newLines[0] ?? 0},${newLines.length} @@`
+        );
+      }
+      const text = codeCell.text().trimEnd();
       // Determine diff marker from CSS class on gutter/code cells or the row itself
       const rowCls = $row.attr('class') ?? '';
       const codeCls = codeCell.attr('class') ?? '';
@@ -913,7 +999,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       if (/^[+-]\s/.test(text)) {
         lines.push(text);
       } else {
-        lines.push(marker + ' ' + text);
+        lines.push((marker + ' ' + text).trimEnd());
       }
     });
     if (lines.length > 0) {
@@ -921,6 +1007,10 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       const $code = $('<code class="language-diff"></code>');
       $code.text(lines.join('\n'));
       $pre.append($code);
+      const label = $table.attr('data-md-label');
+      if (label) {
+        $pre.attr('data-md-label', label);
+      }
       $table.replaceWith($pre);
     }
   });

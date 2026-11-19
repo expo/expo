@@ -12,24 +12,24 @@ internal import jsi
 ///   it may be caught on any thread, but reading its value or releasing it should happen on the
 ///   JavaScript thread while the runtime is alive.
 public final class JavaScriptError: Error, Sendable {
-  private weak let runtime: JavaScriptRuntime?
+  private let runtimeHandle: JavaScriptRuntimeHandle
   nonisolated(unsafe) private let pointee: facebook.jsi.JSError
 
-  internal init(_ runtime: JavaScriptRuntime, _ error: facebook.jsi.JSError) {
-    self.runtime = runtime
+  internal init(_ runtime: borrowing JavaScriptRuntime, _ error: facebook.jsi.JSError) {
+    self.runtimeHandle = runtime.handle
     self.pointee = error
   }
 
-  public init(_ runtime: JavaScriptRuntime, message: String) {
-    self.runtime = runtime
+  public init(_ runtime: borrowing JavaScriptRuntime, message: String) {
+    self.runtimeHandle = runtime.handle
     self.pointee = facebook.jsi.JSError(runtime.pointee, message)
   }
 
   /// Creates a JavaScript error referring to an arbitrary JS value. Unlike the message-based
   /// initializers, this does not mint a new `Error` instance: the value is thrown as-is, which
   /// matches JavaScript semantics where any value (not only an `Error`) can be thrown.
-  public init(_ runtime: JavaScriptRuntime, value: consuming JavaScriptValue) {
-    self.runtime = runtime
+  public init(_ runtime: borrowing JavaScriptRuntime, value: consuming JavaScriptValue) {
+    self.runtimeHandle = runtime.handle
     // The value is consumed, so its `jsi::Value` moves straight into the error without a clone.
     self.pointee = expo.errorFromValue(runtime.pointee, value.pointee)
   }
@@ -37,8 +37,8 @@ public final class JavaScriptError: Error, Sendable {
   /// Creates a JavaScript error from a native error conforming to `JavaScriptThrowable`.
   /// Creates a proper JavaScript `Error` instance with `message` set, then attaches
   /// the optional `code` property to the error object.
-  public init(_ runtime: JavaScriptRuntime, from error: any JavaScriptThrowable) {
-    self.runtime = runtime
+  public init(_ runtime: borrowing JavaScriptRuntime, from error: any JavaScriptThrowable) {
+    self.runtimeHandle = runtime.handle
     self.pointee = facebook.jsi.JSError(runtime.pointee, error.message)
 
     // Attach the code property to the Error object when provided.
@@ -66,10 +66,10 @@ public final class JavaScriptError: Error, Sendable {
   /// Returns the error as a `JavaScriptValue`, which may be an arbitrary value rather than an
   /// `Error` instance when the error was created from one.
   public func toValue() -> JavaScriptValue {
-    guard let runtime else {
+    guard let jsiRuntime = runtimeHandle.pointee else {
       FatalError.runtimeLost()
     }
-    return JavaScriptValue(runtime, expo.valueFromError(runtime.pointee, pointee))
+    return JavaScriptValue(runtimeHandle, expo.valueFromError(jsiRuntime, pointee))
   }
 
   internal func toJSError() -> facebook.jsi.JSError {

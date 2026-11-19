@@ -112,7 +112,7 @@ export function shouldWriteHeadersXCFramework(
 
 /** Writes the headers xcframework of a product from the flavored xcframework this run composed. */
 export async function composeHeadersXCFrameworkAsync(
-  { buildPath, outputVersionPrefix }: SPMPackageSource,
+  { buildPath, outputVersionPrefix, packageName, packageVersion }: SPMPackageSource,
   product: HeadersProduct,
   flavor: BuildFlavor
 ): Promise<void> {
@@ -120,7 +120,8 @@ export async function composeHeadersXCFrameworkAsync(
   await writeHeadersXCFrameworkAsync(
     Frameworks.getFrameworkPath(buildPath, product.name, flavor, outputVersionPrefix),
     product,
-    destination
+    destination,
+    { name: packageName, version: packageVersion }
   );
   logger.info(`📦 Wrote ${path.basename(destination)} from the ${flavor} xcframework.`);
 }
@@ -129,11 +130,16 @@ export async function composeHeadersXCFrameworkAsync(
  * Writes `destination` as the headers xcframework of `sourceXCFramework`, replacing any previous
  * output. Slices, identifiers and platforms come from the source's Info.plist; a slice with no
  * headers and no Swift interfaces (a placeholder) is left out.
+ *
+ * With `npmPackage`, it also writes `expo-package.json` naming the package and version the headers
+ * come from. Expo's SwiftPM plugin compares that version with the installed sources an app builds
+ * the real framework from.
  */
 export async function writeHeadersXCFrameworkAsync(
   sourceXCFramework: string,
   product: HeadersProduct,
-  destination: string
+  destination: string,
+  npmPackage?: { name: string; version: string }
 ): Promise<void> {
   const libraries = await readSourceLibrariesAsync(sourceXCFramework);
   await fs.mkdirp(path.dirname(destination));
@@ -172,6 +178,9 @@ export async function writeHeadersXCFrameworkAsync(
         XCFrameworkFormatVersion: '1.0',
       })
     );
+    if (npmPackage) {
+      await fs.writeJson(path.join(staging, 'expo-package.json'), npmPackage);
+    }
     await replaceDirectoryAsync(staging, destination);
   } finally {
     await Promise.all([fs.remove(staging), fs.remove(scratch)]);

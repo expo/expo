@@ -1,7 +1,9 @@
 import {
+  Slot,
   Stack,
   unstable_enablePerformanceIntegration,
   unstable_PerformanceObserver,
+  useSegments,
   type RouterPerformanceMark,
 } from 'expo-router';
 import { DefaultTheme, ThemeProvider } from 'expo-router/react-navigation';
@@ -16,17 +18,22 @@ new unstable_PerformanceObserver((list) => {
 }).observe({ type: 'mark' });
 
 export default function Layout() {
+  const segments = useSegments();
   return (
     <ThemeProvider
       value={{
         ...DefaultTheme,
         colors: {
           ...DefaultTheme.colors,
-          text: '#0F0',
-          background: '#00f',
+          background: '#fff',
         },
       }}>
-      <Stack screenOptions={{ headerShown: false }} />
+      {/* SplitView cannot be inside a native navigator. */}
+      {segments[0] === 'split-view-mail' ? (
+        <Slot />
+      ) : (
+        <Stack screenOptions={{ headerShown: false }} />
+      )}
     </ThemeProvider>
   );
 }

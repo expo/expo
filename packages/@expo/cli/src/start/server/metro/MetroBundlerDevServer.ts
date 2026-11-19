@@ -26,7 +26,6 @@ import type MetroServer from '@expo/metro/metro/Server';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import getGraphId from '@expo/metro/metro/lib/getGraphId';
 import type { GetStreamingContentOptions } from '@expo/router-server/build/server/renderStreamingContent';
-import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import assert from 'assert';
 import chalk from 'chalk';
 import type { RouteNode } from 'expo-router/build/Route';
@@ -111,7 +110,7 @@ import { serialAssetsToStaticContentAssets } from './serializeHtml';
 import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
 export type ExpoRouterRuntimeManifest = Awaited<
-  ReturnType<typeof import('@expo/router-server/build/static/renderStaticContent').getManifest>
+  ReturnType<typeof import('@expo/router-server/build/server/render').getManifest>
 >;
 
 type SSRLoadModuleFunc = <T extends Record<string, any>>(
@@ -121,11 +120,15 @@ type SSRLoadModuleFunc = <T extends Record<string, any>>(
 ) => Promise<T>;
 
 type ResolveMetadataFunction =
-  typeof import('@expo/router-server/build/static/renderStaticContent').resolveMetadata;
+  typeof import('@expo/router-server/build/server/render').resolveMetadata;
+
+/** `renderAsync` resolves the matched route and params itself. */
+type StaticRenderOptions = Omit<GetStreamingContentOptions, 'route' | 'params'>;
 
 type DevServerRenderOptions = {
   loader?: GetStreamingContentOptions['loader'];
   metadata?: Awaited<ReturnType<ResolveMetadataFunction>>;
+  route: GetStreamingContentOptions['route'];
   params: Record<string, string | string[]>;
 };
 
@@ -477,7 +480,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     htmlManifest: ExpoRouterRuntimeManifest;
   }> {
     const { exp } = getConfig(this.projectRoot);
-    // NOTE: This could probably be folded back into `renderStaticContent` when expo-asset and font support RSC.
+    // NOTE: This could probably be folded back into `render` when expo-asset and font support RSC.
     const { getBuildTimeServerManifestAsync, getManifest } = await this.ssrLoadModule<
       typeof import('@expo/router-server/build/static/getServerManifest')
     >(require.resolve('@expo/router-server/build/static/getServerManifest.js'), {
@@ -497,11 +500,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getStaticRenderFunctionAsync(): Promise<{
     serverManifest: RoutesManifest<string>;
     manifest: ExpoRouterRuntimeManifest;
-    renderAsync: (
-      path: string,
-      route: RouteNode,
-      opts?: GetStaticContentOptions
-    ) => Promise<string>;
+    renderAsync: (path: string, route: RouteNode, opts?: StaticRenderOptions) => Promise<string>;
     executeLoaderAsync: (path: string, route: RouteNode) => Promise<Response | undefined>;
   }> {
     const { routerRoot } = this.instanceMetroOptions;
@@ -514,11 +513,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const url = this.getDevServerUrlOrAssert();
 
     const { getStreamingContent, resolveMetadata, getManifest, getBuildTimeServerManifestAsync } =
-      await this.ssrLoadModule<
-        typeof import('@expo/router-server/build/static/renderStaticContent')
-      >(require.resolve('@expo/router-server/node/render.js'), {
-        environment: 'node',
-      });
+      await this.ssrLoadModule<typeof import('@expo/router-server/build/server/render')>(
+        require.resolve('@expo/router-server/node/render.js'),
+        {
+          environment: 'node',
+        }
+      );
 
     const { exp } = getConfig(this.projectRoot);
     const isExportingWithSSR = exp.web?.output === 'server' && !this.isReactServerComponentsEnabled;
@@ -549,6 +549,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         return await getStreamingContent(location, {
           ...opts,
           ...(metadata !== undefined ? { metadata } : {}),
+          ...(resolvedRoute
+            ? {
+                route: { file: resolvedRoute.file, page: resolvedRoute.contextKey },
+                params: resolvedRoute.params,
+              }
+            : {
+                // Internal routes such as the sitemap and the generated not-found page.
+                route: { file: route.contextKey, page: location.pathname, generated: true },
+                params: {},
+              }),
           output: 'static',
         });
       },
@@ -625,12 +635,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     resolveMetadata?: ResolveMetadataFunction;
   }): Promise<DevServerRenderOptions> {
     if (route.generated) {
-      return { params: {} };
+      return { params: {}, route: { file: route.file, page: route.page, generated: true } };
     }
 
     const resolvedLoaderRoute = fromServerManifestRoute(location.pathname, route);
     const params = resolvedLoaderRoute?.params ?? {};
-    const renderOptions: DevServerRenderOptions = { params };
+    const renderOptions: DevServerRenderOptions = {
+      params,
+      route: { file: route.file, page: route.page },
+    };
     const { exp } = getConfig(this.projectRoot);
     const isRuntimeSsr = exp.web?.output === 'server';
 
@@ -730,7 +743,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       }
 
       const { getStreamingContent, resolveMetadata } = await this.ssrLoadModule<
-        typeof import('@expo/router-server/build/static/renderStaticContent')
+        typeof import('@expo/router-server/build/server/render')
       >(require.resolve('@expo/router-server/node/render.js'), {
         // Development streaming SSR intentionally stays on the non-RSC server renderer.
         environment: 'node',
@@ -743,7 +756,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         clientBoundaries: [],
       });
       const css = getStreamingCssAssetsFromSerialAssets(resources);
-      const { loader, metadata } = await this.getDevServerRenderOptionsAsync({
+      const {
+        loader,
+        metadata,
+        route: matchedRoute,
+        params,
+      } = await this.getDevServerRenderOptionsAsync({
         location,
         route,
         request,
@@ -754,6 +772,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         loader,
         metadata,
         request: request as unknown as Request,
+        route: matchedRoute,
+        params,
         assets: {
           css,
           js: [devBundleUrlPathname],
@@ -765,7 +785,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const [{ artifacts: resources }, { getStreamingContent, resolveMetadata }] = await Promise.all([
       this.getStaticResourcesAsync({ clientBoundaries: [] }),
-      this.ssrLoadModule<typeof import('@expo/router-server/build/static/renderStaticContent')>(
+      this.ssrLoadModule<typeof import('@expo/router-server/build/server/render')>(
         require.resolve('@expo/router-server/node/render.js'),
         {
           environment: 'node',
@@ -776,7 +796,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       ),
     ]);
 
-    const { loader, metadata } = await this.getDevServerRenderOptionsAsync({
+    const {
+      loader,
+      metadata,
+      route: matchedRoute,
+      params,
+    } = await this.getDevServerRenderOptionsAsync({
       location,
       route,
       request,
@@ -792,6 +817,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const content = await getStreamingContent(location, {
       ...(loader ? { loader } : {}),
       ...(metadata !== undefined ? { metadata } : {}),
+      route: matchedRoute,
+      params,
       output: 'static',
       hydrate: env.EXPO_WEB_DEV_HYDRATE,
       assets,
@@ -1337,7 +1364,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     this.instanceMetroOptions = instanceMetroOptions;
 
     const parsedOptions = {
-      host: options.location.hostType === 'localhost' ? 'localhost' : undefined,
+      host: options.location.hostType === 'localhost' ? '127.0.0.1' : undefined,
       port: this.getPort(),
       maxWorkers: options.maxWorkers,
       resetCache: options.resetDevServer,

@@ -1,17 +1,17 @@
 ---
-title: Schema for EAS Metadata
+title: Schema for Expo Metadata
 sidebar_title: Metadata schema
 maxHeadingDepth: 4
-description: A reference of store config in EAS Metadata.
+description: A reference of store config in Expo Metadata.
 ---
 
 import { MetadataTable, MetadataSubcategories } from '~/components/plugins/EasMetadataTable';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { markdownComponents as MD } from '~/ui/components/Markdown';
 
-> **important** **EAS Metadata** is in [beta](/more/release-statuses/#beta) and subject to breaking changes.
+> **important** **Expo Metadata** is in [beta](/more/release-statuses/#beta) and subject to breaking changes.
 
-The store config in EAS Metadata contains information that otherwise would be provided manually through the app store dashboards.
+The store config in Expo Metadata contains information that otherwise would be provided manually through the app store dashboards.
 This document outlines the structure of the object in your store config.
 
 > If you use the [VS Code Expo Tools extension](https://github.com/expo/vscode-expo#readme), you get all this information through auto-complete, suggestions, and warnings in your editor.
@@ -22,7 +22,7 @@ An essential property in the store config object is the `configVersion` property
 App stores might require more or change existing information structures to publish your app.
 This property helps versioning changes that are not backward compatible.
 
-EAS Metadata _currently_ only supports the Apple App Store.
+Expo Metadata _currently_ only supports the Apple App Store.
 
 <MetadataTable>
   {[
@@ -30,7 +30,7 @@ EAS Metadata _currently_ only supports the Apple App Store.
       name: 'configVersion',
       type: 'number',
       rules: ['enum: 0'],
-      description: 'The EAS Metadata store configuration schema version.',
+      description: 'The Expo Metadata store configuration schema version.',
     },
     {
       name: 'apple',
@@ -44,7 +44,7 @@ EAS Metadata _currently_ only supports the Apple App Store.
       description: [
         <MD.p>The app version to use when syncing all metadata defined in the store config.</MD.p>,
         <MD.p>
-          EAS Metadata selects the latest available version in the app stores by default.
+          Expo Metadata selects the latest available version in the app stores by default.
         </MD.p>,
       ],
     },
@@ -102,7 +102,7 @@ EAS Metadata _currently_ only supports the Apple App Store.
 
 Apple uses a complex questionnaire to determine the app's [age rating](https://help.apple.com/app-store-connect/#/dev599d50efb).
 Parental controls on the App Store use this calculated age rating.
-EAS Metadata uses the least restrictive answer for each of these questions by default.
+Expo Metadata uses the least restrictive answer for each of these questions by default.
 
 <Collapsible summary="Complete advisory with the least restrictive answers">
 

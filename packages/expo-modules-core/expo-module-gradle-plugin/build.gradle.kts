@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "2.2.21"
+  kotlin("jvm") version "2.3.21"
   id("java-gradle-plugin")
 }
 
@@ -33,7 +33,7 @@ dependencies {
   implementation("com.facebook.react:react-native-gradle-plugin")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
   implementation("io.github.expo.pika:pika-gradle:1.1.0")
-  implementation("io.github.expo:expo-modules-v2-gradle-plugin:0.2.5")
+  implementation("io.github.expo:expo-modules-v2-gradle-plugin:0.3.0")
 
   if (isExpoAutolinkingSettingsPluginAvailable) {
     implementation("expo.modules:expo-autolinking-plugin-shared")

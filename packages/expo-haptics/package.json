@@ -1,6 +1,6 @@
 {
   "name": "expo-haptics",
-  "version": "58.0.6",
+  "version": "58.0.7",
   "description": "Provides access to the system's haptics engine on iOS, vibration effects on Android, and Web Vibration API on web.",
   "keywords": [
     "expo",
@@ -45,13 +45,12 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
     "prepack": "expo-module prepack",
-    "generate-types": "expo-modules generate-types"
+    "typegen": "expo-modules typegen"
   },
   "dependencies": {},
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
-    "expo": "workspace:*",
-    "expo-modules-cli": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"

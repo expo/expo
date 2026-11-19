@@ -35,7 +35,7 @@ export const GET_STARTED_TUTORIAL_CHAPTERS: Chapter[] = [
     title: 'Chapter 3: Build a screen',
     slug: '/tutorial/build-a-screen',
     summary:
-      "We've successfully implemented the initial design to start building our app's first screen.",
+      "We've successfully built our app's first screen with Expo Image and native buttons from Expo UI.",
     nextDescription:
       "In the next chapter, we'll add the functionality to pick an image from the device's media library.",
   },
@@ -51,7 +51,7 @@ export const GET_STARTED_TUTORIAL_CHAPTERS: Chapter[] = [
     title: 'Chapter 5: Create a modal',
     slug: '/tutorial/create-a-modal',
     summary:
-      "We've successfully created the emoji picker modal and implemented the logic to select an emoji and display it over the image.",
+      "We've successfully created an emoji picker with a bottom sheet and native buttons from Expo UI, and implemented the logic to display the selected emoji over the image.",
     nextDescription:
       "In the next chapter, let's add user interactions with gestures to drag the emoji and scale the size by tapping it.",
   },
@@ -68,22 +68,15 @@ export const GET_STARTED_TUTORIAL_CHAPTERS: Chapter[] = [
     summary: (
       <>
         We've successfully used <CODE>react-native-view-shot</CODE> and{' '}
-        <CODE>expo-media-library</CODE> to capture a screenshot and save it on the device's library.
+        <CODE>expo-media-library</CODE> to capture a screenshot and save it on the device's library,
+        and to download it on the web.
       </>
     ),
     nextDescription:
-      "In the next chapter, let's learn how to handle the differences between mobile and web platforms to implement the same functionality on web.",
+      "The app does everything we set out for it to do. In the next chapter, we will customize the app's status bar, splash screen, and app icon.",
   },
   {
-    title: 'Chapter 8: Handle platform differences',
-    slug: '/tutorial/platform-differences',
-    summary:
-      "The app does everything we set out for it to do, so it's time to shift our focus toward the purely aesthetic..",
-    nextDescription:
-      "In the next chapter, we will customize the app's status bar, splash screen, and app icon.",
-  },
-  {
-    title: 'Chapter 9: Configure status bar, splash screen and app icon',
+    title: 'Chapter 8: Configure status bar, splash screen and app icon',
     slug: '/tutorial/configuration',
     summary:
       'Well done! We built an app that runs on Android, iOS, and the web from the same codebase.',
@@ -97,7 +90,7 @@ export const EAS_TUTORIAL_INITIAL_CHAPTERS: Chapter[] = [
     title: 'Chapter 1: Configure development build in cloud',
     slug: '/tutorial/eas/configure-development-build',
     summary:
-      'We successfully used the EAS CLI to initialize, and configure our project, link it to EAS servers, and prepare a development build.',
+      'We successfully used the EAS CLI to initialize, and configure our project, link it to Expo servers, and prepare a development build.',
     nextDescription:
       "In the next chapter, let's create a development build for Android, install it on a device and an emulator, and get it running with the development server.",
   },
@@ -106,25 +99,25 @@ export const EAS_TUTORIAL_INITIAL_CHAPTERS: Chapter[] = [
     slug: '/tutorial/eas/android-development-build',
     summary: (
       <>
-        We successfully used EAS Build to create and run development builds on Android devices and
+        We successfully used Expo Build to create and run development builds on Android devices and
         emulators, and learned about <strong>.apk</strong> and <strong>.aab</strong> file formats.
       </>
     ),
     nextDescription:
-      'In the next chapter, learn how to configure a development build for iOS Simulators using EAS Build and get it running.',
+      'In the next chapter, learn how to configure a development build for iOS Simulators using Expo Build and get it running.',
   },
   {
     title: 'Chapter 3: Create and run a cloud build for iOS Simulator',
     slug: '/tutorial/eas/ios-development-build-for-simulators',
     summary:
-      'We successfully used EAS Build to create and run development builds on iOS Simulators.',
+      'We successfully used Expo Build to create and run development builds on iOS Simulators.',
     nextDescription:
       "In the next chapter, let's create a development build for iOS, install it on a device, and get it running.",
   },
   {
     title: 'Chapter 4: Create and run a cloud build for iOS device',
     slug: '/tutorial/eas/ios-development-build-for-devices',
-    summary: 'We successfully used EAS Build to create and run development builds on iOS devices.',
+    summary: 'We successfully used Expo Build to create and run development builds on iOS devices.',
     nextDescription:
       'In the next chapter, learn how to configure our app config to install multiple app variants on a single device.',
   },
@@ -187,13 +180,13 @@ export const EAS_TUTORIAL_INITIAL_CHAPTERS: Chapter[] = [
       </>
     ),
     nextDescription:
-      'In the next chapter, learn how to use the EAS Update to send OTA updates and share previews with our team.',
+      'In the next chapter, learn how to use Expo Update to send OTA updates and share previews with our team.',
   },
   {
     title: 'Chapter 10: Share previews with your team',
     slug: '/tutorial/eas/team-development',
     summary:
-      'We successfully configured  EAS Update to manage and publish over-the-air updates across platforms, and explored methods to fetch updates to review.',
+      'We successfully configured  Expo Update to manage and publish over-the-air updates across platforms, and explored methods to fetch updates to review.',
     nextDescription:
       'In the next chapter, learn about the process of triggering builds from a GitHub repository.',
   },
@@ -201,8 +194,8 @@ export const EAS_TUTORIAL_INITIAL_CHAPTERS: Chapter[] = [
     title: 'Chapter 11: Trigger builds from a GitHub repository',
     slug: '/tutorial/eas/using-github',
     summary:
-      'We successfully linked our GitHub account with Expo, connected our repository to our EAS project, and learned about automated development build creation using GitHub PR labels.',
-    nextDescription: 'Learn about the next steps to use EAS.',
+      'We successfully linked our GitHub account with Expo, connected our repository to our Expo Services project, and learned about automated development build creation using GitHub PR labels.',
+    nextDescription: 'Learn about the next steps to use Expo Services.',
   },
 ];
 
@@ -258,10 +251,10 @@ export const BUILD_WITH_AI_TUTORIAL_CHAPTERS: Chapter[] = [
 
 export const CICD_TUTORIAL_CHAPTERS: Chapter[] = [
   {
-    title: 'Chapter 1: First EAS Workflows job',
+    title: 'Chapter 1: First Expo Workflows job',
     slug: '/tutorial/cicd/first-workflow',
     summary:
-      'We created a custom job workflow, triggered it manually and automatically, chained jobs using needs and outputs, and used the EAS dashboard to verify job execution.',
+      'We created a custom job workflow, triggered it manually and automatically, chained jobs using needs and outputs, and used the Expo dashboard to verify job execution.',
     nextDescription:
       'In the next chapter, learn how to automate development builds with fingerprinting to skip unnecessary rebuilds.',
   },
@@ -277,9 +270,9 @@ export const CICD_TUTORIAL_CHAPTERS: Chapter[] = [
     title: 'Chapter 3: Preview builds',
     slug: '/tutorial/cicd/preview-builds',
     summary:
-      'We created a preview build workflow with fingerprinting, added Slack notifications for build status, and set up PR previews using EAS Update so reviewers can test changes without checking out a branch.',
+      'We created a preview build workflow with fingerprinting, added Slack notifications for build status, and set up PR previews using Expo Update so reviewers can test changes without checking out a branch.',
     nextDescription:
-      'In the next chapter, learn how to run end-to-end tests with Maestro in an EAS Workflows job.',
+      'In the next chapter, learn how to run end-to-end tests with Maestro in an Expo Workflows job.',
   },
   {
     title: 'Chapter 4: E2E tests',
@@ -293,7 +286,7 @@ export const CICD_TUTORIAL_CHAPTERS: Chapter[] = [
     title: 'Chapter 5: Production deployments',
     slug: '/tutorial/cicd/production',
     summary:
-      'We created a production workflow for Android and iOS triggered by pushes to a release branch, used fingerprinting to choose between a native build and an OTA update, and saw how EAS Submit automates app store submissions.',
+      'We created a production workflow for Android and iOS triggered by pushes to a release branch, used fingerprinting to choose between a native build and an OTA update, and saw how Expo Submit automates app store submissions.',
     nextDescription:
       'In the next chapter, learn how to switch production deployments from release branches to version tags.',
   },
@@ -303,14 +296,14 @@ export const CICD_TUTORIAL_CHAPTERS: Chapter[] = [
     summary:
       'We switched the production workflow trigger from a release branch to a Git tag, tested the change by pushing a versioned tag from main, and learned how to gate release candidates with a pre-release tag glob.',
     nextDescription:
-      'In the next chapter, learn how to deploy web builds to EAS Hosting from a workflow.',
+      'In the next chapter, learn how to deploy web builds to Expo Hosting from a workflow.',
   },
   {
     title: 'Chapter 7: Web deployments',
     slug: '/tutorial/cicd/web-deployments',
     summary:
       'We configured the Expo project for static web export, added a deploy job to the preview workflow for non-production web URLs, and added a deploy job with `prod: true` to the production workflow so every release ships the web build with the native release.',
-    nextDescription: 'Learn about the next steps to use EAS Workflows.',
+    nextDescription: 'Learn about the next steps to use Expo Workflows.',
   },
 ];
 
@@ -324,12 +317,12 @@ export const TUTORIAL_CHAPTERS: Record<TutorialName, Chapter[]> = {
 export const TUTORIAL_TRAILERS: Record<TutorialName, TutorialTrailer> = {
   GET_STARTED: { title: 'Learning resources', slug: '/tutorial/follow-up' },
   EAS_TUTORIAL: {
-    title: 'Next steps in your journey with EAS',
+    title: 'Next steps in your journey with Expo Services',
     slug: '/tutorial/eas/next-steps',
   },
   BUILD_WITH_AI: { title: 'Expo tutorial', slug: '/tutorial/introduction' },
   CICD_TUTORIAL: {
-    title: 'Next steps in your journey with EAS Workflows',
+    title: 'Next steps in your journey with Expo Workflows',
     slug: '/tutorial/cicd/next-steps',
   },
 };

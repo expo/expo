@@ -7,6 +7,10 @@ import type { ModifierConfig } from '@expo/ui/swift-ui/modifiers';
  *
  * The native layer persists each invocation until `removePendingInvocationAsync` removes it.
  * Delivery is at-least-once, so handlers must be idempotent for each `id`.
+ *
+ * A background task that `runBackgroundTask(name:params:timeout:)` runs from Swift receives an
+ * invocation as its `data` too. The native layer does not persist that invocation, delivers it at
+ * most once, and gives every run a new `id`.
  */
 export type AppIntentInvocation = {
   /**
@@ -15,7 +19,8 @@ export type AppIntentInvocation = {
   id: string;
   /**
    * Contains the invocation name passed to
-   * `await AppIntentDispatcher.shared.dispatch(name:params:)` in Swift.
+   * `await AppIntentDispatcher.shared.dispatch(name:params:)` in Swift, or the task name passed to
+   * `runBackgroundTask(name:params:timeout:)`.
    */
   name: string;
   /**

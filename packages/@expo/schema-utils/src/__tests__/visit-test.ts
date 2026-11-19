@@ -111,9 +111,86 @@ describe('visitNode', () => {
     };
     expect(collect(schema)).toEqual(['']);
   });
+  describe('combinators with a value', () => {
+    const tagged = (tag: string, schema: JSONSchema): JSONSchema => ({ ...schema, tag });
+    const tagsFor = (schema: JSONSchema, value: unknown): unknown[] => {
+      const tags: unknown[] = [];
+      visitNode(schema, value, (visited) => visited.tag !== undefined && tags.push(visited.tag));
+      return tags;
+    };
+    // The shape of `ios.icon`: a `.icon` directory, any other string as an image.
+    const icon: JSONSchema = {
+      oneOf: [
+        tagged('directory', { type: 'string', pattern: '\\.icon$' }),
+        tagged('image', { type: 'string', not: { pattern: '\\.icon$' } }),
+        tagged('object', { type: 'object' }),
+      ],
+    };
+
+    it('visits only the `oneOf` branch the value matches', () => {
+      expect(tagsFor(icon, './assets/app.icon')).toEqual(['directory']);
+      expect(tagsFor(icon, './assets/icon.png')).toEqual(['image']);
+      expect(tagsFor(icon, { light: './assets/icon.png' })).toEqual(['object']);
+    });
+
+    it('visits every `anyOf` branch the value matches', () => {
+      const schema: JSONSchema = {
+        anyOf: [
+          tagged('string', { type: 'string' }),
+          tagged('png', { type: 'string', pattern: '\\.png$' }),
+          tagged('number', { type: 'number' }),
+        ],
+      };
+      expect(tagsFor(schema, './icon.png')).toEqual(['string', 'png']);
+    });
+
+    it('visits `then` or `else` by the value, not both', () => {
+      const schema: JSONSchema = {
+        if: { type: 'string' },
+        then: tagged('then', {}),
+        else: tagged('else', {}),
+      };
+      expect(tagsFor(schema, 'text')).toEqual(['then']);
+      expect(tagsFor(schema, 3)).toEqual(['else']);
+    });
+
+    it('selects `then` for `if: true` and `else` for `if: false`', () => {
+      const branches = { then: tagged('then', {}), else: tagged('else', {}) };
+      expect(tagsFor({ if: true, ...branches }, 'text')).toEqual(['then']);
+      expect(tagsFor({ if: false, ...branches }, 'text')).toEqual(['else']);
+    });
+
+    it('ignores `then` and `else` without an `if`', () => {
+      expect(tagsFor({ then: tagged('then', {}), else: tagged('else', {}) }, 'text')).toEqual([]);
+    });
+
+    it('visits a matching `if` itself, for its annotations', () => {
+      const schema: JSONSchema = {
+        if: tagged('if', { type: 'string' }),
+        then: tagged('then', {}),
+      };
+      expect(tagsFor(schema, 'text')).toEqual(['if', 'then']);
+      expect(tagsFor(schema, 3)).toEqual([]);
+    });
+  });
 });
 
 describe('visit', () => {
+  it('matches `oneOf` branches after resolving `$ref`s', () => {
+    const schema = {
+      properties: {
+        icon: { oneOf: [{ $ref: '#/definitions/Directory' }, { $ref: '#/definitions/Image' }] },
+      },
+      definitions: {
+        Directory: { type: 'string', pattern: '\\.icon$', tag: 'directory' },
+        Image: { type: 'string', not: { pattern: '\\.icon$' }, tag: 'image' },
+      },
+    } as unknown as JSONSchema;
+    const tags: unknown[] = [];
+    visit(schema, { icon: './app.icon' }, (visited) => visited.tag && tags.push(visited.tag));
+    expect(tags).toEqual(['directory']);
+  });
+
   it('dereferences `$ref`s and visits the referenced path once', () => {
     const schema = {
       properties: { android: { $ref: '#/definitions/Android' } },

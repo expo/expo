@@ -64,7 +64,7 @@ beforeEach(() => {
 });
 
 const htmlRoute = {
-  file: 'posts/[postId].tsx',
+  file: './posts/[postId].tsx',
   page: '/posts/[postId]',
   namedRegex: /^\/posts\/(?<postId>[^/]+?)\/?$/i,
   routeKeys: { postId: 'postId' },
@@ -271,6 +271,8 @@ describe('getStaticRenderFunctionAsync', () => {
     expect(getStreamingContent).toHaveBeenCalledWith(new URL('http://localhost:8081/posts/123'), {
       ...options,
       metadata: resolvedMetadata,
+      route: { file: './posts/[postId].tsx', page: '/posts/[postId]' },
+      params: { postId: '123' },
       output: 'static',
     });
 
@@ -284,7 +286,12 @@ describe('getStaticRenderFunctionAsync', () => {
     expect(resolveMetadata).not.toHaveBeenCalled();
     expect(getStreamingContent).toHaveBeenLastCalledWith(
       new URL('http://localhost:8081/+not-found'),
-      { ...options, output: 'static' }
+      {
+        ...options,
+        route: { file: undefined, page: '/+not-found', generated: true },
+        params: {},
+        output: 'static',
+      }
     );
   });
 });
@@ -356,6 +363,16 @@ describe('startAsync', () => {
       expect.objectContaining({
         devToolsPluginManager: devServer['devToolsPluginManager'],
       })
+    );
+  });
+
+  it(`listens on 127.0.0.1 with --localhost`, async () => {
+    const devServer = await getStartedDevServer({ location: { hostType: 'localhost' } });
+
+    expect(instantiateMetroAsync).toHaveBeenLastCalledWith(
+      devServer,
+      expect.objectContaining({ host: '127.0.0.1' }),
+      expect.anything()
     );
   });
 
@@ -640,6 +657,8 @@ describe('getStaticPageAsync', () => {
       loader: undefined,
       metadata: null,
       request,
+      route: { file: './posts/[postId].tsx', page: '/posts/[postId]' },
+      params: { postId: '123' },
       assets: {
         css: [
           { type: 'external', href: 'https://example.com/font.css', media: undefined },
@@ -684,7 +703,7 @@ describe('getStaticPageAsync', () => {
 
       expect(result).toEqual({ content: '<html>streamed SSG</html>', resources: [] });
       expect(resolveMetadata).toHaveBeenCalledWith({
-        route: { file: 'posts/[postId].tsx', page: '/posts/[postId]' },
+        route: { file: './posts/[postId].tsx', page: '/posts/[postId]' },
         request: undefined,
         params: { postId: '123' },
       });
@@ -696,6 +715,8 @@ describe('getStaticPageAsync', () => {
       expect(getStreamingContent).toHaveBeenCalledWith(new URL('http://localhost:8081/posts/123'), {
         loader: { data: { postId: '123' }, key: '/posts/123' },
         metadata: resolvedMetadata,
+        route: { file: './posts/[postId].tsx', page: '/posts/[postId]' },
+        params: { postId: '123' },
         output: 'static',
         hydrate: false,
         assets: {
@@ -767,6 +788,7 @@ describe('getStaticPageAsync', () => {
 
     expect(result).toEqual({
       params: { postId: '123' },
+      route: { file: './posts/[postId].tsx', page: '/posts/[postId]' },
       metadata: { headNodes: [] },
       loader: {
         data: { postId: '123' },
@@ -775,7 +797,7 @@ describe('getStaticPageAsync', () => {
     });
     expect(resolveMetadata).toHaveBeenCalledWith({
       route: {
-        file: 'posts/[postId].tsx',
+        file: './posts/[postId].tsx',
         page: '/posts/[postId]',
       },
       request,
@@ -822,7 +844,7 @@ describe('executeServerDataLoaderAsync', () => {
     const response = await devServer.executeServerDataLoaderAsync(
       new URL('http://localhost:8081/posts/123'),
       {
-        file: 'posts/[postId].tsx',
+        file: './posts/[postId].tsx',
         contextKey: '/posts/[postId]',
         pathname: '/posts/123',
         params: { postId: '123' },

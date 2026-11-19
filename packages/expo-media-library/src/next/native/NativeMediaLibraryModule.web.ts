@@ -1,9 +1,4 @@
-import {
-  PermissionStatus,
-  type PermissionResponse,
-  type EventSubscription,
-  UnavailabilityError,
-} from 'expo';
+import { PermissionStatus, type EventSubscription, UnavailabilityError } from 'expo';
 
 import type {
   AlbumMetadata,
@@ -12,10 +7,13 @@ import type {
   AssetFieldValueMap,
   AssetMetadata,
   AssetUriOptions,
+  CollectionAssetField,
   GranularPermission,
   MediaTypeFilter,
   MediaLibraryAssetsChangeEvent,
+  PermissionResponse,
   SortDescriptor,
+  SortableAssetField,
 } from '../types';
 import type { NativeAlbumClass } from './types/NativeAlbumClass.types';
 import type { NativeAssetClass } from './types/NativeAssetClass.types';
@@ -169,10 +167,19 @@ class NativeAlbumWeb implements NativeAlbumClass {
 }
 
 class NativeQueryWeb implements NativeQueryClass {
-  eq<T extends AssetField>(_field: T, _value: AssetFieldValueMap[T]) {
+  eq<T extends Exclude<AssetField, CollectionAssetField>>(
+    _field: T,
+    _value: AssetFieldValueMap[T]
+  ) {
     return this;
   }
-  within<T extends AssetField>(_field: T, _value: AssetFieldValueMap[T][]) {
+  within<T extends Exclude<AssetField, CollectionAssetField>>(
+    _field: T,
+    _value: AssetFieldValueMap[T][]
+  ) {
+    return this;
+  }
+  contains<T extends CollectionAssetField>(_field: T, _value: AssetFieldValueMap[T][number]) {
     return this;
   }
   gt(_field: AssetField, _value: number) {
@@ -193,7 +200,7 @@ class NativeQueryWeb implements NativeQueryClass {
   offset(_offset: number) {
     return this;
   }
-  orderBy(_sortDescriptors: SortDescriptor | AssetField) {
+  orderBy(_sortDescriptors: SortDescriptor | SortableAssetField) {
     return this;
   }
   album(_album: NativeAlbumClass) {

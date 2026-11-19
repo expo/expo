@@ -6,7 +6,7 @@ description: Learn how to create integration tests for your app when using Expo 
 
 import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 
-> **info** This guide covers SDK 58 and later. If you're upgrading from SDK 57, see the [Router testing migration guide](/router/migrate/sdk-57-to-58/#update-router-tests).
+> **info** This guide covers SDK 58 and later. In SDK 57, `expo-router/testing-library` works only with `@testing-library/react-native` version 13. If you're upgrading from SDK 57, see the [Router testing migration guide](/router/migrate/sdk-57-to-58/#update-router-tests).
 
 Expo Router relies on your file system, which can present challenges when setting up mocks for integration tests. Expo Router's submodule, `expo-router/testing-library`, is a set of testing utilities built on top of the popular [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/) and allows you to quickly create in-memory Expo Router apps that are pre-configured for testing.
 
@@ -76,7 +76,7 @@ it('my-test', async () => {
 
 `renderRouter(fixturePath: string, options: RenderOptions)`
 
-`renderRouter` can accept a directory path to mock an existing fixture. Ensure that the provided path is relative to the current test file.
+`renderRouter` can accept a directory path to mock an existing fixture. The path is relative to the directory where you run Jest, which is usually your project root.
 
 ```tsx app.test.tsx
 import { renderRouter } from 'expo-router/testing-library';
@@ -94,7 +94,7 @@ it('my-test', async () => {
 
 `renderRouter({ appDir: string, overrides: Record<string, ReactComponent>}, options: RenderOptions)`
 
-For more complex testing scenarios, `renderRouter` can use both directory path and inline-mocking methods simultaneously. The `appDir` parameter takes a string representing a pathname to a directory. The overrides parameter is an inline mock that can be used to override specific paths within the `appDir`. This combination allows for fine-tuned control over the mock environment.
+For more complex testing scenarios, `renderRouter` can use both directory path and inline-mocking methods simultaneously. The `appDir` parameter takes a path to a directory, relative to the directory where you run Jest. The overrides parameter is an inline mock that can be used to override specific paths within the `appDir`. This combination allows for fine-tuned control over the mock environment.
 
 ```tsx app.test.tsx
 import { renderRouter } from 'expo-router/testing-library';
@@ -161,21 +161,12 @@ expect(screen).toHaveSegments(['[id]']);
 ```
 
 </PaddedAPIBox>
-<PaddedAPIBox header="useLocalSearchParams()">
-
-Assert the current local URL parameters against an object. The matcher uses the value of the [`useLocalSearchParams`](/versions/latest/sdk/router/#uselocalsearchparams) hook on the current `screen`.
-
-```tsx app.test.tsx
-expect(screen).useLocalSearchParams({ first: 'abc' });
-```
-
-</PaddedAPIBox>
-<PaddedAPIBox header="useGlobalSearchParams()">
+<PaddedAPIBox header="toHaveSearchParams()">
 
 Assert the current global URL parameters against an object. The matcher uses the value of the [`useGlobalSearchParams`](/versions/latest/sdk/router/#useglobalsearchparams) hook on the current `screen`.
 
 ```tsx app.test.tsx
-expect(screen).useGlobalSearchParams({ first: 'abc' });
+expect(screen).toHaveSearchParams({ first: 'abc' });
 ```
 
 </PaddedAPIBox>

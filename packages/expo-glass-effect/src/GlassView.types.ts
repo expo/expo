@@ -1,4 +1,4 @@
-import type { Ref } from 'react';
+import type { ComponentRef, Ref } from 'react';
 import type { ColorValue, View, ViewProps } from 'react-native';
 
 export type GlassStyle = 'clear' | 'regular' | 'none';
@@ -44,5 +44,5 @@ export type GlassViewProps = {
    * @default 'auto'
    */
   colorScheme?: GlassColorScheme;
-  ref?: Ref<View>;
+  ref?: Ref<ComponentRef<typeof View>>;
 } & ViewProps;

@@ -30,7 +30,8 @@ export function Text({
   const modifiers = transformToModifiers(
     style,
     { onPress: disabled ? undefined : onPress, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'Text' }
   );
 
   // Build Compose Text style object

@@ -23,8 +23,8 @@ import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { shouldReduceLogs } from '../../../utils/interactive';
-import type DevToolsPluginManager from '../DevToolsPluginManager';
-import { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
+import type DevToolsPluginManager from '../devtools/DevToolsPluginManager';
+import { DevToolsPluginEndpoint } from '../devtools/DevToolsPluginManager';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
@@ -315,6 +315,14 @@ export async function loadMetroConfigAsync(
   }
   if (!reduceLogs && env.EXPO_UNSTABLE_LOG_BOX) {
     Log.warn(`Experimental Expo LogBox is enabled.`);
+  }
+  const workletsBundleModeEnabled = config.serializer?.polyfillModuleNames?.some((modulePath) =>
+    modulePath.includes('react-native-worklets')
+  );
+  if (!reduceLogs && workletsBundleModeEnabled) {
+    Log.warn(
+      `Experimental react-native-worklets Bundle Mode is enabled.\nBundle mode is currently unstable, not recommended for production use, and may cause unexpected behavior.`
+    );
   }
 
   if (!reduceLogs && serverActionsEnabled) {

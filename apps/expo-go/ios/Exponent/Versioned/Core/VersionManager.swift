@@ -12,7 +12,6 @@ import EXManifests
 final class VersionManager: EXVersionManagerObjC {
   var appContext: AppContext?
   var legacyModuleRegistry: EXModuleRegistry?
-  private var hasRegisteredExpoModules = false
 
   let params: [AnyHashable: Any]
 
@@ -30,7 +29,6 @@ final class VersionManager: EXVersionManagerObjC {
     self.manifest = manifest
 
     configureReact(
-      enableTurboModules: true,
       fatalHandler: fatalHandler,
       logFunction: logFunction,
       logThreshold: logThreshold
@@ -45,10 +43,6 @@ final class VersionManager: EXVersionManagerObjC {
 
   private func getOrCreateAppContext() -> AppContext {
     if let appContext {
-      if !hasRegisteredExpoModules {
-        registerExpoModules(appContext)
-        hasRegisteredExpoModules = true
-      }
       return appContext
     }
 
@@ -67,7 +61,6 @@ final class VersionManager: EXVersionManagerObjC {
     appContext.constants = EXConstantsBinding(params: params)
 
     registerExpoModules(appContext)
-    hasRegisteredExpoModules = true
 
     return appContext
   }
@@ -85,8 +78,7 @@ final class VersionManager: EXVersionManagerObjC {
    */
   @objc
   override func extraModules() -> [Any] {
-    // Ideally if we don't initialize the app context here, but unfortunately there is no better place in bridge lifecycle
-    // that would work well for us (especially properly invalidating existing app context on reload).
+    self.appContext = nil
     let appContext = getOrCreateAppContext()
 
     guard let legacyModuleRegistry else {
@@ -169,12 +161,10 @@ final class VersionManager: EXVersionManagerObjC {
  Configures some React Native global options.
  */
 private func configureReact(
-  enableTurboModules: Bool,
   fatalHandler: @escaping (Error?) -> Void,
   logFunction: @escaping RCTLogFunction,
   logThreshold: RCTLogLevel
 ) {
-  RCTEnableTurboModule(enableTurboModules)
   RCTSetFatalHandler(fatalHandler)
   RCTSetLogThreshold(logThreshold)
   RCTSetLogFunction(logFunction)

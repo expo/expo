@@ -5,6 +5,7 @@ import prompts from 'prompts';
 import { AbortCommandError, CommandError } from './errors';
 import { event } from './events';
 import { isInteractive } from './interactive';
+import { withProgramStatus } from './programStatus';
 
 export type Question<V extends string = string> = PromptObject<V> & {
   optionsPerPage?: number;
@@ -14,7 +15,10 @@ export interface ExpoChoice<T> extends Choice {
   value: T;
 }
 
-type PromptOptions = { nonInteractiveHelp?: string } & Options;
+type PromptOptions = {
+  nonInteractiveHelp?: string;
+  programStatusKind?: 'permission' | 'question' | 'auth';
+} & Options;
 
 export type NamelessQuestion = Omit<Question<'value'>, 'name' | 'type'>;
 
@@ -27,7 +31,7 @@ const listeners: InteractionCallback[] = [];
 
 export default async function prompt(
   questions: Question | Question[],
-  { nonInteractiveHelp, ...options }: PromptOptions = {}
+  { nonInteractiveHelp, programStatusKind, ...options }: PromptOptions = {}
 ) {
   questions = Array.isArray(questions) ? questions : [questions];
   if (!isInteractive() && questions.length) {
@@ -46,16 +50,24 @@ export default async function prompt(
     throw new CommandError('NON_INTERACTIVE', message);
   }
 
+  const kind =
+    programStatusKind ??
+    (questions.some((question) => question.type === 'password')
+      ? 'auth'
+      : questions[0]?.type === 'confirm'
+        ? 'permission'
+        : 'question');
+  const msg = typeof questions[0]?.message === 'string' ? questions[0].message : undefined;
   pauseInteractions();
   try {
-    const results = await prompts(questions, {
-      onCancel() {
-        throw new AbortCommandError();
-      },
-      ...options,
-    });
-
-    return results;
+    return await withProgramStatus({ state: 'blocked', kind, msg }, () =>
+      prompts(questions, {
+        onCancel() {
+          throw new AbortCommandError();
+        },
+        ...options,
+      })
+    );
   } finally {
     resumeInteractions();
   }

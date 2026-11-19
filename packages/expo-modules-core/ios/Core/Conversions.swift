@@ -208,7 +208,9 @@ public struct Conversions {
     case let string as NSString:
       return .representing(value: string as String, in: runtime)
     case let data as Data:
-      return try dataToUint8Array(data, runtime: runtime)
+      return try JavaScriptActor.assumeIsolated {
+        return try Data.encode(data, in: runtime)
+      }
     case let array as NSArray:
       let jsArray = runtime.createArray(length: array.count)
       for (index, element) in array.enumerated() {
@@ -226,20 +228,6 @@ public struct Conversions {
       log.warn("unknownToJavaScriptValue: unsupported native type '\(type(of: value))', returning undefined")
       return .undefined()
     }
-  }
-
-  /**
-   Copies the given `Data` into a new JS `ArrayBuffer` and wraps it in a `Uint8Array`.
-   */
-  private static func dataToUint8Array(_ data: Data, runtime: JavaScriptRuntime) throws -> JavaScriptValue {
-    let arrayBuffer = runtime.createArrayBuffer(size: data.count)
-    data.withUnsafeBytes { rawBuffer in
-      if let baseAddress = rawBuffer.baseAddress, data.count > 0 {
-        memcpy(arrayBuffer.data(), baseAddress, data.count)
-      }
-    }
-    let uint8ArrayCtor = try runtime.global().getPropertyAsFunction("Uint8Array")
-    return try uint8ArrayCtor.callAsConstructor(arrayBuffer.asValue().ref())
   }
 
   // MARK: - Exceptions

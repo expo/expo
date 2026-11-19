@@ -4,9 +4,9 @@ import JsonFile from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 import fs from 'fs';
-import { glob } from 'glob';
 import ora from 'ora';
 import path from 'path';
+import { glob } from 'tinyglobby';
 
 import { consumeMonorepoConfigAsync } from './createExpoConfig';
 import { sanitizedName } from './createFileTransform';
@@ -237,7 +237,7 @@ function escapeXMLCharacters(original: string): string {
  * `getTemplateFilesToRenameAsync()`.
  *
  * The file patterns are formatted as glob expressions to be interpreted by
- * [glob](https://github.com/isaacs/node-glob). Comments are supported with
+ * [tinyglobby](https://github.com/SuperchupuDev/tinyglobby). Comments are supported with
  * the `#` symbol, both in the plain-text file and string array formats.
  * Whitespace is trimmed and whitespace-only lines are ignored.
  *
@@ -296,16 +296,20 @@ export async function getTemplateFilesToRenameAsync({
     .map((line) => line.split(/(?<!\\)#/, 2)[0]?.trim() ?? '')
     .filter((line) => line !== '');
 
-  return await glob(config, {
-    cwd,
-    // `true` is consistent with .gitignore. Allows `*.xml` to match .xml files
-    // in all subdirs.
-    matchBase: true,
-    dot: true,
-    // Prevent climbing out of the template directory in case a template
-    // includes a symlink to an external directory.
-    follow: false,
-  });
+  return glob(
+    config.map((pattern) => {
+      const literalPattern = pattern.startsWith('!') ? `\\${pattern}` : pattern;
+      // NOTE(@kitten): tinyglobby has no matchBase option; bare patterns match in every directory.
+      return pattern.includes('/') ? literalPattern : `**/${literalPattern}`;
+    }),
+    {
+      cwd,
+      dot: true,
+      expandDirectories: false,
+      // NOTE(@kitten): Renaming must not modify files reached through template symlinks.
+      followSymbolicLinks: false,
+    }
+  );
 }
 
 /**

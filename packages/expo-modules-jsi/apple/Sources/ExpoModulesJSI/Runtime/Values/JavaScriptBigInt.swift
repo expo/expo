@@ -1,3 +1,4 @@
+internal import ExpoModulesJSI_Cxx
 internal import jsi
 
 /// A Swift representation of a JavaScript BigInt. BigInt is a built-in JavaScript object that provides
@@ -50,6 +51,7 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
   internal var jsiRuntime: facebook.jsi.IRuntime? {
     return runtimeHandle.pointee
   }
+  /// Mutable so that ``takeValue()`` can move the engine value out of a consumed BigInt.
   internal var pointee: facebook.jsi.BigInt
 
   /// Creates a BigInt from an existing JSI BigInt.
@@ -136,7 +138,7 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
     self.runtimeHandle = runtime.handle
     // The global `BigInt` function is looked up once per runtime and cached.
     self.pointee = try runtime.withCached(
-      bigIntFunctionKey,
+      JavaScriptRuntime.CacheKeys.bigInt,
       { try runtime.global().getPropertyAsFunction("BigInt") },
       { (bigIntFunction: borrowing JavaScriptFunction) in
         // A single borrowed argument is passed without allocating an arguments buffer.
@@ -265,6 +267,11 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptValue(runtimeHandle, facebook.jsi.Value(jsiRuntime, pointee))
   }
 
+  /// Moves the BigInt into a `JavaScriptValue`, without the clone that ``asValue()`` makes.
+  public consuming func takeValue() -> JavaScriptValue {
+    return JavaScriptValue(runtimeHandle, expo.takeValueFromBigInt(&pointee))
+  }
+
   /// Returns the BigInt as a `facebook.jsi.Value` instance.
   internal func asJSIValue() -> facebook.jsi.Value {
     guard let jsiRuntime else {
@@ -312,6 +319,41 @@ extension JavaScriptBigInt: JSIRepresentable {
   }
 }
 
+// MARK: - JavaScriptCodable
+
+// A `JavaScriptBigInt` argument receives the JS BigInt unconverted, so it keeps values outside the
+// `Int64` and `UInt64` ranges. Decoding anything else, including a number, throws a `TypeError`.
+extension JavaScriptBigInt: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .bigint
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptBigInt
+  {
+    return try value.asBigInt()
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptBigInt
+  {
+    return try value.asBigInt(in: runtime)
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(_ value: consuming JavaScriptBigInt, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptValue
+  {
+    return value.takeValue()
+  }
+}
+
 // MARK: - Errors
 
 /// Errors that can occur when working with BigInt conversions.
@@ -336,6 +378,3 @@ public enum BigIntConversionError: Error, CustomStringConvertible {
     }
   }
 }
-
-/// Key of the global `BigInt` function in each runtime's cache.
-private let bigIntFunctionKey = JavaScriptRuntime.Cache.Key<JavaScriptFunction.Ref>()

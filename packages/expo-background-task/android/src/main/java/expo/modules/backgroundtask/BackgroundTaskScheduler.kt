@@ -266,7 +266,7 @@ object BackgroundTaskScheduler {
 
     return try {
       val workInfos = workManager.getWorkInfosForUniqueWork(WORKER_IDENTIFIER).await()
-      return workInfos.firstOrNull()
+      return selectCurrentWorkInfo(workInfos)
     } catch (e: Exception) {
       Log.d(TAG, "Calling getWorkInfosForUniqueWork failed with error " + e.message)
       null
@@ -295,3 +295,11 @@ object BackgroundTaskScheduler {
     }
   }
 }
+
+/**
+ * Chaining runs with `ExistingWorkPolicy.APPEND` keeps finished runs in the unique work,
+ * and WorkManager returns them in no fixed order, so the live run must be picked explicitly.
+ */
+internal fun selectCurrentWorkInfo(workInfos: List<WorkInfo>): WorkInfo? =
+  workInfos.firstOrNull { it.state == WorkInfo.State.RUNNING || it.state == WorkInfo.State.ENQUEUED }
+    ?: workInfos.firstOrNull()

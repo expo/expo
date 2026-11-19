@@ -3,6 +3,19 @@ import Foundation
 
 public typealias AppIntentParams = [String: AppIntentValue]
 
+/// Thrown when a value from JavaScript has a type that `AppIntentValue` cannot hold.
+internal final class AppIntentUnsupportedValueException: GenericException<String>, LocalizedError, @unchecked Sendable {
+  override var reason: String {
+    "expo-app-intents could not read a value of type '\(param)' that came from JavaScript, because App Intent "
+      + "values must be JSON: a string, number, boolean, null, array, or plain object. Convert the value to one "
+      + "of these types before you pass it on."
+  }
+
+  var errorDescription: String? {
+    reason
+  }
+}
+
 // swift-format moves the brace to a new line for wrapped declarations.
 // swiftlint:disable opening_brace
 /// A Codable, Sendable JSON value used to persist App Intent params while JS is cold.
@@ -35,14 +48,38 @@ public enum AppIntentValue: Codable, Equatable, Sendable, ExpressibleByStringLit
     self = .bool(value)
   }
 
+  /// Converts a Foundation value from JavaScript. NaN and infinity become `.null`, as in `JSON.stringify`.
+  init(foundationValue value: Any?) throws {
+    self = try Self.converting(foundationValue: value).jsonSafe()
+  }
+
+  private static func converting(foundationValue value: Any?) throws -> AppIntentValue {
+    switch value {
+    case nil, is NSNull:
+      return .null
+    case let number as NSNumber:
+      if CFGetTypeID(number) == CFBooleanGetTypeID() {
+        return .bool(number.boolValue)
+      }
+      return Int(exactly: number.doubleValue).map(AppIntentValue.int) ?? .double(number.doubleValue)
+    case let string as String:
+      return .string(string)
+    case let array as [Any]:
+      return .array(try array.map(converting(foundationValue:)))
+    case let object as [String: Any]:
+      return .object(try object.mapValues(converting(foundationValue:)))
+    case let value?:
+      throw AppIntentUnsupportedValueException(String(describing: type(of: value)))
+    }
+  }
+
   /// Returns an equivalent value that JSON can represent.
   func jsonSafe() -> AppIntentValue {
     switch self {
     case .double(let value) where !value.isFinite:
       log.warn(
-        "expo-app-intents replaced a non-finite number (\(value)) in App Intent params with null, "
-          + "because JSON cannot represent NaN or infinity and the invocation would otherwise be "
-          + "dropped. Pass a finite number, or a string if the exact value matters."
+        "expo-app-intents replaced a non-finite number (\(value)) with null, because JSON cannot represent "
+          + "NaN or infinity. Use a finite number, or a string if the exact value matters."
       )
       return .null
     case .array(let values):

@@ -1,5 +1,6 @@
 import { Link } from 'expo-router';
 import { ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useTimer } from '@/utils/useTimer';
 
@@ -15,17 +16,19 @@ export default function Performance() {
   ));
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic" style={{ backgroundColor: '#000' }}>
-      <Text style={{ color: '#fff' }}>Performance - One</Text>
-      <Text style={{ color: '#fff' }}>Time: {time}</Text>
-      <Link href="/link-preview/performance" style={{ color: '#fff' }}>
-        <Link.Trigger>Link.Preview: /performance</Link.Trigger>
-        <Link.Preview />
-      </Link>
-      <Link href="/link-preview/performance/mosaic" style={{ color: '#fff' }}>
-        <Link.Trigger>Link.Preview: /performance/mosaic</Link.Trigger>
-        <Link.Preview />
-      </Link>
-      {elements}
+      <SafeAreaView edges={['left', 'right']}>
+        <Text style={{ color: '#fff' }}>Performance - One</Text>
+        <Text style={{ color: '#fff' }}>Time: {time}</Text>
+        <Link href="/link-preview/performance" style={{ color: '#fff' }}>
+          <Link.Trigger>Link.Preview: /performance</Link.Trigger>
+          <Link.Preview />
+        </Link>
+        <Link href="/link-preview/performance/mosaic" style={{ color: '#fff' }}>
+          <Link.Trigger>Link.Preview: /performance/mosaic</Link.Trigger>
+          <Link.Preview />
+        </Link>
+        {elements}
+      </SafeAreaView>
     </ScrollView>
   );
 }

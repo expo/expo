@@ -4,10 +4,7 @@ on:
     types: [labeled]
   # pull_request_target is required so fork PRs get a write token when a
   # maintainer applies a label (e.g. "Version bump PR") that triggers a canned
-  # reply. Most jobs here only post API comments — safe. The one job that
-  # checks out code and uses high-value secrets (issue-accepted) is explicitly
-  # gated to `event_name == 'issues'` so a same-named label on a PR can't
-  # cause fork content to be processed with secrets in env.
+  # reply. Jobs here only post API comments and never check out PR code.
   pull_request_target:
     types: [labeled]
 
@@ -89,10 +86,7 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       issues: write
-    # event_name guard is load-bearing: this job checks out code and runs
-    # expotools with EXPO_BOT_GITHUB_TOKEN, LINEAR_API_KEY, and OPENAI_API_KEY
-    # in env. Without the guard, applying an "issue accepted" label to a PR
-    # would trigger the same flow on a pull_request_target event.
+    # Only for issues, so an "issue accepted" label on a PR does not post this comment.
     if: github.repository == 'expo/expo' && github.event_name == 'issues' && github.event.label.name == 'issue accepted'
     steps:
       - name: Comment on issue
@@ -124,35 +118,6 @@ jobs:
                 throw e;
               }
             }
-      - name: 👀 Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: 🔨 Install pnpm
-        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
-        with:
-          install: false
-      - name: 🔨 Setup Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 24
-          cache: 'pnpm'
-      - name: 📦 Install dependencies
-        run: pnpm install --ignore-scripts --frozen-lockfile
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-      - name: 🛠 Build expotools
-        run: pnpm turbo build --filter expotools...
-        env:
-          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-          TURBO_TEAM: expo
-      - name: 🔎 Import issue to Linear
-        run: pnpm expotools import-github-issue-to-linear --issue "${{ github.event.issue.number }}" --importer "${{ github.triggering_actor }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
-          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
   question:
     runs-on: ubuntu-24.04

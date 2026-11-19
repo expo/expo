@@ -23,3 +23,32 @@ export function isRenderingComponent(): boolean {
   // https://github.com/react/react/blob/07dde64da1abd1525120b9ae49672386486e33c3/packages/react-reconciler/src/ReactFiberAsyncDispatcher.js#L38-L42
   return internals?.A?.getOwner?.() != null;
 }
+
+let wrappedCallDepth = 0;
+const shownWarnings = new Set<string>();
+
+/**
+ * Returns `fn` wrapped so that, in development, `message` is warned once per process when a
+ * component calls it during render. Wrapped functions call each other, so only the outermost
+ * call warns.
+ */
+export function withWarnOnceIfCalledDuringRender<Args extends unknown[], Result>(
+  fn: (...args: Args) => Result,
+  message: string
+): (...args: Args) => Result {
+  if (process.env.NODE_ENV === 'production') {
+    return fn;
+  }
+  return (...args) => {
+    if (wrappedCallDepth === 0 && !shownWarnings.has(message) && isRenderingComponent()) {
+      shownWarnings.add(message);
+      console.warn(message);
+    }
+    wrappedCallDepth++;
+    try {
+      return fn(...args);
+    } finally {
+      wrappedCallDepth--;
+    }
+  };
+}

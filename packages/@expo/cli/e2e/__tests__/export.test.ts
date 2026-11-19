@@ -1,7 +1,7 @@
 import JsonFile from '@expo/json-file';
 import fs from 'fs/promises';
-import { sync as globSync } from 'glob';
 import path from 'path';
+import { globSync } from 'tinyglobby';
 
 import { executeExpoAsync } from '../utils/expo';
 import {
@@ -306,7 +306,7 @@ describe('server', () => {
     // packages change. If it is significantly larger than the threshold,
     // log and diff the `bundle` with the a previous version from a branch
     // where this passes.
-    expect(bundle.split('\n').length).toBeLessThan(700);
+    expect(bundle.split('\n').length).toBeLessThan(750);
   });
 
   it('runs `npx expo export --no-bytecode --unstable-hosted-native`', async () => {

@@ -37,6 +37,7 @@ __rsc_tests__
 /android/src/test/**
 /ios/Tests/**
 
+AGENTS.md
 CLAUDE.md
 CONTRIBUTING.md
 

@@ -3,8 +3,11 @@
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { NavigatorContentProps } from '../../../standard-navigation/types';
+import { useNonStackAnchorWarning } from '../../../standard-navigation/useNonStackAnchorWarning';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
+import { useReconcileTabHistory } from '../../../standard-navigation/useReconcileTabHistory';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
+import type { TabRouterOptions } from '../../native';
 import type {
   MaterialTopTabDescriptorMap,
   MaterialTopTabNavigationConfig,
@@ -27,7 +30,8 @@ export type MaterialTopTabNavigatorContentProps = MaterialTopTabNavigationConfig
 type ContentArgs = NavigatorContentProps<
   MaterialTopTabNavigationOptions,
   MaterialTopTabNavigationEventMap,
-  MaterialTopTabNavigationConfig,
+  // Router options are forwarded to the content too.
+  MaterialTopTabNavigationConfig & Pick<TabRouterOptions, 'backBehavior'>,
   MaterialTopTabNavigatorCreateProps
 >;
 
@@ -41,8 +45,11 @@ function MaterialTopTabNavigatorContent({
   routeNames,
   preload,
   navigateToTabSync,
+  backBehavior,
   ...rest
 }: ContentArgs) {
+  useNonStackAnchorWarning(backBehavior);
+  useReconcileTabHistory();
   const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames,

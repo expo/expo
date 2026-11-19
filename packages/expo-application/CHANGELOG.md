@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.1.2
+
+### Patch Changes
+
+- [Android] Fix async functions rejecting with `NoSuchMethodError` on `expo-modules-core` 58.0.18 and later. The prebuilt Android library is now built against Expo Modules v2 runtime 0.2.5. ([#51693](https://github.com/expo/expo/pull/51693) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.1.1
 
 ### Patch Changes

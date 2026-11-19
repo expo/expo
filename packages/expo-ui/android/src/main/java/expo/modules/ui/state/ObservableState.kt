@@ -10,6 +10,8 @@ import expo.modules.kotlin.sharedobjects.SharedObject
  * recomposes automatically when the value changes.
  */
 class ObservableState(initialValue: Any? = null) : SharedObject() {
+  override val releasesAfterPendingViewUpdates = true
+
   private val _state: MutableState<Any?> = mutableStateOf(initialValue)
   internal var onChange: WorkletCallback? = null
   private var isNotifying = false

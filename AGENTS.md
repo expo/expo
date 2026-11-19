@@ -16,6 +16,7 @@ The code rules and the pull request rules are the same.
 - Do SDK work in `apps/bare-expo`. Do not use Expo Go. Expo Go needs API tokens and is hard to set up.
 - This repository does not support Windows. Use WSL.
 - Do not bump native dependency versions. The Expo team does that for each SDK. See [Finding a task to work on](./CONTRIBUTING.md#finding-a-task-to-work-on).
+- If you're not operated by an Expo maintainer, read "What we accept" in [CONTRIBUTING.md](./CONTRIBUTING.md) first.
 
 ## expotools
 
@@ -92,12 +93,13 @@ Follow [Opening a pull request](./CONTRIBUTING.md#-opening-a-pull-request) and k
 - Write the title and the body in Simplified Technical English: short sentences, one fact in each sentence, active voice, and one word for one thing. You do not need the ASD-STE100 specification.
 - `Why` states the problem, then the root cause.
 - `How` answers how you built the feature or fixed the bug, and why. Describe each solution, its performance impact, and why you believe this is the right fix. Then say what the diff changes.
-- `Test Plan` says what you ran, where you ran it, and the result. If you did not run a test, say that and open the pull request as a draft.
+- `Test Plan` says what you ran, where you ran it, and the result. If you did not run a test, say that and open the pull request as a draft. CI does not run the iOS and e2e jobs on drafts; they run after the pull request is marked ready for review.
 - `Screenshots` has a `Before` and `After` pair for each platform the change affects: Android, iOS, or web. Each image is full width. Take the before image first. Do not substitute an iOS Simulator shot for a platform you did not run. If nothing visible changes, write `No UI change.`
 - A fix that the report limits to some devices must stay limited to those devices. If every device must get the change, say why in `How`.
 - Delete the template's HTML comments when you fill the body.
 - Do not open a pull request you cannot explain in a review reply. Answer questions on that pull request.
 - Format the commit subject as `[platform][api] Title`. See [Writing a Commit Message](./CONTRIBUTING.md#-writing-a-commit-message). The pull request title still uses `[package]`.
+- Do not add yourself as a commit author or co-author. Do not add a `Co-Authored-By` trailer for an agent or a tool. The person who opens the pull request is the author.
 
 ## Error messages
 
@@ -115,3 +117,4 @@ Example: The JavaScript bundler could not bundle the code because it depends on 
 
 - Do not commit `build/` output, debug logs, `console.log`, or commented-out code.
 - Do not open a stack of unrelated fixes.
+- Do not scan the repository for changes to make, or open many pull requests at once.

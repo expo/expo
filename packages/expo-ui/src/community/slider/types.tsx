@@ -72,4 +72,18 @@ export interface SliderProps {
    * Used to style and layout the Slider.
    */
   style?: StyleProp<ViewStyle>;
+  /**
+   * What screen readers (VoiceOver, TalkBack) announce for the slider before its value.
+   * Without it, the slider is announced by its value alone.
+   */
+  accessibilityLabel?: string;
+  /**
+   * Describes what adjusting the slider does. Screen readers read it after the label and value.
+   * @platform ios
+   */
+  accessibilityHint?: string;
+  /**
+   * Used to locate this view in end-to-end tests.
+   */
+  testID?: string;
 }

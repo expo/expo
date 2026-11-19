@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function IconTest() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['left', 'right']} style={styles.container}>
       <Text>This tab uses an image icon with its original colors.</Text>
-    </View>
+    </SafeAreaView>
   );
 }
 

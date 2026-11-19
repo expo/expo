@@ -63,7 +63,10 @@ import {
   isNoxcturnalTransformWorkerEnabled,
   tryTransformJSWithNoxcturnal,
 } from './noxcturnal/metro-transform-worker';
-import { type NoxcturnalMetroTransformAttempt } from './noxcturnal/noxcturnal-transformer';
+import {
+  transformAssetWithNoxcturnalSync,
+  type NoxcturnalMetroTransformAttempt,
+} from './noxcturnal/noxcturnal-transformer';
 import { shouldMinify } from './resolveOptions';
 import type { ExpoBabelFileMetadata, ExpoJsTransformerConfig } from './types';
 import { getMinifier, resolveMinifier } from './utils/getMinifier';
@@ -697,13 +700,46 @@ async function transformAsset(
   context: TransformationContext
 ): Promise<TransformResponse> {
   const { assetRegistryPath, assetPlugins } = context.config;
+  const assetArgs = {
+    filename: file.filename,
+    options: {
+      platform: context.options.platform,
+      customTransformOptions: context.options.customTransformOptions,
+      projectRoot: context.projectRoot,
+      publicPath: context.config.publicPath,
+    },
+  };
 
-  // TODO: Add web asset hashing in production.
-  const result = await assetTransformer.transform(
-    getBabelTransformArgs(file, context),
-    assetRegistryPath,
-    assetPlugins
-  );
+  if (isNoxcturnalTransformWorkerEnabled(context.config)) {
+    const result = await assetTransformer.transformToSource(
+      assetArgs,
+      assetRegistryPath,
+      assetPlugins
+    );
+    const jsFile: JSFile = {
+      ...file,
+      code: result.code,
+      type: 'js/module/asset',
+      functionMap: null,
+      hasCjsExports: true,
+      reactClientReference: result.reactClientReference,
+    };
+    const done = debugEvent.span();
+    const native = transformAssetWithNoxcturnalSync({
+      filename: file.filename,
+      source: result.code,
+      projectRoot: context.projectRoot,
+      options: context.options,
+      config: context.config,
+    });
+    done('noxcturnal:full', {
+      file: debugEvent.path(file.filename),
+      status: native.status,
+    });
+    return completeFullNoxcturnalTransform(jsFile, context, native);
+  }
+
+  const result = await assetTransformer.transform(assetArgs, assetRegistryPath, assetPlugins);
 
   const jsFile: JSFile = {
     ...file,
@@ -754,7 +790,7 @@ async function transformJSWithBabel(
       isDefaultExpoTransformer,
     },
     {
-      completeFullTransform: completeFullNoxcturnalTransform,
+      completeFullTransform: completeNoxcturnalSourceTransform,
     }
   );
   if (noxcturnal.status === 'complete') {
@@ -781,12 +817,13 @@ function enableExperimentalImportSupportForReactCompiler(context: Transformation
   }
 }
 
-async function completeFullNoxcturnalTransform(
+async function completeNoxcturnalSourceTransform(
   file: JSFile,
   context: TransformationContext,
   fullNoxcturnal: Extract<NoxcturnalMetroTransformAttempt, { status: 'complete' }>
 ): Promise<TransformResponse> {
   const cacheVary = fullNoxcturnal.result.metadata.cacheVary as readonly CacheVaryDim[] | undefined;
+  // Graph optimization still needs the Babel AST and import metadata from transformJS.
   if (String(context.options.customTransformOptions?.optimize) === 'true') {
     return transformJS(
       {
@@ -824,6 +861,15 @@ async function completeFullNoxcturnalTransform(
     );
   }
 
+  return completeFullNoxcturnalTransform(file, context, fullNoxcturnal);
+}
+
+async function completeFullNoxcturnalTransform(
+  file: JSFile,
+  context: TransformationContext,
+  fullNoxcturnal: Extract<NoxcturnalMetroTransformAttempt, { status: 'complete' }>
+): Promise<TransformResponse> {
+  const cacheVary = fullNoxcturnal.result.metadata.cacheVary as readonly CacheVaryDim[] | undefined;
   let code = fullNoxcturnal.result.code;
   let lineCount: number;
   let map: VlqMap;
