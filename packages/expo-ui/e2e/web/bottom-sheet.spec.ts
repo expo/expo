@@ -217,6 +217,36 @@ test.describe('Community BottomSheet screen', () => {
     await expect(openPanel(page)).toBeVisible();
   });
 
+  test('should paint a sheet opened from a React Native Modal above the Modal', async ({
+    page,
+  }) => {
+    await gotoCommunity(page);
+    await clickFirstButtonAfter(page, 'snapPoints: 25%, 50%, 90%');
+    await clickSheetButton(page, 'Open Modal over sheet');
+    await page.getByRole('button', { name: 'Open sheet over Modal' }).click();
+    const sheet = openPanel(page).filter({ hasText: 'Sheet over Modal' });
+    await expect(sheet).toBeVisible();
+
+    await expect
+      .poll(() =>
+        sheet.evaluate((panel) => {
+          // `inert` also turns off hit-testing. Clear it so elementFromPoint follows paint order.
+          const inert = Array.from(document.querySelectorAll<HTMLElement>('[inert]'));
+          inert.forEach((el) => (el.inert = false));
+          const box = panel.getBoundingClientRect();
+          const top = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+          inert.forEach((el) => (el.inert = true));
+          return top != null && panel.contains(top);
+        })
+      )
+      .toBe(true);
+
+    await sheet.getByRole('button', { name: 'Close sheet over Modal' }).click();
+    await expect(sheet).toHaveCount(0);
+    await page.getByRole('button', { name: 'Close Modal' }).click();
+    await expect(page.getByText('Modal presented')).toHaveCount(0);
+  });
+
   test('should present BottomSheetModal from Open and start closed on load', async ({ page }) => {
     await gotoCommunity(page);
     await expect(openPanel(page)).toHaveCount(0);

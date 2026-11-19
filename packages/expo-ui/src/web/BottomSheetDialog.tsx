@@ -179,10 +179,9 @@ const sheetCss = css`
     border: none;
     background: transparent;
     overflow: hidden;
-    /* The dialog is not in the top layer. One step below react-native-web
-       Modal's 9999, so a Modal opened from sheet content always paints above
-       the sheet, wherever its portal node sits in <body>. */
-    z-index: 9998;
+    /* The dialog is not in the top layer. react-native-web Modal's z-index, so
+       DOM order decides which one paints on top (see trackLayerOrder). */
+    z-index: 9999;
   }
   [data-expo-ui-bottom-sheet]::backdrop {
     background: transparent;
@@ -294,47 +293,120 @@ function unlockBodyScroll() {
 
 const SHEET_ROOT_ATTRIBUTE = 'data-expo-ui-bottom-sheet-root';
 
-// Reference counts per element, so stacked sheets restore `inert` correctly.
-const inertLocks = new Map<HTMLElement, number>();
+// The sheet roots that made each element inert, so stacked sheets restore
+// `inert` correctly.
+const inertLocks = new Map<HTMLElement, Set<HTMLElement>>();
 
 // The dialog is not modal, so the browser does not make the rest of the page
 // inert. Do it for the elements already in <body> when the sheet opens.
 // Elements appended later — such as a react-native-web Modal opened from sheet
-// content — stay interactive on purpose. Sheet roots are skipped so two open
-// sheets cannot make each other inert.
-function lockBackgroundInert() {
+// content — stay interactive on purpose.
+function lockBackgroundInert(ownRoot: HTMLElement) {
   const locked: HTMLElement[] = [];
   for (const child of Array.from(document.body.children)) {
-    if (!(child instanceof HTMLElement) || child.hasAttribute(SHEET_ROOT_ATTRIBUTE)) continue;
+    if (!(child instanceof HTMLElement) || child === ownRoot) continue;
     // An element without element children hosts no background content.
     // react-native-web's Modal appends its empty portal <div> when the Modal
     // mounts — even hidden inside sheet content — and fills it when the Modal
     // becomes visible; `inert` here would disable that Modal.
     if (child.childElementCount === 0) continue;
-    const count = inertLocks.get(child) ?? 0;
-    if (count === 0) {
+    const owners = inertLocks.get(child);
+    if (owners) {
+      owners.add(ownRoot);
+    } else {
       // The app made this element inert itself; leave it alone.
       if (child.inert) continue;
       child.inert = true;
+      inertLocks.set(child, new Set([ownRoot]));
     }
-    inertLocks.set(child, count + 1);
     locked.push(child);
   }
   return () => {
     for (const el of locked) {
-      const count = inertLocks.get(el) ?? 0;
-      if (count <= 1) {
-        inertLocks.delete(el);
-        el.inert = false;
-      } else {
-        inertLocks.set(el, count - 1);
-      }
+      const owners = inertLocks.get(el);
+      if (!owners?.delete(ownRoot) || owners.size > 0) continue;
+      inertLocks.delete(el);
+      el.inert = false;
     }
   };
 }
 
 // Open sheet dialogs, oldest first. Only the top-most one reacts to Escape.
 const openSheetDialogs: HTMLDialogElement[] = [];
+
+// A closed sheet keeps its root and its closed <dialog>, which does not paint.
+function isShown(element: Element) {
+  if (element.hasAttribute(SHEET_ROOT_ATTRIBUTE))
+    return element.querySelector('dialog[open]') != null;
+  return element.childElementCount > 0;
+}
+
+// A layer that opens goes on top: it is no longer inert, and it moves to the end
+// of <body> when a shown element follows it. Moving a node reloads its iframes,
+// so it moves only when it has to.
+function bringToFront(element: Element) {
+  if (element instanceof HTMLElement && inertLocks.delete(element)) element.inert = false;
+  let next = element.nextElementSibling;
+  while (next && !isShown(next)) next = next.nextElementSibling;
+  if (!next) return;
+  const active = document.activeElement;
+  document.body.appendChild(element);
+  // Moving a node blurs the focused element inside it.
+  if (
+    active instanceof HTMLElement &&
+    element.contains(active) &&
+    document.activeElement !== active
+  ) {
+    active.focus({ preventScroll: true });
+  }
+}
+
+let layerOrder: { observer: MutationObserver; shown: Set<Element>; count: number } | null = null;
+
+// Overlays share z-index 9999, so the later <body> child paints on top. The
+// layer opened last must be on top, as in the browser top layer. A sheet brings
+// its root to the front when it opens. react-native-web appends a Modal's portal
+// <div> when the Modal mounts, not when it opens, and fills it when the Modal
+// becomes visible. So while a sheet is open, a <body> child that gets its first
+// element is a layer that opens, and it comes to the front.
+function trackLayerOrder() {
+  if (!layerOrder) {
+    const shown = new Set<Element>();
+    const observer = new MutationObserver((records) => {
+      for (const record of records) {
+        const target = record.target;
+        if (target === document.body) {
+          for (const node of Array.from(record.addedNodes)) {
+            if (node instanceof Element) observer.observe(node, { childList: true });
+          }
+          continue;
+        }
+        if (!(target instanceof Element) || target.parentNode !== document.body) continue;
+        if (target.hasAttribute(SHEET_ROOT_ATTRIBUTE)) continue;
+        if (target.childElementCount === 0) {
+          shown.delete(target);
+        } else if (!shown.has(target)) {
+          shown.add(target);
+          bringToFront(target);
+        }
+      }
+    });
+    observer.observe(document.body, { childList: true });
+    for (const child of Array.from(document.body.children)) {
+      if (child.childElementCount > 0) shown.add(child);
+      observer.observe(child, { childList: true });
+    }
+    layerOrder = { observer, shown, count: 0 };
+  }
+  layerOrder.count += 1;
+  return () => {
+    if (!layerOrder) return;
+    layerOrder.count -= 1;
+    if (layerOrder.count > 0) return;
+    layerOrder.observer.disconnect();
+    layerOrder = null;
+  };
+}
 
 /**
  * Web-only bottom sheet built on the HTML dialog element.
@@ -387,6 +459,13 @@ export function BottomSheetDialog({
     if (open) setMounted(true);
   }, [open]);
 
+  // Before the dialog opens: show() focuses the sheet, and a react-native-web
+  // Modal under it would pull that focus back unless it is already inert.
+  useLayoutEffect(() => {
+    if (!open || !mounted || !containerRef.current) return;
+    return lockBackgroundInert(containerRef.current);
+  }, [open, mounted]);
+
   const restoreFocus = useCallback(() => {
     const dialog = asHTMLDialogElement(dialogRef.current);
     const target = previouslyFocusedRef.current;
@@ -408,6 +487,7 @@ export function BottomSheetDialog({
       if (!isDialogOpen(dialog)) {
         previouslyFocusedRef.current =
           document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        if (containerRef.current) bringToFront(containerRef.current);
         openDialog(dialog);
       }
       if (playedEnterRef.current) return;
@@ -466,7 +546,7 @@ export function BottomSheetDialog({
 
   useEffect(() => {
     if (!open || !mounted) return;
-    return lockBackgroundInert();
+    return trackLayerOrder();
   }, [open, mounted]);
 
   const commitClose = useCallback(() => {
