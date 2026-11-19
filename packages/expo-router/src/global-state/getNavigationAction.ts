@@ -1,4 +1,5 @@
 import type { RouteNode } from '../Route';
+import type { ResultState } from '../fork/getStateFromPath';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHrefStringWithSegments } from '../link/href';
@@ -9,13 +10,13 @@ import {
 import type { NavigationAction } from '../react-navigation/native';
 import type { NavigationState } from '../react-navigation/routers';
 import type { SingularOptions } from '../useScreens';
-import { getRouteInfoFromState } from './getRouteInfoFromState';
+import { getRouteInfoFromState, type UrlObject } from './getRouteInfoFromState';
 import { resolveNavigationDestination } from './resolveNavigationDestination';
 import type { RouterRegistry } from './routerRegistry';
 import type { LinkToOptions, StoreRedirects } from './types';
 
 export type NavigationResolution =
-  | { status: 'action'; action: NavigationAction }
+  | { status: 'action'; action: NavigationAction; targetState: ResultState }
   | { status: 'invalid'; href: string };
 
 export type NavigateActionConfig = {
@@ -33,15 +34,17 @@ export function getNavigateAction(
   withAnchor: boolean | undefined,
   singular: SingularOptions | undefined,
   previewKey: string | undefined,
-  navigationState: NavigationState
+  navigationState: NavigationState,
+  // The blocked route that a `redirectTo` resolves against. The options of the navigation do not apply.
+  redirectFrom?: UrlObject
 ): NavigationResolution {
   if (!config.linking || !config.routeNode) {
     throw new Error('Attempted to link to route when no routes are present');
   }
 
-  const routeInfo = getRouteInfoFromState(navigationState);
+  const routeInfo = redirectFrom ?? getRouteInfoFromState(navigationState);
   const href = applyRedirects(
-    resolveHrefStringWithSegments(baseHref, routeInfo, options),
+    resolveHrefStringWithSegments(baseHref, routeInfo, redirectFrom ? undefined : options),
     config.redirects
   )!;
 
@@ -74,5 +77,5 @@ export function getNavigateAction(
     internalParams,
   });
 
-  return { status: 'action', action };
+  return { status: 'action', action, targetState: state };
 }

@@ -27,7 +27,7 @@ import {
   completeNavigationState,
   createSeededNavigationState,
 } from './createSeededNavigationState';
-import { getNavigateAction } from './getNavigationAction';
+import { addsBlockedRoute, createRedirectLoopError, getGuardedNavigateAction } from './guards';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
 import type { RouterRegistry } from './routerRegistry';
 import { markActionEnqueuedAndReturnId, type QueuedRoutingIntent } from './routingQueue';
@@ -271,9 +271,9 @@ function reduceTree(
   switch (operation.type) {
     case 'NAVIGATE_TO_HREF': {
       const { href, options } = operation.payload;
-      let resolution: ReturnType<typeof getNavigateAction>;
+      let resolution: ReturnType<typeof getGuardedNavigateAction>;
       try {
-        resolution = getNavigateAction(
+        resolution = getGuardedNavigateAction(
           href,
           options,
           config,
@@ -290,6 +290,12 @@ function reduceTree(
         console.warn(
           `An error occurred when trying to handle navigation action ${JSON.stringify(operation)}: ${message}`
         );
+        return result;
+      }
+      if (resolution.status === 'redirect-loop') {
+        throw createRedirectLoopError(resolution.hrefs);
+      }
+      if (resolution.status === 'blocked') {
         return result;
       }
       if (resolution.status === 'invalid') {
@@ -358,7 +364,10 @@ function reduceTree(
       const nextState = config.routeNode
         ? completeNavigationState(reduction.nextState, config.routeNode)
         : reduction.nextState;
-      if (nextState === state) {
+      if (
+        nextState === state ||
+        addsBlockedRoute(state, nextState, reduction.affectedRouteKey, config)
+      ) {
         return result;
       }
 
