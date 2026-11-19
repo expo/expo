@@ -313,8 +313,9 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * changes when the app's data is cleared or the app is reinstalled, although a backup restore
    * can carry the previous id over. It identifies an installation, not a user or a device.
    *
-   * `null` on web, where there is no Expo Services client id, and while consent is not granted.
-   * Observe does not create the id until consent is granted. A revoke keeps the id.
+   * `null` on web, where there is no Expo Services client id.
+   * Reading the id creates it on the device when it does not exist, also while consent is not
+   * granted. A revoke keeps the id.
    *
    * @example
    * ```ts
