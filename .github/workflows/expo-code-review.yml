@@ -23,21 +23,23 @@ permissions:
 concurrency:
   # Only an event that can start or stop a review shares the PR's group; every other
   # event gets its own group (`run_id`), so it never cancels a running review:
+  # - Removing `ai-review`. A re-request removes and adds it again, and the removal must
+  #   not cancel the new review. Add `ai-review:skip` to stop a running review.
   # - On a PR from this repository: a label event for a label other than `ai-review*`,
   #   such as `contributor: external` or the `ready for human` label the reviewer adds.
-  # - On a PR from a fork: everything except adding or removing `ai-review`, adding
-  #   `ai-review:skip`, and the non-label events that can review: on a PR with both
-  #   `ai-review` and `ai-autonomous`, or while AI_REVIEW_FORK_PRS is on. Any other
-  #   push to a fork PR cannot start a review (see the job `if`), so it must not cancel
-  #   the review a maintainer started with the label.
+  # - On a PR from a fork: everything except adding `ai-review` or `ai-review:skip`,
+  #   and the non-label events that can review: on a PR with both `ai-review` and
+  #   `ai-autonomous`, or while AI_REVIEW_FORK_PRS is on. Any other push to a fork PR
+  #   cannot start a review (see the job `if`), so it must not cancel the review a
+  #   maintainer started with the label.
   group: >-
     ai-code-review-${{ github.event.pull_request.number }}-${{
-    ((github.event.pull_request.head.repo.full_name == github.repository
+    ((github.event.action == 'unlabeled' && github.event.label.name == 'ai-review')
+    || (github.event.pull_request.head.repo.full_name == github.repository
     && (github.event.action == 'labeled' || github.event.action == 'unlabeled')
     && !startsWith(github.event.label.name, 'ai-review'))
     || (github.event.pull_request.head.repo.full_name != github.repository
-    && !(((github.event.action == 'labeled' || github.event.action == 'unlabeled')
-    && github.event.label.name == 'ai-review')
+    && !((github.event.action == 'labeled' && github.event.label.name == 'ai-review')
     || (github.event.action == 'labeled' && github.event.label.name == 'ai-review:skip')
     || (github.event.action != 'labeled' && github.event.action != 'unlabeled'
     && (vars.AI_REVIEW_FORK_PRS == 'true'
@@ -71,9 +73,10 @@ jobs:
     #    reviewed" note would replace the aggregate comment. The `/review` path reviews
     #    the PR's head when `ecr ci` starts.
     #    The exception is a fork PR that also has `ai-autonomous`, which
-    #    expo-code-review-request.yml adds. It reviews again on each push, like a PR
-    #    from this repository, but only while every changed file is in the autonomous
-    #    scope (see the scope step).
+    #    expo-code-review-request.yml adds. It reviews again on each push that is not a
+    #    draft, like a PR from this repository, but only while every changed file is in
+    #    the autonomous scope and its author has at most 2 such PRs open (see the scope
+    #    step). That also holds for the review the label starts.
     #
     # 3. AUTOMATIC for a non-draft PR from a fork, only while the repo variable
     #    AI_REVIEW_FORK_PRS is 'true'. It is off by default. `ecr ci` gets `--force`
@@ -92,6 +95,7 @@ jobs:
       || (github.event.pull_request.head.repo.full_name != github.repository
       && contains(github.event.pull_request.labels.*.name, 'ai-review')
       && contains(github.event.pull_request.labels.*.name, 'ai-autonomous')
+      && !github.event.pull_request.draft
       && github.event.action != 'labeled'
       && github.event.action != 'unlabeled')
       || (github.event.pull_request.head.repo.full_name != github.repository
@@ -133,7 +137,57 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
+      # This checkout is the default branch, so a PR cannot change the scope it is checked
+      # against. It runs before the model setup, so a skipped push calls no model.
+      # On a fork PR with `ai-autonomous`, every run reviews only while every changed
+      # file is in the scope and the author has at most MAX_OPEN such PRs open, so a
+      # contributor cannot widen the review after the label, or reopen a closed PR to get
+      # past the limit. That check fails closed. Elsewhere a failure only skips the sandbox.
+      - name: Find files in the autonomous review scope
+        id: scope
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          MAX_OPEN: 2
+          GATED: >-
+            ${{ github.event.pull_request.head.repo.full_name != github.repository
+            && contains(github.event.pull_request.labels.*.name, 'ai-autonomous')
+            && vars.AI_REVIEW_FORK_PRS != 'true' }}
+        run: |
+          bash .github/scripts/ai-review-scope.sh || echo "::warning::The scope check failed."
+          skip_review=false
+          if [ "$GATED" = true ]; then
+            open=$(gh api -X GET "repos/$REPO/issues" -f state=open -f labels=ai-autonomous \
+              -f creator="$AUTHOR" -f per_page=100 --jq '[.[] | select(.pull_request)] | length') || open=""
+            if ! grep -qx only_autonomous=true "$GITHUB_OUTPUT"; then
+              echo "::notice::Not reviewing: the fork PR changes files outside the autonomous scope, or its files could not be read. A maintainer can comment /review."
+              skip_review=true
+            elif [ -z "$open" ] || [ "$open" -gt "$MAX_OPEN" ]; then
+              echo "::notice::Not reviewing: $AUTHOR has ${open:-an unknown number of} open PRs with an automatic review. A maintainer can comment /review."
+              skip_review=true
+            fi
+          fi
+          echo "skip_review=$skip_review" >> "$GITHUB_OUTPUT"
+
+      # ecr removes its `ready for human` label when new commits arrive, but a skipped
+      # push never reaches ecr, so remove it here.
+      - name: Remove the ready label from a skipped push
+        if: >-
+          steps.scope.outputs.skip_review == 'true'
+          && github.event.action == 'synchronize'
+          && contains(github.event.pull_request.labels.*.name, 'ready for human')
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: gh pr edit "$PR" --repo "$REPO" --remove-label "ready for human"
+
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        if: steps.scope.outputs.skip_review != 'true'
         with:
           node-version: 24
           # The reviewer runs via npx and never installs with a package manager, so
@@ -146,6 +200,7 @@ jobs:
       # would silently drift on every CI run; bump it deliberately. Remove this
       # step if you switch every model to an OpenCode-served provider.
       - name: Install Claude Code CLI
+        if: steps.scope.outputs.skip_review != 'true'
         run: npm install -g @anthropic-ai/claude-code@2.1.280
 
       # SECURITY: the TRUSTED BASE checkout above includes every
@@ -165,6 +220,7 @@ jobs:
       # selects a published package from the registry and never executes PR code.
       # @ref LLP 0009#guard-step-ordering-and-job-budgets [implements] — layer 2; layer 1 is ecr ci's own runtime check
       - name: Guard config tokenEnv (root + routing + all scopes)
+        if: steps.scope.outputs.skip_review != 'true'
         env:
           # (Comma-separated set for a multi-credential auth.providers config.)
           ECR_EXPECTED_TOKEN_ENV: ${{ vars.ECR_EXPECTED_TOKEN_ENV || 'CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN' }}
@@ -174,6 +230,7 @@ jobs:
       # do not re-bind it from secrets.* or this step is overwritten.
       - name: Prepare model env
         id: model-env
+        if: steps.scope.outputs.skip_review != 'true'
         uses: ./.github/actions/prepare-model-env
         with:
           c1: ${{ secrets.ECR_1 }}
@@ -209,35 +266,12 @@ jobs:
       # and body only to the coordinator, so pass them as untrusted context. ecr sanitizes
       # the file like the title and body. The text comes through env, never the script.
       - name: Write the PR title and body for reviewers
+        if: steps.scope.outputs.skip_review != 'true'
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           printf 'Pull request title: %s\n\nPull request body:\n%s\n' "$PR_TITLE" "$PR_BODY" > "$RUNNER_TEMP/pr-description.md"
-
-      # This checkout is the default branch, so a PR cannot change the scope it is checked
-      # against. If this step fails, the review runs without a sandbox.
-      # A push to an `ai-autonomous` fork PR reviews only while every changed file is in
-      # the scope, so a contributor cannot widen an automatic review after the label.
-      - name: Find files in the autonomous review scope
-        id: scope
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
-          REPO: ${{ github.repository }}
-          PR: ${{ github.event.pull_request.number }}
-          FORK_PUSH: >-
-            ${{ github.event.pull_request.head.repo.full_name != github.repository
-            && github.event.action != 'labeled' && github.event.action != 'unlabeled'
-            && vars.AI_REVIEW_FORK_PRS != 'true' }}
-        run: |
-          bash .github/scripts/ai-review-scope.sh
-          skip_review=false
-          if [ "$FORK_PUSH" = true ] && ! grep -qx only_autonomous=true "$GITHUB_OUTPUT"; then
-            echo "::notice::Not reviewing this push: the fork PR changes files outside the autonomous scope, or its files could not be read. A maintainer can comment /review."
-            skip_review=true
-          fi
-          echo "skip_review=$skip_review" >> "$GITHUB_OUTPUT"
 
       # A sandbox lets reviewers check how a tool behaves by running it. The parent
       # EXPO_SANDBOX_MCP_TOKEN reaches only this step and the revoke step. The review
@@ -245,13 +279,15 @@ jobs:
       # the sandbox, and the tools listed here.
       # Minting creates no sandbox. If it fails, the review runs without one.
       # Only the autonomous scope has sandbox rules, so other PRs get no token.
-      # A fork PR gets a sandbox only on the review a maintainer starts with the label.
-      # A later push to a labeled fork PR, which AI_REVIEW_FORK_PRS can review, gets none.
+      # A fork PR gets a sandbox on the review a maintainer starts with the label, and on
+      # each review of an `ai-autonomous` PR that the scope step lets through. A later
+      # push to another labeled fork PR, which AI_REVIEW_FORK_PRS can review, gets none.
       - name: Mint sandbox token
         if: >-
           steps.scope.outputs.autonomous == 'true'
-          && steps.scope.outputs.skip_review != 'true'
+          && steps.scope.outputs.skip_review == 'false'
           && (github.event.pull_request.head.repo.full_name == github.repository
+          || contains(github.event.pull_request.labels.*.name, 'ai-autonomous')
           || (github.event.action == 'labeled' && github.event.label.name == 'ai-review'))
         continue-on-error: true
         env:

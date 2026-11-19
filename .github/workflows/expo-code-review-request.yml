@@ -4,7 +4,8 @@ name: AI code review request
 # paths, and anyone can re-request it. This workflow only adds the `ai-review` label;
 # expo-code-review.yml runs the review on that label, as when a maintainer adds it.
 # An outside contributor's fork PR gets the label too, but only when every changed
-# file is in the autonomous scope of routing.jsonc.
+# file is in the autonomous scope of routing.jsonc. A changeset for a package in the
+# scope also counts.
 #
 # SECURITY: `pull_request_target`. The job checks out only the base branch, for the
 # scope script, and runs no PR code.
@@ -54,7 +55,8 @@ jobs:
       # A writer can start a review on any PR, as when they add the label by hand.
       # An outsider's fork PR is labeled only inside the autonomous scope, only while
       # the author has fewer than 2 such PRs open, and never twice, so a re-request
-      # cannot reset the automatic review limit.
+      # cannot reset the automatic review limit. A PR keeps `ai-autonomous` after a
+      # maintainer removes `ai-review`, so that label marks a PR that already had its turn.
       - name: Add the ai-review label
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
@@ -64,6 +66,7 @@ jobs:
           AUTHOR: ${{ github.event.pull_request.user.login }}
           SENDER: ${{ github.event.sender.login }}
           HAS_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'ai-review') }}
+          HAS_AUTONOMOUS: ${{ contains(github.event.pull_request.labels.*.name, 'ai-autonomous') }}
           ONLY_AUTONOMOUS: ${{ steps.scope.outputs.only_autonomous }}
           MAX_OPEN: 2
         run: |
@@ -75,21 +78,28 @@ jobs:
             return 1
           }
           # `ai-autonomous` lets a fork PR review again on each push (see expo-code-review.yml).
-          labels=ai-review
-          [ "$SAME_REPO" = true ] || labels=ai-autonomous,ai-review
+          # Add it first, so the `ai-review` event already carries it. A fork PR with files
+          # outside the scope never gets it: its pushes would only cancel a review.
+          add_labels() {
+            if [ "$SAME_REPO" != true ] && [ "$ONLY_AUTONOMOUS" = true ]; then
+              gh pr edit "$PR" --repo "$REPO" --add-label ai-autonomous
+            fi
+            gh pr edit "$PR" --repo "$REPO" --add-label ai-review
+          }
 
           if [ "$SAME_REPO" != true ] && ! can_write "$AUTHOR" && ! can_write "$SENDER"; then
-            if [ "$HAS_LABEL" = true ]; then
-              echo "Already labeled. A maintainer can re-request expo-bot's review to start a new one."
+            if [ "$HAS_LABEL" = true ] || [ "$HAS_AUTONOMOUS" = true ]; then
+              echo "Already reviewed automatically. A maintainer can re-request expo-bot's review to start a new one."
               exit 0
             fi
             if [ "$ONLY_AUTONOMOUS" != true ]; then
               echo "Not starting the AI review: the PR changes files outside the autonomous scope, or they could not be read. A maintainer can add the ai-review label."
               exit 0
             fi
-            open=$(gh api -X GET search/issues -f per_page=100 \
-              -f q="repo:$REPO is:pr is:open author:$AUTHOR label:ai-autonomous" \
-              --jq "[.items[] | select(.number != $PR)] | length") || open=""
+            # The issues API, unlike search, sees a label added a moment ago.
+            open=$(gh api -X GET "repos/$REPO/issues" -f state=open -f labels=ai-autonomous \
+              -f creator="$AUTHOR" -f per_page=100 \
+              --jq "[.[] | select(.pull_request and .number != $PR)] | length") || open=""
             if [ -z "$open" ]; then
               echo "Could not count the author's open PRs. A maintainer can add the ai-review label."
               exit 0
@@ -98,16 +108,13 @@ jobs:
               echo "Not starting the AI review: $AUTHOR already has $open open PRs with an automatic review. A maintainer can add the ai-review label."
               exit 0
             fi
-            gh pr edit "$PR" --repo "$REPO" --add-label "$labels"
+            add_labels
             exit 0
           fi
 
-          # Re-adding the label starts the review workflow again on a re-request.
+          # Re-adding the label starts the review workflow again on a re-request. The
+          # removal runs in its own concurrency group, so it cannot cancel the new review.
           if [ "$HAS_LABEL" = true ]; then
             gh pr edit "$PR" --repo "$REPO" --remove-label ai-review
-            # The unlabeled run shares the review's concurrency group and cancels the run
-            # before it. Wait, so the labeled run starts last and is not the one cancelled.
-            # This token cannot read Actions runs, so it cannot poll for that run instead.
-            sleep 20
           fi
-          gh pr edit "$PR" --repo "$REPO" --add-label "$labels"
+          add_labels
