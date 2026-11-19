@@ -40,11 +40,17 @@ export function deepDiffPropValue(prevValue: unknown, nextValue: unknown): boole
     typeof prevValue !== 'object' ||
     prevValue === null ||
     typeof nextValue !== 'object' ||
-    nextValue === null ||
-    prevValue instanceof SharedObject ||
-    nextValue instanceof SharedObject ||
-    prevValue.constructor !== nextValue.constructor
+    nextValue === null
   ) {
+    return true;
+  }
+  const constructor = prevValue.constructor;
+  if (constructor !== nextValue.constructor) {
+    return true;
+  }
+  // The values have the same constructor, so one check is enough. Plain objects and arrays skip it,
+  // because `instanceof` walks the prototype chain.
+  if (constructor !== Object && constructor !== Array && prevValue instanceof SharedObject) {
     return true;
   }
   if (Array.isArray(prevValue)) {
