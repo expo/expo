@@ -172,6 +172,22 @@ The above command adds the MCP server to your Codex configuration file and promp
 
 </Tab>
 
+<Tab label="Grok">
+
+**Grok**
+
+Expo MCP is available in the Grok connector catalog. This setup requires no installation on your machine. Go to [grok.com/connectors](https://grok.com/connectors), click **New Connector**, select **Expo**, and sign in with your Expo account.
+
+**Grok Build**
+
+If you installed the [`expo` plugin](/skills/#install-expo-skills), it already registers this server. Skip the command below and type `/mcps` in your session, select `expo`, and press <kbd>I</kbd> to authenticate.
+
+<Terminal cmd={['$ grok mcp add --transport http expo https://mcp.expo.dev/mcp']} />
+
+Grok Build opens the Expo sign-in page in your browser the first time it uses the server.
+
+</Tab>
+
 </Tabs>
 
 </Step>

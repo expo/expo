@@ -81,7 +81,12 @@ export const home = [
     makePage('mcp.mdx'),
     makeGroup(
       'AI agents',
-      [makePage('agents/claude.mdx'), makePage('agents/codex.mdx'), makePage('agents/cursor.mdx')],
+      [
+        makePage('agents/claude.mdx'),
+        makePage('agents/codex.mdx'),
+        makePage('agents/cursor.mdx'),
+        makePage('agents/grok.mdx'),
+      ],
       {
         expanded: false,
       }
