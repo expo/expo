@@ -879,6 +879,32 @@ it('works with tabs', async () => {
   expect(screen.queryByLabelText('protected, tab, 2 of 2')).toBeVisible();
 });
 
+it('throws when the redirectTo of a passing Protected component is an external URL', async () => {
+  const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+  try {
+    await expect(
+      renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Protected guard redirectTo="https://example.com/login">
+              <Stack.Screen name="secret" />
+            </Stack.Protected>
+          </Stack>
+        ),
+        index: () => <Text testID="home">home</Text>,
+        secret: () => <Text testID="secret">secret</Text>,
+      })
+    ).rejects.toThrow(
+      'Expo Router could not use the `redirectTo` "https://example.com/login" of a `Protected` component in "app/_layout", because it is an external URL. ' +
+        '`redirectTo` accepts only routes of the app. ' +
+        'Set `redirectTo` to a route of the app, and open the external URL from your app code, for example with `Linking.openURL`.'
+    );
+  } finally {
+    errorSpy.mockRestore();
+  }
+});
+
 describe('all routes guarded', () => {
   let consoleWarnSpy: jest.SpyInstance<void, Parameters<typeof console.warn>>;
 
