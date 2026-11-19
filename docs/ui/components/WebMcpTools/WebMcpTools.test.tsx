@@ -80,6 +80,10 @@ describe(WebMcpTools, () => {
       readOnlyHint: false,
       consequentialHint: true,
     });
+    expect(tools.ask_docs.annotations).toEqual({
+      readOnlyHint: true,
+      untrustedContentHint: true,
+    });
 
     unmount();
 

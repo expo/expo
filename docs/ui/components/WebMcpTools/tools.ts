@@ -13,7 +13,11 @@ export type WebMcpTool = {
   title: string;
   description: string;
   inputSchema: object;
-  annotations: { readOnlyHint: boolean; consequentialHint?: boolean };
+  annotations: {
+    readOnlyHint: boolean;
+    untrustedContentHint?: boolean;
+    consequentialHint?: boolean;
+  };
   execute: (input: ToolInput, options: { signal: AbortSignal }) => Promise<string>;
 };
 
@@ -389,7 +393,7 @@ export const webMcpTools: WebMcpTool[] = [
       required: ['query'],
       additionalProperties: false,
     },
-    annotations: { readOnlyHint: true },
+    annotations: { readOnlyHint: true, untrustedContentHint: true },
     execute: askDocsAsync,
   },
   {
