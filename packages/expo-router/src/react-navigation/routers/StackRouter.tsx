@@ -507,6 +507,9 @@ function stackRouterExtension({
 
         case 'REMOVE_ROUTES': {
           const { routeKeys, fallback } = action.payload;
+          if (fallback && !state.routeNames.includes(fallback.name)) {
+            return RouterActionHandling.Unhandled;
+          }
           const isKept = (route: Route<string>) => !routeKeys.includes(route.key);
           const survivingRoutes = activeRoutes.filter(isKept);
           const nextPreloadedRoutes = preloadedRoutes.filter(isKept);

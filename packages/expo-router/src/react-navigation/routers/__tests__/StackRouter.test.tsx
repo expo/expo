@@ -3294,6 +3294,66 @@ test('replaces every route with the fallback when every route is removed', () =>
   });
 });
 
+test('does not handle a removal with a fallback that the navigator does not declare', () => {
+  const router = StackRouter({});
+
+  expect(
+    router.getStateForAction(
+      {
+        stale: false,
+        routeKeySeq: 0,
+        type: 'stack',
+        key: 'navigator:root',
+        index: 1,
+        routeNames: ['home', 'login'],
+        routes: [
+          { key: 'home', name: 'home' },
+          { key: 'login', name: 'login' },
+        ],
+      },
+      { type: 'REMOVE_ROUTES', payload: { routeKeys: ['login'], fallback: { name: 'missing' } } },
+      { routeNames: ['home', 'login'], routeGetIdList: {} }
+    )
+  ).toBe(RouterActionHandling.Unhandled);
+});
+
+test('removes only the preloaded route with the given key', () => {
+  const router = StackRouter({});
+
+  expect(
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 0,
+          routeNames: ['home', 'detail'],
+          routes: [
+            { key: 'home', name: 'home' },
+            { key: 'detail-1', name: 'detail', isPreloaded: true },
+            { key: 'detail-2', name: 'detail', isPreloaded: true },
+          ],
+        },
+        { type: 'REMOVE_ROUTES', payload: { routeKeys: ['detail-1'] } },
+        { routeNames: ['home', 'detail'], routeGetIdList: {} }
+      )
+    ).state
+  ).toEqual({
+    stale: false,
+    routeKeySeq: 0,
+    type: 'stack',
+    key: 'navigator:root',
+    index: 0,
+    routeNames: ['home', 'detail'],
+    routes: [
+      { key: 'home', name: 'home' },
+      { key: 'detail-2', name: 'detail', isPreloaded: true },
+    ],
+  });
+});
+
 test('ignores the fallback when a route survives the removal', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
