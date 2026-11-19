@@ -2,10 +2,12 @@ import { use, useEffect, useMemo } from 'react';
 
 import { useRouteNode } from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
+import { getGuard } from '../global-state/guards';
 import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
-import { useRouterActions } from '../global-state/useRouterActions';
-import { useGuardRedirect } from '../layouts/GuardContext';
+import { findStateByKey } from '../global-state/stateUtils';
+import { GuardContext } from '../layouts/GuardContext';
 import { useIsPreview } from '../link/preview/PreviewRouteContext';
+import { NavigationBuilderContext } from '../react-navigation/core/NavigationBuilderContext';
 import { NavigatorStateContext } from '../react-navigation/core/useNavigationState';
 import {
   type Descriptor,
@@ -45,7 +47,7 @@ export function useVisibleTabsWithRedirect<
   descriptors: Record<string, TabDescriptor<Options>>;
   navigatorKey?: string;
 }) {
-  const router = useRouterActions();
+  const { handleGuardsChanged } = use(NavigationBuilderContext);
   const enqueue = useEnqueueRoutingIntent();
   const navigatorState = use(NavigatorStateContext);
   const key = navigatorKey ?? navigatorState?.key;
@@ -53,7 +55,10 @@ export function useVisibleTabsWithRedirect<
   const isFocused = useIsFocused();
   const routeNode = useRouteNode();
   const focusedRoute = routes.find((route) => route.key === focusedRouteKey);
-  const guardRedirect = useGuardRedirect(focusedRoute?.name ?? '');
+  const guards = use(GuardContext);
+  const hasGuards = !!guards?.size;
+  const isFocusedRouteGuarded =
+    !!guards && !!focusedRoute && getGuard(guards, focusedRoute.name) !== undefined;
 
   const visibleRoutes = useMemo(
     () =>
@@ -84,7 +89,7 @@ export function useVisibleTabsWithRedirect<
   useEffect(() => {
     // TODO(@ubax): Consider throwing in __DEV__ instead of warning.
     // TODO: Skip this during HMR while placeholder descriptors lack `routeSource`.
-    if (__DEV__ && visibleRoutes.length === 0 && guardRedirect === undefined) {
+    if (__DEV__ && visibleRoutes.length === 0 && !isFocusedRouteGuarded) {
       const undeclaredRoutes = routes
         .filter((route) => !isDeclaredInLayout(descriptors[route.key]))
         .map((route) => route.name)
@@ -97,44 +102,47 @@ export function useVisibleTabsWithRedirect<
       );
     }
     // Route names are diagnostic; only rerun when the warning's eligibility changes.
-  }, [guardRedirect, routeNode?.contextKey, visibleRoutes.length]);
+  }, [isFocusedRouteGuarded, routeNode?.contextKey, visibleRoutes.length]);
 
   useEffect(() => {
+    if (isPreview || !isFocused || visibleFocusedIndex >= 0 || focusedFallbackRoute) {
+      return;
+    }
+    if (!redirectRoute) {
+      // The guard policy cannot see which tabs are visible, so it learns here that no tab is
+      // visible, and then looks for a fallback in a parent.
+      if (hasGuards && key) {
+        handleGuardsChanged(key);
+      }
+      return;
+    }
     // The focused route can be hidden or have no trigger at all — for example a path pointing at a
     // route without a tab, or a trigger hidden while focused. Redirect to the router's initial tab,
     // falling back to the first visible tab. `replace` keeps the unreachable route out of history.
     // TODO(@ubax): Show a formsheet for hidden tabs which are focused (Tabs + Stack in one).
-    if (
-      !isPreview &&
-      isFocused &&
-      visibleFocusedIndex < 0 &&
-      focusedFallbackRoute === undefined &&
-      (guardRedirect != null || redirectRoute !== undefined)
-    ) {
-      if (guardRedirect != null) {
-        router.replace(guardRedirect);
-      } else if (redirectRoute) {
-        enqueue({
-          type: 'ACTION',
-          payload: {
-            action: {
-              ...TabActions.replace(redirectRoute.name, redirectRoute.params),
-              target: key,
-            },
-            originKey: key,
-          },
-        });
-      }
-    }
+    enqueue({
+      type: 'COMPUTED_ACTION',
+      payload: {
+        compute: (rootState, registry) => {
+          // A guard `redirectTo` or an unmount can change the focus before this runs.
+          const tabState = key && registry.has(key) ? findStateByKey(rootState, key) : undefined;
+          return tabState?.routes[tabState.index]?.key === focusedRouteKey
+            ? { ...TabActions.replace(redirectRoute.name, redirectRoute.params), target: key }
+            : undefined;
+        },
+        originKey: key,
+      },
+    });
   }, [
     enqueue,
     focusedFallbackRoute,
-    guardRedirect,
+    focusedRouteKey,
+    handleGuardsChanged,
+    hasGuards,
     isFocused,
     isPreview,
     key,
     redirectRoute,
-    router,
     visibleFocusedIndex,
   ]);
 

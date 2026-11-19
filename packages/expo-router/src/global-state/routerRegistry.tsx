@@ -38,6 +38,9 @@ export type RouterRegistrySetters = {
   unregister: (stateKey: string, entry: RouterRegistryEntry) => void;
 };
 
+// Read-only access for code outside the reducer, such as link previews.
+export const RouterRegistryContext = createContext<RouterRegistry>(new Map());
+
 export const RouterRegistrySettersContext = createContext<RouterRegistrySetters | undefined>(
   undefined
 );

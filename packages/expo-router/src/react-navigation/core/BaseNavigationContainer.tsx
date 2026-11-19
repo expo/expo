@@ -15,6 +15,7 @@ import { GlobalRoutesWithRemovalPreventedContext } from '../../global-state/remo
 import { RouteInfoContext } from '../../global-state/routeInfoContext';
 import { RouterConfigContext } from '../../global-state/routerConfigContext';
 import {
+  RouterRegistryContext,
   RouterRegistrySettersContext,
   type RouterRegistry,
   type RouterRegistrySetters,
@@ -326,13 +327,16 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
             <RootNavigationStateContext.Provider value={state}>
               <CanGoBackContext value={focusedCanGoBack}>
                 <CanDismissContext value={canDismiss}>
-                  <RouterRegistrySettersContext.Provider value={registrySetters}>
-                    <EnsureSingleNavigator>
-                      <NavigationPendingContext value={isNavigationPending || isWaitingForLayouts}>
-                        <ThemeProvider value={theme}>{children}</ThemeProvider>
-                      </NavigationPendingContext>
-                    </EnsureSingleNavigator>
-                  </RouterRegistrySettersContext.Provider>
+                  <RouterRegistryContext value={registry}>
+                    <RouterRegistrySettersContext.Provider value={registrySetters}>
+                      <EnsureSingleNavigator>
+                        <NavigationPendingContext
+                          value={isNavigationPending || isWaitingForLayouts}>
+                          <ThemeProvider value={theme}>{children}</ThemeProvider>
+                        </NavigationPendingContext>
+                      </EnsureSingleNavigator>
+                    </RouterRegistrySettersContext.Provider>
+                  </RouterRegistryContext>
                 </CanDismissContext>
               </CanGoBackContext>
               <ImperativeRoutingQueueBridge

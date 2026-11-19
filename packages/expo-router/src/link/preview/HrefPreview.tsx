@@ -1,6 +1,7 @@
 'use client';
 
-import { use, useMemo } from 'react';
+import { use, useMemo, useState } from 'react';
+import isEqual from 'react-fast-compare';
 import { Text, View } from 'react-native';
 
 import type { RouteNode } from '../../Route';
@@ -8,11 +9,13 @@ import { INTERNAL_SLOT_NAME } from '../../constants';
 import type { ResultState } from '../../exports';
 import { CompositionContext } from '../../fork/native-stack/composition-options';
 import { RouterConfigContext } from '../../global-state/routerConfigContext';
+import { RouterRegistryContext, type RouterRegistry } from '../../global-state/routerRegistry';
 import type { ReactNavigationState } from '../../global-state/types';
 import { useRouteInfo } from '../../global-state/useRouteInfo';
 import { getRootStackRouteNames } from '../../global-state/utils';
 import { usePathname } from '../../hooks';
 import { RootNavigationStateContext } from '../../react-navigation/core/RootNavigationStateContext';
+import { useClientLayoutEffect } from '../../react-navigation/core/useClientLayoutEffect';
 import {
   NavigationContext,
   type NavigationProp,
@@ -31,36 +34,25 @@ export function HrefPreview({ href }: { href: Href }) {
   const { segments: routeSegments } = useRouteInfo();
   const { linking, routeNode } = use(RouterConfigContext) ?? {};
   const rootNavigationState = use(RootNavigationStateContext);
+  const registry = use(RouterRegistryContext);
   const hrefState = useMemo(
     () => getStateForHref(href, { segments: routeSegments }, linking),
     [href, routeSegments, linking]
   );
   const index = hrefState?.index ?? 0;
 
-  let isProtected = false;
-  if (hrefState?.routes[index]?.name === INTERNAL_SLOT_NAME) {
-    let routerState: typeof hrefState | undefined = hrefState;
-    let rnState: ReactNavigationState | undefined = rootNavigationState;
-    while (routerState && rnState) {
-      const routerRoute: ResultState['routes'][number] = routerState.routes[0]!;
-      // When the route we want to show is not present in react-navigation state
-      // Then most likely it is a protected route
-      if (rnState.stale === false && !rnState.routeNames?.includes(routerRoute.name)) {
-        isProtected = true;
-        break;
-      }
-      const rnIndex = rnState.routes.findIndex((route) => route.name === routerRoute.name);
-      if (rnIndex === -1) {
-        break;
-      }
-      routerState = routerRoute.state;
-      rnState = rnState.routes[rnIndex]?.state;
-    }
-    if (!isProtected) {
-      return (
-        <PreviewForRootHrefState hrefState={hrefState} href={href} rootRouteNode={routeNode} />
-      );
-    }
+  // Navigators register their guards in a layout effect. This waits for one, so a blocked screen never mounts.
+  const [hasRegisteredGuards, setHasRegisteredGuards] = useState(false);
+  useClientLayoutEffect(() => setHasRegisteredGuards(true), []);
+  if (!hasRegisteredGuards) {
+    return null;
+  }
+
+  if (
+    hrefState?.routes[index]?.name === INTERNAL_SLOT_NAME &&
+    !isProtected(hrefState, rootNavigationState, registry)
+  ) {
+    return <PreviewForRootHrefState hrefState={hrefState} href={href} rootRouteNode={routeNode} />;
   }
 
   const pathname = href.toString();
@@ -75,6 +67,34 @@ export function HrefPreview({ href }: { href: Href }) {
       }}>
       <PreviewForInternalRoutes />
     </PreviewRouteContext.Provider>
+  );
+}
+
+// A route that its mounted navigator blocks, or that is missing from its route names, is protected.
+// One href can match several mounted instances of a route, so a block in any of them counts.
+function isProtected(
+  routerState: ResultState | undefined,
+  rnState: ReactNavigationState | undefined,
+  registry: RouterRegistry
+): boolean {
+  if (!routerState || !rnState) {
+    return false;
+  }
+  const routerRoute: ResultState['routes'][number] = routerState.routes[0]!;
+  if (
+    rnState.stale === false &&
+    (!rnState.routeNames?.includes(routerRoute.name) ||
+      registry.get(rnState.key)?.getGuard?.(routerRoute.name))
+  ) {
+    return true;
+  }
+  const routes: { name: string; params?: object; state?: ReactNavigationState }[] =
+    rnState.routes.filter((route: { name: string }) => route.name === routerRoute.name);
+  const sameParamsRoutes = routes.filter((route) =>
+    isEqual(route.params ?? {}, routerRoute.params ?? {})
+  );
+  return (sameParamsRoutes.length > 0 ? sameParamsRoutes : routes).some((route) =>
+    isProtected(routerRoute.state, route.state, registry)
   );
 }
 
