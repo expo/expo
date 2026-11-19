@@ -1,7 +1,7 @@
 import AppMetrics from 'expo-app-metrics';
 
 import type { ObserveIntegrationsConfig } from '../../types';
-import { getNavigationMetricParams, isTotalBlockingTimeEnabled } from '../navigationConfig';
+import { getNavigationMetricParams } from '../navigationConfig';
 import { createNavigationBlockingTime } from '../shared/navigation/blockingTime';
 import { emitTTI } from './emitTTI';
 import { buildRoutePattern } from './routeName';
@@ -37,9 +37,9 @@ export function initListeners(
   PerformanceObserver: RouterPerformanceObserver
 ): () => void {
   const appLaunchTime = performance.now();
-  const blockingTime = isTotalBlockingTimeEnabled(routerIntegrationConfig)
-    ? createNavigationBlockingTime((metric) => AppMetrics.getMainSession().addMetric(metric))
-    : undefined;
+  const blockingTime = createNavigationBlockingTime((metric) =>
+    AppMetrics.getMainSession().addMetric(metric)
+  );
 
   const observer = new PerformanceObserver((list) => {
     for (const performanceEntry of list.getEntries()) {
