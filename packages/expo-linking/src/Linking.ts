@@ -113,7 +113,8 @@ export function clearInitialURL(): void {
  */
 export async function openURL(url: string): Promise<true> {
   validateURL(url);
-  return await RNLinking.openURL(url);
+  await RNLinking.openURL(url);
+  return true;
 }
 
 // @needsAudit
