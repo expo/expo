@@ -170,30 +170,10 @@ The device saves the value. On later launches, the saved value overrides the app
 
 ### While consent is not granted
 
-- Expo Observe does not write data or settings to the device and does not send data. The only value it saves is the consent value from `setConsent()`.
+- Expo Observe does not write data or settings to the device and does not send data. It saves only the consent value from `setConsent()` and the client ID.
 - A launch without consent deletes the Expo Observe data and settings that an earlier launch stored.
-- `Observe.clientId` is `null`, and Expo Observe does not create the [client ID](/eas/observe/reference/client-id/).
+- `Observe.clientId` returns the [client ID](/eas/observe/reference/client-id/). The device saves the ID, but Expo Observe does not use it.
 - Startup metrics of the current launch stay in memory. A grant in the same launch saves them.
-- Settings from `configure()` stay in memory. A grant in the same launch saves them.
-
-On iOS, Expo Observe also stays inactive for a launch when it cannot read the saved value, for example before the first unlock after a device restart. That launch keeps the data that is already stored.
-
-### Grant and revoke
-
-A grant starts collection in the current launch. Native crashes from before the grant are not reported.
-
-A revoke stops collection and deletes the Expo Observe data and settings that are stored on the device. A revoke keeps the client ID, because other Expo libraries use the same ID.
-
-Expo Observe starts collection at most one time in each app launch. After a revoke, a grant only saves the value, and collection starts at the next launch.
-
-A revoke does not stop work that already started:
-
-- A request that is in progress can finish and deliver its data.
-- A record or crash file that is written at the same time as the revoke can stay on the device. The next launch without consent deletes it.
-
-`setConsent()` rejects when the device cannot save the value, for example when the storage is full. After a failed revoke, collection stops and the stored data is deleted, but the next launch can read the earlier value. After a failed grant, nothing changes. In both cases, call `setConsent()` again.
-
-`AppMetrics.clearStoredEntries()` does not change consent. It also deletes the sessions of the current launch, so the data that those sessions record after the call is lost. To delete the data when the user withdraws consent, call `setConsent('not-granted')`.
 
 ### Consent and `dispatchingEnabled`
 
