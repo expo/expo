@@ -358,9 +358,10 @@ inline jsi::Value callFunctionWithThis(jsi::IRuntime &runtime, const jsi::Functi
 
 /**
  Calls `defineProperty`, the runtime's `Reflect.defineProperty`, on `object` with a new descriptor that holds
- `value` (when `hasValue` is set) and only the attributes that are `true`, like a descriptor built in
- JavaScript. Taking the function and the descriptor keys from the caller lets it create them once per runtime,
- and building the descriptor and the arguments here avoids a round trip through Swift for each of them.
+ `value` (when `hasValue` is set) and all three attributes. `Reflect.defineProperty` keeps an attribute that
+ the descriptor leaves out when the property exists, so a `false` attribute is written too. Taking the function
+ and the descriptor keys from the caller lets it create them once per runtime, and building the descriptor and
+ the arguments here avoids a round trip through Swift for each of them.
  */
 inline void defineProperty(
   jsi::IRuntime &runtime,
@@ -380,17 +381,12 @@ inline void defineProperty(
 ) {
   expo::CppError::tryCatch(runtime, [&] {
     jsi::Object descriptor(runtime);
-    if (configurable) {
-      descriptor.setProperty(runtime, configurableKey, true);
-    }
-    if (enumerable) {
-      descriptor.setProperty(runtime, enumerableKey, true);
-    }
-    if (writable) {
-      descriptor.setProperty(runtime, writableKey, true);
-    }
+    descriptor.setProperty(runtime, configurableKey, configurable);
+    descriptor.setProperty(runtime, enumerableKey, enumerable);
+    descriptor.setProperty(runtime, writableKey, writable);
     if (hasValue) {
-      descriptor.setProperty(runtime, valueKey, value);
+      // `Object::setProperty` clones a `const Value &` before it sets it; `setPropertyValue` doesn't.
+      runtime.setPropertyValue(descriptor, valueKey, value);
     }
     defineProperty.call(runtime, object, jsi::String::createFromUtf8(runtime, nameUtf8, nameLength), descriptor);
     return jsi::Value::undefined();

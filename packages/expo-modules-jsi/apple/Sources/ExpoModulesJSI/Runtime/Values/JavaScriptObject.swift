@@ -533,7 +533,10 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     let defineProperty = definePropertyFunction(in: runtime)
     let jsiRuntime = runtime.pointee
     let hasValue = descriptor.value != nil
-    let value = descriptor.value?.toJSIValue(in: jsiRuntime) ?? facebook.jsi.Value.undefined()
+    let writable = descriptor.writable
+    let enumerable = descriptor.enumerable
+    let configurable = descriptor.configurable
+    let value = descriptor.value ?? JavaScriptValue.undefined()
     var utf8Name = name
     utf8Name.withUTF8 { nameUtf8 in
       // A JS error can't propagate through Swift, so `capturingCppErrors` captures it and rethrows it
@@ -551,11 +554,11 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
             // An empty buffer may have no base address; any non-null pointer works with a zero length.
             nameUtf8.baseAddress ?? UnsafePointer(bitPattern: 1)!,
             nameUtf8.count,
-            value,
+            value.pointee,
             hasValue,
-            descriptor.writable,
-            descriptor.enumerable,
-            descriptor.configurable
+            writable,
+            enumerable,
+            configurable
           )
         }
       } catch {
@@ -580,6 +583,53 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
       writable: options.contains(.writable),
       value: value.toJavaScriptValue(in: runtime)
     )
+    defineProperty(name, descriptor: descriptor)
+  }
+
+  /// Defines a property whose value is created on the first read. That read calls `factory`, encodes its result
+  /// and replaces the property with a data property that holds the value, so later reads don't run native code.
+  ///
+  /// `.enumerable` applies before and after the first read. `.configurable` and `.writable` apply to the data
+  /// property only. Before the first read, the property is always configurable, so the getter can replace it,
+  /// and it has no setter, so an assignment fails.
+  ///
+  /// The getter defines the value on the object that the property is read from (`this`), because capturing
+  /// the object would keep it alive. When `factory` throws, the property stays lazy and the next read calls
+  /// `factory` again. When the object doesn't accept the new property, for example when it's frozen,
+  /// each read calls `factory`.
+  @JavaScriptActor
+  public func defineLazyProperty<T: JavaScriptEncodable & ~Copyable>(
+    _ name: String,
+    options: PropertyOptions = [.configurable, .enumerable],
+    factory: sending @escaping @JavaScriptActor (_ runtime: borrowing JavaScriptRuntime) throws -> T
+  ) {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    let getter = runtime.createFunction(name) {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+      let value = try T.encode(factory(runtime), in: runtime)
+      if this.isObject() {
+        let descriptor = PropertyDescriptor(
+          configurable: options.contains(.configurable),
+          enumerable: options.contains(.enumerable),
+          writable: options.contains(.writable),
+          value: value.copy()
+        )
+        this.getObject(in: runtime).defineProperty(name, descriptor: descriptor)
+      }
+      result.emplace(value)
+    }
+    let keys = definePropertyFunction(in: runtime)
+    let descriptor = runtime.createObject()
+    descriptor.setProperty(keys.getKey, value: getter.takeValue())
+    descriptor.setProperty(keys.configurableKey, value: JavaScriptValue(runtime, true))
+    descriptor.setProperty(keys.enumerableKey, value: JavaScriptValue(runtime, options.contains(.enumerable)))
     defineProperty(name, descriptor: descriptor)
   }
 
@@ -1049,6 +1099,7 @@ internal final class DefinePropertyFunction {
   let enumerableKey: JavaScriptPropNameID
   let writableKey: JavaScriptPropNameID
   let valueKey: JavaScriptPropNameID
+  let getKey: JavaScriptPropNameID
 
   init(_ function: consuming JavaScriptFunction, in runtime: JavaScriptRuntime) {
     self.function = function
@@ -1056,6 +1107,7 @@ internal final class DefinePropertyFunction {
     self.enumerableKey = JavaScriptPropNameID(runtime, string: "enumerable")
     self.writableKey = JavaScriptPropNameID(runtime, string: "writable")
     self.valueKey = JavaScriptPropNameID(runtime, string: "value")
+    self.getKey = JavaScriptPropNameID(runtime, string: "get")
   }
 }
 
