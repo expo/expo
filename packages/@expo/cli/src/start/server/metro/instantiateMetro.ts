@@ -252,6 +252,11 @@ export async function loadMetroConfigAsync(
     // Compare to `LoadOptions` type (disregard `reporter` as we don't expose this)
     resetCache: !!options.resetCache,
     maxWorkers: options.maxWorkers ?? config.maxWorkers,
+    resolver: {
+      ...config.resolver,
+      // Expo CLI uses the Node crawler and watcher unless Watchman is explicitly enabled
+      useWatchman: config.resolver.useWatchman ?? false,
+    },
     server: {
       ...config.server,
       port: options.port ?? config.server.port,

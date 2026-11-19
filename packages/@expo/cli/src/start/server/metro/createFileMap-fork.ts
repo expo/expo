@@ -95,7 +95,7 @@ export default function createFileMap(config: ExpoMetroConfig, options?: CreateF
     resetCache: config.resetCache,
     rootDir: projectRoot,
     roots: config.watchFolders,
-    useWatchman: config.resolver.useWatchman ?? false,
+    useWatchman: config.resolver.useWatchman,
     watch,
     watchmanDeferStates: config.watcher.watchman.deferStates,
     // NOTE: (@expo/metro-file-map fork) New option is required for `scopeFallback: true` checks
