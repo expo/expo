@@ -5,6 +5,9 @@ name: AI code review (command)
 #   /review (or /expo-review, or @expo-bot review)  run once; router picks agents
 #   /review all (or /expo-review all, or @expo-bot review all)
 #   /review correctness security (either command, or @expo-bot review …)
+#                            Each named agent must exist in every routing scope
+#                            the PR touches, or that scope fails. `correctness`
+#                            and `security` are in every scope.
 #   @expo-bot check          the review half of "verify + review from one
 #                            comment" (verify-comment.yml owns the verify
 #                            half). Any tail belongs to verify (--fix), so
@@ -277,8 +280,10 @@ jobs:
       # The same untrusted context as expo-code-review.yml, so a /review judges the
       # same evidence as the automatic review. A dispatch has no PR in its payload,
       # so read the title and body from the API for both paths.
+      # The review runs without the PR text if this fails.
       - name: Write the PR title and body for reviewers
         if: steps.cmd.outputs.run == 'true'
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           PR: ${{ github.event.issue.number || inputs.pr }}
