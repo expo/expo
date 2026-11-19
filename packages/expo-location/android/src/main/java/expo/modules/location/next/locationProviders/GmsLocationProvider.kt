@@ -135,31 +135,19 @@ class GmsLocationProvider(
   }
 
   override fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> {
-    if (!isServiceAvailable()) {
-      return ProviderResult.Unavailable
-    }
-    return ProviderResult.Available(GmsLocationTaskConsumer::class.java)
+    return ProviderResult.availableIf(isServiceAvailable(), GmsLocationTaskConsumer::class.java)
   }
 
   override fun getRegisteredTaskConsumerClass(taskManager: TaskManagerInterface, taskName: String): ProviderResult<Class<out TaskConsumer>> {
-    if (!taskManager.taskHasConsumerOfClass(taskName, GmsLocationTaskConsumer::class.java)) {
-      return ProviderResult.Unavailable
-    }
-    return ProviderResult.Available(GmsLocationTaskConsumer::class.java)
+    return taskManager.registeredConsumerClass(taskName, GmsLocationTaskConsumer::class.java)
   }
 
   override fun getGeofencingTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> {
-    if (!isServiceAvailable()) {
-      return ProviderResult.Unsupported
-    }
-    return ProviderResult.Available(GmsGeofencingTaskConsumer::class.java)
+    return ProviderResult.availableIf(isServiceAvailable(), GmsGeofencingTaskConsumer::class.java)
   }
 
   override fun getRegisteredGeofencingTaskConsumerClass(taskManager: TaskManagerInterface, taskName: String): ProviderResult<Class<out TaskConsumer>> {
-    if (!taskManager.taskHasConsumerOfClass(taskName, GmsGeofencingTaskConsumer::class.java)) {
-      return ProviderResult.Unavailable
-    }
-    return ProviderResult.Available(GmsGeofencingTaskConsumer::class.java)
+    return taskManager.registeredConsumerClass(taskName, GmsGeofencingTaskConsumer::class.java)
   }
 }
 

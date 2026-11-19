@@ -114,13 +114,7 @@ class GmsGeofencingTaskConsumer(
     if (bundles.isEmpty()) {
       return
     }
-    if (LocationModuleNext.modulesStarted.get() > 0) {
-      execute(currentTask, bundles) {}
-      return
-    }
-    runCatching {
-      taskManagerUtils.scheduleJob(context, currentTask, bundles)
-    }.onFailure { Log.w(TAG, "Could not schedule a job for the geofencing events", it) }
+    executeOrScheduleTask(currentTask, bundles)
   }
 
   override fun didExecuteJob(jobService: JobService?, params: JobParameters?): Boolean {
@@ -172,12 +166,16 @@ class GmsGeofencingTaskConsumer(
     pendingIntent?.let { runCatching { geofencingClient.removeGeofences(it) } }
     currentRegionIds = emptySet()
     val bundles = listOf(PersistableBundle().apply { putString("error", message) })
+    executeOrScheduleTask(currentTask, bundles)
+  }
+
+  private fun executeOrScheduleTask(currentTask: TaskInterface, bundles: List<PersistableBundle>) {
     if (LocationModuleNext.modulesStarted.get() > 0) {
       execute(currentTask, bundles) {}
       return
     }
     runCatching {
       taskManagerUtils.scheduleJob(context, currentTask, bundles)
-    }.onFailure { Log.w(TAG, "Could not schedule a job for the geofencing error", it) }
+    }.onFailure { Log.w(TAG, "Could not schedule a job for the geofencing event", it) }
   }
 }
