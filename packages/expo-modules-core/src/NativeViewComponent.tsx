@@ -1,15 +1,17 @@
 'use client';
 
 import { type ComponentType } from 'react';
-import { type HostComponent, NativeComponentRegistry } from 'react-native';
+import { NativeComponentRegistry } from 'react-native';
 
 import { hasAriaProps, mapAriaProps } from './ariaProps';
 import { requireOptionalNativeModule } from './requireNativeModule';
 
 /**
- * The host components that `createNativeViewComponent` registered, by their component name.
+ * The components that `createNativeViewComponent` created, by their component name. Native calls it again
+ * when `import * as` copies the lazy getter of a view to another object, and the registry of host components
+ * throws when a name is registered twice.
  */
-const hostComponentsCache = new Map<string, HostComponent<any>>();
+const nativeViewComponentsCache = new Map<string, ComponentType<any>>();
 
 /**
  * The non-enumerable property of a module object that holds the component of the module's default view.
@@ -22,24 +24,6 @@ const DEFAULT_VIEW_PROPERTY = '__expo_default_view__';
  * with the name of a view is never taken for its component.
  */
 const NATIVE_VIEW_COMPONENT = Symbol.for('expo.nativeViewComponent');
-
-function requireHostComponent(
-  name: string,
-  validAttributes: Record<string, true>,
-  directEventTypes: Record<string, { registrationName: string }>
-): HostComponent<any> {
-  let component = hostComponentsCache.get(name);
-  if (!component) {
-    component = NativeComponentRegistry.get(name, () => ({
-      uiViewClassName: name,
-      // Shared objects go to native as JS objects. The props decoder of the view reads their native state.
-      validAttributes,
-      directEventTypes,
-    }));
-    hostComponentsCache.set(name, component);
-  }
-  return component;
-}
 
 /**
  * Creates the React component of a view of Expo Modules v2. Native calls it through
@@ -56,8 +40,17 @@ export function createNativeViewComponent(
   displayName: string,
   validAttributes: Record<string, true>,
   directEventTypes: Record<string, { registrationName: string }>
-) {
-  const HostView = requireHostComponent(name, validAttributes, directEventTypes);
+): ComponentType<any> {
+  const cachedComponent = nativeViewComponentsCache.get(name);
+  if (cachedComponent) {
+    return cachedComponent;
+  }
+  const HostView = NativeComponentRegistry.get(name, () => ({
+    uiViewClassName: name,
+    // Shared objects go to native as JS objects. The props decoder of the view reads their native state.
+    validAttributes,
+    directEventTypes,
+  }));
 
   // `ref` is a regular prop in React 19, so spreading the props passes it to the host view.
   function NativeView(props: Record<string, any>) {
@@ -65,6 +58,7 @@ export function createNativeViewComponent(
   }
   NativeView.displayName = displayName;
   Object.defineProperty(NativeView, NATIVE_VIEW_COMPONENT, { value: true });
+  nativeViewComponentsCache.set(name, NativeView);
   return NativeView;
 }
 

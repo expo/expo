@@ -23,6 +23,18 @@ describe('createNativeViewComponent', () => {
     expect((globalThis.expo as any).__createNativeViewComponent).toBe(createNativeViewComponent);
   });
 
+  it(`returns the same component for the same component name`, () => {
+    // Native calls the factory again when `import * as` copies the lazy getter of a view to another object.
+    expect(
+      createNativeViewComponent(
+        'ViewManagerAdapter_ExpoTestCards_CardView',
+        'CardView',
+        { title: true },
+        {}
+      )
+    ).toBe(CardView);
+  });
+
   it(`renders the host component with the props unchanged`, async () => {
     const style = { flex: 1 };
     const { container } = await render(<CardView title="Card" style={style} />);
