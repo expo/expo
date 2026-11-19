@@ -32,11 +32,6 @@ describe('withShareExtension', () => {
   });
   const props = { android: { enabled: true } };
 
-  beforeEach(() => {
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
-  });
-  afterEach(() => jest.restoreAllMocks());
-
   it('uses a string scheme from the app config', async () => {
     expect(await getAndroidShareIntoScheme(createConfig('myapp'), props)).toBe(
       'myapp'
