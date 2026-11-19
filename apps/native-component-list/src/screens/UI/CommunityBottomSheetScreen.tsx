@@ -36,6 +36,7 @@ export default function CommunityBottomSheetScreen() {
   const edgeToEdgeRef = useRef<BottomSheetModal>(null);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalSheetIndex, setModalSheetIndex] = useState(-1);
   const [log, setLog] = useState<string[]>([]);
   const addLog = (msg: string) =>
     setLog((prev) => [`${new Date().toLocaleTimeString()} ${msg}`, ...prev].slice(0, 15));
@@ -116,6 +117,7 @@ export default function CommunityBottomSheetScreen() {
                 </Text>
               )}
               <SheetControls snapCount={3} />
+              <Button title="Open Modal over sheet" onPress={() => setIsModalVisible(true)} />
             </BottomSheetView>
           </BottomSheet>
 
@@ -183,9 +185,20 @@ export default function CommunityBottomSheetScreen() {
             <View style={styles.modalBackdrop}>
               <View style={styles.modalCard}>
                 <Text style={styles.sheetTitle}>Modal presented</Text>
-                <Button title="Close" onPress={() => setIsModalVisible(false)} />
+                <Button title="Close Modal" onPress={() => setIsModalVisible(false)} />
+                <Button title="Open sheet over Modal" onPress={() => setModalSheetIndex(0)} />
               </View>
             </View>
+            <BottomSheet
+              index={modalSheetIndex}
+              snapPoints={['50%']}
+              enablePanDownToClose
+              onChange={setModalSheetIndex}>
+              <BottomSheetView style={styles.sheetView}>
+                <Text style={styles.sheetTitle}>Sheet over Modal</Text>
+                <Button title="Close sheet over Modal" onPress={() => setModalSheetIndex(-1)} />
+              </BottomSheetView>
+            </BottomSheet>
           </Modal>
         </View>
       </BottomSheetModalProvider>
