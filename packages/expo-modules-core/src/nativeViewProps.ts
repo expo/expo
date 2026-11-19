@@ -23,12 +23,12 @@ export function processPropValue(value: unknown): unknown {
 }
 
 /**
- * Returns whether a prop value changed. It compares values as the default differ of React Native does,
- * except shared objects, which it compares by identity. The default differ compares the enumerable
- * properties of objects, and a shared object has none that identify it, so React Native doesn't send
- * a new shared object of the same class to native.
+ * Returns whether a prop value changed. It compares values as `deepDiffer` of React Native does,
+ * except shared objects, which it compares by identity. `deepDiffer` compares the enumerable
+ * properties of objects, and a shared object has none that identify it, so React Native doesn't
+ * send a new shared object of the same class to native.
  */
-export function diffPropValue(prevValue: unknown, nextValue: unknown): boolean {
+export function deepDiffPropValue(prevValue: unknown, nextValue: unknown): boolean {
   if (prevValue === nextValue) {
     return false;
   }
@@ -58,7 +58,7 @@ export function diffPropValue(prevValue: unknown, nextValue: unknown): boolean {
     }
     // An index loop, not `some`, which skips the holes of a sparse array.
     for (let index = 0; index < prevValue.length; index++) {
-      if (diffPropValue(prevValue[index], nextArray[index])) {
+      if (deepDiffPropValue(prevValue[index], nextArray[index])) {
         return true;
       }
     }
@@ -67,7 +67,7 @@ export function diffPropValue(prevValue: unknown, nextValue: unknown): boolean {
   const prevObject = prevValue as Record<string, unknown>;
   const nextObject = nextValue as Record<string, unknown>;
   for (const key in prevObject) {
-    if (diffPropValue(prevObject[key], nextObject[key])) {
+    if (deepDiffPropValue(prevObject[key], nextObject[key])) {
       return true;
     }
   }
@@ -80,11 +80,36 @@ export function diffPropValue(prevValue: unknown, nextValue: unknown): boolean {
 }
 
 /**
+ * The `diff` that goes with `processPropValue`. It returns what React Native returns for an
+ * attribute with only `process`, except for shared objects, which it compares by identity.
+ */
+function diffPropValue(prevValue: unknown, nextValue: unknown): boolean {
+  // React Native calls `diff` only for values that aren't identical, and it compares only objects
+  // in depth.
+  if (typeof nextValue !== 'object' || nextValue === null) {
+    return true;
+  }
+  return deepDiffPropValue(prevValue, nextValue);
+}
+
+/**
  * Passes a function to native as `true`. React Native does that itself only for an attribute
  * without `process` and `diff`.
  */
 function processFunctionPropValue(value: unknown): unknown {
   return typeof value === 'function' ? true : value;
+}
+
+/**
+ * The `diff` that goes with `processFunctionPropValue`. It returns what React Native returns for an
+ * attribute without `process` and `diff`, except for shared objects, which it compares by identity.
+ */
+function diffFunctionPropValue(prevValue: unknown, nextValue: unknown): boolean {
+  if (typeof nextValue === 'function') {
+    // React Native changes a function to `true` before it compares the values.
+    return prevValue !== true && typeof prevValue !== 'function';
+  }
+  return diffPropValue(prevValue, nextValue);
 }
 
 function createAttributes(
@@ -113,6 +138,6 @@ export function addAttributeProcessing(validAttributes: Record<string, any>): Re
 export function addAttributeDiffing(validAttributes: Record<string, true>): Record<string, any> {
   return createAttributes(validAttributes, {
     process: processFunctionPropValue,
-    diff: diffPropValue,
+    diff: diffFunctionPropValue,
   });
 }

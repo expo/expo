@@ -1,7 +1,17 @@
 import { SharedObject } from '../SharedObject';
-import { diffPropValue } from '../nativeViewProps';
+import {
+  addAttributeDiffing,
+  addAttributeProcessing,
+  deepDiffPropValue,
+  processPropValue,
+} from '../nativeViewProps';
 
+const { isDeepStrictEqual } = require('util');
 const deepDiffer = require('react-native/Libraries/Utilities/differ/deepDiffer').default;
+const {
+  create: createAttributePayload,
+  diff: diffAttributePayload,
+} = require('react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload');
 
 // `ReactNativeAttributePayload` passes these options to `deepDiffer`.
 const deepDifferOptions = { unsafelyIgnoreFunctions: true };
@@ -69,7 +79,39 @@ function createValues(): unknown[] {
   ];
 }
 
-describe('diffPropValue', () => {
+/**
+ * Expects that React Native builds the same payloads with both attribute configs, for each value
+ * and each pair of values.
+ */
+function expectSamePayloads(attributes: object, defaultAttributes: object) {
+  const prevValues = createValues();
+  const nextValues = createValues();
+  const mismatches: object[] = [];
+  for (const prevValue of prevValues) {
+    const prevProps = { value: prevValue };
+    const payload = createAttributePayload(prevProps, attributes);
+    const defaultPayload = createAttributePayload(prevProps, defaultAttributes);
+    if (!isDeepStrictEqual(payload, defaultPayload)) {
+      mismatches.push({ props: prevProps, payload, defaultPayload });
+    }
+    for (const nextValue of [...nextValues, prevValue]) {
+      const nextProps = { value: nextValue };
+      const diffPayload = diffAttributePayload(prevProps, nextProps, attributes);
+      const defaultDiffPayload = diffAttributePayload(prevProps, nextProps, defaultAttributes);
+      if (!isDeepStrictEqual(diffPayload, defaultDiffPayload)) {
+        mismatches.push({
+          prevProps,
+          nextProps,
+          payload: diffPayload,
+          defaultPayload: defaultDiffPayload,
+        });
+      }
+    }
+  }
+  expect(mismatches).toEqual([]);
+}
+
+describe('deepDiffPropValue', () => {
   it(`matches deepDiffer of React Native for values without shared objects`, () => {
     const prevValues = createValues();
     const nextValues = createValues();
@@ -77,7 +119,7 @@ describe('diffPropValue', () => {
     for (const prevValue of prevValues) {
       for (const nextValue of [...nextValues, prevValue]) {
         const expected = deepDiffer(prevValue, nextValue, deepDifferOptions);
-        if (diffPropValue(prevValue, nextValue) !== expected) {
+        if (deepDiffPropValue(prevValue, nextValue) !== expected) {
           mismatches.push({ prevValue, nextValue, deepDiffer: expected });
         }
       }
@@ -90,12 +132,26 @@ describe('diffPropValue', () => {
     const otherSharedObject = new SharedObject();
     // React Native sees no change between two shared objects of the same class.
     expect(deepDiffer(sharedObject, otherSharedObject, deepDifferOptions)).toBe(false);
-    expect(diffPropValue(sharedObject, otherSharedObject)).toBe(true);
-    expect(diffPropValue([sharedObject], [otherSharedObject])).toBe(true);
-    expect(diffPropValue({ a: sharedObject }, { a: otherSharedObject })).toBe(true);
-    expect(diffPropValue(new Array(1), [sharedObject])).toBe(true);
-    expect(diffPropValue(sharedObject, sharedObject)).toBe(false);
-    expect(diffPropValue([sharedObject], [sharedObject])).toBe(false);
-    expect(diffPropValue({ a: sharedObject }, { a: sharedObject })).toBe(false);
+    expect(deepDiffPropValue(sharedObject, otherSharedObject)).toBe(true);
+    expect(deepDiffPropValue([sharedObject], [otherSharedObject])).toBe(true);
+    expect(deepDiffPropValue({ a: sharedObject }, { a: otherSharedObject })).toBe(true);
+    expect(deepDiffPropValue(new Array(1), [sharedObject])).toBe(true);
+    expect(deepDiffPropValue(sharedObject, sharedObject)).toBe(false);
+    expect(deepDiffPropValue([sharedObject], [sharedObject])).toBe(false);
+    expect(deepDiffPropValue({ a: sharedObject }, { a: sharedObject })).toBe(false);
+  });
+});
+
+describe('addAttributeProcessing', () => {
+  it(`builds the same payloads as an attribute with only process`, () => {
+    expectSamePayloads(addAttributeProcessing({ value: true }), {
+      value: { process: processPropValue },
+    });
+  });
+});
+
+describe('addAttributeDiffing', () => {
+  it(`builds the same payloads as an attribute without process and diff`, () => {
+    expectSamePayloads(addAttributeDiffing({ value: true }), { value: true });
   });
 });
