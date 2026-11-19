@@ -594,17 +594,17 @@ async function testAgentDiscoveryRedirectsAsync(): Promise<void> {
   }
   console.log('✓ /api redirects to the API reference');
 
-  const accessTokensUrl = 'https://expo.dev/settings/access-tokens';
+  const programmaticAccessPath = '/accounts/programmatic-access/';
   for (const from of ['/developers', '/developers/']) {
     const response = await fetch(`${BASE_URL}${from}`, { redirect: 'manual' });
     const location = response.headers.get('location') ?? '';
 
-    if (response.status !== 301 || location !== accessTokensUrl) {
+    if (response.status !== 301 || location !== programmaticAccessPath) {
       throw new Error(
-        `Expected ${from} to 301 to ${accessTokensUrl}, got: HTTP ${response.status} -> ${location}`
+        `Expected ${from} to 301 to ${programmaticAccessPath}, got: HTTP ${response.status} -> ${location}`
       );
     }
-    console.log(`✓ ${from} redirects to the Expo access tokens page`);
+    console.log(`✓ ${from} redirects to the programmatic access page`);
   }
 
   const pricingCases: { from: string; to: string; headers: Record<string, string> }[] = [
