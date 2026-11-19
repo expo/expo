@@ -151,6 +151,7 @@ sealed class CopyMoveStrategy(
           if (!spec.overwrite) {
             throw DestinationAlreadyExistsException()
           }
+          validateDestinationDoesNotContainSource(source, file)
           file.deleteRecursively()
         }
         return DestinationSink.SAF(spec, file, isContainer = false)
@@ -173,11 +174,44 @@ sealed class CopyMoveStrategy(
         if (!spec.overwrite) {
           throw DestinationAlreadyExistsException()
         }
+        validateDestinationDoesNotContainSource(source, existingChild)
         existingChild.deleteRecursively()
       }
 
       return DestinationSink.SAF(spec, file, isContainer = true)
     }
+
+    // Overwriting deletes the existing target first. When the target is the source
+    // or one of its ancestors, that delete would remove the source too.
+    // One document can have several URIs (other tree roots, single-document URIs), so documents
+    // are compared by document ID.
+    private fun validateDestinationDoesNotContainSource(source: UnifiedFileInterface, target: SAFDocumentFile) {
+      if (source !is SAFDocumentFile || source.uri.authority != target.uri.authority) {
+        return
+      }
+      val sourceId = source.documentId ?: return
+      if (target.documentId == sourceId || (target.isDirectory() && directoryContains(target, source, sourceId))) {
+        throw DestinationContainsSourceException()
+      }
+    }
+
+    // `DocumentsContract.isChildDocument` needs API 29 and a provider root with
+    // `FLAG_SUPPORTS_IS_CHILD`. When it is not available, walk the directory instead.
+    private fun directoryContains(directory: SAFDocumentFile, source: SAFDocumentFile, sourceId: String): Boolean {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val directoryUri = directory.documentFile?.uri
+        val sourceUri = source.documentFile?.uri
+        if (directoryUri != null && sourceUri != null) {
+          runCatching { DocumentsContract.isChildDocument(context.contentResolver, directoryUri, sourceUri) }
+            .getOrNull()
+            ?.let { return it }
+        }
+      }
+      return directory.walkTopDown().any { it.documentId == sourceId }
+    }
+
+    private val SAFDocumentFile.documentId: String?
+      get() = documentFile?.uri?.let { runCatching { DocumentsContract.getDocumentId(it) }.getOrNull() }
 
     /**
      * Attempts to use native SAF move operation.
