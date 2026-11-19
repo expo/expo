@@ -1,6 +1,7 @@
 package expo.modules.notifications.notifications.categories
 
 import android.content.Context
+import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
@@ -21,7 +22,13 @@ open class ExpoNotificationCategoriesModule : Module() {
     AsyncFunction("setNotificationCategoriesAsync", this@ExpoNotificationCategoriesModule::setNotificationCategoriesAsync)
 
     AsyncFunction("getNotificationCategoriesAsync") { promise: Promise ->
-      promise.resolve(store.allNotificationCategories.filter { ownsCategory(it.identifier) }.map(::serializeCategory))
+      val categories = try {
+        store.allNotificationCategories
+      } catch (e: Exception) {
+        promise.reject("ERR_CATEGORIES_FETCH_FAILED", "Could not fetch notification categories. Restart the app and try again.", e)
+        return@AsyncFunction
+      }
+      promise.resolve(categories.filter { ownsCategory(it.identifier) }.map(::serializeCategory))
     }
 
     AsyncFunction("setNotificationCategoryAsync", this@ExpoNotificationCategoriesModule::setNotificationCategoryAsync)
@@ -36,7 +43,14 @@ open class ExpoNotificationCategoriesModule : Module() {
     promise: Promise
   ) {
     val category = NotificationCategoryRecord(identifier, actionArguments)
-    store.saveNotificationCategory(category)
+    try {
+      store.saveNotificationCategory(category)
+    } catch (e: InvalidArgumentException) {
+      throw e
+    } catch (e: Exception) {
+      promise.reject("ERR_CATEGORY_SET_FAILED", "Could not save notification category '$identifier'. Check the available device storage and try again.", e)
+      return
+    }
     promise.resolve(serializeCategory(category))
   }
 
@@ -46,7 +60,12 @@ open class ExpoNotificationCategoriesModule : Module() {
   }
 
   open fun deleteNotificationCategoryAsync(identifier: String, promise: Promise) {
-    val deleted = store.removeNotificationCategory(identifier)
+    val deleted = try {
+      store.removeNotificationCategory(identifier)
+    } catch (e: Exception) {
+      promise.reject("ERR_CATEGORY_DELETE_FAILED", "Could not delete notification category '$identifier'. Check the available device storage and try again.", e)
+      return
+    }
     promise.resolve(deleted)
   }
 
