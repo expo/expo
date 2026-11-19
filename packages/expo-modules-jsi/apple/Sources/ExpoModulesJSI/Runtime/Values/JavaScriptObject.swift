@@ -864,12 +864,22 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   /// Sets the internal native state property of this object, overwriting any old value.
   /// Creates a new shared_ptr to the object managed by state, which will live until the value at this property becomes unreachable.
-  /// - TODO: throw a type error if this object is a proxy or host object.
+  /// The engine refuses a frozen object, a Proxy and a host object. Use ``trySetNativeState(_:)`` for an object
+  /// that can be one of those.
   public func setNativeState<T: JavaScriptNativeState>(_ nativeState: T) {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     expo.setNativeState(jsiRuntime, self.pointee, nativeState.acquireShared())
+  }
+
+  /// Sets the native state of this object, like ``setNativeState(_:)``. Returns `false` when the engine doesn't
+  /// allow it, for example when the object is frozen, a Proxy or a host object; the object then stays unchanged.
+  public func trySetNativeState<T: JavaScriptNativeState>(_ nativeState: T) -> Bool {
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    return expo.trySetNativeState(jsiRuntime, self.pointee, nativeState.acquireShared())
   }
 
   /// Sets the native state of this object only while its underlying C++ native state is alive, that is, while

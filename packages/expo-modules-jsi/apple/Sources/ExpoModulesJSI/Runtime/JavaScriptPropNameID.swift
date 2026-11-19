@@ -60,6 +60,15 @@ public final class JavaScriptPropNameID: JavaScriptType {
     return utf8()
   }
 
+  /// Provides scoped access to a raw pointer to the underlying `facebook.jsi.PropNameID`, for example to pass a
+  /// cached property name to C++. The pointer is valid only for the duration of the closure and must not be stored
+  /// or escaped.
+  public func withUnsafePointee<R>(_ body: (UnsafeRawPointer) throws -> R) rethrows -> R {
+    return try withUnsafeBytes(of: pointee) { bytes in
+      return try body(bytes.baseAddress!)
+    }
+  }
+
   // MARK: - JavaScriptType
 
   public func asValue() -> JavaScriptValue {
