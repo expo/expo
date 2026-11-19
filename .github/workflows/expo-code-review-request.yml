@@ -3,9 +3,11 @@ name: AI code review request
 # Requesting expo-bot's review starts the AI review. CODEOWNERS requests it for some
 # paths, and anyone can re-request it. This workflow only adds the `ai-review` label;
 # expo-code-review.yml runs the review on that label, as when a maintainer adds it.
+# An outside contributor's fork PR gets the label too, but only when every changed
+# file is in the autonomous scope of routing.jsonc.
 #
-# SECURITY: `pull_request_target`, and no checkout: this job reads nothing from the PR
-# and runs no PR code.
+# SECURITY: `pull_request_target`. The job checks out only the base branch, for the
+# scope script, and runs no PR code.
 on:
   pull_request_target:
     types: [review_requested]
@@ -27,9 +29,32 @@ jobs:
       && !contains(github.event.pull_request.labels.*.name, 'ai-review:skip') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
     steps:
-      # A PR from a fork by someone outside the team needs a maintainer, as before:
-      # an automatic review spends model and sandbox budget.
+      - name: Check out the base branch (never the PR head)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github/scripts
+            .expo-agents/code-review/routing.jsonc
+          sparse-checkout-cone-mode: false
+
+      # If this step fails, an outsider's PR gets no label.
+      - name: Find files in the autonomous review scope
+        id: scope
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: bash .github/scripts/ai-review-scope.sh
+
+      # A writer can start a review on any PR, as when they add the label by hand.
+      # An outsider's fork PR is labeled only inside the autonomous scope, only while
+      # the author has fewer than 2 such PRs open, and never twice, so a re-request
+      # cannot reset the automatic review limit.
       - name: Add the ai-review label
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
@@ -39,6 +64,8 @@ jobs:
           AUTHOR: ${{ github.event.pull_request.user.login }}
           SENDER: ${{ github.event.sender.login }}
           HAS_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'ai-review') }}
+          ONLY_AUTONOMOUS: ${{ steps.scope.outputs.only_autonomous }}
+          MAX_OPEN: 2
         run: |
           # A collaborator can have read access only, so check the permission itself.
           can_write() {
@@ -47,10 +74,34 @@ jobs:
             esac
             return 1
           }
+          # `ai-autonomous` lets a fork PR review again on each push (see expo-code-review.yml).
+          labels=ai-review
+          [ "$SAME_REPO" = true ] || labels=ai-autonomous,ai-review
+
           if [ "$SAME_REPO" != true ] && ! can_write "$AUTHOR" && ! can_write "$SENDER"; then
-            echo "Not starting the AI review: a maintainer can add the ai-review label."
+            if [ "$HAS_LABEL" = true ]; then
+              echo "Already labeled. A maintainer can re-request expo-bot's review to start a new one."
+              exit 0
+            fi
+            if [ "$ONLY_AUTONOMOUS" != true ]; then
+              echo "Not starting the AI review: the PR changes files outside the autonomous scope, or they could not be read. A maintainer can add the ai-review label."
+              exit 0
+            fi
+            open=$(gh api -X GET search/issues -f per_page=100 \
+              -f q="repo:$REPO is:pr is:open author:$AUTHOR label:ai-autonomous" \
+              --jq "[.items[] | select(.number != $PR)] | length") || open=""
+            if [ -z "$open" ]; then
+              echo "Could not count the author's open PRs. A maintainer can add the ai-review label."
+              exit 0
+            fi
+            if [ "$open" -ge "$MAX_OPEN" ]; then
+              echo "Not starting the AI review: $AUTHOR already has $open open PRs with an automatic review. A maintainer can add the ai-review label."
+              exit 0
+            fi
+            gh pr edit "$PR" --repo "$REPO" --add-label "$labels"
             exit 0
           fi
+
           # Re-adding the label starts the review workflow again on a re-request.
           if [ "$HAS_LABEL" = true ]; then
             gh pr edit "$PR" --repo "$REPO" --remove-label ai-review
@@ -59,4 +110,4 @@ jobs:
             # This token cannot read Actions runs, so it cannot poll for that run instead.
             sleep 20
           fi
-          gh pr edit "$PR" --repo "$REPO" --add-label ai-review
+          gh pr edit "$PR" --repo "$REPO" --add-label "$labels"
