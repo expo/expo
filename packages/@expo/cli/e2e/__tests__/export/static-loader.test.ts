@@ -86,7 +86,7 @@ describe.each(
     async () => {
       const first = await server.fetchAsync('/_expo/loaders/revalidate');
       const deployedData = await first.json();
-      expect(deployedData).toEqual({ revision: expect.any(Number) });
+      expect(deployedData).toEqual({ revision: expect.any(Number), requestCacheControl: null });
       const refreshed = await server.fetchAsync('/_expo/loaders/revalidate', {
         headers: { 'Cache-Control': 'no-cache' },
       });
