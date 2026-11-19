@@ -5,8 +5,8 @@ import type { Options } from '../resolveOptions';
 
 jest.mock('@expo/package-manager', () => ({ createForProject: jest.fn() }));
 jest.mock('@expo/require-utils', () => ({
-  resolveFrom: jest.fn(() => '/app/node_modules/eslint/lib/api.js'),
-  loadModuleSync: jest.fn(() => ({ loadESLint: async () => ({ version: '9.0.0' }) })),
+  resolveFrom: jest.fn(() => '/app/node_modules/eslint/package.json'),
+  loadModuleSync: jest.fn(() => ({ version: '9.0.0' })),
 }));
 jest.mock('../ESlintPrerequisite', () => ({
   ESLintProjectPrerequisite: jest.fn(() => ({ assertAsync: async () => true })),
