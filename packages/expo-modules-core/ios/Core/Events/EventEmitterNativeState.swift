@@ -5,8 +5,10 @@
 /// Native state of a JS object that emits events. It keeps the event listeners of its primary runtime, the runtime of
 /// the JS object, in a field that only the thread of that runtime uses, so emitting there takes no lock.
 ///
-/// The JS objects of a shared object in all runtimes share one native state. Its primary runtime is the main runtime,
-/// and a subclass keeps the listeners of the other runtimes (see `listeners(inOtherRuntime:creatingIfNeeded:)`).
+/// A JS object of `expo.EventEmitter` gets one when JS adds its first listener. A module object gets a subclass when
+/// it is built, and a shared object gets a subclass when it is paired. The JS objects of a shared object in all
+/// runtimes share one native state. Its primary runtime is the main runtime, and the subclass keeps the listeners of
+/// the other runtimes (see `listeners(inOtherRuntime:creatingIfNeeded:)`).
 ///
 /// `@unchecked Sendable`: the listeners of a runtime are used only on the thread of that runtime.
 internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendable {
@@ -16,6 +18,12 @@ internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendab
   /// The listeners of the primary runtime. Used only on the thread of that runtime.
   @exclusivity(unchecked)
   private var primaryListeners: EventListeners?
+
+  /// Creates a native state with a plain C++ state, for a JS object in the given runtime.
+  internal init(primaryRuntimeId: JavaScriptRuntime.ID?) {
+    self.primaryRuntimeId = primaryRuntimeId
+    super.init()
+  }
 
   /// Creates a native state whose C++ state `factory` makes. See `JavaScriptNativeState.init(factory:)`.
   internal init(primaryRuntimeId: JavaScriptRuntime.ID?, factory: @escaping Factory) {
@@ -59,12 +67,58 @@ internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendab
   @JavaScriptActor
   internal func listenersDidChange(in runtime: JavaScriptRuntime, hasListeners: Bool) {}
 
+  /// Called after `emitter`, a JS object in `runtime`, got the first listener of the event (`isListening` is `true`),
+  /// or lost the last one. It calls the observing functions of the JS object, when it has them.
+  @JavaScriptActor
+  internal func listeningDidChange(
+    _ emitter: borrowing JavaScriptObject,
+    event: String,
+    isListening: Bool,
+    in runtime: JavaScriptRuntime
+  ) throws {
+    let names = runtime.cached(observingFunctionNamesKey) {
+      return ObservingFunctionNames(runtime)
+    }
+    try callObservingFunction(isListening ? names.startListening : names.stopListening, of: emitter, event: event)
+    try callObservingFunction(isListening ? names.startObserving : names.stopObserving, of: emitter, event: event)
+  }
+
+  @JavaScriptActor
+  private func callObservingFunction(
+    _ name: JavaScriptPropNameID,
+    of emitter: borrowing JavaScriptObject,
+    event: String
+  ) throws {
+    let function = emitter.getProperty(name)
+    guard function.isObject() else {
+      return
+    }
+    try function.asFunction().call(this: emitter, arguments: event)
+  }
+
   /// Removes all listeners of the primary runtime, without calling the observing functions. Call it on the thread of
   /// that runtime, or while the runtime is destroyed, because it releases the listener functions.
   internal func removePrimaryListeners() {
     primaryListeners = nil
   }
 }
+
+/// The names of the observing functions, made once for each runtime.
+private final class ObservingFunctionNames {
+  let startListening: JavaScriptPropNameID
+  let stopListening: JavaScriptPropNameID
+  let startObserving: JavaScriptPropNameID
+  let stopObserving: JavaScriptPropNameID
+
+  init(_ runtime: borrowing JavaScriptRuntime) {
+    startListening = JavaScriptPropNameID(runtime, string: "__expo_onStartListeningToEvent")
+    stopListening = JavaScriptPropNameID(runtime, string: "__expo_onStopListeningToEvent")
+    startObserving = JavaScriptPropNameID(runtime, string: "startObserving")
+    stopObserving = JavaScriptPropNameID(runtime, string: "stopObserving")
+  }
+}
+
+private let observingFunctionNamesKey = JavaScriptRuntime.Cache.Key<ObservingFunctionNames>()
 
 /// The event listeners of one runtime. Used only on the thread of that runtime.
 internal final class EventListeners {

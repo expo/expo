@@ -116,9 +116,7 @@ public final class SharedObjectRegistry: Sendable {
     let mainRuntime = try? appContext?.runtime
     let runtime = runtime ?? mainRuntime
 
-    // Attach the C++ shared-object native state. Because `expo::SharedObject::NativeState`
-    // inherits from `expo::EventEmitter::NativeState`, later `addListener` calls see an
-    // existing native state (via the inheritance check) and don't overwrite it.
+    // Attach the shared-object native state, which also keeps the event listeners.
     // The existing C++ native state is attached only while it is alive. When it is destroyed on another
     // thread, its release must not apply to `jsObject`, so the native object gets a new native state and ID.
     let isMainRuntime = runtime?.id == mainRuntime?.id

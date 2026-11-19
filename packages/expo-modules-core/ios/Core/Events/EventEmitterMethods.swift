@@ -2,14 +2,32 @@
 
 @_spi(Internal) import ExpoModulesJSI
 
-/// The JS methods of an event emitter whose listeners an `EventEmitterNativeState` keeps: `addListener`,
-/// `removeListener`, `removeAllListeners`, `emit`, `listenerCount` and `removeSubscription`. They shadow the methods of
-/// `expo.EventEmitter.prototype`. An object without an `EventEmitterNativeState`, for example a shared object after
-/// `release()`, has no listeners: the methods do nothing, and `listenerCount` returns 0.
+/// The `expo.EventEmitter` class, the base class of modules and shared objects, and its methods: `addListener`,
+/// `removeListener`, `removeAllListeners`, `emit`, `listenerCount` and `removeSubscription`. An
+/// `EventEmitterNativeState` keeps the listeners. `addListener` attaches a plain one to an object without a native
+/// state. The methods ignore an object with another native state: it has no listeners, and `listenerCount` returns 0.
 internal enum EventEmitterMethods {
+  /// Installs the class as `EventEmitter` on the core object, `global.expo`.
+  @JavaScriptActor
+  static func installClass(on coreObject: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
+    let eventEmitterClass = try runtime.createClass(name: "EventEmitter") { this, arguments in
+      // The old event emitter wrapped the native module that its constructor got. A module is an event emitter now,
+      // so the constructor returns an event emitter that it gets.
+      if arguments.count > 0 && arguments[0].isObject() {
+        let constructor = try this.asObject().getProperty("constructor")
+        if constructor.isFunction() && arguments[0].getObject().instanceOf(constructor) {
+          return arguments[0]
+        }
+      }
+      return this
+    }
+    try install(on: eventEmitterClass.asObject().getPropertyAsObject("prototype"), in: runtime)
+    coreObject.setProperty("EventEmitter", value: eventEmitterClass.asValue())
+  }
+
   /// Defines the methods on the prototype.
   @JavaScriptActor
-  static func install(on prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
+  private static func install(on prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
     prototype.setProperty("addListener", value: try createAddListener(in: runtime))
     prototype.setProperty("removeListener", value: runtime.createFunction("removeListener", removeListener).asValue())
     prototype.setProperty(
@@ -77,7 +95,7 @@ internal enum EventEmitterMethods {
       throw InvalidListenerException(event)
     }
     guard
-      let nativeState = emitter.getNativeState(as: EventEmitterNativeState.self),
+      let nativeState = nativeStateCreatingIfNeeded(of: emitter, in: runtime),
       let listeners = nativeState.listenersCreatingIfNeeded(in: runtime)
     else {
       return
@@ -88,8 +106,27 @@ internal enum EventEmitterMethods {
       nativeState.listenersDidChange(in: runtime, hasListeners: true)
     }
     if count == 1 {
-      try notifyListening(emitter, event: event, isListening: true, in: runtime)
+      try nativeState.listeningDidChange(emitter, event: event, isListening: true, in: runtime)
     }
+  }
+
+  /// Returns the native state of the emitter. Attaches a plain one when the emitter has no native state, for example
+  /// an object of `expo.EventEmitter` or a module object in a runtime other than the main runtime. Returns `nil` when
+  /// the emitter has another native state.
+  @JavaScriptActor
+  private static func nativeStateCreatingIfNeeded(
+    of emitter: borrowing JavaScriptObject,
+    in runtime: JavaScriptRuntime
+  ) -> EventEmitterNativeState? {
+    if let nativeState = emitter.getNativeState(as: EventEmitterNativeState.self) {
+      return nativeState
+    }
+    guard !emitter.hasNativeState() else {
+      return nil
+    }
+    let nativeState = EventEmitterNativeState(primaryRuntimeId: runtime.id)
+    emitter.setNativeState(nativeState)
+    return nativeState
   }
 
   /// `nativeRemoveListener(emitter, eventName, listener)`, which the `remove()` method of a subscription calls.
@@ -141,7 +178,7 @@ internal enum EventEmitterMethods {
       if listeners.isEmpty {
         nativeState.listenersDidChange(in: runtime, hasListeners: false)
       }
-      try notifyListening(emitter, event: event, isListening: false, in: runtime)
+      try nativeState.listeningDidChange(emitter, event: event, isListening: false, in: runtime)
     }
   }
 
@@ -219,55 +256,9 @@ internal enum EventEmitterMethods {
       if listeners.isEmpty {
         nativeState.listenersDidChange(in: runtime, hasListeners: false)
       }
-      try notifyListening(emitter, event: event, isListening: false, in: runtime)
+      try nativeState.listeningDidChange(emitter, event: event, isListening: false, in: runtime)
     }
   }
-
-  /// Calls the observing functions of the emitter, when it has them, after the first listener of the event is added
-  /// (`isListening` is `true`) or the last one is removed.
-  @JavaScriptActor
-  private static func notifyListening(
-    _ emitter: borrowing JavaScriptObject,
-    event: String,
-    isListening: Bool,
-    in runtime: borrowing JavaScriptRuntime
-  ) throws {
-    let names = runtime.cached(observingFunctionNamesKey) {
-      return ObservingFunctionNames(runtime)
-    }
-    try callObservingFunction(isListening ? names.startListening : names.stopListening, of: emitter, event: event)
-    try callObservingFunction(isListening ? names.startObserving : names.stopObserving, of: emitter, event: event)
-  }
-
-  @JavaScriptActor
-  private static func callObservingFunction(
-    _ name: JavaScriptPropNameID,
-    of emitter: borrowing JavaScriptObject,
-    event: String
-  ) throws {
-    let function = emitter.getProperty(name)
-    guard function.isObject() else {
-      return
-    }
-    try function.asFunction().call(this: emitter, arguments: event)
-  }
-
-  /// The names of the observing functions, made once for each runtime.
-  private final class ObservingFunctionNames {
-    let startListening: JavaScriptPropNameID
-    let stopListening: JavaScriptPropNameID
-    let startObserving: JavaScriptPropNameID
-    let stopObserving: JavaScriptPropNameID
-
-    init(_ runtime: borrowing JavaScriptRuntime) {
-      startListening = JavaScriptPropNameID(runtime, string: "__expo_onStartListeningToEvent")
-      stopListening = JavaScriptPropNameID(runtime, string: "__expo_onStopListeningToEvent")
-      startObserving = JavaScriptPropNameID(runtime, string: "startObserving")
-      stopObserving = JavaScriptPropNameID(runtime, string: "stopObserving")
-    }
-  }
-
-  private static let observingFunctionNamesKey = JavaScriptRuntime.Cache.Key<ObservingFunctionNames>()
 
   private static func requireArguments(
     _ count: Int,

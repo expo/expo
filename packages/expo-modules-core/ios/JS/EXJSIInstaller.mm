@@ -5,7 +5,6 @@
 #import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/SharedObject.h>
 #import <ExpoModulesCore/SharedRef.h>
-#import <ExpoModulesCore/EventEmitter.h>
 #import <ExpoModulesCore/NativeModule.h>
 
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
@@ -44,11 +43,6 @@ static NSString *modulesHostObjectPropertyName = @"modules";
 - (void)installSharedRefClass
 {
   expo::SharedRef::installBaseClass(*_runtime);
-}
-
-- (void)installEventEmitterClass
-{
-  expo::EventEmitter::installClass(*_runtime);
 }
 
 - (void)installNativeModuleClass

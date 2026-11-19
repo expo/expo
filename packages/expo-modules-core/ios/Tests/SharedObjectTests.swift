@@ -278,6 +278,26 @@ struct SharedObjectTests {
   }
 
   @Test
+  func `emits events to a listener that the EventEmitter prototype adds`() throws {
+    let jsObject = try runtime
+      .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
+      .asObject()
+
+    try runtime.eval(
+      """
+      callCount = 0;
+      expo.EventEmitter.prototype.addListener.call(sharedObject, 'ping', () => { callCount += 1 });
+      """
+    )
+
+    let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
+    nativeObject?.emit(event: "ping")
+
+    #expect(try runtime.eval("callCount").asInt() == 1)
+    #expect(try runtime.eval("sharedObject.listenerCount('ping')").asInt() == 1)
+  }
+
+  @Test
   func `emits events with a pre-converted JavaScriptValue payload`() throws {
     let jsObject = try runtime
       .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
