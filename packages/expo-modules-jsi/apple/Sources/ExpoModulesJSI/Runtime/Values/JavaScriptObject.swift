@@ -606,7 +606,9 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    let getter = runtime.createFunction(name) {
+    // The getter has no name: a name costs about 90 ns for each property, and the first read replaces
+    // the getter.
+    let getter = runtime.createHostFunction(nil) {
       (
         this: borrowing JavaScriptUnownedValue,
         arguments: consuming JavaScriptValuesBuffer,
