@@ -56,6 +56,36 @@ export default function SmallTouchTargetsExample() {
 }
 ```
 
+### Autofill highlight
+
+When autofill fills a text field, Compose paints a semi-transparent yellow over it. Set `autofillHighlightColor` to change that color, or to `transparent` to remove it.
+
+```tsx
+import {
+  BasicTextField,
+  CompositionLocalProvider,
+  Host,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
+import { fillMaxWidth, semantics } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function AutofillHighlightExample() {
+  const email = useNativeState('');
+
+  return (
+    <Host matchContents>
+      <CompositionLocalProvider values={{ autofillHighlightColor: 'transparent' }}>
+        <BasicTextField
+          value={email}
+          singleLine
+          modifiers={[fillMaxWidth(), semantics({ contentType: 'username' })]}
+        />
+      </CompositionLocalProvider>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx
