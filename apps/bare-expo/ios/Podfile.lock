@@ -4465,7 +4465,7 @@ SPEC CHECKSUMS:
   ExpoSensors: c126f95565e222791ba5e9ce8535e4e2ecfad1c3
   ExpoSharing: 3287d1b7e0382c59f346df0c0b80da9acb899cb1
   ExpoSMS: c8b282d16f6ed0846beeec28f59bdf9218199d91
-  ExpoSpeech: 285f0182cbba95a10b3be102de69a17dd1aa6875
+  ExpoSpeech: 615fe9cf7cbe07bdf738016fa61c842c2e779b7e
   ExpoSplashScreen: 4a16996856aeceb61b1c253c5fc9b43208705fa5
   ExpoSQLite: df5b2414b02832b9ea101f04e7464131d85361ff
   ExpoStatusBar: 56aa9746e1bee4d8adbab12f4d7efc97000ac49f

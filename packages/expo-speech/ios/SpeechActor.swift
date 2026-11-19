@@ -58,6 +58,17 @@ internal actor SpeechActor {
     synthesizer.speak(utterance)
   }
 
+  func voices() -> [VoiceInfo] {
+    return AVSpeechSynthesisVoice.speechVoices().map { voice in
+      VoiceInfo(
+        identifier: voice.identifier,
+        name: voice.name,
+        quality: voice.quality == .enhanced ? "Enhanced" : "Default",
+        language: voice.language
+      )
+    }
+  }
+
   func stop() {
     synthesizer.stopSpeaking(at: .immediate)
   }

@@ -25,20 +25,9 @@ public final class SpeechModule: Module, SpeechResultHadler {
     try await speech.speak(id: utteranceId, text: text, options: options)
   }
 
-  @JS(.concurrent)
+  @JS
   func getVoices() async -> [VoiceInfo] {
-    let voices = AVSpeechSynthesisVoice.speechVoices()
-
-    let availableVoicesResult = voices.map { voice in
-      VoiceInfo(
-        identifier: voice.identifier,
-        name: voice.name,
-        quality: voice.quality == .enhanced ? "Enhanced" : "Default",
-        language: voice.language
-      )
-    }
-
-    return availableVoicesResult
+    return await speech.voices()
   }
 
   @JS
