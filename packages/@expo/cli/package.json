@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "2g": "^1.0.1",
-    "@expo/code-signing-certificates": "^0.0.7",
+    "@expo/code-signing-certificates": "0.1.0-canary.2",
     "@expo/config": "workspace:~",
     "@expo/config-plugins": "workspace:~",
     "@expo/devcert": "^1.2.2",
