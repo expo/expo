@@ -395,6 +395,7 @@ describe('FetchResponse', () => {
       await expect(response.body!.cancel('not needed')).rejects.toHaveProperty('name', 'TypeError');
       expect(nativeCancel).not.toHaveBeenCalled();
       await expect(pending).resolves.toBe('hello world');
+      expect(response.body!.locked).toBe(true);
     });
 
     it('does not start native streaming when body.getReader() runs during arrayBuffer()', async () => {
