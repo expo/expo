@@ -274,6 +274,16 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
     }
   }
 
+  // React's tag and component name of a Fabric view. Hydration hands these views back to React.
+  auto node = [&]() {
+    folly::dynamic result = folly::dynamic::object("name", name)("props", std::move(props))("children", std::move(children));
+    if ([view isKindOfClass:[RCTViewComponentView class]]) {
+      result["tag"] = (int64_t)view.tag;
+      result["component"] = [[view class] componentDescriptorProvider].name;
+    }
+    return result;
+  };
+
   if ([view isKindOfClass:[RCTViewComponentView class]]) {
     auto *componentView = (RCTViewComponentView *)view;
     const auto &metrics = layoutMetricsOf(componentView);
@@ -297,7 +307,7 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
         props["ellipsizeMode"] = toString(paragraph.ellipsizeMode);
       }
       children = textRunsOf(text, NSTextAlignmentNatural);
-      return folly::dynamic::object("name", name)("props", std::move(props))("children", std::move(children));
+      return node();
     }
   } else if ([view isKindOfClass:[UILabel class]]) {
     UILabel *label = (UILabel *)view;
@@ -342,7 +352,7 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
       children.push_back(std::move(child));
     }
   }
-  return folly::dynamic::object("name", name)("props", std::move(props))("children", std::move(children));
+  return node();
 }
 
 } // namespace

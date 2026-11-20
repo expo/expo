@@ -56,6 +56,17 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)captureLaunchScreenAfterDelay:(NSTimeInterval)delay;
 
+/**
+ Main thread. Experimental, off by default: `ExpoSplashScreenPrerenderHydrate` in Info.plist or as a
+ launch argument. With the snapshot on screen, commits it into the app's own surface (with the tags
+ React used when it was taken) as soon as that surface has a shadow tree. React's first commits then
+ update the prerendered views in place and do not create new ones. Touches are blocked until then.
+ */
+- (void)hydrateAppSurfaceWhenReady;
+
+/** Whether a "content did appear" notification right now comes from the hydration mount, not from React. */
+- (BOOL)shouldIgnoreContentDidAppear;
+
 @end
 
 NS_ASSUME_NONNULL_END
