@@ -1,5 +1,5 @@
 import JsonFile from '@expo/json-file';
-import resolveFrom from 'resolve-from';
+import { resolveFrom } from '@expo/require-utils';
 import semver from 'semver';
 
 import { debugEvent, event } from '../events';
@@ -27,7 +27,7 @@ export function collectMissingPackages(
   const resolutions: Record<string, string> = {};
 
   const missingPackages = requiredPackages.filter((p) => {
-    const resolved = resolveFrom.silent(projectRoot, p.file);
+    const resolved = resolveFrom(projectRoot, p.file, { skipNodePath: true });
     if (!resolved || !versionSatisfiesRequiredPackage(resolved, p)) {
       return true;
     }
