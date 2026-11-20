@@ -35,7 +35,8 @@ class RelaunchProcedure(
   private val shouldRunReaper: Boolean,
   private val reloadScreenManager: ReloadScreenManager?,
   private val callback: Launcher.LauncherCallback,
-  private val procedureScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+  private val procedureScope: CoroutineScope = CoroutineScope(Dispatchers.IO),
+  private val recreateActivityAfterRestart: Boolean = false
 ) : StateMachineProcedure() {
   override val loggerTimerLabel = "timer-relaunch"
 
@@ -71,9 +72,18 @@ class RelaunchProcedure(
     callback.onSuccess()
 
     procedureScope.launch {
-      withContext(Dispatchers.Main) {
+      val reloadTask = withContext(Dispatchers.Main) {
         reloadScreenManager?.show(weakActivity?.get())
         reactHost.restart(weakActivity?.get(), "Restart from RelaunchProcedure")
+      }
+      if (recreateActivityAfterRestart) {
+        // React Native destroys the host after a fatal error. The destroy stops the surface of the
+        // activity and forgets it, and the reload starts only the surfaces that the host still has.
+        // So the activity must create its surface again, after the new instance exists.
+        withContext(Dispatchers.IO) { reloadTask.waitForCompletion() }
+        withContext(Dispatchers.Main) {
+          weakActivity?.get()?.takeUnless { it.isFinishing || it.isDestroyed }?.recreate()
+        }
       }
     }
 

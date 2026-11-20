@@ -130,7 +130,8 @@ class EnabledUpdatesController(
       }
 
       override fun onRequestRelaunch(shouldRunReaper: Boolean, callback: LauncherCallback) {
-        relaunchReactApplication(shouldRunReaper, callback)
+        // Only error recovery calls this, after a fatal error destroyed the React host.
+        relaunchReactApplication(shouldRunReaper, callback, recreateActivityAfterRestart = true)
       }
     },
     controllerScope
@@ -187,7 +188,11 @@ class EnabledUpdatesController(
     stateMachine.queueExecution(startupProcedure)
   }
 
-  private fun relaunchReactApplication(shouldRunReaper: Boolean, callback: LauncherCallback) {
+  private fun relaunchReactApplication(
+    shouldRunReaper: Boolean,
+    callback: LauncherCallback,
+    recreateActivityAfterRestart: Boolean = false
+  ) {
     val procedure = RelaunchProcedure(
       context,
       weakActivity,
@@ -202,7 +207,8 @@ class EnabledUpdatesController(
       shouldRunReaper = shouldRunReaper,
       reloadScreenManager = reloadScreenManager,
       callback,
-      controllerScope
+      controllerScope,
+      recreateActivityAfterRestart = recreateActivityAfterRestart
     )
     stateMachine.queueExecution(procedure)
   }
