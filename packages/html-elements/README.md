@@ -134,7 +134,7 @@ Other features not implemented in this package can be found in different parts o
 
 ## Headings
 
-Header elements will use the expected [font size and margins from web](http://trac.webkit.org/browser/trunk/Source/WebCore/css/html.css) universally. You can see how the native CSS units (rem, and em) are transformed in [css/units](src/css/units.ts).
+Header elements use the [font size ratios and margins from web](http://trac.webkit.org/browser/trunk/Source/WebCore/css/html.css) universally. On web, heading font sizes are in `rem`, so they scale with the root font size rather than with the font size of a parent element; margins stay in `em`, relative to the heading's own font size. You can see how the native CSS units (rem, and em) are transformed in [css/units](src/css/units.ts).
 
 ```tsx
 import { H1, H2, H3, H4, H5, H6 } from '@expo/html-elements';
