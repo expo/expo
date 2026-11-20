@@ -22,6 +22,7 @@ To manage sessions without EAS CLI, use the [Expo Simulators REST API](/eas/simu
 | Command                                                       | Purpose                                                                  |
 | ------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | [`simulator:availability`](#simulatoravailability)            | Check whether the current project's account can use Expo Simulators      |
+| [`simulator:devices`](#simulatordevices)                      | List the devices that you can select with `simulator:start --device`     |
 | [`simulator:start`](#simulatorstart)                          | Create a session and wait for its controller configuration               |
 | [`simulator`](#simulatorstart)                                | Same command as `simulator:start`                                        |
 | [`simulator:control`](#simulatorcontrol)                      | Run a supported device action on a running iOS session                   |
@@ -39,6 +40,16 @@ To manage sessions without EAS CLI, use the [Expo Simulators REST API](/eas/simu
 <Terminal cmd={['$ eas simulator:availability --json']} />
 
 The `--json` flag is optional. It prints a stable, machine-readable result for agents and automation; omit it for human-readable output. The JSON object contains `available` and `accountName`. When the account does not have access, it also contains `billingUrl`, the URL of the account's billing page. This command does not create a session or consume simulator usage.
+
+## `simulator:devices`
+
+List the devices that you can pass to `simulator:start --device`:
+
+<Terminal cmd={['$ eas simulator:devices --platform android']} />
+
+Omit `--platform` to list the devices of both platforms. The table shows the platform, the device name, and the `--device` value. With EAS CLI 27.11.0 or later, the default device has `(default)` after its name. The command does not create a session. It needs EAS CLI 27.10.0 or later.
+
+`--json` prints an object with an `ios` array and an `android` array, or only one of them with `--platform`. Each item has `identifier` (the `--device` value) and `displayName`. With EAS CLI 27.11.0 or later, it also has `isDefault`. `sim:devices` is an alias of this command.
 
 ## `simulator:start`
 

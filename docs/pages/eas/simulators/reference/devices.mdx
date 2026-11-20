@@ -10,6 +10,14 @@ import { Terminal } from '~/ui/components/Snippet';
 
 Expo Simulators starts one virtual device for each session. On Android, it is an Android Emulator with a hardware profile. On iOS, it is an iOS Simulator device. Select the device with `--device` when the session starts. If you omit the flag, the runner uses `medium_phone` on Android and `iPhone 17` on iOS.
 
+## List the devices that you can start
+
+Run `eas simulator:devices` to list the devices that Expo Simulators suggests and the value to pass to `--device`. The list comes from the service, so it can include devices that the tables on this page do not show. The command needs EAS CLI 27.10.0 or later and an Expo login, but no session:
+
+<Terminal cmd={['$ eas simulator:devices --platform ios']} />
+
+With EAS CLI 27.11.0 or later, the table shows `(default)` after the device that a session uses when you omit `--device`. See [`simulator:devices`](/eas/simulators/reference/cli/#simulatordevices) for the JSON output.
+
 ## Android Emulator profiles
 
 Pass the profile ID to `--device`:
@@ -74,7 +82,7 @@ The iOS image also includes these iPad simulators:
 - `iPad Pro 11-inch (M5)`
 - `iPad Pro 13-inch (M5)`
 
-The image also includes Apple Vision Pro and Apple TV simulators. The list can change, so [list the devices in a session](#list-the-devices-in-a-session) to get the exact names. To start an iPad, pass its exact name:
+The image also includes Apple Vision Pro and Apple TV simulators. The list can change. To get the exact iPad names, [list the devices that you can start](#list-the-devices-that-you-can-start). To see every simulator in the runner image, [list the devices in a session](#list-the-devices-in-a-session). To start an iPad, pass its exact name:
 
 <Terminal
   cmd={[
