@@ -23,6 +23,7 @@
 - Remove the Zod production dependency by using schema-utils for DevTools validation and loading Zod from the optional MCP integration. Declare `expo-mcp` as an optional peer dependency. ([#52599](https://github.com/expo/expo/pull/52599) by [@kitten](https://github.com/kitten))
 - Select the iOS device before installing CocoaPods when running `expo run:ios`. ([#52745](https://github.com/expo/expo/pull/52745) by [@kitten](https://github.com/kitten))
 - [Internal] Include the parent CLI command in telemetry to distinguish nested command invocations. ([#53393](https://github.com/expo/expo/pull/53393) by [@davidmokos](https://github.com/davidmokos))
+- [Internal] Detect Factory Droid, Grok Bot, Claude Cowork, and Muse in CLI telemetry. ([#53831](https://github.com/expo/expo/pull/53831) by [@davidmokos](https://github.com/davidmokos))
 
 ## 56.1.27 — 2026-10-21
 
