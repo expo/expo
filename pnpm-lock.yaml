@@ -2108,8 +2108,8 @@ importers:
         specifier: ^1.3.8
         version: 1.3.8
       agent-cli-detector:
-        specifier: 0.1.7
-        version: 0.1.7
+        specifier: ^0.1.8
+        version: 0.1.8
       arg:
         specifier: ^5.0.2
         version: 5.0.2
@@ -10822,8 +10822,8 @@ packages:
     engines: {node: '>=18.18'}
     hasBin: true
 
-  agent-cli-detector@0.1.7:
-    resolution: {integrity: sha512-d8OWDVdZMgjhLUT9ZPgSv/BdFFF9pVuscC0JdUSz3bjwE15gcp6u/o0/JooM2yyAWC49KThFhXlgTXRa9B7yng==}
+  agent-cli-detector@0.1.8:
+    resolution: {integrity: sha512-o9iM2eTePg7zrZQNoC80Dgljvz53u6MT0EPeBshRKipEl2K3825mthxQCGsYkHob7pFZ/VCwKXMJJ5qa8Z44EA==}
     engines: {node: '>=18.18'}
     hasBin: true
 
@@ -19884,7 +19884,7 @@ snapshots:
 
   agent-cli-detector@0.1.6: {}
 
-  agent-cli-detector@0.1.7: {}
+  agent-cli-detector@0.1.8: {}
 
   ajv-formats@2.1.1(ajv@8.20.0):
     optionalDependencies:
