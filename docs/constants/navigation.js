@@ -424,6 +424,7 @@ export const general = [
     ]),
     makeGroup('Tools', [makePage('guides/using-eslint.mdx'), makePage('guides/typescript.mdx')]),
     makeGroup('TV apps', [makePage('guides/building-for-tv.mdx')]),
+    makeGroup('Voice and video', [makePage('guides/using-livekit.mdx')]),
     makeGroup('Web apps', [makePage('guides/using-nextjs.mdx')]),
   ]),
   makeSection(
