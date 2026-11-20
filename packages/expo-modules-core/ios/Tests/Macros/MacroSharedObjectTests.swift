@@ -33,6 +33,11 @@ private final class MacroCounter: SharedObject {
     return value
   }
 
+  @JS(.cached)
+  var initial: Int {
+    return value
+  }
+
   // A settable stored property.
   @JS
   var label: String = ""
@@ -138,6 +143,11 @@ private final class MacroSymbolList: SharedObject {
   @JS(symbol: "macro.count")
   var count: Int {
     return items.count
+  }
+
+  @JS(symbol: "macro.first", .cached)
+  var first: Int {
+    return items.first ?? -1
   }
 
   // Shares its text with the symbol above, but a name never collides with a symbol.
@@ -248,6 +258,25 @@ private struct MacroSharedObjectTests {
   }
 
   @Test
+  func `stores the first value of a @JS(.cached) property under a symbol on the instance`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let value = try runtime.eval(
+      """
+      (() => {
+        const key = Symbol.for('macro.first')
+        const list = new expo.modules.MacroSharedObjectModule.MacroSymbolList([7, 8])
+        const first = list[key]
+        const descriptor = Object.getOwnPropertyDescriptor(list, key)
+        return [first, descriptor.value, descriptor.writable]
+      })()
+      """)
+    let result = try value.asArray()
+    #expect(try result[0].asInt() == 7)
+    #expect(try result[1].asInt() == 7)
+    #expect(try result[2].asBool() == false)
+  }
+
+  @Test
   func `binds a static @JS(symbol:) method over a read-only inherited one`() throws {
     register(MacroSharedObjectModule(appContext: appContext))
     let value = try runtime.eval(
@@ -355,6 +384,30 @@ private struct MacroSharedObjectTests {
       object.label
       """)
     #expect(try value.asString() == "hello")
+  }
+
+  @Test
+  func `stores the first value of a @JS(.cached) property on each instance`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let value = try runtime.eval(
+      """
+      (() => {
+        const first = new expo.modules.MacroSharedObjectModule.MacroCounter(1)
+        const second = new expo.modules.MacroSharedObjectModule.MacroCounter(2)
+        const ownBeforeRead = Object.prototype.hasOwnProperty.call(first, 'initial')
+        const firstInitial = first.initial
+        first.increment(10)
+        const descriptor = Object.getOwnPropertyDescriptor(first, 'initial')
+        return [ownBeforeRead, firstInitial, second.initial, first.initial, descriptor.value, descriptor.writable]
+      })()
+      """)
+    let result = try value.asArray()
+    #expect(try result[0].asBool() == false)
+    #expect(try result[1].asInt() == 1)
+    #expect(try result[2].asInt() == 2)
+    #expect(try result[3].asInt() == 1)
+    #expect(try result[4].asInt() == 1)
+    #expect(try result[5].asBool() == false)
   }
 
   // MARK: - Static @JS members

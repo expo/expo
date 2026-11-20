@@ -23,6 +23,12 @@ private struct NoEventsProps {
   var title = "Untitled"
 }
 
+@ViewProps(extending: TapProps.self)
+private struct ExtendedTapProps {
+  var subtitle = "None"
+  var onOpen: () -> Void
+}
+
 /// Records the events in place of Fabric's event emitter.
 @ExpoView<TapProps>
 private final class RecordingTapView: ExpoNativeView {
@@ -147,6 +153,17 @@ struct ViewEventDispatcherTests {
     decoded.props.onTap()
 
     #expect(view.events.map(\.name) == ["onTap"])
+  }
+
+  @Test
+  func `extended props dispatch their own events and the events of the base`() throws {
+    let decoded: DecodedViewProps<ExtendedTapProps> = try #require(try decode("{ title: 'Card' }"))
+    try #require(decoded.events).connect(view)
+
+    decoded.props.onOpen()
+    decoded.props.base.onTap()
+
+    #expect(view.events.map(\.name) == ["onOpen", "onTap"])
   }
 
   @Test
