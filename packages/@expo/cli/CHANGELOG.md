@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Detect Factory Droid, Grok Bot, Claude Cowork, and Muse in CLI telemetry. ([#53831](https://github.com/expo/expo/pull/53831) by [@davidmokos](https://github.com/davidmokos))
+
 ### 💡 Others
 
 - [Internal] Include the parent CLI command in telemetry to distinguish nested command invocations. ([#53393](https://github.com/expo/expo/pull/53393) by [@davidmokos](https://github.com/davidmokos))
