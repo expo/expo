@@ -3,6 +3,7 @@ import { vol } from 'memfs';
 
 import { Log } from '../../../log';
 import rnFixture from '../../../prebuild/__tests__/fixtures/react-native-project';
+import { stripAnsi } from '../../../utils/ansi';
 import { copyAsync, removeAsync } from '../../../utils/dir';
 import { isInteractive } from '../../../utils/interactive';
 import { loadEnvFiles } from '../../../utils/nodeEnv.js';
@@ -55,10 +56,12 @@ afterEach(() => {
 });
 
 const output = () =>
-  jest
-    .mocked(Log.log)
-    .mock.calls.map(([message]) => message)
-    .join('');
+  stripAnsi(
+    jest
+      .mocked(Log.log)
+      .mock.calls.map(([message]) => message)
+      .join('')
+  );
 
 it('documents itself without touching the project', async () => {
   await expoCompileAndroid(['--help']);
@@ -80,7 +83,7 @@ it('builds the app for every architecture', async () => {
     { cwd: '/app/android', stdio: 'inherit' }
   );
   expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('Build complete'));
-  expect(Log.log).toHaveBeenCalledWith(expect.stringContaining(`Binary: ${apkPath}`));
+  expect(output()).toContain(`Binary: ${apkPath}`);
   const done = jest.mocked(event.span).mock.results[0]?.value;
   expect(done).toHaveBeenCalledWith('build:done', { platform: 'android', mode: 'development' });
   expect(done).toHaveBeenCalledWith('done', {
@@ -124,7 +127,7 @@ it('builds from a child directory of the project', async () => {
   await expoCompileAndroid(['--dev']);
 
   expect(loadEnvFiles).toHaveBeenCalledWith('/app', { mode: 'development' });
-  expect(Log.log).toHaveBeenCalledWith(expect.stringContaining(`Binary: ${apkPath}`));
+  expect(output()).toContain(`Binary: ${apkPath}`);
 });
 
 it('copies the app to the output directory', async () => {
@@ -132,7 +135,7 @@ it('copies the app to the output directory', async () => {
 
   expect(removeAsync).toHaveBeenCalledWith('/app/build/app-debug.apk');
   expect(copyAsync).toHaveBeenCalledWith(apkPath, '/app/build/app-debug.apk');
-  expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('Binary: /app/build/app-debug.apk'));
+  expect(output()).toContain('Binary: /app/build/app-debug.apk');
 });
 
 it('builds a production apk', async () => {
@@ -153,9 +156,7 @@ it('builds a production apk', async () => {
     ['app:assembleRelease', '-x', 'lint', '-x', 'test', '--configure-on-demand', '--build-cache'],
     { cwd: '/app/android', stdio: 'inherit' }
   );
-  expect(Log.log).toHaveBeenCalledWith(
-    expect.stringContaining('Binary: /app/android/app/build/outputs/apk/release/app-release.apk')
-  );
+  expect(output()).toContain('Binary: /app/android/app/build/outputs/apk/release/app-release.apk');
 });
 
 it('builds a production aab by default', async () => {
@@ -169,8 +170,8 @@ it('builds a production aab by default', async () => {
     ['app:bundleRelease', '-x', 'lint', '-x', 'test', '--configure-on-demand', '--build-cache'],
     { cwd: '/app/android', stdio: 'inherit' }
   );
-  expect(Log.log).toHaveBeenCalledWith(
-    expect.stringContaining('Binary: /app/android/app/build/outputs/bundle/release/app-release.aab')
+  expect(output()).toContain(
+    'Binary: /app/android/app/build/outputs/bundle/release/app-release.aab'
   );
   const done = jest.mocked(event.span).mock.results[0]?.value;
   expect(done).toHaveBeenCalledWith('done', {
