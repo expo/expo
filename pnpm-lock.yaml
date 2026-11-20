@@ -2614,6 +2614,9 @@ importers:
       resolve-from:
         specifier: ^5.0.0
         version: 5.0.0
+      resolve-workspace-root:
+        specifier: ^2.0.0
+        version: 2.0.1
       semver:
         specifier: ^7.7.4
         version: 7.7.4

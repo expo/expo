@@ -164,6 +164,44 @@ describe(getPatchPackageSourcesAsync, () => {
     ]);
   });
 
+  it('should not include a parent `patches` dir for a project excluded by a negated glob', async () => {
+    vol.fromJSON({
+      '/monorepo/package.json': JSON.stringify({
+        private: true,
+        workspaces: ['apps/*', '!apps/legacy'],
+      }),
+      '/monorepo/apps/legacy/package.json': JSON.stringify({ name: 'legacy', private: true }),
+      '/monorepo/patches/react-native@0.88.0.patch': 'diff --git a/react-native\n',
+    });
+
+    const sources = await getPatchPackageSourcesAsync(
+      '/monorepo/apps/legacy',
+      await normalizeOptionsAsync('/monorepo/apps/legacy')
+    );
+    expect(sources).toEqual([]);
+  });
+
+  it('should include workspace-root `patches` for a `./`-prefixed pnpm glob', async () => {
+    vol.fromJSON({
+      '/monorepo/package.json': JSON.stringify({ private: true }),
+      '/monorepo/pnpm-workspace.yaml': "packages:\n  - './apps/*'\n",
+      '/monorepo/apps/mobile/package.json': JSON.stringify({ name: 'mobile', private: true }),
+      '/monorepo/patches/react-native@0.88.0.patch': 'diff --git a/react-native\n',
+    });
+
+    const sources = await getPatchPackageSourcesAsync(
+      '/monorepo/apps/mobile',
+      await normalizeOptionsAsync('/monorepo/apps/mobile')
+    );
+    expect(sources).toEqual([
+      {
+        type: 'dir',
+        filePath: '../../patches',
+        reasons: ['patchPackage'],
+      },
+    ]);
+  });
+
   it('should not include a parent `patches` dir when the project is outside the workspace globs', async () => {
     vol.fromJSON({
       '/outer/package.json': JSON.stringify({
