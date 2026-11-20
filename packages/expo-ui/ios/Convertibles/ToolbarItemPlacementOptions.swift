@@ -6,7 +6,7 @@ import SwiftUI
 /**
  Where an item sits in the toolbar, matching SwiftUI's `ToolbarItemPlacement`.
  */
-internal enum ToolbarItemPlacementOptions: String, Enumerable {
+internal enum ToolbarItemPlacementOptions: String, UIEnum {
   case automatic
   case principal
   case navigation

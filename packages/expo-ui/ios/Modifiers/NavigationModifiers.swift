@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum NavigationSplitViewStyleOptions: String, Enumerable {
+internal enum NavigationSplitViewStyleOptions: String, UIEnum {
   case automatic
   case balanced
   case prominentDetail

@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum LabelStyleType: String, Enumerable {
+internal enum LabelStyleType: String, UIEnum {
   case automatic
   case iconOnly
   case titleAndIcon

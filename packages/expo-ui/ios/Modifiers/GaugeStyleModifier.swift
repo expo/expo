@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum GaugeStyleType: String, Enumerable {
+internal enum GaugeStyleType: String, UIEnum {
   case automatic
   case circular
   case circularCapacity

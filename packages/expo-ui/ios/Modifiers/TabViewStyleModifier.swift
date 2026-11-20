@@ -3,13 +3,13 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum TabViewStyleType: String, Enumerable {
+internal enum TabViewStyleType: String, UIEnum {
   case page
   case automatic
   case sidebarAdaptable
 }
 
-internal enum PageIndexDisplayMode: String, Enumerable {
+internal enum PageIndexDisplayMode: String, UIEnum {
   case automatic
   case always
   case never

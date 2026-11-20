@@ -5,7 +5,7 @@ import SwiftUI
 
 // MARK: - Individual ViewModifier Structs
 
-internal enum ListSectionSpacingType: String, Enumerable {
+internal enum ListSectionSpacingType: String, UIEnum {
   case `default`
   case compact
   case custom
@@ -491,7 +491,7 @@ internal func hueRotationModifier(_ content: StableContent, _ p: ModifierParams)
   content.hueRotation(.degrees(angle))
 }
 
-internal enum ScrollDismissesKeyboardMode: String, Enumerable {
+internal enum ScrollDismissesKeyboardMode: String, UIEnum {
   case automatic
   case never
   case interactively
@@ -517,7 +517,7 @@ internal func scrollDismissesKeyboardModifier(_ content: StableContent, _ p: Mod
   }
 }
 
-internal enum MenuActionDismissBehaviorMode: String, Enumerable {
+internal enum MenuActionDismissBehaviorMode: String, UIEnum {
   case automatic
   case disabled
   case enabled
@@ -600,7 +600,7 @@ internal func accessibilityHiddenModifier(_ content: StableContent, _ p: Modifie
   content.accessibilityHidden(hidden)
 }
 
-internal enum AccessibilityChildBehaviorType: String, Enumerable {
+internal enum AccessibilityChildBehaviorType: String, UIEnum {
   case ignore
   case combine
   case contain
@@ -623,7 +623,7 @@ internal func accessibilityElementModifier(_ content: StableContent, _ p: Modifi
   content.accessibilityElement(children: children.toNative())
 }
 
-internal enum AccessibilityTraitType: String, Enumerable {
+internal enum AccessibilityTraitType: String, UIEnum {
   case isButton
   case isHeader
   case isImage
@@ -983,7 +983,7 @@ internal struct ListRowSpacing: ViewModifier, UIRecord {
   }
 }
 
-internal enum AlignmentGuideOptions: String, Enumerable {
+internal enum AlignmentGuideOptions: String, UIEnum {
   case leading
   case center
   case trailing
@@ -1025,7 +1025,7 @@ internal func alignmentGuideModifier(_ content: StableContent, _ p: ModifierPara
   }
 }
 
-internal enum TextTruncationModeTypes: String, Enumerable {
+internal enum TextTruncationModeTypes: String, UIEnum {
   case head
   case middle
   case tail
@@ -1666,7 +1666,7 @@ internal func geometryGroupModifier(_ content: StableContent, _: ModifierParams)
   }
 }
 
-internal enum ButtonStyle: String, Enumerable {
+internal enum ButtonStyle: String, UIEnum {
   case automatic
   case bordered
   case borderedProminent
@@ -1717,7 +1717,7 @@ internal func buttonStyleModifier(_ content: StableContent, _ p: ModifierParams)
   }
 }
 
-internal enum TextFieldStyle: String, Enumerable {
+internal enum TextFieldStyle: String, UIEnum {
   case automatic
   case plain
   case roundedBorder
@@ -1750,7 +1750,7 @@ internal func navigationTitleModifier(_ content: StableContent, _ p: ModifierPar
   }
 }
 
-internal enum NavigationBarTitleDisplayMode: String, Enumerable {
+internal enum NavigationBarTitleDisplayMode: String, UIEnum {
   case automatic
   case inline
   case large
@@ -1779,7 +1779,7 @@ internal func navigationBarTitleDisplayModeModifier(_ content: StableContent, _ 
 #endif
 }
 
-internal enum ToolbarTitleDisplayModeType: String, Enumerable {
+internal enum ToolbarTitleDisplayModeType: String, UIEnum {
   case automatic
   case inline
   case inlineLarge

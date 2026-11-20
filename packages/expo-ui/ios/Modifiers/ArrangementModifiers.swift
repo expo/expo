@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum ArrangementViewStyleOptions: String, Enumerable {
+internal enum ArrangementViewStyleOptions: String, UIEnum {
   case automatic
   case split
   case overlay
@@ -111,7 +111,7 @@ internal func splitArrangementFixedLayoutSizeModifier(_ content: StableContent, 
 #endif
 }
 
-internal enum OverlayArrangementEdgeOptions: String, Enumerable {
+internal enum OverlayArrangementEdgeOptions: String, UIEnum {
   case top
   case bottom
   case leading

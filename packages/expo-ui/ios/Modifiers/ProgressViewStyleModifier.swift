@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum ProgressViewStyleType: String, Enumerable {
+internal enum ProgressViewStyleType: String, UIEnum {
   case automatic
   case linear
   case circular

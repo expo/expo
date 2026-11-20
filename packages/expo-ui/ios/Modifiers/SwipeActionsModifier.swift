@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum SwipeActionsEdge: String, Enumerable {
+internal enum SwipeActionsEdge: String, UIEnum {
   case leading
   case trailing
 

@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum DatePickerStyleType: String, Enumerable {
+internal enum DatePickerStyleType: String, UIEnum {
   case automatic
   case compact
   case graphical
