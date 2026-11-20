@@ -18,7 +18,8 @@ still run, because every scope runs them. A wrong `critical` costs the deep revi
 The shared rules above are written for the full review. Where they conflict with this prompt,
 this prompt wins. These shared sections do not apply to you: "Study the code, not the diff"
 (the related-files list, the sibling check, the documentation lookup and the sandbox),
-"Acceptance criteria" with its unfit-PR rule, "Tests", and "Severity".
+"Acceptance criteria" with its unfit-PR rule, and "Tests". In "Severity", the levels below
+replace the shared levels. The evidence requirement and "Do not inflate severity" still apply.
 
 ## What you have
 
