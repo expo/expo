@@ -568,7 +568,7 @@ export interface Android {
    */
   blockedPermissions?: string[];
   /**
-   * A list of hardware or software features to declare with `<uses-feature>` elements in the app `AndroidManifest.xml` during prebuild. Set `required` to `false` to keep Google Play from hiding the app on devices without the feature, such as a feature implied by a permission or by a fixed screen orientation. An entry replaces a `<uses-feature>` element with the same name in the app manifest. The manifest merger still merges `<uses-feature>` elements from libraries, so this field only controls the app manifest. For example: `[{ "name": "android.hardware.wifi", "required": false }]`
+   * A list of hardware or software features to declare with `<uses-feature>` elements in the app `AndroidManifest.xml` during prebuild. Set `required` to `false` to keep Google Play from hiding the app on devices without the feature, such as a feature implied by a permission or by a fixed screen orientation. An entry replaces a `<uses-feature>` element with the same name in the app manifest. The manifest merger keeps a feature required if a library manifest declares it without `android:required="false"`. For example: `[{ "name": "android.hardware.wifi", "required": false }]`
    */
   usesFeatures?: {
     /**

@@ -39,21 +39,6 @@ The only way to remove permissions that are added by package-level **AndroidMani
 - Apps using _dangerous_ or _signature_ permissions without valid reasons **may be rejected by Google**. Ensure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
 - [All available Android `Manifest.permissions`](https://developer.android.com/reference/android/Manifest.permission).
 
-Some permissions and settings imply hardware features. For example, `android.permission.ACCESS_WIFI_STATE` implies `android.hardware.wifi`, and `"orientation": "portrait"` implies `android.hardware.screen.portrait`. Google Play treats an implied feature as required and hides the app on devices that do not have it. To make the app available on those devices, declare the feature with `android.usesFeatures` and set `required` to `false`:
-
-```json app.json
-{
-  "android": {
-    "usesFeatures": [
-      { "name": "android.hardware.wifi", "required": false },
-      { "name": "android.hardware.screen.portrait", "required": false }
-    ]
-  }
-}
-```
-
-Each entry becomes a `<uses-feature>` element in the app **AndroidManifest.xml**. The manifest merger still merges `<uses-feature>` elements from libraries, so `android.usesFeatures` controls only the app manifest. See [implicit feature requirements](https://developer.android.com/guide/topics/manifest/uses-feature-element#implicit) for the full list.
-
 <ConfigReactNative>
 
 Modify **AndroidManifest.xml** to exclude specific permissions: add the `tools:node="remove"` attribute to a `<use-permission>` tag to ensure it is removed, even if it's included in a library's **AndroidManifest.xml**.
@@ -67,6 +52,23 @@ Modify **AndroidManifest.xml** to exclude specific permissions: add the `tools:n
 > You have to define the `xmlns:tools` attribute on `<manifest>` before you can use the `tools:node` attribute on permissions.
 
 </ConfigReactNative>
+
+### Hardware features
+
+Some permissions and settings imply hardware features. For example, `android.permission.ACCESS_WIFI_STATE` implies `android.hardware.wifi`, and `"orientation": "portrait"` implies `android.hardware.screen.portrait`. Google Play treats an implied feature as required and hides the app on devices that do not have it. To make the app available on those devices, declare the feature with `android.usesFeatures` and set `required` to `false`:
+
+```json app.json
+{
+  "android": {
+    "usesFeatures": [
+      { "name": "android.hardware.wifi", "required": false },
+      { "name": "android.hardware.screen.portrait", "required": false }
+    ]
+  }
+}
+```
+
+Each entry becomes a `<uses-feature>` element in the app **AndroidManifest.xml**. If a library manifest declares the same feature without `android:required="false"`, the merged manifest keeps it required, so Google Play still hides the app. See [permissions that imply feature requirements](https://developer.android.com/guide/topics/manifest/uses-feature-element#permissions) for the full list.
 
 ## iOS
 
