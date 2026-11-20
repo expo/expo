@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.6
+
+### Patch Changes
+
+- [iOS] Add a checked-in Package.swift so that the Expo SwiftPM plugin builds the module directly from it. ([#53210](https://github.com/expo/expo/pull/53210) by [@chrfalch](https://github.com/chrfalch))
+
 ## 58.0.5
 
 ### Patch Changes

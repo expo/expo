@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.19
+
+### Patch Changes
+
+- [iOS] Keep the rendered image when the view's size changes and the image is still suitable for display at the new size. Also round the downscaled image size to the nearest pixel. This helps scaled images keep their aspect ratio as best as possible. ([#52424](https://github.com/expo/expo/pull/52424) by [@ide](https://github.com/ide))
+- [iOS] Decode AVIF with libdav1d instead of libaom in the precompiled framework, to match source builds and reduce memory use. ([#52640](https://github.com/expo/expo/pull/52640) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.18
 
 ### Patch Changes

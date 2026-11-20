@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.1.22
+
+### Patch Changes
+
+- Detect Factory Droid, Grok Bot, Claude Cowork, and Muse in CLI telemetry. ([#53831](https://github.com/expo/expo/pull/53831) by [@davidmokos](https://github.com/davidmokos))
+- Fix `expo lint` and `expo run` failing right after installing a missing package. ([#53887](https://github.com/expo/expo/pull/53887) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Treat non-boolean `CI` values, like `CI=yes`, as false instead of failing. ([#53019](https://github.com/expo/expo/pull/53019) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [Internal] Include the parent CLI command in telemetry to distinguish nested command invocations. ([#53393](https://github.com/expo/expo/pull/53393) by [@davidmokos](https://github.com/davidmokos))
+
 ## 58.1.21
 
 ### Patch Changes
