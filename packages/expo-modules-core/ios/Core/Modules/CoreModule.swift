@@ -7,8 +7,8 @@ import ExpoModulesJSI
 // The core module that describes the `global.expo` object.
 @ExpoModule
 internal final class CoreModule: Module {
-  @JS
-  lazy var expoModulesCoreVersion: ExpoModulesCoreVersion = {
+  @JS(.cached)
+  var expoModulesCoreVersion: ExpoModulesCoreVersion {
     let version = CoreModuleHelper.getVersion()
     let components = version.split(separator: "-")[0].split(separator: ".").compactMap { Int($0) }
 
@@ -18,16 +18,22 @@ internal final class CoreModule: Module {
       minor: components[1],
       patch: components[2]
     )
-  }()
+  }
 
-  @JS
-  lazy var cacheDir: String = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?.path ?? ""
+  @JS(.cached)
+  var cacheDir: String {
+    FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?.path ?? ""
+  }
 
-  @JS
-  lazy var documentsDir: String = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? ""
+  @JS(.cached)
+  var documentsDir: String {
+    FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? ""
+  }
 
-  @JS
-  lazy var isRunningOnQuest: Bool = false
+  @JS(.cached)
+  var isRunningOnQuest: Bool {
+    false
+  }
 
   @JS
   func uuidv4() -> String {
