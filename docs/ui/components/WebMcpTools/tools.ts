@@ -471,15 +471,15 @@ export const webMcpTools: WebMcpTool[] = [
     name: 'send_feedback',
     title: 'Send feedback on an Expo docs page',
     description:
-      'Sends written feedback about a documentation page to the Expo documentation team, and ' +
-      'returns a confirmation.',
+      'Sends specific, actionable feedback about a documentation page to the Expo documentation ' +
+      'team, such as an error or misleading or outdated information, and returns a confirmation.',
     inputSchema: {
       type: 'object',
       properties: {
         feedback: {
           type: 'string',
           maxLength: FEEDBACK_MAX_LENGTH,
-          description: 'The feedback text.',
+          description: 'A specific, actionable description of the problem, with its context.',
         },
         path: pathProperty,
       },
