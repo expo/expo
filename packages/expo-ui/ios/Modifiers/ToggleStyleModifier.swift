@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum ToggleStyleType: String, Enumerable {
+internal enum ToggleStyleType: String, UIEnum {
   case automatic
   case `switch`
   case button

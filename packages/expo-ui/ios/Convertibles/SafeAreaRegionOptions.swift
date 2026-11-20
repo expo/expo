@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum SafeAreaRegionOptions: String, Enumerable {
+internal enum SafeAreaRegionOptions: String, UIEnum {
   case all
   case container
   case keyboard

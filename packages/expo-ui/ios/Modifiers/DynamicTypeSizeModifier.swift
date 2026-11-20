@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum DynamicTypeSizeType: String, Enumerable {
+internal enum DynamicTypeSizeType: String, UIEnum {
   case xSmall
   case small
   case medium

@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum ScrollIndicatorVisibilityOptions: String, Enumerable {
+internal enum ScrollIndicatorVisibilityOptions: String, UIEnum {
   case automatic
   case visible
   case hidden

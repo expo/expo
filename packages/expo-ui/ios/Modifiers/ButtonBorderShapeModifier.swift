@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum ButtonBorderShapeType: String, Enumerable {
+internal enum ButtonBorderShapeType: String, UIEnum {
   case automatic
   case capsule
   case roundedRectangle

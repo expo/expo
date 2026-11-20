@@ -168,7 +168,7 @@ internal func presentationCornerRadiusModifier(_ content: StableContent, _ p: Mo
 
 // MARK: - Presentation Background Interaction
 
-internal enum PresentationBackgroundInteractionTypeModifier: String, Enumerable {
+internal enum PresentationBackgroundInteractionTypeModifier: String, UIEnum {
   case automatic
   case enabled
   case disabled

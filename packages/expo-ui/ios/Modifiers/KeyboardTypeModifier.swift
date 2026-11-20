@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-enum KeyboardType: String, Enumerable {
+enum KeyboardType: String, UIEnum {
   case defaultKeyboard = "default"
   case emailAddress = "email-address"
   case numeric = "numeric"

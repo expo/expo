@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum ControlSizeType: String, Enumerable {
+internal enum ControlSizeType: String, UIEnum {
   case mini
   case small
   case regular
