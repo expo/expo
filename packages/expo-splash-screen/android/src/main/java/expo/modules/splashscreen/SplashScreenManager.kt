@@ -1,7 +1,9 @@
 package expo.modules.splashscreen
 
 import android.app.Activity
+import android.app.Application
 import android.os.Build
+import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver.OnPreDrawListener
 import android.view.animation.AccelerateInterpolator
@@ -9,12 +11,35 @@ import android.window.SplashScreenView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
+import java.lang.ref.WeakReference
 
 object SplashScreenManager {
   private var keepSplashScreenOnScreen = true
   var preventAutoHideCalled: Boolean = false
   var userControlledAutoHide: Boolean = false
   private var exitAnimationDuration = SplashScreenOptions().duration
+  private var registeredActivity: WeakReference<Activity>? = null
+  private var relaunchedForConfigurationChange = false
+
+  private val registeredActivityDestroyedListener = object : Application.ActivityLifecycleCallbacks {
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) = Unit
+
+    override fun onActivityStarted(activity: Activity) = Unit
+
+    override fun onActivityResumed(activity: Activity) = Unit
+
+    override fun onActivityPaused(activity: Activity) = Unit
+
+    override fun onActivityStopped(activity: Activity) = Unit
+
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
+
+    override fun onActivityDestroyed(activity: Activity) {
+      if (activity === registeredActivity?.get()) {
+        relaunchedForConfigurationChange = activity.isChangingConfigurations
+      }
+    }
+  }
 
   private val contentAppearedListener = ReactMarker.MarkerListener { name, _, _ ->
     if (name == ReactMarkerConstants.CONTENT_APPEARED) {
@@ -25,9 +50,14 @@ object SplashScreenManager {
   }
 
   fun registerOnActivity(mainActivity: Activity) {
-    if (userControlledAutoHide) {
+    if (userControlledAutoHide && !relaunchedForConfigurationChange) {
       keepSplashScreenOnScreen = true
     }
+    relaunchedForConfigurationChange = false
+    if (registeredActivity == null) {
+      mainActivity.application.registerActivityLifecycleCallbacks(registeredActivityDestroyedListener)
+    }
+    registeredActivity = WeakReference(mainActivity)
     val splashScreen = mainActivity.installSplashScreen()
     ReactMarker.addListener(contentAppearedListener)
 
