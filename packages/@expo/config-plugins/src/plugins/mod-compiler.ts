@@ -1,3 +1,4 @@
+import { PREBUILD_APPLE_PLATFORMS, isPrebuildApplePlatform } from '@expo/platforms';
 import Debug from 'debug';
 import path from 'path';
 
@@ -16,7 +17,9 @@ export function withDefaultBaseMods(
   config: ExportedConfig,
   props: ForwardedBaseModOptions = {}
 ): ExportedConfig {
-  config = withIosBaseMods(config, props);
+  for (const platform of PREBUILD_APPLE_PLATFORMS) {
+    config = withIosBaseMods(config, { ...props, platform });
+  }
   config = withAndroidBaseMods(config, props);
   return config;
 }
@@ -108,16 +111,18 @@ function getRawClone({ mods, ...config }: ExportedConfig) {
   return Object.freeze(JSON.parse(JSON.stringify(config)));
 }
 
-const precedences: Record<string, Record<string, number>> = {
-  ios: {
-    // dangerous runs first
-    dangerous: -2,
-    // run the XcodeProject mod second because many plugins attempt to read from it.
-    xcodeproj: -1,
-    // put the finalized mod at the last
-    finalized: 1,
-  },
+const applePrecedences = {
+  // dangerous runs first
+  dangerous: -2,
+  // run the XcodeProject mod second because many plugins attempt to read from it.
+  xcodeproj: -1,
+  // put the finalized mod at the last
+  finalized: 1,
 };
+
+const precedences: Record<string, Record<string, number>> = Object.fromEntries(
+  PREBUILD_APPLE_PLATFORMS.map((platform) => [platform, applePrecedences])
+);
 /**
  * A generic plugin compiler.
  *
@@ -158,8 +163,9 @@ export async function evalModsAsync(
       entries = sortMods(entries, precedences[platformName] ?? { dangerous: -1, finalized: 1 });
       debug(`run in order: ${entries.map(([name]) => name).join(', ')}`);
       const platformProjectRoot = path.join(projectRoot, platformName);
-      const projectName =
-        platformName === 'ios' ? getHackyProjectName(projectRoot, config) : undefined;
+      const projectName = isPrebuildApplePlatform(platformName)
+        ? getHackyProjectName(projectRoot, config, platformName)
+        : undefined;
 
       for (const [modName, mod] of entries) {
         const modRequest = {

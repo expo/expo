@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { consumeConfigEnvMode, loadProjectEnv } from '@expo/env';
+import { PREBUILD_APPLE_PLATFORMS } from '@expo/platforms';
 import chalk from 'chalk';
 
 import { Command } from './cli';
@@ -7,6 +8,8 @@ import { syncConfigurationToNativeAsync } from './syncConfigurationToNativeAsync
 import { requireArg, assertArgs, getProjectRoot } from './utils/args';
 import { CommandError } from './utils/errors';
 import * as Log from './utils/log';
+
+const SYNC_PLATFORMS: readonly string[] = [...PREBUILD_APPLE_PLATFORMS, 'android'];
 
 export const syncConfigurationToNative: Command = async (argv) => {
   const args = assertArgs(
@@ -32,7 +35,7 @@ only needs to be used by the EAS CLI for generic projects that don't use continu
   {dim $} npx expo-updates configuration:syncnative --platform <platform>
 
   Options
-  --platform <string>                  Platform to sync
+  --platform <string>                  Platform to sync: ${SYNC_PLATFORMS.join(', ')}
   --workflow <string>                  Workflow to use for configuration sync
   -h, --help                           Output usage information
     `,
@@ -41,8 +44,10 @@ only needs to be used by the EAS CLI for generic projects that don't use continu
   }
 
   const platform = requireArg(args, '--platform');
-  if (!['ios', 'android'].includes(platform)) {
-    throw new CommandError(`Invalid platform argument: ${platform}`);
+  if (!SYNC_PLATFORMS.includes(platform)) {
+    throw new CommandError(
+      `Invalid platform argument: ${platform}. Use one of: ${SYNC_PLATFORMS.join(', ')}.`
+    );
   }
 
   const workflow = requireArg(args, '--workflow');

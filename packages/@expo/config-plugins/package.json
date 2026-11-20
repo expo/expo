@@ -91,6 +91,7 @@
   "dependencies": {
     "@expo/config-types": "workspace:^",
     "@expo/json-file": "workspace:~",
+    "@expo/platforms": "workspace:^",
     "@expo/plist": "workspace:^",
     "@expo/require-utils": "workspace:^",
     "@expo/sdk-runtime-versions": "^1.0.1",

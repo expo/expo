@@ -14,7 +14,7 @@ import path from 'path';
 import type { ContentsJson, ContentsJsonImage } from './AssetContents';
 import { writeContentsJsonAsync } from './AssetContents';
 
-const { getProjectName, unquote } = IOSConfig.XcodeUtils;
+const { unquote } = IOSConfig.XcodeUtils;
 
 const IMAGE_CACHE_NAME = 'icons';
 const IMAGESET_PATH = 'Images.xcassets/AppIcon.appiconset';
@@ -24,7 +24,11 @@ export const withIosIcons: ConfigPlugin = (config) => {
   config = withDangerousMod(config, [
     'ios',
     async (config) => {
-      await setIconsAsync(config, config.modRequest.projectRoot);
+      await setIconsAsync(
+        config,
+        config.modRequest.projectRoot,
+        IOSConfig.Paths.toApplePlatform(config.modRequest.platform)
+      );
       return config;
     },
   ]);
@@ -94,11 +98,15 @@ export function getIcons(config: Pick<ExpoConfig, 'icon' | 'ios'>): IOSIcons | s
   return null;
 }
 
-export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
+export async function setIconsAsync(
+  config: ExpoConfig,
+  projectRoot: string,
+  platform?: IOSConfig.Paths.ApplePlatform
+) {
   const icon = getIcons(config);
 
-  // Something like projectRoot/ios/MyApp/
-  const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
+  // Something like projectRoot/{ios,tvos}/MyApp/
+  const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot, platform);
 
   if (typeof icon === 'string' && path.extname(icon) === '.icon') {
     if (await addLiquidGlassIcon(icon, projectRoot, iosNamedProjectRoot)) {
@@ -157,13 +165,16 @@ export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
 }
 
 /**
- * Return the project's named iOS path: ios/MyProject/
+ * Return the project's named Apple path: {ios,tvos}/MyProject/
  *
  * @param projectRoot Expo project root path.
+ * @param platform Apple platform directory to resolve in. Defaults to searching all of them.
  */
-function getIosNamedProjectPath(projectRoot: string): string {
-  const projectName = getProjectName(projectRoot);
-  return path.join(projectRoot, 'ios', projectName);
+function getIosNamedProjectPath(
+  projectRoot: string,
+  platform?: IOSConfig.Paths.ApplePlatform
+): string {
+  return IOSConfig.Paths.getSourceRoot(projectRoot, platform);
 }
 
 function getAppleIconName(size: number, scale: number, appearance?: 'dark' | 'tinted'): string {

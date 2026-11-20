@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import type { AppleTargetPlatformName } from '@expo/platforms';
+import { PREBUILD_APPLE_PLATFORMS } from '@expo/platforms';
 import type { SpawnResult } from '@expo/spawn-async';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
@@ -84,12 +86,19 @@ export async function setupDependenciesAsync(
   // Install dependencies
   let podsInstalled: boolean = false;
   let nodeModulesInstalled: boolean = false;
-  const needsPodsInstalled = !props.swiftpm && fs.existsSync(path.join(projectRoot, 'ios'));
+  const cocoaPodsPlatforms = PREBUILD_APPLE_PLATFORMS.filter(
+    (platform) =>
+      !(props.swiftpm && platform === 'ios') && fs.existsSync(path.join(projectRoot, platform))
+  );
+  const needsPodsInstalled = cocoaPodsPlatforms.length > 0;
   let swiftPMSetUp = false;
   if (shouldInstall) {
     nodeModulesInstalled = await installNodeDependenciesAsync(projectRoot, packageManager);
     if (needsPodsInstalled) {
-      podsInstalled = await installCocoaPodsAsync(projectRoot);
+      podsInstalled = true;
+      for (const platform of cocoaPodsPlatforms) {
+        podsInstalled = (await installCocoaPodsAsync(projectRoot, platform)) && podsInstalled;
+      }
     }
     // Prebuild runs from the project's node modules, and SwiftPM needs Xcode, so like
     // CocoaPods this is skipped outside macOS.
@@ -351,10 +360,13 @@ async function installNodeDependenciesAsync(
   }
 }
 
-async function installCocoaPodsAsync(projectRoot: string): Promise<boolean> {
+async function installCocoaPodsAsync(
+  projectRoot: string,
+  platform: AppleTargetPlatformName
+): Promise<boolean> {
   let podsInstalled = false;
   try {
-    podsInstalled = await Template.installPodsAsync(projectRoot);
+    podsInstalled = await Template.installPodsAsync(projectRoot, platform);
   } catch (error) {
     debug(`Error installing CocoaPods: %O`, error);
   }

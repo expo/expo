@@ -1,6 +1,7 @@
 import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import type { ModPlatform } from '@expo/config-plugins';
+import { isPrebuildApplePlatform } from '@expo/platforms';
 
 import {
   getOrPromptForBundleIdentifierAsync,
@@ -22,7 +23,7 @@ export async function ensureConfigAsync(
     await getOrPromptForPackageAsync(projectRoot);
   }
 
-  if (platforms.includes('ios')) {
+  if (platforms.some(isPrebuildApplePlatform)) {
     await getOrPromptForBundleIdentifierAsync(projectRoot);
   }
 

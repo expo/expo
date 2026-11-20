@@ -47,6 +47,7 @@
     "@expo/internal-scripts": "workspace:*",
     "@expo/json-file": "workspace:*",
     "@expo/package-manager": "workspace:*",
+    "@expo/platforms": "workspace:*",
     "@expo/spawn-async": "^1.8.0",
     "@octokit/types": "^13.5.0",
     "@types/debug": "^4.1.7",

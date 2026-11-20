@@ -77,9 +77,9 @@ const defaultProviders = {
   }),
   // Append a rule to supply AppDelegate data to mods on `mods.ios.appDelegate`
   appDelegate: provider<Paths.AppDelegateProjectFile>({
-    getFilePath({ modRequest: { projectRoot } }) {
+    getFilePath({ modRequest: { projectRoot, platform } }) {
       // TODO: Get application AppDelegate file from pbxproj.
-      return Paths.getAppDelegateFilePath(projectRoot);
+      return Paths.getAppDelegateFilePath(projectRoot, Paths.toApplePlatform(platform));
     },
     async read(filePath) {
       return Paths.getFileInfo(filePath);
@@ -92,6 +92,7 @@ const defaultProviders = {
   expoPlist: provider<JSONObject>({
     isIntrospective: true,
     getFilePath({ modRequest: { platformProjectRoot, projectName } }) {
+      //: [root]/myapp/{ios,tvos}/MyApp/Supporting
       const supportingDirectory = path.join(platformProjectRoot, projectName!, 'Supporting');
       return path.resolve(supportingDirectory, 'Expo.plist');
     },
@@ -112,10 +113,10 @@ const defaultProviders = {
       await writeFile(filePath, plist.build(sortObject(modResults)));
     },
   }),
-  // Append a rule to supply .xcodeproj data to mods on `mods.ios.xcodeproj`
+  // Append a rule to supply .xcodeproj data to mods on `mods.<platform>.xcodeproj`
   xcodeproj: provider<XcodeProject>({
-    getFilePath({ modRequest: { projectRoot } }) {
-      return Paths.getPBXProjectPath(projectRoot);
+    getFilePath({ modRequest: { projectRoot, platform } }) {
+      return Paths.getPBXProjectPath(projectRoot, Paths.toApplePlatform(platform));
     },
     async read(filePath) {
       const project = xcode.project(filePath);
@@ -130,9 +131,10 @@ const defaultProviders = {
   infoPlist: provider<InfoPlist, ForwardedBaseModOptions>({
     isIntrospective: true,
     async getFilePath(config) {
+      const platform = Paths.toApplePlatform(config.modRequest.platform);
       let project: xcode.XcodeProject | null = null;
       try {
-        project = getPbxproj(config.modRequest.projectRoot);
+        project = getPbxproj(config.modRequest.projectRoot, platform);
       } catch {
         // noop
       }
@@ -143,9 +145,9 @@ const defaultProviders = {
         const infoPlistBuildProperty = getInfoPlistPathFromPbxproj(project);
 
         if (infoPlistBuildProperty) {
-          //: [root]/myapp/ios/MyApp/Info.plist
+          //: [root]/myapp/{ios,tvos}/MyApp/Info.plist
           const infoPlistPath = path.join(
-            //: myapp/ios
+            //: myapp/{ios,tvos}
             config.modRequest.platformProjectRoot,
             //: MyApp/Info.plist
             infoPlistBuildProperty
@@ -163,7 +165,7 @@ const defaultProviders = {
       }
       try {
         // Fallback on glob...
-        return await Paths.getInfoPlistPath(config.modRequest.projectRoot);
+        return await Paths.getInfoPlistPath(config.modRequest.projectRoot, platform);
       } catch (error: any) {
         if (config.modRequest.introspect) {
           // fallback to an empty string in introspection mode.
@@ -176,7 +178,10 @@ const defaultProviders = {
       // Apply all of the Info.plist values to the expo.ios.infoPlist object
       // TODO: Remove this in favor of just overwriting the Info.plist with the Expo object. This will enable people to actually remove values.
       if (!config.ios) config.ios = {};
-      if (!config.ios.infoPlist) config.ios.infoPlist = {};
+      // `ios.infoPlist` doubles as the user's overrides and as the resolved contents that were
+      // written, and the ios and tvos passes share it. Restart from the user's config so a
+      // combined prebuild doesn't merge the iOS Info.plist into the tvOS one.
+      config.ios.infoPlist = { ...config.modRawConfig.ios?.infoPlist };
 
       let modResults: InfoPlist;
       try {
@@ -219,9 +224,10 @@ const defaultProviders = {
     isIntrospective: true,
 
     async getFilePath(config) {
+      const platform = Paths.toApplePlatform(config.modRequest.platform);
       try {
-        ensureApplicationTargetEntitlementsFileConfigured(config.modRequest.projectRoot);
-        return Entitlements.getEntitlementsPath(config.modRequest.projectRoot) ?? '';
+        ensureApplicationTargetEntitlementsFileConfigured(config.modRequest.projectRoot, platform);
+        return Entitlements.getEntitlementsPath(config.modRequest.projectRoot, { platform }) ?? '';
       } catch (error: any) {
         if (config.modRequest.introspect) {
           // fallback to an empty string in introspection mode.
@@ -253,7 +259,9 @@ const defaultProviders = {
       // Apply all of the .entitlements values to the expo.ios.entitlements object
       // TODO: Remove this in favor of just overwriting the .entitlements with the Expo object. This will enable people to actually remove values.
       if (!config.ios) config.ios = {};
-      if (!config.ios.entitlements) config.ios.entitlements = {};
+      // Shared by the ios and tvos passes like `ios.infoPlist` above — restart from the user's
+      // config so the iOS entitlements don't follow the mods over to tvOS.
+      config.ios.entitlements = { ...config.modRawConfig.ios?.entitlements };
 
       config.ios.entitlements = {
         ...(modResults || {}),
@@ -280,8 +288,8 @@ const defaultProviders = {
   }),
 
   podfile: provider<Paths.PodfileProjectFile>({
-    getFilePath({ modRequest: { projectRoot } }) {
-      return Paths.getPodfilePath(projectRoot);
+    getFilePath({ modRequest: { projectRoot, platform } }) {
+      return Paths.getPodfilePath(projectRoot, Paths.toApplePlatform(platform));
     },
     // @ts-expect-error
     async read(filePath) {
@@ -322,12 +330,17 @@ export function withIosBaseMods(
   config: ExportedConfig,
   {
     providers,
+    platform = 'ios',
     ...props
-  }: ForwardedBaseModOptions & { providers?: Partial<IosDefaultProviders> } = {}
+  }: ForwardedBaseModOptions & {
+    providers?: Partial<IosDefaultProviders>;
+    /** The Apple platform to register the base mods for. @default 'ios' */
+    platform?: Paths.ApplePlatform;
+  } = {}
 ): ExportedConfig {
   return withGeneratedBaseMods<IosModName>(config, {
     ...props,
-    platform: 'ios',
+    platform,
     providers: providers ?? getIosModFileProviders(),
   });
 }
