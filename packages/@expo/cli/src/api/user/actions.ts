@@ -40,6 +40,14 @@ export async function showLoginPromptAsync({
   }
 
   if (sso || browser) {
+    if (env.CI) {
+      throw new CommandError(
+        'NON_INTERACTIVE',
+        `Browser login can't be completed in CI. Use the EXPO_TOKEN environment variable to authenticate in CI (${learnMore(
+          'https://docs.expo.dev/accounts/programmatic-access/'
+        )})`
+      );
+    }
     await browserLoginAsync({ sso: !!sso });
     Log.log('Logged in');
     return;
