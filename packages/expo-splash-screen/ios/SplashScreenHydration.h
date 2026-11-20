@@ -35,8 +35,11 @@ class SplashScreenTransactionWatcher : public MountingOverrideDelegate {
     bool isHydrationCommit{};
   };
 
-  SplashScreenTransactionWatcher(std::unordered_set<Tag> prerendered, std::function<void(Stats)> onTransaction)
-      : prerendered_(std::move(prerendered)), onTransaction_(std::move(onTransaction))
+  SplashScreenTransactionWatcher(
+      std::unordered_set<Tag> prerendered,
+      std::function<void(Tag)> onAdopt,
+      std::function<void(Stats)> onTransaction)
+      : prerendered_(std::move(prerendered)), onAdopt_(std::move(onAdopt)), onTransaction_(std::move(onTransaction))
   {
   }
 
@@ -98,6 +101,9 @@ class SplashScreenTransactionWatcher : public MountingOverrideDelegate {
             const ShadowView &old = held->second.oldChildShadowView;
             auto removed = heldRemoves_.find(tag);
             if (std::strcmp(old.componentName, mutation.newChildShadowView.componentName) == 0) {
+              // The view leaves the prerendered tree now, outside the mutation stream: a `Remove`
+              // mutation here has a stale index, and that breaks delegates that mirror the stream.
+              onAdopt_(tag);
               out.push_back(ShadowViewMutation::UpdateMutation(
                   old, mutation.newChildShadowView, removed != heldRemoves_.end() ? removed->second.parentTag : -1));
               adopted_.insert(tag);
@@ -132,6 +138,7 @@ class SplashScreenTransactionWatcher : public MountingOverrideDelegate {
   }
 
   std::unordered_set<Tag> prerendered_;
+  std::function<void(Tag)> onAdopt_;
   std::function<void(Stats)> onTransaction_;
   mutable bool active_ = true;
   mutable bool sawFirst_ = false;

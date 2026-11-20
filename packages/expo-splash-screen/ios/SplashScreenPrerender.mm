@@ -691,8 +691,17 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
     builder.buildRootChildren(*reactRoot, *children);
     // Watch the transactions that follow: hold React's deletes of these nodes, adopt on matching creates.
     __weak SplashScreenPrerender *weakSelf = self;
+    RCTComponentViewRegistry *viewRegistry = presenter.mountingManager.componentViewRegistry;
     _transactionWatcher = std::make_shared<expo::SplashScreenTransactionWatcher>(
-        builder.prerenderedTags(), [weakSelf](expo::SplashScreenTransactionWatcher::Stats stats) {
+        builder.prerenderedTags(),
+        [viewRegistry](Tag tag) {
+          // Mounting thread (main). React inserts the adopted view into its own tree in the same
+          // transaction. A native container that React puts into the view before that (a
+          // react-native-screens stack) looks for its parent view controller when it moves to the
+          // window, and must not find the one of the prerendered tree.
+          [[viewRegistry findComponentViewWithTag:tag] removeFromSuperview];
+        },
+        [weakSelf](expo::SplashScreenTransactionWatcher::Stats stats) {
           dispatch_async(dispatch_get_main_queue(), ^{
             [weakSelf didObserveTransaction:stats];
           });
