@@ -545,9 +545,7 @@ export default class FileMap extends EventEmitter {
       console: this.#console,
       enableSymlinks,
       extensions,
-      healthCheckFilePrefix: this.#options.healthCheck.enabled
-        ? this.#options.healthCheck.filePrefix
-        : null,
+      healthCheckFilePrefix: this.#options.healthCheck.filePrefix,
       ignoreForCrawl,
       ignorePatternForWatch: ignorePattern,
       perfLogger: this.#startupPerfLogger,
@@ -1011,7 +1009,7 @@ export default class FileMap extends EventEmitter {
     this.#changeInterval = setInterval(emitChange, CHANGE_INTERVAL);
 
     invariant(this.#watcher != null, 'Expected #watcher to have been initialised by build()');
-    await this.#watcher.watch(onChange);
+    await this.#watcher.watch(onChange, clocks);
 
     if (this.#options.healthCheck.enabled) {
       const performHealthCheck = () => {
