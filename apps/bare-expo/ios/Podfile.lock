@@ -366,6 +366,9 @@ PODS:
     - ZXingObjC/PDF417
   - ExpoCellular (58.0.3):
     - ExpoModulesCore
+  - ExpoCellular/Tests (58.0.3):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoClipboard (58.0.4):
     - ExpoModulesCore
   - ExpoClipboard/Tests (58.0.4):
@@ -3669,6 +3672,7 @@ DEPENDENCIES:
   - ExpoCamera/Tests (from `../../../packages/expo-camera/ios`)
   - ExpoCameraBarcodeScanning (from `../../../packages/expo-camera/ios`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
+  - ExpoCellular/Tests (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
   - ExpoClipboard/Tests (from `../../../packages/expo-clipboard/ios`)
   - ExpoContacts (from `../../../packages/expo-contacts/ios`)
@@ -4415,7 +4419,7 @@ SPEC CHECKSUMS:
   ExpoCalendar: 47dcd767c17ecec01f449ee57140d8a29ae9eef7
   ExpoCamera: baa3429b8e3609ffd9f17888978e1963ca1171e5
   ExpoCameraBarcodeScanning: 64af648214637c7e6e16f3d7e8a50d9828fcefdd
-  ExpoCellular: 3b8740bc9cf771700dd2356543c4930f2e9c8b96
+  ExpoCellular: bd6031a9355a21f93ee7fd2e3aab8383bb3e5682
   ExpoClipboard: 244adf0a38b60ec7105e217042dd266a722f5a5e
   ExpoContacts: cdfaeae0fdf01f7228b52da73d85f1f7095280a1
   ExpoCrypto: b6c913cc7d72044cd145f2baececdbfad80626b2
