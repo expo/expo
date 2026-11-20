@@ -12,6 +12,9 @@ import { performance } from 'perf_hooks';
 
 import nodeCrawl from './crawlers/node';
 import watchmanCrawl from './crawlers/watchman';
+import { RootPathUtils } from './lib/RootPathUtils';
+import normalizePathSeparatorsToPosix from './lib/normalizePathSeparatorsToPosix';
+import normalizePathSeparatorsToSystem from './lib/normalizePathSeparatorsToSystem';
 import type {
   Console,
   CrawlerOptions,
@@ -20,6 +23,8 @@ import type {
   PerfLogger,
   WatcherBackend,
   WatcherBackendChangeEvent,
+  WatchmanClocks,
+  WatchmanClockSpec,
 } from './types';
 import FallbackWatcher from './watchers/FallbackWatcher';
 import NativeWatcher from './watchers/NativeWatcher';
@@ -30,6 +35,11 @@ import type { WatcherOptions as WatcherBackendOptions } from './watchers/common'
 const debug = require('debug')('Metro:Watcher');
 
 const MAX_WAIT_TIME = 240000;
+
+// For a backend that isn't live as soon as it starts, how long to wait for each
+// health check that confirms a watch, and for the watch overall.
+const LIVE_CHECK_TIMEOUT = 200;
+const MAX_LIVE_WAIT_TIME = 10000;
 
 interface InternalCrawlOptions {
   readonly previousState: CrawlerOptions['previousState'];
@@ -44,7 +54,9 @@ interface WatcherOptions {
   console: Console;
   enableSymlinks: boolean;
   extensions: readonly string[];
-  healthCheckFilePrefix: string | null;
+  // Whether checkHealth() is called periodically.
+  healthCheckEnabled: boolean;
+  healthCheckFilePrefix: string;
   ignoreForCrawl: (filePath: string) => boolean;
   ignorePatternForWatch: RegExp | null;
   previousState: CrawlerOptions['previousState'];
@@ -73,23 +85,45 @@ export type HealthCheckResult =
       pauseReason: string | undefined | null;
     };
 
+type WatcherBackendClass = typeof WatchmanWatcher | typeof NativeWatcher | typeof FallbackWatcher;
+
 export class Watcher extends EventEmitter {
   #activeWatcher: string | undefined | null;
   #backends: readonly WatcherBackend[] = [];
+  // Events received by started backends before watch() is called, to be
+  // replayed once it is.
+  #bufferedEvents: WatcherBackendChangeEvent[] = [];
+  #closed: boolean = false;
   readonly #instanceId: number;
   #nextHealthCheckId: number = 0;
+  #onChange: ((change: WatcherBackendChangeEvent) => void) | null = null;
   readonly #options: WatcherOptions;
   readonly #pendingHealthChecks: Map</* basename */ string, /* resolve */ () => void> = new Map();
+  // Whether watch() uses a Watchman backend. False if the Watchman crawl fell
+  // back to the node crawler, which returns no clock to subscribe `since`.
+  #useWatchmanWatcher: boolean;
 
   constructor(options: WatcherOptions) {
     super();
     this.#options = options;
     this.#instanceId = nextInstanceId++;
+    this.#useWatchmanWatcher = options.useWatchman;
   }
 
   async crawl(): Promise<CrawlResult> {
     this.#options.perfLogger?.point('crawl_start');
     const options = this.#options;
+
+    // Non-Watchman backends have no clock to subscribe `since`, so they must
+    // already be watching before the crawl begins, and their events buffered,
+    // for changes made while crawling not to be missed. Watchman backends are
+    // started by watch(), which subscribes `since` the crawl's clock to cover
+    // the same window. If the Watchman crawl falls back to the node crawler,
+    // there is no clock, so #crawl() starts non-Watchman backends before the
+    // node crawl instead.
+    if (!options.useWatchman) {
+      await this.#startBackendsBeforeCrawl();
+    }
 
     const result = await this.#crawl({
       previousState: options.previousState,
@@ -99,6 +133,17 @@ export class Watcher extends EventEmitter {
 
     this.#options.perfLogger?.point('crawl_end');
     return result;
+  }
+
+  async #startBackendsBeforeCrawl(): Promise<void> {
+    if (!this.#options.watch) {
+      return;
+    }
+    await this.#startBackends(null);
+    // end() may have closed us before the backends were set - don't leak them.
+    if (this.#options.abortSignal.aborted) {
+      await this.close();
+    }
   }
 
   async recrawl(
@@ -120,16 +165,23 @@ export class Watcher extends EventEmitter {
     const options = this.#options;
     const { useWatchman, subpath } = crawlOptions;
 
+    // Health check files are only written in watch mode, by checkHealth() and
+    // to confirm the watches of a backend that isn't live on start.
+    const healthCheckFilePrefix =
+      options.watch &&
+      (options.healthCheckEnabled || !this.#getBackendClass({ useWatchman: false }).isLiveOnStart())
+        ? options.healthCheckFilePrefix
+        : null;
     const ignoreForCrawl = (() => {
-      if (options.ignoreForCrawl && options.healthCheckFilePrefix) {
+      if (options.ignoreForCrawl && healthCheckFilePrefix) {
         const baseIgnore = options.ignoreForCrawl;
-        const prefix = options.healthCheckFilePrefix;
+        const prefix = healthCheckFilePrefix;
         return (filePath: string) =>
           baseIgnore(filePath) || filePath.startsWith(prefix, filePath.lastIndexOf(path.sep) + 1);
       } else if (options.ignoreForCrawl) {
         return options.ignoreForCrawl;
-      } else if (options.healthCheckFilePrefix) {
-        const prefix = options.healthCheckFilePrefix;
+      } else if (healthCheckFilePrefix) {
+        const prefix = healthCheckFilePrefix;
         return (filePath: string) =>
           filePath.startsWith(prefix, filePath.lastIndexOf(path.sep) + 1);
       } else {
@@ -178,6 +230,10 @@ export class Watcher extends EventEmitter {
           '  ' +
           firstError.toString()
       );
+      // Watch with a non-Watchman backend, started before the node crawl so
+      // that changes made during it are not missed.
+      this.#useWatchmanWatcher = false;
+      await this.#startBackendsBeforeCrawl();
       try {
         delta = await nodeCrawl(crawlerOptions);
       } catch (retryError: any) {
@@ -199,28 +255,66 @@ export class Watcher extends EventEmitter {
     return delta;
   }
 
-  async watch(onChange: (change: WatcherBackendChangeEvent) => void) {
-    const { extensions, ignorePatternForWatch, useWatchman } = this.#options;
+  async watch(
+    onChange: (change: WatcherBackendChangeEvent) => void,
+    clocks?: WatchmanClocks
+  ): Promise<void> {
+    this.#onChange = onChange;
 
+    // Replay anything a backend started before the crawl reported in the
+    // meantime - these are handled exactly like live events.
+    const bufferedEvents = this.#bufferedEvents;
+    this.#bufferedEvents = [];
+    for (const event of bufferedEvents) {
+      onChange(event);
+    }
+
+    if (this.#backends.length === 0) {
+      await this.#startBackends(clocks);
+    }
+  }
+
+  #getBackendClass({
+    useWatchman = this.#useWatchmanWatcher,
+  }: { useWatchman?: boolean } = {}): WatcherBackendClass {
     // WatchmanWatcher > NativeWatcher > FallbackWatcher
-    const WatcherImpl = (useWatchman
+    return useWatchman
       ? WatchmanWatcher
       : NativeWatcher.isSupported()
         ? NativeWatcher
-        : FallbackWatcher) as unknown as new (
-      root: string,
-      opts: WatcherBackendOptions
-    ) => WatcherBackend;
+        : FallbackWatcher;
+  }
+
+  async #startBackends(clocks: WatchmanClocks | undefined | null): Promise<void> {
+    const { extensions, ignorePatternForWatch } = this.#options;
+    const useWatchman = this.#useWatchmanWatcher;
+    const WatcherImpl = this.#getBackendClass();
 
     let watcher = 'fallback';
-    if (WatcherImpl === (WatchmanWatcher as unknown)) {
+    if (WatcherImpl === WatchmanWatcher) {
       watcher = 'watchman';
-    } else if (WatcherImpl === (NativeWatcher as unknown)) {
+    } else if (WatcherImpl === NativeWatcher) {
       watcher = 'native';
     }
     debug(`Using watcher: ${watcher}`);
     this.#options.perfLogger?.annotate({ string: { watcher } });
     this.#activeWatcher = watcher;
+
+    // Crawl clocks are keyed by path relative to the project root, but a
+    // backend only learns its Watchman watch root after `watch-project`, so
+    // hand each the whole map keyed by absolute watch root to look up.
+    let watchmanClocks: Map<string, WatchmanClockSpec> | null = null;
+    if (useWatchman && clocks != null) {
+      const pathUtils = new RootPathUtils(this.#options.rootDir);
+      watchmanClocks = new Map(
+        [...clocks].map(([root, clockSpec]) => [
+          normalizePathSeparatorsToPosix(
+            pathUtils.normalToAbsolute(normalizePathSeparatorsToSystem(root))
+          ),
+          clockSpec,
+        ])
+      );
+    }
 
     const createWatcherBackend = (root: Path): Promise<WatcherBackend> => {
       const watcherOptions: WatcherBackendOptions = {
@@ -230,13 +324,11 @@ export class Watcher extends EventEmitter {
           // module resolution.
           basenames: new Set(['package.json']),
           // Ensure we always watch any health check files
-          basenamePrefixes:
-            this.#options.healthCheckFilePrefix != null
-              ? [this.#options.healthCheckFilePrefix]
-              : [],
+          basenamePrefixes: [this.#options.healthCheckFilePrefix],
         },
         ignored: ignorePatternForWatch,
         watchmanDeferStates: this.#options.watchmanDeferStates,
+        clocks: watchmanClocks,
       };
       const watcher: WatcherBackend = new WatcherImpl(root, watcherOptions);
 
@@ -248,18 +340,16 @@ export class Watcher extends EventEmitter {
 
         const healthCheckFilePrefix = this.#options.healthCheckFilePrefix;
         watcher.onFileEvent((change) => {
-          if (healthCheckFilePrefix) {
-            const isHealthCheckFile = change.relativePath.startsWith(
-              healthCheckFilePrefix,
-              change.relativePath.lastIndexOf(path.sep) + 1
-            );
-            if (isHealthCheckFile) {
-              if (change.event === TOUCH_EVENT) {
-                debug('Observed possible health check cookie: %s in %s', change.relativePath, root);
-                this.#handleHealthCheckObservation(path.basename(change.relativePath));
-              }
-              return;
+          const isHealthCheckFile = change.relativePath.startsWith(
+            healthCheckFilePrefix,
+            change.relativePath.lastIndexOf(path.sep) + 1
+          );
+          if (isHealthCheckFile) {
+            if (change.event === TOUCH_EVENT) {
+              debug('Observed possible health check cookie: %s in %s', change.relativePath, root);
+              this.#handleHealthCheckObservation(path.basename(change.relativePath));
             }
+            return;
           }
 
           // Watchman handles recrawls internally - receiving a recrawl event
@@ -271,7 +361,12 @@ export class Watcher extends EventEmitter {
             );
             return;
           }
-          onChange(change);
+          const onChange = this.#onChange;
+          if (onChange != null) {
+            onChange(change);
+          } else {
+            this.#bufferedEvents.push(change);
+          }
         });
         await watcher.startWatching();
         clearTimeout(rejectTimeout);
@@ -280,6 +375,35 @@ export class Watcher extends EventEmitter {
     };
 
     this.#backends = await Promise.all(this.#options.roots.map(createWatcherBackend));
+    // Confirmed only once every backend has started, because starting one may
+    // restart the others' watches (NativeWatchers share one FSEvents stream).
+    if (!WatcherImpl.isLiveOnStart()) {
+      await Promise.all(this.#options.roots.map((root) => this.#waitUntilLive(root)));
+    }
+  }
+
+  /**
+   * Check the health of a root's watch until it reports a change, so that
+   * changes made from now on aren't missed. Warns if it can't be confirmed.
+   */
+  async #waitUntilLive(root: Path): Promise<void> {
+    const deadline = Date.now() + MAX_LIVE_WAIT_TIME;
+    let result: HealthCheckResult;
+    do {
+      result = await this.#checkHealth(root, LIVE_CHECK_TIMEOUT);
+    } while (
+      result.type === 'timeout' &&
+      Date.now() < deadline &&
+      !this.#closed &&
+      !this.#options.abortSignal.aborted
+    );
+    debug('Confirming the watch of %s: %s', root, result.type);
+    if (result.type !== 'success' && !this.#closed && !this.#options.abortSignal.aborted) {
+      this.#options.console.warn(
+        `metro-file-map: Could not confirm that ${root} is being watched ` +
+          `(${result.type}). Changes made during startup may be missed.`
+      );
+    }
   }
 
   #handleHealthCheckObservation(basename: string) {
@@ -291,11 +415,19 @@ export class Watcher extends EventEmitter {
   }
 
   async close() {
+    this.#closed = true;
     await Promise.all(this.#backends.map((watcher) => watcher.stopWatching()));
     this.#activeWatcher = null;
   }
 
   async checkHealth(timeout: number): Promise<HealthCheckResult> {
+    return this.#checkHealth(this.#options.rootDir, timeout);
+  }
+
+  /**
+   * Write a health check file into `dir`, and wait for a backend to report it.
+   */
+  async #checkHealth(dir: Path, timeout: number): Promise<HealthCheckResult> {
     const healthCheckId = this.#nextHealthCheckId++;
     if (healthCheckId === Number.MAX_SAFE_INTEGER) {
       this.#nextHealthCheckId = 0;
@@ -309,7 +441,7 @@ export class Watcher extends EventEmitter {
       this.#instanceId +
       '-' +
       healthCheckId;
-    const healthCheckPath = path.join(this.#options.rootDir, basename);
+    const healthCheckPath = path.join(dir, basename);
     let result: HealthCheckResult | undefined | null;
     const timeoutPromise = new Promise<void>((resolve) => setTimeout(resolve, timeout)).then(() => {
       if (!result) {
