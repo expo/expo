@@ -30,7 +30,7 @@ internal enum ControlSizeType: String, Enumerable {
   }
 }
 
-internal struct ControlSizeModifier: ViewModifier, Record {
+internal struct ControlSizeModifier: ViewModifier, UIRecord {
   @Field var size: ControlSizeType = .regular
 
   func body(content: Content) -> some View {

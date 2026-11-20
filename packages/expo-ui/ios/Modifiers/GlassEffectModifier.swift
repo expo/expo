@@ -24,7 +24,7 @@ internal struct GlassEffectOptions: Record {
   @Field var tint: Color?
 }
 
-internal struct GlassEffectModifier: ViewModifier, Record {
+internal struct GlassEffectModifier: ViewModifier, UIRecord {
   @Field var glass: GlassEffectOptions?
   @Field var shape: GlassEffectShape = .capsule
   @Field var cornerRadius: CGFloat = 0
@@ -73,7 +73,7 @@ internal struct GlassEffectModifier: ViewModifier, Record {
 #endif
 }
 
-internal struct GlassEffectIdModifier: ViewModifier, Record {
+internal struct GlassEffectIdModifier: ViewModifier, UIRecord {
   @Field var id: String?
   @Field var namespaceId: String?
 

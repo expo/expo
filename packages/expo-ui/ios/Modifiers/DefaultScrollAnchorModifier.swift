@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct DefaultScrollAnchorModifier: ViewModifier, Record {
+internal struct DefaultScrollAnchorModifier: ViewModifier, UIRecord {
   @Field var anchor: UnitPointOptions?
 
   func body(content: Content) -> some View {

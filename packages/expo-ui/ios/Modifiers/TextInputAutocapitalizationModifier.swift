@@ -10,7 +10,7 @@ internal enum TextInputAutocapitalizationType: String, Enumerable {
   case characters
 }
 
-internal struct TextInputAutocapitalizationModifier: ViewModifier, Record {
+internal struct TextInputAutocapitalizationModifier: ViewModifier, UIRecord {
   @Field var autocapitalization: TextInputAutocapitalizationType = .sentences
 
   func body(content: Content) -> some View {

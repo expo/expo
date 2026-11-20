@@ -43,7 +43,7 @@ internal enum ColorSchemeType: String, Enumerable {
   }
 }
 
-internal struct EnvironmentModifier: ViewModifier, Record {
+internal struct EnvironmentModifier: ViewModifier, UIRecord {
   @Field var key: EnvironmentKeyType = .editMode
   @Field var value: String = ""
 

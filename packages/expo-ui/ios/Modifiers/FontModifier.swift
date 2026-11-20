@@ -89,7 +89,7 @@ internal enum FontTextStyle: String, Enumerable {
   }
 }
 
-internal struct FontModifier: ViewModifier, Record {
+internal struct FontModifier: ViewModifier, UIRecord {
   @Field var family: String?
   @Field var size: CGFloat?
   @Field var weight: FontWeight?

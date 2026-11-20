@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct IDModifier: ViewModifier, Record {
+internal struct IDModifier: ViewModifier, UIRecord {
   @Field var id: String = ""
 
   func body(content: Content) -> some View {

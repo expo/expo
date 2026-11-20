@@ -36,7 +36,7 @@ internal enum ListStyleType: String, Enumerable {
   }
 }
 
-internal struct ListStyleModifier: ViewModifier, Record {
+internal struct ListStyleModifier: ViewModifier, UIRecord {
   @Field var style: ListStyleType?
 
   @ViewBuilder

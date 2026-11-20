@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct PreferredColorSchemeModifier: ViewModifier, Record {
+internal struct PreferredColorSchemeModifier: ViewModifier, UIRecord {
   @Field var colorScheme: ColorSchemeType?
 
   func body(content: Content) -> some View {

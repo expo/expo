@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct ScrollIndicatorsModifier: ViewModifier, Record {
+internal struct ScrollIndicatorsModifier: ViewModifier, UIRecord {
   @Field var visibility: ScrollIndicatorVisibilityOptions = .automatic
   @Field var axes: AxisOptions = .both
 

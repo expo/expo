@@ -8,7 +8,7 @@ internal enum ScrollTargetBehaviorType: String, Enumerable {
   case viewAligned
 }
 
-internal struct ScrollTargetBehaviorModifier: ViewModifier, Record {
+internal struct ScrollTargetBehaviorModifier: ViewModifier, UIRecord {
   @Field var behavior: ScrollTargetBehaviorType = .paging
 
   func body(content: Content) -> some View {

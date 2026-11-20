@@ -35,7 +35,7 @@ internal enum DynamicTypeSizeType: String, Enumerable {
   }
 }
 
-internal struct DynamicTypeSizeModifier: ViewModifier, Record {
+internal struct DynamicTypeSizeModifier: ViewModifier, UIRecord {
   @Field var size: DynamicTypeSizeType?
   @Field var min: DynamicTypeSizeType?
   @Field var max: DynamicTypeSizeType?

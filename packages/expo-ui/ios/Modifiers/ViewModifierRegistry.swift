@@ -11,7 +11,7 @@ internal enum ListSectionSpacingType: String, Enumerable {
   case custom
 }
 
-internal struct ListSectionSpacingModifier: ViewModifier, Record {
+internal struct ListSectionSpacingModifier: ViewModifier, UIRecord {
   @Field var spacing: ListSectionSpacingType = .default
   @Field var value: CGFloat = 0
 
@@ -35,7 +35,7 @@ internal struct ListSectionSpacingModifier: ViewModifier, Record {
   }
 }
 
-internal struct CornerRadiusModifier: ViewModifier, Record {
+internal struct CornerRadiusModifier: ViewModifier, UIRecord {
   @Field var radius: CGFloat = 0
 
   func body(content: Content) -> some View {
@@ -43,7 +43,7 @@ internal struct CornerRadiusModifier: ViewModifier, Record {
   }
 }
 
-internal struct ShadowModifier: ViewModifier, Record {
+internal struct ShadowModifier: ViewModifier, UIRecord {
   @Field var color: Color = .white
   @Field var radius: CGFloat = 0
   @Field var x: CGFloat = 0
@@ -54,7 +54,7 @@ internal struct ShadowModifier: ViewModifier, Record {
   }
 }
 
-internal struct FrameModifier: ViewModifier, Record {
+internal struct FrameModifier: ViewModifier, UIRecord {
   @Field var width: CGFloat?
   @Field var height: CGFloat?
   @Field var minWidth: CGFloat?
@@ -82,7 +82,7 @@ internal struct FrameModifier: ViewModifier, Record {
   }
 }
 
-internal struct PaddingModifier: ViewModifier, Record {
+internal struct PaddingModifier: ViewModifier, UIRecord {
   @Field var all: PaddingValue?
   @Field var horizontal: PaddingValue?
   @Field var vertical: PaddingValue?
@@ -156,7 +156,7 @@ internal struct PaddingModifier: ViewModifier, Record {
   }
 }
 
-internal struct OpacityModifier: ViewModifier, Record {
+internal struct OpacityModifier: ViewModifier, UIRecord {
   @Field var value: Double = 1.0
 
   func body(content: Content) -> some View {
@@ -164,7 +164,7 @@ internal struct OpacityModifier: ViewModifier, Record {
   }
 }
 
-internal struct ScaleEffectModifier: ViewModifier, Record {
+internal struct ScaleEffectModifier: ViewModifier, UIRecord {
   @Field var x: CGFloat = 1.0
   @Field var y: CGFloat = 1.0
 
@@ -173,7 +173,7 @@ internal struct ScaleEffectModifier: ViewModifier, Record {
   }
 }
 
-internal struct RotationEffectModifier: ViewModifier, Record {
+internal struct RotationEffectModifier: ViewModifier, UIRecord {
   @Field var angle: Double = 0
 
   func body(content: Content) -> some View {
@@ -181,7 +181,7 @@ internal struct RotationEffectModifier: ViewModifier, Record {
   }
 }
 
-internal struct OffsetModifier: ViewModifier, Record {
+internal struct OffsetModifier: ViewModifier, UIRecord {
   @Field var x: CGFloat = 0
   @Field var y: CGFloat = 0
 
@@ -190,7 +190,7 @@ internal struct OffsetModifier: ViewModifier, Record {
   }
 }
 
-internal struct ForegroundColorModifier: ViewModifier, Record {
+internal struct ForegroundColorModifier: ViewModifier, UIRecord {
   @Field var color: Color?
 
   func body(content: Content) -> some View {
@@ -202,13 +202,13 @@ internal struct ForegroundColorModifier: ViewModifier, Record {
   }
 }
 
-internal struct LuminanceToAlphaModifier: ViewModifier, Record {
+internal struct LuminanceToAlphaModifier: ViewModifier, UIRecord {
   func body(content: Content) -> some View {
     content.luminanceToAlpha()
   }
 }
 
-internal struct BoldModifier: ViewModifier, Record {
+internal struct BoldModifier: ViewModifier, UIRecord {
   func body(content: Content) -> some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
       content.bold()
@@ -216,7 +216,7 @@ internal struct BoldModifier: ViewModifier, Record {
   }
 }
 
-internal struct ItalicModifier: ViewModifier, Record {
+internal struct ItalicModifier: ViewModifier, UIRecord {
   func body(content: Content) -> some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
       content.italic()
@@ -224,13 +224,13 @@ internal struct ItalicModifier: ViewModifier, Record {
   }
 }
 
-internal struct MonospacedDigitModifier: ViewModifier, Record {
+internal struct MonospacedDigitModifier: ViewModifier, UIRecord {
   func body(content: Content) -> some View {
     content.monospacedDigit()
   }
 }
 
-internal struct TintModifier: ViewModifier, Record {
+internal struct TintModifier: ViewModifier, UIRecord {
   @Field var tint: ShapeStyleValue?
 
   func body(content: Content) -> some View {
@@ -242,7 +242,7 @@ internal struct TintModifier: ViewModifier, Record {
   }
 }
 
-internal struct HiddenModifier: ViewModifier, Record {
+internal struct HiddenModifier: ViewModifier, UIRecord {
   @Field var hidden: Bool = true
 
   func body(content: Content) -> some View {
@@ -254,13 +254,13 @@ internal struct HiddenModifier: ViewModifier, Record {
   }
 }
 
-internal struct LabelsHiddenModifier: ViewModifier, Record {
+internal struct LabelsHiddenModifier: ViewModifier, UIRecord {
   func body(content: Content) -> some View {
     content.labelsHidden()
   }
 }
 
-internal struct DisabledModifier: ViewModifier, Record {
+internal struct DisabledModifier: ViewModifier, UIRecord {
   @Field var disabled: Bool = true
 
   func body(content: Content) -> some View {
@@ -274,7 +274,7 @@ internal enum RedactionReason: String, Enumerable {
   case invalidated
 }
 
-internal struct RedactedModifier: ViewModifier, Record {
+internal struct RedactedModifier: ViewModifier, UIRecord {
   @Field var reasons: [RedactionReason] = [.placeholder]
 
   func body(content: Content) -> some View {
@@ -297,13 +297,13 @@ internal struct RedactedModifier: ViewModifier, Record {
   }
 }
 
-internal struct UnredactedModifier: ViewModifier, Record {
+internal struct UnredactedModifier: ViewModifier, UIRecord {
   func body(content: Content) -> some View {
     content.unredacted()
   }
 }
 
-internal struct PrivacySensitiveModifier: ViewModifier, Record {
+internal struct PrivacySensitiveModifier: ViewModifier, UIRecord {
   @Field var sensitive: Bool = true
 
   func body(content: Content) -> some View {
@@ -311,7 +311,7 @@ internal struct PrivacySensitiveModifier: ViewModifier, Record {
   }
 }
 
-internal struct InvalidatableContentModifier: ViewModifier, Record {
+internal struct InvalidatableContentModifier: ViewModifier, UIRecord {
   @Field var invalidatable: Bool = true
 
   func body(content: Content) -> some View {
@@ -323,7 +323,7 @@ internal struct InvalidatableContentModifier: ViewModifier, Record {
   }
 }
 
-internal struct ZIndexModifier: ViewModifier, Record {
+internal struct ZIndexModifier: ViewModifier, UIRecord {
   @Field var index: Double = 0
 
   func body(content: Content) -> some View {
@@ -331,7 +331,7 @@ internal struct ZIndexModifier: ViewModifier, Record {
   }
 }
 
-internal struct BlurModifier: ViewModifier, Record {
+internal struct BlurModifier: ViewModifier, UIRecord {
   @Field var radius: CGFloat = 0
 
   func body(content: Content) -> some View {
@@ -339,7 +339,7 @@ internal struct BlurModifier: ViewModifier, Record {
   }
 }
 
-internal struct BrightnessModifier: ViewModifier, Record {
+internal struct BrightnessModifier: ViewModifier, UIRecord {
   @Field var amount: Double = 0
 
   func body(content: Content) -> some View {
@@ -347,7 +347,7 @@ internal struct BrightnessModifier: ViewModifier, Record {
   }
 }
 
-internal struct ContrastModifier: ViewModifier, Record {
+internal struct ContrastModifier: ViewModifier, UIRecord {
   @Field var amount: Double = 1
 
   func body(content: Content) -> some View {
@@ -355,7 +355,7 @@ internal struct ContrastModifier: ViewModifier, Record {
   }
 }
 
-internal struct SaturationModifier: ViewModifier, Record {
+internal struct SaturationModifier: ViewModifier, UIRecord {
   @Field var amount: Double = 1
 
   func body(content: Content) -> some View {
@@ -363,7 +363,7 @@ internal struct SaturationModifier: ViewModifier, Record {
   }
 }
 
-internal struct ColorInvertModifier: ViewModifier, Record {
+internal struct ColorInvertModifier: ViewModifier, UIRecord {
   @Field var inverted: Bool = true
 
   func body(content: Content) -> some View {
@@ -375,7 +375,7 @@ internal struct ColorInvertModifier: ViewModifier, Record {
   }
 }
 
-internal struct GrayscaleModifier: ViewModifier, Record {
+internal struct GrayscaleModifier: ViewModifier, UIRecord {
   @Field var amount: Double = 0
 
   func body(content: Content) -> some View {
@@ -383,7 +383,7 @@ internal struct GrayscaleModifier: ViewModifier, Record {
   }
 }
 
-internal struct BorderModifier: ViewModifier, Record {
+internal struct BorderModifier: ViewModifier, UIRecord {
   // Declared as `shapeStyle` because `content` is taken by the parameter of `body(content:)`.
   @Field("content") var shapeStyle: ShapeStyleValue?
   @Field var width: CGFloat = 1.0
@@ -397,7 +397,7 @@ internal struct BorderModifier: ViewModifier, Record {
   }
 }
 
-internal struct ClipShapeModifier: ViewModifier, Record {
+internal struct ClipShapeModifier: ViewModifier, UIRecord {
   @Field var shape: ShapeType = .rectangle
   @Field var cornerRadius: CGFloat = 8
   @Field var roundedCornerStyle: RoundedCornerStyle?
@@ -422,7 +422,7 @@ internal struct ClipShapeModifier: ViewModifier, Record {
   }
 }
 
-internal struct StrokeBorderModifier: ViewModifier, Record {
+internal struct StrokeBorderModifier: ViewModifier, UIRecord {
   // Declared as `shapeStyle` because `content` is taken by the parameter of `body(content:)`.
   @Field("content") var shapeStyle: ShapeStyleValue?
   @Field var style: StrokeStyleConfig?
@@ -465,7 +465,7 @@ internal struct StrokeBorderModifier: ViewModifier, Record {
   }
 }
 
-internal struct OnTapGestureModifier: ViewModifier, Record {
+internal struct OnTapGestureModifier: ViewModifier, UIRecord {
   var eventDispatcher: EventDispatcher?
 
   init() {}
@@ -484,7 +484,7 @@ internal struct OnTapGestureModifier: ViewModifier, Record {
   }
 }
 
-internal struct OnLongPressGestureModifier: ViewModifier, Record {
+internal struct OnLongPressGestureModifier: ViewModifier, UIRecord {
   @Field var minimumDuration: Double = 0.5
   var eventDispatcher: EventDispatcher?
 
@@ -502,7 +502,7 @@ internal struct OnLongPressGestureModifier: ViewModifier, Record {
   }
 }
 
-internal struct OnAppearModifier: ViewModifier, Record {
+internal struct OnAppearModifier: ViewModifier, UIRecord {
   var eventDispatcher: EventDispatcher?
 
   init() {}
@@ -519,7 +519,7 @@ internal struct OnAppearModifier: ViewModifier, Record {
   }
 }
 
-internal struct OnDisappearModifier: ViewModifier, Record {
+internal struct OnDisappearModifier: ViewModifier, UIRecord {
   var eventDispatcher: EventDispatcher?
 
   init() {}
@@ -536,7 +536,7 @@ internal struct OnDisappearModifier: ViewModifier, Record {
   }
 }
 
-internal struct HueRotationModifier: ViewModifier, Record {
+internal struct HueRotationModifier: ViewModifier, UIRecord {
   @Field var angle: Double = 0
 
   func body(content: Content) -> some View {
@@ -551,7 +551,7 @@ internal enum ScrollDismissesKeyboardMode: String, Enumerable {
   case immediately
 }
 
-internal struct ScrollDismissesKeyboardModifier: ViewModifier, Record {
+internal struct ScrollDismissesKeyboardModifier: ViewModifier, UIRecord {
   @Field var mode: ScrollDismissesKeyboardMode = .automatic
 
   func body(content: Content) -> some View {
@@ -578,7 +578,7 @@ internal enum MenuActionDismissBehaviorMode: String, Enumerable {
   case enabled
 }
 
-internal struct MenuActionDismissBehaviorModifier: ViewModifier, Record {
+internal struct MenuActionDismissBehaviorModifier: ViewModifier, UIRecord {
   @Field var behavior: MenuActionDismissBehaviorMode = .automatic
 
   func body(content: Content) -> some View {
@@ -601,7 +601,7 @@ internal struct MenuActionDismissBehaviorModifier: ViewModifier, Record {
   }
 }
 
-internal struct AccessibilityLabelModifier: ViewModifier, Record {
+internal struct AccessibilityLabelModifier: ViewModifier, UIRecord {
   @Field var label: String?
 
   func body(content: Content) -> some View {
@@ -613,7 +613,7 @@ internal struct AccessibilityLabelModifier: ViewModifier, Record {
   }
 }
 
-internal struct AccessibilityHintModifier: ViewModifier, Record {
+internal struct AccessibilityHintModifier: ViewModifier, UIRecord {
   @Field var hint: String?
 
   func body(content: Content) -> some View {
@@ -625,7 +625,7 @@ internal struct AccessibilityHintModifier: ViewModifier, Record {
   }
 }
 
-internal struct AccessibilityValueModifier: ViewModifier, Record {
+internal struct AccessibilityValueModifier: ViewModifier, UIRecord {
   @Field var value: String?
 
   func body(content: Content) -> some View {
@@ -637,7 +637,7 @@ internal struct AccessibilityValueModifier: ViewModifier, Record {
   }
 }
 
-internal struct AccessibilityInputLabelsModifier: ViewModifier, Record {
+internal struct AccessibilityInputLabelsModifier: ViewModifier, UIRecord {
   @Field var inputLabels: [String]?
 
   func body(content: Content) -> some View {
@@ -649,7 +649,7 @@ internal struct AccessibilityInputLabelsModifier: ViewModifier, Record {
   }
 }
 
-internal struct AccessibilityIdentifierModifier: ViewModifier, Record {
+internal struct AccessibilityIdentifierModifier: ViewModifier, UIRecord {
   @Field var identifier: String?
 
   func body(content: Content) -> some View {
@@ -661,7 +661,7 @@ internal struct AccessibilityIdentifierModifier: ViewModifier, Record {
   }
 }
 
-internal struct AccessibilityHiddenModifier: ViewModifier, Record {
+internal struct AccessibilityHiddenModifier: ViewModifier, UIRecord {
   @Field var hidden: Bool = true
 
   func body(content: Content) -> some View {
@@ -686,7 +686,7 @@ internal enum AccessibilityChildBehaviorType: String, Enumerable {
   }
 }
 
-internal struct AccessibilityElementModifier: ViewModifier, Record {
+internal struct AccessibilityElementModifier: ViewModifier, UIRecord {
   @Field var children: AccessibilityChildBehaviorType = .ignore
 
   func body(content: Content) -> some View {
@@ -769,7 +769,7 @@ internal func combineAccessibilityTraits(_ traits: [AccessibilityTraitType]) -> 
   return combined
 }
 
-internal struct AccessibilityAddTraitsModifier: ViewModifier, Record {
+internal struct AccessibilityAddTraitsModifier: ViewModifier, UIRecord {
   @Field var traits: [AccessibilityTraitType] = []
 
   func body(content: Content) -> some View {
@@ -777,7 +777,7 @@ internal struct AccessibilityAddTraitsModifier: ViewModifier, Record {
   }
 }
 
-internal struct AccessibilityRemoveTraitsModifier: ViewModifier, Record {
+internal struct AccessibilityRemoveTraitsModifier: ViewModifier, UIRecord {
   @Field var traits: [AccessibilityTraitType] = []
 
   func body(content: Content) -> some View {
@@ -785,7 +785,7 @@ internal struct AccessibilityRemoveTraitsModifier: ViewModifier, Record {
   }
 }
 
-internal struct LayoutPriorityModifier: ViewModifier, Record {
+internal struct LayoutPriorityModifier: ViewModifier, UIRecord {
   @Field var priority: Double = 0
 
   func body(content: Content) -> some View {
@@ -793,7 +793,7 @@ internal struct LayoutPriorityModifier: ViewModifier, Record {
   }
 }
 
-internal struct AspectRatioModifier: ViewModifier, Record {
+internal struct AspectRatioModifier: ViewModifier, UIRecord {
   @Field var ratio: Double?
   @Field var contentMode: String = "fit"
 
@@ -807,7 +807,7 @@ internal struct AspectRatioModifier: ViewModifier, Record {
   }
 }
 
-internal struct ClippedModifier: ViewModifier, Record {
+internal struct ClippedModifier: ViewModifier, UIRecord {
   @Field var clipped: Bool = true
 
   func body(content: Content) -> some View {
@@ -819,7 +819,7 @@ internal struct ClippedModifier: ViewModifier, Record {
   }
 }
 
-internal struct MaskModifier: ViewModifier, Record {
+internal struct MaskModifier: ViewModifier, UIRecord {
   @Field var shape: ShapeType = .rectangle
   @Field var cornerRadius: CGFloat = 8
   @Field var roundedCornerStyle: RoundedCornerStyle?
@@ -844,7 +844,7 @@ internal struct MaskModifier: ViewModifier, Record {
   }
 }
 
-internal struct OverlayModifier: ViewModifier, Record {
+internal struct OverlayModifier: ViewModifier, UIRecord {
   @Field var color: Color?
   @Field var alignment: AlignmentOptions = .center
   func body(content: Content) -> some View {
@@ -856,7 +856,7 @@ internal struct OverlayModifier: ViewModifier, Record {
   }
 }
 
-internal struct BackgroundOverlayModifier: ViewModifier, Record {
+internal struct BackgroundOverlayModifier: ViewModifier, UIRecord {
   @Field var color: Color?
   @Field var alignment: AlignmentOptions = .center
 
@@ -869,7 +869,7 @@ internal struct BackgroundOverlayModifier: ViewModifier, Record {
   }
 }
 
-internal struct FixedSizeModifier: ViewModifier, Record {
+internal struct FixedSizeModifier: ViewModifier, UIRecord {
   @Field var horizontal: Bool?
   @Field var vertical: Bool?
 
@@ -886,7 +886,7 @@ internal struct FixedSizeModifier: ViewModifier, Record {
   }
 }
 
-internal struct IgnoreSafeAreaModifier: ViewModifier, Record {
+internal struct IgnoreSafeAreaModifier: ViewModifier, UIRecord {
   @Field var regions: SafeAreaRegionOptions?
   @Field var edges: EdgeOptions?
 
@@ -940,7 +940,7 @@ internal struct StableViewModifier: ViewModifier {
   }
 }
 
-internal struct AnimationModifier: ViewModifier, Record {
+internal struct AnimationModifier: ViewModifier, UIRecord {
   @Field var animation: AnimationConfig
   @Field var animatedValue: Either<Double, Bool>?
 
@@ -962,7 +962,7 @@ internal enum ScrollContentBackgroundTypes: String, Enumerable {
   case visible
 }
 
-internal struct ScrollContentBackground: ViewModifier, Record {
+internal struct ScrollContentBackground: ViewModifier, UIRecord {
   @Field var visible: ScrollContentBackgroundTypes = .visible
 
   func body(content: Content) -> some View {
@@ -985,7 +985,7 @@ internal struct ScrollContentBackground: ViewModifier, Record {
   }
 }
 
-internal struct ListRowBackground: ViewModifier, Record {
+internal struct ListRowBackground: ViewModifier, UIRecord {
   @Field var color: Color?
 
   func body(content: Content) -> some View {
@@ -1014,7 +1014,7 @@ internal enum VerticalEdgeOptions: String, Enumerable {
   }
 }
 
-internal struct ListRowSeparator: ViewModifier, Record {
+internal struct ListRowSeparator: ViewModifier, UIRecord {
   @Field var visibility: VisibilityOptions = .automatic
   @Field var edges: VerticalEdgeOptions?
 
@@ -1031,7 +1031,7 @@ internal struct ListRowSeparator: ViewModifier, Record {
   }
 }
 
-internal struct ListRowSeparatorTint: ViewModifier, Record {
+internal struct ListRowSeparatorTint: ViewModifier, UIRecord {
   @Field var color: Color?
   @Field var edges: VerticalEdgeOptions?
 
@@ -1048,7 +1048,7 @@ internal struct ListRowSeparatorTint: ViewModifier, Record {
   }
 }
 
-internal struct ListRowSpacing: ViewModifier, Record {
+internal struct ListRowSpacing: ViewModifier, UIRecord {
   @Field var spacing: Double?
 
   func body(content: Content) -> some View {
@@ -1095,7 +1095,7 @@ internal enum AlignmentGuideOptions: String, Enumerable {
   }
 }
 
-internal struct AlignmentGuideModifier: ViewModifier, Record {
+internal struct AlignmentGuideModifier: ViewModifier, UIRecord {
   @Field var guide: AlignmentGuideOptions = .leading
   @Field var value: Double = 0
 
@@ -1114,7 +1114,7 @@ internal enum TextTruncationModeTypes: String, Enumerable {
   case tail
 }
 
-internal struct TextTruncationMode: ViewModifier, Record {
+internal struct TextTruncationMode: ViewModifier, UIRecord {
   @Field var mode: TextTruncationModeTypes = .tail
 
   func body(content: Content) -> some View {
@@ -1129,7 +1129,7 @@ internal struct TextTruncationMode: ViewModifier, Record {
   }
 }
 
-internal struct TextKerning: ViewModifier, Record {
+internal struct TextKerning: ViewModifier, UIRecord {
   @Field var value: CGFloat = 0
 
   func body(content: Content) -> some View {
@@ -1141,7 +1141,7 @@ internal struct TextKerning: ViewModifier, Record {
   }
 }
 
-internal struct TextAllowsTightening: ViewModifier, Record {
+internal struct TextAllowsTightening: ViewModifier, UIRecord {
   @Field var value: Bool = true
 
   func body(content: Content) -> some View {
@@ -1153,7 +1153,7 @@ internal struct TextAllowsTightening: ViewModifier, Record {
   }
 }
 
-internal struct MinimumScaleFactorModifier: ViewModifier, Record {
+internal struct MinimumScaleFactorModifier: ViewModifier, UIRecord {
   @Field var factor: CGFloat = 1.0
 
   func body(content: Content) -> some View {
@@ -1166,7 +1166,7 @@ internal enum TextCaseTypes: String, Enumerable {
   case uppercase
 }
 
-internal struct TextCase: ViewModifier, Record {
+internal struct TextCase: ViewModifier, UIRecord {
   @Field var value: TextCaseTypes = .lowercase
 
   func body(content: Content) -> some View {
@@ -1199,7 +1199,7 @@ internal extension TextLinePattern {
   }
 }
 
-internal struct TextUnderLine: ViewModifier, Record {
+internal struct TextUnderLine: ViewModifier, UIRecord {
   @Field var isActive: Bool = false
   @Field var pattern: TextLinePattern = .solid
   @Field var color: Color?
@@ -1224,7 +1224,7 @@ internal struct TextUnderLine: ViewModifier, Record {
   }
 }
 
-internal struct TextStrikeThrough: ViewModifier, Record {
+internal struct TextStrikeThrough: ViewModifier, UIRecord {
   @Field var isActive: Bool = false
   @Field var pattern: TextLinePattern = .solid
   @Field var color: Color?
@@ -1255,7 +1255,7 @@ internal enum TextAligment: String, Enumerable {
   case trailing
 }
 
-internal struct MultilineTextAlignment: ViewModifier, Record {
+internal struct MultilineTextAlignment: ViewModifier, UIRecord {
   @Field var alignment: TextAligment = .leading
 
   func body(content: Content) -> some View {
@@ -1270,7 +1270,7 @@ internal struct MultilineTextAlignment: ViewModifier, Record {
   }
 }
 
-internal struct TextSelection: ViewModifier, Record {
+internal struct TextSelection: ViewModifier, UIRecord {
   @Field var value: Bool = true
 
   func body(content: Content) -> some View {
@@ -1287,7 +1287,7 @@ internal struct TextSelection: ViewModifier, Record {
   }
 }
 
-internal struct LineSpacing: ViewModifier, Record {
+internal struct LineSpacing: ViewModifier, UIRecord {
   @Field var value: CGFloat?
 
   func body(content: Content) -> some View {
@@ -1299,7 +1299,7 @@ internal struct LineSpacing: ViewModifier, Record {
   }
 }
 
-internal struct LineHeight: ViewModifier, Record {
+internal struct LineHeight: ViewModifier, UIRecord {
   @Field var value: CGFloat?
 
   func body(content: Content) -> some View {
@@ -1320,7 +1320,7 @@ internal enum Prominence: String, Enumerable {
   case increased
 }
 
-internal struct HeaderProminence: ViewModifier, Record {
+internal struct HeaderProminence: ViewModifier, UIRecord {
   @Field var prominence: Prominence?
 
   func body(content: Content) -> some View {
@@ -1337,7 +1337,7 @@ internal struct HeaderProminence: ViewModifier, Record {
   }
 }
 
-internal struct ListRowInsets: ViewModifier, Record {
+internal struct ListRowInsets: ViewModifier, UIRecord {
   @Field var top: CGFloat?
   @Field var leading: CGFloat?
   @Field var bottom: CGFloat?
@@ -1363,7 +1363,7 @@ internal enum BadgeProminenceType: String, Enumerable {
   case decreased
 }
 
-internal struct BadgeProminence: ViewModifier, Record {
+internal struct BadgeProminence: ViewModifier, UIRecord {
   @Field var badgeType: BadgeProminenceType = .standard
 
   func body(content: Content) -> some View {
@@ -1386,7 +1386,7 @@ internal struct BadgeProminence: ViewModifier, Record {
   }
 }
 
-internal struct Badge: ViewModifier, Record {
+internal struct Badge: ViewModifier, UIRecord {
   @Field var value: String?
 
   func body(content: Content) -> some View {
@@ -1402,7 +1402,7 @@ internal struct Badge: ViewModifier, Record {
   }
 }
 
-internal struct ListSectionMargins: ViewModifier, Record {
+internal struct ListSectionMargins: ViewModifier, UIRecord {
   @Field var length: CGFloat?
   @Field var edges: EdgeOptions?
 
@@ -1423,7 +1423,7 @@ internal struct ListSectionMargins: ViewModifier, Record {
   }
 }
 
-internal struct GridCellUnsizedAxes: ViewModifier, Record {
+internal struct GridCellUnsizedAxes: ViewModifier, UIRecord {
   @Field var axes: AxisOptions?
 
   func body(content: Content) -> some View {
@@ -1439,7 +1439,7 @@ internal struct GridCellUnsizedAxes: ViewModifier, Record {
   }
 }
 
-internal struct GridCellColumns: ViewModifier, Record {
+internal struct GridCellColumns: ViewModifier, UIRecord {
   @Field var count: Int?
 
   func body(content: Content) -> some View {
@@ -1469,7 +1469,7 @@ internal enum GridColumnAlignmentType: String, Enumerable {
   }
 }
 
-internal struct GridColumnAlignment: ViewModifier, Record {
+internal struct GridColumnAlignment: ViewModifier, UIRecord {
   @Field var alignment: GridColumnAlignmentType?
 
   func body(content: Content) -> some View {
@@ -1513,7 +1513,7 @@ internal enum UnitPointOptions: String, Enumerable {
   }
 }
 
-internal struct GridCellAnchor: ViewModifier, Record {
+internal struct GridCellAnchor: ViewModifier, UIRecord {
   @Field var points: UnitPoint?
   @Field var type: String?
   @Field var anchor: UnitPointOptions?
@@ -1717,7 +1717,7 @@ internal enum MatchedGeometryPropertiesOptions: String, Enumerable {
   }
 }
 
-internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
+internal struct MatchedGeometryEffectModifier: ViewModifier, UIRecord {
   @Field var id: String?
   @Field var namespaceId: String?
   @Field var properties: MatchedGeometryPropertiesOptions = .frame
@@ -1739,7 +1739,7 @@ internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
   }
 }
 
-internal struct GeometryGroupModifier: ViewModifier, Record {
+internal struct GeometryGroupModifier: ViewModifier, UIRecord {
   func body(content: Content) -> some View {
     if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
       content.geometryGroup()
@@ -1759,7 +1759,7 @@ internal enum ButtonStyle: String, Enumerable {
   case plain
 }
 
-internal struct ButtonStyleModifier: ViewModifier, Record {
+internal struct ButtonStyleModifier: ViewModifier, UIRecord {
   @Field var style: ButtonStyle = .automatic
 
   func body(content: Content) -> some View {
@@ -1808,7 +1808,7 @@ internal enum TextFieldStyle: String, Enumerable {
   case roundedBorder
 }
 
-internal struct TextFieldStyleModifier: ViewModifier, Record {
+internal struct TextFieldStyleModifier: ViewModifier, UIRecord {
   @Field var style: TextFieldStyle = .automatic
 
   func body(content: Content) -> some View {
@@ -1827,7 +1827,7 @@ internal struct TextFieldStyleModifier: ViewModifier, Record {
   }
 }
 
-internal struct NavigationTitleModifier: ViewModifier, Record {
+internal struct NavigationTitleModifier: ViewModifier, UIRecord {
   @Field var title: String?
 
   @ViewBuilder
@@ -1859,7 +1859,7 @@ internal enum NavigationBarTitleDisplayMode: String, Enumerable {
 #endif
 }
 
-internal struct NavigationBarTitleDisplayModeModifier: ViewModifier, Record {
+internal struct NavigationBarTitleDisplayModeModifier: ViewModifier, UIRecord {
   @Field var displayMode: NavigationBarTitleDisplayMode = .automatic
 
   func body(content: Content) -> some View {
@@ -1900,7 +1900,7 @@ internal enum ToolbarTitleDisplayModeType: String, Enumerable {
   }
 }
 
-internal struct ToolbarTitleDisplayModeModifier: ViewModifier, Record {
+internal struct ToolbarTitleDisplayModeModifier: ViewModifier, UIRecord {
   @Field var mode: ToolbarTitleDisplayModeType = .automatic
 
   @ViewBuilder

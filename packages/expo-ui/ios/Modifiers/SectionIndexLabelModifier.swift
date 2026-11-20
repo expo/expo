@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct SectionIndexLabelModifier: ViewModifier, Record {
+internal struct SectionIndexLabelModifier: ViewModifier, UIRecord {
   @Field var label: String?
 
   @ViewBuilder

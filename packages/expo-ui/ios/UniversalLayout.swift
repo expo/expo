@@ -53,7 +53,7 @@ private func finite(_ value: CGFloat?) -> CGFloat? {
  Fixed sizes are applied separately, as a SwiftUI `frame`.
  A view with no percentage keeps its own layout.
  */
-internal struct UniversalLayoutModifier: ViewModifier, Record {
+internal struct UniversalLayoutModifier: ViewModifier, UIRecord {
   @Field var widthPoints: CGFloat?
   @Field var widthFraction: CGFloat?
   @Field var heightPoints: CGFloat?

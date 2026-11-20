@@ -184,7 +184,7 @@ internal enum TextContentTypeValue: String, Enumerable {
   }
 }
 
-internal struct TextContentTypeModifier: ViewModifier, Record {
+internal struct TextContentTypeModifier: ViewModifier, UIRecord {
   @Field var textContentType: TextContentTypeValue?
 
   func body(content: Content) -> some View {

@@ -25,7 +25,7 @@ internal enum PageIndexBackgroundDisplayMode: String, Enumerable {
 #endif
 }
 
-internal struct IndexViewStyleModifier: ViewModifier, Record {
+internal struct IndexViewStyleModifier: ViewModifier, UIRecord {
   @Field var type: IndexViewStyleType?
   @Field var backgroundDisplayMode: PageIndexBackgroundDisplayMode?
 

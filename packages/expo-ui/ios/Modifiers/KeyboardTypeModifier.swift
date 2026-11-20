@@ -49,7 +49,7 @@ func getKeyboardType(_ keyboardType: KeyboardType) -> UIKeyboardType {
 }
 #endif
 
-internal struct KeyboardTypeModifier: ViewModifier, Record {
+internal struct KeyboardTypeModifier: ViewModifier, UIRecord {
   @Field var keyboardType: KeyboardType?
 
   func body(content: Content) -> some View {
@@ -65,7 +65,7 @@ internal struct KeyboardTypeModifier: ViewModifier, Record {
   }
 }
 
-internal struct AutocorrectionDisabledModifier: ViewModifier, Record {
+internal struct AutocorrectionDisabledModifier: ViewModifier, UIRecord {
   @Field var disabled: Bool = true
 
   func body(content: Content) -> some View {

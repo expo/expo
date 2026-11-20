@@ -35,7 +35,7 @@ internal enum SearchFieldPlacementType: String, Enumerable {
   }
 }
 
-internal struct SearchableModifier: ViewModifier, Record {
+internal struct SearchableModifier: ViewModifier, UIRecord {
   @Field var text: ObservableState?
   @Field var placement: SearchFieldPlacementType = .automatic
   @Field var prompt: String?
