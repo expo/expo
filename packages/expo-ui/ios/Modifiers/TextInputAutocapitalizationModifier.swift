@@ -10,25 +10,23 @@ internal enum TextInputAutocapitalizationType: String, Enumerable {
   case characters
 }
 
-internal struct TextInputAutocapitalizationModifier: ViewModifier, UIRecord {
-  @Field var autocapitalization: TextInputAutocapitalizationType = .sentences
-
-  func body(content: Content) -> some View {
+@MainActor @AnyViewBuilder
+internal func textInputAutocapitalizationModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let autocapitalization: TextInputAutocapitalizationType = try p.value("autocapitalization", .sentences)
 #if os(macOS)
-    // Autocapitalization is a software-keyboard behaviour and `textInputAutocapitalization`
-    // is unavailable on macOS, so the modifier is a no-op there.
-    content
+  // Autocapitalization is a software-keyboard behaviour and `textInputAutocapitalization`
+  // is unavailable on macOS, so the modifier is a no-op there.
+  content
 #else
-    switch autocapitalization {
-    case .never:
-      content.textInputAutocapitalization(.never)
-    case .words:
-      content.textInputAutocapitalization(.words)
-    case .sentences:
-      content.textInputAutocapitalization(.sentences)
-    case .characters:
-      content.textInputAutocapitalization(.characters)
-    }
-#endif
+  switch autocapitalization {
+  case .never:
+    content.textInputAutocapitalization(.never)
+  case .words:
+    content.textInputAutocapitalization(.words)
+  case .sentences:
+    content.textInputAutocapitalization(.sentences)
+  case .characters:
+    content.textInputAutocapitalization(.characters)
   }
+#endif
 }

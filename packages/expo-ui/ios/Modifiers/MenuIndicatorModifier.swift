@@ -3,16 +3,13 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct MenuIndicatorModifier: ViewModifier, UIRecord {
-  @Field var visibility: VisibilityOptions = .automatic
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    // `menuIndicator(_:)` requires iOS 15.0 / tvOS 17.0.
-    if #available(iOS 15.0, tvOS 17.0, *) {
-      content.menuIndicator(visibility.toVisibility())
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func menuIndicatorModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let visibility: VisibilityOptions = try p.value("visibility", .automatic)
+  // `menuIndicator(_:)` requires iOS 15.0 / tvOS 17.0.
+  if #available(iOS 15.0, tvOS 17.0, *) {
+    content.menuIndicator(visibility.toVisibility())
+  } else {
+    content
   }
 }

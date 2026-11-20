@@ -8,21 +8,18 @@ internal enum MenuStyleType: String, Enumerable {
   case button
 }
 
-internal struct MenuStyleModifier: ViewModifier, UIRecord {
-  @Field var style: MenuStyleType = .automatic
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    // `MenuStyle` requires iOS 16.0 / tvOS 17.0; below that, menus keep the platform default.
-    if #available(iOS 16.0, tvOS 17.0, *) {
-      switch style {
-      case .button:
-        content.menuStyle(.button)
-      case .automatic:
-        content.menuStyle(.automatic)
-      }
-    } else {
-      content
+@MainActor @AnyViewBuilder
+internal func menuStyleModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let style: MenuStyleType = try p.value("style", .automatic)
+  // `MenuStyle` requires iOS 16.0 / tvOS 17.0; below that, menus keep the platform default.
+  if #available(iOS 16.0, tvOS 17.0, *) {
+    switch style {
+    case .button:
+      content.menuStyle(.button)
+    case .automatic:
+      content.menuStyle(.automatic)
     }
+  } else {
+    content
   }
 }

@@ -53,25 +53,22 @@ private func finite(_ value: CGFloat?) -> CGFloat? {
  Fixed sizes are applied separately, as a SwiftUI `frame`.
  A view with no percentage keeps its own layout.
  */
-internal struct UniversalLayoutModifier: ViewModifier, UIRecord {
-  @Field var widthPoints: CGFloat?
-  @Field var widthFraction: CGFloat?
-  @Field var heightPoints: CGFloat?
-  @Field var heightFraction: CGFloat?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    let dimensions = UniversalLayoutDimensions(
-      widthPoints: finite(widthPoints),
-      widthFraction: finite(widthFraction),
-      heightPoints: finite(heightPoints),
-      heightFraction: finite(heightFraction)
-    )
-    if dimensions.hasFraction {
-      ResolvedUniversalLayout(dimensions: dimensions, content: content)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func universalLayoutModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let widthPoints: CGFloat? = try p.value("widthPoints", nil)
+  let widthFraction: CGFloat? = try p.value("widthFraction", nil)
+  let heightPoints: CGFloat? = try p.value("heightPoints", nil)
+  let heightFraction: CGFloat? = try p.value("heightFraction", nil)
+  let dimensions = UniversalLayoutDimensions(
+    widthPoints: finite(widthPoints),
+    widthFraction: finite(widthFraction),
+    heightPoints: finite(heightPoints),
+    heightFraction: finite(heightFraction)
+  )
+  if dimensions.hasFraction {
+    ResolvedUniversalLayout(dimensions: dimensions, content: content)
+  } else {
+    content
   }
 }
 

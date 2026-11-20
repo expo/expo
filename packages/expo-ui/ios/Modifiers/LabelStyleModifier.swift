@@ -24,15 +24,12 @@ internal enum LabelStyleType: String, Enumerable {
   }
 }
 
-internal struct LabelStyleModifier: ViewModifier, UIRecord {
-  @Field var style: LabelStyleType?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    if let style {
-      style.apply(to: content)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func labelStyleModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let style: LabelStyleType? = try p.value("style", nil)
+  if let style {
+    style.apply(to: content)
+  } else {
+    content
   }
 }

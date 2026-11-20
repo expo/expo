@@ -3,14 +3,12 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct ScrollDisabledModifier: ViewModifier, UIRecord {
-  @Field var disabled: Bool = true
-
-  func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      content.scrollDisabled(disabled)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func scrollDisabledModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let disabled: Bool = try p.value("disabled", true)
+  if #available(iOS 16.0, tvOS 16.0, *) {
+    content.scrollDisabled(disabled)
+  } else {
+    content
   }
 }

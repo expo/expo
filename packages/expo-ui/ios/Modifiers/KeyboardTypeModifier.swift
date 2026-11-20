@@ -49,26 +49,22 @@ func getKeyboardType(_ keyboardType: KeyboardType) -> UIKeyboardType {
 }
 #endif
 
-internal struct KeyboardTypeModifier: ViewModifier, UIRecord {
-  @Field var keyboardType: KeyboardType?
-
-  func body(content: Content) -> some View {
+@MainActor @AnyViewBuilder
+internal func keyboardTypeModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let keyboardType: KeyboardType? = try p.value("keyboardType", nil)
 #if os(macOS)
-    content
+  content
 #else
-    if let keyboardType {
-      content.keyboardType(getKeyboardType(keyboardType))
-    } else {
-      content
-    }
-#endif
+  if let keyboardType {
+    content.keyboardType(getKeyboardType(keyboardType))
+  } else {
+    content
   }
+#endif
 }
 
-internal struct AutocorrectionDisabledModifier: ViewModifier, UIRecord {
-  @Field var disabled: Bool = true
-
-  func body(content: Content) -> some View {
-    content.autocorrectionDisabled(disabled)
-  }
+@MainActor @AnyViewBuilder
+internal func autocorrectionDisabledModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let disabled: Bool = try p.value("disabled", true)
+  content.autocorrectionDisabled(disabled)
 }

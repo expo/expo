@@ -28,19 +28,16 @@ internal enum DatePickerStyleType: String, Enumerable {
 #endif
 }
 
-internal struct DatePickerStyleModifier: ViewModifier, UIRecord {
-  @Field var style: DatePickerStyleType?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
+@MainActor @AnyViewBuilder
+internal func datePickerStyleModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let style: DatePickerStyleType? = try p.value("style", nil)
 #if os(tvOS)
-    content
+  content
 #else
-    if let style {
-      style.apply(to: content)
-    } else {
-      content
-    }
-#endif
+  if let style {
+    style.apply(to: content)
+  } else {
+    content
   }
+#endif
 }

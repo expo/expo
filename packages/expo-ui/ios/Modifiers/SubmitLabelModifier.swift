@@ -29,15 +29,12 @@ internal enum SubmitLabelType: String, Enumerable {
   }
 }
 
-internal struct SubmitLabelModifier: ViewModifier, UIRecord {
-  @Field var submitLabel: SubmitLabelType?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    if let submitLabel {
-      content.submitLabel(submitLabel.toSubmitLabel)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func submitLabelModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let submitLabel: SubmitLabelType? = try p.value("submitLabel", nil)
+  if let submitLabel {
+    content.submitLabel(submitLabel.toSubmitLabel)
+  } else {
+    content
   }
 }

@@ -148,26 +148,22 @@ private struct PresentationDetentsSelectionView<WrappedContent: View>: View {
 
 // MARK: - Presentation Drag Indicator
 
-internal struct PresentationDragIndicatorModifier: ViewModifier, UIRecord {
-  @Field var visibility: VisibilityOptions = .automatic
-
-  func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      content.presentationDragIndicator(visibility.toVisibility())
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func presentationDragIndicatorModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let visibility: VisibilityOptions = try p.value("visibility", .automatic)
+  if #available(iOS 16.0, tvOS 16.0, *) {
+    content.presentationDragIndicator(visibility.toVisibility())
+  } else {
+    content
   }
 }
 
 // MARK: - Presentation Corner Radius
 
-internal struct PresentationCornerRadiusModifier: ViewModifier, UIRecord {
-  @Field var cornerRadius: Double?
-
-  func body(content: Content) -> some View {
-    content.presentationCornerRadius(cornerRadius.map { CGFloat($0) })
-  }
+@MainActor @AnyViewBuilder
+internal func presentationCornerRadiusModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let cornerRadius: Double? = try p.value("cornerRadius", nil)
+  content.presentationCornerRadius(cornerRadius.map { CGFloat($0) })
 }
 
 // MARK: - Presentation Background Interaction
@@ -179,53 +175,47 @@ internal enum PresentationBackgroundInteractionTypeModifier: String, Enumerable 
   case enabledUpThrough
 }
 
-internal struct PresentationBackgroundInteractionModifier: ViewModifier, UIRecord {
-  @Field var interactionType: PresentationBackgroundInteractionTypeModifier = .automatic
-  @Field var detent: Either<PresentationDetentPreset, PresentationDetentItem>?
-
-  func body(content: Content) -> some View {
-    if #available(iOS 16.4, tvOS 16.4, *) {
-      switch interactionType {
-      case .automatic:
-        content.presentationBackgroundInteraction(.automatic)
-      case .enabled:
+@MainActor @AnyViewBuilder
+internal func presentationBackgroundInteractionModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let interactionType: PresentationBackgroundInteractionTypeModifier = try p.value("interactionType", .automatic)
+  let detent: Either<PresentationDetentPreset, PresentationDetentItem>? = try p.value("detent", nil)
+  if #available(iOS 16.4, tvOS 16.4, *) {
+    switch interactionType {
+    case .automatic:
+      content.presentationBackgroundInteraction(.automatic)
+    case .enabled:
+      content.presentationBackgroundInteraction(.enabled)
+    case .disabled:
+      content.presentationBackgroundInteraction(.disabled)
+    case .enabledUpThrough:
+      if let detent, let parsed = parsePresentationDetent(detent) {
+        content.presentationBackgroundInteraction(.enabled(upThrough: parsed))
+      } else {
         content.presentationBackgroundInteraction(.enabled)
-      case .disabled:
-        content.presentationBackgroundInteraction(.disabled)
-      case .enabledUpThrough:
-        if let detent, let parsed = parsePresentationDetent(detent) {
-          content.presentationBackgroundInteraction(.enabled(upThrough: parsed))
-        } else {
-          content.presentationBackgroundInteraction(.enabled)
-        }
       }
-    } else {
-      content
     }
+  } else {
+    content
   }
 }
 
 // MARK: - Interactive Dismiss Disabled
 
-internal struct InteractiveDismissDisabledModifier: ViewModifier, UIRecord {
-  @Field var isDisabled: Bool = true
-
-  func body(content: Content) -> some View {
-    content.interactiveDismissDisabled(isDisabled)
-  }
+@MainActor @AnyViewBuilder
+internal func interactiveDismissDisabledModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let isDisabled: Bool = try p.value("isDisabled", true)
+  content.interactiveDismissDisabled(isDisabled)
 }
 
 // MARK: - Presentation Background
 
-internal struct PresentationBackgroundModifier: ViewModifier, UIRecord {
-  @Field var style: ShapeStyleValue?
-
-  func body(content: Content) -> some View {
-    if let shapeStyle = style?.toAnyShapeStyle() {
-      content.presentationBackground(shapeStyle)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func presentationBackgroundModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let style: ShapeStyleValue? = try p.value("style", nil)
+  if let shapeStyle = style?.toAnyShapeStyle() {
+    content.presentationBackground(shapeStyle)
+  } else {
+    content
   }
 }
 

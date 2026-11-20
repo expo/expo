@@ -21,15 +21,12 @@ internal enum ProgressViewStyleType: String, Enumerable {
   }
 }
 
-internal struct ProgressViewStyleModifier: ViewModifier, UIRecord {
-  @Field var style: ProgressViewStyleType?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    if let style = style {
-      style.apply(to: content)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func progressViewStyleModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let style: ProgressViewStyleType? = try p.value("style", nil)
+  if let style = style {
+    style.apply(to: content)
+  } else {
+    content
   }
 }

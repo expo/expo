@@ -3,10 +3,8 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct IDModifier: ViewModifier, UIRecord {
-  @Field var id: String = ""
-
-  func body(content: Content) -> some View {
-    content.id(id)
-  }
+@MainActor @AnyViewBuilder
+internal func iDModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let id: String = try p.value("id", "")
+  content.id(id)
 }

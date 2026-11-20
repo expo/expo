@@ -36,15 +36,12 @@ internal enum ListStyleType: String, Enumerable {
   }
 }
 
-internal struct ListStyleModifier: ViewModifier, UIRecord {
-  @Field var style: ListStyleType?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    if let style {
-      style.apply(to: content)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func listStyleModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let style: ListStyleType? = try p.value("style", nil)
+  if let style {
+    style.apply(to: content)
+  } else {
+    content
   }
 }

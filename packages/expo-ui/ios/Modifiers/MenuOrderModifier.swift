@@ -25,10 +25,8 @@ internal enum MenuOrderType: String, Enumerable {
   }
 }
 
-internal struct MenuOrderModifier: ViewModifier, UIRecord {
-  @Field var order: MenuOrderType = .automatic
-
-  func body(content: Content) -> some View {
-    content.menuOrder(order.toNativeMenuOrder())
-  }
+@MainActor @AnyViewBuilder
+internal func menuOrderModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let order: MenuOrderType = try p.value("order", .automatic)
+  content.menuOrder(order.toNativeMenuOrder())
 }
