@@ -4,6 +4,7 @@ import { selectAsync } from '../../../../utils/prompts';
 import { promptOrQueryNativeSchemeAsync, getDefaultNativeScheme } from '../resolveNativeScheme';
 
 jest.mock('../../../../utils/prompts');
+jest.mock('../../../../utils/interactive', () => ({ isInteractive: () => false }));
 jest.mock('@expo/config-plugins', () => {
   return {
     IOSConfig: {
@@ -105,5 +106,19 @@ describe(promptOrQueryNativeSchemeAsync, () => {
 
     jest.mocked(selectAsync).mockResolvedValueOnce('bacon');
     expect(await promptOrQueryNativeSchemeAsync('/', { scheme: true })).toEqual(null);
+  });
+
+  it(`names the --scheme choices in non-interactive mode`, async () => {
+    jest.mocked(IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj).mockReturnValueOnce([
+      { name: 'foobar', osType: 'iOS', type: 'com.apple.product-type.application' },
+      { name: 'foobar2', osType: 'watchOS', type: 'com.apple.product-type.application.watchapp' },
+    ]);
+    jest
+      .mocked(selectAsync)
+      .mockImplementationOnce(jest.requireActual('../../../../utils/prompts').selectAsync);
+
+    await expect(promptOrQueryNativeSchemeAsync('/', { scheme: true })).rejects.toThrow(
+      '--scheme: argument must be provided with a string in non-interactive mode. Valid choices are: foobar, foobar2'
+    );
   });
 });
