@@ -142,9 +142,10 @@ struct SharedObjectRegistryTests {
     let id = registry.add(native: nativeObject, javaScript: jsObject)
     #expect(registry.get(id) != nil)
 
-    // Detach drops JSI's shared_ptr; the destructor's releaser calls `registry.delete(id)`.
+    // Detach drops JSI's shared_ptr; its destructor makes the native state release the native object. The release
+    // resets the ID under the lock of `nativeState`, after it removes the entry.
     jsObject.unsetNativeState()
-    try runtime.collectGarbage { registry.get(id) == nil }
+    try runtime.collectGarbage { registry.get(id) == nil && nativeObject.nativeState == nil }
 
     #expect(registry.get(id) == nil)
     #expect(nativeObject.sharedObjectId == 0)
@@ -157,8 +158,8 @@ struct SharedObjectRegistryTests {
     let firstId = registry.add(native: nativeObject, javaScript: firstObject)
 
     // Pair the same, still-alive native object again. Because its JS object still holds its native state,
-    // `add` must reuse that state's id rather than mint a new one — otherwise the C++ `NativeState.objectId`
-    // (which drives the releaser/`delete`) would disagree with `sharedObjectId`, leaking the first registry entry.
+    // `add` must reuse that state's id rather than mint a new one. Otherwise the native state's `objectId`
+    // (which its release removes from the registry) would disagree with `sharedObjectId`, leaking the first registry entry.
     let secondObject = try runtime.createObject()
     let secondId = withExtendedLifetime(firstObject) {
       registry.add(native: nativeObject, javaScript: secondObject)
@@ -252,10 +253,10 @@ struct SharedObjectRegistryTests {
   }
 
   @Test
-  func `releaser tolerates a deallocated registry`() throws {
+  func `release tolerates a deallocated registry`() throws {
     // Build a throwaway registry, register an object on it, then drop the registry
-    // before triggering the releaser. The `[weak self]` capture should make the
-    // releaser a no-op rather than crashing on a dangling reference.
+    // before triggering the release. The native state's weak reference to the registry
+    // should make the release skip the registry rather than crash on a dangling reference.
     var localRegistry: SharedObjectRegistry? = SharedObjectRegistry(appContext: appContext)
     let nativeObject = TestSharedObject()
     let jsObject = try runtime.createObject()
@@ -263,8 +264,8 @@ struct SharedObjectRegistryTests {
 
     localRegistry = nil
 
-    // The native state is still attached to `jsObject`. Detaching now would call
-    // the releaser whose `[weak self]` is now nil — must not crash.
+    // The native state is still attached to `jsObject`. Detaching now releases
+    // the native object while the native state's registry is nil, which must not crash.
     jsObject.unsetNativeState()
     try runtime.collectGarbage()
   }

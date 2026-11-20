@@ -44,14 +44,14 @@
 @implementation EXSharedObjectUtils
 
 + (void *)makeSharedObjectNativeStatePtr:(long)objectId
-                                releaser:(ObjectReleaser)releaser
                                listeners:(EXSharedObjectListeners *)listeners
                                  context:(void *)context
                       contextDeallocator:(void (*)(void *))contextDeallocator
 {
+  // The Swift native state releases the native object from `contextDeallocator`, which runs after this releaser.
   auto nativeState = std::make_shared<expo::SharedObject::NativeState>(
     objectId,
-    [releaser](long id) { releaser(id); },
+    [](long) {},
     context,
     contextDeallocator
   );

@@ -8,7 +8,7 @@ import os
 /// `JavaScriptObject.getNativeState(as:)` without going through `SharedObjectRegistry`.
 ///
 /// The JS objects of the native object in all runtimes (for example the main runtime and the worklet UI runtime)
-/// share this native state and its C++ state. The C++ state is destroyed, and its releaser releases the native
+/// share this native state and its C++ state. The C++ state is destroyed, and the native state releases the native
 /// object, when the last of these JS objects is collected. The first JS object creates the C++ state. The others get
 /// this native state only while that C++ state is alive (`setNativeStateIfAlive`), so it has one C++ state.
 ///
@@ -24,6 +24,14 @@ import os
 /// of the native object's `nativeState`.
 internal final class SharedObjectNativeState: EventEmitterNativeState, @unchecked Sendable {
   internal let native: SharedObject
+
+  /// The ID of the native object while it is paired with this native state.
+  internal let objectId: SharedObjectId
+
+  /// The registry of the app context that created this native state. Only that app context pairs JS objects with it,
+  /// because it holds values of that app context's main runtime. Weak, because a JS object of another runtime can keep
+  /// the native state alive after the app context is gone.
+  internal weak let registry: SharedObjectRegistry?
 
   /// The main runtime of the app context. The JS object in that runtime is kept in `pairedObject`. JS objects in
   /// other runtimes are kept by those runtimes (see `PairedObjects`), so each runtime touches only its own JS
@@ -61,33 +69,77 @@ internal final class SharedObjectNativeState: EventEmitterNativeState, @unchecke
   internal init(
     native: SharedObject,
     objectId: SharedObjectId,
+    registry: SharedObjectRegistry,
     mainRuntimeId: JavaScriptRuntime.ID?,
-    isPairedInOtherRuntime: Bool,
-    releaser: @escaping ObjectReleaser
+    isPairedInOtherRuntime: Bool
   ) {
     let listeners = SharedObjectListeners()
     self.native = native
+    self.objectId = objectId
+    self.registry = registry
     self.mainRuntimeId = mainRuntimeId
     self.flags = OSAllocatedUnfairLock(initialState: Flags(isPairedInOtherRuntime: isPairedInOtherRuntime))
     self.listeners = listeners
     super.init(primaryRuntimeId: mainRuntimeId) { context, deallocator in
       return SharedObjectUtils.makeSharedObjectNativeStatePtr(
         objectId: objectId,
-        releaser: releaser,
         listeners: listeners,
         context: context,
         contextDeallocator: deallocator
       )
     }
+    // Runs when the C++ state is destroyed, after the JS objects of all runtimes were collected. The closure captures
+    // nothing, so it costs no allocation.
+    setDeallocator { nativeState in
+      unsafeDowncast(nativeState, to: SharedObjectNativeState.self).release(reason: .nativeStateDestroyed)
+    }
   }
 
-  /// Marks the native object as released. Returns whether a runtime other than the main runtime paired a JS object
-  /// with this native state.
-  internal func markReleased() -> Bool {
-    return flags.withLock { flags in
+  /// Why the native object is released.
+  internal enum ReleaseReason {
+    /// `release()` was called in the main runtime, on its thread.
+    case releasedInMainRuntime
+    /// `release()` was called on another thread, for example in another runtime.
+    case released
+    /// The C++ state was destroyed, after the JS objects of all runtimes were collected.
+    case nativeStateDestroyed
+  }
+
+  /// Releases the native object, for `release()` called in JS or when the C++ state is destroyed. When another runtime
+  /// pairs a JS object with the native state, `clear()` releases the values of the main runtime in it. A release in the
+  /// main runtime also releases them right away, on the thread of the main runtime. The other runtimes release their
+  /// values on their threads. Only the first release runs the release hooks of the native object.
+  internal func release(reason: ReleaseReason) {
+    let (wasReleased, isPairedInOtherRuntime) = flags.withLock { flags in
+      let wasReleased = flags.isReleased
       flags.isReleased = true
-      return flags.isPairedInOtherRuntime
+      return (wasReleased, flags.isPairedInOtherRuntime)
     }
+    if !wasReleased || reason == .nativeStateDestroyed {
+      // A JS object of another runtime can hold the C++ state after the main runtime is destroyed. A frozen JS object
+      // of the main runtime keeps the native state after the release, so its listeners can come back.
+      registry?.remove(self, keepingUntilDestroyed: reason != .nativeStateDestroyed && isPairedInOtherRuntime)
+    }
+    guard !wasReleased else {
+      return
+    }
+    // A native object that was paired again after its JS object died has a new native state and ID, and stays paired.
+    let isCurrent = native.nativeState === self
+    if reason == .releasedInMainRuntime && isPairedInOtherRuntime {
+      releaseRuntimeValues()
+    }
+    if reason != .nativeStateDestroyed && isPairedInOtherRuntime {
+      releaseOtherRuntimeValues()
+    }
+    guard isCurrent else {
+      return
+    }
+    // The hooks run without a lock: they can emit events whose listeners run inline on the JavaScript
+    // thread and use the shared object again, and the locks aren't reentrant.
+    native.sharedObjectWillRelease()
+    // Reset the ID of the object and end the pair, unless the hook paired it again.
+    native.endPairing(with: self, resettingId: true)
+    native.sharedObjectDidRelease()
   }
 
   /// Records that a runtime other than the main runtime pairs a JS object with this native state. Call it before
