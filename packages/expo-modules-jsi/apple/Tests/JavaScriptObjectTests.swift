@@ -145,6 +145,185 @@ struct JavaScriptObjectTests {
   }
 
   @Test
+  func `defineProperty sets false attributes of an existing property`() throws {
+    let object = JavaScriptObject(runtime)
+    object.defineProperty("test", value: 1, options: [.configurable, .enumerable, .writable])
+    object.defineProperty("test", value: 2)
+    runtime.global().setProperty("obj", object)
+
+    let descriptor = try runtime.eval("Object.getOwnPropertyDescriptor(obj, 'test')").getObject()
+    #expect(descriptor.getProperty("value").getInt() == 2)
+    #expect(descriptor.getProperty("configurable").getBool() == false)
+    #expect(descriptor.getProperty("enumerable").getBool() == false)
+    #expect(descriptor.getProperty("writable").getBool() == false)
+  }
+
+  // MARK: - Lazy properties
+
+  @Test
+  func `defineLazyProperty creates the value on the first read only`() throws {
+    let object = runtime.createObject()
+    object.defineLazyProperty("value") { _, runtime in
+      try runtime.eval("++globalThis.calls")
+    }
+    runtime.global().setProperty("obj", object)
+    try runtime.eval("globalThis.calls = 0")
+
+    #expect(try runtime.eval("Object.keys(obj).join()").getString() == "value")
+    #expect(try runtime.eval("calls").getInt() == 0)
+    #expect(try runtime.eval("obj.value").getInt() == 1)
+    #expect(try runtime.eval("obj.value").getInt() == 1)
+    #expect(try runtime.eval("calls").getInt() == 1)
+  }
+
+  @Test
+  func `defineLazyProperty replaces the getter with a read-only data property`() throws {
+    let object = runtime.createObject()
+    object.defineLazyProperty("value") { _, _ in
+      "lazy"
+    }
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("typeof Object.getOwnPropertyDescriptor(obj, 'value').get").getString() == "function")
+    #expect(try runtime.eval("obj.value").getString() == "lazy")
+
+    let descriptor = try runtime.eval("Object.getOwnPropertyDescriptor(obj, 'value')").getObject()
+    #expect(descriptor.getProperty("value").getString() == "lazy")
+    #expect(descriptor.getProperty("writable").getBool() == false)
+    #expect(descriptor.getProperty("enumerable").getBool() == true)
+    #expect(descriptor.getProperty("configurable").getBool() == true)
+  }
+
+  @Test
+  func `defineLazyProperty defines a non-enumerable property`() throws {
+    let object = runtime.createObject()
+    object.defineLazyProperty("hidden", options: [.configurable]) { _, _ in
+      1
+    }
+    runtime.global().setProperty("obj", object)
+
+    #expect(try runtime.eval("Object.keys(obj).length").getInt() == 0)
+    #expect(try runtime.eval("obj.hidden").getInt() == 1)
+    #expect(try runtime.eval("Object.keys(obj).length").getInt() == 0)
+  }
+
+  @Test
+  func `defineLazyProperty makes the data property non-configurable`() throws {
+    let object = runtime.createObject()
+    object.defineLazyProperty("value", options: [.enumerable]) { _, _ in
+      1
+    }
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("Object.getOwnPropertyDescriptor(obj, 'value').configurable").getBool() == true)
+    #expect(try runtime.eval("obj.value").getInt() == 1)
+
+    let descriptor = try runtime.eval("Object.getOwnPropertyDescriptor(obj, 'value')").getObject()
+    #expect(descriptor.getProperty("value").getInt() == 1)
+    #expect(descriptor.getProperty("writable").getBool() == false)
+    #expect(descriptor.getProperty("enumerable").getBool() == true)
+    #expect(descriptor.getProperty("configurable").getBool() == false)
+    #expect(try runtime.eval("delete obj.value").getBool() == false)
+    #expect(try runtime.eval("obj.value").getInt() == 1)
+  }
+
+  @Test
+  func `defineLazyProperty calls the factory again after it throws`() throws {
+    let object = runtime.createObject()
+    object.defineLazyProperty("value") { _, runtime in
+      try runtime.eval("if (++globalThis.calls === 1) throw new Error('first read'); globalThis.calls")
+    }
+    runtime.global().setProperty("obj", object)
+    try runtime.eval("globalThis.calls = 0")
+
+    #expect(throws: (any Error).self) {
+      try runtime.eval("obj.value")
+    }
+    #expect(try runtime.eval("obj.value").getInt() == 2)
+    #expect(try runtime.eval("obj.value").getInt() == 2)
+  }
+
+  @Test
+  func `defineLazyProperty passes the object that the property is read from`() throws {
+    let prototype = runtime.createObject()
+    prototype.defineLazyProperty("size", options: [.enumerable]) {
+      (this: borrowing JavaScriptUnownedValue, runtime: borrowing JavaScriptRuntime) -> Int in
+      let state = try this.asObject(in: runtime).getNativeState(as: SizeNativeState.self)
+      return try #require(state).size
+    }
+    runtime.global().setProperty("proto", prototype)
+    try runtime.eval("globalThis.first = Object.create(proto)").getObject().setNativeState(SizeNativeState(size: 1))
+    try runtime.eval("globalThis.second = Object.create(proto)").getObject().setNativeState(SizeNativeState(size: 2))
+
+    #expect(try runtime.eval("first.size").getInt() == 1)
+    #expect(try runtime.eval("second.size").getInt() == 2)
+    #expect(try runtime.eval("Object.getOwnPropertyDescriptor(first, 'size').value").getInt() == 1)
+    #expect(try runtime.eval("Object.getOwnPropertyDescriptor(second, 'size').value").getInt() == 2)
+    #expect(try runtime.eval("typeof Object.getOwnPropertyDescriptor(proto, 'size').get").getString() == "function")
+  }
+
+  @Test
+  func `defineLazyProperty takes a factory that returns an encoded value`() throws {
+    final class Owner {
+      let info: [String: Any] = ["name": "cache"]
+
+      @JavaScriptActor
+      func install(on object: borrowing JavaScriptObject) {
+        object.defineLazyProperty("info", options: [.enumerable]) {
+          [self] (this: borrowing JavaScriptUnownedValue, runtime: borrowing JavaScriptRuntime) -> JavaScriptValue in
+          try JavaScriptValue.encodeAnyDictionary(self.info, in: runtime)
+        }
+      }
+    }
+    let object = runtime.createObject()
+    Owner().install(on: object)
+    runtime.global().setProperty("obj", object)
+
+    #expect(try runtime.eval("obj.info.name").getString() == "cache")
+    #expect(try runtime.eval("Object.getOwnPropertyDescriptor(obj, 'info').value === obj.info").getBool() == true)
+  }
+
+  @Test
+  func `defineLazyProperty defines a property under a well-known symbol`() throws {
+    let object = runtime.createObject()
+    try object.defineLazyProperty(symbol: .wellKnown(.toStringTag)) { _, _ in
+      "Cache"
+    }
+    runtime.global().setProperty("obj", object)
+    #expect(
+      try runtime.eval("typeof Object.getOwnPropertyDescriptor(obj, Symbol.toStringTag).get").getString() == "function"
+    )
+    #expect(try runtime.eval("String(obj)").getString() == "[object Cache]")
+
+    let descriptor = try runtime.eval("Object.getOwnPropertyDescriptor(obj, Symbol.toStringTag)").getObject()
+    #expect(descriptor.getProperty("value").getString() == "Cache")
+    #expect(descriptor.getProperty("writable").getBool() == false)
+    #expect(descriptor.getProperty("enumerable").getBool() == true)
+    #expect(descriptor.getProperty("configurable").getBool() == true)
+    #expect(try runtime.eval("Reflect.ownKeys(obj).length").getInt() == 1)
+  }
+
+  @Test
+  func `defineLazyProperty defines a property under a registered symbol`() throws {
+    let object = runtime.createObject()
+    try object.defineLazyProperty(symbol: "app.id", options: []) { _, runtime in
+      try runtime.eval("++globalThis.calls")
+    }
+    runtime.global().setProperty("obj", object)
+    try runtime.eval("globalThis.calls = 0")
+
+    #expect(try runtime.eval("Object.getOwnPropertySymbols(obj).length").getInt() == 1)
+    #expect(try runtime.eval("obj[Symbol.for('app.id')]").getInt() == 1)
+    #expect(try runtime.eval("obj[Symbol.for('app.id')]").getInt() == 1)
+    #expect(try runtime.eval("calls").getInt() == 1)
+
+    let descriptor = try runtime.eval("Object.getOwnPropertyDescriptor(obj, Symbol.for('app.id'))").getObject()
+    #expect(descriptor.getProperty("value").getInt() == 1)
+    #expect(descriptor.getProperty("writable").getBool() == false)
+    #expect(descriptor.getProperty("enumerable").getBool() == false)
+    #expect(descriptor.getProperty("configurable").getBool() == false)
+    #expect(try runtime.eval("Reflect.ownKeys(obj).length").getInt() == 1)
+  }
+
+  @Test
   func `getPropertyAsFunction finds a non-ASCII name`() throws {
     let object = try runtime.eval("({ 'zażółć': () => 'gęślą jaźń' })").getObject()
     let function = try object.getPropertyAsFunction("zażółć")
@@ -909,6 +1088,15 @@ private struct ArrayEncodedPair: JavaScriptEncodable {
     try array.set(value: value.first, at: 0)
     try array.set(value: value.second, at: 1)
     slot.emplace(array)
+  }
+}
+
+private final class SizeNativeState: JavaScriptNativeState {
+  let size: Int
+
+  init(size: Int) {
+    self.size = size
+    super.init()
   }
 }
 

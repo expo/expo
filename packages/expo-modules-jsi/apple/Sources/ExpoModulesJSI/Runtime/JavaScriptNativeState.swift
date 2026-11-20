@@ -103,19 +103,6 @@ open class JavaScriptNativeState {
     self.deallocator = deallocator
   }
 
-  /// Turns the C++ `expo.NativeState` pointer into its Swift counterpart, or
-  /// returns `nil` if the context is null or the recovered instance's type
-  /// doesn't match `Self`. Precondition: a non-null context must be a retained
-  /// `JavaScriptNativeState` opaque pointer (see `Public/NativeState.h::getContext`);
-  /// any other layout will be reinterpreted and crash.
-  internal static func from(cxx nativeState: UnsafeMutablePointer<expo.NativeState>) -> Self? {
-    guard let context = nativeState.pointee.getContext() else {
-      return nil
-    }
-    let value = Unmanaged<JavaScriptNativeState>.fromOpaque(context).takeUnretainedValue()
-    return value as? Self
-  }
-
   // MARK: - WeakPointer
 
   /// Non-owning wrapper around `expo::NativeStateWeak`. `lock()` returns a strong

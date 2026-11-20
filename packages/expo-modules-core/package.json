@@ -81,7 +81,7 @@
   },
   "dependencies": {
     "expo-modules-jsi": "workspace:~",
-    "expo-modules-macros": "0.36.0",
+    "expo-modules-macros": "0.40.0",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
@@ -95,7 +95,7 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "react-native-worklets": ">=0.13.0"
+    "react-native-worklets": ">=0.14.0"
   },
   "peerDependenciesMeta": {
     "react-native-worklets": {

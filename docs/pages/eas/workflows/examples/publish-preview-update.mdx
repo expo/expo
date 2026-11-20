@@ -5,10 +5,31 @@ description: Learn how to publish preview updates with Expo Workflows.
 hideTOC: true
 ---
 
+import { AgentPrompt } from '~/ui/components/AgentPrompt';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+<AgentPrompt
+  title="Publish preview updates with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent.">
+
+```text wrap
+Set up a workflow that publishes preview updates with Expo Workflows. Use https://docs.expo.dev/eas/workflows/examples/publish-preview-update.md as the source for each command and file.
+
+1. Check that EAS CLI is installed and up to date. If it is not, run `npm install -g eas-cli`.
+2. Check that I am logged in with `eas whoami`. If I am not, stop and ask me to run `eas login` or to set `EXPO_TOKEN`. Do not print a token.
+3. If the project does not have an Expo Services project ID, ask me before you run `eas init`.
+4. If the app config does not have `updates.url`, run `eas update:configure --non-interactive`. Then tell me to create new development builds, as the page says.
+5. Write the workflow from the page to .eas/workflows/publish-preview-update.yml.
+6. Run `eas workflow:run .eas/workflows/publish-preview-update.yml --non-interactive --wait --json`. When EAS CLI starts the run, `github.ref_name` is empty, so the workflow publishes the update to the `test` branch.
+7. If the run fails, find the failed job in the JSON output, run `eas workflow:logs <job ID> --non-interactive`, and tell me which job failed and why.
+8. Give me the workflow run link from the command output. Tell me which files you changed and which commands you ran.
+9. Tell me that the workflow runs on each push only when my GitHub repository is linked to the project in the Expo dashboard. Do not push commits without asking me.
+```
+
+</AgentPrompt>
 
 Once you've made changes to your project, you can share a preview of your changes with your team by publishing a [preview update](/review/share-previews-with-your-team/). This is useful when you want to review changes with your team without pulling the latest changes and running them locally.
 

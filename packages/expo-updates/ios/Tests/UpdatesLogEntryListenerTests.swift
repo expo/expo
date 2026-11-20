@@ -1,10 +1,10 @@
 //  Copyright (c) 2026 650 Industries, Inc. All rights reserved.
 
-import EXUpdatesInterface
 import Foundation
 import Testing
 
 @testable import EXUpdates
+@testable import EXUpdatesInterface
 
 /// Records the entries that the registry delivers. Entries can arrive on any thread.
 private final class RecordingListener: UpdatesLogEntryListener, @unchecked Sendable {
@@ -83,18 +83,21 @@ struct UpdatesLogEntryListenerTests {
 
   @Test
   func `the registry keeps a listener alive until it is removed`() {
+    // Not the shared registry: a test that logs at the same time can still hold the listener in
+    // its `notify` call after `remove` returns.
+    let registry = UpdatesLogEntryListenerRegistry()
     weak var weakListener: RecordingListener?
     do {
       let listener = RecordingListener()
       weakListener = listener
-      UpdatesLogEntryListenerRegistry.sharedInstance.add(listener)
+      registry.add(listener)
     }
 
-    logger.warn(.reaperFailed, values: ["cause": "Warning \(marker)"])
+    registry.notify(["message": "Warning \(marker)"])
     #expect(weakListener?.entries(containing: marker).count == 1)
 
     if let listener = weakListener {
-      UpdatesLogEntryListenerRegistry.sharedInstance.remove(listener)
+      registry.remove(listener)
     }
     #expect(weakListener == nil)
   }

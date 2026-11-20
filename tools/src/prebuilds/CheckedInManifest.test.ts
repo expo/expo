@@ -670,21 +670,20 @@ it('direct stand-ins: rejects a product of a stand-in package that has no stand-
   );
 });
 
-function withWorkletsStandIn(externalDependencies: string[]) {
+function withHeadersStandIn(standIn: string, externalDependencies: string[]) {
   const input = fixture(
-    '.target(name: "Main", dependencies: [.product(name: "ExpoModulesWorkletsHeaders", package: "ExpoModulesWorkletsHeaders")], path: "ios")',
+    `.target(name: "Main", dependencies: [.product(name: "${standIn}", package: "${standIn}")], path: "ios")`,
     undefined,
-    {
-      dependencies:
-        '.package(name: "ExpoModulesWorkletsHeaders", path: "../ExpoModulesWorkletsHeaders")',
-    }
+    { dependencies: `.package(name: "${standIn}", path: "../${standIn}")` }
   );
   input.product.externalDependencies = externalDependencies;
   return input;
 }
 
 it('direct stand-ins: replaces ExpoModulesWorkletsHeaders with expo-modules-core/ExpoModulesWorklets', async () => {
-  const input = withWorkletsStandIn(['expo-modules-core/ExpoModulesWorklets']);
+  const input = withHeadersStandIn('ExpoModulesWorkletsHeaders', [
+    'expo-modules-core/ExpoModulesWorklets',
+  ]);
   assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, [
     'expo-modules-core/ExpoModulesWorklets',
   ]);
@@ -692,8 +691,20 @@ it('direct stand-ins: replaces ExpoModulesWorkletsHeaders with expo-modules-core
 
 it('direct stand-ins: requires externalDependencies to list "expo-modules-core/ExpoModulesWorklets"', async () => {
   await rejectsManifest(
-    withWorkletsStandIn(['expo-modules-core/ExpoModulesCore']),
+    withHeadersStandIn('ExpoModulesWorkletsHeaders', ['expo-modules-core/ExpoModulesCore']),
     /: it names unknown dependency "expo-modules-core\/ExpoModulesWorklets", which the generated package/
+  );
+});
+
+it('direct stand-ins: replaces ExpoUIHeaders with @expo/ui/ExpoUI', async () => {
+  const input = withHeadersStandIn('ExpoUIHeaders', ['@expo/ui/ExpoUI']);
+  assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, ['@expo/ui/ExpoUI']);
+});
+
+it('direct stand-ins: requires externalDependencies to list "@expo/ui/ExpoUI"', async () => {
+  await rejectsManifest(
+    withHeadersStandIn('ExpoUIHeaders', ['expo-modules-core/ExpoModulesCore']),
+    /: it names unknown dependency "@expo\/ui\/ExpoUI", which the generated package/
   );
 });
 

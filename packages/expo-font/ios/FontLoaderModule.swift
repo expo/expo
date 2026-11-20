@@ -1,63 +1,80 @@
 import CoreGraphics
 import ExpoModulesCore
 
+@ExpoModule("ExpoFontLoader")
 public final class FontLoaderModule: Module {
   // could be a Set, but to be able to pass to JS we keep it as an array
-  private lazy var registeredFonts: [String] = queryCustomNativeFonts()
+  private let registeredFonts = Mutex<[String]?>(nil)
 
-  public func definition() -> ModuleDefinition {
-    Name("ExpoFontLoader")
+  // NOTE: this is exposed in JS as globalThis.expo.modules.ExpoFontLoader.loadedFonts
+  // and potentially consumed outside of Expo (e.g. RN vector icons)
+  // do NOT change the property as it'll break consumers!
+  @JS
+  func getLoadedFonts() -> [String] {
+    return registeredFonts.withLock { cachedFonts in
+      let fonts = cachedFonts ?? queryCustomNativeFonts()
+      cachedFonts = fonts
+      return fonts
+    }
+  }
 
-    // NOTE: this is exposed in JS as globalThis.expo.modules.ExpoFontLoader.loadedFonts
-    // and potentially consumed outside of Expo (e.g. RN vector icons)
-    // do NOT change the property as it'll break consumers!
-    Function("getLoadedFonts") {
-      return registeredFonts
+  // NOTE: this is exposed in JS as globalThis.expo.modules.ExpoFontLoader.loadAsync
+  // and potentially consumed outside of Expo (e.g. RN vector icons)
+  // do NOT change the function signature as it'll break consumers!
+  @JS
+  @FontLoaderActor
+  func loadAsync(fontFamilyAlias: String, localUri: URL) async throws {
+    try loadFont(alias: fontFamilyAlias, localUri: localUri)
+  }
+
+  @JS
+  @FontLoaderActor
+  func loadFontFamilyAsync(fontFamilyAlias: String, faces: [FontFaceRecord]) async throws {
+    try loadFontFamily(alias: fontFamilyAlias, faces: faces)
+  }
+
+  private func loadFont(alias fontFamilyAlias: String, localUri: URL) throws {
+    let fontUrl = localUri as CFURL
+    // If the font was already registered, unregister it first. Otherwise CTFontManagerRegisterFontsForURL
+    // would fail because of a duplicated font name when the app reloads. Note that re-registering
+    // under an existing alias is skipped in the JS layer.
+    if FontFamilyAliasManager.hasAlias(fontFamilyAlias) {
+      guard try unregisterFont(url: fontUrl) else {
+        return
+      }
     }
 
-    // NOTE: this is exposed in JS as globalThis.expo.modules.ExpoFontLoader.loadAsync
-    // and potentially consumed outside of Expo (e.g. RN vector icons)
-    // do NOT change the function signature as it'll break consumers!
-    AsyncFunction("loadAsync") { (fontFamilyAlias: String, localUri: URL) in
-      let fontUrl = localUri as CFURL
-      // If the font was already registered, unregister it first. Otherwise CTFontManagerRegisterFontsForURL
-      // would fail because of a duplicated font name when the app reloads. Note that re-registering
-      // under an existing alias is skipped in the JS layer.
-      if FontFamilyAliasManager.hasAlias(fontFamilyAlias) {
-        guard try unregisterFont(url: fontUrl) else {
-          return
-        }
+    let registeredFont = try registerFont(fontUrl: fontUrl, fontFamilyAlias: fontFamilyAlias)
+
+    // Alias every name the file provides to `fontFamilyAlias` — one per named instance for a
+    // variable font — that makes its weights reachable through the `fontWeight` style prop.
+    let aliasedNames = try postScriptNames(inFileAt: fontUrl, alias: fontFamilyAlias)
+
+    let previousUrls = FontFamilyAliasManager.registeredUrls(forAlias: fontFamilyAlias)
+
+    FontFamilyAliasManager.setAlias(fontFamilyAlias, forPostScriptNames: aliasedNames, url: localUri)
+
+    // A duplicate-name registration still depends on a previously registered URL. Do not
+    // unregister it when the incoming URL did not acquire its own registration. The registry
+    // then records the incoming URL while CoreText serves the previous one, until the next
+    // cold launch registers the incoming URL first.
+    if registeredFont {
+      for staleUrl in previousUrls where !FontFamilyAliasManager.hasRegisteredUrl(staleUrl) {
+        _ = try? unregisterFont(url: staleUrl as CFURL)
       }
-
-      let registeredFont = try registerFont(fontUrl: fontUrl, fontFamilyAlias: fontFamilyAlias)
-
-      // Alias every name the file provides to `fontFamilyAlias` — one per named instance for a
-      // variable font — that makes its weights reachable through the `fontWeight` style prop.
-      let aliasedNames = try postScriptNames(inFileAt: fontUrl, alias: fontFamilyAlias)
-
-      let previousUrls = FontFamilyAliasManager.registeredUrls(forAlias: fontFamilyAlias)
-
-      FontFamilyAliasManager.setAlias(fontFamilyAlias, forPostScriptNames: aliasedNames, url: localUri)
-
-      // A duplicate-name registration still depends on a previously registered URL. Do not
-      // unregister it when the incoming URL did not acquire its own registration. The registry
-      // then records the incoming URL while CoreText serves the previous one, until the next
-      // cold launch registers the incoming URL first.
-      if registeredFont {
-        for staleUrl in previousUrls where !FontFamilyAliasManager.hasRegisteredUrl(staleUrl) {
-          _ = try? unregisterFont(url: staleUrl as CFURL)
-        }
-      }
-
-      // Only report names the app supplied. This list is what `Font.isLoaded` answers from, and
-      // what `loadAsync` skips on, so every entry takes a name the app can no longer load under.
-      // The names read out of the file stay in the alias registry above, where `fontWeight`
-      // resolution needs them.
-      registeredFonts = Array(Set(registeredFonts).union([fontFamilyAlias]))
     }
 
-    AsyncFunction("loadFontFamilyAsync") { (fontFamilyAlias: String, faces: [FontFaceRecord]) in
-      try self.loadFontFamily(alias: fontFamilyAlias, faces: faces)
+    // Only report names the app supplied. This list is what `Font.isLoaded` answers from, and
+    // what `loadAsync` skips on, so every entry takes a name the app can no longer load under.
+    // The names read out of the file stay in the alias registry above, where `fontWeight`
+    // resolution needs them.
+    addRegisteredFont(fontFamilyAlias)
+  }
+
+  private func addRegisteredFont(_ fontFamilyAlias: String) {
+    registeredFonts.withLock { cachedFonts in
+      let fonts = cachedFonts ?? queryCustomNativeFonts()
+      cachedFonts = Array(Set(fonts).union([fontFamilyAlias]))
     }
   }
 
@@ -126,7 +143,7 @@ public final class FontLoaderModule: Module {
       }
     }
 
-    registeredFonts = Array(Set(registeredFonts).union([fontFamilyAlias]))
+    addRegisteredFont(fontFamilyAlias)
   }
 }
 

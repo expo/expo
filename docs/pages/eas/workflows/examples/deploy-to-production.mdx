@@ -8,11 +8,37 @@ hideTOC: true
 import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
 import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
 
+import { AgentPrompt } from '~/ui/components/AgentPrompt';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+<AgentPrompt
+  title="Deploy to production with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent.">
+
+```text wrap
+Set up a workflow that deploys my app to production with Expo Workflows. Use https://docs.expo.dev/eas/workflows/examples/deploy-to-production.md as the source for each command and file.
+
+1. Check that EAS CLI is installed and up to date. If it is not, run `npm install -g eas-cli`.
+2. Check that I am logged in with `eas whoami`. If I am not, stop and ask me to run `eas login` or to set `EXPO_TOKEN`. Do not print a token.
+3. If the project does not have an Expo Services project ID, ask me before you run `eas init`.
+4. If eas.json does not have a `production` build profile, ask me to run `eas build:configure` in my terminal.
+5. If the app config does not have `updates.url`, run `eas update:configure --non-interactive`.
+6. Ask me if the credentials for the `production` profile are set up. If they are not, ask me to run these commands in my terminal, because they ask me to sign in or to select a key. Do not ask for my Apple ID, my password, or a key file.
+   - `eas credentials:configure-build -p ios -e production` for the iOS build.
+   - `eas credentials --platform ios` to set up an App Store Connect API key for Expo Submit.
+   - `eas credentials --platform android` to set up a Google Service Account key for Expo Submit.
+7. Write the workflow from the page to .eas/workflows/deploy-to-production.yml.
+8. Ask me before you run the workflow, because it can submit builds to the app stores or send an update to my production users. If I agree, run `eas workflow:run .eas/workflows/deploy-to-production.yml --non-interactive --wait --json`.
+9. If the run fails, find the failed job in the JSON output, run `eas workflow:logs <job ID> --non-interactive`, and tell me which job failed and why. Do not change credentials without asking me.
+10. Give me the workflow run link from the command output. Tell me which files you changed and which commands you ran.
+11. Tell me that the workflow runs on each push to `main` only when my GitHub repository is linked to the project in the Expo dashboard. Do not push commits without asking me.
+```
+
+</AgentPrompt>
 
 When you're ready to deliver changes to your users, you can build and submit to the app stores or you can send an over-the-air update. The following workflow detects if you need new builds, and if so, it sends them to the app stores. If new builds are not required, it will send an over-the-air update.
 

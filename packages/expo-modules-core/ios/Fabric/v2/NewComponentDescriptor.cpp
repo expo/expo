@@ -81,6 +81,14 @@ react::ComponentName NewComponentDescriptor::getComponentName() const {
   return componentFlavor().name.c_str();
 }
 
+react::ShadowNodeTraits NewComponentDescriptor::getTraits() const {
+  auto traits = ConcreteComponentDescriptor::getTraits();
+  if (componentFlavor().keepsDirectChildren) {
+    traits.set(react::ShadowNodeTraits::Trait::ChildrenFormStackingContext);
+  }
+  return traits;
+}
+
 react::Props::Shared NewComponentDescriptor::cloneProps(
   const react::PropsParserContext &context,
   const react::Props::Shared &props,

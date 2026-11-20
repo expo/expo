@@ -30,6 +30,10 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
     return nil
   }
 
+  private var sceneSubscribers: [ExpoSceneDelegateSubscriberProtocol] {
+    return ExpoAppDelegateSubscriberRepository.subscribers.compactMap { $0 as? ExpoSceneDelegateSubscriberProtocol }
+  }
+
   open func scene(
     _ scene: UIScene,
     willConnectTo session: UISceneSession,
@@ -47,6 +51,10 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
         + "ExpoAppDelegate, conforms to ExpoReactNativeFactoryProvider and creates its "
         + "RCTReactNativeFactory in application(_:didFinishLaunchingWithOptions:)."
       )
+    }
+
+    sceneSubscribers.forEach {
+      $0.scene?(windowScene, willConnectTo: session, options: connectionOptions)
     }
 
     let window = UIWindow(windowScene: windowScene)
@@ -89,6 +97,7 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   open func sceneDidDisconnect(_ scene: UIScene) {
+    sceneSubscribers.forEach { $0.sceneDidDisconnect?(scene) }
     window = nil
   }
 

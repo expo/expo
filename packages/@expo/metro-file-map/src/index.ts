@@ -155,7 +155,7 @@ export type {
 // This should be bumped whenever a code change to `metro-file-map` itself
 // would cause a change to the cache data structure and/or content (for a given
 // filesystem state and build parameters).
-const CACHE_BREAKER = '12';
+const CACHE_BREAKER = '13';
 
 const CHANGE_INTERVAL = 30;
 
@@ -322,7 +322,7 @@ export default class FileMap extends EventEmitter {
       healthCheck: options.healthCheck,
       perfLoggerFactory: options.perfLoggerFactory,
       resetCache: options.resetCache,
-      useWatchman: options.useWatchman ?? false,
+      useWatchman: options.useWatchman == null ? true : options.useWatchman,
       watch: !!options.watch,
       watchmanDeferStates: options.watchmanDeferStates ?? [],
       enableFallback,
@@ -627,11 +627,7 @@ export default class FileMap extends EventEmitter {
 
       if (fileData[H.SYMLINK] === 0) {
         filesToProcess.push([normalFilePath, fileData]);
-      } else if (fileData[H.MTIME] != null && fileData[H.MTIME] !== 0) {
-        // Symlink was previously resolved and its mtime changed — resolve
-        // eagerly to update the cached target. Symlinks with null mtime
-        // (cold start or never accessed) are deferred to lazy resolution
-        // in TreeFS.#resolveSymlinkTargetToNormalPath.
+      } else {
         const maybeReadLink = this.#maybeReadLink(normalFilePath, fileData);
         if (maybeReadLink) {
           readLinkPromises.push(

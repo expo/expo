@@ -1046,8 +1046,8 @@
 # Agent discovery paths probed by AI-readiness checkers
 /api /versions/latest 301
 /api/ /versions/latest 301
-/developers / 301
-/developers/ / 301
+/developers /accounts/programmatic-access/ 301
+/developers/ /accounts/programmatic-access/ 301
 /contact https://expo.dev/contact 301
 /contact/ https://expo.dev/contact 301
 /privacy https://expo.dev/privacy 301

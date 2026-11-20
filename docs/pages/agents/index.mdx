@@ -11,6 +11,7 @@ import {
   ClaudeLogoIcon,
   CursorLogoIcon,
   OpenAILogoIcon,
+  XAILogoIcon,
 } from '~/ui/components/CustomIcons/AIProviderIcons';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -20,7 +21,7 @@ Claude Code, Codex, Cursor, and other AI coding agents can help you build, upgra
 
 ## Quick start
 
-Claude Code and Codex have an official Expo plugin. One command installs [Expo Skills](/skills/) and registers the [Expo Model Context Protocol (MCP) Server](/mcp/).
+Claude Code, Codex, and Grok Build have an official Expo plugin. One command installs [Expo Skills](/skills/) and registers the [Expo Model Context Protocol (MCP) Server](/mcp/).
 
 <Tabs>
 
@@ -42,6 +43,14 @@ Then sign in to your Expo account:
 
 </Tab>
 
+<Tab label="Grok Build">
+
+<Terminal cmd={['$ grok plugin install expo --trust']} />
+
+Then type `/mcps` inside your Grok Build session, select `expo`, and press <kbd>I</kbd> to sign in to your Expo account.
+
+</Tab>
+
 </Tabs>
 
 Cursor and other agents do not have an official Expo plugin. To configure them, install [Expo Skills](/skills/) and the [Expo MCP Server](/mcp/) separately.
@@ -51,7 +60,7 @@ Cursor and other agents do not have an official Expo plugin. To configure them, 
 Three pieces work together to give an AI agent consistent, Expo-specific context:
 
 - **Expo Skills:** The `expo` plugin adds Expo-specific instructions and slash commands to the agent. The agent applies known-good Expo patterns (SDK upgrades, Expo Workflows, native UI with Jetpack Compose and SwiftUI, API routes) instead of guessing from training data. Skills install once per machine.
-- **Expo MCP Server:** A remote Model Context Protocol (MCP) server that gives the agent live access to the latest Expo documentation, Expo Build history, Expo Update channels, and TestFlight metadata. The agent can install SDK-matching packages, read build logs, and take simulator screenshots through it. For Claude Code and Codex, the `expo` plugin registers this server, so you do not add it separately.
+- **Expo MCP Server:** A remote Model Context Protocol (MCP) server that gives the agent live access to the latest Expo documentation, Expo Build history, Expo Update channels, and TestFlight metadata. The agent can install SDK-matching packages, read build logs, and take simulator screenshots through it. For Claude Code, Codex, and Grok Build, the `expo` plugin registers this server, so you do not add it separately.
 - **Project context files:** `create-expo-app` writes **AGENTS.md** at the project root to point agents to the documentation for the Expo SDK version your project targets. When Claude Code is installed, it also writes **.claude/settings.json** to enable the Expo plugin.
 
 ## Set up Expo Skills and Expo MCP Server
@@ -97,16 +106,23 @@ Each per-agent guide covers install, setup, and example prompts for that agent:
   Icon={CursorLogoIcon}
 />
 
+<BoxLink
+  title="Grok Build"
+  description="Set up xAI's terminal agent with Expo, including project context and example prompts."
+  href="/agents/grok/"
+  Icon={XAILogoIcon}
+/>
+
 ## Project context files for agents
 
 The `create-expo-app` CLI adds **AGENTS.md** to a new project's root. When Claude Code is installed, it also adds **.claude/settings.json**:
 
-| File                      | Read by                         | Purpose                                                                                                                             |
-| ------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| **AGENTS.md**             | Claude Code, Codex, and Cursor. | Points the agent to the Expo documentation matching your project's SDK. This is the source of truth for project-level instructions. |
-| **.claude/settings.json** | Claude Code on startup.         | Pre-enables the official Expo plugin from the Claude Code plugin marketplace.                                                       |
+| File                      | Read by                                     | Purpose                                                                                                                             |
+| ------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **AGENTS.md**             | Claude Code, Codex, Cursor, and Grok Build. | Points the agent to the Expo documentation matching your project's SDK. This is the source of truth for project-level instructions. |
+| **.claude/settings.json** | Claude Code on startup.                     | Pre-enables the official Expo plugin from the Claude Code plugin marketplace.                                                       |
 
-Add shared project instructions to **AGENTS.md** so Claude Code, Codex, and Cursor read the same context.
+Add shared project instructions to **AGENTS.md** so Claude Code, Codex, Cursor, and Grok Build read the same context.
 
 ## Set up an existing project
 
@@ -146,7 +162,7 @@ This file enables the plugin for everyone who opens the project. Each developer 
 
 </Step>
 
-Commit both files so every agent session on your team starts from the same project context. Codex and Cursor need only **AGENTS.md**, so step 2 applies to Claude Code only.
+Commit both files so every agent session on your team starts from the same project context. Codex, Cursor, and Grok Build need only **AGENTS.md**, so step 2 applies to Claude Code only.
 
 ## Verify the setup
 

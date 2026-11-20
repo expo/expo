@@ -36,10 +36,10 @@ open class ExpoNativeView: ExpoNativeViewObjC {
     fatalError("init(coder:) has not been implemented")
   }
 
-  /// The view's type as an `AnyNativeView`, found on the first props update, so later updates skip the
+  /// The view's type as an `AnyNativeUIKitView`, found on the first props update, so later updates skip the
   /// conformance check. Accessed only on the main thread, in `updateDecodedProps(_:)`.
   @exclusivity(unchecked)
-  nonisolated(unsafe) private var nativeViewType: (any AnyNativeView.Type)?
+  nonisolated(unsafe) private var nativeViewType: (any AnyNativeUIKitView.Type)?
 
   public nonisolated final override func updateDecodedProps(_ decodedProps: UnsafeRawPointer?) {
     assert(Thread.isMainThread, "Fabric mounts the props of a view on the main thread")
@@ -50,10 +50,10 @@ open class ExpoNativeView: ExpoNativeViewObjC {
     viewType._applyDecodedProps(object, to: self)
   }
 
-  private nonisolated func findNativeViewType() -> (any AnyNativeView.Type)? {
-    guard let viewType = type(of: self) as? any AnyNativeView.Type else {
+  private nonisolated func findNativeViewType() -> (any AnyNativeUIKitView.Type)? {
+    guard let viewType = type(of: self) as? any AnyNativeUIKitView.Type else {
       log.error(
-        "The view '\(type(of: self))' doesn't conform to AnyNativeView, so its props aren't applied. Add @ExpoView<Props> to the class"
+        "The view '\(type(of: self))' doesn't conform to AnyNativeUIKitView, so its props aren't applied. Add @ExpoView<Props> to the class"
       )
       return nil
     }
@@ -73,14 +73,10 @@ open class ExpoNativeView: ExpoNativeViewObjC {
   /// `packageComponentName`.
   ///
   /// `RCTComponentViewFactory` maps each component to a class and creates the views with `+[viewClass new]`.
-  /// So the registered class is a subclass of the view type that is named after the component, the same way
-  /// that `ExpoFabricView.viewClass` does it. The subclass adds no methods.
+  /// So the registered class is a subclass of `_componentViewBaseClass` that is named after the component, the
+  /// same way that `ExpoFabricView.viewClass` does it. The subclass adds no methods.
   @MainActor
   internal static func registerComponent(_ viewType: any AnyNativeView.Type, componentName: String) {
-    guard viewType is ExpoNativeView.Type else {
-      log.error("The view '\(viewType)' isn't registered as '\(componentName)', because it isn't an ExpoNativeView")
-      return
-    }
     if let registeredViewType = registeredViewTypes[componentName] {
       if registeredViewType != ObjectIdentifier(viewType) {
         log.error(
@@ -89,7 +85,7 @@ open class ExpoNativeView: ExpoNativeViewObjC {
       }
       return
     }
-    guard let viewClass = objc_allocateClassPair(viewType, componentName, 0) else {
+    guard let viewClass = objc_allocateClassPair(viewType._componentViewBaseClass, componentName, 0) else {
       log.error("Cannot register the view '\(viewType)' because a class named '\(componentName)' already exists")
       return
     }

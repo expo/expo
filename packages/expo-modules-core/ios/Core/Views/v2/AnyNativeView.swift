@@ -1,19 +1,11 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
-/// A view of Expo Modules v2. `@ExpoView<Props>` conforms an `ExpoNativeView` subclass to it,
-/// and its `Props` typealias names the `@ViewProps` type.
-///
-/// It's constrained to `AnyObject`, not to `ExpoNativeView`: with the superclass in the protocol, the
-/// Swift compiler sometimes crashes when it deserializes the protocol in a module that imports
-/// `RCTComponentViewProtocol` on macOS. The `@ExpoView` macro applies only to `ExpoNativeView`
-/// subclasses, so the extension below treats `self` as one.
+/// A view type of Expo Modules v2: a UIKit view (``AnyNativeUIKitView``) or a SwiftUI view
+/// (``AnyNativeSwiftUIView``). `@ExpoView<Props>` conforms the type to one of them, and its `Props` typealias names
+/// the `@ViewProps` type. Modules and packages list their views as this type.
 @MainActor
-public protocol AnyNativeView: AnyObject {
+public protocol AnyNativeView {
   associatedtype Props: AnyViewProps
-
-  /// Called when the view gets new props, with what changed since the props it had. The first call
-  /// has all props, also when React sets none of them. When it had none, the next call has all props too.
-  func didUpdateProps(_ diff: PropsDiff<Props>)
 
   /// Creates the decoder of the view's props, which the component descriptor of the view type calls.
   /// Framework-internal (leading underscore). It's a requirement, so the default implementation is
@@ -24,14 +16,60 @@ public protocol AnyNativeView: AnyObject {
   /// overrides it; it's the unqualified type name by default.
   nonisolated static var _jsName: String { get }
 
+  /// The class that the Fabric component views of the view type are based on: the view type itself for a UIKit
+  /// view, or the class that renders a SwiftUI view. Core registers a subclass of it for each component.
+  /// Framework-internal (leading underscore). `AnyNativeUIKitView` and `AnyNativeSwiftUIView` implement it, so core
+  /// gets the class without a dynamic cast, which would look up the conformance of the view type at launch.
+  static var _componentViewBaseClass: AnyClass { get }
+}
+
+extension AnyNativeView {
+  @inlinable
+  public nonisolated static func _makePropsDecoder(viewName: String) -> ViewPropsDecoderAdapter {
+    return ViewPropsDecoderAdapter(makeViewPropsDecoder(Props.self, viewName: viewName))
+  }
+
+  public nonisolated static var _jsName: String {
+    return unqualifiedTypeName(self)
+  }
+
+  /// The names of the view's props, for the view config in JavaScript.
+  nonisolated internal static var propNames: [String] {
+    // A closure, not `\.rawValue`: in generic code, a key path finds its type from a mangled name, which looks up
+    // the conformance of `Props`.
+    return Props.PropName.allCases.map { $0.rawValue }
+  }
+
+  /// The names of the view's events, for the view config in JavaScript.
+  nonisolated internal static var eventNames: [String] {
+    return Props._eventNames
+  }
+}
+
+/// A UIKit view of Expo Modules v2. `@ExpoView<Props>` conforms an `ExpoNativeView` subclass to it.
+///
+/// It's constrained to `AnyObject`, not to `ExpoNativeView`: with the superclass in the protocol, the
+/// Swift compiler sometimes crashes when it deserializes the protocol in a module that imports
+/// `RCTComponentViewProtocol` on macOS. The `@ExpoView` macro applies only to `ExpoNativeView`
+/// subclasses, so the extension below treats `self` as one.
+@MainActor
+public protocol AnyNativeUIKitView: AnyNativeView, AnyObject {
+  /// Called when the view gets new props, with what changed since the props it had. The first call
+  /// has all props, also when React sets none of them. When it had none, the next call has all props too.
+  func didUpdateProps(_ diff: PropsDiff<Props>)
+
   /// Applies decoded props that Fabric mounts to the given view of this type. Framework-internal
   /// (leading underscore). It's a requirement, so the default implementation is specialized in the
   /// module that declares the view.
   nonisolated static func _applyDecodedProps(_ object: AnyObject?, to view: ExpoNativeView)
 }
 
-extension AnyNativeView {
+extension AnyNativeUIKitView {
   public func didUpdateProps(_ diff: PropsDiff<Props>) {}
+
+  public static var _componentViewBaseClass: AnyClass {
+    return self
+  }
 
   /// The current props of the view. Before the first `didUpdateProps(_:)`, they are `Props()`.
   /// `@inlinable`, so the access is specialized for `Props` in the module that declares the view.
@@ -62,32 +100,13 @@ extension AnyNativeView {
     let apply = unsafeBitCast(applyDecodedProps as IsolatedApply, to: NonisolatedApply.self)
     apply(object, nativeView, Self.self)
   }
-
-  @inlinable
-  public nonisolated static func _makePropsDecoder(viewName: String) -> ViewPropsDecoderAdapter {
-    return ViewPropsDecoderAdapter(ViewPropsDecoder<Props>(viewName: viewName))
-  }
-
-  public nonisolated static var _jsName: String {
-    return unqualifiedTypeName(self)
-  }
-
-  /// The names of the view's props, for the view config in JavaScript.
-  nonisolated internal static var propNames: [String] {
-    return Props.PropName.allCases.map(\.rawValue)
-  }
-
-  /// The names of the view's events, for the view config in JavaScript.
-  nonisolated internal static var eventNames: [String] {
-    return Props._eventNames
-  }
 }
 
 /// Applies decoded props to a view of the given type. A plain main actor function, not a closure or a
 /// witness, so Swift doesn't check the current executor when `AnyNativeView._applyDecodedProps` calls it.
 @MainActor
 @inlinable
-internal func applyDecodedProps<View: AnyNativeView>(
+internal func applyDecodedProps<View: AnyNativeUIKitView>(
   _ object: AnyObject?,
   to nativeView: ExpoNativeView,
   as viewType: View.Type
@@ -106,12 +125,18 @@ internal func applyDecodedProps<View: AnyNativeView>(
     new = unsafeDowncast(object, to: DecodedViewProps<View.Props>.self)
   } else if old == nil {
     // React set none of the props, so the view gets the defaults.
-    new = DecodedViewProps(props: View.Props(), changedProps: [], previous: nil)
+    let (props, events) = initialViewProps(View.Props.self)
+    new = DecodedViewProps(props: props, changedProps: [], previous: nil, events: events)
   } else {
     return
   }
   if new === old {
     return
+  }
+  // New props from another lineage come with their own dispatcher. It's connected before `didUpdateProps`, which
+  // can dispatch events.
+  if let events = new.events, events !== old?.events {
+    events.connect(nativeView)
   }
   nativeView.decodedProps = new
   unsafeDowncast(nativeView, to: View.self).didUpdateProps(

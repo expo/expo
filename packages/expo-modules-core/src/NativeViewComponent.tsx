@@ -4,7 +4,6 @@ import { type ComponentType } from 'react';
 import { type HostComponent, NativeComponentRegistry } from 'react-native';
 
 import { hasAriaProps, mapAriaProps } from './ariaProps';
-import { addAttributeProcessing } from './nativeViewProps';
 import { requireOptionalNativeModule } from './requireNativeModule';
 
 /**
@@ -33,7 +32,8 @@ function requireHostComponent(
   if (!component) {
     component = NativeComponentRegistry.get(name, () => ({
       uiViewClassName: name,
-      validAttributes: addAttributeProcessing(validAttributes),
+      // Shared objects go to native as JS objects. The props decoder of the view reads their native state.
+      validAttributes,
       directEventTypes,
     }));
     hostComponentsCache.set(name, component);

@@ -2,43 +2,35 @@
 
 import CoreGraphics
 import ExpoModulesCore
+import UIKit
 
-/**
- Options for loading the source image.
- */
-internal struct ImageLoadOptions: Record {
-  @Field
+/// The source image: a URL or a reference to an already loaded image.
+@Union
+internal enum ImageSource {
+  case url(URL)
+  case image(SharedRef<UIImage>)
+}
+
+/// Options for loading the source image.
+@Record
+internal struct ImageLoadOptions {
   var maxWidth: Int?
-
-  @Field
   var maxHeight: Int?
 }
 
-/**
- Options provided for resize action.
- */
-internal struct ResizeOptions: Record {
-  @Field
+/// Options provided for resize action.
+@Record
+internal struct ResizeOptions {
   var width: CGFloat?
-
-  @Field
   var height: CGFloat?
 }
 
-/**
- Cropping rect for crop action.
- */
-internal struct CropRect: Record {
-  @Field
+/// Cropping rect for crop action.
+@Record
+internal struct CropRect {
   var originX: Double = 0.0
-
-  @Field
   var originY: Double = 0.0
-
-  @Field
   var width: Double = 0.0
-
-  @Field
   var height: Double = 0.0
 
   func toRect() -> CGRect {
@@ -46,31 +38,30 @@ internal struct CropRect: Record {
   }
 }
 
-/**
- Options to use when saving the resulted image.
- */
-internal struct ManipulateOptions: Record {
-  @Field
+/// Options to use when saving the resulted image.
+@Record
+internal struct ManipulateOptions {
   var base64: Bool = false
-
-  @Field
   var compress: Double = 1.0
-
-  @Field
   var format: ImageFormat = .jpeg
 }
 
-/**
- Possible options for flip action.
- */
+/// The saved image file, returned to JavaScript.
+@Record
+internal struct ImageResult {
+  var uri: String
+  var width: Int
+  var height: Int
+  var base64: String?
+}
+
+/// Possible options for flip action.
 internal enum FlipType: String, Enumerable {
   case vertical
   case horizontal
 }
 
-/**
- Enum with supported image formats.
- */
+/// Enum with supported image formats.
 internal enum ImageFormat: String, Enumerable {
   case jpeg
   case jpg

@@ -78,7 +78,7 @@ internal abstract class NsdDiscoveryBase(
     }
   )
 
-  override fun start() = synchronized(this) {
+  override fun start(): Unit = synchronized(this) {
     if (isDiscovering) {
       return
     }

@@ -1,14 +1,11 @@
 import CoreTelephony
 import ExpoModulesCore
 
+@ExpoModule("ExpoCellular")
 public class CellularModule: Module {
-
-  public func definition() -> ModuleDefinition {
-    Name("ExpoCellular")
-
-    AsyncFunction("getCellularGenerationAsync") { () -> Int in
-      Self.currentCellularGeneration().rawValue
-    }
+  @JS(.concurrent)
+  func getCellularGenerationAsync() async -> Int {
+    Self.currentCellularGeneration().rawValue
   }
 
   // MARK: - internals

@@ -1,7 +1,8 @@
 import { Command } from '@expo/commander';
+import fs from 'node:fs';
 
 import logger from '../Logger';
-import { backportAsync } from '../sdk-cherry-pick/Backport';
+import { BackportRebuild, backportAsync } from '../sdk-cherry-pick/Backport';
 import { ghCli } from '../sdk-cherry-pick/GitHub';
 
 /** `LABELS` is a JSON string for a `labeled` event, and a JSON array when the pull request merged. */
@@ -24,30 +25,40 @@ async function action() {
   }
   const repo = env.GITHUB_REPOSITORY || 'expo/expo';
   const github = ghCli(repo);
-  const pullRequest =
-    env.MERGE_SHA && env.PR_TITLE && env.PR_AUTHOR
-      ? { mergeSha: env.MERGE_SHA, title: env.PR_TITLE, author: env.PR_AUTHOR }
-      : await github.viewPullRequestAsync(prNumber);
+  const pullRequest = await github.viewPullRequestAsync(prNumber);
   const runLogUrl = env.GITHUB_RUN_ID
     ? `${env.GITHUB_SERVER_URL}/${repo}/actions/runs/${env.GITHUB_RUN_ID}`
     : undefined;
 
+  const rebuilds: BackportRebuild[] = [];
   for (const sdkVersion of readSdkVersions(env)) {
     try {
-      await backportAsync({
+      const rebuild = await backportAsync({
         repoDir: env.REPO_DIR || process.cwd(),
         prNumber,
         sdkVersion,
         ...pullRequest,
+        buildPatch: env.BUILD_PATCH,
+        buildPatchRejected: env.BUILD_CHECK === 'failure',
+        buildBase: env.BUILD_BASE,
         dryRun: env.DRY_RUN !== 'false',
         github,
         runLogUrl,
         log: (message) => logger.log(message),
       });
+      if (rebuild) {
+        rebuilds.push(rebuild);
+      }
     } catch (error) {
       logger.error(`The backport to sdk-${sdkVersion} failed:`, error);
       process.exitCode = 1;
     }
+  }
+  if (env.GITHUB_OUTPUT) {
+    await fs.promises.appendFile(
+      env.GITHUB_OUTPUT,
+      `merge-sha=${pullRequest.mergeSha}\nrebuilds=${JSON.stringify(rebuilds)}\n`
+    );
   }
 }
 
@@ -61,10 +72,13 @@ export default (program: Command) => {
     PR_NUMBER                       The pull request on main.
     SDK_VERSION                     The NN of sdk-NN. Without it, LABELS names the branches.
     LABELS                          JSON of the label added, or of every label of the pull request.
-    MERGE_SHA, PR_TITLE, PR_AUTHOR  Read with "gh pr view" when one of them is missing.
-    DRY_RUN                         "false" pushes, opens the pull request, and comments. Default: "true".
+    DRY_RUN                         "false" pushes and comments. Default: "true".
     REPO_DIR                        A clone with an "origin" remote. Default: the current directory.
-    GH_TOKEN                        A token that can push, open pull requests, and comment.`
+    BUILD_PATCH                     The checked build/ patch. Without it, a branch without
+                                    changesets is printed to GITHUB_OUTPUT as "rebuilds", not pushed.
+    BUILD_BASE                      The sdk-NN commit that the rebuild built BUILD_PATCH on.
+    BUILD_CHECK                     "failure" when the safety check rejected the patch.
+    GH_TOKEN                        A token that can push to sdk-NN and comment.`
     )
     .asyncAction(action);
 };
