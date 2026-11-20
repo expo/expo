@@ -25,27 +25,24 @@ internal enum PageIndexDisplayMode: String, Enumerable {
 #endif
 }
 
-internal struct TabViewStyleModifier: ViewModifier, UIRecord {
-  @Field var type: TabViewStyleType?
-  @Field var indexDisplayMode: PageIndexDisplayMode?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    switch type ?? .page {
-    case .page:
+@MainActor @AnyViewBuilder
+internal func tabViewStyleModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let type: TabViewStyleType? = try p.value("type", nil)
+  let indexDisplayMode: PageIndexDisplayMode? = try p.value("indexDisplayMode", nil)
+  switch type ?? .page {
+  case .page:
 #if os(macOS)
-      content.tabViewStyle(.automatic)
+    content.tabViewStyle(.automatic)
 #else
-      content.tabViewStyle(.page(indexDisplayMode: (indexDisplayMode ?? .automatic).asSwiftUI))
+    content.tabViewStyle(.page(indexDisplayMode: (indexDisplayMode ?? .automatic).asSwiftUI))
 #endif
-    case .automatic:
+  case .automatic:
+    content.tabViewStyle(.automatic)
+  case .sidebarAdaptable:
+    if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
+      content.tabViewStyle(.sidebarAdaptable)
+    } else {
       content.tabViewStyle(.automatic)
-    case .sidebarAdaptable:
-      if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
-        content.tabViewStyle(.sidebarAdaptable)
-      } else {
-        content.tabViewStyle(.automatic)
-      }
     }
   }
 }

@@ -3,23 +3,20 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct ContainerRelativeFrameModifier: ViewModifier, UIRecord {
-  @Field var axes: AxisOptions = .both
-  @Field var count: Int = 0
-  @Field var span: Int = 1
-  @Field var spacing: CGFloat = 0
-  @Field var alignment: AlignmentOptions = .center
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    if #available(iOS 17.0, tvOS 17.0, *) {
-      if count > 0 {
-        content.containerRelativeFrame(axes.toAxis(), count: count, span: span, spacing: spacing, alignment: alignment.toAlignment())
-      } else {
-        content.containerRelativeFrame(axes.toAxis(), alignment: alignment.toAlignment())
-      }
+@MainActor @AnyViewBuilder
+internal func containerRelativeFrameModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let axes: AxisOptions = try p.value("axes", .both)
+  let count: Int = try p.value("count", 0)
+  let span: Int = try p.value("span", 1)
+  let spacing: CGFloat = try p.value("spacing", 0)
+  let alignment: AlignmentOptions = try p.value("alignment", .center)
+  if #available(iOS 17.0, tvOS 17.0, *) {
+    if count > 0 {
+      content.containerRelativeFrame(axes.toAxis(), count: count, span: span, spacing: spacing, alignment: alignment.toAlignment())
     } else {
-      content
+      content.containerRelativeFrame(axes.toAxis(), alignment: alignment.toAlignment())
     }
+  } else {
+    content
   }
 }

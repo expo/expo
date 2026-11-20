@@ -30,10 +30,8 @@ internal enum ControlSizeType: String, Enumerable {
   }
 }
 
-internal struct ControlSizeModifier: ViewModifier, UIRecord {
-  @Field var size: ControlSizeType = .regular
-
-  func body(content: Content) -> some View {
-    content.controlSize(size.toNativeControlSize())
-  }
+@MainActor @AnyViewBuilder
+internal func controlSizeModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let size: ControlSizeType = try p.value("size", .regular)
+  content.controlSize(size.toNativeControlSize())
 }

@@ -148,38 +148,30 @@ internal struct PaddingModifier: ViewModifier, UIRecord {
   }
 }
 
-internal struct OpacityModifier: ViewModifier, UIRecord {
-  @Field var value: Double = 1.0
-
-  func body(content: Content) -> some View {
-    content.opacity(value)
-  }
+@MainActor @AnyViewBuilder
+internal func opacityModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let value: Double = try p.value("value", 1.0)
+  content.opacity(value)
 }
 
-internal struct ScaleEffectModifier: ViewModifier, UIRecord {
-  @Field var x: CGFloat = 1.0
-  @Field var y: CGFloat = 1.0
-
-  func body(content: Content) -> some View {
-    content.scaleEffect(x: x, y: y)
-  }
+@MainActor @AnyViewBuilder
+internal func scaleEffectModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let x: CGFloat = try p.value("x", 1.0)
+  let y: CGFloat = try p.value("y", 1.0)
+  content.scaleEffect(x: x, y: y)
 }
 
-internal struct RotationEffectModifier: ViewModifier, UIRecord {
-  @Field var angle: Double = 0
-
-  func body(content: Content) -> some View {
-    content.rotationEffect(.degrees(angle))
-  }
+@MainActor @AnyViewBuilder
+internal func rotationEffectModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let angle: Double = try p.value("angle", 0)
+  content.rotationEffect(.degrees(angle))
 }
 
-internal struct OffsetModifier: ViewModifier, UIRecord {
-  @Field var x: CGFloat = 0
-  @Field var y: CGFloat = 0
-
-  func body(content: Content) -> some View {
-    content.offset(x: x, y: y)
-  }
+@MainActor @AnyViewBuilder
+internal func offsetModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let x: CGFloat = try p.value("x", 0)
+  let y: CGFloat = try p.value("y", 0)
+  content.offset(x: x, y: y)
 }
 
 internal struct ForegroundColorModifier: ViewModifier, UIRecord {
@@ -194,70 +186,59 @@ internal struct ForegroundColorModifier: ViewModifier, UIRecord {
   }
 }
 
-internal struct LuminanceToAlphaModifier: ViewModifier, UIRecord {
-  func body(content: Content) -> some View {
-    content.luminanceToAlpha()
+@MainActor @AnyViewBuilder
+internal func luminanceToAlphaModifier(_ content: StableContent, _: ModifierParams) throws -> AnyView {
+  content.luminanceToAlpha()
+}
+
+@MainActor @AnyViewBuilder
+internal func boldModifier(_ content: StableContent, _: ModifierParams) throws -> AnyView {
+  if #available(iOS 16.0, tvOS 16.0, *) {
+    content.bold()
   }
 }
 
-internal struct BoldModifier: ViewModifier, UIRecord {
-  func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      content.bold()
-    }
+@MainActor @AnyViewBuilder
+internal func italicModifier(_ content: StableContent, _: ModifierParams) throws -> AnyView {
+  if #available(iOS 16.0, tvOS 16.0, *) {
+    content.italic()
   }
 }
 
-internal struct ItalicModifier: ViewModifier, UIRecord {
-  func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      content.italic()
-    }
+@MainActor @AnyViewBuilder
+internal func monospacedDigitModifier(_ content: StableContent, _: ModifierParams) throws -> AnyView {
+  content.monospacedDigit()
+}
+
+@MainActor @AnyViewBuilder
+internal func tintModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let tint: ShapeStyleValue? = try p.value("tint", nil)
+  if let shapeStyle = tint?.toAnyShapeStyle() {
+    content.tint(shapeStyle)
+  } else {
+    content
   }
 }
 
-internal struct MonospacedDigitModifier: ViewModifier, UIRecord {
-  func body(content: Content) -> some View {
-    content.monospacedDigit()
+@MainActor @AnyViewBuilder
+internal func hiddenModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let hidden: Bool = try p.value("hidden", true)
+  if hidden {
+    content.hidden()
+  } else {
+    content
   }
 }
 
-internal struct TintModifier: ViewModifier, UIRecord {
-  @Field var tint: ShapeStyleValue?
-
-  func body(content: Content) -> some View {
-    if let shapeStyle = tint?.toAnyShapeStyle() {
-      content.tint(shapeStyle)
-    } else {
-      content
-    }
-  }
+@MainActor @AnyViewBuilder
+internal func labelsHiddenModifier(_ content: StableContent, _: ModifierParams) throws -> AnyView {
+  content.labelsHidden()
 }
 
-internal struct HiddenModifier: ViewModifier, UIRecord {
-  @Field var hidden: Bool = true
-
-  func body(content: Content) -> some View {
-    if hidden {
-      content.hidden()
-    } else {
-      content
-    }
-  }
-}
-
-internal struct LabelsHiddenModifier: ViewModifier, UIRecord {
-  func body(content: Content) -> some View {
-    content.labelsHidden()
-  }
-}
-
-internal struct DisabledModifier: ViewModifier, UIRecord {
-  @Field var disabled: Bool = true
-
-  func body(content: Content) -> some View {
-    content.disabled(disabled)
-  }
+@MainActor @AnyViewBuilder
+internal func disabledModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let disabled: Bool = try p.value("disabled", true)
+  content.disabled(disabled)
 }
 
 internal enum RedactionReason: String, Enumerable {
@@ -289,70 +270,55 @@ internal struct RedactedModifier: ViewModifier, UIRecord {
   }
 }
 
-internal struct UnredactedModifier: ViewModifier, UIRecord {
-  func body(content: Content) -> some View {
-    content.unredacted()
+@MainActor @AnyViewBuilder
+internal func unredactedModifier(_ content: StableContent, _: ModifierParams) throws -> AnyView {
+  content.unredacted()
+}
+
+@MainActor @AnyViewBuilder
+internal func privacySensitiveModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let sensitive: Bool = try p.value("sensitive", true)
+  content.privacySensitive(sensitive)
+}
+
+@MainActor @AnyViewBuilder
+internal func invalidatableContentModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let invalidatable: Bool = try p.value("invalidatable", true)
+  if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+    content.invalidatableContent(invalidatable)
+  } else {
+    content
   }
 }
 
-internal struct PrivacySensitiveModifier: ViewModifier, UIRecord {
-  @Field var sensitive: Bool = true
-
-  func body(content: Content) -> some View {
-    content.privacySensitive(sensitive)
-  }
+@MainActor @AnyViewBuilder
+internal func zIndexModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let index: Double = try p.value("index", 0)
+  content.zIndex(index)
 }
 
-internal struct InvalidatableContentModifier: ViewModifier, UIRecord {
-  @Field var invalidatable: Bool = true
-
-  func body(content: Content) -> some View {
-    if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
-      content.invalidatableContent(invalidatable)
-    } else {
-      content
-    }
-  }
+@MainActor @AnyViewBuilder
+internal func blurModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let radius: CGFloat = try p.value("radius", 0)
+  content.blur(radius: radius)
 }
 
-internal struct ZIndexModifier: ViewModifier, UIRecord {
-  @Field var index: Double = 0
-
-  func body(content: Content) -> some View {
-    content.zIndex(index)
-  }
+@MainActor @AnyViewBuilder
+internal func brightnessModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let amount: Double = try p.value("amount", 0)
+  content.brightness(amount)
 }
 
-internal struct BlurModifier: ViewModifier, UIRecord {
-  @Field var radius: CGFloat = 0
-
-  func body(content: Content) -> some View {
-    content.blur(radius: radius)
-  }
+@MainActor @AnyViewBuilder
+internal func contrastModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let amount: Double = try p.value("amount", 1)
+  content.contrast(amount)
 }
 
-internal struct BrightnessModifier: ViewModifier, UIRecord {
-  @Field var amount: Double = 0
-
-  func body(content: Content) -> some View {
-    content.brightness(amount)
-  }
-}
-
-internal struct ContrastModifier: ViewModifier, UIRecord {
-  @Field var amount: Double = 1
-
-  func body(content: Content) -> some View {
-    content.contrast(amount)
-  }
-}
-
-internal struct SaturationModifier: ViewModifier, UIRecord {
-  @Field var amount: Double = 1
-
-  func body(content: Content) -> some View {
-    content.saturation(amount)
-  }
+@MainActor @AnyViewBuilder
+internal func saturationModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let amount: Double = try p.value("amount", 1)
+  content.saturation(amount)
 }
 
 @MainActor @AnyViewBuilder
@@ -365,25 +331,21 @@ internal func colorInvertModifier(_ content: StableContent, _ p: ModifierParams)
   }
 }
 
-internal struct GrayscaleModifier: ViewModifier, UIRecord {
-  @Field var amount: Double = 0
-
-  func body(content: Content) -> some View {
-    content.grayscale(amount)
-  }
+@MainActor @AnyViewBuilder
+internal func grayscaleModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let amount: Double = try p.value("amount", 0)
+  content.grayscale(amount)
 }
 
-internal struct BorderModifier: ViewModifier, UIRecord {
+@MainActor @AnyViewBuilder
+internal func borderModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
   // Declared as `shapeStyle` because `content` is taken by the parameter of `body(content:)`.
-  @Field("content") var shapeStyle: ShapeStyleValue?
-  @Field var width: CGFloat = 1.0
-
-  func body(content: Content) -> some View {
-    if let resolvedStyle = shapeStyle?.toAnyShapeStyle() {
-      content.border(resolvedStyle, width: width)
-    } else {
-      content
-    }
+  let shapeStyle: ShapeStyleValue? = try p.value("content", nil)
+  let width: CGFloat = try p.value("width", 1.0)
+  if let resolvedStyle = shapeStyle?.toAnyShapeStyle() {
+    content.border(resolvedStyle, width: width)
+  } else {
+    content
   }
 }
 
@@ -523,12 +485,10 @@ internal struct OnDisappearModifier: ViewModifier, UIRecord {
   }
 }
 
-internal struct HueRotationModifier: ViewModifier, UIRecord {
-  @Field var angle: Double = 0
-
-  func body(content: Content) -> some View {
-    content.hueRotation(.degrees(angle))
-  }
+@MainActor @AnyViewBuilder
+internal func hueRotationModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let angle: Double = try p.value("angle", 0)
+  content.hueRotation(.degrees(angle))
 }
 
 internal enum ScrollDismissesKeyboardMode: String, Enumerable {
@@ -538,24 +498,22 @@ internal enum ScrollDismissesKeyboardMode: String, Enumerable {
   case immediately
 }
 
-internal struct ScrollDismissesKeyboardModifier: ViewModifier, UIRecord {
-  @Field var mode: ScrollDismissesKeyboardMode = .automatic
-
-  func body(content: Content) -> some View {
-    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
-      switch mode {
-      case .interactively:
-        content.scrollDismissesKeyboard(.interactively)
-      case .immediately:
-        content.scrollDismissesKeyboard(.immediately)
-      case .never:
-        content.scrollDismissesKeyboard(.never)
-      case .automatic:
-        content.scrollDismissesKeyboard(.automatic)
-      }
-    } else {
-      content
+@MainActor @AnyViewBuilder
+internal func scrollDismissesKeyboardModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let mode: ScrollDismissesKeyboardMode = try p.value("mode", .automatic)
+  if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+    switch mode {
+    case .interactively:
+      content.scrollDismissesKeyboard(.interactively)
+    case .immediately:
+      content.scrollDismissesKeyboard(.immediately)
+    case .never:
+      content.scrollDismissesKeyboard(.never)
+    case .automatic:
+      content.scrollDismissesKeyboard(.automatic)
     }
+  } else {
+    content
   }
 }
 
@@ -565,95 +523,81 @@ internal enum MenuActionDismissBehaviorMode: String, Enumerable {
   case enabled
 }
 
-internal struct MenuActionDismissBehaviorModifier: ViewModifier, UIRecord {
-  @Field var behavior: MenuActionDismissBehaviorMode = .automatic
-
-  func body(content: Content) -> some View {
-    if #available(iOS 16.4, macOS 13.3, tvOS 17.0, *) {
-      switch behavior {
-      case .automatic:
-        content.menuActionDismissBehavior(.automatic)
-      case .disabled:
+@MainActor @AnyViewBuilder
+internal func menuActionDismissBehaviorModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let behavior: MenuActionDismissBehaviorMode = try p.value("behavior", .automatic)
+  if #available(iOS 16.4, macOS 13.3, tvOS 17.0, *) {
+    switch behavior {
+    case .automatic:
+      content.menuActionDismissBehavior(.automatic)
+    case .disabled:
 #if os(macOS)
-        content.menuActionDismissBehavior(.automatic)
+      content.menuActionDismissBehavior(.automatic)
 #else
-        content.menuActionDismissBehavior(.disabled)
+      content.menuActionDismissBehavior(.disabled)
 #endif
-      case .enabled:
-        content.menuActionDismissBehavior(.enabled)
-      }
-    } else {
-      content
+    case .enabled:
+      content.menuActionDismissBehavior(.enabled)
     }
+  } else {
+    content
   }
 }
 
-internal struct AccessibilityLabelModifier: ViewModifier, UIRecord {
-  @Field var label: String?
-
-  func body(content: Content) -> some View {
-    if let label = label {
-      content.accessibilityLabel(label)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func accessibilityLabelModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let label: String? = try p.value("label", nil)
+  if let label = label {
+    content.accessibilityLabel(label)
+  } else {
+    content
   }
 }
 
-internal struct AccessibilityHintModifier: ViewModifier, UIRecord {
-  @Field var hint: String?
-
-  func body(content: Content) -> some View {
-    if let hint = hint {
-      content.accessibilityHint(hint)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func accessibilityHintModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let hint: String? = try p.value("hint", nil)
+  if let hint = hint {
+    content.accessibilityHint(hint)
+  } else {
+    content
   }
 }
 
-internal struct AccessibilityValueModifier: ViewModifier, UIRecord {
-  @Field var value: String?
-
-  func body(content: Content) -> some View {
-    if let value = value {
-      content.accessibilityValue(value)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func accessibilityValueModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let value: String? = try p.value("value", nil)
+  if let value = value {
+    content.accessibilityValue(value)
+  } else {
+    content
   }
 }
 
-internal struct AccessibilityInputLabelsModifier: ViewModifier, UIRecord {
-  @Field var inputLabels: [String]?
-
-  func body(content: Content) -> some View {
-    if let inputLabels = inputLabels {
-      content.accessibilityInputLabels(inputLabels.map { Text($0) })
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func accessibilityInputLabelsModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let inputLabels: [String]? = try p.value("inputLabels", nil)
+  if let inputLabels = inputLabels {
+    content.accessibilityInputLabels(inputLabels.map { Text($0) })
+  } else {
+    content
   }
 }
 
-internal struct AccessibilityIdentifierModifier: ViewModifier, UIRecord {
-  @Field var identifier: String?
-
-  func body(content: Content) -> some View {
-    if let identifier = identifier {
-      content.accessibilityIdentifier(identifier)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func accessibilityIdentifierModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let identifier: String? = try p.value("identifier", nil)
+  if let identifier = identifier {
+    content.accessibilityIdentifier(identifier)
+  } else {
+    content
   }
 }
 
-internal struct AccessibilityHiddenModifier: ViewModifier, UIRecord {
-  @Field var hidden: Bool = true
-
-  func body(content: Content) -> some View {
-    content.accessibilityHidden(hidden)
-  }
+@MainActor @AnyViewBuilder
+internal func accessibilityHiddenModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let hidden: Bool = try p.value("hidden", true)
+  content.accessibilityHidden(hidden)
 }
 
 internal enum AccessibilityChildBehaviorType: String, Enumerable {
@@ -673,12 +617,10 @@ internal enum AccessibilityChildBehaviorType: String, Enumerable {
   }
 }
 
-internal struct AccessibilityElementModifier: ViewModifier, UIRecord {
-  @Field var children: AccessibilityChildBehaviorType = .ignore
-
-  func body(content: Content) -> some View {
-    content.accessibilityElement(children: children.toNative())
-  }
+@MainActor @AnyViewBuilder
+internal func accessibilityElementModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let children: AccessibilityChildBehaviorType = try p.value("children", .ignore)
+  content.accessibilityElement(children: children.toNative())
 }
 
 internal enum AccessibilityTraitType: String, Enumerable {
@@ -756,137 +698,117 @@ internal func combineAccessibilityTraits(_ traits: [AccessibilityTraitType]) -> 
   return combined
 }
 
-internal struct AccessibilityAddTraitsModifier: ViewModifier, UIRecord {
-  @Field var traits: [AccessibilityTraitType] = []
+@MainActor @AnyViewBuilder
+internal func accessibilityAddTraitsModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let traits: [AccessibilityTraitType] = try p.value("traits", [])
+  content.accessibilityAddTraits(combineAccessibilityTraits(traits))
+}
 
-  func body(content: Content) -> some View {
-    content.accessibilityAddTraits(combineAccessibilityTraits(traits))
+@MainActor @AnyViewBuilder
+internal func accessibilityRemoveTraitsModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let traits: [AccessibilityTraitType] = try p.value("traits", [])
+  content.accessibilityRemoveTraits(combineAccessibilityTraits(traits))
+}
+
+@MainActor @AnyViewBuilder
+internal func layoutPriorityModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let priority: Double = try p.value("priority", 0)
+  content.layoutPriority(priority)
+}
+
+@MainActor @AnyViewBuilder
+internal func aspectRatioModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let ratio: Double? = try p.value("ratio", nil)
+  let contentMode: String = try p.value("contentMode", "fit")
+  let mode: ContentMode = contentMode == "fill" ? .fill : .fit
+  if let ratio {
+    content.aspectRatio(ratio, contentMode: mode)
+  } else {
+    content.aspectRatio(contentMode: mode)
   }
 }
 
-internal struct AccessibilityRemoveTraitsModifier: ViewModifier, UIRecord {
-  @Field var traits: [AccessibilityTraitType] = []
-
-  func body(content: Content) -> some View {
-    content.accessibilityRemoveTraits(combineAccessibilityTraits(traits))
+@MainActor @AnyViewBuilder
+internal func clippedModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let clipped: Bool = try p.value("clipped", true)
+  if clipped {
+    content.clipped()
+  } else {
+    content
   }
 }
 
-internal struct LayoutPriorityModifier: ViewModifier, UIRecord {
-  @Field var priority: Double = 0
-
-  func body(content: Content) -> some View {
-    content.layoutPriority(priority)
+@MainActor @AnyViewBuilder
+internal func maskModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let shape: ShapeType = try p.value("shape", .rectangle)
+  let cornerRadius: CGFloat = try p.value("cornerRadius", 8)
+  let roundedCornerStyle: RoundedCornerStyle? = try p.value("roundedCornerStyle", nil)
+  let cornerSize: CornerSize? = try p.value("cornerSize", nil)
+  switch shape {
+  case .capsule:
+    content.mask(makeCapsule(style: roundedCornerStyle))
+  case .circle:
+    content.mask(Circle())
+  case .containerRelativeShape:
+    content.mask(ContainerRelativeShape())
+  case .ellipse:
+    content.mask(Ellipse())
+  case .rectangle:
+    content.mask(Rectangle())
+  case .roundedRectangle:
+    content.mask(makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle))
   }
 }
 
-internal struct AspectRatioModifier: ViewModifier, UIRecord {
-  @Field var ratio: Double?
-  @Field var contentMode: String = "fit"
-
-  func body(content: Content) -> some View {
-    let mode: ContentMode = contentMode == "fill" ? .fill : .fit
-    if let ratio {
-      content.aspectRatio(ratio, contentMode: mode)
-    } else {
-      content.aspectRatio(contentMode: mode)
-    }
+@MainActor @AnyViewBuilder
+internal func overlayModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let color: Color? = try p.value("color", nil)
+  let alignment: AlignmentOptions = try p.value("alignment", .center)
+  if let color = color {
+    content.overlay(color, alignment: alignment.toAlignment())
+  } else {
+    content
   }
 }
 
-internal struct ClippedModifier: ViewModifier, UIRecord {
-  @Field var clipped: Bool = true
-
-  func body(content: Content) -> some View {
-    if clipped {
-      content.clipped()
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func backgroundOverlayModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let color: Color? = try p.value("color", nil)
+  let alignment: AlignmentOptions = try p.value("alignment", .center)
+  if let color = color {
+    content.background(color, alignment: alignment.toAlignment())
+  } else {
+    content
   }
 }
 
-internal struct MaskModifier: ViewModifier, UIRecord {
-  @Field var shape: ShapeType = .rectangle
-  @Field var cornerRadius: CGFloat = 8
-  @Field var roundedCornerStyle: RoundedCornerStyle?
-  @Field var cornerSize: CornerSize?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    switch shape {
-    case .capsule:
-      content.mask(makeCapsule(style: roundedCornerStyle))
-    case .circle:
-      content.mask(Circle())
-    case .containerRelativeShape:
-      content.mask(ContainerRelativeShape())
-    case .ellipse:
-      content.mask(Ellipse())
-    case .rectangle:
-      content.mask(Rectangle())
-    case .roundedRectangle:
-      content.mask(makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle))
-    }
+@MainActor @AnyViewBuilder
+internal func fixedSizeModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let horizontal: Bool? = try p.value("horizontal", nil)
+  let vertical: Bool? = try p.value("vertical", nil)
+  if let horizontal, let vertical {
+    content.fixedSize(horizontal: horizontal, vertical: vertical)
+  } else if let horizontal {
+    content.fixedSize(horizontal: horizontal, vertical: false)
+  } else if let vertical {
+    content.fixedSize(horizontal: false, vertical: vertical)
+  } else {
+    content.fixedSize()
   }
 }
 
-internal struct OverlayModifier: ViewModifier, UIRecord {
-  @Field var color: Color?
-  @Field var alignment: AlignmentOptions = .center
-  func body(content: Content) -> some View {
-    if let color = color {
-      content.overlay(color, alignment: alignment.toAlignment())
-    } else {
-      content
-    }
-  }
-}
-
-internal struct BackgroundOverlayModifier: ViewModifier, UIRecord {
-  @Field var color: Color?
-  @Field var alignment: AlignmentOptions = .center
-
-  func body(content: Content) -> some View {
-    if let color = color {
-      content.background(color, alignment: alignment.toAlignment())
-    } else {
-      content
-    }
-  }
-}
-
-internal struct FixedSizeModifier: ViewModifier, UIRecord {
-  @Field var horizontal: Bool?
-  @Field var vertical: Bool?
-
-  func body(content: Content) -> some View {
-    if let horizontal, let vertical {
-      content.fixedSize(horizontal: horizontal, vertical: vertical)
-    } else if let horizontal {
-      content.fixedSize(horizontal: horizontal, vertical: false)
-    } else if let vertical {
-      content.fixedSize(horizontal: false, vertical: vertical)
-    } else {
-      content.fixedSize()
-    }
-  }
-}
-
-internal struct IgnoreSafeAreaModifier: ViewModifier, UIRecord {
-  @Field var regions: SafeAreaRegionOptions?
-  @Field var edges: EdgeOptions?
-
-  func body(content: Content) -> some View {
-    if let regions, let edges {
-      content.ignoresSafeArea(regions.toSafeAreaRegions(), edges: edges.toEdge())
-    } else if let regions {
-      content.ignoresSafeArea(regions.toSafeAreaRegions())
-    } else if let edges {
-      content.ignoresSafeArea(edges: edges.toEdge())
-    } else {
-      content.ignoresSafeArea()
-    }
+@MainActor @AnyViewBuilder
+internal func ignoreSafeAreaModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let regions: SafeAreaRegionOptions? = try p.value("regions", nil)
+  let edges: EdgeOptions? = try p.value("edges", nil)
+  if let regions, let edges {
+    content.ignoresSafeArea(regions.toSafeAreaRegions(), edges: edges.toEdge())
+  } else if let regions {
+    content.ignoresSafeArea(regions.toSafeAreaRegions())
+  } else if let edges {
+    content.ignoresSafeArea(edges: edges.toEdge())
+  } else {
+    content.ignoresSafeArea()
   }
 }
 
@@ -1092,16 +1014,14 @@ internal enum AlignmentGuideOptions: String, Enumerable {
   }
 }
 
-internal struct AlignmentGuideModifier: ViewModifier, UIRecord {
-  @Field var guide: AlignmentGuideOptions = .leading
-  @Field var value: Double = 0
-
-  func body(content: Content) -> some View {
-    if let alignment = guide.horizontalAlignment {
-      content.alignmentGuide(alignment) { _ in CGFloat(value) }
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func alignmentGuideModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let guide: AlignmentGuideOptions = try p.value("guide", .leading)
+  let value: Double = try p.value("value", 0)
+  if let alignment = guide.horizontalAlignment {
+    content.alignmentGuide(alignment) { _ in CGFloat(value) }
+  } else {
+    content
   }
 }
 
@@ -1111,51 +1031,43 @@ internal enum TextTruncationModeTypes: String, Enumerable {
   case tail
 }
 
-internal struct TextTruncationMode: ViewModifier, UIRecord {
-  @Field var mode: TextTruncationModeTypes = .tail
-
-  func body(content: Content) -> some View {
-    switch mode {
-    case .head:
-      content.truncationMode(.head)
-    case .middle:
-      content.truncationMode(.middle)
-    case .tail:
-      content.truncationMode(.tail)
-    }
+@MainActor @AnyViewBuilder
+internal func textTruncationMode(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let mode: TextTruncationModeTypes = try p.value("mode", .tail)
+  switch mode {
+  case .head:
+    content.truncationMode(.head)
+  case .middle:
+    content.truncationMode(.middle)
+  case .tail:
+    content.truncationMode(.tail)
   }
 }
 
-internal struct TextKerning: ViewModifier, UIRecord {
-  @Field var value: CGFloat = 0
-
-  func body(content: Content) -> some View {
-    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
-      content.kerning(value)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func textKerning(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let value: CGFloat = try p.value("value", 0)
+  if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+    content.kerning(value)
+  } else {
+    content
   }
 }
 
-internal struct TextAllowsTightening: ViewModifier, UIRecord {
-  @Field var value: Bool = true
-
-  func body(content: Content) -> some View {
-    if #available(iOS 13.0, macOS 10.15, tvOS 16.0, *) {
-      content.allowsTightening(value)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func textAllowsTightening(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let value: Bool = try p.value("value", true)
+  if #available(iOS 13.0, macOS 10.15, tvOS 16.0, *) {
+    content.allowsTightening(value)
+  } else {
+    content
   }
 }
 
-internal struct MinimumScaleFactorModifier: ViewModifier, UIRecord {
-  @Field var factor: CGFloat = 1.0
-
-  func body(content: Content) -> some View {
-    content.minimumScaleFactor(factor)
-  }
+@MainActor @AnyViewBuilder
+internal func minimumScaleFactorModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let factor: CGFloat = try p.value("factor", 1.0)
+  content.minimumScaleFactor(factor)
 }
 
 internal enum TextCaseTypes: String, Enumerable {
@@ -1745,13 +1657,12 @@ internal struct MatchedGeometryEffectModifier: ViewModifier, UIRecord {
   }
 }
 
-internal struct GeometryGroupModifier: ViewModifier, UIRecord {
-  func body(content: Content) -> some View {
-    if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
-      content.geometryGroup()
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func geometryGroupModifier(_ content: StableContent, _: ModifierParams) throws -> AnyView {
+  if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+    content.geometryGroup()
+  } else {
+    content
   }
 }
 
@@ -1765,46 +1676,44 @@ internal enum ButtonStyle: String, Enumerable {
   case plain
 }
 
-internal struct ButtonStyleModifier: ViewModifier, UIRecord {
-  @Field var style: ButtonStyle = .automatic
-
-  func body(content: Content) -> some View {
-    switch style {
-    case .bordered:
-      content.buttonStyle(.bordered)
-    case .borderedProminent:
-      content.buttonStyle(.borderedProminent)
-    case .borderless:
-      if #available(iOS 13.0, macOS 10.15, tvOS 17.0, *) {
-        content.buttonStyle(.borderless)
-      } else {
-        content.buttonStyle(.automatic)
-      }
-    case .glass:
-      if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
-#if compiler(>=6.2) // Xcode 26
-        content.buttonStyle(.glass)
-#else
-        content.buttonStyle(.automatic)
-#endif
-      } else {
-        content.buttonStyle(.automatic)
-      }
-    case .glassProminent:
-      if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
-#if compiler(>=6.2) // Xcode 26
-        content.buttonStyle(.glassProminent)
-#else
-        content.buttonStyle(.automatic)
-#endif
-      } else {
-        content.buttonStyle(.automatic)
-      }
-    case .plain:
-      content.buttonStyle(.plain)
-    default:
+@MainActor @AnyViewBuilder
+internal func buttonStyleModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let style: ButtonStyle = try p.value("style", .automatic)
+  switch style {
+  case .bordered:
+    content.buttonStyle(.bordered)
+  case .borderedProminent:
+    content.buttonStyle(.borderedProminent)
+  case .borderless:
+    if #available(iOS 13.0, macOS 10.15, tvOS 17.0, *) {
+      content.buttonStyle(.borderless)
+    } else {
       content.buttonStyle(.automatic)
     }
+  case .glass:
+    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
+#if compiler(>=6.2) // Xcode 26
+      content.buttonStyle(.glass)
+#else
+      content.buttonStyle(.automatic)
+#endif
+    } else {
+      content.buttonStyle(.automatic)
+    }
+  case .glassProminent:
+    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
+#if compiler(>=6.2) // Xcode 26
+      content.buttonStyle(.glassProminent)
+#else
+      content.buttonStyle(.automatic)
+#endif
+    } else {
+      content.buttonStyle(.automatic)
+    }
+  case .plain:
+    content.buttonStyle(.plain)
+  default:
+    content.buttonStyle(.automatic)
   }
 }
 
@@ -1814,35 +1723,30 @@ internal enum TextFieldStyle: String, Enumerable {
   case roundedBorder
 }
 
-internal struct TextFieldStyleModifier: ViewModifier, UIRecord {
-  @Field var style: TextFieldStyle = .automatic
-
-  func body(content: Content) -> some View {
-    switch style {
-    case .plain:
-      content.textFieldStyle(.plain)
-    case .roundedBorder:
+@MainActor @AnyViewBuilder
+internal func textFieldStyleModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let style: TextFieldStyle = try p.value("style", .automatic)
+  switch style {
+  case .plain:
+    content.textFieldStyle(.plain)
+  case .roundedBorder:
 #if os(iOS)
-      content.textFieldStyle(.roundedBorder)
+    content.textFieldStyle(.roundedBorder)
 #else
-      content.textFieldStyle(.automatic)
+    content.textFieldStyle(.automatic)
 #endif
-    default:
-      content.textFieldStyle(.automatic)
-    }
+  default:
+    content.textFieldStyle(.automatic)
   }
 }
 
-internal struct NavigationTitleModifier: ViewModifier, UIRecord {
-  @Field var title: String?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    if let title {
-      content.navigationTitle(title)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func navigationTitleModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let title: String? = try p.value("title", nil)
+  if let title {
+    content.navigationTitle(title)
+  } else {
+    content
   }
 }
 
@@ -1865,16 +1769,14 @@ internal enum NavigationBarTitleDisplayMode: String, Enumerable {
 #endif
 }
 
-internal struct NavigationBarTitleDisplayModeModifier: ViewModifier, UIRecord {
-  @Field var displayMode: NavigationBarTitleDisplayMode = .automatic
-
-  func body(content: Content) -> some View {
+@MainActor @AnyViewBuilder
+internal func navigationBarTitleDisplayModeModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let displayMode: NavigationBarTitleDisplayMode = try p.value("displayMode", .automatic)
 #if os(iOS)
-    content.navigationBarTitleDisplayMode(displayMode.value)
+  content.navigationBarTitleDisplayMode(displayMode.value)
 #else
-    content
+  content
 #endif
-  }
 }
 
 internal enum ToolbarTitleDisplayModeType: String, Enumerable {
@@ -1906,20 +1808,17 @@ internal enum ToolbarTitleDisplayModeType: String, Enumerable {
   }
 }
 
-internal struct ToolbarTitleDisplayModeModifier: ViewModifier, UIRecord {
-  @Field var mode: ToolbarTitleDisplayModeType = .automatic
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
-      if let value = mode.value {
-        content.toolbarTitleDisplayMode(value)
-      } else {
-        content
-      }
+@MainActor @AnyViewBuilder
+internal func toolbarTitleDisplayModeModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let mode: ToolbarTitleDisplayModeType = try p.value("mode", .automatic)
+  if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+    if let value = mode.value {
+      content.toolbarTitleDisplayMode(value)
     } else {
       content
     }
+  } else {
+    content
   }
 }
 
@@ -1930,9 +1829,7 @@ extension ViewModifierRegistry {
   private func registerBuiltInModifiers() {
     registerModifierInline("listSectionSpacing", listSectionSpacingModifier)
 
-    register("background") { params, appContext, _ in
-      return try BackgroundModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("background", backgroundModifier)
 
     registerModifierInline("cornerRadius", cornerRadiusModifier)
 
@@ -1940,33 +1837,21 @@ extension ViewModifierRegistry {
 
     registerModifierInline("frame", frameModifier)
 
-    register("universalLayout") { params, appContext, _ in
-      return try UniversalLayoutModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("universalLayout", universalLayoutModifier)
 
     register("padding") { params, appContext, _ in
       return try PaddingModifier(from: params, appContext: appContext)
     }
 
-    register("opacity") { params, appContext, _ in
-      return try OpacityModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("opacity", opacityModifier)
 
-    register("scaleEffect") { params, appContext, _ in
-      return try ScaleEffectModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("scaleEffect", scaleEffectModifier)
 
-    register("rotationEffect") { params, appContext, _ in
-      return try RotationEffectModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("rotationEffect", rotationEffectModifier)
 
-    register("rotation3DEffect") { params, appContext, _ in
-      return try Rotation3DEffectModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("rotation3DEffect", rotation3DEffectModifier)
 
-    register("offset") { params, appContext, _ in
-      return try OffsetModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("offset", offsetModifier)
 
     register("foregroundColor") { params, appContext, _ in
       return try ForegroundColorModifier(from: params, appContext: appContext)
@@ -1976,87 +1861,49 @@ extension ViewModifierRegistry {
       return try ForegroundStyleModifier(from: params, appContext: appContext)
     }
 
-    register("luminanceToAlpha") { params, appContext, _ in
-      return try LuminanceToAlphaModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("luminanceToAlpha", luminanceToAlphaModifier)
 
-    register("bold") { params, appContext, _ in
-      return try BoldModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("bold", boldModifier)
 
-    register("italic") { params, appContext, _ in
-      return try ItalicModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("italic", italicModifier)
 
-    register("monospacedDigit") { params, appContext, _ in
-      return try MonospacedDigitModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("monospacedDigit", monospacedDigitModifier)
 
-    register("tint") { params, appContext, _ in
-      return try TintModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("tint", tintModifier)
 
-    register("selectedSegmentTintColor") { params, appContext, _ in
-      return try SelectedSegmentTintColorModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("selectedSegmentTintColor", selectedSegmentTintColorModifier)
 
-    register("hidden") { params, appContext, _ in
-      return try HiddenModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("hidden", hiddenModifier)
 
-    register("labelsHidden") { params, appContext, _ in
-      return try LabelsHiddenModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("labelsHidden", labelsHiddenModifier)
 
-    register("disabled") { params, appContext, _ in
-      return try DisabledModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("disabled", disabledModifier)
 
     register("redacted") { params, appContext, _ in
       return try RedactedModifier(from: params, appContext: appContext)
     }
 
-    register("unredacted") { params, appContext, _ in
-      return try UnredactedModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("unredacted", unredactedModifier)
 
-    register("privacySensitive") { params, appContext, _ in
-      return try PrivacySensitiveModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("privacySensitive", privacySensitiveModifier)
 
-    register("invalidatableContent") { params, appContext, _ in
-      return try InvalidatableContentModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("invalidatableContent", invalidatableContentModifier)
 
-    register("zIndex") { params, appContext, _ in
-      return try ZIndexModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("zIndex", zIndexModifier)
 
-    register("blur") { params, appContext, _ in
-      return try BlurModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("blur", blurModifier)
 
-    register("brightness") { params, appContext, _ in
-      return try BrightnessModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("brightness", brightnessModifier)
 
-    register("contrast") { params, appContext, _ in
-      return try ContrastModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("contrast", contrastModifier)
 
-    register("saturation") { params, appContext, _ in
-      return try SaturationModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("saturation", saturationModifier)
 
     registerModifierInline("colorInvert", colorInvertModifier)
 
-    register("grayscale") { params, appContext, _ in
-      return try GrayscaleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("grayscale", grayscaleModifier)
 
-    register("border") { params, appContext, _ in
-      return try BorderModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("border", borderModifier)
     register("strokeBorder") { params, appContext, _ in
       return try StrokeBorderModifier(from: params, appContext: appContext)
     }
@@ -2087,109 +1934,57 @@ extension ViewModifierRegistry {
       return try RefreshableModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
-    register("hueRotation") { params, appContext, _ in
-      return try HueRotationModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("hueRotation", hueRotationModifier)
 
-    register("navigationTitle") { params, appContext, _ in
-      return try NavigationTitleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("navigationTitle", navigationTitleModifier)
 
-    register("navigationBarTitleDisplayMode") { params, appContext, _ in
-      return try NavigationBarTitleDisplayModeModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("navigationBarTitleDisplayMode", navigationBarTitleDisplayModeModifier)
 
-    register("toolbarTitleDisplayMode") { params, appContext, _ in
-      return try ToolbarTitleDisplayModeModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("toolbarTitleDisplayMode", toolbarTitleDisplayModeModifier)
 
-    register("navigationSplitViewStyle") { params, appContext, _ in
-      return try NavigationSplitViewStyleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("navigationSplitViewStyle", navigationSplitViewStyleModifier)
 
-    register("navigationSplitViewColumnWidth") { params, appContext, _ in
-      return try NavigationSplitViewColumnWidthModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("navigationSplitViewColumnWidth", navigationSplitViewColumnWidthModifier)
 
-    register("arrangementViewStyle") { params, appContext, _ in
-      return try ArrangementViewStyleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("arrangementViewStyle", arrangementViewStyleModifier)
 
-    register("splitArrangementLayoutRatio") { params, appContext, _ in
-      return try SplitArrangementLayoutRatioModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("splitArrangementLayoutRatio", splitArrangementLayoutRatioModifier)
 
-    register("splitArrangementLayoutSize") { params, appContext, _ in
-      return try SplitArrangementLayoutSizeModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("splitArrangementLayoutSize", splitArrangementLayoutSizeModifier)
 
-    register("splitArrangementFixedLayoutSize") { params, appContext, _ in
-      return try SplitArrangementFixedLayoutSizeModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("splitArrangementFixedLayoutSize", splitArrangementFixedLayoutSizeModifier)
 
-    register("overlayArrangementEdge") { params, appContext, _ in
-      return try OverlayArrangementEdgeModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("overlayArrangementEdge", overlayArrangementEdgeModifier)
 
-    register("accessibilityLabel") { params, appContext, _ in
-      return try AccessibilityLabelModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("accessibilityLabel", accessibilityLabelModifier)
 
-    register("accessibilityHint") { params, appContext, _ in
-      return try AccessibilityHintModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("accessibilityHint", accessibilityHintModifier)
 
-    register("accessibilityValue") { params, appContext, _ in
-      return try AccessibilityValueModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("accessibilityValue", accessibilityValueModifier)
 
-    register("accessibilityInputLabels") { params, appContext, _ in
-      return try AccessibilityInputLabelsModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("accessibilityInputLabels", accessibilityInputLabelsModifier)
 
-    register("accessibilityIdentifier") { params, appContext, _ in
-      return try AccessibilityIdentifierModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("accessibilityIdentifier", accessibilityIdentifierModifier)
 
-    register("accessibilityHidden") { params, appContext, _ in
-      return try AccessibilityHiddenModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("accessibilityHidden", accessibilityHiddenModifier)
 
-    register("accessibilityElement") { params, appContext, _ in
-      return try AccessibilityElementModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("accessibilityElement", accessibilityElementModifier)
 
-    register("accessibilityAddTraits") { params, appContext, _ in
-      return try AccessibilityAddTraitsModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("accessibilityAddTraits", accessibilityAddTraitsModifier)
 
-    register("accessibilityRemoveTraits") { params, appContext, _ in
-      return try AccessibilityRemoveTraitsModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("accessibilityRemoveTraits", accessibilityRemoveTraitsModifier)
 
-    register("layoutPriority") { params, appContext, _ in
-      return try LayoutPriorityModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("layoutPriority", layoutPriorityModifier)
 
-    register("aspectRatio") { params, appContext, _ in
-      return try AspectRatioModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("aspectRatio", aspectRatioModifier)
 
-    register("clipped") { params, appContext, _ in
-      return try ClippedModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("clipped", clippedModifier)
 
-    register("mask") { params, appContext, _ in
-      return try MaskModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("mask", maskModifier)
 
-    register("overlay") { params, appContext, _ in
-      return try OverlayModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("overlay", overlayModifier)
 
-    register("backgroundOverlay") { params, appContext, _ in
-      return try BackgroundOverlayModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("backgroundOverlay", backgroundOverlayModifier)
 
     register("glassEffect") { params, appContext, _ in
       return try GlassEffectModifier(from: params, appContext: appContext)
@@ -2207,53 +2002,31 @@ extension ViewModifierRegistry {
       return try MatchedGeometryEffectModifier.init(from: params, appContext: appContext)
     }
 
-    register("geometryGroup") { params, appContext, _ in
-      return try GeometryGroupModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("geometryGroup", geometryGroupModifier)
 
-    register("fixedSize") { params, appContext, _ in
-      return try FixedSizeModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("fixedSize", fixedSizeModifier)
 
-    register("ignoreSafeArea") { params, appContext, _ in
-      return try IgnoreSafeAreaModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("ignoreSafeArea", ignoreSafeAreaModifier)
 
-    register("containerShape") { params, appContext, _ in
-      return try ContainerShapeModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("containerShape", containerShapeModifier)
 
     register("contentShape") { params, appContext, _ in
       return try ContentShapeModifier(from: params, appContext: appContext)
     }
 
-    register("containerRelativeFrame") { params, appContext, _ in
-      return try ContainerRelativeFrameModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("containerRelativeFrame", containerRelativeFrameModifier)
 
-    register("buttonStyle") { params, appContext, _ in
-      return try ButtonStyleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("buttonStyle", buttonStyleModifier)
 
-    register("buttonBorderShape") { params, appContext, _ in
-      return try ButtonBorderShapeModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("buttonBorderShape", buttonBorderShapeModifier)
 
-    register("toggleStyle") { params, appContext, _ in
-      return try ToggleStyleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("toggleStyle", toggleStyleModifier)
 
-    register("controlSize") { params, appContext, _ in
-      return try ControlSizeModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("controlSize", controlSizeModifier)
 
-    register("labelStyle") { params, appContext, _ in
-      return try LabelStyleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("labelStyle", labelStyleModifier)
 
-    register("textFieldStyle") { params, appContext, _ in
-      return try TextFieldStyleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("textFieldStyle", textFieldStyleModifier)
 
     register("scrollContentBackground") { params, appContext, _ in
       return try ScrollContentBackground(from: params, appContext: appContext)
@@ -2275,25 +2048,15 @@ extension ViewModifierRegistry {
       return try ListRowSpacing(from: params, appContext: appContext)
     }
 
-    register("alignmentGuide") { params, appContext, _ in
-      return try AlignmentGuideModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("alignmentGuide", alignmentGuideModifier)
 
-    register("truncationMode") { params, appContext, _ in
-      return try TextTruncationMode(from: params, appContext: appContext)
-    }
+    registerModifierInline("truncationMode", textTruncationMode)
 
-    register("kerning") { params, appContext, _ in
-      return try TextKerning(from: params, appContext: appContext)
-    }
+    registerModifierInline("kerning", textKerning)
 
-    register("allowsTightening") { params, appContext, _ in
-      return try TextAllowsTightening(from: params, appContext: appContext)
-    }
+    registerModifierInline("allowsTightening", textAllowsTightening)
 
-    register("minimumScaleFactor") { params, appContext, _ in
-      return try MinimumScaleFactorModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("minimumScaleFactor", minimumScaleFactorModifier)
 
     register("textCase") { params, appContext, _ in
       return try TextCase(from: params, appContext: appContext)
@@ -2323,9 +2086,7 @@ extension ViewModifierRegistry {
       return try LineHeight(from: params, appContext: appContext)
     }
 
-    register("lineLimit") { params, appContext, _ in
-      return try LineLimitModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("lineLimit", lineLimitModifier)
 
     register("listRowInsets") { params, appContext, _ in
       return try ListRowInsets(from: params, appContext: appContext)
@@ -2343,13 +2104,9 @@ extension ViewModifierRegistry {
       return try ListSectionMargins(from: params, appContext: appContext)
     }
 
-    register("scrollDismissesKeyboard") { params, appContext, _ in
-      return try ScrollDismissesKeyboardModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("scrollDismissesKeyboard", scrollDismissesKeyboardModifier)
 
-    register("menuActionDismissBehavior") { params, appContext, _ in
-      return try MenuActionDismissBehaviorModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("menuActionDismissBehavior", menuActionDismissBehaviorModifier)
 
     register("headerProminence") { params, appContext, _ in
       return try HeaderProminence(from: params, appContext: appContext)
@@ -2359,13 +2116,9 @@ extension ViewModifierRegistry {
       return try FontModifier(from: params, appContext: appContext)
     }
 
-    register("dynamicTypeSize") { params, appContext, _ in
-      return try DynamicTypeSizeModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("dynamicTypeSize", dynamicTypeSizeModifier)
 
-    register("imageScale") { params, appContext, _ in
-      return try ImageScaleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("imageScale", imageScaleModifier)
 
     register("gridCellUnsizedAxes") { params, appContext, _ in
       return try GridCellUnsizedAxes(from: params, appContext: appContext)
@@ -2383,21 +2136,13 @@ extension ViewModifierRegistry {
       return try GridCellAnchor(from: params, appContext: appContext)
     }
 
-    register("tag") { params, appContext, _ in
-      return try TagModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("tag", tagModifier)
 
-    register("scrollTargetBehavior") { params, appContext, _ in
-      return try ScrollTargetBehaviorModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("scrollTargetBehavior", scrollTargetBehaviorModifier)
 
-    register("scrollTargetLayout") { params, appContext, _ in
-      return try ScrollTargetLayoutModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("scrollTargetLayout", scrollTargetLayoutModifier)
 
-    register("id") { params, appContext, _ in
-      return try IDModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("id", iDModifier)
 
     register("scrollPosition") { params, appContext, eventDispatcher in
       return try ScrollPositionModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
@@ -2407,145 +2152,79 @@ extension ViewModifierRegistry {
       return try SearchableModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
-    register("searchToolbarBehavior") { params, appContext, _ in
-      return try SearchToolbarBehaviorModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("searchToolbarBehavior", searchToolbarBehaviorModifier)
 
-    register("pickerStyle") { params, appContext, _ in
-      return try PickerStyleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("pickerStyle", pickerStyleModifier)
 
-    register("menuOrder") { params, appContext, _ in
-      return try MenuOrderModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("menuOrder", menuOrderModifier)
 
-    register("menuStyle") { params, appContext, _ in
-      return try MenuStyleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("menuStyle", menuStyleModifier)
 
-    register("menuIndicator") { params, appContext, _ in
-      return try MenuIndicatorModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("menuIndicator", menuIndicatorModifier)
 
-    register("submitLabel") { params, appContext, _ in
-      return try SubmitLabelModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("submitLabel", submitLabelModifier)
 
-    register("textInputAutocapitalization") { params, appContext, _ in
-      return try TextInputAutocapitalizationModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("textInputAutocapitalization", textInputAutocapitalizationModifier)
 
-    register("textContentType") { params, appContext, _ in
-      return try TextContentTypeModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("textContentType", textContentTypeModifier)
 
-    register("datePickerStyle") { params, appContext, _ in
-      return try DatePickerStyleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("datePickerStyle", datePickerStyleModifier)
 
-    register("scrollDisabled") { params, appContext, _ in
-      return try ScrollDisabledModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("scrollDisabled", scrollDisabledModifier)
 
-    register("preferredColorScheme") { params, appContext, _ in
-      return try PreferredColorSchemeModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("preferredColorScheme", preferredColorSchemeModifier)
 
-    register("scrollClipDisabled") { params, appContext, _ in
-      return try ScrollClipDisabledModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("scrollClipDisabled", scrollClipDisabledModifier)
 
-    register("scrollIndicators") { params, appContext, _ in
-      return try ScrollIndicatorsModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("scrollIndicators", scrollIndicatorsModifier)
 
-    register("scrollEdgeEffectStyle") { params, appContext, _ in
-      return try ScrollEdgeEffectStyleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("scrollEdgeEffectStyle", scrollEdgeEffectStyleModifier)
 
-    register("tabViewStyle") { params, appContext, _ in
-      return try TabViewStyleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("tabViewStyle", tabViewStyleModifier)
 
-    register("indexViewStyle") { params, appContext, _ in
-      return try IndexViewStyleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("indexViewStyle", indexViewStyleModifier)
 
-    register("defaultScrollAnchor") { params, appContext, _ in
-      return try DefaultScrollAnchorModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("defaultScrollAnchor", defaultScrollAnchorModifier)
 
-    register("defaultScrollAnchorForRole") { params, appContext, _ in
-      return try DefaultScrollAnchorForRoleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("defaultScrollAnchorForRole", defaultScrollAnchorForRoleModifier)
 
-    register("progressViewStyle") { params, appContext, _ in
-      return try ProgressViewStyleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("progressViewStyle", progressViewStyleModifier)
 
-    register("gaugeStyle") { params, appContext, _ in
-      return try GaugeStyleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("gaugeStyle", gaugeStyleModifier)
 
     register("presentationDetents") { params, appContext, eventDispatcher in
       return try PresentationDetentsModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
-    register("presentationDragIndicator") { params, appContext, _ in
-      return try PresentationDragIndicatorModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("presentationDragIndicator", presentationDragIndicatorModifier)
 
-    register("presentationCornerRadius") { params, appContext, _ in
-      return try PresentationCornerRadiusModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("presentationCornerRadius", presentationCornerRadiusModifier)
 
-    register("presentationBackgroundInteraction") { params, appContext, _ in
-      return try PresentationBackgroundInteractionModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("presentationBackgroundInteraction", presentationBackgroundInteractionModifier)
 
-    register("interactiveDismissDisabled") { params, appContext, _ in
-      return try InteractiveDismissDisabledModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("interactiveDismissDisabled", interactiveDismissDisabledModifier)
 
-    register("presentationBackground") { params, appContext, _ in
-      return try PresentationBackgroundModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("presentationBackground", presentationBackgroundModifier)
 
     register("presentationSizing") { params, appContext, _ in
       return try PresentationSizingModifier(from: params, appContext: appContext)
     }
 
-    register("listStyle") { params, appContext, _ in
-      return try ListStyleModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("listStyle", listStyleModifier)
 
-    register("sectionIndexLabel") { params, appContext, _ in
-      return try SectionIndexLabelModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("sectionIndexLabel", sectionIndexLabelModifier)
 
-    register("moveDisabled") { params, appContext, _ in
-      return try MoveDisabledModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("moveDisabled", moveDisabledModifier)
 
-    register("deleteDisabled") { params, appContext, _ in
-      return try DeleteDisabledModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("deleteDisabled", deleteDisabledModifier)
 
-    register("environment") { params, appContext, _ in
-      return try EnvironmentModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("environment", environmentModifier)
 
-    register("contentTransition") { params, appContext, _ in
-      return try ContentTransitionModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("contentTransition", contentTransitionModifier)
 
-    register("keyboardType") { params, appContext, _ in
-      return try KeyboardTypeModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("keyboardType", keyboardTypeModifier)
 
-    register("autocorrectionDisabled") { params, appContext, _ in
-      return try AutocorrectionDisabledModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("autocorrectionDisabled", autocorrectionDisabledModifier)
 
     register("onSubmit") { params, appContext, eventDispatcher in
       return try OnSubmitModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)

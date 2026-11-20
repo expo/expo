@@ -30,23 +30,20 @@ internal enum GaugeStyleType: String, Enumerable {
 #endif
 }
 
-internal struct GaugeStyleModifier: ViewModifier, UIRecord {
-  @Field var style: GaugeStyleType?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
+@MainActor @AnyViewBuilder
+internal func gaugeStyleModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let style: GaugeStyleType? = try p.value("style", nil)
 #if !os(tvOS)
-    if #available(iOS 16.0, *) {
-      if let style = style {
-        style.apply(to: content)
-      } else {
-        content
-      }
+  if #available(iOS 16.0, *) {
+    if let style = style {
+      style.apply(to: content)
     } else {
       content
     }
-#else
+  } else {
     content
-#endif
   }
+#else
+  content
+#endif
 }

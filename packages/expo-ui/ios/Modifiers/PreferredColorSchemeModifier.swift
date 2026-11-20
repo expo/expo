@@ -3,10 +3,8 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct PreferredColorSchemeModifier: ViewModifier, UIRecord {
-  @Field var colorScheme: ColorSchemeType?
-
-  func body(content: Content) -> some View {
-    content.preferredColorScheme(colorScheme?.toNativeColorScheme())
-  }
+@MainActor @AnyViewBuilder
+internal func preferredColorSchemeModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let colorScheme: ColorSchemeType? = try p.value("colorScheme", nil)
+  content.preferredColorScheme(colorScheme?.toNativeColorScheme())
 }

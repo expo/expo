@@ -3,14 +3,12 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct DefaultScrollAnchorModifier: ViewModifier, UIRecord {
-  @Field var anchor: UnitPointOptions?
-
-  func body(content: Content) -> some View {
-    if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
-      content.defaultScrollAnchor(anchor?.toUnitPoint)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func defaultScrollAnchorModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let anchor: UnitPointOptions? = try p.value("anchor", nil)
+  if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+    content.defaultScrollAnchor(anchor?.toUnitPoint)
+  } else {
+    content
   }
 }
