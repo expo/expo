@@ -235,6 +235,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'RangeSlider component',
+    route: 'ui/range-slider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./RangeSliderScreen'));
+    },
+  },
+  {
     name: 'DropdownMenu component',
     route: 'ui/dropdown-menu',
     options: {},
@@ -432,6 +440,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./PullToRefreshBoxScreen'));
+    },
+  },
+  {
+    name: 'SplitButtonLayout component',
+    route: 'ui/split-button-layout',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SplitButtonLayoutScreen'));
     },
   },
   {

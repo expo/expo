@@ -174,22 +174,18 @@ export function transformNativeBundleForMd5Filename({
     if (artifact.type !== 'js') {
       continue;
     }
-    const assetEntity = files.get(artifact.filename);
-    assert(assetEntity);
-    if (Buffer.isBuffer(assetEntity.contents)) {
-      const searchBuffer = Buffer.from(`${hash}.html`, 'utf8');
-      const replaceBuffer = Buffer.from(`${htmlMd5}.html`, 'utf8');
-      assert(searchBuffer.length === replaceBuffer.length);
-      let index = assetEntity.contents.indexOf(searchBuffer, 0);
-      while (index !== -1) {
-        replaceBuffer.copy(assetEntity.contents, index);
-        index = assetEntity.contents.indexOf(searchBuffer, index + searchBuffer.length);
+    if (Buffer.isBuffer(artifact.source)) {
+      if (artifact.metadata.expoDomComponentReferences?.length) {
+        throw new Error(
+          `Cannot rename DOM assets in compiled Hermes bytecode (${artifact.filename}). ` +
+            'Run `npx expo-doctor` to check package compatibility. Custom serializers must defer Hermes compilation until DOM filenames are resolved.'
+        );
       }
     } else {
       const search = `${hash}.html`;
       const replace = `${htmlMd5}.html`;
       assert(search.length === replace.length);
-      assetEntity.contents = assetEntity.contents.toString().replaceAll(search, replace);
+      artifact.source = artifact.source.replaceAll(search, replace);
     }
   }
 }

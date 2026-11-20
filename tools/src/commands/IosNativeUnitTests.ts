@@ -228,7 +228,7 @@ async function runTestsAsync(
     '-destination',
     destination,
     '-resultBundlePath',
-    path.join(RESULTS_DIR, `${scheme}.xcresult`),
+    getResultBundlePath(scheme),
     'CODE_SIGN_IDENTITY=',
     'CODE_SIGNING_REQUIRED=NO',
     // After a full run, xcodebuild collects simulator diagnostics (a sysdiagnose and a log
@@ -295,6 +295,152 @@ async function runTestsAsync(
     await spawnAsync('bash', ['-o', 'pipefail', '-c', command], { cwd, env, stdio: 'inherit' });
   } else {
     await spawnAsync('xcodebuild', args, { cwd, env, stdio: 'inherit' });
+  }
+}
+
+function getResultBundlePath(scheme: string): string {
+  return path.join(RESULTS_DIR, `${scheme}.xcresult`);
+}
+
+type TestFailure = {
+  target: string;
+  test: string;
+  message: string;
+  /**
+   * Relative to the repository root when the file is in the repository.
+   */
+  file: string | null;
+  line: number | null;
+};
+
+type ResultBundleNode = {
+  nodeType?: string;
+  name?: string;
+  result?: string;
+  sourceLocation?: { filePath: string; lineNumber: number };
+  children?: ResultBundleNode[];
+};
+
+/**
+ * Reads the failed tests from the result bundle, with their failure messages and source
+ * locations. Returns an empty list when the bundle can't be read or has no test results, for
+ * example after a build failure.
+ */
+async function readTestFailuresAsync(resultBundlePath: string): Promise<TestFailure[]> {
+  let testNodes: ResultBundleNode[];
+  try {
+    const { stdout } = await spawnAsync('xcrun', [
+      'xcresulttool',
+      'get',
+      'test-results',
+      'tests',
+      '--path',
+      resultBundlePath,
+    ]);
+    testNodes = JSON.parse(stdout).testNodes;
+  } catch {
+    return [];
+  }
+  const repoRoot = Directories.getExpoRepositoryRootDir();
+  const failures: TestFailure[] = [];
+
+  const collectMessages = (node: ResultBundleNode, messages: ResultBundleNode[]) => {
+    for (const child of node.children ?? []) {
+      if (child.nodeType === 'Failure Message') {
+        messages.push(child);
+      } else if (child.nodeType !== 'Test Value') {
+        collectMessages(child, messages);
+      }
+    }
+    return messages;
+  };
+
+  const visit = (node: ResultBundleNode, target: string) => {
+    if (node.nodeType === 'Unit test bundle') {
+      target = node.name ?? target;
+    }
+    if (node.nodeType === 'Test Case' && node.result === 'Failed') {
+      const messages = collectMessages(node, []);
+      if (!messages.length) {
+        messages.push({ name: 'The test failed.' });
+      }
+      for (const message of messages) {
+        const filePath = message.sourceLocation?.filePath;
+        const relativePath = filePath ? path.relative(repoRoot, filePath) : null;
+        failures.push({
+          target,
+          test: node.name ?? 'unknown test',
+          message: message.name ?? '',
+          file: relativePath && !relativePath.startsWith('..') ? relativePath : (filePath ?? null),
+          line: message.sourceLocation?.lineNumber ?? null,
+        });
+      }
+      return;
+    }
+    for (const child of node.children ?? []) {
+      visit(child, target);
+    }
+  };
+  for (const node of testNodes ?? []) {
+    visit(node, 'unknown target');
+  }
+  return failures;
+}
+
+function formatLocation(failure: TestFailure): string | null {
+  if (!failure.file) {
+    return null;
+  }
+  return failure.line != null ? `${failure.file}:${failure.line}` : failure.file;
+}
+
+async function reportTestFailuresAsync(failures: TestFailure[]) {
+  console.log(chalk.red.bold(`\nTest failures (${failures.length}):`));
+  for (const failure of failures) {
+    const location = formatLocation(failure);
+    console.log(`- ${chalk.bold(`${failure.target}: ${failure.test}`)}`);
+    if (location) {
+      console.log(`  ${location}`);
+    }
+    console.log(`  ${failure.message.replace(/\n/g, '\n  ')}`);
+  }
+  console.log();
+
+  if (!isGithubActions) {
+    return;
+  }
+  // Workflow command values can't contain newlines, and properties can't contain `:` or `,`.
+  const escapeData = (value: string) =>
+    value.replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A');
+  const escapeProperty = (value: string) =>
+    escapeData(value).replace(/:/g, '%3A').replace(/,/g, '%2C');
+  for (const failure of failures) {
+    const properties = [
+      failure.file && `file=${escapeProperty(failure.file)}`,
+      failure.line != null && `line=${failure.line}`,
+      `title=${escapeProperty(`${failure.target}: ${failure.test}`)}`,
+    ].filter(Boolean);
+    console.log(`::error ${properties.join(',')}::${escapeData(failure.message)}`);
+  }
+
+  const summaryPath = process.env.GITHUB_STEP_SUMMARY;
+  if (summaryPath) {
+    const cell = (value: string) => value.replace(/\|/g, '\\|').replace(/\r?\n/g, '<br>');
+    const rows = failures.map((failure) => {
+      const location = formatLocation(failure);
+      return `| ${cell(failure.target)} | ${cell(failure.test)} | ${location ? cell(location) : ''} | ${cell(failure.message)} |`;
+    });
+    await fs.appendFile(
+      summaryPath,
+      [
+        '### iOS unit test failures',
+        '',
+        '| Target | Test | Location | Message |',
+        '| --- | --- | --- | --- |',
+        ...rows,
+        '',
+      ].join('\n')
+    );
   }
 }
 
@@ -421,6 +567,16 @@ export async function iosNativeUnitTests({
   try {
     await runTestsAsync(scheme, destination, useXcbeautify, { benchmarks });
   } catch {
+    const resultBundlePath = getResultBundlePath(scheme);
+    const failures = await readTestFailuresAsync(resultBundlePath);
+    if (failures.length) {
+      await reportTestFailuresAsync(failures);
+      const failedTargets = [...new Set(failures.map((failure) => failure.target))];
+      throw new Error(
+        `iOS unit ${what} failed in ${failedTargets.join(', ')}. The list above shows each ` +
+          `failure. The result bundle is at ${resultBundlePath}.`
+      );
+    }
     if (isGithubActions) {
       console.log(`::error title=iOS unit tests::Unit ${what} failed, see the log for details`);
     }

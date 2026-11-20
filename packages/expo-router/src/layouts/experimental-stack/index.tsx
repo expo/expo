@@ -28,7 +28,8 @@ const RNExperimentalStack = integrateWithRouter<
   activityDefaultThreshold: 2,
   createProps: (args) => ({
     ...createBaseStackProps(args),
-    removeRoutes: (routeNames) => args.dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
+    removeRoutes: (routeNames) =>
+      args.dispatchSync({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
   }),
 });
 

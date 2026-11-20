@@ -62,11 +62,9 @@ jobs:
     # 2. ONE review per label, for a PR from a fork. Only the `labeled` event for
     #    `ai-review` itself starts it, so a push after that review does not start a new
     #    run. To review new commits, remove and add the label again, or comment `/review`.
-    #    The review is of the PR's head when `ecr ci` starts, a few minutes after the
-    #    label, not of the commit the maintainer labeled: a push in between is reviewed
-    #    instead. The `/review` path has the same gap. Pinning the review to
-    #    `github.event.pull_request.head.sha` needs an engine change and must land
-    #    before AI_REVIEW_FORK_PRS is turned on.
+    #    The review is of the commit the maintainer labeled: if a push moves the head
+    #    before `ecr ci` starts, it posts a "not reviewed" note instead (`--expect-head`
+    #    below). The `/review` path reviews the PR's head when `ecr ci` starts.
     #
     # 3. AUTOMATIC for a non-draft PR from a fork, only while the repo variable
     #    AI_REVIEW_FORK_PRS is 'true'. It is off by default. `ecr ci` gets `--force`
@@ -196,9 +194,11 @@ jobs:
       - name: Run AI review
         # The launcher selects the SAME checked-in package version the guard cleared.
         # `--force` only on the automatic fork path (see the job `if`), never from PR input.
-        run: ./scripts/expo-code-review ecr ci ${FORCE:+"$FORCE"}
+        # `--expect-head`: review only the commit this event is for.
+        run: ./scripts/expo-code-review ecr ci --expect-head "$HEAD_SHA" ${FORCE:+"$FORCE"}
         continue-on-error: true
         env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           FORCE: ${{ !contains(github.event.pull_request.labels.*.name, 'ai-review') && '--force' || '' }}
           GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           # Layer-1 auth lock: the CLI refuses to run when the tokenEnv it would

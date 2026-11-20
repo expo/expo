@@ -3,11 +3,17 @@ import { vol } from 'memfs';
 
 import { Log } from '../../../log';
 import rnFixture from '../../../prebuild/__tests__/fixtures/react-native-project';
+import { copyAsync, removeAsync } from '../../../utils/dir';
+import { isInteractive } from '../../../utils/interactive';
 import { loadEnvFiles } from '../../../utils/nodeEnv.js';
 import { event } from '../../events';
 import { expoCompileIos } from '../index';
 
 jest.mock('../../../log');
+jest.mock('../../../utils/dir');
+jest.mock('../../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => false),
+}));
 jest.mock('../../../utils/nodeEnv.js', () => ({ loadEnvFiles: jest.fn() }), { virtual: true });
 jest.mock('../../events', () => {
   const done = jest.fn();
@@ -19,9 +25,6 @@ jest.mock('../../events', () => {
     }),
     debugEvent: Object.assign(jest.fn(), { path: jest.fn((path) => path) }),
   };
-});
-jest.mock('../../resolveMode.js', () => jest.requireActual('../../resolveMode'), {
-  virtual: true,
 });
 jest.mock('../../resolveOptions.js', () => jest.requireActual('../../resolveOptions'), {
   virtual: true,
@@ -96,6 +99,7 @@ it('builds the app for the simulator', async () => {
       'ReactNativeProject',
       '-destination',
       'generic/platform=iOS Simulator',
+      '-hideShellScriptEnvironment',
       'COCOAPODS_PARALLEL_CODE_SIGN=true',
       'COMPILER_INDEX_STORE_ENABLE=NO',
     ],
@@ -119,22 +123,83 @@ it('builds the app for the simulator', async () => {
   });
 });
 
-it('refuses production before loading env files', async () => {
+it('reports working while building and done after', async () => {
+  const write = jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+  let writesWhileBuilding: unknown[][] = [];
+  const spawn = jest.mocked(spawnAsync).getMockImplementation()!;
+  jest.mocked(isInteractive).mockReturnValue(true);
+  jest.mocked(spawnAsync).mockImplementation((command, args, options) => {
+    if (command === 'xcodebuild' && !args?.includes('-showBuildSettings')) {
+      writesWhileBuilding = [...write.mock.calls];
+    }
+    return spawn(command, args, options);
+  });
+
+  try {
+    await expoCompileIos(['--dev']);
+
+    expect(writesWhileBuilding).toEqual([
+      ['\x1b]7501;state=working:app=expo:msg=QnVpbGRpbmcgaU9TIGFwcA==:id=2\x1b\\'],
+    ]);
+    expect(write.mock.calls).toEqual([
+      ['\x1b]7501;state=working:app=expo:msg=QnVpbGRpbmcgaU9TIGFwcA==:id=2\x1b\\'],
+      ['\x1b]7501;state=clear:id=2\x1b\\'],
+      ['\x1b]7501;state=done:app=expo:msg=QnVpbGQgY29tcGxldGU=\x1b\\'],
+    ]);
+  } finally {
+    write.mockRestore();
+    jest.mocked(isInteractive).mockReturnValue(false);
+  }
+});
+
+it('copies the app to the output directory', async () => {
+  await expoCompileIos(['--dev', '--output-dir', 'build']);
+
+  expect(removeAsync).toHaveBeenCalledWith('/app/build/ReactNativeProject.app');
+  expect(copyAsync).toHaveBeenCalledWith(appPath, '/app/build/ReactNativeProject.app');
+  expect(Log.log).toHaveBeenCalledWith(
+    expect.stringContaining('Binary: /app/build/ReactNativeProject.app')
+  );
+});
+
+it('builds a production app', async () => {
+  await expoCompileIos(['--prod', '--output-type', 'app']);
+
+  expect(loadEnvFiles).toHaveBeenCalledWith('/app', { mode: 'production' });
+  expect(spawnAsync).toHaveBeenCalledWith(
+    'xcodebuild',
+    expect.arrayContaining(['-configuration', 'Release']),
+    { stdio: 'inherit', env: expect.objectContaining({ RCT_NO_LAUNCH_PACKAGER: 'true' }) }
+  );
+});
+
+it('refuses the default production store file', async () => {
   await expect(expoCompileIos([])).rejects.toThrow(/EXIT_CALLED/);
 
   expect(Log.exit).toHaveBeenCalledWith(
     expect.objectContaining({
-      message: 'Production builds are not supported yet. Pass --dev to build in development mode.',
+      message: 'Building an ipa is not supported yet. Pass --output-type app to build an app.',
+    })
+  );
+});
+
+it('refuses unsupported flags before finding the project', async () => {
+  vol.reset();
+
+  await expect(expoCompileIos(['--dev', '--output-type', 'ipa'])).rejects.toThrow(/EXIT_CALLED/);
+
+  expect(Log.exit).toHaveBeenCalledWith(
+    expect.objectContaining({
+      message: 'Building an ipa is not supported yet. Pass --output-type app to build an app.',
     })
   );
   expect(loadEnvFiles).not.toHaveBeenCalled();
-  expect(spawnAsync).not.toHaveBeenCalled();
 });
 
 it('only runs on macOS', async () => {
   mockPlatform('win32');
 
-  await expect(expoCompileIos(['--dev'])).rejects.toThrow(/EXIT_CALLED/);
+  await expect(expoCompileIos([])).rejects.toThrow(/EXIT_CALLED/);
 
   expect(Log.exit).toHaveBeenCalledWith(expect.stringMatching(/eas build -p ios/));
   expect(spawnAsync).not.toHaveBeenCalled();

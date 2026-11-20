@@ -20,6 +20,7 @@ class RouterToolbarItemView: RouterViewWithLogger {
   @ReactiveProp var imageRenderingMode: ImageRenderingMode?
   @ReactiveProp var hidesSharedBackground: Bool = false
   @ReactiveProp var sharesBackground: Bool = true
+  @ReactiveProp var axisBehavior: AxisBehavior?
   @ReactiveProp var barButtonItemStyle: UIBarButtonItem.Style?
   @ReactiveProp var width: Double?
 
@@ -164,6 +165,7 @@ class RouterToolbarItemView: RouterViewWithLogger {
       item.hidesSharedBackground = hidesSharedBackground
       item.sharesBackground = sharesBackground
     }
+    (axisBehavior ?? .automatic).apply(to: item)
     item.style = barButtonItemStyle ?? .plain
     item.width = width.map { CGFloat($0) } ?? 0
     item.isSelected = selected
@@ -171,33 +173,7 @@ class RouterToolbarItemView: RouterViewWithLogger {
     item.accessibilityHint = routerAccessibilityHint
     item.isEnabled = !disabled
     if #available(iOS 26.0, *) {
-      if let badgeConfig = badgeConfiguration {
-        var badge = UIBarButtonItem.Badge.indicator()
-        if let value = badgeConfig.value {
-          badge = .string(value)
-        }
-        if let backgroundColor = badgeConfig.backgroundColor {
-          badge.backgroundColor = backgroundColor
-        }
-        if let foregroundColor = badgeConfig.color {
-          badge.foregroundColor = foregroundColor
-        }
-        if badgeConfig.fontFamily != nil || badgeConfig.fontSize != nil
-          || badgeConfig.fontWeight != nil
-        {
-          let font = RouterFontUtils.convertTitleStyleToFont(
-            TitleStyle(
-              fontFamily: badgeConfig.fontFamily,
-              fontSize: badgeConfig.fontSize,
-              fontWeight: badgeConfig.fontWeight
-            )
-          )
-          badge.font = font
-        }
-        item.badge = badge
-      } else {
-        item.badge = nil
-      }
+      item.badge = badgeConfiguration?.toBarButtonItemBadge()
     }
   }
 
@@ -237,6 +213,29 @@ struct BadgeConfiguration: Equatable {
   var fontFamily: String?
   var fontSize: Double?
   var fontWeight: String?
+}
+
+extension BadgeConfiguration {
+  @available(iOS 26.0, *)
+  @MainActor
+  func toBarButtonItemBadge() -> UIBarButtonItem.Badge {
+    var badge = UIBarButtonItem.Badge.indicator()
+    if let value {
+      badge = .string(value)
+    }
+    if let backgroundColor {
+      badge.backgroundColor = backgroundColor
+    }
+    if let color {
+      badge.foregroundColor = color
+    }
+    if fontFamily != nil || fontSize != nil || fontWeight != nil {
+      badge.font = RouterFontUtils.convertTitleStyleToFont(
+        TitleStyle(fontFamily: fontFamily, fontSize: fontSize, fontWeight: fontWeight)
+      )
+    }
+    return badge
+  }
 }
 
 struct TitleStyle: Equatable {

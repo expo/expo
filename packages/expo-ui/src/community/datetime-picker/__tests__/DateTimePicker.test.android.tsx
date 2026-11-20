@@ -62,6 +62,14 @@ describe('DateTimePicker (Android)', () => {
     expect(props).not.toHaveProperty('showHeadline');
   });
 
+  it('shows the time input in the time dialog for the spinner display', async () => {
+    await render(<DateTimePicker value={value} mode="time" display="spinner" />);
+
+    expect(getNativeProps('TimePickerDialogView')).toEqual(
+      expect.objectContaining({ variant: 'input' })
+    );
+  });
+
   it.each(['inline', 'dialog'] as const)(
     'applies themeVariant as the %s picker color scheme',
     async (presentation) => {

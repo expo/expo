@@ -55,13 +55,22 @@ internal struct LanguageModelToolDefinition: Sendable {
 internal struct LanguageModelSessionOptions: Sendable {
   let instructions: String?
   let tools: [LanguageModelToolDefinition]
+  let guardrails: LanguageModelGuardrails
 
   init(json: String) throws {
     guard let object = try LanguageModelJSON.decode(json).object else {
       throw LanguageModelException.invalid("Session options must be an object.")
     }
-    try validateKeys(object, allowed: ["instructions", "tools"])
+    try validateKeys(object, allowed: ["instructions", "tools", "guardrails"])
     instructions = try optionalString(object["instructions"], name: "instructions")
+    if let value = object["guardrails"] {
+      guard let name = value.string, let guardrails = LanguageModelGuardrails(rawValue: name) else {
+        throw LanguageModelException.invalid("Unknown Apple guardrails mode.")
+      }
+      self.guardrails = guardrails
+    } else {
+      guardrails = .default
+    }
     let values: [LanguageModelJSON]
     if let tools = object["tools"] {
       guard case .array(let entries) = tools else {
@@ -95,6 +104,11 @@ internal struct LanguageModelSessionOptions: Sendable {
       return LanguageModelToolDefinition(name: name, description: description, schema: schema, builtin: builtin)
     }
   }
+}
+
+internal enum LanguageModelGuardrails: String, Sendable {
+  case `default`
+  case permissiveContentTransformations
 }
 
 internal struct LanguageModelRequestOptions: Sendable {

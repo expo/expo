@@ -194,7 +194,7 @@ async function testDirectMarkdownAccessAsync(): Promise<void> {
     throw new Error('Direct .md request did not return markdown content');
   }
   if (
-    response.headers.get('Link') !== '</llms.txt>; rel="llms-txt"' ||
+    response.headers.get('Link') !== '</llms.txt>; rel="llms-txt", </sitemap.xml>; rel="sitemap"' ||
     response.headers.get('X-Llms-Txt') !== '/llms.txt'
   ) {
     throw new Error('Direct .md response lost the asset discovery headers');
@@ -352,6 +352,55 @@ async function testAcceptQualityValuesAsync(): Promise<void> {
   console.log('✓ Markdown with the higher q is served');
 }
 
+async function testAiUserAgentMarkdownAsync(): Promise<void> {
+  console.log('\n--- Testing markdown for AI user agents ---');
+
+  const aiUserAgents = [
+    'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; +https://openai.com/bot',
+    'Claude-User/1.0',
+    'Perplexity-User/1.0',
+  ];
+
+  for (const userAgent of aiUserAgents) {
+    const response = await fetch(`${BASE_URL}/test-page`, {
+      headers: { 'User-Agent': userAgent, Accept: 'text/html' },
+    });
+    const contentType = response.headers.get('content-type') ?? '';
+    const body = await response.text();
+
+    if (!contentType.includes('text/markdown') || !body.includes('Test Markdown Content')) {
+      throw new Error(`Expected markdown for "${userAgent}", got: ${contentType}`);
+    }
+    if (!varyTokens(response).includes('user-agent')) {
+      throw new Error(
+        `Expected Vary header listing User-Agent, got: ${response.headers.get('vary') ?? '(absent)'}`
+      );
+    }
+    console.log(`✓ ${userAgent.match(/[\w-]+-User/)?.[0]} gets markdown when it requests HTML`);
+  }
+
+  const expectations = [
+    { route: '/html-only-page', userAgent: 'Claude-User/1.0', status: 200 },
+    { route: '/nonexistent-page', userAgent: 'Claude-User/1.0', status: 404 },
+    { route: '/test-page', userAgent: 'ClaudeBot/1.0', status: 200 },
+    { route: '/test-page', userAgent: 'Mozilla/5.0 (Macintosh) Chrome/157.0', status: 200 },
+  ];
+
+  for (const { route, userAgent, status } of expectations) {
+    const response = await fetch(`${BASE_URL}${route}`, {
+      headers: { 'User-Agent': userAgent, Accept: 'text/html' },
+    });
+    const contentType = response.headers.get('content-type') ?? '';
+
+    if (response.status !== status || !contentType.includes('text/html')) {
+      throw new Error(
+        `Expected an HTML ${status} for ${route} with "${userAgent}", got: HTTP ${response.status} ${contentType}`
+      );
+    }
+    console.log(`✓ ${route} with "${userAgent}" returns an HTML ${status}`);
+  }
+}
+
 async function testUpgradePairNegotiationAsync(): Promise<void> {
   console.log('\n--- Testing upgrade helper version-pair negotiation ---');
 
@@ -472,7 +521,7 @@ async function testDeletedPageRedirectsAsync(): Promise<void> {
   if (
     easRedirect.status !== 301 ||
     !easLocation.includes(
-      '?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build'
+      '?buildenv=build-with-expo-services#how-would-you-like-to-build-your-development-build'
     )
   ) {
     throw new Error(
@@ -499,7 +548,7 @@ async function testDeletedPageRedirectsAsync(): Promise<void> {
   });
   const mdLocation = mdRedirect.headers.get('location') ?? '';
 
-  if (mdRedirect.status !== 301 || !mdLocation.includes('?buildenv=build-with-eas')) {
+  if (mdRedirect.status !== 301 || !mdLocation.includes('?buildenv=build-with-expo-services')) {
     throw new Error(
       `Expected the markdown request to pass through the page redirect, got: HTTP ${mdRedirect.status} -> ${mdLocation}`
     );
@@ -545,18 +594,38 @@ async function testAgentDiscoveryRedirectsAsync(): Promise<void> {
   }
   console.log('✓ /api redirects to the API reference');
 
-  const developers = await fetch(`${BASE_URL}/developers`, { redirect: 'manual' });
-  const developersLocation = developers.headers.get('location') ?? '';
+  const programmaticAccessPath = '/accounts/programmatic-access/';
+  for (const from of ['/developers', '/developers/']) {
+    const response = await fetch(`${BASE_URL}${from}`, { redirect: 'manual' });
+    const location = response.headers.get('location') ?? '';
 
-  if (
-    developers.status !== 301 ||
-    !(developersLocation === '/' || developersLocation === `${BASE_URL}/`)
-  ) {
-    throw new Error(
-      `Expected /developers to redirect to /, got: HTTP ${developers.status} -> ${developersLocation}`
-    );
+    if (response.status !== 301 || location !== programmaticAccessPath) {
+      throw new Error(
+        `Expected ${from} to 301 to ${programmaticAccessPath}, got: HTTP ${response.status} -> ${location}`
+      );
+    }
+    console.log(`✓ ${from} redirects to the programmatic access page`);
   }
-  console.log('✓ /developers redirects to the docs home');
+
+  const pricingCases: { from: string; to: string; headers: Record<string, string> }[] = [
+    { from: '/pricing', to: 'https://expo.dev/pricing', headers: {} },
+    { from: '/pricing/', to: 'https://expo.dev/pricing', headers: {} },
+    { from: '/pricing.md', to: 'https://expo.dev/pricing.md', headers: {} },
+    { from: '/pricing', to: 'https://expo.dev/pricing', headers: { Accept: 'text/markdown' } },
+  ];
+
+  for (const { from, to, headers } of pricingCases) {
+    const response = await fetch(`${BASE_URL}${from}`, { headers, redirect: 'manual' });
+    const location = response.headers.get('location') ?? '';
+    const accept = headers.Accept ? ` with Accept: ${headers.Accept}` : '';
+
+    if (response.status !== 301 || location !== to) {
+      throw new Error(
+        `Expected ${from}${accept} to 301 to ${to}, got: HTTP ${response.status} -> ${location}`
+      );
+    }
+    console.log(`✓ ${from}${accept} redirects to ${to}`);
+  }
 }
 
 async function testHtmlNotFoundAsync(): Promise<void> {
@@ -569,6 +638,53 @@ async function testHtmlNotFoundAsync(): Promise<void> {
     throw new Error(`Expected HTTP 404 for nonexistent page, got ${response.status}`);
   }
   console.log(`✓ Nonexistent HTML page returns HTTP ${response.status} (not a server error)`);
+}
+
+async function testJsonNotFoundAsync(): Promise<void> {
+  console.log('\n--- Testing JSON 404 responses ---');
+
+  const response = await fetch(`${BASE_URL}/nonexistent-page`, {
+    headers: { Accept: 'application/json' },
+  });
+  const contentType = response.headers.get('content-type') ?? '';
+
+  if (response.status !== 404 || !contentType.includes('application/json')) {
+    throw new Error(`Expected a JSON 404, got: HTTP ${response.status} ${contentType}`);
+  }
+  if (!varyTokens(response).includes('accept')) {
+    throw new Error(
+      `Expected Vary header listing Accept on the JSON 404, got: ${response.headers.get('vary') ?? '(absent)'}`
+    );
+  }
+
+  const body = (await response.json()) as {
+    error?: { code?: string };
+    links?: { index?: string };
+  };
+
+  if (body.error?.code !== 'not_found' || !body.links?.index?.endsWith('/llms.txt')) {
+    throw new Error(`Expected an error code and recovery links, got: ${JSON.stringify(body)}`);
+  }
+  console.log('✓ JSON 404 responds with a JSON error body and recovery links');
+
+  const expectations = [
+    { route: '/nonexistent-page', accept: '*/*', type: 'text/html' },
+    { route: '/nonexistent-page', accept: 'text/html, application/json;q=0.9', type: 'text/html' },
+    { route: '/api/v1/nonexistent', accept: '*/*', type: 'application/json' },
+    { route: '/api/v1/nonexistent', accept: 'text/html,application/xml;q=0.9', type: 'text/html' },
+  ];
+
+  for (const { route, accept, type } of expectations) {
+    const result = await fetch(`${BASE_URL}${route}`, { headers: { Accept: accept } });
+    const resultType = result.headers.get('content-type') ?? '';
+
+    if (result.status !== 404 || !resultType.includes(type)) {
+      throw new Error(
+        `Expected a ${type} 404 for ${route} with Accept "${accept}", got: HTTP ${result.status} ${resultType}`
+      );
+    }
+    console.log(`✓ ${route} with Accept "${accept}" returns a ${type} 404`);
+  }
 }
 
 function navigateAsync(path: string, headers: http.OutgoingHttpHeaders = {}) {
@@ -617,11 +733,13 @@ async function mainAsync(): Promise<void> {
     await testMarkdownContentNegotiationAsync();
     await testMarkdownNotFoundAsync();
     await testAcceptQualityValuesAsync();
+    await testAiUserAgentMarkdownAsync();
     await testUpgradePairNegotiationAsync();
     await testDeletedPageRedirectsAsync();
     await testRemovedSdkRedirectsAsync();
     await testAgentDiscoveryRedirectsAsync();
     await testHtmlNotFoundAsync();
+    await testJsonNotFoundAsync();
     await testUrlRecoveryAsync();
 
     console.log('\n=== All tests passed! ===');

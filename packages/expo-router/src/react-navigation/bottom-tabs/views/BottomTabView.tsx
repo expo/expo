@@ -134,7 +134,7 @@ export function BottomTabView(props: Props) {
 
             const toValue = index === state.index ? 0 : index >= state.index ? 1 : -1;
 
-            return Animated[spec.animation](tabAnims[route.key]!, {
+            return Animated[spec.animation](tabAnims[route.name]!, {
               ...spec.config,
               toValue,
               useNativeDriver,
@@ -269,7 +269,7 @@ export function BottomTabView(props: Props) {
           const { sceneStyle } =
             sceneStyleInterpolator?.({
               current: {
-                progress: tabAnims[route.key]!,
+                progress: tabAnims[route.name]!,
               },
             }) ?? {};
 

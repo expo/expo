@@ -18,7 +18,10 @@ private const val KEY_LAST_DISPATCHED_LOG_ID = "lastDispatchedLogId"
 data class PersistedConfig(
   val dispatchingEnabled: Boolean? = null,
   val dispatchInDebug: Boolean? = null,
-  val sampleRate: Double? = null
+  val sampleRate: Double? = null,
+  val errorSampleRate: Double? = null,
+  val ignoredMetrics: List<String> = emptyList(),
+  val ignoredEvents: List<String> = emptyList()
 )
 
 /**

@@ -149,6 +149,12 @@ To make the whole row tappable and have screen readers read the label with the s
 
 Without `onCheckedChange`, the switch loses its 48 dp minimum touch size. Use `defaultMinSize` to keep it.
 
+<ComponentExample
+  title="LabeledSwitchExample.tsx"
+  src="/static/images/expo-ui/examples/switch-labeled-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/switch-labeled-android-dark.webp"
+  alt="A full-width row with the label Wi-Fi on the left and an off switch on the right">
+
 ```tsx
 import { useState } from 'react';
 import { Host, Row, Switch, Text } from '@expo/ui/jetpack-compose';
@@ -162,7 +168,9 @@ export default function LabeledSwitchExample() {
   const [checked, setChecked] = useState(false);
 
   return (
-    <Host matchContents>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <Row
         verticalAlignment="center"
         modifiers={[
@@ -182,6 +190,8 @@ export default function LabeledSwitchExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

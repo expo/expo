@@ -12,3 +12,13 @@ it('points to usage for an unknown platform', async () => {
     })
   );
 });
+
+it('rejects an option before the platform', async () => {
+  await expect(expoCompile(['--dev', 'ios'])).rejects.toThrow(/EXIT_CALLED/);
+
+  expect(Log.exit).toHaveBeenCalledWith(
+    expect.objectContaining({
+      message: 'Unsupported platform: --dev. Run `npx expo compile --help` for usage.',
+    })
+  );
+});

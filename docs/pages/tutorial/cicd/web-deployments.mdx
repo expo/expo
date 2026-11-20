@@ -1,7 +1,7 @@
 ---
-title: 'Deploy web apps to EAS Hosting with EAS Workflows'
+title: 'Deploy web apps to Expo Hosting with Expo Workflows'
 sidebar_title: Web deployments
-description: Learn how to deploy web builds to EAS Hosting alongside Android and iOS releases to existing EAS Workflows.
+description: Learn how to deploy web builds to Expo Hosting alongside Android and iOS releases to existing Expo Workflows.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -9,7 +9,7 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Our workflows from previous chapters cover Android and iOS. Let's extend them to also deploy the web build to [EAS Hosting](/eas/hosting/introduction/) alongside the same release.
+Our workflows from previous chapters cover Android and iOS. Let's extend them to also deploy the web build to [Expo Hosting](/eas/hosting/introduction/) alongside the same release.
 
 ## Learning outcomes
 
@@ -17,11 +17,11 @@ Our workflows from previous chapters cover Android and iOS. Let's extend them to
 - Add a web deployment job to **preview.yml** to generate a non-production web build
 - Add a web deployment job to **production.yml** to generate a production web build
 
-## EAS Hosting and the deploy job
+## Expo Hosting and the deploy job
 
-**EAS Hosting** is a service for hosting and deploying web builds of an Expo app. Each deployment gets its own unique URL, and a project has a single production URL that serves whatever we last deployed to production.
+**Expo Hosting** is a service for hosting and deploying web builds of an Expo app. Each deployment gets its own unique URL, and a project has a single production URL that serves whatever we last deployed to production.
 
-The [`deploy`](/eas/workflows/pre-packaged-jobs/#deploy) pre-packaged job in EAS Workflows runs the web export, uploads the output of the export step to EAS Hosting, and returns the deployment URL as the job output. The `deploy` job has two parameters:
+The [`deploy`](/eas/workflows/pre-packaged-jobs/#deploy) pre-packaged job in Expo Workflows runs the web export, uploads the output of the export step to Expo Hosting, and returns the deployment URL as the job output. The `deploy` job has two parameters:
 
 | Parameter | Type    | Description                                                                                     |
 | --------- | ------- | ----------------------------------------------------------------------------------------------- |
@@ -43,7 +43,7 @@ Before we add web deployment jobs to our workflows, we need to configure our Exp
 }
 ```
 
-`static` tells the Expo CLI to produce a directory of static HTML, JavaScript, and asset files that EAS Hosting can serve. Expo also supports `single` and `server` output; `static` produces plain files that any host can serve, which is all we need here.
+`static` tells the Expo CLI to produce a directory of static HTML, JavaScript, and asset files that Expo Hosting can serve. Expo also supports `single` and `server` output; `static` produces plain files that any host can serve, which is all we need here.
 
 After updating the **app.json** with the above configuration, commit the change and push it to the repository's `main` branch.
 
@@ -76,7 +76,7 @@ With no `prod` parameter, this deploys as a non-production version. Each push ge
 
 ### Push the workflow change to the repository
 
-Commit the change to **preview.yml** and push it to the `main` branch of the GitHub repository. EAS Workflows reads workflow files from the default branch, so this is what makes the change effective.
+Commit the change to **preview.yml** and push it to the `main` branch of the GitHub repository. Expo Workflows reads workflow files from the default branch, so this is what makes the change effective.
 
 <Terminal
   cmd={[
@@ -99,10 +99,10 @@ Now, manually run the preview workflow using the following command:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/preview.yml']} />
 
-On the EAS dashboard, the preview workflow run shows the `deploy_web` job alongside the build jobs.
+On the Expo dashboard, the preview workflow run shows the `deploy_web` job alongside the build jobs.
 
 <ContentSpotlight
-  alt="EAS Workflows preview run showing a deploy_web job running in parallel with Android and iOS build jobs."
+  alt="Expo Workflows preview run showing a deploy_web job running in parallel with Android and iOS build jobs."
   src="/static/images/tutorial/cicd/eas-workflows-web-deploy-preview-job.png"
   className="max-w-160"
 />
@@ -110,7 +110,7 @@ On the EAS dashboard, the preview workflow run shows the `deploy_web` job alongs
 Under **Deploy web (preview)**, click the **View Deployment** link to open the deployed web build in the browser.
 
 <ContentSpotlight
-  alt="EAS Hosting deployment URL output from a deploy_web job, showing a unique per-deployment preview URL."
+  alt="Expo Hosting deployment URL output from a deploy_web job, showing a unique per-deployment preview URL."
   src="/static/images/tutorial/cicd/eas-hosting-deployment-url-output.webp"
   className="max-w-160"
 />

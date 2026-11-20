@@ -56,6 +56,7 @@ const COMMENTS_LIMIT = 10;
 const getMagicCommentForReviewer = (reviewer: Reviewer) => `<!-- disable:${reviewer.id} -->`;
 
 enum Label {
+  // No longer added, but still removed from pull requests that were labeled with it before.
   PASSED_CHECKS = 'bot: passed checks',
   SUGGESTIONS = 'bot: suggestions',
   NEEDS_CHANGES = 'bot: needs changes',
@@ -147,9 +148,9 @@ function getReviewCommentsFromOutputs(outputs: ReviewOutput[]): ReviewComment[] 
 }
 
 /**
- * Returns GitHub's label based on outputs' final status.
+ * Returns GitHub's label based on outputs' final status, or `null` if the pull request passed all checks.
  */
-function getLabelFromOutputs(outputs: ReviewOutput[]): Label {
+function getLabelFromOutputs(outputs: ReviewOutput[]): Label | null {
   const finalStatus = outputs.reduce(
     (acc, output) => Math.max(acc, output.status),
     ReviewStatus.PASSIVE
@@ -160,14 +161,14 @@ function getLabelFromOutputs(outputs: ReviewOutput[]): Label {
     case ReviewStatus.WARN:
       return Label.SUGGESTIONS;
     default:
-      return Label.PASSED_CHECKS;
+      return null;
   }
 }
 
 /**
- * Updates bot's labels of the PR so that only given label is assigned.
+ * Updates bot's labels of the PR so that only given label is assigned, or none if `newLabel` is `null`.
  */
-async function updateLabelsAsync(pr: GitHub.PullRequest, newLabel: Label) {
+async function updateLabelsAsync(pr: GitHub.PullRequest, newLabel: Label | null) {
   const prLabels = pr.labels.map((label) => label.name);
   const botLabels = Object.values(Label);
 
@@ -180,7 +181,7 @@ async function updateLabelsAsync(pr: GitHub.PullRequest, newLabel: Label) {
     logger.info(`🏷  Removing ${chalk.yellow(labelToRemove)} label`);
     await GitHub.removeIssueLabelAsync(pr.number, labelToRemove);
   }
-  if (!prLabels.includes(newLabel)) {
+  if (newLabel && !prLabels.includes(newLabel)) {
     logger.info(`🏷  Adding ${chalk.yellow(newLabel)} label`);
     await GitHub.addIssueLabelsAsync(pr.number, [newLabel]);
   }

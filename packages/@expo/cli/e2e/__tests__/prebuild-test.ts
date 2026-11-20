@@ -32,12 +32,14 @@ it('loads expected modules by default', async () => {
   expect(modules).toStrictEqual([
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/prebuild/index.js',
+    '@expo/cli/build/src/utils/ansi.js',
     '@expo/cli/build/src/utils/args.js',
     '@expo/cli/build/src/utils/env.js',
     '@expo/cli/build/src/utils/errors.js',
     '@expo/cli/build/src/utils/interactive.js',
     '@expo/cli/build/src/utils/metadata.js',
     '@expo/cli/build/src/utils/nodeEnv.js',
+    '@expo/cli/build/src/utils/programStatus.js',
   ]);
 });
 

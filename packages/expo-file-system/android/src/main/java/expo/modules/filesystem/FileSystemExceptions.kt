@@ -53,6 +53,9 @@ internal class PickerCancelledException :
 internal class DestinationAlreadyExistsException :
   CodedException("Destination already exists")
 
+internal class DestinationContainsSourceException :
+  CodedException("Destination is the source or contains it, overwriting it would delete the source")
+
 internal class UnableToCopyException(reason: String) :
   CodedException("Unable to copy file or directory: $reason")
 

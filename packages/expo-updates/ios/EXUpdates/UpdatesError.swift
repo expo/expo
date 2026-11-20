@@ -21,23 +21,17 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
   case fileDownloaderCodeSigningCertificateScopeKeyOrProjectIdMismatch
   case fileDownloaderManifestFilterManifestMismatch
   case fileDownloaderHTTPResponseError(statusCode: Int, body: String)
-  case fileDownloaderServerDefinedHeaderFailure(cause: Error)
-  case fileDownloaderExtraParamFailure(cause: Error)
-  case fileDownloaderFailedUpdateIDsFailure(cause: Error)
   case fileDownloaderUnknownError(cause: Error)
   case remoteAppLoaderAssetMissingUrl
   case remoteAppLoaderUnsafeAssetFilename(filename: String)
   case remoteAppLoaderHeaderDataError(cause: Error)
   case remoteAppLoaderUnknownError(cause: Error)
-  case appLoaderFailedToLoadAllAssets
+  case appLoaderFailedToLoadAllAssets(failures: [AssetLoadFailure])
   case appLoaderFinishedWithoutManifest
   case appLoaderUnknownError(cause: Error)
   case appLoaderTaskFailedToLaunch(cause: Error?)
   case appLoaderTaskUnexpectedErrorDuringLaunch
   case appControllerInitializationError(cause: Error)
-  case errorRecoveryCrashing
-  case errorRecoveryFatalException(serializedError: String)
-  case errorRecoveryCouldNotWriteToLog(cause: Error)
   case appLauncherWithDatabaseAssetMissingUrl
   case appLauncherWithDatabaseAssetBundlePathNil
   case appLauncherWithDatabaseAssetCopyFailed
@@ -45,9 +39,6 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
   case appLauncherNoLaunchableUpdates(cause: Error?)
   case appLauncherLaunchAssetNotFound(updateId: UUID)
   case embeddedAppLoaderEmbeddedManifestLoadFailed
-  case startupProcedureDidFinishWithError(cause: Error)
-  case startupProcedureDidFinishBackgroundUpdateWithStatusWithError(cause: Error)
-  case relaunchProcedureFailedToRelaunch(cause: Error)
 
   public var errorDescription: String? {
     switch self {
@@ -85,12 +76,6 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
       return "Manifest filters do not match manifest content for downloaded manifest"
     case let .fileDownloaderHTTPResponseError(statusCode, body):
       return "HTTP response error \(statusCode): \(body)"
-    case let .fileDownloaderServerDefinedHeaderFailure(cause):
-      return "Error selecting serverDefinedHeaders from database: \(cause.localizedDescription)"
-    case let .fileDownloaderExtraParamFailure(cause):
-      return "Error adding extra params to headers: \(cause.localizedDescription)"
-    case let .fileDownloaderFailedUpdateIDsFailure(cause):
-      return "Error selecting failedUpdateIDs from database: \(cause.localizedDescription)"
     case let .fileDownloaderUnknownError(cause):
       return "Unknown error: \(cause.localizedDescription)"
     case .remoteAppLoaderAssetMissingUrl:
@@ -99,8 +84,10 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
       return "Failed to download asset: filename \"\(filename)\" would resolve outside the updates directory"
     case let .remoteAppLoaderHeaderDataError(cause):
       return "Error persisting header data to disk: \(cause.localizedDescription)"
-    case .appLoaderFailedToLoadAllAssets:
-      return "Failed to load all assets"
+    case let .appLoaderFailedToLoadAllAssets(failures):
+      let firstError = failures.first.map { ": \($0.error.localizedDescription)" } ?? ""
+      let assets = failures.count == 1 ? "asset" : "assets"
+      return "Failed to load \(failures.count) \(assets) (\(UpdatesLogger.assetKeysValue(failures.map { $0.assetKey })))\(firstError)"
     case .appLoaderFinishedWithoutManifest:
       return "AppLoader finished without a processed update manifest. This is an internal error."
     case let .remoteAppLoaderUnknownError(cause):
@@ -113,12 +100,6 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
       return "AppLoaderTask encountered an unexpected error and could not launch an update."
     case let .appControllerInitializationError(cause):
       return "The expo-updates system is disabled due to an error during initialization: \(cause.localizedDescription)"
-    case .errorRecoveryCrashing:
-      return "ErrorRecovery: could not recover from error, crashing"
-    case let .errorRecoveryFatalException(serializedError):
-      return "ErrorRecovery fatal exception: \(serializedError)"
-    case let .errorRecoveryCouldNotWriteToLog(cause):
-      return "Could not write fatal error to log: \(cause.localizedDescription)"
     case .appLauncherWithDatabaseAssetMissingUrl:
       return "Failed to download asset with no URL provided"
     case .appLauncherWithDatabaseAssetBundlePathNil:
@@ -133,14 +114,64 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
       return "Launch asset not found for update \(updateId). The update cannot launch and will be repaired at the next app launch."
     case .embeddedAppLoaderEmbeddedManifestLoadFailed:
       return "Failed to load embedded manifest. Make sure you have configured expo-updates correctly."
-    case let .startupProcedureDidFinishWithError(cause):
-      return "AppController appLoaderTask didFinishWithError: \(cause.localizedDescription)"
-    case let .startupProcedureDidFinishBackgroundUpdateWithStatusWithError(cause):
-      return "AppController appLoaderTask didFinishBackgroundUpdateWithStatus=Error: \(cause.localizedDescription)"
-    case let .relaunchProcedureFailedToRelaunch(cause):
-      return "Failed to relaunch: \(cause.localizedDescription)"
     }
   }
+
+  /**
+   The error that this error wraps, if it wraps one.
+   */
+  var cause: Error? {
+    switch self {
+    case let .fileDownloaderAssetFileWriteFailed(cause, _),
+      let .fileDownloaderDirectiveParseFailed(cause),
+      let .fileDownloaderCodeSigningUnknownError(cause),
+      let .fileDownloaderUnknownError(cause),
+      let .remoteAppLoaderHeaderDataError(cause),
+      let .remoteAppLoaderUnknownError(cause),
+      let .appLoaderUnknownError(cause),
+      let .appControllerInitializationError(cause),
+      let .appLauncherWithDatabaseUnknownError(cause):
+      return cause
+    case let .fileDownloaderManifestParseFailed(cause),
+      let .appLoaderTaskFailedToLaunch(cause),
+      let .appLauncherNoLaunchableUpdates(cause):
+      return cause
+    case let .fileDownloaderCodeSigningError(cause):
+      return cause
+    case let .appLoaderFailedToLoadAllAssets(failures):
+      return failures.first?.error
+    case .fileDownloaderAssetDownloadEmptyResponse,
+      .fileDownloaderAssetMismatchedHash,
+      .fileDownloaderResponseNotHTTPURLResponse,
+      .fileDownloaderRemoteUpdateMissingBody,
+      .fileDownloaderMissingMultipartBoundary,
+      .fileDownloaderErrorReadingMultipartResponse,
+      .fileDownloaderMultipartExtensionsPartParseFailed,
+      .fileDownloaderMultipartMissingManifestVersion0,
+      .fileDownloaderCodeSigningIncorrectSignature,
+      .fileDownloaderCodeSigningCertificateScopeKeyOrProjectIdMismatch,
+      .fileDownloaderManifestFilterManifestMismatch,
+      .fileDownloaderHTTPResponseError,
+      .remoteAppLoaderAssetMissingUrl,
+      .remoteAppLoaderUnsafeAssetFilename,
+      .appLoaderFinishedWithoutManifest,
+      .appLoaderTaskUnexpectedErrorDuringLaunch,
+      .appLauncherWithDatabaseAssetMissingUrl,
+      .appLauncherWithDatabaseAssetBundlePathNil,
+      .appLauncherWithDatabaseAssetCopyFailed,
+      .appLauncherLaunchAssetNotFound,
+      .embeddedAppLoaderEmbeddedManifestLoadFailed:
+      return nil
+    }
+  }
+}
+
+/**
+ An asset that failed to load, and the error it failed with.
+ */
+public struct AssetLoadFailure: Sendable {
+  public let assetKey: String
+  public let error: UpdatesError
 }
 
 // swiftlint:enable identifier_name

@@ -25,8 +25,10 @@ const HomeIndex = () => {
         <Section title="Native navigation">
           <CaseLink href="/tabs" text="Native Tabs" />
           <CaseLink href="/tabs-form-sheet/home" text="Native Tabs Form Sheet" />
+          <CaseLink href="/tabs-icon-modes" text="Native Tabs Icon Modes" />
           <CaseLink href="/link-preview" text="Link Preview" />
           <CaseLink href="/split-view" text="Split View" />
+          <CaseLink href="/split-view-mail" text="Split View Mail" />
           <CaseLink href="/toolbar" text="Toolbar" />
           <CaseLink href="/header-items" text="Header Items" />
         </Section>
@@ -52,6 +54,7 @@ const HomeIndex = () => {
         <Section title="Stack behavior">
           <CaseLink href="/experimental-stack" text="Experimental Stack" />
           <CaseLink href="/navigation-aware-activity" text="Navigation Aware Activity" />
+          <CaseLink href="/required-screens" text="Required Screens Below" />
         </Section>
         <Section title="Drawers">
           <CaseLink href="/drawer" text="Drawer" />

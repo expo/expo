@@ -598,6 +598,10 @@ public final class FileSystemModule: Module {
         try task.acknowledgeBackgroundCompletion()
       }.runOnQueue(.main)
 
+      Property("response") { (task: FileSystemDownloadTask) in
+        task.getResponse()
+      }
+
       Function("cancel") { (task: FileSystemDownloadTask) in
         task.cancel()
       }

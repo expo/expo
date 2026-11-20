@@ -10,6 +10,13 @@ public final class JavaScriptPropNameID: JavaScriptType {
   internal var jsiRuntime: facebook.jsi.IRuntime? {
     return runtimeHandle.pointee
   }
+
+  /// Whether the property name belongs to the given runtime, the runtime that created it. Use it only with the runtime
+  /// it belongs to, on the thread of that runtime.
+  public func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
+    return runtimeHandle === runtime.handle
+  }
+
   internal let pointee: facebook.jsi.PropNameID
 
   /// Creates a PropNameID from existing `facebook.jsi.PropNameID`.
@@ -22,6 +29,16 @@ public final class JavaScriptPropNameID: JavaScriptType {
   public init(_ runtime: borrowing JavaScriptRuntime, string: String) {
     self.runtimeHandle = runtime.handle
     self.pointee = string.toJSIPropNameID(in: runtime.pointee)
+  }
+
+  /// Creates a PropNameID from the symbol, for a property with a symbol key.
+  public init(_ runtime: borrowing JavaScriptRuntime, symbol: borrowing JavaScriptSymbol) {
+    assert(
+      symbol.runtimeHandle === runtime.handle,
+      "JavaScriptSymbol belongs to a different runtime than the PropNameID being created"
+    )
+    self.runtimeHandle = runtime.handle
+    self.pointee = facebook.jsi.PropNameID.forSymbol(runtime.pointee, symbol.pointee)
   }
 
   /// Copies the contents of the PropNameID into a string.

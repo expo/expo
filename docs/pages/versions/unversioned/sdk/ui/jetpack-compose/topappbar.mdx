@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 
 Expo UI TopAppBar matches the official Jetpack Compose [`TopAppBar`](https://developer.android.com/develop/ui/compose/components/app-bars#small) API. It displays a title, a navigation icon, and action buttons at the top of a screen.
 
@@ -21,7 +22,13 @@ Expo UI TopAppBar matches the official Jetpack Compose [`TopAppBar`](https://dev
 
 Put content in the `TopAppBar.Title`, `TopAppBar.NavigationIcon`, and `TopAppBar.Actions` slots. Each slot is optional. Set `style={{ typography: 'titleLarge' }}` on the title `Text` to use Material 3 title typography.
 
-```tsx BasicTopAppBar.tsx
+<ComponentExample
+  title="BasicTopAppBar.tsx"
+  src="/static/images/expo-ui/examples/topappbar-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/topappbar-basic-android-dark.webp"
+  alt="A full-width top app bar with a close icon, the title Inbox, and an edit icon, with empty space above them for the status bar">
+
+```tsx
 import {
   Host,
   Icon,
@@ -59,11 +66,19 @@ export default function BasicTopAppBar() {
 }
 ```
 
+</ComponentExample>
+
 ### Window insets
 
 By default, the app bar adds the status bar height above its content. It also adds any system bar or display cutout inset at its sides. These insets assume the bar is at the top edge of the window, even inside a nested `Host`. If a parent view already handles the insets, pass `windowInsets={{}}`. This removes both the top and horizontal insets.
 
-```tsx TopAppBarWithoutInsets.tsx
+<ComponentExample
+  title="TopAppBarWithoutInsets.tsx"
+  src="/static/images/expo-ui/examples/topappbar-without-insets-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/topappbar-without-insets-android-dark.webp"
+  alt="A full-width top app bar with the title Settings and no empty space above it">
+
+```tsx
 import { Host, Text, TopAppBar } from '@expo/ui/jetpack-compose';
 import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
 
@@ -81,6 +96,8 @@ export default function TopAppBarWithoutInsets() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

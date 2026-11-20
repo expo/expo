@@ -51,20 +51,22 @@ Expo MCP Server teaches your AI-assisted tools about the Expo SDK and lets them 
 - "Install `expo-camera` and show me how to take photos"
 - "Add `expo-notifications` for push notifications"
 
-**Manage builds and workflows.** Expo MCP Server can trigger and monitor EAS builds, run workflows, and pull crash data from TestFlight:
+**Manage builds and workflows.** Expo MCP Server can trigger and monitor builds on Expo Build, run workflows, and pull crash data from TestFlight:
 
-- "Investigate why my most recent iOS build on EAS failed"
+- "Investigate why my most recent iOS build on Expo Build failed"
 - "Identify any patterns in recent failing workflows"
 - "Create a workflow that runs Maestro tests"
 - "Show me recent TestFlight crashes"
 - "Show TestFlight feedback for my app"
 
-**Investigate production performance.** Expo MCP Server can [query EAS Observe](/eas/observe/ai-agents/) for startup and navigation metrics, slow sessions, and user-defined events from your production app:
+**Investigate production performance and errors.** Expo MCP Server can [query Expo Observe](/eas/observe/ai-agents/) for startup and navigation metrics, slow sessions, user-defined events, errors, native crashes, and network traces from your production app:
 
 - "Did startup get slower in the latest release?"
 - "Find the slowest cold launches this week"
 - "Which routes have the worst time to interactive on Android?"
 - "Show me the timeline for the session behind that slow launch"
+- "List the most common crashes in the latest release"
+- "Find the slowest network requests from yesterday"
 
 **Automate visual verification and testing.** Multimodal AI-assisted tools can screenshot and interact with your running app in a simulator. Expo MCP Server includes local capabilities enabled by adding the `expo-mcp` package to your project's dependencies.
 
@@ -81,8 +83,8 @@ The complete table of [MCP capabilities](#available-mcp-capabilities) documents 
     An Expo account is required to use Expo MCP Server.
   </Requirement>
   <Requirement title="An Expo project on the latest SDK">
-    Create a project with `npx create-expo-app@latest --template default@sdk-58`, or ensure your
-    existing project has the latest `expo` package installed.
+    Create a project with `npx create-expo-app@latest`, or ensure your existing project has the
+    latest `expo` package installed.
   </Requirement>
   <Requirement title="An AI-assisted tool with remote MCP support">
     Claude, Claude Code, Cursor, VS Code, or any other tool with remote MCP server support.
@@ -167,6 +169,22 @@ If you installed the [`expo` plugin](/skills/#install-expo-skills), it already r
 <Terminal cmd={['$ codex mcp add expo --url https://mcp.expo.dev/mcp']} />
 
 The above command adds the MCP server to your Codex configuration file and prompts you to authenticate with your Expo account.
+
+</Tab>
+
+<Tab label="Grok">
+
+**Grok**
+
+Expo MCP is available in the Grok connector catalog. This setup requires no installation on your machine. Go to [grok.com/connectors](https://grok.com/connectors), click **New Connector**, select **Expo**, and sign in with your Expo account.
+
+**Grok Build**
+
+If you installed the [`expo` plugin](/skills/#install-expo-skills), it already registers this server. Skip the command below and type `/mcps` in your session, select `expo`, and press <kbd>I</kbd> to authenticate.
+
+<Terminal cmd={['$ grok mcp add --transport http expo https://mcp.expo.dev/mcp']} />
+
+Grok Build opens the Expo sign-in page in your browser the first time it uses the server.
 
 </Tab>
 

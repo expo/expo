@@ -3,22 +3,24 @@
 import ExpoModulesJSI
 @testable import ExpoModulesCore
 
-/// Runs one benchmark case with a fresh app context that has the module from `makeModule` registered, so
-/// JavaScript drivers reach it through `expo.modules`. The app context's runtime runs scheduled work
+/// Runs one benchmark case with a fresh app context. The app context's runtime runs scheduled work
 /// synchronously, so the measured operations include the work they schedule.
+public func appContextBenchmarkCase(_ body: @escaping @JavaScriptActor (AppContext) throws -> Void) async throws {
+  try await benchmarkCase {
+    try body(AppContext.create())
+  }
+}
+
+/// Runs one benchmark case with a fresh app context that has the module from `makeModule` registered, so
+/// JavaScript drivers reach it through `expo.modules`.
 public func moduleBenchmarkCase<ModuleType: AnyModule>(
   _ makeModule: @escaping @JavaScriptActor (AppContext) -> ModuleType,
   _ body: @escaping @JavaScriptActor (ModuleType, JavaScriptRuntime) throws -> Void
 ) async throws {
-  try await benchmarkCase {
-    let appContext = AppContext.create()
+  try await appContextBenchmarkCase { appContext in
     let module = makeModule(appContext)
     appContext.moduleRegistry.register(module: module, name: nil)
-    let runtime = try appContext.runtime
-    // The module holds its app context weakly, so keep the context alive while the case runs.
-    try withExtendedLifetime(appContext) {
-      try body(module, runtime)
-    }
+    try body(module, try appContext.runtime)
   }
 }
 

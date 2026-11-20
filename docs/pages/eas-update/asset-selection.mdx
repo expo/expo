@@ -9,7 +9,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import { CODE } from '~/ui/components/Text';
 
-Experimental **asset selection feature** allows the developer to specify that only certain assets should be included in updates. This can greatly reduce the number of assets that need to be uploaded to and downloaded from the updates server. This feature will work with the EAS Update server or any custom server that complies with the [`expo-updates` protocol](/technical-specs/expo-updates-1).
+Experimental **asset selection feature** allows the developer to specify that only certain assets should be included in updates. This can greatly reduce the number of assets that need to be uploaded to and downloaded from the updates server. This feature will work with the Expo Update server or any custom server that complies with the [`expo-updates` protocol](/technical-specs/expo-updates-1).
 
 SDK 52 launched this feature to general availability.
 
@@ -57,7 +57,7 @@ If you are building your app locally or have access to the correct build for pub
 
 <Terminal cmd={['$ npx expo-updates assets:verify <dir>']} />
 
-> **info** This new command is part of the `expo-updates` CLI, which also supports [EAS Update code signing](/eas-update/code-signing/). It is not part of the [Expo CLI](/more/expo-cli/) or the [EAS CLI](https://github.com/expo/eas-cli). Only available for ([`expo-updates`](/versions/latest/sdk/updates/) >= 0.24.10).
+> **info** This new command is part of the `expo-updates` CLI, which also supports [Expo Update code signing](/eas-update/code-signing/). It is not part of the [Expo CLI](/more/expo-cli/) or the [EAS CLI](https://github.com/expo/eas-cli). Only available for ([`expo-updates`](/versions/latest/sdk/updates/) >= 0.24.10).
 
 You can also use the `--help` option with the command to see the available options:
 
@@ -77,7 +77,7 @@ You can also use the `--help` option with the command to see the available optio
   description={
     <>
       See a working example of using asset selection, the <CODE>assets:verify</CODE> command, and
-      other EAS Update features.
+      other Expo Update features.
     </>
   }
   Icon={GithubIcon}

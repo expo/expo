@@ -652,6 +652,7 @@ class AudioControlsService : MediaSessionService() {
     mediaSession?.release()
     mediaSession = null
     sessionMetadataPlayer = null
+    currentPlayable?.isActiveForLockScreen = false
     currentPlayable = null
     currentMetadata = null
     currentOptions = null

@@ -24,6 +24,23 @@ class TimeUtilsTest {
   }
 
   @Test
+  fun `uptimeToDate maps the current uptime to the current wall-clock time`() {
+    val now = TimeUtils.uptimeToDate(TimeUtils.getCurrentTimeInMillis())
+
+    assertEquals(System.currentTimeMillis().toDouble(), now.time.toDouble(), 100.0)
+  }
+
+  @Test
+  fun `uptimeToDate keeps the distance between two uptimes`() {
+    val uptime = TimeUtils.getCurrentTimeInMillis()
+
+    val earlier = TimeUtils.uptimeToDate(uptime - 5_000)
+    val later = TimeUtils.uptimeToDate(uptime)
+
+    assertEquals(5_000.0, (later.time - earlier.time).toDouble(), 100.0)
+  }
+
+  @Test
   fun `getCurrentTimeInMillis returns monotonically increasing values`() {
     // Given
     val time1 = TimeUtils.getCurrentTimeInMillis()

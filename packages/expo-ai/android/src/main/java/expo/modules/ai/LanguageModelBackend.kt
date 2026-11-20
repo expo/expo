@@ -25,7 +25,15 @@ internal data class ModelAvailability(
         put("execution", "on-device")
         put("constrainedOutput", "unsupported")
         put("runtimeToolDeclarations", "unsupported")
-        put("images", "unsupported")
+        // ML Kit has no query for vision support, so only a request can show it.
+        put(
+          "images",
+          if (status == "unavailable") {
+            "unsupported"
+          } else {
+            "unknown"
+          }
+        )
         put("contextTokens", contextTokens ?: JSONObject.NULL)
       }
     )

@@ -19,6 +19,65 @@ export type ObserveAttribute = LogAttributeValue;
  */
 export type ObserveAttributes = Record<string, ObserveAttribute>;
 
+// Keep in sync with `metricNameMap` in `ios/OpenTelemetry.swift` and `android/.../OpenTelemetry.kt` (except legacy entries).
+/**
+ * Name of a metric that EAS Observe sends.
+ */
+export type ObserveMetricName =
+  | 'expo.app_startup.tti'
+  | 'expo.app_startup.ttr'
+  | 'expo.app_startup.cold_launch_time'
+  | 'expo.app_startup.warm_launch_time'
+  | 'expo.app_startup.bundle_load_time'
+  | 'expo.updates.download_time'
+  | 'expo.navigation.cold_ttr'
+  | 'expo.navigation.warm_ttr'
+  | 'expo.navigation.tti'
+  | 'expo.navigation.tbt';
+
+/**
+ * Name of an event that EAS Observe sends. Custom names passed to `logEvent` are allowed.
+ */
+export type ObserveEventName =
+  | 'js.exception'
+  | 'native.exception'
+  | 'expo.feedback'
+  | 'reanimated.warning'
+  | 'expo-image.oversized'
+  | (string & {});
+
+/**
+ * User feedback sent by `reportFeedback`. Set `message`, `rating`, or both.
+ */
+export type ObserveFeedback = {
+  /**
+   * Where the feedback is collected, for example, `'checkout'`. Many reports can use the same id.
+   * Sent as the `expo.feedback.id` attribute.
+   */
+  id: string;
+  /**
+   * Text that the user wrote. Sent as the event body. Text longer than 4096 characters is cut.
+   */
+  message?: string;
+  /**
+   * A whole number from `scale.min` to `scale.max`. Sent as the `expo.feedback.rating` attribute.
+   */
+  rating?: number;
+  /**
+   * The lowest and the highest `rating` your UI allows, as whole numbers from 0 to 10. `min` must
+   * be less than `max`. Set it only with a `rating`. Sent as the `expo.feedback.scale.min` and
+   * `expo.feedback.scale.max` attributes. The dashboard uses the scale to compare ratings.
+   *
+   * @default { min: 0, max: 10 }
+   */
+  scale?: { min: number; max: number };
+  /**
+   * Attributes attached to the event. They follow the same rules as `logEvent` attributes. If the
+   * event has more than 128 attributes in total, the `expo.*` attributes are kept first.
+   */
+  attributes?: ObserveAttributes;
+};
+
 export type ObserveConfig = {
   /**
    * The environment for observability events
@@ -43,8 +102,8 @@ export type ObserveConfig = {
    *
    * Has no effect on release builds.
    *
-   * If `dispatchingEnabled` is `false` or this device is out-of-sample for `sampleRate`, nothing
-   * is dispatched regardless of `dispatchInDebug`.
+   * If `dispatchingEnabled` is `false`, nothing is dispatched regardless of `dispatchInDebug`.
+   * `sampleRate` and `errorSampleRate` also apply in debug builds.
    *
    * @default false
    */
@@ -61,11 +120,45 @@ export type ObserveConfig = {
    * - If `dispatchingEnabled` is `true` (or unset), metrics are dispatched only when this device
    *   is in-sample.
    *
+   * Errors follow `errorSampleRate` when it is set and higher. Every installation sends feedback
+   * from `reportFeedback`.
+   *
    * > Note: Devices that end up out-of-sample drop pending metrics rather than accumulating them.
    *
    * @default undefined - metrics from all devices are sent
    */
   sampleRate?: number;
+  /**
+   * Fraction of installations that should dispatch errors, in `[0, 1]`. Values outside that range
+   * are clamped. Use it to keep more errors than other events, for example, `sampleRate: 0.03` with
+   * `errorSampleRate: 1`.
+   *
+   * Errors include unhandled JavaScript errors, errors from `reportError` and
+   * `ObserveErrorBoundary`, and native crash reports. Every installation sends feedback from
+   * `reportFeedback`. All other events follow `sampleRate`.
+   *
+   * `errorSampleRate` is a minimum. Installations in-sample for `sampleRate` always send errors. A
+   * lower value has no effect, and `configure()` prints a warning. An unset `sampleRate` counts as
+   * `1`.
+   *
+   * `dispatchingEnabled` and `dispatchInDebug` apply to errors the same way as to other events.
+   *
+   * @default undefined - errors follow `sampleRate`
+   */
+  errorSampleRate?: number;
+  /**
+   * Metric names that are not sent. Each `configure` call replaces the list.
+   *
+   * @default []
+   */
+  ignoredMetrics?: ObserveMetricName[];
+  /**
+   * Event names that are not sent, including custom names passed to `logEvent`. Each `configure`
+   * call replaces the list.
+   *
+   * @default []
+   */
+  ignoredEvents?: ObserveEventName[];
   /**
    * Whether to record unhandled JavaScript errors as `exception` log events.
    *
@@ -128,7 +221,7 @@ export type ObserveNavigationIntegrationConfig = {
 export interface ObserveIntegrationsConfig {
   /**
    * Enables the `expo-router` integration, which records navigation metrics
-   * (`cold_ttr`, `warm_ttr`, `tti`) from router state changes.
+   * (`cold_ttr`, `warm_ttr`, `tti`, `tbt`) from router state changes.
    *
    * Requires `expo-router` to be installed.
    *
@@ -139,7 +232,7 @@ export interface ObserveIntegrationsConfig {
   'expo-router'?: boolean | ObserveNavigationIntegrationConfig;
   /**
    * Enables the `@react-navigation/native` integration, which records
-   * navigation metrics (`cold_ttr`, `warm_ttr`, `tti`).
+   * navigation metrics (`cold_ttr`, `warm_ttr`, `tti`, `tbt`).
    *
    * Requires `@react-navigation/native` to be installed and the app tree
    * to be wrapped in `<ObserveNavigationContainer>` instead of the stock
@@ -206,15 +299,15 @@ export type ObserveModuleEvents = {
 
 export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
   /**
-   * The EAS client id: a random, pseudonymous identifier for this app installation, shared by all
-   * EAS client libraries. Observe records it on every metric and log event as the
+   * The Expo Services client id: a random, pseudonymous identifier for this app installation, shared by all
+   * Expo Services client libraries. Observe records it on every metric and log event as the
    * `expo.eas_client.id` attribute, so use it to correlate Observe data with another service.
    *
    * The id is stored in native preferences and is stable across app launches and app updates. It
    * changes when the app's data is cleared or the app is reinstalled, although a backup restore
    * can carry the previous id over. It identifies an installation, not a user or a device.
    *
-   * `null` on web, where there is no EAS client id.
+   * `null` on web, where there is no Expo Services client id.
    *
    * @example
    * ```ts
@@ -251,6 +344,21 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * ```
    */
   dispatchEvents(): Promise<void>;
+  /**
+   * Starts a trace span measuring an operation that is underway. See `startSpan` in
+   * `expo-app-metrics` for the full contract.
+   */
+  startSpan: typeof import('expo-app-metrics').startSpan;
+  /**
+   * Runs a callback inside a span that ends automatically. See `withSpan` in
+   * `expo-app-metrics` for the full contract.
+   */
+  withSpan: typeof import('expo-app-metrics').withSpan;
+  /**
+   * Records a span for an already-measured operation. See `recordSpan` in `expo-app-metrics`
+   * for the full contract.
+   */
+  recordSpan: typeof import('expo-app-metrics').recordSpan;
   /**
    * Configures how observability events are collected and dispatched at runtime, such as
    * the environment label, dispatching behavior, sampling, and integrations.
@@ -322,6 +430,27 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
   // eslint-disable-next-line handle-callback-err -- `error` is the caught value to report, not a Node callback error.
   reportError(error: unknown): void;
   /**
+   * Reports feedback from a user as an `expo.feedback` event. Every installation sends feedback:
+   * `sampleRate` and `errorSampleRate` do not apply to it. `dispatchingEnabled`,
+   * `dispatchInDebug`, and `ignoredEvents` apply to it the same way as to other events.
+   *
+   * `reportFeedback` drops the report and prints a warning in development when `id` is empty, when
+   * the report has neither `message` nor `rating` (an empty `message` counts as none), when
+   * `rating` is not a whole number within `scale`, when `scale` is not valid or has no `rating`,
+   * or when an argument has the wrong type.
+   *
+   * @param feedback The feedback to report.
+   *
+   * @example
+   * ```ts
+   * Observe.reportFeedback({ id: 'checkout', message: 'The pay button is hard to find.', rating: 6 });
+   * ```
+   *
+   * @platform android
+   * @platform ios
+   */
+  reportFeedback(feedback: ObserveFeedback): void;
+  /**
    * Marks the first render of the app. Used to compute the `cold_ttr` and
    * `warm_ttr` metrics.
    */
@@ -357,4 +486,11 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * @internal
    */
   setBundleDefaults(defaults: { environment: string; isJsDev: boolean }): void;
+  /**
+   * Returns whether the app privacy manifest declares user content.
+   *
+   * @private
+   * @platform ios
+   */
+  hasUserContentPrivacyEntry?(): boolean;
 }

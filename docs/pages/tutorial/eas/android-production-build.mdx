@@ -18,7 +18,7 @@ In this chapter, we'll create our example app's production version and submit it
 <VideoBoxLink
   videoId="nxlt8uwqhpE"
   title="Watch: Creating and releasing a production build for Android"
-  description="Create a production build for Android with EAS, submit it to the Google Play Store, and automate the release process."
+  description="Create a production build for Android with Expo Build, submit it to the Google Play Store, and automate the release process."
 />
 
 ---
@@ -48,11 +48,11 @@ A [production Android build](/build/eas-json/#production-builds) has a **.aab** 
 
 ## Create a production build
 
-To create an Android production build using the default `production` profile, open your terminal and execute the following command. Since `production` is set as the default profile in the EAS configuration, there is no need to specify it explicitly with the `--profile` flag.
+To create an Android production build using the default `production` profile, open your terminal and execute the following command. Since `production` is set as the default profile in **eas.json**, there is no need to specify it explicitly with the `--profile` flag.
 
 <Terminal cmd={['$ eas build --platform android']} />
 
-The above command queues the build. Notice in the EAS dashboard that the **Version** column shows the auto-incremented version code in parentheses, for example, `1.0.0 (2)`.
+The above command queues the build. Notice in the Expo dashboard that the **Version** column shows the auto-incremented version code in parentheses, for example, `1.0.0 (2)`.
 
 </Step>
 
@@ -120,9 +120,9 @@ After the app is created on Google Play Console, it redirects us to the app's Da
 
 ## Upload the app binary
 
-After EAS has created a production build:
+After Expo Build has created a production build:
 
-- Open the EAS dashboard and click on **Download** to get the **.aab** file.
+- Open the Expo dashboard and click on **Download** to get the **.aab** file.
 
 <ContentSpotlight
   alt="Downloading the aab file"
@@ -207,14 +207,14 @@ To promote our internal test release version to **alpha**, in Google Play Store 
 
 > **info** **Tip**: Before following the steps in this section, see the instructions on [creating a Google Service Account key or downloading it from an existing account](https://expo.fyi/creating-google-service-account) guide.
 
-From now on, we can use [EAS Submit](/submit/android/) to automate releases and avoid the manual process. To do that, we need to add the service account key to our project's credentials.
+From now on, we can use [Expo Submit](/submit/android/) to automate releases and avoid the manual process. To do that, we need to add the service account key to our project's credentials.
 
-After following the Google Service Account guide steps, we can upload the downloaded JSON key to EAS dashboard:
+After following the Google Service Account guide steps, we can upload the downloaded JSON key to Expo dashboard:
 
-- Go to your project's EAS dashboard, click **Credentials**, and under **Android**, click your app's **Application identifier**.
+- Go to your project's Expo dashboard, click **Credentials**, and under **Android**, click your app's **Application identifier**.
 
 <ContentSpotlight
-  alt="Adding a new Google Service Account key to EAS dashboard"
+  alt="Adding a new Google Service Account key to Expo dashboard"
   src="/static/images/tutorial/eas/credentials-01.png"
   className="max-w-[640px]"
 />
@@ -222,7 +222,7 @@ After following the Google Service Account guide steps, we can upload the downlo
 - Under **Service Credentials**, click **Add a Google Service Account Key**.
 
 <ContentSpotlight
-  alt="Add a Google Service Account Key button under Service Credentials in EAS dashboard"
+  alt="Add a Google Service Account Key button under Service Credentials in Expo dashboard"
   src="/static/images/tutorial/eas/credentials-02.png"
   className="max-w-[640px]"
 />
@@ -230,7 +230,7 @@ After following the Google Service Account guide steps, we can upload the downlo
 - Under **Change Google Service Account Key**, ensure **Upload new key** is selected and upload the downloaded JSON key. This will add the key to your project's credentials.
 
 <ContentSpotlight
-  alt="Uploading the Google Service Account key to EAS dashboard under Service Credentials"
+  alt="Uploading the Google Service Account key to Expo dashboard under Service Credentials"
   src="/static/images/tutorial/eas/credentials-03.png"
   className="max-w-[640px]"
 />
@@ -270,7 +270,7 @@ In the above snippet, we're adding [`track`](/eas/json/#track) property and sett
 - This command will automatically create a new internal release version in Google Play Console:
 
 <ContentSpotlight
-  alt="Automatic internal release version created in Google Play Console by EAS Submit"
+  alt="Automatic internal release version created in Google Play Console by Expo Submit"
   src="/static/images/tutorial/eas/play-store-18.png"
   className="max-w-[800px]"
 />
@@ -300,7 +300,7 @@ To release the app for production:
 }
 ```
 
-- We can also use the same EAS Build we did for the internal testing release. Run the `eas submit` command to release to the Play Store:
+- We can also use the same Expo Build we did for the internal testing release. Run the `eas submit` command to release to the Play Store:
 
 <Terminal cmd={['$ eas submit --platform android']} />
 

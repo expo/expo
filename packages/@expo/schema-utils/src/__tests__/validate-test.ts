@@ -427,6 +427,26 @@ describe('format', () => {
     expect(validateSchema({ format }, value, '')).toEqual(null);
     expect(validateSchema({ format }, '', '')).not.toEqual(null);
   });
+
+  it.each([
+    ['https://expo.dev/image.png', true],
+    ['file:///tmp/image.png', true],
+    ['data:image/png;base64,AAAA', true],
+    ['mailto:hello@expo.dev', true],
+    ['urn:example:resource', true],
+    ['https://expo.dev/image name.png', true],
+    ['', false],
+    ['https://', false],
+    ['/image.png', false],
+    ['not a URL', false],
+  ])('validates the WHATWG URL %j as %s', (value, valid) => {
+    const result = validateSchema({ type: 'string', format: 'url' }, value, '');
+    if (valid) {
+      expect(result).toBeNull();
+    } else {
+      expect(result).toEqual(expect.objectContaining({ keyword: 'format', value }));
+    }
+  });
 });
 
 describe('minLength', () => {

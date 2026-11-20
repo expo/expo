@@ -1,6 +1,6 @@
 ---
 title: Using TesterArmy
-description: Learn how to test your Expo app with TesterArmy on each push and pull request, using EAS Build and EAS Workflows.
+description: Learn how to test your Expo app with TesterArmy on each push and pull request, using Expo Build and Expo Workflows.
 hasVideoLink: true
 ---
 
@@ -15,12 +15,12 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 [TesterArmy](https://tester.army/) is a hosted testing platform that tests your app with AI agents. An agent opens your app, taps through a flow like a user does, and checks the result. TesterArmy runs saved tests and an exploration agent on cloud Android Emulators and iOS Simulators.
 
-This guide shows how to build your app with [EAS Build](/build/introduction/) and run TesterArmy tests on each push and pull request with [EAS Workflows](/eas/workflows/introduction/). To run tests on your own emulator or simulator with TesterArmy's open source e2e framework, see [Using e2e by TesterArmy](/guides/using-e2e/).
+This guide shows how to build your app with [Expo Build](/build/introduction/) and run TesterArmy tests on each push and pull request with [Expo Workflows](/eas/workflows/introduction/). To run tests on your own emulator or simulator with TesterArmy's open source e2e framework, see [Using e2e by TesterArmy](/guides/using-e2e/).
 
 <VideoBoxLink
   videoId="yrtWWbhTsHE"
   title="Agentic CI for Expo apps with TesterArmy"
-  description="Build or repack your app with EAS Workflows, and let a TesterArmy agent test each pull request on a cloud simulator."
+  description="Build or repack your app with Expo Workflows, and let a TesterArmy agent test each pull request on a cloud simulator."
 />
 
 ---
@@ -30,9 +30,9 @@ This guide shows how to build your app with [EAS Build](/build/introduction/) an
     Sign up at [tester.army](https://tester.army/) and create a mobile project. Add at least one
     test to a test group. Run the test once from the TesterArmy dashboard to confirm it works.
   </Requirement>
-  <Requirement title="A GitHub repository linked to your EAS project">
-    EAS Workflows runs on push and pull request events from GitHub. See [Link your GitHub repository
-    to your Expo
+  <Requirement title="A GitHub repository linked to your Expo Services project">
+    Expo Workflows runs on push and pull request events from GitHub. See [Link your GitHub
+    repository to your Expo
     project](/build/building-from-github/#link-your-github-repository-to-your-expo-project).
   </Requirement>
   <Requirement title="The TesterArmy GitHub integration">
@@ -41,7 +41,7 @@ This guide shows how to build your app with [EAS Build](/build/introduction/) an
   </Requirement>
 </Prerequisites>
 
-## Run TesterArmy tests on EAS Workflows
+## Run TesterArmy tests on Expo Workflows
 
 <Step label="1">
 
@@ -72,7 +72,7 @@ TesterArmy runs an Android APK (**.apk**) and an iOS Simulator build (**.app**).
 
 ### Add environment variables
 
-The workflow reads these variables from the `preview` environment of your EAS project:
+The workflow reads these variables from the `preview` environment of your Expo Services project:
 
 | Variable                           | Value                                                                           | Where to find it in the TesterArmy dashboard    |
 | ---------------------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------- |
@@ -81,7 +81,7 @@ The workflow reads these variables from the `preview` environment of your EAS pr
 | `TESTERARMY_GROUP_ID`              | The test group to run                                                           | The **Test** tab, in the menu of the test group |
 | `TESTERARMY_DYNAMIC_AGENT_ENABLED` | Optional. Set to `false` to turn off the exploration agent. Defaults to `true`. | Not applicable                                  |
 
-Create the variables in the [EAS dashboard or with EAS CLI](/eas/environment-variables/manage/#create-environment-variables). Set the visibility of `TESTERARMY_API_KEY` to [Secret](/eas/environment-variables/#visibility-settings-for-environment-variables), and do not add an `EXPO_PUBLIC_` prefix to it.
+Create the variables in the [Expo dashboard or with EAS CLI](/eas/environment-variables/manage/#create-environment-variables). Set the visibility of `TESTERARMY_API_KEY` to [Secret](/eas/environment-variables/#visibility-settings-for-environment-variables), and do not add an `EXPO_PUBLIC_` prefix to it.
 
 </Step>
 
@@ -659,8 +659,8 @@ If a coding agent writes your pull requests, add the [TesterArmy testing instruc
 ## Additional resources
 
 <BoxLink
-  title="TesterArmy Expo EAS guide"
-  description="Run TesterArmy platform tests on EAS Workflows, with fingerprint and repack, the exploration agent, and a setup prompt for coding agents."
+  title="TesterArmy Expo Services guide"
+  description="Run TesterArmy platform tests on Expo Workflows, with fingerprint and repack, the exploration agent, and a setup prompt for coding agents."
   href="https://docs.tester.army/mobile/expo-eas"
   Icon={Globe01Icon}
 />

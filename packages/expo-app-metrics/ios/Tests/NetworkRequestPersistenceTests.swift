@@ -381,6 +381,38 @@ struct NetworkRequestSpanMappingTests {
   }
 
   @Test
+  func `redacts redirect URLs like the request URL`() throws {
+    let request = makeRequest(redirects: [
+      NetworkRequest.Redirect(
+        fromUrl: URL(string: "https://user:pass@api.example.com/download?id=1&sig=secret")!,
+        toUrl: URL(
+          string: "https://bucket.s3.amazonaws.com/key"
+            + "?X-Amz-Algorithm=AWS4-HMAC-SHA256"
+            + "&X-Amz-Credential=AKIAEXAMPLE%2F20260907%2Fus-east-1%2Fs3%2Faws4_request"
+            + "&X-Amz-Security-Token=session-token"
+            + "&X-Amz-Signature=abc"
+        )!,
+        statusCode: 302,
+        respondedAt: nil
+      )
+    ])
+    let events = try eventsArray(makeSpan(request))
+    let attributes = try #require(events.first?["attributes"] as? [String: Any])
+    #expect(
+      attributes["expo.http.redirect.from"] as? String
+        == "https://REDACTED:REDACTED@api.example.com/download?id=1&sig=REDACTED"
+    )
+    #expect(
+      attributes["expo.http.redirect.to"] as? String
+        == "https://bucket.s3.amazonaws.com/key"
+        + "?X-Amz-Algorithm=AWS4-HMAC-SHA256"
+        + "&X-Amz-Credential=REDACTED"
+        + "&X-Amz-Security-Token=REDACTED"
+        + "&X-Amz-Signature=REDACTED"
+    )
+  }
+
+  @Test
   func `keeps redirect event times inside the span window`() throws {
     // A hop that the platform timed before the span's own start has no valid place on the
     // timeline: OTLP events must sit within their span. Rather than ship an event that precedes
@@ -463,7 +495,7 @@ struct NetworkRequestPersistenceTests {
     try withTemporaryDatabase { database in
       try insertSession(id: "s", into: database)
       let persistence = NetworkRequestPersistence(
-        database: database,
+        writer: SpanWriter(database: database),
         configuration: NetworkTracesConfiguration(enabled: false)
       ) {
         return "s"
@@ -478,7 +510,7 @@ struct NetworkRequestPersistenceTests {
     try withTemporaryDatabase { database in
       try insertSession(id: "s", into: database)
       let persistence = NetworkRequestPersistence(
-        database: database,
+        writer: SpanWriter(database: database),
         configuration: NetworkTracesConfiguration(enabled: true, hosts: ["API.myapp.com"], methods: nil)
       ) {
         return "s"
@@ -498,7 +530,7 @@ struct NetworkRequestPersistenceTests {
     try withTemporaryDatabase { database in
       try insertSession(id: "s", into: database)
       let persistence = NetworkRequestPersistence(
-        database: database,
+        writer: SpanWriter(database: database),
         configuration: NetworkTracesConfiguration(enabled: true)
       ) {
         return "s"
@@ -515,7 +547,7 @@ struct NetworkRequestPersistenceTests {
     try withTemporaryDatabase { database in
       try insertSession(id: "main-session", into: database)
       let persistence = NetworkRequestPersistence(
-        database: database,
+        writer: SpanWriter(database: database),
         configuration: NetworkTracesConfiguration(enabled: true)
       ) {
         return "main-session"
@@ -535,7 +567,7 @@ struct NetworkRequestPersistenceTests {
       try insertSession(id: "main-session", into: database)
       let monitor = NetworkRequestMonitor()
       monitor.persistence = NetworkRequestPersistence(
-        database: database,
+        writer: SpanWriter(database: database),
         configuration: NetworkTracesConfiguration(enabled: true)
       ) {
         return "main-session"
@@ -553,7 +585,7 @@ struct NetworkRequestPersistenceTests {
     // row rather than throw into the monitor's record path.
     try withTemporaryDatabase { database in
       let persistence = NetworkRequestPersistence(
-        database: database,
+        writer: SpanWriter(database: database),
         configuration: NetworkTracesConfiguration(enabled: true)
       ) {
         return "never-inserted"

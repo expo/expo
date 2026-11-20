@@ -25,24 +25,6 @@ describe(resolveOptionsAsync, () => {
     }
   );
 
-  it(`rejects --device`, async () => {
-    await expect(
-      resolveOptionsAsync('/app', {
-        mode: 'development',
-        device: 'iPhone 18 Pro',
-        outputType: 'app',
-      })
-    ).rejects.toThrow(
-      'Device builds are not supported yet. Omit --device to build for the simulator.'
-    );
-  });
-
-  it(`rejects an output type other than app`, async () => {
-    await expect(
-      resolveOptionsAsync('/app', { mode: 'development', outputType: 'ipa' })
-    ).rejects.toThrow('Building an ipa is not supported yet. Omit --output-type to build an app.');
-  });
-
   it(`rejects a non-iOS app`, async () => {
     const pbxprojPath = 'ios/ReactNativeProject.xcodeproj/project.pbxproj';
     vol.fromJSON(

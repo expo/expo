@@ -1,7 +1,12 @@
 package expo.modules.webbrowser
 
+import android.content.ComponentName
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Browser
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.CustomTabsSession
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.errorCodeOf
 import expo.modules.test.core.legacy.ModuleMock
@@ -84,6 +89,59 @@ internal class WebBrowserModuleTest {
   }
 
   @Test
+  fun `authentication headers use the verified session and origin`() = withWebBrowserMock {
+    val intentSlot = slot<CustomTabsIntent>()
+    val activities = mockkCustomTabsActivitiesHelper(
+      preferredActivity = "com.preferred.browser",
+      startIntentSlot = intentSlot,
+      defaultCanResolveIntent = true
+    )
+    val connection = mockkCustomTabsConnectionHelper()
+    val session = CustomTabsSession.createMockSessionForTesting(
+      ComponentName("com.preferred.browser", "CustomTabsService")
+    )
+    every {
+      connection.openWithHeaders(
+        "com.preferred.browser",
+        Uri.parse("https://auth.example"),
+        any(),
+        any()
+      )
+    } answers {
+      thirdArg<Promise>().resolve(arg<(CustomTabsSession) -> Bundle>(3)(session))
+    }
+    initialize(moduleSpy, activities, connection)
+
+    val result = module.openBrowserAsync(
+      "https://auth.example/start?prompt=login#fragment",
+      OpenBrowserOptions(additionalHeaderFields = mapOf("X-Test" to "example"))
+    )
+
+    assertEquals("opened", result.getString("type"))
+    assertEquals("example", intentSlot.captured.intent.getBundleExtra(Browser.EXTRA_HEADERS)?.getString("X-Test"))
+    assertEquals("com.preferred.browser", intentSlot.captured.intent.`package`)
+    assertEquals(Uri.parse("https://auth.example/start?prompt=login#fragment"), intentSlot.captured.intent.data)
+  }
+
+  @Test
+  fun `authentication headers reject an insecure origin before opening`() = withWebBrowserMock {
+    val activities = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true)
+    initialize(moduleSpy, customTabsActivitiesHelper = activities)
+
+    val exception = runCatching {
+      module.openBrowserAsync(
+        "http://auth.example/start",
+        OpenBrowserOptions(additionalHeaderFields = mapOf("X-Test" to "example"))
+      )
+    }.exceptionOrNull()
+
+    assertCodedException(exception) {
+      assertEquals(errorCodeOf<BrowserHeadersException>(), it.code)
+    }
+    verify(exactly = 0) { activities.startCustomTabs(any(), any()) }
+  }
+
+  @Test
   fun `test browser not opened when no resolving activity found`() = withWebBrowserMock {
     // given
     val mock = mockkCustomTabsActivitiesHelper()
@@ -139,6 +197,42 @@ internal class WebBrowserModuleTest {
       )
     )
 
+    assertEquals("com.browser.package", intentSlot.captured.intent.`package`)
+  }
+
+  @Test
+  fun `test intent is pinned to preferred browser when no package given`() = withWebBrowserMock {
+    // given
+    val intentSlot = slot<CustomTabsIntent>()
+    val mock = mockkCustomTabsActivitiesHelper(
+      preferredActivity = "com.preferred.browser",
+      startIntentSlot = intentSlot,
+      defaultCanResolveIntent = true
+    )
+    initialize(moduleSpy, customTabsActivitiesHelper = mock)
+
+    // when
+    module.openBrowserAsync("http://expo.io", OpenBrowserOptions())
+
+    // then
+    assertEquals("com.preferred.browser", intentSlot.captured.intent.`package`)
+  }
+
+  @Test
+  fun `test explicit package is not overridden by preferred browser`() = withWebBrowserMock {
+    // given
+    val intentSlot = slot<CustomTabsIntent>()
+    val mock = mockkCustomTabsActivitiesHelper(
+      preferredActivity = "com.preferred.browser",
+      startIntentSlot = intentSlot,
+      defaultCanResolveIntent = true
+    )
+    initialize(moduleSpy, customTabsActivitiesHelper = mock)
+
+    // when
+    module.openBrowserAsync("http://expo.io", OpenBrowserOptions(browserPackage = "com.browser.package"))
+
+    // then
     assertEquals("com.browser.package", intentSlot.captured.intent.`package`)
   }
 

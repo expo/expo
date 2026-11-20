@@ -8,7 +8,6 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import expo.modules.devmenu.api.DevMenuApi
-import host.exp.exponent.analytics.EXL
 import host.exp.exponent.branch.BranchManager
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.*
@@ -18,7 +17,6 @@ import host.exp.exponent.modules.ExponentKernelModule
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.expoview.ExpoViewBuildConfig
 import host.exp.expoview.Exponent
-import me.leolin.shortcutbadger.ShortcutBadger
 import java.io.IOException
 import javax.inject.Inject
 
@@ -67,14 +65,6 @@ abstract class ExpoApplication : Application() {
 
     BranchManager.initialize(this)
 
-    try {
-      // Remove the badge count on weird launchers
-      // TODO: doesn't work on the Xiaomi phone. bug with the library
-      ShortcutBadger.removeCount(this)
-    } catch (e: Throwable) {
-      EXL.e(TAG, e)
-    }
-
     if (Constants.DEBUG_COLD_START_METHOD_TRACING) {
       Debug.startMethodTracing("coldStart")
     }
@@ -98,9 +88,5 @@ abstract class ExpoApplication : Application() {
   // remove the override of shouldUseInternetKernel() their project will still build without errors
   private fun shouldUseEmbeddedKernel(): Boolean {
     return !isDebug
-  }
-
-  companion object {
-    private val TAG = ExpoApplication::class.java.simpleName
   }
 }

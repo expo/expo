@@ -42,11 +42,36 @@ struct SwiftUIViewHostTests {
 
     // What `virtualViewUnmountChild` and `virtualViewMountChild` do in one Fabric transaction.
     hostedView.removeFromSuperview()
+    (props.children?.first as? ExpoSwiftUI.UIViewHost)?.didUnmount()
     props.children = []
     props.children = [ExpoSwiftUI.UIViewHost(view: hostedView)]
     props.objectWillChange.send()
     try await render(window)
 
     #expect(hostedView.window === window)
+  }
+
+  // SwiftUI can build a second instance of a child that is not on screen, like a `List` cell it measures.
+  // https://github.com/expo/expo/issues/52692
+  @Test
+  func `keeps the view on screen when SwiftUI builds another instance outside the window`() async throws {
+    let props = HostTestViewProps()
+    let hostedView = UIView()
+    props.children = [ExpoSwiftUI.UIViewHost(view: hostedView)]
+
+    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
+    window.rootViewController = UIHostingController(rootView: HostTestView(props: props))
+    window.makeKeyAndVisible()
+    try await render(window)
+    #expect(hostedView.window === window)
+
+    let offscreen = UIHostingController(rootView: HostTestView(props: props))
+    _ = offscreen.sizeThatFits(in: window.bounds.size)
+    offscreen.view.frame = window.bounds
+    offscreen.view.layoutIfNeeded()
+    try await render(window)
+
+    #expect(hostedView.window === window)
+    withExtendedLifetime(offscreen) {}
   }
 }

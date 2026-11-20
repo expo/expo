@@ -1,8 +1,8 @@
 import fs from 'fs-extra';
-import { glob } from 'glob';
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import path from 'path';
+import { glob } from 'tinyglobby';
 
 import { getExpoRepositoryRootDir } from '../Directories';
 
@@ -25,6 +25,7 @@ describe('SPMGenerator header staging — expo-modules-core', () => {
     //      the public include/ dir. See SPMGenerator.ts:141-143 and 187-191.
     const targetSourcePath = path.join(repoRoot, 'packages/expo-modules-core', target.path);
     const stagedIntoInclude = await glob(target.headerPattern, {
+      expandDirectories: false,
       cwd: targetSourcePath,
       ignore: target.exclude ?? [],
     });
@@ -33,6 +34,7 @@ describe('SPMGenerator header staging — expo-modules-core', () => {
     const mappedPaths = new Set<string>();
     for (const mapping of fileMappings) {
       const matches = await glob(mapping.from, {
+        expandDirectories: false,
         cwd: targetSourcePath,
         ignore: target.exclude ?? [],
       });

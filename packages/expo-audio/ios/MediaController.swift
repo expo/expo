@@ -39,6 +39,9 @@ class MediaController {
   static let shared = MediaController()
 
   private var activePlayable: (any LockScreenPlayable)?
+  // The playable of the latest `setActivePlayable` call. `activePlayable` follows it on the main thread.
+  private weak var requestedPlayable: (any LockScreenPlayable)?
+  private let requestLock = NSLock()
   private var remoteCommandCenter = MPRemoteCommandCenter.shared()
   private var nowPlayingInfoCenter = MPNowPlayingInfoCenter.default()
   private var remoteCommandTargets: [(command: MPRemoteCommand, target: Any)] = []
@@ -50,7 +53,18 @@ class MediaController {
   private var isLiveStream = false
 
   func setActivePlayable(_ playable: (any LockScreenPlayable)?, options: LockScreenOptions? = nil) {
-    performOnMain {
+    requestLock.lock()
+    defer { requestLock.unlock() }
+
+    // The flags change on the calling thread, so they are up to date when this returns.
+    if let previous = requestedPlayable, previous.id != playable?.id {
+      previous.isActiveForLockScreen = false
+    }
+    requestedPlayable = playable
+    playable?.isActiveForLockScreen = true
+
+    // Queued under the lock, also from the main thread, so main applies requests in the order of the flag changes.
+    DispatchQueue.main.async {
       self.setActivePlayableOnMain(playable, options: options)
     }
   }
@@ -75,13 +89,11 @@ class MediaController {
 
   private func setActivePlayableOnMain(_ playable: (any LockScreenPlayable)?, options: LockScreenOptions? = nil) {
     if let previous = activePlayable, previous.id != playable?.id {
-      previous.isActiveForLockScreen = false
       resetArtworkState()
       currentArtworkItemIdentifier = nil
     }
 
     activePlayable = playable
-    playable?.isActiveForLockScreen = true
     isLiveStream = options?.isLiveStream ?? playable?.isLive ?? false
 
     if let playable {

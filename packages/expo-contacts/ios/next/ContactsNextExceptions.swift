@@ -47,3 +47,16 @@ internal final class FailedToParseDate: Exception {
     "Could not parse date"
   }
 }
+
+internal final class ContactNotesNotAccessibleException: Exception {
+  override var reason: String {
+    "Could not access the note of the contact, because the app does not have the com.apple.developer.contacts.notes entitlement. "
+      + "Request the entitlement from Apple, set `ios.accessesContactNotes` to `true` in the app config, and create a development build"
+  }
+}
+
+internal final class ContactKeyNotFetchedException: GenericException<String> {
+  override var reason: String {
+    "The contact was fetched without the key '\(param)'. This is a bug in expo-contacts, please report it"
+  }
+}

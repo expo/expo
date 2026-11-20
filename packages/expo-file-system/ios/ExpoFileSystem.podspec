@@ -35,9 +35,5 @@ Pod::Spec.new do |s|
     # ExpoModulesCore requires React-hermes or React-jsc in tests.
     test_spec.dependency 'ExpoModulesTestCore'
     test_spec.source_files = 'Tests/**/*.{m,swift}'
-    # Test bundles do not inherit ExpoModulesCore's user_target_xcconfig linker flags.
-    test_spec.pod_target_xcconfig = {
-      'OTHER_LDFLAGS' => '$(inherited) -lc++'
-    }
   end
 end

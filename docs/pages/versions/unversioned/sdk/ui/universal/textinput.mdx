@@ -184,6 +184,19 @@ export default function PhoneMaskExample() {
 
 </ComponentExample>
 
+### Accessibility
+
+Use [`accessibilityLabel`](#accessibilitylabel) to give the field a name for screen readers. The label remains available when the field contains text and when [`secureTextEntry`](#securetextentry) is enabled. Set [`autoComplete`](#autocomplete) separately to provide an autofill hint.
+
+```tsx
+<TextInput
+  accessibilityLabel="Password"
+  placeholder="Enter your password"
+  secureTextEntry
+  autoComplete="password"
+/>
+```
+
 ## Unsupported React Native props
 
 Some React Native `TextInput` props are not supported, because Compose's `TextField` or SwiftUI's `TextField` does not expose an equivalent, or because the prop is replaced by a different mechanism. See the [API](#api) section below for the supported props. If a missing prop blocks your use case, [open an issue](https://github.com/expo/expo/issues/new/choose) so it can be prioritized.

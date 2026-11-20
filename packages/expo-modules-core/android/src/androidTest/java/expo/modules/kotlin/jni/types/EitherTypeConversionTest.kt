@@ -14,7 +14,7 @@ import java.net.URL
 
 class EitherTypeConversionTest {
   @Test
-  fun either_should_be_convertible() = conversionTest(
+  fun either_should_be_convertible() = conversionTest<Either<Int, String>, Any>(
     TestCase(
       jsValue = "123",
       nativeAssertion = { either: Either<Int, String> ->

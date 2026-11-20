@@ -79,7 +79,8 @@ export function DateTimePicker(props: DateTimePickerProps) {
     }
   };
 
-  const onDateSelected = (date: Date) => {
+  const onDateSelected = (date: Date | null) => {
+    if (date === null) return;
     const selected = usesDateComponents ? utcDayToLocalDate(date, value) : date;
     if (onValueChange) {
       onValueChange(buildChangeEvent(selected), selected);
@@ -104,7 +105,11 @@ export function DateTimePicker(props: DateTimePickerProps) {
     if (mode === 'time') {
       return (
         <Host colorScheme={themeVariant} style={style}>
-          <AndroidTimePickerDialog {...dialogProps} is24Hour={is24Hour} />
+          <AndroidTimePickerDialog
+            {...dialogProps}
+            variant={displayToAndroidVariant(display)}
+            is24Hour={is24Hour}
+          />
         </Host>
       );
     }

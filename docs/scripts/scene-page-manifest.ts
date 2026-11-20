@@ -27,7 +27,7 @@ export const SCENE_PAGES: ScenePage[] = [
         mdxPath: `${DEV_BUILDS_INSTRUCTIONS_DIR}/build-locally.mdx`,
       },
       {
-        heading: 'Create a development build with EAS',
+        heading: 'Create a development build with Expo Build',
         mdxPath: `${DEV_BUILDS_INSTRUCTIONS_DIR}/eas.mdx`,
       },
       {
@@ -44,7 +44,7 @@ export const SCENE_PAGES: ScenePage[] = [
         mdxPath: `${INSTRUCTIONS_DIR}/androidPhysicalExpoGo.mdx`,
       },
       {
-        heading: 'Android device with a development build (EAS)',
+        heading: 'Android device with a development build (Expo Build)',
         mdxPath: `${INSTRUCTIONS_DIR}/androidPhysicalDevelopmentBuild.mdx`,
       },
       {
@@ -56,7 +56,7 @@ export const SCENE_PAGES: ScenePage[] = [
         mdxPath: `${INSTRUCTIONS_DIR}/androidSimulatedExpoGo.mdx`,
       },
       {
-        heading: 'Android Emulator with a development build (EAS)',
+        heading: 'Android Emulator with a development build (Expo Build)',
         mdxPath: `${INSTRUCTIONS_DIR}/androidSimulatedDevelopmentBuild.mdx`,
       },
       {
@@ -68,7 +68,7 @@ export const SCENE_PAGES: ScenePage[] = [
         mdxPath: `${INSTRUCTIONS_DIR}/iosPhysicalExpoGo.mdx`,
       },
       {
-        heading: 'iOS device with a development build (EAS)',
+        heading: 'iOS device with a development build (Expo Build)',
         mdxPath: `${INSTRUCTIONS_DIR}/iosPhysicalDevelopmentBuild.mdx`,
       },
       {
@@ -80,7 +80,7 @@ export const SCENE_PAGES: ScenePage[] = [
         mdxPath: `${INSTRUCTIONS_DIR}/iosSimulatedExpoGo.mdx`,
       },
       {
-        heading: 'iOS Simulator with a development build (EAS)',
+        heading: 'iOS Simulator with a development build (Expo Build)',
         mdxPath: `${INSTRUCTIONS_DIR}/iosSimulatedDevelopmentBuild.mdx`,
       },
       {

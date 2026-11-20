@@ -64,6 +64,21 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
     return "SharedObject<\(innerType)>"
   }
 
+  func castToJS<ValueType>(
+    _ value: ValueType,
+    appContext: AppContext,
+    in runtime: JavaScriptRuntime
+  ) throws -> JavaScriptValue {
+    guard let nativeObject = value as? SharedObject, let sharedObjectType = innerType as? SharedObject.Type else {
+      return try castToJS(value, appContext: appContext)
+    }
+    // Called on the declared type, whose class the main runtime gives to a new JS object.
+    nonisolated(unsafe) let sharedObject = nativeObject
+    return try JavaScriptActor.assumeIsolated {
+      return try sharedObjectType.encode(sharedObject, in: runtime)
+    }
+  }
+
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
     // If the result is a native shared object, create its JS representation and add the pair to the registry of shared objects.
     if let sharedObject = value as? SharedObject {

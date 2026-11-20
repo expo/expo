@@ -1,12 +1,14 @@
 import spawnAsync from '@expo/spawn-async';
+import { realpathSync } from 'fs';
 import fs from 'fs/promises';
+import os from 'os';
 import path from 'path';
 
 import runCLIAsync from './utils/CLIUtils';
 
 describe('CLI', () => {
   jest.setTimeout(600000);
-  const tmpDir = require('temp-dir');
+  const tmpDir = realpathSync(os.tmpdir());
   const projectName = 'update-e2e-cli-project';
   const projectRoot = path.join(tmpDir, projectName);
 

@@ -32,7 +32,7 @@ const LOCAL_REQUIREMENTS = {
  * Keyed by tool name.
  */
 const SERVER_REQUIREMENTS = {
-  search_documentation: 'requires an EAS paid plan',
+  search_documentation: 'requires an Expo Services paid plan',
 };
 
 /**
@@ -66,6 +66,12 @@ const SERVER_EXAMPLE_PROMPTS = {
   observe_event_names: 'which custom events is the app emitting',
   observe_events: 'show the latest onboarding.completed events',
   observe_session: 'show the timeline for session <session-id>',
+  observe_errors: 'list the most common errors and crashes from the last 7 days',
+  observe_error_occurrences: 'show the stack trace of the latest occurrence of error <fingerprint>',
+  observe_error_breakdown: 'which app versions and devices have error <fingerprint>',
+  observe_span_names: 'which kinds of network requests does the app record',
+  observe_spans: 'find network requests that took longer than 2 seconds today',
+  observe_trace: 'show every span of trace <trace-id>',
 };
 
 /**

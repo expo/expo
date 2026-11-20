@@ -34,7 +34,6 @@ module.exports = {
     getConstants: { type: 'function' },
     installModules: { type: 'function', functionType: 'sync' },
   },
-  'ExpoModulesCore.ViewModuleWrapper': {},
   ExponentScopedModuleRegistry: {},
   ExponentTest: {
     action: { type: 'function', functionType: 'promise' },

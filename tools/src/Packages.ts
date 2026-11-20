@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
-import { glob } from 'glob';
+import { globSync as nativeGlobSync } from 'node:fs';
 import path from 'path';
+import { glob, globSync } from 'tinyglobby';
 
 import { Podspec, readPodspecAsync } from './CocoaPods';
 import * as Directories from './Directories';
@@ -92,8 +93,8 @@ export type ExpoModuleConfig = {
 };
 
 const SPMConfigFileName = 'spm.config.json';
-const PACKAGE_JSON_GLOB = '**/package.json';
-const PACKAGE_GLOB_IGNORE = [
+export const PACKAGE_JSON_GLOB = '**/package.json';
+export const PACKAGE_GLOB_IGNORE = [
   '**/example/**',
   '**/node_modules/**',
   '**/static/**',
@@ -102,7 +103,7 @@ const PACKAGE_GLOB_IGNORE = [
   '**/__fixtures__/**',
   '**/e2e/**',
 ];
-const TEMPLATE_GLOB_IGNORE = [
+export const TEMPLATE_GLOB_IGNORE = [
   '**/node_modules/**',
   '**/__tests__/**',
   '**/__mocks__/**',
@@ -175,14 +176,13 @@ export class Package {
     }
 
     // Look for podspecs in the package root and both iOS-style subdirectories.
-    const [podspecPath] = glob.sync(
-      `{*,${this.iosSubdirectory}/*,${this.appleSubdirectory}/*}.podspec`,
-      {
-        cwd: this.path,
-      }
-    );
-
-    return podspecPath || null;
+    for (const directory of ['.', this.iosSubdirectory, this.appleSubdirectory]) {
+      const [podspecPath] = nativeGlobSync(`${directory}/*.podspec`, { cwd: this.path })
+        .sort()
+        .reverse();
+      if (podspecPath) return podspecPath;
+    }
+    return null;
   }
 
   /**
@@ -477,10 +477,12 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
     const paths = await glob(PACKAGE_JSON_GLOB, {
       cwd: PACKAGES_DIR,
       ignore: PACKAGE_GLOB_IGNORE,
+      followSymbolicLinks: false,
     });
     const templatesPaths = await glob(PACKAGE_JSON_GLOB, {
       cwd: TEMPLATES_DIR,
       ignore: TEMPLATE_GLOB_IGNORE,
+      followSymbolicLinks: false,
     });
     cachedPackages = createPackagesFromPaths(PACKAGES_DIR, paths).concat(
       createPackagesFromPaths(TEMPLATES_DIR, templatesPaths)
@@ -490,13 +492,15 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
 }
 
 function getListOfPackagesSync(): Package[] {
-  const paths = glob.sync(PACKAGE_JSON_GLOB, {
+  const paths = globSync(PACKAGE_JSON_GLOB, {
     cwd: PACKAGES_DIR,
     ignore: PACKAGE_GLOB_IGNORE,
+    followSymbolicLinks: false,
   });
-  const templatesPaths = glob.sync(PACKAGE_JSON_GLOB, {
+  const templatesPaths = globSync(PACKAGE_JSON_GLOB, {
     cwd: TEMPLATES_DIR,
     ignore: TEMPLATE_GLOB_IGNORE,
+    followSymbolicLinks: false,
   });
   return createPackagesFromPaths(PACKAGES_DIR, paths).concat(
     createPackagesFromPaths(TEMPLATES_DIR, templatesPaths)
