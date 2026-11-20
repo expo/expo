@@ -295,11 +295,49 @@ describe('processBatch', () => {
       })
     );
   });
+
+  test("asks for the stats of files that haven't been stat'd, and records them", async () => {
+    mockWorkerFn.mockImplementation((message: WorkerMessage) => ({
+      sha1: 'abc123',
+      stats: message.returnStats ? { mtime: 1700000000000, size: 11 } : null,
+    }));
+
+    const processor = new FileProcessor(defaultOptions);
+
+    const statted: FileMetadata = [123, 234, 0, null, 0, null];
+    const unstatted: FileMetadata = [null, null, 0, null, 0, null];
+    const unstattedNodeModule: FileMetadata = [null, null, 0, null, 0, null];
+
+    await processor.processBatch(
+      [
+        [p('src/statted.js'), statted],
+        [p('src/unstatted.js'), unstatted],
+        [p('node_modules/pkg/index.js'), unstattedNodeModule],
+      ],
+      {
+        computeSha1: true,
+        maybeReturnContent: false,
+      }
+    );
+
+    expect(
+      mockWorkerFn.mock.calls.map(([message]) => [message.filePath, message.returnStats])
+    ).toEqual([
+      [path.resolve(defaultOptions.rootDir, p('src/statted.js')), false],
+      [path.resolve(defaultOptions.rootDir, p('src/unstatted.js')), true],
+      [path.resolve(defaultOptions.rootDir, p('node_modules/pkg/index.js')), true],
+    ]);
+    // A known modified time is kept
+    expect(statted.slice(0, 4)).toEqual([123, 234, 1, 'abc123']);
+    expect(unstatted.slice(0, 4)).toEqual([1700000000000, 11, 1, 'abc123']);
+    expect(unstattedNodeModule.slice(0, 4)).toEqual([1700000000000, 11, 1, 'abc123']);
+  });
 });
 
 describe('processRegularFile', () => {
   let FileProcessor: typeof import('../FileProcessor').FileProcessor;
   const mockReadFile = jest.fn();
+  const mockStatSync = jest.fn();
 
   beforeEach(() => {
     jest.resetModules();
@@ -307,6 +345,7 @@ describe('processRegularFile', () => {
     jest.unmock('../../worker');
     jest.mock('fs', () => ({
       readFileSync: mockReadFile,
+      statSync: mockStatSync,
     }));
     FileProcessor = require('../FileProcessor').FileProcessor;
   });
@@ -331,6 +370,27 @@ describe('processRegularFile', () => {
     });
 
     expect(metadata[H.SHA1]).toMatch(/^[a-f0-9]{40}$/);
+    // A known modified time is kept
+    expect(mockStatSync).not.toHaveBeenCalled();
+    expect(metadata[H.MTIME]).toBe(123);
+  });
+
+  test('records the stats of a file crawled without them', () => {
+    const processor = new FileProcessor(defaultOptions);
+    const metadata: FileMetadata = [null, null, 0, null, 0, null];
+
+    mockReadFile.mockReturnValue(Buffer.from('hello world'));
+    mockStatSync.mockReturnValue({ mtime: new Date(1700000000000), size: 11 });
+
+    processor.processRegularFile('file.js', metadata, {
+      computeSha1: true,
+      maybeReturnContent: false,
+    });
+
+    expect(mockStatSync).toHaveBeenCalledWith(path.resolve(defaultOptions.rootDir, 'file.js'));
+    expect(metadata[H.SHA1]).toMatch(/^[a-f0-9]{40}$/);
+    expect(metadata[H.MTIME]).toBe(1700000000000);
+    expect(metadata[H.SIZE]).toBe(11);
   });
 });
 

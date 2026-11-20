@@ -265,8 +265,13 @@ export type IgnoreMatcher = (item: string) => boolean;
 export type FileData = Map<CanonicalPath, FileMetadata>;
 
 export type FileMetadata = [
+  // `mtime` and `size` are null for a regular file that hasn't been stat'd,
+  // as the node crawler lists regular files without a stat. Such a file has
+  // no derived data: its mtime and size are recorded, from a stat taken before
+  // it's read, when a SHA-1 or plugin data is first derived from it. So a file
+  // without an mtime has nothing that could be stale.
   mtime: number | null,
-  size: number,
+  size: number | null,
   visited: 0 | 1,
   sha1: string | null,
   symlink: 0 | 1 | string, // string specifies target, if known
@@ -288,6 +293,9 @@ export interface FileSystem {
    * Given a map of files, determine which of them are new or modified
    * (changedFiles), and which of them are missing from the input
    * (removedFiles), vs the current state of this instance of FileSystem.
+   * Regular files given without a modified time, that were regular files with
+   * one here, may be unmodified. They are included in changedFiles, and also
+   * in filesToStat with the modified time they had here.
    */
   getDifference(
     files: FileData,
@@ -302,11 +310,11 @@ export interface FileSystem {
   ): {
     changedFiles: FileData;
     removedFiles: Set<string>;
+    filesToStat: Map<string, number>;
   };
 
   // A copy of the file system's data, which later changes don't affect.
   getSerializableSnapshot(): CacheData['fileSystemData'];
-  getMtimeByNormalPath(file: Path): number | undefined | null;
   getSha1(file: Path): string | undefined | null;
   getOrComputeSha1(file: Path): Promise<{ sha1: string; content?: Buffer } | undefined | null>;
 
@@ -351,6 +359,9 @@ export interface FileSystem {
   /**
    * Analogous to posix lstat. If the file at `file` is a symlink, return
    * information about the symlink without following it.
+   *
+   * `modifiedTime` and `size` are null for a regular file that hasn't been
+   * stat'd (see `FileMetadata`).
    */
   linkStats(file: Path): FileStats | undefined | null;
 
@@ -611,11 +622,15 @@ export interface WorkerMessage {
   readonly filePath: string;
   readonly maybeReturnContent: boolean;
   readonly pluginsToRun: readonly number[];
+  // Whether to stat the file before reading it, and return the result as
+  // `stats`. Set for a file that hasn't been stat'd (see `FileMetadata`).
+  readonly returnStats: boolean;
 }
 
 export interface WorkerMetadata {
   readonly sha1?: string | undefined | null;
   readonly content?: Buffer | undefined | null;
+  readonly stats?: Readonly<{ mtime: number; size: number }> | undefined | null;
   readonly pluginData?: readonly V8Serializable[];
 }
 
