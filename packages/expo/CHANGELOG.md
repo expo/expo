@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Pass the React runtime scheduler to `ExpoModulesCore` through a weak handle, so dispatching onto the JS thread during a reload no longer risks calling into a scheduler the React instance already destroyed. ([#47492](https://github.com/expo/expo/pull/47492) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 56.0.24 — 2026-10-21
