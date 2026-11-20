@@ -32,6 +32,12 @@ class APIClient {
       : "https://expo.dev"
   }
 
+  var apiOrigin: String {
+    return useStaging
+      ? "https://staging-api.expo.dev"
+      : "https://api.expo.dev"
+  }
+
   private var sessionSecret: String?
 
   private init() {}

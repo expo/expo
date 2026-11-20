@@ -1,6 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import SwiftUI
+#if os(tvOS)
+import CoreImage.CIFilterBuiltins
+#endif
 
 struct AccountSheet: View {
   @Environment(\.dismiss) private var dismiss
@@ -52,6 +55,11 @@ struct AccountSheet: View {
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     #if !os(tvOS) && !os(macOS)
     .background(Color(.systemGroupedBackground))
+    #endif
+    #if os(tvOS)
+    .onDisappear {
+      viewModel.cancelDeviceLogin()
+    }
     #endif
   }
 
@@ -109,9 +117,7 @@ struct AccountSheet: View {
         .foregroundStyle(Color.secondary)
 
       #if os(tvOS)
-      VStack(spacing: 8) {
-        Text("Login and signup are not yet available on tvOS")
-      }
+      deviceLoginCard
       #else
       VStack(spacing: 8) {
         signInButton
@@ -149,6 +155,93 @@ struct AccountSheet: View {
     .clipShape(RoundedRectangle(cornerRadius: 12))
     .disabled(viewModel.isAuthenticating)
   }
+
+  #if os(tvOS)
+  @ViewBuilder
+  private var deviceLoginCard: some View {
+    switch viewModel.deviceLoginStep {
+    case nil:
+      VStack(spacing: 8) {
+        signInButton
+        Text("You will approve the login on your phone or computer.")
+          .font(.caption)
+          .foregroundStyle(Color.secondary)
+      }
+    case .waitingForApproval(let userCode, let verificationURL):
+      HStack(alignment: .center, spacing: 40) {
+        if let qrCode = qrCodeImage(for: verificationURL) {
+          Image(uiImage: qrCode)
+            .interpolation(.none)
+            .resizable()
+            .frame(width: 240, height: 240)
+        }
+        VStack(alignment: .leading, spacing: 12) {
+          Text("Scan the QR code, or go to")
+            .foregroundStyle(Color.secondary)
+          Text(verificationURL.host.map { "\($0)\(verificationURL.path)" } ?? verificationURL.absoluteString)
+            .font(.headline)
+          Text("and enter this code:")
+            .foregroundStyle(Color.secondary)
+          Text(userCode)
+            .font(.system(size: 56, weight: .bold, design: .monospaced))
+          HStack(spacing: 12) {
+            ProgressView()
+            Text("Waiting for approval…")
+              .foregroundStyle(Color.secondary)
+          }
+        }
+      }
+      cancelDeviceLoginButton
+    case .matching(let options):
+      VStack(spacing: 24) {
+        Text("Select the number shown in your browser")
+          .font(.headline)
+        HStack(spacing: 24) {
+          ForEach(options, id: \.self) { option in
+            Button {
+              viewModel.selectDeviceLoginMatch(option)
+            } label: {
+              Text(option)
+                .font(.system(size: 40, weight: .bold, design: .monospaced))
+                .frame(minWidth: 120)
+            }
+          }
+        }
+        cancelDeviceLoginButton
+      }
+    case .verifying:
+      HStack(spacing: 12) {
+        ProgressView()
+        Text("Logging in…")
+      }
+    case .failed(let message):
+      VStack(spacing: 16) {
+        Text(message)
+          .foregroundStyle(Color.red)
+        Button("Try again") {
+          viewModel.startDeviceLogin()
+        }
+      }
+    }
+  }
+
+  private var cancelDeviceLoginButton: some View {
+    Button("Cancel") {
+      viewModel.cancelDeviceLogin()
+    }
+  }
+
+  private func qrCodeImage(for url: URL) -> UIImage? {
+    let filter = CIFilter.qrCodeGenerator()
+    filter.message = Data(url.absoluteString.utf8)
+    filter.correctionLevel = "M"
+    guard let output = filter.outputImage?.transformed(by: CGAffineTransform(scaleX: 10, y: 10)),
+      let cgImage = CIContext().createCGImage(output, from: output.extent) else {
+      return nil
+    }
+    return UIImage(cgImage: cgImage)
+  }
+  #endif
 
   private var signUpButton: some View {
     Button {

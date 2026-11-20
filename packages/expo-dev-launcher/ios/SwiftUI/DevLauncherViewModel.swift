@@ -66,6 +66,11 @@ class DevLauncherViewModel: ObservableObject {
   }
   @Published var isAuthenticated = false
   @Published var isAuthenticating = false
+  #if os(tvOS)
+  @Published var deviceLoginStep: DeviceLoginStep?
+  private var deviceLoginTask: Task<Void, Never>?
+  private var deviceLoginGrant: DeviceAuthClient.Grant?
+  #endif
   @Published var user: User? {
     didSet {
       applyDevServerFilters()
@@ -657,6 +662,9 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   func signIn() async {
+    #if os(tvOS)
+    startDeviceLogin()
+    #else
     isAuthenticating = true
 
     do {
@@ -673,6 +681,7 @@ class DevLauncherViewModel: ObservableObject {
         isAuthenticating = false
       }
     }
+    #endif
   }
 
   func signUp() async {
@@ -693,6 +702,109 @@ class DevLauncherViewModel: ObservableObject {
       }
     }
   }
+
+  #if os(tvOS)
+  func startDeviceLogin() {
+    cancelDeviceLogin()
+    isAuthenticating = true
+    deviceLoginTask = Task { [weak self] in
+      do {
+        let grant = try await DeviceAuthClient().startAsync()
+        guard let self, !Task.isCancelled else { return }
+        self.deviceLoginGrant = grant
+        self.deviceLoginStep = .waitingForApproval(
+          userCode: grant.userCode,
+          verificationURL: grant.verificationURLWithCode
+        )
+        await self.pollDeviceLogin(grant: grant, match: nil)
+      } catch {
+        guard let self, !Task.isCancelled else { return }
+        self.failDeviceLogin(error.localizedDescription)
+      }
+    }
+  }
+
+  func selectDeviceLoginMatch(_ value: String) {
+    guard let grant = deviceLoginGrant else { return }
+    deviceLoginTask?.cancel()
+    deviceLoginStep = .verifying
+    deviceLoginTask = Task { [weak self] in
+      await self?.pollDeviceLogin(grant: grant, match: value)
+    }
+  }
+
+  func cancelDeviceLogin() {
+    deviceLoginTask?.cancel()
+    deviceLoginTask = nil
+    deviceLoginGrant = nil
+    deviceLoginStep = nil
+    isAuthenticating = false
+  }
+
+  private func pollDeviceLogin(grant: DeviceAuthClient.Grant, match: String?) async {
+    let client = DeviceAuthClient()
+    var interval = grant.interval
+    var match = match
+
+    while !Task.isCancelled {
+      if Date() >= grant.expiresAt {
+        failDeviceLogin("The login code expired.")
+        return
+      }
+      // A selected number is sent right away; the previous poll already waited out the interval.
+      if match == nil {
+        try? await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
+        if Task.isCancelled { return }
+      }
+
+      let result: DeviceAuthClient.TokenResult
+      do {
+        result = try await client.pollAsync(grant: grant, match: match)
+      } catch {
+        if !Task.isCancelled {
+          failDeviceLogin(error.localizedDescription)
+        }
+        return
+      }
+      if Task.isCancelled { return }
+      match = nil
+
+      switch result {
+      case .authenticated(let sessionSecret):
+        completeDeviceLogin(sessionSecret: sessionSecret)
+        return
+      case .pending:
+        continue
+      case .slowDown:
+        interval += 5
+      case .matchingRequired(let options):
+        deviceLoginStep = .matching(options: options)
+        return
+      case .failed(let reason):
+        failDeviceLogin(reason)
+        return
+      }
+    }
+  }
+
+  private func completeDeviceLogin(sessionSecret: String) {
+    UserDefaults.standard.set(sessionSecret, forKey: sessionKey)
+    APIClient.shared.setSession(sessionSecret)
+    deviceLoginTask = nil
+    deviceLoginGrant = nil
+    deviceLoginStep = nil
+    isAuthenticating = false
+    isAuthenticated = true
+    loadUserInfo()
+  }
+
+  private func failDeviceLogin(_ message: String) {
+    deviceLoginTask = nil
+    deviceLoginGrant = nil
+    deviceLoginStep = .failed(message: message)
+    isAuthenticating = false
+  }
+  #endif
 
   func signOut() {
     UserDefaults.standard.removeObject(forKey: sessionKey)
@@ -770,6 +882,15 @@ class DevLauncherViewModel: ObservableObject {
     hasStoredCrash = storedCrashInstance != nil
   }
 }
+
+#if os(tvOS)
+enum DeviceLoginStep: Equatable {
+  case waitingForApproval(userCode: String, verificationURL: URL)
+  case matching(options: [String])
+  case verifying
+  case failed(message: String)
+}
+#endif
 
 #if !os(tvOS)
 private class DevLauncherAuthPresentationContext: NSObject, ASWebAuthenticationPresentationContextProviding {
