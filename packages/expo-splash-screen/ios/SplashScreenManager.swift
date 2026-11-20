@@ -41,6 +41,9 @@ class SplashScreenManager: NSObject, RCTReloadListener {
       guard let self, let rootView, isLoadingViewVisible() else {
         return
       }
+      // Keep the observer until the splash screen hides. Error recovery in expo-updates reloads the
+      // app before any content appears, and the content of the reloaded app must hide it.
+      removeObservers()
       let duration = options.duration / 1000
       if options.fade {
         UIView.transition(with: rootView, duration: duration, options: .transitionCrossDissolve) {

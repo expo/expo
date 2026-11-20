@@ -36,9 +36,5 @@ public class SplashScreenModule: Module {
     AsyncFunction("internalPreventAutoHideAsync") {
       SplashScreenManager.shared.preventAutoHideCalled = true
     }
-
-    OnDestroy {
-      SplashScreenManager.shared.removeObservers()
-    }
   }
 }
