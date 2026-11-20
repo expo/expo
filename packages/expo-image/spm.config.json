@@ -80,12 +80,11 @@
           ]
         }
       ],
+      "swiftLanguageVersions": ["5"],
       "targets": [
         {
           "type": "swift",
           "name": "ExpoImage",
-          "path": "ios",
-          "pattern": "**/*.swift",
           "dependencies": [
             "ReactNativeDependencies",
             "React",
