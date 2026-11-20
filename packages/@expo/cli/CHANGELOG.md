@@ -17,6 +17,7 @@
 - Fix `expo start` skipping all manifest assets (icons, splash images) when a config section on an asset path, such as `splash`, is `null` or `undefined` ([#52975](https://github.com/expo/expo/pull/52975) by [@Shaurya55555](https://github.com/Shaurya55555))
 - Fix parsing Android device serials containing spaces. ([#53129](https://github.com/expo/expo/pull/53129) by [@kitten](https://github.com/kitten))
 - Treat non-boolean `CI` values, like `CI=yes`, as false instead of failing. ([#53019](https://github.com/expo/expo/pull/53019) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Fix `expo lint` failing right after it installs ESLint. ([#53887](https://github.com/expo/expo/pull/53887) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others
 
