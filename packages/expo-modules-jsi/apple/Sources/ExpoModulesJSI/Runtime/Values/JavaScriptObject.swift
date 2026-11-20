@@ -930,9 +930,15 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   /// accessed, enumerated, or modified.
   ///
   /// - SeeAlso: `PropertyDescriptor` for more fine-grained control over property definitions
+  @frozen
   public struct PropertyOptions: OptionSet, Sendable {
     public let rawValue: Int
 
+    // `@frozen` with an inlinable initializer, so a client module specializes an options literal such as
+    // `[.configurable, .enumerable]`. The options stay stored `static let`s, so the module keeps exporting the
+    // symbols that modules built against an earlier version use.
+
+    @inlinable
     public init(rawValue: Int) {
       self.rawValue = rawValue
     }
