@@ -242,7 +242,7 @@ public final class ModuleHolder {
         componentName: ExpoFabricView.componentName(moduleName: name, viewName: viewName)
       )
       let options: JavaScriptObject.PropertyOptions = isDefaultView ? [.configurable] : [.configurable, .enumerable]
-      object.defineLazyProperty(propertyName, options: options) { runtime in
+      object.defineLazyProperty(propertyName, options: options) { _, runtime in
         try NativeViewComponentFactory.create(config, in: runtime)
       }
     }

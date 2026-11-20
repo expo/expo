@@ -62,6 +62,25 @@ struct JavaScriptSymbolTests {
     #expect((first == second) == true)
   }
 
+  // MARK: - Shared symbols
+
+  @Test
+  func `init returns the shared symbol`() throws {
+    let wellKnown = try JavaScriptSymbol(runtime, .wellKnown(.iterator))
+    let iterator = try runtime.eval("Symbol.iterator").asSymbol()
+    #expect((wellKnown == iterator) == true)
+
+    let registered = try JavaScriptSymbol(runtime, .for("expo.tag"))
+    let tag = try runtime.eval("Symbol.for('expo.tag')").asSymbol()
+    #expect((registered == tag) == true)
+  }
+
+  @Test
+  func `a string literal is the key of a registered symbol`() {
+    let symbol: JavaScriptSymbol.Shared = "expo.tag"
+    #expect(symbol == .for("expo.tag"))
+  }
+
   // MARK: - Values
 
   @Test
