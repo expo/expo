@@ -9,7 +9,7 @@ import {
   type PrebuiltFlavor,
 } from 'expo-modules-autolinking/internal/prebuiltArtifactPaths';
 import fs from 'fs-extra';
-import { glob } from 'glob';
+import { globSync } from 'node:fs';
 import path from 'path';
 
 import { getExpoRepositoryRootDir } from '../Directories';
@@ -29,7 +29,7 @@ import {
 import { BuiltFramework } from './SPMBuild.types';
 import { BuildPlatform, SPMConfig, SPMProduct } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
-import { assertSafeSPMIdentifier } from './SPMIdentifier';
+import { assertSafeSPMIdentifier, swiftPMPackageName } from './SPMIdentifier';
 import { createAsyncSpinner, SpinnerError } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
 
@@ -254,13 +254,13 @@ export const Frameworks = {
     // Kept relative to buildPath, which glob takes as its cwd, so a glob metacharacter in the
     // build path cannot widen the match. Glob patterns are POSIX on every platform.
     const anyVersionBase = getArtifactBase('.', buildVersionPrefix('*', '*', '*'));
-    const matches = glob.sync(
+    const matches = globSync(
       path.posix.join(
         ...anyVersionBase.split(path.sep),
         getArtifactSuffixes(productName, PREBUILT_FLAVOR[buildType]).framework
       ),
-      { cwd: buildPath, absolute: true }
-    );
+      { cwd: buildPath }
+    ).map((file) => path.resolve(buildPath, file));
     return matches.sort()[0] ?? null;
   },
 
@@ -464,8 +464,8 @@ export const copyResourceBundlesIntoXCFrameworkAsync = async (
   const spinner = createAsyncSpinner(`Copying resource bundles`, pkg, product);
 
   for (const target of targetsWithResources) {
-    // SPM names the resource bundle as {packageName}_{targetName}.bundle
-    const bundleName = `${pkg.packageName}_${target.name}.bundle`;
+    // SPM names the resource bundle {SwiftPM package name}_{targetName}.bundle, not the npm name.
+    const bundleName = `${swiftPMPackageName(pkg.packageName)}_${target.name}.bundle`;
 
     for (const slice of slices) {
       // Map slice name to build folder prefix (e.g., 'ios-arm64' -> 'iphoneos')

@@ -18,6 +18,7 @@ import expo.modules.appmetrics.utils.MetricParamsBuilder
 import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimeInMillis
 import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimestampInISOFormat
 import expo.modules.appmetrics.utils.TimeUtils.getProcessStartTimeInMillis
+import expo.modules.appmetrics.utils.TimeUtils.uptimeToDate
 import org.json.JSONObject
 import java.util.Date
 import java.util.concurrent.CopyOnWriteArrayList
@@ -279,7 +280,7 @@ object AppStartupManager {
     // (`markers.finishedLaunchingDate`). When the anchor is missing we skip the summary
     // entirely; an unbounded window would silently include requests from before launch.
     val networkRequests = launchTimeInMillis?.let { launchStart ->
-      NetworkRequestMonitor.shared.summarize(start = Date(launchStart), end = Date())
+      NetworkRequestMonitor.shared.summarize(start = uptimeToDate(launchStart), end = Date())
     }
     return MetricParamsBuilder.build(
       userParams = userParams,

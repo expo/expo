@@ -33,7 +33,7 @@ async function fetchManifest(
   options: FetchManifestOptions
 ): Promise<RoutesManifest | null> {
   const getManifest = getExpoRouteManifestBuilderAsync(projectRoot);
-  const paths = getRoutePaths(options.appDir);
+  const paths = await getRoutePaths(options.appDir);
   // Get the serialized manifest
   const jsonManifest = getManifest(paths, options);
   if (!jsonManifest) {

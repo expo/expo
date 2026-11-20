@@ -1,3 +1,5 @@
+import chalk from 'chalk';
+
 import type { Command } from '../../index';
 import * as Log from '../../log';
 import { logCmdError } from '../../utils/errors';
@@ -14,24 +16,14 @@ export const expoCompileIos: Command = async (argv) => {
       return;
     }
 
-    const projectRoot = findUpProjectRootOrAssert(process.cwd());
-    const { resolveMode } = await import('../resolveMode.js');
-    const mode = resolveMode({
-      dev: values.dev,
-      prod: values.prod,
-      device: values.device,
-    });
-    const { loadEnvFiles } = await import('../../utils/nodeEnv.js');
-    loadEnvFiles(projectRoot, { mode });
+    assertPlatform();
 
     const { resolveOptions } = await import('../resolveOptions.js');
-    const options = resolveOptions(projectRoot, {
-      platform: 'ios',
-      mode,
-      device: values.device,
-      outputDir: values['output-dir'],
-      outputType: values['output-type'],
-    });
+    const options = resolveOptions('ios', values);
+
+    const projectRoot = findUpProjectRootOrAssert(process.cwd());
+    const { loadEnvFiles } = await import('../../utils/nodeEnv.js');
+    loadEnvFiles(projectRoot, { mode: options.mode });
 
     const { compileIosAsync } = await import('./compileIosAsync.js');
     await compileIosAsync(projectRoot, options);
@@ -39,3 +31,11 @@ export const expoCompileIos: Command = async (argv) => {
     return logCmdError(error);
   }
 };
+
+function assertPlatform() {
+  if (process.platform !== 'darwin') {
+    Log.exit(
+      chalk`iOS apps can only be built on macOS devices. Use {cyan eas build -p ios} to build in the cloud.`
+    );
+  }
+}

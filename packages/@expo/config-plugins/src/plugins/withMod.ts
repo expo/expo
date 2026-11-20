@@ -1,12 +1,12 @@
 import type { ExpoConfig } from '@expo/config-types';
 import type { JSONObject } from '@expo/json-file';
 import chalk from 'chalk';
-import { boolish } from 'getenv';
 
 import type { ExportedConfig, ExportedConfigWithProps, Mod, ModPlatform } from '../Plugin.types';
+import { env } from '../utils/env';
 import { PluginError } from '../utils/errors';
 
-const EXPO_DEBUG = boolish('EXPO_DEBUG', false);
+const EXPO_DEBUG = env.EXPO_DEBUG;
 
 export type BaseModOptions = {
   /** Officially supports `'ios' | 'android'` (`ModPlatform`). Arbitrary strings are supported for adding out-of-tree platforms. */

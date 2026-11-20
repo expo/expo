@@ -1,3 +1,5 @@
+import type { UnknownInputParams } from './typed-routes/types';
+
 export const INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = '__internal_expo_router_no_animation';
 export const INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME =
   '__internal__expo_router_is_preview_navigation';
@@ -17,6 +19,12 @@ export const INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME = '__internal_expo_route
  */
 export const INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME = 'internal_gestureEnabled';
 
+// A layout `Stack.Screen` reaches the stack navigator only as a screen with `options`. This
+// option carries the `unstable_requiredScreensBelow` prop there, without adding it to the public
+// option types.
+export const INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME =
+  'internal_requiredScreensBelow';
+
 /**
  * Internal navigation options that Expo Router uses to control React Navigation behavior,
  * which are not available to developers directly and do not change user-defined options.
@@ -27,6 +35,11 @@ export interface InternalNavigationOptions {
    * When set, this value overrides the user's `gestureEnabled` option.
    */
   [INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME]?: boolean;
+  // The same type as the `unstable_requiredScreensBelow` prop of `Stack.Screen`.
+  [INTERNAL_EXPO_ROUTER_REQUIRED_SCREENS_BELOW_OPTION_NAME]?: (
+    | string
+    | { name: string; params?: UnknownInputParams }
+  )[];
 }
 
 const internalExpoRouterParamNames = [

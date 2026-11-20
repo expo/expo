@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { buildExpandArgs, resolveExpandBinary, runExpand } from '../scanner/expand';
+import { buildExpandArgs, buildFixArgs, resolveExpandBinary, runExpand } from '../scanner/expand';
 import { parseArgs } from './args';
 
 const OPTIONS_HELP = `  --symbol <name>   Only a type ('MyModule', 'MyModule.Options') or a member
@@ -31,6 +31,9 @@ directory). Exits with code 1 when there is an error. Errors that need type
 checking still need a build.
 
 Options:
+  --fix             Apply the Fix-Its of the diagnostics to the files in place,
+                    then check them again. Doesn't format the files. Can't be
+                    combined with --json.
 ${OPTIONS_HELP}`;
 
 export async function swiftExpandCommand(argv: string[]) {
@@ -56,6 +59,8 @@ async function runSwiftExpand(
       '--scanner': String,
       '--help': Boolean,
       '-h': '--help',
+      // Only `swift:check` takes `--fix`, so the other commands parse it as an unknown option.
+      ...(diagnosticsOnly ? { '--fix': Boolean } : {}),
     },
     argv,
     `expo-modules ${command}`
@@ -74,13 +79,34 @@ async function runSwiftExpand(
     );
   }
 
+  const fix = args['--fix'] === true;
+  if (fix && args['--json']) {
+    throw new Error(
+      `\`expo-modules ${command}\` can't combine --fix with --json, because the Fix-Its are ` +
+        `printed as text.`
+    );
+  }
+
   const binaryPath = args['--scanner']
     ? path.resolve(args['--scanner'])
     : resolveExpandBinary(packageDirectoryOf(firstPath));
-  process.exitCode = await runExpand(
+  const symbols = args['--symbol'];
+
+  // The check after the Fix-Its reports the diagnostics that are left, which have no Fix-It or
+  // whose Fix-It was skipped. A usage error would fail the check the same way, so it stops here.
+  let fixExitCode = 0;
+  if (fix) {
+    fixExitCode = await runExpand(binaryPath, buildFixArgs({ paths, symbols }));
+    if (fixExitCode === 2) {
+      process.exitCode = fixExitCode;
+      return;
+    }
+  }
+  const exitCode = await runExpand(
     binaryPath,
-    buildExpandArgs({ paths, symbols: args['--symbol'], json: args['--json'], diagnosticsOnly })
+    buildExpandArgs({ paths, symbols, json: args['--json'], diagnosticsOnly })
   );
+  process.exitCode = Math.max(exitCode, fixExitCode);
 }
 
 /**

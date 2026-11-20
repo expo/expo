@@ -22,6 +22,7 @@ describe(getXcodeBuildArgs, () => {
       'my-app',
       '-destination',
       'generic/platform=iOS Simulator',
+      '-hideShellScriptEnvironment',
       'COCOAPODS_PARALLEL_CODE_SIGN=true',
       'COMPILER_INDEX_STORE_ENABLE=NO',
     ]);
@@ -64,6 +65,16 @@ describe(getAppPathAsync, () => {
 
     await expect(getAppPathAsync(props)).rejects.toThrow(
       /Could not parse JSON returned from "xcodebuild -showBuildSettings -json"\.\n\nnot json\n\nError: /
+    );
+  });
+
+  it(`throws when the scheme doesn't build a target with its name`, async () => {
+    jest.mocked(spawnAsync).mockResolvedValueOnce({
+      stdout: JSON.stringify([{ target: 'other-app', buildSettings: {} }]),
+    } as any);
+
+    await expect(getAppPathAsync(props)).rejects.toThrow(
+      'The "my-app" scheme doesn\'t build a target named "my-app". Targets it builds: other-app. Edit the scheme in Xcode so it builds the "my-app" target.'
     );
   });
 });

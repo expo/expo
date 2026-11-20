@@ -9,6 +9,8 @@ import type {
 
 /**
  * Sets the new notification category.
+ * @deprecated Use [`setNotificationCategoriesAsync`](#setnotificationcategoriesasynccategories)
+ * with the complete list of categories instead.
  * @param identifier A string to associate as the ID of this category. You will pass this string in as the `categoryIdentifier`
  * in your [`NotificationContent`](#notificationcontent) to associate a notification with this category.
  * > Don't use the characters `:` or `-` in your category identifier. If you do, categories might not work as expected.

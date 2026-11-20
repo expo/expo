@@ -213,6 +213,7 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   contentStyle?: Pick<
     ViewStyle,
     | 'backgroundColor'
+    | 'backgroundImage'
     | 'experimental_backgroundImage'
     | 'padding'
     | 'paddingTop'
@@ -238,9 +239,9 @@ export interface NativeTabOptions extends DefaultRouterOptions {
 }
 
 /**
- * How an image-based icon is tinted on iOS: `template` lets the tab bar recolor the icon,
- * `original` keeps the image's own colors. SF Symbols are always tinted by the system.
- * @platform ios
+ * How a tab icon is drawn: `template` draws the icon in the tab's icon color,
+ * `original` keeps the icon's own colors. For SF Symbols, `template` is the monochrome
+ * rendering and `original` is the multicolor rendering.
  */
 export type IconRenderingMode = 'template' | 'original';
 
@@ -261,6 +262,10 @@ export type SymbolOrImageSource =
        * @platform android
        */
       drawable?: string;
+      /**
+       * Controls how the SF Symbol or drawable icon is drawn. `xcasset` icons ignore it.
+       */
+      renderingMode?: IconRenderingMode;
     }
   | {
       /**
@@ -268,9 +273,11 @@ export type SymbolOrImageSource =
        */
       src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
       /**
-       * Controls how the icon is rendered on iOS.
-       * @platform ios
-       * @default 'template'
+       * Controls how the icon is drawn.
+       *
+       * When not set:
+       * - iOS uses `template` if the tab state has an icon color, and `original` if it does not.
+       * - Android always uses `template`.
        */
       renderingMode?: IconRenderingMode;
     };
@@ -526,7 +533,6 @@ export interface NativeTabsProps extends PropsWithChildren {
 
 export interface InternalNativeTabsProps extends NativeTabsProps {
   nonTriggerChildren?: React.ReactNode;
-  tabConfigurationKey: string;
 }
 export interface OnTabChangeEventPayload {
   /**
@@ -565,7 +571,6 @@ export interface NativeTabsViewProps extends Omit<
   | 'rippleColor'
   | 'disableIndicator'
   | 'labelVisibilityMode'
-  | 'tabConfigurationKey'
 > {
   focusedIndex: number;
   /**
@@ -716,7 +721,7 @@ export interface NativeTabTriggerProps {
    *
    * The `"search"` role makes this tab the system search tab
    * ([`UISearchTab`](https://developer.apple.com/documentation/uikit/uisearchtab)) on iOS 26.1 and later.
-   * Do not change `role` after the tab renders.
+   * Changing `role` to or from `"search"` remounts the tab and resets its state.
    *
    * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem).
    * @platform ios

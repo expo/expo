@@ -91,9 +91,10 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
     self.pointee = value.toJSIValue(in: runtime.pointee)
   }
 
-  /// Whether the value may be used with the given runtime: it belongs to it, or it is runtime-free
-  /// (undefined, null, a boolean or a number) and so fits any runtime.
-  internal func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
+  /// Whether the value belongs to the given runtime, the runtime that created it. A value created without a runtime,
+  /// for example with ``number(_:)`` or ``undefined()``, belongs to every runtime, because every runtime can use it.
+  /// Use a value only with a runtime it belongs to, on the thread of that runtime.
+  public func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
     return runtimeHandle == nil || runtimeHandle === runtime.handle
   }
 
@@ -204,17 +205,25 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
   }
 
   public func isArray() -> Bool {
+    // A value without a runtime is a primitive, so it can't be an array.
+    guard pointee.isObject() else {
+      return false
+    }
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return pointee.isObject() && pointee.getObject(jsiRuntime).isArray(jsiRuntime)
+    return pointee.getObject(jsiRuntime).isArray(jsiRuntime)
   }
 
   public func isFunction() -> Bool {
+    // A value without a runtime is a primitive, so it can't be a function.
+    guard pointee.isObject() else {
+      return false
+    }
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return pointee.isObject() && pointee.getObject(jsiRuntime).isFunction(jsiRuntime)
+    return pointee.getObject(jsiRuntime).isFunction(jsiRuntime)
   }
 
   /// Whether the value is a thenable: an object with a callable `then`, such as a promise.
@@ -232,18 +241,26 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
   }
 
   public func isTypedArray() -> Bool {
+    // A value without a runtime is a primitive, so it can't be a typed array.
+    guard pointee.isObject() else {
+      return false
+    }
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return pointee.isObject() && expo.isTypedArray(jsiRuntime, pointee.getObject(jsiRuntime))
+    return expo.isTypedArray(jsiRuntime, pointee.getObject(jsiRuntime))
   }
 
   /// Checks whether the value is an `ArrayBuffer`.
   public func isArrayBuffer() -> Bool {
+    // A value without a runtime is a primitive, so it can't be an `ArrayBuffer`.
+    guard pointee.isObject() else {
+      return false
+    }
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return pointee.isObject() && pointee.getObject(jsiRuntime).isArrayBuffer(jsiRuntime)
+    return pointee.getObject(jsiRuntime).isArrayBuffer(jsiRuntime)
   }
 
   /// Checks whether the value is an instance of a global class of the given name.
@@ -355,6 +372,15 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptBigInt(runtimeHandle, pointee.getBigInt(jsiRuntime))
   }
 
+  /// Returns the value as a symbol, or asserts if not a symbol.
+  public func getSymbol() -> JavaScriptSymbol {
+    guard let runtimeHandle, let jsiRuntime = runtimeHandle.pointee else {
+      FatalError.runtimeLost()
+    }
+    assert(isSymbol(), "Value is not a symbol")
+    return JavaScriptSymbol(runtimeHandle, pointee.getSymbol(jsiRuntime))
+  }
+
   /// Returns the value as an object, or asserts if not an object.
   public func getObject() -> JavaScriptObject {
     guard let runtimeHandle, let jsiRuntime = runtimeHandle.pointee else {
@@ -455,6 +481,14 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
       throw TypeError(type: JavaScriptBigInt.self)
     }
     return getBigInt()
+  }
+
+  @JavaScriptActor
+  public func asSymbol() throws(TypeError) -> JavaScriptSymbol {
+    guard isSymbol() else {
+      throw TypeError(type: JavaScriptSymbol.self)
+    }
+    return getSymbol()
   }
 
   @JavaScriptActor

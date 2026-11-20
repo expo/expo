@@ -1,10 +1,9 @@
 package versioned.host.exp.exponent.modules.universal.notifications
 
-import android.os.Bundle
 import expo.modules.kotlin.Promise
 import expo.modules.notifications.notifications.categories.ExpoNotificationCategoriesModule
 import expo.modules.notifications.notifications.categories.NotificationActionRecord
-import expo.modules.notifications.notifications.model.NotificationCategory
+import expo.modules.notifications.notifications.categories.NotificationCategoryRecord
 import host.exp.exponent.kernel.ExperienceKey
 import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsIdUtils
 
@@ -31,9 +30,18 @@ class ScopedExpoNotificationCategoriesModule(
     super.deleteNotificationCategoryAsync(scopedCategoryIdentifier, promise)
   }
 
-  override fun serializeCategories(categories: Collection<NotificationCategory>): List<Bundle?> {
-    return categories
-      .filter { ScopedNotificationsIdUtils.checkIfCategoryBelongsToExperience(experienceKey, it) }
-      .map(serializer::toBundle)
+  override fun setNotificationCategoriesAsync(categories: List<NotificationCategoryRecord>, promise: Promise) {
+    val scopedCategories = categories.map {
+      it.copy(identifier = ScopedNotificationsIdUtils.getScopedCategoryId(experienceKey, it.identifier))
+    }
+    super.setNotificationCategoriesAsync(scopedCategories, promise)
+  }
+
+  override fun ownsCategory(identifier: String): Boolean {
+    return identifier.startsWith(ScopedNotificationsIdUtils.getScopedCategoryId(experienceKey, ""))
+  }
+
+  override fun serializeCategory(category: NotificationCategoryRecord): NotificationCategoryRecord {
+    return category.copy(identifier = category.identifier.removePrefix(ScopedNotificationsIdUtils.getScopedCategoryId(experienceKey, "")))
   }
 }

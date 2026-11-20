@@ -118,7 +118,9 @@ class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter
         ContactField.NICKNAME,
         ContactField.MAIDEN_NAME,
         ContactField.IM_ADDRESS,
-        ContactField.SOCIAL_PROFILES
+        ContactField.SOCIAL_PROFILES,
+        ContactField.BIRTHDAY,
+        ContactField.NON_GREGORIAN_BIRTHDAY
         -> null
       }
     }

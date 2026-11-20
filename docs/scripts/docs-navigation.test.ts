@@ -29,7 +29,7 @@ const index = buildNavIndexFrom([
       },
       {
         type: 'section',
-        name: 'EAS Workflows',
+        name: 'Expo Workflows',
         children: [
           { type: 'page', name: 'Introduction', href: '/eas/workflows/introduction' },
           { type: 'page', name: 'Get started', href: '/eas/workflows/get-started' },
@@ -94,7 +94,7 @@ describe('buildNavigationSection', () => {
         '',
         'When answering a related or follow-up question, fetch the relevant page below as Markdown (.md) instead of guessing; use llms.txt for the full map.',
         '',
-        'You are here: EAS > EAS Workflows',
+        'You are here: Expo Services > Expo Workflows',
         'Pages in this section:',
         '- [Introduction](https://docs.expo.dev/eas/workflows/introduction.md)',
         '- [Get started](https://docs.expo.dev/eas/workflows/get-started.md) (this page)',
@@ -112,7 +112,7 @@ describe('buildNavigationSection', () => {
 
   it('uses the immediate group for a nested page, including it in the breadcrumb', () => {
     const block = navFor('/eas/workflows/examples/e2e-tests') as string;
-    expect(block).toContain('You are here: EAS > EAS Workflows > Examples');
+    expect(block).toContain('You are here: Expo Services > Expo Workflows > Examples');
     expect(block).toContain(
       '- [E2E tests](https://docs.expo.dev/eas/workflows/examples/e2e-tests.md) (this page)'
     );
@@ -122,7 +122,7 @@ describe('buildNavigationSection', () => {
 
   it('omits a title-less section from the breadcrumb', () => {
     const block = navFor('/eas/overview') as string;
-    expect(block).toContain('You are here: EAS\n');
+    expect(block).toContain('You are here: Expo Services\n');
     expect(block).toContain('- [Overview](https://docs.expo.dev/eas/overview.md) (this page)');
   });
 
@@ -161,7 +161,7 @@ describe('buildNavigationSection', () => {
 
   it('does not trim a large non-reference section', () => {
     const block = navFor('/eas/big/page-0') as string;
-    expect(block).toContain('You are here: EAS > Big EAS');
+    expect(block).toContain('You are here: Expo Services > Big EAS');
     expect(block).toContain('Pages in this section:');
   });
 

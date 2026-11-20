@@ -31,6 +31,7 @@ export type AwaitedIcon =
       sf?: SFSymbol;
       xcasset?: string;
       drawable?: string;
+      renderingMode?: IconRenderingMode;
     }
   | {
       src?: ImageSourcePropType;
@@ -72,10 +73,7 @@ function isAwaitedIcon(icon: NativeTabOptions['icon']): icon is AwaitedIcon {
   return !icon || !('src' in icon && icon.src instanceof Promise);
 }
 
-export function convertComponentSrcToImageSource(
-  src: React.ReactElement,
-  renderingMode?: IconRenderingMode
-) {
+export function convertComponentSrcToImageSource(src: React.ReactElement) {
   let result: SymbolOrImageSource | undefined;
   if (isChildOfType(src, NativeTabsTriggerVectorIcon)) {
     const props = src.props;
@@ -85,9 +83,6 @@ export function convertComponentSrcToImageSource(
   } else {
     console.warn('Only VectorIcon is supported as a React element in Icon.src');
     return undefined;
-  }
-  if (renderingMode) {
-    result = { ...result, renderingMode };
   }
   return result;
 }

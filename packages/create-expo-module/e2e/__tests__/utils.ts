@@ -129,6 +129,38 @@ export function createFakeProject(name?: string): string {
   return projectPath;
 }
 
+/** The published `jest-expo` can lag behind the React Native version on main. */
+export async function createLocalTemplateAsync(targetRoot: string): Promise<string> {
+  const packagesRoot = path.resolve(__dirname, '../../..');
+  const jestExpoRoot = path.join(packagesRoot, 'jest-expo');
+  const { version } = JSON.parse(
+    fs.readFileSync(path.join(jestExpoRoot, 'package.json'), { encoding: 'utf8' })
+  );
+
+  ensureFolderExists(targetRoot);
+  await spawnAsync('pnpm', ['pack', '--pack-destination', targetRoot], { cwd: jestExpoRoot });
+  const jestExpoTarball = path.join(targetRoot, `jest-expo-${version}.tgz`);
+
+  const templatePath = path.join(targetRoot, 'expo-module-template');
+  fs.cpSync(path.join(packagesRoot, 'expo-module-template'), templatePath, {
+    recursive: true,
+    filter: (source) => path.basename(source) !== 'node_modules',
+  });
+  const packageJsonPath = path.join(templatePath, '$package.json');
+  const packageJson = fs.readFileSync(packageJsonPath, { encoding: 'utf8' });
+  const localPackageJson = packageJson.replace(
+    /"jest-expo": "[^"]*"/,
+    `"jest-expo": "file:${jestExpoTarball}"`
+  );
+  if (localPackageJson === packageJson) {
+    throw new Error(
+      `Could not find the jest-expo dependency in ${packageJsonPath}. Update the pattern in createLocalTemplateAsync to match the template.`
+    );
+  }
+  fs.writeFileSync(packageJsonPath, localPackageJson);
+  return templatePath;
+}
+
 /** Read and parse a JSON file from the test project */
 export function readJson(projectName: string, ...filePath: string[]) {
   const targetPath = getTestPath(projectName, ...filePath);

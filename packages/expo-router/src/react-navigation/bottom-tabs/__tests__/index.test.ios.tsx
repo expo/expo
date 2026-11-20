@@ -415,6 +415,23 @@ test('renders only screens declared in the layout and redirects from undeclared 
   expect(screen.getByTestId('index')).toBeVisible();
 });
 
+test('redirects an undeclared root route to the first screen in a group tab', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="(feed)" />
+      </Tabs>
+    ),
+    index: () => <View testID="undeclared-root" />,
+    '(feed)/_layout': () => <Stack />,
+    '(feed)/feed': () => <View testID="feed" />,
+  });
+
+  expect(screen.getByTestId('feed')).toBeVisible();
+  expect(screen).toHavePathname('/feed');
+  expect(screen.queryByTestId('undeclared-root')).toBeNull();
+});
+
 test('redirects an undeclared route to the configured initial tab', async () => {
   await renderRouter({
     _layout: {

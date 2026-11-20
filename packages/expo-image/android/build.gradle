@@ -44,6 +44,7 @@ dependencies {
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.robolectric:robolectric:4.16'
+  testImplementation 'io.mockk:mockk:1.14.9'
 
   implementation 'com.facebook.react:react-android'
 
@@ -58,7 +59,6 @@ dependencies {
   api "com.squareup.okhttp3:okhttp:${expoModule.safeExtGet("okHttpVersion", '4.9.2')}"
 
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
-  implementation "jp.wasabeef:glide-transformations:4.3.0"
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.robolectric:robolectric:4.16'

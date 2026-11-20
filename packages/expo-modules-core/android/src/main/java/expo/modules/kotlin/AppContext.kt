@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.modules.network.OkHttpClientProvider
@@ -59,6 +60,10 @@ class AppContext(
       }.applicationContext
     }
 
+  override fun <T : View> findView(viewTag: Int): T? = super.findView(viewTag)
+
+  override fun assertMainThread() = super.assertMainThread()
+
   private val uiRuntimeHolder = lazy { WorkletRuntime(this, reactContextHolder) }
   val uiRuntime
     get() = uiRuntimeHolder.value
@@ -99,6 +104,8 @@ class AppContext(
   val registry = ModuleRegistry(this.weak())
 
   val services = ServicesRegistry(this.weak())
+
+  private val expoModulesV2Host = ExpoModulesV2Host()
 
   internal var legacyModulesProxyHolder: WeakReference<NativeModulesProxy>? = null
 
@@ -154,7 +161,7 @@ class AppContext(
    */
   fun installJSIInterop() {
     runtime.install()
-    runtime.reactContext?.let(ExpoModulesV2Host::install)
+    runtime.reactContext?.let { expoModulesV2Host.install(this, it) }
   }
 
   /**
@@ -286,7 +293,7 @@ class AppContext(
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
 
-    ExpoModulesV2Host.uninstall()
+    expoModulesV2Host.uninstall()
 
     runtime.deallocate()
     if (uiRuntimeHolder.isInitialized()) {

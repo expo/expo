@@ -151,7 +151,7 @@ internal final class UpdatesDatabaseInitialization {
     }
 
     if resultCode != SQLITE_OK {
-      logger.warn(message: "Error opening SQLite db: \(UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db).message)", code: .initializationError)
+      logger.warn(.localDatabaseOpenFailed, values: ["cause": UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db).message])
       sqlite3_close(db)
 
       if resultCode == SQLITE_CORRUPT || resultCode == SQLITE_NOTADB {
@@ -163,7 +163,7 @@ internal final class UpdatesDatabaseInitialization {
           throw UpdatesDatabaseInitializationError.moveExistingCorruptedDatabaseFailure(cause: error)
         }
 
-        logger.info(message: "Moved corrupt SQLite db to %@ \(archivedDbFilename)")
+        logger.info(message: "Moved corrupt SQLite db to \(archivedDbFilename)")
         var dbInit2: OpaquePointer?
         guard sqlite3_open(dbUrl.path, &dbInit2) == SQLITE_OK else {
           throw UpdatesDatabaseInitializationError.openAfterMovingCorruptedDatabaseFailure
@@ -184,7 +184,7 @@ internal final class UpdatesDatabaseInitialization {
     do {
       _ = try UpdatesDatabaseUtils.execute(sql: "PRAGMA foreign_keys=ON;", withArgs: nil, onDatabase: db)
     } catch {
-      logger.warn(message: "Error turning on foreign key constraint: \(error.localizedDescription)")
+      logger.warn(.localDatabaseMigrationFailed, cause: error, values: ["step": "foreignKeys"])
     }
 
     if shouldInitializeDatabaseSchema {
@@ -221,13 +221,13 @@ internal final class UpdatesDatabaseInitialization {
     do {
       try FileManager.default.moveItem(atPath: existingURL.path, toPath: latestURL.path)
     } catch {
-      logger.warn(message: "Migration failed: failed to rename database file")
+      logger.warn(.localDatabaseMigrationFailed, cause: error, values: ["step": "rename"])
       return false
     }
 
     var db: OpaquePointer?
     if sqlite3_open(latestURL.path, &db) != SQLITE_OK {
-      logger.warn(message: "Error opening migrated SQLite db: \(UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db!).message)")
+      logger.warn(.localDatabaseOpenFailed, values: ["cause": UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db!).message])
       sqlite3_close(db)
       return false
     }
@@ -236,7 +236,7 @@ internal final class UpdatesDatabaseInitialization {
     do {
       _ = try UpdatesDatabaseUtils.execute(sql: "PRAGMA foreign_keys=ON;", withArgs: nil, onDatabase: db!)
     } catch {
-      logger.warn(message: "Error turning on foreign key constraint: \(error.localizedDescription)")
+      logger.warn(.localDatabaseMigrationFailed, cause: error, values: ["step": "foreignKeys"])
     }
 
     for index in startingMigrationIndex..<migrations.count {
@@ -244,7 +244,7 @@ internal final class UpdatesDatabaseInitialization {
       do {
         try migration.runMigration(onDatabase: db!)
       } catch {
-        logger.warn(message: "Error migrating SQLite db: \(UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db!).message)")
+        logger.warn(.localDatabaseMigrationFailed, values: ["step": "migrate", "cause": UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db!).message])
         sqlite3_close(db)
         return false
       }

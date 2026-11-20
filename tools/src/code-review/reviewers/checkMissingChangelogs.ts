@@ -1,5 +1,5 @@
-import minimatch from 'minimatch';
 import path from 'node:path';
+import picomatch from 'picomatch';
 
 import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
@@ -42,7 +42,7 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
       diff.some(
         (fileDiff) =>
           isPathWithin(fileDiff.path, pkg.path) &&
-          !IGNORED_PATHS.some((pattern) => minimatch(fileDiff.path, pattern))
+          !IGNORED_PATHS.some((pattern) => picomatch.isMatch(fileDiff.path, pattern))
       )
   );
   const changesets = await readChangedChangesetsAsync(pullRequest, diff);

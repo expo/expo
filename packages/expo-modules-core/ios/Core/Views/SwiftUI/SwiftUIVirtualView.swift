@@ -367,7 +367,7 @@ private func virtualViewDidUpdateProps(viewDefinition: AnyViewDefinition?, apple
 private func virtualViewMountChild<Props: ExpoSwiftUI.ViewProps>(_ childComponentView: UIView, index: Int, props: Props) {
   var children = props.children ?? []
   let child: any ExpoSwiftUI.AnyChild
-  if let view = childComponentView as AnyObject as? (any ExpoSwiftUI.View) {
+  if let view = childComponentView as AnyObject as? (any ExpoSwiftUI.AnyChild) {
     child = view
   } else {
     child = ExpoSwiftUI.UIViewHost(view: childComponentView)
@@ -391,6 +391,7 @@ private func virtualViewUnmountChild<Props: ExpoSwiftUI.ViewProps>(_ childCompon
   }
 
   if let children = props.children {
+    (children.first(where: { $0.id == childViewId }) as? ExpoSwiftUI.UIViewHost)?.didUnmount()
     props.children = children.filter({ $0.id != childViewId })
     #if DEBUG
     assert(props.children?.count == children.count - 1, "Failed to remove child view")

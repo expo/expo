@@ -17,52 +17,72 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
 
   @MainActor
   func request() async throws {
-    let authorizationChanges = makeAuthorizationChanges()
-    defer {
-      self.authorizationChanges?.finish()
-      self.authorizationChanges = nil
-    }
-    let appWillResignActive = NotificationCenter.default.notifications(named: UIApplication.willResignActiveNotification)
-    let appDidBecomeActive = NotificationCenter.default.notifications(named: UIApplication.didBecomeActiveNotification)
     let beginStatus = locationManager.authorizationStatus
     self.beginStatus = beginStatus
-    let isUpgradeFromWhenInUse = beginStatus == .authorizedWhenInUse
+    defer {
+      finishAuthorizationChanges()
+    }
+    if beginStatus == .authorizedWhenInUse {
+      try await requestUpgradeFromWhenInUse()
+    } else {
+      try await requestFirstAuthorization()
+    }
+  }
+
+  @MainActor
+  private func requestFirstAuthorization() async throws {
+    let authorizationChanges = sendAlwaysAuthorizationRequest()
+    try await authorizationChanges.waitForNext()
+  }
+
+  @MainActor
+  private func requestUpgradeFromWhenInUse() async throws {
+    await Self.waitForAppToBecomeActive()
+
+    let appWillResignActive = NotificationCenter.default.notifications(named: UIApplication.willResignActiveNotification)
+    let appDidBecomeActive = NotificationCenter.default.notifications(named: UIApplication.didBecomeActiveNotification)
+    let authorizationChanges = sendAlwaysAuthorizationRequest()
 
     try await withThrowingTaskGroup(of: Void.self) { group in
       group.addTask {
-        try await Self.waitForAuthorizationChange(authorizationChanges)
+        try await authorizationChanges.waitForNext()
       }
-
-      if isUpgradeFromWhenInUse {
-        group.addTask { @MainActor in
-          await Self.waitForDialogToClose(
-            appWillResignActive: appWillResignActive,
-            appDidBecomeActive: appDidBecomeActive
-          )
-        }
+      group.addTask { @MainActor in
+        await Self.waitForDialogToCloseWithoutChange(
+          appWillResignActive: appWillResignActive,
+          appDidBecomeActive: appDidBecomeActive
+        )
       }
-
-      locationManager.perform(Self.alwaysAuthorizationSelector)
 
       try await group.next()
       group.cancelAll()
     }
   }
 
-  private func makeAuthorizationChanges() -> AsyncThrowingStream<Void, Error> {
-    return AsyncThrowingStream { continuation in
+  @MainActor
+  private func sendAlwaysAuthorizationRequest() -> AsyncThrowingStream<Void, Error> {
+    let authorizationChanges = AsyncThrowingStream<Void, Error> { continuation in
       self.authorizationChanges = continuation
     }
+    locationManager.perform(Self.alwaysAuthorizationSelector)
+    return authorizationChanges
   }
 
-  private static func waitForAuthorizationChange(_ changes: AsyncThrowingStream<Void, Error>) async throws {
-    for try await _ in changes {
-      return
-    }
+  private func finishAuthorizationChanges() {
+    authorizationChanges?.finish()
+    authorizationChanges = nil
   }
 
   @MainActor
-  private static func waitForDialogToClose(
+  private static func waitForAppToBecomeActive() async {
+    guard UIApplication.shared.applicationState != .active else {
+      return
+    }
+    await NotificationCenter.default.notifications(named: UIApplication.didBecomeActiveNotification).waitForNext()
+  }
+
+  @MainActor
+  private static func waitForDialogToCloseWithoutChange(
     appWillResignActive: NotificationCenter.Notifications,
     appDidBecomeActive: NotificationCenter.Notifications
   ) async {
@@ -70,9 +90,7 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
     guard dialogDidOpen else {
       return
     }
-    for await _ in appDidBecomeActive {
-      return
-    }
+    await appDidBecomeActive.waitForNext()
   }
 
   private static func receivedNotification(
@@ -81,10 +99,7 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
   ) async -> Bool {
     return await withTaskGroup(of: Bool.self) { group in
       group.addTask {
-        for await _ in notifications {
-          return true
-        }
-        return false
+        await notifications.waitForNext()
       }
       group.addTask {
         try? await Task.sleep(for: timeout)
@@ -105,5 +120,15 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
 
   func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
     authorizationChanges?.finish(throwing: error)
+  }
+}
+
+private extension AsyncSequence {
+  @discardableResult
+  func waitForNext() async rethrows -> Bool {
+    for try await _ in self {
+      return true
+    }
+    return false
   }
 }

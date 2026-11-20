@@ -94,7 +94,10 @@ function createBuildHost(baseDir, inputDir, outDir, typecheck) {
       if (fs.readFileSync(resolved, 'utf-8') === content) return;
     } catch {}
     fs.mkdirSync(path.dirname(resolved), { recursive: true });
-    fs.writeFileSync(resolved, content);
+    // Rename into place: a package building in parallel must never read a half-written file.
+    const temporary = `${resolved}.${process.pid}.tmp`;
+    fs.writeFileSync(temporary, content);
+    fs.renameSync(temporary, resolved);
   }
 
   compilerHost.writeFile = (fileName, text) => {

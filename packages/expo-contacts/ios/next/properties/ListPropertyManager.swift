@@ -33,7 +33,7 @@ class ListPropertyManager<
   }
 
   func get() async throws -> [TExistingRecord] {
-    guard let contact = contactRepository.getById(id: contactId, keysToFetch: [key]) else {
+    guard let contact = try contactRepository.getById(id: contactId, keysToFetch: [key]) else {
       throw ContactNotFoundException(contactId)
     }
     guard let labeledValues = contact.value(forKey: keyString) as? [CNLabeledValue<TDomainValue>] else {

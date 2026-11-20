@@ -8,11 +8,11 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 
-`expo-updates` is a library that enables your app to manage remote updates to your application code. It communicates with the configured remote update service to get information about available updates. This guide explains how to set up an existing React Native project for use with [EAS Update](/eas-update/introduction), a hosted remote update service that includes tools to simplify installation and configuration of the `expo-updates` library.
+`expo-updates` is a library that enables your app to manage remote updates to your application code. It communicates with the configured remote update service to get information about available updates. This guide explains how to set up an existing React Native project for use with [Expo Update](/eas-update/introduction), a hosted remote update service that includes tools to simplify installation and configuration of the `expo-updates` library.
 
 <Collapsible summary="Do you use Continuous Native Generation (CNG) in your project?">
 
-You may be reading the wrong guide. To use `expo-updates` in a project that uses [CNG](/workflow/continuous-native-generation/), see [EAS Update "Get started"](/eas-update/getting-started/).
+You may be reading the wrong guide. To use `expo-updates` in a project that uses [CNG](/workflow/continuous-native-generation/), see [Expo Update "Get started"](/eas-update/getting-started/).
 
 </Collapsible>
 
@@ -60,7 +60,7 @@ Run `eas update:configure` to set the `updates` URL and `projectId` in **app.jso
 
 Modify the `expo` section of **app.json**. If you created your project using `npx @react-native-community/cli@latest init`, you will need to add the following changes including the [`updates` URL](/versions/latest/config/app/#url).
 
-> The example `updates` URL and `projectId` shown below are used with EAS Update. The EAS CLI sets this URL correctly for the EAS Update service when running `eas update:configure`.
+> The example `updates` URL and `projectId` shown below are used with Expo Update. The EAS CLI sets this URL correctly for the Expo Update service when running `eas update:configure`.
 
 <DiffBlock source="/static/diffs/expo-updates-app-json.diff" />
 
@@ -141,7 +141,7 @@ Using Xcode, add **Expo.plist** file to **ios/your-project/Supporting** with the
 
 The `channel` property on a build allows you to point updates at specific types of builds. For example, it allows you to publish updates to a preview build without impacting your production deployment.
 
-This property is also ultimately set in the **AndroidManifest.xml** and **Expo.plist** files you modified above. It is usually set right before build, so you can switch between production and non-production builds. If you build your project with EAS Build, the `channel` is set in the **eas.json** build profile. EAS Build then applies it to these files right before the native build step.
+This property is also ultimately set in the **AndroidManifest.xml** and **Expo.plist** files you modified above. It is usually set right before build, so you can switch between production and non-production builds. If you build your project with Expo Build, the `channel` is set in the **eas.json** build profile. Expo Build then applies it to these files right before the native build step.
 
 When you build locally or with another service, you need to set the channel yourself in these files:
 
@@ -169,7 +169,7 @@ In **Expo.plist**, add the `EXUpdatesRequestHeaders` dictionary inside the exist
 
 ## Next steps
 
-- To start using EAS Update with EAS Build, see the EAS Update [Get started](/eas-update/getting-started/).
+- To start using Expo Update with Expo Build, see the Expo Update [Get started](/eas-update/getting-started/).
 - See [`expo-updates` API reference](/versions/latest/sdk/updates/) for more information on how to use the library.
-- See how to use [EAS Update with a local build directly](/eas-update/standalone-service/).
+- See how to use [Expo Update with a local build directly](/eas-update/standalone-service/).
 - It is also possible to use `expo-updates` with a custom server that implements the [Expo Updates protocol](/technical-specs/expo-updates-1/). See [`custom-expo-updates-server` README](https://github.com/expo/custom-expo-updates-server#readme).

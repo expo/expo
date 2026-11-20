@@ -6,6 +6,9 @@ interface Window {
 
   __sidebarScroll: number;
   sidebarState: Record<string, boolean>;
+
+  cometlyDomainOverrides?: string[];
+  cometToken?: () => string;
 }
 
 interface ImportMeta {
@@ -16,7 +19,6 @@ interface ImportMeta {
 
 declare module NodeJS {
   interface Global {
-    tippy: any;
     __NEXT_DATA__: any;
   }
 }

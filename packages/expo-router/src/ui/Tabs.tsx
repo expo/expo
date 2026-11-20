@@ -270,6 +270,8 @@ function TabVisibilityRedirect({
     routeNames: stateWithPlaceholders.routeNames,
     focusedRouteKey: stateWithPlaceholders.routes[stateWithPlaceholders.index]?.key,
     descriptors,
+    // This runs before the tab's NavigationContent provides its own state context.
+    navigatorKey: state.key,
   });
   return null;
 }

@@ -53,7 +53,7 @@ class ProfileViewModel : ViewModel() {
               Account(
                 id = account.id,
                 name = account.name,
-                avatar = account.ownerUserActor?.profilePhoto,
+                avatar = account.ownerUserActor?.primaryAccountProfileImageUrl,
                 isSelected = account.id == newUserState.selectedAccount?.id
               )
             } ?: emptyList()

@@ -16,6 +16,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
@@ -416,6 +417,41 @@ class EventDispatcherTest {
         ),
         result
       )
+    }
+
+  @Test
+  fun `metrics, logs, and spans are sent as compact JSON`() =
+    runTest {
+      repeat(3) {
+        mockServer.enqueue(MockResponse().setResponseCode(200).setBody("{}"))
+      }
+      val log = LogEvent(
+        sessionId = "test-session",
+        timestamp = "2025-11-26T10:00:00.000Z",
+        name = "test_log",
+        severity = "info"
+      )
+      val span = OTSpan(
+        traceId = "0af7651916cd43dd8448eb211c80319c",
+        spanId = "b7ad6b7169203331",
+        name = "GET",
+        kind = 3,
+        startTimeUnixNano = 1_000_000,
+        endTimeUnixNano = 2_000_000,
+        attributes = emptyList(),
+        events = emptyList()
+      )
+      val results = listOf(
+        eventDispatcher.dispatch(listOf(createTestEvent())),
+        eventDispatcher.dispatchLogs(listOf(createTestEvent().copy(logs = listOf(log)))),
+        eventDispatcher.dispatchSpans(listOf(SpanBatch(event = createTestEvent(), spans = listOf(span))))
+      )
+      assertEquals(List(3) { DispatchResult.Success }, results)
+      repeat(3) {
+        val request = requireNotNull(mockServer.takeRequest(5, TimeUnit.SECONDS)) { "Expected a request" }
+        val body = request.body.readUtf8()
+        assertFalse("Request body is pretty-printed: $body", body.contains('\n'))
+      }
     }
 
   // Helper function to create test events

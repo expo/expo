@@ -38,6 +38,42 @@ struct JavaScriptObjectTests {
     #expect(object.getPropertyNames() == ["café", "日本語", "🎉", ""])
   }
 
+  @Test
+  func `forEachProperty visits the properties in order`() throws {
+    let object = try runtime.eval("({ a: 1, 'café': 'two', c: true })").getObject()
+    var names: [String] = []
+    var numbers: [Double] = []
+    object.forEachProperty { name, value in
+      names.append(name)
+      if value.isNumber() {
+        numbers.append(value.getDouble())
+      }
+    }
+    #expect(names == ["a", "café", "c"])
+    #expect(numbers == [1])
+  }
+
+  @Test
+  func `forEachProperty visits inherited but not non-enumerable properties`() throws {
+    let object = try runtime.eval(
+      "Object.create({ inherited: 1 }, { hidden: { value: 2, enumerable: false }, shown: { value: 3, enumerable: true } })"
+    ).getObject()
+    var names: [String] = []
+    object.forEachProperty { name, _ in
+      names.append(name)
+    }
+    #expect(names == ["shown", "inherited"])
+  }
+
+  @Test
+  func `forEachProperty doesn't call the body for an empty object`() {
+    var calls = 0
+    runtime.createObject().forEachProperty { _, _ in
+      calls += 1
+    }
+    #expect(calls == 0)
+  }
+
   // MARK: - Non-ASCII property names
 
   @Test
@@ -106,6 +142,103 @@ struct JavaScriptObjectTests {
     object.defineProperty("test", value: 1)
     object.defineProperty("test", value: 2)
     #expect(object.getProperty("test").getInt() == 1)
+  }
+
+  @Test
+  func `defineProperty sets false attributes of an existing property`() throws {
+    let object = JavaScriptObject(runtime)
+    object.defineProperty("test", value: 1, options: [.configurable, .enumerable, .writable])
+    object.defineProperty("test", value: 2)
+    runtime.global().setProperty("obj", object)
+
+    let descriptor = try runtime.eval("Object.getOwnPropertyDescriptor(obj, 'test')").getObject()
+    #expect(descriptor.getProperty("value").getInt() == 2)
+    #expect(descriptor.getProperty("configurable").getBool() == false)
+    #expect(descriptor.getProperty("enumerable").getBool() == false)
+    #expect(descriptor.getProperty("writable").getBool() == false)
+  }
+
+  // MARK: - Lazy properties
+
+  @Test
+  func `defineLazyProperty creates the value on the first read only`() throws {
+    let object = runtime.createObject()
+    object.defineLazyProperty("value") { runtime in
+      try runtime.eval("++globalThis.calls")
+    }
+    runtime.global().setProperty("obj", object)
+    try runtime.eval("globalThis.calls = 0")
+
+    #expect(try runtime.eval("Object.keys(obj).join()").getString() == "value")
+    #expect(try runtime.eval("calls").getInt() == 0)
+    #expect(try runtime.eval("obj.value").getInt() == 1)
+    #expect(try runtime.eval("obj.value").getInt() == 1)
+    #expect(try runtime.eval("calls").getInt() == 1)
+  }
+
+  @Test
+  func `defineLazyProperty replaces the getter with a read-only data property`() throws {
+    let object = runtime.createObject()
+    object.defineLazyProperty("value") { _ in
+      "lazy"
+    }
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("typeof Object.getOwnPropertyDescriptor(obj, 'value').get").getString() == "function")
+    #expect(try runtime.eval("obj.value").getString() == "lazy")
+
+    let descriptor = try runtime.eval("Object.getOwnPropertyDescriptor(obj, 'value')").getObject()
+    #expect(descriptor.getProperty("value").getString() == "lazy")
+    #expect(descriptor.getProperty("writable").getBool() == false)
+    #expect(descriptor.getProperty("enumerable").getBool() == true)
+    #expect(descriptor.getProperty("configurable").getBool() == true)
+  }
+
+  @Test
+  func `defineLazyProperty defines a non-enumerable property`() throws {
+    let object = runtime.createObject()
+    object.defineLazyProperty("hidden", options: [.configurable]) { _ in
+      1
+    }
+    runtime.global().setProperty("obj", object)
+
+    #expect(try runtime.eval("Object.keys(obj).length").getInt() == 0)
+    #expect(try runtime.eval("obj.hidden").getInt() == 1)
+    #expect(try runtime.eval("Object.keys(obj).length").getInt() == 0)
+  }
+
+  @Test
+  func `defineLazyProperty makes the data property non-configurable`() throws {
+    let object = runtime.createObject()
+    object.defineLazyProperty("value", options: [.enumerable]) { _ in
+      1
+    }
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("Object.getOwnPropertyDescriptor(obj, 'value').configurable").getBool() == true)
+    #expect(try runtime.eval("obj.value").getInt() == 1)
+
+    let descriptor = try runtime.eval("Object.getOwnPropertyDescriptor(obj, 'value')").getObject()
+    #expect(descriptor.getProperty("value").getInt() == 1)
+    #expect(descriptor.getProperty("writable").getBool() == false)
+    #expect(descriptor.getProperty("enumerable").getBool() == true)
+    #expect(descriptor.getProperty("configurable").getBool() == false)
+    #expect(try runtime.eval("delete obj.value").getBool() == false)
+    #expect(try runtime.eval("obj.value").getInt() == 1)
+  }
+
+  @Test
+  func `defineLazyProperty calls the factory again after it throws`() throws {
+    let object = runtime.createObject()
+    object.defineLazyProperty("value") { runtime in
+      try runtime.eval("if (++globalThis.calls === 1) throw new Error('first read'); globalThis.calls")
+    }
+    runtime.global().setProperty("obj", object)
+    try runtime.eval("globalThis.calls = 0")
+
+    #expect(throws: (any Error).self) {
+      try runtime.eval("obj.value")
+    }
+    #expect(try runtime.eval("obj.value").getInt() == 2)
+    #expect(try runtime.eval("obj.value").getInt() == 2)
   }
 
   @Test
@@ -745,6 +878,113 @@ struct JavaScriptObjectTests {
       .getArray()
     #expect(array.length == 2)
     #expect(try array.getValue(at: 1).getObject().getProperty("x").getInt() == 2)
+  }
+
+  // MARK: - Properties with symbol keys
+
+  @Test
+  func `setProperty with a symbol installs a function named after the symbol`() throws {
+    let object = runtime.createObject()
+    object.setProperty(try JavaScriptSymbol.wellKnown(runtime, .iterator)) {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+      result.emplace(number: 42)
+    }
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("obj[Symbol.iterator]()").getInt() == 42)
+    #expect(try runtime.eval("obj[Symbol.iterator].name").getString() == "[Symbol.iterator]")
+    #expect(try runtime.eval("Object.keys(obj).length").getInt() == 0)
+  }
+
+  @Test
+  func `setProperty with a registered symbol and a result slot closure`() throws {
+    let object = runtime.createObject()
+    object.setProperty(try JavaScriptSymbol.for(runtime, "app.greet")) {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+      let name = try String.decode(arguments.unownedValue(at: 0), in: runtime)
+      try String.encode("hello \(name)", into: result, in: runtime)
+    }
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("obj[Symbol.for('app.greet')]('café')").getString() == "hello café")
+    #expect(try runtime.eval("obj[Symbol.for('app.greet')].name").getString() == "[app.greet]")
+  }
+
+  @Test
+  func `setProperty with a symbol and a void closure returns undefined`() throws {
+    let object = runtime.createObject()
+    object.setProperty("calls", value: JavaScriptValue(runtime, 0))
+    object.setProperty(try JavaScriptSymbol.for(runtime, "app.bump")) {
+      [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) -> Void in
+      let target = try this.asObject(in: runtime)
+      target.setProperty("calls", value: JavaScriptValue(runtime, target.getProperty("calls").getInt() + 1))
+    }
+    runtime.global().setProperty("obj", object)
+    let result = try runtime.eval("[obj[Symbol.for('app.bump')](), obj.calls]").getArray()
+    #expect(result[0].isUndefined() == true)
+    #expect(result[1].getInt() == 1)
+  }
+
+  @Test
+  func `defineProperty with a symbol and a descriptor object defines an accessor`() throws {
+    let object = runtime.createObject()
+    let descriptor = runtime.createObject()
+    descriptor.setProperty("get") { this, arguments in
+      return JavaScriptValue(self.runtime, "Cache")
+    }
+    object.defineProperty(try JavaScriptSymbol.wellKnown(runtime, .toStringTag), descriptor: descriptor)
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("String(obj)").getString() == "[object Cache]")
+  }
+
+  @Test
+  func `defineProperty with a symbol shadows a read-only inherited property`() throws {
+    // `Function.prototype[Symbol.hasInstance]` is read-only, so an assignment can't shadow it.
+    let function = try runtime.eval("(function Cache() {})").getObject()
+    function.defineProperty(
+      try JavaScriptSymbol.wellKnown(runtime, .hasInstance),
+      descriptor: .init(configurable: true, writable: true)
+    )
+    function.setProperty(try JavaScriptSymbol.wellKnown(runtime, .hasInstance)) {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+      result.emplace(bool: true)
+    }
+    runtime.global().setProperty("Cache", function)
+    #expect(try runtime.eval("({}) instanceof Cache").getBool() == true)
+  }
+
+  @Test
+  func `defineProperty with a symbol and a value applies the options`() throws {
+    let object = runtime.createObject()
+    object.defineProperty(try JavaScriptSymbol.for(runtime, "app.id"), value: 1, options: [.enumerable])
+    object.defineProperty(try JavaScriptSymbol.for(runtime, "app.id"), value: 2)
+    runtime.global().setProperty("obj", object)
+    let descriptor = try runtime.eval("Object.getOwnPropertyDescriptor(obj, Symbol.for('app.id'))").getObject()
+    #expect(descriptor.getProperty("value").getInt() == 1)
+    #expect(descriptor.getProperty("enumerable").getBool() == true)
+    #expect(descriptor.getProperty("writable").getBool() == false)
+    #expect(descriptor.getProperty("configurable").getBool() == false)
+  }
+
+  @Test
+  func `defineProperty with a symbol leaves a frozen object unchanged`() throws {
+    let object = try runtime.eval("Object.freeze({})").getObject()
+    object.defineProperty(try JavaScriptSymbol.wellKnown(runtime, .toStringTag), value: "Cache")
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("Object.getOwnPropertySymbols(obj).length").getInt() == 0)
   }
 }
 
