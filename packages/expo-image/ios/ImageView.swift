@@ -110,6 +110,8 @@ public final class ImageView: ExpoView {
         sdImageView.image = nil
         placeholderImage = nil
         sourceImage = nil
+        // `reload()` returns early in a locked view, so a running load must not show its image here.
+        latestLoadID += 1
       }
     }
   }
@@ -743,6 +745,12 @@ public final class ImageView: ExpoView {
     } else {
       sdImageView.layer.frame.origin = offset
     }
+  }
+
+  /// Displays the image of an image ref. A running load doesn't replace it, also in a locked view.
+  func renderImageRef(_ image: UIImage) {
+    latestLoadID += 1
+    renderSourceImage(image)
   }
 
   internal func renderSourceImage(_ image: UIImage?, cacheType: ImageCacheType = .none) {

@@ -123,3 +123,66 @@ struct ImageViewResizeTests {
     #expect(abs(aspectRatio - 100) < 2)
   }
 }
+
+@MainActor
+@Suite("ImageView late images")
+struct ImageViewLateImageTests {
+  /// Starts to load an image that the view downscales off the main thread.
+  private func startLoad(recyclingKey: String? = nil) throws -> (view: ImageView, url: URL) {
+    let view = ImageView()
+    let url = try makeImageFile(pixelSize: square(400).size * view.screenScale)
+    var source = ImageSource()
+    source.uri = url
+    view.recyclingKey = recyclingKey
+    view.sources = [source]
+    view.bounds = square(100)
+    return (view, url)
+  }
+
+  /// Gives the load and the resize up to 1 s to finish. Returns early when the late image shows.
+  private func waitForLateImage(_ isShown: () -> Bool) async throws {
+    for _ in 0..<100 where !isShown() {
+      try await Task.sleep(for: .milliseconds(10))
+    }
+  }
+
+  @Test
+  func `drops the image of a load that ends after the source is removed`() async throws {
+    let (view, url) = try startLoad()
+    defer { try? FileManager.default.removeItem(at: url) }
+
+    view.sources = nil
+    view.reload()
+
+    try await waitForLateImage { view.sourceImage != nil }
+    #expect(view.sourceImage == nil)
+  }
+
+  @Test
+  func `drops the image of a load that ends after a locked view gets a new recycling key`() async throws {
+    let (view, url) = try startLoad(recyclingKey: "a")
+    defer { try? FileManager.default.removeItem(at: url) }
+
+    view.lockResource = true
+    view.recyclingKey = "b"
+    view.reload()
+
+    try await waitForLateImage { view.sourceImage != nil }
+    #expect(view.sourceImage == nil)
+  }
+
+  @Test
+  func `keeps an image ref that a locked view gets while it loads`() async throws {
+    let (view, url) = try startLoad()
+    defer { try? FileManager.default.removeItem(at: url) }
+    let ref = UIGraphicsImageRenderer(size: CGSize(width: 10, height: 10)).image { _ in }
+
+    view.lockResource = true
+    view.sources = nil
+    view.renderImageRef(ref)
+    view.reload()
+
+    try await waitForLateImage { view.sourceImage !== ref }
+    #expect(view.sourceImage === ref)
+  }
+}

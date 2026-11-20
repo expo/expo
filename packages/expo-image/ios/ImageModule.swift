@@ -38,7 +38,7 @@ public final class ImageModule: Module {
         if let imageRef: SharedRef<UIImage> = sources?.get() {
           // Unset an array of traditional sources and just render the image ref right away.
           view.sources = nil
-          view.renderSourceImage(imageRef.ref)
+          view.renderImageRef(imageRef.ref)
         } else {
           // Update an array of sources. Image will start loading once the all props are updated.
           view.sources = sources?.get()
