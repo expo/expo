@@ -1759,6 +1759,23 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         }
       });
 
+      httpbingo.it('reports download task progress as numbers', async () => {
+        const file = new File(testDirectory, 'download_task_progress.bin');
+        const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
+
+        await File.createDownloadTask('https://httpbingo.org/bytes/102400', file, {
+          onProgress: (data) => {
+            progressUpdates.push({ ...data });
+          },
+        }).downloadAsync();
+
+        expect(progressUpdates.length).toBeGreaterThan(1);
+        for (const update of progressUpdates) {
+          expect(typeof update.bytesWritten).toBe('number');
+          expect(typeof update.totalBytes).toBe('number');
+        }
+      });
+
       httpbingo.it('totalBytes matches content-length when server provides it', async () => {
         const url = 'https://httpbingo.org/bytes/51200';
         const file = new File(testDirectory, 'progress_total.bin');
@@ -1897,6 +1914,41 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         expect(output.uri).toBe(file.uri);
         expect(file.size).toBe(10240);
         expect(progressUpdates.length).toBeGreaterThan(0);
+      });
+    });
+
+    describe('Uploads files', () => {
+      let originalTimeout: number;
+
+      t.beforeAll(async () => {
+        originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
+      });
+
+      t.afterAll(() => {
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+      });
+
+      httpbingo.it('reports upload task progress as numbers', async () => {
+        const file = new File(testDirectory, 'upload_progress.bin');
+        file.create();
+        file.writeSync(new Uint8Array(512 * 1024));
+        const progressUpdates: { bytesSent: number; totalBytes: number }[] = [];
+
+        const result = await file
+          .createUploadTask('https://httpbingo.org/post', {
+            onProgress: (data) => {
+              progressUpdates.push({ ...data });
+            },
+          })
+          .uploadAsync();
+
+        expect(result.status).toBe(200);
+        expect(progressUpdates.length).toBeGreaterThan(1);
+        for (const update of progressUpdates) {
+          expect(typeof update.bytesSent).toBe('number');
+          expect(typeof update.totalBytes).toBe('number');
+        }
       });
     });
 
