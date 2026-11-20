@@ -7,7 +7,7 @@ import Network
 import EXDevMenu
 
 private let selectedAccountKey = "expo-selected-account-id"
-private let sessionKey = "expo-session-secret"
+let sessionKey = "expo-session-secret"
 
 private let DEV_LAUNCHER_DEFAULT_SCHEME = "expo-dev-launcher"
 private let BONJOUR_TYPE = "_expo._tcp"
@@ -138,6 +138,16 @@ class DevLauncherViewModel: ObservableObject {
     loadData()
     checkAuthenticationStatus()
     checkForStoredCrashes()
+
+    NotificationCenter.default.addObserver(
+      forName: EXDevLauncherDeviceLogin.didSignInNotification,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      Task { @MainActor [weak self] in
+        self?.checkAuthenticationStatus()
+      }
+    }
   }
 
   private func updateDevServers(_ servers: [DevServer]) {

@@ -26,6 +26,12 @@ class APIClient {
       : "https://exp.host/--/graphql"
   }
 
+  var apiOrigin: String {
+    return useStaging
+      ? "https://staging-api.expo.dev"
+      : "https://api.expo.dev"
+  }
+
   var websiteOrigin: String {
     return useStaging
       ? "https://staging.expo.dev"
