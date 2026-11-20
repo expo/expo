@@ -182,6 +182,7 @@ export class FileProcessor {
           filePath: this.#rootPathUtils.normalToAbsolute(normalPath),
           maybeReturnContent,
           pluginsToRun,
+          returnStats: fileMetadata[H.MTIME] == null,
         };
       }
       return null;
@@ -192,6 +193,7 @@ export class FileProcessor {
       filePath: this.#rootPathUtils.normalToAbsolute(normalPath),
       maybeReturnContent,
       pluginsToRun,
+      returnStats: fileMetadata[H.MTIME] == null,
     };
   }
 
@@ -241,6 +243,7 @@ function processWorkerReply(
   fileMetadata: FileMetadata
 ): Buffer | undefined | null {
   fileMetadata[H.VISITED] = 1;
+  applyStats(metadata, fileMetadata);
   const pluginData = metadata.pluginData;
   if (pluginData) {
     for (const [i, pluginIdx] of pluginsRun.entries()) {
@@ -253,6 +256,16 @@ function processWorkerReply(
   }
 
   return metadata.content;
+}
+
+// Records the stats of a file that hadn't been stat'd, taken as data was first
+// derived from it (see `FileMetadata`).
+function applyStats(metadata: WorkerMetadata, fileMetadata: FileMetadata): void {
+  const { stats } = metadata;
+  if (stats != null) {
+    fileMetadata[H.MTIME] = stats.mtime;
+    fileMetadata[H.SIZE] = stats.size;
+  }
 }
 
 function normalizeWorkerError(mixedError: Error | string | null | undefined): MaybeCodedError {

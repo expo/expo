@@ -31,8 +31,17 @@ export class Worker {
   processFile(data: WorkerMessage): WorkerMetadata {
     let content: Buffer | undefined;
     let sha1: WorkerMetadata['sha1'];
+    let stats: WorkerMetadata['stats'];
 
-    const { computeSha1, filePath, pluginsToRun } = data;
+    const { computeSha1, filePath, pluginsToRun, returnStats } = data;
+
+    // Stat before deriving anything, so that the recorded mtime is never newer
+    // than the content the data was derived from. `getTime()` truncates to
+    // whole milliseconds, as the crawler's mtimes are.
+    if (returnStats) {
+      const { mtime, size } = fs.statSync(filePath);
+      stats = { mtime: mtime.getTime(), size };
+    }
 
     const getContent = (): Buffer => {
       if (content == null) {
@@ -52,8 +61,8 @@ export class Worker {
     }
 
     return content != null && data.maybeReturnContent
-      ? { content, pluginData, sha1 }
-      : { pluginData, sha1 };
+      ? { content, pluginData, sha1, stats }
+      : { pluginData, sha1, stats };
   }
 }
 

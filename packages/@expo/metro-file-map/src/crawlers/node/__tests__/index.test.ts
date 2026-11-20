@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import * as fs from 'fs';
 import { vol } from 'memfs';
 
 import H from '../../../constants';
@@ -15,6 +16,12 @@ import nodeCrawl from '../index';
 // memfs is POSIX-only; pin to POSIX path semantics
 // TODO(@kitten): Fork the test for posix v windows
 jest.mock('path', () => jest.requireActual<typeof import('path')>('path').posix);
+
+// memfs, with `lstat` spied on to count stats
+jest.mock('fs', () => {
+  const { fs } = jest.requireActual<typeof import('memfs')>('memfs');
+  return { ...fs, lstat: jest.fn(fs.lstat) };
+});
 
 const rootDir = '/project';
 const processFile = () => null;
@@ -215,12 +222,13 @@ describe('node crawler', () => {
     const meta = changedFiles.get('fruits/apple.js')!;
 
     expect(meta).toBeDefined();
-    // On cold start (empty previous FS), stat is deferred
+    // New files are recorded without a stat
     expect(meta[H.MTIME]).toBeNull();
-    expect(meta[H.SIZE]).toBe(0);
+    expect(meta[H.SIZE]).toBeNull();
     expect(meta[H.VISITED]).toBe(0);
     expect(meta[H.SHA1]).toBeNull();
     expect(meta[H.SYMLINK]).toBe(0);
+    expect(fs.lstat).not.toHaveBeenCalled();
   });
 
   test('skips lstat for files with no prior mtime', async () => {
@@ -229,9 +237,11 @@ describe('node crawler', () => {
       '/project/fruits/banana.js': 'b',
     });
 
+    // Neither file has any data derived from its content, so neither can be
+    // stale, whatever has changed on disk.
     const previousFiles: FileData = new Map([
-      ['fruits/apple.js', [null, 0, 0, null, 0, null] as FileMetadata],
-      ['fruits/banana.js', [null, 0, 0, null, 0, null] as FileMetadata],
+      ['fruits/apple.js', [null, null, 0, null, 0, null] as FileMetadata],
+      ['fruits/banana.js', [null, null, 0, null, 0, null] as FileMetadata],
     ]);
 
     const { changedFiles, removedFiles } = await crawl({
@@ -241,12 +251,12 @@ describe('node crawler', () => {
       },
     });
 
-    // Both files had null mtime → stat deferred, getDifference treats as unchanged
     expect(changedFiles).toEqual(new Map());
     expect(removedFiles).toEqual(new Set());
+    expect(fs.lstat).not.toHaveBeenCalled();
   });
 
-  test('calls lstat only for files with existing mtime', async () => {
+  test('calls lstat only for files with existing mtime, without looking them up', async () => {
     vol.fromJSON({
       '/project/fruits/apple.js': 'a',
       '/project/fruits/banana.js': 'b',
@@ -258,12 +268,16 @@ describe('node crawler', () => {
       // apple has a real mtime → will be lstat'd, mtime differs → changed
       ['fruits/apple.js', [appleStat.mtime.getTime() - 1000, 0, 1, null, 0, null] as FileMetadata],
       // banana has null mtime → stat is deferred
-      ['fruits/banana.js', [null, 0, 0, null, 0, null] as FileMetadata],
+      ['fruits/banana.js', [null, null, 0, null, 0, null] as FileMetadata],
     ]);
+    const fileSystem = makeTreeFS(previousFiles);
+    // The comparison with the previous file map finds them.
+    const lookup = jest.spyOn(fileSystem, 'lookup');
+    const linkStats = jest.spyOn(fileSystem, 'linkStats');
 
     const { changedFiles, removedFiles } = await crawl({
       previousState: {
-        fileSystem: makeTreeFS(previousFiles),
+        fileSystem,
         clocks: new Map(),
       },
     });
@@ -278,6 +292,10 @@ describe('node crawler', () => {
       ])
     );
     expect(removedFiles).toEqual(new Set());
+    expect(fs.lstat).toHaveBeenCalledTimes(1);
+    expect(fs.lstat).toHaveBeenCalledWith('/project/fruits/apple.js', expect.any(Function));
+    expect(lookup).not.toHaveBeenCalled();
+    expect(linkStats).not.toHaveBeenCalled();
   });
 
   test('excludes unchanged files when lstat mtime matches cache', async () => {
@@ -310,6 +328,67 @@ describe('node crawler', () => {
     // Both files have matching mtime → lstat'd but unchanged
     expect(changedFiles).toEqual(new Map());
     expect(removedFiles).toEqual(new Set());
+  });
+
+  test('does not compare a file with one reached through a previous symlink', async () => {
+    vol.fromJSON({
+      '/project/fruits/directory/strawberry.js': 'a',
+      '/project/fruits/tomato.js': 'b',
+    });
+
+    // Before, `directory` was a symlink to `other`, whose strawberry.js has the
+    // same modified time as the crawled one (as a hard link would).
+    const strawberryStat = vol.statSync('/project/fruits/directory/strawberry.js');
+    const previousFiles: FileData = new Map([
+      ['fruits/directory', [0, 0, 0, null, 'fruits/other', null] as FileMetadata],
+      [
+        'fruits/other/strawberry.js',
+        [strawberryStat.mtime.getTime(), 1, 1, 'abc', 0, null] as FileMetadata,
+      ],
+      ['fruits/tomato.js', [null, null, 0, null, 0, null] as FileMetadata],
+    ]);
+
+    const { changedFiles, removedFiles } = await crawl({
+      previousState: {
+        fileSystem: makeTreeFS(previousFiles),
+        clocks: new Map(),
+      },
+    });
+
+    expect(changedFiles).toEqual(
+      new Map([['fruits/directory/strawberry.js', [null, null, 0, null, 0, null] as FileMetadata]])
+    );
+    expect(removedFiles).toEqual(new Set(['fruits/directory', 'fruits/other/strawberry.js']));
+  });
+
+  test("a scoped recrawl stats files that weren't stat'd before", async () => {
+    vol.fromJSON({
+      '/project/fruits/directory/strawberry.js': 'a',
+      '/project/fruits/tomato.js': 'b',
+    });
+
+    const previousFiles: FileData = new Map([
+      ['fruits/directory/strawberry.js', [null, null, 0, null, 0, null] as FileMetadata],
+      ['fruits/tomato.js', [null, null, 0, null, 0, null] as FileMetadata],
+    ]);
+
+    const { changedFiles } = await crawl({
+      previousState: {
+        fileSystem: makeTreeFS(previousFiles),
+        clocks: new Map(),
+      },
+      subpath: 'fruits',
+    });
+
+    // Their contents may have been read outside the file map, so they're
+    // reported as changed.
+    expect(changedFiles).toEqual(
+      new Map([
+        ['fruits/directory/strawberry.js', [expect.any(Number), 1, 0, null, 0, null]],
+        ['fruits/tomato.js', [expect.any(Number), 1, 0, null, 0, null]],
+      ])
+    );
+    expect(fs.lstat).toHaveBeenCalledTimes(2);
   });
 
   test('stats symlinks on a cold start', async () => {
