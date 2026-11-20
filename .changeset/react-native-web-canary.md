@@ -15,4 +15,4 @@
 'expo-system-ui': patch
 ---
 
-Upgrade `react-native-web` and `babel-plugin-react-native-web` to 0.22.0-canary-20261119-0cbcdde (ESM only). `expo/types` now uses `react-native-web/types`.
+Upgrade `react-native-web` and `babel-plugin-react-native-web` to 0.22.0-canary-20261120-0e0a420 (ESM only). `expo/types` now uses `react-native-web/types`.

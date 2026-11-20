@@ -103,7 +103,7 @@
   "react": "19.3.0",
   "react-dom": "19.3.0",
   "react-native": "0.89.0-rc.2",
-  "react-native-web": "0.22.0-canary-20261119-0cbcdde",
+  "react-native-web": "0.22.0-canary-20261120-0e0a420",
   "react-native-gesture-handler": "~3.5.0",
   "react-native-keyboard-controller": "1.22.7",
   "react-native-maps": "1.29.11",
