@@ -110,6 +110,8 @@ public final class ImageView: ExpoView {
         sdImageView.image = nil
         placeholderImage = nil
         sourceImage = nil
+        // `reload()` returns early in a locked view, so a running load must not show its image here.
+        latestLoadID += 1
       }
     }
   }
@@ -199,6 +201,8 @@ public final class ImageView: ExpoView {
     if lockResource && !force {
       return
     }
+    // Before the early returns, so that a downscale that is still running for the previous source is dropped.
+    latestLoadID += 1
     if isViewEmpty {
       if placeholderImage != nil {
         displayPlaceholderIfNecessary()
@@ -233,7 +237,6 @@ public final class ImageView: ExpoView {
     }
 
     renderedImage = nil
-    latestLoadID += 1
     let load = SourceLoad(id: latestLoadID, sourceIndex: sourceIndex, isThumbnail: thumbnailPixelSize != nil)
 
     // Some loaders (e.g. PhotoLibraryAssetLoader) may need to know the screen scale.
@@ -417,8 +420,28 @@ public final class ImageView: ExpoView {
     )
 
     let sourcePixelSize = image.size * image.scale
+
+    if !image.sd_isAnimated && !bounds.isEmpty, let size = downscaledSize(sourcePixelSize: sourcePixelSize) {
+      // The view keeps its current image until the downscaled one is ready.
+      let scale = screenScale
+      DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+        let resized = resize(image: image, toSize: size, scale: scale)
+        DispatchQueue.main.async {
+          guard let self, load.id == self.latestLoadID else {
+            return
+          }
+          self.sdImageView.animationTransformer = nil
+          self.layOutImage(sourcePixelSize: sourcePixelSize)
+          self.renderLoadedImage(resized, sourcePixelSize: sourcePixelSize, cacheType: cacheType, load: load)
+        }
+      }
+      return
+    }
     layOutImage(sourcePixelSize: sourcePixelSize)
-    let image = processImage(image)
+    renderLoadedImage(processImage(image), sourcePixelSize: sourcePixelSize, cacheType: cacheType, load: load)
+  }
+
+  private func renderLoadedImage(_ image: UIImage?, sourcePixelSize: CGSize, cacheType: SDImageCacheType, load: SourceLoad) {
     renderSourceImage(image, cacheType: ImageCacheType.fromSdCacheType(cacheType))
     // SDWebImage can complete a cancelled load after `reload()` starts the next one.
     // A thumbnail and an animated image depend on the view's size at load time.
@@ -722,6 +745,12 @@ public final class ImageView: ExpoView {
     } else {
       sdImageView.layer.frame.origin = offset
     }
+  }
+
+  /// Displays the image of an image ref. A running load doesn't replace it, also in a locked view.
+  func renderImageRef(_ image: UIImage) {
+    latestLoadID += 1
+    renderSourceImage(image)
   }
 
   internal func renderSourceImage(_ image: UIImage?, cacheType: ImageCacheType = .none) {
