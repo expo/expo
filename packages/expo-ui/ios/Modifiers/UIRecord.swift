@@ -22,3 +22,60 @@ extension UIRecord {
     try updateFields(of: self, withDict: dict, appContext: appContext)
   }
 }
+
+extension ModifierParams {
+  // Decodes a nested dictionary with the same rules as a `Record` field.
+  @_semantics("optimize.sil.specialize.generic.never")
+  private func decodeRecord<T: UIRecord>(_ key: String, _ value: Any?) throws -> T {
+    guard let dict = value as? [String: Any] else {
+      throw ModifierFieldException(key)
+    }
+    return try T(from: dict, appContext: appContext)
+  }
+
+  @inline(__always)
+  func value<T: UIRecord>(_ key: String, _ fallback: T) throws -> T {
+    guard raw.keys.contains(key) else {
+      return fallback
+    }
+    return try decodeRecord(key, raw[key])
+  }
+
+  @inline(__always)
+  func value<T: UIRecord>(_ key: String, _ fallback: T?) throws -> T? {
+    guard raw.keys.contains(key) else {
+      return fallback
+    }
+    let newValue = raw[key]
+    if newValue == nil || newValue is NSNull {
+      return nil
+    }
+    return try decodeRecord(key, newValue) as T
+  }
+
+  @inline(__always)
+  func value<T: UIRecord>(_ key: String, _ fallback: [T]) throws -> [T] {
+    guard raw.keys.contains(key) else {
+      return fallback
+    }
+    guard let array = raw[key] as? [Any] else {
+      throw ModifierFieldException(key)
+    }
+    return try array.map { try decodeRecord(key, $0) as T }
+  }
+
+  @inline(__always)
+  func value<T: UIRecord>(_ key: String, _ fallback: [T]?) throws -> [T]? {
+    guard raw.keys.contains(key) else {
+      return fallback
+    }
+    let newValue = raw[key]
+    if newValue == nil || newValue is NSNull {
+      return nil
+    }
+    guard let array = newValue as? [Any] else {
+      throw ModifierFieldException(key)
+    }
+    return try array.map { try decodeRecord(key, $0) as T }
+  }
+}
