@@ -2,6 +2,7 @@ import type { ImageStyle } from 'react-native';
 
 import type { ImageNativeProps, ImageSource } from '../Image.types';
 import { resolveDefaultSize } from '../utils';
+import { resolveSources } from '../utils/resolveSources';
 
 const source: ImageSource[] = [{ uri: 'file:///image.png', width: 100, height: 50 }];
 
@@ -60,33 +61,25 @@ describe('resolveDefaultSize', () => {
     expect(resolveDefaultSize(source, { position: 'absolute' })).toBeNull();
   });
 
-  // Padding and border widths add to a 0-content box in Yoga, so an image styled with only these
-  // is already visible today and its layout must not change.
+  it.each(['padding', 'paddingHorizontal', 'borderWidth', 'borderTopWidth'])(
+    'returns the size when the style sets only %s',
+    (property) => {
+      expect(resolveDefaultSize(source, { [property]: 10 } as ImageStyle)).toEqual({
+        width: 100,
+        height: 50,
+      });
+    }
+  );
+
   it.each([
-    'padding',
-    'paddingBlock',
-    'paddingBlockEnd',
-    'paddingBlockStart',
-    'paddingBottom',
-    'paddingEnd',
-    'paddingHorizontal',
-    'paddingInline',
-    'paddingInlineEnd',
-    'paddingInlineStart',
-    'paddingLeft',
-    'paddingRight',
-    'paddingStart',
-    'paddingTop',
-    'paddingVertical',
-    'borderWidth',
-    'borderBottomWidth',
-    'borderEndWidth',
-    'borderLeftWidth',
-    'borderRightWidth',
-    'borderStartWidth',
-    'borderTopWidth',
-  ])('returns null when the style sets %s', (property) => {
-    expect(resolveDefaultSize(source, { [property]: 10 } as ImageStyle)).toBeNull();
+    ['a blurhash string', 'blurhash:/LEHV6nWB2yk8pyo0adR*.7kCMdnj'],
+    ['a blurhash with a size', { blurhash: 'LEHV6nWB2yk8pyo0adR*.7kCMdnj', width: 32, height: 32 }],
+    [
+      'a thumbhash with a size',
+      { thumbhash: '1QcSHQRnh493V4dIh4eXh1h4kJUI', width: 32, height: 32 },
+    ],
+  ])('returns null for %s', (_, hashSource) => {
+    expect(resolveDefaultSize(resolveSources(hashSource), {})).toBeNull();
   });
 
   it('returns the size when the style sets a non-sizing border/color property', () => {

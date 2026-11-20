@@ -13,10 +13,7 @@ import type {
 } from './Image.types';
 
 /**
- * Style properties that already determine the layout size of the view — either directly
- * (`width`, `flex`, …) or by giving a 0-content box a non-zero size of its own: padding and
- * border widths add to the content box in Yoga, so a leaf styled with only those is already
- * laid out at a visible size today.
+ * Style properties that already set or flex the layout size of the view.
  */
 const SIZING_STYLE_PROPS = [
   'width',
@@ -27,28 +24,6 @@ const SIZING_STYLE_PROPS = [
   'flex',
   'flexGrow',
   'flexBasis',
-  'padding',
-  'paddingBlock',
-  'paddingBlockEnd',
-  'paddingBlockStart',
-  'paddingBottom',
-  'paddingEnd',
-  'paddingHorizontal',
-  'paddingInline',
-  'paddingInlineEnd',
-  'paddingInlineStart',
-  'paddingLeft',
-  'paddingRight',
-  'paddingStart',
-  'paddingTop',
-  'paddingVertical',
-  'borderWidth',
-  'borderBottomWidth',
-  'borderEndWidth',
-  'borderLeftWidth',
-  'borderRightWidth',
-  'borderStartWidth',
-  'borderTopWidth',
 ] as const satisfies readonly (keyof ImageStyle)[];
 
 /**
@@ -69,8 +44,7 @@ function isUsableSize(value: unknown): value is number {
  * Returns the size declared by the image source, to be used as the default size of the view,
  * the same way React Native's `<Image>` does. An asset loaded with `require` carries the size
  * that the bundler read from the file and an `ImageSource` object can declare it explicitly.
- * It is applied only when nothing in the style already determines the layout size, so it can
- * affect only the images that would otherwise be laid out as 0x0.
+ * It is not applied when the style already sets or flexes the size of the view.
  */
 export function resolveDefaultSize(
   source: ImageNativeProps['source'],
@@ -81,6 +55,13 @@ export function resolveDefaultSize(
     return null;
   }
   const [resolvedSource] = source;
+  // For image hashes, the source size is the resolution to decode the hash at, not a layout size.
+  if (
+    resolvedSource?.uri?.startsWith('blurhash:/') ||
+    resolvedSource?.uri?.startsWith('thumbhash:/')
+  ) {
+    return null;
+  }
   const { width, height } = resolvedSource ?? {};
 
   // A source declaring a zero, negative or non-finite size has no usable size to fall back to.

@@ -369,7 +369,14 @@ export class Image extends React.PureComponent<ImageProps> {
     const defaultSizeStyle = isSFSymbol
       ? symbolSizeStyle
       : resolveDefaultSize(resolvedSource, restStyle);
-    const resolvedStyle = defaultSizeStyle ? { ...defaultSizeStyle, ...restStyle } : restStyle;
+    // `StyleSheet.flatten` keeps keys with an `undefined` value, so a spread would let them win.
+    const resolvedStyle = defaultSizeStyle
+      ? {
+          ...restStyle,
+          width: restStyle.width ?? defaultSizeStyle.width,
+          height: restStyle.height ?? defaultSizeStyle.height,
+        }
+      : restStyle;
 
     return (
       <ExpoImage
