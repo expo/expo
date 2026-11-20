@@ -87,6 +87,23 @@ public macro JS(_ jsName: String? = nil, _ options: JSOptions...) =
 public macro JS(_ options: JSOptions...) =
   #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
 
+/// Binds the member under a well-known symbol instead of a name, for example `@JS(symbol: .iterator)` binds
+/// a function as `[Symbol.iterator]`, and `@JS(symbol: .toStringTag)` binds a property as
+/// `[Symbol.toStringTag]`. Applies to a function or property, not to an initializer.
+///
+///     @JS(symbol: .iterator)
+///     func makeIterator() -> JavaScriptObject { ... }
+@attached(peer, names: arbitrary)
+public macro JS(symbol: JavaScriptSymbol.WellKnown, _ options: JSOptions...) =
+  #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
+
+/// Binds the member under the symbol that the global symbol registry holds for the key, like
+/// `Symbol.for(key)` in JavaScript, for example `@JS(symbol: "app.id")`. The key must be a string literal.
+/// Applies to a function or property, not to an initializer.
+@attached(peer, names: arbitrary)
+public macro JS(symbol: String, _ options: JSOptions...) =
+  #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
+
 /// Options passed to `@Event` after the optional JS name, e.g. `@Event(.inline)` or
 /// `@Event("tick", .blocking)`. The macro reads them from the source, so spell them as `.option`
 /// literals rather than constants. Without an option, the event is scheduled on the JavaScript thread
@@ -141,6 +158,8 @@ public macro Event(_ options: EventOptions...) =
 /// marked with `@JS` and binds them directly into the module's JS object by a synthesized
 /// `_decorateModule(object:in:)`. The `@SharedObject` classes in the `classes:` argument are
 /// emitted as a `_classTypes` static, and core adds their JavaScript classes to the module's JS object.
+/// The `@ExpoView` classes in the `views:` argument are emitted as a `_viewTypes` static, and core
+/// registers them as native components.
 ///
 /// The module's JavaScript name is synthesized into a `_jsName` static and read by core, so there
 /// is no `Name(…)` DSL entry. It defaults to the class name; pass `@ExpoModule("CustomName")` to
@@ -161,11 +180,11 @@ public macro Event(_ options: EventOptions...) =
 @attached(
   member,
   names:
-    named(_jsName), named(_classTypes), named(appContext), named(init),
+    named(_jsName), named(_classTypes), named(_viewTypes), named(appContext), named(init),
     named(_decorateModule), named(_assertTypesConformance))
 @attached(memberAttribute)
 @attached(extension, conformances: AnyModule, Sendable)
-public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
+public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = [], views: [Any.Type] = []) =
   #externalMacro(module: "ExpoModulesMacros", type: "ExpoModuleMacro")
 
 /// Member macro applied to a `SharedObject` subclass. Scans the class body for declarations
@@ -281,3 +300,66 @@ public macro Record() =
 @attached(extension, conformances: JavaScriptDecodable, JavaScriptEncodable)
 public macro Union() =
   #externalMacro(module: "ExpoModulesMacros", type: "UnionMacro")
+
+/// Member + extension macro applied to a struct with the props of a view of Expo Modules v2. Every stored property
+/// is a prop: a function-typed property is an event, and every other property is a value prop that
+/// core decodes from the props that React sends. A prop's default is its value in `Self()`, which it has
+/// until React sets it and after React removes it. So each value prop needs an initial value or an
+/// optional type, unless the struct declares its own `init()`. When needed, the macro generates
+/// `init()`, which sets each event prop without an initial value to an empty closure.
+///
+/// An event prop takes no parameter or one, the payload that JavaScript gets, whose type is
+/// `JavaScriptEncodable`. Calling it dispatches the event to the view's event handler in JavaScript.
+///
+/// Usage:
+///
+///     @ViewProps
+///     struct CardProps {
+///       var title = "Untitled"
+///       var radius: Double = 0
+///       var onTap: () -> Void
+///     }
+@attached(
+  member,
+  names: named(PropName), named(PropSet), named(_eventNames), named(Diff), named(init), named(_resetViewProp))
+@attached(
+  extension, conformances: AnyViewProps, names: named(allProps), named(propSet), named(_decode), named(_bindEvents))
+public macro ViewProps() =
+  #externalMacro(module: "ExpoModulesMacros", type: "ViewPropsMacro")
+
+/// Member + extension macro applied to a view of Expo Modules v2: an `ExpoNativeView` subclass or a SwiftUI view
+/// struct. It binds the view to its `@ViewProps` type, which is the generic argument, and conforms it to
+/// `AnyNativeUIKitView` or `AnyNativeSwiftUIView`. The module registers the view with `@ExpoModule(views:)`.
+///
+/// The view's name defaults to the type name; pass `@ExpoView<Props>("CustomName")` to override it.
+///
+/// Usage:
+///
+///     @ExpoView<CardProps>
+///     final class CardView: ExpoNativeView {
+///       let titleLabel = UILabel()
+///
+///       func didUpdateProps(_ diff: CardProps.Diff) {
+///         if diff.changed(.title) {
+///           titleLabel.text = props.title
+///         }
+///       }
+///     }
+///
+/// For a SwiftUI view, the macro adds the `props` and `children` constants, the weak `appContext` property and
+/// `init(props:children:appContext:)`. Core creates the struct again with the current props and children when either
+/// changes:
+///
+///     @ExpoView<CardProps>
+///     struct CardView: View {
+///       var body: some View {
+///         VStack {
+///           Text(props.title)
+///           children
+///         }
+///       }
+///     }
+@attached(member, names: named(Props), named(_jsName), named(props), named(children), named(appContext), named(init))
+@attached(extension, conformances: AnyNativeUIKitView, AnyNativeSwiftUIView)
+public macro ExpoView<Props: AnyViewProps>(_ name: String? = nil) =
+  #externalMacro(module: "ExpoModulesMacros", type: "ExpoViewMacro")

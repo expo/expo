@@ -462,11 +462,8 @@ export function getDefaultConfig(
     expoMetroConfig
   );
 
-  // NOTE(@kitten): `useWatchman` is currently defaulting to `false`
-  // However, in standard Metro, it defaults to `true`, and we must override this to `null` to disable the slow "native find" codepath
-  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro-file-map/src/index.js#L326
-  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro/src/node-haste/DependencyGraph/createFileMap.js#L109
-  (metroConfig.resolver as { useWatchman?: boolean | null }).useWatchman = null;
+  // Expo defaults to the Node crawler and watcher, where Metro defaults to Watchman.
+  (metroConfig.resolver as { useWatchman: boolean }).useWatchman = false;
 
   return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }

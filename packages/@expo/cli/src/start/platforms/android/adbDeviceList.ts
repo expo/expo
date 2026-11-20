@@ -21,7 +21,10 @@ export function parseAdbDeviceList(output: string): AdbDeviceRecord[] {
 }
 
 function parseDeviceLine(line: string): AdbDeviceRecord | null {
-  const match = line.match(/^(\S+)\s+(.+)$/);
+  const match =
+    line.match(
+      /^(.+?)\s+((?:offline|bootloader|device|host|recovery|rescue|sideload|unauthorized|authorizing|connecting|detached|any|no permissions)(?:\s+.*)?)$/
+    ) ?? line.match(/^(\S+)\s+(.+)$/);
   if (!match) {
     return null;
   }

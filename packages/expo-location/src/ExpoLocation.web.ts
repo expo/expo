@@ -21,13 +21,14 @@ class GeocoderError extends Error {
 /**
  * Converts `GeolocationPosition` to JavaScript object.
  */
-function geolocationPositionToJSON(position: LocationObject): LocationObject {
+function geolocationPositionToJSON(position: GeolocationPosition): LocationObject {
   const { coords, timestamp } = position;
   return {
     coords: {
       latitude: coords.latitude,
       longitude: coords.longitude,
       altitude: coords.altitude,
+      mslAltitude: null,
       accuracy: coords.accuracy,
       altitudeAccuracy: coords.altitudeAccuracy,
       heading: coords.heading,

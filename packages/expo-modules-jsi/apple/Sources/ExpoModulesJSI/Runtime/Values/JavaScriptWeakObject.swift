@@ -18,6 +18,13 @@ public struct JavaScriptWeakObject: JavaScriptType, ~Copyable {
   internal var jsiRuntime: facebook.jsi.IRuntime? {
     return runtimeHandle.pointee
   }
+
+  /// Whether the weak object belongs to the given runtime, the runtime that created it. Use it only with the runtime it
+  /// belongs to, on the thread of that runtime.
+  public func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
+    return runtimeHandle === runtime.handle
+  }
+
   internal let pointee: facebook.jsi.WeakObject
 
   /// Initializes a weak object with the underlying JSI weak object.

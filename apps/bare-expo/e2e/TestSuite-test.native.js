@@ -17,6 +17,7 @@ const TESTS = [
   'CryptoAES',
   // 'GLView',
   'Haptics',
+  'ImageManipulator',
   'Localization',
   // 'SecureStore',
   // 'Segment',

@@ -44,10 +44,10 @@ export function resolveOptions(platform: Platform, options: Options): ResolvedOp
       `Device builds are not supported yet. Omit --device to build for ${target}.`
     );
   }
-  if (outputType !== installable) {
+  if (outputType === 'ipa') {
     throw new CommandError(
       'BAD_ARGS',
-      `Building an ${outputType} is not supported yet. Omit --output-type to build an ${installable}.`
+      `Building an ${outputType} is not supported yet. Pass --output-type ${installable} to build an ${installable}.`
     );
   }
   return { mode, outputDir: options['output-dir'], outputType };

@@ -87,12 +87,12 @@ describe(useSQLiteContext, () => {
 
   it('should re-import when the asset source changes and ignore a new object with the same contents', async () => {
     const openDatabaseSpy = jest.spyOn(require('../SQLiteDatabase'), 'openDatabaseAsync');
-    const assetModuleSpy = jest.spyOn(Asset, 'fromModule').mockImplementation((assetId: number) => {
+    const assetModuleSpy = jest.spyOn(Asset, 'fromModule').mockImplementation((assetId) => {
       return {
         downloadAsync: async () => ({ localUri: `file:///asset-${assetId}.db` }),
       } as Asset;
     });
-    const importSpy = jest.fn(async () => {});
+    const importSpy = jest.fn(async (..._args: unknown[]) => {});
     require('../ExpoSQLite').default.importAssetDatabaseAsync = importSpy;
 
     function App({ assetId, forceOverwrite }: { assetId: number; forceOverwrite?: boolean }) {
@@ -128,14 +128,14 @@ describe(useSQLiteContext, () => {
     await waitFor(() => {
       expect(importSpy).toHaveBeenCalledTimes(3);
     });
-    expect(importSpy.mock.calls[2][2]).toBe(true);
+    expect(importSpy.mock.lastCall?.[2]).toBe(true);
 
     openDatabaseSpy.mockRestore();
     assetModuleSpy.mockRestore();
   });
 
   it('should re-import a suspense database when the asset source changes', async () => {
-    const assetModuleSpy = jest.spyOn(Asset, 'fromModule').mockImplementation((assetId: number) => {
+    const assetModuleSpy = jest.spyOn(Asset, 'fromModule').mockImplementation((assetId) => {
       return {
         downloadAsync: async () => ({ localUri: `file:///asset-${assetId}.db` }),
       } as Asset;

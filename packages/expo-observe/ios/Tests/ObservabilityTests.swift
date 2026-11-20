@@ -84,13 +84,23 @@ struct ObservabilitySampledLogsTests {
 
   @Test
   func `out-of-sample for sampleRate keeps only exception logs`() {
-    let result = ObservabilityManager.sampledLogs(logs, shouldDispatch: false, ignoredEvents: [])
+    let result = ObservabilityManager.sampledLogs(
+      logs,
+      shouldDispatch: false,
+      shouldDispatchErrors: true,
+      ignoredEvents: []
+    )
     #expect(result.map(\.name) == ["js.exception", "native.exception"])
   }
 
   @Test
   func `in-sample for sampleRate keeps all logs`() {
-    let result = ObservabilityManager.sampledLogs(logs, shouldDispatch: true, ignoredEvents: [])
+    let result = ObservabilityManager.sampledLogs(
+      logs,
+      shouldDispatch: true,
+      shouldDispatchErrors: true,
+      ignoredEvents: []
+    )
     #expect(result.map(\.name) == ["info", "js.exception", "native.exception"])
   }
 
@@ -99,6 +109,7 @@ struct ObservabilitySampledLogsTests {
     let result = ObservabilityManager.sampledLogs(
       logs,
       shouldDispatch: false,
+      shouldDispatchErrors: true,
       ignoredEvents: ["js.exception"]
     )
     #expect(result.map(\.name) == ["native.exception"])
@@ -109,9 +120,36 @@ struct ObservabilitySampledLogsTests {
     let result = ObservabilityManager.sampledLogs(
       logs,
       shouldDispatch: true,
+      shouldDispatchErrors: true,
       ignoredEvents: ["info", "js.exception", "native.exception"]
     )
     #expect(result.isEmpty)
+  }
+
+  private let logsWithFeedback = ["info", "js.exception", "expo.feedback"].map {
+    LogRow(sessionId: "s", timestamp: "2025-01-01T00:00:00Z", severity: "info", name: $0)
+  }
+
+  @Test
+  func `out-of-sample for sampleRate keeps exception and feedback logs`() {
+    let result = ObservabilityManager.sampledLogs(
+      logsWithFeedback,
+      shouldDispatch: false,
+      shouldDispatchErrors: true,
+      ignoredEvents: []
+    )
+    #expect(result.map(\.name) == ["js.exception", "expo.feedback"])
+  }
+
+  @Test
+  func `out-of-sample for both rates keeps only feedback logs`() {
+    let result = ObservabilityManager.sampledLogs(
+      logsWithFeedback,
+      shouldDispatch: false,
+      shouldDispatchErrors: false,
+      ignoredEvents: []
+    )
+    #expect(result.map(\.name) == ["expo.feedback"])
   }
 }
 

@@ -1,6 +1,53 @@
 import { isAdbDeviceStateUsable, parseAdbDeviceList } from '../adbDeviceList';
 
 describe(parseAdbDeviceList, () => {
+  it('preserves spaces in mDNS serials in a mixed device list', () => {
+    const records = parseAdbDeviceList(
+      [
+        'List of devices attached',
+        'FA8251A00720           device usb:338690048X product:walleye model:Pixel_2 transport_id:4',
+        'emulator-5554         device product:sdk model:Pixel transport_id:1',
+        'adb-XXXX._adb-tls-connect._tcp (2)\tdevice product:cheetah model:Pixel_7 transport_id:7',
+        'adb-XXXX (2)._adb-tls-connect._tcp offline transport_id:8',
+        'adb-YYYY._adb-tls-connect._tcp (2) unauthorized transport_id:9',
+        '',
+      ].join('\r\n')
+    );
+
+    expect(records).toEqual([
+      {
+        serial: 'FA8251A00720',
+        state: 'device',
+        metadata: ['usb:338690048X', 'product:walleye', 'model:Pixel_2', 'transport_id:4'],
+        transportId: '4',
+      },
+      {
+        serial: 'emulator-5554',
+        state: 'device',
+        metadata: ['product:sdk', 'model:Pixel', 'transport_id:1'],
+        transportId: '1',
+      },
+      {
+        serial: 'adb-XXXX._adb-tls-connect._tcp (2)',
+        state: 'device',
+        metadata: ['product:cheetah', 'model:Pixel_7', 'transport_id:7'],
+        transportId: '7',
+      },
+      {
+        serial: 'adb-XXXX (2)._adb-tls-connect._tcp',
+        state: 'offline',
+        metadata: ['transport_id:8'],
+        transportId: '8',
+      },
+      {
+        serial: 'adb-YYYY._adb-tls-connect._tcp (2)',
+        state: 'unauthorized',
+        metadata: ['transport_id:9'],
+        transportId: '9',
+      },
+    ]);
+  });
+
   it.each([
     ['tabs', 'emulator-5554\tdevice product:sdk model:Pixel transport_id:1'],
     ['runs of whitespace', 'emulator-5554          offline transport_id:1'],

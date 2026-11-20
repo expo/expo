@@ -36,14 +36,8 @@ export function useLinking(
     }
 
     if (linkingHandlers.length) {
-      console.error(
-        [
-          'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
-          "- You don't have multiple NavigationContainers in the app",
-          '- Only a single instance of the root component is rendered',
-        ]
-          .join('\n')
-          .trim()
+      console.warn(
+        'Your app mounted a second time while the first instance was still handling deep links. Make sure that the app renders only one root component.'
       );
     }
 

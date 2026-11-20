@@ -39,6 +39,7 @@ class ExpoVideoPlaybackService : MediaSessionService() {
       weakContext = WeakReference(value)
     }
   private val mediaSessions = mutableMapOf<ExoPlayer, MediaSession>()
+  private val postedNotificationIds = mutableSetOf<Int>()
   private val binder = PlaybackServiceBinder(this)
   private var mostRecentInteractionSession: MediaSession? = null
   private var isForeground: Boolean = false
@@ -191,6 +192,7 @@ class ExpoVideoPlaybackService : MediaSessionService() {
       .build()
 
     val notificationId = session.player.hashCode()
+    postedNotificationIds.add(notificationId)
 
     if (startInForegroundRequired) {
       try {
@@ -213,6 +215,7 @@ class ExpoVideoPlaybackService : MediaSessionService() {
 
       val sessionsToRelease = mediaSessions.values.toList()
       mediaSessions.clear()
+      postedNotificationIds.clear()
       for (session in sessionsToRelease) {
         session.release()
       }
@@ -228,12 +231,13 @@ class ExpoVideoPlaybackService : MediaSessionService() {
   private fun hidePlayerNotification(player: ExoPlayer) {
     val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     notificationManager.cancel(player.hashCode())
+    postedNotificationIds.remove(player.hashCode())
   }
 
   @MainThread
   private fun hideAllNotifications() {
     val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    notificationManager.cancelAll()
+    postedNotificationIds.forEach { notificationManager.cancel(it) }
   }
 
   private fun MediaSession.wantsToShowNotification(): Boolean =

@@ -215,10 +215,7 @@ class AudioModule : Module() {
 
   private enum class AudioFocusResult { GRANTED, DELAYED, FAILED, NOT_REQUESTED }
 
-  private fun audioFocusGainForMode(mode: InterruptionMode?): Int? = when (mode) {
-    null -> AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
-    else -> mode.toAudioFocusGain()
-  }
+  private fun audioFocusGainForMode(mode: InterruptionMode?): Int? = mode?.toAudioFocusGain()
 
   private fun requestAudioFocus(): AudioFocusResult {
     if (focusAcquired) {
@@ -676,6 +673,12 @@ class AudioModule : Module() {
         ref.setVolume(volume)
       }
 
+      Property("isActiveForLockScreen") { player ->
+        runOnMain {
+          player.isActiveForLockScreen
+        }
+      }
+
       Function("play") { player: AudioPlayer ->
         runOnMain {
           playWithAudioFocus(player)
@@ -1009,7 +1012,9 @@ class AudioModule : Module() {
       }
 
       Property("loop") { playlist ->
-        playlist.loopMode.value
+        runOnMain {
+          playlist.loopMode.value
+        }
       }.set { playlist, mode: LoopMode ->
         runOnMain {
           playlist.loopMode = mode
@@ -1019,6 +1024,12 @@ class AudioModule : Module() {
       Property("currentStatus") { playlist ->
         runOnMain {
           playlist.currentStatus()
+        }
+      }
+
+      Property("isActiveForLockScreen") { playlist ->
+        runOnMain {
+          playlist.isActiveForLockScreen
         }
       }
 

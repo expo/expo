@@ -32,8 +32,5 @@ Pod::Spec.new do |s|
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
     test_spec.source_files = 'Tests/**/*.swift'
-    test_spec.pod_target_xcconfig = {
-      'OTHER_LDFLAGS' => '$(inherited) -lc++',
-    }
   end
 end

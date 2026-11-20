@@ -13,6 +13,15 @@ type SubscriptionDemoProps = {
   subscribe: (setValue: SetValueType) => Subscription | Promise<Subscription>;
 };
 
+function sortMotionActivities(activity: Location.MotionActivityObject) {
+  const activities: Record<string, { detected: boolean | 'TRUE'; confidence: number }> = {};
+  for (const type of Object.values(Location.MotionActivityType)) {
+    const { detected, confidence } = activity.activities[type];
+    activities[type] = { detected: detected ? 'TRUE' : false, confidence };
+  }
+  return { activities, timestamp: activity.timestamp };
+}
+
 function SubscriptionDemo(props: SubscriptionDemoProps) {
   const [subscription, setSubscription] = React.useState<Subscription | null>(null);
 
@@ -102,7 +111,12 @@ export default function LocationScreen() {
       />
       <SubscriptionDemo
         title="watchMotionActivityAsync"
-        subscribe={(setValue) => Location.watchMotionActivityAsync(setValue, setValue)}
+        subscribe={(setValue) =>
+          Location.watchMotionActivityAsync(
+            (activity) => setValue(sortMotionActivities(activity)),
+            setValue
+          )
+        }
       />
 
       <View style={{ marginTop: 30, paddingHorizontal: 10 }}>

@@ -189,6 +189,7 @@ struct DispatchLoopTests {
         sent = ObservabilityManager.sampledLogs(
           batch,
           shouldDispatch: true,
+          shouldDispatchErrors: true,
           ignoredEvents: ["hidden"]
         ).map(\.name)
         return .retryableFailure(retryAfter: nil)

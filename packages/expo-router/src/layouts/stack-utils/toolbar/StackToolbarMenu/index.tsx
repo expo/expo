@@ -16,6 +16,7 @@ import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
   extractIconRenderingMode,
   extractXcassetName,
+  warnIfHeaderItemHasImage,
 } from '../shared';
 import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from '../toolbar-primitives';
 import { NativeToolbarMenu, NativeToolbarMenuAction } from './native';
@@ -163,6 +164,7 @@ export function convertStackToolbarMenuPropsToRNHeaderItem(
   if (props.hidden) {
     return undefined;
   }
+  warnIfHeaderItemHasImage('Stack.Toolbar.Menu', props.image);
   const { title, ...rest } = props;
   const actions = Children.toArray(props.children).filter(
     (child) =>
@@ -205,6 +207,7 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(
   if (props.hidden) {
     return undefined;
   }
+  warnIfHeaderItemHasImage('Stack.Toolbar.Menu', props.image);
   const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
   const actions = Children.toArray(props.children).filter(
     (child) =>
@@ -293,6 +296,7 @@ export const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps> = (pr
 export function convertStackToolbarMenuActionPropsToRNHeaderItem(
   props: StackToolbarMenuActionProps
 ): NativeStackHeaderItemMenuAction {
+  warnIfHeaderItemHasImage('Stack.Toolbar.MenuAction', props.image);
   const { children, isOn, unstable_keepPresented, icon, ...rest } = props;
   const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
   const item: NativeStackHeaderItemMenuAction = {

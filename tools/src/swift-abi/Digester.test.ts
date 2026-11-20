@@ -46,6 +46,17 @@ describe('isBreakingFinding', () => {
     );
   });
 
+  it('drops conformances added to existing protocols', () => {
+    assert.equal(
+      isBreakingFinding({
+        section: 'Protocol Conformance Change',
+        message:
+          'Struct JavaScriptFunction has added a conformance to an existing protocol JavaScriptDecodable',
+      }),
+      false
+    );
+  });
+
   it('keeps removals, renames and final changes', () => {
     for (const [section, message] of [
       ['Removed Decls', 'Func Record.decode(_:in:) has been removed'],

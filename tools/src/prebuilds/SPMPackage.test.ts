@@ -579,6 +579,37 @@ describe('assertUniqueTargetNames', () => {
   });
 });
 
+describe('writePackageSwiftAsync package name', () => {
+  it('names a scoped npm package without the scope separator', async () => {
+    const packageRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-package-name-'));
+    try {
+      const product: SPMProduct = {
+        name: 'ExpoUI',
+        podName: 'ExpoUI',
+        platforms: ['iOS(.v15)'],
+        targets: [],
+      };
+      const packageSwiftPath = path.join(packageRoot, '.build', 'Package.swift');
+      await SPMPackage.writePackageSwiftAsync(
+        {
+          path: packageRoot,
+          buildPath: path.join(packageRoot, '.build'),
+          packageName: '@expo/ui',
+          packageVersion: '1.0.0',
+          getSwiftPMConfiguration: () => ({ products: [product] }),
+        },
+        product,
+        'Debug',
+        packageSwiftPath,
+        packageRoot
+      );
+      assert.match(fs.readFileSync(packageSwiftPath, 'utf-8'), /^ {4}name: "expo-ui",$/m);
+    } finally {
+      fs.rmSync(packageRoot, { recursive: true, force: true });
+    }
+  });
+});
+
 describe('resolveCompilerFlags', () => {
   /** Asserts the thrown diagnostic names the target and points at the offending key or value. */
   function expectRejection(flags: unknown, offender: RegExp, buildType: BuildFlavor = 'Debug') {

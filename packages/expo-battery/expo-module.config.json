@@ -1,8 +1,5 @@
 {
   "platforms": ["apple", "android", "web"],
-  "apple": {
-    "modules": ["BatteryModule"]
-  },
   "android": {
     "publication": {
       "groupId": "host.exp.exponent",

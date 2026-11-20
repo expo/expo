@@ -26,13 +26,14 @@ class CheckForUpdateProcedure(
   private val updatesLogger: UpdatesLogger,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
-  private val launchedUpdate: UpdateEntity?,
+  private val getLaunchedUpdate: () -> UpdateEntity?,
   private val callback: (IUpdatesController.CheckForUpdateResult) -> Unit
 ) : StateMachineProcedure() {
   override val loggerTimerLabel = "timer-check-for-update"
 
   override suspend fun run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEvent.Check())
+    val launchedUpdate = getLaunchedUpdate()
 
     val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, updatesConfiguration)?.updateEntity
     val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
@@ -45,7 +46,7 @@ class CheckForUpdateProcedure(
 
     try {
       val updateResponse = downloadRemoteUpdate(extraHeaders)
-      processUpdatesResponse(updateResponse, procedureContext, embeddedUpdate)
+      processUpdatesResponse(updateResponse, procedureContext, embeddedUpdate, launchedUpdate)
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
@@ -70,7 +71,12 @@ class CheckForUpdateProcedure(
     }
   }
 
-  private fun processUpdatesResponse(updateResponse: UpdateResponse, procedureContext: ProcedureContext, embeddedUpdate: UpdateEntity?) {
+  private fun processUpdatesResponse(
+    updateResponse: UpdateResponse,
+    procedureContext: ProcedureContext,
+    embeddedUpdate: UpdateEntity?,
+    launchedUpdate: UpdateEntity?
+  ) {
     val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
     val update = updateResponse.manifestUpdateResponsePart?.update
 

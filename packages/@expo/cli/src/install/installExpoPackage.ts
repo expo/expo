@@ -4,6 +4,7 @@ import chalk from 'chalk';
 
 import * as Log from '../log';
 import { getRunningProcess } from '../utils/getRunningProcess';
+import { withProgramStatus } from '../utils/programStatus';
 import { event } from './events';
 import type { Options } from './resolveOptions';
 
@@ -44,11 +45,13 @@ export async function installExpoPackageAsync(
   // Safe to use current process to upgrade Expo package- doesn't affect current process
   const done = event.span();
   try {
-    if (dev) {
-      await packageManager.addDevAsync([...packageManagerArguments, expoPackageToInstall]);
-    } else {
-      await packageManager.addAsync([...packageManagerArguments, expoPackageToInstall]);
-    }
+    await withProgramStatus({ state: 'working', msg: 'Installing packages' }, async () => {
+      if (dev) {
+        await packageManager.addDevAsync([...packageManagerArguments, expoPackageToInstall]);
+      } else {
+        await packageManager.addAsync([...packageManagerArguments, expoPackageToInstall]);
+      }
+    });
     done('done', {
       packages: [expoPackageToInstall],
       dev: !!dev,

@@ -158,7 +158,7 @@ public final class ScreenCaptureModule: Module {
 
     NotificationCenter.default.addObserver(
       self,
-      selector: #selector(appDidBecomeActive),
+      selector: #selector(onAppDidBecomeActive),
       name: UIApplication.didBecomeActiveNotification,
       object: nil
     )
@@ -186,7 +186,7 @@ public final class ScreenCaptureModule: Module {
   }
 
   @objc
-  private func appDidBecomeActive() {
+  private func onAppDidBecomeActive() {
     removePrivacyOverlay()
   }
 

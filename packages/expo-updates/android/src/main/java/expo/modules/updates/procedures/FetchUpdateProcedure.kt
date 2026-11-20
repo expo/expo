@@ -27,7 +27,7 @@ class FetchUpdateProcedure(
   private val updatesDirectory: File,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
-  private val launchedUpdate: UpdateEntity?,
+  private val getLaunchedUpdate: () -> UpdateEntity?,
   private val scope: CoroutineScope,
   private val callback: (IUpdatesController.FetchUpdateResult) -> Unit
 ) : StateMachineProcedure() {
@@ -35,10 +35,11 @@ class FetchUpdateProcedure(
 
   override suspend fun run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEvent.Download())
+    val launchedUpdate = getLaunchedUpdate()
 
     try {
-      val loaderResult = startRemoteLoader(database, procedureContext)
-      processSuccessLoaderResult(loaderResult, procedureContext)
+      val loaderResult = startRemoteLoader(database, procedureContext, launchedUpdate)
+      processSuccessLoaderResult(loaderResult, procedureContext, launchedUpdate)
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
@@ -56,7 +57,7 @@ class FetchUpdateProcedure(
     }
   }
 
-  private suspend fun startRemoteLoader(database: UpdatesDatabase, procedureContext: ProcedureContext): Loader.LoaderResult {
+  private suspend fun startRemoteLoader(database: UpdatesDatabase, procedureContext: ProcedureContext, launchedUpdate: UpdateEntity?): Loader.LoaderResult {
     val remoteLoader = RemoteLoader(
       context,
       updatesConfiguration,
@@ -103,7 +104,7 @@ class FetchUpdateProcedure(
     }
   }
 
-  private suspend fun processSuccessLoaderResult(loaderResult: Loader.LoaderResult, procedureContext: ProcedureContext) {
+  private suspend fun processSuccessLoaderResult(loaderResult: Loader.LoaderResult, procedureContext: ProcedureContext, launchedUpdate: UpdateEntity?) {
     val result = RemoteLoader.processSuccessLoaderResult(
       context,
       updatesConfiguration,
