@@ -29,6 +29,15 @@ export type IOSSplashConfig = BaseIOSSplashConfig & {
   imageWidth: number;
   resizeMode: 'cover' | 'contain';
   dark?: BaseIOSSplashConfig;
+  prerender?: PrerenderConfig;
+};
+
+export type PrerenderConfig = {
+  /**
+   * Captures the screen that replaces the splash screen and draws it on the next launch.
+   * @default false
+   */
+  snapshot?: boolean;
 };
 
 export type Props = {
@@ -63,6 +72,13 @@ export type Props = {
     image?: string;
     backgroundColor?: string;
   };
+  /**
+   * Experimental. Draws the app's first screen through Fabric before React Native starts, instead of
+   * the splash image. With `snapshot`, the screen that replaces the splash screen is captured on the
+   * device and drawn on the next launch. The first launch shows the splash image.
+   * @platform ios
+   */
+  prerender?: PrerenderConfig;
   /**
    * Properties for configuring the splash screen on Android.
    * @platform android
