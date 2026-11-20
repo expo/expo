@@ -241,8 +241,11 @@ extension ExpoSwiftUI {
       parentController?.addChild(hostingController)
       #else
       guard let parentController else {
-        hostingController.view.removeFromSuperview()
+        // Mounted on the window with no view controller, as `FullWindowOverlay` does.
+        // Render without containment.
         hostingController.removeFromParent()
+        addSubview(hostingController.view)
+        setupHostingViewConstraints()
         return
       }
       // `reactViewController()` walks the responder chain, which may not match the view hierarchy:
