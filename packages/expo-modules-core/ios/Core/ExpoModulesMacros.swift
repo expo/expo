@@ -46,6 +46,17 @@ public enum JSOptions {
   /// The variant sends the module or shared object off the JavaScript thread, so in Swift 6 language
   /// mode the enclosing class must be `Sendable`.
   case withAsync(String)
+
+  /// Caches the value of a getter-only computed property on the JavaScript object. On the first read,
+  /// the getter runs and its value is stored as a read-only data property on the object, so later
+  /// reads don't call into native code. Each instance of a shared object stores its own value, and the
+  /// constructor stores the value of a `static` property. Each runtime runs the getter once.
+  ///
+  /// Use it instead of a `lazy var` for a property that more than one runtime can read, such as the
+  /// main runtime and a worklet runtime: two runtimes on different threads can read a `lazy var` for
+  /// the first time at once, which is a data race on its storage. Only valid on a getter-only computed
+  /// property.
+  case cached
 }
 
 /// Marker macro applied to module / shared-object members that should be exposed to JavaScript.
@@ -62,6 +73,9 @@ public enum JSOptions {
 ///
 ///     @JS
 ///     var status: String { "ok" }
+///
+///     @JS(.cached)
+///     var cacheDirectory: String { ... }
 ///
 ///     @JS(.concurrent)
 ///     func digest(data: Data) async -> Data { ... }
@@ -325,6 +339,30 @@ public macro Union() =
 @attached(
   extension, conformances: AnyViewProps, names: named(allProps), named(propSet), named(_decode), named(_bindEvents))
 public macro ViewProps() =
+  #externalMacro(module: "ExpoModulesMacros", type: "ViewPropsMacro")
+
+/// Gives the struct the props and events of another `@ViewProps` struct, as a subclass of a props class gets them in
+/// Expo Modules v1. The macro adds a `base` property that holds the props of `Base`. JavaScript sets the base props by
+/// their own names, and the view reads them from `base`, such as `props.base.title`. A diff names a changed base prop
+/// with `.base(_:)`, such as `diff.changed(.base(.title))`.
+///
+/// An own prop hides a base prop with the same name. The struct can't declare its own `base` property, and the own and
+/// base value props together can't be more than 64.
+///
+/// Usage:
+///
+///     @ViewProps(extending: CardProps.self)
+///     struct LinkCardProps {
+///       var link = ""
+///       var onOpen: () -> Void
+///     }
+@attached(
+  member,
+  names:
+    named(base), named(PropName), named(PropSet), named(_eventNames), named(Diff), named(init), named(_resetViewProp))
+@attached(
+  extension, conformances: AnyViewProps, names: named(allProps), named(propSet), named(_decode), named(_bindEvents))
+public macro ViewProps<Base: AnyViewProps>(extending: Base.Type) =
   #externalMacro(module: "ExpoModulesMacros", type: "ViewPropsMacro")
 
 /// Member + extension macro applied to a view of Expo Modules v2: an `ExpoNativeView` subclass or a SwiftUI view
