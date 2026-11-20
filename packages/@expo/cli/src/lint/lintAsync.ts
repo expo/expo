@@ -14,12 +14,12 @@ import type { Options } from './resolveOptions';
 
 const DEFAULT_INPUTS = ['src', 'app', 'components'];
 
-function getEslintVersion(projectRoot: string): string | null {
-  const resolvedPath = resolveFrom(projectRoot, 'eslint/package.json', { skipNodePath: false });
+function loadEslint(projectRoot: string): typeof import('eslint') | null {
+  const resolvedPath = resolveFrom(projectRoot, 'eslint', { skipNodePath: false });
   if (!resolvedPath) {
     return null;
   } else {
-    return loadModuleSync(resolvedPath).version ?? null;
+    return loadModuleSync(resolvedPath);
   }
 }
 
@@ -40,7 +40,17 @@ export const lintAsync = async (
     await prerequisite.bootstrapAsync();
   }
 
-  const version = getEslintVersion(projectRoot);
+  const mod = loadEslint(projectRoot);
+  // loadESLint is >= 8.57.0 (https://github.com/eslint/eslint/releases/tag/v8.57.0) https://github.com/eslint/eslint/pull/18098
+  if (mod == null || !('loadESLint' in mod)) {
+    throw new CommandError(
+      'npx expo lint requires ESLint version 8.57.0 or greater. Upgrade eslint or use npx eslint directly.'
+    );
+  }
+
+  const ESLint = await mod.loadESLint({ cwd: options.projectRoot } as any);
+  const version = ESLint?.version;
+
   if (!version || semver.lt(version, '8.57.0')) {
     throw new CommandError(
       'npx expo lint requires ESLint version 8.57.0 or greater. Upgrade eslint or use npx eslint directly.'
