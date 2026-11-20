@@ -8,11 +8,27 @@ import { getMarkdownFilePath } from '~/ui/components/MarkdownActions/paths';
 
 type ToolInput = Record<string, unknown>;
 
+type PropertySchema = {
+  type: 'string' | 'integer';
+  description: string;
+  enum?: string[];
+  maxLength?: number;
+  minimum?: number;
+  maximum?: number;
+};
+
+type InputSchema = {
+  type: 'object';
+  properties: Record<string, PropertySchema>;
+  required?: string[];
+  additionalProperties: false;
+};
+
 export type WebMcpTool = {
   name: string;
   title: string;
   description: string;
-  inputSchema: object;
+  inputSchema: InputSchema;
   annotations: {
     readOnlyHint: boolean;
     untrustedContentHint?: boolean;
@@ -62,14 +78,71 @@ const SEARCH_QUERY_MAX_LENGTH = 200;
 const FEEDBACK_MAX_LENGTH = 1000;
 const SECTION_MAX_LENGTH = 200;
 
-function requireText(value: unknown, field: string, maxLength = Infinity) {
+function requireText(value: unknown, field: string) {
   if (typeof value !== 'string' || !value.trim()) {
     throw new TypeError(`${field} must be a non-empty string.`);
   }
-  if (value.trim().length > maxLength) {
-    throw new TypeError(`${field} must be at most ${maxLength} characters.`);
-  }
   return value.trim();
+}
+
+function checkValue(name: string, value: unknown, property: PropertySchema) {
+  if (property.type === 'string') {
+    if (typeof value !== 'string') {
+      throw new TypeError(`${name} must be a string.`);
+    }
+    if (property.enum && !property.enum.includes(value)) {
+      throw new TypeError(`${name} must be one of: ${property.enum.join(', ')}.`);
+    }
+    if (property.maxLength !== undefined && value.length > property.maxLength) {
+      throw new TypeError(`${name} must be at most ${property.maxLength} characters.`);
+    }
+    return;
+  }
+  if (typeof value !== 'number' || !Number.isInteger(value)) {
+    throw new TypeError(`${name} must be an integer.`);
+  }
+  if (property.minimum !== undefined && value < property.minimum) {
+    throw new TypeError(`${name} must be at least ${property.minimum}.`);
+  }
+  if (property.maximum !== undefined && value > property.maximum) {
+    throw new TypeError(`${name} must be at most ${property.maximum}.`);
+  }
+}
+
+function checkInput(input: ToolInput, schema: InputSchema) {
+  const names = Object.keys(schema.properties);
+  for (const name of Object.keys(input)) {
+    if (!names.includes(name)) {
+      throw new TypeError(`Unknown argument "${name}". Arguments: ${names.join(', ') || 'none'}.`);
+    }
+  }
+  for (const name of schema.required ?? []) {
+    if (input[name] === undefined) {
+      throw new TypeError(`Missing argument "${name}".`);
+    }
+  }
+  for (const [name, value] of Object.entries(input)) {
+    if (value !== undefined) {
+      checkValue(name, value, schema.properties[name]);
+    }
+  }
+}
+
+function withErrorsAsResults(tool: WebMcpTool): WebMcpTool {
+  return {
+    ...tool,
+    async execute(input, options) {
+      try {
+        checkInput(input, tool.inputSchema);
+        return await tool.execute(input, options);
+      } catch (error) {
+        if (options.signal.aborted) {
+          throw error;
+        }
+        return `Error: ${error instanceof Error ? error.message : String(error)}`;
+      }
+    },
+  };
 }
 
 async function fetchTextAsync(url: string, signal: AbortSignal) {
@@ -141,8 +214,7 @@ async function getPageMarkdownAsync(
   { path = window.location.pathname, section }: ToolInput,
   { signal }: { signal: AbortSignal }
 ) {
-  const heading =
-    section === undefined ? undefined : requireText(section, 'section', SECTION_MAX_LENGTH);
+  const heading = section === undefined ? undefined : requireText(section, 'section');
   const markdown = await readPageMarkdownAsync(path, signal);
   return heading === undefined
     ? markdown
@@ -205,10 +277,6 @@ async function listSectionsAsync({ area, section }: ToolInput) {
       NAVIGATION_AREAS.map(name => ({ area: name, sections: sectionsOf(name).map(sectionName) }))
     );
   }
-  if (!NAVIGATION_AREAS.includes(area as NavigationArea)) {
-    throw new TypeError(`area must be one of: ${NAVIGATION_AREAS.join(', ')}.`);
-  }
-
   const sections = sectionsOf(area as NavigationArea);
   const matches = sections.filter(node => section === undefined || sectionName(node) === section);
   if (!matches.length) {
@@ -227,11 +295,10 @@ async function searchDocsAsync(
   { query, limit = 5 }: ToolInput,
   { signal }: { signal: AbortSignal }
 ) {
-  const hitsPerPage = typeof limit === 'number' ? Math.min(Math.max(Math.trunc(limit), 1), 20) : 5;
   const version = getVersionFromPath(window.location.pathname) ?? 'latest';
   const params = new URLSearchParams({
-    query: requireText(query, 'query', SEARCH_QUERY_MAX_LENGTH),
-    hitsPerPage: `${hitsPerPage}`,
+    query: requireText(query, 'query'),
+    hitsPerPage: String(limit),
   });
 
   const response = await fetch(SEARCH.url, {
@@ -298,7 +365,7 @@ async function sendFeedbackAsync(
     signal,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      feedback: requireText(feedback, 'feedback', FEEDBACK_MAX_LENGTH),
+      feedback: requireText(feedback, 'feedback'),
       url: toSiteUrl(path).pathname,
     }),
   });
@@ -309,13 +376,13 @@ async function sendFeedbackAsync(
   return 'Feedback sent to the Expo documentation team.';
 }
 
-const pathProperty = {
+const pathProperty: PropertySchema = {
   type: 'string',
   maxLength: 500,
   description: 'A docs.expo.dev URL or a path that starts with "/". Defaults to the current page.',
 };
 
-export const webMcpTools: WebMcpTool[] = [
+const toolDefinitions: WebMcpTool[] = [
   {
     name: 'search_docs',
     title: 'Search Expo docs',
@@ -490,3 +557,5 @@ export const webMcpTools: WebMcpTool[] = [
     execute: sendFeedbackAsync,
   },
 ];
+
+export const webMcpTools = toolDefinitions.map(withErrorsAsResults);

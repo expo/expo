@@ -108,8 +108,8 @@ describe(WebMcpTools, () => {
       '/.well-known/agent-skills/index.json',
       '/.well-known/agent-skills/expo/SKILL.md',
     ]);
-    await expect(tools.read_skill.execute({ skill_name: 'nope' }, { signal })).rejects.toThrow(
-      'Available skills: expo.'
+    await expect(tools.read_skill.execute({ skill_name: 'nope' }, { signal })).resolves.toBe(
+      'Error: No skill named "nope". Available skills: expo.'
     );
   });
 
@@ -124,14 +124,14 @@ describe(WebMcpTools, () => {
     });
     const { tools } = renderTools();
 
-    const results = await tools.search_docs.execute({ query: 'camera', limit: 50 }, { signal });
+    const results = await tools.search_docs.execute({ query: 'camera', limit: 3 }, { signal });
 
     expect(JSON.parse(results)).toEqual([
       { title: 'Expo Camera > Permissions', path: '/versions/latest/sdk/camera/#permissions' },
     ]);
     const [, init] = fetchMock.mock.calls[0];
     expect(JSON.parse(init?.body ?? '')).toEqual({
-      params: 'query=camera&hitsPerPage=20',
+      params: 'query=camera&hitsPerPage=3',
       facetFilters: [['version:none', 'version:latest']],
     });
   });
@@ -288,7 +288,9 @@ describe(WebMcpTools, () => {
     );
     await expect(
       tools.get_page_markdown.execute({ path, section: 'Permissions' }, { signal })
-    ).rejects.toThrow('No heading on /versions/latest/sdk/camera/ matches "Permissions".');
+    ).resolves.toBe(
+      'Error: No heading on /versions/latest/sdk/camera/ matches "Permissions". Pass a heading that get_page_info returns for this page.'
+    );
   });
 
   it('asks the Kapa assistant and returns its answer with sources', async () => {
@@ -299,8 +301,8 @@ describe(WebMcpTools, () => {
 
     expect(askKapaAsync).toHaveBeenCalledWith('How do I add a camera?', signal);
     expect(JSON.parse(answer).sources[0].title).toBe('Camera');
-    await expect(tools.ask_docs.execute({ query: ' ' }, { signal })).rejects.toThrow(
-      'query must be a non-empty string.'
+    await expect(tools.ask_docs.execute({ query: ' ' }, { signal })).resolves.toBe(
+      'Error: query must be a non-empty string.'
     );
     expect(askKapaAsync).toHaveBeenCalledTimes(1);
   });
@@ -330,12 +332,12 @@ describe(WebMcpTools, () => {
       title: 'Introduction',
       path: '/build/introduction',
     });
-    await expect(tools.list_sections.execute({ area: 'nope' }, { signal })).rejects.toThrow(
-      'area must be one of'
+    await expect(tools.list_sections.execute({ area: 'nope' }, { signal })).resolves.toBe(
+      'Error: area must be one of: home, general, eas, learn, reference, preview, archive.'
     );
     await expect(
       tools.list_sections.execute({ area: 'eas', section: 'Nope' }, { signal })
-    ).rejects.toThrow('Sections: ');
+    ).resolves.toMatch(/^Error: No section named "Nope" in eas\. Sections: /);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -352,27 +354,50 @@ describe(WebMcpTools, () => {
     ];
 
     for (const path of offSitePaths) {
-      await expect(tools.get_page_markdown.execute({ path }, { signal })).rejects.toThrow(
-        TypeError
+      await expect(tools.get_page_markdown.execute({ path }, { signal })).resolves.toMatch(
+        /^Error: path must /
       );
-      await expect(tools.navigate_page.execute({ path }, { signal })).rejects.toThrow(TypeError);
+      await expect(tools.navigate_page.execute({ path }, { signal })).resolves.toMatch(
+        /^Error: path must /
+      );
       await expect(
         tools.send_feedback.execute({ feedback: 'x', path }, { signal })
-      ).rejects.toThrow(TypeError);
+      ).resolves.toMatch(/^Error: path must /);
     }
     expect(fetchMock).not.toHaveBeenCalled();
     expect(routerPush).not.toHaveBeenCalled();
   });
 
-  it('rejects a search query or feedback over its length limit before any request', async () => {
+  it('returns an error for input that does not match the schema, before any request', async () => {
     const { tools } = renderTools();
+    const cases: [WebMcpTool, Record<string, unknown>, string][] = [
+      [
+        tools.search_docs,
+        { query: 'camera', foo: 1 },
+        'Unknown argument "foo". Arguments: query, limit.',
+      ],
+      [tools.get_site_overview, { foo: 1 }, 'Unknown argument "foo". Arguments: none.'],
+      [tools.search_docs, {}, 'Missing argument "query".'],
+      [tools.search_docs, { query: 7 }, 'query must be a string.'],
+      [tools.search_docs, { query: 'camera', limit: 2.5 }, 'limit must be an integer.'],
+      [tools.search_docs, { query: 'camera', limit: 50 }, 'limit must be at most 20.'],
+      [tools.search_docs, { query: 'camera', limit: 0 }, 'limit must be at least 1.'],
+      [tools.search_docs, { query: 'a'.repeat(201) }, 'query must be at most 200 characters.'],
+      [
+        tools.read_skill,
+        { skill_name: 'a'.repeat(101) },
+        'skill_name must be at most 100 characters.',
+      ],
+      [
+        tools.send_feedback,
+        { feedback: 'a'.repeat(1001) },
+        'feedback must be at most 1000 characters.',
+      ],
+    ];
 
-    await expect(tools.search_docs.execute({ query: 'a'.repeat(201) }, { signal })).rejects.toThrow(
-      'query must be at most 200 characters.'
-    );
-    await expect(
-      tools.send_feedback.execute({ feedback: 'a'.repeat(1001) }, { signal })
-    ).rejects.toThrow('feedback must be at most 1000 characters.');
+    for (const [tool, input, message] of cases) {
+      await expect(tool.execute(input, { signal })).resolves.toBe(`Error: ${message}`);
+    }
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });
