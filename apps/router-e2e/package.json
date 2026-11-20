@@ -62,7 +62,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-native": "0.89.0-rc.2",
-    "react-native-gesture-handler": "~3.3.0",
+    "react-native-gesture-handler": "~3.5.0",
     "react-native-pager-view": "^8.0.2",
     "react-native-safe-area-context": "~5.11.1",
     "react-native-screens": "4.30.1",
