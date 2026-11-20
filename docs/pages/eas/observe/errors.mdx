@@ -173,7 +173,7 @@ On iOS, the device resolves frames in system libraries to symbol names. The dash
 
 When Xcode builds your app for release, it writes the debug information of each binary to a separate **.dSYM** bundle. There is one bundle for the app and one for each framework that Xcode compiles. A prebuilt framework, such as Hermes, has no bundle in the archive. Download its dSYM from the framework's publisher and add it to the **.zip** file you upload. A binary and its dSYM share a UUID. Each native crash report lists the UUIDs of the binaries in its stack trace, and Expo Observe uses them to find the matching dSYM files.
 
-Every build produces new UUIDs, so upload the dSYM files of each build you release. Symbolication happens when you view a crash, so an upload also applies to crashes that were reported before it.
+Every build produces new UUIDs, so upload the dSYM files of each build you release. Symbolication happens when you view a crash, so an upload also applies to earlier crashes.
 
 #### Find the debug symbols
 
