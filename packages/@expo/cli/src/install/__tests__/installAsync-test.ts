@@ -138,10 +138,12 @@ describe(installAsync, () => {
     } as unknown as PackageManager.NodePackageManager);
 
     try {
-      await installAsync(['expo-camera'], { projectRoot });
+      await installAsync(['expo-camera'], { projectRoot, title: 'expo-camera' });
 
       expect(writesWhileInstalling).toEqual([
-        ['\x1b]7501;state=working:app=expo:msg=SW5zdGFsbGluZyBwYWNrYWdlcw==:id=2\x1b\\'],
+        [
+          '\x1b]7501;state=working:app=expo:title=ZXhwby1jYW1lcmE=:msg=SW5zdGFsbGluZyBwYWNrYWdlcw==:id=2\x1b\\',
+        ],
       ]);
     } finally {
       write.mockRestore();

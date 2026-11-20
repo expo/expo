@@ -62,7 +62,10 @@ describe(ensureDependenciesAsync, () => {
 
     expect(confirmAsync).toHaveBeenCalledTimes(1);
     expect(installAsync).toHaveBeenCalledTimes(1);
-    expect(installAsync).toHaveBeenCalledWith(['bacon@~1.0.0'], { projectRoot: 'projectRoot' });
+    expect(installAsync).toHaveBeenCalledWith(['bacon@~1.0.0'], {
+      projectRoot: 'projectRoot',
+      title: 'bacon@~1.0.0',
+    });
   });
   it(`installs without prompting`, async () => {
     jest
@@ -93,7 +96,10 @@ describe(ensureDependenciesAsync, () => {
 
     expect(confirmAsync).toHaveBeenCalledTimes(0);
     expect(installAsync).toHaveBeenCalledTimes(1);
-    expect(installAsync).toHaveBeenCalledWith(['bacon@~1.0.0'], { projectRoot: 'projectRoot' });
+    expect(installAsync).toHaveBeenCalledWith(['bacon@~1.0.0'], {
+      projectRoot: 'projectRoot',
+      title: 'bacon@~1.0.0',
+    });
   });
   it(`installs dev dependencies`, async () => {
     jest
@@ -127,6 +133,7 @@ describe(ensureDependenciesAsync, () => {
     expect(installAsync).toHaveBeenCalledWith(['eslint@~1.0.0'], {
       projectRoot: 'projectRoot',
       dev: true,
+      title: 'eslint@~1.0.0',
     });
   });
   it(`asserts when the prompt is rejected`, async () => {
