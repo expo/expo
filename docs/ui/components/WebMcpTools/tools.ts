@@ -1,5 +1,6 @@
 import Router from 'next/router';
 
+import { reportWebMcpToolCall, type WebMcpToolCallParams } from '~/providers/Analytics';
 import { getVersionFromPath } from '~/providers/page-api-version';
 import navigation from '~/public/static/constants/navigation.json';
 import { NavigationRoute } from '~/types/common';
@@ -128,18 +129,41 @@ function checkInput(input: ToolInput, schema: InputSchema) {
   }
 }
 
-function withErrorsAsResults(tool: WebMcpTool): WebMcpTool {
+function errorResult(error: unknown) {
+  return `Error: ${error instanceof Error ? error.message : String(error)}`;
+}
+
+function withChecksAndReporting(tool: WebMcpTool): WebMcpTool {
   return {
     ...tool,
     async execute(input, options) {
+      const startPage = window.location.pathname;
+      const report = (outcome: WebMcpToolCallParams['webmcp_outcome']) => {
+        reportWebMcpToolCall({
+          webmcp_tool_name: tool.name,
+          webmcp_outcome: outcome,
+          webmcp_tool_page: startPage,
+        });
+      };
+
       try {
         checkInput(input, tool.inputSchema);
-        return await tool.execute(input, options);
+      } catch (error) {
+        report('invalid_input');
+        return errorResult(error);
+      }
+
+      try {
+        const result = await tool.execute(input, options);
+        report('success');
+        return result;
       } catch (error) {
         if (options.signal.aborted) {
+          report('cancelled');
           throw error;
         }
-        return `Error: ${error instanceof Error ? error.message : String(error)}`;
+        report('error');
+        return errorResult(error);
       }
     },
   };
@@ -558,4 +582,4 @@ const toolDefinitions: WebMcpTool[] = [
   },
 ];
 
-export const webMcpTools = toolDefinitions.map(withErrorsAsResults);
+export const webMcpTools = toolDefinitions.map(withChecksAndReporting);

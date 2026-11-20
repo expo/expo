@@ -10,6 +10,8 @@ const askKapaAsync = jest.fn(async (_question: string, _signal: AbortSignal) => 
 }));
 jest.unstable_mockModule('next/router', () => ({ default: { push: routerPush } }));
 jest.unstable_mockModule('~/ui/components/WebMcpTools/askDocs', () => ({ askKapaAsync }));
+const reportWebMcpToolCall = jest.fn();
+jest.unstable_mockModule('~/providers/Analytics', () => ({ reportWebMcpToolCall }));
 
 const { WebMcpTools } = await import('./WebMcpTools');
 
@@ -47,10 +49,12 @@ beforeEach(() => {
   responses.clear();
   global.fetch = fetchMock as unknown as typeof fetch;
   routerPush.mockClear();
+  reportWebMcpToolCall.mockClear();
 });
 
 afterEach(() => {
   setModelContext(undefined);
+  window.history.pushState({}, '', '/');
 });
 
 describe(WebMcpTools, () => {
@@ -399,5 +403,41 @@ describe(WebMcpTools, () => {
       await expect(tool.execute(input, { signal })).resolves.toBe(`Error: ${message}`);
     }
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('reports each call with its tool, its outcome, and the page it started on', async () => {
+    window.history.pushState({}, '', '/get-started/create-a-project/');
+    routerPush.mockImplementationOnce(async (url: string) => {
+      window.history.pushState({}, '', url);
+      return true;
+    });
+    responses.set('/.well-known/agent-skills/index.json', { skills: [] });
+    askKapaAsync.mockRejectedValueOnce(new DOMException('The call was cancelled.', 'AbortError'));
+    const cancelled = new AbortController();
+    cancelled.abort();
+    const { tools } = renderTools();
+
+    await tools.navigate_page.execute({ path: '/versions/latest/sdk/camera/' }, { signal });
+    await tools.search_docs.execute({ query: 'camera', foo: 1 }, { signal });
+    await tools.read_skill.execute({ skill_name: 'nope' }, { signal });
+    await expect(
+      tools.ask_docs.execute({ query: 'camera' }, { signal: cancelled.signal })
+    ).rejects.toThrow('The call was cancelled.');
+
+    const cameraPage = '/versions/latest/sdk/camera/';
+    expect(reportWebMcpToolCall.mock.calls.map(([params]) => params)).toEqual([
+      {
+        webmcp_tool_name: 'navigate_page',
+        webmcp_outcome: 'success',
+        webmcp_tool_page: '/get-started/create-a-project/',
+      },
+      {
+        webmcp_tool_name: 'search_docs',
+        webmcp_outcome: 'invalid_input',
+        webmcp_tool_page: cameraPage,
+      },
+      { webmcp_tool_name: 'read_skill', webmcp_outcome: 'error', webmcp_tool_page: cameraPage },
+      { webmcp_tool_name: 'ask_docs', webmcp_outcome: 'cancelled', webmcp_tool_page: cameraPage },
+    ]);
   });
 });
