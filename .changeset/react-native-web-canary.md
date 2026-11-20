@@ -11,7 +11,6 @@
 'expo-checkbox': patch
 'expo-gl': patch
 'expo-router': patch
-'expo-symbols': patch
 'expo-system-ui': patch
 ---
 

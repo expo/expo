@@ -54,13 +54,13 @@ export type SymbolViewProps = {
    * @platform ios
    */
   animationSpec?: AnimationSpec;
-} & Omit<ViewProps, 'type'>;
+} & ViewProps;
 
 /**
  * It narrows down some props to types expected by the native/web side.
  * @hidden
  */
-export interface NativeSymbolViewProps extends Omit<ViewProps, 'type'> {
+export interface NativeSymbolViewProps extends ViewProps {
   name?: string;
   type: SymbolType;
   scale?: SymbolScale;
