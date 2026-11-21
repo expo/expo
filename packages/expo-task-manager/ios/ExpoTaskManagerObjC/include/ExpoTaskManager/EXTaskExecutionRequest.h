@@ -2,7 +2,6 @@
 
 #import <Foundation/Foundation.h>
 #import <ExpoModulesCore/EXTaskInterface.h>
-#import <UMAppLoader/UMAppLoaderInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
