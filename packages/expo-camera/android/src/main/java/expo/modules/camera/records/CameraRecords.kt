@@ -12,11 +12,13 @@ import expo.modules.kotlin.types.OptimizedRecord
 
 enum class CameraType(val value: String) : Enumerable {
   FRONT("front"),
-  BACK("back");
+  BACK("back"),
+  EXTERNAL("external");
 
   fun mapToCharacteristic() = when (this) {
     FRONT -> CameraMetadata.LENS_FACING_FRONT
     BACK -> CameraMetadata.LENS_FACING_BACK
+    EXTERNAL -> CameraMetadata.LENS_FACING_EXTERNAL
   }
 }
 

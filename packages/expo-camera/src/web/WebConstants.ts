@@ -21,7 +21,7 @@ export const MinimumConstraints: MediaStreamConstraints = {
   video: true,
 };
 
-export const CameraTypeToFacingMode: Record<CameraType, string> = {
+export const CameraTypeToFacingMode: Partial<Record<CameraType, string>> = {
   front: 'user',
   back: 'environment',
 };

@@ -6,7 +6,14 @@ import type { ViewProps } from 'react-native';
 import type { AndroidBarcode } from './AndroidBarcode.types';
 import type { PictureRef } from './PictureRef';
 
-export type CameraType = 'front' | 'back';
+/**
+ * Camera facing.
+ * - `front` - The front-facing camera.
+ * - `back` - The back-facing camera.
+ * - `external` - An external camera, such as a USB (UVC) camera, on Android devices that expose it.
+ *   On iOS, this uses the back-facing camera.
+ */
+export type CameraType = 'front' | 'back' | 'external';
 
 /**
  * Flash mode for the camera.
@@ -398,7 +405,8 @@ export type ScanningResult = Omit<BarcodeScanningResult, 'bounds' | 'cornerPoint
 export type CameraViewProps = ViewProps & {
   /**
    * Camera facing. Use one of `CameraType`. When `front`, use the front-facing camera.
-   * When `back`, use the back-facing camera.
+   * When `back`, use the back-facing camera. When `external`, use an external camera,
+   * such as a USB (UVC) camera. Android only; on iOS, `external` uses the back-facing camera.
    * @default 'back'
    */
   facing?: CameraType;

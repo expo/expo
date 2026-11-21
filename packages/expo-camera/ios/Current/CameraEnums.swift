@@ -4,12 +4,13 @@ import ExpoModulesCore
 enum CameraType: String, Enumerable {
   case front
   case back
+  case external
 
   func toPosition() -> AVCaptureDevice.Position {
     switch self {
     case .front:
       return .front
-    case .back:
+    case .back, .external:
       return .back
     }
   }
