@@ -3,6 +3,7 @@ package expo.modules.taskmanager.repository;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,31 +41,48 @@ public class BareTasksAndEventsRepository implements TasksAndEventsRepository {
 
   @Override
   public void putEvents(String appScopeKey, List<Bundle> events) {
-    sEvents.put(appScopeKey, events);
+    synchronized (BareTasksAndEventsRepository.class) {
+      sEvents.put(appScopeKey, events);
+    }
   }
 
+  // sEvents is static and shared by the FCM thread and the starting app. The list is created on
+  // demand: a check-then-add left a drain's removeEvents between the two.
   @Override
   public void putEventForAppScopeKey(String appScopeKey, Bundle body) {
-    sEvents.get(appScopeKey).add(body);
+    synchronized (BareTasksAndEventsRepository.class) {
+      List<Bundle> events = sEvents.get(appScopeKey);
+      if (events == null) {
+        events = new ArrayList<>();
+        sEvents.put(appScopeKey, events);
+      }
+      events.add(body);
+    }
   }
 
   @Override
   public boolean hasEvents(String appScopeKey) {
-    return sEvents.containsKey(appScopeKey);
+    synchronized (BareTasksAndEventsRepository.class) {
+      return sEvents.containsKey(appScopeKey);
+    }
   }
 
   @Override
   public void removeEvents(String appScopeKey) {
-    sEvents.remove(appScopeKey);
+    synchronized (BareTasksAndEventsRepository.class) {
+      sEvents.remove(appScopeKey);
+    }
   }
 
   @Override
   public List<Bundle> getEvents(String appScopeKey) {
-    List<Bundle> allEvents = new LinkedList<>();
-    for(List<Bundle> value: sEvents.values()) {
-      allEvents.addAll(value);
+    synchronized (BareTasksAndEventsRepository.class) {
+      List<Bundle> allEvents = new LinkedList<>();
+      for(List<Bundle> value: sEvents.values()) {
+        allEvents.addAll(value);
+      }
+      return allEvents;
     }
-    return allEvents;
   }
 
   @Override

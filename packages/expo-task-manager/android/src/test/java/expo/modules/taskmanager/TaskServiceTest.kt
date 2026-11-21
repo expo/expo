@@ -69,6 +69,48 @@ class TaskServiceTest {
     assertFalse(taskCallbacksMap().containsKey(eventId))
   }
 
+  @Test
+  fun `executeTask drops the event when no task manager and no headless app loader exist`() {
+    val context = RuntimeEnvironment.getApplication()
+    // No app loader class in the metadata, so AppLoaderProvider cannot create one and returns null.
+    shadowOf(context.packageManager).getInternalMutablePackageInfo(context.packageName)
+      .applicationInfo!!.metaData = Bundle()
+
+    val taskService = TaskService(context)
+    val appScopeKey = "noLoaderAppScopeKey"
+
+    val task = object : TaskInterface {
+      override fun getName() = "testTask"
+      override fun getAppScopeKey() = appScopeKey
+      override fun getAppUrl() = "appUrl"
+      override fun getConsumer(): TaskConsumerInterface? = null
+      override fun getOptions(): Map<String, Any>? = null
+      override fun getOptionsBundle(): Bundle? = null
+      override fun execute(data: Bundle?, error: Error?) = Unit
+      override fun execute(data: Bundle?, error: Error?, callback: TaskExecutionCallback?) = Unit
+      override fun setOptions(options: Map<String, Any>?) = Unit
+    }
+
+    // Must not throw a NullPointerException.
+    taskService.executeTask(task, Bundle(), null, null)
+
+    // The dropped event must not be delivered to a task manager that registers later.
+    var delivered = 0
+    val taskManager = object : TaskManagerInterface {
+      override fun registerTask(taskName: String, consumerClass: Class<*>, options: Map<String, Any>) = Unit
+      override fun unregisterTask(taskName: String, consumerClass: Class<*>) = Unit
+      override fun executeTaskWithBody(body: Bundle) {
+        delivered++
+      }
+      override fun taskHasConsumerOfClass(taskName: String, consumerClass: Class<*>) = false
+      override fun flushQueuedEvents() = Unit
+      override fun getAppScopeKey() = appScopeKey
+    }
+    taskService.setTaskManager(taskManager, appScopeKey, "appUrl")
+
+    assertEquals(0, delivered)
+  }
+
   private fun taskCallbacksMap(): Map<*, *> {
     val field = TaskService::class.java.getDeclaredField("sTaskCallbacks")
     field.isAccessible = true
