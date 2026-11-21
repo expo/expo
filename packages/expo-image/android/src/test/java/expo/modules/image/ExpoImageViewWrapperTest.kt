@@ -9,9 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import expo.modules.image.records.ImageTransition
+import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.AppContext
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.spyk
+import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
 import org.junit.Test
@@ -52,6 +55,21 @@ class ExpoImageViewWrapperTest {
     val imageView = wrapper.imageViews().single()
     assertSame(drawable, imageView.drawable)
     assertEquals(1f, imageView.alpha)
+  }
+
+  @Test
+  fun buildsTheRequestOnlyAfterTheFirstLayout() {
+    val wrapper = createWrapper()
+    val source = spyk(SourceMap(uri = "https://example.com/image.png"))
+    every { source.createGlideModelProvider(any()) } returns null
+    wrapper.sources = listOf(source)
+
+    // React Native sets the props before the first layout.
+    wrapper.rerenderIfNeeded()
+    verify(exactly = 0) { source.createGlideModelProvider(any()) }
+
+    wrapper.layout(0, 0, 100, 100)
+    verify(exactly = 1) { source.createGlideModelProvider(any()) }
   }
 
   private fun createWrapper(): ExpoImageViewWrapper {
