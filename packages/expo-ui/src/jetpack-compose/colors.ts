@@ -5,7 +5,7 @@ import {
   useColorScheme as useRNColorScheme,
 } from 'react-native';
 
-import { ExpoUIModule } from './ExpoUIModule';
+import { ExpoUIModule } from '../ExpoUIModule';
 
 /**
  * 8-digit RGBA hex color string, always in `#RRGGBBAA` form (uppercase).

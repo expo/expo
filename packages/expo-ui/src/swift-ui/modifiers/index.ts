@@ -3,8 +3,7 @@
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
 
-import { requireNativeModule } from 'expo';
-
+import { ExpoUIModule as ExpoUI } from '../../ExpoUIModule';
 import { animation } from './animation/index';
 import { background } from './background';
 import { containerBackground } from './containerBackground';
@@ -31,8 +30,6 @@ import {
 import { flattenOptions } from './symbolEffectOptions';
 import type { Color } from './types';
 import { activityBackgroundTint, widgetAccentedRenderingMode, widgetURL } from './widgets';
-
-const ExpoUI = requireNativeModule('ExpoUI');
 
 // =============================================================================
 // Built-in Modifier Functions
