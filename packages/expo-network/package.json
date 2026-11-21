@@ -26,6 +26,7 @@
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
+    "test": "jest",
     "swift:format": "../../scripts/swift-format.sh",
     "swift:lint": "../../scripts/swift-format.sh --lint",
     "prepublishOnly": "expo-module prepublishOnly",
@@ -36,11 +37,15 @@
   "dependencies": {},
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
+    "@testing-library/react-native": "^14.0.1",
     "@types/react": "~19.3.0",
     "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",
     "react": "*"
+  },
+  "jest": {
+    "preset": "@expo/internal-scripts"
   }
 }
