@@ -1,0 +1,16 @@
+# Fork review events have no repository secrets. This observer supplies IDs
+# to verify-review.yml, which revalidates them against GitHub from main.
+name: verify (review request)
+run-name: "verify #${{ github.event.pull_request.number }} (review ${{ github.event.review.id }})"
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+permissions: {}
+
+jobs:
+  request:
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'true'
