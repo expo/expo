@@ -1,6 +1,7 @@
 import { screen, act } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
+import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/StackClient';
 import { Tabs } from '../layouts/Tabs';
@@ -204,4 +205,65 @@ describe('a navigator with a dynamic name', () => {
     await link('/users/2');
     expect(rootRoutes()).toEqual(['index', 'users/1', 'sheet', 'users/2']);
   });
+});
+
+it('seeds the anchor of a nested stack that a deep link opens, with the params of its owner', async () => {
+  let listener: (url: string) => void = () => {};
+
+  const result = await renderRouter({
+    _layout: () => <Stack />,
+    index: () => <Text testID="home" />,
+    'lists/[id]/_layout': {
+      unstable_settings: { anchor: 'index' },
+      default: () => <Stack />,
+    },
+    'lists/[id]/index': () => <Text testID="list" />,
+    'lists/[id]/item/[itemId]': () => <Text testID="item" />,
+    '+native-intent': {
+      legacy_subscribe(listenerFn) {
+        listener = listenerFn;
+        return () => {};
+      },
+    },
+  });
+
+  await act(() => listener('/lists/7/item/42'));
+
+  const listStack = result
+    .getRouterState()
+    ?.routes[0]?.state?.routes.find((route) => route.name === 'lists/[id]')?.state;
+  expect(listStack?.routes.map(({ name, params }) => ({ name, params }))).toEqual([
+    { name: 'index', params: { id: '7', itemId: '42' } },
+    { name: 'item/[itemId]', params: { id: '7', itemId: '42' } },
+  ]);
+});
+
+it('goes back to the anchor of a nested stack that a deep link opens', async () => {
+  let listener: (url: string) => void = () => {};
+
+  await renderRouter({
+    _layout: () => <Stack />,
+    index: () => <Text testID="home" />,
+    'lists/[id]/_layout': {
+      unstable_settings: { anchor: 'index' },
+      default: () => <Stack />,
+    },
+    'lists/[id]/index': function List() {
+      const { id } = useLocalSearchParams();
+      return <Text testID="list">{`List id: ${id}`}</Text>;
+    },
+    'lists/[id]/item/[itemId]': () => <Text testID="item" />,
+    '+native-intent': {
+      legacy_subscribe(listenerFn) {
+        listener = listenerFn;
+        return () => {};
+      },
+    },
+  });
+
+  await act(() => listener('/lists/7/item/42'));
+  await act(() => router.back());
+
+  expect(screen).toHavePathname('/lists/7');
+  expect(screen.getByTestId('list')).toHaveTextContent('List id: 7');
 });
