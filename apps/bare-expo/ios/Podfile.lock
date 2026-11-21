@@ -417,6 +417,7 @@ PODS:
   - ExpoImage (58.0.17):
     - ExpoModulesCore
     - libavif/libdav1d
+    - libwebp (>= 1.3.2)
     - SDWebImage (~> 5.21.0)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
@@ -425,6 +426,7 @@ PODS:
     - ExpoModulesCore
     - ExpoModulesTestCore
     - libavif/libdav1d
+    - libwebp (>= 1.3.2)
     - SDWebImage (~> 5.21.0)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
@@ -4444,7 +4446,7 @@ SPEC CHECKSUMS:
   ExpoGlassEffect: 6594e055df1e0b88d34cc189ba0b21589adec6bf
   ExpoHaptics: c95d1e2162895e710b68dd912eec619900ebdf33
   ExpoHinge: 10aa4c293ba8b9a89c185b8a94db534df5cb4301
-  ExpoImage: 04f6e13379ea155eec04e99499baefba1c313f77
+  ExpoImage: e132b3b9139392338cba984ffc66fb7bdc6795c1
   ExpoImageManipulator: ccb683d1cdb101aaf9cd1f7dd0f12b86edfb98aa
   ExpoImagePicker: d1d480a62d4a3683e946cfd953a4b4b037ba2a33
   ExpoInsights: 71478e2b6ed6061a92ccd05a3f815a5137ef684e
