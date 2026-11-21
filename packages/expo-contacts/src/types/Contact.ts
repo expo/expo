@@ -1036,6 +1036,8 @@ export declare class Contact {
 
   /**
    * A static method that opens the native contact picker UI allowing the user to select a contact.
+   * > Reading from or writing to the returned [`Contact`](#contact) requires the contacts permission.
+   * > To read the selected contact without the permission, use [`Contact.pickDetails`](#pickdetailsfields).
    * @returns a promise resolving to the selected [`Contact`](#contact) instance, or `null` if the user cancelled.
    * @example
    * ```ts
@@ -1046,6 +1048,34 @@ export declare class Contact {
    * ```
    */
   static presentPicker(): Promise<Contact | null>;
+
+  /**
+   * A static method that opens the native contact picker UI and returns the requested fields of the selected contact.
+   * It does not require the contacts permission, because the system shares only the contact that the user selects.
+   *
+   * The fields that the picker can share depend on the platform:
+   * - **iOS**: all fields. The picker shares `note` without the [notes entitlement](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
+   * - **Android 17 and higher**: all fields except `note`, `image`, and `thumbnail`. The picker does not share them,
+   *   so they are always `null`.
+   * - **Android 16 and lower**: only one of `phones`, `emails`, or `addresses`, optionally with `fullName` and `isFavourite`.
+   *   Any other request needs the `READ_CONTACTS` permission and rejects with `ERR_CONTACTS_PICKER_UNAVAILABLE` without it.
+   *
+   * > **Note:** On Android, a request with only one of `phones`, `emails`, or `addresses` makes the user select a single value,
+   * > and the result contains only that value. On iOS, and on Android 16 and lower with the `READ_CONTACTS` permission granted,
+   * > the result contains all values. To get all values on Android 17 and higher, request one more field.
+   * @param fields - The list of fields to retrieve.
+   * @returns a promise resolving to the requested fields of the selected contact, or `null` if the user cancelled.
+   * @example
+   * ```ts
+   * const details = await Contact.pickDetails([ContactField.FULL_NAME, ContactField.PHONES]);
+   * if (details) {
+   *   console.log(details.fullName, details.phones);
+   * }
+   * ```
+   */
+  static pickDetails<T extends readonly ContactField[]>(
+    fields: T
+  ): Promise<PartialContactDetails<T> | null>;
 
   /**
    * A static method that presents a system dialog to request access to specific contacts (iOS 18+).

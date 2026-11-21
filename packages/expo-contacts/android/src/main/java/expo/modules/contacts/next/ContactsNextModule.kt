@@ -1,5 +1,7 @@
 package expo.modules.contacts.next
 
+import android.content.pm.ApplicationInfo
+import android.os.Build
 import expo.modules.contacts.next.intents.ContactIntentDelegate
 import expo.modules.contacts.next.domain.ContactRepository
 import expo.modules.contacts.next.mappers.ContactRecordDomainMapper
@@ -56,6 +58,26 @@ class ContactsNextModule : Module() {
 
   private val permissionsDelegate by lazy {
     ContactsPermissionsDelegate(appContext)
+  }
+
+  private val contactDetailsPicker: ContactDetailsPicker by lazy {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+      ContactDetailsModernPicker(
+        intentDelegate = contactIntentDelegate,
+        repository = contactRepository,
+        mapper = contactMapper,
+        permissionsDelegate = permissionsDelegate,
+        isDebuggable = { context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0 },
+        warn = { message -> appContext.jsLogger?.warn(message) }
+      )
+    } else {
+      ContactDetailsLegacyPicker(
+        intentDelegate = contactIntentDelegate,
+        repository = contactRepository,
+        mapper = contactMapper,
+        permissionsDelegate = permissionsDelegate
+      )
+    }
   }
 
   private val observerDelegate by lazy {
@@ -355,6 +377,12 @@ class ContactsNextModule : Module() {
 
       StaticAsyncFunction("presentPicker") Coroutine { ->
         Contact.presentPicker(contactIntentDelegate, contactFactory)
+      }
+
+      StaticAsyncFunction("pickDetails") Coroutine { fields: Set<ContactField> ->
+        Contact.pickDetails(contactDetailsPicker, fields)?.let {
+          SkipFormatter(fields).format(it)
+        }
       }
 
       StaticAsyncFunction("getAll") Coroutine { contactQueryOptions: ContactQueryOptions? ->

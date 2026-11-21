@@ -3,6 +3,7 @@ package expo.modules.contacts.next.domain
 import android.content.ContentProviderOperation
 import android.content.ContentResolver
 import android.database.Cursor
+import android.net.Uri
 import android.provider.ContactsContract
 import expo.modules.contacts.next.ContactIdNotFoundException
 import expo.modules.contacts.next.domain.model.Appendable
@@ -189,6 +190,25 @@ class ContactRepository(val contentResolver: ContentResolver) {
     } else {
       null
     }
+  }
+
+  suspend fun getByUri(
+    extractableFields: Set<ExtractableField<*>>,
+    uri: Uri
+  ): ExistingContact? = withContext(Dispatchers.IO) {
+    val queryAggregator = QueryAggregator(extractableFields)
+    val queryBuilder = QueryBuilder(extractableFields)
+
+    contentResolver.safeQuery(
+      uri = uri,
+      projection = queryBuilder.buildJoinedProjection()
+    ).use { cursor ->
+      ensureActive()
+      cursor
+        .asSequence()
+        .forEach { _ -> queryAggregator.aggregateJoinedRow(cursor) }
+    }
+    return@withContext queryAggregator.buildContacts().firstOrNull()
   }
 
   suspend fun getAllPaginated(

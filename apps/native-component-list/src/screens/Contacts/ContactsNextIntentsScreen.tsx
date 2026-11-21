@@ -1,12 +1,30 @@
-import { Contact, ContactAccessButton, requestPermissionsAsync } from 'expo-contacts';
+import { Contact, ContactAccessButton, ContactField, requestPermissionsAsync } from 'expo-contacts';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 
 import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 
+type DetailsPreset = {
+  title: string;
+  fields: ContactField[];
+};
+
+const DETAILS_PRESETS: DetailsPreset[] = [
+  { title: 'phones', fields: [ContactField.PHONES] },
+  {
+    title: 'fullName, phones, emails',
+    fields: [ContactField.FULL_NAME, ContactField.PHONES, ContactField.EMAILS],
+  },
+  {
+    title: 'note, image, thumbnail',
+    fields: [ContactField.NOTE, ContactField.IMAGE, ContactField.THUMBNAIL],
+  },
+];
+
 export default function ContactPickersScreen() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [pickedDetails, setPickedDetails] = useState<string | null>(null);
 
   useEffect(() => {
     requestPermissionsAsync();
@@ -20,6 +38,15 @@ export default function ContactPickersScreen() {
       }
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handlePickDetails = async (fields: ContactField[]) => {
+    try {
+      const details = await Contact.pickDetails(fields);
+      setPickedDetails(JSON.stringify(details, null, 2));
+    } catch (error) {
+      setPickedDetails(String(error));
     }
   };
 
@@ -60,6 +87,14 @@ export default function ContactPickersScreen() {
       <View style={styles.buttons}>
         <Button title="Contact.presentCreateForm()" onPress={handlePresentCreateForm} />
         <Button title="Contact.presentPicker()" onPress={handlePresentPicker} />
+        {DETAILS_PRESETS.map((preset) => (
+          <Button
+            key={preset.title}
+            title={`Contact.pickDetails(${preset.title})`}
+            onPress={() => handlePickDetails(preset.fields)}
+          />
+        ))}
+        {pickedDetails && <BodyText>{pickedDetails}</BodyText>}
         <Button
           title="selectedContact.editWithForm()"
           onPress={handlePresentEditForm}

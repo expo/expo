@@ -229,6 +229,13 @@ class Contact(
         }
     }
 
+    suspend fun pickDetails(
+      contactDetailsPicker: ContactDetailsPicker,
+      fields: Set<ContactField>
+    ): GetContactDetailsRecord? {
+      return contactDetailsPicker.pick(fields)
+    }
+
     suspend fun hasAny(contactRepository: ContactRepository) =
       contactRepository.getCount() > 0
 

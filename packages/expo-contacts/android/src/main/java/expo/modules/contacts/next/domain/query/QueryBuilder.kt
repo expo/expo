@@ -35,6 +35,13 @@ class QueryBuilder(
       .toTypedArray()
   }
 
+  fun buildJoinedProjection(): Array<String> =
+    contactsExtractableFields
+      .flatMap { it.projection.toList() }
+      .toSet()
+      .plus(buildDataProjection())
+      .toTypedArray()
+
   fun buildSelection(
     contactIds: Collection<ContactId>? = null
   ): String? {

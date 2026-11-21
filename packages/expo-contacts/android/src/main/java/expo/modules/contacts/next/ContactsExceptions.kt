@@ -26,3 +26,13 @@ class PermissionException(permission: String, cause: Throwable? = null) :
 
 class ContactsObserverException(message: String, cause: Throwable? = null) :
   CodedException(message, cause)
+
+class ContactsPickerUnavailableException(cause: Throwable? = null) :
+  CodedException(MESSAGE, cause) {
+  companion object {
+    const val MESSAGE =
+      "Could not pick a contact with the requested fields. " +
+        "Android 16 and lower can share the requested fields only with the READ_CONTACTS permission. " +
+        "Request a single field (phones, emails or addresses), or request the permission first"
+  }
+}
