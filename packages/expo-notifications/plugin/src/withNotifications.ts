@@ -32,6 +32,20 @@ export type NotificationsPluginProps = {
    */
   defaultChannel?: string;
   /**
+   * Whether to present a notification when the app receives a data-only FCM message (a message without
+   * a `notification` key) that has `title` or `message` in `data`, while the app is not in the foreground.
+   *
+   * By default, such messages are presented and a deprecation warning is logged.
+   * Set to `false` to never present them. This will be the default in SDK 59.
+   * Set to `true` to keep presenting them. A deprecation warning is still logged, and this option
+   * is removed in SDK 60, when these messages are no longer presented.
+   *
+   * To show a notification, send a Notification Message instead. To run code first, handle the message in a
+   * task registered with `registerTaskAsync` and call `scheduleNotificationAsync`.
+   * @platform android
+   */
+  presentDataOnlyNotificationsWithTitle?: boolean;
+  /**
    * Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.
    */
   sounds?: string[];
