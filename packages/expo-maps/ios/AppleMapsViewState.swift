@@ -11,9 +11,9 @@ public class AppleMapsViewiOS18State: ObservableObject {
   @Published var lookAroundScene: MKLookAroundScene?
   @Published var lookAroundPresented: Bool = false
   var hasInitializedCamera: Bool = false
-  var lastKnownDistance: Double?
-  var lastKnownHeading: Double = 0
-  var lastKnownPitch: Double = 0
+  let cameraFitter = MapCameraFitter()
+  var mapSize: CGSize = .zero
+  var lastKnownCamera: MapCamera?
 }
 
 @available(iOS 17.0, *)
@@ -22,4 +22,7 @@ public class AppleMapsViewiOS17State: ObservableObject {
   @Published var lookAroundScene: MKLookAroundScene?
   @Published var lookAroundPresented: Bool = false
   var hasInitializedCamera: Bool = false
+  let cameraFitter = MapCameraFitter()
+  var mapSize: CGSize = .zero
+  var lastKnownCamera: MapCamera?
 }
