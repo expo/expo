@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct OnHingeChangeModifier: ViewModifier, Record {
+internal struct OnHingeChangeModifier: EventDispatchingViewModifier, Record {
   // Worklet path: synchronous invocation on the UI runtime (no JS-thread dispatch).
   @Field var workletCallback: WorkletCallback?
   // JS-thread path: async event via the global modifier event dispatcher.
@@ -11,11 +11,6 @@ internal struct OnHingeChangeModifier: ViewModifier, Record {
   @State private var delivery = HingeDeliveryState()
 
   init() {}
-
-  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
-    try self = .init(from: params, appContext: appContext)
-    self.eventDispatcher = eventDispatcher
-  }
 
   func body(content: Content) -> some View {
 #if canImport(SwiftUI, _version: 8.0.85) // iOS 27.1 SDK

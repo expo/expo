@@ -465,15 +465,10 @@ internal struct StrokeBorderModifier: ViewModifier, Record {
   }
 }
 
-internal struct OnTapGestureModifier: ViewModifier, Record {
+internal struct OnTapGestureModifier: EventDispatchingViewModifier, Record {
   var eventDispatcher: EventDispatcher?
 
   init() {}
-
-  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
-    try self = .init(from: params, appContext: appContext)
-    self.eventDispatcher = eventDispatcher
-  }
 
   func body(content: Content) -> some View {
     if #available(iOS 15.0, tvOS 16.0, *) {
@@ -484,16 +479,11 @@ internal struct OnTapGestureModifier: ViewModifier, Record {
   }
 }
 
-internal struct OnLongPressGestureModifier: ViewModifier, Record {
+internal struct OnLongPressGestureModifier: EventDispatchingViewModifier, Record {
   @Field var minimumDuration: Double = 0.5
   var eventDispatcher: EventDispatcher?
 
   init() {}
-
-  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
-    try self = .init(from: params, appContext: appContext)
-    self.eventDispatcher = eventDispatcher
-  }
 
   func body(content: Content) -> some View {
     content.onLongPressGesture(minimumDuration: minimumDuration) {
@@ -502,15 +492,10 @@ internal struct OnLongPressGestureModifier: ViewModifier, Record {
   }
 }
 
-internal struct OnAppearModifier: ViewModifier, Record {
+internal struct OnAppearModifier: EventDispatchingViewModifier, Record {
   var eventDispatcher: EventDispatcher?
 
   init() {}
-
-  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
-    try self = .init(from: params, appContext: appContext)
-    self.eventDispatcher = eventDispatcher
-  }
 
   func body(content: Content) -> some View {
     content.onAppear {
@@ -519,15 +504,10 @@ internal struct OnAppearModifier: ViewModifier, Record {
   }
 }
 
-internal struct OnDisappearModifier: ViewModifier, Record {
+internal struct OnDisappearModifier: EventDispatchingViewModifier, Record {
   var eventDispatcher: EventDispatcher?
 
   init() {}
-
-  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
-    try self = .init(from: params, appContext: appContext)
-    self.eventDispatcher = eventDispatcher
-  }
 
   func body(content: Content) -> some View {
     content.onDisappear {
@@ -931,8 +911,7 @@ internal struct StableViewModifier: ViewModifier {
   func body(content: Content) -> some View {
     if let type = params["$type"] as? String,
       let appContext,
-      let factory = ViewModifierRegistry.shared.modifierFactories[type],
-      let modifier = try? factory(params, appContext, dispatcher) {
+      let modifier = try? ViewModifierRegistry.shared.createModifier(type, params: params, appContext: appContext, eventDispatcher: dispatcher) {
       content.modifier(AnyViewModifier(modifier))
     } else {
       content
@@ -1536,6 +1515,25 @@ internal struct GridCellAnchor: ViewModifier, Record {
 // MARK: - Registry
 
 /**
+ * A modifier that sends events to JavaScript, for example `onTapGesture`.
+ * The registry sets `eventDispatcher` to the dispatcher of the view when it creates the modifier.
+ */
+public protocol EventDispatchingViewModifier: ViewModifier {
+  var eventDispatcher: EventDispatcher? { get set }
+}
+
+/**
+ * Gives the event dispatcher of the view to a modifier that sends events.
+ */
+internal func withEventDispatcher(_ modifier: any ViewModifier, _ eventDispatcher: EventDispatcher) -> any ViewModifier {
+  guard var modifier = modifier as? any EventDispatchingViewModifier else {
+    return modifier
+  }
+  modifier.eventDispatcher = eventDispatcher
+  return modifier
+}
+
+/**
  * Registry for SwiftUI view modifiers that can be applied from React Native.
  * This system uses ViewModifier structs for better performance than AnyView wrapping.
  */
@@ -1543,7 +1541,12 @@ public class ViewModifierRegistry {
   static let shared = ViewModifierRegistry()
 
   public typealias ModifierFactory = ([String: Any], AppContext, EventDispatcher) throws -> any ViewModifier
-  private(set) internal var modifierFactories: [String: ModifierFactory] = [:]
+
+  internal enum Registration {
+    case type(any (ViewModifier & Record).Type)
+    case factory(ModifierFactory)
+  }
+  private(set) internal var registrations: [String: Registration] = [:]
 
   public static var widgetKit: WidgetKitModifiers?
 
@@ -1553,15 +1556,28 @@ public class ViewModifierRegistry {
 
   /**
    * Public API to register a custom modifier with the given type name.
+   * The registry creates the modifier from the params of `createModifier` in JavaScript, which set its `@Field` properties.
+   * A modifier that conforms to `EventDispatchingViewModifier` also gets the event dispatcher of the view.
    *
    * - Important: Call this in `OnCreate` of your module definition to ensure modifiers
    *   are registered before any views are rendered.
    */
+  public static func register<Modifier: ViewModifier & Record>(_ type: String, _ modifierType: Modifier.Type) {
+    shared.register(type, modifierType)
+  }
+
+  /**
+   * Public API to register a custom modifier with the given type name and a factory that creates it.
+   *
+   * - Important: Call this in `OnCreate` of your module definition to ensure modifiers
+   *   are registered before any views are rendered.
+   */
+  @available(*, deprecated, message: "Use register(_:_:) with the type of the modifier instead.")
   public static func register(
     _ type: String,
     factory: @escaping ModifierFactory
   ) {
-    shared.register(type, factory: factory)
+    shared.register(type, .factory(factory))
   }
 
   /**
@@ -1574,24 +1590,44 @@ public class ViewModifierRegistry {
   }
 
   /**
-   * Registers a new modifier with the given type name.
-   * The modifier factory creates a ViewModifier from parameters.
+   * Registers a new modifier type with the given type name.
    */
-  internal func register(
-    _ type: String,
-    factory: @escaping ModifierFactory
-  ) {
-    if modifierFactories[type] != nil {
+  internal func register<Modifier: ViewModifier & Record>(_ type: String, _ modifierType: Modifier.Type) {
+    register(type, .type(modifierType))
+  }
+
+  private func register(_ type: String, _ registration: Registration) {
+    if registrations[type] != nil {
       log.warn("ViewModifierRegistry: Overwriting existing modifier '\(type)'. This may cause unexpected behavior.")
     }
-    modifierFactories[type] = factory
+    registrations[type] = registration
   }
 
   /**
    * Unregisters a modifier by type name.
    */
   internal func unregister(_ type: String) {
-    modifierFactories.removeValue(forKey: type)
+    registrations.removeValue(forKey: type)
+  }
+
+  /**
+   * Creates the modifier registered with the given type name from its params.
+   * Returns nil if the modifier type is not registered.
+   */
+  internal func createModifier(
+    _ type: String,
+    params: [String: Any],
+    appContext: AppContext,
+    eventDispatcher: EventDispatcher
+  ) throws -> (any ViewModifier)? {
+    switch registrations[type] {
+    case .type(let modifierType):
+      return withEventDispatcher(try modifierType.from(dictionary: params, appContext: appContext), eventDispatcher)
+    case .factory(let factory):
+      return try factory(params, appContext, eventDispatcher)
+    case nil:
+      return nil
+    }
   }
 
   /**
@@ -1606,7 +1642,7 @@ public class ViewModifierRegistry {
     globalEventDispatcher: EventDispatcher,
     params: [String: Any]
   ) -> AnyView {
-    guard modifierFactories[type] != nil else {
+    guard registrations[type] != nil else {
       return view
     }
     return AnyView(view.modifier(StableViewModifier(
@@ -1692,14 +1728,14 @@ public class ViewModifierRegistry {
    * Checks if a modifier type is registered.
    */
   func hasModifier(_ type: String) -> Bool {
-    return modifierFactories[type] != nil
+    return registrations[type] != nil
   }
 
   /**
    * Returns all registered modifier types.
    */
   func registeredTypes() -> [String] {
-    return Array(modifierFactories.keys)
+    return Array(registrations.keys)
   }
 }
 
@@ -1922,663 +1958,331 @@ internal struct ToolbarTitleDisplayModeModifier: ViewModifier, Record {
 // swiftlint:disable:next no_grouping_extension
 extension ViewModifierRegistry {
   private func registerBuiltInModifiers() {
-    register("listSectionSpacing") { params, appContext, _ in
-      return try ListSectionSpacingModifier(from: params, appContext: appContext)
-    }
-
-    register("background") { params, appContext, _ in
-      return try BackgroundModifier(from: params, appContext: appContext)
-    }
-
-    register("cornerRadius") { params, appContext, _ in
-      return try CornerRadiusModifier(from: params, appContext: appContext)
-    }
-
-    register("shadow") { params, appContext, _ in
-      return try ShadowModifier(from: params, appContext: appContext)
-    }
-
-    register("frame") { params, appContext, _ in
-      return try FrameModifier(from: params, appContext: appContext)
-    }
-
-    register("universalLayout") { params, appContext, _ in
-      return try UniversalLayoutModifier(from: params, appContext: appContext)
-    }
-
-    register("padding") { params, appContext, _ in
-      return try PaddingModifier(from: params, appContext: appContext)
-    }
-
-    register("opacity") { params, appContext, _ in
-      return try OpacityModifier(from: params, appContext: appContext)
-    }
-
-    register("scaleEffect") { params, appContext, _ in
-      return try ScaleEffectModifier(from: params, appContext: appContext)
-    }
-
-    register("rotationEffect") { params, appContext, _ in
-      return try RotationEffectModifier(from: params, appContext: appContext)
-    }
-
-    register("rotation3DEffect") { params, appContext, _ in
-      return try Rotation3DEffectModifier(from: params, appContext: appContext)
-    }
-
-    register("offset") { params, appContext, _ in
-      return try OffsetModifier(from: params, appContext: appContext)
-    }
-
-    register("foregroundColor") { params, appContext, _ in
-      return try ForegroundColorModifier(from: params, appContext: appContext)
-    }
-
-    register("foregroundStyle") { params, appContext, _ in
-      return try ForegroundStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("luminanceToAlpha") { params, appContext, _ in
-      return try LuminanceToAlphaModifier(from: params, appContext: appContext)
-    }
-
-    register("bold") { params, appContext, _ in
-      return try BoldModifier(from: params, appContext: appContext)
-    }
-
-    register("italic") { params, appContext, _ in
-      return try ItalicModifier(from: params, appContext: appContext)
-    }
-
-    register("monospacedDigit") { params, appContext, _ in
-      return try MonospacedDigitModifier(from: params, appContext: appContext)
-    }
-
-    register("tint") { params, appContext, _ in
-      return try TintModifier(from: params, appContext: appContext)
-    }
-
-    register("selectedSegmentTintColor") { params, appContext, _ in
-      return try SelectedSegmentTintColorModifier(from: params, appContext: appContext)
-    }
-
-    register("hidden") { params, appContext, _ in
-      return try HiddenModifier(from: params, appContext: appContext)
-    }
-
-    register("labelsHidden") { params, appContext, _ in
-      return try LabelsHiddenModifier(from: params, appContext: appContext)
-    }
-
-    register("disabled") { params, appContext, _ in
-      return try DisabledModifier(from: params, appContext: appContext)
-    }
-
-    register("redacted") { params, appContext, _ in
-      return try RedactedModifier(from: params, appContext: appContext)
-    }
-
-    register("unredacted") { params, appContext, _ in
-      return try UnredactedModifier(from: params, appContext: appContext)
-    }
-
-    register("privacySensitive") { params, appContext, _ in
-      return try PrivacySensitiveModifier(from: params, appContext: appContext)
-    }
-
-    register("invalidatableContent") { params, appContext, _ in
-      return try InvalidatableContentModifier(from: params, appContext: appContext)
-    }
-
-    register("zIndex") { params, appContext, _ in
-      return try ZIndexModifier(from: params, appContext: appContext)
-    }
-
-    register("blur") { params, appContext, _ in
-      return try BlurModifier(from: params, appContext: appContext)
-    }
-
-    register("brightness") { params, appContext, _ in
-      return try BrightnessModifier(from: params, appContext: appContext)
-    }
-
-    register("contrast") { params, appContext, _ in
-      return try ContrastModifier(from: params, appContext: appContext)
-    }
-
-    register("saturation") { params, appContext, _ in
-      return try SaturationModifier(from: params, appContext: appContext)
-    }
-
-    register("colorInvert") { params, appContext, _ in
-      return try ColorInvertModifier(from: params, appContext: appContext)
-    }
-
-    register("grayscale") { params, appContext, _ in
-      return try GrayscaleModifier(from: params, appContext: appContext)
-    }
-
-    register("border") { params, appContext, _ in
-      return try BorderModifier(from: params, appContext: appContext)
-    }
-    register("strokeBorder") { params, appContext, _ in
-      return try StrokeBorderModifier(from: params, appContext: appContext)
-    }
-
-    register("clipShape") { params, appContext, _ in
-      return try ClipShapeModifier(from: params, appContext: appContext)
-    }
-
-    register("onTapGesture") { params, appContext, eventDispatcher in
-      return try OnTapGestureModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
-    }
-
-    register("onLongPressGesture") { params, appContext, eventDispatcher in
-      return try OnLongPressGestureModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
-    }
-
-    register("onAppear") { params, appContext, eventDispatcher in
-      return try OnAppearModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
-    }
-
-    register("onDisappear") { params, appContext, eventDispatcher in
-      return try OnDisappearModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
-    }
-
-    register("onGeometryChange") { params, appContext, eventDispatcher in
-      return try OnGeometryChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
-    }
-
-    register("refreshable") { params, appContext, eventDispatcher in
-      return try RefreshableModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
-    }
-
-    register("hueRotation") { params, appContext, _ in
-      return try HueRotationModifier(from: params, appContext: appContext)
-    }
-
-    register("navigationTitle") { params, appContext, _ in
-      return try NavigationTitleModifier(from: params, appContext: appContext)
-    }
-
-    register("navigationBarTitleDisplayMode") { params, appContext, _ in
-      return try NavigationBarTitleDisplayModeModifier(from: params, appContext: appContext)
-    }
-
-    register("toolbarTitleDisplayMode") { params, appContext, _ in
-      return try ToolbarTitleDisplayModeModifier(from: params, appContext: appContext)
-    }
-
-    register("navigationSplitViewStyle") { params, appContext, _ in
-      return try NavigationSplitViewStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("navigationSplitViewColumnWidth") { params, appContext, _ in
-      return try NavigationSplitViewColumnWidthModifier(from: params, appContext: appContext)
-    }
-
-    register("arrangementViewStyle") { params, appContext, _ in
-      return try ArrangementViewStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("splitArrangementLayoutRatio") { params, appContext, _ in
-      return try SplitArrangementLayoutRatioModifier(from: params, appContext: appContext)
-    }
-
-    register("splitArrangementLayoutSize") { params, appContext, _ in
-      return try SplitArrangementLayoutSizeModifier(from: params, appContext: appContext)
-    }
-
-    register("splitArrangementFixedLayoutSize") { params, appContext, _ in
-      return try SplitArrangementFixedLayoutSizeModifier(from: params, appContext: appContext)
-    }
-
-    register("overlayArrangementEdge") { params, appContext, _ in
-      return try OverlayArrangementEdgeModifier(from: params, appContext: appContext)
-    }
-
-    register("accessibilityLabel") { params, appContext, _ in
-      return try AccessibilityLabelModifier(from: params, appContext: appContext)
-    }
-
-    register("accessibilityHint") { params, appContext, _ in
-      return try AccessibilityHintModifier(from: params, appContext: appContext)
-    }
-
-    register("accessibilityValue") { params, appContext, _ in
-      return try AccessibilityValueModifier(from: params, appContext: appContext)
-    }
-
-    register("accessibilityInputLabels") { params, appContext, _ in
-      return try AccessibilityInputLabelsModifier(from: params, appContext: appContext)
-    }
-
-    register("accessibilityIdentifier") { params, appContext, _ in
-      return try AccessibilityIdentifierModifier(from: params, appContext: appContext)
-    }
-
-    register("accessibilityHidden") { params, appContext, _ in
-      return try AccessibilityHiddenModifier(from: params, appContext: appContext)
-    }
-
-    register("accessibilityElement") { params, appContext, _ in
-      return try AccessibilityElementModifier(from: params, appContext: appContext)
-    }
-
-    register("accessibilityAddTraits") { params, appContext, _ in
-      return try AccessibilityAddTraitsModifier(from: params, appContext: appContext)
-    }
-
-    register("accessibilityRemoveTraits") { params, appContext, _ in
-      return try AccessibilityRemoveTraitsModifier(from: params, appContext: appContext)
-    }
-
-    register("layoutPriority") { params, appContext, _ in
-      return try LayoutPriorityModifier(from: params, appContext: appContext)
-    }
-
-    register("aspectRatio") { params, appContext, _ in
-      return try AspectRatioModifier(from: params, appContext: appContext)
-    }
-
-    register("clipped") { params, appContext, _ in
-      return try ClippedModifier(from: params, appContext: appContext)
-    }
-
-    register("mask") { params, appContext, _ in
-      return try MaskModifier(from: params, appContext: appContext)
-    }
-
-    register("overlay") { params, appContext, _ in
-      return try OverlayModifier(from: params, appContext: appContext)
-    }
-
-    register("backgroundOverlay") { params, appContext, _ in
-      return try BackgroundOverlayModifier(from: params, appContext: appContext)
-    }
-
-    register("glassEffect") { params, appContext, _ in
-      return try GlassEffectModifier(from: params, appContext: appContext)
-    }
-
-    register("animation") { params, appContext, _ in
-      return try AnimationModifier.init(from: params, appContext: appContext)
-    }
-
-    register("glassEffectId") { params, appContext, _ in
-      return try GlassEffectIdModifier.init(from: params, appContext: appContext)
-    }
-
-    register("matchedGeometryEffect") { params, appContext, _ in
-      return try MatchedGeometryEffectModifier.init(from: params, appContext: appContext)
-    }
-
-    register("geometryGroup") { params, appContext, _ in
-      return try GeometryGroupModifier(from: params, appContext: appContext)
-    }
-
-    register("fixedSize") { params, appContext, _ in
-      return try FixedSizeModifier(from: params, appContext: appContext)
-    }
-
-    register("ignoreSafeArea") { params, appContext, _ in
-      return try IgnoreSafeAreaModifier(from: params, appContext: appContext)
-    }
-
-    register("containerShape") { params, appContext, _ in
-      return try ContainerShapeModifier(from: params, appContext: appContext)
-    }
-
-    register("contentShape") { params, appContext, _ in
-      return try ContentShapeModifier(from: params, appContext: appContext)
-    }
-
-    register("containerRelativeFrame") { params, appContext, _ in
-      return try ContainerRelativeFrameModifier(from: params, appContext: appContext)
-    }
-
-    register("buttonStyle") { params, appContext, _ in
-      return try ButtonStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("buttonBorderShape") { params, appContext, _ in
-      return try ButtonBorderShapeModifier(from: params, appContext: appContext)
-    }
-
-    register("toggleStyle") { params, appContext, _ in
-      return try ToggleStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("controlSize") { params, appContext, _ in
-      return try ControlSizeModifier(from: params, appContext: appContext)
-    }
-
-    register("labelStyle") { params, appContext, _ in
-      return try LabelStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("textFieldStyle") { params, appContext, _ in
-      return try TextFieldStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("scrollContentBackground") { params, appContext, _ in
-      return try ScrollContentBackground(from: params, appContext: appContext)
-    }
-
-    register("listRowBackground") { params, appContext, _ in
-      return try ListRowBackground(from: params, appContext: appContext)
-    }
-
-    register("listRowSeparator") { params, appContext, _ in
-      return try ListRowSeparator(from: params, appContext: appContext)
-    }
-
-    register("listRowSeparatorTint") { params, appContext, _ in
-      return try ListRowSeparatorTint(from: params, appContext: appContext)
-    }
-
-    register("listRowSpacing") { params, appContext, _ in
-      return try ListRowSpacing(from: params, appContext: appContext)
-    }
-
-    register("alignmentGuide") { params, appContext, _ in
-      return try AlignmentGuideModifier(from: params, appContext: appContext)
-    }
-
-    register("truncationMode") { params, appContext, _ in
-      return try TextTruncationMode(from: params, appContext: appContext)
-    }
-
-    register("kerning") { params, appContext, _ in
-      return try TextKerning(from: params, appContext: appContext)
-    }
-
-    register("allowsTightening") { params, appContext, _ in
-      return try TextAllowsTightening(from: params, appContext: appContext)
-    }
-
-    register("minimumScaleFactor") { params, appContext, _ in
-      return try MinimumScaleFactorModifier(from: params, appContext: appContext)
-    }
-
-    register("textCase") { params, appContext, _ in
-      return try TextCase(from: params, appContext: appContext)
-    }
-
-    register("underline") { params, appContext, _ in
-      return try TextUnderLine(from: params, appContext: appContext)
-    }
-
-    register("strikethrough") { params, appContext, _ in
-      return try TextStrikeThrough(from: params, appContext: appContext)
-    }
-
-    register("multilineTextAlignment") { params, appContext, _ in
-      return try MultilineTextAlignment(from: params, appContext: appContext)
-    }
-
-    register("textSelection") { params, appContext, _ in
-      return try TextSelection(from: params, appContext: appContext)
-    }
-
-    register("lineSpacing") { params, appContext, _ in
-      return try LineSpacing(from: params, appContext: appContext)
-    }
-
-    register("lineHeight") { params, appContext, _ in
-      return try LineHeight(from: params, appContext: appContext)
-    }
-
-    register("lineLimit") { params, appContext, _ in
-      return try LineLimitModifier(from: params, appContext: appContext)
-    }
-
-    register("listRowInsets") { params, appContext, _ in
-      return try ListRowInsets(from: params, appContext: appContext)
-    }
-
-    register("badgeProminence") { params, appContext, _ in
-      return try BadgeProminence(from: params, appContext: appContext)
-    }
-
-    register("badge") { params, appContext, _ in
-      return try Badge(from: params, appContext: appContext)
-    }
-
-    register("listSectionMargins") { params, appContext, _ in
-      return try ListSectionMargins(from: params, appContext: appContext)
-    }
-
-    register("scrollDismissesKeyboard") { params, appContext, _ in
-      return try ScrollDismissesKeyboardModifier(from: params, appContext: appContext)
-    }
-
-    register("menuActionDismissBehavior") { params, appContext, _ in
-      return try MenuActionDismissBehaviorModifier(from: params, appContext: appContext)
-    }
-
-    register("headerProminence") { params, appContext, _ in
-      return try HeaderProminence(from: params, appContext: appContext)
-    }
-
-    register("font") { params, appContext, _ in
-      return try FontModifier(from: params, appContext: appContext)
-    }
-
-    register("dynamicTypeSize") { params, appContext, _ in
-      return try DynamicTypeSizeModifier(from: params, appContext: appContext)
-    }
-
-    register("imageScale") { params, appContext, _ in
-      return try ImageScaleModifier(from: params, appContext: appContext)
-    }
-
-    register("gridCellUnsizedAxes") { params, appContext, _ in
-      return try GridCellUnsizedAxes(from: params, appContext: appContext)
-    }
-
-    register("gridCellColumns") { params, appContext, _ in
-      return try GridCellColumns(from: params, appContext: appContext)
-    }
-
-    register("gridColumnAlignment") { params, appContext, _ in
-      return try GridColumnAlignment(from: params, appContext: appContext)
-    }
-
-    register("gridCellAnchor") { params, appContext, _ in
-      return try GridCellAnchor(from: params, appContext: appContext)
-    }
-
-    register("tag") { params, appContext, _ in
-      return try TagModifier(from: params, appContext: appContext)
-    }
-
-    register("scrollTargetBehavior") { params, appContext, _ in
-      return try ScrollTargetBehaviorModifier(from: params, appContext: appContext)
-    }
-
-    register("scrollTargetLayout") { params, appContext, _ in
-      return try ScrollTargetLayoutModifier(from: params, appContext: appContext)
-    }
-
-    register("id") { params, appContext, _ in
-      return try IDModifier(from: params, appContext: appContext)
-    }
-
-    register("scrollPosition") { params, appContext, eventDispatcher in
-      return try ScrollPositionModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
-    }
-
-    register("searchable") { params, appContext, eventDispatcher in
-      return try SearchableModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
-    }
-
-    register("searchToolbarBehavior") { params, appContext, _ in
-      return try SearchToolbarBehaviorModifier(from: params, appContext: appContext)
-    }
-
-    register("pickerStyle") { params, appContext, _ in
-      return try PickerStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("menuOrder") { params, appContext, _ in
-      return try MenuOrderModifier(from: params, appContext: appContext)
-    }
-
-    register("menuStyle") { params, appContext, _ in
-      return try MenuStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("menuIndicator") { params, appContext, _ in
-      return try MenuIndicatorModifier(from: params, appContext: appContext)
-    }
-
-    register("submitLabel") { params, appContext, _ in
-      return try SubmitLabelModifier(from: params, appContext: appContext)
-    }
-
-    register("textInputAutocapitalization") { params, appContext, _ in
-      return try TextInputAutocapitalizationModifier(from: params, appContext: appContext)
-    }
-
-    register("textContentType") { params, appContext, _ in
-      return try TextContentTypeModifier(from: params, appContext: appContext)
-    }
-
-    register("datePickerStyle") { params, appContext, _ in
-      return try DatePickerStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("scrollDisabled") { params, appContext, _ in
-      return try ScrollDisabledModifier(from: params, appContext: appContext)
-    }
-
-    register("preferredColorScheme") { params, appContext, _ in
-      return try PreferredColorSchemeModifier(from: params, appContext: appContext)
-    }
-
-    register("scrollClipDisabled") { params, appContext, _ in
-      return try ScrollClipDisabledModifier(from: params, appContext: appContext)
-    }
-
-    register("scrollIndicators") { params, appContext, _ in
-      return try ScrollIndicatorsModifier(from: params, appContext: appContext)
-    }
-
-    register("scrollEdgeEffectStyle") { params, appContext, _ in
-      return try ScrollEdgeEffectStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("tabViewStyle") { params, appContext, _ in
-      return try TabViewStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("indexViewStyle") { params, appContext, _ in
-      return try IndexViewStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("defaultScrollAnchor") { params, appContext, _ in
-      return try DefaultScrollAnchorModifier(from: params, appContext: appContext)
-    }
-
-    register("defaultScrollAnchorForRole") { params, appContext, _ in
-      return try DefaultScrollAnchorForRoleModifier(from: params, appContext: appContext)
-    }
-
-    register("progressViewStyle") { params, appContext, _ in
-      return try ProgressViewStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("gaugeStyle") { params, appContext, _ in
-      return try GaugeStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("presentationDetents") { params, appContext, eventDispatcher in
-      return try PresentationDetentsModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
-    }
-
-    register("presentationDragIndicator") { params, appContext, _ in
-      return try PresentationDragIndicatorModifier(from: params, appContext: appContext)
-    }
-
-    register("presentationCornerRadius") { params, appContext, _ in
-      return try PresentationCornerRadiusModifier(from: params, appContext: appContext)
-    }
-
-    register("presentationBackgroundInteraction") { params, appContext, _ in
-      return try PresentationBackgroundInteractionModifier(from: params, appContext: appContext)
-    }
-
-    register("interactiveDismissDisabled") { params, appContext, _ in
-      return try InteractiveDismissDisabledModifier(from: params, appContext: appContext)
-    }
-
-    register("presentationBackground") { params, appContext, _ in
-      return try PresentationBackgroundModifier(from: params, appContext: appContext)
-    }
-
-    register("presentationSizing") { params, appContext, _ in
-      return try PresentationSizingModifier(from: params, appContext: appContext)
-    }
-
-    register("listStyle") { params, appContext, _ in
-      return try ListStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("sectionIndexLabel") { params, appContext, _ in
-      return try SectionIndexLabelModifier(from: params, appContext: appContext)
-    }
-
-    register("moveDisabled") { params, appContext, _ in
-      return try MoveDisabledModifier(from: params, appContext: appContext)
-    }
-
-    register("deleteDisabled") { params, appContext, _ in
-      return try DeleteDisabledModifier(from: params, appContext: appContext)
-    }
-
-    register("environment") { params, appContext, _ in
-      return try EnvironmentModifier(from: params, appContext: appContext)
-    }
-
-    register("contentTransition") { params, appContext, _ in
-      return try ContentTransitionModifier(from: params, appContext: appContext)
-    }
-
-    register("keyboardType") { params, appContext, _ in
-      return try KeyboardTypeModifier(from: params, appContext: appContext)
-    }
-
-    register("autocorrectionDisabled") { params, appContext, _ in
-      return try AutocorrectionDisabledModifier(from: params, appContext: appContext)
-    }
-
-    register("onSubmit") { params, appContext, eventDispatcher in
-      return try OnSubmitModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
-    }
-
-    register("containerBackground") { params, appContext, _ in
-      let modifier = try ContainerBackgroundModifier(from: params, appContext: appContext)
-      #if DEBUG
-      modifier.warnIfWidgetPlacementIsUnavailable()
-      #endif
-      return modifier
-    }
-
-    register("symbolEffect") { params, appContext, _ in
-      return try SymbolEffectModifier(from: params, appContext: appContext)
-    }
-
-    register("onScrollPhaseChange") { params, appContext, eventDispatcher in
-      return try OnScrollPhaseChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
-    }
-
-    register("onScrollGeometryChange") { params, appContext, eventDispatcher in
-      return try OnScrollGeometryChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
-    }
-
-    register("onHingeChange") { params, appContext, eventDispatcher in
-      return try OnHingeChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
-    }
+    register("listSectionSpacing", ListSectionSpacingModifier.self)
+
+    register("background", BackgroundModifier.self)
+
+    register("cornerRadius", CornerRadiusModifier.self)
+
+    register("shadow", ShadowModifier.self)
+
+    register("frame", FrameModifier.self)
+
+    register("universalLayout", UniversalLayoutModifier.self)
+
+    register("padding", PaddingModifier.self)
+
+    register("opacity", OpacityModifier.self)
+
+    register("scaleEffect", ScaleEffectModifier.self)
+
+    register("rotationEffect", RotationEffectModifier.self)
+
+    register("rotation3DEffect", Rotation3DEffectModifier.self)
+
+    register("offset", OffsetModifier.self)
+
+    register("foregroundColor", ForegroundColorModifier.self)
+
+    register("foregroundStyle", ForegroundStyleModifier.self)
+
+    register("luminanceToAlpha", LuminanceToAlphaModifier.self)
+
+    register("bold", BoldModifier.self)
+
+    register("italic", ItalicModifier.self)
+
+    register("monospacedDigit", MonospacedDigitModifier.self)
+
+    register("tint", TintModifier.self)
+
+    register("selectedSegmentTintColor", SelectedSegmentTintColorModifier.self)
+
+    register("hidden", HiddenModifier.self)
+
+    register("labelsHidden", LabelsHiddenModifier.self)
+
+    register("disabled", DisabledModifier.self)
+
+    register("redacted", RedactedModifier.self)
+
+    register("unredacted", UnredactedModifier.self)
+
+    register("privacySensitive", PrivacySensitiveModifier.self)
+
+    register("invalidatableContent", InvalidatableContentModifier.self)
+
+    register("zIndex", ZIndexModifier.self)
+
+    register("blur", BlurModifier.self)
+
+    register("brightness", BrightnessModifier.self)
+
+    register("contrast", ContrastModifier.self)
+
+    register("saturation", SaturationModifier.self)
+
+    register("colorInvert", ColorInvertModifier.self)
+
+    register("grayscale", GrayscaleModifier.self)
+
+    register("border", BorderModifier.self)
+    register("strokeBorder", StrokeBorderModifier.self)
+
+    register("clipShape", ClipShapeModifier.self)
+
+    register("onTapGesture", OnTapGestureModifier.self)
+
+    register("onLongPressGesture", OnLongPressGestureModifier.self)
+
+    register("onAppear", OnAppearModifier.self)
+
+    register("onDisappear", OnDisappearModifier.self)
+
+    register("onGeometryChange", OnGeometryChangeModifier.self)
+
+    register("refreshable", RefreshableModifier.self)
+
+    register("hueRotation", HueRotationModifier.self)
+
+    register("navigationTitle", NavigationTitleModifier.self)
+
+    register("navigationBarTitleDisplayMode", NavigationBarTitleDisplayModeModifier.self)
+
+    register("toolbarTitleDisplayMode", ToolbarTitleDisplayModeModifier.self)
+
+    register("navigationSplitViewStyle", NavigationSplitViewStyleModifier.self)
+
+    register("navigationSplitViewColumnWidth", NavigationSplitViewColumnWidthModifier.self)
+
+    register("arrangementViewStyle", ArrangementViewStyleModifier.self)
+
+    register("splitArrangementLayoutRatio", SplitArrangementLayoutRatioModifier.self)
+
+    register("splitArrangementLayoutSize", SplitArrangementLayoutSizeModifier.self)
+
+    register("splitArrangementFixedLayoutSize", SplitArrangementFixedLayoutSizeModifier.self)
+
+    register("overlayArrangementEdge", OverlayArrangementEdgeModifier.self)
+
+    register("accessibilityLabel", AccessibilityLabelModifier.self)
+
+    register("accessibilityHint", AccessibilityHintModifier.self)
+
+    register("accessibilityValue", AccessibilityValueModifier.self)
+
+    register("accessibilityInputLabels", AccessibilityInputLabelsModifier.self)
+
+    register("accessibilityIdentifier", AccessibilityIdentifierModifier.self)
+
+    register("accessibilityHidden", AccessibilityHiddenModifier.self)
+
+    register("accessibilityElement", AccessibilityElementModifier.self)
+
+    register("accessibilityAddTraits", AccessibilityAddTraitsModifier.self)
+
+    register("accessibilityRemoveTraits", AccessibilityRemoveTraitsModifier.self)
+
+    register("layoutPriority", LayoutPriorityModifier.self)
+
+    register("aspectRatio", AspectRatioModifier.self)
+
+    register("clipped", ClippedModifier.self)
+
+    register("mask", MaskModifier.self)
+
+    register("overlay", OverlayModifier.self)
+
+    register("backgroundOverlay", BackgroundOverlayModifier.self)
+
+    register("glassEffect", GlassEffectModifier.self)
+
+    register("animation", AnimationModifier.self)
+
+    register("glassEffectId", GlassEffectIdModifier.self)
+
+    register("matchedGeometryEffect", MatchedGeometryEffectModifier.self)
+
+    register("geometryGroup", GeometryGroupModifier.self)
+
+    register("fixedSize", FixedSizeModifier.self)
+
+    register("ignoreSafeArea", IgnoreSafeAreaModifier.self)
+
+    register("containerShape", ContainerShapeModifier.self)
+
+    register("contentShape", ContentShapeModifier.self)
+
+    register("containerRelativeFrame", ContainerRelativeFrameModifier.self)
+
+    register("buttonStyle", ButtonStyleModifier.self)
+
+    register("buttonBorderShape", ButtonBorderShapeModifier.self)
+
+    register("toggleStyle", ToggleStyleModifier.self)
+
+    register("controlSize", ControlSizeModifier.self)
+
+    register("labelStyle", LabelStyleModifier.self)
+
+    register("textFieldStyle", TextFieldStyleModifier.self)
+
+    register("scrollContentBackground", ScrollContentBackground.self)
+
+    register("listRowBackground", ListRowBackground.self)
+
+    register("listRowSeparator", ListRowSeparator.self)
+
+    register("listRowSeparatorTint", ListRowSeparatorTint.self)
+
+    register("listRowSpacing", ListRowSpacing.self)
+
+    register("alignmentGuide", AlignmentGuideModifier.self)
+
+    register("truncationMode", TextTruncationMode.self)
+
+    register("kerning", TextKerning.self)
+
+    register("allowsTightening", TextAllowsTightening.self)
+
+    register("minimumScaleFactor", MinimumScaleFactorModifier.self)
+
+    register("textCase", TextCase.self)
+
+    register("underline", TextUnderLine.self)
+
+    register("strikethrough", TextStrikeThrough.self)
+
+    register("multilineTextAlignment", MultilineTextAlignment.self)
+
+    register("textSelection", TextSelection.self)
+
+    register("lineSpacing", LineSpacing.self)
+
+    register("lineHeight", LineHeight.self)
+
+    register("lineLimit", LineLimitModifier.self)
+
+    register("listRowInsets", ListRowInsets.self)
+
+    register("badgeProminence", BadgeProminence.self)
+
+    register("badge", Badge.self)
+
+    register("listSectionMargins", ListSectionMargins.self)
+
+    register("scrollDismissesKeyboard", ScrollDismissesKeyboardModifier.self)
+
+    register("menuActionDismissBehavior", MenuActionDismissBehaviorModifier.self)
+
+    register("headerProminence", HeaderProminence.self)
+
+    register("font", FontModifier.self)
+
+    register("dynamicTypeSize", DynamicTypeSizeModifier.self)
+
+    register("imageScale", ImageScaleModifier.self)
+
+    register("gridCellUnsizedAxes", GridCellUnsizedAxes.self)
+
+    register("gridCellColumns", GridCellColumns.self)
+
+    register("gridColumnAlignment", GridColumnAlignment.self)
+
+    register("gridCellAnchor", GridCellAnchor.self)
+
+    register("tag", TagModifier.self)
+
+    register("scrollTargetBehavior", ScrollTargetBehaviorModifier.self)
+
+    register("scrollTargetLayout", ScrollTargetLayoutModifier.self)
+
+    register("id", IDModifier.self)
+
+    register("scrollPosition", ScrollPositionModifier.self)
+
+    register("searchable", SearchableModifier.self)
+
+    register("searchToolbarBehavior", SearchToolbarBehaviorModifier.self)
+
+    register("pickerStyle", PickerStyleModifier.self)
+
+    register("menuOrder", MenuOrderModifier.self)
+
+    register("menuStyle", MenuStyleModifier.self)
+
+    register("menuIndicator", MenuIndicatorModifier.self)
+
+    register("submitLabel", SubmitLabelModifier.self)
+
+    register("textInputAutocapitalization", TextInputAutocapitalizationModifier.self)
+
+    register("textContentType", TextContentTypeModifier.self)
+
+    register("datePickerStyle", DatePickerStyleModifier.self)
+
+    register("scrollDisabled", ScrollDisabledModifier.self)
+
+    register("preferredColorScheme", PreferredColorSchemeModifier.self)
+
+    register("scrollClipDisabled", ScrollClipDisabledModifier.self)
+
+    register("scrollIndicators", ScrollIndicatorsModifier.self)
+
+    register("scrollEdgeEffectStyle", ScrollEdgeEffectStyleModifier.self)
+
+    register("tabViewStyle", TabViewStyleModifier.self)
+
+    register("indexViewStyle", IndexViewStyleModifier.self)
+
+    register("defaultScrollAnchor", DefaultScrollAnchorModifier.self)
+
+    register("defaultScrollAnchorForRole", DefaultScrollAnchorForRoleModifier.self)
+
+    register("progressViewStyle", ProgressViewStyleModifier.self)
+
+    register("gaugeStyle", GaugeStyleModifier.self)
+
+    register("presentationDetents", PresentationDetentsModifier.self)
+
+    register("presentationDragIndicator", PresentationDragIndicatorModifier.self)
+
+    register("presentationCornerRadius", PresentationCornerRadiusModifier.self)
+
+    register("presentationBackgroundInteraction", PresentationBackgroundInteractionModifier.self)
+
+    register("interactiveDismissDisabled", InteractiveDismissDisabledModifier.self)
+
+    register("presentationBackground", PresentationBackgroundModifier.self)
+
+    register("presentationSizing", PresentationSizingModifier.self)
+
+    register("listStyle", ListStyleModifier.self)
+
+    register("sectionIndexLabel", SectionIndexLabelModifier.self)
+
+    register("moveDisabled", MoveDisabledModifier.self)
+
+    register("deleteDisabled", DeleteDisabledModifier.self)
+
+    register("environment", EnvironmentModifier.self)
+
+    register("contentTransition", ContentTransitionModifier.self)
+
+    register("keyboardType", KeyboardTypeModifier.self)
+
+    register("autocorrectionDisabled", AutocorrectionDisabledModifier.self)
+
+    register("onSubmit", OnSubmitModifier.self)
+
+    register("containerBackground", ContainerBackgroundModifier.self)
+
+    register("symbolEffect", SymbolEffectModifier.self)
+
+    register("onScrollPhaseChange", OnScrollPhaseChangeModifier.self)
+
+    register("onScrollGeometryChange", OnScrollGeometryChangeModifier.self)
+
+    register("onHingeChange", OnHingeChangeModifier.self)
   }
 }
