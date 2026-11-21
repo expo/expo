@@ -16,6 +16,11 @@ import java.io.File
  */
 interface ImageExporter {
   /**
+   * The MIME type of the file that [exportAsync] writes for a source of `sourceMimeType`
+   */
+  fun outputMimeType(sourceMimeType: String): String = sourceMimeType
+
+  /**
    * Export the file under `source` [Uri] to the `output` [File]
    */
   suspend fun exportAsync(source: Uri, output: File, contentResolver: ContentResolver): ImageExportResult
