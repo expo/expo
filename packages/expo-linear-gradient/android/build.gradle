@@ -13,3 +13,10 @@ android {
     versionName "58.0.3"
   }
 }
+
+dependencies {
+  implementation 'com.facebook.react:react-android'
+
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.robolectric:robolectric:4.16'
+}
