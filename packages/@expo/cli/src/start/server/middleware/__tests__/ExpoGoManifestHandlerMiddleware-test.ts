@@ -77,6 +77,9 @@ jest.mock('@expo/config', () => ({
   })),
 }));
 jest.mock('../resolveRuntimeVersionWithExpoUpdatesAsync');
+jest.mock('../watchFingerprintSourcesAsync', () => ({
+  watchFingerprintSourcesAsync: jest.fn(async () => ({ close: jest.fn() })),
+}));
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
 
@@ -831,7 +834,11 @@ describe('_getManifestResponseAsync', () => {
   });
 
   it('delegates runtime version resolution to expo-updates if possible', async () => {
-    jest.mocked(resolveRuntimeVersionWithExpoUpdatesAsync).mockResolvedValue('testrtv');
+    jest.mocked(resolveRuntimeVersionWithExpoUpdatesAsync).mockResolvedValue({
+      runtimeVersion: 'testrtv',
+      fingerprintSources: null,
+      workflow: 'managed',
+    });
 
     const middleware = createMiddleware();
     process.env.EXPO_OFFLINE = '1';
@@ -855,5 +862,29 @@ describe('_getManifestResponseAsync', () => {
     }
 
     expect(partsSeen.has('manifest')).toBeTruthy();
+  });
+
+  it('resolves a fingerprint runtime version once for repeated manifest requests', async () => {
+    jest.mocked(resolveRuntimeVersionWithExpoUpdatesAsync).mockReset();
+    jest.mocked(resolveRuntimeVersionWithExpoUpdatesAsync).mockResolvedValue({
+      runtimeVersion: 'fingerprint-hash',
+      fingerprintSources: [{ type: 'dir', filePath: 'ios', reasons: ['bareNativeDir'] }],
+      workflow: 'generic',
+    });
+
+    const middleware = createMiddleware({ runtimeVersion: { policy: 'fingerprint' } });
+    process.env.EXPO_OFFLINE = '1';
+
+    for (let i = 0; i < 3; i++) {
+      const response = await middleware._getManifestResponseAsync({
+        responseContentType: ResponseContentType.APPLICATION_JSON,
+        platform: 'ios',
+        expectSignature: null,
+        hostname: 'localhost',
+      });
+      expect(await response.json()).toMatchObject({ runtimeVersion: 'fingerprint-hash' });
+    }
+
+    expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledTimes(1);
   });
 });
