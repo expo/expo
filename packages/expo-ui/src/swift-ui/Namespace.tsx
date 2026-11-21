@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { requireOptionalNative } from 'expo';
 
 export interface NamespaceProps {
   /**
@@ -11,10 +11,10 @@ export interface NamespaceProps {
 
 type NativeNamespaceProps = NamespaceProps;
 
-const NativeNamespaceView: React.ComponentType<NativeNamespaceProps> = requireNativeView(
-  'ExpoUI',
-  'NamespaceView'
-);
+// Only iOS has native views in `expo.packages`. Android also loads this file
+// (through `@expo/ui/swift-ui`), and there `requireNative` would throw.
+const NativeNamespaceView: React.ComponentType<NativeNamespaceProps> =
+  requireOptionalNative('@expo/ui')?.NamespaceView;
 
 /**
  * A component that provides a SwiftUI [`Namespace`](https://developer.apple.com/documentation/swiftui/namespace) to its children.

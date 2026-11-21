@@ -29,19 +29,15 @@ public struct GridView: ExpoSwiftUI.View {
   }
 }
 
-public final class GridRowProps: ExpoSwiftUI.ViewProps {}
-public struct GridRowView: ExpoSwiftUI.View {
-  @ObservedObject public var props: GridRowProps
+@ViewProps
+public struct GridRowProps {}
 
-  public init(props: GridRowProps) {
-    self.props = props
-  }
-
+@ExpoView<GridRowProps>
+public struct GridRowView: View {
   public var body: some View {
     if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
       GridRow {
-        Children()
-          .publishZeroContentOrigin(props.shadowNodeProxy)
+        children
       }
     } else {
       EmptyView()
