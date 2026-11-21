@@ -67,7 +67,10 @@ public struct WidgetLiveActivity: Widget {
       } minimal: {
         LiveActivitySectionView(context: context, nodes: nodes, sectionName: "minimal")
       }
-      if let url = context.attributes.url.flatMap(URL.init(string:)) {
+      // The compact and minimal presentations only open the `widgetURL` set on the
+      // `DynamicIsland` itself, so a `widgetURL` modifier inside a section never applies.
+      // Hoist one from a section's root node when the activity has no `url` of its own.
+      if let url = context.attributes.url.flatMap(URL.init(string:)) ?? getDynamicIslandWidgetURL(from: nodes) {
         return island.widgetURL(url)
       }
       return island
@@ -113,4 +116,33 @@ extension WidgetConfiguration {
       return self
     }
   }
+}
+
+private let dynamicIslandSectionNames = [
+  "compactLeading",
+  "compactTrailing",
+  "minimal",
+  "expandedLeading",
+  "expandedTrailing",
+  "expandedCenter",
+  "expandedBottom"
+]
+
+/**
+ * Returns the URL of the first `widgetURL` modifier set on the root node of a Dynamic Island section.
+ */
+private func getDynamicIslandWidgetURL(from nodes: [String: Any]) -> URL? {
+  for sectionName in dynamicIslandSectionNames {
+    guard let node = nodes[sectionName] as? [String: Any],
+          let props = node["props"] as? [String: Any],
+          let modifiers = props["modifiers"] as? [[String: Any]] else {
+      continue
+    }
+    for modifier in modifiers where modifier["$type"] as? String == "widgetURL" {
+      if let url = (modifier["url"] as? String).flatMap(URL.init(string:)) {
+        return url
+      }
+    }
+  }
+  return nil
 }
