@@ -16,7 +16,7 @@ import { MarkdownIcon } from '~/ui/components/CustomIcons/MarkdownIcon';
 import * as Dropdown from '~/ui/components/Dropdown';
 import { FOOTNOTE } from '~/ui/components/Text';
 
-import { getVersionedMarkdownPath } from './paths';
+import { getMarkdownFilePath } from './paths';
 
 const getPrompt = (url: string) =>
   encodeURIComponent(`Read this documentation page, so I can ask questions about it:\n\n${url}`);
@@ -29,25 +29,7 @@ export function MarkdownActionsDropdown() {
   const asPath = router?.asPath;
 
   const pagePath = asPath ?? pathname;
-  const markdownViewUrl = useMemo(() => {
-    if (!pagePath) {
-      return null;
-    }
-
-    const versionedPath = getVersionedMarkdownPath(pagePath);
-    if (versionedPath) {
-      return versionedPath;
-    }
-
-    const path = pagePath.split(/[#?]/)[0].replace(/\/$/, '');
-    if (!path || path === '/') {
-      return '/index.md';
-    }
-    if (path.endsWith('.md')) {
-      return path;
-    }
-    return path.endsWith('/index') ? `${path}.md` : `${path}/index.md`;
-  }, [pagePath]);
+  const markdownViewUrl = useMemo(() => getMarkdownFilePath(pagePath), [pagePath]);
 
   const handleCopyMarkdown = useCallback(async () => {
     if (!markdownViewUrl) {
