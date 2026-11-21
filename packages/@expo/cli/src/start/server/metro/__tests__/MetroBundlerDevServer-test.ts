@@ -1,8 +1,10 @@
 import { getConfig } from '@expo/config';
 import type { ChangeEvent } from '@expo/metro/metro-file-map/flow-types';
+import type { GraphRevision } from '@expo/metro/metro/IncrementalBundler';
 import { ImmutableRequest } from 'expo-server/private';
 import { fs, vol } from 'memfs';
 
+import type { DefineFn, RequireFn } from '../../../../../metro-require/require';
 import type { ExportAssetMap } from '../../../../export/saveAssets';
 import { getEnvFiles, reloadEnvFiles } from '../../../../utils/nodeEnv';
 import type { BundlerStartOptions } from '../../BundlerDevServer';
@@ -456,6 +458,70 @@ describe('watchConfig', () => {
     devServer['watchConfig']();
 
     expect(watchFile).not.toHaveBeenCalled();
+  });
+});
+
+describe('setupLoaderGraphListener', () => {
+  it('preserves lazy imports in pending requests when a file changes', async () => {
+    let createModuleSystem: typeof import('../../../../../metro-require/__tests__/MetroFastRefreshMockRuntime').createModuleSystem;
+    try {
+      ({ createModuleSystem } = jest.requireActual(
+        '../../../../../metro-require/__tests__/MetroFastRefreshMockRuntime'
+      ));
+    } finally {
+      // The runtime helper unmocks these modules; other dev-server tests need their mocks.
+      jest.doMock('fs');
+      jest.doMock('resolve-from');
+    }
+
+    const runtime = {} as { __d: DefineFn; __r: RequireFn; __c: () => unknown };
+    createModuleSystem(runtime, true, '');
+    runtime.__d((_global, _require, _importDefault, _importAll, module) => {
+      module.exports = 'original value';
+    }, 1);
+
+    const devServer = new MetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+    let onChange!: () => Promise<void>;
+    devServer['metro'] = {
+      getBundler: () => ({
+        getDeltaBundler: () => ({
+          listen: (_graph: unknown, listener: () => Promise<void>) => {
+            onChange = listener;
+            return () => {};
+          },
+        }),
+      }),
+    } as unknown as NonNullable<(typeof devServer)['metro']>;
+    const broadcast = jest.spyOn(devServer, 'broadcastMessage').mockImplementation(() => {});
+    devServer['setupLoaderGraphListener'](
+      'loader-graph',
+      '/app/index.tsx',
+      {} as GraphRevision['graph']
+    );
+
+    const previousClear = Object.getOwnPropertyDescriptor(globalThis, '__c');
+    Object.defineProperty(globalThis, '__c', { configurable: true, value: runtime.__c });
+    let finishRequest!: () => void;
+    const pendingRequest = new Promise<void>((resolve) => {
+      finishRequest = resolve;
+    }).then(() => runtime.__r(1));
+
+    try {
+      await onChange();
+      finishRequest();
+      await expect(pendingRequest).resolves.toBe('original value');
+      expect(broadcast).toHaveBeenCalledWith('sendDevCommand', {
+        name: 'loader-invalidate',
+        data: { scope: 'all' },
+      });
+    } finally {
+      finishRequest();
+      if (previousClear) Object.defineProperty(globalThis, '__c', previousClear);
+      else Reflect.deleteProperty(globalThis, '__c');
+    }
   });
 });
 
