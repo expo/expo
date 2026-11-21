@@ -1,0 +1,39 @@
+{
+  "name": "expo-embedding",
+  "version": "0.0.0-dev",
+  "private": true,
+  "description": "Native dependency metadata for the Expo embedding prototype",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-embedding"
+  },
+  "files": [
+    "build"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.cjs",
+    "prepack": "npm run build",
+    "test": "jest --runInBand",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "depscheck": "expo-module depscheck"
+  },
+  "dependencies": {
+    "minimatch": "^9.0.9"
+  },
+  "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.14.0",
+    "esbuild": "0.28.1",
+    "jest": "30.5.2",
+    "typescript": "^6.0.2"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
