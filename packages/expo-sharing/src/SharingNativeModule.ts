@@ -5,6 +5,7 @@ import type { SharingOptions, ResolvedSharePayload, SharePayload } from './Shari
 type SharingModule = {
   shareAsync(url: string, options: SharingOptions): Promise<void>;
   getSharedPayloads(): SharePayload[];
+  getSharedPayloadsAsync?(): Promise<SharePayload[]>;
   getResolvedSharedPayloadsAsync(): Promise<ResolvedSharePayload[]>;
   clearSharedPayloads(): void;
   isAvailableAsync(): Promise<boolean>;
