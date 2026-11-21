@@ -21,7 +21,7 @@ function generateItemMarkdown(item, withDescription) {
   return `- [${item.title}](${item.url})${withDescription && item.description ? `: ${item.description}` : ''}\n`;
 }
 
-const FULLY_DESCRIBED_SECTIONS = new Set(['Configuration files']);
+const FULLY_DESCRIBED_SECTIONS = new Set(['Configuration files', 'Regulatory compliance']);
 
 function generateSectionMarkdown(section) {
   let content = section.title ? `## ${section.title}\n\n` : '';
