@@ -1,6 +1,7 @@
+import { useMemo } from 'react';
+
 import { sortRoutesWithInitial, type RouteNode } from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
-import type { UrlObject } from '../global-state/getRouteInfoFromState';
 import { resolveNavigationDestination } from '../global-state/resolveNavigationDestination';
 import type { RouterRegistry } from '../global-state/routerRegistry';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
@@ -99,10 +100,77 @@ export function useTriggersToScreens(
   layoutRouteNode: RouteNode,
   linking: LinkingOptions<ParamListBase>,
   parentTriggerMap: TriggerMap,
-  routeInfo: UrlObject,
-  contextKey: string
+  params: Record<string, string | string[] | undefined>,
+  contextKey: string,
+  previewSegments?: string[]
+) {
+  const segmentsWithoutGroups = contextKey
+    .split('/')
+    .filter((segment) => segment && !(segment.startsWith('(') && segment.endsWith(')')));
+  const triggerKey = JSON.stringify(
+    triggers.map((trigger) => ({
+      name: trigger.name,
+      type: trigger.type,
+      href: resolveHref(trigger.href),
+      ...(trigger.type === 'internal' ? { activityEnabled: trigger.activityEnabled } : {}),
+    }))
+  );
+  const hasRelativeTrigger = triggers.some(
+    (trigger) => trigger.type === 'internal' && resolveHref(trigger.href).startsWith('.')
+  );
+  // Only relative hrefs read layout params when they resolve. Absolute hrefs ignore params, so a
+  // param change must not rebuild their triggers.
+  const paramsKey = JSON.stringify(
+    hasRelativeTrigger
+      ? segmentsWithoutGroups.flatMap((segment) => {
+          const name = /^\[(?:\.\.\.)?([^\]]+)\]$/.exec(segment)?.[1];
+          return name ? [[name, params[name]]] : [];
+        })
+      : []
+  );
+  const previewSegmentsKey = JSON.stringify(previewSegments);
+
+  const { screenProps, triggerMap } = useMemo(
+    () =>
+      createTriggerMap(
+        triggers,
+        layoutRouteNode,
+        linking,
+        parentTriggerMap,
+        params,
+        contextKey,
+        previewSegments,
+        segmentsWithoutGroups
+      ),
+    // `triggers`, `params`, and `previewSegments` are new objects on every render. The string keys
+    // hold their values that the trigger map reads, so they replace them as deps.
+    [
+      contextKey,
+      layoutRouteNode,
+      linking,
+      parentTriggerMap,
+      paramsKey,
+      previewSegmentsKey,
+      triggerKey,
+    ]
+  );
+
+  const children = useSortedScreens(screenProps);
+  return { children, triggerMap };
+}
+
+function createTriggerMap(
+  triggers: ScreenTrigger[],
+  layoutRouteNode: RouteNode,
+  linking: LinkingOptions<ParamListBase>,
+  parentTriggerMap: TriggerMap,
+  params: Record<string, string | string[] | undefined>,
+  contextKey: string,
+  previewSegments: string[] | undefined,
+  segmentsWithoutGroups: string[]
 ) {
   const configs: TriggerConfig[] = [];
+  const stateSegments = previewSegments ?? contextKey.split('/').filter(Boolean);
 
   for (const trigger of triggers) {
     if (trigger.name in parentTriggerMap) {
@@ -129,21 +197,16 @@ export function useTriggersToScreens(
       throw new Error('Trigger href cannot link to a parent directory');
     }
 
-    const segmentsWithoutGroups = contextKey.split('/').filter((segment) => {
-      return !(segment.startsWith('(') && segment.endsWith(')'));
-    });
-
     resolvedHref = resolveHrefStringWithSegments(
       resolvedHref,
       {
-        ...routeInfo,
         segments: segmentsWithoutGroups,
+        params,
       },
       { relativeToDirectory: true }
     );
 
-    let state = linking.getStateFromPath?.(resolvedHref, linking.config, routeInfo.segments)
-      ?.routes[0];
+    let state = linking.getStateFromPath?.(resolvedHref, linking.config, stateSegments)?.routes[0];
 
     if (!state) {
       // This shouldn't occur, as you should get the global +not-found
@@ -243,10 +306,8 @@ export function useTriggersToScreens(
     }
   }
 
-  const children = useSortedScreens(screenProps);
-
   return {
-    children,
+    screenProps,
     triggerMap,
   };
 }
