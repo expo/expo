@@ -4,6 +4,7 @@ import React from 'react';
 import { Platform } from 'react-native';
 
 import type { JasmineInterface, TestPortal } from '../types';
+import { gateOnHostAsync } from '../utils/HostReachability';
 import { requireNotNull } from '../utils/requireNotNull';
 import { mountAndWaitFor, mountAndWaitForWithTimeout, TimeoutError, waitFor } from './helpers';
 
@@ -28,11 +29,23 @@ export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal 
     }
     t.expect(error).toBeTruthy();
   };
+  const emitsWithinTimeout = async (child: React.ReactElement<any>, propName: string) => {
+    try {
+      await mountAndWaitForWithTimeout(child, propName, setPortalChild, 3000);
+      return true;
+    } catch (e) {
+      if (e instanceof TimeoutError) {
+        return false;
+      }
+      throw e;
+    }
+  };
+  const unsplash = await gateOnHostAsync(t, REMOTE_SOURCE.uri);
 
   // TODO: Remove the condition once this is implemented on other platforms
   if (Platform.OS === 'ios' || Platform.OS === 'android') {
     t.describe('Image', () => {
-      t.it('loads an image', async () => {
+      unsplash.it('loads an image', async () => {
         const image = await Image.loadAsync(REMOTE_SOURCE);
 
         t.expect(image).toBeDefined();
@@ -102,13 +115,16 @@ export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal 
     });
 
     t.describe('onLoadStart', () => {
-      t.it('emits an event when the image starts to load (will load successfully)', async () => {
-        await mountAndWaitFor(
-          <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
-          'onLoadStart',
-          setPortalChild
-        );
-      });
+      unsplash.it(
+        'emits an event when the image starts to load (will load successfully)',
+        async () => {
+          await mountAndWaitFor(
+            <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
+            'onLoadStart',
+            setPortalChild
+          );
+        }
+      );
 
       t.it('emits an event when the image starts to load (will error)', async () => {
         await mountAndWaitFor(
@@ -120,7 +136,7 @@ export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal 
     });
 
     t.describe('onLoad', () => {
-      t.it('emits an event when the image loads successfully', async () => {
+      unsplash.it('emits an event when the image loads successfully', async () => {
         await mountAndWaitFor(
           <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
           'onLoad',
@@ -129,18 +145,11 @@ export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal 
       });
 
       t.it('does not emit an event if the image errors', async () => {
-        try {
-          await mountAndWaitForWithTimeout(
-            <Image source={NON_EXISTENT_SOURCE} style={{ height: 100, width: 100 }} />,
-            'onLoad',
-            setPortalChild,
-            3000
-          );
-        } catch (e) {
-          if (!(e instanceof TimeoutError)) {
-            throw e;
-          }
-        }
+        const emitted = await emitsWithinTimeout(
+          <Image source={NON_EXISTENT_SOURCE} style={{ height: 100, width: 100 }} />,
+          'onLoad'
+        );
+        t.expect(emitted).toBe(false);
       });
 
       t.it('load animated image and emits animated is true', async () => {
@@ -190,24 +199,17 @@ export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal 
         );
       });
 
-      t.it('does not emit an event if the image loads successfully', async () => {
-        try {
-          await mountAndWaitForWithTimeout(
-            <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
-            'onError',
-            setPortalChild,
-            3000
-          );
-        } catch (e) {
-          if (!(e instanceof TimeoutError)) {
-            throw e;
-          }
-        }
+      unsplash.it('does not emit an event if the image loads successfully', async () => {
+        const emitted = await emitsWithinTimeout(
+          <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
+          'onError'
+        );
+        t.expect(emitted).toBe(false);
       });
     });
 
     t.describe('onLoadEnd', () => {
-      t.it('emits an event when the image loads successfully', async () => {
+      unsplash.it('emits an event when the image loads successfully', async () => {
         await mountAndWaitFor(
           <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
           'onLoadEnd',
@@ -217,7 +219,7 @@ export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal 
 
       t.it('emits an event when the image errors', async () => {
         await mountAndWaitFor(
-          <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
+          <Image source={NON_EXISTENT_SOURCE} style={{ height: 100, width: 100 }} />,
           'onLoadEnd',
           setPortalChild
         );
@@ -225,10 +227,10 @@ export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal 
     });
 
     t.describe('getCachePathAsync', () => {
-      t.it('returns path to cached image when it does exist in the cache', async () => {
+      unsplash.it('returns path to cached image when it does exist in the cache', async () => {
         await mountAndWaitFor(
           <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
-          undefined,
+          'onLoad',
           setPortalChild
         );
 
@@ -237,26 +239,19 @@ export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal 
         t.expect(typeof result).toBe('string');
       });
 
-      t.it('returns a valid image path', async () => {
+      unsplash.it('returns a valid image path', async () => {
         const result = await Image.getCachePathAsync(REMOTE_SOURCE.uri);
 
         if (typeof result != 'string') {
           throw new Error();
         }
 
-        try {
-          // On Android, the path should start with file://
-          await mountAndWaitForWithTimeout(
-            <Image source={'file://' + result} style={{ height: 100, width: 100 }} />,
-            'onError',
-            setPortalChild,
-            3000
-          );
-        } catch (e) {
-          if (!(e instanceof TimeoutError)) {
-            throw e;
-          }
-        }
+        // On Android, the path should start with file://
+        await mountAndWaitFor(
+          <Image source={'file://' + result} style={{ height: 100, width: 100 }} />,
+          'onLoad',
+          setPortalChild
+        );
       });
 
       t.it('returns null when the image does not exist in the cache', async () => {
@@ -268,7 +263,7 @@ export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal 
     });
 
     t.describe('prefetch', () => {
-      t.it('prefetches an image and resolves promise to true', async () => {
+      unsplash.it('prefetches an image and resolves promise to true', async () => {
         await Image.clearDiskCache();
         const result = await Image.prefetch(REMOTE_SOURCE.uri);
         t.expect(result).toBe(true);
@@ -290,7 +285,7 @@ export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal 
         }
       });
 
-      t.it('prefetches an image with headers and resolves promise to true', async () => {
+      unsplash.it('prefetches an image with headers and resolves promise to true', async () => {
         await Image.clearDiskCache();
         const result = await Image.prefetch(REMOTE_SOURCE.uri, {
           headers: {
@@ -310,7 +305,7 @@ export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal 
       t.describe('writeToCacheAsync / readFromCacheAsync', () => {
         const CACHE_KEY = 'test-suite-seeded-image';
 
-        t.it('seeds the cache from an ImageRef and reads it back', async () => {
+        unsplash.it('seeds the cache from an ImageRef and reads it back', async () => {
           await Image.clearDiskCache();
           await Image.clearMemoryCache();
           const image = await Image.loadAsync(REMOTE_SOURCE);
