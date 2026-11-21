@@ -1,0 +1,22 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '0.1.0'
+
+android {
+  namespace "expo.modules.location.huawei"
+  defaultConfig {
+    versionCode 1
+    versionName '0.1.0'
+  }
+}
+
+dependencies {
+  implementation project(':expo-location')
+  implementation('com.huawei.hms:location:6.12.0.300') {
+    exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
+  }
+}
