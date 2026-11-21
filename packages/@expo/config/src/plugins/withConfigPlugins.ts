@@ -18,9 +18,6 @@ export const withConfigPlugins: ConfigPlugin<boolean> = (config, skipPlugins) =>
     // Resolve and evaluate plugins
     // @ts-ignore: TODO: add plugins to the config schema
     config = withPlugins(config, config.plugins);
-  } else {
-    // Delete the plugins array in case someone added functions or other values which cannot be automatically serialized.
-    delete config.plugins;
   }
   // plugins aren't serialized by default, serialize the plugins after resolving them.
   return serializeAfterStaticPlugins(config);
