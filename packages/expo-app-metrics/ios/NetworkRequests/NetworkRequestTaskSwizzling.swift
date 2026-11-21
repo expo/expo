@@ -563,6 +563,10 @@ private final class DelegateProxy: NSObject {
   }
 
   private static let metricsSelector = NSSelectorFromString("URLSession:task:didFinishCollectingMetrics:")
+  private static let didCompleteSelector = NSSelectorFromString("URLSession:task:didCompleteWithError:")
+  private static let didReceiveResponseSelector = NSSelectorFromString(
+    "URLSession:dataTask:didReceiveResponse:completionHandler:"
+  )
 
   override func responds(to aSelector: Selector!) -> Bool {
     if aSelector == Self.metricsSelector {
@@ -598,6 +602,44 @@ private final class DelegateProxy: NSObject {
       return nil
     }
     return wrapped
+  }
+
+  /// Tools that subclass the session delegate, such as Detox, call `super` for these two callbacks
+  /// only when `+instancesRespondToSelector:` is true. That check ignores `forwardingTarget(for:)`.
+  /// Some delegates implement these selectors without declaring the protocol, so dispatch through
+  /// the Obj-C runtime instead of a Swift protocol cast.
+  @objc(URLSession:task:didCompleteWithError:)
+  func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    guard let target = wrapped as? NSObject, target.responds(to: Self.didCompleteSelector) else {
+      return
+    }
+    typealias DidComplete = @convention(c) (AnyObject, Selector, URLSession, URLSessionTask, NSError?) -> Void
+    let implementation = unsafeBitCast(target.method(for: Self.didCompleteSelector), to: DidComplete.self)
+    implementation(target, Self.didCompleteSelector, session, task, error as NSError?)
+  }
+
+  @objc(URLSession:dataTask:didReceiveResponse:completionHandler:)
+  func urlSession(
+    _ session: URLSession,
+    dataTask: URLSessionDataTask,
+    didReceive response: URLResponse,
+    completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
+  ) {
+    guard let target = wrapped as? NSObject, target.responds(to: Self.didReceiveResponseSelector) else {
+      completionHandler(.allow)
+      return
+    }
+    typealias DidReceiveResponse =
+      @convention(c) (
+        AnyObject,
+        Selector,
+        URLSession,
+        URLSessionDataTask,
+        URLResponse,
+        @escaping @convention(block) (URLSession.ResponseDisposition) -> Void
+      ) -> Void
+    let implementation = unsafeBitCast(target.method(for: Self.didReceiveResponseSelector), to: DidReceiveResponse.self)
+    implementation(target, Self.didReceiveResponseSelector, session, dataTask, response) { completionHandler($0) }
   }
 
   /// Canonical recording site. `didFinishCollectingMetrics:` is Apple's "task is fully done" signal
