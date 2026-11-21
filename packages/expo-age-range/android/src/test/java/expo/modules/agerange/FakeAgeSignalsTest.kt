@@ -1,7 +1,6 @@
 package expo.modules.agerange
 
 import android.os.Looper
-import com.google.android.play.agesignals.AgeSignalsRequest
 import com.google.android.play.agesignals.model.AgeSignalsErrorCode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -26,18 +25,11 @@ class FakeAgeSignalsTest {
     )
 
     var result: AgeRangeResult? = null
-    fake.manager
-      .checkAgeSignals(AgeSignalsRequest.builder().build())
-      .addOnCanceledListener {
-        throw AssertionError("Unexpected cancellation")
-      }
-      .addOnFailureListener { exception ->
-        val codedException = processAgeSignalsError(exception)
-        throw AssertionError("Unexpected error: $codedException")
-      }
-      .addOnSuccessListener { ageSignalsResult ->
-        result = AgeRangeResult(ageSignalsResult)
-      }
+    requestAgeRange(
+      ageSignalsManager = fake.manager,
+      onSuccess = { result = it },
+      onError = { throw AssertionError("Unexpected error: $it") }
+    )
     shadowOf(Looper.getMainLooper()).idle()
 
     assertNotNull("Expected success callback to be called", result)
