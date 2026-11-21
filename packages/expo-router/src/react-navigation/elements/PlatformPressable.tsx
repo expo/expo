@@ -7,6 +7,7 @@ import {
   type GestureResponderEvent,
   Platform,
   Pressable,
+  type PressableInstance,
   type PressableProps,
   type StyleProp,
   type ViewStyle,
@@ -21,7 +22,7 @@ type HoverEffectProps = {
 };
 
 export type Props = Omit<PressableProps, 'style' | 'onPress'> & {
-  ref?: React.Ref<React.ComponentRef<typeof AnimatedPressable>>;
+  ref?: React.Ref<PressableInstance>;
   href?: string;
   pressColor?: ColorValue;
   pressOpacity?: number;
@@ -88,7 +89,9 @@ function PlatformPressableInternal({
 
       // let browser handle "target=_blank" etc.
       const isSelfTarget =
-        e.currentTarget && 'target' in e.currentTarget
+        typeof e.currentTarget === 'object' &&
+        e.currentTarget !== null &&
+        'target' in e.currentTarget
           ? [undefined, null, '', 'self'].includes(e.currentTarget.target)
           : true;
 

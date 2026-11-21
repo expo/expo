@@ -2,6 +2,7 @@ import { Slot as RUISlot } from '@radix-ui/react-slot';
 import React, {
   forwardRef,
   useMemo,
+  type CSSProperties,
   type ForwardRefExoticComponent,
   type Component,
   type RefAttributes,
@@ -23,7 +24,12 @@ import { StyleSheet, type ViewProps } from 'react-native';
  */
 function ShimSlotForReactNative(Component: typeof RUISlot): typeof RUISlot {
   return forwardRef(function RNSlotHOC({ style, ...props }, ref) {
-    const flattenedStyle = useMemo(() => StyleSheet.flatten(style), [style]);
+    // Radix types `style` as CSS properties, while React Native callers pass style arrays.
+    const flattenedStyle = useMemo(
+      () =>
+        (StyleSheet.flatten(style as ViewProps['style']) ?? undefined) as CSSProperties | undefined,
+      [style]
+    );
     if (process.env.NODE_ENV !== 'production') {
       if (React.isValidElement(props.children)) {
         if (

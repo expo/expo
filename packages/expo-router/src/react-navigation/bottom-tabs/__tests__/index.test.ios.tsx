@@ -4,7 +4,7 @@ import {
   Animated,
   type EmitterSubscription,
   Keyboard,
-  type KeyboardEventListener,
+  type KeyboardEvent,
   type KeyboardEventName,
   Pressable,
   View,
@@ -152,7 +152,7 @@ test('preloads a non-lazy screen after mount', async () => {
 
 test('tab bar cannot be tapped when hidden', async () => {
   // @ts-expect-error: mock implementation for testing
-  const listeners: Record<KeyboardEventName, KeyboardEventListener[]> = {
+  const listeners: Record<KeyboardEventName, ((event: KeyboardEvent) => void)[]> = {
     keyboardWillShow: [],
     keyboardWillHide: [],
   };

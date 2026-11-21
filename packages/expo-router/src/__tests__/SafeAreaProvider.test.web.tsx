@@ -2,7 +2,7 @@
 import { act, fireEvent, render } from '@testing-library/react';
 import { createRef } from 'react';
 import { renderToString } from 'react-dom/server';
-import { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 import { useSafeAreaFrame, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SafeAreaProvider } from '../SafeAreaProvider';
@@ -55,7 +55,7 @@ it('keeps metrics fixed through hydration and resize, including nested providers
 });
 
 it('preserves the wrapper, styles, events and ref', () => {
-  const ref = createRef<View>();
+  const ref = createRef<ViewInstance>();
   const onPointerDown = jest.fn();
   const result = render(
     <SafeAreaProvider

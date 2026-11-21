@@ -241,7 +241,7 @@ const SceneView = ({
 
   const rawAnimatedHeaderHeight = useAnimatedValue(defaultHeaderHeight);
   const animatedHeaderHeight = React.useMemo(
-    () => Animated.add<number>(rawAnimatedHeaderHeight, headerHeightCorrectionOffset),
+    () => Animated.add(rawAnimatedHeaderHeight, headerHeightCorrectionOffset),
     [headerHeightCorrectionOffset, rawAnimatedHeaderHeight]
   );
 
