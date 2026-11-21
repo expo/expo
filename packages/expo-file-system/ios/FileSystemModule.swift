@@ -112,8 +112,14 @@ public final class FileSystemModule: Module {
       items.append(item)
     }
 
+    let sourceView = options?.sourceViewTag.flatMap { appContext?.findView(withTag: $0, ofType: UIView.self) }
     let previewController = FileSystemPreviewController()
-    let session = FileSystemPreviewSession(items: items, scopedAccesses: scopedAccesses) { [weak self] in
+    let session = FileSystemPreviewSession(
+      items: items,
+      scopedAccesses: scopedAccesses,
+      sourceView: sourceView,
+      sourceItemIndex: initialIndex
+    ) { [weak self] in
       guard let self else {
         return
       }
@@ -301,14 +307,14 @@ public final class FileSystemModule: Module {
       #endif
     }.runOnQueue(.main)
 
-    AsyncFunction("preview") { (files: [FileSystemFile], initialIndex: Double, promise: Promise) in
+    AsyncFunction("preview") { (files: [FileSystemFile], initialIndex: Double, options: FilePreviewOptions?, promise: Promise) in
       #if os(iOS)
       do {
         guard let initialIndex = Int(exactly: initialIndex),
           files.indices.contains(initialIndex) else {
           throw FilePreviewInvalidInputException("initialIndex must be an integer within a nonempty preview collection.")
         }
-        try requestPreview(files: files, options: nil, initialIndex: initialIndex, promise: promise)
+        try requestPreview(files: files, options: options, initialIndex: initialIndex, promise: promise)
       } catch {
         promise.reject(error)
       }

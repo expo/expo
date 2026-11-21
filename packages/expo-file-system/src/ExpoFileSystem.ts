@@ -8,6 +8,7 @@ import type { PathInfo } from './Paths.types';
 import type {
   FileSystemDownloadTask,
   FileSystemUploadTask,
+  NativeFilePreviewOptions,
   NativeFileSystemDirectory,
   NativeFileSystemFile,
   NativeFileSystemWatcher,
@@ -31,7 +32,7 @@ declare class ExpoFileSystemModule extends NativeModule<FileSystemEvents> {
   ): Promise<string>;
   /** Native iOS collection previews. Single-file requests use the File instance methods. */
   canPreview(files: File[]): Promise<boolean>;
-  preview(files: File[], initialIndex: number): Promise<void>;
+  preview(files: File[], initialIndex: number, options?: NativeFilePreviewOptions): Promise<void>;
   cancelDownloadAsync(uuid: string): void;
   pickDirectoryAsync(initialUri?: string): Promise<Directory>;
   pickFileAsync(options: PickSingleFileOptions): Promise<File>;
