@@ -9,9 +9,11 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.util.TypedValue;
 import android.view.View;
+import com.facebook.react.uimanager.PointerEvents;
+import com.facebook.react.uimanager.ReactPointerEventsView;
 import expo.modules.core.interfaces.DoNotStrip;
 
-public class LinearGradientView extends View {
+public class LinearGradientView extends View implements ReactPointerEventsView {
   private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
   private Path mPathForBorderRadius;
   private RectF mTempRectForBorderRadius;
@@ -27,6 +29,13 @@ public class LinearGradientView extends View {
   @DoNotStrip
   public LinearGradientView(Context context) {
     super(context);
+  }
+
+  // The gradient only draws. The wrapper `View` that `NativeLinearGradient.android.tsx` renders
+  // around it receives the `pointerEvents` prop, so this view must never be the touch target.
+  @Override
+  public PointerEvents getPointerEvents() {
+    return PointerEvents.NONE;
   }
 
   public void setStartPosition(final float x, final float y) {
