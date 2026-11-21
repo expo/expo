@@ -28,7 +28,8 @@ class VideoSource(
   @Field var metadata: VideoMetadata? = null,
   @Field var headers: Map<String, String>? = null,
   @Field var useCaching: Boolean = false,
-  @Field val contentType: ContentType = ContentType.AUTO
+  @Field val contentType: ContentType = ContentType.AUTO,
+  @Field var tsExtractorFlags: Int = 0
 ) : Record, Serializable {
   private fun toMediaId(): String {
     return "uri:${this.uri}" +
@@ -41,7 +42,8 @@ class VideoSource(
       "NotificationDataTitle:${this.metadata?.title}" +
       "NotificationDataSecondaryText:${this.metadata?.artist}" +
       "NotificationDataArtwork:${this.metadata?.artwork?.path}" +
-      "ContentType:${this.contentType.value}"
+      "ContentType:${this.contentType.value}" +
+      "TsExtractorFlags:${this.tsExtractorFlags}"
   }
 
   fun toMediaSource(context: Context): MediaSource? {
