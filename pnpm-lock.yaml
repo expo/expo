@@ -6800,8 +6800,8 @@ importers:
         specifier: ^0.38.4
         version: 0.38.4
       agent-cli-detector:
-        specifier: 0.1.6
-        version: 0.1.6
+        specifier: ^0.1.8
+        version: 0.1.8
       arg:
         specifier: ^5.0.2
         version: 5.0.2
@@ -10847,11 +10847,6 @@ packages:
   agent-base@7.1.4:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
-
-  agent-cli-detector@0.1.6:
-    resolution: {integrity: sha512-vKrPeEVN3upDF3GjWxsWBbwQgMtNJ8VB1cduPvK3svmmz4ENpS7yaPxbogsbe3w+xp9xp2Cu+0Ar41rjAR4+lA==}
-    engines: {node: '>=18.18'}
-    hasBin: true
 
   agent-cli-detector@0.1.8:
     resolution: {integrity: sha512-o9iM2eTePg7zrZQNoC80Dgljvz53u6MT0EPeBshRKipEl2K3825mthxQCGsYkHob7pFZ/VCwKXMJJ5qa8Z44EA==}
@@ -20093,8 +20088,6 @@ snapshots:
   adaptive-quadratic-curve@1.0.2: {}
 
   agent-base@7.1.4: {}
-
-  agent-cli-detector@0.1.6: {}
 
   agent-cli-detector@0.1.8: {}
 
