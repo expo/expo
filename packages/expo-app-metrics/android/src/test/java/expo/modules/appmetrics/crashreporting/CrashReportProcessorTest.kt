@@ -380,5 +380,18 @@ class CrashReportProcessorTest {
       assertEquals(fresh.timestampMillis, cursor)
     }
 
+  @Test
+  fun `ignores a SIGKILL signaled exit`() =
+    runTest {
+      // Devices without low-memory-kill reporting record those kills as REASON_SIGNALED + SIGKILL.
+      // An app can't raise SIGKILL itself, so this is a system kill, not a crash.
+      exitRecords += exitRecord(reason = ApplicationExitInfo.REASON_SIGNALED, status = 9)
+
+      processor().process()
+
+      assertTrue(storeCalls.isEmpty())
+    }
+
+
   // endregion
 }
