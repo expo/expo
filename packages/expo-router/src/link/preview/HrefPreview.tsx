@@ -6,7 +6,10 @@ import { Text, View } from 'react-native';
 import type { RouteNode } from '../../Route';
 import { INTERNAL_SLOT_NAME } from '../../constants';
 import type { ResultState } from '../../exports';
-import { CompositionContext } from '../../fork/native-stack/composition-options';
+import {
+  CompositionContext,
+  type CompositionContextValue,
+} from '../../fork/native-stack/composition-options';
 import { RouterConfigContext } from '../../global-state/routerConfigContext';
 import type { ReactNavigationState } from '../../global-state/types';
 import { useRouteInfo } from '../../global-state/useRouteInfo';
@@ -25,6 +28,13 @@ import { getQualifiedRouteComponent } from '../../useScreens';
 import { getStateForHref } from '../getStateForHref';
 import { getPathFromState } from '../linking';
 import { PreviewRouteContext } from './PreviewRouteContext';
+
+const PREVIEW_COMPOSITION_CONTEXT: CompositionContextValue = {
+  set: () => {},
+  unset: () => {},
+  hideRoute: () => {},
+  showRoute: () => {},
+};
 
 export function HrefPreview({ href }: { href: Href }) {
   // TODO(@ubax): Extract `linking` and `routeNode` into separate contexts to avoid unrelated rerenders.
@@ -111,7 +121,7 @@ function PreviewForRootHrefState({
 
   return (
     <PreviewRouteContext value={value}>
-      <CompositionContext value={{ set: () => {}, unset: () => {} }}>
+      <CompositionContext value={PREVIEW_COMPOSITION_CONTEXT}>
         {/* Using NavigationContext to override useNavigation */}
         <NavigationContext value={navigationPropWithWarnings}>
           {/* `getQualifiedRouteComponent` returns a cached component per route node,
