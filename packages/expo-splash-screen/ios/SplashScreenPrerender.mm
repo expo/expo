@@ -231,8 +231,6 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   BOOL _hydrated;
   BOOL _reactCommitted;
   BOOL _flushPending;
-  BOOL _dismissPending;
-  NSTimeInterval _pendingDismissFade;
   int _adoptedTotal;
   CFTimeInterval _lastTransactionTime;
   NSTimeInterval _pendingCaptureDelay;
@@ -472,6 +470,8 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   _capturePending = YES;
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
     self->_capturePending = NO;
+    // The views that React did not adopt must not be in the snapshot.
+    [self flushHydration];
     [self saveLaunchScreen];
   });
 }
@@ -694,12 +694,21 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
     RCTComponentViewRegistry *viewRegistry = presenter.mountingManager.componentViewRegistry;
     _transactionWatcher = std::make_shared<expo::SplashScreenTransactionWatcher>(
         builder.prerenderedTags(),
-        [viewRegistry](Tag tag) {
-          // Mounting thread (main). React inserts the adopted view into its own tree in the same
-          // transaction. A native container that React puts into the view before that (a
-          // react-native-screens stack) looks for its parent view controller when it moves to the
-          // window, and must not find the one of the prerendered tree.
-          [[viewRegistry findComponentViewWithTag:tag] removeFromSuperview];
+        [viewRegistry](Tag tag, expo::SplashScreenTransactionWatcher::ViewEvent event) {
+          // Mounting thread (main).
+          UIView *view = [viewRegistry findComponentViewWithTag:tag];
+          // React inserts its views by index, so a held view stays in front of them in the subview
+          // order. Hide it: the window then shows only React's tree, and the overlay does not need
+          // to cover until the held views are removed. The overlay still covers at this time,
+          // because the app hides the splash screen only after React's first commit.
+          view.hidden = event == expo::SplashScreenTransactionWatcher::ViewEvent::Held;
+          if (event == expo::SplashScreenTransactionWatcher::ViewEvent::Adopted) {
+            // React inserts the adopted view into its own tree in the same transaction. A native
+            // container that React puts into the view before that (a react-native-screens stack)
+            // looks for its parent view controller when it moves to the window, and must not find
+            // the one of the prerendered tree.
+            [view removeFromSuperview];
+          }
         },
         [weakSelf](expo::SplashScreenTransactionWatcher::Stats stats) {
           dispatch_async(dispatch_get_main_queue(), ^{
@@ -743,10 +752,10 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 }
 
 /// The app hid the splash screen: its first screen is up. Once React has been quiet for a moment,
-/// the prerendered views it did not adopt are removed.
+/// the prerendered views it did not adopt are removed. The snapshot capture removes them at the latest.
 - (void)flushHydrationIfSettled
 {
-  if (!_flushPending || !_transactionWatcher || !_transactionWatcher->isActive()) {
+  if (!_flushPending) {
     return;
   }
   CFTimeInterval quietFor = CACurrentMediaTime() - _lastTransactionTime;
@@ -757,7 +766,15 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
     });
     return;
   }
+  [self flushHydration];
+}
+
+- (void)flushHydration
+{
   _flushPending = NO;
+  if (!_transactionWatcher || !_transactionWatcher->isActive()) {
+    return;
+  }
   UIView *rootView = _appRootView;
   id<RCTSurfaceProtocol> surface =
       [rootView isKindOfClass:[RCTSurfaceHostingProxyRootView class]] ? ((RCTSurfaceHostingProxyRootView *)rootView).surface : nil;
@@ -770,6 +787,7 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
       continue;
     }
     [view removeFromSuperview];
+    view.hidden = NO;
     if ([view isKindOfClass:[RCTViewComponentView class]]) {
       RCTComponentViewDescriptor descriptor = [registry componentViewDescriptorWithTag:tag];
       [registry enqueueComponentViewWithComponentHandle:[[view class] componentDescriptorProvider].handle
@@ -780,10 +798,6 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   }
   _transactionWatcher->deactivate();
   [self log:[NSString stringWithFormat:@"hydration: done, React adopted %d prerendered views, %d removed", _adoptedTotal, removed]];
-  if (_dismissPending) {
-    _dismissPending = NO;
-    [self dismissWithFadeDuration:_pendingDismissFade];
-  }
 }
 
 #pragma mark - Main thread
@@ -855,17 +869,12 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
     });
     return;
   }
-  if (_transactionWatcher && _transactionWatcher->isActive()) {
-    // React is still building its tree out of (and around) the prerendered views. The overlay
-    // keeps covering until it has settled, then the leftovers go and the overlay fades.
-    _pendingDismissFade = duration;
-    _dismissPending = YES;
-    if (!_flushPending) {
-      _flushPending = YES;
-      [self log:@"hydration: splash hidden, waiting for React to settle"];
-      [self flushHydrationIfSettled];
-    }
-    return;
+  if (_transactionWatcher && _transactionWatcher->isActive() && !_flushPending) {
+    // React can still adopt prerendered views. The ones it did not adopt are hidden, so the
+    // overlay fades now, and they go when React has settled.
+    _flushPending = YES;
+    [self log:@"hydration: splash hidden, waiting for React to settle"];
+    [self flushHydrationIfSettled];
   }
   UIView *container = _containerView;
   if (!_window || !container || duration <= 0) {

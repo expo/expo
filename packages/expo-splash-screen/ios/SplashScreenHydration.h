@@ -22,13 +22,22 @@ using namespace facebook::react;
  builds its tree over several commits. Instead of letting those commits delete the prerendered views,
  the deletes are held back; when React later creates a node with the same tag and component, the
  `Create` becomes an `Update` of the prerendered view (adoption). Whatever React never claims is
- removed directly from the view hierarchy once the app has hidden the splash screen and React has
- settled; replaying the held mutations later would confuse other mounting delegates that mirror the
- stream (Reanimated's layout animations). Mutations otherwise pass through untouched. Runs on the
- mounting thread (main).
+ hidden, and removed directly from the view hierarchy once the app has hidden the
+ splash screen and React has settled; replaying the held mutations later would confuse other
+ mounting delegates that mirror the stream (Reanimated's layout animations). Mutations otherwise
+ pass through untouched. Runs on the mounting thread (main).
  */
 class SplashScreenTransactionWatcher : public MountingOverrideDelegate {
  public:
+  enum class ViewEvent {
+    /// React removed the view. It stays in the hierarchy, hidden, for a later `Create` to adopt.
+    Held,
+    /// The held view goes back into the mutation stream, to be removed and deleted.
+    Released,
+    /// A `Create` with the same tag and component arrived. The view is React's now.
+    Adopted,
+  };
+
   struct Stats {
     int adopted{};
     bool isEmpty{};
@@ -37,9 +46,9 @@ class SplashScreenTransactionWatcher : public MountingOverrideDelegate {
 
   SplashScreenTransactionWatcher(
       std::unordered_set<Tag> prerendered,
-      std::function<void(Tag)> onAdopt,
+      std::function<void(Tag, ViewEvent)> onViewEvent,
       std::function<void(Stats)> onTransaction)
-      : prerendered_(std::move(prerendered)), onAdopt_(std::move(onAdopt)), onTransaction_(std::move(onTransaction))
+      : prerendered_(std::move(prerendered)), onViewEvent_(std::move(onViewEvent)), onTransaction_(std::move(onTransaction))
   {
   }
 
@@ -89,6 +98,7 @@ class SplashScreenTransactionWatcher : public MountingOverrideDelegate {
             : mutation.oldChildShadowView.tag;
         if (mutation.type == ShadowViewMutation::Remove && isHeldCandidate(tag)) {
           heldRemoves_.insert_or_assign(tag, mutation);
+          onViewEvent_(tag, ViewEvent::Held);
           continue;
         }
         if (mutation.type == ShadowViewMutation::Delete && isHeldCandidate(tag)) {
@@ -103,7 +113,7 @@ class SplashScreenTransactionWatcher : public MountingOverrideDelegate {
             if (std::strcmp(old.componentName, mutation.newChildShadowView.componentName) == 0) {
               // The view leaves the prerendered tree now, outside the mutation stream: a `Remove`
               // mutation here has a stale index, and that breaks delegates that mirror the stream.
-              onAdopt_(tag);
+              onViewEvent_(tag, ViewEvent::Adopted);
               out.push_back(ShadowViewMutation::UpdateMutation(
                   old, mutation.newChildShadowView, removed != heldRemoves_.end() ? removed->second.parentTag : -1));
               adopted_.insert(tag);
@@ -115,6 +125,7 @@ class SplashScreenTransactionWatcher : public MountingOverrideDelegate {
               continue;
             }
             // Same tag, different component: the prerendered view goes first.
+            onViewEvent_(tag, ViewEvent::Released);
             if (removed != heldRemoves_.end()) {
               out.push_back(removed->second);
               heldRemoves_.erase(removed);
@@ -138,7 +149,7 @@ class SplashScreenTransactionWatcher : public MountingOverrideDelegate {
   }
 
   std::unordered_set<Tag> prerendered_;
-  std::function<void(Tag)> onAdopt_;
+  std::function<void(Tag, ViewEvent)> onViewEvent_;
   std::function<void(Stats)> onTransaction_;
   mutable bool active_ = true;
   mutable bool sawFirst_ = false;
