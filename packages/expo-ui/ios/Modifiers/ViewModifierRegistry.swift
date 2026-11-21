@@ -11,74 +11,66 @@ internal enum ListSectionSpacingType: String, Enumerable {
   case custom
 }
 
-internal struct ListSectionSpacingModifier: ViewModifier, UIRecord {
-  @Field var spacing: ListSectionSpacingType = .default
-  @Field var value: CGFloat = 0
-
-  func body(content: Content) -> some View {
+@MainActor @AnyViewBuilder
+internal func listSectionSpacingModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let spacing: ListSectionSpacingType = try p.value("spacing", .default)
+  let value: CGFloat = try p.value("value", 0)
 #if os(tvOS) || os(macOS)
-    content
+  content
 #else
-    if #available(iOS 17.0, *) {
-      switch spacing {
-      case .compact:
-        content.listSectionSpacing(.compact)
-      case .custom:
-        content.listSectionSpacing(value)
-      default:
-        content.listSectionSpacing(.default)
-      }
-    } else {
-      content
+  if #available(iOS 17.0, *) {
+    switch spacing {
+    case .compact:
+      content.listSectionSpacing(.compact)
+    case .custom:
+      content.listSectionSpacing(value)
+    default:
+      content.listSectionSpacing(.default)
     }
+  } else {
+    content
+  }
 #endif
-  }
 }
 
-internal struct CornerRadiusModifier: ViewModifier, UIRecord {
-  @Field var radius: CGFloat = 0
-
-  func body(content: Content) -> some View {
-    content.cornerRadius(radius)
-  }
+@MainActor @AnyViewBuilder
+internal func cornerRadiusModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let radius: CGFloat = try p.value("radius", 0)
+  content.cornerRadius(radius)
 }
 
-internal struct ShadowModifier: ViewModifier, UIRecord {
-  @Field var color: Color = .white
-  @Field var radius: CGFloat = 0
-  @Field var x: CGFloat = 0
-  @Field var y: CGFloat = 0
-
-  func body(content: Content) -> some View {
-    content.shadow(color: color, radius: radius, x: x, y: y)
-  }
+@MainActor @AnyViewBuilder
+internal func shadowModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let color: Color = try p.value("color", .white)
+  let radius: CGFloat = try p.value("radius", 0)
+  let x: CGFloat = try p.value("x", 0)
+  let y: CGFloat = try p.value("y", 0)
+  content.shadow(color: color, radius: radius, x: x, y: y)
 }
 
-internal struct FrameModifier: ViewModifier, UIRecord {
-  @Field var width: CGFloat?
-  @Field var height: CGFloat?
-  @Field var minWidth: CGFloat?
-  @Field var maxWidth: CGFloat?
-  @Field var minHeight: CGFloat?
-  @Field var maxHeight: CGFloat?
-  @Field var idealWidth: CGFloat?
-  @Field var idealHeight: CGFloat?
-  @Field var alignment: AlignmentOptions = .center
-
-  func body(content: Content) -> some View {
-    if width != nil || height != nil {
-      content.frame(width: width, height: height, alignment: alignment.toAlignment())
-    } else {
-      content.frame(
-        minWidth: minWidth,
-        idealWidth: idealWidth,
-        maxWidth: maxWidth,
-        minHeight: minHeight,
-        idealHeight: idealHeight,
-        maxHeight: maxHeight,
-        alignment: alignment.toAlignment()
-      )
-    }
+@MainActor @AnyViewBuilder
+internal func frameModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let width: CGFloat? = try p.value("width", nil)
+  let height: CGFloat? = try p.value("height", nil)
+  let minWidth: CGFloat? = try p.value("minWidth", nil)
+  let maxWidth: CGFloat? = try p.value("maxWidth", nil)
+  let minHeight: CGFloat? = try p.value("minHeight", nil)
+  let maxHeight: CGFloat? = try p.value("maxHeight", nil)
+  let idealWidth: CGFloat? = try p.value("idealWidth", nil)
+  let idealHeight: CGFloat? = try p.value("idealHeight", nil)
+  let alignment: AlignmentOptions = try p.value("alignment", .center)
+  if width != nil || height != nil {
+    content.frame(width: width, height: height, alignment: alignment.toAlignment())
+  } else {
+    content.frame(
+      minWidth: minWidth,
+      idealWidth: idealWidth,
+      maxWidth: maxWidth,
+      minHeight: minHeight,
+      idealHeight: idealHeight,
+      maxHeight: maxHeight,
+      alignment: alignment.toAlignment()
+    )
   }
 }
 
@@ -363,15 +355,13 @@ internal struct SaturationModifier: ViewModifier, UIRecord {
   }
 }
 
-internal struct ColorInvertModifier: ViewModifier, UIRecord {
-  @Field var inverted: Bool = true
-
-  func body(content: Content) -> some View {
-    if inverted {
-      content.colorInvert()
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func colorInvertModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let inverted: Bool = try p.value("inverted", true)
+  if inverted {
+    content.colorInvert()
+  } else {
+    content
   }
 }
 
@@ -397,28 +387,25 @@ internal struct BorderModifier: ViewModifier, UIRecord {
   }
 }
 
-internal struct ClipShapeModifier: ViewModifier, UIRecord {
-  @Field var shape: ShapeType = .rectangle
-  @Field var cornerRadius: CGFloat = 8
-  @Field var roundedCornerStyle: RoundedCornerStyle?
-  @Field var cornerSize: CornerSize?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    switch shape {
-    case .capsule:
-      content.clipShape(makeCapsule(style: roundedCornerStyle))
-    case .circle:
-      content.clipShape(Circle())
-    case .containerRelativeShape:
-      content.clipShape(ContainerRelativeShape())
-    case .ellipse:
-      content.clipShape(Ellipse())
-    case .rectangle:
-      content.clipShape(Rectangle())
-    case .roundedRectangle:
-      content.clipShape(makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle))
-    }
+@MainActor @AnyViewBuilder
+internal func clipShapeModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let shape: ShapeType = try p.value("shape", .rectangle)
+  let cornerRadius: CGFloat = try p.value("cornerRadius", 8)
+  let roundedCornerStyle: RoundedCornerStyle? = try p.value("roundedCornerStyle", nil)
+  let cornerSize: CornerSize? = try p.value("cornerSize", nil)
+  switch shape {
+  case .capsule:
+    content.clipShape(makeCapsule(style: roundedCornerStyle))
+  case .circle:
+    content.clipShape(Circle())
+  case .containerRelativeShape:
+    content.clipShape(ContainerRelativeShape())
+  case .ellipse:
+    content.clipShape(Ellipse())
+  case .rectangle:
+    content.clipShape(Rectangle())
+  case .roundedRectangle:
+    content.clipShape(makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle))
   }
 }
 
@@ -934,6 +921,11 @@ internal struct StableViewModifier: ViewModifier {
       let factory = ViewModifierRegistry.shared.modifierFactories[type],
       let modifier = try? factory(params, appContext, dispatcher) {
       content.modifier(AnyViewModifier(modifier))
+    } else if let type = params["$type"] as? String,
+      let appContext,
+      let body = ViewModifierRegistry.shared.inlineModifiers[type],
+      let view = try? body(content, ModifierParams(raw: params, appContext: appContext)) {
+      view
     } else {
       content
     }
@@ -1544,6 +1536,7 @@ public class ViewModifierRegistry {
 
   public typealias ModifierFactory = ([String: Any], AppContext, EventDispatcher) throws -> any ViewModifier
   private(set) internal var modifierFactories: [String: ModifierFactory] = [:]
+  private(set) internal var inlineModifiers: [String: InlineModifier] = [:]
 
   public static var widgetKit: WidgetKitModifiers?
 
@@ -1588,6 +1581,14 @@ public class ViewModifierRegistry {
   }
 
   /**
+   * Registers a built-in modifier written as an `@AnyViewBuilder` function. The function reads its
+   * fields from `ModifierParams` and returns the modified content.
+   */
+  internal func registerModifierInline(_ type: String, _ body: @escaping InlineModifier) {
+    inlineModifiers[type] = body
+  }
+
+  /**
    * Unregisters a modifier by type name.
    */
   internal func unregister(_ type: String) {
@@ -1606,7 +1607,7 @@ public class ViewModifierRegistry {
     globalEventDispatcher: EventDispatcher,
     params: [String: Any]
   ) -> AnyView {
-    guard modifierFactories[type] != nil else {
+    guard modifierFactories[type] != nil || inlineModifiers[type] != nil else {
       return view
     }
     return AnyView(view.modifier(StableViewModifier(
@@ -1692,14 +1693,14 @@ public class ViewModifierRegistry {
    * Checks if a modifier type is registered.
    */
   func hasModifier(_ type: String) -> Bool {
-    return modifierFactories[type] != nil
+    return modifierFactories[type] != nil || inlineModifiers[type] != nil
   }
 
   /**
    * Returns all registered modifier types.
    */
   func registeredTypes() -> [String] {
-    return Array(modifierFactories.keys)
+    return Array(Set(modifierFactories.keys).union(inlineModifiers.keys))
   }
 }
 
@@ -1922,25 +1923,17 @@ internal struct ToolbarTitleDisplayModeModifier: ViewModifier, UIRecord {
 // swiftlint:disable:next no_grouping_extension
 extension ViewModifierRegistry {
   private func registerBuiltInModifiers() {
-    register("listSectionSpacing") { params, appContext, _ in
-      return try ListSectionSpacingModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("listSectionSpacing", listSectionSpacingModifier)
 
     register("background") { params, appContext, _ in
       return try BackgroundModifier(from: params, appContext: appContext)
     }
 
-    register("cornerRadius") { params, appContext, _ in
-      return try CornerRadiusModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("cornerRadius", cornerRadiusModifier)
 
-    register("shadow") { params, appContext, _ in
-      return try ShadowModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("shadow", shadowModifier)
 
-    register("frame") { params, appContext, _ in
-      return try FrameModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("frame", frameModifier)
 
     register("universalLayout") { params, appContext, _ in
       return try UniversalLayoutModifier(from: params, appContext: appContext)
@@ -2050,9 +2043,7 @@ extension ViewModifierRegistry {
       return try SaturationModifier(from: params, appContext: appContext)
     }
 
-    register("colorInvert") { params, appContext, _ in
-      return try ColorInvertModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("colorInvert", colorInvertModifier)
 
     register("grayscale") { params, appContext, _ in
       return try GrayscaleModifier(from: params, appContext: appContext)
@@ -2065,9 +2056,7 @@ extension ViewModifierRegistry {
       return try StrokeBorderModifier(from: params, appContext: appContext)
     }
 
-    register("clipShape") { params, appContext, _ in
-      return try ClipShapeModifier(from: params, appContext: appContext)
-    }
+    registerModifierInline("clipShape", clipShapeModifier)
 
     register("onTapGesture") { params, appContext, eventDispatcher in
       return try OnTapGestureModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
