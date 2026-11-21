@@ -72,6 +72,14 @@ class ExpoImageModule : Module() {
       appContext.reactContext?.unregisterComponentCallbacks(ExpoImageComponentCallbacks)
     }
 
+    OnActivityEntersForeground {
+      ExpoImageViewWrapper.onActivityEntersForeground()
+    }
+
+    OnActivityEntersBackground {
+      ExpoImageViewWrapper.onActivityEntersBackground()
+    }
+
     AsyncFunction("prefetch") { urls: List<String>, cachePolicy: CachePolicy, headersMap: Map<String, String>?, promise: Promise ->
       val context = appContext.reactContext ?: return@AsyncFunction false
 
