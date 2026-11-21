@@ -4,16 +4,14 @@ import ExpoModulesCore
 import SwiftUI
 
 // SwiftUI has no API for this, so set it on the `UISegmentedControl` behind the segmented `Picker`.
-internal struct SelectedSegmentTintColorModifier: ViewModifier, UIRecord {
-  @Field var color: Color?
-
-  func body(content: Content) -> some View {
+@MainActor @AnyViewBuilder
+internal func selectedSegmentTintColorModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let color: Color? = try p.value("color", nil)
 #if os(iOS)
-    content.background(SegmentedControlTintSetter(color: color.map { UIColor($0) }))
+  content.background(SegmentedControlTintSetter(color: color.map { UIColor($0) }))
 #else
-    content
+  content
 #endif
-  }
 }
 
 #if os(iOS)

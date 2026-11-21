@@ -35,22 +35,20 @@ internal enum DynamicTypeSizeType: String, Enumerable {
   }
 }
 
-internal struct DynamicTypeSizeModifier: ViewModifier, UIRecord {
-  @Field var size: DynamicTypeSizeType?
-  @Field var min: DynamicTypeSizeType?
-  @Field var max: DynamicTypeSizeType?
-
-  func body(content: Content) -> some View {
-    if let size {
-      content.dynamicTypeSize(size.toSwiftUI())
-    } else if let min, let max {
-      content.dynamicTypeSize(min.toSwiftUI()...max.toSwiftUI())
-    } else if let max {
-      content.dynamicTypeSize(...max.toSwiftUI())
-    } else if let min {
-      content.dynamicTypeSize(min.toSwiftUI()...)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func dynamicTypeSizeModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let size: DynamicTypeSizeType? = try p.value("size", nil)
+  let min: DynamicTypeSizeType? = try p.value("min", nil)
+  let max: DynamicTypeSizeType? = try p.value("max", nil)
+  if let size {
+    content.dynamicTypeSize(size.toSwiftUI())
+  } else if let min, let max {
+    content.dynamicTypeSize(min.toSwiftUI()...max.toSwiftUI())
+  } else if let max {
+    content.dynamicTypeSize(...max.toSwiftUI())
+  } else if let min {
+    content.dynamicTypeSize(min.toSwiftUI()...)
+  } else {
+    content
   }
 }

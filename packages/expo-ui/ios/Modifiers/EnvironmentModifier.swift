@@ -43,41 +43,38 @@ internal enum ColorSchemeType: String, Enumerable {
   }
 }
 
-internal struct EnvironmentModifier: ViewModifier, UIRecord {
-  @Field var key: EnvironmentKeyType = .editMode
-  @Field var value: String = ""
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    switch key {
-    case .editMode:
+@MainActor @AnyViewBuilder
+internal func environmentModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let key: EnvironmentKeyType = try p.value("key", .editMode)
+  let value: String = try p.value("value", "")
+  switch key {
+  case .editMode:
 #if os(macOS)
-      content
+    content
 #else
-      if let editMode = EditModeType(rawValue: value) {
-        content.environment(\.editMode, .constant(editMode.toNativeEditMode()))
-      } else {
-        content
-      }
+    if let editMode = EditModeType(rawValue: value) {
+      content.environment(\.editMode, .constant(editMode.toNativeEditMode()))
+    } else {
+      content
+    }
 #endif
-    case .colorScheme:
-      if let colorScheme = ColorSchemeType(rawValue: value) {
-        content.environment(\.colorScheme, colorScheme.toNativeColorScheme())
-      } else {
-        content
-      }
-    case .locale:
-      if Locale.availableIdentifiers.contains(value) {
-        content.environment(\.locale, Locale(identifier: value))
-      } else {
-        content
-      }
-    case .timeZone:
-      if let tz = TimeZone(identifier: value) {
-        content.environment(\.timeZone, tz)
-      } else {
-        content
-      }
+  case .colorScheme:
+    if let colorScheme = ColorSchemeType(rawValue: value) {
+      content.environment(\.colorScheme, colorScheme.toNativeColorScheme())
+    } else {
+      content
+    }
+  case .locale:
+    if Locale.availableIdentifiers.contains(value) {
+      content.environment(\.locale, Locale(identifier: value))
+    } else {
+      content
+    }
+  case .timeZone:
+    if let tz = TimeZone(identifier: value) {
+      content.environment(\.timeZone, tz)
+    } else {
+      content
     }
   }
 }

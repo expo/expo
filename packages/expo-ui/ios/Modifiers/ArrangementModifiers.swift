@@ -9,118 +9,106 @@ internal enum ArrangementViewStyleOptions: String, Enumerable {
   case overlay
 }
 
-internal struct ArrangementViewStyleModifier: ViewModifier, UIRecord {
-  @Field var style: ArrangementViewStyleOptions = .automatic
-  @Field var axes: AxisOptions?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
+@MainActor @AnyViewBuilder
+internal func arrangementViewStyleModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let style: ArrangementViewStyleOptions = try p.value("style", .automatic)
+  let axes: AxisOptions? = try p.value("axes", nil)
 #if canImport(SwiftUICore, _version: 8.0.85)
-    if #available(iOS 27.1, macOS 27.1, tvOS 27.1, visionOS 27.1, *) {
-      switch style {
-      case .automatic:
-        content.arrangementViewStyle(.automatic)
-      case .split:
-        if let axes {
-          content.arrangementViewStyle(.split.axes(axes.toAxis()))
-        } else {
-          content.arrangementViewStyle(.split)
-        }
-      case .overlay:
-        if let axes {
-          content.arrangementViewStyle(.overlay.axes(axes.toAxis()))
-        } else {
-          content.arrangementViewStyle(.overlay)
-        }
-      }
-    } else {
-      content
-    }
-#else
-    content
-#endif
-  }
-}
-
-internal struct SplitArrangementLayoutRatioModifier: ViewModifier, UIRecord {
-  @Field var ratio: CGFloat?
-  @Field var minHorizontal: CGFloat?
-  @Field var idealHorizontal: CGFloat?
-  @Field var maxHorizontal: CGFloat?
-  @Field var minVertical: CGFloat?
-  @Field var idealVertical: CGFloat?
-  @Field var maxVertical: CGFloat?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-#if canImport(SwiftUICore, _version: 8.0.85)
-    if #available(iOS 27.1, macOS 27.1, tvOS 27.1, visionOS 27.1, *) {
-      if let ratio {
-        content.splitArrangementLayoutRatio(ratio)
+  if #available(iOS 27.1, macOS 27.1, tvOS 27.1, visionOS 27.1, *) {
+    switch style {
+    case .automatic:
+      content.arrangementViewStyle(.automatic)
+    case .split:
+      if let axes {
+        content.arrangementViewStyle(.split.axes(axes.toAxis()))
       } else {
-        content.splitArrangementLayoutRatio(
-          minHorizontal: minHorizontal,
-          idealHorizontal: idealHorizontal,
-          maxHorizontal: maxHorizontal,
-          minVertical: minVertical,
-          idealVertical: idealVertical,
-          maxVertical: maxVertical
-        )
+        content.arrangementViewStyle(.split)
       }
-    } else {
-      content
+    case .overlay:
+      if let axes {
+        content.arrangementViewStyle(.overlay.axes(axes.toAxis()))
+      } else {
+        content.arrangementViewStyle(.overlay)
+      }
     }
-#else
+  } else {
     content
-#endif
   }
+#else
+  content
+#endif
 }
 
-internal struct SplitArrangementLayoutSizeModifier: ViewModifier, UIRecord {
-  @Field var minWidth: CGFloat?
-  @Field var idealWidth: CGFloat?
-  @Field var maxWidth: CGFloat?
-  @Field var minHeight: CGFloat?
-  @Field var idealHeight: CGFloat?
-  @Field var maxHeight: CGFloat?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
+@MainActor @AnyViewBuilder
+internal func splitArrangementLayoutRatioModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let ratio: CGFloat? = try p.value("ratio", nil)
+  let minHorizontal: CGFloat? = try p.value("minHorizontal", nil)
+  let idealHorizontal: CGFloat? = try p.value("idealHorizontal", nil)
+  let maxHorizontal: CGFloat? = try p.value("maxHorizontal", nil)
+  let minVertical: CGFloat? = try p.value("minVertical", nil)
+  let idealVertical: CGFloat? = try p.value("idealVertical", nil)
+  let maxVertical: CGFloat? = try p.value("maxVertical", nil)
 #if canImport(SwiftUICore, _version: 8.0.85)
-    if #available(iOS 27.1, macOS 27.1, tvOS 27.1, visionOS 27.1, *) {
-      content.splitArrangementLayoutSize(
-        minWidth: minWidth,
-        idealWidth: idealWidth,
-        maxWidth: maxWidth,
-        minHeight: minHeight,
-        idealHeight: idealHeight,
-        maxHeight: maxHeight
+  if #available(iOS 27.1, macOS 27.1, tvOS 27.1, visionOS 27.1, *) {
+    if let ratio {
+      content.splitArrangementLayoutRatio(ratio)
+    } else {
+      content.splitArrangementLayoutRatio(
+        minHorizontal: minHorizontal,
+        idealHorizontal: idealHorizontal,
+        maxHorizontal: maxHorizontal,
+        minVertical: minVertical,
+        idealVertical: idealVertical,
+        maxVertical: maxVertical
       )
-    } else {
-      content
     }
-#else
+  } else {
     content
-#endif
   }
+#else
+  content
+#endif
 }
 
-internal struct SplitArrangementFixedLayoutSizeModifier: ViewModifier, UIRecord {
-  @Field var horizontal: Bool = true
-  @Field var vertical: Bool = true
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
+@MainActor @AnyViewBuilder
+internal func splitArrangementLayoutSizeModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let minWidth: CGFloat? = try p.value("minWidth", nil)
+  let idealWidth: CGFloat? = try p.value("idealWidth", nil)
+  let maxWidth: CGFloat? = try p.value("maxWidth", nil)
+  let minHeight: CGFloat? = try p.value("minHeight", nil)
+  let idealHeight: CGFloat? = try p.value("idealHeight", nil)
+  let maxHeight: CGFloat? = try p.value("maxHeight", nil)
 #if canImport(SwiftUICore, _version: 8.0.85)
-    if #available(iOS 27.1, macOS 27.1, tvOS 27.1, visionOS 27.1, *) {
-      content.splitArrangementFixedLayoutSize(horizontal: horizontal, vertical: vertical)
-    } else {
-      content
-    }
-#else
+  if #available(iOS 27.1, macOS 27.1, tvOS 27.1, visionOS 27.1, *) {
+    content.splitArrangementLayoutSize(
+      minWidth: minWidth,
+      idealWidth: idealWidth,
+      maxWidth: maxWidth,
+      minHeight: minHeight,
+      idealHeight: idealHeight,
+      maxHeight: maxHeight
+    )
+  } else {
     content
-#endif
   }
+#else
+  content
+#endif
+}
+
+@MainActor @AnyViewBuilder
+internal func splitArrangementFixedLayoutSizeModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let horizontal: Bool = try p.value("horizontal", true)
+  let vertical: Bool = try p.value("vertical", true)
+#if canImport(SwiftUICore, _version: 8.0.85)
+  if #available(iOS 27.1, macOS 27.1, tvOS 27.1, visionOS 27.1, *) {
+    content.splitArrangementFixedLayoutSize(horizontal: horizontal, vertical: vertical)
+  } else {
+    content
+  }
+#else
+  content
+#endif
 }
 
 internal enum OverlayArrangementEdgeOptions: String, Enumerable {
@@ -130,28 +118,25 @@ internal enum OverlayArrangementEdgeOptions: String, Enumerable {
   case trailing
 }
 
-internal struct OverlayArrangementEdgeModifier: ViewModifier, UIRecord {
-  @Field var edge: OverlayArrangementEdgeOptions = .trailing
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
+@MainActor @AnyViewBuilder
+internal func overlayArrangementEdgeModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let edge: OverlayArrangementEdgeOptions = try p.value("edge", .trailing)
 #if canImport(SwiftUICore, _version: 8.0.85)
-    if #available(iOS 27.1, macOS 27.1, tvOS 27.1, visionOS 27.1, *) {
-      switch edge {
-      case .top:
-        content.overlayArrangementEdge(VerticalEdge.top)
-      case .bottom:
-        content.overlayArrangementEdge(VerticalEdge.bottom)
-      case .leading:
-        content.overlayArrangementEdge(HorizontalEdge.leading)
-      case .trailing:
-        content.overlayArrangementEdge(HorizontalEdge.trailing)
-      }
-    } else {
-      content
+  if #available(iOS 27.1, macOS 27.1, tvOS 27.1, visionOS 27.1, *) {
+    switch edge {
+    case .top:
+      content.overlayArrangementEdge(VerticalEdge.top)
+    case .bottom:
+      content.overlayArrangementEdge(VerticalEdge.bottom)
+    case .leading:
+      content.overlayArrangementEdge(HorizontalEdge.leading)
+    case .trailing:
+      content.overlayArrangementEdge(HorizontalEdge.trailing)
     }
-#else
+  } else {
     content
-#endif
   }
+#else
+  content
+#endif
 }

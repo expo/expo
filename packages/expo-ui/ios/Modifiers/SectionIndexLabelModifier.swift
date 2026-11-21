@@ -3,19 +3,16 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct SectionIndexLabelModifier: ViewModifier, UIRecord {
-  @Field var label: String?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
+@MainActor @AnyViewBuilder
+internal func sectionIndexLabelModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let label: String? = try p.value("label", nil)
+  if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
 #if compiler(>=6.2) // Xcode 26
-      content.sectionIndexLabel(label)
+    content.sectionIndexLabel(label)
 #else
-      content
+    content
 #endif
-    } else {
-      content
-    }
+  } else {
+    content
   }
 }

@@ -48,37 +48,35 @@ internal struct ContentTransitionSymbolEffectConfig: Record {
   }
 }
 
-internal struct ContentTransitionModifier: ViewModifier, UIRecord {
-  @Field var transitionType: ContentTransitionType?
-  @Field var countsDown: Bool = false
-  @Field var symbolEffect: ContentTransitionSymbolEffectConfig?
-  @Field var options: SymbolEffectOptionsConfig?
-
-  func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
-      switch transitionType {
-      case .numericText:
-        content.contentTransition(.numericText(countsDown: countsDown))
-      case .identity:
-        content.contentTransition(.identity)
-      case .opacity:
-        content.contentTransition(.opacity)
-      case .interpolate:
-        content.contentTransition(.interpolate)
-      case .symbolEffect:
-        if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
-          content.contentTransition(
-            (symbolEffect ?? ContentTransitionSymbolEffectConfig())
-              .toContentTransition(options: options?.toSwiftUI() ?? .default)
-          )
-        } else {
-          content
-        }
-      default:
+@MainActor @AnyViewBuilder
+internal func contentTransitionModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let transitionType: ContentTransitionType? = try p.value("transitionType", nil)
+  let countsDown: Bool = try p.value("countsDown", false)
+  let symbolEffect: ContentTransitionSymbolEffectConfig? = try p.value("symbolEffect", nil)
+  let options: SymbolEffectOptionsConfig? = try p.value("options", nil)
+  if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
+    switch transitionType {
+    case .numericText:
+      content.contentTransition(.numericText(countsDown: countsDown))
+    case .identity:
+      content.contentTransition(.identity)
+    case .opacity:
+      content.contentTransition(.opacity)
+    case .interpolate:
+      content.contentTransition(.interpolate)
+    case .symbolEffect:
+      if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+        content.contentTransition(
+          (symbolEffect ?? ContentTransitionSymbolEffectConfig())
+            .toContentTransition(options: options?.toSwiftUI() ?? .default)
+        )
+      } else {
         content
       }
-    } else {
+    default:
       content
     }
+  } else {
+    content
   }
 }

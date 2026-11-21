@@ -3,11 +3,9 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct ScrollIndicatorsModifier: ViewModifier, UIRecord {
-  @Field var visibility: ScrollIndicatorVisibilityOptions = .automatic
-  @Field var axes: AxisOptions = .both
-
-  func body(content: Content) -> some View {
-    content.scrollIndicators(visibility.toVisibility(), axes: axes.toAxis())
-  }
+@MainActor @AnyViewBuilder
+internal func scrollIndicatorsModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let visibility: ScrollIndicatorVisibilityOptions = try p.value("visibility", .automatic)
+  let axes: AxisOptions = try p.value("axes", .both)
+  content.scrollIndicators(visibility.toVisibility(), axes: axes.toAxis())
 }

@@ -18,15 +18,13 @@ internal enum ScrollAnchorRoleOptions: String, Enumerable {
   }
 }
 
-internal struct DefaultScrollAnchorForRoleModifier: ViewModifier, UIRecord {
-  @Field var anchor: UnitPointOptions?
-  @Field var role: ScrollAnchorRoleOptions = .initialOffset
-
-  func body(content: Content) -> some View {
-    if #available(iOS 18.0, tvOS 18.0, macOS 15.0, *) {
-      content.defaultScrollAnchor(anchor?.toUnitPoint, for: role.toScrollAnchorRole)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func defaultScrollAnchorForRoleModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let anchor: UnitPointOptions? = try p.value("anchor", nil)
+  let role: ScrollAnchorRoleOptions = try p.value("role", .initialOffset)
+  if #available(iOS 18.0, tvOS 18.0, macOS 15.0, *) {
+    content.defaultScrollAnchor(anchor?.toUnitPoint, for: role.toScrollAnchorRole)
+  } else {
+    content
   }
 }

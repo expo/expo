@@ -20,10 +20,8 @@ internal enum ImageScaleType: String, Enumerable {
   }
 }
 
-internal struct ImageScaleModifier: ViewModifier, UIRecord {
-  @Field var scale: ImageScaleType = .medium
-
-  func body(content: Content) -> some View {
-    content.imageScale(scale.toNativeImageScale())
-  }
+@MainActor @AnyViewBuilder
+internal func imageScaleModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let scale: ImageScaleType = try p.value("scale", .medium)
+  content.imageScale(scale.toNativeImageScale())
 }

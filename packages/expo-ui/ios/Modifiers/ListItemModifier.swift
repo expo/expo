@@ -3,18 +3,14 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct MoveDisabledModifier: ViewModifier, UIRecord {
-  @Field var disabled: Bool = true
-
-  func body(content: Content) -> some View {
-    content.moveDisabled(disabled)
-  }
+@MainActor @AnyViewBuilder
+internal func moveDisabledModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let disabled: Bool = try p.value("disabled", true)
+  content.moveDisabled(disabled)
 }
 
-internal struct DeleteDisabledModifier: ViewModifier, UIRecord {
-  @Field var disabled: Bool = true
-
-  func body(content: Content) -> some View {
-    content.deleteDisabled(disabled)
-  }
+@MainActor @AnyViewBuilder
+internal func deleteDisabledModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let disabled: Bool = try p.value("disabled", true)
+  content.deleteDisabled(disabled)
 }
