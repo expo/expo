@@ -38,6 +38,33 @@ struct ErrorReportTests {
   }
 
   @Test
+  func `includes the error code attribute when present`() {
+    let report = ErrorReport(
+      source: .integration,
+      type: "updates.error",
+      message: "Failed to download remote update",
+      code: "UpdateFailedToLoad",
+      isFatal: false
+    )
+
+    let attributes = try! #require(report.toLogRecord().attributes?.value as? [String: Any])
+    #expect(attributes["expo.error.code"] as? String == "UpdateFailedToLoad")
+  }
+
+  @Test
+  func `omits the error code attribute when absent`() {
+    let report = ErrorReport(
+      source: .reportedByUser,
+      type: "Error",
+      message: "boom",
+      isFatal: false
+    )
+
+    let attributes = try! #require(report.toLogRecord().attributes?.value as? [String: Any])
+    #expect(attributes.keys.contains("expo.error.code") == false)
+  }
+
+  @Test
   func `tags a user-reported error with the reportedByUser source at error severity`() {
     let report = ErrorReport(
       source: .reportedByUser,

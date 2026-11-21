@@ -687,6 +687,12 @@ export interface ExpoAppMetricsModuleType {
      * error boundary. Recorded as the `expo.error.component_stack` attribute.
      */
     componentStack?: string;
+    /**
+     * A stable code that identifies the kind of error, such as `UpdateFailedToLoad`. Recorded as the
+     * `expo.error.code` attribute, which EAS Observe shows, filters on and adds to the error's
+     * fingerprint.
+     */
+    code?: string;
     isFatal: boolean;
   }): void;
 
