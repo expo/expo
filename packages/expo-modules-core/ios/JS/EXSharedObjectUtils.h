@@ -2,8 +2,6 @@
 
 #import <Foundation/Foundation.h>
 
-typedef void (^ObjectReleaser)(long objectId);
-
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -39,11 +37,10 @@ NS_SWIFT_NAME(SharedObjectUtils)
  `listeners` gets a weak reference to the listeners of the new native state.
  */
 + (nonnull void *)makeSharedObjectNativeStatePtr:(long)objectId
-                                        releaser:(nonnull ObjectReleaser)releaser
                                        listeners:(nonnull EXSharedObjectListeners *)listeners
                                          context:(nullable void *)context
                               contextDeallocator:(nullable void (*)(void * _Nullable))contextDeallocator
-    NS_SWIFT_NAME(makeSharedObjectNativeStatePtr(objectId:releaser:listeners:context:contextDeallocator:));
+    NS_SWIFT_NAME(makeSharedObjectNativeStatePtr(objectId:listeners:context:contextDeallocator:));
 
 @end
 

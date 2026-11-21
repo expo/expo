@@ -32,38 +32,48 @@ open class SharedObject: AnySharedObject {
 
    The reference is strong: a weak reference would give the native state a side table, which makes every retain and
    release of it slower, also when a JS method finds it on its JS object. The native state holds this object too, so
-   the registry ends the pair with `endPairing(with:)` when the object is released, when its JS objects are collected
-   and when the registry is cleared. The registry changes it on any thread, so it is behind a lock.
+   it ends the pair with `endPairing(with:resettingId:)` when the object is released or its JS objects are collected,
+   and the registry ends it when it is cleared. They change it on any thread, so it is behind a lock.
    */
   internal var nativeState: SharedObjectNativeState? {
-    get {
-      return SharedObjectLock.withLock(for: self) {
-        return pairedNativeState
-      }
-    }
-    set {
-      let oldValue = SharedObjectLock.withLock(for: self) {
-        let oldValue = pairedNativeState
-        pairedNativeState = newValue
-        return oldValue
-      }
-      // The old native state can be deallocated here, so it is released after the lock is unlocked.
-      withExtendedLifetime(oldValue) {}
+    return SharedObjectLock.withLock(for: self) {
+      return pairedNativeState
     }
   }
 
   /// The storage of `nativeState`. Use it only under the lock.
   private var pairedNativeState: SharedObjectNativeState?
 
-  /// Ends the pair with the native state: clears `nativeState` when it is the given native state. Another native state
-  /// can be there already, when the object was paired again.
-  internal func endPairing(with nativeState: SharedObjectNativeState) {
+  /// Pairs the object with the native state and its ID when `nativeState` is still `expected`, and returns whether it
+  /// did. Another thread can pair the object again after the caller read `expected`.
+  internal func pair(with nativeState: SharedObjectNativeState, id: SharedObjectId, replacing expected: SharedObjectNativeState?) -> Bool {
+    let (isPaired, oldValue): (Bool, SharedObjectNativeState?) = SharedObjectLock.withLock(for: self) {
+      guard pairedNativeState === expected else {
+        return (false, nil)
+      }
+      let oldValue = pairedNativeState
+      pairedNativeState = nativeState
+      sharedObjectId = id
+      return (true, oldValue)
+    }
+    // The old native state can be deallocated here, so it is released after the lock is unlocked.
+    withExtendedLifetime(oldValue) {}
+    return isPaired
+  }
+
+  /// Ends the pair with the native state: clears `nativeState`, and `sharedObjectId` when `resettingId` is `true`, when
+  /// `nativeState` is the given native state. Another native state can be there already, when the object was paired
+  /// again.
+  internal func endPairing(with nativeState: SharedObjectNativeState, resettingId: Bool = false) {
     let oldValue: SharedObjectNativeState? = SharedObjectLock.withLock(for: self) {
       guard pairedNativeState === nativeState else {
         return nil
       }
       let oldValue = pairedNativeState
       pairedNativeState = nil
+      if resettingId {
+        sharedObjectId = 0
+      }
       return oldValue
     }
     withExtendedLifetime(oldValue) {}
