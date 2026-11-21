@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import UIKit
 
-internal enum HingeStatus: String, Enumerable {
+public enum HingeStatus: String, Enumerable {
   case closed
   case partiallyOpen
   case fullyOpen
@@ -9,9 +9,9 @@ internal enum HingeStatus: String, Enumerable {
 }
 
 /// The hinge state as sent to JS. The angle is in degrees, where 0 is closed and 180 is flat.
-internal struct HingeState: Equatable {
-  let angle: Double
-  let status: HingeStatus
+public struct HingeState: Equatable {
+  public let angle: Double
+  public let status: HingeStatus
 
   var dictionary: [String: Any] {
     return ["angle": angle, "status": status.rawValue]
@@ -98,3 +98,45 @@ extension HingeState {
   }
 }
 #endif
+
+/// The hinge as this module last saw it, for native code in other modules that must answer
+/// synchronously and cannot wait for JavaScript, such as an app delegate subscriber deciding
+/// `supportedInterfaceOrientationsFor` from the hinge when UIKit asks.
+public enum Hinge {
+  private static let lock = NSLock()
+  private static var current: HingeState?
+  private static var nextListenerId = 0
+  private static var listeners: [Int: (HingeState?) -> Void] = [:]
+
+  /// The current hinge, or `nil` before the first report and on devices without a hinge.
+  public static var hinge: HingeState? {
+    return lock.withLock { current }
+  }
+
+  /// Calls `listener` on the main thread with each change, after `hinge` has been updated.
+  /// Returns an id for `removeListener`.
+  @discardableResult
+  public static func addListener(_ listener: @escaping (HingeState?) -> Void) -> Int {
+    return lock.withLock {
+      nextListenerId += 1
+      listeners[nextListenerId] = listener
+      return nextListenerId
+    }
+  }
+
+  public static func removeListener(_ id: Int) {
+    lock.withLock {
+      listeners[id] = nil
+    }
+  }
+
+  internal static func update(_ hinge: HingeState?) {
+    let listeners = lock.withLock {
+      current = hinge
+      return Array(self.listeners.values)
+    }
+    for listener in listeners {
+      listener(hinge)
+    }
+  }
+}

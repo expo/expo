@@ -35,6 +35,7 @@ public class ExpoHingeModule: Module {
 
     OnCreate {
       observer.onChange = { [weak self] hinge in
+        Hinge.update(hinge)
         guard let self else {
           return
         }
