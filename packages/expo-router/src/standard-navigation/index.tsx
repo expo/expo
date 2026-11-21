@@ -1,6 +1,6 @@
 'use client';
 
-import { type ComponentType, useMemo } from 'react';
+import { type ComponentType, memo, useMemo } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
@@ -205,7 +205,9 @@ export function integrateWithRouterInternal<
   } = useUnprocessedState
 ) {
   assertStandardNavigator(navigator);
-  const { NavigatorContent } = navigator;
+  // Every navigator renders on every navigation, because it reads the root navigation state.
+  // `memo` skips its content when the props are the same.
+  const NavigatorContent = memo(navigator.NavigatorContent) as typeof navigator.NavigatorContent;
 
   type NavPropsType = StandardRouterNavigatorProps<
     State,

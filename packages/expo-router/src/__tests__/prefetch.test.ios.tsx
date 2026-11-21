@@ -900,17 +900,10 @@ it('can update <Screen /> options while prefetching in stack', async () => {
   await act(() => router.push('/second'));
 
   expect(headerTitle.mock.calls).toStrictEqual([
-    // Call after navigation
+    // Call after navigation. The <Stack.Screen /> sets the options the route already has, so the
+    // headers are not rendered again for it.
     [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
     [{ tintColor: 'rgb(0, 122, 255)', children: 'Updated while preloaded' }],
-    // Call from the <Stack.Screen />
-    [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
-    [
-      {
-        tintColor: 'rgb(0, 122, 255)',
-        children: 'Updated while preloaded',
-      },
-    ],
   ]);
 });
 
@@ -967,8 +960,6 @@ it('can still use <Screen /> while prefetching in tabs', async () => {
   await act(() => router.push('/second'));
 
   expect(headerTitle.mock.calls.map((call) => call[0].children)).toStrictEqual([
-    'index',
-    'Should only change after focus',
     'index',
     'Should only change after focus',
   ]);

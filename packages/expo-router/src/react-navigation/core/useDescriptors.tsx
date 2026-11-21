@@ -17,6 +17,8 @@ import { getChainFromRouteKey } from '../routers/stateKeys';
 import { type AddListener, NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationProvider } from './NavigationProvider';
 import { SceneView } from './SceneView';
+import { isArrayEqual } from './isArrayEqual';
+import { isRecordEqual } from './isRecordEqual';
 import { ThemeContext } from './theming/ThemeContext';
 import type {
   Descriptor,
@@ -271,9 +273,9 @@ export function useDescriptors<
   const createDescriptor = (
     route: RouteProp<ParamListBase, string>,
     navigation: ReturnType<typeof getNavigation>,
-    routeState: NavigationState | PartialState<NavigationState> | undefined
+    routeState: NavigationState | PartialState<NavigationState> | undefined,
+    customOptions: ScreenOptions
   ): DescriptorMap[string] => {
-    const customOptions = getOptions(route, navigation, options[route.key] ?? {});
     const element = render(route, navigation, customOptions, routeState);
     return {
       route,
@@ -285,25 +287,112 @@ export function useDescriptors<
     };
   };
 
-  const descriptors = cachedRoutes.reduce<DescriptorMap>((acc, route, i) => {
-    const navigation = getNavigation(route, route.isPreloaded === true);
+  type DescriptorCacheEntry = {
+    placeholder: boolean;
+    inputs: unknown[];
+    descriptor: DescriptorMap[string];
+  };
 
-    if (screens[route.name] === undefined) {
-      acc[route.key] = {
-        route,
-        // @ts-expect-error: it's missing action helpers, fix later
-        navigation,
-        options: {} as ScreenOptions,
-        render: () => null,
-      };
+  // A descriptor and the element it renders keep their identity until one of the inputs changes.
+  // Same pattern as `useRouteCache` and `useNavigationCache`.
+  const descriptorCache = React.useMemo(
+    () => ({
+      current: new Map<string, DescriptorCacheEntry>(),
+      descriptors: undefined as DescriptorMap | undefined,
+      describe: undefined as
+        | ((
+            route: DescriptorRouteProp<ParamListBase, string>,
+            options?: { create?: boolean }
+          ) => DescriptorMap[string])
+        | undefined,
+    }),
+    []
+  );
+
+  const previousEntries = descriptorCache.current;
+  const nextEntries = new Map<string, DescriptorCacheEntry>();
+
+  let descriptors = cachedRoutes.reduce<DescriptorMap>((acc, route, i) => {
+    const navigation = getNavigation(route, route.isPreloaded === true);
+    const config = screens[route.name];
+    const previous = previousEntries.get(route.key);
+
+    if (config === undefined) {
+      const inputs = [route, navigation];
+      let entry: DescriptorCacheEntry;
+
+      if (previous?.placeholder && isArrayEqual(previous.inputs, inputs)) {
+        entry = previous;
+      } else {
+        const descriptor: DescriptorMap[string] = {
+          route,
+          // @ts-expect-error: it's missing action helpers, fix later
+          navigation,
+          options: {} as ScreenOptions,
+          render: () => null,
+        };
+
+        entry = { placeholder: true, inputs, descriptor };
+      }
+
+      nextEntries.set(route.key, entry);
+      acc[route.key] = entry.descriptor;
 
       return acc;
     }
 
-    acc[route.key] = createDescriptor(route, navigation, routes[i]!.state);
+    // An option can be a function of anything, so resolve the options on every render. Keep the
+    // previous object when it holds the same values.
+    const resolvedOptions = getOptions(route, navigation, options[route.key] ?? {});
+    const customOptions =
+      previous &&
+      !previous.placeholder &&
+      isRecordEqual(previous.descriptor.options, resolvedOptions)
+        ? previous.descriptor.options
+        : resolvedOptions;
+    const routeState = routes[i]!.state;
+
+    // This list must hold everything that `render` reads.
+    const inputs = [
+      route,
+      navigation,
+      customOptions,
+      routeState,
+      config.props,
+      config.layout,
+      screenLayout,
+      activityEnabled,
+      activityDefaultThreshold,
+      context,
+      theme,
+      emitRemovalEvent,
+    ];
+
+    let entry: DescriptorCacheEntry;
+
+    if (previous && !previous.placeholder && isArrayEqual(previous.inputs, inputs)) {
+      entry = previous;
+    } else {
+      entry = {
+        placeholder: false,
+        inputs,
+        descriptor: createDescriptor(route, navigation, routeState, customOptions),
+      };
+    }
+
+    nextEntries.set(route.key, entry);
+    acc[route.key] = entry.descriptor;
 
     return acc;
   }, {});
+
+  descriptorCache.current = nextEntries;
+
+  if (descriptorCache.descriptors && isRecordEqual(descriptorCache.descriptors, descriptors)) {
+    descriptors = descriptorCache.descriptors;
+  } else {
+    descriptorCache.descriptors = descriptors;
+  }
 
   const createMissingDescriptor = (route: RouteProp<ParamListBase, string>) => {
     // Seed a nested navigator the same way the global state does when the route is added.
@@ -311,17 +400,22 @@ export function useDescriptors<
     const routeState = childNode?.children.length
       ? createSeededNavigationState(undefined, childNode, getChainFromRouteKey(route.key))
       : undefined;
-    return createDescriptor(route, getNavigation(route, false), routeState);
+    const navigation = getNavigation(route, false);
+    return createDescriptor(
+      route,
+      navigation,
+      routeState,
+      getOptions(route, navigation, options[route.key] ?? {})
+    );
   };
 
   // Placeholder descriptors need a cast because `useNavigationCache` adds action helpers at
   // runtime, but its return type omits them.
   // TODO: Fix the `useNavigationCache` return type and remove these casts.
-  // TODO: Stabilize screens, options, descriptors, and `describe` without relying on React Compiler.
   // With `create`, a keyed route that is not in the state yet gets the descriptor it will have
   // once the route is added. A navigator uses it for routes that it adds before the global state
   // has them. It is opt-in, so an unknown key from any other caller still throws.
-  const describe = (
+  descriptorCache.describe = (
     route: DescriptorRouteProp<ParamListBase, string>,
     { create = false }: { create?: boolean } = {}
   ) => {
@@ -356,6 +450,30 @@ export function useDescriptors<
       routeSource: config.props.routeSource,
     } as DescriptorMap[string];
   };
+
+  // `describe` keeps its identity until a value that it can return changes. It calls the function
+  // of the latest render.
+  const describe = React.useCallback(
+    (route: DescriptorRouteProp<ParamListBase, string>, describeOptions?: { create?: boolean }) =>
+      descriptorCache.describe!(route, describeOptions),
+    // The callback does not read these values. `descriptorCache.describe` closes over them.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      descriptorCache,
+      descriptors,
+      screens,
+      options,
+      screenOptions,
+      screenLayout,
+      activityEnabled,
+      activityDefaultThreshold,
+      navigation,
+      context,
+      theme,
+      routeNode,
+      emitRemovalEvent,
+    ]
+  );
 
   return { describe, descriptors };
 }
