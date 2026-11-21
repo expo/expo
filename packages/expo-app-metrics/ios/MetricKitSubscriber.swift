@@ -1,4 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
+import Foundation
+
 #if !os(tvOS)
 
 import MetricKit
@@ -33,35 +35,57 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
       }
     }
     AppMetricsActor.isolated {
-      let mainSessions: [SessionRow]
-      do {
-        mainSessions = try AppMetrics.database?.getMainSessions() ?? []
-      } catch {
-        logger.warn("[AppMetrics] Failed to load main sessions for crash attribution: \(error.localizedDescription)")
+      guard let database = AppMetrics.database else {
         return
       }
-      for crashReport in crashReports {
-        if let session = crashReport.findMatchingSession(in: mainSessions) {
-          persistCrashReport(crashReport, sessionId: session.id)
-        } else {
-          logger.warn("[AppMetrics] Received crash report with no matching session:\n\(crashReport)")
-        }
+      storeCrashReports(crashReports, in: database)
+    }
+  }
+}
+
+#endif
+
+/// Stores each crash report under the main session it belongs to. A crashed process with no stored
+/// session gets a new session built from the crash report, so the crash is sent with its own app version.
+@AppMetricsActor
+func storeCrashReports(_ crashReports: [CrashReport], in database: MetricsDatabase) {
+  var mainSessions: [SessionRow]
+  do {
+    mainSessions = try database.getMainSessions()
+  } catch {
+    logger.warn("[AppMetrics] Failed to load main sessions for crash attribution: \(error.localizedDescription)")
+    return
+  }
+  for crashReport in crashReports {
+    if let session = crashReport.findMatchingSession(in: mainSessions) {
+      persistCrashReport(crashReport, sessionId: session.id, in: database)
+    } else if crashReport.processId != nil {
+      let environment = AppMetricsUserDefaults.environment ?? AppMetricsUserDefaults.getDefaultEnvironment()
+      let session = SessionRow.forCrashedProcess(crashReport, environment: environment)
+      do {
+        try database.insert(session: session)
+      } catch {
+        logger.warn("[AppMetrics] Failed to insert a session for a crashed process: \(error.localizedDescription)")
+        continue
       }
+      // A later report in this batch for the same process must match this session.
+      mainSessions.append(session)
+      persistCrashReport(crashReport, sessionId: session.id, in: database)
+    } else {
+      logger.warn("[AppMetrics] Received crash report with no matching session:\n\(crashReport)")
     }
   }
 }
 
 @AppMetricsActor
-private func persistCrashReport(_ crashReport: CrashReport, sessionId: String) {
+private func persistCrashReport(_ crashReport: CrashReport, sessionId: String, in database: MetricsDatabase) {
   guard let payload = encodeAsJSONString(crashReport) else {
     return
   }
   do {
     let log = LogRow.from(log: crashReport.toLogRecord(), sessionId: sessionId)
-    try AppMetrics.database?.storeCrashReportIfNew(sessionId: sessionId, payload: payload, log: log)
+    try database.storeCrashReportIfNew(sessionId: sessionId, payload: payload, log: log)
   } catch {
     logger.warn("[AppMetrics] Failed to persist crash report for session \(sessionId): \(error.localizedDescription)")
   }
 }
-
-#endif

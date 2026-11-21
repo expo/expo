@@ -162,6 +162,165 @@ struct CrashReportTests {
       )
       #expect(report.findMatchingSession(in: []) == nil)
     }
+
+    @Test
+    func `matches the session of the crashed process`() {
+      let windowEnd = Date.now
+      let windowStart = windowEnd.addingTimeInterval(-3600)
+
+      let crashed = makeMainSessionRow(
+        id: "crashed",
+        startDate: windowEnd.addingTimeInterval(-2400),
+        endDate: nil,
+        processId: 100
+      )
+      let later = makeMainSessionRow(
+        id: "later",
+        startDate: windowEnd.addingTimeInterval(-1200),
+        endDate: nil,
+        processId: 200
+      )
+
+      let report = makeCrashReport(timestampBegin: windowStart, timestampEnd: windowEnd, processId: 100)
+      let match = report.findMatchingSession(in: [crashed, later])
+      #expect(match?.id == "crashed")
+    }
+
+    @Test
+    func `returns nil when no session belongs to the crashed process`() {
+      let windowEnd = Date.now
+      let windowStart = windowEnd.addingTimeInterval(-3600)
+
+      let earlier = makeMainSessionRow(
+        id: "earlier",
+        startDate: windowEnd.addingTimeInterval(-2400),
+        endDate: nil,
+        processId: 100
+      )
+      let later = makeMainSessionRow(
+        id: "later",
+        startDate: windowEnd.addingTimeInterval(-1200),
+        endDate: nil,
+        processId: 200
+      )
+
+      let report = makeCrashReport(timestampBegin: windowStart, timestampEnd: windowEnd, processId: 300)
+      let match = report.findMatchingSession(in: [earlier, later])
+      #expect(match == nil)
+    }
+
+    @Test
+    func `ignores a session of the crashed process ID that ended before the window`() {
+      let windowEnd = Date.now
+      let windowStart = windowEnd.addingTimeInterval(-3600)
+
+      // Process IDs repeat, for example after a reboot.
+      let previousBoot = makeMainSessionRow(
+        id: "previous-boot",
+        startDate: windowEnd.addingTimeInterval(-172_800),
+        endDate: windowEnd.addingTimeInterval(-172_000),
+        processId: 100
+      )
+      let other = makeMainSessionRow(
+        id: "other",
+        startDate: windowEnd.addingTimeInterval(-1200),
+        endDate: nil,
+        processId: 200
+      )
+
+      let report = makeCrashReport(timestampBegin: windowStart, timestampEnd: windowEnd, processId: 100)
+      let match = report.findMatchingSession(in: [previousBoot, other])
+      #expect(match == nil)
+    }
+  }
+
+  @AppMetricsActor
+  @Suite("storeCrashReports")
+  struct StoreCrashReportsTests {
+    @Test
+    func `stores a crash of a process with no session under a new session`() throws {
+      try withTemporaryDatabase { database in
+        let report = makeCrashReport(
+          timestampBegin: Date.now.addingTimeInterval(-3600),
+          timestampEnd: Date.now.addingTimeInterval(-60),
+          appBuildNumber: "14",
+          processId: 822
+        )
+
+        storeCrashReports([report], in: database)
+
+        let session = try #require(try database.getMainSessions().first { $0.processId == 822 })
+        #expect(session.appBuildNumber == "14")
+        #expect(try database.getLogs(sessionId: session.id).map(\.name) == [nativeExceptionLogName])
+      }
+    }
+
+    @Test
+    func `stores a redelivered crash of a process with no session only once`() throws {
+      try withTemporaryDatabase { database in
+        let report = makeCrashReport(
+          timestampBegin: Date.now.addingTimeInterval(-3600),
+          timestampEnd: Date.now.addingTimeInterval(-60),
+          processId: 822
+        )
+
+        storeCrashReports([report], in: database)
+        storeCrashReports([report], in: database)
+
+        let sessions = try database.getMainSessions().filter { $0.processId == 822 }
+        try #require(sessions.count == 1)
+        #expect(try database.getLogs(sessionId: sessions[0].id).count == 1)
+      }
+    }
+  }
+
+  @Suite("SessionRow.forCrashedProcess")
+  struct ForCrashedProcessTests {
+    @Test
+    func `takes the app version, build number and OS version from the crash report`() {
+      let crashTime = Date(timeIntervalSince1970: 1_700_000_000)
+      let report = makeCrashReport(
+        timestampBegin: crashTime.addingTimeInterval(-3600),
+        timestampEnd: crashTime,
+        appBuildNumber: "14",
+        osVersion: "iPhone OS 17.6.1 (21G93)",
+        processId: 822
+      )
+
+      let session = SessionRow.forCrashedProcess(
+        report,
+        environment: "production",
+        app: makeAppInfo(buildNumber: "15"),
+        device: testDevice
+      )
+
+      #expect(session.type == Session.SessionType.main.rawValue)
+      #expect(session.appVersion == "1.0.0")
+      #expect(session.appBuildNumber == "14")
+      #expect(session.deviceOsVersion == "17.6.1")
+      #expect(session.processId == 822)
+      #expect(session.startTimestamp == crashTime.ISO8601Format())
+      #expect(session.endTimestamp == crashTime.ISO8601Format())
+      #expect(session.isActive == false)
+      #expect(session.expoSdkVersion == nil)
+      #expect(session.appUpdateId == nil)
+    }
+
+    @Test
+    func `copies the build details from the running app when it is the same build`() {
+      let report = makeCrashReport(
+        timestampBegin: Date.now.addingTimeInterval(-3600),
+        timestampEnd: Date.now,
+        appBuildNumber: "14",
+        processId: 822
+      )
+      let app = makeAppInfo(buildNumber: "14")
+
+      let session = SessionRow.forCrashedProcess(report, environment: "production", app: app, device: testDevice)
+
+      #expect(session.expoSdkVersion == app.expoSdkVersion)
+      #expect(session.reactNativeVersion == app.reactNativeVersion)
+    }
   }
 
   @Suite("toLogRecord")
@@ -373,13 +532,42 @@ struct CrashReportTests {
 
 }
 
-private func makeMainSessionRow(id: String, startDate: Date, endDate: Date?) -> SessionRow {
+private let testDevice = DeviceInfo(
+  modelName: "iPhone",
+  modelIdentifier: "iPhone16,1",
+  systemName: "iOS",
+  systemVersion: "18.0"
+)
+
+private func makeAppInfo(buildNumber: String) -> AppInfo {
+  return AppInfo(
+    appId: "dev.expo.test",
+    appName: "TestApp",
+    appVersion: "1.0.0",
+    buildNumber: buildNumber,
+    updatesInfo: nil
+  )
+}
+
+@AppMetricsActor
+private func withTemporaryDatabase(_ body: (MetricsDatabase) throws -> Void) throws {
+  let directoryUrl = FileManager.default.temporaryDirectory
+    .appendingPathComponent("CrashReportTests-\(UUID().uuidString)")
+  try FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
+  defer {
+    try? FileManager.default.removeItem(at: directoryUrl)
+  }
+  try body(try MetricsDatabase(directoryUrl: directoryUrl))
+}
+
+private func makeMainSessionRow(id: String, startDate: Date, endDate: Date?, processId: Int? = nil) -> SessionRow {
   return SessionRow(
     id: id,
     type: Session.SessionType.main.rawValue,
     startTimestamp: startDate.ISO8601Format(),
     endTimestamp: endDate?.ISO8601Format(),
-    isActive: endDate == nil
+    isActive: endDate == nil,
+    processId: processId
   )
 }
 
@@ -393,7 +581,10 @@ private func makeCrashReport(
   terminationReason: String? = nil,
   virtualMemoryRegionInfo: String? = nil,
   exceptionReason: CrashReport.ExceptionReason? = nil,
-  callStackTree: CrashReport.CallStackTree? = nil
+  callStackTree: CrashReport.CallStackTree? = nil,
+  appBuildNumber: String? = nil,
+  osVersion: String? = nil,
+  processId: Int? = nil
 ) -> CrashReport {
   return CrashReport(
     exceptionType: exceptionType,
@@ -404,6 +595,9 @@ private func makeCrashReport(
     exceptionReason: exceptionReason,
     callStackTree: callStackTree,
     appVersion: "1.0.0",
+    appBuildNumber: appBuildNumber,
+    osVersion: osVersion,
+    processId: processId,
     timestampBegin: timestampBegin,
     timestampEnd: timestampEnd,
     ingestedAt: ingestedAt

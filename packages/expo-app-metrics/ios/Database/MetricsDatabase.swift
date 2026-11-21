@@ -11,7 +11,7 @@ final class MetricsDatabase: Sendable {
   /// semantics change in a way that an older or newer build can't operate on; on a mismatch the
   /// database is wiped and recreated (see `openConnection`). We don't ship migrations yet — the data
   /// is local-only and short-lived, so wiping is preferable to maintaining migration code.
-  static let currentSchemaVersion = 3
+  static let currentSchemaVersion = 4
 
   /// How long a session (and its metrics, logs, crash report) is retained before `init` prunes it.
   static let sessionRetention: TimeInterval = 7 * 24 * 60 * 60 // 7 days
@@ -187,13 +187,15 @@ final class MetricsDatabase: Sendable {
         appName, appIdentifier, appVersion, appBuildNumber,
         appUpdateId, appUpdateRuntimeVersion, appUpdateRequestHeaders, appEasBuildId,
         deviceOs, deviceOsVersion, deviceModel, deviceName,
-        expoSdkVersion, reactNativeVersion, clientVersion, languageTag
+        expoSdkVersion, reactNativeVersion, clientVersion, languageTag,
+        processId
       ) VALUES (
         ?1, ?2, ?3, ?4, ?5, ?6,
         ?7, ?8, ?9, ?10,
         ?11, ?12, ?13, ?14,
         ?15, ?16, ?17, ?18,
-        ?19, ?20, ?21, ?22
+        ?19, ?20, ?21, ?22,
+        ?23
       )
       """
     )
@@ -203,6 +205,7 @@ final class MetricsDatabase: Sendable {
       session.appUpdateId, session.appUpdateRuntimeVersion, session.appUpdateRequestHeaders, session.appEasBuildId,
       session.deviceOs, session.deviceOsVersion, session.deviceModel, session.deviceName,
       session.expoSdkVersion, session.reactNativeVersion, session.clientVersion, session.languageTag,
+      session.processId,
     ])
     try statement.run()
   }
@@ -742,7 +745,8 @@ final class MetricsDatabase: Sendable {
         expoSdkVersion TEXT,
         reactNativeVersion TEXT,
         clientVersion TEXT,
-        languageTag TEXT
+        languageTag TEXT,
+        processId INTEGER
       );
 
       CREATE TABLE IF NOT EXISTS metrics (
@@ -831,7 +835,8 @@ final class MetricsDatabase: Sendable {
     appName, appIdentifier, appVersion, appBuildNumber,
     appUpdateId, appUpdateRuntimeVersion, appUpdateRequestHeaders, appEasBuildId,
     deviceOs, deviceOsVersion, deviceModel, deviceName,
-    expoSdkVersion, reactNativeVersion, clientVersion, languageTag
+    expoSdkVersion, reactNativeVersion, clientVersion, languageTag,
+    processId
     """
 
   private let spanColumns = """
