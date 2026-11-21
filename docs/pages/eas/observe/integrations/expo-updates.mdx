@@ -1,0 +1,135 @@
+---
+title: expo-updates library integration
+sidebar_title: Expo Updates
+description: Learn how to report expo-updates errors and warnings, and JS errors handled by the library's error recovery, in Expo Observe.
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+
+The [`expo-updates`](/versions/latest/sdk/updates/) library writes its errors and warnings to a log on the device. Without this integration, you must add code to read and send that log, and ship a new build or update, before you can see a problem in production. The `expo-updates` integration for Expo Observe reports the log errors as Observe errors, and optionally the log warnings as events. It also reports the JS errors that [error recovery](/eas-update/error-recovery/) handled, which happen soon after launch or before the first render.
+
+## Prerequisites
+
+<Prerequisites>
+  <Requirement title="An app already using Expo Observe">
+    Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
+    build.
+  </Requirement>
+  <Requirement title="expo-updates installed and imported in the app">
+    The integration lives in [`expo-updates`](/versions/latest/sdk/updates/), which adds it when
+    your app imports `expo-updates`. If your app does not import `expo-updates` anywhere, the
+    integration does nothing, and `expo-observe` prints a warning.
+  </Requirement>
+</Prerequisites>
+
+## Enable the integration
+
+Import `expo-updates`, and call `Observe.configure()` once with the `expo-updates` integration flag at module scope, before your app mounts:
+
+```tsx src/app/_layout.tsx
+import { Observe } from 'expo-observe';
+import 'expo-updates';
+
+Observe.configure({
+  integrations: { 'expo-updates': true },
+});
+```
+
+## How it works
+
+When `Observe.configure()` runs, the integration reads the `expo-updates` log entries written since its last report. `expo-updates` keeps log entries for one day, so on the first run, the integration reads up to one day back. Because the integration reads the log at the next launch, it also reports errors from an earlier launch. For example, it reports a crash that error recovery handled before the app could start again. After that, the integration reports each new entry when `expo-updates` logs it.
+
+The integration reports the entries as follows:
+
+- An `error` or `fatal` entry becomes an Observe error named `updates.error`. The error message is the entry's code followed by the log message, for example `UpdateFailedToLoad: ...`.
+- A JS error that error recovery handled becomes an Observe error named `updates.error_recovery`. The message includes the original JS error. The same error can also appear as an unhandled JavaScript error.
+- When error recovery cannot recover, it logs an entry and then crashes the app. The integration does not report that entry, because Observe reports the crash itself.
+- A `warn` entry becomes an `updates.warning` event with `warn` severity, but only when `reportWarnings` is `true`.
+- The integration does not report entries with a lower level.
+
+A reported error gets the current session and time, not the time of the log entry. Warning events keep the log entry time in the `logTimestamp` attribute.
+
+To limit the number of reports, the integration reports each distinct message at most once every 15 minutes. It reports at most 20 distinct errors and 20 distinct warnings in any 15-minute period. JS errors that error recovery handled skip the filters and have their own limit of 20 distinct messages, so other errors cannot stop them from being reported. The limits reset when the app restarts.
+
+**Warning event attributes:**
+
+| Attribute      | Type     | Description                                                           |
+| -------------- | -------- | --------------------------------------------------------------------- |
+| `message`      | `string` | The log message, cut to 500 characters.                               |
+| `code`         | `string` | The log entry code, for example `AssetsFailedToLoad`.                 |
+| `logTimestamp` | `number` | The time the entry was written, in milliseconds since the Unix epoch. |
+| `updateId`     | `string` | The ID of the update that the entry is about, if there is one.        |
+| `assetId`      | `string` | The ID of the asset that the entry is about, if there is one.         |
+
+## Configuration
+
+Pass a configuration object instead of `true` to change what the integration reports:
+
+```tsx src/app/_layout.tsx
+import { Observe } from 'expo-observe';
+import 'expo-updates';
+
+Observe.configure({
+  integrations: {
+    'expo-updates': {
+      reportWarnings: true,
+      shouldReport: entry => entry.key !== 'reaper.assetDeleteFailed',
+    },
+  },
+});
+```
+
+- `reportWarnings`: Whether the integration also reports warnings as `updates.warning` events. The default is `false`. When updates are disabled, for example in a development build or a build variant that turns updates off, `expo-updates` logs a warning with a `config.` key on every launch. Use `shouldReport` to skip those warnings, as in the example after this list.
+- `shouldReport`: A function that gets each error entry, and each warning entry when `reportWarnings` is `true`, and returns `false` to skip it. If the function throws, the integration reports the entry. Each entry has a `code`. See [`UpdatesLogEntryCode`](/versions/unversioned/sdk/updates/#updateslogentrycode) for the codes. Each warning and error entry also has a `key`, such as `remote.assetDownloadFailed`, that names what failed. The `key` stays the same when the message text changes. The entry's `values` hold the parts of the message that change, such as `cause`. See [`UpdatesLogMessageKey`](/versions/unversioned/sdk/updates/#updateslogmessagekey) for each key, with its message template and its code.
+
+`shouldReport` does not apply to JS errors that error recovery handled.
+
+To report warnings without the `config.` warnings of a build with updates disabled:
+
+```tsx src/app/_layout.tsx
+import { Observe } from 'expo-observe';
+import 'expo-updates';
+
+Observe.configure({
+  integrations: {
+    'expo-updates': {
+      reportWarnings: true,
+      shouldReport: entry => !entry.key?.startsWith('config.'),
+    },
+  },
+});
+```
+
+Some errors are common and expected, for example a failed update check when the device is offline. When `expo-updates` cannot reach the update server, it logs an error with the `UpdateServerUnreachable` code. To skip these errors, return `false` for that code:
+
+```tsx src/app/_layout.tsx
+import { Observe } from 'expo-observe';
+import 'expo-updates';
+
+Observe.configure({
+  integrations: {
+    'expo-updates': {
+      shouldReport: entry => entry.code !== 'UpdateServerUnreachable',
+    },
+  },
+});
+```
+
+## View errors and events
+
+In the dashboard: open your project and navigate to **Observe**. Errors from the integration are named `updates.error` and `updates.error_recovery`, and warnings are `updates.warning` events.
+
+From the CLI:
+
+<Terminal
+  cmd={[
+    '# Show errors',
+    '$ eas observe:errors',
+    '',
+    '# Show expo-updates warning events',
+    '$ eas observe:events updates.warning',
+  ]}
+/>
+
+For naming, severity, and attribute details shared by all events, see [User-defined events](/eas/observe/events/).

@@ -180,3 +180,77 @@ export function logExpensiveOperation(durationMs: number, thresholdMs: number) {
 For more information about naming events and adding details, see [User-defined events](/eas/observe/events/).
 
 </Step>
+
+<Step label="5">
+
+## Report errors and warnings
+
+The `Observe.registerIntegration()` callback also receives a reporter. Use it to report the errors and warnings that your package handles. The reporter:
+
+- Reports an error as an Observe error with the `integration` source, and a warning as an event with `warn` severity.
+- Skips a report when the integration's `shouldReport` option returns `false`. It uses the option from the latest `Observe.configure()` call.
+- Reports each distinct message at most once every 15 minutes, and at most 20 distinct errors and 20 distinct warnings in any 15-minute period.
+- Sends nothing while the integration is disabled.
+
+Keep the reporter when the callback runs, and call it where your package handles an error:
+
+```ts observe.ts
+import type { ObserveIntegrationReporter } from 'expo-observe';
+
+let reporter: ObserveIntegrationReporter | undefined;
+
+export function initObserveIntegration() {
+  if (typeof window !== 'undefined' && observeModule) {
+    const { Observe } = observeModule;
+
+    Observe.registerIntegration('your-package', (config, integrationReporter) => {
+      if (config) {
+        reporter = integrationReporter;
+        enableObserveIntegration(config === true ? {} : config);
+      }
+    });
+  }
+}
+
+export function reportDownloadFailure(url: string, cause: string) {
+  reporter?.reportError(
+    {
+      type: 'your-package.error',
+      message: `Download failed: ${cause}`,
+      code: 'DownloadFailed',
+    },
+    { filterValue: { code: 'DownloadFailed', url, cause } }
+  );
+}
+```
+
+Observe groups errors by `type` and `message`. The `code` is recorded as the `expo.error.code` attribute. `shouldReport` receives the `filterValue` of the report, or the report itself when there is no `filterValue`. Put the `code` in the `filterValue`, so that developers can skip reports by code.
+
+To let developers set `shouldReport`, add `ObserveIntegrationFilterConfig` to your configuration type. Its type parameter is the value that `shouldReport` receives:
+
+```ts observe.types.ts
+import type { ObserveIntegrationFilterConfig } from 'expo-observe';
+
+export type YourPackageIntegrationConfig = ObserveIntegrationFilterConfig<{
+  code: string;
+  url: string;
+  cause: string;
+}> & {
+  thresholdMs?: number;
+};
+```
+
+Developers can then skip reports by code or by any other value:
+
+```tsx app/_layout.tsx
+Observe.configure({
+  integrations: {
+    'your-package': {
+      shouldReport: value =>
+        value.code !== 'DownloadCancelled' && !value.url.startsWith('https://cdn.example.com/'),
+    },
+  },
+});
+```
+
+</Step>
