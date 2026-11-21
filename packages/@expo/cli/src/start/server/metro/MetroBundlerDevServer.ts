@@ -17,10 +17,6 @@ import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
 import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
 import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
 import type { DeltaResult, TransformInputOptions } from '@expo/metro/metro/DeltaBundler/types';
-import type {
-  default as MetroHmrServer,
-  Client as MetroHmrClient,
-} from '@expo/metro/metro/HmrServer';
 import type { GraphRevision } from '@expo/metro/metro/IncrementalBundler';
 import type MetroServer from '@expo/metro/metro/Server';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
@@ -125,6 +121,14 @@ type ResolveMetadataFunction =
 /** `renderAsync` resolves the matched route and params itself. */
 type StaticRenderOptions = Omit<GetStreamingContentOptions, 'route' | 'params'>;
 
+/** A server bundle loaded with `hot`, tracked for changes. */
+type ServerGraphSubscription = {
+  graph: GraphRevision['graph'];
+  revisionId: string;
+  platform: string | undefined;
+  unlisten: () => void;
+};
+
 type DevServerRenderOptions = {
   loader?: GetStreamingContentOptions['loader'];
   metadata?: Awaited<ReturnType<ResolveMetadataFunction>>;
@@ -182,8 +186,9 @@ export const event = events('devserver');
 
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroServer | null = null;
-  private hmrServer: MetroHmrServer<MetroHmrClient> | null = null;
-  private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
+  private serverGraphs: Map<string, ServerGraphSubscription> = new Map();
+  private serverGraphUpdateTimer: ReturnType<typeof setTimeout> | undefined;
+  private serverGraphUpdates: Promise<void> = Promise.resolve();
   private loaderGraphListeners: Map<string, () => void> = new Map();
   private pendingLoaderInvalidationChangeIds: Set<string> = new Set();
   isReactServerComponentsEnabled?: boolean;
@@ -852,11 +857,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       extras.hot &&
       this.instanceMetroOptions.isExporting !== true
     ) {
-      // Register SSR HMR
-      const serverRoot = getMetroServerRoot(this.projectRoot);
-      const relativePath = toPosixPath(path.relative(serverRoot, res.filename));
-      const url = new URL(relativePath, this.getDevServerUrlOrAssert());
-      this.setupHmr(url);
+      await this.setupServerGraphListener(res.nextRevId);
     }
 
     return evalMetroAndWrapFunctions(
@@ -1383,12 +1384,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       exporting: !!options.isExporting,
     });
 
-    const { metro, hmrServer, address, server, middleware, messageSocket } =
-      await instantiateMetroAsync(this, parsedOptions, {
+    const { metro, address, server, middleware, messageSocket } = await instantiateMetroAsync(
+      this,
+      parsedOptions,
+      {
         isExporting: !!options.isExporting,
         exp,
         devToolsPluginManager: this.devToolsPluginManager,
-      });
+      }
+    );
 
     // Required for symbolication:
     const serverBaseUrl = `${address?.protocol ?? 'http'}://localhost:${this.getPort()}`;
@@ -1648,8 +1652,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return originalClose((err?: Error) => {
         this.instance = null;
         this.metro = null;
-        this.hmrServer = null;
-        this.ssrHmrClients = new Map();
+        clearTimeout(this.serverGraphUpdateTimer);
+        for (const { unlisten } of this.serverGraphs.values()) {
+          unlisten();
+        }
+        this.serverGraphs.clear();
         for (const unlisten of this.loaderGraphListeners.values()) {
           unlisten();
         }
@@ -1660,7 +1667,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     this.metro = metro;
-    this.hmrServer = hmrServer;
     return {
       server,
       location: {
@@ -1677,95 +1683,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   private onReloadRscEvent: ((platform: string) => void) | null = null;
-
-  private async registerSsrHmrAsync(url: string, onReload: (platform: string[]) => void) {
-    if (!this.hmrServer || this.ssrHmrClients.has(url)) {
-      return;
-    }
-
-    debugEvent('ssr_hmr_registered', { url });
-
-    const sendFn = (message: string) => {
-      const data = JSON.parse(String(message)) as { type: string; body: any };
-
-      switch (data.type) {
-        case 'bundle-registered':
-        case 'update-done':
-        case 'update-start':
-          break;
-        case 'update':
-          {
-            const update = data.body;
-            const {
-              isInitialUpdate,
-              added,
-              modified,
-              deleted,
-            }: {
-              isInitialUpdate?: boolean;
-              added: {
-                module: [number | string, string];
-                sourceURL: string;
-                sourceMappingURL: string;
-              }[];
-              modified: {
-                module: [number | string, string];
-                sourceURL: string;
-                sourceMappingURL: string;
-              }[];
-              deleted: (number | string)[];
-            } = update;
-
-            const hasUpdate = added.length || modified.length || deleted.length;
-
-            // NOTE: We throw away the updates and instead simply send a trigger to the client to re-fetch the server route.
-            if (!isInitialUpdate && hasUpdate) {
-              // Clear all SSR modules before sending the reload event. This ensures that the next event will rebuild the in-memory state from scratch.
-              if (typeof globalThis.__c === 'function') globalThis.__c();
-
-              const allModuleIds = new Set(
-                [...added, ...modified].map((m) => m.module[0]).concat(deleted)
-              );
-
-              const platforms = unique(
-                Array.from(allModuleIds)
-                  .map((moduleId) => {
-                    if (typeof moduleId !== 'string') {
-                      return null;
-                    }
-                    // Extract platforms from the module IDs.
-                    return moduleId.match(/[?&]platform=([\w]+)/)?.[1] ?? null;
-                  })
-                  .filter(Boolean)
-              ) as string[];
-
-              onReload(platforms);
-            }
-          }
-          break;
-        case 'error':
-          // GraphNotFound can mean that we have an issue in metroOptions where the URL doesn't match the object props.
-          Log.error('[SSR] HMR Error: ' + JSON.stringify(data, null, 2));
-
-          if (data.body?.type === 'GraphNotFoundError') {
-            Log.error(
-              'Available SSR HMR keys:',
-              `${this.metro?._bundler._revisionsByGraphId.keys()}`
-            );
-          }
-          break;
-        default:
-          debugEvent('ssr_hmr_unknown_message', { type: data.type });
-          break;
-      }
-    };
-
-    const client = await this.hmrServer!.onClientConnect(url, sendFn);
-    this.ssrHmrClients.set(url, client);
-    // Opt in...
-    client.optedIntoHMR = true;
-    await this.hmrServer!._registerEntryPoint(client, url, sendFn);
-  }
 
   public async waitForTypeScriptAsync(): Promise<boolean> {
     if (!this.instance) {
@@ -2049,29 +1966,89 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
   }
 
-  // Metro HMR
+  // Subscribe to the graph of a server bundle loaded with `hot` (RSC server functions), so that a
+  // change reaching it broadcasts `rsc-reload`. The first graph for each graph ID is tracked, and
+  // kept current by updating it on each change.
+  private async setupServerGraphListener(revisionId: string) {
+    const bundler = this.metro?.getBundler();
+    const revision = await bundler?.getRevision(revisionId);
+    if (!bundler || !revision || this.serverGraphs.has(revision.graphId)) {
+      return;
+    }
 
-  private setupHmr(url: URL) {
-    const onReload = (platforms: string[] = []) => {
-      // Send reload command to client from Fast Refresh code.
+    const { graphId, graph } = revision;
+    const platform = graph.transformOptions.platform ?? undefined;
+    debugEvent('ssr_hmr_registered', { graphId, platform });
 
-      if (!platforms.length) {
-        // TODO: When is this called?
-        this.broadcastMessage('sendDevCommand', {
-          name: 'rsc-reload',
+    const unlisten = bundler.getDeltaBundler().listen(graph, async () => {
+      this.scheduleServerGraphUpdate();
+    });
+    this.serverGraphs.set(graphId, { graph, revisionId: revision.id, platform, unlisten });
+  }
+
+  private scheduleServerGraphUpdate() {
+    // Every graph's `DeltaCalculator` emits each file change batch, so this debounces them into
+    // one update of all server graphs, like Metro's `HmrServer`. Updates are serialized, because
+    // each advances its graph's revision ID.
+    clearTimeout(this.serverGraphUpdateTimer);
+    this.serverGraphUpdateTimer = setTimeout(() => {
+      this.serverGraphUpdates = this.serverGraphUpdates
+        .then(() => this.updateServerGraphsAsync())
+        .catch((error) => {
+          Log.error(`[SSR] Failed to reload server functions after a file change: ${error}`);
         });
-      } else {
-        for (const platform of platforms) {
-          this.onReloadRscEvent?.(platform);
-          this.broadcastMessage('sendDevCommand', {
-            name: 'rsc-reload',
-            platform,
-          });
-        }
-      }
-    };
+    }, 50);
+  }
 
-    this.registerSsrHmrAsync(url.toString(), onReload);
+  private async updateServerGraphsAsync() {
+    const bundler = this.metro?.getBundler();
+    if (!bundler) {
+      return;
+    }
+
+    const changedPlatforms = new Set<string | undefined>();
+    for (const [graphId, subscription] of this.serverGraphs) {
+      const revision =
+        (await bundler.getRevision(subscription.revisionId)) ??
+        (await bundler.getRevisionByGraphId(graphId));
+      if (revision?.graph !== subscription.graph) {
+        // The graph's revision was removed, or replaced by one for a different graph. Stop, so that
+        // the next `hot` load subscribes to the current graph.
+        debugEvent('ssr_hmr_revision_lost', { graphId });
+        subscription.unlisten();
+        this.serverGraphs.delete(graphId);
+        continue;
+      }
+
+      try {
+        const result = await bundler.updateGraph(revision, false);
+        subscription.revisionId = result.revision.id;
+        const { added, modified, deleted } = result.delta;
+        if (added.size || modified.size || deleted.size) {
+          changedPlatforms.add(subscription.platform);
+        }
+      } catch (error) {
+        // Report like Metro's `HmrServer`. The graph keeps its pending changes, so the next change
+        // retries them.
+        this.metro?._reporter.update({ type: 'bundling_error', error: error as Error });
+      }
+    }
+
+    if (!changedPlatforms.size) {
+      return;
+    }
+
+    // Clear all SSR modules before sending the reload event. This ensures that the next request
+    // rebuilds the in-memory state from scratch.
+    if (typeof globalThis.__c === 'function') {
+      globalThis.__c();
+    }
+    for (const platform of changedPlatforms) {
+      if (platform) {
+        this.onReloadRscEvent?.(platform);
+      }
+      this.broadcastMessage('sendDevCommand', { name: 'rsc-reload', platform });
+    }
   }
 
   // Subscribe to a loader bundle's Metro graph so we can broadcast `loader-invalidate` and

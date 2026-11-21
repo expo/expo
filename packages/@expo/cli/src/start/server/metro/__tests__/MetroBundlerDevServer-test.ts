@@ -1,5 +1,6 @@
 import { getConfig } from '@expo/config';
 import type { ChangeEvent } from '@expo/metro/metro-file-map/flow-types';
+import type MetroServer from '@expo/metro/metro/Server';
 import { ImmutableRequest } from 'expo-server/private';
 import { fs, vol } from 'memfs';
 
@@ -889,5 +890,201 @@ describe('exportServerRouteAsync', () => {
       ].join('\n')
     );
     expect(files.has('_expo/server/render.js.map')).toBe(true);
+  });
+});
+
+describe('server graph listeners', () => {
+  type FakeGraph = { transformOptions: { platform: string } };
+  type FakeRevision = { id: string; graphId: string; graph: FakeGraph };
+
+  // A fake `IncrementalBundler`: `changed` holds the graphs the next update reports a delta for.
+  function createFakeBundler() {
+    const revisions = new Map<string, FakeRevision>();
+    const listeners = new Set<() => void>();
+    const changed = new Set<FakeGraph>();
+    let nextId = 0;
+
+    const addRevision = (graphId: string, graph: FakeGraph): FakeRevision => {
+      const revision = { id: `rev-${nextId++}`, graphId, graph };
+      revisions.set(revision.id, revision);
+      return revision;
+    };
+    // Like `IncrementalBundler.updateGraph`, replaces the revision with a new one.
+    const advanceRevision = (revision: FakeRevision): FakeRevision => {
+      revisions.delete(revision.id);
+      return addRevision(revision.graphId, revision.graph);
+    };
+    const bundler = {
+      getRevision: (id: string) => (revisions.has(id) ? Promise.resolve(revisions.get(id)) : null),
+      getRevisionByGraphId: (graphId: string) => {
+        const latest = [...revisions.values()].filter((r) => r.graphId === graphId).pop();
+        return latest ? Promise.resolve(latest) : null;
+      },
+      updateGraph: jest.fn(async (revision: FakeRevision) => {
+        const delta = {
+          added: new Map(),
+          modified: new Map(changed.has(revision.graph) ? [['/changed.js', {}]] : []),
+          deleted: new Set(),
+        };
+        changed.delete(revision.graph);
+        return { revision: advanceRevision(revision), delta };
+      }),
+      getDeltaBundler: () => ({
+        listen: (_graph: FakeGraph, listener: () => void) => {
+          listeners.add(listener);
+          return () => listeners.delete(listener);
+        },
+      }),
+    };
+    return {
+      bundler,
+      revisions,
+      addRevision,
+      advanceRevision,
+      createGraph: (platform: string): FakeGraph => ({ transformOptions: { platform } }),
+      // Emits one file change batch to every listener, as `DeltaCalculator`s do.
+      emitChange(touched: FakeGraph[]) {
+        touched.forEach((graph) => changed.add(graph));
+        listeners.forEach((listener) => listener());
+      },
+    };
+  }
+
+  function createDevServerWithBundler(fake: ReturnType<typeof createFakeBundler>) {
+    const devServer = new MetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+    const reporter = { update: jest.fn() };
+    devServer['metro'] = {
+      getBundler: () => fake.bundler,
+      _reporter: reporter,
+    } as unknown as MetroServer;
+    const broadcastMessage = jest.fn();
+    devServer.broadcastMessage = broadcastMessage;
+    const onReloadRscEvent = jest.fn();
+    devServer['onReloadRscEvent'] = onReloadRscEvent;
+    const subscribe = async (graphId: string, graph: FakeGraph) => {
+      const revision = fake.addRevision(graphId, graph);
+      await devServer['setupServerGraphListener'](revision.id);
+      return revision;
+    };
+    return { devServer, broadcastMessage, onReloadRscEvent, reporter, subscribe };
+  }
+
+  const clearRegistry = jest.fn();
+  const debounce = () => jest.advanceTimersByTimeAsync(50);
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    clearRegistry.mockClear();
+    Object.assign(globalThis, { __c: clearRegistry });
+  });
+  afterEach(() => {
+    jest.useRealTimers();
+    Reflect.deleteProperty(globalThis, '__c');
+  });
+
+  it('reloads the graph platform only when a change reaches the graph', async () => {
+    const fake = createFakeBundler();
+    const { broadcastMessage, onReloadRscEvent, subscribe } = createDevServerWithBundler(fake);
+    const graph = fake.createGraph('ios');
+    await subscribe('graph-a', graph);
+
+    fake.emitChange([]);
+    await debounce();
+    expect(fake.bundler.updateGraph).toHaveBeenCalledTimes(1);
+    expect(broadcastMessage).not.toHaveBeenCalled();
+    expect(clearRegistry).not.toHaveBeenCalled();
+
+    fake.emitChange([graph]);
+    await debounce();
+    expect(clearRegistry).toHaveBeenCalledTimes(1);
+    expect(onReloadRscEvent).toHaveBeenCalledWith('ios');
+    expect(broadcastMessage.mock.calls).toEqual([
+      ['sendDevCommand', { name: 'rsc-reload', platform: 'ios' }],
+    ]);
+  });
+
+  it('updates each graph once for a burst of changes, and broadcasts once per platform', async () => {
+    const fake = createFakeBundler();
+    const { broadcastMessage, subscribe } = createDevServerWithBundler(fake);
+    const graphs = [fake.createGraph('web'), fake.createGraph('web'), fake.createGraph('ios')];
+    for (const [i, graph] of graphs.entries()) {
+      await subscribe(`graph-${i}`, graph);
+    }
+
+    fake.emitChange(graphs);
+    fake.emitChange([]);
+    await debounce();
+    expect(fake.bundler.updateGraph).toHaveBeenCalledTimes(3);
+    expect(clearRegistry).toHaveBeenCalledTimes(1);
+    expect(broadcastMessage.mock.calls).toEqual([
+      ['sendDevCommand', { name: 'rsc-reload', platform: 'web' }],
+      ['sendDevCommand', { name: 'rsc-reload', platform: 'ios' }],
+    ]);
+  });
+
+  it('keeps the first graph registered for a graph ID', async () => {
+    const fake = createFakeBundler();
+    const { broadcastMessage, subscribe } = createDevServerWithBundler(fake);
+    const first = fake.createGraph('web');
+    const second = fake.createGraph('web');
+    const firstRevision = await subscribe('graph-a', first);
+    await subscribe('graph-a', second);
+
+    fake.emitChange([second]);
+    await debounce();
+    expect(fake.bundler.updateGraph).toHaveBeenCalledTimes(1);
+    expect(fake.bundler.updateGraph).toHaveBeenCalledWith(firstRevision, false);
+    expect(broadcastMessage).not.toHaveBeenCalled();
+  });
+
+  it('follows the graph when another caller advances its revision', async () => {
+    const fake = createFakeBundler();
+    const { broadcastMessage, subscribe } = createDevServerWithBundler(fake);
+    const graph = fake.createGraph('web');
+    fake.advanceRevision(await subscribe('graph-a', graph));
+
+    fake.emitChange([graph]);
+    await debounce();
+    expect(broadcastMessage).toHaveBeenCalledWith('sendDevCommand', {
+      name: 'rsc-reload',
+      platform: 'web',
+    });
+  });
+
+  it('stops when the revision now belongs to a different graph', async () => {
+    const fake = createFakeBundler();
+    const { devServer, broadcastMessage, subscribe } = createDevServerWithBundler(fake);
+    const graph = fake.createGraph('web');
+    fake.revisions.delete((await subscribe('graph-a', graph)).id);
+    fake.addRevision('graph-a', fake.createGraph('web'));
+
+    fake.emitChange([graph]);
+    await debounce();
+    fake.emitChange([graph]);
+    await debounce();
+    expect(fake.bundler.updateGraph).not.toHaveBeenCalled();
+    expect(broadcastMessage).not.toHaveBeenCalled();
+    expect(devServer['serverGraphs'].has('graph-a')).toBe(false);
+  });
+
+  it('reports an update error and still updates the other graphs', async () => {
+    const fake = createFakeBundler();
+    const { broadcastMessage, reporter, subscribe } = createDevServerWithBundler(fake);
+    const failing = fake.createGraph('web');
+    const graph = fake.createGraph('ios');
+    await subscribe('graph-a', failing);
+    await subscribe('graph-b', graph);
+    const error = new Error('SyntaxError');
+    fake.bundler.updateGraph.mockRejectedValueOnce(error);
+
+    fake.emitChange([failing, graph]);
+    await debounce();
+    expect(reporter.update).toHaveBeenCalledWith({ type: 'bundling_error', error });
+    expect(broadcastMessage.mock.calls).toEqual([
+      ['sendDevCommand', { name: 'rsc-reload', platform: 'ios' }],
+    ]);
   });
 });

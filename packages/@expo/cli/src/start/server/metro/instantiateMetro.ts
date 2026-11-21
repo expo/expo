@@ -395,7 +395,6 @@ export async function instantiateMetroAsync(
   }
 ): Promise<{
   metro: MetroServer;
-  hmrServer: MetroHmrServer<MetroHmrClient> | null;
   server: http.Server;
   address: ServerAddressInfo | null;
   middleware: any;
@@ -675,7 +674,6 @@ export async function instantiateMetroAsync(
 
   return {
     metro,
-    hmrServer,
     server,
     middleware,
     messageSocket: messagesSocket,

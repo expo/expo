@@ -3,8 +3,8 @@ import type { SerializedError } from '2g';
 
 declare module '2g' {
   interface EventRegistry {
-    'metro:ssr_hmr_registered': { url: string };
-    'metro:ssr_hmr_unknown_message': { type: string };
+    'metro:ssr_hmr_registered': { graphId: string; platform: string | undefined };
+    'metro:ssr_hmr_revision_lost': { graphId: string };
     'metro:env_reload': Record<string, never>;
     'metro:rsc_route_added': { path: string };
     'metro:client_boundaries_evaluated': { count: number };
