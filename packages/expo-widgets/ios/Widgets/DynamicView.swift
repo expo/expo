@@ -21,6 +21,6 @@ public struct WidgetsDynamicView: View {
   public var body: some View {
     // Roots are not inside Children()'s ForEach, so consume their identity here as well.
     let view: any View = child.childView
-    AnyView(view).id(child.childIdentity)
+    AnyView(view).id(child.childIdentity.key)
   }
 }

@@ -18,7 +18,7 @@ struct ListForEachView: ExpoSwiftUI.View {
   }
 
   var body: some View {
-    ForEach(props.children ?? [], id: \.childIdentity) { child in
+    ForEach(props.children ?? [], id: \.childIdentity.key) { child in
       if let item = child.childView as? DataListForEachItemView {
         item.tag(AnyHashable(item.props.itemKey))
       } else {
