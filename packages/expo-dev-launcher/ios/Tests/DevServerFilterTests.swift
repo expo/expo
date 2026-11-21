@@ -5,6 +5,60 @@ import XCTest
 @testable import EXDevLauncher
 
 class DevServerFilterTests: XCTestCase {
+  func testBundleIdentifierFilterAcceptsRelatedIdentifiersAndKeepsTheInstalledApp() {
+    let servers = [
+      server("http://10.0.0.1:8081", bundleIdentifier: "dev.expo.mine.dev"),
+      server("http://10.0.0.2:8081", bundleIdentifier: "dev.expo.mine"),
+      server("http://10.0.0.3:8081", bundleIdentifier: "dev.expo.theirs"),
+      server("http://10.0.0.4:8081")
+    ]
+
+    let result = DevServerFilter.apply(
+      servers,
+      settings: settings(bundleIdentifier: true),
+      bundleIdentifier: "dev.expo.mine.dev",
+      username: nil,
+      additionalBundleIdentifiers: ["dev.expo.mine"]
+    )
+
+    XCTAssertEqual(result.map(\.url), ["http://10.0.0.1:8081", "http://10.0.0.2:8081"])
+  }
+
+  func testRelatedIdentifiersApplyWithoutAnInstalledIdentifier() {
+    let servers = [
+      server("http://10.0.0.1:8081", bundleIdentifier: "dev.expo.mine"),
+      server("http://10.0.0.2:8081", bundleIdentifier: "dev.expo.theirs")
+    ]
+
+    let result = DevServerFilter.apply(
+      servers,
+      settings: settings(bundleIdentifier: true),
+      bundleIdentifier: nil,
+      username: nil,
+      additionalBundleIdentifiers: ["dev.expo.mine"]
+    )
+
+    XCTAssertEqual(result.map(\.url), ["http://10.0.0.1:8081"])
+  }
+
+  func testRelatedIdentifiersStillRespectOtherFilters() {
+    let servers = [
+      server("http://10.0.0.1:8081", slug: "my-app", bundleIdentifier: "dev.expo.mine", username: "chris"),
+      server("http://10.0.0.2:8081", slug: "other-app", bundleIdentifier: "dev.expo.mine", username: "chris"),
+      server("http://10.0.0.3:8081", slug: "my-app", bundleIdentifier: "dev.expo.mine", username: "other")
+    ]
+
+    let result = DevServerFilter.apply(
+      servers,
+      settings: settings(bundleIdentifier: true, username: true, slug: "my-app"),
+      bundleIdentifier: "dev.expo.mine.dev",
+      username: "chris",
+      additionalBundleIdentifiers: ["dev.expo.mine"]
+    )
+
+    XCTAssertEqual(result.map(\.url), ["http://10.0.0.1:8081"])
+  }
+
   private func server(
     _ url: String,
     slug: String? = nil,

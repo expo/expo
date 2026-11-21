@@ -12,6 +12,8 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import expo.modules.devlauncher.DevLauncherController
+import expo.modules.devlauncher.helpers.DevLauncherAppIdentifiers
+import expo.modules.devlauncher.helpers.DevLauncherMetadataHelper
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorInstance
 import expo.modules.devlauncher.logs.DevLauncherRemoteLogManager
@@ -53,7 +55,13 @@ class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
   private val nsdPreferences = inject<NsdPreferences>()
   private val sessionService = inject<SessionService>()
 
-  private val appPackageName: String = devLauncherController.context.packageName
+  private val appPackageNames = DevLauncherAppIdentifiers.fromMetadata(
+    applicationId = devLauncherController.context.packageName,
+    metadata = DevLauncherMetadataHelper.getMetadataValue(
+      devLauncherController.context,
+      DevLauncherAppIdentifiers.METADATA_KEY
+    )
+  )
 
   private var allPackagers: Set<PackagerInfo> = packagerService.runningPackagers.value
 
@@ -118,7 +126,7 @@ class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
     var filtered = packagers
 
     if (nsdPreferences.filterByPackageName) {
-      filtered = filtered.filter { it.androidPackage == appPackageName }.toSet()
+      filtered = filtered.filter { it.androidPackage in appPackageNames }.toSet()
     }
 
     val slugFilter = nsdPreferences.filterBySlug

@@ -79,6 +79,9 @@ class DevLauncherViewModel: ObservableObject {
   @Published var devServers: [DevServer] = []
 
   private var allDevServers: [DevServer] = []
+  private let additionalBundleIdentifiers = Bundle.main.object(
+    forInfoDictionaryKey: "EXDevLauncherDevServerApplicationIds"
+  ) as? [String] ?? []
 
   @Published var hiddenDevServerCount = 0
 
@@ -168,7 +171,8 @@ class DevLauncherViewModel: ObservableObject {
       allDevServers,
       settings: settings,
       bundleIdentifier: Bundle.main.bundleIdentifier,
-      username: user?.username
+      username: user?.username,
+      additionalBundleIdentifiers: additionalBundleIdentifiers
     )
 
     let sorted = filtered.sorted(by: <)
