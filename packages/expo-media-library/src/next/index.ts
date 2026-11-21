@@ -2,6 +2,7 @@ export {
   Asset,
   Album,
   Query,
+  MediaLibrary,
   requestPermissionsAsync,
   getPermissionsAsync,
   usePermissions,
