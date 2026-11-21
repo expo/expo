@@ -40,15 +40,20 @@ extension SessionRow {
 
   /// Builds a finished main session for a crashed process that has no stored session, for example a
   /// launch that failed before the app's code ran. The app version, build number and OS version come
-  /// from the crash report. The other build details come from the running app only when it is the same
-  /// build. The update fields stay empty, because the crashed launch could have run another update.
+  /// from the crash report. The other build details come from the newest stored session of the same
+  /// build, and stay empty without one. The update fields stay empty, because the crashed launch could
+  /// have run another update.
   static func forCrashedProcess(
     _ crashReport: CrashReport,
+    storedSessions: [SessionRow],
     environment: String?,
     app: AppInfo = AppInfo.current,
     device: DeviceInfo = DeviceInfo.current
   ) -> SessionRow {
-    let isSameBuild = crashReport.appVersion == app.appVersion && crashReport.appBuildNumber == app.buildNumber
+    let sameBuildSessions = storedSessions.filter {
+      $0.appVersion == crashReport.appVersion && $0.appBuildNumber == crashReport.appBuildNumber
+    }
+    let sameBuild = sameBuildSessions.max(by: { $0.startTimestamp < $1.startTimestamp })
     let crashTimestamp = crashReport.timestampEnd.ISO8601Format()
 
     return SessionRow(
@@ -62,13 +67,13 @@ extension SessionRow {
       appIdentifier: app.appId,
       appVersion: crashReport.appVersion,
       appBuildNumber: crashReport.appBuildNumber,
-      appEasBuildId: isSameBuild ? app.easBuildId : nil,
+      appEasBuildId: sameBuild?.appEasBuildId,
       deviceOs: device.systemName,
       deviceOsVersion: crashReport.osVersion.flatMap(versionNumber(from:)) ?? device.systemVersion,
       deviceModel: device.modelIdentifier,
       deviceName: device.modelName,
-      expoSdkVersion: isSameBuild ? app.expoSdkVersion : nil,
-      reactNativeVersion: isSameBuild ? app.reactNativeVersion : nil,
+      expoSdkVersion: sameBuild?.expoSdkVersion,
+      reactNativeVersion: sameBuild?.reactNativeVersion,
       clientVersion: app.clientVersion,
       languageTag: Locale.preferredLanguages.first,
       processId: crashReport.processId

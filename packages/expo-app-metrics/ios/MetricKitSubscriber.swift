@@ -61,7 +61,7 @@ func storeCrashReports(_ crashReports: [CrashReport], in database: MetricsDataba
       persistCrashReport(crashReport, sessionId: session.id, in: database)
     } else if crashReport.processId != nil {
       let environment = AppMetricsUserDefaults.environment ?? AppMetricsUserDefaults.getDefaultEnvironment()
-      let session = SessionRow.forCrashedProcess(crashReport, environment: environment)
+      let session = SessionRow.forCrashedProcess(crashReport, storedSessions: mainSessions, environment: environment)
       do {
         try database.insert(session: session)
       } catch {

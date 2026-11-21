@@ -272,6 +272,28 @@ struct CrashReportTests {
         #expect(try database.getLogs(sessionId: sessions[0].id).count == 1)
       }
     }
+
+    @Test
+    func `stores crashes of different processes in one payload under their own sessions`() throws {
+      try withTemporaryDatabase { database in
+        let windowEnd = Date.now.addingTimeInterval(-60)
+        let windowStart = windowEnd.addingTimeInterval(-3600)
+        try database.insert(
+          session: makeMainSessionRow(id: "process-100", startDate: windowStart, endDate: nil, processId: 100)
+        )
+        let reports = [100, 822].map { processId in
+          makeCrashReport(timestampBegin: windowStart, timestampEnd: windowEnd, processId: processId)
+        }
+
+        storeCrashReports(reports, in: database)
+
+        let sessions = try database.getMainSessions()
+        try #require(sessions.count == 2)
+        for session in sessions {
+          #expect(try database.getLogs(sessionId: session.id).count == 1)
+        }
+      }
+    }
   }
 
   @Suite("SessionRow.forCrashedProcess")
@@ -289,6 +311,7 @@ struct CrashReportTests {
 
       let session = SessionRow.forCrashedProcess(
         report,
+        storedSessions: [],
         environment: "production",
         app: makeAppInfo(buildNumber: "15"),
         device: testDevice
@@ -307,19 +330,30 @@ struct CrashReportTests {
     }
 
     @Test
-    func `copies the build details from the running app when it is the same build`() {
+    func `copies the build details from the newest stored session of the same build`() {
       let report = makeCrashReport(
         timestampBegin: Date.now.addingTimeInterval(-3600),
         timestampEnd: Date.now,
         appBuildNumber: "14",
         processId: 822
       )
-      let app = makeAppInfo(buildNumber: "14")
+      let storedSessions = [
+        makeBuildSessionRow(buildNumber: "14", startTimestamp: "2026-11-01T10:00:00Z", expoSdkVersion: "58.0.0"),
+        makeBuildSessionRow(buildNumber: "14", startTimestamp: "2026-11-02T10:00:00Z", expoSdkVersion: "58.0.1"),
+        makeBuildSessionRow(buildNumber: "15", startTimestamp: "2026-11-03T10:00:00Z", expoSdkVersion: "59.0.0"),
+      ]
 
-      let session = SessionRow.forCrashedProcess(report, environment: "production", app: app, device: testDevice)
+      let session = SessionRow.forCrashedProcess(
+        report,
+        storedSessions: storedSessions,
+        environment: "production",
+        app: makeAppInfo(buildNumber: "15"),
+        device: testDevice
+      )
 
-      #expect(session.expoSdkVersion == app.expoSdkVersion)
-      #expect(session.reactNativeVersion == app.reactNativeVersion)
+      #expect(session.expoSdkVersion == "58.0.1")
+      #expect(session.reactNativeVersion == "0.86.0")
+      #expect(session.appEasBuildId == "eas-build-14")
     }
   }
 
@@ -546,6 +580,20 @@ private func makeAppInfo(buildNumber: String) -> AppInfo {
     appVersion: "1.0.0",
     buildNumber: buildNumber,
     updatesInfo: nil
+  )
+}
+
+private func makeBuildSessionRow(buildNumber: String, startTimestamp: String, expoSdkVersion: String) -> SessionRow {
+  return SessionRow(
+    id: UUID().uuidString,
+    type: Session.SessionType.main.rawValue,
+    startTimestamp: startTimestamp,
+    isActive: false,
+    appVersion: "1.0.0",
+    appBuildNumber: buildNumber,
+    appEasBuildId: "eas-build-\(buildNumber)",
+    expoSdkVersion: expoSdkVersion,
+    reactNativeVersion: "0.86.0"
   )
 }
 
