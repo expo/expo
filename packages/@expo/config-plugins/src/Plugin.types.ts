@@ -166,7 +166,7 @@ export interface ModConfig {
     /**
      * Modify the `android/gradle.properties` as a `Properties.PropertiesItem[]`.
      */
-    gradleProperties?: Mod<Properties.PropertiesItem[]>;
+    gradleProperties?: Mod<readonly Properties.PropertiesItem[]>;
   };
   ios?: {
     /**
