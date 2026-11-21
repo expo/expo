@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { getRouterE2ERoot } from '../__tests__/utils';
+import { getServerTesterRoot } from '../__tests__/utils';
 import { createExpoServe, createExpoStart, executeExpoAsync } from './expo';
 import { executeAsync, processFindPrefixedValue } from './process';
 import { BackgroundServer, createBackgroundServer } from './server';
@@ -24,9 +24,7 @@ export type ServerTestConfiguration = {
 };
 
 export type ServerTestOptions = {
-  /** The E2E test scenario directory name (e.g., 'server-middleware-async') */
-  fixtureName: string;
-  /** A unique value to ensure the output directory is not overwritten by another test running in parallel. Useful for tests that share the same `fixtureName` */
+  /** A unique value to keep suites with different export options in separate output directories. */
   uniqueOutputKey?: string;
   /** Options for the export command */
   export?: {
@@ -43,7 +41,7 @@ export type ServerTestOptions = {
 };
 
 /**
- * Creates server test configurations for the specified runtimes.
+ * Creates server-tester configurations for the specified runtimes.
  * Use with `describe.each()` to run the same tests against multiple server implementations.
  *
  * @param runtimes - Array of runtime identifiers to prepare (e.g., `['expo serve', 'workerd']`)
@@ -52,9 +50,7 @@ export type ServerTestOptions = {
  * @example
  * ```ts
  * describe.each(
- *   prepareServers(['expo serve', 'workerd'], {
- *     fixtureName: 'server-middleware-async',
- *   })
+ *   prepareServers(['expo serve', 'workerd'], {})
  * )('$name requests', (config) => {
  *   const ctx = setupServer(config);
  *   it('can serve html', async () => {
@@ -67,8 +63,9 @@ export function prepareServers(
   runtimes: RuntimeType[],
   options: ServerTestOptions
 ): ServerTestConfiguration[] {
-  const { fixtureName, uniqueOutputKey } = options;
-  const projectRoot = getRouterE2ERoot();
+  const { uniqueOutputKey } = options;
+  const projectRoot = getServerTesterRoot();
+  const workerdDir = path.join(projectRoot, 'servers/workerd');
 
   const exportEnv = options.export?.env ?? {};
   const exportCliFlags = options.export?.cliFlags ?? [];
@@ -77,14 +74,13 @@ export function prepareServers(
   const defaultExportEnv = {
     NODE_ENV: 'production',
     EXPO_USE_STATIC: 'server',
-    E2E_ROUTER_SRC: fixtureName,
     ...exportEnv,
   } as const;
 
   let sharedProductionExport: Promise<string> | undefined;
 
   async function prepareProductionDist(runtimeName: string) {
-    const sharedOutputName = generateOutputDir('shared', fixtureName, uniqueOutputKey);
+    const sharedOutputName = generateOutputDir('shared', uniqueOutputKey);
     const sharedOutputDir = path.join(projectRoot, sharedOutputName);
 
     sharedProductionExport ??= executeExpoAsync(
@@ -94,7 +90,7 @@ export function prepareServers(
     ).then(() => sharedOutputDir);
 
     const sourceDir = await sharedProductionExport;
-    const outputName = generateOutputDir(runtimeName, fixtureName, uniqueOutputKey);
+    const outputName = generateOutputDir(runtimeName, uniqueOutputKey);
     const outputDir = path.join(projectRoot, outputName);
 
     await fs.promises.rm(outputDir, { force: true, recursive: true });
@@ -139,7 +135,7 @@ export function prepareServers(
       },
       createServer: (overrideServe) =>
         createBackgroundServer({
-          command: ['node', path.join(projectRoot, `__e2e__/${fixtureName}/express.js`)],
+          command: ['node', path.join(projectRoot, 'servers/express.js')],
           host: (chunk: any) => processFindPrefixedValue(chunk, 'Express server listening'),
           cwd: projectRoot,
           env: {
@@ -159,10 +155,10 @@ export function prepareServers(
           '--format=esm',
           '--platform=node',
           `--outfile=${path.join(outputDir, 'server/workerd.js')}`,
-          path.join(projectRoot, `__e2e__/${fixtureName}/workerd/workerd.mjs`),
+          path.join(workerdDir, 'workerd.mjs'),
         ]);
         fs.copyFileSync(
-          path.join(projectRoot, `__e2e__/${fixtureName}/workerd/config.capnp`),
+          path.join(workerdDir, 'config.capnp'),
           path.join(outputDir, 'server/config.capnp')
         );
 
@@ -175,7 +171,7 @@ export function prepareServers(
             'serve',
             path.join(
               projectRoot,
-              generateOutputDir('workerd', fixtureName, uniqueOutputKey),
+              generateOutputDir('workerd', uniqueOutputKey),
               'server/config.capnp'
             ),
           ],
@@ -267,6 +263,6 @@ export function setupServer(
   };
 }
 
-function generateOutputDir(runtimeName: string, fixtureName: string, uniqueOutputKey?: string) {
-  return `dist-${fixtureName}-${runtimeName}${uniqueOutputKey ? `-${uniqueOutputKey}` : ''}`;
+function generateOutputDir(runtimeName: string, uniqueOutputKey?: string) {
+  return ['dist', runtimeName, uniqueOutputKey].filter(Boolean).join('-');
 }
