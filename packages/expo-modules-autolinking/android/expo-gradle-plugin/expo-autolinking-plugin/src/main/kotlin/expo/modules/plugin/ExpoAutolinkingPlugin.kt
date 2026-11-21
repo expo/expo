@@ -6,6 +6,7 @@ import com.android.build.api.variant.AndroidComponentsExtension
 import expo.modules.plugin.configuration.ExpoModule
 import expo.modules.plugin.text.Colors
 import expo.modules.plugin.text.withColor
+import kotlinx.serialization.json.Json
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -127,9 +128,10 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
       it.nodeWorkingDir.set(project.rootProject.layout.projectDirectory)
       it.mirrorDirectory.set(project.layout.projectDirectory.dir("src/main/java/inline/modules"))
       it.outputDirectory.set(getInlineModulesDir(project))
-      it.watchedDirectoriesSerialized.set(
-        (project.findProperty("expo.inlineModules.watchedDirectories")
-          ?: emptyList<String>()).toString()
+      it.watchedDirectories.set(
+        project.findProperty("expo.inlineModules.watchedDirectories")
+          ?.let { value -> Json.decodeFromString<List<String>>(value.toString()) }
+          ?: emptyList()
       )
     }
   }
