@@ -174,7 +174,6 @@ public final class ExpoUIModule: Module {
     ExpoUIView(SliderView.self)
 
     ExpoUIView(SpacerView.self)
-    ExpoUIView(StepperView.self)
     ExpoUIView(ToggleView.self)
     ExpoUIView(VStackView.self)
     ExpoUIView(ZStackView.self)
@@ -194,7 +193,6 @@ public final class ExpoUIModule: Module {
     ExpoUIView(OverlayView.self)
     ExpoUIView(BackgroundView.self)
     ExpoUIView(MaskView.self)
-    ExpoUIView(GridView.self)
     ExpoUIView(LinkView.self)
     ExpoUIView(TabView.self)
     ExpoUIView(Tab.self)

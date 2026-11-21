@@ -1,27 +1,28 @@
 import ExpoModulesCore
 import SwiftUI
 
-public final class GridProps: UIBaseViewProps {
-  @Field var alignment: AlignmentOptions?
-  @Field var verticalSpacing: CGFloat?
-  @Field var horizontalSpacing: CGFloat?
+@ViewProps(extending: ExpoUIViewProps.self)
+public struct GridProps {
+  var alignment: AlignmentOptions?
+  var verticalSpacing: CGFloat?
+  var horizontalSpacing: CGFloat?
 }
 
-public struct GridView: ExpoSwiftUI.View {
-  @ObservedObject public var props: GridProps
-
-  public init(props: GridProps) {
-    self.props = props
+@ExpoView<GridProps>
+public struct GridView: View {
+  public var body: some View {
+    grid.applyExpoUIViewProps(props.base, appContext: appContext)
   }
 
-  public var body: some View {
+  @ViewBuilder
+  private var grid: some View {
     if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
       Grid(
         alignment: props.alignment?.toAlignment() ?? .center,
         horizontalSpacing: props.horizontalSpacing,
         verticalSpacing: props.verticalSpacing
       ) {
-        Children()
+        children
       }
     } else {
       EmptyView()
