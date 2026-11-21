@@ -649,6 +649,224 @@ describe('expo-file-system behavioral mock', () => {
         expect(handle.offset).toBe(1);
         handle.close();
       });
+
+      describe('FileHandle positional calls', () => {
+        it('reads at a position without moving the offset', async () => {
+          const file = makeFile('at-read.txt', 'abcdef');
+          const handle = file.open(FileMode.ReadOnly);
+          handle.readBytesSync(1);
+          expect(handle.readBytesSync(2, { at: 4 })).toEqual(encode('ef'));
+          expect(await handle.readBytes(2, { at: 2 })).toEqual(encode('cd'));
+          expect(handle.readBytesSync(3, { at: 5 })).toEqual(encode('f'));
+          expect(handle.readBytesSync(1, { at: 9 })).toEqual(new Uint8Array([]));
+          expect(handle.offset).toBe(1);
+          handle.close();
+        });
+
+        it('runs positional async reads without the queue, in any order', async () => {
+          const file = makeFile('at-concurrent.txt', 'abcdef');
+          const handle = file.open(FileMode.ReadOnly);
+          const second = handle.readBytes(2, { at: 2 });
+          const first = handle.readBytes(2, { at: 0 });
+          expect(await second).toEqual(encode('cd'));
+          expect(await first).toEqual(encode('ab'));
+          expect(handle.offset).toBe(0);
+          handle.close();
+        });
+
+        it('writes at a position without moving the offset and zero-fills a gap', async () => {
+          const file = makeFile('at-write.txt', 'abcd');
+          const handle = file.open(FileMode.ReadWrite);
+          handle.writeBytesSync(encode('Z'), { at: 1 });
+          await handle.writeBytes(encode('!'), { at: 6 });
+          expect(handle.offset).toBe(0);
+          handle.close();
+          const bytes = file.bytesSync();
+          expect(bytes).toEqual(new Uint8Array([...encode('aZcd'), 0, 0, 33]));
+        });
+
+        it('keeps positional writes in call order with cursor writes', async () => {
+          const file = makeFile('at-write-order.txt', '');
+          const handle = file.open(FileMode.ReadWrite);
+          const cursorWrite = handle.writeBytes(encode('ab'));
+          const atWrite = handle.writeBytes(encode('X'), { at: 0 });
+          await Promise.all([cursorWrite, atWrite]);
+          expect(handle.offset).toBe(2);
+          handle.close();
+          expect(file.textSync()).toBe('Xb');
+        });
+
+        it('appends a positional write in Append mode and leaves the offset alone', () => {
+          const file = makeFile('at-append.txt', 'abc');
+          const handle = file.open(FileMode.Append);
+          handle.writeBytesSync(encode('d'), { at: 0 });
+          expect(handle.offset).toBe(3);
+          expect(handle.size).toBe(4);
+          handle.writeBytesSync(encode('e'));
+          expect(handle.offset).toBe(5);
+          handle.close();
+          expect(file.textSync()).toBe('abcde');
+        });
+
+        it('waits for an un-queued positional read before closing the native handle', async () => {
+          const file = makeFile('at-close.txt', 'abcdef');
+          const handle = file.open(FileMode.ReadOnly);
+          const native = (handle as any).native;
+          let resolveRead!: (bytes: ArrayBuffer) => void;
+          jest.spyOn(native, 'readAt').mockImplementationOnce(
+            () =>
+              new Promise<ArrayBuffer>((resolve) => {
+                resolveRead = resolve;
+              })
+          );
+          const closeSpy = jest.spyOn(native, 'close');
+          const pending = handle.readBytes(3, { at: 3 });
+          handle.close();
+          expect(handle.offset).toBeNull();
+          await Promise.resolve();
+          expect(closeSpy).not.toHaveBeenCalled();
+          resolveRead(encode('def').buffer as ArrayBuffer);
+          expect(await pending).toEqual(encode('def'));
+          await Promise.resolve();
+          await Promise.resolve();
+          expect(closeSpy).toHaveBeenCalledTimes(1);
+          expect(() => handle.readBytesSync(1, { at: 0 })).toThrow('The file handle is closed');
+          await expect(handle.readBytes(1, { at: 0 })).rejects.toThrow('The file handle is closed');
+          await expect(handle.writeBytes(encode('x'), { at: 0 })).rejects.toThrow(
+            'The file handle is closed'
+          );
+        });
+
+        it('lets a positional read finish while a cursor read is still pending', async () => {
+          const file = makeFile('at-skips-queue.txt', 'abcdef');
+          const handle = file.open(FileMode.ReadOnly);
+          const native = (handle as any).native;
+          let resolveRead!: (bytes: ArrayBuffer) => void;
+          jest.spyOn(native, 'readAt').mockImplementationOnce(
+            () =>
+              new Promise<ArrayBuffer>((resolve) => {
+                resolveRead = resolve;
+              })
+          );
+          const stuck = handle.readBytes(2);
+          // The queued read starts on the next microtask, so let it take the stub first.
+          await Promise.resolve();
+          expect(await handle.readBytes(2, { at: 4 })).toEqual(encode('ef'));
+          resolveRead(encode('ab').buffer as ArrayBuffer);
+          expect(await stuck).toEqual(encode('ab'));
+          expect(handle.offset).toBe(2);
+          handle.close();
+        });
+
+        it('rejects a position that is negative, fractional or not a number', async () => {
+          const file = makeFile('bad-position.txt', 'abc');
+          const handle = file.open(FileMode.ReadWrite);
+          for (const at of [-1, 1.5, NaN, Infinity]) {
+            expect(() => handle.readBytesSync(1, { at })).toThrow(RangeError);
+            expect(() => handle.readIntoSync(new Uint8Array(1), { at })).toThrow(RangeError);
+            expect(() => handle.writeBytesSync(encode('x'), { at })).toThrow(RangeError);
+            await expect(handle.readBytes(1, { at })).rejects.toThrow(RangeError);
+            await expect(handle.readInto(new Uint8Array(1), { at })).rejects.toThrow(RangeError);
+            await expect(handle.writeBytes(encode('x'), { at })).rejects.toThrow(RangeError);
+          }
+          handle.offset = -1;
+          expect(() => handle.readBytesSync(1)).toThrow(RangeError);
+          await expect(handle.readBytes(1)).rejects.toThrow(RangeError);
+          handle.offset = 0;
+          expect(handle.readBytesSync(3)).toEqual(encode('abc'));
+          handle.close();
+        });
+
+        it('writeBytes and writeBytesSync accept an ArrayBuffer and write only the range of a view', async () => {
+          const file = makeFile('write-views.txt', '------');
+          const handle = file.open(FileMode.ReadWrite);
+          const backing = encode('xxabcdxx').buffer;
+          // A view must write its own byte range, not the whole backing buffer.
+          handle.writeBytesSync(new Uint8Array(backing, 2, 2), { at: 0 });
+          await handle.writeBytes(new DataView(backing, 4, 2), { at: 2 });
+          expect(file.textSync()).toBe('abcd--');
+          handle.writeBytesSync(encode('ef').buffer as ArrayBuffer, { at: 4 });
+          await handle.writeBytes(new Uint16Array(encode('gh').buffer), { at: 0 });
+          expect(file.textSync()).toBe('ghcdef');
+          handle.close();
+        });
+
+        it('readIntoSync fills the buffer, returns the count, and stops at EOF', () => {
+          const file = makeFile('into-sync.txt', 'abcdef');
+          const handle = file.open(FileMode.ReadOnly);
+          const target = new Uint8Array(4).fill(0xff);
+          expect(handle.readIntoSync(target, { at: 1 })).toBe(4);
+          expect(target).toEqual(encode('bcde'));
+          expect(handle.readIntoSync(target, { at: 4 })).toBe(2);
+          expect(target).toEqual(new Uint8Array([...encode('ef'), ...encode('de')]));
+          expect(handle.readIntoSync(target, { at: 6 })).toBe(0);
+          expect(handle.readIntoSync(new Uint8Array(0), { at: 0 })).toBe(0);
+          expect(handle.offset).toBe(0);
+          handle.close();
+        });
+
+        it('readIntoSync writes only into the given view', () => {
+          const file = makeFile('into-view.txt', 'abcdef');
+          const handle = file.open(FileMode.ReadOnly);
+          const backing = new ArrayBuffer(12);
+          const view = new Uint8Array(backing, 4, 4);
+          expect(handle.readIntoSync(view, { at: 0 })).toBe(4);
+          expect(new Uint8Array(backing)).toEqual(
+            new Uint8Array([0, 0, 0, 0, ...encode('abcd'), 0, 0, 0, 0])
+          );
+          const dataView = new DataView(backing, 8, 2);
+          expect(handle.readIntoSync(dataView, { at: 4 })).toBe(2);
+          expect(new Uint8Array(backing, 8, 4)).toEqual(new Uint8Array([...encode('ef'), 0, 0]));
+          expect(handle.readIntoSync(backing, { at: 0 })).toBe(6);
+          expect(new Uint8Array(backing, 0, 6)).toEqual(encode('abcdef'));
+          handle.close();
+        });
+
+        it('readInto without at reads at the offset and advances it in call order', async () => {
+          const file = makeFile('into-cursor.txt', 'abcdef');
+          const handle = file.open(FileMode.ReadOnly);
+          const target = new Uint8Array(2);
+          const first = handle.readInto(target);
+          const second = handle.readBytes(2);
+          expect(await first).toBe(2);
+          expect(target).toEqual(encode('ab'));
+          expect(await second).toEqual(encode('cd'));
+          expect(handle.readIntoSync(target)).toBe(2);
+          expect(target).toEqual(encode('ef'));
+          expect(handle.offset).toBe(6);
+          handle.close();
+        });
+
+        it('readInto with at runs concurrently and copies into each buffer', async () => {
+          const file = makeFile('into-concurrent.txt', 'abcdef');
+          const handle = file.open(FileMode.ReadOnly);
+          const a = new Uint8Array(3);
+          const b = new Uint8Array(3);
+          const [countB, countA] = await Promise.all([
+            handle.readInto(b, { at: 3 }),
+            handle.readInto(a, { at: 0 }),
+          ]);
+          expect([countA, countB]).toEqual([3, 3]);
+          expect(a).toEqual(encode('abc'));
+          expect(b).toEqual(encode('def'));
+          expect(handle.offset).toBe(0);
+          handle.close();
+        });
+
+        it('readInto rejects on a write-only or closed handle', async () => {
+          const file = makeFile('into-errors.txt', 'abc');
+          const writeOnly = file.open(FileMode.WriteOnly);
+          expect(() => writeOnly.readIntoSync(new Uint8Array(1), { at: 0 })).toThrow();
+          await expect(writeOnly.readInto(new Uint8Array(1), { at: 0 })).rejects.toThrow();
+          writeOnly.close();
+          const closed = file.open(FileMode.ReadOnly);
+          closed.close();
+          expect(() => closed.readIntoSync(new Uint8Array(1))).toThrow('The file handle is closed');
+          await expect(closed.readInto(new Uint8Array(1), { at: 0 })).rejects.toThrow(
+            'The file handle is closed'
+          );
+        });
+      });
     });
   });
 });

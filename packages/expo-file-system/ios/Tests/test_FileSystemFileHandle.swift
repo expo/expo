@@ -105,4 +105,40 @@ struct FileSystemFileHandleTests {
     }
     #expect(handle.size == nil)
   }
+
+  private func readInto(_ handle: FileSystemFileHandle, _ position: UInt64, count: Int, fill: UInt8 = 0x2A) throws -> (Int, [UInt8]) {
+    var storage = [UInt8](repeating: fill, count: count)
+    let read = try storage.withUnsafeMutableBytes { try handle.readInto(position, $0) }
+    return (read, storage)
+  }
+
+  @Test
+  func readIntoFillsTheBufferAndReturnsTheCount() throws {
+    let handle = try FileSystemFileHandle(file: makeFile("abcdef"), mode: .read)
+    let (read, storage) = try readInto(handle, 2, count: 4)
+
+    #expect(read == 4)
+    #expect(String(bytes: storage, encoding: .utf8) == "cdef")
+  }
+
+  @Test
+  func readIntoStopsAtEofAndLeavesTheTailAlone() throws {
+    let handle = try FileSystemFileHandle(file: makeFile("abcdef"), mode: .read)
+    let (read, storage) = try readInto(handle, 4, count: 4)
+
+    #expect(read == 2)
+    #expect(storage == Array("ef**".utf8))
+    #expect(try readInto(handle, 6, count: 4).0 == 0)
+    #expect(try readInto(handle, 10, count: 4).0 == 0)
+    #expect(try readInto(handle, 0, count: 0).0 == 0)
+  }
+
+  @Test
+  func readIntoThrowsInWriteOnlyMode() throws {
+    let handle = try FileSystemFileHandle(file: makeFile("abc"), mode: .write)
+
+    #expect(throws: UnableToReadHandleException.self) {
+      try readInto(handle, 0, count: 1)
+    }
+  }
 }
