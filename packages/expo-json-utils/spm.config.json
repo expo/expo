@@ -12,19 +12,10 @@
         {
           "type": "objc",
           "name": "EXJSONUtils",
-          "path": "ios",
-          "pattern": "**/*.m",
-          "headerPattern": "**/*.h",
           "dependencies": [],
           "linkedFrameworks": [
             "Foundation",
             "UIKit"
-          ],
-          "includeDirectories": [
-            "."
-          ],
-          "exclude": [
-            "Tests/**"
           ]
         }
       ]
