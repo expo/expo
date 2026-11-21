@@ -90,7 +90,7 @@ class VideoManager {
         player.ref.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
       } else if !videoView.playerViewController.isInPictureInPicture {
         player.ref.audiovisualBackgroundPlaybackPolicy = .pauses
-        player.ref.pause()
+        player.pause()
       }
     }
   }
