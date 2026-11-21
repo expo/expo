@@ -8,6 +8,7 @@ import expo.modules.appmetrics.crashreporting.CrashFileFormat
 import expo.modules.appmetrics.jserrors.PendingErrorStore
 import expo.modules.appmetrics.storage.MetricsDatabase
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Whether the user consented to Observe collecting data. While not granted, app metrics stores
@@ -19,9 +20,52 @@ object ObserveConsent {
   var isGranted: Boolean = false
     private set
 
-  /** Reads the consent value that the `expo-observe` config plugin writes to the manifest. */
+  // After a revoke, a grant in the same process only saves the value.
+  private var hasRevoked = false
+
+  /** Reads the saved consent value, else the manifest value that the `expo-observe` config plugin writes. */
+  @Synchronized
   fun load(context: Context) {
-    isGranted = resolve(readManifestConsent(context))
+    var savedConsent = AppMetricsPreferences.getObserveConsent(context)
+    if (savedConsent == GRANTED_AT_NEXT_LAUNCH) {
+      // Exit records from before this launch are from processes without consent, so the crash
+      // cursor skips them. Without that cursor, consent stays not granted until a later launch.
+      val isSaved = AppMetricsPreferences.saveGrant(context, GRANTED, lastProcessedExitMillis = System.currentTimeMillis())
+      savedConsent = if (isSaved) {
+        GRANTED
+      } else {
+        NOT_GRANTED
+      }
+    }
+    isGranted = resolve(savedConsent, readManifestConsent(context))
+    hasRevoked = false
+  }
+
+  internal data class Update(val changed: Boolean, val isSaved: Boolean)
+
+  /**
+   * Saves the value and changes the gate. A grant after a revoke changes it only at the next launch.
+   * When the save fails, a revoke still closes the gate, but a grant changes nothing: the next
+   * launch would read the earlier value.
+   */
+  @Synchronized
+  internal fun update(context: Context, granted: Boolean): Update {
+    val consent = when {
+      granted && !isGranted && hasRevoked -> GRANTED_AT_NEXT_LAUNCH
+      granted -> GRANTED
+      else -> NOT_GRANTED
+    }
+    val isSaved = AppMetricsPreferences.setObserveConsent(context, consent)
+    if (granted == isGranted || (granted && (hasRevoked || !isSaved))) {
+      return Update(changed = false, isSaved = isSaved)
+    }
+    if (granted) {
+      // Before the gate opens, so no reader sees the stored settings without them.
+      ConsentGatedPreferences.saveUnsavedValues(context)
+    }
+    isGranted = granted
+    hasRevoked = hasRevoked || !granted
+    return Update(changed = true, isSaved = isSaved)
   }
 
   // Null when the manifest has no value. An empty string, which is an unknown value, when the
@@ -41,8 +85,11 @@ object ObserveConsent {
       ""
     }
 
-  /** Consent from the manifest `meta-data` value, granted when the value is absent. */
-  internal fun resolve(consent: String?): Boolean {
+  /** Consent from the saved value, else from the manifest `meta-data` value, granted when both are absent. */
+  internal fun resolve(savedConsent: String?, consent: String?): Boolean {
+    if (savedConsent != null) {
+      return savedConsent == GRANTED
+    }
     if (consent == null) {
       return true
     }
@@ -60,6 +107,9 @@ object ObserveConsent {
   private const val CONSENT_META_DATA = "expo.modules.observe.CONSENT"
   private const val GRANTED = "granted"
   private const val NOT_GRANTED = "not-granted"
+
+  // Saved by a grant after a revoke. The next launch saves `GRANTED` in its place.
+  private const val GRANTED_AT_NEXT_LAUNCH = "granted-at-next-launch"
 }
 
 /** Deletes the metrics database, the crash files, the pending-error files, and the settings. */
@@ -72,8 +122,13 @@ internal fun deleteStoredData(context: Context) {
 
 /** Shared preferences that save nothing while consent is not granted. */
 class ConsentGatedPreferences(private val name: String) {
-  // Values set without consent. They are kept only in memory, and reads return them.
+  // Values set without consent. The app sends its config at startup, before the user can grant
+  // consent. The first grant saves these values, so Observe does not send with the defaults.
   private val unsavedValues = ConcurrentHashMap<String, Any>()
+
+  init {
+    stores.add(this)
+  }
 
   fun getString(context: Context, key: String): String? =
     read(inMemory = { unsavedValues[key] as? String }, stored = { preferences(context).getString(key, null) })
@@ -93,25 +148,58 @@ class ConsentGatedPreferences(private val name: String) {
     write(inMemory = { unsavedValues[key] = value }, stored = { preferences(context).edit(commit = true) { putLong(key, value) } })
   }
 
+  // `update` changes the gate under the same lock. So a write cannot land in memory after the first
+  // grant saved those values, or in storage after a revoke closed the gate and deleted the settings.
   private inline fun write(inMemory: () -> Unit, stored: () -> Unit) {
-    if (ObserveConsent.isGranted) {
-      stored()
-    } else {
-      inMemory()
+    synchronized(ObserveConsent) {
+      if (ObserveConsent.isGranted) {
+        stored()
+      } else {
+        inMemory()
+      }
     }
   }
 
-  private inline fun <T> read(inMemory: () -> T, stored: () -> T): T =
-    if (ObserveConsent.isGranted) {
-      stored()
-    } else {
-      inMemory()
+  // Like `write`, but a read with consent does not wait for the lock: a stale value read during a
+  // transition changes nothing on disk.
+  private inline fun <T> read(inMemory: () -> T, stored: () -> T): T {
+    if (!ObserveConsent.isGranted) {
+      synchronized(ObserveConsent) {
+        if (!ObserveConsent.isGranted) {
+          return inMemory()
+        }
+      }
     }
+    return stored()
+  }
 
-  /** Deletes the settings file. Runs at a launch without consent. */
+  /** Deletes the settings file. Runs at a launch without consent and at a revoke. */
   fun delete(context: Context) {
     context.deleteSharedPreferences(name)
   }
 
   private fun preferences(context: Context) = context.getSharedPreferences(name, Context.MODE_PRIVATE)
+
+  companion object {
+    // A store that was never created holds no values in memory, so this list has every such value.
+    private val stores = CopyOnWriteArrayList<ConsentGatedPreferences>()
+
+    /** Saves the values kept in memory, then forgets them. Runs at the first grant. */
+    internal fun saveUnsavedValues(context: Context) {
+      for (store in stores) {
+        if (store.unsavedValues.isEmpty()) {
+          continue
+        }
+        store.preferences(context).edit(commit = true) {
+          for ((key, value) in store.unsavedValues) {
+            when (value) {
+              is String -> putString(key, value)
+              is Long -> putLong(key, value)
+            }
+          }
+        }
+        store.unsavedValues.clear()
+      }
+    }
+  }
 }

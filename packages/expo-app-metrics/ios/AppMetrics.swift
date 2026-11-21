@@ -77,7 +77,7 @@ public struct AppMetrics {
   // Make the initializer private to prevent non-singleton usage.
   private init() {}
 
-  /// Deletes the stored data. Runs at a launch without consent.
+  /// Deletes the stored data. Runs at a launch without consent and at a revoke.
   static func deleteStoredData() {
     guard let databaseDirectory = try? MetricsDatabase.defaultDirectoryUrl(),
       let pendingErrorsDirectory = try? PendingErrorStore.directoryUrl()
@@ -98,6 +98,39 @@ public struct AppMetrics {
     try? FileManager.default.removeItem(at: pendingErrorsDirectory)
     AppMetricsUserDefaults.deleteStoredSettings()
     MetricsDatabase.cleanUpLegacyStorage()
+  }
+
+  /// Applies a consent change from `Observe.setConsent`. It runs on the actor without suspending,
+  /// so the changes run one at a time.
+  @AppMetricsActor
+  public static func setConsent(granted: Bool) throws {
+    let update = ObserveConsent.update(granted: granted)
+    if update.changed {
+      apply(granted: granted)
+    }
+    if !update.isSaved {
+      throw ConsentNotSavedException(granted)
+    }
+  }
+
+  @AppMetricsActor
+  private static func apply(granted: Bool) {
+    if granted {
+      // The launch inserts did nothing without consent, so the session rows are inserted now.
+      mainSession.insertRow()
+      foregroundSession?.insertRow()
+      mainSession.saveUnsavedStartupMetrics()
+      #if !os(tvOS) && !targetEnvironment(simulator)
+      // Past payloads are from before the grant, so they are not processed.
+      MXMetricManager.shared.add(metricKitSubscriber)
+      #endif
+    } else {
+      #if !os(tvOS) && !targetEnvironment(simulator)
+      MXMetricManager.shared.remove(metricKitSubscriber)
+      #endif
+      // The open database is not used again in this process, so its files can be deleted.
+      deleteStoredData()
+    }
   }
 
   // MARK: - Read API for downstream consumers (e.g. expo-observe)
@@ -225,5 +258,17 @@ public struct AppMetrics {
       foregroundSession?.stop()
       foregroundSession = nil
     }
+  }
+}
+
+internal final class ConsentNotSavedException: GenericException<Bool>, @unchecked Sendable {
+  override var reason: String {
+    if param {
+      return "Observe could not save the consent value 'granted' on the device, so collection did not start. "
+        + "The device storage may be full or unavailable. Free storage and call setConsent('granted') again."
+    }
+    return "Observe could not save the consent value 'not-granted' on the device. Collection stopped and the "
+      + "stored data was deleted, but the next launch may read the earlier value. The device storage may be "
+      + "full or unavailable. Free storage and call setConsent('not-granted') again."
   }
 }

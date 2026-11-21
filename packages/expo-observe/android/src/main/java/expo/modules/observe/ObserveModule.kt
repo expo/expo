@@ -12,6 +12,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
 
 @OptimizedRecord
@@ -31,6 +32,11 @@ class BundleDefaults(
   @Field val environment: String = "",
   @Field val isJsDev: Boolean = false
 ) : Record
+
+internal enum class ConsentValue(val value: String) : Enumerable {
+  GRANTED("granted"),
+  NOT_GRANTED("not-granted")
+}
 
 class ObserveModule : Module() {
   private val context: Context
@@ -71,6 +77,18 @@ class ObserveModule : Module() {
 
       Constant("clientId") {
         EASClientID(context).uuid.toString().lowercase()
+      }
+
+      AsyncFunction("setConsent") Coroutine { consent: ConsentValue ->
+        try {
+          appMetricsModule.setConsent(consent == ConsentValue.GRANTED)
+        } finally {
+          // Also when the save fails, because the revoke still applies. After the gate closes, so
+          // nothing saves the settings again.
+          if (consent == ConsentValue.NOT_GRANTED) {
+            deleteObserveData(context)
+          }
+        }
       }
 
       AsyncFunction("dispatchEvents") Coroutine { ->
@@ -125,4 +143,11 @@ class ObserveModule : Module() {
         appMetricsModule.setEnvironment(defaults.environment)
       }
     }
+}
+
+/** Deletes the Observe settings, the dispatch cursors among them, and the scheduled dispatch. Runs at a revoke. */
+internal suspend fun deleteObserveData(context: Context) {
+  ObservabilityBackgroundWorker.cancelBackgroundDispatch(context)
+  context.deleteDatabase(LEGACY_DATABASE_NAME)
+  ObservePreferences.deleteStoredSettings(context)
 }

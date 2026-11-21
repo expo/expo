@@ -1,12 +1,121 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import os
 
 /// Whether the user consented to Observe collecting data. While not granted, app metrics stores
 /// nothing and Observe sends nothing.
 public enum ObserveConsent {
-  /// Read on first access from the `Info.plist` value that the `expo-observe` config plugin writes.
-  public static let isGranted: Bool = isGranted(consent: Bundle.main.object(forInfoDictionaryKey: "EXObserveConsent"))
+  public enum State: Sendable {
+    case granted
+    case notGranted
+    /// The saved value could not be read, for example before the first unlock after a restart.
+    /// Nothing is stored, and the launch cleanup keeps the stored data, because it can belong to
+    /// a user who granted consent.
+    case unknown
+  }
+
+  /// The consent of this process and the changes it allows.
+  struct Gate: Sendable {
+    private(set) var state: State
+    private var hasRevoked = false
+
+    init(state: State) {
+      self.state = state
+    }
+
+    /// Returns whether the gate changed. After a revoke, a grant changes it only at the next launch.
+    mutating func apply(granted: Bool) -> Bool {
+      if granted {
+        guard state != .granted, !hasRevoked else {
+          return false
+        }
+        state = .granted
+      } else {
+        guard state != .notGranted else {
+          return false
+        }
+        state = .notGranted
+        hasRevoked = true
+      }
+      return true
+    }
+  }
+
+  /// Resolved on first access: the saved value, else the `Info.plist` value that the `expo-observe`
+  /// config plugin writes.
+  private static let gate = OSAllocatedUnfairLock<Gate?>(initialState: nil)
+
+  private static let savedValueUrl = try? MetricsDatabase.defaultDirectoryUrl()
+    .appendingPathComponent("observe-consent")
+
+  public static var isGranted: Bool {
+    return state == .granted
+  }
+
+  public static var state: State {
+    return gate.withLock { gate in
+      if let gate {
+        return gate.state
+      }
+      let state = resolveState()
+      gate = Gate(state: state)
+      return state
+    }
+  }
+
+  private static func resolveState() -> State {
+    guard let savedValueUrl else {
+      return .unknown
+    }
+    let consent = Bundle.main.object(forInfoDictionaryKey: "EXObserveConsent")
+    return readSavedState(at: savedValueUrl) ?? (isGranted(consent: consent) ? .granted : .notGranted)
+  }
+
+  /// Saves the value and changes the gate. When the save fails, a revoke still closes the gate,
+  /// but a grant changes nothing: the next launch would read the earlier value.
+  static func update(granted: Bool) -> (changed: Bool, isSaved: Bool) {
+    let isSaved = savedValueUrl.map { save(granted: granted, to: $0) } ?? false
+    _ = state
+    let changed = ConsentGatedDefaults.transitionLock.withLock {
+      gate.withLock { gate in
+        guard isSaved || !granted, var next = gate, next.apply(granted: granted) else {
+          return false
+        }
+        if granted {
+          // Before the gate opens, so no reader sees the stored settings without them.
+          ConsentGatedDefaults.saveUnsavedValues()
+        }
+        gate = next
+        return true
+      }
+    }
+    return (changed, isSaved)
+  }
+
+  /// `nil` when no value was saved, `.unknown` when the saved value cannot be read.
+  static func readSavedState(at url: URL) -> State? {
+    do {
+      return try String(contentsOf: url, encoding: .utf8) == "granted" ? .granted : .notGranted
+    } catch CocoaError.fileReadNoSuchFile {
+      return nil
+    } catch {
+      logger.warn("[AppMetrics] Failed to read the saved Observe consent: \(error.localizedDescription)")
+      return .unknown
+    }
+  }
+
+  /// Returns whether the value was written.
+  static func save(granted: Bool, to url: URL) -> Bool {
+    do {
+      try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+      try Data((granted ? "granted" : "not-granted").utf8).write(to: url, options: .atomic)
+      return true
+    } catch {
+      logger.warn("[AppMetrics] Failed to save the Observe consent: \(error.localizedDescription)")
+      return false
+    }
+  }
 
   /// Consent from the `EXObserveConsent` value of `Info.plist`, granted when the value is absent.
   static func isGranted(consent: Any?) -> Bool {
@@ -28,7 +137,8 @@ public final class ConsentGatedDefaults: @unchecked Sendable {
   // `UserDefaults` is thread-safe, and the in-memory values are behind a mutex.
   private let defaults: UserDefaults
   private let isGranted: @Sendable () -> Bool
-  // Values set without consent. They are kept only in memory, and reads return them.
+  // Values set without consent. The app sends its config at startup, before the user can grant
+  // consent. The first grant saves these values, so Observe does not send with the defaults.
   private let unsavedValues = Mutex<[String: Any]>([:])
 
   public convenience init(_ defaults: UserDefaults) {
@@ -38,20 +148,61 @@ public final class ConsentGatedDefaults: @unchecked Sendable {
   init(_ defaults: UserDefaults, isGranted: @escaping @Sendable () -> Bool) {
     self.defaults = defaults
     self.isGranted = isGranted
+    Self.stores.withLock { $0.append(self) }
+  }
+
+  // A store that was never created holds no values in memory, so this list has every such value.
+  private static let stores = Mutex<[ConsentGatedDefaults]>([])
+
+  // Taken before the consent gate lock. `ObserveConsent.update` changes the gate under it, and the
+  // writes and the not-granted reads check the gate under it.
+  static let transitionLock = OSAllocatedUnfairLock()
+
+  /// Saves the values kept in memory, then forgets them. Runs at the first grant.
+  static func saveUnsavedValues() {
+    for store in stores.withLock({ $0 }) {
+      let values = store.unsavedValues.withLock { values in
+        defer { values = [:] }
+        return values
+      }
+      for (key, value) in values {
+        store.defaults.set(value, forKey: key)
+      }
+    }
   }
 
   public func object(forKey key: String) -> Any? {
-    guard isGranted() else {
-      return unsavedValues.withLock { $0[key] }
+    var value: Any?
+    if whileNotGranted({ value = unsavedValues.withLock { $0[key] } }) {
+      return value
     }
     return defaults.object(forKey: key)
   }
 
+  // `ObserveConsent.update` changes the gate under the same lock. So a write cannot land in memory
+  // after the first grant saved those values, or in the suite after a revoke closed the gate.
   public func set(_ value: Any?, forKey key: String) {
-    if isGranted() {
-      defaults.set(value, forKey: key)
-    } else {
-      unsavedValues.withLock { $0[key] = value }
+    Self.transitionLock.withLockUnchecked {
+      if isGranted() {
+        defaults.set(value, forKey: key)
+      } else {
+        unsavedValues.withLock { $0[key] = value }
+      }
+    }
+  }
+
+  // Runs `body` and returns true while consent is not granted. Like `set`, but a read with consent
+  // does not wait for the lock: a stale value read during a transition changes nothing on disk.
+  private func whileNotGranted(_ body: () -> Void) -> Bool {
+    guard !isGranted() else {
+      return false
+    }
+    return Self.transitionLock.withLockUnchecked {
+      guard !isGranted() else {
+        return false
+      }
+      body()
+      return true
     }
   }
 }

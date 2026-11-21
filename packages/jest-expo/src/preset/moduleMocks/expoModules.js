@@ -718,6 +718,7 @@ module.exports = {
           { name: 'dispatchEvents', argumentsCount: 0, key: 'dispatchEvents' },
           { name: 'getIntegrations', argumentsCount: 0, key: 'getIntegrations' },
           { name: 'setBundleDefaults', argumentsCount: 1, key: 'setBundleDefaults' },
+          { name: 'setConsent', argumentsCount: 1, key: 'setConsent' },
         ],
         ExpoPrint: [
           { name: 'print', argumentsCount: 1, key: 'print' },
@@ -1542,6 +1543,7 @@ module.exports = {
           getIntegrations: { type: 'function' },
           removeListeners: { type: 'function' },
           setBundleDefaults: { type: 'function' },
+          setConsent: { type: 'function' },
         },
         ExpoPrint: {
           addListener: { type: 'function' },

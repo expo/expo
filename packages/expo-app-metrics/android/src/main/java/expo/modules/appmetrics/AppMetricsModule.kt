@@ -12,6 +12,7 @@ import expo.modules.appmetrics.crashreporting.ExitInfoProviderImpl
 import expo.modules.appmetrics.crashreporting.JvmCrashHandler
 import expo.modules.appmetrics.crashreporting.PreferencesLastProcessedExitStore
 import expo.modules.appmetrics.crashreporting.attributeAndStoreCrashReport
+import expo.modules.appmetrics.crashreporting.skipExitRecords
 import expo.modules.appmetrics.logevents.FeedbackReport
 import expo.modules.appmetrics.logevents.LogEventOptions
 import expo.modules.appmetrics.networkrequests.NetworkRequestFilter
@@ -56,6 +57,7 @@ import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -67,8 +69,15 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   // TODO(@lukmccall): Consider using appContext.backgroundCoroutineScope instead
-  private val scope: CoroutineScope
-    get() = appContext.modulesQueue
+  // A revoke deletes the database while a fire-and-forget write can still run. Such a write logs
+  // and drops instead of crashing the app.
+  private val scope: CoroutineScope by lazy {
+    CoroutineScope(
+      appContext.modulesQueue.coroutineContext + CoroutineExceptionHandler { _, error ->
+        Log.w(TAG, "[AppMetrics] Failed to store telemetry", error)
+      }
+    )
+  }
 
   lateinit var memoryMetricsManager: MemoryMetricsManager
   lateinit var updatesMonitoring: UpdatesMonitoring
@@ -479,6 +488,26 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
     }
   }
 
+  /** Applies a consent change from `Observe.setConsent`. Changes run one at a time. */
+  suspend fun setConsent(granted: Boolean) =
+    consentMutex.withLock {
+      val update = ObserveConsent.update(context, granted)
+      if (update.changed && granted) {
+        // The launch insert did nothing without consent, so the session row is inserted now.
+        mainSession.awaitSessionPersisted()
+        sessionManager.startSessionWithIdAt(mainSession.sessionId, mainSession.startDate, metadata)
+        saveStartupMetrics()
+        skipExitRecords(ExitInfoProviderImpl(context), PreferencesLastProcessedExitStore(context))
+      } else if (update.changed) {
+        deleteStoredData(context)
+      }
+      if (!update.isSaved) {
+        throw ConsentNotSavedException(granted)
+      }
+    }
+
+  private val consentMutex = Mutex()
+
   override fun updatesStateDidChange(event: Map<String, Any>) {
     if (UpdatesStateEvent.fromMap(event)?.type == UpdatesStateEvent.EventType.DownloadCompleteWithUpdate) {
       updatesMonitoring.downloadTimeMetric(subscription)?.let { metric ->
@@ -709,4 +738,15 @@ internal fun spanStatusCode(status: String?): Int? = when (status) {
 private class SpanConstructorUnavailableException : CodedException(
   "Span objects can't be constructed directly because a span's identity and session " +
     "attribution are assigned natively at start time. Get one from AppMetrics.startSpan() instead."
+)
+
+private class ConsentNotSavedException(granted: Boolean) : CodedException(
+  if (granted) {
+    "Observe could not save the consent value 'granted' on the device, so collection did not start. " +
+      "The device storage may be full or unavailable. Free storage and call setConsent('granted') again."
+  } else {
+    "Observe could not save the consent value 'not-granted' on the device. Collection stopped and " +
+      "the stored data was deleted, but the next launch may read the earlier value. The device " +
+      "storage may be full or unavailable. Free storage and call setConsent('not-granted') again."
+  }
 )

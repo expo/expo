@@ -17,6 +17,11 @@ internal struct Config: Record {
   @Field var integrations: [String: Any]?
 }
 
+internal enum ConsentValue: String, Enumerable {
+  case granted
+  case notGranted = "not-granted"
+}
+
 internal struct BundleDefaults: Record {
   @Field var environment: String = ""
   @Field var isJsDev: Bool = false
@@ -33,7 +38,7 @@ public final class ObserveModule: Module {
     OnCreate {
       // Deletes what a build with consent stored. Module start is late enough, because nothing is
       // sent without consent.
-      if !ObserveConsent.isGranted {
+      if ObserveConsent.state == .notGranted {
         ObserveUserDefaults.deleteStoredSettings()
       }
       // The observability manager needs to know the project id. Currently it's available only through `expo-constants`,
@@ -46,6 +51,10 @@ public final class ObserveModule: Module {
 
     Constant("clientId") {
       EASClientID.uuid().uuidString.lowercased()
+    }
+
+    AsyncFunction("setConsent") { (consent: ConsentValue) in
+      try await applyConsent(consent) { try await AppMetrics.setConsent(granted: $0) }
     }
 
     AsyncFunction("dispatchEvents") {
@@ -151,4 +160,20 @@ internal func hasUserContentEntry(privacyManifest: Data?) -> Bool {
     "NSPrivacyCollectedDataTypeCustomerSupport",
   ]
   return dataTypes.contains { userContentTypes.contains($0["NSPrivacyCollectedDataType"] as? String ?? "") }
+}
+
+/// Applies a consent change to App Metrics. A revoke also deletes the Observe settings, the dispatch
+/// cursors among them.
+func applyConsent(
+  _ consent: ConsentValue,
+  toAppMetrics setAppMetricsConsent: @Sendable (Bool) async throws -> Void
+) async throws {
+  // Also when the save fails, because the revoke still applies. After the gate closes, so nothing
+  // saves the settings again.
+  defer {
+    if consent == .notGranted {
+      ObserveUserDefaults.deleteStoredSettings()
+    }
+  }
+  try await setAppMetricsConsent(consent == .granted)
 }
