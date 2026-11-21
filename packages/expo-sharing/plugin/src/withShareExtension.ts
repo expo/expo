@@ -1,4 +1,11 @@
-import { ConfigPlugin, createRunOncePlugin, StaticPlugin, withPlugins } from '@expo/config-plugins';
+import {
+  AndroidConfig,
+  ConfigPlugin,
+  createRunOncePlugin,
+  IOSConfig,
+  StaticPlugin,
+  withPlugins,
+} from '@expo/config-plugins';
 
 import { parseIntentFilters } from './android/parseIntentFilters';
 import { withAndroidIntentFilters } from './android/withAndroidIntentFilters';
@@ -34,7 +41,7 @@ const withShareExtension: ShareExtensionConfigPlugin = (config, props?) => {
       `${config.ios?.bundleIdentifier}.${EXPO_SHARE_EXTENSION_TARGET_NAME}`;
     const fallbackAppGroupId = `group.${bundleIdentifier}`;
     const appGroupId = props?.ios?.appGroupId ?? fallbackAppGroupId;
-    const urlScheme = config.scheme ?? bundleIdentifier;
+    const urlScheme = IOSConfig.Scheme.getScheme(config)[0] ?? bundleIdentifier;
     const activationRule = props?.ios?.activationRule ?? {
       supportsText: true,
       supportsWebUrlWithMaxCount: 1,
@@ -97,7 +104,7 @@ const withShareExtension: ShareExtensionConfigPlugin = (config, props?) => {
   }
 
   if (androidEnabled) {
-    const urlScheme = config.scheme ?? config.android?.package;
+    const urlScheme = AndroidConfig.Scheme.getScheme(config)[0] ?? config.android?.package;
 
     if (!urlScheme) {
       throw new Error(
