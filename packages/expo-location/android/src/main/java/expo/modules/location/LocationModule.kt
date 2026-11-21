@@ -66,6 +66,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -73,8 +74,8 @@ import kotlin.math.abs
 
 class LocationModule : Module(), SensorEventListener, ActivityEventListener {
   private var mGeofield: GeomagneticField? = null
-  private val mLocationCallbacks = HashMap<Int, LocationCallback>()
-  private val mLocationRequests = HashMap<Int, LocationRequest>()
+  private val mLocationCallbacks = ConcurrentHashMap<Int, LocationCallback>()
+  private val mLocationRequests = ConcurrentHashMap<Int, LocationRequest>()
   private var mPendingLocationRequests = ArrayList<LocationActivityResultListener>()
   private lateinit var mContext: Context
   private lateinit var mSensorManager: SensorManager
@@ -762,8 +763,8 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
 
   private fun resumeLocationUpdates() {
     for (requestId in mLocationCallbacks.keys) {
-      val locationCallback = mLocationCallbacks[requestId] ?: return
-      val locationRequest = mLocationRequests[requestId] ?: return
+      val locationCallback = mLocationCallbacks[requestId] ?: continue
+      val locationRequest = mLocationRequests[requestId] ?: continue
       try {
         mLocationProvider.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
       } catch (e: SecurityException) {
