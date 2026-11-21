@@ -48,6 +48,7 @@ internal struct DatePickerView: ExpoSwiftUI.View {
       // Graphical style on macOS: https://github.com/expo/expo/issues/47062
       .frame(minWidth: isGraphicalStyle ? 320 : nil)
       .if(props.title == nil && !hasChildren) { $0.labelsHidden() }
+      .modifier(MeasureAgainAfterAppear())
   }
 
 #if os(iOS)
@@ -117,6 +118,31 @@ internal struct DatePickerView: ExpoSwiftUI.View {
     }
   }
 #endif
+}
+
+/// SwiftUI's compact `DatePicker` lays out its date label with today's width at its first layout,
+/// whatever date it shows, and only measures the selected date at its next layout. When the picker
+/// appears during a screen transition that layout can be half a second away, so a date wider than
+/// today's is shown in its short numeric form until then (expo/expo#52491). Proposing the picker a
+/// width one point different on the next run-loop turn makes that layout happen at once, before
+/// the transition has shown anything. A same-size proposal is not enough: a picker that shows its
+/// label fills the row, so its own size does not change, and SwiftUI reuses its layout.
+private struct MeasureAgainAfterAppear: ViewModifier {
+  @State private var appeared = false
+
+  func body(content: Content) -> some View {
+#if os(iOS)
+    content
+      .padding(.trailing, appeared ? 0 : 1)
+      .onAppear {
+        DispatchQueue.main.async {
+          appeared = true
+        }
+      }
+#else
+    content
+#endif
+  }
 }
 
 internal struct DateRange: Record {
