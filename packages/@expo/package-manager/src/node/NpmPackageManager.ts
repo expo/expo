@@ -13,6 +13,33 @@ export class NpmPackageManager extends BasePackageManager {
   readonly bin = 'npm';
   readonly lockFile = NPM_LOCK_FILE;
 
+  private npmVersionPromise?: Promise<string>;
+
+  /**
+   * Resolve through npm's `min-release-age` gate - Expo installs pin known versions (#44479).
+   * npm 11.0-11.9 warns about the unknown env config on every command, so only set it when
+   * npm >=11.10 understands the setting.
+   */
+  private async withMinReleaseAgeEnvAsync(): Promise<NodeJS.ProcessEnv> {
+    try {
+      this.npmVersionPromise ??= this.versionAsync();
+      const [major = 0, minor = 0] = (await this.npmVersionPromise).split('.').map(Number);
+      if (major > 11 || (major === 11 && minor >= 10)) {
+        return { npm_config_min_release_age: '0', ...this.options.env };
+      }
+    } catch {
+      // Run without the override and let the install itself surface any real error
+    }
+    return this.options.env ?? {};
+  }
+
+  installAsync(flags: string[] = []) {
+    return createPendingSpawnAsync(
+      () => this.withMinReleaseAgeEnvAsync(),
+      (env) => this.runAsync(['install', ...flags], { env })
+    );
+  }
+
   workspaceRoot() {
     const root = resolveWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));
     if (root) {
@@ -35,11 +62,16 @@ export class NpmPackageManager extends BasePackageManager {
     const { flags, versioned, unversioned } = this.parsePackageSpecs(namesOrFlags);
 
     return createPendingSpawnAsync(
-      () => this.updatePackageFileAsync(versioned, 'dependencies'),
-      () =>
+      async () => {
+        await this.updatePackageFileAsync(versioned, 'dependencies');
+        return this.withMinReleaseAgeEnvAsync();
+      },
+      (env) =>
         !unversioned.length
-          ? this.runAsync(['install', ...flags])
-          : this.runAsync(['install', '--save', ...flags, ...unversioned.map((spec) => spec.raw)])
+          ? this.runAsync(['install', ...flags], { env })
+          : this.runAsync(['install', '--save', ...flags, ...unversioned.map((spec) => spec.raw)], {
+              env,
+            })
     );
   }
 
@@ -51,16 +83,17 @@ export class NpmPackageManager extends BasePackageManager {
     const { flags, versioned, unversioned } = this.parsePackageSpecs(namesOrFlags);
 
     return createPendingSpawnAsync(
-      () => this.updatePackageFileAsync(versioned, 'devDependencies'),
-      () =>
+      async () => {
+        await this.updatePackageFileAsync(versioned, 'devDependencies');
+        return this.withMinReleaseAgeEnvAsync();
+      },
+      (env) =>
         !unversioned.length
-          ? this.runAsync(['install', ...flags])
-          : this.runAsync([
-              'install',
-              '--save-dev',
-              ...flags,
-              ...unversioned.map((spec) => spec.raw),
-            ])
+          ? this.runAsync(['install', ...flags], { env })
+          : this.runAsync(
+              ['install', '--save-dev', ...flags, ...unversioned.map((spec) => spec.raw)],
+              { env }
+            )
     );
   }
 
@@ -69,7 +102,10 @@ export class NpmPackageManager extends BasePackageManager {
       return this.installAsync();
     }
 
-    return this.runAsync(['install', '--global', ...namesOrFlags]);
+    return createPendingSpawnAsync(
+      () => this.withMinReleaseAgeEnvAsync(),
+      (env) => this.runAsync(['install', '--global', ...namesOrFlags], { env })
+    );
   }
 
   removeAsync(namesOrFlags: string[]) {
