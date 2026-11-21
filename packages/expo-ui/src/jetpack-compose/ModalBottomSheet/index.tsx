@@ -4,6 +4,7 @@ import type { ColorValue } from 'react-native';
 
 import { PresentedContent } from '../../PresentedContentContext';
 import { type ModifierConfig } from '../../types';
+import type { PaddingValuesRecord } from '../Carousel';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 type SlotNativeViewProps = {
@@ -92,6 +93,15 @@ export interface ModalBottomSheetProps {
    * @default true
    */
   sheetGesturesEnabled?: boolean;
+  /**
+   * Insets in dp that the sheet adds around its content. Missing sides are `0`.
+   * When omitted, the sheet uses `BottomSheetDefaults.windowInsets`, which pads the
+   * content clear of the status bar, the navigation bar and display cutouts, so
+   * scrolling content stops above the navigation bar.
+   * Pass `{ top: insets.top }` to let the content run under the navigation bar and
+   * pad its own end instead.
+   */
+  contentWindowInsets?: PaddingValuesRecord;
   /**
    * Properties for the modal window behavior.
    */

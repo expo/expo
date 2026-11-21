@@ -359,6 +359,17 @@ export interface BottomSheetProps {
   modifiers?: ModifierConfig[];
 
   /**
+   * Insets in dp that the native sheet adds around its content. Missing sides are `0`.
+   * By default the content is padded clear of the status bar, the navigation bar and
+   * display cutouts, so scrolling content stops above the navigation bar. Pass
+   * `{ top: insets.top }` to let the content run under the navigation bar and pad its
+   * own end instead.
+   *
+   * @platform android
+   */
+  contentWindowInsets?: { start?: number; top?: number; end?: number; bottom?: number };
+
+  /**
    * The content to render inside the bottom sheet.
    */
   children: ReactNode;

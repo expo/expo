@@ -65,6 +65,7 @@ export function BottomSheet(props: BottomSheetProps) {
     handleComponent,
     backgroundStyle,
     modifiers,
+    contentWindowInsets,
     children,
   } = props;
   const { width } = useWindowDimensions();
@@ -203,6 +204,7 @@ export function BottomSheet(props: BottomSheetProps) {
             sheetGesturesEnabled={enablePanDownToClose}
             containerColor={containerColor}
             modifiers={modifiers}
+            contentWindowInsets={contentWindowInsets}
             properties={{
               shouldDismissOnBackPress: enablePanDownToClose,
               shouldDismissOnClickOutside: enablePanDownToClose,
