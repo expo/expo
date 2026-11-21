@@ -504,3 +504,100 @@ it('pushes a dynamic route with different params in a nested stack when a screen
   expect(groupStack.routes[2]!.params).toEqual({ id: '2' });
   expect(groupStack.index).toBe(2);
 });
+
+it('replaces the current screen when the dynamic layout in the history has different params', async () => {
+  const result = await renderRouter({
+    _layout: () => <Stack />,
+    index: () => null,
+    '[slug]/(group)/_layout': () => <Stack />,
+    '[slug]/(group)/index': () => null,
+    '[slug]/details': () => null,
+  });
+
+  await act(() => router.push('/a'));
+  await act(() => router.push('/a/details'));
+  expect(screen).toHavePathname('/a/details');
+
+  await act(() => router.dismissTo('/b'));
+
+  expect(screen).toHavePathname('/b');
+  const rootStack = result.getRouterState()!.routes[0]!.state!;
+  expect(rootStack.routes.map((route) => route.name)).toEqual([
+    'index',
+    '[slug]/(group)',
+    '[slug]/(group)',
+  ]);
+  expect(rootStack.routes[1]!.params).toEqual({ slug: 'a' });
+  expect(rootStack.routes[2]!.params).toEqual({ slug: 'b' });
+  expect(rootStack.index).toBe(2);
+});
+
+it('replaces the current screen when the dynamic route in the history has different params', async () => {
+  const result = await renderRouter({
+    _layout: () => <Stack />,
+    index: () => null,
+    '[id]': () => null,
+    modal: () => null,
+  });
+
+  await act(() => router.push('/1'));
+  await act(() => router.push('/modal'));
+  expect(screen).toHavePathname('/modal');
+
+  await act(() => router.dismissTo('/2'));
+
+  expect(screen).toHavePathname('/2');
+  const rootStack = result.getRouterState()!.routes[0]!.state!;
+  expect(rootStack.routes.map((route) => route.name)).toEqual(['index', '[id]', '[id]']);
+  expect(rootStack.routes[1]!.params).toEqual({ id: '1' });
+  expect(rootStack.routes[2]!.params).toEqual({ id: '2' });
+  expect(rootStack.index).toBe(2);
+});
+
+it('goes back to the dynamic route with the same params when it is lower in the stack', async () => {
+  const result = await renderRouter({
+    _layout: () => <Stack />,
+    index: () => null,
+    '[id]': () => null,
+    modal: () => null,
+  });
+
+  await act(() => router.push('/1'));
+  await act(() => router.push('/2'));
+  await act(() => router.push('/modal'));
+  expect(screen).toHavePathname('/modal');
+
+  await act(() => router.dismissTo('/1'));
+
+  expect(screen).toHavePathname('/1');
+  const rootStack = result.getRouterState()!.routes[0]!.state!;
+  expect(rootStack.routes.map((route) => route.name)).toEqual(['index', '[id]']);
+  expect(rootStack.routes[1]!.params).toEqual({ id: '1' });
+  expect(rootStack.index).toBe(1);
+});
+
+it('does not reuse a preloaded dynamic route with different params', async () => {
+  const result = await renderRouter({
+    _layout: () => <Stack />,
+    index: () => null,
+    '[id]': () => null,
+    modal: () => null,
+  });
+
+  await act(() => router.push('/1'));
+  await act(() => router.push('/modal'));
+  await act(() => router.prefetch('/3'));
+  expect(screen).toHavePathname('/modal');
+
+  await act(() => router.dismissTo('/2'));
+
+  expect(screen).toHavePathname('/2');
+  const rootStack = result.getRouterState()!.routes[0]!.state!;
+  expect(rootStack.index).toBe(2);
+  expect(rootStack.routes.map((route) => route.params)).toEqual([
+    undefined,
+    { id: '1' },
+    { id: '2' },
+    { id: '3' },
+  ]);
+});
