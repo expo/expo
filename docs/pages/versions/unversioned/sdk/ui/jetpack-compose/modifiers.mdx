@@ -606,6 +606,27 @@ import { selectable } from '@expo/ui/jetpack-compose/modifiers';
 </Button>;
 ```
 
+### `openURL(url)`
+
+Opens a URL when the user taps the component, for example, a deep link into the app.
+
+> **info** Works only inside Android widgets and custom notifications built with `expo-widgets`. Expo UI ignores this modifier in an app.
+
+On a button, this modifier replaces the `onClick` action.
+
+| Parameter | Type     | Description      |
+| --------- | -------- | ---------------- |
+| `url`     | `string` | The URL to open. |
+
+```tsx
+import { Row, Text } from '@expo/ui/jetpack-compose';
+import { openURL } from '@expo/ui/jetpack-compose/modifiers';
+
+<Row modifiers={[openURL('myapp://items/42')]}>
+  <Text>Open item 42</Text>
+</Row>;
+```
+
 ## Clipping
 
 Clip a component's content to a specific shape.

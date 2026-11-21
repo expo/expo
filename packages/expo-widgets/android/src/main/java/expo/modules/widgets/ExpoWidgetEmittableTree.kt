@@ -67,6 +67,7 @@ import androidx.glance.EmittableImage
 import androidx.glance.ImageProvider
 import androidx.glance.TintColorFilterParams
 import androidx.glance.GlanceModifier
+import androidx.glance.action.ActionModifier
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.CheckboxDefaults
 import androidx.glance.appwidget.cornerRadius
@@ -300,24 +301,28 @@ private fun ReadableMap.toPeekButton(converterContext: WidgetConverterContext, s
   val children = children()
   val action =
     props.target?.let { target -> WidgetInteraction(source, target).toGlanceAction(converterContext.applicationContext) }
-  val modifier = props.buttonModifier(converterContext)
+  // Glance uses the last click action. The press action goes first, so a click modifier such as
+  // `openURL` replaces it.
+  val modifier = props.buttonModifier(converterContext).let {
+    when {
+      !props.enabled -> it.withoutActions()
+      action != null -> GlanceModifier.clickable(action).then(it)
+      else -> it
+    }
+  }
   val contentColor = props.contentColorProvider()
   val textContent = children.textContent(converterContext) ?: props.label
   if (textContent != null && (children.isEmpty() || children.isTextOnlyContent())) {
     return EmittableButton().also {
       it.text = textContent
-      it.modifier = if (props.enabled && action != null) modifier.clickable(action) else modifier
+      it.modifier = modifier
       it.enabled = props.enabled
       it.style = TextStyle(color = contentColor ?: TextDefaults.defaultTextColor)
     }
   }
 
   return EmittableBox().also {
-    it.modifier = if (props.enabled && action != null) {
-      modifier.clickable(action)
-    } else {
-      modifier
-    }
+    it.modifier = modifier
     it.contentAlignment = Alignment.Center
     it.children += children.flatMap { child -> child.toPeekNodes(converterContext, source) }
   }
@@ -427,6 +432,7 @@ private fun ModifierType.toPeekModifier(converterContext: WidgetConverterContext
         WidgetInteraction(converterContext.source, target).toGlanceAction(converterContext.applicationContext)
       )
     }
+    "openURL" -> asRecord<WidgetOpenUrlParams>(converterContext)?.url?.let { GlanceModifier.clickable(openUrlAction(it)) }
     // Unsupported Expo UI modifiers are ignored until they have exact Glance semantics.
     else -> null
   } ?: GlanceModifier
@@ -442,6 +448,12 @@ private fun TextProps.textModifier(converterContext: WidgetConverterContext): Gl
     modifier = modifier.background(it)
   }
   return modifier
+}
+
+private fun GlanceModifier.withoutActions(): GlanceModifier {
+  return foldIn<GlanceModifier>(GlanceModifier) { result, element ->
+    if (element is ActionModifier) result else result.then(element)
+  }
 }
 
 private fun WidgetButtonProps.buttonModifier(converterContext: WidgetConverterContext): GlanceModifier {
@@ -704,4 +716,9 @@ internal data class WidgetImageProps(
 @OptimizedRecord
 internal data class WidgetClickableParams(
   @Field val target: String? = null
+) : Record
+
+@OptimizedRecord
+internal data class WidgetOpenUrlParams(
+  @Field val url: String? = null
 ) : Record
