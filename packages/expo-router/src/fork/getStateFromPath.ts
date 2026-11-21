@@ -304,10 +304,14 @@ const matchAgainstConfigs = (remaining: string, configs: RouteConfig[]) => {
 
       const matchedParams = matchResult.matchedParams || {};
 
-      routes = config.routeNames.map((name) => {
+      routes = config.routeNames.map((name, routeIndex) => {
         const routeConfig = configs.find((c) => {
-          // Check matching name AND pattern in case same screen is used at different levels in config
-          return c.screen === name && config.pattern.startsWith(c.pattern);
+          // Match the same chain of route names from the root when a child reuses a screen name.
+          return (
+            c.screen === name &&
+            c.routeNames.join('/') === config.routeNames.slice(0, routeIndex + 1).join('/') &&
+            config.pattern.startsWith(c.pattern)
+          );
         });
 
         // Normalize pattern to remove any leading, trailing slashes, duplicate slashes etc.
