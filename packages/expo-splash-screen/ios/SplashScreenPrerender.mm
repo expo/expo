@@ -49,18 +49,33 @@
 {
 }
 
+- (void)hydrateAppSurfaceWhenReady
+{
+}
+
+- (BOOL)shouldIgnoreContentDidAppear
+{
+  return NO;
+}
+
 @end
 
 #else
 
+#import "SplashScreenHydration.h"
 #import "SplashScreenSnapshot.h"
 
 #import <CoreText/CoreText.h>
 #import <objc/message.h>
 
 #import <React/RCTComponentViewFactory.h>
+#import <React/RCTComponentViewRegistry.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTParagraphComponentView.h>
+#import <React/RCTScheduler.h>
+#import <React/RCTSurfaceHostingProxyRootView.h>
+#import <React/RCTSurfacePresenter.h>
+#import <React/RCTSurfaceProtocol.h>
 #import <React/RCTViewComponentView.h>
 #import <React/RCTUtils.h>
 
@@ -93,7 +108,7 @@ namespace {
 const SurfaceId kSurfaceId = 900001;
 
 // Increment when the snapshot format changes. A rebuild with the same build number keeps old snapshots.
-NSNumber *const kSnapshotFormat = @2;
+NSNumber *const kSnapshotFormat = @3;
 
 NSString *appBuild()
 {
@@ -209,6 +224,16 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   BOOL _dismissed;
   BOOL _capturePending;
   BOOL _captured;
+  // Hydration
+  NSInteger _snapshotRootTag;
+  folly::dynamic _snapshotTemplate;
+  std::shared_ptr<expo::SplashScreenTransactionWatcher> _transactionWatcher;
+  BOOL _hydrated;
+  BOOL _reactCommitted;
+  BOOL _flushPending;
+  int _adoptedTotal;
+  CFTimeInterval _lastTransactionTime;
+  NSTimeInterval _pendingCaptureDelay;
 }
 
 + (instancetype)shared
@@ -306,6 +331,7 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
     return;
   }
   folly::dynamic templateDynamic = convertIdToFollyDynamic(json);
+  _snapshotTemplate = templateDynamic;
   [self registerFontsUsedByTemplate:templateDynamic];
 
   // The layout uses the size and the scale of the snapshot. `showInWindowScene:` compares them with the window.
@@ -419,6 +445,7 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
     return nil;
   }
   _snapshotEnvironment = environment;
+  _snapshotRootTag = [snapshot[@"rootTag"] isKindOfClass:[NSNumber class]] ? [snapshot[@"rootTag"] integerValue] : 0;
   _snapshotFonts = [snapshot[@"fonts"] isKindOfClass:[NSDictionary class]] ? snapshot[@"fonts"] : nil;
   return snapshot[@"template"];
 }
@@ -435,9 +462,16 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   if (_captured || _capturePending) {
     return;
   }
+  if (_hydrated && !_reactCommitted) {
+    // The screen on display is still the prerender. Capture after React has taken over.
+    _pendingCaptureDelay = MAX(delay, 0.5);
+    return;
+  }
   _capturePending = YES;
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
     self->_capturePending = NO;
+    // The views that React did not adopt must not be in the snapshot.
+    [self flushHydration];
     [self saveLaunchScreen];
   });
 }
@@ -484,6 +518,9 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   NSDictionary *snapshot = @{
     @"environment" : [self environmentKeyForSize:rootView.bounds.size windowScene:windowScene],
     @"fonts" : fonts,
+    @"rootTag" : @([rootView isKindOfClass:[RCTSurfaceHostingProxyRootView class]]
+        ? ((RCTSurfaceHostingProxyRootView *)rootView).surface.rootTag
+        : 0),
     @"template" : convertFollyDynamicToId(templateDynamic)
   };
   [fileManager removeItemAtURL:markerURL error:nil];
@@ -560,6 +597,209 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   }
 }
 
+#pragma mark - Hydration (snapshot committed into the app's surface)
+
+/// Experimental, off by default: `ExpoSplashScreenPrerenderHydrate` in Info.plist or as a launch argument.
+- (BOOL)isHydrationEnabled
+{
+  id launchArgument = [[NSUserDefaults standardUserDefaults] objectForKey:@"ExpoSplashScreenPrerenderHydrate"];
+  if (launchArgument != nil) {
+    return [launchArgument boolValue];
+  }
+  return [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"ExpoSplashScreenPrerenderHydrate"] boolValue];
+}
+
+- (void)hydrateAppSurfaceWhenReady
+{
+  RCTAssertMainQueue();
+  // The overlay is on screen, so the background preparation is done and the snapshot matches the window.
+  if (!_isEnabled || !_window || ![self isHydrationEnabled] || _snapshotRootTag == 0 || _snapshotTemplate.isNull()) {
+    return;
+  }
+  [self log:@"hydration: waiting for the app surface"];
+  [self tryHydrateUntil:CACurrentMediaTime() + 3.0];
+}
+
+- (void)tryHydrateUntil:(CFTimeInterval)deadline
+{
+  UIView *rootView = _appRootView;
+  if (_hydrated || _dismissed || !rootView || ![rootView isKindOfClass:[RCTSurfaceHostingProxyRootView class]]) {
+    return;
+  }
+  id<RCTSurfaceProtocol> surface = ((RCTSurfaceHostingProxyRootView *)rootView).surface;
+  RCTSurfacePresenter *presenter = [(NSObject *)surface valueForKey:@"surfacePresenter"];
+  std::shared_ptr<UIManager> uiManager = presenter.scheduler.uiManager;
+  SurfaceId surfaceId = (SurfaceId)surface.rootTag;
+  bool found = false;
+  bool empty = false;
+  std::shared_ptr<const MountingCoordinator> coordinator;
+  if (uiManager) {
+    uiManager->getShadowTreeRegistry().visit(surfaceId, [&](const ShadowTree &tree) {
+      found = true;
+      empty = tree.getCurrentRevision().rootShadowNode->getChildren().empty();
+      coordinator = tree.getMountingCoordinator();
+    });
+  }
+  if (!found) {
+    // The host starts the surface only after the bundle has loaded; its shadow tree appears on the
+    // JS thread right before React's first render, so this polls fast and commits in that window.
+    if (CACurrentMediaTime() < deadline) {
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+        [self tryHydrateUntil:deadline];
+      });
+    } else {
+      [self log:@"hydration: app surface did not appear in time"];
+    }
+    return;
+  }
+  if (!empty) {
+    [self log:@"hydration: React already committed, skipping"];
+    return;
+  }
+  if (surfaceId != _snapshotRootTag) {
+    [self log:[NSString stringWithFormat:@"hydration: surface %d but snapshot was taken on %ld, skipping", surfaceId, (long)_snapshotRootTag]];
+    return;
+  }
+
+  // The snapshot's structure above React's root component view (the hosting view, the surface
+  // view) is UIKit; React's children hang directly off the surface's root node.
+  const folly::dynamic *reactRoot = nullptr;
+  std::function<void(const folly::dynamic &)> findRoot = [&](const folly::dynamic &n) {
+    if (reactRoot) {
+      return;
+    }
+    if (n.count("tag") != 0 && n["tag"].isInt() && n["tag"].asInt() == surfaceId) {
+      reactRoot = &n;
+      return;
+    }
+    if (n.count("children") != 0) {
+      for (const auto &child : n["children"]) {
+        findRoot(child);
+      }
+    }
+  };
+  findRoot(_snapshotTemplate);
+  if (!reactRoot) {
+    [self log:@"hydration: snapshot has no React root view, skipping"];
+    return;
+  }
+  // Touches would reach views whose event emitters have no React instance behind them yet.
+  rootView.userInteractionEnabled = NO;
+  try {
+    expo::SplashScreenHydrationBuilder builder(*uiManager, surfaceId);
+    auto children = std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
+    builder.buildRootChildren(*reactRoot, *children);
+    // Watch the transactions that follow: hold React's deletes of these nodes, adopt on matching creates.
+    __weak SplashScreenPrerender *weakSelf = self;
+    RCTComponentViewRegistry *viewRegistry = presenter.mountingManager.componentViewRegistry;
+    _transactionWatcher = std::make_shared<expo::SplashScreenTransactionWatcher>(
+        builder.prerenderedTags(),
+        [viewRegistry](Tag tag, bool held) {
+          // Mounting thread (main).
+          UIView *view = [viewRegistry findComponentViewWithTag:tag];
+          // React inserts its views by index, so a held view stays in front of them in the subview
+          // order. Hide it: the window then shows only React's tree, and the overlay does not need
+          // to cover until the held views are removed. The overlay still covers at this time,
+          // because the app hides the splash screen only after React's first commit.
+          view.hidden = held;
+          if (!held) {
+            // React inserts the adopted view into its own tree in the same transaction. A native
+            // container that React puts into the view before that (a react-native-screens stack)
+            // looks for its parent view controller when it moves to the window, and must not find
+            // the one of the prerendered tree.
+            [view removeFromSuperview];
+          }
+        },
+        [weakSelf](expo::SplashScreenTransactionWatcher::Stats stats) {
+          dispatch_async(dispatch_get_main_queue(), ^{
+            [weakSelf didObserveTransaction:stats];
+          });
+        });
+    coordinator->setMountingOverrideDelegate(_transactionWatcher);
+    uiManager->completeSurface(surfaceId, children, ShadowTree::CommitOptions{.mountSynchronously = true});
+    _hydrated = YES;
+    [self log:[NSString stringWithFormat:@"hydration: committed %d nodes into surface %d, %d with React's tags and components",
+                                         builder.created(), surfaceId, builder.reused()]];
+  } catch (const std::exception &e) {
+    rootView.userInteractionEnabled = YES;
+    NSLog(@"[expo-splash-screen] prerender: hydration failed: %s", e.what());
+  }
+}
+
+- (void)didObserveTransaction:(expo::SplashScreenTransactionWatcher::Stats)stats
+{
+  _lastTransactionTime = CACurrentMediaTime();
+  _adoptedTotal += stats.adopted;
+  if (_reactCommitted || stats.isHydrationCommit || stats.isEmpty) {
+    return;
+  }
+  _reactCommitted = YES;
+  _appRootView.userInteractionEnabled = YES;
+  [self log:@"hydration: React's first commit landed, interaction enabled"];
+  // The hosting view already reported "content did appear" for the hydration mount (ignored by the
+  // splash screen manager); React's own first content is what the app is waiting for.
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTContentDidAppearNotification" object:_appRootView];
+  if (_pendingCaptureDelay > 0) {
+    NSTimeInterval delay = _pendingCaptureDelay;
+    _pendingCaptureDelay = 0;
+    [self captureLaunchScreenAfterDelay:delay];
+  }
+}
+
+- (BOOL)shouldIgnoreContentDidAppear
+{
+  return _hydrated && !_reactCommitted;
+}
+
+/// The app hid the splash screen: its first screen is up. Once React has been quiet for a moment,
+/// the prerendered views it did not adopt are removed. The snapshot capture removes them at the latest.
+- (void)flushHydrationIfSettled
+{
+  if (!_flushPending) {
+    return;
+  }
+  CFTimeInterval quietFor = CACurrentMediaTime() - _lastTransactionTime;
+  if (quietFor < 0.25) {
+    __weak SplashScreenPrerender *weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((0.25 - quietFor) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      [weakSelf flushHydrationIfSettled];
+    });
+    return;
+  }
+  [self flushHydration];
+}
+
+- (void)flushHydration
+{
+  _flushPending = NO;
+  if (!_transactionWatcher || !_transactionWatcher->isActive()) {
+    return;
+  }
+  UIView *rootView = _appRootView;
+  id<RCTSurfaceProtocol> surface =
+      [rootView isKindOfClass:[RCTSurfaceHostingProxyRootView class]] ? ((RCTSurfaceHostingProxyRootView *)rootView).surface : nil;
+  RCTSurfacePresenter *presenter = surface ? [(NSObject *)surface valueForKey:@"surfacePresenter"] : nil;
+  RCTComponentViewRegistry *registry = presenter.mountingManager.componentViewRegistry;
+  int removed = 0;
+  for (Tag tag : _transactionWatcher->heldTags()) {
+    UIView<RCTComponentViewProtocol> *view = [registry findComponentViewWithTag:tag];
+    if (!view) {
+      continue;
+    }
+    [view removeFromSuperview];
+    view.hidden = NO;
+    if ([view isKindOfClass:[RCTViewComponentView class]]) {
+      RCTComponentViewDescriptor descriptor = [registry componentViewDescriptorWithTag:tag];
+      [registry enqueueComponentViewWithComponentHandle:[[view class] componentDescriptorProvider].handle
+                                                    tag:tag
+                                componentViewDescriptor:descriptor];
+    }
+    removed++;
+  }
+  _transactionWatcher->deactivate();
+  [self log:[NSString stringWithFormat:@"hydration: done, React adopted %d prerendered views, %d removed", _adoptedTotal, removed]];
+}
+
 #pragma mark - Main thread
 
 - (BOOL)isShown
@@ -628,6 +868,13 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
       [self dismissWithFadeDuration:duration];
     });
     return;
+  }
+  if (_transactionWatcher && _transactionWatcher->isActive() && !_flushPending) {
+    // React can still adopt prerendered views. The ones it did not adopt are hidden, so the
+    // overlay fades now, and they go when React has settled.
+    _flushPending = YES;
+    [self log:@"hydration: splash hidden, waiting for React to settle"];
+    [self flushHydrationIfSettled];
   }
   UIView *container = _containerView;
   if (!_window || !container || duration <= 0) {

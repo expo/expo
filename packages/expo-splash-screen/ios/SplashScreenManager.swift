@@ -22,6 +22,7 @@ class SplashScreenManager: NSObject, RCTReloadListener {
     if !prerender.isShown {
       showSplashScreen()
     }
+    prerender.hydrateAppSurfaceWhenReady()
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(onAppReady),
@@ -33,6 +34,9 @@ class SplashScreenManager: NSObject, RCTReloadListener {
   @objc private func onAppReady(_ notification: Notification) {
     // The prerender surface posts this notification too; only the app's surface counts.
     if let view = notification.object as? UIView, SplashScreenPrerender.shared().isPrerenderRootView(view) {
+      return
+    }
+    if SplashScreenPrerender.shared().shouldIgnoreContentDidAppear() {
       return
     }
     if !preventAutoHideCalled {
