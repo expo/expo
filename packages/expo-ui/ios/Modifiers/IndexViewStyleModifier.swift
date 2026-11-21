@@ -3,11 +3,11 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum IndexViewStyleType: String, Enumerable {
+internal enum IndexViewStyleType: String, UIEnum {
   case page
 }
 
-internal enum PageIndexBackgroundDisplayMode: String, Enumerable {
+internal enum PageIndexBackgroundDisplayMode: String, UIEnum {
   case automatic
   case always
   case never

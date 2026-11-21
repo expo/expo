@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum ScrollTargetBehaviorType: String, Enumerable {
+internal enum ScrollTargetBehaviorType: String, UIEnum {
   case paging
   case viewAligned
 }

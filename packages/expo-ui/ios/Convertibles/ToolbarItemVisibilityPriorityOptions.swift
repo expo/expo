@@ -6,7 +6,7 @@ import SwiftUI
 /**
  How readily a toolbar item gives up its place, matching SwiftUI's `ToolbarItemVisibilityPriority`.
  */
-internal enum ToolbarItemVisibilityPriorityOptions: String, Enumerable {
+internal enum ToolbarItemVisibilityPriorityOptions: String, UIEnum {
   case automatic
   case low
   case high

@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum TextInputAutocapitalizationType: String, Enumerable {
+internal enum TextInputAutocapitalizationType: String, UIEnum {
   case never
   case words
   case sentences

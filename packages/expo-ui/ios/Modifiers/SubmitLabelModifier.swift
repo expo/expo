@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum SubmitLabelType: String, Enumerable {
+internal enum SubmitLabelType: String, UIEnum {
   case continueLabel = "continue"
   case done = "done"
   case go = "go"

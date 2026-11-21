@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum ContentTransitionType: String, Enumerable {
+internal enum ContentTransitionType: String, UIEnum {
   case numericText
   case identity
   case opacity

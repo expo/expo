@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum SearchToolbarBehaviorType: String, Enumerable {
+internal enum SearchToolbarBehaviorType: String, UIEnum {
   case automatic
   case minimize
 }

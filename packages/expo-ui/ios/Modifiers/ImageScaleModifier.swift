@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum ImageScaleType: String, Enumerable {
+internal enum ImageScaleType: String, UIEnum {
   case small
   case medium
   case large

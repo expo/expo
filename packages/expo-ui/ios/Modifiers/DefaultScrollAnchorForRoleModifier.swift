@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum ScrollAnchorRoleOptions: String, Enumerable {
+internal enum ScrollAnchorRoleOptions: String, UIEnum {
   case initialOffset
   case sizeChanges
   case alignment
