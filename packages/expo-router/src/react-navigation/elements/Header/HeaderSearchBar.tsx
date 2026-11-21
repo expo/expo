@@ -47,6 +47,9 @@ function HeaderSearchBarInternal({
   autoCapitalize,
   placeholder = 'Search',
   cancelButtonText = 'Cancel',
+  openButtonAccessibilityLabel,
+  cancelButtonAccessibilityLabel = 'Close',
+  clearButtonAccessibilityLabel = 'Clear text',
   enterKeyHint = 'search',
   onChangeText,
   onClose,
@@ -191,6 +194,7 @@ function HeaderSearchBarInternal({
         />
         {Platform.OS === 'ios' ? (
           <PlatformPressable
+            aria-label={clearButtonAccessibilityLabel}
             onPress={onClear}
             style={[
               {
@@ -210,6 +214,9 @@ function HeaderSearchBarInternal({
       </View>
       {Platform.OS !== 'ios' ? (
         <HeaderButton
+          accessibilityLabel={
+            hasText ? clearButtonAccessibilityLabel : cancelButtonAccessibilityLabel
+          }
           onPress={() => {
             if (value) {
               onClear();
