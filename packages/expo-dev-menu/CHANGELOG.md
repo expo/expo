@@ -1,5 +1,11 @@
 # Changelog
 
+## Unpublished
+
+### 🐛 Bug fixes
+
+- [Android] Fall back to the application's ReactHost when no delegate is set, so the dev menu draws without expo-dev-launcher. (by [@itisrmk](https://github.com/itisrmk))
+
 ## 58.0.11
 
 ### Patch Changes
