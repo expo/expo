@@ -11,7 +11,8 @@ export interface NamespaceProps {
 
 type NativeNamespaceProps = NamespaceProps;
 
-// `expo.packages` exists only on iOS, and other platforms can import this file.
+// Only iOS has native views in `expo.packages`. Android also loads this file
+// (through `@expo/ui/swift-ui`), and there `requireNative` would throw.
 const NativeNamespaceView: React.ComponentType<NativeNamespaceProps> =
   requireOptionalNative('@expo/ui')?.NamespaceView;
 
