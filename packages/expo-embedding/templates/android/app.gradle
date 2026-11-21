@@ -1,0 +1,25 @@
+react {
+  root = new File(@@EXPO@@)
+  reactNativeDir = new File(@@RN@@)
+  codegenDir = new File(@@CODEGEN@@)
+  nodeExecutableAndArgs = [@@NODE@@]
+  cliFile = new File(@@EXPO_CLI@@)
+  bundleCommand = 'export:embed'
+  hermesCommand = @@HERMESC@@
+  entryFile = new File(providers.exec {
+    workingDir(@@EXPO@@)
+    commandLine(@@NODE@@, '-e', "require('expo/scripts/resolveAppEntry')", @@EXPO@@, 'android', 'absolute')
+  }.standardOutput.asText.get().trim())
+  // A debuggable APK still contains a bundle. Metro is an explicit runtime choice.
+  debuggableVariants = []
+  autolinkLibrariesWithApp()
+}
+android {
+  buildFeatures { buildConfig = true }
+  sourceSets.main.kotlin.srcDir(new File(@@ROOT@@, '.expo-source/android/host'))
+}
+dependencies {
+  implementation project(':expoEmbedding')
+  implementation 'com.facebook.react:react-android'
+  implementation 'com.facebook.hermes:hermes-android'
+}
