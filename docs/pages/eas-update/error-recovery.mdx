@@ -111,8 +111,19 @@ Last Exception Backtrace:
 
 Even though it appears the exception was thrown from expo-updates, this stacktrace generally indicates **an error that originated in JavaScript**.
 
-Unfortunately, Apple's crash reporting does not include the exception message, which details the underlying error and its location in JavaScript. To see the message and help you narrow down the issue, you may need to reproduce the crash locally with the Xcode debugger or macOS Console app attached.
+Apple's crash report does not show the exception message in the backtrace. Two other places record the original JavaScript error:
+
+- The exception name. When the fatal error comes from JavaScript, the name has the form `RCTFatalException: <the JavaScript error>`. Symbolicate the crash report and read the exception name.
+- [`Updates.readLogEntriesAsync()`](/versions/latest/sdk/updates/#updatesreadlogentriesasyncmaxage), which returns the error that `expo-updates` serialized when it caught it. The default `maxAge` is one hour, so pass a larger value in milliseconds to reach an older crash. One day is the oldest entry you can retrieve.
+
+If neither is available, reproduce the crash locally with the Xcode debugger or macOS Console app attached.
 
 </Tab>
 
 </Tabs>
+
+## After an update is marked as failed
+
+After `expo-updates` marks an update as failed, it does not launch that update on the device again. Restarting the app does not clear the mark. [`Updates.checkForUpdateAsync()`](/versions/latest/sdk/updates/#updatescheckforupdateasync) reports the update as unavailable with the reason `updatePreviouslyFailed`. To recover a device in this state, publish a new update or reinstall the app.
+
+One frequent cause of an update that fails to launch is configuration that is present at build time but missing at publish time. For example, Metro inlines `EXPO_PUBLIC_*` environment variables into the bundle, so set them for `eas update` as well as for `eas build`. See [Using environment variables with EAS Update](/eas/environment-variables/usage/#using-environment-variables-with-eas-update) for more information.
