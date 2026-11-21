@@ -120,7 +120,7 @@ class CoreModule : Module() {
       }
 
       runBlocking {
-        withContext(Dispatchers.Main) {
+        withContext(Dispatchers.Main.immediate) {
           appContext.uiRuntime.install(runtimePointer)
         }
       }
