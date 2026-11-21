@@ -234,6 +234,7 @@ struct CrashReportTests {
     }
   }
 
+  #if !os(tvOS)
   @AppMetricsActor
   @Suite("storeCrashReports")
   struct StoreCrashReportsTests {
@@ -247,7 +248,7 @@ struct CrashReportTests {
           processId: 822
         )
 
-        storeCrashReports([report], in: database)
+        MetricKitSubscriber.storeCrashReports([report], in: database)
 
         let session = try #require(try database.getMainSessions().first { $0.processId == 822 })
         #expect(session.appBuildNumber == "14")
@@ -264,8 +265,8 @@ struct CrashReportTests {
           processId: 822
         )
 
-        storeCrashReports([report], in: database)
-        storeCrashReports([report], in: database)
+        MetricKitSubscriber.storeCrashReports([report], in: database)
+        MetricKitSubscriber.storeCrashReports([report], in: database)
 
         let sessions = try database.getMainSessions().filter { $0.processId == 822 }
         try #require(sessions.count == 1)
@@ -285,7 +286,7 @@ struct CrashReportTests {
           makeCrashReport(timestampBegin: windowStart, timestampEnd: windowEnd, processId: processId)
         }
 
-        storeCrashReports(reports, in: database)
+        MetricKitSubscriber.storeCrashReports(reports, in: database)
 
         let sessions = try database.getMainSessions()
         try #require(sessions.count == 2)
@@ -295,6 +296,7 @@ struct CrashReportTests {
       }
     }
   }
+  #endif
 
   @Suite("SessionRow.forCrashedProcess")
   struct ForCrashedProcessTests {
