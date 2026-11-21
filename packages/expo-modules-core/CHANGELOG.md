@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.2.0
+
+### Minor Changes
+
+- [iOS] Ship an `ExpoModulesWorkletsHeaders.xcframework` with the iOS prebuilds. A module built from its checked-in Package.swift can depend on the `ExpoModulesWorkletsHeaders` product to compile against `ExpoModulesWorklets`. ([#53322](https://github.com/expo/expo/pull/53322) by [@chrfalch](https://github.com/chrfalch))
+
+### Patch Changes
+
+- [iOS] Fixed SwiftUI views (such as `@expo/ui`'s `Host`) rendering nothing when mounted outside any view controller, for example inside react-native-screens' `FullWindowOverlay`. ([#50966](https://github.com/expo/expo/pull/50966) by [@finn-pleo](https://github.com/finn-pleo))
+
 ## 58.1.0
 
 ### Minor Changes

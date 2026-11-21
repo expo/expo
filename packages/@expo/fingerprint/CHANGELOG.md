@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.22.0
+
+### Minor Changes
+
+- Sort sources, directory entries, and autolinking arrays by code point instead of the system locale, so the fingerprint is the same on every machine. Fingerprints change once on upgrade for most projects. ([#53968](https://github.com/expo/expo/pull/53968) by [@expo-tuft](https://github.com/apps/expo-tuft))
+
 ## 0.21.10
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # Changelog
 
+## 58.1.0
+
+### Minor Changes
+
+- [iOS] A module built from its checked-in Package.swift can depend on the `ExpoModulesWorkletsHeaders` package at `../ExpoModulesWorkletsHeaders`. The SwiftPM plugin emits that package over the `ExpoModulesWorkletsHeaders.xcframework` from `expo-modules-core`, together with the `ExpoModulesCoreHeaders` package it depends on. ([#53323](https://github.com/expo/expo/pull/53323) by [@chrfalch](https://github.com/chrfalch))
+
+### Patch Changes
+
+- Fix `expo/fetch` returning an empty or partial body from `text()` or `arrayBuffer()` when `response.body` is read while that call waits. `response.body` is now locked during the read, as the Fetch spec requires. ([#53320](https://github.com/expo/expo/pull/53320) by [@vonovak](https://github.com/vonovak))
+- Accept patch releases of `@shopify/flash-list` (`~2.3.2` instead of `2.3.2`), so `npx expo install --fix` no longer downgrades projects that use `2.3.3`. ([#52961](https://github.com/expo/expo/pull/52961) by [@saviocmc](https://github.com/saviocmc))
+- Updated dependencies. ([#53831](https://github.com/expo/expo/pull/53831), [#53887](https://github.com/expo/expo/pull/53887), [#53019](https://github.com/expo/expo/pull/53019), [#53393](https://github.com/expo/expo/pull/53393), [#53322](https://github.com/expo/expo/pull/53322), [#53968](https://github.com/expo/expo/pull/53968), [#50966](https://github.com/expo/expo/pull/50966))
+  - @expo/cli@58.1.22
+  - expo-modules-core@58.2.0
+  - @expo/fingerprint@0.22.0
+  - babel-preset-expo@58.0.27
+
 ## 58.0.26
 
 ### Patch Changes
