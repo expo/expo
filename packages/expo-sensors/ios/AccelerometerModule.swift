@@ -3,48 +3,52 @@
 import CoreMotion
 import ExpoModulesCore
 
+// `@Event` needs a string literal, so it repeats this name.
 private let EVENT_ACCELEROMETER_DID_UPDATE = "accelerometerDidUpdate"
 
+@ExpoModule("ExponentAccelerometer")
 public final class AccelerometerModule: Module {
   private lazy var motionManager = CMMotionManager()
   private lazy var operationQueue = OperationQueue()
 
-  public func definition() -> ModuleDefinition {
-    Name("ExponentAccelerometer")
+  @Event("accelerometerDidUpdate")
+  var onAccelerometerUpdate: (ThreeAxisSensorEvent) -> Void
 
-    Events(EVENT_ACCELEROMETER_DID_UPDATE)
+  @JS
+  func isAvailableAsync() async -> Bool {
+    return motionManager.isAccelerometerAvailable
+  }
 
-    AsyncFunction("isAvailableAsync") {
-      return motionManager.isAccelerometerAvailable
+  @JS
+  func setUpdateInterval(intervalMs: Double) async {
+    motionManager.accelerometerUpdateInterval = intervalMs / 1000.0
+  }
+
+  public override func didStartListening(event: String) {
+    guard event == EVENT_ACCELEROMETER_DID_UPDATE, !motionManager.isAccelerometerActive else {
+      return
     }
-
-    AsyncFunction("setUpdateInterval") { (intervalMs: Double) in
-      motionManager.accelerometerUpdateInterval = intervalMs / 1000.0
-    }
-
-    OnStartObserving {
-      if motionManager.isAccelerometerActive {
+    motionManager.startAccelerometerUpdates(to: operationQueue) { [weak self] data, _ in
+      guard let data else {
         return
       }
-      motionManager.startAccelerometerUpdates(to: operationQueue) { [weak self] data, _ in
-        guard let acceleration = data?.acceleration, let timestamp = data?.timestamp else {
-          return
-        }
-        self?.sendEvent(EVENT_ACCELEROMETER_DID_UPDATE, [
-          "x": acceleration.x,
-          "y": acceleration.y,
-          "z": acceleration.z,
-          "timestamp": timestamp
-        ])
-      }
+      self?.onAccelerometerUpdate(ThreeAxisSensorEvent(
+        x: data.acceleration.x,
+        y: data.acceleration.y,
+        z: data.acceleration.z,
+        timestamp: data.timestamp
+      ))
     }
+  }
 
-    OnStopObserving {
-      motionManager.stopAccelerometerUpdates()
+  public override func didStopListening(event: String) {
+    guard event == EVENT_ACCELEROMETER_DID_UPDATE else {
+      return
     }
+    motionManager.stopAccelerometerUpdates()
+  }
 
-    OnDestroy {
-      motionManager.stopAccelerometerUpdates()
-    }
+  public override func willDestroy() {
+    motionManager.stopAccelerometerUpdates()
   }
 }

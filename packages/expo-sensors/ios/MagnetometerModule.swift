@@ -3,50 +3,55 @@
 import CoreMotion
 import ExpoModulesCore
 
+// `@Event` needs a string literal, so it repeats this name.
 private let EVENT_MAGNETOMETER_DID_UPDATE = "magnetometerDidUpdate"
 
+@ExpoModule("ExponentMagnetometer")
 public final class MagnetometerModule: Module {
   private lazy var motionManager = CMMotionManager()
   private lazy var operationQueue = OperationQueue()
 
-  public func definition() -> ModuleDefinition {
-    Name("ExponentMagnetometer")
+  @Event("magnetometerDidUpdate")
+  var onMagnetometerUpdate: (ThreeAxisSensorEvent) -> Void
 
-    Events(EVENT_MAGNETOMETER_DID_UPDATE)
+  @JS
+  func isAvailableAsync() async -> Bool {
+    return motionManager.isDeviceMotionAvailable
+  }
 
-    AsyncFunction("isAvailableAsync") {
-      return motionManager.isDeviceMotionAvailable
+  @JS
+  func setUpdateInterval(intervalMs: Double) async {
+    motionManager.deviceMotionUpdateInterval = intervalMs / 1000.0
+  }
+
+  public override func didStartListening(event: String) {
+    guard event == EVENT_MAGNETOMETER_DID_UPDATE, !motionManager.isDeviceMotionActive else {
+      return
     }
+    let referenceFrame = getAttitudeReferenceFrame()
 
-    AsyncFunction("setUpdateInterval") { (intervalMs: Double) in
-      motionManager.deviceMotionUpdateInterval = intervalMs / 1000.0
-    }
-
-    OnStartObserving {
-      if motionManager.isDeviceMotionActive {
+    motionManager.startDeviceMotionUpdates(using: referenceFrame, to: operationQueue) { [weak self] data, _ in
+      guard let data else {
         return
       }
-      let referenceFrame = getAttitudeReferenceFrame()
-
-      motionManager.startDeviceMotionUpdates(using: referenceFrame, to: operationQueue) { [weak self] data, _ in
-        guard let magneticField = data?.magneticField.field, let timestamp = data?.timestamp else {
-          return
-        }
-        self?.sendEvent(EVENT_MAGNETOMETER_DID_UPDATE, [
-          "x": magneticField.x,
-          "y": magneticField.y,
-          "z": magneticField.z,
-          "timestamp": timestamp
-        ])
-      }
+      let magneticField = data.magneticField.field
+      self?.onMagnetometerUpdate(ThreeAxisSensorEvent(
+        x: magneticField.x,
+        y: magneticField.y,
+        z: magneticField.z,
+        timestamp: data.timestamp
+      ))
     }
+  }
 
-    OnStopObserving {
-      motionManager.stopDeviceMotionUpdates()
+  public override func didStopListening(event: String) {
+    guard event == EVENT_MAGNETOMETER_DID_UPDATE else {
+      return
     }
+    motionManager.stopDeviceMotionUpdates()
+  }
 
-    OnDestroy {
-      motionManager.stopDeviceMotionUpdates()
-    }
+  public override func willDestroy() {
+    motionManager.stopDeviceMotionUpdates()
   }
 }

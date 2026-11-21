@@ -108,4 +108,36 @@ public final class MotionPermissionRequester: NSObject, EXPermissionsRequester {
       resolve(self.getPermissions())
     }
   }
+
+  static func getPermissionsAsync(appContext: AppContext?) async throws -> [String: Any] {
+    guard let permissions = appContext?.permissions else {
+      throw Exceptions.PermissionsModuleNotFound()
+    }
+    return try await withPermissionsContinuation { resolve, reject in
+      permissions.getPermissionUsingRequesterClass(Self.self, resolve: resolve, reject: reject)
+    }
+  }
+
+  static func requestPermissionsAsync(appContext: AppContext?) async throws -> [String: Any] {
+    guard let permissions = appContext?.permissions else {
+      throw Exceptions.PermissionsModuleNotFound()
+    }
+    return try await withPermissionsContinuation { resolve, reject in
+      permissions.askForPermission(usingRequesterClass: Self.self, resolve: resolve, reject: reject)
+    }
+  }
+
+  private static func withPermissionsContinuation(
+    _ body: (@escaping EXPromiseResolveBlock, @escaping EXPromiseRejectBlock) -> Void
+  ) async throws -> [String: Any] {
+    return try await withCheckedThrowingContinuation { continuation in
+      let resolve: EXPromiseResolveBlock = { result in
+        continuation.resume(returning: result as? [String: Any] ?? [:])
+      }
+      let reject: EXPromiseRejectBlock = { code, message, _ in
+        continuation.resume(throwing: Exception(name: code ?? "", description: message ?? "", code: code ?? ""))
+      }
+      body(resolve, reject)
+    }
+  }
 }
