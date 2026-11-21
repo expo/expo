@@ -137,7 +137,7 @@ class IntentLauncherModule : Module() {
       val response = Bundle().apply {
         putInt("resultCode", payload.resultCode)
         if (payload.data != null) {
-          payload.data?.let { putString(ATTR_DATA, it.toString()) }
+          payload.data?.data?.let { putString(ATTR_DATA, it.toString()) }
           payload.data?.extras?.let { putBundle(ATTR_EXTRA, it) }
         }
       }
