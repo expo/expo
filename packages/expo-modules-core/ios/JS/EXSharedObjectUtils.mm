@@ -17,35 +17,10 @@
   "are on the framework search path."
 #endif
 
-@implementation EXSharedObjectListeners {
-  std::weak_ptr<expo::SharedObject::NativeState> _nativeState;
-}
-
-- (void)setNativeState:(const std::shared_ptr<expo::SharedObject::NativeState> &)nativeState
-{
-  @synchronized (self) {
-    _nativeState = nativeState;
-  }
-}
-
-- (void)clear
-{
-  std::shared_ptr<expo::SharedObject::NativeState> nativeState;
-  @synchronized (self) {
-    nativeState = _nativeState.lock();
-  }
-  if (nativeState) {
-    nativeState->clearListeners();
-  }
-}
-
-@end
-
 @implementation EXSharedObjectUtils
 
 + (void *)makeSharedObjectNativeStatePtr:(long)objectId
                                 releaser:(ObjectReleaser)releaser
-                               listeners:(EXSharedObjectListeners *)listeners
                                  context:(void *)context
                       contextDeallocator:(void (*)(void *))contextDeallocator
 {
@@ -55,7 +30,6 @@
     context,
     contextDeallocator
   );
-  [listeners setNativeState:nativeState];
 
   // Heap-allocate the `shared_ptr<jsi::NativeState>` itself (not its pointee) so the
   // raw pointer crosses the no-interop boundary into Swift, where `JavaScriptNativeState`

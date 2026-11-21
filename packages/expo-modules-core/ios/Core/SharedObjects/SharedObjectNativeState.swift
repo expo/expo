@@ -39,9 +39,6 @@ internal final class SharedObjectNativeState: EventEmitterNativeState, @unchecke
   /// The JS object paired with the native object in the main runtime, held weakly.
   private var pairedObject: JavaScriptWeakObject?
 
-  /// The listeners in the C++ state, which `expo.EventEmitter.prototype` methods called with a shared object add.
-  private let listeners: SharedObjectListeners
-
   private struct Flags {
     var isReleased = false
 
@@ -65,16 +62,13 @@ internal final class SharedObjectNativeState: EventEmitterNativeState, @unchecke
     isPairedInOtherRuntime: Bool,
     releaser: @escaping ObjectReleaser
   ) {
-    let listeners = SharedObjectListeners()
     self.native = native
     self.mainRuntimeId = mainRuntimeId
     self.flags = OSAllocatedUnfairLock(initialState: Flags(isPairedInOtherRuntime: isPairedInOtherRuntime))
-    self.listeners = listeners
     super.init(primaryRuntimeId: mainRuntimeId) { context, deallocator in
       return SharedObjectUtils.makeSharedObjectNativeStatePtr(
         objectId: objectId,
         releaser: releaser,
-        listeners: listeners,
         context: context,
         contextDeallocator: deallocator
       )
@@ -107,7 +101,6 @@ internal final class SharedObjectNativeState: EventEmitterNativeState, @unchecke
   /// before the runtime is destroyed, because a JS object of another runtime can keep the native state alive for
   /// longer.
   internal func releaseRuntimeValues() {
-    listeners.clear()
     removePrimaryListeners()
     pairedObject = nil
   }
@@ -135,7 +128,8 @@ internal final class SharedObjectNativeState: EventEmitterNativeState, @unchecke
 
   @JavaScriptActor
   internal override func listeners(inOtherRuntime runtime: JavaScriptRuntime, creatingIfNeeded: Bool) -> EventListeners? {
-    return runtime.cached(pairedObjectsCacheKey, PairedObjects.init).listeners(for: self, creatingIfNeeded: creatingIfNeeded)
+    return runtime.cached(pairedObjectsCacheKey, PairedObjects.init)
+      .listeners(for: self, creatingIfNeeded: creatingIfNeeded, in: runtime)
   }
 
   @JavaScriptActor
@@ -290,12 +284,16 @@ private final class PairedObjects {
 
   /// Returns the listeners of the JS object of the native state, and creates them when `creatingIfNeeded` is `true`.
   /// Returns `nil` when the native state has no live JS object here.
-  func listeners(for nativeState: SharedObjectNativeState, creatingIfNeeded: Bool) -> EventListeners? {
+  func listeners(
+    for nativeState: SharedObjectNativeState,
+    creatingIfNeeded: Bool,
+    in runtime: JavaScriptRuntime
+  ) -> EventListeners? {
     guard let pairing = pairings[ObjectIdentifier(nativeState)], object(of: pairing, for: nativeState) != nil else {
       return nil
     }
     if pairing.listeners == nil && creatingIfNeeded {
-      pairing.listeners = EventListeners()
+      pairing.listeners = EventListeners(in: runtime)
     }
     return pairing.listeners
   }

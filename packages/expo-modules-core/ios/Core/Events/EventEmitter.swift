@@ -460,8 +460,7 @@ internal func warnNonCopyablePayloadNotEncoded(event: String, payloadType: any (
 }
 
 /// Sends a pre-converted event payload to the JavaScript object of the given emitter. Logs a warning
-/// when the emitter is no longer associated with a JavaScript object. A shared object keeps its listeners in its
-/// Swift native state, and the listeners of other emitters are in the C++ state of their JS object.
+/// when the emitter is no longer associated with a JavaScript object.
 @JavaScriptActor
 @usableFromInline
 internal func dispatchEvent(
@@ -553,8 +552,8 @@ internal struct SharedEventPayload<P>: @unchecked Sendable {
   }
 }
 
-/// Sends a pre-converted event payload to the JavaScript object of a module, which its holder, `holder`, lends. Logs a
-/// warning when the module has no JS object.
+/// Sends a pre-converted event payload to the listeners of a module, whose holder is `holder`. Logs a warning when the
+/// module isn't registered.
 @JavaScriptActor
 @usableFromInline
 internal func dispatchEvent(
@@ -563,15 +562,11 @@ internal func dispatchEvent(
   toModuleHolder holder: AnyObject?,
   in runtime: JavaScriptRuntime
 ) {
-  let dispatched = holder.flatMap { holder in
-    unsafeDowncast(holder, to: ModuleHolder.self).withEventTarget { target in
-      dispatchEvent(event: event, payload: payload, to: target, in: runtime)
-      return true
-    }
-  }
-  if dispatched == nil {
+  guard let holder else {
     warnEventTargetLost(event: event)
+    return
   }
+  unsafeDowncast(holder, to: ModuleHolder.self).dispatchEvent(event: event, payload: payload, in: runtime)
 }
 
 /// Sends a pre-converted event payload to the JavaScript object that `withEventTarget` of the emitter lends. Logs a
@@ -599,21 +594,13 @@ internal func warnEventTargetLost(event: String) {
   log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
 }
 
-/**
- Sends a pre-converted event payload to the given JavaScript object via the JSI emitter helper.
- Must run on the JS thread; the public `emit` overloads schedule onto the runtime before calling in.
- */
+/// Calls the listeners of the event that the native state of `target` keeps, with the payload and `target` as `this`.
+/// Must run on the JS thread; the public `emit` overloads schedule onto the runtime before calling in.
 @JavaScriptActor
 internal func dispatchEvent(event: String, payload: borrowing JavaScriptValue, to target: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) {
-  runtime.withUnsafePointees(object: target, value: payload) { runtimePtr, objectPtr, payloadPtr in
-    event.withCString { eventName in
-      emitJSEvent(
-        utf8Name: eventName,
-        runtimePointer: runtimePtr,
-        objectPointer: objectPtr,
-        argumentsPointer: payloadPtr,
-        argumentCount: 1
-      )
-    }
+  let nativeState = target.getNativeState(as: EventEmitterNativeState.self)
+  guard let eventListeners = nativeState?.listeners(in: runtime)?.listeners(of: event) else {
+    return
   }
+  EventListeners.call(eventListeners, this: target, payload: payload, in: runtime)
 }
