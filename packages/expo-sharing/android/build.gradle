@@ -6,14 +6,25 @@ plugins {
 group = 'host.exp.exponent'
 version = '58.0.20'
 
+expoModule {
+  v2 true
+}
+
 android {
   namespace "expo.modules.sharing"
   defaultConfig {
     versionCode 16
     versionName '58.0.20'
   }
+  testOptions {
+    unitTests.includeAndroidResources = true
+  }
 }
 
 dependencies {
   implementation 'com.facebook.react:react-android'
+  testImplementation 'io.mockk:mockk:1.13.11'
+  testImplementation 'androidx.test:core:1.7.0'
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.robolectric:robolectric:4.16'
 }
