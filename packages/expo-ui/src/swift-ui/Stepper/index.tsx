@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { requireOptionalNative } from 'expo';
 
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -34,10 +34,10 @@ export interface StepperProps extends CommonViewModifierProps {
 type NativeStepperProps = Omit<StepperProps, 'onValueChange'> &
   ViewEvent<'onValueChange', { value: number }>;
 
-const StepperNativeView: React.ComponentType<NativeStepperProps> = requireNativeView(
-  'ExpoUI',
-  'StepperView'
-);
+// Only iOS has native views in `expo.packages`. Android also loads this file
+// (through `@expo/ui/swift-ui`), and there `requireNative` would throw.
+const StepperNativeView: React.ComponentType<NativeStepperProps> =
+  requireOptionalNative('@expo/ui')?.StepperView;
 
 function transformStepperProps(props: StepperProps): NativeStepperProps {
   const { modifiers, ...restProps } = props;
