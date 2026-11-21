@@ -1,0 +1,6 @@
+  @JS
+  suspend fun setValueAsync(value: String) {
+<% if (project.features.includes('Event')) { -%>
+    onChange(ChangeEventPayload(value))
+<% } -%>
+  }

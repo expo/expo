@@ -9,7 +9,7 @@ export interface <%- project.swiftUIViewName %>Props extends CommonViewModifierP
 }
 
 const Native<%- project.swiftUIViewName %> = requireNativeView<<%- project.swiftUIViewName %>Props>(
-  '<%- project.name %>',
+  '<%- project.viewsModule?.name ?? project.name %>',
   '<%- project.swiftUIViewName %>'
 );
 

@@ -1,0 +1,6 @@
+  @JS
+  func setValueAsync(value: String) async {
+<% if (project.features.includes('Event')) { -%>
+    onChange(ChangeEventPayload(value: value))
+<% } -%>
+  }
