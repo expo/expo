@@ -73,6 +73,8 @@ describe(runAndroidAsync, () => {
   it.each([
     { variant: 'debug', mode: 'development' },
     { variant: 'debugOptimized', mode: 'development' },
+    { variant: 'freeDebug', mode: 'development' },
+    { variant: 'freeDebugOptimized', mode: 'development' },
     { variant: 'staging', mode: 'production' },
   ])('uses $mode mode for the $variant variant', async ({ variant, mode }) => {
     vol.fromJSON(
