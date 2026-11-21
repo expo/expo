@@ -54,6 +54,7 @@
     "ignore": "^5.3.1",
     "minimatch": "^10.2.6",
     "resolve-from": "^5.0.0",
+    "resolve-workspace-root": "^2.0.0",
     "semver": "^7.7.4"
   },
   "devDependencies": {
