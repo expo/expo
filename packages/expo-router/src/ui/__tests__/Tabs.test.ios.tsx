@@ -42,6 +42,7 @@ it('does not warn when the layout sets an anchor without a backBehavior', async 
 
 it('keeps static headless tab triggers stable while a stack covers the tabs', async () => {
   const triggerMaps: TriggerMap[] = [];
+  const tabButtonRender = jest.fn();
 
   function Probe() {
     triggerMaps.push(use(TabTriggerMapContext));
@@ -49,6 +50,7 @@ it('keeps static headless tab triggers stable while a stack covers the tabs', as
   }
 
   function TabButton({ label, ...props }: { label: string } & ComponentProps<typeof Pressable>) {
+    tabButtonRender(label);
     return (
       <Pressable {...props}>
         <Text>{label}</Text>
@@ -82,23 +84,28 @@ it('keeps static headless tab triggers stable while a stack covers the tabs', as
   expect(triggerMaps.at(-1)?.home?.href).toBe('/');
   expect(triggerMaps.at(-1)?.second?.href).toBe('/second');
   const originalMap = triggerMaps.at(-1);
+  const originalButtonRenderCount = tabButtonRender.mock.calls.length;
 
   await act(() => router.push('/details'));
   expect(screen.getByTestId('details')).toBeVisible();
   expect(triggerMaps.at(-1)).toBe(originalMap);
   expect(triggerMaps.at(-1)?.second?.href).toBe('/second');
+  expect(tabButtonRender).toHaveBeenCalledTimes(originalButtonRenderCount);
 
   await act(() => router.push('/details2'));
   expect(screen.getByTestId('details2')).toBeVisible();
   expect(triggerMaps.at(-1)).toBe(originalMap);
+  expect(tabButtonRender).toHaveBeenCalledTimes(originalButtonRenderCount);
 
   await act(() => router.back());
   expect(screen.getByTestId('details')).toBeVisible();
   expect(triggerMaps.at(-1)).toBe(originalMap);
+  expect(tabButtonRender).toHaveBeenCalledTimes(originalButtonRenderCount);
 
   await act(() => router.back());
   expect(screen.getByTestId('home')).toBeVisible();
   expect(triggerMaps.at(-1)).toBe(originalMap);
+  expect(tabButtonRender).toHaveBeenCalledTimes(originalButtonRenderCount);
 });
 
 it('updates relative triggers for their layout param but ignores unrelated params', async () => {
