@@ -1,4 +1,5 @@
 import prompts from 'prompts';
+import { PassThrough } from 'stream';
 
 import { confirmAsync, createSelectionFilter, promptAsync } from '../prompts';
 
@@ -73,5 +74,42 @@ describe(createSelectionFilter, () => {
     }
     // escaped
     expect(await filter('\\\n\t\r', choices)).toEqual([]);
+  });
+});
+
+describe('closed stdin', () => {
+  let stdin: PassThrough;
+
+  beforeEach(() => {
+    stdin = new PassThrough();
+    jest.spyOn(process, 'stdin', 'get').mockReturnValue(stdin as unknown as typeof process.stdin);
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it(`fails when stdin closes while prompting`, async () => {
+    jest.mocked(prompts).mockImplementationOnce(() => new Promise(() => {}));
+
+    const result = confirmAsync({ message: 'Continue?' });
+    stdin.end();
+    stdin.resume();
+
+    const pending = new Promise((resolve) => setTimeout(resolve, 100, 'still pending'));
+    await expect(Promise.race([result, pending])).rejects.toThrow(
+      'Input is required, but stdin was closed.\nRequired input:\n> Continue?'
+    );
+  });
+
+  it(`fails when stdin was already closed`, async () => {
+    stdin.end();
+    stdin.resume();
+    await new Promise((resolve) => stdin.once('end', resolve));
+
+    await expect(confirmAsync({ message: 'Continue?' })).rejects.toThrow(
+      'Input is required, but stdin was closed.\nRequired input:\n> Continue?'
+    );
   });
 });
