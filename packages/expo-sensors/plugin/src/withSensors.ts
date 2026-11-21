@@ -1,8 +1,10 @@
 import {
+  AndroidConfig,
   ConfigPlugin,
   createRunOncePlugin,
   InfoPlist,
   IOSConfig,
+  withGradleProperties,
   withInfoPlist,
   withPodfileProperties,
 } from 'expo/config-plugins';
@@ -13,6 +15,9 @@ const MOTION_USAGE = 'Allow $(PRODUCT_NAME) to access your device motion';
 // Read by `MotionPermissionRequester.isMotionPermissionDisabled` in the iOS module (do not change).
 export const DISABLE_MOTION_PERMISSION_KEY = 'ExpoSensors_disableMotionPermission';
 
+// Read by `android/build.gradle` (do not change).
+export const PEDOMETER_PLAY_SERVICES_KEY = 'expo.sensors.pedometer-play-services-enabled';
+
 export type Props = {
   /**
    * A string to set the `NSMotionUsageDescription` permission message, or `false` to disable.
@@ -20,6 +25,13 @@ export type Props = {
    * @platform ios
    */
   motionPermission?: string | false;
+  /**
+   * Whether to include the Google Play services libraries that the pedometer step history
+   * and pause/resume events need. They increase the app size.
+   * @default false
+   * @platform android
+   */
+  pedometerPlayServicesEnabled?: boolean;
 };
 
 export function setMotionPermissionDisabled(
@@ -34,13 +46,36 @@ export function setMotionPermissionDisabled(
   return infoPlist;
 }
 
-const withSensors: ConfigPlugin<Props | void> = (config, { motionPermission } = {}) => {
+export function setPedometerPlayServicesEnabled(
+  { pedometerPlayServicesEnabled }: Props,
+  gradleProperties: AndroidConfig.Properties.PropertiesItem[]
+): AndroidConfig.Properties.PropertiesItem[] {
+  return AndroidConfig.BuildProperties.updateAndroidBuildProperty(
+    gradleProperties,
+    PEDOMETER_PLAY_SERVICES_KEY,
+    pedometerPlayServicesEnabled === true ? 'true' : null,
+    { removePropWhenValueIsNull: true }
+  );
+}
+
+const withSensors: ConfigPlugin<Props | void> = (
+  config,
+  { motionPermission, pedometerPlayServicesEnabled } = {}
+) => {
   if (motionPermission === false) {
     config = withPodfileProperties(config, (config) => {
       config.modResults.MOTION_PERMISSION = 'false';
       return config;
     });
   }
+
+  config = withGradleProperties(config, (config) => {
+    config.modResults = setPedometerPlayServicesEnabled(
+      { pedometerPlayServicesEnabled },
+      config.modResults
+    );
+    return config;
+  });
 
   config = withInfoPlist(config, (config) => {
     config.modResults = setMotionPermissionDisabled({ motionPermission }, config.modResults);

@@ -6,15 +6,19 @@ plugins {
 group = 'host.exp.exponent'
 version = '58.0.4'
 
+def pedometerPlayServicesEnabled = (findProperty('expo.sensors.pedometer-play-services-enabled') ?: "false").toString() == "true"
+
 android {
   namespace "expo.modules.sensors"
   defaultConfig {
     versionCode 27
     versionName "58.0.4"
+    consumerProguardFiles "proguard-rules.pro"
   }
 }
 
 dependencies {
-  implementation("com.google.android.gms:play-services-fitness:21.3.0")
-  implementation("com.google.android.gms:play-services-location:21.0.1")
+  def pedometerPlayServicesConfiguration = pedometerPlayServicesEnabled ? "implementation" : "compileOnly"
+  add(pedometerPlayServicesConfiguration, "com.google.android.gms:play-services-fitness:21.3.0")
+  add(pedometerPlayServicesConfiguration, "com.google.android.gms:play-services-location:21.0.1")
 }
