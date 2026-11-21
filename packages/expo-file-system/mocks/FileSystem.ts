@@ -371,7 +371,7 @@ export class FileSystemFile {
     };
   }
 
-  open(mode?: FileMode): FileSystemFileHandle {
+  openHandle(mode?: FileMode): FileSystemFileHandle {
     const key = normalizeKey(this.uri);
     const entry = store.get(key);
     if (!entry || entry.kind !== 'file' || !entry.exists) {
@@ -466,36 +466,34 @@ export class FileSystemFile {
   }
 }
 
+/**
+ * Mock of the native handle: stateless positional I/O only. The read/write cursor lives in the
+ * TypeScript `FileHandle` class, which wraps this object.
+ */
 export class FileSystemFileHandle {
   private readonly key: string;
   private readonly readOnly: boolean;
   private readonly writeOnly: boolean;
-  private cursor: number;
+  private readonly appendMode: boolean;
   private closed = false;
 
   constructor(key: string, mode: FileMode) {
     this.key = key;
     const entry = store.get(key);
+    this.appendMode = mode === FileMode.Append;
     switch (mode) {
       case FileMode.ReadWrite:
         this.readOnly = false;
         this.writeOnly = false;
-        this.cursor = 0;
         break;
       case FileMode.ReadOnly:
         this.readOnly = true;
         this.writeOnly = false;
-        this.cursor = 0;
         break;
       case FileMode.WriteOnly:
-        this.readOnly = false;
-        this.writeOnly = true;
-        this.cursor = 0;
-        break;
       case FileMode.Append:
         this.readOnly = false;
         this.writeOnly = true;
-        this.cursor = entry?.bytes?.length ?? 0;
         break;
       case FileMode.Truncate:
         this.readOnly = false;
@@ -508,7 +506,6 @@ export class FileSystemFileHandle {
           createdAt: entry?.createdAt ?? nextMockTimestamp(),
           modifiedAt: nextMockTimestamp(),
         });
-        this.cursor = 0;
         break;
       default:
         assertNever(mode);
@@ -519,17 +516,6 @@ export class FileSystemFileHandle {
     if (this.closed) throw new Error('File handle is closed');
   }
 
-  get offset(): number | null {
-    return this.closed ? null : this.cursor;
-  }
-
-  set offset(value: number | null) {
-    if (this.closed || value == null) {
-      return;
-    }
-    this.cursor = value;
-  }
-
   get size(): number | null {
     if (this.closed) {
       return null;
@@ -538,21 +524,19 @@ export class FileSystemFileHandle {
     return entry?.bytes?.length ?? 0;
   }
 
-  readBytesSync(count: number): Uint8Array {
+  readAtSync(position: number, count: number): ArrayBuffer {
     this.ensureOpen();
     if (this.writeOnly) throw new Error('File handle is write-only');
-    const entry = store.get(this.key);
-    const bytes = entry?.bytes ?? new Uint8Array(0);
-    const slice = bytes.slice(this.cursor, this.cursor + count);
-    this.cursor += slice.length;
-    return slice;
+    const bytes = store.get(this.key)?.bytes ?? new Uint8Array(0);
+    // A fresh slice, so the buffer holds exactly the bytes read, like the native result.
+    return bytes.slice(position, position + count).buffer;
   }
 
-  async readBytes(count: number): Promise<Uint8Array> {
-    return this.readBytesSync(count);
+  async readAt(position: number, count: number): Promise<ArrayBuffer> {
+    return this.readAtSync(position, count);
   }
 
-  writeBytesSync(buffer: Uint8Array): void {
+  writeAtSync(position: number, buffer: Uint8Array): number {
     this.ensureOpen();
     if (this.readOnly) throw new Error('File handle is read-only');
     const entry = store.get(this.key) ?? {
@@ -561,7 +545,8 @@ export class FileSystemFileHandle {
       exists: true,
     };
     const prior = entry.bytes ?? new Uint8Array(0);
-    const writeOffset = Math.min(this.cursor, prior.length);
+    // A write past the end grows the file and leaves a zero-filled gap, like `pwrite` does.
+    const writeOffset = this.appendMode ? prior.length : position;
     const newLength = Math.max(prior.length, writeOffset + buffer.length);
     const merged = new Uint8Array(newLength);
     merged.set(prior, 0);
@@ -573,11 +558,11 @@ export class FileSystemFileHandle {
       exists: true,
       modifiedAt: nextMockTimestamp(),
     });
-    this.cursor = writeOffset + buffer.length;
+    return writeOffset + buffer.length;
   }
 
-  async writeBytes(buffer: Uint8Array): Promise<void> {
-    this.writeBytesSync(buffer);
+  async writeAt(position: number, buffer: Uint8Array): Promise<number> {
+    return this.writeAtSync(position, buffer);
   }
 
   close(): void {
