@@ -4,6 +4,7 @@ import { useRouter } from 'next/compat/router';
 import dynamic from 'next/dynamic';
 import { useEffect, useState, type PropsWithChildren, useRef, useCallback, useMemo } from 'react';
 
+import { trackServicesPageClick } from '~/common/click-tracking';
 import { getLocaleFromPath } from '~/common/i18n';
 import * as RoutesUtils from '~/common/routes';
 import {
@@ -210,6 +211,14 @@ export default function DocumentationPage({
       setHasActivatedAskAI(true);
     }
   }, [isAskAIVisible]);
+
+  useEffect(() => {
+    const appRoot = document.getElementById('__next');
+    appRoot?.addEventListener('click', trackServicesPageClick);
+    return () => {
+      appRoot?.removeEventListener('click', trackServicesPageClick);
+    };
+  }, []);
 
   useEffect(() => {
     if (!layoutRef.current) {
