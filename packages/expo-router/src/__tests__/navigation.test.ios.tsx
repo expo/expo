@@ -844,6 +844,46 @@ it('supports dynamic 404s next to dynamic routes', async () => {
   expect(await screen.findByText('found')).toBeOnTheScreen();
 });
 
+it('keeps catch-all array params that contain reserved URL characters', async () => {
+  await renderRouter({
+    index: () => <Text />,
+    'blog/[...slug]': () => <Text testID="blog" />,
+  });
+
+  await act(() =>
+    router.push({ pathname: '/blog/[...slug]', params: { slug: ['a?b c', '50%', 'd#e'] } })
+  );
+
+  expect(screen.getByTestId('blog')).toBeOnTheScreen();
+  expect(screen).toHaveSegments(['blog', '[...slug]']);
+  expect(screen).toHaveSearchParams({ slug: ['a?b c', '50%', 'd#e'] });
+});
+
+it('keeps a catch-all string param that contains reserved URL characters', async () => {
+  await renderRouter({
+    index: () => <Text />,
+    'blog/[...slug]': () => <Text testID="blog" />,
+  });
+
+  await act(() => router.push({ pathname: '/blog/[...slug]', params: { slug: 'a?b c/50%/d#e' } }));
+
+  expect(screen.getByTestId('blog')).toBeOnTheScreen();
+  expect(screen).toHaveSearchParams({ slug: ['a?b c', '50%', 'd#e'] });
+});
+
+it('opens an encoded catch-all URL with the decoded params', async () => {
+  await renderRouter(
+    {
+      index: () => <Text />,
+      'blog/[...slug]': () => <Text testID="blog" />,
+    },
+    { initialUrl: '/blog/a%3Fb%20c/50%25/d%23e' }
+  );
+
+  expect(screen.getByTestId('blog')).toBeOnTheScreen();
+  expect(screen).toHaveSearchParams({ slug: ['a?b c', '50%', 'd#e'] });
+});
+
 it('supports deep dynamic 404s next to dynamic routes', async () => {
   await renderRouter({
     index: () => <Text />,
