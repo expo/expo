@@ -49,6 +49,7 @@ export type {
   ObserveIntegrationFilterConfig,
   ObserveIntegrationReporter,
   ObserveIntegrationReportOptions,
+  ObserveIntegrationStorage,
   ObserveIntegrationWarningReport,
   ObserveIntegrationsConfig,
   ObserveModule,
