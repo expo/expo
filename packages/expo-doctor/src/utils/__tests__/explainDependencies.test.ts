@@ -73,4 +73,26 @@ describe(getDeepDependenciesWarningAsync, () => {
     const result = await getDeepDependenciesWarningAsync({ name: '@expo/prebuild-config' }, '../');
     expect(result).toContain('Expected to not find any copies');
   });
+
+  it(`invokes npm explain with --force so projects using another package manager do not fail`, async () => {
+    jest.mocked(spawnAsync).mockImplementation(() =>
+      mockSpawnPromise(
+        Promise.resolve({
+          stdout: mockNpmExplainJsonString,
+          stderr: '',
+          status: 0,
+        })
+      )
+    );
+    const result = await getDeepDependenciesWarningAsync(
+      { name: '@expo/prebuild-config', version: '5.0.7' },
+      '../'
+    );
+    expect(result).toBe(null);
+    expect(spawnAsync).toHaveBeenCalledWith(
+      'npm',
+      expect.arrayContaining(['explain', '@expo/prebuild-config', '--force']),
+      expect.anything()
+    );
+  });
 });
