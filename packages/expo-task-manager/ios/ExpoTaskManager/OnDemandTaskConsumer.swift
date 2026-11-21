@@ -1,6 +1,10 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 import ExpoModulesCore
 
+#if canImport(ExpoTaskManagerObjC)
+import ExpoTaskManagerObjC
+#endif
+
 /**
  The consumer of tasks that native code runs on demand with `TaskRunner`.
  */

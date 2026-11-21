@@ -1,5 +1,9 @@
 import ExpoModulesCore
 
+#if canImport(ExpoTaskManagerObjC)
+import ExpoTaskManagerObjC
+#endif
+
 public class TaskManagerAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
     EXTaskService.shared.applicationDidFinishLaunching(options: launchOptions)
