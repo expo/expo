@@ -17,13 +17,10 @@ public class PermissionsModule: Module {
     }
 
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
-      appContext?
-        .permissions?
-        .getPermissionUsingRequesterClass(
-          ExpoNotificationsPermissionsRequester.self,
-          resolve: promise.legacyResolver,
-          reject: promise.legacyRejecter
-        )
+      Task {
+        let permission = await requester.getPermissionsAsync()
+        promise.legacyResolver(EXPermissionsService.parsePermission(fromRequester: permission))
+      }
     }
 
     AsyncFunction("requestPermissionsAsync") { (requestedPermissions: NotificationPermissionRecord, promise: Promise) in
