@@ -297,6 +297,207 @@ test('does not move browser history when a pop is prevented', async () => {
   expect(result.result.current.report?.events.at(-1)?.type).toBe('prevented-routes');
 });
 
+test('returns to the restored browser entry when a prevented browser Back in a nested stack is continued', async () => {
+  const nestedInitialState: NavigationState = {
+    ...initialState,
+    routeNames: ['app'],
+    routes: [{ key: 'app', name: 'app', state: { ...initialState, key: 'child' } }],
+  };
+  const nestedRegistry: RouterRegistry = new Map([
+    ['root', entry(StackRouter({}), ['app'])],
+    ['child', entry(StackRouter({}), ['first', 'second', 'third'])],
+  ]);
+  const routesWithRemovalPrevented = new Set<string>();
+  const result = await renderHook(() =>
+    useNavigationTreeReducer({
+      initialState: nestedInitialState,
+      registry: nestedRegistry,
+      routesWithRemovalPrevented,
+    })
+  );
+  await act(() => {
+    result.result.current.handleAction({
+      type: 'PUSH',
+      target: 'child',
+      payload: { name: 'second' },
+    });
+    result.result.current.handleAction({
+      type: 'PUSH',
+      target: 'child',
+      payload: { name: 'third' },
+    });
+  });
+  const stateOnThird = result.result.current.state;
+  routesWithRemovalPrevented.add(stateOnThird.routes[0]!.state!.routes[2]!.key!);
+  // Entry 0 is the seeded first screen; entries 1 and 2 are the pushes.
+  const secondEntry = browserEvents(result)!.filter((event) => event.op !== 'go')[1]!;
+
+  await act(() =>
+    result.result.current.processIntent({
+      type: 'BROWSER_HISTORY_CHANGED',
+      actionId: 0,
+      payload: { id: secondEntry.entryId, path: '/app' },
+    })
+  );
+  expect(result.result.current.state).toBe(stateOnThird);
+  expect(browserEvents(result)?.at(-1)).toEqual(expect.objectContaining({ op: 'go', delta: 1 }));
+  const prevented = result.result.current
+    .report!.events.filter((event) => event.type === 'prevented-routes')
+    .at(-1)!;
+  expect(prevented.action.type).toBe('RESET');
+
+  routesWithRemovalPrevented.clear();
+  await act(() =>
+    result.result.current.processIntent({
+      type: 'ACTION',
+      actionId: 0,
+      payload: { action: { source: 'third', ...prevented.action } },
+    })
+  );
+
+  expect(result.result.current.state.routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+    'first',
+    'second',
+  ]);
+  expect(browserEvents(result)?.slice(-2)).toEqual([
+    expect.objectContaining({ op: 'go', delta: -1 }),
+    expect.objectContaining({ op: 'replace', entryId: secondEntry.entryId, path: '/app' }),
+  ]);
+});
+
+test('returns to the restored browser entry when the screen updates its params before a prevented browser Back is continued', async () => {
+  const nestedInitialState: NavigationState = {
+    ...initialState,
+    routeNames: ['app'],
+    routes: [{ key: 'app', name: 'app', state: { ...initialState, key: 'child' } }],
+  };
+  const nestedRegistry: RouterRegistry = new Map([
+    ['root', entry(StackRouter({}), ['app'])],
+    ['child', entry(StackRouter({}), ['first', 'second', 'third'])],
+  ]);
+  const routesWithRemovalPrevented = new Set<string>();
+  const result = await renderHook(() =>
+    useNavigationTreeReducer({
+      initialState: nestedInitialState,
+      registry: nestedRegistry,
+      routesWithRemovalPrevented,
+    })
+  );
+  await act(() => {
+    result.result.current.handleAction({
+      type: 'PUSH',
+      target: 'child',
+      payload: { name: 'second' },
+    });
+    result.result.current.handleAction({
+      type: 'PUSH',
+      target: 'child',
+      payload: { name: 'third' },
+    });
+  });
+  routesWithRemovalPrevented.add(result.result.current.state.routes[0]!.state!.routes[2]!.key!);
+  const secondEntry = browserEvents(result)!.filter((event) => event.op !== 'go')[1]!;
+
+  await act(() =>
+    result.result.current.processIntent({
+      type: 'BROWSER_HISTORY_CHANGED',
+      actionId: 0,
+      payload: { id: secondEntry.entryId, path: '/app' },
+    })
+  );
+  const prevented = result.result.current
+    .report!.events.filter((event) => event.type === 'prevented-routes')
+    .at(-1)!;
+  await act(() =>
+    result.result.current.handleAction({
+      type: 'SET_PARAMS',
+      target: 'child',
+      payload: { params: { draft: 'saved' } },
+    })
+  );
+  expect(result.result.current.state.routes[0]!.state!.routes[2]!.params).toEqual({
+    draft: 'saved',
+  });
+
+  routesWithRemovalPrevented.clear();
+  await act(() =>
+    result.result.current.processIntent({
+      type: 'ACTION',
+      actionId: 0,
+      payload: { action: { source: 'third', ...prevented.action } },
+    })
+  );
+
+  expect(browserEvents(result)?.slice(-2)).toEqual([
+    expect.objectContaining({ op: 'go', delta: -1 }),
+    expect.objectContaining({ op: 'replace', entryId: secondEntry.entryId, path: '/app' }),
+  ]);
+});
+
+test('returns to the restored browser entry when a prevented multi-entry browser jump in a nested stack is continued', async () => {
+  const nestedInitialState: NavigationState = {
+    ...initialState,
+    routeNames: ['app'],
+    routes: [{ key: 'app', name: 'app', state: { ...initialState, key: 'child' } }],
+  };
+  const nestedRegistry: RouterRegistry = new Map([
+    ['root', entry(StackRouter({}), ['app'])],
+    ['child', entry(StackRouter({}), ['first', 'second', 'third'])],
+  ]);
+  const routesWithRemovalPrevented = new Set<string>();
+  const result = await renderHook(() =>
+    useNavigationTreeReducer({
+      initialState: nestedInitialState,
+      registry: nestedRegistry,
+      routesWithRemovalPrevented,
+    })
+  );
+  await act(() => {
+    result.result.current.handleAction({
+      type: 'PUSH',
+      target: 'child',
+      payload: { name: 'second' },
+    });
+    result.result.current.handleAction({
+      type: 'PUSH',
+      target: 'child',
+      payload: { name: 'third' },
+    });
+  });
+  routesWithRemovalPrevented.add(result.result.current.state.routes[0]!.state!.routes[2]!.key!);
+  const firstEntry = browserEvents(result)!.filter((event) => event.op !== 'go')[0]!;
+
+  await act(() =>
+    result.result.current.processIntent({
+      type: 'BROWSER_HISTORY_CHANGED',
+      actionId: 0,
+      payload: { id: firstEntry.entryId, path: '/app' },
+    })
+  );
+  expect(browserEvents(result)?.at(-1)).toEqual(expect.objectContaining({ op: 'go', delta: 2 }));
+  const prevented = result.result.current
+    .report!.events.filter((event) => event.type === 'prevented-routes')
+    .at(-1)!;
+  expect(prevented.action.type).toBe('RESET');
+
+  routesWithRemovalPrevented.clear();
+  await act(() =>
+    result.result.current.processIntent({
+      type: 'ACTION',
+      actionId: 0,
+      payload: { action: { source: 'third', ...prevented.action } },
+    })
+  );
+
+  expect(result.result.current.state.routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+    'first',
+  ]);
+  expect(browserEvents(result)?.slice(-2)).toEqual([
+    expect.objectContaining({ op: 'go', delta: -2 }),
+    expect.objectContaining({ op: 'replace', entryId: firstEntry.entryId, path: '/app' }),
+  ]);
+});
+
 test('uses the parent stack decision when focusing a hidden child removes the visible route', async () => {
   const child = { ...initialState, key: 'child' };
   const state = {

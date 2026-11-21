@@ -1,4 +1,8 @@
-import type { NavigationState, RouterBrowserHistoryAction } from '../react-navigation/routers';
+import type {
+  NavigationAction,
+  NavigationState,
+  RouterBrowserHistoryAction,
+} from '../react-navigation/routers';
 import { ROOT_CHAIN } from '../react-navigation/routers/stateKeys';
 import type {
   BrowserHistory,
@@ -48,20 +52,51 @@ export function applyRouterHistoryAction(
   history: BrowserHistory,
   nextState: NavigationState,
   config: BrowserHistoryConfig,
-  action?: RouterBrowserHistoryAction
+  action?: RouterBrowserHistoryAction,
+  dispatchedAction?: NavigationAction
 ): BrowserHistoryProjection {
   const path = getPathForState(nextState, config.linking);
+  const restoredIndex = findPreventedRestoreIndex(history, dispatchedAction);
+  if (restoredIndex !== -1) {
+    return selectAndUpdateHistoryEntry(
+      clearPreventedRestore(history),
+      restoredIndex,
+      nextState,
+      path
+    );
+  }
   if (action?.type === 'push') {
-    return addHistoryEntry(history, nextState, path, 'push');
+    return addHistoryEntry(clearPreventedRestore(history), nextState, path, 'push');
   }
   if (action?.type === 'pop') {
     const index = findBackDestinationIndex(history, action);
-    return selectAndUpdateHistoryEntry(history, index, nextState, path);
+    return selectAndUpdateHistoryEntry(clearPreventedRestore(history), index, nextState, path);
   }
   // Push and pop change which tracked entry is current, so they need special handling above.
   // `replace` and no instruction both refresh this entry. An explicit `replace` only matters
   // while nested routers compose their instructions, where it can override a child push.
   return selectAndUpdateHistoryEntry(history, history.index, nextState, path);
+}
+
+function findPreventedRestoreIndex(
+  history: BrowserHistory,
+  dispatchedAction: NavigationAction | undefined
+): number {
+  const { preventedRestoreEntryId } = history;
+  if (preventedRestoreEntryId === undefined || dispatchedAction?.type !== 'RESET') {
+    return -1;
+  }
+  return history.entries.findIndex(
+    (entry) => entry.id === preventedRestoreEntryId && entry.state === dispatchedAction.payload
+  );
+}
+
+function clearPreventedRestore(history: BrowserHistory): BrowserHistory {
+  if (history.preventedRestoreEntryId === undefined) {
+    return history;
+  }
+  const { preventedRestoreEntryId: _cleared, ...rest } = history;
+  return rest;
 }
 
 /** Adds a snapshot and assigns its ID to a new or already-created browser entry. */
@@ -162,6 +197,7 @@ export function restoreNavigationFromBrowser<Result extends { state: NavigationS
   config: BrowserHistoryConfig,
   reduce: Reduce<Result>
 ): BrowserHistoryRestore<Result> {
+  history = clearPreventedRestore(history);
   const trackedEntry = history.entries.find((entry) => entry.id === change.id);
   if (trackedEntry) {
     return restoreTrackedEntry(history, trackedEntry, result, change, config, reduce);
@@ -186,7 +222,10 @@ function restoreTrackedEntry<Result extends { state: NavigationState }>(
     // The restore was prevented, so move the browser back to the entry that matches the UI.
     return {
       result: reduced,
-      history,
+      history:
+        trackedIndex === history.index
+          ? history
+          : { ...history, preventedRestoreEntryId: trackedEntry.id },
       events:
         trackedIndex === history.index
           ? []

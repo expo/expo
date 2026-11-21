@@ -18,6 +18,13 @@ export type BrowserHistory = {
   // Random per page load, so an id stored before a reload never matches a new entry.
   idPrefix: string;
   entrySeq: number;
+  /**
+   * The entry that a browser Back or Forward tried to restore when removal prevention blocked it.
+   * A later `RESET` to that entry's saved state returns the browser to the entry instead of
+   * replacing the current one. Updates to the current entry keep it; any other navigation or
+   * browser change clears it.
+   */
+  preventedRestoreEntryId?: string;
 };
 
 /** A browser command produced by the reducer and run after commit. */
