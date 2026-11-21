@@ -1,0 +1,149 @@
+---
+title: 'Expo Modules API 2.0: Get started'
+sidebar_title: Get started
+description: Learn how to create a module with Expo Modules API 2.0.
+---
+
+import { CpuChip01Icon } from '@expo/styleguide-icons/outline/CpuChip01Icon';
+
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+A module that uses Expo Modules API 2.0 starts from the same template as any Expo module. You then turn on the API for Android, remove the module list from the module config, and replace the module class.
+
+> **warning** Expo Modules API 2.0 is in beta, and its API can still change.
+
+## Requirements
+
+Expo Modules API 2.0 is available in **SDK 58 and later**. The `expo-modules-core` package of the SDK includes the Swift macros and the Kotlin library.
+
+<Step label="1">
+
+## Create a module
+
+Create a module with `create-expo-module`, as the [Expo Modules API get started guide](/modules/get-started/) describes. For example, to create a local module in your project:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module@latest --local'],
+    yarn: ['$ yarn create expo-module --local'],
+    pnpm: ['$ pnpm create expo-module --local'],
+    bun: ['$ bun create expo-module --local'],
+  }}
+/>
+
+The rest of this guide uses a module with the native module name `MyModule`. Adjust the names and the paths to match your module.
+
+</Step>
+
+<Step label="2">
+
+## Turn on Expo Modules API 2.0 for Android
+
+In **android/build.gradle** of the module, add the `expoModule` block with `v2 true`:
+
+```groovy android/build.gradle
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+expoModule {
+  v2 true
+}
+```
+
+This applies the Kotlin compiler plugin that reads the `@ExpoModule` and `@JS` annotations. Swift needs no change in the build configuration: the macros come with `ExpoModulesCore`.
+
+</Step>
+
+<Step label="3">
+
+## Remove the module list from the module config
+
+Autolinking finds the modules that use Expo Modules API 2.0 without a list. On Android, the Kotlin compiler plugin registers them. On iOS, autolinking scans the Swift source files of the module for `@ExpoModule` classes. So, remove the `modules` lists from **expo-module.config.json**:
+
+```json expo-module.config.json
+{
+  "platforms": ["apple", "android"]
+}
+```
+
+> **warning** On iOS, a `modules` list turns off the scan, even an empty list. If the package also has a module that uses the [module definition DSL](/modules/module-api/) (domain-specific language), keep the `apple.modules` list, and add the `@ExpoModule` class to it.
+
+</Step>
+
+<Step label="4">
+
+## Replace the module class
+
+Replace the content of the Kotlin and Swift module files with a class that uses Expo Modules API 2.0:
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
+
+```kotlin
+package expo.modules.mymodule
+
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+
+@ExpoModule("MyModule")
+class MyModule : Module() {
+  @JS
+  fun hello(): String = "Hello world!"
+}
+```
+
+```swift
+import ExpoModulesCore
+
+@ExpoModule("MyModule")
+public class MyModule: Module {
+  @JS
+  func hello() -> String {
+    "Hello world!"
+  }
+}
+```
+
+</CodeBlocksTable>
+
+JavaScript loads the module the same way as before:
+
+```ts
+import { requireNativeModule } from 'expo';
+
+const MyModule = requireNativeModule('MyModule');
+
+MyModule.hello(); // "Hello world!"
+```
+
+Rebuild the app to see the changes, for example with `npx expo run:android` and `npx expo run:ios`.
+
+</Step>
+
+## Next steps
+
+<BoxLink
+  title="Tutorial: Create a native module with Expo Modules API 2.0"
+  description="Build a module that persists settings and sends events, step by step."
+  href="/modules/v2/tutorials/native-module/"
+  Icon={CpuChip01Icon}
+/>
+
+<BoxLink
+  title="Feature support"
+  description="Learn which features of Expo Modules API 2.0 Kotlin and Swift support."
+  href="/modules/v2/feature-support/"
+  Icon={CpuChip01Icon}
+/>
+
+<BoxLink
+  title="Modules reference"
+  description="Learn about functions, properties, and constants of a module."
+  href="/modules/v2/reference/modules/"
+  Icon={CpuChip01Icon}
+/>
