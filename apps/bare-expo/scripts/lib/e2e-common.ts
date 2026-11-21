@@ -135,6 +135,60 @@ export function prettyPrintTestSuiteLogs(logs: string[]) {
   return result.join('\n');
 }
 
+// The test-suite app logs one line with this marker for each pending spec (`TestScreen.tsx`).
+const PENDING_SPEC_MARKER = '[TEST-SUITE-PENDING]';
+
+// The reasons Jasmine gives to specs that `xit` and `xdescribe` disable.
+const DISABLED_SPEC_REASONS = new Set(['Temporarily disabled with xit', '']);
+
+export type PendingSpec = { spec: string; reason: string };
+
+/**
+ * Reads the specs that the test-suite app skipped at run time, for example because a host they
+ * need did not answer. Specs that `xit` or `xdescribe` disable are left out: they skip on
+ * purpose (for example on the other platform) and would show in every run. A spec that is
+ * logged more than once is returned once.
+ */
+export function findPendingSpecs(logs: string[]): PendingSpec[] {
+  const specs = new Map<string, PendingSpec>();
+  for (const line of logs) {
+    const index = line.indexOf(PENDING_SPEC_MARKER);
+    if (index === -1) {
+      continue;
+    }
+    try {
+      const { spec, reason = '' } = JSON.parse(line.slice(index + PENDING_SPEC_MARKER.length));
+      if (DISABLED_SPEC_REASONS.has(reason)) {
+        continue;
+      }
+      specs.set(spec, { spec, reason });
+    } catch {
+      // The log tool cut the line.
+    }
+  }
+  return [...specs.values()];
+}
+
+/**
+ * Prints the pending specs and adds one warning annotation for each reason. A pending spec does
+ * not fail the run, so without this a passing run does not show that some specs did not run.
+ */
+export function reportPendingSpecs(logs: string[]): void {
+  const specs = findPendingSpecs(logs);
+  if (specs.length === 0) {
+    return;
+  }
+  console.warn(`\n⚠️ ${specs.length} test(s) were skipped:`);
+  const countByReason = new Map<string, number>();
+  for (const { spec, reason } of specs) {
+    console.warn(`  - ${spec} (${reason})`);
+    countByReason.set(reason, (countByReason.get(reason) ?? 0) + 1);
+  }
+  for (const [reason, count] of countByReason) {
+    annotate('warning', 'Skipped tests', `${count} test(s) skipped: ${reason}`);
+  }
+}
+
 export async function printImageComparisonServerLogs(): Promise<void> {
   const dir = path.join(process.env.HOME || '', '.maestro', 'tests');
   try {
