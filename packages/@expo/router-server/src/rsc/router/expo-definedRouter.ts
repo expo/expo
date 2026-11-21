@@ -1,5 +1,10 @@
 import { ctx } from 'expo-router/_ctx';
-import { getContextKey, sortRoutes, type RouteNode } from 'expo-router/internal/routing';
+import {
+  getContextKey,
+  isLayoutRouteNode,
+  sortRoutes,
+  type RouteNode,
+} from 'expo-router/internal/routing';
 
 import { getRoutes } from '../../getRoutesSSR';
 import { evalStaticParamsAsync } from '../../loadStaticParamsAsync';
@@ -90,9 +95,10 @@ async function registerRouteTree(api: CreatePagesApi, route: RouteNode): Promise
     render: layoutSettings.render ?? 'static',
   });
 
+  // TODO(@ubax): Extract layout child sorting into a shared helper.
   await Promise.all(
-    route.children.sort(sortRoutes).map(async (child) => {
-      if (child.type === 'layout') {
+    (isLayoutRouteNode(route) ? route.children : []).sort(sortRoutes).map(async (child) => {
+      if (isLayoutRouteNode(child)) {
         await registerRouteTree(api, child);
         return;
       }

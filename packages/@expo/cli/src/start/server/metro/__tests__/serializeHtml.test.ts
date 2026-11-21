@@ -57,6 +57,7 @@ describe(serialAssetsToStaticContentAssets, () => {
       isExporting: true,
       baseUrl: '/sub/',
       route: {
+        type: 'route',
         contextKey: './nested/page.tsx',
         entryPoints: ['/app/_layout.tsx', '/app/nested/page.tsx'],
       } as any,
@@ -75,7 +76,7 @@ describe(serialAssetsToStaticContentAssets, () => {
 
   it('does not preload unrelated shared chunks, workers, or aliases owned by the initial bundle', () => {
     const assets = granularAssets();
-    for (const route of [undefined, { entryPoints: ['/app/inlined.tsx'] } as any]) {
+    for (const route of [undefined, { type: 'route', entryPoints: ['/app/inlined.tsx'] } as any]) {
       expect(
         serialAssetsToStaticContentAssets(assets, { isExporting: true, baseUrl: '', route }).js
       ).toEqual(['/dist/runtime.js', '/dist/entry.js']);
@@ -100,7 +101,7 @@ describe(serialAssetsToStaticContentAssets, () => {
       serialAssetsToStaticContentAssets(assets, {
         isExporting: true,
         baseUrl: '',
-        route: { entryPoints: ['/app/b.tsx'] } as any,
+        route: { type: 'route', entryPoints: ['/app/b.tsx'] } as any,
       }).js
     ).toEqual(['/runtime.js', '/a.js', '/entry.js']);
   });
@@ -123,7 +124,7 @@ describe(serialAssetsToStaticContentAssets, () => {
       serialAssetsToStaticContentAssets(assets, {
         isExporting: true,
         baseUrl: '/sub/',
-        route: { entryPoints: [`/app/${route}/index.tsx`] } as any,
+        route: { type: 'route', entryPoints: [`/app/${route}/index.tsx`] } as any,
       }).js
     ).toEqual(['/sub/runtime.js', `/sub/shared-${route}.js`, '/sub/entry.js']);
   });
@@ -150,7 +151,7 @@ describe(serialAssetsToStaticContentAssets, () => {
       serialAssetsToStaticContentAssets([entry], {
         isExporting: true,
         baseUrl: '',
-        route: { entryPoints: ['/app/page.tsx'] } as any,
+        route: { type: 'route', entryPoints: ['/app/page.tsx'] } as any,
       })
     ).toThrow('Asset not found for entry /app/page.tsx: missing.js');
   });
@@ -230,6 +231,7 @@ describe(serialAssetsToStaticContentAssets, () => {
       }),
     ];
     const route = {
+      type: 'route',
       contextKey: './[slug].tsx',
       entryPoints: ['/app/_layout.tsx', '/app/[slug].tsx'],
     } as any;
@@ -415,6 +417,7 @@ it('serializes HTML with async chunks in correct order for dynamic routes', () =
     isExporting: true,
     template: '<!DOCTYPE html><html><head></head><body><div id="root"></div></body></html>',
     route: {
+      type: 'route',
       contextKey: './[slug].tsx',
       entryPoints: ['/app/_layout.tsx', '/app/[slug].tsx'],
     } as any,
@@ -461,6 +464,7 @@ it('places sync entry scripts after async chunks so preloaded chunks resolve syn
     isExporting: true,
     template: '<!DOCTYPE html><html><head></head><body><div id="root"></div></body></html>',
     route: {
+      type: 'route',
       contextKey: './[slug].tsx',
       entryPoints: ['/app/_layout.tsx', '/app/[slug].tsx'],
     } as any,

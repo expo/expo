@@ -9,7 +9,12 @@ import { getChunkUrl } from '@expo/metro-config/build/serializer/exportPath';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import type { GetStreamingContentOptions } from '@expo/router-server/build/server/renderStreamingContent';
 import chalk from 'chalk';
-import type { RouteNode } from 'expo-router/build/Route';
+import {
+  isRedirectRouteNode,
+  isRewriteRouteNode,
+  isPageRouteNode,
+  type RouteNode,
+} from 'expo-router/build/Route';
 import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
 import type { PageHeaderInfo, RoutesManifest } from 'expo-server/private';
@@ -143,7 +148,7 @@ export async function getFilesToExportFromServerAsync(
     getHtmlFiles({ manifest, includeGroupVariations: !exportServer }).map(
       async ({ route, filePath, pathname }) => {
         // Rewrite routes should not be statically generated
-        if (route.type === 'rewrite') {
+        if (isRewriteRouteNode(route)) {
           return;
         }
 
@@ -186,7 +191,11 @@ function modifyRouteNodeInRuntimeManifest(
 // TODO: Do this earlier in the process.
 function makeRuntimeEntryPointsAbsolute(manifest: ExpoRouterRuntimeManifest, appDir: string) {
   modifyRouteNodeInRuntimeManifest(manifest, (route) => {
-    if (Array.isArray(route.entryPoints)) {
+    // Only screens and redirects carry entry points.
+    if (
+      (isPageRouteNode(route) || isRedirectRouteNode(route)) &&
+      Array.isArray(route.entryPoints)
+    ) {
       route.entryPoints = route.entryPoints.map((entryPoint) => {
         // TODO(@hassankhan): ENG-16577
         if (shouldLinkExternally(entryPoint)) {
@@ -448,14 +457,16 @@ export async function exportFromServerAsync(
       // Build per-route async chunk assignments
       const routeAssets = new Map<string, string[]>();
       for (const { route } of htmlRoutes) {
-        if (!route.entryPoints || !Array.isArray(route.entryPoints)) {
+        const entryPoints =
+          isPageRouteNode(route) || isRedirectRouteNode(route) ? (route.entryPoints ?? []) : [];
+        if (!entryPoints.length) {
           continue;
         }
 
         if (isGranular) {
           routeAssets.set(
             route.contextKey,
-            getGranularAssetsForRoute(jsArtifacts, route.entryPoints)
+            getGranularAssetsForRoute(jsArtifacts, entryPoints)
               .filter((asset) => !topLevelJs.has(asset))
               .map((asset) => toAssetUrl(asset.filename))
           );
@@ -467,7 +478,7 @@ export async function exportFromServerAsync(
           if (!asyncChunk.metadata.modulePaths || !Array.isArray(asyncChunk.metadata.modulePaths)) {
             continue;
           }
-          const hasRouteEntryPoint = route.entryPoints.some((entryPoint) =>
+          const hasRouteEntryPoint = entryPoints.some((entryPoint) =>
             (asyncChunk.metadata.modulePaths as string[]).includes(entryPoint)
           );
           if (hasRouteEntryPoint) {
@@ -476,7 +487,7 @@ export async function exportFromServerAsync(
         }
 
         if (matchedChunks.length > 0) {
-          const sorted = sortMatchedAssetsByEntryPoints(matchedChunks, route.entryPoints);
+          const sorted = sortMatchedAssetsByEntryPoints(matchedChunks, entryPoints);
           routeAssets.set(
             route.contextKey,
             sorted.map((chunk) => toAssetUrl(chunk.filename))

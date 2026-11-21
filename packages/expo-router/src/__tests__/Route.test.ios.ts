@@ -1,12 +1,11 @@
-import type { RouteNode } from '../Route';
+import type { LayoutRouteNode, RouteNode, PageRouteNode } from '../Route';
 import { sortRoutes, sortRoutesWithInitial } from '../Route';
 import { generateDynamic } from '../getRoutes';
 import { findRouteNodeAndParamsForState, getValidInitialRouteName } from '../routeNode';
 
-const asRouteNode = (route: string): RouteNode => {
+const asPageRouteNode = (route: string): PageRouteNode => {
   return {
     type: 'route',
-    children: [],
     dynamic: generateDynamic(route),
     loadRoute(): any {
       return {
@@ -22,7 +21,7 @@ const asRouteNode = (route: string): RouteNode => {
 
 function getSortedRoutes(...routes: string[]) {
   return routes
-    .map(asRouteNode)
+    .map(asPageRouteNode)
     .sort(sortRoutes)
     .map((node) => node.route);
 }
@@ -44,54 +43,54 @@ describe(sortRoutes, () => {
   });
   it(`sorts index routes by priority`, () => {
     // Index before deep dynamic
-    expect(sortRoutes(asRouteNode('index'), asRouteNode('[...a]'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('index'), asPageRouteNode('[...a]'))).toBe(-1);
     // Index before dynamic
-    expect(sortRoutes(asRouteNode('index'), asRouteNode('[a]'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('index'), asPageRouteNode('[a]'))).toBe(-1);
     // Index before named
-    expect(sortRoutes(asRouteNode('index'), asRouteNode('a'))).toBe(-1);
-    expect(sortRoutes(asRouteNode('index'), asRouteNode('z'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('index'), asPageRouteNode('a'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('index'), asPageRouteNode('z'))).toBe(-1);
 
     // Index tied with group
-    expect(sortRoutes(asRouteNode('index'), asRouteNode('(z)'))).toBe(2);
+    expect(sortRoutes(asPageRouteNode('index'), asPageRouteNode('(z)'))).toBe(2);
   });
   it(`sorts group routes by priority`, () => {
-    expect(sortRoutes(asRouteNode('(zzz)'), asRouteNode('[...a]'))).toBe(-1);
-    expect(sortRoutes(asRouteNode('(zzz)'), asRouteNode('[a]'))).toBe(-1);
-    expect(sortRoutes(asRouteNode('(zzz)'), asRouteNode('a'))).toBe(-1);
-    expect(sortRoutes(asRouteNode('(zzz)'), asRouteNode('z'))).toBe(-1);
-    expect(sortRoutes(asRouteNode('(zzz)'), asRouteNode('index'))).toBe(0);
+    expect(sortRoutes(asPageRouteNode('(zzz)'), asPageRouteNode('[...a]'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('(zzz)'), asPageRouteNode('[a]'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('(zzz)'), asPageRouteNode('a'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('(zzz)'), asPageRouteNode('z'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('(zzz)'), asPageRouteNode('index'))).toBe(0);
   });
   it(`sorts multiple dynamic routes higher than a single deep dynamic route`, () => {
     // dynamic before deep dynamic
-    expect(sortRoutes(asRouteNode('[a]/[b]'), asRouteNode('[...a]'))).toBe(-1);
-    expect(sortRoutes(asRouteNode('[...a]'), asRouteNode('[a]/[b]'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[a]/[b]'), asPageRouteNode('[...a]'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('[...a]'), asPageRouteNode('[a]/[b]'))).toBe(1);
   });
 
   it(`sorts dynamic routes by priority`, () => {
     // dynamic before deep dynamic
-    expect(sortRoutes(asRouteNode('[a]'), asRouteNode('[...a]'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('[a]'), asPageRouteNode('[...a]'))).toBe(-1);
     // tied with two dynamic routes
-    expect(sortRoutes(asRouteNode('[a]'), asRouteNode('[b]'))).toBe(0);
-    expect(sortRoutes(asRouteNode('[a]/[b]'), asRouteNode('[b]/[a]'))).toBe(0);
+    expect(sortRoutes(asPageRouteNode('[a]'), asPageRouteNode('[b]'))).toBe(0);
+    expect(sortRoutes(asPageRouteNode('[a]/[b]'), asPageRouteNode('[b]/[a]'))).toBe(0);
     // Lower priority
-    expect(sortRoutes(asRouteNode('[a]'), asRouteNode('index'))).toBe(1);
-    expect(sortRoutes(asRouteNode('[a]'), asRouteNode('a'))).toBe(1);
-    expect(sortRoutes(asRouteNode('[a]'), asRouteNode('(a)'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[a]'), asPageRouteNode('index'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[a]'), asPageRouteNode('a'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[a]'), asPageRouteNode('(a)'))).toBe(1);
   });
   it(`sorts deep dynamic routes by priority`, () => {
-    expect(sortRoutes(asRouteNode('[...a]'), asRouteNode('[...beta]'))).toBe(0);
-    expect(sortRoutes(asRouteNode('[...a]/[b]'), asRouteNode('[...beta]/[c]'))).toBe(0);
+    expect(sortRoutes(asPageRouteNode('[...a]'), asPageRouteNode('[...beta]'))).toBe(0);
+    expect(sortRoutes(asPageRouteNode('[...a]/[b]'), asPageRouteNode('[...beta]/[c]'))).toBe(0);
     // Lower priority
-    expect(sortRoutes(asRouteNode('[...a]'), asRouteNode('[b]'))).toBe(1);
-    expect(sortRoutes(asRouteNode('[...a]/[a]'), asRouteNode('[b]/[c]'))).toBe(1);
-    expect(sortRoutes(asRouteNode('[...a]'), asRouteNode('index'))).toBe(1);
-    expect(sortRoutes(asRouteNode('[...a]'), asRouteNode('a'))).toBe(1);
-    expect(sortRoutes(asRouteNode('[...a]'), asRouteNode('(a)'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[...a]'), asPageRouteNode('[b]'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[...a]/[a]'), asPageRouteNode('[b]/[c]'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[...a]'), asPageRouteNode('index'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[...a]'), asPageRouteNode('a'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[...a]'), asPageRouteNode('(a)'))).toBe(1);
   });
 });
 
-const asLayoutNode = (anchor: string, children: RouteNode[]): RouteNode => ({
-  ...asRouteNode('_layout'),
+const asLayoutNode = (anchor: string, children: RouteNode[] = []): LayoutRouteNode => ({
+  ...asPageRouteNode('_layout'),
   type: 'layout',
   loadRoute: () => ({ unstable_settings: { anchor } }),
   children,
@@ -99,19 +98,19 @@ const asLayoutNode = (anchor: string, children: RouteNode[]): RouteNode => ({
 
 describe(getValidInitialRouteName, () => {
   it('returns the registered route name for a valid setting', () => {
-    const node = asLayoutNode('a', [asRouteNode('a')]);
+    const node = asLayoutNode('a', [asPageRouteNode('a')]);
 
     expect(getValidInitialRouteName(node)).toBe('a');
   });
 
   it('resolves a directory setting to its registered index route', () => {
-    const node = asLayoutNode('a', [asRouteNode('a/index')]);
+    const node = asLayoutNode('a', [asPageRouteNode('a/index')]);
 
     expect(getValidInitialRouteName(node)).toBe('a/index');
   });
 
   it('sorts a resolved directory setting before other routes', () => {
-    const node = asLayoutNode('a', [asRouteNode('b'), asRouteNode('a/index')]);
+    const node = asLayoutNode('a', [asPageRouteNode('b'), asPageRouteNode('a/index')]);
 
     expect(
       node.children
@@ -121,7 +120,10 @@ describe(getValidInitialRouteName, () => {
   });
 
   it('throws for a missing route', () => {
-    const node = asLayoutNode('missing', [asRouteNode('index'), asRouteNode('settings/index')]);
+    const node = asLayoutNode('missing', [
+      asPageRouteNode('index'),
+      asPageRouteNode('settings/index'),
+    ]);
     node.contextKey = './app/(tabs)/_layout.tsx';
 
     expect(() => getValidInitialRouteName(node)).toThrow(
@@ -136,7 +138,7 @@ describe(getValidInitialRouteName, () => {
 
 describe(findRouteNodeAndParamsForState, () => {
   it('returns no route node without nested state', () => {
-    expect(findRouteNodeAndParamsForState(asRouteNode('_layout'), undefined)).toEqual({
+    expect(findRouteNodeAndParamsForState(asLayoutNode('_layout'), undefined)).toEqual({
       routeNode: undefined,
       params: {},
     });

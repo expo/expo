@@ -2,7 +2,7 @@ import type { RequireContext } from 'expo-router';
 import {
   getRoutesCore,
   type GetRoutesCoreOptions,
-  type RouteNode,
+  type LayoutRouteNode,
 } from 'expo-router/internal/routing';
 
 export type Options = Omit<GetRoutesCoreOptions, 'getSystemRoute'>;
@@ -18,9 +18,13 @@ export type Options = Omit<GetRoutesCoreOptions, 'getSystemRoute'>;
  *      - The name of the route is relative to the nearest _layout
  *      - If multiple routes have the same name, the most specific route is used
  */
-export function getRoutes(contextModule: RequireContext, options: Options = {}): RouteNode | null {
+export function getRoutes(
+  contextModule: RequireContext,
+  options: Options = {}
+): LayoutRouteNode | null {
   return getRoutesCore(contextModule, {
-    getSystemRoute({ route, type, defaults, redirectConfig, rewriteConfig }) {
+    getSystemRoute(request) {
+      const { route, type } = request;
       if (route === '' && type === 'layout') {
         // Root layout when no layout is defined.
         return {
@@ -46,7 +50,6 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
           generated: true,
           internal: true,
           dynamic: null,
-          children: [],
         };
       } else if (route === '+not-found' && type === 'route') {
         return {
@@ -59,30 +62,27 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
           generated: true,
           internal: true,
           dynamic: [{ name: '+not-found', deep: true, notFound: true }],
-          children: [],
         };
-      } else if (type === 'redirect' && redirectConfig && defaults) {
+      } else if (type === 'redirect') {
         return {
-          ...defaults,
+          ...request.defaults,
           loadRoute() {
             return require('expo-router/build/getRoutesRedirects').getRedirectModule(
-              redirectConfig
+              request.redirectConfig
             );
           },
         };
-      } else if (type === 'rewrite' && rewriteConfig && defaults) {
+      } else if (type === 'rewrite') {
         return {
-          ...defaults,
+          ...request.defaults,
           loadRoute() {
             return {
-              default: contextModule(rewriteConfig.destinationContextKey).default,
+              default: contextModule(request.rewriteConfig.destinationContextKey).default,
             };
           },
         };
       }
-      throw new Error(
-        `Unknown system route: ${route} and type: ${type} and redirectConfig: ${redirectConfig} and rewriteConfig: ${rewriteConfig}`
-      );
+      throw new Error(`Unknown system route: ${route} and type: ${type}`);
     },
     ...options,
   });
@@ -91,7 +91,7 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
 export function getExactRoutes(
   contextModule: RequireContext,
   options: Options = {}
-): RouteNode | null {
+): LayoutRouteNode | null {
   return getRoutes(contextModule, {
     ...options,
     skipGenerated: true,
