@@ -226,13 +226,13 @@ export async function getXcodeBuildArgsAsync(
     props.device &&
     (!props.isSimulator || simulatorBuildRequiresCodeSigning(props.projectRoot))
   ) {
-    const developmentTeamId = await ensureDeviceIsCodeSignedForDeploymentAsync(props.projectRoot);
+    const { developmentTeamId, allowProvisioningUpdates } =
+      await ensureDeviceIsCodeSignedForDeploymentAsync(props.projectRoot, props.configuration);
     if (developmentTeamId) {
-      args.push(
-        `DEVELOPMENT_TEAM=${developmentTeamId}`,
-        '-allowProvisioningUpdates',
-        '-allowProvisioningDeviceRegistration'
-      );
+      args.push(`DEVELOPMENT_TEAM=${developmentTeamId}`);
+    }
+    if (allowProvisioningUpdates && (developmentTeamId || !props.isSimulator)) {
+      args.push('-allowProvisioningUpdates', '-allowProvisioningDeviceRegistration');
     }
   }
 

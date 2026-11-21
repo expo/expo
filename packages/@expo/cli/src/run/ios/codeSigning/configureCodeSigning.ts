@@ -3,43 +3,64 @@ import chalk from 'chalk';
 import * as Log from '../../../log';
 import * as Security from './Security';
 import { resolveCertificateSigningIdentityAsync } from './resolveCertificateSigningIdentity';
-import { getCodeSigningInfoForPbxproj, setAutoCodeSigningInfoForPbxproj } from './xcodeCodeSigning';
+import {
+  type CodeSigningInfo,
+  getCodeSigningInfoForPbxproj,
+  setAutoCodeSigningInfoForPbxproj,
+} from './xcodeCodeSigning';
+
+export type DeviceCodeSigningResult = {
+  developmentTeamId: string | null;
+  allowProvisioningUpdates: boolean;
+};
 
 export async function ensureDeviceIsCodeSignedForDeploymentAsync(
-  projectRoot: string
-): Promise<string | null> {
-  if (isCodeSigningConfigured(projectRoot)) {
-    return null;
+  projectRoot: string,
+  configuration?: string
+): Promise<DeviceCodeSigningResult> {
+  const signingInfo = getCodeSigningInfoForPbxproj(projectRoot);
+  const configuredSigning = getConfiguredCodeSigningStyle(signingInfo, configuration);
+  if (configuredSigning === 'automatic') {
+    return { developmentTeamId: null, allowProvisioningUpdates: true };
   }
-  return configureCodeSigningAsync(projectRoot);
+  if (configuredSigning === 'manual') {
+    return { developmentTeamId: null, allowProvisioningUpdates: false };
+  }
+  const developmentTeamId = await configureCodeSigningAsync(projectRoot);
+  return { developmentTeamId, allowProvisioningUpdates: true };
 }
 
-function isCodeSigningConfigured(projectRoot: string): boolean {
-  // Check if the app already has a development team defined.
-  const signingInfo = getCodeSigningInfoForPbxproj(projectRoot);
+function usesManualSigning(target: CodeSigningInfo[string], configuration?: string): boolean {
+  if (configuration && target.configurations.includes(configuration)) {
+    return target.manualSigningConfigurations.includes(configuration);
+  }
+  return !!target.manualSigningConfigurations.length;
+}
 
-  const allTargetsHaveTeams = Object.values(signingInfo).reduce((prev, curr) => {
-    return prev && !!curr.developmentTeams.length;
-  }, true);
+function getConfiguredCodeSigningStyle(
+  signingInfo: CodeSigningInfo,
+  configuration?: string
+): 'automatic' | 'manual' | null {
+  const targets = Object.values(signingInfo);
 
+  const allTargetsHaveTeams = targets.every((target) => !!target.developmentTeams.length);
   if (allTargetsHaveTeams) {
-    const teamList = Object.values(signingInfo).reduce<string[]>((prev, curr) => {
+    const teamList = targets.reduce<string[]>((prev, curr) => {
       const team = curr.developmentTeams[0];
       return team ? [...prev, team] : prev;
     }, []);
+    if (targets.some((target) => usesManualSigning(target, configuration))) {
+      return 'manual';
+    }
     Log.log(chalk.dim`\u203A Auto signing app using team(s): ${teamList.join(', ')}`);
-    return true;
+    return 'automatic';
   }
 
-  const allTargetsHaveProfiles = Object.values(signingInfo).reduce((prev, curr) => {
-    return prev && !!curr.provisioningProfiles.length;
-  }, true);
-
+  const allTargetsHaveProfiles = targets.every((target) => !!target.provisioningProfiles.length);
   if (allTargetsHaveProfiles) {
-    // this indicates that the user has manual code signing setup (possibly for production).
-    return true;
+    return 'manual';
   }
-  return false;
+  return null;
 }
 
 async function configureCodeSigningAsync(projectRoot: string) {
