@@ -38,6 +38,15 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   private val clippingRect = RectF()
   private var borderRadii = FloatArray(8)
   private var needsClippingPathUpdate = true
+  private val platformBackdrop = PlatformBackdrop()
+
+  // `PLATFORM_BACKDROP` falls back to `DIMEZIS_BLUR_VIEW_SDK_31_PLUS` where the platform API is missing.
+  private val effectiveMethod: BlurMethod
+    get() = if (blurMethod == BlurMethod.PLATFORM_BACKDROP && !PlatformBackdrop.isSupported) {
+      BlurMethod.DIMEZIS_BLUR_VIEW_SDK_31_PLUS
+    } else {
+      blurMethod
+    }
 
   private val blurView = BlurView(context).also {
     it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
@@ -83,9 +92,14 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
       return
     }
 
-    when (blurMethod) {
+    when (effectiveMethod) {
       BlurMethod.NONE -> {
         applyBlurViewRadiusCompat(false, radius)
+      }
+
+      BlurMethod.PLATFORM_BACKDROP -> {
+        applyBlurViewRadiusCompat(false, radius)
+        invalidate()
       }
 
       BlurMethod.DIMEZIS_BLUR_VIEW -> {
@@ -101,14 +115,14 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   fun setBlurMethod(method: BlurMethod) {
     blurMethod = method
     // re-configure if the method was changed from none -> dimezis at runtime
-    if (method != BlurMethod.NONE && blurConfiguration != BlurViewConfiguration.DIMEZIS) {
+    if (effectiveMethod.usesDimezis && blurConfiguration != BlurViewConfiguration.DIMEZIS) {
       configureBlurView()
       applyTint()
       setBlurRadius(blurRadius)
     }
 
-    val safeMethod = if (blurTarget != null) {
-      method
+    val safeMethod = if (blurTarget != null || effectiveMethod == BlurMethod.PLATFORM_BACKDROP) {
+      effectiveMethod
     } else {
       BlurMethod.NONE
     }
@@ -120,6 +134,11 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
     when (safeMethod) {
       BlurMethod.NONE -> {
         blurView.setBlurEnabled(false)
+      }
+
+      BlurMethod.PLATFORM_BACKDROP -> {
+        blurView.setBlurEnabled(false)
+        invalidate()
       }
 
       BlurMethod.DIMEZIS_BLUR_VIEW -> {
@@ -150,8 +169,8 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
       return
     }
 
-    when (blurMethod) {
-      BlurMethod.NONE -> {
+    when (effectiveMethod) {
+      BlurMethod.NONE, BlurMethod.PLATFORM_BACKDROP -> {
         applyBlurViewOverlayColorCompat(false)
       }
 
@@ -182,20 +201,41 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   }
 
   override fun draw(canvas: Canvas) {
-    if (borderRadii.none { it > 0f }) {
+    val hasBorderRadius = borderRadii.any { it > 0f }
+    if (hasBorderRadius) {
+      updateClippingPathIfNeeded()
+    }
+
+    // The processed backdrop is drawn first, so the tint (this view's background) and children are
+    // drawn on top of it.
+    if (effectiveMethod == BlurMethod.PLATFORM_BACKDROP) {
+      platformBackdrop.draw(
+        canvas,
+        width,
+        height,
+        if (hasBorderRadius) clippingPath else null,
+        blurRadius / blurReduction * resources.displayMetrics.density
+      )
+    }
+
+    if (!hasBorderRadius) {
       super.draw(canvas)
       return
     }
 
-    updateClippingPathIfNeeded()
     val saveCount = canvas.save()
     canvas.clipPath(clippingPath)
     super.draw(canvas)
     canvas.restoreToCount(saveCount)
   }
 
+  override fun onDetachedFromWindow() {
+    super.onDetachedFromWindow()
+    platformBackdrop.release()
+  }
+
   private fun configureBlurView() {
-    if (blurTarget == null || blurMethod == BlurMethod.NONE) {
+    if (blurTarget == null || !effectiveMethod.usesDimezis) {
       blurView.setBlurEnabled(false)
       blurConfiguration = BlurViewConfiguration.NONE
       return
