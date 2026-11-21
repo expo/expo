@@ -6,6 +6,7 @@ import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.location.next.LocationProfile
 import expo.modules.location.next.Position
+import expo.modules.location.next.WatchEvent
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -61,11 +62,6 @@ fun Map<String, Any?>.toBackgroundUpdatesParameters(): BackgroundUpdatesParamete
   )
 }
 
-sealed interface WatchUpdate {
-  data class Fix(val position: Position) : WatchUpdate
-  data class Failure(val cause: Throwable) : WatchUpdate
-}
-
 data class GetCurrentPositionOptions(
   val maxCachedAge: Duration,
   val timeout: Duration,
@@ -96,12 +92,14 @@ sealed interface EnableLocationServicesResult {
   object ResolutionPending : EnableLocationServicesResult
 }
 
-interface PositionUpdatesSession {
-  fun startUpdates(parameters: WatchPositionParameters, onUpdate: (WatchUpdate) -> Unit): Boolean
+interface UpdatesSession<Parameters> {
+  fun startUpdates(parameters: Parameters, onUpdate: (WatchEvent) -> Unit)
   fun stopUpdates()
   fun isSubscribed(): Boolean
   fun canDeliverUpdates(): Boolean
 }
+
+typealias PositionUpdatesSession = UpdatesSession<WatchPositionParameters>
 
 interface LocationProvider {
   val name: String

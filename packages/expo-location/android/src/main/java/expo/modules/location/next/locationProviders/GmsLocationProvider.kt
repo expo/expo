@@ -27,7 +27,9 @@ import expo.modules.location.next.BatchedPositions
 import expo.modules.location.next.LocationTaskConsumer
 import expo.modules.location.next.Position
 import expo.modules.location.next.SETTINGS_REQUEST_CODE
+import expo.modules.location.next.WatchEvent
 import expo.modules.location.next.toPosition
+import expo.modules.location.next.toWatchEvent
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
@@ -154,10 +156,16 @@ private class GmsPositionUpdatesSession(
   @Volatile
   private var callback: LocationCallback? = null
 
+  private fun clearCallback() {
+    callback?.let { fusedLocationProvider.removeLocationUpdates(it) }
+    callback = null
+    available = false
+  }
+
   @SuppressLint("MissingPermission")
   @Synchronized
-  override fun startUpdates(parameters: WatchPositionParameters, onUpdate: (WatchUpdate) -> Unit): Boolean {
-    stopUpdates()
+  override fun startUpdates(parameters: WatchPositionParameters, onUpdate: (WatchEvent) -> Unit) {
+    clearCallback()
     val locationRequest = LocationRequest
       .Builder(parameters.priority.toGmsPriority(), parameters.interval.inWholeMilliseconds)
       .setMaxUpdateDelayMillis(parameters.maxUpdateDelay.inWholeMilliseconds)
@@ -169,7 +177,7 @@ private class GmsPositionUpdatesSession(
           return
         }
         locationResult.lastLocation?.let {
-          onUpdate(WatchUpdate.Fix(it.toPosition()))
+          onUpdate(WatchEvent(data = it.toPosition()))
           available = true
         }
       }
@@ -190,18 +198,15 @@ private class GmsPositionUpdatesSession(
           if (callback == locationCallback) {
             available = false
             callback = null
-            onUpdate(WatchUpdate.Failure(it))
+            onUpdate(it.toWatchEvent())
           }
         }
       }
-    return true
   }
 
   @Synchronized
   override fun stopUpdates() {
-    callback?.let { fusedLocationProvider.removeLocationUpdates(it) }
-    callback = null
-    available = false
+    clearCallback()
   }
 
   @Synchronized
