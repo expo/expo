@@ -63,7 +63,7 @@ export async function exportDomComponentAsync({
     mainModuleName: convertEntryPointToRelative(projectRoot, virtualEntry),
     mode: dev ? 'development' : 'production',
     engine: isHermes ? 'hermes' : undefined,
-    serializerIncludeMaps: includeSourceMaps,
+    includeSourceMaps,
     bytecode: false,
     reactCompiler: !!exp.experiments?.reactCompiler,
     baseUrl: './',
