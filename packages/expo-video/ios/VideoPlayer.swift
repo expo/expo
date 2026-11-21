@@ -71,7 +71,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   var preservesPitch = true {
     didSet {
-      ref.currentItem?.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
+      ref.currentItem?.audioTimePitchAlgorithm = preservesPitch ? .timeDomain : .varispeed
     }
   }
 
@@ -236,7 +236,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: playerItem.urlAsset)
     }
 
-    playerItem.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
+    playerItem.audioTimePitchAlgorithm = preservesPitch ? .timeDomain : .varispeed
     playerItem.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
 
     // The current item has to be replaced from the main thread. When replacing from other queues
@@ -281,7 +281,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       self.contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: playerItem.urlAsset)
     }
 
-    playerItem.audioTimePitchAlgorithm = self.preservesPitch ? .spectral : .varispeed
+    playerItem.audioTimePitchAlgorithm = self.preservesPitch ? .timeDomain : .varispeed
     playerItem.preferredForwardBufferDuration = self.bufferOptions.preferredForwardBufferDuration
 
     // The current item has to be replaced from the main thread. When replacing from other queues
