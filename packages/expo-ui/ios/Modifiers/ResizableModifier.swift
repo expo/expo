@@ -15,7 +15,7 @@ internal enum ResizingModeOptions: String, Enumerable {
   }
 }
 
-internal struct ResizableModifier: Record {
+internal struct ResizableModifier: UIRecord {
   @Field var top: CGFloat = 0
   @Field var leading: CGFloat = 0
   @Field var bottom: CGFloat = 0

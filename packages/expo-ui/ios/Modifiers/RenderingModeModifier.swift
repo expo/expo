@@ -15,6 +15,6 @@ internal enum TemplateRenderingModeOptions: String, Enumerable {
   }
 }
 
-internal struct RenderingModeModifier: Record {
+internal struct RenderingModeModifier: UIRecord {
   @Field var mode: TemplateRenderingModeOptions?
 }
