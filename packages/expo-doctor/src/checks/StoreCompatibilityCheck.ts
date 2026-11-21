@@ -9,9 +9,9 @@ import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks
 // See https://support.google.com/googleplay/android-developer/answer/11926878?hl=en
 // Update these values as minimum requirements change
 export const PLAY_STORE_MINIMUM_REQS = {
-  effectiveDate: 'August 31 2024',
-  AndroidSdkVersion: 34,
-  ExpoSdkVersion: 50,
+  effectiveDate: 'August 31 2026',
+  AndroidSdkVersion: 36,
+  ExpoSdkVersion: 54,
 };
 
 export class StoreCompatibilityCheck implements DoctorCheck {
