@@ -81,6 +81,25 @@ describe.each(
     expect(files).toContain('_expo/loaders/static-helper');
   });
 
+  (server.isExpoStart ? it.skip : it)(
+    'serves the deployed loader artifact again for explicit refresh',
+    async () => {
+      const first = await server.fetchAsync('/_expo/loaders/revalidate');
+      const deployedData = await first.json();
+      expect(deployedData).toEqual({ revision: expect.any(Number), requestCacheControl: null });
+      const refreshed = await server.fetchAsync('/_expo/loaders/revalidate', {
+        headers: { 'Cache-Control': 'no-cache' },
+      });
+      expect(refreshed.status).toBe(200);
+      expect(await refreshed.json()).toEqual(deployedData);
+      const html = getHtml(await (await server.fetchAsync('/revalidate')).text());
+      expect(html.querySelector('[data-testid="refresh-pending"]')?.textContent).toBe('false');
+      expect(html.querySelector('[data-testid="refresh-data"]')?.textContent).toBe(
+        JSON.stringify(deployedData)
+      );
+    }
+  );
+
   it('includes completed Suspense content before the hydration bootstrap', async () => {
     const response = await server.fetchAsync('/large-suspense');
     expect(response.status).toBe(200);
@@ -370,10 +389,18 @@ describe.each(
           namedRegex: '^/response(?:/)?$',
           headers: { 'Cache-Control': 'public, max-age=604800' },
         },
+        {
+          namedRegex: '^/revalidate(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=3600' },
+        },
         { namedRegex: '^/second(?:/)?$', headers: { 'Cache-Control': 'private, no-store' } },
         {
           namedRegex: '^/_expo/loaders/response(?:/)?$',
           headers: { 'Cache-Control': 'public, max-age=604800' },
+        },
+        {
+          namedRegex: '^/_expo/loaders/revalidate(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=3600' },
         },
         {
           namedRegex: '^/_expo/loaders/second(?:/)?$',

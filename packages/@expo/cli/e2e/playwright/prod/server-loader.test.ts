@@ -43,6 +43,36 @@ test.describe('server loaders in production', () => {
     await expoServe.stopAsync();
   });
 
+  test('refreshes hydrated data through the HTTP cache while keeping client state', async ({
+    page,
+  }) => {
+    const pageErrors = pageCollectErrors(page);
+    const statuses = await trackLoaderNetworkStatuses(page, '/_expo/loaders/revalidate');
+    await page.goto(new URL('/revalidate', expoServe.url).href);
+    await expect(page.getByTestId('refresh-mounted')).toHaveText('true');
+    expect(statuses).toEqual([]);
+    await page.getByTestId('refresh-input').fill('keep this text');
+    const initial = await page.getByTestId('refresh-data').textContent();
+    await page.screenshot({ path: test.info().outputPath('refresh-before.png'), fullPage: true });
+    await page.getByTestId('refresh-button').click();
+    await expect(page.getByTestId('refresh-data')).not.toHaveText(initial!);
+    await expect.poll(() => statuses).toEqual([200]);
+    await expect(page.getByTestId('refresh-data')).toContainText(
+      '"requestCacheControl":"no-cache"'
+    );
+    const firstRefresh = await page.getByTestId('refresh-data').textContent();
+    await page.getByTestId('refresh-toggle').click();
+    await expect(page.getByTestId('refresh-data')).toBeHidden();
+    await page.getByTestId('refresh-button').click();
+    await expect.poll(() => statuses).toEqual([200, 200]);
+    await expect(page.getByTestId('refresh-pending')).toHaveText('false');
+    await page.getByTestId('refresh-toggle').click();
+    await expect(page.getByTestId('refresh-data')).not.toHaveText(firstRefresh!);
+    await expect(page.getByTestId('refresh-input')).toHaveValue('keep this text');
+    await page.screenshot({ path: test.info().outputPath('refresh-after.png'), fullPage: true });
+    expect(pageErrors.all).toEqual([]);
+  });
+
   test('retains loader data and local state across Activity hide and reveal', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
     const loaderRequests: string[] = [];

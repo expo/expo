@@ -1,4 +1,10 @@
-import { router, Slot, unstable_useIsNavigating, useNavigationContainerRef } from 'expo-router';
+import {
+  router,
+  Slot,
+  unstable_useIsNavigating,
+  useNavigationContainerRef,
+  usePathname,
+} from 'expo-router';
 import { useState, useTransition } from 'react';
 import { Button, Text } from 'react-native';
 
@@ -9,6 +15,14 @@ export default function RootLayout() {
   const [isChangingPost, startPostTransition] = useTransition();
   const navigation = useNavigationContainerRef();
   const isNavigating = unstable_useIsNavigating();
+  const pathname = usePathname();
+  if (pathname === '/revalidate') {
+    return (
+      <Container>
+        <Slot />
+      </Container>
+    );
+  }
   return (
     <Container>
       <Button

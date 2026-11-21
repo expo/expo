@@ -14,6 +14,7 @@ export {
   useCanGoBack,
   useCanDismiss,
   useLoaderData,
+  useLoaderRevalidator,
   useCurrentRouteInfo,
 } from './hooks';
 
