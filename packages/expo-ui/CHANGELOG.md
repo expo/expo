@@ -1,5 +1,20 @@
 # Changelog
 
+## 58.0.30
+
+### Patch Changes
+
+- [Android] Fix bottom sheet modals closing when the snap point count changes. ([#51972](https://github.com/expo/expo/pull/51972) by [@tacheraSasi](https://github.com/tacheraSasi))
+- [Android] Fix time pickers ignoring `variant="input"` and `display="spinner"`, and add `variant` to `TimePickerDialog`. ([#53781](https://github.com/expo/expo/pull/53781) by [@expo-bot](https://github.com/expo-bot))
+- [Android] Fix time pickers showing a 24-hour clock on devices set to a 12-hour clock. When `is24Hour` is not set, the Jetpack Compose `DateTimePicker` and `TimePickerDialog` and the community `DateTimePicker` now follow the device's 12-hour or 24-hour setting, as `@react-native-community/datetimepicker` does. Set `is24Hour` to `true` to keep the 24-hour clock. ([#53765](https://github.com/expo/expo/pull/53765) by [@miniware9](https://github.com/miniware9))
+- Add a `modifiers` prop to the community `BottomSheet`. ([#53399](https://github.com/expo/expo/pull/53399) by [@dileepapeiris](https://github.com/dileepapeiris))
+- [iOS] Add the `renderingMode` modifier for `Image`. With `renderingMode('template')`, an image fills its opaque pixels with the foreground style, as SF Symbols do. ([#52653](https://github.com/expo/expo/pull/52653) by [@matiaspan](https://github.com/matiaspan))
+- Fix TypeScript rejecting a `PlatformColor` as the text color of the universal `Text`, `TextInput`, and `Collapsible`. The `color` of `UniversalTextStyle` is now a `ColorValue`. ([#53573](https://github.com/expo/expo/pull/53573) by [@miniware9](https://github.com/miniware9))
+- [Web] Fix a universal `TextInput` that did not show a `set()` write to its `value` state when the React Compiler compiled the component that created the state. `useNativeState` on web now returns a new object each time its value changes. ([#53767](https://github.com/expo/expo/pull/53767) by [@expo-bot](https://github.com/expo-bot))
+- [web] Fix a React Native `Modal` opened from `BottomSheet` content rendering under the sheet and ignoring clicks. ([#51607](https://github.com/expo/expo/pull/51607) by [@expo-bot](https://github.com/expo-bot))
+- [Android] Fix `Icon` and `Image` drawing a vector drawable resource shifted or clipped when it uses `<group>` transforms, clip paths or gradients. Drawables referenced by resource name are now inflated by Compose. ([#52899](https://github.com/expo/expo/pull/52899) by [@MarkusWendorf](https://github.com/MarkusWendorf))
+- [iOS] Fix the community `BottomSheet` moving to the wrong detent for a frame when its `index` and `snapPoints` change together. ([#53294](https://github.com/expo/expo/pull/53294) by [@Hassan1305](https://github.com/Hassan1305))
+
 ## 58.0.29
 
 ### Patch Changes

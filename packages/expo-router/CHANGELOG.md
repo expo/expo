@@ -1,5 +1,22 @@
 # Changelog
 
+## 58.0.33
+
+### Patch Changes
+
+- Fix `router.navigate()` between routes of a layout with multiple dynamic segments, such as `[org]/[project]`. ([#51571](https://github.com/expo/expo/pull/51571) by [@Arthur031221](https://github.com/Arthur031221))
+- `NativeTabs` shows a `Trigger` wrapped in `Protected` when its guard passes, and hides that tab when the guard fails. ([#51802](https://github.com/expo/expo/pull/51802) by [@maaz-bin-hassan](https://github.com/maaz-bin-hassan))
+- Fix unhandled `REMOVE_ROUTES` warning when a stack with `Stack.Protected` unmounts during startup. ([#53415](https://github.com/expo/expo/pull/53415) by [@Ubax](https://github.com/Ubax))
+- Fix an infinite loop when a `Stack.Protected` guard falls back to a route from the `redirects` config. ([#53632](https://github.com/expo/expo/pull/53632) by [@Ubax](https://github.com/Ubax))
+- [iOS] Fix a `Link.Trigger` child disappearing when it remounts inside a `Link` with `Link.Menu` or `Link.Preview`. ([#50736](https://github.com/expo/expo/pull/50736) by [@oscnord](https://github.com/oscnord))
+- Made `@react-native-masked-view/masked-view` an optional peer dependency. Install it to keep the masked back button label on iOS in `expo-router/js-stack`. ([#53733](https://github.com/expo/expo/pull/53733) by [@theeket](https://github.com/theeket))
+- Keep the module-level `router` and `useNavigationContainerRef()` working after an Android Activity relaunch. ([#53447](https://github.com/expo/expo/pull/53447) by [@Ubax](https://github.com/Ubax))
+- Match redirect and rewrite sources against the full path in the app, the same as the server. Use a catch-all source such as `/old/[...path]` to redirect child paths. ([#53634](https://github.com/expo/expo/pull/53634) by [@Ubax](https://github.com/Ubax))
+- [iOS] `SplitView` now applies the left and right safe area insets to its columns, main content, and inspector when it shows more than one column. Set `horizontalSafeAreaInsets` to change this. ([#52391](https://github.com/expo/expo/pull/52391) by [@Ubax](https://github.com/Ubax))
+- Add the `unstable_requiredScreensBelow` prop to `Stack.Screen` to add screens below a screen when a deep link or a navigation adds it to the stack. ([#51695](https://github.com/expo/expo/pull/51695) by [@Ubax](https://github.com/Ubax))
+- Updated dependencies. ([#53210](https://github.com/expo/expo/pull/53210))
+  - expo-glass-effect@58.0.6
+
 ## 58.0.32
 
 ### Patch Changes
