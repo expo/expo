@@ -24,6 +24,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/** Posted when a `loadApp:` launch begins, from any entry point (deep link, initial URL, launcher UI). */
+extern NSNotificationName const EXDevLauncherAppLoadingDidStartNotification;
+
 @class EXAppContext;
 @class EXDevLauncherInstallationIDHelper;
 @class EXDevLauncherPendingDeepLinkRegistry;
@@ -78,6 +81,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSURL *)appManifestURLWithFallback;
 
 - (BOOL)isAppRunning;
+
+/** YES while a `loadApp:` launch is in flight. */
+- (BOOL)isLoadingApp;
 
 - (UIWindow * _Nullable)currentWindow;
 
