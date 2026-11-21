@@ -8,7 +8,7 @@ internal enum SearchToolbarBehaviorType: String, Enumerable {
   case minimize
 }
 
-internal struct SearchToolbarBehaviorModifier: ViewModifier, Record {
+internal struct SearchToolbarBehaviorModifier: ViewModifier, UIRecord {
   @Field var behavior: SearchToolbarBehaviorType = .automatic
 
   @ViewBuilder

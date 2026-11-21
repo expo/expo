@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct BackgroundModifier: ViewModifier, Record {
+internal struct BackgroundModifier: ViewModifier, UIRecord {
   @Field var style: ShapeStyleValue?
   @Field var shape: ShapeType?
   @Field var cornerRadius: CGFloat = 0

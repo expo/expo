@@ -25,7 +25,7 @@ internal enum PageIndexDisplayMode: String, Enumerable {
 #endif
 }
 
-internal struct TabViewStyleModifier: ViewModifier, Record {
+internal struct TabViewStyleModifier: ViewModifier, UIRecord {
   @Field var type: TabViewStyleType?
   @Field var indexDisplayMode: PageIndexDisplayMode?
 

@@ -33,7 +33,7 @@ internal enum ToggleStyleType: String, Enumerable {
   }
 }
 
-internal struct ToggleStyleModifier: ViewModifier, Record {
+internal struct ToggleStyleModifier: ViewModifier, UIRecord {
   @Field var style: ToggleStyleType?
 
   @ViewBuilder

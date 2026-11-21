@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct OnSubmitModifier: ViewModifier, Record {
+internal struct OnSubmitModifier: ViewModifier, UIRecord {
   var eventDispatcher: EventDispatcher?
 
   init() {}

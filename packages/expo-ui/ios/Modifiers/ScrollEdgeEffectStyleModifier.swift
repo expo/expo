@@ -9,7 +9,7 @@ internal enum ScrollEdgeEffectStyleOptions: String, Enumerable {
   case soft
 }
 
-internal struct ScrollEdgeEffectStyleModifier: ViewModifier, Record {
+internal struct ScrollEdgeEffectStyleModifier: ViewModifier, UIRecord {
   @Field var style: ScrollEdgeEffectStyleOptions = .automatic
   @Field var edges: EdgeOptions = .all
 

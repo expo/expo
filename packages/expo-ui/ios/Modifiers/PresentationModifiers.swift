@@ -38,7 +38,7 @@ private func parsePresentationDetent(_ detent: Either<PresentationDetentPreset, 
   return nil
 }
 
-internal struct PresentationDetentsModifier: ViewModifier, Record {
+internal struct PresentationDetentsModifier: ViewModifier, UIRecord {
   @Field var detents: [Either<PresentationDetentPreset, PresentationDetentItem>]?
   @Field var selection: Either<PresentationDetentPreset, PresentationDetentItem>?
   var eventDispatcher: EventDispatcher?
@@ -148,7 +148,7 @@ private struct PresentationDetentsSelectionView<WrappedContent: View>: View {
 
 // MARK: - Presentation Drag Indicator
 
-internal struct PresentationDragIndicatorModifier: ViewModifier, Record {
+internal struct PresentationDragIndicatorModifier: ViewModifier, UIRecord {
   @Field var visibility: VisibilityOptions = .automatic
 
   func body(content: Content) -> some View {
@@ -162,7 +162,7 @@ internal struct PresentationDragIndicatorModifier: ViewModifier, Record {
 
 // MARK: - Presentation Corner Radius
 
-internal struct PresentationCornerRadiusModifier: ViewModifier, Record {
+internal struct PresentationCornerRadiusModifier: ViewModifier, UIRecord {
   @Field var cornerRadius: Double?
 
   func body(content: Content) -> some View {
@@ -179,7 +179,7 @@ internal enum PresentationBackgroundInteractionTypeModifier: String, Enumerable 
   case enabledUpThrough
 }
 
-internal struct PresentationBackgroundInteractionModifier: ViewModifier, Record {
+internal struct PresentationBackgroundInteractionModifier: ViewModifier, UIRecord {
   @Field var interactionType: PresentationBackgroundInteractionTypeModifier = .automatic
   @Field var detent: Either<PresentationDetentPreset, PresentationDetentItem>?
 
@@ -207,7 +207,7 @@ internal struct PresentationBackgroundInteractionModifier: ViewModifier, Record 
 
 // MARK: - Interactive Dismiss Disabled
 
-internal struct InteractiveDismissDisabledModifier: ViewModifier, Record {
+internal struct InteractiveDismissDisabledModifier: ViewModifier, UIRecord {
   @Field var isDisabled: Bool = true
 
   func body(content: Content) -> some View {
@@ -217,7 +217,7 @@ internal struct InteractiveDismissDisabledModifier: ViewModifier, Record {
 
 // MARK: - Presentation Background
 
-internal struct PresentationBackgroundModifier: ViewModifier, Record {
+internal struct PresentationBackgroundModifier: ViewModifier, UIRecord {
   @Field var style: ShapeStyleValue?
 
   func body(content: Content) -> some View {
@@ -243,7 +243,7 @@ internal struct PresentationSizingFittedAxes: Record {
   @Field var vertical: Bool = false
 }
 
-internal struct PresentationSizingModifier: ViewModifier, Record {
+internal struct PresentationSizingModifier: ViewModifier, UIRecord {
   @Field var sizing: PresentationSizingOption = .automatic
   @Field var fitted: PresentationSizingFittedAxes?
 

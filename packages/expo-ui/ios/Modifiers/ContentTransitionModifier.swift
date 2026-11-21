@@ -48,7 +48,7 @@ internal struct ContentTransitionSymbolEffectConfig: Record {
   }
 }
 
-internal struct ContentTransitionModifier: ViewModifier, Record {
+internal struct ContentTransitionModifier: ViewModifier, UIRecord {
   @Field var transitionType: ContentTransitionType?
   @Field var countsDown: Bool = false
   @Field var symbolEffect: ContentTransitionSymbolEffectConfig?

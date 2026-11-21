@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct ContainerShapeModifier: ViewModifier, Record {
+internal struct ContainerShapeModifier: ViewModifier, UIRecord {
   @Field var shape: ShapeType = .rectangle
   @Field var cornerRadius: CGFloat = 0
   @Field var roundedCornerStyle: RoundedCornerStyle?

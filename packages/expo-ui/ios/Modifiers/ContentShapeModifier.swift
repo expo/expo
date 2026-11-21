@@ -43,7 +43,7 @@ internal enum ContentShapeKind: String, Enumerable {
   }
 }
 
-internal struct ContentShapeModifier: ViewModifier, Record {
+internal struct ContentShapeModifier: ViewModifier, UIRecord {
   @Field var shape: ShapeType = .rectangle
   @Field var cornerRadius: CGFloat = 0
   @Field var roundedCornerStyle: RoundedCornerStyle?

@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct MenuIndicatorModifier: ViewModifier, Record {
+internal struct MenuIndicatorModifier: ViewModifier, UIRecord {
   @Field var visibility: VisibilityOptions = .automatic
 
   @ViewBuilder

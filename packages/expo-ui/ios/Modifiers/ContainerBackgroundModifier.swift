@@ -21,7 +21,7 @@ internal enum ContainerBackgroundPlacementOptions: String, Enumerable {
 #endif
 }
 
-internal struct ContainerBackgroundModifier: ViewModifier, Record {
+internal struct ContainerBackgroundModifier: ViewModifier, UIRecord {
   @Field var style: ShapeStyleValue?
   @Field var container: ContainerBackgroundPlacementOptions?
 

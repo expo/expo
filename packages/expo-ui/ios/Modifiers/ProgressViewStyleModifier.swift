@@ -21,7 +21,7 @@ internal enum ProgressViewStyleType: String, Enumerable {
   }
 }
 
-internal struct ProgressViewStyleModifier: ViewModifier, Record {
+internal struct ProgressViewStyleModifier: ViewModifier, UIRecord {
   @Field var style: ProgressViewStyleType?
 
   @ViewBuilder

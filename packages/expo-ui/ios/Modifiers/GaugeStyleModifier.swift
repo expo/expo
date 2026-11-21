@@ -30,7 +30,7 @@ internal enum GaugeStyleType: String, Enumerable {
 #endif
 }
 
-internal struct GaugeStyleModifier: ViewModifier, Record {
+internal struct GaugeStyleModifier: ViewModifier, UIRecord {
   @Field var style: GaugeStyleType?
 
   @ViewBuilder

@@ -9,7 +9,7 @@ internal enum ArrangementViewStyleOptions: String, Enumerable {
   case overlay
 }
 
-internal struct ArrangementViewStyleModifier: ViewModifier, Record {
+internal struct ArrangementViewStyleModifier: ViewModifier, UIRecord {
   @Field var style: ArrangementViewStyleOptions = .automatic
   @Field var axes: AxisOptions?
 
@@ -42,7 +42,7 @@ internal struct ArrangementViewStyleModifier: ViewModifier, Record {
   }
 }
 
-internal struct SplitArrangementLayoutRatioModifier: ViewModifier, Record {
+internal struct SplitArrangementLayoutRatioModifier: ViewModifier, UIRecord {
   @Field var ratio: CGFloat?
   @Field var minHorizontal: CGFloat?
   @Field var idealHorizontal: CGFloat?
@@ -76,7 +76,7 @@ internal struct SplitArrangementLayoutRatioModifier: ViewModifier, Record {
   }
 }
 
-internal struct SplitArrangementLayoutSizeModifier: ViewModifier, Record {
+internal struct SplitArrangementLayoutSizeModifier: ViewModifier, UIRecord {
   @Field var minWidth: CGFloat?
   @Field var idealWidth: CGFloat?
   @Field var maxWidth: CGFloat?
@@ -105,7 +105,7 @@ internal struct SplitArrangementLayoutSizeModifier: ViewModifier, Record {
   }
 }
 
-internal struct SplitArrangementFixedLayoutSizeModifier: ViewModifier, Record {
+internal struct SplitArrangementFixedLayoutSizeModifier: ViewModifier, UIRecord {
   @Field var horizontal: Bool = true
   @Field var vertical: Bool = true
 
@@ -130,7 +130,7 @@ internal enum OverlayArrangementEdgeOptions: String, Enumerable {
   case trailing
 }
 
-internal struct OverlayArrangementEdgeModifier: ViewModifier, Record {
+internal struct OverlayArrangementEdgeModifier: ViewModifier, UIRecord {
   @Field var edge: OverlayArrangementEdgeOptions = .trailing
 
   @ViewBuilder

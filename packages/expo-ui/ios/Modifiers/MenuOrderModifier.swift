@@ -25,7 +25,7 @@ internal enum MenuOrderType: String, Enumerable {
   }
 }
 
-internal struct MenuOrderModifier: ViewModifier, Record {
+internal struct MenuOrderModifier: ViewModifier, UIRecord {
   @Field var order: MenuOrderType = .automatic
 
   func body(content: Content) -> some View {

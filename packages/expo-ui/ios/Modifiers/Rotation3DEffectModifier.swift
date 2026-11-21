@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct Rotation3DEffectModifier: ViewModifier, Record {
+internal struct Rotation3DEffectModifier: ViewModifier, UIRecord {
   @Field var angle: Double = 0
   @Field var axisX: CGFloat = 0
   @Field var axisY: CGFloat = 0
