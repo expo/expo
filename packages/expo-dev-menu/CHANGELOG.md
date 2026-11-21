@@ -28,6 +28,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- Add optional native icons and named groups to custom dev menu items.
 - Add the `ExpoLauncherURL` parser for the reserved `__expo_*` deep linking URL params. ([#50287](https://github.com/expo/expo/pull/50287) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 58.0.6 — 2026-09-23
