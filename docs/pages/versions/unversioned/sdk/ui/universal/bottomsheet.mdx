@@ -178,6 +178,8 @@ export default function BottomSheetContentPaddingExample() {
 
 Pass [`snapPoints`](#snappoints) to let the user drag the sheet between multiple resting heights. You can use the semantic values `'half'` and `'full'` for cross-platform parity. The `{ fraction }` and `{ height }` forms are honored precisely on iOS and web.
 
+Use [`onSnapPointChange`](#onsnappointchange) to react to changes in the active snap point, for example to trigger haptic feedback in your app. It requires `snapPoints` and does not report opening or dismissal. Android reports `'half'` or `'full'`, including when you supply custom snap points. The callback follows each platform's selection change; on web, it reports the snap target chosen when you release the drag. It does not signal animation completion.
+
 When sheet content can be taller than the smallest snap point, wrap it in a `ScrollView` so the overflow scrolls correctly.
 
 <ComponentExample
@@ -197,9 +199,11 @@ When sheet content can be taller than the smallest snap point, wrap it in a `Scr
 import { useState } from 'react';
 import { useColorScheme } from 'react-native';
 import { Host, BottomSheet, Button, Column, ScrollView, Text } from '@expo/ui';
+import type { SnapPoint } from '@expo/ui';
 
 export default function BottomSheetSnapPointsExample() {
   const [isPresented, setIsPresented] = useState(false);
+  const [lastSnapPoint, setLastSnapPoint] = useState<SnapPoint | null>(null);
   const colorScheme = useColorScheme();
   const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
 
@@ -211,11 +215,13 @@ export default function BottomSheetSnapPointsExample() {
       <BottomSheet
         isPresented={isPresented}
         onDismiss={() => setIsPresented(false)}
-        snapPoints={['half', 'full']}>
+        snapPoints={['half', 'full']}
+        onSnapPointChange={setLastSnapPoint}>
         <ScrollView>
           <Column spacing={12}>
             <Text textStyle={{ ...ink, fontSize: 20, fontWeight: '700' }}>Half / full sheet</Text>
             <Text textStyle={ink}>Drag the sheet between half and full screen height.</Text>
+            <Text textStyle={ink}>Last snap change: {JSON.stringify(lastSnapPoint)}</Text>
           </Column>
         </ScrollView>
       </BottomSheet>
