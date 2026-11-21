@@ -1,9 +1,9 @@
 'use client';
-import { useVerticalBarEdgeIOS } from 'expo-status-bar';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 
+import { useVerticalBarEdgeIOS } from '../../../../utils/useVerticalBarEdgeIOS';
 import { HeaderShownContext, SafeAreaProviderCompat } from '../../../elements';
 import { type LocaleDirection, type Route } from '../../../native';
 import type {
