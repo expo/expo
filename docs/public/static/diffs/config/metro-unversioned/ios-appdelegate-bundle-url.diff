@@ -1,0 +1,13 @@
+diff --git a/ios/<Project>/AppDelegate.swift b/ios/<Project>/AppDelegate.swift
+index 0000000..1111111 100644
+--- a/ios/<Project>/AppDelegate.swift
++++ b/ios/<Project>/AppDelegate.swift
+@@ -1,7 +1,7 @@
+   override func bundleURL() -> URL? {
+ #if DEBUG
+-    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
++    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
+ #else
+     return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+ #endif
+   }
