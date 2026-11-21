@@ -4,6 +4,7 @@ import android.os.Bundle
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.convertToString
+import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.providers.AppContextProvider
 import expo.modules.kotlin.tracing.trace
 import expo.modules.kotlin.types.Enumerable
@@ -37,6 +38,13 @@ abstract class Module : AppContextProvider {
 
   private val moduleEventEmitter by lazy { appContext.eventEmitter(this) }
 
+  private val eventEmitter: EventEmitter?
+    get() = if (_appContextHolder.get()?.isDestroyed == false) {
+      moduleEventEmitter
+    } else {
+      null
+    }
+
   val registry
     get() = appContext.registry
 
@@ -44,19 +52,19 @@ abstract class Module : AppContextProvider {
   internal lateinit var coroutineScopeDelegate: Lazy<CoroutineScope>
 
   fun sendEvent(name: String, body: Bundle? = Bundle.EMPTY) {
-    moduleEventEmitter?.emit(name, body)
+    eventEmitter?.emit(name, body)
   }
 
   fun sendEvent(name: String, body: Map<String, Any?>) {
-    moduleEventEmitter?.emit(name, body)
+    eventEmitter?.emit(name, body)
   }
 
   fun <T> sendEvent(enum: T, body: Bundle? = Bundle.EMPTY) where T : Enumerable, T : Enum<T> {
-    moduleEventEmitter?.emit(enum.convertToString(), body)
+    eventEmitter?.emit(enum.convertToString(), body)
   }
 
   fun <T> sendEvent(enum: T, body: Map<String, Any?>? = null) where T : Enumerable, T : Enum<T> {
-    moduleEventEmitter?.emit(enum.convertToString(), body)
+    eventEmitter?.emit(enum.convertToString(), body)
   }
 
   open fun converters(): TypeConverterProvider? = null
