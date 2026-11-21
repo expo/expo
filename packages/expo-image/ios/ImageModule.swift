@@ -195,6 +195,9 @@ public final class ImageModule: Module {
       context[.storeCacheType] = SDImageCacheType.none.rawValue
       context[.originalQueryCacheType] = sdCacheType
       context[.originalStoreCacheType] = sdCacheType
+      if cachePolicy == .disk {
+        context[.imageCache] = DiskOnlyImageCache.shared
+      }
 
       var imagesLoaded = 0
       var failed = false
