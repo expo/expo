@@ -1,3 +1,5 @@
+import Foundation
+
 /// Resolves a variant stream's URL relative to the main Playlist URL.
 func resolveMediaUrl(pathLine: String, mainUrl: URL) -> URL? {
   let cleanedPath = pathLine.trimmingCharacters(in: .whitespacesAndNewlines)
