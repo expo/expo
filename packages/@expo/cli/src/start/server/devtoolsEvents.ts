@@ -7,6 +7,8 @@ declare module '2g' {
     'devtools:mcp_tunnel_failed': { error: SerializedError };
     'devtools:mcp_extension_installed': { packageName: string; commandCount: number };
     'devtools:plugin_request_failed': { error: SerializedError };
+    'devtools:plugin_upgrade_failed': { error: SerializedError };
+    'devtools:plugin_websocket_hook_failed': { error: SerializedError };
   }
 }
 

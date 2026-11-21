@@ -4,15 +4,18 @@ import DevToolsPluginManager from '../DevToolsPluginManager';
 jest.mock('../../../../log');
 
 jest.mock('2g', () => ({
-  events: jest.fn(() => {
-    const event = jest.fn();
-    Object.assign(event, {
-      span: jest.fn(() => jest.fn()),
-      path: jest.fn((value) => value),
-      error: jest.fn((value) => value),
-    });
-    return event;
-  }),
+  events: Object.assign(
+    jest.fn(() => {
+      const event = jest.fn();
+      Object.assign(event, {
+        span: jest.fn(() => jest.fn()),
+        path: jest.fn((value) => value),
+        error: jest.fn((value) => value),
+      });
+      return event;
+    }),
+    { debug: jest.fn(() => Object.assign(jest.fn(), { error: jest.fn((value) => value) })) }
+  ),
 }));
 
 const { events } = require('2g') as { events: jest.Mock };
