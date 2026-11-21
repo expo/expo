@@ -1,5 +1,7 @@
 package expo.modules.appmetrics.storage
 
+import expo.modules.appmetrics.ObserveConsentGrantedRule
+import org.junit.Rule
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -27,6 +29,9 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class SessionSharedObjectTest {
+  @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
   private lateinit var database: MetricsDatabase
   private lateinit var sessionManager: SessionManager
 

@@ -44,7 +44,7 @@ final class MetricsDatabase: Sendable {
     }
   }
 
-  private static func defaultDirectoryUrl() throws -> URL {
+  static func defaultDirectoryUrl() throws -> URL {
     #if os(tvOS)
     return try FileManager.default
       .url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
@@ -156,7 +156,7 @@ final class MetricsDatabase: Sendable {
   /// Removes the database file along with its WAL/shm sidecars. The caller must ensure no
   /// `SQLiteDatabase` instance for this file is still alive — when one falls out of scope its `deinit`
   /// runs `sqlite3_close_v2`, which is what releases the file handle.
-  private static func removeDatabaseFile(at fileUrl: URL) throws {
+  static func removeDatabaseFile(at fileUrl: URL) throws {
     let fileManager = FileManager.default
     let basePath = fileUrl.path
     for path in [basePath, basePath + "-wal", basePath + "-shm"] {
@@ -843,7 +843,7 @@ final class MetricsDatabase: Sendable {
 
   /// Deletes `metrics.json` left behind by the JSON storage that this database replaced. Nothing reads
   /// that file anymore, so it only takes up space on the device.
-  private static func cleanUpLegacyStorage() {
+  static func cleanUpLegacyStorage() {
     // The JSON storage always lived in the documents directory, also on tvOS.
     guard
       let directoryUrl = try? FileManager.default

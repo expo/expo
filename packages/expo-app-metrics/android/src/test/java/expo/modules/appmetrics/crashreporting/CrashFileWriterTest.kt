@@ -1,5 +1,11 @@
 package expo.modules.appmetrics.crashreporting
 
+import expo.modules.appmetrics.ObserveConsentGrantedRule
+import expo.modules.appmetrics.ObserveConsent
+import io.mockk.every
+import io.mockk.mockkObject
+import io.mockk.unmockkAll
+import org.junit.After
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -16,7 +22,15 @@ import java.io.File
 @Config(manifest = Config.NONE, sdk = [28])
 class CrashFileWriterTest {
   @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
+  @get:Rule
   val tmp = TemporaryFolder()
+
+  @After
+  fun tearDown() {
+    unmockkAll()
+  }
 
   private fun writer(directory: File = tmp.root): CrashFileWriter =
     CrashFileWriter(directory)
@@ -60,5 +74,16 @@ class CrashFileWriterTest {
     val file = writer.write(throwable(), "main", "session-1", 123, 1_700_000_000_000)
 
     assertNull(file)
+  }
+
+  @Test
+  fun `writes nothing while consent is not granted`() {
+    mockkObject(ObserveConsent)
+    every { ObserveConsent.isGranted } returns false
+
+    val file = writer().write(throwable(), "main", "session-1", 123, 1_700_000_000_000)
+
+    assertNull(file)
+    assertTrue(tmp.root.listFiles()!!.isEmpty())
   }
 }

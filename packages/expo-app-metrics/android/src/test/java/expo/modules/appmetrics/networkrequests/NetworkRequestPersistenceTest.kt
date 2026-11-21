@@ -1,5 +1,7 @@
 package expo.modules.appmetrics.networkrequests
 
+import expo.modules.appmetrics.ObserveConsentGrantedRule
+import org.junit.Rule
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -479,6 +481,9 @@ class NetworkRequestToSpanMappingTest {
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class NetworkRequestPersistenceTest {
+  @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
   // Shared by `runTest` and Room's executors: persistence inserts are fire-and-forget, and
   // Room's suspending DAO calls hop to its executors, which live outside the test scheduler's
   // virtual time. Pinning them to the same scheduler makes `advanceUntilIdle` actually wait

@@ -1,5 +1,6 @@
 package expo.modules.appmetrics.crashreporting
 
+import expo.modules.appmetrics.ObserveConsentGrantedRule
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -18,6 +19,9 @@ import java.io.File
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class JvmCrashHandlerTest {
+  @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
   @get:Rule
   val tmp = TemporaryFolder()
 
