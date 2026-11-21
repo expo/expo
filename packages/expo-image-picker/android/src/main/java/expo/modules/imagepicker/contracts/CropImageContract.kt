@@ -11,6 +11,7 @@ import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
 import expo.modules.imagepicker.CropShape
 import expo.modules.imagepicker.ExpoCropImageActivity
+import expo.modules.imagepicker.ImagePickerConstants
 import expo.modules.imagepicker.ImagePickerOptions
 import expo.modules.imagepicker.MediaType
 import expo.modules.imagepicker.copyExifData
@@ -26,6 +27,8 @@ internal class CropImageContract(
 ) : AppContextActivityResultContract<CropImageContractOptions, ImagePickerContractResult> {
   override fun createIntent(context: Context, input: CropImageContractOptions) = Intent(context, ExpoCropImageActivity::class.java).apply {
     val outputUri = input.outputFile.getContentUri(context)
+
+    putExtra(ImagePickerConstants.CROP_OUTPUT_FILE_PATH_EXTRA, input.outputFile.absolutePath)
 
     putExtra(
       CropImage.CROP_IMAGE_EXTRA_BUNDLE,
