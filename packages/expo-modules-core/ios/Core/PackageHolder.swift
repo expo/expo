@@ -32,13 +32,6 @@ internal struct PackageHolder {
   }
 
   /**
-   The holders of the package's modules, sorted by the module name.
-   */
-  var moduleHolders: [ModuleHolder] {
-    return modules.values.sorted { $0.name < $1.name }
-  }
-
-  /**
    Returns the holder of the module with the given name.
    */
   func moduleHolder(named moduleName: String) -> ModuleHolder? {
@@ -66,23 +59,25 @@ internal struct PackageHolder {
    is already taken by another export of the package is left out and logged.
    */
   var exportNames: [String] {
-    var names = moduleHolders.map(\.name)
-    var seenNames = Set(names)
-    let classNames = sharedObjects.map(\._jsName)
-    let viewNames = views.map { $0._jsName }
+    var names = modules.keys.sorted()
 
-    for (kind, exportNames) in [("Class", classNames), ("View", viewNames)] {
-      for exportName in exportNames {
-        if seenNames.insert(exportName).inserted {
-          names.append(exportName)
-        } else {
-          log.error(
-            "\(kind) '\(exportName)' is not available in 'expo.packages[\"\(name)\"]', "
-              + "because another export of the '\(name)' package already has this name. "
-              + "Rename it so that each name in the package is unique."
-          )
-        }
+    func append(_ exportName: String, kind: String) {
+      // A package has few exports, so a linear search is faster than hashing the names into a set.
+      guard !names.contains(exportName) else {
+        log.error(
+          "\(kind) '\(exportName)' is not available in 'expo.packages[\"\(name)\"]', "
+            + "because another export of the '\(name)' package already has this name. "
+            + "Rename it so that each name in the package is unique."
+        )
+        return
       }
+      names.append(exportName)
+    }
+    for sharedObject in sharedObjects {
+      append(sharedObject._jsName, kind: "Class")
+    }
+    for view in views {
+      append(view._jsName, kind: "View")
     }
     return names
   }

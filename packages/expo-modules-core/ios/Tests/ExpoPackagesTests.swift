@@ -178,9 +178,12 @@ struct ExpoPackagesTests {
     #expect(throws: (any Error).self) {
       try runtime.eval("expo.packages['expo-audio'] = {}")
     }
+    // An export is a read-only property, so the assignment throws only in strict mode.
     #expect(throws: (any Error).self) {
-      try runtime.eval("expo.packages['expo-audio'].Player = {}")
+      try runtime.eval("'use strict'; expo.packages['expo-audio'].Player = {}")
     }
+    try runtime.eval("expo.packages['expo-audio'].Player = {}")
+    #expect(try runtime.eval("typeof expo.packages['expo-audio'].Player").asString() == "function")
   }
 }
 
