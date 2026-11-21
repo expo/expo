@@ -67,6 +67,7 @@
 
 #import <CoreText/CoreText.h>
 #import <objc/message.h>
+#import <sys/sysctl.h>
 
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewRegistry.h>
@@ -215,6 +216,7 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   std::unique_ptr<MountingTreeDelegate> _treeDelegate;
   std::unique_ptr<ShadowTree> _tree;
   RootShadowNode::Unshared _preparedRoot;
+  UIImage *_launchImage;
   UIView *_containerView;
   UIWindow *_window;
   CFTimeInterval _loadTime;
@@ -250,7 +252,16 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 {
   SplashScreenPrerender *prerender = [self shared];
   if (prerender.isEnabled) {
-    [prerender log:@"+load"];
+    // The time that the launch image is on screen before any code of the app runs.
+    struct kinfo_proc info;
+    size_t size = sizeof(info);
+    int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    double sinceStart = sysctl(mib, 4, &info, &size, NULL, 0) == 0
+        ? (now.tv_sec - info.kp_proc.p_starttime.tv_sec) * 1000.0 + (now.tv_usec - info.kp_proc.p_starttime.tv_usec) / 1000.0
+        : -1;
+    [prerender log:[NSString stringWithFormat:@"+load (%.1f ms after process start)", sinceStart]];
     [prerender prepare];
   }
 }
@@ -330,6 +341,7 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
     [self log:@"no snapshot for this launch"];
     return;
   }
+  _launchImage = [[UIImage imageWithContentsOfFile:[self launchImageURL].path] imageByPreparingForDisplay];
   folly::dynamic templateDynamic = convertIdToFollyDynamic(json);
   _snapshotTemplate = templateDynamic;
   [self registerFontsUsedByTemplate:templateDynamic];
@@ -397,6 +409,12 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 
 /// Where the snapshot of the last launch's first screen lives: `Caches/expo-splash-screen`.
 /// The file is a cache: the system does not back it up and can delete it.
+/// The picture of the screen from the capture that also wrote the snapshot.
+- (NSURL *)launchImageURL
+{
+  return [[self snapshotURL].URLByDeletingLastPathComponent URLByAppendingPathComponent:@"launch-image.png"];
+}
+
 - (NSURL *)snapshotURL
 {
   NSURL *caches = [[NSFileManager defaultManager] URLForDirectory:NSCachesDirectory
@@ -531,6 +549,47 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
     NSData *data = [NSJSONSerialization dataWithJSONObject:snapshot options:0 error:nil];
     BOOL written = [data writeToURL:url options:NSDataWritingAtomic | NSDataWritingFileProtectionComplete error:nil];
     [self log:[NSString stringWithFormat:@"snapshot %@ (%lu bytes)", written ? @"saved" : @"not saved", (unsigned long)data.length]];
+  });
+  [self saveLaunchImageOfWindow:rootView.window];
+}
+
+/**
+ Replaces the launch images that the system cached for this app with an image of the screen on display.
+ The system shows a launch image from the first frame of the launch animation, before the process
+ runs, so the next launch starts with this screen and not with the splash image.
+ The cache directory is not a public API. When it is absent or has another layout, nothing is written.
+ */
+- (void)saveLaunchImageOfWindow:(UIWindow *)window
+{
+  if (!window) {
+    return;
+  }
+  CFTimeInterval start = CACurrentMediaTime();
+  UIGraphicsImageRendererFormat *format = [UIGraphicsImageRendererFormat formatForTraitCollection:window.traitCollection];
+  format.opaque = YES;
+  UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithBounds:window.bounds format:format];
+  UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext *context) {
+    [window drawViewHierarchyInRect:window.bounds afterScreenUpdates:NO];
+  }];
+  CFTimeInterval drawTime = (CACurrentMediaTime() - start) * 1000.0;
+  dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+    NSString *library = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES).firstObject;
+    NSString *directory = [library stringByAppendingPathComponent:
+        [NSString stringWithFormat:@"SplashBoard/Snapshots/%@ - {DEFAULT GROUP}", [NSBundle mainBundle].bundleIdentifier]];
+    NSData *data = UIImagePNGRepresentation(image);
+    [data writeToURL:[self launchImageURL] options:NSDataWritingAtomic | NSDataWritingFileProtectionComplete error:nil];
+    int replaced = 0;
+    for (NSString *name in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directory error:nil]) {
+      NSString *path = [directory stringByAppendingPathComponent:name];
+      CGImageRef cached = [UIImage imageWithContentsOfFile:path].CGImage;
+      // The launch images of the other orientation have another size, and stay.
+      // ponytail: the light and the dark launch image both get this image; give each its own capture if the wrong one shows.
+      if (cached && CGImageGetWidth(cached) == CGImageGetWidth(image.CGImage) &&
+          CGImageGetHeight(cached) == CGImageGetHeight(image.CGImage)) {
+        replaced += [data writeToFile:path atomically:YES] ? 1 : 0;
+      }
+    }
+    [self log:[NSString stringWithFormat:@"launch image: drawn in %.1f ms, replaced %d files", drawTime, replaced]];
   });
 }
 
@@ -855,6 +914,15 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   window.frame = windowScene.coordinateSpace.bounds;
   UIViewController *controller = [UIViewController new];
   controller.view = _containerView;
+  if (_launchImage) {
+    // The launch image that the system showed until now is this picture. The prerendered views
+    // have less detail (no images), so the picture stays on top of them and nothing changes on screen.
+    // ponytail: the picture hides the prerendered views; remove it when the views draw all that the picture has.
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:_launchImage];
+    imageView.frame = _containerView.bounds;
+    [_containerView addSubview:imageView];
+    _launchImage = nil;
+  }
   window.rootViewController = controller;
   window.hidden = NO;
   _window = window;
