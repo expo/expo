@@ -14,11 +14,16 @@ import {
 } from './integrations/react-native-reanimated/init';
 import { initReactNavigationIntegration } from './integrations/react-navigation/init';
 import { isReactNavigationInstalled } from './integrations/react-navigation/reactNavigation';
+import {
+  configureRegisteredIntegrations,
+  createIntegrationReporter,
+} from './integrations/registry';
 import { reportCaughtError } from './reportCaughtError';
 import { reportFeedback } from './reportFeedback';
 import type {
   ObserveConfig,
   ObserveFeedback,
+  ObserveIntegrationReporter,
   ObserveIntegrationsConfig,
   ObserveModule,
 } from './types';
@@ -119,7 +124,11 @@ const Observe: ObserveModule = new Proxy(native, {
           disableReanimatedIntegration();
         }
         warnIfErrorSampleRateIsLower(config);
-        return target.configure(config);
+        const result = target.configure(config);
+        // After the native configure, so a library integration that reads `getIntegrations()` sees
+        // the new config.
+        configureRegisteredIntegrations(config.integrations ?? {});
+        return result;
       };
     }
 
@@ -146,7 +155,10 @@ const Observe: ObserveModule = new Proxy(native, {
     if (prop === 'registerIntegration') {
       return <K extends keyof ObserveIntegrationsConfig>(
         name: K,
-        callback: (config: ObserveIntegrationsConfig[K]) => void
+        callback: (
+          config: ObserveIntegrationsConfig[K],
+          reporter: ObserveIntegrationReporter
+        ) => void
       ) => registerIntegrationImpl(target, name, callback);
     }
 
@@ -164,12 +176,12 @@ const Observe: ObserveModule = new Proxy(native, {
 export function registerIntegrationImpl<K extends keyof ObserveIntegrationsConfig>(
   target: Pick<ObserveModule, 'addListener' | 'getIntegrations'>,
   name: K,
-  callback: (config: ObserveIntegrationsConfig[K]) => void
+  callback: (config: ObserveIntegrationsConfig[K], reporter: ObserveIntegrationReporter) => void
 ): void {
   const integrations = target.getIntegrations();
   if (integrations) {
     if (integrations[name]) {
-      callback(integrations[name]);
+      callback(integrations[name], createIntegrationReporter(name));
     }
     return;
   }
@@ -177,7 +189,7 @@ export function registerIntegrationImpl<K extends keyof ObserveIntegrationsConfi
   const subscription = target.addListener('configure', ({ integrations }) => {
     subscription.remove();
     if (integrations?.[name]) {
-      callback(integrations[name]);
+      callback(integrations[name], createIntegrationReporter(name));
     }
   });
 }

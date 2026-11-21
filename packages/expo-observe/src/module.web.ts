@@ -7,10 +7,12 @@ import AppMetrics, {
   type MetricAttributes,
 } from 'expo-app-metrics';
 
+import { configureRegisteredIntegrations } from './integrations/registry';
 import { reportCaughtError } from './reportCaughtError';
 import { reportFeedback } from './reportFeedback';
 import type {
   ObserveConfig,
+  ObserveIntegrationReporter,
   ObserveIntegrationsConfig,
   ObserveModule,
   ObserveModuleEvents,
@@ -27,13 +29,15 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
   startSpan = startSpan;
   withSpan = withSpan;
   recordSpan = recordSpan;
-  configure(config: ObserveConfig): void {}
+  configure(config: ObserveConfig): void {
+    configureRegisteredIntegrations(config.integrations ?? {});
+  }
   getIntegrations(): ObserveIntegrationsConfig {
     return {};
   }
   registerIntegration<K extends keyof ObserveIntegrationsConfig>(
     name: K,
-    callback: (config: ObserveIntegrationsConfig[K]) => void
+    callback: (config: ObserveIntegrationsConfig[K], reporter: ObserveIntegrationReporter) => void
   ): void {
     // Web does not provide integration configuration or emit `configure` events.
   }

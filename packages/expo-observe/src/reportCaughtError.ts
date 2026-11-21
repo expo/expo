@@ -39,18 +39,21 @@ function normalizeReportedError(error: unknown): NormalizedReportedError {
  * Reports a caught value as a non-fatal error through the AppMetrics module, shared by the native
  * and web `Observe.reportError` implementations and by integrations. `source` is `reportedByUser`
  * for an error the app reports, and `integration` for an error an integration reports for a library.
+ * `code` is a stable code for the kind of error, recorded as the `expo.error.code` attribute.
  *
  * Never throws: it's called from a `catch` block, so a failure here (a pathological thrown value, or
  * a native call that rejects the payload) must not turn a handled error into an unhandled one.
  */
 export function reportCaughtError(
   error: unknown,
-  source: 'reportedByUser' | 'integration' = 'reportedByUser'
+  source: 'reportedByUser' | 'integration' = 'reportedByUser',
+  code?: string
 ): void {
   try {
     AppMetrics.reportError({
       source,
       ...normalizeReportedError(error),
+      ...(code !== undefined ? { code } : {}),
       isFatal: false,
     });
   } catch (reportingError) {

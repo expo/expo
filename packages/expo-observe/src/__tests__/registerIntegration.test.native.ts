@@ -71,6 +71,11 @@ beforeEach(() => {
   configureListeners.clear();
 });
 
+const reporterShape = expect.objectContaining({
+  reportError: expect.any(Function),
+  reportWarning: expect.any(Function),
+});
+
 describe('Observe.registerIntegration', () => {
   it('calls the callback synchronously without adding a listener when the key is present', () => {
     integrations = { 'expo-router': true };
@@ -78,7 +83,7 @@ describe('Observe.registerIntegration', () => {
 
     loadModule().registerIntegration('expo-router', callback);
 
-    expect(callback).toHaveBeenCalledWith(true);
+    expect(callback).toHaveBeenCalledWith(true, reporterShape);
     expect(mockNativeTarget.addListener).not.toHaveBeenCalled();
   });
 
@@ -120,7 +125,7 @@ describe('Observe.registerIntegration', () => {
 
     emit({ 'expo-router': true });
 
-    expect(callback).toHaveBeenCalledWith(true);
+    expect(callback).toHaveBeenCalledWith(true, reporterShape);
     expect(remove).toHaveBeenCalledTimes(1);
   });
 
