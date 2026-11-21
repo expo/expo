@@ -2094,6 +2094,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const onChange = async (changeEvent?: DeltaChangeEvent) => {
       debugEvent('loader_graph_changed', { path: resolvedEntryFilePath });
 
+      // Metro emits `change` for every watched file, not only files in this graph.
+      if (!(await this.hasLoaderGraphChangedAsync(graphId))) {
+        return;
+      }
+
       if (!this.shouldBroadcastLoaderInvalidation(changeEvent?.changeId)) {
         return;
       }
@@ -2110,6 +2115,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const unlisten = deltaBundler.listen(graph, onChange as () => Promise<void>);
     this.loaderGraphListeners.set(graphId, unlisten);
+  }
+
+  private async hasLoaderGraphChangedAsync(graphId: string): Promise<boolean> {
+    const bundler = this.metro?.getBundler();
+    const revision = await bundler?.getRevisionByGraphId(graphId);
+    if (!bundler || !revision) {
+      return true;
+    }
+    try {
+      const { delta } = await bundler.updateGraph(revision, false);
+      return delta.added.size > 0 || delta.modified.size > 0 || delta.deleted.size > 0;
+    } catch {
+      // Let the next loader request report the build error.
+      return true;
+    }
   }
 
   private shouldBroadcastLoaderInvalidation(changeId?: string) {
