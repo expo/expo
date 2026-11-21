@@ -50,6 +50,53 @@ class AudioRecorder(
   private var recordingTimerJob: Job? = null
   private var durationLimitMillis: Long? = null
   var useForegroundService = false
+  var notificationOptions = RecordingNotificationOptions()
+  var notificationSessionId = UUID.randomUUID().toString()
+    private set
+
+  @Volatile
+  private var hasNotificationActionListeners = false
+
+  override fun onStartListeningToEvent(eventName: String) {
+    super.onStartListeningToEvent(eventName)
+    if (eventName == "recordingNotificationAction") {
+      hasNotificationActionListeners = true
+    }
+  }
+
+  override fun onStopListeningToEvent(eventName: String) {
+    super.onStopListeningToEvent(eventName)
+    if (eventName == "recordingNotificationAction") {
+      hasNotificationActionListeners = false
+    }
+  }
+
+  internal fun handleNotificationAction(action: String, sessionId: String, onStop: () -> Unit = { stopRecording() }) {
+    if (!isPrepared || sessionId != notificationSessionId) {
+      return
+    }
+    val button = notificationOptions.resolvedButtons(isPaused).firstOrNull { it.id == action } ?: return
+    if (button.preventDefault && action == "stop" && !hasNotificationActionListeners) {
+      appContext?.jsLogger?.warn("The recording notification Stop button prevents native stopping, but no recordingNotificationAction listener is registered. Recording will continue. Add a listener that calls stop(), or remove preventDefault.")
+    }
+    if (!button.preventDefault) {
+      when (action) {
+        "pause" -> if (isRecording) {
+          pauseRecording()
+        }
+        "resume" -> if (isPaused) {
+          record()
+        }
+        "stop" -> onStop()
+      }
+    }
+    appContext?.mainQueue?.launch {
+      // Native Stop clears isPrepared. Its event must still reach the listener.
+      if (sessionId == notificationSessionId) {
+        emit("recordingNotificationAction", mapOf("action" to action, "sessionId" to sessionId, "defaultPrevented" to button.preventDefault))
+      }
+    }
+  }
 
   val serviceConnection = AudioRecordingServiceConnection(WeakReference(this), appContext)
 
@@ -99,6 +146,7 @@ class AudioRecorder(
         serviceConnection.bindWithService()
       }
       mediaRecorder.prepare()
+      notificationSessionId = UUID.randomUUID().toString()
       isPrepared = true
     } catch (e: Exception) {
       mediaRecorder.release()
@@ -131,6 +179,7 @@ class AudioRecorder(
     isRecording = true
     isPaused = false
     scheduleRecordingStop()
+    serviceConnection.recordingServiceBinder?.service?.updateNotification()
   }
 
   fun recordWithOptions(atTimeSeconds: Double? = null, forDurationSeconds: Double? = null) {
@@ -166,6 +215,7 @@ class AudioRecorder(
     durationAlreadyRecorded = getAudioRecorderDurationMillis()
     isRecording = false
     isPaused = true
+    serviceConnection.recordingServiceBinder?.service?.updateNotification()
   }
 
   fun pauseForSystem() {
