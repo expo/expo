@@ -13,6 +13,10 @@ internal struct IsPlayingEventPayload: Record {
   @Field var oldIsPlaying: Bool? = nil
 }
 
+internal struct PlaybackRequestedChangedEventPayload: Record {
+  @Field var isPlaybackRequested: Bool = false
+}
+
 internal struct VolumeChangedEventPayload: Record {
   @Field var volume: Float = 1
   @Field var oldVolume: Float? = nil
