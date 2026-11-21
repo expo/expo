@@ -28,7 +28,8 @@ import java.lang.ref.WeakReference
 @OptIn(UnstableApi::class)
 class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragmentListener, VideoManagerListener, VideoViewListener {
   private val appContext = WeakReference(appContext)
-  private val mainActivity = WeakReference(appContext.currentActivity)
+  private val mainActivity
+    get() = WeakReference(appContext.get()?.currentActivity)
 
   var autoEnterPiP = false
     private set
@@ -218,10 +219,9 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
   private fun removePiPHelperFragment() {
     pipHelperFragment?.release()
 
-    (mainActivity.get() as? FragmentActivity)?.let {
-      val fragment = pipHelperFragment ?: return
-      it.supportFragmentManager.beginTransaction()
-        .remove(fragment)
+    pipHelperFragment?.takeIf { it.isAdded }?.let {
+      it.parentFragmentManager.beginTransaction()
+        .remove(it)
         .commitAllowingStateLoss()
     }
     pipHelperFragment = null
