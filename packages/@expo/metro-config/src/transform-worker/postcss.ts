@@ -7,7 +7,7 @@
 import JsonFile from '@expo/json-file';
 import fs from 'fs';
 import path from 'path';
-import type { AcceptedPlugin, ProcessOptions, Processor } from 'postcss';
+import type { AcceptedPlugin, Message, ProcessOptions, Processor } from 'postcss';
 import resolveFrom from 'resolve-from';
 
 import { debugEvent } from './events';
@@ -60,20 +60,35 @@ const loadPostcssPipelineAsync = (function () {
 export async function transformPostCssModule(
   projectRoot: string,
   { src, filename }: { src: string; filename: string }
-): Promise<{ src: string; hasPostcss: boolean }> {
+): Promise<{ src: string; hasPostcss: boolean; fileDependencies: string[] }> {
   const pipeline = await loadPostcssPipelineAsync(projectRoot);
   if (!pipeline) {
-    return { src, hasPostcss: false };
+    return { src, hasPostcss: false, fileDependencies: [] };
   }
 
-  const { content } = await pipeline.processor.process(src, {
+  const { content, messages } = await pipeline.processor.process(src, {
     ...pipeline.baseOptions,
     from: filename,
     to: filename,
     map: pipeline.emitMap ? { inline: true } : false,
   });
 
-  return { src: content, hasPostcss: true };
+  return {
+    src: content,
+    hasPostcss: true,
+    fileDependencies: collectFileDependencies(projectRoot, messages),
+  };
+}
+
+/** The files a PostCSS run read, which plugins report as `dependency` messages: https://github.com/postcss/postcss/blob/main/docs/guidelines/runner.md#31-rebuild-when-dependencies-change */
+function collectFileDependencies(projectRoot: string, messages: Message[]): string[] {
+  const fileDependencies = new Set<string>();
+  for (const message of messages) {
+    if (message.type === 'dependency' && typeof message.file === 'string') {
+      fileDependencies.add(path.resolve(projectRoot, message.file));
+    }
+  }
+  return [...fileDependencies];
 }
 
 async function parsePostcssConfigAsync(

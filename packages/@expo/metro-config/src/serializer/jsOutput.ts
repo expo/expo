@@ -50,6 +50,8 @@ export type CSSMetadata = {
   map: unknown[];
   functionMap: null;
   skipCache?: boolean;
+  /** Absolute paths of the files the module's compile read besides its own; a change to one compiles the module again. */
+  fileDependencies?: string[];
   externalImports: { url: string; supports: string | null; media: string | null }[];
 };
 
