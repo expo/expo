@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 import type { Range as SemverRange } from 'semver';
 import { intersects as semverIntersects } from 'semver';
 
@@ -168,14 +169,22 @@ export function updatePkgDependencies(
       }
 
       // Warn users for outdated dependencies when prebuilding
+      const projectVersion = resolveComparableVersion(
+        projectRoot,
+        dependencyKey,
+        String(pkg.dependencies[dependencyKey])
+      );
+      if (projectVersion == null) {
+        continue;
+      }
       const hasRecommendedVersion = versionRangesIntersect(
-        pkg.dependencies[dependencyKey],
+        projectVersion,
         String(defaultDependencies[dependencyKey]),
         true
       );
       if (!hasRecommendedVersion) {
         nonRecommendedPackages.push([
-          `${dependencyKey}@${pkg.dependencies[dependencyKey]}`,
+          `${dependencyKey}@${projectVersion}`,
           `${dependencyKey}@${defaultDependencies[dependencyKey]}`,
         ]);
       }
@@ -285,6 +294,28 @@ export function hashForDependencyMap(deps: DependenciesMap = {}): string {
 export function createFileHash(contents: string): string {
   // this doesn't need to be secure, the shorter the better.
   return crypto.createHash('sha1').update(contents).digest('hex');
+}
+
+/**
+ * Package manager protocols such as `catalog:`, `workspace:*` or `npm:react-native@0.80.0` are not
+ * semver ranges, so the installed version is compared instead. Returns `null` when that version can't
+ * be resolved, since there is nothing meaningful to compare.
+ */
+function resolveComparableVersion(
+  projectRoot: string,
+  dependencyKey: string,
+  specifier: string
+): string | null {
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(specifier)) {
+    return specifier;
+  }
+  try {
+    const packageJsonPath = resolveFrom(projectRoot, `${dependencyKey}/package.json`);
+    const { version } = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    return typeof version === 'string' ? version : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
