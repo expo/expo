@@ -11,6 +11,7 @@ internal import EXDevMenu
 #endif
 
 @objc
+@MainActor
 public class ReactNativeHostManager: NSObject {
   @objc public static let shared = ReactNativeHostManager()
 
@@ -19,9 +20,23 @@ public class ReactNativeHostManager: NSObject {
   private var firstLoadInitialized: Bool = false
   private var devMenuInitialized: Bool = false
   private var turboModuleClasses: [String: AnyClass] = [:]
+  private var swiftUIHost: ExpoHost?
 
   private override init() {
     super.init()
+  }
+
+  /// Shares an app-owned host with the existing ReactNativeView and UIKit APIs.
+  public func initialize(host: ExpoHost) {
+    guard !firstLoadInitialized else {
+      precondition(
+        swiftUIHost === host,
+        "ReactNativeHostManager already uses another host or the legacy runtime. Call initialize(host:) with the app's ExpoHost before creating any ReactNativeView, and remove the legacy initialize() call."
+      )
+      return
+    }
+    swiftUIHost = host
+    firstLoadInitialized = true
   }
   /**
    * Initializes ReactNativeHostManager instance
@@ -29,6 +44,10 @@ public class ReactNativeHostManager: NSObject {
    */
   @objc public func initialize(turboModuleClasses: [String: AnyClass] = [:]) {
     if firstLoadInitialized {
+      precondition(
+        swiftUIHost == nil,
+        "ReactNativeHostManager already uses an app-owned ExpoHost. Remove initialize(turboModuleClasses:) and supply TurboModule classes when creating ExpoHost."
+      )
       return
     }
 
@@ -47,6 +66,13 @@ public class ReactNativeHostManager: NSObject {
     initialProps: [AnyHashable: Any]?,
     launchOptions: [AnyHashable: Any]?
   ) throws -> UIView {
+    if let swiftUIHost {
+      return try swiftUIHost.loadView(
+        name: moduleName,
+        props: initialProps ?? [:],
+        launchOptions: launchOptions
+      )
+    }
     guard firstLoadInitialized, let reactNativeFactory else {
       fatalError(
         "loadView called before initialize(). Call ReactNativeHostManager.shared.initialize() first."
@@ -66,6 +92,9 @@ public class ReactNativeHostManager: NSObject {
   * Initializes a React Native instance
   */
   @objc public func initializeInstance() {
+    if swiftUIHost != nil {
+      return
+    }
     let delegate = ReactNativeDelegate(turboModuleClasses: turboModuleClasses)
     reactNativeFactory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
@@ -77,6 +106,10 @@ public class ReactNativeHostManager: NSObject {
    * to prevent memory leaks
    */
   @objc public func cleanupPreviousInstance() {
+    // The app owns this host; mounted ExpoScene surfaces must keep sharing its runtime.
+    guard swiftUIHost == nil else {
+      return
+    }
     if let rootViewFactory = reactNativeFactory?.rootViewFactory {
       rootViewFactory.setValue(nil, forKey: "_reactHost")
       reactNativeDelegate = nil
@@ -86,7 +119,7 @@ public class ReactNativeHostManager: NSObject {
   }
 
   /**
-   * Starts React Native (which initializes delegates) and
+   * Starts the legacy root and
    * fetches and updates the manifest for dev menu if dev menu is
    * available. Runs at most once per factory — calling startReactNative
    * multiple times on the same factory would duplicate delegate setup.
@@ -103,7 +136,7 @@ public class ReactNativeHostManager: NSObject {
 
     devMenuInitialized = true
 
-    // Needed to set up delegates (e.g. for expo-dev-menu)
+    // Preserve the legacy main-root startup before fetching its development manifest.
     reactNativeFactory.startReactNative(
       withModuleName: "main",
       in: nil,
