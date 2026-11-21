@@ -694,15 +694,15 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
     RCTComponentViewRegistry *viewRegistry = presenter.mountingManager.componentViewRegistry;
     _transactionWatcher = std::make_shared<expo::SplashScreenTransactionWatcher>(
         builder.prerenderedTags(),
-        [viewRegistry](Tag tag, expo::SplashScreenTransactionWatcher::ViewEvent event) {
+        [viewRegistry](Tag tag, bool held) {
           // Mounting thread (main).
           UIView *view = [viewRegistry findComponentViewWithTag:tag];
           // React inserts its views by index, so a held view stays in front of them in the subview
           // order. Hide it: the window then shows only React's tree, and the overlay does not need
           // to cover until the held views are removed. The overlay still covers at this time,
           // because the app hides the splash screen only after React's first commit.
-          view.hidden = event == expo::SplashScreenTransactionWatcher::ViewEvent::Held;
-          if (event == expo::SplashScreenTransactionWatcher::ViewEvent::Adopted) {
+          view.hidden = held;
+          if (!held) {
             // React inserts the adopted view into its own tree in the same transaction. A native
             // container that React puts into the view before that (a react-native-screens stack)
             // looks for its parent view controller when it moves to the window, and must not find

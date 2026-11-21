@@ -29,15 +29,6 @@ using namespace facebook::react;
  */
 class SplashScreenTransactionWatcher : public MountingOverrideDelegate {
  public:
-  enum class ViewEvent {
-    /// React removed the view. It stays in the hierarchy, hidden, for a later `Create` to adopt.
-    Held,
-    /// The held view goes back into the mutation stream, to be removed and deleted.
-    Released,
-    /// A `Create` with the same tag and component arrived. The view is React's now.
-    Adopted,
-  };
-
   struct Stats {
     int adopted{};
     bool isEmpty{};
@@ -46,11 +37,14 @@ class SplashScreenTransactionWatcher : public MountingOverrideDelegate {
 
   SplashScreenTransactionWatcher(
       std::unordered_set<Tag> prerendered,
-      std::function<void(Tag, ViewEvent)> onViewEvent,
+      /// `held` is true when React removed the view: it stays in the hierarchy, hidden, for a later
+      /// `Create` to adopt. It is false when that `Create` arrived: the view leaves its parent.
+      std::function<void(Tag, bool held)> onHeldChange,
       std::function<void(Stats)> onTransaction)
-      : prerendered_(std::move(prerendered)), onViewEvent_(std::move(onViewEvent)), onTransaction_(std::move(onTransaction))
+      : prerendered_(std::move(prerendered)), onHeldChange_(std::move(onHeldChange)), onTransaction_(std::move(onTransaction))
   {
   }
+
 
   bool isActive() const
   {
@@ -98,7 +92,7 @@ class SplashScreenTransactionWatcher : public MountingOverrideDelegate {
             : mutation.oldChildShadowView.tag;
         if (mutation.type == ShadowViewMutation::Remove && isHeldCandidate(tag)) {
           heldRemoves_.insert_or_assign(tag, mutation);
-          onViewEvent_(tag, ViewEvent::Held);
+          onHeldChange_(tag, true);
           continue;
         }
         if (mutation.type == ShadowViewMutation::Delete && isHeldCandidate(tag)) {
@@ -113,7 +107,7 @@ class SplashScreenTransactionWatcher : public MountingOverrideDelegate {
             if (std::strcmp(old.componentName, mutation.newChildShadowView.componentName) == 0) {
               // The view leaves the prerendered tree now, outside the mutation stream: a `Remove`
               // mutation here has a stale index, and that breaks delegates that mirror the stream.
-              onViewEvent_(tag, ViewEvent::Adopted);
+              onHeldChange_(tag, false);
               out.push_back(ShadowViewMutation::UpdateMutation(
                   old, mutation.newChildShadowView, removed != heldRemoves_.end() ? removed->second.parentTag : -1));
               adopted_.insert(tag);
@@ -124,10 +118,12 @@ class SplashScreenTransactionWatcher : public MountingOverrideDelegate {
               stats.adopted++;
               continue;
             }
-            // Same tag, different component: the prerendered view goes first.
-            onViewEvent_(tag, ViewEvent::Released);
+            // Same tag, different component: React gives the tags that it allocates late to
+            // different nodes in each launch. The prerendered view goes first. It leaves its parent
+            // outside the stream like an adopted view, and only the `Delete` goes into the stream:
+            // Reanimated throws on a `Remove`, a `Delete`, and an `Insert` of one tag in one transaction.
+            onHeldChange_(tag, false);
             if (removed != heldRemoves_.end()) {
-              out.push_back(removed->second);
               heldRemoves_.erase(removed);
             }
             out.push_back(held->second);
@@ -149,7 +145,7 @@ class SplashScreenTransactionWatcher : public MountingOverrideDelegate {
   }
 
   std::unordered_set<Tag> prerendered_;
-  std::function<void(Tag, ViewEvent)> onViewEvent_;
+  std::function<void(Tag, bool)> onHeldChange_;
   std::function<void(Stats)> onTransaction_;
   mutable bool active_ = true;
   mutable bool sawFirst_ = false;
@@ -217,6 +213,9 @@ class SplashScreenHydrationBuilder {
     folly::dynamic props = propsOf(node);
     std::shared_ptr<ShadowNode> shadowNode;
     if (canReuseTag(component)) {
+      // The snapshot has one node for each native view, so the node was not flattened in React's
+      // tree. The node needs its own view here too, or React has nothing to adopt for this tag.
+      props["collapsable"] = false;
       try {
         shadowNode = uiManager_.createNode(tag, component, surfaceId_, RawProps(props), nullptr);
         reused_++;
@@ -260,7 +259,9 @@ class SplashScreenHydrationBuilder {
   std::shared_ptr<const ShadowNode> buildText(const folly::dynamic &node)
   {
     Tag tag = allocateTag();
-    auto shadowNode = uiManager_.createNode(tag, node["name"].asString(), surfaceId_, RawProps(propsOf(node)), nullptr);
+    // `createNode` takes React's view names, and "Text" is the paragraph there.
+    const std::string name = node["name"].asString() == "Text" ? "VirtualText" : node["name"].asString();
+    auto shadowNode = uiManager_.createNode(tag, name, surfaceId_, RawProps(propsOf(node)), nullptr);
     prerendered_.insert(tag);
     created_++;
     if (node.count("children") != 0 && node["children"].isArray()) {
