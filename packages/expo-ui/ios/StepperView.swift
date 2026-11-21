@@ -3,24 +3,31 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class StepperProps: UIBaseViewProps {
-  @Field var label: String
-  @Field var value: Int = 0
-  @Field var min: Int = 0
-  @Field var max: Int = 100
-  @Field var step: Int = 1
-  var onValueChange = EventDispatcher()
+@ViewProps(extending: ExpoUIViewProps.self)
+public struct StepperProps {
+  var label = ""
+  var value = 0
+  var min = 0
+  var max = 100
+  var step = 1
+  var onValueChange: (StepperValueChange) -> Void
 }
 
-struct StepperView: ExpoSwiftUI.View {
-  @ObservedObject var props: StepperProps
-  @State var value: Int = 0
-  
-  init(props: StepperProps) {
-    self.props = props
+@Record
+struct StepperValueChange {
+  var value: Int = 0
+}
+
+@ExpoView<StepperProps>
+public struct StepperView: View {
+  @State private var value: Int = 0
+
+  public var body: some View {
+    stepper.applyExpoUIViewProps(props.base, appContext: appContext)
   }
 
-  var body: some View {
+  @ViewBuilder
+  private var stepper: some View {
 #if !os(tvOS)
     Stepper(props.label, value: $value, in: props.min...props.max, step: props.step)
       .onAppear {
@@ -31,7 +38,7 @@ struct StepperView: ExpoSwiftUI.View {
       }
       .onChange(of: value) { newValue in
         if props.value != newValue {
-          props.onValueChange(["value": Int(newValue)])
+          props.onValueChange(StepperValueChange(value: newValue))
         }
       }
 #else
