@@ -656,6 +656,19 @@ inline void setNativeState(jsi::IRuntime &runtime, const jsi::Object &object, co
 }
 
 /**
+ Sets the native state of the object. Returns `false` when the engine refuses, for example when the object is
+ frozen, a Proxy or a host object. A C++ exception can't cross into Swift, so it's caught here.
+ */
+inline bool trySetNativeState(jsi::IRuntime &runtime, const jsi::Object &object, const expo::NativeStateShared &nativeState) {
+  try {
+    object.setNativeState(runtime, nativeState);
+    return true;
+  } catch (const jsi::JSIException &) {
+    return false;
+  }
+}
+
+/**
  Removes the native state from the object. Returns `false` when the engine refuses, for example when the
  object is frozen. A C++ exception can't cross into Swift, so it's caught here.
  */

@@ -130,4 +130,12 @@ struct JavaScriptPropNameIDTests {
     runtime.global().setProperty("arr", value: array.asValue())
     #expect(try runtime.eval("arr['café'] === 'party'").getBool() == true)
   }
+
+  @Test
+  func `withUnsafePointee returns the same pointee across calls`() {
+    let propName = JavaScriptPropNameID(runtime, string: "name")
+    let pointee1 = propName.withUnsafePointee { return $0 }
+    let pointee2 = propName.withUnsafePointee { return $0 }
+    #expect(pointee1 == pointee2)
+  }
 }
