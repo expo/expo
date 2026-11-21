@@ -16,7 +16,7 @@ import { useNavigatorContext } from '../views/Navigator';
 import { TabNavigatorStatesContext, TabTriggerMapContext } from './TabContext';
 import { buildTabAction, type TriggerMap } from './common';
 
-type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & {
+type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children' | 'href'> & {
   children?: ReactNode | undefined;
 };
 

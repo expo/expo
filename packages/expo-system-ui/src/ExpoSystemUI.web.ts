@@ -3,7 +3,8 @@ export default {
     if (typeof window === 'undefined') {
       return null;
     }
-    const normalizeColor = require('react-native-web/dist/cjs/modules/normalizeColor');
+    const normalizeColor =
+      require('react-native-web/dist/exports/StyleSheet/compiler/normalizeColor.js').default;
     return normalizeColor(document.body.style.backgroundColor);
   },
   setBackgroundColorAsync(color: string | null) {

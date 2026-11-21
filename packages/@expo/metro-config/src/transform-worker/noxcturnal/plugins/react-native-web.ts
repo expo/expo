@@ -10,9 +10,9 @@ const REACT_NATIVE_WEB_EXPORTS = new Set<string>([
   'AppRegistry',
   'AppState',
   'Appearance',
+  'AssetRegistry',
   'BackHandler',
   'Button',
-  'CheckBox',
   'Clipboard',
   'DeviceEventEmitter',
   'Dimensions',
@@ -22,7 +22,6 @@ const REACT_NATIVE_WEB_EXPORTS = new Set<string>([
   'Image',
   'ImageBackground',
   'InputAccessoryView',
-  'InteractionManager',
   'Keyboard',
   'KeyboardAvoidingView',
   'LayoutAnimation',
@@ -32,11 +31,10 @@ const REACT_NATIVE_WEB_EXPORTS = new Set<string>([
   'NativeEventEmitter',
   'NativeModules',
   'PanResponder',
-  'Picker',
   'PixelRatio',
   'Platform',
+  'PlatformColor',
   'Pressable',
-  'ProgressBar',
   'RefreshControl',
   'SafeAreaView',
   'ScrollView',
@@ -47,7 +45,6 @@ const REACT_NATIVE_WEB_EXPORTS = new Set<string>([
   'Switch',
   'Text',
   'TextInput',
-  'Touchable',
   'TouchableHighlight',
   'TouchableNativeFeedback',
   'TouchableOpacity',
@@ -56,12 +53,14 @@ const REACT_NATIVE_WEB_EXPORTS = new Set<string>([
   'Vibration',
   'View',
   'VirtualizedList',
-  'YellowBox',
   'createElement',
   'findNodeHandle',
   'processColor',
   'render',
   'unmountComponentAtNode',
+  'useAnimatedColor',
+  'useAnimatedValue',
+  'useAnimatedValueXY',
   'useColorScheme',
   'useLocaleContext',
   'useWindowDimensions',
@@ -102,9 +101,9 @@ export function createReactNativeWebPlugin(nox: Noxcturnal): DefinedNativePlugin
                 if (location) {
                   return `import ${String(specifier.node.local)} from ${JSON.stringify(location)};`;
                 }
-                return `import { ${specifier.sourceText()} } from "react-native-web/dist/index";`;
+                return `import { ${specifier.sourceText()} } from "react-native-web/dist/index.js";`;
               }
-              return `import ${specifier.sourceText()} from "react-native-web/dist/index";`;
+              return `import ${specifier.sourceText()} from "react-native-web/dist/index.js";`;
             })
           );
         }
@@ -131,7 +130,7 @@ export function createReactNativeWebPlugin(nox: Noxcturnal): DefinedNativePlugin
               const location = reactNativeWebLocation(local);
               return location
                 ? `export { default as ${exported} } from ${JSON.stringify(location)};`
-                : `export { ${specifier.sourceText()} } from "react-native-web/dist/index";`;
+                : `export { ${specifier.sourceText()} } from "react-native-web/dist/index.js";`;
             })
           );
         }
@@ -190,7 +189,7 @@ export function createReactNativeWebPlugin(nox: Noxcturnal): DefinedNativePlugin
 
             if (id.node.type === 'Identifier') {
               replacements.push(
-                `${kind} ${String(id.node.name)} = require("react-native-web/dist/index");`
+                `${kind} ${String(id.node.name)} = require("react-native-web/dist/index.js");`
               );
               changed = true;
               continue;
@@ -253,7 +252,7 @@ export function createReactNativeWebPlugin(nox: Noxcturnal): DefinedNativePlugin
                 if (index > 0) parts.push(', ');
                 parts.push(property);
               }
-              parts.push(' } = require("react-native-web/dist/index");');
+              parts.push(' } = require("react-native-web/dist/index.js");');
               replacements.push({ kind: 'composite', parts });
             }
             changed = true;
