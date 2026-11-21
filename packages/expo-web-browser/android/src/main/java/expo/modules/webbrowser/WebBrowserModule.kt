@@ -1,5 +1,6 @@
 package expo.modules.webbrowser
 
+import android.content.Intent
 import android.os.Bundle
 import android.provider.Browser
 import android.text.TextUtils
@@ -161,6 +162,9 @@ class WebBrowserModule : Module() {
       val packageName = options.browserPackage
       if (session == null && !TextUtils.isEmpty(packageName)) {
         intent.setPackage(packageName)
+      }
+      options.referrer?.takeIf { it.isNotEmpty() }?.let {
+        intent.putExtra(Intent.EXTRA_REFERRER, it.toUri())
       }
     }
   }
