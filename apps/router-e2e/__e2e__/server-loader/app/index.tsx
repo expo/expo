@@ -2,6 +2,7 @@ import { useLoaderData, useLocalSearchParams, usePathname } from 'expo-router';
 import { Suspense, useState } from 'react';
 import { Button } from 'react-native';
 
+import { LoaderActivity } from '../components/Container';
 import { Loading } from '../components/Loading';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
 import { Table, TableRow } from '../components/Table';
@@ -15,7 +16,9 @@ export async function loader() {
 export default function IndexRoute() {
   return (
     <Suspense fallback={<Loading />}>
-      <IndexScreen />
+      <LoaderActivity>
+        <IndexScreen />
+      </LoaderActivity>
     </Suspense>
   );
 }

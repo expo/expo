@@ -26,6 +26,7 @@ import {
 } from '../../global-state/routingQueueContext';
 import { useNavigationTreeReducer } from '../../global-state/useNavigationTreeReducer';
 import { useNavigationTreeReportEvents } from '../../global-state/useNavigationTreeReportEvents';
+import { LoaderContext } from '../../loaders/LoaderContext';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
@@ -80,6 +81,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   const routerConfig = use(RouterConfigContext);
   const routingQueue = use(RoutingQueueApiContext);
   const isNavigationPending = use(NavigationPendingContext);
+  const loaderContext = use(LoaderContext);
   const routesWithRemovalPrevented = use(GlobalRoutesWithRemovalPreventedContext);
 
   if (!parent.isDefault) {
@@ -115,6 +117,9 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     redirects: routerConfig?.redirects,
   });
   const [browserHistory] = React.useState(createBrowserHistoryAdapter);
+  useClientLayoutEffect(() => {
+    loaderContext.commit(state);
+  }, [loaderContext, state]);
   useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory);
   const registrySetters = React.useMemo<RouterRegistrySetters>(
     () => ({

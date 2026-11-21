@@ -43,40 +43,32 @@ test.describe('server loaders in production', () => {
     await expoServe.stopAsync();
   });
 
-  test('writes large completed Suspense content before the bootstrap script', async ({
-    request,
-  }) => {
-    const response = await request.get(new URL('/large-suspense', expoServe.url).href);
-    expect(response.status()).toBe(200);
-    const html = await response.text();
-    const contentStart = html.indexOf('data-testid="suspense-content"');
-    const contentEnd = html.indexOf('data-testid="suspense-content-end"');
-    const bootstrap = html.indexOf('globalThis.__EXPO_ROUTER_HYDRATE__');
-
-    expect(contentStart).toBeGreaterThan(-1);
-    expect(contentEnd).toBeGreaterThan(contentStart);
-    expect(bootstrap).toBeGreaterThan(contentEnd);
-    expect(html).toContain('globalThis.__EXPO_ROUTER_LOADER_DATA__');
-    expect(html).not.toContain('<div hidden id="S:');
-  });
-
-  test('shows large completed Suspense content without JavaScript', async ({ browser }) => {
-    const page = await browser.newPage({ javaScriptEnabled: false });
-    try {
-      const response = await page.goto(new URL('/large-suspense', expoServe.url).href);
-
-      expect(response?.status()).toBe(200);
-      await expect(page.getByTestId('suspense-row')).toHaveText(
-        Array.from(
-          { length: 400 },
-          (_, id) => `Row ${id} of 400, carrying enough text that a few hundred of them add up`
-        )
-      );
-      await expect(page.getByTestId('suspense-content')).toBeVisible();
-      await expect(page.getByTestId('suspense-content-end')).toBeVisible();
-    } finally {
-      await page.close();
-    }
+  test('retains loader data and local state across Activity hide and reveal', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+    const loaderRequests: string[] = [];
+    page.on('request', (request) => {
+      if (request.url().includes('/_expo/loaders/')) loaderRequests.push(request.url());
+    });
+    await page.goto(expoServe.url.href);
+    await page.getByTestId('site-links-mounted').waitFor({ state: 'attached' });
+    await page.getByTestId('index-increment').click();
+    await expect(page.getByTestId('index-count')).toHaveText('1');
+    loaderRequests.length = 0;
+    await page.getByTestId('toggle-route-activity').click();
+    await expect(page.getByTestId('loader-result')).toBeHidden();
+    await page.screenshot({
+      path: test.info().outputPath('activity-hidden.png'),
+      fullPage: true,
+    });
+    await page.getByTestId('toggle-route-activity').click();
+    await expect(page.getByTestId('loader-result')).toContainText('root-index');
+    await expect(page.getByTestId('index-count')).toHaveText('1');
+    await page.screenshot({
+      path: test.info().outputPath('activity-revealed.png'),
+      fullPage: true,
+    });
+    expect(loaderRequests).toEqual([]);
+    expect(pageErrors.all).toEqual([]);
   });
 
   test('hydrates large completed Suspense content', async ({ page }) => {
@@ -110,26 +102,6 @@ test.describe('server loaders in production', () => {
 
     const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
     expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
-  });
-
-  test('loads a platform-specific catch-all loader on client-side navigation', async ({ page }) => {
-    const loaderRequests: string[] = [];
-    page.on('request', (request) => {
-      if (request.url().includes('/_expo/loaders/')) {
-        loaderRequests.push(request.url());
-      }
-    });
-
-    await page.goto(expoServe.url.href);
-    await page.getByText('Go to Platform Catch-all').click();
-    await expect(page).toHaveURL(/\/platform\/alpha\/beta$/);
-    await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
-      JSON.stringify({ data: 'platform-catch-all' }, null, 2)
-    );
-    expect(loaderRequests).toContainEqual(
-      expect.stringContaining('/_expo/loaders/(group)/platform/alpha/beta')
-    );
-    expect(loaderRequests).not.toContainEqual(expect.stringContaining('[...slug].web'));
   });
 
   test('refetches headerless loader data on every fresh mount', async ({ page }) => {

@@ -134,6 +134,40 @@ test.describe('server-loader HMR in streaming SSR', () => {
     expect(pageErrors.all).toEqual([]);
   });
 
+  test('refreshes loader data while its Activity is hidden', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+    const messages = trackMessageSocket(page);
+    const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(
+      expoStart,
+      page,
+      undefined,
+      OPEN_PAGE_OPTS
+    );
+    await waitForHydration(page);
+    await page.getByTestId('index-increment').click();
+    await expect(page.getByTestId('index-count')).toHaveText('1');
+    await page.getByTestId('toggle-route-activity').click();
+    await expect(page.getByTestId('loader-result')).toBeHidden();
+
+    const loaderRequests: string[] = [];
+    page.on('request', (request) => {
+      if (request.url().includes('/_expo/loaders/index')) loaderRequests.push(request.url());
+    });
+    const refreshed = page.waitForResponse((response) =>
+      response.url().includes('/_expo/loaders/index')
+    );
+    await mutateFile(indexFile, (contents) =>
+      contents.replace(`'${ORIGINAL_LOADER_VALUE}'`, "'root-index-hidden'")
+    );
+    await Promise.all([waitForLoaderInvalidate(messages.socket!), waitForFashRefresh()]);
+    expect(await (await refreshed).json()).toEqual({ data: 'root-index-hidden' });
+    await page.getByTestId('toggle-route-activity').click();
+    await expect(page.getByTestId('loader-result')).toContainText('root-index-hidden');
+    await expect(page.getByTestId('index-count')).toHaveText('1');
+    expect(loaderRequests).toHaveLength(1);
+    expect(pageErrors.all).toEqual([]);
+  });
+
   test('two consecutive loader edits both apply', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
     const messages = trackMessageSocket(page);

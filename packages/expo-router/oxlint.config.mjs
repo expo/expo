@@ -13,6 +13,32 @@ export default defineConfig({
       },
     },
     {
+      files: ['src/**/*.{ts,tsx}'],
+      excludeFiles: [
+        'src/loaders/LoaderRuntime.ts',
+        'src/loaders/__tests__/LoaderClient.test.ts',
+        'src/loaders/__tests__/LoaderSuspenseStore.test.ts',
+      ],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            patterns: [
+              {
+                group: [
+                  '**/LoaderClient',
+                  '**/LoaderClient.*',
+                  '**/LoaderSuspenseStore',
+                  '**/LoaderSuspenseStore.*',
+                ],
+                message: 'Use LoaderRuntime to coordinate loader requests and Suspense state.',
+              },
+            ],
+          },
+        ],
+      },
+    },
+    {
       files: ['src/loaders/LoaderClient.ts'],
       rules: {
         'no-restricted-imports': [

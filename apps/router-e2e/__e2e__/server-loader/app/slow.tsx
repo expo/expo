@@ -1,6 +1,7 @@
 import { useLoaderData } from 'expo-router';
 import { Suspense } from 'react';
 
+import { LoaderActivity } from '../components/Container';
 import { Loading } from '../components/Loading';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
 import { Table, TableRow } from '../components/Table';
@@ -16,7 +17,9 @@ export async function loader() {
 export default function SlowRoute() {
   return (
     <Suspense fallback={<SlowFallback />}>
-      <SlowScreen />
+      <LoaderActivity>
+        <SlowScreen />
+      </LoaderActivity>
     </Suspense>
   );
 }

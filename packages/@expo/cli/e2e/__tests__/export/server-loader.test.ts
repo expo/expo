@@ -87,6 +87,47 @@ describe.each(
     }
   });
 
+  it('includes completed Suspense content before the hydration bootstrap', async () => {
+    const response = await server.fetchAsync('/large-suspense');
+    expect(response.status).toBe(200);
+    const html = await response.text();
+    const contentStart = html.indexOf('data-testid="suspense-content"');
+    const contentEnd = html.indexOf('data-testid="suspense-content-end"');
+    const bootstrap = html.indexOf(
+      server.isExpoStart
+        ? 'globalThis.__EXPO_ROUTER_LOADER_DATA__'
+        : 'globalThis.__EXPO_ROUTER_HYDRATE__'
+    );
+
+    expect(contentStart).toBeGreaterThan(-1);
+    expect(contentEnd).toBeGreaterThan(contentStart);
+    expect(bootstrap).toBeGreaterThan(contentEnd);
+    expect(html).toContain('globalThis.__EXPO_ROUTER_LOADER_DATA__');
+    expect(html).not.toContain('<div hidden id="S:');
+  });
+
+  it('includes all loader rows in HTML without executing JavaScript', async () => {
+    const response = await server.fetchAsync('/large-suspense');
+    expect(response.status).toBe(200);
+    const html = getHtml(await response.text());
+    const content = html.querySelector('[data-testid="suspense-content"]');
+    const rows = content!.querySelectorAll('[data-testid="suspense-row"]');
+
+    expect(rows.length).toBe(400);
+    expect(rows[0].textContent).toBe(
+      'Row 0 of 400, carrying enough text that a few hundred of them add up'
+    );
+    expect(rows[399].textContent).toBe(
+      'Row 399 of 400, carrying enough text that a few hundred of them add up'
+    );
+    expect(content!.querySelector('[data-testid="suspense-content-end"]')?.textContent).toBe(
+      'End of loader rows'
+    );
+    expect(content!.querySelector('[data-testid="suspense-count"]')?.textContent).toBe('0');
+    expect(content!.querySelector('[data-testid="suspense-mounted"]')).toBeNull();
+    expect(html.querySelector('[hidden][id^="S:"]')).toBeNull();
+  });
+
   it('returns 404 for loader endpoint when route has no loader', async () => {
     const response = await server.fetchAsync('/_expo/loaders/no-loader');
     expect(response.status).toBe(404);
