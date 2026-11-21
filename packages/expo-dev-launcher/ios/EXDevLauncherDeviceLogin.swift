@@ -29,34 +29,50 @@ internal struct DeviceLoginRequest: Equatable {
 /**
  * Signs the launcher in from a launch URL. The tool that opens the URL (Expo CLI, Expo Orbit)
  * creates an OAuth device code and approves it with its own session; the launcher exchanges the
- * code for a session of its own. Every failure is silent: the launch continues signed out.
+ * code for a session of its own. A failure only writes a log line: the launch continues signed out.
  */
 @objc(EXDevLauncherDeviceLogin)
 public class EXDevLauncherDeviceLogin: NSObject {
   static let didSignInNotification = Notification.Name("EXDevLauncherDeviceLoginDidSignIn")
+  /// Set by the sign out button and removed by a manual sign in: a launch URL does not undo a sign out.
+  static let signedOutKey = "expo-device-login-signed-out"
 
   @objc public static func handle(_ url: URL) {
     // Simulator only: on a device, a link from another app could sign the launcher in to the
     // sender's account.
     #if targetEnvironment(simulator)
-    guard UserDefaults.standard.string(forKey: sessionKey) == nil,
-          let request = DeviceLoginRequest.parse(url) else {
+    guard let request = DeviceLoginRequest.parse(url) else {
       return
     }
+    let defaults = UserDefaults.standard
+    let redeems = defaults.string(forKey: APIClient.sessionKey) == nil && !defaults.bool(forKey: signedOutKey)
 
     Task {
-      guard let sessionSecret = try? await exchange(request) else {
-        return
+      do {
+        // The app's linking listeners get this URL too. When the launcher does not redeem the code,
+        // a wrong match value (the server sends two digits) makes the server reject the code from then on.
+        let data = try await exchange(request, matchValue: redeems ? request.matchValue : "x")
+        guard redeems else {
+          return
+        }
+        guard let sessionSecret = data["session_secret"] as? String else {
+          // Only the server error code: never log the device code or the session secret.
+          NSLog("DevLauncher could not sign in from the launch URL: %@", data["error"] as? String ?? "no session in the response")
+          return
+        }
+        defaults.set(sessionSecret, forKey: APIClient.sessionKey)
+        NotificationCenter.default.post(name: didSignInNotification, object: nil)
+      } catch {
+        NSLog("DevLauncher could not sign in from the launch URL: %@", error.localizedDescription)
       }
-      UserDefaults.standard.set(sessionSecret, forKey: sessionKey)
-      NotificationCenter.default.post(name: didSignInNotification, object: nil)
     }
     #endif
   }
 
-  private static func exchange(_ request: DeviceLoginRequest) async throws -> String? {
+  /** Returns the `data` object of the token response. */
+  private static func exchange(_ request: DeviceLoginRequest, matchValue: String) async throws -> [String: Any] {
     guard let url = URL(string: "\(APIClient.shared.apiOrigin)/v2/auth/token") else {
-      return nil
+      return [:]
     }
     var urlRequest = URLRequest(url: url)
     urlRequest.httpMethod = "POST"
@@ -65,12 +81,12 @@ public class EXDevLauncherDeviceLogin: NSObject {
       "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
       "client_id": request.clientId,
       "device_code": request.deviceCode,
-      "match_value": request.matchValue
+      "match_value": matchValue
     ])
     urlRequest.timeoutInterval = 10
 
     let (data, _) = try await URLSession.shared.data(for: urlRequest)
     let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-    return (json?["data"] as? [String: Any])?["session_secret"] as? String
+    return json?["data"] as? [String: Any] ?? [:]
   }
 }

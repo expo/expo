@@ -7,7 +7,6 @@ import Network
 import EXDevMenu
 
 private let selectedAccountKey = "expo-selected-account-id"
-let sessionKey = "expo-session-secret"
 
 private let DEV_LAUNCHER_DEFAULT_SCHEME = "expo-dev-launcher"
 private let BONJOUR_TYPE = "_expo._tcp"
@@ -622,7 +621,7 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   private func checkAuthenticationStatus() {
-    let sessionSecret = UserDefaults.standard.string(forKey: sessionKey)
+    let sessionSecret = UserDefaults.standard.string(forKey: APIClient.sessionKey)
 
     if let sessionSecret {
       APIClient.shared.setSession(sessionSecret)
@@ -635,7 +634,7 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   private func clearInvalidSession() {
-    UserDefaults.standard.removeObject(forKey: sessionKey)
+    UserDefaults.standard.removeObject(forKey: APIClient.sessionKey)
     APIClient.shared.setSession(nil)
     isAuthenticated = false
     user = nil
@@ -705,7 +704,8 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   func signOut() {
-    UserDefaults.standard.removeObject(forKey: sessionKey)
+    UserDefaults.standard.removeObject(forKey: APIClient.sessionKey)
+    UserDefaults.standard.set(true, forKey: EXDevLauncherDeviceLogin.signedOutKey)
     UserDefaults.standard.removeObject(forKey: selectedAccountKey)
     APIClient.shared.setSession(nil)
     clearRecentlyOpenedApps()
@@ -752,7 +752,8 @@ class DevLauncherViewModel: ObservableObject {
           return
         }
 
-        UserDefaults.standard.set(sessionSecret, forKey: sessionKey)
+        UserDefaults.standard.set(sessionSecret, forKey: APIClient.sessionKey)
+        UserDefaults.standard.removeObject(forKey: EXDevLauncherDeviceLogin.signedOutKey)
         APIClient.shared.setSession(sessionSecret)
         continuation.resume(returning: true)
       }

@@ -67,6 +67,8 @@ class SessionService(
 
   fun setSession(newSession: Session?) {
     newSession.saveToPreferences(sessionStore)
+    // A null session is always an explicit sign out.
+    sessionStore.edit(commit = true) { putBoolean(SIGNED_OUT_KEY, newSession == null) }
     httpClientService.setSession(newSession?.sessionSecret)
     _session.update { newSession }
   }

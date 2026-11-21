@@ -4,6 +4,8 @@ import Foundation
 
 class APIClient {
   static let shared = APIClient()
+  /// The `UserDefaults` key of the stored session secret.
+  static let sessionKey = "expo-session-secret"
 
   private var useStaging: Bool {
     return false
