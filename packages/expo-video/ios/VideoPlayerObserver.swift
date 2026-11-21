@@ -504,7 +504,7 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
     }
     error = nil
 
-    if player.timeControlStatus != .waitingToPlayAtSpecifiedRate && player.status == .readyToPlay && currentItem?.isPlaybackBufferEmpty != true {
+    if player.timeControlStatus != .waitingToPlayAtSpecifiedRate && player.status == .readyToPlay && currentItem?.isPlaybackBufferEmpty == false {
       status = .readyToPlay
     } else if player.timeControlStatus == .waitingToPlayAtSpecifiedRate {
       switch player.reasonForWaitingToPlay {
