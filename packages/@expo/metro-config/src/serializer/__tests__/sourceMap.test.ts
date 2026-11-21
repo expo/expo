@@ -201,6 +201,49 @@ describe('composeSourceMaps', () => {
     });
   });
 
+  it('tolerates a segment with a source index past the end of sources', () => {
+    const bundler = buildMap({
+      file: 'bundle.js',
+      segments: [
+        { generated: { line: 1, column: 0 }, source: 'a.js', original: { line: 1, column: 0 } },
+        { generated: { line: 1, column: 10 }, source: 'a.js', original: { line: 2, column: 0 } },
+      ],
+    });
+
+    // Raw (0-based) segments for the single generated line:
+    //   genCol 0 -> bundle.js 1:0
+    //   genCol 3 -> source index 1, but `sources` has one entry  (crashes remapping)
+    //   genCol 6 -> bundle.js 1:10
+    const hermes: ComposableSourceMap = {
+      version: 3,
+      file: 'bundle.hbc',
+      sources: ['bundle.js'],
+      names: [],
+      mappings: encode([
+        [
+          [0, 0, 0, 0],
+          [3, 1, 0, 0],
+          [6, 0, 0, 10],
+        ],
+      ]),
+    };
+
+    let composed!: ComposableSourceMap;
+    expect(() => {
+      composed = composeSourceMaps([bundler, hermes]);
+    }).not.toThrow();
+
+    const tracer = new TraceMap(composed as any);
+    expect(originalPositionFor(tracer, { line: 1, column: 6 })).toMatchObject({
+      source: 'a.js',
+      line: 2,
+      column: 0,
+    });
+    expect(originalPositionFor(tracer, { line: 1, column: 3 })).toMatchObject({
+      source: null,
+    });
+  });
+
   it('returns a single map unchanged in the trivial chain', () => {
     const single = buildMap({
       file: 'a.js',
