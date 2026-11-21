@@ -328,6 +328,11 @@ class Env {
     return boolish('EXPO_UNSTABLE_BONJOUR', !envIsHeadless());
   }
 
+  /** Sign in to a development build on a simulator or an emulator with the session of `expo login`. */
+  get EXPO_UNSTABLE_DEV_CLIENT_LOGIN(): boolean {
+    return boolish('EXPO_UNSTABLE_DEV_CLIENT_LOGIN', false);
+  }
+
   /** @internal Configure other environment variables for headless operations */
   get EXPO_UNSTABLE_HEADLESS() {
     return boolish('EXPO_UNSTABLE_HEADLESS', envIsWebcontainer());

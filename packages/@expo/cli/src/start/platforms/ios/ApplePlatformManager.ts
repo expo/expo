@@ -52,6 +52,10 @@ export class ApplePlatformManager extends PlatformManager<Device> {
     return new AppleAppIdResolver(this.projectRoot);
   }
 
+  _isVirtualDevice(): boolean {
+    return true;
+  }
+
   _resolveAlternativeLaunchUrl(
     applicationId: string,
     props?: Partial<BaseOpenInCustomProps>

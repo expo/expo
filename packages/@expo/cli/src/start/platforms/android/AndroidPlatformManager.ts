@@ -5,6 +5,7 @@ import { hasDirectDevClientDependency } from '../../detectDevClient';
 import type { AppIdResolver } from '../AppIdResolver';
 import type { BaseOpenInCustomProps, BaseResolveDeviceProps } from '../PlatformManager';
 import { PlatformManager } from '../PlatformManager';
+import { withDeviceLoginParamsAsync } from '../deviceLogin';
 import { event } from '../events';
 import { AndroidAppIdResolver } from './AndroidAppIdResolver';
 import { AndroidDeviceManager } from './AndroidDeviceManager';
@@ -113,13 +114,22 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
 
     deviceManager.logOpeningUrl(url ?? launchActivity);
     await deviceManager.activateWindowAsync();
-    await deviceManager.launchActivityAsync(launchActivity, url);
+    await deviceManager.launchActivityAsync(
+      launchActivity,
+      url && this._isVirtualDevice(deviceManager.device)
+        ? await withDeviceLoginParamsAsync(url)
+        : url
+    );
 
     return { url: url ?? launchActivity };
   }
 
   _getAppIdResolver(): AppIdResolver {
     return new AndroidAppIdResolver(this.projectRoot);
+  }
+
+  _isVirtualDevice(device: Device): boolean {
+    return device.type === 'emulator';
   }
 
   _resolveAlternativeLaunchUrl(

@@ -8,6 +8,7 @@ import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
 import type { AppIdResolver } from './AppIdResolver';
 import type { DeviceManager } from './DeviceManager';
+import { withDeviceLoginParamsAsync } from './deviceLogin';
 import { event as debugEvent } from './events';
 
 declare module '2g' {
@@ -57,6 +58,11 @@ export class PlatformManager<
       ) => Promise<DeviceManager<IDevice>>;
     }
   ) {}
+
+  /** Whether the device is a simulator or an emulator. */
+  _isVirtualDevice(device: IDevice): boolean {
+    return false;
+  }
 
   /** Returns the project application identifier or asserts that one is not defined. Exposed for testing. */
   _getAppIdResolver(): AppIdResolver {
@@ -171,7 +177,11 @@ export class PlatformManager<
     deviceManager.logOpeningUrl(url);
     await deviceManager.activateWindowAsync();
 
-    await deviceManager.openUrlAsync(url, {
+    // The device login params are not in the logged or returned URL: they contain an approved code.
+    const launchUrl = this._isVirtualDevice(deviceManager.device)
+      ? await withDeviceLoginParamsAsync(url)
+      : url;
+    await deviceManager.openUrlAsync(launchUrl, {
       appId: applicationId,
     });
 
