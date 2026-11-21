@@ -48,6 +48,8 @@ import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import expo.modules.camera.analyzers.BarcodeAnalyzer
 import expo.modules.camera.analyzers.toByteArray
 import expo.modules.camera.common.BarcodeScannedEvent
@@ -685,8 +687,19 @@ class ExpoCameraView(
     camera?.cameraControl?.setZoomRatio(targetZoomRatio)
   }
 
+  // The observer of the current bind. Every bind (a change of mode, lens or picture size) observes the
+  // camera's state again: an observer left from an earlier bind would report the camera as open once more
+  // for each bind so far and, tied to the activity's lifecycle, keep this view alive after it is gone.
+  private var cameraStateObserver: Pair<LiveData<CameraState>, Observer<CameraState>>? = null
+
+  private fun stopObservingCameraState() {
+    cameraStateObserver?.let { (cameraState, observer) -> cameraState.removeObserver(observer) }
+    cameraStateObserver = null
+  }
+
   private fun observeCameraState(cameraInfo: CameraInfo) {
-    cameraInfo.cameraState.observe(currentActivity) {
+    stopObservingCameraState()
+    val observer = Observer<CameraState> {
       when (it.type) {
         CameraState.Type.OPEN -> {
           onCameraReady(Unit)
@@ -696,6 +709,8 @@ class ExpoCameraView(
         else -> {}
       }
     }
+    cameraInfo.cameraState.observe(currentActivity, observer)
+    cameraStateObserver = cameraInfo.cameraState to observer
   }
 
   @OptIn(ExperimentalCamera2Interop::class)
@@ -895,6 +910,7 @@ class ExpoCameraView(
   }
 
   fun cleanupCamera() {
+    stopObservingCameraState()
     orientationEventListener.disable()
     cancelCoroutineScope()
     cameraProvider?.unbindAll()
