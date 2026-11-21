@@ -6,9 +6,6 @@
 #import <ExpoTaskManager/EXTask.h>
 #import <ExpoTaskManager/EXTaskService.h>
 
-#import <UMAppLoader/UMAppLoaderProvider.h>
-#import <UMAppLoader/UMAppRecordInterface.h>
-
 #import <React/RCTLog.h>
 
 @interface EXTaskService ()
@@ -18,9 +15,6 @@
 
 // Table of registered tasks. Schema: { "<appId>": { "<taskName>": EXTask } }
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSMutableDictionary<NSString *, EXTask *> *> *tasks;
-
-// Dictionary with app records of running background apps. Schema: { "<appId>": EXAppRecordInterface }
-@property (nonatomic, strong) NSMutableDictionary<NSString *, id<UMAppRecordInterface>> *appRecords;
 
 // MapTable with task managers of running (foregrounded) apps. Schema: { "<appId>": EXTaskManagerInterface }
 @property (nonatomic, strong) NSMapTable<NSString *, id<EXTaskManagerInterface>> *taskManagers;
@@ -59,7 +53,6 @@
   if (self = [super init]) {
     _tasks = [NSMutableDictionary new];
     _requests = [NSMutableArray new];
-    _appRecords = [NSMutableDictionary new];
     _taskManagers = [NSMapTable strongToWeakObjectsMapTable];
     _headlessTaskManagers = [NSMapTable strongToWeakObjectsMapTable];
     _eventsQueues = [NSMutableDictionary new];
@@ -285,8 +278,6 @@
     }
   }
 
-  // Remove event and maybe invalidate related app record
-  BOOL shouldMaybeInvalidate = NO;
   @synchronized (_lockTarget) {
     NSMutableArray *appEvents = _events[appId];
 
@@ -295,23 +286,8 @@
 
       if (appEvents.count == 0) {
         [self->_events removeObjectForKey:appId];
-        shouldMaybeInvalidate = YES;
       }
     }
-  }
-
-  if (shouldMaybeInvalidate) {
-    // Invalidate app record but after 1 second delay so we can still take batched events.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-      BOOL stillEmpty;
-      @synchronized (self->_lockTarget) {
-        stillEmpty = self->_events[appId] == nil;
-      }
-
-      if (stillEmpty) {
-        [self _invalidateAppWithId:appId];
-      }
-    });
   }
 }
 
@@ -376,18 +352,7 @@
     return executionInfo[@"eventId"];
   }
 
-  BOOL hasAppRecord;
-  @synchronized (_lockTarget) {
-    hasAppRecord = _appRecords[task.appId] != nil;
-  }
-
-  if (!hasAppRecord) {
-    // No app record yet - let's spin it up!
-    [self _loadAppWithId:task.appId appUrl:task.appUrl];
-  }
-
-  // App record for that app exists, but it's not fully loaded as its task manager is not there yet.
-  // We need to add event's body to the queue from which events will be executed once the task manager is ready.
+  // The task manager is not there yet. Queue the event's body; it runs once the task manager is ready.
   @synchronized (_lockTarget) {
     NSMutableArray *appEventsQueue = _eventsQueues[task.appId] ?: [NSMutableArray new];
     [appEventsQueue addObject:body];
@@ -645,36 +610,6 @@
   [request maybeEvaluate];
 }
 
-- (void)_loadAppWithId:(nonnull NSString *)appId
-                appUrl:(nonnull NSString *)appUrl
-{
-  id<UMAppLoaderInterface> appLoader = [[UMAppLoaderProvider sharedInstance] createAppLoader:@"react-native-experience"];
-  
-  if (appLoader != nil && appUrl != nil) {
-    __block id<UMAppRecordInterface> appRecord;
-    
-    NSLog(@"EXTaskService: Loading headless app '%@' with url '%@'.", appId, appUrl);
-    
-    appRecord = [appLoader loadAppWithUrl:appUrl options:nil callback:^(BOOL success, NSError *error) {
-      if (!success) {
-        NSLog(@"EXTaskService: Loading app '%@' from url '%@' failed. Error description: %@", appId, appUrl, error.description);
-        @synchronized (self->_lockTarget) {
-          [self->_events removeObjectForKey:appId];
-          [self->_eventsQueues removeObjectForKey:appId];
-          [self->_appRecords removeObjectForKey:appId];
-        }
-
-        // Host unreachable? Unregister all tasks for that app.
-        [self unregisterAllTasksForAppId:appId];
-      }
-    }];
-
-    @synchronized (_lockTarget) {
-      [_appRecords setObject:appRecord forKey:appId];
-    }
-  }
-}
-
 /**
  *  Returns task manager for given appId. Task managers initialized in non-headless contexts have precedence over headless one.
  */
@@ -771,23 +706,6 @@
     @"taskName": task.name,
     @"appState": appState,
   };
-}
-
-- (void)_invalidateAppWithId:(NSString *)appId
-{
-  id<UMAppRecordInterface> appRecord;
-  @synchronized (_lockTarget) {
-    appRecord = _appRecords[appId];
-  }
-
-  if (appRecord) {
-    [appRecord invalidate];
-
-    @synchronized (_lockTarget) {
-      [_appRecords removeObjectForKey:appId];
-      [_headlessTaskManagers removeObjectForKey:appId];
-    }
-  }
 }
 
 - (nullable NSDictionary *)_exportError:(nullable NSError *)error

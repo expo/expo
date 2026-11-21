@@ -1,6 +1,10 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 import ExpoModulesCore
 
+#if canImport(ExpoTaskManagerObjC)
+import ExpoTaskManagerObjC
+#endif
+
 /**
  Runs a JavaScript task defined with `TaskManager.defineTask` on demand, in the execution time of the
  caller, and reports the value the task resolved with.
