@@ -24,6 +24,10 @@ public final class ModuleHolder {
   @JavaScriptActor
   private var javaScriptObject: JavaScriptObject?
 
+  /// The native state of `javaScriptObject`, which keeps its event listeners.
+  @JavaScriptActor
+  private var eventEmitterState: ModuleEventEmitterNativeState?
+
   /// The ID for the next created holder.
   private static let nextHolderId = Mutex<UInt64>(0)
 
@@ -171,8 +175,22 @@ public final class ModuleHolder {
     }
   }
 
+  /// Calls the listeners of the event with the payload and the module object as `this`. A module without a module
+  /// object has no listeners, so the object isn't built for the event.
+  @JavaScriptActor
+  func dispatchEvent(event: String, payload: borrowing JavaScriptValue, in runtime: JavaScriptRuntime) {
+    guard let eventListeners = eventEmitterState?.listeners(in: runtime)?.listeners(of: event) else {
+      return
+    }
+    EventListeners.call(eventListeners, this: javaScriptObject!, payload: payload, in: runtime)
+  }
+
   @JavaScriptActor
   func releaseJavaScriptObject() {
+    // The native state keeps the listeners, values of the runtime that is going away. The module object can't use it
+    // after that either.
+    eventEmitterState?.removePrimaryListeners()
+    eventEmitterState = nil
     javaScriptObject = nil
   }
 
@@ -205,7 +223,16 @@ public final class ModuleHolder {
 
       installNativeViewComponents(on: object)
 
-      try installListeningHooks(on: object, in: appContext.runtime)
+      let eventObservers =
+        definition.eventObservers.isEmpty ? nil : EventObservers(definitions: definition.eventObservers)
+      let eventEmitterState = ModuleEventEmitterNativeState(
+        module: module,
+        appContext: appContext,
+        eventObservers: eventObservers,
+        runtimeId: try appContext.runtime.id
+      )
+      object.setNativeState(eventEmitterState)
+      self.eventEmitterState = eventEmitterState
 
       return object
     } catch {
@@ -304,69 +331,6 @@ public final class ModuleHolder {
     post(event: .moduleDestroy)
   }
 
-  // MARK: - Privates
-
-  /// Sets the native hook that the event emitter calls when the number of listeners for an event
-  /// switches between zero and non-zero. The hook notifies the module through the `didStartListening`
-  /// and `didStopListening` lifecycle hooks, and calls the `OnStartObserving` and `OnStopObserving` definitions.
-  @JavaScriptActor
-  private func installListeningHooks(on object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) {
-    let eventObservers =
-      definition.eventObservers.isEmpty
-      ? nil
-      : EventObservers(definitions: definition.eventObservers)
-    let hookContext = ListeningHookContext(module: module, appContext: appContext, eventObservers: eventObservers)
-
-    // The emitter owns this retained reference and releases it together with the object's native state.
-    let context = Unmanaged.passRetained(hookContext).toOpaque()
-
-    object.withUnsafePointee { objectPointer in
-      runtime.withUnsafePointee { runtimePointer in
-        setJSListeningHook(
-          runtimePointer: runtimePointer,
-          objectPointer: objectPointer,
-          context: context,
-          hook: { context, eventName, isListening in
-            Unmanaged<ListeningHookContext>.fromOpaque(context)
-              .takeUnretainedValue()
-              .call(event: String(cString: eventName), isListening: isListening)
-          },
-          releaseContext: { context in
-            Unmanaged<ListeningHookContext>.fromOpaque(context).release()
-          }
-        )
-      }
-    }
-  }
-
-  private final class ListeningHookContext {
-    weak var module: AnyModule?
-    weak var appContext: AppContext?
-    let eventObservers: EventObservers?
-
-    init(module: AnyModule, appContext: AppContext?, eventObservers: EventObservers?) {
-      self.module = module
-      self.appContext = appContext
-      self.eventObservers = eventObservers
-    }
-
-    func call(event: String, isListening: Bool) {
-      if isListening {
-        module?.didStartListening(event: event)
-      } else {
-        module?.didStopListening(event: event)
-      }
-      guard let eventObservers, let appContext else {
-        return
-      }
-      if isListening {
-        eventObservers.didStartListening(event: event, appContext: appContext)
-      } else {
-        eventObservers.didStopListening(event: event, appContext: appContext)
-      }
-    }
-  }
-
   // MARK: - Exceptions
 
   internal class ModuleNotFoundException: GenericException<String> {
@@ -378,6 +342,45 @@ public final class ModuleHolder {
   internal class FunctionNotFoundException: GenericException<(functionName: String, moduleName: String)> {
     override var reason: String {
       "Function '\(param.functionName)' not found in module '\(param.moduleName)'"
+    }
+  }
+}
+
+/// The native state of a module object in the main runtime. Instead of the observing functions of the JS object, it
+/// calls the listening hooks of the module, `didStartListening(event:)` and `didStopListening(event:)`, and the
+/// `OnStartObserving` and `OnStopObserving` definitions.
+internal final class ModuleEventEmitterNativeState: EventEmitterNativeState, @unchecked Sendable {
+  private weak var module: AnyModule?
+  private weak var appContext: AppContext?
+  private let eventObservers: EventObservers?
+
+  init(module: AnyModule, appContext: AppContext, eventObservers: EventObservers?, runtimeId: JavaScriptRuntime.ID) {
+    self.module = module
+    self.appContext = appContext
+    self.eventObservers = eventObservers
+    super.init(primaryRuntimeId: runtimeId)
+  }
+
+  @JavaScriptActor
+  override func listeningDidChange(
+    _ emitter: borrowing JavaScriptObject,
+    event: String,
+    eventValue: borrowing JavaScriptUnownedValue,
+    isListening: Bool,
+    in runtime: JavaScriptRuntime
+  ) {
+    if isListening {
+      module?.didStartListening(event: event)
+    } else {
+      module?.didStopListening(event: event)
+    }
+    guard let eventObservers, let appContext else {
+      return
+    }
+    if isListening {
+      eventObservers.didStartListening(event: event, appContext: appContext)
+    } else {
+      eventObservers.didStopListening(event: event, appContext: appContext)
     }
   }
 }
