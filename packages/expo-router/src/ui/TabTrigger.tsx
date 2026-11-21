@@ -4,7 +4,7 @@ import { use, useCallback } from 'react';
 import type { View, PressableProps } from 'react-native';
 import { StyleSheet, Pressable } from 'react-native';
 
-import { appendBaseUrl } from '../fork/getPathFromState';
+import { appendBaseUrl } from '../fork/getPathFromState-forks';
 import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
 import { findStateByKey } from '../global-state/stateUtils';
 import { router } from '../imperative-api';

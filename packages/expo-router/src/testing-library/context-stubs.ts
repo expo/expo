@@ -2,6 +2,7 @@ import type { LoaderFunction } from 'expo-server';
 import path from 'path';
 
 import type { NativeIntent } from '../types';
+import type { FileContextKey } from '../types/paths';
 import requireContext from './require-context-ponyfill';
 
 export type ReactComponent = () => React.ReactElement<any, any> | null;
@@ -23,23 +24,31 @@ export { requireContext };
 const validExtensions = ['.js', '.jsx', '.ts', '.tsx'];
 
 export function inMemoryContext(context: MemoryContext) {
+  const originalKeys = new Map<string, string>();
+  function getContextKeys() {
+    originalKeys.clear();
+    return Object.keys(context).map((originalKey) => {
+      const ext = path.extname(originalKey);
+      const name = originalKey.replace(/^\.?\//, '');
+      const contextKey: FileContextKey = validExtensions.includes(ext)
+        ? `./${name}`
+        : `./${name}.js`;
+      originalKeys.set(contextKey, originalKey);
+      return contextKey;
+    });
+  }
+
+  getContextKeys();
+
   return Object.assign(
     function (id: string) {
-      id = id.replace(/^\.\//, '').replace(/\.\w*$/, '');
+      id = originalKeys.get(id) ?? id.replace(/^\.\//, '').replace(/\.\w*$/, '');
       return typeof context[id] === 'function' ? { default: context[id] } : context[id];
     },
     {
       resolve: (key: string) => key,
       id: '0',
-      keys: () =>
-        Object.keys(context).map((key) => {
-          const ext = path.extname(key);
-          key = key.replace(/^\.\//, '');
-          key = key.startsWith('/') ? key : `./${key}`;
-          key = validExtensions.includes(ext) ? key : `${key}.js`;
-
-          return key;
-        }),
+      keys: getContextKeys,
     }
   );
 }
@@ -66,7 +75,7 @@ export function findDuplicateKeys(normalizedKeys: readonly string[]): string[] {
  * and `index.tsx`), it throws, matching the ambiguity `requireContext` cannot
  * represent.
  */
-export function normalizeKeys(keys: string[]): Record<string, string> {
+export function normalizeKeys<T extends string>(keys: T[]): Record<string, T> {
   const normalizedKeys = keys.map(normalizeKey);
   const duplicateKeys = findDuplicateKeys(normalizedKeys);
   if (duplicateKeys.length > 0) {
@@ -89,6 +98,7 @@ export function requireContextWithOverrides(dir: string, overrides: MemoryContex
 
   return Object.assign(
     function (id: string) {
+      id = normalizeKey(id);
       if (id in overrides) {
         const route = overrides[id];
         return typeof route === 'function' ? { default: route } : route;
@@ -97,7 +107,7 @@ export function requireContextWithOverrides(dir: string, overrides: MemoryContex
       }
     },
     {
-      keys: () => [...uniqueKeys],
+      keys: () => uniqueKeys.map((key): FileContextKey => normalizedKeys[key] ?? `./${key}.js`),
       resolve: (key: string) => key,
       id: '0',
     }

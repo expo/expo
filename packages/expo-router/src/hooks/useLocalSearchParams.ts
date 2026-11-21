@@ -49,7 +49,8 @@ export function useLocalSearchParams<
 export function useLocalSearchParams() {
   let params = React.use(LocalRouteParamsContext) ?? {};
   const node = useRouteNode();
-  const { params: previewParams } = usePreviewInfo();
+  const previewInfo = usePreviewInfo();
+  const previewParams = previewInfo.isPreview ? previewInfo.params : undefined;
 
   if (node?.type === 'layout' && !previewParams) {
     // TODO(@ubax): Reading this context re-renders the layout on any navigation, even when params do not

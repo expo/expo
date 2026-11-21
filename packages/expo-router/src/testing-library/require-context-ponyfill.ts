@@ -4,17 +4,18 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import type { RequireContext } from '../types';
+import type { FileContextKey } from '../types/paths';
 
 export interface RequireContextPonyFill extends RequireContext {
-  __add(file: string): void;
-  __delete(file: string): void;
+  __add(file: FileContextKey): void;
+  __delete(file: FileContextKey): void;
 }
 
 export default function requireContext(
   base = '.',
   scanSubDirectories = true,
   regularExpression = /\.[tj]sx?$/,
-  files: Record<string, unknown> = {}
+  files: Partial<Record<FileContextKey, unknown>> = {}
 ) {
   const baseTarget = path.resolve(base);
 
@@ -30,7 +31,7 @@ export default function requireContext(
           readDirectory(relativePath);
         }
       } else if (entry.isFile()) {
-        const posixPath = `./${relativePath.split(path.sep).join('/')}`;
+        const posixPath: FileContextKey = `./${relativePath.split(path.sep).join('/')}`;
         if (regularExpression.test(posixPath)) {
           files[posixPath] = true;
         }
@@ -47,13 +48,14 @@ export default function requireContext(
       return require(path.join(base, file));
     },
     {
-      keys: () => Object.keys(files),
+      // Object.keys() widens the keys of the FileContextKey-indexed file map.
+      keys: () => Object.keys(files) as FileContextKey[],
       resolve: (key: string) => key,
       id: '0',
-      __add(file: string) {
+      __add(file: FileContextKey) {
         files[file] = true;
       },
-      __delete(file: string) {
+      __delete(file: FileContextKey) {
         delete files[file];
       },
     }
