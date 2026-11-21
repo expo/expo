@@ -1427,6 +1427,46 @@ Function("mutateMe") { jsObject: JavaScriptObject ->
 </CodeBlocksTable>
 
 </PaddedAPIBox>
+<PaddedAPIBox header="Callbacks">
+
+Use the `Callback` type to accept a JavaScript function that native code calls later, possibly more than once.
+Each call is scheduled onto the JavaScript thread, so you can call it from any thread and from `AsyncFunction` bodies.
+The return value of the JavaScript function is ignored.
+Calls made after the JavaScript runtime is destroyed are dropped.
+
+<CodeBlocksTable>
+
+```swift
+Function("download") { (url: URL, onProgress: Callback) in
+  downloader.download(url) { percent in
+    onProgress(percent, "downloading")
+  }
+}
+```
+
+```kotlin
+Function("download") { url: URL, onProgress: Callback ->
+  downloader.download(url) { percent ->
+    onProgress(percent, "downloading")
+  }
+}
+```
+
+</CodeBlocksTable>
+
+Arguments are converted the same way as function results, so records, enums and shared objects are supported.
+On iOS, `Callback` is also accepted as a parameter of `@JS` methods in modules that use the `@ExpoModule` macro.
+Declare the parameter as `Callback?` to make it optional. `null` and `undefined` are then accepted.
+
+On the JavaScript side, declare the parameter as an ordinary function type:
+
+```ts
+export function download(url: string, onProgress: (percent: number, stage: string) => void) {
+  return NativeModule.download(url, onProgress);
+}
+```
+
+</PaddedAPIBox>
 
 ## Native classes
 
