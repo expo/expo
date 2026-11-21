@@ -128,6 +128,25 @@ struct UpdatesStateMachineTests {
   }
 
   @Test
+  func `sends manifests to JS as JSON strings`() throws {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    machine.processEventForTesting(.download)
+    machine.processEventForTesting(.downloadCompleteWithUpdate(manifest: ["id": "0000-xxxx", "launchAsset": ["key": "bundle"]]))
+
+    let json = machine.context.json
+    #expect(json["latestManifest"] == nil)
+    #expect(json["downloadedManifest"] == nil)
+    for key in ["latestManifestString", "downloadedManifestString"] {
+      let string = try #require(json[key] as? String)
+      let parsed = try #require(try JSONSerialization.jsonObject(with: Data(string.utf8)) as? [String: Any])
+      #expect(parsed["id"] as? String == "0000-xxxx")
+      #expect((parsed["launchAsset"] as? [String: Any])?["key"] as? String == "bundle")
+    }
+  }
+
+  @Test
   func `should handle a completed download with an update`() {
     let testStateChangeEventManager = TestStateChangeEventManager()
     let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
