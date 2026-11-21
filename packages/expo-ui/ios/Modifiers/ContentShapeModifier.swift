@@ -48,6 +48,7 @@ internal struct ContentShapeModifier: ViewModifier, Record {
   @Field var cornerRadius: CGFloat = 0
   @Field var roundedCornerStyle: RoundedCornerStyle?
   @Field var cornerSize: CornerSize?
+  @Field var cornerRadii: CornerRadii?
   @Field var kind: [ContentShapeKind]?
 
   @ViewBuilder
@@ -65,6 +66,8 @@ internal struct ContentShapeModifier: ViewModifier, Record {
       applyContentShape(content, Rectangle())
     case .roundedRectangle:
       applyContentShape(content, makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle))
+    case .unevenRoundedRectangle:
+      applyContentShape(content, makeUnevenRoundedRectangle(cornerRadii: cornerRadii, style: roundedCornerStyle))
     }
   }
 

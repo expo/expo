@@ -10,6 +10,7 @@ internal enum ShapeType: String, Enumerable {
   case ellipse
   case rectangle
   case roundedRectangle
+  case unevenRoundedRectangle
 }
 
 internal enum RoundedCornerStyle: String, Enumerable {
@@ -20,6 +21,13 @@ internal enum RoundedCornerStyle: String, Enumerable {
 internal struct CornerSize: Record {
   @Field var width: Int = 0
   @Field var height: Int = 0
+}
+
+internal struct CornerRadii: Record {
+  @Field var topLeading: CGFloat = 0
+  @Field var topTrailing: CGFloat = 0
+  @Field var bottomLeading: CGFloat = 0
+  @Field var bottomTrailing: CGFloat = 0
 }
 
 // MARK: - Stroke Style
@@ -110,4 +118,20 @@ internal func makeRoundedRectangle(
     }
     return RoundedRectangle(cornerRadius: cornerRadius)
   }
+}
+
+internal func makeUnevenRoundedRectangle(
+  cornerRadii: CornerRadii?,
+  style: RoundedCornerStyle?
+) -> UnevenRoundedRectangle {
+  return UnevenRoundedRectangle(
+    cornerRadii: RectangleCornerRadii(
+      topLeading: cornerRadii?.topLeading ?? 0,
+      bottomLeading: cornerRadii?.bottomLeading ?? 0,
+      bottomTrailing: cornerRadii?.bottomTrailing ?? 0,
+      topTrailing: cornerRadii?.topTrailing ?? 0
+    ),
+    // Matches `makeRoundedRectangle`, whose `RoundedRectangle` defaults to circular corners.
+    style: style == .continuous ? .continuous : .circular
+  )
 }

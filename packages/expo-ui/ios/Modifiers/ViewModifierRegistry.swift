@@ -402,6 +402,7 @@ internal struct ClipShapeModifier: ViewModifier, Record {
   @Field var cornerRadius: CGFloat = 8
   @Field var roundedCornerStyle: RoundedCornerStyle?
   @Field var cornerSize: CornerSize?
+  @Field var cornerRadii: CornerRadii?
 
   @ViewBuilder
   func body(content: Content) -> some View {
@@ -418,6 +419,8 @@ internal struct ClipShapeModifier: ViewModifier, Record {
       content.clipShape(Rectangle())
     case .roundedRectangle:
       content.clipShape(makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle))
+    case .unevenRoundedRectangle:
+      content.clipShape(makeUnevenRoundedRectangle(cornerRadii: cornerRadii, style: roundedCornerStyle))
     }
   }
 }
@@ -431,6 +434,7 @@ internal struct StrokeBorderModifier: ViewModifier, Record {
   @Field var cornerRadius: CGFloat = 8
   @Field var roundedCornerStyle: RoundedCornerStyle?
   @Field var cornerSize: CornerSize?
+  @Field var cornerRadii: CornerRadii?
 
   func body(content: Content) -> some View {
     content.overlay(strokeBorderView())
@@ -452,6 +456,8 @@ internal struct StrokeBorderModifier: ViewModifier, Record {
       applyStrokeBorder(Rectangle(), strokeStyle)
     case .roundedRectangle:
       applyStrokeBorder(makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle), strokeStyle)
+    case .unevenRoundedRectangle:
+      applyStrokeBorder(makeUnevenRoundedRectangle(cornerRadii: cornerRadii, style: roundedCornerStyle), strokeStyle)
     }
   }
 
@@ -824,6 +830,7 @@ internal struct MaskModifier: ViewModifier, Record {
   @Field var cornerRadius: CGFloat = 8
   @Field var roundedCornerStyle: RoundedCornerStyle?
   @Field var cornerSize: CornerSize?
+  @Field var cornerRadii: CornerRadii?
 
   @ViewBuilder
   func body(content: Content) -> some View {
@@ -840,6 +847,8 @@ internal struct MaskModifier: ViewModifier, Record {
       content.mask(Rectangle())
     case .roundedRectangle:
       content.mask(makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle))
+    case .unevenRoundedRectangle:
+      content.mask(makeUnevenRoundedRectangle(cornerRadii: cornerRadii, style: roundedCornerStyle))
     }
   }
 }
