@@ -41,5 +41,6 @@ enum class CppType(val clazz: KClass<*>, val value: Int = nextValue()) {
   JS_ARRAY_BUFFER(JavaScriptArrayBuffer::class),
   NATIVE_ARRAY_BUFFER(NativeArrayBuffer::class),
   SERIALIZABLE(Worklet::class),
-  ARRAY_BUFFER(ArrayBuffer::class)
+  ARRAY_BUFFER(ArrayBuffer::class),
+  CALLBACK(Callback::class)
 }

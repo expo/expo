@@ -35,6 +35,7 @@ enum class CppType {
   NATIVE_ARRAY_BUFFER = 1 << 23,
   SERIALIZABLE = 1 << 24,
   ARRAY_BUFFER = 1 << 25,
+  CALLBACK = 1 << 26,
 };
 
 } // namespace expo

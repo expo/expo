@@ -24,6 +24,7 @@ void FrontendConverterProvider::createConverters() {
   RegisterConverter(CppType::ARRAY_BUFFER, ArrayBufferFrontendConverter);
   RegisterConverter(CppType::NATIVE_ARRAY_BUFFER, NativeArrayBufferFrontendConverter);
   RegisterConverter(CppType::JS_FUNCTION, JavaScriptFunctionFrontendConverter);
+  RegisterConverter(CppType::CALLBACK, CallbackFrontendConverter);
   RegisterConverter(CppType::STRING, StringFrontendConverter);
   RegisterConverter(CppType::READABLE_MAP, ReadableNativeMapArrayFrontendConverter);
   RegisterConverter(CppType::READABLE_ARRAY, ReadableNativeArrayFrontendConverter);
