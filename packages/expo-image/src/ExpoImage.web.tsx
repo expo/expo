@@ -25,7 +25,7 @@ function onLoadAdapter(onLoad?: (event: ImageLoadEventData) => void) {
         height: target.naturalHeight,
         mediaType: null,
       },
-      cacheType: 'none',
+      cacheType: (event as { cacheType?: ImageLoadEventData['cacheType'] }).cacheType ?? 'none',
     });
   };
 }
