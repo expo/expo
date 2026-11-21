@@ -49,7 +49,9 @@ void setColor(folly::dynamic &out, const char *key, UIColor *color)
 /// `fontWeight` as CSS weight, from the font's weight trait (the closest of UIKit's named weights).
 int fontWeightOf(UIFont *font)
 {
-  NSNumber *trait = font.fontDescriptor.fontAttributes[UIFontDescriptorTraitsAttribute][UIFontWeightTrait];
+  // `fontAttributes` has only the attributes the descriptor was made with. `objectForKey:` resolves the traits.
+  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
+  NSNumber *trait = traits[UIFontWeightTrait];
   if (!trait) {
     return (font.fontDescriptor.symbolicTraits & UIFontDescriptorTraitBold) ? 700 : 400;
   }
