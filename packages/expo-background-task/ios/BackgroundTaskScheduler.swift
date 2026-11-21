@@ -62,10 +62,14 @@ public class BackgroundTaskScheduler {
     private var scheduler: BackgroundTaskScheduling = SystemBackgroundTaskScheduler()
     private var numberOfRegisteredTasksOfThisType: Int = 0
     private var intervalSeconds: TimeInterval = 12 * 60 * 60
+    private var requiresNetworkConnectivity: Bool = BackgroundTaskConstants.defaultRequiresNetworkConnectivity
 
-    func didRegisterTask(minutes: Int?) -> Bool {
+    func didRegisterTask(minutes: Int?, requiresNetworkConnectivity: Bool?) -> Bool {
       if let minutes = minutes {
         intervalSeconds = Double(minutes) * 60
+      }
+      if let requiresNetworkConnectivity = requiresNetworkConnectivity {
+        self.requiresNetworkConnectivity = requiresNetworkConnectivity
       }
       numberOfRegisteredTasksOfThisType += 1
 
@@ -90,7 +94,7 @@ public class BackgroundTaskScheduler {
       stopWorkerOnce()
 
       let request = BGProcessingTaskRequest(identifier: BackgroundTaskConstants.BackgroundWorkerIdentifier)
-      request.requiresNetworkConnectivity = true
+      request.requiresNetworkConnectivity = requiresNetworkConnectivity
       request.requiresExternalPower = false
       request.earliestBeginDate = Date().addingTimeInterval(intervalSeconds)
 
@@ -129,6 +133,7 @@ public class BackgroundTaskScheduler {
       scheduler = SystemBackgroundTaskScheduler()
       numberOfRegisteredTasksOfThisType = registeredTaskCount
       intervalSeconds = 12 * 60 * 60
+      requiresNetworkConnectivity = BackgroundTaskConstants.defaultRequiresNetworkConnectivity
     }
 
     private func stopWorkerOnce() {
@@ -152,9 +157,13 @@ public class BackgroundTaskScheduler {
   /**
    * Call when a task is registered to keep track of how many background task consumers we have
    */
-  public static func didRegisterTask(minutes: Int?) {
+  public static func didRegisterTask(minutes: Int?, requiresNetworkConnectivity: Bool? = nil) {
     Task {
-      if await schedulerState.didRegisterTask(minutes: minutes) {
+      let isFirstTask = await schedulerState.didRegisterTask(
+        minutes: minutes,
+        requiresNetworkConnectivity: requiresNetworkConnectivity
+      )
+      if isFirstTask {
         try await tryScheduleWorker()
       }
     }
@@ -202,6 +211,16 @@ public class BackgroundTaskScheduler {
 
   static func setSchedulerForTesting(_ scheduler: BackgroundTaskScheduling) async {
     await schedulerState.setSchedulerForTesting(scheduler)
+  }
+
+  /**
+   Awaitable counterpart of `didRegisterTask`, which returns before its detached Task runs.
+   */
+  static func didRegisterTaskForTesting(minutes: Int?, requiresNetworkConnectivity: Bool?) async -> Bool {
+    return await schedulerState.didRegisterTask(
+      minutes: minutes,
+      requiresNetworkConnectivity: requiresNetworkConnectivity
+    )
   }
 
   static func resetForTesting(registeredTaskCount: Int = 0) async {
