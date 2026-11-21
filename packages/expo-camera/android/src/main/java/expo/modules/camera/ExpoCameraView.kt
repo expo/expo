@@ -118,6 +118,11 @@ class ExpoCameraView(
 
         imageAnalysisUseCase?.targetRotation = rotation
         imageCaptureUseCase?.targetRotation = rotation
+        deviceRotation = rotation
+        // CameraX reads the video's rotation when a recording starts. With the activity locked to one
+        // orientation the display never rotates, so without this a recording made with the device
+        // turned is saved as if it were held upright.
+        videoCaptureUseCase?.targetRotation = rotation
       }
     }
   }
@@ -128,6 +133,10 @@ class ExpoCameraView(
   private var cameraProvider: ProcessCameraProvider? = null
   private var imageCaptureUseCase: ImageCapture? = null
   private var imageAnalysisUseCase: ImageAnalysis? = null
+  private var videoCaptureUseCase: VideoCapture<Recorder>? = null
+
+  // The last rotation the orientation listener saw, for a video use case created after it.
+  private var deviceRotation: Int? = null
   private var barcodeAnalyzer: BarcodeAnalyzer? = null
   private var recorder: Recorder? = null
   private var barcodeFormats: List<BarcodeType> = emptyList()
@@ -529,7 +538,10 @@ class ExpoCameraView(
     val selectedCameraInfo = cameraSelector
       .filter(cameraProvider.availableCameraInfos)
       .firstOrNull()
-    val videoCapture = createVideoCapture(selectedCameraInfo)
+    val videoCapture = createVideoCapture(selectedCameraInfo).also {
+      deviceRotation?.let { rotation -> it.targetRotation = rotation }
+      videoCaptureUseCase = it
+    }
     releaseBarcodeAnalyzer()
     imageAnalysisUseCase = if (shouldScanBarcodes) {
       createImageAnalyzer()
