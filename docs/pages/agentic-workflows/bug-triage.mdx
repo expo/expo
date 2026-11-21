@@ -131,24 +131,6 @@ switch (command) {
     console.log(issue.number);
     break;
   }
-  case 'open-pull-request': {
-    const [branch, title, bodyFile] = args;
-    const owner = repository.split('/')[0];
-    const open = await request('GET', `${repo}/pulls?state=open&head=${owner}:${branch}`);
-    if (open.length > 0) {
-      console.log(open[0].html_url);
-      break;
-    }
-    const { default_branch: base } = await request('GET', repo);
-    const pullRequest = await request('POST', `${repo}/pulls`, {
-      head: branch,
-      base,
-      title,
-      body: await readFile(bodyFile, 'utf8'),
-    });
-    console.log(pullRequest.html_url);
-    break;
-  }
   case 'author-email': {
     const user = await request('GET', '/user');
     console.log(`${user.id}+${user.login}@users.noreply.github.com`);
@@ -156,7 +138,7 @@ switch (command) {
   }
   default:
     console.error(
-      `Unknown command "${command}". Use issue, comment, create-issue, open-pull-request, or author-email.`
+      `Unknown command "${command}". Use issue, comment, create-issue, or author-email.`
     );
     process.exit(1);
 }

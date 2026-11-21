@@ -57,7 +57,7 @@ Issue to PR needs [Agentic CI](/agentic-workflows/agentic-ci/), because Agentic 
 
 ### Add the GitHub helper
 
-The job script uses this file to read the issue, open the PR, and add comments:
+The job script uses this file to read the issue and to add comments:
 
 ```js .eas/agents/github.mjs
 import { readFile } from 'node:fs/promises';
@@ -121,24 +121,6 @@ switch (command) {
     });
     break;
   }
-  case 'open-pull-request': {
-    const [branch, title, bodyFile] = args;
-    const owner = repository.split('/')[0];
-    const open = await request('GET', `${repo}/pulls?state=open&head=${owner}:${branch}`);
-    if (open.length > 0) {
-      console.log(open[0].html_url);
-      break;
-    }
-    const { default_branch: base } = await request('GET', repo);
-    const pullRequest = await request('POST', `${repo}/pulls`, {
-      head: branch,
-      base,
-      title,
-      body: await readFile(bodyFile, 'utf8'),
-    });
-    console.log(pullRequest.html_url);
-    break;
-  }
   case 'author-email': {
     const user = await request('GET', '/user');
     console.log(`${user.id}+${user.login}@users.noreply.github.com`);
@@ -146,7 +128,7 @@ switch (command) {
   }
   default:
     console.error(
-      `Unknown command "${command}". Use issue, comment, open-pull-request, or author-email.`
+      `Unknown command "${command}". Use issue, comment, or author-email.`
     );
     process.exit(1);
 }
@@ -207,6 +189,7 @@ fi
 
 TITLE=$(head -n 1 agent-output/summary.md 2> /dev/null || true)
 TITLE=${TITLE:-"Change for issue #$ISSUE_NUMBER"}
+printf '%s' "$TITLE" > /tmp/pull-request-title.txt
 {
   tail -n +2 agent-output/summary.md 2> /dev/null || true
   printf '\n\nCloses #%s\n' "$ISSUE_NUMBER"
@@ -217,10 +200,6 @@ git checkout -b "$BRANCH"
 git add -A
 git -c user.name="Expo agent" -c user.email="$AUTHOR_EMAIL" commit -m "$TITLE"
 git push --force "$PUSH_URL" "HEAD:refs/heads/$BRANCH"
-PR_URL=$(node "$GITHUB_HELPER" open-pull-request "$BRANCH" "$TITLE" /tmp/pull-request.md)
-
-printf '## Issue to PR\n\nThe agent opened %s.\n' "$PR_URL" > /tmp/comment.md
-node "$GITHUB_HELPER" comment "$ISSUE_NUMBER" /tmp/comment.md
 ```
 
 The script does these tasks in this order:
@@ -230,7 +209,7 @@ The script does these tasks in this order:
 3. It removes the Expo and GitHub tokens from the environment, and runs the agent in the `change` mode in the app directory of the clone.
 4. If the agent changed a file in **.eas** or **.github**, it stops and does not open a PR.
 5. If the agent changed no file, it adds a comment with the reason to the issue, and stops.
-6. It commits the change, pushes the branch, and opens a PR. Then it adds a comment with the PR link to the issue.
+6. It commits the change and pushes the branch. It writes the PR title and description to files. The workflow reads these files, and the next job opens the PR.
 
 </Step>
 
@@ -276,18 +255,39 @@ jobs:
     environment: preview
     env:
       ISSUE_NUMBER: ${{ inputs.issue_number }}
+    outputs:
+      branch: ${{ steps.pull_request.outputs.branch }}
+      title: ${{ steps.pull_request.outputs.title }}
+      body: ${{ steps.pull_request.outputs.body }}
     steps:
       - uses: eas/checkout
       - uses: eas/install_node_modules
-      - name: Make the change and open a pull request
+      - name: Make the change and push the branch
         run: bash .eas/agents/make-change.sh
+      - id: pull_request
+        name: Read the pull request details
+        run: |
+          set-output branch "agent/issue-$ISSUE_NUMBER"
+          set-output title "$(cat /tmp/pull-request-title.txt)"
+          set-output body "$(cat /tmp/pull-request.md)"
       - uses: eas/upload_artifact
         if: ${{ always() }}
         with:
           type: other
           name: issue-to-pr-log
           path: /tmp/agent-change/agent-output/**/*
+
+  open_pull_request:
+    name: Open the pull request
+    needs: [change]
+    type: github-pull-request
+    params:
+      head: ${{ needs.change.outputs.branch }}
+      title: ${{ needs.change.outputs.title }}
+      body: ${{ needs.change.outputs.body }}
 ```
+
+The `open_pull_request` job opens the PR with the [`github-pull-request`](/eas/workflows/pre-packaged-jobs/#github-pull-request) pre-packaged job. If the job already opened a PR from the same branch, it updates the title and the description of that PR. If the `change` job fails, this job does not run.
 
 </Step>
 
@@ -376,7 +376,7 @@ The GitHub Action starts the Issue to PR workflow on Expo Workflows.
 
 ## Read the result
 
-When the agent finishes, the issue gets an **Issue to PR** comment with a link to the PR:
+When the agent finishes, the `open_pull_request` job opens the PR. The description of the PR ends with `Closes #<number>`, so GitHub links the PR to the issue:
 
 - The branch of the PR is `agent/issue-<number>`.
 - The description of the PR is the summary of the agent, and ends with `Closes #<number>`.
