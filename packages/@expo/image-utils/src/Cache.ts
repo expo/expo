@@ -70,10 +70,11 @@ export async function cacheImageAsync(
 ): Promise<void> {
   try {
     const cachedKey = cacheKeys[cacheKey];
-    await fs.promises.writeFile(
-      cachedKey != null ? resolve(cachedKey, fileName) : resolve(fileName),
-      buffer
-    );
+    const target = cachedKey != null ? resolve(cachedKey, fileName) : resolve(fileName);
+    // Write then rename, so a parallel getImageFromCacheAsync never reads a half-written file.
+    const temporary = `${target}.${crypto.randomUUID()}.tmp`;
+    await fs.promises.writeFile(temporary, buffer);
+    await fs.promises.rename(temporary, target);
   } catch (error: any) {
     console.warn(`Error caching image: "${fileName}". ${error.message}`);
   }
