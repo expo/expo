@@ -87,7 +87,7 @@ public struct CrashReport: Codable, Sendable {
   func findMatchingSession(in mainSessions: [SessionRow]) -> SessionRow? {
     let payloadBegin = timestampBegin.ISO8601Format()
     let payloadEnd = timestampEnd.ISO8601Format()
-    let intersecting = mainSessions.filter { session in
+    let overlapsPayloadWindow = { (session: SessionRow) -> Bool in
       guard session.startTimestamp <= payloadEnd else {
         return false
       }
@@ -98,9 +98,10 @@ public struct CrashReport: Codable, Sendable {
       return sessionEnd >= payloadBegin
     }
     if let processId {
-      let sameProcess = intersecting.filter { $0.processId == processId }
+      let sameProcess = mainSessions.filter { $0.processId == processId && overlapsPayloadWindow($0) }
       return sameProcess.max(by: { $0.startTimestamp < $1.startTimestamp })
     }
+    let intersecting = mainSessions.filter(overlapsPayloadWindow)
     let candidates: [SessionRow]
     if !intersecting.isEmpty {
       candidates = intersecting
