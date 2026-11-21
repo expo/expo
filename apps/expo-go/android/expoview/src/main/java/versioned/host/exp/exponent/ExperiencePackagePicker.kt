@@ -1,6 +1,5 @@
 package versioned.host.exp.exponent
 
-import expo.modules.asset.AssetModule
 import expo.modules.audio.AudioModule
 import expo.modules.backgroundfetch.BackgroundFetchModule
 import expo.modules.backgroundtask.BackgroundTaskModule
@@ -112,7 +111,6 @@ object ExperiencePackagePicker : ModulesProvider {
     AudioModule::class.java to null,
     // Sensors
     AccelerometerModule::class.java to null,
-    AssetModule::class.java to null,
     BarometerModule::class.java to null,
     GyroscopeModule::class.java to null,
     LightSensorModule::class.java to null,
