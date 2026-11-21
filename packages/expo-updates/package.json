@@ -21,7 +21,10 @@
   "bin": {
     "expo-updates": "bin/cli.js"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "*.fx.js",
+    "*.fx.ts"
+  ],
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
