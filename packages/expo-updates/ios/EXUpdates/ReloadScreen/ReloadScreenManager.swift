@@ -54,6 +54,7 @@ public class ReloadScreenManager: Reloadable {
 
     window.windowLevel = UIWindow.Level.alert + 1
     window.backgroundColor = UIColor.clear
+    // Do not make this window key. React Native modules read the key window when the new runtime starts.
     window.isHidden = false
 
     let reloadScreenView = ReloadScreenView(frame: window.bounds)
@@ -63,7 +64,6 @@ public class ReloadScreenManager: Reloadable {
     viewController.view = reloadScreenView
 
     window.rootViewController = viewController
-    window.makeKeyAndVisible()
 
     currentReloadScreen = reloadScreenView
   }
