@@ -21,6 +21,7 @@ import * as Strings from './Strings';
 import * as Styles from './Styles';
 import * as SystemBars from './SystemBars';
 import * as Updates from './Updates';
+import * as UsesFeatures from './UsesFeatures';
 import * as Version from './Version';
 import * as WindowSoftInputMode from './WindowSoftInputMode';
 import * as CodeMod from './codeMod';
@@ -41,6 +42,7 @@ export {
   PrimaryColor,
   SystemBars,
   Updates,
+  UsesFeatures,
   Version,
   WindowSoftInputMode,
   PredictiveBackGesture,

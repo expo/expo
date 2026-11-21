@@ -124,6 +124,7 @@ function getLargeConfig(): ExportedConfig {
         'com.sec.android.provider.badge.permission.WRITE',
         'android.permission.RECORD_AUDIO',
       ],
+      usesFeatures: [{ name: 'android.hardware.wifi', required: false }],
       googleServicesFile: './config/google-services.json',
       config: {
         branch: {
@@ -401,6 +402,10 @@ describe('built-in plugins', () => {
 
     expect(after['android/app/src/main/res/values/strings.xml']).toMatch(
       '<string name="app_name">my cool app</string>'
+    );
+
+    expect(after['android/app/src/main/AndroidManifest.xml']).toMatch(
+      '<uses-feature android:name="android.hardware.wifi" android:required="false"/>'
     );
 
     // Ensure files are always written in the correct format
