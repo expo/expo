@@ -17,3 +17,9 @@ it('mocks the SharedObject classes that @expo/ui constructs', () => {
   expect(state.getValue()).toBe(2);
   expect(new ExpoUI.WorkletCallback(null)).toBeInstanceOf(globalThis.expo.SharedObject);
 });
+
+it('mocks the views that @expo/ui reads from its package object', () => {
+  const { requireNative } = require('expo-modules-core');
+  const { GridRowView } = requireNative('@expo/ui');
+  expect(GridRowView.displayName).toBe('GridRowView');
+});
