@@ -40,7 +40,8 @@ export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal 
       throw e;
     }
   };
-  const unsplash = await gateOnHostAsync(t, REMOTE_SOURCE.uri);
+  // Probe the host, not the test image: a removed image must fail the tests, not skip them.
+  const unsplash = await gateOnHostAsync(t, 'https://images.unsplash.com/');
 
   // TODO: Remove the condition once this is implemented on other platforms
   if (Platform.OS === 'ios' || Platform.OS === 'android') {
