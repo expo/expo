@@ -37,6 +37,7 @@ export type Props = {
   photosPermission?: string | false;
   /**
    * A string to set the `NSCameraUsageDescription` permission message, or `false` to block the permission on Android.
+   * `false` does not add or remove `NSCameraUsageDescription`.
    * @default "Allow $(PRODUCT_NAME) to access your camera"
    */
   cameraPermission?: string | false;
@@ -117,15 +118,19 @@ const withImagePicker: ConfigPlugin<Props | void> = (
   config,
   { photosPermission, cameraPermission, microphonePermission, colors, dark } = {}
 ) => {
-  IOSConfig.Permissions.createPermissionsPlugin({
+  const iosPermissionDefaults: Record<string, string> = {
     NSPhotoLibraryUsageDescription: READ_PHOTOS_USAGE,
-    NSCameraUsageDescription: CAMERA_USAGE,
     NSMicrophoneUsageDescription: MICROPHONE_USAGE,
-  })(config, {
+  };
+  const iosPermissionValues: Record<string, string | false | undefined> = {
     NSPhotoLibraryUsageDescription: photosPermission,
-    NSCameraUsageDescription: cameraPermission,
     NSMicrophoneUsageDescription: microphonePermission,
-  });
+  };
+  if (cameraPermission !== false) {
+    iosPermissionDefaults.NSCameraUsageDescription = CAMERA_USAGE;
+    iosPermissionValues.NSCameraUsageDescription = cameraPermission;
+  }
+  IOSConfig.Permissions.createPermissionsPlugin(iosPermissionDefaults)(config, iosPermissionValues);
 
   if (microphonePermission !== false) {
     config = AndroidConfig.Permissions.withPermissions(config, ['android.permission.RECORD_AUDIO']);
