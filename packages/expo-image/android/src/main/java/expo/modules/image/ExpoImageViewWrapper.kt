@@ -167,6 +167,13 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       field = value
     }
 
+  internal var sharedAnimationTick: Boolean = false
+    set(value) {
+      field = value
+      firstView.sharedAnimationTick = value
+      secondView?.sharedAnimationTick = value
+    }
+
   internal var allowDownscaling: Boolean = true
     set(value) {
       field = value
@@ -673,6 +680,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   private fun getOrCreateSecondView(): ExpoImageView {
     secondView?.let { return it }
     return ExpoImageView(activity).also {
+      it.sharedAnimationTick = sharedAnimationTick
       secondView = it
       imageViewsLayout.addView(it, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
     }

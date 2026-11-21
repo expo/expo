@@ -14,6 +14,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -37,6 +38,19 @@ class ExpoImageViewWrapperTest {
     val imageViews = wrapper.imageViews()
     assertEquals(2, imageViews.size)
     assertSame(next, imageViews.single { it.isVisible }.drawable)
+  }
+
+  @Test
+  fun appliesSharedAnimationTickToTheSecondImageViewWhenItIsCreated() {
+    val wrapper = createWrapper()
+    wrapper.sharedAnimationTick = true
+
+    wrapper.display(ColorDrawable(Color.RED))
+    wrapper.display(ColorDrawable(Color.BLUE))
+
+    val imageViews = wrapper.imageViews()
+    assertEquals(2, imageViews.size)
+    assertTrue(imageViews.all { it.sharedAnimationTick })
   }
 
   @Test
