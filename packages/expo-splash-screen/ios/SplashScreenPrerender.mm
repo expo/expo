@@ -114,7 +114,9 @@ class TemplateBuilder {
 
   std::shared_ptr<const ShadowNode> build(const folly::dynamic &node)
   {
-    const auto &descriptor = registry_.at(node["name"].asString());
+    // The registry takes React's view names, and "Text" is the paragraph there.
+    const std::string name = node["name"].asString();
+    const auto &descriptor = registry_.at(name == "Text" ? "VirtualText" : name);
     auto family = descriptor.createFamily(ShadowNodeFamilyFragment{allocateTag(), kSurfaceId, nullptr});
 
     PropsParserContext parserContext{kSurfaceId, contextContainer_};
