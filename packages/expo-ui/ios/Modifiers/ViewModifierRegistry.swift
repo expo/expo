@@ -916,11 +916,16 @@ internal struct StableViewModifier: ViewModifier {
   let dispatcher: EventDispatcher
 
   func body(content: Content) -> some View {
+    // A registered factory owns this name.
+    // If it throws, leave the view unchanged instead of applying the inline built-in.
     if let type = params["$type"] as? String,
       let appContext,
-      let factory = ViewModifierRegistry.shared.modifierFactories[type],
-      let modifier = try? factory(params, appContext, dispatcher) {
-      content.modifier(AnyViewModifier(modifier))
+      let factory = ViewModifierRegistry.shared.modifierFactories[type] {
+      if let modifier = try? factory(params, appContext, dispatcher) {
+        content.modifier(AnyViewModifier(modifier))
+      } else {
+        content
+      }
     } else if let type = params["$type"] as? String,
       let appContext,
       let body = ViewModifierRegistry.shared.inlineModifiers[type],
@@ -1574,7 +1579,7 @@ public class ViewModifierRegistry {
     _ type: String,
     factory: @escaping ModifierFactory
   ) {
-    if modifierFactories[type] != nil {
+    if modifierFactories[type] != nil || inlineModifiers[type] != nil {
       log.warn("ViewModifierRegistry: Overwriting existing modifier '\(type)'. This may cause unexpected behavior.")
     }
     modifierFactories[type] = factory
