@@ -49,6 +49,7 @@ data class UpdatesConfiguration(
   val enableBsdiffPatchSupport: Boolean,
   val disableAntiBrickingMeasures: Boolean,
   val maxUpdatesToKeep: Int = UPDATES_CONFIGURATION_MAX_UPDATES_TO_KEEP_DEFAULT_VALUE,
+  val useReactNativeHttpClient: Boolean = true,
   val hasUpdatesOverride: Boolean,
 
   private val cachedOverrideMap: Map<String, Any>?
@@ -143,6 +144,7 @@ data class UpdatesConfiguration(
       ?: true,
     disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(context, overrideMap),
     maxUpdatesToKeep = getMaxUpdatesToKeep(context, overrideMap),
+    useReactNativeHttpClient = getUseReactNativeHttpClient(context, overrideMap),
     hasUpdatesOverride = configOverride != null
   )
 
@@ -175,6 +177,7 @@ data class UpdatesConfiguration(
     const val UPDATES_CONFIGURATION_DISABLE_ANTI_BRICKING_MEASURES = "disableAntiBrickingMeasures"
     const val UPDATES_CONFIGURATION_ENABLE_BSDIFF_PATCH_SUPPORT = "enableBsdiffPatchSupport"
     const val UPDATES_CONFIGURATION_MAX_UPDATES_TO_KEEP_KEY = "maxUpdatesToKeep"
+    const val UPDATES_CONFIGURATION_USE_REACT_NATIVE_HTTP_CLIENT_KEY = "useReactNativeHttpClient"
 
     const val UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE = "codeSigningCertificate"
     const val UPDATES_CONFIGURATION_CODE_SIGNING_METADATA = "codeSigningMetadata"
@@ -190,6 +193,12 @@ data class UpdatesConfiguration(
 
     private fun getDisableAntiBrickingMeasures(context: Context?, overrideMap: Map<String, Any>?): Boolean {
       return overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_DISABLE_ANTI_BRICKING_MEASURES) ?: context?.getMetadataValue("expo.modules.updates.DISABLE_ANTI_BRICKING_MEASURES") ?: false
+    }
+
+    private fun getUseReactNativeHttpClient(context: Context?, overrideMap: Map<String, Any>?): Boolean {
+      return overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_USE_REACT_NATIVE_HTTP_CLIENT_KEY)
+        ?: context?.getMetadataValue("expo.modules.updates.USE_REACT_NATIVE_HTTP_CLIENT")
+        ?: true
     }
 
     private fun getMaxUpdatesToKeep(context: Context?, overrideMap: Map<String, Any>?): Int {
