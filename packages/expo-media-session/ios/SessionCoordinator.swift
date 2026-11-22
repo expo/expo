@@ -43,7 +43,7 @@ final class SessionCoordinator: @unchecked Sendable {
   private var correctedAfterNotification = false
   private var needsReactivation = false
   private var deferredInterruptionEnd: Bool?
-  private var isInterrupted = false
+  private(set) var isInterrupted = false
 
   private let log: @Sendable (String) -> Void
 
@@ -71,6 +71,12 @@ final class SessionCoordinator: @unchecked Sendable {
 
   var pendingActivationCount: Int {
     snapshot.withLock { $0.pendingActivationCount }
+  }
+
+  // Coordinator queue only.
+  var effectiveInterruptionMode: InterruptionMode {
+    SessionResolver.resolve(policy: policy, requirements: entries.filter { !$0.isRejected }.map(\.requirements))
+      .interruptionMode
   }
 
   func begin(client: String, requirements: SessionRequirements, activation: ActivationSignal) -> UInt64 {
@@ -435,7 +441,7 @@ final class SessionCoordinator: @unchecked Sendable {
     }
   }
 
-  private func notify(_ body: (any MediaSessionObserver) -> Void) {
+  func notify(_ body: (any MediaSessionObserver) -> Void) {
     scheduler.assertIsolated()
     publishSnapshot()
     for entry in observers {

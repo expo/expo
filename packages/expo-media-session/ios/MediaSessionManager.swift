@@ -37,6 +37,7 @@ public protocol MediaSessionObserver: AnyObject {
   func mediaSessionFocusLost(transient: Bool)
   func mediaSessionServicesReset()
   func mediaSessionSilentModeChanged(isSilent: Bool)
+  func mediaSessionNowPlayingOwnerChanged(_ owner: (any NowPlayingOwner)?)
 }
 
 extension MediaSessionObserver {
@@ -50,6 +51,7 @@ extension MediaSessionObserver {
   public func mediaSessionFocusLost(transient: Bool) {}
   public func mediaSessionServicesReset() {}
   public func mediaSessionSilentModeChanged(isSilent: Bool) {}
+  public func mediaSessionNowPlayingOwnerChanged(_ owner: (any NowPlayingOwner)?) {}
 }
 
 /// The manager keeps the observer until `remove()` is called or this registration is deallocated.
@@ -77,19 +79,34 @@ public final class MediaSessionManager: @unchecked Sendable {
   public static let shared = MediaSessionManager(
     backend: AVAudioSessionBackend(),
     scheduler: DispatchScheduler(),
+    nowPlayingCenter: MPNowPlayingCenterBackend(),
     observesSystemEvents: true
   )
 
   let coordinator: SessionCoordinator
+  let nowPlaying: NowPlayingStack
   private let systemEvents: SystemEventSource?
+  private let nowPlayingEvents: ObserverRegistration
 
   init(
     backend: any SessionBackend,
     scheduler: any Scheduler,
+    nowPlayingCenter: any NowPlayingCenterBackend,
     observesSystemEvents: Bool = false,
     log: @escaping @Sendable (String) -> Void = { print($0) }
   ) {
-    coordinator = SessionCoordinator(backend: backend, scheduler: scheduler, log: log)
+    let coordinator = SessionCoordinator(backend: backend, scheduler: scheduler, log: log)
+    self.coordinator = coordinator
+    nowPlaying = NowPlayingStack(
+      center: nowPlayingCenter,
+      scheduler: scheduler,
+      mixingMode: { [weak coordinator] in coordinator?.effectiveInterruptionMode ?? .mixWithOthers },
+      isInterrupted: { [weak coordinator] in coordinator?.isInterrupted ?? false },
+      onOwnerChange: { [weak coordinator] owner in
+        coordinator?.notify { $0.mediaSessionNowPlayingOwnerChanged(owner) }
+      }
+    )
+    nowPlayingEvents = coordinator.addObserver(NowPlayingEventForwarder(stack: nowPlaying))
     systemEvents = observesSystemEvents ? SystemEventSource(coordinator: coordinator) : nil
   }
 
@@ -119,6 +136,18 @@ public final class MediaSessionManager: @unchecked Sendable {
 
   public func setPolicy(_ update: AudioPolicyUpdate) throws {
     try coordinator.setPolicy(update)
+  }
+
+  public func offerNowPlaying(
+    _ owner: any NowPlayingOwner,
+    info: NowPlayingInfo,
+    commands: Set<RemoteCommandKind>
+  ) -> NowPlayingClaim {
+    nowPlaying.offer(owner, info: info, commands: commands)
+  }
+
+  public var nowPlayingOwner: (any NowPlayingOwner)? {
+    nowPlaying.owner
   }
 
   public func addObserver(_ observer: any MediaSessionObserver) -> ObserverRegistration {
@@ -214,5 +243,21 @@ public final class SessionHold: @unchecked Sendable {
       activation.finish(.failure(SessionUseEndedException(client)))
       coordinator?.end(id: id)
     }
+  }
+}
+
+private final class NowPlayingEventForwarder: MediaSessionObserver {
+  private weak var stack: NowPlayingStack?
+
+  init(stack: NowPlayingStack) {
+    self.stack = stack
+  }
+
+  func mediaSessionInterruptionEnded(shouldResume: Bool) {
+    stack?.interruptionEnded(shouldResume: shouldResume)
+  }
+
+  func mediaSessionServicesReset() {
+    stack?.servicesReset()
   }
 }
