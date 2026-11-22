@@ -57,6 +57,26 @@ public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
     }
   }
 
+  static func requirePermission() throws {
+    try requireUsageDescription()
+
+    if #available(iOS 17.0, *) {
+      switch AVAudioApplication.shared.recordPermission {
+      case .denied, .undetermined:
+        throw AudioPermissionsException()
+      default:
+        break
+      }
+    } else {
+      switch AVAudioSession.sharedInstance().recordPermission {
+      case .denied, .undetermined:
+        throw AudioPermissionsException()
+      default:
+        break
+      }
+    }
+  }
+
   public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: @escaping EXPromiseRejectBlock) {
     requestPermissions(usageDescription: Self.microphoneUsageDescription, resolver: resolve, rejecter: reject)
   }

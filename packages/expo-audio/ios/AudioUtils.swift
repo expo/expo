@@ -4,7 +4,7 @@ import ExpoModulesCore
 struct RecordingUtils {
   static func getAvailableInputs() -> [[String: Any]] {
     AVAudioSession.sharedInstance().availableInputs?.map { desc in
-      ["name": desc.portName, "type": desc.portType, "uid": desc.uid]
+      ["name": desc.portName, "type": desc.portType.rawValue, "uid": desc.uid]
     } ?? []
   }
 
@@ -187,6 +187,14 @@ struct AudioUtils {
     return nil
   }
 
+  static func recordingDirectory(for directory: RecordingDirectory?, appContext: AppContext?) throws -> URL {
+    guard let fileSystem = appContext?.fileSystem else {
+      throw Exceptions.AppContextLost()
+    }
+    let path = (directory ?? .cache) == .document ? fileSystem.documentDirectory : fileSystem.cachesDirectory
+    return URL(fileURLWithPath: path)
+  }
+
   static func validateAudioMode(mode: AudioMode) throws {
     if !mode.playsInSilentMode && mode.interruptionMode == .duckOthers {
       throw InvalidAudioModeException("playsInSilentMode == false and duckOthers == true cannot be set on iOS")
@@ -218,5 +226,15 @@ extension AVPlayer {
       return !currentItem.isPlaybackLikelyToKeepUp && currentItem.isPlaybackBufferEmpty
     }
     return true
+  }
+}
+
+extension DispatchQueue {
+  func perform<T>(_ body: @escaping () throws -> T) async throws -> T {
+    try await withCheckedThrowingContinuation { continuation in
+      async {
+        continuation.resume(with: Result(catching: body))
+      }
+    }
   }
 }

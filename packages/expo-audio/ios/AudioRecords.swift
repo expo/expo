@@ -1,32 +1,33 @@
 import ExpoModulesCore
 
-struct AudioMode: Record {
-  @Field var playsInSilentMode: Bool = true
-  @Field var interruptionMode: InterruptionMode = .mixWithOthers
-  @Field var allowsRecording: Bool = false
-  @Field var shouldPlayInBackground: Bool = false
-  @Field var shouldRouteThroughEarpiece: Bool = false
-  @Field var allowsBackgroundRecording: Bool = false
+@Record
+struct AudioMode {
+  var playsInSilentMode: Bool = true
+  var interruptionMode: InterruptionMode = .mixWithOthers
+  var allowsRecording: Bool = false
+  var shouldPlayInBackground: Bool = false
+  var shouldRouteThroughEarpiece: Bool = false
+  var allowsBackgroundRecording: Bool = false
 }
 
-struct PartialAudioMode: Record {
-  @Field var playsInSilentMode: Bool?
-  @Field var interruptionMode: InterruptionMode?
-  @Field var allowsRecording: Bool?
-  @Field var shouldPlayInBackground: Bool?
-  @Field var shouldRouteThroughEarpiece: Bool?
-  @Field var allowsBackgroundRecording: Bool?
+@Record
+struct PartialAudioMode {
+  var playsInSilentMode: Bool?
+  var interruptionMode: InterruptionMode?
+  var allowsRecording: Bool?
+  var shouldPlayInBackground: Bool?
+  var shouldRouteThroughEarpiece: Bool?
+  var allowsBackgroundRecording: Bool?
 
-  // `AudioMode` fields are reference types, so build a new mode instead of mutating `current`.
   func merged(into current: AudioMode) -> AudioMode {
-    let mode = AudioMode()
-    mode.playsInSilentMode = playsInSilentMode ?? current.playsInSilentMode
-    mode.interruptionMode = interruptionMode ?? current.interruptionMode
-    mode.allowsRecording = allowsRecording ?? current.allowsRecording
-    mode.shouldPlayInBackground = shouldPlayInBackground ?? current.shouldPlayInBackground
-    mode.shouldRouteThroughEarpiece = shouldRouteThroughEarpiece ?? current.shouldRouteThroughEarpiece
-    mode.allowsBackgroundRecording = allowsBackgroundRecording ?? current.allowsBackgroundRecording
-    return mode
+    AudioMode(
+      playsInSilentMode: playsInSilentMode ?? current.playsInSilentMode,
+      interruptionMode: interruptionMode ?? current.interruptionMode,
+      allowsRecording: allowsRecording ?? current.allowsRecording,
+      shouldPlayInBackground: shouldPlayInBackground ?? current.shouldPlayInBackground,
+      shouldRouteThroughEarpiece: shouldRouteThroughEarpiece ?? current.shouldRouteThroughEarpiece,
+      allowsBackgroundRecording: allowsBackgroundRecording ?? current.allowsBackgroundRecording
+    )
   }
 }
 
@@ -68,21 +69,22 @@ enum PitchCorrectionQuality: String, Enumerable {
   }
 }
 
-struct RecordingOptions: Record {
-  @Field var directory: RecordingDirectory?
-  @Field var fileName: String?
-  @Field var `extension`: String
-  @Field var sampleRate: Double
-  @Field var numberOfChannels: Double
-  @Field var bitRate: Double
-  @Field var outputFormat: String?
-  @Field var audioQuality: Int
-  @Field var bitRateStrategy: BitRateStrategy?
-  @Field var bitDepthHint: Double?
-  @Field var linearPCMBitDepth: Double?
-  @Field var linearPCMIsBigEndian: Bool?
-  @Field var linearPCMIsFloat: Bool?
-  @Field var isMeteringEnabled: Bool = false
+@Record
+struct RecordingOptions {
+  var directory: RecordingDirectory?
+  var fileName: String?
+  var `extension`: String = ""
+  var sampleRate: Double = 0
+  var numberOfChannels: Double = 0
+  var bitRate: Double = 0
+  var outputFormat: String?
+  var audioQuality: Int = 0
+  var bitRateStrategy: BitRateStrategy?
+  var bitDepthHint: Double?
+  var linearPCMBitDepth: Double?
+  var linearPCMIsBigEndian: Bool?
+  var linearPCMIsFloat: Bool?
+  var isMeteringEnabled: Bool = false
 }
 
 enum RecordingDirectory: String, Enumerable {
@@ -90,21 +92,23 @@ enum RecordingDirectory: String, Enumerable {
   case document
 }
 
-struct Metadata: Record {
-  @Field var title: String?
-  @Field var artist: String?
-  @Field var albumTitle: String?
-  @Field var artworkUrl: URL?
+@Record
+struct Metadata {
+  var title: String?
+  var artist: String?
+  var albumTitle: String?
+  var artworkUrl: URL?
 }
 
-struct LockScreenOptions: Record {
-  @Field var showSeekForward: Bool = false
-  @Field var showSeekBackward: Bool = false
-  @Field var showNextTrack: Bool = false
-  @Field var showPreviousTrack: Bool = false
-  @Field var isLiveStream: Bool? = false
-  @Field var seekForwardIntervalSeconds: Double = 10.0
-  @Field var seekBackwardIntervalSeconds: Double = 10.0
+@Record
+struct LockScreenOptions {
+  var showSeekForward: Bool = false
+  var showSeekBackward: Bool = false
+  var showNextTrack: Bool = false
+  var showPreviousTrack: Bool = false
+  var isLiveStream: Bool? = false
+  var seekForwardIntervalSeconds: Double = 10.0
+  var seekBackwardIntervalSeconds: Double = 10.0
 }
 
 enum BitRateStrategy: String, Enumerable {
@@ -127,9 +131,10 @@ enum BitRateStrategy: String, Enumerable {
   }
 }
 
-struct RecordOptions: Record {
-  @Field var atTime: Double?
-  @Field var forDuration: Double?
+@Record
+struct RecordOptions {
+  var atTime: Double?
+  var forDuration: Double?
 }
 
 enum AudioStreamEncoding: String, Enumerable {
@@ -137,10 +142,11 @@ enum AudioStreamEncoding: String, Enumerable {
   case int16
 }
 
-struct AudioStreamOptions: Record {
-  @Field var sampleRate: Double = 48000
-  @Field var channels: Int = 1
-  @Field var encoding: AudioStreamEncoding = .float32
+@Record
+struct AudioStreamOptions {
+  var sampleRate: Double = 48000
+  var channels: Int = 1
+  var encoding: AudioStreamEncoding = .float32
 }
 
 enum AudioStreamFileFormat: String, Enumerable {
@@ -152,21 +158,24 @@ enum AudioStreamFileFormat: String, Enumerable {
   }
 }
 
-struct AudioStreamFileRecordingOptions: Record {
-  @Field var uri: URL? = nil
-  @Field var directory: RecordingDirectory? = .cache
-  @Field var format: AudioStreamFileFormat = .wav
+@Record
+struct AudioStreamFileRecordingOptions {
+  var uri: URL?
+  var directory: RecordingDirectory? = .cache
+  var format: AudioStreamFileFormat = .wav
 }
 
-struct AudioStreamFileRecordingStartResult: Record {
-  @Field var uri: String? = nil
+@Record
+struct AudioStreamFileRecordingStartResult {
+  var uri: String?
 }
 
-struct AudioStreamFileRecordingResult: Record {
-  @Field var uri: String = ""
-  @Field var duration: Double = 0.0
-  @Field var size: Int = 0
-  @Field var sampleRate: Int = 0
-  @Field var channels: Int = 0
-  @Field var encoding: AudioStreamEncoding  = .int16
+@Record
+struct AudioStreamFileRecordingResult {
+  var uri: String = ""
+  var duration: Double = 0.0
+  var size: Int = 0
+  var sampleRate: Int = 0
+  var channels: Int = 0
+  var encoding: AudioStreamEncoding = .int16
 }
