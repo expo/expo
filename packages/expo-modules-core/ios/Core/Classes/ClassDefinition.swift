@@ -57,7 +57,7 @@ public final class ClassDefinition: ObjectDefinition {
   public override func build(appContext: AppContext) throws -> JavaScriptObject {
     // The concrete `SharedObject` subclass backing this class, used to dispatch to the
     // `@SharedObject` macro's `_constructSharedObject` / `_decorateSharedObject` overrides.
-    let sharedObjectType = ((associatedType as? DynamicSharedObjectType)?.innerType) as? SharedObject.Type
+    let sharedObjectType = (associatedType as? DynamicSharedObjectType)?.innerType
 
     let constructorClosure: JavaScriptRuntime.SyncFunctionClosure = { [weak self, weak appContext] this, arguments in
       guard let self, let appContext else {
@@ -83,14 +83,15 @@ public final class ClassDefinition: ObjectDefinition {
       return this
     }
 
-    let klass = try createClass(appContext: appContext, name: name, constructorClosure).asObject()
+    let klass = try createClass(appContext: appContext, name: name, sharedObjectType: sharedObjectType, constructorClosure)
+      .asObject()
 
     try decorate(object: klass, appContext: appContext)
 
     let prototype = klass.getProperty("prototype").getObject()
 
     // Bind the macro's `@JS` members: instance members onto the prototype, static members onto the constructor.
-    if let sharedObjectType {
+    if let sharedObjectType, sharedObjectType.bindsOwnJSMembers {
       try sharedObjectType._decorateSharedObject(prototype: prototype, in: appContext.runtime)
       try sharedObjectType._decorateSharedObject(constructor: klass, in: appContext.runtime)
     }
@@ -118,7 +119,15 @@ public final class ClassDefinition: ObjectDefinition {
   }
 
   @JavaScriptActor
-  private func createClass(appContext: AppContext, name: String, _ constructor: @escaping JavaScriptRuntime.SyncFunctionClosure) throws -> JavaScriptFunction {
+  private func createClass(
+    appContext: AppContext,
+    name: String,
+    sharedObjectType: (any AnySharedObject.Type)?,
+    _ constructor: @escaping JavaScriptRuntime.SyncFunctionClosure
+  ) throws -> JavaScriptFunction {
+    if let sharedObjectType {
+      return try JavaScriptBindings.createSharedObjectClass(sharedObjectType, name: name, appContext: appContext, constructor)
+    }
     if isSharedRef {
       return try appContext.runtime.createSharedRefClass(name, constructor)
     }
@@ -143,7 +152,7 @@ public final class ClassDefinition: ObjectDefinition {
       }
     }
     // Bind the macro's `@JS` members, which aren't in the DSL `properties`/`functions` dictionaries.
-    if let sharedObjectType = (associatedType as? DynamicSharedObjectType)?.innerType as? SharedObject.Type {
+    if let sharedObjectType = (associatedType as? DynamicSharedObjectType)?.innerType, sharedObjectType.bindsOwnJSMembers {
       try sharedObjectType._decorateSharedObject(prototype: proto, in: runtime)
     }
     return proto
