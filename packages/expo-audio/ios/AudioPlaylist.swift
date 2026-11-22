@@ -2,12 +2,9 @@ import ExpoModulesCore
 import AVFoundation
 import Combine
 
-private enum PlaylistConstants {
-  static let playlistStatusUpdate = "playlistStatusUpdate"
-  static let trackChanged = "trackChanged"
-}
-
-public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayable {
+@SharedObject
+public final class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayable {
+  @JS
   let id = UUID().uuidString
   private let interval: Double
   private(set) var currentRate: Float = 1.0
@@ -23,7 +20,8 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
   private var playerItems: [AVPlayerItem?] = []
   private var previousTrackIndex = 0
 
-  var currentTrackIndex: Int {
+  @JS("currentIndex")
+  nonisolated var currentTrackIndex: Int {
     guard let current = ref.currentItem,
           let index = playerItems.firstIndex(where: { $0 === current }) else {
       return min(max(previousTrackIndex, 0), max(sources.count - 1, 0))
@@ -41,20 +39,24 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
 
   weak var owningRegistry: AudioComponentRegistry?
 
-  var duration: Double {
+  @JS
+  nonisolated var duration: Double {
     let d = ref.currentItem?.duration.seconds ?? 0.0
     return d.isNaN ? 0.0 : d
   }
 
-  var currentTime: Double {
+  @JS
+  nonisolated var currentTime: Double {
     ref.currentItem?.currentTime().seconds ?? 0.0
   }
 
-  var isLoaded: Bool {
+  @JS
+  nonisolated var isLoaded: Bool {
     ref.currentItem?.status == .readyToPlay
   }
 
-  var isPlaying: Bool {
+  @JS("playing")
+  nonisolated var isPlaying: Bool {
     ref.timeControlStatus == .playing
   }
 
@@ -74,11 +76,13 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
     true
   }
 
-  var isBuffering: Bool {
+  @JS
+  nonisolated var isBuffering: Bool {
     ref.isBuffering(isPlaying: isPlaying)
   }
 
-  var trackCount: Int {
+  @JS
+  nonisolated var trackCount: Int {
     sources.count
   }
 
@@ -94,6 +98,63 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
     addPlaybackEndNotification()
   }
 
+  @Event("playlistStatusUpdate")
+  var onPlaylistStatusUpdate: (AudioPlaylistStatus) -> Void
+
+  @Event("trackChanged")
+  var onTrackChanged: (TrackChangedEvent) -> Void
+
+  @JS("sources")
+  var sourcesFromJS: [AudioSource] {
+    getSourceInfo()
+  }
+
+  @JS
+  nonisolated var muted: Bool {
+    get { ref.isMuted }
+    set { ref.isMuted = newValue }
+  }
+
+  @JS
+  nonisolated var playbackRate: Float {
+    get { isPlaying ? ref.rate : currentRate }
+    set { setPlaybackRate(newValue) }
+  }
+
+  @JS
+  nonisolated var loop: LoopMode {
+    get { loopMode }
+    set { setLoopMode(newValue) }
+  }
+
+  @JS("currentStatus")
+  var currentStatusFromJS: AudioPlaylistStatus {
+    currentStatus()
+  }
+
+  @JS("isActiveForLockScreen")
+  var isActiveForLockScreenFromJS: Bool {
+    isActiveForLockScreen
+  }
+
+  @JS
+  nonisolated func updateLockScreenMetadata(_ metadata: Metadata?) {
+    if isActiveForLockScreen {
+      self.metadata = metadata
+      MediaController.shared.refreshActivePlayable(self, options: lockScreenOptions)
+    }
+  }
+
+  @JS
+  nonisolated func clearLockScreenControls() {
+    if isActiveForLockScreen {
+      metadata = nil
+      lockScreenOptions = nil
+      isActiveForLockScreen = false
+      MediaController.shared.setActivePlayable(nil)
+    }
+  }
+
   func play(at rate: Float) {
     registerTimeObserver()
     ref.playImmediately(atRate: rate)
@@ -103,7 +164,8 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
     }
   }
 
-  func pause() {
+  @JS
+  nonisolated func pause() {
     ref.pause()
 
     if isActiveForLockScreen {
@@ -111,7 +173,8 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
     }
   }
 
-  func next() {
+  @JS
+  nonisolated func next() {
     if currentTrackIndex < sources.count - 1 {
       ref.advanceToNextItem()
     } else if loopMode == .all && !sources.isEmpty {
@@ -119,7 +182,8 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
     }
   }
 
-  func previous() {
+  @JS
+  nonisolated func previous() {
     if currentTrackIndex > 0 {
       let wasPlaying = isPlaying
       rebuildPlaylist(startingAt: currentTrackIndex - 1)
@@ -139,7 +203,8 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
     previous()
   }
 
-  func skipTo(index: Int) {
+  @JS
+  nonisolated func skipTo(index: Int) {
     guard validIndex(index) else {
       return
     }
@@ -152,29 +217,33 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
     }
   }
 
+  @JS
   func seekTo(seconds: Double) async {
     let time = CMTime(seconds: seconds, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
       ref.seek(to: time) { [weak self] _ in
         if let self {
-          self.updateStatus(with: ["currentTime": self.currentTime])
+          let currentTime = self.currentTime
+          self.updateStatus { $0.currentTime = currentTime }
         }
         continuation.resume()
       }
     }
   }
 
-  func add(source: AudioSource) {
+  @JS
+  nonisolated func add(source: AudioSource) {
     sources.append(source)
     let item = AudioUtils.createAVPlayerItem(from: source)
     if let item {
       ref.insert(item, after: nil)
     }
     playerItems.append(item)
-    updateStatus(with: ["trackCount": trackCount])
+    updateStatus()
   }
 
-  func insert(source: AudioSource, at index: Int) {
+  @JS
+  nonisolated func insert(source: AudioSource, at index: Int) {
     guard index >= 0 && index <= sources.count else {
       return
     }
@@ -193,10 +262,11 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
     if wasPlaying {
       play(at: currentRate)
     }
-    updateStatus(with: ["trackCount": trackCount])
+    updateStatus()
   }
 
-  func remove(at index: Int) {
+  @JS
+  nonisolated func remove(at index: Int) {
     guard validIndex(index) else {
       return
     }
@@ -226,27 +296,28 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
       playerItems.remove(at: index)
     }
 
-    updateStatus(with: ["trackCount": trackCount])
+    updateStatus()
   }
 
-  func clear() {
+  @JS
+  nonisolated func clear() {
     ref.pause()
     ref.removeAllItems()
     sources.removeAll()
     playerItems.removeAll()
     previousTrackIndex = 0
 
-    updateStatus(with: [
-      "trackCount": 0,
-      "currentIndex": 0,
-      "playing": false
-    ])
+    updateStatus {
+      $0.trackCount = 0
+      $0.currentIndex = 0
+      $0.playing = false
+    }
   }
 
   func setLoopMode(_ mode: LoopMode) {
     loopMode = mode
     ref.actionAtItemEnd = mode == .single ? .pause : .advance
-    updateStatus(with: ["loop": mode.rawValue])
+    updateStatus()
   }
 
   func setPlaybackRate(_ rate: Float) {
@@ -257,7 +328,12 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
     }
   }
 
-  func setActiveForLockScreen(_ active: Bool = true, metadata: Metadata? = nil, options: LockScreenOptions?) {
+  @JS
+  nonisolated func setActiveForLockScreen(
+    _ active: Bool = true,
+    metadata: Metadata? = nil,
+    options: LockScreenOptions?
+  ) {
     self.metadata = metadata
     self.isActiveForLockScreen = active
     self.lockScreenOptions = active ? options : nil
@@ -268,28 +344,28 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
     }
   }
 
-  func currentStatus() -> [String: Any] {
-    return [
-      "id": id,
-      "currentIndex": currentTrackIndex,
-      "trackCount": trackCount,
-      "currentTime": currentTime,
-      "duration": duration,
-      "playing": isPlaying,
-      "isBuffering": isBuffering,
-      "isLoaded": isLoaded,
-      "playbackRate": isPlaying ? ref.rate : currentRate,
-      "muted": ref.isMuted,
-      "volume": ref.volume,
-      "loop": loopMode.rawValue,
-      "didJustFinish": false
-    ]
+  func currentStatus() -> AudioPlaylistStatus {
+    return AudioPlaylistStatus(
+      id: id,
+      currentIndex: currentTrackIndex,
+      trackCount: trackCount,
+      currentTime: currentTime,
+      duration: duration,
+      playing: isPlaying,
+      isBuffering: isBuffering,
+      isLoaded: isLoaded,
+      playbackRate: isPlaying ? ref.rate : currentRate,
+      muted: ref.isMuted,
+      volume: ref.volume,
+      loop: loopMode,
+      didJustFinish: false
+    )
   }
 
-  func updateStatus(with dict: [String: Any]) {
-    var arguments = currentStatus()
-    arguments.merge(dict) { _, new in new }
-    self.emit(event: PlaylistConstants.playlistStatusUpdate, payload: arguments)
+  func updateStatus(_ modify: (inout AudioPlaylistStatus) -> Void = { _ in }) {
+    var status = currentStatus()
+    modify(&status)
+    onPlaylistStatusUpdate(status)
 
     if isActiveForLockScreen {
       MediaController.shared.updateNowPlayingInfo(for: self)
@@ -301,11 +377,8 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
   }
 
   private func emitTrackChanged(previousIndex: Int, currentIndex: Int) {
-    self.emit(event: PlaylistConstants.trackChanged, payload: [
-      "previousIndex": previousIndex,
-      "currentIndex": currentIndex
-    ])
-    updateStatus(with: [:])
+    onTrackChanged(TrackChangedEvent(previousIndex: previousIndex, currentIndex: currentIndex))
+    updateStatus()
   }
 
   private func rebuildPlaylist(startingAt index: Int) {
@@ -330,7 +403,7 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
           return
         }
         if status == .readyToPlay {
-          self.updateStatus(with: ["isLoaded": true])
+          self.updateStatus { $0.isLoaded = true }
         }
       }
       .store(in: &cancellables)
@@ -345,7 +418,7 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
           self.emitTrackChanged(previousIndex: self.previousTrackIndex, currentIndex: index)
           self.previousTrackIndex = index
         } else {
-          self.updateStatus(with: [:])
+          self.updateStatus()
         }
       }
       .store(in: &cancellables)
@@ -378,10 +451,10 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
 
       case .none:
         if isLastTrack {
-          self.updateStatus(with: [
-            "playing": false,
-            "didJustFinish": true
-          ])
+          self.updateStatus {
+            $0.playing = false
+            $0.didJustFinish = true
+          }
         }
       }
     }
@@ -399,11 +472,12 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
       guard let self else {
         return
       }
-      self.updateStatus(with: ["currentTime": time.seconds])
+      self.updateStatus { $0.currentTime = time.seconds }
     }
   }
 
-  var volume: Float {
+  @JS
+  nonisolated var volume: Float {
     get { ref.volume }
     set { ref.volume = newValue }
   }

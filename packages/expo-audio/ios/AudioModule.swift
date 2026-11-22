@@ -169,81 +169,6 @@ public final class AudioModule: Module {
         return player
       }
 
-      Property("id") { player in
-        player.id
-      }
-
-      Property("isAudioSamplingSupported") {
-        true
-      }
-
-      Property("isBuffering") { player in
-        player.isBuffering
-      }
-
-      Property("loop") { player in
-        player.isLooping
-      }.set { (player, isLooping: Bool) in
-        player.isLooping = isLooping
-      }
-
-      Property("isLoaded") { player in
-        player.isLoaded
-      }
-
-      Property("playing") { player in
-        player.isPlaying
-      }
-
-      Property("muted") { player in
-        player.ref.isMuted
-      }.set { (player, isMuted: Bool) in
-        player.ref.isMuted = isMuted
-      }
-
-      Property("shouldCorrectPitch") { player in
-        player.shouldCorrectPitch
-      }.set { (player, shouldCorrectPitch: Bool) in
-        player.shouldCorrectPitch = shouldCorrectPitch
-      }
-
-      Property("currentTime") { player in
-        player.currentTime
-      }
-
-      Property("duration") { player in
-        player.ref.status == .readyToPlay ? player.duration : 0.0
-      }
-
-      Property("playbackRate") { player in
-        return if player.isPlaying {
-          player.ref.rate
-        } else {
-          player.currentRate
-        }
-      }.set { (player, rate: Double) in
-        // Keep the pitch correction quality from the last `setPlaybackRate` call.
-        player.setPlaybackRate(rate, pitchCorrectionQuality: player.pitchCorrectionQuality)
-      }
-
-      Property("paused") { player in
-        player.isPaused
-      }
-
-      Property("volume") { player in
-        player.ref.volume
-      }.set { (player, volume: Double) in
-        player.ref.volume = Float(volume)
-      }
-
-      Property("currentStatus") { player in
-        player.currentStatus()
-      }
-
-      Property("isActiveForLockScreen") { player in
-        player.isActiveForLockScreen
-      }
-
       Function("play") { player in
         guard self.canStartPlayback() else {
           return
@@ -254,10 +179,6 @@ public final class AudioModule: Module {
           player?.pause()
           self?.appContext?.jsLogger.warn("[expo-audio] Playback was paused because the audio session could not be activated: \(message). Another app may hold a higher-priority session (for example, a phone call), or the app tried to activate a non-mixable session in the background. Call `play()` again later.")
         }
-      }
-
-      Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
-        player.setPlaybackRate(rate, pitchCorrectionQuality: pitchCorrectionQuality?.toPitchAlgorithm() ?? .timeDomain)
       }
 
       Function("replace") { (player, source: AudioSource?) in
@@ -281,40 +202,6 @@ public final class AudioModule: Module {
         self.registry.remove(player)
         self.unregisterAudioSessionActivityKeeper(player.id)
       }
-
-      Function("setAudioSamplingEnabled") { (player, enabled: Bool) in
-        if player.samplingEnabled != enabled {
-          player.setSamplingEnabled(enabled: enabled)
-        }
-      }
-
-      Function("setActiveForLockScreen") { (player: AudioPlayer, active: Bool, metadata: Metadata?, options: LockScreenOptions?) in
-        player.setActiveForLockScreen(active, metadata: metadata, options: options)
-      }
-
-      Function("updateLockScreenMetadata") { (player: AudioPlayer, metadata: Metadata?) in
-        if player.isActiveForLockScreen {
-          player.metadata = metadata
-          MediaController.shared.refreshActivePlayable(player, options: player.lockScreenOptions)
-        }
-      }
-
-      Function("clearLockScreenControls") { (player: AudioPlayer) in
-        if player.isActiveForLockScreen {
-          player.metadata = nil
-          player.lockScreenOptions = nil
-          player.isActiveForLockScreen = false
-          MediaController.shared.setActivePlayable(nil)
-        }
-      }
-
-      AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double, toleranceMillisBefore: Double?, toleranceMillisAfter: Double?) in
-        await player.seekTo(
-          seconds: seconds,
-          toleranceMillisBefore: toleranceMillisBefore,
-          toleranceMillisAfter: toleranceMillisAfter
-        )
-      }
     }
 
     Class(AudioPlaylist.self) {
@@ -328,136 +215,12 @@ public final class AudioModule: Module {
         return playlist
       }
 
-      Property("id") { playlist in
-        playlist.id
-      }
-
-      Property("currentIndex") { playlist in
-        playlist.currentTrackIndex
-      }
-
-      Property("trackCount") { playlist in
-        playlist.trackCount
-      }
-
-      Property("sources") { playlist in
-        playlist.getSourceInfo()
-      }
-
-      Property("playing") { playlist in
-        playlist.isPlaying
-      }
-
-      Property("isLoaded") { playlist in
-        playlist.isLoaded
-      }
-
-      Property("isBuffering") { playlist in
-        playlist.isBuffering
-      }
-
-      Property("currentTime") { playlist in
-        playlist.currentTime
-      }
-
-      Property("duration") { playlist in
-        playlist.duration
-      }
-
-      Property("muted") { playlist in
-        playlist.ref.isMuted
-      }.set { (playlist, isMuted: Bool) in
-        playlist.ref.isMuted = isMuted
-      }
-
-      Property("volume") { playlist in
-        playlist.ref.volume
-      }.set { (playlist, volume: Double) in
-        playlist.ref.volume = Float(volume)
-      }
-
-      Property("playbackRate") { playlist in
-        playlist.isPlaying ? playlist.ref.rate : playlist.currentRate
-      }.set { (playlist, rate: Double) in
-        playlist.setPlaybackRate(Float(rate))
-      }
-
-      Property("loop") { playlist in
-        playlist.loopMode.rawValue
-      }.set { (playlist, mode: LoopMode) in
-        playlist.setLoopMode(mode)
-      }
-
-      Property("currentStatus") { playlist in
-        playlist.currentStatus()
-      }
-
-      Property("isActiveForLockScreen") { playlist in
-        playlist.isActiveForLockScreen
-      }
-
       Function("play") { playlist in
         guard self.canStartPlayback() else {
           return
         }
         playlist.play(at: playlist.currentRate)
         self.activateSession()
-      }
-
-      Function("pause") { playlist in
-        playlist.pause()
-      }
-
-      Function("next") { playlist in
-        playlist.next()
-      }
-
-      Function("previous") { playlist in
-        playlist.previous()
-      }
-
-      Function("skipTo") { (playlist, index: Int) in
-        playlist.skipTo(index: index)
-      }
-
-      AsyncFunction("seekTo") { (playlist: AudioPlaylist, seconds: Double) in
-        await playlist.seekTo(seconds: seconds)
-      }
-
-      Function("add") { (playlist, source: AudioSource) in
-        playlist.add(source: source)
-      }
-
-      Function("insert") { (playlist, source: AudioSource, index: Int) in
-        playlist.insert(source: source, at: index)
-      }
-
-      Function("remove") { (playlist, index: Int) in
-        playlist.remove(at: index)
-      }
-
-      Function("clear") { playlist in
-        playlist.clear()
-      }
-
-      Function("setActiveForLockScreen") { (playlist: AudioPlaylist, active: Bool, metadata: Metadata?, options: LockScreenOptions?) in
-        playlist.setActiveForLockScreen(active, metadata: metadata, options: options)
-      }
-
-      Function("updateLockScreenMetadata") { (playlist: AudioPlaylist, metadata: Metadata?) in
-        if playlist.isActiveForLockScreen {
-          playlist.metadata = metadata
-          MediaController.shared.refreshActivePlayable(playlist, options: playlist.lockScreenOptions)
-        }
-      }
-
-      Function("clearLockScreenControls") { (playlist: AudioPlaylist) in
-        if playlist.isActiveForLockScreen {
-          playlist.metadata = nil
-          playlist.lockScreenOptions = nil
-          playlist.isActiveForLockScreen = false
-          MediaController.shared.setActivePlayable(nil)
-        }
       }
 
       Function("destroy") { playlist in

@@ -179,3 +179,59 @@ struct AudioStreamFileRecordingResult {
   var channels: Int = 0
   var encoding: AudioStreamEncoding = .int16
 }
+
+@Record
+struct AudioPlayerStatus {
+  var id: String
+  var currentTime: Double
+  var playbackState: String
+  var timeControlStatus: String
+  var reasonForWaitingToPlay: String
+  var mute: Bool
+  var duration: Double
+  var playing: Bool
+  var loop: Bool
+  var didJustFinish: Bool
+  var isLoaded: Bool
+  var playbackRate: Float
+  var shouldCorrectPitch: Bool
+  var isBuffering: Bool
+  var isLive: Bool
+  var currentOffsetFromLive: Double?
+  var error: String?
+  var mediaServicesDidReset: Bool
+}
+
+@Record
+struct AudioSampleChannel {
+  var frames: [Float]
+}
+
+@Record
+struct AudioSampleEvent {
+  var channels: [AudioSampleChannel]
+  var timestamp: Double
+}
+
+@Record
+struct AudioPlaylistStatus {
+  var id: String
+  var currentIndex: Int
+  var trackCount: Int
+  var currentTime: Double
+  var duration: Double
+  var playing: Bool
+  var isBuffering: Bool
+  var isLoaded: Bool
+  var playbackRate: Float
+  var muted: Bool
+  var volume: Float
+  var loop: LoopMode
+  var didJustFinish: Bool
+}
+
+@Record
+struct TrackChangedEvent {
+  var previousIndex: Int
+  var currentIndex: Int
+}

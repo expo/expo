@@ -1,12 +1,9 @@
 import ExpoModulesCore
 import Combine
 
-private enum AudioConstants {
-  static let playbackStatus = "playbackStatusUpdate"
-  static let audioSample = "audioSampleUpdate"
-}
-
-public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
+@SharedObject
+public final class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
+  @JS
   let id = UUID().uuidString
   var shouldCorrectPitch = true
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .timeDomain
@@ -20,7 +17,8 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
   let interval: Double
   var wasPlaying = false
-  var isPaused: Bool {
+  @JS("paused")
+  nonisolated var isPaused: Bool {
     ref.rate == 0.0
   }
   var samplingEnabled = false
@@ -47,7 +45,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
         removeQueuedLoopItems()
         ref.actionAtItemEnd = .pause
       }
-      updateStatus(with: [:])
+      updateStatus()
     }
   }
 
@@ -69,7 +67,8 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     return seconds.isNaN ? 0.0 : seconds
   }
 
-  var currentTime: Double {
+  @JS
+  nonisolated var currentTime: Double {
     let seconds = ref.currentItem?.currentTime().seconds ?? 0.0
     return seconds.isNaN ? 0.0 : seconds
   }
@@ -100,15 +99,98 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     setupPublisher()
   }
 
-  var isLoaded: Bool {
+  @Event("playbackStatusUpdate")
+  var onPlaybackStatusUpdate: (AudioPlayerStatus) -> Void
+
+  @Event("audioSampleUpdate")
+  var onAudioSampleUpdate: (AudioSampleEvent) -> Void
+
+  @JS
+  nonisolated var isAudioSamplingSupported: Bool {
+    true
+  }
+
+  @JS
+  nonisolated var loop: Bool {
+    get { isLooping }
+    set { isLooping = newValue }
+  }
+
+  @JS
+  nonisolated var muted: Bool {
+    get { ref.isMuted }
+    set { ref.isMuted = newValue }
+  }
+
+  @JS("shouldCorrectPitch")
+  var shouldCorrectPitchFromJS: Bool {
+    get { shouldCorrectPitch }
+    set { shouldCorrectPitch = newValue }
+  }
+
+  @JS("duration")
+  var durationFromJS: Double {
+    ref.status == .readyToPlay ? duration : 0.0
+  }
+
+  @JS
+  nonisolated var playbackRate: Float {
+    get { isPlaying ? ref.rate : currentRate }
+    set { setPlaybackRate(Double(newValue), pitchCorrectionQuality: pitchCorrectionQuality) }
+  }
+
+  @JS("currentStatus")
+  var currentStatusFromJS: AudioPlayerStatus {
+    currentStatus()
+  }
+
+  @JS("isActiveForLockScreen")
+  var isActiveForLockScreenFromJS: Bool {
+    isActiveForLockScreen
+  }
+
+  @JS
+  nonisolated func setPlaybackRate(_ rate: Double, _ pitchCorrectionQuality: PitchCorrectionQuality?) {
+    setPlaybackRate(rate, pitchCorrectionQuality: pitchCorrectionQuality?.toPitchAlgorithm() ?? .timeDomain)
+  }
+
+  @JS
+  nonisolated func setAudioSamplingEnabled(_ enabled: Bool) {
+    if samplingEnabled != enabled {
+      setSamplingEnabled(enabled: enabled)
+    }
+  }
+
+  @JS
+  nonisolated func updateLockScreenMetadata(_ metadata: Metadata?) {
+    if isActiveForLockScreen {
+      self.metadata = metadata
+      MediaController.shared.refreshActivePlayable(self, options: lockScreenOptions)
+    }
+  }
+
+  @JS
+  nonisolated func clearLockScreenControls() {
+    if isActiveForLockScreen {
+      metadata = nil
+      lockScreenOptions = nil
+      isActiveForLockScreen = false
+      MediaController.shared.setActivePlayable(nil)
+    }
+  }
+
+  @JS
+  nonisolated var isLoaded: Bool {
     ref.currentItem?.status == .readyToPlay
   }
 
-  var isPlaying: Bool {
+  @JS("playing")
+  nonisolated var isPlaying: Bool {
     ref.timeControlStatus == .playing
   }
 
-  var isBuffering: Bool {
+  @JS
+  nonisolated var isBuffering: Bool {
     ref.isBuffering(isPlaying: isPlaying)
   }
 
@@ -163,31 +245,37 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     }
   }
 
-  func currentStatus(knownCurrentTime: Double? = nil) -> [String: Any?] {
+  func currentStatus(knownCurrentTime: Double? = nil) -> AudioPlayerStatus {
     let currentDuration = ref.status == .readyToPlay ? duration : 0.0
     let rate = isPlaying ? ref.rate : currentRate
-    return [
-      "id": id,
-      "currentTime": knownCurrentTime ?? currentTime,
-      "playbackState": statusToString(status: ref.status),
-      "timeControlStatus": timeControlStatusString(status: ref.timeControlStatus),
-      "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: ref.reasonForWaitingToPlay),
-      "mute": ref.isMuted,
-      "duration": currentDuration,
-      "playing": isPlaying,
-      "loop": isLooping,
-      "didJustFinish": false,
-      "isLoaded": isLoaded,
-      "playbackRate": rate,
-      "shouldCorrectPitch": shouldCorrectPitch,
-      "isBuffering": isBuffering,
-      "isLive": isLive,
-      "currentOffsetFromLive": currentOffsetFromLive,
-      "error": nil
-    ]
+    return AudioPlayerStatus(
+      id: id,
+      currentTime: knownCurrentTime ?? currentTime,
+      playbackState: statusToString(status: ref.status),
+      timeControlStatus: timeControlStatusString(status: ref.timeControlStatus),
+      reasonForWaitingToPlay: reasonForWaitingToPlayString(status: ref.reasonForWaitingToPlay),
+      mute: ref.isMuted,
+      duration: currentDuration,
+      playing: isPlaying,
+      loop: isLooping,
+      didJustFinish: false,
+      isLoaded: isLoaded,
+      playbackRate: rate,
+      shouldCorrectPitch: shouldCorrectPitch,
+      isBuffering: isBuffering,
+      isLive: isLive,
+      currentOffsetFromLive: currentOffsetFromLive,
+      error: nil,
+      mediaServicesDidReset: false
+    )
   }
 
-  func setActiveForLockScreen(_ active: Bool = true, metadata: Metadata? = nil, options: LockScreenOptions?) {
+  @JS
+  nonisolated func setActiveForLockScreen(
+    _ active: Bool = true,
+    metadata: Metadata? = nil,
+    options: LockScreenOptions?
+  ) {
     self.metadata = metadata
     self.isActiveForLockScreen = active
     self.lockScreenOptions = active ? options : nil
@@ -198,20 +286,23 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     }
   }
 
-  func updateStatus(with dict: [String: Any]) {
+  func updateStatus(currentTime knownCurrentTime: Double? = nil, _ modify: (inout AudioPlayerStatus) -> Void = { _ in }) {
     // Reading currentTime waits on the player's lock while a source swap pauses it.
-    var arguments = currentStatus(knownCurrentTime: dict["currentTime"] as? Double)
-    arguments.merge(dict) { _, new in
-      new
-    }
-    self.emit(event: AudioConstants.playbackStatus, payload: arguments)
+    var status = currentStatus(knownCurrentTime: knownCurrentTime)
+    modify(&status)
+    onPlaybackStatusUpdate(status)
 
     if isActiveForLockScreen {
       MediaController.shared.updateNowPlayingInfo(for: self)
     }
   }
 
-  func seekTo(seconds: Double, toleranceMillisBefore: Double? = nil, toleranceMillisAfter: Double? = nil) async {
+  @JS
+  func seekTo(
+    seconds: Double,
+    toleranceMillisBefore: Double? = nil,
+    toleranceMillisAfter: Double? = nil
+  ) async {
     let time = CMTime(seconds: seconds, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     let toleranceBefore = toleranceMillisBefore.map {
       CMTime(seconds: $0 / 1000.0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
@@ -223,9 +314,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
       ref.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter) { [weak self] _ in
         if let self {
-          self.updateStatus(with: [
-            "currentTime": self.currentTime
-          ])
+          self.updateStatus(currentTime: self.currentTime)
         }
         continuation.resume()
       }
@@ -246,9 +335,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
           return
         }
         if status == .readyToPlay {
-          self.updateStatus(with: [
-            "isLoaded": true
-          ])
+          self.updateStatus { $0.isLoaded = true }
           if self.isLooping {
             self.enqueueNextLoopItem()
           }
@@ -258,9 +345,8 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
           }
         }
         if status == .failed {
-          self.updateStatus(with: [
-            "error": self.ref.currentItem?.error?.localizedDescription ?? "Unknown error"
-          ])
+          let error = self.ref.currentItem?.error?.localizedDescription ?? "Unknown error"
+          self.updateStatus { $0.error = error }
         }
       }
       .store(in: &cancellables)
@@ -330,7 +416,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
 
   func handleMediaServicesReset() {
     guard let source else {
-      updateStatus(with: ["mediaServicesDidReset": true])
+      updateStatus { $0.mediaServicesDidReset = true }
       return
     }
 
@@ -346,7 +432,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
       guard let self else { return }
       self.restorePlaybackState(time: savedTime, shouldResume: shouldResume, rate: savedRate)
       self.wasPlaying = false
-      self.updateStatus(with: ["mediaServicesDidReset": true])
+      self.updateStatus { $0.mediaServicesDidReset = true }
     }
   }
 
@@ -430,13 +516,10 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
           let channelData = stride(from: channelIndex, to: Int(frameCount), by: channelCount).map { frameIndex in
             dataPointer[frameIndex]
           }
-          return ["frames": channelData]
+          return AudioSampleChannel(frames: channelData)
         }
 
-        self.emit(event: AudioConstants.audioSample, payload: [
-          "channels": channels,
-          "timestamp": timestamp
-        ])
+        self.onAudioSampleUpdate(AudioSampleEvent(channels: channels, timestamp: timestamp))
       }
     }
   }
@@ -505,11 +588,10 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
 
       if !self.isLooping {
         let currentTime = finishedItem.duration.seconds
-        self.updateStatus(with: [
-          "playing": false,
-          "currentTime": currentTime.isNaN ? 0.0 : currentTime,
-          "didJustFinish": true
-        ])
+        self.updateStatus(currentTime: currentTime.isNaN ? 0.0 : currentTime) {
+          $0.playing = false
+          $0.didJustFinish = true
+        }
         self.onPlaybackComplete?()
       }
     }
@@ -528,13 +610,12 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
         return
       }
 
-      self.updateStatus(with: [
-        "currentTime": time.seconds
-      ])
+      self.updateStatus(currentTime: time.seconds)
     }
   }
 
-  var volume: Float {
+  @JS
+  nonisolated var volume: Float {
     get { ref.volume }
     set { ref.volume = newValue }
   }
