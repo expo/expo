@@ -124,16 +124,17 @@ internal struct FontModifier: ViewModifier, Record {
   @Field var textStyle: FontTextStyle?
   @Field var smallCaps: Bool = false
   @Field var leading: FontLeading?
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
   func body(content: Content) -> some View {
-    content.font(resolveFont())
+    content.font(resolveFont(for: dynamicTypeSize))
   }
 
   // Shared so the Text-concatenation path (`applyTextModifier`) resolves the
   // same `Font` as the view path, instead of a fixed-size `Font.custom` that
   // drops `relativeTo` (Dynamic Type) and `weight`.
-  func resolveFont() -> Font {
-    var font = resolveBaseFont()
+  func resolveFont(for dynamicTypeSize: DynamicTypeSize) -> Font {
+    var font = resolveBaseFont(for: dynamicTypeSize)
     if smallCaps {
       font = font.smallCaps()
     }
@@ -143,7 +144,7 @@ internal struct FontModifier: ViewModifier, Record {
     return font
   }
 
-  private func resolveBaseFont() -> Font {
+  private func resolveBaseFont(for dynamicTypeSize: DynamicTypeSize) -> Font {
     if let family = family {
       let baseSize = size ?? 17
       var font: Font = if let textStyle = textStyle {
