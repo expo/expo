@@ -1623,7 +1623,8 @@ public class ViewModifierRegistry {
     _ type: String,
     to text: Text,
     appContext: AppContext,
-    params: [String: Any]
+    params: [String: Any],
+    dynamicTypeSize: DynamicTypeSize
   ) -> Text {
     switch type {
     case "bold":
@@ -1634,7 +1635,7 @@ public class ViewModifierRegistry {
       return text.monospacedDigit()
     case "font":
       guard let modifier = try? FontModifier(from: params, appContext: appContext) else { return text }
-      return text.font(modifier.resolveFont())
+      return text.font(modifier.resolveFont(for: dynamicTypeSize))
     case "foregroundColor":
       guard let modifier = try? ForegroundColorModifier(from: params, appContext: appContext),
             let color = modifier.color else { return text }
