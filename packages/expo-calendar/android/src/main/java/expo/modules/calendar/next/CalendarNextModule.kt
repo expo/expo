@@ -154,6 +154,7 @@ class CalendarNextModule : Module() {
     }
 
     AsyncFunction("getEventById") Coroutine { eventId: String ->
+      permissionsDelegate.requireReadPermissions()
       ExpoCalendarEvent.findById(eventId, eventRepository, reminderRepository, expoCalendarEventFactory)
     }
 

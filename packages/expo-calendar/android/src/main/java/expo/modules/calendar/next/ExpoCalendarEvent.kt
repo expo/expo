@@ -219,10 +219,10 @@ class ExpoCalendarEvent(
       eventRepository: EventRepository,
       reminderRepository: ReminderRepository,
       expoCalendarEventFactory: ExpoCalendarEventFactory
-    ): ExpoCalendarEvent? {
+    ): ExpoCalendarEvent {
       val eventId = EventId(eventId.toLong())
       val eventEntity = eventRepository.findById(eventId)
-        ?: return null
+        ?: throw EventNotFoundException("Event ${eventId.value} was not found")
       val reminders = reminderRepository.findAllByEventId(eventId)
       return expoCalendarEventFactory.create(
         eventEntity = eventEntity,
