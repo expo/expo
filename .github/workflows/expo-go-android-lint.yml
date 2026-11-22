@@ -8,6 +8,7 @@ on:
       - .github/workflows/expo-go-android-lint.yml
       - apps/expo-go/android/**
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - .github/workflows/expo-go-android-lint.yml
       - apps/expo-go/android/**
@@ -18,6 +19,8 @@ concurrency:
 
 jobs:
   spotless:
+    # Draft pull requests skip this job. Marking the pull request ready for review runs it.
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     env:
