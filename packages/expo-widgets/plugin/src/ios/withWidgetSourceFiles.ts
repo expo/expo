@@ -329,14 +329,31 @@ struct ${typeName}: AppEntity {
   var displayRepresentation: DisplayRepresentation {
     DisplayRepresentation(
       title: LocalizedStringResource(stringLiteral: name),
-      subtitle: subtitle.map { LocalizedStringResource(stringLiteral: $0) }
+      subtitle: subtitle.map { return LocalizedStringResource(stringLiteral: $0) }
     )
   }
 }
 
 struct ${typeName}Query: EntityQuery {
+  // A saved value that is no longer in the options keeps its id, so the widget still gets it.
+  func entities(for identifiers: [String]) async throws -> [${typeName}] {
+    let all = options()
+    return identifiers.map { id in
+      return all.first { return $0.id == id } ?? ${typeName}(id: id, name: id, subtitle: nil)
+    }
+  }
+
+  func suggestedEntities() async throws -> [${typeName}] {
+    return options()
+  }
+
+  func defaultResult() async -> ${typeName}? {
+    return options().first { return $0.id == ${JSON.stringify(parameter.default)} }
+      ?? ${typeName}(id: ${JSON.stringify(parameter.default)}, name: ${JSON.stringify(defaultName)}, subtitle: nil)
+  }
+
   private func options() -> [${typeName}] {
-    widgetConfigurationOptions(
+    return widgetConfigurationOptions(
       name: ${JSON.stringify(widgetName)},
       parameter: ${JSON.stringify(parameterName)},
       fallback: [
@@ -346,24 +363,7 @@ ${parameter.values
   })
   .join(',\n')}
       ]
-    ).map { ${typeName}(id: $0.value, name: $0.name, subtitle: $0.subtitle) }
-  }
-
-  // A saved value that is no longer in the options keeps its id, so the widget still gets it.
-  func entities(for identifiers: [String]) async throws -> [${typeName}] {
-    let all = options()
-    return identifiers.map { id in
-      all.first { $0.id == id } ?? ${typeName}(id: id, name: id, subtitle: nil)
-    }
-  }
-
-  func suggestedEntities() async throws -> [${typeName}] {
-    return options()
-  }
-
-  func defaultResult() async -> ${typeName}? {
-    return options().first { $0.id == ${JSON.stringify(parameter.default)} }
-      ?? ${typeName}(id: ${JSON.stringify(parameter.default)}, name: ${JSON.stringify(defaultName)}, subtitle: nil)
+    ).map { return ${typeName}(id: $0.value, name: $0.name, subtitle: $0.subtitle) }
   }
 }`;
 };
