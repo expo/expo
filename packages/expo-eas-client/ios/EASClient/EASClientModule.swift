@@ -4,9 +4,13 @@ import ExpoModulesCore
 
 @ExpoModule("EASClient")
 public class EASClientModule: Module {
-  @JS
-  lazy var clientID: String = EASClientID.uuid().uuidString
+  @JS(.cached)
+  var clientID: String {
+    return EASClientID.uuid().uuidString
+  }
 
-  @JS
-  lazy var deterministicUniformValue: Double = EASClientID.deterministicUniformValue(EASClientID.uuid())
+  @JS(.cached)
+  var deterministicUniformValue: Double {
+    return EASClientID.deterministicUniformValue(EASClientID.uuid())
+  }
 }
