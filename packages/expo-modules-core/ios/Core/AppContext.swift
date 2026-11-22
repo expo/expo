@@ -283,6 +283,11 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     // A class that a package exports is built when JS reads it first, and a class with its own JS class that no module
     // registers is built when it is first needed. Build it now, because a native instance gets to JS before that.
     guard type.hasOwnJSClass || packageRegistry.sharedObjectType(for: nativeClassId) != nil else {
+      // A class without the `@SharedObject` macro gets the class of its nearest superclass with the macro, as it does
+      // in the other runtimes.
+      if let classType = type._jsClassType {
+        return try newObject(of: classType)
+      }
       return nil
     }
     // Native values are converted to JS on the JavaScript thread.

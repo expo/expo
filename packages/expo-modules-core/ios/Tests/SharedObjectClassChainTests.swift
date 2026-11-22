@@ -29,6 +29,9 @@ private class ChainRoot: SharedObject {
 /// A class without the macro. It inherits all the hooks of `ChainRoot`.
 private class ChainMiddle: ChainRoot {}
 
+/// A class without the macro that no module registers.
+private final class ChainLocal: ChainRoot {}
+
 /// A class with the macro whose superclass doesn't have it, but a class above does.
 private final class ChainLeaf: ChainMiddle {
   override class var _jsClassType: (any AnySharedObject.Type)? { ChainLeaf.self }
@@ -261,6 +264,18 @@ private struct SharedObjectClassChainTests {
 
     #expect(try attachedRuntime.eval(
       "expo.SharedObject.__resolveInWorklet(\(root.sharedObjectId)).rootMethod()"
+    ).asInt() == 1)
+  }
+
+  @Test
+  func `an object of a class without the macro that no module registers gets the class of its superclass`() throws {
+    let local = ChainLocal()
+    try runtime.global().setProperty("local", value: try ChainLocal.encode(local, in: runtime))
+    let attachedRuntime = try appContext.addRuntime()
+
+    #expect(try runtime.eval("local.rootMethod()").asInt() == 1)
+    #expect(try attachedRuntime.eval(
+      "expo.SharedObject.__resolveInWorklet(\(local.sharedObjectId)).rootMethod()"
     ).asInt() == 1)
   }
 
