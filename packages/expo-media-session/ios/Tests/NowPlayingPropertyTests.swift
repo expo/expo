@@ -41,7 +41,7 @@ private final class NowPlayingRun {
 
   private struct Live {
     let owner: Int
-    let claim: NowPlayingClaim
+    let claim: any NowPlayingClaim
     var info: NowPlayingInfo
     var commands: Set<RemoteCommandKind>
     var wasPlaying: Bool
@@ -52,12 +52,12 @@ private final class NowPlayingRun {
   private let scheduler = ManualScheduler()
   private let center = FakeNowPlayingCenter()
   private let manager: MediaSessionManager
-  private let hold: SessionHold?
-  private var uses: [(use: SessionUse, strict: Bool)] = []
+  private let hold: (any SessionHold)?
+  private var uses: [(use: any SessionUse, strict: Bool)] = []
   private var policyMixes = false
   private let owners = (0..<4).map { FakeNowPlayingOwner("o\($0)", mediaType: $0 % 2 == 0 ? .audio : .video) }
   private var live: [Live] = []
-  private var stale: [NowPlayingClaim] = []
+  private var stale: [any NowPlayingClaim] = []
   private var seen = [Int](repeating: 0, count: 4)
   private var offers = 0
   private(set) var steps: [String] = []
@@ -229,7 +229,7 @@ private final class NowPlayingRun {
 
   private func withdraw(at index: Int, ending: Bool) -> String? {
     let wasTop = index == live.count - 1
-    var claim: NowPlayingClaim? = live[index].claim
+    var claim: (any NowPlayingClaim)? = live[index].claim
     live.remove(at: index)
     var expected: [Int: [FakeNowPlayingOwner.Event]] = [:]
     if wasTop, let top, top.pausedByTakeover {

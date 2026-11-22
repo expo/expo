@@ -10,13 +10,32 @@ final class SessionCoordinator: @unchecked Sendable {
     var pendingActivationCount = 0
   }
 
+  enum PauseCause: Hashable {
+    case interruption
+    case background
+  }
+
+  // Only touched on the coordinator queue.
+  struct WeakUse: @unchecked Sendable {
+    weak var delegate: (any SessionUseDelegate)?
+    weak var token: CoordinatorSessionUse?
+    let queue: DispatchQueue
+  }
+
   private struct Entry {
     let id: UInt64
     let client: String
     var requirements: SessionRequirements
     let activation: ActivationSignal?
+    let use: WeakUse?
     var droppedOptions: AVAudioSession.CategoryOptions = []
     var isRejected = false
+    var causes: Set<PauseCause> = []
+    var isDucked = false
+
+    var isCommanded: Bool {
+      use != nil
+    }
   }
 
   // Only touched on the coordinator queue.
@@ -43,7 +62,9 @@ final class SessionCoordinator: @unchecked Sendable {
   private var correctedAfterNotification = false
   private var needsReactivation = false
   private var deferredInterruptionEnd: Bool?
+  private var suppressedActivationError: Error?
   private(set) var isInterrupted = false
+  private var isDuckingForInterruption = false
 
   private let log: @Sendable (String) -> Void
 
@@ -79,17 +100,32 @@ final class SessionCoordinator: @unchecked Sendable {
       .interruptionMode
   }
 
-  func begin(client: String, requirements: SessionRequirements, activation: ActivationSignal) -> UInt64 {
-    let id = nextID.withLock { value in
+  func reserveID() -> UInt64 {
+    nextID.withLock { value in
       value += 1
       return value
     }
+  }
+
+  func begin(
+    id: UInt64,
+    client: String,
+    requirements: SessionRequirements,
+    activation: ActivationSignal,
+    delegate: (any SessionUseDelegate)?,
+    queue: DispatchQueue,
+    token: CoordinatorSessionUse?
+  ) {
     releaseGeneration.withLock { $0 &+= 1 }
+    let use = delegate.map { WeakUse(delegate: $0, token: token, queue: queue) }
     task { [self] in
-      entries.append(Entry(id: id, client: client, requirements: requirements, activation: activation))
-      reconcile(client: client, activating: true, activation: activation, entryID: id)
+      entries.append(Entry(id: id, client: client, requirements: requirements, activation: activation, use: use))
+      let activated = reconcile(client: client, activating: true, activation: activation, entryID: id)
+      // iOS does not always send the end of an interruption. A successful activation means it is over.
+      if activated && suspendCount == 0 && isDuckingForInterruption {
+        endDuck()
+      }
     }
-    return id
   }
 
   func update(id: UInt64, requirements: SessionRequirements) {
@@ -125,7 +161,11 @@ final class SessionCoordinator: @unchecked Sendable {
       policy = merged
     }
     task { [self] in
-      reconcile(client: nil, activating: false, activation: nil)
+      if entries.isEmpty {
+        applyPolicyOnly()
+      } else {
+        reconcile(client: nil, activating: false, activation: nil)
+      }
     }
   }
 
@@ -154,6 +194,7 @@ final class SessionCoordinator: @unchecked Sendable {
       needsReactivation = true
       if entries.isEmpty {
         scheduleRelease()
+        applyPolicyOnly()
         resumed = false
       } else if isInterrupted {
         resumed = false
@@ -162,7 +203,7 @@ final class SessionCoordinator: @unchecked Sendable {
       }
       if let shouldResume = deferredInterruptionEnd {
         deferredInterruptionEnd = nil
-        notify { $0.mediaSessionInterruptionEnded(shouldResume: shouldResume && resumed) }
+        finishInterruption(resumed: shouldResume && resumed)
       }
     }
   }
@@ -172,7 +213,20 @@ final class SessionCoordinator: @unchecked Sendable {
       needsReactivation = true
       isInterrupted = true
       deferredInterruptionEnd = nil
+      let ducks = effectiveInterruptionMode == .duckOthers
+      isDuckingForInterruption = ducks
       notify { $0.mediaSessionInterruptionBegan(reason: reason) }
+      for index in entries.indices where entries[index].isCommanded && entries[index].causes.isEmpty {
+        if ducks {
+          if !entries[index].isDucked {
+            entries[index].isDucked = true
+            command(entries[index]) { $0.sessionUse($1, duck: true) }
+          }
+        } else {
+          entries[index].causes.insert(.interruption)
+          command(entries[index]) { $0.sessionUse($1, pause: .interruption) }
+        }
+      }
     }
   }
 
@@ -185,7 +239,7 @@ final class SessionCoordinator: @unchecked Sendable {
       }
       let reactivates = (shouldResume || !pendingActivations.isEmpty) && !entries.isEmpty
       let resumed = reactivates && reconcile(client: nil, activating: true, activation: nil) && shouldResume
-      notify { $0.mediaSessionInterruptionEnded(shouldResume: resumed) }
+      finishInterruption(resumed: resumed)
     }
   }
 
@@ -195,6 +249,15 @@ final class SessionCoordinator: @unchecked Sendable {
         reconcile(client: nil, activating: false, activation: nil, fromNotification: true)
       }
       notify { $0.mediaSessionRouteChanged(reason: reason) }
+      guard reason == .oldDeviceUnavailable else {
+        return
+      }
+      let input: SessionCapabilities = [.record, .measurement]
+      let unplugged = entries.filter { $0.isCommanded && $0.requirements.capabilities.isDisjoint(with: input) }
+      for entry in unplugged {
+        command(entry) { $0.sessionUse($1, pause: .outputDisconnected) }
+      }
+      endEntries(ids: unplugged.map(\.id), error: nil)
     }
   }
 
@@ -202,8 +265,29 @@ final class SessionCoordinator: @unchecked Sendable {
     task { [self] in
       needsReactivation = true
       isInterrupted = false
-      reconcile(client: nil, activating: true, activation: nil)
+      if entries.isEmpty {
+        appliedSession = nil
+        isActive = false
+        applyPolicyOnly()
+      }
+      let reactivated = reconcile(client: nil, activating: true, activation: nil)
       notify { $0.mediaSessionServicesReset() }
+      resolveInterruptionPauses(resumed: reactivated)
+    }
+  }
+
+  func didEnterBackground() {
+    task { [self] in
+      for index in entries.indices
+      where entries[index].isCommanded && !entries[index].requirements.continuesInBackground
+        && !entries[index].causes.contains(.background)
+      {
+        let wasRunning = entries[index].causes.isEmpty
+        entries[index].causes.insert(.background)
+        if wasRunning {
+          command(entries[index]) { $0.sessionUse($1, pause: .background) }
+        }
+      }
     }
   }
 
@@ -212,13 +296,113 @@ final class SessionCoordinator: @unchecked Sendable {
     task { [self] in
       let awaitsReactivation = needsReactivation
       needsReactivation = true
-      if !awaitsReactivation {
-        reconcile(client: nil, activating: true, activation: nil)
+      var resumable: [UInt64] = []
+      for index in entries.indices where entries[index].causes.contains(.background) {
+        entries[index].causes.remove(.background)
+        if entries[index].causes.isEmpty {
+          resumable.append(entries[index].id)
+        }
+      }
+      guard !resumable.isEmpty else {
+        if !awaitsReactivation {
+          reconcile(client: nil, activating: true, activation: nil)
+        }
+        return
+      }
+      suppressedActivationError = nil
+      if reconcile(client: nil, activating: true, activation: nil, reportsActivationFailure: false) {
+        for entry in entries where resumable.contains(entry.id) {
+          command(entry) { $0.sessionUseResume($1) }
+        }
+      } else if isInterrupted {
+        for index in entries.indices where resumable.contains(entries[index].id) {
+          entries[index].causes.insert(.interruption)
+        }
+      } else if let error = suppressedActivationError {
+        let client = entries.first { resumable.contains($0.id) }?.client ?? ""
+        fail(error, client: client)
+        endEntries(ids: resumable, error: error)
       }
     }
   }
 
-  func addObserver(_ observer: any MediaSessionObserver) -> ObserverRegistration {
+  private func finishInterruption(resumed: Bool) {
+    notify { $0.mediaSessionInterruptionEnded(shouldResume: resumed) }
+    resolveInterruptionPauses(resumed: resumed)
+  }
+
+  private func endDuck() {
+    isDuckingForInterruption = false
+    for index in entries.indices where entries[index].isDucked {
+      entries[index].isDucked = false
+      command(entries[index]) { $0.sessionUse($1, duck: false) }
+    }
+  }
+
+  private func resolveInterruptionPauses(resumed: Bool) {
+    endDuck()
+    let interrupted = entries.filter { $0.isCommanded && $0.causes.contains(.interruption) }.map(\.id)
+    guard resumed else {
+      endEntries(ids: interrupted, error: nil)
+      return
+    }
+    for index in entries.indices where interrupted.contains(entries[index].id) {
+      entries[index].causes.remove(.interruption)
+      if entries[index].causes.isEmpty {
+        command(entries[index]) { $0.sessionUseResume($1) }
+      }
+    }
+  }
+
+  private func command(_ entry: Entry, _ body: @escaping @Sendable (any SessionUseDelegate, any SessionUse) -> Void) {
+    guard let use = entry.use, use.delegate != nil, use.token != nil else {
+      return
+    }
+    use.queue.async {
+      guard let delegate = use.delegate, let token = use.token, token.acceptsCommands else {
+        return
+      }
+      body(delegate, token)
+    }
+  }
+
+  private func endEntries(ids: [UInt64], error: Error?, reconciles: Bool = true) {
+    guard !ids.isEmpty else {
+      return
+    }
+    var removed = false
+    for id in ids {
+      guard let index = entries.firstIndex(where: { $0.id == id }) else {
+        continue
+      }
+      let entry = entries.remove(at: index)
+      removed = true
+      if let activation = entry.activation {
+        pendingActivations.removeAll { $0 === activation }
+        activation.finish(.failure(error ?? SessionUseEndedException(entry.client)))
+      }
+      entry.use?.token?.markEndedByCoordinator()
+      if entry.isDucked {
+        command(entry) { $0.sessionUse($1, duck: false) }
+      }
+      if let error {
+        command(entry) { $0.sessionUse($1, didFail: error) }
+      }
+      command(entry) { $0.sessionUseDidEnd($1) }
+    }
+    guard removed, reconciles else {
+      return
+    }
+    if entries.isEmpty {
+      scheduleRelease()
+    } else {
+      task { [self] in
+        reconcile(client: nil, activating: false, activation: nil)
+      }
+    }
+  }
+
+  func addObserver(_ observer: any MediaSessionObserver) -> any ObserverRegistration {
     let id = nextID.withLock { value in
       value += 1
       return value
@@ -227,7 +411,7 @@ final class SessionCoordinator: @unchecked Sendable {
     task { [self] in
       observers.append(registered)
     }
-    return ObserverRegistration { [weak self] in
+    return CoordinatorObserverRegistration { [weak self] in
       self?.removeObserver(id: id)
     }
   }
@@ -260,7 +444,8 @@ final class SessionCoordinator: @unchecked Sendable {
     activating: Bool,
     activation: ActivationSignal?,
     entryID: UInt64? = nil,
-    fromNotification: Bool = false
+    fromNotification: Bool = false,
+    reportsActivationFailure: Bool = true
   ) -> Bool {
     scheduler.assertIsolated()
     if let activation {
@@ -292,6 +477,10 @@ final class SessionCoordinator: @unchecked Sendable {
       ).causedBy(error)
       if let entryID, let index = entries.firstIndex(where: { $0.id == entryID }) {
         reject(index: index, exception)
+        if entries.isEmpty {
+          scheduleRelease()
+          return false
+        }
         return reconcile(client: nil, activating: activating, activation: nil)
       }
       fail(exception, client: reportedClient)
@@ -304,12 +493,14 @@ final class SessionCoordinator: @unchecked Sendable {
         isActive = true
         needsReactivation = false
       } catch {
-        fail(
-          MediaSessionException(
-            "The audio session could not be activated for \(reportedClient). Another app or a phone call may hold a session that does not mix with others. Begin the use again after the interruption ends"
-          ).causedBy(error),
-          client: reportedClient
-        )
+        let exception = MediaSessionException(
+          "The audio session could not be activated for \(reportedClient). Another app or a phone call may hold a session that does not mix with others. Begin the use again after the interruption ends"
+        ).causedBy(error)
+        guard reportsActivationFailure else {
+          suppressedActivationError = exception
+          return false
+        }
+        fail(exception, client: reportedClient)
         return false
       }
     }
@@ -366,18 +557,48 @@ final class SessionCoordinator: @unchecked Sendable {
   }
 
   private func reject(index: Int, _ error: Error) {
+    let client = entries[index].client
+    guard !entries[index].isCommanded else {
+      let id = entries[index].id
+      notify { $0.mediaSession(didFail: error, client: client) }
+      endEntries(ids: [id], error: error, reconciles: false)
+      return
+    }
     entries[index].isRejected = true
     if let activation = entries[index].activation {
       pendingActivations.removeAll { $0 === activation }
       activation.finish(.failure(error))
     }
-    let client = entries[index].client
     notify { $0.mediaSession(didFail: error, client: client) }
   }
 
   private func fail(_ error: Error, client: String) {
+    let failing = entries.filter { entry in
+      entry.isCommanded && pendingActivations.contains { $0 === entry.activation }
+    }.map(\.id)
     completePending(.failure(error))
     notify { $0.mediaSession(didFail: error, client: client) }
+    endEntries(ids: failing, error: error)
+  }
+
+  private func applyPolicyOnly() {
+    guard suspendCount == 0 else {
+      return
+    }
+    let policyOnly = SessionResolver.resolve(policy: policy, requirements: [])
+    guard appliedSession?.configuration != policyOnly.configuration else {
+      return
+    }
+    // A mixWithOthers session stays active when idle. Release it before a non-mixable category interrupts others.
+    if pendingRelease == nil && isActive && policyOnly.interruptionMode != .mixWithOthers {
+      deactivate()
+    }
+    do {
+      _ = try backend.configure(policyOnly)
+      appliedSession = policyOnly
+    } catch {
+      log("[expo-media-session] Failed to apply the audio policy: \(error.localizedDescription)")
+    }
   }
 
   private func restorePolicyCategory() {
@@ -425,9 +646,12 @@ final class SessionCoordinator: @unchecked Sendable {
     }
     let deactivates = isActive && appliedSession?.interruptionMode != .mixWithOthers
     restorePolicyCategory()
-    guard deactivates else {
-      return
+    if deactivates {
+      deactivate()
     }
+  }
+
+  private func deactivate() {
     do {
       try backend.deactivate(notifyingOthers: appliedSession?.notifiesOthersOnDeactivation ?? true)
       isActive = false

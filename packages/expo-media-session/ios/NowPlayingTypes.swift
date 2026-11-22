@@ -104,8 +104,7 @@ extension NowPlayingOwner {
   }
 }
 
-/// Store the claim while the owner shows on the lock screen. Deinit withdraws it.
-public final class NowPlayingClaim: @unchecked Sendable {
+final class StackNowPlayingClaim: NowPlayingClaim, @unchecked Sendable {
   private let id: UInt64
   private weak var stack: NowPlayingStack?
   private let withdrawn = Mutex(false)
@@ -119,14 +118,14 @@ public final class NowPlayingClaim: @unchecked Sendable {
     withdraw()
   }
 
-  public func update(_ info: NowPlayingInfo, commands: Set<RemoteCommandKind>? = nil) {
+  func update(_ info: NowPlayingInfo, commands: Set<RemoteCommandKind>?) {
     guard !withdrawn.withLock({ $0 }) else {
       return
     }
     stack?.update(id: id, info: info, commands: commands)
   }
 
-  public func withdraw() {
+  func withdraw() {
     let wasWithdrawn = withdrawn.withLock { withdrawn in
       defer { withdrawn = true }
       return withdrawn

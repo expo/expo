@@ -4,7 +4,7 @@ import ExpoModulesCore
 final class JSNowPlayingOwner: SharedObject {
   let mediaType: NowPlayingMediaType
   private let playing = Mutex(false)
-  private let claim = Mutex<NowPlayingClaim?>(nil)
+  private let claim = Mutex<(any NowPlayingClaim)?>(nil)
 
   @Event
   var onCommand: (RemoteCommandEvent) -> Void

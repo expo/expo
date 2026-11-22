@@ -5,7 +5,7 @@ import Foundation
 public final class MediaSessionModule: Module {
   private let forwarder = EventForwarder()
   private let listening = Mutex(Listening())
-  private let holds = Mutex<[String: SessionHold]>([:])
+  private let holds = Mutex<[String: any SessionHold]>([:])
 
   @Event
   var onInterruption: (InterruptionEvent) -> Void
@@ -66,7 +66,7 @@ public final class MediaSessionModule: Module {
   }
 
   public override func didStopListening(event: String) {
-    let removed = listening.withLock { listening -> ObserverRegistration? in
+    let removed = listening.withLock { listening -> (any ObserverRegistration)? in
       listening.events.remove(event)
       guard listening.events.isEmpty else {
         return nil
@@ -95,7 +95,7 @@ public final class MediaSessionModule: Module {
 
 private struct Listening {
   var events: Set<String> = []
-  var registration: ObserverRegistration?
+  var registration: (any ObserverRegistration)?
 }
 
 private final class EventForwarder: MediaSessionObserver {

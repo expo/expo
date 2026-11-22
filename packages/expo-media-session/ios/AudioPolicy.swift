@@ -89,6 +89,7 @@ public struct SessionRequirements: Equatable, Sendable {
   public var extraOptions: AVAudioSession.CategoryOptions
   public var preferredSampleRate: Double?
   public var preferredIOBufferDuration: TimeInterval?
+  public var continuesInBackground: Bool
 
   public init(
     mixing: MixingRequirement? = nil,
@@ -96,7 +97,8 @@ public struct SessionRequirements: Equatable, Sendable {
     mode: AVAudioSession.Mode? = nil,
     extraOptions: AVAudioSession.CategoryOptions = [],
     preferredSampleRate: Double? = nil,
-    preferredIOBufferDuration: TimeInterval? = nil
+    preferredIOBufferDuration: TimeInterval? = nil,
+    continuesInBackground: Bool = false
   ) {
     self.mixing = mixing
     self.capabilities = capabilities
@@ -104,5 +106,6 @@ public struct SessionRequirements: Equatable, Sendable {
     self.extraOptions = extraOptions
     self.preferredSampleRate = preferredSampleRate
     self.preferredIOBufferDuration = preferredIOBufferDuration
+    self.continuesInBackground = continuesInBackground
   }
 }
