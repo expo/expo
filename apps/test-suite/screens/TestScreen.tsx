@@ -215,6 +215,12 @@ function useTestRunner() {
         if (cancelledRef.current) {
           return;
         }
+        if (result.status === 'pending') {
+          // The bare-expo e2e scripts read these lines to report skipped specs in CI.
+          console.log(
+            `[TEST-SUITE-PENDING] ${JSON.stringify({ spec: result.fullName, reason: result.pendingReason })}`
+          );
+        }
         if (result.status === 'passed' || result.status === 'failed') {
           const grouping = result.status === 'passed' ? '---' : '+++';
           resultsRef.current += `${grouping} ${result.fullName}\n`;

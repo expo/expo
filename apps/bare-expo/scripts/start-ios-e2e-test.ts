@@ -16,6 +16,7 @@ import {
   retryAsync,
   prettyPrintTestSuiteLogs,
   printImageComparisonServerLogs,
+  reportPendingSpecs,
   runCustomMaestroFlowsAsync,
   runMaestroAsync,
   TEST_DURATION_LABEL,
@@ -293,11 +294,14 @@ async function testAsync(
     // reinstalled by the retry.
     reinstallMaestroDriver = false;
 
+    stopLogCollectionController.abort();
+    const testSuiteLogs = await getTestSuiteLogs();
+    reportPendingSpecs(testSuiteLogs);
+
     if (failedFlows.length > 0) {
-      stopLogCollectionController.abort();
       console.warn(`\n⚠️ Maestro flows failed: ${failedFlows.join(', ')}\n\n`);
 
-      console.log(prettyPrintTestSuiteLogs(await getTestSuiteLogs()));
+      console.log(prettyPrintTestSuiteLogs(testSuiteLogs));
       await printImageComparisonServerLogs();
       // we need to always get these logs since it stops listener process
       const nativeLogs = await getNativeErrorLogs();
