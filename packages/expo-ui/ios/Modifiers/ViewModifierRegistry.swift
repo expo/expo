@@ -1289,10 +1289,12 @@ internal struct TextSelection: ViewModifier, Record {
 
 internal struct LineSpacing: ViewModifier, Record {
   @Field var value: CGFloat?
+  @Field var textStyle: FontTextStyle?
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
   func body(content: Content) -> some View {
     if let value {
-      content.lineSpacing(value)
+      content.lineSpacing(textStyle?.scaled(value, for: dynamicTypeSize) ?? value)
     } else {
       content
     }
