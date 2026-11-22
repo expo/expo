@@ -309,7 +309,6 @@ export const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-tracking-transparency': ['TrackingTransparency.ts'],
   'expo-updates': ['index.ts'],
   'expo-video': ['index.ts'],
-  'expo-video-thumbnails': ['VideoThumbnails.ts'],
   'expo-web-browser': ['WebBrowser.ts'],
   '@expo/fingerprint': ['index.ts'],
   'expo-age-range': ['index.ts'],

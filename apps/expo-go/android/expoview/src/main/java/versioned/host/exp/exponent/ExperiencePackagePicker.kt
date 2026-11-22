@@ -76,7 +76,6 @@ import expo.modules.trackingtransparency.TrackingTransparencyModule
 import expo.modules.ui.ExpoUIModule
 import expo.modules.updates.UpdatesPackage
 import expo.modules.video.VideoModule
-import expo.modules.videothumbnails.VideoThumbnailsModule
 import expo.modules.webbrowser.WebBrowserModule
 import expo.modules.webview.DomWebViewModule
 import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
@@ -178,7 +177,6 @@ object ExperiencePackagePicker : ModulesProvider {
     SystemUIModule::class.java to null,
     TaskManagerModule::class.java to null,
     TrackingTransparencyModule::class.java to null,
-    VideoThumbnailsModule::class.java to null,
     VideoModule::class.java to null,
     WebBrowserModule::class.java to null,
     BrightnessModule::class.java to null

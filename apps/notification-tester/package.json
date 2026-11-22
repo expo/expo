@@ -112,7 +112,6 @@
         "expo-system-ui",
         "expo-tracking-transparency",
         "expo-video",
-        "expo-video-thumbnails",
         "expo-web-browser"
       ]
     }
