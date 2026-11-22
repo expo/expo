@@ -1,44 +1,59 @@
 import AdSupport
 import ExpoModulesCore
 
+// TODO: Rename the package to 'ExpoTracking'
+@ExpoModule("ExpoTrackingTransparency")
 public class TrackingTransparencyModule: Module {
-  public func definition() -> ModuleDefinition {
-    // TODO: Rename the package to 'ExpoTracking'
-    Name("ExpoTrackingTransparency")
+  public override func didCreate() {
+    EXPermissionsMethodsDelegate.register(
+      [TrackingTransparencyPermissionRequester()],
+      withPermissionsManager: appContext?.permissions
+    )
+  }
 
-    OnCreate {
-      EXPermissionsMethodsDelegate.register(
-        [TrackingTransparencyPermissionRequester()],
-        withPermissionsManager: self.appContext?.permissions
-      )
-    }
+  @JS(.withAsync("getAdvertisingIdAsync"))
+  func getAdvertisingId() -> String {
+    return ASIdentifierManager.shared().advertisingIdentifier.uuidString
+  }
 
-    Function("getAdvertisingId") { () -> String in
-      return ASIdentifierManager.shared().advertisingIdentifier.uuidString
-    }
-
-    AsyncFunction("getAdvertisingIdAsync") { () -> String in
-      return ASIdentifierManager.shared().advertisingIdentifier.uuidString
-    }
-
-    AsyncFunction("getPermissionsAsync") { (promise: Promise) in
+  @JS
+  @MainActor
+  func getPermissionsAsync() async throws -> [String: Any] {
+    return try await withPermissionsContinuation { resolve, reject in
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
-        self.appContext?.permissions,
+        appContext?.permissions,
         withRequester: TrackingTransparencyPermissionRequester.self,
-        resolve: promise.legacyResolver,
-        reject: promise.legacyRejecter
+        resolve: resolve,
+        reject: reject
       )
     }
-    .runOnQueue(.main)
+  }
 
-    AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
+  @JS
+  @MainActor
+  func requestPermissionsAsync() async throws -> [String: Any] {
+    return try await withPermissionsContinuation { resolve, reject in
       EXPermissionsMethodsDelegate.askForPermission(
-        withPermissionsManager: self.appContext?.permissions,
+        withPermissionsManager: appContext?.permissions,
         withRequester: TrackingTransparencyPermissionRequester.self,
-        resolve: promise.legacyResolver,
-        reject: promise.legacyRejecter
+        resolve: resolve,
+        reject: reject
       )
     }
-    .runOnQueue(.main)
+  }
+
+  @MainActor
+  private func withPermissionsContinuation(
+    _ body: (@escaping EXPromiseResolveBlock, @escaping EXPromiseRejectBlock) -> Void
+  ) async throws -> [String: Any] {
+    return try await withCheckedThrowingContinuation { continuation in
+      let resolve: EXPromiseResolveBlock = { result in
+        continuation.resume(returning: result as? [String: Any] ?? [:])
+      }
+      let reject: EXPromiseRejectBlock = { code, message, _ in
+        continuation.resume(throwing: Exception(name: code ?? "", description: message ?? "", code: code ?? ""))
+      }
+      body(resolve, reject)
+    }
   }
 }

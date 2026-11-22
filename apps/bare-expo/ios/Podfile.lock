@@ -765,6 +765,9 @@ PODS:
     - UMAppLoader
   - ExpoTrackingTransparency (58.0.2):
     - ExpoModulesCore
+  - ExpoTrackingTransparency/Tests (58.0.2):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoUI (58.0.23):
     - ExpoModulesCore
     - ExpoModulesWorklets
@@ -3780,6 +3783,7 @@ DEPENDENCIES:
   - ExpoTaskManager (from `../../../packages/expo-task-manager/ios`)
   - ExpoTaskManager/Tests (from `../../../packages/expo-task-manager/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
+  - ExpoTrackingTransparency/Tests (from `../../../packages/expo-tracking-transparency/ios`)
   - ExpoUI (from `../../../packages/expo-ui/ios`)
   - ExpoVideo (from `../../../packages/expo-video/ios`)
   - ExpoVideo/Tests (from `../../../packages/expo-video/ios`)
@@ -4503,7 +4507,7 @@ SPEC CHECKSUMS:
   ExpoSymbols: 1260e741b35b6fd105942779895418db306645c8
   ExpoSystemUI: ba45da148c24afde6e09d14c9eb180b6d9ff437d
   ExpoTaskManager: a9a9c3ccecdf3e0b76d11c35893a5ee0989ccd7a
-  ExpoTrackingTransparency: 8092242760ec865a6b2995fb6b3ab1c905b45eb0
+  ExpoTrackingTransparency: 16604a38f96b01b3d75c4407b5322a91759c09a3
   ExpoUI: ee7843da6bf0b16255f3f5c5de69c3cd4f956cd6
   ExpoVideo: dcfa5764e56e73c9eb1cf54c7c218967280701b7
   ExpoVideoDashSupportModule: a8197584e7b7e533a67e75d3349c5fa827358ad6
