@@ -1427,12 +1427,15 @@ export type FontTextStyle =
  * Sets the font properties of a view.
  *
  * Pass `textStyle` to scale with the user's Dynamic Type setting. Combine
- * it with `family` to scale a custom font.
+ * it with `size` to scale a system or custom font from that size.
  *
  * @example
  * ```tsx
  * // Scales with Dynamic Type
  * <Text modifiers={[font({ textStyle: 'largeTitle', weight: 'bold' })]}>Hello</Text>
+ *
+ * // System font at 16 points that scales relative to the body text style
+ * <Text modifiers={[font({ textStyle: 'body', size: 16 })]}>Hi</Text>
  *
  * // Custom font that scales relative to the body text style
  * <Text modifiers={[font({ textStyle: 'body', family: 'Helvetica', size: 18 })]}>Hi</Text>
@@ -1446,7 +1449,7 @@ export const font = (params: {
   /** Custom font family name. */
   family?: string;
   /**
-   * Font size in points. Ignored when only `textStyle` is set.
+   * Font size in points. With `textStyle`, the size scales relative to that text style.
    *
    * @default 17
    */
