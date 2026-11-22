@@ -1327,9 +1327,11 @@ export const textSelection = (value: boolean) => createModifier('textSelection',
 /**
  * The distance in points between the bottom of one line fragment and the top of the next.
  * @param value - The amount of space between the bottom of one line and the top of the next line in points. This value is always nonnegative. Otherwise, the default value will be used.
+ * @param params - Pass `textStyle` to scale the spacing with the user's Dynamic Type setting, relative to that text style.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/linespacing(_:)).
  */
-export const lineSpacing = (value: number) => createModifier('lineSpacing', { value });
+export const lineSpacing = (value: number, params?: { textStyle?: FontTextStyle }) =>
+  createModifier('lineSpacing', { value, ...params });
 /**
  * Sets the total line height for text in this view.
  * @param value - The line height in points.
