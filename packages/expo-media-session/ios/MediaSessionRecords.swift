@@ -87,3 +87,43 @@ struct RemoteCommandEvent {
   var kind: String
   var value: Double?
 }
+
+@Record
+struct SessionRequirementsRecord {
+  var mixing: MixingRequirement?
+  var capabilities: [String]?
+  var continuesInBackground: Bool?
+}
+
+extension SessionRequirementsRecord {
+  var requirements: SessionRequirements {
+    var capabilities: SessionCapabilities = []
+    for capability in self.capabilities ?? [] {
+      switch capability {
+      case "record": capabilities.insert(.record)
+      case "measurement": capabilities.insert(.measurement)
+      default: break
+      }
+    }
+    return SessionRequirements(
+      mixing: mixing,
+      capabilities: capabilities,
+      continuesInBackground: continuesInBackground ?? false
+    )
+  }
+}
+
+@Record
+struct SessionPauseEvent {
+  var reason: String
+}
+
+@Record
+struct SessionDuckEvent {
+  var isDucked: Bool
+}
+
+@Record
+struct SessionFailEvent {
+  var message: String
+}

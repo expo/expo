@@ -16,7 +16,7 @@ public enum InterruptionMode: String, Enumerable, Sendable {
   }
 }
 
-public enum MixingRequirement: String, Sendable {
+public enum MixingRequirement: String, Enumerable, Sendable {
   case mixWithOthers
   case duckOthers
   case doNotMix

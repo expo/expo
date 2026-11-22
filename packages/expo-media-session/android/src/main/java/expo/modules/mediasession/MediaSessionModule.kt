@@ -15,7 +15,7 @@ private const val ROUTE_CHANGE = "routeChange"
 private const val ACTIVATION_ERROR = "activationError"
 private const val NOW_PLAYING_OWNER_CHANGE = "nowPlayingOwnerChange"
 
-@ExpoModule("ExpoMediaSession", classes = [JSNowPlayingOwner::class])
+@ExpoModule("ExpoMediaSession", classes = [JSNowPlayingOwner::class, JSSessionUse::class])
 class MediaSessionModule : Module() {
   private val listeningLock = Any()
   private val listening = mutableSetOf<String>()
@@ -92,6 +92,10 @@ class MediaSessionModule : Module() {
   fun releaseSession(key: String) {
     synchronized(holds) { holds.remove(key) }?.release()
   }
+
+  @JS
+  private fun beginSessionUse(client: String, requirements: SessionRequirementsRecord): JSSessionUse =
+    JSSessionUse(manager, client, requirements.toRequirements())
 
   @JS
   private fun getNowPlayingOwner(): JSNowPlayingOwner? = manager.nowPlayingOwner as? JSNowPlayingOwner

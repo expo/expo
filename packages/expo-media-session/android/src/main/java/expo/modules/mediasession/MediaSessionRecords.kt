@@ -70,3 +70,31 @@ internal data class NowPlayingInfoRecord(
 
 @Record
 internal data class RemoteCommandEvent(val kind: String, val value: Double? = null)
+
+@Record
+internal data class SessionRequirementsRecord(
+  val mixing: MixingRequirement? = null,
+  val capabilities: List<String>? = null,
+  val continuesInBackground: Boolean? = null
+) {
+  fun toRequirements() = SessionRequirements(
+    mixing = mixing,
+    capabilities = capabilities.orEmpty().mapNotNull { capability ->
+      when (capability) {
+        "record" -> SessionCapability.RECORD
+        "measurement" -> SessionCapability.MEASUREMENT
+        else -> null
+      }
+    }.toSet(),
+    continuesInBackground = continuesInBackground ?: false
+  )
+}
+
+@Record
+internal data class SessionPauseEvent(val reason: String)
+
+@Record
+internal data class SessionDuckEvent(val isDucked: Boolean)
+
+@Record
+internal data class SessionFailEvent(val message: String)

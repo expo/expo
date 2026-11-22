@@ -6,6 +6,7 @@ import {
   addNowPlayingOwnerChangeListener,
   addRouteChangeListener,
   type AudioPolicy,
+  beginSessionUse,
   getAudioPolicy,
   getNowPlayingOwner,
   holdSession,
@@ -17,6 +18,7 @@ import {
   releaseSession,
   type RemoteCommand,
   type RemoteCommandKind,
+  type SessionUse,
   setAudioPolicyAsync,
 } from 'expo-media-session';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -233,6 +235,9 @@ export default function MediaSessionScreen() {
   const [log, setLog] = useState<string[]>([]);
   const [owners, setOwners] = useState<DemoOwner[]>([]);
   const [, setRevision] = useState(0);
+  const sessionUseRef = useRef<SessionUse | null>(null);
+  const [useStatus, setUseStatus] = useState('none');
+  const [continuesInBackground, setContinuesInBackground] = useState(false);
 
   const appendLog = useCallback((line: string) => {
     setLog((lines) => [`${new Date().toLocaleTimeString()} ${line}`, ...lines].slice(0, 50));
@@ -301,6 +306,42 @@ export default function MediaSessionScreen() {
     };
   }, [appendLog]);
 
+  useEffect(() => () => sessionUseRef.current?.end(), []);
+
+  const beginUse = () => {
+    const previous = sessionUseRef.current;
+    const use = beginSessionUse('demo-js-use', { mixing: 'doNotMix', continuesInBackground });
+    previous?.end();
+    sessionUseRef.current = use;
+    const isCurrent = () => sessionUseRef.current === use;
+    use.addListener('pause', ({ reason }) => {
+      appendLog(`session use paused (${reason})`);
+      if (isCurrent()) setUseStatus(`paused (${reason})`);
+    });
+    use.addListener('resume', () => {
+      appendLog('session use resumed');
+      if (isCurrent()) setUseStatus('live');
+    });
+    use.addListener('duck', ({ isDucked }) => appendLog(`session use duck ${isDucked}`));
+    use.addListener('fail', ({ message }) => appendLog(`session use failed: ${message}`));
+    use.addListener('ended', () => {
+      appendLog('session use ended by the module');
+      if (isCurrent()) {
+        sessionUseRef.current = null;
+        setUseStatus('ended by the module');
+      }
+    });
+    setUseStatus('live');
+    appendLog(`began session use, continuesInBackground ${continuesInBackground}`);
+  };
+
+  const endUse = () => {
+    sessionUseRef.current?.end();
+    sessionUseRef.current = null;
+    setUseStatus('none');
+    appendLog('ended session use');
+  };
+
   const updatePolicy = async (update: Partial<AudioPolicy>) => {
     try {
       await setAudioPolicyAsync(update);
@@ -352,6 +393,30 @@ export default function MediaSessionScreen() {
         title={held ? 'Release session' : 'Hold session'}
         onPress={toggleHold}
       />
+
+      <HeadingText>Session use</HeadingText>
+      <Text testID="media-session-use-status">Use: {useStatus}</Text>
+      <TitledSwitch
+        testID="media-session-use-background"
+        title="Continues in background"
+        value={continuesInBackground}
+        setValue={setContinuesInBackground}
+      />
+      <View style={styles.row}>
+        <Button
+          testID="media-session-use-begin"
+          style={styles.button}
+          title="Begin use"
+          onPress={beginUse}
+        />
+        <Button
+          testID="media-session-use-end"
+          style={styles.button}
+          title="End use"
+          disabled={!sessionUseRef.current}
+          onPress={endUse}
+        />
+      </View>
 
       <HeadingText>Now Playing</HeadingText>
       <Text testID="media-session-owner">Owner: {ownerName ?? 'none'}</Text>

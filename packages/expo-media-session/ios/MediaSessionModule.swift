@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import Foundation
 
-@ExpoModule("ExpoMediaSession", classes: [JSNowPlayingOwner.self])
+@ExpoModule("ExpoMediaSession", classes: [JSNowPlayingOwner.self, JSSessionUse.self])
 public final class MediaSessionModule: Module {
   private let forwarder = EventForwarder()
   private let listening = Mutex(Listening())
@@ -40,6 +40,11 @@ public final class MediaSessionModule: Module {
   func releaseSession(_ key: String) {
     let hold = holds.withLock { $0.removeValue(forKey: key) }
     hold?.release()
+  }
+
+  @JS
+  func beginSessionUse(_ client: String, _ requirements: SessionRequirementsRecord) -> JSSessionUse {
+    JSSessionUse(client: client, requirements: requirements.requirements, manager: MediaSessionManager.shared)
   }
 
   @JS

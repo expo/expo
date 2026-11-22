@@ -7,6 +7,8 @@ import type {
   NowPlayingInfo,
   NowPlayingOwner,
   RemoteCommandKind,
+  SessionRequirements,
+  SessionUse,
 } from './MediaSession.types';
 
 type NativeNowPlayingOwnerEvents = {
@@ -26,6 +28,7 @@ declare class ExpoMediaSessionModule extends NativeModule<MediaSessionEvents> {
   setAudioPolicyAsync(update: Partial<AudioPolicy>): Promise<void>;
   getAudioPolicy(): AudioPolicy;
   holdSession(key: string): void;
+  beginSessionUse(client: string, requirements: SessionRequirements): SessionUse;
   releaseSession(key: string): void;
   getNowPlayingOwner(): NativeNowPlayingOwner | NowPlayingOwner | null;
   offerNowPlaying?(
