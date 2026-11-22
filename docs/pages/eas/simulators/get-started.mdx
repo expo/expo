@@ -1,240 +1,977 @@
----
-title: Get started with Expo Simulators
-sidebar_title: Get started
-description: Check whether Expo Simulators is available, start a remote device session, and connect to it.
-searchRank: 9
----
+#!/usr/bin/env bash
+set -euo pipefail
 
-import { AgentPrompt } from '~/ui/components/AgentPrompt';
-import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
-import { RelatedSkills } from '~/ui/components/RelatedSkills';
-import { Step } from '~/ui/components/Step';
-import { Terminal } from '~/ui/components/Snippet';
-import { Tab, Tabs } from '~/ui/components/Tabs';
+# ==========================================================
+# مشروع: كيبورد نجم - لوحة مفاتيح عربية أندرويد + مزامنة سحابية
+# شغّل هذا السكربت داخل مجلد فارغ، وسينشئ مشروعاً كاملاً
+# قابلًا للفتح في Android Studio والبناء إلى APK.
+# صورتك الشخصية مضمّنة كأيقونة التطبيق (app_icon.jpg).
+# ==========================================================
 
-<AgentPrompt
-  title="Start an Expo Simulators session with an AI agent"
-  description="Paste this into Claude, Cursor, Codex, or another agent.">
+echo ">> إنشاء هيكل مشروع كيبورد نجم..."
+mkdir -p gradle/wrapper
+mkdir -p app/src/main/java/com/najm/keyboard
+mkdir -p app/src/main/java/com/najm/keyboard/sync
+mkdir -p app/src/main/res/xml
+mkdir -p app/src/main/res/values
+mkdir -p app/src/main/res/drawable-nodpi
+mkdir -p web/src/sync
 
-```text wrap
-Start an Expo Simulators session for my Expo project. Use https://docs.expo.dev/eas/simulators/get-started.md as the source for each command.
+# ---------- إعدادات Gradle ----------
 
-1. Check that EAS CLI is installed and up to date. If it is not, run `npm install -g eas-cli`.
-2. Check that I am logged in with `eas whoami`. If I am not, stop and ask me to run `eas login` or to set `EXPO_TOKEN`. Do not print a token.
-3. If the project does not have an Expo Services project ID, ask me before you run `eas init`.
-4. Run `eas simulator:availability --json`. If `available` is `false`, stop and tell me. Do not start a session.
-5. Add .env.eas-simulator to .gitignore. Do not print, commit, or share this file.
-6. Ask me for the platform (`ios` or `android`) and the session type (`agent-device`, `argent`, `appium`, or `web-preview-only`). Then run `eas simulator:start --platform <platform> --type <type> --name "<short purpose>" --non-interactive`.
-7. Run `eas simulator:get --json --non-interactive`. Continue only when `status` is `IN_PROGRESS` and `remoteConfig` is present.
-8. Give me the session page link and the browser preview link. Tell me which commands you ran.
-9. The session counts toward my account's usage until it stops. When I say that I am done, run `eas simulator:stop`.
-```
-
-</AgentPrompt>
-
-<Prerequisites>
-  <Requirement title="An Expo account with Expo Simulators access">
-    Expo Simulators is available on paid plans. Check the current project's account before starting
-    a session.
-  </Requirement>
-  <Requirement title="A linked Expo project">
-    Run these commands from the project directory. If the project does not have an Expo Services
-    project ID, run `eas init` first.
-  </Requirement>
-  <Requirement title="A recent EAS CLI">
-    The `simulator:*` commands are experimental. [Install or update EAS CLI](/eas/cli/) before using
-    them. Since the commands change quickly, use `eas simulator:start --help` to check the flags
-    supported by your installed version.
-  </Requirement>
-</Prerequisites>
-
-## Expo Skills for AI agents
-
-If you use an AI agent, install [Expo Skills](/skills/) and ask it to use the Expo Simulators skill. The skill can perform the session workflow below, drive the app, and collect evidence for you. Use this page when you want to understand or run the commands manually.
-
-<RelatedSkills names={['eas-simulator']} />
-
-## Start a session manually
-
-The steps below use EAS CLI. To manage sessions directly from your own HTTP client, see the [REST API reference](/eas/simulators/reference/rest-api/). To start a browser-preview-only session when someone opens an authenticated expo.dev URL, see [Start a session from a link](/eas/simulators/how-to/hand-off-a-session/#start-a-session-from-a-link).
-
-<Step label="1">
-
-### Authenticate and verify the project
-
-On an interactive machine, log in and confirm the current user:
-
-<Terminal cmd={['$ eas login', '$ eas whoami']} />
-
-In CI or a headless agent environment, provide an [Expo access token](/accounts/programmatic-access/) in `EXPO_TOKEN` instead of starting an interactive login.
-
-If the project is not linked to Expo Services, initialize it:
-
-<Terminal cmd={['$ eas init']} />
-
-</Step>
-
-<Step label="2">
-
-### Check account availability
-
-The availability check is read-only. It does not start a device or consume simulator usage. The `--json` flag is optional, but it makes the result easy for an agent or script to inspect:
-
-<Terminal cmd={['$ eas simulator:availability --json']} />
-
-An enabled account returns:
-
-```json
-{
-  "available": true,
-  "accountName": "my-account"
+cat <<'__EOF__' > "settings.gradle.kts"
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
 }
-```
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "NajmKeyboard"
+include(":app")
+__EOF__
 
-If `available` is `false`, do not call `simulator:start`. Use a local simulator or emulator, or upgrade the account to a paid plan. See [Expo Simulators access](/eas/simulators/reference/usage-and-billing/#access).
+cat <<'__EOF__' > "build.gradle.kts"
+plugins {
+    id("com.android.application") version "8.7.2" apply false
+    id("org.jetbrains.kotlin.android") version "2.0.21" apply false
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.21" apply false
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21" apply false
+    id("com.google.devtools.ksp") version "2.0.21-1.0.28" apply false
+    id("com.google.gms.google-services") version "4.4.2" apply false
+}
+__EOF__
 
-</Step>
+cat <<'__EOF__' > "gradle.properties"
+org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+android.useAndroidX=true
+android.nonTransitiveRClass=true
+__EOF__
 
-<Step label="3">
+cat <<'__EOF__' > "gradle/wrapper/gradle-wrapper.properties"
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.9-bin.zip
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+__EOF__
 
-### Protect the session configuration
+# ---------- ملفات التطبيق ----------
 
-EAS CLI writes the current session ID and controller credentials to **.env.eas-simulator**. Add the file to **.gitignore** before starting:
+cat <<'__EOF__' > "app/build.gradle.kts"
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.serialization")
+    id("org.jetbrains.kotlin.plugin.compose")
+    id("com.google.devtools.ksp")
+}
 
-```sh .gitignore
-.env.eas-simulator
-```
+// يُفعَّل إضافة Firebase فقط عند وجود ملف الإعدادات، حتى يبنى المشروع قبل ربط السحابة.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+}
 
-Do not commit or share this file. It includes the token that lets a controller reach the remote device.
+android {
+    namespace = "com.najm.keyboard"
+    compileSdk = 35
 
-</Step>
+    defaultConfig {
+        applicationId = "com.najm.keyboard"
+        minSdk = 24
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0"
+    }
 
-<Step label="4">
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+                "proguard-rules.sync.pro"
+            )
+        }
+    }
 
-### Choose a session type and start a remote device
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions { jvmTarget = "17" }
+    buildFeatures { compose = true }
+}
 
-Choose the controller you plan to use for installation and device actions. Each controller-backed session also includes a browser preview. If you only need the browser preview, use `web-preview-only` without a controller. Pass the session type explicitly when you start the session.
+dependencies {
+    implementation(platform("androidx.compose:compose-bom:2025.01.00"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.activity:activity-compose:1.9.3")
 
-<Tabs>
+    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
 
-<Tab label="agent-device">
+    implementation("androidx.credentials:credentials:1.5.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
-See [agent-device and Expo](/agents/agent-device/) for controller setup and commands.
+    implementation("androidx.datastore:datastore-preferences:1.1.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.9.0")
 
-<Terminal
-  cmd={[
-    '$ eas simulator:start --platform ios --type agent-device --name "Checkout flow screenshots" --non-interactive',
-  ]}
-/>
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+}
+__EOF__
 
-</Tab>
+cat <<'__EOF__' > "app/proguard-rules.pro"
+# قواعد ProGuard العامة للمشروع
+__EOF__
 
-<Tab label="Argent">
+cat <<'__EOF__' > "app/src/main/AndroidManifest.xml"
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-See [Argent and Expo](/agents/argent/) for controller setup and commands.
+    <uses-permission android:name="android.permission.INTERNET" />
 
-<Terminal
-  cmd={[
-    '$ eas simulator:start --platform ios --type argent --name "Checkout flow screenshots" --non-interactive',
-  ]}
-/>
+    <application
+        android:label="@string/app_name"
+        android:icon="@drawable/app_icon"
+        android:theme="@android:style/Theme.Material.NoActionBar"
+        android:allowBackup="true"
+        android:supportsRtl="true">
 
-</Tab>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
-<Tab label="Appium">
+        <service
+            android:name=".NajmKeyboardService"
+            android:exported="true"
+            android:label="@string/ime_name"
+            android:permission="android.permission.BIND_INPUT_METHOD">
+            <intent-filter>
+                <action android:name="android.view.InputMethod" />
+            </intent-filter>
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/method" />
+        </service>
+    </application>
+</manifest>
+__EOF__
 
-Use an Appium client when you already have Appium tests or automation. EAS CLI writes the remote server URL and capabilities to the session configuration.
+cat <<'__EOF__' > "app/src/main/res/values/strings.xml"
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">كيبورد نجم</string>
+    <string name="ime_name">كيبورد نجم (عربي)</string>
+</resources>
+__EOF__
 
-<Terminal
-  cmd={[
-    '$ eas simulator:start --platform ios --type appium --name "Checkout flow tests" --non-interactive',
-  ]}
-/>
+cat <<'__EOF__' > "app/src/main/res/xml/method.xml"
+<?xml version="1.0" encoding="utf-8"?>
+<input-method xmlns:android="http://schemas.android.com/apk/res/android"
+    android:supportsSwitchingToNextInputMethod="true">
+    <subtype
+        android:label="@string/ime_name"
+        android:imeSubtypeLocale="ar"
+        android:imeSubtypeMode="keyboard" />
+</input-method>
+__EOF__
 
-</Tab>
+cat <<'__EOF__' > "app/src/main/res/xml/keyboard_arabic.xml"
+<?xml version="1.0" encoding="utf-8"?>
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    android:keyWidth="8.3%p"
+    android:keyHeight="60dp"
+    android:horizontalGap="1px"
+    android:verticalGap="1px">
 
-<Tab label="Browser preview only">
+    <Row>
+        <Key android:codes="1590" android:keyLabel="ض" android:keyEdgeFlags="left"/>
+        <Key android:codes="1589" android:keyLabel="ص"/>
+        <Key android:codes="1579" android:keyLabel="ث"/>
+        <Key android:codes="1602" android:keyLabel="ق"/>
+        <Key android:codes="1601" android:keyLabel="ف"/>
+        <Key android:codes="1594" android:keyLabel="غ"/>
+        <Key android:codes="1593" android:keyLabel="ع"/>
+        <Key android:codes="1607" android:keyLabel="ه"/>
+        <Key android:codes="1582" android:keyLabel="خ"/>
+        <Key android:codes="1581" android:keyLabel="ح"/>
+        <Key android:codes="1580" android:keyLabel="ج"/>
+        <Key android:codes="1583" android:keyLabel="د" android:keyEdgeFlags="right"/>
+    </Row>
+    <Row>
+        <Key android:codes="1588" android:keyLabel="ش" android:keyEdgeFlags="left" android:horizontalGap="4%p"/>
+        <Key android:codes="1587" android:keyLabel="س"/>
+        <Key android:codes="1610" android:keyLabel="ي"/>
+        <Key android:codes="1576" android:keyLabel="ب"/>
+        <Key android:codes="1604" android:keyLabel="ل"/>
+        <Key android:codes="1575" android:keyLabel="ا"/>
+        <Key android:codes="1578" android:keyLabel="ت"/>
+        <Key android:codes="1606" android:keyLabel="ن"/>
+        <Key android:codes="1605" android:keyLabel="م"/>
+        <Key android:codes="1603" android:keyLabel="ك"/>
+        <Key android:codes="1591" android:keyLabel="ط" android:keyEdgeFlags="right"/>
+    </Row>
+    <Row>
+        <Key android:codes="-1" android:keyLabel="⇧" android:keyWidth="12%p" android:isSticky="true" android:keyEdgeFlags="left"/>
+        <Key android:codes="1574" android:keyLabel="ئ"/>
+        <Key android:codes="1569" android:keyLabel="ء"/>
+        <Key android:codes="1572" android:keyLabel="ؤ"/>
+        <Key android:codes="1585" android:keyLabel="ر"/>
+        <Key android:codes="1604,1575" android:keyLabel="لا"/>
+        <Key android:codes="1609" android:keyLabel="ى"/>
+        <Key android:codes="1577" android:keyLabel="ة"/>
+        <Key android:codes="1608" android:keyLabel="و"/>
+        <Key android:codes="1586" android:keyLabel="ز"/>
+        <Key android:codes="1592" android:keyLabel="ظ"/>
+        <Key android:codes="-5" android:keyLabel="⌫" android:keyWidth="12%p" android:isRepeatable="true" android:keyEdgeFlags="right"/>
+    </Row>
+    <Row>
+        <Key android:codes="-2" android:keyLabel="123" android:keyWidth="15%p" android:keyEdgeFlags="left"/>
+        <Key android:codes="32" android:keyLabel="␣" android:keyWidth="55%p" android:isRepeatable="true"/>
+        <Key android:codes="-4" android:keyLabel="⏎" android:keyWidth="30%p" android:keyEdgeFlags="right"/>
+    </Row>
+</Keyboard>
+__EOF__
 
-Use the browser preview without provisioning a programmatic controller.
+cat <<'__EOF__' > "app/src/main/res/xml/keyboard_symbols.xml"
+<?xml version="1.0" encoding="utf-8"?>
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    android:keyWidth="10%p"
+    android:keyHeight="60dp"
+    android:horizontalGap="1px"
+    android:verticalGap="1px">
 
-<Terminal
-  cmd={[
-    '$ eas simulator:start --platform ios --type web-preview-only --name "Design review" --non-interactive',
-  ]}
-/>
+    <Row>
+        <Key android:codes="49" android:keyLabel="1" android:keyEdgeFlags="left"/>
+        <Key android:codes="50" android:keyLabel="2"/>
+        <Key android:codes="51" android:keyLabel="3"/>
+        <Key android:codes="52" android:keyLabel="4"/>
+        <Key android:codes="53" android:keyLabel="5"/>
+        <Key android:codes="54" android:keyLabel="6"/>
+        <Key android:codes="55" android:keyLabel="7"/>
+        <Key android:codes="56" android:keyLabel="8"/>
+        <Key android:codes="57" android:keyLabel="9"/>
+        <Key android:codes="48" android:keyLabel="0" android:keyEdgeFlags="right"/>
+    </Row>
+    <Row>
+        <Key android:codes="64" android:keyLabel="\@" android:keyEdgeFlags="left"/>
+        <Key android:codes="35" android:keyLabel="#"/>
+        <Key android:codes="36" android:keyLabel="$"/>
+        <Key android:codes="37" android:keyLabel="%"/>
+        <Key android:codes="38" android:keyLabel="&amp;"/>
+        <Key android:codes="42" android:keyLabel="*"/>
+        <Key android:codes="45" android:keyLabel="-"/>
+        <Key android:codes="43" android:keyLabel="+"/>
+        <Key android:codes="40" android:keyLabel="("/>
+        <Key android:codes="41" android:keyLabel=")" android:keyEdgeFlags="right"/>
+    </Row>
+    <Row>
+        <Key android:codes="46" android:keyLabel="." android:keyEdgeFlags="left"/>
+        <Key android:codes="44" android:keyLabel=","/>
+        <Key android:codes="33" android:keyLabel="!"/>
+        <Key android:codes="63" android:keyLabel="؟"/>
+        <Key android:codes="58" android:keyLabel=":"/>
+        <Key android:codes="59" android:keyLabel="؛"/>
+        <Key android:codes="47" android:keyLabel="/"/>
+        <Key android:codes="39" android:keyLabel="'"/>
+        <Key android:codes="34" android:keyLabel="&quot;"/>
+        <Key android:codes="-5" android:keyLabel="⌫" android:isRepeatable="true" android:keyEdgeFlags="right"/>
+    </Row>
+    <Row>
+        <Key android:codes="-2" android:keyLabel="عربي" android:keyWidth="20%p" android:keyEdgeFlags="left"/>
+        <Key android:codes="32" android:keyLabel="␣" android:keyWidth="50%p" android:isRepeatable="true"/>
+        <Key android:codes="-4" android:keyLabel="⏎" android:keyWidth="30%p" android:keyEdgeFlags="right"/>
+    </Row>
+</Keyboard>
+__EOF__
 
-</Tab>
+cat <<'__EOF__' > "app/src/main/java/com/najm/keyboard/MainActivity.kt"
+package com.najm.keyboard
 
-</Tabs>
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
+import android.os.Bundle
+import android.provider.Settings
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.najm.keyboard.sync.CloudSyncCard
+import com.najm.keyboard.sync.LexiconSyncRepository
+import com.najm.keyboard.sync.LexiconSyncViewModel
+import com.najm.keyboard.sync.LocalLexiconStore
+import com.google.firebase.FirebaseApp
 
-Give each session a short name that describes its purpose. The name appears in `simulator:list`, `simulator:get`, and on expo.dev, which makes parallel and historical sessions easier to identify.
+const val WEB_CLIENT_ID = "ضع-هنا-Web-Client-ID.apps.googleusercontent.com"
 
-Use `--platform android` for an Android Emulator. The session page on expo.dev shows an **Open preview** button that opens the browser preview in a new tab.
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
 
-Use `--device` to select an Android virtual device hardware profile, or a specific iOS Simulator name or unique device identifier (UDID). If you omit the flag, the remote runner uses `medium_phone` on Android and `iPhone 17` on iOS. See [Expo Simulators devices](/eas/simulators/reference/devices/).
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-For an unattended or shareable session, use `--max-duration-minutes` to set an automatic stop time. The value can be up to 115 minutes. A larger value returns an error. Without the flag, the maximum duration is 115 minutes. You can also use `--max-idle-time-minutes` to stop after a period without session activity.
+        // المزامنة تحتاج ملف google-services.json في مجلد app/.
+        val firebaseReady = FirebaseApp.getApps(this).isNotEmpty() ||
+            runCatching { FirebaseApp.initializeApp(this) }.getOrNull() != null
 
-When `--platform` is omitted in an interactive terminal, EAS CLI asks which platform to use. Non-interactive runs require the flag.
+        setContent {
+            MaterialTheme(colorScheme = darkColorScheme()) {
+                Scaffold { padding ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "كيبورد نجم",
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFD4AF37)
+                        )
 
-The start command waits for the session to become ready, then writes **.env.eas-simulator**. It also prints:
+                        EnableKeyboardButtons()
 
-- A direct simulator session page on expo.dev
-- A browser preview link that requires an Expo login with access to the project. With `--public-link`, EAS CLI prints a public link instead. See [Browser preview links](/eas/simulators/reference/cli/#browser-preview-links).
-- The command pattern for controlling the device
+                        if (firebaseReady) {
+                            SyncSection()
+                        } else {
+                            Text(
+                                text = "لتفعيل المزامنة السحابية: أضف ملف google-services.json في مجلد app/ ثم أعد بناء التطبيق.",
+                                color = Color(0xFFA3A3A3)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
-To install and launch an app before the session becomes ready, pass exactly one of `--build-id`, `--build-fingerprint`, `--application-archive-url`, or `--expo-go`. You can also pass launch arguments and an Expo or development-client URL. See [Install an app on a remote Android Emulator or iOS Simulator](/eas/simulators/how-to/install-your-app/) for complete examples.
+@Composable
+private fun EnableKeyboardButtons() {
+    val context = LocalContext.current
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = {
+            context.startActivity(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS))
+        }) { Text("تفعيل لوحة المفاتيح من إعدادات النظام") }
 
-> **warning** `--non-interactive` does not automatically stop the session. The command returns when the session is ready, and the remote device remains active.
+        val imeManager = context.getSystemService(Context.INPUT_METHOD_SERVICE)
+            as? android.view.inputmethod.InputMethodManager
+        Button(onClick = {
+            runCatching { imeManager?.showInputMethodPicker() }
+        }) { Text("اختيار كيبورد نجم كلوحة افتراضية") }
+    }
+}
 
-</Step>
+@Composable
+private fun SyncSection() {
+    val context = LocalContext.current
+    val viewModel = remember {
+        val store = LocalLexiconStore(context.applicationContext)
+        LexiconSyncViewModel(store, LexiconSyncRepository(store))
+    }
+    val state by viewModel.uiState.collectAsState()
 
-<Step label="5">
+    CloudSyncCard(
+        uiState = state,
+        webClientId = WEB_CLIENT_ID,
+        onSignIn = { activity, clientId ->
+            viewModel.onGoogleSignInClick(activity, clientId)
+        },
+        onSyncNow = { viewModel.syncNow() },
+        onRequestRestoreDialog = { viewModel.requestRestoreDialog() },
+        onDismissRestoreDialog = { viewModel.dismissRestoreDialog() },
+        onConfirmRestore = { replaceLocal -> viewModel.restoreFromCloud(replaceLocal) },
+        onSignOut = { ctx -> viewModel.signOut(ctx) },
+        onResolveFirstSync = { strategy -> viewModel.resolveFirstSyncChoice(strategy) },
+        onResolveAccountSwitch = { action -> viewModel.resolveAccountSwitch(action) }
+    )
+}
+__EOF__
 
-### Confirm that the session is active
+cat <<'__EOF__' > "app/src/main/java/com/najm/keyboard/NajmKeyboardService.kt"
+package com.najm.keyboard
 
-Use the session ID from **.env.eas-simulator**:
+import android.inputmethodservice.InputMethodService
+import android.inputmethodservice.Keyboard
+import android.inputmethodservice.KeyboardView
+import android.view.KeyEvent
+import android.view.View
+import android.view.inputmethod.EditorInfo
+import com.najm.keyboard.sync.LocalLexiconStore
+import com.najm.keyboard.sync.PrivacyGuard
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
-<Terminal cmd={['$ eas simulator:get --json --non-interactive']} />
+class NajmKeyboardService : InputMethodService(), KeyboardView.OnKeyboardActionListener {
 
-Continue when `status` is `IN_PROGRESS` and `remoteConfig` is present. A stopped session can still have old connection configuration, so the dotenv file alone is not proof that the device is live.
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private lateinit var lexiconStore: LocalLexiconStore
+    private var keyboardView: KeyboardView? = null
 
-</Step>
+    private val arabicKeyboard by lazy { Keyboard(this, R.xml.keyboard_arabic) }
+    private val symbolsKeyboard by lazy { Keyboard(this, R.xml.keyboard_symbols) }
 
-<Step label="6">
+    override fun onCreate() {
+        super.onCreate()
+        lexiconStore = LocalLexiconStore(this)
+    }
 
-### Open the web surfaces
+    override fun onDestroy() {
+        serviceScope.cancel()
+        super.onDestroy()
+    }
 
-The start command links to a session page with this shape:
+    override fun onCreateInputView(): View {
+        keyboardView = KeyboardView(this, null).apply {
+            keyboard = arabicKeyboard
+            setOnKeyboardActionListener(this@NajmKeyboardService)
+        }
+        return keyboardView!!
+    }
 
-```text
-https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>
-```
+    override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
+        super.onStartInputView(info, restarting)
+        keyboardView?.keyboard = arabicKeyboard
+    }
 
-The project-level session list is:
+    override fun onKey(primaryCode: Int, keyCodes: IntArray?) {
+        val ic = currentInputConnection ?: return
+        when (primaryCode) {
+            Keyboard.KEYCODE_DELETE -> {
+                if (ic.getSelectedText(0) != null) {
+                    ic.commitText("", 1)
+                } else {
+                    sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)
+                }
+            }
+            Keyboard.KEYCODE_MODE_CHANGE -> {
+                keyboardView?.keyboard = symbolsKeyboard
+            }
+            KEYCODE_ARABIC_MODE -> {
+                keyboardView?.keyboard = arabicKeyboard
+            }
+            KEYCODE_SHIFT -> {
+                keyboardView?.setShifted(keyboardView?.isShifted?.not() ?: true)
+            }
+            Keyboard.KEYCODE_DONE -> {
+                sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
+            }
+            else -> {
+                if (primaryCode <= 0) return
+                var text = primaryCode.toChar().toString()
+                if (keyboardView?.isShifted == true) {
+                    text = text.uppercase()
+                }
+                ic.commitText(text, 1)
+                if (text == " ") recordLastWord()
+            }
+        }
+    }
 
-```text
-https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions
-```
+    /** تسجيل الكلمة الأخيرة في القاموس الشخصي (O(1) على Room) مع احترام وضع الخصوصية. */
+    private fun recordLastWord() {
+        val editorInfo = currentInputEditorInfo ?: return
+        val isPrivate = PrivacyGuard.isPrivateField(editorInfo.imeOptions, editorInfo.inputType)
+        if (isPrivate) return
+        val before = currentInputConnection?.getTextBeforeCursor(64, 0) ?: return
+        val word = before.trim().split(Regex("\\s+")).lastOrNull() ?: return
+        if (word.isBlank() || word.length > 120) return
+        serviceScope.launch { lexiconStore.recordWordUsage(word, isPrivateMode = false) }
+    }
 
-Open the browser preview link in a desktop browser to view the live device. On iOS, you can also interact with it. By default, the link has this shape, and it requires an Expo login with access to the project:
+    override fun onPress(primaryCode: Int) {}
+    override fun onRelease(primaryCode: Int) {}
+    override fun onText(text: CharSequence?) {
+        currentInputConnection?.commitText(text, 1)
+    }
+    override fun swipeLeft() {}
+    override fun swipeRight() {}
+    override fun swipeDown() {}
+    override fun swipeUp() {}
 
-```text
-https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>/preview
-```
+    private companion object {
+        const val KEYCODE_SHIFT = -1
+        const val KEYCODE_ARABIC_MODE = -3
+    }
+}
+__EOF__
 
-In `--json` output, the link is `remoteConfig.webPreviewUrl`, or `remoteConfig.previewUrl` for a `web-preview-only` session. The preview link is not an application deep link. Do not pass it to a controller command that opens apps or URLs.
+# ---------- ملفات المزامنة السحابية (نفس النسخة المصلّحة) ----------
 
-</Step>
+cat <<'__EOF__' > "firestore.rules"
+rules_version = '2';
 
-<Step label="7">
+service cloud.firestore {
+  match /databases/{database}/documents {
 
-### Stop the session
+    function isSignedIn() {
+      return request.auth != null;
+    }
 
-When you finish, stop the current session:
+    function isVerifiedOwner(userId) {
+      return isSignedIn()
+        && request.auth.token.email_verified == true
+        && request.auth.uid == userId;
+    }
 
-<Terminal cmd={['$ eas simulator:stop']} />
+    function isValidUserProfile(data, userId) {
+      return data.keys().hasAll(['uid', 'email', 'displayName', 'wordCount', 'lastSyncedAt'])
+        && data.keys().hasOnly(['uid', 'email', 'displayName', 'wordCount', 'lastSyncedAt'])
+        && data.uid == userId
+        && data.email is string
+        && data.email.size() > 0
+        && data.email.size() <= 320
+        && data.displayName is string
+        && data.displayName.size() <= 120
+        && data.wordCount is int
+        && data.wordCount >= 0
+        && data.wordCount <= 500000
+        && data.lastSyncedAt is timestamp;
+    }
 
-If EAS CLI is still attached, press <kbd>Ctrl</kbd> + <kbd>C</kbd> once to stop the session and let EAS CLI reset **.env.eas-simulator**. EAS CLI stays attached only in an interactive terminal without `--non-interactive`.
+    function isValidLexiconWord(data, userId, wordId) {
+      return wordId.matches('^[a-f0-9]{64}$')
+        && data.keys().hasAll(['ownerId', 'word', 'count', 'updatedAt', 'deleted'])
+        && data.keys().hasOnly(['ownerId', 'word', 'count', 'updatedAt', 'deleted'])
+        && data.ownerId == userId
+        && data.word is string
+        && data.word.size() >= 1
+        && data.word.size() <= 120
+        && !data.word.matches('^\\s*$')
+        && data.count is int
+        && data.count >= 1
+        && data.count <= 10000000
+        && data.updatedAt is timestamp
+        && data.deleted is bool;
+    }
 
-</Step>
+    match /users/{userId} {
+      allow read, delete: if isVerifiedOwner(userId);
+      allow create, update: if isVerifiedOwner(userId)
+        && isValidUserProfile(request.resource.data, userId);
+
+      match /lexicon_words/{wordId} {
+        allow read, delete: if isVerifiedOwner(userId);
+        allow create, update: if isVerifiedOwner(userId)
+          && isValidLexiconWord(request.resource.data, userId, wordId);
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+__EOF__
+
+cat <<'__EOF__' > "README.md"
+# كيبورد نجم
+
+لوحة مفاتيح عربية لأندرويد مع مزامنة سحابية للقاموس الشخصي.
+
+## خطوات التشغيل
+
+1. افتح مجلد المشروع في **Android Studio** (سيجلب Gradle تلقائياً عبر `gradle-wrapper.properties`).
+2. ضع صورتك كأيقونة عالية الجودة: **File > New > Image Asset > Launcher Icons** واختر `app/src/main/res/drawable-nodpi/app_icon.jpg` كمصدر (أو اترك الأيقونة الحالية).
+3. للمزامنة السحابية (اختياري):
+   - أنشئ مشروعاً في console.firebase.google.com وأضف تطبيق أندرويد بالمعرّف `com.najm.keyboard`.
+   - أضف بصمات SHA-1 وSHA-256 (من `./gradlew signingReport`) في إعدادات التطبيق بـ Firebase.
+   - نزّل `google-services.json` وضعه في مجلد `app/`.
+   - فعّل Authentication (Google) وCloud Firestore وانشر `firestore.rules`.
+   - ضع **Web Client ID** من Firebase في `WEB_CLIENT_ID` داخل `MainActivity.kt`.
+4. للبناء: `Build > Generate Signed Bundle / APK` أو الطرفية:
+   - `./gradlew assembleDebug` (نسخة تجريبية)
+   - `./gradlew assembleRelease` (نسخة إصدار، تحتاج keystore كما في دليل البناء)
+
+## تفعيل لوحة المفاتيح على الهاتف
+الإعدادات ← النظام ← لوحات المفاتيح ← فعّل "كيبورد نجم" ← اختره كلوحة افتراضية.
+__EOF__
+
+# ---------- الأيقونة: صورتك الشخصية ----------
+mkdir -p "app/src/main/res/drawable-nodpi"
+base64 -d > "app/src/main/res/drawable-nodpi/app_icon.jpg" <<'__ICON_B64_EOF__'
+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
+9
