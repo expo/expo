@@ -20,13 +20,15 @@ internal data class AudioPolicyRecord(
   val playsInSilentMode: Boolean? = null,
   val interruptionMode: InterruptionMode? = null,
   val allowsRecording: Boolean? = null,
-  val shouldRouteThroughEarpiece: Boolean? = null
+  val shouldRouteThroughEarpiece: Boolean? = null,
+  val bluetoothProfile: BluetoothProfile? = null
 ) {
   fun toUpdate() = AudioPolicyUpdate(
     playsInSilentMode = playsInSilentMode,
     interruptionMode = interruptionMode,
     allowsRecording = allowsRecording,
-    shouldRouteThroughEarpiece = shouldRouteThroughEarpiece
+    shouldRouteThroughEarpiece = shouldRouteThroughEarpiece,
+    bluetoothProfile = bluetoothProfile
   )
 }
 
@@ -34,7 +36,8 @@ internal fun AudioPolicy.toRecord() = AudioPolicyRecord(
   playsInSilentMode = playsInSilentMode,
   interruptionMode = interruptionMode,
   allowsRecording = allowsRecording,
-  shouldRouteThroughEarpiece = shouldRouteThroughEarpiece
+  shouldRouteThroughEarpiece = shouldRouteThroughEarpiece,
+  bluetoothProfile = bluetoothProfile
 )
 
 @Record

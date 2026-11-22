@@ -16,6 +16,7 @@ const defaultPolicy: AudioPolicy = {
   interruptionMode: 'mixWithOthers',
   allowsRecording: false,
   shouldRouteThroughEarpiece: false,
+  bluetoothProfile: 'hfp',
 };
 
 class ExpoMediaSessionWeb extends NativeModule<MediaSessionEvents> {
