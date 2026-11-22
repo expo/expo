@@ -42,7 +42,14 @@ class BackgroundTaskConsumer: NSObject, EXTaskConsumerInterface {
       return
     }
 
-    BackgroundTaskScheduler.didRegisterTask(minutes: (self.task?.options?["minimumInterval"] as? NSNumber)?.intValue)
+    BackgroundTaskScheduler.didRegisterTask(minutes: Self.minimumIntervalMinutes(from: task.options))
+  }
+
+  /// Reads `minimumInterval` from the task options. A value registered from JS arrives as a `Double`,
+  /// one restored from the saved task config as an `NSNumber`; `as? Int` only matches the latter.
+  static func minimumIntervalMinutes(from options: [AnyHashable: Any]?) -> Int? {
+    // swiftlint:disable:next legacy_objc_type
+    return (options?["minimumInterval"] as? NSNumber)?.intValue
   }
 
   func didUnregister() {

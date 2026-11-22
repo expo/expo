@@ -29,6 +29,66 @@ final class BackgroundTaskSchedulerTests: XCTestCase {
     XCTAssertEqual(scheduler.maxConcurrentCancelCalls, 1)
     XCTAssertEqual(scheduler.submitCallCount, 2)
   }
+
+  func testMinimumIntervalRegisteredFromJSIsRead() {
+    // A number passed to registerTaskAsync reaches native code as a Double.
+    let options: [AnyHashable: Any] = ["minimumInterval": Double(15)]
+    XCTAssertEqual(BackgroundTaskConsumer.minimumIntervalMinutes(from: options), 15)
+  }
+
+  func testMinimumIntervalRestoredFromSavedConfigIsRead() {
+    // The saved task config comes back from NSUserDefaults with NSNumber values.
+    // swiftlint:disable:next legacy_objc_type
+    let options: [AnyHashable: Any] = ["minimumInterval": NSNumber(value: 15)]
+    XCTAssertEqual(BackgroundTaskConsumer.minimumIntervalMinutes(from: options), 15)
+  }
+
+  func testMissingMinimumIntervalKeepsTheDefault() {
+    XCTAssertNil(BackgroundTaskConsumer.minimumIntervalMinutes(from: nil))
+    XCTAssertNil(BackgroundTaskConsumer.minimumIntervalMinutes(from: [:]))
+  }
+
+  func testRegisteringWithMinutesSchedulesTheWorkerAfterThatInterval() async throws {
+    let scheduler = RequestCapturingScheduler()
+    let submitted = expectation(description: "worker submitted")
+    scheduler.onSubmit = { submitted.fulfill() }
+
+    await BackgroundTaskScheduler.resetForTesting()
+    await BackgroundTaskScheduler.setSchedulerForTesting(scheduler)
+    BackgroundTaskScheduler.bgTaskSchedulerDidFinishRegister()
+
+    let start = Date()
+    BackgroundTaskScheduler.didRegisterTask(minutes: 15)
+    await fulfillment(of: [submitted], timeout: 5)
+
+    let delay = try XCTUnwrap(scheduler.lastRequest?.earliestBeginDate).timeIntervalSince(start)
+    XCTAssertEqual(delay, 15 * 60, accuracy: 5)
+  }
+}
+
+private final class RequestCapturingScheduler: BackgroundTaskScheduling, @unchecked Sendable {
+  private let lock = NSLock()
+  private var request: BGProcessingTaskRequest?
+  var onSubmit: (() -> Void)?
+
+  var lastRequest: BGProcessingTaskRequest? {
+    lock.lock()
+    defer { lock.unlock() }
+    return request
+  }
+
+  func cancel(taskRequestWithIdentifier identifier: String) {}
+
+  func submit(_ request: BGProcessingTaskRequest) throws {
+    lock.lock()
+    self.request = request
+    lock.unlock()
+    onSubmit?()
+  }
+
+  func pendingTaskRequests() async -> [BGTaskRequest] {
+    return []
+  }
 }
 
 private final class OverlapDetectingScheduler: BackgroundTaskScheduling, @unchecked Sendable {
