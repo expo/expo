@@ -87,6 +87,24 @@ internal enum FontTextStyle: String, Enumerable {
     case .caption2: .caption2
     }
   }
+
+#if !os(macOS)
+  private func toUIKit() -> UIFont.TextStyle {
+    switch self {
+    case .largeTitle: .largeTitle
+    case .title: .title1
+    case .title2: .title2
+    case .title3: .title3
+    case .headline: .headline
+    case .subheadline: .subheadline
+    case .body: .body
+    case .callout: .callout
+    case .footnote: .footnote
+    case .caption: .caption1
+    case .caption2: .caption2
+    }
+  }
+#endif
 }
 
 internal struct FontModifier: ViewModifier, Record {
