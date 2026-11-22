@@ -13,7 +13,7 @@ import Testing
 /// A class with the macro whose superclass doesn't have it.
 private class ChainRoot: SharedObject {
   override class var _jsClassType: (any AnySharedObject.Type)? { ChainRoot.self }
-  override class var _jsParentClassType: (any AnySharedObject.Type)? { super._jsClassType }
+  override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
 
   @JavaScriptActor
   override class func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
@@ -32,7 +32,7 @@ private class ChainMiddle: ChainRoot {}
 /// A class with the macro whose superclass doesn't have it, but a class above does.
 private final class ChainLeaf: ChainMiddle {
   override class var _jsClassType: (any AnySharedObject.Type)? { ChainLeaf.self }
-  override class var _jsParentClassType: (any AnySharedObject.Type)? { super._jsClassType }
+  override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
 
   @JavaScriptActor
   override class func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
@@ -55,7 +55,7 @@ private final class ChainLeaf: ChainMiddle {
 /// A second class with the macro that extends `ChainRoot`.
 private final class ChainSibling: ChainRoot {
   override class var _jsClassType: (any AnySharedObject.Type)? { ChainSibling.self }
-  override class var _jsParentClassType: (any AnySharedObject.Type)? { super._jsClassType }
+  override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
 
   @JavaScriptActor
   override class func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
@@ -76,13 +76,13 @@ private final class ChainSibling: ChainRoot {
 /// A `SharedRef` class with the macro.
 private class ChainRefRoot: SharedRef<String> {
   override class var _jsClassType: (any AnySharedObject.Type)? { ChainRefRoot.self }
-  override class var _jsParentClassType: (any AnySharedObject.Type)? { super._jsClassType }
+  override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
 }
 
 /// A subclass of `ChainRefRoot` with the macro.
 private final class ChainRefLeaf: ChainRefRoot {
   override class var _jsClassType: (any AnySharedObject.Type)? { ChainRefLeaf.self }
-  override class var _jsParentClassType: (any AnySharedObject.Type)? { super._jsClassType }
+  override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
 }
 
 /// A class without `_jsClassType`, like a class that an earlier version of the macro expands.
@@ -112,14 +112,14 @@ private struct SharedObjectClassChainTests {
     return try runtime.eval(source).asBool()
   }
 
-  // MARK: - Parent classes
+  // MARK: - Superclasses
 
   @Test
-  func `the parent of a class is its nearest superclass with the macro`() {
-    #expect(ChainRoot.resolvedJSParentClassType == nil)
-    #expect(ChainMiddle.resolvedJSParentClassType == ChainRoot.self)
-    #expect(ChainLeaf.resolvedJSParentClassType == ChainRoot.self)
-    #expect(ChainFlat.resolvedJSParentClassType == nil)
+  func `the JS superclass of a class is its nearest superclass with the macro`() {
+    #expect(ChainRoot.resolvedJSSuperclassType == nil)
+    #expect(ChainMiddle.resolvedJSSuperclassType == ChainRoot.self)
+    #expect(ChainLeaf.resolvedJSSuperclassType == ChainRoot.self)
+    #expect(ChainFlat.resolvedJSSuperclassType == nil)
   }
 
   @Test
@@ -133,7 +133,7 @@ private struct SharedObjectClassChainTests {
   // MARK: - Main runtime
 
   @Test
-  func `the class extends the class of its parent`() throws {
+  func `the class extends the class of its superclass`() throws {
     #expect(try evalBool("Object.getPrototypeOf(expo.modules.ClassChainModule.ChainLeaf).name === 'ChainRoot'"))
     #expect(try evalBool(
       "Object.getPrototypeOf(Object.getPrototypeOf(expo.modules.ClassChainModule.ChainLeaf)) === expo.SharedObject"
@@ -152,7 +152,7 @@ private struct SharedObjectClassChainTests {
   }
 
   @Test
-  func `the members of the parent are only on its prototype`() throws {
+  func `the members of the superclass are only on its prototype`() throws {
     try runtime.eval("leaf = new expo.modules.ClassChainModule.ChainLeaf()")
     #expect(try runtime.eval("leaf.rootMethod() + leaf.leafMethod()").asInt() == 3)
     #expect(try evalBool(
@@ -164,7 +164,7 @@ private struct SharedObjectClassChainTests {
   }
 
   @Test
-  func `the class inherits the static members of its parent`() throws {
+  func `the class inherits the static members of its superclass`() throws {
     #expect(try runtime.eval("expo.modules.ClassChainModule.ChainLeaf.rootStatic()").asInt() == 10)
     #expect(try !evalBool(
       "Object.prototype.hasOwnProperty.call(expo.modules.ClassChainModule.ChainLeaf, 'rootStatic')"
@@ -172,7 +172,7 @@ private struct SharedObjectClassChainTests {
   }
 
   @Test
-  func `classes with the same parent share its class`() throws {
+  func `classes with the same superclass share its class`() throws {
     #expect(try evalBool(
       """
       Object.getPrototypeOf(expo.modules.ClassChainModule.ChainLeaf)
@@ -185,7 +185,7 @@ private struct SharedObjectClassChainTests {
   }
 
   @Test
-  func `a class without the macro extends the class of its parent and has no members of its own`() throws {
+  func `a class without the macro extends the class of its superclass and has no members of its own`() throws {
     #expect(try evalBool("Object.getPrototypeOf(expo.modules.ClassChainModule.ChainMiddle).name === 'ChainRoot'"))
     #expect(try !evalBool(
       "Object.prototype.hasOwnProperty.call(expo.modules.ClassChainModule.ChainMiddle.prototype, 'rootMethod')"
@@ -233,7 +233,7 @@ private struct SharedObjectClassChainTests {
   }
 
   @Test
-  func `classes with the same parent share its prototype in an attached runtime`() throws {
+  func `classes with the same superclass share its prototype in an attached runtime`() throws {
     let ids = try runtime.eval(
       """
       leaf = new expo.modules.ClassChainModule.ChainLeaf();
@@ -246,9 +246,9 @@ private struct SharedObjectClassChainTests {
 
     #expect(try attachedRuntime.eval(
       """
-      leafParent = Object.getPrototypeOf(Object.getPrototypeOf(expo.SharedObject.__resolveInWorklet(\(leafId))));
-      siblingParent = Object.getPrototypeOf(Object.getPrototypeOf(expo.SharedObject.__resolveInWorklet(\(siblingId))));
-      leafParent === siblingParent && Object.prototype.hasOwnProperty.call(leafParent, 'rootMethod')
+      leafSuperclass = Object.getPrototypeOf(Object.getPrototypeOf(expo.SharedObject.__resolveInWorklet(\(leafId))));
+      siblingSuperclass = Object.getPrototypeOf(Object.getPrototypeOf(expo.SharedObject.__resolveInWorklet(\(siblingId))));
+      leafSuperclass === siblingSuperclass && Object.prototype.hasOwnProperty.call(leafSuperclass, 'rootMethod')
       """
     ).asBool())
   }

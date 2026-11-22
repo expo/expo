@@ -796,8 +796,8 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   }
 
   /// Returns the prototype of the JS class of a native shared object class in a runtime other than the main runtime,
-  /// and builds it on the first call. It extends the prototype of `resolvedJSParentClassType`, built the same way, or
-  /// the base prototype. Like in the main runtime, a parent class gets a prototype also when no module registers it.
+  /// and builds it on the first call. It extends the prototype of `resolvedJSSuperclassType`, built the same way, or
+  /// the base prototype. Like in the main runtime, a superclass gets a prototype also when no module registers it.
   @JavaScriptActor
   private func classPrototype(
     for type: any AnySharedObject.Type,
@@ -811,17 +811,17 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     }) {
       return prototype
     }
-    let parentPrototype: JavaScriptObject
-    if let parentType = type.resolvedJSParentClassType {
-      parentPrototype = try classPrototype(for: parentType, in: runtime, prototypes: prototypes)
+    let superclassPrototype: JavaScriptObject
+    if let superclassType = type.resolvedJSSuperclassType {
+      superclassPrototype = try classPrototype(for: superclassType, in: runtime, prototypes: prototypes)
     } else {
-      parentPrototype = try basePrototype(for: type, in: runtime)
+      superclassPrototype = try basePrototype(for: type, in: runtime)
     }
     let prototype: JavaScriptObject
     if let classDefinition = findClassDefinition(for: typeId) {
-      prototype = try classDefinition.buildPrototype(in: runtime, appContext: self, basePrototype: parentPrototype)
+      prototype = try classDefinition.buildPrototype(in: runtime, appContext: self, basePrototype: superclassPrototype)
     } else {
-      prototype = try JavaScriptBindings.buildSharedObjectPrototype(type, in: runtime, basePrototype: parentPrototype)
+      prototype = try JavaScriptBindings.buildSharedObjectPrototype(type, in: runtime, basePrototype: superclassPrototype)
     }
     prototypes.classPrototypes[typeId] = prototype.asValue().getObject().ref()
     return prototype

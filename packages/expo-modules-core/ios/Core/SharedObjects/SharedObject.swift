@@ -17,9 +17,9 @@ public protocol AnySharedObject: AnyArgument, AnyObject {
   /// superclass with the macro. `nil` when no class in the chain has the macro.
   static var _jsClassType: (any AnySharedObject.Type)? { get }
 
-  /// The class whose JavaScript class is the parent of the JavaScript class of this class, or `nil` for the base
-  /// `SharedObject` or `SharedRef` class.
-  static var _jsParentClassType: (any AnySharedObject.Type)? { get }
+  /// The nearest superclass with the `@SharedObject` macro, whose JavaScript class the JavaScript class of this class
+  /// extends, or `nil` for the base `SharedObject` or `SharedRef` class.
+  static var _jsSuperclassType: (any AnySharedObject.Type)? { get }
 
   /// Binds the `@JS` members of the class onto its JavaScript prototype.
   @JavaScriptActor
@@ -226,10 +226,10 @@ open class SharedObject: AnySharedObject {
     return nil
   }
 
-  /// The class whose JavaScript class is the parent of the JavaScript class of this class, or `nil` for the base
-  /// `SharedObject` or `SharedRef` class. Overridden by the `@SharedObject` macro with `super._jsClassType`, which skips
-  /// the superclasses without the macro.
-  open class var _jsParentClassType: (any AnySharedObject.Type)? {
+  /// The nearest superclass with the `@SharedObject` macro, whose JavaScript class the JavaScript class of this class
+  /// extends, or `nil` for the base `SharedObject` or `SharedRef` class. Overridden by the `@SharedObject` macro with
+  /// `super._jsClassType`, which skips the superclasses without the macro.
+  open class var _jsSuperclassType: (any AnySharedObject.Type)? {
     return nil
   }
 
@@ -276,21 +276,21 @@ extension AnySharedObject {
   }
 
   /// Whether core binds the `@JS` members of this class with its decorate hooks. A class without the `@SharedObject`
-  /// macro inherits the hooks of its nearest superclass with the macro, whose JavaScript class is the parent and
-  /// already has these members.
+  /// macro inherits the hooks of its nearest superclass with the macro. The JavaScript class of this class extends the
+  /// JavaScript class of that superclass, which already has these members.
   internal static var bindsOwnJSMembers: Bool {
     return _jsClassType == nil || hasOwnJSClass
   }
 
-  /// The class whose JavaScript class is the parent of the JavaScript class of this class, or `nil` for the base
-  /// `SharedObject` or `SharedRef` class. It is `_jsParentClassType` for a class with the `@SharedObject` macro. A class
-  /// without the macro inherits `_jsParentClassType` from its nearest superclass with the macro, so its parent is that
-  /// superclass.
-  internal static var resolvedJSParentClassType: (any AnySharedObject.Type)? {
+  /// The superclass whose JavaScript class the JavaScript class of this class extends, or `nil` for the base
+  /// `SharedObject` or `SharedRef` class. It is `_jsSuperclassType` for a class with the `@SharedObject` macro. A class
+  /// without the macro inherits `_jsSuperclassType` from its nearest superclass with the macro, so for that class it is
+  /// that superclass itself.
+  internal static var resolvedJSSuperclassType: (any AnySharedObject.Type)? {
     guard let classType = _jsClassType else {
       return nil
     }
-    return ObjectIdentifier(classType) == ObjectIdentifier(self) ? _jsParentClassType : classType
+    return ObjectIdentifier(classType) == ObjectIdentifier(self) ? _jsSuperclassType : classType
   }
 }
 

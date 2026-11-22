@@ -39,7 +39,7 @@ internal enum JavaScriptBindings {
   }
 
   /// Creates the JavaScript class of a shared object class, without its members. The class extends the JavaScript
-  /// class of `resolvedJSParentClassType`, which is built first when it isn't built yet, or the base `SharedObject` or
+  /// class of `resolvedJSSuperclassType`, which is built first when it isn't built yet, or the base `SharedObject` or
   /// `SharedRef` class.
   @JavaScriptActor
   static func createSharedObjectClass(
@@ -49,9 +49,9 @@ internal enum JavaScriptBindings {
     _ constructor: @escaping JavaScriptRuntime.SyncFunctionClosure
   ) throws -> JavaScriptFunction {
     let runtime = try appContext.runtime
-    if let parentType = type.resolvedJSParentClassType {
-      let parentClass = try appContext.getSharedObjectClass(parentType).getFunction()
-      return try runtime.createClass(name: name, inheriting: parentClass, constructor)
+    if let superclassType = type.resolvedJSSuperclassType {
+      let superclass = try appContext.getSharedObjectClass(superclassType).getFunction()
+      return try runtime.createClass(name: name, inheriting: superclass, constructor)
     }
     if type is AnySharedRef.Type {
       return try runtime.createSharedRefClass(name, constructor)
@@ -60,7 +60,7 @@ internal enum JavaScriptBindings {
   }
 
   /// Builds a prototype for a `@SharedObject` class in an alternate runtime (e.g. the worklet runtime),
-  /// inheriting from the given prototype: the prototype of the parent class in that runtime, or the base prototype.
+  /// inheriting from the given prototype: the prototype of the superclass in that runtime, or the base prototype.
   /// The counterpart of `ClassDefinition.buildPrototype` for the classes that a module registers in `_classTypes`.
   @JavaScriptActor
   static func buildSharedObjectPrototype(

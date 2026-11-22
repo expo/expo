@@ -233,7 +233,7 @@ public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = [], views: 
 @attached(
   member,
   names:
-    named(_jsName), named(_jsClassType), named(_jsParentClassType), named(_decorateSharedObject),
+    named(_jsName), named(_jsClassType), named(_jsSuperclassType), named(_decorateSharedObject),
     named(_constructSharedObject), named(_assertTypesConformance))
 @attached(memberAttribute)
 @attached(extension, conformances: Sendable)
