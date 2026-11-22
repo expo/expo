@@ -11,6 +11,7 @@ android {
   defaultConfig {
     versionCode 17
     versionName '58.0.11'
+    consumerProguardFiles 'consumer-rules.pro'
   }
 }
 
