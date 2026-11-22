@@ -42,7 +42,7 @@ class BackgroundTaskConsumer: NSObject, EXTaskConsumerInterface {
       return
     }
 
-    BackgroundTaskScheduler.didRegisterTask(minutes: self.task?.options?["minimumInterval"] as? Int)
+    BackgroundTaskScheduler.didRegisterTask(minutes: (self.task?.options?["minimumInterval"] as? NSNumber)?.intValue)
   }
 
   func didUnregister() {
