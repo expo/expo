@@ -63,6 +63,7 @@ export function Text({
           size: textStyle.fontSize,
           weight: textStyle.fontWeight ? fontWeightMap[textStyle.fontWeight] : undefined,
           family: textStyle.fontFamily,
+          textStyle: 'body',
         })
       );
     }
