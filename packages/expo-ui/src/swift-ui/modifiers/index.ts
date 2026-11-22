@@ -1407,6 +1407,21 @@ export const listSectionMargins = (params?: {
 }) => createModifier('listSectionMargins', params);
 
 /**
+ * A SwiftUI text style. Mirrors SwiftUI's `Font.TextStyle`.
+ */
+export type FontTextStyle =
+  | 'largeTitle'
+  | 'title'
+  | 'title2'
+  | 'title3'
+  | 'headline'
+  | 'subheadline'
+  | 'body'
+  | 'callout'
+  | 'footnote'
+  | 'caption'
+  | 'caption2';
+/**
  * Sets the font properties of a view.
  *
  * Pass `textStyle` to scale with the user's Dynamic Type setting. Combine
@@ -1451,18 +1466,7 @@ export const font = (params: {
    * SwiftUI text style. When set, the resulting font scales with the user's
    * Dynamic Type setting.
    */
-  textStyle?:
-    | 'largeTitle'
-    | 'title'
-    | 'title2'
-    | 'title3'
-    | 'headline'
-    | 'subheadline'
-    | 'body'
-    | 'callout'
-    | 'footnote'
-    | 'caption'
-    | 'caption2';
+  textStyle?: FontTextStyle;
   /**
    * Draws both lowercase and uppercase letters as small capitals.
    * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/font/smallcaps()).
