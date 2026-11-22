@@ -2,7 +2,7 @@
 
 import Foundation
 
-/** The `__expo_device_*` params of a launch URL. Separate from the POST so the parse is unit-testable. */
+/** The `__expo_device_*` params of a launch URL. */
 internal struct DeviceLoginRequest: Equatable {
   let deviceCode: String
   let matchValue: String
@@ -24,6 +24,11 @@ internal struct DeviceLoginRequest: Equatable {
     }
     return DeviceLoginRequest(deviceCode: deviceCode, matchValue: matchValue, clientId: clientId)
   }
+
+  /// The server sends two digits. Another two-digit value is a failed match, not a malformed request.
+  var wrongMatchValue: String {
+    return matchValue == "00" ? "01" : "00"
+  }
 }
 
 /**
@@ -39,7 +44,8 @@ public class EXDevLauncherDeviceLogin: NSObject {
 
   @objc public static func handle(_ url: URL) {
     // Simulator only: on a device, a link from another app could sign the launcher in to the
-    // sender's account.
+    // sender's account. A simulator has the same risk, because the check does not look at the
+    // sender. That is the accepted risk: a launch URL can already open any project.
     #if targetEnvironment(simulator)
     guard let request = DeviceLoginRequest.parse(url) else {
       return
@@ -50,8 +56,8 @@ public class EXDevLauncherDeviceLogin: NSObject {
     Task {
       do {
         // The app's linking listeners get this URL too. When the launcher does not redeem the code,
-        // a wrong match value (the server sends two digits) makes the server reject the code from then on.
-        let data = try await exchange(request, matchValue: redeems ? request.matchValue : "x")
+        // a wrong match value makes the server reject the code from then on.
+        let data = try await exchange(request, matchValue: redeems ? request.matchValue : request.wrongMatchValue)
         guard redeems else {
           return
         }

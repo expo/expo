@@ -35,6 +35,10 @@ data class DeviceLoginRequest(
       )
     }
   }
+
+  /** The server sends two digits. Another two-digit value is a failed match, not a malformed request. */
+  val wrongMatchValue: String
+    get() = if (matchValue == "00") "01" else "00"
 }
 
 /**
@@ -46,22 +50,24 @@ suspend fun signInFromLaunchUrl(uri: Uri) {
   val sessionService = DependencyInjection.sessionService ?: return
   val sessionStore = sessionService.sessionStore
   // Emulator only: on a device, a link from another app could sign the launcher in to the
-  // sender's account. The check reads `Build` properties, so a device with a custom ROM can pass
-  // it. That is the accepted risk: this file is only in debug builds.
-  if (!EmulatorUtilities.isRunningOnEmulator() ||
-    Session.loadFromPreferences(sessionStore) != null ||
-    sessionStore.getBoolean(SIGNED_OUT_KEY, false)
-  ) {
+  // sender's account. An emulator has the same risk, because the check does not look at the
+  // sender. That is the accepted risk: a launch URL can already open any project. The check reads
+  // `Build` properties, so a device with a custom ROM can pass it. This file is only in debug builds.
+  if (!EmulatorUtilities.isRunningOnEmulator()) {
     return
   }
   val request = DeviceLoginRequest.parse(uri) ?: return
+  val redeems = Session.loadFromPreferences(sessionStore) == null &&
+    !sessionStore.getBoolean(SIGNED_OUT_KEY, false)
 
   runCatching {
     val payload = JSONObject()
       .put("grant_type", "urn:ietf:params:oauth:grant-type:device_code")
       .put("client_id", request.clientId)
       .put("device_code", request.deviceCode)
-      .put("match_value", request.matchValue)
+      // The running app gets this URL too. When the launcher does not redeem the code, a wrong
+      // match value makes the server reject the code from then on.
+      .put("match_value", if (redeems) request.matchValue else request.wrongMatchValue)
       .toString()
     val response = Request
       .Builder()
@@ -70,6 +76,9 @@ suspend fun signInFromLaunchUrl(uri: Uri) {
       .build()
       .await(DependencyInjection.httpClientService.httpClient)
     val data = response.use { JSONObject(it.body?.string().orEmpty()) }.getJSONObject("data")
+    if (!redeems) {
+      return
+    }
     if (!data.has("session_secret")) {
       // Only the server error code: never log the device code or the session secret.
       Log.w(TAG, "Could not sign in from the launch URL: ${data.optString("error")}")
