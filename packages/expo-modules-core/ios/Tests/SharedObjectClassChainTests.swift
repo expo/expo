@@ -12,6 +12,7 @@ import Testing
 
 /// A class with the macro whose superclass doesn't have it.
 private class ChainRoot: SharedObject {
+  override class var _jsName: String { "ChainRoot" }
   override class var _jsClassType: (any AnySharedObject.Type)? { ChainRoot.self }
   override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
 
@@ -26,14 +27,12 @@ private class ChainRoot: SharedObject {
   }
 }
 
-/// A class without the macro. It inherits all the hooks of `ChainRoot`.
+/// A class without the macro that no module registers. It inherits all the hooks of `ChainRoot`, also `_jsName`.
 private class ChainMiddle: ChainRoot {}
-
-/// A class without the macro that no module registers.
-private final class ChainLocal: ChainRoot {}
 
 /// A class with the macro whose superclass doesn't have it, but a class above does.
 private final class ChainLeaf: ChainMiddle {
+  override class var _jsName: String { "ChainLeaf" }
   override class var _jsClassType: (any AnySharedObject.Type)? { ChainLeaf.self }
   override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
 
@@ -57,6 +56,7 @@ private final class ChainLeaf: ChainMiddle {
 
 /// A second class with the macro that extends `ChainRoot`.
 private final class ChainSibling: ChainRoot {
+  override class var _jsName: String { "ChainSibling" }
   override class var _jsClassType: (any AnySharedObject.Type)? { ChainSibling.self }
   override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
 
@@ -76,14 +76,32 @@ private final class ChainSibling: ChainRoot {
   }
 }
 
+/// A class with the macro that no module registers.
+private final class ChainUnregistered: ChainRoot {
+  override class var _jsName: String { "ChainUnregistered" }
+  override class var _jsClassType: (any AnySharedObject.Type)? { ChainUnregistered.self }
+  override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
+
+  @JavaScriptActor
+  override class func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
+    let method = runtime.createFunction("unregisteredMethod") { _, _ in .number(3) }
+    prototype.setProperty("unregisteredMethod", value: method.asValue())
+  }
+
+  @JavaScriptActor
+  override class func _decorateSharedObject(constructor: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
+}
+
 /// A `SharedRef` class with the macro.
 private class ChainRefRoot: SharedRef<String> {
+  override class var _jsName: String { "ChainRefRoot" }
   override class var _jsClassType: (any AnySharedObject.Type)? { ChainRefRoot.self }
   override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
 }
 
 /// A subclass of `ChainRefRoot` with the macro.
 private final class ChainRefLeaf: ChainRefRoot {
+  override class var _jsName: String { "ChainRefLeaf" }
   override class var _jsClassType: (any AnySharedObject.Type)? { ChainRefLeaf.self }
   override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
 }
@@ -91,7 +109,7 @@ private final class ChainRefLeaf: ChainRefRoot {
 /// A class without `_jsClassType`, like a class that an earlier version of the macro expands.
 private final class ChainFlat: SharedObject {}
 
-@ExpoModule(classes: [ChainLeaf.self, ChainSibling.self, ChainMiddle.self, ChainRefLeaf.self])
+@ExpoModule(classes: [ChainLeaf.self, ChainSibling.self, ChainRefLeaf.self])
 private final class ClassChainModule: Module {}
 
 // MARK: - Tests
@@ -188,14 +206,6 @@ private struct SharedObjectClassChainTests {
   }
 
   @Test
-  func `a class without the macro extends the class of its superclass and has no members of its own`() throws {
-    #expect(try evalBool("Object.getPrototypeOf(expo.modules.ClassChainModule.ChainMiddle).name === 'ChainRoot'"))
-    #expect(try !evalBool(
-      "Object.prototype.hasOwnProperty.call(expo.modules.ClassChainModule.ChainMiddle.prototype, 'rootMethod')"
-    ))
-  }
-
-  @Test
   func `an object of a class that no module registers gets the class`() throws {
     try runtime.global().setProperty("root", value: try ChainRoot.encode(ChainRoot(), in: runtime))
     #expect(try runtime.eval("root.rootMethod()").asInt() == 1)
@@ -268,28 +278,30 @@ private struct SharedObjectClassChainTests {
   }
 
   @Test
-  func `an object of a class without the macro that no module registers gets the class of its superclass`() throws {
-    let local = ChainLocal()
-    try runtime.global().setProperty("local", value: try ChainLocal.encode(local, in: runtime))
-    let attachedRuntime = try appContext.addRuntime()
-
-    #expect(try runtime.eval("local.rootMethod()").asInt() == 1)
-    #expect(try attachedRuntime.eval(
-      "expo.SharedObject.__resolveInWorklet(\(local.sharedObjectId)).rootMethod()"
-    ).asInt() == 1)
-  }
-
-  @Test
-  func `a class without the macro has no members of its own in an attached runtime`() throws {
+  func `an object of a class without the macro gets the class of its nearest superclass with the macro`() throws {
+    let rootClass = try appContext.getSharedObjectClass(ChainRoot.self)
+    try runtime.global().setProperty("rootClass", value: rootClass.asValue())
     let middle = ChainMiddle()
     try runtime.global().setProperty("middle", value: try ChainMiddle.encode(middle, in: runtime))
     let attachedRuntime = try appContext.addRuntime()
     try attachedRuntime.eval("middle = expo.SharedObject.__resolveInWorklet(\(middle.sharedObjectId))")
 
-    #expect(try attachedRuntime.eval("middle.rootMethod()").asInt() == 1)
-    #expect(try !attachedRuntime.eval(
+    #expect(try evalBool("Object.getPrototypeOf(middle) === rootClass.prototype"))
+    #expect(try attachedRuntime.eval(
       "Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(middle), 'rootMethod')"
     ).asBool())
+  }
+
+  @Test
+  func `an object gets the class of its own type, not of the declared type, in both runtimes`() throws {
+    let object = ChainUnregistered()
+    try runtime.global().setProperty("object", value: try ChainRoot.encode(object, in: runtime))
+    let attachedRuntime = try appContext.addRuntime()
+
+    #expect(try runtime.eval("object.unregisteredMethod()").asInt() == 3)
+    #expect(try attachedRuntime.eval(
+      "expo.SharedObject.__resolveInWorklet(\(object.sharedObjectId)).unregisteredMethod()"
+    ).asInt() == 3)
   }
 
   @Test

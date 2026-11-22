@@ -54,6 +54,10 @@ extension SharedObject: JavaScriptDecodable, JavaScriptEncodable {
     if let mainRuntime = try? appContext.runtime, runtime.id != mainRuntime.id {
       return try appContext.javaScriptObject(for: value, in: copy runtime).takeValue()
     }
-    return try DynamicSharedObjectType(innerType: Self.self).castToJS(value, appContext: appContext)
+    // An object whose type has a class from the `@SharedObject` macro gets the class of its own type, as in the other
+    // runtimes. Any other object gets the class of the declared type.
+    let valueType = type(of: value)
+    let innerType: any AnySharedObject.Type = valueType._jsClassType != nil ? valueType : Self.self
+    return try DynamicSharedObjectType(innerType: innerType).castToJS(value, appContext: appContext)
   }
 }

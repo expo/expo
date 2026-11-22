@@ -72,7 +72,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
     guard let nativeObject = value as? SharedObject, let sharedObjectType = innerType as? SharedObject.Type else {
       return try castToJS(value, appContext: appContext)
     }
-    // Called on the declared type, whose class the main runtime gives to a new JS object.
+    // Called on the declared type. The main runtime gives its class to a new object whose type has no `_jsClassType`.
     nonisolated(unsafe) let sharedObject = nativeObject
     return try JavaScriptActor.assumeIsolated {
       return try sharedObjectType.encode(sharedObject, in: runtime)
