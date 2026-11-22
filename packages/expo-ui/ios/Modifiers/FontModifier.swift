@@ -159,6 +159,13 @@ internal struct FontModifier: ViewModifier, Record {
     }
 
     if let textStyle = textStyle {
+      if let size = size {
+        return .system(
+          size: textStyle.scaled(size, for: dynamicTypeSize),
+          weight: weight?.toSwiftUI() ?? .regular,
+          design: design?.toSwiftUI() ?? .default
+        )
+      }
       var font = Font.system(textStyle.toSwiftUI(), design: design?.toSwiftUI() ?? .default)
       if let weight = weight {
         font = font.weight(weight.toSwiftUI())
