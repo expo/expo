@@ -266,14 +266,20 @@ extension SharedObject: EventEmitter {
 // MARK: - JavaScript class chain
 
 extension AnySharedObject {
+  /// Whether the `@SharedObject` macro gives this class a JavaScript class of its own. Core builds that class when it
+  /// first needs it, also when no module registers the class.
+  internal static var hasOwnJSClass: Bool {
+    guard let classType = _jsClassType else {
+      return false
+    }
+    return ObjectIdentifier(classType) == ObjectIdentifier(self)
+  }
+
   /// Whether core binds the `@JS` members of this class with its decorate hooks. A class without the `@SharedObject`
   /// macro inherits the hooks of its nearest superclass with the macro, whose JavaScript class is the parent and
   /// already has these members.
   internal static var bindsOwnJSMembers: Bool {
-    guard let classType = _jsClassType else {
-      return true
-    }
-    return ObjectIdentifier(classType) == ObjectIdentifier(self)
+    return _jsClassType == nil || hasOwnJSClass
   }
 
   /// The class whose JavaScript class is the parent of the JavaScript class of this class, or `nil` for the base

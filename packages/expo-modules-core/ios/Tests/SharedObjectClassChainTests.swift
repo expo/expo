@@ -88,7 +88,7 @@ private final class ChainRefLeaf: ChainRefRoot {
 /// A class without `_jsClassType`, like a class that an earlier version of the macro expands.
 private final class ChainFlat: SharedObject {}
 
-@ExpoModule(classes: [ChainLeaf.self, ChainSibling.self, ChainRefLeaf.self])
+@ExpoModule(classes: [ChainLeaf.self, ChainSibling.self, ChainMiddle.self, ChainRefLeaf.self])
 private final class ClassChainModule: Module {}
 
 // MARK: - Tests
@@ -185,6 +185,20 @@ private struct SharedObjectClassChainTests {
   }
 
   @Test
+  func `a class without the macro extends the class of its parent and has no members of its own`() throws {
+    #expect(try evalBool("Object.getPrototypeOf(expo.modules.ClassChainModule.ChainMiddle).name === 'ChainRoot'"))
+    #expect(try !evalBool(
+      "Object.prototype.hasOwnProperty.call(expo.modules.ClassChainModule.ChainMiddle.prototype, 'rootMethod')"
+    ))
+  }
+
+  @Test
+  func `an object of a class that no module registers gets the class`() throws {
+    try runtime.global().setProperty("root", value: try ChainRoot.encode(ChainRoot(), in: runtime))
+    #expect(try runtime.eval("root.rootMethod()").asInt() == 1)
+  }
+
+  @Test
   func `a chain of SharedRef classes ends at the base SharedRef class`() throws {
     #expect(try evalBool(
       "Object.getPrototypeOf(Object.getPrototypeOf(expo.modules.ClassChainModule.ChainRefLeaf)) === expo.SharedRef"
@@ -235,6 +249,44 @@ private struct SharedObjectClassChainTests {
       leafParent = Object.getPrototypeOf(Object.getPrototypeOf(expo.SharedObject.__resolveInWorklet(\(leafId))));
       siblingParent = Object.getPrototypeOf(Object.getPrototypeOf(expo.SharedObject.__resolveInWorklet(\(siblingId))));
       leafParent === siblingParent && Object.prototype.hasOwnProperty.call(leafParent, 'rootMethod')
+      """
+    ).asBool())
+  }
+
+  @Test
+  func `an object of a class that no module registers gets the class in an attached runtime`() throws {
+    let root = ChainRoot()
+    try runtime.global().setProperty("root", value: try ChainRoot.encode(root, in: runtime))
+    let attachedRuntime = try appContext.addRuntime()
+
+    #expect(try attachedRuntime.eval(
+      "expo.SharedObject.__resolveInWorklet(\(root.sharedObjectId)).rootMethod()"
+    ).asInt() == 1)
+  }
+
+  @Test
+  func `a class without the macro has no members of its own in an attached runtime`() throws {
+    let middle = ChainMiddle()
+    try runtime.global().setProperty("middle", value: try ChainMiddle.encode(middle, in: runtime))
+    let attachedRuntime = try appContext.addRuntime()
+    try attachedRuntime.eval("middle = expo.SharedObject.__resolveInWorklet(\(middle.sharedObjectId))")
+
+    #expect(try attachedRuntime.eval("middle.rootMethod()").asInt() == 1)
+    #expect(try !attachedRuntime.eval(
+      "Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(middle), 'rootMethod')"
+    ).asBool())
+  }
+
+  @Test
+  func `a chain of SharedRef classes ends at the base SharedRef prototype in an attached runtime`() throws {
+    let ref = ChainRefLeaf("ref")
+    try runtime.global().setProperty("ref", value: try ChainRefLeaf.encode(ref, in: runtime))
+    let attachedRuntime = try appContext.addRuntime()
+
+    #expect(try attachedRuntime.eval(
+      """
+      ref = expo.SharedObject.__resolveInWorklet(\(ref.sharedObjectId));
+      Object.getPrototypeOf(Object.getPrototypeOf(Object.getPrototypeOf(ref))) === expo.SharedRef.prototype
       """
     ).asBool())
   }

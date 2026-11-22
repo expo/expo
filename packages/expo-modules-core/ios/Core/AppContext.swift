@@ -270,24 +270,25 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   internal let classRegistry = ClassRegistry()
 
   /// Creates a new JavaScript object with the class prototype associated with the given native class.
-  /// Returns `nil` when no JavaScript class is registered for the native class.
+  /// Returns `nil` when the native class has no JavaScript class.
   /// - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
-  internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
+  internal func newObject(of type: any AnySharedObject.Type) throws -> JavaScriptObject? {
     let runtime = try self.runtime
+    let nativeClassId = ObjectIdentifier(type)
     if let object = classRegistry.withPrototype(nativeClassId: nativeClassId, { (prototype: borrowing JavaScriptObject) in
       return runtime.createObject(prototype: prototype)
     }) {
       return object
     }
-    // A class that a package exports is built when JS reads it first.
-    // Build it now, because a native instance gets to JS before that.
-    guard let sharedObjectType = packageRegistry.sharedObjectType(for: nativeClassId) else {
+    // A class that a package exports is built when JS reads it first, and a class with its own JS class that no module
+    // registers is built when it is first needed. Build it now, because a native instance gets to JS before that.
+    guard type.hasOwnJSClass || packageRegistry.sharedObjectType(for: nativeClassId) != nil else {
       return nil
     }
     // Native values are converted to JS on the JavaScript thread.
     return try JavaScriptActor.assumeIsolated {
       // Building the class registers its prototype in `classRegistry`.
-      _ = try JavaScriptBindings.buildSharedObjectClass(sharedObjectType, appContext: self)
+      _ = try JavaScriptBindings.buildSharedObjectClass(type, appContext: self)
       return classRegistry.withPrototype(nativeClassId: nativeClassId) { (prototype: borrowing JavaScriptObject) in
         return runtime.createObject(prototype: prototype)
       }
@@ -733,7 +734,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     }
     let nativeType = type(of: native)
     let jsObject =
-      try newObject(nativeClassId: ObjectIdentifier(nativeType))
+      try newObject(of: nativeType)
       ?? (try self.runtime).createBaseSharedObject(isSharedRef: nativeType is AnySharedRef.Type)
     sharedObjectRegistry.add(native: native, javaScript: jsObject, inheritsBaseClass: true, in: runtime)
     return jsObject
@@ -770,11 +771,11 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   }
 
   /// Returns the prototype for an instance of a native shared object class in a runtime other than the main runtime:
-  /// the prototype of the class itself or of its nearest superclass that a module defines with a `ClassDefinition` or
-  /// registers in `_classTypes`, or that a package exports. A subclass that no module registers gets the prototype of
-  /// its nearest registered superclass, because a function that declares the superclass as its return type gives it
-  /// that class in the main runtime. Returns the base prototype when no module registers any of these classes, as the
-  /// main runtime does.
+  /// the prototype of the class itself or of its nearest superclass that has a JS class. A module defines that class
+  /// with a `ClassDefinition` or registers it in `_classTypes`, a package exports it, or the `@SharedObject` macro gives
+  /// it its own class. A subclass without a JS class gets the prototype of that superclass, because a function that
+  /// declares the superclass as its return type gives it that class in the main runtime. Returns the base prototype
+  /// when none of these classes has a JS class, as the main runtime does.
   @JavaScriptActor
   private func instancePrototype(
     for nativeType: SharedObject.Type,
@@ -786,7 +787,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     while let currentType = type {
       let typeId = ObjectIdentifier(currentType)
 
-      if findClassDefinition(for: typeId) != nil || findClassType(for: typeId) != nil {
+      if currentType.hasOwnJSClass || findClassDefinition(for: typeId) != nil || findClassType(for: typeId) != nil {
         return try classPrototype(for: currentType, in: runtime, prototypes: prototypes)
       }
       type = class_getSuperclass(currentType) as? SharedObject.Type
