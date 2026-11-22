@@ -1036,6 +1036,7 @@ module.exports = {
   documentedPackage,
   packageDeclaration,
   raiseFloor,
+  renderPlatforms,
   emitSourceManifestPackage,
   emitPureSwiftSourcePackage,
   emitExpoModulesJSIHeadersPackage,
