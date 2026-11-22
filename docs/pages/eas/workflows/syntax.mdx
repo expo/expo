@@ -387,6 +387,8 @@ on:
 
 Runs your workflow when one of the selected Sentry issue actions occurs.
 
+Connect your Expo account to Sentry and link your Expo project to a Sentry project. Follow [Sentry integration with Expo dashboard](/guides/using-sentry/#sentry-integration-with-expo-dashboard) to set up the connection.
+
 #### `on.sentry.issue.actions`
 
 Required. The Sentry issue actions that trigger this workflow. Specify at least one action.
@@ -2072,7 +2074,7 @@ This job outputs the following properties:
 
 #### `github-pull-request`
 
-Opens a pull request in the GitHub repository linked to your project. If this job already opened a pull request for the same head and base branches, it updates that pull request. See [GitHub Pull Request job documentation](/eas/workflows/pre-packaged-jobs#github-pull-request) for detailed information and examples.
+Opens a pull request in the GitHub repository linked to your project. If this job already opened a pull request for the same head and base branches, it updates that pull request. See [GitHub pull request job documentation](/eas/workflows/pre-packaged-jobs#github-pull-request) for detailed information and examples.
 
 ```yaml
 jobs:

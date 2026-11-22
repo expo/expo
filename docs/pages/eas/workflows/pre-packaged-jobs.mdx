@@ -2209,13 +2209,13 @@ jobs:
 
 </Collapsible>
 
-## GitHub Pull Request
+## GitHub pull request
 
 Open a pull request in the GitHub repository linked to your project. Use this job after a job that pushes a branch, for example a job in which a coding agent changes your code.
 
 <Prerequisites>
   <Requirement title="A GitHub repository connected to your project">
-    To use the GitHub Pull Request job, your project must have a GitHub repository connected. Learn
+    To use the GitHub pull request job, your project must have a GitHub repository connected. Learn
     how to [connect your GitHub repository](/build/building-from-github/) to get started.
   </Requirement>
 </Prerequisites>
@@ -2236,13 +2236,13 @@ jobs:
 
 #### Parameters
 
-| Parameter | Type    | Description                                                                                                         |
-| --------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
-| head      | string  | Required. The branch that contains the changes. The branch must already exist in the linked GitHub repository.      |
-| title     | string  | Required. The title of the pull request.                                                                            |
-| base      | string  | Optional. The branch to merge the changes into. Defaults to the default branch of the repository.                   |
-| body      | string  | Optional. The description of the pull request.                                                                      |
-| draft     | boolean | Optional. Whether to open the pull request as a draft. Defaults to `false`.                                         |
+| Parameter | Type    | Description                                                                                                    |
+| --------- | ------- | -------------------------------------------------------------------------------------------------------------- |
+| head      | string  | Required. The branch that contains the changes. The branch must already exist in the linked GitHub repository. |
+| title     | string  | Required. The title of the pull request.                                                                       |
+| base      | string  | Optional. The branch to merge the changes into. Defaults to the default branch of the repository.              |
+| body      | string  | Optional. The description of the pull request.                                                                 |
+| draft     | boolean | Optional. Whether to open the pull request as a draft. Defaults to `false`.                                    |
 
 #### Run the job again
 
