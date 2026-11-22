@@ -117,22 +117,39 @@ export function prettyPrintTestSuiteLogs(logs: string[]) {
   if (!lastTestSuiteLog) {
     return '';
   }
-  const jsonPart = lastTestSuiteLog?.match(/{.*}/);
-  if (!jsonPart || !jsonPart[0]) {
-    return '';
-  }
-  const testSuiteResult = JSON.parse(jsonPart[0]);
-  if ((testSuiteResult?.failures.length ?? 0) <= 0) {
+  const failures = readFailures(lastTestSuiteLog);
+  if (!failures) {
     return '';
   }
   const result = [];
   result.push('  ❌ Test suite had following test failures:');
-  testSuiteResult?.failures?.split('\n').forEach((failure) => {
+  failures.split('\n').forEach((failure) => {
     if (failure.length > 0) {
       result.push(`    ${failure}`);
     }
   });
   return result.join('\n');
+}
+
+/**
+ * Reads the `failures` field of a `[TEST-SUITE-END]` line. logcat cuts a line at about 4 KB, so
+ * the JSON of a suite with many results does not parse. `failures` comes before `results` in the
+ * line, so this field is usually complete.
+ */
+function readFailures(line: string): string | null {
+  const match = line.match(/"failures":"((?:[^"\\]|\\.)*)(")?/);
+  if (!match) {
+    return null;
+  }
+  const [, escaped, closingQuote] = match;
+  let failures: string;
+  try {
+    failures = JSON.parse(`"${escaped}"`);
+  } catch {
+    // The line ends inside an escape sequence.
+    failures = escaped;
+  }
+  return closingQuote ? failures : `${failures}\n(the log line ends here)`;
 }
 
 // The test-suite app logs one line with this marker for each pending spec (`TestScreen.tsx`).

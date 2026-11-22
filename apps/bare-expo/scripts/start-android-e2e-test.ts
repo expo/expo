@@ -168,12 +168,13 @@ async function testAsync(
     reinstallMaestroDriver = false;
 
     stopLogCollectionController.abort();
-    reportPendingSpecs(await getJavaScriptLogs());
+    const javaScriptLogs = await getJavaScriptLogs();
+    reportPendingSpecs(javaScriptLogs);
 
     if (failedFlows.length > 0) {
       console.warn(`\n⚠️ Maestro flows failed: ${failedFlows.join(', ')}\n\n`);
       const logs = await getLogs();
-      console.log(prettyPrintTestSuiteLogs(logs));
+      console.log(prettyPrintTestSuiteLogs(javaScriptLogs));
       await printImageComparisonServerLogs();
       if (!(await isAppRunning())) {
         if (logs.length > 0) {

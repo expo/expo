@@ -7,6 +7,7 @@ import {
   annotate,
   findPendingSpecs,
   MaestroNoResultsError,
+  prettyPrintTestSuiteLogs,
   reportPendingSpecs,
   runCustomMaestroFlowsAsync,
   runMaestroAsync,
@@ -320,5 +321,36 @@ describe(reportPendingSpecs, () => {
     reportPendingSpecs(['{"magic":"[TEST-SUITE-END]","failed":0}']);
     expect(log).not.toHaveBeenCalled();
     expect(warn).not.toHaveBeenCalled();
+  });
+});
+
+describe(prettyPrintTestSuiteLogs, () => {
+  it('prints the failures from a result line that logcat cut', () => {
+    const line =
+      '11-22 00:12:19.567  5492  5547 I ReactNativeJS: {"magic":"[TEST-SUITE-END]","failed":1,' +
+      '"failures":"+++ SQLite opens a database\\nExpected 1 to be 2.\\n",' +
+      '"results":"--- SQLite closes a database\\n+++ SQLite opens a databa';
+    expect(prettyPrintTestSuiteLogs([line])).toBe(
+      [
+        '  ❌ Test suite had following test failures:',
+        '    +++ SQLite opens a database',
+        '    Expected 1 to be 2.',
+      ].join('\n')
+    );
+  });
+
+  it('says so when logcat cut the failures', () => {
+    const line =
+      'I ReactNativeJS: {"magic":"[TEST-SUITE-END]","failed":2,' +
+      '"failures":"+++ SQLite opens a database\\nExpected 1 to be 2.\\n+++ SQLite cl';
+    expect(prettyPrintTestSuiteLogs([line])).toBe(
+      [
+        '  ❌ Test suite had following test failures:',
+        '    +++ SQLite opens a database',
+        '    Expected 1 to be 2.',
+        '    +++ SQLite cl',
+        '    (the log line ends here)',
+      ].join('\n')
+    );
   });
 });
