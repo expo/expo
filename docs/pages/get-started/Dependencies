@@ -1,0 +1,235 @@
+
+import 'react-native-url-polyfill/auto';
+import React, { useState, useEffect } from 'react';
+import {
+  View, Text, TextInput, TouchableOpacity,
+  StyleSheet, Alert, ActivityIndicator
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createClient } from '@supabase/supabase-js';
+
+const SUPABASE_URL = 'PASTE_YOUR_PROJECT_URL_HERE';
+const SUPABASE_KEY = 'PASTE_YOUR_PUBLISHABLE_KEY_HERE';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: {
+    storage: AsyncStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+});
+
+export default function App() {
+  const [signup, setSignup] = useState(true);
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, newSession) => setSession(newSession)
+    );
+
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  const handleSubmit = async () => {
+    if (
+      SUPABASE_URL.includes('PASTE_') ||
+      SUPABASE_KEY.includes('PASTE_')
+    ) {
+      Alert.alert('Setup needed', 'Add your Supabase project details first.');
+      return;
+    }
+
+    if (!email.trim() || password.length < 6) {
+      Alert.alert('Check details', 'Enter your email and a password of at least 6 characters.');
+      return;
+    }
+
+    if (signup && !username.trim()) {
+      Alert.alert('Username needed', 'Please choose a username.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      if (signup) {
+        const { data, error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password,
+          options: {
+            data: { username: username.trim() }
+          }
+        });
+
+        if (error) throw error;
+
+        if (!data.session) {
+          Alert.alert(
+            'Check your email 📩',
+            'Your registration was submitted. Verify your email, then log in.'
+          );
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password
+        });
+
+        if (error) throw error;
+      }
+    } catch (error) {
+      Alert.alert('InstaMini', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) Alert.alert('Error', error.message);
+  };
+
+  if (session) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.logo}>InstaMini 📸</Text>
+        <Text style={styles.title}>Welcome! 🎉</Text>
+        <Text style={styles.text}>
+          You are logged in as:
+        </Text>
+        <Text style={styles.email}>{session.user.email}</Text>
+        <TouchableOpacity style={styles.button} onPress={logout}>
+          <Text style={styles.buttonText}>Log Out</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.logo}>InstaMini 📸</Text>
+      <Text style={styles.subtitle}>Share your moments with the world.</Text>
+
+      <Text style={styles.title}>
+        {signup ? 'Create Account' : 'Welcome Back'}
+      </Text>
+
+      {signup && (
+        <TextInput
+          style={styles.input}
+          placeholder="Choose a username"
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+        />
+      )}
+
+      <TextInput
+        style={styles.input}
+        placeholder="Email address"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Password (at least 6 characters)"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleSubmit}
+        disabled={loading}
+      >
+        {loading
+          ? <ActivityIndicator color="white" />
+          : <Text style={styles.buttonText}>
+              {signup ? 'Sign Up' : 'Log In'}
+            </Text>}
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => setSignup(!signup)}>
+        <Text style={styles.switch}>
+          {signup
+            ? 'Already have an account? Log In'
+            : "Don't have an account? Sign Up"}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    padding: 25,
+  },
+  logo: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 15,
+  },
+  subtitle: {
+    color: '#777',
+    textAlign: 'center',
+    marginBottom: 45,
+  },
+  title: {
+    fontSize: 27,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 25,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 10,
+    padding: 16,
+    marginBottom: 15,
+    fontSize: 16,
+  },
+  button: {
+    backgroundColor: '#a020f0',
+    padding: 17,
+    borderRadius: 10,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  switch: {
+    color: '#a020f0',
+    textAlign: 'center',
+    marginTop: 25,
+    fontWeight: 'bold',
+  },
+  email: {
+    textAlign: 'center',
+    fontSize: 17,
+    marginVertical: 15,
+  },
+  text: {
+    textAlign: 'center',
+  },
+});
