@@ -2,7 +2,13 @@ import { render } from '@testing-library/react-native';
 
 import { Text } from '..';
 import { findNativeViewProps } from '../../../__mocks__/expo';
-import { font, foregroundStyle, lineLimit, opacity } from '../../../swift-ui/modifiers';
+import {
+  font,
+  foregroundStyle,
+  lineLimit,
+  lineSpacing,
+  opacity,
+} from '../../../swift-ui/modifiers';
 
 jest.mock('expo');
 
@@ -41,9 +47,17 @@ describe('Text', () => {
       </Text>
     );
     expect(nativeTextModifiers()).toEqual([
-      font({ size: 20 }),
+      font({ size: 20, textStyle: 'body' }),
       foregroundStyle('red'),
       opacity(0.5),
+    ]);
+  });
+
+  it('scales fontSize and lineHeight with the body text style', async () => {
+    await render(<Text textStyle={{ fontSize: 12, lineHeight: 20 }}>hi</Text>);
+    expect(nativeTextModifiers()).toEqual([
+      font({ size: 12, textStyle: 'body' }),
+      lineSpacing(8, { textStyle: 'body' }),
     ]);
   });
 });
