@@ -17,8 +17,7 @@ fun ensureDirExists(dir: File): File {
   return dir
 }
 
-fun getMapFromDeviceInfo(deviceInfo: AudioDeviceInfo): Bundle {
-  val map = Bundle()
+fun getMapFromDeviceInfo(deviceInfo: AudioDeviceInfo): Map<String, Any?> {
   val type = when (deviceInfo.type) {
     AudioDeviceInfo.TYPE_BUILTIN_MIC -> "MicrophoneBuiltIn"
     AudioDeviceInfo.TYPE_BLUETOOTH_SCO -> "BluetoothSCO"
@@ -35,10 +34,19 @@ fun getMapFromDeviceInfo(deviceInfo: AudioDeviceInfo): Bundle {
     AudioDeviceInfo.TYPE_BUS -> "CarAudio"
     else -> "Unknown device type"
   }
-  map.putString("name", deviceInfo.productName.toString())
-  map.putString("type", type)
-  map.putString("uid", deviceInfo.id.toString())
-  return map
+  return mapOf(
+    "name" to deviceInfo.productName.toString(),
+    "type" to type,
+    "uid" to deviceInfo.id.toString()
+  )
+}
+
+@Suppress("DEPRECATION")
+internal fun Bundle.toMap(): Map<String, Any?> = keySet().associateWith { key ->
+  when (val value = get(key)) {
+    is Bundle -> value.toMap()
+    else -> value
+  }
 }
 
 @OptIn(UnstableApi::class)

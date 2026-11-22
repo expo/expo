@@ -1,7 +1,6 @@
 {
   "platforms": ["apple", "android"],
   "android": {
-    "modules": ["expo.modules.audio.AudioModule"],
     "publication": {
       "groupId": "expo.modules.audio",
       "artifactId": "expo.modules.audio",

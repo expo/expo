@@ -62,3 +62,6 @@ internal class AudioStreamInitializationException(message: String) :
   CodedException(message)
 
 internal class AudioStreamFileException(message: String) : CodedException(message)
+
+internal class AudioModuleNotFoundException :
+  CodedException("Cannot create the audio object because the ExpoAudio module is not installed in this app. Rebuild the app after installing expo-audio")

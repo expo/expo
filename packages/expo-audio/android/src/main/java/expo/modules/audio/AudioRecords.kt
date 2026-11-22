@@ -3,18 +3,16 @@ package expo.modules.audio
 import android.media.AudioManager
 import android.media.MediaRecorder
 import android.os.Build
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.Enumerable
+import io.github.expo.modules.v2.Enumerable
+import io.github.expo.modules.v2.Record
 import java.net.URL
-import expo.modules.kotlin.types.OptimizedRecord
 
-@OptimizedRecord
+@Record
 class AudioSource(
-  @Field val uri: String?,
-  @Field val headers: Map<String, String>?,
-  @Field val name: String? = null
-) : Record
+  val uri: String? = null,
+  val headers: Map<String, String>? = null,
+  val name: String? = null
+)
 
 enum class LoopMode(val value: String) : Enumerable {
   NONE("none"),
@@ -22,43 +20,42 @@ enum class LoopMode(val value: String) : Enumerable {
   ALL("all")
 }
 
-@OptimizedRecord
+@Record
 class AudioMode(
-  @Field val shouldPlayInBackground: Boolean?,
-  @Field val shouldRouteThroughEarpiece: Boolean?,
-  @Field val interruptionMode: InterruptionMode?,
-  @Field val allowsBackgroundRecording: Boolean?,
-  @Field val playsInSilentMode: Boolean?
-) : Record
+  val shouldPlayInBackground: Boolean? = null,
+  val shouldRouteThroughEarpiece: Boolean? = null,
+  val interruptionMode: InterruptionMode? = null,
+  val allowsBackgroundRecording: Boolean? = null,
+  val playsInSilentMode: Boolean? = null
+)
 
-// Data class because we want `equals`
-@OptimizedRecord
+@Record
 data class RecordingOptions(
-  @Field val extension: String,
-  @Field val sampleRate: Double?,
-  @Field val numberOfChannels: Double?,
-  @Field val bitRate: Double?,
-  @Field val outputFormat: AndroidOutputFormat?,
-  @Field val audioEncoder: AndroidAudioEncoder?,
-  @Field val maxFileSize: Int?,
-  @Field val isMeteringEnabled: Boolean = false,
-  @Field val audioSource: RecordingSource?,
-  @Field val directory: RecordingDirectory?,
-  @Field val fileName: String? = null
-) : Record
+  val extension: String,
+  val sampleRate: Double? = null,
+  val numberOfChannels: Double? = null,
+  val bitRate: Double? = null,
+  val outputFormat: AndroidOutputFormat? = null,
+  val audioEncoder: AndroidAudioEncoder? = null,
+  val maxFileSize: Int? = null,
+  val isMeteringEnabled: Boolean = false,
+  val audioSource: RecordingSource? = null,
+  val directory: RecordingDirectory? = null,
+  val fileName: String? = null
+)
 
 enum class RecordingDirectory(val value: String) : Enumerable {
   CACHE("cache"),
   DOCUMENT("document")
 }
 
-@OptimizedRecord
+@Record
 class Metadata(
-  @Field val title: String?,
-  @Field val artist: String?,
-  @Field val albumTitle: String?,
-  @Field val artworkUrl: URL?
-) : Record
+  val title: String? = null,
+  val artist: String? = null,
+  val albumTitle: String? = null,
+  val artworkUrl: URL? = null
+)
 
 enum class AndroidOutputFormat(val value: String) : Enumerable {
   DEFAULT("default"),
@@ -108,16 +105,16 @@ enum class AndroidAudioEncoder(val value: String) : Enumerable {
   }
 }
 
-@OptimizedRecord
+@Record
 class AudioLockScreenOptions(
-  @Field val showSeekForward: Boolean,
-  @Field val showSeekBackward: Boolean,
-  @Field val showNextTrack: Boolean = false,
-  @Field val showPreviousTrack: Boolean = false,
-  @Field val isLiveStream: Boolean? = null,
-  @Field val seekForwardIntervalSeconds: Double = 10.0,
-  @Field val seekBackwardIntervalSeconds: Double = 10.0
-) : Record
+  val showSeekForward: Boolean,
+  val showSeekBackward: Boolean,
+  val showNextTrack: Boolean = false,
+  val showPreviousTrack: Boolean = false,
+  val isLiveStream: Boolean? = null,
+  val seekForwardIntervalSeconds: Double = 10.0,
+  val seekBackwardIntervalSeconds: Double = 10.0
+)
 
 enum class InterruptionMode(val value: String) : Enumerable {
   DO_NOT_MIX("doNotMix"),
@@ -133,25 +130,23 @@ enum class InterruptionMode(val value: String) : Enumerable {
   }
 }
 
-@OptimizedRecord
+@Record
 class RecordOptions(
-  @Field val atTime: Double?,
-  @Field val forDuration: Double?
-) : Record
+  val atTime: Double? = null,
+  val forDuration: Double? = null
+)
 
 enum class AudioStreamEncoding(val value: String) : Enumerable {
   FLOAT32("float32"),
   INT16("int16")
 }
 
-@OptimizedRecord
-class AudioStreamOptions : Record {
-  @Field var sampleRate: Int = 48000
-
-  @Field var channels: Int = 1
-
-  @Field var encoding: AudioStreamEncoding = AudioStreamEncoding.FLOAT32
-}
+@Record
+class AudioStreamOptions(
+  val sampleRate: Int = 48000,
+  val channels: Int = 1,
+  val encoding: AudioStreamEncoding = AudioStreamEncoding.FLOAT32
+)
 
 enum class RecordingSource(val value: String) : Enumerable {
   CAMCORDER("camcorder"),
@@ -182,31 +177,24 @@ enum class AudioStreamFileFormat(val value: String) : Enumerable {
   val fileExtension: String get() = value
 }
 
-@OptimizedRecord
-class AudioStreamFileRecordingOptions : Record {
-  @Field var uri: URL? = null
+@Record
+class AudioStreamFileRecordingOptions(
+  val uri: URL? = null,
+  val directory: RecordingDirectory? = null,
+  val format: AudioStreamFileFormat = AudioStreamFileFormat.WAV
+)
 
-  @Field var directory: RecordingDirectory? = null
+@Record
+class AudioStreamFileRecordingStartResult(
+  val uri: URL? = null
+)
 
-  @Field var format: AudioStreamFileFormat = AudioStreamFileFormat.WAV
-}
-
-@OptimizedRecord
-class AudioStreamFileRecordingStartResult : Record {
-  @Field var uri: URL? = null
-}
-
-@OptimizedRecord
-class AudioStreamFileRecordingResult : Record {
-  @Field var uri: URL? = null
-
-  @Field var duration: Double = 0.0
-
-  @Field var size: Long = 0L
-
-  @Field var sampleRate: Int = 0
-
-  @Field var channels: Int = 0
-
-  @Field var encoding: AudioStreamEncoding = AudioStreamEncoding.FLOAT32
-}
+@Record
+class AudioStreamFileRecordingResult(
+  val uri: URL? = null,
+  val duration: Double = 0.0,
+  val size: Long = 0L,
+  val sampleRate: Int = 0,
+  val channels: Int = 0,
+  val encoding: AudioStreamEncoding = AudioStreamEncoding.FLOAT32
+)

@@ -6,8 +6,12 @@ import android.media.AudioRecord
 import android.media.MediaRecorder
 import androidx.annotation.RequiresPermission
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.jni.NativeArrayBuffer
-import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.v2.legacyAppContextOrNull
+import io.github.expo.modules.v2.Event
+import io.github.expo.modules.v2.ExpoSharedObject
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.SharedObject
+import io.github.expo.modules.v2.module
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -16,9 +20,8 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.UUID
 
-internal const val AUDIO_STREAM_BUFFER = "audioStreamBuffer"
-internal const val AUDIO_STREAM_STATUS = "audioStreamStatus"
 private const val DEFAULT_BUFFER_DURATION_MS = 100
 private val FALLBACK_SAMPLE_RATES = intArrayOf(48000, 44100, 16000, 22050, 8000)
 
@@ -37,12 +40,25 @@ internal fun trimToRecordedBytes(byteBuffer: ByteBuffer, bytesRead: Int): ByteBu
   return byteBuffer.slice()
 }
 
-class AudioStream(
-  appContext: AppContext,
+@ExpoSharedObject
+class AudioStream @JS constructor(
   private val options: AudioStreamOptions
-) : SharedObject(appContext) {
+) : SharedObject() {
 
+  @JS
   val id: String = java.util.UUID.randomUUID().toString()
+
+  private val appContext: AppContext?
+    get() = legacyAppContextOrNull
+
+  private val module: AudioModule
+    get() = context.module<AudioModule>() ?: throw AudioModuleNotFoundException()
+
+  @Event(name = "audioStreamStatus")
+  private val onAudioStreamStatus = event<Map<String, Any?>>()
+
+  @Event(name = "audioStreamBuffer")
+  private val onAudioStreamBuffer = event<Map<String, Any?>>()
 
   private var audioRecord: AudioRecord? = null
   private var captureJob: Job? = null
@@ -65,6 +81,60 @@ class AudioStream(
 
   private var fileWriter: AudioStreamFileWriter? = null
   private val fileWriterLock = Any()
+
+  @JS("sampleRate")
+  val sampleRateFromJS: Int
+    get() = sampleRate
+
+  @JS("channels")
+  val channelsFromJS: Int
+    get() = channels
+
+  @JS("isStreaming")
+  val isStreamingFromJS: Boolean
+    get() = isStreaming
+
+  @JS("start")
+  suspend fun startFromJS(): Unit = module.background {
+    module.checkRecordingPermission()
+    start()
+  }
+
+  @JS("stop")
+  fun stopFromJS() {
+    stop()
+  }
+
+  @JS("startFileRecordingAsync")
+  suspend fun startFileRecordingAsync(options: AudioStreamFileRecordingOptions?): AudioStreamFileRecordingStartResult =
+    module.background {
+      val opts = options ?: AudioStreamFileRecordingOptions()
+      val format = opts.format
+      val file = opts.uri?.let { uri ->
+        val ext = File(uri.toURI()).extension.lowercase()
+        if (ext != format.fileExtension) {
+          throw AudioStreamFileException(
+            "The URI '${File(uri.toURI()).name}' has extension '.$ext' but the chosen format is '${format.value}'. Change the URI extension or the format to match."
+          )
+        }
+        File(uri.toURI())
+      } ?: run {
+        val appContext = module.appContext
+        val parentDir = when (opts.directory ?: RecordingDirectory.CACHE) {
+          RecordingDirectory.CACHE -> appContext.cacheDirectory
+          RecordingDirectory.DOCUMENT -> appContext.persistentFilesDirectory
+        }
+        val dir = File(parentDir, "AudioStream")
+        dir.mkdirs()
+        File(dir, "stream-${UUID.randomUUID()}.${format.fileExtension}")
+      }
+      AudioStreamFileRecordingStartResult(uri = startFileRecording(file, format))
+    }
+
+  @JS("stopFileRecordingAsync")
+  suspend fun stopFileRecordingAsync(): AudioStreamFileRecordingResult = module.background {
+    stopFileRecording()
+  }
 
   @RequiresPermission(Manifest.permission.RECORD_AUDIO)
   fun start() {
@@ -153,18 +223,18 @@ class AudioStream(
     fileWriter = null
     val currentSampleRate = sampleRate
     val currentChannels = channels
-    AudioStreamFileRecordingResult().apply {
-      uri = writer.file.toURI().toURL()
+    AudioStreamFileRecordingResult(
+      uri = writer.file.toURI().toURL(),
       duration = if (currentSampleRate > 0) {
         frames.toDouble() / currentSampleRate
       } else {
         0.0
-      }
-      size = totalSize
-      sampleRate = currentSampleRate
-      channels = currentChannels
+      },
+      size = totalSize,
+      sampleRate = currentSampleRate,
+      channels = currentChannels,
       encoding = options.encoding
-    }
+    )
   }
 
   private fun resolveAudioConfig(): ResolvedAudioConfig {
@@ -266,7 +336,7 @@ class AudioStream(
     if (bytesRead > 0) {
       val recorded = trimToRecordedBytes(byteBuffer, bytesRead)
       // Copy PCM bytes before acquiring the lock so the lock covers only the file write,
-      // not the allocation+copy. Write to file before constructing NativeArrayBuffer.
+      // not the allocation+copy.
       val pcmBytes = ByteArray(bytesRead).also { buf ->
         recorded.duplicate().apply {
           position(0)
@@ -276,29 +346,25 @@ class AudioStream(
       synchronized(fileWriterLock) {
         fileWriter?.append(pcmBytes)
       }
-      emitBufferEvent(NativeArrayBuffer(recorded), channels, sampleRate, captureSession)
+      emitBufferEvent(pcmBytes, channels, sampleRate, captureSession)
     }
   }
 
   private fun emitStatus() {
     val streaming = isStreaming
     appContext?.mainQueue?.launch {
-      emit(
-        AUDIO_STREAM_STATUS,
-        mapOf("isStreaming" to streaming)
-      )
+      onAudioStreamStatus(mapOf("isStreaming" to streaming))
     }
   }
 
-  private fun emitBufferEvent(data: NativeArrayBuffer, channels: Int, sampleRate: Int, bufferSession: Int) {
+  private fun emitBufferEvent(data: ByteArray, channels: Int, sampleRate: Int, bufferSession: Int) {
     val timestamp = (System.nanoTime() - startTimeNanos) / 1_000_000_000.0
 
     appContext?.mainQueue?.launch {
       if (!isStreaming || bufferSession != session) {
         return@launch
       }
-      emit(
-        AUDIO_STREAM_BUFFER,
+      onAudioStreamBuffer(
         mapOf(
           "data" to data,
           "sampleRate" to sampleRate,

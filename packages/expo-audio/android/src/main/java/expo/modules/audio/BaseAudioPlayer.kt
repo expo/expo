@@ -6,7 +6,8 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.v2.legacyAppContextOrNull
+import io.github.expo.modules.v2.SharedObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -30,11 +31,11 @@ import java.util.UUID
  */
 @UnstableApi
 abstract class BaseAudioPlayer(
-  player: ExoPlayer,
-  appContext: AppContext,
-  private val updateInterval: Double,
-  private val statusEventName: String
-) : SharedRef<ExoPlayer>(player, appContext), Playable {
+  private val updateInterval: Double
+) : SharedObject(), Playable {
+  abstract val ref: ExoPlayer
+  override val appContext: AppContext?
+    get() = legacyAppContextOrNull
   override val id: String = UUID.randomUUID().toString()
   override var isPaused = false
   override var isMuted = false
@@ -73,7 +74,16 @@ abstract class BaseAudioPlayer(
   protected fun sendStatusUpdate(map: Map<String, Any?>? = null) {
     val data = currentStatus()
     val body = map?.let { data + it } ?: data
-    emit(statusEventName, body)
+    emitStatus(body)
+  }
+
+  protected abstract fun emitStatus(body: Map<String, Any?>)
+
+  // An event emitted before JavaScript starts observing is dropped, so the first listener gets the current status.
+  protected fun sendStatusUpdateOnMain() {
+    playerScope.launch {
+      sendStatusUpdate()
+    }
   }
 
   protected fun installPlayerListeners() {

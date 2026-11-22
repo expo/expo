@@ -1,7 +1,6 @@
 package expo.modules.audio
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
@@ -10,14 +9,19 @@ import android.media.MediaRecorder.MEDIA_ERROR_SERVER_DIED
 import android.media.MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN
 import android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED
 import android.os.Build
-import android.os.Bundle
 import androidx.core.content.ContextCompat
+import android.net.Uri
 import androidx.core.net.toUri
 import expo.modules.audio.service.AudioRecordingServiceConnection
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
-import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.v2.legacyAppContext
+import expo.modules.v2.legacyAppContextOrNull
+import io.github.expo.modules.v2.Event
+import io.github.expo.modules.v2.ExpoSharedObject
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.SharedObject
+import io.github.expo.modules.v2.module
+import io.github.expo.modules.v2.react.androidContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -27,13 +31,10 @@ import java.lang.ref.WeakReference
 import java.util.UUID
 import kotlin.math.log10
 
-private const val RECORDING_STATUS_UPDATE = "recordingStatusUpdate"
-
-class AudioRecorder(
-  private val context: Context,
-  appContext: AppContext,
+@ExpoSharedObject
+class AudioRecorder @JS constructor(
   private val options: RecordingOptions
-) : SharedObject(appContext),
+) : SharedObject(),
   MediaRecorder.OnErrorListener,
   MediaRecorder.OnInfoListener {
   var filePath: String? = null
@@ -42,6 +43,8 @@ class AudioRecorder(
   var isPrepared = false
 
   private var recorder: MediaRecorder? = null
+
+  @JS
   val id = UUID.randomUUID().toString()
   var startTime = 0L
   var isRecording = false
@@ -51,12 +54,88 @@ class AudioRecorder(
   private var durationLimitMillis: Long? = null
   var useForegroundService = false
 
-  val serviceConnection = AudioRecordingServiceConnection(WeakReference(this), appContext)
+  private val serviceConnectionDelegate = lazy { AudioRecordingServiceConnection(WeakReference(this), legacyAppContext) }
+  val serviceConnection by serviceConnectionDelegate
 
-  private val _appContext: AppContext
-    get() {
-      return appContext ?: throw Exceptions.AppContextLost()
+  private val module: AudioModule
+    get() = context.module<AudioModule>() ?: throw AudioModuleNotFoundException()
+
+  @Event(name = "recordingStatusUpdate")
+  private val onRecordingStatusUpdate = event<Map<String, Any?>>()
+
+  init {
+    contextOrNull?.module<AudioModule>()?.registerRecorder(this)
+  }
+
+  @JS("uri")
+  val uriFromJS: String
+    get() = filePath?.let { Uri.fromFile(File(it)).toString() } ?: ""
+
+  @JS("isRecording")
+  val isRecordingFromJS: Boolean
+    get() = isRecording
+
+  @JS("currentTime")
+  val currentTimeFromJS: Double
+    get() = getCurrentTimeSeconds()
+
+  @JS("prepareToRecordAsync")
+  suspend fun prepareToRecordAsyncFromJS(options: RecordingOptions?): Unit = module.background {
+    module.checkRecordingPermission()
+    prepareRecording(options)
+  }
+
+  @JS("record")
+  fun recordFromJS(options: RecordOptions?) {
+    module.checkRecordingPermission()
+    if (isPrepared) {
+      recordWithOptions(options?.atTime, options?.forDuration)
     }
+  }
+
+  @JS("recordForDuration")
+  fun recordForDurationFromJS(seconds: Double) {
+    module.checkRecordingPermission()
+    if (isPrepared) {
+      recordForDuration(seconds)
+    }
+  }
+
+  @JS("pause")
+  fun pauseFromJS() {
+    module.checkRecordingPermission()
+    pauseRecording()
+  }
+
+  @JS("stop")
+  suspend fun stopFromJS(): Map<String, Any?> = module.background {
+    module.checkRecordingPermission()
+    stopRecording()
+  }
+
+  @JS("getStatus")
+  fun getStatusFromJS(): Map<String, Any?> = getAudioRecorderStatus()
+
+  @JS("getCurrentInput")
+  suspend fun getCurrentInputFromJS(): Map<String, Any?> = module.background {
+    getCurrentInput(module.audioManager)
+  }
+
+  @JS("getAvailableInputs")
+  fun getAvailableInputsFromJS(): List<Map<String, Any?>> = getAvailableInputs(module.audioManager)
+
+  @JS("setInput")
+  fun setInputFromJS(input: String) {
+    setInput(input, module.audioManager)
+  }
+
+  @JS("startRecordingAtTime")
+  fun startRecordingAtTimeFromJS(seconds: Double) {
+    module.checkRecordingPermission()
+    if (isPrepared) {
+      startRecordingAtTime(seconds)
+    }
+  }
 
   private fun currentFileUrl(): String? =
     filePath?.let(::File)?.toUri()?.toString()
@@ -184,7 +263,7 @@ class AudioRecorder(
   private fun scheduleRecordingStop() {
     recordingTimerJob?.cancel()
     recordingTimerJob = durationLimitMillis?.let { limit ->
-      appContext?.mainQueue?.launch {
+      legacyAppContextOrNull?.mainQueue?.launch {
         delay((limit - getAudioRecorderDurationMillis()).coerceAtLeast(0))
         if (isRecording) {
           stopRecording()
@@ -193,7 +272,7 @@ class AudioRecorder(
     }
   }
 
-  fun stopRecording(): Bundle {
+  fun stopRecording(): Map<String, Any?> {
     val url = currentFileUrl()
     var durationMillis: Long
     var stopFailed = false
@@ -214,19 +293,18 @@ class AudioRecorder(
       reset()
     }
 
-    val status = Bundle().apply {
-      putBoolean("canRecord", false)
-      putBoolean("isRecording", false)
-      putLong("durationMillis", durationMillis)
+    val status = buildMap {
+      put("canRecord", false)
+      put("isRecording", false)
+      put("durationMillis", durationMillis)
       if (!stopFailed) {
-        url?.let { putString("url", it) }
+        url?.let { put("url", it) }
       }
     }
 
     // Emit completion event on the main thread
-    appContext?.mainQueue?.launch {
-      emit(
-        RECORDING_STATUS_UPDATE,
+    legacyAppContextOrNull?.mainQueue?.launch {
+      onRecordingStatusUpdate(
         mapOf(
           "id" to id,
           "isFinished" to true,
@@ -281,8 +359,8 @@ class AudioRecorder(
     val baseName = provided ?: "recording-${UUID.randomUUID()}"
     val filename = "$baseName${options.extension}"
     val parentDirectory = when (options.directory ?: RecordingDirectory.CACHE) {
-      RecordingDirectory.CACHE -> _appContext.cacheDirectory
-      RecordingDirectory.DOCUMENT -> _appContext.persistentFilesDirectory
+      RecordingDirectory.CACHE -> legacyAppContext.cacheDirectory
+      RecordingDirectory.DOCUMENT -> legacyAppContext.persistentFilesDirectory
     }
     val directory = File(parentDirectory, "Audio")
     try {
@@ -334,38 +412,37 @@ class AudioRecorder(
   override fun sharedObjectDidRelease() {
     super.sharedObjectDidRelease()
 
-    // Mark recorder as released
-    serviceConnection.release()
+    if (serviceConnectionDelegate.isInitialized()) {
+      serviceConnection.release()
 
-    if (useForegroundService) {
-      serviceConnection.recordingServiceBinder?.service?.unregisterRecorder(this)
-      // Unbind service connection
-      serviceConnection.unbind()
-      // Clean up service connection resources
-      serviceConnection.cleanup()
+      if (useForegroundService) {
+        serviceConnection.recordingServiceBinder?.service?.unregisterRecorder(this)
+        serviceConnection.unbind()
+        serviceConnection.cleanup()
+      }
     }
     reset()
   }
 
-  fun getAudioRecorderStatus() = if (hasRecordingPermissions()) {
-    Bundle().apply {
-      putBoolean("canRecord", isPrepared)
-      putBoolean("isRecording", isRecording)
-      putLong("durationMillis", getAudioRecorderDurationMillis())
-      putLong("fileSize", fileSize)
+  fun getAudioRecorderStatus(): Map<String, Any?> = if (hasRecordingPermissions()) {
+    buildMap {
+      put("canRecord", isPrepared)
+      put("isRecording", isRecording)
+      put("durationMillis", getAudioRecorderDurationMillis())
+      put("fileSize", fileSize)
       getAudioRecorderLevels()?.let {
-        putDouble("metering", it)
+        put("metering", it)
       }
-      currentFileUrl()?.let { putString("url", it) }
+      currentFileUrl()?.let { put("url", it) }
     }
   } else {
-    Bundle().apply {
-      putBoolean("canRecord", false)
-      putBoolean("isRecording", false)
-      putLong("durationMillis", 0)
-      putLong("fileSize", 0)
-      putString("url", null)
-    }
+    mapOf(
+      "canRecord" to false,
+      "isRecording" to false,
+      "durationMillis" to 0L,
+      "fileSize" to 0L,
+      "url" to null
+    )
   }
 
   private fun getAudioRecorderDurationMillis(): Long {
@@ -386,8 +463,7 @@ class AudioRecorder(
       MEDIA_ERROR_SERVER_DIED -> "The media server has crashed"
       else -> "An unknown recording error occurred"
     }
-    emit(
-      RECORDING_STATUS_UPDATE,
+    onRecordingStatusUpdate(
       mapOf(
         "isFinished" to true,
         "hasError" to true,
@@ -415,8 +491,7 @@ class AudioRecorder(
         } finally {
           reset()
         }
-        emit(
-          RECORDING_STATUS_UPDATE,
+        onRecordingStatusUpdate(
           mapOf(
             "isFinished" to true,
             "hasError" to true,
@@ -428,7 +503,7 @@ class AudioRecorder(
     }
   }
 
-  fun getCurrentInput(audioManager: AudioManager): Bundle {
+  fun getCurrentInput(audioManager: AudioManager): Map<String, Any?> {
     var deviceInfo: AudioDeviceInfo? = null
 
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
@@ -472,7 +547,7 @@ class AudioRecorder(
   }
 
   private fun hasRecordingPermissions() =
-    ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+    ContextCompat.checkSelfPermission(androidContext, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
 
   fun getAvailableInputs(audioManager: AudioManager) =
     audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS).mapNotNull { deviceInfo ->

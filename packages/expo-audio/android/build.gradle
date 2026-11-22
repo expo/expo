@@ -6,6 +6,10 @@ plugins {
 group = 'expo.modules.audio'
 version = '58.0.10'
 
+expoModule {
+  v2 true
+}
+
 android {
   namespace "expo.modules.audio"
   defaultConfig {
@@ -23,6 +27,7 @@ repositories {
 }
 
 dependencies {
+  implementation 'com.facebook.react:react-android'
   implementation 'androidx.core:core-ktx:1.15.0'
 
   def androidxMedia3Version = "1.9.1"
