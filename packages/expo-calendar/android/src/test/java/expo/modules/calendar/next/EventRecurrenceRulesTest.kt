@@ -1,5 +1,8 @@
 package expo.modules.calendar.next
 
+import expo.modules.calendar.next.domain.dto.event.EventInput
+import expo.modules.calendar.next.domain.wrappers.EventId
+import expo.modules.calendar.next.mappers.EventMapper
 import expo.modules.calendar.next.records.RecurrenceRuleRecord
 import expo.modules.calendar.next.utils.createRecurrenceRule
 import java.util.TimeZone
@@ -111,4 +114,14 @@ class EventRecurrenceRulesTest {
     assertEquals(recurrence?.endDate, "2025-10-24T00:00:00.000Z")
     assertEquals(recurrence?.occurrence, null)
   }
+  @Test
+  fun selectedWeekdaysSurviveTheRecordAndEventMapping() {
+    val text = "FREQ=WEEKLY;INTERVAL=2;BYDAY=SU,SA"
+    val record = requireNotNull(RecurrenceRuleRecord.fromRrFormat(text))
+    assertEquals(listOf(1, 7), record.daysOfTheWeek?.map { it.dayOfTheWeek })
+    val rule = with(EventMapper()) { record.toDomain() }
+    val stored = EventInput(rrule = rule).toExistingEntity(EventId(1))
+    assertEquals(text, stored.rrule?.toRuleString())
+  }
+
 }

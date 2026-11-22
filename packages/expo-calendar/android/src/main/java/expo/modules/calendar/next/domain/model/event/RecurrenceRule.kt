@@ -9,7 +9,10 @@ data class RecurrenceRule(
   val frequency: String,
   val interval: Int?,
   val occurrence: Int?,
-  val endDate: String?
+  val endDate: String?,
+  val daysOfTheWeek: List<RecurrenceWeekday>? = null,
+  val daysOfTheMonth: List<Int>? = null,
+  val monthsOfTheYear: List<Int>? = null
 ) {
 
   /**
@@ -35,6 +38,17 @@ data class RecurrenceRule(
       rrule += ";COUNT=$occurrence"
     }
 
+    daysOfTheWeek?.takeIf { it.isNotEmpty() }?.let {
+      rrule += ";BYDAY=" + it.joinToString(",") { day -> day.toRuleString() }
+    }
+    daysOfTheMonth?.takeIf { it.isNotEmpty() }?.let {
+      require(it.all { day -> day in -31..31 && day != 0 })
+      rrule += ";BYMONTHDAY=" + it.joinToString(",")
+    }
+    monthsOfTheYear?.takeIf { it.isNotEmpty() }?.let {
+      require(it.all { month -> month in 1..12 })
+      rrule += ";BYMONTH=" + it.joinToString(",")
+    }
     return rrule
   }
 
@@ -70,7 +84,12 @@ data class RecurrenceRule(
         occurrence = ruleParts["COUNT"]?.toInt()
       }
 
-      return RecurrenceRule(frequency, interval, occurrence, endDate)
+      return RecurrenceRule(
+        frequency, interval, occurrence, endDate,
+        ruleParts["BYDAY"]?.split(",")?.map(RecurrenceWeekday::fromRuleString),
+        ruleParts["BYMONTHDAY"]?.split(",")?.map(String::toInt),
+        ruleParts["BYMONTH"]?.split(",")?.map(String::toInt)
+      )
     }
   }
 }
@@ -84,3 +103,24 @@ private fun tryParseEndDate(endDate: String): Date? =
   }.recover {
     CalendarUtils.allDayRecurrenceSDF.parse(endDate)
   }.getOrNull()
+
+/** Expo numbers weekdays Sunday=1 through Saturday=7, matching EventKit. */
+data class RecurrenceWeekday(val dayOfTheWeek: Int, val weekNumber: Int? = null) {
+  fun toRuleString(): String {
+    require(dayOfTheWeek in 1..7)
+    require(weekNumber == null || weekNumber in -53..53)
+    val ordinal = weekNumber?.takeIf { it != 0 }?.toString() ?: ""
+    return ordinal + names[dayOfTheWeek - 1]
+  }
+
+  companion object {
+    private val weekdayPattern = Regex("([+-]?[0-9]+)?(SU|MO|TU|WE|TH|FR|SA)", RegexOption.IGNORE_CASE)
+    private val names = listOf("SU", "MO", "TU", "WE", "TH", "FR", "SA")
+
+    fun fromRuleString(value: String): RecurrenceWeekday {
+      val match = weekdayPattern.matchEntire(value)
+        ?: throw IllegalArgumentException("Invalid recurrence weekday")
+      return RecurrenceWeekday(names.indexOf(match.groupValues[2].uppercase(Locale.ROOT)) + 1, match.groupValues[1].toIntOrNull())
+    }
+  }
+}
