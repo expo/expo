@@ -82,7 +82,7 @@ export function Text({
       // Convert by subtracting the font size (default 17 = SwiftUI Body).
       const baseFontSize = textStyle.fontSize ?? 17;
       const spacing = Math.max(0, textStyle.lineHeight - baseFontSize);
-      textModifiers.push(lineSpacing(spacing));
+      textModifiers.push(lineSpacing(spacing, { textStyle: 'body' }));
     }
 
     if (typeof textStyle.letterSpacing === 'number') {
