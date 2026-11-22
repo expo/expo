@@ -4,7 +4,9 @@ import android.media.AudioAttributes
 import android.media.AudioManager
 import android.util.Log
 import androidx.annotation.VisibleForTesting
+import expo.modules.kotlin.exception.CodedException
 import java.lang.ref.WeakReference
+import java.util.concurrent.Executor
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.CancellationException
@@ -29,13 +31,23 @@ internal class SessionCoordinator(
     val pendingActivationCount: Int = 0
   )
 
+  private enum class PauseCause { INTERRUPTION, BACKGROUND }
+
   private class Entry(
     val id: Long,
     val client: String,
     var requirements: SessionRequirements,
     val token: WeakReference<Any>,
-    val activation: CompletableDeferred<Unit>
-  )
+    val activation: CompletableDeferred<Unit>,
+    val delegate: WeakReference<SessionUseDelegate>?,
+    val executor: Executor
+  ) {
+    val causes = mutableSetOf<PauseCause>()
+    var isDucked = false
+
+    val isCommanded: Boolean
+      get() = delegate != null
+  }
 
   private enum class LossState { NONE, DUCKED, TRANSIENT, PERMANENT }
 
@@ -64,6 +76,7 @@ internal class SessionCoordinator(
   private var current = LossState.NONE
   private var reported = LossState.NONE
   private var isSilent: Boolean? = null
+  private var lastFocusError: MediaSessionException? = null
 
   @Volatile
   private var snapshot = Snapshot()
@@ -106,13 +119,27 @@ internal class SessionCoordinator(
     client: String,
     requirements: SessionRequirements,
     activation: CompletableDeferred<Unit>,
-    token: Any
+    token: Any,
+    delegate: SessionUseDelegate?,
+    executor: Executor
   ) {
     releaseGeneration.incrementAndGet()
     val reference = WeakReference(token)
+    val delegateReference = delegate?.let { WeakReference(it) }
     task {
-      entries.add(Entry(id, client, requirements, reference, activation))
+      val entry = Entry(id, client, requirements, reference, activation, delegateReference, executor)
+      entries.add(entry)
       reconcile(client, activating = true, activation)
+      if (!entry.isCommanded || !entries.contains(entry)) {
+        return@task
+      }
+      if (focusDelayed && entry.causes.isEmpty()) {
+        entry.causes.add(PauseCause.INTERRUPTION)
+        command(entry) { delegate, use -> delegate.sessionUsePause(use, SessionPauseReason.INTERRUPTION) }
+      } else if (current == LossState.DUCKED && reported == LossState.DUCKED) {
+        entry.isDucked = true
+        command(entry) { delegate, use -> delegate.sessionUseDuck(use, true) }
+      }
     }.invokeOnCompletion { cause ->
       when (cause) {
         null -> Unit
@@ -225,6 +252,48 @@ internal class SessionCoordinator(
   fun onBecomingNoisy() {
     task {
       notify { it.mediaSessionRouteChanged(RouteChangeReason.OLD_DEVICE_UNAVAILABLE) }
+      val input = setOf(SessionCapability.RECORD, SessionCapability.MEASUREMENT)
+      val unplugged = entries.filter { it.isCommanded && it.requirements.capabilities.none(input::contains) }
+      unplugged.forEach { entry ->
+        command(entry) { delegate, use -> delegate.sessionUsePause(use, SessionPauseReason.OUTPUT_DISCONNECTED) }
+      }
+      endEntries(unplugged, error = null)
+    }
+  }
+
+  fun onBackground() {
+    task {
+      entries
+        .filter { it.isCommanded && !it.requirements.continuesInBackground && PauseCause.BACKGROUND !in it.causes }
+        .forEach { entry ->
+          val wasRunning = entry.causes.isEmpty()
+          entry.causes.add(PauseCause.BACKGROUND)
+          if (wasRunning) {
+            command(entry) { delegate, use -> delegate.sessionUsePause(use, SessionPauseReason.BACKGROUND) }
+          }
+        }
+    }
+  }
+
+  fun onForeground() {
+    task {
+      val resumable = entries.filter { entry ->
+        entry.causes.remove(PauseCause.BACKGROUND) && entry.causes.isEmpty()
+      }
+      if (resumable.isEmpty()) {
+        return@task
+      }
+      lastFocusError = null
+      reconcile(client = null, activating = true, activation = null)
+      val error = lastFocusError
+      when {
+        error != null -> endEntries(resumable, error)
+        focusDelayed || (suspendCount == 0 && current == LossState.TRANSIENT) ->
+          resumable.forEach { it.causes.add(PauseCause.INTERRUPTION) }
+        else -> resumable.forEach { entry ->
+          command(entry) { delegate, use -> delegate.sessionUseResume(use) }
+        }
+      }
     }
   }
 
@@ -244,7 +313,7 @@ internal class SessionCoordinator(
     task {
       observers.add(id to observer)
     }
-    return ObserverRegistration {
+    return CoordinatorObserverRegistration {
       task {
         observers.removeAll { it.first == id }
       }
@@ -292,6 +361,9 @@ internal class SessionCoordinator(
       if (suspendCount == 0) {
         completePending(Result.success(Unit))
         reconcile(client = null, activating = false, activation = null)
+        if (reported != LossState.TRANSIENT) {
+          resolveInterruptionPauses(resumed = true)
+        }
       }
     } else if (suspendCount == 0 && currentFocus != null && resolvedFocus() != currentFocus) {
       reconcile(client = null, activating = false, activation = null)
@@ -318,8 +390,10 @@ internal class SessionCoordinator(
         "Audio focus for $client was lost before the system granted it. " +
           "Another app or a call took focus. Begin the use again after the other audio stops"
       )
+      val failing = entries.filter { it.isCommanded && it.activation in pendingActivations }
       completePending(Result.failure(error))
       notify { it.mediaSessionDidFail(error, client) }
+      endEntries(failing, error)
     }
   }
 
@@ -333,10 +407,12 @@ internal class SessionCoordinator(
     if (current == reported) {
       return
     }
+    val previous = reported
+    var shouldResume = false
     when (reported) {
       LossState.DUCKED -> notify { it.mediaSessionDucked(false) }
       LossState.TRANSIENT -> {
-        val shouldResume = current != LossState.PERMANENT && entries.isNotEmpty() &&
+        shouldResume = current != LossState.PERMANENT && entries.isNotEmpty() &&
           (currentFocus != null || resolvedFocus() == null)
         notify { it.mediaSessionInterruptionEnded(shouldResume) }
       }
@@ -354,6 +430,98 @@ internal class SessionCoordinator(
         notify { it.mediaSessionInterruptionBegan(InterruptionReason.DEFAULT) }
       }
       else -> {}
+    }
+    sendCommands(previous, reported, shouldResume)
+  }
+
+  private fun sendCommands(previous: LossState, next: LossState, shouldResume: Boolean) {
+    if (previous == LossState.DUCKED) {
+      entries.filter { it.isDucked }.forEach { entry ->
+        entry.isDucked = false
+        command(entry) { delegate, use -> delegate.sessionUseDuck(use, false) }
+      }
+    }
+    if (previous == LossState.TRANSIENT && next != LossState.PERMANENT) {
+      resolveInterruptionPauses(resumed = shouldResume)
+    }
+    when (next) {
+      LossState.DUCKED -> entries.filter { it.isCommanded && !it.isDucked }.forEach { entry ->
+        entry.isDucked = true
+        command(entry) { delegate, use -> delegate.sessionUseDuck(use, true) }
+      }
+      LossState.TRANSIENT -> entries.filter { it.isCommanded && it.causes.isEmpty() }.forEach { entry ->
+        entry.causes.add(PauseCause.INTERRUPTION)
+        command(entry) { delegate, use -> delegate.sessionUsePause(use, SessionPauseReason.INTERRUPTION) }
+      }
+      LossState.PERMANENT -> {
+        val lost = entries.filter { it.isCommanded }
+        lost.forEach { entry ->
+          command(entry) { delegate, use -> delegate.sessionUsePause(use, SessionPauseReason.FOCUS_LOST) }
+        }
+        endEntries(lost, error = null)
+      }
+      LossState.NONE -> {}
+    }
+  }
+
+  private fun resolveInterruptionPauses(resumed: Boolean) {
+    val interrupted = entries.filter { it.isCommanded && PauseCause.INTERRUPTION in it.causes }
+    if (!resumed) {
+      endEntries(interrupted, error = null)
+      return
+    }
+    interrupted.forEach { entry ->
+      entry.causes.remove(PauseCause.INTERRUPTION)
+      if (entry.causes.isEmpty()) {
+        command(entry) { delegate, use -> delegate.sessionUseResume(use) }
+      }
+    }
+  }
+
+  private fun command(entry: Entry, body: (SessionUseDelegate, SessionUse) -> Unit) {
+    val delegateReference = entry.delegate ?: return
+    val token = entry.token
+    try {
+      entry.executor.execute {
+        val delegate = delegateReference.get() ?: return@execute
+        val use = token.get() as? SessionUse ?: return@execute
+        if ((use as? CoordinatorSessionUse)?.isEndedByClient == true) {
+          return@execute
+        }
+        try {
+          body(delegate, use)
+        } catch (e: Exception) {
+          log("Session use delegate failed: $e")
+        }
+      }
+    } catch (e: Exception) {
+      log("Session use executor rejected a command for ${entry.client}: $e")
+    }
+  }
+
+  private fun endEntries(ended: List<Entry>, error: CodedException?) {
+    val removed = ended.filter { entries.remove(it) }
+    if (removed.isEmpty()) {
+      return
+    }
+    removed.forEach { entry ->
+      pendingActivations.remove(entry.activation)
+      entry.activation.completeExceptionally(error ?: SessionUseEndedException(entry.client))
+      (entry.token.get() as? CoordinatorSessionUse)?.markEndedByModule()
+      if (entry.isDucked) {
+        command(entry) { delegate, use -> delegate.sessionUseDuck(use, false) }
+      }
+      if (error != null) {
+        command(entry) { delegate, use -> delegate.sessionUseDidFail(use, error) }
+      }
+      command(entry) { delegate, use -> delegate.sessionUseDidEnd(use) }
+    }
+    if (entries.isEmpty()) {
+      scheduleRelease()
+    } else {
+      task {
+        reconcile(client = null, activating = false, activation = null)
+      }
     }
   }
 
@@ -425,8 +593,11 @@ internal class SessionCoordinator(
             "playback while the app is visible",
           e
         )
+        lastFocusError = error
+        val failing = entries.filter { it.isCommanded && it.activation in pendingActivations }
         completePending(Result.failure(error))
         notify { it.mediaSessionDidFail(error, reportedClient) }
+        endEntries(failing, error)
         return
       }
     }

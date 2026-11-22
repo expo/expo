@@ -102,20 +102,23 @@ class SessionRequirements(
   val capabilities: Set<SessionCapability> = emptySet(),
   val usage: Int? = null,
   val contentType: Int? = null,
-  val pausesWhenDucked: Boolean = false
+  val pausesWhenDucked: Boolean = false,
+  val continuesInBackground: Boolean = false
 ) {
   fun copy(
     mixing: MixingRequirement? = this.mixing,
     capabilities: Set<SessionCapability> = this.capabilities,
     usage: Int? = this.usage,
     contentType: Int? = this.contentType,
-    pausesWhenDucked: Boolean = this.pausesWhenDucked
+    pausesWhenDucked: Boolean = this.pausesWhenDucked,
+    continuesInBackground: Boolean = this.continuesInBackground
   ) = SessionRequirements(
     mixing = mixing,
     capabilities = capabilities,
     usage = usage,
     contentType = contentType,
-    pausesWhenDucked = pausesWhenDucked
+    pausesWhenDucked = pausesWhenDucked,
+    continuesInBackground = continuesInBackground
   )
 
   override fun equals(other: Any?) =
@@ -124,11 +127,14 @@ class SessionRequirements(
       other.capabilities == capabilities &&
       other.usage == usage &&
       other.contentType == contentType &&
-      other.pausesWhenDucked == pausesWhenDucked
+      other.pausesWhenDucked == pausesWhenDucked &&
+      other.continuesInBackground == continuesInBackground
 
-  override fun hashCode() = Objects.hash(mixing, capabilities, usage, contentType, pausesWhenDucked)
+  override fun hashCode() =
+    Objects.hash(mixing, capabilities, usage, contentType, pausesWhenDucked, continuesInBackground)
 
   override fun toString() =
     "SessionRequirements(mixing=$mixing, capabilities=$capabilities, usage=$usage, " +
-      "contentType=$contentType, pausesWhenDucked=$pausesWhenDucked)"
+      "contentType=$contentType, pausesWhenDucked=$pausesWhenDucked, " +
+      "continuesInBackground=$continuesInBackground)"
 }
