@@ -88,6 +88,15 @@ internal enum FontTextStyle: String, Enumerable {
     }
   }
 
+  func scaled(_ value: CGFloat, for dynamicTypeSize: DynamicTypeSize) -> CGFloat {
+#if os(macOS)
+    return value
+#else
+    let traits = UITraitCollection(preferredContentSizeCategory: UIContentSizeCategory(dynamicTypeSize))
+    return UIFontMetrics(forTextStyle: toUIKit()).scaledValue(for: value, compatibleWith: traits)
+#endif
+  }
+
 #if !os(macOS)
   private func toUIKit() -> UIFont.TextStyle {
     switch self {
