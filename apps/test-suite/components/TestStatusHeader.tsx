@@ -66,8 +66,18 @@ export default function TestStatusHeader({
           </TouchableOpacity>
         </View>
       )}
+      {/* The e2e flows read these test IDs. The header stays on screen, so they don't depend on
+      how far the list scrolled. */}
       {done && (
-        <View style={styles.countsRow}>
+        <View testID="test_suite_text_results" style={styles.countsRow}>
+          <Text
+            testID="test_suite_summary_result_text"
+            style={[
+              styles.status,
+              { color: failedCount > 0 ? theme.text.danger : theme.text.success },
+            ]}>
+            {failedCount > 0 ? 'Some tests failed!' : 'All tests passed!'}
+          </Text>
           <Text style={[styles.status, { color: theme.text.success }]}>
             {passedCount}/{totalCount} passed
           </Text>
@@ -96,6 +106,7 @@ const styles = StyleSheet.create({
   },
   countsRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
     gap: 12,
     minHeight: 28,
