@@ -5,27 +5,24 @@ import MobileCoreServices
 import UniformTypeIdentifiers
 
 struct ExpoSMSContext {
-  let promise: Promise
+  let continuation: CheckedContinuation<[String: String], Error>
   let smsDelegate: SMSDelegate
 }
 
+@ExpoModule("ExpoSMS")
 public class ExpoSMSModule: Module, SMSResultHandler {
+  @MainActor
   private var smsContext: ExpoSMSContext?
-  private lazy var utils = appContext?.utilities
 
-  public func definition() -> ModuleDefinition {
-    Name("ExpoSMS")
-
-    AsyncFunction("isAvailableAsync") {
-      return MFMessageComposeViewController.canSendText()
-    }
-
-    AsyncFunction("sendSMSAsync") { (addresses: [String], message: String, options: SMSOptions, promise: Promise) in
-      try sendSMSAsync(addresses: addresses, message: message, options: options, promise: promise)
-    }.runOnQueue(.main)
+  @JS
+  @MainActor
+  func isAvailableAsync() async -> Bool {
+    return MFMessageComposeViewController.canSendText()
   }
 
-  private func sendSMSAsync(addresses: [String], message: String, options: SMSOptions, promise: Promise) throws {
+  @JS
+  @MainActor
+  func sendSMSAsync(addresses: [String], message: String, options: SMSOptions) async throws -> [String: String] {
     if !MFMessageComposeViewController.canSendText() {
       throw SMSUnavailableException()
     }
@@ -35,10 +32,9 @@ public class ExpoSMSModule: Module, SMSResultHandler {
     }
 
     let smsDelegate = SMSDelegate(handler: self)
-    let context = ExpoSMSContext(promise: promise, smsDelegate: smsDelegate)
 
     let messageComposeViewController = MFMessageComposeViewController()
-    messageComposeViewController.messageComposeDelegate = context.smsDelegate
+    messageComposeViewController.messageComposeDelegate = smsDelegate
     messageComposeViewController.recipients = addresses
     messageComposeViewController.body = message
 
@@ -57,41 +53,45 @@ public class ExpoSMSModule: Module, SMSResultHandler {
         throw SMSUriException(attachment.uri)
       }
 
+      let data: Data
       do {
-        let data = try Data(contentsOf: url, options: .mappedIfSafe)
-        let attached = messageComposeViewController.addAttachmentData(
-          data,
-          typeIdentifier: attachment.mimeType,
-          filename: attachment.filename
-        )
-        if !attached {
-          throw SMSFileException(attachment.uri)
-        }
+        data = try Data(contentsOf: url, options: .mappedIfSafe)
       } catch {
-        context.promise.reject(error)
-        return
+        throw UnexpectedException(error)
+      }
+      let attached = messageComposeViewController.addAttachmentData(
+        data,
+        typeIdentifier: attachment.mimeType,
+        filename: attachment.filename
+      )
+      if !attached {
+        throw SMSFileException(attachment.uri)
       }
     }
 
-    smsContext = context
-    utils?.currentViewController()?.present(messageComposeViewController, animated: true, completion: nil)
+    return try await withCheckedThrowingContinuation { continuation in
+      smsContext = ExpoSMSContext(continuation: continuation, smsDelegate: smsDelegate)
+      appContext?.utilities?.currentViewController()?.present(messageComposeViewController, animated: true, completion: nil)
+    }
   }
 
+  @MainActor
   func onSuccess(_ data: [String: String]) {
-    guard let promise = smsContext?.promise else {
+    guard let continuation = smsContext?.continuation else {
       log.error("SMS context has been lost")
       return
     }
     smsContext = nil
-    promise.resolve(data)
+    continuation.resume(returning: data)
   }
 
+  @MainActor
   func onFailure(_ error: String) {
-    guard let promise = smsContext?.promise else {
+    guard let continuation = smsContext?.continuation else {
       log.error("SMS context has been lost")
       return
     }
     smsContext = nil
-    promise.reject(SMSSendingException(error))
+    continuation.resume(throwing: SMSSendingException(error))
   }
 }

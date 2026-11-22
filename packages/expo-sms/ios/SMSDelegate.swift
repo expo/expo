@@ -1,11 +1,14 @@
 import MessageUI
 
 protocol SMSResultHandler {
+  @MainActor
   func onSuccess(_ data: [String: String])
+  @MainActor
   func onFailure(_ error: String)
 }
 
-class SMSDelegate: NSObject, MFMessageComposeViewControllerDelegate {
+@MainActor
+class SMSDelegate: NSObject, @preconcurrency MFMessageComposeViewControllerDelegate {
   private let handler: SMSResultHandler
 
   init(handler: SMSResultHandler) {
