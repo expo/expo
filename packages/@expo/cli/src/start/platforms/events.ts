@@ -37,6 +37,8 @@ declare module '2g' {
     'platform:adb_host_probe': { endpoint: string; result: string };
     // android/gradle.ts
     'platform:gradle_spawn': { command: string };
+    // deviceLogin.ts
+    'platform:device_login_failed': { error: SerializedError };
     // ExpoGoInstaller.ts
     'platform:expo_go_version_check': {
       expectedVersion: string | null;

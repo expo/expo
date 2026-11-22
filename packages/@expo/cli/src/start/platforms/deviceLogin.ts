@@ -1,8 +1,7 @@
 import { fetchAsync, getResponseDataOrThrow } from '../../api/rest/client';
 import { getAccessToken, getSession } from '../../api/user/UserSettings';
 import { env } from '../../utils/env';
-
-const debug = require('debug')('expo:start:platforms:deviceLogin') as typeof console.log;
+import { event } from './events';
 
 // TODO: Use a client ID of its own when the server has one for development builds.
 const CLIENT_ID = 'expo-go';
@@ -57,8 +56,8 @@ export async function withDeviceLoginParamsAsync(url: string): Promise<string> {
       __expo_device_client: CLIENT_ID,
     });
     return `${url}&${params}`;
-  } catch (error: any) {
-    debug('Could not create a device login for the development build: %s', error.message);
+  } catch (error) {
+    event('device_login_failed', { error: event.error(error as Error) });
     return url;
   }
 }
