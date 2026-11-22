@@ -3,33 +3,27 @@ package expo.modules.mediasession
 import expo.modules.kotlin.exception.CodedException
 import io.github.expo.modules.v2.Event
 import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
 import io.github.expo.modules.v2.Module
-import io.github.expo.modules.v2.Record
+import io.github.expo.modules.v2.react.androidContext
 import io.github.expo.modules.v2.react.androidContextOrNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 private const val INTERRUPTION = "interruption"
 private const val ROUTE_CHANGE = "routeChange"
 private const val ACTIVATION_ERROR = "activationError"
 private const val NOW_PLAYING_OWNER_CHANGE = "nowPlayingOwnerChange"
 
-@Record
-internal data class InterruptionEvent(
-  val type: String,
-  val reason: String? = null,
-  val shouldResume: Boolean? = null
-)
-
-@Record
-internal data class RouteChangeEvent(val reason: String)
-
-@Record
-internal data class ActivationErrorEvent(val message: String?, val client: String)
-
-@ExpoModule("ExpoMediaSession")
+@ExpoModule("ExpoMediaSession", classes = [JSNowPlayingOwner::class])
 class MediaSessionModule : Module() {
   private val listeningLock = Any()
   private val listening = mutableSetOf<String>()
   private var registration: ObserverRegistration? = null
+  private val holds = mutableMapOf<String, SessionHold>()
+
+  private val manager: MediaSessionManager
+    get() = MediaSessionManager.get(androidContext)
 
   @Event(name = INTERRUPTION)
   private val onInterruption = event<InterruptionEvent>(
@@ -69,7 +63,9 @@ class MediaSessionModule : Module() {
     }
 
     override fun mediaSessionDidFail(error: CodedException, client: String) {
-      val message = error.cause?.message?.let { "${error.message}\n→ Caused by: $it" } ?: error.message
+      val description = error.message
+        ?: "$client could not activate the media session for an unknown reason. Check Logcat for the error"
+      val message = error.cause?.message?.let { "$description\n→ Caused by: $it" } ?: description
       onActivationError(ActivationErrorEvent(message, client))
     }
 
@@ -78,12 +74,49 @@ class MediaSessionModule : Module() {
     }
   }
 
+  @JS
+  private suspend fun setAudioPolicyAsync(update: AudioPolicyRecord): Unit = withContext(Dispatchers.Default) {
+    manager.setPolicy(update.toUpdate())
+  }
+
+  @JS
+  private fun getAudioPolicy(): AudioPolicyRecord = manager.policy.toRecord()
+
+  @JS
+  fun holdSession(key: String) {
+    val hold = manager.hold(key)
+    synchronized(holds) { holds.put(key, hold) }?.release()
+  }
+
+  @JS
+  fun releaseSession(key: String) {
+    synchronized(holds) { holds.remove(key) }?.release()
+  }
+
+  @JS
+  private fun getNowPlayingOwner(): JSNowPlayingOwner? = manager.nowPlayingOwner as? JSNowPlayingOwner
+
+  @JS
+  private fun createNowPlayingOwner(mediaType: String): JSNowPlayingOwner =
+    JSNowPlayingOwner(
+      manager,
+      if (mediaType == "video") {
+        NowPlayingMediaType.VIDEO
+      } else {
+        NowPlayingMediaType.AUDIO
+      }
+    )
+
   override fun onDestroy() {
     val removed = synchronized(listeningLock) {
       listening.clear()
       registration.also { registration = null }
     }
     removed?.remove()
+    val released = synchronized(holds) {
+      holds.values.toList().also { holds.clear() }
+    }
+    released.forEach { it.release() }
   }
 
   private fun startObserving(event: String) {
