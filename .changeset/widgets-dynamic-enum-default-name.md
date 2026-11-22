@@ -2,4 +2,4 @@
 'expo-widgets': patch
 ---
 
-[iOS] Show the option name instead of the option value for a dynamic enum parameter in the widget edit screen, the default value included.
+[iOS] Show the name of the default option, not its value, for a dynamic enum parameter in the widget edit screen.
