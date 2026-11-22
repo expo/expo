@@ -22,17 +22,17 @@ internal final class CoreModule: Module {
 
   @JS(.cached)
   var cacheDir: String {
-    FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?.path ?? ""
+    return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?.path ?? ""
   }
 
   @JS(.cached)
   var documentsDir: String {
-    FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? ""
+    return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? ""
   }
 
   @JS(.cached)
   var isRunningOnQuest: Bool {
-    false
+    return false
   }
 
   @JS
