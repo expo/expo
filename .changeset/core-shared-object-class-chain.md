@@ -2,4 +2,4 @@
 'expo-modules-core': patch
 ---
 
-[iOS] Make the JavaScript class of a shared object class extend the JavaScript class of its nearest superclass with the `@SharedObject` macro, which the new `_jsClassType` and `_jsSuperclassType` hooks give. A class whose hooks give no superclass extends `SharedObject` or `SharedRef`, as before. The hooks of the macro are now requirements of `AnySharedObject`, which `SharedObject` implements.
+[iOS] Update `expo-modules-macros` to 0.41.0. The JavaScript class of a `@SharedObject` class now extends the JavaScript class of its nearest superclass with the macro, so its instances are `instanceof` that class, and the members of the superclass are on the prototype of the superclass only. The macro gives the superclass to core with the new `_jsClassType` and `_jsSuperclassType` hooks, which are requirements of `AnySharedObject` with the other hooks of the macro.

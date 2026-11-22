@@ -5408,8 +5408,8 @@ importers:
         specifier: workspace:~
         version: link:../expo-modules-jsi
       expo-modules-macros:
-        specifier: 0.40.0
-        version: 0.40.0
+        specifier: 0.41.0
+        version: 0.41.0
       invariant:
         specifier: ^2.2.4
         version: 2.2.4
@@ -8341,25 +8341,25 @@ packages:
   '@expo/metro@58.0.0':
     resolution: {integrity: sha512-PMD640ihB0C3Oqm0AnDVJ/8qF2cKbRUEqGuSOr4tM/OTb9ktxsQqsiSSSeaOEgdCZBq20AxRS0d6WHNhhH2P+g==}
 
-  '@expo/modules-macros-linux-arm64@0.40.0':
-    resolution: {integrity: sha512-eTAkW/ELm7X1tIxgkQH+RZUP65Bho5ANAqIG5jmypjeS7zey8sGAF4DoYdJnBx2S3LGMQIfP5M4K7RqnZtG1Hw==}
+  '@expo/modules-macros-linux-arm64@0.41.0':
+    resolution: {integrity: sha512-WZqBQgQNsImZo4oBfdGf/3/apjWWelXpBuOhwtjPbK8kI5IiAmc27i/+WyAP1EeYKR+yWru0QSRHqihFa1OYXg==}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@expo/modules-macros-linux-x64@0.40.0':
-    resolution: {integrity: sha512-1pLzAfTThP3n+S6IfDKWesHQQaXIlK+afN3iLlTp2GkwoW5TOorEm5ElBqzywwyO6T3uH5pjD2gwQfQULbeQrw==}
+  '@expo/modules-macros-linux-x64@0.41.0':
+    resolution: {integrity: sha512-nA0rvn5NqDJ7OLvc4jxGsCocexYYkz1S3cSaYt8Y3ZMi6vaZ7lPFcS3QSMWwjChnLPC0wwuNX5OKEzzdZazZag==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@expo/modules-macros-win32-arm64@0.40.0':
-    resolution: {integrity: sha512-/wdp5prpL6gSyKLeC2M4PBFeDxxLw7lnm8mfNkH7SMtLEHWOP7fZEHc3jVJipTC84iYCeX+HCXethF0fD23udg==}
+  '@expo/modules-macros-win32-arm64@0.41.0':
+    resolution: {integrity: sha512-ecsyczEpOMcFGkoYPe2H91wvWMrglU9E3rVeKkRufeSxbCS+eZ6OALd0OTvXbQDY/czx+RZUjjmPcp24edi9dw==}
     cpu: [arm64]
     os: [win32]
 
-  '@expo/modules-macros-win32-x64@0.40.0':
-    resolution: {integrity: sha512-ehpBC1pOdqJLAQ+BqJCb9ZPszxXg863gZp9IRmHZtcmHh1IlNkYYLBMiueS/SMsI6YOAhlk+yB2sN6M/e7Hj7A==}
+  '@expo/modules-macros-win32-x64@0.41.0':
+    resolution: {integrity: sha512-F0yjZUVhITpc3iCMqWgIb9z3OHatRwxN2pNxPNpOyGwa44S4LwCKfKTHx6MpM/ysGdzGqe7Ac4vNJKxMJaCqFg==}
     cpu: [x64]
     os: [win32]
 
@@ -12202,8 +12202,8 @@ packages:
     resolution: {integrity: sha512-rBomlm+085wNa+UF9YC3bXGZR6LlYPfOlUXwKBB5R7+dnASk0VjWFETuxyApdtXw9OItmOsAXolUxrAlEYfqSA==}
     hasBin: true
 
-  expo-modules-macros@0.40.0:
-    resolution: {integrity: sha512-XQtOEoC2uV2XWil0NSK0+nFMH4wA5mhIiAgGA4DsBRUBjFFcRHWT3YZrL9zQrY5m97eM2dVGekL7pECDI8C0Ng==}
+  expo-modules-macros@0.41.0:
+    resolution: {integrity: sha512-bI9pT94QsOrkA+IW5eDvABWcSUUYcgiGc10oZLjF8fOiKMAu83DUignVeehq3k1VBQcySgXoxtu4e9xThFg48w==}
 
   expo-server@57.0.3:
     resolution: {integrity: sha512-aK+LdKzauHSGmsOStZtyxdzv0zWssCkxTw3m4QuOhfDSJsZaMRTd9O41d8ixU/QfELTbaJ0oRNcF7JFV/7O9YQ==}
@@ -17539,16 +17539,16 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@expo/modules-macros-linux-arm64@0.40.0':
+  '@expo/modules-macros-linux-arm64@0.41.0':
     optional: true
 
-  '@expo/modules-macros-linux-x64@0.40.0':
+  '@expo/modules-macros-linux-x64@0.41.0':
     optional: true
 
-  '@expo/modules-macros-win32-arm64@0.40.0':
+  '@expo/modules-macros-win32-arm64@0.41.0':
     optional: true
 
-  '@expo/modules-macros-win32-x64@0.40.0':
+  '@expo/modules-macros-win32-x64@0.41.0':
     optional: true
 
   '@expo/multipart-body-parser@1.1.0':
@@ -21652,12 +21652,12 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  expo-modules-macros@0.40.0:
+  expo-modules-macros@0.41.0:
     optionalDependencies:
-      '@expo/modules-macros-linux-arm64': 0.40.0
-      '@expo/modules-macros-linux-x64': 0.40.0
-      '@expo/modules-macros-win32-arm64': 0.40.0
-      '@expo/modules-macros-win32-x64': 0.40.0
+      '@expo/modules-macros-linux-arm64': 0.41.0
+      '@expo/modules-macros-linux-x64': 0.41.0
+      '@expo/modules-macros-win32-arm64': 0.41.0
+      '@expo/modules-macros-win32-x64': 0.41.0
 
   expo-server@57.0.3: {}
 

@@ -164,8 +164,39 @@ private final class MacroSymbolList: SharedObject {
   }
 }
 
+/// The superclass of `MacroChainLeaf`, which no module registers.
+@SharedObject
+private class MacroChainRoot: SharedObject {
+  @JS
+  func rootMethod() -> Int {
+    return 1
+  }
+}
+
+/// A class without the macro between two classes with it.
+private class MacroChainMiddle: MacroChainRoot {}
+
+@SharedObject
+private final class MacroChainLeaf: MacroChainMiddle {
+  private let value: Int
+
+  @JS
+  init(value: Int) {
+    self.value = value
+    super.init()
+  }
+
+  @JS
+  func leafMethod() -> Int {
+    return value
+  }
+}
+
 @ExpoModule(
-  classes: [MacroCounter.self, MacroNamedCounter.self, MacroUnconstructableCounter.self, MacroSymbolList.self])
+  classes: [
+    MacroCounter.self, MacroNamedCounter.self, MacroUnconstructableCounter.self, MacroSymbolList.self,
+    MacroChainLeaf.self,
+  ])
 private final class MacroSharedObjectModule: Module {}
 
 @Suite("Macro shared object")
@@ -193,6 +224,20 @@ private struct MacroSharedObjectTests {
   func `class is exposed under the module by its name`() throws {
     register(MacroSharedObjectModule(appContext: appContext))
     #expect(try runtime.eval("typeof expo.modules.MacroSharedObjectModule.MacroCounter").asString() == "function")
+  }
+
+  @Test
+  func `the class extends the class of its nearest superclass with the macro`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    try runtime.eval("leaf = new expo.modules.MacroSharedObjectModule.MacroChainLeaf(2)")
+
+    #expect(try runtime.eval("leaf.rootMethod() + leaf.leafMethod()").asInt() == 3)
+    #expect(try runtime.eval(
+      "Object.getPrototypeOf(expo.modules.MacroSharedObjectModule.MacroChainLeaf).name"
+    ).asString() == "MacroChainRoot")
+    #expect(try !runtime.eval(
+      "Object.prototype.hasOwnProperty.call(expo.modules.MacroSharedObjectModule.MacroChainLeaf.prototype, 'rootMethod')"
+    ).asBool())
   }
 
   @Test
