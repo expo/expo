@@ -6,16 +6,58 @@ plugins {
 group = 'host.exp.exponent'
 version = '58.0.11'
 
+def reactNativeArchitectures() {
+  def value = project.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 android {
+  if (rootProject.hasProperty("ndkPath")) {
+    ndkPath rootProject.ext.ndkPath
+  }
+  if (rootProject.hasProperty("ndkVersion")) {
+    ndkVersion rootProject.ext.ndkVersion
+  }
+
   namespace "expo.modules.splashscreen"
   defaultConfig {
     versionCode 17
     versionName '58.0.11'
     consumerProguardFiles 'consumer-rules.pro'
+
+    externalNativeBuild {
+      cmake {
+        abiFilters(*reactNativeArchitectures())
+        arguments "-DANDROID_STL=c++_shared",
+          "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
+          "-DREACT_NATIVE_DIR=${expoModule.reactNativeDir}"
+      }
+    }
+  }
+
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
+    }
+  }
+
+  buildFeatures {
+    prefab true
+  }
+
+  packagingOptions {
+    // Gradle adds the CMake target dependencies to the package; the app ships its own copies.
+    excludes += [
+      "**/libc++_shared.so",
+      "**/libfbjni.so",
+      "**/libjsi.so",
+      "**/libreactnative.so",
+    ]
   }
 }
 
 dependencies {
   implementation "androidx.core:core-splashscreen:1.2.0"
   implementation "com.facebook.react:react-android"
+  compileOnly "com.facebook.fbjni:fbjni:0.5.1"
 }

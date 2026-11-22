@@ -9,10 +9,18 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Process
 import android.os.SystemClock
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import com.facebook.react.ReactApplication
+import com.facebook.react.fabric.FabricUIManager
+import com.facebook.react.shell.MainReactPackage
+import com.facebook.react.uimanager.DisplayMetricsHolder
+import com.facebook.react.uimanager.ThemedReactContext
+import com.facebook.react.uimanager.UIManagerHelper
+import com.facebook.react.uimanager.ViewManagerRegistry
+import com.facebook.react.uimanager.common.UIManagerType
 import org.json.JSONObject
 import java.io.File
 import java.lang.ref.WeakReference
@@ -21,14 +29,15 @@ import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 /**
- * Draws the app's first screen before React Native starts.
+ * Renders the app's first screen through Fabric before React Native starts.
  *
  * When the app hides the splash screen, the screen that replaces it is captured (the view hierarchy
- * with the frames Android resolved, and the text runs at the positions their layouts resolved) and
- * stored in the cache directory. On the next launch, the snapshot is read and parsed on a background
- * thread from `Application.onCreate`, and drawn with plain views in an overlay on the activity's decor
- * view from `SplashScreenManager.registerOnActivity`. No React instance, JS runtime or TurboModule runs
- * for this. The overlay fades out when the app hides the splash screen.
+ * with the frames Android resolved, and the props of its React Native views from the app's shadow
+ * tree) and stored in the cache directory. On the next launch, the snapshot is read, built and laid
+ * out with Fabric on a background thread from `Application.onCreate`, and mounted into an overlay on
+ * the activity's decor view from `SplashScreenManager.registerOnActivity`. Only the renderer and the
+ * mounting layer are used, through a standalone `FabricUIManager`: no React instance, no JS runtime,
+ * no TurboModules. The overlay fades out when the app hides the splash screen.
  *
  * `<meta-data android:name="expo.modules.splashscreen.PRERENDER_SNAPSHOT" android:value="true"/>` in
  * AndroidManifest.xml turns it on.
@@ -41,23 +50,34 @@ object SplashScreenPrerender {
   private const val DISABLED_EXTRA = "ExpoSplashScreenPrerenderDisabled"
 
   // Increment when the snapshot format changes. A rebuild with the same version code keeps old snapshots.
-  private const val SNAPSHOT_FORMAT = 1
+  private const val SNAPSHOT_FORMAT = 2
 
   // How long the first activity waits for the background preparation before it shows the splash only.
   private const val PREPARATION_TIMEOUT_MS = 50L
+
+  // Root tags end in 1; this one is far above anything React allocates.
+  private const val SURFACE_ID = 900001
 
   private val mainHandler = Handler(Looper.getMainLooper())
 
   private var prepared: CountDownLatch? = null
 
   // Written by the preparation thread, read on the main thread only after `prepared` is done.
-  private var preparedSnapshot: JSONObject? = null
+  private var preparedEnvironment: JSONObject? = null
+  private var preparedRenderer: Renderer? = null
   private var appBuild: String = ""
+
+  /** The standalone Fabric renderer of a prepared snapshot, and the native shadow tree (`handle`). */
+  private class Renderer(val context: SplashScreenPrerenderContext, val fabricUIManager: FabricUIManager, var handle: Long)
+
+  private var renderer: Renderer? = null
 
   @Volatile
   private var enabled = false
   private var disabledForLaunch = false
   private var showAttempted = false
+  private var pendingActivity: WeakReference<Activity>? = null
+  private var hideRequested = false
   private var overlay: ViewGroup? = null
   private var isFadingOut = false
   private var activity: WeakReference<Activity>? = null
@@ -90,18 +110,56 @@ object SplashScreenPrerender {
         enabled = isOn
         if (isOn) {
           log("prepare")
-          preparedSnapshot = loadSnapshot(appContext)
-          if (preparedSnapshot != null) {
-            log("prepared (background)")
+          val snapshot = loadSnapshot(appContext)
+          if (snapshot != null) {
+            preparedRenderer = prepareRenderer(appContext, snapshot)
+            if (preparedRenderer != null) {
+              preparedEnvironment = snapshot.getJSONObject("environment")
+              log("prepared (background)")
+            }
           }
         }
       } catch (e: Throwable) {
         Log.w(TAG, "Failed to prepare the prerender", e)
-        preparedSnapshot = null
+        preparedRenderer = null
       } finally {
         latch.countDown()
+        // The first activity did not wait this long; the snapshot can still replace the splash screen.
+        mainHandler.post { showWhenPrepared() }
       }
     }
+  }
+
+  /**
+   * Background thread. Builds the snapshot into a shadow tree and lays it out with Fabric. Text is
+   * measured through a `FabricUIManager` with no binding, which mounts the tree later as well.
+   */
+  private fun prepareRenderer(context: Context, snapshot: JSONObject): Renderer? {
+    val environment = snapshot.getJSONObject("environment")
+    val template = SplashScreenSnapshot.removeUnavailableFonts(context, snapshot.getJSONObject("template")) ?: return null
+    val density = environment.optInt("density") / DisplayMetrics.DENSITY_DEFAULT.toFloat()
+    // Text measurement and `BackgroundStyleApplicator` convert sizes with the display metrics React
+    // Native sets up when its instance starts, which is after this runs.
+    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context)
+    val reactContext = SplashScreenPrerenderContext(context)
+    val reactPackage = MainReactPackage()
+    val viewManagers = listOf("RCTView", "RCTText").mapNotNull { reactPackage.createViewManager(reactContext, it) }
+    val registry = ViewManagerRegistry(viewManagers)
+    val fabricUIManager = FabricUIManager(reactContext, registry) { }
+    reactContext.uiManager = fabricUIManager
+    val handle = SplashScreenPrerenderNative.prepare(
+      fabricUIManager,
+      SURFACE_ID,
+      template.toString(),
+      environment.optInt("width") / density,
+      environment.optInt("height") / density,
+      density,
+      environment.optInt("layoutDirection") == View.LAYOUT_DIRECTION_RTL
+    )
+    if (handle == 0L) {
+      return null
+    }
+    return Renderer(reactContext, fabricUIManager, handle)
   }
 
   /**
@@ -117,36 +175,72 @@ object SplashScreenPrerender {
     prepare(activity)
     if (activity.intent?.getBooleanExtra(DISABLED_EXTRA, false) == true) {
       disabledForLaunch = true
+      hideRequested = true
       return
     }
     val latch = prepared ?: return
     if (!latch.await(PREPARATION_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
-      log("not prepared in time")
+      log("not prepared in time, shown when prepared")
+      pendingActivity = WeakReference(activity)
       return
     }
-    val snapshot = preparedSnapshot ?: return
-    preparedSnapshot = null
-    val decorView = activity.window?.decorView as? ViewGroup ?: return
+    show(activity)
+  }
 
-    val environment = snapshot.getJSONObject("environment")
+  /** Main thread. Shows a snapshot that was prepared after the first activity stopped waiting for it. */
+  private fun showWhenPrepared() {
+    if (hideRequested) {
+      releasePreparedRenderer()
+      return
+    }
+    val activity = pendingActivity?.get() ?: return
+    pendingActivity = null
+    if (hideRequested || activity.isFinishing) {
+      releasePreparedRenderer()
+      return
+    }
+    show(activity)
+  }
+
+  private fun releasePreparedRenderer() {
+    renderer = preparedRenderer ?: return
+    preparedRenderer = null
+    preparedEnvironment = null
+    releaseRenderer()
+  }
+
+  private fun show(activity: Activity) {
+    val renderer = preparedRenderer ?: return
+    val environment = preparedEnvironment ?: return
+    preparedRenderer = null
+    preparedEnvironment = null
+    this.renderer = renderer
+    val decorView = activity.window?.decorView as? ViewGroup
+    if (decorView == null) {
+      releaseRenderer()
+      return
+    }
+
     val expected = environmentOf(activity, environment.optInt("width"), environment.optInt("height"))
     if (!sameEnvironment(environment, expected)) {
       log("snapshot does not match this configuration: $environment is not $expected")
+      releaseRenderer()
       return
     }
 
     val start = SystemClock.uptimeMillis()
-    val content = try {
-      SplashScreenSnapshotView.build(activity, snapshot.getJSONObject("template"))
+    val container = SplashScreenPrerenderRootView(activity)
+    decorView.addView(container, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+    val mounted = try {
+      startSurface(renderer, activity, container) && SplashScreenPrerenderNative.mount(renderer.handle)
     } catch (e: Throwable) {
-      Log.w(TAG, "Failed to build the snapshot", e)
-      return
+      Log.w(TAG, "Failed to mount the snapshot", e)
+      false
     }
-    val container = FrameLayout(activity).apply {
-      importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
-      isClickable = false
-      isFocusable = false
-      addView(content)
+    if (!mounted) {
+      decorView.removeView(container)
+      releaseRenderer()
+      return
     }
     // The window size is known once the decor view is laid out, before its first frame is drawn.
     container.addOnLayoutChangeListener { view, left, top, right, bottom, _, _, _, _ ->
@@ -157,16 +251,54 @@ object SplashScreenPrerender {
         // Hidden in this frame, so the splash screen stays; removing a view during layout is deferred.
         overlay = null
         view.alpha = 0f
-        mainHandler.post { (view.parent as? ViewGroup)?.removeView(view) }
+        mainHandler.post {
+          (view.parent as? ViewGroup)?.removeView(view)
+          releaseRenderer()
+        }
       }
     }
-    decorView.addView(container, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
     overlay = container
-    log("shown (built in ${SystemClock.uptimeMillis() - start} ms)")
+    log("shown (mounted in ${SystemClock.uptimeMillis() - start} ms)")
+  }
+
+  /**
+   * `FabricUIManager.startSurface` needs a binding (a React instance). The prerender starts the
+   * surface in its mounting manager directly, which is all the mounting of a synchronous batch needs.
+   */
+  private fun startSurface(renderer: Renderer, activity: Activity, rootView: View): Boolean {
+    val mountingManager = mountingManagerOf(renderer.fabricUIManager) ?: return false
+    val themedContext = ThemedReactContext(renderer.context, activity, "", SURFACE_ID)
+    mountingManager.javaClass
+      .getMethod("startSurface", Int::class.javaPrimitiveType, ThemedReactContext::class.java, View::class.java)
+      .invoke(mountingManager, SURFACE_ID, themedContext, rootView)
+    return true
+  }
+
+  private fun mountingManagerOf(fabricUIManager: FabricUIManager): Any? = try {
+    FabricUIManager::class.java.getDeclaredField("mMountingManager").apply { isAccessible = true }.get(fabricUIManager)
+  } catch (e: ReflectiveOperationException) {
+    Log.w(TAG, "React Native's mounting manager is not available", e)
+    null
+  }
+
+  /** Main thread. Stops the surface and releases the shadow tree and the standalone `FabricUIManager`. */
+  private fun releaseRenderer() {
+    val renderer = renderer ?: return
+    this.renderer = null
+    try {
+      mountingManagerOf(renderer.fabricUIManager)?.let { mountingManager ->
+        mountingManager.javaClass.getMethod("stopSurface", Int::class.javaPrimitiveType).invoke(mountingManager, SURFACE_ID)
+      }
+    } catch (e: ReflectiveOperationException) {
+      Log.w(TAG, "Failed to stop the prerender surface", e)
+    }
+    SplashScreenPrerenderNative.release(renderer.handle, SURFACE_ID)
+    renderer.handle = 0
   }
 
   /** Main thread. Fades the overlay out over `durationMs` (0 removes it immediately), then releases it. */
   fun dismiss(durationMs: Long = 0) {
+    hideRequested = true
     val container = overlay ?: return
     if (durationMs <= 0) {
       removeOverlay(container)
@@ -190,6 +322,7 @@ object SplashScreenPrerender {
       log("dismissed")
     }
     (container.parent as? ViewGroup)?.removeView(container)
+    releaseRenderer()
   }
 
   /**
@@ -228,7 +361,13 @@ object SplashScreenPrerender {
     marker.writeText(appBuild)
 
     val start = SystemClock.uptimeMillis()
-    val serializer = SplashScreenSnapshot(decorView, exclude = overlay, debug = isLoggable)
+    val nodes = appShadowTreeProps(activity)
+    if (nodes == null) {
+      marker.delete()
+      log("snapshot: the app's shadow tree is not available")
+      return
+    }
+    val serializer = SplashScreenSnapshot(decorView, exclude = overlay, nodes = nodes, debug = isLoggable)
     val template = serializer.serialize()
     if (template == null || (template.optJSONArray("children")?.length() ?: 0) == 0) {
       marker.delete()
@@ -250,6 +389,14 @@ object SplashScreenPrerender {
       }.isSuccess
       log("snapshot ${if (written) "saved" else "not saved"} (${data.length} bytes)")
     }
+  }
+
+  /** The props of the app's React Native views, by tag, from the shadow trees of its `FabricUIManager`. */
+  private fun appShadowTreeProps(activity: Activity): JSONObject? {
+    val reactContext = (activity.application as? ReactApplication)?.reactHost?.currentReactContext ?: return null
+    val fabricUIManager = UIManagerHelper.getUIManager(reactContext, UIManagerType.FABRIC) as? FabricUIManager ?: return null
+    val json = SplashScreenPrerenderNative.captureProps(fabricUIManager) ?: return null
+    return runCatching { JSONObject(json) }.getOrNull()
   }
 
   // region Snapshot file
