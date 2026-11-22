@@ -1,15 +1,9 @@
 import ExpoModulesCore
 
-struct MailClient: Record {
-  init() {}
-
-  @Field var label: String
-  @Field var url: String
-
-  init(label: String, url: String) {
-    self.label = label
-    self.url = url
-  }
+@Record
+struct MailClient {
+  var label: String
+  var url: String
 }
 
 /**
