@@ -32,17 +32,18 @@ public final class TextViewProps: UIBaseViewProps {
 
 public struct TextView: ExpoSwiftUI.View {
   @ObservedObject public var props: TextViewProps
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
   public init(props: TextViewProps) {
     self.props = props
   }
 
   public var body: some View {
-    buildText(applyModifiers: false)
+    buildText(applyModifiers: false, dynamicTypeSize: dynamicTypeSize)
       .applyModifiers(props.modifiers, appContext: props.appContext, globalEventDispatcher: props.globalEventDispatcher)
   }
 
-  internal func buildText(applyModifiers: Bool = true) -> Text {
+  internal func buildText(applyModifiers: Bool = true, dynamicTypeSize: DynamicTypeSize) -> Text {
     let text: Text
 
     if #available(iOS 16.0, tvOS 16.0, *),
@@ -62,12 +63,12 @@ public struct TextView: ExpoSwiftUI.View {
     }
 
     var result = applyModifiers
-    ? text.applyTextModifiers(props.modifiers, appContext: props.appContext)
+    ? text.applyTextModifiers(props.modifiers, appContext: props.appContext, dynamicTypeSize: dynamicTypeSize)
     : text
 
     if let children = props.children {
       result = children
-        .compactMap { ($0.childView as? TextView)?.buildText(applyModifiers: true) }
+        .compactMap { ($0.childView as? TextView)?.buildText(applyModifiers: true, dynamicTypeSize: dynamicTypeSize) }
         .reduce(result, +)
     }
     return result
