@@ -2,7 +2,8 @@ import AVFoundation
 
 protocol SessionBackend: AnyObject, Sendable {
   var liveConfiguration: SessionConfiguration { get }
-  func configure(_ session: ResolvedSession) throws
+  @discardableResult
+  func configure(_ session: ResolvedSession) throws -> Bool
   func activate() throws
   func deactivate(notifyingOthers: Bool) throws
 }
@@ -17,21 +18,26 @@ final class AVAudioSessionBackend: SessionBackend {
     )
   }
 
-  func configure(_ session: ResolvedSession) throws {
+  func configure(_ session: ResolvedSession) throws -> Bool {
     let audioSession = AVAudioSession.sharedInstance()
     let configuration = session.configuration
+    var wrote = false
     if audioSession.category != configuration.category
       || audioSession.mode != configuration.mode
       || audioSession.categoryOptions != Self.reportedOptions(for: configuration.options)
     {
+      wrote = true
       try audioSession.setCategory(configuration.category, mode: configuration.mode, options: configuration.options)
     }
     if let rate = session.preferredSampleRate, audioSession.preferredSampleRate != rate {
+      wrote = true
       try audioSession.setPreferredSampleRate(rate)
     }
     if let duration = session.preferredIOBufferDuration, audioSession.preferredIOBufferDuration != duration {
+      wrote = true
       try audioSession.setPreferredIOBufferDuration(duration)
     }
+    return wrote
   }
 
   func activate() throws {
