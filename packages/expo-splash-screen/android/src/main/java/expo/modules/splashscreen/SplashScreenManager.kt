@@ -42,10 +42,11 @@ object SplashScreenManager {
     })
 
     // On Android 12 and 13, setting an exit animation listener makes the platform hand the
-    // splash view over to the app on the first draw. When the starting window is already gone,
-    // ActivityThread.syncTransferSplashscreenViewTransaction hides a null leash and crashes in
-    // SurfaceControl.checkNotReleased (https://issuetracker.google.com/issues/242118185).
-    // Without a listener, the platform removes the splash itself, without the fade.
+    // splash view over to the app. When the starting window is already gone, the platform
+    // operates on an already released surface and crashes in SurfaceControl.checkNotReleased
+    // (https://issuetracker.google.com/issues/242118185).
+    // Without a listener, the platform still plays its own exit animation; only the configured
+    // fade duration is not applied.
     if (Build.VERSION.SDK_INT in Build.VERSION_CODES.S..Build.VERSION_CODES.TIRAMISU) {
       return
     }
