@@ -17,11 +17,14 @@ import nodeCrawl from '../index';
 // TODO(@kitten): Fork the test for posix v windows
 jest.mock('path', () => jest.requireActual<typeof import('path')>('path').posix);
 
-// memfs, with `lstat` spied on to count stats
+// memfs, with `lstat` spied on to count stats, and `readdir` to order them
 jest.mock('fs', () => {
   const { fs } = jest.requireActual<typeof import('memfs')>('memfs');
-  return { ...fs, lstat: jest.fn(fs.lstat) };
+  return { ...fs, lstat: jest.fn(fs.lstat), readdir: jest.fn(fs.readdir) };
 });
+
+const mockLstat = fs.lstat as unknown as jest.Mock;
+const mockReaddir = fs.readdir as unknown as jest.Mock;
 
 const rootDir = '/project';
 const processFile = () => null;
@@ -330,6 +333,84 @@ describe('node crawler', () => {
     expect(removedFiles).toEqual(new Set());
   });
 
+  test("stats the files that were stat'd before during the walk, once each", async () => {
+    vol.fromJSON({
+      '/project/fruits/apple.js': 'a',
+      '/project/fruits/tropical/mango.js': 'm',
+    });
+    const appleStat = vol.statSync('/project/fruits/apple.js');
+    const mangoStat = vol.statSync('/project/fruits/tropical/mango.js');
+
+    const previousFiles: FileData = new Map([
+      // Unmodified
+      [
+        'fruits/apple.js',
+        [appleStat.mtime.getTime(), appleStat.size, 1, null, 0, null] as FileMetadata,
+      ],
+      // Modified
+      [
+        'fruits/tropical/mango.js',
+        [mangoStat.mtime.getTime() - 1000, 0, 1, null, 0, null] as FileMetadata,
+      ],
+    ]);
+
+    const { changedFiles, removedFiles } = await crawl({
+      previousState: {
+        fileSystem: makeTreeFS(previousFiles),
+        clocks: new Map(),
+      },
+    });
+
+    expect(changedFiles).toEqual(
+      new Map([
+        [
+          'fruits/tropical/mango.js',
+          [mangoStat.mtime.getTime(), mangoStat.size, 0, null, 0, null] as FileMetadata,
+        ],
+      ])
+    );
+    expect(removedFiles).toEqual(new Set());
+    // Once each, during the walk: the first stat is issued once the first
+    // directory has been read, before the walk reads the next.
+    expect(mockLstat).toHaveBeenCalledTimes(2);
+    const tropicalRead = mockReaddir.mock.calls.findIndex(
+      ([directory]) => directory === '/project/fruits/tropical'
+    );
+    expect(Math.min(...mockLstat.mock.invocationCallOrder)).toBeLessThan(
+      mockReaddir.mock.invocationCallOrder[tropicalRead]!
+    );
+  });
+
+  test('reports a file whose stat fails as changed, without stats', async () => {
+    vol.fromJSON({
+      '/project/fruits/apple.js': 'a',
+    });
+    const appleStat = vol.statSync('/project/fruits/apple.js');
+
+    const previousFiles: FileData = new Map([
+      [
+        'fruits/apple.js',
+        [appleStat.mtime.getTime(), appleStat.size, 1, null, 0, null] as FileMetadata,
+      ],
+    ]);
+    mockLstat.mockImplementationOnce((_path: string, callback: (err: Error) => void) =>
+      callback(Object.assign(new Error('EACCES'), { code: 'EACCES' }))
+    );
+
+    const { changedFiles } = await crawl({
+      previousState: {
+        fileSystem: makeTreeFS(previousFiles),
+        clocks: new Map(),
+      },
+    });
+
+    // Processing stats it before deriving anything from it (see `FileMetadata`).
+    expect(changedFiles).toEqual(
+      new Map([['fruits/apple.js', [null, null, 0, null, 0, null] as FileMetadata]])
+    );
+    expect(mockLstat).toHaveBeenCalledTimes(1);
+  });
+
   test('does not compare a file with one reached through a previous symlink', async () => {
     vol.fromJSON({
       '/project/fruits/directory/strawberry.js': 'a',
@@ -361,35 +442,41 @@ describe('node crawler', () => {
     expect(removedFiles).toEqual(new Set(['fruits/directory', 'fruits/other/strawberry.js']));
   });
 
-  test("a scoped recrawl stats files that weren't stat'd before", async () => {
-    vol.fromJSON({
-      '/project/fruits/directory/strawberry.js': 'a',
-      '/project/fruits/tomato.js': 'b',
-    });
+  test.each([
+    ["weren't", [null, null, 0, null, 0, null]],
+    ['were', [1, 1, 1, null, 0, null]],
+  ] as [string, FileMetadata][])(
+    "a scoped recrawl stats files that %s stat'd before, once each",
+    async (_, previousMetadata) => {
+      vol.fromJSON({
+        '/project/fruits/directory/strawberry.js': 'a',
+        '/project/fruits/tomato.js': 'b',
+      });
 
-    const previousFiles: FileData = new Map([
-      ['fruits/directory/strawberry.js', [null, null, 0, null, 0, null] as FileMetadata],
-      ['fruits/tomato.js', [null, null, 0, null, 0, null] as FileMetadata],
-    ]);
+      const previousFiles: FileData = new Map([
+        ['fruits/directory/strawberry.js', [...previousMetadata] as FileMetadata],
+        ['fruits/tomato.js', [...previousMetadata] as FileMetadata],
+      ]);
 
-    const { changedFiles } = await crawl({
-      previousState: {
-        fileSystem: makeTreeFS(previousFiles),
-        clocks: new Map(),
-      },
-      subpath: 'fruits',
-    });
+      const { changedFiles } = await crawl({
+        previousState: {
+          fileSystem: makeTreeFS(previousFiles),
+          clocks: new Map(),
+        },
+        subpath: 'fruits',
+      });
 
-    // Their contents may have been read outside the file map, so they're
-    // reported as changed.
-    expect(changedFiles).toEqual(
-      new Map([
-        ['fruits/directory/strawberry.js', [expect.any(Number), 1, 0, null, 0, null]],
-        ['fruits/tomato.js', [expect.any(Number), 1, 0, null, 0, null]],
-      ])
-    );
-    expect(fs.lstat).toHaveBeenCalledTimes(2);
-  });
+      // Their contents may have been read outside the file map, so they're
+      // reported as changed.
+      expect(changedFiles).toEqual(
+        new Map([
+          ['fruits/directory/strawberry.js', [expect.any(Number), 1, 0, null, 0, null]],
+          ['fruits/tomato.js', [expect.any(Number), 1, 0, null, 0, null]],
+        ])
+      );
+      expect(fs.lstat).toHaveBeenCalledTimes(2);
+    }
+  );
 
   test('stats symlinks on a cold start', async () => {
     vol.fromJSON({

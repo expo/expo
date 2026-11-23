@@ -14,7 +14,7 @@ import H from '../../constants';
 import { RootPathUtils } from '../../lib/RootPathUtils';
 import type { CrawlerOptions, CrawlResult, FileData } from '../../types';
 
-function find(options: CrawlerOptions): Promise<FileData> {
+function find(options: CrawlerOptions, onDirectoryRead?: () => void): Promise<FileData> {
   const { extensions, ignore, includeSymlinks, rootDir, roots, subpath } = options;
   // A recrawl while watching diffs against the live file system, whose
   // consumers (e.g. a package.json cache) may hold contents read without a
@@ -36,6 +36,7 @@ function find(options: CrawlerOptions): Promise<FileData> {
       activeCalls++;
       fs.readdir(directory, { withFileTypes: true }, (err, entries) => {
         activeCalls--;
+        onDirectoryRead?.();
         if (err) {
           // NOTE(@kitten): This isn't necessarily a problem and we can ignore this
           /*
@@ -86,8 +87,8 @@ function find(options: CrawlerOptions): Promise<FileData> {
 
             if (!isSymbolicLink && !statRegularFiles) {
               // Not stat'd (see `FileMetadata`). Those that were stat'd before
-              // are stat'd once the difference is known, by
-              // `dropUnmodifiedFiles`.
+              // are stat'd alongside the walk, by `EarlyStats`, and checked
+              // once the difference is known, by `dropUnmodifiedFiles`.
               result.set(childNormal, [null, null, 0, null, 0, null]);
               continue;
             }
@@ -131,7 +132,16 @@ export default async function nodeCrawl(options: CrawlerOptions): Promise<CrawlR
 
   perfLogger?.point('nodeCrawl_start');
 
-  const fileData = await find(options);
+  // Files that were stat'd before are likely to need a stat once the
+  // difference is known (see `dropUnmodifiedFiles`), so stat them during the
+  // walk. A file changed after its stat is reported as unmodified either way,
+  // but an early stat opens that window up to the walk's duration sooner. A
+  // recrawl (`subpath` set) stats every file as it walks.
+  const earlyStats =
+    subpath == null
+      ? new EarlyStats(options.rootDir, previousState.fileSystem.getStatPaths())
+      : null;
+  const fileData = await find(options, earlyStats?.onDirectoryRead);
 
   abortSignal?.throwIfAborted();
 
@@ -139,22 +149,57 @@ export default async function nodeCrawl(options: CrawlerOptions): Promise<CrawlR
     fileData,
     { subpath }
   );
-  await dropUnmodifiedFiles(options.rootDir, changedFiles, filesToStat);
+  await dropUnmodifiedFiles(options.rootDir, changedFiles, filesToStat, earlyStats?.results);
 
   perfLogger?.point('nodeCrawl_end');
   return { changedFiles, removedFiles };
 }
 
+// The result of an `lstat`, or null if it failed.
+type StatResult = Readonly<{ mtime: number; size: number }> | null;
+
+function lstat(filePath: string): Promise<StatResult> {
+  return new Promise((resolve) => {
+    fs.lstat(filePath, (err, stat) => {
+      resolve(!err && stat ? { mtime: stat.mtime.getTime(), size: stat.size } : null);
+    });
+  });
+}
+
+/**
+ * Stats files that were stat'd before, one for each directory the walk reads,
+ * so that they keep pace with the walk and share libuv's thread pool with its
+ * directory reads. Reads the previous file map only as fast as it issues them.
+ */
+class EarlyStats {
+  readonly results: Map<string, Promise<StatResult>> = new Map();
+  #paths: Iterator<string>;
+  #pathUtils: RootPathUtils;
+
+  constructor(rootDir: string, paths: Iterator<string>) {
+    this.#paths = paths;
+    this.#pathUtils = new RootPathUtils(rootDir);
+  }
+
+  onDirectoryRead = (): void => {
+    const next = this.#paths.next();
+    if (next.done !== true) {
+      this.results.set(next.value, lstat(this.#pathUtils.normalToAbsolute(next.value)));
+    }
+  };
+}
+
 /**
  * Changed files crawled without a stat that were stat'd before may have data
- * derived from what they held then. Stat those, drop any whose mtime matches,
- * and record the stats of the rest.
+ * derived from what they held then. Stat those (from `earlyStats` where it has
+ * them), drop any whose mtime matches, and record the stats of the rest.
  */
 async function dropUnmodifiedFiles(
   rootDir: string,
   changedFiles: FileData,
   // Each with the mtime it had before
-  filesToStat: ReadonlyMap<string, number>
+  filesToStat: ReadonlyMap<string, number>,
+  earlyStats?: ReadonlyMap<string, Promise<StatResult>>
 ): Promise<void> {
   // None if the previous file map is empty, as on a cold start
   if (filesToStat.size === 0) {
@@ -167,22 +212,19 @@ async function dropUnmodifiedFiles(
     if (modifiedTime == null) {
       continue;
     }
+    const stat = earlyStats?.get(normalPath) ?? lstat(pathUtils.normalToAbsolute(normalPath));
     stats.push(
-      new Promise((resolve) => {
-        fs.lstat(pathUtils.normalToAbsolute(normalPath), (err, stat) => {
-          if (!err && stat) {
-            const mtime = stat.mtime.getTime();
-            if (mtime === modifiedTime) {
-              changedFiles.delete(normalPath);
-            } else {
-              metadata[H.MTIME] = mtime;
-              metadata[H.SIZE] = stat.size;
-            }
-          }
-          // Otherwise deleted since it was crawled, which processing will
-          // discover.
-          resolve();
-        });
+      stat.then((result) => {
+        if (result == null) {
+          // Missing or unreadable when stat'd, which processing will discover.
+          return;
+        }
+        if (result.mtime === modifiedTime) {
+          changedFiles.delete(normalPath);
+        } else {
+          metadata[H.MTIME] = result.mtime;
+          metadata[H.SIZE] = result.size;
+        }
       })
     );
   }

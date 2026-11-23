@@ -313,6 +313,13 @@ export interface FileSystem {
     filesToStat: Map<string, number>;
   };
 
+  /**
+   * The regular files that have been stat'd (see `FileMetadata`), as normal
+   * paths. These include every file `getDifference` can return in
+   * filesToStat. Lazy, so that a crawler can stat them as it goes.
+   */
+  getStatPaths(): Iterator<string>;
+
   // A copy of the file system's data, which later changes don't affect.
   getSerializableSnapshot(): CacheData['fileSystemData'];
   getSha1(file: Path): string | undefined | null;

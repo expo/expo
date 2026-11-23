@@ -621,6 +621,33 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
     });
   });
 
+  describe('getStatPaths', () => {
+    test("yields the regular files that have been stat'd", () => {
+      tfs.addOrModify(p('/project/not-stat-d.js'), [null, null, 0, null, 0, null]);
+      expect([...tfs.getStatPaths()].sort()).toEqual(
+        [
+          p('../outside/external.js'),
+          p('bar.js'),
+          p('foo/another.js'),
+          p('node_modules/pkg/a.js'),
+          p('node_modules/pkg/package.json'),
+        ].sort()
+      );
+    });
+
+    test('includes every file getDifference can return in filesToStat', () => {
+      // Every regular file crawled again without a stat.
+      const crawled: FileData = new Map(
+        tfs
+          .getAllFiles()
+          .map((filePath) => [canonical(filePath), [null, null, 0, null, 0, null] as FileMetadata])
+      );
+      const { filesToStat } = tfs.getDifference(crawled);
+      expect(filesToStat.size).toBeGreaterThan(0);
+      expect(new Set(tfs.getStatPaths())).toEqual(new Set(filesToStat.keys()));
+    });
+  });
+
   describe('pathsOutsideRoots', () => {
     const build = (rootDir: string, files: readonly string[]) =>
       new TreeFS({
