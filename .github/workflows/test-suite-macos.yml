@@ -57,6 +57,7 @@ on:
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths: *trigger_paths
 
 concurrency:
@@ -65,10 +66,12 @@ concurrency:
 
 jobs:
   macos-build:
+    # Draft pull requests skip this job to shorten the shared macOS runner queue. Marking the pull request ready for review runs it.
     if: >-
       github.event_name != 'pull_request' ||
-      github.event.pull_request.head.repo.full_name != github.repository ||
-      !startsWith(github.head_ref, 'changeset-release/')
+      (!github.event.pull_request.draft &&
+        (github.event.pull_request.head.repo.full_name != github.repository ||
+          !startsWith(github.head_ref, 'changeset-release/')))
     runs-on: macos-26
     steps:
       - name: 👀 Checkout

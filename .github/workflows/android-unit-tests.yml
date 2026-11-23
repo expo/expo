@@ -13,6 +13,7 @@ on:
       - '!packages/@expo/cli/**'
       - '!tools/src/commands/GenerateDocsAPIData.ts'
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths: *trigger_paths
 
 concurrency:
@@ -21,10 +22,12 @@ concurrency:
 
 jobs:
   test:
+    # Draft pull requests skip this job. Marking the pull request ready for review runs it.
     if: >-
       github.event_name != 'pull_request' ||
-      github.event.pull_request.head.repo.full_name != github.repository ||
-      !startsWith(github.head_ref, 'changeset-release/')
+      (!github.event.pull_request.draft &&
+        (github.event.pull_request.head.repo.full_name != github.repository ||
+          !startsWith(github.head_ref, 'changeset-release/')))
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     env:
