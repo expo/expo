@@ -113,10 +113,27 @@ function createDevServerForStaticPageTests() {
 }
 
 describe('Metro error reporting', () => {
-  it.each(['artifacts', 'workers', 'single bundle', 'custom conventional', 'invalid'])(
+  const formats = [
+    'artifacts',
+    'workers',
+    'single bundle',
+    'custom conventional',
+    'invalid',
+    'missing entry',
+    'invalid client',
+    'invalid map',
+    'invalid artifacts',
+  ];
+  it.each(formats)(
     'reports only the final outcome after validating serializer output (%s)',
     async (format) => {
-      const valid = format !== 'invalid';
+      const valid = ![
+        'invalid',
+        'missing entry',
+        'invalid client',
+        'invalid map',
+        'invalid artifacts',
+      ].includes(format);
       const devServer = createDevServerForStaticPageTests();
       const update = jest.fn();
       const revision = {
@@ -148,45 +165,51 @@ describe('Metro error reporting', () => {
       devServer['getMetroSerializer'] = jest
         .fn()
         .mockReturnValue(async (...[_entry, _pre, _graph, options]: SerializerParameters) =>
-          format === 'single bundle' || format === 'custom conventional'
-            ? {
-                code:
-                  format === 'custom conventional'
-                    ? `${options.getRunModuleStatement(0, '')}\n${options.getRunModuleStatement(1, '')}\n// Custom serializer footer\n//# sourceMappingURL=original.map\n//# debugId=original-id`
-                    : 'module.exports = { custom: true };',
-                map: JSON.stringify({ version: 3, sources: [], names: [], mappings: '' }),
-              }
-            : valid
-              ? {
-                  artifacts:
-                    format === 'workers'
-                      ? [
-                          {
-                            type: 'js',
-                            filename: 'worker.js',
-                            source: 'worker',
-                            metadata: { isAsync: true },
-                          },
-                          { type: 'map', filename: 'worker.js.map', source: 'worker map' },
-                          {
-                            type: 'js',
-                            filename: 'hello.js',
-                            source: 'code',
-                            metadata: { isAsync: false },
-                          },
-                          { type: 'map', filename: 'hello.js.map', source: 'entry map' },
-                        ]
-                      : [{ type: 'js', source: 'code' }],
-                  assets: [],
-                }
-              : {}
+          format === 'invalid artifacts'
+            ? { artifacts: null }
+            : format === 'invalid map'
+              ? { code: 'module.exports = {};', map: '{' }
+              : format === 'missing entry'
+                ? { artifacts: [] }
+                : format === 'single bundle' || format === 'custom conventional'
+                  ? {
+                      code:
+                        format === 'custom conventional'
+                          ? `${options.getRunModuleStatement(0, '')}\n${options.getRunModuleStatement(1, '')}\n// Custom serializer footer\n//# sourceMappingURL=original.map\n//# debugId=original-id`
+                          : 'module.exports = { custom: true };',
+                      map: JSON.stringify({ version: 3, sources: [], names: [], mappings: '' }),
+                    }
+                  : valid
+                    ? {
+                        artifacts:
+                          format === 'workers'
+                            ? [
+                                {
+                                  type: 'js',
+                                  filename: 'worker.js',
+                                  source: 'worker',
+                                  metadata: { isAsync: true },
+                                },
+                                { type: 'map', filename: 'worker.js.map', source: 'worker map' },
+                                {
+                                  type: 'js',
+                                  filename: 'hello.js',
+                                  source: 'code',
+                                  metadata: { isAsync: false },
+                                },
+                                { type: 'map', filename: 'hello.js.map', source: 'entry map' },
+                              ]
+                            : [{ type: 'js', source: 'code' }],
+                        assets: [],
+                      }
+                    : {}
         );
       const result = devServer['_bundleDirectAsync']('/app/index.js', {
         transformOptions: {
           dev: true,
           minify: false,
           platform: 'web',
-          customTransformOptions: { environment: 'node' },
+          customTransformOptions: { environment: format === 'invalid client' ? 'client' : 'node' },
           type: 'module',
           unstable_transformProfile: 'default',
         },
@@ -222,8 +245,18 @@ describe('Metro error reporting', () => {
           'bundle_build_done',
         ]);
       } else {
+        if (format === 'invalid map') await expect(result).rejects.toBeInstanceOf(SyntaxError);
         await expect(result).rejects.toMatchObject({
-          message: expect.stringContaining('Serializer did not return expected format'),
+          message:
+            format === 'invalid map'
+              ? expect.any(String)
+              : format === 'invalid artifacts'
+                ? 'Serializer did not return expected format. Expected an array of serializer artifacts.'
+                : format === 'invalid client'
+                  ? expect.stringContaining('Serializer did not return expected format')
+                  : format === 'missing entry'
+                    ? 'Expected one server bundle. Server bundle splitting is not supported.'
+                    : 'Serializer did not return expected format. Expected serializer artifacts, JavaScript, or a { code, map } bundle.',
           [IS_METRO_BUNDLE_ERROR_SYMBOL]: true,
         });
         expect(update.mock.calls.map(([event]) => event.type)).toEqual([

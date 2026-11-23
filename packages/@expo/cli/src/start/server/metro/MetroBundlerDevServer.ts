@@ -2325,43 +2325,41 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       let exportResources: Pick<BundleDirectResult, 'artifacts' | 'assets'> | undefined;
 
       if (serializerOptions.output === 'static') {
+        const result = isServer
+          ? await serializeServerBundleAsync(
+              bundle,
+              resolvedEntryFilePath,
+              revision.prepend,
+              revision.graph,
+              options,
+              config
+            )
+          : bundle;
+        let parsed;
         try {
-          const parsed = isServer
-            ? await serializeServerBundleAsync(
-                bundle,
-                resolvedEntryFilePath,
-                revision.prepend,
-                revision.graph,
-                options,
-                config
-              )
-            : typeof bundle === 'string'
-              ? JSON.parse(bundle)
-              : bundle;
-
+          parsed = typeof result === 'string' ? JSON.parse(result) : result;
           assert(
-            'artifacts' in parsed && Array.isArray(parsed.artifacts),
+            parsed != null && typeof parsed === 'object' && Array.isArray(parsed.artifacts),
             'Expected serializer to return an object with key artifacts to contain an array of serial assets.'
           );
-
-          const artifacts = parsed.artifacts as SerialAsset[];
-          const assets = parsed.assets;
-
-          const entry = isServer
-            ? getServerEntryArtifact(artifacts)
-            : artifacts.find((asset) => asset.type === 'js');
-          bundleCode = entry!.source;
-          bundleMap =
-            artifacts.find(
-              (asset) => asset.type === 'map' && asset.filename === entry!.filename + '.map'
-            )?.source ?? '';
-          exportResources = { artifacts, assets };
         } catch (error: any) {
           throw new Error(
             'Serializer did not return expected format. The project copy of `expo/metro-config` may be out of date. Error: ' +
               error.message
           );
         }
+
+        const artifacts = parsed.artifacts as SerialAsset[];
+        const assets = parsed.assets;
+        const entry = isServer
+          ? getServerEntryArtifact(artifacts)
+          : artifacts.find((asset) => asset.type === 'js');
+        bundleCode = entry!.source;
+        bundleMap =
+          artifacts.find(
+            (asset) => asset.type === 'map' && asset.filename === entry!.filename + '.map'
+          )?.source ?? '';
+        exportResources = { artifacts, assets };
       } else if (typeof bundle === 'string') {
         bundleCode = bundle;
 
