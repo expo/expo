@@ -688,7 +688,7 @@ export type AudioMode = {
    * `allowsRecording` is `true`. See [`BluetoothProfile`](#bluetoothprofile) for the values.
    *
    * When `allowsRecording` is `false`, the audio session only plays audio, and Bluetooth output
-   * uses A2DP.
+   * uses the Advanced Audio Distribution Profile (A2DP).
    *
    * @default 'hfp'
    * @platform ios
@@ -699,14 +699,14 @@ export type AudioMode = {
 /**
  * Bluetooth profiles that the audio session can use while recording is allowed.
  *
- * - `'hfp'`: Hands-Free Profile. A connected headset is available for input and output. While the
- *   audio session is active, iOS routes the headset through HFP. HFP output is mono and narrowband,
- *   so playback sounds like a phone call. Use it when the app records from the headset microphone,
- *   for example for voice chat.
- * - `'a2dp'`: Advanced Audio Distribution Profile. A connected headset is available for output only,
- *   in high-quality stereo. The app records from the built-in microphone or a wired input.
- *   The headset microphone is not listed by `getAvailableInputs()`. Call `getAvailableInputs()`
- *   again after you change the profile.
+ * - `'hfp'`: Hands-Free Profile (HFP). A connected headset is available for input and output.
+ *   While the audio session is active, iOS routes the headset through HFP. HFP output is mono and
+ *   narrowband, so playback sounds like a phone call. Use it when the app records from the headset
+ *   microphone, for example for voice chat.
+ * - `'a2dp'`: Advanced Audio Distribution Profile (A2DP). A connected headset is available for
+ *   output only, in high-quality stereo. The app records from the built-in microphone or a wired
+ *   input. The headset microphone is not listed by `getAvailableInputs()`. Call
+ *   `getAvailableInputs()` again after you change the profile.
  *
  * @platform ios
  */
