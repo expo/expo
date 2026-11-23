@@ -4,7 +4,7 @@ import { LoaderSuspenseStore } from './LoaderSuspenseStore';
 import type { LoaderFetcher, LoaderResult } from './types';
 
 export const ROOT_LOADER_OWNER = Symbol('root loader owner');
-type LoaderOwner = string | typeof ROOT_LOADER_OWNER;
+export type LoaderOwner = string | typeof ROOT_LOADER_OWNER;
 type Owner = { speculative: boolean; retained: boolean; awaiting: boolean; stale: boolean };
 type LoaderRecord = {
   path: string;
@@ -26,6 +26,12 @@ export type LoaderRead<T> = {
 };
 const READY = Object.assign(Promise.resolve(), { status: 'fulfilled', value: undefined });
 
+const errorRetries = new WeakMap<object, () => void>();
+
+export function retryLoaderError(error: unknown) {
+  if (error instanceof Error) errorRetries.get(error)?.();
+}
+
 export const activeLoaderRuntimes = new Set<LoaderRuntime>();
 
 /** Owns requests, Suspense reads, and route claims for one router root. */
@@ -38,6 +44,9 @@ export class LoaderRuntime {
   private navigationState?: NavigationState;
   private liveRoutes = new Set<string>();
   private mounts = 0;
+  private disposed = false;
+  private refreshes = new Map<string, Set<() => void>>();
+  private statusListeners = new Map<string, Set<() => void>>();
 
   constructor(fetcher?: LoaderFetcher) {
     this.client = new LoaderClient(fetcher);
@@ -103,19 +112,7 @@ export class LoaderRuntime {
     record.hydrated = false;
     record.observers.add(onChange);
 
-    if (owner !== ROOT_LOADER_OWNER && this.claims.get(owner) !== record) {
-      this.claims.set(owner, record);
-      // A route has one contextual loader path, even if its reader remounts. An interrupted
-      // candidate can finish, but returning to it after this commit must fetch fresh data.
-      for (const candidate of this.records.values()) {
-        if (candidate === record) continue;
-        const previous = candidate.owners.get(owner);
-        if (!previous) continue;
-        if (previous.speculative) previous.stale = true;
-        else candidate.owners.delete(owner);
-        this.releaseIfUnused(candidate);
-      }
-    }
+    this.commitClaim(record, owner);
     if (
       this.store.version(record.path) !== seen.version ||
       this.records.get(record.path) !== record
@@ -150,6 +147,7 @@ export class LoaderRuntime {
   }
 
   mount(): () => void {
+    this.disposed = false;
     this.mounts++;
     activeLoaderRuntimes.add(this);
     let mounted = true;
@@ -171,12 +169,77 @@ export class LoaderRuntime {
     }
   }
 
+  revalidate(owner: LoaderOwner, path: string): Promise<void> {
+    if (this.disposed || (owner !== ROOT_LOADER_OWNER && !this.liveRoutes.has(owner))) {
+      return Promise.resolve();
+    }
+    let record = this.records.get(path);
+    if (!record) {
+      record = { path, owners: new Map(), observers: new Set() };
+      this.records.set(path, record);
+    }
+    this.acquire(record, owner);
+    this.commitClaim(record, owner);
+    let waiters = this.refreshes.get(path);
+    if (!waiters) this.refreshes.set(path, (waiters = new Set()));
+    const completion = new Promise<void>((resolve) => waiters.add(resolve));
+    // Native fetch does not implement RequestInit.cache, so also send the HTTP directive.
+    this.start(record, { cache: 'no-cache', headers: { 'Cache-Control': 'no-cache' } });
+    this.notifyStatus(path);
+    return completion;
+  }
+
+  isRevalidating(path: string): boolean {
+    return this.refreshes.has(path);
+  }
+
+  subscribeStatus(path: string, listener: () => void): () => void {
+    let listeners = this.statusListeners.get(path);
+    if (!listeners) this.statusListeners.set(path, (listeners = new Set()));
+    listeners.add(listener);
+    return () => {
+      listeners.delete(listener);
+      if (listeners.size === 0) this.statusListeners.delete(path);
+    };
+  }
+
+  /** A committed control can release its previous claim without creating a new one. */
+  updatePath(owner: LoaderOwner, path: string) {
+    if (owner === ROOT_LOADER_OWNER) return;
+    const previous = this.claims.get(owner);
+    if (!previous || previous.path === path) return;
+    this.claims.delete(owner);
+    previous.owners.delete(owner);
+    this.releaseIfUnused(previous);
+  }
+
+  private commitClaim(record: LoaderRecord, owner: LoaderOwner) {
+    record.owners.get(owner)!.speculative = false;
+    if (owner === ROOT_LOADER_OWNER || this.claims.get(owner) === record) return;
+    this.claims.set(owner, record);
+    // An interrupted candidate may finish, but a later visit after another path
+    // commits must not reuse its speculative result.
+    for (const candidate of this.records.values()) {
+      if (candidate === record) continue;
+      const previous = candidate.owners.get(owner);
+      if (!previous) continue;
+      if (previous.speculative) previous.stale = true;
+      else candidate.owners.delete(owner);
+      this.releaseIfUnused(candidate);
+    }
+  }
+
+  private notifyStatus(path: string) {
+    for (const listener of this.statusListeners.get(path) ?? []) listener();
+  }
+
   /** Read-only inspection for diagnostics. */
   peek(path: string): LoaderResult | Promise<void> | undefined {
     return this.store.value(path) ?? this.store.pending(path);
   }
 
   private dispose() {
+    this.disposed = true;
     this.navigationState = undefined;
     this.liveRoutes.clear();
     this.focusedNavigators.clear();
@@ -205,7 +268,6 @@ export class LoaderRuntime {
       throw this.store.pending(record.path)!;
     }
     if ('error' in value) {
-      queueMicrotask(() => this.store.evict(record.path, value));
       throw value.error;
     }
     return value.data as T; // The hook's loader type supplies the result type at this boundary.
@@ -244,20 +306,37 @@ export class LoaderRuntime {
       this.records.delete(record.path);
     }
     this.store.release(record.path);
+    const waiters = this.refreshes.get(record.path);
+    this.refreshes.delete(record.path);
     this.client.abort(record.path);
+    this.notifyStatus(record.path);
+    for (const resolve of waiters ?? []) resolve();
   }
 
-  private start(record: LoaderRecord) {
+  private start(record: LoaderRecord, init?: RequestInit) {
+    const value = this.store.value(record.path);
+    if (value && 'error' in value) this.store.evict(record.path, value);
     this.store.suspend(record.path);
     if (!this.store.value(record.path)) {
       for (const owner of record.owners.values()) owner.awaiting = true;
     }
-    this.client.start(record.path, (result) => this.settle(record, result));
+    this.client.start(record.path, (result) => this.settle(record, result), init);
   }
 
   private settle(record: LoaderRecord, value: LoaderResult) {
+    const waiters = this.refreshes.get(record.path);
+    this.refreshes.delete(record.path);
+    if ('error' in value && value.error instanceof Error) {
+      errorRetries.set(value.error, () => {
+        if (this.store.value(record.path) !== value || record.owners.size === 0) return;
+        this.start(record);
+        for (const onChange of record.observers) onChange();
+      });
+    }
     for (const owner of record.owners.values()) owner.awaiting = false;
     this.store.settle(record.path, value);
     for (const onChange of record.observers) onChange();
+    this.notifyStatus(record.path);
+    for (const resolve of waiters ?? []) resolve();
   }
 }

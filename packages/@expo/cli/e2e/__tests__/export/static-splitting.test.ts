@@ -122,6 +122,7 @@ describe('exports static with granular bundle splitting', () => {
         'no-loader',
         'request',
         'response',
+        'revalidate',
         'second',
         'server-helper',
         'slow',
