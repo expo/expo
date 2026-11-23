@@ -241,7 +241,7 @@ class ObserveConsentTest {
       }
     }
 
-    assertThrows(IllegalStateException::class.java) { ObserveConsent.update(failingQuery, granted = true) }
+    assertThrows(ExitRecordsUnavailableException::class.java) { ObserveConsent.update(failingQuery, granted = true) }
     assertFalse(ObserveConsent.isGranted)
     assertEquals(mapOf("observeConsent" to "not-granted"), savedOnDisk())
 

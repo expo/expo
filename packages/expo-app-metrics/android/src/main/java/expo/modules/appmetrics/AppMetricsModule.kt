@@ -502,12 +502,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
    */
   suspend fun setConsent(granted: Boolean, afterRevoke: suspend () -> Unit = {}) =
     consentMutex.withLock {
-      val update = try {
-        ObserveConsent.update(context, granted)
-      } catch (e: Exception) {
-        // Only a first grant throws: it reads the exit records.
-        throw ExitRecordsUnavailableException(e)
-      }
+      val update = ObserveConsent.update(context, granted)
       try {
         if (update.changed && granted) {
           // The launch insert did nothing without consent, so the session row is inserted now.
@@ -767,12 +762,6 @@ internal fun spanStatusCode(status: String?): Int? = when (status) {
 private class SpanConstructorUnavailableException : CodedException(
   "Span objects can't be constructed directly because a span's identity and session " +
     "attribution are assigned natively at start time. Get one from AppMetrics.startSpan() instead."
-)
-
-private class ExitRecordsUnavailableException(cause: Exception) : CodedException(
-  "Observe could not read the app exit records from the system, so collection did not start. Observe needs them " +
-    "to skip crashes from before the grant. Call setConsent('granted') again.",
-  cause
 )
 
 private class ConsentNotSavedException(granted: Boolean) : CodedException(

@@ -9,6 +9,7 @@ import expo.modules.appmetrics.crashreporting.ExitInfoProvider
 import expo.modules.appmetrics.crashreporting.ExitInfoProviderImpl
 import expo.modules.appmetrics.jserrors.PendingErrorStore
 import expo.modules.appmetrics.storage.MetricsDatabase
+import expo.modules.kotlin.exception.CodedException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -73,7 +74,7 @@ object ObserveConsent {
       else -> AppMetricsPreferences.saveObserveConsent(
         context,
         GRANTED,
-        lastProcessedExitMillis = exitInfoProvider.getExitRecords().maxOfOrNull { it.timestampMillis } ?: 0L
+        lastProcessedExitMillis = readExitRecords(exitInfoProvider).maxOfOrNull { it.timestampMillis } ?: 0L
       )
     }
     if (granted == isGranted || (granted && (hasRevoked || !isSaved))) {
@@ -87,6 +88,13 @@ object ObserveConsent {
     hasRevoked = hasRevoked || !granted
     return Update(changed = true, isSaved = isSaved)
   }
+
+  private fun readExitRecords(exitInfoProvider: ExitInfoProvider) =
+    try {
+      exitInfoProvider.getExitRecords()
+    } catch (e: Exception) {
+      throw ExitRecordsUnavailableException(e)
+    }
 
   // Null when the manifest has no value. An empty string, which is an unknown value, when the
   // value is not a string or the manifest cannot be read.
@@ -131,6 +139,12 @@ object ObserveConsent {
   // Saved by a grant after a revoke. The next launch saves `GRANTED` in its place.
   private const val GRANTED_AT_NEXT_LAUNCH = "granted-at-next-launch"
 }
+
+internal class ExitRecordsUnavailableException(cause: Exception) : CodedException(
+  "Observe could not read the app exit records from the system, so collection did not start. Observe needs them " +
+    "to skip crashes from before the grant. Call setConsent('granted') again.",
+  cause
+)
 
 /** Deletes the metrics database, the crash files, the pending-error files, and the settings. */
 internal fun deleteStoredData(context: Context) {
