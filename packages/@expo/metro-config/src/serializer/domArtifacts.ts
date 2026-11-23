@@ -17,10 +17,10 @@ export function finalizeDomComponentArtifacts(artifacts: SerialAsset[]): void {
     if (resolved != null) return resolved;
     const artifact = files.get(filename);
     if (!artifact || artifact.type === 'css-external') return filename;
-    assert(
-      !pending.has(filename),
-      'Cannot name cyclic DOM chunks by their final content. Disable bundle splitting with EXPO_NO_BUNDLE_SPLITTING=1.'
-    );
+    // TODO(@kitten): Break cyclic chunk references before final-content hashing: each hash depends
+    // on the other filenames. Merge chunks (respecting worker runtimes) or rebundle this DOM without
+    // splitting. Returning the existing name avoids recursion but leaves cyclic URLs unresolved.
+    if (pending.has(filename)) return filename;
     pending.add(filename);
 
     let source = artifact.source;

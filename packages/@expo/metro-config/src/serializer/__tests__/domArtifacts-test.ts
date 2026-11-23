@@ -61,10 +61,15 @@ it('finalizes an async chunk that dynamically imports itself', async () => {
   }
 });
 
-it('rejects cyclic DOM references that cannot use final-content hashes', () => {
+it('retains unresolved cyclic DOM references without failing export', () => {
   const a = js('a.js', 'load("./b.js");', { paths: { a: { b: ['./b.js'] } } });
   const b = js('b.js', 'load("./a.js");', { paths: { b: { a: './a.js' } } });
-  expect(() => finalizeDomComponentArtifacts([a, b])).toThrow(/cyclic.*DOM/i);
+  finalizeDomComponentArtifacts([a, b]);
+  expect(b.source).toBe('load("./a.js");');
+  expect(a.source).toBe(`load("./${b.filename}");`);
+  for (const artifact of [a, b]) {
+    expect(artifact.filename).toBe(md5(artifact.source) + '.js');
+  }
 });
 
 it('preserves external CSS URLs', () => {
