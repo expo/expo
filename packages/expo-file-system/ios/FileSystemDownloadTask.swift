@@ -240,8 +240,10 @@ struct DownloadTaskOptions: Record {
  * A SharedObject that handles file downloads with pause/resume support and progress tracking.
  */
 class FileSystemDownloadTask: SharedObject {
-  private var downloadTask: URLSessionDownloadTask?
-  private var delegateKey: String?
+  // The main queue sets and clears the task (`start`, `resume`, `finishTask`, the release hook), while
+  // `cancel()` runs on the JS thread and `pause()` on a background executor. An unguarded optional lets
+  // one of them retain a task that the main queue is releasing, so `cancel()` reaches freed memory.
+  private let downloadTask = Mutex<URLSessionDownloadTask?>(nil)
   private var sessionType: NetworkTaskSessionType = .background
   private(set) var isPausing = false
 
@@ -260,18 +262,18 @@ class FileSystemDownloadTask: SharedObject {
     }
 
     let task = session.downloadTask(with: request)
-    downloadTask = task
-    delegateKey = NetworkTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
+    downloadTask.withLock { $0 = task }
+    _ = NetworkTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
     task.resume()
   }
 
   func pause() async -> [String: String?] {
     isPausing = true
-    guard let downloadTask else {
+    guard let task = downloadTask.withLock({ $0 }) else {
       return ["resumeData": nil]
     }
 
-    let resumeData = await downloadTask.cancelByProducingResumeData()
+    let resumeData = await task.cancelByProducingResumeData()
     return ["resumeData": resumeData?.base64EncodedString()]
   }
 
@@ -294,33 +296,35 @@ class FileSystemDownloadTask: SharedObject {
     let delegate = DownloadTaskDelegate(sharedObject: self, destination: to, promise: promise)
     let task = session.downloadTask(withResumeData: data)
 
-    downloadTask = task
-    delegateKey = NetworkTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
+    downloadTask.withLock { $0 = task }
+    _ = NetworkTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
     task.resume()
   }
 
   func cancel() {
     isPausing = false
-    downloadTask?.cancel()
-    cleanup(unregisterDelegate: false)
+    let task = takeDownloadTask()
+    task?.cancel()
   }
 
   func finishTask() {
     // Delegate is unregistered by NetworkTaskSessionDispatcher after didCompleteWithError returns.
-    cleanup(unregisterDelegate: false)
+    downloadTask.withLock { $0 = nil }
   }
 
   override func sharedObjectWillRelease() {
-    downloadTask?.cancel()
-    cleanup(unregisterDelegate: false)
+    takeDownloadTask()?.cancel()
   }
 
-  private func cleanup(unregisterDelegate: Bool) {
-    if unregisterDelegate {
-      NetworkTaskSessionManager.shared.unregister(key: delegateKey)
+  /**
+   Takes the task out of its slot, so that only one caller can cancel it.
+   */
+  private func takeDownloadTask() -> URLSessionDownloadTask? {
+    return downloadTask.withLock { task in
+      let result = task
+      task = nil
+      return result
     }
-    delegateKey = nil
-    downloadTask = nil
   }
 }
 

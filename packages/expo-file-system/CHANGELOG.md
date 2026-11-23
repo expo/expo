@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix a crash when a `DownloadTask` or `UploadTask` is cancelled or garbage-collected at the moment its request completes. ([#50106](https://github.com/expo/expo/pull/50106) by [@isaacrowntree](https://github.com/isaacrowntree))
+
 ### 💡 Others
 
 ## 57.0.7 — 2026-09-11
