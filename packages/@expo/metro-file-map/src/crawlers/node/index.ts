@@ -87,8 +87,8 @@ function find(options: CrawlerOptions, onDirectoryRead?: () => void): Promise<Fi
 
             if (!isSymbolicLink && !statRegularFiles) {
               // Not stat'd (see `FileMetadata`). Those that were stat'd before
-              // are stat'd alongside the walk, by `EarlyStats`, and checked
-              // once the difference is known, by `dropUnmodifiedFiles`.
+              // may be stat'd alongside the walk (see `nodeCrawl`), and are
+              // checked once the difference is known, by `dropUnmodifiedFiles`.
               result.set(childNormal, [null, null, 0, null, 0, null]);
               continue;
             }
@@ -137,8 +137,12 @@ export default async function nodeCrawl(options: CrawlerOptions): Promise<CrawlR
   // walk. A file changed after its stat is reported as unmodified either way,
   // but an early stat opens that window up to the walk's duration sooner. A
   // recrawl (`subpath` set) stats every file as it walks.
+  // NOTE(@robhogan): Only on macOS, where stats issued during the walk add
+  // less main-thread time to it than they save after it. On Linux and Windows
+  // (including Linux on the same hardware), they add more and made warm starts
+  // slower.
   const earlyStats =
-    subpath == null
+    subpath == null && process.platform === 'darwin'
       ? new EarlyStats(options.rootDir, previousState.fileSystem.getStatPaths())
       : null;
   const fileData = await find(options, earlyStats?.onDirectoryRead);

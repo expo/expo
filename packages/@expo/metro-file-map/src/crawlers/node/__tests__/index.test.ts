@@ -58,9 +58,19 @@ function sorted(iter: IterableIterator<string>): string[] {
   return Array.from(iter).sort();
 }
 
+const originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform')!;
+function setPlatform(platform: NodeJS.Platform): void {
+  Object.defineProperty(process, 'platform', { ...originalPlatform, value: platform });
+}
+
 describe('node crawler', () => {
   beforeEach(() => {
     vol.reset();
+    setPlatform('linux');
+  });
+
+  afterAll(() => {
+    Object.defineProperty(process, 'platform', originalPlatform);
   });
 
   test('discovers files by extension', async () => {
@@ -333,7 +343,8 @@ describe('node crawler', () => {
     expect(removedFiles).toEqual(new Set());
   });
 
-  test("stats the files that were stat'd before during the walk, once each", async () => {
+  test("on macOS, stats the files that were stat'd before during the walk, once each", async () => {
+    setPlatform('darwin');
     vol.fromJSON({
       '/project/fruits/apple.js': 'a',
       '/project/fruits/tropical/mango.js': 'm',
@@ -381,35 +392,66 @@ describe('node crawler', () => {
     );
   });
 
-  test('reports a file whose stat fails as changed, without stats', async () => {
+  test("on other platforms, stats the files that were stat'd before after the walk", async () => {
     vol.fromJSON({
       '/project/fruits/apple.js': 'a',
+      '/project/fruits/tropical/mango.js': 'm',
     });
-    const appleStat = vol.statSync('/project/fruits/apple.js');
-
-    const previousFiles: FileData = new Map([
-      [
-        'fruits/apple.js',
-        [appleStat.mtime.getTime(), appleStat.size, 1, null, 0, null] as FileMetadata,
-      ],
-    ]);
-    mockLstat.mockImplementationOnce((_path: string, callback: (err: Error) => void) =>
-      callback(Object.assign(new Error('EACCES'), { code: 'EACCES' }))
+    const fileSystem = makeTreeFS(
+      new Map([
+        ['fruits/apple.js', [1, 1, 1, null, 0, null] as FileMetadata],
+        ['fruits/tropical/mango.js', [1, 1, 1, null, 0, null] as FileMetadata],
+      ])
     );
+    const getStatPaths = jest.spyOn(fileSystem, 'getStatPaths');
 
-    const { changedFiles } = await crawl({
+    await crawl({
       previousState: {
-        fileSystem: makeTreeFS(previousFiles),
+        fileSystem,
         clocks: new Map(),
       },
     });
 
-    // Processing stats it before deriving anything from it (see `FileMetadata`).
-    expect(changedFiles).toEqual(
-      new Map([['fruits/apple.js', [null, null, 0, null, 0, null] as FileMetadata]])
+    expect(getStatPaths).not.toHaveBeenCalled();
+    expect(mockLstat).toHaveBeenCalledTimes(2);
+    expect(Math.min(...mockLstat.mock.invocationCallOrder)).toBeGreaterThan(
+      Math.max(...mockReaddir.mock.invocationCallOrder)
     );
-    expect(mockLstat).toHaveBeenCalledTimes(1);
   });
+
+  test.each([['darwin'], ['linux']] as [NodeJS.Platform][])(
+    'on %s, reports a file whose stat fails as changed, without stats',
+    async (platform) => {
+      setPlatform(platform);
+      vol.fromJSON({
+        '/project/fruits/apple.js': 'a',
+      });
+      const appleStat = vol.statSync('/project/fruits/apple.js');
+
+      const previousFiles: FileData = new Map([
+        [
+          'fruits/apple.js',
+          [appleStat.mtime.getTime(), appleStat.size, 1, null, 0, null] as FileMetadata,
+        ],
+      ]);
+      mockLstat.mockImplementationOnce((_path: string, callback: (err: Error) => void) =>
+        callback(Object.assign(new Error('EACCES'), { code: 'EACCES' }))
+      );
+
+      const { changedFiles } = await crawl({
+        previousState: {
+          fileSystem: makeTreeFS(previousFiles),
+          clocks: new Map(),
+        },
+      });
+
+      // Processing stats it before deriving anything from it (see `FileMetadata`).
+      expect(changedFiles).toEqual(
+        new Map([['fruits/apple.js', [null, null, 0, null, 0, null] as FileMetadata]])
+      );
+      expect(mockLstat).toHaveBeenCalledTimes(1);
+    }
+  );
 
   test('does not compare a file with one reached through a previous symlink', async () => {
     vol.fromJSON({
