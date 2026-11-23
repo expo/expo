@@ -5,6 +5,38 @@ import os
 
 public protocol AnySharedObject: AnyArgument, AnyObject {
   var sharedObjectId: SharedObjectId { get }
+
+  // The hooks that the `@SharedObject` macro implements, which core calls when it builds the JavaScript class.
+  // `SharedObject` implements them with `class` members, so a call through this protocol reaches the override of the
+  // subclass.
+
+  /// The name of the class in JavaScript.
+  static var _jsName: String { get }
+
+  /// The class whose `@SharedObject` macro gives this class its JavaScript class: the class itself, or its nearest
+  /// superclass with the macro. `nil` when no class in the chain has the macro.
+  static var _jsClassType: (any AnySharedObject.Type)? { get }
+
+  /// The nearest superclass with the `@SharedObject` macro, whose JavaScript class the JavaScript class of this class
+  /// extends, or `nil` for the base `SharedObject` or `SharedRef` class.
+  static var _jsSuperclassType: (any AnySharedObject.Type)? { get }
+
+  /// Binds the `@JS` members of the class onto its JavaScript prototype.
+  @JavaScriptActor
+  static func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws
+
+  /// Binds the `static` and `class` `@JS` members of the class onto its JavaScript constructor.
+  @JavaScriptActor
+  static func _decorateSharedObject(constructor: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws
+
+  /// Builds a native instance from the arguments of the JavaScript constructor, or returns `nil` when the class has no
+  /// `@JS init`.
+  @JavaScriptActor
+  static func _constructSharedObject(
+    this: borrowing JavaScriptValue,
+    arguments: borrowing JavaScriptValuesBuffer,
+    in runtime: JavaScriptRuntime
+  ) throws -> SharedObject?
 }
 
 extension AnySharedObject {
@@ -187,8 +219,22 @@ open class SharedObject: AnySharedObject {
     return unqualifiedTypeName(self)
   }
 
+  /// The class whose `@SharedObject` macro gives this class its JavaScript class: the class itself, or its nearest
+  /// superclass with the macro. `nil` when no class in the chain has the macro. Overridden by the `@SharedObject` macro
+  /// with the type of the class, written as its name, so a subclass without the macro inherits the value.
+  open class var _jsClassType: (any AnySharedObject.Type)? {
+    return nil
+  }
+
+  /// The nearest superclass with the `@SharedObject` macro, whose JavaScript class the JavaScript class of this class
+  /// extends, or `nil` for the base `SharedObject` or `SharedRef` class. Overridden by the `@SharedObject` macro with
+  /// `super._jsClassType`, which skips the superclasses without the macro.
+  open class var _jsSuperclassType: (any AnySharedObject.Type)? {
+    return nil
+  }
+
   /// Binds the class's `@JS` members onto its JavaScript prototype. Overridden by the `@SharedObject`
-  /// macro; a `class func` (not a protocol requirement) so dispatch resolves per subclass.
+  /// macro; a `class func`, so a call through `AnySharedObject` resolves per subclass.
   @JavaScriptActor
   open class func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
 
@@ -214,6 +260,37 @@ extension SharedObject: EventEmitter {
       return nil
     }
     return try body(target)
+  }
+}
+
+// MARK: - JavaScript class chain
+
+extension AnySharedObject {
+  /// Whether the `@SharedObject` macro gives this class a JavaScript class of its own. Core builds that class when it
+  /// first needs it, also when no module registers the class.
+  internal static var hasOwnJSClass: Bool {
+    guard let classType = _jsClassType else {
+      return false
+    }
+    return ObjectIdentifier(classType) == ObjectIdentifier(self)
+  }
+
+  /// Whether core binds the `@JS` members of this class with its decorate hooks. A class without the `@SharedObject`
+  /// macro inherits the hooks of its nearest superclass with the macro. The JavaScript class of this class extends the
+  /// JavaScript class of that superclass, which already has these members.
+  internal static var bindsOwnJSMembers: Bool {
+    return _jsClassType == nil || hasOwnJSClass
+  }
+
+  /// The superclass whose JavaScript class the JavaScript class of this class extends, or `nil` for the base
+  /// `SharedObject` or `SharedRef` class. It is `_jsSuperclassType` for a class with the `@SharedObject` macro. A class
+  /// without the macro inherits `_jsSuperclassType` from its nearest superclass with the macro, so for that class it is
+  /// that superclass itself.
+  internal static var resolvedJSSuperclassType: (any AnySharedObject.Type)? {
+    guard let classType = _jsClassType else {
+      return nil
+    }
+    return ObjectIdentifier(classType) == ObjectIdentifier(self) ? _jsSuperclassType : classType
   }
 }
 

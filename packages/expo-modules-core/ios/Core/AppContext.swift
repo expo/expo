@@ -270,24 +270,30 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   internal let classRegistry = ClassRegistry()
 
   /// Creates a new JavaScript object with the class prototype associated with the given native class.
-  /// Returns `nil` when no JavaScript class is registered for the native class.
+  /// Returns `nil` when the native class has no JavaScript class.
   /// - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
-  internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
+  internal func newObject(of type: any AnySharedObject.Type) throws -> JavaScriptObject? {
     let runtime = try self.runtime
+    let nativeClassId = ObjectIdentifier(type)
     if let object = classRegistry.withPrototype(nativeClassId: nativeClassId, { (prototype: borrowing JavaScriptObject) in
       return runtime.createObject(prototype: prototype)
     }) {
       return object
     }
-    // A class that a package exports is built when JS reads it first.
-    // Build it now, because a native instance gets to JS before that.
-    guard let sharedObjectType = packageRegistry.sharedObjectType(for: nativeClassId) else {
+    // A class that a package exports is built when JS reads it first, and a class with its own JS class that no module
+    // registers is built when it is first needed. Build it now, because a native instance gets to JS before that.
+    guard type.hasOwnJSClass || packageRegistry.sharedObjectType(for: nativeClassId) != nil else {
+      // A class without the `@SharedObject` macro gets the class of its nearest superclass with the macro, as it does
+      // in the other runtimes.
+      if let classType = type._jsClassType {
+        return try newObject(of: classType)
+      }
       return nil
     }
     // Native values are converted to JS on the JavaScript thread.
     return try JavaScriptActor.assumeIsolated {
       // Building the class registers its prototype in `classRegistry`.
-      _ = try JavaScriptBindings.buildSharedObjectClass(sharedObjectType, appContext: self)
+      _ = try JavaScriptBindings.buildSharedObjectClass(type, appContext: self)
       return classRegistry.withPrototype(nativeClassId: nativeClassId) { (prototype: borrowing JavaScriptObject) in
         return runtime.createObject(prototype: prototype)
       }
@@ -461,7 +467,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    the same object in both places.
    */
   @JavaScriptActor
-  func getSharedObjectClass(_ sharedObjectType: SharedObject.Type) throws -> JavaScriptObject {
+  func getSharedObjectClass(_ sharedObjectType: any AnySharedObject.Type) throws -> JavaScriptObject {
     let cachedClass = classRegistry.withPrototype(nativeClassId: ObjectIdentifier(sharedObjectType)) {
       (prototype: borrowing JavaScriptObject) in
       return prototype.getProperty("constructor").getObject()
@@ -733,7 +739,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     }
     let nativeType = type(of: native)
     let jsObject =
-      try newObject(nativeClassId: ObjectIdentifier(nativeType))
+      try newObject(of: nativeType)
       ?? (try self.runtime).createBaseSharedObject(isSharedRef: nativeType is AnySharedRef.Type)
     sharedObjectRegistry.add(native: native, javaScript: jsObject, inheritsBaseClass: true, in: runtime)
     return jsObject
@@ -758,46 +764,82 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     let prototypes = runtime.cached(sharedObjectPrototypesCacheKey, SharedObjectPrototypes.init)
     let typeId = ObjectIdentifier(nativeType)
 
-    if let instance = prototypes.store[typeId]?.withUnwrappedValue({ (prototype: borrowing JavaScriptObject) in
+    if let instance = prototypes.instancePrototypes[typeId]?.withUnwrappedValue({ (prototype: borrowing JavaScriptObject) in
       runtime.createObject(prototype: prototype)
     }) {
       return instance
     }
-    let basePrototype = try runtime.global()
-      .getPropertyAsObject(globalCoreObjectPropertyName)
-      .getPropertyAsObject(nativeType is AnySharedRef.Type ? "SharedRef" : "SharedObject")
-      .getPropertyAsObject("prototype")
-    let prototype = try buildWorkletPrototype(for: nativeType, in: runtime, basePrototype: basePrototype)
+    let prototype = try instancePrototype(for: nativeType, in: runtime, prototypes: prototypes)
     let instance = runtime.createObject(prototype: prototype)
-    prototypes.store[typeId] = prototype.ref()
+    prototypes.instancePrototypes[typeId] = prototype.ref()
     return instance
   }
 
-  /// Builds the worklet prototype for a native shared object class, from the `ClassDefinition` of a module
-  /// that defines it or from a module that registers it in `_classTypes`. A subclass that no module registers gets
-  /// the prototype of its nearest registered superclass, because a function that declares the superclass as its
-  /// return type gives it that class in the main runtime. Returns the base prototype when no module registers any of
-  /// these classes, as the main runtime does.
+  /// Returns the prototype for an instance of a native shared object class in a runtime other than the main runtime:
+  /// the prototype of the class itself or of its nearest superclass that has a JS class. A module defines that class
+  /// with a `ClassDefinition` or registers it in `_classTypes`, a package exports it, or the `@SharedObject` macro gives
+  /// it its own class. A subclass without a JS class gets the prototype of that superclass, because a function that
+  /// declares the superclass as its return type gives it that class in the main runtime. Returns the base prototype
+  /// when none of these classes has a JS class, as the main runtime does.
   @JavaScriptActor
-  private func buildWorkletPrototype(
+  private func instancePrototype(
     for nativeType: SharedObject.Type,
     in runtime: JavaScriptRuntime,
-    basePrototype: consuming JavaScriptObject
+    prototypes: SharedObjectPrototypes
   ) throws -> JavaScriptObject {
     var type: SharedObject.Type? = nativeType
 
     while let currentType = type {
       let typeId = ObjectIdentifier(currentType)
 
-      if let classDefinition = findClassDefinition(for: typeId) {
-        return try classDefinition.buildPrototype(in: runtime, appContext: self, basePrototype: basePrototype)
-      }
-      if let classType = findClassType(for: typeId) {
-        return try JavaScriptBindings.buildSharedObjectPrototype(classType, in: runtime, basePrototype: basePrototype)
+      if currentType.hasOwnJSClass || findClassDefinition(for: typeId) != nil || findClassType(for: typeId) != nil {
+        return try classPrototype(for: currentType, in: runtime, prototypes: prototypes)
       }
       type = class_getSuperclass(currentType) as? SharedObject.Type
     }
-    return basePrototype
+    return try basePrototype(for: nativeType, in: runtime)
+  }
+
+  /// Returns the prototype of the JS class of a native shared object class in a runtime other than the main runtime,
+  /// and builds it on the first call. It extends the prototype of `resolvedJSSuperclassType`, built the same way, or
+  /// the base prototype. Like in the main runtime, a superclass gets a prototype also when no module registers it.
+  @JavaScriptActor
+  private func classPrototype(
+    for type: any AnySharedObject.Type,
+    in runtime: JavaScriptRuntime,
+    prototypes: SharedObjectPrototypes
+  ) throws -> JavaScriptObject {
+    let typeId = ObjectIdentifier(type)
+
+    if let prototype = prototypes.classPrototypes[typeId]?.withUnwrappedValue({ (prototype: borrowing JavaScriptObject) in
+      prototype.asValue().getObject()
+    }) {
+      return prototype
+    }
+    let superclassPrototype: JavaScriptObject
+    if let superclassType = type.resolvedJSSuperclassType {
+      superclassPrototype = try classPrototype(for: superclassType, in: runtime, prototypes: prototypes)
+    } else {
+      superclassPrototype = try basePrototype(for: type, in: runtime)
+    }
+    let prototype: JavaScriptObject
+    if let classDefinition = findClassDefinition(for: typeId) {
+      prototype = try classDefinition.buildPrototype(in: runtime, appContext: self, basePrototype: superclassPrototype)
+    } else {
+      prototype = try JavaScriptBindings.buildSharedObjectPrototype(type, in: runtime, basePrototype: superclassPrototype)
+    }
+    prototypes.classPrototypes[typeId] = prototype.asValue().getObject().ref()
+    return prototype
+  }
+
+  /// Returns the prototype of the base `SharedRef` class for a `SharedRef` type, otherwise of the base `SharedObject`
+  /// class, in the given runtime.
+  @JavaScriptActor
+  private func basePrototype(for type: any AnySharedObject.Type, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
+    return try runtime.global()
+      .getPropertyAsObject(globalCoreObjectPropertyName)
+      .getPropertyAsObject(type is AnySharedRef.Type ? "SharedRef" : "SharedObject")
+      .getPropertyAsObject("prototype")
   }
 
   /**
@@ -1077,7 +1119,10 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 /// The prototypes of shared object classes in a runtime other than the main runtime, by native class. Prototypes
 /// are kept behind `JavaScriptRef` because `JavaScriptObject` is ~Copyable and cannot be a Dictionary value.
 private final class SharedObjectPrototypes {
-  var store: [ObjectIdentifier: JavaScriptObject.Ref] = [:]
+  /// The prototype for an instance of each native class, which can be the prototype of a superclass.
+  var instancePrototypes: [ObjectIdentifier: JavaScriptObject.Ref] = [:]
+  /// The prototype of the JS class of each native class.
+  var classPrototypes: [ObjectIdentifier: JavaScriptObject.Ref] = [:]
 }
 
 private let sharedObjectPrototypesCacheKey = JavaScriptRuntime.Cache.Key<SharedObjectPrototypes>()

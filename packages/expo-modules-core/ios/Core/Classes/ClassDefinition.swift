@@ -57,7 +57,7 @@ public final class ClassDefinition: ObjectDefinition {
   public override func build(appContext: AppContext) throws -> JavaScriptObject {
     // The concrete `SharedObject` subclass backing this class, used to dispatch to the
     // `@SharedObject` macro's `_constructSharedObject` / `_decorateSharedObject` overrides.
-    let sharedObjectType = ((associatedType as? DynamicSharedObjectType)?.innerType) as? SharedObject.Type
+    let sharedObjectType = (associatedType as? DynamicSharedObjectType)?.innerType
 
     let constructorClosure: JavaScriptRuntime.SyncFunctionClosure = { [weak self, weak appContext] this, arguments in
       guard let self, let appContext else {
@@ -143,7 +143,7 @@ public final class ClassDefinition: ObjectDefinition {
       }
     }
     // Bind the macro's `@JS` members, which aren't in the DSL `properties`/`functions` dictionaries.
-    if let sharedObjectType = (associatedType as? DynamicSharedObjectType)?.innerType as? SharedObject.Type {
+    if let sharedObjectType = (associatedType as? DynamicSharedObjectType)?.innerType {
       try sharedObjectType._decorateSharedObject(prototype: proto, in: runtime)
     }
     return proto
