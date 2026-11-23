@@ -251,14 +251,6 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
         return@AsyncFunction
       }
 
-      if (watchId != mHeadingId && !mLocationRequests.containsKey(watchId)) {
-        return@AsyncFunction
-      }
-
-      if (isMissingForegroundPermissions()) {
-        throw LocationUnauthorizedException()
-      }
-
       // Check if we want to stop watching location or compass
       if (watchId == mHeadingId) {
         destroyHeadingWatch()
