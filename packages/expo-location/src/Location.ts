@@ -422,6 +422,7 @@ export const useMotionActivityPermissions = createPermissionHook({
 export async function getMotionActivityAsync({
   timeout,
 }: MotionActivityOptions = {}): Promise<MotionActivityObject> {
+  assertValidTimeout(timeout);
   const { promise, resolve, reject } = Promise.withResolvers<MotionActivityObject>();
   const subscriber = await watchMotionActivityAsync(resolve, (reason) => reject(new Error(reason)));
   try {
@@ -431,15 +432,21 @@ export async function getMotionActivityAsync({
   }
 }
 
-function withTimeout<T>(promise: Promise<T>, timeout: number | undefined): Promise<T> {
+function assertValidTimeout(timeout: number | undefined): void {
   if (timeout === undefined) {
-    return promise;
+    return;
   }
   if (!Number.isFinite(timeout) || timeout <= 0) {
     throw new CodedError(
       'ERR_LOCATION_INVALID_TIMEOUT',
       `\`timeout\` must be a positive, finite number of milliseconds. Got ${timeout} instead.`
     );
+  }
+}
+
+function withTimeout<T>(promise: Promise<T>, timeout: number | undefined): Promise<T> {
+  if (timeout === undefined) {
+    return promise;
   }
   let timer: ReturnType<typeof setTimeout> | undefined;
   const timedOut = new Promise<never>((_, reject) => {
