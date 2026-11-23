@@ -34,6 +34,7 @@ export default function HomeRoute() {
           <RouteLink href="/loaders/env" />
           <RouteLink href="/loaders/request" />
           <RouteLink href="/loaders/response" />
+          <RouteLink href="/loaders/json-helper" />
           <RouteLink href="/loaders/meta" />
           <RouteLink href="/loaders/error" />
           <RouteLink href="/loaders/no-loader" />

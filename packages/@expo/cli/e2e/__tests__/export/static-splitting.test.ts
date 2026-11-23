@@ -117,6 +117,7 @@ describe('exports static with granular bundle splitting', () => {
         // loaders
         'env',
         'error',
+        'json-helper',
         'large-suspense',
         'meta',
         'no-loader',

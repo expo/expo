@@ -346,6 +346,10 @@ describe.each(
           headers: { 'Cache-Control': 'public, max-age=86400' },
         },
         {
+          namedRegex: '^/loaders/json\\-helper(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=60' },
+        },
+        {
           namedRegex: '^/loaders/response(?:/)?$',
           headers: { 'Cache-Control': 'public, max-age=604800' },
         },
@@ -356,6 +360,10 @@ describe.each(
         {
           namedRegex: '^/_expo/loaders/headers/blog(?:/)?$',
           headers: { 'Cache-Control': 'public, max-age=86400' },
+        },
+        {
+          namedRegex: '^/_expo/loaders/loaders/json\\-helper(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=60' },
         },
         {
           namedRegex: '^/_expo/loaders/loaders/response(?:/)?$',
@@ -382,6 +390,23 @@ describe.each(
       'expo-router,loaders,meta'
     );
     expect(html.querySelector('meta[name="author"]')?.getAttribute('content')).toBe('Expo');
+  });
+
+  it.each(getPageAndLoaderData('/loaders/json-helper'))(
+    'renders typed JSON helper data for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      expect(await getData(response)).toEqual({ source: 'json-helper', count: 1 });
+    }
+  );
+
+  it('preserves allowed typed JSON helper headers in static output', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/loaders/json-helper');
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('public, max-age=60');
+    expect(response.headers.get('x-loader-header')).toBeNull();
   });
 
   it.each(getPageAndLoaderData('/loaders/static-helper'))(

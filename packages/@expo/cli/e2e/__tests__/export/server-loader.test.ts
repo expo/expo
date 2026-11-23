@@ -271,6 +271,24 @@ describe.each(
     expect(data).toEqual({ foo: 'bar' });
   });
 
+  it.each(getPageAndLoaderData('/loaders/json-helper'))(
+    'renders typed JSON helper data for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      expect(await getData(response)).toEqual({ source: 'json-helper', count: 1 });
+    }
+  );
+
+  it('preserves typed JSON helper response headers', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/loaders/json-helper');
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('application/json');
+    expect(response.headers.get('cache-control')).toBe('public, max-age=60');
+    expect(response.headers.get('x-loader-header')).toBe('json-helper');
+  });
+
   it('defaults a headerless server loader to no-store', async () => {
     const response = await server.fetchAsync('/_expo/loaders/loaders/index');
 

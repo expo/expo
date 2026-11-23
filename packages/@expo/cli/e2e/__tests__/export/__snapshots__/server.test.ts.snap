@@ -317,6 +317,13 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "./loaders/json-helper.tsx",
+      "loader": "_expo/loaders/loaders/json-helper.js",
+      "namedRegex": "^/loaders/json\\-helper(?:/)?$",
+      "page": "/loaders/json-helper",
+      "routeKeys": {},
+    },
+    {
       "file": "./rendering/env-metadata.tsx",
       "namedRegex": "^/rendering/env\\-metadata(?:/)?$",
       "page": "/rendering/env-metadata",
@@ -848,6 +855,13 @@ exports[`server-output workerd requests exported files has expected routes manif
       "file": "./loaders/no-loader.tsx",
       "namedRegex": "^/loaders/no\\-loader(?:/)?$",
       "page": "/loaders/no-loader",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/json-helper.tsx",
+      "loader": "_expo/loaders/loaders/json-helper.js",
+      "namedRegex": "^/loaders/json\\-helper(?:/)?$",
+      "page": "/loaders/json-helper",
       "routeKeys": {},
     },
     {
