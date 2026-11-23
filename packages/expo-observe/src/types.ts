@@ -79,8 +79,8 @@ export type ObserveFeedback = {
 };
 
 /**
- * Whether the user consents to Observe collecting data. The `extra.eas.observe.consent` key of the
- * app config sets the value for the first launch, and `setConsent` changes it at runtime.
+ * Whether the user consents to Observe collecting data. The `consent` option of the `expo-observe`
+ * config plugin sets the value for the first launch, and `setConsent` changes it at runtime.
  */
 export type ObserveConsent = 'not-granted' | 'granted';
 
@@ -334,11 +334,12 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
   readonly clientId: string | null;
   /**
    * Changes whether the user consents to Observe collecting data. The device saves the value, and
-   * it overrides the `extra.eas.observe.consent` key of the app config on later launches.
+   * it overrides the `consent` option of the `expo-observe` config plugin on later launches.
    *
    * A grant starts collection and saves the startup metrics of the current launch. A revoke stops
    * collection and deletes the Observe data stored on the device, but keeps `clientId`. A call
-   * with the current value changes nothing.
+   * with the current value does not change collection, but its promise can still reject when the
+   * device cannot save the value.
    *
    * Observe starts collection at most one time in each app launch. After a revoke, a grant only
    * saves the value, and collection starts at the next launch.
