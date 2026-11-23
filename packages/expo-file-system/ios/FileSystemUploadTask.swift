@@ -115,8 +115,8 @@ class FileSystemUploadTask: SharedObject {
     if shouldEmit {
       lastProgressTime = currentTime
       emit(event: "progress", payload: [
-        "bytesSent": bytesSent,
-        "totalBytes": totalBytes
+        "bytesSent": Double(bytesSent),
+        "totalBytes": Double(totalBytes)
       ])
     }
   }
