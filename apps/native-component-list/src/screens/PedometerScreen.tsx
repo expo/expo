@@ -46,28 +46,14 @@ function usePedometerHistory({
   }, []);
 
   React.useEffect(() => {
-    (async () => {
-      const isRecordingAvailable = await Pedometer.isRecordingAvailableAsync();
+    if (Platform.OS !== 'ios') {
+      setData({ steps: 0 });
+      return;
+    }
 
-      if (!isRecordingAvailable) {
-        if (isMounted.current) {
-          setData({ steps: 0 });
-        }
-        return;
-      }
-
-      if (Platform.OS === 'android') {
-        await Pedometer.subscribeRecordingAsync();
-      }
-
-      const result = await Pedometer.getStepCountAsync(start, end);
+    Pedometer.getStepCountAsync(start, end).then((data) => {
       if (isMounted.current) {
-        setData(result);
-      }
-    })().catch((error) => {
-      console.log('Pedometer history error:', error);
-      if (isMounted.current) {
-        setData({ steps: 0 });
+        setData(data);
       }
     });
   }, [start, end]);
@@ -75,72 +61,16 @@ function usePedometerHistory({
   return data;
 }
 
-function usePedometerEvents() {
-  const [lastEvent, setLastEvent] = React.useState<Pedometer.PedometerEvent | null>(null);
-  const [isSupported, setIsSupported] = React.useState<boolean | undefined>();
-  const isMounted = React.useRef(true);
-
-  React.useEffect(() => {
-    isMounted.current = true;
-    let subscription: Pedometer.Subscription | null = null;
-
-    Pedometer.isEventTrackingAvailableAsync()
-      .then(async (available) => {
-        if (!isMounted.current) {
-          return;
-        }
-        setIsSupported(available);
-        if (!available) {
-          return;
-        }
-        await Pedometer.startEventUpdatesAsync();
-        subscription = Pedometer.watchEventUpdates((event) => {
-          if (isMounted.current) {
-            setLastEvent(event);
-          }
-        });
-      })
-      .catch(() => {
-        if (isMounted.current) {
-          setIsSupported(false);
-        }
-      });
-
-    return () => {
-      isMounted.current = false;
-      subscription?.remove();
-      Pedometer.stopEventUpdatesAsync().catch(() => {});
-    };
-  }, []);
-
-  return { lastEvent, isSupported };
-}
-
 function StepTrackerView() {
   const [isActive, setActive] = React.useState(false);
   const data = usePedometer({ isActive });
-  const { lastEvent, isSupported } = usePedometerEvents();
-  const message = data ? `Total steps ${data.steps}` : `Waiting...`;
-  const eventMessage = React.useMemo(() => {
-    if (isSupported === undefined) {
-      return 'Checking pedometer event support...';
-    }
-    if (isSupported === false) {
-      return 'Pedometer events are not available on this device.';
-    }
-    if (!lastEvent) {
-      return 'Waiting for pedometer events...';
-    }
-    const date = new Date(lastEvent.date);
-    return `Last event: ${lastEvent.type} (${date.toLocaleTimeString()})`;
-  }, [isSupported, lastEvent]);
+  const message = data?.steps ? `Total steps ${data.steps}` : `Waiting...`;
   return (
     <View style={{ padding: 10 }}>
       <H2>Step Tracker</H2>
       <ListButton onPress={() => setActive(true)} disabled={isActive} title="Start" />
       <ListButton onPress={() => setActive(false)} disabled={!isActive} title="Stop" />
       <BodyText style={{ paddingTop: 10, fontWeight: 'bold' }}>{message}</BodyText>
-      <BodyText style={{ paddingTop: 10 }}>{eventMessage}</BodyText>
     </View>
   );
 }
@@ -155,19 +85,12 @@ function StepHistoryMessage() {
     return yesterday;
   }, [today]);
 
-  const [isRecordingAvailable] = useResolvedValue(Pedometer.isRecordingAvailableAsync);
-
   const data = usePedometerHistory({ start: yesterday, end: today });
 
   const message = data ? `Steps in the last day: ${data.steps}` : `Loading health data...`;
   return (
     <View style={{ padding: 10 }}>
       <H2>Step History</H2>
-      {isRecordingAvailable === false ? (
-        <BodyText style={{ paddingTop: 10, fontWeight: 'bold' }}>
-          Pedometer history is not available on this device.
-        </BodyText>
-      ) : null}
       <BodyText>{message}</BodyText>
     </View>
   );

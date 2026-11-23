@@ -208,7 +208,6 @@ class LightSensor extends SensorBlock<Sensors.LightSensorMeasurement> {
 
 const PedometerSensor = () => {
   const [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
-  const [isPedometerHistoryAvailable, setIsPedometerHistoryAvailable] = useState('checking');
   const [pastStepCount, setPastStepCount] = useState(0);
   const [currentStepCount, setCurrentStepCount] = useState(0);
 
@@ -217,14 +216,8 @@ const PedometerSensor = () => {
     const subscribe = async () => {
       const isAvailable = await Sensors.Pedometer.isAvailableAsync();
       setIsPedometerAvailable(String(isAvailable));
-      const isHistoryAvailable =
-        isAvailable && (await Sensors.Pedometer.isRecordingAvailableAsync());
-      setIsPedometerHistoryAvailable(String(isHistoryAvailable));
 
-      if (isHistoryAvailable) {
-        if (Platform.OS === 'android') {
-          await Sensors.Pedometer.subscribeRecordingAsync();
-        }
+      if (isAvailable) {
         const end = new Date();
         const start = new Date();
         start.setDate(end.getDate() - 1);
@@ -233,9 +226,7 @@ const PedometerSensor = () => {
         if (pastStepCountResult) {
           setPastStepCount(pastStepCountResult.steps);
         }
-      }
 
-      if (isAvailable) {
         listener = Sensors.Pedometer.watchStepCount((result) => {
           setCurrentStepCount(result.steps);
         });
@@ -250,7 +241,6 @@ const PedometerSensor = () => {
     <View style={styles.sensor}>
       <BodyText>Pedometer:</BodyText>
       <BodyText>Is available: {isPedometerAvailable}</BodyText>
-      <BodyText>History available: {isPedometerHistoryAvailable}</BodyText>
       <BodyText>Steps taken in the last 24 hours: {pastStepCount}</BodyText>
       <BodyText>Watch step count: {currentStepCount}</BodyText>
     </View>
