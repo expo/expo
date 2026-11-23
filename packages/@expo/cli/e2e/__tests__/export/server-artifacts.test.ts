@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
-import { executeExpoAsync } from '../../utils/expo';
+import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { processFindPrefixedValue } from '../../utils/process';
 import { setupServer } from '../../utils/runtime';
 import { createBackgroundServer } from '../../utils/server';
@@ -14,9 +14,17 @@ runExportSideEffects();
 
 jest.unmock('@expo/spawn-async');
 
-it.each(['pair', 'string', 'captured'])(
-  'exports a custom serializer %s result as server artifacts',
-  async (format) => {
+it.each([
+  ['pair', 'commonjs'],
+  ['string', 'commonjs'],
+  ['captured', 'commonjs'],
+  ['pair', 'module'],
+  ['string', 'module'],
+  ['captured', 'module'],
+])(
+  'exports a custom serializer %s result as server artifacts (%s)',
+  async (format, packageType) => {
+    const extension = packageType === 'module' ? '.cjs' : '.js';
     let projectRoot = getTemporaryPath();
     try {
       await fs.promises.cp(
@@ -30,6 +38,9 @@ it.each(['pair', 'string', 'captured'])(
         path.join(projectRoot, 'node_modules'),
         'junction'
       );
+      const packagePath = path.join(projectRoot, 'package.json');
+      const pkg = JSON.parse(await fs.promises.readFile(packagePath, 'utf8'));
+      await fs.promises.writeFile(packagePath, JSON.stringify({ ...pkg, type: packageType }));
       await fs.promises.appendFile(
         path.join(projectRoot, 'metro.config.cjs'),
         `
@@ -52,7 +63,9 @@ if (${JSON.stringify(format)} === 'captured') {
         env: { NODE_ENV: 'production' },
       });
       const serverRoot = path.join(projectRoot, 'dist/server');
-      const filename = findProjectFiles(serverRoot).find((file) => file.endsWith('hello+api.js'))!;
+      const filename = findProjectFiles(serverRoot).find((file) =>
+        file.endsWith('hello+api' + extension)
+      )!;
       expect(filename).toBeDefined();
       const output = path.join(serverRoot, filename);
       const { GET } = createRequire(__filename)(output);
@@ -85,23 +98,29 @@ if (${JSON.stringify(format)} === 'captured') {
   }
 );
 
-it('exports and runs a server route with a standalone worker', async () => {
-  let projectRoot = getTemporaryPath();
-  try {
-    await fs.promises.cp(
-      path.join(__dirname, '../../fixtures/with-server-artifacts'),
-      projectRoot,
-      { recursive: true }
-    );
-    projectRoot = await fs.promises.realpath(projectRoot);
-    await fs.promises.symlink(
-      path.join(getRouterE2ERoot(), 'node_modules'),
-      path.join(projectRoot, 'node_modules'),
-      'junction'
-    );
-    await fs.promises.writeFile(
-      path.join(projectRoot, 'app/hello+api.ts'),
-      `
+it.each(['commonjs', 'module'])(
+  'exports and runs a server route with a standalone worker (%s)',
+  async (packageType) => {
+    const extension = packageType === 'module' ? '.cjs' : '.js';
+    let projectRoot = getTemporaryPath();
+    try {
+      await fs.promises.cp(
+        path.join(__dirname, '../../fixtures/with-server-artifacts'),
+        projectRoot,
+        { recursive: true }
+      );
+      projectRoot = await fs.promises.realpath(projectRoot);
+      await fs.promises.symlink(
+        path.join(getRouterE2ERoot(), 'node_modules'),
+        path.join(projectRoot, 'node_modules'),
+        'junction'
+      );
+      const packagePath = path.join(projectRoot, 'package.json');
+      const pkg = JSON.parse(await fs.promises.readFile(packagePath, 'utf8'));
+      await fs.promises.writeFile(packagePath, JSON.stringify({ ...pkg, type: packageType }));
+      await fs.promises.writeFile(
+        path.join(projectRoot, 'app/hello+api.ts'),
+        `
 import { Worker as NodeWorker } from 'node:worker_threads';
 import path from 'node:path';
 export async function GET() {
@@ -115,41 +134,54 @@ export async function GET() {
   return Response.json({ value, workerPath });
 }
 `
-    );
-    await fs.promises.writeFile(
-      path.join(projectRoot, 'worker.ts'),
-      `
+      );
+      await fs.promises.writeFile(
+        path.join(projectRoot, 'worker.ts'),
+        `
 import { parentPort } from 'node:worker_threads';
 parentPort.postMessage('worker result');
 `
-    );
-    await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--api-only', '--source-maps'], {
-      env: { NODE_ENV: 'production' },
-    });
-    const serverRoot = path.join(projectRoot, 'dist/server');
-    const { stdout } = await spawnAsync(
-      process.execPath,
-      [
-        '-e',
-        'require(process.argv[1]).GET().then(async (response) => console.log(JSON.stringify(await response.json()))).catch((error) => { console.error(error); process.exitCode = 1; });',
-        path.join(serverRoot, '_expo/functions/hello+api.js'),
-      ],
-      { cwd: projectRoot }
-    ).catch((error) => {
-      throw new Error(error.stderr || error.message);
-    });
-    const result = JSON.parse(stdout);
-    expect(result.value).toBe('worker result');
-    expect(result.workerPath).toMatch(/worker-.*\.js$/);
-    const workerFilename = path.join(serverRoot, result.workerPath);
-    expect(fs.existsSync(workerFilename)).toBe(true);
-    expect(fs.existsSync(workerFilename + '.map')).toBe(true);
-  } finally {
-    await fs.promises.rm(projectRoot, { recursive: true, force: true });
+      );
+      await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--api-only', '--source-maps'], {
+        env: { NODE_ENV: 'production' },
+      });
+      const serverRoot = path.join(projectRoot, 'dist/server');
+      const { stdout } = await spawnAsync(
+        process.execPath,
+        [
+          '-e',
+          'require(process.argv[1]).GET().then(async (response) => console.log(JSON.stringify(await response.json()))).catch((error) => { console.error(error); process.exitCode = 1; });',
+          path.join(serverRoot, `_expo/functions/hello+api${extension}`),
+        ],
+        { cwd: projectRoot }
+      ).catch((error) => {
+        throw new Error(error.stderr || error.message);
+      });
+      const result = JSON.parse(stdout);
+      expect(result.value).toBe('worker result');
+      expect(path.basename(result.workerPath)).toMatch(/^worker-/);
+      expect(result.workerPath.endsWith(extension)).toBe(true);
+      const workerFilename = path.join(serverRoot, result.workerPath);
+      expect(fs.existsSync(workerFilename)).toBe(true);
+      expect(fs.existsSync(workerFilename + '.map')).toBe(true);
+    } finally {
+      await fs.promises.rm(projectRoot, { recursive: true, force: true });
+    }
   }
-});
+);
 
-describe.each(['SSR', 'RSC'])('serialized server artifacts: %s', (mode) => {
+describe.each([
+  ['SSR', 'commonjs', 'default', true],
+  ['RSC', 'commonjs', 'default', true],
+  ['SSR', 'module', 'default', true],
+  ['RSC', 'module', 'default', true],
+  ['RSC', 'commonjs', 'custom action', true],
+  ['RSC', 'module', 'custom action', true],
+  ['SSR', 'module', 'default', false],
+  ['RSC', 'module', 'default', false],
+  ['RSC', 'module', 'custom action', false],
+] as const)('server artifacts: %s (%s, %s, maps: %s)', (mode, packageType, variant, sourceMaps) => {
+  const extension = packageType === 'module' ? '.cjs' : '.js';
   let projectRoot = getTemporaryPath();
   const outputDir = path.join(projectRoot, 'dist');
 
@@ -165,9 +197,30 @@ describe.each(['SSR', 'RSC'])('serialized server artifacts: %s', (mode) => {
       path.join(projectRoot, 'node_modules'),
       'junction'
     );
-    await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--source-maps'], {
-      env: { NODE_ENV: 'production', TEST_RSC: mode === 'RSC' ? '1' : '0' },
-    });
+    const packagePath = path.join(projectRoot, 'package.json');
+    const pkg = JSON.parse(await fs.promises.readFile(packagePath, 'utf8'));
+    await fs.promises.writeFile(packagePath, JSON.stringify({ ...pkg, type: packageType }));
+    if (variant === 'custom action') {
+      await fs.promises.appendFile(
+        path.join(projectRoot, 'metro.config.cjs'),
+        `
+const original = config.serializer.customSerializer;
+config.serializer.customSerializer = async (...args) => {
+  const result = await original(...args);
+  return args[0].endsWith('/actions.ts')
+    ? result.artifacts.find((artifact) => artifact.type === 'js').source
+    : result;
+};
+`
+      );
+    }
+    await executeExpoAsync(
+      projectRoot,
+      ['export', '-p', 'web', ...(sourceMaps ? ['--source-maps'] : [])],
+      {
+        env: { NODE_ENV: 'production', TEST_RSC: mode === 'RSC' ? '1' : '0' },
+      }
+    );
   });
 
   afterAll(async () => {
@@ -190,17 +243,85 @@ describe.each(['SSR', 'RSC'])('serialized server artifacts: %s', (mode) => {
       }),
   });
 
-  it('persists flat server maps with sibling references, debug IDs, and no embedded sources', () => {
+  if (mode === 'SSR') {
+    const serve = setupServer({
+      name: 'expo serve',
+      prepareDist: async () => [outputDir],
+      createServer: () => createExpoServe({ cwd: projectRoot, env: { NODE_ENV: 'production' } }),
+    });
+
+    it('serves API, middleware, loaders, and JavaScript client scripts with expo serve', async () => {
+      const api = await serve.fetchAsync('/hello');
+      expect(api.status).toBe(200);
+      expect(api.headers.get('x-esm-middleware')).toBe('true');
+      await expect(api.json()).resolves.toEqual({ message: 'Hello from server artifacts' });
+      const response = await serve.fetchAsync('/');
+      expect(response.status).toBe(200);
+      const html = await response.text();
+      expect(html).toContain('Hello from server artifacts');
+      const scripts = [...html.matchAll(/<script[^>]*src="([^"]+)"/g)].map((match) => match[1]!);
+      expect(scripts.length).toBeGreaterThan(0);
+      for (const script of scripts) {
+        expect(script.endsWith('.js')).toBe(true);
+        expect((await serve.fetchAsync(script)).status).toBe(200);
+      }
+      const loader = await serve.fetchAsync('/_expo/loaders/index');
+      expect(loader.status).toBe(200);
+      await expect(loader.json()).resolves.toEqual({ message: 'Hello from server artifacts' });
+    });
+  }
+
+  it('persists server artifacts with required and optional source maps', () => {
     const root = path.join(outputDir, 'server');
     const files = findProjectFiles(root);
-    const bundles = files.filter((file) => file.endsWith('.js') && !file.endsWith('-manifest.js'));
+    expect(
+      files.filter((file) => packageType === 'module' && /\.js(?:\.map)?$/.test(file))
+    ).toEqual([]);
+    const bundles = files.filter(
+      (file) => file.endsWith(extension) && !file.endsWith('-manifest' + extension)
+    );
     expect(bundles.length).toBeGreaterThan(0);
+    const manifest = JSON.parse(fs.readFileSync(path.join(root, '_expo/routes.json'), 'utf8'));
+    for (const route of [...manifest.apiRoutes, manifest.middleware, manifest.rendering]) {
+      if (route?.file) expect(files).toContain(route.file);
+    }
+    for (const route of manifest.htmlRoutes) {
+      if (route.loader) expect(files).toContain(route.loader);
+    }
+    const clientFiles = findProjectFiles(path.join(outputDir, 'client'));
+    expect(clientFiles.some((file) => file.endsWith('.js'))).toBe(true);
+    expect(clientFiles.some((file) => file.endsWith('.cjs'))).toBe(false);
     if (mode === 'RSC') {
-      expect(files).toContain('_expo/rsc/web/router.js.map');
-      expect(files.some((file) => /_expo\/rsc\/web\/actions-.*\.js\.map$/.test(file))).toBe(true);
+      expect(files.includes(`_expo/rsc/web/router${extension}.map`)).toBe(sourceMaps);
+      for (const name of ['ssr', 'action']) {
+        expect(files).toContain(`_expo/rsc/web/${name}-manifest${extension}`);
+      }
+      const actions = createRequire(__filename)(
+        path.join(root, `_expo/rsc/web/action-manifest${extension}`)
+      );
+      expect(Object.values(actions).length).toBeGreaterThan(0);
+      for (const [, filename] of Object.values(actions) as [string, string][]) {
+        expect(files).toContain(filename);
+        expect(filename.endsWith(extension)).toBe(true);
+      }
+      expect(
+        files.some(
+          (file) => file.startsWith('_expo/rsc/web/actions-') && file.endsWith(extension + '.map')
+        )
+      ).toBe(sourceMaps);
+    }
+    if (!sourceMaps) {
+      expect(clientFiles.some((file) => file.endsWith('.map'))).toBe(false);
+      expect(files.some((file) => file.startsWith('_expo/rsc/') && file.endsWith('.map'))).toBe(
+        false
+      );
     }
     for (const filename of bundles) {
       const code = fs.readFileSync(path.join(root, filename), 'utf8');
+      if (!sourceMaps && filename.startsWith('_expo/rsc/')) {
+        expect(code).not.toContain('//# sourceMappingURL=');
+        continue;
+      }
       const map = JSON.parse(fs.readFileSync(path.join(root, filename + '.map'), 'utf8'));
       expect(code).toContain(
         '//# sourceMappingURL=' + encodeURIComponent(path.basename(filename) + '.map')
@@ -218,13 +339,18 @@ describe.each(['SSR', 'RSC'])('serialized server artifacts: %s', (mode) => {
       mode === 'RSC' ? '/_flight/web/index.txt?platform=web' : '/'
     );
     expect(response.status).toBe(200);
+    if (mode === 'SSR') expect(response.headers.get('x-esm-middleware')).toBe('true');
     expect(await response.text()).toContain(
       mode === 'RSC' ? 'Server artifact RSC page' : 'Hello from server artifacts'
     );
   });
 
-  it('maps deployed stack traces to virtual source names independent of the export directory', async () => {
+  it('executes API routes, loaders, and actions with source-mapped errors when requested', async () => {
     if (mode === 'SSR') {
+      const api = await server.fetchAsync('/hello');
+      expect(api.status).toBe(200);
+      expect(api.headers.get('x-esm-middleware')).toBe('true');
+      await expect(api.json()).resolves.toEqual({ message: 'Hello from server artifacts' });
       const response = await server.fetchAsync('/hello?error=1');
       expect(response.status).toBe(200);
       const { stack } = await response.json();
@@ -246,7 +372,7 @@ describe.each(['SSR', 'RSC'])('serialized server artifacts: %s', (mode) => {
       expect(response.status).toBe(200);
       const payload = await response.text();
       expect(payload).toContain('mapped action error');
-      expect(payload).toMatch(/\(\/actions\.ts:4:\d+\)/);
+      if (sourceMaps) expect(payload).toMatch(/\(\/actions\.ts:4:\d+\)/);
     }
   });
 });

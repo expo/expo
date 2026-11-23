@@ -1133,3 +1133,35 @@ function serverContents(filename: string) {
     artifacts: [{ type: 'js', filename, source: src, originFilename: 'entry.ts', metadata: {} }],
   };
 }
+
+it('defaults server output extensions while preserving client requests and explicit overrides', async () => {
+  for (const [environment, serverExtension, outputExtension, expected] of [
+    ['node', '.cjs', undefined, '.cjs'],
+    ['react-server', '.cjs', undefined, '.cjs'],
+    ['client', '.cjs', undefined, undefined],
+    ['node', '.js', undefined, '.js'],
+    ['node', '.cjs', '.js', '.js'],
+    ['client', '.cjs', '.custom', '.custom'],
+  ] as const) {
+    const devServer = createDevServerForStaticPageTests();
+    devServer['serverOutputExtension'] = serverExtension;
+    const load = jest.spyOn(devServer as any, 'metroLoadModuleContents').mockResolvedValue({
+      filename: 'entry',
+      bundle: 'code',
+      map: '',
+    });
+    await devServer['ssrLoadModuleContents']('/app/index.ts', {
+      environment,
+      outputExtension,
+      entryFilename: 'exact.bundle',
+    });
+    expect(load).toHaveBeenCalledWith(
+      '/app/index.ts',
+      expect.objectContaining({
+        environment,
+        outputExtension: expected,
+        entryFilename: 'exact.bundle',
+      })
+    );
+  }
+});

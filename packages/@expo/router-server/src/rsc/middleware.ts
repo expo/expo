@@ -16,6 +16,8 @@ import { renderRsc } from './rsc-renderer';
 declare const $$require_external: typeof require;
 
 const debug = createDebug('expo:router:server:rsc-renderer');
+// TODO(@kitten): Bundle RSC like the SSR renderer so the serializer handles chunking internally.
+const serverOutputExtension = path.extname(__filename);
 
 function serverRequire<T = any>(...targetOutputModulePath: string[]): T {
   // NOTE(@kitten): This `__dirname` will be located in the output file system, e.g. `dist/server/*`
@@ -36,7 +38,7 @@ function getServerActionManifest(
     string,
   ]
 > {
-  const filePath = `../../rsc/${platform}/action-manifest.js`;
+  const filePath = `../../rsc/${platform}/action-manifest${serverOutputExtension}`;
   return serverRequire(filePath);
 }
 
@@ -53,7 +55,7 @@ function getSSRManifest(
     string,
   ]
 > {
-  const filePath = `../../rsc/${platform}/ssr-manifest.js`;
+  const filePath = `../../rsc/${platform}/ssr-manifest${serverOutputExtension}`;
   return serverRequire(filePath);
 }
 
@@ -147,7 +149,7 @@ export async function renderRscAsync(
     {
       router: () => {
         // NOTE(@kitten): [WORKAROUND] Assumes __dirname is at `dist/server/_expo/functions/_flight`
-        return serverRequire(`../../rsc/${platform}/router.js`);
+        return serverRequire(`../../rsc/${platform}/router${serverOutputExtension}`);
       },
     },
     args

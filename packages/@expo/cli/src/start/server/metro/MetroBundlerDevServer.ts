@@ -74,6 +74,7 @@ import {
   getBaseUrlFromExpoConfig,
   getChunkingStrategyFromExpoConfig,
   getMetroDirectBundleOptions,
+  isServerEnvironment,
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { createInfoHandler, createOpen } from '../middleware/openHandlers';
@@ -244,8 +245,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const middlewareFilePath = path.isAbsolute(manifest.middleware.file)
       ? manifest.middleware.file
       : path.join(appDir, manifest.middleware.file);
+    const serverOutputExtension = this.serverOutputExtension;
     const artifactFilename = convertPathToModuleSpecifier(
-      path.join(outputDir, path.relative(appDir, middlewareFilePath.replace(/\.[tj]sx?$/, '.js')))
+      path.join(
+        outputDir,
+        path.relative(appDir, middlewareFilePath.replace(/\.[tj]sx?$/, serverOutputExtension))
+      )
     );
     const contents = await this.bundleApiRoute(middlewareFilePath, {
       platform,
@@ -280,6 +285,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     platform: string;
   }): Promise<{ files: ExportAssetMap; manifest: RoutesManifest<string> }> {
     const { routerRoot } = this.instanceMetroOptions;
+    const serverOutputExtension = this.serverOutputExtension;
     assert(
       routerRoot != null,
       'The server must be started before calling exportExpoRouterApiRoutesAsync.'
@@ -325,9 +331,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const artifactFilename =
         route.page === rscPath
           ? // HACK: Add RSC renderer to the output...
-            convertPathToModuleSpecifier(path.join(outputDir, '.' + rscPath + '.js'))
+            convertPathToModuleSpecifier(
+              path.join(outputDir, '.' + rscPath + serverOutputExtension)
+            )
           : convertPathToModuleSpecifier(
-              path.join(outputDir, path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js')))
+              path.join(
+                outputDir,
+                path.relative(appDir, filepath.replace(/\.[tj]sx?$/, serverOutputExtension))
+              )
             );
       const contents = await this.bundleApiRoute(filepath, {
         platform,
@@ -370,7 +381,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     includeSourceMaps?: boolean;
     platform?: string;
   }) {
-    const artifactFilename = '_expo/server/render.js';
+    const artifactFilename = `_expo/server/render${this.serverOutputExtension}`;
     const renderModule = await this.ssrLoadModuleContents(
       require.resolve('@expo/router-server/node/render.js'),
       {
@@ -417,7 +428,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // NOTE(@hassankhan): Should we parallelize loader bundling?
     for (const entry of entryPoints) {
       const pagePath = entry.page.startsWith('/') ? entry.page.slice(1) : entry.page;
-      const artifactFilename = convertPathToModuleSpecifier(path.join(outputDir, pagePath + '.js'));
+      const artifactFilename = convertPathToModuleSpecifier(
+        path.join(outputDir, pagePath + this.serverOutputExtension)
+      );
       const contents = await this.bundleLoader(entry.file, {
         platform,
         entryFilename: artifactFilename,
@@ -818,6 +831,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   // Set when the server is started.
   private instanceMetroOptions: Partial<ExpoMetroOptions> = {};
+  private serverOutputExtension: '.js' | '.cjs' = '.js';
 
   private ssrLoadModule: SSRLoadModuleFunc = async (
     filePath,
@@ -1005,6 +1019,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       ...specificOptions,
     };
+
+    if (isServerEnvironment(opts.environment)) {
+      opts.outputExtension ??= this.serverOutputExtension;
+    }
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
     const { filename, bundle, map, ...rest } = await this.metroLoadModuleContents(filePath, opts);
@@ -1202,7 +1220,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
 
     // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
-    files.set(`_expo/rsc/${options.platform}/ssr-manifest.js`, {
+    const manifestFilename = `_expo/rsc/${options.platform}/ssr-manifest${this.serverOutputExtension}`;
+    files.set(manifestFilename, {
       targetDomain: 'server',
       contents:
         'module.exports = ' +
@@ -1332,6 +1351,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
     }
 
+    this.serverOutputExtension = config.pkg.type === 'module' ? '.cjs' : '.js';
     const instanceMetroOptions = {
       chunkingStrategy: getChunkingStrategyFromExpoConfig(exp),
       isExporting: !!options.isExporting,
@@ -1539,6 +1559,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       if (isReactServerComponentsEnabled) {
         this.bindRSCDevModuleInjectionHandler();
         const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
+          outputExtension: this.serverOutputExtension,
           instanceMetroOptions: this.instanceMetroOptions,
           rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
@@ -1612,6 +1633,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       if (isReactServerComponentsEnabled) {
         this.bindRSCDevModuleInjectionHandler();
         const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
+          outputExtension: this.serverOutputExtension,
           instanceMetroOptions: this.instanceMetroOptions,
           rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
