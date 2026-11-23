@@ -708,6 +708,20 @@ it('direct stand-ins: requires externalDependencies to list "@expo/ui/ExpoUI"', 
   );
 });
 
+for (const product of ['RNWorklets', 'RNScreens']) {
+  it(`direct stand-ins: replaces ${product}Headers with ${product}`, async () => {
+    const input = withHeadersStandIn(`${product}Headers`, [product]);
+    assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, [product]);
+  });
+}
+
+it('direct stand-ins: requires externalDependencies to list "RNWorklets"', async () => {
+  await rejectsManifest(
+    withHeadersStandIn('RNWorkletsHeaders', ['expo-modules-core/ExpoModulesCore']),
+    /: it names unknown dependency "RNWorklets", which the generated package/
+  );
+});
+
 it('product dependency: rejects a .product naming a product absent from spm.config.json', async () => {
   await rejectsManifest(
     withPackages(

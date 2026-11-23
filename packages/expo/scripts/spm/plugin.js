@@ -95,6 +95,7 @@ const {
   dumpModuleManifest,
   emitDirectPackage,
   headersStandInsOf,
+  rnLibraryPlaceholdersOf,
 } = require('./direct');
 const {
   emitExpoModulesJSIHeadersPackage,
@@ -572,7 +573,7 @@ function resolveHeadersStandIn({ packageName, productName }, precompiled, cacheD
 
 /**
  * Emits the source package of the module whose first pod is `identity`: its checked-in
- * manifest as it stands when that depends on a headers stand-in (`direct` is then
+ * manifest as it stands when that depends on a headers stand-in or placeholder (`direct` is then
  * set), else that manifest mirrored, or else one Swift target over its sources. A
  * pure-Swift module is refused when its podspec declares linkage, because the
  * emitted package would link less than the podspec does. Returns null for a module
@@ -587,7 +588,8 @@ function emitSourceModule(identity, hasManifest, emitContext, dumpManifest) {
   if (hasManifest) {
     const { json, manifest } = dumpManifest(moduleRoot, packageName);
     const standIns = headersStandInsOf(manifest);
-    if (standIns.length === 0) {
+    const placeholders = rnLibraryPlaceholdersOf(manifest);
+    if (standIns.length === 0 && placeholders.length === 0) {
       return emitSourceManifestPackage(moduleRoot, emitContext, json);
     }
     const headersXCFrameworks = Object.fromEntries(
@@ -603,6 +605,9 @@ function emitSourceModule(identity, hasManifest, emitContext, dumpManifest) {
       macrosPackageRoot: emitContext.macrosPackageRoot,
       react: emitContext.react,
       codegenPkgPath: emitContext.codegenPkgPath,
+      placeholders,
+      reactNativeLibsDir: emitContext.reactNativeLibsDir,
+      minimumIosDeploymentTarget: emitContext.minimumIosDeploymentTarget,
       manifest,
     });
     return { ...emission, direct: true };
@@ -725,8 +730,8 @@ function manifestDumper() {
  * Both passes, over fresh pod records, with the pods in `fallbackPods` linked precompiled
  * though a buildFromSource pattern matches them.
  *
- * @param sourceContext `{ react, outDir, codegenPkgPath, jsiHeadersPkgPath }`: what every
- *   emitted package is generated against, besides what pass 1 decides.
+ * @param sourceContext `{ react, outDir, codegenPkgPath, jsiHeadersPkgPath, reactNativeLibsDir }`:
+ *   what every emitted package is generated against, besides what pass 1 decides.
  */
 function linkPasses(
   fallbackPods,
@@ -1089,7 +1094,13 @@ module.exports = function expoSpmPlugin(context) {
     cacheDir: artifactCacheDir,
     matchBuildFromSource,
     dumpManifest: manifestDumper(),
-    sourceContext: { react, outDir, codegenPkgPath, jsiHeadersPkgPath },
+    sourceContext: {
+      react,
+      outDir,
+      codegenPkgPath,
+      jsiHeadersPkgPath,
+      reactNativeLibsDir: path.join(outputDir, 'libs'),
+    },
   };
   // A pod a buildFromSource pattern matches is linked precompiled when no source route takes
   // it, as ExpoModulesCore never is. Linking one changes what pass 2 decides — a sibling pod's

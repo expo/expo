@@ -1066,9 +1066,10 @@ describe('a module with a checked-in manifest', () => {
   /**
    * Syncs expo-haptics (pod ExpoHaptics) with a checked-in manifest that depends on the
    * ExpoModulesCore headers when `onCoreHeaders`, an artifact when `precompiled`, the app's
-   * `buildFromSource` patterns, and `spmConfig` as its spm.config.json.
+   * `buildFromSource` patterns, and `spmConfig` as its spm.config.json. `manifest` replaces
+   * that dumped manifest.
    */
-  function sync({ onCoreHeaders, precompiled, buildFromSource, spmConfig }) {
+  function sync({ onCoreHeaders, precompiled, buildFromSource, spmConfig, manifest }) {
     const tmp = makeTempDir('expo-spm-direct-rule-');
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     const moduleRoot = path.join(tmp, 'expo-haptics');
@@ -1076,7 +1077,7 @@ describe('a module with a checked-in manifest', () => {
     fs.writeFileSync(path.join(moduleRoot, 'Package.swift'), '// swift-tools-version: 6.0\n');
     if (spmConfig != null) writeSpmConfig(moduleRoot, spmConfig);
     runDumpPackage.mockReturnValue(
-      dumpedManifest('expo-haptics', 'ExpoHaptics', { onCoreHeaders })
+      manifest ?? dumpedManifest('expo-haptics', 'ExpoHaptics', { onCoreHeaders })
     );
     resolveExpoModules.mockReturnValue({
       ...modulesOf([coreAt(core), ['expo-haptics', [['ExpoHaptics', podspecDir]]]]),
@@ -1162,6 +1163,29 @@ describe('a module with a checked-in manifest', () => {
     expect(fs.existsSync(generatedManifest)).toBe(true);
     expect(printed(logs.log)).toContain('source via checked-in manifest (1): expo-haptics');
     expect(printed(logs.log)).toContain('source via direct checked-in manifest (0): —');
+  });
+
+  it("is built from a manifest that depends only on a React Native library's placeholder", () => {
+    builtDirect(
+      sync({
+        precompiled: false,
+        manifest: JSON.stringify({
+          name: 'expo-haptics',
+          dependencies: [{ fileSystem: [{ identity: 'rnworkletsheaders' }] }],
+          products: [
+            { name: 'ExpoHaptics', type: { library: ['automatic'] }, targets: ['ExpoHaptics'] },
+          ],
+          targets: [
+            {
+              name: 'ExpoHaptics',
+              type: 'regular',
+              path: 'ios',
+              dependencies: [{ product: ['RNWorkletsHeaders', 'RNWorkletsHeaders', null, null] }],
+            },
+          ],
+        }),
+      })
+    );
   });
 
   it.each([

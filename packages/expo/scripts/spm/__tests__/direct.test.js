@@ -11,7 +11,12 @@ jest.mock('../cli', () => ({
 }));
 
 const { runDumpPackage } = require('../cli');
-const { dumpModuleManifest, emitDirectPackage, headersStandInsOf } = require('../direct');
+const {
+  dumpModuleManifest,
+  emitDirectPackage,
+  headersStandInsOf,
+  rnLibraryPlaceholdersOf,
+} = require('../direct');
 const { rerunSpmUpdate, thrownBy } = require('./helpers');
 
 const hapticsManifest = {
@@ -542,6 +547,129 @@ describe('emitDirectPackage', () => {
         /\.target\(\s*name: "ExpoUIHeadersDependencies",\s*dependencies: \[\s*\.product\(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders"\),\s*\.product\(name: "ExpoModulesWorkletsHeaders", package: "ExpoModulesWorkletsHeaders"\),\s*\]/
       );
       expect(uiManifest().match(/\.package\(/g)).toHaveLength(2);
+    });
+  });
+
+  describe('with an RN library placeholder', () => {
+    let reactNativeLibsDir;
+    const placeholderProduct = (name) => ({ product: [name, name, null, null] });
+    const emitDependingOn = (dependency, minimumIosDeploymentTarget) => {
+      const manifest = manifestDependingOn(dependency);
+      return emitDirectPackage({
+        moduleRoot: path.join(root, 'expo-haptics'),
+        packageName: 'expo-haptics',
+        outDir,
+        headersXCFrameworks: {},
+        jsiHeadersPkgPath,
+        macrosPackageRoot,
+        placeholders: rnLibraryPlaceholdersOf(manifest),
+        reactNativeLibsDir,
+        minimumIosDeploymentTarget,
+        manifest,
+      });
+    };
+
+    beforeEach(() => {
+      reactNativeLibsDir = path.join(root, 'libs');
+      fs.mkdirSync(reactNativeLibsDir);
+      for (const [npmName, productName] of [
+        ['react-native-worklets', 'RNWorklets'],
+        ['react-native-screens', 'RNScreens'],
+      ]) {
+        const packageRoot = path.join(root, 'node_modules', npmName);
+        fs.mkdirSync(packageRoot, { recursive: true });
+        fs.writeFileSync(path.join(packageRoot, 'Package.swift'), `// ${productName}\n`);
+        fs.symlinkSync(packageRoot, path.join(reactNativeLibsDir, productName));
+      }
+    });
+
+    it.each([
+      ['RNWorkletsHeaders', 'RNWorklets'],
+      ['RNScreensHeaders', 'RNScreens'],
+    ])("depends for %s on React Native's %s package through its libs link", (name, product) => {
+      emitDependingOn(placeholderProduct(name), '16.4');
+      const placeholderDir = path.join(outDir, 'direct', name);
+      const manifest = fs.readFileSync(path.join(placeholderDir, 'Package.swift'), 'utf8');
+      expect(manifest).toContain(`.package(path: "../../../libs/${product}")`);
+      expect(manifest.match(/\.package\(/g)).toHaveLength(1);
+      expect(manifest).toContain('platforms: [.iOS("16.4")],');
+      expect(path.resolve(placeholderDir, `../../../libs/${product}`)).toBe(
+        path.join(reactNativeLibsDir, product)
+      );
+      expect(manifest).toContain(`.library(name: "${name}", targets: ["${name}Dependencies"])`);
+      expect(manifest).toMatch(
+        new RegExp(
+          `\\.target\\(\\s*name: "${name}Dependencies",\\s*dependencies: \\[\\s*\\.product\\(name: "${product}", package: "${product}"\\),`
+        )
+      );
+      expect(
+        fs.existsSync(path.join(placeholderDir, `${name}Dependencies`, `${name}Dependencies.swift`))
+      ).toBe(true);
+    });
+
+    it("declares react-native-screens' iOS floor when the Expo modules declare none", () => {
+      emitDependingOn(placeholderProduct('RNScreensHeaders'), null);
+      const manifest = fs.readFileSync(
+        path.join(outDir, 'direct', 'RNScreensHeaders', 'Package.swift'),
+        'utf8'
+      );
+      expect(manifest).toContain('platforms: [.iOS("15.1")],');
+    });
+
+    it("raises a core floor below react-native-screens' to 15.1", () => {
+      emitDependingOn(placeholderProduct('RNScreensHeaders'), '15.0');
+      expect(
+        fs.readFileSync(path.join(outDir, 'direct', 'RNScreensHeaders', 'Package.swift'), 'utf8')
+      ).toContain('platforms: [.iOS("15.1")],');
+    });
+
+    it('emits a headers stand-in and a placeholder for a manifest that names both', () => {
+      const manifest = manifestDependingOn(
+        { product: ['ExpoModulesCoreHeaders', 'ExpoModulesCoreHeaders', null, null] },
+        placeholderProduct('RNScreensHeaders')
+      );
+      emitDirectPackage({
+        moduleRoot: path.join(root, 'expo-haptics'),
+        packageName: 'expo-haptics',
+        outDir,
+        headersXCFrameworks: { ExpoModulesCoreHeaders: coreHeadersXCFramework },
+        jsiHeadersPkgPath,
+        macrosPackageRoot,
+        placeholders: rnLibraryPlaceholdersOf(manifest),
+        reactNativeLibsDir,
+        minimumIosDeploymentTarget: '16.4',
+        manifest,
+      });
+      const directDir = path.join(outDir, 'direct');
+      expect(fs.existsSync(path.join(directDir, 'ExpoModulesCoreHeaders', 'Package.swift'))).toBe(
+        true
+      );
+      expect(
+        fs.readFileSync(path.join(directDir, 'RNScreensHeaders', 'Package.swift'), 'utf8')
+      ).toContain('.package(path: "../../../libs/RNScreens")');
+    });
+
+    it("names the library's product as provided, so no pod dependency on it is reported", () => {
+      const emission = emitDependingOn(placeholderProduct('RNScreensHeaders'), '16.4');
+      expect(emission.ok.spmProductNames).toEqual(['RNScreens']);
+    });
+
+    it.each([
+      ['React Native linked no RNWorklets package', (link) => fs.rmSync(link)],
+      [
+        'the RNWorklets link points at nothing',
+        (link) => fs.rmSync(fs.realpathSync(link), { recursive: true }),
+      ],
+    ])('fails, writing no package, when %s', (_, breakLink) => {
+      const workletsLibLink = path.join(reactNativeLibsDir, 'RNWorklets');
+      breakLink(workletsLibLink);
+      const thrown = thrownBy(() => emitDependingOn(placeholderProduct('RNWorkletsHeaders')));
+      expect(thrown.message).toContain(
+        `expo-haptics's Package.swift depends on RNWorkletsHeaders, but React Native linked no RNWorklets package at ${workletsLibLink}.`
+      );
+      expect(thrown.message).toContain('npx expo install react-native-worklets');
+      expect(thrown.message).toContain(rerunSpmUpdate);
+      expect(fs.existsSync(path.join(outDir, 'direct'))).toBe(false);
     });
   });
 
