@@ -1,0 +1,46 @@
+{
+  "name": "server-tester",
+  "version": "0.0.1",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "prebuild": "TEMPLATE_DIR=\"../../templates/expo-template-bare-minimum\" && (cd \"$TEMPLATE_DIR\" && PACKED_FILE=$(npm pack) && mv \"$PACKED_FILE\" pack.tgz) && npx expo prebuild --clean --template \"$TEMPLATE_DIR/pack.tgz\"",
+    "start": "E2E_ROUTER_WEB_OUTPUT=server expo start",
+    "start:static": "E2E_ROUTER_WEB_OUTPUT=static expo start",
+    "export": "E2E_ROUTER_WEB_OUTPUT=server expo export -p web",
+    "export:static": "E2E_ROUTER_WEB_OUTPUT=static expo export -p web",
+    "serve": "expo serve",
+    "serve:express": "node servers/express.js dist",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format"
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
+    "expo": "workspace:*",
+    "expo-build-properties": "workspace:*",
+    "expo-font": "workspace:*",
+    "expo-linking": "workspace:*",
+    "expo-router": "workspace:*",
+    "expo-server": "workspace:*",
+    "expo-splash-screen": "workspace:*",
+    "jose": "^5",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-native": "0.88.1",
+    "react-native-gesture-handler": "~3.3.0",
+    "react-native-safe-area-context": "~5.11.1",
+    "react-native-screens": "4.30.1",
+    "react-native-web": "~0.21.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.3.0",
+    "compression": "^1.8.0",
+    "esbuild": "^0.28.1",
+    "express": "^5.1.0",
+    "morgan": "^1.11.0",
+    "workerd": "^1.20250807.0"
+  }
+}
