@@ -10,7 +10,13 @@ final class BlurEffectView: UIVisualEffectView {
   @Clamping(lowerBound: 0.01, upperBound: 1)
   var intensity: Double = 0.5 {
     didSet {
-      setNeedsEffectUpdate()
+      // Move the paused animator instead of making a new one. A new animator for each change makes UIKit look up
+      // the previous animator for each backdrop key path, which blocks the main thread when intensity is animated.
+      if !needsEffectUpdate, let animator, animator.state == .active {
+        animator.fractionComplete = CGFloat(intensity)
+      } else {
+        setNeedsEffectUpdate()
+      }
     }
   }
 
