@@ -219,8 +219,6 @@ function productAutolinkCondition(autolinkConditions, moduleRoot, productName) {
  * The gated products autolinking never resolves as a pod, by package root: companions
  * such as expo-camera's barcode scanner, which a checked-in manifest links, and
  * expo-modules-core's worklets adapter, whose package `linkGeneratedCompanions` generates.
- *
- * @param resolvedPodNames the names of the pods autolinking resolved.
  */
 function indexGatedCompanions(metadata, resolvedPodNames) {
   const byRoot = new Map();
@@ -238,11 +236,11 @@ function indexGatedCompanions(metadata, resolvedPodNames) {
 /**
  * Only a checked-in manifest's products have their autolinkWhen checked. A gated pod
  * linked any other way fails the sync whichever way its condition falls. Its module's
- * gated companions are left out, unless their package was generated. Leaving one out
- * differs from CocoaPods only where its condition is met. Such a companion fails the sync
- * only when a Podfile property decides it, because the app can switch that off; a pod or
- * npm package condition is met by what the app installs for its own reasons, so refusing
- * it would block the app.
+ * gated companions are left out, which differs from CocoaPods only where a companion's
+ * condition is met. Such a companion fails the sync only when a Podfile property
+ * decides it, because the app can switch that off; a pod or npm package condition is
+ * met by what the app installs for its own reasons, so refusing it would block the app.
+ * A companion whose package pass 3 generated is not left out.
  *
  * @param linked the precompiled and pure-Swift records, in pass order.
  * @param generatedCompanions the pod names of the companions whose package was generated.
@@ -587,10 +585,10 @@ function resolveHeadersStandIn({ packageName, productName }, precompiled, cacheD
 
 /**
  * Emits the source package of the module whose first pod is `identity`: its checked-in
- * manifest as it stands when that depends on a headers stand-in or a React Native
- * library placeholder (`direct` is then set), else that manifest mirrored, or else one
- * Swift target over its sources. A pure-Swift module is refused when its podspec
- * declares linkage, because the emitted package would link less than the podspec does. Returns null for a module
+ * manifest as it stands when that depends on a headers stand-in or placeholder (`direct` is then
+ * set), else that manifest mirrored, or else one Swift target over its sources. A
+ * pure-Swift module is refused when its podspec declares linkage, because the
+ * emitted package would link less than the podspec does. Returns null for a module
  * with no sources: the pod's own `no-apple-sources` report covers it. Returns null too
  * for a direct module whose headers a later round provides.
  *

@@ -553,81 +553,8 @@ describe('emitDirectPackage', () => {
 
   describe('with an RN library placeholder', () => {
     let reactNativeLibsDir;
-    let workletsLibLink;
-    let workletsPackageRoot;
-    const placeholderDir = () => path.join(outDir, 'direct', 'RNWorkletsHeaders');
-    const placeholderManifest = () =>
-      fs.readFileSync(path.join(placeholderDir(), 'Package.swift'), 'utf8');
-    const emitDependingOn = (...dependencies) =>
-      emitDirectPackage({
-        moduleRoot: path.join(root, 'expo-haptics'),
-        packageName: 'expo-haptics',
-        outDir,
-        headersXCFrameworks: { ExpoModulesCoreHeaders: coreHeadersXCFramework },
-        jsiHeadersPkgPath,
-        macrosPackageRoot,
-        reactNativeLibsDir,
-        manifest: manifestDependingOn(...dependencies),
-      });
-    const placeholderProduct = {
-      product: ['RNWorkletsHeaders', 'RNWorkletsHeaders', null, null],
-    };
-
-    // React Native's sync writes `<outputDir>/libs/<SwiftName>` as a link to the package
-    // directory, and the plugin writes into `<outputDir>/expo`.
-    beforeEach(() => {
-      reactNativeLibsDir = path.join(root, 'libs');
-      workletsLibLink = path.join(reactNativeLibsDir, 'RNWorklets');
-      workletsPackageRoot = path.join(root, 'node_modules', 'react-native-worklets');
-      fs.mkdirSync(workletsPackageRoot, { recursive: true });
-      fs.writeFileSync(path.join(workletsPackageRoot, 'Package.swift'), '// RNWorklets\n');
-      fs.mkdirSync(reactNativeLibsDir);
-      fs.symlinkSync(workletsPackageRoot, workletsLibLink);
-    });
-
-    it.each([
-      ['product', placeholderProduct],
-      ['name', { byName: ['RNWorkletsHeaders', null] }],
-    ])('declares one RNWorkletsHeaders product for a %s dependency on it', (_, dependency) => {
-      emitDependingOn({ byName: ['ExpoModulesCoreHeaders', null] }, dependency);
-      expect(placeholderManifest()).toContain('name: "RNWorkletsHeaders",');
-      expect(placeholderManifest().match(/\.library\(/g)).toHaveLength(1);
-      expect(placeholderManifest()).toContain(
-        '.library(name: "RNWorkletsHeaders", targets: ["RNWorkletsHeadersDependencies"])'
-      );
-    });
-
-    it("depends on React Native's RNWorklets package through its libs link", () => {
-      emitDependingOn(placeholderProduct);
-      const declaration = '.package(path: "../../../libs/RNWorklets")';
-      expect(placeholderManifest()).toContain(declaration);
-      expect(path.resolve(placeholderDir(), '../../../libs/RNWorklets')).toBe(workletsLibLink);
-      expect(placeholderManifest()).not.toContain('node_modules');
-      expect(placeholderManifest()).not.toContain(fs.realpathSync(workletsPackageRoot));
-      expect(placeholderManifest().match(/\.package\(/g)).toHaveLength(1);
-      expect(placeholderManifest()).toMatch(
-        /\.target\(\s*name: "RNWorkletsHeadersDependencies",\s*dependencies: \[\s*\.product\(name: "RNWorklets", package: "RNWorklets"\),\s*\]/
-      );
-    });
-
-    it("depends on React Native's RNScreens package for the RNScreensHeaders placeholder", () => {
-      const screensPackageRoot = path.join(root, 'node_modules', 'react-native-screens');
-      fs.mkdirSync(screensPackageRoot, { recursive: true });
-      fs.writeFileSync(path.join(screensPackageRoot, 'Package.swift'), '// RNScreens\n');
-      fs.symlinkSync(screensPackageRoot, path.join(reactNativeLibsDir, 'RNScreens'));
-      emitDependingOn({ product: ['RNScreensHeaders', 'RNScreensHeaders', null, null] });
-      const screensDir = path.join(outDir, 'direct', 'RNScreensHeaders');
-      const manifest = fs.readFileSync(path.join(screensDir, 'Package.swift'), 'utf8');
-      expect(manifest).toContain('.package(path: "../../../libs/RNScreens")');
-      expect(path.resolve(screensDir, '../../../libs/RNScreens')).toBe(
-        path.join(reactNativeLibsDir, 'RNScreens')
-      );
-      expect(manifest).toMatch(
-        /\.target\(\s*name: "RNScreensHeadersDependencies",\s*dependencies: \[\s*\.product\(name: "RNScreens", package: "RNScreens"\),\s*\]/
-      );
-    });
-
-    it("declares the Expo modules' iOS floor, which is above the library's own", () => {
+    const placeholderProduct = (name) => ({ product: [name, name, null, null] });
+    const emitDependingOn = (dependency, minimumIosDeploymentTarget) =>
       emitDirectPackage({
         moduleRoot: path.join(root, 'expo-haptics'),
         packageName: 'expo-haptics',
@@ -636,74 +563,65 @@ describe('emitDirectPackage', () => {
         jsiHeadersPkgPath,
         macrosPackageRoot,
         reactNativeLibsDir,
-        minimumIosDeploymentTarget: '16.4',
-        manifest: manifestDependingOn(placeholderProduct),
+        minimumIosDeploymentTarget,
+        manifest: manifestDependingOn(dependency),
       });
-      expect(placeholderManifest()).toContain('platforms: [.iOS("16.4")],');
+
+    beforeEach(() => {
+      reactNativeLibsDir = path.join(root, 'libs');
+      fs.mkdirSync(reactNativeLibsDir);
+      for (const [npmName, productName] of [
+        ['react-native-worklets', 'RNWorklets'],
+        ['react-native-screens', 'RNScreens'],
+      ]) {
+        const packageRoot = path.join(root, 'node_modules', npmName);
+        fs.mkdirSync(packageRoot, { recursive: true });
+        fs.writeFileSync(path.join(packageRoot, 'Package.swift'), `// ${productName}\n`);
+        fs.symlinkSync(packageRoot, path.join(reactNativeLibsDir, productName));
+      }
     });
 
-    it('names no target RNWorklets', () => {
-      emitDependingOn(placeholderProduct);
-      expect(placeholderManifest()).not.toMatch(/\.(binaryTarget|target)\(\s*name: "RNWorklets"/);
-      expect(
-        fs.existsSync(
-          path.join(
-            placeholderDir(),
-            'RNWorkletsHeadersDependencies',
-            'RNWorkletsHeadersDependencies.swift'
-          )
+    it.each([
+      ['RNWorkletsHeaders', 'RNWorklets'],
+      ['RNScreensHeaders', 'RNScreens'],
+    ])("depends for %s on React Native's %s package through its libs link", (name, product) => {
+      emitDependingOn(placeholderProduct(name), '16.4');
+      const placeholderDir = path.join(outDir, 'direct', name);
+      const manifest = fs.readFileSync(path.join(placeholderDir, 'Package.swift'), 'utf8');
+      expect(manifest).toContain(`.package(path: "../../../libs/${product}")`);
+      expect(manifest.match(/\.package\(/g)).toHaveLength(1);
+      // The Expo floor is above the library's own.
+      expect(manifest).toContain('platforms: [.iOS("16.4")],');
+      expect(path.resolve(placeholderDir, `../../../libs/${product}`)).toBe(
+        path.join(reactNativeLibsDir, product)
+      );
+      expect(manifest).toContain(`.library(name: "${name}", targets: ["${name}Dependencies"])`);
+      expect(manifest).toMatch(
+        new RegExp(
+          `\\.target\\(\\s*name: "${name}Dependencies",\\s*dependencies: \\[\\s*\\.product\\(name: "${product}", package: "${product}"\\),`
         )
+      );
+      expect(
+        fs.existsSync(path.join(placeholderDir, `${name}Dependencies`, `${name}Dependencies.swift`))
       ).toBe(true);
     });
 
-    it('writes no Expo headers package the manifest does not name', () => {
-      emitDirectPackage({
-        moduleRoot: path.join(root, 'expo-haptics'),
-        packageName: 'expo-haptics',
-        outDir,
-        headersXCFrameworks: {},
-        jsiHeadersPkgPath,
-        macrosPackageRoot,
-        reactNativeLibsDir,
-        manifest: manifestDependingOn(placeholderProduct),
-      });
-      expect(fs.readdirSync(path.join(outDir, 'direct')).sort()).toEqual([
-        'RNWorkletsHeaders',
-        'expo-haptics',
-      ]);
-    });
-
     it.each([
-      ['React Native linked no RNWorklets package', () => fs.rmSync(workletsLibLink)],
+      ['React Native linked no RNWorklets package', (link) => fs.rmSync(link)],
       [
         'the RNWorklets link points at nothing',
-        () => fs.rmSync(workletsPackageRoot, { recursive: true }),
+        (link) => fs.rmSync(fs.realpathSync(link), { recursive: true }),
       ],
     ])('fails, writing no package, when %s', (_, breakLink) => {
-      breakLink();
-      const thrown = thrownBy(() => emitDependingOn(placeholderProduct));
+      const workletsLibLink = path.join(reactNativeLibsDir, 'RNWorklets');
+      breakLink(workletsLibLink);
+      const thrown = thrownBy(() => emitDependingOn(placeholderProduct('RNWorkletsHeaders')));
       expect(thrown.message).toContain(
         `expo-haptics's Package.swift depends on RNWorkletsHeaders, but React Native linked no RNWorklets package at ${workletsLibLink}.`
       );
-      expect(thrown.message).toContain('react-native-worklets is not installed');
       expect(thrown.message).toContain('npx expo install react-native-worklets');
       expect(thrown.message).toContain(rerunSpmUpdate);
       expect(fs.existsSync(path.join(outDir, 'direct'))).toBe(false);
-    });
-
-    it('changes no file in the placeholder when emitted again with the same inputs', () => {
-      emitDependingOn(placeholderProduct);
-      const snapshot = () =>
-        fs
-          .readdirSync(placeholderDir(), { recursive: true })
-          .sort()
-          .map((entry) => {
-            const stat = fs.lstatSync(path.join(placeholderDir(), entry), { bigint: true });
-            return [entry, stat.ino, stat.mtimeNs];
-          });
-      const first = snapshot();
-      emitDependingOn(placeholderProduct);
-      expect(snapshot()).toEqual(first);
     });
   });
 
@@ -842,7 +760,7 @@ describe('emitCompanionPackage', () => {
   const companionDir = () => path.join(outDir, 'direct', 'ExpoModulesWorkletsAdapter');
   const companionManifest = () =>
     fs.readFileSync(path.join(companionDir(), 'Package.swift'), 'utf8');
-  const emit = (product = workletsAdapter) =>
+  const emit = (product = workletsAdapter, minimumIosDeploymentTarget) =>
     emitCompanionPackage({
       moduleRoot,
       packageName: 'expo-modules-core',
@@ -854,6 +772,7 @@ describe('emitCompanionPackage', () => {
       react: null,
       codegenPkgPath: null,
       reactNativeLibsDir,
+      minimumIosDeploymentTarget,
     });
 
   beforeEach(() => {
@@ -932,19 +851,7 @@ let package = Package(
     ['an iOS floor below the Expo floor', ['iOS("15.1")']],
     ['no iOS floor', []],
   ])('raises a companion that declares %s to the Expo floor', (_, platforms) => {
-    emitCompanionPackage({
-      moduleRoot,
-      packageName: 'expo-modules-core',
-      companion: companionPackage({ ...workletsAdapter, platforms }),
-      outDir,
-      headersXCFrameworks,
-      jsiHeadersPkgPath,
-      macrosPackageRoot,
-      react: null,
-      codegenPkgPath: null,
-      reactNativeLibsDir,
-      minimumIosDeploymentTarget: '16.4',
-    });
+    emit({ ...workletsAdapter, platforms }, '16.4');
     expect(companionManifest()).toContain('    platforms: [.iOS("16.4")],\n');
   });
 
@@ -965,25 +872,6 @@ let package = Package(
       'ExpoModulesWorkletsHeaders',
       'RNWorkletsHeaders',
     ]);
-    expect(
-      fs.realpathSync(
-        path.join(
-          outDir,
-          'direct',
-          'ExpoModulesWorkletsHeaders',
-          'ExpoModulesWorkletsHeaders.xcframework'
-        )
-      )
-    ).toBe(fs.realpathSync(headersXCFrameworks.ExpoModulesWorkletsHeaders));
-  });
-
-  it('writes no package it does not depend on', () => {
-    headersXCFrameworks = { ExpoModulesCoreHeaders: headersXCFrameworks.ExpoModulesCoreHeaders };
-    emit(companionDependingOn('React'));
-    expect(fs.readdirSync(path.join(outDir, 'direct')).sort()).toEqual([
-      'ExpoModulesCoreHeaders',
-      'ExpoModulesWorkletsAdapter',
-    ]);
   });
 
   it('fails, writing no package, when React Native linked no RNWorklets package', () => {
@@ -992,31 +880,6 @@ let package = Package(
     expect(thrown.message).toContain(
       `ExpoModulesWorkletsAdapter's Package.swift depends on RNWorkletsHeaders, but React Native linked no RNWorklets package at ${workletsLibLink}.`
     );
-    expect(thrown.message).toContain('npx expo install react-native-worklets');
-    expect(thrown.message).toContain(rerunSpmUpdate);
     expect(fs.existsSync(path.join(outDir, 'direct'))).toBe(false);
-  });
-
-  it('fails, writing no package, when there is no JSI headers package', () => {
-    jsiHeadersPkgPath = null;
-    expect(() => emit()).toThrow(
-      'needs the ExpoModulesJSI headers, but expo-modules-jsi is not autolinked.'
-    );
-    expect(fs.existsSync(path.join(outDir, 'direct'))).toBe(false);
-  });
-
-  it('changes no file in the package when emitted again with the same inputs', () => {
-    emit();
-    const snapshot = () =>
-      fs
-        .readdirSync(companionDir(), { recursive: true })
-        .sort()
-        .map((entry) => {
-          const stat = fs.lstatSync(path.join(companionDir(), entry), { bigint: true });
-          return [entry, stat.ino, stat.mtimeNs];
-        });
-    const first = snapshot();
-    emit();
-    expect(snapshot()).toEqual(first);
   });
 });

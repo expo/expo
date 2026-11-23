@@ -708,15 +708,12 @@ it('direct stand-ins: requires externalDependencies to list "@expo/ui/ExpoUI"', 
   );
 });
 
-it('direct stand-ins: replaces RNWorkletsHeaders with RNWorklets', async () => {
-  const input = withHeadersStandIn('RNWorkletsHeaders', ['RNWorklets']);
-  assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, ['RNWorklets']);
-});
-
-it('direct stand-ins: replaces RNScreensHeaders with RNScreens', async () => {
-  const input = withHeadersStandIn('RNScreensHeaders', ['RNScreens']);
-  assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, ['RNScreens']);
-});
+for (const product of ['RNWorklets', 'RNScreens']) {
+  it(`direct stand-ins: replaces ${product}Headers with ${product}`, async () => {
+    const input = withHeadersStandIn(`${product}Headers`, [product]);
+    assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, [product]);
+  });
+}
 
 it('direct stand-ins: requires externalDependencies to list "RNWorklets"', async () => {
   await rejectsManifest(
