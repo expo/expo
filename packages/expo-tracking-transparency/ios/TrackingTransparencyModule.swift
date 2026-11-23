@@ -1,7 +1,6 @@
 import AdSupport
 import ExpoModulesCore
 
-// TODO: Rename the package to 'ExpoTracking'
 @ExpoModule("ExpoTrackingTransparency")
 public class TrackingTransparencyModule: Module {
   public override func didCreate() {
