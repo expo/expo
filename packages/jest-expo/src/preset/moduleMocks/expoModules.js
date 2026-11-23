@@ -612,6 +612,17 @@ module.exports = {
           { name: 'getPermissionsAsync', argumentsCount: 0, key: 'getPermissionsAsync' },
           { name: 'getStepCountAsync', argumentsCount: 2, key: 'getStepCountAsync' },
           { name: 'isAvailableAsync', argumentsCount: 0, key: 'isAvailableAsync' },
+          {
+            name: 'isRecordingAvailableAsync',
+            argumentsCount: 0,
+            key: 'isRecordingAvailableAsync',
+          },
+          { name: 'subscribeRecordingAsync', argumentsCount: 0, key: 'subscribeRecordingAsync' },
+          {
+            name: 'unsubscribeRecordingAsync',
+            argumentsCount: 0,
+            key: 'unsubscribeRecordingAsync',
+          },
           { name: 'requestPermissionsAsync', argumentsCount: 0, key: 'requestPermissionsAsync' },
         ],
         ExpoNetwork: [
@@ -1460,8 +1471,11 @@ module.exports = {
           getPermissionsAsync: { type: 'function' },
           getStepCountAsync: { type: 'function' },
           isAvailableAsync: { type: 'function' },
+          isRecordingAvailableAsync: { type: 'function' },
           removeListeners: { type: 'function' },
           requestPermissionsAsync: { type: 'function' },
+          subscribeRecordingAsync: { type: 'function' },
+          unsubscribeRecordingAsync: { type: 'function' },
         },
         ExpoNetwork: {
           addListener: { type: 'function' },

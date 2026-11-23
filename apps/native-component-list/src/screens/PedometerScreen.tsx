@@ -46,14 +46,28 @@ function usePedometerHistory({
   }, []);
 
   React.useEffect(() => {
-    if (Platform.OS !== 'ios') {
-      setData({ steps: 0 });
-      return;
-    }
+    (async () => {
+      const isRecordingAvailable = await Pedometer.isRecordingAvailableAsync();
 
-    Pedometer.getStepCountAsync(start, end).then((data) => {
+      if (!isRecordingAvailable) {
+        if (isMounted.current) {
+          setData({ steps: 0 });
+        }
+        return;
+      }
+
+      if (Platform.OS === 'android') {
+        await Pedometer.subscribeRecordingAsync();
+      }
+
+      const result = await Pedometer.getStepCountAsync(start, end);
       if (isMounted.current) {
-        setData(data);
+        setData(result);
+      }
+    })().catch((error) => {
+      console.log('Pedometer history error:', error);
+      if (isMounted.current) {
+        setData({ steps: 0 });
       }
     });
   }, [start, end]);
@@ -85,12 +99,19 @@ function StepHistoryMessage() {
     return yesterday;
   }, [today]);
 
+  const [isRecordingAvailable] = useResolvedValue(Pedometer.isRecordingAvailableAsync);
+
   const data = usePedometerHistory({ start: yesterday, end: today });
 
   const message = data ? `Steps in the last day: ${data.steps}` : `Loading health data...`;
   return (
     <View style={{ padding: 10 }}>
       <H2>Step History</H2>
+      {isRecordingAvailable === false ? (
+        <BodyText style={{ paddingTop: 10, fontWeight: 'bold' }}>
+          Pedometer history is not available on this device.
+        </BodyText>
+      ) : null}
       <BodyText>{message}</BodyText>
     </View>
   );
