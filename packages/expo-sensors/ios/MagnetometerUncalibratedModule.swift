@@ -3,48 +3,52 @@
 import CoreMotion
 import ExpoModulesCore
 
+// `@Event` needs a string literal, so it repeats this name.
 private let EVENT_MAGNETOMETER_DID_UPDATE = "magnetometerUncalibratedDidUpdate"
 
+@ExpoModule("ExponentMagnetometerUncalibrated")
 public final class MagnetometerUncalibratedModule: Module {
   private lazy var motionManager = CMMotionManager()
   private lazy var operationQueue = OperationQueue()
 
-  public func definition() -> ModuleDefinition {
-    Name("ExponentMagnetometerUncalibrated")
+  @Event("magnetometerUncalibratedDidUpdate")
+  var onMagnetometerUncalibratedUpdate: (ThreeAxisSensorEvent) -> Void
 
-    Events(EVENT_MAGNETOMETER_DID_UPDATE)
+  @JS
+  func isAvailableAsync() async -> Bool {
+    return motionManager.isMagnetometerAvailable
+  }
 
-    AsyncFunction("isAvailableAsync") {
-      return motionManager.isMagnetometerAvailable
+  @JS
+  func setUpdateInterval(intervalMs: Double) async {
+    motionManager.magnetometerUpdateInterval = intervalMs
+  }
+
+  public override func didStartListening(event: String) {
+    guard event == EVENT_MAGNETOMETER_DID_UPDATE, !motionManager.isMagnetometerActive else {
+      return
     }
-
-    AsyncFunction("setUpdateInterval") { (intervalMs: Double) in
-      motionManager.magnetometerUpdateInterval = intervalMs
-    }
-
-    OnStartObserving {
-      if motionManager.isMagnetometerActive {
+    motionManager.startMagnetometerUpdates(to: operationQueue) { [weak self] data, _ in
+      guard let data else {
         return
       }
-      motionManager.startMagnetometerUpdates(to: operationQueue) { [weak self] data, _ in
-        guard let magneticField = data?.magneticField, let timestamp = data?.timestamp else {
-          return
-        }
-        self?.sendEvent(EVENT_MAGNETOMETER_DID_UPDATE, [
-          "x": magneticField.x,
-          "y": magneticField.y,
-          "z": magneticField.z,
-          "timestamp": timestamp
-        ])
-      }
+      self?.onMagnetometerUncalibratedUpdate(ThreeAxisSensorEvent(
+        x: data.magneticField.x,
+        y: data.magneticField.y,
+        z: data.magneticField.z,
+        timestamp: data.timestamp
+      ))
     }
+  }
 
-    OnStopObserving {
-      motionManager.stopMagnetometerUpdates()
+  public override func didStopListening(event: String) {
+    guard event == EVENT_MAGNETOMETER_DID_UPDATE else {
+      return
     }
+    motionManager.stopMagnetometerUpdates()
+  }
 
-    OnDestroy {
-      motionManager.stopMagnetometerUpdates()
-    }
+  public override func willDestroy() {
+    motionManager.stopMagnetometerUpdates()
   }
 }

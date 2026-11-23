@@ -6,69 +6,60 @@ import ExpoModulesCore
 // Gravity on the planet this module supports (currently just Earth) represented as m/s^2.
 private let GRAVITY = 9.80665
 
+// `@Event` needs a string literal, so it repeats this name.
 private let EVENT_DEVICE_MOTION_DID_UPDATE = "deviceMotionDidUpdate"
 
+@ExpoModule("ExponentDeviceMotion")
 public final class DeviceMotionModule: Module {
   private lazy var motionManager = CMMotionManager()
   private lazy var operationQueue = OperationQueue()
 
-  public func definition() -> ModuleDefinition {
-    Name("ExponentDeviceMotion")
+  @Event("deviceMotionDidUpdate")
+  var onDeviceMotionUpdate: (DeviceMotionEvent) -> Void
 
-    Constant("Gravity") {
-      GRAVITY
+  @JS("Gravity")
+  lazy var gravity = GRAVITY
+
+  @JS
+  func isAvailableAsync() async -> Bool {
+    return motionManager.isDeviceMotionAvailable
+  }
+
+  @JS
+  func setUpdateInterval(intervalMs: Double) async {
+    motionManager.deviceMotionUpdateInterval = intervalMs / 1000.0
+  }
+
+  @JS
+  func getPermissionsAsync() async throws -> [String: Any] {
+    return try await MotionPermissionRequester.getPermissionsAsync(appContext: appContext)
+  }
+
+  @JS
+  func requestPermissionsAsync() async throws -> [String: Any] {
+    return try await MotionPermissionRequester.requestPermissionsAsync(appContext: appContext)
+  }
+
+  public override func didCreate() {
+    appContext?.permissions?.register([MotionPermissionRequester()])
+  }
+
+  public override func didStartListening(event: String) {
+    guard event == EVENT_DEVICE_MOTION_DID_UPDATE else {
+      return
     }
+    startDeviceMotionUpdates()
+  }
 
-    Events(EVENT_DEVICE_MOTION_DID_UPDATE)
-
-    AsyncFunction("isAvailableAsync") {
-      return motionManager.isDeviceMotionAvailable
+  public override func didStopListening(event: String) {
+    guard event == EVENT_DEVICE_MOTION_DID_UPDATE else {
+      return
     }
+    motionManager.stopDeviceMotionUpdates()
+  }
 
-    AsyncFunction("setUpdateInterval") { (intervalMs: Double) in
-      motionManager.deviceMotionUpdateInterval = intervalMs / 1000.0
-    }
-
-    AsyncFunction("getPermissionsAsync") { (promise: Promise) in
-      guard let permissionsManager = appContext?.permissions else {
-        return
-      }
-      permissionsManager.getPermissionUsingRequesterClass(
-        MotionPermissionRequester.self,
-        resolve: promise.legacyResolver,
-        reject: promise.legacyRejecter
-      )
-    }
-
-    AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
-      guard let permissionsManager = appContext?.permissions else {
-        return
-      }
-      permissionsManager.askForPermission(
-        usingRequesterClass: MotionPermissionRequester.self,
-        resolve: promise.legacyResolver,
-        reject: promise.legacyRejecter
-      )
-    }
-
-    OnStartObserving {
-      startDeviceMotionUpdates()
-    }
-
-    OnStopObserving {
-      motionManager.stopDeviceMotionUpdates()
-    }
-
-    OnDestroy {
-      motionManager.stopDeviceMotionUpdates()
-    }
-
-    OnCreate {
-      guard let permissionsManager = appContext?.permissions else {
-        return
-      }
-      permissionsManager.register([MotionPermissionRequester()])
-    }
+  public override func willDestroy() {
+    motionManager.stopDeviceMotionUpdates()
   }
 
   private func startDeviceMotionUpdates() {
@@ -85,34 +76,34 @@ public final class DeviceMotionModule: Module {
       let attitude = data.attitude
       let rotationRate = data.rotationRate
 
-      self.sendEvent(EVENT_DEVICE_MOTION_DID_UPDATE, [
-        "acceleration": [
-          "x": userAcceleration.x * GRAVITY,
-          "y": userAcceleration.y * GRAVITY,
-          "z": userAcceleration.z * GRAVITY,
-          "timestamp": data.timestamp
-        ],
-        "accelerationIncludingGravity": [
-          "x": (userAcceleration.x + data.gravity.x) * GRAVITY,
-          "y": (userAcceleration.y + data.gravity.y) * GRAVITY,
-          "z": (userAcceleration.z + data.gravity.z) * GRAVITY,
-          "timestamp": data.timestamp
-        ],
-        "rotation": [
-          "alpha": attitude.yaw,
-          "beta": attitude.pitch,
-          "gamma": attitude.roll,
-          "timestamp": data.timestamp
-        ],
-        "rotationRate": [
-          "alpha": radiansToDegrees(rotationRate.z),
-          "beta": radiansToDegrees(rotationRate.y),
-          "gamma": radiansToDegrees(rotationRate.x),
-          "timestamp": data.timestamp
-        ],
-        "orientation": getDeviceOrientationRotation(),
-        "interval": Double(self.motionManager.deviceMotionUpdateInterval)
-      ])
+      self.onDeviceMotionUpdate(DeviceMotionEvent(
+        acceleration: ThreeAxisSensorEvent(
+          x: userAcceleration.x * GRAVITY,
+          y: userAcceleration.y * GRAVITY,
+          z: userAcceleration.z * GRAVITY,
+          timestamp: data.timestamp
+        ),
+        accelerationIncludingGravity: ThreeAxisSensorEvent(
+          x: (userAcceleration.x + data.gravity.x) * GRAVITY,
+          y: (userAcceleration.y + data.gravity.y) * GRAVITY,
+          z: (userAcceleration.z + data.gravity.z) * GRAVITY,
+          timestamp: data.timestamp
+        ),
+        rotation: RotationEvent(
+          alpha: attitude.yaw,
+          beta: attitude.pitch,
+          gamma: attitude.roll,
+          timestamp: data.timestamp
+        ),
+        rotationRate: RotationEvent(
+          alpha: radiansToDegrees(rotationRate.z),
+          beta: radiansToDegrees(rotationRate.y),
+          gamma: radiansToDegrees(rotationRate.x),
+          timestamp: data.timestamp
+        ),
+        orientation: getDeviceOrientationRotation(),
+        interval: Double(self.motionManager.deviceMotionUpdateInterval)
+      ))
     }
   }
 }

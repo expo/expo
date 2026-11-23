@@ -3,48 +3,52 @@
 import CoreMotion
 import ExpoModulesCore
 
+// `@Event` needs a string literal, so it repeats this name.
 private let EVENT_GYROSCOPE_DID_UPDATE = "gyroscopeDidUpdate"
 
+@ExpoModule("ExponentGyroscope")
 public final class GyroscopeModule: Module {
   private lazy var motionManager = CMMotionManager()
   private lazy var operationQueue = OperationQueue()
 
-  public func definition() -> ModuleDefinition {
-    Name("ExponentGyroscope")
+  @Event("gyroscopeDidUpdate")
+  var onGyroscopeUpdate: (ThreeAxisSensorEvent) -> Void
 
-    Events(EVENT_GYROSCOPE_DID_UPDATE)
+  @JS
+  func isAvailableAsync() async -> Bool {
+    return motionManager.isGyroAvailable
+  }
 
-    AsyncFunction("isAvailableAsync") {
-      return motionManager.isGyroAvailable
+  @JS
+  func setUpdateInterval(intervalMs: Double) async {
+    motionManager.gyroUpdateInterval = intervalMs / 1000.0
+  }
+
+  public override func didStartListening(event: String) {
+    guard event == EVENT_GYROSCOPE_DID_UPDATE, !motionManager.isGyroActive else {
+      return
     }
-
-    AsyncFunction("setUpdateInterval") { (intervalMs: Double) in
-      motionManager.gyroUpdateInterval = intervalMs / 1000.0
-    }
-
-    OnStartObserving {
-      if motionManager.isGyroActive {
+    motionManager.startGyroUpdates(to: operationQueue) { [weak self] data, _ in
+      guard let data else {
         return
       }
-      motionManager.startGyroUpdates(to: operationQueue) { [weak self] data, _ in
-        guard let rotationRate = data?.rotationRate, let timestamp = data?.timestamp else {
-          return
-        }
-        self?.sendEvent(EVENT_GYROSCOPE_DID_UPDATE, [
-          "x": rotationRate.x,
-          "y": rotationRate.y,
-          "z": rotationRate.z,
-          "timestamp": timestamp
-        ])
-      }
+      self?.onGyroscopeUpdate(ThreeAxisSensorEvent(
+        x: data.rotationRate.x,
+        y: data.rotationRate.y,
+        z: data.rotationRate.z,
+        timestamp: data.timestamp
+      ))
     }
+  }
 
-    OnStopObserving {
-      motionManager.stopGyroUpdates()
+  public override func didStopListening(event: String) {
+    guard event == EVENT_GYROSCOPE_DID_UPDATE else {
+      return
     }
+    motionManager.stopGyroUpdates()
+  }
 
-    OnDestroy {
-      motionManager.stopGyroUpdates()
-    }
+  public override func willDestroy() {
+    motionManager.stopGyroUpdates()
   }
 }
