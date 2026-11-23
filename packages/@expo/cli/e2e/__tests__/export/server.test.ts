@@ -1,3 +1,4 @@
+import { getMetroServerRoot } from '@expo/config/paths';
 import JsonFile from '@expo/json-file';
 import fs from 'fs/promises';
 import path from 'path';
@@ -10,7 +11,7 @@ import {
   RUNTIME_EXPO_SERVE,
   RUNTIME_WORKERD,
 } from '../../utils/runtime';
-import { findProjectFiles } from '../utils';
+import { findProjectFiles, getServerTesterRoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
@@ -383,7 +384,7 @@ describe('server-output', () => {
         expect(files).not.toContain('server/_expo/functions/routing/(a)/multi-group-api+api.js');
         expect(files).not.toContain('server/_expo/functions/routing/(b)/multi-group-api+api.js');
 
-        // Load the sourcemap and check that the paths are relative
+        // Exported source names are URLs relative to the Metro server root.
         const map = JSON.parse(
           await fs.readFile(
             path.join(
@@ -394,7 +395,11 @@ describe('server-output', () => {
           )
         );
 
-        expect(map.sources).toContain('app/routing/(a,b)/multi-group-api+api.ts');
+        const projectRoot = getServerTesterRoot();
+        const sourceFile = path.join(projectRoot, 'app/routing/(a,b)/multi-group-api+api.ts');
+        expect(map.sources).toContain(
+          '/' + path.relative(getMetroServerRoot(projectRoot), sourceFile).split(path.sep).join('/')
+        );
       });
 
       it('keeps a magic import comment as a dynamic import', async () => {
