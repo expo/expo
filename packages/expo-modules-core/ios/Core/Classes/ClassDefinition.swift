@@ -83,15 +83,14 @@ public final class ClassDefinition: ObjectDefinition {
       return this
     }
 
-    let klass = try createClass(appContext: appContext, name: name, sharedObjectType: sharedObjectType, constructorClosure)
-      .asObject()
+    let klass = try createClass(appContext: appContext, name: name, constructorClosure).asObject()
 
     try decorate(object: klass, appContext: appContext)
 
     let prototype = klass.getProperty("prototype").getObject()
 
     // Bind the macro's `@JS` members: instance members onto the prototype, static members onto the constructor.
-    if let sharedObjectType, sharedObjectType.bindsOwnJSMembers {
+    if let sharedObjectType {
       try sharedObjectType._decorateSharedObject(prototype: prototype, in: appContext.runtime)
       try sharedObjectType._decorateSharedObject(constructor: klass, in: appContext.runtime)
     }
@@ -119,15 +118,7 @@ public final class ClassDefinition: ObjectDefinition {
   }
 
   @JavaScriptActor
-  private func createClass(
-    appContext: AppContext,
-    name: String,
-    sharedObjectType: (any AnySharedObject.Type)?,
-    _ constructor: @escaping JavaScriptRuntime.SyncFunctionClosure
-  ) throws -> JavaScriptFunction {
-    if let sharedObjectType {
-      return try JavaScriptBindings.createSharedObjectClass(sharedObjectType, name: name, appContext: appContext, constructor)
-    }
+  private func createClass(appContext: AppContext, name: String, _ constructor: @escaping JavaScriptRuntime.SyncFunctionClosure) throws -> JavaScriptFunction {
     if isSharedRef {
       return try appContext.runtime.createSharedRefClass(name, constructor)
     }
@@ -152,7 +143,7 @@ public final class ClassDefinition: ObjectDefinition {
       }
     }
     // Bind the macro's `@JS` members, which aren't in the DSL `properties`/`functions` dictionaries.
-    if let sharedObjectType = (associatedType as? DynamicSharedObjectType)?.innerType, sharedObjectType.bindsOwnJSMembers {
+    if let sharedObjectType = (associatedType as? DynamicSharedObjectType)?.innerType {
       try sharedObjectType._decorateSharedObject(prototype: proto, in: runtime)
     }
     return proto
