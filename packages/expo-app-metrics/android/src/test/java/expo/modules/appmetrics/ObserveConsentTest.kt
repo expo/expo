@@ -95,7 +95,7 @@ class ObserveConsentTest {
       parentFile?.mkdirs()
       writeText("{}")
     }
-    AppMetricsPreferences.setEnvironment(context, "production")
+    context.getSharedPreferences("dev.expo.app-metrics", Context.MODE_PRIVATE).edit().putString("environment", "production").commit()
 
     deleteStoredData(context)
 
