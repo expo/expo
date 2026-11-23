@@ -436,8 +436,48 @@ describe(WebMcpTools, () => {
         webmcp_outcome: 'invalid_input',
         webmcp_tool_page: cameraPage,
       },
-      { webmcp_tool_name: 'read_skill', webmcp_outcome: 'error', webmcp_tool_page: cameraPage },
+      { webmcp_tool_name: 'read_skill', webmcp_outcome: 'not_found', webmcp_tool_page: cameraPage },
       { webmcp_tool_name: 'ask_docs', webmcp_outcome: 'cancelled', webmcp_tool_page: cameraPage },
     ]);
+  });
+
+  it('reports an input error, a missing target, and a failed request as different outcomes', async () => {
+    responses.set('/.well-known/agent-skills/index.json', { skills: [] });
+    const failNextRequest = (status: number) =>
+      fetchMock.mockResolvedValueOnce({
+        ok: false,
+        status,
+        text: async () => '',
+        json: async () => ({}),
+      });
+    const { tools } = renderTools();
+
+    await tools.search_docs.execute({ query: '   ' }, { signal });
+    await tools.get_page_markdown.execute({ path: 'https://evil.example/' }, { signal });
+    await tools.get_page_markdown.execute({ path: 'get-started/' }, { signal });
+    await tools.get_page_markdown.execute({ section: 'Nope' }, { signal });
+    await tools.list_sections.execute({ area: 'eas', section: 'Nope' }, { signal });
+    await tools.read_skill.execute({ skill_name: 'nope' }, { signal });
+    failNextRequest(404);
+    await tools.get_page_markdown.execute({ path: '/nope/' }, { signal });
+    failNextRequest(500);
+    await tools.search_docs.execute({ query: 'camera' }, { signal });
+
+    expect(reportWebMcpToolCall.mock.calls.map(([params]) => params)).toEqual(
+      [
+        ['search_docs', 'invalid_input'],
+        ['get_page_markdown', 'invalid_input'],
+        ['get_page_markdown', 'invalid_input'],
+        ['get_page_markdown', 'not_found'],
+        ['list_sections', 'not_found'],
+        ['read_skill', 'not_found'],
+        ['get_page_markdown', 'not_found'],
+        ['search_docs', 'error'],
+      ].map(([tool, outcome]) => ({
+        webmcp_tool_name: tool,
+        webmcp_outcome: outcome,
+        webmcp_tool_page: '/',
+      }))
+    );
   });
 });

@@ -152,7 +152,7 @@ export function reportSectionView(section: string) {
 
 export type WebMcpToolCallParams = {
   webmcp_tool_name: string;
-  webmcp_outcome: 'success' | 'invalid_input' | 'error' | 'cancelled';
+  webmcp_outcome: 'success' | 'invalid_input' | 'not_found' | 'error' | 'cancelled';
   webmcp_tool_page: string;
 };
 
