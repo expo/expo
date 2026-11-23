@@ -780,17 +780,19 @@ function isOptionalDependency(name: string, path: NodePath<any>, state: State): 
     return true;
   }
 
-  // Valid statement stack for single-level try-block: expressionStatement -> blockStatement -> tryStatement
-  let sCount = 0;
+  // Functions declared inside a try block may be called outside it
   let p: NodePath<any> | NodePath<t.Node> | null = path;
-  while (p && sCount < 3) {
-    if (p.isStatement()) {
-      if (p.node.type === 'BlockStatement') {
-        return (
-          p.parentPath != null && p.parentPath.node.type === 'TryStatement' && p.key === 'block'
-        );
-      }
-      sCount += 1;
+  while (p) {
+    if (p.isFunction()) {
+      return false;
+    }
+    if (
+      p.isBlockStatement() &&
+      p.parentPath != null &&
+      p.parentPath.isTryStatement() &&
+      p.key === 'block'
+    ) {
+      return true;
     }
     p = p.parentPath;
   }
