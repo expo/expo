@@ -54,13 +54,14 @@ object ObserveConsent {
   /**
    * Saves the value and changes the gate. A grant after a revoke changes it only at the next launch.
    * When the save fails, a revoke still closes the gate, but a grant changes nothing: the next
-   * launch would read the earlier value.
+   * launch would read the earlier value. A first grant that cannot read the exit records throws
+   * and saves nothing.
    */
   @Synchronized
   internal fun update(
     context: Context,
     granted: Boolean,
-    exitInfoProvider: ExitInfoProvider = ExitInfoProviderImpl(context)
+    exitInfoProvider: ExitInfoProvider = ExitInfoProvider(ExitInfoProviderImpl(context)::readExitRecords)
   ): Update {
     val isSaved = when {
       // A failed revoke keeps its value in memory, so a later write of the file saves it.

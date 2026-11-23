@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.os.bundleOf
 import androidx.test.core.app.ApplicationProvider
+import android.app.ActivityManager
 import android.app.ApplicationExitInfo
 import expo.modules.appmetrics.crashreporting.CrashFileFormat
 import expo.modules.appmetrics.crashreporting.CrashFileReader
@@ -26,6 +27,7 @@ import kotlinx.coroutines.runBlocking
 import org.w3c.dom.Element
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.After
 import org.junit.Before
@@ -223,6 +225,33 @@ class ObserveConsentTest {
     ObserveConsent.load(context)
     val afterGrant = crashRecord(System.currentTimeMillis())
     assertEquals(listOf(timestamp(afterGrant)), reportedCrashTimes(listOf(afterGrant)))
+  }
+
+  @Test
+  @Config(manifest = Config.NONE, sdk = [30])
+  fun `a first grant that cannot read the exit records saves nothing, and a retry grants`() {
+    ObserveConsent.update(context, granted = false)
+    ObserveConsent.load(context)
+    AppMetricsPreferences.setEnvironment(context, "staging")
+    val failingQuery = mockk<Context> {
+      every { getSharedPreferences(any(), any()) } answers { context.getSharedPreferences(firstArg(), secondArg()) }
+      every { packageName } returns context.packageName
+      every { getSystemService(ActivityManager::class.java) } returns mockk {
+        every { getHistoricalProcessExitReasons(any(), any(), any()) } throws IllegalStateException("system server")
+      }
+    }
+
+    assertThrows(IllegalStateException::class.java) { ObserveConsent.update(failingQuery, granted = true) }
+    assertFalse(ObserveConsent.isGranted)
+    assertEquals(mapOf("observeConsent" to "not-granted"), savedOnDisk())
+
+    // A record dated ahead of the clock, for example after the clock moved back.
+    val beforeGrant = crashRecord(System.currentTimeMillis() + 60_000)
+    ObserveConsent.update(context, granted = true, exitInfoProvider = { listOf(beforeGrant) })
+    assertTrue(ObserveConsent.isGranted)
+    assertEquals("staging", savedOnDisk()["environment"])
+    ObserveConsent.load(context)
+    assertEquals(emptyList<String?>(), reportedCrashTimes(listOf(beforeGrant)))
   }
 
   @Test

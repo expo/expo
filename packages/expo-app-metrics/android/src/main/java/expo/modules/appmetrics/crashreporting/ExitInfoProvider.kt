@@ -82,11 +82,14 @@ fun interface ExitInfoProvider {
  * so its logic runs and tests on every SDK level.
  */
 class ExitInfoProviderImpl(private val context: Context) : ExitInfoProvider {
-  override fun getExitRecords(): List<ExitRecord> {
+  override fun getExitRecords(): List<ExitRecord> = runCatching { readExitRecords() }.getOrElse { emptyList() }
+
+  /** Like `getExitRecords`, but throws when the system cannot list the records. */
+  fun readExitRecords(): List<ExitRecord> {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
       return emptyList()
     }
-    return runCatching { queryExitRecords() }.getOrElse { emptyList() }
+    return queryExitRecords()
   }
 
   @RequiresApi(Build.VERSION_CODES.R)
