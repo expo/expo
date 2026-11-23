@@ -1,11 +1,13 @@
 import ExpoModulesCore
 
-struct SMSOptions: Record {
-  @Field var attachments: [SMSAttachment]
+@Record
+struct SMSOptions {
+  var attachments: [SMSAttachment] = []
 }
 
-struct SMSAttachment: Record {
-  @Field var uri: String
-  @Field var mimeType: String
-  @Field var filename: String
+@Record
+struct SMSAttachment {
+  var uri: String = ""
+  var mimeType: String = ""
+  var filename: String = ""
 }
