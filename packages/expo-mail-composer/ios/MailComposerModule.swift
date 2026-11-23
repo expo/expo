@@ -3,7 +3,6 @@
 import MessageUI
 import ExpoModulesCore
 
-// TODO: Rename the package to 'ExpoMail'
 @ExpoModule("ExpoMailComposer")
 public class MailComposerModule: Module {
   @MainActor
