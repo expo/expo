@@ -35,28 +35,3 @@ struct WidgetToggleView: ExpoSwiftUI.View {
     }
   }
 }
-
-@available(iOS 17.0, *)
-struct LiveActivityToggleView: ExpoSwiftUI.View {
-  @ObservedObject var props: ToggleProps
-
-  var body: some View {
-    SwiftUI.Toggle(
-      isOn: props.isOn ?? false,
-      intent: LiveActivityUserInteraction(
-        source: props.source,
-        target: props.target
-      )
-    ) {
-      if let label = props.label {
-        if let systemImage = props.systemImage {
-          Label(title: { Text(label) }, icon: { Image(systemName: systemImage) })
-        } else {
-          Text(label)
-        }
-      } else {
-        Children()
-      }
-    }
-  }
-}
