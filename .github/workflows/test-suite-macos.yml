@@ -103,6 +103,8 @@ jobs:
           ccache: 'true'
           ccache-variant: 'macos-app'
           bare-expo-macos-pods: 'true'
+          expo-modules-jsi-xcframework: 'true'
+          expo-modules-jsi-xcframework-platform: 'macos'
       - name: Reset ccache stats
         run: ccache -z
       - name: 📦 Install node modules
