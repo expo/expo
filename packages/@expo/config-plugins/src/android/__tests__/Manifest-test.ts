@@ -2,7 +2,7 @@ import { resolve } from 'path';
 
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as XML from '../../utils/XML';
-import type { AndroidManifest } from '../Manifest';
+import type { AndroidManifest, ManifestApplication } from '../Manifest';
 import {
   addMetaDataItemToMainApplication,
   addUsesLibraryItemToMainApplication,
@@ -126,3 +126,14 @@ describe(ensureToolsAvailable, () => {
     expect(firstFewLines2).toEqual(firstFewLines);
   });
 });
+
+describe('profileable', () => {
+    it('types a <profileable> child on the main application', () => {
+          const application: ManifestApplication = {
+                  $: { 'android:name': '.MainApplication',},
+                  profileable: [{ $: { 'android:shell': 'true', 'android:enabled': 'true' } }],
+          };
+          expect(application.profileable?.[0].$['android:shell']).toBe('true');
+    });
+});
+
