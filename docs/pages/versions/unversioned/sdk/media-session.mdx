@@ -20,7 +20,7 @@ import {
 
 > **info** `expo-audio` and `expo-video` do not use this module yet. They still configure the audio session, audio focus, and the lock screen controls themselves. In an app that uses them, the audio policy and holds of this module do not change how they play, and a hold adds a second writer of the same session.
 
-Use the JavaScript API to set the app-wide audio policy, keep the session active between sounds, and listen for interruptions and route changes. Library authors use the [native API](#for-library-authors).
+Use the JavaScript API to set the app-wide audio policy, keep the session active between sounds, and listen for interruptions and route changes. A media library that plays audio from JavaScript can [begin session uses](#begin-a-session-use-from-javascript). Native library authors use the [native API](#for-library-authors).
 
 ## Installation
 
@@ -148,27 +148,93 @@ The events differ between platforms:
 
 `InterruptionReason` and `RouteChangeReason` can get new values, so handle unknown values with a default case.
 
+### Begin a session use from JavaScript
+
+A library that plays audio from JavaScript, such as one built on the Web Audio API, begins a session use for each playback. The module sends the use commands as events. Pause or resume the player on those events, and lower its volume while the use is ducked.
+
+```tsx
+import { beginSessionUse, SessionUse } from 'expo-media-session';
+
+let use: SessionUse | null = null;
+
+function play() {
+  const previous = use;
+  use = beginSessionUse('my-player', { mixing: 'doNotMix' });
+  previous?.end();
+  use.addListener('pause', () => player.pause());
+  use.addListener('resume', () => player.play());
+  use.addListener('duck', ({ isDucked }) => player.setVolume(isDucked ? 0.5 : 1));
+  use.addListener('fail', ({ message }) => {
+    player.pause();
+    console.warn(message);
+  });
+  player.play();
+}
+
+function pause() {
+  use?.end();
+  use = null;
+  player.pause();
+}
+```
+
+- Begin a new use on every play. End it when the user pauses or stops, and when playback ends.
+- Begin the new use before you end the old one, so the session keeps its configuration in between.
+- Do not end the use in the event listeners. When the module will not resume a use, it ends the use itself and sends `ended`. An ended use sends no more events.
+- The use pauses when the app goes to the background, and resumes when the app returns. Set `continuesInBackground: true` to keep it playing. A change through `update` takes effect at the next background transition.
+- The `activationError` listener also receives a failed use, with the client name that you passed.
+
 ### Web
 
-On web, `setAudioPolicyAsync` stores the policy and does not change browser audio, and holds do nothing. The module never calls the interruption, route change, or activation error listeners.
+On web, `setAudioPolicyAsync` stores the policy and does not change browser audio, holds do nothing, and a session use never sends events. The module never calls the interruption, route change, or activation error listeners.
 
 ## For library authors
 
 A media library uses the Swift and Kotlin API to get the session and to show Now Playing controls. Only this module writes the system state: `AVAudioSession` category and activation, Android audio focus, `MPNowPlayingInfoCenter`, `MPRemoteCommandCenter` targets, and the Media3 session service. A library that writes them directly breaks the other libraries in the app.
 
+### Depend on the module
+
+A native library declares the module in three places:
+
+- **iOS:** add `s.dependency 'ExpoMediaSession'` to the podspec, and `import ExpoMediaSession` in Swift.
+- **Android:** add `implementation project(':expo-media-session')` to the `dependencies` block of **build.gradle**.
+- **package.json:** add `expo-media-session` to `peerDependencies`, so that the app installs one copy for every library.
+
+A library that plays audio from JavaScript needs only the `peerDependencies` entry and the [JavaScript API](#begin-a-session-use-from-javascript).
+
 ### Uses and holds
 
-Begin a use when the player starts. The call returns at once, and the module activates the session or requests audio focus in the background. Keep the token while the audio plays.
+Begin a use on every play, with a delegate that receives the commands for that use. The call returns at once, and the module activates the session or requests audio focus in the background. Keep the token in the player, and end it when the user pauses or stops, and when playback ends.
 
 <Tabs>
 
 <Tab label="Kotlin">
 
 ```kotlin
-val use = MediaSessionManager.get(context).beginUse("my-player", SessionRequirements(mixing = MixingRequirement.DO_NOT_MIX))
-use.awaitActivation() // A suspend function. Call it from a coroutine.
-// ...
-use.close()
+class Player(private val session: MediaSessionManaging) : SessionUseDelegate {
+  private var use: SessionUse? = null
+
+  fun play() {
+    val previous = use
+    use = session.beginUse("my-player", SessionRequirements(mixing = MixingRequirement.DO_NOT_MIX), delegate = this)
+    previous?.close()
+    // Start playback.
+  }
+
+  fun pause() {
+    use?.close()
+    use = null
+    // Pause playback.
+  }
+
+  override fun sessionUsePause(use: SessionUse, reason: SessionPauseReason) { /* ... */ }
+  override fun sessionUseResume(use: SessionUse) { /* ... */ }
+  override fun sessionUseDuck(use: SessionUse, isDucked: Boolean) { /* ... */ }
+  override fun sessionUseDidFail(use: SessionUse, error: CodedException) { /* ... */ }
+  override fun sessionUseDidEnd(use: SessionUse) { /* ... */ }
+}
+
+val player = Player(MediaSessionManager.get(context))
 ```
 
 </Tab>
@@ -178,32 +244,94 @@ use.close()
 ```swift
 import ExpoMediaSession
 
-let use = MediaSessionManager.shared.beginUse(client: "my-player", requirements: SessionRequirements(mixing: .doNotMix))
-try await use.activated()
-// ...
-use.end()
+final class Player: SessionUseDelegate {
+  private let session: any MediaSessionManaging
+  private var use: (any SessionUse)?
+
+  init(session: any MediaSessionManaging = MediaSessionManager.shared) {
+    self.session = session
+  }
+
+  func play() {
+    let previous = use
+    use = session.beginUse(client: "my-player", requirements: SessionRequirements(mixing: .doNotMix), delegate: self)
+    previous?.end()
+    // Start playback.
+  }
+
+  func pause() {
+    use?.end()
+    use = nil
+    // Pause playback.
+  }
+
+  func sessionUse(_ use: any SessionUse, pause reason: SessionPauseReason) { /* ... */ }
+  func sessionUseResume(_ use: any SessionUse) { /* ... */ }
+  func sessionUse(_ use: any SessionUse, duck isDucked: Bool) { /* ... */ }
+  func sessionUse(_ use: any SessionUse, didFail error: Error) { /* ... */ }
+  func sessionUseDidEnd(_ use: any SessionUse) { /* ... */ }
+}
 ```
 
 </Tab>
 
 </Tabs>
 
+- Begin the new use before you end the old one, so the session keeps its configuration in between.
+- Do not end the use in the delegate methods. When the module will not resume a use, it ends the use itself and calls `sessionUseDidEnd` after the last command. A later `end()` does nothing.
 - On Android, call `close()` to end a `SessionUse` or a `SessionHold`. On iOS, deinit ends them.
-- `awaitActivation()` (Android) and `activated()` (iOS) wait for the first activation. They stay pending while writes are suspended, and on Android while a delayed focus grant is pending. They throw if the activation fails or the use ends first.
+- The module holds the delegate weakly. A use without a delegate gets no commands.
+- A player with a delegate can start at once and follow the commands. A player that must make no sound before the session is active waits for the first activation: `awaitActivation()` on Android, a suspend function, and `activated()` on iOS. They stay pending while writes are suspended, and on Android while a delayed focus grant is pending. They throw if the activation fails or the use ends first. A failed activation also sends `didFail` to the delegate.
 - Requirements can only make the policy stricter. The mixing order is `doNotMixPersistent`, `doNotMix`, `duckOthers`, then `mixWithOthers`.
 - `hold(client:)` keeps the session active without requirements, like the JavaScript `holdSession`.
+
+### Commands
+
+The module sends each use only its own commands:
+
+- **pause:** pause the player. The reason is `interruption`, `background`, `outputDisconnected`, or on Android `focusLost`. Handle unknown reasons like a pause.
+- **resume:** play the player again. The module sends it only after a pause with the reason `interruption` or `background`, when every cause of the pause is gone.
+- **duck:** lower the volume with `true`, and restore it with `false`. Every `duck(true)` gets one `duck(false)` while the use is live.
+- **didFail:** the session or focus could not be activated for this use. Pause the player and report the error.
+- **didEnd:** the module ended the use. It comes after the last command for the use. The module does not call it when the client ends the use.
+
+The module ends the use after a pause it will not resume: an output disconnect, a permanent focus loss, and an interruption that ends without resume. It also ends the use after `didFail`.
+
+The delegate methods run on the main thread, or on the queue (iOS) or executor (Android) that you pass to `beginUse`. Run your play and pause code on that same queue. Then no command for a use runs after `end()` returns, and a command never interleaves with a user action. The delegate methods carry the use.
+
+| Event                            | iOS                                                                                                                           | Android                                                                                                                          |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Interruption begins              | `pause(interruption)`. In `duckOthers` mode, `duck(true)` instead.                                                            | `pause(interruption)` on a transient focus loss. `duck(true)` on a duck that the player handles.                                 |
+| Interruption ends with resume    | `resume`, after the session is active again.                                                                                  | `resume`, when focus returns.                                                                                                    |
+| Interruption ends without resume | The module ends the use.                                                                                                      | The module ends the use.                                                                                                         |
+| Permanent focus loss             | Not applicable.                                                                                                               | `pause(focusLost)`, then the module ends the use.                                                                                |
+| Output device disconnects        | `pause(outputDisconnected)`, then the module ends the use. Uses with the `record` or `measurement` capability get no command. | The same as iOS.                                                                                                                 |
+| App goes to the background       | `pause(background)` to uses that do not continue in the background.                                                           | The same as iOS, when the last activity of the app stops.                                                                        |
+| App returns to the foreground    | `resume`, after the session is active again.                                                                                  | `resume`, after focus is held again.                                                                                             |
+| Activation fails                 | `didFail`, then the module ends the use.                                                                                      | `didFail`, then the module ends the use. A delayed grant sends `pause(interruption)`, and `resume` when the system grants focus. |
+
+On Android, a use that begins during a duck gets `duck(true)` at once. On iOS, a use that activates during a duck ends the duck for every use, because a successful activation means the interruption is over. When the client ends a ducked use, the module sends no `duck(false)`. Restore the volume when you end the use.
+
+### Background
+
+Set `continuesInBackground` in `SessionRequirements` to keep a use playing in the background. The default is `false`. The module pauses the other uses when the app goes to the background and resumes them when it returns.
+
+- The module acts on the transition only. A use that begins while the app is in the background is not paused.
+- Change the value with `update`, for example when Picture in Picture starts. The change takes effect at the next transition.
+- A paused use keeps the session and audio focus.
+- For background playback, the app also needs the `supportsBackgroundPlayback` [config plugin property](#configuration-in-app-config).
 
 ### Getting the session back
 
 - `beginUse` and `hold` activate the session and request focus. The module also does this when it resumes writes, after an iOS media services reset, and when an iOS interruption ends and playback can resume. On iOS, it activates the session before it sends `mediaSessionInterruptionEnded(shouldResume: true)`.
 - On iOS, the module activates the session again when the app returns to the foreground with a live use. The system can deactivate the session while the app is suspended. After an interruption begins, the module does not do this until it activates the session again, for example for a new use or hold, or when the interruption ends with `shouldResume`.
-- On iOS, when the last use ends, the module restores the policy configuration if a use changed the category, for example after a recording. Without an active use, the module makes only this write and the delayed deactivation.
+- On iOS, when the last use ends, the module restores the policy configuration if a use changed the category, for example after a recording. Without an active use, the module writes only the policy configuration, when the policy changes or the last use ends, and never activates the session.
 - `update` and `setPolicy` reconfigure the session. On Android, a reconfigure for an active use requests focus again with the new attributes. During a transient loss, the request waits until the system gives focus back.
 - After a permanent focus loss, only `beginUse` and `hold` get the session back. End the use and begin a new one, for example when the user presses play.
 
 ### Observers
 
-Add an observer with `addObserver`, and keep the returned `ObserverRegistration`. Every observer method has a default implementation, so implement only the events you need.
+Players use the delegate. Observers are for app-level listeners, for example to rebuild players after a media services reset, or to follow route changes, silent mode, suspended writes, and the Now Playing owner. Add an observer with `addObserver`, and keep the returned `ObserverRegistration`. Every observer method has a default implementation, so implement only the events you need.
 
 - Observer methods run on the coordinator thread (Android) or the coordinator queue (iOS). Switch to your own isolation before you touch UI or player state.
 - `mediaSessionDucked` and `mediaSessionFocusLost` are Android only. The Swift protocol declares them, but iOS never sends them. `mediaSessionServicesReset()` is iOS only.
@@ -223,7 +351,8 @@ Add an observer with `addObserver`, and keep the returned `ObserverRegistration`
 ### Platform differences
 
 - Android sends `mediaSessionInterruptionBegan(reason:)` only while a use is live. iOS can send it while no use is live.
-- On Android, a use that begins during a transient loss requests focus again. If the system grants focus, the interruption ends. If it delays the grant, `awaitActivation()` waits for it. If it refuses, the module sends `mediaSessionDidFail(error, client)`. On iOS, the use gets no signal that it is interrupted.
+- On Android, a use that begins during a transient loss requests focus again. If the system grants focus, the interruption ends. If it delays the grant, `awaitActivation()` waits for it. If it refuses, the module sends `mediaSessionDidFail(error, client)`. On iOS, a use that begins during an interruption tries to activate the session. If the activation fails, the use gets `didFail`.
+- On iOS, `duck` comes only from an interruption in `duckOthers` mode.
 - iOS does not report the "app was suspended" interruption reason.
 
 ### Now playing
@@ -245,12 +374,18 @@ claim.withdraw()
 - A playing offer takes over at once. A paused offer takes over at once when the current owner is paused. When the current owner plays, a paused offer waits below it and takes over when it starts to play. An owner lower in the stack that starts to play also takes over. A pause keeps ownership. A withdraw removes that owner from anywhere in the stack.
 - A takeover pauses the previous owner, unless the effective interruption mode is `mixWithOthers`. When the newer owner withdraws, the previous owner resumes only if the takeover paused it. During an interruption, the resume waits until the interruption ends with `shouldResume: true`. If the user plays and then pauses that owner during the takeover, it stays paused. Call `update` from `pauseForTakeover` so the module sees the pause.
 - The defaults for `pauseForTakeover` and `resumeAfterTakeover` handle a `pause` and a `play` command.
+- A takeover pause is a user pause: the player ends its use, and the takeover resume begins a new one. Route custom `pauseForTakeover` and `resumeAfterTakeover` through the same code as a user pause and play.
+- Report every pause and resume that a command causes through `claim.update`.
 - Commands go only to the top owner, and only for the kinds it offered. Do not offer `seek` for content that cannot seek. A live stream never shows `seek`.
 - When you offer both skip and track commands, iOS shows next and previous instead of skip. iOS always answers commands with success.
 - The module can write Now Playing at any time, for example when another owner withdraws. Keep `isPlaying` consistent with the `elapsedTime` and `playbackRate` of your last update.
 - Owner callbacks run on the coordinator queue or thread. On iOS, the module switches to the main thread for the system writes, in order.
 - On Android, call `close()` to withdraw a `NowPlayingClaim`. On iOS, deinit withdraws it.
 - On Android, the `NowPlayingInfo` you send drives the owner. An owner that implements `MediaPlayerOwner` exposes its Media3 `Player` instead.
+
+### Testing
+
+The manager and the tokens are protocols on iOS and interfaces on Android: `MediaSessionManaging`, `SessionUse`, `SessionHold`, `NowPlayingClaim`, and `ObserverRegistration`. Pass the manager to your player, as in the examples above, and pass `FakeMediaSessionManager` in tests. The fake is in debug builds only. The fake records the uses, holds, and policy. A use from the fake can send any command, end itself as the module does, and the fake can fail the next activation.
 
 ## API
 
