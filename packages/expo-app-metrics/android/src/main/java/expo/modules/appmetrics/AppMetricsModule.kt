@@ -159,6 +159,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       Function("startSpan") { name: String, options: StartSpanOptions?, parent: SpanHandle? ->
+        val onEndOfValidSpan = spanWriter.onEndOfNewSpan()
         val validatedName = validatedSpanName(name)
         val recorder = SpanRecorder(
           name = validatedName ?: name,
@@ -171,7 +172,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         // A span with an invalid name still works for the caller, including as a parent, but it
         // is never written.
         val onEnd: (Span) -> Unit = if (validatedName != null) {
-          spanWriter::write
+          onEndOfValidSpan
         } else {
           { _ -> }
         }

@@ -193,6 +193,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     }
 
     Function("startSpan") { (name: String, options: StartSpanOptions?, parent: SpanHandle?) -> SpanHandle in
+      let onEndOfValidSpan = AppMetrics.spanWriter.onEndOfNewSpan()
       let validatedName = validatedSpanName(name)
       let recorder = SpanRecorder(
         name: validatedName ?? name,
@@ -208,7 +209,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       if validatedName == nil {
         onEnd = { _ in }
       } else {
-        onEnd = AppMetrics.spanWriter.schedule
+        onEnd = onEndOfValidSpan
       }
       return SpanHandle(recorder: recorder, onEnd: onEnd)
     }

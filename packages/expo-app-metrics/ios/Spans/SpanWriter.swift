@@ -41,4 +41,14 @@ final class SpanWriter: Sendable {
       self.write(row)
     }
   }
+
+  /// The end action for a span that starts now. A span that starts without consent holds data
+  /// from before a grant, so it is never written. A span that ends after a revoke is dropped
+  /// because the shared database is `nil` without consent.
+  nonisolated func onEndOfNewSpan(isGranted: Bool = ObserveConsent.isGranted) -> @Sendable (SpanRow) -> Void {
+    guard isGranted else {
+      return { _ in }
+    }
+    return schedule
+  }
 }

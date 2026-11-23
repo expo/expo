@@ -80,4 +80,38 @@ struct SpanWriterTests {
       #expect(names == ["checkout"])
     }
   }
+
+  @Test
+  func `a span that starts without consent is not written after a grant`() async throws {
+    try await withTemporaryDatabase { database in
+      let writer = SpanWriter(database: database)
+      let beforeGrant = SpanHandle(
+        recorder: SpanRecorder(
+          name: "before-grant",
+          sessionId: "s",
+          attributes: ["step": "pay"],
+          startTimestampMs: 1_782_131_895_000
+        ),
+        onEnd: writer.onEndOfNewSpan(isGranted: false)
+      )
+      beforeGrant.recorder.addEvent(name: "tapped", attributes: nil, timeMs: 1_782_131_895_010)
+      let afterGrant = SpanHandle(
+        recorder: SpanRecorder(name: "after-grant", sessionId: "s", startTimestampMs: 1_782_131_895_100),
+        onEnd: writer.onEndOfNewSpan(isGranted: true)
+      )
+
+      beforeGrant.end(statusCode: nil, statusMessage: nil, endTimestampMs: 1_782_131_895_250)
+      afterGrant.end(statusCode: nil, statusMessage: nil, endTimestampMs: 1_782_131_895_250)
+
+      // A write runs in a task on this actor, in the order the spans ended. So when the second
+      // span is stored, a write of the first span would have run before it.
+      var attempts = 0
+      while try spanNames(in: database).isEmpty, attempts < 100 {
+        attempts += 1
+        try await Task.sleep(for: .milliseconds(10))
+      }
+      let names = try spanNames(in: database)
+      #expect(names == ["after-grant"])
+    }
+  }
 }
