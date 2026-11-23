@@ -1,6 +1,7 @@
 /* eslint-env node */
 // Learn more https://docs.expo.dev/guides/customizing-metro/
 const { getDefaultConfig } = require('expo/metro-config');
+const path = require('path');
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
@@ -33,5 +34,15 @@ config.server.enhanceMiddleware = (middleware) => {
     middleware(req, res, next);
   };
 };
+
+// With `EXPO_BARE_EXPO_IGNORE_LIST_PACKAGES=1`, ignore-list the monorepo's packages the way an app
+// ignore-lists them in `node_modules`, so React Native DevTools shows the stacks and initiators an
+// app shows. Off by default, since it hides package frames while working on a package.
+if (process.env.EXPO_BARE_EXPO_IGNORE_LIST_PACKAGES) {
+  const packagesDir = path.resolve(__dirname, '../../packages') + path.sep;
+  const isThirdPartyModule = config.serializer.isThirdPartyModule;
+  config.serializer.isThirdPartyModule = (module) =>
+    module.path.startsWith(packagesDir) || isThirdPartyModule(module);
+}
 
 module.exports = config;
