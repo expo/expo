@@ -12,6 +12,8 @@ import MetroHMRClient from '@expo/metro/metro-runtime/modules/HMRClient';
 import prettyFormat, { plugins } from 'pretty-format';
 
 import type { MarshalledProps } from '../dom/dom-entry';
+import { getBundleOrigin } from '../utils/getBundleOrigin';
+import getDevServer from '../utils/getDevServer';
 import {
   getConnectionError,
   getFullBundlerUrl,
@@ -101,6 +103,9 @@ const HMRClient = {
 
   registerBundle(requestUrl: string) {
     assert(hmrClient, 'Expected HMRClient.setup() call at startup.');
+    if (!isDevServerBundle(requestUrl)) {
+      return;
+    }
     pendingEntryPoints.push(requestUrl);
     registerBundleEntryPoints(hmrClient);
   },
@@ -320,6 +325,14 @@ function setHMRUnavailableReason(reason: string) {
       console.warn(reason);
     }, 500);
   }
+}
+
+// Metro resolves each entry point in its own project and fails on a bundle from another server.
+// Compare with the bundle origin and not with the `setup()` host: Android adds the default port there.
+function isDevServerBundle(requestUrl: string): boolean {
+  const requestOrigin = getBundleOrigin(requestUrl);
+  const serverOrigin = getBundleOrigin(getDevServer().url);
+  return requestOrigin === null || serverOrigin === null || requestOrigin === serverOrigin;
 }
 
 function registerBundleEntryPoints(client: MetroHMRClient | null) {
