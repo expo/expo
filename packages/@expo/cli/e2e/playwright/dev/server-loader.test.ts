@@ -92,7 +92,8 @@ for (const outputMode of outputModes) {
           if (request.url().includes('/_expo/loaders/loaders/posts/slow'))
             abortedRequests.push(request.url());
         });
-        await gotoHydrated(page, new URL('/loaders/posts/static-post-1', expoStart.url).href);
+        await page.goto(new URL('/loaders/posts/static-post-1', expoStart.url).href);
+        await page.getByTestId('loader-mounted').waitFor({ state: 'attached' });
         await page.getByTestId('transition-to-slow').click();
         await expect.poll(() => slowRequests).toHaveLength(1);
         await expect(page.getByTestId('navigation-pending')).toHaveText('true');
