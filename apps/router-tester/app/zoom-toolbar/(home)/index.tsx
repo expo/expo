@@ -20,6 +20,9 @@ export default function Home() {
       <Link href="/zoom-toolbar/image/standard">
         <Text>Open without zoom</Text>
       </Link>
+      <Link href="/" replace>
+        Back to Router Tester
+      </Link>
     </ScrollView>
   );
 }
