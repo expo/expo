@@ -473,7 +473,7 @@ const CounterWidget = (props: CounterProps) => {
 export default createWidget('CounterWidget', CounterWidget, { count: 0 });
 ```
 
-A `Toggle` works the same way: its `onIsOnChange` callback receives the new value, and the value it returns becomes the widget's new props. On iOS, the widget draws it with [`Toggle(isOn:intent:)`](<https://developer.apple.com/documentation/swiftui/toggle/init(ison:intent:label:)>). It has the system's default look for a toggle in a widget. iOS does not render the `switch` toggle style in a widget.
+On iOS, a `Toggle` works the same way. Its `onIsOnChange` callback receives the new value. The value that the callback returns becomes the widget's new props. The widget draws it with [`Toggle(isOn:intent:)`](<https://developer.apple.com/documentation/swiftui/toggle/init(ison:intent:label:)>). It has the system's default look for a toggle in a widget. iOS does not render the `switch` toggle style in a widget.
 
 ```tsx
 <Toggle label="Enabled" isOn={props.enabled} onIsOnChange={isOn => ({ enabled: isOn })} />
