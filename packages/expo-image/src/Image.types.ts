@@ -525,6 +525,13 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * @platform web
    */
   draggable?: boolean;
+
+  /**
+   * Renders the image with the new iOS image view, which is in development and doesn't support all props yet.
+   * Internal, only for testing the new view.
+   * @hidden
+   */
+  experimental_useV2View?: boolean;
 }
 
 /**

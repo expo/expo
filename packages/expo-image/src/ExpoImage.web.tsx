@@ -88,6 +88,8 @@ export default function ExpoImage({
   dataSet,
   // Destructured so it isn't forwarded to the DOM. SVG variables are a native-only feature.
   svgVariables,
+  // Destructured so it isn't forwarded to the DOM. The new image view is native-only.
+  experimental_useV2View,
   ...props
 }: ExpoImageWebProps) {
   const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
