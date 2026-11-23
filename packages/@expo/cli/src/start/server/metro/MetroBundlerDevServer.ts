@@ -8,7 +8,6 @@ import { events } from '2g';
 import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import { getMetroServerRoot, resolveRelativeEntryPoint } from '@expo/config/paths';
-import { getServerOutputExtension } from '@expo/metro-config/build/serializer/exportPath';
 import { getServerRunModuleStatement } from '@expo/metro-config/build/serializer/getServerRunModuleStatement';
 import { serializeServerBundleAsync } from '@expo/metro-config/build/serializer/serializeServerBundle';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
@@ -75,6 +74,7 @@ import {
   getBaseUrlFromExpoConfig,
   getChunkingStrategyFromExpoConfig,
   getMetroDirectBundleOptions,
+  isServerEnvironment,
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { createInfoHandler, createOpen } from '../middleware/openHandlers';
@@ -1020,6 +1020,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       ...specificOptions,
     };
 
+    if (isServerEnvironment(opts.environment)) {
+      opts.outputExtension ??= this.serverOutputExtension;
+    }
+
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
     const { filename, bundle, map, ...rest } = await this.metroLoadModuleContents(filePath, opts);
     return {
@@ -1347,7 +1351,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
     }
 
-    this.serverOutputExtension = getServerOutputExtension(config.pkg.type);
+    this.serverOutputExtension = config.pkg.type === 'module' ? '.cjs' : '.js';
     const instanceMetroOptions = {
       chunkingStrategy: getChunkingStrategyFromExpoConfig(exp),
       isExporting: !!options.isExporting,

@@ -662,56 +662,6 @@ it('normalizes inline server maps and excludes requested source content', async 
   expect(artifacts.some((a: SerialAsset) => a.type === 'map')).toBe(false);
 });
 
-it.each(['node', 'react-server', 'client'])(
-  'selects generated %s filenames without changing content identity',
-  async (environment) => {
-    const [entry, premodules, graph, options] = await microBundle({
-      fs: {
-        'index.js': `import('./async'); export const value = 42;`,
-        'async.js': `export const value = 43;`,
-      },
-      options: {
-        isServer: environment !== 'client',
-        dev: false,
-        output: 'static',
-        splitChunks: true,
-        sourceMaps: true,
-      },
-    });
-    const serverGraph = {
-      ...graph,
-      transformOptions: { ...graph.transformOptions, customTransformOptions: { environment } },
-    };
-    const serialize = (serverOutputExtension: '.js' | '.cjs') =>
-      createSerializerFromSerialProcessors({ projectRoot } as any, [], null, {
-        serverOutputExtension,
-      })(entry, premodules, serverGraph, options) as Promise<any>;
-    const original = (await serialize('.js')).artifacts;
-    const artifacts = (await serialize('.cjs')).artifacts;
-    const js = artifacts.find((a: SerialAsset) => a.type === 'js' && !a.metadata.isAsync);
-    const asyncJs = artifacts.find((a: SerialAsset) => a.type === 'js' && a.metadata.isAsync);
-    expect(asyncJs.filename.endsWith(environment === 'client' ? '.js' : '.cjs')).toBe(true);
-    expect(JSON.stringify(js.metadata.paths)).toContain(asyncJs.filename);
-    const originalJs = original.find((a: SerialAsset) => a.type === 'js' && !a.metadata.isAsync);
-    expect(js.filename).toBe(
-      originalJs.filename.replace(/\.js$/, environment === 'client' ? '.js' : '.cjs')
-    );
-    expect(js.source).toMatch(/debugId=[0-9a-f-]+/);
-    expect(js.source.match(/debugId=([^\n]+)/)?.[1]).toBe(
-      originalJs.source.match(/debugId=([^\n]+)/)?.[1]
-    );
-    expect(artifacts.find((a: SerialAsset) => a.filename === js.filename + '.map').filename).toBe(
-      js.filename + '.map'
-    );
-    (options as ExpoSerializerOptions).serializerOptions!.entryFilename = 'exact.bundle';
-    expect(
-      (await serialize('.cjs')).artifacts.find(
-        (a: SerialAsset) => a.type === 'js' && !a.metadata.isAsync
-      ).filename
-    ).toBe('exact.bundle');
-  }
-);
-
 it('names generated server artifacts in their final directory with an explicit extension', async () => {
   const [entry, premodules, graph, options] = await microBundle({
     fs: { 'index.js': `export const value = 42;` },

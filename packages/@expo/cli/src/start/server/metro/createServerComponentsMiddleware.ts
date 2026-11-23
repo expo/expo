@@ -171,7 +171,6 @@ export function createServerComponentsMiddleware(
         excludeSource: true,
         splitChunks: false,
         outputDirectory: `_expo/rsc/${platform}`,
-        outputExtension,
       });
 
       const reactClientReferences = getServerEntryArtifact(

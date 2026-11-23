@@ -29,7 +29,6 @@ import { event } from './events';
 import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
-import { getServerOutputExtension } from './serializer/exportPath';
 import type { JSModule } from './serializer/getCssDeps';
 import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
@@ -466,10 +465,7 @@ export function getDefaultConfig(
   // Expo defaults to the Node crawler and watcher, where Metro defaults to Watchman.
   (metroConfig.resolver as { useWatchman: boolean }).useWatchman = false;
 
-  return withExpoSerializers(metroConfig, {
-    unstable_beforeAssetSerializationPlugins,
-    serverOutputExtension: getServerOutputExtension(pkg?.type),
-  });
+  return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }
 
 /** Use to access the Expo Metro transformer path */
