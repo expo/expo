@@ -123,9 +123,3 @@ class CrashReportProcessor(
     }
   }
 }
-
-/** Moves the cursor past every exit record, so no record from before a grant is reported. */
-fun skipExitRecords(exitInfoProvider: ExitInfoProvider, lastProcessedExitStore: LastProcessedExitStore) {
-  val newest = exitInfoProvider.getExitRecords().maxOfOrNull { it.timestampMillis } ?: return
-  lastProcessedExitStore.set(maxOf(newest, lastProcessedExitStore.get()))
-}

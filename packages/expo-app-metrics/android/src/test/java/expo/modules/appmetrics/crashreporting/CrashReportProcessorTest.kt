@@ -385,16 +385,4 @@ class CrashReportProcessorTest {
     }
 
   // endregion
-
-  @Test
-  fun `skipExitRecords moves the cursor past every record and reports none`() = runTest {
-    exitRecords += exitRecord(timestampMillis = 1_700_000_000_500)
-    exitRecords += exitRecord(timestampMillis = 1_700_000_000_900, pid = 456)
-
-    skipExitRecords(exitInfoProvider, lastProcessedExitStore)
-    processor().process()
-
-    assertEquals(1_700_000_000_900, cursor)
-    assertTrue(storeCalls.isEmpty())
-  }
 }

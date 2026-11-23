@@ -78,16 +78,43 @@ object AppMetricsPreferences {
   internal fun getObserveConsent(context: Context): String? =
     context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getString(KEY_OBSERVE_CONSENT, null)
 
-  /** Returns whether the value was written to disk. */
-  internal fun setObserveConsent(context: Context, consent: String): Boolean =
-    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putString(KEY_OBSERVE_CONSENT, consent).commit()
-
-  /** Saves the consent value and the crash cursor in one write. Returns whether it was written to disk. */
-  internal fun saveGrant(context: Context, consent: String, lastProcessedExitMillis: Long): Boolean =
-    context
-      .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-      .edit()
-      .putString(KEY_OBSERVE_CONSENT, consent)
-      .putLong(KEY_LAST_PROCESSED_EXIT_MILLIS, lastProcessedExitMillis)
-      .commit()
+  /**
+   * Saves the consent value, and the crash cursor when it is given, in one write. The cursor does
+   * not move back. Returns whether the values were written to disk.
+   */
+  internal fun saveObserveConsent(
+    context: Context,
+    consent: String,
+    lastProcessedExitMillis: Long? = null,
+    keepOnFailure: Boolean = false
+  ): Boolean {
+    val settings = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    val previousConsent = settings.getString(KEY_OBSERVE_CONSENT, null)
+    val previousCursor = settings.getLong(KEY_LAST_PROCESSED_EXIT_MILLIS, 0L)
+    val hasCursor = settings.contains(KEY_LAST_PROCESSED_EXIT_MILLIS)
+    val editor = settings.edit().putString(KEY_OBSERVE_CONSENT, consent)
+    if (lastProcessedExitMillis != null) {
+      editor.putLong(KEY_LAST_PROCESSED_EXIT_MILLIS, maxOf(lastProcessedExitMillis, previousCursor))
+    }
+    if (editor.commit()) {
+      return true
+    }
+    if (!keepOnFailure) {
+      // `commit` keeps the values in memory when the disk write fails, and the next write of this
+      // file saves them. So the earlier values go back.
+      settings.edit(commit = true) {
+        if (previousConsent != null) {
+          putString(KEY_OBSERVE_CONSENT, previousConsent)
+        } else {
+          remove(KEY_OBSERVE_CONSENT)
+        }
+        if (hasCursor) {
+          putLong(KEY_LAST_PROCESSED_EXIT_MILLIS, previousCursor)
+        } else {
+          remove(KEY_LAST_PROCESSED_EXIT_MILLIS)
+        }
+      }
+    }
+    return false
+  }
 }

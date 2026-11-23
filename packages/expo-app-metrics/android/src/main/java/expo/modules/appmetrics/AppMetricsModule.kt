@@ -12,7 +12,6 @@ import expo.modules.appmetrics.crashreporting.ExitInfoProviderImpl
 import expo.modules.appmetrics.crashreporting.JvmCrashHandler
 import expo.modules.appmetrics.crashreporting.PreferencesLastProcessedExitStore
 import expo.modules.appmetrics.crashreporting.attributeAndStoreCrashReport
-import expo.modules.appmetrics.crashreporting.skipExitRecords
 import expo.modules.appmetrics.logevents.FeedbackReport
 import expo.modules.appmetrics.logevents.LogEventOptions
 import expo.modules.appmetrics.networkrequests.NetworkRequestFilter
@@ -504,7 +503,6 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         mainSession.awaitSessionPersisted()
         sessionManager.startSessionWithIdAt(mainSession.sessionId, mainSession.startDate, metadata)
         saveStartupMetrics()
-        skipExitRecords(ExitInfoProviderImpl(context), PreferencesLastProcessedExitStore(context))
       } else if (update.changed) {
         deleteStoredData(context)
       }

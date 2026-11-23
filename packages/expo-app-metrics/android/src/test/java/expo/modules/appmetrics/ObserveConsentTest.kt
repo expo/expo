@@ -20,7 +20,10 @@ import io.mockk.unmockkAll
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.concurrent.thread
+import kotlinx.coroutines.runBlocking
+import org.w3c.dom.Element
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -175,6 +178,144 @@ class ObserveConsentTest {
 
     assertTrue(ObserveConsent.isGranted)
     assertEquals(listOf(TimeUtils.millisToTimestamp(activeProcessCrash.timestampMillis)), reported)
+  }
+
+  private fun reportedCrashTimes(records: List<ExitRecord>): List<String?> = runBlocking {
+    val reported = mutableListOf<String?>()
+    CrashReportProcessor(
+      crashFileReader = CrashFileReader(File(context.cacheDir, "crashes")),
+      exitInfoProvider = ExitInfoProvider { records },
+      lastProcessedExitStore = PreferencesLastProcessedExitStore(context),
+      appVersion = "1.0.0"
+    ) { _, _, report, _ -> reported += report.timestampBegin }.process()
+    reported
+  }
+
+  private fun timestamp(record: ExitRecord) = TimeUtils.millisToTimestamp(record.timestampMillis)
+
+  @Test
+  fun `the first grant saves the consent and the newest exit record as the crash cursor`() {
+    ObserveConsent.update(context, granted = false)
+    ObserveConsent.load(context)
+    val now = System.currentTimeMillis()
+    // The clock can be behind the time of a record, so the cursor is the newest record, not the clock.
+    val beforeGrant = listOf(crashRecord(now - 60_000), crashRecord(now + 60_000))
+
+    ObserveConsent.update(context, granted = true, exitInfoProvider = { beforeGrant })
+
+    assertEquals("granted", savedOnDisk()["observeConsent"])
+    assertEquals((now + 60_000).toString(), savedOnDisk()["lastProcessedExitMillis"])
+
+    // The process dies after the grant. The next launch reports only the crashes from after the grant.
+    ObserveConsent.load(context)
+    val afterGrant = crashRecord(now + 120_000)
+    assertEquals(listOf(timestamp(afterGrant)), reportedCrashTimes(beforeGrant + afterGrant))
+  }
+
+  @Test
+  fun `the first grant with no exit records saves the cursor at 0`() {
+    ObserveConsent.update(context, granted = false)
+    ObserveConsent.load(context)
+
+    ObserveConsent.update(context, granted = true, exitInfoProvider = { emptyList() })
+
+    assertEquals("0", savedOnDisk()["lastProcessedExitMillis"])
+    ObserveConsent.load(context)
+    val afterGrant = crashRecord(System.currentTimeMillis())
+    assertEquals(listOf(timestamp(afterGrant)), reportedCrashTimes(listOf(afterGrant)))
+  }
+
+  @Test
+  fun `the first grant keeps a newer saved crash cursor`() {
+    ObserveConsent.update(context, granted = false)
+    ObserveConsent.load(context)
+    settings().edit().putLong("lastProcessedExitMillis", 9_000).commit()
+
+    ObserveConsent.update(context, granted = true, exitInfoProvider = { listOf(crashRecord(5_000)) })
+
+    assertEquals("9000", savedOnDisk()["lastProcessedExitMillis"])
+  }
+
+  @Test
+  fun `a grant while consent is granted does not move the crash cursor`() {
+    ObserveConsent.load(context)
+    val reported = crashRecord(3_000)
+    reportedCrashTimes(listOf(reported))
+    val unreported = crashRecord(9_000)
+
+    ObserveConsent.update(context, granted = true, exitInfoProvider = { listOf(reported, unreported) })
+
+    assertEquals("3000", savedOnDisk()["lastProcessedExitMillis"])
+    assertEquals(listOf(timestamp(unreported)), reportedCrashTimes(listOf(reported, unreported)))
+  }
+
+  @Test
+  fun `a failed first grant is not saved by a later write`() {
+    ObserveConsent.update(context, granted = false)
+    ObserveConsent.load(context)
+
+    val update = withUnwritableSettings {
+      ObserveConsent.update(context, granted = true, exitInfoProvider = { listOf(crashRecord(5_000)) })
+    }
+    // A later write of the file, here the cleanup of a launch without consent, saves the values in memory.
+    deleteStoredData(context)
+
+    assertEquals(ObserveConsent.Update(changed = false, isSaved = false), update)
+    assertFalse(ObserveConsent.isGranted)
+    assertEquals(mapOf("observeConsent" to "not-granted"), savedOnDisk())
+  }
+
+  @Test
+  fun `a failed grant after a revoke is not saved by a later write`() {
+    ObserveConsent.load(context)
+    ObserveConsent.update(context, granted = false)
+
+    withUnwritableSettings { ObserveConsent.update(context, granted = true) }
+    settings().edit().putString("environment", "production").commit()
+
+    assertEquals("not-granted", savedOnDisk()["observeConsent"])
+  }
+
+  @Test
+  fun `a failed deferred grant at launch keeps the deferred grant for the next launch`() {
+    ObserveConsent.load(context)
+    ObserveConsent.update(context, granted = false)
+    ObserveConsent.update(context, granted = true)
+
+    withUnwritableSettings { ObserveConsent.load(context) }
+    assertFalse(ObserveConsent.isGranted)
+    // The cleanup of a launch without consent keeps the consent value and deletes the cursor.
+    deleteStoredData(context)
+    assertEquals(mapOf("observeConsent" to "granted-at-next-launch"), savedOnDisk())
+
+    ObserveConsent.load(context)
+    assertTrue(ObserveConsent.isGranted)
+    assertEquals("granted", savedOnDisk()["observeConsent"])
+    assertTrue(savedOnDisk().containsKey("lastProcessedExitMillis"))
+  }
+
+  // `SharedPreferences.commit` changes the values in memory, then fails to write the file.
+  private fun <T> withUnwritableSettings(body: () -> T): T {
+    val directory = File(context.dataDir, "shared_prefs")
+    assertTrue(directory.setWritable(false))
+    try {
+      return body()
+    } finally {
+      directory.setWritable(true)
+    }
+  }
+
+  // The values in the settings file, which a new process reads.
+  private fun savedOnDisk(): Map<String, String> {
+    val file = File(context.dataDir, "shared_prefs/dev.expo.app-metrics.xml")
+    if (!file.exists()) {
+      return emptyMap()
+    }
+    val elements = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file).documentElement.childNodes
+    return (0 until elements.length)
+      .map { elements.item(it) }
+      .filterIsInstance<Element>()
+      .associate { it.getAttribute("name") to (it.getAttribute("value").ifEmpty { it.textContent }) }
   }
 
   private fun crashRecord(timestampMillis: Long) = ExitRecord(

@@ -5,6 +5,8 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.edit
 import expo.modules.appmetrics.crashreporting.CrashFileFormat
+import expo.modules.appmetrics.crashreporting.ExitInfoProvider
+import expo.modules.appmetrics.crashreporting.ExitInfoProviderImpl
 import expo.modules.appmetrics.jserrors.PendingErrorStore
 import expo.modules.appmetrics.storage.MetricsDatabase
 import java.util.concurrent.ConcurrentHashMap
@@ -36,7 +38,7 @@ object ObserveConsent {
     if (savedConsent == GRANTED_AT_NEXT_LAUNCH) {
       // Exit records from before this launch are from processes without consent, so the crash
       // cursor skips them. Without that cursor, consent stays not granted until a later launch.
-      val isSaved = AppMetricsPreferences.saveGrant(context, GRANTED, lastProcessedExitMillis = System.currentTimeMillis())
+      val isSaved = AppMetricsPreferences.saveObserveConsent(context, GRANTED, lastProcessedExitMillis = System.currentTimeMillis())
       savedConsent = if (isSaved) {
         GRANTED
       } else {
@@ -55,13 +57,24 @@ object ObserveConsent {
    * launch would read the earlier value.
    */
   @Synchronized
-  internal fun update(context: Context, granted: Boolean): Update {
-    val consent = when {
-      granted && !isGranted && hasRevoked -> GRANTED_AT_NEXT_LAUNCH
-      granted -> GRANTED
-      else -> NOT_GRANTED
+  internal fun update(
+    context: Context,
+    granted: Boolean,
+    exitInfoProvider: ExitInfoProvider = ExitInfoProviderImpl(context)
+  ): Update {
+    val isSaved = when {
+      // A failed revoke keeps its value in memory, so a later write of the file saves it.
+      !granted -> AppMetricsPreferences.saveObserveConsent(context, NOT_GRANTED, keepOnFailure = true)
+      isGranted -> AppMetricsPreferences.saveObserveConsent(context, GRANTED)
+      hasRevoked -> AppMetricsPreferences.saveObserveConsent(context, GRANTED_AT_NEXT_LAUNCH)
+      // The exit records that exist now are from before the grant, so the crash cursor skips them.
+      // In the same write as the consent, so no launch reads `granted` without the cursor.
+      else -> AppMetricsPreferences.saveObserveConsent(
+        context,
+        GRANTED,
+        lastProcessedExitMillis = exitInfoProvider.getExitRecords().maxOfOrNull { it.timestampMillis } ?: 0L
+      )
     }
-    val isSaved = AppMetricsPreferences.setObserveConsent(context, consent)
     if (granted == isGranted || (granted && (hasRevoked || !isSaved))) {
       return Update(changed = false, isSaved = isSaved)
     }
