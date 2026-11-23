@@ -48,6 +48,11 @@ export default function ExamplesIndex() {
         description="Custom spans (startSpan / withSpan / recordSpan) and network span capture"
         onPress={() => router.push('/examples/traces')}
       />
+      <Button
+        title="Feedback"
+        description="reportFeedback from a form sheet, thumbs, and a star rating"
+        onPress={() => router.push('/examples/feedback')}
+      />
     </ScrollView>
   );
 }

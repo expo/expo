@@ -136,10 +136,6 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propName: 'expo.core.buildFromSource',
       propValueGetter: (config) => config.android?.buildExpoModulesCoreFromSource?.toString(),
     },
-    {
-      propName: 'hermesV1Enabled',
-      propValueGetter: (config) => resolveConfigValue(config, 'android', 'useHermesV1')?.toString(),
-    },
   ],
   'withAndroidBuildProperties'
 );
@@ -186,7 +182,7 @@ export const withAndroidPurgeProguardRulesOnce: ConfigPlugin = (config) => {
        * ```ts
        * config = withBuildProperties(config as ExpoConfig, {
        *   android: {
-       *     kotlinVersion: "1.6.10",
+       *     kotlinVersion: "2.3.21",
        *   },
        * });
        * config = withBuildProperties(config as ExpoConfig, {

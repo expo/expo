@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { axe } from '~/common/test-utilities';
 
@@ -94,5 +94,25 @@ describe(APICommentTextBlock, () => {
 
     const { container } = render(<APICommentTextBlock comment={comment} />);
     expect(container).toMatchSnapshot();
+  });
+
+  test('one-line example that has its own code span', () => {
+    const comment: CommentData = {
+      summary: [{ kind: 'text', text: 'Padding between the sheet and its children.' }],
+      blockTags: [
+        {
+          tag: '@example',
+          name: '`contentPadding={{ top: 8, bottom: 24 }}` — no horizontal inset',
+          content: [],
+        },
+      ],
+    };
+
+    render(<APICommentTextBlock comment={comment} />);
+
+    expect(
+      screen.getByText('contentPadding={{ top: 8, bottom: 24 }}', { selector: 'code' })
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/no horizontal inset/, { selector: 'code' })).not.toBeInTheDocument();
   });
 });

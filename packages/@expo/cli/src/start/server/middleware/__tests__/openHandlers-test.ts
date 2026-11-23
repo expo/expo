@@ -89,7 +89,7 @@ describe('resolveOpenInfo — tunnel', () => {
       { platform: 'ios', runtime: 'expo' },
       baseDeps
     )) as OpenSinglePlatformResult;
-    expect(info.url).toBe('exp://abc.ngrok-free.app');
+    expect(info.url).toBe('exps://abc.ngrok-free.app');
   });
 
   it('routes dev client URLs through the tunnel host (with https inner URL)', async () => {
@@ -106,7 +106,7 @@ describe('resolveOpenInfo — tunnel', () => {
       { ...baseDeps, getIsRedirectPageEnabled: () => true }
     )) as OpenSinglePlatformResult;
     expect(info.runtime).toBeUndefined();
-    expect(info.url).toBe('http://abc.ngrok-free.app/_expo/loading?platform=ios');
+    expect(info.url).toBe('https://abc.ngrok-free.app/_expo/loading?platform=ios');
     expect(info.availableRuntimes).toEqual(['expo', 'custom']);
   });
 
@@ -115,7 +115,7 @@ describe('resolveOpenInfo — tunnel', () => {
       { platform: 'web', runtime: 'default' },
       baseDeps
     )) as OpenSinglePlatformResult;
-    expect(info.url).toBe('http://abc.ngrok-free.app');
+    expect(info.url).toBe('https://abc.ngrok-free.app');
     expect(info.url).not.toMatch(/localhost|127\.0\.0\.1/);
   });
 
@@ -124,11 +124,11 @@ describe('resolveOpenInfo — tunnel', () => {
       { platform: null, runtime: 'default' },
       { ...baseDeps, getIsRedirectPageEnabled: () => true }
     )) as OpenDiscoveryResult;
-    expect(info.platforms.ios.url).toBe('http://abc.ngrok-free.app/_expo/loading?platform=ios');
+    expect(info.platforms.ios.url).toBe('https://abc.ngrok-free.app/_expo/loading?platform=ios');
     expect(info.platforms.android.url).toBe(
-      'http://abc.ngrok-free.app/_expo/loading?platform=android'
+      'https://abc.ngrok-free.app/_expo/loading?platform=android'
     );
-    expect(info.platforms.web.url).toBe('http://abc.ngrok-free.app');
+    expect(info.platforms.web.url).toBe('https://abc.ngrok-free.app');
     expect(info.platforms.ios.url).not.toMatch(/localhost|127\.0\.0\.1/);
     expect(info.platforms.web.url).not.toMatch(/localhost|127\.0\.0\.1/);
   });

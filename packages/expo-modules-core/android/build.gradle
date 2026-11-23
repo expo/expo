@@ -97,7 +97,7 @@ if (workletsProject != null) {
 
 def reactNativeWorkletsRootDir = workletsProject?.projectDir?.parentFile
 
-def expoModulesV2Version = "0.2.7"
+def expoModulesV2Version = "0.3.0"
 
 configurations {
   // Artifact-only: the C++ sources, not something to put on any classpath.
@@ -300,7 +300,6 @@ android {
 }
 
 dependencies {
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVersion}"
   implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
   implementation 'androidx.annotation:annotation:1.9.1'
 
@@ -322,7 +321,7 @@ dependencies {
     implementation workletsProject
   }
 
-  implementation("io.github.expo.pika:pika-api:1.1.0")
+  implementation("io.github.expo.pika:pika-api:1.1.2")
 
   implementation("io.github.expo.kolibri:kolibri-android")
   api("io.github.expo:expo-modules-v2-react:${expoModulesV2Version}")

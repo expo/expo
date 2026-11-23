@@ -95,6 +95,8 @@ export declare class Contact {
   /**
    * Retrieves specific details for the contact.
    * This method is useful when you want to retrieve only certain fields of the contact.
+   * > On iOS, the note [requires an entitlement](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
+   * > Without it, requesting `ContactField.NOTE` rejects; omitting `fields` leaves the note out.
    * @param fields - An array of field names to retrieve. If omitted, all available fields are fetched.
    * @returns a promise resolving to an object containing the requested details.
    * @example
@@ -1059,6 +1061,8 @@ export declare class Contact {
   /**
    * A static method that retrieves specific fields for all contacts or a subset of contacts.
    * This is an optimized method for fetching bulk data; it avoids creating full [`Contact`](#contact) instances.
+   * > On iOS, the note [requires an entitlement](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
+   * > Without it, requesting `ContactField.NOTE` rejects.
    * @param fields - The list of fields to retrieve.
    * @param options - Query options to filter the contacts.
    * @returns a promise resolving to an array of partial contact details objects.

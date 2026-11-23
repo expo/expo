@@ -91,3 +91,90 @@ describe('when the browser blocks playback', () => {
     expect(playlist.events.at(-1)?.payload).toEqual(expect.objectContaining({ playing: false }));
   });
 });
+
+describe('when the player seeks during playback', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('AudioPlayer reports playing after a seek to the start', () => {
+    jest.spyOn(HTMLMediaElement.prototype, 'paused', 'get').mockReturnValue(false);
+    const player = new AudioPlayerWeb('https://example.com/a.mp3');
+
+    player.media.dispatchEvent(new Event('seeked'));
+
+    expect(player.events.at(-1)).toEqual({
+      name: 'playbackStatusUpdate',
+      payload: expect.objectContaining({ playing: true, currentTime: 0 }),
+    });
+  });
+});
+
+describe('isActiveForLockScreen', () => {
+  const players: { release(): void }[] = [];
+  const createPlayer = () => {
+    const player = new AudioPlayerWeb('https://example.com/a.mp3');
+    players.push(player);
+    return player;
+  };
+
+  beforeEach(() => {
+    jest.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {});
+    jest.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    // The media session controller is shared, so the active player is cleared between tests
+    players.splice(0).forEach((player) => player.release());
+    delete (navigator as any).mediaSession;
+    delete (globalThis as any).MediaMetadata;
+    jest.restoreAllMocks();
+  });
+
+  describe('when the browser supports the Media Session API', () => {
+    beforeEach(() => {
+      // jsdom does not implement the Media Session API
+      Object.defineProperty(navigator, 'mediaSession', {
+        configurable: true,
+        value: {
+          metadata: null,
+          playbackState: 'none',
+          setActionHandler: jest.fn(),
+          setPositionState: jest.fn(),
+        },
+      });
+      (globalThis as any).MediaMetadata = class {};
+    });
+
+    it('follows setActiveForLockScreen() and clearLockScreenControls()', () => {
+      const player = createPlayer();
+
+      player.setActiveForLockScreen(true);
+      expect(player.isActiveForLockScreen).toBe(true);
+
+      player.clearLockScreenControls();
+      expect(player.isActiveForLockScreen).toBe(false);
+    });
+
+    it('is false after another player becomes active', () => {
+      const first = createPlayer();
+      const second = createPlayer();
+      first.setActiveForLockScreen(true);
+
+      second.setActiveForLockScreen(true);
+
+      expect(first.isActiveForLockScreen).toBe(false);
+      expect(second.isActiveForLockScreen).toBe(true);
+    });
+  });
+
+  describe('when the browser does not support the Media Session API', () => {
+    it('stays false after setActiveForLockScreen(true)', () => {
+      const player = createPlayer();
+
+      player.setActiveForLockScreen(true);
+
+      expect(player.isActiveForLockScreen).toBe(false);
+    });
+  });
+});

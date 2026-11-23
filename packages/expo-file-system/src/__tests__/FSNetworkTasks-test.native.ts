@@ -268,6 +268,13 @@ describe('DownloadTask', () => {
     expect(task.state).toBe('idle');
   });
 
+  it('has no response before the download starts', () => {
+    const task = new DownloadTask(url, destination);
+    expect(task.response).toEqual({ status: null, headers: {} });
+    expect(task.state).toBe('idle');
+    task.release();
+  });
+
   it('is a public facade, not a native download task instance', () => {
     const task = new DownloadTask(url, destination);
 
@@ -794,5 +801,77 @@ describe('DownloadTask background completion acknowledgment', () => {
     await standard.downloadAsync();
     await standard.acknowledgeBackgroundCompletionAsync();
     expect(acknowledge).not.toHaveBeenCalled();
+  });
+});
+
+// Exercise the supplied native fake without replacing its task methods.
+describe('DownloadTask response metadata with the supplied fake', () => {
+  const url = 'https://example.com/download';
+
+  it('retains a successful response after downloading through the public API', async () => {
+    const destination = new File(Paths.cache, 'response.bin');
+    const task = new DownloadTask(url, destination);
+    try {
+      expect(task.response).toEqual({ status: null, headers: {} });
+      const result = await task.downloadAsync();
+      expect(result?.uri).toBe('file:///mock/downloaded-file');
+      expect(task.state).toBe('completed');
+      expect(task.response).toEqual({ status: 200, headers: {} });
+    } finally {
+      task.release();
+    }
+  });
+
+  it('retains a successful response after resuming through the public API', async () => {
+    const task = DownloadTask.fromSavable({
+      url,
+      fileUri: new File(Paths.cache, 'resumed-response.bin').uri,
+      isDirectory: false,
+      resumeData: 'mock-resume-data',
+    });
+    try {
+      expect(task.response).toEqual({ status: null, headers: {} });
+      const result = await task.resumeAsync();
+      expect(result?.uri).toBe('file:///mock/downloaded-file');
+      expect(task.state).toBe('completed');
+      expect(task.response).toEqual({ status: 200, headers: {} });
+    } finally {
+      task.release();
+    }
+  });
+
+  it('does not report a response when cancelled before the fake completes', async () => {
+    const native = new ExpoFileSystem.FileSystemDownloadTask();
+    try {
+      const download = native.start(url, new File(Paths.cache, 'cancelled.bin'));
+      native.cancel();
+      await download;
+      expect(native.response).toEqual({ status: null, headers: {} });
+    } finally {
+      native.release();
+    }
+  });
+
+  it('clears the previous response on resume and returns independent snapshots per task', async () => {
+    const native = new ExpoFileSystem.FileSystemDownloadTask();
+    const other = new ExpoFileSystem.FileSystemDownloadTask();
+    const destination = new File(Paths.cache, 'native-response.bin');
+    try {
+      await native.start(url, destination);
+      const response = native.response;
+      expect(response.status).toBe(200);
+      response.status = 500;
+      response.headers['x-test'] = 'modified';
+      expect(native.response).toEqual({ status: 200, headers: {} });
+      expect(other.response).toEqual({ status: null, headers: {} });
+
+      const resumed = native.resume(url, destination, 'mock-resume-data');
+      expect(native.response).toEqual({ status: null, headers: {} });
+      await resumed;
+      expect(native.response).toEqual({ status: 200, headers: {} });
+    } finally {
+      native.release();
+      other.release();
+    }
   });
 });

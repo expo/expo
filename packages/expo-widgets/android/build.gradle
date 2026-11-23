@@ -144,7 +144,7 @@ dependencies {
   implementation 'com.facebook.react:react-android'
   implementation 'com.facebook.react:hermes-android'
   implementation expoModule.getExpoDependency("expo-ui")
-  api 'io.github.expo.peek:peek-emittables:0.3.2'
+  api 'io.github.expo.peek:peek-emittables:0.3.3'
   implementation "androidx.glance:glance:1.2.0"
   // Glance requests work-runtime-ktx 2.7.1, which still bundles the Kotlin extensions WorkManager 2.8+
   // moved into work-runtime, so any 2.8+ in the graph duplicates those classes in release builds.

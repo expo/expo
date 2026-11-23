@@ -43,7 +43,8 @@
     "prepack": "expo-module prepack",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "typegen": "expo-modules typegen"
   },
   "dependencies": {
     "expo-updates-interface": "workspace:~"

@@ -10,7 +10,6 @@ import expo.modules.brightness.BrightnessModule
 import expo.modules.calendar.CalendarModule
 import expo.modules.camera.CameraViewModule
 import expo.modules.cellular.CellularModule
-import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsModule
 import expo.modules.constants.ConstantsService
 import expo.modules.contacts.ContactsModule
@@ -77,7 +76,6 @@ import expo.modules.trackingtransparency.TrackingTransparencyModule
 import expo.modules.ui.ExpoUIModule
 import expo.modules.updates.UpdatesPackage
 import expo.modules.video.VideoModule
-import expo.modules.videothumbnails.VideoThumbnailsModule
 import expo.modules.webbrowser.WebBrowserModule
 import expo.modules.webview.DomWebViewModule
 import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
@@ -138,7 +136,6 @@ object ExperiencePackagePicker : ModulesProvider {
     CalendarModule::class.java to null,
     CameraViewModule::class.java to null,
     CellularModule::class.java to null,
-    ClipboardModule::class.java to null,
     ConstantsModule::class.java to null,
     ContactsModule::class.java to null,
     ContactsNextModule::class.java to null,
@@ -180,7 +177,6 @@ object ExperiencePackagePicker : ModulesProvider {
     SystemUIModule::class.java to null,
     TaskManagerModule::class.java to null,
     TrackingTransparencyModule::class.java to null,
-    VideoThumbnailsModule::class.java to null,
     VideoModule::class.java to null,
     WebBrowserModule::class.java to null,
     BrightnessModule::class.java to null

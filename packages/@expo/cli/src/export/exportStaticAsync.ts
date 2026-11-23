@@ -7,7 +7,7 @@
 import type { ExpoConfig } from '@expo/config';
 import { getChunkUrl } from '@expo/metro-config/build/serializer/exportPath';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
+import type { GetStreamingContentOptions } from '@expo/router-server/build/server/renderStreamingContent';
 import chalk from 'chalk';
 import type { RouteNode } from 'expo-router/build/Route';
 import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
@@ -273,7 +273,7 @@ export async function exportFromServerAsync(
       const normalizedPathname =
         pathname === '' ? '/' : pathname.startsWith('/') ? pathname : `/${pathname}`;
 
-      const renderOpts: Omit<GetStaticContentOptions, 'route' | 'params'> = {};
+      const renderOpts: Omit<GetStreamingContentOptions, 'route' | 'params'> = {};
 
       const contextKey = getLoaderRouteContextKey(route);
 
@@ -399,7 +399,7 @@ export async function exportFromServerAsync(
 
     // Export SSR render module and add SSR configuration to routes manifest
     if (isExportingWithSSR) {
-      await devServer.exportExpoRouterRenderModuleAsync({
+      const rendererFilename = await devServer.exportExpoRouterRenderModuleAsync({
         files,
         includeSourceMaps: true,
         platform: 'web',
@@ -495,7 +495,7 @@ export async function exportFromServerAsync(
           };
           manifest.rendering = {
             mode: 'ssr',
-            file: '_expo/server/render.js',
+            file: rendererFilename,
           };
 
           const routes = isGranular
@@ -512,7 +512,7 @@ export async function exportFromServerAsync(
       });
     }
   } else {
-    warnPossibleInvalidExportType(appDir, mode);
+    await warnPossibleInvalidExportType(appDir, mode);
   }
 
   return files;
@@ -758,13 +758,13 @@ async function exportApiRoutesAsync({
   return files;
 }
 
-function warnPossibleInvalidExportType(appDir: string, mode: Options['mode']) {
-  const apiRoutes = getApiRoutesForDirectory(appDir);
+async function warnPossibleInvalidExportType(appDir: string, mode: Options['mode']) {
+  const apiRoutes = await getApiRoutesForDirectory(appDir);
   if (apiRoutes.length) {
     warnInvalidWebOutput(apiRoutes.map((route) => path.relative(appDir, route)));
   }
 
-  const middlewareFile = getMiddlewareForDirectory(appDir, mode);
+  const middlewareFile = await getMiddlewareForDirectory(appDir, mode);
   if (middlewareFile) {
     Log.warn(
       chalk.yellow`Skipping export for middleware because \`web.output\` is not "server" and API routes are disabled. Set \`apiRoutes: true\` in the \`expo-router\` config plugin to enable them. You may want to remove ${path.relative(appDir, middlewareFile)}`
@@ -817,7 +817,7 @@ async function exportLoadersAsync({
   const entryPointModules = entryPoints.map((e) => e.page);
   debugEvent('static:bundling_loaders', { modules: entryPointModules });
 
-  await devServer.exportExpoRouterLoadersAsync({
+  const loaderFilenames = await devServer.exportExpoRouterLoadersAsync({
     platform,
     entryPoints,
     files,
@@ -829,10 +829,10 @@ async function exportLoadersAsync({
   updateExportManifestInFiles({
     files,
     callback: (manifest) => {
-      const routesWithLoaders = new Set(entryPointModules);
       for (const route of manifest.htmlRoutes) {
-        if (routesWithLoaders.has(route.page)) {
-          route.loader = `_expo/loaders${route.page}.js`;
+        const filename = loaderFilenames.get(route.page);
+        if (filename) {
+          route.loader = filename;
         }
       }
     },

@@ -1,5 +1,7 @@
 import { stripAnsi } from '../../../../utils/ansi';
-import { formatDeviceChoice } from '../promptAndroidDevice';
+import { formatDeviceChoice, promptForDeviceAsync } from '../promptAndroidDevice';
+
+jest.mock('../../../../utils/interactive', () => ({ isInteractive: () => false }));
 
 describe(formatDeviceChoice, () => {
   it('formats Network connected authorized device', () => {
@@ -82,5 +84,18 @@ describe(formatDeviceChoice, () => {
 
     expect(stripAnsi(choice.title)).toBe(`Pixel_6_API_33 (emulator)`);
     expect(stripAnsi(choice.value)).toBe(`Pixel_6_API_33`);
+  });
+});
+
+describe(promptForDeviceAsync, () => {
+  it('names the --device argument in non-interactive mode', async () => {
+    await expect(
+      promptForDeviceAsync([
+        { name: 'Pixel_9', type: 'emulator', isBooted: true, isAuthorized: true },
+        { name: 'Pixel_7_Pro', type: 'device', isBooted: true, isAuthorized: true },
+      ])
+    ).rejects.toThrow(
+      '--device: argument must be provided with a device name in non-interactive mode. Valid choices are: Pixel_9, Pixel_7_Pro'
+    );
   });
 });

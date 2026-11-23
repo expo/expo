@@ -114,6 +114,82 @@ export function reportEasTutorialCompleted() {
   }
 }
 
+type HomeClickParams = {
+  section: string;
+  link_text: string;
+  link_url?: string;
+};
+
+export function reportHomeClick(params: HomeClickParams) {
+  if (isAnalyticsConsented()) {
+    window?.gtag?.('event', 'home_click', params);
+    return;
+  }
+
+  if (getAnalyticsConsentStatus() === 'pending') {
+    enqueueAnalyticsEvent({
+      type: 'track',
+      args: ['home_click', params],
+      timestamp: Date.now(),
+    });
+  }
+}
+
+type DocsClickParams = HomeClickParams & {
+  page_location: string;
+};
+
+export function reportDocsClick(params: DocsClickParams) {
+  if (isAnalyticsConsented()) {
+    window?.gtag?.('event', 'eas_docs_click', params);
+    return;
+  }
+
+  if (getAnalyticsConsentStatus() === 'pending') {
+    enqueueAnalyticsEvent({
+      type: 'track',
+      args: ['eas_docs_click', params],
+      timestamp: Date.now(),
+    });
+  }
+}
+
+export function reportSectionView(section: string) {
+  if (isAnalyticsConsented()) {
+    window?.gtag?.('event', 'home_section_view', { section });
+    return;
+  }
+
+  if (getAnalyticsConsentStatus() === 'pending') {
+    enqueueAnalyticsEvent({
+      type: 'track',
+      args: ['home_section_view', { section }],
+      timestamp: Date.now(),
+    });
+  }
+}
+
+export type WebMcpToolCallParams = {
+  webmcp_tool_name: string;
+  webmcp_outcome: 'success' | 'invalid_input' | 'not_found' | 'error' | 'cancelled';
+  webmcp_tool_page: string;
+};
+
+export function reportWebMcpToolCall(params: WebMcpToolCallParams) {
+  if (isAnalyticsConsented()) {
+    window?.gtag?.('event', 'webmcp_tool_call', params);
+    return;
+  }
+
+  if (getAnalyticsConsentStatus() === 'pending') {
+    enqueueAnalyticsEvent({
+      type: 'track',
+      args: ['webmcp_tool_call', params],
+      timestamp: Date.now(),
+    });
+  }
+}
+
 // Register the replay function so queued events are dispatched when consent is granted.
 setAnalyticsReplayFn((events: QueuedEvent[]) => {
   for (const event of events) {
@@ -146,6 +222,26 @@ setAnalyticsReplayFn((events: QueuedEvent[]) => {
       case 'eas_tutorial': {
         const payload = data as Record<string, unknown>;
         window?.gtag?.('event', 'eas_tutorial', payload);
+        break;
+      }
+      case 'home_click': {
+        const params = data as Record<string, unknown>;
+        window?.gtag?.('event', 'home_click', params);
+        break;
+      }
+      case 'eas_docs_click': {
+        const params = data as Record<string, unknown>;
+        window?.gtag?.('event', 'eas_docs_click', params);
+        break;
+      }
+      case 'home_section_view': {
+        const params = data as Record<string, unknown>;
+        window?.gtag?.('event', 'home_section_view', params);
+        break;
+      }
+      case 'webmcp_tool_call': {
+        const params = data as Record<string, unknown>;
+        window?.gtag?.('event', 'webmcp_tool_call', params);
         break;
       }
     }

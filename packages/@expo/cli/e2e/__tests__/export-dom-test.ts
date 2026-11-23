@@ -1,9 +1,9 @@
 import JsonFile from '@expo/json-file';
 import fs from 'fs/promises';
-import { sync as globSync } from 'glob';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import path from 'path';
+import { globSync } from 'tinyglobby';
 
 import { toPosixPath } from '../../src/utils/filePath';
 import { executeExpoAsync } from '../utils/expo';
@@ -83,6 +83,12 @@ describe('Export DOM Components', () => {
       'utf8'
     );
     const md5DomJsBundle = crypto.createHash('md5').update(domJsBundleContent).digest('hex');
+    const sourceMapUrl = domJsBundleContent.match(/^\/\/# sourceMappingURL=(.*)$/m)?.[1];
+    expect(sourceMapUrl).toMatch(/^[a-f0-9]{32}\.map$/);
+    const domMap = JSON.parse(
+      await fs.readFile(path.join(outputDir, 'www.bundle', sourceMapUrl!), 'utf8')
+    );
+    expect(domMap.debugId).toBe(domJsBundleContent.match(/^\/\/# debugId=(.*)$/m)?.[1]);
     expect(
       domEntry.indexOf(`<script src="./${md5DomJsBundle}.js" defer></script>`)
     ).toBeGreaterThan(-1);

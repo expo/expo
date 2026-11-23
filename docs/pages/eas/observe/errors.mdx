@@ -6,6 +6,7 @@ description: Record JavaScript errors and native crashes from your app and inves
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 > **important** Error reporting in Expo Observe is in [preview](/more/release-statuses/#preview) and requires SDK 57 or later. Native crashes additionally require `expo-observe` 57.0.21 or later. See [Still to come](#still-to-come) for more features.
 
@@ -160,9 +161,95 @@ With this flag, EAS CLI uploads the Android and iOS source maps produced when yo
 
 ### Native stack traces
 
-Source maps only apply to JavaScript. Native stack traces are not symbolicated in the dashboard.
+Source maps only apply to JavaScript. Native frames need the debug symbols of the native binary instead.
 
-On Android, frames from Java and Kotlin exceptions already carry the class, method, and line number. On iOS, frames are resolved to symbol names on the device where the crash happened, so you see function names but no file names or line numbers. A frame that cannot be resolved is shown as a binary name and an offset, such as `MyApp + 19160`.
+On Android, frames from Java and Kotlin exceptions already carry the class, method, and line number.
+
+On iOS, the device resolves frames in system libraries to symbol names. The dashboard shows frames in your app and its bundled frameworks as a binary name and an offset, such as `MyApp + 19160`. To see function names, files, and lines for these frames, upload the app's debug symbol (dSYM) files to Expo Observe.
+
+> **info** Native crash symbolication requires `expo-observe` 57.0.25 or later for SDK 57, and 58.0.5 or later for SDK 58. Crash reports from earlier versions do not include the universally unique identifiers (UUIDs) of the binaries, which Expo Observe needs to find the debug symbols.
+
+#### About debug symbols
+
+When Xcode builds your app for release, it writes the debug information of each binary to a separate **.dSYM** bundle. There is one bundle for the app and one for each framework that Xcode compiles. A prebuilt framework, such as Hermes, has no bundle in the archive. Download its dSYM from the framework's publisher and add it to the **.zip** file you upload. A binary and its dSYM share a UUID. Each native crash report lists the UUIDs of the binaries in its stack trace, and Expo Observe uses them to find the matching dSYM files.
+
+Every build produces new UUIDs, so upload the dSYM files of each build you release. Symbolication happens when you view a crash, so an upload also applies to earlier crashes.
+
+#### Find the debug symbols
+
+The location of the dSYM files depends on where you built the app.
+
+##### Expo Build
+
+Expo Build archives your app with fastlane. During the archive, fastlane compresses every dSYM in the archive into one file at **ios/build/&lt;app name&gt;.app.dSYM.zip**. To keep this file, add it to `buildArtifactPaths` in the build profile in **eas.json**:
+
+```json eas.json
+{
+  "build": {
+    "production": {
+      "buildArtifactPaths": ["ios/build/*.app.dSYM.zip"]
+    }
+  }
+}
+```
+
+When the build finishes, download the build artifacts from the build details page. If the download is a **.tar.gz** archive, extract it to get the **.app.dSYM.zip** file.
+
+##### Local builds
+
+With `eas build --local`, the same `buildArtifactPaths` setting applies. EAS CLI writes the build artifacts to the directory where you ran the command, next to the **.ipa** file. When the pattern matches one file, the artifact is the **.app.dSYM.zip** file itself, renamed to **build-&lt;timestamp&gt;.zip**. Do not pass `--output`. With it, EAS CLI writes the **.ipa** file and the build artifacts to the same path, so one file replaces the other.
+
+##### Xcode archives
+
+When you archive the app in Xcode, the dSYM files are inside the archive:
+
+<Step label="1">
+
+In Xcode, open **Window** > **Organizer** and select **Archives**.
+
+</Step>
+
+<Step label="2">
+
+Right-click the archive of the build and select **Show in Finder**.
+
+</Step>
+
+<Step label="3">
+
+Right-click the **.xcarchive** file and select **Show Package Contents**.
+
+</Step>
+
+<Step label="4">
+
+Compress the **dSYMs** folder into a **.zip** file.
+
+</Step>
+
+#### Upload the debug symbols
+
+<Step label="1">
+
+Open a native crash in [**Observe** > **Errors**](https://expo.dev/accounts/[account]/projects/[project]/observe/errors). If binaries in the stack trace have no debug symbols, a warning such as **Missing debug symbols** appears above it.
+
+</Step>
+
+<Step label="2">
+
+Click **Upload debug symbols**. The dialog lists each binary that needs debug symbols with its UUID, and shows whether its debug symbols are **Uploaded** or **Missing**.
+
+</Step>
+
+<Step label="3">
+
+Select the **.zip** file and click **Upload**. Expo Observe reads the dSYM files and stores their symbols. When processing finishes, the stack trace shows function names, files, and lines, and the **Symbolicated** tag appears next to it.
+
+</Step>
+
+The **.dSYM** bundles can be at any depth in the **.zip** file. The file must be at most 1 GB, contain at most 1,000 dSYM files, and not be protected with a password. The dSYM files in it must add up to at most 2 GB uncompressed, so split a larger set into several **.zip** files. Only members who can publish to the project can upload or delete debug symbols.
+
+To upload debug symbols before a crash, or to see and delete earlier uploads, navigate to [**Project settings** > **Observe debug symbols**](https://expo.dev/accounts/[account]/projects/[project]/settings/debug-symbols).
 
 ## View errors
 
@@ -184,4 +271,4 @@ Filter the list by source, by severity (**Fatal** or **Non-fatal**), by platform
 
 Error reporting is in preview, and the following are not available yet:
 
-- **Symbolication for native crashes**: uploading debug symbols, such as Android ProGuard mappings and iOS dSYMs, is not supported yet.
+- **Symbolication for Android**: uploading Android ProGuard and R8 mapping files is not supported yet.

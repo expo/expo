@@ -26,6 +26,13 @@
           "version": {
             "exact": "0.15.0"
           }
+        },
+        {
+          "url": "https://github.com/SDWebImage/libwebp-Xcode.git",
+          "productName": "libwebp",
+          "version": {
+            "exact": "1.6.0"
+          }
         }
       ],
       "targets": [
@@ -40,7 +47,8 @@
             "Hermes",
             "expo-modules-core/ExpoModulesCore",
             "SDWebImage",
-            "SDWebImageWebPCoder"
+            "SDWebImageWebPCoder",
+            "libwebp"
           ],
           "linkedFrameworks": ["Foundation", "UIKit"]
         }

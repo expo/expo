@@ -108,3 +108,44 @@ final class MissingPlistKeyException: GenericException<String>, @unchecked Senda
     "granted. Add the key via the expo-location config plugin or by hand, then rebuild the app"
   }
 }
+
+final class InvalidCoordinatesException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Cannot reverse geocode invalid coordinates. Provide a finite latitude between -90 and 90 " +
+    "and a finite longitude between -180 and 180, in degrees"
+  }
+}
+
+final class GeocodingUnavailableException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Geocoding is unavailable."
+  }
+}
+
+final class GeocodingFailedException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Geocoding failed."
+  }
+}
+
+final class HeadingUnavailable: Exception, @unchecked Sendable {
+  override var reason: String {
+    "This device has no magnetometer, so it cannot report its heading. Catch this error where the " +
+    "app starts watching the heading, and hide compass features on this device"
+  }
+}
+
+final class InvalidHeadingFilterException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Heading filter must be a finite, non-negative number of degrees"
+  }
+}
+
+final class HeadingUpdatesFailed: Exception, @unchecked Sendable {
+  override var reason: String {
+    "The device could not determine its heading, so the updates stopped. This usually comes from " +
+    "magnetic interference near the device, such as a magnet, a metal case, or electronic equipment. " +
+    "Ask the user to move the device away from the interference, then call resume() or restart() to " +
+    "read the heading again"
+  }
+}

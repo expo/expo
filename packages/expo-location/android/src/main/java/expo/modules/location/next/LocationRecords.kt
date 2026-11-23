@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.records.Required
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.location.next.locationProviders.BackgroundUpdatesParameters
@@ -126,8 +127,8 @@ class GetPositionOptions(
 
 @OptimizedRecord
 class Coordinates(
-  @Field val latitude: Double,
-  @Field val longitude: Double
+  @Field @Required val latitude: Double,
+  @Field @Required val longitude: Double
 ) : Record {
   private fun BaseBundle.putCoordinateFields() {
     putDouble("latitude", latitude)
@@ -138,6 +139,9 @@ class Coordinates(
 
   fun toBundle() = Bundle().apply { putCoordinateFields() }
 }
+
+fun Coordinates.areValid(): Boolean =
+  latitude in -90.0..90.0 && longitude in -180.0..180.0
 
 fun PersistableBundle.toCoordinates(): Coordinates = Coordinates(
   getDouble("latitude"),
@@ -160,27 +164,27 @@ class Position(
   @Field val speedAccuracy: Double? = null,
   @Field val headingAccuracy: Double? = null
 ) : Record {
-  private fun BaseBundle.putPositionFields() {
+  private fun BaseBundle.putPositionFields(putOptionalDouble: (String, Double?) -> Unit) {
     putDouble("timestamp", timestamp)
     putBoolean("mocked", mocked)
-    mslAltitude?.let { putDouble("mslAltitude", it) }
-    altitude?.let { putDouble("altitude", it) }
-    speed?.let { putDouble("speed", it) }
-    heading?.let { putDouble("heading", it) }
-    horizontalAccuracy?.let { putDouble("horizontalAccuracy", it) }
-    verticalAccuracy?.let { putDouble("verticalAccuracy", it) }
-    speedAccuracy?.let { putDouble("speedAccuracy", it) }
-    headingAccuracy?.let { putDouble("headingAccuracy", it) }
+    putOptionalDouble("mslAltitude", mslAltitude)
+    putOptionalDouble("altitude", altitude)
+    putOptionalDouble("speed", speed)
+    putOptionalDouble("heading", heading)
+    putOptionalDouble("horizontalAccuracy", horizontalAccuracy)
+    putOptionalDouble("verticalAccuracy", verticalAccuracy)
+    putOptionalDouble("speedAccuracy", speedAccuracy)
+    putOptionalDouble("headingAccuracy", headingAccuracy)
   }
 
   fun toPersistableBundle() = PersistableBundle().apply {
     putPersistableBundle("coordinates", coordinates.toPersistableBundle())
-    putPositionFields()
+    putPositionFields { key, value -> value?.let { putDouble(key, it) } }
   }
 
   fun toBundle() = Bundle().apply {
     putBundle("coordinates", coordinates.toBundle())
-    putPositionFields()
+    putPositionFields { key, value -> putSerializable(key, value) }
   }
 }
 

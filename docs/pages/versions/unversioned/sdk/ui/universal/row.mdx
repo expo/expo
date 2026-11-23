@@ -152,7 +152,20 @@ export default function RowSpacerExample() {
 
 `style.width` and `style.height` take a fixed size in density-independent pixels, or a percentage of the parent, such as `'50%'`. On Android and iOS, the parent has to be a universal `Row`, `Column`, or `Host` with a size on that axis. A universal `ScrollView` resolves the cross axis only, because the scroll axis is unbounded. Give the row a height before a child can use `'100%'` for its own height. A Jetpack Compose `Row` or a SwiftUI `HStack` does not resolve a percentage.
 
-```tsx RowSizeExample.tsx
+<ComponentExample
+  title="RowSizeExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-row-size-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-row-size-android-dark.webp',
+    alt: 'A row split into a light blue column at 30 percent width and a dark blue column at 70 percent width',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-row-size-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-row-size-ios-dark.webp',
+    alt: 'A row split into a light blue column at 30 percent width and a dark blue column at 70 percent width',
+  }}>
+
+```tsx
 import { Host, Column, Row } from '@expo/ui';
 
 export default function RowSizeExample() {
@@ -166,6 +179,8 @@ export default function RowSizeExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

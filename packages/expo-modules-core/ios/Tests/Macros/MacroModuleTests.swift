@@ -36,6 +36,11 @@ private final class MacroGreeter: Module, @unchecked Sendable {
   @JS
   var nickname: String = ""
 
+  @JS(.cached)
+  var cachedNickname: String {
+    return nickname
+  }
+
   // A `Record` argument and return.
   @JS
   func repeated(options: MacroOptions) -> MacroOptions {
@@ -133,6 +138,40 @@ private final class MacroCallbacks: Module {
   }
 }
 
+// JSI value arguments and results: the binding passes the value through, checked for its kind.
+@ExpoModule
+private final class MacroJSIValues: Module {
+  @JS
+  func apply(function: borrowing JavaScriptFunction, value: Int) throws -> Int {
+    return try function.call(arguments: value).asInt()
+  }
+
+  @JS
+  func identity(function: consuming JavaScriptFunction) -> JavaScriptFunction {
+    return function
+  }
+
+  @JS
+  func bigIntString(value: borrowing JavaScriptBigInt) throws -> String {
+    return try value.toString()
+  }
+
+  @JS
+  func sameSymbol(_ symbol: consuming JavaScriptSymbol) -> JavaScriptSymbol {
+    return symbol
+  }
+
+  @JS
+  func size(buffer: borrowing JavaScriptArrayBuffer) -> Int {
+    return buffer.size
+  }
+
+  @JS
+  func sameTypedArray(_ typedArray: consuming JavaScriptTypedArray) -> JavaScriptTypedArray {
+    return typedArray
+  }
+}
+
 @Suite("Macro module")
 @JavaScriptActor
 private struct MacroModuleTests {
@@ -211,36 +250,58 @@ private struct MacroModuleTests {
     #expect(try value.asString() == "Ada")
   }
 
+  @Test
+  func `stores the first value of a @JS(.cached) property on the module object`() throws {
+    register(MacroGreeter(appContext: appContext))
+    let value = try runtime.eval(
+      """
+      (() => {
+        const module = expo.modules.MacroGreeter
+        module.nickname = 'Ada'
+        const first = module.cachedNickname
+        module.nickname = 'Grace'
+        const descriptor = Object.getOwnPropertyDescriptor(module, 'cachedNickname')
+        return [first, module.cachedNickname, descriptor.value, descriptor.writable]
+      })()
+      """)
+    let result = try value.asArray()
+    #expect(try result[0].asString() == "Ada")
+    #expect(try result[1].asString() == "Ada")
+    #expect(try result[2].asString() == "Ada")
+    #expect(try result[3].asBool() == false)
+  }
+
   // MARK: - Async functions
 
   @Test
   func `binds an async @JS function that returns a promise`() async throws {
     register(MacroGreeter(appContext: appContext))
-    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.delayed('done')")
-    #expect(try await result.asString() == "done")
+    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.delayed('done')").ref()
+    // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+    #expect(try await runtime.execute { try result.take().asString() } == "done")
   }
 
   @Test
   func `binds a @JS(.concurrent) async function that returns a promise`() async throws {
     register(MacroGreeter(appContext: appContext))
-    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.offThread('done')")
-    #expect(try await result.asString() == "done")
+    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.offThread('done')").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "done")
   }
 
   @Test
   func `honors the @JS name override combined with .concurrent`() async throws {
     register(MacroGreeter(appContext: appContext))
-    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.renamedOffThread('done')")
-    #expect(try await result.asString() == "done")
-    #expect(try runtime.eval("'offThreadWithName' in expo.modules.MacroGreeter").asBool() == false)
+    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.renamedOffThread('done')").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "done")
+    #expect(try await runtime.execute { try runtime.eval("'offThreadWithName' in expo.modules.MacroGreeter").asBool() } == false)
   }
 
   @Test
   func `binds a @JS(.withAsync) variant that returns a promise`() async throws {
     register(MacroGreeter(appContext: appContext))
     #expect(try runtime.eval("expo.modules.MacroGreeter.joinSync('a', 'b')").asString() == "ab")
-    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.join('a', 'b').then((value) => value + '!')")
-    #expect(try await result.asString() == "ab!")
+    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.join('a', 'b').then((value) => value + '!')").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "ab!")
   }
 
   // MARK: - Non-primitive decode/encode
@@ -354,4 +415,102 @@ private struct MacroModuleTests {
     let result = try await runtime.evalAsync("expo.modules.MacroCallbacks.awaitCallback(async (x) => x * 2)")
     #expect(try await result.asInt() == 41)
   }
+
+  // MARK: - JSI value arguments
+
+  @Test
+  func `a JavaScriptFunction argument is called from native code`() throws {
+    register(MacroJSIValues(appContext: appContext))
+    #expect(try runtime.eval("expo.modules.MacroJSIValues.apply((x) => x * 2, 21)").asInt() == 42)
+  }
+
+  @Test
+  func `a returned JavaScriptFunction is the same function`() throws {
+    register(MacroJSIValues(appContext: appContext))
+    let result = try runtime.eval(
+      """
+      const fn = () => {}
+      expo.modules.MacroJSIValues.identity(fn) === fn
+      """)
+    #expect(try result.asBool() == true)
+  }
+
+  @Test
+  func `a value that is not a function for a JavaScriptFunction argument throws a TypeError`() throws {
+    register(MacroJSIValues(appContext: appContext))
+    for value in ["{}", "42", "null"] {
+      let message = try runtime.eval(
+        "try { expo.modules.MacroJSIValues.apply(\(value), 1); '' } catch (error) { error.message }")
+      #expect(try message.asString().contains("TypeError"))
+    }
+  }
+
+  @Test
+  func `a JavaScriptBigInt argument keeps a value outside the Int64 range`() throws {
+    register(MacroJSIValues(appContext: appContext))
+    let result = try runtime.eval("expo.modules.MacroJSIValues.bigIntString(2n ** 64n)")
+    #expect(try result.asString() == "18446744073709551616")
+  }
+
+  @Test
+  func `a returned JavaScriptSymbol is the same symbol`() throws {
+    register(MacroJSIValues(appContext: appContext))
+    let result = try runtime.eval(
+      """
+      const symbol = Symbol('key')
+      expo.modules.MacroJSIValues.sameSymbol(symbol) === symbol
+      """)
+    #expect(try result.asBool() == true)
+  }
+
+  @Test
+  func `a JavaScriptArrayBuffer argument reads the buffer`() throws {
+    register(MacroJSIValues(appContext: appContext))
+    #expect(try runtime.eval("expo.modules.MacroJSIValues.size(new ArrayBuffer(12))").asInt() == 12)
+  }
+
+  @Test
+  func `a returned JavaScriptTypedArray is the same typed array`() throws {
+    register(MacroJSIValues(appContext: appContext))
+    let result = try runtime.eval(
+      """
+      const array = new Uint8Array([1, 2, 3])
+      expo.modules.MacroJSIValues.sameTypedArray(array) === array
+      """)
+    #expect(try result.asBool() == true)
+  }
+
+  @Test
+  func `a value of another kind for a JSI value argument throws a TypeError`() throws {
+    register(MacroJSIValues(appContext: appContext))
+    let calls = ["bigIntString(42)", "sameSymbol('key')", "size(new Uint8Array(4))", "sameTypedArray(new ArrayBuffer(4))"]
+    for call in calls {
+      let message = try runtime.eval(
+        "try { expo.modules.MacroJSIValues.\(call); '' } catch (error) { error.message }")
+      #expect(try message.asString().contains("TypeError"))
+    }
+  }
+
+  // MARK: - Attached runtimes
+
+  @Test
+  func `binds the module in an attached runtime`() throws {
+    register(MacroGreeter(appContext: appContext))
+    let attachedRuntime = JavaScriptRuntime()
+    try appContext.attach(runtime: attachedRuntime)
+    #expect(try attachedRuntime.eval("expo.modules.MacroGreeter.greet('Expo')").asString() == "Hi, Expo")
+  }
+
+  @Test
+  func `rebuilds the module object in an attached runtime when the module is replaced`() throws {
+    register(MacroGreeter(appContext: appContext))
+    let attachedRuntime = JavaScriptRuntime()
+    try appContext.attach(runtime: attachedRuntime)
+    try attachedRuntime.eval("first = expo.modules.MacroGreeter")
+    #expect(try attachedRuntime.eval("expo.modules.MacroGreeter === first").getBool())
+
+    register(MacroGreeter(appContext: appContext))
+    #expect(try attachedRuntime.eval("expo.modules.MacroGreeter !== first").getBool())
+  }
+
 }

@@ -8,9 +8,11 @@ import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.procedures.StateMachineProcedure
 import expo.modules.updates.procedures.StateMachineSerialExecutorQueue
 import expo.modules.updatesinterface.UpdatesControllerRegistry
+import expo.modules.updatesinterface.UpdatesLogMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.util.Date
+import kotlin.math.floor
 
 /**
  * The Updates state machine class. There should be only one instance of this class
@@ -93,6 +95,7 @@ class UpdatesStateMachine(
    */
   private fun processEvent(event: UpdatesStateEvent) {
     if (transition(event)) {
+      val previousProgress = context.downloadProgress
       context = reduceContext(context, event)
       if (event !is UpdatesStateEvent.DownloadProgress) {
         logger.info("Updates state change: ${event.type}, context = ${context.json}")
@@ -105,7 +108,9 @@ class UpdatesStateMachine(
           }
         }
       }
-      sendContextToJS()
+      if (event !is UpdatesStateEvent.DownloadProgress || floor(context.downloadProgress * 100) != floor(previousProgress * 100)) {
+        sendContextToJS()
+      }
     }
   }
 
@@ -133,26 +138,17 @@ class UpdatesStateMachine(
    throws, so an invalid transition fails an E2E run instead of passing unnoticed.
    */
   private fun reportDroppedEvent(event: UpdatesStateEvent) {
-    val message = droppedEventWarning(event)
-    logger.warn(message)
-    if (BuildConfig.EX_UPDATES_ASSERT_INVALID_STATE) {
-      throw AssertionError(message)
-    }
-  }
-
-  /**
-   The warning written when an event is dropped. It carries the error text of an error event,
-   because some callers do not log the failure themselves before sending the event, which would
-   leave the updates log with no record of what was lost.
-   */
-  private fun droppedEventWarning(event: UpdatesStateEvent): String {
     val errorMessage = when (event) {
       is UpdatesStateEvent.CheckError -> event.error.message
       is UpdatesStateEvent.DownloadError -> event.error.message
       else -> null
     }
-    val error = errorMessage?.let { ", error = $it" } ?: ""
-    return "UpdatesState: invalid transition requested, event dropped: state = $state, event = ${event.type}$error"
+    val values = mapOf("state" to state.toString(), "event" to event.type.toString()) +
+      (errorMessage?.let { mapOf("error" to it) } ?: emptyMap())
+    logger.warn(UpdatesLogMessage.SystemStateMachineEventDropped, values = values)
+    if (BuildConfig.EX_UPDATES_ASSERT_INVALID_STATE) {
+      throw AssertionError(UpdatesLogger.fill(UpdatesLogMessage.SystemStateMachineEventDropped.template, values))
+    }
   }
 
   fun sendContextToJS() {
@@ -255,12 +251,14 @@ class UpdatesStateMachine(
           isDownloading = false,
           downloadError = null,
           isUpdatePending = true,
+          downloadProgress = 1.0,
           downloadStartTime = null,
           downloadFinishTime = null
         )
         is UpdatesStateEvent.DownloadCompleteWithUpdate -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
           downloadError = null,
+          downloadProgress = 1.0,
           latestManifest = event.manifest,
           downloadedManifest = event.manifest,
           rollback = null,

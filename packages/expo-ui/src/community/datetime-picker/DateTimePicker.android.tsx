@@ -105,7 +105,11 @@ export function DateTimePicker(props: DateTimePickerProps) {
     if (mode === 'time') {
       return (
         <Host colorScheme={themeVariant} style={style}>
-          <AndroidTimePickerDialog {...dialogProps} is24Hour={is24Hour} />
+          <AndroidTimePickerDialog
+            {...dialogProps}
+            variant={displayToAndroidVariant(display)}
+            is24Hour={is24Hour}
+          />
         </Host>
       );
     }

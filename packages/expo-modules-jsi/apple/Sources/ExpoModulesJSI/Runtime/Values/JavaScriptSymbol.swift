@@ -1,5 +1,6 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+internal import ExpoModulesJSI_Cxx
 internal import jsi
 
 /// A Swift representation of a JavaScript symbol. A symbol is a unique primitive value, mostly used as a
@@ -30,6 +31,14 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
   internal var jsiRuntime: facebook.jsi.IRuntime? {
     return runtimeHandle.pointee
   }
+
+  /// Whether the symbol belongs to the given runtime, the runtime that created it. Use it only with the runtime it
+  /// belongs to, on the thread of that runtime.
+  public func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
+    return runtimeHandle === runtime.handle
+  }
+
+  /// Mutable so that ``takeValue()`` can move the engine value out of a consumed symbol.
   internal var pointee: facebook.jsi.Symbol
 
   /// Creates a symbol from an existing JSI symbol.
@@ -77,6 +86,17 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
     return try cache(in: runtime).wellKnown(symbol)
   }
 
+  /// Returns the given shared symbol, with ``wellKnown(_:_:)`` or ``for(_:_:)``.
+  @JavaScriptActor
+  public init(_ runtime: borrowing JavaScriptRuntime, _ symbol: Shared) throws {
+    switch symbol {
+    case .wellKnown(let symbol):
+      self = try Self.wellKnown(runtime, symbol)
+    case .for(let key):
+      self = try Self.for(runtime, key)
+    }
+  }
+
   /// Converts the symbol to a string, like `toString()` in JavaScript. The result has the form
   /// `Symbol(description)`.
   public func toString() -> String {
@@ -86,6 +106,14 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
     return String(pointee.toString(jsiRuntime))
   }
 
+  /// The name that JavaScript gives a method with the symbol as its key: the description of the symbol in
+  /// brackets, such as `[Symbol.iterator]`, or an empty string for a symbol without a description.
+  internal var functionName: String {
+    // `toString()` has the form `Symbol(description)`.
+    let description = toString().dropFirst("Symbol(".count).dropLast()
+    return description.isEmpty ? "" : "[\(description)]"
+  }
+
   // MARK: - JavaScriptType
 
   public func asValue() -> JavaScriptValue {
@@ -93,6 +121,11 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
       FatalError.runtimeLost()
     }
     return JavaScriptValue(runtimeHandle, facebook.jsi.Value(jsiRuntime, pointee))
+  }
+
+  /// Moves the symbol into a `JavaScriptValue`, without the clone that ``asValue()`` makes.
+  public consuming func takeValue() -> JavaScriptValue {
+    return JavaScriptValue(runtimeHandle, expo.takeValueFromSymbol(&pointee))
   }
 
   /// Returns the symbol as a `facebook.jsi.Value` instance.
@@ -135,6 +168,24 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
     case toStringTag
     case unscopables
   }
+
+  // MARK: - Shared symbols
+
+  /// A symbol that all code shares: a well-known symbol or a symbol from the global symbol registry. The runtime
+  /// can return the symbol again at any time, so native code can keep this value instead of an engine value.
+  /// ``init(_:_:)`` returns the symbol.
+  ///
+  /// A string literal is the key of a symbol from the registry: `"app.id"` is the same as `.for("app.id")`.
+  public enum Shared: Hashable, Sendable, ExpressibleByStringLiteral {
+    /// A well-known symbol, such as `Symbol.iterator`.
+    case wellKnown(WellKnown)
+    /// The symbol that the global symbol registry holds for the key, like `Symbol.for(key)` in JavaScript.
+    case `for`(String)
+
+    public init(stringLiteral key: String) {
+      self = .for(key)
+    }
+  }
 }
 
 extension JavaScriptSymbol: JavaScriptRepresentable {
@@ -155,6 +206,41 @@ extension JavaScriptSymbol: JSIRepresentable {
 
   func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
     return asJSIValue()
+  }
+}
+
+// MARK: - JavaScriptCodable
+
+// A `JavaScriptSymbol` argument receives the JS symbol unconverted, so native code can use it as a
+// property key or compare it with another symbol. Decoding anything else throws a `TypeError`.
+extension JavaScriptSymbol: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .symbol
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptSymbol
+  {
+    return try value.asSymbol()
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptSymbol
+  {
+    return try value.asSymbol(in: runtime)
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(_ value: consuming JavaScriptSymbol, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptValue
+  {
+    return value.takeValue()
   }
 }
 

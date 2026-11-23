@@ -134,6 +134,15 @@ struct JavaScriptCodableRecordTests {
   }
 
   @Test
+  func `record encode throws in a runtime other than the main runtime`() throws {
+    let attachedRuntime = JavaScriptRuntime()
+    try appContext.attach(runtime: attachedRuntime)
+    #expect(throws: RecordInAnotherRuntimeException.self) {
+      _ = try ReflectedPoint.encode(ReflectedPoint(), in: attachedRuntime)
+    }
+  }
+
+  @Test
   func `macro record converts on a runtime with no app context`() throws {
     let bareRuntime = JavaScriptRuntime()
     let value = try bareRuntime.eval("({ x: 1, y: 2 })")

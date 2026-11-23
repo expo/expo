@@ -111,7 +111,7 @@ fun injectBundleLoader(
   return try {
     check(reactHost is ReactHostImpl)
     // A leftover file path would take precedence over the injected loader.
-    reactHost.devSupportManager?.bundleFilePath = null
+    reactHost.devSupportManager.bundleFilePath = null
 
     val reactHostClass = ReactHostImpl::class.java
     val mReactHostDelegateField = reactHostClass.getDeclaredField("reactHostDelegate")

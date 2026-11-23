@@ -36,6 +36,11 @@ on:
       - packages/expo-updates/**
       - packages/expo-web-browser/**
       - '!packages/**/android/**'
+      - '!packages/**/ios/Tests/**'
+      - '!packages/**/ios/WorkletsTests/**'
+      - '!packages/**/ios/Benchmarks/**'
+      - '!packages/**/apple/Tests/**'
+      - '!packages/**/apple/Benchmarks/**'
       # Common ignores from detect-platform-change action
       - '!**/*.md'
       - '!**/LICENSE*'
@@ -52,6 +57,7 @@ on:
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths: *trigger_paths
 
 concurrency:
@@ -60,10 +66,12 @@ concurrency:
 
 jobs:
   macos-build:
+    # Draft pull requests skip this job to shorten the shared macOS runner queue. Marking the pull request ready for review runs it.
     if: >-
       github.event_name != 'pull_request' ||
-      github.event.pull_request.head.repo.full_name != github.repository ||
-      !startsWith(github.head_ref, 'changeset-release/')
+      (!github.event.pull_request.draft &&
+        (github.event.pull_request.head.repo.full_name != github.repository ||
+          !startsWith(github.head_ref, 'changeset-release/')))
     runs-on: macos-26
     steps:
       - name: 👀 Checkout
@@ -73,11 +81,10 @@ jobs:
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby and install gems
-        uses: ruby/setup-ruby@26e5b7d197ebf60545ee9667bcbace0be11ccaec # v1.334.0
+        uses: ruby/setup-ruby@f9c4492e86def3e644ab32a0ef185eda5b0c20d0 # v1.342.0
         with:
           bundler-cache: true
-          # Ruby 3.4.11 breaks `pod install` at random (https://bugs.ruby-lang.org/issues/22479). Bump to 3.4.13 or later.
-          ruby-version: 3.2.2
+          ruby-version: 3.4.13
       - name: 🔨 Install pnpm
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:

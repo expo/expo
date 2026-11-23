@@ -10,10 +10,14 @@ import Foundation
 internal final class TestRuntimeScheduler: @unchecked Sendable {
   let thread = TestJavaScriptThread()
 
-  /// The handle the runtime passes back to ``dispatch``. Unretained: keep the scheduler alive for as
-  /// long as the runtime can schedule work.
-  var opaquePointer: UnsafeMutableRawPointer {
-    return Unmanaged.passUnretained(self).toOpaque()
+  /// The handle the runtime passes back to ``dispatch``. A retained thread that is never released, like
+  /// the handle React Native's host passes: the runtime may dispatch to it after the scheduler is gone,
+  /// for example when a value is released on another thread at the end of a test. The thread drops
+  /// work that arrives after it stopped.
+  let opaquePointer: UnsafeMutableRawPointer
+
+  init() {
+    opaquePointer = Unmanaged.passRetained(thread).toOpaque()
   }
 
   /// The `void (*)(void *scheduler, int priority, void (^callback)())` function the runtime calls to
@@ -30,6 +34,6 @@ private let scheduleOnTestRuntimeScheduler:
     guard let schedulerPointer else {
       return
     }
-    let scheduler = Unmanaged<TestRuntimeScheduler>.fromOpaque(schedulerPointer).takeUnretainedValue()
-    scheduler.thread.schedule(callback)
+    let thread = Unmanaged<TestJavaScriptThread>.fromOpaque(schedulerPointer).takeUnretainedValue()
+    thread.schedule(callback)
   }

@@ -80,6 +80,11 @@ struct ExpoModulesTests {
   }
 
   @Test
+  func `expo.NativeModule inherits the static members of expo.EventEmitter`() throws {
+    #expect(try runtime.eval("Object.getPrototypeOf(expo.NativeModule) === expo.EventEmitter").asBool() == true)
+  }
+
+  @Test
   func `has keys for registered modules`() throws {
     let registeredModuleNames = appContext.moduleRegistry.getModuleNames()
     let keys = try runtime.eval("Object.keys(expo.modules)").asArray().map {

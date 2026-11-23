@@ -117,8 +117,8 @@ extension SpanRow {
         // `expo.`-namespaced: the naming guidelines advise against application-specific names
         // under a semconv namespace. The status code reuses the registry attribute it matches.
         "attributes": [
-          "expo.http.redirect.from": redirect.fromUrl.absoluteString,
-          "expo.http.redirect.to": redirect.toUrl.absoluteString,
+          "expo.http.redirect.from": redactedUrlFull(redirect.fromUrl),
+          "expo.http.redirect.to": redactedUrlFull(redirect.toUrl),
           "http.response.status_code": redirect.statusCode,
         ],
       ]

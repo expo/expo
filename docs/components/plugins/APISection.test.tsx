@@ -66,7 +66,7 @@ describe('APISection', () => {
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(12);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(15);
     expect(screen.getAllByRole('table')).toHaveLength(5);
 
     expect(screen.queryByText('Methods'));
@@ -114,7 +114,7 @@ describe('APISection', () => {
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(12);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(15);
     expect(screen.getAllByRole('table')).toHaveLength(5);
   });
 
@@ -140,6 +140,6 @@ describe('APISection', () => {
       0
     );
     expect(container.innerHTML).not.toContain("'discover_tune'");
-    expect(container.innerHTML.length).toBeLessThan(500_000);
+    expect(container.innerHTML.length).toBeLessThan(600_000);
   });
 });

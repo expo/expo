@@ -30,7 +30,6 @@ export type Options = Pick<SerializerOptions, 'unstable_getAsyncDependencyPath'>
   serverRoot: string;
   sourceUrl?: string | null;
   splitChunks: boolean;
-  skipWrapping: boolean;
   computedAsyncModulePaths: Record<string, string> | null;
 };
 
@@ -142,7 +141,11 @@ export function getModuleParams(
             '.bundle?' +
             searchParams.toString();
         }
-      } else if (options.splitChunks && options.computedAsyncModulePaths != null) {
+      } else if (
+        (options.splitChunks ||
+          (dependency.data.data.asyncType as AsyncDependencyType) === 'worker') &&
+        options.computedAsyncModulePaths != null
+      ) {
         hasPaths = true;
         // A template string that we'll match and replace later when we know the content hash for a given path.
         paths[id] = options.computedAsyncModulePaths[dependency.absolutePath]!;

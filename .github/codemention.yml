@@ -235,8 +235,6 @@ rules:
     mentions: ['Kudo', 'alanjhughes', 'wschurman']
   - patterns: ['packages/expo-video/**']
     mentions: ['lukmccall', 'behenate']
-  - patterns: ['packages/expo-video-thumbnails/**']
-    mentions: ['behenate']
   - patterns: ['packages/expo-web-browser/**']
     mentions: ['alanjhughes']
   - patterns: ['packages/expo-yarn-workspaces/**']

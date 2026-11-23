@@ -10,7 +10,7 @@ export const expoCompile: Command = async (argv = []) => {
   try {
     const [platform, ...argsWithoutPlatform] = argv;
 
-    if (!platform || platform.startsWith('-')) {
+    if (!platform || platform === '--help' || platform === '-h') {
       Log.log(
         [
           '',

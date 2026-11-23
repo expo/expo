@@ -1,27 +1,31 @@
 import ExpoModulesCore
 
-struct SpeechOptions: Record {
-  @Field
+@Record
+struct SpeechOptions: Sendable {
   var language: String?
-  @Field
   var pitch: Double?
-  @Field
   var rate: Double?
-  @Field
   var voice: String?
-  @Field
   var useApplicationAudioSession: Bool?
-  @Field
   var volume: Float?
 }
 
-struct VoiceInfo: Record {
-  @Field
+@Record
+struct VoiceInfo {
   var identifier: String? = nil
-  @Field
   var name: String? = nil
-  @Field
   var quality: String? = nil
-  @Field
   var language: String? = nil
+}
+
+@Record
+struct SpeechEvent {
+  var id: String
+}
+
+@Record
+struct SpeechWillSayNextStringEvent {
+  var id: String
+  var charIndex: Int
+  var charLength: Int
 }

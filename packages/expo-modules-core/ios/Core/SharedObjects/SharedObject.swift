@@ -1,9 +1,42 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 import ExpoModulesJSI
+import os
 
 public protocol AnySharedObject: AnyArgument, AnyObject {
   var sharedObjectId: SharedObjectId { get }
+
+  // The hooks that the `@SharedObject` macro implements, which core calls when it builds the JavaScript class.
+  // `SharedObject` implements them with `class` members, so a call through this protocol reaches the override of the
+  // subclass.
+
+  /// The name of the class in JavaScript.
+  static var _jsName: String { get }
+
+  /// The class whose `@SharedObject` macro gives this class its JavaScript class: the class itself, or its nearest
+  /// superclass with the macro. `nil` when no class in the chain has the macro.
+  static var _jsClassType: (any AnySharedObject.Type)? { get }
+
+  /// The nearest superclass with the `@SharedObject` macro, whose JavaScript class the JavaScript class of this class
+  /// extends, or `nil` for the base `SharedObject` or `SharedRef` class.
+  static var _jsSuperclassType: (any AnySharedObject.Type)? { get }
+
+  /// Binds the `@JS` members of the class onto its JavaScript prototype.
+  @JavaScriptActor
+  static func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws
+
+  /// Binds the `static` and `class` `@JS` members of the class onto its JavaScript constructor.
+  @JavaScriptActor
+  static func _decorateSharedObject(constructor: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws
+
+  /// Builds a native instance from the arguments of the JavaScript constructor, or returns `nil` when the class has no
+  /// `@JS init`.
+  @JavaScriptActor
+  static func _constructSharedObject(
+    this: borrowing JavaScriptValue,
+    arguments: borrowing JavaScriptValuesBuffer,
+    in runtime: JavaScriptRuntime
+  ) throws -> SharedObject?
 }
 
 extension AnySharedObject {
@@ -25,11 +58,48 @@ open class SharedObject: AnySharedObject {
   public internal(set) weak var appContext: AppContext?
 
   /**
-   Weak reference to the native state that owns this `SharedObject` and bridges
-   it to its JS counterpart. Populated by `SharedObjectRegistry.add` and used to
-   recover the paired JS object without going through the registry's id table.
+   The native state that owns this `SharedObject` and bridges it to its JS counterpart, or `nil` when the object
+   isn't paired. Populated by `SharedObjectRegistry.add` and used to recover the paired JS object without going
+   through the registry's id table.
+
+   The reference is strong: a weak reference would give the native state a side table, which makes every retain and
+   release of it slower, also when a JS method finds it on its JS object. The native state holds this object too, so
+   the registry ends the pair with `endPairing(with:)` when the object is released, when its JS objects are collected
+   and when the registry is cleared. The registry changes it on any thread, so it is behind a lock.
    */
-  internal weak var nativeState: SharedObjectNativeState?
+  internal var nativeState: SharedObjectNativeState? {
+    get {
+      return SharedObjectLock.withLock(for: self) {
+        return pairedNativeState
+      }
+    }
+    set {
+      let oldValue = SharedObjectLock.withLock(for: self) {
+        let oldValue = pairedNativeState
+        pairedNativeState = newValue
+        return oldValue
+      }
+      // The old native state can be deallocated here, so it is released after the lock is unlocked.
+      withExtendedLifetime(oldValue) {}
+    }
+  }
+
+  /// The storage of `nativeState`. Use it only under the lock.
+  private var pairedNativeState: SharedObjectNativeState?
+
+  /// Ends the pair with the native state: clears `nativeState` when it is the given native state. Another native state
+  /// can be there already, when the object was paired again.
+  internal func endPairing(with nativeState: SharedObjectNativeState) {
+    let oldValue: SharedObjectNativeState? = SharedObjectLock.withLock(for: self) {
+      guard pairedNativeState === nativeState else {
+        return nil
+      }
+      let oldValue = pairedNativeState
+      pairedNativeState = nil
+      return oldValue
+    }
+    withExtendedLifetime(oldValue) {}
+  }
 
   /**
    The default public initializer of the shared object.
@@ -114,6 +184,23 @@ open class SharedObject: AnySharedObject {
     return unreleasedNativeState?.javaScriptObject(in: runtime)
   }
 
+  /// The reference that an event emitted now is dispatched through: the native state, or `nil` when the object isn't
+  /// paired, and whether runtimes other than the main runtime have listeners. Both are read under one lock. The dispatch
+  /// checks whether the object was released. See `EventEmitterReference`.
+  @usableFromInline
+  internal var eventEmitterReference: EventEmitterReference {
+    return SharedObjectLock.withLock(for: self) {
+      guard let nativeState = pairedNativeState else {
+        return .sharedObject(nil)
+      }
+      // The native state of this object is behind the lock of this object too.
+      if nativeState.hasListeningRuntimesUnderLock {
+        return .sharedObjectInManyRuntimes(nativeState)
+      }
+      return .sharedObject(nativeState)
+    }
+  }
+
   /**
    Backwards-compatible overload that forwards to `emit(event:payload:)`. Existing single-argument
    call sites keep working unchanged; the parameter has been renamed to `payload` to make the
@@ -132,8 +219,22 @@ open class SharedObject: AnySharedObject {
     return unqualifiedTypeName(self)
   }
 
+  /// The class whose `@SharedObject` macro gives this class its JavaScript class: the class itself, or its nearest
+  /// superclass with the macro. `nil` when no class in the chain has the macro. Overridden by the `@SharedObject` macro
+  /// with the type of the class, written as its name, so a subclass without the macro inherits the value.
+  open class var _jsClassType: (any AnySharedObject.Type)? {
+    return nil
+  }
+
+  /// The nearest superclass with the `@SharedObject` macro, whose JavaScript class the JavaScript class of this class
+  /// extends, or `nil` for the base `SharedObject` or `SharedRef` class. Overridden by the `@SharedObject` macro with
+  /// `super._jsClassType`, which skips the superclasses without the macro.
+  open class var _jsSuperclassType: (any AnySharedObject.Type)? {
+    return nil
+  }
+
   /// Binds the class's `@JS` members onto its JavaScript prototype. Overridden by the `@SharedObject`
-  /// macro; a `class func` (not a protocol requirement) so dispatch resolves per subclass.
+  /// macro; a `class func`, so a call through `AnySharedObject` resolves per subclass.
   @JavaScriptActor
   open class func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
 
@@ -159,6 +260,37 @@ extension SharedObject: EventEmitter {
       return nil
     }
     return try body(target)
+  }
+}
+
+// MARK: - JavaScript class chain
+
+extension AnySharedObject {
+  /// Whether the `@SharedObject` macro gives this class a JavaScript class of its own. Core builds that class when it
+  /// first needs it, also when no module registers the class.
+  internal static var hasOwnJSClass: Bool {
+    guard let classType = _jsClassType else {
+      return false
+    }
+    return ObjectIdentifier(classType) == ObjectIdentifier(self)
+  }
+
+  /// Whether core binds the `@JS` members of this class with its decorate hooks. A class without the `@SharedObject`
+  /// macro inherits the hooks of its nearest superclass with the macro. The JavaScript class of this class extends the
+  /// JavaScript class of that superclass, which already has these members.
+  internal static var bindsOwnJSMembers: Bool {
+    return _jsClassType == nil || hasOwnJSClass
+  }
+
+  /// The superclass whose JavaScript class the JavaScript class of this class extends, or `nil` for the base
+  /// `SharedObject` or `SharedRef` class. It is `_jsSuperclassType` for a class with the `@SharedObject` macro. A class
+  /// without the macro inherits `_jsSuperclassType` from its nearest superclass with the macro, so for that class it is
+  /// that superclass itself.
+  internal static var resolvedJSSuperclassType: (any AnySharedObject.Type)? {
+    guard let classType = _jsClassType else {
+      return nil
+    }
+    return ObjectIdentifier(classType) == ObjectIdentifier(self) ? _jsSuperclassType : classType
   }
 }
 
@@ -222,5 +354,51 @@ extension SharedObject {
     override var reason: String {
       "Expected the native shared object to be '\(param.expected)', but found '\(param.actual)'"
     }
+  }
+}
+
+extension SharedObjectNativeState {
+  /// Calls the listeners of the event in the given runtime with the payload, and the JS object in that runtime as
+  /// `this`. Logs a warning when the native object was released or has no JS object in that runtime.
+  @JavaScriptActor
+  internal func dispatchEvent(event: String, payload: borrowing JavaScriptValue, in runtime: JavaScriptRuntime) {
+    guard !isReleased else {
+      warnEventTargetLost(event: event)
+      return
+    }
+    // Only a JS object can add listeners, so without listeners there is nothing to look up.
+    guard let eventListeners = listeners(in: runtime)?.listeners(of: event) else {
+      return
+    }
+    guard let target = javaScriptObject(in: runtime) else {
+      warnEventTargetLost(event: event)
+      return
+    }
+    EventListeners.call(eventListeners, this: target, payload: payload, in: runtime)
+  }
+}
+
+/// The locks of the `nativeState` property of shared objects, picked by the address of the object. A lock of its own
+/// would cost an allocation for every shared object. A lock is never held while another one is taken, so two objects
+/// that share a lock can't deadlock. The listening runtimes of a native state are behind the lock of its native object.
+internal enum SharedObjectLock {
+  private static let count = 64
+
+  // The locks are never deallocated, and an `os_unfair_lock` is safe to use from any thread.
+  private nonisolated(unsafe) static let locks: UnsafeMutablePointer<os_unfair_lock> = {
+    let locks = UnsafeMutablePointer<os_unfair_lock>.allocate(capacity: count)
+    locks.initialize(repeating: os_unfair_lock(), count: count)
+    return locks
+  }()
+
+  static func withLock<R>(for object: SharedObject, _ body: () -> R) -> R {
+    // Objects are aligned to 16 bytes, so the low bits of the address are always zero.
+    let index = Int(truncatingIfNeeded: UInt(bitPattern: ObjectIdentifier(object)) >> 4) & (count - 1)
+    let lock = locks + index
+    os_unfair_lock_lock(lock)
+    defer {
+      os_unfair_lock_unlock(lock)
+    }
+    return body()
   }
 }

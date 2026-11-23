@@ -17,7 +17,7 @@ import nodeCrawl from '../index';
 jest.mock('path', () => jest.requireActual<typeof import('path')>('path').posix);
 
 const rootDir = '/project';
-const processFile = async () => null;
+const processFile = () => null;
 
 function makeTreeFS(files?: FileData): TreeFS {
   return new TreeFS({ rootDir, files, processFile });
@@ -312,7 +312,7 @@ describe('node crawler', () => {
     expect(removedFiles).toEqual(new Set());
   });
 
-  test('marks symlinks correctly when stat is skipped', async () => {
+  test('stats symlinks on a cold start', async () => {
     vol.fromJSON({
       '/project/fruits/apple.js': 'a',
       '/project/fruits/target.js': 'target',
@@ -323,10 +323,10 @@ describe('node crawler', () => {
 
     const linkMeta = changedFiles.get('fruits/link.js')!;
     expect(linkMeta).toBeDefined();
-    // On cold start, mtime is deferred
-    expect(linkMeta[H.MTIME]).toBeNull();
-    expect(linkMeta[H.SIZE]).toBe(0);
-    // But symlink flag is still correctly set
+    // Unlike a regular file, a symlink is stat'd even on a cold start
+    expect(linkMeta[H.MTIME]).toEqual(expect.any(Number));
+    expect(changedFiles.get('fruits/apple.js')![H.MTIME]).toBeNull();
+    // Its target is read later, in FileMap
     expect(linkMeta[H.SYMLINK]).toBe(1);
   });
 

@@ -6,6 +6,7 @@ import { XcrunPrerequisite } from '../XcrunPrerequisite';
 
 jest.mock(`../../../../log`);
 jest.mock('../../../../utils/prompts');
+jest.mock('../../../../utils/interactive', () => ({ isInteractive: () => false }));
 
 it(`detects that xcrun is installed and is valid`, async () => {
   // Mock xcrun installed for CI
@@ -69,4 +70,21 @@ it(`asserts that xcrun is not installed and the user cancels`, async () => {
 
   await expect(XcrunPrerequisite.instance.assertImplementation()).rejects.toThrow();
   expect(spawnAsync).not.toHaveBeenCalled();
+});
+
+it(`names the install command in non-interactive mode`, async () => {
+  jest
+    .mocked(execSync)
+    .mockReset()
+    .mockImplementation(() => {
+      throw new Error('foobar');
+    });
+  jest
+    .mocked(confirmAsync)
+    .mockReset()
+    .mockImplementationOnce(jest.requireActual('../../../../utils/prompts').confirmAsync);
+
+  await expect(XcrunPrerequisite.instance.assertImplementation()).rejects.toThrow(
+    'Install the Xcode Command Line Tools with `sudo xcode-select --install` and try again.'
+  );
 });

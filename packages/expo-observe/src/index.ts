@@ -13,6 +13,12 @@ export type {
   LogEventOptions,
   LogSeverity,
   MetricAttributes,
+  RecordSpanOptions,
+  Span,
+  SpanEndOptions,
+  SpanEventOptions,
+  SpanStatus,
+  StartSpanOptions,
 } from 'expo-app-metrics';
 export { ObserveErrorBoundary } from './ObserveErrorBoundary';
 export type {
@@ -38,6 +44,7 @@ export type {
   ObserveAttributes,
   ObserveConfig,
   ObserveEventName,
+  ObserveFeedback,
   ObserveIntegrationsConfig,
   ObserveModule,
   ObserveModuleEvents,

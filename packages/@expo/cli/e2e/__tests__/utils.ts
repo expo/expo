@@ -247,6 +247,10 @@ export function getRouterE2ERoot(): string {
   return path.join(__dirname, '../../../../../apps/router-e2e');
 }
 
+export function getServerTesterRoot(): string {
+  return path.join(__dirname, '../../../../../apps/server-tester');
+}
+
 export function getHtmlHelpers(outputDir: string) {
   async function getScriptTagsAsync(name: string) {
     const tags = (await getPageHtml(outputDir, name))

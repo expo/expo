@@ -2,10 +2,13 @@
 
 import { getConfig } from '@expo/config';
 import type { ModPlatform } from '@expo/config-plugins';
-import { compileModsAsync } from '@expo/config-plugins';
+import { IOSConfig, compileModsAsync } from '@expo/config-plugins';
 import chalk from 'chalk';
 import { Command } from 'commander';
+import fs from 'fs';
+import path from 'path';
 import prompts from 'prompts';
+import semver from 'semver';
 
 import {
   shouldUpdateAgpVersionAsync,
@@ -18,6 +21,8 @@ import {
   withIosDeploymentTarget,
 } from './plugins/ios/withIosDeploymentTarget';
 import { withIosModules } from './plugins/ios/withIosModules';
+import { assertNoLegacySourceUrl } from './plugins/ios/withIosModulesAppDelegate';
+import { getSceneDelegatePath } from './plugins/ios/withIosSceneDelegate';
 import { withSwiftVersion } from './plugins/ios/withSwiftVersion';
 import { withXCParseXcodeProjectBaseMod } from './plugins/ios/withXCParseXcodeProject';
 import type { VersionInfo } from './utils/expoVersionMappings';
@@ -147,6 +152,21 @@ async function runAsync() {
   }
   if (platformIos && !(await promptUpgradeIosDeployTargetAsync(projectRoot, iosDeploymentTarget))) {
     return;
+  }
+
+  if (platformIos && sdkVersion && semver.gte(sdkVersion, '59.0.0')) {
+    const appDelegate = IOSConfig.Paths.getAppDelegate(projectRoot);
+    if (appDelegate.language === 'swift') {
+      assertNoLegacySourceUrl(appDelegate.contents, sdkVersion);
+    }
+    const sceneDelegatePath = getSceneDelegatePath(appDelegate.path);
+    if (fs.existsSync(sceneDelegatePath)) {
+      assertNoLegacySourceUrl(
+        fs.readFileSync(sceneDelegatePath, 'utf8'),
+        sdkVersion,
+        path.basename(sceneDelegatePath)
+      );
+    }
   }
 
   const cliIntegration = supportCliIntegration && (await promptCliIntegrationAsync());

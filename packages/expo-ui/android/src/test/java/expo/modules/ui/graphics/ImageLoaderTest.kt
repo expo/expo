@@ -3,6 +3,7 @@ package expo.modules.ui.graphics
 import android.content.Context
 import android.util.Xml
 import androidx.compose.ui.graphics.PathFillType
+import androidx.compose.ui.graphics.vector.VectorGroup
 import androidx.compose.ui.graphics.vector.VectorPath
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
@@ -401,6 +402,22 @@ class ImageLoaderTest {
 
     assertThat(result.imageVector).isNull()
     assertThat(result.drawable).isNull()
+  }
+
+  @Test
+  fun `should keep group transforms of a vector drawable resource`() = runBlocking {
+    val resourceId = context.resources.getIdentifier("test_grouped_vector", "drawable", context.packageName)
+    assertThat(resourceId).isNotEqualTo(0)
+
+    val result = loader.loadFromUri("res:/$resourceId")
+
+    val root = result.imageVector!!.root
+    assertThat(root.size).isEqualTo(1)
+    assertThat(root[0]).isInstanceOf(VectorGroup::class.java)
+    val group = root[0] as VectorGroup
+    assertThat(group.translationX).isWithin(0.01f).of(4f)
+    assertThat(group.translationY).isWithin(0.01f).of(2f)
+    assertThat(group[0]).isInstanceOf(VectorPath::class.java)
   }
 
   // ========== Integration Tests ==========

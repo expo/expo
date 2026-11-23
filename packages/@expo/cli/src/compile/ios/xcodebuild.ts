@@ -16,6 +16,7 @@ export function getXcodeBuildArgs(
     props.scheme,
     '-destination',
     'generic/platform=iOS Simulator',
+    '-hideShellScriptEnvironment',
     'COCOAPODS_PARALLEL_CODE_SIGN=true',
     'COMPILER_INDEX_STORE_ENABLE=NO',
   ];
@@ -62,8 +63,13 @@ export async function getAppPathAsync(
       `Could not parse JSON returned from "xcodebuild -showBuildSettings -json".\n\n${stdout.trim()}\n\nError: ${error.message}`
     );
   }
-  const { buildSettings } = settings.find(
-    ({ target }: { target: string }) => target === props.scheme
-  );
+  const match = settings.find(({ target }: { target: string }) => target === props.scheme);
+  if (!match) {
+    const targets = settings.map(({ target }: { target: string }) => target).join(', ');
+    throw new CommandError(
+      `The "${props.scheme}" scheme doesn't build a target named "${props.scheme}". Targets it builds: ${targets}. Edit the scheme in Xcode so it builds the "${props.scheme}" target.`
+    );
+  }
+  const { buildSettings } = match;
   return path.join(buildSettings.TARGET_BUILD_DIR, buildSettings.WRAPPER_NAME);
 }

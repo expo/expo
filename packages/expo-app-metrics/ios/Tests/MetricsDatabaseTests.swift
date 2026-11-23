@@ -74,6 +74,7 @@ struct MetricsDatabaseTests {
       #expect(fetched.appName == row.appName)
       #expect(fetched.deviceModel == row.deviceModel)
       #expect(fetched.expoSdkVersion == row.expoSdkVersion)
+      #expect(fetched.processId == row.processId)
     }
   }
 
@@ -230,6 +231,45 @@ struct MetricsDatabaseTests {
       try database.deleteAllSessions()
       #expect(try database.getSession(id: "a") == nil)
       #expect(try database.getSession(id: "b") == nil)
+    }
+  }
+
+  @Test
+  func `clearStoredEntries deletes stored data but keeps active sessions`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "active"))
+      try database.insert(session: makeSessionRow(id: "ended"))
+      try database.updateSessionActiveStatus(id: "ended", isActive: false, endTimestamp: nil)
+      for sessionId in ["active", "ended"] {
+        try database.insert(metric: makeMetricRow(sessionId: sessionId, name: "m"))
+        try database.insert(log: makeLogRow(sessionId: sessionId, name: "l"))
+        try database.insert(span: makeSpanRow(sessionId: sessionId))
+        try database.setCrashReport(sessionId: sessionId, payload: "{}")
+      }
+      try database.setCrashReport(sessionId: "orphan", payload: "{}")
+
+      try database.clearStoredEntries()
+
+      #expect(try database.getSession(id: "active") != nil)
+      #expect(try database.getSession(id: "ended") == nil)
+      for table in ["metrics", "logs", "spans", "crash_reports"] {
+        #expect(try countRows(database: database, table: table) == 0)
+      }
+    }
+  }
+
+  @Test
+  func `active sessions keep recording after clearStoredEntries`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "active"))
+      let clearedLogId = try database.insert(log: makeLogRow(sessionId: "active", name: "before"))
+
+      try database.clearStoredEntries()
+
+      // Ids keep growing past the cleared rows, so expo-observe's dispatch cursor doesn't skip new rows.
+      let logId = try database.insert(log: makeLogRow(sessionId: "active", name: "after"))
+      #expect(logId > clearedLogId)
+      #expect(try database.getLogs(sessionId: "active").map(\.name) == ["after"])
     }
   }
 
@@ -869,7 +909,8 @@ private func makeSessionRow(
     expoSdkVersion: "55.0.0",
     reactNativeVersion: "0.85.0",
     clientVersion: "0.1.0",
-    languageTag: "en-US"
+    languageTag: "en-US",
+    processId: 1234
   )
 }
 

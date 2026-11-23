@@ -39,14 +39,15 @@
     "prepack": "expo-module prepack"
   },
   "dependencies": {
-    "@react-native/normalize-colors": "0.88.1",
+    "@react-native/normalize-colors": "0.89.0-rc.2",
     "debug": "^4.3.2"
   },
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "expo": "workspace:*"
+    "expo": "workspace:*",
+    "react-native-web": "0.22.0-canary-20261120-0e0a420"
   },
   "peerDependencies": {
     "expo": "*",

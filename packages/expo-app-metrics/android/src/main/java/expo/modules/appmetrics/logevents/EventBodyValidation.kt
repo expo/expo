@@ -18,13 +18,13 @@ private const val MAX_EVENT_BODY_LENGTH = 4096
  * logging a warning when truncation happens. Returns `null` for `null` input so
  * the call site can pass the result through unchanged.
  */
-internal fun validateEventBody(body: String?): String? {
+internal fun validateEventBody(body: String?, source: String = "logEvent"): String? {
   if (body == null) {
     return null
   }
   return truncateToMaxLength(
     body,
     MAX_EVENT_BODY_LENGTH,
-    "[AppMetrics] logEvent truncated body from ${body.length} characters to the $MAX_EVENT_BODY_LENGTH-character limit."
+    "[AppMetrics] $source truncated body from ${body.length} characters to the $MAX_EVENT_BODY_LENGTH-character limit."
   )
 }

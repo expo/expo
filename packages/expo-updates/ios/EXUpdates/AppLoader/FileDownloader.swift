@@ -11,6 +11,7 @@
 // swiftlint:disable force_unwrapping
 // swiftlint:disable no_grouping_extension
 
+import EXUpdatesInterface
 import Foundation
 import EASClient
 
@@ -180,8 +181,8 @@ public final class FileDownloader {
 
       if !skipPatchProcessing && isPatch && !canAttemptPatch {
         self.logger.warn(
-          message: "Received patch when patch support disabled for asset \(asset.key ?? asset.filename)",
-          code: UpdatesErrorCode.assetsFailedToLoad,
+          .remotePatchFallback,
+          values: ["assetKey": asset.key ?? asset.filename, "reason": "patchDisabled"],
           updateId: requestedUpdate?.updateId.uuidString,
           assetId: asset.key ?? asset.filename
         )
@@ -208,8 +209,8 @@ public final class FileDownloader {
         let patchMetadata {
         guard let launchedUpdate else {
           self.logger.warn(
-            message: "Missing launched update when attempting to apply diff for asset \(asset.key ?? asset.filename); retrying with full download",
-            code: UpdatesErrorCode.assetsFailedToLoad,
+            .remotePatchFallback,
+            values: ["assetKey": asset.key ?? asset.filename, "reason": "missingLaunchedUpdate"],
             updateId: requestedUpdate?.updateId.uuidString,
             assetId: asset.key ?? asset.filename
           )
@@ -231,8 +232,8 @@ public final class FileDownloader {
         }
         if !Self.validatePatchResponseMetadata(patchMetadata, launchedUpdate: launchedUpdate, requestedUpdate: requestedUpdate) {
           self.logger.warn(
-            message: "Patch response missing required headers or had mismatched identifiers; retrying with full asset download",
-            code: UpdatesErrorCode.assetsFailedToLoad,
+            .remotePatchFallback,
+            values: ["assetKey": asset.key ?? asset.filename, "reason": "invalidHeaders"],
             updateId: requestedUpdate?.updateId.uuidString,
             assetId: asset.key ?? asset.filename
           )
@@ -265,8 +266,9 @@ public final class FileDownloader {
           return
         } catch {
           self.logger.warn(
-            message: "Patch application failed for asset \(asset.key ?? asset.filename); retrying with full asset download: \(error.localizedDescription)",
-            code: UpdatesErrorCode.assetsFailedToLoad,
+            .remotePatchFallback,
+            cause: error,
+            values: ["assetKey": asset.key ?? asset.filename, "reason": "applyFailed"],
             updateId: requestedUpdate?.updateId.uuidString,
             assetId: asset.key ?? asset.filename
           )
@@ -364,18 +366,25 @@ public final class FileDownloader {
     do {
       extraHeaders = try database.serverDefinedHeaders(withScopeKey: scopeKey) ?? [:]
     } catch {
-      logger.error(cause: UpdatesError.fileDownloaderServerDefinedHeaderFailure(cause: error))
+      logger.warn(.localMetadataReadFailed, cause: error, values: ["field": "serverDefinedHeaders"])
     }
 
+    var extraClientParams: [String: String]?
     do {
-      if let extraClientParams = try database.extraParams(withScopeKey: scopeKey) {
+      extraClientParams = try database.extraParams(withScopeKey: scopeKey)
+    } catch {
+      logger.warn(.localMetadataReadFailed, cause: error, values: ["field": "extraParams"])
+    }
+
+    if let extraClientParams {
+      do {
         let structuredHeaderDictionary = try StringDictionary(value: extraClientParams.mapValues({ value in
           try StringItem(value: value)
         }))
         extraHeaders["Expo-Extra-Params"] = structuredHeaderDictionary.serialize()
+      } catch {
+        logger.warn(.remoteExtraParamsHeaderInvalid, cause: error)
       }
-    } catch {
-      logger.error(cause: UpdatesError.fileDownloaderExtraParamFailure(cause: error))
     }
 
     if let launchedUpdate {
@@ -395,7 +404,7 @@ public final class FileDownloader {
         extraHeaders["Expo-Recent-Failed-Update-IDs"] = structuredHeaderList.serialize()
       }
     } catch {
-      logger.error(cause: UpdatesError.fileDownloaderExtraParamFailure(cause: error))
+      logger.warn(.localMetadataReadFailed, cause: error, values: ["field": "recentFailedUpdateIds"])
     }
 
     return extraHeaders
@@ -998,12 +1007,14 @@ public final class FileDownloader {
         } else {
           cause = UpdatesError.fileDownloaderCodeSigningUnknownError(cause: error)
         }
+        logger.error(.systemCodeSigningVerificationFailed, cause: cause, values: ["kind": "directive"])
         errorBlock(cause)
         return
       }
 
       if signatureValidationResult.validationResult == .invalid {
         let cause = UpdatesError.fileDownloaderCodeSigningIncorrectSignature
+        logger.error(.systemCodeSigningVerificationFailed, cause: cause, values: ["kind": "directive"])
         errorBlock(cause)
         return
       }
@@ -1022,6 +1033,7 @@ public final class FileDownloader {
           if expoProjectInformation.projectId != directive.signingInfo?.easProjectId ||
             expoProjectInformation.scopeKey != directive.signingInfo?.scopeKey {
             let cause = UpdatesError.fileDownloaderCodeSigningCertificateScopeKeyOrProjectIdMismatch
+            logger.error(.systemCodeSigningVerificationFailed, cause: cause, values: ["kind": "directive"])
             errorBlock(cause)
             return
           }
@@ -1116,12 +1128,14 @@ public final class FileDownloader {
         } else {
           cause = UpdatesError.fileDownloaderCodeSigningUnknownError(cause: error)
         }
+        logger.error(.systemCodeSigningVerificationFailed, cause: cause, values: ["kind": "manifest"])
         errorBlock(cause)
         return
       }
 
       if signatureValidationResult.validationResult == .invalid {
         let cause = UpdatesError.fileDownloaderCodeSigningIncorrectSignature
+        logger.error(.systemCodeSigningVerificationFailed, cause: cause, values: ["kind": "manifest"])
         errorBlock(cause)
         return
       }
@@ -1150,6 +1164,7 @@ public final class FileDownloader {
           if expoProjectInformation.projectId != manifestForProjectInformation.easProjectId() ||
             expoProjectInformation.scopeKey != manifestForProjectInformation.scopeKey() {
             let cause = UpdatesError.fileDownloaderCodeSigningCertificateScopeKeyOrProjectIdMismatch
+            logger.error(.systemCodeSigningVerificationFailed, cause: cause, values: ["kind": "manifest"])
             errorBlock(cause)
             return
           }

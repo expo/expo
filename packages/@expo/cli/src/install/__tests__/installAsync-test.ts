@@ -2,6 +2,7 @@ import { getConfig, getPackageJson } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 
 import { getVersionedPackagesAsync } from '../../start/doctor/dependencies/getVersionedPackages';
+import { isInteractive } from '../../utils/interactive';
 import { applyPluginsAsync } from '../applyPlugins';
 import { checkPackagesAsync } from '../checkPackages';
 import { installAsync } from '../installAsync';
@@ -14,6 +15,10 @@ jest.mock('@expo/config', () => ({
 }));
 
 jest.mock('../../log');
+
+jest.mock('../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => false),
+}));
 
 jest.mock('../../start/doctor/dependencies/getVersionedPackages', () => ({
   getVersionedPackagesAsync: jest.fn(),
@@ -118,6 +123,30 @@ describe(installAsync, () => {
       'expo-camera@~16.0.0',
       'react-native-reanimated@~3.17.0',
     ]);
+  });
+
+  it('reports working while installing packages', async () => {
+    const write = jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+    let writesWhileInstalling: unknown[][] = [];
+    jest.mocked(isInteractive).mockReturnValue(true);
+    jest.mocked(PackageManager.createForProject).mockReturnValue({
+      name: 'pnpm',
+      addAsync: jest.fn(async () => {
+        writesWhileInstalling = [...write.mock.calls];
+      }),
+      addDevAsync: jest.fn(),
+    } as unknown as PackageManager.NodePackageManager);
+
+    try {
+      await installAsync(['expo-camera'], { projectRoot });
+
+      expect(writesWhileInstalling).toEqual([
+        ['\x1b]7501;state=working:app=expo:msg=SW5zdGFsbGluZyBwYWNrYWdlcw==:id=2\x1b\\'],
+      ]);
+    } finally {
+      write.mockRestore();
+      jest.mocked(isInteractive).mockReturnValue(false);
+    }
   });
 
   it('keeps NODE_ENV when called internally', async () => {

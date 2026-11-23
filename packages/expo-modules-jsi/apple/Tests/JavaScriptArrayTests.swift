@@ -596,4 +596,11 @@ struct JavaScriptArrayTests {
       _ = try JavaScriptArray.decode(value, in: runtime)
     }
   }
+
+  @Test
+  func `decoding rejects a runtime-free value`() throws {
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptArray.decode(JavaScriptValue.number(42), in: runtime)
+    }
+  }
 }

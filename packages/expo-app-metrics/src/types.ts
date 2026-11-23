@@ -308,6 +308,21 @@ export type CrashReport = {
   /** App version at the time of the crash. */
   appVersion: string;
   /**
+   * App build number at the time of the crash.
+   * @platform ios
+   */
+  appBuildNumber?: string | null;
+  /**
+   * OS version at the time of the crash, as MetricKit reports it (for example `iPhone OS 17.6.1 (21G93)`).
+   * @platform ios
+   */
+  osVersion?: string | null;
+  /**
+   * ID of the crashed process. Available on iOS 17 and later.
+   * @platform ios
+   */
+  processId?: number | null;
+  /**
    * Start of the diagnostic window. On iOS this is MetricKit's payload window
    * (typically a 24-hour bucket); on Android the exact crash moment. ISO 8601 —
    * sub-second precision differs between platforms, so parse rather than
@@ -688,6 +703,23 @@ export interface ExpoAppMetricsModuleType {
      */
     componentStack?: string;
     isFatal: boolean;
+  }): void;
+
+  /**
+   * Records user feedback as an `expo.feedback` log event. `expo-observe` validates the feedback
+   * before it calls this function.
+   *
+   * @private This API is unstable and may change without notice.
+   */
+  reportFeedback(feedback: {
+    id: string;
+    message?: string;
+    rating?: number;
+    scale?: {
+      min: number;
+      max: number;
+    };
+    attributes?: Record<string, LogAttributeValue>;
   }): void;
 
   /**

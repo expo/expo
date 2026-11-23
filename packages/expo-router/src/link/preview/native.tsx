@@ -4,6 +4,7 @@ import { requireNativeView, SharedRef } from 'expo';
 import { Fragment, type PropsWithChildren } from 'react';
 import { Platform, StyleSheet, type ViewProps, type ColorValue } from 'react-native';
 
+import type { ToolbarAxisBehavior } from '../../toolbar/axisBehavior';
 import type { BasicTextStyle } from '../../utils/font';
 
 // TODO(@kitten): Replace with `globalThis`, add typings in `expo`
@@ -46,6 +47,7 @@ export interface NativeLinkPreviewActionProps {
   // They're included for API consistency with toolbar items.
   sharesBackground?: boolean;
   hidesSharedBackground?: boolean;
+  axisBehavior?: ToolbarAxisBehavior;
   onSelected: () => void;
   titleStyle?: BasicTextStyle;
 }

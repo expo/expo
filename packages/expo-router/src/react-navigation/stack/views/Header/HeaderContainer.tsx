@@ -3,6 +3,7 @@ import { use } from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { getHeaderTitle, HeaderBackContext } from '../../../elements';
+import { getUnfocusedScreenProps } from '../../../elements/getUnfocusedScreenProps';
 import { NavigationProvider, type Route, useLinkBuilder } from '../../../native';
 import {
   forNoAnimation,
@@ -143,7 +144,7 @@ export function HeaderContainer({
                     }
                   : undefined
               }
-              aria-hidden={!isFocused}
+              {...getUnfocusedScreenProps(isFocused)}
               style={[
                 {
                   pointerEvents: isFocused ? 'box-none' : 'none',

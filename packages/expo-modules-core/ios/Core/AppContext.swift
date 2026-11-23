@@ -10,6 +10,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   internal static func create() -> AppContext {
     let appContext = AppContext()
 
+    appContext.ownsRuntime = true
     appContext._runtime = ExpoRuntime()
     return appContext
   }
@@ -42,6 +43,36 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   private var isModuleRegistryInitialized: Bool = false
 
   /**
+   The registry of the packages that back `expo.packages`. It's independent of `moduleRegistry`,
+   but a module that is in both has one holder.
+   */
+  internal private(set) lazy var packageRegistry: PackageRegistry = {
+    isPackageRegistryInitialized = true
+    return PackageRegistry(appContext: self)
+  }()
+
+  /**
+   Whether the package registry for this app context has already been initialized.
+   */
+  private var isPackageRegistryInitialized: Bool = false
+
+  /**
+   The holders of the modules in `moduleRegistry` and of the modules that are only in `packageRegistry`,
+   each holder once. It doesn't create a registry that isn't created yet.
+   */
+  internal var allModuleHolders: [ModuleHolder] {
+    var holders = isModuleRegistryInitialized ? Array(moduleRegistry) : []
+    guard isPackageRegistryInitialized else {
+      return holders
+    }
+    var seenHolders = Set(holders.map(ObjectIdentifier.init))
+    for holder in packageRegistry.moduleHolders where seenHolders.insert(ObjectIdentifier(holder)).inserted {
+      holders.append(holder)
+    }
+    return holders
+  }
+
+  /**
    The legacy module registry with modules written in the old-fashioned way.
    */
   @objc
@@ -62,6 +93,18 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
   /// Observes the surface presenter of the host to know when the views of this app context are created.
   private var surfacePresenterObserver: SurfacePresenterObserver?
+
+  /**
+   Whether the app context owns its runtime, as the one from `create()` and `TestAppContext` do,
+   rather than React Native. The `global.expo` native state then doesn't pin the app context (see
+   ``NativeState``): nothing else tears that runtime down, so the pin would be a cycle that keeps
+   both alive forever. Set it before the runtime.
+   */
+  internal var ownsRuntime = false {
+    willSet {
+      assert(_runtime == nil, "Set ownsRuntime before the runtime: the global.expo native state reads it only once")
+    }
+  }
 
   /**
    Underlying JSI runtime of the running app.
@@ -105,15 +148,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   */
   nonisolated(unsafe) public static var uiRuntimeFactory: UIRuntimeFactory?
 
-  public var _uiRuntime: JavaScriptRuntime? {
-    didSet {
-      if _uiRuntime != oldValue {
-        MainActor.assumeIsolated {
-          try? prepareUIRuntime()
-        }
-      }
-    }
-  }
+  public var _uiRuntime: JavaScriptRuntime?
 
   public var uiRuntime: JavaScriptRuntime {
     get throws {
@@ -160,11 +195,6 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    */
   internal private(set) lazy var coreModule = CoreModule(appContext: self)
 
-  /**
-   The module holder for the core module.
-   */
-  internal private(set) lazy var coreModuleHolder = ModuleHolder(appContext: self, module: coreModule, name: nil)
-
   internal var converter: MainValueConverter {
     // MainValueConverter is ~Copyable so it can't be stored in a lazy var (which uses Optional internally).
     // This is zero-cost at runtime — the struct contains only an unowned pointer to self, so constructing
@@ -203,6 +233,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   @discardableResult
   public func useModulesProvider(_ provider: ModulesProvider) -> Self {
     moduleRegistry.register(fromProvider: provider)
+    packageRegistry.register(fromProvider: provider)
     return self
   }
 
@@ -239,12 +270,33 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   internal let classRegistry = ClassRegistry()
 
   /// Creates a new JavaScript object with the class prototype associated with the given native class.
-  /// Returns `nil` when no JavaScript class is registered for the native class.
+  /// Returns `nil` when the native class has no JavaScript class.
   /// - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
-  internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
+  internal func newObject(of type: any AnySharedObject.Type) throws -> JavaScriptObject? {
     let runtime = try self.runtime
-    return classRegistry.withPrototype(nativeClassId: nativeClassId) { (prototype: borrowing JavaScriptObject) in
+    let nativeClassId = ObjectIdentifier(type)
+    if let object = classRegistry.withPrototype(nativeClassId: nativeClassId, { (prototype: borrowing JavaScriptObject) in
       return runtime.createObject(prototype: prototype)
+    }) {
+      return object
+    }
+    // A class that a package exports is built when JS reads it first, and a class with its own JS class that no module
+    // registers is built when it is first needed. Build it now, because a native instance gets to JS before that.
+    guard type.hasOwnJSClass || packageRegistry.sharedObjectType(for: nativeClassId) != nil else {
+      // A class without the `@SharedObject` macro gets the class of its nearest superclass with the macro, as it does
+      // in the other runtimes.
+      if let classType = type._jsClassType {
+        return try newObject(of: classType)
+      }
+      return nil
+    }
+    // Native values are converted to JS on the JavaScript thread.
+    return try JavaScriptActor.assumeIsolated {
+      // Building the class registers its prototype in `classRegistry`.
+      _ = try JavaScriptBindings.buildSharedObjectClass(type, appContext: self)
+      return classRegistry.withPrototype(nativeClassId: nativeClassId) { (prototype: borrowing JavaScriptObject) in
+        return runtime.createObject(prototype: prototype)
+      }
     }
   }
 
@@ -343,25 +395,34 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   }
 
   /**
-   Handles app's (`UIApplication`) lifecycle notifications and posts appropriate events to the module registry.
+   Posts the event to the modules of both registries, each module once.
+   */
+  private func postToModules(event: EventName) {
+    for holder in allModuleHolders {
+      holder.post(event: event)
+    }
+  }
+
+  /**
+   Handles app's (`UIApplication`) lifecycle notifications and posts appropriate events to the modules.
    */
   @objc
   private func handleClientAppNotification(_ notification: Notification) {
     switch notification.name {
     #if os(iOS) || os(tvOS)
     case UIApplication.willEnterForegroundNotification:
-      moduleRegistry.post(event: .appEntersForeground)
+      postToModules(event: .appEntersForeground)
     case UIApplication.didBecomeActiveNotification:
-      moduleRegistry.post(event: .appBecomesActive)
+      postToModules(event: .appBecomesActive)
     case UIApplication.didEnterBackgroundNotification:
-      moduleRegistry.post(event: .appEntersBackground)
+      postToModules(event: .appEntersBackground)
     #elseif os(macOS)
     case NSApplication.willUnhideNotification:
-      moduleRegistry.post(event: .appEntersForeground)
+      postToModules(event: .appEntersForeground)
     case NSApplication.didBecomeActiveNotification:
-      moduleRegistry.post(event: .appBecomesActive)
+      postToModules(event: .appBecomesActive)
     case NSApplication.didHideNotification:
-      moduleRegistry.post(event: .appEntersBackground)
+      postToModules(event: .appEntersBackground)
     #endif
     default:
       return
@@ -391,6 +452,38 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   @JavaScriptActor
   public func getNativeModuleObject(_ moduleName: String) -> JavaScriptValue? {
     return moduleRegistry.get(moduleHolderForName: moduleName)?.getJavaScriptValue()
+  }
+
+  /**
+   Returns the package with the given name that backs `expo.packages[packageName]`, or `nil` when it isn't registered.
+   */
+  func package(named packageName: String) -> PackageHolder? {
+    return packageRegistry.package(named: packageName)
+  }
+
+  /**
+   Returns the JavaScript class of the given `@SharedObject` class, and builds it on the first call. There is one
+   class for each native type, so a class that a package exports and a module registers in `_classTypes` too is
+   the same object in both places.
+   */
+  @JavaScriptActor
+  func getSharedObjectClass(_ sharedObjectType: any AnySharedObject.Type) throws -> JavaScriptObject {
+    let cachedClass = classRegistry.withPrototype(nativeClassId: ObjectIdentifier(sharedObjectType)) {
+      (prototype: borrowing JavaScriptObject) in
+      return prototype.getProperty("constructor").getObject()
+    }
+    if let cachedClass {
+      return cachedClass
+    }
+    return try JavaScriptBindings.buildSharedObjectClass(sharedObjectType, appContext: self)
+  }
+
+  /**
+   Returns a JavaScript object that represents a module with given name in a runtime attached with `attach(runtime:)`.
+   */
+  @JavaScriptActor
+  internal func getNativeModuleObject(_ moduleName: String, inAttachedRuntime runtime: JavaScriptRuntime) -> JavaScriptValue? {
+    return moduleRegistry.get(moduleHolderForName: moduleName)?.getJavaScriptValue(inAttachedRuntime: runtime)
   }
 
   // MARK: - Modules registration
@@ -429,9 +522,26 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    */
   @MainActor
   private func registerNativeViews() {
-    for holder in moduleRegistry {
+    for holder in allModuleHolders {
+      // Views of Expo Modules v1, declared with `View` in the module definition.
       for viewName in holder.definition.views.keys {
         ExpoFabricView.registerComponent(moduleName: holder.name, viewName: viewName)
+      }
+      // Views of Expo Modules v2, the `@ExpoView` classes in `@ExpoModule(views:)`.
+      for (viewName, viewType) in holder.nativeViewTypes {
+        ExpoNativeView.registerComponent(
+          viewType,
+          componentName: ExpoFabricView.componentName(moduleName: holder.name, viewName: viewName)
+        )
+      }
+    }
+    // Views of Expo Modules v2 that packages export, the `@ExpoView` classes in `ExpoPackage.views`.
+    if isPackageRegistryInitialized {
+      for (packageName, viewType) in packageRegistry.views {
+        ExpoNativeView.registerComponent(
+          viewType,
+          componentName: ExpoNativeView.packageComponentName(packageName: packageName, viewName: viewType._jsName)
+        )
       }
     }
     AppContext.viewsRegisteringAppContext = self
@@ -508,151 +618,235 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
   @JavaScriptActor
   internal func prepareRuntime() throws {
-    let installer = ExpoRuntimeInstaller(appContext: self, runtime: try runtime)
+    try prepare(runtime: try runtime, isMainRuntime: true)
+  }
+
+  /**
+   Prepares another runtime to use this app context, next to the main runtime, for example the
+   worklet UI runtime or a second runtime in tests. Call it on the thread of that runtime.
+   The runtime doesn't own the app context's lifecycle: tearing it down doesn't destroy the app context.
+   Attaching a runtime that is already attached to this app context does nothing.
+   */
+  @JavaScriptActor
+  public func attach(runtime: JavaScriptRuntime) throws {
+    // `global.expo` can't be replaced, so a runtime that has it can't be prepared again. It can also belong to
+    // an app context that was released, in which case `AppContext.from(runtime:)` returns `nil`.
+    if runtime.global().hasProperty(globalCoreObjectPropertyName) {
+      guard AppContext.from(runtime: runtime) === self else {
+        throw RuntimeAttachedToAnotherAppContextException()
+      }
+      return
+    }
+    try prepare(runtime: runtime, isMainRuntime: false)
+  }
+
+  @JavaScriptActor
+  private func prepare(runtime: JavaScriptRuntime, isMainRuntime: Bool) throws {
+    let installer = ExpoRuntimeInstaller(appContext: self, runtime: runtime)
 
     // Install `global.expo`.
     let coreObject = installer.installCoreObject()
 
     // Attach the native state that ties this app context's lifetime to the runtime and lets
-    // it be recovered from the runtime via `AppContext.from(runtime:)`. This is the main
-    // runtime, so its teardown owns the app context's `destroy()`.
-    installer.installAppContextNativeState(on: coreObject, ownsLifecycle: true)
+    // it be recovered from the runtime via `AppContext.from(runtime:)`. Only the teardown of
+    // the main runtime runs the app context's `destroy()`.
+    installer.installAppContextNativeState(on: coreObject, ownsLifecycle: isMainRuntime)
 
-    try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
-
-    // Bind the `@JS` members of the core module, such as `installOnUIRuntime`.
+    // Bind the `@JS` members of the core module.
     try coreModule._decorateModule(object: coreObject, in: runtime)
 
     // Install `global.expo.EventEmitter`.
-    installer.installEventEmitterClass()
+    let eventEmitterClass = try EventEmitterMethods.installClass(on: coreObject, in: runtime)
 
     // Install `global.expo.SharedObject`.
     installer.installSharedObjectClass() { [weak sharedObjectRegistry] objectId in
-      sharedObjectRegistry?.delete(objectId)
+      sharedObjectRegistry?.release(objectId, inMainRuntime: isMainRuntime)
     }
 
     // Install `global.expo.SharedRef`.
-    installer.installSharedRefClass()
+    try installer.installSharedRefClass(on: coreObject, inheriting: coreObject.getPropertyAsFunction("SharedObject"))
 
     // Install `global.expo.NativeModule`.
-    installer.installNativeModuleClass()
+    try installer.installNativeModuleClass(on: coreObject, inheriting: eventEmitterClass)
 
     // Install the modules host object as the `global.expo.modules`.
-    try installer.installExpoModulesHostObject()
-  }
+    try installer.installExpoModulesHostObject(isMainRuntime: isMainRuntime)
 
-  @MainActor
-  internal func prepareUIRuntime() throws {
-    // This function is @MainActor, but the installer APIs require @JavaScriptActor.
-    // Safe here because the UI runtime runs its JS on the main thread, which
-    // JavaScriptActor accepts as a valid isolated context.
-    try JavaScriptActor.assumeIsolated {
-      let installer = ExpoRuntimeInstaller(appContext: self, runtime: try uiRuntime)
+    // Install the packages host object as the `global.expo.packages`.
+    try installer.installExpoPackagesHostObject()
 
-      // Install `global.expo`.
-      let coreObject = installer.installCoreObject()
-
-      // Attach the native state that ties this app context's lifetime to the UI runtime and
-      // lets it be recovered from the runtime via `AppContext.from(runtime:)`. The UI runtime
-      // is subordinate, so its teardown must not destroy the app context.
-      installer.installAppContextNativeState(on: coreObject, ownsLifecycle: false)
-
-      // Install `global.expo.EventEmitter`.
-      installer.installEventEmitterClass()
-
-      // Install `global.expo.SharedObject`.
-      installer.installSharedObjectClass() { [weak sharedObjectRegistry] objectId in
-        sharedObjectRegistry?.delete(objectId)
-      }
-
-      // Install `global.expo.SharedRef`.
-      installer.installSharedRefClass()
-
-      // Install `global.expo.NativeModule`.
-      installer.installNativeModuleClass()
-
-      // Install the modules host object as the `global.expo.modules`.
-      try installer.installExpoModulesHostObject()
-
-      // Install module class prototypes so SharedObject properties are accessible in worklets.
-      try installModuleClasses(in: uiRuntime)
-    }
+    // Install `global.expo.SharedObject.__resolveInWorklet`.
+    try installSharedObjectResolver(in: runtime, isMainRuntime: isMainRuntime)
   }
 
   /**
-   Installs SharedObject class prototypes with property getter/setters in the given runtime.
-   Also installs `SharedObject.__resolveInWorklet(objectId)` for resolving the original native object instance in worklets.
+   Installs `SharedObject.__resolveInWorklet(objectId)`, which the worklets serializer calls to get the JS object of a
+   shared object in the runtime that unpacks it: an attached runtime for a worklet, or the main runtime for a value that
+   a worklet passes back with `runOnJS`.
    */
   @JavaScriptActor
-  private func installModuleClasses(in runtime: JavaScriptRuntime) throws {
-    let coreObject = try runtime.global().getPropertyAsObject(globalCoreObjectPropertyName)
-    let sharedObjectClass = try coreObject.getPropertyAsObject("SharedObject")
-    let sharedObjectBaseProto = sharedObjectClass.getProperty("prototype")
+  private func installSharedObjectResolver(in runtime: JavaScriptRuntime, isMainRuntime: Bool) throws {
+    let sharedObjectClass = try runtime.global()
+      .getPropertyAsObject(globalCoreObjectPropertyName)
+      .getPropertyAsObject("SharedObject")
 
-    // Prototypes are cached behind `JavaScriptRef` because `JavaScriptObject` is ~Copyable and
-    // cannot be a Dictionary value.
-    let prototypeCache = WorkletPrototypeCache()
-
-    // Called by the worklet serializer's `unpack` to recreate a SharedObject proxy.
-    // Takes just the objectId — looks up the native type, lazily builds the prototype on first use.
-    let resolveInWorklet = runtime.createFunction("__resolveInWorklet") { [weak self] _, arguments in
+    // The function gets the runtime as an argument, because capturing it would keep a runtime that owns its
+    // engine alive forever.
+    let resolveInWorklet = runtime.createFunction("__resolveInWorklet") {
+      [weak self] (
+        _: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
       guard let self else {
         throw Exceptions.AppContextLost()
       }
+      let runtime = copy runtime
       let objectId = try arguments[0].asInt()
 
-      guard let nativeObject = self.sharedObjectRegistry.get(objectId)?.native else {
+      guard let nativeState = self.sharedObjectRegistry.get(objectId), !nativeState.isReleased else {
         throw SharedObjectNotFoundException(String(objectId))
       }
-
-      let typeId = ObjectIdentifier(type(of: nativeObject))
-      let instance: JavaScriptObject
-
-      if let cachedInstance = prototypeCache.store[typeId]?.withUnwrappedValue({ (prototype: borrowing JavaScriptObject) in
-        runtime.createObject(prototype: prototype)
-      }) {
-        instance = cachedInstance
-      } else {
-        let built = try self.buildWorkletPrototype(
-          for: type(of: nativeObject),
-          in: runtime,
-          basePrototype: sharedObjectBaseProto.getObject()
-        )
-        instance = runtime.createObject(prototype: built)
-        prototypeCache.store[typeId] = built.ref()
+      if isMainRuntime {
+        result.emplace(try self.mainRuntimeObject(for: nativeState, in: runtime).asValue())
+        return
       }
-
-      instance.defineProperty(sharedObjectIdPropertyName, value: objectId, options: [])
-      return instance.asValue()
+      let nativeType = type(of: nativeState.native)
+      let instance = try nativeState.javaScriptObject(in: runtime) {
+        return try self.newSharedObjectInstance(of: nativeType, in: runtime)
+      }
+      guard let instance else {
+        throw SharedObjectNotFoundException(String(objectId))
+      }
+      result.emplace(instance.asValue())
     }
 
     sharedObjectClass.setProperty("__resolveInWorklet", value: resolveInWorklet.asObject())
   }
 
-  /// Builds the worklet prototype for a native shared object class, from the `ClassDefinition` of a module
-  /// that defines it or from a module that registers it in `_classTypes`.
+  /// Returns the JS object of the shared object in the main runtime. When that JS object was collected, for example
+  /// while a worklet still has one, it pairs a new JS object with the same native state and ID.
   @JavaScriptActor
-  private func buildWorkletPrototype(
-    for nativeType: SharedObject.Type,
-    in runtime: JavaScriptRuntime,
-    basePrototype: consuming JavaScriptObject
-  ) throws -> JavaScriptObject {
+  private func mainRuntimeObject(for nativeState: SharedObjectNativeState, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
+    if let jsObject = nativeState.javaScriptObject(in: runtime) {
+      return jsObject
+    }
+    let native = nativeState.native
+    // The native object was paired again with a new native state and ID after this one was released.
+    guard native.nativeState === nativeState else {
+      throw SharedObjectNotFoundException(String(native.sharedObjectId))
+    }
+    let nativeType = type(of: native)
+    let jsObject =
+      try newObject(of: nativeType)
+      ?? (try self.runtime).createBaseSharedObject(isSharedRef: nativeType is AnySharedRef.Type)
+    sharedObjectRegistry.add(native: native, javaScript: jsObject, inheritsBaseClass: true, in: runtime)
+    return jsObject
+  }
+
+  /// Returns the JS object of the shared object in the given runtime, a runtime other than the main runtime, and
+  /// creates one when there is none.
+  @JavaScriptActor
+  internal func javaScriptObject(for sharedObject: SharedObject, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
+    if let jsObject = sharedObject.object(in: runtime) {
+      return jsObject
+    }
+    let jsObject = try newSharedObjectInstance(of: type(of: sharedObject), in: runtime)
+    sharedObjectRegistry.add(native: sharedObject, javaScript: jsObject, inheritsBaseClass: true, in: runtime)
+    return jsObject
+  }
+
+  /// Creates a JS object with the prototype of the shared object class in the given runtime, a runtime other than
+  /// the main runtime. Not paired yet.
+  @JavaScriptActor
+  private func newSharedObjectInstance(of nativeType: SharedObject.Type, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
+    let prototypes = runtime.cached(sharedObjectPrototypesCacheKey, SharedObjectPrototypes.init)
     let typeId = ObjectIdentifier(nativeType)
 
+    if let instance = prototypes.instancePrototypes[typeId]?.withUnwrappedValue({ (prototype: borrowing JavaScriptObject) in
+      runtime.createObject(prototype: prototype)
+    }) {
+      return instance
+    }
+    let prototype = try instancePrototype(for: nativeType, in: runtime, prototypes: prototypes)
+    let instance = runtime.createObject(prototype: prototype)
+    prototypes.instancePrototypes[typeId] = prototype.ref()
+    return instance
+  }
+
+  /// Returns the prototype for an instance of a native shared object class in a runtime other than the main runtime:
+  /// the prototype of the class itself or of its nearest superclass that has a JS class. A module defines that class
+  /// with a `ClassDefinition` or registers it in `_classTypes`, a package exports it, or the `@SharedObject` macro gives
+  /// it its own class. A subclass without a JS class gets the prototype of that superclass, because a function that
+  /// declares the superclass as its return type gives it that class in the main runtime. Returns the base prototype
+  /// when none of these classes has a JS class, as the main runtime does.
+  @JavaScriptActor
+  private func instancePrototype(
+    for nativeType: SharedObject.Type,
+    in runtime: JavaScriptRuntime,
+    prototypes: SharedObjectPrototypes
+  ) throws -> JavaScriptObject {
+    var type: SharedObject.Type? = nativeType
+
+    while let currentType = type {
+      let typeId = ObjectIdentifier(currentType)
+
+      if currentType.hasOwnJSClass || findClassDefinition(for: typeId) != nil || findClassType(for: typeId) != nil {
+        return try classPrototype(for: currentType, in: runtime, prototypes: prototypes)
+      }
+      type = class_getSuperclass(currentType) as? SharedObject.Type
+    }
+    return try basePrototype(for: nativeType, in: runtime)
+  }
+
+  /// Returns the prototype of the JS class of a native shared object class in a runtime other than the main runtime,
+  /// and builds it on the first call. It extends the prototype of `resolvedJSSuperclassType`, built the same way, or
+  /// the base prototype. Like in the main runtime, a superclass gets a prototype also when no module registers it.
+  @JavaScriptActor
+  private func classPrototype(
+    for type: any AnySharedObject.Type,
+    in runtime: JavaScriptRuntime,
+    prototypes: SharedObjectPrototypes
+  ) throws -> JavaScriptObject {
+    let typeId = ObjectIdentifier(type)
+
+    if let prototype = prototypes.classPrototypes[typeId]?.withUnwrappedValue({ (prototype: borrowing JavaScriptObject) in
+      prototype.asValue().getObject()
+    }) {
+      return prototype
+    }
+    let superclassPrototype: JavaScriptObject
+    if let superclassType = type.resolvedJSSuperclassType {
+      superclassPrototype = try classPrototype(for: superclassType, in: runtime, prototypes: prototypes)
+    } else {
+      superclassPrototype = try basePrototype(for: type, in: runtime)
+    }
+    let prototype: JavaScriptObject
     if let classDefinition = findClassDefinition(for: typeId) {
-      return try classDefinition.buildPrototype(in: runtime, appContext: self, basePrototype: basePrototype)
+      prototype = try classDefinition.buildPrototype(in: runtime, appContext: self, basePrototype: superclassPrototype)
+    } else {
+      prototype = try JavaScriptBindings.buildSharedObjectPrototype(type, in: runtime, basePrototype: superclassPrototype)
     }
-    if let classType = findClassType(for: typeId) {
-      return try JavaScriptBindings.buildSharedObjectPrototype(classType, in: runtime, basePrototype: basePrototype)
-    }
-    throw SharedObjectClassNotRegisteredException(String(describing: nativeType))
+    prototypes.classPrototypes[typeId] = prototype.asValue().getObject().ref()
+    return prototype
+  }
+
+  /// Returns the prototype of the base `SharedRef` class for a `SharedRef` type, otherwise of the base `SharedObject`
+  /// class, in the given runtime.
+  @JavaScriptActor
+  private func basePrototype(for type: any AnySharedObject.Type, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
+    return try runtime.global()
+      .getPropertyAsObject(globalCoreObjectPropertyName)
+      .getPropertyAsObject(type is AnySharedRef.Type ? "SharedRef" : "SharedObject")
+      .getPropertyAsObject("prototype")
   }
 
   /**
    Finds the ClassDefinition for a given native type identifier by searching all modules.
    */
   private func findClassDefinition(for typeId: ObjectIdentifier) -> ClassDefinition? {
-    for module in moduleRegistry {
+    for module in allModuleHolders {
       for (_, classDefinition) in module.definition.classes {
         if let sharedObjectType = classDefinition.associatedType as? DynamicSharedObjectType,
            sharedObjectType.typeIdentifier == typeId {
@@ -664,14 +858,14 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   }
 
   /// Finds the `@SharedObject` class for a given native type identifier among the classes that modules
-  /// register in `_classTypes`.
+  /// register in `_classTypes` and the classes that packages export.
   private func findClassType(for typeId: ObjectIdentifier) -> SharedObject.Type? {
-    for module in moduleRegistry {
+    for module in allModuleHolders {
       if let classType = type(of: module.module)._classTypes.first(where: { ObjectIdentifier($0) == typeId }) {
         return classType
       }
     }
-    return nil
+    return packageRegistry.sharedObjectType(for: typeId)
   }
 
   /**
@@ -682,7 +876,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     sharedObjectRegistry.clear()
     classRegistry.clear()
 
-    for module in moduleRegistry {
+    for module in allModuleHolders {
       module.releaseJavaScriptObject()
     }
   }
@@ -727,8 +921,15 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   /// intentional: the cycle is broken only when the runtime is torn down (which frees the
   /// native state and fires its deallocator), which is exactly what defers the app context's
   /// release until the runtime is gone. The app context never holds the native state directly.
+  ///
+  /// An app context that owns its runtime (see ``ownsRuntime``) isn't pinned, as the cycle would
+  /// never break. The native state references it weakly and the app context tears the runtime
+  /// down in its own `deinit`.
   internal final class NativeState: JavaScriptNativeState {
-    internal let appContext: AppContext
+    internal weak let appContext: AppContext?
+
+    /// The strong reference that pins the app context, or `nil` when it isn't pinned.
+    private let pinnedAppContext: AppContext?
 
     /// Whether releasing this native state should tear the app context down. Set only for the
     /// main runtime; subordinate runtimes pin the app context and enable recovery without
@@ -737,6 +938,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
     internal init(appContext: AppContext, ownsLifecycle: Bool) {
       self.appContext = appContext
+      self.pinnedAppContext = appContext.ownsRuntime ? nil : appContext
       self.ownsLifecycle = ownsLifecycle
       super.init()
       setDeallocator { nativeState in
@@ -749,7 +951,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
         // values. A future cross-runtime sharing path that could drop this state's last JSI slot
         // while the runtime still runs JavaScript (see `JavaScriptNativeState.acquireShared`)
         // would need to hop to the JS thread here first.
-        nativeState.appContext.destroy()
+        nativeState.appContext?.destroy()
       }
     }
   }
@@ -773,12 +975,16 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   deinit {
     NotificationCenter.default.removeObserver(self)
 
-    // Post an event to the registry only if it was already created.
-    // If we let it to lazy-load here, that would crash since the module registry
-    // has a weak reference to the app context which is being deallocated.
-    if isModuleRegistryInitialized {
-      moduleRegistry.post(event: .appContextDestroys)
+    // Nothing pins an app context that owns its runtime, so the runtime outlives it only until its
+    // stored properties are released. Release the JavaScript objects before that.
+    if ownsRuntime && _runtime != nil {
+      destroy()
     }
+
+    // Post an event only to the registries that were already created.
+    // If we let them lazy-load here, that would crash since the registries
+    // have a weak reference to the app context which is being deallocated.
+    postToModules(event: .appContextDestroys)
   }
 
   @objc
@@ -910,9 +1116,16 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
  `JavaScriptValue.Ref` and rehydrate a JavaScriptObject on use.
  */
 @JavaScriptActor
-private final class WorkletPrototypeCache {
-  var store: [ObjectIdentifier: JavaScriptObject.Ref] = [:]
+/// The prototypes of shared object classes in a runtime other than the main runtime, by native class. Prototypes
+/// are kept behind `JavaScriptRef` because `JavaScriptObject` is ~Copyable and cannot be a Dictionary value.
+private final class SharedObjectPrototypes {
+  /// The prototype for an instance of each native class, which can be the prototype of a superclass.
+  var instancePrototypes: [ObjectIdentifier: JavaScriptObject.Ref] = [:]
+  /// The prototype of the JS class of each native class.
+  var classPrototypes: [ObjectIdentifier: JavaScriptObject.Ref] = [:]
 }
+
+private let sharedObjectPrototypesCacheKey = JavaScriptRuntime.Cache.Key<SharedObjectPrototypes>()
 
 // MARK: - Public exceptions
 
@@ -928,9 +1141,9 @@ internal final class SharedObjectNotFoundException: GenericException<String>, @u
   }
 }
 
-internal final class SharedObjectClassNotRegisteredException: GenericException<String>, @unchecked Sendable {
+internal final class RuntimeAttachedToAnotherAppContextException: Exception, @unchecked Sendable {
   override var reason: String {
-    "No class definition registered for SharedObject type '\(param)'"
+    "The runtime already has `global.expo` of another app context"
   }
 }
 

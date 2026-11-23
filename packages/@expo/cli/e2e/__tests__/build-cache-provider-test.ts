@@ -53,3 +53,54 @@ it('loads the `eas` build cache provider from the built CLI', async () => {
     uploadBuildCache: 'function',
   });
 });
+
+it('loads the `eas` build cache provider installed after a failed lookup in the same process', async () => {
+  const installRoot = getTemporaryPath();
+  await fs.mkdir(path.join(installRoot, 'node_modules'), { recursive: true });
+  await fs.writeFile(
+    path.join(installRoot, 'package.json'),
+    JSON.stringify({ name: 'build-cache-provider-install-test', version: '1.0.0' })
+  );
+  await fs.writeFile(
+    path.join(installRoot, 'app.json'),
+    JSON.stringify({ expo: { sdkVersion: '58.0.0' } })
+  );
+
+  const results = await executeAsync(__dirname, [
+    'node',
+    '-e',
+    `const fs = require('node:fs');
+    const path = require('node:path');
+    const projectRoot = process.argv[1];
+    require('../../build/src/start/doctor/dependencies/getMissingPackages').collectMissingPackages(
+      projectRoot,
+      [{ pkg: 'eas-build-cache-provider', file: 'eas-build-cache-provider/package.json' }]
+    );
+    const providerRoot = path.join(projectRoot, 'node_modules', 'eas-build-cache-provider');
+    fs.mkdirSync(path.join(providerRoot, 'build'), { recursive: true });
+    fs.writeFileSync(
+      path.join(providerRoot, 'package.json'),
+      JSON.stringify({ name: 'eas-build-cache-provider', version: '1.0.0', main: 'build/index.js' })
+    );
+    fs.writeFileSync(
+      path.join(providerRoot, 'build', 'index.js'),
+      'exports.default = { resolveBuildCache() {}, uploadBuildCache() {} };'
+    );
+    require('../../build/src/utils/build-cache-providers')
+      .resolveBuildCacheProvider('eas', projectRoot)
+      .then(
+        (provider) => console.log(JSON.stringify({
+          resolveBuildCache: typeof provider?.plugin.resolveBuildCache,
+          uploadBuildCache: typeof provider?.plugin.uploadBuildCache,
+        })),
+        (error) => console.log(JSON.stringify({ error: error.message }))
+      );`,
+    installRoot,
+  ]);
+  await fs.rm(installRoot, { recursive: true, force: true });
+
+  expect(JSON.parse(results.stdout.trim())).toEqual({
+    resolveBuildCache: 'function',
+    uploadBuildCache: 'function',
+  });
+});

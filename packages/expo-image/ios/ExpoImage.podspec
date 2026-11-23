@@ -32,6 +32,7 @@ Pod::Spec.new do |s|
   s.dependency 'SDWebImageAVIFCoder', '~> 0.11.0'
   s.dependency 'SDWebImageSVGCoder', '~> 1.7.0'
   s.dependency 'SDWebImageWebPCoder', '~> 0.14.6'
+  s.dependency 'libwebp', '>= 1.3.2'
   s.dependency 'libavif/libdav1d' unless disable_libdav1d
 
   # Swift/Objective-C compatibility

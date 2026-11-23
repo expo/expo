@@ -27,7 +27,11 @@ export function createRequestHandler<Env = unknown>(
   });
   const run = createRequestScope(STORE, makeRequestAPISetup);
   const common = createWorkerdEnv(params);
-  const onRequest = createExpoHandler({ ...common, ...setup });
+  const onRequest = createExpoHandler({
+    ...common,
+    ...setup,
+    checkOrigin: setup?.checkOrigin === false ? false : 'sec-only',
+  });
 
   function handler(request: Request, env: Env, ctx: ExecutionContext) {
     return run(onRequest, request, env, ctx);

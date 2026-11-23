@@ -97,10 +97,15 @@ export class ExternalModule<TModule> {
     const answer =
       autoInstall ||
       (shouldPrompt &&
-        (await confirmAsync({
-          message: this.promptMessage(packageName),
-          initial: true,
-        })));
+        (await confirmAsync(
+          {
+            message: this.promptMessage(packageName),
+            initial: true,
+          },
+          {
+            nonInteractiveHelp: `Install ${packageName}${shouldGloballyInstall ? ' globally' : ''} and try again.`,
+          }
+        )));
     if (answer) {
       Log.log(`Installing ${packageName}...`);
 

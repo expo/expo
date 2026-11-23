@@ -587,7 +587,6 @@ export declare class ExpoCalendarReminder {
 
 /**
  * Represents a calendar attendee object.
- * @platform android
  */
 export declare class ExpoCalendarAttendee {
   /**

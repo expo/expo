@@ -42,6 +42,7 @@ exceptions:
   - '.*APNs.*'
   - '.*App Links.*'
   - '.*AppDelegate.*'
+  - '.*AppDrop.*'
   - '.*App Store.*'
   - '.*App Store Connect.*'
   - '.*Appium.*'
@@ -135,6 +136,7 @@ exceptions:
   - '.*Google Font.*'
   - '.*Google Service Account.*'
   - '.*Google Pay.*'
+  - '.*Grok Build.*'
   - ".*Giphy's.*"
   - '.*GLView.*'
   - '.*gitignore.*'
@@ -163,6 +165,7 @@ exceptions:
   - '.*Link component.*'
   - '.*Linking.*'
   - '.*Linux.*'
+  - '.*LiveKit.*'
   - '.*MCP*'
   - '.*Mac Catalyst.*'
   - '.*Material Symbols.*'

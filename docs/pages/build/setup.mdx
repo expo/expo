@@ -3,12 +3,32 @@ title: Create your first build
 description: Learn how to create a build for your app with Expo Build.
 ---
 
+import { AgentPrompt } from '~/ui/components/AgentPrompt';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { A } from '~/ui/components/Text';
+
+<AgentPrompt
+  title="Create your first build with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent.">
+
+```text wrap
+Create the first build of my project with Expo Build. Use https://docs.expo.dev/build/setup.md as the source for each command.
+
+1. Check that EAS CLI is installed and up to date. If it is not, run `npm install -g eas-cli`.
+2. Check that I am logged in with `eas whoami`. If I am not, stop and ask me to run `eas login` or to set `EXPO_TOKEN`. Do not print a token.
+3. Ask me for the platform (`android` or `ios`) and the build type: a development build to install on a device, emulator, or simulator, or a production build for the app stores.
+4. If the project has no eas.json, ask me to run `eas build:configure --platform <platform>` in my terminal, because the command asks questions. Continue when eas.json exists.
+5. For a development build, run `npx expo install expo-dev-client`. For an iOS Simulator build, set `ios.simulator` to `true` on the `development` profile in eas.json.
+6. For an Android build or an iOS Simulator build, run `eas build --platform <platform> --profile <development or production> --non-interactive --no-wait`. If the project has no Android keystore, EAS CLI generates one.
+7. For an iOS build for a device or the App Store, EAS CLI asks me to sign in to my Apple Developer account. Stop and ask me to run `eas build --platform ios --profile <development or production>` in my terminal. Do not ask for my Apple ID or password.
+8. Give me the build details page link and tell me which commands you ran. To check the status later, run `eas build:list --limit 1`. To upload a production build to a store, I need a Google Play Developer or Apple Developer Program membership.
+```
+
+</AgentPrompt>
 
 Expo Build allows you to build a ready-to-submit binary of your app for the Google Play Store or Apple App Store. In this guide, let's learn how to do that.
 
@@ -24,10 +44,10 @@ For a small app, builds for Android and iOS platforms trigger within a few minut
 
     <Terminal
       cmd={{
-        npm: ['$ npx create-expo-app@latest my-app --template default@sdk-58'],
-        yarn: ['$ yarn create expo-app my-app --template default@sdk-58'],
-        pnpm: ['$ pnpm create expo-app my-app --template default@sdk-58'],
-        bun: ['$ bun create expo my-app --template default@sdk-58'],
+        npm: ['$ npx create-expo-app@latest my-app'],
+        yarn: ['$ yarn create expo-app my-app'],
+        pnpm: ['$ pnpm create expo-app my-app'],
+        bun: ['$ bun create expo my-app'],
       }}
     />
 

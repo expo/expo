@@ -16,7 +16,17 @@ extension TypedArray: JavaScriptDecodable, JavaScriptEncodable {
   @JavaScriptActor
   @inlinable
   public static func encode(_ value: TypedArray, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    guard value.jsTypedArray.belongs(to: runtime) else {
+      throw TypedArrayInAnotherRuntimeException()
+    }
     // No byte copy: the wrapper already owns the JS typed array, so hand the same object back.
     return value.jsTypedArray.asValue()
+  }
+}
+
+@usableFromInline
+internal final class TypedArrayInAnotherRuntimeException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Cannot convert a typed array to a value of another JavaScript runtime. A typed array belongs to the runtime that created it, for example the main runtime, and another runtime, for example the worklet UI runtime, can't use it. Pass the bytes as `Data` instead: it becomes a new `Uint8Array` in each runtime"
   }
 }

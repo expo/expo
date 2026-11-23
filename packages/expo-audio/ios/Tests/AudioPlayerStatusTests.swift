@@ -7,6 +7,12 @@ private final class SpyPlayerItem: AVPlayerItem {
   private(set) var currentDateCalls = 0
   private(set) var currentTimeCalls = 0
 
+  // Keeps the item loading. When a load ends, `AudioPlayer` updates its status from another thread,
+  // and that update reads the time too.
+  override var status: AVPlayerItem.Status {
+    return .unknown
+  }
+
   override func currentDate() -> Date? {
     currentDateCalls += 1
     return super.currentDate()

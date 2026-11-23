@@ -85,6 +85,79 @@ extension JSIBenchmarks {
     }
   }
 
+  // Comparing a string argument with a known name, for example an event name. A name of 12 chars fits in a small
+  // Swift `String`, and a name of 20 chars needs an allocation. The results are counted, so the comparisons can't be
+  // optimized away.
+
+  @Test(arguments: ["statusChange", "playbackStatusUpdate"])
+  func `unowned string compared as a Swift string`(name: String) async throws {
+    try await benchmarkCase { runtime in
+      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("'\(name)'").ref())
+      try benchmark("JavaScriptUnownedValue.getString() == literal: \(name.count) chars", runtime: runtime) {
+        iterations in
+        var matches = 0
+        for _ in 0..<iterations where buffer.unownedValue(at: 0).getString() == name {
+          matches += 1
+        }
+        precondition(matches == iterations)
+      }
+    }
+  }
+
+  @Test(arguments: ["statusChange", "playbackStatusUpdate"])
+  func `unowned string compared with an equal string`(name: String) async throws {
+    try await benchmarkCase { runtime in
+      // Built at run time, so the two strings are equal but aren't the same string in the engine.
+      let half = name.index(name.startIndex, offsetBy: name.count / 2)
+      let buffer = JavaScriptValuesBuffer.allocate(
+        in: runtime,
+        with: try runtime.eval("'\(name[..<half])' + '\(name[half...])'").ref()
+      )
+      let value = try runtime.eval("'\(name)'")
+      try benchmark("JavaScriptUnownedValue.isEqual(to:): equal string, \(name.count) chars", runtime: runtime) {
+        iterations in
+        var matches = 0
+        for _ in 0..<iterations where buffer.unownedValue(at: 0).isEqual(to: value) {
+          matches += 1
+        }
+        precondition(matches == iterations)
+      }
+    }
+  }
+
+  @Test(arguments: ["statusChange", "playbackStatusUpdate"])
+  func `unowned string compared with the same string`(name: String) async throws {
+    try await benchmarkCase { runtime in
+      let value = try runtime.eval("globalThis.name = '\(name)'")
+      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("name").ref())
+      try benchmark("JavaScriptUnownedValue.isEqual(to:): same string, \(name.count) chars", runtime: runtime) {
+        iterations in
+        var matches = 0
+        for _ in 0..<iterations where buffer.unownedValue(at: 0).isEqual(to: value) {
+          matches += 1
+        }
+        precondition(matches == iterations)
+      }
+    }
+  }
+
+  @Test(arguments: ["statusChange", "playbackStatusUpdate"])
+  func `unowned string compared with a different string`(name: String) async throws {
+    try await benchmarkCase { runtime in
+      // The same length, and only the last char differs, so the engine compares the whole string.
+      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("'\(name)'").ref())
+      let value = try runtime.eval("'\(name.dropLast())X'")
+      try benchmark("JavaScriptUnownedValue.isEqual(to:): different string, \(name.count) chars", runtime: runtime) {
+        iterations in
+        var mismatches = 0
+        for _ in 0..<iterations where !buffer.unownedValue(at: 0).isEqual(to: value) {
+          mismatches += 1
+        }
+        precondition(mismatches == iterations)
+      }
+    }
+  }
+
   @Test
   func `value to double`() async throws {
     try await benchmarkCase { runtime in
