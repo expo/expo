@@ -22,7 +22,7 @@ object ObserveConsent {
   val isGranted: Boolean
     get() = granted == true
 
-  val isLoaded: Boolean
+  internal val isLoaded: Boolean
     get() = granted != null
 
   /** Reads the consent value that the `expo-observe` config plugin writes to the manifest. */
