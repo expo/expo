@@ -108,7 +108,9 @@ class SharedObjectRegistry(runtime: Runtime) {
   }
 
   internal fun toNativeObject(id: SharedObjectId): SharedObject {
-    val native = pairs[id.ensureWasNotRelease()]?.first
+    val native = synchronized(this) {
+      pairs[id.ensureWasNotRelease()]?.first
+    }
     return native ?: throw InvalidSharedObjectIdException()
   }
 
@@ -124,7 +126,9 @@ class SharedObjectRegistry(runtime: Runtime) {
     }
 
     val id = SharedObjectId(js.getProperty(sharedObjectIdPropertyName).getInt())
-    return pairs[id]?.first
+    return synchronized(this) {
+      pairs[id]?.first
+    }
   }
 
   internal fun toJavaScriptObjectOrNull(native: SharedObject): JavaScriptObject? {
