@@ -1,7 +1,9 @@
 import crypto from 'crypto';
+import resolveFrom from 'resolve-from';
 
 import {
   addDomBundleToMetadataAsync,
+  exportDomComponentAsync,
   transformDomEntryForMd5Filename,
   transformNativeBundleForMd5Filename,
 } from '../exportDomComponents';
@@ -27,6 +29,95 @@ const mockMd5 = jest.fn().mockReturnValue('MOCK_CONTENTS_MD5_HASH');
     return self;
   }
   return jest.fn();
+});
+
+it('keeps DOM bundle map references valid after choosing MD5 filenames', async () => {
+  jest.mocked(resolveFrom).mockReturnValueOnce('/app/dom-entry.js');
+  const bundle: BundleOutput = {
+    assets: [],
+    artifacts: [
+      {
+        filename: 'entry.js',
+        originFilename: 'entry.ts',
+        type: 'js',
+        source: 'console.log(42);\n//# sourceMappingURL=entry.js.map\n//# debugId=original-id',
+        metadata: {},
+      },
+      {
+        filename: 'entry.js.map',
+        originFilename: 'entry.ts',
+        type: 'map',
+        source: JSON.stringify({
+          version: 3,
+          sources: ['entry.ts'],
+          names: [],
+          mappings: 'AAAA',
+          debugId: 'original-id',
+        }),
+        metadata: {},
+      },
+    ],
+  };
+  await exportDomComponentAsync({
+    filePath: '/app/Dom.tsx',
+    projectRoot: '/app',
+    dev: false,
+    isHermes: false,
+    includeSourceMaps: true,
+    exp: {} as any,
+    files: new Map(),
+    useMd5Filename: true,
+    devServer: { legacySinglePageExportBundleAsync: async () => bundle } as any,
+  });
+  const js = bundle.artifacts.find((asset) => asset.type === 'js')!;
+  const map = bundle.artifacts.find((asset) => asset.type === 'map')!;
+  expect(js.filename).toBe('MOCK_CONTENTS_MD5_HASH.js');
+  expect(map.filename).toBe('MOCK_CONTENTS_MD5_HASH.map');
+  expect(js.source.match(/sourceMappingURL=([^\n]+)/)?.[1]).toBe(map.filename);
+  expect(js.source).toContain('//# debugId=original-id');
+});
+
+it('finalizes dynamic DOM import URLs before naming their importing bundle', async () => {
+  const createHash = jest.mocked(crypto.createHash);
+  const original = createHash.getMockImplementation()!;
+  createHash.mockImplementation(jest.requireActual('crypto').createHash);
+  try {
+    jest.mocked(resolveFrom).mockReturnValueOnce('/app/dom-entry.js');
+    const child = {
+      filename: 'child.js',
+      originFilename: 'child.ts',
+      type: 'js' as const,
+      source: 'console.log(42);',
+      metadata: {},
+    };
+    const entry = {
+      filename: 'entry.js',
+      originFilename: 'entry.ts',
+      type: 'js' as const,
+      source: 'load("./child.js");',
+      metadata: { paths: { entry: { child: './child.js' } } },
+    };
+    const bundle = { assets: [], artifacts: [entry, child] };
+    await exportDomComponentAsync({
+      filePath: '/app/Dom.tsx',
+      projectRoot: '/app',
+      dev: false,
+      isHermes: false,
+      includeSourceMaps: false,
+      exp: {} as any,
+      files: new Map(),
+      useMd5Filename: true,
+      devServer: { legacySinglePageExportBundleAsync: async () => bundle } as any,
+    });
+    const md5 = (source: string) => crypto.createHash('md5').update(source).digest('hex') + '.js';
+    expect(child.filename).toBe(md5(child.source));
+    expect(entry.source).toBe(`load("./${child.filename}");`);
+    expect(entry.metadata.paths.entry.child).toBe('./' + child.filename);
+    expect(entry.filename).toBe(md5(entry.source));
+    expect(entry.filename).not.toBe(child.filename);
+  } finally {
+    createHash.mockImplementation(original);
+  }
 });
 
 describe(addDomBundleToMetadataAsync, () => {
