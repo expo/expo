@@ -2,32 +2,12 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Observe, ObserveRoot } from 'expo-observe';
 import { Stack } from 'expo-router';
 import { StyleSheet, Text, useColorScheme, View } from 'react-native';
-import { ReanimatedLogLevel } from 'react-native-reanimated';
 
-Observe.configure({
-  environment: 'custom-env',
-  dispatchingEnabled: true,
-  dispatchInDebug: true,
-  sampleRate: 1,
-  errorSampleRate: 1,
-  // ignoredMetrics: ['expo.app_startup.tti'],
-  // ignoredEvents: ['debug.info_button_pressed'],
-  integrations: {
-    'expo-router': {
-      filteredParams: ['accountId', 'firstName'],
-    },
-    'expo-image': {
-      oversizeThreshold: 1.5,
-      includeUrlParams: false,
-    },
-    'react-native-reanimated': {
-      level: ReanimatedLogLevel.warn,
-      strict: true,
-      reportWarnings: true,
-    },
-  },
-  networkTraces: true,
-});
+import { observeConfig } from '@/utils/observeConfig';
+// Registers the example integration at launch, as an app does when it imports a library.
+import '@/modules/observe-integration-example';
+
+Observe.configure(observeConfig);
 
 // Passing `errorBoundaryFallback` opts the root into capturing render-phase errors: the boundary
 // records them and renders this in place of the crashed app, instead of leaving them to React

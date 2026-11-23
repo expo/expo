@@ -26,6 +26,7 @@ Pod::Spec.new do |s|
   s.dependency 'React-Core'
   s.dependency 'EXUpdatesInterface'
   s.dependency 'EASClient'
+  s.dependency 'ExpoObserveInterface'
 
   s.libraries = 'sqlite3'
 

@@ -69,6 +69,7 @@
   },
   "dependencies": {
     "expo-eas-client": "workspace:~",
+    "expo-observe-interface": "workspace:~",
     "expo-updates-interface": "workspace:~"
   },
   "devDependencies": {

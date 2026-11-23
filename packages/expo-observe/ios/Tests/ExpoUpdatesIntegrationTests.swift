@@ -1,6 +1,7 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 import EXUpdatesInterface
+import ExpoObserveInterface
 import Testing
 
 @testable import ExpoObserve

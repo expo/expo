@@ -1,5 +1,6 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+import ExpoObserveInterface
 import Foundation
 
 @testable import ExpoObserve
@@ -141,6 +142,10 @@ final class FakeObserveClient: ObserveClient, @unchecked Sendable {
     lock.withLock {
       reportedWarnings.append(report)
     }
+    return true
+  }
+
+  func logEvent(_ event: ObserveEvent) -> Bool {
     return true
   }
 }

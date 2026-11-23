@@ -49,6 +49,11 @@ export default function ExamplesIndex() {
         onPress={() => router.push('/examples/traces')}
       />
       <Button
+        title="Library integration"
+        description="An integration that a library registers with expo-observe-interface (iOS)"
+        onPress={() => router.push('/examples/observe-integration')}
+      />
+      <Button
         title="Feedback"
         description="reportFeedback from a form sheet, thumbs, and a star rating"
         onPress={() => router.push('/examples/feedback')}

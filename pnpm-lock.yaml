@@ -1523,6 +1523,9 @@ importers:
       expo-observe:
         specifier: workspace:*
         version: link:../../packages/expo-observe
+      expo-observe-interface:
+        specifier: workspace:*
+        version: link:../../packages/expo-observe-interface
       expo-router:
         specifier: workspace:*
         version: link:../../packages/expo-router
@@ -5629,6 +5632,9 @@ importers:
       expo-eas-client:
         specifier: workspace:~
         version: link:../expo-eas-client
+      expo-observe-interface:
+        specifier: workspace:~
+        version: link:../expo-observe-interface
       expo-router:
         specifier: '*'
         version: link:../expo-router

@@ -1,15 +1,17 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+import ExpoObserveInterface
 import Foundation
 
 /// Sets up the integrations that `Observe.configure` enables, and tears them down when a later `configure` changes
 /// their config or turns them off. One host serves the whole process. At launch, it applies the config that the last
 /// `configure` stored, before the app code runs, so the integrations see what the libraries log from the start.
 /// While the user has not granted consent to Observe, no integration runs.
-internal final class IntegrationHost: @unchecked Sendable {
+internal final class IntegrationHost: ObserveIntegrationHost, @unchecked Sendable {
   static let shared: IntegrationHost = {
     let host = IntegrationHost(recorder: AppMetricsIntegrationRecorder())
     host.register(ExpoUpdatesIntegration())
+    ObserveIntegrationRegistry.shared.setHost(host)
     return host
   }()
 
@@ -51,6 +53,24 @@ internal final class IntegrationHost: @unchecked Sendable {
     }
   }
 
+  /// Whether a native integration with the name is registered.
+  func isRegistered(_ name: String) -> Bool {
+    return lock.withLock {
+      return registrations[name] != nil
+    }
+  }
+
+  /// Returns a client for one setup of the integration with the name, for an integration that the host does not run,
+  /// such as a JavaScript integration.
+  func makeClient(integration name: String, config: [String: Any]) -> IntegrationClient {
+    return IntegrationClient(integration: name, config: config, recorder: recorder)
+  }
+
+  /// Whether integrations can run. They cannot while the user has not granted consent to Observe.
+  var isConsentGranted: Bool {
+    return recorder.isConsentGranted
+  }
+
   /// Applies the config JSON of each enabled integration, by name. An integration that is not in `configs` is torn
   /// down. An integration whose config JSON changed is torn down and set up again with a new client.
   func apply(_ configs: [String: String]) {
@@ -78,7 +98,7 @@ internal final class IntegrationHost: @unchecked Sendable {
     guard let registration = registrations[name], let configs else {
       return
     }
-    let configJson = recorder.isConsentGranted ? configs[name] : nil
+    let configJson = isConsentGranted ? configs[name] : nil
     guard registration.configJson != configJson else {
       return
     }
@@ -91,7 +111,7 @@ internal final class IntegrationHost: @unchecked Sendable {
   private func start(_ registration: Registration, configJson: String) {
     let name = registration.integration.name
     let config = Self.parseConfig(configJson)
-    let client = IntegrationClient(integration: name, config: config, recorder: recorder)
+    let client = makeClient(integration: name, config: config)
     // Set before the setup, so a setup that throws is not retried until the config changes.
     registration.configJson = configJson
     do {
@@ -116,7 +136,7 @@ internal final class IntegrationHost: @unchecked Sendable {
     client?.invalidate()
   }
 
-  private static func parseConfig(_ json: String) -> [String: Any] {
+  static func parseConfig(_ json: String) -> [String: Any] {
     let object = try? JSONSerialization.jsonObject(with: Data(json.utf8))
     return object as? [String: Any] ?? [:]
   }

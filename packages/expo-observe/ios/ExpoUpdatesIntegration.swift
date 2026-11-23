@@ -1,6 +1,7 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 import EXUpdatesInterface
+import ExpoObserveInterface
 
 /// Reports the errors that expo-updates logs, and its warnings when `reportWarnings` is set. It listens to
 /// `UpdatesLogEntryListenerRegistry`, which gets each entry at the warning level or higher as expo-updates logs it,
