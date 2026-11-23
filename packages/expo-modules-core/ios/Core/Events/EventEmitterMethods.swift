@@ -7,9 +7,12 @@
 /// `EventEmitterNativeState` keeps the listeners. `addListener` attaches a plain one to an object without a native
 /// state. The methods ignore an object with another native state: it has no listeners, and `listenerCount` returns 0.
 internal enum EventEmitterMethods {
-  /// Installs the class as `EventEmitter` on the core object, `global.expo`.
+  /// Installs the class as `EventEmitter` on the core object, `global.expo`, and returns it.
   @JavaScriptActor
-  static func installClass(on coreObject: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
+  static func installClass(
+    on coreObject: borrowing JavaScriptObject,
+    in runtime: JavaScriptRuntime
+  ) throws -> JavaScriptFunction {
     let eventEmitterClass = try runtime.createClass(name: "EventEmitter") { [weak runtime] this, arguments in
       // The old event emitter wrapped the native module that its constructor got. A module is an event emitter now,
       // so the constructor returns an event emitter that it gets.
@@ -25,6 +28,7 @@ internal enum EventEmitterMethods {
     }
     try install(on: eventEmitterClass.asObject().getPropertyAsObject("prototype"), in: runtime)
     coreObject.setProperty("EventEmitter", value: eventEmitterClass.asValue())
+    return eventEmitterClass
   }
 
   /// Defines the methods on the prototype.

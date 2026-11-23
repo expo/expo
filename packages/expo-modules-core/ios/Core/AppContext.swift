@@ -656,7 +656,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     try coreModule._decorateModule(object: coreObject, in: runtime)
 
     // Install `global.expo.EventEmitter`.
-    try EventEmitterMethods.installClass(on: coreObject, in: runtime)
+    let eventEmitterClass = try EventEmitterMethods.installClass(on: coreObject, in: runtime)
 
     // Install `global.expo.SharedObject`.
     installer.installSharedObjectClass() { [weak sharedObjectRegistry] objectId in
@@ -664,10 +664,10 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     }
 
     // Install `global.expo.SharedRef`.
-    installer.installSharedRefClass()
+    try installer.installSharedRefClass(on: coreObject, inheriting: coreObject.getPropertyAsFunction("SharedObject"))
 
     // Install `global.expo.NativeModule`.
-    installer.installNativeModuleClass()
+    try installer.installNativeModuleClass(on: coreObject, inheriting: eventEmitterClass)
 
     // Install the modules host object as the `global.expo.modules`.
     try installer.installExpoModulesHostObject(isMainRuntime: isMainRuntime)

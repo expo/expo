@@ -45,6 +45,34 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
   }
 
   /**
+   Installs `expo.SharedRef`, the base class of shared refs, on the core object.
+   */
+  @JavaScriptActor
+  internal func installSharedRefClass(
+    on coreObject: borrowing JavaScriptObject,
+    inheriting sharedObjectClass: consuming JavaScriptFunction
+  ) throws {
+    let sharedRefClass = try runtime.createClass(name: "SharedRef", inheriting: sharedObjectClass) { this, _ in
+      return this
+    }
+    coreObject.setProperty("SharedRef", value: sharedRefClass.asValue())
+  }
+
+  /**
+   Installs `expo.NativeModule`, the class of module objects, on the core object.
+   */
+  @JavaScriptActor
+  internal func installNativeModuleClass(
+    on coreObject: borrowing JavaScriptObject,
+    inheriting eventEmitterClass: consuming JavaScriptFunction
+  ) throws {
+    let nativeModuleClass = try runtime.createClass(name: "NativeModule", inheriting: eventEmitterClass) { this, _ in
+      return this
+    }
+    coreObject.setProperty("NativeModule", value: nativeModuleClass.asValue())
+  }
+
+  /**
    Installs `expo.modules`, the host object that returns module objects.
    */
   @JavaScriptActor

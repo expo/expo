@@ -25,14 +25,4 @@
  */
 - (void)installSharedObjectClass:(void (^_Nonnull)(long))releaser;
 
-/**
- Installs the base class for shared refs, i.e. `global.expo.SharedRef`.
- */
-- (void)installSharedRefClass;
-
-/**
- Installs the NativeModule class in the given runtime as `global.expo.NativeModule`.
- */
-- (void)installNativeModuleClass;
-
 @end
