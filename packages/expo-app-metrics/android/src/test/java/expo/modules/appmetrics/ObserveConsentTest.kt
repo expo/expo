@@ -237,6 +237,17 @@ class ObserveConsentTest {
   }
 
   @Test
+  fun `the first grant saves its crash cursor over a cursor set without consent`() {
+    ObserveConsent.update(context, granted = false)
+    ObserveConsent.load(context)
+    AppMetricsPreferences.setLastProcessedExitTimestampMillis(context, 5)
+
+    ObserveConsent.update(context, granted = true, exitInfoProvider = { listOf(crashRecord(9_000)) })
+
+    assertEquals("9000", savedOnDisk()["lastProcessedExitMillis"])
+  }
+
+  @Test
   fun `a grant while consent is granted does not move the crash cursor`() {
     ObserveConsent.load(context)
     val reported = crashRecord(3_000)

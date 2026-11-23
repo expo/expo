@@ -45,11 +45,9 @@ class AppMetricsPreferencesTest {
     val configured = NetworkTracesConfiguration(enabled = true, hosts = listOf("api.example.com"))
 
     AppMetricsPreferences.setEnvironment(context, "staging")
-    AppMetricsPreferences.setLastProcessedExitTimestampMillis(context, 5)
     AppMetricsPreferences.setNetworkTracesConfiguration(context, configured)
 
     assertEquals("staging", AppMetricsPreferences.getEnvironment(context))
-    assertEquals(5L, AppMetricsPreferences.getLastProcessedExitTimestampMillis(context))
     assertEquals(configured, AppMetricsPreferences.getNetworkTracesConfiguration(context))
     assertTrue(context.getSharedPreferences("dev.expo.app-metrics", Context.MODE_PRIVATE).all.isEmpty())
   }

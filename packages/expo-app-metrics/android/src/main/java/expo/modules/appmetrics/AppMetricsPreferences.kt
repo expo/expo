@@ -24,6 +24,11 @@ object AppMetricsPreferences {
     context: Context,
     millis: Long
   ) {
+    // Not kept without consent, because the first grant saves its own cursor. A revoke after this
+    // check keeps the value in memory, but after a revoke no grant saves those values.
+    if (!ObserveConsent.isGranted) {
+      return
+    }
     preferences.putLong(context, KEY_LAST_PROCESSED_EXIT_MILLIS, millis)
   }
 
