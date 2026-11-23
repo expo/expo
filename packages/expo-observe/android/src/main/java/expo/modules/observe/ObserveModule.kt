@@ -14,6 +14,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
+import kotlinx.coroutines.CancellationException
 
 @OptimizedRecord
 class Config(
@@ -80,15 +81,7 @@ class ObserveModule : Module() {
       }
 
       AsyncFunction("setConsent") Coroutine { consent: ConsentValue ->
-        try {
-          appMetricsModule.setConsent(consent == ConsentValue.GRANTED)
-        } finally {
-          // Also when the save fails, because the revoke still applies. After the gate closes, so
-          // nothing saves the settings again.
-          if (consent == ConsentValue.NOT_GRANTED) {
-            deleteObserveData(context)
-          }
-        }
+        applyConsent(context, consent, appMetricsModule::setConsent)
       }
 
       AsyncFunction("dispatchEvents") Coroutine { ->
@@ -145,9 +138,44 @@ class ObserveModule : Module() {
     }
 }
 
-/** Deletes the Observe settings, the dispatch cursors among them, and the scheduled dispatch. Runs at a revoke. */
+/**
+ * Applies `Observe.setConsent`. After a revoke closes the gate, deletes the Observe data, also when
+ * the consent save failed. A failed consent save is reported before a failed delete.
+ */
+internal suspend fun applyConsent(
+  context: Context,
+  consent: ConsentValue,
+  setAppMetricsConsent: suspend (Boolean) -> Unit
+) {
+  val consentError = try {
+    setAppMetricsConsent(consent == ConsentValue.GRANTED)
+    null
+  } catch (e: CancellationException) {
+    // Canceled while it waited for an earlier consent change, so the revoke did not apply.
+    throw e
+  } catch (e: Exception) {
+    e
+  }
+  if (consent == ConsentValue.NOT_GRANTED && !ObserveConsent.isGranted) {
+    try {
+      deleteObserveData(context)
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      consentError?.addSuppressed(e) ?: throw e
+    }
+  }
+  consentError?.let { throw it }
+}
+
+/** Deletes the Observe settings, the dispatch cursors among them, and the scheduled dispatch. */
 internal suspend fun deleteObserveData(context: Context) {
+  // The local deletes first, because they do not suspend. So a failed or canceled dispatch cancel
+  // cannot skip them.
+  try {
+    context.deleteDatabase(LEGACY_DATABASE_NAME)
+  } finally {
+    ObservePreferences.deleteStoredSettings(context)
+  }
   ObservabilityBackgroundWorker.cancelBackgroundDispatch(context)
-  context.deleteDatabase(LEGACY_DATABASE_NAME)
-  ObservePreferences.deleteStoredSettings(context)
 }
