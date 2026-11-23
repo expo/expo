@@ -219,6 +219,8 @@ A single page (for example, `/get-started/set-up-your-environment/`) is reachabl
 
 Tools that take a `path` accept a path that starts with `/` or a full `https://docs.expo.dev` URL. They read or open that path on the current site, so the same input works on previews and in local development. They reject other origins before any request or navigation.
 
+Each call sends a `webmcp_tool_call` event to Google Analytics, through `reportWebMcpToolCall` in `providers/Analytics.tsx`. The event has 3 parameters: `webmcp_tool_name`, `webmcp_outcome` (`success`, `invalid_input`, `not_found`, `error`, or `cancelled`), and `webmcp_tool_page`, the path of the page where the call started. `invalid_input` means the input failed a check, in the schema or in the tool. `not_found` means the page, heading, section, or skill does not exist. `error` means any other failure, such as a failed request. The event never includes tool input, such as a search query or feedback text. It follows the same cookie consent rules as the other analytics events.
+
 ## Search
 
 We use Algolia as the main search results provider for our docs. This is set up in the `@expo/styleguide` library, which provides a universal search component that is used in the docs, expo.dev, and EAS dashboard.

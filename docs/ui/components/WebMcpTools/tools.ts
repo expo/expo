@@ -1,5 +1,6 @@
 import Router from 'next/router';
 
+import { reportWebMcpToolCall, type WebMcpToolCallParams } from '~/providers/Analytics';
 import { getVersionFromPath } from '~/providers/page-api-version';
 import navigation from '~/public/static/constants/navigation.json';
 import { NavigationRoute } from '~/types/common';
@@ -61,14 +62,17 @@ type SkillsIndex = { skills: { name: string; url: string }[] };
 type NavigationArea = (typeof NAVIGATION_AREAS)[number];
 type PageEntry = { section: string; group?: string; title: string; path: string };
 
+class InvalidInputError extends Error {}
+class NotFoundError extends Error {}
+
 function toSiteUrl(path: unknown) {
   if (typeof path !== 'string' || !(path.startsWith('/') || /^https?:\/\//.test(path))) {
-    throw new TypeError('path must be a docs.expo.dev URL or a path that starts with "/".');
+    throw new InvalidInputError('path must be a docs.expo.dev URL or a path that starts with "/".');
   }
 
   const url = new URL(path, window.location.origin);
   if (url.origin !== window.location.origin && url.origin !== DOCS_ORIGIN) {
-    throw new TypeError('path must stay on docs.expo.dev.');
+    throw new InvalidInputError('path must stay on docs.expo.dev.');
   }
 
   return new URL(`${url.pathname}${url.search}${url.hash}`, window.location.origin);
@@ -80,7 +84,7 @@ const SECTION_MAX_LENGTH = 200;
 
 function requireText(value: unknown, field: string) {
   if (typeof value !== 'string' || !value.trim()) {
-    throw new TypeError(`${field} must be a non-empty string.`);
+    throw new InvalidInputError(`${field} must be a non-empty string.`);
   }
   return value.trim();
 }
@@ -88,24 +92,24 @@ function requireText(value: unknown, field: string) {
 function checkValue(name: string, value: unknown, property: PropertySchema) {
   if (property.type === 'string') {
     if (typeof value !== 'string') {
-      throw new TypeError(`${name} must be a string.`);
+      throw new InvalidInputError(`${name} must be a string.`);
     }
     if (property.enum && !property.enum.includes(value)) {
-      throw new TypeError(`${name} must be one of: ${property.enum.join(', ')}.`);
+      throw new InvalidInputError(`${name} must be one of: ${property.enum.join(', ')}.`);
     }
     if (property.maxLength !== undefined && value.length > property.maxLength) {
-      throw new TypeError(`${name} must be at most ${property.maxLength} characters.`);
+      throw new InvalidInputError(`${name} must be at most ${property.maxLength} characters.`);
     }
     return;
   }
   if (typeof value !== 'number' || !Number.isInteger(value)) {
-    throw new TypeError(`${name} must be an integer.`);
+    throw new InvalidInputError(`${name} must be an integer.`);
   }
   if (property.minimum !== undefined && value < property.minimum) {
-    throw new TypeError(`${name} must be at least ${property.minimum}.`);
+    throw new InvalidInputError(`${name} must be at least ${property.minimum}.`);
   }
   if (property.maximum !== undefined && value > property.maximum) {
-    throw new TypeError(`${name} must be at most ${property.maximum}.`);
+    throw new InvalidInputError(`${name} must be at most ${property.maximum}.`);
   }
 }
 
@@ -113,12 +117,14 @@ function checkInput(input: ToolInput, schema: InputSchema) {
   const names = Object.keys(schema.properties);
   for (const name of Object.keys(input)) {
     if (!names.includes(name)) {
-      throw new TypeError(`Unknown argument "${name}". Arguments: ${names.join(', ') || 'none'}.`);
+      throw new InvalidInputError(
+        `Unknown argument "${name}". Arguments: ${names.join(', ') || 'none'}.`
+      );
     }
   }
   for (const name of schema.required ?? []) {
     if (input[name] === undefined) {
-      throw new TypeError(`Missing argument "${name}".`);
+      throw new InvalidInputError(`Missing argument "${name}".`);
     }
   }
   for (const [name, value] of Object.entries(input)) {
@@ -128,18 +134,42 @@ function checkInput(input: ToolInput, schema: InputSchema) {
   }
 }
 
-function withErrorsAsResults(tool: WebMcpTool): WebMcpTool {
+function errorResult(error: unknown) {
+  return `Error: ${error instanceof Error ? error.message : String(error)}`;
+}
+
+function errorOutcome(error: unknown) {
+  if (error instanceof InvalidInputError) {
+    return 'invalid_input';
+  }
+  return error instanceof NotFoundError ? 'not_found' : 'error';
+}
+
+function withChecksAndReporting(tool: WebMcpTool): WebMcpTool {
   return {
     ...tool,
     async execute(input, options) {
+      const startPage = window.location.pathname;
+      const report = (outcome: WebMcpToolCallParams['webmcp_outcome']) => {
+        reportWebMcpToolCall({
+          webmcp_tool_name: tool.name,
+          webmcp_outcome: outcome,
+          webmcp_tool_page: startPage,
+        });
+      };
+
       try {
         checkInput(input, tool.inputSchema);
-        return await tool.execute(input, options);
+        const result = await tool.execute(input, options);
+        report('success');
+        return result;
       } catch (error) {
         if (options.signal.aborted) {
+          report('cancelled');
           throw error;
         }
-        return `Error: ${error instanceof Error ? error.message : String(error)}`;
+        report(errorOutcome(error));
+        return errorResult(error);
       }
     },
   };
@@ -148,7 +178,8 @@ function withErrorsAsResults(tool: WebMcpTool): WebMcpTool {
 async function fetchTextAsync(url: string, signal: AbortSignal) {
   const response = await fetch(url, { signal });
   if (!response.ok) {
-    throw new Error(`Could not read ${url} (HTTP ${response.status}).`);
+    const message = `Could not read ${url} (HTTP ${response.status}).`;
+    throw response.status === 404 ? new NotFoundError(message) : new Error(message);
   }
   return await response.text();
 }
@@ -203,7 +234,7 @@ function readSections(markdown: string, section: string, pagePath: string) {
     return [[...parentLines, ...lines.slice(heading.line, end)].join('\n').trimEnd()];
   });
   if (sections.length === 0) {
-    throw new Error(
+    throw new NotFoundError(
       `No heading on ${pagePath} matches "${section}". Pass a heading that get_page_info returns for this page.`
     );
   }
@@ -280,7 +311,7 @@ async function listSectionsAsync({ area, section }: ToolInput) {
   const sections = sectionsOf(area as NavigationArea);
   const matches = sections.filter(node => section === undefined || sectionName(node) === section);
   if (!matches.length) {
-    throw new Error(
+    throw new NotFoundError(
       `No section named "${String(section)}" in ${String(area)}. Sections: ${sections.map(sectionName).join(', ')}.`
     );
   }
@@ -338,7 +369,7 @@ async function readSkillAsync({ skill_name }: ToolInput, { signal }: { signal: A
   const skill = index.skills.find(entry => entry.name === name);
   if (!skill) {
     const available = index.skills.map(entry => entry.name).join(', ');
-    throw new Error(`No skill named "${name}". Available skills: ${available}.`);
+    throw new NotFoundError(`No skill named "${name}". Available skills: ${available}.`);
   }
   return await fetchTextAsync(toSiteUrl(skill.url).pathname, signal);
 }
@@ -558,4 +589,4 @@ const toolDefinitions: WebMcpTool[] = [
   },
 ];
 
-export const webMcpTools = toolDefinitions.map(withErrorsAsResults);
+export const webMcpTools = toolDefinitions.map(withChecksAndReporting);
