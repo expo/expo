@@ -140,23 +140,17 @@ URLs are redacted before they are stored. A username and password in the URL are
 
 By default, Expo Observe collects data from the first launch. If your app must ask the user before it collects data, keep Expo Observe inactive until the user grants consent.
 
-Set the `consent` value in your **app config** to `'not-granted'`:
+Set the `consent` option of the `expo-observe` config plugin to `'not-granted'` in your [**app config**](/workflow/configuration/):
 
 ```json app.json
 {
   "expo": {
-    "extra": {
-      "eas": {
-        "observe": {
-          "consent": "not-granted"
-        }
-      }
-    }
+    "plugins": [["expo-observe", { "consent": "not-granted" }]]
   }
 }
 ```
 
-The value is `'granted'` or `'not-granted'`, and the default is `'granted'`. Any other value keeps Expo Observe inactive and logs a warning. The value is embedded in the native app at build time, so a change needs a new build. An update from EAS Update does not change it.
+The option is `'granted'` or `'not-granted'`, and the default is `'granted'`. Any other value makes the config plugin throw an error when the app config is evaluated. Prebuild writes the value to the native projects, so a change needs a new build. An update from EAS Update does not change it.
 
 When the user makes a choice, call `Observe.setConsent()` on Android or iOS:
 
@@ -166,7 +160,7 @@ import { Observe } from 'expo-observe';
 await Observe.setConsent(userAccepted ? 'granted' : 'not-granted');
 ```
 
-The device saves the value. On later launches, the saved value overrides the app config value.
+The device saves the value. On later launches, the saved value overrides the config plugin value.
 
 ### While consent is not granted
 
@@ -178,6 +172,30 @@ The device saves the value. On later launches, the saved value overrides the app
 ### Consent and `dispatchingEnabled`
 
 `configure({ dispatchingEnabled: false })` stops only the upload. Expo Observe still collects data and stores it on the device. Consent also stops collection and storage, and a revoke deletes the stored data. Use consent when the user must agree before Expo Observe collects data.
+
+### Set the value without prebuild
+
+If your app does not use prebuild, add the value to the native projects yourself. Like the config plugin value, it applies only until `setConsent()` saves a value. Without a native value or a saved value, Expo Observe collects data.
+
+On Android, add a `meta-data` element to the main `application` element:
+
+```xml android/app/src/main/AndroidManifest.xml
+<application>
+  <meta-data android:name="expo.modules.observe.CONSENT" android:value="not-granted"/>
+</application>
+```
+
+On iOS, add an `ExpoObserve` dictionary with a `consent` key to **Info.plist**:
+
+```xml ios/YourApp/Info.plist
+<key>ExpoObserve</key>
+<dict>
+  <key>consent</key>
+  <string>not-granted</string>
+</dict>
+```
+
+The native value is `granted` or `not-granted`. Any other value keeps Expo Observe inactive and logs a warning. On iOS, an `ExpoObserve` value that is not a dictionary has the same result.
 
 ## Turn off data ingestion
 
