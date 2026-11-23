@@ -168,14 +168,29 @@ internal suspend fun applyConsent(
   deleteError?.let { throw it }
 }
 
-/** Deletes the Observe settings, the dispatch cursors among them, and the scheduled dispatch. */
+/**
+ * Deletes the Observe settings, the dispatch cursors among them, and the scheduled dispatch. Each
+ * step runs also when an earlier step fails. The first error is thrown, with the others attached.
+ */
 internal suspend fun deleteObserveData(context: Context) {
-  // The local deletes first, because they do not suspend. So a failed or canceled dispatch cancel
-  // cannot skip them.
-  try {
-    context.deleteDatabase(LEGACY_DATABASE_NAME)
-  } finally {
-    ObservePreferences.deleteStoredSettings(context)
+  var error: Exception? = null
+  // The local deletes first, because they do not suspend. So a canceled dispatch cancel cannot
+  // skip them.
+  val localDeletes = listOf({ context.deleteDatabase(LEGACY_DATABASE_NAME) }, { ObservePreferences.deleteStoredSettings(context) })
+  for (delete in localDeletes) {
+    try {
+      delete()
+    } catch (e: Exception) {
+      error?.addSuppressed(e) ?: run { error = e }
+    }
   }
-  ObservabilityBackgroundWorker.cancelBackgroundDispatch(context)
+  try {
+    ObservabilityBackgroundWorker.cancelBackgroundDispatch(context)
+  } catch (e: CancellationException) {
+    error?.let(e::addSuppressed)
+    throw e
+  } catch (e: Exception) {
+    error?.addSuppressed(e) ?: run { error = e }
+  }
+  error?.let { throw it }
 }

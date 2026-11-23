@@ -128,6 +128,21 @@ class DeleteObserveDataTest {
   }
 
   @Test
+  fun `a failed local delete still deletes the rest and cancels the dispatch`() = runTest {
+    ObservabilityBackgroundWorker.scheduleBackgroundDispatch(context, "project", "https://example.com")
+    val deleteError = IllegalStateException("settings")
+    mockkObject(ObservePreferences)
+    every { ObservePreferences.deleteStoredSettings(any()) } throws deleteError
+
+    val error = applyRevokeError(revoke())
+
+    assertSame(deleteError, error)
+    assertFalse(context.getDatabasePath(LEGACY_DATABASE_NAME).exists())
+    val work = WorkManager.getInstance(context).getWorkInfosForUniqueWork(ObservabilityBackgroundWorker.WORK_NAME).get()
+    assertTrue(work.isNotEmpty() && work.all { it.state == WorkInfo.State.CANCELLED })
+  }
+
+  @Test
   fun `a coroutine canceled during the dispatch cancel still deletes the data`() = runTest {
     val canceled = CancellationException("canceled")
     failDispatchCancel(canceled)
