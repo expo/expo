@@ -9,12 +9,8 @@ internal import SDWebImage
 /// the JS `Image` component renders it only when the internal `experimental_useV2View` prop is set.
 @ExpoView<ImageView2Props>("ImageView")
 public final class ImageView2: ExpoNativeView {
-  /// One manager for all the views, with the cache and the loaders that `ImageView` and the module
-  /// functions use, so all of them share one cache.
-  private static let imageManager = SDWebImageManager(
-    cache: SDImageCache.shared,
-    loader: SDImageLoadersManager.shared
-  )
+  /// Loads the images of all the views.
+  private static let pipeline: any ImagePipeline = SDWebImagePipeline.shared
 
   /// Clips the image. React Native masks image views that are direct subviews of a clipping view
   /// with rounded corners to their own bounds, which are not the bounds of this view for most content fits.
@@ -22,12 +18,9 @@ public final class ImageView2: ExpoNativeView {
 
   let imageView = SDAnimatedImageView(frame: .zero)
 
+  /// The running load, or `nil` when no load runs. A memory cache hit completes without a task.
   /// `nonisolated(unsafe)` so that `deinit` can cancel it. It's otherwise read and written only on the main thread.
-  nonisolated(unsafe) var operation: SDWebImageCombinedOperation?
-
-  /// Whether a load runs. `operation` can't tell: a memory cache hit completes the load before `loadImage` returns
-  /// the operation.
-  private(set) var isLoading = false
+  nonisolated(unsafe) var loadTask: Task<Void, Never>?
 
   /// Increases with each load. A completion of an older load is ignored.
   private(set) var loadGeneration = 0
@@ -76,7 +69,7 @@ public final class ImageView2: ExpoNativeView {
   }
 
   deinit {
-    operation?.cancel()
+    loadTask?.cancel()
   }
 
   public func didUpdateProps(_ diff: ImageView2Props.Diff) {
@@ -169,16 +162,16 @@ public final class ImageView2: ExpoNativeView {
 
   /// Starts a load. A redecode loads the image of the same source again, at another size, and sends no events.
   func startLoad(source: ImageSource, uri: URL, isRedecode: Bool = false) {
-    operation?.cancel()
+    loadTask?.cancel()
+    loadTask = nil
     downscaleTask?.cancel()
     downscaleTask = nil
     loadGeneration += 1
     currentImageRef = nil
 
     let generation = loadGeneration
-    let context = createSDWebImageContext(forSource: source, cachePolicy: props.cachePolicy)
-    let isPhotoLibraryAsset = source.isPhotoLibraryAsset
-    // Event props can be called from any thread, and the progress block runs on a background queue.
+    let request = ImagePipelineRequest(source: source, uri: uri, cachePolicy: props.cachePolicy)
+    // Event props can be called from any thread, and the pipeline reports the progress on a background queue.
     nonisolated(unsafe) let onProgress: ((ImageView2ProgressEvent) -> Void)? = isRedecode ? nil : props.onProgress
 
     if !isRedecode {
@@ -188,95 +181,73 @@ public final class ImageView2: ExpoNativeView {
       props.onLoadStart()
     }
 
-    isLoading = true
-    operation = Self.imageManager.loadImage(
-      with: uri,
-      options: [.retryFailed, .handleCookies, .transformAnimatedImage],
-      context: context,
-      progress: { @Sendable receivedSize, expectedSize, _ in
-        // The expected size is unknown (0 or -1) in the first calls.
-        guard expectedSize > 0 else {
-          return
-        }
-        // The Photos loader reports the progress as a percentage, without sizes in bytes.
+    if let cached = Self.pipeline.cachedImage(for: request) {
+      loadCompleted(generation: generation, result: .success(cached), isRedecode: isRedecode)
+      return
+    }
+    let pipeline = Self.pipeline
+    let reportProgress: (@Sendable (ImagePipelineProgress) -> Void)?
+    if onProgress != nil {
+      reportProgress = { value in
         onProgress?(ImageView2ProgressEvent(
-          loaded: isPhotoLibraryAsset ? nil : receivedSize,
-          total: isPhotoLibraryAsset ? nil : expectedSize,
-          progress: Double(receivedSize) / Double(expectedSize)
+          loaded: value.loadedBytes,
+          total: value.totalBytes,
+          progress: value.fraction
         ))
-      },
-      completed: { @Sendable [weak self] image, _, error, cacheType, finished, url in
-        // `SDWebImageManager` calls the completion on the main queue.
-        MainActor.assumeIsolated {
-          self?.loadCompleted(
-            generation: generation,
-            image: image,
-            error: error,
-            cacheType: cacheType,
-            finished: finished,
-            url: url,
-            isRedecode: isRedecode
-          )
-        }
       }
-    )
+    } else {
+      reportProgress = nil
+    }
+    loadTask = Task { [weak self] in
+      let result: Result<ImagePipelineResult, any Error>
+      do {
+        result = .success(try await pipeline.image(for: request, progress: reportProgress))
+      } catch {
+        result = .failure(error)
+      }
+      self?.loadCompleted(generation: generation, result: result, isRedecode: isRedecode)
+    }
   }
 
-  // swiftlint:disable:next function_parameter_count
-  private func loadCompleted(
-    generation: Int,
-    image: UIImage?,
-    error: Error?,
-    cacheType: SDImageCacheType,
-    finished: Bool,
-    url: URL?,
-    isRedecode: Bool
-  ) {
+  private func loadCompleted(generation: Int, result: Result<ImagePipelineResult, any Error>, isRedecode: Bool) {
     guard generation == loadGeneration else {
       return
     }
-    if let error {
-      operation = nil
-      isLoading = false
-      let nsError = error as NSError
+    loadTask = nil
 
+    let loaded: ImagePipelineResult
+    switch result {
+    case .success(let value):
+      loaded = value
+    case .failure(let error):
       // A failed redecode keeps the displayed image.
-      if isRedecode {
-        return
-      }
-
-      if nsError.domain != SDWebImageErrorDomain || nsError.code != SDWebImageError.cancelled.rawValue {
+      if !isRedecode && !(error is CancellationError) {
         props.onError(ImageView2ErrorEvent(error: error.localizedDescription))
       }
       return
     }
-    // A degraded image from the Photos library comes with `finished` set to `false`, before the full one.
-    guard finished, let image else {
-      return
-    }
-    operation = nil
-    isLoading = false
+    let image = loaded.image
 
     if isRedecode {
-      present(image, cacheType: ImageCacheType.fromSdCacheType(cacheType), isRedecode: true)
+      present(image, cacheType: loaded.cacheType, isRedecode: true)
       return
     }
     props.onLoad(ImageView2LoadEvent(
-      cacheType: cacheTypeToString(cacheType),
+      cacheType: loaded.cacheType.rawValue,
       source: ImageView2LoadedSource(
-        url: url?.absoluteString,
+        url: loaded.url?.absoluteString,
         width: image.size.width,
         height: image.size.height,
-        mediaType: imageFormatToMediaType(image.sd_imageFormat),
+        mediaType: loaded.mediaType,
         isAnimated: image.sd_isAnimated
       )
     ))
     appContext?.moduleRegistry.getModule(implementing: ImageModule.self)?.emitImageLoaded(
-      url: url?.absoluteString ?? "",
+      url: loaded.url?.absoluteString ?? "",
       width: image.size.width * image.scale,
       height: image.size.height * image.scale
     )
-    present(image, cacheType: ImageCacheType.fromSdCacheType(cacheType), isRedecode: false)
+    present(image, cacheType: loaded.cacheType, isRedecode: false)
   }
 
   // MARK: - Display
@@ -323,9 +294,8 @@ public final class ImageView2: ExpoNativeView {
   }
 
   private func clear() {
-    operation?.cancel()
-    operation = nil
-    isLoading = false
+    loadTask?.cancel()
+    loadTask = nil
     downscaleTask?.cancel()
     downscaleTask = nil
     loadGeneration += 1
