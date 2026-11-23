@@ -12,11 +12,10 @@ jest.mock('../cli', () => ({
 
 const { runDumpPackage } = require('../cli');
 const {
-  companionPackage,
   dumpModuleManifest,
-  emitCompanionPackage,
   emitDirectPackage,
   headersStandInsOf,
+  rnLibraryPlaceholdersOf,
 } = require('../direct');
 const { rerunSpmUpdate, thrownBy } = require('./helpers');
 
@@ -554,18 +553,21 @@ describe('emitDirectPackage', () => {
   describe('with an RN library placeholder', () => {
     let reactNativeLibsDir;
     const placeholderProduct = (name) => ({ product: [name, name, null, null] });
-    const emitDependingOn = (dependency, minimumIosDeploymentTarget) =>
-      emitDirectPackage({
+    const emitDependingOn = (dependency, minimumIosDeploymentTarget) => {
+      const manifest = manifestDependingOn(dependency);
+      return emitDirectPackage({
         moduleRoot: path.join(root, 'expo-haptics'),
         packageName: 'expo-haptics',
         outDir,
         headersXCFrameworks: {},
         jsiHeadersPkgPath,
         macrosPackageRoot,
+        placeholders: rnLibraryPlaceholdersOf(manifest),
         reactNativeLibsDir,
         minimumIosDeploymentTarget,
-        manifest: manifestDependingOn(dependency),
+        manifest,
       });
+    };
 
     beforeEach(() => {
       reactNativeLibsDir = path.join(root, 'libs');
@@ -590,7 +592,6 @@ describe('emitDirectPackage', () => {
       const manifest = fs.readFileSync(path.join(placeholderDir, 'Package.swift'), 'utf8');
       expect(manifest).toContain(`.package(path: "../../../libs/${product}")`);
       expect(manifest.match(/\.package\(/g)).toHaveLength(1);
-      // The Expo floor is above the library's own.
       expect(manifest).toContain('platforms: [.iOS("16.4")],');
       expect(path.resolve(placeholderDir, `../../../libs/${product}`)).toBe(
         path.join(reactNativeLibsDir, product)
@@ -604,6 +605,53 @@ describe('emitDirectPackage', () => {
       expect(
         fs.existsSync(path.join(placeholderDir, `${name}Dependencies`, `${name}Dependencies.swift`))
       ).toBe(true);
+    });
+
+    it("declares react-native-screens' iOS floor when the Expo modules declare none", () => {
+      emitDependingOn(placeholderProduct('RNScreensHeaders'), null);
+      const manifest = fs.readFileSync(
+        path.join(outDir, 'direct', 'RNScreensHeaders', 'Package.swift'),
+        'utf8'
+      );
+      expect(manifest).toContain('platforms: [.iOS("15.1")],');
+    });
+
+    it("raises a core floor below react-native-screens' to 15.1", () => {
+      emitDependingOn(placeholderProduct('RNScreensHeaders'), '15.0');
+      expect(
+        fs.readFileSync(path.join(outDir, 'direct', 'RNScreensHeaders', 'Package.swift'), 'utf8')
+      ).toContain('platforms: [.iOS("15.1")],');
+    });
+
+    it('emits a headers stand-in and a placeholder for a manifest that names both', () => {
+      const manifest = manifestDependingOn(
+        { product: ['ExpoModulesCoreHeaders', 'ExpoModulesCoreHeaders', null, null] },
+        placeholderProduct('RNScreensHeaders')
+      );
+      emitDirectPackage({
+        moduleRoot: path.join(root, 'expo-haptics'),
+        packageName: 'expo-haptics',
+        outDir,
+        headersXCFrameworks: { ExpoModulesCoreHeaders: coreHeadersXCFramework },
+        jsiHeadersPkgPath,
+        macrosPackageRoot,
+        placeholders: rnLibraryPlaceholdersOf(manifest),
+        reactNativeLibsDir,
+        minimumIosDeploymentTarget: '16.4',
+        manifest,
+      });
+      const directDir = path.join(outDir, 'direct');
+      expect(fs.existsSync(path.join(directDir, 'ExpoModulesCoreHeaders', 'Package.swift'))).toBe(
+        true
+      );
+      expect(
+        fs.readFileSync(path.join(directDir, 'RNScreensHeaders', 'Package.swift'), 'utf8')
+      ).toContain('.package(path: "../../../libs/RNScreens")');
+    });
+
+    it("names the library's product as provided, so no pod dependency on it is reported", () => {
+      const emission = emitDependingOn(placeholderProduct('RNScreensHeaders'), '16.4');
+      expect(emission.ok.spmProductNames).toEqual(['RNScreens']);
     });
 
     it.each([
@@ -638,248 +686,5 @@ describe('emitDirectPackage', () => {
     const first = snapshot();
     emit();
     expect(snapshot()).toEqual(first);
-  });
-});
-
-// expo-modules-core's entry, as its spm.config.json declares it.
-const workletsAdapter = {
-  name: 'ExpoModulesWorkletsAdapter',
-  podName: 'ExpoModulesWorkletsAdapter',
-  sourceOnly: true,
-  platforms: ['iOS("16.4")'],
-  autolinkWhen: { podName: 'RNWorklets' },
-  externalDependencies: [
-    'ReactNativeDependencies',
-    'React',
-    'Hermes',
-    'expo-modules-jsi/ExpoModulesJSI',
-    'ExpoModulesWorklets',
-    'RNWorklets',
-  ],
-  targets: [
-    {
-      type: 'objc',
-      name: 'ExpoModulesWorkletsAdapter',
-      path: 'ios/WorkletsAdapter',
-      pattern: '**/*.{m,mm}',
-      headerPattern: '**/*.h',
-      dependencies: [
-        'Hermes',
-        'React',
-        'ReactNativeDependencies',
-        'expo-modules-jsi/ExpoModulesJSI',
-        'ExpoModulesCore',
-        'ExpoModulesWorklets',
-        'RNWorklets',
-      ],
-      linkedFrameworks: ['Foundation'],
-      includeDirectories: ['.'],
-    },
-  ],
-};
-
-/** The worklets adapter's entry with one objc target that depends on `dependencies` alone. */
-const companionDependingOn = (...dependencies) => ({
-  ...workletsAdapter,
-  externalDependencies: dependencies,
-  targets: [{ ...workletsAdapter.targets[0], dependencies }],
-});
-
-describe('companionPackage', () => {
-  it('depends on both Expo headers packages and the RNWorklets placeholder for the worklets adapter', () => {
-    expect(companionPackage(workletsAdapter)).toMatchObject({
-      name: 'ExpoModulesWorkletsAdapter',
-      standIns: ['ExpoModulesCoreHeaders', 'ExpoModulesWorkletsHeaders'],
-      placeholders: ['RNWorkletsHeaders'],
-    });
-  });
-
-  // The ExpoModulesCore headers package brings React Native's headers and the JSI headers.
-  it('depends on the ExpoModulesCore headers package alone for React', () => {
-    expect(companionPackage(companionDependingOn('React'))).toMatchObject({
-      standIns: ['ExpoModulesCoreHeaders'],
-      placeholders: [],
-    });
-  });
-
-  it.each([
-    ['no entry', null],
-    [
-      'an external dependency no direct package provides',
-      { ...workletsAdapter, externalDependencies: ['React', 'SDWebImage'] },
-    ],
-    [
-      'a target dependency no direct package provides',
-      {
-        ...workletsAdapter,
-        targets: [{ ...workletsAdapter.targets[0], dependencies: ['ExpoModulesCore', 'Lottie'] }],
-      },
-    ],
-    ['no targets', { ...workletsAdapter, targets: [] }],
-    [
-      'a Swift target',
-      { ...workletsAdapter, targets: [{ ...workletsAdapter.targets[0], type: 'swift' }] },
-    ],
-    [
-      'a source pattern that selects more than Objective-C files',
-      {
-        ...workletsAdapter,
-        targets: [{ ...workletsAdapter.targets[0], pattern: '**/*.{m,mm,swift}' }],
-      },
-    ],
-    [
-      'compiler flags on its target',
-      {
-        ...workletsAdapter,
-        targets: [{ ...workletsAdapter.targets[0], compilerFlags: ['-DWORKLETS=1'] }],
-      },
-    ],
-    [
-      'Swift packages of its own',
-      {
-        ...workletsAdapter,
-        spmPackages: [
-          { url: 'https://example/lottie.git', productName: 'Lottie', version: { exact: '4.5.0' } },
-        ],
-      },
-    ],
-  ])('is null for an entry with %s', (_, product) => {
-    expect(companionPackage(product)).toBeNull();
-  });
-});
-
-describe('emitCompanionPackage', () => {
-  let root;
-  let moduleRoot;
-  let outDir;
-  let reactNativeLibsDir;
-  let workletsLibLink;
-  let headersXCFrameworks;
-  let jsiHeadersPkgPath;
-  let macrosPackageRoot;
-  const companionDir = () => path.join(outDir, 'direct', 'ExpoModulesWorkletsAdapter');
-  const companionManifest = () =>
-    fs.readFileSync(path.join(companionDir(), 'Package.swift'), 'utf8');
-  const emit = (product = workletsAdapter, minimumIosDeploymentTarget) =>
-    emitCompanionPackage({
-      moduleRoot,
-      packageName: 'expo-modules-core',
-      companion: companionPackage(product),
-      outDir,
-      headersXCFrameworks,
-      jsiHeadersPkgPath,
-      macrosPackageRoot,
-      react: null,
-      codegenPkgPath: null,
-      reactNativeLibsDir,
-      minimumIosDeploymentTarget,
-    });
-
-  beforeEach(() => {
-    root = fs.mkdtempSync(path.join(os.tmpdir(), 'direct-companion-'));
-    moduleRoot = path.join(root, 'node_modules', 'expo-modules-core');
-    fs.mkdirSync(path.join(moduleRoot, 'ios', 'WorkletsAdapter'), { recursive: true });
-    outDir = path.join(root, 'out');
-    jsiHeadersPkgPath = path.join(outDir, 'ExpoModulesJSIHeaders');
-    macrosPackageRoot = path.join(root, 'node_modules', 'expo-modules-macros');
-    fs.mkdirSync(macrosPackageRoot, { recursive: true });
-    fs.writeFileSync(
-      path.join(macrosPackageRoot, 'Package.swift'),
-      '// swift-tools-version: 6.2\n'
-    );
-    headersXCFrameworks = Object.fromEntries(
-      ['ExpoModulesCoreHeaders', 'ExpoModulesWorkletsHeaders'].map((name) => [
-        name,
-        path.join(moduleRoot, 'headers', `${name}.xcframework`),
-      ])
-    );
-    for (const xcframework of Object.values(headersXCFrameworks)) {
-      fs.mkdirSync(xcframework, { recursive: true });
-    }
-    reactNativeLibsDir = path.join(root, 'libs');
-    workletsLibLink = path.join(reactNativeLibsDir, 'RNWorklets');
-    const workletsPackageRoot = path.join(root, 'node_modules', 'react-native-worklets');
-    fs.mkdirSync(workletsPackageRoot, { recursive: true });
-    fs.writeFileSync(path.join(workletsPackageRoot, 'Package.swift'), '// RNWorklets\n');
-    fs.mkdirSync(reactNativeLibsDir);
-    fs.symlinkSync(workletsPackageRoot, workletsLibLink);
-  });
-
-  afterEach(() => {
-    fs.rmSync(root, { recursive: true, force: true });
-  });
-
-  it('generates the package of the worklets adapter from its entry', () => {
-    emit();
-    expect(companionManifest()).toBe(`// swift-tools-version: 6.0
-// AUTO-GENERATED by expo/scripts/spm/direct.js — do not edit.
-// The ExpoModulesWorkletsAdapter product of expo-modules-core, as its spm.config.json declares it.
-import PackageDescription
-
-let package = Package(
-    name: "ExpoModulesWorkletsAdapter",
-    platforms: [.iOS("16.4")],
-    products: [
-        .library(name: "ExpoModulesWorkletsAdapter", targets: ["ExpoModulesWorkletsAdapter"]),
-    ],
-    dependencies: [
-        .package(path: "../ExpoModulesCoreHeaders"),
-        .package(path: "../ExpoModulesWorkletsHeaders"),
-        .package(path: "../RNWorkletsHeaders"),
-    ],
-    targets: [
-        .target(
-            name: "ExpoModulesWorkletsAdapter",
-            dependencies: [
-                .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders"),
-                .product(name: "ExpoModulesWorkletsHeaders", package: "ExpoModulesWorkletsHeaders"),
-                .product(name: "RNWorkletsHeaders", package: "RNWorkletsHeaders"),
-            ],
-            path: "ExpoModulesWorkletsAdapter",
-            publicHeadersPath: ".",
-            cSettings: [.headerSearchPath(".")],
-            cxxSettings: [.headerSearchPath(".")],
-            linkerSettings: [.linkedFramework("Foundation")]
-        ),
-    ],
-    cxxLanguageStandard: .cxx20
-)
-`);
-  });
-
-  it.each([
-    ['an iOS floor below the Expo floor', ['iOS("15.1")']],
-    ['no iOS floor', []],
-  ])('raises a companion that declares %s to the Expo floor', (_, platforms) => {
-    emit({ ...workletsAdapter, platforms }, '16.4');
-    expect(companionManifest()).toContain('    platforms: [.iOS("16.4")],\n');
-  });
-
-  it('reaches the target sources through a relative link', () => {
-    emit();
-    const link = path.join(companionDir(), 'ExpoModulesWorkletsAdapter');
-    expect(path.isAbsolute(fs.readlinkSync(link))).toBe(false);
-    expect(fs.realpathSync(link)).toBe(
-      fs.realpathSync(path.join(moduleRoot, 'ios', 'WorkletsAdapter'))
-    );
-  });
-
-  it('writes the headers packages and the placeholder it depends on beside it', () => {
-    emit();
-    expect(fs.readdirSync(path.join(outDir, 'direct')).sort()).toEqual([
-      'ExpoModulesCoreHeaders',
-      'ExpoModulesWorkletsAdapter',
-      'ExpoModulesWorkletsHeaders',
-      'RNWorkletsHeaders',
-    ]);
-  });
-
-  it('fails, writing no package, when React Native linked no RNWorklets package', () => {
-    fs.rmSync(workletsLibLink);
-    const thrown = thrownBy(() => emit());
-    expect(thrown.message).toContain(
-      `ExpoModulesWorkletsAdapter's Package.swift depends on RNWorkletsHeaders, but React Native linked no RNWorklets package at ${workletsLibLink}.`
-    );
-    expect(fs.existsSync(path.join(outDir, 'direct'))).toBe(false);
   });
 });
