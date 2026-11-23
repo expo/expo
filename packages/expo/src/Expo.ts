@@ -18,6 +18,8 @@ export {
   requireNativeModule,
   requireOptionalNativeModule,
   requireNativeViewManager as requireNativeView,
+  requireNative,
+  requireOptionalNative,
   registerWebModule,
   reloadAppAsync,
 
