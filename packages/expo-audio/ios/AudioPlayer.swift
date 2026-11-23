@@ -1,8 +1,9 @@
-import ExpoModulesCore
 import Combine
+import ExpoMediaSession
+import ExpoModulesCore
 
 @SharedObject
-public final class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
+public final class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable, SessionCommandTarget {
   @JS
   let id = UUID().uuidString
   var shouldCorrectPitch = true
@@ -31,7 +32,12 @@ public final class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayabl
       applyPreferredForwardBufferDuration()
     }
   }
-  var onRelease: (() -> Void)?
+  var continuesInBackground = false
+  var canStartPlayback: () -> Bool = { true }
+  let sessionUse: SessionUseSlot
+  // Only touched on the session use queue.
+  private var hold: (any SessionHold)?
+  private var volumeBeforeDuck: Float?
 
   var isLooping = false {
     didSet {
@@ -60,7 +66,6 @@ public final class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayabl
   private var tapInstalled = false
   private var shouldInstallAudioTap = false
   weak var owningRegistry: AudioComponentRegistry?
-  var onPlaybackComplete: (() -> Void)?
 
   var duration: Double {
     let seconds = ref.currentItem?.duration.seconds ?? 0.0
@@ -91,10 +96,18 @@ public final class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayabl
     return Date().timeIntervalSince1970 - currentDate.timeIntervalSince1970
   }
 
-  init(_ ref: AVPlayer, interval: Double, source: AudioSource? = nil) {
+  init(
+    _ ref: AVPlayer,
+    interval: Double,
+    source: AudioSource? = nil,
+    session: any MediaSessionManaging = MediaSessionManager.shared
+  ) {
     self.interval = interval
     self.source = source
+    self.sessionUse = SessionUseSlot(session: session, label: "player")
     super.init(ref)
+    sessionUse.client = "expo-audio:player:\(id)"
+    sessionUse.target = self
 
     setupPublisher()
   }
@@ -592,7 +605,7 @@ public final class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayabl
           $0.playing = false
           $0.didJustFinish = true
         }
-        self.onPlaybackComplete?()
+        self.endSessionUse()
       }
     }
   }
@@ -620,17 +633,65 @@ public final class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayabl
     set { ref.volume = newValue }
   }
 
-  func pause() {
-    ref.pause()
+  func play() {
+    guard canStartPlayback() else {
+      return
+    }
+    sessionUse.sync {
+      sessionUse.begin(sessionRequirements)
+      if keepAudioSessionActive && hold == nil {
+        hold = sessionUse.session.hold(client: sessionUse.client)
+      }
+      play(at: effectiveRate)
+    }
   }
 
-  func resumePlayback() {
-    ref.play()
+  func pause() {
+    sessionUse.sync {
+      ref.pause()
+      endUseOnQueue()
+    }
+  }
+
+  func endSessionUse() {
+    sessionUse.sync {
+      endUseOnQueue()
+    }
+  }
+
+  func releaseHold() {
+    sessionUse.sync {
+      hold?.release()
+      hold = nil
+    }
+  }
+
+  func setContinuesInBackground(_ continuesInBackground: Bool) {
+    sessionUse.sync {
+      self.continuesInBackground = continuesInBackground
+      sessionUse.update(sessionRequirements)
+    }
+  }
+
+  private var sessionRequirements: SessionRequirements {
+    SessionRequirements(continuesInBackground: continuesInBackground)
+  }
+
+  private func endUseOnQueue() {
+    sessionUse.end()
+    restoreVolumeAfterDuck()
+  }
+
+  private func restoreVolumeAfterDuck() {
+    if let volumeBeforeDuck {
+      ref.volume = volumeBeforeDuck
+      self.volumeBeforeDuck = nil
+    }
   }
 
   public override func sharedObjectWillRelease() {
-    onRelease?()
-    onRelease = nil
+    endSessionUse()
+    releaseHold()
     ref.currentItem?.cancelPendingSeeks()
     owningRegistry?.remove(self)
 
@@ -643,4 +704,33 @@ public final class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayabl
     audioProcessor?.invalidate()
     audioProcessor = nil
   }
+
+  func sessionPause(reason: SessionPauseReason) {
+    ref.pause()
+  }
+
+  func sessionResume() {
+    play(at: effectiveRate)
+  }
+
+  func sessionDuck(_ isDucked: Bool) {
+    if isDucked {
+      guard volumeBeforeDuck == nil else {
+        return
+      }
+      volumeBeforeDuck = ref.volume
+      ref.volume *= 0.5
+    } else {
+      restoreVolumeAfterDuck()
+    }
+  }
+
+  func sessionDidFail(_ error: Error) {
+    ref.pause()
+    appContext?.jsLogger.warn(
+      "[expo-audio] Playback was paused because the audio session could not be activated: \(error.localizedDescription). Another app may hold a higher-priority session (for example, a phone call), or the app tried to activate a non-mixable session in the background. Call `play()` again later."
+    )
+  }
+
+  func sessionDidEnd() {}
 }

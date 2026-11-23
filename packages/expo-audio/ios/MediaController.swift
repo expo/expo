@@ -15,7 +15,7 @@ protocol LockScreenPlayable: AnyObject {
   var supportsNextTrack: Bool { get }
   var supportsPreviousTrack: Bool { get }
 
-  func play(at rate: Float)
+  func play()
   func pause()
   func nextTrack()
   func previousTrack()
@@ -313,7 +313,7 @@ class MediaController {
         return .commandFailed
       }
 
-      playable.play(at: Float(playable.currentRate > 0 ? playable.currentRate : 1.0))
+      playable.play()
       return .success
     }
     remoteCommandTargets.append((remoteCommandCenter.playCommand, playTarget))
@@ -336,7 +336,7 @@ class MediaController {
       if playable.isPlaying {
         playable.pause()
       } else {
-        playable.play(at: Float(playable.currentRate > 0 ? playable.currentRate : 1.0))
+        playable.play()
       }
       return .success
     }

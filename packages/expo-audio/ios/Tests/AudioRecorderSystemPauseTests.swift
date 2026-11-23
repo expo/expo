@@ -27,7 +27,7 @@ func makeStubbedRecorder() throws -> AudioRecorder {
     AVSampleRateKey: 44_100,
     AVNumberOfChannelsKey: 1
   ])
-  let recorder = AudioRecorder(avRecorder, options: RecordingOptions(), sessionQueue: DispatchQueue(label: "test"))
+  let recorder = AudioRecorder(avRecorder, options: RecordingOptions())
   recorder.allowsRecording = true
   return recorder
 }

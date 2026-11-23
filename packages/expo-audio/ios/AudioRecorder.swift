@@ -1,4 +1,5 @@
 #if os(iOS)
+import ExpoMediaSession
 import ExpoModulesCore
 
 @Record
@@ -21,32 +22,36 @@ enum RecordingState {
 }
 
 @SharedObject
-public final class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
+public final class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler, SessionCommandTarget {
   @JS
   let id = UUID().uuidString
   private var recordingDelegate: RecordingDelegate?
   private var startTimestamp = 0
   private var totalRecordedDuration = 0
   private var currentState: RecordingState = .idle
-  private var recordingSession = AVAudioSession.sharedInstance()
   var allowsRecording = false
   private var isPausedBySystem = false
   weak var owningRegistry: AudioComponentRegistry?
-  weak var module: AudioModule?
   private var mediaServicesDidReset = false
   private var currentOptions: RecordingOptions?
-  private var currentSessionOptions: AVAudioSession.CategoryOptions = []
   private var durationLimitSeconds: TimeInterval?
-  private let sessionQueue: DispatchQueue
+  var continuesInBackground = false
+  let sessionUse: SessionUseSlot
 
   private var isPrepared: Bool {
     currentState == .prepared || currentState == .recording || currentState == .paused
   }
 
-  init(_ ref: AVAudioRecorder, options: RecordingOptions, sessionQueue: DispatchQueue) {
+  init(
+    _ ref: AVAudioRecorder,
+    options: RecordingOptions,
+    session: any MediaSessionManaging = MediaSessionManager.shared
+  ) {
     currentOptions = options
-    self.sessionQueue = sessionQueue
+    sessionUse = SessionUseSlot(session: session, label: "recorder")
     super.init(ref)
+    sessionUse.client = "expo-audio:recorder:\(id)"
+    sessionUse.target = self
     recordingDelegate = RecordingDelegate(resultHandler: self)
     ref.delegate = recordingDelegate
   }
@@ -67,6 +72,7 @@ public final class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHan
   @JS
   func record(_ options: RecordOptions?) throws -> [String: Any] {
     try AudioRecordingRequester.requirePermission()
+    try requireSessionUse()
 
     switch (options?.atTime, options?.forDuration) {
     case let (atTime?, forDuration?):
@@ -94,26 +100,64 @@ public final class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHan
   @JS
   func prepareToRecordAsync(_ options: RecordingOptions?) async throws {
     try AudioRecordingRequester.requireUsageDescription()
-    try await sessionQueue.perform {
-      guard let module = self.module else {
-        throw Exceptions.AppContextLost()
+    let use = sessionUse.sync {
+      sessionUse.begin(sessionRequirements)
+    }
+    do {
+      try await use.activated()
+    } catch {
+      sessionUse.sync {
+        sessionUse.end(ifCurrent: use)
       }
-      try module.activateRecordingSession { sessionOptions, deactivateOnFailure in
-        try self.prepare(
-          options: options,
-          sessionOptions: sessionOptions,
-          deactivateSessionOnFailure: deactivateOnFailure
-        )
+      currentState = .error
+      throw AudioRecordingException("Failed to configure audio session: \(error.localizedDescription)")
+    }
+    do {
+      try await sessionUse.queue.perform {
+        guard self.sessionUse.isCurrent(use) else {
+          throw AudioRecordingException(
+            "The recorder was stopped while it was preparing. Call prepareToRecordAsync() again to record"
+          )
+        }
+        try self.prepare(options: options)
       }
+    } catch {
+      sessionUse.sync {
+        sessionUse.end(ifCurrent: use)
+      }
+      throw error
     }
   }
 
   @JS
   func stop() async throws {
     try AudioRecordingRequester.requirePermission()
-    try await sessionQueue.perform {
+    try await sessionUse.queue.perform {
       self.stopRecording()
+      self.sessionUse.end()
     }
+  }
+
+  func setContinuesInBackground(_ continuesInBackground: Bool) {
+    sessionUse.sync {
+      self.continuesInBackground = continuesInBackground
+      sessionUse.update(sessionRequirements)
+    }
+  }
+
+  private func requireSessionUse() throws {
+    let lostSession = sessionUse.sync {
+      isPrepared && !sessionUse.hasUse
+    }
+    if lostSession {
+      throw AudioRecordingException(
+        "The recorder lost its audio session, for example after an interruption that did not resume. Call prepareToRecordAsync() again before record()"
+      )
+    }
+  }
+
+  private var sessionRequirements: SessionRequirements {
+    SessionRequirements(capabilities: .record, continuesInBackground: continuesInBackground)
   }
 
   @JS
@@ -124,12 +168,14 @@ public final class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHan
   @JS
   func startRecordingAtTime(_ seconds: Double) throws {
     try AudioRecordingRequester.requirePermission()
+    try requireSessionUse()
     try record(atTime: TimeInterval(seconds))
   }
 
   @JS("recordForDuration")
   func recordForDurationFromJS(_ seconds: Double) throws {
     try AudioRecordingRequester.requirePermission()
+    try requireSessionUse()
     try recordForDuration(TimeInterval(seconds))
   }
 
@@ -181,11 +227,7 @@ public final class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHan
     }
   }
 
-  func prepare(
-    options: RecordingOptions?,
-    sessionOptions: AVAudioSession.CategoryOptions = [],
-    deactivateSessionOnFailure: Bool = true
-  ) throws {
+  func prepare(options: RecordingOptions?) throws {
     if currentState == .recording {
       ref.stop()
     }
@@ -193,29 +235,16 @@ public final class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHan
     durationLimitSeconds = nil
     mediaServicesDidReset = false
 
-    let session = AVAudioSession.sharedInstance()
-    do {
-      try session.setCategory(.playAndRecord, mode: .default, options: sessionOptions)
-      try session.setActive(true)
-    } catch {
-      currentState = .error
-      throw AudioRecordingException("Failed to configure audio session: \(error.localizedDescription)")
-    }
-
     if let options = options ?? currentOptions {
       let newRecorder: AVAudioRecorder
       do {
         newRecorder = try AudioUtils.createRecorder(directory: recordingDirectory(for: options), with: options)
       } catch {
         currentState = .error
-        if deactivateSessionOnFailure {
-          try? session.setActive(false)
-        }
         throw error
       }
 
       currentOptions = options
-      currentSessionOptions = sessionOptions
       ref.delegate = nil
       ref = newRecorder
       ref.delegate = recordingDelegate
@@ -372,7 +401,7 @@ public final class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHan
 
     if let options = currentOptions {
       do {
-        try prepare(options: options, sessionOptions: currentSessionOptions)
+        try prepare(options: options)
         onRecordingStatusUpdate(RecordingStatusEvent(
           id: id,
           isFinished: true,
@@ -397,10 +426,13 @@ public final class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHan
   }
 
   func didFinish(_ recorder: AVAudioRecorder, successfully flag: Bool) {
-    // Update internal state when recording finishes automatically (e.g., from recordForDuration)
-    currentState = .stopped
-    resetDurationTracking()
-    durationLimitSeconds = nil
+    // A stop() or a new prepare already reset the state, and a later use may be live.
+    if recorder === ref && (currentState == .recording || currentState == .paused) {
+      currentState = .stopped
+      resetDurationTracking()
+      durationLimitSeconds = nil
+      endSessionUseLater()
+    }
 
     onRecordingStatusUpdate(RecordingStatusEvent(
       id: id,
@@ -413,10 +445,12 @@ public final class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHan
   }
 
   func encodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?) {
-    // Update internal state on error
-    currentState = .error
-    resetDurationTracking()
-    durationLimitSeconds = nil
+    if recorder === ref {
+      currentState = .error
+      resetDurationTracking()
+      durationLimitSeconds = nil
+      endSessionUseLater()
+    }
 
     onRecordingStatusUpdate(RecordingStatusEvent(
       id: id,
@@ -436,8 +470,22 @@ public final class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHan
     return URL(fileURLWithPath: path)
   }
 
+  func endSessionUse() {
+    sessionUse.sync {
+      sessionUse.end()
+    }
+  }
+
+  // The recorder can call its delegate from inside stop(), which runs on the session use queue.
+  private func endSessionUseLater() {
+    sessionUse.queue.async { [sessionUse] in
+      sessionUse.end()
+    }
+  }
+
   public override func sharedObjectWillRelease() {
     owningRegistry?.remove(self)
+    endSessionUseLater()
 
     if currentState == .recording {
       ref.stop()
@@ -445,6 +493,32 @@ public final class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHan
 
     ref.delegate = nil
     recordingDelegate = nil
+  }
+
+  func sessionPause(reason: SessionPauseReason) {
+    pauseForSystem()
+  }
+
+  func sessionResume() {
+    try? resumeAfterSystemPause()
+  }
+
+  func sessionDuck(_ isDucked: Bool) {}
+
+  func sessionDidFail(_ error: Error) {
+    guard currentState == .recording else {
+      return
+    }
+    pauseForSystem()
+    appContext?.jsLogger.warn(
+      "[expo-audio] Recording was paused because the audio session could not be activated: \(error.localizedDescription). Another app may hold a higher-priority session, for example a phone call. Call `record()` again later."
+    )
+  }
+
+  func sessionDidEnd() {
+    if currentState == .recording || currentState == .paused {
+      ref.stop()
+    }
   }
 }
 #endif

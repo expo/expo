@@ -9,7 +9,8 @@
         "ReactNativeDependencies",
         "React",
         "Hermes",
-        "expo-modules-core/ExpoModulesCore"
+        "expo-modules-core/ExpoModulesCore",
+        "expo-media-session/ExpoMediaSession"
       ],
       "targets": [
         {
@@ -33,6 +34,7 @@
             "React",
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore",
+            "expo-media-session/ExpoMediaSession",
             "ExpoAudio_ios_objc"
           ],
           "linkedFrameworks": ["Foundation", "UIKit", "AVFoundation", "MediaPlayer"]
