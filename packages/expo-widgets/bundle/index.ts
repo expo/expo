@@ -97,6 +97,8 @@ const __expoWidgetHandlePress = function (
     const props = node?.props as {
       onButtonPress?: () => Dictionary;
       onButtonPressed?: () => Dictionary;
+      onIsOnChange?: (event: { nativeEvent: { isOn: boolean } }) => Dictionary;
+      isOn?: boolean;
       target?: string;
       children?: unknown;
     };
@@ -104,6 +106,9 @@ const __expoWidgetHandlePress = function (
     const onPress = props?.onButtonPress ?? props?.onButtonPressed;
     if (onPress && props?.target === target) {
       return onPress();
+    }
+    if (props?.onIsOnChange && props.target === target) {
+      return props.onIsOnChange({ nativeEvent: { isOn: !props.isOn } });
     }
 
     for (const child of React.Children.toArray(props?.children)) {

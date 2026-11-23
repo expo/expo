@@ -77,6 +77,25 @@ struct WidgetsViewRenderer {
       } else {
         return renderWithModifiers(ExpoUI.Button.self, ExpoUI.ButtonProps.self, updateProps: updateChildren)
       }
+    case "ToggleView":
+      if #available(iOS 17.0, *) {
+        switch kind {
+        case .widget:
+          return renderWithModifiers(WidgetToggleView.self, ToggleProps.self) { toggleProps in
+            try updateChildren(toggleProps)
+            toggleProps.source = name
+            toggleProps.entryIndex = entryIndex
+            toggleProps.environmentString = environmentString
+          }
+        case .liveActivity:
+          return renderWithModifiers(LiveActivityToggleView.self, ToggleProps.self) { toggleProps in
+            try updateChildren(toggleProps)
+            toggleProps.source = name
+          }
+        }
+      } else {
+        return renderWithModifiers(ExpoUI.ToggleView.self, ExpoUI.ToggleProps.self, updateProps: updateChildren)
+      }
     case "react.fragment":
       return renderWithModifiers(FragmentView.self, FragmentProps.self, updateProps: updateChildren)
     case "LinkView":
