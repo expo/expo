@@ -218,10 +218,13 @@ final class NetworkTaskSessionManager {
     configuration.urlCache = nil
     configuration.sessionSendsLaunchEvents = true
     configuration.isDiscretionary = false
-    return URLSession(configuration: configuration, delegate: dispatcher, delegateQueue: .main)
+    let session = URLSession(configuration: configuration, delegate: dispatcher, delegateQueue: .main)
+    ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)?
+      .registerSession(Self.backgroundSessionIdentifier)
+    return session
   }
 
-  private static let backgroundSessionIdentifier = {
+  static let backgroundSessionIdentifier = {
     let bundleIdentifier = Bundle.main.bundleIdentifier ?? "expo.modules.filesystem"
     return "\(bundleIdentifier).expo-file-system.network-task.background"
   }()
