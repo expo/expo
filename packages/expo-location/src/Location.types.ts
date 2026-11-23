@@ -612,6 +612,19 @@ export type MotionActivityObject = {
 };
 
 /**
+ * Options for `getMotionActivityAsync`.
+ */
+export type MotionActivityOptions = {
+  /**
+   * The maximum time to wait for an activity update, in milliseconds. When it passes, the promise
+   * rejects with an error whose `code` is `ERR_LOCATION_MOTION_ACTIVITY_TIMEOUT`. Without it the
+   * promise waits for the next activity update. That can take a long time if the device is still
+   * or the app is in the background.
+   */
+  timeout?: number;
+};
+
+/**
  * Represents the `watchMotionActivityAsync` callback.
  */
 export type MotionActivityCallback = (activity: MotionActivityObject) => any;
