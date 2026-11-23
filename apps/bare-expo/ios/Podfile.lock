@@ -659,6 +659,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - ExpoObserveInterface (58.0.0)
+  - ExpoObserveInterface/Tests (58.0.0)
   - ExpoPrint (58.0.7):
     - ExpoModulesCore
   - ExpoRouter (58.0.26):
@@ -3737,6 +3739,8 @@ DEPENDENCIES:
   - ExpoObserve (from `../../../packages/expo-observe/ios`)
   - ExpoObserve/ColdStartTests (from `../../../packages/expo-observe/ios`)
   - ExpoObserve/Tests (from `../../../packages/expo-observe/ios`)
+  - ExpoObserveInterface (from `../../../packages/expo-observe-interface/ios`)
+  - ExpoObserveInterface/Tests (from `../../../packages/expo-observe-interface/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
   - ExpoRouter (from `../../../packages/expo-router/ios`)
   - ExpoRouter/Tests (from `../../../packages/expo-router/ios`)
@@ -4102,6 +4106,9 @@ EXTERNAL SOURCES:
   ExpoObserve:
     inhibit_warnings: false
     :path: "../../../packages/expo-observe/ios"
+  ExpoObserveInterface:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-observe-interface/ios"
   ExpoPrint:
     inhibit_warnings: false
     :path: "../../../packages/expo-print/ios"
@@ -4464,6 +4471,7 @@ SPEC CHECKSUMS:
   ExpoNetwork: 92aefa9d2d62c48f5f2820f728ac9f537841cf05
   ExpoNotifications: c2f9208d081c4e83fb57542a495c8c212f44723c
   ExpoObserve: 81ab0dea1f18667c0e45a683ea689d7ccbdae3e4
+  ExpoObserveInterface: 7584b26890f464fca498be1e6f6dd15a31f03d1e
   ExpoPrint: e6103f99d8bfdcdc9fe4513b3c37e31b5c8cb7a9
   ExpoRouter: c5f712d2c761df71f8c9a42739f6ecae38ba8315
   ExpoScreenCapture: 9d9d0f0ea42a137396791b9a91d5c5ff3bb3b7eb

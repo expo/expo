@@ -55,6 +55,11 @@
                 "name": "ExpoObserve",
                 "path": "../../../packages/expo-observe/ios",
                 "testspecs": ["Tests"]
+              },
+              {
+                "name": "ExpoObserveInterface",
+                "path": "../../../packages/expo-observe-interface/ios",
+                "testspecs": ["Tests"]
               }
             ]
           }
