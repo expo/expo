@@ -393,6 +393,17 @@ jobs:
           fi
           ./scripts/expo-code-review ecr ci --context-file "$RUNNER_TEMP/pr-description.md" "${ARGS[@]}"
 
+      # ecr rewrites the comment on every run, so put the attach line back after it.
+      - name: Tell Expo employees how to reopen the review
+        if: always() && steps.cmd.outputs.run == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.issue.number || inputs.pr }}
+          BOT_LOGIN: expo-bot
+        run: bash .github/scripts/ai-review-attach-note.sh
+
       - name: Destroy review sandbox
         if: always() && steps.cmd.outputs.run == 'true'
         continue-on-error: true

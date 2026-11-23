@@ -370,6 +370,18 @@ jobs:
           SEEN: ${{ steps.cap.outputs.seen }}
         run: bash .github/scripts/ai-review-auto-count.sh record
 
+      # ecr rewrites the comment, and the count step rewrites the tail, so this runs
+      # after both. A missing comment is a no-op.
+      - name: Tell Expo employees how to reopen the review
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          BOT_LOGIN: expo-bot
+        run: bash .github/scripts/ai-review-attach-note.sh
+
       # The model never destroys the sandbox, so this step does. The child token sees
       # only this run's sandbox.
       - name: Destroy review sandbox
