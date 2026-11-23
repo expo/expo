@@ -12,14 +12,27 @@ final class SpanWriter: Sendable {
   /// production, where the shared database is resolved lazily on the actor. That keeps the
   /// `AppMetrics.spanWriter` static constructible from nonisolated contexts (the JS thread).
   private let databaseOverride: MetricsDatabase?
+  /// Runs a write on the actor. Test seam: a test runs the writes itself.
+  private let enqueue: @Sendable (@escaping @Sendable @AppMetricsActor () -> Void) -> Void
 
   nonisolated init() {
     self.databaseOverride = nil
+    self.enqueue = Self.enqueueOnActor
   }
 
   /// Writes to `database` instead of the shared one.
-  init(database: MetricsDatabase) {
+  init(
+    database: MetricsDatabase,
+    enqueue: @escaping @Sendable (@escaping @Sendable @AppMetricsActor () -> Void) -> Void = SpanWriter.enqueueOnActor
+  ) {
     self.databaseOverride = database
+    self.enqueue = enqueue
+  }
+
+  private nonisolated static func enqueueOnActor(_ write: @escaping @Sendable @AppMetricsActor () -> Void) {
+    Task { @AppMetricsActor in
+      write()
+    }
   }
 
   /// Writes one completed row. Callers already on `AppMetricsActor` (the network producer's
@@ -37,7 +50,7 @@ final class SpanWriter: Sendable {
 
   /// Fire-and-forget write from any isolation (the JS spans API calls this from the JS thread).
   nonisolated func schedule(_ row: SpanRow) {
-    Task { @AppMetricsActor in
+    enqueue {
       self.write(row)
     }
   }

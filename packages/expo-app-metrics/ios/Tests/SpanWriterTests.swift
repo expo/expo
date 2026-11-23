@@ -1,3 +1,4 @@
+import ExpoModulesCore
 import Foundation
 import Testing
 
@@ -84,7 +85,10 @@ struct SpanWriterTests {
   @Test
   func `a span that starts without consent is not written after a grant`() async throws {
     try await withTemporaryDatabase { database in
-      let writer = SpanWriter(database: database)
+      let writes = Mutex<[@Sendable @AppMetricsActor () -> Void]>([])
+      let writer = SpanWriter(database: database) { write in
+        writes.withLock { $0.append(write) }
+      }
       let beforeGrant = SpanHandle(
         recorder: SpanRecorder(
           name: "before-grant",
@@ -101,14 +105,11 @@ struct SpanWriterTests {
       )
 
       beforeGrant.end(statusCode: nil, statusMessage: nil, endTimestampMs: 1_782_131_895_250)
+      #expect(writes.withLock { $0.isEmpty })
       afterGrant.end(statusCode: nil, statusMessage: nil, endTimestampMs: 1_782_131_895_250)
 
-      // A write runs in a task on this actor, in the order the spans ended. So when the second
-      // span is stored, a write of the first span would have run before it.
-      var attempts = 0
-      while try spanNames(in: database).isEmpty, attempts < 100 {
-        attempts += 1
-        try await Task.sleep(for: .milliseconds(10))
+      for write in writes.withLock({ $0 }) {
+        write()
       }
       let names = try spanNames(in: database)
       #expect(names == ["after-grant"])
