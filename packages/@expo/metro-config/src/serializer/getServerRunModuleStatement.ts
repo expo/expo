@@ -1,5 +1,4 @@
 import type { SerializerOptions } from '@expo/metro/metro/DeltaBundler/types';
-import assert from 'assert';
 
 type RunModuleStatement = SerializerOptions['getRunModuleStatement'];
 
@@ -15,11 +14,11 @@ export function getServerRunModuleStatement(
   const getRunModuleStatement: RunModuleStatement = (moduleId, ...args) => {
     const statement = original(moduleId, ...args);
     if (moduleId !== options.createModuleId(entryPoint)) return statement;
-    if (statement.startsWith('__r(')) return 'module.exports = ' + statement;
-    const entryCall = /(^|[;\n])(\s*)(__r\s*\([^;\n]*\)\s*;?\s*)$/;
-    assert(
-      entryCall.test(statement),
-      'Cannot export the server entry because serializer.getRunModuleStatement does not end with a standalone __r call. Return setup statements followed by the entry-module call.'
+    const prefix = (args[0] ?? '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const requireName = prefix ? `(?:${prefix}__r|__r)` : '__r';
+    const entryCall = new RegExp(
+      `(^|[;\\n])(\\s*)(${requireName}\\s*\\([^;\\n]*?\\)\\s*)(?=;|$|\\n)`,
+      'g'
     );
     return statement.replace(entryCall, '$1$2module.exports = $3');
   };
