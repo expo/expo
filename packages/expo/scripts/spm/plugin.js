@@ -92,7 +92,9 @@ const {
 } = require('./flavored-frameworks');
 const {
   HEADERS_STAND_INS,
+  companionPackage,
   dumpModuleManifest,
+  emitCompanionPackage,
   emitDirectPackage,
   headersStandInsOf,
   rnLibraryPlaceholdersOf,
@@ -215,14 +217,18 @@ function productAutolinkCondition(autolinkConditions, moduleRoot, productName) {
 
 /**
  * The gated products autolinking never resolves as a pod, by package root: companions
- * such as expo-camera's barcode scanner, which only a checked-in manifest links.
+ * such as expo-camera's barcode scanner, which a checked-in manifest links, and
+ * expo-modules-core's worklets adapter, whose package `linkGeneratedCompanions` generates.
  */
-function indexGatedCompanions(metadata, records) {
+function indexGatedCompanions(metadata, resolvedPodNames) {
   const byRoot = new Map();
-  for (const [podName, { packageRoot, productName, autolinkWhen }] of metadata) {
-    if (autolinkWhen == null || packageRoot == null || records.has(podName)) continue;
+  for (const [podName, { packageRoot, productName, sourceOnly, autolinkWhen }] of metadata) {
+    if (autolinkWhen == null || packageRoot == null || resolvedPodNames.has(podName)) continue;
     const root = path.resolve(packageRoot);
-    byRoot.set(root, [...(byRoot.get(root) ?? []), { podName, productName, autolinkWhen }]);
+    byRoot.set(root, [
+      ...(byRoot.get(root) ?? []),
+      { podName, productName, sourceOnly, autolinkWhen },
+    ]);
   }
   return byRoot;
 }
@@ -234,11 +240,16 @@ function indexGatedCompanions(metadata, records) {
  * condition is met. Such a companion fails the sync only when a Podfile property
  * decides it, because the app can switch that off; a pod or npm package condition is
  * met by what the app installs for its own reasons, so refusing it would block the app.
+ * A companion whose package pass 3 generated is not left out.
  *
  * @param linked the precompiled and pure-Swift records, in pass order.
+ * @param generatedCompanions the pod names of the companions whose package was generated.
  * @returns the `refusals` that fail the sync, and the `leftOutCompanions` to warn about.
  */
-function uncheckedAutolinkConditions(linked, { gatedCompanions, manifestRoots, autolinkGate }) {
+function uncheckedAutolinkConditions(
+  linked,
+  { gatedCompanions, generatedCompanions, manifestRoots, autolinkGate }
+) {
   const companionRootsSeen = new Set();
   const refusals = [];
   const leftOutCompanions = [];
@@ -251,6 +262,7 @@ function uncheckedAutolinkConditions(linked, { gatedCompanions, manifestRoots, a
     if (manifestRoots.has(root) || companionRootsSeen.has(root)) continue;
     companionRootsSeen.add(root);
     for (const companion of gatedCompanions.get(root) ?? []) {
+      if (generatedCompanions.has(companion.podName)) continue;
       if (!autolinkConditionMet(companion.autolinkWhen, autolinkGate)) continue;
       if (autolinkConditionKey(companion.autolinkWhen) === 'podfileProperty') {
         refusals.push({ ...refusal, ...companion, linkedThrough: podName });
@@ -713,6 +725,76 @@ function linkSourceModules(modules, identities, records, emitContext, dumpManife
   return { emitted, refusals };
 }
 
+/**
+ * Pass 3 — the gated sourceOnly companions of precompiled modules, where CocoaPods would link
+ * them and no Podfile property decides that. Each gets a package generated from its
+ * spm.config.json entry, where `companionPackage` supports that entry; any other stays left
+ * out. So does one whose headers a later round provides.
+ *
+ * @param precompiled the records of the pods linked precompiled.
+ * @param emitContext what `linkSourceModules` emits against.
+ * @returns one `{ identity, linkedAs: 'companion', direct: true, emission }` per package.
+ */
+function linkGeneratedCompanions(precompiled, emitContext, { gatedCompanions, autolinkGate }) {
+  const emitted = [];
+  const roots = new Set();
+  for (const { identity } of precompiled) {
+    const { packageName, moduleRoot } = identity;
+    const root = path.resolve(moduleRoot);
+    if (roots.has(root)) continue;
+    roots.add(root);
+    const companions = gatedCompanions.get(root) ?? [];
+    for (const { podName, productName, sourceOnly, autolinkWhen } of companions) {
+      if (
+        !sourceOnly ||
+        !autolinkConditionMet(autolinkWhen, autolinkGate) ||
+        autolinkConditionKey(autolinkWhen) === 'podfileProperty'
+      ) {
+        continue;
+      }
+      const companion = companionPackage(spmConfigProduct(moduleRoot, productName));
+      if (companion == null) continue;
+      const headersXCFrameworks = Object.fromEntries(
+        companion.standIns.map((standIn) => [standIn, emitContext.headersXCFramework(standIn)])
+      );
+      if (Object.values(headersXCFrameworks).includes(null)) continue;
+      const emission = emitCompanionPackage({
+        moduleRoot,
+        packageName,
+        companion,
+        outDir: emitContext.outDir,
+        headersXCFrameworks,
+        jsiHeadersPkgPath: emitContext.jsiHeadersPkgPath,
+        macrosPackageRoot: emitContext.macrosPackageRoot,
+        react: emitContext.react,
+        codegenPkgPath: emitContext.codegenPkgPath,
+        reactNativeLibsDir: emitContext.reactNativeLibsDir,
+        minimumIosDeploymentTarget: emitContext.minimumIosDeploymentTarget,
+      });
+      emitted.push({
+        identity: { podName, packageName, moduleRoot, productName },
+        linkedAs: 'companion',
+        direct: true,
+        emission: emission.ok,
+      });
+    }
+  }
+  return emitted;
+}
+
+/**
+ * The entry of `productName` in the spm.config.json at `moduleRoot`, or null when there is
+ * none to read: the companion is then left out, as it is without one.
+ */
+function spmConfigProduct(moduleRoot, productName) {
+  try {
+    const config = JSON.parse(fs.readFileSync(path.join(moduleRoot, 'spm.config.json'), 'utf8'));
+    return config.products?.find((product) => product?.name === productName) ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /** `dumpModuleManifest`, run at most once per real module root. */
 function manifestDumper() {
   // By real path: listings can reach one manifest through different symlinks.
@@ -727,15 +809,25 @@ function manifestDumper() {
 }
 
 /**
- * Both passes, over fresh pod records, with the pods in `fallbackPods` linked precompiled
+ * Every pass, over fresh pod records, with the pods in `fallbackPods` linked precompiled
  * though a buildFromSource pattern matches them.
  *
  * @param sourceContext `{ react, outDir, codegenPkgPath, jsiHeadersPkgPath, reactNativeLibsDir }`:
  *   what every emitted package is generated against, besides what pass 1 decides.
+ * @param gatedCompanions `indexGatedCompanions`'s result, which pass 3 generates packages from.
  */
 function linkPasses(
   fallbackPods,
-  { modules, identities, cacheDir, matchBuildFromSource, dumpManifest, sourceContext }
+  {
+    modules,
+    identities,
+    cacheDir,
+    matchBuildFromSource,
+    dumpManifest,
+    sourceContext,
+    gatedCompanions,
+    autolinkGate,
+  }
 ) {
   const records = podRecords(identities);
   const precompiled = linkPrecompiledPods(
@@ -777,43 +869,41 @@ function linkPasses(
   if (coreAvailable) {
     let resolvedMacroFlags = null;
     const resolvedHeadersXCFrameworks = new Map();
-    sourceModules = linkSourceModules(
-      modules,
-      identities,
-      records,
-      {
-        ...sourceContext,
-        frameworkSearchPath,
-        minimumIosDeploymentTarget: core.iosDeploymentTarget,
-        satisfiedDependencies,
-        // Every emitted target may use the macros (CocoaPods' "is core or depends on core" gate).
-        // Lazy: an install that emits no source package needs no macro plugin.
-        get macroFlags() {
-          return (resolvedMacroFlags ??= macroPluginFlags(core.moduleRoot));
-        },
-        get macrosPackageRoot() {
-          return macrosPackageRoot(core.moduleRoot);
-        },
-        // Lazy: only a direct module needs headers, and only then must they exist. Null for
-        // headers whose product a pattern matches: the next round links it precompiled.
-        headersXCFramework(standIn) {
-          if (!resolvedHeadersXCFrameworks.has(standIn)) {
-            const { packageName, productName } = HEADERS_STAND_INS[standIn];
-            const match = matchBuildFromSource({ podName: productName, packageName });
-            if (match?.exact === false && !fallbackPods.has(productName)) {
-              standInFallbacks.set(productName, match.entry);
-              resolvedHeadersXCFrameworks.set(standIn, null);
-            } else {
-              resolvedHeadersXCFrameworks.set(
-                standIn,
-                resolveHeadersStandIn(HEADERS_STAND_INS[standIn], precompiled, cacheDir)
-              );
-            }
-          }
-          return resolvedHeadersXCFrameworks.get(standIn);
-        },
+    const emitContext = {
+      ...sourceContext,
+      frameworkSearchPath,
+      minimumIosDeploymentTarget: core.iosDeploymentTarget,
+      satisfiedDependencies,
+      // Every emitted target may use the macros (CocoaPods' "is core or depends on core" gate).
+      // Lazy: an install that emits no source package needs no macro plugin.
+      get macroFlags() {
+        return (resolvedMacroFlags ??= macroPluginFlags(core.moduleRoot));
       },
-      dumpManifest
+      get macrosPackageRoot() {
+        return macrosPackageRoot(core.moduleRoot);
+      },
+      // Lazy: only a direct module needs headers, and only then must they exist. Null for
+      // headers whose product a pattern matches: the next round links it precompiled.
+      headersXCFramework(standIn) {
+        if (!resolvedHeadersXCFrameworks.has(standIn)) {
+          const { packageName, productName } = HEADERS_STAND_INS[standIn];
+          const match = matchBuildFromSource({ podName: productName, packageName });
+          if (match?.exact === false && !fallbackPods.has(productName)) {
+            standInFallbacks.set(productName, match.entry);
+            resolvedHeadersXCFrameworks.set(standIn, null);
+          } else {
+            resolvedHeadersXCFrameworks.set(
+              standIn,
+              resolveHeadersStandIn(HEADERS_STAND_INS[standIn], precompiled, cacheDir)
+            );
+          }
+        }
+        return resolvedHeadersXCFrameworks.get(standIn);
+      },
+    };
+    sourceModules = linkSourceModules(modules, identities, records, emitContext, dumpManifest);
+    sourceModules.emitted.push(
+      ...linkGeneratedCompanions(precompiled, emitContext, { gatedCompanions, autolinkGate })
     );
   }
   return {
@@ -871,12 +961,13 @@ function gateProducts(emitted, autolinkConditions, autolinkGate) {
 }
 
 /**
- * Everything that follows from the pod records once both passes ran: the source
+ * Everything that follows from the pod records once the passes ran: the source
  * packages and products React Native links, the pods nothing covers, the
  * diagnostics, and what each pass linked. Each check runs once per pod, in pass
- * order — the precompiled pods, then the modules pass 2 emitted. `precompiled` is
- * what `linkPrecompiledPods` returned; `emitted` and `refusals` are what
- * `linkSourceModules` returned; `gatedCompanions` is what `indexGatedCompanions` returned.
+ * order — the precompiled pods, then the modules passes 2 and 3 emitted. `precompiled`
+ * is what `linkPrecompiledPods` returned; `emitted` is what `linkSourceModules` and then
+ * `linkGeneratedCompanions` returned, and `refusals` what `linkSourceModules` returned;
+ * `gatedCompanions` is what `indexGatedCompanions` returned.
  *
  * @param satisfiedDependencies the SwiftPM packages already declared as frameworks.
  */
@@ -908,7 +999,7 @@ function summarizeRecords(
 
   // What the resolved dependencies already carry is not uncovered, their subspecs
   // included.
-  const unmappedDeps = [...precompiled, ...emitted]
+  const unmappedDeps = [...precompiled, ...emitted.filter((r) => r.linkedAs !== 'companion')]
     .map((record) => ({
       packageName: record.identity.packageName,
       podName: record.identity.podName,
@@ -918,8 +1009,10 @@ function summarizeRecords(
       ),
     }))
     .filter((entry) => entry.pods.length > 0);
+  const generatedCompanions = emitted.filter((r) => r.linkedAs === 'companion');
   const unchecked = uncheckedAutolinkConditions([...precompiled, ...pureSwift], {
     gatedCompanions,
+    generatedCompanions: new Set(generatedCompanions.map((r) => r.identity.podName)),
     manifestRoots: new Set(
       emitted
         .filter((r) => r.linkedAs === 'manifest')
@@ -941,7 +1034,7 @@ function summarizeRecords(
 
   const reactWired = [
     ...precompiled.filter(({ identity }) => moduleNeedsReact(identity.podName, identity.sources)),
-    ...(react != null ? emitted : []),
+    ...(react != null ? emitted.filter((r) => r.linkedAs !== 'companion') : []),
   ];
   const podNames = (list) => list.map((r) => r.identity.podName);
   const packageNames = (list) => list.map((r) => r.identity.packageName);
@@ -962,6 +1055,7 @@ function summarizeRecords(
     precompiledPods: podNames(precompiled),
     manifestPackages: packageNames(fromManifests),
     directPackages: packageNames(fromManifests.filter((r) => r.direct)),
+    generatedCompanions: generatedCompanions.map((r) => r.identity.productName),
     pureSwiftPods: podNames(pureSwift),
     reactWiredPods: podNames(reactWired),
   };
@@ -1088,6 +1182,10 @@ module.exports = function expoSpmPlugin(context) {
     : null;
 
   const jsiHeadersPkgPath = linkExpoModulesJSI(identities, outDir, artifactCacheDir, appRoot);
+  const gatedCompanions = indexGatedCompanions(
+    metadata,
+    new Set([...identities.values()].map((identity) => identity.podName))
+  );
   const passOptions = {
     modules,
     identities,
@@ -1101,10 +1199,12 @@ module.exports = function expoSpmPlugin(context) {
       jsiHeadersPkgPath,
       reactNativeLibsDir: path.join(outputDir, 'libs'),
     },
+    gatedCompanions,
+    autolinkGate,
   };
   // A pod a buildFromSource pattern matches is linked precompiled when no source route takes
   // it, as ExpoModulesCore never is. Linking one changes what pass 2 decides — a sibling pod's
-  // route, the products already satisfied, the interface tree — so both passes run again until
+  // route, the products already satisfied, the interface tree — so the passes run again until
   // no other pod falls back. Transitional: needed until every Expo module, ExpoModulesCore
   // included, has a checked-in Package.swift that SwiftPM can build from source.
   const fallbackEntries = new Map();
@@ -1168,7 +1268,7 @@ module.exports = function expoSpmPlugin(context) {
     react,
     satisfiedDependencies,
     autolinkConditions,
-    gatedCompanions: indexGatedCompanions(metadata, records),
+    gatedCompanions,
     autolinkGate,
   });
   const logListed = (label, names) =>
@@ -1177,6 +1277,7 @@ module.exports = function expoSpmPlugin(context) {
   logListed('paired runtime frameworks', summary.precompiledPods);
   logListed('source via checked-in manifest', summary.manifestPackages);
   logListed('source via direct checked-in manifest', summary.directPackages);
+  logListed('source via generated companion package', summary.generatedCompanions);
   logListed('source pure-Swift', summary.pureSwiftPods);
   logListed('React wired into', summary.reactWiredPods);
   logListed('gated off', summary.gatedOffProducts);

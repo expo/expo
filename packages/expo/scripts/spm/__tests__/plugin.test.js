@@ -52,6 +52,7 @@ jest.mock('../manifests', () => {
 jest.mock('../direct', () => ({
   ...jest.requireActual('../direct'),
   emitDirectPackage: jest.fn(),
+  emitCompanionPackage: jest.fn(),
 }));
 
 const {
@@ -64,7 +65,7 @@ const { resolveAppTarget } = require('../app-target');
 const { findModuleRoot } = require('../classify');
 const { spmUpdateCommand } = require('../commands');
 const { UnsupportedModulesError, renderBuildFromSourceFallbackWarning } = require('../diagnostics');
-const { emitDirectPackage } = require('../direct');
+const { emitCompanionPackage, emitDirectPackage } = require('../direct');
 const { emitPureSwiftSourcePackage } = require('../manifests');
 const {
   artifactBaseDirs,
@@ -5123,6 +5124,100 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
       expect(companionWarnings).toHaveLength(1);
       expect(companionWarnings[0]).toContain('"ExpoModulesWorkletsAdapter"');
       expect(companionWarnings[0]).toContain('"ExpoCameraBarcodeScanning"');
+    });
+
+    describe('with a supported entry in its spm.config.json', () => {
+      const externalDependencies = ['React', 'ExpoModulesWorklets', 'RNWorklets'];
+      const adapterEntry = () => ({
+        name: 'ExpoModulesWorkletsAdapter',
+        podName: 'ExpoModulesWorkletsAdapter',
+        sourceOnly: true,
+        platforms: ['iOS("16.4")'],
+        autolinkWhen: { podName: 'RNWorklets' },
+        externalDependencies,
+        targets: [
+          {
+            type: 'objc',
+            name: 'ExpoModulesWorkletsAdapter',
+            path: 'ios/WorkletsAdapter',
+            pattern: '**/*.{m,mm}',
+            headerPattern: '**/*.h',
+            dependencies: ['ExpoModulesCore', ...externalDependencies],
+            linkedFrameworks: ['Foundation'],
+            includeDirectories: ['.'],
+          },
+        ],
+      });
+      const adapterPackage = () =>
+        path.join(tmp, 'out', 'expo', 'direct', 'ExpoModulesWorkletsAdapter');
+
+      // expo-modules-core lists ExpoModulesWorklets beside ExpoModulesCore, both precompiled.
+      const runWithAdapter = () => {
+        const coreRoot = path.join(tmp, 'expo-modules-core');
+        fs.writeFileSync(
+          path.join(coreRoot, 'spm.config.json'),
+          JSON.stringify({ products: [adapterEntry()] })
+        );
+        fs.writeFileSync(path.join(coreRoot, 'ios', 'ExpoModulesWorklets.podspec'), spec());
+        modules['expo-modules-core'].pods.push({
+          podName: 'ExpoModulesWorklets',
+          podspecDir: path.join(coreRoot, 'ios'),
+        });
+        emitCompanionPackage.mockReset();
+        emitCompanionPackage.mockReturnValue({
+          ok: {
+            packageDep: { name: 'ExpoModulesWorkletsAdapter', path: adapterPackage() },
+            productDeps: [
+              { name: 'ExpoModulesWorkletsAdapter', package: 'ExpoModulesWorkletsAdapter' },
+            ],
+            spmProductNames: [],
+            partlyProvidedPackages: [],
+          },
+        });
+        return run({
+          packages: [],
+          metadata: {
+            ExpoModulesCore: documented('expo-modules-core', 'ExpoModulesCore'),
+            ExpoModulesWorklets: documented('expo-modules-core', 'ExpoModulesWorklets'),
+            ExpoModulesWorkletsAdapter: adapter(),
+            RNWorklets: documented('react-native-worklets', 'RNWorklets'),
+          },
+          precompiled: ['ExpoModulesWorklets'],
+        });
+      };
+
+      it('links the product of the package it generates where the app declares RNWorklets', () => {
+        const { result, thrown } = runWithAdapter();
+
+        expect(thrown).toBeNull();
+        expect(emitCompanionPackage).toHaveBeenCalledTimes(1);
+        expect(emitCompanionPackage).toHaveBeenCalledWith(
+          expect.objectContaining({
+            moduleRoot: path.join(tmp, 'expo-modules-core'),
+            packageName: 'expo-modules-core',
+            companion: expect.objectContaining({
+              name: 'ExpoModulesWorkletsAdapter',
+              standIns: ['ExpoModulesCoreHeaders', 'ExpoModulesWorkletsHeaders'],
+              placeholders: ['RNWorkletsHeaders'],
+            }),
+            headersXCFrameworks: {
+              ExpoModulesCoreHeaders: '/abs/ExpoModulesCoreHeaders.xcframework',
+              ExpoModulesWorkletsHeaders: '/abs/ExpoModulesWorkletsHeaders.xcframework',
+            },
+            outDir: path.join(tmp, 'out', 'expo'),
+            reactNativeLibsDir: path.join(tmp, 'out', 'libs'),
+          })
+        );
+        expect(result.packageDependencies).toContainEqual({
+          name: 'ExpoModulesWorkletsAdapter',
+          path: adapterPackage(),
+        });
+        expect(result.productDependencies).toContainEqual({
+          name: 'ExpoModulesWorkletsAdapter',
+          package: 'ExpoModulesWorkletsAdapter',
+        });
+        expect(printed(logs.warn)).not.toContain('ExpoModulesWorkletsAdapter');
+      });
     });
 
     it('is still named when a companion gated on a Podfile property fails the sync', () => {
