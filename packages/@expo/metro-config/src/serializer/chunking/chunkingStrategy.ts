@@ -72,7 +72,8 @@ export function createChunkCollector(
   { graph, options, preModules: runtimePremodules }: ChunkingContext,
   strategy: ChunkingImplementation,
   chunks: Set<Chunk>,
-  shouldTraverseDependency: (dependency: ResolvedDependency) => boolean
+  shouldTraverseDependency: (dependency: ResolvedDependency) => boolean,
+  shouldSplitDependency: (dependency: ResolvedDependency) => boolean = () => true
 ) {
   const chunksByEntryPath = new Map<string, Chunk>();
   return function collectChunk(
@@ -112,7 +113,8 @@ export function createChunkCollector(
         } else if (
           asyncType &&
           // Workers require standalone bundles even when ordinary chunk splitting is disabled.
-          (isWorker || splitChunks)
+          (isWorker || splitChunks) &&
+          shouldSplitDependency(dependency)
         ) {
           if (isWorker && options.includeAsyncPaths) {
             continue;

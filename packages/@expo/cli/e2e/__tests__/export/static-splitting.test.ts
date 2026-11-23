@@ -150,8 +150,9 @@ describe('exports static with granular bundle splitting', () => {
         'multi-group',
         ...Array(3).fill('\\[postId\\]'),
         // workers
+        'async-imports',
         'other',
-        'worker-client',
+        'worker-async',
         'worker-one',
       ]
         .sort()
