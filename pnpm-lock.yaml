@@ -1787,7 +1787,7 @@ importers:
     dependencies:
       '@expo/vector-icons':
         specifier: ^15.0.2
-        version: 15.1.1(expo-font@packages+expo-font)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 15.1.1(expo-font@packages+expo-font)(react-native@0.89.0-rc.2(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
@@ -1819,17 +1819,17 @@ importers:
         specifier: 19.3.0
         version: 19.3.0(react@19.3.0)
       react-native:
-        specifier: 0.89.0-rc.0
-        version: 0.89.0-rc.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
+        specifier: 0.89.0-rc.2
+        version: 0.89.0-rc.2(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       react-native-gesture-handler:
         specifier: ~3.3.0
-        version: 3.3.0(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 3.3.0(react-native@0.89.0-rc.2(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-safe-area-context:
         specifier: ~5.11.1
-        version: 5.11.1(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 5.11.1(react-native@0.89.0-rc.2(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-screens:
         specifier: 4.30.1
-        version: 4.30.1(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 4.30.1(react-native@0.89.0-rc.2(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
         specifier: ~0.21.4
         version: 0.21.4(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -14690,6 +14690,12 @@ packages:
       react: '*'
       react-native: 0.89.0-rc.2
 
+  react-native-gesture-handler@3.3.0:
+    resolution: {integrity: sha512-ZCTlJ09nE3GPbm7J74lvwpxmx1TQ/7MDlHZNLARVYTN82k21mJUJ7BmI9eWjEi8eevHiAudI5O1Cpnt0rJfoJA==}
+    peerDependencies:
+      react: '*'
+      react-native: 0.89.0-rc.2
+
   react-native-gesture-handler@3.5.0:
     resolution: {integrity: sha512-bm8yepwMBUhEOSeU7WQbNNrstD0Hbv6i+XsApARBJSlb+WlRvyaQsobi+tZ5Uyr5kDVgXzg6kPb+CWY9zvyfEw==}
     peerDependencies:
@@ -24649,6 +24655,13 @@ snapshots:
     dependencies:
       react: 19.3.0
       react-native: 0.89.0-rc.2(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
+
+  react-native-gesture-handler@3.3.0(react-native@0.89.0-rc.2(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0):
+    dependencies:
+      '@types/react-test-renderer': 19.1.0
+      invariant: 2.2.4
+      react: 19.3.0
+      react-native: 0.89.0-rc.2(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
 
   react-native-gesture-handler@3.5.0(react-native@0.89.0-rc.2(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0):
     dependencies:
