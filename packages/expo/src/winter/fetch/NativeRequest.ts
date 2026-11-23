@@ -33,7 +33,7 @@ export declare class NativeResponse extends SharedObject<NativeResponseEvents> {
   get url(): string;
   get redirected(): boolean;
   startStreaming(): Promise<Uint8Array<ArrayBuffer> | null>;
-  cancelStreaming(reason: string): void;
+  cancelStreaming(reason: string): Promise<void>;
   arrayBuffer(): Promise<ArrayBuffer>;
   text(): Promise<string>;
 }

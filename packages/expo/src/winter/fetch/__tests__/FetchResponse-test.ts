@@ -388,6 +388,24 @@ describe('FetchResponse', () => {
       await expect(response.text()).rejects.toThrow(TypeError);
     });
 
+    it('handles a rejected native cancel when the body is canceled', async () => {
+      const response = makeResponse();
+      jest
+        .spyOn(response, 'cancelStreaming')
+        .mockImplementation(() =>
+          Promise.reject(new Error('Cannot use shared object that was already released'))
+        );
+      const unhandled = jest.fn();
+      process.on('unhandledRejection', unhandled);
+      try {
+        await response.body!.cancel('not needed');
+        await new Promise((resolve) => setImmediate(resolve));
+      } finally {
+        process.off('unhandledRejection', unhandled);
+      }
+      expect(unhandled).not.toHaveBeenCalled();
+    });
+
     it('rejects body.cancel() while text() reads the body', async () => {
       const response = makeResponse();
       const nativeCancel = jest.spyOn(response, 'cancelStreaming');
