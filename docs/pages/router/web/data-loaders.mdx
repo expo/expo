@@ -287,6 +287,42 @@ A loader started during an interrupted transition can finish while the current r
 
 A revisit can display a Suspense fallback while the fetch completes, even when the platform serves a cached response. Retrying a loader error through the route's `ErrorBoundary` also fetches again.
 
+### Refresh loader data
+
+> **info** `useLoaderRevalidator` is available in SDK 59 and later.
+
+Use `useLoaderRevalidator()` to refresh the calling page's loader after a mutation or when the user requests a refresh. Existing data stays visible while the request runs. Use `isPending` for a refresh indicator instead of a Suspense fallback:
+
+```tsx app/index.tsx
+import { useLoaderData, useLoaderRevalidator } from 'expo-router';
+import { RefreshControl, ScrollView, Text } from 'react-native';
+
+export async function loader() {
+  return { updatedAt: new Date().toISOString() };
+}
+
+export default function Page() {
+  const data = useLoaderData<typeof loader>();
+  const { revalidate, isPending } = useLoaderRevalidator();
+
+  return (
+    <ScrollView refreshControl={<RefreshControl refreshing={isPending} onRefresh={revalidate} />}>
+      <Text>Updated at: {data.updatedAt}</Text>
+    </ScrollView>
+  );
+}
+```
+
+The hook targets the calling page's current parameters and search parameters. Readers of the same loader path share the result and refresh state within one router root. It does not refresh other page paths or ancestor layouts. Mounting the hook does not fetch data. You can keep a refresh control mounted while conditionally removing a component that calls `useLoaderData()`.
+
+Each call starts a new request and replaces any pending request for that loader path. Older responses cannot overwrite the result. Removing the last route that retains the path cancels its request. Hiding a retained screen or removing a data reader does not cancel it. A reader that has no data still suspends during loading.
+
+If the request fails, `useLoaderData()` throws the error to its nearest error boundary. The boundary replaces its content, including after a pull-to-refresh failure. The error stays available to other readers until a new request starts or the route releases its data. Use the route's `ErrorBoundary` `retry()` prop to start another request and render the content again.
+
+`revalidate()` returns a promise that never rejects. The promise resolves when the refresh finishes or the route releases its data. If another refresh replaces it, the promise waits for that replacement. Completion does not indicate success or wait for React to paint. `isPending` tracks explicit refreshes, not initial loading or development hot reloads.
+
+Refresh requests ask the HTTP cache to validate the response. They do not invalidate server data caches. In a static export, a refresh reads the deployed JSON file again. It cannot rerun the loader or change its data without another export and deployment.
+
 ### Cache defaults
 
 When a loader does not declare `Cache-Control`, these defaults apply:
@@ -473,7 +509,7 @@ export default function Post() {
 ## Known limitations
 
 - Loaders **must** return JSON-serializable data or a `Response` with a JSON body. Streaming loader data is not supported.
-- There is no public API to invalidate loader data for a route that remains mounted. Use `Cache-Control` to control HTTP caching when the route fetches again.
+- `useLoaderRevalidator` refreshes only the calling page. There is no public API to target another page for revalidation.
 - A `loader` export in a native-only route file, such as **index.ios.tsx**, does not run. Put the `loader` in **index.web.tsx** if that file exists, or in **index.tsx** if it does not.
 
 ## Common questions
