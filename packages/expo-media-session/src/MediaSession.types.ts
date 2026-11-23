@@ -55,12 +55,12 @@ export type AudioPolicy = {
 /**
  * Bluetooth profiles that the session can use when its category is `playAndRecord`.
  *
- * - `hfp`: Hands-Free Profile. A connected headset is available for input and output. While the
- * session is active, iOS routes the headset through HFP. HFP output is mono and narrowband, so
+ * - `hfp`: Hands-Free Profile (HFP). A connected headset is available for input and output. While
+ * the session is active, iOS routes the headset through HFP. HFP output is mono and narrowband, so
  * playback sounds like a phone call. Use it when the app records from the headset microphone.
  * - `a2dp`: Advanced Audio Distribution Profile. A connected headset is available for output only,
  * in high-quality stereo. The app records from the built-in microphone or a wired input. iOS still
- * uses HFP while a media library uses the voice chat or video chat mode.
+ * uses HFP while a media library uses the voice chat or video chat mode, or requests HFP itself.
  */
 export type BluetoothProfile = 'hfp' | 'a2dp';
 
