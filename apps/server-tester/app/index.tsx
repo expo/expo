@@ -90,6 +90,11 @@ export default function HomeRoute() {
           <RouteLink href="/rendering/catch-all/hello/world" />
         </RouteLinks>
       </Section>
+      <Section title="Web workers">
+        <RouteLinks>
+          <RouteLink href="/workers" />
+        </RouteLinks>
+      </Section>
       <Section title="Routing">
         <RouteLinks>
           <RouteLink href="/routing" />

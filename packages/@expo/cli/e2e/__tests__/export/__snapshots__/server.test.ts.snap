@@ -150,7 +150,9 @@ exports[`server-output express requests exported files has expected routes manif
         "type": "css",
       },
     ],
-    "js": [],
+    "js": [
+      "/_expo/static/js/web/__expo-metro-runtime-[hash].js",
+    ],
   },
   "htmlRoutes": [
     {
@@ -500,6 +502,18 @@ exports[`server-output express requests exported files has expected routes manif
       "loader": "_expo/loaders/headers/blog.js",
       "namedRegex": "^/headers/blog(?:/)?$",
       "page": "/headers/blog",
+      "routeKeys": {},
+    },
+    {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
+      "file": "./workers/index.tsx",
+      "namedRegex": "^/workers(?:/)?$",
+      "page": "/workers/index",
       "routeKeys": {},
     },
     {
@@ -1013,7 +1027,9 @@ exports[`server-output workerd requests exported files has expected routes manif
         "type": "css",
       },
     ],
-    "js": [],
+    "js": [
+      "/_expo/static/js/web/__expo-metro-runtime-[hash].js",
+    ],
   },
   "htmlRoutes": [
     {
@@ -1363,6 +1379,18 @@ exports[`server-output workerd requests exported files has expected routes manif
       "loader": "_expo/loaders/headers/blog.js",
       "namedRegex": "^/headers/blog(?:/)?$",
       "page": "/headers/blog",
+      "routeKeys": {},
+    },
+    {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
+      "file": "./workers/index.tsx",
+      "namedRegex": "^/workers(?:/)?$",
+      "page": "/workers/index",
       "routeKeys": {},
     },
     {

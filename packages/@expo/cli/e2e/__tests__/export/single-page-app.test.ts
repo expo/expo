@@ -78,17 +78,17 @@ describe('exports with single-page', () => {
       expect(queryMeta(name)).not.toBeDefined();
     });
 
-    indexHtml
+    const jsBundles = indexHtml
       .querySelectorAll('script')
       .filter((script) => script.attributes.src)
-      .forEach((script) => {
-        const jsBundle = fs.readFileSync(path.join(outputDir, script.attributes.src ?? ''), 'utf8');
+      .map((script) => fs.readFileSync(path.join(outputDir, script.attributes.src ?? ''), 'utf8'));
 
-        // Ensure the bundle is valid
-        expect(jsBundle).toMatch('__BUNDLE_START_TIME__');
-        // Ensure the non-public env var is not included in the bundle
-        expect(jsBundle).not.toMatch('not-public-value');
-      });
+    // Ensure the bundle is valid
+    expect(jsBundles[0]).toMatch('__BUNDLE_START_TIME__');
+    for (const jsBundle of jsBundles) {
+      // Ensure the non-public env var is not included in the bundle
+      expect(jsBundle).not.toMatch('not-public-value');
+    }
   });
 
   it('static styles are injected', async () => {

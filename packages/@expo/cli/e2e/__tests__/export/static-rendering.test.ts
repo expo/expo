@@ -114,46 +114,54 @@ describe('exports static', () => {
     const files = findProjectFiles(outputDir);
 
     const mapFiles = files.filter((file) => file?.endsWith('.map'));
-    expect(mapFiles).toEqual([expect.stringMatching(/_expo\/static\/js\/web\/entry-.*\.map/)]);
+    expect(mapFiles).toEqual([
+      // The `workers` route has async imports, so the Metro runtime is a separate chunk.
+      expect.stringMatching(/_expo\/static\/js\/web\/__expo-metro-runtime-.*\.map/),
+      expect.stringMatching(/_expo\/static\/js\/web\/entry-.*\.map/),
+      // The `workers` route imports these modules asynchronously and starts a web worker.
+      expect.stringMatching(/_expo\/static\/js\/web\/other-.*\.map/),
+      expect.stringMatching(/_expo\/static\/js\/web\/worker-client-.*\.map/),
+      expect.stringMatching(/_expo\/static\/js\/web\/worker-one-.*\.map/),
+    ]);
 
-    for (const file of mapFiles) {
-      // Ensure the bundle does not contain a source map reference
-      const sourceMap = JSON.parse(fs.readFileSync(path.join(outputDir, file!), 'utf8'));
-      expect(sourceMap.version).toBe(3);
-      expect(sourceMap.sections).toEqual(
-        expect.arrayContaining([
-          expectSourceMapSection('__prelude__'),
-          // NOTE: No `/Users/evanbacon/`...
-          // NOTE(@kitten): We can slot in our own runtime here
-          expectSourceMapSection(
-            expect.pathMatching(
-              new RegExp(
-                [
-                  '/node_modules/metro-runtime/src/polyfills/require.js',
-                  '/@expo/cli/build/metro-require/require.js',
-                ].join('|')
-              )
+    const sections = mapFiles
+      .filter((file) => /\/(__expo-metro-runtime|entry)-/.test(file!))
+      .flatMap((file) => {
+        const sourceMap = JSON.parse(fs.readFileSync(path.join(outputDir, file!), 'utf8'));
+        expect(sourceMap.version).toBe(3);
+        return sourceMap.sections;
+      });
+    expect(sections).toEqual(
+      expect.arrayContaining([
+        expectSourceMapSection('__prelude__'),
+        // NOTE: No `/Users/evanbacon/`...
+        // NOTE(@kitten): We can slot in our own runtime here
+        expectSourceMapSection(
+          expect.pathMatching(
+            new RegExp(
+              [
+                '/node_modules/metro-runtime/src/polyfills/require.js',
+                '/@expo/cli/build/metro-require/require.js',
+              ].join('|')
             )
-          ),
+          )
+        ),
 
-          // NOTE: relative to the server root for optimal source map support
-          expectSourceMapSection(
-            expect.pathMatching(/\/apps\/server-tester\/app\/rendering\/\[post\]\.tsx/)
-          ),
-        ])
-      );
-    }
+        // NOTE: relative to the server root for optimal source map support
+        expectSourceMapSection(
+          expect.pathMatching(/\/apps\/server-tester\/app\/rendering\/\[post\]\.tsx/)
+        ),
+      ])
+    );
 
     const jsFiles = files.filter((file) => file?.endsWith('.js'));
 
     for (const file of jsFiles) {
       // Ensure the bundle does not contain a source map reference
       const jsBundle = fs.readFileSync(path.join(outputDir, file!), 'utf8');
-      expect(jsBundle).toMatch(
-        /^\/\/\# sourceMappingURL=\/_expo\/static\/js\/web\/entry-.*\.map$/gm
-      );
+      expect(jsBundle).toMatch(/^\/\/\# sourceMappingURL=\/_expo\/static\/js\/web\/.*\.js\.map$/gm);
       const mapFile = jsBundle.match(
-        /^\/\/\# sourceMappingURL=(\/_expo\/static\/js\/web\/entry-.*\.map)$/m
+        /^\/\/\# sourceMappingURL=(\/_expo\/static\/js\/web\/.*\.js\.map)$/m
       )?.[1];
 
       expect(fs.existsSync(path.join(outputDir, mapFile!))).toBe(true);
@@ -176,17 +184,17 @@ describe('exports static', () => {
     // non-public env vars are injected during SSG
     expect(queryMeta('expo-e2e-private-env-var-client')).toEqual('not-public-value');
 
-    indexHtml
+    const jsBundles = indexHtml
       .querySelectorAll('script')
       .filter((script) => !!script.attributes.src)
-      .forEach((script) => {
-        const jsBundle = fs.readFileSync(path.join(outputDir, script.attributes.src ?? ''), 'utf8');
+      .map((script) => fs.readFileSync(path.join(outputDir, script.attributes.src ?? ''), 'utf8'));
 
-        // Ensure the bundle is valid
-        expect(jsBundle).toMatch('__BUNDLE_START_TIME__');
-        // Ensure the non-public env var is not included in the bundle
-        expect(jsBundle).not.toMatch('not-public-value');
-      });
+    // Ensure the bundle is valid
+    expect(jsBundles[0]).toMatch('__BUNDLE_START_TIME__');
+    for (const jsBundle of jsBundles) {
+      // Ensure the non-public env var is not included in the bundle
+      expect(jsBundle).not.toMatch('not-public-value');
+    }
   });
 
   it('static styles are injected', async () => {

@@ -58,6 +58,8 @@ describe('static-rendering with a custom base path', () => {
       .map((script) => script.attributes.src)
       .filter((src): src is string => !!src);
     expect(jsFiles).toEqual([
+      // The `workers` route has async imports, so the Metro runtime is a separate chunk.
+      expect.stringMatching(/\/one\/two\/_expo\/static\/js\/web\/__expo-metro-runtime-.*\.js/),
       expect.stringMatching(/\/one\/two\/_expo\/static\/js\/web\/entry-.*\.js/),
     ]);
 

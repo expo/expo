@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import path from 'node:path';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
-import { getRouterE2ERoot } from '../../__tests__/utils';
+import { getServerTesterRoot } from '../../__tests__/utils';
 import { createExpoStart } from '../../utils/expo';
 import { mutateFile, openPageAndEagerlyLoadJS } from '../../utils/hmr';
 import { pageCollectErrors } from '../page';
@@ -10,21 +10,19 @@ import { pageCollectErrors } from '../page';
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
 
-const projectRoot = getRouterE2ERoot();
+const projectRoot = getServerTesterRoot();
 const testName = 'web-workers';
 const inputDir = 'dist-' + testName;
 
 test.describe(inputDir, () => {
   test.describe.configure({ mode: 'serial' });
-  const targetDirectory = path.join(projectRoot, `__e2e__/${testName}/app`);
-  const indexFile = path.join(targetDirectory, 'index.tsx');
+  const indexFile = path.join(projectRoot, 'app/workers/index.tsx');
 
   const expoStart = createExpoStart({
     cwd: projectRoot,
     env: {
       NODE_ENV: 'development',
-      EXPO_USE_STATIC: 'single',
-      E2E_ROUTER_SRC: testName,
+      E2E_ROUTER_WEB_OUTPUT: 'single',
       E2E_ROUTER_ASYNC: 'development',
       // Ensure CI is disabled otherwise the file watcher won't run.
       CI: '0',
@@ -58,7 +56,11 @@ test.describe(inputDir, () => {
   test('support HMR with web workers', async ({ page }) => {
     // Listen for console logs and errors
     const pageErrors = pageCollectErrors(page);
-    const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(expoStart, page);
+    const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(
+      expoStart,
+      page,
+      new URL('/workers', expoStart.url).href
+    );
 
     console.time('button');
     // Wait for the app to load
