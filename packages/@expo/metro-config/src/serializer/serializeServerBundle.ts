@@ -43,7 +43,10 @@ export async function serializeServerBundleAsync(
     }
   }
   if (bundle != null && typeof bundle === 'object' && 'artifacts' in bundle) {
-    assert(Array.isArray(bundle.artifacts), 'Expected an array of serializer artifacts.');
+    assert(
+      Array.isArray(bundle.artifacts),
+      'Serializer did not return expected format. Expected an array of serializer artifacts.'
+    );
     return bundle as { artifacts: SerialAsset[]; assets?: readonly AssetData[] };
   }
   assert(
@@ -54,7 +57,7 @@ export async function serializeServerBundleAsync(
         typeof bundle.code === 'string' &&
         'map' in bundle &&
         typeof bundle.map === 'string'),
-    'Expected serializer artifacts, JavaScript, or a { code, map } bundle.'
+    'Serializer did not return expected format. Expected serializer artifacts, JavaScript, or a { code, map } bundle.'
   );
   const singleBundle = bundle as string | { code: string; map: string };
   const serializerOptions = options.serializerOptions;
