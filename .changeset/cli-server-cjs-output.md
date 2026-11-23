@@ -1,5 +1,4 @@
 ---
-"@expo/metro-config": patch
 "@expo/cli": patch
 "@expo/router-server": patch
 ---
