@@ -169,6 +169,27 @@ export function reportSectionView(section: string) {
   }
 }
 
+export type WebMcpToolCallParams = {
+  webmcp_tool_name: string;
+  webmcp_outcome: 'success' | 'invalid_input' | 'not_found' | 'error' | 'cancelled';
+  webmcp_tool_page: string;
+};
+
+export function reportWebMcpToolCall(params: WebMcpToolCallParams) {
+  if (isAnalyticsConsented()) {
+    window?.gtag?.('event', 'webmcp_tool_call', params);
+    return;
+  }
+
+  if (getAnalyticsConsentStatus() === 'pending') {
+    enqueueAnalyticsEvent({
+      type: 'track',
+      args: ['webmcp_tool_call', params],
+      timestamp: Date.now(),
+    });
+  }
+}
+
 // Register the replay function so queued events are dispatched when consent is granted.
 setAnalyticsReplayFn((events: QueuedEvent[]) => {
   for (const event of events) {
@@ -216,6 +237,11 @@ setAnalyticsReplayFn((events: QueuedEvent[]) => {
       case 'home_section_view': {
         const params = data as Record<string, unknown>;
         window?.gtag?.('event', 'home_section_view', params);
+        break;
+      }
+      case 'webmcp_tool_call': {
+        const params = data as Record<string, unknown>;
+        window?.gtag?.('event', 'webmcp_tool_call', params);
         break;
       }
     }

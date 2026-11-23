@@ -1,4 +1,5 @@
 import {
+  getMarkdownFilePath,
   getVersionedMarkdownPath,
   hasDynamicData,
   normalizePath,
@@ -83,6 +84,19 @@ describe(getVersionedMarkdownPath, () => {
     expect(getVersionedMarkdownPath('/bare/upgrade/?fromSdk=57&toSdk=52')).toBeNull();
     expect(getVersionedMarkdownPath('/bare/upgrade/?fromSdk=52&toSdk=52')).toBeNull();
     expect(getVersionedMarkdownPath('/bare/upgrade/?fromSdk=unversioned&toSdk=57')).toBeNull();
+  });
+});
+
+describe(getMarkdownFilePath, () => {
+  it('maps page paths to the markdown file the build writes', () => {
+    expect(getMarkdownFilePath('/')).toBe('/index.md');
+    expect(getMarkdownFilePath('/get-started/create-a-project/#next-step')).toBe(
+      '/get-started/create-a-project/index.md'
+    );
+    expect(getMarkdownFilePath('/bare/upgrade/?fromSdk=52&toSdk=57')).toBe(
+      '/bare/upgrade/52-to-57/index.md'
+    );
+    expect(getMarkdownFilePath(undefined)).toBeNull();
   });
 });
 
