@@ -44,6 +44,7 @@ const server :Workerd.Worker = (
     (name = "_expo/loaders/loaders/nullish/[value].js", commonJsModule = embed "_expo/loaders/loaders/nullish/[value].js"),
     (name = "_expo/loaders/loaders/request.js", commonJsModule = embed "_expo/loaders/loaders/request.js"),
     (name = "_expo/loaders/loaders/response.js", commonJsModule = embed "_expo/loaders/loaders/response.js"),
+    (name = "_expo/loaders/loaders/json-helper.js", commonJsModule = embed "_expo/loaders/loaders/json-helper.js"),
     (name = "_expo/loaders/loaders/groups/(group)/index.js", commonJsModule = embed "_expo/loaders/loaders/groups/(group)/index.js"),
     (name = "_expo/loaders/loaders/groups/(group)/platform/[...slug].js", commonJsModule = embed "_expo/loaders/loaders/groups/(group)/platform/[...slug].js"),
     (name = "_expo/loaders/loaders/static-helper.js", commonJsModule = embed "_expo/loaders/loaders/static-helper.js"),
