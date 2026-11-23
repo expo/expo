@@ -32,19 +32,9 @@ public class MailComposerModule: Module {
 
     // This is important to retain the session until it finishes
     currentSession = session
+    defer { currentSession = nil }
 
-    return try await withCheckedThrowingContinuation { continuation in
-      // The session can report more than one result, but only the first one settles the call.
-      var continuation: CheckedContinuation<[String: String], Error>? = continuation
-
-      session.presentViewController { result in
-        continuation?.resume(with: result.mapError { $0 as Error })
-        continuation = nil
-
-        // Release the session so it can get deallocated
-        self.currentSession = nil
-      }
-    }
+    return try await session.present()
   }
 
   // Function to check the availability of listed mail clients on the device
