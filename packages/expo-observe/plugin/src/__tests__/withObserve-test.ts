@@ -1,4 +1,4 @@
-import type { AndroidConfig, ExportedConfig, Mod } from 'expo/config-plugins';
+import type { AndroidConfig, ExportedConfig, InfoPlist, Mod } from 'expo/config-plugins';
 
 import withObserve from '../withObserve';
 
@@ -31,10 +31,16 @@ async function evalModAsync<T>(
 // Runs the plugin on a fresh config, and returns the `Info.plist` and the consent `meta-data` items.
 async function applyAsync(
   props?: Parameters<typeof withObserve>[1],
-  metaData?: AndroidConfig.Manifest.ManifestMetaData[]
+  metaData?: AndroidConfig.Manifest.ManifestMetaData[],
+  initialInfoPlist: InfoPlist = {}
 ) {
   const config: ExportedConfig = withObserve({ name: 'test', slug: 'test' }, props);
-  const infoPlist = await evalModAsync(config, 'ios', config.mods?.ios?.infoPlist, {});
+  const infoPlist = await evalModAsync(
+    config,
+    'ios',
+    config.mods?.ios?.infoPlist,
+    initialInfoPlist
+  );
   const manifest = await evalModAsync(config, 'android', config.mods?.android?.manifest, {
     manifest: {
       $: { 'xmlns:android': 'http://schemas.android.com/apk/res/android' },
@@ -51,7 +57,7 @@ async function applyAsync(
 describe('withObserve', () => {
   it('writes the `consent` option to both native projects', async () => {
     const { infoPlist, consentItems } = await applyAsync({ consent: 'not-granted' });
-    expect(infoPlist.EXObserveConsent).toBe('not-granted');
+    expect(infoPlist.ExpoObserve).toEqual({ consent: 'not-granted' });
     expect(consentItems).toEqual([
       { $: { 'android:name': CONSENT_META_DATA, 'android:value': 'not-granted' } },
     ]);
@@ -59,7 +65,7 @@ describe('withObserve', () => {
 
   it.each([undefined, {}])('writes `granted` when the props are %p', async (props) => {
     const { infoPlist, consentItems } = await applyAsync(props);
-    expect(infoPlist.EXObserveConsent).toBe('granted');
+    expect(infoPlist.ExpoObserve).toEqual({ consent: 'granted' });
     expect(consentItems).toEqual([
       { $: { 'android:name': CONSENT_META_DATA, 'android:value': 'granted' } },
     ]);
@@ -72,6 +78,13 @@ describe('withObserve', () => {
     expect(consentItems).toEqual([
       { $: { 'android:name': CONSENT_META_DATA, 'android:value': 'granted' } },
     ]);
+  });
+
+  it('keeps the other `ExpoObserve` settings when it replaces the consent', async () => {
+    const { infoPlist } = await applyAsync({}, undefined, {
+      ExpoObserve: { consent: 'not-granted', other: 'value' },
+    });
+    expect(infoPlist.ExpoObserve).toEqual({ consent: 'granted', other: 'value' });
   });
 
   it.each(['denied', null, false, ''])('throws when `consent` is %p', (consent) => {

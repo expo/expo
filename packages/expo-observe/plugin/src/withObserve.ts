@@ -37,7 +37,12 @@ const withObserve: ConfigPlugin<Props | void> = (config, props) => {
   });
 
   return withInfoPlist(config, (config) => {
-    config.modResults.EXObserveConsent = consent;
+    // `ios.infoPlist` or an earlier prebuild can put other Observe settings in this dictionary.
+    const settings = config.modResults.ExpoObserve;
+    config.modResults.ExpoObserve = {
+      ...(typeof settings === 'object' && !Array.isArray(settings) ? settings : {}),
+      consent,
+    };
     return config;
   });
 };
