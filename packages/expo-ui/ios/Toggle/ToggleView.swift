@@ -3,24 +3,24 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class ToggleProps: UIBaseViewProps {
-  @Field var isOn: Bool?
-  @Field var label: String?
-  @Field var systemImage: String?
+open class ToggleProps: UIBaseViewProps {
+  @Field public var isOn: Bool?
+  @Field public var label: String?
+  @Field public var systemImage: String?
   var onIsOnChange = EventDispatcher()
 }
 
-internal struct ToggleView: ExpoSwiftUI.View {
-  @ObservedObject var props: ToggleProps
+public struct ToggleView: ExpoSwiftUI.View {
+  @ObservedObject public var props: ToggleProps
   // Only used when `isOn` isn't passed. While the prop is set it is the sole source of
   // truth, so JS stays in control of what the toggle shows and can refuse a change.
   @State private var uncontrolled = false
 
-  init(props: ToggleProps) {
+  public init(props: ToggleProps) {
     self.props = props
   }
 
-  var body: some View {
+  public var body: some View {
     makeToggle(isOn: Binding(
       get: { props.isOn ?? uncontrolled },
       set: { newValue in
