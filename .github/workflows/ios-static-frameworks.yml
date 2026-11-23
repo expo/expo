@@ -7,6 +7,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/ios-static-frameworks.yml
+      - apps/bare-expo/package.json
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
