@@ -399,7 +399,7 @@ describe('FetchResponse', () => {
       process.on('unhandledRejection', unhandled);
       try {
         await response.body!.cancel('not needed');
-        await new Promise((resolve) => setImmediate(resolve));
+        await new Promise((resolve) => setTimeout(resolve, 0));
       } finally {
         process.off('unhandledRejection', unhandled);
       }
