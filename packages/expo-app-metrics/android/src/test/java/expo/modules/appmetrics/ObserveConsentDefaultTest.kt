@@ -9,4 +9,9 @@ class ObserveConsentDefaultTest {
   fun `consent is not granted before load`() {
     assertFalse(ObserveConsent.isGranted)
   }
+
+  @Test
+  fun `consent is not loaded before load`() {
+    assertFalse(ObserveConsent.isLoaded)
+  }
 }

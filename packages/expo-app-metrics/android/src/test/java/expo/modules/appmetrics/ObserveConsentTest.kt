@@ -52,6 +52,7 @@ class ObserveConsentTest {
   fun `load reads the consent value from the manifest meta-data`() {
     setManifestConsent("granted")
     ObserveConsent.load(context)
+    assertTrue(ObserveConsent.isLoaded)
     assertTrue(ObserveConsent.isGranted)
 
     // Last, so the other tests still start without consent.

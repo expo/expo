@@ -235,6 +235,13 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       OnCreate {
+        if (!ObserveConsent.isLoaded) {
+          Log.w(
+            TAG,
+            "[AppMetrics] The Observe consent was not loaded, so Observe stays inactive. Call " +
+              "`ApplicationLifecycleDispatcher.onApplicationCreate(this)` in `Application.onCreate`."
+          )
+        }
         sessionManager = SessionManager(context)
 
         // The main session starts at the first startup metric's timestamp (the

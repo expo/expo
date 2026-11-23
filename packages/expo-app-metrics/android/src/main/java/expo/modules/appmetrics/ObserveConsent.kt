@@ -14,14 +14,20 @@ import java.util.concurrent.ConcurrentHashMap
  * nothing and Observe sends nothing.
  */
 object ObserveConsent {
-  // Not granted until the application start hook calls `load`, so nothing is collected if it never runs.
+  // Null until the application start hook calls `load`. Not granted while null, so nothing is
+  // collected if the hook never runs.
   @Volatile
-  var isGranted: Boolean = false
-    private set
+  private var granted: Boolean? = null
+
+  val isGranted: Boolean
+    get() = granted == true
+
+  val isLoaded: Boolean
+    get() = granted != null
 
   /** Reads the consent value that the `expo-observe` config plugin writes to the manifest. */
   fun load(context: Context) {
-    isGranted = resolve(readManifestConsent(context))
+    granted = resolve(readManifestConsent(context))
   }
 
   // Null when the manifest has no value. An empty string, which is an unknown value, when the
