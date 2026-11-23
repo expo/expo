@@ -56,6 +56,7 @@ import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -495,8 +496,11 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
     }
   }
 
-  /** Applies a consent change from `Observe.setConsent`. Changes run one at a time. */
-  suspend fun setConsent(granted: Boolean) =
+  /**
+   * Applies a consent change from `Observe.setConsent`. Changes run one at a time. A revoke runs
+   * `afterRevoke` after the gate closes, before the next change starts.
+   */
+  suspend fun setConsent(granted: Boolean, afterRevoke: suspend () -> Unit = {}) =
     consentMutex.withLock {
       val update = try {
         ObserveConsent.update(context, granted)
@@ -504,13 +508,27 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         // Only a first grant throws: it reads the exit records.
         throw ExitRecordsUnavailableException(e)
       }
-      if (update.changed && granted) {
-        // The launch insert did nothing without consent, so the session row is inserted now.
-        mainSession.awaitSessionPersisted()
-        sessionManager.startSessionWithIdAt(mainSession.sessionId, mainSession.startDate, metadata)
-        saveStartupMetrics()
-      } else if (update.changed) {
-        deleteStoredData(context)
+      try {
+        if (update.changed && granted) {
+          // The launch insert did nothing without consent, so the session row is inserted now.
+          mainSession.awaitSessionPersisted()
+          sessionManager.startSessionWithIdAt(mainSession.sessionId, mainSession.startDate, metadata)
+          saveStartupMetrics()
+        } else if (!granted) {
+          try {
+            if (update.changed) {
+              deleteStoredData(context)
+            }
+          } finally {
+            afterRevoke()
+          }
+        }
+      } catch (e: Exception) {
+        // A failed save matters more to the caller than a failed cleanup.
+        if (update.isSaved || e is CancellationException) {
+          throw e
+        }
+        throw ConsentNotSavedException(granted).apply { addSuppressed(e) }
       }
       if (!update.isSaved) {
         throw ConsentNotSavedException(granted)

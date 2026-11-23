@@ -60,9 +60,11 @@ class DeleteObserveDataTest {
     assertFalse(context.getDatabasePath(LEGACY_DATABASE_NAME).exists())
   }
 
-  // Closes the gate like the app metrics revoke, then fails with `error` when it is given.
-  private fun revoke(error: Exception? = null): suspend (Boolean) -> Unit = {
+  // Like the app metrics revoke: closes the gate, runs `afterRevoke` under the consent lock, then
+  // fails with `error` when it is given.
+  private fun revoke(error: Exception? = null): suspend (Boolean, suspend () -> Unit) -> Unit = { _, afterRevoke ->
     isGranted = false
+    afterRevoke()
     error?.let { throw it }
   }
 
@@ -71,7 +73,7 @@ class DeleteObserveDataTest {
     coEvery { ObservabilityBackgroundWorker.cancelBackgroundDispatch(any()) } throws error
   }
 
-  private suspend fun applyRevokeError(setAppMetricsConsent: suspend (Boolean) -> Unit): Throwable {
+  private suspend fun applyRevokeError(setAppMetricsConsent: suspend (Boolean, suspend () -> Unit) -> Unit): Throwable {
     try {
       applyConsent(context, ConsentValue.NOT_GRANTED, setAppMetricsConsent)
     } catch (e: Throwable) {
@@ -93,11 +95,21 @@ class DeleteObserveDataTest {
   }
 
   @Test
+  fun `a revoke deletes the data before the consent lock is released`() = runTest {
+    applyConsent(context, ConsentValue.NOT_GRANTED) { _, afterRevoke ->
+      isGranted = false
+      afterRevoke()
+      // A grant that waits for the lock cannot save its settings before this delete.
+      assertDataDeleted()
+    }
+  }
+
+  @Test
   fun `a revoke canceled before the gate closes deletes nothing`() = runTest {
     // Cancellation while the revoke waits for an earlier consent change.
     val canceled = CancellationException("canceled")
 
-    val error = applyRevokeError { throw canceled }
+    val error = applyRevokeError { _, _ -> throw canceled }
 
     assertSame(canceled, error)
     assertEquals(mapOf("lastDispatchedMetricId" to 5L, "lastDispatchedLogId" to 7L), savedSettings())

@@ -139,33 +139,33 @@ class ObserveModule : Module() {
 }
 
 /**
- * Applies `Observe.setConsent`. After a revoke closes the gate, deletes the Observe data, also when
- * the consent save failed. A failed consent save is reported before a failed delete.
+ * Applies `Observe.setConsent`. A revoke deletes the Observe data under the app metrics consent
+ * lock, after the gate closes, also when the consent save failed. A failed consent save is reported
+ * before a failed delete.
  */
 internal suspend fun applyConsent(
   context: Context,
   consent: ConsentValue,
-  setAppMetricsConsent: suspend (Boolean) -> Unit
+  setAppMetricsConsent: suspend (Boolean, suspend () -> Unit) -> Unit
 ) {
-  val consentError = try {
-    setAppMetricsConsent(consent == ConsentValue.GRANTED)
-    null
+  var deleteError: Exception? = null
+  try {
+    setAppMetricsConsent(consent == ConsentValue.GRANTED) {
+      try {
+        deleteObserveData(context)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        deleteError = e
+      }
+    }
   } catch (e: CancellationException) {
-    // Canceled while it waited for an earlier consent change, so the revoke did not apply.
     throw e
   } catch (e: Exception) {
-    e
+    deleteError?.let(e::addSuppressed)
+    throw e
   }
-  if (consent == ConsentValue.NOT_GRANTED && !ObserveConsent.isGranted) {
-    try {
-      deleteObserveData(context)
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      consentError?.addSuppressed(e) ?: throw e
-    }
-  }
-  consentError?.let { throw it }
+  deleteError?.let { throw it }
 }
 
 /** Deletes the Observe settings, the dispatch cursors among them, and the scheduled dispatch. */
