@@ -74,6 +74,7 @@ struct MetricsDatabaseTests {
       #expect(fetched.appName == row.appName)
       #expect(fetched.deviceModel == row.deviceModel)
       #expect(fetched.expoSdkVersion == row.expoSdkVersion)
+      #expect(fetched.processId == row.processId)
     }
   }
 
@@ -908,7 +909,8 @@ private func makeSessionRow(
     expoSdkVersion: "55.0.0",
     reactNativeVersion: "0.85.0",
     clientVersion: "0.1.0",
-    languageTag: "en-US"
+    languageTag: "en-US",
+    processId: 1234
   )
 }
 

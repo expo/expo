@@ -41,6 +41,10 @@ public struct SessionRow: Sendable {
 
   public let languageTag: String?
 
+  /// ID of the process the session ran in. MetricKit reports the process ID of a crash, so this is
+  /// how a crash finds its session.
+  public let processId: Int?
+
   public init(
     id: String,
     type: String,
@@ -63,7 +67,8 @@ public struct SessionRow: Sendable {
     expoSdkVersion: String? = nil,
     reactNativeVersion: String? = nil,
     clientVersion: String? = nil,
-    languageTag: String? = nil
+    languageTag: String? = nil,
+    processId: Int? = nil
   ) {
     self.id = id
     self.type = type
@@ -87,6 +92,7 @@ public struct SessionRow: Sendable {
     self.reactNativeVersion = reactNativeVersion
     self.clientVersion = clientVersion
     self.languageTag = languageTag
+    self.processId = processId
   }
 }
 
@@ -114,7 +120,8 @@ extension SessionRow {
       expoSdkVersion: row.string(at: 18),
       reactNativeVersion: row.string(at: 19),
       clientVersion: row.string(at: 20),
-      languageTag: row.string(at: 21)
+      languageTag: row.string(at: 21),
+      processId: row.int(at: 22)
     )
   }
 }
