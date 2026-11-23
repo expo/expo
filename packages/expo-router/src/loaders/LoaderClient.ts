@@ -1,188 +1,60 @@
-type LoaderFetcher = (path: string, requestInit: RequestInit) => Promise<unknown>;
-export type LoaderResult = { data: unknown } | { error: unknown };
-type LoaderSubscriber = (result: LoaderResult, isCurrentSource: boolean) => void;
-export type LoaderUnsubscribe = (onSourceTeardown?: () => void) => void;
+import type { LoaderFetcher, LoaderResult } from './types';
+import { fetchLoader } from './utils';
 
-interface LoaderSubscription {
-  callback: LoaderSubscriber;
-  committed: boolean;
-}
+export type { LoaderFetcher, LoaderResult } from './types';
 
-interface LoaderSource {
-  subscribers: Set<LoaderSubscription>;
-  controller: AbortController | null;
-  onTeardown?: () => void;
-}
-
-/**
- * Coordinates loader execution, deduplication, and source subscriptions.
- *
- * Suspense state belongs to the React integration layer; this client must not access or mutate
- * `LoaderSuspenseStore`.
- */
+/** Executes requests and delivers only the current request's result for each path. */
 export class LoaderClient {
-  private active = new Map<string, LoaderSource>();
-  private fetchers = new Map<string, LoaderFetcher>();
+  private requests = new Map<string, AbortController>();
 
-  subscribeLoader(
-    path: string,
-    callback: LoaderSubscriber = () => {},
-    { committed = false }: { committed?: boolean } = {}
-  ): LoaderUnsubscribe {
-    const source = this.getOrCreateSource(path);
-    const subscription = { callback, committed };
-    source.onTeardown = undefined;
-    source.subscribers.add(subscription);
+  constructor(private fetcher: LoaderFetcher = fetchLoader) {}
 
-    let subscribed = true;
-    return (onSourceTeardown) => {
-      if (!subscribed) {
-        return;
-      }
-      subscribed = false;
-      source.subscribers.delete(subscription);
-      if (source.subscribers.size === 0) {
-        this.scheduleTeardown(path, source, onSourceTeardown);
-      }
-    };
-  }
+  start(path: string, onSettle: (result: LoaderResult) => void) {
+    const previous = this.requests.get(path);
+    const request = new AbortController();
+    this.requests.set(path, request);
+    previous?.abort();
+    // An abort listener can synchronously install another replacement.
+    if (this.requests.get(path) !== request) return;
 
-  registerFetcher(path: string, fetcher: LoaderFetcher) {
-    this.fetchers.set(path, fetcher);
-  }
-
-  /** Aborts and detaches a source unless a committed reader still owns it. */
-  abort(path: string): boolean {
-    const source = this.active.get(path);
-    if (!source) {
-      return false;
-    }
-
-    const hasCommittedSubscription = [...source.subscribers].some(
-      (subscriber) => subscriber.committed
-    );
-    if (hasCommittedSubscription) {
-      return false;
-    }
-
-    // Detach before aborting because an abort listener may synchronously start replacement work.
-    this.active.delete(path);
-    source.onTeardown = undefined;
-    source.subscribers.clear();
-    this.abortSourceRequest(source);
-    return true;
-  }
-
-  execute(path: string, fetcher?: LoaderFetcher): void {
-    if (fetcher) {
-      this.fetchers.set(path, fetcher);
-    }
-    const source = this.active.get(path);
-    const fetcherFn = this.fetchers.get(path);
-    if (!source || !fetcherFn || source.controller) {
-      return;
-    }
-
-    const controller = new AbortController();
-    source.controller = controller;
-
-    let request: Promise<unknown>;
+    let promise: Promise<unknown>;
     try {
-      request = fetcherFn(path, { signal: controller.signal });
+      promise = this.fetcher(path, { signal: request.signal });
     } catch (error) {
-      request = Promise.reject(error);
+      promise = Promise.reject(error);
     }
-
-    request.then(
-      (data) => this.settle(path, source, controller, { data }),
+    promise.then(
+      (data) => this.settle(path, request, { data }, onSettle),
       (error) =>
-        this.settle(path, source, controller, {
-          error: new Error(`Failed to load loader data for route: ${path}`, {
-            cause: error,
-          }),
-        })
+        this.settle(
+          path,
+          request,
+          {
+            error: new Error(`Failed to load loader data for route: ${path}`, { cause: error }),
+          },
+          onSettle
+        )
     );
   }
 
-  revalidate(): ReadonlySet<string> {
-    const livePaths = new Set<string>();
-    for (const [path, source] of this.active) {
-      if (source.subscribers.size > 0) {
-        livePaths.add(path);
-        this.abortSourceRequest(source);
-        this.execute(path);
-      } else {
-        this.active.delete(path);
-        source.onTeardown = undefined;
-        source.subscribers.clear();
-        this.abortSourceRequest(source);
-      }
-    }
-    return livePaths;
+  isLoading(path: string) {
+    return this.requests.has(path);
   }
 
-  clear() {
-    const sources = [...this.active.values()];
-    this.active.clear();
-    this.fetchers.clear();
-    for (const source of sources) {
-      source.onTeardown = undefined;
-      source.subscribers.clear();
-      this.abortSourceRequest(source);
-    }
-  }
-
-  private getOrCreateSource(path: string): LoaderSource {
-    let source = this.active.get(path);
-    if (!source) {
-      source = {
-        subscribers: new Set(),
-        controller: null,
-      };
-      this.active.set(path, source);
-    }
-    return source;
-  }
-
-  private scheduleTeardown(path: string, source: LoaderSource, onSourceTeardown?: () => void) {
-    const onTeardown = () => {
-      if (
-        source.onTeardown === onTeardown &&
-        source.subscribers.size === 0 &&
-        this.active.get(path) === source
-      ) {
-        this.active.delete(path);
-        source.onTeardown = undefined;
-        this.abortSourceRequest(source);
-        onSourceTeardown?.();
-      }
-    };
-    source.onTeardown = onTeardown;
-    queueMicrotask(onTeardown);
-  }
-
-  private abortSourceRequest(source: LoaderSource) {
-    const controller = source.controller;
-    source.controller = null;
-    controller?.abort();
+  abort(path: string) {
+    const request = this.requests.get(path);
+    this.requests.delete(path);
+    request?.abort();
   }
 
   private settle(
     path: string,
-    source: LoaderSource,
-    controller: AbortController,
-    result: LoaderResult
+    request: AbortController,
+    result: LoaderResult,
+    onSettle: (result: LoaderResult) => void
   ) {
-    if (source.controller === controller) {
-      source.controller = null;
-    }
-    if (controller.signal.aborted) {
-      return;
-    }
-
-    const isCurrentSource = this.active.get(path) === source;
-    for (const { callback } of source.subscribers) {
-      callback(result, isCurrentSource);
-    }
+    if (this.requests.get(path) !== request) return;
+    this.requests.delete(path);
+    onSettle(result);
   }
 }

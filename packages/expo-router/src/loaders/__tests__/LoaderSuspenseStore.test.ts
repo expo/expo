@@ -1,76 +1,44 @@
 import { LoaderSuspenseStore } from '../LoaderSuspenseStore';
 
 describe(LoaderSuspenseStore, () => {
-  it('stores and returns data, error, and promise entries', () => {
+  it('keeps one wakeable through a refresh and writes its value before waking', async () => {
     const store = new LoaderSuspenseStore();
-    const error = new Error('boom');
-    const promise = Promise.resolve('v1');
+    const pending = store.suspend('/p');
+    expect(store.suspend('/p')).toBe(pending);
+    expect(store.seed('/p', 'late hydration')).toBe(false);
 
-    store.set('/data', { data: 'v1' });
-    store.set('/error', { error });
-    store.set('/pending', promise);
+    store.settle('/p', { data: 'fresh' });
+    await pending;
 
-    expect(store.get('/data')).toEqual({ data: 'v1' });
-    expect(store.get('/error')).toEqual({ error });
-    expect(store.get('/pending')).toBe(promise);
-    expect(store.get('/missing')).toBeUndefined();
+    expect(store.value('/p')).toEqual({ data: 'fresh' });
+    expect(store.pending('/p')).toBeUndefined();
   });
 
-  it('seeds a key idempotently without replacing an existing entry', () => {
+  it('clears its value and wakeable before waking released readers', async () => {
     const store = new LoaderSuspenseStore();
-    store.seed('/p', 'seed');
-    store.seed('/p', 'replacement');
+    store.seed('/p', 'old');
+    const pending = store.suspend('/p');
+    const observed = pending.then(() => {
+      expect(store.value('/p')).toBeUndefined();
+      expect(store.pending('/p')).toBeUndefined();
+    });
 
-    expect(store.get('/p')).toEqual({ data: 'seed' });
+    store.release('/p');
+    await observed;
   });
 
-  it('removes an entry on clear', () => {
+  it('does not repeat versions after releasing and recreating a path', () => {
     const store = new LoaderSuspenseStore();
-    store.set('/p', { data: 'v1' });
-    store.clear('/p');
+    store.seed('/p', 'old');
+    const original = store.version('/p');
+    store.release('/p');
+    const released = store.version('/p');
+    store.seed('/other', 'other');
+    const other = store.version('/other');
+    store.seed('/p', 'new');
 
-    expect(store.get('/p')).toBeUndefined();
-  });
-
-  it('removes entries only after both disposal and teardown', () => {
-    const store = new LoaderSuspenseStore();
-    store.set('/disposed', { data: 'disposed' });
-    store.set('/torn-down', { data: 'torn-down' });
-    store.set('/reclaimed', { data: 'reclaimed' });
-
-    store.dispose('/disposed');
-    store.teardown('/torn-down');
-    store.dispose('/reclaimed');
-    store.teardown('/reclaimed');
-
-    expect(store.get('/disposed')).toEqual({ data: 'disposed' });
-    expect(store.get('/torn-down')).toEqual({ data: 'torn-down' });
-    expect(store.get('/reclaimed')).toBeUndefined();
-  });
-
-  it('unmarks a disposed key when a new entry is set', () => {
-    const store = new LoaderSuspenseStore();
-    store.set('/p', { data: 'v1' });
-    store.dispose('/p');
-
-    store.set('/p', { data: 'v2' });
-    store.teardown('/p');
-
-    expect(store.get('/p')).toEqual({ data: 'v2' });
-  });
-
-  it('retains live entries and clears inactive entries', () => {
-    const store = new LoaderSuspenseStore();
-    store.set('/live', { data: 'fresh' });
-    store.set('/inactive', { data: 'stale' });
-    store.dispose('/inactive');
-
-    store.retain(new Set(['/live']));
-
-    expect(store.get('/live')).toEqual({ data: 'fresh' });
-    expect(store.get('/inactive')).toBeUndefined();
-    store.set('/inactive', { data: 'new' });
-    store.teardown('/inactive');
-    expect(store.get('/inactive')).toEqual({ data: 'new' });
+    expect(released).toBeGreaterThan(original);
+    expect(other).toBeGreaterThan(released);
+    expect(store.version('/p')).toBeGreaterThan(other);
   });
 });

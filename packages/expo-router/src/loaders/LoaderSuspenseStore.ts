@@ -1,55 +1,61 @@
-type SuspenseEntry = { data: unknown } | { error: unknown } | Promise<unknown>;
+import type { LoaderResult } from './types';
 
-/**
- * Stores pending and settled loader reads for React Suspense.
- *
- * Disposal marks an entry reclaimable, teardown confirms its removal, and a replacement written
- * between them cancels reclamation.
- */
+type Pending = { promise: Promise<void>; wake: () => void };
+type Entry = { value?: LoaderResult; pending?: Pending; version: number };
+
+/** Stores values and stable Suspense wakeables without deciding which routes retain them. */
 export class LoaderSuspenseStore {
-  private entries = new Map<string, SuspenseEntry>();
-  private reclaim = new Set<string>();
+  private entries = new Map<string, Entry>();
+  private revision = 0;
 
-  get<T = unknown>(key: string): { data: T } | { error: unknown } | Promise<T> | undefined {
-    return this.entries.get(key) as { data: T } | { error: unknown } | Promise<T> | undefined;
+  value(path: string) {
+    return this.entries.get(path)?.value;
   }
 
-  set(key: string, entry: SuspenseEntry) {
-    this.reclaim.delete(key);
-    this.entries.set(key, entry);
+  version(path: string) {
+    return this.entries.get(path)?.version ?? 0;
   }
 
-  seed(key: string, data: unknown) {
-    if (!this.entries.has(key)) {
-      this.set(key, { data });
+  pending(path: string) {
+    return this.entries.get(path)?.pending?.promise;
+  }
+
+  suspend(path: string): Promise<void> {
+    const entry: Entry = this.entries.get(path) ?? { version: 0 };
+    if (!entry.pending) {
+      let wake!: () => void;
+      const promise = new Promise<void>((resolve) => (wake = resolve));
+      entry.pending = { promise, wake };
+      entry.version = ++this.revision;
+      this.entries.set(path, entry);
+    }
+    return entry.pending.promise;
+  }
+
+  seed(path: string, data: unknown): boolean {
+    const entry = this.entries.get(path);
+    if (entry?.value || entry?.pending) return false;
+    this.entries.set(path, { value: { data }, version: ++this.revision });
+    return true;
+  }
+
+  settle(path: string, result: LoaderResult) {
+    const pending = this.entries.get(path)?.pending;
+    this.entries.set(path, { value: result, version: ++this.revision });
+    pending?.wake();
+  }
+
+  evict(path: string, expected: LoaderResult) {
+    const entry = this.entries.get(path);
+    if (entry?.value === expected) {
+      entry.value = undefined;
+      entry.version = ++this.revision;
     }
   }
 
-  clear(key: string) {
-    this.reclaim.delete(key);
-    this.entries.delete(key);
-  }
-
-  dispose(key: string) {
-    this.reclaim.add(key);
-  }
-
-  teardown(key: string) {
-    if (this.reclaim.delete(key)) {
-      this.entries.delete(key);
-    }
-  }
-
-  retain(livePaths: ReadonlySet<string>) {
-    for (const path of this.entries.keys()) {
-      if (!livePaths.has(path)) {
-        this.clear(path);
-      }
-    }
-  }
-
-  reset() {
-    this.entries.clear();
-    this.reclaim.clear();
+  release(path: string) {
+    const pending = this.entries.get(path)?.pending;
+    this.entries.set(path, { version: ++this.revision });
+    pending?.wake();
   }
 }
