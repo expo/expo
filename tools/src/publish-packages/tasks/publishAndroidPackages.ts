@@ -154,7 +154,13 @@ export const publishAndroidArtifacts = new Task<TaskArgs>(
     // Run Gradle tasks in one batch to speed up the process.
     await spawnAsync(
       './gradlew',
-      [...gradleTasks, '--no-build-cache', '--no-configuration-cache'],
+      [
+        ...gradleTasks,
+        '--no-build-cache',
+        '--no-configuration-cache',
+        // Overrides a narrower `reactNativeArchitectures` in ~/.gradle/gradle.properties.
+        '-PreactNativeArchitectures=armeabi-v7a,arm64-v8a,x86,x86_64',
+      ],
       {
         cwd: path.join(EXPO_DIR, 'apps/bare-expo/android'),
         stdio: 'inherit',
