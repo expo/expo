@@ -400,9 +400,12 @@ async function sendFeedbackAsync(
       url: toSiteUrl(path).pathname,
     }),
   });
-  const result = (await response.json()) as { errors?: unknown[] };
-  if (!response.ok || result.errors) {
-    throw new Error(`Feedback was not sent: ${JSON.stringify(result.errors ?? response.status)}.`);
+  if (!response.ok) {
+    throw new Error(`Feedback was not sent (HTTP ${response.status}).`);
+  }
+  const { errors } = (await response.json()) as { errors?: unknown[] };
+  if (errors) {
+    throw new Error(`Feedback was not sent: ${JSON.stringify(errors)}.`);
   }
   return 'Feedback sent to the Expo documentation team.';
 }

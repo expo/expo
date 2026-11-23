@@ -159,6 +159,20 @@ describe(WebMcpTools, () => {
     });
   });
 
+  it('reports the HTTP status when the feedback service returns a page that is not JSON', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 502,
+      text: async () => '<html>Bad Gateway</html>',
+      json: async () => JSON.parse('<html>Bad Gateway</html>'),
+    });
+    const { tools } = renderTools();
+
+    await expect(tools.send_feedback.execute({ feedback: 'Typo' }, { signal })).resolves.toBe(
+      'Error: Feedback was not sent (HTTP 502).'
+    );
+  });
+
   it('accepts full docs.expo.dev links and keeps them on the current site', async () => {
     responses.set('https://api.expo.dev/v2/feedback/docs-send', {});
     const { tools } = renderTools();
