@@ -69,3 +69,9 @@ EAS CLI follows these rules when it creates the project archive:
 EAS CLI shows a warning when the project archive is larger than 150 MiB. It stops with an error when the project archive is larger than 2 GiB. The error message is "Project archive is too big. Maximum allowed size is 2.0 GB." To make the project archive smaller, exclude files with [.easignore](/build-reference/easignore/).
 
 To see the files that EAS CLI uploads for your project, follow the steps in [Check which files EAS CLI uploads](/build-reference/easignore/#check-which-files-eas-cli-uploads).
+
+## How long Expo keeps the project archive
+
+Expo Build uses the project archive only to run your build. After the build, Expo deletes the project archive. You cannot download or recover it, and Expo does not keep another copy of your source code. Keep your own backup of your project, such as in a Git repository with a remote.
+
+The **Project archive content** section on the build details page lists the files in the project archive. This list is build metadata. It does not contain the files.
