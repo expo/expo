@@ -260,8 +260,6 @@ PODS:
     - React-RCTFabric
   - ExpoVideo (58.0.12):
     - ExpoModulesCore
-  - ExpoVideoThumbnails (58.0.2):
-    - ExpoModulesCore
   - ExpoWebBrowser (58.0.6):
     - ExpoModulesCore
   - EXStructuredHeaders (58.0.1)
@@ -4646,7 +4644,6 @@ DEPENDENCIES:
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
   - ExpoUI (from `../../../packages/expo-ui/ios`)
   - ExpoVideo (from `../../../packages/expo-video/ios`)
-  - ExpoVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
   - EXUpdates (from `../../../packages/expo-updates/ios`)
@@ -4959,8 +4956,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-ui/ios"
   ExpoVideo:
     :path: "../../../packages/expo-video/ios"
-  ExpoVideoThumbnails:
-    :path: "../../../packages/expo-video-thumbnails/ios"
   ExpoWebBrowser:
     :path: "../../../packages/expo-web-browser/ios"
   EXStructuredHeaders:
@@ -5254,7 +5249,6 @@ SPEC CHECKSUMS:
   ExpoTrackingTransparency: 8092242760ec865a6b2995fb6b3ab1c905b45eb0
   ExpoUI: ee7843da6bf0b16255f3f5c5de69c3cd4f956cd6
   ExpoVideo: dcfa5764e56e73c9eb1cf54c7c218967280701b7
-  ExpoVideoThumbnails: 62430fc61f4d73da425acf4ba351a0fdf144b529
   ExpoWebBrowser: dca6b04fee3f7a2bca26c9534a010badef0db355
   EXStructuredHeaders: d38b81fb2ff838c15bf28135deb247e76293d2b9
   EXUpdates: 3cc9aa7ad7b3278ac43596af88d470ab6e84f9fa

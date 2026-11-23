@@ -459,10 +459,10 @@ describe('check-spm-manifest-collateral', () => {
     assert.equal(comparedManifests(result), 3);
   });
 
-  it('fails when a baseline product disappears', () => {
+  it('fails when a baseline product disappears from a package that still exists', () => {
     const { root, baseCommit } = fixtureRepo({
       editHead: (packages) => {
-        delete packages['fixture-leaf'];
+        packages['fixture-leaf'] = [];
       },
     });
     const result = runGate(root, baseCommit);
@@ -471,6 +471,37 @@ describe('check-spm-manifest-collateral', () => {
     assert.match(
       output(result),
       /Baseline SwiftPM products disappeared: fixture-leaf\/FixtureLeaf/
+    );
+  });
+
+  it('reports a product removed with its whole package, and compares the others', () => {
+    const { root, baseCommit } = fixtureRepo({
+      editHead: (packages) => {
+        delete packages['fixture-leaf'];
+      },
+    });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 0, output(result));
+    assert.match(
+      result.stdout,
+      /INFO: SwiftPM products removed with their package \(not compared\): fixture-leaf\/FixtureLeaf/
+    );
+    assert.equal(comparedManifests(result), 2);
+  });
+
+  it('fails when a removed package leaves a dependent product behind', () => {
+    const { root, baseCommit } = fixtureRepo({
+      editHead: (packages) => {
+        delete packages['fixture-core'];
+      },
+    });
+    const result = runGate(root, baseCommit);
+
+    assert.notEqual(result.status, 0, output(result));
+    assert.match(
+      output(result),
+      /\[fixture-consumer\/FixtureConsumer\] Could not find xcframework for external dependency fixture-core\/FixtureCore/
     );
   });
 

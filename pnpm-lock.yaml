@@ -767,9 +767,6 @@ importers:
       expo-video:
         specifier: workspace:*
         version: link:../../packages/expo-video
-      expo-video-thumbnails:
-        specifier: workspace:*
-        version: link:../../packages/expo-video-thumbnails
       expo-web-browser:
         specifier: workspace:*
         version: link:../../packages/expo-web-browser
@@ -1196,9 +1193,6 @@ importers:
       expo-video:
         specifier: workspace:*
         version: link:../../packages/expo-video
-      expo-video-thumbnails:
-        specifier: workspace:*
-        version: link:../../packages/expo-video-thumbnails
       expo-web-browser:
         specifier: workspace:*
         version: link:../../packages/expo-web-browser
@@ -6598,15 +6592,6 @@ importers:
       jest-expo:
         specifier: workspace:*
         version: link:../jest-expo
-
-  packages/expo-video-thumbnails:
-    devDependencies:
-      '@expo/internal-scripts':
-        specifier: workspace:*
-        version: link:../@expo/internal-scripts
-      expo:
-        specifier: workspace:*
-        version: link:../expo
 
   packages/expo-web-browser:
     dependencies:

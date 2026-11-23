@@ -25,7 +25,6 @@
 'expo-status-bar': patch
 'expo-store-review': patch
 'expo-symbols': patch
-'expo-video-thumbnails': patch
 'expo-web-browser': patch
 ---
 

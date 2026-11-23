@@ -116,7 +116,6 @@
     "expo-tracking-transparency": "workspace:*",
     "expo-updates": "workspace:*",
     "expo-video": "workspace:*",
-    "expo-video-thumbnails": "workspace:*",
     "expo-web-browser": "workspace:*",
     "fbemitter": "^2.1.1",
     "fuse.js": "^6.4.6",

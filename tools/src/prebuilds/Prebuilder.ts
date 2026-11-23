@@ -67,7 +67,6 @@ export const PACKAGES_TO_PREBUILD = [
   // 'expo-structured-headers',
   // 'expo-task-manager',
   // 'expo-updates',
-  // 'expo-video-thumbnails',
   // 'expo-web-browser',
   // 'unimodules-app-loader',
 ];

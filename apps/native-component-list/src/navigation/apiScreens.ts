@@ -565,12 +565,6 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/VideoThumbnailsScreen'));
-    },
-    name: 'Video Thumbnails',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/ViewShotScreen'));
     },
     name: 'ViewShot',
