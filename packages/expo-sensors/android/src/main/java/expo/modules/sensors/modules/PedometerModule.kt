@@ -2,28 +2,17 @@
 package expo.modules.sensors.modules
 
 import android.Manifest
-import android.app.PendingIntent
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.hardware.Sensor
 import android.os.Build
 import android.os.Bundle
-import android.os.SystemClock
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.gms.tasks.Task
 import com.google.android.gms.fitness.FitnessLocal
 import com.google.android.gms.fitness.LocalRecordingClient
 import com.google.android.gms.fitness.data.LocalDataType
 import com.google.android.gms.fitness.data.LocalField
 import com.google.android.gms.fitness.request.LocalDataReadRequest
-import com.google.android.gms.location.ActivityRecognition
-import com.google.android.gms.location.ActivityTransition
-import com.google.android.gms.location.ActivityTransitionRequest
-import com.google.android.gms.location.ActivityTransitionResult
-import com.google.android.gms.location.DetectedActivity
+import com.google.android.gms.tasks.Task
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
@@ -34,36 +23,31 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.sensors.UseSensorProxy
 import expo.modules.sensors.createSensorProxy
 import java.util.concurrent.TimeUnit
-import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 
 private const val EventName = "Exponent.pedometerUpdate"
-private const val EventNameEvent = "Exponent.pedometerEvent"
-private const val TransitionAction = "expo.modules.sensors.PEDOMETER_TRANSITION"
 private const val TaskTimeoutSeconds = 30L
 
 class NotSupportedException(message: String) : CodedException(message)
 
-class TaskCancelledException(operationName: String) : CodedException(
+class TaskCancelledException : CodedException(
   "TASK_CANCELLED",
-  "The pedometer operation was cancelled while attempting to $operationName.",
+  "Google Play services cancelled the pedometer Recording API request. Try again.",
   null
 )
-class TaskTimeoutException(operationName: String) : CodedException(
+class TaskTimeoutException : CodedException(
   "TASK_TIMEOUT",
-  "Google Play services did not respond within $TaskTimeoutSeconds seconds while attempting to $operationName. " +
+  "Google Play services did not respond to the pedometer Recording API request within $TaskTimeoutSeconds seconds. " +
     "Check that Google Play services is up to date on the device, then try again.",
   null
 )
-class TaskFailedException(operationName: String, cause: Throwable) : CodedException(
+class TaskFailedException(cause: Throwable?) : CodedException(
   "TASK_FAILED",
-  "The pedometer operation failed while attempting to $operationName.",
+  "The pedometer Recording API request to Google Play services failed.",
   cause
 )
 class ReadDataFailedException(statusCode: Int, statusMessage: String?) : CodedException(
@@ -85,14 +69,8 @@ class PedometerModule : Module() {
     }
   }
 
-  private var transitionPendingIntent: PendingIntent? = null
-  private var transitionsReceiver: BroadcastReceiver? = null
-  private var isEventUpdatesActive = false
-  private val eventUpdatesMutex = Mutex()
-
   override fun definition() = ModuleDefinition {
     val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-    val activityRecognitionClient = ActivityRecognition.getClient(context)
 
     fun isRecordingAvailable(): Boolean {
       return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
@@ -101,157 +79,14 @@ class PedometerModule : Module() {
       ) == ConnectionResult.SUCCESS
     }
 
-    suspend fun <T> awaitTask(task: Task<T>, operationName: String): T {
-      try {
-        return withTimeout(TimeUnit.SECONDS.toMillis(TaskTimeoutSeconds)) {
-          suspendCancellableCoroutine { continuation ->
-            task.addOnSuccessListener { continuation.resume(it) }
-            task.addOnFailureListener { continuation.resumeWithException(it) }
-            task.addOnCanceledListener { continuation.cancel() }
-          }
-        }
-      } catch (e: TimeoutCancellationException) {
-        throw TaskTimeoutException(operationName)
-      } catch (e: CancellationException) {
-        if (task.isCanceled) {
-          throw TaskCancelledException(operationName)
-        }
-        throw e
-      } catch (e: SecurityException) {
-        throw Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
-      } catch (e: Exception) {
-        throw TaskFailedException(operationName, e)
-      }
-    }
-
-    fun ensureTransitionPendingIntent(): PendingIntent {
-      transitionPendingIntent?.let { return it }
-
-      val intent = Intent(TransitionAction).setPackage(context.packageName)
-      val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-      } else {
-        PendingIntent.FLAG_UPDATE_CURRENT
-      }
-
-      val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, flags)
-      transitionPendingIntent = pendingIntent
-      return pendingIntent
-    }
-
-    fun unregisterTransitionsReceiver() {
-      transitionsReceiver?.let {
-        try {
-          context.unregisterReceiver(it)
-        } catch (_: IllegalArgumentException) {
-          // Receiver already unregistered.
-        }
-      }
-      transitionsReceiver = null
-    }
-
-    fun ensureTransitionsReceiver(): Boolean {
-      if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) != ConnectionResult.SUCCESS) {
-        return false
-      }
-
-      if (transitionsReceiver != null) {
-        return true
-      }
-
-      val receiver = object : BroadcastReceiver() {
-        // A change from walking to running is an exit and an enter, but the user did not stop.
-        // Send an event only when the user changes between moving and not moving.
-        private val activeActivityTypes = mutableSetOf<Int>()
-        private var isMoving: Boolean? = null
-
-        override fun onReceive(context: Context?, intent: Intent?) {
-          if (intent == null) {
-            return
-          }
-          if (!ActivityTransitionResult.hasResult(intent)) {
-            return
-          }
-
-          val result = ActivityTransitionResult.extractResult(intent) ?: return
-          val events = result.transitionEvents
-            .filter { it.activityType == DetectedActivity.WALKING || it.activityType == DetectedActivity.RUNNING }
-            .sortedBy { it.elapsedRealTimeNanos }
-          if (events.isEmpty()) {
-            return
-          }
-
-          for (event in events) {
-            if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
-              activeActivityTypes.add(event.activityType)
-            } else {
-              activeActivityTypes.remove(event.activityType)
-            }
-          }
-
-          val isMovingNow = activeActivityTypes.isNotEmpty()
-          if (isMovingNow == isMoving) {
-            return
-          }
-          isMoving = isMovingNow
-
-          val (type, transitionType) = if (isMovingNow) {
-            "resume" to ActivityTransition.ACTIVITY_TRANSITION_ENTER
-          } else {
-            "pause" to ActivityTransition.ACTIVITY_TRANSITION_EXIT
-          }
-          val event = events.lastOrNull { it.transitionType == transitionType } ?: events.last()
-
-          val elapsedNow = SystemClock.elapsedRealtimeNanos()
-          val eventAgeNanos = elapsedNow - event.elapsedRealTimeNanos
-          val eventTimestamp = System.currentTimeMillis() - TimeUnit.NANOSECONDS.toMillis(eventAgeNanos)
-
-          val bundle = Bundle().apply {
-            putString("type", type)
-            putDouble("date", eventTimestamp.toDouble())
-          }
-
-          sendEvent(EventNameEvent, bundle)
-        }
-      }
-
-      transitionsReceiver = receiver
-      val intentFilter = IntentFilter(TransitionAction)
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        context.registerReceiver(receiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
-      } else {
-        @Suppress("DEPRECATION")
-        context.registerReceiver(receiver, intentFilter)
-      }
-
-      return true
-    }
-
-    fun stopActivityTransitionUpdates() {
-      val pendingIntent = transitionPendingIntent
-      if (pendingIntent != null) {
-        if (isEventUpdatesActive) {
-          activityRecognitionClient.removeActivityTransitionUpdates(pendingIntent)
-        } else {
-          pendingIntent.cancel()
-        }
-      }
-
-      isEventUpdatesActive = false
-      transitionPendingIntent = null
-      unregisterTransitionsReceiver()
-    }
-
     Name("ExponentPedometer")
 
     UseSensorProxy(
       this@PedometerModule,
       Sensor.TYPE_STEP_COUNTER,
       EventName,
-      listenerDecorator = { stepsAtTheBeginning = null },
-      onModuleDestroy = { stopActivityTransitionUpdates() }
+      listenerDecorator = { stepsAtTheBeginning = null }
     ) { sensorProxy }
-    Events(EventName, EventNameEvent)
 
     AsyncFunction("getPermissionsAsync") { promise: Promise ->
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -275,86 +110,20 @@ class PedometerModule : Module() {
       isRecordingAvailable()
     }
 
-    AsyncFunction("isEventTrackingAvailableAsync") {
-      GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
-    }
-
-    AsyncFunction("startEventUpdatesAsync") Coroutine { ->
-      eventUpdatesMutex.withLock {
-        if (isEventUpdatesActive) {
-          return@withLock true
-        }
-
-        if (!ensureTransitionsReceiver()) {
-          return@withLock false
-        }
-
-        val pendingIntent = ensureTransitionPendingIntent()
-
-        val transitions = listOf(
-          ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.WALKING)
-            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-            .build(),
-          ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.WALKING)
-            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
-            .build(),
-          ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.RUNNING)
-            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-            .build(),
-          ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.RUNNING)
-            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
-            .build()
-        )
-
-        val request = ActivityTransitionRequest(transitions)
-
-        try {
-          awaitTask(
-            activityRecognitionClient.requestActivityTransitionUpdates(request, pendingIntent),
-            "start event updates"
-          )
-        } catch (e: CodedException) {
-          stopActivityTransitionUpdates()
-          throw e
-        }
-
-        isEventUpdatesActive = true
-        true
-      }
-    }
-
-    AsyncFunction("stopEventUpdatesAsync") Coroutine { ->
-      eventUpdatesMutex.withLock {
-        stopActivityTransitionUpdates()
-      }
-    }
-
     AsyncFunction("subscribeRecordingAsync") Coroutine { ->
       if (!isRecordingAvailable()) {
         throw NotSupportedException("Pedometer Recording API is not available on this device.")
       }
 
       val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
-      awaitTask(
-        localRecordingClient.subscribe(LocalDataType.TYPE_STEP_COUNT_DELTA),
-        "subscribe to recording updates"
-      )
-      Unit
+      localRecordingClient.subscribe(LocalDataType.TYPE_STEP_COUNT_DELTA).await()
     }
 
     AsyncFunction("unsubscribeRecordingAsync") Coroutine { ->
       if (isRecordingAvailable()) {
         val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
-        awaitTask(
-          localRecordingClient.unsubscribe(LocalDataType.TYPE_STEP_COUNT_DELTA),
-          "unsubscribe from recording updates"
-        )
+        localRecordingClient.unsubscribe(LocalDataType.TYPE_STEP_COUNT_DELTA).await()
       }
-      Unit
     }
 
     AsyncFunction("getStepCountAsync") Coroutine { startTime: Long, endTime: Long ->
@@ -374,10 +143,7 @@ class PedometerModule : Module() {
         .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
         .build()
 
-      val response = awaitTask(
-        localRecordingClient.readData(readRequest),
-        "read recorded step data"
-      )
+      val response = localRecordingClient.readData(readRequest).await()
 
       if (!response.status.isSuccess) {
         throw ReadDataFailedException(response.status.statusCode, response.status.statusMessage)
@@ -390,5 +156,26 @@ class PedometerModule : Module() {
 
       mapOf("steps" to sum.toLong())
     }
+  }
+}
+
+private suspend fun <T> Task<T>.await(): T {
+  try {
+    return withTimeout(TimeUnit.SECONDS.toMillis(TaskTimeoutSeconds)) {
+      suspendCancellableCoroutine { continuation ->
+        addOnCompleteListener { task ->
+          when {
+            task.isSuccessful -> continuation.resume(task.result)
+            task.isCanceled -> continuation.resumeWithException(TaskCancelledException())
+            task.exception is SecurityException -> continuation.resumeWithException(
+              Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
+            )
+            else -> continuation.resumeWithException(TaskFailedException(task.exception))
+          }
+        }
+      }
+    }
+  } catch (e: TimeoutCancellationException) {
+    throw TaskTimeoutException()
   }
 }

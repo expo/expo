@@ -17,32 +17,6 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 > **Note:** iOS keeps collecting step history automatically (up to seven days). On Android, step history requires Google Play Services Recording API support and an active `subscribeRecordingAsync()` subscription. Unsubscribing makes previously collected history inaccessible, and Android retains up to 10 days since the latest subscription. The subscription helpers (`subscribeRecordingAsync()` / `unsubscribeRecordingAsync()`) are no-ops on iOS.
 
-### Pause and resume events
-
-You can listen for pedometer pause/resume events:
-
-> **Note:** Event delivery is best-effort and generally only while the app is running. On Android, events are derived from walking/running activity transitions.
-
-```tsx
-import { Pedometer } from 'expo-sensors';
-
-const subscription = Pedometer.watchEventUpdates(event => {
-  console.log(`Pedometer ${event.type} at`, new Date(event.date));
-});
-
-const isAvailable = await Pedometer.isEventTrackingAvailableAsync();
-if (!isAvailable) {
-  subscription.remove();
-  console.log('Pedometer events are not available on this device.');
-} else {
-  await Pedometer.startEventUpdatesAsync();
-}
-
-// Later, to stop listening:
-subscription.remove();
-await Pedometer.stopEventUpdatesAsync();
-```
-
 ## Installation
 
 <APIInstallSection />
