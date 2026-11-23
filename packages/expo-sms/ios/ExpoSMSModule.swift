@@ -4,15 +4,10 @@ import MessageUI
 import MobileCoreServices
 import UniformTypeIdentifiers
 
-struct ExpoSMSContext {
-  let continuation: CheckedContinuation<[String: String], Error>
-  let smsDelegate: SMSDelegate
-}
-
 @ExpoModule("ExpoSMS")
-public class ExpoSMSModule: Module, SMSResultHandler {
+public class ExpoSMSModule: Module {
   @MainActor
-  private var smsContext: ExpoSMSContext?
+  private var currentDelegate: SMSDelegate?
 
   @JS
   @MainActor
@@ -27,14 +22,11 @@ public class ExpoSMSModule: Module, SMSResultHandler {
       throw SMSUnavailableException()
     }
 
-    if smsContext != nil {
+    if currentDelegate != nil {
       throw SMSPendingException()
     }
 
-    let smsDelegate = SMSDelegate(handler: self)
-
     let messageComposeViewController = MFMessageComposeViewController()
-    messageComposeViewController.messageComposeDelegate = smsDelegate
     messageComposeViewController.recipients = addresses
     messageComposeViewController.body = message
 
@@ -69,29 +61,13 @@ public class ExpoSMSModule: Module, SMSResultHandler {
       }
     }
 
-    return try await withCheckedThrowingContinuation { continuation in
-      smsContext = ExpoSMSContext(continuation: continuation, smsDelegate: smsDelegate)
-      appContext?.utilities?.currentViewController()?.present(messageComposeViewController, animated: true, completion: nil)
+    guard let presenter = appContext?.utilities?.currentViewController() else {
+      throw SMSMissingViewControllerException()
     }
-  }
 
-  @MainActor
-  func onSuccess(_ data: [String: String]) {
-    guard let continuation = smsContext?.continuation else {
-      log.error("SMS context has been lost")
-      return
-    }
-    smsContext = nil
-    continuation.resume(returning: data)
-  }
-
-  @MainActor
-  func onFailure(_ error: String) {
-    guard let continuation = smsContext?.continuation else {
-      log.error("SMS context has been lost")
-      return
-    }
-    smsContext = nil
-    continuation.resume(throwing: SMSSendingException(error))
+    let smsDelegate = SMSDelegate()
+    currentDelegate = smsDelegate
+    defer { currentDelegate = nil }
+    return try await smsDelegate.present(messageComposeViewController, from: presenter)
   }
 }
