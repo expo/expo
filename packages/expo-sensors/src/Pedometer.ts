@@ -58,7 +58,7 @@ export function watchStepCount(callback: PedometerUpdateCallback): EventSubscrip
 
 /**
  * Listen for pedometer pause/resume events emitted by the underlying platform.
- * Call [`startEventUpdatesAsync`](#starteventupdatesasync) to begin receiving events.
+ * Call [`startEventUpdatesAsync`](#pedometerstarteventupdatesasync) to begin receiving events.
  *
  * > Event delivery is best-effort and generally only while the app is running.
  * > Do not rely on it while the app is in the background or terminated.
