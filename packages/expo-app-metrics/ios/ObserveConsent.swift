@@ -46,8 +46,15 @@ public enum ObserveConsent {
   /// config plugin writes.
   private static let gate = OSAllocatedUnfairLock<Gate?>(initialState: nil)
 
+  #if !os(tvOS)
+  // A file, because its read tells a missing value from one that cannot be read before the first
+  // unlock. On tvOS this directory is in Caches, which the system can purge.
   private static let savedValueUrl = try? MetricsDatabase.defaultDirectoryUrl()
     .appendingPathComponent("observe-consent")
+  #endif
+
+  // The tvOS store. Not in a settings suite, because a revoke deletes those suites.
+  static let savedValueKey = "dev.expo.app-metrics.observe-consent"
 
   public static var isGranted: Bool {
     return state == .granted
@@ -65,17 +72,28 @@ public enum ObserveConsent {
   }
 
   private static func resolveState() -> State {
+    #if os(tvOS)
+    let savedState = readSavedState(from: .standard)
+    #else
     guard let savedValueUrl else {
       return .unknown
     }
+    let savedState = readSavedState(at: savedValueUrl)
+    #endif
     let settings = Bundle.main.object(forInfoDictionaryKey: "ExpoObserve")
-    return readSavedState(at: savedValueUrl) ?? (isGranted(settings: settings) ? .granted : .notGranted)
+    return savedState ?? (isGranted(settings: settings) ? .granted : .notGranted)
   }
 
   /// Saves the value and changes the gate. When the save fails, a revoke still closes the gate,
   /// but a grant changes nothing: the next launch would read the earlier value.
   static func update(granted: Bool) -> (changed: Bool, isSaved: Bool) {
+    #if os(tvOS)
+    save(granted: granted, to: .standard)
+    // `UserDefaults` cannot report a failed save.
+    let isSaved = true
+    #else
     let isSaved = savedValueUrl.map { save(granted: granted, to: $0) } ?? false
+    #endif
     _ = state
     let changed = ConsentGatedDefaults.transitionLock.withLock {
       gate.withLock { gate in
@@ -115,6 +133,14 @@ public enum ObserveConsent {
       logger.warn("[AppMetrics] Failed to save the Observe consent: \(error.localizedDescription)")
       return false
     }
+  }
+
+  static func readSavedState(from defaults: UserDefaults) -> State? {
+    return defaults.string(forKey: savedValueKey).map { $0 == "granted" ? .granted : .notGranted }
+  }
+
+  static func save(granted: Bool, to defaults: UserDefaults) {
+    defaults.set(granted ? "granted" : "not-granted", forKey: savedValueKey)
   }
 
   /// Consent from the `consent` key of the `ExpoObserve` dictionary in `Info.plist`. Granted when the

@@ -217,6 +217,45 @@ struct ObserveConsentSavedValueTests {
   }
 }
 
+@Suite("ObserveConsent value in UserDefaults", .serialized)
+struct ObserveConsentUserDefaultsTests {
+  private let suiteName = "dev.expo.app-metrics.tests.observe-consent"
+
+  init() {
+    UserDefaults.standard.removePersistentDomain(forName: suiteName)
+  }
+
+  @Test
+  func `no saved value falls back to the app config`() throws {
+    let defaults = try #require(UserDefaults(suiteName: suiteName))
+
+    #expect(ObserveConsent.readSavedState(from: defaults) == nil)
+  }
+
+  @Test
+  func `the saved value round-trips`() throws {
+    let defaults = try #require(UserDefaults(suiteName: suiteName))
+
+    ObserveConsent.save(granted: false, to: defaults)
+    #expect(ObserveConsent.readSavedState(from: defaults) == .notGranted)
+
+    ObserveConsent.save(granted: true, to: defaults)
+    #expect(ObserveConsent.readSavedState(from: defaults) == .granted)
+  }
+
+  @Test
+  func `a saved revoke survives the deletion of the settings`() {
+    defer {
+      UserDefaults.standard.removeObject(forKey: ObserveConsent.savedValueKey)
+    }
+    ObserveConsent.save(granted: false, to: .standard)
+
+    AppMetricsUserDefaults.deleteStoredSettings()
+
+    #expect(ObserveConsent.readSavedState(from: .standard) == .notGranted)
+  }
+}
+
 @Suite("ObserveConsent.Gate")
 struct ObserveConsentGateTests {
   // Applies each value in order and returns whether each call changed the gate.
