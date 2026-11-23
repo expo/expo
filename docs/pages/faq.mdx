@@ -146,6 +146,15 @@ Expo Go cannot use third-party libraries that require custom native code and you
 
 **We strongly recommend using [development builds](/develop/development-builds/introduction/) for any real project. It's like creating a version of Expo Go that is specifically customized to your app's needs.**
 
+## Are Snacks public, and can I delete one?
+
+All [Snacks](https://snack.expo.dev/) are public. Anyone with the link to a Snack can open it and see its code, so do not put secrets or private code in a Snack. Snack pages tell search engines not to index them.
+
+- **Saved Snacks**: To delete a Snack that you saved to your account, open **Snacks** in your account dashboard and select **Delete**. This removes the Snack from your list, but its link continues to work.
+- **Anonymous Snacks**: A Snack that you create without signing in has a random URL. It stops loading 30 days after you create it.
+
+Expo cannot remove Snacks on request.
+
 ## Is ejecting deprecated?
 
 > **warning** **This concept is deprecated.** The `expo eject` command was removed in SDK 46. Expo now uses [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/). To access or customize native code, run [`npx expo prebuild`](/workflow/continuous-native-generation/#usage) to generate native directories, then modify them directly or use [config plugins](/config-plugins/introduction/).
