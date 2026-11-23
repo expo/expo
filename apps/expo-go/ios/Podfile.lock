@@ -92,7 +92,7 @@ PODS:
     - ExpoModulesCore
   - ExpoFont (57.0.4):
     - ExpoModulesCore
-  - ExpoGL (57.0.3):
+  - ExpoGL (57.0.4):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ReactCommon/turbomodule/core
@@ -229,7 +229,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (57.0.3):
     - ExpoModulesCore
-  - ExpoSQLite (57.0.5):
+  - ExpoSQLite (57.0.6):
     - ExpoModulesCore
   - ExpoStoreReview (57.0.3):
     - ExpoModulesCore
@@ -4605,7 +4605,7 @@ SPEC CHECKSUMS:
   ExpoDomWebView: beaec034e51bd028428b98bb1f2633ab79c6d095
   ExpoFileSystem: 28778f942725170102f7c6cf4dee05a526ddacd0
   ExpoFont: f8198a952ba2ff53c9b393b5269ea435f232cfc3
-  ExpoGL: db98e2e356cb6bc3b4770e40ccc87706046f37c3
+  ExpoGL: 259bf4b939d56383535e6274c708a17dc269aa5d
   ExpoGlassEffect: 8eb4bd2743a1de43d46bea44b7ddeaf956803b9a
   ExpoHaptics: 32efd02d88953d30a5c2ff796c0fce692e7bcd2e
   ExpoImage: abe60c6c68d08d837b2c51fb9e8b6c6e320b9125
@@ -4638,7 +4638,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 082c55b5fa86485659ef51d3dd21d5bbf4d8af16
   ExpoSMS: 241fbd0ed18edac737edcf232ae1e008ee24bcce
   ExpoSpeech: ab83f97ede99c65a23fd4c228122deadc430de01
-  ExpoSQLite: adaed954dfb79969c59491800d1e0058e23b3756
+  ExpoSQLite: 6f2326998cc4386548c9e713e01eda5aefc1b425
   ExpoStoreReview: a70a18f8ec77262d6c63a6578ce4de3b3ee8ddf0
   ExpoSymbols: 37a3a6e5847edb08b83a5ee04d3b46525e205f00
   ExpoSystemUI: 05ee8d4aaba1b6af330f3621e19b39ff9f21e718
@@ -4666,7 +4666,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: 961f18167d062fd9ab72d4a63784200b131ecc6c
+  hermes-engine: 023df75f480d5c230c69e805b330af947c2ee98d
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: af5937a13536ef73f3784d69cc342b98961acf33

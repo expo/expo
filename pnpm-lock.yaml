@@ -5115,7 +5115,7 @@ importers:
   packages/expo-processing:
     dependencies:
       expo-gl:
-        specifier: workspace:~57.0.3
+        specifier: workspace:~57.0.4
         version: link:../expo-gl
       processing-js:
         specifier: ^1.6.6
