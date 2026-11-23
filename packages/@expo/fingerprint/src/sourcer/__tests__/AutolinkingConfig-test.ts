@@ -86,6 +86,18 @@ describe('normalizeAutolinkingConfig', () => {
     `);
   });
 
+  it('should sort android packages and component descriptors by code point', () => {
+    const config = {
+      packages: ['com.example.b.BPackage', 'com.example.a.APackage'],
+      componentDescriptors: ['HeaderViewComponentDescriptor', 'ChartViewComponentDescriptor'],
+    };
+
+    expect(normalizeAutolinkingConfig(config, { stripPaths: false, roots })).toEqual({
+      packages: ['com.example.a.APackage', 'com.example.b.BPackage'],
+      componentDescriptors: ['ChartViewComponentDescriptor', 'HeaderViewComponentDescriptor'],
+    });
+  });
+
   it('should not sort scriptPhases', () => {
     const config = {
       modules: [

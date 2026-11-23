@@ -195,11 +195,6 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    */
   internal private(set) lazy var coreModule = CoreModule(appContext: self)
 
-  /**
-   The module holder for the core module.
-   */
-  internal private(set) lazy var coreModuleHolder = ModuleHolder(appContext: self, module: coreModule, name: nil)
-
   internal var converter: MainValueConverter {
     // MainValueConverter is ~Copyable so it can't be stored in a lazy var (which uses Optional internally).
     // This is zero-cost at runtime — the struct contains only an unowned pointer to self, so constructing
@@ -651,16 +646,11 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     // the main runtime runs the app context's `destroy()`.
     installer.installAppContextNativeState(on: coreObject, ownsLifecycle: isMainRuntime)
 
-    if isMainRuntime {
-      // The members of the `definition()` DSL are built in the main runtime only.
-      try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
-    }
-
-    // Bind the `@JS` members of the core module, such as `installOnUIRuntime`.
+    // Bind the `@JS` members of the core module.
     try coreModule._decorateModule(object: coreObject, in: runtime)
 
     // Install `global.expo.EventEmitter`.
-    installer.installEventEmitterClass()
+    try EventEmitterMethods.installClass(on: coreObject, in: runtime)
 
     // Install `global.expo.SharedObject`.
     installer.installSharedObjectClass() { [weak sharedObjectRegistry] objectId in
@@ -681,8 +671,6 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
     // Install `global.expo.SharedObject.__resolveInWorklet`.
     try installSharedObjectResolver(in: runtime, isMainRuntime: isMainRuntime)
-
-    try installSharedObjectEventMethods(in: runtime)
   }
 
   /**
@@ -749,17 +737,6 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       ?? (try self.runtime).createBaseSharedObject(isSharedRef: nativeType is AnySharedRef.Type)
     sharedObjectRegistry.add(native: native, javaScript: jsObject, inheritsBaseClass: true, in: runtime)
     return jsObject
-  }
-
-  /// Defines the event emitter methods of shared objects, which keep the listeners of the main runtime in the Swift
-  /// native state of the shared object, and the listeners of another runtime in the cache of that runtime.
-  @JavaScriptActor
-  private func installSharedObjectEventMethods(in runtime: JavaScriptRuntime) throws {
-    let prototype = try runtime.global()
-      .getPropertyAsObject(globalCoreObjectPropertyName)
-      .getPropertyAsObject("SharedObject")
-      .getPropertyAsObject("prototype")
-    try EventEmitterMethods.install(on: prototype, in: runtime)
   }
 
   /// Returns the JS object of the shared object in the given runtime, a runtime other than the main runtime, and

@@ -703,6 +703,7 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
       '/versions/unversioned/sdk/router/native-tabs/#nativetabstriggericonprops',
     NativeTabsTriggerLabelProps:
       '/versions/unversioned/sdk/router/native-tabs/#nativetabstriggerlabelprops',
+    PedometerEventCallback: '/versions/unversioned/sdk/pedometer/#pedometereventcallbackevent',
     RouterActionReducer:
       '/versions/unversioned/sdk/router/#routeractionreducerstate-action-context',
     RouterExtension: '/versions/unversioned/sdk/router/#routerextensioncontext',

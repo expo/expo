@@ -159,15 +159,22 @@ function createChoices(
 export async function selectTemplatesAsync(projectRoot: string, props: DestinationResolutionProps) {
   const options = createChoices(projectRoot, props);
 
-  const { answer } = await prompt({
-    type: 'multiselect',
-    name: 'answer',
-    message: 'Which files would you like to generate?',
-    hint: '- Space to select. Return to submit',
-    warn: 'File already exists.',
-    limit: options.length,
-    instructions: '',
-    choices: options,
-  });
+  const { answer } = await prompt(
+    {
+      type: 'multiselect',
+      name: 'answer',
+      message: 'Which files would you like to generate?',
+      hint: '- Space to select. Return to submit',
+      warn: 'File already exists.',
+      limit: options.length,
+      instructions: '',
+      choices: options,
+    },
+    {
+      nonInteractiveHelp: `files: arguments must be provided in non-interactive mode. Valid choices are: ${options
+        .map((option) => option.title)
+        .join(', ')}`,
+    }
+  );
   return answer;
 }

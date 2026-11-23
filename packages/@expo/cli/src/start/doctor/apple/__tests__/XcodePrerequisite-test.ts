@@ -8,6 +8,7 @@ import { getXcodeVersionAsync, XcodePrerequisite } from '../XcodePrerequisite';
 jest.mock('@expo/spawn-async');
 jest.mock(`../../../../log`);
 jest.mock('../../../../utils/prompts');
+jest.mock('../../../../utils/interactive', () => ({ isInteractive: () => false }));
 
 function mockXcodeInstalled() {
   return jest.mocked(spawnAsync).mockResolvedValueOnce({
@@ -106,10 +107,13 @@ for (const platform of ['darwin', 'win32']) {
 
         await expect(XcodePrerequisite.instance.assertImplementation()).rejects.toThrow();
 
-        expect(confirmAsync).toHaveBeenLastCalledWith({
-          initial: true,
-          message: expect.stringMatching(promptRegex),
-        });
+        expect(confirmAsync).toHaveBeenLastCalledWith(
+          {
+            initial: true,
+            message: expect.stringMatching(promptRegex),
+          },
+          expect.anything()
+        );
         // Opens the app store...
         expect(execSync).toHaveBeenLastCalledWith(
           platform === 'darwin'
@@ -121,3 +125,19 @@ for (const platform of ['darwin', 'win32']) {
     }
   });
 }
+
+it(`names the next step in non-interactive mode`, async () => {
+  mockPlatform('darwin');
+  jest.mocked(spawnAsync).mockResolvedValueOnce({
+    stdout: `Xcode 1.0
+  Build version 13A1030d`,
+  } as unknown as SpawnResult);
+  jest
+    .mocked(confirmAsync)
+    .mockReset()
+    .mockImplementationOnce(jest.requireActual('../../../../utils/prompts').confirmAsync);
+
+  await expect(XcodePrerequisite.instance.assertImplementation()).rejects.toThrow(
+    'Install or update Xcode from the App Store and try again.'
+  );
+});

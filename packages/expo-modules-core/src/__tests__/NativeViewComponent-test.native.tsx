@@ -23,6 +23,18 @@ describe('createNativeViewComponent', () => {
     expect((globalThis.expo as any).__createNativeViewComponent).toBe(createNativeViewComponent);
   });
 
+  it(`returns the same component for the same component name`, () => {
+    // Native calls the factory again when `import * as` copies the lazy getter of a view to another object.
+    expect(
+      createNativeViewComponent(
+        'ViewManagerAdapter_ExpoTestCards_CardView',
+        'CardView',
+        { title: true },
+        {}
+      )
+    ).toBe(CardView);
+  });
+
   it(`renders the host component with the props unchanged`, async () => {
     const style = { flex: 1 };
     const { container } = await render(<CardView title="Card" style={style} />);
@@ -86,6 +98,30 @@ describe('createNativeViewComponent', () => {
       create: createAttributePayload,
     } = require('react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload');
     expect(createAttributePayload({ image }, validAttributes).image).toBe(image);
+  });
+
+  it(`sends a new shared object of the same class to native`, () => {
+    const getViewConfig = jest.spyOn(NativeComponentRegistry, 'get');
+    createNativeViewComponent(
+      'ViewManagerAdapter_ExpoTestCards_PlayerView',
+      'PlayerView',
+      { player: true },
+      {}
+    );
+    const { validAttributes } = getViewConfig.mock.calls.at(-1)![1]();
+    getViewConfig.mockRestore();
+
+    const player = new SharedObject();
+    const nextPlayer = new SharedObject();
+
+    // The renderer builds the props that native gets on an update with this function.
+    const {
+      diff: diffAttributePayload,
+    } = require('react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload');
+    expect(diffAttributePayload({ player }, { player: nextPlayer }, validAttributes)).toEqual({
+      player: nextPlayer,
+    });
+    expect(diffAttributePayload({ player }, { player }, validAttributes)).toBeNull();
   });
 
   it(`is returned by requireNativeViewManager when the module has it`, () => {

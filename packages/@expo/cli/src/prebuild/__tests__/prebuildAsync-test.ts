@@ -6,6 +6,7 @@ import { clearNativeFolder, getExistingNativePlatformsAsync } from '../clearNati
 import { configureProjectAsync } from '../configureProjectAsync';
 import { prebuildAsync } from '../prebuildAsync';
 import { setupSwiftPMAsync } from '../setupSwiftPM';
+import { updateFromTemplateAsync } from '../updateFromTemplate';
 
 jest.mock('@expo/config', () => ({
   ...jest.requireActual('@expo/config'),
@@ -13,6 +14,7 @@ jest.mock('@expo/config', () => ({
 }));
 jest.mock('@expo/inline-modules', () => ({ updateXcodeProject: jest.fn() }));
 jest.mock('../../log');
+jest.mock('../../utils/interactive', () => ({ isInteractive: () => false }));
 jest.mock('../clearNativeFolder', () => ({
   clearNativeFolder: jest.fn(),
   getExistingNativePlatformsAsync: jest.fn(async () => []),
@@ -234,4 +236,18 @@ describe('Swift Package Manager', () => {
       expect(setupSwiftPMAsync).not.toHaveBeenCalled();
     });
   });
+});
+
+it('names the --no-install flag in non-interactive mode', async () => {
+  jest.mocked(getConfig).mockReturnValue({ exp: {} } as unknown as ReturnType<typeof getConfig>);
+  jest.mocked(updateFromTemplateAsync).mockResolvedValueOnce({
+    hasNewProjectFiles: true,
+    needsPodInstall: false,
+    templateChecksum: 'checksum',
+    changedDependencies: ['react', 'react-native'],
+  } as Awaited<ReturnType<typeof updateFromTemplateAsync>>);
+
+  await expect(prebuildAsync('/app', { platforms: ['android'], install: true })).rejects.toThrow(
+    '--no-install: flag must be provided in non-interactive mode.'
+  );
 });

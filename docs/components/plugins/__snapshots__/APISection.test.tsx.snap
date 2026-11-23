@@ -9310,7 +9310,7 @@ Unsubscribing will also reset the historical data that was collected.
                 >
                   <a
                     class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                    href="#pedometereventcallback"
+                    href="/versions/unversioned/sdk/pedometer#pedometereventcallbackevent"
                   >
                     PedometerEventCallback
                   </a>
@@ -9333,7 +9333,7 @@ Unsubscribing will also reset the historical data that was collected.
 Call 
         <a
           class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-          href="#starteventupdatesasync"
+          href="#pedometerstarteventupdatesasync"
         >
           <code
             class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"

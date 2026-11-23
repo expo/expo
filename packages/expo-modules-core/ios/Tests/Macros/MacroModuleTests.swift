@@ -36,6 +36,11 @@ private final class MacroGreeter: Module, @unchecked Sendable {
   @JS
   var nickname: String = ""
 
+  @JS(.cached)
+  var cachedNickname: String {
+    return nickname
+  }
+
   // A `Record` argument and return.
   @JS
   func repeated(options: MacroOptions) -> MacroOptions {
@@ -243,6 +248,27 @@ private struct MacroModuleTests {
       expo.modules.MacroGreeter.nickname
       """)
     #expect(try value.asString() == "Ada")
+  }
+
+  @Test
+  func `stores the first value of a @JS(.cached) property on the module object`() throws {
+    register(MacroGreeter(appContext: appContext))
+    let value = try runtime.eval(
+      """
+      (() => {
+        const module = expo.modules.MacroGreeter
+        module.nickname = 'Ada'
+        const first = module.cachedNickname
+        module.nickname = 'Grace'
+        const descriptor = Object.getOwnPropertyDescriptor(module, 'cachedNickname')
+        return [first, module.cachedNickname, descriptor.value, descriptor.writable]
+      })()
+      """)
+    let result = try value.asArray()
+    #expect(try result[0].asString() == "Ada")
+    #expect(try result[1].asString() == "Ada")
+    #expect(try result[2].asString() == "Ada")
+    #expect(try result[3].asBool() == false)
   }
 
   // MARK: - Async functions

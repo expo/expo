@@ -599,19 +599,73 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   /// property only. Before the first read, the property is always configurable, so the getter can replace it,
   /// and it has no setter, so an assignment fails.
   ///
-  /// The getter defines the value on the object that the property is read from (`this`), because capturing
-  /// the object would keep it alive. When `factory` throws, the property stays lazy and the next read calls
-  /// `factory` again. When the object doesn't accept the new property, for example when it's frozen,
-  /// each read calls `factory`.
+  /// `factory` gets the object that the property is read from (`this`), which isn't this object when the read
+  /// goes through the prototype chain, for example when this object is the prototype of a class and the read is
+  /// on an instance. The getter defines the value on `this` too, so each object that inherits the property gets
+  /// its own value, and the getter doesn't capture this object, which would keep it alive. When `this` isn't an
+  /// object, the read returns the value and defines nothing. When `factory` throws, the property stays lazy and
+  /// the next read calls `factory` again. When `this` doesn't accept the new property, for example when it's
+  /// frozen, each read calls `factory`.
   @JavaScriptActor
   public func defineLazyProperty<T: JavaScriptEncodable & ~Copyable>(
     _ name: String,
     options: PropertyOptions = [.configurable, .enumerable],
-    factory: sending @escaping @JavaScriptActor (_ runtime: borrowing JavaScriptRuntime) throws -> T
+    factory:
+      sending @escaping @JavaScriptActor (
+        _ this: borrowing JavaScriptUnownedValue,
+        _ runtime: borrowing JavaScriptRuntime
+      ) throws -> T
   ) {
     guard let runtime else {
       FatalError.runtimeLost()
     }
+    let descriptor = Self.lazyPropertyDescriptor(.name(name), options: options, factory: factory, in: runtime)
+    defineProperty(name, descriptor: descriptor)
+  }
+
+  /// Defines a property under a symbol, such as `Symbol.iterator` or `Symbol.for("app.id")`, whose value is
+  /// created on the first read. It works like ``defineLazyProperty(_:options:factory:)``.
+  ///
+  /// - Throws: An error when the runtime can't get the symbol, for example a well-known symbol that the engine
+  ///   doesn't define. The object stays unchanged.
+  @JavaScriptActor
+  public func defineLazyProperty<T: JavaScriptEncodable & ~Copyable>(
+    symbol: JavaScriptSymbol.Shared,
+    options: PropertyOptions = [.configurable, .enumerable],
+    factory:
+      sending @escaping @JavaScriptActor (
+        _ this: borrowing JavaScriptUnownedValue,
+        _ runtime: borrowing JavaScriptRuntime
+      ) throws -> T
+  ) throws {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    let key = try JavaScriptSymbol(runtime, symbol)
+    let descriptor = Self.lazyPropertyDescriptor(.symbol(symbol), options: options, factory: factory, in: runtime)
+    defineProperty(key, descriptor: descriptor)
+  }
+
+  /// The key under which a lazy getter defines the data property. The getter gets a symbol key again from its
+  /// ``JavaScriptSymbol/Shared`` value, so the getter, which the runtime owns, keeps no engine value.
+  private enum LazyPropertyKey {
+    case name(String)
+    case symbol(JavaScriptSymbol.Shared)
+  }
+
+  /// Creates the accessor descriptor of a lazy property: a getter that calls `factory` and defines the data
+  /// property under `key` on `this`.
+  @JavaScriptActor
+  private static func lazyPropertyDescriptor<T: JavaScriptEncodable & ~Copyable>(
+    _ key: LazyPropertyKey,
+    options: PropertyOptions,
+    factory:
+      sending @escaping @JavaScriptActor (
+        _ this: borrowing JavaScriptUnownedValue,
+        _ runtime: borrowing JavaScriptRuntime
+      ) throws -> T,
+    in runtime: JavaScriptRuntime
+  ) -> JavaScriptObject {
     // The getter has no name: a name costs about 90 ns for each property, and the first read replaces
     // the getter.
     let getter = runtime.createHostFunction(nil) {
@@ -621,7 +675,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
         result: borrowing JavaScriptValue.Slot,
         runtime: borrowing JavaScriptRuntime
       ) in
-      let value = try T.encode(factory(runtime), in: runtime)
+      let value = try T.encode(factory(this, runtime), in: runtime)
       if this.isObject() {
         let descriptor = PropertyDescriptor(
           configurable: options.contains(.configurable),
@@ -629,7 +683,13 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
           writable: options.contains(.writable),
           value: value.copy()
         )
-        this.getObject(in: runtime).defineProperty(name, descriptor: descriptor)
+        let object = this.getObject(in: runtime)
+        switch key {
+        case .name(let name):
+          object.defineProperty(name, descriptor: descriptor)
+        case .symbol(let symbol):
+          object.defineProperty(try JavaScriptSymbol(runtime, symbol), descriptor: descriptor)
+        }
       }
       result.emplace(value)
     }
@@ -638,7 +698,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     descriptor.setProperty(keys.getKey, value: getter.takeValue())
     descriptor.setProperty(keys.configurableKey, value: JavaScriptValue(runtime, true))
     descriptor.setProperty(keys.enumerableKey, value: JavaScriptValue(runtime, options.contains(.enumerable)))
-    defineProperty(name, descriptor: descriptor)
+    return descriptor
   }
 
   // MARK: - Properties with symbol keys
@@ -864,12 +924,22 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   /// Sets the internal native state property of this object, overwriting any old value.
   /// Creates a new shared_ptr to the object managed by state, which will live until the value at this property becomes unreachable.
-  /// - TODO: throw a type error if this object is a proxy or host object.
+  /// The engine refuses a frozen object, a Proxy and a host object. Use ``trySetNativeState(_:)`` for an object
+  /// that can be one of those.
   public func setNativeState<T: JavaScriptNativeState>(_ nativeState: T) {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     expo.setNativeState(jsiRuntime, self.pointee, nativeState.acquireShared())
+  }
+
+  /// Sets the native state of this object, like ``setNativeState(_:)``. Returns `false` when the engine doesn't
+  /// allow it, for example when the object is frozen, a Proxy or a host object; the object then stays unchanged.
+  public func trySetNativeState<T: JavaScriptNativeState>(_ nativeState: T) -> Bool {
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    return expo.trySetNativeState(jsiRuntime, self.pointee, nativeState.acquireShared())
   }
 
   /// Sets the native state of this object only while its underlying C++ native state is alive, that is, while
@@ -930,9 +1000,15 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   /// accessed, enumerated, or modified.
   ///
   /// - SeeAlso: `PropertyDescriptor` for more fine-grained control over property definitions
+  @frozen
   public struct PropertyOptions: OptionSet, Sendable {
     public let rawValue: Int
 
+    // `@frozen` with an inlinable initializer, so a client module specializes an options literal such as
+    // `[.configurable, .enumerable]`. The options stay stored `static let`s, so the module keeps exporting the
+    // symbols that modules built against an earlier version use.
+
+    @inlinable
     public init(rawValue: Int) {
       self.rawValue = rawValue
     }

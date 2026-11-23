@@ -2,12 +2,15 @@
 
 import ExpoModulesCore
 
+@ExpoModule("EASClient")
 public class EASClientModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("EASClient")
+  @JS(.cached)
+  var clientID: String {
+    return EASClientID.uuid().uuidString
+  }
 
-    Constant("clientID") { EASClientID.uuid().uuidString }
-
-    Constant("deterministicUniformValue") { EASClientID.deterministicUniformValue(EASClientID.uuid()) }
+  @JS(.cached)
+  var deterministicUniformValue: Double {
+    return EASClientID.deterministicUniformValue(EASClientID.uuid())
   }
 }

@@ -135,6 +135,25 @@ export function reportHomeClick(params: HomeClickParams) {
   }
 }
 
+type DocsClickParams = HomeClickParams & {
+  page_location: string;
+};
+
+export function reportDocsClick(params: DocsClickParams) {
+  if (isAnalyticsConsented()) {
+    window?.gtag?.('event', 'eas_docs_click', params);
+    return;
+  }
+
+  if (getAnalyticsConsentStatus() === 'pending') {
+    enqueueAnalyticsEvent({
+      type: 'track',
+      args: ['eas_docs_click', params],
+      timestamp: Date.now(),
+    });
+  }
+}
+
 export function reportSectionView(section: string) {
   if (isAnalyticsConsented()) {
     window?.gtag?.('event', 'home_section_view', { section });
@@ -187,6 +206,11 @@ setAnalyticsReplayFn((events: QueuedEvent[]) => {
       case 'home_click': {
         const params = data as Record<string, unknown>;
         window?.gtag?.('event', 'home_click', params);
+        break;
+      }
+      case 'eas_docs_click': {
+        const params = data as Record<string, unknown>;
+        window?.gtag?.('event', 'eas_docs_click', params);
         break;
       }
       case 'home_section_view': {

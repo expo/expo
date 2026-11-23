@@ -15,6 +15,7 @@ export type JasmineResult = {
   description: string;
   fullName: string;
   status: string;
+  pendingReason?: string;
   failedExpectations: { matcherName?: string; message: string }[];
 };
 

@@ -165,6 +165,7 @@ exceptions:
   - '.*Link component.*'
   - '.*Linking.*'
   - '.*Linux.*'
+  - '.*LiveKit.*'
   - '.*MCP*'
   - '.*Mac Catalyst.*'
   - '.*Material Symbols.*'

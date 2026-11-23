@@ -3,6 +3,7 @@ import { vol } from 'memfs';
 
 import { Log } from '../../../log';
 import rnFixture from '../../../prebuild/__tests__/fixtures/react-native-project';
+import { stripAnsi } from '../../../utils/ansi';
 import { copyAsync, removeAsync } from '../../../utils/dir';
 import { isInteractive } from '../../../utils/interactive';
 import { loadEnvFiles } from '../../../utils/nodeEnv.js';
@@ -69,10 +70,12 @@ afterEach(() => {
 });
 
 const output = () =>
-  jest
-    .mocked(Log.log)
-    .mock.calls.map(([message]) => message)
-    .join('');
+  stripAnsi(
+    jest
+      .mocked(Log.log)
+      .mock.calls.map(([message]) => message)
+      .join('')
+  );
 
 it('documents itself without touching the project', async () => {
   await expoCompileIos(['--help']);
@@ -112,7 +115,7 @@ it('builds the app for the simulator', async () => {
     '/app/ios',
   ]);
   expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('Build complete'));
-  expect(Log.log).toHaveBeenCalledWith(expect.stringContaining(`Binary: ${appPath}`));
+  expect(output()).toContain(`Binary: ${appPath}`);
   const done = jest.mocked(event.span).mock.results[0]?.value;
   expect(done).toHaveBeenCalledWith('build:done', { platform: 'ios', mode: 'development' });
   expect(done).toHaveBeenCalledWith('done', {
@@ -157,9 +160,7 @@ it('copies the app to the output directory', async () => {
 
   expect(removeAsync).toHaveBeenCalledWith('/app/build/ReactNativeProject.app');
   expect(copyAsync).toHaveBeenCalledWith(appPath, '/app/build/ReactNativeProject.app');
-  expect(Log.log).toHaveBeenCalledWith(
-    expect.stringContaining('Binary: /app/build/ReactNativeProject.app')
-  );
+  expect(output()).toContain('Binary: /app/build/ReactNativeProject.app');
 });
 
 it('builds a production app', async () => {
