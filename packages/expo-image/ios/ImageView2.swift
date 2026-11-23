@@ -20,13 +20,17 @@ public final class ImageView2: ExpoNativeView {
   /// with rounded corners to their own bounds, which are not the bounds of this view for most content fits.
   private let clippingView = UIView()
 
-  private let imageView = SDAnimatedImageView(frame: .zero)
+  let imageView = SDAnimatedImageView(frame: .zero)
 
   /// `nonisolated(unsafe)` so that `deinit` can cancel it. It's otherwise read and written only on the main thread.
-  nonisolated(unsafe) private var operation: SDWebImageCombinedOperation?
+  nonisolated(unsafe) var operation: SDWebImageCombinedOperation?
+
+  /// Whether a load runs. `operation` can't tell: a memory cache hit completes the load before `loadImage` returns
+  /// the operation.
+  private(set) var isLoading = false
 
   /// Increases with each load. A completion of an older load is ignored.
-  private var loadGeneration = 0
+  private(set) var loadGeneration = 0
 
   /// The inputs of the running or finished load.
   private var currentLoadKey: ImageView2LoadKey?
@@ -35,10 +39,23 @@ public final class ImageView2: ExpoNativeView {
   private var currentImageRef: SharedRef<UIImage>?
 
   /// The image that the view displays.
-  private var image: UIImage?
+  private(set) var image: UIImage?
+
+  /// The size in points that lays out the displayed image. For a downscaled image, it's the size of the loaded image.
+  private var imageLayoutSize: CGSize = .zero
 
   /// The size of the last layout, to pick the source again when the size changes.
   private var laidOutSize: CGSize = .zero
+
+  /// The size in points and the scale of the image that the last load delivered, before downscaling.
+  var loadedImageSize: CGSize?
+  var loadedImageScale: Double = 1
+
+  /// What the displayed image was downscaled to, or `nil` when the view displays the image as it was loaded.
+  var downscaling: ImageView2Downscaling?
+
+  /// Downscales a loaded image off the main thread.
+  var downscaleTask: Task<Void, Never>?
 
   public override init(frame: CGRect) {
     super.init(frame: frame)
@@ -77,6 +94,12 @@ public final class ImageView2: ExpoNativeView {
     if diff.changed([.contentFit, .contentPosition]) {
       setNeedsLayout()
     }
+    if diff.changed(.contentFit) {
+      redecodeIfNeeded()
+    }
+    if diff.changed(.allowDownscaling), !diff.isInitial, loadedImageSize != nil {
+      redecode()
+    }
   }
 
   public override func layoutSubviews() {
@@ -86,13 +109,14 @@ public final class ImageView2: ExpoNativeView {
       laidOutSize = bounds.size
       // A new size can change the best source. The load restarts only when the source changes.
       loadIfNeeded()
+      redecodeIfNeeded()
     }
     layoutImageView()
   }
 
   // MARK: - Loading
 
-  private var screenScale: Double {
+  var screenScale: Double {
     // The first load can run before the view is in a window.
     return Double(window?.screen.scale ?? UIScreen.main.scale)
   }
@@ -143,8 +167,11 @@ public final class ImageView2: ExpoNativeView {
     startLoad(source: source, uri: uri)
   }
 
-  private func startLoad(source: ImageSource, uri: URL) {
+  /// Starts a load. A redecode loads the image of the same source again, at another size, and sends no events.
+  func startLoad(source: ImageSource, uri: URL, isRedecode: Bool = false) {
     operation?.cancel()
+    downscaleTask?.cancel()
+    downscaleTask = nil
     loadGeneration += 1
     currentImageRef = nil
 
@@ -152,10 +179,16 @@ public final class ImageView2: ExpoNativeView {
     let context = createSDWebImageContext(forSource: source, cachePolicy: props.cachePolicy)
     let isPhotoLibraryAsset = source.isPhotoLibraryAsset
     // Event props can be called from any thread, and the progress block runs on a background queue.
-    nonisolated(unsafe) let onProgress = props.onProgress
+    nonisolated(unsafe) let onProgress: ((ImageView2ProgressEvent) -> Void)? = isRedecode ? nil : props.onProgress
 
-    props.onLoadStart()
+    if !isRedecode {
+      // A redecode loads the current source, so it must not run for the displayed image before this load delivers.
+      loadedImageSize = nil
+      downscaling = nil
+      props.onLoadStart()
+    }
 
+    isLoading = true
     operation = Self.imageManager.loadImage(
       with: uri,
       options: [.retryFailed, .handleCookies, .transformAnimatedImage],
@@ -166,7 +199,7 @@ public final class ImageView2: ExpoNativeView {
           return
         }
         // The Photos loader reports the progress as a percentage, without sizes in bytes.
-        onProgress(ImageView2ProgressEvent(
+        onProgress?(ImageView2ProgressEvent(
           loaded: isPhotoLibraryAsset ? nil : receivedSize,
           total: isPhotoLibraryAsset ? nil : expectedSize,
           progress: Double(receivedSize) / Double(expectedSize)
@@ -181,7 +214,8 @@ public final class ImageView2: ExpoNativeView {
             error: error,
             cacheType: cacheType,
             finished: finished,
-            url: url
+            url: url,
+            isRedecode: isRedecode
           )
         }
       }
@@ -195,14 +229,21 @@ public final class ImageView2: ExpoNativeView {
     error: Error?,
     cacheType: SDImageCacheType,
     finished: Bool,
-    url: URL?
+    url: URL?,
+    isRedecode: Bool
   ) {
     guard generation == loadGeneration else {
       return
     }
     if let error {
       operation = nil
+      isLoading = false
       let nsError = error as NSError
+
+      // A failed redecode keeps the displayed image.
+      if isRedecode {
+        return
+      }
 
       if nsError.domain != SDWebImageErrorDomain || nsError.code != SDWebImageError.cancelled.rawValue {
         props.onError(ImageView2ErrorEvent(error: error.localizedDescription))
@@ -214,7 +255,12 @@ public final class ImageView2: ExpoNativeView {
       return
     }
     operation = nil
+    isLoading = false
 
+    if isRedecode {
+      present(image, cacheType: ImageCacheType.fromSdCacheType(cacheType), isRedecode: true)
+      return
+    }
     props.onLoad(ImageView2LoadEvent(
       cacheType: cacheTypeToString(cacheType),
       source: ImageView2LoadedSource(
@@ -230,15 +276,20 @@ public final class ImageView2: ExpoNativeView {
       width: image.size.width * image.scale,
       height: image.size.height * image.scale
     )
-    display(image, cacheType: ImageCacheType.fromSdCacheType(cacheType))
+    present(image, cacheType: ImageCacheType.fromSdCacheType(cacheType), isRedecode: false)
   }
 
-  private func display(_ image: UIImage, cacheType: ImageCacheType) {
+  // MARK: - Display
+
+  /// Displays an image, laid out with `layoutSize` or its own size. A redecode replaces the image without a transition
+  /// and without `onDisplay`.
+  func display(_ image: UIImage, layoutSize: CGSize? = nil, cacheType: ImageCacheType, isRedecode: Bool = false) {
     let isInitialDisplay = self.image == nil
     self.image = image
+    imageLayoutSize = layoutSize ?? image.size
     imageView.autoPlayAnimatedImage = props.autoplay
 
-    if let transition = props.transition,
+    if !isRedecode, let transition = props.transition,
       transition.shouldPlay(cacheType: cacheType, isInitialDisplay: isInitialDisplay) {
       // Transitions the clipping view, which keeps its bounds, so the outgoing image keeps its frame.
       UIView.transition(
@@ -251,7 +302,9 @@ public final class ImageView2: ExpoNativeView {
     } else {
       showImage(image)
     }
-    props.onDisplay()
+    if !isRedecode {
+      props.onDisplay()
+    }
   }
 
   private func showImage(_ image: UIImage) {
@@ -272,123 +325,31 @@ public final class ImageView2: ExpoNativeView {
   private func clear() {
     operation?.cancel()
     operation = nil
+    isLoading = false
+    downscaleTask?.cancel()
+    downscaleTask = nil
     loadGeneration += 1
     currentLoadKey = nil
     currentImageRef = nil
+    loadedImageSize = nil
+    downscaling = nil
     image = nil
+    imageView.animationTransformer = nil
     imageView.image = nil
   }
 
   // MARK: - Layout
 
   private func layoutImageView() {
-    guard let image else {
+    guard image != nil else {
       imageView.frame = clippingView.bounds
       return
     }
     imageView.frame = imageView2Frame(
-      imageSize: image.size,
+      imageSize: imageLayoutSize,
       containerSize: bounds.size,
       contentFit: props.contentFit,
       contentPosition: props.contentPosition
     ) ?? clippingView.bounds
   }
-}
-
-// MARK: - Helpers
-
-/// The frame of the image in a container of the given size, as the CSS `object-fit` and `object-position`
-/// properties place it. `imageSize` is in points. Returns `nil` when a size is empty or the frame isn't finite.
-func imageView2Frame(
-  imageSize: CGSize,
-  containerSize: CGSize,
-  contentFit: ContentFit,
-  contentPosition: ImageView2ContentPosition?
-) -> CGRect? {
-  guard imageSize.width > 0, imageSize.height > 0, containerSize.width > 0, containerSize.height > 0 else {
-    return nil
-  }
-  let size: CGSize
-
-  switch contentFit {
-  case .contain:
-    size = imageSize * min(containerSize.width / imageSize.width, containerSize.height / imageSize.height)
-  case .cover:
-    size = imageSize * max(containerSize.width / imageSize.width, containerSize.height / imageSize.height)
-  case .fill:
-    size = containerSize
-  case .none:
-    size = imageSize
-  case .scaleDown:
-    if imageSize.width > containerSize.width || imageSize.height > containerSize.height {
-      size = imageSize * min(containerSize.width / imageSize.width, containerSize.height / imageSize.height)
-    } else {
-      size = imageSize
-    }
-  }
-  guard size.width.isFinite, size.height.isFinite else {
-    return nil
-  }
-  let freeSpace = CGSize(width: containerSize.width - size.width, height: containerSize.height - size.height)
-  let position = contentPosition ?? ImageView2ContentPosition()
-  let origin = CGPoint(
-    x: positionOrigin(start: position.left, end: position.right, freeSpace: freeSpace.width),
-    y: positionOrigin(start: position.top, end: position.bottom, freeSpace: freeSpace.height)
-  )
-  guard origin.x.isFinite, origin.y.isFinite else {
-    return nil
-  }
-  return CGRect(origin: origin, size: size)
-}
-
-/// The origin on one axis. A distance from the start edge wins over one from the end edge, and a distance
-/// in points wins over a percentage. Without a value, the image is centered.
-private func positionOrigin(
-  start: ImageView2PositionValue?,
-  end: ImageView2PositionValue?,
-  freeSpace: Double
-) -> Double {
-  if let distance = positionDistance(start) {
-    return distance
-  }
-  if let distance = positionDistance(end) {
-    return freeSpace - distance
-  }
-  if let factor = positionFactor(start) {
-    return freeSpace * factor
-  }
-  if let factor = positionFactor(end) {
-    return freeSpace * (1 - factor)
-  }
-  return freeSpace / 2
-}
-
-/// A distance in points: a number, or a string with only a number. A value that isn't finite counts as no value.
-private func positionDistance(_ value: ImageView2PositionValue?) -> Double? {
-  let distance: Double?
-
-  switch value {
-  case .number(let number):
-    distance = number
-  case .string(let string):
-    distance = Double(string)
-  case nil:
-    distance = nil
-  }
-  return distance?.isFinite == true ? distance : nil
-}
-
-/// A fraction of the free space: a percentage string such as `"25%"`, or `"center"` for 50%.
-private func positionFactor(_ value: ImageView2PositionValue?) -> Double? {
-  guard case .string(let string) = value else {
-    return nil
-  }
-  if string == "center" {
-    return 0.5
-  }
-  guard string.contains("%"), let percentage = Double(string.replacingOccurrences(of: "%", with: "")),
-    percentage.isFinite else {
-    return nil
-  }
-  return percentage / 100
 }

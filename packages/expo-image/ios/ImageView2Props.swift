@@ -107,6 +107,7 @@ public struct ImageView2Props {
   var transition: ImageView2Transition?
   var recyclingKey: String?
   var autoplay: Bool = true
+  var allowDownscaling: Bool = true
   var onLoadStart: () -> Void
   var onProgress: (ImageView2ProgressEvent) -> Void
   var onLoad: (ImageView2LoadEvent) -> Void
