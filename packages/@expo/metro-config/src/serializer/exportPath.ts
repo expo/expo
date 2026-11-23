@@ -8,6 +8,10 @@ import path from 'path';
 
 import { fileNameFromContents } from './getCssDeps';
 
+export function getServerOutputExtension(packageType?: string): '.js' | '.cjs' {
+  return packageType === 'module' ? '.cjs' : '.js';
+}
+
 export function getExportFilename(
   contentFilename: string,
   {
