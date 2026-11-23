@@ -45,12 +45,12 @@ export type ServerTestOptions = {
  * Use with `describe.each()` to run the same tests against multiple server implementations.
  *
  * @param runtimes - Array of runtime identifiers to prepare (e.g., `['expo serve', 'workerd']`)
- * @param options - Configuration options for the test servers
+ * @param options - Optional configuration for the test servers
  *
  * @example
  * ```ts
  * describe.each(
- *   prepareServers(['expo serve', 'workerd'], {})
+ *   prepareServers(['expo serve', 'workerd'])
  * )('$name requests', (config) => {
  *   const ctx = setupServer(config);
  *   it('can serve html', async () => {
@@ -61,7 +61,7 @@ export type ServerTestOptions = {
  */
 export function prepareServers(
   runtimes: RuntimeType[],
-  options: ServerTestOptions
+  options: ServerTestOptions = {}
 ): ServerTestConfiguration[] {
   const { uniqueOutputKey } = options;
   const projectRoot = getServerTesterRoot();
