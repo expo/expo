@@ -1,8 +1,9 @@
-import { Suspense, use, useEffect, useState } from 'react';
+import { Suspense, use, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Page } from '@/components/Page';
 import { colors } from '@/components/theme';
+import { useIsMounted } from '@/hooks/useIsMounted';
 
 let content: Promise<string> | undefined;
 
@@ -10,11 +11,7 @@ function DelayedContent() {
   content ??= new Promise((resolve) => setTimeout(() => resolve('x'.repeat(30_000)), 25));
   const text = use(content);
   const [count, setCount] = useState(0);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useIsMounted();
 
   return (
     <View testID="resolved-suspense">

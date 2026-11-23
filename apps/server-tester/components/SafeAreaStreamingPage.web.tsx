@@ -1,5 +1,7 @@
-import { Suspense, use, useEffect, useState } from 'react';
+import { Suspense, use, useState } from 'react';
 import { Text } from 'react-native';
+
+import { useIsMounted } from '@/hooks/useIsMounted';
 
 const clientResource = new Promise<string>(() => {});
 
@@ -15,12 +17,8 @@ function Content({ resource, id }: { resource: Promise<string>; id: string }) {
 }
 
 function Shell() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsMounted();
   const [clicked, setClicked] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <>
