@@ -36,7 +36,7 @@ it.each(['pair', 'string', 'captured'])(
 const serialize = config.serializer.customSerializer;
 const baseJSBundle = require(${JSON.stringify(require.resolve('@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle'))}).default;
 const bundleToString = require(${JSON.stringify(require.resolve('@expo/metro/metro/lib/bundleToString'))}).default;
-config.serializer.customSerializer = (...args) => args[0].endsWith('/hello+api.ts')
+config.serializer.customSerializer = (...args) => require('node:path').basename(args[0]) === 'hello+api.ts'
   ? ${JSON.stringify(format)} === 'string' ? bundleToString(baseJSBundle(...args)).code : {
       code: 'module.exports = { GET() { return Response.json({ custom: true }); } };\\n//# sourceMappingURL=old.js.map\\n//# debugId=01234567-89ab-4cde-8fab-0123456789ab',
       map: JSON.stringify({ version: 3, sources: ${JSON.stringify(format)} === 'captured' ? [require('node:path').join(__dirname, 'app/hello+api.ts')] : ['custom://project/original.ts'], sourcesContent: ['original source'], names: [], mappings: 'AAAA', debugId: '01234567-89ab-4cde-8fab-0123456789ab' }),
