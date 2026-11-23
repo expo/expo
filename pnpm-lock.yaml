@@ -1836,7 +1836,7 @@ importers:
         specifier: ^0.0.6
         version: 0.0.6
       '@expo/config':
-        specifier: workspace:~57.0.11
+        specifier: workspace:~57.0.12
         version: link:../config
       '@expo/config-plugins':
         specifier: workspace:~57.0.13
@@ -1851,7 +1851,7 @@ importers:
         specifier: workspace:^0.11.7
         version: link:../image-utils
       '@expo/inline-modules':
-        specifier: workspace:^0.1.9
+        specifier: workspace:^0.1.10
         version: link:../inline-modules
       '@expo/json-file':
         specifier: workspace:^11.0.1
@@ -1884,7 +1884,7 @@ importers:
         specifier: workspace:^57.0.7
         version: link:../require-utils
       '@expo/router-server':
-        specifier: workspace:^57.0.15
+        specifier: workspace:^57.0.16
         version: link:../router-server
       '@expo/schema-utils':
         specifier: workspace:^57.0.3
@@ -2479,7 +2479,7 @@ importers:
   packages/@expo/local-build-cache-provider:
     dependencies:
       '@expo/config':
-        specifier: workspace:~57.0.11
+        specifier: workspace:~57.0.12
         version: link:../config
       chalk:
         specifier: ^4.1.2
@@ -2562,7 +2562,7 @@ importers:
         specifier: ^7.20.5
         version: 7.29.1
       '@expo/config':
-        specifier: workspace:~57.0.11
+        specifier: workspace:~57.0.12
         version: link:../config
       '@expo/env':
         specifier: workspace:~2.4.4
@@ -2815,7 +2815,7 @@ importers:
   packages/@expo/prebuild-config:
     dependencies:
       '@expo/config':
-        specifier: workspace:~57.0.11
+        specifier: workspace:~57.0.12
         version: link:../config
       '@expo/config-plugins':
         specifier: workspace:~57.0.13
@@ -2901,13 +2901,13 @@ importers:
   packages/@expo/router-server:
     dependencies:
       '@expo/metro-runtime':
-        specifier: workspace:^57.0.18
+        specifier: workspace:^57.0.19
         version: link:../metro-runtime
       debug:
         specifier: ^4.3.4
         version: 4.4.3
       expo-constants:
-        specifier: workspace:^57.0.24
+        specifier: workspace:^57.0.25
         version: link:../../expo-constants
       expo-font:
         specifier: workspace:^57.0.4
@@ -3475,10 +3475,10 @@ importers:
         specifier: ^7.20.0
         version: 7.29.2
       '@expo/cli':
-        specifier: workspace:^57.0.34
+        specifier: workspace:^57.0.35
         version: link:../@expo/cli
       '@expo/config':
-        specifier: workspace:~57.0.11
+        specifier: workspace:~57.0.12
         version: link:../@expo/config
       '@expo/config-plugins':
         specifier: workspace:~57.0.13
@@ -3490,7 +3490,7 @@ importers:
         specifier: workspace:~57.0.1
         version: link:../@expo/dom-webview
       '@expo/fingerprint':
-        specifier: workspace:^0.20.16
+        specifier: workspace:^0.20.17
         version: link:../@expo/fingerprint
       '@expo/local-build-cache-provider':
         specifier: workspace:^57.0.10
@@ -3511,10 +3511,10 @@ importers:
         specifier: workspace:~57.0.17
         version: link:../babel-preset-expo
       expo-asset:
-        specifier: workspace:~57.0.21
+        specifier: workspace:~57.0.22
         version: link:../expo-asset
       expo-constants:
-        specifier: workspace:~57.0.24
+        specifier: workspace:~57.0.25
         version: link:../expo-constants
       expo-file-system:
         specifier: workspace:~57.0.7
@@ -3663,7 +3663,7 @@ importers:
         specifier: workspace:^0.11.7
         version: link:../@expo/image-utils
       expo-constants:
-        specifier: workspace:~57.0.24
+        specifier: workspace:~57.0.25
         version: link:../expo-constants
       react:
         specifier: 19.2.3
@@ -3722,7 +3722,7 @@ importers:
         specifier: workspace:~57.0.3
         version: link:../expo-application
       expo-constants:
-        specifier: workspace:~57.0.24
+        specifier: workspace:~57.0.25
         version: link:../expo-constants
       expo-crypto:
         specifier: workspace:~57.0.4
@@ -3756,7 +3756,7 @@ importers:
   packages/expo-background-fetch:
     dependencies:
       expo-task-manager:
-        specifier: workspace:~57.0.23
+        specifier: workspace:~57.0.24
         version: link:../expo-task-manager
     devDependencies:
       '@types/node':
@@ -3772,7 +3772,7 @@ importers:
   packages/expo-background-task:
     dependencies:
       expo-task-manager:
-        specifier: workspace:~57.0.23
+        specifier: workspace:~57.0.24
         version: link:../expo-task-manager
     devDependencies:
       '@types/node':
@@ -3878,7 +3878,7 @@ importers:
         specifier: ^5.2.0
         version: 5.2.2
       expo-build-properties:
-        specifier: workspace:~57.0.23
+        specifier: workspace:~57.0.24
         version: link:../expo-build-properties
       expo-manifests:
         specifier: workspace:~57.0.2
@@ -4133,10 +4133,10 @@ importers:
   packages/expo-dev-client:
     dependencies:
       expo-dev-launcher:
-        specifier: workspace:~57.0.22
+        specifier: workspace:~57.0.23
         version: link:../expo-dev-launcher
       expo-dev-menu:
-        specifier: workspace:~57.0.21
+        specifier: workspace:~57.0.22
         version: link:../expo-dev-menu
       expo-dev-menu-interface:
         specifier: workspace:~57.0.0
@@ -4167,7 +4167,7 @@ importers:
         specifier: workspace:^57.0.3
         version: link:../@expo/schema-utils
       expo-dev-menu:
-        specifier: workspace:~57.0.21
+        specifier: workspace:~57.0.22
         version: link:../expo-dev-menu
       expo-manifests:
         specifier: workspace:~57.0.2
@@ -4630,7 +4630,7 @@ importers:
   packages/expo-linking:
     dependencies:
       expo-constants:
-        specifier: workspace:~57.0.24
+        specifier: workspace:~57.0.25
         version: link:../expo-constants
       invariant:
         specifier: ^2.2.4
@@ -5040,7 +5040,7 @@ importers:
         specifier: workspace:~57.0.3
         version: link:../expo-application
       expo-constants:
-        specifier: workspace:~57.0.24
+        specifier: workspace:~57.0.25
         version: link:../expo-constants
       react:
         specifier: 19.2.3
@@ -5068,7 +5068,7 @@ importers:
   packages/expo-observe:
     dependencies:
       expo-app-metrics:
-        specifier: workspace:~57.0.24
+        specifier: workspace:~57.0.25
         version: link:../expo-app-metrics
       expo-eas-client:
         specifier: workspace:~57.0.5
@@ -5131,7 +5131,7 @@ importers:
         specifier: workspace:^57.0.5
         version: link:../@expo/log-box
       '@expo/metro-runtime':
-        specifier: workspace:^57.0.18
+        specifier: workspace:^57.0.19
         version: link:../@expo/metro-runtime
       '@expo/schema-utils':
         specifier: workspace:^57.0.3
@@ -5161,7 +5161,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       expo-constants:
-        specifier: workspace:^57.0.24
+        specifier: workspace:^57.0.25
         version: link:../expo-constants
       expo-glass-effect:
         specifier: workspace:^57.0.5
@@ -6106,7 +6106,7 @@ importers:
         specifier: 1.0.0-alpha.24
         version: 1.0.0-alpha.24
       '@expo/config':
-        specifier: workspace:~57.0.11
+        specifier: workspace:~57.0.12
         version: link:../@expo/config
       '@expo/config-plugins':
         specifier: workspace:~57.0.13

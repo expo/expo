@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 57.0.35 — 2026-11-23
+
+### 🐛 Bug fixes
+
 - Detect Factory Droid, Grok Bot, Claude Cowork, and Muse in CLI telemetry. ([#53831](https://github.com/expo/expo/pull/53831) by [@davidmokos](https://github.com/davidmokos))
 - Treat non-boolean `CI` values, like `CI=yes`, as false instead of failing. ([#53019](https://github.com/expo/expo/pull/53019) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Fix `expo lint` failing right after it installs ESLint. ([#53887](https://github.com/expo/expo/pull/53887) by [@ramonclaudio](https://github.com/ramonclaudio))

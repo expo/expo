@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 57.0.16 — 2026-11-23
+
+_This version does not introduce any user-facing changes._
+
 ## 57.0.15 — 2026-11-05
 
 ### 🐛 Bug fixes

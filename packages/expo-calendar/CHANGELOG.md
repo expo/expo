@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Expose `name`, `role`, `status`, `type`, `url` and `isCurrentUser` on the attendee objects that `ExpoCalendarEvent.getAttendees()` returns. The class was registered without properties, so every field read as `undefined`. ([#53535](https://github.com/expo/expo/pull/53535) by [@dileepapeiris](https://github.com/dileepapeiris))
-
 ### 💡 Others
+
+## 57.0.7 — 2026-11-23
+
+### 🐛 Bug fixes
+
+- [iOS] Expose `name`, `role`, `status`, `type`, `url` and `isCurrentUser` on the attendee objects that `ExpoCalendarEvent.getAttendees()` returns. The class was registered without properties, so every field read as `undefined`. ([#53535](https://github.com/expo/expo/pull/53535) by [@dileepapeiris](https://github.com/dileepapeiris))
 
 ## 57.0.6 — 2026-10-21
 

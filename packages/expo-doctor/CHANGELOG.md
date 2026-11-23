@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Treat non-boolean `CI` values, like `CI=yes`, as false instead of failing. ([#53019](https://github.com/expo/expo/pull/53019) by [@ramonclaudio](https://github.com/ramonclaudio))
-
 ### 💡 Others
+
+## 1.20.6 — 2026-11-23
+
+### 🐛 Bug fixes
+
+- Treat non-boolean `CI` values, like `CI=yes`, as false instead of failing. ([#53019](https://github.com/expo/expo/pull/53019) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ## 1.20.5 — 2026-11-05
 
