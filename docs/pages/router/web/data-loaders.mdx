@@ -281,6 +281,10 @@ See the [Runtime API documentation](/router/web/api-routes/#runtime-api) for a f
 
 Expo Router uses loader data from the initial HTML response for hydration. When you revisit a route after it unmounts, `useLoaderData` fetches its data again. The platform HTTP cache uses `Cache-Control` to decide whether to reuse a cached response, revalidate it, or request fresh data. Expo Router does not keep a permanent in-memory data cache across route visits.
 
+Screens retained in a stack or tab navigator keep their loader data when React `<Activity>` hides them. Revealing a retained screen does not fetch its data again. Removing a route from its navigator releases its loader data when no other retained route uses the same loader path. Navigating away from a route in `<Slot>` also releases its data because `<Slot>` renders only the current route.
+
+A loader started during an interrupted transition can finish while the current route stays mounted. A later parameter change on that route can reuse the result if no other loader path has committed in between.
+
 A revisit can display a Suspense fallback while the fetch completes, even when the platform serves a cached response. Retrying a loader error through the route's `ErrorBoundary` also fetches again.
 
 ### Cache defaults
