@@ -6,24 +6,36 @@ import Testing
 @Suite("ObserveConsent")
 struct ObserveConsentTests {
   @Test
-  func `absent consent value grants consent`() {
-    #expect(ObserveConsent.isGranted(consent: nil))
+  func `absent ExpoObserve dictionary grants consent`() {
+    #expect(ObserveConsent.isGranted(settings: nil))
   }
 
   @Test
-  func `consent value granted grants consent`() {
-    #expect(ObserveConsent.isGranted(consent: "granted"))
+  func `ExpoObserve dictionary without consent grants consent`() {
+    #expect(ObserveConsent.isGranted(settings: [String: Any]()))
+    #expect(ObserveConsent.isGranted(settings: ["other": "value"]))
   }
 
   @Test
-  func `consent value not-granted denies consent`() {
-    #expect(!ObserveConsent.isGranted(consent: "not-granted"))
+  func `consent granted grants consent`() {
+    #expect(ObserveConsent.isGranted(settings: ["consent": "granted"]))
+  }
+
+  @Test
+  func `consent not-granted denies consent`() {
+    #expect(!ObserveConsent.isGranted(settings: ["consent": "not-granted"]))
   }
 
   @Test
   func `unknown consent value denies consent`() {
-    #expect(!ObserveConsent.isGranted(consent: "pending"))
-    #expect(!ObserveConsent.isGranted(consent: false))
+    #expect(!ObserveConsent.isGranted(settings: ["consent": "pending"]))
+    #expect(!ObserveConsent.isGranted(settings: ["consent": false]))
+  }
+
+  @Test
+  func `ExpoObserve value that is not a dictionary denies consent`() {
+    #expect(!ObserveConsent.isGranted(settings: "granted"))
+    #expect(!ObserveConsent.isGranted(settings: ["granted"]))
   }
 }
 
