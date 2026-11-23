@@ -2,25 +2,19 @@
 
 import ExpoModulesCore
 
-internal struct MailComposerOptions: Record {
-  @Field
+@Record
+internal struct MailComposerOptions {
   var recipients: [String]?
 
-  @Field
   var ccRecipients: [String]?
 
-  @Field
   var bccRecipients: [String]?
 
-  @Field
   var subject: String = ""
 
-  @Field
   var body: String = ""
 
-  @Field
   var isHtml: Bool = false
 
-  @Field
   var attachments: [URL]?
 }
