@@ -182,7 +182,7 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
       }
       else -> null
     },
-    contentWindowInsets = { contentWindowInsets ?: BottomSheetDefaults.windowInsets },
+    contentWindowInsets = { contentWindowInsets ?: BottomSheetDefaults.modalWindowInsets },
     properties = ModalBottomSheetProperties(
       shouldDismissOnBackPress = props.properties.shouldDismissOnBackPress,
       shouldDismissOnClickOutside = props.properties.shouldDismissOnClickOutside

@@ -122,6 +122,16 @@ export interface BottomSheetFooterProps {
  * which renders inline at the bottom of its container, this implementation presents
  * a modal sheet overlay on iOS and Android. On web, it renders inline.
  */
+/**
+ * Insets in dp for the sides of the bottom sheet content. Missing sides are `0`.
+ */
+export interface BottomSheetContentWindowInsets {
+  start?: number;
+  top?: number;
+  end?: number;
+  bottom?: number;
+}
+
 export interface BottomSheetProps {
   /**
    * Ref to the bottom sheet component. Exposes imperative methods (`snapToIndex`,
@@ -360,14 +370,15 @@ export interface BottomSheetProps {
 
   /**
    * Insets in dp that the native sheet adds around its content. Missing sides are `0`.
-   * By default the content is padded clear of the status bar, the navigation bar and
-   * display cutouts, so scrolling content stops above the navigation bar. Pass
-   * `{ top: insets.top }` to let the content run under the navigation bar and pad its
-   * own end instead.
+   * By default, the sheet pads the top and bottom of the content clear of the system bars,
+   * display cutouts, and the keyboard, so scrolling content stops above the navigation bar.
+   * Pass `{ top: insets.top }`, with `insets` from `react-native-safe-area-context`, to let
+   * the content run under the navigation bar and pad its own end instead. The sheet then
+   * adds no padding for the keyboard.
    *
    * @platform android
    */
-  contentWindowInsets?: { start?: number; top?: number; end?: number; bottom?: number };
+  contentWindowInsets?: BottomSheetContentWindowInsets;
 
   /**
    * The content to render inside the bottom sheet.

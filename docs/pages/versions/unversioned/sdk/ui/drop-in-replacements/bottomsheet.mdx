@@ -300,7 +300,9 @@ export default function EdgeToEdgeSheet() {
 }
 ```
 
-On Android, the sheet pads its content clear of the status bar, the navigation bar and display cutouts, so a scrolling list stops above the navigation bar. Pass `contentWindowInsets` with only the top inset to let the content run under the navigation bar, and pad the end of the list instead.
+## Edge-to-edge content on Android
+
+On Android, the sheet pads the top and bottom of its content clear of the system bars, display cutouts, and the keyboard. As a result, a scrolling list stops above the navigation bar. Pass `contentWindowInsets` with only the top inset to let the content run under the navigation bar, and pad the end of the list instead. With that value, the sheet adds no padding for the keyboard.
 
 ```tsx
 import { ScrollView } from 'react-native';
@@ -311,7 +313,9 @@ export default function EdgeToEdgeListSheet({ children }: { children: React.Reac
   const insets = useSafeAreaInsets();
   return (
     <BottomSheet snapPoints={['50%', '100%']} contentWindowInsets={{ top: insets.top }}>
-      <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom }}>{children}</ScrollView>
+      <ScrollView nestedScrollEnabled contentContainerStyle={{ paddingBottom: insets.bottom }}>
+        {children}
+      </ScrollView>
     </BottomSheet>
   );
 }

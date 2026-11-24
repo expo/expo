@@ -7,6 +7,8 @@ import { type ModifierConfig } from '../../types';
 import type { PaddingValuesRecord } from '../Carousel';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
+export type { PaddingValuesRecord };
+
 type SlotNativeViewProps = {
   slotName: string;
   children: ReactNode;
@@ -95,11 +97,12 @@ export interface ModalBottomSheetProps {
   sheetGesturesEnabled?: boolean;
   /**
    * Insets in dp that the sheet adds around its content. Missing sides are `0`.
-   * When omitted, the sheet uses `BottomSheetDefaults.windowInsets`, which pads the
-   * content clear of the status bar, the navigation bar and display cutouts, so
-   * scrolling content stops above the navigation bar.
-   * Pass `{ top: insets.top }` to let the content run under the navigation bar and
-   * pad its own end instead.
+   * When omitted, the sheet uses `BottomSheetDefaults.modalWindowInsets`, which pads the
+   * top and bottom of the content clear of the system bars, display cutouts, and the
+   * keyboard, so scrolling content stops above the navigation bar.
+   * Pass `{ top: insets.top }`, with `insets` from `react-native-safe-area-context`, to let
+   * the content run under the navigation bar and pad its own end instead. The sheet then
+   * adds no padding for the keyboard.
    */
   contentWindowInsets?: PaddingValuesRecord;
   /**
