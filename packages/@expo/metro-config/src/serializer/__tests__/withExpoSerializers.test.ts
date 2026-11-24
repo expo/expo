@@ -879,6 +879,46 @@ describe('Granular chunk emission', () => {
     expect(new Set(artifacts.map((asset) => asset.filename)).size).toBe(artifacts.length);
   });
 
+  it('gives each worker its own chunks when two workers import the same modules', async () => {
+    const artifacts: SerialAsset[] = await serializeSplitAsync(
+      {
+        ...publicGraph,
+        'index.js': `require.unstable_resolveWorker('./one'); require.unstable_resolveWorker('./two');`,
+        'one.js': `import('./a'); import('./b');`,
+        'two.js': `import('./a'); import('./b');`,
+      },
+      { chunkingStrategy: 'granular' }
+    );
+
+    const getChunkUrls = (workerName: string) => {
+      const worker = artifacts.find((asset) => asset.originFilename === `${workerName}.js`)!;
+      return Object.values(worker.metadata.paths![`/app/${workerName}.js`]!).flat() as string[];
+    };
+    const chunkUrls = [...new Set([...getChunkUrls('one'), ...getChunkUrls('two')])];
+    // Each worker has a chunk for `a.js`, for `b.js`, and for `shared.js`.
+    expect(chunkUrls).toHaveLength(6);
+    expect(artifacts.filter((asset) => chunkUrls.includes('/' + asset.filename))).toHaveLength(6);
+    expect(new Set(artifacts.map((asset) => asset.filename)).size).toBe(artifacts.length);
+  });
+
+  it('plans a worker one time when workers start each other', async () => {
+    const artifacts: SerialAsset[] = await serializeSplitAsync(
+      {
+        'index.js': `require.unstable_resolveWorker('./one'); import('./route');`,
+        'route.js': `require.unstable_resolveWorker('./one');`,
+        'one.js': `require.unstable_resolveWorker('./two');`,
+        'two.js': `require.unstable_resolveWorker('./one'); import('./lazy');`,
+        'lazy.js': `console.log('lazy');`,
+      },
+      { chunkingStrategy: 'granular' }
+    );
+
+    expect(artifacts[0]!.metadata.chunkingStrategy).toBe('granular');
+    expect(artifacts.filter((asset) => asset.originFilename === 'one.js')).toHaveLength(1);
+    expect(artifacts.filter((asset) => asset.originFilename === 'two.js')).toHaveLength(1);
+    expect(new Set(artifacts.map((asset) => asset.filename)).size).toBe(artifacts.length);
+  });
+
   it('keeps DOM exports on the legacy pipeline even when requested', async () => {
     const [entry, premodules, graph, options] = await microBundle({
       fs: publicGraph,
