@@ -6,7 +6,9 @@ const nativeModuleStubs: Record<string, any> = { ExpoUI };
 const nativePackageStubs: Record<string, Record<string, any>> = {
   '@expo/ui': {
     GridRowView: createViewStub('GridRowView'),
+    GridView: createViewStub('GridView'),
     NamespaceView: createViewStub('NamespaceView'),
+    StepperView: createViewStub('StepperView'),
   },
 };
 
