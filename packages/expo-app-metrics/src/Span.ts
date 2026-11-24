@@ -11,12 +11,12 @@ import type { LogAttributeValue, SpanEndOptions, SpanEventOptions } from './type
  */
 export declare class Span extends SharedObject {
   /**
-   * W3C trace ID, as 32 lowercase hexadecimal characters. Spans that you start with this span as
+   * Trace ID, as 32 lowercase hexadecimal characters. Spans that you start with this span as
    * `parent` share it.
    */
   readonly traceId: string;
   /**
-   * W3C span ID, as 16 lowercase hexadecimal characters
+   * Span ID, as 16 lowercase hexadecimal characters
    */
   readonly spanId: string;
   /**
