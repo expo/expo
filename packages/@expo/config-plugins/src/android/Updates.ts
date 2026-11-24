@@ -106,7 +106,7 @@ export async function applyRuntimeVersionFromConfigForProjectRootAsync(
   if (runtimeVersion) {
     return setStringItem(
       [
-        // Keep source-based translation tools from treating the runtime version         
+        // Keep source-based translation tools from treating the runtime version
         // as user-facing text.
         buildResourceItem({
           name: 'expo_runtime_version',
