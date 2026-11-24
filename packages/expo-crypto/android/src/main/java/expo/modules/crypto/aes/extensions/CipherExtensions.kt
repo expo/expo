@@ -16,9 +16,13 @@ internal fun Cipher.encrypt(plaintext: ByteBuffer): SealedData {
 
 internal fun Cipher.decrypt(sealedData: SealedData): ByteBuffer {
   val inputBuf = sealedData.taggedCiphertextBuffer
-  val plaintextSize = getOutputSize(inputBuf.remaining())
+  val output = ByteBuffer.allocate(getOutputSize(inputBuf.remaining()))
+  val written = doFinal(inputBuf, output)
 
-  return ByteBuffer.allocate(plaintextSize).also { outputBuf ->
-    doFinal(inputBuf, outputBuf)
+  // The caller reads the backing array. Its size must equal the number of bytes written.
+  return if (written == output.capacity()) {
+    output
+  } else {
+    ByteBuffer.wrap(output.array().copyOf(written))
   }
 }
