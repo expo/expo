@@ -12,7 +12,7 @@ public enum ObserveConsent {
   }
 
   /// The consent of this process and the changes it allows.
-  struct Gate: Sendable {
+  private struct Gate: Sendable {
     private(set) var state: State
     private var hasRevoked = false
 
@@ -38,9 +38,43 @@ public enum ObserveConsent {
     }
   }
 
-  /// Resolved on first access: the saved value, else the `Info.plist` value that the `expo-observe`
-  /// config plugin writes.
-  private static let gate = OSAllocatedUnfairLock(initialState: Gate(state: resolveState(from: .standard)))
+  // UserDefaults is thread-safe, and the lock protects the gate.
+  final class Store: @unchecked Sendable {
+    private let defaults: UserDefaults
+    private let gate: OSAllocatedUnfairLock<Gate>
+    private let saveBufferedSettings: @Sendable () -> Void
+
+    init(defaults: UserDefaults, settings: Any?, saveBufferedSettings: @escaping @Sendable () -> Void) {
+      self.defaults = defaults
+      self.saveBufferedSettings = saveBufferedSettings
+      self.gate = OSAllocatedUnfairLock(initialState: Gate(state: resolveState(from: defaults, settings: settings)))
+    }
+
+    var state: State {
+      return gate.withLock { $0.state }
+    }
+
+    func update(granted: Bool) -> Bool {
+      save(granted: granted, to: defaults)
+      return ConsentGatedDefaults.transitionLock.withLock {
+        gate.withLock { gate in
+          guard gate.apply(granted: granted) else {
+            return false
+          }
+          if granted {
+            saveBufferedSettings()
+          }
+          return true
+        }
+      }
+    }
+  }
+
+  private static let shared = Store(
+    defaults: .standard,
+    settings: Bundle.main.object(forInfoDictionaryKey: "ExpoObserve"),
+    saveBufferedSettings: ConsentGatedDefaults.saveUnsavedValues
+  )
 
   // A revoke deletes the settings suites, so the consent value lives in standard defaults.
   static let savedValueKey = "dev.expo.app-metrics.observe-consent"
@@ -50,13 +84,10 @@ public enum ObserveConsent {
   }
 
   public static var state: State {
-    return gate.withLock { $0.state }
+    return shared.state
   }
 
-  static func resolveState(
-    from defaults: UserDefaults,
-    settings: Any? = Bundle.main.object(forInfoDictionaryKey: "ExpoObserve")
-  ) -> State {
+  static func resolveState(from defaults: UserDefaults, settings: Any?) -> State {
     // TODO(ENG-29437): Verify the iOS UserDefaults read after reboot and before the first unlock.
     if let saved = defaults.string(forKey: savedValueKey) {
       return saved == "granted" ? .granted : .notGranted
@@ -66,20 +97,7 @@ public enum ObserveConsent {
 
   /// Saves the choice for the next launch and returns whether collection changes in this process.
   static func update(granted: Bool) -> Bool {
-    // Read the previous choice before saving the new one on the first call.
-    let gate = Self.gate
-    save(granted: granted, to: .standard)
-    return ConsentGatedDefaults.transitionLock.withLock {
-      gate.withLock { gate in
-        guard gate.apply(granted: granted) else {
-          return false
-        }
-        if granted {
-          ConsentGatedDefaults.saveUnsavedValues()
-        }
-        return true
-      }
-    }
+    return shared.update(granted: granted)
   }
 
   static func save(granted: Bool, to defaults: UserDefaults) {

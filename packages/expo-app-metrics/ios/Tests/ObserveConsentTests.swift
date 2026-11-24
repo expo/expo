@@ -218,28 +218,41 @@ struct ObserveConsentUserDefaultsTests {
   }
 }
 
-@Suite("ObserveConsent.Gate")
-struct ObserveConsentGateTests {
-  // Applies each value in order and returns whether each call changed the gate.
-  private func apply(_ values: [Bool], to gate: inout ObserveConsent.Gate) -> [Bool] {
-    return values.map { gate.apply(granted: $0) }
+@Suite("ObserveConsent updates")
+struct ObserveConsentUpdateTests {
+  private let suiteName = "dev.expo.app-metrics.tests.consent-update.\(UUID().uuidString)"
+
+  @Test
+  func `the first grant saves the choice and buffered settings only once`() throws {
+    let defaults = try #require(UserDefaults(suiteName: suiteName))
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+    let saves = OSAllocatedUnfairLock(initialState: 0)
+    let consent = ObserveConsent.Store(defaults: defaults, settings: ["consent": "not-granted"]) {
+      saves.withLock { $0 += 1 }
+    }
+
+    #expect(consent.update(granted: true))
+    #expect(consent.state == .granted)
+    #expect(defaults.string(forKey: ObserveConsent.savedValueKey) == "granted")
+    #expect(!consent.update(granted: true))
+    #expect(saves.withLock { $0 } == 1)
   }
 
   @Test
-  func `a call with the current value changes nothing`() {
-    var granted = ObserveConsent.Gate(state: .granted)
-    var notGranted = ObserveConsent.Gate(state: .notGranted)
+  func `a revoke closes the gate and a later grant only saves the choice`() throws {
+    let defaults = try #require(UserDefaults(suiteName: suiteName))
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+    let consent = ObserveConsent.Store(defaults: defaults, settings: nil) {
+      Issue.record("A deferred grant must keep the buffered settings in memory.")
+    }
 
-    #expect(apply([true], to: &granted) == [false])
-    #expect(apply([false], to: &notGranted) == [false])
-  }
-
-  @Test
-  func `a grant after a revoke changes nothing until the next launch`() {
-    var gate = ObserveConsent.Gate(state: .notGranted)
-
-    #expect(apply([true, false, true], to: &gate) == [true, true, false])
-    #expect(gate.state == .notGranted)
+    #expect(consent.update(granted: false))
+    #expect(consent.state == .notGranted)
+    #expect(defaults.string(forKey: ObserveConsent.savedValueKey) == "not-granted")
+    #expect(!consent.update(granted: false))
+    #expect(!consent.update(granted: true))
+    #expect(consent.state == .notGranted)
+    #expect(defaults.string(forKey: ObserveConsent.savedValueKey) == "granted")
   }
 }
 
