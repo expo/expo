@@ -147,6 +147,15 @@ describe(unescapeAndroidString, () => {
 
 describe('Android whitespace decoding', () => {
   const cases = [
+    ['NUL Unicode escape', 'a\\u0000b', 'ab'],
+    ['one-digit NUL escape', '\\u0', ''],
+    ['two-digit NUL escape', '\\u00', ''],
+    ['three-digit NUL escape', '\\u000', ''],
+    ['four-digit NUL escape', '\\u0000', ''],
+    ['bare Unicode escape', '\\u', ''],
+    ['one-digit Unicode escape', 'x\\u4', 'x\u0004'],
+    ['two-digit Unicode escape', 'x\\u41', 'xA'],
+    ['three-digit Unicode escape', 'x\\u004', 'x\u0004'],
     ['escaped newline and tab', 'one\\ntwo\\tthree', 'one\ntwo\tthree'],
     ['Unicode escapes', 'caf\\u00e9\\u2026', 'café…'],
     ['quoted padding', '"  padded  "', '  padded  '],
@@ -154,7 +163,6 @@ describe('Android whitespace decoding', () => {
     ['quoted tabs and newlines', '"a\t\nb"', 'a\t\nb'],
     ['Unicode carriage return', 'a\\u000db', 'a\rb'],
     ['Unicode form feed', 'a\\u000cb', 'a\fb'],
-    ['Unicode null', 'a\\u0000b', 'a\0b'],
     ['unquoted spaces', 'a  b', 'a b'],
     ['unquoted padding', '  a  ', 'a'],
     ['only whitespace', ' \t\n ', ''],
@@ -174,7 +182,16 @@ describe('Android whitespace decoding', () => {
     expect(unescapeAndroidString(source)).toBe(expected);
   });
 
-  it.each(cases.filter(([, , expected]) => expected !== ''))(
+  const roundTripCases = [
+    ...cases,
+    ['quoted empty string', '""', ''],
+    ['padded quoted empty string', ' "" ', ''],
+    ['repeated empty quoted regions', '""""', ''],
+    ['Unicode FFFE', 'x\\ufffe', 'x\ufffe'],
+    ['Unicode FFFF', 'x\\uffff', 'x\uffff'],
+  ];
+
+  it.each(roundTripCases.filter(([name]) => name !== 'only whitespace'))(
     'preserves %s through XML read/write cycles',
     async (_name, source, expected) => {
       const stringsPath = '/app/android/app/src/main/res/values/strings.xml';
@@ -195,5 +212,30 @@ describe('Android whitespace decoding', () => {
 
   it('writes carriage returns as Unicode escapes', () => {
     expect(escapeAndroidString('a\rb')).toBe('a\\u000db');
+  });
+});
+
+describe('Android string writer boundaries', () => {
+  it.each([
+    ['', '""'],
+    ['a\ufffeb', 'a\\ufffeb'],
+    ['a\uffffb', 'a\\uffffb'],
+  ])('escapes %j as %j', (value, expected) => {
+    expect(escapeAndroidString(value)).toBe(expected);
+  });
+
+  it.each([
+    ['\u0000Name', 'Name'],
+    ['Name\u0000', 'Name'],
+    ['Null\u0000Byte', 'NullByte'],
+    ['\u0000', '""'],
+    ['a \u0000 b', '"a  b"'],
+    ['\u0000 Padded\u0000', '" Padded"'],
+    ['Padded \u0000', '"Padded "'],
+  ])('discards NUL from %j and writes %j', (value, expected) => {
+    expect(escapeAndroidString(value)).toBe(expected);
+  });
+  it('discards literal NUL when decoding', () => {
+    expect(unescapeAndroidString('Null\0Byte')).toBe('NullByte');
   });
 });
