@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import type { Command } from '../../index';
 import * as Log from '../../log';
-import { logCmdError } from '../../utils/errors';
+import { CommandError, logCmdError } from '../../utils/errors';
 import { findUpProjectRootOrAssert } from '../../utils/findUp';
 import { parseCompileArgs } from '../args';
 import { getHelp } from './help';
@@ -34,7 +34,7 @@ export const expoCompileIos: Command = async (argv) => {
 
 function assertPlatform() {
   if (process.platform !== 'darwin') {
-    Log.exit(
+    throw new CommandError(
       chalk`iOS apps can only be built on macOS devices. Use {cyan eas build -p ios} to build in the cloud.`
     );
   }
