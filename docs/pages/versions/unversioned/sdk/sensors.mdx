@@ -37,7 +37,8 @@ You can configure `expo-sensors` using its built-in [config plugin](/config-plug
       [
         "expo-sensors",
         {
-          "motionPermission": "Allow $(PRODUCT_NAME) to access your device motion"
+          "motionPermission": "Allow $(PRODUCT_NAME) to access your device motion",
+          "pedometerPlayServicesEnabled": true
         }
       ]
     ]
@@ -55,6 +56,13 @@ You can configure `expo-sensors` using its built-in [config plugin](/config-plug
       description:
         'A string to set the [`NSMotionUsageDescription`](#permission-nsmotionusagedescription) permission message or `false` to disable motion permissions.',
       default: '"Allow $(PRODUCT_NAME) to access your device motion"',
+    },
+    {
+      name: 'pedometerPlayServicesEnabled',
+      platform: 'android',
+      description:
+        'Whether to include the Google Play services libraries that [`Pedometer`](/versions/latest/sdk/pedometer/) step history needs. They increase the app size. Without them, `isRecordingAvailableAsync()` returns `false`, and `getStepCountAsync()` and `subscribeRecordingAsync()` reject with `ERR_PEDOMETER_PLAY_SERVICES_NOT_LINKED`.',
+      default: 'false',
     },
   ]}
 />

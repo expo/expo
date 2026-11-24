@@ -9,17 +9,61 @@ platforms: ['android', 'ios', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `Pedometer` from `expo-sensors` uses the system step counter sensor for live updates, and the Recording API on Android/Core Motion on iOS for step history.
 
 > **warning** Pedometer is not available in Expo Go for Android. Expo Go does not include the `ACTIVITY_RECOGNITION` permission that Pedometer needs. With this permission, Google Play could classify Expo Go as a health app. To use Pedometer on Android, create a [development build](/develop/development-builds/introduction/).
 
-> **Note:** iOS keeps collecting step history automatically (up to seven days). On Android, step history requires Google Play Services Recording API support and an active `subscribeRecordingAsync()` subscription. Unsubscribing makes previously collected history inaccessible, and Android retains up to 10 days since the latest subscription. The subscription helpers (`subscribeRecordingAsync()` / `unsubscribeRecordingAsync()`) are no-ops on iOS.
+iOS keeps collecting step history automatically (up to seven days). On Android, step history requires the [`pedometerPlayServicesEnabled`](#configurable-properties) config plugin option, Google Play services Recording API support, and an active `subscribeRecordingAsync()` subscription. Unsubscribing makes previously collected history inaccessible, and Android retains up to 10 days since the latest subscription. The subscription helpers (`subscribeRecordingAsync()` / `unsubscribeRecordingAsync()`) are no-ops on iOS.
 
 ## Installation
 
 <APIInstallSection />
+
+## Configuration in app config
+
+You can configure `Pedometer` from `expo-sensors` using its built-in [config plugin](/config-plugins/introduction/). The plugin allows you to configure properties that cannot be set at runtime and require building a new app binary to take effect.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Allow $(PRODUCT_NAME) to access your device motion",
+          "pedometerPlayServicesEnabled": true
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'motionPermission',
+      platform: 'ios',
+      description:
+        'A string to set the [`NSMotionUsageDescription`](/versions/latest/sdk/sensors/#permission-nsmotionusagedescription) permission message or `false` to disable motion permissions.',
+      default: '"Allow $(PRODUCT_NAME) to access your device motion"',
+    },
+    {
+      name: 'pedometerPlayServicesEnabled',
+      platform: 'android',
+      description:
+        'Whether to include the Google Play services libraries that step history needs. They increase the app size. Without them, `isRecordingAvailableAsync()` returns `false`, and `getStepCountAsync()` and `subscribeRecordingAsync()` reject with `ERR_PEDOMETER_PLAY_SERVICES_NOT_LINKED`.',
+      default: 'false',
+    },
+  ]}
+/>
 
 ## Usage
 

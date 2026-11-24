@@ -5,14 +5,6 @@ import android.Manifest
 import android.hardware.Sensor
 import android.os.Build
 import android.os.Bundle
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.gms.fitness.FitnessLocal
-import com.google.android.gms.fitness.LocalRecordingClient
-import com.google.android.gms.fitness.data.LocalDataType
-import com.google.android.gms.fitness.data.LocalField
-import com.google.android.gms.fitness.request.LocalDataReadRequest
-import com.google.android.gms.tasks.Task
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
@@ -22,15 +14,9 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.sensors.UseSensorProxy
 import expo.modules.sensors.createSensorProxy
-import java.util.concurrent.TimeUnit
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withTimeout
 
 private const val EventName = "Exponent.pedometerUpdate"
-private const val TaskTimeoutSeconds = 30L
+internal const val TaskTimeoutSeconds = 30L
 
 class NotSupportedException(message: String) : CodedException(message)
 
@@ -55,6 +41,13 @@ class ReadDataFailedException(statusCode: Int, statusMessage: String?) : CodedEx
   "Failed to read data from the Recording API. Code: $statusCode. Message: $statusMessage",
   null
 )
+class PlayServicesNotLinkedException : CodedException(
+  "ERR_PEDOMETER_PLAY_SERVICES_NOT_LINKED",
+  "Pedometer step history is not available because the app does not include the Google Play services " +
+    "libraries for the pedometer. Set `pedometerPlayServicesEnabled` to `true` in the `expo-sensors` config plugin, " +
+    "or set `expo.sensors.pedometer-play-services-enabled=true` in `android/gradle.properties`. Then rebuild the app.",
+  null
+)
 class PedometerModule : Module() {
   private var stepsAtTheBeginning: Int? = null
 
@@ -69,16 +62,28 @@ class PedometerModule : Module() {
     }
   }
 
-  override fun definition() = ModuleDefinition {
-    val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+  private val isPlayServicesLinked by lazy {
+    try {
+      Class.forName("com.google.android.gms.fitness.FitnessLocal")
+      true
+    } catch (_: ClassNotFoundException) {
+      false
+    }
+  }
 
-    fun isRecordingAvailable(): Boolean {
-      return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
-        context,
-        LocalRecordingClient.LOCAL_RECORDING_CLIENT_MIN_VERSION_CODE
-      ) == ConnectionResult.SUCCESS
+  private var playServicesInstance: PedometerPlayServices? = null
+
+  private val playServices: PedometerPlayServices?
+    get() {
+      if (!isPlayServicesLinked) {
+        return null
+      }
+      playServicesInstance?.let { return it }
+      val context = appContext.reactContext?.applicationContext ?: throw Exceptions.ReactContextLost()
+      return PedometerPlayServices(context).also { playServicesInstance = it }
     }
 
+  override fun definition() = ModuleDefinition {
     Name("ExponentPedometer")
 
     UseSensorProxy(
@@ -107,75 +112,22 @@ class PedometerModule : Module() {
     }
 
     AsyncFunction("isRecordingAvailableAsync") {
-      isRecordingAvailable()
+      playServices?.isRecordingAvailable() ?: false
     }
 
     AsyncFunction("subscribeRecordingAsync") Coroutine { ->
-      if (!isRecordingAvailable()) {
-        throw NotSupportedException("Pedometer Recording API is not available on this device.")
-      }
-
-      val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
-      localRecordingClient.subscribe(LocalDataType.TYPE_STEP_COUNT_DELTA).await()
+      val playServices = playServices ?: throw PlayServicesNotLinkedException()
+      playServices.subscribeRecording()
     }
 
     AsyncFunction("unsubscribeRecordingAsync") Coroutine { ->
-      if (isRecordingAvailable()) {
-        val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
-        localRecordingClient.unsubscribe(LocalDataType.TYPE_STEP_COUNT_DELTA).await()
-      }
+      playServices?.unsubscribeRecording()
+      Unit
     }
 
     AsyncFunction("getStepCountAsync") Coroutine { startTime: Long, endTime: Long ->
-      if (!isRecordingAvailable()) {
-        throw NotSupportedException("Pedometer Recording API is not available on this device.")
-      }
-
-      // `LocalDataReadRequest.Builder.build()` throws when the end time is not after the start time.
-      if (endTime <= startTime) {
-        return@Coroutine mapOf("steps" to 0L)
-      }
-
-      val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
-      val readRequest = LocalDataReadRequest.Builder()
-        .aggregate(LocalDataType.TYPE_STEP_COUNT_DELTA)
-        .bucketByTime(1, TimeUnit.DAYS)
-        .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
-        .build()
-
-      val response = localRecordingClient.readData(readRequest).await()
-
-      if (!response.status.isSuccess) {
-        throw ReadDataFailedException(response.status.statusCode, response.status.statusMessage)
-      }
-
-      val sum = response.buckets
-        .flatMap { it.dataSets }
-        .flatMap { it.dataPoints }
-        .sumOf { it.getValue(LocalField.FIELD_STEPS).asInt() }
-
-      mapOf("steps" to sum.toLong())
+      val playServices = playServices ?: throw PlayServicesNotLinkedException()
+      mapOf("steps" to playServices.getStepCount(startTime, endTime))
     }
-  }
-}
-
-private suspend fun <T> Task<T>.await(): T {
-  try {
-    return withTimeout(TimeUnit.SECONDS.toMillis(TaskTimeoutSeconds)) {
-      suspendCancellableCoroutine { continuation ->
-        addOnCompleteListener { task ->
-          when {
-            task.isSuccessful -> continuation.resume(task.result)
-            task.isCanceled -> continuation.resumeWithException(TaskCancelledException())
-            task.exception is SecurityException -> continuation.resumeWithException(
-              Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
-            )
-            else -> continuation.resumeWithException(TaskFailedException(task.exception))
-          }
-        }
-      }
-    }
-  } catch (e: TimeoutCancellationException) {
-    throw TaskTimeoutException()
   }
 }
