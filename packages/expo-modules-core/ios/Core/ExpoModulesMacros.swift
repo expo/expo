@@ -59,9 +59,9 @@ public enum JSOptions {
   case cached
 }
 
-/// Marker macro applied to module / shared-object members that should be exposed to JavaScript.
-/// The accompanying `@ExpoModule` and `@SharedObject` macros discover `@JS`-marked declarations
-/// and generate the matching `Function` / `AsyncFunction` / `Property` / `Constructor` registrations.
+/// Marker macro applied to module, shared object and `@JSClass` class members that should be exposed to
+/// JavaScript. The accompanying `@ExpoModule`, `@SharedObject` and `@JSClass` macros discover `@JS`-marked
+/// declarations and generate the matching `Function` / `AsyncFunction` / `Property` / `Constructor` registrations.
 ///
 /// Usage:
 ///
@@ -170,8 +170,8 @@ public macro Event(_ options: EventOptions...) =
 
 /// Member macro applied to a `Module` subclass. Scans the class body for declarations
 /// marked with `@JS` and binds them directly into the module's JS object by a synthesized
-/// `_decorateModule(object:in:)`. The `@SharedObject` classes in the `classes:` argument are
-/// emitted as a `_classTypes` static, and core adds their JavaScript classes to the module's JS object.
+/// `_decorateModule(object:in:)`. The `@SharedObject` and `@JSClass` classes in the `classes:` argument
+/// are emitted as a `_classTypes` static, and core adds their JavaScript classes to the module's JS object.
 /// The `@ExpoView` classes in the `views:` argument are emitted as a `_viewTypes` static, and core
 /// registers them as native components.
 ///
@@ -203,14 +203,14 @@ public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = [], views: 
 
 /// Member macro applied to a `SharedObject` subclass. Scans the class body for declarations
 /// marked with `@JS` (including a single `@JS init(...)` for the JS constructor) and
-/// binds them through overrides of the `SharedObject` hooks below. The class's JavaScript name
-/// is emitted as a `_jsName` override. The companion `@ExpoModule(classes: [Foo.self])` wires the
-/// class into the module's exposed surface.
+/// binds them through overrides of the `AnyJavaScriptClass` hooks that `SharedObject` implements.
+/// The class's JavaScript name is emitted as a `_jsName` override. The companion
+/// `@ExpoModule(classes: [Foo.self])` wires the class into the module's exposed surface.
 ///
 /// `@JS` methods and properties are bound directly onto the class prototype by an override of
-/// `_decorateSharedObject(prototype:in:)`, `static` and `class` ones onto the class itself by an
-/// override of `_decorateSharedObject(constructor:in:)`, and a single `@JS init(...)` becomes an
-/// override of `_constructSharedObject(this:arguments:in:)` that builds the native instance from the
+/// `_decorateClass(prototype:in:)`, `static` and `class` ones onto the class itself by an
+/// override of `_decorateClass(constructor:in:)`, and a single `@JS init(...)` becomes an
+/// override of `_constructInstance(this:arguments:in:)` that builds the native instance from the
 /// JS arguments. Core calls them when building the class. The class must be a `SharedObject`
 /// subclass, direct or not, or the `_jsName` override doesn't compile.
 ///
@@ -233,12 +233,50 @@ public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = [], views: 
 @attached(
   member,
   names:
-    named(_jsName), named(_jsClassType), named(_jsSuperclassType), named(_decorateSharedObject),
-    named(_constructSharedObject), named(_assertTypesConformance))
+    named(_jsName), named(_jsClassType), named(_jsSuperclassType), named(_decorateClass),
+    named(_constructInstance), named(_assertTypesConformance))
 @attached(memberAttribute)
 @attached(extension, conformances: Sendable)
 public macro SharedObject(_ name: String? = nil) =
   #externalMacro(module: "ExpoModulesMacros", type: "SharedObjectMacro")
+
+/// Member + extension macro applied to any class. Gives the class a JavaScript class without making it a
+/// shared object: the class needs no superclass, and its instances have no events and no registry ID. Like
+/// `@SharedObject`, it binds the `@JS` members and a single `@JS init(...)` through the hooks of
+/// `AnyJavaScriptClass`, and the companion `@ExpoModule(classes: [Point.self])` adds the class to the module's
+/// JavaScript object. The JavaScript name defaults to the class name; pass `@JSClass("CustomName")` to
+/// override it.
+///
+/// JavaScript gets an instance only from the constructor, which pairs the new JavaScript object with the
+/// native instance. The JavaScript object holds the native instance, and native code can't return it to
+/// JavaScript, so a `@JS` member can't return the class. A `@JS` function can take an instance as an
+/// argument.
+///
+/// A class whose superclass has no JavaScript class is the root of its chain. The JavaScript class of a
+/// subclass of another `@JSClass` class extends the JavaScript class of that class. A `@JSClass` class
+/// can't be a shared object. Like `@SharedObject`, the macro adds an `@unchecked Sendable` conformance
+/// to a root class that isn't `Sendable` yet.
+///
+/// Usage:
+///
+///     @JSClass
+///     public final class Point {
+///       @JS
+///       init(x: Double, y: Double) { ... }
+///
+///       @JS
+///       func distance(to other: Point) -> Double { ... }
+///     }
+@attached(
+  member,
+  conformances: AnyJavaScriptClass, AnySharedObject,
+  names:
+    named(_jsName), named(_jsClassType), named(_jsSuperclassType), named(_decorateClass),
+    named(_constructInstance), named(_assertTypesConformance))
+@attached(memberAttribute)
+@attached(extension, conformances: AnyJavaScriptClass, JavaScriptDecodable, Sendable)
+public macro JSClass(_ name: String? = nil) =
+  #externalMacro(module: "ExpoModulesMacros", type: "JSClassMacro")
 
 /// Member + extension macro applied to a record `struct` or `class`. Every non-`static`,
 /// non-`private`/`fileprivate`, non-`lazy`, non-computed stored property is part of the record — no

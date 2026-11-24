@@ -611,7 +611,7 @@ private struct MacroSharedObjectTests {
     register(MacroSharedObjectModule(appContext: appContext))
 
     // `buildSharedObjectPrototype` is how a SharedObject's proxy is rebuilt in an alternate runtime
-    // (e.g. a worklet), so the prototype must be decorated via `_decorateSharedObject` here too.
+    // (e.g. a worklet), so the prototype must be decorated via `_decorateClass` here too.
     let basePrototype = try runtime.eval("expo.SharedObject.prototype").asObject()
     let prototype = try JavaScriptBindings.buildSharedObjectPrototype(MacroCounter.self, in: runtime, basePrototype: basePrototype)
     // Read into plain values first; `#expect` can't capture the non-copyable `JavaScriptObject`.

@@ -212,9 +212,9 @@ public final class ModuleHolder {
       log.info("Creating JS object for module '\(name)'")
       let object = try definition.build(appContext: appContext)
 
-      // Install the `@SharedObject` classes the `@ExpoModule` macro registers by type.
+      // Install the `@SharedObject` and `@JSClass` classes the `@ExpoModule` macro registers by type.
       for classType in type(of: module)._classTypes {
-        object.setProperty(classType._jsName, value: try appContext.getSharedObjectClass(classType))
+        object.setProperty(classType._jsName, value: try appContext.getJavaScriptClass(classType))
       }
 
       // Install the `@JS` members the `@ExpoModule` macro binds directly into the JS object

@@ -2,6 +2,7 @@ import type {
   ExportedEnum,
   ExportedEvent,
   ExportedFunction,
+  ExportedJSClass,
   ExportedModule,
   ExportedParameter,
   ExportedProperty,
@@ -39,10 +40,10 @@ export type RenderedSurface = {
 };
 
 export type RenderedDeclaration = {
-  kind: 'enum' | 'record' | 'union' | 'shared object' | 'module';
+  kind: 'enum' | 'record' | 'union' | 'shared object' | 'class' | 'module';
   /**
-   * The TypeScript name: the JS name for modules and shared objects, the native name without the
-   * types it is nested in otherwise.
+   * The TypeScript name: the JS name for modules, shared objects and classes, the native name
+   * without the types it is nested in otherwise.
    */
   name: string;
   /** The name of the declaration in the native source. */
@@ -54,6 +55,7 @@ export type RenderedDeclaration = {
 export type DeclarationCounts = {
   modules: number;
   sharedObjects: number;
+  classes: number;
   records: number;
   enums: number;
   unions: number;
@@ -145,8 +147,8 @@ const BASE_CLASS_NAMES = new Set([NATIVE_MODULE_BASE.name, SHARED_OBJECT_BASE.na
 
 /**
  * Renders a scanned surface as one TypeScript declaration file: enums first, then records, unions,
- * shared objects, and modules, so every declaration precedes the ones that reference it. References to
- * types the `expo` package provides become type-only imports.
+ * shared objects, `@JSClass` classes, and modules, so every declaration precedes the ones that
+ * reference it. References to types the `expo` package provides become type-only imports.
  */
 export function renderSurface(scanned: ExportedSurface): RenderedSurface {
   const surface = withoutBackticks(scanned);
@@ -181,6 +183,7 @@ export function renderSurface(scanned: ExportedSurface): RenderedSurface {
   const records = declarable(surface.records, (record) => typeName(record.name));
   const unions = declarable(surface.unions, (union) => typeName(union.name));
   const sharedObjects = declarable(surface.sharedObjects, (sharedObject) => sharedObject.jsName);
+  const classes = declarable(surface.classes, (jsClass) => jsClass.jsName);
   const modules = declarable(surface.modules, (module) => module.jsName);
 
   // Qualified Swift type name -> the TS name it is declared under in this file. The scanner reports
@@ -197,6 +200,9 @@ export function renderSurface(scanned: ExportedSurface): RenderedSurface {
   }
   for (const sharedObject of sharedObjects) {
     refs.set(sharedObject.name, sharedObject.jsName);
+  }
+  for (const jsClass of classes) {
+    refs.set(jsClass.name, jsClass.jsName);
   }
   for (const module of modules) {
     refs.set(module.name, module.jsName);
@@ -251,11 +257,13 @@ export function renderSurface(scanned: ExportedSurface): RenderedSurface {
     ...sharedObjects.flatMap((sharedObject) =>
       renderSharedObject(sharedObject, makeContext, claimTypeName)
     ),
+    ...classes.map((jsClass) => renderJSClass(jsClass, makeContext)),
     ...modules.flatMap((module) => renderModule(module, makeContext, claimTypeName)),
   ];
   const counts: DeclarationCounts = {
     modules: modules.length,
     sharedObjects: sharedObjects.length,
+    classes: classes.length,
     records: records.length,
     enums: enums.length,
     unions: unions.length,
@@ -284,6 +292,12 @@ export function renderSurface(scanned: ExportedSurface): RenderedSurface {
       name: so.jsName,
       nativeName: so.name,
       file: so.file,
+    })),
+    ...classes.map((c) => ({
+      kind: 'class' as const,
+      name: c.jsName,
+      nativeName: c.name,
+      file: c.file,
     })),
     ...modules.map((m) => ({
       kind: 'module' as const,
@@ -444,35 +458,7 @@ function renderSharedObject(
   makeContext: ContextFactory,
   claimTypeName: (name: string) => boolean
 ): string[] {
-  const members: string[] = [];
-  const names = new MemberNames();
-  if (sharedObject.initializer) {
-    const parameters = renderParameters(
-      sharedObject.initializer.parameters,
-      sharedObject.file,
-      `${sharedObject.name}.init`,
-      makeContext
-    );
-    members.push(`constructor(${parameters});`);
-  } else {
-    // Without a `@JS init`, JS cannot construct the object; only native code hands out instances. A
-    // private constructor tells TypeScript the same, instead of the implied public no-argument one.
-    members.push('private constructor();');
-  }
-  for (const property of sharedObject.properties) {
-    const rendered = renderProperty(property, sharedObject, makeContext, names, {
-      includeStatic: true,
-    });
-    if (rendered) {
-      members.push(rendered);
-    }
-  }
-  for (const fn of sharedObject.functions) {
-    const rendered = renderFunction(fn, sharedObject, makeContext, names, { includeStatic: true });
-    if (rendered) {
-      members.push(rendered);
-    }
-  }
+  const members = renderClassMembers(sharedObject, makeContext);
   const events = renderEvents(sharedObject, sharedObject.jsName, makeContext, claimTypeName);
   const base = `${SHARED_OBJECT_BASE.name}${events.typeArgument}`;
   const declaration = block(
@@ -481,6 +467,52 @@ function renderSharedObject(
     '}'
   );
   return events.declaration ? [events.declaration, declaration] : [declaration];
+}
+
+/**
+ * A `@JSClass` class has the members of a shared object, but no events and no base class. The
+ * members that it inherits from a `@JSClass` superclass are among its own, as for a shared object.
+ */
+function renderJSClass(jsClass: ExportedJSClass, makeContext: ContextFactory): string {
+  return block(
+    `export declare class ${jsClass.jsName} {`,
+    renderClassMembers(jsClass, makeContext),
+    '}'
+  );
+}
+
+/** The constructor, properties, and functions of a shared object or `@JSClass` class. */
+function renderClassMembers(jsClass: ExportedJSClass, makeContext: ContextFactory): string[] {
+  const members: string[] = [];
+  const names = new MemberNames();
+  if (jsClass.initializer) {
+    const parameters = renderParameters(
+      jsClass.initializer.parameters,
+      jsClass.file,
+      `${jsClass.name}.init`,
+      makeContext
+    );
+    members.push(`constructor(${parameters});`);
+  } else {
+    // Without a `@JS init`, JS cannot construct the object. A private constructor tells TypeScript
+    // the same, instead of the implied public no-argument one.
+    members.push('private constructor();');
+  }
+  for (const property of jsClass.properties) {
+    const rendered = renderProperty(property, jsClass, makeContext, names, {
+      includeStatic: true,
+    });
+    if (rendered) {
+      members.push(rendered);
+    }
+  }
+  for (const fn of jsClass.functions) {
+    const rendered = renderFunction(fn, jsClass, makeContext, names, { includeStatic: true });
+    if (rendered) {
+      members.push(rendered);
+    }
+  }
+  return members;
 }
 
 /** The events type (when it got its own declaration) and the class, in that order. */
@@ -759,6 +791,18 @@ function withoutBackticks(surface: ExportedSurface): ExportedSurface {
     name: stripBackticks(e.name),
     jsName: stripBackticks(e.jsName),
   });
+  const jsClass = (c: ExportedJSClass): ExportedJSClass => ({
+    ...c,
+    name: stripBackticks(c.name),
+    jsName: stripBackticks(c.jsName),
+    initializer: c.initializer && {
+      ...c.initializer,
+      parameters: c.initializer.parameters.map(parameter),
+    },
+    functions: c.functions.map(fn),
+    properties: c.properties.map(property),
+    events: c.events.map(event),
+  });
   return {
     ...surface,
     enums: surface.enums.map((e) => ({
@@ -776,18 +820,8 @@ function withoutBackticks(surface: ExportedSurface): ExportedSurface {
       name: stripBackticks(u.name),
       members: u.members.map((m) => ({ ...m, name: stripBackticks(m.name) })),
     })),
-    sharedObjects: surface.sharedObjects.map((so) => ({
-      ...so,
-      name: stripBackticks(so.name),
-      jsName: stripBackticks(so.jsName),
-      initializer: so.initializer && {
-        ...so.initializer,
-        parameters: so.initializer.parameters.map(parameter),
-      },
-      functions: so.functions.map(fn),
-      properties: so.properties.map(property),
-      events: so.events.map(event),
-    })),
+    sharedObjects: surface.sharedObjects.map(jsClass),
+    classes: surface.classes.map(jsClass),
     modules: surface.modules.map((m) => ({
       ...m,
       name: stripBackticks(m.name),

@@ -93,7 +93,7 @@ internal struct PackageHolder {
       return holder.getJavaScriptValue()
     }
     if let sharedObjectType = sharedObjectType(named: exportName) {
-      return try appContext.getSharedObjectClass(sharedObjectType).asValue()
+      return try appContext.getJavaScriptClass(sharedObjectType).asValue()
     }
     return nil
   }

@@ -272,7 +272,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   /// Creates a new JavaScript object with the class prototype associated with the given native class.
   /// Returns `nil` when the native class has no JavaScript class.
   /// - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
-  internal func newObject(of type: any AnySharedObject.Type) throws -> JavaScriptObject? {
+  internal func newObject(of type: any AnyJavaScriptClass.Type) throws -> JavaScriptObject? {
     let runtime = try self.runtime
     let nativeClassId = ObjectIdentifier(type)
     if let object = classRegistry.withPrototype(nativeClassId: nativeClassId, { (prototype: borrowing JavaScriptObject) in
@@ -293,7 +293,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     // Native values are converted to JS on the JavaScript thread.
     return try JavaScriptActor.assumeIsolated {
       // Building the class registers its prototype in `classRegistry`.
-      _ = try JavaScriptBindings.buildSharedObjectClass(type, appContext: self)
+      _ = try JavaScriptBindings.buildClass(type, appContext: self)
       return classRegistry.withPrototype(nativeClassId: nativeClassId) { (prototype: borrowing JavaScriptObject) in
         return runtime.createObject(prototype: prototype)
       }
@@ -462,20 +462,20 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   }
 
   /**
-   Returns the JavaScript class of the given `@SharedObject` class, and builds it on the first call. There is one
-   class for each native type, so a class that a package exports and a module registers in `_classTypes` too is
-   the same object in both places.
+   Returns the JavaScript class of the given `@SharedObject` or `@JSClass` class, and builds it on the first call.
+   There is one class for each native type, so a class that a package exports and a module registers in
+   `_classTypes` too is the same object in both places.
    */
   @JavaScriptActor
-  func getSharedObjectClass(_ sharedObjectType: any AnySharedObject.Type) throws -> JavaScriptObject {
-    let cachedClass = classRegistry.withPrototype(nativeClassId: ObjectIdentifier(sharedObjectType)) {
+  func getJavaScriptClass(_ type: any AnyJavaScriptClass.Type) throws -> JavaScriptObject {
+    let cachedClass = classRegistry.withPrototype(nativeClassId: ObjectIdentifier(type)) {
       (prototype: borrowing JavaScriptObject) in
       return prototype.getProperty("constructor").getObject()
     }
     if let cachedClass {
       return cachedClass
     }
-    return try JavaScriptBindings.buildSharedObjectClass(sharedObjectType, appContext: self)
+    return try JavaScriptBindings.buildClass(type, appContext: self)
   }
 
   /**
@@ -809,7 +809,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   /// the base prototype. Like in the main runtime, a superclass gets a prototype also when no module registers it.
   @JavaScriptActor
   private func classPrototype(
-    for type: any AnySharedObject.Type,
+    for type: any AnyJavaScriptClass.Type,
     in runtime: JavaScriptRuntime,
     prototypes: SharedObjectPrototypes
   ) throws -> JavaScriptObject {
@@ -839,7 +839,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   /// Returns the prototype of the base `SharedRef` class for a `SharedRef` type, otherwise of the base `SharedObject`
   /// class, in the given runtime.
   @JavaScriptActor
-  private func basePrototype(for type: any AnySharedObject.Type, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
+  private func basePrototype(for type: any AnyJavaScriptClass.Type, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
     return try runtime.global()
       .getPropertyAsObject(globalCoreObjectPropertyName)
       .getPropertyAsObject(type is AnySharedRef.Type ? "SharedRef" : "SharedObject")
@@ -861,9 +861,9 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     return nil
   }
 
-  /// Finds the `@SharedObject` class for a given native type identifier among the classes that modules
-  /// register in `_classTypes` and the classes that packages export.
-  private func findClassType(for typeId: ObjectIdentifier) -> SharedObject.Type? {
+  /// Finds the class for a given native type identifier among the classes that modules register in `_classTypes`
+  /// and the classes that packages export.
+  private func findClassType(for typeId: ObjectIdentifier) -> (any AnyJavaScriptClass.Type)? {
     for module in allModuleHolders {
       if let classType = type(of: module.module)._classTypes.first(where: { ObjectIdentifier($0) == typeId }) {
         return classType
