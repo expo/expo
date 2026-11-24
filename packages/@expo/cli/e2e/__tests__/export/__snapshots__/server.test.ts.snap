@@ -150,12 +150,16 @@ exports[`server-output express requests exported files has expected routes manif
         "type": "css",
       },
     ],
-    "js": [
-      "/_expo/static/js/web/entry-[hash].js",
-    ],
+    "js": [],
   },
   "htmlRoutes": [
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/nested/index.tsx",
       "loader": "_expo/loaders/loaders/nested/index.js",
       "namedRegex": "^/loaders/nested(?:/)?$",
@@ -163,6 +167,12 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/index.tsx",
       "loader": "_expo/loaders/loaders/index.js",
       "namedRegex": "^/loaders(?:/)?$",
@@ -170,18 +180,36 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./index.tsx",
       "namedRegex": "^/(?:/)?$",
       "page": "/index",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./routing/(alpha)/beta.tsx",
       "namedRegex": "^/routing(?:/\\(alpha\\))?/beta(?:/)?$",
       "page": "/routing/(alpha)/beta",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/groups/(group)/index.tsx",
       "loader": "_expo/loaders/loaders/groups/(group)/index.js",
       "namedRegex": "^/loaders/groups(?:/\\(group\\))?(?:/)?$",
@@ -189,24 +217,48 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./routing/(alpha)/index.tsx",
       "namedRegex": "^/routing(?:/\\(alpha\\))?(?:/)?$",
       "page": "/routing/(alpha)/index",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./routing/(a,b)/multi-group.tsx",
       "namedRegex": "^/routing(?:/\\(b\\))?/multi\\-group(?:/)?$",
       "page": "/routing/(b)/multi-group",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./routing/(a,b)/multi-group.tsx",
       "namedRegex": "^/routing(?:/\\(a\\))?/multi\\-group(?:/)?$",
       "page": "/routing/(a)/multi-group",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/env.tsx",
       "loader": "_expo/loaders/loaders/env.js",
       "namedRegex": "^/loaders/env(?:/)?$",
@@ -214,6 +266,12 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/slow.tsx",
       "loader": "_expo/loaders/loaders/slow.js",
       "namedRegex": "^/loaders/slow(?:/)?$",
@@ -221,6 +279,12 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/meta.tsx",
       "loader": "_expo/loaders/loaders/meta.js",
       "namedRegex": "^/loaders/meta(?:/)?$",
@@ -228,30 +292,60 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/links.tsx",
       "namedRegex": "^/rendering/links(?:/)?$",
       "page": "/rendering/links",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/fonts.tsx",
       "namedRegex": "^/rendering/fonts(?:/)?$",
       "page": "/rendering/fonts",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/asset.tsx",
       "namedRegex": "^/rendering/asset(?:/)?$",
       "page": "/rendering/asset",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/about.tsx",
       "namedRegex": "^/rendering/about(?:/)?$",
       "page": "/rendering/about",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/error.tsx",
       "loader": "_expo/loaders/loaders/error.js",
       "namedRegex": "^/loaders/error(?:/)?$",
@@ -259,12 +353,24 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/styled.tsx",
       "namedRegex": "^/rendering/styled(?:/)?$",
       "page": "/rendering/styled",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/second.tsx",
       "loader": "_expo/loaders/loaders/second.js",
       "namedRegex": "^/loaders/second(?:/)?$",
@@ -272,6 +378,12 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/request.tsx",
       "loader": "_expo/loaders/loaders/request.js",
       "namedRegex": "^/loaders/request(?:/)?$",
@@ -279,18 +391,36 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/suspense.tsx",
       "namedRegex": "^/rendering/suspense(?:/)?$",
       "page": "/rendering/suspense",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/metadata.tsx",
       "namedRegex": "^/rendering/metadata(?:/)?$",
       "page": "/rendering/metadata",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/response.tsx",
       "loader": "_expo/loaders/loaders/response.js",
       "namedRegex": "^/loaders/response(?:/)?$",
@@ -298,6 +428,12 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "expo-router/build/views/Sitemap.js",
       "generated": true,
       "namedRegex": "^/_sitemap(?:/)?$",
@@ -305,18 +441,36 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/safe-area.tsx",
       "namedRegex": "^/rendering/safe\\-area(?:/)?$",
       "page": "/rendering/safe-area",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/no-loader.tsx",
       "namedRegex": "^/loaders/no\\-loader(?:/)?$",
       "page": "/loaders/no-loader",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/json-helper.tsx",
       "loader": "_expo/loaders/loaders/json-helper.js",
       "namedRegex": "^/loaders/json\\-helper(?:/)?$",
@@ -324,12 +478,24 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/env-metadata.tsx",
       "namedRegex": "^/rendering/env\\-metadata(?:/)?$",
       "page": "/rendering/env-metadata",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./headers/blog.tsx",
       "loader": "_expo/loaders/headers/blog.js",
       "namedRegex": "^/headers/blog(?:/)?$",
@@ -337,6 +503,12 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/static-helper.tsx",
       "loader": "_expo/loaders/loaders/static-helper.js",
       "namedRegex": "^/loaders/static\\-helper(?:/)?$",
@@ -344,6 +516,12 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/server-helper.tsx",
       "loader": "_expo/loaders/loaders/server-helper.js",
       "namedRegex": "^/loaders/server\\-helper(?:/)?$",
@@ -351,12 +529,24 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./headers/index.tsx",
       "namedRegex": "^/headers(?:/)?$",
       "page": "/headers/index",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./errors/loader.tsx",
       "loader": "_expo/loaders/errors/loader.js",
       "namedRegex": "^/errors/loader(?:/)?$",
@@ -364,12 +554,24 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./api/with-page.tsx",
       "namedRegex": "^/api/with\\-page(?:/)?$",
       "page": "/api/with-page",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/large-suspense.tsx",
       "loader": "_expo/loaders/loaders/large-suspense.js",
       "namedRegex": "^/loaders/large\\-suspense(?:/)?$",
@@ -377,72 +579,144 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/safe-area-stack.tsx",
       "namedRegex": "^/rendering/safe\\-area\\-stack(?:/)?$",
       "page": "/rendering/safe-area-stack",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./redirects/index.tsx",
       "namedRegex": "^/redirects(?:/)?$",
       "page": "/redirects/index",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./middleware/index.tsx",
       "namedRegex": "^/middleware(?:/)?$",
       "page": "/middleware/index",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./errors/throw-on-load.tsx",
       "namedRegex": "^/errors/throw\\-on\\-load(?:/)?$",
       "page": "/errors/throw-on-load",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./api/checks/post-json.tsx",
       "namedRegex": "^/api/checks/post\\-json(?:/)?$",
       "page": "/api/checks/post-json",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./api/checks/get-spread.tsx",
       "namedRegex": "^/api/checks/get\\-spread(?:/)?$",
       "page": "/api/checks/get-spread",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./api/checks/get-runtime.tsx",
       "namedRegex": "^/api/checks/get\\-runtime(?:/)?$",
       "page": "/api/checks/get-runtime",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./api/checks/get-methods.tsx",
       "namedRegex": "^/api/checks/get\\-methods(?:/)?$",
       "page": "/api/checks/get-methods",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./api/checks/get-dynamic.tsx",
       "namedRegex": "^/api/checks/get\\-dynamic(?:/)?$",
       "page": "/api/checks/get-dynamic",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./api/checks/post-methods.tsx",
       "namedRegex": "^/api/checks/post\\-methods(?:/)?$",
       "page": "/api/checks/post-methods",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./middleware/redirect-target.tsx",
       "namedRegex": "^/middleware/redirect\\-target(?:/)?$",
       "page": "/middleware/redirect-target",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./routing/static/posts/[postId].tsx",
       "namedRegex": "^/routing/static/posts/(?<postId>[^/]+?)(?:/)?$",
       "page": "/routing/static/posts/[postId]",
@@ -451,6 +725,12 @@ exports[`server-output express requests exported files has expected routes manif
       },
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./routing/posts/[postId].tsx",
       "namedRegex": "^/routing/posts/(?<postId>[^/]+?)(?:/)?$",
       "page": "/routing/posts/[postId]",
@@ -459,6 +739,12 @@ exports[`server-output express requests exported files has expected routes manif
       },
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/metadata-async/[id].tsx",
       "namedRegex": "^/rendering/metadata\\-async/(?<id>[^/]+?)(?:/)?$",
       "page": "/rendering/metadata-async/[id]",
@@ -467,6 +753,12 @@ exports[`server-output express requests exported files has expected routes manif
       },
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/[post].tsx",
       "namedRegex": "^/rendering/(?<post>[^/]+?)(?:/)?$",
       "page": "/rendering/[post]",
@@ -475,6 +767,12 @@ exports[`server-output express requests exported files has expected routes manif
       },
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/posts/[postId].tsx",
       "loader": "_expo/loaders/loaders/posts/[postId].js",
       "namedRegex": "^/loaders/posts/(?<postId>[^/]+?)(?:/)?$",
@@ -484,6 +782,12 @@ exports[`server-output express requests exported files has expected routes manif
       },
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/nullish/[value].tsx",
       "loader": "_expo/loaders/loaders/nullish/[value].js",
       "namedRegex": "^/loaders/nullish/(?<value>[^/]+?)(?:/)?$",
@@ -493,6 +797,12 @@ exports[`server-output express requests exported files has expected routes manif
       },
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/catch-all/[...post].tsx",
       "namedRegex": "^/rendering/catch\\-all(?:/(?<post>.+?))?(?:/)?$",
       "page": "/rendering/catch-all/[...post]",
@@ -501,6 +811,12 @@ exports[`server-output express requests exported files has expected routes manif
       },
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/groups/(group)/platform/[...slug].web.tsx",
       "loader": "_expo/loaders/loaders/groups/(group)/platform/[...slug].js",
       "namedRegex": "^/loaders/groups(?:/\\(group\\))?/platform(?:/(?<slug>.+?))?(?:/)?$",
@@ -515,6 +831,12 @@ exports[`server-output express requests exported files has expected routes manif
   },
   "notFoundRoutes": [
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./+not-found.tsx",
       "namedRegex": "^(?:/(?<notfound>.+?))?(?:/)?$",
       "page": "/+not-found",
@@ -691,12 +1013,16 @@ exports[`server-output workerd requests exported files has expected routes manif
         "type": "css",
       },
     ],
-    "js": [
-      "/_expo/static/js/web/entry-[hash].js",
-    ],
+    "js": [],
   },
   "htmlRoutes": [
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/nested/index.tsx",
       "loader": "_expo/loaders/loaders/nested/index.js",
       "namedRegex": "^/loaders/nested(?:/)?$",
@@ -704,6 +1030,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/index.tsx",
       "loader": "_expo/loaders/loaders/index.js",
       "namedRegex": "^/loaders(?:/)?$",
@@ -711,18 +1043,36 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./index.tsx",
       "namedRegex": "^/(?:/)?$",
       "page": "/index",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./routing/(alpha)/beta.tsx",
       "namedRegex": "^/routing(?:/\\(alpha\\))?/beta(?:/)?$",
       "page": "/routing/(alpha)/beta",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/groups/(group)/index.tsx",
       "loader": "_expo/loaders/loaders/groups/(group)/index.js",
       "namedRegex": "^/loaders/groups(?:/\\(group\\))?(?:/)?$",
@@ -730,24 +1080,48 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./routing/(alpha)/index.tsx",
       "namedRegex": "^/routing(?:/\\(alpha\\))?(?:/)?$",
       "page": "/routing/(alpha)/index",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./routing/(a,b)/multi-group.tsx",
       "namedRegex": "^/routing(?:/\\(b\\))?/multi\\-group(?:/)?$",
       "page": "/routing/(b)/multi-group",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./routing/(a,b)/multi-group.tsx",
       "namedRegex": "^/routing(?:/\\(a\\))?/multi\\-group(?:/)?$",
       "page": "/routing/(a)/multi-group",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/env.tsx",
       "loader": "_expo/loaders/loaders/env.js",
       "namedRegex": "^/loaders/env(?:/)?$",
@@ -755,6 +1129,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/slow.tsx",
       "loader": "_expo/loaders/loaders/slow.js",
       "namedRegex": "^/loaders/slow(?:/)?$",
@@ -762,6 +1142,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/meta.tsx",
       "loader": "_expo/loaders/loaders/meta.js",
       "namedRegex": "^/loaders/meta(?:/)?$",
@@ -769,30 +1155,60 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/links.tsx",
       "namedRegex": "^/rendering/links(?:/)?$",
       "page": "/rendering/links",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/fonts.tsx",
       "namedRegex": "^/rendering/fonts(?:/)?$",
       "page": "/rendering/fonts",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/asset.tsx",
       "namedRegex": "^/rendering/asset(?:/)?$",
       "page": "/rendering/asset",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/about.tsx",
       "namedRegex": "^/rendering/about(?:/)?$",
       "page": "/rendering/about",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/error.tsx",
       "loader": "_expo/loaders/loaders/error.js",
       "namedRegex": "^/loaders/error(?:/)?$",
@@ -800,12 +1216,24 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/styled.tsx",
       "namedRegex": "^/rendering/styled(?:/)?$",
       "page": "/rendering/styled",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/second.tsx",
       "loader": "_expo/loaders/loaders/second.js",
       "namedRegex": "^/loaders/second(?:/)?$",
@@ -813,6 +1241,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/request.tsx",
       "loader": "_expo/loaders/loaders/request.js",
       "namedRegex": "^/loaders/request(?:/)?$",
@@ -820,18 +1254,36 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/suspense.tsx",
       "namedRegex": "^/rendering/suspense(?:/)?$",
       "page": "/rendering/suspense",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/metadata.tsx",
       "namedRegex": "^/rendering/metadata(?:/)?$",
       "page": "/rendering/metadata",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/response.tsx",
       "loader": "_expo/loaders/loaders/response.js",
       "namedRegex": "^/loaders/response(?:/)?$",
@@ -839,6 +1291,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "expo-router/build/views/Sitemap.js",
       "generated": true,
       "namedRegex": "^/_sitemap(?:/)?$",
@@ -846,18 +1304,36 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/safe-area.tsx",
       "namedRegex": "^/rendering/safe\\-area(?:/)?$",
       "page": "/rendering/safe-area",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/no-loader.tsx",
       "namedRegex": "^/loaders/no\\-loader(?:/)?$",
       "page": "/loaders/no-loader",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/json-helper.tsx",
       "loader": "_expo/loaders/loaders/json-helper.js",
       "namedRegex": "^/loaders/json\\-helper(?:/)?$",
@@ -865,12 +1341,24 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/env-metadata.tsx",
       "namedRegex": "^/rendering/env\\-metadata(?:/)?$",
       "page": "/rendering/env-metadata",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./headers/blog.tsx",
       "loader": "_expo/loaders/headers/blog.js",
       "namedRegex": "^/headers/blog(?:/)?$",
@@ -878,6 +1366,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/static-helper.tsx",
       "loader": "_expo/loaders/loaders/static-helper.js",
       "namedRegex": "^/loaders/static\\-helper(?:/)?$",
@@ -885,6 +1379,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/server-helper.tsx",
       "loader": "_expo/loaders/loaders/server-helper.js",
       "namedRegex": "^/loaders/server\\-helper(?:/)?$",
@@ -892,12 +1392,24 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./headers/index.tsx",
       "namedRegex": "^/headers(?:/)?$",
       "page": "/headers/index",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./errors/loader.tsx",
       "loader": "_expo/loaders/errors/loader.js",
       "namedRegex": "^/errors/loader(?:/)?$",
@@ -905,12 +1417,24 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./api/with-page.tsx",
       "namedRegex": "^/api/with\\-page(?:/)?$",
       "page": "/api/with-page",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/large-suspense.tsx",
       "loader": "_expo/loaders/loaders/large-suspense.js",
       "namedRegex": "^/loaders/large\\-suspense(?:/)?$",
@@ -918,72 +1442,144 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/safe-area-stack.tsx",
       "namedRegex": "^/rendering/safe\\-area\\-stack(?:/)?$",
       "page": "/rendering/safe-area-stack",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./redirects/index.tsx",
       "namedRegex": "^/redirects(?:/)?$",
       "page": "/redirects/index",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./middleware/index.tsx",
       "namedRegex": "^/middleware(?:/)?$",
       "page": "/middleware/index",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./errors/throw-on-load.tsx",
       "namedRegex": "^/errors/throw\\-on\\-load(?:/)?$",
       "page": "/errors/throw-on-load",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./api/checks/post-json.tsx",
       "namedRegex": "^/api/checks/post\\-json(?:/)?$",
       "page": "/api/checks/post-json",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./api/checks/get-spread.tsx",
       "namedRegex": "^/api/checks/get\\-spread(?:/)?$",
       "page": "/api/checks/get-spread",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./api/checks/get-runtime.tsx",
       "namedRegex": "^/api/checks/get\\-runtime(?:/)?$",
       "page": "/api/checks/get-runtime",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./api/checks/get-methods.tsx",
       "namedRegex": "^/api/checks/get\\-methods(?:/)?$",
       "page": "/api/checks/get-methods",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./api/checks/get-dynamic.tsx",
       "namedRegex": "^/api/checks/get\\-dynamic(?:/)?$",
       "page": "/api/checks/get-dynamic",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./api/checks/post-methods.tsx",
       "namedRegex": "^/api/checks/post\\-methods(?:/)?$",
       "page": "/api/checks/post-methods",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./middleware/redirect-target.tsx",
       "namedRegex": "^/middleware/redirect\\-target(?:/)?$",
       "page": "/middleware/redirect-target",
       "routeKeys": {},
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./routing/static/posts/[postId].tsx",
       "namedRegex": "^/routing/static/posts/(?<postId>[^/]+?)(?:/)?$",
       "page": "/routing/static/posts/[postId]",
@@ -992,6 +1588,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       },
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./routing/posts/[postId].tsx",
       "namedRegex": "^/routing/posts/(?<postId>[^/]+?)(?:/)?$",
       "page": "/routing/posts/[postId]",
@@ -1000,6 +1602,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       },
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/metadata-async/[id].tsx",
       "namedRegex": "^/rendering/metadata\\-async/(?<id>[^/]+?)(?:/)?$",
       "page": "/rendering/metadata-async/[id]",
@@ -1008,6 +1616,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       },
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/[post].tsx",
       "namedRegex": "^/rendering/(?<post>[^/]+?)(?:/)?$",
       "page": "/rendering/[post]",
@@ -1016,6 +1630,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       },
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/posts/[postId].tsx",
       "loader": "_expo/loaders/loaders/posts/[postId].js",
       "namedRegex": "^/loaders/posts/(?<postId>[^/]+?)(?:/)?$",
@@ -1025,6 +1645,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       },
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/nullish/[value].tsx",
       "loader": "_expo/loaders/loaders/nullish/[value].js",
       "namedRegex": "^/loaders/nullish/(?<value>[^/]+?)(?:/)?$",
@@ -1034,6 +1660,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       },
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./rendering/catch-all/[...post].tsx",
       "namedRegex": "^/rendering/catch\\-all(?:/(?<post>.+?))?(?:/)?$",
       "page": "/rendering/catch-all/[...post]",
@@ -1042,6 +1674,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       },
     },
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./loaders/groups/(group)/platform/[...slug].web.tsx",
       "loader": "_expo/loaders/loaders/groups/(group)/platform/[...slug].js",
       "namedRegex": "^/loaders/groups(?:/\\(group\\))?/platform(?:/(?<slug>.+?))?(?:/)?$",
@@ -1056,6 +1694,12 @@ exports[`server-output workerd requests exported files has expected routes manif
   },
   "notFoundRoutes": [
     {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./+not-found.tsx",
       "namedRegex": "^(?:/(?<notfound>.+?))?(?:/)?$",
       "page": "/+not-found",

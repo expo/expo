@@ -454,10 +454,9 @@ describe('server-output', () => {
           path.join(server.outputDir, 'server/_expo/routes.json')
         );
         // Asset hashes depend on the bundled source and should not affect route snapshots.
-        expect({
-          ...manifest,
-          assets: JSON.parse(JSON.stringify(manifest.assets).replace(/[a-f0-9]{32}/g, '[hash]')),
-        }).toMatchSnapshot();
+        expect(
+          JSON.parse(JSON.stringify(manifest).replace(/[a-f0-9]{32}/g, '[hash]'))
+        ).toMatchSnapshot();
       });
     });
   });

@@ -87,9 +87,11 @@ describe('exports server', () => {
       // Assets should be included
       expect(manifest.assets).toHaveProperty('js');
       expect(manifest.assets).toHaveProperty('css');
-      expect(manifest.assets?.js).toEqual(
-        expect.arrayContaining([expect.stringMatching(/_expo\/static\/js\/web\/entry-.*\.js/)])
-      );
+      for (const route of manifest.htmlRoutes) {
+        expect([...(manifest.assets?.js ?? []), ...(route.assets?.js ?? [])]).toEqual(
+          expect.arrayContaining([expect.stringMatching(/_expo\/static\/js\/web\/entry-.*\.js/)])
+        );
+      }
 
       // Rendering configuration
       expect(manifest.rendering).toEqual({
