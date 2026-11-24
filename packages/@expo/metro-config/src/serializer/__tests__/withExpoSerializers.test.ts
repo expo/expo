@@ -824,12 +824,16 @@ describe('Granular chunk emission', () => {
     ).toBe(true);
   });
 
-  it('bundles the async imports of a worker into the worker', async () => {
+  it.each([
+    ['async', 'import'],
+    ['maybeSync', 'require.unstable_importMaybeSync'],
+    ['prefetch', '__prefetchImport'],
+  ])('bundles the %s imports of a worker into the worker', async (_asyncType, importCall) => {
     const artifacts: SerialAsset[] = await serializeSplitAsync(
       {
         ...publicGraph,
         'index.js': `import('./a'); import('./b'); require.unstable_resolveWorker('./worker');`,
-        'worker.js': `import('./worker-target'); import('./a');`,
+        'worker.js': `${importCall}('./worker-target'); ${importCall}('./a');`,
         'worker-target.js': `console.log('worker target');`,
       },
       { chunkingStrategy: 'granular' }
