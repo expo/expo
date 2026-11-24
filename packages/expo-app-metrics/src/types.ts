@@ -688,12 +688,13 @@ export interface ExpoAppMetricsModuleType {
    * OpenTelemetry's exception conventions. Called by the global `ErrorUtils` handler that
    * `installErrorHandler` installs and by `AppMetricsErrorBoundary`; the `source` field records
    * which path captured the error. An integration that reports errors for a library uses the
-   * `integration` source.
+   * `integration` source. A long task on the JavaScript thread uses the `longTask` source and is
+   * recorded at `warn` severity.
    *
    * @private This API is unstable and may change without notice.
    */
   reportError(error: {
-    source: 'global' | 'errorBoundary' | 'reportedByUser' | 'integration';
+    source: 'global' | 'errorBoundary' | 'reportedByUser' | 'integration' | 'longTask';
     type?: string;
     message: string;
     stacktrace?: string;
@@ -703,6 +704,11 @@ export interface ExpoAppMetricsModuleType {
      */
     componentStack?: string;
     isFatal: boolean;
+    /**
+     * How long a long task blocked the JavaScript thread, in milliseconds. Set only for the
+     * `longTask` source. Recorded as the `expo.long_task.duration_ms` attribute.
+     */
+    durationMs?: number;
   }): void;
 
   /**

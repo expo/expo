@@ -70,6 +70,30 @@ struct ErrorReportTests {
   }
 
   @Test
+  func `records a long task at warn severity with its duration`() {
+    let report = ErrorReport(
+      source: .longTask,
+      type: "LongTask",
+      message: "A long task blocked the JavaScript thread",
+      isFatal: false,
+      durationMs: 812.5
+    )
+    let record = report.toLogRecord()
+    let attributes = try! #require(record.attributes?.value as? [String: Any])
+    #expect(record.name == "js.exception")
+    #expect(record.severity == .warn)
+    #expect(attributes["expo.error.source"] as? String == "longTask")
+    #expect(attributes["expo.long_task.duration_ms"] as? Double == 812.5)
+  }
+
+  @Test
+  func `omits the long task duration attribute when absent`() {
+    let report = ErrorReport(source: .global, message: "boom", isFatal: false)
+    let attributes = try! #require(report.toLogRecord().attributes?.value as? [String: Any])
+    #expect(attributes.keys.contains("expo.long_task.duration_ms") == false)
+  }
+
+  @Test
   func `builds a js exception log from a pending fatal error`() {
     let record = PendingErrorStore.PendingError(
       source: "global",

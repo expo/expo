@@ -75,6 +75,30 @@ class ErrorReportTest {
   }
 
   @Test
+  fun `records a long task at warn severity with its duration`() {
+    val report = ErrorReport(
+      source = ErrorSource.LONG_TASK,
+      type = "LongTask",
+      message = "A long task blocked the JavaScript thread",
+      isFatal = false,
+      durationMs = 812.5
+    )
+    val record = report.toLogRecord(sessionId = "s")
+    val attributes = record.attributes ?: ""
+    assertEquals("js.exception", record.name)
+    assertEquals("warn", record.severity)
+    assertTrue(attributes.contains("\"expo.error.source\":\"longTask\""))
+    assertTrue(attributes.contains("\"expo.long_task.duration_ms\":812.5"))
+  }
+
+  @Test
+  fun `omits the long task duration attribute when absent`() {
+    val report = ErrorReport(source = ErrorSource.GLOBAL, message = "boom", isFatal = false)
+    val attributes = report.toLogRecord(sessionId = "s").attributes ?: ""
+    assertFalse(attributes.contains("expo.long_task.duration_ms"))
+  }
+
+  @Test
   fun `builds a js exception log from a pending fatal error`() {
     val record = PendingErrorStore.PendingError(
       source = "global",
