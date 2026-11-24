@@ -1,6 +1,7 @@
 package expo.modules.appmetrics
 
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import androidx.core.os.bundleOf
 import androidx.test.core.app.ApplicationProvider
@@ -8,10 +9,13 @@ import android.app.ActivityManager
 import android.app.ApplicationExitInfo
 import expo.modules.appmetrics.crashreporting.CrashFileFormat
 import expo.modules.appmetrics.crashreporting.CrashFileReader
+import expo.modules.appmetrics.crashreporting.CrashFileWriter
 import expo.modules.appmetrics.crashreporting.CrashReportProcessor
 import expo.modules.appmetrics.crashreporting.ExitInfoProvider
 import expo.modules.appmetrics.crashreporting.ExitRecord
+import expo.modules.appmetrics.crashreporting.JvmCrashHandler
 import expo.modules.appmetrics.crashreporting.PreferencesLastProcessedExitStore
+import expo.modules.appmetrics.jserrors.PendingErrorStore
 import expo.modules.appmetrics.utils.TimeUtils
 import kotlinx.coroutines.test.runTest
 import io.mockk.every
@@ -20,6 +24,8 @@ import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import java.io.File
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeoutException
 import java.util.concurrent.TimeUnit
 import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.concurrent.thread
@@ -447,6 +453,96 @@ class ObserveConsentTest {
     )
 
     assertEquals(mapOf("observeConsent" to "not-granted"), settings().all)
+  }
+
+  private fun assertRevokeDeletesPausedWrite(directory: File, write: (pause: () -> Unit) -> Unit) {
+    ObserveConsent.load(context)
+    val paused = CountDownLatch(1)
+    val resume = CountDownLatch(1)
+    val executor = Executors.newFixedThreadPool(2)
+    try {
+      val writer = executor.submit {
+        write {
+          paused.countDown()
+          check(resume.await(5, TimeUnit.SECONDS))
+        }
+      }
+      assertTrue(paused.await(5, TimeUnit.SECONDS))
+      ObserveConsent.update(context, granted = false)
+      val cleanup = executor.submit { deleteStoredData(context) }
+      try {
+        cleanup.get(500, TimeUnit.MILLISECONDS)
+      } catch (_: TimeoutException) {
+        // Cleanup can wait for the writer that already passed its consent check.
+      } finally {
+        resume.countDown()
+      }
+      writer.get(5, TimeUnit.SECONDS)
+      cleanup.get(5, TimeUnit.SECONDS)
+      assertFalse(directory.exists())
+    } finally {
+      resume.countDown()
+      executor.shutdownNow()
+    }
+  }
+
+  @Test
+  fun `revoke removes a JVM crash whose write is in progress`() {
+    val directory = CrashFileFormat.crashesDir(context)
+    assertRevokeDeletesPausedWrite(directory) { pause ->
+      val pausedDirectory = object : File(directory.path) {
+        override fun isDirectory(): Boolean {
+          pause()
+          return super.isDirectory()
+        }
+      }
+      CrashFileWriter(pausedDirectory).write(IllegalStateException("crash"), "main", "s", 42, 123)
+    }
+  }
+
+  @Test
+  fun `revoke removes a fatal JavaScript error whose write is in progress`() {
+    val directory = PendingErrorStore.directory(context)
+    assertRevokeDeletesPausedWrite(directory) { pause ->
+      val pausedContext = object : ContextWrapper(context) {
+        override fun getNoBackupFilesDir(): File {
+          pause()
+          return super.getNoBackupFilesDir()
+        }
+      }
+      val error = PendingErrorStore.PendingError("global", null, "fatal", null, "s", "123")
+      PendingErrorStore.write(pausedContext, error)
+    }
+  }
+
+  @Test
+  fun `an uncaught exception delegates immediately while crash file cleanup holds the lock`() {
+    ObserveConsent.load(context)
+    val paused = CountDownLatch(1)
+    val resume = CountDownLatch(1)
+    val cleanupContext = object : ContextWrapper(context) {
+      override fun getNoBackupFilesDir(): File {
+        paused.countDown()
+        check(resume.await(5, TimeUnit.SECONDS))
+        return super.getNoBackupFilesDir()
+      }
+    }
+    val executor = Executors.newFixedThreadPool(2)
+    try {
+      val cleanup = executor.submit { deleteStoredData(cleanupContext) }
+      assertTrue(paused.await(5, TimeUnit.SECONDS))
+      val delegated = CountDownLatch(1)
+      val writer = CrashFileWriter.forContext(context)
+      val handler = JvmCrashHandler(writer, { _, _ -> delegated.countDown() })
+      executor.submit { handler.uncaughtException(Thread.currentThread(), IllegalStateException("crash")) }
+      assertTrue(delegated.await(2, TimeUnit.SECONDS))
+      assertTrue(CrashFileFormat.crashesDir(context).listFiles().isNullOrEmpty())
+      resume.countDown()
+      cleanup.get(5, TimeUnit.SECONDS)
+    } finally {
+      resume.countDown()
+      executor.shutdownNow()
+    }
   }
 
   @Test

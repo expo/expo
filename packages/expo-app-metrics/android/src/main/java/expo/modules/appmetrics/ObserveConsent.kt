@@ -12,6 +12,8 @@ import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.kotlin.exception.CodedException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.withLock
 
 /**
  * Whether the user consented to Observe collecting data. While not granted, app metrics stores
@@ -146,11 +148,31 @@ internal class ExitRecordsUnavailableException(cause: Exception) : CodedExceptio
   cause
 )
 
+private val crashFilesLock = ReentrantReadWriteLock()
+
+// Fatal error writers must never wait for cleanup. Only deletion needs exclusive access.
+internal inline fun <T> writeCrashFileIfGranted(write: () -> T): T? {
+  val lock = crashFilesLock.readLock()
+  if (!lock.tryLock()) {
+    return null
+  }
+  try {
+    if (!ObserveConsent.isGranted) {
+      return null
+    }
+    return write()
+  } finally {
+    lock.unlock()
+  }
+}
+
 /** Deletes the metrics database, the crash files, the pending-error files, and the settings. */
 internal fun deleteStoredData(context: Context) {
   context.deleteDatabase(MetricsDatabase.NAME)
-  CrashFileFormat.crashesDir(context).deleteRecursively()
-  PendingErrorStore.directory(context).deleteRecursively()
+  crashFilesLock.writeLock().withLock {
+    CrashFileFormat.crashesDir(context).deleteRecursively()
+    PendingErrorStore.directory(context).deleteRecursively()
+  }
   AppMetricsPreferences.deleteStoredSettings(context)
 }
 
