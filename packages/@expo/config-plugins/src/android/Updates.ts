@@ -106,10 +106,8 @@ export async function applyRuntimeVersionFromConfigForProjectRootAsync(
   if (runtimeVersion) {
     return setStringItem(
       [
-        // `expo_runtime_version` is a technical identifier read back by expo-updates, not
-        // user-facing copy, so translation tooling that reads `res/values/strings.xml` should
-        // leave it alone. Note the attribute is a source-XML signal only: it is not carried
-        // into the compiled resource table.
+        // Keep source-based translation tools from treating the runtime version         
+        // as user-facing text.
         buildResourceItem({
           name: 'expo_runtime_version',
           value: runtimeVersion,
