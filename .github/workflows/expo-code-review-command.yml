@@ -314,8 +314,8 @@ jobs:
           fi
           echo "writer=$writer" >> "$GITHUB_OUTPUT"
           bash .github/scripts/ai-review-scope.sh
-          gh pr view "$PR" --repo "$REPO" --json isCrossRepository,labels \
-            --jq '"fork=\(.isCrossRepository)", "labeled=\(any(.labels[]; .name == "ai-review"))"' >> "$GITHUB_OUTPUT"
+          gh pr view "$PR" --repo "$REPO" --json isCrossRepository,labels,headRefOid \
+            --jq '"fork=\(.isCrossRepository)", "labeled=\(any(.labels[]; .name == "ai-review"))", "head=\(.headRefOid)"' >> "$GITHUB_OUTPUT"
 
       - name: Mint sandbox token
         if: >-
@@ -353,6 +353,7 @@ jobs:
           PR_NUMBER: ${{ inputs.pr }}
           CONFIG_FROM_CHECKOUT: ${{ inputs.config-from-checkout }}
           SANDBOX_MCP_CONFIG: ${{ runner.temp }}/review-sandbox-mcp.json
+          HEAD_SHA: ${{ steps.scope.outputs.head }}
         # NOTE: running via `issue_comment` makes this a manual review command, which
         # the CLI detects (GITHUB_EVENT_NAME=issue_comment) and treats as a trigger-gate bypass
         # — it reviews even when the config trigger policy or an `ai-review:skip` label
@@ -393,21 +394,31 @@ jobs:
             REVIEW_SANDBOX_TOKEN=$(jq -r '.mcpServers.sandbox.headers.Authorization | sub("^Bearer "; "")' "$SANDBOX_MCP_CONFIG")
             export REVIEW_SANDBOX_TOKEN
           fi
-          ./scripts/expo-code-review ecr ci --context-file "$RUNNER_TEMP/pr-description.md" "${ARGS[@]}"
+          # Review only the head read above, so the decision step knows which commit it judged.
+          if [ -n "$HEAD_SHA" ]; then
+            ARGS+=(--expect-head "$HEAD_SHA")
+          fi
+          bash .github/scripts/ai-review-capture.sh \
+            ./scripts/expo-code-review ecr ci --context-file "$RUNNER_TEMP/pr-description.md" "${ARGS[@]}"
 
       # Same decision as the automatic workflow. A review of selected agents is
-      # partial, so it does not approve or request changes.
+      # partial, so it does not approve or request changes. The comment gate admits
+      # any collaborator, so only a commenter with write access gets a decision.
       - name: Submit the autonomous review decision
-        if: >-
-          steps.review.outcome == 'success'
-          && steps.scope.outputs.only_autonomous == 'true'
-          && steps.cmd.outputs.agents == ''
+        if: steps.review.outcome == 'success'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           REPO: ${{ github.repository }}
           PR: ${{ github.event.issue.number || inputs.pr }}
           BOT_LOGIN: expo-bot
+          HEAD_SHA: ${{ steps.scope.outputs.head }}
+          POSTED: ${{ runner.temp }}/ai-review-posted.md
+          ECR_LOG: ${{ runner.temp }}/ai-review-ecr.log
+          DECIDE: >-
+            ${{ steps.scope.outputs.only_autonomous == 'true'
+            && steps.cmd.outputs.agents == ''
+            && steps.scope.outputs.writer == 'true' }}
         run: bash .github/scripts/ai-review-decision.sh
 
       # ecr rewrites the comment on every run, so put the attach line back after it.

@@ -1,0 +1,45 @@
+name: AI code review (stale approval)
+
+# expo-bot approves one commit of an autonomous-only PR. A push makes that
+# approval stale, so dismiss it. The next review approves the new commit again.
+# A push that gets no review (the automatic review limit, a fork PR that a
+# maintainer reviewed once, a PR that leaves the scope) must not keep it.
+#
+# expo-bot approves only PRs that change the autonomous paths, so `paths` keeps this
+# off other pushes. expo-code-review-owners.yml checks that it matches routing.jsonc.
+#
+# SECURITY: `pull_request_target` with a checkout of the default branch. It runs no PR code.
+on:
+  pull_request_target:
+    types: [synchronize]
+    branches: [main, 'sdk-*']
+    paths:
+      - packages/patch-project/**
+
+# The writes use EXPO_BOT_REVIEW_TOKEN, so GITHUB_TOKEN only reads the checkout.
+permissions:
+  contents: read
+
+jobs:
+  dismiss:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: ai-code-review-stale-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: .github/scripts/ai-review-decision.sh
+          sparse-checkout-cone-mode: false
+
+      - name: Dismiss expo-bot's approval of an older commit
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          BOT_LOGIN: expo-bot
+        run: bash .github/scripts/ai-review-decision.sh --dismiss-stale

@@ -11,6 +11,7 @@ on:
       - .github/CODEOWNERS
       - .expo-agents/code-review/routing.jsonc
       - .github/workflows/expo-code-review-owners.yml
+      - .github/workflows/expo-code-review-stale.yml
 
 permissions:
   contents: read
@@ -27,6 +28,7 @@ jobs:
           sparse-checkout: |
             .github/CODEOWNERS
             .expo-agents/code-review/routing.jsonc
+            .github/workflows/expo-code-review-stale.yml
           sparse-checkout-cone-mode: false
 
       - name: Compare CODEOWNERS with the autonomous scope paths
@@ -62,3 +64,17 @@ jobs:
           fi
           echo "CODEOWNERS matches routing.jsonc:"
           echo "$want"
+
+      - name: Compare the stale approval paths with the autonomous scope paths
+        run: |
+          set -euo pipefail
+          want=$(sed 's#^[[:space:]]*//.*##' .expo-agents/code-review/routing.jsonc \
+            | jq -r '.scopes[] | select(.name == "autonomous") | .paths[]' | sort -u)
+          have=$(awk '/^    paths:/ { inside = 1; next } inside && /^      - / { print $2; next } { inside = 0 }' \
+            .github/workflows/expo-code-review-stale.yml | sort -u)
+          if [ "$want" != "$have" ]; then
+            echo "::error file=.github/workflows/expo-code-review-stale.yml::The \`paths\` of this workflow do not match the autonomous scope paths in .expo-agents/code-review/routing.jsonc. expo-bot then keeps an approval after a push. Copy the autonomous paths to \`paths\`."
+            diff <(echo "$want") <(echo "$have") || true
+            exit 1
+          fi
+          echo "The stale approval paths match routing.jsonc."
