@@ -91,6 +91,20 @@ start_egress() {
   exit 1
 }
 
+# On the Linux runners, the egress client can ignore SIGINT, so SIGTERM follows after 10 s.
+stop_egress() {
+  kill -INT "$EGRESS_PID" 2> /dev/null
+  for _ in $(seq 1 10); do
+    if ! kill -0 "$EGRESS_PID" 2> /dev/null; then
+      return 0
+    fi
+    sleep 1
+  done
+  echo "The egress client did not stop on SIGINT. Sending SIGTERM." >&2
+  pkill -TERM -P "$EGRESS_PID" 2> /dev/null
+  kill -TERM "$EGRESS_PID" 2> /dev/null
+}
+
 # The app logs of a stopped session become available a short time after it stops.
 download_ios_app_logs() {
   for _ in 1 2 3 4 5 6; do
@@ -117,14 +131,13 @@ cleanup() {
     echo "===== end ====="
   fi
   echo 'Cleaning up...'
-  if [[ -n "$EGRESS_PID" ]]; then
-    kill -INT "$EGRESS_PID" 2> /dev/null
-    wait "$EGRESS_PID" 2> /dev/null
-  fi
   if grep -q EAS_SIMULATOR_SESSION_ID .env.eas-simulator 2> /dev/null; then
     "${EAS[@]}" simulator:stop --non-interactive
   fi
   reset_dotenv
+  if [[ -n "$EGRESS_PID" ]]; then
+    stop_egress
+  fi
   if [[ -n "$UPDATES_SERVER_PID" ]]; then
     kill "$UPDATES_SERVER_PID" 2> /dev/null
     lsof -t -i:"$UPDATES_SERVER_PORT" | xargs kill 2> /dev/null
