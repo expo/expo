@@ -1,6 +1,6 @@
 import { Directory, File, Paths } from 'expo-file-system';
 import { Image } from 'expo-image';
-import { Asset, Album, requestPermissionsAsync } from 'expo-media-library';
+import { Asset, Album, MediaLibrary } from 'expo-media-library';
 import { useEffect, useState } from 'react';
 import {
   View,
@@ -36,7 +36,7 @@ const AddAssetToAlbumScreen = () => {
 
   useEffect(() => {
     const requestPermissions = async () => {
-      const { status } = await requestPermissionsAsync();
+      const { status } = await MediaLibrary.requestPermissions();
       if (status === 'denied') {
         Alert.alert('Permission denied', 'Cannot proceed without media library permissions.');
         setTestState(TestState.ERROR);

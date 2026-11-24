@@ -52,12 +52,12 @@ Add the following code snippet inside the **src/app/(tabs)/index.tsx**:
 {/* prettier-ignore */}
 ```tsx src/app/(tabs)/index.tsx
 import { /* @tutinfo */useEffect/* @end */, useState } from 'react';
-/* @tutinfo Import `MediaLibrary` from `expo-media-library`. */import * as MediaLibrary from 'expo-media-library';/* @end */
+/* @tutinfo Import `usePermissions` from `expo-media-library`. */import { usePermissions } from 'expo-media-library';/* @end */
 
 // ...rest of the code remains same
 
 export default function Index() {
-  /* @tutinfo Add this statement to get the permission response and the `requestPermission()` method from the hook. */const [permissionResponse, requestPermission] = MediaLibrary.usePermissions({ writeOnly: true });/* @end */
+  /* @tutinfo Add this statement to get the permission response and the `requestPermission()` method from the hook. */const [permissionResponse, requestPermission] = usePermissions({ writeOnly: true });/* @end */
   // ...rest of the code remains same
 
   /* @tutinfo Add an if statement to check the permission status. The requestPermission() method will trigger a dialog box for the user to grant or deny the permission. */
@@ -120,7 +120,7 @@ In the above snippet, the `collapsable` prop is set to `false`. This allows the 
 
 We can capture a screenshot of the view by calling the `captureRef()` method from `react-native-view-shot` inside the `onSaveImageAsync()` function. It accepts an optional argument where we can pass the `width` and `height` of the screenshot capturing area. We can read more about available options in [the library's documentation](https://github.com/gre/react-native-view-shot#capturerefview-options-lower-level-imperative-api).
 
-The `captureRef()` method also returns a promise that fulfills with the screenshot's URI. We will pass this URI as a parameter to [`MediaLibrary.Asset.create()`](/versions/latest/sdk/media-library/#createfilepath-album), which saves the screenshot to the device's media library.
+The `captureRef()` method also returns a promise that fulfills with the screenshot's URI. We will pass this URI as a parameter to [`Asset.create()`](/versions/latest/sdk/media-library/#createfilepath-album), which saves the screenshot to the device's media library.
 
 Inside **src/app/(tabs)/index.tsx**, update the `onSaveImageAsync()` function with the following code:
 
@@ -130,7 +130,7 @@ import { useEffect, useRef, useState, type ComponentRef } from 'react';
 import { Platform, View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
+import { Asset, usePermissions } from 'expo-media-library';
 import { captureRef } from 'react-native-view-shot';
 import type { ImageSource } from 'expo-image';
 
@@ -149,7 +149,7 @@ export default function Index() {
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
-  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions({ writeOnly: true });
+  const [permissionResponse, requestPermission] = usePermissions({ writeOnly: true });
   const imageRef = useRef<ComponentRef<typeof View>>(null);
 
   useEffect(() => {
@@ -193,7 +193,7 @@ export default function Index() {
         quality: 1,
       });
 
-      await MediaLibrary.Asset.create(localUri);
+      await Asset.create(localUri);
       alert('Saved!');
     } catch (e) {
       console.log(e);
@@ -294,7 +294,7 @@ import { useEffect, useRef, useState, type ComponentRef } from 'react';
 import { Platform, View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
+import { Asset, usePermissions } from 'expo-media-library';
 import { captureRef } from 'react-native-view-shot';
 import type { ImageSource } from 'expo-image';
 
@@ -313,7 +313,7 @@ export default function Index() {
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
-  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions({ writeOnly: true });
+  const [permissionResponse, requestPermission] = usePermissions({ writeOnly: true });
   const imageRef = useRef<ComponentRef<typeof View>>(null);
 
   useEffect(() => {
@@ -359,7 +359,7 @@ export default function Index() {
           quality: 1,
         });
 
-        await MediaLibrary.Asset.create(localUri);
+        await Asset.create(localUri);
         alert('Saved!');
       } catch (e) {
         console.log(e);

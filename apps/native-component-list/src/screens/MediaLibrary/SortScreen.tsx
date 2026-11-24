@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import {
   MediaType,
-  requestPermissionsAsync,
+  MediaLibrary,
   Query,
   AssetField,
   type SortableAssetField,
@@ -75,7 +75,7 @@ const SortScreen = () => {
 
   useEffect(() => {
     const requestPermissions = async () => {
-      const { status } = await requestPermissionsAsync();
+      const { status } = await MediaLibrary.requestPermissions();
       if (status === 'denied') {
         Alert.alert('Permission denied', 'Cannot proceed without media library permissions.');
       }

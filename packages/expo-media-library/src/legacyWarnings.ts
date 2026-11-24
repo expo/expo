@@ -27,7 +27,7 @@ export async function isAvailableAsync(): Promise<boolean> {
 }
 
 /**
- * @deprecated Use `presentPermissionsPicker()` or import this method from `expo-media-library/legacy`. This method will throw in runtime.
+ * @deprecated Use `MediaLibrary.presentPermissionsPicker()` or import this method from `expo-media-library/legacy`. This method will throw in runtime.
  */
 export async function presentPermissionsPickerAsync(mediaTypes?: MediaTypeFilter[]): Promise<void> {
   throw errorOnLegacyMethodUse('presentPermissionsPickerAsync');
