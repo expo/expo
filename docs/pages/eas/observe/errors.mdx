@@ -269,7 +269,7 @@ Filter the list by source, by severity (**Fatal** or **Non-fatal**), by platform
 
 ## Trigger a workflow for a new error
 
-Use [`on.observe.new_error`](/eas/workflows/syntax/#onobservenew_error) to start an [Expo Workflow](/eas/workflows/introduction/) when Expo Observe detects a new error group. For example, you can notify your team or start an investigation.
+Use [`on.observe.new_error`](/eas/workflows/syntax/#onobservenew_error) to start a workflow run in [Expo Workflows](/eas/workflows/introduction/) when Expo Observe detects a new error group. For example, you can notify your team or start an investigation.
 
 [Connect your project's GitHub repository](/eas/workflows/get-started/#automate-workflows-with-github-events), then add this file to **.eas/workflows** on the repository's default branch:
 
@@ -289,10 +289,10 @@ jobs:
     params:
       md: |
         # New fatal error
-        Type: ${{ observe.event.exception.type }}
-        Message: ${{ observe.event.exception.message }}
-        Environment: ${{ observe.event.environment }}
-        Platform: ${{ observe.event.platform }}
+        - Type: ${{ observe.event.exception.type }}
+        - Message: ${{ observe.event.exception.message }}
+        - Environment: ${{ observe.event.environment }}
+        - Platform: ${{ observe.event.platform }}
   review:
     needs: [error_details]
     type: require-approval

@@ -385,7 +385,7 @@ on:
 
 ### `on.observe.new_error`
 
-Runs your workflow when [Expo Observe](/eas/observe/errors/) detects a new error group in your project. An error group is identified by its fingerprint and environment. The same fingerprint first seen in staging and later in production can trigger a run in each environment. Repeated occurrences in the same environment do not trigger another run, even on a different platform.
+Runs your workflow when [Expo Observe](/eas/observe/errors/) detects a new error group in your project. Expo Observe identifies an error group by its fingerprint and environment. The same fingerprint first seen in staging and later in production can trigger a run in each environment. Repeated occurrences in the same environment do not trigger another run, even on a different platform.
 
 To enable the trigger, [connect your project's GitHub repository](/eas/workflows/get-started/#automate-workflows-with-github-events) and push the workflow file to its default branch. Runs use the latest commit on that branch. Existing error groups do not trigger runs when you add the workflow. Detection runs periodically, so a run may not start immediately after an error arrives.
 
@@ -1021,7 +1021,7 @@ In [`on.<trigger>.if`](#ontriggerif), the `workflow` context has only `name` and
 
 `app_store_connect` has values only for runs that an App Store Connect event triggered. In steps, only `build` jobs receive it.
 
-`observe` has values only for runs triggered by an Observe event, their retries, and workflows they call.
+`observe` has values only for runs that an Observe event triggered, for their retries, and for the workflows they call.
 
 At the job level, `env` becomes available after Expo Workflows determines the job's [`environment`](#jobsjob_idenvironment). You cannot use `env` in `jobs.<job_id>.environment` itself.
 
