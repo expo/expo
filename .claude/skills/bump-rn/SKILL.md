@@ -1,6 +1,7 @@
 ---
 name: bump-rn
-description: Upgrade React Native in expo/expo to a new patch or RC version end to end - rebase the expo/react-native fork (react-native-lab submodule) onto the upstream release tag, bump react-native and @react-native/* with `et bump-rn`, regenerate the committed Podfile.locks, verify, and make the two conventional commits. Use when the user says "bump-rn", "bump react-native", "upgrade React Native to 0.xx", or a new React Native RC/patch is out. Usage - /bump-rn -v 0.89.0-rc.3
+description: Upgrade React Native in expo/expo to a new patch or RC version end to end - rebase the expo/react-native fork (react-native-lab submodule) onto the upstream release tag, bump react-native and @react-native/* with `et bump-rn`, regenerate the committed Podfile.locks, verify, and make the two conventional commits. Use when the user says "bump-rn", "bump react-native", "upgrade React Native to 0.xx", or a new React Native RC/patch is out.
+argument-hint: "[-v] <version>"
 allowed-tools: "Read,Edit,Bash"
 ---
 
