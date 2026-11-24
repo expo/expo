@@ -85,9 +85,14 @@ internal final class FileSystemFile: FileSystemPath {
       defer { try? handle.close() }
 
       var mutableHasher = hasher
-      while let chunk = try handle.read(upToCount: bufferSize), !chunk.isEmpty {
+      // `read(upToCount:)` returns autoreleased data. Drain it for each chunk, or every chunk stays in memory until the digest returns.
+      while try autoreleasepool(invoking: { () throws -> Bool in
+        guard let chunk = try handle.read(upToCount: bufferSize), !chunk.isEmpty else {
+          return false
+        }
         mutableHasher.update(data: chunk)
-      }
+        return true
+      }) {}
 
       let hash = mutableHasher.finalize()
       return hash.map { String(format: "%02hhx", $0) }.joined()
