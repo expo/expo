@@ -117,9 +117,10 @@ describe('exports static', () => {
     expect(mapFiles).toEqual([
       // The `workers` route has async imports, so the Metro runtime is a separate chunk.
       expect.stringMatching(/_expo\/static\/js\/web\/__expo-metro-runtime-.*\.map/),
+      // The `worker-async` web worker imports four modules asynchronously. Each one is a chunk.
+      ...Array(4).fill(expect.stringMatching(/_expo\/static\/js\/web\/__worker-.*\.map/)),
       expect.stringMatching(/_expo\/static\/js\/web\/entry-.*\.map/),
       // The `workers` routes import `other` asynchronously and start two web workers.
-      // A web worker bundle includes the modules that the worker imports asynchronously.
       expect.stringMatching(/_expo\/static\/js\/web\/other-.*\.map/),
       expect.stringMatching(/_expo\/static\/js\/web\/worker-async-.*\.map/),
       expect.stringMatching(/_expo\/static\/js\/web\/worker-one-.*\.map/),

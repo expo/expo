@@ -3,6 +3,6 @@ export function createWorker(): Worker | null {
   return null;
 }
 
-export function createAsyncImportsWorker(): Worker | null {
+export function createAsyncImportsWorker(_options?: WorkerOptions): Worker | null {
   return null;
 }

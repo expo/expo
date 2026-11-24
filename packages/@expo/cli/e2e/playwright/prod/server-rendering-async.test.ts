@@ -189,6 +189,8 @@ test.describe('server rendering with async routes in production', () => {
 
   test('resolves async imports inside a web worker', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
+    const scripts: string[] = [];
+    page.context().on('request', (request) => scripts.push(new URL(request.url()).pathname));
     await page.goto(new URL('/workers/async-imports', expoServe.url).href);
 
     await expect(page.getByTestId('page-math')).toHaveText('4');
@@ -199,7 +201,10 @@ test.describe('server rendering with async routes in production', () => {
     await expect(page.getByTestId('worker-shared-importer')).toHaveText('6');
     await expect(page.getByTestId('worker-maybe-sync')).toHaveText('maybe-sync-target');
     await expect(page.getByTestId('worker-prefetch')).toHaveText('prefetch-target');
+    await expect(page.getByTestId('module-worker-worker-only')).toHaveText('worker-only');
 
+    // The workers load the modules that they import asynchronously from separate chunks.
+    expect(scripts).toContainEqual(expect.stringMatching(/\/__worker-[^/]+\.js$/));
     expect(pageErrors.all).toEqual([]);
   });
 });

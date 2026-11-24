@@ -828,7 +828,7 @@ describe('Granular chunk emission', () => {
     ['async', 'import'],
     ['maybeSync', 'require.unstable_importMaybeSync'],
     ['prefetch', '__prefetchImport'],
-  ])('bundles the %s imports of a worker into the worker', async (_asyncType, importCall) => {
+  ])('emits the %s imports of a worker as chunks of the worker', async (_asyncType, importCall) => {
     const artifacts: SerialAsset[] = await serializeSplitAsync(
       {
         ...publicGraph,
@@ -840,13 +840,43 @@ describe('Granular chunk emission', () => {
     );
 
     expect(artifacts[0]!.metadata.chunkingStrategy).toBe('granular');
-    expect(artifacts.some((asset) => asset.filename.includes('__shared-'))).toBe(true);
     const worker = artifacts.find((asset) => asset.originFilename === 'worker.js')!;
-    expect(worker.metadata.modulePaths).toEqual(
-      expect.arrayContaining(['/app/worker-target.js', '/app/a.js', '/app/shared.js'])
+    expect(worker.metadata.modulePaths).not.toContain('/app/worker-target.js');
+    expect(worker.metadata.modulePaths).not.toContain('/app/a.js');
+    const getModulePaths = (urls: unknown) =>
+      (urls as string[]).map(
+        (url) => artifacts.find((asset) => '/' + asset.filename === url)!.metadata.modulePaths
+      );
+    const workerPaths = worker.metadata.paths!['/app/worker.js']!;
+    expect(getModulePaths(workerPaths['/app/worker-target.js'])).toEqual([
+      ['/app/worker-target.js'],
+    ]);
+    // The application has `shared.js` in a chunk for `a.js` and `b.js`. The worker does not
+    // import `b.js`, so its chunk for `a.js` contains `shared.js`.
+    expect(getModulePaths(workerPaths['/app/a.js'])).toEqual([['/app/a.js', '/app/shared.js']]);
+    expect(getModulePaths(artifacts[0]!.metadata.paths!['/app/index.js']!['/app/a.js'])).toEqual(
+      expect.arrayContaining([['/app/a.js'], ['/app/shared.js']])
     );
-    expect(worker.metadata.paths).toEqual({});
-    expect(artifacts.some((asset) => asset.originFilename === 'worker-target.js')).toBe(false);
+  });
+
+  it('gives a worker chunk its own filename when the application has the same chunk', async () => {
+    const artifacts: SerialAsset[] = await serializeSplitAsync(
+      {
+        'index.js': `import('./lazy'); require.unstable_resolveWorker('./worker');`,
+        'worker.js': `import('./lazy');`,
+        'lazy.js': `console.log('lazy');`,
+      },
+      { chunkingStrategy: 'granular' }
+    );
+
+    const worker = artifacts.find((asset) => asset.originFilename === 'worker.js')!;
+    const [workerUrl] = worker.metadata.paths!['/app/worker.js']!['/app/lazy.js'] as string[];
+    const [applicationUrl] = artifacts[0]!.metadata.paths!['/app/index.js']![
+      '/app/lazy.js'
+    ] as string[];
+    expect(workerUrl).toMatch(/\/__worker-[\da-f]{16}-[\da-f]+\.js$/);
+    expect(workerUrl).not.toBe(applicationUrl);
+    expect(new Set(artifacts.map((asset) => asset.filename)).size).toBe(artifacts.length);
   });
 
   it('keeps DOM exports on the legacy pipeline even when requested', async () => {

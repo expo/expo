@@ -1,4 +1,4 @@
-import type { ResolvedDependency } from '@expo/metro/metro/DeltaBundler/types';
+import type { MixedOutput, Module, ResolvedDependency } from '@expo/metro/metro/DeltaBundler/types';
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import assert from 'assert';
 import { createHash } from 'crypto';
@@ -11,7 +11,6 @@ import { Chunk, getBaseUrlOption } from './Chunk';
 import {
   type ChunkingContext,
   type ChunkingImplementation,
-  createChunkCollector,
   createRuntimeChunk,
   serializeChunksAsync,
 } from './chunkingStrategy';
@@ -24,9 +23,9 @@ import {
 
 export function createGranularChunkingStrategy(context: ChunkingContext): ChunkingImplementation {
   const { entryFile, graph, options } = context;
-  let entryPathsByChunk = new Map<Chunk, string[]>();
-  let requiredChunksByEntryPath = new Map<string, readonly Chunk[]>();
-  let workerChunksByEntryPath = new Map<string, Chunk>();
+  let application: RegistryChunks | undefined;
+  const registriesByChunk = new Map<Chunk, RegistryChunks>();
+  const workerChunksByEntryPath = new Map<string, Chunk>();
 
   function getChunkTargets(chunk: Chunk, dependency: ResolvedDependency): readonly Chunk[] {
     const asyncType = dependency.data.data.asyncType as AsyncDependencyType | null;
@@ -36,9 +35,9 @@ export function createGranularChunkingStrategy(context: ChunkingContext): Chunki
       assert(workerChunk, `Worker chunk not found for: ${dependency.absolutePath}`);
       return [workerChunk];
     }
-    // A worker contains the modules it imports asynchronously, so it has no other files to load.
-    if (chunk.sealed) return [];
-    const targets = requiredChunksByEntryPath.get(dependency.absolutePath);
+    const targets = registriesByChunk
+      .get(chunk)
+      ?.requiredChunksByEntryPath.get(dependency.absolutePath);
     assert(targets, `Granular async entry not found: ${dependency.absolutePath}`);
     // The importing chunk is already loaded. Return the other chunks needed by
     // the imported entry; the loader skips files it has already loaded.
@@ -49,25 +48,30 @@ export function createGranularChunkingStrategy(context: ChunkingContext): Chunki
     async serializeAsync() {
       const entryModule = graph.dependencies.get(entryFile);
       assert(entryModule, `Granular entry is missing from the export graph: ${entryFile}`);
-      const plan = computeBitSetChunkPlan([entryModule], graph, {
-        isLazyBundle: options.includeAsyncPaths,
-      });
-      const materializedPlan = materializeChunkPlan(context, strategy, plan);
-      const { chunks, entryChunk } = materializedPlan;
-      entryPathsByChunk = materializedPlan.entryPathsByChunk;
-      requiredChunksByEntryPath = assignEntryChunkRequirements(plan, materializedPlan);
-      const workers = collectWorkerChunks(context, strategy, plan.workerEntries);
-      workerChunksByEntryPath = workers.chunksByEntryPath;
-      for (const workerChunk of workers.chunks) chunks.add(workerChunk);
+      application = planRegistryChunks(context, strategy, entryModule, false);
+      const { entryChunk } = application;
       // Application chunks share one module registry. Extract its runtime so it can load
-      // before dependent chunks; sealed workers already carry independent runtimes.
-      if ([...chunks].some((chunk) => chunk.isAsync && !chunk.sealed)) {
-        createRuntimeChunk(
-          entryChunk,
-          chunks,
-          strategy,
-          [...chunks].filter((chunk) => !chunk.sealed)
-        );
+      // before dependent chunks; worker entries carry independent runtimes.
+      if ([...application.chunks].some((chunk) => chunk.isAsync)) {
+        createRuntimeChunk(entryChunk, application.chunks, strategy);
+      }
+      // Each worker has its own module registry, so it cannot use the chunks planned for the
+      // application or for another worker. Plan the chunks of each worker from its entry.
+      const registries = [application];
+      const workerEntries = [...application.workerEntries];
+      for (const workerEntry of workerEntries) {
+        if (workerChunksByEntryPath.has(workerEntry.path)) continue;
+        const worker = planRegistryChunks(context, strategy, workerEntry, true);
+        workerChunksByEntryPath.set(workerEntry.path, worker.entryChunk);
+        registries.push(worker);
+        workerEntries.push(...worker.workerEntries);
+      }
+      const chunks = new Set<Chunk>();
+      for (const registry of registries) {
+        for (const chunk of registry.chunks) {
+          chunks.add(chunk);
+          registriesByChunk.set(chunk, registry);
+        }
       }
       const orderedChunks = new Set([
         entryChunk,
@@ -92,7 +96,8 @@ export function createGranularChunkingStrategy(context: ChunkingContext): Chunki
     },
     getStableSerializationOptions(chunk) {
       return {
-        includeChunkCompletion: chunk.isAsync && !chunk.sealed,
+        // Only the application loader reads chunk completions.
+        includeChunkCompletion: chunk.isAsync && registriesByChunk.get(chunk) === application,
         includeAsyncPaths: false,
         unstable_getAsyncDependencyPath: undefined,
       };
@@ -123,7 +128,7 @@ export function createGranularChunkingStrategy(context: ChunkingContext): Chunki
         ...(chunk.isEntry &&
           !chunk.sealed && {
             entryChunks: Object.fromEntries(
-              [...requiredChunksByEntryPath].map(([entryPath, requiredChunks]) => [
+              [...application!.requiredChunksByEntryPath].map(([entryPath, requiredChunks]) => [
                 entryPath,
                 requiredChunks.map((requiredChunk) => {
                   const filename = filenamesByChunk.get(requiredChunk);
@@ -133,7 +138,7 @@ export function createGranularChunkingStrategy(context: ChunkingContext): Chunki
               ])
             ),
           }),
-        entryPaths: [...(entryPathsByChunk.get(chunk) ?? [])].sort(),
+        entryPaths: [...(application!.entryPathsByChunk.get(chunk) ?? [])].sort(),
         modulePaths: chunk.sealed ? modulePaths : modulePaths.sort(),
       };
     },
@@ -154,24 +159,37 @@ type MaterializedChunkPlan = {
  * each chunk represents.
  */
 function materializeChunkPlan(
-  { entryFile, preModules, graph, options }: ChunkingContext,
+  { preModules, graph, options }: ChunkingContext,
   strategy: ChunkingImplementation,
-  plan: BitSetChunkPlan
+  plan: BitSetChunkPlan,
+  entryFile: string,
+  isWorker: boolean
 ): MaterializedChunkPlan {
+  const getRelativePath = (modulePath: string) =>
+    toPosixPath(path.relative(options.serverRoot ?? options.projectRoot, modulePath));
+  const getChunkName = (prefix: string, paths: string[]) =>
+    `/${prefix}-${createHash('sha256').update(JSON.stringify(paths)).digest('hex').slice(0, 16)}.js`;
+  // The application and each worker can have a chunk for the same module, with different
+  // contents. The worker entry in the name gives each chunk of a worker its own filename.
+  const getWorkerChunkName = (ownerPaths: string[]) =>
+    getChunkName('__worker', [getRelativePath(entryFile), ...ownerPaths]);
   const chunks = new Set<Chunk>();
   const entryPathsByChunk = new Map<Chunk, string[]>();
   const facadesByEntryPath = new Map<string, Chunk>();
   for (const { module, kind } of plan.entryPoints) {
+    const isInitial = kind === 'initial';
     const facade = new Chunk(
-      module.path,
+      isWorker && !isInitial ? getWorkerChunkName([getRelativePath(module.path)]) : module.path,
       new Set([module]),
       graph,
       options,
       strategy,
-      kind !== 'initial',
+      isWorker || !isInitial,
       false,
-      kind === 'initial'
+      isInitial
     );
+    // A worker entry carries the runtime of its own module registry.
+    if (isWorker && isInitial) facade.seal();
     facade.deps.clear();
     entryPathsByChunk.set(facade, [module.path]);
     facadesByEntryPath.set(module.path, facade);
@@ -188,20 +206,16 @@ function materializeChunkPlan(
     } else {
       // Owner paths remain stable when unrelated entries shift the planner's bit positions.
       const ownerPaths = entryIndices
-        .map((index) =>
-          toPosixPath(
-            path.relative(
-              options.serverRoot ?? options.projectRoot,
-              plan.entryPoints[index]!.module.path
-            )
-          )
-        )
+        .map((index) => getRelativePath(plan.entryPoints[index]!.module.path))
         .sort();
-      const hash = createHash('sha256')
-        .update(JSON.stringify(ownerPaths))
-        .digest('hex')
-        .slice(0, 16);
-      ownerChunk = new Chunk(`/__shared-${hash}.js`, new Set(), graph, options, strategy, true);
+      ownerChunk = new Chunk(
+        isWorker ? getWorkerChunkName(ownerPaths) : getChunkName('__shared', ownerPaths),
+        new Set(),
+        graph,
+        options,
+        strategy,
+        true
+      );
       chunks.add(ownerChunk);
     }
     ownerChunk.deps = new Set(atom.modules);
@@ -241,32 +255,38 @@ function assignEntryChunkRequirements(
   return requiredChunksByEntryPath;
 }
 
-function collectWorkerChunks(
+/** The chunks that register modules in one module registry: the application's or a worker's. */
+type RegistryChunks = {
+  chunks: Set<Chunk>;
+  entryChunk: Chunk;
+  entryPathsByChunk: Map<Chunk, string[]>;
+  requiredChunksByEntryPath: Map<string, readonly Chunk[]>;
+  workerEntries: readonly Module<MixedOutput>[];
+};
+
+function planRegistryChunks(
   context: ChunkingContext,
   strategy: ChunkingImplementation,
-  workerEntries: BitSetChunkPlan['workerEntries']
-): { chunks: Set<Chunk>; chunksByEntryPath: Map<string, Chunk> } {
-  const { preModules } = context;
-  const workerChunksByEntryPath = new Map<string, Chunk>();
-  // Workers keep their own runtime and copies of dependencies shared with the application.
-  // A worker has no chunk loader, so it also contains the modules it imports asynchronously.
-  const workerChunks = new Set<Chunk>();
-  const collectChunk = createChunkCollector(
+  entryModule: Module<MixedOutput>,
+  isWorker: boolean
+): RegistryChunks {
+  const plan = computeBitSetChunkPlan([entryModule], context.graph, {
+    isLazyBundle: context.options.includeAsyncPaths,
+  });
+  const materializedPlan = materializeChunkPlan(
     context,
     strategy,
-    workerChunks,
-    (dependency) => dependency.data.data.asyncType !== 'weak',
-    (dependency) => (dependency.data.data.asyncType as AsyncDependencyType | null) === 'worker'
+    plan,
+    entryModule.path,
+    isWorker
   );
-  for (const module of workerEntries) {
-    const chunk = collectChunk(module.path, preModules, true, true);
-    assert(chunk, `Worker chunk not found for: ${module.path}`);
-    chunk.seal();
-  }
-  for (const workerChunk of workerChunks) {
-    for (const module of workerChunk.entries) workerChunksByEntryPath.set(module.path, workerChunk);
-  }
-  return { chunks: workerChunks, chunksByEntryPath: workerChunksByEntryPath };
+  return {
+    chunks: materializedPlan.chunks,
+    entryChunk: materializedPlan.entryChunk,
+    entryPathsByChunk: materializedPlan.entryPathsByChunk,
+    requiredChunksByEntryPath: assignEntryChunkRequirements(plan, materializedPlan),
+    workerEntries: plan.workerEntries,
+  };
 }
 
 function assignModuleIds(
