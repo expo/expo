@@ -73,6 +73,15 @@ private final class JSClassMath {
 @ExpoModule(classes: [JSClassPoint.self, JSClassShape.self, JSClassSquare.self, JSClassMath.self])
 private final class MacroJSClassModule: Module {}
 
+/// Holds an object weakly, so that the test doesn't keep it alive.
+private final class WeakReference: @unchecked Sendable {
+  weak var object: AnyObject?
+
+  init(_ object: AnyObject) {
+    self.object = object
+  }
+}
+
 // MARK: - Tests
 
 @Suite("Macro JavaScript class")
@@ -143,13 +152,39 @@ private struct MacroJSClassTests {
   }
 
   @Test
-  func `an argument without a native instance throws`() throws {
+  func `constructing onto an object that can't keep a native instance throws`() throws {
     let code = try runtime.eval(
       """
-      point = new expo.modules.MacroJSClassModule.JSClassPoint(0, 0)
-      try { point.distance({}); 'no error' } catch (error) { error.code }
+      Point = expo.modules.MacroJSClassModule.JSClassPoint
+      try { Point.call(Object.freeze(Object.create(Point.prototype)), 0, 0); 'no error' } catch (error) { error.code }
       """)
-    #expect(try code.asString() == "ERR_NATIVE_INSTANCE_NOT_FOUND")
+    #expect(try code.asString() == "ERR_NATIVE_INSTANCE_NOT_ATTACHABLE")
+  }
+
+  @Test
+  func `releases the native instance when its JavaScript object is collected`() throws {
+    let mainRuntime = try runtime
+    try mainRuntime.eval("point = new expo.modules.MacroJSClassModule.JSClassPoint(0, 0)")
+    let point = WeakReference(try JSClassPoint._native(from: mainRuntime.eval("point").asObject()))
+    #expect(point.object != nil)
+
+    try mainRuntime.eval("point = undefined")
+    try mainRuntime.execute {
+      mainRuntime.collectGarbage { point.object == nil }
+    }
+    #expect(point.object == nil)
+  }
+
+  @Test
+  func `an argument without a native instance throws`() throws {
+    let error = try runtime.eval(
+      """
+      point = new expo.modules.MacroJSClassModule.JSClassPoint(0, 0)
+      try { point.distance({}); null } catch (error) { error }
+      """
+    ).asObject()
+    #expect(try error.getProperty("code").asString() == "ERR_NATIVE_INSTANCE_NOT_FOUND")
+    #expect(try error.getProperty("message").asString().contains("'JSClassPoint'"))
   }
 
   @Test

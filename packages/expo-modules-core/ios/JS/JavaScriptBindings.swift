@@ -28,7 +28,9 @@ internal enum JavaScriptBindings {
       if let sharedObject = instance as? SharedObject {
         appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: this.getObject(), inheritsBaseClass: true)
       } else {
-        this.getObject().setNativeState(JavaScriptClassNativeState(native: instance))
+        guard try this.asObject().trySetNativeState(JavaScriptClassNativeState(native: instance)) else {
+          throw JavaScriptClassNativeState.NotAttachableException(name)
+        }
       }
       return this
     }

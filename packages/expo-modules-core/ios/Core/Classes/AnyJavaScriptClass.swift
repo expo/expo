@@ -80,9 +80,12 @@ extension AnyJavaScriptClass {
   @JavaScriptActor
   @inlinable
   public static func _native(from object: borrowing JavaScriptObject) throws -> Self {
-    let native = try JavaScriptClassNativeState.native(from: object)
-    guard let instance = native as? Self else {
-      throw JavaScriptClassNativeState.TypeMismatchException((expected: Self.self, actual: Swift.type(of: native)))
+    guard let nativeState = object.getNativeState(as: JavaScriptClassNativeState.self) else {
+      throw JavaScriptClassNativeState.NotFoundException(_jsName)
+    }
+    guard let instance = nativeState.native as? Self else {
+      let actual = Swift.type(of: nativeState.native)._jsName
+      throw JavaScriptClassNativeState.TypeMismatchException((expected: _jsName, actual: actual))
     }
     return instance
   }
@@ -110,45 +113,61 @@ extension JavaScriptDecodable where Self: AnyJavaScriptClass {
 @usableFromInline
 internal final class JavaScriptClassNativeState: JavaScriptNativeState {
   @usableFromInline
-  let native: AnyObject
+  let native: any AnyJavaScriptClass
 
-  init(native: AnyObject) {
+  init(native: any AnyJavaScriptClass) {
     self.native = native
     super.init()
   }
 
-  /// Returns the native instance that the native state of the given JavaScript object holds.
-  @JavaScriptActor
-  @usableFromInline
-  static func native(from object: borrowing JavaScriptObject) throws -> AnyObject {
-    guard let nativeState = object.getNativeState(as: JavaScriptClassNativeState.self) else {
-      throw NotFoundException()
-    }
-    return nativeState.native
-  }
+  // `NotFoundException` and `TypeMismatchException` are `@usableFromInline`, so the inlinable `_native(from:)` can
+  // throw them. Their parameters are JavaScript class names.
 
-  /// Thrown when a JavaScript object has no native instance, for example an object that the constructor of a native
-  /// class didn't create.
-  internal final class NotFoundException: Exception, @unchecked Sendable {
+  /// Thrown when a JavaScript object has no native instance, for example an object that the constructor of the
+  /// expected class didn't create.
+  @usableFromInline
+  internal final class NotFoundException: GenericException<String>, @unchecked Sendable {
     override var code: String {
       "ERR_NATIVE_INSTANCE_NOT_FOUND"
     }
 
     override var reason: String {
-      "The JavaScript object has no native instance, because the constructor of a native class didn't create it. Pass an object that you created with `new`."
+      """
+      Expected an instance of '\(param)', but got an object that the constructor of '\(param)' didn't create. Pass an \
+      object that you created with `new \(param)`.
+      """
     }
   }
 
-  /// Thrown when the native instance of a JavaScript object isn't the expected class. `@usableFromInline`, so the
-  /// inlinable `_native(from:)` can throw it.
+  /// Thrown when the native instance of a JavaScript object isn't the expected class.
   @usableFromInline
-  internal final class TypeMismatchException: GenericException<(expected: Any.Type, actual: Any.Type)>, @unchecked Sendable {
+  internal final class TypeMismatchException:
+    GenericException<(expected: String, actual: String)>, @unchecked Sendable
+  {
     override var code: String {
       "ERR_NATIVE_INSTANCE_TYPE_MISMATCH"
     }
 
     override var reason: String {
-      "Expected the native instance to be '\(param.expected)', but found '\(param.actual)'. Pass an instance of the class that the function takes."
+      """
+      Expected an instance of '\(param.expected)', but got an instance of '\(param.actual)'. Pass an instance of \
+      '\(param.expected)' or of a subclass of it.
+      """
+    }
+  }
+
+  /// Thrown when the JavaScript constructor can't attach the native instance to `this`.
+  internal final class NotAttachableException: GenericException<String>, @unchecked Sendable {
+    override var code: String {
+      "ERR_NATIVE_INSTANCE_NOT_ATTACHABLE"
+    }
+
+    override var reason: String {
+      """
+      The constructor of '\(param)' couldn't attach the native instance to the object. The JavaScript engine doesn't \
+      allow it on a Proxy, a host object, or an object that can't get new properties, for example a frozen one. Create \
+      the object with `new \(param)`, and freeze it only after the constructor returns.
+      """
     }
   }
 
@@ -159,7 +178,10 @@ internal final class JavaScriptClassNativeState: JavaScriptNativeState {
     }
 
     override var reason: String {
-      "'\(param)' cannot be constructed from JavaScript, because its native class doesn't declare a `@JS init`. Add a `@JS init` to the native class."
+      """
+      '\(param)' cannot be constructed from JavaScript, because its native class doesn't declare a `@JS init`. Add a \
+      `@JS init` to the native class.
+      """
     }
   }
 }
