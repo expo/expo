@@ -122,7 +122,7 @@ export function format(manifest: any, { indentLevel = 2, newline = EOL } = {}): 
 }
 
 /**
- * Escapes Android string literals and control characters that cannot appear literally in XML.
+ * Escapes Android string literals and characters that cannot appear literally in XML.
  *
  * Keep in sync with packages/create-expo/src/Template.ts.
  *
@@ -135,6 +135,8 @@ export function escapeAndroidString(value: string): string {
   for (let index = 0; index < value.length; index++) {
     const character = value.charAt(index);
     switch (character) {
+      case '\0':
+        break;
       case '"':
       case "'":
       case '@':
@@ -150,14 +152,11 @@ export function escapeAndroidString(value: string): string {
         break;
       default: {
         const code = value.charCodeAt(index);
-        if (code < 0x20) {
+        if (code < 0x20 || code === 0xfffe || code === 0xffff) {
           result += '\\u' + code.toString(16).padStart(4, '0');
         } else {
           result += character;
-          if (
-            ((index === 0 || index === value.length - 1) && character.trim() === '') ||
-            (character === ' ' && value.charAt(index - 1) === ' ')
-          ) {
+          if (character === ' ' && result.charAt(result.length - 2) === ' ') {
             needsQuotes = true;
           }
         }
@@ -166,6 +165,13 @@ export function escapeAndroidString(value: string): string {
     }
   }
 
+  if (
+    result.length === 0 ||
+    result.charAt(0).trim() === '' ||
+    result.charAt(result.length - 1).trim() === ''
+  ) {
+    needsQuotes = true;
+  }
   return needsQuotes ? '"' + result + '"' : result;
 }
 
@@ -191,6 +197,8 @@ export function unescapeAndroidString(value: string): string {
   for (let index = start; index < end; index++) {
     const character = value.charAt(index);
     switch (character) {
+      case '\0':
+        break;
       case ' ':
       case '\t':
       case '\n':
@@ -237,8 +245,10 @@ export function unescapeAndroidString(value: string): string {
               }
               code = (code << 4) | hex;
             }
-            if (cursor === index + 5) {
-              result += String.fromCharCode(code);
+            if (cursor === index + 5 || cursor === end) {
+              if (code !== 0) {
+                result += String.fromCharCode(code);
+              }
               index = cursor - 1;
             } else {
               result += 'u';

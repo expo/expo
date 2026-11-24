@@ -182,6 +182,8 @@ function escapeAndroidString(value: string): string {
   for (let index = 0; index < value.length; index++) {
     const character = value.charAt(index);
     switch (character) {
+      case '\0':
+        break;
       case '"':
       case "'":
       case '@':
@@ -197,14 +199,11 @@ function escapeAndroidString(value: string): string {
         break;
       default: {
         const code = value.charCodeAt(index);
-        if (code < 0x20) {
+        if (code < 0x20 || code === 0xfffe || code === 0xffff) {
           result += '\\u' + code.toString(16).padStart(4, '0');
         } else {
           result += character;
-          if (
-            ((index === 0 || index === value.length - 1) && character.trim() === '') ||
-            (character === ' ' && value.charAt(index - 1) === ' ')
-          ) {
+          if (character === ' ' && result.charAt(result.length - 2) === ' ') {
             needsQuotes = true;
           }
         }
@@ -213,6 +212,13 @@ function escapeAndroidString(value: string): string {
     }
   }
 
+  if (
+    result.length === 0 ||
+    result.charAt(0).trim() === '' ||
+    result.charAt(result.length - 1).trim() === ''
+  ) {
+    needsQuotes = true;
+  }
   return needsQuotes ? '"' + result + '"' : result;
 }
 
