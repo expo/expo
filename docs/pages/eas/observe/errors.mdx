@@ -267,6 +267,43 @@ The **Crash-free sessions** card shows the share of sessions in the selected tim
 
 Filter the list by source, by severity (**Fatal** or **Non-fatal**), by platform, by environment, and by release. Fatal errors are reported on the app's next launch, so a recent crash can take time to appear.
 
+## Trigger a workflow for a new error
+
+Use [`on.observe.new_error`](/eas/workflows/syntax/#onobservenew_error) to start a workflow run in [Expo Workflows](/eas/workflows/introduction/) when Expo Observe detects a new error group. For example, you can notify your team or start an investigation.
+
+[Connect your project's GitHub repository](/eas/workflows/get-started/#automate-workflows-with-github-events), then add this file to **.eas/workflows** on the repository's default branch:
+
+```yaml .eas/workflows/review-observe-error.yml
+name: Review a new Observe error
+
+on:
+  observe:
+    new_error:
+      environments: [production]
+      platforms: [android, ios]
+      if: ${{ observe.event.severity == 'fatal' }}
+
+jobs:
+  error_details:
+    type: doc
+    params:
+      md: |
+        # New fatal error
+        - Type: ${{ observe.event.exception.type }}
+        - Message: ${{ observe.event.exception.message }}
+        - Environment: ${{ observe.event.environment }}
+        - Platform: ${{ observe.event.platform }}
+  review:
+    needs: [error_details]
+    type: require-approval
+```
+
+This workflow displays the error details and waits for approval. It matches new fatal errors in production on Android and iOS. Omit `environments`, `platforms`, or `if` to remove that filter.
+
+Newness is per project, environment, and error fingerprint, not per platform or app version. Repeated occurrences of the same group do not start another run. Adding the workflow does not trigger runs for existing error groups.
+
+See the [trigger reference](/eas/workflows/syntax/#onobservenew_error) for filter behavior and the [`observe` context](/eas/workflows/syntax/#observe) for all event fields. The event context does not include the stack trace.
+
 ## Still to come
 
 Error reporting is in preview, and the following are not available yet:

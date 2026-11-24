@@ -71,7 +71,7 @@ on:
 
 The value is a string. It can include `${{ }}` expressions. Expo Workflows renders the template when it creates the run, before any job starts.
 
-The expression can use the [`github`](#github), [`app_store_connect`](#app_store_connect), [`inputs`](#inputs), [`workflow`](#workflow), [`app`](#app), and [`account`](#account) contexts. It supports all [context functions](#context-functions) except `success()`, `failure()`, and `hashFiles()`. Those functions need a job or step that has already run.
+The expression can use the [`github`](#github), [`app_store_connect`](#app_store_connect), [`observe`](#observe), [`inputs`](#inputs), [`workflow`](#workflow), [`app`](#app), and [`account`](#account) contexts. It supports all [context functions](#context-functions) except `success()`, `failure()`, and `hashFiles()`. Those functions need a job or step that has already run.
 
 Job-level contexts such as `needs`, `steps`, and `env` are not available. If the template references an unsupported context, the run fails. Expo Workflows stores an error and does not store a custom title.
 
@@ -79,7 +79,7 @@ If the rendered text is longer than 255 characters, Expo Workflows truncates it 
 
 ## `on`
 
-The `on` key defines the events that start a workflow run. A workflow can start on GitHub events, on a [schedule](#onschedulecron), or on [App Store Connect events](#onapp_store_connect). A workflow can also start when another workflow calls it with [`workflow_call`](#onworkflow_call). You can also start any workflow manually with `eas workflow:run` or the [REST API](/eas/workflows/rest-api/), regardless of the `on` key. To accept inputs for a manual run, use [`on.workflow_dispatch.inputs`](#onworkflow_dispatchinputs).
+The `on` key defines the events that start a workflow run. A workflow can start on GitHub events, on a [schedule](#onschedulecron), on [App Store Connect events](#onapp_store_connect), or on [new errors in Expo Observe](#onobservenew_error). A workflow can also start when another workflow calls it with [`workflow_call`](#onworkflow_call). You can also start any workflow manually with `eas workflow:run` or the [REST API](/eas/workflows/rest-api/), regardless of the `on` key. To accept inputs for a manual run, use [`on.workflow_dispatch.inputs`](#onworkflow_dispatchinputs).
 
 ```yaml
 on:
@@ -383,6 +383,31 @@ on:
     build_upload: {}
 ```
 
+### `on.observe.new_error`
+
+Runs your workflow when [Expo Observe](/eas/observe/errors/) detects a new error group in your project. Expo Observe identifies an error group by its fingerprint and environment. The same fingerprint first seen in staging and later in production can trigger a run in each environment. Repeated occurrences in the same environment do not trigger another run, even on a different platform.
+
+To enable the trigger, [connect your project's GitHub repository](/eas/workflows/get-started/#automate-workflows-with-github-events) and push the workflow file to its default branch. Runs use the latest commit on that branch. Existing error groups do not trigger runs when you add the workflow. Detection runs periodically, so a run may not start immediately after an error arrives.
+
+```yaml
+on:
+  observe:
+    new_error:
+      environments: [production]
+      platforms: [android, ios]
+      if: ${{ observe.event.severity == 'fatal' }}
+```
+
+All filters are optional:
+
+- `environments`: A non-empty list of environment names. Values must match the environment reported to Expo Observe exactly. Omit to match all environments.
+- `platforms`: A non-empty list containing `android`, `ios`, or both. Omit to match all platforms.
+- `if`: A [trigger condition](#ontriggerif) that can read [`observe.event`](#observe), such as the severity or exception message.
+
+The event must match all configured filters. Filters apply to the first occurrence that identifies the new group. A later occurrence does not trigger the workflow if the first one did not match.
+
+To match every new error group without filters, use `new_error: {}`. For a complete example, see [Trigger a workflow for a new error](/eas/observe/errors/#trigger-a-workflow-for-a-new-error).
+
 ### `on.schedule.cron`
 
 > **info** Scheduled workflows are available on paid plans. Learn more at [Expo pricing](https://expo.dev/pricing).
@@ -521,7 +546,7 @@ EAS converts numbers and booleans to strings. A missing value, for example the o
 
 The `if` condition on a trigger decides whether a workflow run starts.
 
-You can add `if:` under `push`, `ref_delete`, `pull_request`, `pull_request_labeled`, `pull_request_comment`, and each `app_store_connect` event domain (`app_version`, `build_upload`, `external_beta`, or `beta_feedback`).
+You can add `if:` under `push`, `ref_delete`, `pull_request`, `pull_request_labeled`, `pull_request_comment`, `observe.new_error`, and each `app_store_connect` event domain (`app_version`, `build_upload`, `external_beta`, or `beta_feedback`).
 
 The value is a boolean or an expression string. You can write it with or without the `${{ }}` wrapper.
 
@@ -537,7 +562,7 @@ The expression must fit in one `${{ }}` block and can be at most 250 characters.
 
 When the condition evaluates to false, no workflow run starts for that trigger event. A retry of an existing run skips this check. It only applies when a new run is created.
 
-The expression can use the [`github`](#github), [`app_store_connect`](#app_store_connect), [`inputs`](#inputs), [`workflow`](#workflow), [`app`](#app), and [`account`](#account) contexts. It supports all [context functions](#context-functions) except `success()`, `failure()`, and `hashFiles()`. Those functions need a job or step that has already run, but a trigger's `if` condition evaluates before any job starts.
+The expression can use the [`github`](#github), [`app_store_connect`](#app_store_connect), [`observe`](#observe), [`inputs`](#inputs), [`workflow`](#workflow), [`app`](#app), and [`account`](#account) contexts. It supports all [context functions](#context-functions) except `success()`, `failure()`, and `hashFiles()`. Those functions need a job or step that has already run, but a trigger's `if` condition evaluates before any job starts.
 
 ```yaml
 on:
@@ -981,6 +1006,7 @@ Expo Workflows evaluates `${{ }}` expressions at four points. Each point has its
 | [`app`](#app)                                                                                           | <YesIcon />  | <YesIcon /> | <YesIcon />                     | <YesIcon />        |
 | [`account`](#account)                                                                                   | <YesIcon />  | <YesIcon /> | <YesIcon />                     | <YesIcon />        |
 | [`app_store_connect`](#app_store_connect)                                                               | <YesIcon />  | <YesIcon /> | <YesIcon /> (`build` jobs only) | <YesIcon />        |
+| [`observe`](#observe)                                                                                   | <YesIcon />  | <YesIcon /> | <YesIcon />                     | <YesIcon />        |
 | [`needs`](#needs)                                                                                       | <NoIcon />   | <YesIcon /> | <YesIcon />                     | <YesIcon />        |
 | [`after`](#after)                                                                                       | <NoIcon />   | <YesIcon /> | <YesIcon />                     | <YesIcon />        |
 | [`jobs`](#onworkflow_calloutputs)                                                                       | <NoIcon />   | <NoIcon />  | <NoIcon />                      | <YesIcon />        |
@@ -994,6 +1020,8 @@ Expo Workflows evaluates `${{ }}` expressions at four points. Each point has its
 In [`on.<trigger>.if`](#ontriggerif), the `workflow` context has only `name` and `filename`. Expo Workflows evaluates the condition before it creates the run, so `workflow.id` and `workflow.url` do not exist yet.
 
 `app_store_connect` has values only for runs that an App Store Connect event triggered. In steps, only `build` jobs receive it.
+
+`observe` has values only for runs that an Observe event triggered, for their retries, and for the workflows they call.
 
 At the job level, `env` becomes available after Expo Workflows determines the job's [`environment`](#jobsjob_idenvironment). You cannot use `env` in `jobs.<job_id>.environment` itself.
 
@@ -1348,6 +1376,27 @@ jobs:
         Build ${{ app_store_connect.build_upload.cf_bundle_version }} is ready for testing.
       submit_beta_review: true
 ```
+
+#### `observe`
+
+Information about the error that triggered an [`on.observe.new_error`](#onobservenew_error) workflow. Read these fields through `observe.event` in trigger conditions and jobs. The context is not available when you start the workflow manually.
+
+| Property                    | Type               | Description                                                    |
+| --------------------------- | ------------------ | -------------------------------------------------------------- |
+| `event.id`                  | `string`           | ID of the error occurrence used to detect the new group.       |
+| `event.type`                | `string`           | Always `new_error`.                                            |
+| `event.occurredAt`          | `string`           | Timestamp of the error occurrence in ISO 8601 format.          |
+| `event.appId`               | `string`           | Expo project ID.                                               |
+| `event.fingerprint.value`   | `string`           | Fingerprint used to group matching errors.                     |
+| `event.fingerprint.version` | `string` or `null` | Fingerprint algorithm version, when available.                 |
+| `event.severity`            | `string`           | `fatal` or `error`.                                            |
+| `event.environment`         | `string` or `null` | Reported environment name, or `null` if unavailable.           |
+| `event.platform`            | `string` or `null` | `android`, `ios`, or `null` if the platform is not recognized. |
+| `event.deviceOs`            | `string`, optional | Reported operating system name.                                |
+| `event.exception.type`      | `string` or `null` | Exception type, when available.                                |
+| `event.exception.message`   | `string` or `null` | Exception message, when available.                             |
+
+The event does not include a stack trace. Open the error in the [Expo Observe dashboard](/eas/observe/errors/#investigate-an-error) to inspect its stack trace and occurrences.
 
 #### `env`
 
