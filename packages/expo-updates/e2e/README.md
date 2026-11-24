@@ -37,68 +37,33 @@ mkdir $WORKING_DIR_ROOT
 pnpm generate-test-update-bundles
 ```
 
-- To run iOS tests:
-
-  - Have an iOS simulator already running, and ensure no Android emulators are running
-  - Execute these commands:
+- Build the app, for iOS or Android, in Debug or Release:
 
 ```bash
-npx pod-install
-pnpm maestro:ios:debug:build
-./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml ios debug
+npx pod-install # iOS only
+pnpm maestro:ios:debug:build # or maestro:ios:release:build, maestro:android:debug:build, maestro:android:release:build
 ```
 
-- To run Android tests:
-
-  - Have an Android emulator already running, and ensure no iOS simulators are running
-  - Execute these commands:
+- Run the suite on a device in Expo Simulators:
 
 ```bash
-pnpm maestro:android:debug:build
-./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android debug
-```
-
-- For either the iOS or Android tests, you can optionally run the test updates server separately for debugging purposes.
-
-  - Before running the Maestro tests above, run this command in a separate terminal window:
-
-```bash
-./maestro/updates-server/start.ts
-```
-
-### Update retention
-
-The enabled test app sets `updates.maxUpdatesToKeep` to `3`. The
-`basic_updateRetention.yml` flow launches four successive updates and checks the
-cached update IDs after each launch. It verifies that the three newest downloaded
-updates survive and the oldest downloaded update is removed. The current embedded ID
-is excluded from the comparison so only downloaded updates count toward the
-expected retained IDs. Database reads are exposed only by the E2E fixture modules.
-The reader waits up to one second for SQLite locks on iOS. Failed reads are displayed in the result row,
-and the bounded poll retries failed or missing results.
-
-After building the app and generating the test bundles above, run this flow alone
-with:
-
-```bash
-./maestro/maestro-test-executor.sh ./maestro/tests/basic_updateRetention.yml android debug
-# Or use ios instead of android.
+./simulator/simulator-test-executor.sh ./simulator/tests/updates-e2e-enabled.txt ios debug
+# Or use android instead of ios, and release instead of debug.
 ```
 
 ### Tests in Expo Simulators
 
-The bricking measures disabled tests run on a device in Expo Simulators, not in a local simulator or emulator. You must be logged in to an Expo account with Expo Simulators access, and the account must have access to the `updates-e2e` EAS project.
-
-Create the project with `./packages/expo-updates/e2e/setup/create-bricking-measures-disabled-eas-project.ts`, and generate the bundles as above. Then build the release app and run the suite:
-
-```bash
-npx pod-install # iOS only
-pnpm maestro:ios:release:build # or pnpm maestro:android:release:build
-./simulator/simulator-test-executor.sh ./simulator/tests/updates-e2e-bricking-measures-disabled.txt ios release
-# Or use android instead of ios.
-```
+The enabled and bricking measures disabled tests run on a device in Expo Simulators, not in a local simulator or emulator. You must be logged in to an Expo account with Expo Simulators access, and the account must have access to the `updates-e2e` EAS project.
 
 The executor starts the updates server, starts a session, and stops both when the suite ends. The device reaches the updates server on this machine through the local egress tunnel of the session. Logs, and a screenshot on failure, are in `simulator/output`.
+
+To run one flow, make a suite file that lists only that flow, for example `basic_updateRetention.sh`, and pass it to the executor.
+
+For the bricking measures disabled tests, create the project with `./packages/expo-updates/e2e/setup/create-bricking-measures-disabled-eas-project.ts`, generate the bundles as above, build the release app, and run `./simulator/tests/updates-e2e-bricking-measures-disabled.txt`.
+
+### Update retention
+
+The enabled test app sets `updates.maxUpdatesToKeep` to `3`. The `basic_updateRetention.sh` flow launches four successive updates and checks the cached update IDs after each launch. It verifies that the three newest downloaded updates survive and the oldest downloaded update is removed. The current embedded ID is excluded from the comparison so only downloaded updates count toward the expected retained IDs. Database reads are exposed only by the E2E fixture modules. The reader waits up to one second for SQLite locks on iOS. Failed reads are displayed in the result row, and the flow retries failed or missing results.
 
 ## Updates API test project:
 

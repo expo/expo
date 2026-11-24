@@ -123,6 +123,11 @@ app.get('/failing-asset/:status/:filename', (req: Request<{ status: string }>, r
   res.status(parseInt(req.params.status, 10)).send(`Asset failed with status ${req.params.status}`);
 });
 
+// Never responds, so the asset request times out and the app reports the server as unreachable.
+// A refused connection cannot do this in Expo Simulators: the local egress proxy answers it with
+// an HTTP error.
+app.get('/hanging-asset/:filename', () => {});
+
 app.get(
   '/notify/:string',
   (
@@ -744,12 +749,11 @@ async function serveTestUpdateWithFailingAssets(platform: string): Promise<strin
     platform
   );
   const serverUrl = `http://${Update.serverHost}:${Update.serverPort}`;
-  // Nothing listens on port 1, so the connection is refused.
   const assetUrls = [
     `${serverUrl}/static/missing-asset0.jpg`,
     `${serverUrl}/static/missing-asset1.jpg`,
     `${serverUrl}/failing-asset/500/asset2.jpg`,
-    `http://${Update.serverHost}:1/asset3.jpg`,
+    `${serverUrl}/hanging-asset/asset3.jpg`,
   ];
   // The downloads fail before any hash check, so each asset only needs a distinct hash.
   const assets = assetUrls.map((url, index) => ({
