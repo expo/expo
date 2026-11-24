@@ -20,7 +20,7 @@ extension JavaScriptRuntime {
     private let pointee: expo.RuntimeScheduler
     private let handle: JavaScriptRuntimeHandle
 
-    /// Releases that `scheduleRelease` collected on the JavaScript thread and that no task runs yet.
+    /// Releases that `scheduleRelease` collected on a thread that runs JavaScript and that no task runs yet.
     private let pendingReleases = OSAllocatedUnfairLock<[@JavaScriptActor (JavaScriptRuntime) -> Void]>(
       uncheckedState: []
     )
