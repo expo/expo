@@ -23,12 +23,34 @@ append_note() {
   printf '%s\n\n%s\n' "$body" "$line"
 }
 
+# True when the comment's embedded ecr state holds a review. A "not reviewed" comment,
+# or a routed comment where every scope failed, has no stored session to reopen.
+has_review() {
+  local state
+  state=$(grep -o 'expo-ai-code-reviewer:state=[A-Za-z0-9+/=]*' <<< "$1" | tail -n 1) || return 1
+  state=${state#*:state=}
+  [ -n "$state" ] || return 1
+  base64 --decode <<< "$state" 2>/dev/null | jq -e '
+    .review.couldNotComplete != true
+    and ((.scopes // []) as $scopes
+      | ($scopes | length) == 0 or any($scopes[]; .review.couldNotComplete != true))
+  ' > /dev/null 2>&1
+}
+
 if [ "${1:-}" = --self-test ]; then
-  body=$'Review\n<!-- expo-ai-code-reviewer -->\n<!-- tag:state=abc -->'
+  state_marker() { printf '<!-- expo-ai-code-reviewer:state=%s -->' "$(printf '%s' "$1" | base64 | tr -d '\n')"; }
+  reviewed=$(state_marker '{"review":{"decision":"approve","findings":[]}}')
+  body=$'Review\n<!-- expo-ai-code-reviewer -->\n'"$reviewed"
   out=$(append_note "$body" 12)
   [[ $out == *'ecr attach --pr 12'* ]]
   [ "$(append_note "$out" 12)" = "$out" ]
-  [[ $out == *'<!-- tag:state=abc -->'* ]]
+  [[ $out == *"$reviewed"* ]]
+  has_review "$body"
+  has_review "x $(state_marker '{"review":{"couldNotComplete":true}}')" && exit 1
+  has_review "x $(state_marker '{"review":{},"scopes":[{"review":{"couldNotComplete":true}}]}')" && exit 1
+  has_review "x $(state_marker '{"review":{},"scopes":[{"review":{"couldNotComplete":true}},{"review":{}}]}')"
+  has_review 'Review <!-- expo-ai-code-reviewer -->' && exit 1
+  echo "ai-review-attach-note self-test ok"
   exit 0
 fi
 
@@ -52,6 +74,10 @@ ids=$(
 
 for id in $ids; do
   body=$(gh api "repos/${REPO}/issues/comments/${id}" --jq .body) || continue
+  if ! has_review "$body"; then
+    echo "attach note: comment ${id} holds no review, so it gets no note"
+    continue
+  fi
   updated=$(append_note "$body" "$PR")
   printf '%s' "$updated" | jq -Rs '{body: .}' |
     gh api --method PATCH "repos/${REPO}/issues/comments/${id}" --input - >/dev/null

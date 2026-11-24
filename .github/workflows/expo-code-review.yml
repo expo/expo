@@ -323,6 +323,7 @@ jobs:
         run: bash .github/scripts/ai-review-sandbox-token.sh mint
 
       - name: Run AI review
+        id: review
         # The launcher selects the SAME checked-in package version the guard cleared.
         # `--force` only on the automatic fork path (see the job `if`), never from PR input.
         # `--expect-head`: review only the commit this event is for.
@@ -371,9 +372,10 @@ jobs:
         run: bash .github/scripts/ai-review-auto-count.sh record
 
       # ecr rewrites the comment, and the count step rewrites the tail, so this runs
-      # after both. A missing comment is a no-op.
+      # after both. A missing comment is a no-op. Only a review that finished has a stored
+      # session to reopen.
       - name: Tell Expo staff how to reopen the review
-        if: always()
+        if: always() && steps.review.outcome == 'success'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
