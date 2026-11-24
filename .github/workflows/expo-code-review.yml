@@ -372,7 +372,7 @@ jobs:
 
       # ecr rewrites the comment, and the count step rewrites the tail, so this runs
       # after both. A missing comment is a no-op.
-      - name: Tell Expo employees how to reopen the review
+      - name: Tell Expo staff how to reopen the review
         if: always()
         continue-on-error: true
         env:

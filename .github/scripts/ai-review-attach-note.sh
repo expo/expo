@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Tell an Expo employee how to reopen this review.
+# Tell Expo staff how to reopen this review.
 #
 # ecr rewrites its comment on every run, so this runs after ecr and after the
 # auto-count marker. The line is appended, and a second run leaves it once.
@@ -8,7 +8,7 @@
 set -euo pipefail
 
 note_line() {
-  printf 'Expo employees can reopen a stored review with `ecr attach --pr %s` from a checkout of the reviewed commit.' "$1"
+  printf 'Expo staff can reopen a stored review with `ecr attach --pr %s` from a checkout of the reviewed commit.' "$1"
 }
 
 # Print the body with the line at the end, or the body unchanged when it is there.

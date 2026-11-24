@@ -394,7 +394,7 @@ jobs:
           ./scripts/expo-code-review ecr ci --context-file "$RUNNER_TEMP/pr-description.md" "${ARGS[@]}"
 
       # ecr rewrites the comment on every run, so put the attach line back after it.
-      - name: Tell Expo employees how to reopen the review
+      - name: Tell Expo staff how to reopen the review
         if: always() && steps.cmd.outputs.run == 'true'
         continue-on-error: true
         env:
