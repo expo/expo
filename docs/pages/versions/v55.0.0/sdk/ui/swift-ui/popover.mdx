@@ -31,7 +31,7 @@ export default function BasicPopoverExample() {
     <Host matchContents>
       <Popover
         isPresented={isPresented}
-        onStateChange={({ isPresented }) => setIsPresented(isPresented)}>
+        onIsPresentedChange={isPresented => setIsPresented(isPresented)}>
         <Popover.Trigger>
           <Button label="Show Popover" onPress={() => setIsPresented(true)} />
         </Popover.Trigger>
@@ -62,7 +62,7 @@ export default function AttachmentAnchorExample() {
     <Host matchContents>
       <Popover
         isPresented={isPresented}
-        onStateChange={({ isPresented }) => setIsPresented(isPresented)}
+        onIsPresentedChange={isPresented => setIsPresented(isPresented)}
         attachmentAnchor="trailing">
         <Popover.Trigger>
           <Button label="Show Popover" onPress={() => setIsPresented(true)} />
@@ -94,7 +94,7 @@ export default function ArrowEdgeExample() {
     <Host matchContents>
       <Popover
         isPresented={isPresented}
-        onStateChange={({ isPresented }) => setIsPresented(isPresented)}
+        onIsPresentedChange={isPresented => setIsPresented(isPresented)}
         arrowEdge="top">
         <Popover.Trigger>
           <Button label="Show Popover" onPress={() => setIsPresented(true)} />
@@ -127,7 +127,7 @@ export default function RNContentPopoverExample() {
     <Host matchContents>
       <Popover
         isPresented={isPresented}
-        onStateChange={({ isPresented }) => setIsPresented(isPresented)}>
+        onIsPresentedChange={isPresented => setIsPresented(isPresented)}>
         <Popover.Trigger>
           <Button label="Show RN Popover" onPress={() => setIsPresented(true)} />
         </Popover.Trigger>

@@ -27,6 +27,20 @@ private class DevLauncherWrapperView: UIView {
     devLauncherViewController?.view.layoutIfNeeded()
   }
 #endif
+
+#if os(tvOS)
+  // This view is the window root view controller's view, so UIKit's
+  // preferred-focus search passes through it. A plain UIView prefers nothing,
+  // which ends the search before the React root view (the view of
+  // devLauncherViewController). Forward the search to it, or nothing on screen
+  // can take focus and `hasTVPreferredFocus` and `focus()` are ignored.
+  override var preferredFocusEnvironments: [UIFocusEnvironment] {
+    if let viewController = devLauncherViewController {
+      return [viewController]
+    }
+    return super.preferredFocusEnvironments
+  }
+#endif
 }
 
 @objc

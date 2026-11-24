@@ -293,8 +293,8 @@ declare module 'xcode' {
     addToPbxSourcesBuildPhase(file: unknown): void;
     removeFromPbxSourcesBuildPhase(file: unknown): void;
     /**
-     * Adds to PBXResourcesBuildPhase` section
-     * @param resourcesBuildPhaseSectionKey Because there's might more than one `Resources` build phase we need to ensure file is placed under correct one.
+     * Adds to `PBXResourcesBuildPhase` section
+     * @param resourcesBuildPhaseSectionKey Because there might be more than one `Resources` build phase we need to ensure the file is placed under the correct one.
      */
     addToPbxResourcesBuildPhase(file: PBXFile): void;
     removeFromPbxResourcesBuildPhase(file: unknown): void;

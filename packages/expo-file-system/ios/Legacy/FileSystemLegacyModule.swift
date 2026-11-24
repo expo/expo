@@ -11,7 +11,14 @@ public final class FileSystemLegacyModule: Module {
   private lazy var taskHandlersManager = EXTaskHandlersManager()
   private lazy var resourceManager = PHAssetResourceManager()
 
-  private lazy var backgroundSession = createUrlSession(type: .background, delegate: sessionTaskDispatcher)
+  private lazy var backgroundSession: URLSession = {
+    let session = createUrlSession(type: .background, delegate: sessionTaskDispatcher)
+    if let identifier = session.configuration.identifier {
+      ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)?
+        .registerSession(identifier)
+    }
+    return session
+  }()
   private lazy var foregroundSession = createUrlSession(type: .foreground, delegate: sessionTaskDispatcher)
 
   private var documentDirectory: URL? {
@@ -75,11 +82,11 @@ public final class FileSystemLegacyModule: Module {
       if options.encoding == .base64 {
         return try readFileAsBase64(path: url.path, options: options)
       }
-      do {
-        return try String(contentsOfFile: url.path, encoding: options.encoding.toStringEncoding() ?? .utf8)
-      } catch {
-        throw FileNotReadableException(url.path)
-      }
+      return try readFileAsString(
+        path: url.path,
+        encoding: options.encoding.toStringEncoding() ?? .utf8,
+        options: options
+      )
     }
 
     AsyncFunction("writeAsStringAsync") { (url: URL, string: String, options: WritingOptions) in

@@ -4,6 +4,7 @@ import { useRouter } from 'next/compat/router';
 import dynamic from 'next/dynamic';
 import { useEffect, useState, type PropsWithChildren, useRef, useCallback, useMemo } from 'react';
 
+import { trackServicesPageClick } from '~/common/click-tracking';
 import { getLocaleFromPath } from '~/common/i18n';
 import * as RoutesUtils from '~/common/routes';
 import {
@@ -14,7 +15,7 @@ import {
 } from '~/common/routes';
 import { versionToText, throttle } from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
-import DocumentationHead from '~/components/DocumentationHead';
+import DocumentationHead, { getOGImageURL } from '~/components/DocumentationHead';
 import DocumentationNestedScrollLayout, {
   DocumentationNestedScrollLayoutHandles,
 } from '~/components/DocumentationNestedScrollLayout';
@@ -83,9 +84,19 @@ export default function DocumentationPage({
     version !== 'unversioned' && !RoutesUtils.isInternalPath(pathname)
       ? RoutesUtils.getCanonicalUrl(pathname)
       : undefined;
+  const latestVersionPath =
+    version === 'unversioned'
+      ? RoutesUtils.getLatestVersionPath(RoutesUtils.getRoutes(pathname, 'latest'), pathname)
+      : undefined;
   const techArticleSchema =
     title && canonicalUrl
-      ? buildTechArticleSchema({ title, description, modificationDate, url: canonicalUrl })
+      ? buildTechArticleSchema({
+          title,
+          description,
+          modificationDate,
+          image: getOGImageURL({ title, description, locale }),
+          url: canonicalUrl,
+        })
       : null;
   const sidebarScrollPosition = process?.browser ? window.__sidebarScroll : 0;
   const currentPath = router?.asPath ?? '';
@@ -200,6 +211,14 @@ export default function DocumentationPage({
       setHasActivatedAskAI(true);
     }
   }, [isAskAIVisible]);
+
+  useEffect(() => {
+    const appRoot = document.getElementById('__next');
+    appRoot?.addEventListener('click', trackServicesPageClick);
+    return () => {
+      appRoot?.removeEventListener('click', trackServicesPageClick);
+    };
+  }, []);
 
   useEffect(() => {
     if (!layoutRef.current) {
@@ -380,9 +399,14 @@ export default function DocumentationPage({
           </p>
           {version && version === 'unversioned' && (
             <InlineHelp type="default" size="sm" className="mb-5! inline-flex! w-full">
-              This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
-              <A href={pathname.replace('unversioned', 'latest')}>latest version</A> (
-              {versionToText(LATEST_VERSION)}).
+              This is documentation for the next SDK version.
+              {latestVersionPath && (
+                <>
+                  {' '}
+                  For up-to-date documentation, see the{' '}
+                  <A href={latestVersionPath}>latest version</A> ({versionToText(LATEST_VERSION)}).
+                </>
+              )}
             </InlineHelp>
           )}
           {title && (

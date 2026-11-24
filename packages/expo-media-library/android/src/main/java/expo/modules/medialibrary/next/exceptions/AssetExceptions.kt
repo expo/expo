@@ -1,5 +1,6 @@
 package expo.modules.medialibrary.next.exceptions
 
+import android.net.Uri
 import expo.modules.kotlin.exception.CodedException
 
 class PermissionsException(message: String, cause: Throwable? = null) :
@@ -8,8 +9,8 @@ class PermissionsException(message: String, cause: Throwable? = null) :
 class UnableToSaveException(message: String) :
   CodedException(message)
 
-class AssetNotFoundException(message: String, cause: Throwable? = null) :
-  CodedException(message, cause)
+class AssetNotFoundException(contentUri: Uri) :
+  CodedException("Asset not found: $contentUri. It may have been deleted or is no longer accessible.")
 
 class AssetPropertyNotFoundException(propertyName: String, cause: Throwable? = null) :
   CodedException("$propertyName not found. The asset may have been deleted or is no longer accessible.", cause)

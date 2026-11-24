@@ -1,7 +1,7 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
 import CoreSpotlight
+import ExpoModulesCore
 
 /// Represents the Info.plist.
 public struct InfoPlist {
@@ -35,7 +35,8 @@ func sendFakeDeepLinkEventToReactNative(obj: Any, url: String) {
     // swiftlint:disable:next legacy_objc_type
     name: NSNotification.Name(rawValue: "RCTOpenURLNotification"),
     object: obj,
-    userInfo: ["url": url])
+    userInfo: ["url": url]
+  )
 }
 
 func userInfoToQueryString(_ userInfo: [String: NSSecureCoding]?) -> String {

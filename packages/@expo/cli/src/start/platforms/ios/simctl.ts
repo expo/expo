@@ -5,7 +5,6 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import { isSpawnResultError, xcrunAsync } from './xcrun';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { memoize } from '../../../utils/fn';
@@ -13,6 +12,7 @@ import { learnMore } from '../../../utils/link';
 import { parsePlistAsync } from '../../../utils/plist';
 import { profile } from '../../../utils/profile';
 import { event } from '../events';
+import { isSpawnResultError, xcrunAsync } from './xcrun';
 
 type DeviceState = 'Shutdown' | 'Booted';
 

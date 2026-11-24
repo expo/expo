@@ -7,9 +7,9 @@
  */
 import type { Socket } from 'net';
 
-import { ResponseError, ServiceClient } from './ServiceClient';
 import { LockdownProtocolClient } from '../protocol/LockdownProtocol';
 import type { LockdownCommand, LockdownResponse } from '../protocol/LockdownProtocol';
+import { ResponseError, ServiceClient } from './ServiceClient';
 
 export type OnInstallProgressCallback = (props: {
   status: string;

@@ -1,5 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore
@@ -124,7 +125,46 @@ struct SharedObjectTests {
   func `releases the native object when JS reference is garbage-collected`() throws {
     let registrySizeBefore = appContext.sharedObjectRegistry.size
     try runtime.eval("(() => { new expo.modules.SharedObjectModule.SharedObjectExample() })()")
-    try runtime.eval("gc() && gc() && gc()")
+    try runtime.collectGarbage { appContext.sharedObjectRegistry.size == registrySizeBefore }
+    #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
+  }
+
+  @Test
+  func `releases the native object after removing a listener through its subscription`() throws {
+    let registrySizeBefore = appContext.sharedObjectRegistry.size
+    // Same shape as a React effect returning `() => subscription.remove()`: the listener's closure
+    // can reach the subscription, which must not keep the listener nor the shared object alive.
+    try runtime.eval(
+      """
+      (() => {
+        const sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample();
+        const subscription = sharedObject.addListener('test event', () => sharedObject);
+        const cleanup = () => subscription.remove();
+        cleanup();
+      })()
+      """
+    )
+    try runtime.collectGarbage { appContext.sharedObjectRegistry.size == registrySizeBefore }
+    #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
+  }
+
+  @Test
+  func `releases the native object after removing a listener with removeListener`() throws {
+    let registrySizeBefore = appContext.sharedObjectRegistry.size
+    // The listener's closure can reach the subscription, which is never removed. It must not keep the listener nor the
+    // shared object alive.
+    try runtime.eval(
+      """
+      (() => {
+        const sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample();
+        let subscription;
+        const listener = () => subscription;
+        subscription = sharedObject.addListener('test event', listener);
+        sharedObject.removeListener('test event', listener);
+      })()
+      """
+    )
+    try runtime.collectGarbage { appContext.sharedObjectRegistry.size == registrySizeBefore }
     #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
   }
 
@@ -193,6 +233,71 @@ struct SharedObjectTests {
   }
 
   @Test
+  func `calls the other listeners when a listener throws`() throws {
+    let jsObject = try runtime
+      .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
+      .asObject()
+
+    try runtime.eval(
+      """
+      callCount = 0;
+      sharedObject.addListener('ping', () => { throw new Error('listener error') });
+      sharedObject.addListener('ping', () => { callCount += 1 });
+      """
+    )
+
+    let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
+    nativeObject?.emit(event: "ping")
+
+    #expect(try runtime.eval("callCount").asInt() == 1)
+  }
+
+  @Test
+  func `keeps canonically equivalent event names apart`() throws {
+    let jsObject = try runtime
+      .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
+      .asObject()
+
+    try runtime.eval(
+      """
+      callCount = 0;
+      sharedObject.addListener('\\u00e9', () => { callCount += 1 });
+      """
+    )
+
+    let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
+    nativeObject?.emit(event: "e\u{301}")
+    try runtime.eval([
+      "sharedObject.emit('e\\u0301')",
+      "sharedObject.removeAllListeners('e\\u0301')"
+    ])
+
+    #expect(try runtime.eval("callCount").asInt() == 0)
+    #expect(try runtime.eval("sharedObject.listenerCount('e\\u0301')").asInt() == 0)
+    #expect(try runtime.eval("sharedObject.listenerCount('\\u00e9')").asInt() == 1)
+  }
+
+  @Test
+  func `emits events to a listener that the EventEmitter prototype adds`() throws {
+    let jsObject = try runtime
+      .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
+      .asObject()
+
+    try runtime.eval(
+      """
+      callCount = 0;
+      expo.EventEmitter.prototype.addListener.call(sharedObject, 'ping', () => { callCount += 1 });
+      """
+    )
+
+    let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
+    nativeObject?.emit(event: "ping")
+
+    #expect(try runtime.eval("callCount").asInt() == 1)
+    #expect(try runtime.eval("sharedObject.listenerCount('ping')").asInt() == 1)
+  }
+
+  @Test
   func `emits events with a pre-converted JavaScriptValue payload`() throws {
     let jsObject = try runtime
       .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
@@ -248,7 +353,24 @@ struct SharedObjectTests {
     // defensive branches in the public `emit` overloads should log and return cleanly.
     detached.emit(event: "ignored")
     detached.emit(event: "ignored", payload: ["key": "value"])
-    detached.emit(event: "ignored", payload: .undefined)
+    detached.emit(event: "ignored", payload: .undefined())
+  }
+
+  @Test
+  func `emits from deinit without keeping the shared object`() throws {
+    // The runtime of a `TestAppContext` runs scheduled work on its own thread, after `deinit` returns.
+    let appContext = TestAppContext()
+    weak var weakObject: DeinitEmittingSharedObject?
+    do {
+      let object = DeinitEmittingSharedObject()
+      object.appContext = appContext
+      weakObject = object
+    }
+    #expect(weakObject == nil)
+
+    // Waits for the scheduled emit.
+    let runtime = try appContext.runtime
+    try runtime.execute {}
   }
 
   // MARK: - native(from:)
@@ -336,7 +458,7 @@ struct SharedObjectTests {
     let result = try resultValue.asObject()
     let dataProperty = result.getProperty("data")
 
-    #expect(dataProperty.isArrayBuffer())
+    #expect(dataProperty.isArrayBuffer() == true)
     #expect(try result.getProperty("length").asInt() == 16)
 
     let firstByte = try runtime.eval("new Uint8Array(result.data)[0]").asInt()
@@ -365,3 +487,10 @@ private final class SharedObjectExample: SharedObject {}
 
 /// A second, unrelated subclass used to exercise the type-mismatch path of `native(from:)`.
 private final class OtherSharedObjectExample: SharedObject {}
+
+/// Emits from `deinit`, like `AudioStream` in `expo-audio`.
+private final class DeinitEmittingSharedObject: SharedObject {
+  deinit {
+    emit(event: "stopped", payload: 1)
+  }
+}

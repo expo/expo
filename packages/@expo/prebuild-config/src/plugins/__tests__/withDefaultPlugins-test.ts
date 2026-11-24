@@ -13,13 +13,13 @@ import { vol } from 'memfs';
 import * as path from 'path';
 import xcode from 'xcode';
 
-import rnFixture from './fixtures/react-native-project';
-import { getDirFromFS } from './getDirFromFS';
 import {
   withAndroidExpoPlugins,
   withIosExpoPlugins,
   withVersionedExpoSDKPlugins,
 } from '../withDefaultPlugins';
+import rnFixture from './fixtures/react-native-project';
+import { getDirFromFS } from './getDirFromFS';
 
 const { withOrientation } = IOSConfig.Orientation;
 
@@ -391,7 +391,7 @@ describe('built-in plugins', () => {
     expect(after['ios/HelloWorld/Info.plist']).toMatch('UIApplicationSceneManifest');
     expect(after['ios/HelloWorld/Info.plist']).toMatch('$(PRODUCT_MODULE_NAME).SceneDelegate');
     expect(after['ios/HelloWorld/Supporting/en.lproj/InfoPlist.strings']).toMatch(
-      /foo = "uhh bar"/
+      /"foo" = "uhh bar"/
     );
     expect(after['ios/HelloWorld/GoogleService-Info.plist']).toBe(googleServiceInfoFixture);
 

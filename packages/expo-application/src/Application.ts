@@ -3,6 +3,7 @@ import { Platform, UnavailabilityError } from 'expo';
 import type {
   ApplicationReleaseType,
   PushNotificationServiceEnvironment,
+  AppleAppStoreEnvironment,
 } from './Application.types';
 import ExpoApplication from './ExpoApplication';
 
@@ -22,7 +23,7 @@ export const nativeApplicationVersion: string | null = ExpoApplication
 // @needsAudit
 /**
  * The internal build version of the native application that the app stores may use to distinguish
- * between different binaries. At the time when native app is built, On Android, this is the version
+ * between different binaries. At the time when native app is built, on Android, this is the version
  * code set by `android.versionCode` in app config, and on iOS, the `Info.plist` value for
  * `CFBundleVersion` (set with `ios.buildNumber` value in app config in a standalone app).
  * On web, this value is `null`. The return type on Android and iOS is `string`.
@@ -142,6 +143,30 @@ export async function getIosApplicationReleaseTypeAsync(): Promise<ApplicationRe
   return await ExpoApplication.getApplicationReleaseTypeAsync();
 }
 
+/**
+ * Gets the App Store environment of the running build. Unlike
+ * [`getIosApplicationReleaseTypeAsync`](#applicationgetiosapplicationreleasetypeasync), which
+ * reports `APP_STORE` for both a TestFlight build and an App Store release, this tells them apart.
+ * In Expo Go, this reports Expo Go's own environment.
+ *
+ * @example
+ * ```ts
+ * if ((await Application.getAppleStoreEnvironmentAsync()) === 'sandbox') {
+ *   // Show settings for TestFlight testers, App Review and development builds
+ * }
+ * ```
+ * @return A `Promise` which fulfills with an
+ * [`AppleAppStoreEnvironment`](#appleappstoreenvironment).
+ * @platform ios
+ * @platform tvos
+ */
+export async function getAppleStoreEnvironmentAsync(): Promise<AppleAppStoreEnvironment> {
+  if (!ExpoApplication.getStoreEnvironmentAsync) {
+    throw new UnavailabilityError('expo-application', 'getStoreEnvironmentAsync');
+  }
+  return await ExpoApplication.getStoreEnvironmentAsync();
+}
+
 // @needsAudit
 /**
  * Gets the current [Apple Push Notification (APN)](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment?language=objc)
@@ -207,4 +232,5 @@ export async function getLastUpdateTimeAsync(): Promise<Date> {
 export {
   ApplicationReleaseType,
   type PushNotificationServiceEnvironment,
+  type AppleAppStoreEnvironment,
 } from './Application.types';

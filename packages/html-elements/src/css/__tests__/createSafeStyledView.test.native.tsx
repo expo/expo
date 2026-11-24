@@ -17,8 +17,8 @@ afterAll(() => {
   console.warn = originalConsoleWarn;
 });
 
-it('strips invalid style properties', () => {
-  const { toJSON } = render(
+it('strips invalid style properties', async () => {
+  const { toJSON } = await render(
     <Safe
       style={{
         transitionDuration: '200ms',
@@ -29,8 +29,23 @@ it('strips invalid style properties', () => {
   expect(toJSON()).toMatchSnapshot();
 });
 
-it('replaces invalid position with "relative"', () => {
-  const { toJSON } = render(
+it('preserves backgroundImage, which React Native supports natively', async () => {
+  const { toJSON } = await render(
+    <Safe
+      style={{
+        backgroundImage: 'linear-gradient(to bottom, red, blue)',
+        backgroundClip: 'border-box',
+      }}
+    />
+  );
+  const json = toJSON();
+  expect(json && !Array.isArray(json) && json.props.style).toMatchObject({
+    backgroundImage: 'linear-gradient(to bottom, red, blue)',
+  });
+});
+
+it('replaces invalid position with "relative"', async () => {
+  const { toJSON } = await render(
     <Safe
       style={{
         position: 'fixed',
@@ -41,8 +56,8 @@ it('replaces invalid position with "relative"', () => {
   expect(console.warn).toHaveBeenCalledWith(`Unsupported position: 'fixed'`);
 });
 
-it('mocks out visibility: hidden by lowering the opacity', () => {
-  const { toJSON } = render(
+it('mocks out visibility: hidden by lowering the opacity', async () => {
+  const { toJSON } = await render(
     <Safe
       style={{
         visibility: 'hidden',

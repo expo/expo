@@ -1,7 +1,7 @@
 import basicSpawnAsync, { SpawnResult, SpawnOptions, SpawnPromise } from '@expo/spawn-async';
 import chalk from 'chalk';
-import { glob, GlobOptions } from 'glob';
 import ora from 'ora';
+import { glob, type GlobOptions } from 'tinyglobby';
 import { stripVTControlCharacters } from 'util';
 
 import { EXPO_DIR } from './Constants';
@@ -24,6 +24,21 @@ export function spawnAsync(
 }
 
 /**
+ * Collects the output of a failed spawn into a single string. `@expo/spawn-async`
+ * puts `stdout` and `stderr` on non-enumerable getters that error formatters skip,
+ * so without this the reason for the failure is nowhere in the printed error.
+ */
+export function spawnErrorOutput(error: unknown): string {
+  const { stdout, stderr } = (error ?? {}) as { stdout?: unknown; stderr?: unknown };
+
+  return [stderr, stdout]
+    .filter((output): output is string => typeof output === 'string')
+    .map((output) => output.trim())
+    .filter(Boolean)
+    .join('\n');
+}
+
+/**
  * Does the same as `spawnAsync` but parses the output to JSON object.
  */
 export async function spawnJSONCommandAsync<T = object>(
@@ -31,7 +46,18 @@ export async function spawnJSONCommandAsync<T = object>(
   args: readonly string[] = [],
   options: SpawnOptions = {}
 ): Promise<T> {
-  const child = await spawnAsync(command, args, options);
+  let child: SpawnResult;
+
+  try {
+    child = await spawnAsync(command, args, options);
+  } catch (error: any) {
+    const output = spawnErrorOutput(error);
+    if (output) {
+      error.message += '\n' + output;
+    }
+    throw error;
+  }
+
   try {
     return JSON.parse(child.stdout);
   } catch (e) {
@@ -118,18 +144,9 @@ export function execAll(rgx: RegExp, str: string, index: number = 0): string[] {
 export async function searchFilesAsync(
   rootPath: string,
   patterns: string | string[],
-  options?: Omit<GlobOptions, 'withFileTypes'>
+  options?: Pick<GlobOptions, 'ignore'>
 ): Promise<Set<string>> {
-  const files = await Promise.all(
-    arrayize(patterns).map((pattern) =>
-      glob(pattern, {
-        cwd: rootPath,
-        nodir: true,
-        ...options,
-      })
-    )
-  );
-  return new Set(([] as string[]).concat(...files));
+  return new Set(await glob(patterns, { cwd: rootPath, expandDirectories: false, ...options }));
 }
 
 /**

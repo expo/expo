@@ -57,16 +57,27 @@ describe(sortSources, () => {
   it('should sort sources by override hash key', () => {
     const sources: HashSource[] = [
       { type: 'file', filePath: '/app/app.json', reasons: ['expoConfig'] },
-      { type: 'file', filePath: '/app/eas.json', reasons: ['easBuild'], overrideHashKey: '_first' },
+      { type: 'file', filePath: '/app/eas.json', reasons: ['easBuild'], overrideHashKey: '.first' },
       { type: 'dir', filePath: '/app/android', reasons: ['bareNativeDir'] },
-      { type: 'dir', filePath: '/app/ios', reasons: ['bareNativeDir'], overrideHashKey: '_first' },
+      { type: 'dir', filePath: '/app/ios', reasons: ['bareNativeDir'], overrideHashKey: '.first' },
     ];
 
     expect(sortSources(sources)).toEqual([
-      { type: 'file', filePath: '/app/eas.json', reasons: ['easBuild'], overrideHashKey: '_first' },
+      { type: 'file', filePath: '/app/eas.json', reasons: ['easBuild'], overrideHashKey: '.first' },
       { type: 'file', filePath: '/app/app.json', reasons: ['expoConfig'] },
-      { type: 'dir', filePath: '/app/ios', reasons: ['bareNativeDir'], overrideHashKey: '_first' },
+      { type: 'dir', filePath: '/app/ios', reasons: ['bareNativeDir'], overrideHashKey: '.first' },
       { type: 'dir', filePath: '/app/android', reasons: ['bareNativeDir'] },
     ]);
+  });
+
+  it('should sort file paths by code point regardless of locale', () => {
+    const sources: HashSource[] = [
+      { type: 'file', filePath: '/app/app.json', reasons: ['expoConfig'] },
+      { type: 'file', filePath: '/app/Podfile', reasons: ['bareNativeDir'] },
+    ];
+
+    expect(sortSources(sources).map((source) => (source as { filePath: string }).filePath)).toEqual(
+      ['/app/Podfile', '/app/app.json']
+    );
   });
 });

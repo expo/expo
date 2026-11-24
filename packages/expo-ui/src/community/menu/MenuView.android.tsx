@@ -1,8 +1,14 @@
 import * as React from 'react';
 import { Pressable, View } from 'react-native';
 
-import { HorizontalDivider } from '../../jetpack-compose/Divider';
-import { DropdownMenu } from '../../jetpack-compose/DropdownMenu';
+import { Box } from '../../jetpack-compose/Box';
+import {
+  DropdownMenuGroup,
+  DropdownMenuPopup,
+  SelectableDropdownMenuItem,
+  type MenuShapePosition,
+  type SelectableDropdownMenuItemColors,
+} from '../../jetpack-compose/DropdownMenu';
 import {
   DropdownMenuItem,
   type DropdownMenuItemElementColors,
@@ -10,9 +16,22 @@ import {
 import { Host } from '../../jetpack-compose/Host';
 import { Icon } from '../../jetpack-compose/Icon';
 import { RNHostView } from '../../jetpack-compose/RNHostView';
+import { Spacer } from '../../jetpack-compose/Spacer';
 import { Text as ComposeText } from '../../jetpack-compose/Text';
 import { useMaterialColors } from '../../jetpack-compose/colors';
+import { height, verticalScroll } from '../../jetpack-compose/modifiers';
+import type { PopupProperties } from '../../types';
 import type { MenuAction, MenuComponentProps, MenuComponentRef, NativeActionEvent } from './types';
+
+// Clipped popups drop the status bar offset, so edge-to-edge menus near the bottom detach from the anchor.
+const POPUP_PROPERTIES: PopupProperties = { clippingEnabled: false };
+
+const CHECK_ICON = require('../../../assets/check.xml');
+
+// Compose's `MenuDefaults.GroupSpacing`.
+const MENU_GROUP_SPACING = 2;
+// Compose's `MenuDefaults.LeadingIconSize`.
+const MENU_ITEM_ICON_SIZE = 20;
 
 function actionId(action: MenuAction): string {
   return action.id ?? action.title;
@@ -43,100 +62,177 @@ function buildElementColors(
   };
 }
 
-type ItemProps = {
-  action: MenuAction;
+function buildSelectableColors(
+  action: MenuAction,
+  destructiveColor: string
+): SelectableDropdownMenuItemColors | undefined {
+  const colors = buildElementColors(action, destructiveColor);
+  if (colors == null) {
+    return undefined;
+  }
+  // A selected item keeps the destructive or custom colors instead of the selected-state colors.
+  return {
+    ...colors,
+    selectedTextColor: colors.textColor,
+    selectedLeadingIconColor: colors.leadingIconColor,
+  };
+}
+
+type MenuGroup = { key: string; actions: MenuAction[] };
+
+/**
+ * Splits actions into the groups of a Material 3 Expressive menu. A `displayInline` action
+ * becomes a group of its own. Other actions that follow each other share a group.
+ */
+function groupActions(actions: MenuAction[], keyPrefix = ''): MenuGroup[] {
+  const groups: MenuGroup[] = [];
+  let run: MenuAction[] = [];
+  // The key of a run of actions comes from the inline action before it, not from its first action.
+  // So the group does not remount, and an open submenu in it does not close, when an action hides.
+  let runKey = `${keyPrefix}^`;
+  for (const action of actions) {
+    if (action.attributes?.hidden) {
+      continue;
+    }
+    if (action.displayInline && action.subactions && action.subactions.length > 0) {
+      if (run.length > 0) {
+        groups.push({ key: runKey, actions: run });
+        run = [];
+      }
+      const sectionKey = `${keyPrefix}${actionId(action)}`;
+      groups.push(...groupActions(action.subactions, `${sectionKey}/`));
+      runKey = `${sectionKey}$`;
+    } else {
+      run.push(action);
+    }
+  }
+  if (run.length > 0) {
+    groups.push({ key: runKey, actions: run });
+  }
+  return groups;
+}
+
+type MenuHandlers = {
   onPressAction: MenuComponentProps['onPressAction'];
   dismissAll: () => void;
   destructiveColor: string;
 };
 
-function MenuActionItem({ action, onPressAction, dismissAll, destructiveColor }: ItemProps) {
+function MenuGroups({ actions, ...handlers }: MenuHandlers & { actions: MenuAction[] }) {
+  const groups = groupActions(actions);
+  return groups.map((group, groupIndex) => (
+    <React.Fragment key={group.key}>
+      {groupIndex > 0 && <Spacer modifiers={[height(MENU_GROUP_SPACING)]} />}
+      <DropdownMenuGroup shapes={{ index: groupIndex, count: groups.length }}>
+        {group.actions.map((action, index) => (
+          <MenuActionItem
+            key={actionId(action)}
+            action={action}
+            shape={{ index, count: group.actions.length }}
+            {...handlers}
+          />
+        ))}
+      </DropdownMenuGroup>
+    </React.Fragment>
+  ));
+}
+
+function MenuActionItem({
+  action,
+  shape,
+  onPressAction,
+  dismissAll,
+  destructiveColor,
+}: MenuHandlers & { action: MenuAction; shape: MenuShapePosition }) {
   const [submenuExpanded, setSubmenuExpanded] = React.useState(false);
 
-  if (action.attributes?.hidden) {
-    return null;
-  }
-
-  const { subactions, displayInline, state, attributes, title, image, imageColor } = action;
+  const { subactions, state, attributes, title, image, imageColor } = action;
   // `image` is non-string only when caller passes an ImageSourcePropType
   // (number from `require()` or `{ uri }`). The string form is iOS-only (SF Symbol).
   const leadingIconSource = typeof image === 'string' || image == null ? null : image;
   const elementColors = buildElementColors(action, destructiveColor);
+  const leadingIcon = leadingIconSource && (
+    <Icon source={leadingIconSource} size={MENU_ITEM_ICON_SIZE} tint={imageColor} />
+  );
 
   if (subactions && subactions.length > 0) {
-    if (displayInline) {
-      return (
-        <>
-          <HorizontalDivider />
-          {subactions.map((sub) => (
-            <MenuActionItem
-              key={actionId(sub)}
-              action={sub}
-              onPressAction={onPressAction}
-              dismissAll={dismissAll}
-              destructiveColor={destructiveColor}
-            />
-          ))}
-          <HorizontalDivider />
-        </>
-      );
-    }
     return (
-      <DropdownMenu expanded={submenuExpanded} onDismissRequest={() => setSubmenuExpanded(false)}>
-        <DropdownMenu.Trigger>
-          <DropdownMenuItem
-            enabled={!attributes?.disabled}
-            elementColors={elementColors}
-            onClick={() => setSubmenuExpanded(true)}>
-            <DropdownMenuItem.Text>
-              <ComposeText>{title}</ComposeText>
-            </DropdownMenuItem.Text>
-            {leadingIconSource && (
-              <DropdownMenuItem.LeadingIcon>
-                <Icon source={leadingIconSource} size={24} tint={imageColor} />
-              </DropdownMenuItem.LeadingIcon>
-            )}
-          </DropdownMenuItem>
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Items>
-          {subactions.map((sub) => (
-            <MenuActionItem
-              key={actionId(sub)}
-              action={sub}
-              onPressAction={onPressAction}
-              dismissAll={() => {
-                setSubmenuExpanded(false);
-                dismissAll();
-              }}
-              destructiveColor={destructiveColor}
-            />
-          ))}
-        </DropdownMenu.Items>
-      </DropdownMenu>
+      <Box>
+        <DropdownMenuItem
+          enabled={!attributes?.disabled}
+          shape={shape}
+          elementColors={elementColors}
+          onClick={() => setSubmenuExpanded(true)}>
+          <DropdownMenuItem.Text>
+            <ComposeText>{title}</ComposeText>
+          </DropdownMenuItem.Text>
+          {leadingIcon && (
+            <DropdownMenuItem.LeadingIcon>{leadingIcon}</DropdownMenuItem.LeadingIcon>
+          )}
+        </DropdownMenuItem>
+        <DropdownMenuPopup
+          expanded={submenuExpanded}
+          onDismissRequest={() => setSubmenuExpanded(false)}
+          anchorPosition="end"
+          properties={POPUP_PROPERTIES}
+          // Unlike `DropdownMenu`, `DropdownMenuPopup` does not scroll a menu taller than the window.
+          modifiers={[verticalScroll()]}>
+          <MenuGroups
+            actions={subactions}
+            onPressAction={onPressAction}
+            dismissAll={() => {
+              setSubmenuExpanded(false);
+              dismissAll();
+            }}
+            destructiveColor={destructiveColor}
+          />
+        </DropdownMenuPopup>
+      </Box>
+    );
+  }
+
+  const onClick = () => {
+    onPressAction?.(makeEvent(action));
+    dismissAll();
+  };
+
+  // An action with a `state` is a choice. Compose gives a selected choice a highlighted container
+  // and `SelectedLeadingIcon`, which replaces the leading icon while the item is selected, and
+  // exposes the selected state to screen readers.
+  if (state != null) {
+    const colors = buildSelectableColors(action, destructiveColor);
+    return (
+      <SelectableDropdownMenuItem
+        selected={state === 'on'}
+        enabled={!attributes?.disabled}
+        shapes={shape}
+        colors={colors}
+        onClick={onClick}>
+        <SelectableDropdownMenuItem.Text>
+          <ComposeText>{title}</ComposeText>
+        </SelectableDropdownMenuItem.Text>
+        {leadingIcon && (
+          <SelectableDropdownMenuItem.LeadingIcon>
+            {leadingIcon}
+          </SelectableDropdownMenuItem.LeadingIcon>
+        )}
+        <SelectableDropdownMenuItem.SelectedLeadingIcon>
+          <Icon source={CHECK_ICON} size={MENU_ITEM_ICON_SIZE} />
+        </SelectableDropdownMenuItem.SelectedLeadingIcon>
+      </SelectableDropdownMenuItem>
     );
   }
 
   return (
     <DropdownMenuItem
       enabled={!attributes?.disabled}
+      shape={shape}
       elementColors={elementColors}
-      onClick={() => {
-        onPressAction?.(makeEvent(action));
-        dismissAll();
-      }}>
+      onClick={onClick}>
       <DropdownMenuItem.Text>
         <ComposeText>{title}</ComposeText>
       </DropdownMenuItem.Text>
-      {leadingIconSource && (
-        <DropdownMenuItem.LeadingIcon>
-          <Icon source={leadingIconSource} size={24} tint={imageColor} />
-        </DropdownMenuItem.LeadingIcon>
-      )}
-      {state === 'on' && (
-        <DropdownMenuItem.TrailingIcon>
-          <ComposeText>✓</ComposeText>
-        </DropdownMenuItem.TrailingIcon>
-      )}
+      {leadingIcon && <DropdownMenuItem.LeadingIcon>{leadingIcon}</DropdownMenuItem.LeadingIcon>}
     </DropdownMenuItem>
   );
 }
@@ -144,7 +240,7 @@ function MenuActionItem({ action, onPressAction, dismissAll, destructiveColor }:
 /**
  * A drop-in replacement for `@react-native-menu/menu` on Android.
  * Wraps the trigger in a `Pressable` (whose `onPress`/`onLongPress` opens the menu) and
- * renders the actions tree as a controlled Material `DropdownMenu`.
+ * renders the actions tree as a controlled Material 3 Expressive `DropdownMenuPopup`.
  *
  * Note: when `action.image` is a string, it is treated as an iOS SF Symbol and ignored
  * on Android — pass an `ImageSourcePropType` (e.g. `require('./icon.xml')`) to render
@@ -155,6 +251,7 @@ export function MenuView(props: MenuComponentProps & { ref?: React.Ref<MenuCompo
   const {
     ref,
     actions,
+    colorScheme,
     onPressAction,
     onOpenMenu,
     onCloseMenu,
@@ -189,35 +286,35 @@ export function MenuView(props: MenuComponentProps & { ref?: React.Ref<MenuCompo
 
   return (
     <View style={style} testID={testID}>
-      <Host matchContents>
-        <DropdownMenu expanded={expanded} onDismissRequest={dismissAll}>
-          <DropdownMenu.Trigger>
-            <RNHostView matchContents>
-              <Pressable
-                onPress={shouldOpenOnLongPress ? undefined : open}
-                onLongPress={shouldOpenOnLongPress ? open : undefined}
-                // Mirror upstream `@react-native-menu/menu`, which intercepts touches
-                // natively on a bare `ReactViewGroup`: no click sound, no focus
-                // highlight, no extra a11y node — children declare their own role.
-                android_disableSound
-                focusable={false}
-                accessible={false}>
-                {children}
-              </Pressable>
-            </RNHostView>
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Items>
-            {actions.map((action) => (
-              <MenuActionItem
-                key={actionId(action)}
-                action={action}
-                onPressAction={onPressAction}
-                dismissAll={dismissAll}
-                destructiveColor={destructiveColor}
-              />
-            ))}
-          </DropdownMenu.Items>
-        </DropdownMenu>
+      <Host colorScheme={colorScheme} matchContents>
+        <Box>
+          <RNHostView matchContents>
+            <Pressable
+              onPress={shouldOpenOnLongPress ? undefined : open}
+              onLongPress={shouldOpenOnLongPress ? open : undefined}
+              // Mirror upstream `@react-native-menu/menu`, which intercepts touches
+              // natively on a bare `ReactViewGroup`: no click sound, no focus
+              // highlight, no extra a11y node — children declare their own role.
+              android_disableSound
+              focusable={false}
+              accessible={false}>
+              {children}
+            </Pressable>
+          </RNHostView>
+          <DropdownMenuPopup
+            expanded={expanded}
+            onDismissRequest={dismissAll}
+            properties={POPUP_PROPERTIES}
+            // Unlike `DropdownMenu`, `DropdownMenuPopup` does not scroll a menu taller than the window.
+            modifiers={[verticalScroll()]}>
+            <MenuGroups
+              actions={actions}
+              onPressAction={onPressAction}
+              dismissAll={dismissAll}
+              destructiveColor={destructiveColor}
+            />
+          </DropdownMenuPopup>
+        </Box>
       </Host>
     </View>
   );

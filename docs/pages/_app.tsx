@@ -1,5 +1,4 @@
 import { ThemeProvider } from '@expo/styleguide';
-import { CookieConsentProvider } from '@expo/styleguide-cookie-consent';
 import { MDXProvider } from '@mdx-js/react';
 import * as Sentry from '@sentry/react';
 import { MotionConfig } from 'framer-motion';
@@ -12,19 +11,23 @@ import { getLocaleFromPath, messages } from '~/common/i18n';
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import { useNProgress } from '~/common/useNProgress';
 import { DocumentationPageWrapper } from '~/components/DocumentationPageWrapper';
-import { websiteSchema } from '~/constants/structured-data';
+import { buildWebsiteSchema } from '~/constants/structured-data';
 import { useAnalyticsPageTracking } from '~/providers/Analytics';
 import { CodeBlockSettingsProvider } from '~/providers/CodeBlockSettingsProvider';
+import { CometlyPixel } from '~/providers/CometlyPixel';
+import { ConsentProvider } from '~/providers/ConsentProvider';
 import { TutorialChapterCompletionProvider } from '~/providers/TutorialChapterCompletionProvider';
+import { ApiDataProvider } from '~/providers/api-data';
 import { HreflangAlternates } from '~/ui/components/HreflangAlternates';
 import { markdownComponents } from '~/ui/components/Markdown';
 import { CodeSelectionCopy } from '~/ui/components/Snippet/CodeSelectionCopy';
 import { StructuredData } from '~/ui/components/StructuredData';
 import * as Tooltip from '~/ui/components/Tooltip';
-import '~/common/suppress-trailing-slash-warning';
-import '~/styles/global.css';
+import { WebMcpTools } from '~/ui/components/WebMcpTools/WebMcpTools';
 import '@expo/styleguide/dist/expo-theme.css';
 import '@expo/styleguide-search-ui/dist/expo-search-ui.css';
+
+import '~/styles/global.css';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -71,7 +74,7 @@ export default function App({ Component, pageProps }: AppProps) {
   useAnalyticsPageTracking();
   return (
     <>
-      <StructuredData id="website" data={websiteSchema} />
+      <StructuredData id="website" data={buildWebsiteSchema(locale)} />
       <HreflangAlternates />
       {/* oxlint-disable-next-line react/no-unknown-property */}
       <style jsx global>{`
@@ -94,18 +97,22 @@ export default function App({ Component, pageProps }: AppProps) {
       <IntlProvider locale={locale} messages={messages[locale]} defaultLocale="en">
         <MotionConfig reducedMotion="user">
           <ThemeProvider>
-            <CookieConsentProvider ga4Id="G-YKNPYCMLWY">
+            <ConsentProvider>
+              <CometlyPixel />
               <TutorialChapterCompletionProvider>
                 <CodeBlockSettingsProvider>
                   <MDXProvider components={rootMarkdownComponents}>
                     <Tooltip.Provider>
-                      <Component {...pageProps} />
+                      <ApiDataProvider data={pageProps.apiSectionData}>
+                        <Component {...pageProps} />
+                      </ApiDataProvider>
                       <CodeSelectionCopy />
+                      <WebMcpTools />
                     </Tooltip.Provider>
                   </MDXProvider>
                 </CodeBlockSettingsProvider>
               </TutorialChapterCompletionProvider>
-            </CookieConsentProvider>
+            </ConsentProvider>
           </ThemeProvider>
         </MotionConfig>
       </IntlProvider>

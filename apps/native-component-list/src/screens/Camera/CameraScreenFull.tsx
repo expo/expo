@@ -1,7 +1,6 @@
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Slider from '@react-native-community/slider';
+import Ionicons from '@react-native-vector-icons/ionicons';
+import MaterialCommunityIcons from '@react-native-vector-icons/material-design-icons';
 import {
   BarcodeScanningResult,
   CameraView,
@@ -24,6 +23,7 @@ import {
   useTapGesture,
 } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import GalleryScreen from './GalleryScreen';
 
@@ -109,6 +109,7 @@ function Gestures({ children }: { children: React.ReactNode }) {
 
 export default function CameraScreen() {
   const camera = useRef<CameraView>(null);
+  const insets = useSafeAreaInsets();
   const [state, setState] = useState<State>({
     flash: 'off',
     zoom: 0,
@@ -375,9 +376,9 @@ export default function CameraScreen() {
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={updatePreviewState}>
         {state.previewPaused ? (
-          <AntDesign name="play-circle" size={24} color="white" />
+          <Ionicons name="play-circle" size={24} color="white" />
         ) : (
-          <AntDesign name="pause-circle" size={24} color="white" />
+          <Ionicons name="pause-circle" size={24} color="white" />
         )}
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={toggleMoreOptions}>
@@ -387,7 +388,7 @@ export default function CameraScreen() {
   );
 
   const renderBottomBar = () => (
-    <View style={{ alignItems: 'center' }}>
+    <View style={{ alignItems: 'center', paddingBottom: insets.bottom }}>
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.bottomButton} onPress={changeMode}>
           <MaterialCommunityIcons

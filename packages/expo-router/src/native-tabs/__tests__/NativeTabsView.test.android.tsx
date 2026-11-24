@@ -1,13 +1,19 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
 import React from 'react';
-import { Button, View } from 'react-native';
-import { Tabs, type TabsHostProps } from 'react-native-screens';
+import { Button, Text, View } from 'react-native';
+import { Tabs, type TabsHostProps, type TabsScreenProps } from 'react-native-screens';
 
 import { renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 import type { NativeTabsProps } from '../types';
 
+const mockTabsHostMount = jest.fn();
+const mockTabsHostUnmount = jest.fn();
+const mockScreenMount = jest.fn();
+const mockScreenUnmount = jest.fn();
+
 jest.mock('react-native-screens', () => {
+  const React: typeof import('react') = jest.requireActual('react');
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
   const actualModule = jest.requireActual(
     'react-native-screens'
@@ -16,14 +22,64 @@ jest.mock('react-native-screens', () => {
     ...actualModule,
     Tabs: {
       ...actualModule.Tabs,
-      Host: jest.fn(({ children }) => <View testID="TabsHost">{children}</View>),
+      Host: jest.fn(({ children }) => {
+        React.useEffect(() => {
+          mockTabsHostMount();
+          return () => mockTabsHostUnmount();
+        }, []);
+        return <View testID="TabsHost">{children}</View>;
+      }),
       Screen: jest.fn(({ children }) => <View testID="TabsScreen">{children}</View>),
     },
   };
 });
 
-const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
-const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
+// `Tabs` is mocked by `jest.mock` above; cast to read `.mock` with the props type.
+const TabsHost = Tabs.Host as jest.MockedFunction<(props: TabsHostProps) => React.ReactNode>;
+const TabsScreen = Tabs.Screen as jest.MockedFunction<(props: TabsScreenProps) => React.ReactNode>;
+
+it('mounts deep-linked tabs in Trigger order without remounting', async () => {
+  function TrackedScreen({ name }: { name: string }) {
+    React.useEffect(() => {
+      mockScreenMount(name);
+      return () => mockScreenUnmount(name);
+    }, [name]);
+    return <View testID={name} />;
+  }
+
+  await renderRouter(
+    {
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="test-suite" />
+          <NativeTabs.Trigger name="playground" />
+          <NativeTabs.Trigger name="apis" />
+          <NativeTabs.Trigger name="components" />
+        </NativeTabs>
+      ),
+      'test-suite': () => <TrackedScreen name="test-suite" />,
+      playground: () => <TrackedScreen name="playground" />,
+      apis: () => <TrackedScreen name="apis" />,
+      components: () => <TrackedScreen name="components" />,
+    },
+    { initialUrl: '/apis' }
+  );
+
+  expect(mockTabsHostMount).toHaveBeenCalledTimes(1);
+  expect(mockTabsHostUnmount).not.toHaveBeenCalled();
+  expect(
+    TabsScreen.mock.calls.slice(0, 4).map((call: [TabsScreenProps]) => call[0].screenKey)
+  ).toEqual(['test-suite', 'playground', 'apis', 'components']);
+  expect(mockScreenMount.mock.calls.map(([name]) => name)).toEqual([
+    // The deep-linked route has real content before the other tabs finish preloading.
+    'apis',
+    'test-suite',
+    'playground',
+    'components',
+  ]);
+  expect(mockScreenUnmount).not.toHaveBeenCalled();
+  expect(TabsHost.mock.calls[0]![0].navStateRequest?.selectedScreenKey).toBe('apis');
+});
 
 it.each([
   { value: undefined, expected: false },
@@ -32,8 +88,8 @@ it.each([
 ] as {
   value: NativeTabsProps['tabBarRespectsIMEInsets'];
   expected: NonNullable<TabsHostProps['android']>['tabBarRespectsIMEInsets'];
-}[])('forwards tabBarRespectsIMEInsets=$value to Tabs.Host', ({ value, expected }) => {
-  renderRouter({
+}[])('forwards tabBarRespectsIMEInsets=$value to Tabs.Host', async ({ value, expected }) => {
+  await renderRouter({
     _layout: () => (
       <NativeTabs tabBarRespectsIMEInsets={value}>
         <NativeTabs.Trigger name="index" />
@@ -44,12 +100,12 @@ it.each([
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(TabsHost).toHaveBeenCalledTimes(1);
-  expect(TabsHost.mock.calls[0][0].android?.tabBarRespectsIMEInsets).toBe(expected);
+  expect(TabsHost.mock.calls[0]![0].android?.tabBarRespectsIMEInsets).toBe(expected);
 });
 
 describe('unstable_nativeProps', () => {
-  it('forwards top-level raw props to Tabs.Host', () => {
-    renderRouter({
+  it('forwards top-level raw props to Tabs.Host', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs unstable_nativeProps={{ colorScheme: 'dark', direction: 'rtl' }}>
           <NativeTabs.Trigger name="index" />
@@ -60,12 +116,12 @@ describe('unstable_nativeProps', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].colorScheme).toBe('dark');
-    expect(TabsHost.mock.calls[0][0].direction).toBe('rtl');
+    expect(TabsHost.mock.calls[0]![0].colorScheme).toBe('dark');
+    expect(TabsHost.mock.calls[0]![0].direction).toBe('rtl');
   });
 
-  it('forwards android raw props to Tabs.Host', () => {
-    renderRouter({
+  it('forwards android raw props to Tabs.Host', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs unstable_nativeProps={{ android: { tabBarRespectsIMEInsets: true } }}>
           <NativeTabs.Trigger name="index" />
@@ -76,13 +132,13 @@ describe('unstable_nativeProps', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].android).toMatchObject({
+    expect(TabsHost.mock.calls[0]![0].android).toMatchObject({
       tabBarRespectsIMEInsets: true,
     });
   });
 
-  it('lets top-level raw props override expo-router-managed props', () => {
-    renderRouter({
+  it('lets top-level raw props override expo-router-managed props', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs hidden unstable_nativeProps={{ tabBarHidden: false }}>
           <NativeTabs.Trigger name="index" />
@@ -93,16 +149,16 @@ describe('unstable_nativeProps', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].tabBarHidden).toBe(false);
+    expect(TabsHost.mock.calls[0]![0].tabBarHidden).toBe(false);
   });
 
-  it('does not let raw props override navStateRequest or onTabSelected', () => {
+  it('does not let raw props override navStateRequest or onTabSelected', async () => {
     const userOnTabSelected = jest.fn();
     const rawProps = {
       navStateRequest: { selectedScreenKey: 'foo', baseProvenance: 999 },
       onTabSelected: userOnTabSelected,
     } as unknown as NativeTabsProps['unstable_nativeProps'];
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <NativeTabs unstable_nativeProps={rawProps}>
           <NativeTabs.Trigger name="index" />
@@ -113,16 +169,16 @@ describe('unstable_nativeProps', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].navStateRequest).toEqual({
+    expect(TabsHost.mock.calls[0]![0].navStateRequest).toEqual({
       selectedScreenKey: expect.not.stringMatching('foo'),
       baseProvenance: 0,
     });
-    expect(TabsHost.mock.calls[0][0].onTabSelected).not.toBe(userOnTabSelected);
-    expect(TabsHost.mock.calls[0][0].onTabSelected).toBeInstanceOf(Function);
+    expect(TabsHost.mock.calls[0]![0].onTabSelected).not.toBe(userOnTabSelected);
+    expect(TabsHost.mock.calls[0]![0].onTabSelected).toBeInstanceOf(Function);
   });
 
-  it('wires onTabSelectionPrevented onto Tabs.Host', () => {
-    renderRouter({
+  it('wires onTabSelectionPrevented onto Tabs.Host', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -133,11 +189,11 @@ describe('unstable_nativeProps', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    expect(TabsHost.mock.calls[0][0].onTabSelectionPrevented).toBeInstanceOf(Function);
+    expect(TabsHost.mock.calls[0]![0].onTabSelectionPrevented).toBeInstanceOf(Function);
   });
 
-  it('drops ios-only raw props on Android so they do not leak onto Tabs.Host', () => {
-    renderRouter({
+  it('drops ios-only raw props on Android so they do not leak onto Tabs.Host', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs unstable_nativeProps={{ ios: { tabBarTintColor: 'blue' }, direction: 'ltr' }}>
           <NativeTabs.Trigger name="index" />
@@ -149,11 +205,11 @@ describe('unstable_nativeProps', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
     // iOS-only raw props should not be forwarded to the Android host.
-    expect(TabsHost.mock.calls[0][0].ios).toBeUndefined();
-    expect(TabsHost.mock.calls[0][0].direction).toBe('ltr');
+    expect(TabsHost.mock.calls[0]![0].ios).toBeUndefined();
+    expect(TabsHost.mock.calls[0]![0].direction).toBe('ltr');
   });
 
-  it('forwards updated raw props to Tabs.Host on re-render', () => {
+  it('forwards updated raw props to Tabs.Host on re-render', async () => {
     function Layout() {
       const [direction, setDirection] = React.useState<'ltr' | 'rtl'>('ltr');
       return (
@@ -166,15 +222,15 @@ describe('unstable_nativeProps', () => {
       );
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: Layout,
       index: () => <View testID="index" />,
     });
 
     expect(TabsHost.mock.calls.at(-1)![0].direction).toBe('ltr');
 
-    act(() => {
-      fireEvent.press(screen.getByTestId('toggle'));
+    await act(async () => {
+      await fireEvent.press(screen.getByTestId('toggle'));
     });
 
     expect(TabsHost.mock.calls.at(-1)![0].direction).toBe('rtl');
@@ -184,8 +240,8 @@ describe('unstable_nativeProps', () => {
 // TODO: drop this describe block once react-native-screens honors its documented
 // fallback where `icon` is reused when `selectedIcon` is not provided.
 describe('selectedIcon fallback', () => {
-  it('mirrors drawable icon onto selectedIcon when no selected variant is provided', () => {
-    renderRouter({
+  it('mirrors drawable icon onto selectedIcon when no selected variant is provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -198,18 +254,18 @@ describe('selectedIcon fallback', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].android?.icon).toEqual({
+    expect(TabsScreen.mock.calls[0]![0].android?.icon).toEqual({
       type: 'drawableResource',
       name: 'ic_home',
     });
-    expect(TabsScreen.mock.calls[0][0].android?.selectedIcon).toEqual({
+    expect(TabsScreen.mock.calls[0]![0].android?.selectedIcon).toEqual({
       type: 'drawableResource',
       name: 'ic_home',
     });
   });
 
-  it('does not override an explicitly provided selectedIcon', () => {
-    renderRouter({
+  it('does not override an explicitly provided selectedIcon', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -224,13 +280,70 @@ describe('selectedIcon fallback', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].android?.icon).toEqual({
+    expect(TabsScreen.mock.calls[0]![0].android?.icon).toEqual({
       type: 'drawableResource',
       name: 'ic_home',
     });
-    expect(TabsScreen.mock.calls[0][0].android?.selectedIcon).toEqual({
+    expect(TabsScreen.mock.calls[0]![0].android?.selectedIcon).toEqual({
       type: 'drawableResource',
       name: 'ic_home_filled',
     });
   });
+});
+
+it('keeps tab state mounted when the tab bar hides and shows', async () => {
+  function Layout() {
+    const [hidden, setHidden] = React.useState(false);
+    return (
+      <>
+        <Button title="Toggle" onPress={() => setHidden((value) => !value)} />
+        <NativeTabs hidden={hidden}>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="second" />
+        </NativeTabs>
+      </>
+    );
+  }
+  function Counter({ name }: { name: string }) {
+    const [count, setCount] = React.useState(0);
+    React.useEffect(() => {
+      mockScreenMount(name);
+      return () => mockScreenUnmount(name);
+    }, [name]);
+    return (
+      <>
+        <Text>
+          {name}: {count}
+        </Text>
+        <Button title={`Increment ${name}`} onPress={() => setCount((value) => value + 1)} />
+      </>
+    );
+  }
+
+  await renderRouter({
+    _layout: Layout,
+    index: () => <Counter name="index" />,
+    second: () => <Counter name="second" />,
+  });
+  await fireEvent.press(screen.getByText('INCREMENT INDEX'));
+  expect(screen.getByText('index: 1')).toBeVisible();
+  expect(mockScreenMount.mock.calls).toEqual([['index'], ['second']]);
+
+  await fireEvent.press(screen.getByText('TOGGLE'));
+  expect(TabsHost.mock.calls.at(-1)![0].tabBarHidden).toBe(true);
+  expect(TabsScreen.mock.calls.at(-1)![0].children).toMatchObject({
+    props: { edges: { bottom: true }, insetType: 'system' },
+  });
+  expect(screen.getByText('index: 1')).toBeVisible();
+  expect(mockScreenMount.mock.calls).toEqual([['index'], ['second']]);
+  expect(mockScreenUnmount).not.toHaveBeenCalled();
+
+  await fireEvent.press(screen.getByText('TOGGLE'));
+  expect(TabsHost.mock.calls.at(-1)![0].tabBarHidden).toBe(false);
+  expect(TabsScreen.mock.calls.at(-1)![0].children).toMatchObject({
+    props: { edges: { bottom: true }, insetType: 'all' },
+  });
+  expect(screen.getByText('index: 1')).toBeVisible();
+  expect(mockScreenMount.mock.calls).toEqual([['index'], ['second']]);
+  expect(mockScreenUnmount).not.toHaveBeenCalled();
 });

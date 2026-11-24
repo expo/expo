@@ -117,7 +117,7 @@ struct MetricParamsBuilderTests {
   func `omits network request keys when summary is nil`() {
     let params = MetricParamsBuilder.build(userParams: ["tenant": "acme"])
     #expect(params["expo.network.requests.count"] == nil)
-    #expect(params["expo.network.requests.slowestHost"] == nil)
+    #expect(params["expo.network.requests.slowest.host"] == nil)
   }
 
   @Test
@@ -134,8 +134,14 @@ struct MetricParamsBuilderTests {
       bytesReceived: 12_000,
       bytesSent: 800,
       totalDuration: 1.4,
-      slowestDuration: 0.6,
-      slowestHost: "api.expo.dev"
+      slowest: NetworkRequestSummary.SlowestRequest(
+        host: "api.expo.dev",
+        duration: 0.6,
+        statusCode: 200,
+        timeToFirstByte: nil,
+        bytesReceived: nil
+      ),
+      throughputBytesPerSecond: nil
     )
     let params = MetricParamsBuilder.build(networkRequests: summary)
     #expect(params["expo.network.requests.count"] as? Int == 4)
@@ -143,8 +149,89 @@ struct MetricParamsBuilderTests {
     #expect(params["expo.network.requests.bytesReceived"] as? Int64 == 12_000)
     #expect(params["expo.network.requests.bytesSent"] as? Int64 == 800)
     #expect(params["expo.network.requests.totalDuration"] as? TimeInterval == 1.4)
-    #expect(params["expo.network.requests.slowestDuration"] as? TimeInterval == 0.6)
-    #expect(params["expo.network.requests.slowestHost"] as? String == "api.expo.dev")
+    #expect(params["expo.network.requests.slowest.duration"] as? TimeInterval == 0.6)
+    #expect(params["expo.network.requests.slowest.host"] as? String == "api.expo.dev")
+    #expect(params["expo.network.requests.slowest.statusCode"] as? Int == 200)
+  }
+
+  @Test
+  func `emits path cost flags alongside the connection type`() {
+    let constrainedCellular = NetworkPath(
+      status: .satisfied,
+      interfaceType: .cellular,
+      isExpensive: true,
+      isConstrained: true,
+      unsatisfiedReason: nil,
+      timestamp: 0
+    )
+    let params = MetricParamsBuilder.build(networkPath: constrainedCellular)
+    #expect(params["expo.network.isExpensive"] as? Bool == true)
+    #expect(params["expo.network.isConstrained"] as? Bool == true)
+  }
+
+  @Test
+  func `omits path cost flags when there is no network to describe`() {
+    // `NWPath` reports both as `false` on an unsatisfied path. Emitting that would assert the
+    // connection wasn't metered, about a connection that doesn't exist, and Android withholds its
+    // equivalents in the same situation.
+    let params = MetricParamsBuilder.build(networkPath: unsatisfied)
+    #expect(params["expo.network.connected"] as? Bool == false)
+    #expect(params["expo.network.isExpensive"] == nil)
+    #expect(params["expo.network.isConstrained"] == nil)
+  }
+
+  @Test
+  func `emits path cost flags as false on an unmetered path`() {
+    let params = MetricParamsBuilder.build(networkPath: satisfiedWifi)
+    #expect(params["expo.network.isExpensive"] as? Bool == false)
+    #expect(params["expo.network.isConstrained"] as? Bool == false)
+  }
+
+  @Test
+  func `emits the derived latency and throughput keys when the summary has them`() {
+    let summary = NetworkRequestSummary(
+      count: 4,
+      failed: 1,
+      bytesReceived: 12_000,
+      bytesSent: 800,
+      totalDuration: 1.4,
+      slowest: NetworkRequestSummary.SlowestRequest(
+        host: "api.expo.dev",
+        duration: 0.6,
+        statusCode: 200,
+        timeToFirstByte: 0.35,
+        bytesReceived: nil
+      ),
+      throughputBytesPerSecond: 8571.4
+    )
+    let params = MetricParamsBuilder.build(networkRequests: summary)
+    #expect(params["expo.network.requests.slowest.timeToFirstByte"] as? TimeInterval == 0.35)
+    #expect(params["expo.network.requests.throughputBytesPerSecond"] as? Double == 8571.4)
+  }
+
+  @Test
+  func `omits the derived keys rather than emitting zero when they are unavailable`() {
+    // Every connection reused and nothing received: emitting 0 would read as "instant, no data"
+    // instead of "not measured" on a dashboard.
+    let summary = NetworkRequestSummary(
+      count: 2,
+      failed: 0,
+      bytesReceived: 0,
+      bytesSent: 40,
+      totalDuration: 0.2,
+      slowest: NetworkRequestSummary.SlowestRequest(
+        host: "api.expo.dev",
+        duration: 0.1,
+        statusCode: 200,
+        timeToFirstByte: nil,
+        bytesReceived: nil
+      ),
+      throughputBytesPerSecond: nil
+    )
+    let params = MetricParamsBuilder.build(networkRequests: summary)
+    #expect(params["expo.network.requests.count"] as? Int == 2)
+    #expect(params["expo.network.requests.slowest.timeToFirstByte"] == nil)
+    #expect(params["expo.network.requests.throughputBytesPerSecond"] == nil)
   }
 
   @Test

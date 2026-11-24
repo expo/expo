@@ -9,7 +9,7 @@ const EXCLUDE_PACKAGES = [
   'eslint-config-universe',
   'expo-doctor',
   'expo-env-info',
-  'expo-module-scripts',
+  '@expo/internal-scripts',
   'expo-module-template',
   'expo-test-runner',
   'install-expo-modules',
@@ -26,7 +26,6 @@ const EXCLUDE_PACKAGES = [
 
 export const REACT_NATIVE_TRANSITIVE_DEPENDENCIES = [
   // These packages are transitive dependencies from some expo packages, we should also override their versions.
-  '@react-native/assets-registry',
   '@react-native/dev-middleware',
   '@react-native/babel-preset',
   'react-native',

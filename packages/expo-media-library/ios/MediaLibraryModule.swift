@@ -383,18 +383,20 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
   private func handleLivePhoto(asset: PHAsset, shouldDownloadFromNetwork: Bool, result: [String: Any?], promise: Promise) {
     let livePhotoOptions = PHLivePhotoRequestOptions()
     livePhotoOptions.isNetworkAccessAllowed = shouldDownloadFromNetwork
+    livePhotoOptions.deliveryMode = .highQualityFormat
+
     var updatedResult = result
-      updatedResult["pairedVideoAsset"] = nil
+    updatedResult["pairedVideoAsset"] = nil
 
     PHImageManager.default()
       .requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: livePhotoOptions) { livePhoto, _ in
-      guard let livePhoto = livePhoto,
-        let videoResource = PHAssetResource.assetResources(for: livePhoto)
-        .first(where: { $0.type == .pairedVideo }) else {
-        promise.resolve(updatedResult)
-        return
-      }
-      self.writePairedVideoAsset(videoResource: videoResource, asset: asset, result: updatedResult, promise: promise)
+        guard let livePhoto = livePhoto,
+          let videoResource = PHAssetResource.assetResources(for: livePhoto)
+          .first(where: { $0.type == .pairedVideo }) else {
+          promise.resolve(updatedResult)
+          return
+        }
+        self.writePairedVideoAsset(videoResource: videoResource, asset: asset, result: updatedResult, promise: promise)
       }
   }
 
@@ -413,7 +415,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
       let avAsset = AVAsset(url: fileUrl)
       let duration = avAsset.duration.seconds
-      // The video resouece of a paired photo may have different dimensions from the original photo
+      // The video resource of a paired photo may have different dimensions from the original photo
       if let videoSize = readSizeFrom(url: fileUrl) {
         width = videoSize.width
         height = videoSize.height

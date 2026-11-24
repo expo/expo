@@ -1,15 +1,20 @@
 import type { AndroidConfig } from 'expo/config-plugins';
-import { withGradleProperties, withPodfileProperties } from 'expo/config-plugins';
+import {
+  WarningAggregator,
+  withGradleProperties,
+  withPodfileProperties,
+} from 'expo/config-plugins';
 
-import { compileMockModWithResultsAsync } from './mockMods';
 import type { PluginConfigType } from '../pluginConfig';
 import { withBuildProperties } from '../withBuildProperties';
+import { compileMockModWithResultsAsync } from './mockMods';
 
 jest.mock('expo/config-plugins', () => {
   const plugins = jest.requireActual('expo/config-plugins');
   return {
     ...plugins,
     withDangerousMod: jest.fn().mockImplementation((config) => config),
+    WarningAggregator: { addWarningIOS: jest.fn() },
   };
 });
 
@@ -296,6 +301,48 @@ describe(withBuildProperties, () => {
     });
   });
 
+  it('generates the android.buildExpoModulesCoreFromSource property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { buildExpoModulesCoreFromSource: true },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'expo.core.buildFromSource',
+      value: 'true',
+    });
+  });
+
+  it('does not generate the expo.core.buildFromSource property when unset', async () => {
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps: { android: {} },
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults.map((item) => (item as any).key)).not.toContain(
+      'expo.core.buildFromSource'
+    );
+  });
+
   it('generates the android.cmakeVersion property', async () => {
     const pluginProps: PluginConfigType = {
       android: { cmakeVersion: '3.31.6' },
@@ -341,6 +388,78 @@ describe(withBuildProperties, () => {
       type: 'property',
       key: 'reactNativeReleaseLevel',
       value: 'canary',
+    });
+  });
+
+  it('generates the expo.gif.enabled property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { gifEnabled: false },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'expo.gif.enabled',
+      value: 'false',
+    });
+  });
+
+  it('generates the expo.webp.enabled property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { webpEnabled: false },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'expo.webp.enabled',
+      value: 'false',
+    });
+  });
+
+  it('generates the expo.webp.animated property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { webpAnimated: true },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'expo.webp.animated',
+      value: 'true',
     });
   });
 });
@@ -408,70 +527,17 @@ describe('shared config fields', () => {
       'ios.buildReactNativeFromSource': 'false',
     });
   });
+});
 
-  it('should apply top-level useHermesV1 to Android when buildReactNativeFromSource is true', async () => {
-    const pluginProps: PluginConfigType = {
-      useHermesV1: true,
-      buildReactNativeFromSource: true,
-    };
+describe('ios.enableSceneSupport', () => {
+  it('should run the scene support plugin', () => {
+    const config = { sdkVersion: '58.0.0' } as any;
 
-    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
-      AndroidConfig.Properties.PropertiesItem[],
-      PluginConfigType
-    >(
-      {},
-      {
-        plugin: withBuildProperties,
-        pluginProps,
-        mod: withGradleProperties,
-        modResults: [],
-      }
+    withBuildProperties(config, { ios: { enableSceneSupport: true } });
+
+    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
+      'ios.enableSceneSupport',
+      expect.stringContaining('no longer required')
     );
-    expect(androidModResults).toContainEqual({
-      type: 'property',
-      key: 'hermesV1Enabled',
-      value: 'true',
-    });
-  });
-
-  it('should apply top-level useHermesV1 to iOS when buildReactNativeFromSource is true', async () => {
-    const pluginProps: PluginConfigType = {
-      useHermesV1: true,
-      buildReactNativeFromSource: true,
-    };
-
-    const { modResults: iosModResults } = await compileMockModWithResultsAsync(
-      {},
-      {
-        plugin: withBuildProperties,
-        pluginProps,
-        mod: withPodfileProperties,
-        modResults: {},
-      }
-    );
-    expect(iosModResults).toMatchObject({
-      'expo.useHermesV1': 'true',
-    });
-  });
-
-  it('should allow platform-specific override of top-level useHermesV1', async () => {
-    const pluginProps: PluginConfigType = {
-      useHermesV1: true,
-      buildReactNativeFromSource: true,
-      ios: { useHermesV1: false },
-    };
-
-    const { modResults: iosModResults } = await compileMockModWithResultsAsync(
-      {},
-      {
-        plugin: withBuildProperties,
-        pluginProps,
-        mod: withPodfileProperties,
-        modResults: {},
-      }
-    );
-    expect(iosModResults).toMatchObject({
-      'expo.useHermesV1': 'false',
-    });
   });
 });

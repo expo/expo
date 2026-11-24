@@ -77,6 +77,12 @@ internal final class AudioStreamFileWriter {
   // MARK: - WAV Header
 
   private func writeWavHeader(dataSize: UInt32) throws {
+    let header = Self.makeWavHeader(dataSize: dataSize, sampleRate: sampleRate, channels: channels, encoding: encoding)
+    try fileHandle.seek(toOffset: 0)
+    try fileHandle.write(contentsOf: header)
+  }
+
+  static func makeWavHeader(dataSize: UInt32, sampleRate: Double, channels: Int, encoding: AudioStreamEncoding) -> Data {
     let bitsPerSample: UInt16 = encoding == .int16 ? 16 : 32
     let audioFormat: UInt16 = encoding == .int16 ? 1 : 3  // 1 = PCM, 3 = IEEE float
     let sr = UInt32(sampleRate)
@@ -103,8 +109,7 @@ internal final class AudioStreamFileWriter {
     header.append(contentsOf: [0x64, 0x61, 0x74, 0x61])  // "data"
     header.appendLE(dataSize)
 
-    try fileHandle.seek(toOffset: 0)
-    try fileHandle.write(contentsOf: header)
+    return header
   }
 
   private func updateWavHeader() throws {

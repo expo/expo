@@ -8,10 +8,27 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 `Picker` is a single-selection input. You can use `<Picker.Item label value />` children to declare options so that the parent `Picker` reads them and renders a platform-appropriate dropdown or rotor.
 
 The universal `Picker` is independent of [`@expo/ui/community/picker`](../drop-in-replacements/picker), which remains a compat shim for `@react-native-picker/picker`. Prefer this universal `Picker` for new code unless you specifically need the RN-Picker API surface.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/picker/android-light.webp',
+    darkSrc: '/static/images/expo-ui/picker/android-dark.webp',
+    alt: 'Three labeled rows with dropdown pickers set to Apple, Medium, and Blue',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/picker/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/picker/ios-dark.webp',
+    alt: 'Menu-style Picker showing fruit options with the current selection checked',
+  }}
+/>
 
 ## Installation
 
@@ -21,8 +38,22 @@ The universal `Picker` is independent of [`@expo/ui/community/picker`](../drop-i
 
 ### Menu appearance (default)
 
-```tsx PickerMenuExample.tsx
+<ComponentExample
+  title="PickerMenuExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-picker-menu-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-picker-menu-android-dark.webp',
+    alt: 'A Flavour label beside a dropdown set to Vanilla',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-picker-menu-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-picker-menu-ios-dark.webp',
+    alt: 'A Flavour label beside a menu picker set to Vanilla',
+  }}>
+
+```tsx
 import { useState } from 'react';
+import { useColorScheme } from 'react-native';
 import { Host, Row, Picker, Spacer, Text } from '@expo/ui';
 
 const FLAVOURS = [
@@ -33,11 +64,12 @@ const FLAVOURS = [
 
 export default function PickerMenuExample() {
   const [value, setValue] = useState('vanilla');
+  const colorScheme = useColorScheme();
 
   return (
-    <Host style={{ flex: 1 }}>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <Row alignment="center" spacing={12} style={{ padding: 16 }}>
-        <Text>Flavour:</Text>
+        <Text textStyle={{ color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>Flavour:</Text>
         <Spacer flexible />
         <Picker selectedValue={value} onValueChange={setValue}>
           {FLAVOURS.map(f => (
@@ -50,11 +82,26 @@ export default function PickerMenuExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Wheel appearance
 
 `appearance="wheel"` renders an inline scrollable rotor on iOS. On Android and web, this falls back to the platform's default dropdown (Material 3 doesn't ship a wheel-style picker).
 
-```tsx PickerWheelExample.tsx
+<ComponentExample
+  title="PickerWheelExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-picker-wheel-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-picker-wheel-android-dark.webp',
+    alt: 'A dropdown set to Chocolate, the Android fallback for the wheel appearance',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-picker-wheel-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-picker-wheel-ios-dark.webp',
+    alt: 'An inline wheel picker with Chocolate selected',
+  }}>
+
+```tsx
 import { useState } from 'react';
 import { Host, Column, Picker } from '@expo/ui';
 
@@ -68,7 +115,7 @@ export default function PickerWheelExample() {
   const [value, setValue] = useState('chocolate');
 
   return (
-    <Host style={{ flex: 1 }}>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <Column spacing={8} style={{ padding: 16 }}>
         <Picker selectedValue={value} onValueChange={setValue} appearance="wheel">
           {FLAVOURS.map(f => (
@@ -81,6 +128,8 @@ export default function PickerWheelExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
@@ -88,3 +137,5 @@ import { Picker } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/picker" apiName="Picker" />
+
+</PlatformTabsGroup>

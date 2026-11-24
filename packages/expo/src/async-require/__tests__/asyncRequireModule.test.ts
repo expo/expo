@@ -33,8 +33,7 @@ describe('asyncRequireModule', () => {
     // Clear any previous __loadBundleAsync
     delete (globalThis as any).__loadBundleAsync;
 
-    // Evaluate the compiled module in a scope where `require` is our mock.
-    // We use Function constructor to create a scope with our own `require`.
+    // This is a handwritten copy. Keep it in sync with asyncRequireModule.ts.
     const moduleObj = { exports: {} as any };
     // eslint-disable-next-line no-new-func
     const moduleFn = new Function(
@@ -68,6 +67,17 @@ describe('asyncRequireModule', () => {
 
         // On web, importing synchronously first prevents double-loading preloaded scripts
         if (process.env.EXPO_OS === 'web') {
+          var bundlePath = paths && paths[String(moduleID)];
+          if (Array.isArray(bundlePath)) {
+            var loadBundle = globalThis[(__METRO_GLOBAL_PREFIX__ || '') + '__loadBundleAsync'];
+            if (loadBundle && loadBundle.isReady && loadBundle.isReady(bundlePath)) return importAll();
+            var maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
+            if (maybeLoadBundlePromise != null) return maybeLoadBundlePromise.then(importAll);
+            throw new Error(
+              'Cannot import module ' + (moduleName == null ? moduleID : moduleName) + ': the async bundle loader is unavailable. ' +
+              'Load the initial Expo bundle before importing these chunks: ' + bundlePath.join(', ')
+            );
+          }
           try {
             return importAll();
           } catch (error) {
@@ -90,20 +100,9 @@ describe('asyncRequireModule', () => {
 
       function asyncRequire(moduleID, paths, moduleName) {
         var ret = asyncRequireImpl(moduleID, paths, moduleName);
-        if (!(ret instanceof Promise)) {
-          return {
-            _result: ret,
-            then: function(resolve, reject) {
-              return Promise.resolve(ret).then(resolve, reject);
-            },
-          };
-        }
-        return {
-          _result: ret,
-          then: function(resolve, reject) {
-            return ret.then(resolve, reject);
-          },
-        };
+        var promise = Promise.resolve(ret);
+        promise._result = ret;
+        return promise;
       }
 
       asyncRequire.unstable_importMaybeSync = function(moduleID, paths) {
@@ -133,6 +132,49 @@ describe('asyncRequireModule', () => {
 
     expect(mockImportAll).toHaveBeenCalledWith(42, 'my-module');
     expect(result).toEqual({ default: 'module-42' });
+  });
+
+  it.each([false, true])(
+    'waits before running a partially registered array (maybeSync: %s)',
+    async (maybeSync) => {
+      process.env.EXPO_OS = 'web';
+      let finish!: () => void;
+      const loader = Object.assign(
+        jest.fn(
+          () =>
+            new Promise<void>((resolve) => {
+              finish = resolve;
+            })
+        ),
+        { isReady: () => false }
+      );
+      (globalThis as any).__loadBundleAsync = loader;
+      const result = maybeSync
+        ? asyncRequire.unstable_importMaybeSync(42, { 42: ['/shared.js'] })
+        : asyncRequire(42, { 42: ['/shared.js'] });
+      expect(mockImportAll).not.toHaveBeenCalled();
+      finish();
+      await expect(result).resolves.toEqual({ default: 'module-42' });
+      expect(mockImportAll).toHaveBeenCalledTimes(1);
+    }
+  );
+
+  it('preserves synchronous hydration for confirmed-ready arrays', () => {
+    process.env.EXPO_OS = 'web';
+    const loader = Object.assign(jest.fn(), { isReady: () => true });
+    (globalThis as any).__loadBundleAsync = loader;
+    const result = asyncRequire(42, { 42: ['/shared.js', '/route.js'] });
+    expect(result._result).toEqual({ default: 'module-42' });
+    expect(asyncRequire.unstable_importMaybeSync(42, { 42: ['/route.js'] })).toEqual({
+      default: 'module-42',
+    });
+    expect(loader).not.toHaveBeenCalled();
+  });
+
+  it('does not attempt factory execution for an array without a loader', () => {
+    process.env.EXPO_OS = 'web';
+    expect(() => asyncRequire(42, { 42: ['/shared.js'] })).toThrow('loader');
+    expect(mockImportAll).not.toHaveBeenCalled();
   });
 
   it('calls importAll without moduleName when not provided', async () => {
@@ -213,6 +255,24 @@ describe('asyncRequireModule', () => {
     expect(result).toEqual({ default: 'module-42' });
   });
 
+  it('forwards array payloads opaquely and waits before importing on native', async () => {
+    process.env.EXPO_OS = 'ios';
+    let finish!: () => void;
+    (globalThis as any).__loadBundleAsync = jest.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = resolve;
+        })
+    );
+    const payload = ['/shared.js', '/route.js'];
+    const result = asyncRequire(42, { '42': payload }, 'route');
+    expect((globalThis as any).__loadBundleAsync).toHaveBeenCalledWith(payload);
+    expect(mockImportAll).not.toHaveBeenCalled();
+    finish();
+    await expect(result).resolves.toEqual({ default: 'module-42' });
+    expect(mockImportAll).toHaveBeenCalledTimes(1);
+  });
+
   it('imports synchronously on native when the module is inlined (no split bundle path)', () => {
     process.env.EXPO_OS = 'ios';
     (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.resolve());
@@ -225,14 +285,20 @@ describe('asyncRequireModule', () => {
   });
 
   describe('thenable return value', () => {
-    it('exposes a synchronous _result when no bundle load was needed', () => {
+    it('returns a Promise with a synchronous _result when no bundle load was needed', async () => {
       const ret = asyncRequire(42, null, 'my-module');
 
-      expect(typeof ret.then).toBe('function');
+      const onFinally = jest.fn();
+
+      expect(ret).toBeInstanceOf(Promise);
+      expect(typeof ret.catch).toBe('function');
+      expect(typeof ret.finally).toBe('function');
       expect(ret._result).toEqual({ default: 'module-42' });
+      await expect(ret.finally(onFinally)).resolves.toEqual({ default: 'module-42' });
+      expect(onFinally).toHaveBeenCalledTimes(1);
     });
 
-    it('exposes a Promise _result when a bundle load was needed', async () => {
+    it('returns a Promise with a Promise _result when a bundle load was needed', async () => {
       process.env.EXPO_OS = 'web';
       mockImportAll
         .mockImplementationOnce(() => {
@@ -244,9 +310,21 @@ describe('asyncRequireModule', () => {
 
       const ret = asyncRequire(42, { '42': '/bundles/my-module.bundle' }, 'my-module');
 
-      expect(typeof ret.then).toBe('function');
+      expect(ret).toBeInstanceOf(Promise);
+      expect(typeof ret.catch).toBe('function');
+      expect(typeof ret.finally).toBe('function');
       expect(ret._result).toBeInstanceOf(Promise);
       await expect(ret._result).resolves.toEqual({ default: 'module-42' });
+    });
+
+    it('supports catching a rejected bundle load', async () => {
+      process.env.EXPO_OS = 'ios';
+      const error = new Error('Bundle load failed');
+      (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.reject(error));
+
+      const ret = asyncRequire(42, { '42': '/bundles/my-module.bundle' }, 'my-module');
+
+      await expect(ret.catch((caughtError: Error) => caughtError)).resolves.toBe(error);
     });
   });
 
@@ -260,6 +338,13 @@ describe('asyncRequireModule', () => {
   });
 
   describe('prefetch', () => {
+    it('forwards arrays without executing a factory', async () => {
+      (globalThis as any).__loadBundleAsync = jest.fn(async () => {});
+      const payload = ['/shared.js', '/route.js'];
+      asyncRequire.prefetch(42, { '42': payload }, 'route');
+      expect((globalThis as any).__loadBundleAsync).toHaveBeenCalledWith(payload);
+      expect(mockImportAll).not.toHaveBeenCalled();
+    });
     it('does not call importAll (only triggers bundle loading)', () => {
       (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.resolve());
 

@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  ...require('expo-module-scripts/jest-preset-cli'),
+  ...require('@expo/internal-scripts/jest-preset-cli'),
   clearMocks: true,
   rootDir: path.resolve(__dirname),
   displayName: require('./package').name,

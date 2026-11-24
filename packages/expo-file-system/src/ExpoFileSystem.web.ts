@@ -36,6 +36,10 @@ class FileSystemUploadTask {
 }
 
 class FileSystemDownloadTask {
+  get response() {
+    console.warn('expo-file-system is not supported on web');
+    return { status: null, headers: {} };
+  }
   start() {
     console.warn('expo-file-system is not supported on web');
     return Promise.resolve(null);

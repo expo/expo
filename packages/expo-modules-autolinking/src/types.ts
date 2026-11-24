@@ -1,3 +1,5 @@
+import type { PlatformName } from '@expo/platforms';
+
 import type { ExpoModuleConfig } from './ExpoModuleConfig';
 
 type Required<T, K extends keyof T> = T & { [P in K]-?: T[P] };
@@ -5,15 +7,7 @@ type Required<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 type WithRequired<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>> & Required<T, K>;
 
 // NOTE(@kitten): Our code has never guaranteed this to be exhaustive, hence the `| (string & {})` addition
-export type SupportedPlatform =
-  | 'apple'
-  | 'ios'
-  | 'android'
-  | 'web'
-  | 'macos'
-  | 'tvos'
-  | 'devtools'
-  | (string & {});
+export type SupportedPlatform = PlatformName | 'apple' | 'devtools' | (string & {});
 
 export type PackageRevision = {
   name: string;
@@ -21,7 +15,12 @@ export type PackageRevision = {
   version: string;
   config?: ExpoModuleConfig;
   duplicates?: PackageRevision[];
+  /** Whether the package was found in the app's `nativeModulesDir` (local modules). */
+  isLocal?: boolean;
 };
+
+/** Name of the package that local modules and inline modules are exported in. It can't be the name of an npm package. */
+export const LOCAL_PACKAGE_NAME = '$local';
 
 export type SearchResults = {
   [moduleName: string]: PackageRevision;
@@ -33,7 +32,7 @@ export interface ModuleAndroidProjectInfo {
   modules: ModuleAndroidModuleInfo[];
   services: string[];
   packages: string[];
-  publication?: AndroidPublication;
+  publication?: WithRequired<AndroidPublication, 'version'>;
   aarProjects?: AndroidGradleAarProjectDescriptor[];
   shouldUsePublicationScriptPath?: string;
 }
@@ -45,7 +44,10 @@ export interface ModuleAndroidModuleInfo {
 
 export interface ModuleAndroidPluginInfo {
   id: string;
-  sourceDir: string;
+  group: string;
+  sourceDir?: string;
+  version?: string;
+  applyToRootProject?: boolean;
 }
 
 export interface ModuleAndroidAarProjectInfo extends AndroidGradleAarProjectDescriptor {
@@ -71,7 +73,27 @@ export interface ModuleIosConfig {
   class: string;
 }
 export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
+  /**
+   * Name of the package that the modules declared with the `@ExpoModule` macro are exported in, when it differs
+   * from `packageName`. Local modules use `LOCAL_PACKAGE_NAME`.
+   */
+  exportedPackageName?: string;
   modules: ModuleIosConfig[];
+  /**
+   * The modules from `modules` that `scan-packages` found, so they're declared with the `@ExpoModule` macro
+   * (Expo Modules API 2.0). The generated modules provider also lists these modules by package in `packages`.
+   */
+  expoModules?: ModuleIosConfig[];
+  /**
+   * Names of the `@SharedObject` classes that `scan-packages` found. The generated modules provider lists them by
+   * package in `packages`, next to the modules.
+   */
+  expoSharedObjects?: string[];
+  /**
+   * Names of the `@ExpoView` classes that `scan-packages` found. The generated modules provider lists them by
+   * package in `packages`, next to the modules.
+   */
+  expoViews?: string[];
   pods: ModuleIosPodspecInfo[];
   flags: Record<string, any> | undefined;
   swiftModuleNames: string[];
@@ -127,7 +149,13 @@ export interface AndroidGradlePluginDescriptor {
   /**
    * Relative path to the gradle plugin directory
    */
-  sourceDir: string;
+  sourceDir?: string;
+
+  /**
+   * Version of a published gradle plugin.
+   * Ignored when `sourceDir` is declared.
+   */
+  version?: string;
 
   /**
    * Whether to apply the plugin to the root project
@@ -155,15 +183,15 @@ export interface AndroidPublication {
   /**
    * The Maven artifact ID.
    */
-  id: string;
+  artifactId: string;
   /**
    * The Maven group ID.
    */
-  group: string;
+  groupId: string;
   /**
-   * The Maven version.
+   * The Maven version. Defaults to the package version when omitted from module config.
    */
-  version: string;
+  version?: string;
   /**
    * The Maven repository.
    */
@@ -180,6 +208,7 @@ export type RawAppleModuleConfig = {
 export type RawModuleConfigApple = {
   /**
    * Names of Swift native modules classes to put to the generated modules provider file.
+   * Declaring it, even empty, disables `@ExpoModule` scanning for the package.
    */
   modules?: (string | RawAppleModuleConfig)[];
 

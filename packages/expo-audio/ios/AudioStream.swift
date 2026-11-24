@@ -30,10 +30,15 @@ class AudioStream: SharedObject {
     super.init()
   }
 
-  func start() throws {
+  func start(deactivateSessionOnFailure: Bool = true) throws {
     guard !isStreaming else { return }
 
     let session = AVAudioSession.sharedInstance()
+    defer {
+      if !isStreaming && deactivateSessionOnFailure {
+        try? session.setActive(false)
+      }
+    }
     try session.setCategory(.record, mode: .measurement)
     try session.setPreferredSampleRate(requestedSampleRate)
     try session.setActive(true)
@@ -59,23 +64,7 @@ class AudioStream: SharedObject {
       )
     }
 
-    let needsConversion = hardwareFormat.sampleRate != targetSampleRate
-      || hardwareFormat.channelCount != targetChannels
-      || hardwareFormat.commonFormat != commonFormat
-
-    if needsConversion {
-      guard let conv = AVAudioConverter(from: hardwareFormat, to: targetFormat) else {
-        sampleRate = hardwareFormat.sampleRate
-        channels = Int(hardwareFormat.channelCount)
-        setupTapWithoutConversion(engine: engine, inputNode: inputNode, format: hardwareFormat)
-        self.audioEngine = engine
-        try engine.start()
-        isStreaming = true
-        emitStatus()
-        return
-      }
-      self.converter = conv
-    }
+    self.converter = try AudioStream.makeConverter(from: hardwareFormat, to: targetFormat)
 
     sampleRate = targetSampleRate
     channels = Int(targetChannels)
@@ -98,9 +87,23 @@ class AudioStream: SharedObject {
     }
 
     self.audioEngine = engine
-    try engine.start()
+    try startEngine(engine)
     isStreaming = true
     emitStatus()
+  }
+
+  // Starting the engine happens after the tap is installed. If it fails, undo the setup here: a later
+  // stop() cannot, because it returns early while isStreaming is still false.
+  private func startEngine(_ engine: AVAudioEngine) throws {
+    do {
+      try engine.start()
+    } catch {
+      engine.inputNode.removeTap(onBus: 0)
+      engine.stop()
+      audioEngine = nil
+      converter = nil
+      throw error
+    }
   }
 
   func stop() {
@@ -117,12 +120,10 @@ class AudioStream: SharedObject {
     // removeTap above ensures no more data is dispatched to fileWriterQueue;
     // syncing on the queue drains any appends already in flight before closing the writer.
     fileWriterQueue.sync {
-      try? self.fileWriter?.finish()
+      _ = try? self.fileWriter?.finish()
       self.fileWriter = nil
       self.fileWriterError = nil
     }
-
-    try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
   }
 
   func startFileRecording(url: URL, format: AudioStreamFileFormat) throws -> String {
@@ -172,16 +173,29 @@ class AudioStream: SharedObject {
     )
   }
 
-  private func setupTapWithoutConversion(engine: AVAudioEngine, inputNode: AVAudioInputNode, format: AVAudioFormat) {
-    let bufferSize = AVAudioFrameCount(format.sampleRate * 0.1)
-    inputNode.installTap(onBus: 0, bufferSize: bufferSize, format: format) {
-      [weak self] (buffer, when) in
-      guard let self else { return }
-      if self.startTimestamp == nil {
-        self.startTimestamp = when
-      }
-      self.emitBuffer(buffer: buffer, when: when)
+  static func makeConverter(from inputFormat: AVAudioFormat, to targetFormat: AVAudioFormat) throws -> AVAudioConverter? {
+    if inputFormat == targetFormat {
+      return nil
     }
+    guard let converter = AVAudioConverter(from: inputFormat, to: targetFormat) else {
+      throw AudioStreamException(
+        "The audio input (\(describe(inputFormat))) cannot be converted to the requested format (\(describe(targetFormat))). "
+        + "Check that a microphone is connected, or request a different sample rate or channel count"
+      )
+    }
+    return converter
+  }
+
+  private static func describe(_ format: AVAudioFormat) -> String {
+    let sampleType: String
+    switch format.commonFormat {
+    case .pcmFormatInt16: sampleType = "Int16"
+    case .pcmFormatInt32: sampleType = "Int32"
+    case .pcmFormatFloat32: sampleType = "Float32"
+    case .pcmFormatFloat64: sampleType = "Float64"
+    default: sampleType = "unknown sample type"
+    }
+    return "\(Int(format.sampleRate)) Hz, \(format.channelCount) ch, \(sampleType)"
   }
 
   private func convertAndEmit(
@@ -250,16 +264,15 @@ class AudioStream: SharedObject {
 
     let timestamp = timestampSinceStart(when)
     let channelCount = Int(buffer.format.channelCount)
-    let data: NativeArrayBuffer
+    let data: ArrayBuffer
+    let sampleCount = frameLength * channelCount
 
     if encoding == .int16, let int16Data = buffer.int16ChannelData {
-      let sampleCount = frameLength * channelCount
       let byteCount = sampleCount * MemoryLayout<Int16>.size
-      data = NativeArrayBuffer.copy(of: int16Data[0], count: byteCount)
+      data = ArrayBuffer.copy(of: int16Data[0], count: byteCount)
     } else if let floatData = buffer.floatChannelData {
-      let sampleCount = frameLength * channelCount
       let byteCount = sampleCount * MemoryLayout<Float32>.size
-      data = NativeArrayBuffer.copy(of: floatData[0], count: byteCount)
+      data = ArrayBuffer.copy(of: floatData[0], count: byteCount)
     } else {
       return
     }
@@ -273,9 +286,8 @@ class AudioStream: SharedObject {
   }
 
   private func timestampSinceStart(_ when: AVAudioTime) -> Double {
-    guard let startTimestamp else { return 0 }
-    let hostTimeDiff = when.hostTime - startTimestamp.hostTime
-    return Double(hostTimeDiff) / Double(NSEC_PER_SEC)
+    guard let startTimestamp, when.isHostTimeValid, startTimestamp.isHostTimeValid else { return 0 }
+    return AVAudioTime.seconds(forHostTime: when.hostTime) - AVAudioTime.seconds(forHostTime: startTimestamp.hostTime)
   }
 
   deinit {

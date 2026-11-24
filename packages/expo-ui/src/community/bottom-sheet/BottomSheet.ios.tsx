@@ -92,14 +92,38 @@ export function BottomSheet(props: BottomSheetProps) {
     enableDynamicSizing = true,
     handleComponent,
     backgroundStyle,
+    modifiers: modifiersProp,
     children,
   } = props;
   const { width } = useWindowDimensions();
 
+  const detents = useMemo<PresentationDetent[]>(() => {
+    if (!snapPointsProp || snapPointsProp.length === 0) return ['medium', 'large'];
+    return snapPointsProp.map(snapPointToDetent);
+  }, [snapPointsProp]);
+
   const [isPresented, setIsPresented] = useState(indexProp >= 0);
-  const [currentIndex, setCurrentIndex] = useState(Math.max(indexProp, 0));
+  const [currentIndex, setCurrentIndex] = useState(() =>
+    Math.min(Math.max(indexProp, 0), detents.length - 1)
+  );
   // Ref mirrors currentIndex for use in handleDetentChange without adding it as a useCallback dep
   const currentIndexRef = useRef(currentIndex);
+
+  // Apply a new `index` prop or a new number of detents during render, not in an effect.
+  // An effect runs after the render that already passed the previous index to the native
+  // sheet, so SwiftUI would show the wrong detent for a frame and then jump to the right one.
+  const [syncedIndexProp, setSyncedIndexProp] = useState(indexProp);
+  const [syncedDetentCount, setSyncedDetentCount] = useState(detents.length);
+  if (syncedIndexProp !== indexProp || syncedDetentCount !== detents.length) {
+    setSyncedIndexProp(indexProp);
+    setSyncedDetentCount(detents.length);
+    const requestedIndex = indexProp >= 0 ? indexProp : currentIndex;
+    const clampedIndex = Math.min(requestedIndex, detents.length - 1);
+    if (clampedIndex !== currentIndex) {
+      setCurrentIndex(clampedIndex);
+    }
+    currentIndexRef.current = clampedIndex;
+  }
   // Guards fireCloseCallbacks against double-firing.
   const closedRef = useRef(indexProp < 0);
 
@@ -110,11 +134,6 @@ export function BottomSheet(props: BottomSheetProps) {
   onCloseRef.current = onClose;
   const onDismissRef = useRef(onDismiss);
   onDismissRef.current = onDismiss;
-
-  const detents = useMemo<PresentationDetent[]>(() => {
-    if (!snapPointsProp || snapPointsProp.length === 0) return ['medium', 'large'];
-    return snapPointsProp.map(snapPointToDetent);
-  }, [snapPointsProp]);
 
   const selectedDetent = detents[currentIndex] ?? detents[0];
   const fitToContents = enableDynamicSizing && (!snapPointsProp || snapPointsProp.length === 0);
@@ -132,25 +151,17 @@ export function BottomSheet(props: BottomSheetProps) {
   useEffect(() => {
     if (indexProp === -1) {
       setIsPresented(false);
-      fireCloseCallbacks();
     } else if (indexProp >= 0) {
       closedRef.current = false;
       setIsPresented(true);
-      const clampedIndex = Math.min(indexProp, detents.length - 1);
-      setCurrentIndex(clampedIndex);
-      currentIndexRef.current = clampedIndex;
     }
-  }, [indexProp, detents.length, fireCloseCallbacks]);
+  }, [indexProp]);
 
-  const handlePresentedChange = useCallback(
-    (presented: boolean) => {
-      if (!presented) {
-        setIsPresented(false);
-        fireCloseCallbacks();
-      }
-    },
-    [fireCloseCallbacks]
-  );
+  const handlePresentedChange = useCallback((presented: boolean) => {
+    if (!presented) {
+      setIsPresented(false);
+    }
+  }, []);
 
   const handleDetentChange = useCallback(
     (detent: PresentationDetent) => {
@@ -168,7 +179,6 @@ export function BottomSheet(props: BottomSheetProps) {
     const snapToIndex = (index: number) => {
       if (index === -1) {
         setIsPresented(false);
-        fireCloseCallbacks();
         return;
       }
       const clampedIndex = Math.min(Math.max(index, 0), detents.length - 1);
@@ -179,14 +189,11 @@ export function BottomSheet(props: BottomSheetProps) {
       onChangeRef.current?.(clampedIndex);
     };
 
-    // Fire close callbacks immediately: the native `onIsPresentedChange` event is
-    // suppressed when JS drives the state change (the Swift layer guards against
-    // the feedback loop), so we can't rely on handlePresentedChange here. The
-    // closedRef guard inside fireCloseCallbacks prevents double-firing if a
-    // native user-dismiss event also arrives during the animation.
+    // Close callbacks fire from the native `onDismiss` event, which SwiftUI sends after
+    // the dismissal transition finishes, so they can present another modal without UIKit
+    // rejecting it. Android awaits `hide()` for the same reason.
     const close = () => {
       setIsPresented(false);
-      fireCloseCallbacks();
     };
 
     return {
@@ -200,7 +207,7 @@ export function BottomSheet(props: BottomSheetProps) {
       present: () => snapToIndex(0),
       dismiss: close,
     };
-  }, [detents, fireCloseCallbacks]);
+  }, [detents]);
 
   useImperativeHandle(ref, () => methods, [methods]);
 
@@ -208,8 +215,9 @@ export function BottomSheet(props: BottomSheetProps) {
     const bg = extractBackgroundColor(backgroundStyle);
     return [
       ...(fitToContents
-        ? // Makes the iPad sheet size to that content instead of opening near full height.
-          [presentationSizing('fitted')]
+        ? // Fits the sheet height to the content (iPad opens near full height otherwise) and lets
+          // the system choose the width.
+          [presentationSizing('automatic', { fitted: { horizontal: false, vertical: true } })]
         : [
             presentationDetents(detents, {
               selection: selectedDetent,
@@ -219,6 +227,8 @@ export function BottomSheet(props: BottomSheetProps) {
       presentationDragIndicator(handleComponent === null ? 'hidden' : 'visible'),
       interactiveDismissDisabled(!enablePanDownToClose),
       ...(bg ? [presentationBackground(bg)] : []),
+      // The app's modifiers go last, so they can add to or override the ones above.
+      ...(modifiersProp ?? []),
     ];
   }, [
     fitToContents,
@@ -228,6 +238,7 @@ export function BottomSheet(props: BottomSheetProps) {
     handleComponent,
     enablePanDownToClose,
     backgroundStyle,
+    modifiersProp,
   ]);
 
   return (
@@ -237,13 +248,18 @@ export function BottomSheet(props: BottomSheetProps) {
           <NativeBottomSheet
             isPresented={isPresented}
             onIsPresentedChange={handlePresentedChange}
+            onDismiss={fireCloseCallbacks}
             fitToContents={fitToContents}>
             <Group modifiers={modifiers}>
-              <RNHostView matchContents={fitToContents}>
+              <RNHostView
+                matchContents={fitToContents ? { vertical: true } : false}
+                boundedByHost={fitToContents}>
                 {/* paddingTop compensates for tighter spacing between native drag indicator and content
                     compared to gorhom's handle. flexGrow:1 + height:0 (flex-basis 0) fills the snap-point
-                    height without inheriting the scrollable child's intrinsic content height. Omitted for fitToContents
-                    so RNHostView can measure natural content height. */}
+                    height without inheriting the scrollable child's intrinsic content height. With matchContents,
+                    RNHostView takes the width from the sheet, which can be narrower than the window, and
+                    the height from the content. The first measure runs before SwiftUI reports the sheet
+                    width, so boundedByHost keeps it within the Host width. */}
                 <View
                   style={
                     fitToContents

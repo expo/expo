@@ -3,7 +3,7 @@
 import ExpoModulesJSI
 
 public struct Promise: AnyArgument, Sendable {
-  public typealias ResolveClosure = @Sendable (_ value: JavaScriptValue) -> Void
+  public typealias ResolveClosure = @Sendable (_ value: consuming JavaScriptValue) -> Void
   public typealias RejectClosure = @Sendable (Exception) -> Void
 
   internal weak var appContext: AppContext?

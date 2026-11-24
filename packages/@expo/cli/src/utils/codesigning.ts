@@ -12,7 +12,6 @@ import type { ExpoConfig } from '@expo/config';
 import type { JSONObject } from '@expo/json-file';
 import JsonFile from '@expo/json-file';
 import { promises as fs } from 'fs';
-import type { pki as PKI } from 'node-forge';
 import path from 'path';
 import type { Dictionary } from 'structured-headers';
 import { parseDictionary } from 'structured-headers';
@@ -254,6 +253,11 @@ async function getProjectCodeSigningCertificateAsync(
 ): Promise<CodeSigningInfo | null> {
   const codeSigningCertificatePath = exp.updates?.codeSigningCertificate;
   if (!codeSigningCertificatePath) {
+    if (privateKeyPath) {
+      throw new CommandError(
+        '--private-key-path was specified, but updates.codeSigningCertificate is not set in the resolved app config. Code signing requires both the certificate in app config and the private key. Ensure codeSigningCertificate (and codeSigningMetadata) are present, or omit --private-key-path if you do not intend to sign.\nLearn more: https://docs.expo.dev/eas-update/code-signing/'
+      );
+    }
     return null;
   }
 
@@ -329,7 +333,7 @@ async function getProjectPrivateKeyAndCertificateFromFilePathsAsync({
   const privateKey = convertPrivateKeyPEMToPrivateKey(privateKeyPEM);
   const certificate = convertCertificatePEMToCertificate(codeSigningCertificatePEM);
   validateSelfSignedCertificate(certificate, {
-    publicKey: certificate.publicKey as PKI.rsa.PublicKey,
+    publicKey: certificate.publicKey as ReturnType<typeof generateKeyPair>['publicKey'],
     privateKey,
   });
 
@@ -383,17 +387,9 @@ function validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
 }
 
 function actorCanGetProjectDevelopmentCertificate(actor: Actor, app: App) {
-  const owningAccountId = app.ownerAccount.id;
-
-  const owningAccountIsActorPrimaryAccount =
-    actor.__typename === 'User' || actor.__typename === 'SSOUser'
-      ? actor.primaryAccount.id === owningAccountId
-      : false;
-  const userHasPublishPermissionForOwningAccount = !!actor.accounts
-    .find((account) => account.id === owningAccountId)
-    ?.users?.find((userPermission) => userPermission.actor.id === actor.id)
-    ?.permissions?.includes('PUBLISH');
-  return owningAccountIsActorPrimaryAccount || userHasPublishPermissionForOwningAccount;
+  return !!actor.accounts
+    .find((account) => account.id === app.ownerAccount.id)
+    ?.viewerUserPermission2.effectivePermissions.includes('RUN');
 }
 
 async function fetchAndCacheNewDevelopmentCodeSigningInfoAsync(

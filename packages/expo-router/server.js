@@ -1,1 +1,1 @@
-export { createStaticLoader, createServerLoader } from 'expo-server';
+module.exports = require('./build/server');

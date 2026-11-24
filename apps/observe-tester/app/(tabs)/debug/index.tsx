@@ -1,5 +1,5 @@
-import AppMetrics from 'expo-app-metrics';
 import { useObserve } from 'expo-observe';
+import { AppMetrics } from 'expo-observe/debug';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 
@@ -12,6 +12,7 @@ import { JSErrorsSection } from '@/components/JSErrorsSection';
 import { LogEventsSection } from '@/components/LogEventsSection';
 import { NetworkRequestObserverSection } from '@/components/NetworkRequestObserverSection';
 import { RenderErrorSection } from '@/components/RenderErrorSection';
+import { ReportErrorSection } from '@/components/ReportErrorSection';
 import CrashTester from '@/modules/crash-tester';
 import { useTheme } from '@/utils/theme';
 
@@ -38,6 +39,8 @@ export default function Debug() {
       <CrashReportsSection />
       {CrashTester != null ? <Divider /> : null}
       <JSErrorsSection />
+      <Divider />
+      <ReportErrorSection />
       <Divider />
       <RenderErrorSection />
       <Divider />

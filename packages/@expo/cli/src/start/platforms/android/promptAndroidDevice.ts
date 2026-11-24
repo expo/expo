@@ -1,21 +1,28 @@
 import chalk from 'chalk';
 
-import type { Device } from './adb';
-import { logUnauthorized } from './adb';
 import { AbortCommandError } from '../../../utils/errors';
 import { createSelectionFilter, promptAsync } from '../../../utils/prompts';
+import type { Device } from './adb';
+import { logUnauthorized } from './adb';
 
 export async function promptForDeviceAsync(devices: Device[]): Promise<Device> {
   // TODO: provide an option to add or download more simulators
 
-  const { value } = await promptAsync({
-    type: 'autocomplete',
-    name: 'value',
-    limit: 11,
-    message: 'Select a device/emulator',
-    choices: devices.map((item) => formatDeviceChoice(item)),
-    suggest: createSelectionFilter(),
-  });
+  const { value } = await promptAsync(
+    {
+      type: 'autocomplete',
+      name: 'value',
+      limit: 11,
+      message: 'Select a device/emulator',
+      choices: devices.map((item) => formatDeviceChoice(item)),
+      suggest: createSelectionFilter(),
+    },
+    {
+      nonInteractiveHelp: `--device: argument must be provided with a device name in non-interactive mode. Valid choices are: ${devices
+        .map((device) => device.name)
+        .join(', ')}`,
+    }
+  );
 
   const device = devices.find(({ name }) => name === value);
 

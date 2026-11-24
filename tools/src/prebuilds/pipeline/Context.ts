@@ -42,8 +42,12 @@ export type PrebuildCliOptions = {
   verbose: boolean;
   concurrency?: number;
   bundleSharedDeps?: boolean;
+  /** Disable dependency expansion and use package-owned paths. */
+  exactPackage?: boolean;
   /** Used only by `prebuild prune`: report what would be removed without deleting. */
   dryRun?: boolean;
+  /** Used only by `prebuild prune`: also remove each package's bundled `prebuilds/`. */
+  bundled?: boolean;
 };
 
 // ---------------------------------------------------------------------------
@@ -68,6 +72,7 @@ export interface PrebuildRequest {
   readonly signing?: SigningOptions;
   readonly verbose: boolean;
   readonly bundleSharedDeps: boolean;
+  readonly exactPackage: boolean;
   readonly localTarballTemplates: {
     readonly reactNative?: string;
     readonly hermes?: string;
@@ -157,6 +162,7 @@ export function createRequest(
     reactNativeVersionOverride: options.reactNativeVersion,
     hermesVersionOverride: options.hermesVersion,
     bundleSharedDeps: options.bundleSharedDeps ?? false,
+    exactPackage: options.exactPackage ?? false,
     concurrency: options.concurrency ?? Math.ceil(os.cpus().length / 3),
   };
 }

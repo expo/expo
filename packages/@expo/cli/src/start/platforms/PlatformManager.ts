@@ -210,7 +210,7 @@ export class PlatformManager<
     }
   }
 
-  /** Open the current web project (Webpack) in a device . */
+  /** Open the current web project (Webpack) in a device. */
   private async openWebProjectAsync(resolveSettings: Partial<IResolveDeviceProps> = {}): Promise<{
     url: string;
   }> {

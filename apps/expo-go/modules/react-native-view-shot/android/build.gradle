@@ -44,6 +44,12 @@ android {
       }
     }
   }
+
+  testOptions {
+    unitTests {
+      returnDefaultValues = true
+    }
+  }
 }
 
 repositories {
@@ -56,6 +62,8 @@ repositories {
 }
 
 dependencies {
-  implementation 'com.facebook.react:react-native:+'
   implementation "com.facebook.react:react-native:${safeExtGet('reactNativeVersion', '+')}"
+
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.mockito:mockito-core:5.5.0'
 }

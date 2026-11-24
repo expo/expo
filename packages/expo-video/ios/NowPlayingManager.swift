@@ -42,6 +42,9 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   }
 
   func unregisterPlayer(_ player: VideoPlayer) {
+    guard players.allObjects.contains(where: { $0 === player }) else {
+      return
+    }
     players.remove(player)
     player.observer?.unregisterDelegate(delegate: self)
 
@@ -120,8 +123,9 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
 
       var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
 
-      nowPlayingInfo[MPMediaItemPropertyTitle] = userMetadata?.title ?? title
-      nowPlayingInfo[MPMediaItemPropertyArtist] = userMetadata?.artist ?? artist
+      // `MPNowPlayingInfoCenter` needs plain values, not the `AVMetadataItem`s from the asset.
+      nowPlayingInfo[MPMediaItemPropertyTitle] = userMetadata?.title ?? title?.stringValue
+      nowPlayingInfo[MPMediaItemPropertyArtist] = userMetadata?.artist ?? artist?.stringValue
       nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = currentItem.duration.seconds
       nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentItem.currentTime().seconds
       nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = currentItem.duration.isIndefinite
@@ -137,7 +141,10 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
         }
       } else if userMetadata?.artwork == nil {
         self.artworkDataTask = nil
-        nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+        // MediaPlayer calls `jpegDataWithSize:` on the artwork value, so an `AVMetadataItem` crashes the app.
+        nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork?.dataValue.flatMap { UIImage(data: $0) }.map { image in
+          MPMediaItemArtwork(boundsSize: image.size) { _ in image }
+        }
       }
 
       MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo

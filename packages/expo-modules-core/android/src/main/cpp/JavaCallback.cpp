@@ -12,16 +12,19 @@ JavaCallback::CallbackContext::CallbackContext(
   jsi::Runtime &rt,
   std::weak_ptr<react::CallInvoker> jsCallInvokerHolder,
   std::optional<jsi::Function> resolveHolder,
-  std::optional<jsi::Function> rejectHolder
+  std::optional<jsi::Function> rejectHolder,
+  std::vector<jsi::Value> retainedValues
 ) : react::LongLivedObject(rt),
     rt(rt),
     jsCallInvokerHolder(std::move(jsCallInvokerHolder)),
     resolveHolder(std::move(resolveHolder)),
-    rejectHolder(std::move(rejectHolder)) {}
+    rejectHolder(std::move(rejectHolder)),
+    retainedValues(std::move(retainedValues)) {}
 
 void JavaCallback::CallbackContext::invalidate() {
   resolveHolder.reset();
   rejectHolder.reset();
+  retainedValues.clear();
   allowRelease();
 }
 
@@ -157,10 +160,7 @@ void JavaCallback::invokeFloat(float result) {
 }
 
 void JavaCallback::invokeString(jni::alias_ref<jstring> result) {
-  JNIEnv *env = jni::Environment::current();
-  const char *rawValue = env->GetStringUTFChars(result.get(), nullptr);
-  std::string parsedResult = rawValue;
-  env->ReleaseStringUTFChars(result.get(), rawValue);
+  std::string parsedResult = jstringToUtf8(jni::Environment::current(), result);
   invokeWithResolver(
     [parsedResult = std::move(parsedResult)](jsi::Runtime &rt, jsi::Function &jsFunction) {
       jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, parsedResult));

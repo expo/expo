@@ -4,10 +4,10 @@ import type { JsTransformerConfig } from '@expo/metro/metro-transform-worker';
 import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
 
 import type { ExpoJsOutput } from '../serializer/jsOutput';
-import { countLinesAndTerminateSourceMap, emptySourceMap } from '../serializer/packedMap';
+import { vlqMapFromDecodedMap } from '../serializer/sourceMap';
 import type { TransformResponse } from './transform-worker';
 
-/** Synthesizes the `metro-transform-worker` output for a hand-crafted JS shims
+/** Synthesizes the `metro-transform-worker` output for a hand-crafted JS shim
  *
  * Typically used to skip Babel for JS output that embeds CSS. The CSS files'
  * processing isn't cached in development, making invoking Babel on them very
@@ -44,8 +44,7 @@ export function transformShim(
           '_$$_IMPORT_DEFAULT',
           '_$$_IMPORT_ALL',
           config.unstable_dependencyMapReservedName ?? 'dependencyMap',
-          config.globalPrefix,
-          config.unstable_renameRequire === false
+          config.globalPrefix
         ).ast;
 
   const { code } = generate(wrappedAst, {
@@ -56,8 +55,7 @@ export function transformShim(
     sourceMaps: false,
   });
 
-  const map = emptySourceMap();
-  const { lineCount } = countLinesAndTerminateSourceMap(code, map);
+  const { lineCount, map } = vlqMapFromDecodedMap(null, code);
   const output: ExpoJsOutput[] = [
     {
       type: 'js/module',

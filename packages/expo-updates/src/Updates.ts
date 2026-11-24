@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError } from 'expo';
 import { Image } from 'react-native';
 
 import ExpoUpdates from './ExpoUpdates';
@@ -38,7 +38,7 @@ export const updateId: string | null =
     : null;
 
 /**
- * The channel name of the current build, if configured for use with EAS Update. `null` otherwise.
+ * The channel name of the current build, if configured for use with Expo Update. `null` otherwise.
  *
  * Expo Go and development builds are not set to a specific channel and can run any updates compatible with their native runtime. Therefore, this value will always be `null` when running an update on Expo Go or a development build.
  */
@@ -107,9 +107,8 @@ export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets 
 
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/versions/latest/sdk/constants/#manifest) (or
- * [classic manifest](/versions/latest/sdk/constants/#appmanifest))
- * object for the update that's currently running.
+ * [manifest](/versions/latest/sdk/constants/#manifest) object for the update
+ * that's currently running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
  * empty.
@@ -301,10 +300,7 @@ export async function readLogEntriesAsync(maxAge: number = 3600000): Promise<Upd
 }
 
 /**
- * Clears existing `expo-updates` log entries.
- *
- * > For now, this operation does nothing on the client.  Once log persistence has been
- * > implemented, this operation will actually remove existing logs.
+ * Removes every `expo-updates` log entry from the log on the device.
  *
  * @return A promise that fulfills if the clear operation was successful.
  *
@@ -320,7 +316,7 @@ export async function clearLogEntriesAsync(): Promise<void> {
  * storage. This method cannot be used in development mode, and the returned promise will be
  * rejected if you try to do so.
  *
- > **Note:** [`reloadAsync()`](#updatesreloadasync) can be called after promise resolution to
+ > **Note:** [`reloadAsync()`](#updatesreloadasyncoptions) can be called after promise resolution to
  * reload the app using the most recently downloaded version. Otherwise, the update will be applied
  * on the next app cold start.
  *
@@ -352,7 +348,7 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
 }
 
 /**
- * Overrides updates URL and reuqest headers in runtime from build time.
+ * Overrides updates URL and request headers in runtime from build time.
  * This method allows you to load specific updates from a URL that you provide.
  * Use this method at your own risk, as it may cause unexpected behavior.
  * Because of the risk, this method requires `disableAntiBrickingMeasures` to be set to `true` in the **app.json** file.

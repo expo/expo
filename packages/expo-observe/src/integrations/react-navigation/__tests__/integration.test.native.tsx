@@ -144,7 +144,7 @@ const linking: LinkingOptions<RootParamList> = {
 
 async function renderApp(children: React.ReactNode) {
   const ref = createRef<ContainerRef>();
-  const result = render(
+  const result = await render(
     <ObserveNavigationContainer ref={ref as never} linking={linking}>
       {children}
     </ObserveNavigationContainer>
@@ -321,7 +321,7 @@ describe('react-navigation integration (real navigation tree)', () => {
       await navigate(ref, 'Details', { id: 'abc' });
 
       await act(async () => {
-        fireEvent.press(getByTestId('mark'));
+        await fireEvent.press(getByTestId('mark'));
         await flushAsync();
       });
 
@@ -344,7 +344,7 @@ describe('react-navigation integration (real navigation tree)', () => {
     );
     await navigate(ref, 'Details', { id: 'abc' });
     await act(async () => {
-      fireEvent.press(getByTestId('mark'));
+      await fireEvent.press(getByTestId('mark'));
       await flushAsync();
     });
     await navigate(ref, 'Home', { from: 'xyz' });

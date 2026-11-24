@@ -1,4 +1,4 @@
-import type { UrlObject } from '../LocationProvider';
+import type { UrlObject } from '../global-state/getRouteInfoFromState';
 import type { LinkToOptions } from '../global-state/routing';
 import type { Href } from '../types';
 

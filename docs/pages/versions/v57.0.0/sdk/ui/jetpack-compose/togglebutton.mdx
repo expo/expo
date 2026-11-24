@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI provides four toggle button components that match the official Jetpack Compose Toggle Button API: [`ToggleButton`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-toggle-button.html), [`IconToggleButton`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-icon-toggle-button.html), [`FilledIconToggleButton`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-filled-icon-toggle-button.html), and [`OutlinedIconToggleButton`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-outlined-icon-toggle-button.html).
@@ -30,7 +31,13 @@ Expo UI provides four toggle button components that match the official Jetpack C
 
 A toggle button with text and icon content.
 
-```tsx BasicToggleButtonExample.tsx
+<ComponentExample
+  title="BasicToggleButtonExample.tsx"
+  src="/static/images/expo-ui/examples/togglebutton-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/togglebutton-basic-android-dark.webp"
+  alt="An unchecked toggle button labelled Favorite">
+
+```tsx
 import { useState } from 'react';
 import { Host, ToggleButton, Text } from '@expo/ui/jetpack-compose';
 
@@ -47,11 +54,19 @@ export default function BasicToggleButtonExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Icon toggle button variants
 
 Use different icon toggle button components to convey varying levels of emphasis.
 
-```tsx IconToggleButtonVariantsExample.tsx
+<ComponentExample
+  title="IconToggleButtonVariantsExample.tsx"
+  src="/static/images/expo-ui/examples/togglebutton-icons-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/togglebutton-icons-android-dark.webp"
+  alt="Three star icon toggle buttons: plain unchecked, filled checked, and outlined unchecked">
+
+```tsx
 import { useState } from 'react';
 import {
   Host,
@@ -60,6 +75,7 @@ import {
   OutlinedIconToggleButton,
   Icon,
   Row,
+  Surface,
 } from '@expo/ui/jetpack-compose';
 
 const starIcon = require('./assets/star.png');
@@ -71,27 +87,43 @@ export default function IconToggleButtonVariantsExample() {
 
   return (
     <Host matchContents>
-      <Row horizontalArrangement={{ spacedBy: 8 }}>
-        <IconToggleButton checked={checked1} onCheckedChange={setChecked1}>
-          <Icon source={starIcon} size={24} />
-        </IconToggleButton>
-        <FilledIconToggleButton checked={checked2} onCheckedChange={setChecked2}>
-          <Icon source={starIcon} size={24} />
-        </FilledIconToggleButton>
-        <OutlinedIconToggleButton checked={checked3} onCheckedChange={setChecked3}>
-          <Icon source={starIcon} size={24} />
-        </OutlinedIconToggleButton>
-      </Row>
+      <Surface>
+        <Row horizontalArrangement={{ spacedBy: 8 }}>
+          <IconToggleButton
+            checked={checked1}
+            onCheckedChange={setChecked1}>
+            <Icon source={starIcon} size={24} />
+          </IconToggleButton>
+          <FilledIconToggleButton
+            checked={checked2}
+            onCheckedChange={setChecked2}>
+            <Icon source={starIcon} size={24} />
+          </FilledIconToggleButton>
+          <OutlinedIconToggleButton
+            checked={checked3}
+            onCheckedChange={setChecked3}>
+            <Icon source={starIcon} size={24} />
+          </OutlinedIconToggleButton>
+        </Row>
+      </Surface>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Custom colors
 
 Override checked and unchecked colors using the `colors` prop.
 
-```tsx CustomColorsToggleButtonExample.tsx
+<ComponentExample
+  title="CustomColorsToggleButtonExample.tsx"
+  src="/static/images/expo-ui/examples/togglebutton-colors-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/togglebutton-colors-android-dark.webp"
+  alt="A checked toggle button with a green container and white ON label">
+
+```tsx
 import { useState } from 'react';
 import { Host, ToggleButton, Text } from '@expo/ui/jetpack-compose';
 
@@ -116,9 +148,17 @@ export default function CustomColorsToggleButtonExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Disabled toggle button
 
-```tsx DisabledToggleButtonExample.tsx
+<ComponentExample
+  title="DisabledToggleButtonExample.tsx"
+  src="/static/images/expo-ui/examples/togglebutton-disabled-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/togglebutton-disabled-android-dark.webp"
+  alt="A dimmed, non-interactive toggle button labelled Disabled">
+
+```tsx
 import { Host, ToggleButton, Text } from '@expo/ui/jetpack-compose';
 
 export default function DisabledToggleButtonExample() {
@@ -132,6 +172,8 @@ export default function DisabledToggleButtonExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
@@ -143,4 +185,7 @@ import {
 } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/togglebutton" apiName="ToggleButton" />
+<APISection
+  packageName="expo-ui/jetpack-compose/togglebutton"
+  apiName="ToggleButton"
+/>

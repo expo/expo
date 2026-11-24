@@ -1,5 +1,5 @@
 import { Host, Icon, List, ListItem, Row, Text } from '@expo/ui';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 const CHEVRON = Icon.select({
   ios: 'chevron.right',
@@ -20,11 +20,27 @@ const INITIAL_ITEMS = [
   { id: 6, name: 'French toast' },
   { id: 7, name: 'Granola' },
   { id: 8, name: 'Hash browns' },
+  ...Array.from({ length: 1000 }, (_, index) => ({ id: index + 9, name: 'Generated item' })),
 ];
+
+type Item = (typeof INITIAL_ITEMS)[number];
+
+const keyExtractor = (item: Item) => String(item.id);
 
 export default function ListScreen() {
   const [items, setItems] = useState(INITIAL_ITEMS);
   const [lastTapped, setLastTapped] = useState('—');
+
+  const renderItem = useCallback(
+    ({ item }: { item: Item }) => (
+      <ListItem
+        onPress={() => setLastTapped(item.name)}
+        trailing={<Icon name={CHEVRON} size={14} color="gray" />}>
+        <Text>{`#${item.id}: ${item.name}`}</Text>
+      </ListItem>
+    ),
+    []
+  );
 
   const handleRefresh = async () => {
     // Simulate a slow fetch.
@@ -94,14 +110,9 @@ export default function ListScreen() {
           {`${items.length} items`}
         </ListItem>
 
-        {items.map((item) => (
-          <ListItem
-            key={item.id}
-            onPress={() => setLastTapped(item.name)}
-            trailing={<Icon name={CHEVRON} size={14} color="gray" />}>
-            <Text>{`#${item.id}: ${item.name}`}</Text>
-          </ListItem>
-        ))}
+        <List.ForEach data={items} keyExtractor={keyExtractor}>
+          {renderItem}
+        </List.ForEach>
       </List>
     </Host>
   );

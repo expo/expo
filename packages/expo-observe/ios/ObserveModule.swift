@@ -1,5 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import EASClient
 import ExpoAppMetrics
 import ExpoModulesCore
 
@@ -10,6 +11,9 @@ internal struct Config: Record {
   @Field var dispatchingEnabled: Bool?
   @Field var dispatchInDebug: Bool?
   @Field var sampleRate: Double?
+  @Field var errorSampleRate: Double?
+  @Field var ignoredMetrics: [String] = []
+  @Field var ignoredEvents: [String] = []
   @Field var integrations: [String: Any]?
 }
 
@@ -35,6 +39,10 @@ public final class ObserveModule: Module {
       }
     }
 
+    Constant("clientId") {
+      EASClientID.uuid().uuidString.lowercased()
+    }
+
     AsyncFunction("dispatchEvents") {
       await ObservabilityManager.dispatch()
     }
@@ -46,7 +54,10 @@ public final class ObserveModule: Module {
           PersistedConfig(
             dispatchingEnabled: config.dispatchingEnabled,
             dispatchInDebug: config.dispatchInDebug,
-            sampleRate: config.sampleRate
+            sampleRate: config.sampleRate,
+            errorSampleRate: config.errorSampleRate,
+            ignoredMetrics: config.ignoredMetrics,
+            ignoredEvents: config.ignoredEvents
           )
         )
         let resolvedEnvironment = config.environment ?? ObserveUserDefaults.bundleDefaults?.environment
@@ -62,6 +73,11 @@ public final class ObserveModule: Module {
 
     Function("getIntegrations") {
       return self.lastIntegrations
+    }
+
+    Function("hasUserContentPrivacyEntry") {
+      let url = Bundle.main.url(forResource: "PrivacyInfo", withExtension: "xcprivacy")
+      return hasUserContentEntry(privacyManifest: url.flatMap { try? Data(contentsOf: $0) })
     }
 
     Function("setBundleDefaults") { (defaults: BundleDefaults) in
@@ -115,4 +131,19 @@ private func getManifestProperty(_ propertyChain: String, _ manifest: [String: A
     value = nextValue
   }
   return value
+}
+
+/// Whether the privacy manifest declares a user content data type, which covers user feedback.
+internal func hasUserContentEntry(privacyManifest: Data?) -> Bool {
+  guard let privacyManifest,
+    let plist = try? PropertyListSerialization.propertyList(from: privacyManifest, format: nil) as? [String: Any],
+    let dataTypes = plist["NSPrivacyCollectedDataTypes"] as? [[String: Any]]
+  else {
+    return false
+  }
+  let userContentTypes: Set = [
+    "NSPrivacyCollectedDataTypeOtherUserContent",
+    "NSPrivacyCollectedDataTypeCustomerSupport",
+  ]
+  return dataTypes.contains { userContentTypes.contains($0["NSPrivacyCollectedDataType"] as? String ?? "") }
 }

@@ -8,8 +8,8 @@
 import type { Socket } from 'net';
 import * as path from 'path';
 
-import { ServiceClient } from './ServiceClient';
 import { GDBProtocolClient } from '../protocol/GDBProtocol';
+import { ServiceClient } from './ServiceClient';
 
 export class DebugserverClient extends ServiceClient<GDBProtocolClient> {
   constructor(public socket: Socket) {

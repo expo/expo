@@ -18,6 +18,8 @@ export {
   requireNativeModule,
   requireOptionalNativeModule,
   requireNativeViewManager as requireNativeView,
+  requireNative,
+  requireOptionalNative,
   registerWebModule,
   reloadAppAsync,
 
@@ -29,6 +31,7 @@ export {
   uuid,
   createSnapshotFriendlyRef,
   useReleasingSharedObject,
+  useReleasingSharedObjectWithLifecycle,
 } from 'expo-modules-core';
 
 export type {
@@ -37,6 +40,8 @@ export type {
   IntBasedTypedArray,
   UintBasedTypedArray,
   FloatBasedTypedArray,
+  ReleasingSharedObjectLifecycle,
+  ReleasingSharedObjectLifecycleContext,
 } from 'expo-modules-core';
 
 export type {

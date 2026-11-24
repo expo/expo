@@ -8,6 +8,7 @@ platforms: ['ios', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI DisclosureGroup matches the official SwiftUI [DisclosureGroup API](https://developer.apple.com/documentation/swiftui/disclosuregroup) and displays a disclosure indicator that reveals or hides content.
@@ -30,9 +31,21 @@ Expo UI DisclosureGroup matches the official SwiftUI [DisclosureGroup API](https
 
 `DisclosureGroup` is most commonly used inside a [`Form`](form) so it picks up the standard iOS list styling with a chevron indicator.
 
-```tsx BasicDisclosureGroupExample.tsx
+<ComponentExample
+  title="BasicDisclosureGroupExample.tsx"
+  src="/static/images/expo-ui/examples/disclosuregroup-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/disclosuregroup-basic-ios-dark.webp"
+  alt="An expanded Advanced settings group in a form, listing three settings rows">
+
+```tsx
 import { useState } from 'react';
-import { DisclosureGroup, Form, Host, Section, Text } from '@expo/ui/swift-ui';
+import {
+  DisclosureGroup,
+  Form,
+  Host,
+  Section,
+  Text,
+} from '@expo/ui/swift-ui';
 
 export default function BasicDisclosureGroupExample() {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -55,20 +68,32 @@ export default function BasicDisclosureGroupExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Initially expanded
 
 Set `isExpanded` to `true` initially to show the content by default.
 
-```tsx InitiallyExpandedExample.tsx
+<ComponentExample
+  title="InitiallyExpandedExample.tsx"
+  src="/static/images/expo-ui/examples/disclosuregroup-initially-expanded-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/disclosuregroup-initially-expanded-ios-dark.webp"
+  alt="A Details group outside a form, expanded to show one line of content">
+
+```tsx
 import { useState } from 'react';
 import { Host, DisclosureGroup, Text } from '@expo/ui/swift-ui';
 
 export default function InitiallyExpandedExample() {
   const [isExpanded, setIsExpanded] = useState(true);
 
+  // A disclosure group fills the width it is given, so `matchContents` collapses it.
   return (
-    <Host matchContents>
-      <DisclosureGroup label="Details" isExpanded={isExpanded} onIsExpandedChange={setIsExpanded}>
+    <Host style={{ flex: 1 }}>
+      <DisclosureGroup
+        label="Details"
+        isExpanded={isExpanded}
+        onIsExpandedChange={setIsExpanded}>
         <Text>This content is visible by default.</Text>
       </DisclosureGroup>
     </Host>
@@ -76,13 +101,27 @@ export default function InitiallyExpandedExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom label
 
 Use `DisclosureGroup.Label` when the label needs custom SwiftUI content or modifiers instead of the `label` string prop.
 
-```tsx CustomLabelDisclosureGroupExample.tsx
+<ComponentExample
+  title="CustomLabelDisclosureGroupExample.tsx"
+  src="/static/images/expo-ui/examples/disclosuregroup-custom-label-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/disclosuregroup-custom-label-ios-dark.webp"
+  alt="A collapsed group in a form with a semibold teal Network options label">
+
+```tsx
 import { useState } from 'react';
-import { DisclosureGroup, Form, Host, Section, Text } from '@expo/ui/swift-ui';
+import {
+  DisclosureGroup,
+  Form,
+  Host,
+  Section,
+  Text,
+} from '@expo/ui/swift-ui';
 import { font, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function CustomLabelDisclosureGroupExample() {
@@ -92,9 +131,15 @@ export default function CustomLabelDisclosureGroupExample() {
     <Host style={{ flex: 1 }}>
       <Form>
         <Section>
-          <DisclosureGroup isExpanded={isExpanded} onIsExpandedChange={setIsExpanded}>
+          <DisclosureGroup
+            isExpanded={isExpanded}
+            onIsExpandedChange={setIsExpanded}>
             <DisclosureGroup.Label>
-              <Text modifiers={[font({ weight: 'semibold' }), foregroundStyle('#0a7ea4')]}>
+              <Text
+                modifiers={[
+                  font({ weight: 'semibold' }),
+                  foregroundStyle('#0a7ea4'),
+                ]}>
                 Network options
               </Text>
             </DisclosureGroup.Label>
@@ -109,10 +154,15 @@ export default function CustomLabelDisclosureGroupExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { DisclosureGroup } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/disclosuregroup" apiName="DisclosureGroup" />
+<APISection
+  packageName="expo-ui/swift-ui/disclosuregroup"
+  apiName="DisclosureGroup"
+/>

@@ -49,8 +49,15 @@
       "url": "https://u.expo.dev/2c28de10-a2cd-11e6-b8ce-59d1587e6774"
     },
     "plugins": [
+      "expo-router",
       "expo-video",
       "expo-background-fetch",
+      [
+        "expo-app-intents",
+        {
+          "directory": "../native-component-list/app-intents"
+        }
+      ],
       [
         "expo-splash-screen",
         {
@@ -70,6 +77,8 @@
         {
           "isAndroidBackgroundLocationEnabled": true,
           "isIosBackgroundLocationEnabled": true,
+          "isAndroidMotionActivityEnabled": true,
+          "isAndroidMotionActivityForegroundServiceEnabled": true,
           "androidForegroundServiceIcon": "./assets/location_service_icon.png"
         }
       ],
@@ -79,6 +88,14 @@
           "icon": "./assets/ic_stat_notifications.png",
           "color": "#4630EB",
           "sounds": ["./assets/notification.wav"]
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos",
+          "isAccessMediaLocationEnabled": true
         }
       ],
       [
@@ -102,6 +119,14 @@
           "experimentalLauncherActivity": true
         }
       ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone.",
+          "enableBackgroundPlayback": true,
+          "enableBackgroundRecording": true
+        }
+      ],
       "./plugins/withAndroidNetworkSecurityConfig",
       "./plugins/withBenchmarkModules"
     ],
@@ -110,8 +135,10 @@
       "inlineModules": {
         "watchedDirectories": [
           "../native-component-list/src/screens/inlineModules/inlineModulesExamples",
-          "../native-component-list/src/screens/ModulesCore"
-        ]
+          "../native-component-list/src/screens/ModulesCore",
+          "../native-component-list/app-intents"
+        ],
+        "xcodeProjectTargets": ["BareExpo"]
       }
     }
   }

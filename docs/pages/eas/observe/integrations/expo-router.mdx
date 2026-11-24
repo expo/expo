@@ -1,13 +1,14 @@
 ---
 title: Expo Router integration
 sidebar_title: Expo Router
-description: Track per-route render and interactive timings by enabling the Expo Router integration for EAS Observe.
+description: Track per-route render and interactive timings by enabling the Expo Router integration for Expo Observe.
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-EAS Observe ships an opt-in integration for [Expo Router](/router/introduction/) that collects per-route metrics tagged with the route pattern (for example, `/(tabs)/sessions/[sessionId]`). This lets you compare navigation performance by route in the dashboard instead of looking only at app-wide aggregates.
+Expo Observe ships an opt-in integration for [Expo Router](/router/introduction/) that collects per-route metrics tagged with the route pattern (for example, `/(tabs)/sessions/[sessionId]`). This lets you compare navigation performance by route in the dashboard instead of looking only at app-wide aggregates.
 
 ## Prerequisites
 
@@ -16,7 +17,7 @@ EAS Observe ships an opt-in integration for [Expo Router](/router/introduction/)
     The Expo Router integration is available on SDK 56 and later. On earlier SDKs, `expo-observe`
     still tracks app-wide metrics, but per-route navigation events are not emitted.
   </Requirement>
-  <Requirement title="An app already using EAS Observe">
+  <Requirement title="An app already using Expo Observe">
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
     build.
   </Requirement>
@@ -134,6 +135,24 @@ Emitted at most once per screen instance within a session.
 | `routeParams` | `object`  | Resolved route params.                                                    |
 | `...`         | `any`     | Any custom params passed via `markInteractive({ params: { ... } })`.      |
 
+## View navigation metrics
+
+In the dashboard, open your project, navigate to [**Observe**](https://expo.dev/accounts/[account]/projects/[project]/observe), and select the **Navigation** page. It shows per-route navigation timings with cold and warm time to first render and time to interactive.
+
+In the CLI, you can run the following commands:
+
+<Terminal
+  cmd={[
+    '# Navigation metrics grouped by route name',
+    '$ eas observe:routes',
+    '',
+    '# Filter to specific metrics or routes',
+    '$ eas observe:routes --metric cold_ttr --route-name "/(tabs)/sessions/[sessionId]"',
+  ]}
+/>
+
+Run `eas observe:routes --help` for the full list of flags (time range, platform, app version, and more). See [Querying with EAS CLI](/eas/observe/eas-cli/) for the other `eas observe` commands.
+
 ## Notes and troubleshooting
 
 - `routeName` is a pattern (`/(tabs)/sessions/[sessionId]`), not a resolved URL (`/sessions/abc`). This keeps metrics stable across distinct param values so the dashboard buckets them together. Resolved values are still available on the event via `url` and `routeParams`.
@@ -141,4 +160,4 @@ Emitted at most once per screen instance within a session.
 - The integration only activates if `expo-router` is installed at runtime. If it is not installed, `useObserve()` and `ObserveRoot` continue to work but no per-route navigation metrics are emitted.
 - The integration must be enabled before mount via `Observe.configure({ integrations: { 'expo-router': true } })`. Toggling it after the app has mounted throws.
 - If `markInteractive()` logs `Calling markInteractive on unmounted screen` or `No metadata available for the current screen`, the call ran outside a screen component or after unmount. Move the call into a `useEffect` inside the screen component.
-- For general issues with EAS Observe, see [Troubleshooting](/eas/observe/reference/troubleshooting/).
+- For general issues with Expo Observe, see [Troubleshooting](/eas/observe/reference/troubleshooting/).

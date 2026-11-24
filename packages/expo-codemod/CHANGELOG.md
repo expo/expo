@@ -1,16 +1,20 @@
 # Changelog
 
-## Unpublished
+## 58.0.1
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.0 — 2026-09-10
 
 ### 🛠 Breaking changes
 
 - Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))
 
-### 🎉 New features
+## 57.0.0 - 2026-06-25
 
-### 🐛 Bug fixes
-
-### 💡 Others
+_This version does not introduce any user-facing changes._
 
 ## 56.0.4 — 2026-05-15
 

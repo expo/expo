@@ -19,7 +19,7 @@ function useFadeIn() {
     Animated.timing(value, {
       toValue: 1,
       duration: 200,
-      useNativeDriver: true,
+      useNativeDriver: Platform.OS !== 'web',
     }).start();
   }, []);
   return value;

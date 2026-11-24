@@ -8,8 +8,25 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A controlled slider for selecting a numeric value within a range. Pair [`value`](#value) with [`onValueChange`](#onvaluechange) to manage state from React.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/slider/android-light.webp',
+    darkSrc: '/static/images/expo-ui/slider/android-dark.webp',
+    alt: 'Two Material 3 sliders at different positions',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/slider/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/slider/ios-dark.webp',
+    alt: 'Slider with brightness icons on either side, in a Form section',
+  }}
+/>
 
 ## Installation
 
@@ -21,7 +38,20 @@ A controlled slider for selecting a numeric value within a range. Pair [`value`]
 
 The default range is `[0, 1]`.
 
-```tsx ContinuousSliderExample.tsx
+<ComponentExample
+  title="ContinuousSliderExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-slider-continuous-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-slider-continuous-android-dark.webp',
+    alt: 'A Material 3 slider with the handle at the halfway position',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-slider-continuous-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-slider-continuous-ios-dark.webp',
+    alt: 'A slider with the thumb at the halfway position',
+  }}>
+
+```tsx
 import { useState } from 'react';
 import { Host, Slider } from '@expo/ui';
 
@@ -29,34 +59,55 @@ export default function ContinuousSliderExample() {
   const [value, setValue] = useState(0.5);
 
   return (
-    <Host style={{ flex: 1 }}>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <Slider value={value} onValueChange={setValue} />
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Stepped slider with custom range
 
 Use `min`, `max`, and `step` to constrain the values produced by the slider.
 
-```tsx SteppedSliderExample.tsx
+<ComponentExample
+  title="SteppedSliderExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-slider-stepped-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-slider-stepped-android-dark.webp',
+    alt: 'A Volume label above a stepped Material 3 slider with tick marks',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-slider-stepped-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-slider-stepped-ios-dark.webp',
+    alt: 'A Volume label above a slider set to the middle of its range',
+  }}>
+
+```tsx
 import { useState } from 'react';
+import { useColorScheme } from 'react-native';
 import { Host, Column, Slider, Text } from '@expo/ui';
 
 export default function SteppedSliderExample() {
   const [volume, setVolume] = useState(50);
+  const colorScheme = useColorScheme();
 
   return (
-    <Host style={{ flex: 1 }}>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <Column spacing={8}>
-        <Text>Volume: {volume}</Text>
+        <Text textStyle={{ color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>
+          {`Volume: ${volume}`}
+        </Text>
         <Slider value={volume} onValueChange={setVolume} min={0} max={100} step={10} />
       </Column>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
@@ -65,3 +116,5 @@ import { Slider } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/slider" apiName="Slider" />
+
+</PlatformTabsGroup>

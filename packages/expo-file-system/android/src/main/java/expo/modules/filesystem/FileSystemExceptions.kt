@@ -41,6 +41,9 @@ internal class UnsupportedContentUriReadWriteException :
       "Use READ or WRITE mode instead."
   )
 
+internal class UnsupportedDigestAlgorithmException(algorithm: String) :
+  CodedException("Unsupported digest algorithm: '$algorithm'.")
+
 internal class MissingAppContextException :
   CodedException("The app context is missing.")
 
@@ -49,6 +52,9 @@ internal class PickerCancelledException :
 
 internal class DestinationAlreadyExistsException :
   CodedException("Destination already exists")
+
+internal class DestinationContainsSourceException :
+  CodedException("Destination is the source or contains it, overwriting it would delete the source")
 
 internal class UnableToCopyException(reason: String) :
   CodedException("Unable to copy file or directory: $reason")

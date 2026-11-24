@@ -3,7 +3,6 @@ import CountingSet from '@expo/metro/metro/lib/CountingSet';
 import countLines from '@expo/metro/metro/lib/countLines';
 import assert from 'assert';
 
-import { microBundle, projectRoot } from './mini-metro';
 import { reconcileTransformSerializerPlugin } from '../../reconcileTransformSerializerPlugin';
 import { treeShakeSerializer } from '../../treeShakeSerializerPlugin';
 import type {
@@ -12,6 +11,7 @@ import type {
   SerializerPlugin,
 } from '../../withExpoSerializers';
 import { createSerializerFromSerialProcessors } from '../../withExpoSerializers';
+import { microBundle, projectRoot } from './mini-metro';
 
 // General helper to reduce boilerplate
 export async function serializeToWithGraph(
@@ -81,6 +81,8 @@ export async function serializeSplitAsync(
 export async function serializeShakingAsync(
   fs: Record<string, string>,
   options: {
+    legacyTraverseWeakDependencies?: boolean;
+    chunkingStrategy?: 'granular' | 'legacy';
     isReactServer?: boolean;
     treeshake?: boolean;
     optimize?: boolean;
@@ -96,6 +98,8 @@ export async function serializeShakingAsync(
 export async function serializeOptimizeAsync(
   fs: Record<string, string>,
   options: {
+    legacyTraverseWeakDependencies?: boolean;
+    chunkingStrategy?: 'granular' | 'legacy';
     isReactServer?: boolean;
     treeshake?: boolean;
     optimize?: boolean;

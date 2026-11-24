@@ -5,15 +5,15 @@ sidebar_title: Introduction
 searchRank: 15
 ---
 
-import { DocsLogo } from '@expo/styleguide';
+import { DocsLogo, RouterLogo } from '@expo/styleguide';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { GraduationHat02DuotoneIcon } from '@expo/styleguide-icons/duotone/GraduationHat02DuotoneIcon';
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { YoutubeIcon } from '@expo/styleguide-icons/outline/YoutubeIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FAQ } from '~/ui/components/FAQ';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -29,14 +29,12 @@ We recommend creating a new Expo app using `create-expo-app` to create a project
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-app@latest --template default@sdk-57'],
-    yarn: ['$ yarn create expo-app --template default@sdk-57'],
-    pnpm: ['$ pnpm create expo-app --template default@sdk-57'],
-    bun: ['$ bun create expo --template default@sdk-57'],
+    npm: ['$ npx create-expo-app@latest'],
+    yarn: ['$ yarn create expo-app'],
+    pnpm: ['$ pnpm create expo-app'],
+    bun: ['$ bun create expo'],
   }}
 />
-
-> **Note:** During the SDK 57 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-57` to create an SDK 57 project.
 
 </Step>
 
@@ -78,6 +76,12 @@ Now, you can start your project by running:
   description="A tutorial series from core concepts to more complex navigation flows."
   href="https://www.youtube.com/playlist?list=PLsXDmrmFV_AT17JDf-otXSNE_eH7s0uDD"
 />
+
+### Expo Skills for AI agents
+
+If you use an AI agent, install [Expo Skills](/skills/) to teach it file-based navigation patterns:
+
+<RelatedSkills names={['expo-router']} />
 
 ## Key features
 
@@ -147,13 +151,13 @@ Basic static rendering (SSG) is supported in Expo Router. Server-side rendering 
 
 <BoxLink
   title="Manual installation"
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
   description="Detailed instructions on how to get started and add Expo Router to your existing app."
   href="/router/installation/"
 />
 <BoxLink
   title="Router 101"
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
   description="For information core concepts, notation patterns, navigation layouts, and common navigation patterns, start with Router 101 section."
   href="/router/basics/core-concepts/"
 />

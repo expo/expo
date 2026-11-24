@@ -77,7 +77,6 @@ export interface InputOptions {
   readonly enableFallback?: boolean | undefined | null;
   readonly enableSymlinks?: boolean | undefined | null;
   readonly extensions: readonly string[];
-  readonly forceNodeFilesystemAPI?: boolean | undefined | null;
   readonly ignorePattern?: RegExp | undefined | null;
   readonly plugins?: readonly InputFileMapPlugin[] | undefined;
   readonly retainAllFiles: boolean;
@@ -156,7 +155,7 @@ export type {
 // This should be bumped whenever a code change to `metro-file-map` itself
 // would cause a change to the cache data structure and/or content (for a given
 // filesystem state and build parameters).
-const CACHE_BREAKER = '12';
+const CACHE_BREAKER = '13';
 
 const CHANGE_INTERVAL = 30;
 
@@ -237,7 +236,7 @@ const WATCHMAN_REQUIRED_CAPABILITIES = [
  *       the `FileMap`.
  *
  *  3. visit and extract metadata from changed files, including sha1,
- *     depedendencies, and any plugins.
+ *     dependencies, and any plugins.
  *     * this is done in parallel over worker processes to improve performance.
  *     * the worst case is to visit all files.
  *     * the best case is no file system access and retrieving all data from
@@ -311,7 +310,6 @@ export default class FileMap extends EventEmitter {
       computeSha1: options.computeSha1 || false,
       enableSymlinks: options.enableSymlinks || false,
       extensions: options.extensions,
-      forceNodeFilesystemAPI: !!options.forceNodeFilesystemAPI,
       ignorePattern,
       plugins,
       retainAllFiles: options.retainAllFiles,
@@ -324,7 +322,7 @@ export default class FileMap extends EventEmitter {
       healthCheck: options.healthCheck,
       perfLoggerFactory: options.perfLoggerFactory,
       resetCache: options.resetCache,
-      useWatchman: options.useWatchman ?? false,
+      useWatchman: options.useWatchman == null ? true : options.useWatchman,
       watch: !!options.watch,
       watchmanDeferStates: options.watchmanDeferStates ?? [],
       enableFallback,
@@ -373,8 +371,8 @@ export default class FileMap extends EventEmitter {
         const rootDir = this.#options.rootDir;
         const ignorePattern = this.#options.ignorePattern;
         this.#startupPerfLogger?.point('constructFileSystem_start');
-        const processFile: ProcessFileFunction = async (normalPath, metadata, opts) => {
-          const result = await this.#fileProcessor.processRegularFile(normalPath, metadata, {
+        const processFile: ProcessFileFunction = (normalPath, metadata, opts) => {
+          const result = this.#fileProcessor.processRegularFile(normalPath, metadata, {
             computeSha1: opts.computeSha1,
             maybeReturnContent: true,
           });
@@ -515,7 +513,6 @@ export default class FileMap extends EventEmitter {
       computeSha1,
       enableSymlinks,
       extensions,
-      forceNodeFilesystemAPI,
       ignorePattern,
       retainAllFiles,
       roots,
@@ -548,7 +545,6 @@ export default class FileMap extends EventEmitter {
       console: this.#console,
       enableSymlinks,
       extensions,
-      forceNodeFilesystemAPI,
       healthCheckFilePrefix: this.#options.healthCheck.enabled
         ? this.#options.healthCheck.filePrefix
         : null,
@@ -624,18 +620,14 @@ export default class FileMap extends EventEmitter {
 
     for (const [normalFilePath, fileData] of changedFiles) {
       // A crawler may preserve the H.VISITED flag to indicate that the file
-      // contents are unchaged and it doesn't need visiting again.
+      // contents are unchanged and it doesn't need visiting again.
       if (fileData[H.VISITED] === 1) {
         continue;
       }
 
       if (fileData[H.SYMLINK] === 0) {
         filesToProcess.push([normalFilePath, fileData]);
-      } else if (fileData[H.MTIME] != null && fileData[H.MTIME] !== 0) {
-        // Symlink was previously resolved and its mtime changed — resolve
-        // eagerly to update the cached target. Symlinks with null mtime
-        // (cold start or never accessed) are deferred to lazy resolution
-        // in TreeFS.#resolveSymlinkTargetToNormalPath.
+      } else {
         const maybeReadLink = this.#maybeReadLink(normalFilePath, fileData);
         if (maybeReadLink) {
           readLinkPromises.push(
@@ -709,7 +701,7 @@ export default class FileMap extends EventEmitter {
    * 4. Serialize a snapshot of our raw data via the configured cache manager
    */
   async #takeSnapshotAndPersist(
-    fileSystem: FileSystem,
+    fileSystem: MutableFileSystem,
     clocks: WatchmanClocks,
     plugins: readonly IndexedPlugin[],
     changedSinceCacheRead: boolean
@@ -719,7 +711,7 @@ export default class FileMap extends EventEmitter {
     await this.#cacheManager.write(
       () => ({
         clocks: new Map(clocks),
-        fileSystemData: fileSystem.getSerializableSnapshot(),
+        fileSystemData: fileSystem.getSerializableState(),
         plugins: new Map(
           plugins.map(({ plugin }) => [plugin.name, plugin.getSerializableSnapshot()])
         ),
@@ -925,7 +917,7 @@ export default class FileMap extends EventEmitter {
               if (change.metadata.type === 'l') {
                 await this.#maybeReadLink(relativeFilePath, fileMetadata);
               } else {
-                await this.#fileProcessor.processRegularFile(relativeFilePath, fileMetadata, {
+                this.#fileProcessor.processRegularFile(relativeFilePath, fileMetadata, {
                   computeSha1: this.#options.computeSha1,
                   maybeReturnContent: false,
                 });

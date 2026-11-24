@@ -1,4 +1,4 @@
-import { Host, Section, Text, Form, VStack, HStack } from '@expo/ui/swift-ui';
+import { Host, Section, Text, Form, VStack, HStack, Circle } from '@expo/ui/swift-ui';
 import {
   background,
   cornerRadius,
@@ -11,8 +11,20 @@ import {
   onTapGesture,
   animation,
   Animation,
+  foregroundStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
+
+const springPresets = [
+  { label: 'Smooth', color: '#1ABC9C', preset: Animation.smooth() },
+  { label: 'Snappy', color: '#F1C40F', preset: Animation.snappy() },
+  { label: 'Bouncy', color: '#E84393', preset: Animation.bouncy() },
+  {
+    label: 'Bouncy (1s, extra bounce 0.3)',
+    color: '#6C5CE7',
+    preset: Animation.bouncy({ duration: 1.0, extraBounce: 0.3 }),
+  },
+];
 
 export default function AnimationModifierScreen() {
   const [animationState1, setAnimationState1] = useState(false);
@@ -22,6 +34,7 @@ export default function AnimationModifierScreen() {
   const [animationState5, setAnimationState5] = useState(false);
   const [animationState6, setAnimationState6] = useState(false);
   const [animationState7, setAnimationState7] = useState(false);
+  const [animationState8, setAnimationState8] = useState(false);
 
   return (
     <Host style={{ flex: 1 }}>
@@ -163,6 +176,30 @@ export default function AnimationModifierScreen() {
           </VStack>
         </Section>
 
+        <Section title="🎈 Spring Presets">
+          <VStack
+            spacing={12}
+            alignment="leading"
+            modifiers={[frame({ maxWidth: Infinity, alignment: 'leading' })]}>
+            <Text>Tap a ball: all of them start together, so the overshoot shows side by side</Text>
+
+            {springPresets.map(({ label, color, preset }) => (
+              <VStack key={label} spacing={4} alignment="leading">
+                <Text>{label}</Text>
+                <Circle
+                  modifiers={[
+                    frame({ width: 36, height: 36 }),
+                    foregroundStyle(color),
+                    offset({ x: animationState8 ? 180 : 0, y: 0 }),
+                    animation(preset, animationState8),
+                    onTapGesture(() => setAnimationState8(!animationState8)),
+                  ]}
+                />
+              </VStack>
+            ))}
+          </VStack>
+        </Section>
+
         <Section title="⏰ Delay & Repeat">
           <VStack spacing={16}>
             <Text>Advanced animation timing controls</Text>
@@ -251,6 +288,7 @@ export default function AnimationModifierScreen() {
                   setAnimationState5(false);
                   setAnimationState6(false);
                   setAnimationState7(false);
+                  setAnimationState8(false);
                 }),
               ]}
             />

@@ -4,15 +4,24 @@ import android.net.Uri
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_KEY_ID_KEY
+import expo.modules.updates.codesigning.CodeSigningConfiguration
+import expo.modules.updates.codesigning.ExpoProjectInformation
+import expo.modules.updates.codesigning.SignatureValidationResult
+import expo.modules.updates.codesigning.ValidationResult
 import expo.modules.updates.codesigning.CertificateFixtures
 import expo.modules.updates.codesigning.TestCertificateType
 import expo.modules.updates.codesigning.TestUtils.asJSONResponse
 import expo.modules.updates.codesigning.TestUtils.asResponse
 import expo.modules.updates.codesigning.getTestCertificate
+import expo.modules.updates.logging.LoggedException
+import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.manifest.Update
+import expo.modules.updatesinterface.UpdatesLogMessage
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.spyk
 import kotlinx.coroutines.test.runTest
 import okhttp3.Headers.Companion.toHeaders
 import okhttp3.MediaType.Companion.toMediaType
@@ -30,6 +39,7 @@ import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.junit.Before
 import org.robolectric.RobolectricTestRunner
+import java.util.Date
 
 @RunWith(RobolectricTestRunner::class)
 class FileDownloaderManifestParsingTest {
@@ -59,6 +69,163 @@ class FileDownloaderManifestParsingTest {
 
     Assert.assertNotNull(resultUpdate)
     Assert.assertFalse(resultUpdate!!.manifest.isVerified())
+  }
+
+  @Test
+  fun testManifestParsing_RelativeUrlsAgainstBaseWithoutPath() = runTest {
+    // A development server URL typed without a trailing slash has an empty path. Resolving a
+    // path-relative asset URL against it must still insert the `/` separator, otherwise the first
+    // path segment is spliced onto the port and the resulting authority fails to parse.
+    val manifestBody = """
+      {
+        "id": "0754dad0-d200-d634-113c-ef1f26106028",
+        "createdAt": "2021-11-23T00:57:14.437Z",
+        "runtimeVersion": "1",
+        "assets": [{
+          "hash": "cb65fafb5ed456fc3ed8a726cf4087d37b875184eba96f33f6d99104e6e2266d",
+          "key": "489ea2f19fa850b65653ab445637a181.jpg",
+          "contentType": "image/jpeg",
+          "url": "assets/node_modules/expo-asset/image.jpg?platform=android",
+          "fileExtension": ".jpg"
+        }],
+        "launchAsset": {
+          "hash": "323ddd1968ee76d4ddbb16b04fb2c3f1b6d1ab9b637d819699fecd6fa0ffb1a8",
+          "key": "696a70cf7035664c20ea86f67dae822b.bundle",
+          "contentType": "application/javascript",
+          "url": "apps/testproject/node_modules/expo-router/entry.bundle?platform=android",
+          "fileExtension": ".bundle"
+        },
+        "extra": { "scopeKey": "@test/app" }
+      }
+    """.trimIndent()
+    val response = manifestBody.asJSONResponse(mapOf("expo-protocol-version" to "0").toHeaders())
+    val configuration = UpdatesConfiguration(
+      null,
+      mapOf(
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("http://192.168.1.2:8081")
+      )
+    )
+    val fileDownloader = createFileDownloader(configuration)
+    val updateResponse = fileDownloader.parseRemoteUpdateResponse(response)
+    val resultUpdate = updateResponse.manifestUpdateResponsePart?.update
+    Assert.assertNotNull(resultUpdate)
+    val launchAsset = resultUpdate!!.assetEntityList.first { it.isLaunchAsset }
+    Assert.assertEquals(
+      "http://192.168.1.2:8081/apps/testproject/node_modules/expo-router/entry.bundle?platform=android",
+      launchAsset.url.toString()
+    )
+    // The authority must stay parseable: a spliced path segment yields port -1 instead of 8081.
+    Assert.assertEquals("192.168.1.2", launchAsset.url!!.host)
+    Assert.assertEquals(8081, launchAsset.url!!.port)
+    val imageAsset = resultUpdate.assetEntityList.first { !it.isLaunchAsset }
+    Assert.assertEquals(
+      "http://192.168.1.2:8081/assets/node_modules/expo-asset/image.jpg?platform=android",
+      imageAsset.url.toString()
+    )
+  }
+
+  @Test
+  fun testManifestParsing_RejectsAssetKeyEscapingUpdatesDirectory() = runTest {
+    val manifestBody = manifestBodyWithAsset(key = "../../shared_prefs/pwned", fileExtension = ".xml")
+    val response = manifestBody.asJSONResponse(mapOf("expo-protocol-version" to "0").toHeaders())
+    val fileDownloader = createFileDownloader(configurationWithUpdateUrl())
+
+    val exception = Assert.assertThrows(Exception::class.java) {
+      fileDownloader.parseRemoteUpdateResponse(response)
+    }
+    Assert.assertTrue(
+      exception.localizedMessageWithCauseLocalizedMessage().contains("../../shared_prefs/pwned")
+    )
+  }
+
+  @Test
+  fun testManifestParsing_RejectsFileExtensionEscapingUpdatesDirectory() = runTest {
+    val manifestBody = manifestBodyWithAsset(key = "image", fileExtension = ".png/../../pwned")
+    val response = manifestBody.asJSONResponse(mapOf("expo-protocol-version" to "0").toHeaders())
+    val fileDownloader = createFileDownloader(configurationWithUpdateUrl())
+
+    Assert.assertThrows(Exception::class.java) {
+      fileDownloader.parseRemoteUpdateResponse(response)
+    }
+  }
+
+  @Test
+  fun testManifestParsing_AcceptsAssetKeyWithLeadingDots() = runTest {
+    // Only path separators and the `..` component are dangerous. A key may still start with a dot.
+    val manifestBody = manifestBodyWithAsset(key = "..hidden", fileExtension = ".png")
+    val response = manifestBody.asJSONResponse(mapOf("expo-protocol-version" to "0").toHeaders())
+    val fileDownloader = createFileDownloader(configurationWithUpdateUrl())
+
+    val resultUpdate = fileDownloader.parseRemoteUpdateResponse(response).manifestUpdateResponsePart?.update
+    Assert.assertNotNull(resultUpdate)
+    Assert.assertEquals("..hidden", resultUpdate!!.assetEntityList.first { !it.isLaunchAsset }.key)
+  }
+
+  private fun configurationWithUpdateUrl() = UpdatesConfiguration(
+    null,
+    mapOf(
+      UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test")
+    )
+  )
+
+  private fun manifestBodyWithAsset(key: String, fileExtension: String) = """
+    {
+      "id": "0754dad0-d200-d634-113c-ef1f26106028",
+      "createdAt": "2021-11-23T00:57:14.437Z",
+      "runtimeVersion": "1",
+      "assets": [{
+        "hash": "cb65fafb5ed456fc3ed8a726cf4087d37b875184eba96f33f6d99104e6e2266d",
+        "key": "$key",
+        "contentType": "image/png",
+        "url": "https://url.to/asset",
+        "fileExtension": "$fileExtension"
+      }],
+      "launchAsset": {
+        "hash": "323ddd1968ee76d4ddbb16b04fb2c3f1b6d1ab9b637d819699fecd6fa0ffb1a8",
+        "key": "696a70cf7035664c20ea86f67dae822b.bundle",
+        "contentType": "application/javascript",
+        "url": "https://url.to/bundle",
+        "fileExtension": ".bundle"
+      },
+      "extra": { "scopeKey": "@test/app" }
+    }
+  """.trimIndent()
+
+  @Test
+  fun testManifestParsing_RelativeUrlsAgainstNonHttpBase() = runTest {
+    // Normalizing the base must not narrow which schemes resolve: `exp://` URLs still reach here.
+    val manifestBody = """
+      {
+        "id": "0754dad0-d200-d634-113c-ef1f26106028",
+        "createdAt": "2021-11-23T00:57:14.437Z",
+        "runtimeVersion": "1",
+        "assets": [],
+        "launchAsset": {
+          "hash": "323ddd1968ee76d4ddbb16b04fb2c3f1b6d1ab9b637d819699fecd6fa0ffb1a8",
+          "key": "696a70cf7035664c20ea86f67dae822b.bundle",
+          "contentType": "application/javascript",
+          "url": "apps/testproject/node_modules/expo-router/entry.bundle?platform=android",
+          "fileExtension": ".bundle"
+        },
+        "extra": { "scopeKey": "@test/app" }
+      }
+    """.trimIndent()
+    val response = manifestBody.asJSONResponse(mapOf("expo-protocol-version" to "0").toHeaders())
+    val configuration = UpdatesConfiguration(
+      null,
+      mapOf(
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("exp://192.168.1.2:8081")
+      )
+    )
+    val fileDownloader = createFileDownloader(configuration)
+    val updateResponse = fileDownloader.parseRemoteUpdateResponse(response)
+    val resultUpdate = updateResponse.manifestUpdateResponsePart?.update
+    Assert.assertNotNull(resultUpdate)
+    val launchAsset = resultUpdate!!.assetEntityList.first { it.isLaunchAsset }
+    Assert.assertEquals(
+      "exp://192.168.1.2:8081/apps/testproject/node_modules/expo-router/entry.bundle?platform=android",
+      launchAsset.url.toString()
+    )
   }
 
   @Test
@@ -585,6 +752,36 @@ class FileDownloaderManifestParsingTest {
     )
     resultUpdate = updateResponse.manifestUpdateResponsePart?.update
     Assert.assertNotNull(resultUpdate)
+  }
+
+  @Test
+  fun testManifestParsing_MalformedSignedManifestIsNotACodeSigningFailure() = runTest {
+    val malformedManifestBody = "{\"id\":\"0754dad0-d200-d634-113c-ef1f26106028\"}"
+    val response = malformedManifestBody.asJSONResponse(mapOf("expo-protocol-version" to "1").toHeaders())
+
+    val codeSigningConfiguration = mockk<CodeSigningConfiguration>()
+    every { codeSigningConfiguration.validateSignature(any(), any(), any(), any()) } returns
+      SignatureValidationResult(ValidationResult.VALID, ExpoProjectInformation("project-id", "scope-key"))
+    val configuration = spyk(configurationWithUpdateUrl())
+    every { configuration.codeSigningConfiguration } returns codeSigningConfiguration
+
+    val loggerDirectory = temporaryFolder.newFolder()
+    val since = Date(Date().time - 5000)
+    val fileDownloader = FileDownloader(
+      temporaryFolder.newFolder(),
+      easClientID = "test-eas-client-id",
+      configuration = configuration,
+      logger = UpdatesLogger(loggerDirectory),
+      database = database
+    )
+
+    val error = runCatching { fileDownloader.parseRemoteUpdateResponse(response) }.exceptionOrNull()
+
+    Assert.assertNotNull(error)
+    Assert.assertFalse(generateSequence(error) { it.cause }.any { it is LoggedException })
+    Thread.sleep(500)
+    val logs = UpdatesLogReader(loggerDirectory).getLogEntries(since)
+    Assert.assertFalse(logs.any { it.contains(UpdatesLogMessage.SystemCodeSigningVerificationFailed.key) })
   }
 
   private fun createFileDownloader(config: UpdatesConfiguration): FileDownloader {

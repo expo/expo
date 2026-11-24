@@ -28,7 +28,7 @@ const nodes: DiagramNode[] = [
   {
     id: 'build',
     position: { x: 510, y: 0 },
-    label: 'EAS Build',
+    label: 'Expo Build',
     secondaryLabel: 'Compiles native code into app binary',
     badge: 'Minutes',
     accent: 'green',
@@ -36,7 +36,7 @@ const nodes: DiagramNode[] = [
   {
     id: 'update',
     position: { x: 510, y: 120 },
-    label: 'EAS Update',
+    label: 'Expo Update',
     secondaryLabel: 'Delivers JS changes over-the-air',
     badge: 'Seconds',
     accent: 'blue',
@@ -56,7 +56,7 @@ export function BuildsVsUpdates() {
       nodes={nodes}
       edges={edges}
       height={260}
-      alt="Decision flow: Native changes require EAS Build (minutes). JS-only changes use EAS Update (seconds)."
+      alt="Decision flow: Native changes require Expo Build (minutes). JS-only changes use Expo Update (seconds)."
     />
   );
 }

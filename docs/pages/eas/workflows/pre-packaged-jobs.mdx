@@ -1,7 +1,7 @@
 ---
-title: Pre-packaged jobs in EAS Workflows
+title: Pre-packaged jobs in Expo Workflows
 sidebar_title: Pre-packaged jobs
-description: Learn how to set up and use pre-packaged jobs in EAS Workflows.
+description: Learn how to set up and use pre-packaged jobs in Expo Workflows.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -17,12 +17,12 @@ Build your project into an Android or iOS app.
 Build jobs can be customized so that you can execute custom commands during the build process. See [Custom builds](/custom-builds/get-started/) for more information.
 
 <Prerequisites>
-  <Requirement title="A project configured for EAS Build">
-    Your project must be set up for EAS Build: **eas.json** must contain the build profile the job
+  <Requirement title="A project configured for Expo Build">
+    Your project must be set up for Expo Build: **eas.json** must contain the build profile the job
     uses, and app signing credentials must be configured for the platform. Set up credentials
     without running a build first by running `eas credentials:configure-build -p <platform> -e
     <profile>` with the same platform and profile the job uses. Learn more about [configuring your
-    project for EAS Build](/build/setup/).
+    project for Expo Build](/build/setup/).
   </Requirement>
 </Prerequisites>
 
@@ -38,6 +38,9 @@ jobs:
       profile: string # optional - default: production
       message: string # optional
       refresh_ad_hoc_provisioning_profile: boolean # optional
+    hooks:
+      before_install_node_modules: step[] # optional - steps to run before the build installs dependencies.
+      after_install_node_modules: step[] # optional - steps to run after the build installs dependencies.
 ```
 
 #### Parameters
@@ -53,7 +56,7 @@ You can pass the following parameters into the `params` list:
 
 #### Environment variables
 
-If you need certain environment variables during the build process, you can include them in your [eas.json](/eas/json/#environment), for your specified build `profile`. They will be pulled from [EAS environment variables](/eas/environment-variables/).
+If you need certain environment variables during the build process, you can include them in your [eas.json](/eas/json/#environment), for your specified build `profile`. They will be pulled from [Expo Services environment variables](/eas/environment-variables/).
 
 #### Outputs
 
@@ -74,6 +77,15 @@ You can reference the following outputs in subsequent jobs:
 | runtime_version   | string | The runtime version used.                                          |
 | sdk_version       | string | The SDK version used.                                              |
 | simulator         | string | Whether the build is for simulator.                                |
+
+#### Hooks
+
+The following hooks are supported for the Build job:
+
+- `before_install_node_modules`: steps to run before the build installs your project's dependencies.
+- `after_install_node_modules`: steps to run after the build installs your project's dependencies.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
 
 ### Examples
 
@@ -209,11 +221,11 @@ jobs:
 
 ## Deploy
 
-Deploy your application using [EAS Hosting](/eas/hosting/introduction).
+Deploy your application using [Expo Hosting](/eas/hosting/introduction).
 
 <Prerequisites>
-  <Requirement title="A project set up for EAS Hosting">
-    See [Get started with EAS Hosting](/eas/hosting/get-started/#prerequisites) for setup
+  <Requirement title="A project set up for Expo Hosting">
+    See [Get started with Expo Hosting](/eas/hosting/get-started/#prerequisites) for setup
     instructions.
   </Requirement>
 </Prerequisites>
@@ -228,6 +240,10 @@ jobs:
       alias: string # optional
       prod: boolean # optional
       source_maps: boolean # optional
+    hooks:
+      after_checkout: step[] # optional - steps to run after the job checks out your project.
+      before_install_node_modules: step[] # optional - steps to run before the job installs dependencies.
+      after_install_node_modules: step[] # optional - steps to run after the job installs dependencies.
 ```
 
 #### Parameters
@@ -253,13 +269,23 @@ You can reference the following outputs in subsequent jobs:
 | deploy_identifier     | string | Identifier of the deployment.                                                                                                                    |
 | deploy_dashboard_url  | string | URL to the deployment dashboard (for example, `https://expo.dev/projects/[project]/hosting/deployments`).                                        |
 
+#### Hooks
+
+The following hooks are supported for the Deploy job:
+
+- `after_checkout`: steps to run after the job checks out your project.
+- `before_install_node_modules`: steps to run before the job installs your project's dependencies.
+- `after_install_node_modules`: steps to run after the job installs your project's dependencies.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
+
 ### Examples
 
 Here are some practical examples of using the deploy job:
 
 <Collapsible summary="Basic deployment to production">
 
-This workflow deploys your application to production using EAS Hosting.
+This workflow deploys your application to production using Expo Hosting.
 
 ```yaml .eas/workflows/deploy-basic.yml
 name: Basic Deployment
@@ -319,7 +345,7 @@ Calculates a fingerprint of your project.
 
 > **Note:** This job type only supports [CNG](/workflow/continuous-native-generation/) workflows. If you commit your **android** or **ios** directories, the fingerprint job won't work.
 
-> **Note:** To ensure fingerprints match your builds, use the same `environment` setting as your build profile. For environment variables, we recommend using [EAS environment variables](/eas/environment-variables/) rather than the [`env`](/eas/workflows/syntax/#jobsjob_idenv) field for better consistency.
+> **Note:** To ensure fingerprints match your builds, use the same `environment` setting as your build profile. For environment variables, we recommend using [Expo Services environment variables](/eas/environment-variables/) rather than the [`env`](/eas/workflows/syntax/#jobsjob_idenv) field for better consistency.
 
 ### Syntax
 
@@ -330,11 +356,15 @@ jobs:
     environment: production | preview | development # optional, defaults to production
     env: # optional list of environment variables
       ENV_VAR_NAME: value
+    hooks:
+      after_checkout: step[] # optional - steps to run after the job checks out your project.
+      before_install_node_modules: step[] # optional - steps to run before the job installs dependencies.
+      after_install_node_modules: step[] # optional - steps to run after the job installs dependencies.
 ```
 
 #### Environment variables
 
-You can pass a list of environment variables into the `env` parameter. These environment variables will be pulled from [EAS environment variables](/eas/environment-variables/). The passed `environment` parameter will be used for the environment variable's environment, which is useful when the same environment variable is defined across different environments.
+You can pass a list of environment variables into the `env` parameter. These environment variables will be pulled from [Expo Services environment variables](/eas/environment-variables/). The passed `environment` parameter will be used for the environment variable's environment, which is useful when the same environment variable is defined across different environments.
 
 #### Parameters
 
@@ -352,6 +382,16 @@ You can reference the following outputs in subsequent jobs:
 | ------------------------ | ------ | --------------------------------- |
 | android_fingerprint_hash | string | The fingerprint hash for Android. |
 | ios_fingerprint_hash     | string | The fingerprint hash for iOS.     |
+
+#### Hooks
+
+The following hooks are supported for the Fingerprint job:
+
+- `after_checkout`: steps to run after the job checks out your project.
+- `before_install_node_modules`: steps to run before the job installs your project's dependencies.
+- `after_install_node_modules`: steps to run after the job installs your project's dependencies.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
 
 ### Examples
 
@@ -377,7 +417,7 @@ jobs:
 
 <Collapsible summary="Fingerprint with inline environment variables">
 
-> **Note:** If you depend on inline environment variables, you will need to always make sure to set the right set of environment variables to the right values in every place (build profile, fingerprint job, update job, and so on) for fingerprints to match. **We recommend using [EAS Environment Variables](/eas/environment-variables/) instead**, where you can group sets of variables into environments and reference them in the build profile and workflow jobs.
+> **Note:** If you depend on inline environment variables, you will need to always make sure to set the right set of environment variables to the right values in every place (build profile, fingerprint job, update job, and so on) for fingerprints to match. **We recommend using [Expo Services environment variables](/eas/environment-variables/) instead**, where you can group sets of variables into environments and reference them in the build profile and workflow jobs.
 
 ```yaml .eas/workflows/fingerprint-with-env.yml
 name: Fingerprint with Environment Variables
@@ -398,7 +438,7 @@ jobs:
 
 ## Get Build
 
-Retrieve an existing build from EAS that matches the provided parameters.
+Retrieve an existing build from Expo Build that matches the provided parameters.
 
 ### Syntax
 
@@ -530,13 +570,13 @@ jobs:
 
 ## Submit
 
-Submit an Android or iOS build to the app store using EAS Submit.
+Submit an Android or iOS build to the app store using Expo Submit.
 
 <Prerequisites>
   <Requirement title="CI/CD submission configuration">
     Submission jobs require additional configuration to run within a CI/CD process. See the [Google
-    Play Store CI/CD submission guide](/submit/android/#automate-with-eas-workflows) and [Apple App
-    Store CI/CD submission guide](/submit/ios/#automate-with-eas-workflows) for more information.
+    Play Store CI/CD submission guide](/submit/android/#automate-with-expo-workflows) and [Apple App
+    Store CI/CD submission guide](/submit/ios/#automate-with-expo-workflows) for more information.
   </Requirement>
 </Prerequisites>
 
@@ -551,6 +591,9 @@ jobs:
       profile: string # optional - default: production
       groups: string[] # optional
     hooks:
+      after_checkout: step[] # optional - steps to run after the job checks out your project.
+      before_install_node_modules: step[] # optional - steps to run before the job installs dependencies.
+      after_install_node_modules: step[] # optional - steps to run after the job installs dependencies.
       before_submit: step[] # optional - steps to run before the submission starts.
       after_submit: step[] # optional - steps to run after the submission completes.
 ```
@@ -579,6 +622,9 @@ You can reference the following outputs in subsequent jobs:
 
 The following hooks are supported for the Submit job:
 
+- `after_checkout`: steps to run after the job checks out your project.
+- `before_install_node_modules`: steps to run before the job installs your project's dependencies.
+- `after_install_node_modules`: steps to run after the job installs your project's dependencies.
 - `before_submit`: steps to run before the submission starts.
 - `after_submit`: steps to run after the submission completes.
 
@@ -642,7 +688,7 @@ jobs:
 
 ## TestFlight
 
-Distribute iOS builds to TestFlight internal and external testing groups. This is an alternative to the iOS submit job for when you need more advanced TestFlight features. If you need to control test groups, changelog, or Beta App Review submission, use the `testflight` job instead of submit.
+Distribute iOS builds to [TestFlight](/submit/testflight/) internal and external testing groups. This is an alternative to the iOS submit job for when you need more advanced TestFlight features. If you need to control test groups, changelog, or Beta App Review submission, use the `testflight` job instead of submit.
 
 The job supports two approaches: upload a build and submit it to TestFlight (`build_id`), or submit an already uploaded build (`asc_build_id`). In both cases, you can add the build to groups, set "What to Test" notes, and submit for Beta App Review. Provide exactly one of `build_id` or `asc_build_id`.
 
@@ -669,13 +715,13 @@ Both approaches accept the following parameters in `params`:
 
 ### Upload build and submit to TestFlight
 
-Upload an EAS iOS build and submit it to TestFlight in a single workflow job.
+Upload an iOS build from Expo Build and submit it to TestFlight in a single workflow job.
 
 <Prerequisites>
   <Requirement title="An iOS store build and Apple Developer account">
     TestFlight jobs require an iOS build created with `distribution: store` and an Apple Developer
     account configured. See the [TestFlight submission
-    guide](/submit/ios/#automate-with-eas-workflows) for more information.
+    guide](/submit/ios/#automate-with-expo-workflows) for more information.
   </Requirement>
 </Prerequisites>
 
@@ -693,6 +739,10 @@ jobs:
       changelog: string # optional
       submit_beta_review: boolean # optional
       wait_processing_timeout_seconds: number # optional - default: 1800 (30 minutes)
+    hooks:
+      after_checkout: step[] # optional - steps to run after the job checks out your project.
+      before_install_node_modules: step[] # optional - steps to run before the job installs dependencies.
+      after_install_node_modules: step[] # optional - steps to run after the job installs dependencies.
 ```
 
 #### Parameters
@@ -701,7 +751,7 @@ You can pass the following parameters into the `params` list:
 
 | Parameter                       | Type   | Description                                                                                                                                                           |
 | ------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| build_id                        | string | Required. The ID of the iOS EAS Build to distribute.                                                                                                                  |
+| build_id                        | string | Required. The ID of the iOS Expo Build to distribute.                                                                                                                 |
 | profile                         | string | Optional. The submit profile to use. Defaults to `production`.                                                                                                        |
 | wait_processing_timeout_seconds | number | Optional. Timeout in seconds to wait for App Store Connect build processing. Defaults to `1800` (30 minutes). Only applies when distributing via groups or changelog. |
 
@@ -715,6 +765,16 @@ You can reference the following outputs in subsequent jobs:
 | --------------------- | ------ | ------------------------------------------------- |
 | apple_app_id          | string | The Apple App ID of the submitted build.          |
 | ios_bundle_identifier | string | The iOS bundle identifier of the submitted build. |
+
+#### Hooks
+
+The following hooks are supported for the TestFlight job:
+
+- `after_checkout`: steps to run after the job checks out your project.
+- `before_install_node_modules`: steps to run before the job installs your project's dependencies.
+- `after_install_node_modules`: steps to run after the job installs your project's dependencies.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax. Hooks are not supported when [submitting an already uploaded build](#submit-an-already-uploaded-build) because that job variant does not run on a worker.
 
 #### Examples
 
@@ -806,9 +866,13 @@ You can also pass any of the [shared parameters](#shared-parameters).
 
 #### Outputs
 
-| Output       | Type   | Description                     |
-| ------------ | ------ | ------------------------------- |
-| asc_build_id | string | The App Store Connect build ID. |
+You can reference the following outputs in subsequent jobs:
+
+| Output                | Type   | Description                                       |
+| --------------------- | ------ | ------------------------------------------------- |
+| asc_build_id          | string | The App Store Connect build ID.                   |
+| apple_app_id          | string | The Apple App ID of the submitted build.          |
+| ios_bundle_identifier | string | The iOS bundle identifier of the submitted build. |
 
 #### Examples
 
@@ -876,14 +940,123 @@ jobs:
 
 </Collapsible>
 
+## AppDrop
+
+Publish an Android or iOS build to [AppDrop](https://appdrop.app/) and get a share link for it. Unless you set `environment` on the job, the job runs in the build's environment, or in `production` if the build has none.
+
+iOS builds must be device builds. AppDrop cannot install iOS Simulator builds, so the job fails for them.
+
+Each share link has an update link. Anyone who has the update link can publish new versions to the share link. For this reason, the job never prints or outputs an update link.
+
+If you don't set `update_link`, each run creates a new share link. Later runs cannot publish to that share link.
+
+### Syntax
+
+```yaml
+jobs:
+  appdrop:
+    type: appdrop
+    params:
+      build_id: string # required
+      update_link: string # optional
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter   | Type   | Description                                                                                                                                                      |
+| ----------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id    | string | Required. The ID of the build to publish.                                                                                                                        |
+| update_link | string | Optional. The update link of an existing share link. The job publishes the build as a new version of that share link. Store it in a secret environment variable. |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output    | Type   | Description                            |
+| --------- | ------ | -------------------------------------- |
+| share_url | string | The share link of the published build. |
+
+### Publish every build to one share link
+
+To keep one share link for all builds, create the share link on your computer first:
+
+- Run `npx appdrop` with a build of your app, for example `npx appdrop app.apk`.
+- Run `npx appdrop links` to print the update link of the new share link.
+- Create a [secret environment variable](/eas/environment-variables/#visibility-settings-for-environment-variables) named `APPDROP_UPDATE_LINK` with the update link as its value. Create it in the environment of the builds that the job publishes.
+
+Then pass the variable as `update_link`.
+
+AppDrop rejects a new version that has the same build number as the current version. Set [`autoIncrement`](/build-reference/app-versions/#remote-version-source) in the build profile to give each build a new build number.
+
+### Examples
+
+Here are some practical examples of using the AppDrop job:
+
+<Collapsible summary="Publish a build to a new share link">
+
+This workflow builds an Android app for internal distribution and publishes it to a new share link on each run.
+
+```yaml .eas/workflows/appdrop-new-link.yml
+name: Share Android Build
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: preview
+
+  appdrop:
+    name: Publish to AppDrop
+    needs: [build_android]
+    type: appdrop
+    params:
+      build_id: ${{ needs.build_android.outputs.build_id }}
+```
+
+</Collapsible>
+
+<Collapsible summary="Publish every build to one share link">
+
+This workflow builds an Android app for internal distribution on each push to `main`. It publishes each build as a new version of the share link that `APPDROP_UPDATE_LINK` refers to.
+
+```yaml .eas/workflows/appdrop-update-link.yml
+name: Share Android Build on Main
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: preview
+
+  appdrop:
+    name: Publish to AppDrop
+    needs: [build_android]
+    type: appdrop
+    params:
+      build_id: ${{ needs.build_android.outputs.build_id }}
+      update_link: ${{ env.APPDROP_UPDATE_LINK }}
+```
+
+</Collapsible>
+
 ## Update
 
-Publish an update using [EAS Update](/eas-update/introduction/).
+Publish an update using [Expo Update](/eas-update/introduction/).
 
 <Prerequisites>
-  <Requirement title="EAS Update configured">
+  <Requirement title="Expo Update configured">
     To publish update previews and to send over-the-air updates. Run `npx eas-cli@latest
-    update:configure`, then create new builds. Learn more about [configuring EAS
+    update:configure`, then create new builds. Learn more about [configuring Expo
     Update](/eas-update/getting-started/#prerequisites).
   </Requirement>
 </Prerequisites>
@@ -905,11 +1078,17 @@ jobs:
       rollout_percentage: number # optional - 0 to 100, defaults to 100
       private_key_path: string # optional
       upload_sentry_sourcemaps: boolean # optional - defaults to "try uploading, but don't fail the job if it fails"
+    hooks:
+      after_checkout: step[] # optional - steps to run after the job checks out your project.
+      before_install_node_modules: step[] # optional - steps to run before the job installs dependencies.
+      after_install_node_modules: step[] # optional - steps to run after the job installs dependencies.
+      before_update: step[] # optional - steps to run before publishing the update.
+      after_update: step[] # optional - steps to run after publishing the update.
 ```
 
 #### Environment variables
 
-You can pass a list of environment variables into the `env` parameter. These environment variables will be pulled from [EAS environment variables](/eas/environment-variables/). The passed `environment` parameter will be used for the environment variable's environment, which is useful when the same environment variable is defined across different environments.
+You can pass a list of environment variables into the `env` parameter. These environment variables will be pulled from [Expo Services environment variables](/eas/environment-variables/). The passed `environment` parameter will be used for the environment variable's environment, which is useful when the same environment variable is defined across different environments.
 
 #### Parameters
 
@@ -919,10 +1098,10 @@ You can pass the following parameters into the `params` list:
 | ------------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | message                  | string  | Optional. Message to use for the update. If not provided, the commit message will be used.                                                                                                                                                                                                                                                                                                                                                                   |
 | platform                 | string  | Optional. Platform to use for the update. Can be `android`, `ios`, or `all`. Defaults to `all`.                                                                                                                                                                                                                                                                                                                                                              |
-| branch                   | string  | Optional. Branch to use for the update. If not provided, the branch from the workflow run will be used. For manually run workflows you need to provide a value. Example: `${{ github.ref_name \|\| 'testing' }}`. Provide _either_ a branch or a channel, not both.                                                                                                                                                                                          |
+| branch                   | string  | Optional. Branch to use for the update. If not provided, the branch from the workflow run will be used. If the run has no branch, such as a run that `eas workflow:run` starts from your local project files without `--git-branch`, you need to provide a value. Example: `${{ github.ref_name \|\| 'testing' }}`. Provide _either_ a branch or a channel, not both.                                                                                        |
 | channel                  | string  | Optional. Channel to use for the update. Provide _either_ a branch or a channel, not both.                                                                                                                                                                                                                                                                                                                                                                   |
 | rollout_percentage       | number  | Optional. Percentage of users this update should be immediately available to. Must be an integer between `0` and `100`. This is equivalent to passing `--rollout-percentage` to the EAS CLI.                                                                                                                                                                                                                                                                 |
-| private_key_path         | string  | Optional. Path to the file containing the PEM-encoded private key corresponding to the certificate in [EAS Update configuration](/eas-update/code-signing/#publish-a-signed-update-for-your-app). You can reference a file type [EAS environment variable](/eas/environment-variables/) with `"$VARIABLE_NAME"` syntax. This is equivalent to passing `--private-key-path` to the EAS CLI.                                                                   |
+| private_key_path         | string  | Optional. Path to the file containing the PEM-encoded private key corresponding to the certificate in [Expo Update configuration](/eas-update/code-signing/#publish-a-signed-update-for-your-app). You can reference a file type [Expo Services environment variable](/eas/environment-variables/) with `"$VARIABLE_NAME"` syntax. This is equivalent to passing `--private-key-path` to the EAS CLI.                                                        |
 | upload_sentry_sourcemaps | boolean | Optional. Whether to upload Sentry sourcemaps. If the value is `true`, the job will upload Sentry source maps and fail if uploading fails. If the value is `false`, the job will not upload sourcemaps to Sentry. If the value is not provided, the job is going to check if `@sentry/react-native` is installed and if it is, try to upload sourcemaps. If that fails, it will only print the error message and continue with the job marked as successful. |
 
 #### Outputs
@@ -933,6 +1112,18 @@ You can reference the following outputs in subsequent jobs:
 | --------------------- | ------ | ------------------------------------------------------------- |
 | first_update_group_id | string | The ID of the first update group.                             |
 | updates_json          | string | A JSON string containing information about all update groups. |
+
+#### Hooks
+
+The following hooks are supported for the Update job:
+
+- `after_checkout`: steps to run after the job checks out your project.
+- `before_install_node_modules`: steps to run before the job installs your project's dependencies.
+- `after_install_node_modules`: steps to run after the job installs your project's dependencies.
+- `before_update`: steps to run before publishing the update.
+- `after_update`: steps to run after publishing the update. Hook steps can access files produced during publishing (for example, sourcemaps in the **dist** directory).
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
 
 ### Examples
 
@@ -1010,9 +1201,33 @@ jobs:
 
 </Collapsible>
 
+<Collapsible summary="Upload sourcemaps after publishing an update">
+
+This workflow publishes an update and then uploads the generated sourcemaps to PostHog with the built-in [`eas/posthog_upload_sourcemaps`](/eas/workflows/syntax/#easposthog_upload_sourcemaps) function. Publishing an update creates sourcemaps in the **dist** directory, the function's default upload directory. These files only exist on the worker that runs the job, so the upload must happen in an `after_update` hook rather than in a separate job. Hook steps inherit the job's environment, so you can provide the `POSTHOG_CLI_API_KEY` and `POSTHOG_CLI_PROJECT_ID` credentials as [Expo Services environment variables](/eas/environment-variables/). To upload to a different service, run its upload command in a `run` step instead.
+
+```yaml .eas/workflows/update-with-sourcemaps.yml
+name: Update with sourcemaps
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  update:
+    name: Publish update
+    type: update
+    params:
+      channel: production
+    hooks:
+      after_update:
+        - uses: eas/posthog_upload_sourcemaps
+```
+
+</Collapsible>
+
 ## Update rollout
 
-Increase the rollout percentage of an in-progress [EAS Update](/eas-update/introduction/) rollout. Use this to gradually roll out an update group that was published to a subset of users with a partial `rollout_percentage`.
+Increase the rollout percentage of an in-progress [Expo Update](/eas-update/introduction/) rollout. Use this to gradually roll out an update group that was published to a subset of users with a partial `rollout_percentage`.
 
 ### Syntax
 
@@ -1085,7 +1300,7 @@ jobs:
 
 ## Branch delete
 
-Delete an [EAS Update](/eas-update/introduction/) branch in the current project. The same as [`eas branch:delete`](/eas-update/eas-cli/#delete-a-branch). Pass the EAS Update branch name in `branch_name`.
+Delete an [Expo Update](/eas-update/introduction/) branch in the current project. The same as [`eas branch:delete`](/eas-update/eas-cli/#delete-a-branch). Pass the Expo Update branch name in `branch_name`.
 
 ### Syntax
 
@@ -1104,7 +1319,7 @@ You can pass the following parameters into the `params` list:
 
 | Parameter       | Type    | Description                                                                                                                                                    |
 | --------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| branch_name     | string  | Required. Name of the EAS Update branch to delete.                                                                                                             |
+| branch_name     | string  | Required. Name of the Expo Update branch to delete.                                                                                                            |
 | fail_on_missing | boolean | If `false`, the job succeeds when the branch does not exist. If `true`, the job fails with a validation error when the branch is missing. Defaults to `false`. |
 
 #### Outputs
@@ -1144,12 +1359,13 @@ jobs:
       record_screen: boolean # optional - defaults to false
       include_tags: string | string[] # optional
       exclude_tags: string | string[] # optional
-      maestro_version: string # optional - defaults to latest
+      maestro_version: string # optional - defaults to the version preinstalled on the image, or latest
       android_system_image_package: string # optional
       device_identifier: string | { android?: string, ios?: string } # optional
       output_format: string # optional - defaults to junit
       skip_build_check: boolean # optional - defaults to false
     hooks:
+      after_checkout: step[] # optional - steps to run after the job checks out your project.
       before_maestro_tests: step[] # optional - steps to run before the tests start.
       after_maestro_tests: step[] # optional - steps to run after the tests complete.
 ```
@@ -1168,7 +1384,7 @@ You can pass the following parameters into the `params` list:
 | record_screen                | boolean                                               | Optional. Whether to record the screen. Defaults to false. Note: recording screen may impact emulator performance. You may want to use large runners when recording screen.                                                                                                                                                                                                                                                           |
 | include_tags                 | string or string[]                                    | Optional. Flow tags to include in the tests. Will be passed to Maestro as `--include-tags`.                                                                                                                                                                                                                                                                                                                                           |
 | exclude_tags                 | string or string[]                                    | Optional. Flow tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.                                                                                                                                                                                                                                                                                                                                         |
-| maestro_version              | string                                                | Optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.                                                                                                                                                                                                                                                                                                                                  |
+| maestro_version              | string                                                | Optional. Version of Maestro to use for the tests. If not provided, the job uses the version preinstalled on the runner image when it finds one, and installs the latest version otherwise. Set to `latest` to always install the newest version.                                                                                                                                                                                     |
 | output_format                | string                                                | Optional. Maestro test report format. Defaults to `junit`. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.                                                                                                                                                                                                                                                                                        |
 | android_system_image_package | string                                                | Optional. Android Emulator system image package to use. Run `sdkmanager --list` on your machine to list available packages. Choose an `x86_64` variant. Examples: `system-images;android-36;google_apis;x86_64`, `system-images;android-35-ext15;google_apis_playstore;x86_64`. Note that newer images require more computing resources, for which you may want to use large runners.                                                 |
 | device_identifier            | string or `{ android?: string, ios?: string }` object | Optional. Device identifier to use for the tests. You can also use a single-value expression like `pixel_6`, `iPhone 16 Plus` or `${{ needs.build.outputs.platform == "android" ? "pixel_6" : "iPhone 16 Plus" }}` and an object like `device_identifier: { android: "pixel_6", ios: "iPhone 16 Plus" }`. Note that iOS devices availability differs across runner images. A list of available devices can be found in the jobs logs. |
@@ -1178,6 +1394,7 @@ You can pass the following parameters into the `params` list:
 
 The following hooks are supported for the Maestro job:
 
+- `after_checkout`: steps to run after the job checks out your project.
 - `before_maestro_tests`: steps to run before the tests start.
 - `after_maestro_tests`: steps to run after the tests complete.
 
@@ -1293,18 +1510,18 @@ jobs:
 
 <Collapsible summary="Saving screenshots and recordings">
 
-To save assets created by Maestro commands (such as [`takeScreenshot`](https://docs.maestro.dev/reference/commands-available/takescreenshot) or [`startRecording`](https://docs.maestro.dev/reference/commands-available/startrecording)) to use for debugging later, use the `MAESTRO_TESTS_DIR` environment variable.
+Maestro commands such as [`takeScreenshot`](https://docs.maestro.dev/reference/commands-available/takescreenshot) or [`startRecording`](https://docs.maestro.dev/reference/commands-available/startrecording) save assets that you can use for debugging later.
 
-In your Maestro flow file, specify the asset locations:
+In your Maestro flow file, give each asset a relative path:
 
 ```yaml maestro/flows/test-flow.yaml
 appId: com.myapp
 ---
 - launchApp
-- startRecording: ${MAESTRO_TESTS_DIR}/my_recording
-- takeScreenshot: ${MAESTRO_TESTS_DIR}/my_screenshot
+- startRecording: my_recording
+- takeScreenshot: my_screenshot
 - tapOn: 'Login Button'
-- takeScreenshot: ${MAESTRO_TESTS_DIR}/after_login_screenshot
+- takeScreenshot: after_login_screenshot
 - stopRecording
 ```
 
@@ -1359,7 +1576,7 @@ jobs:
       maestro_api_key: string # optional - defaults to `$MAESTRO_CLOUD_API_KEY`
       include_tags: string | string[] # optional - tags to include in the tests. Will be passed to Maestro as `--include-tags`.
       exclude_tags: string | string[] # optional - tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
-      maestro_version: string # optional - version of Maestro to use for the tests. If not provided, the latest version will be used.
+      maestro_version: string # optional - version of Maestro to use for the tests. If not provided, the version preinstalled on the image is used when found, otherwise the latest version. Set to `latest` to always install the newest version.
       maestro_config: string # optional - path to the Maestro `config.yaml` file to use for the tests. Will be passed to Maestro as `--config`.
       device_locale: string # optional - device locale to use for the tests. Will be passed to Maestro as `--device-locale`.
       device_model: string # optional - model of the device to use for the tests. Will be passed to Maestro as `--device-model`. Run `maestro list-cloud-devices` for a list of supported values.
@@ -1369,6 +1586,7 @@ jobs:
       branch: string # optional - override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
       async: boolean # optional - run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, _not_ whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
     hooks:
+      after_checkout: step[] # optional - steps to run after the job checks out your project.
       before_maestro_cloud: step[] # optional - steps to run before the Maestro Cloud upload.
       after_maestro_cloud: step[] # optional - steps to run after the Maestro Cloud upload.
 ```
@@ -1385,7 +1603,7 @@ You can pass the following parameters into the `params` list:
 | maestro_api_key    | string  | Optional. The API key to use for the Maestro project. By default, `MAESTRO_CLOUD_API_KEY` environment variable will be used. Corresponds to `--api-key` param to `maestro cloud`.                                                            |
 | include_tags       | string  | Optional. The tags to include in the tests. Corresponds to `--include-tags` param to `maestro cloud`. Example: `"pull,push"`.                                                                                                                |
 | exclude_tags       | string  | Optional. The tags to exclude from the tests. Corresponds to `--exclude-tags` param to `maestro cloud`. Example: `"disabled"`.                                                                                                               |
-| maestro_version    | string  | Optional. The version of Maestro to use. Example: `1.30.0`.                                                                                                                                                                                  |
+| maestro_version    | string  | Optional. The version of Maestro to use. Example: `1.30.0`. If not provided, uses the version preinstalled on the image when found, otherwise the latest. Use `latest` to always install the newest.                                         |
 | maestro_config     | string  | Optional. The path to the Maestro `config.yaml` file to use. Corresponds to `--config` param to `maestro cloud`. Example: `.maestro/config.yaml`.                                                                                            |
 | device_locale      | string  | Optional. The locale that will be set on devices used for the tests. Corresponds to `--device-locale` param to `maestro cloud`. Example: `pl_PL`.                                                                                            |
 | device_model       | string  | Optional. The model of the device to use for the tests. Corresponds to `--device-model` param to `maestro cloud`. Example: `iPhone-11`. Run `maestro list-cloud-devices` for a list of supported values.                                     |
@@ -1401,6 +1619,7 @@ You can pass the following parameters into the `params` list:
 
 The following hooks are supported for the Maestro Cloud job:
 
+- `after_checkout`: steps to run after the job checks out your project.
 - `before_maestro_cloud`: steps to run before the Maestro Cloud upload.
 - `after_maestro_cloud`: steps to run after the Maestro Cloud upload.
 
@@ -1602,9 +1821,123 @@ jobs:
 
 </Collapsible>
 
+## Email
+
+Send a plain-text email to members of the account that owns the project. Each email ends with a footer that links to the workflow run.
+
+The job skips recipients who are not account members or have no verified email address. If the job skips a recipient, the job fails and lists the skipped recipients. The other recipients still receive the email.
+
+The job is subject to hourly rate limits. Each account can send up to 100 emails, and each member can receive up to 10 emails. On the Production and Enterprise plans, these limits are 1,000 and 60 respectively. If sending to a recipient would exceed a limit, the job skips that recipient.
+
+### Syntax
+
+```yaml
+jobs:
+  send_email:
+    type: email
+    params:
+      usernames: string[] # required if emails is not provided
+      emails: string[] # required if usernames is not provided
+      subject: string # required
+      body: string # required
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter | Type     | Description                                                                                                                                                    |
+| --------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| usernames | string[] | Required if `emails` is not provided. The usernames of the account members to send the email to. Up to 50 recipients across `usernames` and `emails`.          |
+| emails    | string[] | Required if `usernames` is not provided. The email addresses of the account members to send the email to. Up to 50 recipients across `usernames` and `emails`. |
+| subject   | string   | Required. The subject of the email. Up to 255 characters.                                                                                                      |
+| body      | string   | Required. The plain-text body of the email. Up to 20,000 characters.                                                                                           |
+
+### Examples
+
+Here are some practical examples of using the Email job:
+
+<Collapsible summary="Email on Maestro test failure">
+
+This workflow runs Maestro tests on an iOS Simulator build and emails two account members only when the tests fail.
+
+```yaml .eas/workflows/email-maestro-failure.yml
+name: Maestro Tests with Alert
+
+jobs:
+  build_ios_simulator:
+    name: Build iOS Simulator
+    type: build
+    params:
+      platform: ios
+      profile: preview-simulator
+
+  maestro_test:
+    name: Run Maestro Tests
+    needs: [build_ios_simulator]
+    type: maestro
+    environment: preview
+    params:
+      build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
+      flow_path: ./maestro/flows
+
+  notify_failure:
+    name: Email Test Failure
+    needs: [build_ios_simulator]
+    after: [maestro_test]
+    if: ${{ after.maestro_test.status == 'failure' }}
+    type: email
+    params:
+      usernames: [alice, bob]
+      subject: 'Maestro tests failed'
+      body: |
+        Maestro tests failed for build ${{ needs.build_ios_simulator.outputs.build_id }}.
+```
+
+</Collapsible>
+
+<Collapsible summary="Ask for approval by email">
+
+This workflow deploys a web preview, emails a reviewer, and waits for approval before it deploys to production.
+
+```yaml .eas/workflows/email-approval.yml
+name: Deploy Web with Approval
+
+jobs:
+  web_preview:
+    name: Deploy Web Preview
+    type: deploy
+
+  request_approval:
+    name: Email Reviewer
+    needs: [web_preview]
+    type: email
+    params:
+      emails: [release-manager@example.com]
+      subject: 'Approve the production web deploy'
+      body: |
+        A new web preview is ready: ${{ needs.web_preview.outputs.deploy_url }}
+
+        Approve or reject the production deploy.
+
+  require_approval:
+    name: Deploy Web to Production?
+    needs: [web_preview]
+    type: require-approval
+
+  web_production:
+    name: Deploy Web Production
+    needs: [require_approval]
+    type: deploy
+    params:
+      prod: true
+```
+
+</Collapsible>
+
 ## GitHub Comment
 
-Automatically post reports of your workflow's completed builds, updates, and deployments to GitHub pull requests. It's particularly useful for providing instant feedback on PR builds, sharing test builds with QR codes for easy device testing, displaying EAS Hosting deployment previews, and automating deployment notifications. You can also override the comment contents by providing the `payload` parameter.
+Automatically post reports of your workflow's completed builds, updates, and deployments to GitHub pull requests. It's particularly useful for providing instant feedback on PR builds, sharing test builds with QR codes for easy device testing, displaying Expo Hosting deployment previews, and automating deployment notifications. You can also override the comment contents by providing the `payload` parameter.
 
 <Prerequisites>
   <Requirement title="A GitHub repository connected to your project">
@@ -1717,9 +2050,9 @@ jobs:
 
 </Collapsible>
 
-<Collapsible summary="PR preview with EAS Hosting deployment">
+<Collapsible summary="PR preview with Expo Hosting deployment">
 
-This workflow deploys a preview of your website using EAS Hosting and posts the deployment details to the pull request.
+This workflow deploys a preview of your website using Expo Hosting and posts the deployment details to the pull request.
 
 ```yaml .eas/workflows/pr-preview.yml
 name: PR Preview
@@ -1824,12 +2157,12 @@ jobs:
         - **Build Number**: ${{ needs.build_ios.outputs.app_build_version }}
 
         ### Next Steps
-        1. Download the build from [EAS Dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds/${{ needs.build_ios.outputs.build_id }})
+        1. Download the build from [Expo dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds/${{ needs.build_ios.outputs.build_id }})
         2. Test on physical device
         3. Approve for TestFlight distribution
 
         ---
-        *This comment was automatically generated by EAS Workflows*
+        *This comment was automatically generated by Expo Workflows*
 ```
 
 </Collapsible>
@@ -1878,7 +2211,7 @@ jobs:
 
 ## Apple device registration request
 
-Pause a workflow run until an iOS device enrolls for a specific [Apple Team](https://expo.fyi/apple-team) and a team member approves that enrollment on [expo.dev](https://expo.dev). Use this job to automate registering a device for [internal distribution](/build/internal-distribution/) inside EAS Workflows.
+Pause a workflow run until an iOS device enrolls for a specific [Apple team](https://expo.fyi/apple-team) and a team member approves that enrollment on [expo.dev](https://expo.dev). Use this job to automate registering a device for [internal distribution](/build/internal-distribution/) inside Expo Workflows.
 
 When the workflow reaches this job, the job and the run enter `action-required` and stay paused until the flow completes:
 
@@ -1903,9 +2236,9 @@ jobs:
 
 You can pass the following parameters into the `params` list:
 
-| Parameter             | Type   | Description                                                                                                                                                                                                                                                                                                                    |
-| --------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| apple_team_identifier | string | Optional. The Apple Team ID (for example, `ABCDE12345`). If you omit this parameter and your Expo account has exactly one Apple Team, that team is used. You must set this parameter when your account has no Apple Teams or has two or more Apple Teams. When provided, EAS resolves or creates the team from the identifier. |
+| Parameter             | Type   | Description                                                                                                                                                                                                                                                                                                                              |
+| --------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| apple_team_identifier | string | Optional. The Apple Team ID (for example, `ABCDE12345`). If you omit this parameter and your Expo account has exactly one Apple team, that team is used. You must set this parameter when your account has no Apple teams or has two or more Apple teams. When provided, Expo Services resolves or creates the team from the identifier. |
 
 #### Outputs
 
@@ -1970,13 +2303,24 @@ jobs:
       refresh_ad_hoc_provisioning_profile: true
 ```
 
-The `preview` profile must set [`distribution: internal`](/eas/json/#distribution) and use [credentials managed by EAS](/app-signing/app-credentials/). For CI, you also need an App Store Connect API key. See [internal distribution on CI](/build/internal-distribution/#automation-on-ci-optional) and [trigger builds from CI](/build/building-on-ci/).
+The `preview` profile must set [`distribution: internal`](/eas/json/#distribution) and use [credentials managed by Expo Services](/app-signing/app-credentials/). For CI, you also need an App Store Connect API key. See [internal distribution on CI](/build/internal-distribution/#automation-on-ci-optional) and [trigger builds from CI](/build/building-on-ci/).
 
 </Collapsible>
 
 ## Require Approval
 
 Require approval from a user before continuing with the workflow. A user can approve or reject which translates to success or failure of the job.
+
+> **info** Approve the job within 30 days after Expo Workflows creates the workflow run. If you approve it later, the run fails before its next job starts. A [called run](/eas/workflows/reusable-workflows/) uses the same 30-day window as the run that calls it.
+
+To continue, [re-run the workflow from its failed jobs](/eas/workflows/manage-workflow-runs/#re-run-from-failed-jobs). The new run reuses the approval, so you don't need to approve again. Its remaining jobs use your access. If the dashboard doesn't show the re-run options, [start a new run](/eas/workflows/manage-workflow-runs/#re-run-availability).
+
+Jobs after approval use the access of the user or robot that started the run, not the approver's. If they lose access to the account or their role no longer allows running workflows, the run fails the same way. This includes a role change to Viewer. Revoking the access token that started the run doesn't stop jobs from starting within 30 days after Expo Workflows creates the run. Access changes don't cancel running jobs. [Cancel the run](/eas/workflows/manage-workflow-runs/#cancel-a-workflow-run) with **Cancel workflow** or `eas workflow:cancel`.
+
+If a run fails after approval, it shows one of these errors:
+
+- "Workflow run could not continue" means Expo Workflows couldn't use the access it stored for the user or robot that started the run. The error asks you to retry the run.
+- "Failed to process workflow run" can mean that the stored access expired 30 days after Expo Workflows created the run. It can also mean that the user or robot that started the run lost access to the account or a role that can run workflows. Other errors use the same title, so read the error message.
 
 ### Syntax
 
@@ -2152,6 +2496,10 @@ jobs:
       message: string # optional
       repack_version: string # optional
       repack_package: string # optional
+    hooks:
+      after_checkout: step[] # optional - steps to run after the job checks out your project.
+      before_install_node_modules: step[] # optional - steps to run before the job installs dependencies.
+      after_install_node_modules: step[] # optional - steps to run after the job installs dependencies.
 ```
 
 > **Note:** If the build might still be in progress, use [`get-build`](#get-build) with `wait_for_in_progress: true`, then pass its `build_id` to `repack`.
@@ -2192,11 +2540,21 @@ You can pass the following parameters into the `params` list:
 | ios_signing_use_source_app_entitlements | boolean | Optional. Whether to use fastlane resign `use_app_entitlements` behavior: extract app bundle code signing entitlements and combine them with entitlements from the new provisioning profile. Defaults to false. |
 | ios_signing_app_entitlements_path       | string  | Optional. Path to the entitlements file to use, for example, `myApp/MyApp.entitlements`. This is exclusive with `ios_signing_use_source_app_entitlements`                                                       |
 
+#### Hooks
+
+The following hooks are supported for the Repack job:
+
+- `after_checkout`: steps to run after the job checks out your project.
+- `before_install_node_modules`: steps to run before the job installs your project's dependencies.
+- `after_install_node_modules`: steps to run after the job installs your project's dependencies.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
+
 ### Examples
 
 Here are some practical examples of using the Fingerprint with Repack jobs:
 
-<Collapsible summary="Continuous Deployment with Fingerprint and Repack">
+<Collapsible summary="Continuous deployment with Fingerprint and Repack">
 
 This workflow first generates a fingerprint and then builds or repacks the app depending on whether a compatible build for that fingerprint already exists. Finally, it runs Maestro tests.
 

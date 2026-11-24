@@ -1,6 +1,7 @@
 import AppMetrics from 'expo-app-metrics';
 
 import { getNavigationRouteParams } from '../navigationConfig';
+import type { NavigationBlockingTime } from '../shared/navigation/blockingTime';
 import { emitTTI } from './emitTTI';
 import { getPathname } from './getPathname';
 import { getReactNavigationIntegrationConfig } from './init';
@@ -11,10 +12,11 @@ import type { NavigationStateLike } from './types';
 export function createStateChangeHandler(
   storage: ReactNavigationIntegrationStorage,
   appLaunchTime: number
-): (state: NavigationStateLike | undefined) => void {
+): (state: NavigationStateLike | undefined, blockingTime: NavigationBlockingTime) => void {
   let previousFocusedKey: string | null = null;
+  const focusedKeys = new Set<string>();
 
-  return async function handleStateChange(state) {
+  return async function handleStateChange(state, blockingTime) {
     if (!state) return;
     // Snapshot clocks once so every metric written below is stamped with
     // the moment the focus actually fired, not the moment `addMetric` happens
@@ -61,6 +63,9 @@ export function createStateChangeHandler(
 
     if (focused.key === previousFocusedKey) return;
     previousFocusedKey = focused.key;
+    // Not derived from `dispatchTime`, which the loop above also sets on screens mounted unfocused.
+    const isFirstFocus = !focusedKeys.has(focused.key);
+    focusedKeys.add(focused.key);
 
     const pathname = getPathname(state) ?? focused.route.name;
     const navigationParams = getNavigationRouteParams(
@@ -120,6 +125,18 @@ export function createStateChangeHandler(
       value: ttrSeconds,
       params: { isAppLaunch: false, ...navigationParams },
     });
+    if (isFirstFocus) {
+      blockingTime?.setMetric(
+        {
+          timestamp,
+          category: 'navigation',
+          name: 'tbt',
+          routeName: pathname,
+          params: navigationParams,
+        },
+        now
+      );
+    }
     if (hasPendingInteractive) {
       await emitTTI({
         session: mainSession,

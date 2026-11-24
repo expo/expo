@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { type PropsWithChildren } from 'react';
 
+import { axe } from '~/common/test-utilities';
 import { PageApiVersionContext } from '~/providers/page-api-version';
 import { PageMetadataContext } from '~/providers/page-metadata';
+import versions from '~/public/static/constants/versions.json';
 import { type PageMetadata } from '~/types/common';
 
 import { APIInstallSection } from './InstallSection';
@@ -29,7 +31,7 @@ const widgetsMeta: PageMetadata = { packageName: 'expo-widgets', exampleName: 'w
 describe(APIInstallSection, () => {
   it('shows install and example tabs on the latest SDK version', () => {
     render(
-      <Providers version="v57.0.0" meta={widgetsMeta}>
+      <Providers version={versions.LATEST_VERSION} meta={widgetsMeta}>
         <APIInstallSection />
       </Providers>
     );
@@ -68,12 +70,21 @@ describe(APIInstallSection, () => {
 
   it('renders the plain install section when the page has no example', () => {
     render(
-      <Providers version="v57.0.0" meta={{ packageName: 'expo-camera' }}>
+      <Providers version={versions.LATEST_VERSION} meta={{ packageName: 'expo-camera' }}>
         <APIInstallSection />
       </Providers>
     );
 
     expect(screen.queryByRole('tab', { name: 'Install library' })).not.toBeInTheDocument();
     expect(document.body).toHaveTextContent('npx expo install expo-camera');
+  });
+
+  it('has no axe violations', async () => {
+    const { container } = render(
+      <Providers version={versions.LATEST_VERSION} meta={widgetsMeta}>
+        <APIInstallSection />
+      </Providers>
+    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 });

@@ -33,7 +33,56 @@ extension SessionRow {
       expoSdkVersion: app.expoSdkVersion,
       reactNativeVersion: app.reactNativeVersion,
       clientVersion: app.clientVersion,
-      languageTag: Locale.preferredLanguages.first
+      languageTag: Locale.preferredLanguages.first,
+      processId: Int(ProcessInfo.processInfo.processIdentifier)
     )
   }
+
+  /// Builds a finished main session for a crashed process that has no stored session, for example a
+  /// launch that failed before the app's code ran. The app version, build number and OS version come
+  /// from the crash report. The other build details come from the newest stored session of the same
+  /// build, and stay empty without one. The update fields stay empty, because the crashed launch could
+  /// have run another update.
+  static func forCrashedProcess(
+    _ crashReport: CrashReport,
+    storedSessions: [SessionRow],
+    environment: String?,
+    app: AppInfo = AppInfo.current,
+    device: DeviceInfo = DeviceInfo.current
+  ) -> SessionRow {
+    let sameBuildSessions = storedSessions.filter {
+      $0.appVersion == crashReport.appVersion && $0.appBuildNumber == crashReport.appBuildNumber
+    }
+    let sameBuild = sameBuildSessions.max(by: { $0.startTimestamp < $1.startTimestamp })
+    let crashTimestamp = crashReport.timestampEnd.ISO8601Format()
+
+    return SessionRow(
+      id: UUID().uuidString,
+      type: Session.SessionType.main.rawValue,
+      startTimestamp: crashTimestamp,
+      endTimestamp: crashTimestamp,
+      isActive: false,
+      environment: environment,
+      appName: app.appName,
+      appIdentifier: app.appId,
+      appVersion: crashReport.appVersion,
+      appBuildNumber: crashReport.appBuildNumber,
+      appEasBuildId: sameBuild?.appEasBuildId,
+      deviceOs: device.systemName,
+      deviceOsVersion: crashReport.osVersion.flatMap(versionNumber(from:)) ?? device.systemVersion,
+      deviceModel: device.modelIdentifier,
+      deviceName: device.modelName,
+      expoSdkVersion: sameBuild?.expoSdkVersion,
+      reactNativeVersion: sameBuild?.reactNativeVersion,
+      clientVersion: app.clientVersion,
+      languageTag: Locale.preferredLanguages.first,
+      processId: crashReport.processId
+    )
+  }
+}
+
+/// Returns the version number in a MetricKit OS version, for example "17.6.1" for "iPhone OS 17.6.1 (21G93)".
+private func versionNumber(from osVersion: String) -> String? {
+  let words = osVersion.split(separator: " ")
+  return words.first { $0.first?.isNumber == true && $0.contains(".") }.map(String.init)
 }

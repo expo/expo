@@ -109,7 +109,11 @@ internal class OkHttpFileUrlInterceptor(context: Context) : Interceptor {
 
   companion object {
     fun handleFileUrl(url: URL): URL {
-      return if (url.protocol == "file") URL(fakeHttpUrlPrefix + url.path) else url
+      return if (url.protocol == "file") {
+        URL(fakeHttpUrlPrefix + url.path)
+      } else {
+        url
+      }
     }
   }
 }

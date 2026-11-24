@@ -30,7 +30,11 @@ export default function Layout() {
           marginRight: 'auto',
         }}>
         <Text testID="layout-value">{layoutValue}</Text>
-        <Tabs />
+        <Tabs>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="temp-route" />
+          <Tabs.Screen name="renamed" />
+        </Tabs>
       </View>
     </>
   );

@@ -1,16 +1,50 @@
 # Changelog
 
-## Unpublished
+## 58.0.4
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- [Android][Web] Fixed `SymbolView` dropping view props such as `aria-hidden` and `aria-label`, and screen readers reading the symbol glyph ([#50782](https://github.com/expo/expo/issues/50782)). ([#50959](https://github.com/expo/expo/pull/50959) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-15
+
+### 💡 Others
+
+- Stopped passing `testString` to `expo-font`, which removed the option; font loading no longer needs one. ([#49497](https://github.com/expo/expo/pull/49497) by [@vonovak](https://github.com/vonovak))
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- Fixed `style` prop being ignored on `SymbolView`'s non-native fallback. ([#48553](https://github.com/expo/expo/pull/48553) by [@fallmo](https://github.com/fallmo))
+
+### 💡 Others
+
+- Promote Expo Symbols from beta to stable. ([#48537](https://github.com/expo/expo/pull/48537) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.6 - 2026-06-05
 
 ### 🎉 New features
 
 - Add macOS support. ([#46471](https://github.com/expo/expo/pull/46471) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 56.0.5 — 2026-05-07
 

@@ -1,9 +1,11 @@
 {
   "platforms": ["apple", "android", "web"],
-  "apple": {
-    "modules": ["NetworkModule"]
-  },
   "android": {
-    "modules": ["expo.modules.network.NetworkModule"]
+    "modules": ["expo.modules.network.NetworkModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.network",
+      "repository": "local-maven-repo"
+    }
   }
 }

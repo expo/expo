@@ -1,3 +1,4 @@
+internal import React
 import ExpoModulesJSI
 
 /// Holds a reference to the module instance and caches its definition.
@@ -23,10 +24,31 @@ public final class ModuleHolder {
   @JavaScriptActor
   private var javaScriptObject: JavaScriptObject?
 
+  /// The native state of `javaScriptObject`, which keeps its event listeners.
+  @JavaScriptActor
+  private var eventEmitterState: ModuleEventEmitterNativeState?
+
+  /// The ID for the next created holder.
+  private static let nextHolderId = Mutex<UInt64>(0)
+
+  /// A process-wide unique ID of the holder. Module objects cached by attached runtimes are tied to it.
+  private let holderId: UInt64 = ModuleHolder.nextHolderId.withLock { id in
+    defer { id += 1 }
+    return id
+  }
+
   /**
    Caches the definition of the module type.
    */
   let definition: ModuleDefinition
+
+  /**
+   The `@ExpoView` views that the module registers with `@ExpoModule(views:)`, keyed by the view name,
+   which is the view's `_jsName`. When the definition has no views, the first one is also the
+   module's default view, as the first view of the definition is. A view whose name another view of
+   the module already has isn't included.
+   */
+  let nativeViewTypes: [String: any AnyNativeView.Type]
 
   /**
    The module's name. Prefers the name passed at registration, then a non-empty `Name(…)` from the
@@ -53,18 +75,13 @@ public final class ModuleHolder {
     self._name = name
     self.module = module
     self.definition = ModuleHolder.buildDefinition(for: module)
+    self.nativeViewTypes = ModuleHolder.nativeViewTypes(of: module, definitionViews: definition.views)
+    (module as? BaseModule)?.holder = self
     post(event: .moduleCreate)
   }
 
-  /// Combines the user-authored definition with the entries synthesized by the
-  /// `@ExpoModule` macro on this module's class (if any). The macro emits a
-  /// `_synthesizedDefinition()` method returning an `[AnyDefinition]` array of the
-  /// `Function` / `Property` / `Constructor` entries it generated from `@JS`
-  /// members. Those entries are prepended to the user's definitions and the
-  /// whole list is fed back through `ModuleDefinition.init` so the merged
-  /// result is rebucketed (into `functions`, `properties`, etc.) just like a
-  /// hand-written definition. Modules that don't use the macro fall through
-  /// the empty-synthesized fast path and return the user's definition unchanged.
+  /// Merges the entries from `_synthesizedDefinition()` into the user-authored definition. Only module
+  /// binaries built with earlier `@ExpoModule` macros return any, so other modules take the fast path.
   private static func buildDefinition(for module: AnyModule) -> ModuleDefinition {
     let userDefinition = module.definition()
     let synthesized = module._synthesizedDefinition()
@@ -81,6 +98,29 @@ public final class ModuleHolder {
       definition.name = type(of: module)._jsName
     }
     return definition
+  }
+
+  private static func nativeViewTypes(
+    of module: AnyModule,
+    definitionViews: [String: AnyViewDefinition]
+  ) -> [String: any AnyNativeView.Type] {
+    var viewTypes: [String: any AnyNativeView.Type] = [:]
+
+    for viewType in type(of: module)._viewTypes {
+      let viewName = viewType._jsName
+
+      if viewTypes[viewName] != nil || definitionViews[viewName] != nil {
+        log.error(
+          "The view '\(viewType)' of module '\(type(of: module))' isn't registered, because the module already has a view named '\(viewName)'"
+        )
+        continue
+      }
+      if viewTypes.isEmpty && definitionViews.isEmpty {
+        viewTypes[DEFAULT_MODULE_VIEW] = viewType
+      }
+      viewTypes[viewName] = viewType
+    }
+    return viewTypes
   }
 
   // MARK: Constants
@@ -113,8 +153,44 @@ public final class ModuleHolder {
     return javaScriptObject?.asValue()
   }
 
+  /// Returns the module object in a runtime other than the main runtime. The object has only the members that
+  /// the `@ExpoModule` macro binds. It is built in that runtime and cached by it.
+  @JavaScriptActor
+  func getJavaScriptValue(inAttachedRuntime runtime: JavaScriptRuntime) -> JavaScriptValue? {
+    let moduleObjects = runtime.cached(moduleObjectsCacheKey) {
+      return ModuleObjects()
+    }
+    // The registry can replace the module under the same name, so the cached object is only used for this holder.
+    if let entry = moduleObjects.objects[name], entry.holderId == holderId {
+      return entry.object.withUnwrappedValue { $0.asValue() }
+    }
+    do {
+      let object = try createJavaScriptModuleObject(in: runtime)
+      let value = object.asValue()
+      moduleObjects.objects[name] = ModuleObjects.Entry(holderId: holderId, object: object.ref())
+      return value
+    } catch {
+      log.error("Building the module object failed: \(error)")
+      return nil
+    }
+  }
+
+  /// Calls the listeners of the event with the payload and the module object as `this`. A module without a module
+  /// object has no listeners, so the object isn't built for the event.
+  @JavaScriptActor
+  func dispatchEvent(event: String, payload: borrowing JavaScriptValue, in runtime: JavaScriptRuntime) {
+    guard let eventListeners = eventEmitterState?.listeners(in: runtime)?.listeners(of: event) else {
+      return
+    }
+    EventListeners.call(eventListeners, this: javaScriptObject!, payload: payload, in: runtime)
+  }
+
   @JavaScriptActor
   func releaseJavaScriptObject() {
+    // The native state keeps the listeners, values of the runtime that is going away. The module object can't use it
+    // after that either.
+    eventEmitterState?.removePrimaryListeners()
+    eventEmitterState = nil
     javaScriptObject = nil
   }
 
@@ -136,17 +212,86 @@ public final class ModuleHolder {
       log.info("Creating JS object for module '\(name)'")
       let object = try definition.build(appContext: appContext)
 
+      // Install the `@SharedObject` classes the `@ExpoModule` macro registers by type.
+      for classType in type(of: module)._classTypes {
+        object.setProperty(classType._jsName, value: try appContext.getSharedObjectClass(classType))
+      }
+
       // Install the `@JS` members the `@ExpoModule` macro binds directly into the JS object
       // (the direct-JSI path). A no-op for modules that don't use the macro.
       try module._decorateModule(object: object, in: appContext.runtime)
 
-      try installListeningHooks(on: object, in: appContext.runtime)
+      installNativeViewComponents(on: object)
+
+      let eventObservers =
+        definition.eventObservers.isEmpty ? nil : EventObservers(definitions: definition.eventObservers)
+      let eventEmitterState = ModuleEventEmitterNativeState(
+        module: module,
+        appContext: appContext,
+        eventObservers: eventObservers,
+        runtimeId: try appContext.runtime.id
+      )
+      object.setNativeState(eventEmitterState)
+      self.eventEmitterState = eventEmitterState
 
       return object
     } catch {
       log.error("Building the module object failed: \(error)")
       return nil
     }
+  }
+
+  // MARK: Native view components
+
+  /**
+   The non-enumerable property of the module object that holds the component of the module's default view.
+   It must stay in sync with `DEFAULT_VIEW_PROPERTY` in `NativeViewComponent.tsx`.
+   */
+  static let defaultViewPropertyName = "__expo_default_view__"
+
+  /**
+   Defines a lazy getter on the module object for each `@ExpoView` view. The first read creates the view's
+   React component with `expo.__createNativeViewComponent` and replaces the getter with the component,
+   so later reads don't call native. The default view is a separate component under the module's own component name.
+   */
+  @JavaScriptActor
+  private func installNativeViewComponents(on object: borrowing JavaScriptObject) {
+    let moduleName = name
+
+    for (viewName, viewType) in nativeViewTypes {
+      let isDefaultView = viewName == DEFAULT_MODULE_VIEW
+      let propertyName = isDefaultView ? ModuleHolder.defaultViewPropertyName : viewName
+
+      if !isDefaultView && object.hasProperty(viewName) {
+        log.error("The view '\(viewName)' isn't added to the module '\(name)', because the module already has a property with this name")
+        continue
+      }
+      let options: JavaScriptObject.PropertyOptions = isDefaultView ? [.configurable] : [.configurable, .enumerable]
+      object.defineLazyProperty(propertyName, options: options) { _, runtime in
+        let config = NativeViewComponentConfig(
+          viewType: viewType,
+          componentName: ExpoFabricView.componentName(moduleName: moduleName, viewName: viewName)
+        )
+        return try NativeViewComponentFactory.create(config, in: runtime)
+      }
+    }
+  }
+
+  /// Creates the module object in a runtime other than the main runtime. The members of the `definition()` DSL
+  /// are built in the main runtime only, so the object has only the `@JS` members.
+  @JavaScriptActor
+  private func createJavaScriptModuleObject(in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
+    let object = try runtime.global()
+      .getPropertyAsObject(globalCoreObjectPropertyName)
+      .getPropertyAsFunction("NativeModule")
+      .callAsConstructor()
+      .asObject()
+
+    try module._decorateModule(object: object, in: runtime)
+
+    // Give the module object a name like in the main runtime. It's used for compatibility reasons, see `EventEmitter.ts`.
+    object.defineProperty("__expo_module_name__", value: name, options: [])
+    return object
   }
 
   // MARK: Listening to native events
@@ -158,6 +303,18 @@ public final class ModuleHolder {
   }
 
   func post(event: EventName) {
+    // The app lifecycle events come from `UIApplication`/`NSApplication` notifications on the main thread.
+    nonisolated(unsafe) let module = module
+    switch event {
+    case .appEntersForeground:
+      MainActor.assumeIsolated { module.appWillEnterForeground() }
+    case .appBecomesActive:
+      MainActor.assumeIsolated { module.appDidBecomeActive() }
+    case .appEntersBackground:
+      MainActor.assumeIsolated { module.appDidEnterBackground() }
+    default:
+      break
+    }
     listeners(forEvent: event).forEach {
       try? $0.call(module, nil)
     }
@@ -176,33 +333,6 @@ public final class ModuleHolder {
     post(event: .moduleDestroy)
   }
 
-  // MARK: - Privates
-
-  /// Installs host functions that the JavaScript `EventEmitter` implementation calls when
-  /// the number of listeners for an event switches between zero and non-zero. They notify
-  /// the module through the `didStartListening` and `didStopListening` lifecycle hooks.
-  @JavaScriptActor
-  private func installListeningHooks(on object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) {
-    let startListening = runtime.createFunction("__expo_onStartListeningToEvent") {
-      [weak module = self.module] _, arguments in
-      guard let module, arguments.count > 0 else {
-        return .undefined
-      }
-      module.didStartListening(event: try arguments[0].asString())
-      return .undefined
-    }
-    let stopListening = runtime.createFunction("__expo_onStopListeningToEvent") {
-      [weak module = self.module] _, arguments in
-      guard let module, arguments.count > 0 else {
-        return .undefined
-      }
-      module.didStopListening(event: try arguments[0].asString())
-      return .undefined
-    }
-    object.defineProperty("__expo_onStartListeningToEvent", value: startListening.asValue(), options: [])
-    object.defineProperty("__expo_onStopListeningToEvent", value: stopListening.asValue(), options: [])
-  }
-
   // MARK: - Exceptions
 
   internal class ModuleNotFoundException: GenericException<String> {
@@ -217,3 +347,56 @@ public final class ModuleHolder {
     }
   }
 }
+
+/// The native state of a module object in the main runtime. Instead of the observing functions of the JS object, it
+/// calls the listening hooks of the module, `didStartListening(event:)` and `didStopListening(event:)`, and the
+/// `OnStartObserving` and `OnStopObserving` definitions.
+internal final class ModuleEventEmitterNativeState: EventEmitterNativeState, @unchecked Sendable {
+  private weak var module: AnyModule?
+  private weak var appContext: AppContext?
+  private let eventObservers: EventObservers?
+
+  init(module: AnyModule, appContext: AppContext, eventObservers: EventObservers?, runtimeId: JavaScriptRuntime.ID) {
+    self.module = module
+    self.appContext = appContext
+    self.eventObservers = eventObservers
+    super.init(primaryRuntimeId: runtimeId)
+  }
+
+  @JavaScriptActor
+  override func listeningDidChange(
+    _ emitter: borrowing JavaScriptObject,
+    event: String,
+    eventValue: borrowing JavaScriptUnownedValue,
+    isListening: Bool,
+    in runtime: JavaScriptRuntime
+  ) {
+    if isListening {
+      module?.didStartListening(event: event)
+    } else {
+      module?.didStopListening(event: event)
+    }
+    guard let eventObservers, let appContext else {
+      return
+    }
+    if isListening {
+      eventObservers.didStartListening(event: event, appContext: appContext)
+    } else {
+      eventObservers.didStopListening(event: event, appContext: appContext)
+    }
+  }
+}
+
+/// The module objects that a runtime other than the main runtime caches, by module name.
+private final class ModuleObjects {
+  struct Entry {
+    /// The ID of the holder that the object was built for.
+    let holderId: UInt64
+    /// The module object.
+    let object: JavaScriptObject.Ref
+  }
+
+  var objects: [String: Entry] = [:]
+}
+
+private let moduleObjectsCacheKey = JavaScriptRuntime.Cache.Key<ModuleObjects>()

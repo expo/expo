@@ -119,7 +119,7 @@ renderToNodeStream(app)
 ```
 
 ## Usage in Jest
-While testing in using jest, if there is a need to emulate SSR, the following string is required to have the test behave the way they are expected to.
+While testing using jest, if there is a need to emulate SSR, the following string is required to have the test behave the way they are expected to.
 
 ```javascript
 import { HelmetProvider } from 'react-helmet-async';

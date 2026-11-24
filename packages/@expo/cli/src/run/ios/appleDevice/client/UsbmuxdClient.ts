@@ -9,10 +9,10 @@ import plist from '@expo/plist';
 import type { Socket } from 'net';
 import { connect } from 'net';
 
-import { ResponseError, ServiceClient } from './ServiceClient';
 import { CommandError } from '../../../../utils/errors';
 import { parsePlistBuffer } from '../../../../utils/plist';
 import { UsbmuxProtocolClient } from '../protocol/UsbmuxProtocol';
+import { ResponseError, ServiceClient } from './ServiceClient';
 
 export interface UsbmuxdDeviceProperties {
   /** @example 'USB' */

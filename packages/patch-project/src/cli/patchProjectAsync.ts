@@ -1,11 +1,12 @@
+import { consumeConfigEnvMode, loadProjectEnv, logLoadedEnv } from '@expo/env';
 import chalk from 'chalk';
 import { getConfig, type ExpoConfig } from 'expo/config';
 import { type ModPlatform } from 'expo/config-plugins';
 import fs from 'fs/promises';
-import { glob as globAsync } from 'glob';
 import path from 'path';
 
 import { addAllToGitIndexAsync, commitAsync, diffAsync, initializeGitRepoAsync } from '../gitPatch';
+import { getPatchFilesAsync } from '../patchFiles';
 import { moveAsync } from './dir';
 import { generateNativeProjectsAsync, platformSanityCheckAsync } from './generateNativeProjects';
 import * as logger from './logger';
@@ -15,6 +16,10 @@ import {
 } from './normalizeNativeProjects';
 import { resolveFromExpoCli } from './resolveFromExpoCli';
 import { createWorkingDirectoriesAsync, type WorkingDirectories } from './workingDirectories';
+
+declare namespace globalThis {
+  let __DEV__: boolean | undefined;
+}
 
 const debug = require('debug')('patch-project') as typeof console.log;
 
@@ -39,12 +44,10 @@ export async function patchProjectAsync(
   const { ensureValidPlatforms } = require(
     resolveFromExpoCli(projectRoot, 'build/src/prebuild/resolveOptions')
   ) as typeof import('@expo/cli/src/prebuild/resolveOptions');
-  const { setNodeEnv } = require(
-    resolveFromExpoCli(projectRoot, 'build/src/utils/nodeEnv')
-  ) as typeof import('@expo/cli/src/utils/nodeEnv');
-
-  setNodeEnv('development');
-  require('@expo/env').load(projectRoot);
+  consumeConfigEnvMode();
+  globalThis.__DEV__ = true;
+  const envInfo = loadProjectEnv(projectRoot, { mode: 'development' });
+  logLoadedEnv(envInfo);
 
   const { exp } = await getConfig(projectRoot);
   const patchRoot = options.patchRoot || 'cng-patches';
@@ -149,7 +152,9 @@ async function patchProjectForPlatformAsync({
 }
 
 async function removePatchFilesAsync(patchRoot: string, platform: ModPlatform): Promise<void> {
-  const patchFiles = await globAsync(`${platform}*.patch`, { cwd: patchRoot, absolute: true });
+  const patchFiles = (await getPatchFilesAsync(patchRoot, platform)).map((file) =>
+    path.resolve(patchRoot, file)
+  );
   await Promise.all(
     patchFiles.map((file) => {
       logger.log(`Removing patch file: ${file}`);

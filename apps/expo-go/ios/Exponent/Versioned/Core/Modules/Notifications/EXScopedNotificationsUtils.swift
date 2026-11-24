@@ -32,8 +32,10 @@ public class EXScopedNotificationsUtils {
   }
 
   static func isId(_ identifier: String, scopedByExperience scopeKey: String) -> Bool {
-    let scopeFromCategoryId = getScopeAndIdentifierFromScopedIdentifier(identifier).scopeKey
-    return scopeFromCategoryId == scopeKey
+    guard let components = parseScopedIdentifier(identifier) else {
+      return false
+    }
+    return components.scopeKey.utf16.elementsEqual(scopeKey.utf16)
   }
 
   static func getUnscopedIdentifier(fromScopedIdentifier: String) -> String {
@@ -42,37 +44,32 @@ public class EXScopedNotificationsUtils {
   }
 
   static func getScopeAndIdentifierFromScopedIdentifier(_ scopedIdentifier: String) -> ScopedIdentifierComponents {
-    var scope = ""
-    var identifier = ""
-    let pattern = "^((?:[^/\\\\]|\\\\[/\\\\])*)/((?:[^/\\\\]|\\\\[/\\\\])*)$"
+    return parseScopedIdentifier(scopedIdentifier) ?? ScopedIdentifierComponents(
+      scopeKey: "",
+      identifier: unescapedString(scopedIdentifier)
+    )
+  }
 
-    do {
-      let regex = try NSRegularExpression(pattern: pattern, options: [])
-      let range = NSRange(location: 0, length: scopedIdentifier.count)
+  private static func parseScopedIdentifier(_ scopedId: String) -> ScopedIdentifierComponents? {
+    let utf16 = scopedId.utf16
+    let stored = scopedId as NSString
+    let slash = UInt16(UInt8(ascii: "/"))
+    var match: ScopedIdentifierComponents?
 
-      if let match = regex.firstMatch(in: scopedIdentifier, options: [], range: range) {
-        let scopeRange = match.range(at: 1)
-        let identifierRange = match.range(at: 2)
-
-        if let scopeSubstring = Range(scopeRange, in: scopedIdentifier) {
-          scope = String(scopedIdentifier[scopeSubstring])
-        }
-        if let identifierSubstring = Range(identifierRange, in: scopedIdentifier) {
-          identifier = String(scopedIdentifier[identifierSubstring])
-        }
-      } else {
-        // No delimiter found, so no scope associated with this identifier
-        identifier = scopedIdentifier
+    for (offset, unit) in utf16.enumerated() where unit == slash {
+      let scope = unescapedString(stored.substring(to: offset))
+      let identifier = unescapedString(stored.substring(from: offset + 1))
+      let encoded = scopedIdentifier(fromId: identifier, forExperience: scope)
+      guard encoded.utf16.elementsEqual(utf16) else {
+        continue
       }
-    } catch {
-      // If regex fails, treat as unscoped
-      identifier = scopedIdentifier
+      guard match == nil else {
+        return nil
+      }
+      match = ScopedIdentifierComponents(scopeKey: scope, identifier: identifier)
     }
 
-    return ScopedIdentifierComponents(
-      scopeKey: unescapedString(scope),
-      identifier: unescapedString(identifier)
-    )
+    return match
   }
 
   private static func escapedString(_ string: String) -> String {
@@ -81,7 +78,7 @@ public class EXScopedNotificationsUtils {
   }
 
   private static func unescapedString(_ string: String) -> String {
-    return string.replacingOccurrences(of: "\\/", with: "/")
-      .replacingOccurrences(of: "\\\\", with: "\\")
+    return string.replacingOccurrences(of: "\\/", with: "/", options: .literal)
+      .replacingOccurrences(of: "\\\\", with: "\\", options: .literal)
   }
 }

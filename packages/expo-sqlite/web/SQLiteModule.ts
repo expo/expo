@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import { registerWebModule, NativeModule } from 'expo';
+import { registerWebModule, NativeModule, UnavailabilityError } from 'expo';
 
 import { type SQLiteOpenOptions } from '../src/NativeDatabase';
 import { type Changeset, type NativeChangeset } from '../src/NativeSession';
@@ -11,17 +11,76 @@ import {
   type SQLiteColumnValues,
   type SQLiteRunResult,
 } from '../src/NativeStatement';
-import { invokeWorkerAsync, invokeWorkerSync, workerMessageHandler } from './WorkerChannel';
+import { type SQLiteWebOptions } from '../src/WebConfiguration';
+import {
+  assertSyncWorkerCanPost,
+  beginSyncWorkerLoadRetry,
+  invokeWorkerAsync,
+  invokeWorkerSync,
+  markSQLiteWebWorkerReady,
+  SYNC_WORKER_NOT_READY_MESSAGE,
+  workerMessageHandler,
+} from './WorkerChannel';
+import {
+  type ConfigureWorkerMessage,
+  type InitWorkerMessage,
+  type ShutdownWorkerMessage,
+} from './web.types';
 
 let worker: Worker | null = null;
+let webOptions: SQLiteWebOptions = {};
+let databaseOperationStarted = false;
+let workerEpoch = 0;
+let workerShutdown: Promise<void> | null = null;
 let nextNativeDatabaseId = 0;
 let nextNativeStatementId = 0;
 let nextNativeSessionId = 0;
 
-function getWorker(): Worker {
+// A reloaded module, including a test, clears the previous schedule through this key.
+const workerStartHandle = Symbol.for('expo-sqlite.webWorkerStart');
+
+function cancelScheduledWorkerStart(): void {
+  const globals = globalThis as typeof globalThis & {
+    [workerStartHandle]?: ReturnType<typeof setTimeout>;
+  };
+  if (globals[workerStartHandle] != null) {
+    clearTimeout(globals[workerStartHandle]);
+    delete globals[workerStartHandle];
+  }
+}
+
+function scheduleWorkerStart(): void {
+  if (worker != null || typeof window === 'undefined') {
+    return;
+  }
+  const globals = globalThis as typeof globalThis & {
+    [workerStartHandle]?: ReturnType<typeof setTimeout>;
+  };
+  if (globals[workerStartHandle] != null) {
+    return;
+  }
+  // The next turn lets configureWeb() in this turn choose the wasm URL.
+  globals[workerStartHandle] = setTimeout(() => {
+    delete globals[workerStartHandle];
+    if (worker == null && typeof Worker === 'function') {
+      createWorker();
+    }
+  }, 0);
+}
+
+function createWorker(): Worker {
+  cancelScheduledWorkerStart();
   if (!worker) {
+    const epoch = ++workerEpoch;
     worker = new Worker(new URL('./worker', window.location.href));
     worker.addEventListener('message', (event) => {
+      if (epoch !== workerEpoch) {
+        return;
+      }
+      if (event.data?.type === 'workerReady') {
+        markSQLiteWebWorkerReady(event.data.error ? { error: event.data.error } : 'ready');
+        return;
+      }
       if (event.data.type === 'onDatabaseChange') {
         // @ts-expect-error EventEmitter type for NativeModule is not inferred correctly on web.
         SQLiteModuleInstance.emit(event.data.type, event.data.data);
@@ -29,8 +88,67 @@ function getWorker(): Worker {
       }
       workerMessageHandler(event);
     });
+    worker.postMessage({ type: 'configure', data: webOptions } satisfies ConfigureWorkerMessage);
+    worker.postMessage({ type: 'init' } satisfies InitWorkerMessage);
   }
   return worker;
+}
+
+function getWorker(): Worker {
+  // The old worker still owns the database files until it posts workerShutdown.
+  if (workerShutdown != null) {
+    throw new Error(SYNC_WORKER_NOT_READY_MESSAGE);
+  }
+  // The wasm load already failed. Post init again and return.
+  // The worker can fetch wasm only while this call is not spinning.
+  if (beginSyncWorkerLoadRetry()) {
+    const current = worker;
+    if (current == null) {
+      createWorker();
+    } else {
+      current.postMessage({ type: 'init' } satisfies InitWorkerMessage);
+    }
+    throw new Error(SYNC_WORKER_NOT_READY_MESSAGE);
+  }
+  // This call throws before it posts, so it has not opened a database.
+  // configureWeb() can still replace the worker.
+  assertSyncWorkerCanPost();
+  databaseOperationStarted = true;
+  return createWorker();
+}
+
+async function getWorkerAsync(): Promise<Worker> {
+  if (workerShutdown != null) {
+    await workerShutdown;
+  }
+  databaseOperationStarted = true;
+  return createWorker();
+}
+
+function discardPreloadedWorker(): void {
+  const current = worker;
+  workerEpoch += 1;
+  worker = null;
+  markSQLiteWebWorkerReady('loading');
+  if (current == null) {
+    return;
+  }
+  // terminate() does not close OPFS sync access handles.
+  // Wait until the worker closes them before the replacement opens the same files.
+  workerShutdown = new Promise((resolve) => {
+    const onMessage = (event: MessageEvent) => {
+      if (event.data?.type !== 'workerShutdown') {
+        return;
+      }
+      current.removeEventListener('message', onMessage);
+      current.terminate();
+      workerShutdown = null;
+      scheduleWorkerStart();
+      resolve();
+    };
+    current.addEventListener('message', onMessage);
+    current.postMessage({ type: 'shutdown' } satisfies ShutdownWorkerMessage);
+  });
 }
 
 // web worker works on Uint8Array, but session methods accept ArrayBuffer too
@@ -50,7 +168,7 @@ class NativeDatabase {
   }
 
   async initAsync(): Promise<void> {
-    await invokeWorkerAsync(getWorker(), 'open', {
+    await invokeWorkerAsync(await getWorkerAsync(), 'open', {
       nativeDatabaseId: this.id,
       databasePath: this.databasePath,
       options: this.options ?? {},
@@ -67,7 +185,7 @@ class NativeDatabase {
   }
 
   async isInTransactionAsync(): Promise<boolean> {
-    return await invokeWorkerAsync(getWorker(), 'isInTransaction', {
+    return await invokeWorkerAsync(await getWorkerAsync(), 'isInTransaction', {
       nativeDatabaseId: this.id,
     });
   }
@@ -78,10 +196,14 @@ class NativeDatabase {
   }
 
   async closeAsync(): Promise<void> {
-    await invokeWorkerAsync(getWorker(), 'close', {
+    await invokeWorkerAsync(await getWorkerAsync(), 'close', {
       nativeDatabaseId: this.id,
     });
   }
+  interruptSync(): void {
+    throw new UnavailabilityError('expo-sqlite', 'interruptSync');
+  }
+
   closeSync(): void {
     invokeWorkerSync(getWorker(), 'close', {
       nativeDatabaseId: this.id,
@@ -89,7 +211,7 @@ class NativeDatabase {
   }
 
   async execAsync(source: string): Promise<void> {
-    await invokeWorkerAsync(getWorker(), 'exec', {
+    await invokeWorkerAsync(await getWorkerAsync(), 'exec', {
       nativeDatabaseId: this.id,
       source,
     });
@@ -102,7 +224,7 @@ class NativeDatabase {
   }
 
   async serializeAsync(schemaName: string): Promise<Uint8Array> {
-    return await invokeWorkerAsync(getWorker(), 'serialize', {
+    return await invokeWorkerAsync(await getWorkerAsync(), 'serialize', {
       nativeDatabaseId: this.id,
       schemaName,
     });
@@ -115,7 +237,7 @@ class NativeDatabase {
   }
 
   async prepareAsync(nativeStatement: NativeStatement, source: string): Promise<void> {
-    await invokeWorkerAsync(getWorker(), 'prepare', {
+    await invokeWorkerAsync(await getWorkerAsync(), 'prepare', {
       nativeDatabaseId: this.id,
       nativeStatementId: nativeStatement.id,
       source,
@@ -129,7 +251,7 @@ class NativeDatabase {
     });
   }
   async createSessionAsync(nativeSession: NativeSession, dbName: string): Promise<void> {
-    await invokeWorkerAsync(getWorker(), 'sessionCreate', {
+    await invokeWorkerAsync(await getWorkerAsync(), 'sessionCreate', {
       nativeDatabaseId: this.id,
       nativeSessionId: nativeSession.id,
       dbName,
@@ -166,7 +288,7 @@ class NativeStatement {
     if (this.id == null) {
       throw new Error('Statement not prepared');
     }
-    return await invokeWorkerAsync(getWorker(), 'run', {
+    return await invokeWorkerAsync(await getWorkerAsync(), 'run', {
       nativeDatabaseId: database.id,
       nativeStatementId: this.id,
       bindParams,
@@ -196,7 +318,7 @@ class NativeStatement {
     if (this.id == null) {
       throw new Error('Statement not prepared');
     }
-    return await invokeWorkerAsync(getWorker(), 'step', {
+    return await invokeWorkerAsync(await getWorkerAsync(), 'step', {
       nativeDatabaseId: database.id,
       nativeStatementId: this.id,
     });
@@ -215,7 +337,7 @@ class NativeStatement {
     if (this.id == null) {
       throw new Error('Statement not prepared');
     }
-    return await invokeWorkerAsync(getWorker(), 'getAll', {
+    return await invokeWorkerAsync(await getWorkerAsync(), 'getAll', {
       nativeDatabaseId: database.id,
       nativeStatementId: this.id,
     });
@@ -234,7 +356,7 @@ class NativeStatement {
     if (this.id == null) {
       throw new Error('Statement not prepared');
     }
-    await invokeWorkerAsync(getWorker(), 'reset', {
+    await invokeWorkerAsync(await getWorkerAsync(), 'reset', {
       nativeDatabaseId: database.id,
       nativeStatementId: this.id,
     });
@@ -253,7 +375,7 @@ class NativeStatement {
     if (this.id == null) {
       throw new Error('Statement not prepared');
     }
-    return await invokeWorkerAsync(getWorker(), 'getColumnNames', {
+    return await invokeWorkerAsync(await getWorkerAsync(), 'getColumnNames', {
       nativeStatementId: this.id,
     });
   }
@@ -270,7 +392,7 @@ class NativeStatement {
     if (this.id == null) {
       throw new Error('Statement not prepared');
     }
-    await invokeWorkerAsync(getWorker(), 'finalize', {
+    await invokeWorkerAsync(await getWorkerAsync(), 'finalize', {
       nativeDatabaseId: database.id,
       nativeStatementId: this.id,
     });
@@ -294,7 +416,7 @@ export class NativeSession {
   }
 
   async attachAsync(database: NativeDatabase, table: string | null): Promise<void> {
-    await invokeWorkerAsync(getWorker(), 'sessionAttach', {
+    await invokeWorkerAsync(await getWorkerAsync(), 'sessionAttach', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
       table,
@@ -309,7 +431,7 @@ export class NativeSession {
   }
 
   async enableAsync(database: NativeDatabase, enabled: boolean): Promise<void> {
-    await invokeWorkerAsync(getWorker(), 'sessionEnable', {
+    await invokeWorkerAsync(await getWorkerAsync(), 'sessionEnable', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
       enabled,
@@ -324,7 +446,7 @@ export class NativeSession {
   }
 
   async closeAsync(database: NativeDatabase): Promise<void> {
-    await invokeWorkerAsync(getWorker(), 'sessionClose', {
+    await invokeWorkerAsync(await getWorkerAsync(), 'sessionClose', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
     });
@@ -337,7 +459,7 @@ export class NativeSession {
   }
 
   async createChangesetAsync(database: NativeDatabase): Promise<NativeChangeset> {
-    const result = await invokeWorkerAsync(getWorker(), 'sessionCreateChangeset', {
+    const result = await invokeWorkerAsync(await getWorkerAsync(), 'sessionCreateChangeset', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
     });
@@ -352,10 +474,14 @@ export class NativeSession {
   }
 
   async createInvertedChangesetAsync(database: NativeDatabase): Promise<NativeChangeset> {
-    const result = await invokeWorkerAsync(getWorker(), 'sessionCreateInvertedChangeset', {
-      nativeDatabaseId: database.id,
-      nativeSessionId: this.id,
-    });
+    const result = await invokeWorkerAsync(
+      await getWorkerAsync(),
+      'sessionCreateInvertedChangeset',
+      {
+        nativeDatabaseId: database.id,
+        nativeSessionId: this.id,
+      }
+    );
     return result.buffer as ArrayBuffer;
   }
   createInvertedChangesetSync(database: NativeDatabase): NativeChangeset {
@@ -370,7 +496,7 @@ export class NativeSession {
     database: NativeDatabase,
     changeset: Changeset | NativeChangeset
   ): Promise<void> {
-    await invokeWorkerAsync(getWorker(), 'sessionApplyChangeset', {
+    await invokeWorkerAsync(await getWorkerAsync(), 'sessionApplyChangeset', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
       changeset: convertChangesetInput(changeset),
@@ -388,7 +514,7 @@ export class NativeSession {
     database: NativeDatabase,
     changeset: Changeset | NativeChangeset
   ): Promise<NativeChangeset> {
-    const result = await invokeWorkerAsync(getWorker(), 'sessionInvertChangeset', {
+    const result = await invokeWorkerAsync(await getWorkerAsync(), 'sessionInvertChangeset', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
       changeset: convertChangesetInput(changeset),
@@ -413,7 +539,7 @@ export class SQLiteModule extends NativeModule {
   readonly bundledExtensions = {};
 
   async deleteDatabaseAsync(databasePath: string): Promise<void> {
-    await invokeWorkerAsync(getWorker(), 'deleteDatabase', {
+    await invokeWorkerAsync(await getWorkerAsync(), 'deleteDatabase', {
       databasePath,
     });
   }
@@ -421,6 +547,24 @@ export class SQLiteModule extends NativeModule {
     invokeWorkerSync(getWorker(), 'deleteDatabase', {
       databasePath,
     });
+  }
+
+  configureWeb(options: SQLiteWebOptions): void {
+    // Fast Refresh runs the same call again after a database is open.
+    if (options.wasmURL === webOptions.wasmURL && (worker != null || databaseOperationStarted)) {
+      return;
+    }
+    if (databaseOperationStarted) {
+      throw new Error(
+        'Cannot change the SQLite WebAssembly URL because a database has already been opened, and the web worker loads SQLite only once. ' +
+          'Call `configureWeb()` before opening any database, and reload the app after you change `wasmURL`.'
+      );
+    }
+    webOptions = { ...options };
+    // The preloaded worker loaded the previous wasm URL. No database is open, so start again.
+    if (worker != null) {
+      discardPreloadedWorker();
+    }
   }
 
   async ensureDatabasePathExistsAsync(databasePath: string): Promise<void> {
@@ -436,7 +580,7 @@ export class SQLiteModule extends NativeModule {
     sourceDatabase: NativeDatabase,
     sourceDatabaseName: string
   ): Promise<void> {
-    await invokeWorkerAsync(getWorker(), 'backupDatabase', {
+    await invokeWorkerAsync(await getWorkerAsync(), 'backupDatabase', {
       destNativeDatabaseId: destDatabase.id,
       destDatabaseName,
       sourceNativeDatabaseId: sourceDatabase.id,
@@ -462,7 +606,7 @@ export class SQLiteModule extends NativeModule {
     assetDatabasePath: string,
     forceOverwrite: boolean
   ): Promise<void> {
-    await invokeWorkerAsync(getWorker(), 'importAssetDatabase', {
+    await invokeWorkerAsync(await getWorkerAsync(), 'importAssetDatabase', {
       databasePath,
       assetDatabasePath,
       forceOverwrite,
@@ -474,5 +618,13 @@ export class SQLiteModule extends NativeModule {
   readonly NativeSession: typeof NativeSession = NativeSession;
 }
 
-const SQLiteModuleInstance = registerWebModule(SQLiteModule, 'SQLiteModule');
+const sqliteModuleName = 'SQLiteModule';
+// A second evaluation returns the instance that already owns the worker.
+// Scheduling again would start a worker that instance never uses.
+const moduleAlreadyRegistered = globalThis.expo?.modules?.[sqliteModuleName] != null;
+const SQLiteModuleInstance = registerWebModule(SQLiteModule, sqliteModuleName);
+if (!moduleAlreadyRegistered) {
+  cancelScheduledWorkerStart();
+  scheduleWorkerStart();
+}
 export default SQLiteModuleInstance;

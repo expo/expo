@@ -92,17 +92,27 @@ function isStructStructure(structure: Structure): boolean {
   return structure['key.kind'] === swiftDeclarationKind.struct;
 }
 
-function isRecordStructure(structure: Structure): boolean {
+function containsFieldAnnotation(file: FileType, structure: Structure): boolean {
+  const startIndex = structure['key.offset'];
+  const endIndex = startIndex + structure['key.length'];
+  const fieldIndex = file.content.substring(startIndex, endIndex).indexOf('@Field');
+  return fieldIndex !== -1;
+}
+
+function isRecordStructure(file: FileType, structure: Structure): boolean {
   const isRecordOrClass =
     structure['key.kind'] === swiftDeclarationKind.struct ||
     structure['key.kind'] === swiftDeclarationKind.class;
 
+  // To check whether a structure represents a record, check if it has any @Field annotated fields.
+  // For the case of empty structs add a check if the struct directly conforms to the Record.
+  const hasFields = containsFieldAnnotation(file, structure);
   const inheritsFromRecord =
     structure['key.inheritedtypes']?.find((type) => {
       return type['key.name'] === 'Record';
     }) !== undefined;
 
-  return isRecordOrClass && inheritsFromRecord;
+  return isRecordOrClass && (hasFields || inheritsFromRecord);
 }
 
 function isModuleStructure(structure: Structure): boolean {
@@ -238,7 +248,7 @@ function mapSwiftTypeToTsType(type?: string): Type {
       returnType.type = BasicType.NUMBER;
       break;
     case 'Void':
-    case '()': // `()` type is the same as `Void` in Swift. SourceKit will somtimes output `()` instead of `Void` when queried about the type.
+    case '()': // `()` type is the same as `Void` in Swift. SourceKit will sometimes output `()` instead of `Void` when queried about the type.
       returnType.type = BasicType.VOID;
       break;
     default:
@@ -549,7 +559,7 @@ function getClosureBodyStructure(structure: Structure): Structure | null {
   //.  }
   // }
   //
-  // The strucutre for a ClassDeclaration (from SourceKitten) looks like this:
+  // The structure for a ClassDeclaration (from SourceKitten) looks like this:
   // {
   //   "key.name": "Class",
   //   "key.substructure": [
@@ -971,33 +981,45 @@ async function parseModuleStructure(
   return moduleClassDeclaration;
 }
 
+type ParseStructuresOutput = {
+  modulesStructures: { structure: Structure; name: string }[];
+  recordsStructures: Structure[];
+  enumsStructures: Structure[];
+};
+
+type ParseStructureOptions = {
+  file: FileType;
+  structure: Structure;
+  name: string;
+};
+
 function parseStructure(
-  structure: Structure,
-  name: string,
-  modulesStructures: { structure: Structure; name: string }[],
-  recordsStructures: Structure[],
-  enumsStructures: Structure[]
+  { file, structure, name }: ParseStructureOptions,
+  // Note that instead of returning and merging the enum, record and module arrays, we're just collecting the items in the 3 arrays inside this object.
+  parsedStructuresOutput: ParseStructuresOutput
 ) {
+  const { modulesStructures, recordsStructures, enumsStructures } = parsedStructuresOutput;
   // TODO(@HubertBer): Find out why sometimes the structure is undefined (for example when parsing expo-audio)
-  if (!structure || !structure['key.substructure']) {
+  const substructure = structure['key.substructure'];
+  if (!structure || !substructure) {
     return;
   }
-  const substructure = structure['key.substructure'];
 
   if (isModuleStructure(structure)) {
     modulesStructures.push({ structure, name });
-  } else if (isRecordStructure(structure)) {
+  } else if (isRecordStructure(file, structure)) {
     recordsStructures.push(structure);
   } else if (isEnumStructure(structure)) {
     enumsStructures.push(structure);
   } else if (Array.isArray(substructure) && substructure.length > 0) {
     for (const substructure of structure['key.substructure']) {
       parseStructure(
-        substructure,
-        structure['key.name'] ?? name,
-        modulesStructures,
-        recordsStructures,
-        enumsStructures
+        {
+          file,
+          structure: substructure,
+          name: structure['key.name'] ?? name,
+        },
+        parsedStructuresOutput
       );
     }
   }
@@ -1112,7 +1134,7 @@ function parseNamespaces(
 ) {
   if (
     isModuleStructure(structure) ||
-    isRecordStructure(structure) ||
+    isRecordStructure(file, structure) ||
     isStructStructure(structure) ||
     isEnumStructure(structure) ||
     isClassStructure(structure)
@@ -1153,8 +1175,18 @@ export async function getSwiftFileTypeInformation(
   const recordsStructures: Structure[] = [];
   const enumsStructures: Structure[] = [];
   const fileStructure = getStructureFromFile(file);
-  parseStructure(fileStructure, '', modulesStructures, recordsStructures, enumsStructures);
-
+  parseStructure(
+    {
+      file,
+      structure: getStructureFromFile(file),
+      name: '',
+    },
+    {
+      modulesStructures,
+      recordsStructures,
+      enumsStructures,
+    }
+  );
   const namespaces: { [key: string]: namespace } = {};
   namespaces[''] = {};
   parseNamespaces(fileStructure, namespaces, file, namespaces['']);
@@ -1266,7 +1298,7 @@ function returnExpressionEnd(fileContent: string, returnIndex: number): Expressi
   let escaped = false;
   let braceCount = 0;
   // Doing a little cheat here to simplify the logic, we assume that the expression end is right before the scope closing `}`.
-  // While this isn't neccessarily true, in our case we only want to replace:
+  // While this isn't necessarily true, in our case we only want to replace:
   //
   // return expression
   //
@@ -1275,7 +1307,7 @@ function returnExpressionEnd(fileContent: string, returnIndex: number): Expressi
   // let return_expression = expression
   // return return_expression
   //
-  // such that return_expression variable has the return type of the expression and the file still parses correctly (This might not even be neccessary,
+  // such that return_expression variable has the return type of the expression and the file still parses correctly (This might not even be necessary,
   // sourcekitten seems to be quite flexible, it may parse part of malformed files just fine).
   let i = returnIndex;
   while (i < fileContent.length) {

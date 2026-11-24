@@ -21,20 +21,48 @@ internal import jsi
 /// > decode call, while the owner is alive" — which the buffer-driven decode path honors because it
 /// > reads the value inline on the JS thread before the buffer is torn down. Do not store, capture, or
 /// > escape it; call ``copied(in:)`` to materialize an owning value when escape is needed.
+// `@frozen` so client modules, which decode every `@JS` argument through an unowned value, know its
+// size and that it is trivial to destroy, instead of asking the type's metadata accessor for both.
+@frozen
 public struct JavaScriptUnownedValue: ~Copyable {
-  // Borrows the `jsi::Value` at this address; it does not own it and must not outlive the owner.
-  internal let pointer: UnsafePointer<facebook.jsi.Value>
+  // MARK: - Layout
+
+  // Every stored property below is part of the frozen layout: adding, removing or reordering one
+  // changes the ABI that client modules compiled against, and each type has to be public, which is
+  // why both are kept as raw pointers and rebuilt into their C++ views on access.
+
+  // The address of the borrowed `jsi::Value`. The value is not owned and must not outlive its owner.
+  @usableFromInline
+  internal let rawPointer: UnsafeRawPointer
 
   // The JSI runtime, stored as the raw `facebook.jsi.IRuntime` rather than the `JavaScriptRuntime`
   // wrapper. `IRuntime` is imported as an immortal reference (see `jsi.apinotes`), so storing and
-  // copying it emits no ARC, unlike a `JavaScriptRuntime` field whose every per-call access pays an
-  // unowned retain/release. Only `getString` reads it; the type checks and numeric accessors touch
-  // only `pointer`.
-  internal let runtime: facebook.jsi.IRuntime
+  // rebuilding it emits no ARC, unlike a `JavaScriptRuntime` field whose every per-call access pays an
+  // unowned retain/release. Only the string, object and array accessors read it; the type checks and
+  // numeric accessors touch only `pointer`.
+  internal let rawRuntime: UnsafeRawPointer
+
+  // MARK: - C++ views
+
+  internal var pointer: UnsafePointer<facebook.jsi.Value> {
+    return rawPointer.assumingMemoryBound(to: facebook.jsi.Value.self)
+  }
+
+  // `unsafeBitCast` rather than `Unmanaged.takeUnretainedValue()`: with an immortal reference, the
+  // latter crashes the SIL optimizer (Swift 6.4) in Release builds.
+  internal var runtime: facebook.jsi.IRuntime {
+    return unsafeBitCast(rawRuntime, to: facebook.jsi.IRuntime.self)
+  }
 
   internal init(_ runtime: facebook.jsi.IRuntime, _ pointer: UnsafePointer<facebook.jsi.Value>) {
-    self.runtime = runtime
-    self.pointer = pointer
+    self.rawRuntime = unsafeBitCast(runtime, to: UnsafeRawPointer.self)
+    self.rawPointer = UnsafeRawPointer(pointer)
+  }
+
+  /// Borrows the `jsi::Value` at the given raw pointer, without copying it. `runtime` must be the runtime
+  /// that owns the value, and the value must stay alive and in place while the returned value is used.
+  public init(_ runtime: borrowing JavaScriptRuntime, unsafeValuePointer pointer: UnsafeRawPointer) {
+    self.init(runtime.pointee, pointer.assumingMemoryBound(to: facebook.jsi.Value.self))
   }
 
   /// Materializes an owning ``JavaScriptValue`` by copying the borrowed `jsi::Value`. Use it when the
@@ -46,9 +74,17 @@ public struct JavaScriptUnownedValue: ~Copyable {
   /// different runtime would clone a handle from another heap and corrupt it; the assert guards that.
   public func copied(in runtime: JavaScriptRuntime) -> JavaScriptValue {
     assert(
-      Unmanaged.passUnretained(runtime.pointee).toOpaque() == Unmanaged.passUnretained(self.runtime).toOpaque(),
-      "`copied(in:)` must be passed the runtime that owns the borrowed value")
-    return JavaScriptValue(runtime, pointer.pointee)
+      belongs(to: runtime),
+      "`copied(in:)` must be passed the runtime that owns the borrowed value"
+    )
+    return JavaScriptValue(runtime, copying: pointer.pointee)
+  }
+
+  /// Moves the borrowed `jsi::Value` out into an owning ``JavaScriptValue``, without a clone. The slot it
+  /// points to is left moved-from, so it may be taken only once and only when its owner allows it: the
+  /// host function trampoline uses it for `this`, which the engine doesn't read after the call.
+  internal func takeValue(in runtime: borrowing JavaScriptRuntime) -> JavaScriptValue {
+    return JavaScriptValue(runtime, UnsafeMutablePointer(mutating: pointer).move())
   }
 
   // MARK: - Type checks
@@ -108,7 +144,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   /// Returns the value as a string, or asserts if not a string.
   public func getString() -> String {
     assert(isString(), "Value is not a string")
-    return String(pointer.pointee.getString(runtime).utf8(runtime))
+    return String(jsiStringValue: pointer.pointee, in: runtime)
   }
 
   /// Returns the value as a ``JavaScriptObject`` *without* materializing an owning ``JavaScriptValue``
@@ -123,9 +159,135 @@ public struct JavaScriptUnownedValue: ~Copyable {
   public func getObject(in runtime: JavaScriptRuntime) -> JavaScriptObject {
     assert(isObject(), "Value is not an object")
     assert(
-      Unmanaged.passUnretained(runtime.pointee).toOpaque() == Unmanaged.passUnretained(self.runtime).toOpaque(),
-      "`getObject(in:)` must be passed the runtime that owns the borrowed value")
+      belongs(to: runtime),
+      "`getObject(in:)` must be passed the runtime that owns the borrowed value"
+    )
     return JavaScriptObject(runtime, pointer.pointee.getObject(self.runtime))
+  }
+
+  /// Whether the value is an array. The zero-copy counterpart of ``JavaScriptValue/isArray()``.
+  public func isArray() -> Bool {
+    return pointer.pointee.isObject() && pointer.pointee.getObject(runtime).isArray(runtime)
+  }
+
+  /// Returns the value as a ``JavaScriptArray``, or asserts if it is not an array. The zero-copy
+  /// counterpart of ``JavaScriptValue/getArray()``, with the same runtime contract as
+  /// ``getObject(in:)``.
+  public func getArray(in runtime: JavaScriptRuntime) -> JavaScriptArray {
+    assert(isArray(), "Value is not an array")
+    assert(
+      belongs(to: runtime),
+      "`getArray(in:)` must be passed the runtime that owns the borrowed value"
+    )
+    return JavaScriptArray(runtime, pointer.pointee.getObject(self.runtime).getArray(self.runtime))
+  }
+
+  /// Whether the value is a function. The zero-copy counterpart of ``JavaScriptValue/isFunction()``.
+  public func isFunction() -> Bool {
+    return pointer.pointee.isObject() && pointer.pointee.getObject(runtime).isFunction(runtime)
+  }
+
+  /// Returns the value as a ``JavaScriptFunction``, or asserts if it is not a function. The zero-copy
+  /// counterpart of ``JavaScriptValue/getFunction()``, with the same runtime contract as ``getObject(in:)``.
+  public func getFunction(in runtime: JavaScriptRuntime) -> JavaScriptFunction {
+    assert(isFunction(), "Value is not a function")
+    assert(belongs(to: runtime), "`getFunction(in:)` must be passed the runtime that owns the borrowed value")
+    return JavaScriptFunction(runtime, expo.functionFromValue(self.runtime, pointer.pointee))
+  }
+
+  /// Whether the value is a typed array. The zero-copy counterpart of ``JavaScriptValue/isTypedArray()``.
+  public func isTypedArray() -> Bool {
+    return pointer.pointee.isObject() && expo.isTypedArray(runtime, pointer.pointee.getObject(runtime))
+  }
+
+  /// Whether the value is an `ArrayBuffer`. The zero-copy counterpart of ``JavaScriptValue/isArrayBuffer()``.
+  public func isArrayBuffer() -> Bool {
+    return pointer.pointee.isObject() && pointer.pointee.getObject(runtime).isArrayBuffer(runtime)
+  }
+
+  /// Returns the value as a ``JavaScriptTypedArray``, or asserts if it is not a typed array. The
+  /// zero-copy counterpart of ``JavaScriptValue/getTypedArray()``, with the same runtime contract as
+  /// ``getObject(in:)``.
+  @JavaScriptActor
+  public func getTypedArray(in runtime: JavaScriptRuntime) -> JavaScriptTypedArray {
+    assert(isTypedArray(), "Value is not a typed array")
+    assert(belongs(to: runtime), "`getTypedArray(in:)` must be passed the runtime that owns the borrowed value")
+    return JavaScriptTypedArray(runtime, pointer.pointee.getObject(self.runtime))
+  }
+
+  /// Returns the value as a ``JavaScriptArrayBuffer``, or asserts if it is not an `ArrayBuffer`. The
+  /// zero-copy counterpart of ``JavaScriptValue/getArrayBuffer()``, with the same runtime contract as
+  /// ``getObject(in:)``.
+  public func getArrayBuffer(in runtime: JavaScriptRuntime) -> JavaScriptArrayBuffer {
+    assert(isArrayBuffer(), "Value is not an array buffer")
+    assert(belongs(to: runtime), "`getArrayBuffer(in:)` must be passed the runtime that owns the borrowed value")
+    return JavaScriptArrayBuffer(runtime, expo.arrayBufferFromValue(self.runtime, pointer.pointee))
+  }
+
+  /// Returns the value as a ``JavaScriptBigInt``, or asserts if it is not a BigInt. The zero-copy
+  /// counterpart of ``JavaScriptValue/getBigInt()``, with the same runtime contract as ``getObject(in:)``.
+  public func getBigInt(in runtime: JavaScriptRuntime) -> JavaScriptBigInt {
+    assert(isBigInt(), "Value is not a BigInt")
+    assert(belongs(to: runtime), "`getBigInt(in:)` must be passed the runtime that owns the borrowed value")
+    return JavaScriptBigInt(runtime, pointer.pointee.getBigInt(self.runtime))
+  }
+
+  /// Returns the value as a ``JavaScriptSymbol``, or asserts if it is not a symbol. The zero-copy
+  /// counterpart of ``JavaScriptValue/getSymbol()``, with the same runtime contract as ``getObject(in:)``.
+  public func getSymbol(in runtime: JavaScriptRuntime) -> JavaScriptSymbol {
+    assert(isSymbol(), "Value is not a symbol")
+    assert(belongs(to: runtime), "`getSymbol(in:)` must be passed the runtime that owns the borrowed value")
+    return JavaScriptSymbol(runtime, pointer.pointee.getSymbol(self.runtime))
+  }
+
+  /// The kind of the value. The zero-copy counterpart of ``JavaScriptValue/kind``.
+  public var kind: JavaScriptValue.Kind {
+    switch true {
+    case isUndefined():
+      return .undefined
+    case isNull():
+      return .null
+    case isBool():
+      return .bool
+    case isNumber():
+      return .number
+    case isBigInt():
+      return .bigint
+    case isSymbol():
+      return .symbol
+    case isString():
+      return .string
+    case isFunction():
+      return .function
+    default:
+      return .object
+    }
+  }
+
+  /// Whether the borrowed value belongs to `runtime`: the runtime that owns the value it borrows.
+  private func belongs(to runtime: JavaScriptRuntime) -> Bool {
+    return unsafeBitCast(runtime.pointee, to: UnsafeRawPointer.self) == rawRuntime
+  }
+
+  // MARK: - Pointer access
+
+  /// Provides scoped access to a raw pointer to the borrowed `facebook.jsi.Value`, like
+  /// ``JavaScriptValue/withUnsafePointee(_:)``. The pointer is valid only for the duration of the closure and must
+  /// not be stored or escaped. Inlinable, so it costs nothing in the caller's module.
+  @inlinable
+  public func withUnsafePointee<R: ~Copyable, E: Error>(_ body: (UnsafeRawPointer) throws(E) -> R) throws(E) -> R {
+    return try body(rawPointer)
+  }
+
+  // MARK: - Equality
+
+  /// Tests whether the borrowed value and `another` are strictly equal, like `===` in JavaScript
+  /// (https://262.ecma-international.org/11.0/#sec-strict-equality-comparison). The zero-copy
+  /// counterpart of ``JavaScriptValue/isEqual(to:)``: the engine compares two strings, without a Swift
+  /// `String` or a copy of the borrowed value. `another` must belong to the runtime that owns the
+  /// borrowed value, unless it belongs to no runtime, like a number.
+  public func isEqual(to another: borrowing JavaScriptValue) -> Bool {
+    return facebook.jsi.Value.strictEquals(runtime, pointer.pointee, another.pointee)
   }
 
   // MARK: - Throwing conversions ("as functions")
@@ -169,5 +331,60 @@ public struct JavaScriptUnownedValue: ~Copyable {
       throw JavaScriptValue.TypeError(type: JavaScriptObject.self)
     }
     return getObject(in: runtime)
+  }
+
+  /// Returns the value as a ``JavaScriptArray``, or throws `TypeError` if it is not an array. The
+  /// zero-copy counterpart of ``JavaScriptValue/asArray()``; see ``getArray(in:)``.
+  public func asArray(in runtime: JavaScriptRuntime) throws(JavaScriptValue.TypeError) -> JavaScriptArray {
+    guard isArray() else {
+      throw JavaScriptValue.TypeError(type: JavaScriptArray.self)
+    }
+    return getArray(in: runtime)
+  }
+
+  /// Returns the value as a ``JavaScriptFunction``, or throws `TypeError` if it is not a function. The
+  /// zero-copy counterpart of ``JavaScriptValue/asFunction()``; see ``getFunction(in:)``.
+  public func asFunction(in runtime: JavaScriptRuntime) throws(JavaScriptValue.TypeError) -> JavaScriptFunction {
+    guard isFunction() else {
+      throw JavaScriptValue.TypeError(type: JavaScriptFunction.self)
+    }
+    return getFunction(in: runtime)
+  }
+
+  /// Returns the value as a ``JavaScriptTypedArray``, or throws `TypeError` if it is not a typed array. The
+  /// zero-copy counterpart of ``JavaScriptValue/asTypedArray()``; see ``getTypedArray(in:)``.
+  @JavaScriptActor
+  public func asTypedArray(in runtime: JavaScriptRuntime) throws(JavaScriptValue.TypeError) -> JavaScriptTypedArray {
+    guard isTypedArray() else {
+      throw JavaScriptValue.TypeError(type: JavaScriptTypedArray.self)
+    }
+    return getTypedArray(in: runtime)
+  }
+
+  /// Returns the value as a ``JavaScriptArrayBuffer``, or throws `TypeError` if it is not an `ArrayBuffer`.
+  /// The zero-copy counterpart of ``JavaScriptValue/asArrayBuffer()``; see ``getArrayBuffer(in:)``.
+  public func asArrayBuffer(in runtime: JavaScriptRuntime) throws(JavaScriptValue.TypeError) -> JavaScriptArrayBuffer {
+    guard isArrayBuffer() else {
+      throw JavaScriptValue.TypeError(type: JavaScriptArrayBuffer.self)
+    }
+    return getArrayBuffer(in: runtime)
+  }
+
+  /// Returns the value as a ``JavaScriptBigInt``, or throws `TypeError` if it is not a BigInt. The
+  /// zero-copy counterpart of ``JavaScriptValue/asBigInt()``; see ``getBigInt(in:)``.
+  public func asBigInt(in runtime: JavaScriptRuntime) throws(JavaScriptValue.TypeError) -> JavaScriptBigInt {
+    guard isBigInt() else {
+      throw JavaScriptValue.TypeError(type: JavaScriptBigInt.self)
+    }
+    return getBigInt(in: runtime)
+  }
+
+  /// Returns the value as a ``JavaScriptSymbol``, or throws `TypeError` if it is not a symbol. The
+  /// zero-copy counterpart of ``JavaScriptValue/asSymbol()``; see ``getSymbol(in:)``.
+  public func asSymbol(in runtime: JavaScriptRuntime) throws(JavaScriptValue.TypeError) -> JavaScriptSymbol {
+    guard isSymbol() else {
+      throw JavaScriptValue.TypeError(type: JavaScriptSymbol.self)
+    }
+    return getSymbol(in: runtime)
   }
 }

@@ -51,6 +51,26 @@ export function getVersionedMarkdownPath(path?: string) {
   return `${UPGRADE_HELPER_PATH}/${from}-to-${to}/index.md`;
 }
 
+export function getMarkdownFilePath(pagePath?: string) {
+  if (!pagePath) {
+    return null;
+  }
+
+  const versionedPath = getVersionedMarkdownPath(pagePath);
+  if (versionedPath) {
+    return versionedPath;
+  }
+
+  const path = pagePath.split(/[#?]/)[0].replace(/\/$/, '');
+  if (!path || path === '/') {
+    return '/index.md';
+  }
+  if (path.endsWith('.md')) {
+    return path;
+  }
+  return path.endsWith('/index') ? `${path}.md` : `${path}/index.md`;
+}
+
 export function shouldShowMarkdownActions({
   packageName,
   path,

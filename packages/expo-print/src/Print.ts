@@ -15,6 +15,7 @@ export type {
   FilePrintResult,
   OrientationType,
   PageMargins,
+  PaperSize,
   PrintOptions,
   Printer,
 } from './Print.types';
@@ -81,7 +82,7 @@ export async function selectPrinterAsync(): Promise<Printer> {
 
 // @needsAudit
 /**
- * Prints HTML to PDF file and saves it to [app's cache directory](./filesystem/#filesystemcachedirectory).
+ * Prints HTML to PDF file and saves it to [app's cache directory](./filesystem/#cache).
  * On Web this method opens the print dialog.
  * @param options A map of print options.
  */

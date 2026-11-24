@@ -23,13 +23,13 @@ export function JoinTheCommunity() {
       <div
         className={mergeClasses(
           'my-4 inline-grid w-full grid-cols-2 gap-x-8 gap-y-1.5',
-          'rounded-lg border border-default p-3 shadow-xs',
+          'rounded-3xl border border-default p-3 shadow-xs',
           'max-xl:grid-cols-1',
           'max-lg:grid-cols-2',
           'max-md:grid-cols-1'
         )}>
         <CommunityGridCell
-          title="Discord and Forums"
+          title="Discord and forums"
           description="Join our Discord to chat, ask questions or attend events."
           link="https://chat.expo.dev"
           icon={<DiscordIcon aria-hidden="true" className="icon-xl text-palette-white" />}

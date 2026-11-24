@@ -1,6 +1,5 @@
 package com.reactnativecommunity.webview;
 
-import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Build;
@@ -15,7 +14,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.util.Pair;
 
 import com.facebook.common.logging.FLog;
@@ -33,7 +31,6 @@ import com.reactnativecommunity.webview.events.TopLoadingStartEvent;
 import com.reactnativecommunity.webview.events.TopRenderProcessGoneEvent;
 import com.reactnativecommunity.webview.events.TopShouldStartLoadWithRequestEvent;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -54,11 +51,7 @@ public class RNCWebViewClient extends WebViewClient {
         super.onPageFinished(webView, url);
         String cookies = CookieManager.getInstance().getCookie(url);
         if (cookies != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                CookieManager.getInstance().flush();
-            }else {
-                CookieSyncManager.getInstance().sync();
-            }
+            CookieManager.getInstance().flush();
         }
 
         if (!mLastLoadFailed) {
@@ -139,7 +132,6 @@ public class RNCWebViewClient extends WebViewClient {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.N)
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
         final String url = request.getUrl().toString();
@@ -256,7 +248,6 @@ public class RNCWebViewClient extends WebViewClient {
         UIManagerHelper.getEventDispatcherForReactTag((ReactContext) webView.getContext(), reactTag).dispatchEvent(new TopLoadingErrorEvent(reactTag, eventData));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onReceivedHttpError(
             WebView webView,
@@ -274,7 +265,6 @@ public class RNCWebViewClient extends WebViewClient {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
     @Override
     public boolean onRenderProcessGone(WebView webView, RenderProcessGoneDetail detail) {
         // WebViewClient.onRenderProcessGone was added in O.

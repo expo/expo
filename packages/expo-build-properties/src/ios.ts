@@ -42,10 +42,6 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
         resolveConfigValue(config, 'ios', 'buildReactNativeFromSource')?.toString(),
     },
     {
-      propName: 'expo.useHermesV1',
-      propValueGetter: (config) => resolveConfigValue(config, 'ios', 'useHermesV1')?.toString(),
-    },
-    {
       propName: 'EXPO_USE_PRECOMPILED_MODULES',
       propValueGetter: (config) => (config.ios?.usePrecompiledModules ?? true).toString(),
     },
@@ -63,7 +59,7 @@ export const withIosDeploymentTarget: ConfigPlugin<PluginConfigType> = (config, 
   // Updates deployment target in app xcodeproj
   config = withIosDeploymentTargetXcodeProject(config, { deploymentTarget });
 
-  // Updates deployement target in Podfile (Pods project)
+  // Updates deployment target in Podfile (Pods project)
   config = withIosDeploymentTargetPodfile(config, props);
 
   return config;

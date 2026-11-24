@@ -11,8 +11,9 @@ export interface MangleContext {
   specsChecksum: string;
 }
 
-const MANGLING_DEFINES_KEY = 'MANGLING_DEFINES';
+const MANGLING_HEADER_KEY = 'MANGLING_HEADER';
 const MANGLED_SPECS_CHECKSUM_KEY = 'MANGLED_SPECS_CHECKSUM';
+const MANGLING_HEADER_FILE_NAME = 'expo-brownfield-mangle.h';
 
 const BUILD_DIR_NAME = 'build';
 const BUILT_PRODUCTS_SUBDIR = path.join('build', 'Release-iphonesimulator');
@@ -40,6 +41,7 @@ const SWIFT_SYMBOL_PATTERNS: RegExp[] = [
   /_\w+_swiftoverride_/,
   /_Z\w+swift/,
   /get_witness_table /,
+  /get_type_metadata /,
 ];
 
 const isSwiftSymbol = (line: string): boolean => SWIFT_SYMBOL_PATTERNS.some((re) => re.test(line));
@@ -179,8 +181,26 @@ const extractConstants = (lines: string[]): string[] => {
     .filter((line) => !/__destroy_helper_block.*/.test(line))
     .map((line) => line.replace(/^.* _/, ''));
 
-  return Array.from(new Set([...sConsts, ...tConsts]));
+  // Drop Itanium C++ mangled names (`_Z...`) and any symbol with whitespace:
+  // a `#define` can't rewrite them (mangled names never appear as source
+  // tokens; a name with spaces is invalid and collapses symbols onto one
+  // macro).
+  return Array.from(new Set([...sConsts, ...tConsts])).filter(
+    (sym) => !sym.startsWith('_Z') && !/\s/.test(sym)
+  );
 };
+
+/**
+ * A `#define` for a bare word like `props` or `load` would also rewrite
+ * unrelated C++ identifiers (`std::atomic::load`) in the force-included header,
+ * breaking compilation. Requiring an uppercase letter or underscore keeps
+ * camelCase/prefixed selectors (`reactTag`, `sd_extendedObject`) and drops the
+ * generic single words.
+ */
+const isDistinctiveSelector = (selector: string): boolean => /[A-Z_]/.test(selector);
+
+const capitalize = (value: string): string =>
+  value ? value[0]!.toUpperCase() + value.slice(1) : value;
 
 /**
  * Category selectors are emitted as ` t -[Class(Category) selector]` lines
@@ -219,13 +239,20 @@ const prefixSymbols = (prefix: string, symbols: string[]): string[] =>
   symbols.map((sym) => `${sym}=${prefix}${sym}`);
 
 /**
- * Property setter/getter pairs need symmetric handling so that `setFoo:` →
- * `set<Prefix>Foo:` and `foo` → `<Prefix>foo` both round-trip. Lifted from
- * `CocoapodsMangle::Defines.prefix_selectors` in the gem.
+ * Turn Objective-C category selectors into `#define`s. Beyond the naive
+ * `name=prefixname` rename, a property `foo` also needs:
+ *
+ * - its setter mapped to `set` + capitalize(`<prefix>foo`) to match how the
+ *   compiler derives `setFoo:` (not `set<prefix>foo`);
+ * - its synthesized ivar renamed (`_foo=_<prefix>foo`) for code that touches it
+ *   directly (`_reactSubviews`);
+ * - to be dropped as a whole (getter + setter) when not distinctive, so it's
+ *   either fully renamed or not at all.
  */
 const prefixSelectors = (prefix: string, selectors: string[]): string[] => {
   const remaining = new Set(selectors);
   const defines: string[] = [];
+  const ivarNames: string[] = [];
 
   const setters = selectors.filter((sel) => /^set[A-Z]/.test(sel));
   for (const setter of setters) {
@@ -240,27 +267,59 @@ const prefixSelectors = (prefix: string, selectors: string[]): string[] => {
     }
     remaining.delete(setter);
     remaining.delete(getter);
-    defines.push(`${setter}=set${prefix}${getter}`);
-    defines.push(`${getter}=${prefix}${getter}`);
+    // Drop the whole property when its name isn't distinctive, so the getter
+    // and setter never disagree about whether they were renamed.
+    if (!isDistinctiveSelector(getter)) {
+      continue;
+    }
+    const mangledGetter = `${prefix}${getter}`;
+    defines.push(`${getter}=${mangledGetter}`);
+    defines.push(`${setter}=set${capitalize(mangledGetter)}`);
+    ivarNames.push(getter);
   }
 
-  defines.push(...prefixSymbols(prefix, Array.from(remaining)));
+  const plain = Array.from(remaining).filter(isDistinctiveSelector);
+  defines.push(...prefixSymbols(prefix, plain));
+  // A plain getter-shaped selector may also back an ivar; setters never do.
+  ivarNames.push(...plain.filter((sel) => !/^set[A-Z]/.test(sel)));
+  defines.push(...ivarNames.map((name) => `_${name}=_${prefix}${name}`));
+
   return defines;
 };
 
-const buildManglingDefines = async (prefix: string, binaries: string[]): Promise<string[]> => {
+interface ManglingDefines {
+  /** Plain C/C++ symbols — renamed in every language for link safety. */
+  constantDefines: string[];
+  /** Objective-C classes, selectors, and backing ivars — guarded by __OBJC__. */
+  objcDefines: string[];
+}
+
+const buildManglingDefines = async (
+  prefix: string,
+  binaries: string[]
+): Promise<ManglingDefines> => {
   const allSymbolsGU = await runNm(binaries, '-gU');
   const allSymbolsU = await runNm(binaries, '-U');
 
   const classes = extractClasses(allSymbolsGU);
-  const constants = extractConstants(allSymbolsGU);
   const categorySelectors = extractCategorySelectors(allSymbolsU, classes);
 
-  return [
-    ...prefixSymbols(prefix, classes),
-    ...prefixSymbols(prefix, constants),
-    ...prefixSelectors(prefix, categorySelectors),
-  ];
+  // Only selectors are mangled. Two other symbol kinds can't work via a
+  // `#define` in a Swift + clang-modules graph, because `-include` doesn't
+  // reach Swift source or a module's build context:
+  //
+  // - C/C++ symbols (Yoga's `YGConfigNew`): declared through a module, so the
+  //   call site is renamed but the declaration isn't -> undeclared function.
+  // - ObjC class link-symbols (`_OBJC_CLASS_$_RCTView`): defined textually but
+  //   referenced from Swift / across modules -> undefined symbol at link.
+  //
+  // Selectors are message-send names, and every source that uses them gets the
+  // same `-include`, so renaming them consistently is always safe. `classes` is
+  // still extracted so extractCategorySelectors can skip categories on them.
+  return {
+    constantDefines: [],
+    objcDefines: prefixSelectors(prefix, categorySelectors),
+  };
 };
 
 /** Read the existing xcconfig (if any) and return its `MANGLED_SPECS_CHECKSUM` value. */
@@ -273,28 +332,73 @@ const readExistingChecksum = (xcconfigPath: string): string | null => {
   return match?.[1] ?? null;
 };
 
+/**
+ * Render the renames as `#define OLD NEW` lines in a header (force-included via
+ * `-include`) rather than `-D` flags on `GCC_PREPROCESSOR_DEFINITIONS`. Xcode
+ * exports every build setting into each script phase's environment, so a
+ * megabyte-scale defines list overflows `kern.argmax` (1 MB) and any mangled
+ * target with a script phase fails with "Argument list too long". The header
+ * keeps the command line to one short `-include` flag.
+ *
+ * ObjC renames are wrapped in `__OBJC__` so they never touch pure C/C++
+ * translation units (`std::atomic::load`, folly/hermes internals).
+ */
+const buildManglingHeader = (constantDefines: string[], objcDefines: string[]): string => {
+  const toLines = (defines: string[]): string =>
+    defines
+      .map((define) => {
+        const separator = define.indexOf('=');
+        return `#define ${define.slice(0, separator)} ${define.slice(separator + 1)}`;
+      })
+      .join('\n');
+
+  return `// This file is automatically generated by expo-brownfield any time the
+// pod dependency graph changes. Commit it alongside Podfile.lock.
+#ifndef EXPO_BROWNFIELD_MANGLE_H
+#define EXPO_BROWNFIELD_MANGLE_H
+
+// C / C++ / Objective-C symbols — renamed in every language for link safety.
+${toLines(constantDefines)}
+
+// Objective-C classes, selectors, and backing ivars. Guarded so pure C/C++
+// translation units are never rewritten.
+#ifdef __OBJC__
+${toLines(objcDefines)}
+#endif
+
+#endif
+`;
+};
+
 const writeManglingXcconfig = (
   xcconfigPath: string,
-  defines: string[],
+  constantDefines: string[],
+  objcDefines: string[],
   specsChecksum: string
 ): void => {
+  // Write the header to the sandbox root (the `Pods` dir), whose path has no
+  // spaces, so the `-include` flag needs no fragile shell quoting — unlike the
+  // xcconfig's own "Target Support Files" directory.
+  const headerPath = path.join(path.dirname(path.dirname(xcconfigPath)), MANGLING_HEADER_FILE_NAME);
+
   const contents = `// This config file is automatically generated by expo-brownfield any time the
 // pod dependency graph changes. Commit it alongside Podfile.lock.
-
-${MANGLING_DEFINES_KEY} = ${defines.join(' ')}
-
+${MANGLING_HEADER_KEY} = ${headerPath}
 // Used to skip rebuilding the mangling defines when the dependency graph hasn't changed.
 ${MANGLED_SPECS_CHECKSUM_KEY} = ${specsChecksum}
 `;
+
   fs.mkdirSync(path.dirname(xcconfigPath), { recursive: true });
   fs.writeFileSync(xcconfigPath, contents);
+  fs.writeFileSync(headerPath, buildManglingHeader(constantDefines, objcDefines));
 };
 
 /**
- * Patch a per-pod xcconfig so it (1) `#include`s our mangling xcconfig and
- * (2) appends `$(MANGLING_DEFINES)` to its `GCC_PREPROCESSOR_DEFINITIONS`.
- * The transform is idempotent: re-running on an already-patched file leaves
- * it unchanged.
+ * Patch a per-pod xcconfig so it (1) `#include`s our mangling xcconfig (which
+ * defines `MANGLING_HEADER`) and (2) force-includes that header via
+ * `OTHER_CFLAGS`. Only C-family flags are touched — matching the original
+ * `GCC_PREPROCESSOR_DEFINITIONS` scope and deliberately leaving Swift's clang
+ * importer alone. Idempotent: re-running on an already-patched file is a no-op.
  */
 const patchPodXcconfig = (podXcconfigPath: string, manglingXcconfigPath: string): void => {
   if (!fs.existsSync(podXcconfigPath)) {
@@ -307,15 +411,25 @@ const patchPodXcconfig = (podXcconfigPath: string, manglingXcconfigPath: string)
     contents = `${includeLine}\n${contents}`;
   }
 
-  const definesRefRe = new RegExp(`\\$\\(${MANGLING_DEFINES_KEY}\\)`);
-  if (!definesRefRe.test(contents)) {
-    contents = contents.replace(
-      /^(GCC_PREPROCESSOR_DEFINITIONS\s*=\s*[^\n]*)$/m,
-      `$1 $(${MANGLING_DEFINES_KEY})`
-    );
-  }
+  contents = appendToSetting(contents, 'OTHER_CFLAGS', `-include "$(${MANGLING_HEADER_KEY})"`);
 
   fs.writeFileSync(podXcconfigPath, contents);
+};
+
+/**
+ * Append `tokens` to an existing `KEY = …` line, or add a fresh
+ * `KEY = $(inherited) tokens` line when the setting isn't present. No-op if the
+ * tokens are already there, so re-running `pod install` stays idempotent.
+ */
+const appendToSetting = (contents: string, key: string, tokens: string): string => {
+  if (contents.includes(tokens)) {
+    return contents;
+  }
+  const settingRe = new RegExp(`^(${key}\\s*=\\s*[^\n]*)$`, 'm');
+  if (settingRe.test(contents)) {
+    return contents.replace(settingRe, `$1 ${tokens}`);
+  }
+  return `${contents}\n${key} = $(inherited) ${tokens}\n`;
 };
 
 /**
@@ -338,9 +452,12 @@ export const runMangle = async (
   );
 
   const binaries = findBinariesToMangle(builtProductsDir);
-  const defines = await buildManglingDefines(context.manglePrefix, binaries);
+  const { constantDefines, objcDefines } = await buildManglingDefines(
+    context.manglePrefix,
+    binaries
+  );
 
-  writeManglingXcconfig(context.xcconfigPath, defines, context.specsChecksum);
+  writeManglingXcconfig(context.xcconfigPath, constantDefines, objcDefines, context.specsChecksum);
 
   for (const podXcconfig of context.podXcconfigPaths) {
     patchPodXcconfig(podXcconfig, context.xcconfigPath);
@@ -356,4 +473,6 @@ export const __testing = {
   extractConstants,
   extractCategorySelectors,
   prefixSelectors,
+  isDistinctiveSelector,
+  buildManglingHeader,
 };

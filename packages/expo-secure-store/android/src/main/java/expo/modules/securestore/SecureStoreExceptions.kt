@@ -18,7 +18,10 @@ internal class DeleteException(message: String?, key: String, keychain: String, 
   CodedException("Could not delete the value for key '$key' under keychain '$keychain'. Caused by: ${message ?: "unknown"}", cause)
 
 internal class AuthenticationException(message: String?, cause: Throwable? = null) :
-  CodedException("Could not Authenticate the user: ${message ?: "unknown"}", cause)
+  CodedException("Could not authenticate the user: ${message ?: "unknown"}", cause)
 
 internal class KeyStoreException(message: String?) :
   CodedException("An error occurred when accessing the keystore: ${message ?: "unknown"}")
+
+internal class UnsupportedDeviceCredentialsException :
+  CodedException("requireAuthentication: 'deviceCredentials' (device credential fallback) requires Android API 30 or higher. Check canUseDeviceCredentialsAuthentication() before you use it, or use 'biometry' on older devices.")

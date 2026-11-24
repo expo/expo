@@ -26,13 +26,25 @@ public class RippleAlpha(
   public val pressedAlpha: Float
 ) {
   override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (other !is RippleAlpha) return false
+    if (this === other) {
+      return true
+    }
+    if (other !is RippleAlpha) {
+      return false
+    }
 
-    if (draggedAlpha != other.draggedAlpha) return false
-    if (focusedAlpha != other.focusedAlpha) return false
-    if (hoveredAlpha != other.hoveredAlpha) return false
-    if (pressedAlpha != other.pressedAlpha) return false
+    if (draggedAlpha != other.draggedAlpha) {
+      return false
+    }
+    if (focusedAlpha != other.focusedAlpha) {
+      return false
+    }
+    if (hoveredAlpha != other.hoveredAlpha) {
+      return false
+    }
+    if (pressedAlpha != other.pressedAlpha) {
+      return false
+    }
 
     return true
   }

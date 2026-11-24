@@ -12,7 +12,22 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SwiftUIVirtualViewObjC : NSObject
 
 @property (nonatomic) NSInteger tag;
+
+#if TARGET_OS_OSX
+//  react-native-macos uses `reactTag` instead because `NSView.tag` is read-only
+@property (nonatomic, copy, nullable) NSNumber *reactTag;
+#endif
+
 @property (nonatomic, copy, nullable) NSString *componentName;
+
+/**
+ The tag this view last published a content origin under.
+
+ React Native zeroes `tag` when it recycles a component view, and it does so *before* calling
+ `prepareForRecycle` or `invalidate`, so a teardown hook cannot use `tag` to find its own registry
+ entry. Remembering it here is what lets the entry be removed rather than leaked.
+ */
+@property (nonatomic) NSInteger publishedContentOriginTag;
 
 - (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload;
 
@@ -23,6 +38,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setShadowNodeSize:(float) width height:(float) height;
 
 - (void)setStyleSize:(nullable NSNumber *)width height:(nullable NSNumber *)height;
+
+/**
+ Publishes where SwiftUI drew this view's contents, relative to its host, so `measure()` matches
+ what is on screen. Pass `CGPointZero`-equivalent by calling `clearContentOrigin`.
+ */
+- (void)setContentOrigin:(CGPoint)contentOrigin;
+
+- (void)clearContentOrigin;
 
 - (BOOL)supportsPropWithName:(nonnull NSString *)name;
 

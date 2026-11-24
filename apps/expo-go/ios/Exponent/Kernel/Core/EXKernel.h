@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger, EXKernelErrorCode) {
 @property (nonatomic, strong, readonly) EXKernelAppRegistry *appRegistry;
 @property (nonatomic, strong, readonly) EXKernelServiceRegistry *serviceRegistry;
 @property (nonatomic, readonly) EXKernelAppRecord *visibleApp;
-@property (nonatomic, assign) id<EXAppBrowserController> browserController;
+@property (nonatomic, assign, nullable) id<EXAppBrowserController> browserController;
 
 + (instancetype)sharedInstance;
 

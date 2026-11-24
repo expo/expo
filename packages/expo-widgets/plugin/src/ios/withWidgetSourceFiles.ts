@@ -275,7 +275,8 @@ const configurationValueExpression = (
   parameterName: string,
   parameter: WidgetParameter
 ): string => {
-  const rawValueAccess = parameter.type === 'enum' && !isDynamicEnumParameter(parameter) ? '.rawValue' : '';
+  const rawValueAccess =
+    parameter.type === 'enum' && !isDynamicEnumParameter(parameter) ? '.rawValue' : '';
   return `      "${parameterName}": entry.configuration.${parameterName}${rawValueAccess}`;
 };
 
@@ -346,6 +347,19 @@ ${parameter.values
 const widgetSwift = (widget: WidgetConfig): string => {
   const configuration = widget.ios?.configuration ?? widget.configuration;
   const supportedFamilies = widget.ios?.supportedFamilies ?? widget.supportedFamilies ?? [];
+  const hasExtraLargePortrait = supportedFamilies.includes(WidgetFamily.systemExtraLargePortrait);
+  const otherFamilies = supportedFamilies.filter(
+    (family) => family !== WidgetFamily.systemExtraLargePortrait
+  );
+  const familiesDeclaration = `    var supportedFamilies: [WidgetFamily] = [${otherFamilies.length ? '.' + otherFamilies.join(', .') : ''}]
+${
+  hasExtraLargePortrait
+    ? `    if #available(iOS 27.0, *) {
+      supportedFamilies.append(.systemExtraLargePortrait)
+    }
+`
+    : ''
+}`;
   const contentMarginsDisabled =
     widget.ios?.contentMarginsDisabled ?? widget.contentMarginsDisabled;
   if (!configuration)
@@ -357,12 +371,12 @@ struct ${widget.name}: Widget {
   let name: String = "${widget.name}"
 
   var body: some WidgetConfiguration {
-    StaticConfiguration(kind: name, provider: WidgetsTimelineProvider(name: name)) { entry in
+${familiesDeclaration}    return StaticConfiguration(kind: name, provider: WidgetsTimelineProvider(name: name)) { entry in
       WidgetsEntryView(entry: entry)
     }
     .configurationDisplayName(${JSON.stringify(widget.displayName)})
     .description(${JSON.stringify(widget.description)})
-    .supportedFamilies([.${supportedFamilies.join(', .')}])${contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
+    .supportedFamilies(supportedFamilies)${contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
   }
 }`;
   return `import WidgetKit
@@ -472,7 +486,7 @@ struct ${widget.name}EntryView: View {
       let node = evaluateLayout(layout: layout, props: entry.props, environment: widgetEnvironment)
       WidgetsDynamicView(name: entry.name, kind: .widget, node: node, entryIndex: entry.entryIndex, environmentString: widgetEnvironmentString)
     } else {
-      WidgetsDynamicView(name: entry.name, kind: .widget, node: createRedBox(message: "No layout found for \\(WidgetsStorage.appGroupIdentifier ?? "")::\\(entry.name)"), entryIndex: entry.entryIndex, environmentString: widgetEnvironmentString)
+      EmptyWidgetView()
     }
   }
 }
@@ -483,12 +497,12 @@ struct ${widget.name}: Widget {
   let name: String = "${widget.name}"
 
   var body: some WidgetConfiguration {
-    return AppIntentConfiguration(kind: name, intent: ${widget.name}ConfigurationAppIntent.self, provider: ${widget.name}TimelineProvider()) { entry in
+${familiesDeclaration}    return AppIntentConfiguration(kind: name, intent: ${widget.name}ConfigurationAppIntent.self, provider: ${widget.name}TimelineProvider()) { entry in
       ${widget.name}EntryView(entry: entry)
     }
     .configurationDisplayName(${JSON.stringify(widget.displayName)})
     .description(${JSON.stringify(widget.description)})
-    .supportedFamilies([.${supportedFamilies.join(', .')}])${contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
+    .supportedFamilies(supportedFamilies)${contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
   }
 }`;
 };

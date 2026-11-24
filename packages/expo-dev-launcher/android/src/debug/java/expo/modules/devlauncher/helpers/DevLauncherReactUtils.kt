@@ -111,7 +111,7 @@ fun injectBundleLoader(
   return try {
     check(reactHost is ReactHostImpl)
     // A leftover file path would take precedence over the injected loader.
-    reactHost.devSupportManager?.bundleFilePath = null
+    reactHost.devSupportManager.bundleFilePath = null
 
     val reactHostClass = ReactHostImpl::class.java
     val mReactHostDelegateField = reactHostClass.getDeclaredField("reactHostDelegate")
@@ -199,7 +199,11 @@ fun injectDevServerHelper(
 }
 
 private fun parseUrl(url: Uri): Pair<String, String> {
-  val port = if (url.port != -1) url.port else HttpUrl.defaultPort(url.scheme ?: "http")
+  val port = if (url.port != -1) {
+    url.port
+  } else {
+    HttpUrl.defaultPort(url.scheme ?: "http")
+  }
   val debugServerHost = url.host + ":" + port
   // We need to remove "/" which is added to begin of the path by the Uri
   // and the bundle type

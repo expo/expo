@@ -18,7 +18,9 @@ object HermesBundleUtils {
   )
 
   fun isHermesBundle(file: File): Boolean {
-    if (!file.exists() || file.length() < HERMES_MAGIC_HEADER.size) return false
+    if (!file.exists() || file.length() < HERMES_MAGIC_HEADER.size) {
+      return false
+    }
     return try {
       file.inputStream().use { input ->
         val bytes = ByteArray(HERMES_MAGIC_HEADER.size)

@@ -25,7 +25,7 @@ const runtimeVersion = '1.0.0';
   const projectRoot = process.env.TEST_PROJECT_ROOT || path.join(workingDir, 'updates-e2e');
   const localCliBin = path.join(repoRoot, 'packages/@expo/cli/bin/cli.js');
 
-  await initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin });
+  await initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin, maxUpdatesToKeep: 3 });
 
   await setupE2EAppAsync(projectRoot, { localCliBin, repoRoot });
 })();

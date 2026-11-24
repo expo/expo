@@ -14,8 +14,9 @@ export function DownloadSlide({ title, description, imageUrl, className }: Props
     <a
       download
       href={imageUrl}
+      data-md="card-link"
       className={mergeClasses(
-        'relative flex items-stretch overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
+        'relative flex items-stretch overflow-hidden rounded-3xl border border-default bg-default shadow-xs transition',
         'hocus:opacity-80 hocus:shadow-sm',
         'max-sm:flex-col',
         '[&+hr]:mt-6!',
@@ -35,9 +36,15 @@ export function DownloadSlide({ title, description, imageUrl, className }: Props
         />
       </div>
       <div className="flex flex-col justify-center gap-1 bg-default px-4 py-2">
-        <p className="flex items-center gap-1.5 text-sm leading-normal font-medium">{title}</p>
+        <p
+          className="flex items-center gap-1.5 text-sm leading-normal font-medium"
+          data-text="true">
+          {title}
+        </p>
         {description && (
-          <p className="flex items-center gap-2 text-sm text-secondary">{description}</p>
+          <p className="flex items-center gap-2 text-sm text-secondary" data-text="true">
+            {description}
+          </p>
         )}
       </div>
       <Download03Icon

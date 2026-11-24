@@ -34,7 +34,7 @@ class SceneDelegate: ExpoAppSceneDelegate {
     window.makeKeyAndVisible()
 
     // Deep links / universal links.
-    Self.route(urlContexts: connectionOptions.urlContexts)
-    connectionOptions.userActivities.forEach { Self.route(userActivity: $0) }
+    self.scene(scene, openURLContexts: connectionOptions.urlContexts)
+    connectionOptions.userActivities.forEach { self.scene(scene, continue: $0) }
   }
 }

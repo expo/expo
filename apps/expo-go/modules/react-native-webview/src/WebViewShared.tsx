@@ -1,6 +1,8 @@
 import escapeStringRegexp from 'escape-string-regexp';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Linking, View, ActivityIndicator, Text, Platform } from 'react-native';
+
+import styles from './WebView.styles';
 import {
   OnShouldStartLoadWithRequest,
   ShouldStartLoadRequestEvent,
@@ -15,7 +17,6 @@ import {
   WebViewRenderProcessGoneEvent,
   WebViewTerminatedEvent,
 } from './WebViewTypes';
-import styles from './WebView.styles';
 
 const defaultOriginWhitelist = ['http://*', 'https://*'] as const;
 
@@ -32,17 +33,11 @@ const passesWhitelist = (compiledWhitelist: readonly string[], url: string) => {
   return compiledWhitelist.some((x) => new RegExp(x).test(origin));
 };
 
-const compileWhitelist = (
-  originWhitelist: readonly string[]
-): readonly string[] =>
+const compileWhitelist = (originWhitelist: readonly string[]): readonly string[] =>
   ['about:blank', ...(originWhitelist || [])].map(originWhitelistToRegex);
 
 const createOnShouldStartLoadWithRequest = (
-  loadRequest: (
-    shouldStart: boolean,
-    url: string,
-    lockIdentifier: number
-  ) => void,
+  loadRequest: (shouldStart: boolean, url: string, lockIdentifier: number) => void,
   originWhitelist: readonly string[],
   onShouldStartLoadWithRequest?: OnShouldStartLoadWithRequest
 ) => {
@@ -52,14 +47,14 @@ const createOnShouldStartLoadWithRequest = (
 
     if (!passesWhitelist(compileWhitelist(originWhitelist), url)) {
       Linking.canOpenURL(url)
-        .then((supported) => {
+        .then(async (supported) => {
           if (supported) {
             return Linking.openURL(url);
           }
           console.warn(`Can't open url: ${url}`);
           return undefined;
         })
-        .catch((e) => {
+        .catch((e: unknown) => {
           console.warn('Error opening URL: ', e);
         });
       shouldStart = false;
@@ -132,15 +127,13 @@ export const useWebViewLogic = ({
   onShouldStartLoadWithRequestCallback: (
     shouldStart: boolean,
     url: string,
-    lockIdentifier?: number | undefined
+    lockIdentifier?: number
   ) => void;
 }) => {
   const [viewState, setViewState] = useState<'IDLE' | 'LOADING' | 'ERROR'>(
     startInLoadingState ? 'LOADING' : 'IDLE'
   );
-  const [lastErrorEvent, setLastErrorEvent] = useState<WebViewError | null>(
-    null
-  );
+  const [lastErrorEvent, setLastErrorEvent] = useState<WebViewError | null>(null);
   const startUrl = useRef<string | null>(null);
 
   const updateNavigationState = useCallback(
@@ -243,9 +236,7 @@ export const useWebViewLogic = ({
       } = event;
       // patch for Android only
       if (Platform.OS === 'android' && progress === 1) {
-        setViewState((prevViewState) =>
-          prevViewState === 'LOADING' ? 'IDLE' : prevViewState
-        );
+        setViewState((prevViewState) => (prevViewState === 'LOADING' ? 'IDLE' : prevViewState));
       }
       // !patch for Android only
       onLoadProgress?.(event);
@@ -260,11 +251,7 @@ export const useWebViewLogic = ({
         originWhitelist,
         onShouldStartLoadWithRequestProp
       ),
-    [
-      originWhitelist,
-      onShouldStartLoadWithRequestProp,
-      onShouldStartLoadWithRequestCallback,
-    ]
+    [originWhitelist, onShouldStartLoadWithRequestProp, onShouldStartLoadWithRequestCallback]
   );
 
   const onOpenWindow = useCallback(

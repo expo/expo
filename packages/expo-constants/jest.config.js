@@ -1,3 +1,7 @@
-module.exports = require('expo-module-scripts/createCompositeJestPreset')(__dirname, [], {
-  rsc: true,
-});
+module.exports = require('@expo/internal-scripts/createCompositeJestPreset')(
+  __dirname,
+  ['scripts'],
+  {
+    rsc: true,
+  }
+);

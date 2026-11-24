@@ -1,0 +1,361 @@
+---
+title: Using LiveKit
+description: Add a realtime voice agent to your app with LiveKit.
+---
+
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+[LiveKit](https://livekit.io/) is an open source platform for realtime voice and video. With [LiveKit Agents](https://docs.livekit.io/agents/), you can build an AI agent that joins a conversation and talks with your users.
+
+This guide uses the [Expo LiveKit template](https://github.com/expo/expo-livekit-template) to create a voice agent app for Android and iOS. The template has one screen with a live audio visualizer and a streaming transcript, a token endpoint in an [API route](/router/web/api-routes/), and a voice agent written in TypeScript.
+
+<Prerequisites>
+  <Requirement title="LiveKit Cloud project">
+    Sign up for [LiveKit Cloud](https://cloud.livekit.io/) and create a project. A free project
+    works for this guide.
+  </Requirement>
+  <Requirement title="LiveKit CLI">
+    Install the [LiveKit CLI](https://docs.livekit.io/reference/developer-tools/livekit-cli/). This
+    guide uses it to sign in and to write your credentials.
+  </Requirement>
+  <Requirement title="A development build">
+    The app uses WebRTC, which Expo Go does not include, so it runs in a [development
+    build](/develop/development-builds/introduction/). This guide creates one with [Expo
+    Build](/build/introduction/) or on your computer.
+  </Requirement>
+</Prerequisites>
+
+## Create a voice agent app
+
+<Step label="1">
+
+### Create a project from the template
+
+Create a new project with `create-expo-app`:
+
+<Terminal
+  cmd={{
+    npm: [
+      '$ npx create-expo-app@latest my-voice-app --template https://github.com/expo/expo-livekit-template',
+      '$ cd my-voice-app',
+    ],
+    yarn: [
+      '$ yarn create expo-app my-voice-app --template https://github.com/expo/expo-livekit-template',
+      '$ cd my-voice-app',
+    ],
+    pnpm: [
+      '$ pnpm create expo-app my-voice-app --template https://github.com/expo/expo-livekit-template',
+      '$ cd my-voice-app',
+    ],
+    bun: [
+      '$ bun create expo my-voice-app --template https://github.com/expo/expo-livekit-template',
+      '$ cd my-voice-app',
+    ],
+  }}
+/>
+
+The voice agent is a separate Node.js project in the **agent** directory. Install its dependencies:
+
+<Terminal
+  cmd={{
+    npm: ['$ npm --prefix agent install'],
+    yarn: ['$ yarn --cwd agent install'],
+    pnpm: ['$ pnpm --dir agent install'],
+    bun: ['$ bun install --cwd agent'],
+  }}
+/>
+
+</Step>
+
+<Step label="2">
+
+### Connect your LiveKit Cloud project
+
+Sign in with the LiveKit CLI, then write your credentials to **.env.local**:
+
+<Terminal cmd={['$ lk cloud auth', '$ lk app env -w']} />
+
+`lk cloud auth` opens a browser window to link your LiveKit Cloud project to the CLI. `lk app env -w` writes `LIVEKIT_URL`, `LIVEKIT_API_KEY`, and `LIVEKIT_API_SECRET` to **.env.local**. The token endpoint and the agent read these values.
+
+</Step>
+
+<Step label="3">
+
+### Start the agent
+
+<Terminal cmd={['$ npm run agent']} />
+
+The agent connects to LiveKit Cloud and waits for a conversation. It uses a speech-to-speech model from [LiveKit Inference](https://docs.livekit.io/agents/models/inference/), so you do not need an API key from a model provider. Keep this terminal open.
+
+</Step>
+
+<Step label="4">
+
+### Run the app
+
+The app runs in a development build. To create one in the cloud, use [Expo Build](/build/introduction/) with [EAS CLI](/eas/cli/). You do not need Android Studio or Xcode. In a second terminal, run:
+
+<Terminal
+  cmd={[
+    '# Build for Android',
+    '$ eas build --platform android --profile development',
+    '',
+    '# Build for iOS',
+    '$ eas build --platform ios --profile development',
+  ]}
+/>
+
+When the build finishes, install it on your device. Then start the development server:
+
+<Terminal cmd={['$ npm start']} />
+
+To create the development build on your computer instead, you need Android Studio or Xcode. See [Set up your environment](/get-started/set-up-your-environment/). These commands create the build and start the development server:
+
+<Terminal cmd={['# Run on Android', '$ npm run android', '', '# Run on iOS', '$ npm run ios']} />
+
+To compare the two methods, see [Introduction to development builds](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build).
+
+Tap **Start conversation** and allow microphone access. The agent greets you, and the transcript appears while you talk.
+
+> **info** An Android Emulator or iOS Simulator has no echo cancellation, so the agent can hear its own voice from your computer's speakers. Mute the microphone in the app while the agent speaks, or use headphones.
+
+</Step>
+
+<BoxLink
+  title="Expo LiveKit template"
+  description="The source code of the template, with notes on how to change the agent, the visualizer, and the colors."
+  href="https://github.com/expo/expo-livekit-template"
+  Icon={GithubIcon}
+/>
+
+## How the template works
+
+The template has three parts: a token endpoint, a hook that holds the LiveKit session code, and the voice agent.
+
+### Token endpoint
+
+The app needs a token to join a LiveKit room. **src/app/token+api.ts** is an [API route](/router/web/api-routes/) that creates a token for a new room and dispatches the agent to that room. The route runs on the server, so the API secret never reaches the app.
+
+```ts src/app/token+api.ts
+import { AccessToken, RoomAgentDispatch, RoomConfiguration } from 'livekit-server-sdk';
+
+// Must match `agentName` in agent/agent.ts.
+const AGENT_NAME = 'expo-livekit-agent';
+
+export async function POST() {
+  const url = process.env.LIVEKIT_URL;
+  const apiKey = process.env.LIVEKIT_API_KEY;
+  const apiSecret = process.env.LIVEKIT_API_SECRET;
+  if (!url || !apiKey || !apiSecret) {
+    return Response.json(
+      { error: 'Set LIVEKIT_URL, LIVEKIT_API_KEY and LIVEKIT_API_SECRET in .env.local.' },
+      { status: 500 }
+    );
+  }
+
+  const room = `room-${crypto.randomUUID()}`;
+  const token = new AccessToken(apiKey, apiSecret, {
+    identity: `user-${crypto.randomUUID()}`,
+    ttl: '10m',
+  });
+  token.addGrant({ room, roomJoin: true });
+  token.roomConfig = new RoomConfiguration({
+    agents: [new RoomAgentDispatch({ agentName: AGENT_NAME })],
+  });
+
+  return Response.json(
+    { server_url: url, participant_token: await token.toJwt() },
+    { status: 201 }
+  );
+}
+```
+
+API routes need `web.output` set to `server` in **app.json**, which the template already does. In development, the Expo development server runs the route.
+
+### Voice session hook
+
+All LiveKit session code is in **src/hooks/use-voice-session.ts**. The `useVoiceSession` hook uses `useSession` from `@livekit/components-react` with the token endpoint as its token source. It asks for microphone access before it connects, so the agent does not greet the user behind the permission dialog.
+
+The hook returns the state of the conversation and the functions to control it. You can build your own screen on top of it:
+
+```tsx src/app/index.tsx
+import { Button, Text, View } from 'react-native';
+
+import { useVoiceSession } from '@/hooks/use-voice-session';
+
+export default function VoiceScreen() {
+  const voice = useVoiceSession();
+
+  return (
+    <View>
+      <Text>{voice.error ?? voice.state}</Text>
+      {voice.messages.map(message => (
+        <Text key={message.id}>
+          {message.fromUser ? 'You' : 'Agent'}: {message.text}
+        </Text>
+      ))}
+      {voice.active ? (
+        <>
+          <Button title={voice.muted ? 'Unmute' : 'Mute'} onPress={voice.toggleMute} />
+          <Button title="End conversation" onPress={voice.end} />
+        </>
+      ) : (
+        <Button title="Start conversation" onPress={voice.start} />
+      )}
+    </View>
+  );
+}
+```
+
+The template's own screen also shows an audio visualizer from [LiveKit Agents UI](https://livekit.com/products/agents-ui). The visualizers are React components for the web, and they run in a [DOM component](/guides/dom-components/).
+
+### Voice agent
+
+**agent/agent.ts** is the voice agent. It joins the room, starts a session with a realtime model, and greets the user:
+
+```ts agent/agent.ts
+import { Agent, AgentSession, ServerOptions, cli, defineAgent, inference } from '@livekit/agents';
+import { BackgroundVoiceCancellation } from '@livekit/noise-cancellation-node';
+import { fileURLToPath } from 'node:url';
+
+export default defineAgent({
+  entry: async ctx => {
+    await ctx.connect();
+
+    const session = new AgentSession({
+      // A speech-to-speech model from LiveKit Inference. It needs no extra API key.
+      llm: new inference.RealtimeModel({ model: 'openai/gpt-realtime-2.1', voice: 'marin' }),
+    });
+
+    await session.start({
+      room: ctx.room,
+      // Removes background voices and noise, so nearby talk does not reach the model as a user turn.
+      inputOptions: { noiseCancellation: BackgroundVoiceCancellation() },
+      agent: new Agent({
+        instructions: 'You are a friendly voice assistant. Keep your replies brief and natural.',
+      }),
+    });
+
+    session.generateReply({
+      instructions: 'Greet the user briefly and ask what they would like to talk about.',
+    });
+  },
+});
+
+cli.runApp(
+  new ServerOptions({
+    agent: fileURLToPath(import.meta.url),
+    agentName: 'expo-livekit-agent', // Must match AGENT_NAME in src/app/token+api.ts.
+    port: 8082, // The default port, 8081, belongs to Metro.
+  })
+);
+```
+
+To change how the agent behaves, edit its instructions, voice, and model in this file. The `agentName` must match `AGENT_NAME` in the token endpoint.
+
+<BoxLink
+  title="LiveKit Agents documentation"
+  description="Learn how to add tools, change models, and design the conversation of your voice agent."
+  href="https://docs.livekit.io/agents/"
+  Icon={BookOpen02Icon}
+/>
+
+## Deploy to production
+
+In development, the app gets tokens from the Expo development server and the agent runs on your computer. Before you ship, protect and deploy the token endpoint, then deploy the agent.
+
+<Step label="1">
+
+### Protect the token endpoint
+
+The token endpoint in the template issues a token to anyone who calls it. Before you deploy it, add a check to **src/app/token+api.ts** that the request comes from a signed-in user. See [Authentication](/develop/authentication/) for the options.
+
+</Step>
+
+<Step label="2">
+
+### Deploy the token endpoint
+
+Export the server and deploy it to [Expo Hosting](/eas/hosting/get-started/) with [EAS CLI](/eas/cli/):
+
+<Terminal cmd={['$ npx expo export --platform web', '$ eas deploy --prod']} />
+
+`eas deploy` uploads the LiveKit credentials in **.env.local** with the deployment. See [environment variables in Expo Hosting](/eas/environment-variables/usage/#using-environment-variables-with-expo-hosting) for other ways to provide them.
+
+</Step>
+
+<Step label="3">
+
+### Set the origin
+
+A production build has no development server, so tell the app where the token endpoint is. Set the deployed URL as the `origin` of the `expo-router` config plugin in **app.json**, then create a new build:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-router",
+        {
+          /* @info The URL of your Expo Hosting deployment. */
+          "origin": "https://my-voice-app.expo.app"
+          /* @end */
+        }
+      ]
+    ]
+  }
+}
+```
+
+See [Native deployment](/router/web/api-routes/#native-deployment) for more information about API routes in native apps.
+
+</Step>
+
+<Step label="4">
+
+### Deploy the agent
+
+Deploy the agent in the **agent** directory to LiveKit Cloud with the LiveKit CLI:
+
+<Terminal cmd={['$ cd agent', '$ lk agent create']} />
+
+`lk agent create` registers the agent with LiveKit Cloud, builds it, and deploys it. To deploy a new version later, run `lk agent deploy`.
+
+</Step>
+
+<BoxLink
+  title="LiveKit agent deployment quickstart"
+  description="Learn how LiveKit Cloud builds and runs your agent, and how to check its status and logs."
+  href="https://docs.livekit.io/deploy/agents/quickstart/"
+  Icon={BookOpen02Icon}
+/>
+
+## Troubleshooting
+
+### The app does not open in Expo Go
+
+LiveKit uses WebRTC, which needs native code that Expo Go does not include. Run the app in a [development build](/develop/development-builds/introduction/). See [Run the app](#run-the-app).
+
+### The app stays on "Connecting"
+
+The app waits for the agent to join the room. Check that `npm run agent` is still running and that it uses the same LiveKit Cloud project as the app. Also check that `agentName` in **agent/agent.ts** matches `AGENT_NAME` in **src/app/token+api.ts**.
+
+### The agent does not hear you on an Android Emulator
+
+The Android Emulator does not use your computer's microphone by default. After the emulator starts, turn on the microphone input:
+
+<Terminal cmd={['$ adb emu avd hostmicon']} />
+
+### A production build shows "No token server"
+
+The app has no `origin` for the token endpoint. See [Set the origin](#set-the-origin).
+
+### A production build fails with "requireNativeComponent is not a function"
+
+Expo loads the root layout in Node.js when it exports the token endpoint, and the LiveKit native modules cannot load there. The template has **src/app/\_layout.web.tsx** for this case. Keep this file, and do not import `@livekit/react-native` in a layout file without a web version.

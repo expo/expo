@@ -39,12 +39,14 @@ export type BackgroundServerOptions = ExpoSpawnOptions & {
    */
   port?: number | (() => Promise<number>);
   /**
-   * The host derrived from the child process output chunks (stdout or stderr).
+   * The host derived from the child process output chunks (stdout or stderr).
    * `server.startAsync` will not be resolved, until this method returns the host.
    * This method also functions as the ready-check to determine if the server fully started.
-   * When passing a URL, the port will be overriden using the configured port.
+   * When passing a URL, the port will be overridden using the configured port.
    */
   host(chunk: any): URL | string | null;
+  /** Called with each stdout/stderr chunk from the child, starting at spawn. */
+  onOutput?(chunk: string): void;
   /** Fully show the child process output, enabled when re-running GitHub Actions with debug mode */
   verbose?: boolean;
 };
@@ -70,6 +72,7 @@ export function createBackgroundServer({
   host: resolveHost,
   port: resolvePort = findFreePortAsync,
   verbose,
+  onOutput,
   ...spawnOptions
 }: BackgroundServerOptions): BackgroundServer {
   let child: ChildProcess | null = null;
@@ -132,6 +135,11 @@ export function createBackgroundServer({
       log = createVerboseLogger({ verbose, prefix: 'server' });
       log('startAsync()', bin, ...commandOrFlags, this.options);
       processCollectOutput(child, log.tag);
+      if (onOutput) {
+        const tap = (chunk: Buffer | string) => onOutput(String(chunk));
+        child.stdout?.on('data', tap);
+        child.stderr?.on('data', tap);
+      }
 
       try {
         // Wait until the host is resolved based on the process output

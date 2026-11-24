@@ -12,7 +12,8 @@ import SwiftUI
  *
  *   Toggle(label, isOn: state.binding(false))
  */
-internal class ObservableState: SharedObject, ObservableObject {
+@SharedObject
+internal final class ObservableState: SharedObject, ObservableObject {
   var onChange: WorkletCallback?
   private var isNotifying = false
 
@@ -28,6 +29,40 @@ internal class ObservableState: SharedObject, ObservableObject {
 
   init(value: Any?) {
     self.value = value
+  }
+
+  // `value`, `get` and `set` are bound with `@JS`, so they are also on the object that a worklet gets.
+  // On Android, `useNativeState` defines them in JavaScript.
+
+  @JS("value")
+  var currentValue: Any? {
+    get {
+      return value
+    }
+    set {
+      setValueOnMainThread(newValue)
+    }
+  }
+
+  @JS
+  func get() -> Any? {
+    return value
+  }
+
+  @JS
+  func set(_ newValue: Any?) {
+    setValueOnMainThread(newValue)
+  }
+
+  /// Sets the value on the main thread, which SwiftUI observes it on.
+  func setValueOnMainThread(_ newValue: Any?) {
+    if Thread.isMainThread {
+      value = newValue
+    } else {
+      DispatchQueue.main.async {
+        self.value = newValue
+      }
+    }
   }
 
   func binding<T>(_ fallback: T) -> Binding<T> {

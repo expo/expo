@@ -21,6 +21,7 @@ declare module '2g' {
     'metro:transform_worker_supervisor_skipped': Record<string, never>;
     'metro:polyfills_react_native_not_installed': Record<string, never>;
     'metro:options_lazy_disabled_for_export': Record<string, never>;
+    'metro:cache_vary_module_retransform': { path: string; dimensions: string[] };
   }
 }
 

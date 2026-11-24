@@ -11,6 +11,10 @@ import logger from '../../Logger';
 import { Codegen } from '../Codegen';
 import { composeCustomBuildAsync, runCustomBuildAsync } from '../CustomBuild';
 import { Frameworks } from '../Frameworks';
+import {
+  composeHeadersXCFrameworkAsync,
+  shouldWriteHeadersXCFramework,
+} from '../HeadersXCFramework';
 import { SPMBuild } from '../SPMBuild';
 import { SPMGenerator } from '../SPMGenerator';
 import { FrameworkVerifier } from '../Verifier';
@@ -97,7 +101,7 @@ export const generateStep: Step<PrebuildContext> = {
     // Generate source code structure for the package/product
     await SPMGenerator.generateIsolatedSourcesForTargetsAsync(pkg, product);
 
-    // Generate Package.swift and vfs overlay for the package/product
+    // Generate Package.swift for the package/product
     await SPMGenerator.generateSwiftPackageAsync(pkg, product, flavor, artifacts);
 
     setStage(ctx, 'generate', 'success');
@@ -140,7 +144,7 @@ export const buildStep: Step<PrebuildContext> = {
 
     // Compute hermes include paths for xcodebuild flags.
     // Hermes includes can't go in Package.swift because destroot/include/
-    // contains jsi/ headers that conflict with React VFS jsi/ mappings.
+    // contains jsi/ headers that conflict with React's jsi/ headers.
     const hermesIncludeDirs = artifacts
       ? [path.join(artifacts.hermes, 'destroot', 'include')]
       : undefined;
@@ -176,18 +180,20 @@ export const composeStep: Step<PrebuildContext> = {
 
     if (product.customBuild) {
       await composeCustomBuildAsync(pkg, product, flavor);
-      setStage(ctx, 'compose', 'success');
-      return;
+    } else {
+      await Frameworks.composeXCFrameworkAsync(
+        pkg,
+        product,
+        flavor,
+        ctx.request.platformFilter,
+        ctx.request.signing,
+        { bundleSharedDeps: ctx.request.bundleSharedDeps }
+      );
     }
 
-    await Frameworks.composeXCFrameworkAsync(
-      pkg,
-      product,
-      flavor,
-      ctx.request.platformFilter,
-      ctx.request.signing,
-      { bundleSharedDeps: ctx.request.bundleSharedDeps }
-    );
+    if (shouldWriteHeadersXCFramework(product, flavor, ctx.request.buildFlavors)) {
+      await composeHeadersXCFrameworkAsync(pkg, product, flavor);
+    }
 
     setStage(ctx, 'compose', 'success');
   },

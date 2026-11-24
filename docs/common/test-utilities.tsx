@@ -1,6 +1,7 @@
 import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { render, RenderOptions } from '@testing-library/react';
 import GithubSlugger from 'github-slugger';
+import jestAxe from 'jest-axe';
 import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import { type NextRouter } from 'next/router';
 import { type PropsWithChildren, type ReactElement } from 'react';
@@ -30,3 +31,11 @@ export function renderWithTestRouter(element: ReactElement, router: Partial<Next
     </TooltipProvider>
   );
 }
+
+export const axe = jestAxe.configureAxe({
+  rules: {
+    region: { enabled: false },
+    // JSDOM accessibility testing library does not support color contrast testing in JSDOM
+    'color-contrast': { enabled: false },
+  },
+});

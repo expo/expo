@@ -4,11 +4,20 @@ internal import SDWebImage
 import ExpoModulesCore
 
 /**
- An exception to throw when it its not possible to generate a blurhash for a given URL.
+ An exception to throw when it is not possible to generate a blurhash for a given URL.
  */
 public final class BlurhashGenerationException: Exception {
   override public var reason: String {
     "Unable to generate blurhash, make sure the image exists at the given URL"
+  }
+}
+
+/**
+ An exception to throw when it is not possible to generate a thumbhash for a given URL.
+ */
+public final class ThumbhashGenerationException: Exception {
+  override public var reason: String {
+    "Unable to generate thumbhash, make sure the image exists at the given URL"
   }
 }
 
@@ -87,8 +96,15 @@ func imageFormatToMediaType(_ format: SDImageFormat) -> String? {
 
 /**
  Calculates the ideal size that fills in the container size while maintaining the source aspect ratio.
+ When the content has no pixels, it returns the container size, like `fill` does.
  */
 func idealSize(contentPixelSize: CGSize, containerSize: CGSize, scale: Double = 1.0, contentFit: ContentFit) -> CGSize {
+  guard contentPixelSize.width > 0, contentPixelSize.height > 0 else {
+    // Some decoders return an image with no pixels (e.g. an SVG with a 0x0 canvas).
+    // Dividing by that size gives infinity, and multiplying it back gives NaN,
+    // which crashes Core Animation once it reaches the layer geometry.
+    return containerSize
+  }
   switch contentFit {
   case .contain:
     let aspectRatio = min(containerSize.width / contentPixelSize.width, containerSize.height / contentPixelSize.height)
@@ -115,7 +131,7 @@ func idealSize(contentPixelSize: CGSize, containerSize: CGSize, scale: Double = 
 /**
  Returns a bool whether the image should be downscaled to the given size.
  */
-func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool {
+func shouldDownscale(pixelSize: CGSize, toSize size: CGSize, scale: Double) -> Bool {
   if size.width <= 0 || size.height <= 0 {
     // View is invisible, so no reason to keep the image in memory.
     // This already ensures that we won't be diving by zero in ratio calculations.
@@ -125,8 +141,7 @@ func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool
     // Keep the image unscaled for infinite sizes.
     return false
   }
-  let imageSize = image.size * image.scale
-  return imageSize.width > (size.width * scale) && imageSize.height > (size.height * scale)
+  return pixelSize.width > (size.width * scale) && pixelSize.height > (size.height * scale)
 }
 
 /**
@@ -146,6 +161,10 @@ func resize(image: UIImage, toSize size: CGSize, scale: Double) -> UIImage {
  May be `nil` if there are no sources available or the size is zero.
  */
 func getBestSource(from sources: [ImageSource]?, forSize size: CGSize, scale: Double = 1.0) -> ImageSource? {
+  return getBestSourceIndex(from: sources, forSize: size, scale: scale).flatMap { return sources?[$0] }
+}
+
+func getBestSourceIndex(from sources: [ImageSource]?, forSize size: CGSize, scale: Double = 1.0) -> Int? {
   guard let sources = sources, !sources.isEmpty else {
     return nil
   }
@@ -153,21 +172,21 @@ func getBestSource(from sources: [ImageSource]?, forSize size: CGSize, scale: Do
     return nil
   }
   if sources.count == 1 {
-    return sources.first
+    return 0
   }
-  var bestSource: ImageSource?
+  var bestIndex: Int?
   var bestFit = Double.infinity
   let targetPixelCount = size.width * size.height * scale * scale
 
-  for source in sources {
+  for (index, source) in sources.enumerated() {
     let fit = abs(1 - (source.pixelCount / targetPixelCount))
 
     if fit < bestFit {
-      bestSource = source
+      bestIndex = index
       bestFit = fit
     }
   }
-  return bestSource
+  return bestIndex
 }
 
 /**
@@ -213,6 +232,9 @@ func createSDWebImageContext(forSource source: ImageSource, cachePolicy: ImageCa
   let sdCacheType = cachePolicy.toSdCacheType().rawValue
   context[.queryCacheType] = sdCacheType
   context[.storeCacheType] = sdCacheType
+  if cachePolicy == .disk {
+    context[.imageCache] = DiskOnlyImageCache.shared
+  }
 
   if source.cacheOriginalImage {
     context[.originalQueryCacheType] = sdCacheType

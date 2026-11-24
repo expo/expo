@@ -1,3 +1,4 @@
+import QuartzCore
 import Testing
 
 @testable import ExpoAppMetrics
@@ -24,7 +25,7 @@ struct AppStartupMonitoringTests {
   private func makeMonitoring(receiver: CapturingReceiver) -> AppStartupMonitoring {
     let monitoring = AppStartupMonitoring()
     monitoring.launchType = .cold
-    monitoring.markers.finishedLaunching = 0
+    monitoring.markers.finishedLaunching = CACurrentMediaTime()
     monitoring.addReceiver(receiver)
     // Seed `NetworkPathMonitor.shared` so `markInteractive` doesn't suspend
     // forever waiting for the OS to deliver a real path in the test process.
@@ -36,7 +37,8 @@ struct AppStartupMonitoringTests {
         isConstrained: false,
         unsatisfiedReason: nil,
         timestamp: 0
-      ))
+      )
+    )
     return monitoring
   }
 
@@ -50,6 +52,18 @@ struct AppStartupMonitoringTests {
       try await Task.sleep(for: .milliseconds(10))
     }
     Issue.record("Expected a timeToInteractive metric to be reported")
+    throw CancellationError()
+  }
+
+  /// Waits until the dispatched tasks bring the monitoring to a state that satisfies the condition.
+  private func waitUntil(_ condition: () -> Bool) async throws {
+    for _ in 0..<20 {
+      if condition() {
+        return
+      }
+      try await Task.sleep(for: .milliseconds(10))
+    }
+    Issue.record("Timed out waiting for the condition")
     throw CancellationError()
   }
 
@@ -120,5 +134,65 @@ struct AppStartupMonitoringTests {
     #expect((params["expo.frameRate.slowFrames"] as? Int) != 999)
     // Device params come from the OS, not the user-supplied string.
     #expect(params["expo.device.lowPowerMode"] is Bool)
+  }
+
+  @Test
+  func `skips startup metrics when the app is launched in the background`() async throws {
+    let receiver = CapturingReceiver()
+    let monitoring = makeMonitoring(receiver: receiver)
+
+    await monitoring.markDidFinishLaunching(runningInBackground: true)
+    // `markDidFinishLaunching` dispatches via `Task {}`, so wait for it before marking the next steps.
+    try await waitUntil { monitoring.startupState == .interrupted }
+    monitoring.markFirstRender()
+    monitoring.markInteractive()
+
+    // Give the dispatched tasks a chance to run before asserting nothing was reported.
+    try await Task.sleep(for: .milliseconds(100))
+    #expect(monitoring.startupState == .interrupted)
+    #expect(receiver.metrics.isEmpty)
+  }
+
+  @Test
+  func `reports startup metrics when the app is launched in the foreground`() async throws {
+    let receiver = CapturingReceiver()
+    let monitoring = makeMonitoring(receiver: receiver)
+
+    await monitoring.markDidFinishLaunching(runningInBackground: false)
+    try await waitUntil { monitoring.markers.finishedLaunchingDate != nil }
+    #expect(monitoring.startupState == .launching)
+    monitoring.markInteractive()
+
+    _ = try await ttiMetric(from: receiver)
+    #expect(monitoring.startupState == .launched)
+  }
+
+  @Test
+  func `skips TTR and TTI that exceed the max startup duration`() async throws {
+    let receiver = CapturingReceiver()
+    let monitoring = makeMonitoring(receiver: receiver)
+    monitoring.markers.finishedLaunching = CACurrentMediaTime() - 10 * 60
+
+    monitoring.markFirstRender()
+    try await waitUntil { monitoring.startupState == .interrupted }
+    monitoring.markInteractive()
+
+    // Give the dispatched tasks a chance to run before asserting nothing was reported.
+    try await Task.sleep(for: .milliseconds(100))
+    #expect(monitoring.startupState == .interrupted)
+    #expect(!receiver.metrics.contains { $0.name == "timeToFirstRender" || $0.name == "timeToInteractive" })
+  }
+
+  @Test
+  func `skips TTI that exceeds the max startup duration`() async throws {
+    let receiver = CapturingReceiver()
+    let monitoring = makeMonitoring(receiver: receiver)
+    monitoring.markers.finishedLaunching = CACurrentMediaTime() - 10 * 60
+    monitoring.markers.timeToFirstRender = monitoring.markers.finishedLaunching
+
+    monitoring.markInteractive()
+
+    try await waitUntil { monitoring.startupState == .interrupted }
+    #expect(!receiver.metrics.contains { $0.name == "timeToInteractive" })
   }
 }

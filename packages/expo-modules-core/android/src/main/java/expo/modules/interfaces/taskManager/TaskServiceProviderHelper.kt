@@ -11,7 +11,7 @@ object TaskServiceProviderHelper {
    Uses reflection to look through the current list of packages and attempts to find
    one that provides a TaskServiceInterface implementation.
    @param context Provide the application context (context.getApplicationContext())
-   @return A implementation of the TaskServiceInterface it a package offers it
+   @return An implementation of the TaskServiceInterface if a package offers it
    */
   @DoNotStrip
   fun getTaskServiceImpl(context: Context): TaskServiceInterface? {
@@ -30,7 +30,7 @@ object TaskServiceProviderHelper {
     // Invoke and get the list of packages
     val result = getPackageList.invoke(null) as? List<*> ?: return null
     val packages = result.filterIsInstance<Package>()
-      .sortedByDescending { ModulePriorities.get(it::class.qualifiedName) }
+      .sortedByDescending { ModulePriorities.get(it.javaClass.canonicalName) }
 
     // Check if any of the packages are providing a task manager implementation
     return packages

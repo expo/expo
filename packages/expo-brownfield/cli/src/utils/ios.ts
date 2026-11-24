@@ -30,7 +30,11 @@ export const enumerateSourceBuiltDeps = async (
   config: IosConfig,
   alreadyCovered: Set<string>
 ): Promise<string[]> => {
-  const frameworkBinary = path.join(config.simulator, `${config.scheme}.framework`, config.scheme);
+  const frameworkDir = findSourceBuiltFramework(config.simulator, config.scheme);
+  if (!frameworkDir) {
+    return [];
+  }
+  const frameworkBinary = path.join(frameworkDir, config.scheme);
   if (!fs.existsSync(frameworkBinary)) {
     return [];
   }
@@ -332,10 +336,25 @@ export const createXCframework = async (config: IosConfig, at: string) => {
   const frameworkName = `${config.scheme}.xcframework`;
   const outputPath = path.join(at, frameworkName);
 
+  // Precompiled-module builds can place the scheme's framework under
+  // `XCFrameworkIntermediates/<scheme>/` instead of the products-dir root. In dry-run mode
+  // nothing has been built, so fall back to the root path to print the command.
+  const resolveSlice = (slicePath: string): string => {
+    const framework = findSourceBuiltFramework(slicePath, config.scheme);
+    if (framework) {
+      return framework;
+    }
+    const fallback = path.join(slicePath, `${config.scheme}.framework`);
+    if (!config.dryRun) {
+      CLIError.handle('ios-framework-not-found', fallback);
+    }
+    return fallback;
+  };
+
   const args = [
     '-create-xcframework',
-    ...xcframeworkSliceArgs(`${config.device}/${config.scheme}.framework`),
-    ...xcframeworkSliceArgs(`${config.simulator}/${config.scheme}.framework`),
+    ...xcframeworkSliceArgs(resolveSlice(config.device)),
+    ...xcframeworkSliceArgs(resolveSlice(config.simulator)),
     '-output',
     outputPath,
   ];
@@ -464,7 +483,16 @@ export const generatePackageMetadataFile = async (config: IosConfig, packagePath
   );
   const sourceBuiltDeps = sourceBuiltDepNames.map((name) => ({ name, targets: [name] }));
 
-  const xcframeworks = [...baseFrameworks, ...precompiledModules, ...sourceBuiltDeps];
+  const seenNames = new Set<string>();
+  const xcframeworks = [...baseFrameworks, ...precompiledModules, ...sourceBuiltDeps].filter(
+    ({ name }) => {
+      if (seenNames.has(name)) {
+        return false;
+      }
+      seenNames.add(name);
+      return true;
+    }
+  );
 
   // With prebuilds the module graph is large; expose a single aggregate library so consumers
   // `import <PackageName>` once and Xcode links every underlying binary target automatically.
@@ -564,6 +592,27 @@ export const printIosConfig = (config: IosConfig) => {
   }
 
   console.log();
+};
+
+/**
+ * Fails fast when the brownfield scheme shares its name with a bundled framework — the bundled
+ * xcframework would silently overwrite the wrapper framework in the output, and Package.swift
+ * would declare the same target twice.
+ */
+export const validateSchemeCollision = (config: IosConfig): void => {
+  const bundled = new Set(resolvedFixedXCFrameworks());
+  if (config.usePrebuilds) {
+    for (const module of enumerateAllPrebuildModules(
+      process.cwd(),
+      config.buildConfiguration,
+      config.hostProvidedFrameworks
+    )) {
+      bundled.add(module.name);
+    }
+  }
+  if (bundled.has(config.scheme)) {
+    CLIError.handle('ios-scheme-name-collision', config.scheme);
+  }
 };
 
 export const validateHostProvided = (config: IosConfig): void => {

@@ -97,6 +97,9 @@ export interface NotificationChannel {
   groupId?: string | null;
   lightColor: string;
   lockscreenVisibility: AndroidNotificationVisibility;
+  /**
+   * Whether this channel allows launcher badges. Display depends on the launcher and the user's settings.
+   */
   showBadge: boolean;
   sound: 'default' | 'custom' | null;
   audioAttributes: AudioAttributes;

@@ -73,28 +73,15 @@ export function getCssSerialAssets<T extends any>(
 
       if (cssMetadata.externalImports) {
         for (const external of cssMetadata.externalImports) {
-          let source = `<link rel="stylesheet" href="${escapeHtmlAttribute(external.url)}"`;
-
-          // TODO(@hassankhan): We should be able to remove this when we remove the static renderer
-          // TODO: How can we do this for local css imports?
-          if (external.media) {
-            source += ` media="${escapeHtmlAttribute(external.media)}"`;
-          }
-
-          // TODO: supports attribute
-
-          source += '>';
-
           assets.push({
             type: 'css-external',
             originFilename,
             filename: external.url,
-            // Link CSS file
-            source,
+            // External stylesheets have no file contents. Keep the required SerialAsset field;
+            // static and streaming consumers build links from the URL and metadata below.
+            source: '',
             metadata: {
               hmrId: pathToHtmlSafeName(originFilename),
-              // Carried alongside the baked `source` field so the streaming renderer can rebuild
-              // the `<link>` as a React node without having to parse the HTML string
               media: external.media ?? undefined,
             },
           });
@@ -166,8 +153,4 @@ export function fileNameFromContents({ filepath, src }: { filepath: string; src:
 // TODO(@hassankhan): Investigate why we don't always pass the filename with extension here
 export function getFileName(module: string) {
   return path.basename(module).replace(/\.\w+$/, '');
-}
-
-function escapeHtmlAttribute(value: string): string {
-  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }

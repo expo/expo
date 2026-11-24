@@ -1,6 +1,6 @@
 /**
  * Shared blockquote intros and per-page description overrides for the
- * generated llms.txt and llms-full.txt files.
+ * generated llms.txt file.
  */
 
 export const EXPO_DESCRIPTION =

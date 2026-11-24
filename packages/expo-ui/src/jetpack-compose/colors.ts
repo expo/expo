@@ -183,11 +183,33 @@ export const isDynamicColorAvailable: boolean = ExpoUIModule.isDynamicColorAvail
  */
 export const HostPaletteContext = createContext<MaterialColors | null>(null);
 
+// Cache the `scheme` + `seedColor` keyed palette to prevent sync calls to `getMaterialColors`.
+// https://github.com/expo/expo/issues/50477
+const seededPalettes = new Map<string, MaterialColors>();
+const MAX_SEEDED_PALETTES = 32;
+
 /**
  * Get the Material 3 color palette.
  */
 export function getMaterialColors(options?: MaterialColorsOptions): MaterialColors {
-  return ExpoUIModule.getMaterialColors(options ?? null);
+  const scheme = options?.scheme;
+  const seedColor = options?.seedColor;
+  const isCacheable =
+    (scheme === 'light' || scheme === 'dark') &&
+    (typeof seedColor === 'string' || typeof seedColor === 'number');
+  if (!isCacheable) {
+    return ExpoUIModule.getMaterialColors(options ?? null);
+  }
+  const key = `${scheme}:${seedColor}`;
+  let palette = seededPalettes.get(key);
+  if (!palette) {
+    palette = ExpoUIModule.getMaterialColors(options) as MaterialColors;
+    if (seededPalettes.size >= MAX_SEEDED_PALETTES) {
+      seededPalettes.delete(seededPalettes.keys().next().value!);
+    }
+    seededPalettes.set(key, palette);
+  }
+  return palette;
 }
 
 /**

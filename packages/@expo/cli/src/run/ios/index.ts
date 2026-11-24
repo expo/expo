@@ -3,10 +3,10 @@ import type arg from 'arg';
 import chalk from 'chalk';
 import path from 'path';
 
-import type { XcodeConfiguration } from './XcodeBuild.types';
 import type { Command } from '../../index';
 import { assertWithOptionsArgs, printHelp } from '../../utils/args';
 import { logCmdError } from '../../utils/errors';
+import type { XcodeConfiguration } from './XcodeBuild.types';
 
 export const expoRunIos: Command = async (argv) => {
   const rawArgsMap: arg.Spec = {

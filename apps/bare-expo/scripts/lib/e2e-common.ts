@@ -117,22 +117,93 @@ export function prettyPrintTestSuiteLogs(logs: string[]) {
   if (!lastTestSuiteLog) {
     return '';
   }
-  const jsonPart = lastTestSuiteLog?.match(/{.*}/);
-  if (!jsonPart || !jsonPart[0]) {
-    return '';
-  }
-  const testSuiteResult = JSON.parse(jsonPart[0]);
-  if ((testSuiteResult?.failures.length ?? 0) <= 0) {
+  const failures = readFailures(lastTestSuiteLog);
+  if (!failures) {
     return '';
   }
   const result = [];
   result.push('  ❌ Test suite had following test failures:');
-  testSuiteResult?.failures?.split('\n').forEach((failure) => {
+  failures.split('\n').forEach((failure) => {
     if (failure.length > 0) {
       result.push(`    ${failure}`);
     }
   });
   return result.join('\n');
+}
+
+/**
+ * Reads the `failures` field of a `[TEST-SUITE-END]` line. logcat cuts a line at about 4 KB, so
+ * the JSON of a suite with many results does not parse. `failures` comes before `results` in the
+ * line, so this field is usually complete.
+ */
+function readFailures(line: string): string | null {
+  const match = line.match(/"failures":"((?:[^"\\]|\\.)*)(")?/);
+  if (!match) {
+    return null;
+  }
+  const [, escaped, closingQuote] = match;
+  let failures: string;
+  try {
+    failures = JSON.parse(`"${escaped}"`);
+  } catch {
+    // The line ends inside an escape sequence.
+    failures = escaped;
+  }
+  return closingQuote ? failures : `${failures}\n(the log line ends here)`;
+}
+
+// The test-suite app logs one line with this marker for each pending spec (`TestScreen.tsx`).
+const PENDING_SPEC_MARKER = '[TEST-SUITE-PENDING]';
+
+// The reasons Jasmine gives to specs that `xit` and `xdescribe` disable.
+const DISABLED_SPEC_REASONS = new Set(['Temporarily disabled with xit', '']);
+
+export type PendingSpec = { spec: string; reason: string };
+
+/**
+ * Reads the specs that the test-suite app skipped at run time, for example because a host they
+ * need did not answer. Specs that `xit` or `xdescribe` disable are left out: they skip on
+ * purpose (for example on the other platform) and would show in every run. A spec that is
+ * logged more than once is returned once.
+ */
+export function findPendingSpecs(logs: string[]): PendingSpec[] {
+  const specs = new Map<string, PendingSpec>();
+  for (const line of logs) {
+    const index = line.indexOf(PENDING_SPEC_MARKER);
+    if (index === -1) {
+      continue;
+    }
+    try {
+      const { spec, reason = '' } = JSON.parse(line.slice(index + PENDING_SPEC_MARKER.length));
+      if (DISABLED_SPEC_REASONS.has(reason)) {
+        continue;
+      }
+      specs.set(spec, { spec, reason });
+    } catch {
+      // The log tool cut the line.
+    }
+  }
+  return [...specs.values()];
+}
+
+/**
+ * Prints the pending specs and adds one warning annotation for each reason. A pending spec does
+ * not fail the run, so without this a passing run does not show that some specs did not run.
+ */
+export function reportPendingSpecs(logs: string[]): void {
+  const specs = findPendingSpecs(logs);
+  if (specs.length === 0) {
+    return;
+  }
+  console.warn(`\n⚠️ ${specs.length} test(s) were skipped:`);
+  const countByReason = new Map<string, number>();
+  for (const { spec, reason } of specs) {
+    console.warn(`  - ${spec} (${reason})`);
+    countByReason.set(reason, (countByReason.get(reason) ?? 0) + 1);
+  }
+  for (const [reason, count] of countByReason) {
+    annotate('warning', 'Skipped tests', `${count} test(s) skipped: ${reason}`);
+  }
 }
 
 export async function printImageComparisonServerLogs(): Promise<void> {
@@ -232,14 +303,32 @@ export function annotate(
 export const runCustomMaestroFlowsAsync = async (
   e2eDir: string,
   platform: 'android' | 'ios',
-  runFlowsAsync: RunMaestroFlowsFunction
+  runFlowsAsync: RunMaestroFlowsFunction,
+  retryDelayMs: number = 5000
 ) => {
   const maxAttempts = 3;
 
   let flows = await getCustomMaestroFlowsAsync(e2eDir, platform);
   for (let attempt = 1; flows.length > 0; ++attempt) {
     console.log(`Custom e2e flows attempt ${attempt} of ${maxAttempts}: ${flows.join(', ')}`);
-    const failedFlows = await runFlowsAsync(flows, { attempt });
+    let failedFlows: string[];
+    try {
+      failedFlows = await runFlowsAsync(flows, { attempt });
+    } catch (error) {
+      if (!(error instanceof MaestroNoResultsError) || attempt >= maxAttempts) {
+        throw error;
+      }
+      // maestro failed before reporting any flow results (e.g. its iOS driver didn't start in
+      // time), which says nothing about the flows themselves, so run all of them again.
+      annotate(
+        'warning',
+        'Maestro failed to run the flows',
+        `attempt ${attempt} of ${maxAttempts}: ${error.message}`
+      );
+      console.warn(`⚠️ Retrying all flows, maestro produced no results: ${error.message}`);
+      await delayAsync(retryDelayMs);
+      continue;
+    }
     if (failedFlows.length === 0) {
       return;
     }
@@ -266,9 +355,17 @@ export const runCustomMaestroFlowsAsync = async (
     }
     console.warn(`⚠️ Retrying failed flows: ${failedFlows.join(', ')}`);
     flows = failedFlows;
-    await delayAsync(5000);
+    await delayAsync(retryDelayMs);
   }
 };
+
+/**
+ * Thrown when maestro exits with an error before reporting any flow results, for example when
+ * its driver fails to start. The flows never ran, so it's safe to retry them.
+ */
+export class MaestroNoResultsError extends Error {
+  name = 'MaestroNoResultsError';
+}
 
 export interface RunMaestroOptions {
   /** Global maestro CLI arguments selecting the device, e.g. `['--device', deviceId]`. */
@@ -289,7 +386,8 @@ export interface RunMaestroOptions {
 /**
  * Runs the given flows in a single maestro invocation (flows execute in the given order and
  * a failed flow doesn't stop the following ones) and returns the relative paths of failed flows.
- * Throws if maestro fails without producing flow results, e.g. when it can't reach the device.
+ * Throws `MaestroNoResultsError` if maestro fails without producing flow results, e.g. when it
+ * can't reach the device.
  *
  * Maestro writes the JUnit report only after all flows have finished, so a process that
  * outlives the report is just wedged on exit (Maestro 2.4.0 can crash its main thread while
@@ -376,7 +474,10 @@ export async function runMaestroAsync({
           { cause: error }
         );
       }
-      throw error;
+      throw new MaestroNoResultsError(
+        `maestro failed without producing any flow results: ${(error as Error).message}`,
+        { cause: error }
+      );
     }
     const failedFlows = getFailedFlowsFromJUnitReport(reportContents, flowRelativePaths);
     if (failedFlows.length === 0) {

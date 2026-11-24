@@ -2,7 +2,7 @@
 
 import EXUpdatesInterface
 
-/// Provides some basic informations about the app.
+/// Provides some basic information about the app.
 public struct AppInfo: Codable, Equatable, Sendable {
   public let appId: String?
   public let appName: String?
@@ -57,8 +57,6 @@ public struct AppInfo: Codable, Equatable, Sendable {
   public nonisolated(unsafe) static var current: AppInfo = {
     let bundle = Bundle.main
     let infoPlist = bundle.infoDictionary ?? [:]
-    let updatesInfo = UpdatesMonitoring.getUpdatesMetricsInfo()
-
     return AppInfo(
       appId: bundle.bundleIdentifier,
       appName: (infoPlist["CFBundleDisplayName"] ?? infoPlist["CFBundleName"]) as? String,

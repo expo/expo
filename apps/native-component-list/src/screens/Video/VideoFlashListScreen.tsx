@@ -1,4 +1,4 @@
-import Entypo from '@expo/vector-icons/Entypo';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { FlashList } from '@shopify/flash-list';
 import { VideoView, VideoSource, useVideoPlayer } from 'expo-video';
 import { useEffect, useState } from 'react';
@@ -62,16 +62,16 @@ function RenderItem({ item, index, viewSize, visibleIndex }: RenderItemProps) {
       />
       <View style={styles.overlayContainer}>
         <View style={styles.controlsContainer}>
-          <Entypo
-            name={heart ? 'heart' : 'heart-outlined'}
+          <Ionicons
+            name={heart ? 'heart' : 'heart-outline'}
             size={50}
             color="white"
             onPress={() => {
               setHeart(!heart);
             }}
           />
-          <Entypo name="message" size={50} color="white" />
-          <Entypo name="upload-to-cloud" size={50} color="white" />
+          <Ionicons name="chatbubble" size={50} color="white" />
+          <Ionicons name="cloud-upload" size={50} color="white" />
         </View>
       </View>
     </View>

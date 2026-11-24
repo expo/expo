@@ -13,6 +13,7 @@ import {
   getAudioContext,
   getSourceUri,
   getStatusFromMedia,
+  isPlayInterrupted,
   nextId,
   preloadCache,
   safeDuration,
@@ -120,11 +121,27 @@ export class AudioPlayerWeb
     return getStatusFromMedia(this.media, this.id);
   }
 
+  get isActiveForLockScreen(): boolean {
+    return mediaSessionController.isActive(this);
+  }
+
   play(): void {
     if (!isAudioActive) {
       return;
     }
-    this.media.play();
+    const media = this.media;
+    media.play().catch((error) => {
+      if (isPlayInterrupted(error) || media !== this.media) {
+        return;
+      }
+      this.isPlaying = false;
+      this.stopSampling();
+      this.emit(PLAYBACK_STATUS_UPDATE, {
+        ...getStatusFromMedia(media, this.id),
+        playing: false,
+        error: error?.message ?? String(error),
+      });
+    });
     this.isPlaying = true;
     this.startSampling();
   }

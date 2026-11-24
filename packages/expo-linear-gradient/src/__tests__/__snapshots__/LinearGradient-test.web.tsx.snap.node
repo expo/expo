@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`computes the correct gradient background image for a complex set of props 1`] = `"linear-gradient(135deg, rgba(255,0,0,1.00) 50%, rgba(0,255,255,0.00) 100%)"`;
 

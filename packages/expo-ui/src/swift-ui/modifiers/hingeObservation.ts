@@ -1,0 +1,91 @@
+import { getStateId, type WorkletCallback } from '../../State';
+import { createModifier, createModifierWithEventListener } from './createModifier';
+
+/**
+ * Status of the device hinge, as reported by SwiftUI's `DeviceHinge.Status`.
+ * `'unknown'` is reserved for a status this version of Expo UI does not recognize.
+ * @platform ios 27.1+
+ */
+export type HingeStatus = 'closed' | 'partiallyOpen' | 'fullyOpen' | 'unknown';
+
+/**
+ * State of the device hinge. Mirrors SwiftUI's `DeviceHinge`.
+ * @platform ios 27.1+
+ */
+export type Hinge = {
+  /**
+   * The current angle of the hinge in degrees, where `0` is closed and `180` is flat. The rate and
+   * granularity of angle updates are system policy, so do not depend on a particular update
+   * frequency or precision. Prefer `status` when you only need to know whether the hinge is closed,
+   * partially open, or fully open.
+   */
+  angle: number;
+  /**
+   * The current status of the hinge, determined by the system from the angle and device orientation.
+   */
+  status: HingeStatus;
+};
+
+/**
+ * The hinge context of the view hierarchy. Mirrors SwiftUI's `DeviceHingeContext`.
+ * @platform ios 27.1+
+ */
+export type HingeContext = {
+  /**
+   * The current hinge, or `null` when the device has no hinge or the view's hierarchy provides no
+   * hinge updates.
+   */
+  hinge: Hinge | null;
+};
+
+/**
+ * A function called with the old and the new hinge context when the hinge context changes.
+ */
+export type HingeChangeHandler = (oldContext: HingeContext, newContext: HingeContext) => void;
+
+/**
+ * Calls the handler when the hinge context of the view hierarchy changes, such as when the user
+ * folds or unfolds the device. The handler receives the old and the new context. Use hinge
+ * state for interactions and effects, not for layout.
+ *
+ * Pass a plain function to run it on the JS thread, or a callback from
+ * [`useWorkletCallback`](./usenativestate/#useworkletcallbackcallback) to run it synchronously on the UI
+ * thread, which suits driving a native state value from the continuous `angle`.
+ *
+ * The first call happens when the view appears, and its old context has a `null` hinge. On devices
+ * without a hinge, both contexts have a `null` hinge. The modifier is a no-op on iOS versions earlier
+ * than 27.1 and in builds made with Xcode earlier than 27.1.
+ *
+ * @param handler - Function or worklet callback called with the old and the new hinge context.
+ * @platform ios 27.1+
+ *
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/onhingechange(isenabled:_:)).
+ *
+ * @example
+ * ```tsx
+ * // JS thread
+ * const [hinge, setHinge] = useState<Hinge | null>(null);
+ * <VStack modifiers={[onHingeChange((_, newContext) => setHinge(newContext.hinge))]} />
+ *
+ * // UI thread
+ * const angle = useNativeState(180);
+ * const onHinge = useWorkletCallback((_, newContext) => {
+ *   'worklet';
+ *   angle.value = newContext.hinge?.angle ?? 180;
+ * });
+ * <VStack modifiers={[onHingeChange(onHinge)]} />
+ * ```
+ */
+export const onHingeChange = (
+  handler: HingeChangeHandler | WorkletCallback<HingeChangeHandler>
+) => {
+  if (typeof handler !== 'function') {
+    return createModifier('onHingeChange', { workletCallback: getStateId(handler) });
+  }
+  const callback = handler as HingeChangeHandler;
+  return createModifierWithEventListener(
+    'onHingeChange',
+    (event: { oldContext: HingeContext; newContext: HingeContext }) =>
+      callback(event.oldContext, event.newContext)
+  );
+};

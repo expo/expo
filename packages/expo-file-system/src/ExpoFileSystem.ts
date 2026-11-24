@@ -29,6 +29,9 @@ declare class ExpoFileSystemModule extends NativeModule<FileSystemEvents> {
     options?: DownloadOptions,
     uuid?: string
   ): Promise<string>;
+  /** Native iOS collection previews. Single-file requests use the File instance methods. */
+  canPreview(files: File[]): Promise<boolean>;
+  preview(files: File[], initialIndex: number): Promise<void>;
   cancelDownloadAsync(uuid: string): void;
   pickDirectoryAsync(initialUri?: string): Promise<Directory>;
   pickFileAsync(options: PickSingleFileOptions): Promise<File>;

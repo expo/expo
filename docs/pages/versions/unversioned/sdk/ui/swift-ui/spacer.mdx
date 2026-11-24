@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`Spacer`](../universal/spacer) — it renders the appropriate native component per platform.
@@ -32,7 +33,13 @@ Expo UI Spacer matches the official SwiftUI [Spacer API](https://developer.apple
 
 Use Spacer to push content to opposite ends of a horizontal stack.
 
-```tsx SpacerHStackExample.tsx
+<ComponentExample
+  title="SpacerHStackExample.tsx"
+  src="/static/images/expo-ui/examples/spacer-hstack-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/spacer-hstack-ios-dark.webp"
+  alt="The word Left at the leading edge and Right at the trailing edge of the same row">
+
+```tsx
 import { Host, HStack, Text, Spacer } from '@expo/ui/swift-ui';
 
 export default function SpacerHStackExample() {
@@ -48,11 +55,19 @@ export default function SpacerHStackExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Basic spacer in VStack
 
 Use Spacer to push content to opposite ends of a vertical stack.
 
-```tsx SpacerVStackExample.tsx
+<ComponentExample
+  title="SpacerVStackExample.tsx"
+  src="/static/images/expo-ui/examples/spacer-vstack-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/spacer-vstack-ios-dark.webp"
+  alt="The word Top at the upper edge and Bottom at the lower edge of the same column">
+
+```tsx
 import { Host, VStack, Text, Spacer } from '@expo/ui/swift-ui';
 
 export default function SpacerVStackExample() {
@@ -68,10 +83,15 @@ export default function SpacerVStackExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { Spacer } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/spacer" apiName="Spacer" />
+<APISection
+  packageName="expo-ui/swift-ui/spacer"
+  apiName="Spacer"
+/>

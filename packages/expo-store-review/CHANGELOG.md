@@ -1,14 +1,30 @@
 # Changelog
 
-## Unpublished
+## 58.0.2
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
 
-### 🐛 Bug fixes
+## 58.0.1
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.0 — 2026-09-10
 
 ### 💡 Others
+
+- [iOS] Resolved the review prompt's scene through the shared scene geometry helper, which also fixes a foreground scene being missed when another scene type sorted ahead of it. ([#48318](https://github.com/expo/expo/pull/48318) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.3 — 2026-05-06
 

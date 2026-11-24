@@ -1,11 +1,10 @@
 import { events } from '2g';
 import { type ExpoConfig, getConfig, getPlatformsFromConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
-import type { createStableModuleIdFactory } from '@expo/metro-config';
+import type { createStableModuleIdFactory, ExpoCustomTransformOptions } from '@expo/metro-config';
 import { loadUserConfig } from '@expo/metro-config';
-import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
-import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import type { Reporter } from '@expo/metro/metro';
+import getMaxWorkers from '@expo/metro/metro-config/defaults/getMaxWorkers';
 import { Terminal } from '@expo/metro/metro-core';
 import type Bundler from '@expo/metro/metro/Bundler';
 import type { ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler';
@@ -15,6 +14,7 @@ import type MetroHmrServer from '@expo/metro/metro/HmrServer';
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
+import { isOutOfTreePlatform } from '@expo/platforms';
 import chalk from 'chalk';
 import type http from 'http';
 import path from 'path';
@@ -23,13 +23,14 @@ import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { shouldReduceLogs } from '../../../utils/interactive';
-import type DevToolsPluginManager from '../DevToolsPluginManager';
-import { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
+import type DevToolsPluginManager from '../devtools/DevToolsPluginManager';
+import { DevToolsPluginEndpoint } from '../devtools/DevToolsPluginManager';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
+import type { ExpoMetroConfig } from './ExpoMetroConfig';
 import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { replaceMetroFileMap } from './createFileMap-fork';
@@ -37,6 +38,11 @@ import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
 import { runServer, type ServerAddressInfo, type SecureServerOptions } from './runServer-fork';
+import {
+  patchGetDeltaForCacheVary,
+  patchTransformFileForCacheVary,
+  withMetroCacheVary,
+} from './withMetroCacheVary';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 
 declare module '2g' {
@@ -61,6 +67,7 @@ declare module '2g' {
       host: string | null;
       port: number | null;
     };
+    'metro:prewarm': { workers: number };
   }
 }
 
@@ -118,10 +125,14 @@ class LogRespectingTerminal extends Terminal {
       this.flush();
     };
 
-    const sendStderr = (...msg: any[]) => {
+    const sendStderr = (level: 'warn' | 'error', ...msg: any[]) => {
       if (!msg.length) {
         this.logStderr('');
       } else {
+        event('server_log', {
+          level,
+          data: msg.map((value) => (value instanceof Error ? event.error(value) : value)),
+        });
         const [format, ...args] = msg;
         this.logStderr(require('util').format(format, ...args));
       }
@@ -129,8 +140,8 @@ class LogRespectingTerminal extends Terminal {
 
     console.log = sendLog;
     console.info = sendLog;
-    console.warn = sendStderr;
-    console.error = sendStderr;
+    console.warn = (...msg) => sendStderr('warn', ...msg);
+    console.error = (...msg) => sendStderr('error', ...msg);
 
     // NOTE(@kitten): We flush the stderr queue immediately when we're about to exit
     process.on('exit', () => {
@@ -202,8 +213,8 @@ export async function loadMetroConfigAsync(
 
   // Out-of-tree platforms (tvos/macos) rely on the autolinking module resolver to remap the
   // react-native package to their support package, and require autolinking module resolution
-  const targetsOutOfTreePlatform = getPlatformsFromConfig(projectRoot, exp).some(
-    (platform) => platform === 'tvos' || platform === 'macos'
+  const targetsOutOfTreePlatform = getPlatformsFromConfig(projectRoot, exp).some((platform) =>
+    isOutOfTreePlatform(platform)
   );
 
   // Autolinking Module Resolution is enabled by default in a monorepo or for out-of-tree platforms.
@@ -228,7 +239,7 @@ export async function loadMetroConfigAsync(
 
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
-  let config = await loadUserConfig({
+  let config: ExpoMetroConfig = await loadUserConfig({
     projectRoot,
     serverRoot,
     // NOTE: Allow external tools to override the metro config. This is considered internal and unstable
@@ -241,6 +252,11 @@ export async function loadMetroConfigAsync(
     // Compare to `LoadOptions` type (disregard `reporter` as we don't expose this)
     resetCache: !!options.resetCache,
     maxWorkers: options.maxWorkers ?? config.maxWorkers,
+    resolver: {
+      ...config.resolver,
+      // Expo CLI uses the Node crawler and watcher unless Watchman is explicitly enabled
+      useWatchman: config.resolver.useWatchman ?? false,
+    },
     server: {
       ...config.server,
       port: options.port ?? config.server.port,
@@ -255,6 +271,12 @@ export async function loadMetroConfigAsync(
       },
     },
   };
+
+  // TODO(@kitten): Add type once we stabilise this
+  const enableNativeTransformWorker: boolean = !!(exp.experiments as any)
+    ?.noxcturnalTransformWorker;
+  asWritable(config.transformer as any).unstable_noxcturnalTransformWorker =
+    enableNativeTransformWorker;
 
   // On-Demand Filesystem is enabled by default
   // TODO(@kitten): Add to config-types JSON schema
@@ -299,6 +321,14 @@ export async function loadMetroConfigAsync(
   if (!reduceLogs && env.EXPO_UNSTABLE_LOG_BOX) {
     Log.warn(`Experimental Expo LogBox is enabled.`);
   }
+  const workletsBundleModeEnabled = config.serializer?.polyfillModuleNames?.some((modulePath) =>
+    modulePath.includes('react-native-worklets')
+  );
+  if (!reduceLogs && workletsBundleModeEnabled) {
+    Log.warn(
+      `Experimental react-native-worklets Bundle Mode is enabled.\nBundle mode is currently unstable, not recommended for production use, and may cause unexpected behavior.`
+    );
+  }
 
   if (!reduceLogs && serverActionsEnabled) {
     Log.warn(
@@ -318,6 +348,9 @@ export async function loadMetroConfigAsync(
     isReactServerComponentsEnabled: serverComponentsEnabled,
     getMetroBundler,
   });
+
+  // Post-resolution: `loadUserConfig` has already resolved function-form `cacheStores` to an array.
+  config = withMetroCacheVary(config);
 
   event('config', {
     serverRoot: event.path(serverRoot),
@@ -522,11 +555,14 @@ export async function instantiateMetroAsync(
     );
   };
 
-  // Layered on top of the prune patch above. Both fresh worker results
-  // and cache hits flow through `Bundler.transformFile`, so wrapping
-  // here covers both.
-  patchTransformFileForPackedMaps(metro.getBundler().getBundler());
-  patchMetroSourceMapStringForPackedMaps();
+  // Make ambient-value (cache-vary) staleness visible to the graph and delta layers.
+  patchTransformFileForCacheVary(metro.getBundler().getBundler());
+  patchGetDeltaForCacheVary();
+
+  // Warm the transform worker pool during the idle window before the first bundle request
+  if (!isExporting) {
+    prewarmTransformPool(metro.getBundler().getBundler(), metroConfig.maxWorkers);
+  }
 
   setEventReporter(eventsSocket.reportMetroEvent);
 
@@ -538,7 +574,9 @@ export async function instantiateMetroAsync(
     const ctx = {
       // TODO(@kitten): Increase type-safety here
       platform: graph.transformOptions.platform!,
-      environment: graph.transformOptions.customTransformOptions?.environment,
+      environment: (
+        graph.transformOptions.customTransformOptions as ExpoCustomTransformOptions | undefined
+      )?.environment,
     };
     // Assign IDs to modules in a consistent order
     for (const module of modules) {
@@ -598,7 +636,9 @@ export async function instantiateMetroAsync(
         const moduleIdContext = {
           // TODO(@kitten): Increase type-safety here
           platform: revision.graph.transformOptions.platform!,
-          environment: revision.graph.transformOptions.customTransformOptions?.environment,
+          environment: (
+            revision.graph.transformOptions.customTransformOptions as ExpoCustomTransformOptions
+          )?.environment,
         };
         const hmrUpdate = hmrJSBundle(delta, revision.graph, {
           clientUrl: group.clientUrl,
@@ -641,6 +681,45 @@ export async function instantiateMetroAsync(
     messageSocket: messagesSocket,
     address,
   };
+}
+
+export async function prewarmTransformPool(
+  bundler: Bundler,
+  maxWorkers: number | undefined
+): Promise<void> {
+  const workers = getMaxWorkers(maxWorkers);
+  if (workers <= 1) {
+    return;
+  }
+
+  const warmOptions: TransformOptions = {
+    customTransformOptions: {
+      prewarm: '1',
+      bytecode: '1',
+      engine: 'hermes',
+    },
+    dev: true,
+    experimentalImportSupport: true,
+    inlinePlatform: true,
+    inlineRequires: false,
+    minify: false,
+    platform: 'ios',
+    type: 'module',
+    unstable_transformProfile: 'hermes-stable',
+  };
+
+  const done = event.span();
+  const defaultSource = Buffer.from('export const a = 1; export function b(x) { return x + a; }');
+  await Promise.allSettled(
+    Array.from({ length: workers }, (_, i) =>
+      // Defer each invocation so synchronous transform errors are settled as well. Prewarming is
+      // opportunistic and must never prevent the dev server from starting.
+      Promise.resolve().then(() =>
+        bundler.transformFile(`/__prewarm__/${i}.js`, warmOptions, defaultSource)
+      )
+    )
+  );
+  done('prewarm', { workers });
 }
 
 // TODO: Fork the entire transform function so we can simply regex the file contents for keywords instead.
@@ -698,7 +777,7 @@ function pruneCustomTransformOptions(
 }
 
 /**
- * Simplify and communicate if Metro is running without watching file updates,.
+ * Simplify and communicate if Metro is running without watching file updates.
  * Exposed for testing.
  */
 export function isWatchEnabled() {

@@ -57,7 +57,7 @@ module.exports = defineConfig([
 
       curly: ['warn', 'all'],
       'block-spacing': ['warn', 'always'],
-      'comma-dangle': ['warn', 'always-multiline'],
+      'comma-dangle': 'off',
 
       'comma-spacing': [
         'warn',

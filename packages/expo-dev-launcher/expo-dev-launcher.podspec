@@ -113,17 +113,10 @@ Pod::Spec.new do |s|
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'ios/Tests/**/*.{h,m,mm,swift}'
-    test_spec.dependency 'Quick'
-    test_spec.dependency 'Nimble'
     test_spec.dependency "React-CoreModules"
     test_spec.dependency "OHHTTPStubs"
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
-    # The linked static libs contain C++ but the test bundle has no C++ sources,
-    # so the C++ runtime must be linked explicitly
-    test_spec.pod_target_xcconfig = {
-      'OTHER_LDFLAGS' => '$(inherited) -lc++'
-    }
   end
 
 end

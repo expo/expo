@@ -30,7 +30,7 @@ internal fun getShareIntentUri(context: Context): Uri? {
 }
 
 // Emits intent received event to JS. This is because the `SEND` and `SEND_MULTIPLE` intents
-// do not navigation libraries of a native intent. This aligns the behaviour with ios.
+// do not inform the navigation libraries of a native intent. This aligns the behaviour with ios.
 internal fun emitShareIntentReceived(reactActivity: ReactActivity, originalIntent: Intent) {
   SharingSingleton.intent = originalIntent
 

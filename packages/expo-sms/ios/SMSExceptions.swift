@@ -12,6 +12,12 @@ internal final class SMSPendingException: Exception {
   }
 }
 
+internal final class SMSMissingViewControllerException: Exception {
+  override var reason: String {
+    "Unable to find the current view controller to present the SMS composer"
+  }
+}
+
 internal final class SMSSendingException: GenericException<String> {
   override var reason: String {
     param

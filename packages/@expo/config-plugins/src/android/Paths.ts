@@ -1,11 +1,11 @@
 import assert from 'assert';
 import fs from 'fs';
-import { globSync } from 'glob';
 import * as path from 'path';
+import { globSync } from 'tinyglobby';
 
-import type { ResourceKind } from './Resources';
 import { UnexpectedError } from '../utils/errors';
 import { directoryExistsAsync } from '../utils/modules';
+import type { ResourceKind } from './Resources';
 
 export interface ProjectFile<L extends string = string> {
   path: string;
@@ -17,10 +17,12 @@ export type ApplicationProjectFile = ProjectFile<'java' | 'kt'>;
 export type GradleProjectFile = ProjectFile<'groovy' | 'kt'>;
 
 export function getProjectFilePath(projectRoot: string, name: string): string {
-  const filePath = globSync(`android/app/src/main/java/**/${name}.@(java|kt)`, {
+  const [filePath] = globSync(`android/app/src/main/java/**/${name}.@(java|kt)`, {
     cwd: projectRoot,
     absolute: true,
-  })[0];
+  })
+    .sort()
+    .reverse();
   assert(
     filePath,
     `Project file "${name}" does not exist in android project for root "${projectRoot}"`

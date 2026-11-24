@@ -1,14 +1,27 @@
-import AppMetrics, {
+import {
+  AppMetrics,
   type LogRecord,
   type Metric,
   type NetworkRequestCompletedEvent,
   type NetworkRequestFilter,
   type NetworkRequestObserver,
   type NetworkRequestStartedEvent,
-} from 'expo-app-metrics';
+} from 'expo-observe/debug';
 import { fetch } from 'expo/fetch';
 
+import type { JasmineInterface } from '../types';
+import { gateOnHostAsync } from '../utils/HostReachability';
+
 export const name = 'AppMetrics';
+
+/**
+ * `LogAttributeValue` is recursive, which jasmine's `Expected<T>` cannot
+ * instantiate. Reading attributes through a shallow record keeps the
+ * comparisons below cheap for the type checker.
+ */
+function readAttributes(log: { attributes?: Record<string, unknown> | null }) {
+  return log.attributes ?? {};
+}
 
 const TEST_HOST = 'https://httpbin.io';
 const TEST_HOSTNAME = 'httpbin.io';
@@ -115,7 +128,9 @@ function uniqueLabel(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
 }
 
-export function test({ describe, expect, it, afterEach }) {
+export async function test({ describe, expect, it, afterEach, ...t }: JasmineInterface) {
+  const httpbin = await gateOnHostAsync({ describe, it, pending: t.pending }, `${TEST_HOST}/get`);
+
   describe('getMainSession', () => {
     it('returns a non-null main session with the documented shape', () => {
       const session = AppMetrics.getMainSession();
@@ -182,8 +197,8 @@ export function test({ describe, expect, it, afterEach }) {
       const recorded = metrics.find((metric) => metric.name === name) as Metric;
       expect(recorded).toBeDefined();
       expect(recorded.params).toBeDefined();
-      expect(recorded.params!.screen).toBe('home');
-      expect(recorded.params!.count).toBe(3);
+      expect(recorded.params?.screen).toBe('home');
+      expect(recorded.params?.count).toBe(3);
     });
   });
 
@@ -213,9 +228,10 @@ export function test({ describe, expect, it, afterEach }) {
       expect(log.severity).toBe('warn');
       expect(typeof log.timestamp).toBe('string');
       expect(log.attributes).toBeDefined();
-      expect(log.attributes!.feature).toBe('app-metrics');
-      expect(log.attributes!.retries).toBe(2);
-      expect(log.attributes!.enabled).toBe(true);
+      const attributes = readAttributes(log);
+      expect(attributes.feature).toBe('app-metrics');
+      expect(attributes.retries).toBe(2);
+      expect(attributes.enabled).toBe(true);
     });
 
     it('defaults severity to "info" when none is provided', async () => {
@@ -250,10 +266,11 @@ export function test({ describe, expect, it, afterEach }) {
 
       const log = await readBackLog(name);
       expect(log.attributes).toBeDefined();
-      expect(log.attributes!.subscription_tier).toBe('pro');
-      expect(log.attributes!.experiment_variant).toBe('B');
+      const attributes = readAttributes(log);
+      expect(attributes.subscription_tier).toBe('pro');
+      expect(attributes.experiment_variant).toBe('B');
       // Per-record attributes coexist with the globals.
-      expect(log.attributes!.local_key).toBe('local_value');
+      expect(attributes.local_key).toBe('local_value');
     });
 
     it('lets a per-record attribute win over a global with the same key', async () => {
@@ -262,7 +279,7 @@ export function test({ describe, expect, it, afterEach }) {
       AppMetrics.logEvent(name, { attributes: { source: 'local' } });
 
       const log = await readBackLog(name);
-      expect(log.attributes!.source).toBe('local');
+      expect(readAttributes(log).source).toBe('local');
     });
 
     it('stops applying globals after they are cleared', async () => {
@@ -273,11 +290,11 @@ export function test({ describe, expect, it, afterEach }) {
       AppMetrics.logEvent(name);
 
       const log = await readBackLog(name);
-      expect(log.attributes?.cleared_key).toBeUndefined();
+      expect(readAttributes(log).cleared_key).toBeUndefined();
     });
   });
 
-  describe('NetworkRequestObserver', () => {
+  httpbin.describe('NetworkRequestObserver', () => {
     it('emits requestStarted with the documented field shape', async () => {
       const url = `${TEST_HOST}/get?case=started-shape`;
       const { capture, release } = captureEvents((u) => u === url);
@@ -343,12 +360,12 @@ export function test({ describe, expect, it, afterEach }) {
         // One logical fetch → one completion event observed at the caller-supplied URL.
         const completed = capture.completed.find((event) => event.url === url);
         expect(completed).toBeDefined();
-        expect(completed!.statusCode).toBe(200);
-        expect(completed!.redirects.length).toBe(1);
-        expect(completed!.redirects[0].fromUrl).toBe(url);
-        expect(completed!.redirects[0].toUrl).toBe(target);
-        expect(completed!.redirects[0].statusCode).toBeGreaterThanOrEqual(300);
-        expect(completed!.redirects[0].statusCode).toBeLessThan(400);
+        expect(completed?.statusCode).toBe(200);
+        expect(completed?.redirects.length).toBe(1);
+        expect(completed?.redirects[0].fromUrl).toBe(url);
+        expect(completed?.redirects[0].toUrl).toBe(target);
+        expect(completed?.redirects[0].statusCode).toBeGreaterThanOrEqual(300);
+        expect(completed?.redirects[0].statusCode).toBeLessThan(400);
       } finally {
         release();
       }
@@ -511,15 +528,15 @@ export function test({ describe, expect, it, afterEach }) {
 
   describe('error handler', () => {
     // `installErrorHandler` ran on import, wrapping `global.ErrorUtils`. The end-to-end test drives
-    // the native `reportError` path with a non-fatal error and reads the recorded `exception` log
+    // the native `reportError` path with a non-fatal error and reads the recorded `js.exception` log
     // event back from the main session. (A fatal error can't be round-tripped in-process: it goes to
     // the file sink and is ingested on the next launch — see the native `PendingErrorStore` tests.)
     // A separate test drives the installed global handler to cover the JS wrapper's forwarding logic.
     //
-    // The event follows OpenTelemetry's exception-in-logs convention: event name `exception`, with
+    // The event follows OpenTelemetry's exception-in-logs convention: event name `js.exception`, with
     // `exception.type` / `exception.message` / `exception.stacktrace` attributes, plus `expo.error.*`
     // for the bits OTel has no field for (capture source, fatal flag).
-    async function waitForExceptionLog(
+    async function waitForJsExceptionLog(
       predicate: (log: LogRecord) => boolean,
       timeoutMs = EVENT_TIMEOUT_MS
     ): Promise<LogRecord> {
@@ -527,24 +544,24 @@ export function test({ describe, expect, it, afterEach }) {
       const deadline = Date.now() + timeoutMs;
       while (Date.now() < deadline) {
         const logs = await session.getLogs();
-        const match = logs.find((log) => log.name === 'exception' && predicate(log));
+        const match = logs.find((log) => log.name === 'js.exception' && predicate(log));
         if (match) {
           return match;
         }
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
-      throw new Error(`Timed out after ${timeoutMs}ms waiting for the exception log event`);
+      throw new Error(`Timed out after ${timeoutMs}ms waiting for the js.exception log event`);
     }
 
     it('installs by wrapping the global ErrorUtils handler', () => {
-      // The handler is installed when expo-app-metrics is imported, so a global handler is present.
+      // The handler is installed when expo-observe is imported, so a global handler is present.
       expect(typeof ErrorUtils.getGlobalHandler()).toBe('function');
     });
 
     // Only non-fatal errors are readable via `getLogs` in-process: the fatal path writes to the file
     // sink and is ingested on the next launch, so it can't be round-tripped here. Fatal persistence is
     // covered by the native `PendingErrorStore` write/drain tests.
-    it('records a non-fatal error as an exception log event with OTel attributes', async () => {
+    it('records a non-fatal error as a js.exception log event with OTel attributes', async () => {
       const message = `test-suite error ${Date.now()}`;
       AppMetrics.reportError({
         source: 'global',
@@ -554,12 +571,12 @@ export function test({ describe, expect, it, afterEach }) {
         isFatal: false,
       });
 
-      const log = await waitForExceptionLog(
+      const log = await waitForJsExceptionLog(
         (entry) => (entry.attributes ?? {})['exception.message'] === message
       );
       expect(log.severity).toBe('error');
 
-      const attributes = log.attributes ?? {};
+      const attributes = readAttributes(log);
       expect(attributes['exception.type']).toBe('TypeError');
       expect(attributes['exception.message']).toBe(message);
       expect(attributes['exception.stacktrace']).toBe('onPress@index.bundle:42:7');

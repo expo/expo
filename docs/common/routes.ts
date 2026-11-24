@@ -12,6 +12,10 @@ import { PageApiVersionContextType } from '~/providers/page-api-version';
 import navigation from '~/public/static/constants/navigation.json';
 import { NavigationRoute, NavigationRouteWithSection } from '~/types/common';
 
+if (import.meta.webpackHot) {
+  import.meta.webpackHot.decline('~/public/static/constants/navigation.json');
+}
+
 export const getRoutes = (
   path: string,
   version: PageApiVersionContextType['version']
@@ -93,7 +97,7 @@ export const getPageSection = (path: string) => {
 };
 
 export const getCanonicalUrl = (path: string) => {
-  if (isReferencePath(path)) {
+  if (isVersionedPath(path)) {
     return `https://docs.expo.dev${Utilities.replaceVersionInUrl(path, 'latest')}/`;
   } else if (path !== `/`) {
     return `https://docs.expo.dev${path}/`;
@@ -101,6 +105,33 @@ export const getCanonicalUrl = (path: string) => {
     return `https://docs.expo.dev`;
   }
 };
+
+function collectPageHrefs(routes: NavigationRoute[], acc: Set<string>) {
+  for (const route of routes) {
+    if (!route) {
+      continue;
+    }
+    if (route.type === 'page' && route.href) {
+      acc.add(route.href);
+    }
+    if (route.children) {
+      collectPageHrefs(route.children, acc);
+    }
+  }
+}
+
+/**
+ * Resolve the path shown in the banner on unversioned pages. Returns undefined when the page has no
+ * counterpart in `latest`, which is the case for pages added after an SDK cut.
+ */
+export function getLatestVersionPath(routes: NavigationRoute[], pathname: string) {
+  const path = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+  const latestPath = Utilities.replaceVersionInUrl(path, 'latest');
+  const pages = new Set<string>();
+  collectPageHrefs(routes, pages);
+
+  return pages.has(latestPath) ? latestPath : undefined;
+}
 
 export const getMarkdownPath = (asPath: string) => {
   const path = asPath.split('?')[0].split('#')[0];
@@ -129,28 +160,27 @@ export const isRouteActive = (
 
 const DOCS_ROOT = 'https://docs.expo.dev';
 
-function getAncestorUrl(node: NavigationRoute): string {
-  if (!node.children) {
-    return DOCS_ROOT;
-  }
+function getPageUrl(href: string) {
+  return `${DOCS_ROOT}${href}/`;
+}
 
-  for (const child of node.children as NavigationRoute[]) {
-    if (!child || child.hidden) {
+function collectVisiblePages(nodes: NavigationRoute[] = [], pages: NavigationRoute[] = []) {
+  for (const node of nodes) {
+    if (!node || node.hidden) {
       continue;
     }
-    if (child.type === 'page' && child.href) {
-      if (child.isIndex) {
-        return `${DOCS_ROOT}${child.href}`;
-      }
+    if (node.type === 'page' && node.href) {
+      pages.push(node);
     }
-    if (child.children) {
-      const url = getAncestorUrl(child);
-      if (url !== DOCS_ROOT) {
-        return url;
-      }
-    }
+    collectVisiblePages(node.children as NavigationRoute[], pages);
   }
-  return DOCS_ROOT;
+  return pages;
+}
+
+function getAncestorUrl(node: NavigationRoute): string {
+  const pages = collectVisiblePages(node.children as NavigationRoute[]);
+  const page = pages.find(child => child.isIndex) ?? pages[0];
+  return page ? getPageUrl(page.href) : DOCS_ROOT;
 }
 
 export function getBreadcrumbTrail(
@@ -171,7 +201,7 @@ export function getBreadcrumbTrail(
           return true;
         }
       } else if (node.children) {
-        trail.push({ name: node.name, node });
+        trail.push({ name: node.sidebarTitle ?? node.name, node });
         if (search(node.children)) {
           return true;
         }
@@ -192,7 +222,7 @@ export function getBreadcrumbTrail(
       }
 
       const url =
-        item.node.type === 'page' ? `${DOCS_ROOT}${item.node.href}` : getAncestorUrl(item.node);
+        item.node.type === 'page' ? getPageUrl(item.node.href) : getAncestorUrl(item.node);
 
       return { name: item.name, url };
     });

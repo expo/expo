@@ -213,7 +213,7 @@ export type TimeUpdateEventPayload = {
 
   /**
    * Float value indicating how far the player has buffered the video in seconds.
-   * Same as the [`bufferedPosition`](#bufferedPosition) property.
+   * Same as the [`bufferedPosition`](#bufferedposition) property.
    * @platform android
    * @platform ios
    */

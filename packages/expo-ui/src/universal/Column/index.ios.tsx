@@ -33,7 +33,7 @@ export function Column({
     style,
     { onPress, onAppear, onDisappear, disabled, hidden, testID },
     extraModifiers,
-    { frameAlignment: frameAlignmentMap[alignment] }
+    { componentName: 'Column', frameAlignment: frameAlignmentMap[alignment] }
   );
 
   return (
@@ -41,6 +41,7 @@ export function Column({
       alignment={alignmentMap[alignment]}
       spacing={spacing}
       modifiers={modifiers}
+      resolvesChildPercentages
       testID={testID}>
       {children}
     </VStack>

@@ -68,7 +68,7 @@ export function test({ describe, expect, it, ...t }: any) {
   });
 
   describe('Player instance', () => {
-    let player: AudioPlayer = null;
+    let player: AudioPlayer = null!;
 
     t.beforeAll(async () => {
       await setIsAudioActiveAsync(true);
@@ -81,7 +81,7 @@ export function test({ describe, expect, it, ...t }: any) {
         } catch (error: any) {
           console.warn('Player release error:', error.message);
         }
-        player = null;
+        player = null!;
       }
     });
 
@@ -281,6 +281,7 @@ export function test({ describe, expect, it, ...t }: any) {
         expect(player.shouldCorrectPitch).toBe(true);
         expect(player.currentTime).toBe(0);
         expect(player.duration).toBeGreaterThan(0);
+        expect(player.isActiveForLockScreen).toBe(false);
       });
 
       it('has valid currentStatus object', async () => {
@@ -291,6 +292,81 @@ export function test({ describe, expect, it, ...t }: any) {
         expect(status.mute).toBe(false);
         expect(status.loop).toBe(false);
         expect(status.didJustFinish).toBe(false);
+      });
+    });
+
+    describe('Player.isActiveForLockScreen', () => {
+      t.beforeEach(async () => {
+        player = createAudioPlayer(mainTestingSource);
+        await retryForStatus(player, { isLoaded: true });
+      });
+
+      it('follows setActiveForLockScreen() and clearLockScreenControls()', async () => {
+        player.setActiveForLockScreen(true);
+        expect(player.isActiveForLockScreen).toBe(true);
+
+        player.setActiveForLockScreen(false);
+        expect(player.isActiveForLockScreen).toBe(false);
+
+        player.setActiveForLockScreen(true);
+        player.clearLockScreenControls();
+        expect(player.isActiveForLockScreen).toBe(false);
+      });
+
+      it('is false after another player becomes active', async () => {
+        const otherPlayer = createAudioPlayer(mainTestingSource);
+        try {
+          await retryForStatus(otherPlayer, { isLoaded: true });
+          player.setActiveForLockScreen(true);
+          otherPlayer.setActiveForLockScreen(true);
+
+          expect(otherPlayer.isActiveForLockScreen).toBe(true);
+          if (Platform.OS === 'android') {
+            // Android deactivates the previous player once the playback service binds
+            await asyncRetry(
+              async () => {
+                if (player.isActiveForLockScreen) {
+                  throw new Error('The previous player is still active for the lock screen.');
+                }
+              },
+              { retries: 5, minTimeout: 100 }
+            );
+          }
+          expect(player.isActiveForLockScreen).toBe(false);
+        } finally {
+          otherPlayer.release();
+        }
+      });
+
+      it('stays true when the previous player clears its controls', async () => {
+        const otherPlayer = createAudioPlayer(mainTestingSource);
+        try {
+          await retryForStatus(otherPlayer, { isLoaded: true });
+          player.setActiveForLockScreen(true);
+          otherPlayer.setActiveForLockScreen(true);
+          player.clearLockScreenControls();
+
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          expect(otherPlayer.isActiveForLockScreen).toBe(true);
+        } finally {
+          otherPlayer.release();
+        }
+      });
+
+      it('stays true when the previous player is released', async () => {
+        const otherPlayer = createAudioPlayer(mainTestingSource);
+        try {
+          await retryForStatus(otherPlayer, { isLoaded: true });
+          player.setActiveForLockScreen(true);
+          otherPlayer.setActiveForLockScreen(true);
+          player.release();
+          player = null!;
+
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          expect(otherPlayer.isActiveForLockScreen).toBe(true);
+        } finally {
+          otherPlayer.release();
+        }
       });
     });
 

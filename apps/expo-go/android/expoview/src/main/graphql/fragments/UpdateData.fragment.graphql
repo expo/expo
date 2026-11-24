@@ -3,7 +3,6 @@ fragment UpdateData on Update {
   group
   message
   createdAt
-  runtimeVersion
   expoGoSDKVersion
   platform
   manifestPermalink

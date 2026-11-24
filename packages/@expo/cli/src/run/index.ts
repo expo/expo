@@ -43,10 +43,17 @@ export const expoRun: Command = async (argv) => {
 
     if (!platform) {
       const { selectAsync } = await import('../utils/prompts.js');
-      platform = await selectAsync('Select the platform to run', [
-        { title: 'Android', value: 'android' },
-        { title: 'iOS', value: 'ios' },
-      ]);
+      platform = await selectAsync(
+        'Select the platform to run',
+        [
+          { title: 'Android', value: 'android' },
+          { title: 'iOS', value: 'ios' },
+        ],
+        {
+          nonInteractiveHelp:
+            'platform: argument must be provided in non-interactive mode. Valid choices are: android, ios',
+        }
+      );
     }
 
     logPlatformRunCommand(platform, argsWithoutPlatform);
@@ -66,6 +73,6 @@ export const expoRun: Command = async (argv) => {
         throw new CommandError('UNSUPPORTED_PLATFORM', `Unsupported platform: ${platform}`);
     }
   } catch (error: any) {
-    logCmdError(error);
+    return logCmdError(error);
   }
 };

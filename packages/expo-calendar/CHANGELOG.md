@@ -1,19 +1,59 @@
 # Changelog
 
-## Unpublished
+## 58.0.6
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.5
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.4 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- [Android] Fix the sign of alarm `relativeOffset` in the `next` API so that negative values fire before the event start, matching iOS and the legacy API.
+
+## 58.0.2 — 2026-09-16
+
+### 🐛 Bug fixes
+
+- [iOS] Allow `getDefaultCalendarSync`, `getCalendars` and `ExpoCalendar.get` to work with write-only calendar access. ([#48186](https://github.com/expo/expo/pull/48186) by [@Wenszel](https://github.com/Wenszel))
+
+## 58.0.1 — 2026-09-15
 
 ### 🛠 Breaking changes
 
-### 🎉 New features
+- The `params` argument of `openInCalendar()` and `editInCalendar()` no longer accepts `null`. Call the methods with no arguments instead. ([#50158](https://github.com/expo/expo/pull/50158) by [@Wenszel](https://github.com/Wenszel))
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- [android] Fix `createEventAsync` and `updateEventAsync` failing with "Event could not be saved" in minified release builds. `EventInputBase` now implements `Record`, so the `expo-modules-core` ProGuard rule keeps its `@Field` property names and `startDate`/`endDate` reach the calendar provider. ([#49837](https://github.com/expo/expo/pull/49837) by [@expo-bot](https://github.com/expo-bot))
+- [android] Fix `openInCalendar()` throwing when called without params, which the type declares as optional. ([#50146](https://github.com/expo/expo/pull/50146) by [@hknakn](https://github.com/hknakn))
+- [ios] Fix a crash when reading `calendarId` on an event or reminder whose `EKCalendarItem.calendar` is nil. The property is `null_unspecified` in the EventKit headers, so the bare access was an implicit force-unwrap that trapped the JS thread. ([#48445](https://github.com/expo/expo/pull/48445) by [@cvburgess](https://github.com/cvburgess))
+- [ios] Fix typo in the internal permissions exception name (`MissionPermissionsException` -> `MissingPermissionsException`), which corrects the error code surfaced to JS from `ERR_MISSION_PERMISSIONS` to `ERR_MISSING_PERMISSIONS`. ([#47804](https://github.com/expo/expo/pull/47804) by [@conanm](https://github.com/conanm))
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
 
 ### 🐛 Bug fixes
 
 - Add `@platform ios` JSDoc annotations to iOS-exclusive APIs: `ExpoCalendarReminder` class, `listReminders()`, `createReminder()`, `requestRemindersPermissions()`, `getRemindersPermissions()`, `useRemindersPermissions()`, `AddEventWithFormOptions.url`, and `AddEventWithFormOptions.alarms`. ([#46416](https://github.com/expo/expo/pull/46416) by [@kota113](https://github.com/kota113))
 - Throw `UnavailabilityError` when iOS-only Reminders and Sources APIs (`listReminders()`, `createReminder()`, `ExpoCalendarReminder.get/update/delete`, `requestRemindersPermissions()`, `getRemindersPermissions()`, and `getSourcesSync()`) are called on non-iOS platforms. ([#46416](https://github.com/expo/expo/pull/46416) by [@kota113](https://github.com/kota113))
 - Return a denied permission response from `useRemindersPermissions()` on non-iOS platforms instead of throwing. ([#46416](https://github.com/expo/expo/pull/46416) by [@kota113](https://github.com/kota113))
-- [ios] Fix typo in the internal permissions exception name (`MissionPermissionsException` -> `MissingPermissionsException`), which corrects the error code surfaced to JS from `ERR_MISSION_PERMISSIONS` to `ERR_MISSING_PERMISSIONS`. ([#47804](https://github.com/expo/expo/pull/47804) by [@conanm](https://github.com/conanm))
-
-### 💡 Others
 
 ## 56.0.8 — 2026-05-21
 

@@ -92,16 +92,6 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E88C156AC1F63001DC5B6091C91AC72C"
-               BuildableName = "expo-dev-menu-Unit-UITests.xctest"
-               BlueprintName = "expo-dev-menu-Unit-UITests"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "4F310784370A157E9DDCC2C08A296039"
                BuildableName = "ExpoModulesCore-Unit-Tests.xctest"
                BlueprintName = "ExpoModulesCore-Unit-Tests"

@@ -118,6 +118,19 @@ struct OpenTelemetryTests {
       customParams: nil
     )
     #expect(warm.toOTMetric().name == "expo.navigation.warm_ttr")
+
+    let tbt = Event.Metric(
+      category: "navigation",
+      name: "tbt",
+      value: 1.0,
+      timestamp: "2026-01-01T00:00:00Z",
+      sessionId: testSessionId,
+      parentSessionId: nil,
+      routeName: nil,
+      updateId: nil,
+      customParams: nil
+    )
+    #expect(tbt.toOTMetric().name == "expo.navigation.tbt")
   }
 
   // MARK: - Metric structure
@@ -146,6 +159,107 @@ struct OpenTelemetryTests {
 
     let expectedNanos: UInt64 = 1_767_960_489 * 1_000_000_000
     #expect(otMetric.gauge.dataPoints[0].timeUnixNano == expectedNanos)
+  }
+
+  @Test
+  func `toOTMetric converts ISO8601 timestamp with fractional seconds to nanoseconds`() {
+    let metric = makeMetric(name: "loadTime", value: 1.0, timestamp: "2026-01-09T12:08:09.123Z")
+    let otMetric = metric.toOTMetric()
+
+    #expect(otMetric.gauge.dataPoints[0].timeUnixNano == 1_767_960_489_123_000_000)
+  }
+
+  @Test
+  func `toOTLogRecord converts ISO8601 timestamp with fractional seconds to nanoseconds`() {
+    let log = Event.Log(
+      name: "auth.login_failed",
+      body: nil,
+      timestamp: "2026-01-09T12:08:09.123Z",
+      severity: .info,
+      attributes: nil,
+      droppedAttributesCount: 0,
+      sessionId: testSessionId
+    )
+    let otLog = log.toOTLogRecord(inSampleRate: true)
+
+    #expect(otLog.timeUnixNano == 1_767_960_489_123_000_000)
+    #expect(otLog.observedTimeUnixNano == 1_767_960_489_123_000_000)
+  }
+
+  @Test(arguments: [true, false])
+  func `toOTLogRecord marks all logs with whether the installation is in the sampleRate sample`(
+    inSampleRate: Bool
+  ) {
+    for name in ["auth.login_failed", "js.exception", "native.exception"] {
+      let otLog = makeLog(name: name).toOTLogRecord(inSampleRate: inSampleRate)
+      let attribute = otLog.attributes.first { $0.key == "expo.in_sample_rate" }
+      guard case .bool(let value) = attribute?.value else {
+        Issue.record("Expected a bool `expo.in_sample_rate` attribute on \(name)")
+        continue
+      }
+      #expect(value == inSampleRate)
+    }
+  }
+
+  @Test
+  func `toOTLogRecord keeps the first 128 attributes with the expo attributes first`() {
+    let otherKeys = (0..<100).map { String(format: "a%03d", $0) } + (0..<100).map { String(format: "z%03d", $0) }
+    let expoKeys = ["expo.feedback.id", "expo.feedback.rating", "expo.feedback.scale.max", "expo.feedback.scale.min"]
+    // Mixes the expo keys in between the other keys.
+    let inputKeys: [String] = [
+      [expoKeys[0]], Array(otherKeys[0..<50]),
+      [expoKeys[1]], Array(otherKeys[50..<100]),
+      [expoKeys[2]], Array(otherKeys[100..<200]),
+      Array(expoKeys[3...]),
+    ].flatMap { $0 }
+    let log = Event.Log(
+      name: "auth.login_failed",
+      body: nil,
+      timestamp: "2026-01-09T12:08:09.123Z",
+      severity: .info,
+      attributes: AnyCodable(Dictionary(uniqueKeysWithValues: inputKeys.map { ($0, 1 as Any) })),
+      droppedAttributesCount: 2,
+      sessionId: testSessionId
+    )
+    let otLog = log.toOTLogRecord(inSampleRate: true)
+
+    let keys = otLog.attributes.map(\.key)
+    #expect(keys.count == 128)
+    #expect(Set(keys).count == keys.count)
+    #expect(Array(keys.prefix(3)) == ["session.id", "event.name", "expo.in_sample_rate"])
+    #expect(Set(keys.dropFirst(3).prefix(expoKeys.count)) == Set(expoKeys))
+    #expect(otLog.droppedAttributesCount == 2 + 207 - 128)
+  }
+
+  @Test
+  func `toOTLogRecord keeps all attributes when there are exactly 128`() {
+    // 125 record attributes plus `session.id`, `event.name` and `expo.in_sample_rate`.
+    let recordKeys = (0..<125).map { String(format: "k%03d", $0) }
+    let log = Event.Log(
+      name: "auth.login_failed",
+      body: nil,
+      timestamp: "2026-01-09T12:08:09.123Z",
+      severity: .info,
+      attributes: AnyCodable(Dictionary(uniqueKeysWithValues: recordKeys.map { ($0, 1 as Any) })),
+      droppedAttributesCount: 0,
+      sessionId: testSessionId
+    )
+    let otLog = log.toOTLogRecord(inSampleRate: true)
+
+    #expect(otLog.attributes.map(\.key) == ["session.id", "event.name", "expo.in_sample_rate"] + recordKeys)
+    #expect(otLog.droppedAttributesCount == nil)
+  }
+
+  private func makeLog(name: String) -> Event.Log {
+    Event.Log(
+      name: name,
+      body: nil,
+      timestamp: "2026-01-09T12:08:09.123Z",
+      severity: .error,
+      attributes: nil,
+      droppedAttributesCount: 0,
+      sessionId: testSessionId
+    )
   }
 
   // MARK: - Event metadata
@@ -309,7 +423,8 @@ struct OpenTelemetryTests {
     )
     let otMetric = metric.toOTMetric()
     let attrs = Dictionary(
-      uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
+      uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) }
+    )
 
     #expect(attrs["expo.route_name"] == "/home")
   }
@@ -329,7 +444,8 @@ struct OpenTelemetryTests {
     )
     let otMetric = metric.toOTMetric()
     let attrs = Dictionary(
-      uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
+      uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) }
+    )
 
     #expect(otMetric.name == "expo.updates.download_time")
     #expect(attrs["expo.update_id"] == "abc123-def456")
@@ -369,7 +485,8 @@ struct OpenTelemetryTests {
     )
     let otMetric = metric.toOTMetric()
     let attrs = Dictionary(
-      uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
+      uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) }
+    )
 
     let jsonString = try #require(attrs["expo.custom_params"] ?? nil)
     let parsed = try! JSONSerialization.jsonObject(with: jsonString.data(using: .utf8)!) as! [String: String]

@@ -40,6 +40,14 @@ export const UIUniversalScreens = [
     },
   },
   {
+    name: `${SCREEN_NAME_PREFIX}Size`,
+    route: 'ui-universal/size',
+    options: { title: 'Size' },
+    getComponent() {
+      return optionalRequire(() => require('./SizeScreen'));
+    },
+  },
+  {
     name: `${SCREEN_NAME_PREFIX}ScrollView`,
     route: 'ui-universal/scrollview',
     options: { title: 'ScrollView' },

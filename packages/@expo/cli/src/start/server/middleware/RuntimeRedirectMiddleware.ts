@@ -1,7 +1,7 @@
-import { parse } from 'url';
-
 import * as Log from '../../../log';
 import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
+import type { ForwardedRequestInfo } from './resolveForwarded';
+import { parseForwardedRequestInfo } from './resolveForwarded';
 import type { RuntimePlatform } from './resolvePlatform';
 import {
   assertMissingRuntimePlatform,
@@ -26,15 +26,18 @@ export class RuntimeRedirectMiddleware extends ExpoMiddleware {
     protected projectRoot: string,
     protected options: {
       onDeepLink?: DeepLinkHandler;
-      getLocation: (props: { runtime: RuntimeTarget }) => string | null | undefined;
+      getLocation: (props: {
+        runtime: RuntimeTarget;
+        forwarded: ForwardedRequestInfo | null;
+      }) => string | null | undefined;
     }
   ) {
     super(projectRoot, [LinkEndpoint]);
   }
 
   async handleRequestAsync(req: ServerRequest, res: ServerResponse): Promise<void> {
-    const { query } = parse(req.url!, true);
-    const isDevClient = query['choice'] === 'expo-dev-client';
+    const query = URL.parse(req.url!, 'file:')?.searchParams;
+    const isDevClient = query?.get('choice') === 'expo-dev-client';
     const platform = parsePlatformHeader(req) ?? resolvePlatformFromUserAgentHeader(req);
     assertMissingRuntimePlatform(platform);
     assertRuntimePlatform(platform);
@@ -42,7 +45,10 @@ export class RuntimeRedirectMiddleware extends ExpoMiddleware {
 
     this.options.onDeepLink?.({ runtime, platform });
 
-    const redirect = this.options.getLocation({ runtime });
+    const redirect = this.options.getLocation({
+      runtime,
+      forwarded: parseForwardedRequestInfo(req),
+    });
     if (!redirect) {
       Log.warn(
         `[redirect middleware]: Unable to determine redirect location for runtime '${runtime}' and platform '${platform}'`

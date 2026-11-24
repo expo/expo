@@ -45,11 +45,13 @@ abstract class GeneratePackagesListTask : DefaultTask() {
 
   @TaskAction
   fun generatePackagesList() {
-    val target = outputDirectory.get().asFile
+    val packageDirectory = outputDirectory.get().asFile
       .resolve(namespace.get().replace('.', '/'))
+    packageDirectory.mkdirs()
+
+    packageDirectory
       .resolve(generatedPackageListFilename)
-    target.parentFile.mkdirs()
-    target.writeText(generatePackageListFileContent())
+      .writeText(generatePackageListFileContent())
   }
 
   private fun generatePackageListFileContent(): String {

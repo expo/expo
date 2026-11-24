@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`Row`](../universal/row) — it renders the appropriate native component per platform.
@@ -30,12 +31,18 @@ Expo UI HStack matches the official SwiftUI [HStack API](https://developer.apple
 
 ### Basic horizontal stack
 
-```tsx BasicHStackExample.tsx
+<ComponentExample
+  title="BasicHStackExample.tsx"
+  src="/static/images/expo-ui/examples/hstack-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/hstack-basic-ios-dark.webp"
+  alt="First, Second, and Third text items arranged horizontally in an HStack">
+
+```tsx
 import { Host, HStack, Text } from '@expo/ui/swift-ui';
 
 export default function BasicHStackExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <HStack spacing={12}>
         <Text>First</Text>
         <Text>Second</Text>
@@ -46,20 +53,30 @@ export default function BasicHStackExample() {
 }
 ```
 
+</ComponentExample>
+
 ### With alignment
 
 The `alignment` prop controls vertical alignment of children. Available options are: `top`, `center`, `bottom`, `firstTextBaseline`, and `lastTextBaseline`.
 
-```tsx HStackAlignmentExample.tsx
+<ComponentExample
+  title="HStackAlignmentExample.tsx"
+  src="/static/images/expo-ui/examples/hstack-alignment-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/hstack-alignment-ios-dark.webp"
+  alt="Three rectangles of different heights aligned to the top edge in an HStack">
+
+```tsx
 import { Host, HStack, Rectangle } from '@expo/ui/swift-ui';
 import { frame } from '@expo/ui/swift-ui/modifiers';
 
 export default function HStackAlignmentExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <HStack spacing={12} alignment="top">
         <Rectangle modifiers={[frame({ width: 50, height: 50 })]} />
-        <Rectangle modifiers={[frame({ width: 50, height: 100 })]} />
+        <Rectangle
+          modifiers={[frame({ width: 50, height: 100 })]}
+        />
         <Rectangle modifiers={[frame({ width: 50, height: 75 })]} />
       </HStack>
     </Host>
@@ -67,10 +84,15 @@ export default function HStackAlignmentExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { HStack } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/hstack" apiName="HStack" />
+<APISection
+  packageName="expo-ui/swift-ui/hstack"
+  apiName="HStack"
+/>

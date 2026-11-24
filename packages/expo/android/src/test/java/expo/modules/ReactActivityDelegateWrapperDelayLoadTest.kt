@@ -8,7 +8,6 @@ import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactRootView
-import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
@@ -62,7 +61,6 @@ internal class ReactActivityDelegateWrapperDelayLoadTest {
     ReactNativeFeatureFlagsForTests.setUp()
     mockkStatic(ReactNativeFeatureFlags::class)
     every { ReactNativeFeatureFlags.enableBridgelessArchitecture() } returns true
-    every { ReactNativeFeatureFlags.enableFabricRenderer() } returns true
     Dispatchers.setMain(UnconfinedTestDispatcher())
 
     MockKAnnotations.init(this)
@@ -272,8 +270,7 @@ internal class MockActivity : ReactActivity() {
       spyk(
         object : DefaultReactActivityDelegate(
           this,
-          mainComponentName,
-          fabricEnabled
+          mainComponentName
         ) {}
       )
     )

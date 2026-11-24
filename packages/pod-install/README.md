@@ -23,7 +23,7 @@ All native packages (especially those installed with NPM) often need to explain 
 - What is gem.
 - How to install CocoaPods.
 - `cd` into the proper directory before running `pod install`.
-- You may need run `pod repo update` to fix your project.
+- You may need to run `pod repo update` to fix your project.
 - Why CocoaPods requires a darwin machine.
 
 But now you can simply instruct users to run `npx pod-install`.

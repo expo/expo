@@ -27,20 +27,25 @@ extension UIPasteboard {
       return self.string
     }
     set {
-      guard let newString = newValue,
-            let attributedString = try? NSAttributedString(htmlString: newString)
-      else {
+      guard let item = UIPasteboard.htmlItem(newValue) else {
         self.string = ""
         return
       }
-      let item: [String: Any] = [
-        UTType.rtf.identifier: attributedString.rtfData as Any,
-        UTType.html.identifier: attributedString.htmlString as Any,
-        UTType.utf8PlainText.identifier: attributedString.string
-      ]
 
       self.setItems([item])
     }
+  }
+
+  /// The rich text, HTML and plain text representations of an HTML string.
+  static func htmlItem(_ html: String?) -> [String: Any]? {
+    guard let html, let attributedString = try? NSAttributedString(htmlString: html) else {
+      return nil
+    }
+    return [
+      UTType.rtf.identifier: attributedString.rtfData as Any,
+      UTType.html.identifier: attributedString.htmlString as Any,
+      UTType.utf8PlainText.identifier: attributedString.string
+    ]
   }
 
   var hasHTML: Bool {

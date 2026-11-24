@@ -106,7 +106,11 @@ data class TextFieldSelectionColorsRecord(
 
 @Composable
 fun TextFieldColorsRecord.toColors(isOutlined: Boolean): TextFieldColors {
-  val defaults = if (isOutlined) OutlinedTextFieldDefaults.colors() else TextFieldDefaults.colors()
+  val defaults = if (isOutlined) {
+    OutlinedTextFieldDefaults.colors()
+  } else {
+    TextFieldDefaults.colors()
+  }
   // Outlined and Filled TextField both use TextFieldDefault.colors
   return TextFieldDefaults.colors(
     focusedTextColor = focusedTextColor.composeOrNull ?: defaults.focusedTextColor,
@@ -229,14 +233,26 @@ fun FunctionalComposableScope.TextFieldContent(
 
   // Lines
   val singleLine = props.singleLine
-  val maxLines = props.maxLines ?: if (singleLine) 1 else Int.MAX_VALUE
+  val maxLines = props.maxLines ?: if (singleLine) {
+    1
+  } else {
+    Int.MAX_VALUE
+  }
   val minLines = props.minLines ?: 1
 
   val isOutlined = props.variant == TextFieldVariant.OUTLINED
   val shape = shapeFromShapeRecord(props.shape)
-    ?: if (isOutlined) OutlinedTextFieldDefaults.shape else TextFieldDefaults.shape
+    ?: if (isOutlined) {
+      OutlinedTextFieldDefaults.shape
+    } else {
+      TextFieldDefaults.shape
+    }
   val baseColors = props.colors?.toColors(isOutlined)
-    ?: if (isOutlined) OutlinedTextFieldDefaults.colors() else TextFieldDefaults.colors()
+    ?: if (isOutlined) {
+      OutlinedTextFieldDefaults.colors()
+    } else {
+      TextFieldDefaults.colors()
+    }
   val colors = props.textSelectionColors?.let { record ->
     val handle = record.handleColor.composeOrNull
     val background = record.backgroundColor.composeOrNull

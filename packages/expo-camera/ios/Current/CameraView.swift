@@ -155,11 +155,21 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   let onBarcodeScanned = EventDispatcher()
   let onResponsiveOrientationChanged = EventDispatcher()
   let onAvailableLensesChanged = EventDispatcher()
+  let onRecordingProgress = EventDispatcher()
 
   internal var deviceOrientation: UIInterfaceOrientation {
-    UIApplication.shared.connectedScenes.compactMap {
-      $0 as? UIWindowScene
-    }.first?.interfaceOrientation ?? .unknown
+    SceneGeometry.interfaceOrientation(for: self)
+  }
+
+  internal var captureRotationAngle: CGFloat? {
+    guard !responsiveWhenOrientationLocked else {
+      return nil
+    }
+    if #available(iOS 17.0, *), let coordinator = rotationCoordinator as? AVCaptureDevice.RotationCoordinator {
+      // The capture angle follows gravity; this one follows the interface, Duo offset included.
+      return coordinator.videoRotationAngleForHorizonLevelPreview
+    }
+    return nil
   }
 
   required init(appContext: AppContext? = nil) {
@@ -174,12 +184,6 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
 
     setupPreview()
     barcodeScanner = createBarcodeScanner()
-    UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(orientationChanged),
-      name: UIDevice.orientationDidChangeNotification,
-      object: nil)
     lifecycleManager?.register(self)
     sessionManager.initializeCaptureSessionInput()
   }
@@ -254,12 +258,12 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
         return
       }
       self.onAvailableLensesChanged([
-        "lenses": self.sessionManager.getAvailableLenses()
+        "lenses": self.getAvailableLenses().map { $0.toDictionary() }
       ])
     }
   }
 
-  func getAvailableLenses() -> [String] {
+  func getAvailableLenses() -> [LensInfo] {
     return sessionManager.getAvailableLenses()
   }
 
@@ -300,6 +304,15 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     return try await photoCapture.takePicturePromise(options: options, photoOutput: photoOutput)
   }
 
+  func playShutterAnimation() {
+    Task { @MainActor in
+      self.previewLayer.opacity = 0
+      UIView.animate(withDuration: 0.25) {
+        self.previewLayer.opacity = 1
+      }
+    }
+  }
+
   func record(options: CameraRecordingOptions, promise: Promise) async {
     guard let videoFileOutput = sessionManager.currentVideoFileOutput else {
       promise.reject(CameraOutputNotReadyException())
@@ -319,20 +332,53 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   public override func didMoveToWindow() {
     super.didMoveToWindow()
     if window != nil {
+      startObservingDeviceOrientation()
       configurePreviewRotation()
       startSessionIfNeeded()
+    } else {
+      stopObservingDeviceOrientation()
     }
+  }
+
+  // UIKit counts the `begin` and `end` calls and autorotates the app only while the count is above
+  // zero. Call these only from `didMoveToWindow`: UIKit pairs the window transitions, so the calls
+  // stay balanced.
+  private func startObservingDeviceOrientation() {
+    if #available(iOS 17.0, *) {
+      return
+    }
+    UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(orientationChanged),
+      name: UIDevice.orientationDidChangeNotification,
+      object: nil)
+  }
+
+  private func stopObservingDeviceOrientation() {
+    if #available(iOS 17.0, *) {
+      return
+    }
+    UIDevice.current.endGeneratingDeviceOrientationNotifications()
+    NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
   }
 
   public override func removeFromSuperview() {
     super.removeFromSuperview()
-    sessionQueue.async { [weak self] in
-      self?.sessionManager.stopSession()
+    // Capture both strongly: React Native can drop its reference to the view before this
+    // block runs, and the session has to be stopped before the preview layer detaches
+    // from it. Detaching from a still-running session is the same graph rebuild, only it
+    // happens in the layer's `dealloc` on the main thread.
+    let sessionManager: CameraSessionManager = self.sessionManager
+    let previewLayer = self.previewLayer
+    sessionQueue.async {
+      sessionManager.stopSession()
+      DispatchQueue.main.async {
+        previewLayer.session = nil
+      }
     }
     motionManager.stopAccelerometerUpdates()
     lifecycleManager?.unregisterAppLifecycleListener(self)
-    UIDevice.current.endGeneratingDeviceOrientationNotifications()
-    NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
     previewRotationObservation?.invalidate()
     previewRotationObservation = nil
     rotationCoordinator = nil

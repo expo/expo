@@ -16,7 +16,12 @@ import type {
   SFSymbolEffectObject,
 } from './Image.types';
 import ImageModule from './ImageModule';
-import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
+import {
+  resolveContentFit,
+  resolveContentPosition,
+  resolveDefaultSize,
+  resolveTransition,
+} from './utils';
 import { resolveSource, resolveSources } from './utils/resolveSources';
 
 /**
@@ -40,6 +45,31 @@ function resolveSfEffect(
     }
     return item;
   });
+}
+
+/**
+ * Normalizes `svgVariables` values to strings. They are substituted into the SVG document as text,
+ * but numbers are accepted for convenience so that lengths and opacities don't have to be quoted.
+ *
+ * @hidden Exported for tests.
+ */
+export function resolveSvgVariables(
+  svgVariables: Record<string, string | number> | null | undefined
+): Record<string, string> | null {
+  if (svgVariables == null) {
+    return null;
+  }
+  return Object.fromEntries(
+    Object.entries(svgVariables).map(([name, value]) => {
+      if (__DEV__ && !name.startsWith('--')) {
+        console.warn(
+          `The \`svgVariables\` key "${name}" is not a CSS custom property and will be ignored. ` +
+            `Custom properties start with two dashes, so use "--${name}" if that is what the SVG declares.`
+        );
+      }
+      return [name, String(value)];
+    })
+  );
 }
 
 let loggedDefaultSourceDeprecationWarning = false;
@@ -271,6 +301,10 @@ export class Image extends React.PureComponent<ImageProps> {
   /**
    * Loads an image from the given source to memory and resolves to
    * an object that references the native image instance.
+   *
+   * On Android, when neither `maxWidth` nor `maxHeight` is provided, large images may be
+   * downsampled to fit the platform's bitmap size limit. The returned `ImageRef.width` and
+   * `ImageRef.height` reflect the decoded size and may differ from the original dimensions or iOS.
    * @platform android
    * @platform ios
    * @platform web
@@ -329,11 +363,20 @@ export class Image extends React.PureComponent<ImageProps> {
     const isSFSymbol =
       Array.isArray(resolvedSource) && resolvedSource.some((s) => s?.uri?.startsWith('sf:/'));
 
-    // For SF Symbols, fontSize sets both the symbol point size and container dimensions
-    const resolvedStyle =
-      isSFSymbol && fontSizeStyle
-        ? { width: fontSizeStyle, height: fontSizeStyle, ...restStyle }
-        : restStyle;
+    // For SF Symbols, fontSize sets both the symbol point size and container dimensions.
+    // Any other image defaults to the size declared by its source, like React Native's `<Image>`.
+    const symbolSizeStyle = fontSizeStyle ? { width: fontSizeStyle, height: fontSizeStyle } : null;
+    const defaultSizeStyle = isSFSymbol
+      ? symbolSizeStyle
+      : resolveDefaultSize(resolvedSource, restStyle);
+    // `StyleSheet.flatten` keeps keys with an `undefined` value, so a spread would let them win.
+    const resolvedStyle = defaultSizeStyle
+      ? {
+          ...restStyle,
+          width: restStyle.width ?? defaultSizeStyle.width,
+          height: restStyle.height ?? defaultSizeStyle.height,
+        }
+      : restStyle;
 
     return (
       <ExpoImage
@@ -345,6 +388,7 @@ export class Image extends React.PureComponent<ImageProps> {
         contentPosition={resolveContentPosition(contentPosition)}
         transition={resolveTransition(transition, fadeDuration)}
         sfEffect={resolveSfEffect(sfEffect)}
+        svgVariables={resolveSvgVariables(restProps.svgVariables)}
         tintColor={
           isSFSymbol && colorStyle && !restProps.tintColor
             ? (colorStyle as string)

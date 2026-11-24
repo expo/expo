@@ -10,7 +10,6 @@ export {
   discoverAllSPMPackagesAsync,
   discoverPackagesWithSPMConfigAsync,
   getVersionsInfoAsync,
-  IOS_PREBUILD_PACKAGES,
   selectDistributedPackages,
   validateAllPodNamesAsync,
   validatePodNamesAsync,

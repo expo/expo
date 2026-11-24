@@ -56,7 +56,11 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
 
   func forceResignFirstResponder() {
     if textManager.isFocused {
+#if os(macOS)
+      NSApplication.shared.keyWindow?.makeFirstResponder(nil)
+#else
       UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+#endif
     }
 
     textManager.isFocused = false
@@ -116,6 +120,24 @@ private func extractInt(_ raw: Any?, _ key: String) -> Int? {
   return value.intValue
 }
 
+extension String {
+  /// The longest prefix whose UTF-16 length is at most `maxCount`, cut between characters.
+  /// `maxLength` counts UTF-16 code units, as React Native's `TextInput` and the Android and
+  /// web text fields of this package do.
+  func prefix(utf16Count maxCount: Int) -> String {
+    var result = ""
+    var count = 0
+    for character in self {
+      count += character.utf16.count
+      if count > maxCount {
+        break
+      }
+      result.append(character)
+    }
+    return result
+  }
+}
+
 private struct StatefulTextField: View {
   @ObservedObject var state: ObservableState
   @ObservedObject var props: TextFieldProps
@@ -171,8 +193,8 @@ private struct StatefulTextField: View {
       }
       .onChange(of: state.value as? String) { newValue in
         guard userMutatingState else { return }
-        if let max = props.maxLength, let str = newValue, str.count > max {
-          state.value = String(str.prefix(max))
+        if let max = props.maxLength, let str = newValue, str.utf16.count > max {
+          state.value = str.prefix(utf16Count: max)
           return
         }
         userMutatingState = false
@@ -219,16 +241,10 @@ private struct StatefulSelectableTextField: View {
     )
   }
 
-  private var selectionBinding: Binding<SwiftUI.TextSelection?> {
-    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
-      return $localSelection
-    }
-    return clampedSelectionBinding
-  }
-
-  // iOS 18 SwiftUI can throw an out-of-bounds exception when selection becomes invalid after text is changed programmatically.
+  // SwiftUI can throw an out-of-bounds exception when selection becomes invalid after text is changed programmatically.
   // Resetting to nil avoids passing SwiftUI the stale selection.
   // https://github.com/expo/expo/issues/47434
+  // https://github.com/expo/expo/issues/48274
   // https://github.com/swiftlang/swift/issues/82359#issuecomment-3038538035
   private var clampedSelectionBinding: Binding<SwiftUI.TextSelection?> {
     Binding(
@@ -251,7 +267,7 @@ private struct StatefulSelectableTextField: View {
     TextField(
       promptText == nil ? props.placeholder : "",
       text: textBinding,
-      selection: selectionBinding,
+      selection: clampedSelectionBinding,
       prompt: promptText,
       axis: swiftUIAxis
     )
@@ -278,9 +294,13 @@ private struct StatefulSelectableTextField: View {
       props.onSelectionChange(["start": start, "end": end])
     }
     .onChange(of: state.value as? String) { newValue in
-      guard userMutatingState else { return }
-      if let max = props.maxLength, let str = newValue, str.count > max {
-        state.value = String(str.prefix(max))
+      guard userMutatingState else {
+        // The text was replaced from JS; drop the selection so indices built for the old string are never validated against the new one.
+        localSelection = nil
+        return
+      }
+      if let max = props.maxLength, let str = newValue, str.utf16.count > max {
+        state.value = str.prefix(utf16Count: max)
         return
       }
       userMutatingState = false

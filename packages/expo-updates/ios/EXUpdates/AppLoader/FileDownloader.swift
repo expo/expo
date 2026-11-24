@@ -11,6 +11,7 @@
 // swiftlint:disable force_unwrapping
 // swiftlint:disable no_grouping_extension
 
+import EXUpdatesInterface
 import Foundation
 import EASClient
 
@@ -40,7 +41,21 @@ private extension String {
 
     return self
   }
+
+  /**
+   Truncates a response body for inclusion in an error message. The message reaches JavaScript and
+   crash reporters, so an unbounded body (typically an HTML error page) must not be embedded whole.
+   Mirrors `MAX_ERROR_BODY_LENGTH` in the Android `FileDownloader`.
+   */
+  func truncatedForErrorMessage() -> String {
+    if count <= maxErrorBodyLength {
+      return self
+    }
+    return "\(prefix(maxErrorBodyLength))… (truncated, \(count) characters total)"
+  }
 }
+
+private let maxErrorBodyLength = 512
 
 private extension Dictionary where Iterator.Element == (key: String, value: Any) {
   func stringValueForCaseInsensitiveKey(_ searchKey: Key) -> String? {
@@ -83,6 +98,12 @@ public final class FileDownloader {
   private var logger: UpdatesLogger!
   private let updatesDirectory: URL
   private let database: UpdatesDatabase
+
+  /// Overridable for testing, where the fixture is not in `updatesBundle`.
+  internal var embeddedLaunchAssetUrl: URL? = updatesBundle.url(
+    forResource: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFilename,
+    withExtension: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFileType
+  )
 
   public convenience init(
     config: UpdatesConfig,
@@ -135,6 +156,8 @@ public final class FileDownloader {
     errorBlock: @escaping ErrorBlock
   ) {
     let canAttemptPatch = allowPatch &&
+      expectedBase64URLEncodedSHA256Hash != nil &&
+      config.enableBsdiffPatchSupport &&
       asset.isLaunchAsset &&
       launchedUpdate != nil &&
       requestedUpdate != nil &&
@@ -148,7 +171,6 @@ public final class FileDownloader {
     ) { data, response in
       guard let data else {
         let error = UpdatesError.fileDownloaderAssetDownloadEmptyResponse(url: url)
-        self.logger.error(cause: error, code: UpdatesErrorCode.assetsFailedToLoad)
         errorBlock(error)
         return
       }
@@ -159,8 +181,8 @@ public final class FileDownloader {
 
       if !skipPatchProcessing && isPatch && !canAttemptPatch {
         self.logger.warn(
-          message: "Received patch when patch support disabled for asset \(asset.key ?? asset.filename)",
-          code: UpdatesErrorCode.assetsFailedToLoad,
+          .remotePatchFallback,
+          values: ["assetKey": asset.key ?? asset.filename, "reason": "patchDisabled"],
           updateId: requestedUpdate?.updateId.uuidString,
           assetId: asset.key ?? asset.filename
         )
@@ -187,8 +209,8 @@ public final class FileDownloader {
         let patchMetadata {
         guard let launchedUpdate else {
           self.logger.warn(
-            message: "Missing launched update when attempting to apply diff for asset \(asset.key ?? asset.filename); retrying with full download",
-            code: UpdatesErrorCode.assetsFailedToLoad,
+            .remotePatchFallback,
+            values: ["assetKey": asset.key ?? asset.filename, "reason": "missingLaunchedUpdate"],
             updateId: requestedUpdate?.updateId.uuidString,
             assetId: asset.key ?? asset.filename
           )
@@ -210,8 +232,8 @@ public final class FileDownloader {
         }
         if !Self.validatePatchResponseMetadata(patchMetadata, launchedUpdate: launchedUpdate, requestedUpdate: requestedUpdate) {
           self.logger.warn(
-            message: "Patch response missing required headers or had mismatched identifiers; retrying with full asset download",
-            code: UpdatesErrorCode.assetsFailedToLoad,
+            .remotePatchFallback,
+            values: ["assetKey": asset.key ?? asset.filename, "reason": "invalidHeaders"],
             updateId: requestedUpdate?.updateId.uuidString,
             assetId: asset.key ?? asset.filename
           )
@@ -243,10 +265,10 @@ public final class FileDownloader {
           successBlock(patchedData, response, hashBase64String)
           return
         } catch {
-          let updatesError = UpdatesError.fileDownloaderUnknownError(cause: error)
-          self.logger.error(
-            cause: updatesError,
-            code: UpdatesErrorCode.assetsFailedToLoad,
+          self.logger.warn(
+            .remotePatchFallback,
+            cause: error,
+            values: ["assetKey": asset.key ?? asset.filename, "reason": "applyFailed"],
             updateId: requestedUpdate?.updateId.uuidString,
             assetId: asset.key ?? asset.filename
           )
@@ -275,7 +297,6 @@ public final class FileDownloader {
           expectedBase64URLEncodedSHA256Hash: expectedBase64URLEncodedSHA256Hash,
           actualBase64URLEncodedSHA256Hash: hashBase64String
         )
-        self.logger.error(cause: error, code: UpdatesErrorCode.assetsFailedToLoad)
         errorBlock(error)
         return
       }
@@ -286,12 +307,10 @@ public final class FileDownloader {
         return
       } catch {
         let cause = UpdatesError.fileDownloaderAssetFileWriteFailed(cause: error, destinationPath: destinationPath)
-        self.logger.error(cause: cause, code: UpdatesErrorCode.assetsFailedToLoad)
         errorBlock(cause)
         return
       }
     } errorBlock: { error in
-      self.logger.error(cause: error, code: UpdatesErrorCode.assetsFailedToLoad)
       errorBlock(error)
     }
   }
@@ -321,7 +340,6 @@ public final class FileDownloader {
     ) { data, response in
       guard let response = response as? HTTPURLResponse else {
         let error = UpdatesError.fileDownloaderResponseNotHTTPURLResponse
-        self.logger.error(cause: error, code: UpdatesErrorCode.unknown)
         errorBlock(error)
         return
       }
@@ -348,18 +366,25 @@ public final class FileDownloader {
     do {
       extraHeaders = try database.serverDefinedHeaders(withScopeKey: scopeKey) ?? [:]
     } catch {
-      logger.error(cause: UpdatesError.fileDownloaderServerDefinedHeaderFailure(cause: error))
+      logger.warn(.localMetadataReadFailed, cause: error, values: ["field": "serverDefinedHeaders"])
     }
 
+    var extraClientParams: [String: String]?
     do {
-      if let extraClientParams = try database.extraParams(withScopeKey: scopeKey) {
+      extraClientParams = try database.extraParams(withScopeKey: scopeKey)
+    } catch {
+      logger.warn(.localMetadataReadFailed, cause: error, values: ["field": "extraParams"])
+    }
+
+    if let extraClientParams {
+      do {
         let structuredHeaderDictionary = try StringDictionary(value: extraClientParams.mapValues({ value in
           try StringItem(value: value)
         }))
         extraHeaders["Expo-Extra-Params"] = structuredHeaderDictionary.serialize()
+      } catch {
+        logger.warn(.remoteExtraParamsHeaderInvalid, cause: error)
       }
-    } catch {
-      logger.error(cause: UpdatesError.fileDownloaderExtraParamFailure(cause: error))
     }
 
     if let launchedUpdate {
@@ -379,7 +404,7 @@ public final class FileDownloader {
         extraHeaders["Expo-Recent-Failed-Update-IDs"] = structuredHeaderList.serialize()
       }
     } catch {
-      logger.error(cause: UpdatesError.fileDownloaderExtraParamFailure(cause: error))
+      logger.warn(.localMetadataReadFailed, cause: error, values: ["field": "recentFailedUpdateIds"])
     }
 
     return extraHeaders
@@ -558,8 +583,7 @@ public final class FileDownloader {
       throw DiffError.assetNotLaunch
     }
 
-    let baseAsset = try resolveLaunchAsset(launchedUpdate: launchedUpdate)
-    let baseFileUrl = try loadAndVerifyAsset(baseAsset)
+    let baseFileUrl = try resolveBaseFileUrl(launchedUpdate: launchedUpdate)
     let requestedUpdateId = requestedUpdate?.updateId.uuidString
 
     return try createPatchedAsset(
@@ -570,6 +594,19 @@ public final class FileDownloader {
       expectedBase64URLEncodedSHA256Hash: expectedBase64URLEncodedSHA256Hash,
       requestedUpdateId: requestedUpdateId
     )
+  }
+
+  private func resolveBaseFileUrl(launchedUpdate: Update) throws -> URL {
+    if launchedUpdate.status == UpdateStatus.StatusEmbedded {
+      // StatusEmbedded only launches for this binary's embedded update.
+      guard let embeddedLaunchAssetUrl else {
+        throw DiffError.embeddedBaseAssetMissing
+      }
+      return embeddedLaunchAssetUrl
+    }
+
+    let baseAsset = try resolveLaunchAsset(launchedUpdate: launchedUpdate)
+    return try loadAndVerifyAsset(baseAsset)
   }
 
   private func resolveLaunchAsset(launchedUpdate: Update) throws -> UpdateAsset {
@@ -728,7 +765,6 @@ public final class FileDownloader {
 
     guard let data = data else {
       let cause = UpdatesError.fileDownloaderRemoteUpdateMissingBody
-      logger.error(cause: cause, code: UpdatesErrorCode.unknown)
       errorBlock(cause)
       return
     }
@@ -743,7 +779,6 @@ public final class FileDownloader {
       guard
         let boundaryParameterValue: String = contentTypeParameters.optionalValue(forKey: "boundary") else {
         let cause = UpdatesError.fileDownloaderMissingMultipartBoundary
-        logger.error(cause: cause, code: UpdatesErrorCode.unknown)
         errorBlock(cause)
         return
       }
@@ -829,7 +864,6 @@ public final class FileDownloader {
 
     if !completed {
       let cause = UpdatesError.fileDownloaderErrorReadingMultipartResponse
-      logger.error(cause: cause, code: .unknown)
       errorBlock(cause)
       return
     }
@@ -846,7 +880,6 @@ public final class FileDownloader {
 
       guard let parsedExtensions = parsedExtensions as? [String: Any] else {
         let cause = UpdatesError.fileDownloaderMultipartExtensionsPartParseFailed
-        logger.error(cause: cause, code: .unknown)
         errorBlock(cause)
         return
       }
@@ -856,7 +889,6 @@ public final class FileDownloader {
 
     if config.enableExpoUpdatesProtocolV0CompatibilityMode && manifestPartHeadersAndData == nil {
       let cause = UpdatesError.fileDownloaderMultipartMissingManifestVersion0
-      logger.error(cause: cause, code: .unknown)
       errorBlock(cause)
       return
     }
@@ -975,14 +1007,14 @@ public final class FileDownloader {
         } else {
           cause = UpdatesError.fileDownloaderCodeSigningUnknownError(cause: error)
         }
-        self.logger.error(cause: cause, code: .unknown)
+        logger.error(.systemCodeSigningVerificationFailed, cause: cause, values: ["kind": "directive"])
         errorBlock(cause)
         return
       }
 
       if signatureValidationResult.validationResult == .invalid {
         let cause = UpdatesError.fileDownloaderCodeSigningIncorrectSignature
-        self.logger.error(cause: cause, code: .unknown)
+        logger.error(.systemCodeSigningVerificationFailed, cause: cause, values: ["kind": "directive"])
         errorBlock(cause)
         return
       }
@@ -994,7 +1026,6 @@ public final class FileDownloader {
             directive = try UpdateDirective.fromJSONData(responsePartInfo.body)
           } catch {
             let cause = UpdatesError.fileDownloaderDirectiveParseFailed(cause: error)
-            self.logger.error(cause: cause, code: .unknown)
             errorBlock(cause)
             return
           }
@@ -1002,7 +1033,7 @@ public final class FileDownloader {
           if expoProjectInformation.projectId != directive.signingInfo?.easProjectId ||
             expoProjectInformation.scopeKey != directive.signingInfo?.scopeKey {
             let cause = UpdatesError.fileDownloaderCodeSigningCertificateScopeKeyOrProjectIdMismatch
-            self.logger.error(cause: cause, code: .unknown)
+            logger.error(.systemCodeSigningVerificationFailed, cause: cause, values: ["kind": "directive"])
             errorBlock(cause)
             return
           }
@@ -1016,7 +1047,6 @@ public final class FileDownloader {
       directive = try UpdateDirective.fromJSONData(responsePartInfo.body)
     } catch {
       let cause = UpdatesError.fileDownloaderDirectiveParseFailed(cause: error)
-      self.logger.error(cause: cause, code: .unknown)
       errorBlock(cause)
       return
     }
@@ -1037,14 +1067,12 @@ public final class FileDownloader {
       manifest = try JSONSerialization.jsonObject(with: responsePartInfo.body) as? [String: Any]
     } catch {
       let cause = UpdatesError.fileDownloaderManifestParseFailed(cause: error)
-      logger.error(cause: cause, code: .unknown)
       errorBlock(cause)
       return
     }
 
     guard let manifest = manifest else {
       let cause = UpdatesError.fileDownloaderManifestParseFailed(cause: nil)
-      logger.error(cause: cause, code: .unknown)
       errorBlock(cause)
       return
     }
@@ -1100,14 +1128,14 @@ public final class FileDownloader {
         } else {
           cause = UpdatesError.fileDownloaderCodeSigningUnknownError(cause: error)
         }
-        self.logger.error(cause: cause, code: .unknown)
+        logger.error(.systemCodeSigningVerificationFailed, cause: cause, values: ["kind": "manifest"])
         errorBlock(cause)
         return
       }
 
       if signatureValidationResult.validationResult == .invalid {
         let cause = UpdatesError.fileDownloaderCodeSigningIncorrectSignature
-        self.logger.error(cause: cause, code: .unknown)
+        logger.error(.systemCodeSigningVerificationFailed, cause: cause, values: ["kind": "manifest"])
         errorBlock(cause)
         return
       }
@@ -1128,7 +1156,6 @@ public final class FileDownloader {
             // this will ensure invalid manifests can be easily debugged.
             // For example, this will catch nullish sdkVersion assertions.
             let cause = UpdatesError.fileDownloaderManifestParseFailed(cause: error)
-            self.logger.error(cause: cause, code: .unknown)
             errorBlock(cause)
             return
           }
@@ -1137,7 +1164,7 @@ public final class FileDownloader {
           if expoProjectInformation.projectId != manifestForProjectInformation.easProjectId() ||
             expoProjectInformation.scopeKey != manifestForProjectInformation.scopeKey() {
             let cause = UpdatesError.fileDownloaderCodeSigningCertificateScopeKeyOrProjectIdMismatch
-            self.logger.error(cause: cause, code: .unknown)
+            logger.error(.systemCodeSigningVerificationFailed, cause: cause, values: ["kind": "manifest"])
             errorBlock(cause)
             return
           }
@@ -1161,14 +1188,12 @@ public final class FileDownloader {
       // this will ensure invalid manifests can be easily debugged.
       // For example, this will catch nullish sdkVersion assertions.
       let cause = UpdatesError.fileDownloaderManifestParseFailed(cause: error)
-      self.logger.error(cause: cause, code: .unknown)
       errorBlock(cause)
       return
     }
 
     if !SelectionPolicies.doesUpdate(update, matchFilters: responsePartInfo.responseHeaderData.manifestFilters) {
       let cause = UpdatesError.fileDownloaderManifestFilterManifestMismatch
-      self.logger.error(cause: cause, code: .unknown)
       errorBlock(cause)
       return
     }
@@ -1190,7 +1215,6 @@ public final class FileDownloader {
       }
       guard let response = response else {
         let cause = UpdatesError.fileDownloaderUnknownError(cause: error!)
-        self.logger.error(cause: cause, code: .unknown)
         errorBlock(cause)
         return
       }
@@ -1199,10 +1223,9 @@ public final class FileDownloader {
         httpResponse.statusCode < 200 || httpResponse.statusCode >= 300 {
         let encoding = FileDownloader.encoding(fromResponse: httpResponse)
         let body = data.let { it in
-          String(data: it, encoding: encoding)
+          String(data: it, encoding: encoding)?.truncatedForErrorMessage()
         } ?? "Unknown body response"
         let cause = UpdatesError.fileDownloaderHTTPResponseError(statusCode: httpResponse.statusCode, body: body)
-        self.logger.error(cause: cause, code: .unknown)
         errorBlock(cause)
         return
       }
@@ -1239,6 +1262,7 @@ extension FileDownloader {
     case missingHeader(String)
     case invalidHeader(String)
     case launchAssetNotFound
+    case embeddedBaseAssetMissing
     case baseAssetMissing(path: String)
     case failedToReadBaseAsset(cause: Error)
     case failedToWritePatch(cause: Error, path: String)
@@ -1266,6 +1290,8 @@ extension FileDownloader.DiffError: CustomStringConvertible {
       return "Invalid \(header) header"
     case .launchAssetNotFound:
       return "Launch asset not found for current update"
+    case .embeddedBaseAssetMissing:
+      return "Embedded bundle not found in the app binary"
     case let .baseAssetMissing(path):
       return "Base asset is missing at path \(path)"
     case let .failedToReadBaseAsset(cause):

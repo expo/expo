@@ -2,14 +2,31 @@ package expo.modules.widgets
 
 import android.content.Context
 import android.content.res.Configuration
+import androidx.compose.ui.unit.DpSize
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
+import expo.modules.ui.colors.getMaterialColorTokens
 
-internal fun getWidgetEnvironment(context: Context): Map<String, Any?> {
+internal fun getCommonEnvironment(context: Context): Map<String, Any?> {
   return mapOf(
     "colorScheme" to context.colorScheme(),
-    "configuration" to emptyMap<String, Any?>()
+    "configuration" to emptyMap<String, Any?>(),
+    // TODO(@jakex7): accessing a materialColors through environment is
+    //  a hack to fulfill expo-ui module stub with data
+    "materialColors" to mapOf(
+      "light" to getMaterialColorTokens(context, isDark = false),
+      "dark" to getMaterialColorTokens(context, isDark = true)
+    )
   )
+}
+
+internal fun getWidgetEnvironment(context: Context, size: DpSize? = null): Map<String, Any?> {
+  val environment = getCommonEnvironment(context).toMutableMap()
+  environment["timestamp"] = System.currentTimeMillis()
+  if (size != null && size.width.value > 0f && size.height.value > 0f) {
+    environment["widgetSize"] = mapOf("width" to size.width.value, "height" to size.height.value)
+  }
+  return environment
 }
 
 internal fun evaluateLayout(

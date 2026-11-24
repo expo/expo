@@ -20,6 +20,18 @@ enum FileMode: String, Enumerable {
   var writeOnly: Bool {
     return self == .write || self == .append || self == .truncate
   }
+
+  /// Permissions a handle opened in this mode needs. Mirrors `FileMode.requiredPermissions()` on Android.
+  var requiredPermissions: [FileSystemPermissionFlags] {
+    switch self {
+    case .read:
+      return [.read]
+    case .write, .append, .truncate:
+      return [.write]
+    case .readWrite:
+      return [.read, .write]
+    }
+  }
 }
 
 @available(iOS 14, tvOS 14, *)
@@ -29,10 +41,23 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   let handle: FileHandle
   private let didAccessSecurityScope: Bool
   private var isClosed = false
+  private let lock = NSLock()  // non-reentrant. Don't use it in recursive calls
 
   init(file: FileSystemFile, mode: FileMode?) throws {
+    // Callers that ask for a specific mode get exactly that mode checked. When no mode is given we
+    // fall back to read-only on a path that is not writable, so opening a bundled file keeps working
+    // without having to pass "r" from JavaScript. A path that permits neither still fails below.
+    let resolvedMode = mode ?? (file.checkPermission(.write) ? FileMode.readWrite : FileMode.read)
     self.file = file
-    self.mode = mode ?? FileMode.readWrite
+    self.mode = resolvedMode
+
+    // Opening a handle hands out raw read/write access to the file, so it has to clear the same
+    // permission check as every other read and write. Without this, JavaScript could open a file
+    // belonging to another Expo Go experience, which the scoped permission service denies.
+    for permission in resolvedMode.requiredPermissions {
+      try file.validatePermission(permission)
+    }
+
     self.didAccessSecurityScope = file.url.startAccessingSecurityScopedResource()
 
     do {
@@ -60,9 +85,15 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   }
 
   func read(_ length: Int) throws -> Data {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+
     if self.mode.writeOnly {
       throw UnableToReadHandleException("File opened write-only")
     }
+
     do {
       let data = try handle.read(upToCount: length)
       return data ?? Data()
@@ -72,9 +103,15 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   }
 
   func write(_ bytes: Data) throws {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+
     if self.mode.readOnly {
       throw UnableToWriteHandleException("File opened read-only")
     }
+
     try handle.write(contentsOf: bytes)
   }
 
@@ -83,6 +120,11 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   }
 
   func close() throws {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+
     guard !isClosed else { return }
     isClosed = true
     defer {
@@ -95,17 +137,33 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
 
   var offset: UInt64? {
     get {
-      try? handle.offset()
+      lock.lock()
+      defer {
+        lock.unlock()
+      }
+
+      return try? handle.offset()
     }
     set(newOffset) {
       guard let newOffset else {
         return
       }
+
+      lock.lock()
+      defer {
+        lock.unlock()
+      }
+
       handle.seek(toFileOffset: newOffset)
     }
   }
 
   var size: UInt64? {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+
     do {
       let offset = try handle.offset()
       let size = try handle.seekToEnd()

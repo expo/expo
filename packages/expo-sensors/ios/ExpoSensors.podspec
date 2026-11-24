@@ -20,11 +20,20 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
 
-  s.source_files = "**/*.{h,m,swift}"
+  s.source_files = "**/*.swift"
+  s.exclude_files = "Tests/**"
   if podfile_properties['MOTION_PERMISSION'] == 'false'
     s.pod_target_xcconfig = {
       'OTHER_SWIFT_FLAGS' => '$(inherited) -DEXPO_DISABLE_MOTION_PERMISSION',
-      'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) EXPO_DISABLE_MOTION_PERMISSION=1',
+    }
+  end
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.source_files = 'Tests/**/*.swift'
+    test_spec.requires_app_host = false
+
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '$(inherited) -lc++'
     }
   end
 end

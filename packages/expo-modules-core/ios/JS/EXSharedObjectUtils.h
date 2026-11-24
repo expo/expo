@@ -7,9 +7,8 @@ typedef void (^ObjectReleaser)(long objectId);
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- Bridges Swift to `expo::SharedObject::NativeState` (which inherits from
- `expo::EventEmitter::NativeState`), so that later `addListener` calls on
- the same JS object find the existing state instead of overwriting it.
+ Bridges Swift to `expo::SharedObject::NativeState`, which keeps the object ID that the
+ `release` method and the `__expo_shared_object_id__` getter of `expo.SharedObject` read.
  */
 NS_SWIFT_NAME(SharedObjectUtils)
 @interface EXSharedObjectUtils : NSObject

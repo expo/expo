@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Surface matches the official Jetpack Compose [Surface](https://developer.android.com/develop/ui/compose/designsystems/material3) API and provides a container that applies Material Design surface styling including color, elevation, and content color.
@@ -28,38 +29,61 @@ Expo UI Surface matches the official Jetpack Compose [Surface](https://developer
 
 ### Basic surface
 
-```tsx BasicSurfaceExample.tsx
+<ComponentExample
+  title="BasicSurfaceExample.tsx"
+  src="/static/images/expo-ui/examples/surface-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/surface-basic-android-dark.webp"
+  alt="A pale Material 3 surface panel containing padded text">
+
+```tsx
 import { Host, Surface, Text } from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function BasicSurfaceExample() {
   return (
     <Host matchContents>
-      <Surface modifiers={[paddingAll(16)]}>
-        <Text>Content on a surface</Text>
+      <Surface>
+        <Text modifiers={[paddingAll(16)]}>
+          Content on a surface
+        </Text>
       </Surface>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Surface with elevation
 
 Use `tonalElevation` and `shadowElevation` to control the visual depth of the surface.
 
-```tsx SurfaceElevationExample.tsx
-import { Host, Surface, Column, Text } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="SurfaceElevationExample.tsx"
+  src="/static/images/expo-ui/examples/surface-elevation-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/surface-elevation-android-dark.webp"
+  alt="Two stacked surfaces, the lower one casting a larger shadow than the upper one">
+
+```tsx
+import {
+  Host,
+  Surface,
+  Column,
+  Text,
+} from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function SurfaceElevationExample() {
   return (
     <Host matchContents>
-      <Column modifiers={[paddingAll(16)]}>
-        <Surface tonalElevation={1} shadowElevation={2} modifiers={[paddingAll(16)]}>
-          <Text>Low elevation</Text>
+      <Column
+        verticalArrangement={{ spacedBy: 16 }}
+        modifiers={[paddingAll(16)]}>
+        <Surface tonalElevation={1} shadowElevation={2}>
+          <Text modifiers={[paddingAll(16)]}>Low elevation</Text>
         </Surface>
-        <Surface tonalElevation={4} shadowElevation={8} modifiers={[paddingAll(16)]}>
-          <Text>High elevation</Text>
+        <Surface tonalElevation={4} shadowElevation={8}>
+          <Text modifiers={[paddingAll(16)]}>High elevation</Text>
         </Surface>
       </Column>
     </Host>
@@ -67,11 +91,19 @@ export default function SurfaceElevationExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Surface with custom colors
 
 Use the `color` and `contentColor` props to override the default Material theme colors.
 
-```tsx SurfaceCustomColorsExample.tsx
+<ComponentExample
+  title="SurfaceCustomColorsExample.tsx"
+  src="/static/images/expo-ui/examples/surface-colors-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/surface-colors-android-dark.webp"
+  alt="A dark navy surface panel with white text">
+
+```tsx
 import { Host, Surface, Text } from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
@@ -81,21 +113,35 @@ export default function SurfaceCustomColorsExample() {
       <Surface
         color="#1E3A5F"
         contentColor="#FFFFFF"
-        tonalElevation={2}
-        modifiers={[paddingAll(16)]}>
-        <Text color="#FFFFFF">Custom colored surface</Text>
+        tonalElevation={2}>
+        <Text color="#FFFFFF" modifiers={[paddingAll(16)]}>
+          Custom colored surface
+        </Text>
       </Surface>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Surface with shape and border
 
 Use the `shape` prop to clip content and `border` to draw a stroke around the surface.
 
-```tsx SurfaceShapeBorderExample.tsx
-import { Host, Surface, Shape, Text } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="SurfaceShapeBorderExample.tsx"
+  src="/static/images/expo-ui/examples/surface-shape-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/surface-shape-android-dark.webp"
+  alt="A surface with 16dp rounded corners outlined by a purple two-pixel border">
+
+```tsx
+import {
+  Host,
+  Surface,
+  Shape,
+  Text,
+} from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function SurfaceShapeBorderExample() {
@@ -103,16 +149,24 @@ export default function SurfaceShapeBorderExample() {
     <Host matchContents>
       <Surface
         shape={Shape.RoundedCorner({
-          cornerRadii: { topStart: 16, topEnd: 16, bottomStart: 16, bottomEnd: 16 },
+          cornerRadii: {
+            topStart: 16,
+            topEnd: 16,
+            bottomStart: 16,
+            bottomEnd: 16,
+          },
         })}
-        border={{ width: 2, color: '#6200EE' }}
-        modifiers={[paddingAll(16)]}>
-        <Text>Rounded surface with border</Text>
+        border={{ width: 2, color: '#6200EE' }}>
+        <Text modifiers={[paddingAll(16)]}>
+          Rounded surface with border
+        </Text>
       </Surface>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
@@ -120,4 +174,7 @@ export default function SurfaceShapeBorderExample() {
 import { Surface } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/surface" apiName="Surface" />
+<APISection
+  packageName="expo-ui/jetpack-compose/surface"
+  apiName="Surface"
+/>

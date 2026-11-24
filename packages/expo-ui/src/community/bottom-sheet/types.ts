@@ -1,6 +1,8 @@
 import type { ComponentType, ReactNode, Ref } from 'react';
 import type { StyleProp, ViewProps, ViewStyle } from 'react-native';
 
+import type { ModifierConfig } from '../../types';
+
 // #region BottomSheetMethods
 
 /**
@@ -343,10 +345,29 @@ export interface BottomSheetProps {
    */
   containerStyle?: StyleProp<ViewStyle>;
 
+  // --- Platform ---
+
+  /**
+   * Platform-specific modifier escape hatch. Pass an array of modifier configs from
+   * `@expo/ui/swift-ui/modifiers` or `@expo/ui/jetpack-compose/modifiers`.
+   *
+   * @remarks On iOS, the modifiers are applied to the sheet's content after the ones the
+   * component sets, so a sheet can for example ignore a horizontal safe-area inset that the
+   * window has, as on a folded iPhone Duo, with `ignoreSafeArea({ edges: 'horizontal' })`.
+   * On Android, they are applied to the `ModalBottomSheet`. Not applied on web.
+   */
+  modifiers?: ModifierConfig[];
+
   /**
    * The content to render inside the bottom sheet.
    */
   children: ReactNode;
+
+  /**
+   * Identifier used to locate the inner content container in end-to-end tests.
+   * Applied on web only.
+   */
+  testID?: string;
 }
 
 // #endregion

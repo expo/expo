@@ -1,5 +1,6 @@
-import { loadModuleSync, resolveFrom } from '@expo/require-utils';
+import { loadModuleSync, nativeResolveFrom, resolveFrom } from '@expo/require-utils';
 import assert from 'assert';
+import path from 'path';
 
 import type { ConfigPlugin, StaticPlugin } from '../Plugin.types';
 import { PluginError } from './errors';
@@ -13,10 +14,10 @@ const pluginExtensions = ['.js', '.cjs', '.mjs', '.ts', '.cts', '.mts'];
 /**
  * Resolve the config plugin from a node module or package.
  * If the module or package does not include a config plugin, this function throws a `PluginError`.
- * The resolution is done in following order:
+ * The resolution is done in the following order:
  *   1. Is the reference a relative file path or an import specifier with file path? e.g. `./file.js`, `pkg/file.js` or `@org/pkg/file.js`?
  *     - Resolve the config plugin as-is
- *   2. If the reference a module? e.g. `expo-font`
+ *   2. If the reference is a module? e.g. `expo-font`
  *     - Resolve the root `app.plugin.{js,cjs,mjs,ts,cts,mts}` file within the module
  *   3. Does the module have a valid config plugin in the `main` field?
  *     - Resolve the `main` entry point as config plugin
@@ -37,6 +38,7 @@ export function resolvePluginForModule(
       extensions: pluginExtensions,
     });
     if (pluginPackageFile) {
+      warnIfPluginNotExported(projectRoot, pluginReference, pluginPackageFile);
       return { isPluginFile: true, filePath: pluginPackageFile };
     }
     // Skip the extension/index probes — Node's resolver (step 4) handles `main`.
@@ -50,6 +52,27 @@ export function resolvePluginForModule(
     `Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}". Do you have node modules installed?`,
     'PLUGIN_NOT_FOUND'
   );
+}
+
+const checkedPluginExports = new Set<string>();
+
+// `resolveFrom` finds `app.plugin.*` on disk regardless of `package.json:exports`, so a package
+// that omits it from `exports` works here but not for tools that resolve it through Node.
+function warnIfPluginNotExported(
+  projectRoot: string,
+  pluginReference: string,
+  pluginPackageFile: string
+): void {
+  if (checkedPluginExports.has(pluginReference)) {
+    return;
+  }
+  checkedPluginExports.add(pluginReference);
+  const pluginFile = path.basename(pluginPackageFile);
+  if (nativeResolveFrom(projectRoot, `${pluginReference}/${pluginFile}`) == null) {
+    console.warn(
+      `The config plugin for "${pluginReference}" was loaded from "${pluginFile}", but the "exports" field in its package.json doesn't include "./${pluginFile}", so tools that resolve "${pluginReference}/${pluginFile}" through Node can't find it. If you maintain "${pluginReference}", add "./${pluginFile}": "./${pluginFile}" to its "exports"; otherwise, report this to its maintainers.`
+    );
+  }
 }
 
 // TODO: Test windows

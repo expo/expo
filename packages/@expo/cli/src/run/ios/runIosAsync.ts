@@ -3,51 +3,69 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import * as XcodeBuild from './XcodeBuild';
-import type { Options } from './XcodeBuild.types';
-import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
-import { resolveOptionsAsync } from './options/resolveOptions';
-import { getValidBinaryPathAsync } from './validateExternalBinary';
-import { event, debugEvent } from '../events';
 import { exportEagerAsync } from '../../export/embed/exportEager';
 import * as Log from '../../log';
 import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
 import { getContainerPathAsync, simctlAsync } from '../../start/platforms/ios/simctl';
 import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
-import { CommandError } from '../../utils/errors';
-import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
+import { AbortCommandError, CommandError } from '../../utils/errors';
+import { loadEnvFiles } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { profile } from '../../utils/profile';
 import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
+import { event, debugEvent } from '../events';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
+import * as XcodeBuild from './XcodeBuild';
+import type { BuildProps, Options } from './XcodeBuild.types';
+import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
+import { resolveOptionsAsync } from './options/resolveOptions';
+import { resolveXcodeProject } from './options/resolveXcodeProject';
+import { getValidBinaryPathAsync } from './validateExternalBinary';
 
 export async function runIosAsync(projectRoot: string, options: Options) {
-  setNodeEnv(options.configuration === 'Release' ? 'production' : 'development');
-  loadEnvFiles(projectRoot);
+  const mode = (options.configuration ?? 'Debug').includes('Debug') ? 'development' : 'production';
+  loadEnvFiles(projectRoot, { mode });
 
   assertPlatform();
 
   const install = !!options.install;
 
-  if ((await ensureNativeProjectAsync(projectRoot, { platform: 'ios', install })) && install) {
+  let props: BuildProps | undefined;
+  const hasNativeProject = await ensureNativeProjectAsync(
+    projectRoot,
+    { platform: 'ios', install },
+    async () => {
+      props = await profile(resolveOptionsAsync)(projectRoot, options);
+      if (props.device) {
+        event('device:selected', {
+          platform: 'ios',
+          name: props.device.name,
+          id: props.device.udid,
+          os: props.device.osType ?? null,
+          type: props.isSimulator ? 'simulator' : 'device',
+        });
+      }
+      if (install) {
+        debugEvent('ios:pods_sync', { status: 'started' });
+      }
+    }
+  );
+
+  if (!props) {
+    throw new AbortCommandError();
+  }
+  if (hasNativeProject && install) {
     await maybePromptToSyncPodsAsync(projectRoot);
   }
-
-  // Resolve the CLI arguments into useable options.
-  const props = await profile(resolveOptionsAsync)(projectRoot, options);
-
-  if (props.device) {
-    event('device:selected', {
-      platform: 'ios',
-      name: props.device.name,
-      id: props.device.udid,
-      os: props.device.osType ?? null,
-      type: props.isSimulator ? 'simulator' : 'device',
-    });
+  if (install) {
+    debugEvent('ios:pods_sync', { status: 'finished' });
   }
+
+  // NOTE(@kitten): Pod installation may have created a workspace after options were resolved.
+  props.xcodeProject = await resolveXcodeProject(projectRoot);
 
   // We only support build cache for simulator builds for now.
   if (!options.binary && props.buildCacheProvider && props.isSimulator) {
@@ -129,7 +147,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   } else {
     let eagerBundleOptions: string | undefined;
 
-    if (options.configuration === 'Release') {
+    if (mode === 'production') {
       eagerBundleOptions = JSON.stringify(
         await exportEagerAsync(projectRoot, {
           dev: false,
@@ -210,6 +228,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   // launching the app on a simulator.
   const manager = await startBundlerAsync(projectRoot, {
     port: props.port,
+    mode,
     headless: !props.shouldStartBundler,
     // If a scheme is specified then use that instead of the package name.
 

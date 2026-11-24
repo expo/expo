@@ -3,6 +3,7 @@ import { promises as fs } from 'fs';
 import * as Log from '../../log';
 import { getDevelopmentCodeSigningDirectory } from '../../utils/codesigning';
 import { env } from '../../utils/env';
+import { withProgramStatus } from '../../utils/programStatus';
 import { getExpoWebsiteBaseUrl } from '../endpoint';
 import { debugEvent } from '../events';
 import { UserQuery, type Actor } from '../graphql/queries/UserQuery';
@@ -27,6 +28,8 @@ export function getActorDisplayName(user?: Actor): string {
       return user.username;
     case 'Robot':
       return user.firstName ? `${user.firstName} (robot)` : 'robot';
+    case 'PartnerActor':
+      return user.username;
     default:
       return ANONYMOUS_USERNAME;
   }
@@ -68,10 +71,14 @@ export async function loginAsync(credentials: {
 }
 
 export async function browserLoginAsync({ sso = false }): Promise<void> {
-  const sessionSecret = await getSessionUsingBrowserAuthFlowAsync({
-    expoWebsiteUrl: getExpoWebsiteBaseUrl(),
-    sso,
-  });
+  const sessionSecret = await withProgramStatus(
+    { state: 'blocked', kind: 'auth', msg: 'Waiting for browser login' },
+    () =>
+      getSessionUsingBrowserAuthFlowAsync({
+        expoWebsiteUrl: getExpoWebsiteBaseUrl(),
+        sso,
+      })
+  );
   const userData = await UserQuery.meUserActorAsync({
     'expo-session': sessionSecret,
   });

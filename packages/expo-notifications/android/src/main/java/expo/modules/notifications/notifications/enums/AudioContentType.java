@@ -36,7 +36,7 @@ public enum AudioContentType {
 
   public static AudioContentType fromNativeValue(int value) {
     for (AudioContentType visibility : AudioContentType.values()) {
-      if (visibility.getEnumValue() == value) {
+      if (visibility.getNativeValue() == value) {
         return visibility;
       }
     }

@@ -12,7 +12,7 @@ const indicators: Record<string, string> = {
   [Statuses.Running]: '○',
 };
 
-const colorKeys: Record<string, string> = {
+const colorKeys: Record<string, 'success' | 'danger' | 'tertiary' | 'warning'> = {
   [Statuses.Passed]: 'success',
   [Statuses.Failed]: 'danger',
   [Statuses.Disabled]: 'tertiary',

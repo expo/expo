@@ -64,6 +64,7 @@ export function BottomSheet(props: BottomSheetProps) {
     enableDynamicSizing = true,
     handleComponent,
     backgroundStyle,
+    modifiers,
     children,
   } = props;
   const { width } = useWindowDimensions();
@@ -113,11 +114,16 @@ export function BottomSheet(props: BottomSheetProps) {
       setIsOpen(false);
       fireCloseCallbacks();
     } else if (indexProp >= 0) {
-      pendingIndexRef.current = clampIndex(indexProp);
       closedRef.current = false;
       setIsOpen(true);
     }
-  }, [clampIndex, indexProp, fireCloseCallbacks]);
+  }, [indexProp, fireCloseCallbacks]);
+
+  useEffect(() => {
+    const requestedIndex = indexProp >= 0 ? indexProp : pendingIndexRef.current;
+    if (requestedIndex == null) return;
+    pendingIndexRef.current = clampIndex(requestedIndex);
+  }, [indexProp, clampIndex]);
 
   const handleDismiss = useCallback(() => {
     setIsOpen(false);
@@ -186,7 +192,8 @@ export function BottomSheet(props: BottomSheetProps) {
   return (
     <BottomSheetInternalContext.Provider value={internalContextValue}>
       <BottomSheetContext.Provider value={methods}>
-        <Host style={{ position: 'absolute', width }} pointerEvents="none">
+        {/* Fill the parent, so `removeClippedSubviews` doesn't detach a zero-height host. */}
+        <Host style={{ position: 'absolute', top: 0, bottom: 0, width }} pointerEvents="none">
           <ModalBottomSheet
             ref={sheetRef}
             onDismissRequest={handleDismiss}
@@ -195,14 +202,17 @@ export function BottomSheet(props: BottomSheetProps) {
             showDragHandle={handleComponent !== null}
             sheetGesturesEnabled={enablePanDownToClose}
             containerColor={containerColor}
+            modifiers={modifiers}
             properties={{
               shouldDismissOnBackPress: enablePanDownToClose,
               shouldDismissOnClickOutside: enablePanDownToClose,
             }}>
             <RNHostView matchContents={fitToContents}>
-              {/* flexGrow:1 + height:0 (flex-basis 0) fills RNHostView's measured height without
-                  inheriting the scrollable child's content height, which would block scrolling to the end. */}
-              <View style={fitToContents ? undefined : { flexGrow: 1, height: 0 }}>
+              {/* With matchContents, RNHostView lays the hosted view out at its own size, so `width` gives it
+                  the sheet width while its height stays content-sized. Otherwise flexGrow:1 + height:0
+                  (flex-basis 0) fills RNHostView's measured height without inheriting the scrollable
+                  child's content height, which would block scrolling to the end. */}
+              <View style={fitToContents ? { width } : { flexGrow: 1, height: 0 }}>
                 <SheetScrollContextReset>{children}</SheetScrollContextReset>
               </View>
             </RNHostView>

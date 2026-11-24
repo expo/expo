@@ -16,7 +16,11 @@ object ExpoCropImageUtils {
    */
   fun getThemeColor(theme: android.content.res.Resources.Theme, attr: Int): Int? = runCatching {
     val tv = TypedValue()
-    if (theme.resolveAttribute(attr, tv, true)) tv.data else null
+    if (theme.resolveAttribute(attr, tv, true)) {
+      tv.data
+    } else {
+      null
+    }
   }.getOrNull()
 
   /**

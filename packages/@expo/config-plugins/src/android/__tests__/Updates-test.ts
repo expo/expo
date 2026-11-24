@@ -47,6 +47,7 @@ describe('Android Updates config', () => {
         checkAutomatically: 'ON_ERROR_RECOVERY',
         useEmbeddedUpdate: false,
         enableBsdiffPatchSupport: true,
+        maxUpdatesToKeep: 5,
         codeSigningCertificate: 'hello',
         codeSigningMetadata: {
           alg: 'rsa-v1_5-sha256',
@@ -135,6 +136,12 @@ describe('Android Updates config', () => {
     expect(bsdiffPatchSupport).toHaveLength(1);
     expect(bsdiffPatchSupport[0]!.$['android:value']).toMatch('true');
 
+    const maxUpdatesToKeep = mainApplication['meta-data'].filter(
+      (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATES_MAX_UPDATES_TO_KEEP'
+    );
+    expect(maxUpdatesToKeep).toHaveLength(1);
+    expect(maxUpdatesToKeep[0]?.$['android:value']).toBe('5');
+
     const runtimeVersion = mainApplication['meta-data']?.filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_RUNTIME_VERSION'
     );
@@ -214,4 +221,27 @@ describe('Android Updates config', () => {
       vol.reset();
     });
   });
+});
+
+it('removes a stale retention setting when the option is omitted', async () => {
+  const config = {
+    slug: 'my-app',
+    runtimeVersion: '1.0.0',
+    updates: { url: 'https://u.expo.dev/x', maxUpdatesToKeep: 5 },
+  };
+  const configured = await Updates.setUpdatesConfigAsync(
+    '/app',
+    config,
+    await getFixtureManifestAsync()
+  );
+  const cleared = await Updates.setUpdatesConfigAsync(
+    '/app',
+    { ...config, updates: { url: config.updates.url } },
+    configured
+  );
+  expect(
+    getMainApplication(cleared)!['meta-data']?.filter(
+      (item) => item.$['android:name'] === Updates.Config.MAX_UPDATES_TO_KEEP
+    )
+  ).toEqual([]);
 });

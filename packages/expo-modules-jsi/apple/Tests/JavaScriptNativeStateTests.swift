@@ -52,9 +52,60 @@ struct JavaScriptNativeStateTests {
     let nativeState = CustomNativeState()
     object.setNativeState(nativeState)
     #expect(object.hasNativeState() == true)
-    object.unsetNativeState()
+    #expect(object.tryUnsetNativeState() == true)
     #expect(object.hasNativeState() == false)
     #expect(object.getNativeState() == nil)
+  }
+
+  @Test
+  func `keeps native state of a frozen object`() throws {
+    let object = runtime.createObject()
+    let nativeState = CustomNativeState()
+    object.setNativeState(nativeState)
+    runtime.global().setProperty("frozenObject", value: object.asValue())
+    try runtime.eval("Object.freeze(frozenObject)")
+    #expect(object.tryUnsetNativeState() == false)
+    #expect(object.getNativeState(as: CustomNativeState.self) === nativeState)
+  }
+
+  @Test
+  func `trySetNativeState sets native state`() {
+    let object = runtime.createObject()
+    let nativeState = CustomNativeState()
+    #expect(object.trySetNativeState(nativeState) == true)
+    #expect(object.getNativeState(as: CustomNativeState.self) === nativeState)
+  }
+
+  @Test
+  func `trySetNativeState fails for a frozen object`() throws {
+    let object = try runtime.eval("Object.freeze({})").getObject()
+    #expect(object.trySetNativeState(CustomNativeState()) == false)
+    #expect(object.hasNativeState() == false)
+  }
+
+  @Test
+  func `trySetNativeState keeps the native state of a frozen object`() throws {
+    let object = runtime.createObject()
+    let nativeState = CustomNativeState()
+    object.setNativeState(nativeState)
+    runtime.global().setProperty("frozenObject", value: object.asValue())
+    try runtime.eval("Object.freeze(frozenObject)")
+    #expect(object.trySetNativeState(OtherNativeState()) == false)
+    #expect(object.getNativeState(as: CustomNativeState.self) === nativeState)
+  }
+
+  @Test
+  func `trySetNativeState fails for a Proxy`() throws {
+    let proxy = try runtime.eval("new Proxy({}, {})").getObject()
+    #expect(proxy.trySetNativeState(CustomNativeState()) == false)
+    #expect(proxy.hasNativeState() == false)
+  }
+
+  @Test
+  func `trySetNativeState fails for a host object`() {
+    let hostObject = runtime.createHostObject(get: { _ in .undefined() }, getPropertyNames: { [] })
+    #expect(hostObject.trySetNativeState(CustomNativeState()) == false)
+    #expect(hostObject.hasNativeState() == false)
   }
 
   @Test
@@ -73,17 +124,50 @@ struct JavaScriptNativeStateTests {
   func `reattaches after the previous pointee was released`() throws {
     let object1 = runtime.createObject()
     let object2 = runtime.createObject()
+    var previousPointeeReleased = false
     let nativeState = CustomNativeState()
+    nativeState.setDeallocator { _ in
+      previousPointeeReleased = true
+    }
     object1.setNativeState(nativeState)
     object1.unsetNativeState()
 
-    // Force garbage collection so the previous C++ pointee is dropped.
-    try runtime.eval("gc() && gc() && gc()")
+    // Collect until the previous C++ pointee is dropped, so the reattach below exercises the
+    // expired-weak-pointer path rather than reusing a pointee that happens to still be alive.
+    runtime.collectGarbage { previousPointeeReleased }
+    #expect(previousPointeeReleased == true)
 
     // Reattaching transparently materializes a fresh pointee.
     object2.setNativeState(nativeState)
     #expect(object2.hasNativeState() == true)
     #expect(object2.getNativeState() === nativeState)
+  }
+
+  @Test
+  func `setNativeStateIfAlive attaches a native state that another object holds`() {
+    let object1 = runtime.createObject()
+    let object2 = runtime.createObject()
+    let nativeState = CustomNativeState()
+    object1.setNativeState(nativeState)
+    #expect(object2.setNativeStateIfAlive(nativeState) == true)
+    #expect(object2.getNativeState() === nativeState)
+  }
+
+  @Test
+  func `setNativeStateIfAlive does not attach a native state that no object holds`() throws {
+    let object1 = runtime.createObject()
+    let object2 = runtime.createObject()
+    var isPointeeReleased = false
+    let nativeState = CustomNativeState()
+    nativeState.setDeallocator { _ in
+      isPointeeReleased = true
+    }
+    #expect(object1.setNativeStateIfAlive(nativeState) == false)
+    object1.setNativeState(nativeState)
+    object1.unsetNativeState()
+    runtime.collectGarbage { isPointeeReleased }
+    #expect(object2.setNativeStateIfAlive(nativeState) == false)
+    #expect(object2.hasNativeState() == false)
   }
 
   // MARK: - Deallocator
@@ -105,8 +189,7 @@ struct JavaScriptNativeStateTests {
     object.setNativeState(nativeState)
     object.unsetNativeState()
 
-    // Force garbage collection
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage { deallocatorCalled }
 
     #expect(deallocatorCalled == true)
   }
@@ -123,14 +206,17 @@ struct JavaScriptNativeStateTests {
     object1.setNativeState(nativeState)
     object2.setNativeState(nativeState)
 
-    // Unset from the first object — deallocator should not fire yet.
+    // Unset from the first object — deallocator should not fire yet. `object2` still holds a
+    // strong ref, so no number of collections may release the pointee; this assertion keeps a
+    // fixed collection rather than a retry loop, because it waits for something that must
+    // never happen.
     object1.unsetNativeState()
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
     #expect(deallocatorCallCount == 0)
 
     // Unset from the second object — now the deallocator should fire exactly once.
     object2.unsetNativeState()
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage { deallocatorCallCount == 1 }
     #expect(deallocatorCallCount == 1)
   }
 
@@ -141,7 +227,7 @@ struct JavaScriptNativeStateTests {
     object.setNativeState(nativeState)
 
     // GC shouldn't release the underlying C++ pointee while the JS object is reachable.
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
 
     #expect(object.getNativeState() === nativeState)
   }
@@ -183,7 +269,7 @@ struct JavaScriptNativeStateTests {
 
     object1.setNativeState(nativeState)
     object1.unsetNativeState()
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage { deallocatorCallCount == 1 }
     #expect(deallocatorCallCount == 1)
 
     // Re-attaching builds a new C++ pointee; the wrapper-level deallocator
@@ -192,7 +278,7 @@ struct JavaScriptNativeStateTests {
     #expect(object2.getNativeState() === nativeState)
 
     object2.unsetNativeState()
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage { deallocatorCallCount == 2 }
     #expect(deallocatorCallCount == 2)
   }
 
@@ -209,7 +295,7 @@ struct JavaScriptNativeStateTests {
       // baked into the C++ pointee is the only Swift-side strong reference.
     }
 
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
 
     // The wrapper is still alive because the C++ pointee (held by JSI's slot)
     // retains it via Unmanaged. `getNativeState` recovers it.
@@ -219,7 +305,7 @@ struct JavaScriptNativeStateTests {
     // Once detached and GC'd, the C++ pointee dies, releases the Unmanaged,
     // and the Swift wrapper finally deallocates.
     object.unsetNativeState()
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage { weakWrapper == nil }
     #expect(weakWrapper == nil)
   }
 
@@ -232,7 +318,7 @@ struct JavaScriptNativeStateTests {
     object2.setNativeState(nativeState)
 
     object1.unsetNativeState()
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
 
     #expect(object1.hasNativeState() == false)
     #expect(object2.hasNativeState() == true)

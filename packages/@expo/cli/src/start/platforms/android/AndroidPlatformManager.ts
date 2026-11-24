@@ -1,15 +1,15 @@
-import { AndroidAppIdResolver } from './AndroidAppIdResolver';
-import { AndroidDeviceManager } from './AndroidDeviceManager';
-import type { Device } from './adb';
-import { startAdbReverseAsync } from './adbReverse';
 import { CommandError } from '../../../utils/errors';
 import { memoize } from '../../../utils/fn';
 import { learnMore } from '../../../utils/link';
 import { hasDirectDevClientDependency } from '../../detectDevClient';
 import type { AppIdResolver } from '../AppIdResolver';
-import { event } from '../events';
 import type { BaseOpenInCustomProps, BaseResolveDeviceProps } from '../PlatformManager';
 import { PlatformManager } from '../PlatformManager';
+import { event } from '../events';
+import { AndroidAppIdResolver } from './AndroidAppIdResolver';
+import { AndroidDeviceManager } from './AndroidDeviceManager';
+import type { Device } from './adb';
+import { startAdbReverseAsync } from './adbReverse';
 
 export interface AndroidOpenInCustomProps extends BaseOpenInCustomProps {
   /**

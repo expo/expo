@@ -1,16 +1,26 @@
 # Changelog
 
-## Unpublished
+## 2.3.1
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 2.3.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- [Internal] Fix sporadic `ncc` build failures ([#49615](https://github.com/expo/expo/pull/49615) by [@kitten](https://github.com/kitten))
+
+## 2.2.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.1 - 2026-06-10
 
 ### 🐛 Bug fixes
 
 - Fixed `open` double-escaping special characters in URI search parameters (e.g. `@` becoming `%2540` instead of `%40`). ([#46685](https://github.com/expo/expo/pull/46685) by [@zoontek](https://github.com/zoontek))
-
-### 💡 Others
 
 ## 2.1.0 — 2026-05-20
 

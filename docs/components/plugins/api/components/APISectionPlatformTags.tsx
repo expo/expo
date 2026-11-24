@@ -3,6 +3,7 @@ import { mergeClasses } from '@expo/styleguide';
 import { STYLES_SECONDARY } from '~/components/plugins/api/styles';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { usePageMetadata } from '~/providers/page-metadata';
+import versions from '~/public/static/constants/versions.json';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 import { StatusTag } from '~/ui/components/Tag/StatusTag';
 import { isClientPlatformTag } from '~/ui/components/Tag/helpers';
@@ -30,9 +31,7 @@ export const APISectionPlatformTags = ({
   const { platforms: defaultPlatforms } = usePageMetadata();
   const { version } = usePageApiVersion();
 
-  const isCompatibleVersion = ['unversioned', 'latest', 'v56.0.0', 'v55.0.0', 'v54.0.0'].includes(
-    version
-  );
+  const isCompatibleVersion = versions.VERSIONS.includes(version);
   const platformsData = platforms ?? getAllTagData('platform', comment);
   const experimentalData = getAllTagData('experimental', comment);
 

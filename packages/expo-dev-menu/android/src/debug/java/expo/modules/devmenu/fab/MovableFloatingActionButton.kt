@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import expo.modules.devmenu.compose.DevMenuState
+import expo.modules.devmenu.launch.DevMenuLaunchOverrides
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -96,6 +97,7 @@ fun MovableFloatingActionButton(
     val fab = rememberFabState(bounds)
 
     val isFabDisplayable = state.showFab &&
+      DevMenuLaunchOverrides.canShowFab &&
       !state.isInPictureInPictureMode &&
       bounds.x >= 0f &&
       bounds.y >= 0f
@@ -107,7 +109,11 @@ fun MovableFloatingActionButton(
       if (state.isOpen) {
         fab.restingOffset = fab.animatedOffset.value
         val isOnLeftSide = fab.animatedOffset.value.x < fab.fabAreaBounds.x / 2f
-        val offScreenX = if (isOnLeftSide) -totalFabSizePx.x else constraints.maxWidth.toFloat()
+        val offScreenX = if (isOnLeftSide) {
+          -totalFabSizePx.x
+        } else {
+          constraints.maxWidth.toFloat()
+        }
         fab.animatedOffset.animateTo(
           targetValue = Offset(offScreenX, fab.animatedOffset.value.y),
           animationSpec = tween(durationMillis = 500)

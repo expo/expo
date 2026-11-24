@@ -1,9 +1,11 @@
 {
   "platforms": ["apple", "android"],
-  "apple": {
-    "modules": ["SpeechModule"]
-  },
   "android": {
-    "modules": ["expo.modules.speech.SpeechModule"]
+    "modules": ["expo.modules.speech.SpeechModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.speech",
+      "repository": "local-maven-repo"
+    }
   }
 }

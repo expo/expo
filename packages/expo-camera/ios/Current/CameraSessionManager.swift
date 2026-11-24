@@ -31,6 +31,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
   private let deviceDiscovery = DeviceDiscovery()
 
   private var captureDeviceInput: AVCaptureDeviceInput?
+  private var minZoomFactor: CGFloat = 1.0
   private var photoOutput: AVCapturePhotoOutput?
   private var videoFileOutput: AVCaptureMovieFileOutput?
   private var runtimeErrorTask: Task<Void, Never>?
@@ -88,7 +89,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     : deviceDiscovery.frontCameraLenses
 
     let selectedDevice = lenses.first {
-      $0.localizedName == delegate.selectedLens
+      $0.deviceType.rawValue == delegate.selectedLens
     }
 
     if let selectedDevice {
@@ -99,7 +100,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
       : deviceDiscovery.defaultFrontCamera
 
       if let device {
-        addDevice(device)
+        addDevice(device, minZoomFactor: wideLensZoomFactor(device))
       }
     }
   }
@@ -109,7 +110,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
       return
     }
     if delegate.active {
-      if !self.session.isRunning {
+      if hasAvailableCameraDevice && !self.session.isRunning {
         self.session.startRunning()
       }
     } else {
@@ -217,14 +218,13 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     do {
       try device.lockForConfiguration()
       defer { device.unlockForConfiguration() }
-      let minZoom = 1.0
-      device.videoZoomFactor = minZoom * pow(device.activeFormat.videoMaxZoomFactor / minZoom, delegate.zoom)
+      device.videoZoomFactor = minZoomFactor * pow(device.activeFormat.videoMaxZoomFactor / minZoomFactor, delegate.zoom)
     } catch {
       log.info("\(#function): \(error.localizedDescription)")
     }
   }
 
-  func getAvailableLenses() -> [String] {
+  func getAvailableLenses() -> [LensInfo] {
     guard let delegate else {
       return []
     }
@@ -235,9 +235,9 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
 
     // Lens ordering can be varied which causes problems if you keep the result in react state.
     // We sort them to provide a stable ordering
-    return availableLenses.map { $0.localizedName }.sorted {
-      $0 < $1
-    }
+    return availableLenses
+      .map { LensInfo(deviceType: $0.deviceType.rawValue, localizedName: $0.localizedName) }
+      .sorted { $0.deviceType < $1.deviceType }
   }
 
   func setupMovieFileCapture(withSessionConfiguration: Bool = true) {
@@ -275,12 +275,20 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
   }
 
   func stopSession() {
+    runtimeErrorTask?.cancel()
+    runtimeErrorTask = nil
+
+    // Stop before deconfiguring. Removing inputs and outputs from a session that is still
+    // running rebuilds the capture graph just to tear it down, and that rebuild waits out
+    // its own deadline when the graph never started in the first place.
+    if session.isRunning {
+      session.stopRunning()
+    }
+
     guard hasAvailableCameraDevice else {
       return
     }
 
-    runtimeErrorTask?.cancel()
-    runtimeErrorTask = nil
     session.beginConfiguration()
     for input in self.session.inputs {
       session.removeInput(input)
@@ -290,10 +298,6 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
       session.removeOutput(output)
     }
     session.commitConfiguration()
-
-    if session.isRunning {
-      session.stopRunning()
-    }
   }
 
   func addErrorNotification() {
@@ -327,12 +331,24 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
 
   var currentDevice: AVCaptureDevice? { captureDeviceInput?.device }
 
-  private func addDevice(_ device: AVCaptureDevice) {
+  // On a virtual device with an ultra-wide, zoom factor 1 is the ultra-wide. The wide lens takes over
+  // at the first switch-over factor.
+  private func wideLensZoomFactor(_ device: AVCaptureDevice) -> CGFloat {
+    guard device.constituentDevices.contains(where: { $0.deviceType == .builtInUltraWideCamera }),
+      let switchOver = device.virtualDeviceSwitchOverVideoZoomFactors.first else {
+      return 1.0
+    }
+    return CGFloat(truncating: switchOver)
+  }
+
+  private func addDevice(_ device: AVCaptureDevice, minZoomFactor: CGFloat = 1.0) {
     guard let delegate else {
       return
     }
 
+    self.minZoomFactor = minZoomFactor
     if captureDeviceInput?.device.uniqueID == device.uniqueID {
+      updateZoom()
       return
     }
 

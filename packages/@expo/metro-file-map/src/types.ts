@@ -5,13 +5,40 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { PerfLogger, RootPerfLogger } from '@expo/metro/metro-config';
-
 import type { HType, HTypeValue } from './constants';
 
 export type { HType, HTypeValue };
 
-export type { PerfLoggerFactory, PerfLogger } from '@expo/metro/metro-config';
+// Structural mirrors of `metro-config`'s perf logger types, so the file map can take Metro's
+// `unstable_perfLoggerFactory` without depending on Metro.
+type PerfAnnotations = Partial<{
+  string: Readonly<{ [key: string]: string }>;
+  int: Readonly<{ [key: string]: number }>;
+  double: Readonly<{ [key: string]: number }>;
+  bool: Readonly<{ [key: string]: boolean }>;
+  string_array: Readonly<{ [key: string]: readonly string[] }>;
+  int_array: Readonly<{ [key: string]: readonly number[] }>;
+  double_array: Readonly<{ [key: string]: readonly number[] }>;
+  bool_array: Readonly<{ [key: string]: readonly boolean[] }>;
+}>;
+
+type PerfLoggerPointOptions = Readonly<{ timestamp?: number }>;
+
+export interface PerfLogger {
+  point(name: string, opts?: PerfLoggerPointOptions): void;
+  annotate(annotations: PerfAnnotations): void;
+  subSpan(label: string): PerfLogger;
+}
+
+export interface RootPerfLogger extends PerfLogger {
+  start(opts?: PerfLoggerPointOptions): void;
+  end(status: 'SUCCESS' | 'FAIL' | 'CANCEL', opts?: PerfLoggerPointOptions): void;
+}
+
+export type PerfLoggerFactory = (
+  type: 'START_UP' | 'BUNDLING_REQUEST' | 'HMR',
+  opts?: Readonly<{ key?: number }>
+) => RootPerfLogger;
 
 // These inputs affect the internal data collected for a given filesystem
 // state, and changes may invalidate a cache.
@@ -19,8 +46,6 @@ export interface BuildParameters {
   readonly computeSha1: boolean;
   readonly enableSymlinks: boolean;
   readonly extensions: readonly string[];
-  /** @deprecated */
-  readonly forceNodeFilesystemAPI?: boolean;
   readonly ignorePattern: RegExp | null;
   readonly plugins: readonly InputFileMapPlugin[];
   readonly retainAllFiles: boolean;
@@ -52,7 +77,9 @@ export interface CacheManager {
    * crawler - i.e. internal state reflects the current file system state.
    *
    * getSnapshot may be retained and called at any time before end(), such as
-   * in response to eventSource 'change' events.
+   * in response to eventSource 'change' events. What it returns is the file
+   * map's own state, not a copy, and may change at the next `await`.
+   * Serialize it synchronously, or copy it to keep it.
    */
   write(getSnapshot: () => CacheData, opts: CacheManagerWriteOptions): Promise<void>;
 
@@ -114,8 +141,6 @@ export interface CrawlerOptions {
   computeSha1: boolean;
   console: Console;
   extensions: readonly string[];
-  /** @deprecated */
-  forceNodeFilesystemAPI?: boolean;
   ignore: IgnoreMatcher;
   includeSymlinks: boolean;
   perfLogger?: PerfLogger | null | undefined;
@@ -228,14 +253,11 @@ export interface FileMapPlugin<
 export type InputFileMapPlugin = FileMapPlugin<never, never>;
 
 export interface MetadataWorkerParams {
-  getContent(): Promise<Buffer>;
+  getContent(): Buffer;
 }
 
 export interface MetadataWorker {
-  processFile(
-    message: WorkerMessage,
-    params: MetadataWorkerParams
-  ): V8Serializable | Promise<V8Serializable>;
+  processFile(message: WorkerMessage, params: MetadataWorkerParams): V8Serializable;
 }
 
 export type IgnoreMatcher = (item: string) => boolean;
@@ -282,6 +304,7 @@ export interface FileSystem {
     removedFiles: Set<string>;
   };
 
+  // A copy of the file system's data, which later changes don't affect.
   getSerializableSnapshot(): CacheData['fileSystemData'];
   getMtimeByNormalPath(file: Path): number | undefined | null;
   getSha1(file: Path): string | undefined | null;
@@ -303,8 +326,7 @@ export interface FileSystem {
    *   X = dirname(X)
    * while X !== dirname(X)
    *
-   * If opts.invalidatedBy is given, collects all absolute, real paths that if
-   * added or removed may invalidate this result.
+   * If `observations` is given, records the paths this result depends upon.
    *
    * Useful for finding the closest package scope (subpath: package.json,
    * type f, breakOnSegment: node_modules) or closest potential package root
@@ -314,10 +336,10 @@ export interface FileSystem {
     mixedStartPath: string,
     subpath: string,
     opts: {
-      breakOnSegment: string | undefined | null;
-      invalidatedBy: Set<string> | undefined | null;
+      breakOnSegment?: string | undefined | null;
       subpathType: 'f' | 'd';
-    }
+    },
+    observations?: Observations | undefined | null
   ):
     | {
         absolutePath: string;
@@ -335,8 +357,12 @@ export interface FileSystem {
   /**
    * Return information about the given path, whether a directory or file.
    * Always follow symlinks, and return a real path if it exists.
+   *
+   * If `observations` is given, records the paths this result depends upon:
+   * any symlink traversed, and either the real path found or the first path
+   * segment that did not exist.
    */
-  lookup(mixedPath: Path): LookupResult;
+  lookup(mixedPath: Path, observations?: Observations | undefined | null): LookupResult;
 
   matchFiles(opts: {
     /* Filter relative paths against a pattern. */
@@ -354,8 +380,6 @@ export interface FileSystem {
   }): Iterable<Path>;
 }
 
-export type Glob = string;
-
 export type JsonData = string | number | boolean | null | JsonData[] | { [key: string]: JsonData };
 
 export type LookupResult =
@@ -364,16 +388,11 @@ export type LookupResult =
       // could indicate an unwatched path, or a directory containing no watched
       // files).
       exists: false;
-      // The real, normal, absolute paths of any symlinks traversed.
-      links: ReadonlySet<string>;
-      // The real, normal, absolute path of the first path segment
-      // encountered that does not exist, or cannot be navigated through.
-      missing: string;
     }
   | {
       exists: true;
-      // The real, normal, absolute paths of any symlinks traversed.
-      links: ReadonlySet<string>;
+      // The directory's path relative to the root, with symlinks resolved.
+      canonicalPath: CanonicalPath;
       // The real, normal, absolute path of the directory.
       realPath: string;
       // Currently lookup always follows symlinks, so can only return
@@ -382,8 +401,8 @@ export type LookupResult =
     }
   | {
       exists: true;
-      // The real, normal, absolute paths of any symlinks traversed.
-      links: ReadonlySet<string>;
+      // The file's path relative to the root, with symlinks resolved.
+      canonicalPath: CanonicalPath;
       // The real, normal, absolute path of the file.
       realPath: string;
       // Currently lookup always follows symlinks, so can only return
@@ -392,6 +411,35 @@ export type LookupResult =
       // The file's metadata tuple. Must only be mutated via FileProcessor.
       metadata: FileMetadata;
     };
+
+/**
+ * A mutable record of what a query observed of the file system, sufficient to
+ * decide later whether its answer may have changed.
+ *
+ * The parameter is optional and may be omitted for performance.
+ */
+export interface Observations {
+  /**
+   * Paths that were observed to exist, or not to exist. Invalidated by added or
+   * removed files or directories.
+   *
+   * Non-existence is always recorded against the *topmost* missing path, not
+   * the path asked for, so an absent directory collapses every query beneath
+   * it to one entry: a missing `node_modules` is one path invalidating every
+   * package resolution under it, rather than one per package.
+   */
+  readonly existence: Set<CanonicalPath>;
+
+  /**
+   * Files whose content was observed (including traversed symlinks, whose
+   * content is their target) and directories whose immediate entries were
+   * enumerated. Invalidated by modification, as well as by addition or
+   * removal, so a path here may also be in `existence` (eg, after a `lookup`
+   * and a content read of the same file) without changing what invalidates
+   * the result.
+   */
+  readonly content: Set<CanonicalPath>;
+}
 
 export interface MockMap {
   getMockModule(name: string): Path | undefined | null;
@@ -454,6 +502,12 @@ export interface ReadonlyFileSystemChanges<T = FileMetadata> {
 }
 
 export interface MutableFileSystem extends FileSystem {
+  /**
+   * The file system's own data, not a copy, so it changes with the file
+   * system. Serialize it synchronously (see `CacheManager.write`), or use
+   * `getSerializableSnapshot()` for a copy.
+   */
+  getSerializableState(): CacheData['fileSystemData'];
   remove(filePath: Path, listener?: FileSystemListener | undefined): void;
   addOrModify(
     filePath: Path,
@@ -485,7 +539,7 @@ export type ProcessFileFunction = (
   normalPath: string,
   metadata: FileMetadata,
   request: Readonly<{ computeSha1: boolean }>
-) => Promise<Buffer | undefined | null>;
+) => Buffer | undefined | null;
 
 export type RawMockMap = {
   /** posix-separated mock name to posix-separated project-relative paths */
@@ -535,8 +589,17 @@ export type WatcherBackendChangeEvent =
 
 export interface WatcherBackendOptions {
   readonly ignored: RegExp | undefined | null;
-  readonly globs: readonly string[];
-  readonly dot: boolean;
+  readonly included: WatcherIncludedFiles | null | undefined;
+}
+
+/**
+ * Regular files a watcher reports changes to: those matching any of the
+ * extensions (without a leading dot), basenames, or basename prefixes.
+ */
+export interface WatcherIncludedFiles {
+  readonly extensions: ReadonlySet<string>;
+  readonly basenames: ReadonlySet<string>;
+  readonly basenamePrefixes: readonly string[];
 }
 
 export type WatchmanClockSpec = string | { readonly scm: { readonly 'mergebase-with': string } };

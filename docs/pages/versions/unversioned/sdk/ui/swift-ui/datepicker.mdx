@@ -8,6 +8,7 @@ platforms: ['ios', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI DatePicker matches the official SwiftUI [DatePicker API](https://developer.apple.com/documentation/swiftui/datepicker) and supports styling via the [`datePickerStyle`](modifiers/#datepickerstylestyle) modifier.
@@ -26,15 +27,22 @@ Expo UI DatePicker matches the official SwiftUI [DatePicker API](https://develop
 
 ## Date picker
 
-```tsx DatePickerExample.tsx
+<ComponentExample
+  title="DatePickerExample.tsx"
+  src="/static/images/expo-ui/examples/datepicker-date-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/datepicker-date-ios-dark.webp"
+  alt="A Select a date row with the current date in a compact button">
+
+```tsx
 import { useState } from 'react';
 import { Host, DatePicker } from '@expo/ui/swift-ui';
 
 export default function DatePickerExample() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
+  // A date picker fills the width it is given, so `matchContents` collapses it.
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <DatePicker
         title="Select a date"
         selection={selectedDate}
@@ -48,9 +56,17 @@ export default function DatePickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## Time picker
 
-```tsx TimePickerExample.tsx
+<ComponentExample
+  title="TimePickerExample.tsx"
+  src="/static/images/expo-ui/examples/datepicker-time-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/datepicker-time-ios-dark.webp"
+  alt="A Select a time row with the current time in a compact button">
+
+```tsx
 import { useState } from 'react';
 import { Host, DatePicker } from '@expo/ui/swift-ui';
 
@@ -58,7 +74,7 @@ export default function TimePickerExample() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <DatePicker
         title="Select a time"
         selection={selectedDate}
@@ -72,9 +88,17 @@ export default function TimePickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## Date and time picker
 
-```tsx DateTimePickerExample.tsx
+<ComponentExample
+  title="DateTimePickerExample.tsx"
+  src="/static/images/expo-ui/examples/datepicker-date-time-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/datepicker-date-time-ios-dark.webp"
+  alt="A Select date and time row with separate date and time buttons">
+
+```tsx
 import { useState } from 'react';
 import { Host, DatePicker } from '@expo/ui/swift-ui';
 
@@ -82,7 +106,7 @@ export default function DateTimePickerExample() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <DatePicker
         title="Select date and time"
         selection={selectedDate}
@@ -96,9 +120,17 @@ export default function DateTimePickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## With date range
 
-```tsx DateRangePickerExample.tsx
+<ComponentExample
+  title="DateRangePickerExample.tsx"
+  src="/static/images/expo-ui/examples/datepicker-range-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/datepicker-range-ios-dark.webp"
+  alt="A Select a date row clamped to 31 Dec 2024, the end of the allowed range">
+
+```tsx
 import { useState } from 'react';
 import { Host, DatePicker } from '@expo/ui/swift-ui';
 
@@ -106,7 +138,7 @@ export default function DateRangePickerExample() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <DatePicker
         title="Select a date"
         selection={selectedDate}
@@ -124,11 +156,19 @@ export default function DateRangePickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## Styling with modifiers
 
 You can use the `datePickerStyle` modifier to change the appearance of the picker. Available styles are: `automatic`, `compact`, `graphical`, and `wheel`.
 
-```tsx WheelDatePickerExample.tsx
+<ComponentExample
+  title="WheelDatePickerExample.tsx"
+  src="/static/images/expo-ui/examples/datepicker-wheel-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/datepicker-wheel-ios-dark.webp"
+  alt="A wheel style picker with day, month, and year columns">
+
+```tsx
 import { useState } from 'react';
 import { Host, DatePicker } from '@expo/ui/swift-ui';
 import { datePickerStyle } from '@expo/ui/swift-ui/modifiers';
@@ -137,7 +177,7 @@ export default function WheelDatePickerExample() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <DatePicker
         modifiers={[datePickerStyle('wheel')]}
         title="Select a date"
@@ -152,7 +192,15 @@ export default function WheelDatePickerExample() {
 }
 ```
 
-```tsx GraphicalDatePickerExample.tsx
+</ComponentExample>
+
+<ComponentExample
+  title="GraphicalDatePickerExample.tsx"
+  src="/static/images/expo-ui/examples/datepicker-graphical-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/datepicker-graphical-ios-dark.webp"
+  alt="A graphical style picker showing a month calendar with the current day selected">
+
+```tsx
 import { useState } from 'react';
 import { Host, DatePicker } from '@expo/ui/swift-ui';
 import { datePickerStyle } from '@expo/ui/swift-ui/modifiers';
@@ -161,7 +209,7 @@ export default function GraphicalDatePickerExample() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <DatePicker
         modifiers={[datePickerStyle('graphical')]}
         title="Select a date"
@@ -176,11 +224,19 @@ export default function GraphicalDatePickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## Disabled picker
 
 You can make the picker non-interactive using the `disabled` modifier.
 
-```tsx DisabledDatePickerExample.tsx
+<ComponentExample
+  title="DisabledDatePickerExample.tsx"
+  src="/static/images/expo-ui/examples/datepicker-disabled-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/datepicker-disabled-ios-dark.webp"
+  alt="A Select a date row with the date as plain text and no tappable button">
+
+```tsx
 import { useState } from 'react';
 import { Host, DatePicker } from '@expo/ui/swift-ui';
 import { disabled } from '@expo/ui/swift-ui/modifiers';
@@ -189,7 +245,7 @@ export default function DisabledDatePickerExample() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <DatePicker
         title="Select a date"
         selection={selectedDate}
@@ -204,11 +260,19 @@ export default function DisabledDatePickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## Custom locale
 
 Apply the `environment` modifier with the `locale` key to display the picker in a specific locale.
 
-```tsx LocaleDatePickerExample.tsx
+<ComponentExample
+  title="LocaleDatePickerExample.tsx"
+  src="/static/images/expo-ui/examples/datepicker-locale-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/datepicker-locale-ios-dark.webp"
+  alt="A picker labelled Sélectionner la date showing the date in French">
+
+```tsx
 import { useState } from 'react';
 import { Host, DatePicker } from '@expo/ui/swift-ui';
 import { environment } from '@expo/ui/swift-ui/modifiers';
@@ -217,7 +281,7 @@ export default function LocaleDatePickerExample() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <DatePicker
         title="Sélectionner la date"
         selection={selectedDate}
@@ -232,11 +296,19 @@ export default function LocaleDatePickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## Custom time zone
 
 Apply the `environment` modifier with the `timeZone` key to display the picker in a specific IANA time zone.
 
-```tsx TimeZoneDatePickerExample.tsx
+<ComponentExample
+  title="TimeZoneDatePickerExample.tsx"
+  src="/static/images/expo-ui/examples/datepicker-timezone-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/datepicker-timezone-ios-dark.webp"
+  alt="A Tokyo time row showing the date and time in the Asia/Tokyo time zone">
+
+```tsx
 import { useState } from 'react';
 import { Host, DatePicker } from '@expo/ui/swift-ui';
 import { environment } from '@expo/ui/swift-ui/modifiers';
@@ -245,7 +317,7 @@ export default function TimeZoneDatePickerExample() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <DatePicker
         title="Tokyo time"
         selection={selectedDate}
@@ -260,10 +332,15 @@ export default function TimeZoneDatePickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { DatePicker } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/datepicker" apiName="DatePicker" />
+<APISection
+  packageName="expo-ui/swift-ui/datepicker"
+  apiName="DatePicker"
+/>

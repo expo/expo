@@ -1,4 +1,4 @@
-import { DevToolsPlugin } from '../../server/DevToolsPlugin';
+import { DevToolsPlugin } from '../../server/devtools/DevToolsPlugin';
 import { getDevToolsPluginCliBannerItems } from '../interactiveActions';
 
 const DEFAULT_SERVER_URL = 'http://localhost:8081';

@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.facebook.react.ReactActivity
 import expo.modules.BuildConfig
+import expo.modules.core.utilities.VRUtilities
 import expo.modules.kotlin.events.normalizeEventName
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.jni.JavaScriptObject
@@ -46,6 +47,10 @@ class CoreModule : Module() {
 
     Property("documentsDir") {
       return@Property Uri.fromFile(context.filesDir).toString() + "/"
+    }
+
+    Property("isRunningOnQuest") {
+      return@Property VRUtilities.isQuest()
     }
 
     // Expose some common classes and maybe even the `modules` host object in the future.

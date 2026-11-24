@@ -8,6 +8,7 @@ import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.OptimizedRecord
 import kotlinx.coroutines.Dispatchers
@@ -51,6 +52,16 @@ class FileSystemDownloadTask : SharedObject() {
 
   private var call: Call? = null
 
+  // Publish status and headers together: OkHttp callbacks and JS calls use different threads.
+  @Volatile private var responseMetadata: Map<String, Any?> = emptyResponse()
+
+  fun getResponse(): Map<String, Any?> = responseMetadata
+
+  private fun emptyResponse(): Map<String, Any?> = mapOf(
+    "status" to null,
+    "headers" to emptyMap<String, String>()
+  )
+
   @Volatile private var isPausing = false
 
   @Volatile private var isCancelling = false
@@ -64,6 +75,7 @@ class FileSystemDownloadTask : SharedObject() {
     isPausing = false
     isCancelling = false
     bytesWritten = 0L
+    responseMetadata = emptyResponse()
 
     val destination = resolveDownloadDestination(to, url)
     destinationFile = destination
@@ -96,6 +108,8 @@ class FileSystemDownloadTask : SharedObject() {
   suspend fun resume(url: URI, to: FileSystemPath, resumeData: String, options: DownloadTaskOptions?): String? {
     isPausing = false
     isCancelling = false
+
+    responseMetadata = emptyResponse()
 
     val offset = try {
       resumeData.toLong()
@@ -165,6 +179,10 @@ class FileSystemDownloadTask : SharedObject() {
 
         override fun onResponse(call: Call, response: Response) {
           response.use { resp ->
+            responseMetadata = mapOf(
+              "status" to resp.code,
+              "headers" to resp.headers.toResponseHeaders()
+            )
             try {
               processDownloadResponse(resp, destination, isResume, offset, ::safeResume)
             } catch (e: IOException) {
@@ -206,7 +224,11 @@ class FileSystemDownloadTask : SharedObject() {
 
     // 206 = server supports Range, 200 = server ignored it (sends full content)
     val isPartial = resp.code == 206
-    val effectiveOffset = if (isResume && isPartial) offset else 0L
+    val effectiveOffset = if (isResume && isPartial) {
+      offset
+    } else {
+      0L
+    }
 
     val contentLength = responseBody.contentLength()
     val totalBytes = calculateDownloadTotalBytes(resp.code, contentLength, effectiveOffset)
@@ -318,6 +340,7 @@ fun calculateDownloadTotalBytes(
 }
 
 fun resolveDownloadDestination(to: FileSystemPath, url: URI): UnifiedFileInterface {
+  to.validatePermission(FilePermissionService.Permission.WRITE)
   return when (to) {
     is FileSystemDirectory -> {
       val filename = url.filename

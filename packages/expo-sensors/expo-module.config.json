@@ -21,6 +21,11 @@
       "expo.modules.sensors.modules.MagnetometerModule",
       "expo.modules.sensors.modules.MagnetometerUncalibratedModule",
       "expo.modules.sensors.modules.PedometerModule"
-    ]
+    ],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.sensors",
+      "repository": "local-maven-repo"
+    }
   }
 }

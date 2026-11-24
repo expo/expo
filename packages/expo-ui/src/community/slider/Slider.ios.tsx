@@ -1,6 +1,11 @@
 import { Host } from '../../swift-ui/Host';
 import { Slider as SwiftUISlider } from '../../swift-ui/Slider';
-import { disabled as disabledModifier, tint as tintModifier } from '../../swift-ui/modifiers';
+import {
+  accessibilityHint as accessibilityHintModifier,
+  accessibilityLabel as accessibilityLabelModifier,
+  disabled as disabledModifier,
+  tint as tintModifier,
+} from '../../swift-ui/modifiers';
 import type { ModifierConfig } from '../../types';
 import { type SliderProps } from './types';
 
@@ -21,6 +26,9 @@ export function Slider(props: SliderProps) {
     minimumTrackTintColor,
     onValueChange,
     style,
+    accessibilityLabel,
+    accessibilityHint,
+    testID,
   } = props;
   const hostStyle = inverted ? [style, { transform: [{ scaleX: -1 }] }] : style;
   // SwiftUI's Slider only exposes `.tint(...)` for the minimum (active)
@@ -30,6 +38,12 @@ export function Slider(props: SliderProps) {
   if (disabled) modifiers.push(disabledModifier(true));
   if (minimumTrackTintColor !== undefined) {
     modifiers.push(tintModifier(minimumTrackTintColor as string));
+  }
+  if (accessibilityLabel !== undefined) {
+    modifiers.push(accessibilityLabelModifier(accessibilityLabel));
+  }
+  if (accessibilityHint !== undefined) {
+    modifiers.push(accessibilityHintModifier(accessibilityHint));
   }
   return (
     <Host matchContents={{ vertical: true }} style={hostStyle} ignoreSafeArea="all">
@@ -42,6 +56,7 @@ export function Slider(props: SliderProps) {
         step={step && step > 0 ? step : undefined}
         modifiers={modifiers.length > 0 ? modifiers : undefined}
         onValueChange={onValueChange}
+        testID={testID}
       />
     </Host>
   );

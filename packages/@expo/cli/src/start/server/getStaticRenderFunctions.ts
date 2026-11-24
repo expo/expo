@@ -5,8 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getMetroServerRoot } from '@expo/config/paths';
+import { flattenSourceMap } from '@expo/metro-config/build/serializer/sourceMap';
 import { evalModule } from '@expo/require-utils';
 import fs from 'fs';
+import Module from 'node:module';
 import path from 'path';
 
 import { delayAsync } from '../../utils/delay';
@@ -131,7 +133,17 @@ export function evalMetroNoHandling(
   }
 
   return profile(evalModule, 'eval-metro-bundle')(src, filename, {
+    // Resolve externals from the project root to match the resolver rather than from the bundle's
+    // entry directory.
+    // TODO: DVT-179
+    paths: [...Module._nodeModulePaths(projectRoot)],
     cache: false,
-    sourceMap,
+    sourceMap: sourceMap && toFlatSourceMap(sourceMap),
   });
+}
+
+// Legacy serializers, including wrappers around Expo, may return indexed maps that Node cannot use.
+function toFlatSourceMap(sourceMap: string): string {
+  const parsed = JSON.parse(sourceMap);
+  return 'sections' in parsed ? JSON.stringify(flattenSourceMap(parsed)) : sourceMap;
 }

@@ -6,10 +6,11 @@ import com.facebook.react.bridge.JavaOnlyMap
 import com.google.common.truth.Truth
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.types.testConverterContext
 import expo.modules.kotlin.types.toAnyType
 import io.mockk.mockk
 import org.junit.Test
-import expo.modules.kotlin.types.OptimizedRecord
 
 class ConcreteViewPropTest {
   @Test
@@ -23,7 +24,7 @@ class ConcreteViewPropTest {
       providedView = view
     }
 
-    prop.set(DynamicFromObject(10.0), mockedView)
+    prop.set(DynamicFromObject(10.0), mockedView, testConverterContext)
 
     Truth.assertThat(providedValue).isEqualTo(10)
     Truth.assertThat(providedView).isSameInstanceAs(mockedView)
@@ -54,7 +55,8 @@ class ConcreteViewPropTest {
           putString("name", "name")
         }
       ),
-      mockedView
+      mockedView,
+      testConverterContext
     )
 
     Truth.assertThat(providedValue?.id).isEqualTo("1234")

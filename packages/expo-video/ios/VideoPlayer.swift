@@ -13,6 +13,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   lazy var audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(owner: self)
   lazy var seeker: VideoPlayerSeeker = VideoPlayerSeeker(player: self)
   private var tracksLoadingTask: Task<(), Never>?
+  private let didRelease = Mutex(false)
 
   var loop = false
   var audioMixingMode: AudioMixingMode = .auto {
@@ -34,7 +35,9 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       if #available(iOS 16.0, tvOS 16.0, *) {
         ref.defaultRate = playbackRate
       }
-      ref.rate = playbackRate
+      if ref.rate != 0 {
+        ref.rate = playbackRate
+      }
     }
   }
 
@@ -141,6 +144,17 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
   }
 
+  var maxResolution: VideoSize? {
+    didSet {
+      let resolution = maxResolution?.toCGSize() ?? .zero
+      if resolution == .zero && maxResolution != nil {
+        appContext?.jsLogger.warn("[expo-video] Ignoring invalid `maxResolution`: `width` and `height` must both be greater than zero. Clearing the resolution limit.")
+        maxResolution = nil
+      }
+      ref.currentItem?.preferredMaximumResolution = resolution
+    }
+  }
+
   var bufferedPosition: Double {
     return getBufferedPosition()
   }
@@ -181,24 +195,28 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   deinit {
-    observer?.notifyPlayerDeinit(player: self)
-    observer?.cleanup()
-    NowPlayingManager.shared.unregisterPlayer(self)
-    VideoManager.shared.unregister(videoPlayer: self)
+    releasePlayer()
+  }
 
-    videoSourceLoader.cancelCurrentTask()
-    tracksLoadingTask?.cancel()
-
-    // We have to replace from the main thread because of KVOs (see comment in VideoSourceLoader).
-    // Moreover, in this case we have to keep a strong reference to AVPlayer and remove its item
-    // If we don't do this AVPlayer doesn't get deallocated
-    DispatchQueue.main.async { [ref] in
-      ref.replaceCurrentItem(with: nil)
+  override func sharedObjectWillRelease() {
+    // Strong self capture is intentional: it keeps the player alive until the teardown
+    // has run on the main thread, so `deinit` can never race with it.
+    runOnMainThread {
+      self.releasePlayer()
     }
   }
 
   func replaceCurrentItem(with videoSource: VideoSource?) throws {
     dangerousPropertiesStore.ownerIsReplacing = true
+    do {
+      try replaceCurrentItemSynchronously(with: videoSource)
+    } catch {
+      endFailedReplace()
+      throw error
+    }
+  }
+
+  private func replaceCurrentItemSynchronously(with videoSource: VideoSource?) throws {
     videoSourceLoader.cancelCurrentTask()
     guard
       let videoSource = videoSource,
@@ -210,7 +228,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
     // TODO: @behenate (SDK 55) completely remove support for synchronous `replaceCurrentItem` - it's not practical in any circumstance
     if let url = videoSource.uri, url.isPHAssetUrl {
-      throw PlayerItemLoadException("The provided uri \(url) is a local PHAsset URL. This kind of URL can only be loaded asynchrynously. Use `VideoPlayer.replaceAsync` in order to load this item")
+      throw PlayerItemLoadException("The provided uri \(url) is a local PHAsset URL. This kind of URL can only be loaded asynchronously. Use `VideoPlayer.replaceAsync` in order to load this item")
     }
 
     if let drm = videoSource.drm {
@@ -225,7 +243,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     // sometimes the KVOs will try to deliver updates after the item has been changed or player deallocated,
     // which causes crashes.
     DispatchQueue.main.async { [weak self] in
-      guard let self else {
+      guard let self, !self.hasBeenReleased else {
         return
       }
       self.ref.replaceCurrentItem(with: playerItem)
@@ -244,14 +262,22 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
 
     dangerousPropertiesStore.ownerIsReplacing = true
+    do {
+      try await loadAndReplaceCurrentItem(with: videoSource)
+    } catch {
+      endFailedReplace()
+      throw error
+    }
+  }
+
+  private func loadAndReplaceCurrentItem(with videoSource: VideoSource) async throws {
     guard let playerItem = try await videoSourceLoader.load(videoSource: videoSource) else {
       // Resolve the promise without applying the source. The loading task has been cancelled.
       // The caller that cancelled this task should handle dangerousPropertiesStore
       return
     }
 
-    if let drm = videoSource.drm {
-      try drm.type.assertIsSupported()
+    if videoSource.drm != nil {
       self.contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: playerItem.urlAsset)
     }
 
@@ -262,13 +288,20 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     // sometimes the KVOs will try to deliver updates after the item has been changed or player deallocated,
     // which causes crashes.
     DispatchQueue.main.async { [weak self] in
-      guard let self else {
+      guard let self, !self.hasBeenReleased else {
         return
       }
       self.ref.replaceCurrentItem(with: playerItem)
       dangerousPropertiesStore.ownerIsReplacing = false
       dangerousPropertiesStore.applyProperties(to: self)
     }
+  }
+
+  // Not dispatched to the main queue like the success path: JS can set `currentTime` as soon as the replace rejects.
+  // The flag is cleared first, so a value set in between is applied instead of being stored.
+  private func endFailedReplace() {
+    dangerousPropertiesStore.ownerIsReplacing = false
+    dangerousPropertiesStore.reset()
   }
 
   /**
@@ -321,6 +354,39 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       dangerousPropertiesStore.ownerIsReplacing = false
     }
     return
+  }
+
+  private func releasePlayer() {
+    let alreadyReleased = didRelease.withLock { didRelease in
+      defer {
+        didRelease = true
+      }
+      return didRelease
+    }
+    guard !alreadyReleased else {
+      return
+    }
+
+    observer?.notifyPlayerDeinit(player: self)
+    observer?.cleanup()
+    observer = nil
+    NowPlayingManager.shared.unregisterPlayer(self)
+    VideoManager.shared.unregister(videoPlayer: self)
+
+    videoSourceLoader.close()
+    tracksLoadingTask?.cancel()
+
+    // We have to replace from the main thread because of KVOs (see comment in VideoSourceLoader).
+    // Moreover, in this case we have to keep a strong reference to AVPlayer and remove its item
+    // If we don't do this AVPlayer doesn't get deallocated
+    runOnMainThread { [ref] in
+      ref.pause()
+      ref.replaceCurrentItem(with: nil)
+    }
+  }
+
+  private var hasBeenReleased: Bool {
+    return didRelease.withLock { $0 }
   }
 
   private func getBufferedPosition() -> Double {
@@ -392,6 +458,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     )
     safeEmit(event: "sourceChange", payload: payload)
     newVideoPlayerItem?.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
+    newVideoPlayerItem?.preferredMaximumResolution = maxResolution?.toCGSize() ?? .zero
   }
 
   func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate) {
@@ -399,6 +466,9 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?) {
+    guard !hasBeenReleased else {
+      return
+    }
     // Loading tracks requires doing some long tasks, this callback can be called from the main thread
     // Which could cause hangs
     tracksLoadingTask?.cancel()

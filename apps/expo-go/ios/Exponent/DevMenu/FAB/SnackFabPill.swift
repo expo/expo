@@ -37,15 +37,21 @@ struct SnackActionPanel: View {
   let snappedEdge: SnappedEdge
   let gearPosition: CGPoint  // Top-left of gear frame
   let screenWidth: CGFloat
+  let safeAreaLeading: CGFloat
+  let safeAreaTrailing: CGFloat
   let isLesson: Bool
   let isLessonCompleted: Bool
   let hasBeenEdited: Bool
+  let canEdit: Bool
+  let onEditCode: () -> Void
   // let onSave: () -> Void  // TODO: Add back when save functionality is implemented
   let onComplete: () -> Void
   let onGoBack: () -> Void
 
   // Panel dimensions
-  private let panelHeight: CGFloat = 140
+  private var panelHeight: CGFloat {
+    canEdit ? 176 : 140
+  }
   private let screenEdgeMargin: CGFloat = 12
 
   // The gearPosition is the top-left of the FAB frame.
@@ -68,12 +74,20 @@ struct SnackActionPanel: View {
 
   // Panel width - extends slightly under the gear on both sides
   private var panelWidth: CGFloat {
-    screenWidth - (screenEdgeMargin * 2) + (horizontalOverlap * 2)
+    screenWidth - leadingMargin - trailingMargin + (horizontalOverlap * 2)
   }
 
   // Panel X position - shifted inward to tuck under gear
   private var panelX: CGFloat {
-    screenEdgeMargin - horizontalOverlap
+    leadingMargin - horizontalOverlap
+  }
+
+  private var leadingMargin: CGFloat {
+    max(safeAreaLeading, screenEdgeMargin)
+  }
+
+  private var trailingMargin: CGFloat {
+    max(safeAreaTrailing, screenEdgeMargin)
   }
 
   // Panel Y position - shifted down so gear appears higher
@@ -128,6 +142,12 @@ struct SnackActionPanel: View {
         .padding(.horizontal, descriptionPadding)
         .padding(.top, 7)
 
+      if canEdit {
+        editCodeButton
+          .frame(maxWidth: .infinity)
+          .padding(.top, 8)
+      }
+
       Spacer()
 
       // Action buttons at bottom - always show Go back, conditionally show Complete for lessons
@@ -161,6 +181,19 @@ struct SnackActionPanel: View {
       .background(.ultraThinMaterial, in: Capsule())
     }
     .buttonStyle(.plain)
+  }
+
+  private var editCodeButton: some View {
+    Button(action: onEditCode) {
+      Label("Edit code", systemImage: "curlybraces")
+        .font(.system(size: 14, weight: .semibold))
+        .foregroundColor(.white)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(Color.blue, in: Capsule())
+    }
+    .buttonStyle(.plain)
+    .accessibilityHint("Opens the source code editor")
   }
 
   private var isCompleteButtonEnabled: Bool {

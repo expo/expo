@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Segmented buttons let app users choose from a small set of options displayed side by side in a row. They map to the official Jetpack Compose [Segmented Button](https://developer.android.com/develop/ui/compose/components/segmented-button) API.
@@ -35,7 +36,13 @@ There are two container types:
 
 Use `SingleChoiceSegmentedButtonRow` when only one option can be active at a time. Each `SegmentedButton` takes `selected` and `onClick` props.
 
-```tsx SingleChoiceExample.tsx
+<ComponentExample
+  title="SingleChoiceExample.tsx"
+  src="/static/images/expo-ui/examples/segmentedbutton-single-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/segmentedbutton-single-android-dark.webp"
+  alt="A single-choice segmented row with Day, Week, Month, and Year, with Day selected">
+
+```tsx
 import { useState } from 'react';
 import {
   Host,
@@ -67,11 +74,19 @@ export default function SingleChoiceExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Multi-choice segmented button
 
 Use `MultiChoiceSegmentedButtonRow` when multiple options can be toggled independently. Each `SegmentedButton` takes `checked` and `onCheckedChange` props.
 
-```tsx MultiChoiceExample.tsx
+<ComponentExample
+  title="MultiChoiceExample.tsx"
+  src="/static/images/expo-ui/examples/segmentedbutton-multi-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/segmentedbutton-multi-android-dark.webp"
+  alt="A multi-choice segmented row with Wi-Fi and NFC checked, Bluetooth and GPS unchecked">
+
+```tsx
 import { useState } from 'react';
 import {
   Host,
@@ -81,11 +96,18 @@ import {
 } from '@expo/ui/jetpack-compose';
 
 export default function MultiChoiceExample() {
-  const [checkedItems, setCheckedItems] = useState([false, false, false, false]);
+  const [checkedItems, setCheckedItems] = useState([
+    false,
+    false,
+    false,
+    false,
+  ]);
   const options = ['Wi-Fi', 'Bluetooth', 'NFC', 'GPS'];
 
   return (
-    <Host matchContents>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <MultiChoiceSegmentedButtonRow>
         {options.map((label, index) => (
           <SegmentedButton
@@ -109,11 +131,19 @@ export default function MultiChoiceExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom colors
 
 Use the `colors` prop on `SegmentedButton` to customize its appearance across active, inactive, and disabled states.
 
-```tsx CustomColorsExample.tsx
+<ComponentExample
+  title="CustomColorsExample.tsx"
+  src="/static/images/expo-ui/examples/segmentedbutton-colors-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/segmentedbutton-colors-android-dark.webp"
+  alt="A segmented row of price tiers with the selected segment filled purple">
+
+```tsx
 import { useState } from 'react';
 import {
   Host,
@@ -149,6 +179,8 @@ export default function CustomColorsExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
@@ -159,4 +191,7 @@ import {
 } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/segmentedbutton" apiName="SegmentedButton" />
+<APISection
+  packageName="expo-ui/jetpack-compose/segmentedbutton"
+  apiName="SegmentedButton"
+/>

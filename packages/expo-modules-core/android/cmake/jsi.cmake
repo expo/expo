@@ -3,14 +3,14 @@ file(GLOB android_sources_jsi "${ANDROID_SRC_DIR}/jsi/*.cpp")
 
 add_library(
   expo-modules-jsi
-  STATIC
+  SHARED
   ${common_sources_jsi}
   ${android_sources_jsi}
 )
 
 use_expo_common(expo-modules-jsi)
 
-target_precompile_headers(expo-modules-jsi REUSE_FROM expo-modules-pch)
+use_expo_pch(expo-modules-jsi)
 
 target_include_directories(
   expo-modules-jsi

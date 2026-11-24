@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Card matches the official Jetpack Compose [Card API](https://developer.android.com/develop/ui/compose/components/card) and displays content inside a styled surface container with optional elevation and outline. The `Card` component renders a [filled card](https://developer.android.com/develop/ui/compose/components/card#filled), while `ElevatedCard` and `OutlinedCard` provide raised and bordered variants respectively.
@@ -28,7 +29,13 @@ Expo UI Card matches the official Jetpack Compose [Card API](https://developer.a
 
 ### Basic card
 
-```tsx BasicCardExample.tsx
+<ComponentExample
+  title="BasicCardExample.tsx"
+  src="/static/images/expo-ui/examples/card-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/card-basic-android-dark.webp"
+  alt="A filled Material 3 card holding a single line of padded text">
+
+```tsx
 import { Host, Card, Text } from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
@@ -36,19 +43,36 @@ export default function BasicCardExample() {
   return (
     <Host matchContents>
       <Card>
-        <Text modifiers={[paddingAll(16)]}>This is a basic card with default styling.</Text>
+        <Text modifiers={[paddingAll(16)]}>
+          This is a basic card with default styling.
+        </Text>
       </Card>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Card types
 
 Use `Card` (filled), `ElevatedCard`, or `OutlinedCard` for different styles.
 
-```tsx CardTypesExample.tsx
-import { Host, Card, ElevatedCard, OutlinedCard, Text, Column } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="CardTypesExample.tsx"
+  src="/static/images/expo-ui/examples/card-types-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/card-types-android-dark.webp"
+  alt="Filled, elevated, and outlined cards stacked in a column">
+
+```tsx
+import {
+  Host,
+  Card,
+  ElevatedCard,
+  OutlinedCard,
+  Text,
+  Column,
+} from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function CardTypesExample() {
@@ -70,11 +94,19 @@ export default function CardTypesExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom elevation
 
 Use the `elevation` prop (in dp) to control shadow depth. Elevation is most meaningful on `ElevatedCard`, which uses shadow elevation. Filled `Card` uses tonal elevation by default, so changes may be subtle.
 
-```tsx ElevatedCardExample.tsx
+<ComponentExample
+  title="ElevatedCardExample.tsx"
+  src="/static/images/expo-ui/examples/card-elevated-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/card-elevated-android-dark.webp"
+  alt="An elevated card casting a shadow at 8dp elevation">
+
+```tsx
 import { Host, ElevatedCard, Text } from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
@@ -82,18 +114,28 @@ export default function ElevatedCardExample() {
   return (
     <Host matchContents>
       <ElevatedCard elevation={8}>
-        <Text modifiers={[paddingAll(16)]}>Card with 8dp elevation</Text>
+        <Text modifiers={[paddingAll(16)]}>
+          Card with 8dp elevation
+        </Text>
       </ElevatedCard>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Custom border
 
 `Card` and `OutlinedCard` accept a `border` prop to customize stroke width and color.
 
-```tsx OutlinedCardExample.tsx
+<ComponentExample
+  title="OutlinedCardExample.tsx"
+  src="/static/images/expo-ui/examples/card-outlined-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/card-outlined-android-dark.webp"
+  alt="An outlined card with a 2dp purple border">
+
+```tsx
 import { Host, OutlinedCard, Text } from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
@@ -101,17 +143,28 @@ export default function OutlinedCardExample() {
   return (
     <Host matchContents>
       <OutlinedCard border={{ width: 2, color: '#6200EE' }}>
-        <Text modifiers={[paddingAll(16)]}>Card with custom purple border</Text>
+        <Text modifiers={[paddingAll(16)]}>
+          Card with custom purple border
+        </Text>
       </OutlinedCard>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
-import { Card, ElevatedCard, OutlinedCard } from '@expo/ui/jetpack-compose';
+import {
+  Card,
+  ElevatedCard,
+  OutlinedCard,
+} from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/card" apiName="Card" />
+<APISection
+  packageName="expo-ui/jetpack-compose/card"
+  apiName="Card"
+/>

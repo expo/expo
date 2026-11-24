@@ -1,3 +1,4 @@
+#if !EXPO_LOCATION_DISABLE_MOTION
 import CoreMotion
 import ExpoModulesCore
 
@@ -45,3 +46,4 @@ class MotionActivityPermissionRequester: NSObject, EXPermissionsRequester {
     }
   }
 }
+#endif

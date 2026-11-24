@@ -9,6 +9,7 @@
  * https://github.com/facebook/metro/blob/bbdd7d7c5e6e0feb50a9967ffae1f723c1d7c4e8/packages/metro/src/DeltaBundler/Serializers/baseJSBundle.js#L1
  */
 
+import getInlineSourceMappingURL from '@expo/metro/metro/DeltaBundler/Serializers/helpers/getInlineSourceMappingURL';
 import type {
   MixedOutput,
   Module,
@@ -20,6 +21,8 @@ import countLines from '@expo/metro/metro/lib/countLines';
 import getAppendScripts from '@expo/metro/metro/lib/getAppendScripts';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 
+import type { AsyncModulePaths, ChunkingStrategy } from '../serializerAssets';
+import { getSourceMapOptions, sourceMapString, type ExpoSourceMapOptions } from '../sourceMap';
 import { processModules } from './processModules';
 
 export type ModuleMap = [number, string][];
@@ -32,17 +35,24 @@ export type Bundle = {
     // Module ID
     string,
     // Split paths { moduleId: URL }
-    Record<string, string>
+    AsyncModulePaths
   >;
 };
 
 export type ExpoSerializerOptions = SerializerOptions & {
+  // TODO(@kitten): Remove this extension once Metro types and forwards excludeSource to custom serializers.
+  excludeSource?: boolean;
+  /** Append a footer that records this chunk's completed module registration. */
+  includeChunkCompletion?: boolean;
   serializerOptions?: {
     baseUrl?: string;
-    skipWrapping?: boolean;
     usedExports?: boolean;
     splitChunks?: boolean;
-    output?: string;
+    chunkingStrategy?: ChunkingStrategy;
+    output?: 'static';
+    entryFilename?: string;
+    outputDirectory?: string;
+    outputExtension?: string;
     includeSourceMaps?: boolean;
     exporting?: boolean;
     excludeSource?: boolean;
@@ -93,6 +103,8 @@ export function baseJSBundle(
   options: ExpoSerializerOptions
 ): Bundle {
   const platform = getPlatformOption(graph, options);
+  const environment = graph.transformOptions?.customTransformOptions?.environment;
+  const isServer = environment === 'node' || environment === 'react-server';
   if (platform == null) {
     throw new Error('platform could not be determined for Metro bundle');
   }
@@ -102,8 +114,8 @@ export function baseJSBundle(
     baseUrl: getBaseUrlOption(graph, options),
     splitChunks: !!options.serializerOptions?.splitChunks,
     platform,
-    skipWrapping: !!options.serializerOptions?.skipWrapping,
     computedAsyncModulePaths: null,
+    sourceMapOptions: getSourceMapOptions(options, isServer),
   });
 }
 
@@ -115,9 +127,9 @@ export function baseJSBundleWithDependencies(
     platform: string;
     baseUrl: string;
     splitChunks: boolean;
-    skipWrapping: boolean;
     computedAsyncModulePaths: Record<string, string> | null;
     debugId?: string;
+    sourceMapOptions?: ExpoSourceMapOptions;
   }
 ): Bundle {
   for (const module of dependencies) {
@@ -135,8 +147,8 @@ export function baseJSBundleWithDependencies(
     platform: options.platform,
     baseUrl: options.baseUrl,
     splitChunks: options.splitChunks,
-    skipWrapping: options.skipWrapping,
     computedAsyncModulePaths: options.computedAsyncModulePaths,
+    unstable_getAsyncDependencyPath: options.unstable_getAsyncDependencyPath,
   };
 
   // Do not prepend polyfills or the require runtime when only modules are requested
@@ -153,15 +165,25 @@ export function baseJSBundleWithDependencies(
       options.createModuleId(a.path) - options.createModuleId(b.path)
   );
 
-  const sourceMapUrl =
+  let sourceMapUrl =
     options.serializerOptions?.includeSourceMaps === false ? undefined : options.sourceMapUrl;
+
+  // TODO(@kitten): Fix Metro's getAppendScripts to honor excludeSource and processModuleFilter for inline maps.
+  if (options.inlineSourceMap) {
+    const map = sourceMapString(
+      [...preModules, ...modules],
+      options.sourceMapOptions ?? getSourceMapOptions(options, false)
+    );
+    sourceMapUrl = getInlineSourceMappingURL(map);
+  }
 
   const modulesWithAnnotations = getAppendScripts(entryPoint, [...preModules, ...modules], {
     asyncRequireModulePath: options.asyncRequireModulePath,
     createModuleId: options.createModuleId,
     getRunModuleStatement: options.getRunModuleStatement,
+    getSourceUrl: options.getSourceUrl,
     globalPrefix: options.globalPrefix,
-    inlineSourceMap: options.inlineSourceMap,
+    inlineSourceMap: false,
     runBeforeMainModule: options.runBeforeMainModule,
     runModule: options.runModule,
     shouldAddToIgnoreList: options.shouldAddToIgnoreList,
@@ -172,6 +194,19 @@ export function baseJSBundleWithDependencies(
     sourceUrl:
       options.platform === 'web' ? undefined : !options.dev ? undefined : options.sourceUrl,
   }) as Module[];
+
+  if (options.includeChunkCompletion && options.platform === 'web' && !options.dev) {
+    // Read the URL from currentScript because this footer contributes to the chunk's filename hash.
+    const key = JSON.stringify(`${options.globalPrefix ?? ''}__expo_chunk_completion__`);
+    const code = `(function(){var s=typeof document!=="undefined"&&document.currentScript;if(s&&s.namespaceURI==="http://www.w3.org/1999/xhtml"&&s.tagName==="SCRIPT"&&typeof s.src==="string"&&s.src){var k=${key};(globalThis[k]||(globalThis[k]=new Set())).add(s.src);}})();`;
+    modulesWithAnnotations.unshift({
+      path: 'expo-chunk-completion',
+      dependencies: new Map(),
+      inverseDependencies: new CountingSet(),
+      getSource: () => Buffer.from(code),
+      output: [{ type: 'js/script/virtual', data: { code, lineCount: countLines(code), map: [] } }],
+    });
+  }
 
   // If the `debugId` annotation is available and we aren't inlining the source map, add it to the bundle.
   // NOTE: We may want to move this assertion up further.
@@ -215,7 +250,7 @@ export function baseJSBundleWithDependencies(
       (
         mods.filter(
           ([id, code]) => typeof code !== 'number' && Object.keys(code?.paths ?? {}).length
-        ) as [string, { src: string; paths: Record<string, string> }][]
+        ) as [string, { src: string; paths: AsyncModulePaths }][]
       ).map(([id, code]) => [id, code.paths])
     ),
   };

@@ -215,6 +215,48 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   tintColor?: string | null;
 
   /**
+   * Values for the [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/--*)
+   * that an SVG source refers to with `var()`. Each entry is substituted into the document before it
+   * is parsed, so the image stays a vector, unlike an SVG tinted with `tintColor` on iOS.
+   *
+   * Because the substitution happens on the document itself, different parts of one SVG can be given
+   * different values, so a single document can be tinted with several colors.
+   *
+   * Values are not limited to colors. Anything a custom property stands in for, such as
+   * `stroke-width` or `opacity`, is substituted the same way. Keys include the leading `--`.
+   * Values are inserted as written and cannot refer to other custom properties: a value such as
+   * `'var(--other)'` is not resolved. Reference a paint server the document defines with `url(#id)`.
+   *
+   * A property that is not supplied falls back to the value declared inside its own `var()`. When
+   * there is no fallback, the declaration is dropped and the renderer applies its own default.
+   * An SVG that uses `var()` is rendered with its fallbacks even when this prop is not set. A
+   * document authored for the browser looks the same in the app.
+   *
+   * > **Note:** Colors must be values the SVG itself understands, such as `'#ff0000'` or `'red'`.
+   * > React Native color descriptors like `PlatformColor` are not resolved.
+   *
+   * > **Note:** `tintColor` is applied on top of the substituted document. It floods every pixel with
+   * > a single color, so color values are hidden by it while other values, such as widths or
+   * > opacities, still take effect. On iOS the image is rasterized in that case, as with `tintColor`
+   * > alone.
+   *
+   * Has no effect on sources that aren't SVG.
+   *
+   * @example
+   * ```tsx
+   * // house.svg contains fill="var(--roof, #888)" and fill="var(--wall, #ccc)"
+   * <Image
+   *   source={require('./house.svg')}
+   *   svgVariables={{ '--roof': '#ee3333', '--wall': '#3399ff', '--stroke-width': 2 }}
+   * />
+   * ```
+   *
+   * @platform android
+   * @platform ios
+   */
+  svgVariables?: Record<string, string | number> | null;
+
+  /**
    * Priorities for completing loads. If more than one load is queued at a time,
    * the load with the higher priority will be started first.
    * Priorities are considered best effort, there are no guarantees about the order in which loads will start or finish.
@@ -243,6 +285,10 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * - `'none'` - Image is not cached at all.
    *
    * - `'disk'` - Image is queried from the disk cache if exists, otherwise it's downloaded and then stored on the disk.
+   * On Android and iOS, the decoded image is not kept in memory, so every mount of the image reads it from the disk
+   * and decodes it again. That keeps memory usage low, but it makes repeated renders of the same image — a list of
+   * avatars or custom emojis, a screen that remounts, a list row that recycles — much slower than a memory cache hit,
+   * especially for large or animated images. Prefer `'memory-disk'` when the same image is rendered many times.
    *
    * - `'memory'` - Image is cached in memory. Might be useful when you render a high-resolution picture many times.
    * Memory cache may be purged very quickly to prevent high memory usage and the risk of out of memory exceptions.
@@ -388,6 +434,14 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   accessible?: boolean;
 
   /**
+   * A Boolean value indicating whether the accessibility elements contained within the image
+   * are hidden from the screen reader.
+   * @default false
+   * @platform ios
+   */
+  accessibilityElementsHidden?: boolean;
+
+  /**
    * The text that's read by the screen reader when the user interacts with the image. Sets the `alt` tag on web which is used for web crawlers and link traversal.
    * @default undefined
    */
@@ -436,6 +490,8 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    *
    * Set this prop to `false` to use the official standard-compliant [libwebp](https://github.com/webmproject/libwebp) codec for WebP images.
    * The default implementation from Apple is faster and uses less memory but may render animated images with incorrect blending or play them at the wrong framerate.
+   * Some animated WebP files also decode very slowly with Apple's codec, which can make the image take a long time to appear and keep a CPU core busy while it loads.
+   * If you run into that, try setting this prop to `false` to switch to libwebp instead.
    * @see https://github.com/SDWebImage/SDWebImage/wiki/Advanced-Usage#awebp-coder
    *
    * @default true
@@ -487,6 +543,11 @@ export interface ImageNativeProps extends ImageProps {
   containerViewRef?: React.RefObject<View | null>;
   symbolWeight?: string | null;
   symbolSize?: number | null;
+  /**
+   * Already normalized to strings by the `Image` component, since the values are substituted into
+   * the SVG document as text.
+   */
+  svgVariables?: Record<string, string> | null;
 }
 
 /**
@@ -723,6 +784,39 @@ export type ImageTransition = {
     | 'sf:up-up'
     | 'sf:off-up'
     | null;
+
+  /**
+   * Skips the transition when an image first appears from a cache hit. Already-cached images are
+   * then shown instantly instead of re-animating on every mount, tab change, or scroll back into
+   * view.
+   *
+   * This only affects the first appearance of an image in a view. A later `source` change on a
+   * populated view always plays its transition. A visible placeholder still counts as the first
+   * appearance.
+   *
+   * - `'none'` - The transition always plays. This is the default.
+   * - `'memory'` - Skips the transition for images served from the in-memory cache.
+   * - `'all'` - Skips it for any cache hit, so only uncached (typically network) loads animate.
+   *
+   * Locally bundled assets are always instantly available, so both `'memory'` and `'all'` treat
+   * them as in-memory cache hits and skip their transition.
+   *
+   * @example
+   * ```tsx
+   * // Fade a list item in the first time it loads, but show it instantly
+   * // when it scrolls back into view.
+   * <Image
+   *   source={item.uri}
+   *   recyclingKey={item.id}
+   *   transition={{ duration: 300, skipOnCacheHit: 'all' }}
+   * />
+   * ```
+   *
+   * @default 'none'
+   * @platform android
+   * @platform ios
+   */
+  skipOnCacheHit?: 'none' | 'memory' | 'all' | null;
 };
 
 export type ImageLoadEventData = {
@@ -835,7 +929,7 @@ export declare class ImageNativeModule extends NativeModule<ImageModuleEvents> {
 }
 
 /**
- * An object with options for the [`useImage`](#useimage) hook.
+ * An object with options for the [`useImage`](#useimagesource-options-dependencies) hook.
  */
 export type ImageLoadOptions = {
   /**

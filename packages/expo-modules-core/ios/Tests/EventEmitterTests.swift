@@ -141,15 +141,15 @@ struct EventEmitterTests {
     var receivedEventName: String?
     let eventName = "testEvent"
     let eventNameValue = JavaScriptValue(try runtime, eventName)
-    let listenerA = try runtime.createFunction("listenerA") { _, _ in .undefined }
-    let listenerB = try runtime.createFunction("listenerB") { _, _ in .undefined }
+    let listenerA = try runtime.createFunction("listenerA") { _, _ in .undefined() }
+    let listenerB = try runtime.createFunction("listenerB") { _, _ in .undefined() }
     let observer = try setupEventObserver(runtime: runtime, functionName: "startObserving") { arguments in
       receivedEventName = try arguments[0].asString()
       calls = calls + 1
     }
 
-    try observer.addListener.call(this: observer.emitter, arguments: eventName, listenerA.asValue())
-    try observer.addListener.call(this: observer.emitter, arguments: eventName, listenerB.asValue())
+    try observer.addListener.call(this: observer.emitter, arguments: eventName, listenerA.refToValue())
+    try observer.addListener.call(this: observer.emitter, arguments: eventName, listenerB.refToValue())
 
     #expect(calls == 1)
     #expect(receivedEventName == eventName)
@@ -161,15 +161,15 @@ struct EventEmitterTests {
     var receivedEventName: String?
     let eventName = "testEvent"
     let eventNameValue = JavaScriptValue(try runtime, eventName)
-    let listener = try runtime.createFunction("listener") { _, _ in .undefined }
+    let listener = try runtime.createFunction("listener") { _, _ in .undefined() }
     let observer = try setupEventObserver(runtime: runtime, functionName: "stopObserving") { arguments in
       receivedEventName = try arguments[0].asString()
       calls = calls + 1
     }
 
-    try observer.addListener.call(this: observer.emitter, arguments: eventNameValue, listener.asValue())
-    try observer.removeListener.call(this: observer.emitter, arguments: eventNameValue, listener.asValue())
-    try observer.removeListener.call(this: observer.emitter, arguments: eventNameValue, listener.asValue())
+    try observer.addListener.call(this: observer.emitter, arguments: eventNameValue.refToValue(), listener.refToValue())
+    try observer.removeListener.call(this: observer.emitter, arguments: eventNameValue.refToValue(), listener.refToValue())
+    try observer.removeListener.call(this: observer.emitter, arguments: eventNameValue.refToValue(), listener.refToValue())
 
     #expect(calls == 1)
     #expect(receivedEventName == eventName)
@@ -181,15 +181,15 @@ struct EventEmitterTests {
     var receivedEventName: String?
     let eventName = "testEvent"
     let eventNameValue = JavaScriptValue(try runtime, eventName)
-    let listener = try runtime.createFunction("listener") { _, _ in .undefined }
+    let listener = try runtime.createFunction("listener") { _, _ in .undefined() }
     let observer = try setupEventObserver(runtime: runtime, functionName: "stopObserving") { arguments in
       receivedEventName = try arguments[0].asString()
       calls = calls + 1
     }
 
-    try observer.addListener.call(this: observer.emitter, arguments: eventNameValue, listener.asValue())
-    try observer.removeAllListeners.call(this: observer.emitter, arguments: eventNameValue)
-    try observer.removeAllListeners.call(this: observer.emitter, arguments: eventNameValue)
+    try observer.addListener.call(this: observer.emitter, arguments: eventNameValue.refToValue(), listener.refToValue())
+    try observer.removeAllListeners.call(this: observer.emitter, arguments: eventNameValue.refToValue())
+    try observer.removeAllListeners.call(this: observer.emitter, arguments: eventNameValue.refToValue())
 
     #expect(calls == 1)
     #expect(receivedEventName == eventName)
@@ -218,6 +218,23 @@ struct EventEmitterTests {
     ])
 
     #expect(try wasCalled.asBool() == false)
+  }
+
+  @Test
+  func `does not remove a listener added again after its subscription was removed`() throws {
+    let callCount = try runtime.eval([
+      "callCount = 0",
+      "emitter = new expo.EventEmitter()",
+      "listener = () => { callCount++ }",
+      "subscription = emitter.addListener('test', listener)",
+      "subscription.remove()",
+      "emitter.addListener('test', listener)",
+      "subscription.remove()",
+      "emitter.emit('test')",
+      "callCount"
+    ])
+
+    #expect(try callCount.asInt() == 1)
   }
 
   @Test
@@ -275,6 +292,144 @@ struct EventEmitterTests {
     ])
     #expect(try result.asInt() == 5)
   }
+
+  @Test
+  func `throws when adding a listener to a frozen emitter`() throws {
+    _ = try runtime.eval("emitter = Object.freeze(new expo.EventEmitter())")
+    let message = try errorMessage(of: "emitter.addListener('test', () => {})")
+    #expect(message?.contains("can't keep event listeners") == true)
+  }
+
+  @Test
+  func `throws when adding a listener through a Proxy`() throws {
+    _ = try runtime.eval("emitter = new Proxy(new expo.EventEmitter(), {})")
+    let message = try errorMessage(of: "emitter.addListener('test', () => {})")
+    #expect(message?.contains("can't keep event listeners") == true)
+  }
+
+  @Test
+  func `rethrows the error of an observing function getter`() throws {
+    _ = try runtime.eval([
+      "emitter = new expo.EventEmitter()",
+      "Object.defineProperty(emitter, 'startObserving', { get() { throw new Error('getter error') } })",
+    ])
+    #expect(try errorMessage(of: "emitter.addListener('test', () => {})") == "getter error")
+  }
+
+  @Test
+  func `rethrows the error of a constructor getter`() throws {
+    _ = try runtime.eval([
+      "Emitter = class extends expo.EventEmitter {}",
+      "Object.defineProperty(Emitter.prototype, 'constructor', { get() { throw new Error('getter error') } })",
+    ])
+    #expect(try errorMessage(of: "new Emitter({})") == "getter error")
+  }
+
+  @Test
+  func `rethrows the error that instanceof throws in the constructor`() throws {
+    _ = try runtime.eval("value = new Proxy({}, { getPrototypeOf() { throw new Error('trap error') } })")
+    #expect(try errorMessage(of: "new expo.EventEmitter(value)") == "trap error")
+  }
+
+  @Test
+  func `rethrows the error of a remove getter in removeSubscription`() throws {
+    _ = try runtime.eval([
+      "emitter = new expo.EventEmitter()",
+      "subscription = { get remove() { throw new Error('getter error') } }",
+    ])
+    #expect(try errorMessage(of: "emitter.removeSubscription(subscription)") == "getter error")
+  }
+
+  @Test
+  func `calls a listener with the emitter as this`() throws {
+    let result = try runtime.eval([
+      "emitter = new expo.EventEmitter()",
+      "result = null",
+      "emitter.addListener('test', function () { result = this === emitter })",
+      "emitter.emit('test')",
+      "result"
+    ])
+    #expect(try result.asBool() == true)
+  }
+
+  @Test(arguments: [
+    "emitter.addListener(1, () => {})",
+    "emitter.addListener('test', 1)",
+    "emitter.removeListener('test')",
+    "emitter.emit()",
+    "emitter.listenerCount()",
+    "expo.EventEmitter.prototype.emit.call(5, 'test')",
+  ])
+  func `throws for invalid arguments`(code: String) throws {
+    _ = try runtime.eval("emitter = new expo.EventEmitter()")
+    #expect(try errorMessage(of: code) != nil)
+  }
+
+  @Test(arguments: ["{}", "5"])
+  func `creates an emitter when the argument isn't an event emitter`(argument: String) throws {
+    let result = try runtime.eval([
+      "value = \(argument)",
+      "emitter = new expo.EventEmitter(value)",
+      "emitter !== value && emitter instanceof expo.EventEmitter"
+    ])
+    #expect(try result.asBool() == true)
+  }
+
+  @Test
+  func `supports subclasses`() throws {
+    let result = try runtime.eval([
+      "Emitter = class extends expo.EventEmitter {}",
+      "emitter = new Emitter()",
+      "result = 0",
+      "emitter.addListener('test', () => result += 1)",
+      "emitter.emit('test')",
+      "result"
+    ])
+    #expect(try result.asInt() == 1)
+    #expect(try runtime.eval("new Emitter(emitter) === emitter").asBool() == true)
+    #expect(try runtime.eval("emitter instanceof expo.EventEmitter").asBool() == true)
+  }
+
+  @Test
+  func `finds the listeners of an event name built at runtime`() throws {
+    let result = try runtime.eval([
+      "emitter = new expo.EventEmitter()",
+      "result = 0",
+      "emitter.addListener(['te', 'st'].join(''), () => result += 1)",
+      "emitter.emit('test')",
+      "emitter.emit(['t', 'est'].join(''))",
+      "result"
+    ])
+    #expect(try result.asInt() == 2)
+    #expect(try runtime.eval("emitter.listenerCount('test')").asInt() == 1)
+  }
+
+  @Test(arguments: ["new expo.EventEmitter()", "expo.modules.TestModule"])
+  func `adds and calls listeners in an attached runtime`(emitter: String) throws {
+    appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
+      Name("TestModule")
+    })
+    let attachedRuntime = JavaScriptRuntime()
+    try appContext.attach(runtime: attachedRuntime)
+    let result = try attachedRuntime.eval(
+      """
+      (() => {
+        const emitter = \(emitter);
+        let calls = 0;
+        emitter.addListener('test', () => { calls += 1 });
+        emitter.emit('test');
+        return calls * 10 + emitter.listenerCount('test');
+      })()
+      """
+    )
+    #expect(try result.asInt() == 11)
+  }
+
+  /// Runs the JS code in a `try` statement, and returns the message of the error that it throws, or `nil`.
+  private func errorMessage(of code: String) throws -> String? {
+    let message = try runtime.eval("(() => { try { \(code); return null } catch (error) { return error.message } })()")
+    return message.isNull() ? nil : try message.asString()
+  }
 }
 
 // MARK: - Helpers
@@ -307,7 +462,7 @@ private func setupEventObserver(
   let emitter = try runtime.eval("new expo.EventEmitter()").asObject()
   let observingFunction = runtime.createFunction(functionName) { [callback] this, arguments in
     try callback(arguments)
-    return .undefined
+    return .undefined()
   }
 
   emitter.setProperty(functionName, value: observingFunction)

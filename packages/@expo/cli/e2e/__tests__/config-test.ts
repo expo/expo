@@ -1,9 +1,8 @@
-/* eslint-env jest */
 import fs from 'fs/promises';
 import path from 'path';
 
-import { projectRoot, getRoot, getLoadedModulesAsync } from './utils';
 import { executeExpoAsync } from '../utils/expo';
+import { projectRoot, getRoot, getLoadedModulesAsync } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 
@@ -22,6 +21,11 @@ it('loads expected modules by default', async () => {
     '@expo/cli/build/src/config/index.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/utils/args.js',
+    '@expo/cli/build/src/utils/env.js',
+    '@expo/cli/build/src/utils/errors.js',
+    '@expo/cli/build/src/utils/interactive.js',
+    '@expo/cli/build/src/utils/metadata.js',
+    '@expo/cli/build/src/utils/nodeEnv.js',
   ]);
 });
 

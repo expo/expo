@@ -99,7 +99,7 @@ class FileSystemModule : Module() {
     }
 
     Property("availableDiskSpace") {
-      filesDirectory.freeSpace
+      filesDirectory.usableSpace
     }
 
     AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptions?, downloadUUID: String? ->
@@ -229,6 +229,12 @@ class FileSystemModule : Module() {
         file.info(options)
       }
 
+      AsyncFunction("digest") Coroutine { file: FileSystemFile, algorithm: String ->
+        withContext(Dispatchers.IO) {
+          file.digest(algorithm)
+        }
+      }
+
       Property("exists") { file: FileSystemFile ->
         file.exists
       }
@@ -287,9 +293,9 @@ class FileSystemModule : Module() {
 
       Property("size") { file ->
         try {
-          file.size
+          file.size ?: 0
         } catch (e: Exception) {
-          null
+          0
         }
       }
 
@@ -341,14 +347,18 @@ class FileSystemModule : Module() {
       Constructor { file: FileSystemFile, mode: FileMode? ->
         file.openHandle(mode)
       }
-      AsyncFunction("readBytes") { fileHandle: FileSystemFileHandle, bytes: Long ->
-        fileHandle.read(bytes)
+      AsyncFunction("readBytes") Coroutine { fileHandle: FileSystemFileHandle, bytes: Long ->
+        withContext(Dispatchers.IO) {
+          fileHandle.read(bytes)
+        }
       }
       Function("readBytesSync") { fileHandle: FileSystemFileHandle, bytes: Long ->
         fileHandle.read(bytes)
       }
-      AsyncFunction("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->
-        fileHandle.write(data)
+      AsyncFunction("writeBytes") Coroutine { fileHandle: FileSystemFileHandle, data: ByteArray ->
+        withContext(Dispatchers.IO) {
+          fileHandle.write(data)
+        }
       }
       Function("writeBytesSync") { fileHandle: FileSystemFileHandle, data: ByteArray ->
         fileHandle.write(data)
@@ -472,6 +482,10 @@ class FileSystemModule : Module() {
       AsyncFunction("resume") Coroutine { task: FileSystemDownloadTask, url: URI, to: FileSystemPath, resumeData: String, options: DownloadTaskOptions? ->
         to.validatePermission(FilePermissionService.Permission.WRITE)
         task.resume(url, to, resumeData, options)
+      }
+
+      Property("response") { task: FileSystemDownloadTask ->
+        task.getResponse()
       }
 
       Function("cancel") { task: FileSystemDownloadTask ->

@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import type { Ref, ReactNode, ComponentType } from 'react';
 import type { ColorValue } from 'react-native';
 
+import { PresentedContent } from '../../PresentedContentContext';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -138,7 +139,13 @@ function DragHandle(props: { children: ReactNode }) {
  * A Material Design modal bottom sheet.
  */
 function ModalBottomSheetComponent(props: ModalBottomSheetProps) {
-  return <ModalBottomSheetNativeView {...transformProps(props)} />;
+  const { children, ...rest } = props;
+  // The whole sheet, drag handle included, is presented in its own window, so all of it is marked.
+  return (
+    <ModalBottomSheetNativeView {...transformProps(rest as ModalBottomSheetProps)}>
+      <PresentedContent>{children}</PresentedContent>
+    </ModalBottomSheetNativeView>
+  );
 }
 
 ModalBottomSheetComponent.DragHandle = DragHandle;

@@ -134,7 +134,7 @@ describe('getAllChildrenNotOfType', () => {
     expect(result).toHaveLength(2);
   });
 
-  it.only('includes non-element children in result', () => {
+  it('includes non-element children in result', () => {
     const children = [<A label="a1" />, null, 'text', 123, undefined];
     const result = getAllChildrenNotOfType(children, A);
     // Null and undefined are filtered out by Children.toArray

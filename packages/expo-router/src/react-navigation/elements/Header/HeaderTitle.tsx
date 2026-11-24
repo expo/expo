@@ -23,7 +23,7 @@ export function HeaderTitle({ tintColor, style, ...rest }: Props) {
   return (
     <Animated.Text
       role="heading"
-      aria-level="1"
+      aria-level={1}
       numberOfLines={1}
       {...rest}
       style={[
