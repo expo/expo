@@ -20,9 +20,4 @@
 
 - (nonnull instancetype)initWithRuntime:(nonnull void *)runtime;
 
-/**
- Installs the base class for shared objects, i.e. `global.expo.SharedObject`.
- */
-- (void)installSharedObjectClass:(void (^_Nonnull)(long))releaser;
-
 @end

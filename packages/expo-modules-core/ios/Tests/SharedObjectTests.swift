@@ -29,6 +29,11 @@ struct SharedObjectTests {
   }
 
   @Test
+  func `expo.SharedObject inherits the static members of expo.EventEmitter`() throws {
+    #expect(try runtime.eval("Object.getPrototypeOf(expo.SharedObject) === expo.EventEmitter").asBool() == true)
+  }
+
+  @Test
   func `has release function in prototype`() throws {
     let releaseFunction = try runtime.eval("expo.SharedObject.prototype.release")
     #expect(releaseFunction.kind == .function)

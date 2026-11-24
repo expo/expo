@@ -3,7 +3,6 @@
 #import <ExpoModulesCore/BridgelessJSCallInvoker.h>
 #import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/EXJSIInstaller.h>
-#import <ExpoModulesCore/SharedObject.h>
 
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
@@ -27,15 +26,6 @@ static NSString *modulesHostObjectPropertyName = @"modules";
     _runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), reinterpret_cast<jsi::Runtime *>(runtime));
   }
   return self;
-}
-
-#pragma mark - Installing JSI bindings
-
-- (void)installSharedObjectClass:(void (^_Nonnull)(long))releaser
-{
-  expo::SharedObject::installBaseClass(*_runtime, [releaser](expo::SharedObject::ObjectId objectId) {
-    releaser(objectId);
-  });
 }
 
 @end

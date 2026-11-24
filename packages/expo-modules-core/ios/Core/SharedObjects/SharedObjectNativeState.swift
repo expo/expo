@@ -25,6 +25,11 @@ import os
 internal final class SharedObjectNativeState: EventEmitterNativeState, @unchecked Sendable {
   internal let native: SharedObject
 
+  /// The ID that the native object got with this native state. `release` and the `__expo_shared_object_id__` getter
+  /// read it. The registry sets the ID of the native object to 0 when it releases the object, but a JS object that
+  /// keeps the native state (for example a frozen one) still has this ID.
+  internal let objectId: SharedObjectId
+
   /// The main runtime of the app context. The JS object in that runtime is kept in `pairedObject`. JS objects in
   /// other runtimes are kept by those runtimes (see `PairedObjects`), so each runtime touches only its own JS
   /// objects, on its own thread.
@@ -63,6 +68,7 @@ internal final class SharedObjectNativeState: EventEmitterNativeState, @unchecke
     releaser: @escaping ObjectReleaser
   ) {
     self.native = native
+    self.objectId = objectId
     self.mainRuntimeId = mainRuntimeId
     self.flags = OSAllocatedUnfairLock(initialState: Flags(isPairedInOtherRuntime: isPairedInOtherRuntime))
     super.init(primaryRuntimeId: mainRuntimeId) { context, deallocator in
