@@ -114,15 +114,6 @@ export interface BottomSheetFooterProps {
 // #region BottomSheetProps
 
 /**
- * Props for the `BottomSheet` component.
- * API-compatible with `@gorhom/bottom-sheet` `BottomSheetProps`.
- *
- * @remarks This component uses native platform bottom sheets (SwiftUI on iOS,
- * Material3 ModalBottomSheet on Android, CSS-based on web). Unlike `@gorhom/bottom-sheet`
- * which renders inline at the bottom of its container, this implementation presents
- * a modal sheet overlay on iOS and Android. On web, it renders inline.
- */
-/**
  * Insets in dp for the sides of the bottom sheet content. Missing sides are `0`.
  */
 export interface BottomSheetContentWindowInsets {
@@ -132,6 +123,15 @@ export interface BottomSheetContentWindowInsets {
   bottom?: number;
 }
 
+/**
+ * Props for the `BottomSheet` component.
+ * API-compatible with `@gorhom/bottom-sheet` `BottomSheetProps`.
+ *
+ * @remarks This component uses native platform bottom sheets (SwiftUI on iOS,
+ * Material3 ModalBottomSheet on Android, CSS-based on web). Unlike `@gorhom/bottom-sheet`
+ * which renders inline at the bottom of its container, this implementation presents
+ * a modal sheet overlay on iOS and Android. On web, it renders inline.
+ */
 export interface BottomSheetProps {
   /**
    * Ref to the bottom sheet component. Exposes imperative methods (`snapToIndex`,
