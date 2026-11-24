@@ -2,6 +2,7 @@ package expo.modules.ui.textfield
 
 import android.content.Context
 import android.graphics.Color
+import android.icu.text.BreakIterator
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
@@ -258,12 +259,12 @@ fun FunctionalComposableScope.rememberTextFieldCore(
   val onValueChange: (TextFieldValue) -> Unit = { incoming ->
     val new = maxLength?.let { max ->
       if (incoming.text.length > max) {
-        val truncated = incoming.text.substring(0, max)
+        val truncated = incoming.text.truncateToMaxLength(max)
         incoming.copy(
           text = truncated,
           selection = TextRange(
-            incoming.selection.start.coerceAtMost(max),
-            incoming.selection.end.coerceAtMost(max)
+            incoming.selection.start.coerceAtMost(truncated.length),
+            incoming.selection.end.coerceAtMost(truncated.length)
           )
         )
       } else {
@@ -296,6 +297,24 @@ fun FunctionalComposableScope.rememberTextFieldCore(
   }
 
   return TextFieldCore(localValue.value, onValueChange, keyboardOptions, keyboardActions, modifier)
+}
+
+/**
+ * Cuts the text to at most [maxLength] UTF-16 code units, at the start of a character, so the cut
+ * never splits an emoji or a letter from its combining marks.
+ */
+internal fun String.truncateToMaxLength(maxLength: Int): String {
+  if (length <= maxLength) {
+    return this
+  }
+  val breaks = BreakIterator.getCharacterInstance()
+  breaks.setText(this)
+  val end = if (breaks.isBoundary(maxLength)) {
+    maxLength
+  } else {
+    breaks.preceding(maxLength)
+  }
+  return substring(0, end)
 }
 
 // endregion Shared core
