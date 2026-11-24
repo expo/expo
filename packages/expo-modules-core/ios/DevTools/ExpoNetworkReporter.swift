@@ -4,62 +4,78 @@ import Foundation
 internal import React
 
 /**
- Reports the lifecycle of one network request to React Native's core network reporter
- (`RCTInspectorNetworkReporter`), which backs the React Native DevTools Network panel and the
- Web Performance APIs. For networking stacks that bypass React Native's `RCTNetworking`.
+ Reports network requests to React Native's core network reporter (`RCTInspectorNetworkReporter`),
+ which backs the React Native DevTools Network panel and the Web Performance APIs. For networking
+ stacks that bypass React Native's `RCTNetworking`.
 
- Calls out of order, or after the request has finished, are ignored.
+ Each request is reported under a unique id from `makeRequestId(devToolsRequestId:)`. Calls out of
+ order, or after the request has finished, are ignored, and none reaches the core reporter after the
+ request has finished.
  */
-public final class ExpoNetworkReporter: @unchecked Sendable {
-  /**
-   The id the request is reported under. When created from JS with
-   `__NETWORK_REPORTER__.createDevToolsRequestId()`, DevTools shows the JS call stack as its initiator.
-   */
-  public let requestId: String
+public final class ExpoNetworkReporter: Sendable {
+  public static let shared = ExpoNetworkReporter()
 
-  private enum State {
-    case created
-    case started
-    case finished
+  private struct Request {
+    var isTextResponse = false
+#if DEBUG
+    private var responseBody = Data()
+    private var responseBodyExceedsLimit = false
+
+    mutating func bufferResponseBody(_ data: Data) {
+      guard !responseBodyExceedsLimit else {
+        return
+      }
+      if responseBody.count + data.count <= ExpoNetworkReporter.maxResponseBodySize {
+        responseBody.append(data)
+      } else {
+        responseBodyExceedsLimit = true
+        responseBody = Data()
+      }
+    }
+
+    var bufferedResponseBody: Data? {
+      return responseBodyExceedsLimit || responseBody.isEmpty ? nil : responseBody
+    }
+#endif
   }
 
-  private let lock = NSLock()
-  private var state = State.created
-  private var isTextResponse = false
-#if DEBUG
-  private var responseBody = Data()
-  private var responseBodyExceedsLimit = false
-#endif
+  private let requests = Mutex([String: Request]())
 
   static let maxResponseBodySize = 1_048_576
 
-  public init(devToolsRequestId: String? = nil) {
-    self.requestId = devToolsRequestId ?? UUID().uuidString
+  private init() {}
+
+  /**
+   The id to report a request under. With an id created in JS by
+   `__NETWORK_REPORTER__.createDevToolsRequestId()`, DevTools shows the JS call stack as its initiator.
+   */
+  public static func makeRequestId(devToolsRequestId: String? = nil) -> String {
+    return devToolsRequestId ?? UUID().uuidString
   }
 
   /**
    Marks a request as reported here, so Expo's network inspector doesn't report it a second time.
    */
-  public func mark(_ request: NSMutableURLRequest) {
-    URLProtocol.setProperty(requestId, forKey: Self.requestIdPropertyKey, in: request)
+  public static func mark(_ request: NSMutableURLRequest, requestId: String) {
+    URLProtocol.setProperty(requestId, forKey: requestIdPropertyKey, in: request)
   }
 
   static func isMarked(_ request: URLRequest) -> Bool {
     return URLProtocol.property(forKey: requestIdPropertyKey, in: request) != nil
   }
 
-  public func requestWillBeSent(_ request: URLRequest) {
-    guard transition(from: .created, to: .started) else {
-      return
+  public func willSendRequest(_ requestId: String, request: URLRequest) {
+    requests.withLock { requests in
+      guard requests[requestId] == nil else {
+        return
+      }
+      requests[requestId] = Request()
+      RCTInspectorNetworkReporter.reportRequestStart(requestId, request: request, encodedDataLength: 0)
+      RCTInspectorNetworkReporter.reportConnectionTiming(requestId, request: request)
     }
-    RCTInspectorNetworkReporter.reportRequestStart(requestId, request: request, encodedDataLength: 0)
-    RCTInspectorNetworkReporter.reportConnectionTiming(requestId, request: request)
   }
 
-  public func responseReceived(_ response: URLResponse) {
-    guard isState(.started) else {
-      return
-    }
+  public func didReceiveResponse(_ requestId: String, response: URLResponse) {
     let statusCode: Int
     let headers: [String: String]
     if let httpResponse = response as? HTTPURLResponse {
@@ -73,76 +89,59 @@ public final class ExpoNetworkReporter: @unchecked Sendable {
       statusCode = 200
       headers = response.mimeType.map { ["Content-Type": $0] } ?? [:]
     }
-    lock.withLock {
-      isTextResponse = CdpNetwork.isTextContentType(headers.first { $0.key.lowercased() == "content-type" }?.value)
+    let isTextResponse = CdpNetwork.isTextContentType(headers.first { $0.key.lowercased() == "content-type" }?.value)
+    requests.withLock { requests in
+      guard requests[requestId] != nil else {
+        return
+      }
+      requests[requestId]?.isTextResponse = isTextResponse
+      RCTInspectorNetworkReporter.reportResponseStart(
+        requestId,
+        response: response,
+        statusCode: Int32(statusCode),
+        headers: headers
+      )
     }
-    RCTInspectorNetworkReporter.reportResponseStart(
-      requestId,
-      response: response,
-      statusCode: Int32(statusCode),
-      headers: headers
-    )
   }
 
-  public func dataReceived(_ data: Data) {
-    guard isState(.started) else {
-      return
-    }
-    RCTInspectorNetworkReporter.reportDataReceived(requestId, data: data)
-#if DEBUG
-    // Buffered for the Network panel's response preview only.
-    lock.withLock {
-      if responseBody.count + data.count <= Self.maxResponseBodySize {
-        responseBody.append(data)
-      } else {
-        responseBodyExceedsLimit = true
-        responseBody = Data()
+  public func didReceiveData(_ requestId: String, data: Data) {
+    requests.withLock { requests in
+      guard requests[requestId] != nil else {
+        return
       }
-    }
+      RCTInspectorNetworkReporter.reportDataReceived(requestId, data: data)
+#if DEBUG
+      requests[requestId]?.bufferResponseBody(data)
 #endif
+    }
   }
 
-  public func loadingFinished(encodedDataLength: Int) {
-    guard transition(from: .started, to: .finished) else {
+  public func didFinishLoading(_ requestId: String, encodedDataLength: Int) {
+    guard let request = requests.withLock({ $0.removeValue(forKey: requestId) }) else {
       return
     }
-#if DEBUG
-    let (body, isText) = lock.withLock { () -> (Data?, Bool) in
-      defer { responseBody = Data() }
-      return (responseBodyExceedsLimit || responseBody.isEmpty ? nil : responseBody, isTextResponse)
-    }
-    if let body {
-      if isText, let text = String(data: body, encoding: .utf8) {
-        // Flushed to the reporter by `reportResponseEnd`. `maybeStoreResponseBody` only accepts
-        // strings from Objective-C, as its header types the body as `NSData`.
-        RCTInspectorNetworkReporter.maybeStoreResponseBodyIncremental(requestId, data: text)
-      } else {
-        RCTInspectorNetworkReporter.maybeStoreResponseBody(requestId, data: body, base64Encoded: true)
-      }
-    }
-#endif
+    storeResponseBody(of: request, requestId: requestId)
     RCTInspectorNetworkReporter.reportResponseEnd(requestId, encodedDataLength: Int32(clamping: encodedDataLength))
   }
 
-  public func loadingFailed(cancelled: Bool) {
-    guard transition(from: .started, to: .finished) else {
+  public func didFailLoading(_ requestId: String, cancelled: Bool) {
+    guard requests.withLock({ $0.removeValue(forKey: requestId) }) != nil else {
       return
     }
     RCTInspectorNetworkReporter.reportRequestFailed(requestId, cancelled: cancelled)
   }
 
-  private func isState(_ expected: State) -> Bool {
-    return lock.withLock { state == expected }
-  }
-
-  private func transition(from: State, to: State) -> Bool {
-    return lock.withLock {
-      guard state == from else {
-        return false
-      }
-      state = to
-      return true
+  private func storeResponseBody(of request: Request, requestId: String) {
+#if DEBUG
+    guard let body = request.bufferedResponseBody else {
+      return
     }
+    if request.isTextResponse, let text = String(data: body, encoding: .utf8) {
+      EXNetworkReporterBodyStore.storeTextResponseBody(text, forRequestId: requestId)
+    } else {
+      RCTInspectorNetworkReporter.maybeStoreResponseBody(requestId, data: body, base64Encoded: true)
+    }
+#endif
   }
 
   private static let requestIdPropertyKey = "ExpoNetworkReporter.requestId"
