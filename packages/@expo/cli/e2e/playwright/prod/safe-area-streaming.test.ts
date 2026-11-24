@@ -62,7 +62,9 @@ for (const path of ['/rendering/safe-area', '/rendering/safe-area-stack']) {
     await page.goto(new URL(path, expoServe.url).href, { waitUntil: 'commit' });
     await expect(page.locator('#first-fallback')).toBeVisible();
     await expect(page.locator('#second-fallback')).toBeVisible();
-    await expect(page.locator('script[src]')).toHaveAttribute('defer', '');
+    // The `workers` route has async imports, so the Metro runtime is a separate script.
+    await expect(page.locator('script[src]').first()).toHaveAttribute('defer', '');
+    await expect(page.locator('script[src]:not([defer])')).toHaveCount(0);
     await expect(page.getByTestId('hydration-status')).toHaveText('unmounted');
     const content = page.locator('.safe-area-content');
     await expect(content).toHaveCSS('padding', '24px 12px 16px 8px');
