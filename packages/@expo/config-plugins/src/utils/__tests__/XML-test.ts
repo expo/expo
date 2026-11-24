@@ -131,7 +131,7 @@ describe(escapeAndroidString, () => {
   it(`can escape Android strings`, () => {
     expect(escapeAndroidString(`@`)).toBe(`\\@`);
     expect(escapeAndroidString(`'''`)).toBe(`\\'\\'\\'`);
-    expect(escapeAndroidString('"E&x<p>o"@\n\r\t')).toBe(`\\"E&x<p>o\\"\\@\\n\\r\\t`);
+    expect(escapeAndroidString('"E&x<p>o"@\n\r\t')).toBe(`\\"E&x<p>o\\"\\@\\n\\u000d\\t`);
     expect(escapeAndroidString('?attr/foo')).toBe('\\?attr/foo');
     expect(escapeAndroidString('C:\\Temp')).toBe('C:\\\\Temp');
   });
@@ -139,8 +139,61 @@ describe(escapeAndroidString, () => {
 
 describe(unescapeAndroidString, () => {
   it(`can remove escape sequences from Android strings`, () => {
-    expect(unescapeAndroidString(`test\\test`)).toBe('testtest');
+    expect(unescapeAndroidString(`test\\test`)).toBe('test\test');
     expect(unescapeAndroidString(`test\\'test`)).toBe("test'test");
     expect(unescapeAndroidString(`test\\\\'test`)).toBe("test\\'test");
+  });
+});
+
+describe('Android whitespace decoding', () => {
+  const cases = [
+    ['escaped newline and tab', 'one\\ntwo\\tthree', 'one\ntwo\tthree'],
+    ['Unicode escapes', 'caf\\u00e9\\u2026', 'café…'],
+    ['quoted padding', '"  padded  "', '  padded  '],
+    ['quoted repeated spaces', '"a  b"', 'a  b'],
+    ['quoted tabs and newlines', '"a\t\nb"', 'a\t\nb'],
+    ['Unicode carriage return', 'a\\u000db', 'a\rb'],
+    ['Unicode form feed', 'a\\u000cb', 'a\fb'],
+    ['Unicode null', 'a\\u0000b', 'a\0b'],
+    ['unquoted spaces', 'a  b', 'a b'],
+    ['unquoted padding', '  a  ', 'a'],
+    ['only whitespace', ' \t\n ', ''],
+    ['literal tabs and newlines', 'a\t\nb', 'a b'],
+    ['mixed quoted regions', 'a  "b  c"  d', 'a b  c d'],
+    ['padding outside quotes', '  " a "  ', ' a '],
+    ['empty quoted region', 'a  ""  b', 'a  b'],
+    ['escaped quote does not open a region', 'a\\"  b', 'a" b'],
+    ['escaped backslash before whitespace', 'a\\\\  b', 'a\\ b'],
+    ['escaped space next to literal spaces', 'a  \\u0020  b', 'a   b'],
+    ['escaped newline next to literal spaces', 'a  \\n  b', 'a \n b'],
+    ['escaped literal newline', 'a\\\nb', 'a\nb'],
+    ['trailing backslash', 'a\\', 'a'],
+  ];
+
+  it.each(cases)('decodes %s', (_name, source, expected) => {
+    expect(unescapeAndroidString(source)).toBe(expected);
+  });
+
+  it.each(cases.filter(([, , expected]) => expected !== ''))(
+    'preserves %s through XML read/write cycles',
+    async (_name, source, expected) => {
+      const stringsPath = '/app/android/app/src/main/res/values/strings.xml';
+      vol.fromJSON({
+        [stringsPath]: `<resources><string name="example">${source}</string></resources>`,
+      });
+      try {
+        for (let cycle = 0; cycle < 3; cycle++) {
+          const xml = await readResourcesXMLAsync({ path: stringsPath });
+          expect(xml.resources.string![0]!._).toBe(expected);
+          await writeXMLAsync({ path: stringsPath, xml });
+        }
+      } finally {
+        vol.reset();
+      }
+    }
+  );
+
+  it('writes carriage returns as Unicode escapes', () => {
+    expect(escapeAndroidString('a\rb')).toBe('a\\u000db');
   });
 });
