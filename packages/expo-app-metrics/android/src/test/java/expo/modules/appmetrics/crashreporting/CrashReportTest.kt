@@ -140,6 +140,48 @@ class CrashReportTest {
   }
 
   @Test
+  fun `builds an error log for an ANR in the foreground`() {
+    val report = CrashReport(
+      terminationReason = "Input dispatching timed out",
+      appVersion = "1.2.3",
+      timestampBegin = crashTimestamp,
+      ingestedAt = ingestedAt,
+      exitKind = ExitKind.ANR,
+      isForeground = true
+    )
+
+    val log = report.toLogRecord("session", CrashLogDetails(stackFrames = listOf("at a.B.c(B.java:1)")))
+    val attributes = requireNotNull(JsonAny.decodeJsonStringToMap(requireNotNull(log.attributes)))
+
+    assertEquals("native.exception", log.name)
+    assertEquals("error", log.severity)
+    assertEquals("ApplicationNotResponding", attributes["exception.type"])
+    assertEquals("Input dispatching timed out", attributes["exception.message"])
+    assertEquals("at a.B.c(B.java:1)", attributes["exception.stacktrace"])
+    assertEquals("anr", attributes["expo.error.source"])
+    assertEquals(true, attributes["expo.error.is_fatal"])
+  }
+
+  @Test
+  fun `builds a warning log for a low-memory kill outside the foreground`() {
+    val report = CrashReport(
+      appVersion = "1.2.3",
+      timestampBegin = crashTimestamp,
+      ingestedAt = ingestedAt,
+      exitKind = ExitKind.LOW_MEMORY,
+      isForeground = false
+    )
+
+    val log = report.toLogRecord("session")
+    val attributes = requireNotNull(JsonAny.decodeJsonStringToMap(requireNotNull(log.attributes)))
+
+    assertEquals("warn", log.severity)
+    assertEquals("LowMemoryKill", attributes["exception.type"])
+    assertEquals("The system killed the app to free memory", attributes["exception.message"])
+    assertEquals("lowMemoryKill", attributes["expo.error.source"])
+  }
+
+  @Test
   fun `renders at most fifty attributed stack frames and reports the omitted count`() {
     val report = CrashReport(
       exceptionReason = "boom",

@@ -255,6 +255,8 @@ export type CallStackTree = {
  *   exist for JVM exceptions).
  * - Android native crashes: `signal` and `terminationReason` from the OS exit
  *   record; no call stack.
+ * - Android ANRs and low-memory kills: `exitKind`, `isForeground`, and
+ *   `terminationReason` from the OS exit record.
  */
 export type CrashReport = {
   /**
@@ -305,6 +307,17 @@ export type CrashReport = {
    * @platform android
    */
   sessionId?: string | null;
+  /**
+   * Why the system killed the app, when it was not a crash.
+   * @platform android
+   */
+  exitKind?: 'anr' | 'lowMemory' | null;
+  /**
+   * Whether the app was in the foreground or visible when the system killed it. Set with
+   * `exitKind`.
+   * @platform android
+   */
+  isForeground?: boolean | null;
   /** App version at the time of the crash. */
   appVersion: string;
   /**

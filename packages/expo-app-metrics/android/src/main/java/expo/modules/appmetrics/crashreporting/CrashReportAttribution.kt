@@ -21,11 +21,11 @@ suspend fun attributeAndStoreCrashReport(
     val target: String? = when {
       // JVM file with a real session id → stored under that id.
       sessionId != null -> sessionId.takeIf { sessionManager.getSessionRow(it) != null }
-      // Native crash (exit record) → attributed to the previous main session,
-      // unless that session already has a crash report, in which case it's stored
-      // as an orphan so the existing report isn't overwritten.
+      // Native crash (exit record) → attributed to the last main session that
+      // started before the death, unless that session already has a crash report,
+      // in which case it's stored as an orphan so the existing report isn't overwritten.
       origin == CrashOrigin.EXIT_RECORD ->
-        sessionManager.getPreviousMainSessionId(currentSessionId)
+        sessionManager.getPreviousMainSessionId(currentSessionId, startedAtOrBefore = report.timestampBegin)
           ?.takeIf { sessionManager.getCrashReport(it) == null }
       // id-less JVM file (a crash before the main session existed) → orphan.
       else -> null

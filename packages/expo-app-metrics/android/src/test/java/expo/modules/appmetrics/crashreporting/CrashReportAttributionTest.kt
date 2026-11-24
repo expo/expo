@@ -132,6 +132,19 @@ class CrashReportAttributionTest {
     }
 
   @Test
+  fun `attributes a native crash to the last session that started before it`() =
+    runTest {
+      // The report's crash moment is 2026-06-12T10:00.
+      sessionManager.startSessionWithIdAt("crashed", "2026-06-12T09:00:00.000Z")
+      sessionManager.startSessionWithIdAt("later", "2026-06-12T11:00:00.000Z")
+
+      attribute(null, CrashOrigin.EXIT_RECORD, currentSessionId = "current")
+
+      assertEquals("java.lang.IllegalStateException: boom", storedMessage("crashed"))
+      assertNull(sessionManager.getCrashReport("later"))
+    }
+
+  @Test
   fun `stores a native crash as an orphan when only the current session exists`() =
     runTest {
       sessionManager.startSessionWithIdAt("current", "2023-11-14T22:00:00.000Z")

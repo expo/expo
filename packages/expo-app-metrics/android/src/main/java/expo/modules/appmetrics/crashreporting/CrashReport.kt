@@ -4,6 +4,7 @@ import expo.modules.appmetrics.logevents.Severity
 import expo.modules.appmetrics.logevents.truncateToMaxLength
 import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.utils.JsonAny
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -32,14 +33,24 @@ data class CrashReport(
    * When this device processed the crash and constructed the report — the next
    * launch after the crash, not the crash moment itself.
    */
-  val ingestedAt: String
+  val ingestedAt: String,
+  /** Set when the system killed the app for a reason other than a crash. */
+  val exitKind: ExitKind? = null,
+  /** Whether the app was in the foreground or visible when the system killed it. Set with `exitKind`. */
+  val isForeground: Boolean? = null
 ) {
   fun toLogRecord(sessionId: String, details: CrashLogDetails = CrashLogDetails()): LogRecord {
     val attributes = buildMap<String, Any?> {
-      put("exception.type", details.exceptionType ?: signal?.let(::signalName) ?: "NativeCrash")
-      put("exception.message", terminationReason ?: exceptionReason ?: signal?.let(::signalName) ?: "Native crash")
+      put(
+        "exception.type",
+        details.exceptionType ?: exitKind?.exceptionType ?: signal?.let(::signalName) ?: "NativeCrash"
+      )
+      put(
+        "exception.message",
+        terminationReason ?: exceptionReason ?: exitKind?.defaultMessage ?: signal?.let(::signalName) ?: "Native crash"
+      )
       put("exception.stacktrace", renderStacktrace(details.stackFrames))
-      put("expo.error.source", "nativeCrash")
+      put("expo.error.source", exitKind?.errorSource ?: "nativeCrash")
       put("expo.error.is_fatal", true)
       signal?.let {
         put("expo.crash.signal", signalName(it))
@@ -51,10 +62,18 @@ data class CrashReport(
       sessionId = sessionId,
       timestamp = timestampBegin,
       name = NATIVE_EXCEPTION_LOG_NAME,
-      severity = Severity.FATAL.rawValue,
+      severity = severity.rawValue,
       attributes = JsonAny.encodeMapToJsonString(attributes)
     )
   }
+
+  // The system kills the app for these reasons, so they are not crashes in the app's code.
+  private val severity: Severity
+    get() = when (isForeground) {
+      null -> Severity.FATAL
+      true -> Severity.ERROR
+      false -> Severity.WARN
+    }
 
   private fun renderStacktrace(stackFrames: List<String>?): String? {
     val callStacks = callStackTree?.callStacks.orEmpty()
@@ -162,6 +181,16 @@ data class CrashReport(
         else -> "SIG$signal"
       }
   }
+}
+
+/** Why the system killed the app, when it was not a crash. */
+@Serializable
+enum class ExitKind(val errorSource: String, val exceptionType: String, val defaultMessage: String) {
+  @SerialName("anr")
+  ANR("anr", "ApplicationNotResponding", "The app did not respond"),
+
+  @SerialName("lowMemory")
+  LOW_MEMORY("lowMemoryKill", "LowMemoryKill", "The system killed the app to free memory")
 }
 
 data class CrashLogDetails(
