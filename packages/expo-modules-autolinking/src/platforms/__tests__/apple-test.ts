@@ -857,7 +857,7 @@ describe(generateModulesProviderAsync, () => {
 
     const packages = readProvider().packages!;
     const [debugBlock, releaseBlock] = packages
-      .slice(packages.indexOf('#if EXPO_CONFIGURATION_DEBUG'), packages.indexOf('#endif'))
+      .slice(packages.indexOf('#if DEBUG || EXPO_CONFIGURATION_DEBUG'), packages.indexOf('#endif'))
       .split('#else');
     expect(packageNames(debugBlock!)).toEqual(['expo-camera', 'expo-camera-dev', 'expo-dev-tools']);
     expect(packageNames(releaseBlock!)).toEqual(['expo-camera']);
@@ -953,7 +953,7 @@ describe(generateModulesProviderAsync, () => {
 
     const packages = readProvider().packages!;
     const [debugBlock, releaseBlock] = packages
-      .slice(packages.indexOf('#if EXPO_CONFIGURATION_DEBUG'), packages.indexOf('#endif'))
+      .slice(packages.indexOf('#if DEBUG || EXPO_CONFIGURATION_DEBUG'), packages.indexOf('#endif'))
       .split('#else');
     expect(debugBlock).toContain('sharedObjects: [CameraSession.self, CameraDevSession.self]');
     expect(releaseBlock).toContain('sharedObjects: [CameraSession.self]');

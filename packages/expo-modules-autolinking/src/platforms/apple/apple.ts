@@ -642,14 +642,14 @@ function wrapInDebugConfigurationCheck(
   releaseBlock: string | null = null
 ) {
   if (releaseBlock) {
-    return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(
+    return `${indent.repeat(indentationLevel)}#if DEBUG || EXPO_CONFIGURATION_DEBUG\n${indent.repeat(
       indentationLevel
     )}${debugBlock}\n${indent.repeat(indentationLevel)}#else\n${indent.repeat(
       indentationLevel
     )}${releaseBlock}\n${indent.repeat(indentationLevel)}#endif`;
   }
 
-  return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(
+  return `${indent.repeat(indentationLevel)}#if DEBUG || EXPO_CONFIGURATION_DEBUG\n${indent.repeat(
     indentationLevel
   )}${debugBlock}\n${indent.repeat(indentationLevel)}#endif`;
 }
