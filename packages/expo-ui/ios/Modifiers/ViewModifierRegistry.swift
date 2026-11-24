@@ -1523,17 +1523,6 @@ public protocol EventDispatchingViewModifier: ViewModifier {
 }
 
 /**
- * Gives the event dispatcher of the view to a modifier that sends events.
- */
-internal func withEventDispatcher(_ modifier: any ViewModifier, _ eventDispatcher: EventDispatcher) -> any ViewModifier {
-  guard var modifier = modifier as? any EventDispatchingViewModifier else {
-    return modifier
-  }
-  modifier.eventDispatcher = eventDispatcher
-  return modifier
-}
-
-/**
  * Registry for SwiftUI view modifiers that can be applied from React Native.
  * This system uses ViewModifier structs for better performance than AnyView wrapping.
  */
@@ -1544,6 +1533,7 @@ public class ViewModifierRegistry {
 
   internal enum Registration {
     case type(any (ViewModifier & Record).Type)
+    case eventDispatchingType(any (EventDispatchingViewModifier & Record).Type)
     case factory(ModifierFactory)
   }
   private(set) internal var registrations: [String: Registration] = [:]
@@ -1557,12 +1547,25 @@ public class ViewModifierRegistry {
   /**
    * Public API to register a custom modifier with the given type name.
    * The registry creates the modifier from the params of `createModifier` in JavaScript, which set its `@Field` properties.
-   * A modifier that conforms to `EventDispatchingViewModifier` also gets the event dispatcher of the view.
    *
    * - Important: Call this in `OnCreate` of your module definition to ensure modifiers
    *   are registered before any views are rendered.
    */
   public static func register<Modifier: ViewModifier & Record>(_ type: String, _ modifierType: Modifier.Type) {
+    shared.register(type, modifierType)
+  }
+
+  /**
+   * Public API to register a custom modifier that sends events, with the given type name.
+   * The modifier also gets the event dispatcher of the view.
+   *
+   * - Important: Call this in `OnCreate` of your module definition to ensure modifiers
+   *   are registered before any views are rendered.
+   * - Note: Swift selects this overload only when the static type of the modifier conforms to
+   *   `EventDispatchingViewModifier`. A call from generic code that requires only `ViewModifier & Record`
+   *   registers a modifier that gets no event dispatcher.
+   */
+  public static func register<Modifier: EventDispatchingViewModifier & Record>(_ type: String, _ modifierType: Modifier.Type) {
     shared.register(type, modifierType)
   }
 
@@ -1596,6 +1599,13 @@ public class ViewModifierRegistry {
     register(type, .type(modifierType))
   }
 
+  /**
+   * Registers a new modifier type that sends events with the given type name.
+   */
+  internal func register<Modifier: EventDispatchingViewModifier & Record>(_ type: String, _ modifierType: Modifier.Type) {
+    register(type, .eventDispatchingType(modifierType))
+  }
+
   private func register(_ type: String, _ registration: Registration) {
     if registrations[type] != nil {
       log.warn("ViewModifierRegistry: Overwriting existing modifier '\(type)'. This may cause unexpected behavior.")
@@ -1622,7 +1632,11 @@ public class ViewModifierRegistry {
   ) throws -> (any ViewModifier)? {
     switch registrations[type] {
     case .type(let modifierType):
-      return withEventDispatcher(try modifierType.from(dictionary: params, appContext: appContext), eventDispatcher)
+      return try modifierType.from(dictionary: params, appContext: appContext)
+    case .eventDispatchingType(let modifierType):
+      var modifier = try modifierType.from(dictionary: params, appContext: appContext)
+      modifier.eventDispatcher = eventDispatcher
+      return modifier
     case .factory(let factory):
       return try factory(params, appContext, eventDispatcher)
     case nil:
