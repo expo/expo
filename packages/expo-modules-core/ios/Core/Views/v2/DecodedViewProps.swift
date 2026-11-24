@@ -90,10 +90,12 @@ extension DecodedViewProps where Props: AnyViewProps {
   }
 
   /// Returns the props that changed since the given props. All props when `older` is `nil` or isn't an
-  /// earlier decode of the same lineage, for example the props of a recycled view.
+  /// earlier decode of the same lineage, for example the props of a recycled view, or a decode from the same
+  /// previous props. Fabric decodes from different copies of a view's props: React's copy, and the committed one
+  /// after `setNativeProps` or Reanimated's commits.
   @inlinable
   public func changedProps(since older: DecodedViewProps<Props>?) -> Props.PropSet {
-    guard let older, older.lineage == lineage, older.revision <= revision else {
+    guard let older, older.lineage == lineage, older.revision < revision || older === self else {
       return Props.allProps
     }
     var changedProps = Props.PropSet()

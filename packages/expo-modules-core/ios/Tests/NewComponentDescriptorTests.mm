@@ -81,6 +81,20 @@ public:
     return record(keys, previous);
   }
 
+  views::DecodedProps decodeDynamicValues(
+    const std::vector<std::pair<size_t, const folly::dynamic *>> &values,
+    const views::DecodedProps &previous
+  ) const override {
+    // Sorted, because a `folly::dynamic` object doesn't keep the order of its keys.
+    const auto ownNames = propNames();
+    std::vector<std::string> keys;
+    for (const auto &[index, value] : values) {
+      keys.push_back(ownNames.at(index));
+    }
+    std::sort(keys.begin(), keys.end());
+    return record(keys, previous);
+  }
+
   void didSkipProps(const std::vector<std::string_view> &propNames) const override {
     // Sorted, because a `folly::dynamic` object doesn't keep the order of its keys. Only the decoder's own
     // props, because the descriptor may pass the other keys too.
@@ -282,15 +296,16 @@ NSString *joined(const std::vector<std::string> &names) {
   XCTAssertEqual(newViewProps(updated).opacity, 0.5);
 }
 
-- (void)testDynamicPropsAreSkipped
+- (void)testDynamicPropsGoToTheDecoder
 {
   auto created = [self cloneProps:nullptr jsi:"({ title: 'Title' })"];
-  auto rawProps = react::RawProps(folly::dynamic::object("title", "New title")("opacity", 0.5));
+  auto rawProps = react::RawProps(folly::dynamic::object("title", "New title")("opacity", 0.5)("width", 10));
   auto updated = [self cloneProps:created rawProps:&rawProps];
+  RecordedDecode *decode = decodeOf(updated);
 
-  XCTAssertEqual(_decoder->decodeCount, 1);
-  XCTAssertTrue((_decoder->skippedPropNames == std::vector<std::string>{"opacity", "title"}));
-  XCTAssertTrue(newViewProps(updated).decodedProps == newViewProps(created).decodedProps);
+  XCTAssertEqual(_decoder->decodeCount, 2);
+  XCTAssertTrue((decode->keys == std::vector<std::string>{"opacity", "title"}));
+  XCTAssertTrue(decode->previous == newViewProps(created).decodedProps);
   // The base view props are still parsed from `folly::dynamic`.
   XCTAssertEqual(newViewProps(updated).opacity, 0.5);
 }

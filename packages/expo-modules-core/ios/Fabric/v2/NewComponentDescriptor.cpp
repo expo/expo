@@ -141,9 +141,8 @@ react::Props::Shared NewComponentDescriptor::cloneProps(
   }
 
   // Props without a runtime come as `folly::dynamic`.
-  // TODO: Decode the view's props too, without converting `folly::dynamic` values.
   const auto dynamicProps = static_cast<folly::dynamic>(rawProps);
-  std::vector<std::string_view> skippedNames;
+  std::vector<std::pair<size_t, const folly::dynamic *>> dynamicValues;
 
   for (const auto &[key, value] : dynamicProps.items()) {
     const auto &name = key.getString();
@@ -152,11 +151,13 @@ react::Props::Shared NewComponentDescriptor::cloneProps(
     setBaseViewProp(*newProps, context, hash, name.c_str(), react::RawValue(value));
 
     if (const auto index = propIndex(hash, name)) {
-      skippedNames.emplace_back(propNames_[*index]);
+      dynamicValues.emplace_back(*index, &value);
     }
   }
-  if (!skippedNames.empty()) {
-    decoder.didSkipProps(skippedNames);
+  // Without values of the view's props, for example in an animation of style props, the copy keeps the decoded
+  // props of `sourceProps` and no runtime is needed.
+  if (!dynamicValues.empty()) {
+    newProps->decodedProps = decoder.decodeDynamicValues(dynamicValues, sourceProps.decodedProps);
   }
   return newProps;
 #else

@@ -1,6 +1,7 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 import ExpoModulesJSI
+import Foundation
 import Testing
 
 @testable import ExpoModulesCore
@@ -98,13 +99,37 @@ struct ViewPropsEndToEndTests {
   }
 
   @Test
-  func `props without a runtime keep the decoded props`() throws {
+  func `props without a runtime keep the decoded props on a thread without a runtime`() throws {
     let created = try update("{ title: 'Card' }")
-    let updated =
-      descriptor.update(dynamicProps: ["title": "New card", "opacity": 0.5]) as? DecodedViewProps<EndToEndProps>
+    // A new thread, so no runtime is registered for it.
+    nonisolated(unsafe) let descriptor = descriptor
+    nonisolated(unsafe) var updated: DecodedViewProps<EndToEndProps>?
+    let finished = DispatchSemaphore(value: 0)
+    Thread {
+      updated =
+        descriptor.update(dynamicProps: ["title": "New card", "opacity": 0.5]) as? DecodedViewProps<EndToEndProps>
+      finished.signal()
+    }.start()
+    finished.wait()
 
     #expect(updated === created)
     #expect(updated?.props.title == "Card")
     #expect(descriptor.opacity == 0.5)
+  }
+
+  @Test
+  func `props without a runtime are decoded in the runtime of the current thread`() throws {
+    // Prepares its runtime on this thread, as React Native prepares the main runtime on the JavaScript thread.
+    let appContext = AppContext.create()
+    _ = try update("{ title: 'Card' }")
+    let updated = try #require(
+      descriptor.update(dynamicProps: ["title": "New card", "radius": 8, "opacity": 0.5])
+        as? DecodedViewProps<EndToEndProps>
+    )
+
+    #expect(updated.props.title == "New card")
+    #expect(updated.props.radius == 8)
+    #expect(descriptor.opacity == 0.5)
+    withExtendedLifetime(appContext) {}
   }
 }

@@ -38,6 +38,57 @@ extension Benchmarks {
       name: "component descriptor: update with 1 prop and 5 style props"
     )
   }
+
+  @Test
+  func `component descriptor: dynamic update with 1 prop`() async throws {
+    try await dynamicComponentDescriptorBenchmarkCase(
+      ["progress": 0.5],
+      name: "component descriptor: dynamic update with 1 prop"
+    )
+  }
+
+  @Test
+  func `component descriptor: dynamic update with 1 string prop`() async throws {
+    try await dynamicComponentDescriptorBenchmarkCase(
+      ["title": "Title"],
+      name: "component descriptor: dynamic update with 1 string prop"
+    )
+  }
+
+  @Test
+  func `component descriptor: dynamic update with 1 style prop`() async throws {
+    try await dynamicComponentDescriptorBenchmarkCase(
+      ["opacity": 0.5],
+      name: "component descriptor: dynamic update with 1 style prop"
+    )
+  }
+
+  @Test
+  func `component descriptor: dynamic update with 1 prop and 5 style props`() async throws {
+    try await dynamicComponentDescriptorBenchmarkCase(
+      ["progress": 0.5, "opacity": 0.5, "width": 100, "height": 50, "backgroundColor": 0xff0000ff, "borderRadius": 4],
+      name: "component descriptor: dynamic update with 1 prop and 5 style props"
+    )
+  }
+}
+
+/// Props as `folly::dynamic`, as Reanimated sends them. They decode in the runtime of the current thread.
+private func dynamicComponentDescriptorBenchmarkCase(_ props: [String: any Sendable], name: String) async throws {
+  try await benchmarkCase {
+    let runtime = JavaScriptRuntime()
+    ViewPropsRuntimes.registerForCurrentThread(runtime)
+    withExtendedLifetime(runtime) {
+      let descriptor = EXTestNewComponentDescriptor(
+        decoder: ViewPropsDecoderAdapter(ViewPropsDecoder<DescriptorBenchmarkProps>(viewName: "BenchmarkView"))
+      )
+      descriptor.prepare(dynamicProps: props)
+      benchmark(name, runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = descriptor.updateWithPreparedDynamicProps()
+        }
+      }
+    }
+  }
 }
 
 private func componentDescriptorBenchmarkCase(_ source: String, name: String) async throws {

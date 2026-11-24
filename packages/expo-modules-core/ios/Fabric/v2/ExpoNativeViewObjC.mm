@@ -46,6 +46,13 @@ public:
     return previous;
   }
 
+  views::DecodedProps decodeDynamicValues(
+    const std::vector<std::pair<size_t, const folly::dynamic *>> &,
+    const views::DecodedProps &previous) const override
+  {
+    return previous;
+  }
+
   void didSkipProps(const std::vector<std::string_view> &) const override {}
 };
 

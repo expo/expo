@@ -198,6 +198,15 @@ struct ViewPropsDecoderTests {
   }
 
   @Test
+  func `props decoded from the same previous props as the mounted ones count as all changed`() throws {
+    let created = try decode("{ title: 'Card' }")
+    let mounted = try #require(try decode("{ title: 'New card' }", previous: created))
+    let sibling = try #require(try decode("{ radius: 8 }", previous: created))
+
+    #expect(sibling.changedProps(since: mounted) == DecoderTestProps.allProps)
+  }
+
+  @Test
   func `props of another lineage count as all changed`() throws {
     let other = try decode("{ title: 'Other' }")
     let decoded = try #require(try decode("{ title: 'Card' }"))

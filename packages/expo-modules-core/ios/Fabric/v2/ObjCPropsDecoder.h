@@ -32,6 +32,11 @@ public:
     const DecodedProps &previous
   ) const override;
 
+  DecodedProps decodeDynamicValues(
+    const std::vector<std::pair<size_t, const folly::dynamic *>> &values,
+    const DecodedProps &previous
+  ) const override;
+
   void didSkipProps(const std::vector<std::string_view> &propNames) const override;
 
 private:

@@ -76,6 +76,11 @@ namespace views = expo::views;
   return [self resultWithPrevious:previous];
 }
 
+- (BOOL)withRuntimeForCurrentThread:(NS_NOESCAPE void (^)(const void *runtime))block
+{
+  return NO;
+}
+
 - (void)didSkipProps:(NSArray<NSString *> *)propNames
 {
   self.skippedPropNames = propNames;
