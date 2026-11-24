@@ -288,8 +288,6 @@ jobs:
           BRAVE_SEARCH_API_KEY: ${{ secrets.BRAVE_SEARCH_API_KEY }}
           # Optional: override the model for every agent.
           REVIEWER_MODEL: ${{ vars.REVIEWER_MODEL }}
-          # Store each pass in the private session repo so an employee can reopen it
-          # with `ecr attach`. The upload uses this step's GH_TOKEN (expo-bot).
           SESSION_STORE_REPO: expo/code-review-sessions
           AGENTS: ${{ steps.cmd.outputs.agents }}
           ROUTE: ${{ steps.cmd.outputs.route }}
