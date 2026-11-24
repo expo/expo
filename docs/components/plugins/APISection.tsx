@@ -105,6 +105,10 @@ const PROP_EXCEPTIONS = new Set([
   'AppMetricsErrorBoundaryFallbackProps',
   'AppMetricsErrorBoundaryProps',
   'AppMetricsRootProps',
+  'BottomSheetBackdropProps',
+  'BottomSheetBackgroundProps',
+  'BottomSheetFooterProps',
+  'BottomSheetHandleProps',
   'StackHeaderItemSharedProps',
 ]);
 

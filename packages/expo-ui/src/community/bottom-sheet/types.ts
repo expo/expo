@@ -114,6 +114,16 @@ export interface BottomSheetFooterProps {
 // #region BottomSheetProps
 
 /**
+ * Insets in dp for the sides of the bottom sheet content. Missing sides are `0`.
+ */
+export interface BottomSheetContentWindowInsets {
+  start?: number;
+  top?: number;
+  end?: number;
+  bottom?: number;
+}
+
+/**
  * Props for the `BottomSheet` component.
  * API-compatible with `@gorhom/bottom-sheet` `BottomSheetProps`.
  *
@@ -357,6 +367,18 @@ export interface BottomSheetProps {
    * On Android, they are applied to the `ModalBottomSheet`. Not applied on web.
    */
   modifiers?: ModifierConfig[];
+
+  /**
+   * Insets in dp that the native sheet adds around its content. Missing sides are `0`.
+   * By default, the sheet pads the top and bottom of the content clear of the system bars,
+   * display cutouts, and the keyboard, so scrolling content stops above the navigation bar.
+   * Pass `{ top: insets.top }`, with `insets` from `react-native-safe-area-context`, to let
+   * the content run under the navigation bar and pad its own end instead. The sheet then
+   * adds no padding for the keyboard.
+   *
+   * @platform android
+   */
+  contentWindowInsets?: BottomSheetContentWindowInsets;
 
   /**
    * The content to render inside the bottom sheet.
