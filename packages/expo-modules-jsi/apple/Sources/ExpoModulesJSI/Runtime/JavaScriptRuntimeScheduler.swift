@@ -242,7 +242,7 @@ extension JavaScriptRuntime {
     /// scheduled, so each release runs after a resolve or call that was queued before its value was
     /// dropped.
     internal func scheduleRelease(_ body: @escaping @JavaScriptActor (JavaScriptRuntime) -> Void) {
-      guard supportsAsyncScheduling && (isOnJavaScriptThread() || pthread_main_np() != 0) else {
+      guard supportsAsyncScheduling && (isOnJavaScriptThread() || Thread.isMainThread) else {
         schedule(body)
         return
       }
