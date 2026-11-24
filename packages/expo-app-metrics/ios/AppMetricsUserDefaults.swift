@@ -9,6 +9,7 @@ public final class AppMetricsUserDefaults: UserDefaults {
     case lastAppLaunchState
     case environment
     case networkTracesConfiguration
+    case lastStoredHangPayloadEnd
   }
 
   private init() {
@@ -40,6 +41,16 @@ public final class AppMetricsUserDefaults: UserDefaults {
     }
     set {
       defaults.set(codable: newValue, forKey: Keys.lastAppLaunchState.rawValue)
+    }
+  }
+
+  /// End of the newest MetricKit payload whose hangs were stored. See `MetricKitSubscriber.storeHangReports`.
+  static var lastStoredHangPayloadEnd: Date? {
+    get {
+      return defaults.object(forKey: Keys.lastStoredHangPayloadEnd.rawValue) as? Date
+    }
+    set {
+      defaults.set(newValue, forKey: Keys.lastStoredHangPayloadEnd.rawValue)
     }
   }
 
