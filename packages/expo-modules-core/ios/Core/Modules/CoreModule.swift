@@ -142,12 +142,14 @@ private func installUIRuntime(
   if appContext._uiRuntime != nil {
     return
   }
-  let uiRuntime = try factory(appContext, holder, runtime)
+  // The lookup for the props of v2 views can have made the wrapper already.
+  let uiRuntime = try appContext.workletsUIRuntime.withLock { $0 } ?? factory(appContext, holder, runtime)
 
   try JavaScriptActor.assumeIsolated {
     try appContext.attach(runtime: uiRuntime)
   }
   appContext._uiRuntime = uiRuntime
+  appContext.workletsUIRuntime.withLock { $0 = uiRuntime }
 
   // The main thread decodes the props of v2 views that come without a runtime, for example Reanimated's frames, in
   // the UI runtime. The JavaScript thread runs worklets in it too, so the decode holds the runtime's lock.

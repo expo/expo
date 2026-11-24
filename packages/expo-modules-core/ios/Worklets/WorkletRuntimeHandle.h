@@ -16,6 +16,15 @@ NS_SWIFT_NAME(WorkletRuntimeHandle)
  */
 - (nullable instancetype)initWithRawPointer:(void *)pointer NS_SWIFT_NAME(init(rawPointer:));
 
+/**
+ Creates a handle to the worklet runtime of a holder of `react-native-worklets`, which belongs to the runtime at
+ `runtimePointer`. Unlike `init(rawPointer:)`, it makes JSI calls only on that runtime, so it doesn't wait for the lock
+ of the worklet runtime. Returns nil when the holder has no worklet runtime.
+ */
+- (nullable instancetype)initWithRuntimePointer:(void *)runtimePointer
+                                  holderPointer:(const void *)holderPointer
+    NS_SWIFT_NAME(init(runtimePointer:holderPointer:));
+
 - (instancetype)init NS_UNAVAILABLE;
 
 /**
@@ -35,6 +44,12 @@ NS_SWIFT_NAME(WorkletRuntimeHandle)
  returns YES. Returns NO without running `block` when the runtime is gone.
  */
 - (BOOL)runSync:(NS_NOESCAPE void (^)(void *runtimePointer))block NS_SWIFT_NAME(runSync(_:));
+
+/**
+ Runs `block` with the raw `jsi::Runtime *` of the worklet runtime, which stays alive while `block` runs, and returns
+ YES. Returns NO without running `block` when the runtime is gone.
+ */
+- (BOOL)withRuntimePointer:(NS_NOESCAPE void (^)(void *runtimePointer))block NS_SWIFT_NAME(withRuntimePointer(_:));
 
 @end
 

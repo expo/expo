@@ -148,7 +148,25 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   */
   nonisolated(unsafe) public static var uiRuntimeFactory: UIRuntimeFactory?
 
+  /// Finds the worklets UI runtime of a holder that `react-native-worklets` returns in `runtime`, with JSI calls only on
+  /// `runtime`. Returns a function that makes the wrapper of the UI runtime on the main thread, or `nil` when the holder
+  /// has no UI runtime. The function returns `nil` when the UI runtime is gone.
+  @_spi(Internal)
+  public typealias UIRuntimeLocator = (
+    _ holder: borrowing JavaScriptValue,
+    _ runtime: JavaScriptRuntime
+  ) -> (@Sendable () -> JavaScriptRuntime?)?
+
+  /// Set by `ExpoModulesWorklets`, like ``uiRuntimeFactory``.
+  @_spi(Internal)
+  nonisolated(unsafe) public static var uiRuntimeLocator: UIRuntimeLocator?
+
   public var _uiRuntime: JavaScriptRuntime?
+
+  /// The wrapper of the worklets UI runtime, with or without Expo installed on it. `installOnUIRuntime` and the lookup
+  /// for the props of v2 views make it on the main thread and share it: a second wrapper would replace the first one in
+  /// the runtime registry.
+  internal let workletsUIRuntime = Mutex<JavaScriptRuntime?>(nil)
 
   public var uiRuntime: JavaScriptRuntime {
     get throws {
@@ -654,8 +672,10 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
     if isMainRuntime {
       // The main runtime is prepared on its own thread, which decodes the props of v2 views that come without a
-      // runtime there, for example from Reanimated's commit hook during a React commit.
+      // runtime there, for example from Reanimated's commit hook during a React commit. The main runtime also
+      // finds the worklets UI runtime, which decodes them on the main thread.
       ViewPropsRuntimes.registerForCurrentThread(runtime)
+      ViewPropsRuntimes.addAppContext(self)
     }
 
     // Bind the `@JS` members of the core module.

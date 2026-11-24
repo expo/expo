@@ -174,13 +174,16 @@ public final class ViewPropsDecoder<Props: AnyViewProps>: @unchecked Sendable {
   /// Reports the props of `Props` among the given prop names, which came without a JavaScript runtime
   /// and weren't decoded. Reports each prop only once.
   public func didSkipProps(_ propNames: [String]) {
+    guard ViewPropsRuntimes.shouldReportSkippedProps() else {
+      return
+    }
     let newlySkipped = reportedSkippedProps.withLock { reported in
       propNames.filter { Props.PropName(rawValue: $0) != nil && reported.insert($0).inserted }
     }
     if !newlySkipped.isEmpty {
       let thread = Thread.isMainThread ? "the main thread" : "the thread '\(Thread.current.name ?? "")'"
       log.warn(
-        "The \(newlySkipped) props of '\(viewName)' weren't applied: they came from outside React, for example from Reanimated or Animated, on \(thread), which has no JavaScript runtime that can decode them. On the main thread, call `installOnUIRuntime(getUIRuntimeHolder())` once at startup, with `installOnUIRuntime` from `expo` and `getUIRuntimeHolder` from `react-native-worklets`. Otherwise, set them from React"
+        "The \(newlySkipped) props of '\(viewName)' weren't applied: they came from outside React, for example from Reanimated or Animated, on \(thread), which has no JavaScript runtime that can decode them. On the main thread, install react-native-worklets: Expo decodes them in its UI runtime"
       )
     }
   }
