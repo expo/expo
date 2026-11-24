@@ -4,6 +4,7 @@ sidebar_title: Configuration
 description: Control how Expo Observe collects and dispatches metrics, including environment settings, development mode, custom endpoints, and data ingestion.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Configure Expo Observe at runtime to fit your app's build setup, environment, and data routing. This page covers enabling metrics in development, sampling, ignoring selected metrics and events, using a custom endpoint, separating data by environment, asking for user consent, and turning off data ingestion from the dashboard. For the runtime methods themselves, see the [`configure()`](/versions/latest/sdk/observe/#configureconfig) and [`dispatchEvents()`](/versions/latest/sdk/observe/#dispatchevents) API references.
@@ -138,6 +139,8 @@ URLs are redacted before they are stored. A username and password in the URL are
 
 ## Ask for user consent
 
+> **info** User consent requires `expo-observe` 58.0.21 and later.
+
 By default, Expo Observe collects data from the first launch. If your app must ask the user before it collects data, keep Expo Observe inactive until the user grants consent.
 
 Set the `consent` option of the `expo-observe` config plugin to `'not-granted'` in your [**app config**](/workflow/configuration/):
@@ -160,7 +163,7 @@ import { Observe } from 'expo-observe';
 await Observe.setConsent(userAccepted ? 'granted' : 'not-granted');
 ```
 
-The device saves the value. On later launches, the saved value overrides the config plugin value.
+A call with `'granted'` is a grant. A call with `'not-granted'` is a revoke. The device saves the value. On later launches, the saved value overrides the config plugin value.
 
 ### While consent is not granted
 
@@ -172,11 +175,11 @@ The device saves the value. On later launches, the saved value overrides the con
 
 ### Consent and `dispatchingEnabled`
 
-`configure({ dispatchingEnabled: false })` stops only the upload. Expo Observe still collects data and stores it on the device. Consent also stops collection and storage, and a revoke deletes the stored data. Use consent when the user must agree before Expo Observe collects data.
+`configure({ dispatchingEnabled: false })` stops only the upload. Expo Observe still collects data and stores it on the device. A `not-granted` value also stops collection and storage, and a revoke deletes the stored data. Use consent when the user must agree before Expo Observe collects data.
 
-### Set the value without prebuild
+<Collapsible summary="Not using prebuild?">
 
-If your app does not use prebuild, add the value to the native projects yourself. Like the config plugin value, it applies only until `setConsent()` saves a value. Without a native value or a saved value, Expo Observe collects data.
+If your app does not use [Expo Prebuild](/more/glossary-of-terms/#prebuild), add the value to the native projects yourself. Like the config plugin value, it applies only until `setConsent()` saves a value. Without a native value or a saved value, Expo Observe collects data.
 
 On Android, add a `meta-data` element to the main `application` element:
 
@@ -197,6 +200,8 @@ On iOS, add an `ExpoObserve` dictionary with a `consent` key to **Info.plist**:
 ```
 
 The native value is `granted` or `not-granted`. Any other value keeps Expo Observe inactive and logs a warning. On iOS, an `ExpoObserve` value that is not a dictionary has the same result.
+
+</Collapsible>
 
 ## Turn off data ingestion
 
