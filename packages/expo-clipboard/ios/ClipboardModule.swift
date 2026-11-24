@@ -135,7 +135,7 @@ public class ClipboardModule: Module {
 
     #if !os(macOS)
     View(ClipboardPasteButton.self) {
-      Events("onPastePressed")
+      Events("onPastePressed", "onFittingSizeChange")
 
       Prop("backgroundColor") { (view, color: UIColor?) in
         if view.baseBackgroundColor != color {

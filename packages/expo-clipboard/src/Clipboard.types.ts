@@ -184,6 +184,21 @@ export type ImagePasteEvent = {
   type: 'image';
 } & ClipboardImage;
 
+// @needsAudit
+/**
+ * The size that the paste button needs to show its whole content.
+ */
+export type PasteButtonFittingSize = {
+  /**
+   * The width in points.
+   */
+  width: number;
+  /**
+   * The height in points.
+   */
+  height: number;
+};
+
 export type ClipboardEvent = {
   /**
    * An array of content types that are available on the clipboard.
