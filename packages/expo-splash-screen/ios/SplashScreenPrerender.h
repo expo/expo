@@ -50,9 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setAppRootView:(nullable UIView *)rootView;
 
 /**
- Main thread. Captures the screen on display after `delay` seconds (once it has settled) for the next
- launch. The snapshot replays only while the window size, text size, appearance and app build match.
- Only the first successful capture of a process is saved.
+ Captures the screen on display after `delay` seconds (once it has settled) for the next launch.
+ The snapshot replays only while the window size, text size, appearance and app build match.
+ Only the first successful capture of a process is saved. Safe to call from any thread.
  */
 - (void)captureLaunchScreenAfterDelay:(NSTimeInterval)delay;
 

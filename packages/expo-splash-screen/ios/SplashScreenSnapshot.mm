@@ -27,8 +27,11 @@ folly::dynamic colorToDynamic(const SharedColor &color)
   return folly::dynamic((int64_t)argb);
 }
 
-folly::dynamic colorToDynamic(UIColor *color)
+folly::dynamic colorToDynamic(UIColor *color, UITraitCollection *traits)
 {
+  if (traits) {
+    color = [color resolvedColorWithTraitCollection:traits];
+  }
   CGFloat r = 0, g = 0, b = 0, a = 0;
   if (!color || !([color getRed:&r green:&g blue:&b alpha:&a] || ([color getWhite:&r alpha:&a] && ((g = b = r), true))) ||
       a <= 0) {
@@ -38,9 +41,9 @@ folly::dynamic colorToDynamic(UIColor *color)
   return folly::dynamic((int64_t)((channel(a) << 24) | (channel(r) << 16) | (channel(g) << 8) | channel(b)));
 }
 
-void setColor(folly::dynamic &out, const char *key, UIColor *color)
+void setColor(folly::dynamic &out, const char *key, UIColor *color, UITraitCollection *traits)
 {
-  auto value = colorToDynamic(color);
+  auto value = colorToDynamic(color, traits);
   if (!value.isNull()) {
     out[key] = std::move(value);
   }
@@ -71,10 +74,10 @@ int fontWeightOf(UIFont *font)
 }
 
 /// Text props for one run of an attributed string, as the Text/Paragraph prop parser expects them.
-folly::dynamic textPropsOf(UIFont *font, UIColor *color, NSParagraphStyle *paragraphStyle, NSNumber *kern, NSTextAlignment fallbackAlignment)
+folly::dynamic textPropsOf(UIFont *font, UIColor *color, NSParagraphStyle *paragraphStyle, NSNumber *kern, NSTextAlignment fallbackAlignment, UITraitCollection *traits)
 {
   folly::dynamic props = folly::dynamic::object;
-  setColor(props, "color", color);
+  setColor(props, "color", color, traits);
   if (font) {
     props["fontSize"] = (double)font.pointSize;
     props["fontWeight"] = std::to_string(fontWeightOf(font));
@@ -103,7 +106,7 @@ folly::dynamic textPropsOf(UIFont *font, UIColor *color, NSParagraphStyle *parag
 }
 
 /// `Text` children (one per styled run) for a `Paragraph`.
-folly::dynamic textRunsOf(NSAttributedString *text, NSTextAlignment fallbackAlignment)
+folly::dynamic textRunsOf(NSAttributedString *text, NSTextAlignment fallbackAlignment, UITraitCollection *traits)
 {
   __block folly::dynamic runs = folly::dynamic::array;
   [text enumerateAttributesInRange:NSMakeRange(0, text.length)
@@ -115,7 +118,7 @@ folly::dynamic textRunsOf(NSAttributedString *text, NSTextAlignment fallbackAlig
                           runs.push_back(folly::dynamic::object("name", "Text")(
                               "props",
                               textPropsOf(attributes[NSFontAttributeName], attributes[NSForegroundColorAttributeName],
-                                          attributes[NSParagraphStyleAttributeName], attributes[NSKernAttributeName], fallbackAlignment))(
+                                          attributes[NSParagraphStyleAttributeName], attributes[NSKernAttributeName], fallbackAlignment, traits))(
                               "children", folly::dynamic::array(std::move(rawText))));
                         }];
   return runs;
@@ -192,7 +195,7 @@ UIView *findDescendant(UIView *view, NSString *classNameFragment, int depth = 0)
   return nil;
 }
 
-folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int depth, int &budget, bool debug, Scope scope)
+folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int depth, int &budget, bool debug, Scope scope, UITraitCollection *traits)
 {
   if (view.hidden || view.alpha <= 0.01 || depth > 80 || --budget < 0) {
     return nullptr;
@@ -258,14 +261,14 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
       return nullptr;
     }
     if ([className containsString:@"PlatterView"]) {
-      setColor(props, "backgroundColor", [UIColor.secondarySystemBackgroundColor resolvedColorWithTraitCollection:view.traitCollection]);
+      setColor(props, "backgroundColor", UIColor.secondarySystemBackgroundColor, traits);
       props["borderRadius"] = (double)frame.size.height / 2;
       folly::dynamic lensProps = folly::dynamic::object("position", "absolute")(
           "left", (double)(scope.lens.origin.x - frame.origin.x))("top", (double)(scope.lens.origin.y - frame.origin.y))(
           "width", (double)scope.lens.size.width)("height", (double)scope.lens.size.height)(
-          "borderRadius", (double)scope.lens.size.height / 2)("shadowColor", colorToDynamic(UIColor.blackColor))(
+          "borderRadius", (double)scope.lens.size.height / 2)("shadowColor", colorToDynamic(UIColor.blackColor, traits))(
           "shadowOpacity", 0.08)("shadowRadius", 6.0)("shadowOffset", folly::dynamic::object("width", 0)("height", 2));
-      setColor(lensProps, "backgroundColor", [UIColor.systemBackgroundColor resolvedColorWithTraitCollection:view.traitCollection]);
+      setColor(lensProps, "backgroundColor", UIColor.systemBackgroundColor, traits);
       children.push_back(folly::dynamic::object("name", "View")("props", std::move(lensProps))("children", folly::dynamic::array));
     } else if ([className containsString:@"SelectedContentView"]) {
       scope.clip = scope.lens;
@@ -296,7 +299,7 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
         if (paragraph.maximumNumberOfLines > 0) props["numberOfLines"] = paragraph.maximumNumberOfLines;
         props["ellipsizeMode"] = toString(paragraph.ellipsizeMode);
       }
-      children = textRunsOf(text, NSTextAlignmentNatural);
+      children = textRunsOf(text, NSTextAlignmentNatural, traits);
       return folly::dynamic::object("name", name)("props", std::move(props))("children", std::move(children));
     }
   } else if ([view isKindOfClass:[UILabel class]]) {
@@ -315,29 +318,29 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
                             if (!attributes[NSFontAttributeName] && label.font) [text addAttribute:NSFontAttributeName value:label.font range:range];
                             if (!attributes[NSForegroundColorAttributeName] && label.textColor) [text addAttribute:NSForegroundColorAttributeName value:label.textColor range:range];
                           }];
-    children = textRunsOf(text, label.textAlignment);
+    children = textRunsOf(text, label.textAlignment, traits);
     return folly::dynamic::object("name", name)("props", std::move(props))("children", std::move(children));
   } else if ([view isKindOfClass:[UIImageView class]]) {
     // Nothing to draw without an image loader; the frame stays blank.
     return nullptr;
   } else if ([view isKindOfClass:[UIVisualEffectView class]]) {
     // Bars blur the content below them; a flat system background is the closest the prerender gets.
-    setColor(props, "backgroundColor", [UIColor.secondarySystemBackgroundColor resolvedColorWithTraitCollection:view.traitCollection]);
+    setColor(props, "backgroundColor", UIColor.secondarySystemBackgroundColor, traits);
   } else {
     // A layer composited through a filter (glass, blend modes) does not show its plain color.
     bool filtered = view.layer.compositingFilter != nil || view.layer.filters.count > 0 || view.layer.backgroundFilters.count > 0;
     if (!filtered) {
-      setColor(props, "backgroundColor", view.backgroundColor);
+      setColor(props, "backgroundColor", view.backgroundColor, traits);
     }
     if (view.layer.cornerRadius > 0) props["borderRadius"] = (double)view.layer.cornerRadius;
     if (view.layer.borderWidth > 0 && view.layer.borderColor) {
       props["borderWidth"] = (double)view.layer.borderWidth;
-      setColor(props, "borderColor", [UIColor colorWithCGColor:view.layer.borderColor]);
+      setColor(props, "borderColor", [UIColor colorWithCGColor:view.layer.borderColor], traits);
     }
   }
 
   for (UIView *subview in view.subviews) {
-    auto child = serializeView(subview, root, frame, depth + 1, budget, debug, scope);
+    auto child = serializeView(subview, root, frame, depth + 1, budget, debug, scope, traits);
     if (!child.isNull()) {
       children.push_back(std::move(child));
     }
@@ -354,7 +357,8 @@ folly::dynamic serializeSplashScreenSnapshot(UIView *rootView, int &budget, bool
   if (!layoutMetricsIvar()) {
     return nullptr;
   }
-  return serializeView(rootView, rootView, rootView.bounds, 0, budget, debug, Scope{});
+  UITraitCollection *traits = rootView.window.windowScene.traitCollection ?: rootView.traitCollection;
+  return serializeView(rootView, rootView, rootView.bounds, 0, budget, debug, Scope{}, traits);
 }
 
 } // namespace expo

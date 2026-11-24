@@ -203,12 +203,13 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   UIView *_containerView;
   UIWindow *_window;
   CFTimeInterval _loadTime;
-  NSDictionary<NSString *, NSString *> *_snapshotFonts;
+  NSDictionary<NSString *, id> *_snapshotFonts;
   NSDictionary *_snapshotEnvironment;
   __weak UIView *_appRootView;
   BOOL _dismissed;
   BOOL _capturePending;
   BOOL _captured;
+  BOOL _waitedForPrepare;
 }
 
 + (instancetype)shared
@@ -221,11 +222,13 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   return instance;
 }
 
-+ (void)load
+// C++ constructors run after all +load methods of the image, so React Native's static initializers
+// (folly, Yoga) are ready. +load can run before them when the library is linked statically.
+static void __attribute__((constructor)) ExpoSplashScreenPrerenderInit(void)
 {
-  SplashScreenPrerender *prerender = [self shared];
+  SplashScreenPrerender *prerender = [SplashScreenPrerender shared];
   if (prerender.isEnabled) {
-    [prerender log:@"+load"];
+    [prerender log:@"constructor"];
     [prerender prepare];
   }
 }
@@ -267,7 +270,11 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   if (!factoryClass || ![factoryClass instancesRespondToSelector:selector]) {
     return NO;
   }
-  NSString *level = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"ReactNativeReleaseLevel"] lowercaseString];
+  id plistValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ReactNativeReleaseLevel"];
+  if (plistValue && ![plistValue isKindOfClass:[NSString class]]) {
+    return NO;
+  }
+  NSString *level = [plistValue lowercaseString];
   NSInteger releaseLevel = [level isEqualToString:@"canary"] ? 0 : [level isEqualToString:@"experimental"] ? 1 : 2;
   ((void (*)(id, SEL, NSInteger))objc_msgSend)([factoryClass alloc], selector, releaseLevel);
   return YES;
@@ -405,17 +412,28 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 - (nullable NSDictionary *)loadTemplate
 {
   NSURL *snapshotURL = [self snapshotURL];
-  NSData *snapshotData = [NSData dataWithContentsOfURL:snapshotURL];
-  // A snapshot is used for one launch only: the capture after the splash hides writes the next one.
-  // A snapshot that crashes the prerender then cannot crash every launch.
-  if (!snapshotData || ![[NSFileManager defaultManager] removeItemAtURL:snapshotURL error:nil]) {
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  // A marker means the last prepare of this build crashed. Do not try again.
+  NSURL *prepareMarkerURL = [snapshotURL.URLByDeletingLastPathComponent URLByAppendingPathComponent:@"prepare-started"];
+  NSString *build = appBuild();
+  if ([[NSString stringWithContentsOfURL:prepareMarkerURL encoding:NSUTF8StringEncoding error:nil] isEqualToString:build]) {
+    [self log:@"snapshot: skipped, the last prepare of this build crashed"];
+    [fileManager removeItemAtURL:snapshotURL error:nil];
     return nil;
   }
+  NSData *snapshotData = [NSData dataWithContentsOfURL:snapshotURL];
+  if (!snapshotData) {
+    return nil;
+  }
+  // Write a marker before preparing. It is removed after the overlay is shown successfully.
+  [fileManager createDirectoryAtURL:snapshotURL.URLByDeletingLastPathComponent withIntermediateDirectories:YES attributes:nil error:nil];
+  [build writeToURL:prepareMarkerURL atomically:NO encoding:NSUTF8StringEncoding error:nil];
   id snapshot = [NSJSONSerialization JSONObjectWithData:snapshotData options:0 error:nil];
   NSDictionary *environment = [snapshot isKindOfClass:[NSDictionary class]] ? snapshot[@"environment"] : nil;
-  if (![environment isKindOfClass:[NSDictionary class]] || ![environment[@"build"] isEqual:appBuild()] ||
+  if (![environment isKindOfClass:[NSDictionary class]] || ![environment[@"build"] isEqual:build] ||
       ![environment[@"format"] isEqual:kSnapshotFormat] || ![snapshot[@"template"] isKindOfClass:[NSDictionary class]]) {
     [self log:@"snapshot does not match this build"];
+    [fileManager removeItemAtURL:prepareMarkerURL error:nil];
     return nil;
   }
   _snapshotEnvironment = environment;
@@ -432,13 +450,15 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 
 - (void)captureLaunchScreenAfterDelay:(NSTimeInterval)delay
 {
-  if (_captured || _capturePending) {
-    return;
-  }
-  _capturePending = YES;
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-    self->_capturePending = NO;
-    [self saveLaunchScreen];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (self->_captured || self->_capturePending) {
+      return;
+    }
+    self->_capturePending = YES;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      self->_capturePending = NO;
+      [self saveLaunchScreen];
+    });
   });
 }
 
@@ -449,6 +469,9 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 - (void)saveLaunchScreen
 {
   RCTAssertMainQueue();
+  if (_captured) {
+    return;
+  }
   UIView *rootView = _appRootView;
   UIWindowScene *windowScene = rootView.window.windowScene;
   if (!_isEnabled || !rootView || !windowScene) {
@@ -475,6 +498,11 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   if (templateDynamic.isNull() || templateDynamic["children"].empty()) {
     [fileManager removeItemAtURL:markerURL error:nil];
     [self log:@"snapshot: nothing on screen"];
+    return;
+  }
+  if (budget < 0) {
+    [fileManager removeItemAtURL:markerURL error:nil];
+    [self log:@"snapshot: view budget exhausted, partial capture discarded"];
     return;
   }
   templateDynamic["props"].erase("position");
@@ -523,24 +551,34 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 }
 
 /// Font files (relative to the app bundle) for the families a snapshot uses, as CoreText knows them
-/// once `expo-font` has registered them.
-+ (NSDictionary<NSString *, NSString *> *)fontFilesForFamilies:(NSSet<NSString *> *)families
+/// once `expo-font` has registered them. Returns all faces per family (regular, bold, italic, etc.).
++ (NSDictionary<NSString *, NSArray<NSString *> *> *)fontFilesForFamilies:(NSSet<NSString *> *)families
 {
   NSMutableDictionary *files = [NSMutableDictionary dictionary];
   NSString *bundlePath = [NSBundle mainBundle].bundlePath;
   for (NSString *family in families) {
     CTFontDescriptorRef descriptor = CTFontDescriptorCreateWithAttributes(
         (__bridge CFDictionaryRef) @{(__bridge NSString *)kCTFontFamilyNameAttribute : family});
-    CTFontDescriptorRef match = CTFontDescriptorCreateMatchingFontDescriptor(descriptor, NULL);
+    CFArrayRef matches = CTFontDescriptorCreateMatchingFontDescriptors(descriptor, NULL);
     CFRelease(descriptor);
-    if (!match) {
+    if (!matches) {
       continue;
     }
-    NSURL *url = CFBridgingRelease(CTFontDescriptorCopyAttribute(match, kCTFontURLAttribute));
-    CFRelease(match);
-    NSString *path = url.path;
-    if ([path hasPrefix:bundlePath]) {
-      files[family] = [path substringFromIndex:bundlePath.length];
+    NSMutableArray<NSString *> *paths = [NSMutableArray array];
+    for (CFIndex i = 0, count = CFArrayGetCount(matches); i < count; i++) {
+      CTFontDescriptorRef match = (CTFontDescriptorRef)CFArrayGetValueAtIndex(matches, i);
+      NSURL *url = CFBridgingRelease(CTFontDescriptorCopyAttribute(match, kCTFontURLAttribute));
+      NSString *path = url.path;
+      if ([path hasPrefix:bundlePath]) {
+        NSString *relative = [path substringFromIndex:bundlePath.length];
+        if (![paths containsObject:relative]) {
+          [paths addObject:relative];
+        }
+      }
+    }
+    CFRelease(matches);
+    if (paths.count > 0) {
+      files[family] = [paths copy];
     }
   }
   return files;
@@ -550,13 +588,19 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 {
   NSSet<NSString *> *families = [[self class] fontFamiliesUsedByTemplate:node];
   for (NSString *family in families) {
-    NSString *file = _snapshotFonts[family];
-    if (!file || [UIFont fontNamesForFamilyName:family].count > 0) {
+    if ([UIFont fontNamesForFamilyName:family].count > 0) {
       continue;
     }
-    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle].bundlePath stringByAppendingString:file]];
-    bool registered = CTFontManagerRegisterFontsForURL((__bridge CFURLRef)url, kCTFontManagerScopeProcess, NULL);
-    [self log:[NSString stringWithFormat:@"font %@ %@ from %@", family, registered ? @"registered" : @"not registered", file]];
+    id fontEntry = _snapshotFonts[family];
+    // Supports both the current array format and the legacy single-string format.
+    NSArray<NSString *> *files = [fontEntry isKindOfClass:[NSArray class]] ? fontEntry
+                                 : [fontEntry isKindOfClass:[NSString class]] ? @[fontEntry]
+                                                                             : nil;
+    for (NSString *file in files) {
+      NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle].bundlePath stringByAppendingString:file]];
+      bool registered = CTFontManagerRegisterFontsForURL((__bridge CFURLRef)url, kCTFontManagerScopeProcess, NULL);
+      [self log:[NSString stringWithFormat:@"font %@ %@ from %@", family, registered ? @"registered" : @"not registered", file]];
+    }
   }
 }
 
@@ -574,11 +618,25 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   if (_containerView || !_prepared || _dismissed) {
     return;
   }
-  // `_preparedRoot` and the other objects of the preparation are read only after the group is done.
-  if (dispatch_group_wait(_prepared, dispatch_time(DISPATCH_TIME_NOW, 50 * NSEC_PER_MSEC)) != 0 || !_preparedRoot) {
+  // Wait once: a non-blocking notify replaces the second blocking wait.
+  if (!_waitedForPrepare) {
+    _waitedForPrepare = YES;
+    if (dispatch_group_wait(_prepared, dispatch_time(DISPATCH_TIME_NOW, 50 * NSEC_PER_MSEC)) != 0) {
+      dispatch_group_notify(_prepared, dispatch_get_main_queue(), ^{
+        [self mountPreparedTree];
+      });
+      return;
+    }
+  }
+  [self mountPreparedTree];
+}
+
+- (void)mountPreparedTree
+{
+  RCTAssertMainQueue();
+  if (_containerView || _dismissed || !_preparedRoot) {
     return;
   }
-
   UIView *container = [[UIView alloc] initWithFrame:_bounds];
   container.userInteractionEnabled = NO;
   [_mountingManager attachSurfaceToView:container surfaceId:kSurfaceId];
@@ -618,6 +676,11 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   window.rootViewController = controller;
   window.hidden = NO;
   _window = window;
+  // The snapshot was shown; consume it and clear the crash-protection markers.
+  NSURL *snapshotURL = [self snapshotURL];
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  [fileManager removeItemAtURL:snapshotURL error:nil];
+  [fileManager removeItemAtURL:[snapshotURL.URLByDeletingLastPathComponent URLByAppendingPathComponent:@"prepare-started"] error:nil];
   [self log:@"shown"];
 }
 
