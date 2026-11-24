@@ -108,16 +108,16 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 ## Usage
 
 ```jsx
-import * as Calendar from 'expo-calendar';
+import { Calendar, EntityTypes } from 'expo-calendar';
 import { useEffect } from 'react';
 import { StyleSheet, View, Text, Button } from 'react-native';
 
 const BasicUsage = () => {
   useEffect(() => {
     (async () => {
-      const { status } = await Calendar.requestCalendarPermissions();
+      const { status } = await Calendar.requestPermissions();
       if (status === 'granted') {
-        const calendars = Calendar.getCalendars(Calendar.EntityTypes.EVENT);
+        const calendars = await Calendar.getAll(EntityTypes.EVENT);
         console.log('Here are all your calendars:');
         console.log(JSON.stringify(calendars));
       }
@@ -133,10 +133,10 @@ const BasicUsage = () => {
 };
 
 async function createCalendar() {
-  const newCalendar = await Calendar.createCalendar({
+  const newCalendar = await Calendar.create({
     title: 'Expo Calendar',
     color: 'blue',
-    entityType: Calendar.EntityTypes.EVENT,
+    entityType: EntityTypes.EVENT,
   });
   console.log(`Your new calendar: ${JSON.stringify(newCalendar)}`);
 }
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
 On Android, an event has no field reserved for your app's own data. To recognize the events your app created, and avoid deleting anyone else's, attach an extended property to them:
 
 ```ts
-const [calendar] = await Calendar.getCalendars(Calendar.EntityTypes.EVENT);
+const [calendar] = await Calendar.getAll(EntityTypes.EVENT);
 
 const event = await calendar.createEvent({
   title: 'Team sync',
@@ -182,14 +182,13 @@ Google Calendar also keeps a name you removed with `deleteExtendedProperty` on t
 ## API
 
 ```js
-import * as Calendar from 'expo-calendar';
+import { Calendar, CalendarEvent } from 'expo-calendar';
 ```
 
 Unless specified otherwise, all dates are returned in the ISO 8601 format.
 
 <APISection
   packageName="expo-calendar"
-  apiName="Calendar"
   headersMapping={{
     systemProvidedUI: 'Launching system-provided calendar dialogs',
   }}
@@ -207,7 +206,7 @@ Otherwise, you must add the following permissions to your **app.json** inside th
 
 ### iOS
 
-To only add events without reading existing calendar data, enable the `writeOnlyAccess` option in the [config plugin](#configuration-in-app-config) and request write-only access by passing `true` to [`requestCalendarPermissions`](#calendarrequestcalendarpermissionswriteonly). This is sufficient for methods like [`ExpoCalendar.createEvent`](#createeventdetails). Methods that read calendar data, such as [`getCalendars`](#calendargetcalendarsentitytype), [`listEvents`](#calendarlisteventscalendars-startdate-enddate), or [`presentPicker`](#calendarpresentpicker), require full calendar access.
+To only add events without reading existing calendar data, enable the `writeOnlyAccess` option in the [config plugin](#configuration-in-app-config) and request write-only access by passing `true` to [`Calendar.requestPermissions`](#requestpermissionswriteonly). This is sufficient for methods like [`calendar.createEvent`](#createeventdetails). Methods that read calendar data, such as [`Calendar.getAll`](#getallentitytype), [`CalendarEvent.list`](#listcalendars-startdate-enddate), or [`Calendar.presentPicker`](#presentpicker), require full calendar access.
 
 The following usage description keys are used by this library:
 

@@ -1,14 +1,14 @@
-import { EntityTypes, ExpoCalendar, ExpoCalendarReminder, getCalendars } from 'expo-calendar';
-import * as Calendar from 'expo-calendar/legacy';
+import { Calendar, CalendarReminder, EntityTypes } from 'expo-calendar';
+import { getReminderAsync, type Reminder } from 'expo-calendar/legacy';
 import { type NativeStackScreenProps } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 type RowProps = {
-  reminder: ExpoCalendarReminder;
-  getReminder: (reminder: ExpoCalendarReminder) => void;
-  updateReminder: (reminder: ExpoCalendarReminder) => void;
-  deleteReminder: (reminder: ExpoCalendarReminder) => void;
+  reminder: CalendarReminder;
+  getReminder: (reminder: CalendarReminder) => void;
+  updateReminder: (reminder: CalendarReminder) => void;
+  deleteReminder: (reminder: CalendarReminder) => void;
 };
 
 const ReminderRow = ({ reminder, getReminder, updateReminder, deleteReminder }: RowProps) => (
@@ -29,8 +29,8 @@ type Links = {
 type Props = NativeStackScreenProps<Links, 'Reminders'>;
 
 const RemindersScreen = ({ route }: Props) => {
-  const [reminders, setReminders] = useState<ExpoCalendarReminder[]>([]);
-  const [calendar, setCalendar] = useState<ExpoCalendar | null>(null);
+  const [reminders, setReminders] = useState<CalendarReminder[]>([]);
+  const [calendar, setCalendar] = useState<Calendar | null>(null);
 
   const calendarId = route.params?.calendarId;
 
@@ -39,7 +39,7 @@ const RemindersScreen = ({ route }: Props) => {
       return;
     }
     (async () => {
-      const calendars = await getCalendars(EntityTypes.REMINDER);
+      const calendars = await Calendar.getAll(EntityTypes.REMINDER);
       const calendar = calendars.find(({ id }) => id === calendarId) ?? null;
       setCalendar(calendar);
       if (calendar) {
@@ -48,7 +48,7 @@ const RemindersScreen = ({ route }: Props) => {
     })();
   }, [calendarId]);
 
-  const findReminders = async (calendar: ExpoCalendar) => {
+  const findReminders = async (calendar: Calendar) => {
     try {
       const reminders = await calendar.listReminders();
       setReminders(reminders);
@@ -86,16 +86,16 @@ const RemindersScreen = ({ route }: Props) => {
     }
   };
 
-  const getReminder = async (reminder: Calendar.Reminder) => {
+  const getReminder = async (reminder: Reminder) => {
     try {
-      const newReminder = await Calendar.getReminderAsync(reminder.id!);
+      const newReminder = await getReminderAsync(reminder.id!);
       Alert.alert('Reminder found using getReminderAsync', JSON.stringify(newReminder));
     } catch (e: any) {
       Alert.alert('Error finding reminder', e.message);
     }
   };
 
-  const updateReminder = async (reminder: ExpoCalendarReminder) => {
+  const updateReminder = async (reminder: CalendarReminder) => {
     if (!calendar) {
       Alert.alert('Calendar is not loaded yet');
       return;
@@ -117,7 +117,7 @@ const RemindersScreen = ({ route }: Props) => {
     }
   };
 
-  const deleteReminder = async (reminder: ExpoCalendarReminder) => {
+  const deleteReminder = async (reminder: CalendarReminder) => {
     try {
       reminder.delete();
       Alert.alert('Reminder deleted successfully');
