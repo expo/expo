@@ -704,9 +704,9 @@ inline expo::NativeState *_Nullable getExpoNativeState(jsi::IRuntime &runtime, c
 }
 
 /**
- Factory used by the default `JavaScriptNativeState` initializer. Builds a fresh
- `expo::NativeState` with the given context/deallocator and returns it wrapped in
- the `expo::NativeStateShared` typedef so Swift can hold it as a single value.
+ Builds the C++ state of a `JavaScriptNativeState`: a fresh `expo::NativeState` with
+ the given context/deallocator, wrapped in the `expo::NativeStateShared` typedef so
+ Swift can hold it as a single value.
  */
 inline expo::NativeStateShared makeExpoNativeStateShared(expo::NativeState::Context context,
                                                          expo::NativeState::ContextDeallocator deallocator) {
@@ -720,19 +720,6 @@ inline expo::NativeStateShared makeExpoNativeStateShared(expo::NativeState::Cont
  */
 inline expo::NativeStateWeak makeNativeStateWeak(const expo::NativeStateShared &shared) {
   return expo::NativeStateWeak(shared);
-}
-
-/**
- Moves the heap-allocated `expo::NativeStateShared` at `ptr` into a returned
- by-value `NativeStateShared`, then `delete`s the heap allocation. Pairs with
- `new expo::NativeStateShared(...)` performed by no-interop C++ consumers
- (e.g. `EXSharedObjectUtils.mm`) — using Swift's `UnsafeMutablePointer.deallocate()`
- on a pointer obtained from C++ `new` would be an allocator mismatch.
- */
-inline expo::NativeStateShared consumeNativeStateSharedPtr(expo::NativeStateShared *ptr) {
-  expo::NativeStateShared shared = std::move(*ptr);
-  delete ptr;
-  return shared;
 }
 
 } // namespace expo

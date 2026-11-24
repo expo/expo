@@ -8,9 +8,10 @@ import os
 /// `JavaScriptObject.getNativeState(as:)` without going through `SharedObjectRegistry`.
 ///
 /// The JS objects of the native object in all runtimes (for example the main runtime and the worklet UI runtime)
-/// share this native state and its C++ state. The C++ state is destroyed, and its releaser releases the native
-/// object, when the last of these JS objects is collected. The first JS object creates the C++ state. The others get
-/// this native state only while that C++ state is alive (`setNativeStateIfAlive`), so it has one C++ state.
+/// share this native state and its C++ state. The C++ state is destroyed when the last of these JS objects is
+/// collected, and then the deallocator of this native state releases the native object. The first JS object creates
+/// the C++ state. The others get this native state only while that C++ state is alive (`setNativeStateIfAlive`), so
+/// it has one C++ state.
 ///
 /// The native state keeps the JS object and the event listeners of the main runtime only, so it holds values of the
 /// main runtime only. The app context releases them before the main runtime is destroyed (see
@@ -65,19 +66,15 @@ internal final class SharedObjectNativeState: EventEmitterNativeState, @unchecke
     objectId: SharedObjectId,
     mainRuntimeId: JavaScriptRuntime.ID?,
     isPairedInOtherRuntime: Bool,
-    releaser: @escaping ObjectReleaser
+    releaser: @escaping (SharedObjectId) -> Void
   ) {
     self.native = native
     self.objectId = objectId
     self.mainRuntimeId = mainRuntimeId
     self.flags = OSAllocatedUnfairLock(initialState: Flags(isPairedInOtherRuntime: isPairedInOtherRuntime))
-    super.init(primaryRuntimeId: mainRuntimeId) { context, deallocator in
-      return SharedObjectUtils.makeSharedObjectNativeStatePtr(
-        objectId: objectId,
-        releaser: releaser,
-        context: context,
-        contextDeallocator: deallocator
-      )
+    super.init(primaryRuntimeId: mainRuntimeId)
+    setDeallocator { _ in
+      releaser(objectId)
     }
   }
 

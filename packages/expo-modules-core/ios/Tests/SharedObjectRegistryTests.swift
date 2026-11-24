@@ -29,9 +29,6 @@ struct SharedObjectRegistryTests {
     let jsObject = try runtime.createObject()
     registry.add(native: nativeObject, javaScript: jsObject)
 
-    // Pins the cross-package contract that `SharedObject::NativeState` derives
-    // from `expo::NativeState` on Apple. If the `__has_include` probe in
-    // `EventEmitter.h` falls back, this returns false.
     let hasNativeState = jsObject.hasNativeState()
     #expect(hasNativeState)
   }

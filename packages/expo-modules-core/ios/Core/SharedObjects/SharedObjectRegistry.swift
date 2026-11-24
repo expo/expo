@@ -168,7 +168,7 @@ public final class SharedObjectRegistry: Sendable {
       }
       let id = pullNextId()
       // Runs when the JS objects of all runtimes are collected.
-      let releaser: ObjectReleaser = { [weak self] id in
+      let releaser: (SharedObjectId) -> Void = { [weak self] id in
         self?.delete(id, reason: .nativeStateDestroyed)
       }
       let nativeState = SharedObjectNativeState(
