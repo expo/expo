@@ -80,7 +80,7 @@ jobs:
         run: |
           ./simulator/simulator-test-executor.sh ./simulator/tests/updates-e2e-bricking-measures-disabled.txt ios release
   android:
-    runs_on: linux-large
+    runs_on: linux-large-nested-virtualization
     image: latest
     steps:
       - uses: eas/checkout

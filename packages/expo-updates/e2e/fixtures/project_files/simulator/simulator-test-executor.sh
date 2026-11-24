@@ -51,7 +51,7 @@ reset_dotenv() {
 }
 
 start_updates_server() {
-  if lsof -t -i:"$UPDATES_SERVER_PORT" > /dev/null; then
+  if curl --silent --output /dev/null "http://localhost:$UPDATES_SERVER_PORT/"; then
     echo "Port $UPDATES_SERVER_PORT is already in use." >&2
     exit 1
   fi
@@ -91,18 +91,29 @@ start_egress() {
   exit 1
 }
 
-# On the Linux runners, the egress client can ignore SIGINT, so SIGTERM follows after 10 s.
-stop_egress() {
-  kill -INT "$EGRESS_PID" 2> /dev/null
+# Usage: wait_or_terminate PID NAME. Waits up to 10 s for the process to exit, then sends
+# SIGTERM to it and its child processes.
+wait_or_terminate() {
   for _ in $(seq 1 10); do
-    if ! kill -0 "$EGRESS_PID" 2> /dev/null; then
+    if ! kill -0 "$1" 2> /dev/null; then
       return 0
     fi
     sleep 1
   done
-  echo "The egress client did not stop on SIGINT. Sending SIGTERM." >&2
-  pkill -TERM -P "$EGRESS_PID" 2> /dev/null
-  kill -TERM "$EGRESS_PID" 2> /dev/null
+  echo "The $2 did not stop in 10 s. Sending SIGTERM." >&2
+  pkill -TERM -P "$1" 2> /dev/null
+  kill -TERM "$1" 2> /dev/null
+}
+
+# On the Linux runners, the egress client ignores SIGINT.
+stop_egress() {
+  kill -INT "$EGRESS_PID" 2> /dev/null
+  wait_or_terminate "$EGRESS_PID" "egress client"
+}
+
+stop_updates_server() {
+  updates_server_get stop-server > /dev/null
+  wait_or_terminate "$UPDATES_SERVER_PID" "updates server"
 }
 
 # The app logs of a stopped session become available a short time after it stops.
@@ -139,8 +150,7 @@ cleanup() {
     stop_egress
   fi
   if [[ -n "$UPDATES_SERVER_PID" ]]; then
-    kill "$UPDATES_SERVER_PID" 2> /dev/null
-    lsof -t -i:"$UPDATES_SERVER_PORT" | xargs kill 2> /dev/null
+    stop_updates_server
   fi
   if [[ $exit_code -ne 0 && "$PLATFORM" == "ios" && -n "$SESSION_ID" ]]; then
     download_ios_app_logs
