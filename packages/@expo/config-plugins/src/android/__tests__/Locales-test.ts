@@ -157,7 +157,7 @@ describe('e2e: Android locales', () => {
     expect(WarningAggregator.addWarningForPlatform).toHaveBeenCalledWith(
       'android',
       'locales.pt',
-      'Skipped locale keys with invalid values: plugins. Values must be strings.',
+      'Skipped locale keys with invalid values: plugins. Values must be convertible to strings.',
       'https://docs.expo.dev/guides/localization/#translating-app-metadata'
     );
   });
