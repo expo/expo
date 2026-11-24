@@ -372,6 +372,19 @@ jobs:
           SEEN: ${{ steps.cap.outputs.seen }}
         run: bash .github/scripts/ai-review-auto-count.sh record
 
+      # expo-bot is a code owner of the autonomous paths. Submit its decision only
+      # when every changed file is in that scope, so a mixed PR is not blocked by
+      # the other scopes. A failed call does not fail the job.
+      - name: Submit the autonomous review decision
+        if: steps.review.outcome == 'success' && steps.scope.outputs.only_autonomous == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          BOT_LOGIN: expo-bot
+        run: bash .github/scripts/ai-review-decision.sh
+
       # ecr rewrites the comment, and the count step rewrites the tail, so this runs
       # after both. A missing comment is a no-op. Only a review that finished has a stored
       # session to reopen.
