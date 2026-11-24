@@ -16,6 +16,15 @@ struct ObserveUserDefaultsTests {
   }
 
   @Test
+  func `integrations default to nil and keep the config JSON by name`() {
+    #expect(ObserveUserDefaults.integrations == nil)
+    ObserveUserDefaults.integrations = ["expo-updates": #"{"reportWarnings":true}"#]
+    #expect(ObserveUserDefaults.integrations == ["expo-updates": #"{"reportWarnings":true}"#])
+    ObserveUserDefaults.integrations = [:]
+    #expect(ObserveUserDefaults.integrations == [:])
+  }
+
+  @Test
   func `setConfig with dispatchingEnabled false persists false`() {
     ObserveUserDefaults.setConfig(PersistedConfig(dispatchingEnabled: false))
     #expect(ObserveUserDefaults.config?.dispatchingEnabled == false)

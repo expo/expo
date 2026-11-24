@@ -47,6 +47,7 @@ export type ObserveEventName =
   | 'native.exception'
   | 'expo.feedback'
   | 'reanimated.warning'
+  | 'updates.warning'
   | 'expo-image.oversized'
   | (string & {});
 
@@ -270,6 +271,23 @@ export interface ObserveIntegrationsConfig {
    * @default false
    */
   'react-native-reanimated'?: boolean | ObserveReanimatedIntegrationConfig;
+  /**
+   * Enables the `expo-updates` integration, which reports the errors that `expo-updates` logs to Observe as errors
+   * named `updates.error`. The message starts with the code of the log entry, for example
+   * `UpdateFailedToLoad: Failed to launch update: ...`. To also report warnings as events named `updates.warning`,
+   * set `reportWarnings`.
+   *
+   * A JS error that `expo-updates` error recovery handles is reported as `updates.error_recovery` on the next launch,
+   * because error recovery can end the app right after the error.
+   *
+   * When the app launches, the integration starts with the config of the last `configure` call, before your code
+   * runs. So it also reports what `expo-updates` logs before `configure` runs, except at the first launch after you
+   * enable it.
+   *
+   * @default false
+   * @platform ios
+   */
+  'expo-updates'?: boolean | ObserveExpoUpdatesIntegrationConfig;
 }
 
 export type ObserveReanimatedIntegrationConfig = {
@@ -295,6 +313,47 @@ export type ObserveReanimatedIntegrationConfig = {
    */
   reportWarnings?: boolean;
 };
+
+export type ObserveExpoUpdatesIntegrationConfig = {
+  /**
+   * Whether the integration also reports `expo-updates` warnings to Observe, as events named `updates.warning`. The
+   * event has the code of the log entry in the `code` attribute, and the key of its message in the `key` attribute.
+   *
+   * @default false
+   */
+  reportWarnings?: boolean;
+  /**
+   * Codes of the log entries that the integration does not report. For example, `expo-updates` logs a network error
+   * with the `UpdateServerUnreachable` code.
+   *
+   * @default []
+   */
+  ignoredCodes?: ObserveExpoUpdatesLogEntryCode[];
+  /**
+   * Keys of the log messages that the integration does not report, for example `'remote.assetDownloadFailed'`. A key
+   * names one message of `expo-updates`, so it is more specific than a code. An `updates.warning` event has the key
+   * of its message in the `key` attribute.
+   *
+   * @default []
+   */
+  ignoredKeys?: string[];
+};
+
+/**
+ * The code of an `expo-updates` log entry.
+ */
+export type ObserveExpoUpdatesLogEntryCode =
+  | 'None'
+  | 'NoUpdatesAvailable'
+  | 'UpdateAssetsNotAvailable'
+  | 'UpdateServerUnreachable'
+  | 'UpdateHasInvalidSignature'
+  | 'UpdateCodeSigningError'
+  | 'UpdateFailedToLoad'
+  | 'AssetsFailedToLoad'
+  | 'JSRuntimeError'
+  | 'InitializationError'
+  | 'Unknown';
 
 /**
  * Events emitted by the native `ExpoObserve` module.
