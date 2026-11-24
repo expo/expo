@@ -24,7 +24,7 @@ export type ObserveAttributes = Record<string, ObserveAttribute>;
 
 // Keep in sync with `metricNameMap` in `ios/OpenTelemetry.swift` and `android/.../OpenTelemetry.kt` (except legacy entries).
 /**
- * Name of a metric that Expo Observe sends.
+ * Name of a metric that Expo Observe sends
  */
 export type ObserveMetricName =
   | 'expo.app_startup.tti'
@@ -39,7 +39,7 @@ export type ObserveMetricName =
   | 'expo.navigation.tbt';
 
 /**
- * Name of an event that Expo Observe sends. Custom names passed to `logEvent` are allowed.
+ * Name of an event that Expo Observe sends. You can also pass a custom name to `logEvent`.
  */
 export type ObserveEventName =
   | 'js.exception'
@@ -384,19 +384,20 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    */
   dispatchEvents(): Promise<void>;
   /**
-   * Starts a trace span that measures an operation that is underway, and returns the span. The
-   * trace id and span id are set immediately, so you can pass the span as `parent` to other spans
-   * before it ends.
+   * Starts a trace span for an operation that is underway, and returns the span. The span gets
+   * its trace ID and span ID immediately, so you can pass it as `parent` to other spans before it
+   * ends.
    *
-   * The span is saved only when you call `end()`. A span that you do not end is not sent. After it
-   * ends, the span is sent with the next dispatch, as part of the current session. This method
-   * never throws: when the span cannot be recorded, it logs a warning, and the returned span still
-   * accepts every call.
+   * Observe saves the span when you call `end()`, and sends it with the next dispatch as part of
+   * the current session. If you never call `end()`, Observe never sends the span.
    *
-   * @param name A short, stable name for the operation, for example, `'checkout'`. The span is not
-   * recorded when the name is empty, starts with the reserved `expo.` prefix, or is longer than 256
-   * characters.
-   * @param options Initial attributes, a parent span, and an optional start time.
+   * This method never throws. When it cannot record the span, it logs a warning. The span that it
+   * returns still accepts every call.
+   *
+   * @param name A short, stable name for the operation, for example, `'checkout'`. Observe does
+   * not record the span when the name is empty, starts with the reserved `expo.` prefix, or is
+   * longer than 256 characters.
+   * @param options Initial attributes, a parent span, and an optional start time
    * @returns The span. Call `end()` on it when the operation finishes.
    *
    * @example
@@ -410,22 +411,24 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    */
   startSpan(name: string, options?: StartSpanOptions): Span;
   /**
-   * Runs `callback` inside a span. The span starts before the callback runs, and ends when the
-   * callback returns or its promise settles. When the callback throws or its promise rejects, the
-   * span ends with the `'error'` status and the error message, and the error is thrown again. Your
-   * own error handling still works. A failure inside Observe does not change the result: the
-   * returned promise settles the same way as the callback.
+   * Runs `callback` inside a span. The span starts first and ends when the callback returns or its
+   * promise settles.
    *
-   * The callback receives the span. Use it to add attributes and events, and pass it as `parent`
-   * to nested spans. Spans are not nested automatically: a span that starts inside the callback
-   * without `parent` starts its own trace.
+   * When the callback throws or its promise rejects, the span ends with the `'error'` status and
+   * the error message. The returned promise then rejects with the same error, so your own error
+   * handling still works. An error inside Observe never changes the result: the returned promise
+   * settles the same way as the callback.
    *
-   * @param name A short, stable name for the operation. When the name is empty, starts with the
-   * reserved `expo.` prefix, or is longer than 256 characters, the callback still runs, but the
-   * span is not recorded.
+   * The callback receives the span. Use the span to add attributes and events, and pass it as
+   * `parent` to nested spans. Observe does not nest spans automatically. A span that you start
+   * inside the callback without `parent` begins its own trace.
+   *
+   * @param name A short, stable name for the operation. Observe does not record the span when the
+   * name is empty, starts with the reserved `expo.` prefix, or is longer than 256 characters. The
+   * callback still runs.
    * @param callback The operation to measure. It can be synchronous or asynchronous.
-   * @param options Initial attributes, a parent span, and an optional start time.
-   * @returns A promise that resolves to the result of the callback.
+   * @param options Initial attributes, a parent span, and an optional start time
+   * @returns A promise fulfilled with the result of the callback
    *
    * @example
    * ```ts
@@ -447,15 +450,15 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * Records a span for an operation that you already measured. The result is the same as
    * `startSpan` followed immediately by `end()`, with the times that you supply.
    *
-   * The span is not recorded when `startTime` or `endTime` is missing or is not in Unix epoch
-   * milliseconds. The same applies when `endTime` is before `startTime`. In each case, Observe
-   * logs a warning. A value from `performance.now()` is not a Unix epoch time, so use `Date.now()`.
-   * This method never throws.
+   * Observe does not record the span when `startTime` or `endTime` is missing or is not in Unix
+   * epoch milliseconds. The same applies when `endTime` is before `startTime`. In each case,
+   * Observe logs a warning. A value from `performance.now()` is not a Unix epoch time, so use
+   * `Date.now()`. This method never throws.
    *
-   * @param name A short, stable name for the operation. The span is not recorded when the name is
-   * empty, starts with the reserved `expo.` prefix, or is longer than 256 characters.
+   * @param name A short, stable name for the operation. Observe does not record the span when the
+   * name is empty, starts with the reserved `expo.` prefix, or is longer than 256 characters.
    * @param options The start and end times in Unix epoch milliseconds (both required), optional
-   * attributes, and an optional parent span.
+   * attributes, and an optional parent span
    *
    * @example
    * ```ts
