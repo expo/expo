@@ -13,9 +13,13 @@ final class NetworkReportingImageLoader: NSObject, SDImageLoader {
   /// The report for one download, shared by every load attached to it. `SDWebImageDownloader` attaches
   /// a load of a URL that is already downloading to that download instead of starting another.
   private final class DownloadReport: @unchecked Sendable {
-    let requestId = ExpoNetworkReporter.makeRequestId()
+    let requestId: String
     var attachedLoads = 1
     var receivedResponse = false
+
+    init(devToolsRequestId: String?) {
+      requestId = ExpoNetworkReporter.makeRequestId(devToolsRequestId: devToolsRequestId)
+    }
   }
 
   /// One `requestImage` call, and the download report it is attached to.
@@ -57,7 +61,8 @@ final class NetworkReportingImageLoader: NSObject, SDImageLoader {
     guard let url else {
       return downloader.requestImage(with: url, options: options, context: context, progress: progressBlock, completed: completedBlock)
     }
-    let report = DownloadReport()
+    let source = context?[ImageView.contextSourceKey] as? ImageSource
+    let report = DownloadReport(devToolsRequestId: source?.devToolsRequestId)
     let load = Load()
     var context = context ?? [:]
 
