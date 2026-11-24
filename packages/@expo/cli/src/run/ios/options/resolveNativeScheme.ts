@@ -54,9 +54,9 @@ export async function promptOrQueryNativeSchemeAsync(
         };
       }),
       {
-        nonInteractiveHelp: `--scheme: argument must be provided with a string in non-interactive mode. Valid choices are: ${schemes.join(
-          ', '
-        )}`,
+        nonInteractiveHelp: `--scheme: argument must be provided with a string in non-interactive mode. Valid choices are: ${schemes
+          .map(({ name }) => name)
+          .join(', ')}`,
       }
     );
     return schemes.find(({ name }) => resolvedSchemeName === name) ?? null;
