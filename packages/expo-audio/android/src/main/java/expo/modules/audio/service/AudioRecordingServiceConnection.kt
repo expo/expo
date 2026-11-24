@@ -23,6 +23,7 @@ class AudioRecordingServiceConnection(
   val recorder: WeakReference<AudioRecorder>,
   appContext: AppContext
 ) : BaseServiceConnection<AudioRecordingServiceBinder>(appContext) {
+  @Volatile
   var recordingServiceBinder: AudioRecordingServiceBinder? = null
     private set
   private var bindingTimeoutJob: Job? = null
@@ -130,11 +131,11 @@ class AudioRecordingServiceConnection(
       transitionToState(ServiceBindingState.FAILED)
       return
     }
+    recordingServiceBinder = serviceBinder
+    serviceBinder.service.appContext = appContext
     transitionToState(ServiceBindingState.BOUND)
 
     takeBindingContinuation()?.resume(Unit)
-    recordingServiceBinder = serviceBinder
-    serviceBinder.service.appContext = appContext
   }
 
   override fun onServiceDisconnected(componentName: ComponentName) {

@@ -14,6 +14,8 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -94,6 +96,25 @@ class AudioRecordingServiceConnectionTest {
 
     assertEquals(ServiceBindingState.BOUND, connection.bindingState)
     assertSame(binder, connection.recordingServiceBinder)
+  }
+
+  @Test
+  fun setsUpTheBinderBeforeResumingTheCaller() {
+    onStartServiceAndBind { it.connectLater() }
+    var binderOnResume: AudioRecordingServiceBinder? = null
+    var appContextOnResume: AppContext? = null
+
+    runBlocking {
+      // `Unconfined` runs the caller inside `onServiceConnected`, as soon as it resumes it.
+      launch(Dispatchers.Unconfined) {
+        connection.bindWithService()
+        binderOnResume = connection.recordingServiceBinder
+        appContextOnResume = serviceAppContext
+      }.join()
+    }
+
+    assertSame(binder, binderOnResume)
+    assertSame(appContext, appContextOnResume)
   }
 
   @Test
