@@ -124,6 +124,8 @@ export function format(manifest: any, { indentLevel = 2, newline = EOL } = {}): 
 /**
  * Escapes Android string literals and control characters that cannot appear literally in XML.
  *
+ * Keep in sync with packages/create-expo/src/Template.ts.
+ *
  * @param value unescaped Android XML string literal.
  */
 export function escapeAndroidString(value: string): string {
