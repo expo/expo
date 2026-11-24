@@ -1,25 +1,28 @@
 ---
 title: Integrate a third-party package with Expo Observe
 sidebar_title: Third-party
-description: Learn how to add an optional Expo Observe integration to a third-party package.
+description: Learn how to add an optional Expo Observe integration to a third-party package with expo-observe-interface.
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Step } from '~/ui/components/Step';
 
-Third-party packages can integrate with Expo Observe to send events that help developers identify performance and usage issues. These are often problems that are difficult to detect from application code alone.
+Third-party packages can integrate with Expo Observe to report errors and events that help developers identify performance and usage issues. These are often problems that are difficult to detect from application code alone.
 
-Events should describe actionable issues that developers can fix. For example, a package might report:
+Reports should describe actionable issues that developers can fix. For example, a package might report:
 
 - An image that is much larger than the device's screen
 - A background task that takes too long to complete
 - A native resource that loads slowly
 
+A package integrates with the `expo-observe-interface` package, not with `expo-observe`. `expo-observe-interface` has no dependencies. When the app installs `expo-observe` and enables your integration with `Observe.configure()`, Expo Observe starts your integration and gives it a client that reports for it. When the app does not install `expo-observe`, your integration never starts.
+
 ## Prerequisites
 
 <Prerequisites>
-  <Requirement title="Expo SDK 57 and later">
-    Third-party integrations require SDK 57 and later to access `Observe.registerIntegration()`.
+  <Requirement title="Expo SDK 58 and later">
+    Third-party integrations require `expo-observe-interface`, and `expo-observe` version 58.1.0 and
+    later in the app.
   </Requirement>
   <Requirement title="An app already using Expo Observe">
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
@@ -27,37 +30,19 @@ Events should describe actionable issues that developers can fix. For example, a
   </Requirement>
 </Prerequisites>
 
+> **info** Third-party integrations work on iOS only for now. On Android, your integration does not start.
+
 <Step label="1">
 
-## Add `expo-observe` as an optional peer dependency
+## Add `expo-observe-interface` as a dependency
 
-Add `expo-observe` as an optional peer dependency so your package continues to work when it is not installed. Also, add it as a development dependency for TypeScript types and tests. Do not add it as a required runtime dependency.
+Add `expo-observe-interface` to the `dependencies` of your package. Do not add `expo-observe`:
 
 ```json package.json
 {
-  "peerDependencies": {
-    "expo-observe": ">={{expoSdkVersion}}"
-  },
-  "peerDependenciesMeta": {
-    "expo-observe": {
-      "optional": true
-    }
-  },
-  "devDependencies": {
-    "expo-observe": "^{{expoSdkVersion}}"
+  "dependencies": {
+    "expo-observe-interface": "^{{expoSdkVersion}}"
   }
-}
-```
-
-Load the package with `require()` inside a `try/catch` block. Use `typeof import()` to preserve its TypeScript types:
-
-```ts observe.ts
-let observeModule: typeof import('expo-observe') | undefined;
-
-try {
-  observeModule = require('expo-observe') as typeof import('expo-observe');
-} catch {
-  // The integration remains disabled when expo-observe is not installed.
 }
 ```
 
@@ -67,14 +52,14 @@ try {
 
 ## Declare the integration configuration
 
-Use declaration merging to add your package's integration key to `expo-observe`:
+Use declaration merging to add the key of your integration to `expo-observe-interface`. Use the npm package name of your package as the key:
 
 ```ts observe.types.ts
 export type YourPackageIntegrationConfig = {
   thresholdMs?: number;
 };
 
-declare module 'expo-observe' {
+declare module 'expo-observe-interface' {
   interface ObserveIntegrationsConfig {
     'your-package'?: boolean | YourPackageIntegrationConfig;
   }
@@ -107,76 +92,148 @@ Observe.configure({
 });
 ```
 
+The configuration is passed to your integration as JSON, so it cannot contain functions. Use data, such as lists of codes to skip, instead of callbacks.
+
 </Step>
 
 <Step label="3">
 
 ## Register the integration
 
-Call `Observe.registerIntegration()` with your integration key. The callback receives the configuration for your integration:
+Call `registerObserveIntegration()` once, when your package is imported. `setup` receives the configuration and a client, and returns a function that stops the integration:
 
 ```ts observe.ts
-export function initObserveIntegration() {
-  // The `typeof window` check skips initialization during server-side rendering on web.
-  if (typeof window !== 'undefined' && observeModule) {
-    const { Observe } = observeModule;
+import { registerObserveIntegration } from 'expo-observe-interface';
 
-    Observe.registerIntegration('your-package', config => {
-      if (config) {
-        enableObserveIntegration(config === true ? {} : config);
+import type { YourPackageIntegrationConfig } from './observe.types';
+
+registerObserveIntegration<YourPackageIntegrationConfig>({
+  name: 'your-package',
+  setup({ config, observe }) {
+    const thresholdMs = config.thresholdMs ?? 1000;
+    const subscription = addOperationListener(operation => {
+      if (operation.durationMs > thresholdMs) {
+        observe.logEvent({
+          name: 'your-package.expensive-operation',
+          severity: 'warn',
+          body: 'Reduce the work performed by this operation or increase the configured threshold.',
+          attributes: { durationMs: operation.durationMs, thresholdMs },
+        });
       }
     });
-  }
-}
-
-let enabled = false;
-
-function enableObserveIntegration() {
-  // Initialize the integration here
-  // For example:
-  enabled = true;
-}
+    return () => subscription.remove();
+  },
+});
 ```
 
-Implement `enableObserveIntegration()` in your package. The callback does not run when the integration is omitted or set to `false`.
-
-Call the initialization function from your package entry point:
+Import the file from your package entry point:
 
 ```ts index.ts
-import { initObserveIntegration } from './observe';
+import './observe';
 
 export type { YourPackageIntegrationConfig } from './observe.types';
-
-initObserveIntegration();
 ```
+
+Expo Observe manages the lifecycle of the integration:
+
+- `setup` runs when `Observe.configure()` enables the integration.
+- When a later `Observe.configure()` call changes the configuration, the function that `setup` returned runs, and then `setup` runs again with the new configuration.
+- When a later `Observe.configure()` call turns the integration off, only the function that `setup` returned runs.
+- After the app reloads, `setup` runs again when `Observe.configure()` runs.
+
+Errors that `setup` or the returned function throw are caught and printed as warnings.
 
 </Step>
 
 <Step label="4">
 
-## Log events
+## Report errors, warnings, and events
 
-Call `Observe.logEvent()` when your package detects an actionable issue. Use a lowercase event name with the package name as the first segment. Separate segments with periods:
+The client that `setup` receives reports for your integration only. It has these functions:
+
+- `observe.reportError()` records a non-fatal error. Errors appear in the **Errors** page. See [Error reporting](/eas/observe/errors/).
+- `observe.reportWarning()` records a warning as an event with `warn` severity. The event has the message in its body and in the `message` attribute.
+- `observe.logEvent()` records an event. See [User-defined events](/eas/observe/events/).
 
 ```ts observe.ts
-export function logExpensiveOperation(durationMs: number, thresholdMs: number) {
-  if (!observeModule || !enabled) {
-    return;
+observe.reportError({
+  type: 'your-package.error',
+  message: error.message,
+  stacktrace: error.stack,
+  code: error.code,
+});
+```
+
+Use a lowercase name with the package name as the first segment for error types and event names. Separate segments with periods.
+
+The client applies the same rules to every integration:
+
+- A report with a `code` that is in the `ignoredCodes` option of your integration configuration is not recorded. If your reports have codes, add `ignoredCodes?: string[]` to your configuration type, so developers can set it.
+- While the user has not granted consent to Observe, the client records nothing.
+- After the function that `setup` returned runs, the client records nothing.
+
+The client does not limit how often your integration reports. If your package can log the same message many times, for example once per frame, deduplicate the messages before you report them.
+
+Each report function returns whether the client recorded the report.
+
+</Step>
+
+<Step label="5">
+
+## Add a native integration
+
+When your package detects issues in native code, report them from native code too. A native integration can start at launch, before your JavaScript code runs. It starts with the configuration of the last `Observe.configure()` call.
+
+Add `ExpoObserveInterface` to the dependencies of your pod:
+
+```ruby ios/YourPackage.podspec
+s.dependency 'ExpoObserveInterface'
+```
+
+Implement `ObserveIntegration`:
+
+```swift ios/YourPackageObserveIntegration.swift
+import ExpoObserveInterface
+
+final class YourPackageObserveIntegration: ObserveIntegration {
+  let name = "your-package"
+
+  func setup(config: [String: Any], observe: any ObserveClient) throws -> (() -> Void)? {
+    let thresholdMs = config["thresholdMs"] as? Double ?? 1000
+    let listener = OperationMonitor.shared.addListener { operation in
+      if operation.durationMs > thresholdMs {
+        observe.logEvent(
+          ObserveEvent(
+            name: "your-package.expensive-operation",
+            body: "Reduce the work performed by this operation or increase the configured threshold.",
+            attributes: ["durationMs": .number(operation.durationMs)],
+            severity: .warn
+          )
+        )
+      }
+    }
+    return { OperationMonitor.shared.removeListener(listener) }
   }
-
-  const { Observe } = observeModule;
-
-  Observe.logEvent('your-package.expensive-operation', {
-    severity: 'warn',
-    body: 'Reduce the work performed by this operation or increase the configured threshold.',
-    attributes: {
-      durationMs,
-      thresholdMs,
-    },
-  });
 }
 ```
 
-For more information about naming events and adding details, see [User-defined events](/eas/observe/events/).
+Register the integration once, as early as possible. For example, register it from an app delegate subscriber, and add the subscriber to `apple.appDelegateSubscribers` in the **expo-module.config.json** of your package:
+
+```swift ios/YourPackageAppDelegateSubscriber.swift
+import ExpoModulesCore
+import ExpoObserveInterface
+
+public class YourPackageAppDelegateSubscriber: ExpoAppDelegateSubscriber {
+  public func subscriberDidRegister() {
+    ObserveIntegrationRegistry.shared.register(YourPackageObserveIntegration())
+  }
+}
+```
+
+A native integration and a JavaScript integration with the same name get the same configuration.
 
 </Step>
+
+## Packages that use `Observe.registerIntegration()`
+
+`Observe.registerIntegration()` calls its callback once, with the first configuration that enables the integration. It does not call the callback again when the configuration changes, and it cannot turn the integration off. To get the full lifecycle, move to `registerObserveIntegration()` from `expo-observe-interface`. This also removes the optional peer dependency on `expo-observe`.
