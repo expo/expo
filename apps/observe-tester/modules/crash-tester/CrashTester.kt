@@ -1,5 +1,7 @@
 package expo.modules.crashtester
 
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
 import android.os.Process
@@ -42,6 +44,33 @@ class CrashTester : Module() {
   override fun definition() = ModuleDefinition {
     Function("triggerCrash") { kind: CrashKind ->
       CrashTriggers.trigger(kind)
+    }
+
+    Function("blockMainThread") { seconds: Double ->
+      Handler(Looper.getMainLooper()).post {
+        Thread.sleep((seconds * 1000).toLong())
+      }
+    }
+
+    Function("exhaustJavaHeap") {
+      // Posted to the main looper, so the error reaches the uncaught-exception handler.
+      Handler(Looper.getMainLooper()).post {
+        val chunks = mutableListOf<ByteArray>()
+        while (true) {
+          chunks += ByteArray(16 * 1024 * 1024)
+        }
+      }
+    }
+
+    Function("fillNativeMemory") {
+      // Bitmap pixels live in native memory, outside the Java heap limit. Filling each one makes
+      // its pages resident, so the low-memory killer counts them.
+      Thread {
+        val bitmaps = mutableListOf<Bitmap>()
+        while (true) {
+          bitmaps += Bitmap.createBitmap(4096, 4096, Bitmap.Config.ARGB_8888).apply { eraseColor(Color.RED) }
+        }
+      }.start()
     }
   }
 }

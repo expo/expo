@@ -7,6 +7,7 @@ import { Button } from '@/components/Button';
 import { CrashReportsSection } from '@/components/CrashReportsSection';
 import { Divider } from '@/components/Divider';
 import { GlobalAttributesSection } from '@/components/GlobalAttributesSection';
+import { HangsSection } from '@/components/HangsSection';
 import { JSAnimation } from '@/components/JSAnimation';
 import { JSErrorsSection } from '@/components/JSErrorsSection';
 import { LogEventsSection } from '@/components/LogEventsSection';
@@ -37,6 +38,8 @@ export default function Debug() {
       <NetworkRequestObserverSection />
       <Divider />
       <CrashReportsSection />
+      {CrashTester != null ? <Divider /> : null}
+      <HangsSection />
       {CrashTester != null ? <Divider /> : null}
       <JSErrorsSection />
       <Divider />

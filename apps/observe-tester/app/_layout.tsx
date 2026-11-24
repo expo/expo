@@ -10,6 +10,7 @@ Observe.configure({
   dispatchInDebug: true,
   sampleRate: 1,
   errorSampleRate: 1,
+  longTaskThreshold: 500,
   // ignoredMetrics: ['expo.app_startup.tti'],
   // ignoredEvents: ['debug.info_button_pressed'],
   integrations: {
