@@ -36,6 +36,12 @@ class CrashTester: Module {
       case .stackOverflow: CrashTriggers.stackOverflow()
       }
     }
+
+    Function("blockMainThread") { (seconds: Double) in
+      DispatchQueue.main.async {
+        Thread.sleep(forTimeInterval: seconds)
+      }
+    }
   }
 }
 
