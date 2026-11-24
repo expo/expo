@@ -19,12 +19,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.lang.ref.WeakReference
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 class AudioRecordingServiceConnectionTest {
@@ -149,5 +153,27 @@ class AudioRecordingServiceConnectionTest {
     onStartServiceAndBind { it.connectLater() }
     runBlocking { connection.bindWithService() }
     assertTrue(connection.isConnected)
+  }
+
+  @Test
+  fun failsWhenTheRecorderIsReleasedWhileBinding() {
+    val bindCalled = CountDownLatch(1)
+    onStartServiceAndBind { bindCalled.countDown() }
+    val result = CompletableFuture<Throwable?>()
+    thread(isDaemon = true) {
+      try {
+        runBlocking { connection.bindWithService() }
+        result.complete(null)
+      } catch (e: Throwable) {
+        result.complete(e)
+      }
+    }
+    assertTrue(bindCalled.await(1, TimeUnit.SECONDS))
+
+    connection.release()
+
+    val error = result.get(1, TimeUnit.SECONDS)
+    assertNotNull(error)
+    assertTrue(error is AudioRecordingServiceException)
   }
 }

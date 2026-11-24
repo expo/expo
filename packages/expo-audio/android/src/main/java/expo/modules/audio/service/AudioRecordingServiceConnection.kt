@@ -35,6 +35,7 @@ class AudioRecordingServiceConnection(
   fun release() {
     isRecorderReleased = true
     cancelBindingTimeout()
+    takeBindingContinuation()?.resumeWithException(AudioRecordingServiceException("The recorder has been released"))
   }
 
   fun startBindingTimeout(timeoutMs: Long = 5000) { // 5000ms is more or less the default Android system timeout for binding
