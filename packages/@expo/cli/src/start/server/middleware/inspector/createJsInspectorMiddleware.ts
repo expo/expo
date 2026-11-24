@@ -31,7 +31,20 @@ export function createJsInspectorMiddleware({
       return;
     }
 
-    const app = await queryInspectorAppAsync(serverBaseUrl, appId);
+    // The debug middleware only answers local sockets, and `serverBaseUrl` can be the
+    // REACT_NATIVE_PACKAGER_HOSTNAME or proxy address, so ask Metro over loopback.
+    const metroOrigin = `http://127.0.0.1:${req.socket.localPort}`;
+
+    let app;
+    try {
+      app = await queryInspectorAppAsync(metroOrigin, appId);
+    } catch (error: any) {
+      console.error(
+        chalk.red('Error querying JS inspector targets: ' + (error?.message ?? 'Unknown error'))
+      );
+      res.writeHead(500).end();
+      return;
+    }
     if (!app) {
       res.writeHead(404).end('Unable to find inspector target from @react-native/dev-middleware');
       console.warn(
@@ -56,7 +69,7 @@ export function createJsInspectorMiddleware({
         return;
       }
       try {
-        await openJsInspector(serverBaseUrl, app);
+        await openJsInspector(metroOrigin, app);
       } catch (error: any) {
         // abort(Error: Command failed: osascript -e POSIX path of (path to application "google chrome")
         // 15:50: execution error: Google Chrome got an error: Application isn’t running. (-600)

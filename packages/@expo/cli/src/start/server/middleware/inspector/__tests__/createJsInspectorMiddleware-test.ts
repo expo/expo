@@ -90,9 +90,54 @@ describe('createJsInspectorMiddleware', () => {
     await middlewareAsync(req, res as ServerResponse, next);
 
     expect(JsInspector.queryInspectorAppAsync).toHaveBeenCalledWith(
-      'http://localhost:8081',
+      'http://127.0.0.1:8081',
       expect.anything()
     );
+  });
+
+  it.each([
+    ['a packager hostname override', 'http://192.168.1.20:8081'],
+    ['a packager proxy URL', 'https://metro.example.com'],
+  ])(
+    'queries the inspector over loopback on the port Metro listens on, when serverBaseUrl is %s',
+    async (_, serverBaseUrl) => {
+      const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0]!;
+      const req = createRequest(
+        `http://localhost:8081/_expo/debugger?applicationId=${app.description}`
+      );
+      const res = createMockedResponse();
+      const next = jest.fn();
+      (
+        JsInspector.queryInspectorAppAsync as jest.MockedFunction<
+          typeof JsInspector.queryInspectorAppAsync
+        >
+      ).mockReturnValue(Promise.resolve(app));
+
+      const middlewareAsync = createJsInspectorMiddleware({ serverBaseUrl });
+      await middlewareAsync(req, res as ServerResponse, next);
+
+      expect(JsInspector.queryInspectorAppAsync).toHaveBeenCalledWith(
+        'http://127.0.0.1:8081',
+        expect.anything()
+      );
+    }
+  );
+
+  it('responds with 500 instead of rejecting when the inspector query fails', async () => {
+    const req = createRequest('http://localhost:8081/_expo/debugger?applicationId=any');
+    const res = createMockedResponse();
+    const next = jest.fn();
+    (
+      JsInspector.queryInspectorAppAsync as jest.MockedFunction<
+        typeof JsInspector.queryInspectorAppAsync
+      >
+    ).mockRejectedValue(new TypeError('(intermediate value).reverse is not a function'));
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const middlewareAsync = createJsInspectorMiddleware({ serverBaseUrl: 'http://localhost:8081' });
+    await expect(middlewareAsync(req, res as ServerResponse, next)).resolves.toBeUndefined();
+
+    expectMockedResponse(res, 500);
   });
 
   it('rejects requests from a cross-origin browser page', async () => {
@@ -146,6 +191,7 @@ describe('createJsInspectorMiddleware', () => {
 
     expectMockedResponse(res, 200);
     expect(JsInspector.openJsInspector).toHaveBeenCalledTimes(1);
+    expect(JsInspector.openJsInspector).toHaveBeenCalledWith('http://127.0.0.1:8081', app);
   });
 });
 
