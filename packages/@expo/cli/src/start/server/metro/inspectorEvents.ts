@@ -11,6 +11,7 @@ declare module '2g' {
     'inspector:handler_all_disabled': Record<string, never>;
     'inspector:handler_ready': { handlers: string };
     'inspector:network_cdp_failed': { error: SerializedError };
+    'inspector:console_session_failed': { title: string; error: SerializedError };
   }
 }
 
