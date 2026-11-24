@@ -29,6 +29,7 @@ const mockWithSpan = jest.fn();
 const mockRecordSpan = jest.fn();
 
 const mockSetErrorHandlerEnabled = jest.fn();
+const mockSetLongTaskThreshold = jest.fn();
 
 jest.mock('expo', () => ({
   requireNativeModule: jest.fn(() => mockNative),
@@ -38,6 +39,7 @@ jest.mock('expo-app-metrics', () => ({
   __esModule: true,
   default: mockAppMetrics,
   setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
+  setLongTaskThreshold: mockSetLongTaskThreshold,
   startSpan: mockStartSpan,
   withSpan: mockWithSpan,
   recordSpan: mockRecordSpan,
@@ -82,6 +84,7 @@ beforeEach(() => {
     __esModule: true,
     default: mockAppMetrics,
     setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
+    setLongTaskThreshold: mockSetLongTaskThreshold,
     startSpan: mockStartSpan,
     withSpan: mockWithSpan,
     recordSpan: mockRecordSpan,
@@ -235,6 +238,19 @@ describe('module Proxy', () => {
     expect(Observe.startSpan).toBe(mockStartSpan);
     expect(Observe.withSpan).toBe(mockWithSpan);
     expect(Observe.recordSpan).toBe(mockRecordSpan);
+  });
+
+  it('forwards longTaskThreshold to expo-app-metrics', () => {
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test', longTaskThreshold: 1000 });
+    expect(mockSetLongTaskThreshold).toHaveBeenCalledWith(1000);
+  });
+
+  it('resets the long task threshold when configure omits longTaskThreshold', () => {
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test' });
+    expect(mockSetLongTaskThreshold).toHaveBeenCalledTimes(1);
+    expect(mockSetLongTaskThreshold).toHaveBeenCalledWith(undefined);
   });
 
   it('records no network traces when configure omits networkTraces', () => {
