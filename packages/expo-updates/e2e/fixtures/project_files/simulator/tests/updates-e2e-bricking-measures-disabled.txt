@@ -1,0 +1,2 @@
+brickingDisabled_runUpdate.sh
+brickingDisabled_jsReloadUpdate.sh
