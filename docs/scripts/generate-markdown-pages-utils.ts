@@ -603,7 +603,8 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // Convert font-semibold spans to <strong> so Turndown produces bold text.
   main.find('span.font-semibold').each((_, el) => {
     const $el = $(el);
-    $el.replaceWith('<strong>' + $el.html() + '</strong>');
+    const dataText = $el.attr('data-text') === 'true' ? ' data-text="true"' : '';
+    $el.replaceWith(`<strong${dataText}>` + $el.html() + '</strong>');
   });
 
   // Convert API platform tag groups to "Supported platforms: X, Y" text.

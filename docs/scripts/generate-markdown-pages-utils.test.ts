@@ -612,6 +612,19 @@ describe('card links', () => {
     expect(md).toContain('[My Guide](https://docs.expo.dev/guide.md)');
     expect(md).toContain('Guide description.');
   });
+
+  it('keeps a semibold card link title', () => {
+    const html = `<main>
+      <a href="/guide" data-md="card-link">
+        <div class="flex flex-col">
+          <span class="font-semibold" data-text="true">My Guide</span>
+          <p data-text="true">Guide description.</p>
+        </div>
+      </a>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('[My Guide](https://docs.expo.dev/guide.md) — Guide description.');
+  });
 });
 
 describe('terminal snippet labels', () => {
