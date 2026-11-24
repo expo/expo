@@ -1,11 +1,17 @@
 package expo.modules.appmetrics.spans
 
+import expo.modules.appmetrics.ObserveConsentGrantedRule
+import org.junit.Rule
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.Session
 import expo.modules.appmetrics.storage.Span
+import io.mockk.every
+import io.mockk.mockkObject
+import io.mockk.unmockkAll
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -30,6 +36,9 @@ private fun makeRow(name: String = "checkout", sessionId: String = "s"): Span {
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class SpanWriterTest {
+  @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
   // Shared by `runTest` and Room's executors, so `advanceUntilIdle` waits for the inserts the
   // writer launches instead of racing them.
   private val testDispatcher = StandardTestDispatcher()
@@ -50,6 +59,7 @@ class SpanWriterTest {
 
   @After
   fun tearDown() {
+    unmockkAll()
     database.close()
   }
 
@@ -131,5 +141,22 @@ class SpanWriterTest {
     testScheduler.advanceUntilIdle()
     assertEquals(0, completions)
     assertTrue(allSpanNames().isEmpty())
+  }
+
+  @Test
+  fun `drops rows while consent is not granted`() = runTest(testDispatcher) {
+    insertSession("s")
+    mockkObject(ObserveConsent)
+    every { ObserveConsent.isGranted } returns false
+    var completions = 0
+    val writer = SpanWriter(database = database, scope = this)
+
+    writer.write(makeRow(name = "single"))
+    writer.writeAll(onComplete = { completions += 1 }) { listOf(makeRow(name = "batch")) }
+    testScheduler.advanceUntilIdle()
+
+    assertTrue(allSpanNames().isEmpty())
+    // The dropped batch counts as done, so the caller does not keep it for a retry.
+    assertEquals(1, completions)
   }
 }

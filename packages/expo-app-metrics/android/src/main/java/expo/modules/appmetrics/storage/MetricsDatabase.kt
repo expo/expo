@@ -39,6 +39,8 @@ abstract class MetricsDatabase : RoomDatabase() {
   abstract fun spanDao(): SpanDao
 
   companion object {
+    const val NAME = "app_metrics"
+
     @Volatile
     private var INSTANCE: MetricsDatabase? = null
 
@@ -48,7 +50,7 @@ abstract class MetricsDatabase : RoomDatabase() {
           .databaseBuilder(
             context.applicationContext,
             MetricsDatabase::class.java,
-            "app_metrics"
+            NAME
           )
           // Version bumps drop the data instead of migrating: maintaining migrations costs more
           // than losing local telemetry that is dispatched frequently anyway.

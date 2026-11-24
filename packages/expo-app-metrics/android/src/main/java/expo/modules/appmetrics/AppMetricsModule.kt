@@ -235,6 +235,13 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       OnCreate {
+        if (!ObserveConsent.isLoaded) {
+          Log.w(
+            TAG,
+            "[AppMetrics] The Observe consent was not loaded, so Observe stays inactive. Call " +
+              "`ApplicationLifecycleDispatcher.onApplicationCreate(this)` in `Application.onCreate`."
+          )
+        }
         sessionManager = SessionManager(context)
 
         // The main session starts at the first startup metric's timestamp (the
@@ -291,6 +298,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         // The processor builds the reports; `attributeAndStoreCrashReport` owns
         // the session attribution and storage.
         scope.launch {
+          if (!ObserveConsent.isGranted) {
+            return@launch
+          }
           CrashReportProcessor(
             crashFileReader = CrashFileReader.forContext(context),
             exitInfoProvider = ExitInfoProviderImpl(context),
@@ -325,6 +335,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         // TODO(@ubax): move this drain and other resource-intensive startup work off the launch path
         // (e.g. into `markInteractive` or a background dispatch) so it doesn't affect startup time.
         scope.launch {
+          if (!ObserveConsent.isGranted) {
+            return@launch
+          }
           PendingErrorStore.drain(context).forEach { pendingError ->
             runCatching {
               sessionManager.addLogs(listOf(pendingError.toLogRecord()), sessionId = pendingError.sessionId)
@@ -492,6 +505,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   // The session waits for its row before inserting.
   private suspend fun saveStartupMetrics() =
     saveStartupMetricsMutex.withLock {
+      // Without consent the startup metrics stay in memory.
+      if (!ObserveConsent.isGranted) {
+        return@withLock
+      }
       val metrics = AppStartupManager.takeUnsavedMetrics()
       if (metrics.isNotEmpty()) {
         mainSession.addMetrics(metrics)

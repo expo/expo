@@ -3,6 +3,7 @@ package expo.modules.observe
 import android.content.Context
 import android.util.Log
 import expo.modules.appmetrics.AppMetricsModule
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.easclient.EASClientID
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.exception.Exceptions
@@ -47,6 +48,12 @@ class ObserveModule : Module() {
       Events("configure")
 
       OnCreate {
+        // Deletes what a build with consent stored. Module start is late enough, because nothing is
+        // sent without consent.
+        if (!ObserveConsent.isGranted) {
+          context.deleteDatabase(LEGACY_DATABASE_NAME)
+          ObservePreferences.deleteStoredSettings(context)
+        }
         appMetricsModule = checkNotNull(appContext.registry.getModule<AppMetricsModule>()) {
           "AppMetricsModule is required by ObserveModule. Make sure expo-app-metrics is installed."
         }

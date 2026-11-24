@@ -2,6 +2,7 @@ package expo.modules.appmetrics.jserrors
 
 import android.content.Context
 import android.util.Log
+import expo.modules.appmetrics.ObserveConsent
 import java.io.File
 import java.util.UUID
 import kotlinx.serialization.Serializable
@@ -41,6 +42,9 @@ object PendingErrorStore {
    * way to a crash and must not throw out of the error handler).
    */
   fun write(context: Context, error: PendingError) {
+    if (!ObserveConsent.isGranted) {
+      return
+    }
     runCatching {
       val directory = directory(context)
       val fileName = "${error.timestamp}-${UUID.randomUUID()}.json"
@@ -85,6 +89,6 @@ object PendingErrorStore {
   }
 
   /** The directory holding pending-error files, under `noBackupFilesDir` so they're not backed up. */
-  private fun directory(context: Context): File =
+  internal fun directory(context: Context): File =
     File(context.noBackupFilesDir, "ExpoAppMetrics/pending-errors").apply { mkdirs() }
 }
