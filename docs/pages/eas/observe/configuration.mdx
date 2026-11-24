@@ -168,6 +168,7 @@ The device saves the value. On later launches, the saved value overrides the con
 - A launch without consent deletes the Expo Observe data and settings that an earlier launch stored.
 - `Observe.clientId` returns the [client ID](/eas/observe/reference/client-id/). The device saves the ID, but Expo Observe does not use it.
 - Startup metrics of the current launch stay in memory. A grant in the same launch saves them.
+- Expo Observe starts collection at most one time in each launch. After a revoke, a grant in the same launch only saves the value. Collection starts at the next launch.
 
 ### Consent and `dispatchingEnabled`
 
