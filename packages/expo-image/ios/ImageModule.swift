@@ -6,7 +6,10 @@ internal import SDWebImageAVIFCoder
 internal import SDWebImageSVGCoder
 
 public final class ImageModule: Module {
-  lazy var prefetcher = SDWebImagePrefetcher.shared
+  // Loads through `SDImageLoadersManager`, like `<Image>`, so prefetches use the same loaders.
+  private let prefetcher = SDWebImagePrefetcher(
+    imageManager: SDWebImageManager(cache: SDImageCache.shared, loader: SDImageLoadersManager.shared)
+  )
 
   // Whether JS subscribed to `imageLoaded`. Skips the per-image-load bridge hop when nothing is
   // listening
@@ -207,7 +210,7 @@ public final class ImageModule: Module {
       }
 
       urls.forEach { url in
-        SDWebImagePrefetcher.shared.prefetchURLs([url], context: context, progress: nil, completed: { _, skipped in
+        self.prefetcher.prefetchURLs([url], context: context, progress: nil, completed: { _, skipped in
           if skipped > 0 && !failed {
             failed = true
             promise.resolve(false)
@@ -355,8 +358,10 @@ public final class ImageModule: Module {
     if let image: Image = source.get() {
       generator(image.ref)
     } else if let url: URL = source.get() {
-      let downloader = SDWebImageDownloader()
-      downloader.downloadImage(with: url, progress: nil, completed: { image, _, _, _ in
+      SDImageLoadersManager.shared.requestImage(with: url, options: [], context: nil, progress: nil) { image, _, _, finished in
+        guard finished else {
+          return
+        }
         DispatchQueue.global().async {
           guard let downloadedImage = image else {
             onFailure()
@@ -364,7 +369,7 @@ public final class ImageModule: Module {
           }
           generator(downloadedImage)
         }
-      })
+      }
     } else {
       onFailure()
     }
@@ -383,6 +388,7 @@ public final class ImageModule: Module {
     SDImageLoadersManager.shared.addLoader(ThumbhashLoader())
     SDImageLoadersManager.shared.addLoader(PhotoLibraryAssetLoader())
     SDImageLoadersManager.shared.addLoader(SFSymbolLoader())
+    SDImageLoadersManager.shared.addLoader(NetworkReportingImageLoader(downloader: .shared))
   }
 
   static func configureCache(config: ImageCacheConfig) {
