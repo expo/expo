@@ -20,4 +20,8 @@ android {
 
 dependencies {
   implementation 'com.facebook.react:react-android'
+
+  if (project.findProject(':expo-modules-test-core')) {
+    testImplementation project(':expo-modules-test-core')
+  }
 }
