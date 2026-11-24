@@ -144,6 +144,8 @@ function walk_obj(next: any, next_child: any): void {
     next_child.ele('data').raw(Buffer.from(next).toString('base64'));
   } else if (next && next.buffer && type(next.buffer) === 'ArrayBuffer') {
     // a typed array
-    next_child.ele('data').raw(Buffer.from(next.buffer).toString('base64'));
+    next_child
+      .ele('data')
+      .raw(Buffer.from(next.buffer, next.byteOffset, next.byteLength).toString('base64'));
   }
 }
