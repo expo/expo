@@ -1,5 +1,6 @@
 package expo.modules.appmetrics.crashreporting
 
+import android.app.ActivityManager
 import android.app.ApplicationExitInfo
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -92,13 +93,17 @@ class CrashReportProcessorTest {
     status: Int = 0,
     timestampMillis: Long = 1_700_000_000_500,
     pid: Int = 123,
-    description: String? = null
+    description: String? = null,
+    importance: Int = ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND,
+    trace: String? = null
   ): ExitRecord = ExitRecord(
     reason = reason,
     status = status,
     description = description,
     timestampMillis = timestampMillis,
-    pid = pid
+    pid = pid,
+    importance = importance,
+    openTrace = { trace?.byteInputStream() }
   )
 
   // region JVM crash files
@@ -305,15 +310,99 @@ class CrashReportProcessorTest {
     }
 
   @Test
-  fun `ignores exit reasons outside the crash allowlist`() =
+  fun `ignores exit reasons outside the allowlist`() =
     runTest {
-      exitRecords += exitRecord(reason = ApplicationExitInfo.REASON_ANR)
-      exitRecords += exitRecord(reason = ApplicationExitInfo.REASON_LOW_MEMORY)
       exitRecords += exitRecord(reason = ApplicationExitInfo.REASON_USER_REQUESTED)
+      exitRecords += exitRecord(reason = ApplicationExitInfo.REASON_EXIT_SELF)
 
       processor().process()
 
       assertTrue(storeCalls.isEmpty())
+    }
+
+  @Test
+  fun `hands a foreground ANR to the callback with the main thread frames`() =
+    runTest {
+      exitRecords += exitRecord(
+        reason = ApplicationExitInfo.REASON_ANR,
+        description = "Input dispatching timed out",
+        importance = ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND,
+        trace = """
+          "main" prio=5 tid=1 Sleeping
+            | group="main" sCount=1
+            at java.lang.Thread.sleep(Native method)
+            at com.example.MainActivity.onClick(MainActivity.kt:42)
+        """.trimIndent()
+      )
+
+      processor().process()
+
+      val call = storeCalls.single()
+      assertNull(call.sessionId)
+      assertEquals(CrashOrigin.EXIT_RECORD, call.origin)
+      assertEquals(ExitKind.ANR, call.report.exitKind)
+      assertEquals(true, call.report.isForeground)
+      assertNull(call.report.signal)
+      assertEquals("Input dispatching timed out", call.report.terminationReason)
+      assertEquals(
+        listOf(
+          "at java.lang.Thread.sleep(Native method)",
+          "at com.example.MainActivity.onClick(MainActivity.kt:42)"
+        ),
+        call.logDetails.stackFrames
+      )
+    }
+
+  @Test
+  fun `hands a background low-memory kill to the callback without a stack`() =
+    runTest {
+      exitRecords += exitRecord(
+        reason = ApplicationExitInfo.REASON_LOW_MEMORY,
+        importance = ActivityManager.RunningAppProcessInfo.IMPORTANCE_CACHED
+      )
+
+      processor().process()
+
+      val call = storeCalls.single()
+      assertEquals(ExitKind.LOW_MEMORY, call.report.exitKind)
+      assertEquals(false, call.report.isForeground)
+      assertNull(call.logDetails.stackFrames)
+    }
+
+  @Test
+  fun `drops an empty system description`() =
+    runTest {
+      exitRecords += exitRecord(reason = ApplicationExitInfo.REASON_LOW_MEMORY, description = "")
+
+      processor().process()
+
+      assertNull(storeCalls.single().report.terminationReason)
+    }
+
+  @Test
+  fun `treats a visible app as in the foreground`() =
+    runTest {
+      exitRecords += exitRecord(
+        reason = ApplicationExitInfo.REASON_LOW_MEMORY,
+        importance = ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE
+      )
+
+      processor().process()
+
+      assertEquals(true, storeCalls.single().report.isForeground)
+    }
+
+  @Test
+  fun `treats an ANR with an unknown app state as not in the foreground`() =
+    runTest {
+      exitRecords += exitRecord(
+        reason = ApplicationExitInfo.REASON_ANR,
+        importance = ActivityManager.RunningAppProcessInfo.IMPORTANCE_GONE
+      )
+
+      processor().process()
+
+      assertEquals(false, storeCalls.single().report.isForeground)
     }
 
   @Test

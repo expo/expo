@@ -111,14 +111,14 @@ class CrashReportProcessor(
     // never describe the same death. `consumedRecordKeys` only suppresses a
     // record already covered by a richer JVM file above.
     for (record in newRecords) {
-      if (record.key in consumedRecordKeys || !record.isStandaloneCrash) {
+      if (record.key in consumedRecordKeys || !record.isReported) {
         continue
       }
       storeReport(
         null,
         CrashOrigin.EXIT_RECORD,
         record.toCrashReport(ingestedAt, resolvedAppVersion),
-        CrashLogDetails()
+        CrashLogDetails(stackFrames = record.anrMainThreadFrames())
       )
     }
   }

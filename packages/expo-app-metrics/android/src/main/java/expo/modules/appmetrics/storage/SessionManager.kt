@@ -142,8 +142,8 @@ class SessionManager(
    * them — the previous process's. Android has no session `type` column yet, so
    * every stored session is treated as main.
    */
-  suspend fun getPreviousMainSessionId(currentSessionId: String?): String? =
-    database.sessionDao().getPreviousMainSessionId(currentSessionId)
+  suspend fun getPreviousMainSessionId(currentSessionId: String?, startedAtOrBefore: String? = null): String? =
+    database.sessionDao().getPreviousMainSessionId(currentSessionId, startedAtOrBefore)
 
   suspend fun getMetricsForSession(sessionId: String): List<Metric> =
     database.metricDao().getMetricsForSession(sessionId)

@@ -7,6 +7,7 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import expo.modules.appmetrics.utils.TimeUtils
+import java.io.InputStream
 import kotlin.math.abs
 
 data class ExitRecord(
@@ -15,7 +16,10 @@ data class ExitRecord(
   val status: Int,
   val description: String?,
   val timestampMillis: Long,
-  val pid: Int
+  val pid: Int,
+  /** One of the `ActivityManager.RunningAppProcessInfo.IMPORTANCE_*` constants. */
+  val importance: Int = ActivityManager.RunningAppProcessInfo.IMPORTANCE_GONE,
+  val openTrace: () -> InputStream? = { null }
 ) {
   /**
    * Identity for in-pass dedup: marks a record consumed once it's matched to a
@@ -25,17 +29,31 @@ data class ExitRecord(
     get() = "$timestampMillis:$pid:$reason"
 
   /**
-   * Only true crashes count: managed (`REASON_CRASH`), native
-   * (`REASON_CRASH_NATIVE`), and signal kills (`REASON_SIGNALED`, e.g. a SIGSEGV
-   * the OS records as a bare signal rather than a native crash). Every other
-   * reason — ANRs, low-memory kills, user-requested stops, and the rest — is
-   * explicitly disregarded, matching how Play Console separates crash rate from
-   * ANR rate.
+   * Crashes: managed (`REASON_CRASH`), native (`REASON_CRASH_NATIVE`), and signal
+   * kills (`REASON_SIGNALED`, e.g. a SIGSEGV the OS records as a bare signal
+   * rather than a native crash). Also ANRs and low-memory kills. Every other
+   * reason, such as a user-requested stop, is ignored.
    */
-  val isStandaloneCrash: Boolean
+  val isReported: Boolean
     get() = reason == ApplicationExitInfo.REASON_CRASH ||
       reason == ApplicationExitInfo.REASON_CRASH_NATIVE ||
-      reason == ApplicationExitInfo.REASON_SIGNALED
+      reason == ApplicationExitInfo.REASON_SIGNALED ||
+      exitKind != null
+
+  private val exitKind: ExitKind?
+    get() = when (reason) {
+      ApplicationExitInfo.REASON_ANR -> ExitKind.ANR
+      ApplicationExitInfo.REASON_LOW_MEMORY -> ExitKind.LOW_MEMORY
+      else -> null
+    }
+
+  /** The main thread's frames from the ANR thread dump. Null for other reasons or when the dump is unreadable. */
+  fun anrMainThreadFrames(): List<String>? {
+    if (reason != ApplicationExitInfo.REASON_ANR) {
+      return null
+    }
+    return runCatching { openTrace()?.use(AnrTrace::mainThreadFrames) }.getOrNull()
+  }
 
   /**
    * Whether this record describes the same death as a pending JVM crash file:
@@ -56,10 +74,16 @@ data class ExitRecord(
       } else {
         null
       },
-      terminationReason = description,
+      // A low-memory kill can come with an empty description.
+      terminationReason = description?.ifEmpty { null },
       appVersion = appVersion,
       timestampBegin = crashTimestamp,
-      ingestedAt = ingestedAt
+      ingestedAt = ingestedAt,
+      exitKind = exitKind,
+      isForeground = exitKind?.let {
+        importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND ||
+          importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE
+      }
     )
   }
 
@@ -102,7 +126,9 @@ class ExitInfoProviderImpl(private val context: Context) : ExitInfoProvider {
           status = info.status,
           description = info.description,
           timestampMillis = info.timestamp,
-          pid = info.pid
+          pid = info.pid,
+          importance = info.importance,
+          openTrace = { info.traceInputStream }
         )
       }
   }

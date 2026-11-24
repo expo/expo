@@ -279,14 +279,15 @@ interface SessionDao {
   @Query("SELECT * FROM sessions WHERE id IN (:ids)")
   suspend fun getByIds(ids: List<String>): List<Session>
 
-  // The most recent session other than `:currentSessionId` (null matches all
-  // rows, so it returns the latest of any).
+  // The most recent session other than `:currentSessionId` that started at or
+  // before `:startedAtOrBefore`. A null argument does not filter.
   @Query(
     "SELECT id FROM sessions " +
-      "WHERE :currentSessionId IS NULL OR id != :currentSessionId " +
+      "WHERE (:currentSessionId IS NULL OR id != :currentSessionId) " +
+      "AND (:startedAtOrBefore IS NULL OR startTimestamp <= :startedAtOrBefore) " +
       "ORDER BY startTimestamp DESC LIMIT 1"
   )
-  suspend fun getPreviousMainSessionId(currentSessionId: String?): String?
+  suspend fun getPreviousMainSessionId(currentSessionId: String?, startedAtOrBefore: String?): String?
 
   @Query("UPDATE sessions SET isActive = 0, endTimestamp = :endTimestamp WHERE id = :id")
   suspend fun stopSessionAt(
