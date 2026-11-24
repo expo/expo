@@ -85,18 +85,7 @@ public struct CrashReport: Codable, Sendable {
   /// is genuinely unattributable, and silently misattributing it to the current
   /// session would hide that.
   func findMatchingSession(in mainSessions: [SessionRow]) -> SessionRow? {
-    let payloadBegin = timestampBegin.ISO8601Format()
-    let payloadEnd = timestampEnd.ISO8601Format()
-    let intersecting = mainSessions.filter { session in
-      guard session.startTimestamp <= payloadEnd else {
-        return false
-      }
-      // No end timestamp means the session is still active — it overlaps anything in its future.
-      guard let sessionEnd = session.endTimestamp else {
-        return true
-      }
-      return sessionEnd >= payloadBegin
-    }
+    let intersecting = sessions(mainSessions, intersectingFrom: timestampBegin, to: timestampEnd)
     if let processId {
       let sameProcess = intersecting.filter { $0.processId == processId }
       return sameProcess.max(by: { $0.startTimestamp < $1.startTimestamp })
@@ -117,14 +106,17 @@ public struct CrashReport: Codable, Sendable {
   }
 
   func toLogRecord() -> LogRecord {
-    let selected = selectedFrames
+    let selected = callStackTree?.callStacks.map { callStacks in
+      let attributedStacks = callStacks.filter { $0.threadAttributed == true }
+      return Self.collectFrames(in: attributedStacks.isEmpty ? callStacks : attributedStacks)
+    }
     var attributes: [String: Any] = [
       "exception.type": exceptionReason?.exceptionName
         ?? exceptionType.map { exceptionName(for: $0) }
         ?? signal.map { signalName(for: $0) }
         ?? "NativeCrash",
       "exception.message": exceptionMessage,
-      "exception.stacktrace": selected.flatMap(renderStacktrace) as Any,
+      "exception.stacktrace": selected.flatMap(Self.renderStacktrace) as Any,
       "expo.error.source": "nativeCrash",
       "expo.error.is_fatal": true,
     ]
@@ -158,7 +150,7 @@ public struct CrashReport: Codable, Sendable {
     if let selected, !selected.frames.isEmpty {
       attributes["expo.crash.rendered_frame_count"] = selected.frames.count
       attributes["expo.crash.total_frame_count"] = selected.total
-      if let binaryUUIDs = renderedBinaryUUIDs(in: selected.frames) {
+      if let binaryUUIDs = Self.renderedBinaryUUIDs(in: selected.frames) {
         attributes["expo.crash.binary_uuids"] = binaryUUIDs
       }
     }
@@ -190,26 +182,21 @@ public struct CrashReport: Codable, Sendable {
     return "Native crash"
   }
 
-  /// Frames picked for the stack trace, plus how many the payload actually had.
+  /// Frames picked for the stack trace, plus how many the stacks actually had.
   ///
   /// We stop collecting at `maxLogStackFrames`, so anything past that shows up as the gap between
   /// `frames.count` and `total`.
-  private var selectedFrames: (frames: [CallStackTree.Frame], total: Int)? {
-    guard let callStacks = callStackTree?.callStacks else {
-      return nil
-    }
-    let attributedStacks = callStacks.filter { $0.threadAttributed == true }
-    let selectedStacks = attributedStacks.isEmpty ? callStacks : attributedStacks
+  static func collectFrames(in callStacks: [CallStackTree.CallStack]) -> (frames: [CallStackTree.Frame], total: Int) {
     var frames: [CallStackTree.Frame] = []
     var totalFrames = 0
-    for callStack in selectedStacks {
+    for callStack in callStacks {
       collectFrames(callStack.callStackRootFrames ?? [], into: &frames, total: &totalFrames)
     }
     return (frames, totalFrames)
   }
 
   /// Renders the selected frames, appending a count of the ones that didn't fit.
-  private func renderStacktrace(_ selected: (frames: [CallStackTree.Frame], total: Int)) -> String? {
+  static func renderStacktrace(_ selected: (frames: [CallStackTree.Frame], total: Int)) -> String? {
     var lines = selected.frames.map(renderFrame)
     if selected.total > selected.frames.count {
       lines.append("… +\(selected.total - selected.frames.count) more frames")
@@ -224,7 +211,7 @@ public struct CrashReport: Codable, Sendable {
     )
   }
 
-  private func collectFrames(
+  private static func collectFrames(
     _ source: [CallStackTree.Frame],
     into frames: inout [CallStackTree.Frame],
     total: inout Int
@@ -242,7 +229,7 @@ public struct CrashReport: Codable, Sendable {
   ///
   /// An offset only means something against the build it came from, so these say which dSYM to
   /// reach for.
-  private func renderedBinaryUUIDs(in frames: [CallStackTree.Frame]) -> [String]? {
+  static func renderedBinaryUUIDs(in frames: [CallStackTree.Frame]) -> [String]? {
     var uuidsByBinary: [String: String] = [:]
     for frame in frames {
       guard let binaryName = frame.binaryName, let binaryUUID = frame.binaryUUID else {
@@ -261,7 +248,7 @@ public struct CrashReport: Codable, Sendable {
   /// We keep the address even when a symbol resolved, because on a stripped binary it can be the
   /// wrong one, and it's what lets you re-symbolicate from the archive. Without an offset or an
   /// address there's nothing to look up, so the binary name alone is left off.
-  private func renderFrame(_ frame: CallStackTree.Frame) -> String {
+  private static func renderFrame(_ frame: CallStackTree.Frame) -> String {
     let location: String? = {
       if let binaryName = frame.binaryName, let offset = frame.offsetIntoBinaryTextSegment {
         return "\(binaryName) + \(offset)"
@@ -326,6 +313,22 @@ public struct CrashReport: Codable, Sendable {
 
     /// Exception name field.
     public let exceptionName: String
+  }
+}
+
+/// Main sessions whose `[start, end ?? now]` interval overlaps the payload window. A session with no
+/// end is still active, so it overlaps anything in its future.
+func sessions(_ mainSessions: [SessionRow], intersectingFrom begin: Date, to end: Date) -> [SessionRow] {
+  let payloadBegin = begin.ISO8601Format()
+  let payloadEnd = end.ISO8601Format()
+  return mainSessions.filter { session in
+    guard session.startTimestamp <= payloadEnd else {
+      return false
+    }
+    guard let sessionEnd = session.endTimestamp else {
+      return true
+    }
+    return sessionEnd >= payloadBegin
   }
 }
 

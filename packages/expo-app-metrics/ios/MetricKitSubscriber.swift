@@ -50,6 +50,35 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
     }
   }
 
+  /// Stores each hang as a log on its session and returns the new cursor: the newest payload end
+  /// seen. MetricKit can deliver a past payload again on a later launch, so hangs from payloads that
+  /// end at or before `cursor` are skipped. A hang with no matching session is dropped.
+  ///
+  /// The cursor lives in user defaults, not in the database transaction. If the app dies between the
+  /// two writes, the payload's hangs are stored twice. We accept that rare duplicate.
+  @AppMetricsActor
+  static func storeHangReports(
+    _ hangReports: [HangReport],
+    in database: MetricsDatabase,
+    after cursor: Date?
+  ) -> Date? {
+    let newReports = hangReports.filter { report in cursor.map { report.timestampEnd > $0 } ?? true }
+    guard let newCursor = newReports.map(\.timestampEnd).max() else {
+      return cursor
+    }
+    do {
+      let mainSessions = try database.getMainSessions()
+      let logs = newReports.compactMap { report in
+        report.findMatchingSession(in: mainSessions).map { LogRow.from(log: report.toLogRecord(), sessionId: $0.id) }
+      }
+      try database.insertAll(logs: logs)
+    } catch {
+      logger.warn("[AppMetrics] Failed to store app hangs: \(error.localizedDescription)")
+      return cursor
+    }
+    return newCursor
+  }
+
   // MARK: - MXMetricManagerSubscriber
 
   /// Receives payloads with performance metrics like CPU and memory usage.
@@ -64,11 +93,24 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
         return CrashReport(diagnostic: diagnostic, payload: payload)
       }
     }
+    // Skip replayed payloads here, so their hangs are not symbolicated again on every launch.
+    let hangCursor = AppMetricsUserDefaults.lastStoredHangPayloadEnd
+    let newHangPayloads = payloads.filter { payload in hangCursor.map { payload.timeStampEnd > $0 } ?? true }
+    let hangReports = newHangPayloads.flatMap { payload in
+      return (payload.hangDiagnostics ?? []).map { diagnostic in
+        return HangReport(diagnostic: diagnostic, payload: payload)
+      }
+    }
     AppMetricsActor.isolated {
       guard let database = AppMetrics.database else {
         return
       }
       Self.storeCrashReports(crashReports, in: database)
+      AppMetricsUserDefaults.lastStoredHangPayloadEnd = Self.storeHangReports(
+        hangReports,
+        in: database,
+        after: AppMetricsUserDefaults.lastStoredHangPayloadEnd
+      )
     }
   }
 }
