@@ -9,7 +9,10 @@ export interface NamespaceProps {
   children: React.ReactNode;
 }
 
-type NativeNamespaceProps = NamespaceProps;
+type NativeNamespaceProps = {
+  namespaceId: string;
+  children: React.ReactNode;
+};
 
 const NativeNamespaceView: React.ComponentType<NativeNamespaceProps> = requireNativeView(
   'ExpoUI',
@@ -41,6 +44,7 @@ const NativeNamespaceView: React.ComponentType<NativeNamespaceProps> = requireNa
  * );
  * ```
  */
-export function Namespace(props: NamespaceProps) {
-  return <NativeNamespaceView {...props} />;
+export function Namespace({ id, children }: NamespaceProps) {
+  // The wrapper of native views turns an `id` prop into `nativeID`, so the native prop has another name.
+  return <NativeNamespaceView namespaceId={id}>{children}</NativeNamespaceView>;
 }
