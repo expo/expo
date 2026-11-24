@@ -1,3 +1,5 @@
+import './observe/register.fx';
+
 export * from './Updates';
 export * from './UpdatesEmitter';
 export * from './Updates.types';
