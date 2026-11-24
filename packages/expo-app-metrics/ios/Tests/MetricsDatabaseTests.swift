@@ -134,21 +134,6 @@ struct MetricsDatabaseTests {
   }
 
   @Test
-  func `deactivates active sessions started before the cutoff`() throws {
-    try withTemporaryDatabase { database in
-      try database.insert(session: makeSessionRow(id: "old", startTimestamp: "2026-05-01T00:00:00Z"))
-      try database.insert(session: makeSessionRow(id: "new", startTimestamp: "2026-05-07T00:00:00Z"))
-
-      try database.deactivateAllSessionsBefore(timestamp: "2026-05-05T00:00:00Z")
-
-      let oldRow = try #require(try database.getSession(id: "old"))
-      let newRow = try #require(try database.getSession(id: "new"))
-      #expect(oldRow.isActive == false)
-      #expect(newRow.isActive == true)
-    }
-  }
-
-  @Test
   func `updates environment for a single session`() throws {
     try withTemporaryDatabase { database in
       try database.insert(session: makeSessionRow(id: "s1", environment: "development"))
@@ -273,20 +258,22 @@ struct MetricsDatabaseTests {
   }
 
   @Test
-  func `init deactivates sessions that were still active from a previous launch`() async throws {
-    try await withTemporaryDirectory { directoryUrl in
-      // Seed the file with a session left in `isActive = 1` (the previous process never reached
-      // `stop()`). Then reopen and confirm `init` flipped it inactive.
+  func `init deactivates sessions from a previous launch before it returns`() throws {
+    try withTemporaryDirectory { directoryUrl in
+      // The previous process never reached `stop()`, so its session is still active.
       do {
         let database = try MetricsDatabase(directoryUrl: directoryUrl)
-        try database.insert(session: makeSessionRow(id: "orphaned-active"))
+        try database.insert(session: makeSessionRow(id: "orphaned"))
       }
 
       let database = try MetricsDatabase(directoryUrl: directoryUrl)
-      let active = try await AppMetricsActor.isolated {
-        return try database.getAllActiveSessions().map(\.id)
-      }
-      #expect(active.isEmpty)
+      let orphaned = try #require(try database.getSession(id: "orphaned"))
+      #expect(orphaned.isActive == false)
+
+      // The current session can start in an earlier second than the database opens.
+      let startTimestamp = Date.now.addingTimeInterval(-2).ISO8601Format()
+      try database.insert(session: makeSessionRow(id: "current", startTimestamp: startTimestamp))
+      #expect(try database.getAllActiveSessions().map(\.id) == ["current"])
     }
   }
 
