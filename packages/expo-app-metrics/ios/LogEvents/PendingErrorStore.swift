@@ -26,13 +26,24 @@ enum PendingErrorStore {
   /// files unbounded; we keep the newest `maxPendingErrors` and drop the rest (logged at drain time).
   static let maxPendingErrors = 5
 
+  // Revoke closes the gate before deleting. A writer that passed the gate must finish before deletion.
+  private static let fileLock = NSLock()
+
   /// Writes a fatal error to disk synchronously. Best-effort: any failure is swallowed (we're on the
   /// way to a crash and must not throw out of the error handler).
-  static func write(_ error: PendingError) {
-    guard ObserveConsent.isGranted, let directory = try? createdDirectoryUrl() else {
-      return
+  static func write(_ error: PendingError, directoryUrl: () throws -> URL = createdDirectoryUrl) {
+    fileLock.withLock {
+      guard ObserveConsent.isGranted, let directory = try? directoryUrl() else {
+        return
+      }
+      write(error, in: directory)
     }
-    write(error, in: directory)
+  }
+
+  static func delete(in directory: URL) {
+    fileLock.withLock {
+      try? FileManager.default.removeItem(at: directory)
+    }
   }
 
   /// Writes into an explicit directory. Tests use this overload to point at a temporary directory.

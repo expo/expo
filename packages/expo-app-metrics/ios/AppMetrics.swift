@@ -95,7 +95,7 @@ public struct AppMetrics {
     } catch {
       logger.warn("[AppMetrics] Failed to delete the metrics database: \(error.localizedDescription)")
     }
-    try? FileManager.default.removeItem(at: pendingErrorsDirectory)
+    PendingErrorStore.delete(in: pendingErrorsDirectory)
     AppMetricsUserDefaults.deleteStoredSettings()
     MetricsDatabase.cleanUpLegacyStorage()
   }
