@@ -173,34 +173,60 @@ export async function extractAndPrepareTemplateAppAsync(
   return projectRoot;
 }
 
-// Android resource XML (strings.xml): aapt2 resolves XML entities before its
-// own escape rules, so only &, <, > take entities; the rest (quotes, @, ?,
-// whitespace) needs Android's backslash escapes. The backslash escaping is a
-// copy of `XML.escapeAndroidString` from `@expo/config-plugins`, which this
-// package does not depend on.
-function escapeAndroidResourceValue(original: string): string {
-  const noAmps = original.replace(/&/g, '&amp;');
-  const noLt = noAmps.replace(/</g, '&lt;');
-  const noGt = noLt.replace(/>/g, '&gt;');
-  const escaped = noGt.replace(/[\n\r\t'"@?\\]/g, (m) => {
-    switch (m) {
+// Keep in sync with packages/@expo/config-plugins/src/utils/XML.ts.
+// Kept separate to avoid a runtime dependency on @expo/config-plugins.
+function escapeAndroidString(value: string): string {
+  let result = '';
+  let needsQuotes = false;
+
+  for (let index = 0; index < value.length; index++) {
+    const character = value.charAt(index);
+    switch (character) {
+      case '\0':
+        break;
       case '"':
       case "'":
       case '@':
       case '?':
       case '\\':
-        return '\\' + m;
+        result += '\\' + character;
+        break;
       case '\n':
-        return '\\n';
-      case '\r':
-        return '\\r';
+        result += '\\n';
+        break;
       case '\t':
-        return '\\t';
-      default:
-        throw new Error(`Cannot escape unhandled XML character: ${m}`);
+        result += '\\t';
+        break;
+      default: {
+        const code = value.charCodeAt(index);
+        if (code < 0x20 || code === 0xfffe || code === 0xffff) {
+          result += '\\u' + code.toString(16).padStart(4, '0');
+        } else {
+          result += character;
+          if (character === ' ' && result.charAt(result.length - 2) === ' ') {
+            needsQuotes = true;
+          }
+        }
+        break;
+      }
     }
-  });
-  return escaped.match(/(^\s|\s$)/) ? `"${escaped}"` : escaped;
+  }
+
+  if (
+    result.length === 0 ||
+    result.charAt(0).trim() === '' ||
+    result.charAt(result.length - 1).trim() === ''
+  ) {
+    needsQuotes = true;
+  }
+  return needsQuotes ? '"' + result + '"' : result;
+}
+
+function escapeAndroidResourceValue(original: string): string {
+  return escapeAndroidString(original)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 function escapeXMLCharacters(original: string): string {
