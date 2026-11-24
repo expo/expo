@@ -304,10 +304,16 @@ fun FunctionalComposableScope.rememberTextFieldCore(
  * never splits an emoji or a letter from its combining marks.
  */
 internal fun String.truncateToMaxLength(maxLength: Int): String {
-  if (length <= maxLength) return this
+  if (length <= maxLength) {
+    return this
+  }
   val breaks = BreakIterator.getCharacterInstance()
   breaks.setText(this)
-  val end = if (breaks.isBoundary(maxLength)) maxLength else breaks.preceding(maxLength)
+  val end = if (breaks.isBoundary(maxLength)) {
+    maxLength
+  } else {
+    breaks.preceding(maxLength)
+  }
   return substring(0, end)
 }
 
