@@ -121,6 +121,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       // TODO(@ubax): move `logEvent` onto the Session shared object so logs are recorded via a
       // session handle (like `addMetric`), instead of writing to `mainSession` directly here.
       Function("logEvent") { name: String, options: LogEventOptions? ->
+        if (!ObserveConsent.isGranted) {
+          return@Function
+        }
         val validatedName = validateEventName(name) ?: return@Function
         val validatedBody = validateEventBody(options?.body)
         val sanitized = sanitizeLogEventAttributes(options?.attributes)
@@ -423,6 +426,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       // database) and ingest it on the next launch. Non-fatal errors aren't racing termination, so
       // they go through the normal async log path.
       Function("reportError") { report: ErrorReport ->
+        if (!ObserveConsent.isGranted) {
+          return@Function
+        }
         if (report.isFatal) {
           PendingErrorStore.write(context, report.toPendingError(mainSession.sessionId))
         } else {
@@ -433,6 +439,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       Function("reportFeedback") { report: FeedbackReport ->
+        if (!ObserveConsent.isGranted) {
+          return@Function
+        }
         val record = report.toLogRecord(mainSession.sessionId)
         scope.launch {
           mainSession.addLogs(listOf(record))

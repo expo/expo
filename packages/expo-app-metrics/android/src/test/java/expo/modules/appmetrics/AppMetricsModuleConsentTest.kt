@@ -4,13 +4,19 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.SharedPreferences
 import androidx.test.core.app.ApplicationProvider
+import expo.modules.appmetrics.storage.LogRecord
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.ModuleRegistry
 import expo.modules.kotlin.exception.CodedException
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.unmockkAll
 import java.io.File
+import java.lang.ref.WeakReference
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -48,6 +54,33 @@ class AppMetricsModuleConsentTest {
     every { appContext } returns mockk(relaxed = true) { every { reactContext } returns context }
     mainSession = mockk(relaxed = true)
     sessionManager = mockk(relaxed = true)
+  }
+
+  @Test
+  fun `reports captured before a grant are dropped when the queue runs after the grant`() = runTest {
+    AppMetricsPreferences.saveObserveConsent(context, "not-granted")
+    ObserveConsent.load(context)
+    val appContext = mockk<AppContext>(relaxed = true)
+    every { appContext.modulesQueue } returns this
+    val module = AppMetricsModule()
+    ModuleRegistry(WeakReference(appContext)).register(module)
+    module.mainSession = mockk(relaxed = true)
+    val logs = mutableListOf<LogRecord>()
+    coEvery { module.mainSession.addLogs(any()) } answers { logs.addAll(firstArg<List<LogRecord>>()) }
+    val functions = module.definition().syncFunctions
+    fun report(label: String) {
+      functions.getValue("logEvent").callUserImplementation(arrayOf(label, null), appContext)
+      functions.getValue("reportError").callUserImplementation(arrayOf(mapOf("message" to label)), appContext)
+      functions.getValue("reportFeedback").callUserImplementation(arrayOf(mapOf("id" to label)), appContext)
+    }
+
+    report("before")
+    assertTrue(ObserveConsent.update(context, granted = true).changed)
+    report("after")
+    testScheduler.runCurrent()
+
+    assertEquals(listOf("after", "js.exception", "expo.feedback"), logs.map { it.name })
+    assertTrue(logs.none { it.attributes?.contains("before") == true })
   }
 
   private fun setConsentError(module: AppMetricsModule, granted: Boolean, afterRevoke: suspend () -> Unit = {}): Throwable =
