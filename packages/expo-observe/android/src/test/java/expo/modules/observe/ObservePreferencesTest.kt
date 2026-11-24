@@ -27,6 +27,17 @@ class ObservePreferencesTest {
   }
 
   @Test
+  fun `integration values are kept per integration and removed by null`() {
+    assertNull(ObservePreferences.getIntegrationValue(context, "a", "cursor"))
+    ObservePreferences.setIntegrationValue(context, "a", "cursor", "1")
+    ObservePreferences.setIntegrationValue(context, "b", "cursor", "2")
+    assertEquals("1", ObservePreferences.getIntegrationValue(context, "a", "cursor"))
+    assertEquals("2", ObservePreferences.getIntegrationValue(context, "b", "cursor"))
+    ObservePreferences.setIntegrationValue(context, "a", "cursor", null)
+    assertNull(ObservePreferences.getIntegrationValue(context, "a", "cursor"))
+  }
+
+  @Test
   fun `getConfig returns null by default`() {
     assertNull(ObservePreferences.getConfig(context))
   }
