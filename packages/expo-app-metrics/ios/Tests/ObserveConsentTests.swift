@@ -187,19 +187,23 @@ struct ObserveConsentUserDefaultsTests {
   func `no saved value falls back to the app config`() throws {
     let defaults = try #require(UserDefaults(suiteName: suiteName))
 
-    #expect(ObserveConsent.resolveState(from: defaults, settings: ["consent": "not-granted"]) == .notGranted)
-    #expect(ObserveConsent.resolveState(from: defaults, settings: nil) == .granted)
+    let denied = ObserveConsent.Store(defaults: defaults, settings: ["consent": "not-granted"]) {}
+    let implicitGrant = ObserveConsent.Store(defaults: defaults, settings: nil) {}
+    #expect(denied.state == .notGranted)
+    #expect(implicitGrant.state == .granted)
   }
 
   @Test
   func `the saved value overrides the app config`() throws {
     let defaults = try #require(UserDefaults(suiteName: suiteName))
 
-    ObserveConsent.save(granted: false, to: defaults)
-    #expect(ObserveConsent.resolveState(from: defaults, settings: ["consent": "granted"]) == .notGranted)
+    defaults.set("not-granted", forKey: ObserveConsent.savedValueKey)
+    let denied = ObserveConsent.Store(defaults: defaults, settings: ["consent": "granted"]) {}
+    #expect(denied.state == .notGranted)
 
-    ObserveConsent.save(granted: true, to: defaults)
-    #expect(ObserveConsent.resolveState(from: defaults, settings: ["consent": "not-granted"]) == .granted)
+    defaults.set("granted", forKey: ObserveConsent.savedValueKey)
+    let granted = ObserveConsent.Store(defaults: defaults, settings: ["consent": "not-granted"]) {}
+    #expect(granted.state == .granted)
   }
 
   @Test
@@ -210,7 +214,7 @@ struct ObserveConsentUserDefaultsTests {
 
     // Other tests use the process gate while this test changes the saved choice.
     _ = ObserveConsent.state
-    ObserveConsent.save(granted: false, to: defaults)
+    defaults.set("not-granted", forKey: ObserveConsent.savedValueKey)
 
     AppMetricsUserDefaults.deleteStoredSettings()
 
@@ -218,6 +222,7 @@ struct ObserveConsentUserDefaultsTests {
   }
 }
 
+@AppMetricsActor
 @Suite("ObserveConsent updates")
 struct ObserveConsentUpdateTests {
   private let suiteName = "dev.expo.app-metrics.tests.consent-update.\(UUID().uuidString)"
@@ -253,6 +258,59 @@ struct ObserveConsentUpdateTests {
     #expect(!consent.update(granted: true))
     #expect(consent.state == .notGranted)
     #expect(defaults.string(forKey: ObserveConsent.savedValueKey) == "granted")
+  }
+
+  @Test
+  func `the first grant sets the crash cutoff and repeated grants keep it across launches`() throws {
+    let defaults = try #require(UserDefaults(suiteName: suiteName))
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+    let settings = ["consent": "not-granted"]
+    let consent = ObserveConsent.Store(defaults: defaults, settings: settings) {}
+    let firstGrant = Date(timeIntervalSince1970: 100)
+    #expect(consent.consentStart == nil)
+
+    #expect(consent.update(granted: true, at: firstGrant))
+    #expect(consent.consentStart == firstGrant)
+    #expect(!consent.update(granted: true, at: firstGrant.addingTimeInterval(5)))
+    let relaunched = ObserveConsent.Store(defaults: defaults, settings: settings) {}
+    #expect(relaunched.consentStart == firstGrant)
+
+    #expect(relaunched.update(granted: false))
+    #expect(relaunched.consentStart == nil)
+    #expect(defaults.object(forKey: ObserveConsent.startTimeKey) == nil)
+  }
+
+  @Test
+  func `a deferred grant starts the crash cutoff on the next launch`() throws {
+    let defaults = try #require(UserDefaults(suiteName: suiteName))
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+    let consent = ObserveConsent.Store(defaults: defaults, settings: nil) {}
+    #expect(consent.update(granted: false))
+    #expect(!consent.update(granted: true, at: Date(timeIntervalSince1970: 100)))
+    #expect(!consent.update(granted: true, at: Date(timeIntervalSince1970: 110)))
+    #expect(consent.consentStart == nil)
+
+    let launch = Date(timeIntervalSince1970: 200)
+    let relaunched = ObserveConsent.Store(defaults: defaults, settings: nil, launchTime: launch) {}
+    #expect(relaunched.state == .granted)
+    #expect(relaunched.consentStart == launch)
+    let later = ObserveConsent.Store(defaults: defaults, settings: nil, launchTime: launch.addingTimeInterval(5)) {}
+    #expect(later.consentStart == launch)
+  }
+
+  @Test
+  func `grants from app config and saved grants without a start time allow past crashes`() throws {
+    let defaults = try #require(UserDefaults(suiteName: suiteName))
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+    let consent = ObserveConsent.Store(defaults: defaults, settings: ["consent": "granted"]) {}
+    #expect(consent.state == .granted)
+    #expect(consent.consentStart == nil)
+
+    defaults.set("granted", forKey: ObserveConsent.savedValueKey)
+    let legacy = ObserveConsent.Store(defaults: defaults, settings: ["consent": "not-granted"]) {}
+    #expect(legacy.state == .granted)
+    #expect(!legacy.update(granted: true))
+    #expect(legacy.consentStart == nil)
   }
 }
 

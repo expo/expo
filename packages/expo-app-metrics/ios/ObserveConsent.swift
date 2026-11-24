@@ -11,30 +11,22 @@ public enum ObserveConsent {
     case notGranted
   }
 
-  /// The consent of this process and the changes it allows.
-  private struct Gate: Sendable {
-    private(set) var state: State
-    private var hasRevoked = false
+  private enum Gate: Equatable {
+    case notGranted
+    case granted(since: Date?)
+    case revoked
 
-    init(state: State) {
-      self.state = state
+    var consentStart: Date? {
+      if case .granted(let since) = self { return since }
+      return nil
     }
 
-    /// Returns whether the gate changed. After a revoke, a grant changes it only at the next launch.
-    mutating func apply(granted: Bool) -> Bool {
-      if granted {
-        guard state != .granted, !hasRevoked else {
-          return false
-        }
-        state = .granted
-      } else {
-        guard state != .notGranted else {
-          return false
-        }
-        state = .notGranted
-        hasRevoked = true
+    func applying(granted: Bool, at time: Date) -> Self {
+      switch (self, granted) {
+      case (.notGranted, true): return .granted(since: time)
+      case (.granted, false): return .revoked
+      default: return self
       }
-      return true
     }
   }
 
@@ -44,29 +36,67 @@ public enum ObserveConsent {
     private let gate: OSAllocatedUnfairLock<Gate>
     private let saveBufferedSettings: @Sendable () -> Void
 
-    init(defaults: UserDefaults, settings: Any?, saveBufferedSettings: @escaping @Sendable () -> Void) {
+    init(
+      defaults: UserDefaults,
+      settings: Any?,
+      launchTime: Date = .now,
+      saveBufferedSettings: @escaping @Sendable () -> Void
+    ) {
       self.defaults = defaults
       self.saveBufferedSettings = saveBufferedSettings
-      self.gate = OSAllocatedUnfairLock(initialState: Gate(state: resolveState(from: defaults, settings: settings)))
+      self.gate = OSAllocatedUnfairLock(
+        initialState: Self.load(from: defaults, settings: settings, launchTime: launchTime)
+      )
     }
 
     var state: State {
-      return gate.withLock { $0.state }
+      return gate.withLock {
+        if case .granted = $0 { return .granted }
+        return .notGranted
+      }
     }
 
-    func update(granted: Bool) -> Bool {
-      save(granted: granted, to: defaults)
-      return ConsentGatedDefaults.transitionLock.withLock {
+    var consentStart: Date? {
+      return gate.withLock { $0.consentStart }
+    }
+
+    @AppMetricsActor
+    func update(granted: Bool, at time: Date = .now) -> Bool {
+      let current = gate.withLock { $0 }
+      let next = current.applying(granted: granted, at: time)
+      if granted && next == .revoked {
+        defaults.set(nextLaunch, forKey: startTimeKey)
+      } else {
+        defaults.set(next.consentStart, forKey: startTimeKey)
+      }
+      defaults.set(granted ? "granted" : "not-granted", forKey: savedValueKey)
+
+      guard next != current else {
+        return false
+      }
+      ConsentGatedDefaults.transitionLock.withLock {
         gate.withLock { gate in
-          guard gate.apply(granted: granted) else {
-            return false
-          }
           if granted {
             saveBufferedSettings()
           }
-          return true
+          gate = next
         }
       }
+      return true
+    }
+
+    private static func load(from defaults: UserDefaults, settings: Any?, launchTime: Date) -> Gate {
+      // TODO(ENG-29437): Verify the iOS UserDefaults read after reboot and before the first unlock.
+      guard let saved = defaults.string(forKey: savedValueKey) else {
+        return isGranted(settings: settings) ? .granted(since: nil) : .notGranted
+      }
+      guard saved == "granted" else { return .notGranted }
+      let start = defaults.object(forKey: startTimeKey)
+      if start as? String == nextLaunch {
+        defaults.set(launchTime, forKey: startTimeKey)
+        return .granted(since: launchTime)
+      }
+      return .granted(since: start as? Date)
     }
   }
 
@@ -76,7 +106,10 @@ public enum ObserveConsent {
     saveBufferedSettings: ConsentGatedDefaults.saveUnsavedValues
   )
 
-  // A revoke deletes the settings suites, so the consent value lives in standard defaults.
+  private static let nextLaunch = "next-launch"
+
+  // A revoke deletes the settings suites, so the consent and cutoff live in standard defaults.
+  static let startTimeKey = "dev.expo.app-metrics.observe-consent-start"
   static let savedValueKey = "dev.expo.app-metrics.observe-consent"
 
   public static var isGranted: Bool {
@@ -87,21 +120,14 @@ public enum ObserveConsent {
     return shared.state
   }
 
-  static func resolveState(from defaults: UserDefaults, settings: Any?) -> State {
-    // TODO(ENG-29437): Verify the iOS UserDefaults read after reboot and before the first unlock.
-    if let saved = defaults.string(forKey: savedValueKey) {
-      return saved == "granted" ? .granted : .notGranted
-    }
-    return isGranted(settings: settings) ? .granted : .notGranted
+  static var consentStart: Date? {
+    return shared.consentStart
   }
 
   /// Saves the choice for the next launch and returns whether collection changes in this process.
+  @AppMetricsActor
   static func update(granted: Bool) -> Bool {
     return shared.update(granted: granted)
-  }
-
-  static func save(granted: Bool, to defaults: UserDefaults) {
-    defaults.set(granted ? "granted" : "not-granted", forKey: savedValueKey)
   }
 
   /// Consent from the `consent` key of the `ExpoObserve` dictionary in `Info.plist`. Granted when the

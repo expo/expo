@@ -21,7 +21,11 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
   /// Stores each crash report under the main session it belongs to. A crashed process with no stored
   /// session gets a new session built from the crash report, so the crash is sent with its own app version.
   @AppMetricsActor
-  static func storeCrashReports(_ crashReports: [CrashReport], in database: MetricsDatabase) {
+  static func storeCrashReports(
+    _ crashReports: [CrashReport],
+    in database: MetricsDatabase,
+    consentStart: Date? = ObserveConsent.consentStart
+  ) {
     var mainSessions: [SessionRow]
     do {
       mainSessions = try database.getMainSessions()
@@ -30,6 +34,10 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
       return
     }
     for crashReport in crashReports {
+      // MetricKit gives a window, so an overlapping report can include a crash from before consent.
+      if let consentStart, crashReport.timestampBegin < consentStart {
+        continue
+      }
       if let session = crashReport.findMatchingSession(in: mainSessions) {
         persistCrashReport(crashReport, sessionId: session.id, in: database)
       } else if crashReport.processId != nil {
