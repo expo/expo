@@ -148,6 +148,12 @@ private func installUIRuntime(
     try appContext.attach(runtime: uiRuntime)
   }
   appContext._uiRuntime = uiRuntime
+
+  // The main thread decodes the props of v2 views that come without a runtime, for example Reanimated's frames, in
+  // the UI runtime. The JavaScript thread runs worklets in it too, so the decode holds the runtime's lock.
+  if uiRuntime is any JavaScriptRuntimeLocking {
+    ViewPropsRuntimes.registerForCurrentThread(uiRuntime)
+  }
 }
 
 @Record

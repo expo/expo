@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesJSI
-import ExpoModulesCore
+@_spi(Internal) import ExpoModulesCore
 
 public class WorkletRuntime: JavaScriptRuntime, @unchecked Sendable {
   internal let workletHandle: WorkletRuntimeHandle
@@ -35,5 +35,16 @@ public class WorkletRuntime: JavaScriptRuntime, @unchecked Sendable {
    */
   public func execute(_ serializable: JavaScriptSerializable, arguments: [Any] = []) {
     workletHandle.executeWorklet(serializable, arguments: arguments)
+  }
+}
+
+@_spi(Internal)
+extension WorkletRuntime: JavaScriptRuntimeLocking {
+  /**
+   Runs `body` on the calling thread while holding the lock of the worklet runtime, which the JavaScript thread
+   also takes when it runs a worklet on this runtime.
+   */
+  public func withLock(_ body: () -> Void) -> Bool {
+    return workletHandle.runSync(body)
   }
 }

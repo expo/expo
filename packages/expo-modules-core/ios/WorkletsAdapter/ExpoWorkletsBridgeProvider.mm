@@ -272,4 +272,20 @@ static jsi::Value callWorklet(jsi::Runtime &rt, std::shared_ptr<worklets::Serial
   });
 }
 
+- (BOOL)runSyncWithRuntimeHandle:(id)runtimeHandle block:(NS_NOESCAPE void (^)(void))block
+{
+  ExpoWorkletsRuntimeHandle *runtimeWrapper = runtimeHandleFromOpaqueHandle(runtimeHandle, @"lock");
+  if (!runtimeWrapper) {
+    return NO;
+  }
+  auto workletRuntime = runtimeWrapper->runtime.lock();
+  if (!workletRuntime) {
+    return NO;
+  }
+  workletRuntime->runSync([block](jsi::Runtime &) {
+    block();
+  });
+  return YES;
+}
+
 @end
