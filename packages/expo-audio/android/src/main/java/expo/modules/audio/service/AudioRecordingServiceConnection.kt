@@ -61,6 +61,13 @@ class AudioRecordingServiceConnection(
     bindingContinuation.also { bindingContinuation = null }
   }
 
+  private fun failBinding(exception: Exception) {
+    cancelBindingTimeout()
+    // `bindService` registers the connection even when it fails, so it must be unbound.
+    unbind()
+    takeBindingContinuation()?.resumeWithException(exception)
+  }
+
   /**
    * Binds with the recording service. If the service doesn't exist, it will create the service.
    */
@@ -85,17 +92,25 @@ class AudioRecordingServiceConnection(
           continuation.resumeWithException(AudioRecordingServiceException(message))
           return@suspendCoroutine
         }
-        val serviceRunning = startServiceAndBind(appContext, reactContext, this, AudioRecordingService::class.java, AudioRecordingService.ACTION_START_RECORDING)
+        // `onServiceConnected` runs on the main thread and can run before `bindService` returns,
+        // so the continuation must be stored before binding.
+        transitionToState(ServiceBindingState.BINDING)
+        synchronized(this) {
+          bindingContinuation = continuation
+        }
+        // Without a timeout, the promise would never settle if the system never calls back.
+        startBindingTimeout()
 
-        if (!serviceRunning) {
-          continuation.resumeWithException(AudioRecordingServiceException("Failed to start the recording service"))
+        val serviceRunning = try {
+          startServiceAndBind(appContext, reactContext, this, AudioRecordingService::class.java, AudioRecordingService.ACTION_START_RECORDING)
+        } catch (e: Exception) {
+          failBinding(e)
           return@suspendCoroutine
         }
 
-        transitionToState(ServiceBindingState.BINDING)
-        bindingContinuation = continuation
-        // Without a timeout, the promise would never settle if the system never calls back.
-        startBindingTimeout()
+        if (!serviceRunning) {
+          failBinding(AudioRecordingServiceException("Failed to start the recording service"))
+        }
       }
     }
   }
