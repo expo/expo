@@ -2,6 +2,7 @@ import { requireNativeModule } from 'expo';
 import AppMetrics, {
   recordSpan,
   setErrorHandlerEnabled,
+  setLongTaskThreshold,
   startSpan,
   withSpan,
 } from 'expo-app-metrics';
@@ -76,6 +77,7 @@ const Observe: ObserveModule = new Proxy(native, {
         // The handler is already installed at this point (it installs on import), so this only
         // toggles whether it records anything.
         setErrorHandlerEnabled(config.errorHandlingEnabled ?? true);
+        setLongTaskThreshold(config.longTaskThreshold);
 
         // Recording is gated in expo-app-metrics (the producer side), so the setting travels
         // there rather than into the native `configure` payload. Applies to future captures
