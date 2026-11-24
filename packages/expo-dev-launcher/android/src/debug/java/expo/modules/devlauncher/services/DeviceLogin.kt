@@ -38,7 +38,11 @@ data class DeviceLoginRequest(
 
   /** The server sends two digits. Another two-digit value is a failed match, not a malformed request. */
   val wrongMatchValue: String
-    get() = if (matchValue == "00") "01" else "00"
+    get() = if (matchValue == "00") {
+      "01"
+    } else {
+      "00"
+    }
 }
 
 /**
@@ -67,7 +71,14 @@ suspend fun signInFromLaunchUrl(uri: Uri) {
       .put("device_code", request.deviceCode)
       // The running app gets this URL too. When the launcher does not redeem the code, a wrong
       // match value makes the server reject the code from then on.
-      .put("match_value", if (redeems) request.matchValue else request.wrongMatchValue)
+      .put(
+        "match_value",
+        if (redeems) {
+          request.matchValue
+        } else {
+          request.wrongMatchValue
+        }
+      )
       .toString()
     val response = Request
       .Builder()
