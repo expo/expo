@@ -14,6 +14,7 @@ struct ErrorReport {
   var stacktrace: String?
   var componentStack: String?
   var isFatal: Bool = false
+  var durationMs: Double?
 
   /// How the error was captured. A closed set so the `expo.error.source` attribute stays consistent.
   enum Source: String, Enumerable {
@@ -21,6 +22,7 @@ struct ErrorReport {
     case errorBoundary
     case reportedByUser
     case integration
+    case longTask
   }
 
   /// Builds the `js.exception` log event for the live path.
@@ -31,8 +33,17 @@ struct ErrorReport {
       message: message,
       stacktrace: stacktrace,
       componentStack: componentStack,
-      isFatal: isFatal
+      isFatal: isFatal,
+      severity: severity,
+      durationMs: durationMs
     )
+  }
+
+  private var severity: Severity {
+    if isFatal {
+      return .fatal
+    }
+    return source == .longTask ? .warn : .error
   }
 
   /// Snapshots this report for durable on-disk storage, capturing the session it belongs to and the
@@ -63,6 +74,7 @@ extension PendingErrorStore.PendingError {
       stacktrace: stacktrace,
       componentStack: nil,
       isFatal: true,
+      severity: .fatal,
       timestamp: timestamp
     )
   }
@@ -70,8 +82,8 @@ extension PendingErrorStore.PendingError {
 
 /// Builds a `js.exception` log event following OpenTelemetry's exception-in-logs convention. The error
 /// rides as `exception.*` attributes, while `expo.error.*` carries the bits OTel has no field for (the
-/// capture source and whether the error was fatal). Fatal errors log at `fatal` severity, the rest at
-/// `error`. Shared by the live and ingested-fatal paths so both events keep the same shape.
+/// capture source and whether the error was fatal). Shared by the live and ingested-fatal paths so
+/// both events keep the same shape.
 ///
 /// Absent `type`/`stacktrace` are kept as explicit `null` rather than omitted (the boxed optionals
 /// encode as JSON `null`), so every `js.exception` event carries the same attribute keys. The React
@@ -84,6 +96,8 @@ private func makeExceptionLogRecord(
   stacktrace: String?,
   componentStack: String?,
   isFatal: Bool,
+  severity: Severity,
+  durationMs: Double? = nil,
   timestamp: String = Date.now.ISO8601Format()
 ) -> LogRecord {
   var attributes: [String: Any] = [
@@ -96,10 +110,13 @@ private func makeExceptionLogRecord(
   if let componentStack {
     attributes["expo.error.component_stack"] = componentStack
   }
+  if let durationMs {
+    attributes["expo.long_task.duration_ms"] = durationMs
+  }
   return LogRecord(
     name: jsExceptionLogName,
     attributes: attributes,
-    severity: isFatal ? .fatal : .error,
+    severity: severity,
     timestamp: timestamp
   )
 }

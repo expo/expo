@@ -22,7 +22,8 @@ data class ErrorReport(
   @Field val message: String = "",
   @Field val stacktrace: String? = null,
   @Field val componentStack: String? = null,
-  @Field val isFatal: Boolean = false
+  @Field val isFatal: Boolean = false,
+  @Field val durationMs: Double? = null
 ) : Record {
   /** Builds the `js.exception` log event for the live path. */
   fun toLogRecord(sessionId: String): LogRecord =
@@ -33,8 +34,17 @@ data class ErrorReport(
       message = message,
       stacktrace = stacktrace,
       componentStack = componentStack,
-      isFatal = isFatal
+      isFatal = isFatal,
+      severity = severity,
+      durationMs = durationMs
     )
+
+  private val severity: Severity
+    get() = when {
+      isFatal -> Severity.FATAL
+      source == ErrorSource.LONG_TASK -> Severity.WARN
+      else -> Severity.ERROR
+    }
 
   /**
    * Snapshots this report for durable on-disk storage, capturing the session it belongs to and the
@@ -59,7 +69,8 @@ enum class ErrorSource(val rawValue: String) : Enumerable {
   GLOBAL("global"),
   ERROR_BOUNDARY("errorBoundary"),
   REPORTED_BY_USER("reportedByUser"),
-  INTEGRATION("integration")
+  INTEGRATION("integration"),
+  LONG_TASK("longTask")
 }
 
 /**
@@ -75,14 +86,15 @@ fun PendingErrorStore.PendingError.toLogRecord(): LogRecord =
     stacktrace = stacktrace,
     componentStack = null,
     isFatal = true,
+    severity = Severity.FATAL,
     timestamp = timestamp
   )
 
 /**
  * Builds a `js.exception` log event following OpenTelemetry's exception-in-logs convention. The error
  * rides as `exception.*` attributes, while `expo.error.*` carries the bits OTel has no field for (the
- * capture source and whether the error was fatal). Fatal errors log at `fatal` severity, the rest at
- * `error`. Shared by the live and ingested-fatal paths so both events keep the same shape.
+ * capture source and whether the error was fatal). Shared by the live and ingested-fatal paths so
+ * both events keep the same shape.
  *
  * Absent `type`/`stacktrace` are kept as explicit `null` rather than omitted, so every `js.exception`
  * event carries the same attribute keys. The React component stack only exists for error-boundary
@@ -97,6 +109,8 @@ private fun makeExceptionLogRecord(
   stacktrace: String?,
   componentStack: String?,
   isFatal: Boolean,
+  severity: Severity,
+  durationMs: Double? = null,
   timestamp: String = TimeUtils.getCurrentTimestampInISOFormat()
 ): LogRecord {
   val attributes = buildMap {
@@ -108,18 +122,15 @@ private fun makeExceptionLogRecord(
     if (componentStack != null) {
       put("expo.error.component_stack", componentStack)
     }
+    if (durationMs != null) {
+      put("expo.long_task.duration_ms", durationMs)
+    }
   }
   return LogRecord(
     sessionId = sessionId,
     timestamp = timestamp,
     name = JS_EXCEPTION_LOG_NAME,
-    severity = (
-      if (isFatal) {
-        Severity.FATAL
-      } else {
-        Severity.ERROR
-      }
-      ).rawValue,
+    severity = severity.rawValue,
     attributes = JsonAny.encodeMapToJsonString(attributes)
   )
 }
