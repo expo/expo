@@ -2,6 +2,7 @@ package expo.modules.audio.service
 
 import android.content.ComponentName
 import android.os.IBinder
+import android.util.Log
 import expo.modules.audio.AudioRecorder
 import expo.modules.audio.AudioRecordingServiceException
 import expo.modules.audio.getRecordingServiceErrorMessage
@@ -16,6 +17,8 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+
+private const val TAG = "AudioRecordingServiceConnection"
 
 class AudioRecordingServiceBinder(val service: AudioRecordingService) : android.os.Binder()
 
@@ -65,9 +68,15 @@ class AudioRecordingServiceConnection(
 
   private fun failBinding(exception: Exception) {
     cancelBindingTimeout()
+    val continuation = takeBindingContinuation()
     // `bindService` registers the connection even when it fails, so it must be unbound.
-    unbind()
-    takeBindingContinuation()?.resumeWithException(exception)
+    // `unbind()` throws when the app context is lost. The caller must still get the binding error.
+    try {
+      unbind()
+    } catch (e: Exception) {
+      Log.w(TAG, "Failed to unbind the recording service after a binding failure", e)
+    }
+    continuation?.resumeWithException(exception)
   }
 
   /**

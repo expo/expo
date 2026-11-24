@@ -7,6 +7,7 @@ import android.util.Log
 import expo.modules.audio.AudioRecorder
 import expo.modules.audio.AudioRecordingServiceException
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -51,6 +52,7 @@ class AudioRecordingServiceConnectionTest {
     mockkObject(BaseServiceConnection.Companion)
     mockkStatic(Log::class)
     every { Log.d(any(), any()) } returns 0
+    every { Log.w(any(), any<String>(), any()) } returns 0
   }
 
   @After
@@ -135,6 +137,21 @@ class AudioRecordingServiceConnectionTest {
     onStartServiceAndBind { it.connectLater() }
     runBlocking { connection.bindWithService() }
     assertTrue(connection.isConnected)
+  }
+
+  @Test
+  fun reportsTheBindingErrorWhenTheAppContextIsLostWhileUnbinding() {
+    onStartServiceAndBind(result = false)
+    // `bindWithService` reads the React context, then the app context is lost before `unbind()` reads it again.
+    every { appContext.reactContext } returns reactContext andThenThrows Exceptions.AppContextLost()
+    every { appContext.jsLogger } throws Exceptions.AppContextLost()
+
+    val error = assertThrows(AudioRecordingServiceException::class.java) {
+      runBlocking { connection.bindWithService() }
+    }
+
+    assertTrue(error.message!!.contains("Failed to start the recording service"))
+    assertEquals(ServiceBindingState.UNBOUND, connection.bindingState)
   }
 
   @Test
