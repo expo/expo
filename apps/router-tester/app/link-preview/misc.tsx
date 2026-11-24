@@ -9,7 +9,6 @@ import {
   Pressable,
   Image,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useTimer } from '@/utils/useTimer';
 
@@ -20,7 +19,7 @@ const HomeIndex = () => {
 
   return (
     <ScrollView style={{ backgroundColor: '#84DCC6' }} contentInsetAdjustmentBehavior="automatic">
-      <SafeAreaView edges={['left', 'right']} style={{ padding: 16, gap: 16 }}>
+      <View style={{ padding: 16, gap: 16 }}>
         <View>
           <Text>Misc</Text>
           <Text>Current Path: {pathname}</Text>
@@ -219,7 +218,7 @@ const HomeIndex = () => {
           </Link.Trigger>
           <Link.Preview />
         </Link>
-      </SafeAreaView>
+      </View>
     </ScrollView>
   );
 };

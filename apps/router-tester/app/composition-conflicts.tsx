@@ -1,7 +1,6 @@
 import { Stack } from 'expo-router';
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, Switch, ScrollView, StyleSheet, Pressable, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CompositionConflictsScreen() {
   // Competing Titles
@@ -91,7 +90,7 @@ export default function CompositionConflictsScreen() {
       </Stack.Screen>
 
       <ScrollView style={styles.container} contentInsetAdjustmentBehavior="automatic">
-        <SafeAreaView edges={['left', 'right']} style={styles.contentContainer}>
+        <View style={styles.contentContainer}>
           <Text style={styles.title}>Composition Conflicts</Text>
           <Text style={styles.subtitle}>
             Tests competing components, replacement, and rapid toggling.
@@ -233,7 +232,7 @@ export default function CompositionConflictsScreen() {
               5. Rapid Toggle: Tap start, wait 2s. Verify no crash, final state is consistent.
             </Text>
           </View>
-        </SafeAreaView>
+        </View>
       </ScrollView>
     </>
   );

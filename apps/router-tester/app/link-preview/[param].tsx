@@ -1,7 +1,6 @@
 import { Link, useLocalSearchParams, usePathname } from 'expo-router';
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ParamScreen() {
   const pathname = usePathname();
@@ -9,7 +8,7 @@ export default function ParamScreen() {
 
   return (
     <ScrollView style={{ backgroundColor: '#84DCC6' }} contentInsetAdjustmentBehavior="automatic">
-      <SafeAreaView edges={['left', 'right']} style={{ padding: 16, gap: 16 }}>
+      <View style={{ padding: 16, gap: 16 }}>
         <View>
           <Text>Misc</Text>
           <Text>Current Path: {pathname}</Text>
@@ -23,7 +22,7 @@ export default function ParamScreen() {
           <Link.Trigger>Link.Preview: /one-more-param</Link.Trigger>
           <Link.Preview />
         </Link>
-      </SafeAreaView>
+      </View>
     </ScrollView>
   );
 }

@@ -12,7 +12,6 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ToggleRow } from '../components/ToggleRow';
 import { searchIcon, micIcon, moreVertIcon, sendIcon, deleteIcon } from './icons';
@@ -99,7 +98,7 @@ export default function ToolbarScreen() {
       />
       <Stack.SearchBar />
       <ScrollView style={styles.container} contentInsetAdjustmentBehavior="automatic">
-        <SafeAreaView edges={['left', 'right']} style={styles.contentContainer}>
+        <View style={styles.contentContainer}>
           <Text style={styles.title}>Toolbar E2E Test Screen</Text>
           <Stack.Toolbar placement="right">
             <Stack.Toolbar.Button icon="safari" />
@@ -251,7 +250,7 @@ export default function ToolbarScreen() {
               5. Observe menu items change based on state (e.g., Archive toggle)
             </Text>
           </View>
-        </SafeAreaView>
+        </View>
       </ScrollView>
 
       <Stack.Toolbar backgroundColor="red" tintColor="blue">
