@@ -64,14 +64,15 @@ public actor JavaScriptActor: GlobalActor {
     )
   }
 
+  // Inlinable so a client module specializes it: the generic version needs the metadata of `T` on every call.
   @JavaScriptActor
-  @usableFromInline
+  @inlinable
   internal static func runIsolated<T: ~Copyable>(_ operation: @JavaScriptActor () -> T) -> T {
     return operation()
   }
 
   @JavaScriptActor
-  @usableFromInline
+  @inlinable
   internal static func runIsolatedThrowing<T: ~Copyable>(_ operation: @JavaScriptActor () throws -> T) throws -> T {
     return try operation()
   }
