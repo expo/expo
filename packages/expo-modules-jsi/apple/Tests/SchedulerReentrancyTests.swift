@@ -29,6 +29,31 @@ struct SchedulerReentrancyTests {
   }
 
   @Test
+  func `dropping a promise on the main thread releases it without scheduling from that thread`()
+    async throws
+  {
+    let testRuntime = await ReleasableTestRuntime(dispatch: scheduleOnTestRuntimeUnlessHostLocked)
+    let blockedBefore = testHostSchedulerLock.blockedDispatchCount
+
+    let (box, registeredBefore) = try await testRuntime.scheduler.runIsolated {
+      let runtime = try #require(testRuntime.runtime)
+      let before = runtime.longLivedObjects.count
+      return (PromiseBox(try JavaScriptPromise(runtime)), before)
+    }
+    // React Native also runs JavaScript on the main thread, for an event that a native view
+    // dispatches with `experimental_flushSync`.
+    await MainActor.run {
+      testHostSchedulerLock.acquire()
+      box.promise = nil
+      testHostSchedulerLock.release()
+    }
+
+    #expect(testHostSchedulerLock.blockedDispatchCount == blockedBefore)
+    #expect(try await isReleased(in: testRuntime, registeredBefore: registeredBefore, count: registeredBefore))
+    await testRuntime.tearDown()
+  }
+
+  @Test
   func `dropping a promise on the JavaScript thread after resolving it still settles it`() async throws {
     let testRuntime = await TestRuntimeScheduler().makeRuntime()
 
@@ -136,6 +161,15 @@ private func dropWhileHostLocked(_ promise: consuming JavaScriptPromise) {
   testHostSchedulerLock.acquire()
   _ = consume promise
   testHostSchedulerLock.release()
+}
+
+/// Moves a promise to another thread, which drops it by setting `promise` to `nil`.
+private final class PromiseBox: @unchecked Sendable {
+  var promise: JavaScriptPromise?
+
+  init(_ promise: consuming JavaScriptPromise) {
+    self.promise = consume promise
+  }
 }
 
 /// The settled value of a promise, set by a task that the test polls.

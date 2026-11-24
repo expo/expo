@@ -20,7 +20,7 @@ extension JavaScriptRuntime {
     private let pointee: expo.RuntimeScheduler
     private let handle: JavaScriptRuntimeHandle
 
-    /// Releases that `scheduleRelease` collected on the JavaScript thread and that no task runs yet.
+    /// Releases that `scheduleRelease` collected on a thread that runs JavaScript and that no task runs yet.
     private let pendingReleases = OSAllocatedUnfairLock<[@JavaScriptActor (JavaScriptRuntime) -> Void]>(
       uncheckedState: []
     )
@@ -229,18 +229,20 @@ extension JavaScriptRuntime {
     // For code that runs off the JavaScript thread without holding the runtime, like promises and
     // callbacks. The runtime is read on the JavaScript thread and passed to the closure.
 
-    /// The queue that `scheduleRelease` schedules from when it runs on the JavaScript thread. It is
-    /// serial, so at most one thread waits for React Native's scheduler mutex.
+    /// The queue that `scheduleRelease` schedules from when it runs on a thread that runs JavaScript. It
+    /// is serial, so at most one thread waits for React Native's scheduler mutex.
     private static let releaseQueue = DispatchQueue(label: "expo.modules.jsi.release", qos: .utility)
 
-    /// Schedules the release of a value's state from its `deinit`. On the JavaScript thread, it must not
-    /// schedule directly: React Native's scheduler destroys its queued tasks while it holds the mutex
-    /// that scheduling takes, when a JavaScript error clears the queues, so a value dropped with a task
-    /// would deadlock the JavaScript thread. So it adds the release to a batch, and the release queue
-    /// schedules one task for the batch. The batch is taken before its task is scheduled, so each
-    /// release runs after a resolve or call that was queued before its value was dropped.
+    /// Schedules the release of a value's state from its `deinit`. On a thread that runs JavaScript, it
+    /// must not schedule directly: React Native's scheduler destroys its queued tasks while it holds the
+    /// mutex that scheduling takes, when a JavaScript error clears the queues, so a value dropped with a
+    /// task would deadlock that thread. That is the JavaScript thread, or the main thread for an event
+    /// that a native view dispatches with `experimental_flushSync`. So it adds the release to a batch,
+    /// and the release queue schedules one task for the batch. The batch is taken before its task is
+    /// scheduled, so each release runs after a resolve or call that was queued before its value was
+    /// dropped.
     internal func scheduleRelease(_ body: @escaping @JavaScriptActor (JavaScriptRuntime) -> Void) {
-      guard supportsAsyncScheduling && isOnJavaScriptThread() else {
+      guard supportsAsyncScheduling && (isOnJavaScriptThread() || Thread.isMainThread) else {
         schedule(body)
         return
       }
