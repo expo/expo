@@ -18,6 +18,7 @@ type MetroRequire = {
 type DependencyMapPaths = { [moduleID: number | string]: unknown } | null;
 
 declare const crossOriginIsolated: boolean | undefined;
+declare const importScripts: ((...urls: string[]) => void) | undefined;
 declare let __METRO_GLOBAL_PREFIX__: string;
 
 // Shim script that wraps around a given worker entrypoint and:
@@ -41,6 +42,28 @@ function makeWorkerContent(url: string): string {
     };
     importScripts(ASYNC_WORKER_BASE);
   `;
+}
+
+const loadedWorkerChunks = new Set<string>();
+
+// A worker has its own module registry and no `<script>` elements. `importScripts` loads a chunk
+// into the registry of the worker, and returns after the chunk registered its modules.
+function loadWorkerChunks(urls: readonly string[]): void | Promise<void> {
+  const pendingUrls = urls.filter((url) => !loadedWorkerChunks.has(url));
+  try {
+    for (const url of pendingUrls) {
+      importScripts!(url);
+      loadedWorkerChunks.add(url);
+    }
+  } catch (error) {
+    // `importScripts` throws a `TypeError` in a module worker, which loads scripts with `import()`.
+    if (!(error instanceof TypeError)) throw error;
+    return Promise.all(
+      pendingUrls.map((url) =>
+        import(/* @metro-ignore */ url).then(() => void loadedWorkerChunks.add(url))
+      )
+    ).then(() => {});
+  }
 }
 
 function maybeLoadBundle(moduleID: number, paths: DependencyMapPaths): void | Promise<void> {
@@ -76,6 +99,14 @@ function asyncRequireImpl<T>(
   if (process.env.EXPO_OS === 'web') {
     const bundlePath = paths?.[String(moduleID)];
     if (Array.isArray(bundlePath)) {
+      if (typeof importScripts === 'function') {
+        try {
+          const loading = loadWorkerChunks(bundlePath);
+          return loading ? loading.then(importAll) : importAll();
+        } catch (error) {
+          return Promise.reject(error);
+        }
+      }
       const loadBundle = (globalThis as any)[`${__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`];
       if (loadBundle?.isReady?.(bundlePath)) return importAll();
       const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
@@ -137,6 +168,8 @@ asyncRequire.prefetch = function (
   paths: DependencyMapPaths,
   moduleName?: string // unused
 ): void {
+  // `importScripts` blocks the worker, so a worker loads a chunk only when it imports the chunk.
+  if (typeof importScripts === 'function' && Array.isArray(paths?.[String(moduleID)])) return;
   maybeLoadBundle(moduleID, paths)?.then(
     () => {},
     () => {}

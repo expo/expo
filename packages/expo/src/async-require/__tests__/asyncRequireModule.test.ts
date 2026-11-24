@@ -15,6 +15,7 @@ describe('asyncRequireModule', () => {
   let mockImportAll: jest.Mock;
   let mockRequire: any;
   let asyncRequire: any;
+  let nativeImport: jest.Mock;
   const originalExpoOs = process.env.EXPO_OS;
 
   beforeEach(() => {
@@ -41,11 +42,30 @@ describe('asyncRequireModule', () => {
       'module',
       'exports',
       '__METRO_GLOBAL_PREFIX__',
+      'nativeImport',
       `
       "use strict";
 
       function makeWorkerContent(url) {
         return '';
+      }
+
+      var loadedWorkerChunks = new Set();
+
+      function loadWorkerChunks(urls) {
+        var pendingUrls = urls.filter(function(url) { return !loadedWorkerChunks.has(url); });
+        try {
+          pendingUrls.forEach(function(url) {
+            importScripts(url);
+            loadedWorkerChunks.add(url);
+          });
+        } catch (error) {
+          if (!(error instanceof TypeError)) throw error;
+          // The module uses a native import() here, which this evaluated copy cannot run.
+          return Promise.all(pendingUrls.map(function(url) {
+            return nativeImport(url).then(function() { loadedWorkerChunks.add(url); });
+          })).then(function() {});
+        }
       }
 
       function maybeLoadBundle(moduleID, paths) {
@@ -69,6 +89,14 @@ describe('asyncRequireModule', () => {
         if (process.env.EXPO_OS === 'web') {
           var bundlePath = paths && paths[String(moduleID)];
           if (Array.isArray(bundlePath)) {
+            if (typeof importScripts === 'function') {
+              try {
+                var loading = loadWorkerChunks(bundlePath);
+                return loading ? loading.then(importAll) : importAll();
+              } catch (error) {
+                return Promise.reject(error);
+              }
+            }
             var loadBundle = globalThis[(__METRO_GLOBAL_PREFIX__ || '') + '__loadBundleAsync'];
             if (loadBundle && loadBundle.isReady && loadBundle.isReady(bundlePath)) return importAll();
             var maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
@@ -110,6 +138,7 @@ describe('asyncRequireModule', () => {
       };
 
       asyncRequire.prefetch = function(moduleID, paths, moduleName) {
+        if (typeof importScripts === 'function' && Array.isArray(paths && paths[String(moduleID)])) return;
         var p = maybeLoadBundle(moduleID, paths);
         if (p) p.then(function(){}, function(){});
       };
@@ -117,11 +146,13 @@ describe('asyncRequireModule', () => {
       module.exports = asyncRequire;
       `
     );
-    moduleFn(mockRequire, moduleObj, moduleObj.exports, '');
+    nativeImport = jest.fn(async () => {});
+    moduleFn(mockRequire, moduleObj, moduleObj.exports, '', nativeImport);
     asyncRequire = moduleObj.exports;
   });
 
   afterEach(() => {
+    delete (globalThis as any).importScripts;
     delete (globalThis as any).__loadBundleAsync;
     delete (globalThis as any).__METRO_GLOBAL_PREFIX__;
     process.env.EXPO_OS = originalExpoOs;
@@ -175,6 +206,65 @@ describe('asyncRequireModule', () => {
     process.env.EXPO_OS = 'web';
     expect(() => asyncRequire(42, { 42: ['/shared.js'] })).toThrow('loader');
     expect(mockImportAll).not.toHaveBeenCalled();
+  });
+
+  describe('in a worker', () => {
+    let importScripts: jest.Mock;
+
+    beforeEach(() => {
+      process.env.EXPO_OS = 'web';
+      importScripts = jest.fn();
+      (globalThis as any).importScripts = importScripts;
+    });
+
+    it('loads each chunk of an array one time with importScripts, then imports synchronously', () => {
+      const loader = Object.assign(jest.fn(), { isReady: () => false });
+      (globalThis as any).__loadBundleAsync = loader;
+
+      expect(asyncRequire(42, { 42: ['/shared.js', '/route.js'] })._result).toEqual({
+        default: 'module-42',
+      });
+      expect(
+        asyncRequire.unstable_importMaybeSync(43, { 43: ['/shared.js', '/other.js'] })
+      ).toEqual({ default: 'module-43' });
+      expect(importScripts.mock.calls).toEqual([['/shared.js'], ['/route.js'], ['/other.js']]);
+      expect(loader).not.toHaveBeenCalled();
+    });
+
+    it('rejects when importScripts throws, and loads the chunk again on the next import', async () => {
+      importScripts.mockImplementationOnce(() => {
+        throw new Error('NetworkError');
+      });
+
+      await expect(asyncRequire(42, { 42: ['/route.js'] })).rejects.toThrow('NetworkError');
+      expect(mockImportAll).not.toHaveBeenCalled();
+      await expect(asyncRequire(42, { 42: ['/route.js'] })).resolves.toEqual({
+        default: 'module-42',
+      });
+      expect(importScripts).toHaveBeenCalledTimes(2);
+    });
+
+    it('loads chunks with import() in a module worker, then imports', async () => {
+      importScripts.mockImplementation(() => {
+        throw new TypeError("Module scripts don't support importScripts().");
+      });
+
+      const result = asyncRequire(42, { 42: ['/shared.js', '/route.js'] });
+      expect(mockImportAll).not.toHaveBeenCalled();
+      await expect(result).resolves.toEqual({ default: 'module-42' });
+      expect(nativeImport.mock.calls).toEqual([['/shared.js'], ['/route.js']]);
+      await asyncRequire(43, { 43: ['/shared.js'] });
+      expect(nativeImport).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not load chunks for prefetch', () => {
+      const loader = jest.fn(async () => {});
+      (globalThis as any).__loadBundleAsync = loader;
+
+      asyncRequire.prefetch(42, { 42: ['/route.js'] });
+      expect(importScripts).not.toHaveBeenCalled();
+      expect(loader).not.toHaveBeenCalled();
+    });
   });
 
   it('calls importAll without moduleName when not provided', async () => {
