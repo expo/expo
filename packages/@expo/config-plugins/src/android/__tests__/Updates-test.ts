@@ -232,10 +232,6 @@ describe('Android Updates config', () => {
         (e) => e.$.name === 'expo_runtime_version'
       );
       expect(runtimeVersionString).toBeDefined();
-      // Without this, localization tooling (e.g. Google Play's automatic app string translation)
-      // can emit a locale-qualified copy of the runtime version, which Android prefers over the
-      // default value — devices in that locale then report a stale runtime version and stop
-      // receiving updates.
       expect(runtimeVersionString!.$.translatable).toBe('false');
       expect(runtimeVersionString!._).toBe('1.10');
     });
