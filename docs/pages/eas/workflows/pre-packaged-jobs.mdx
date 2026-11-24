@@ -2209,6 +2209,88 @@ jobs:
 
 </Collapsible>
 
+## GitHub pull request
+
+Open a pull request in the GitHub repository linked to your project. Use this job after a job that pushes a branch, for example a job in which a coding agent changes your code.
+
+<Prerequisites>
+  <Requirement title="A GitHub repository connected to your project">
+    To use the GitHub pull request job, your project must have a GitHub repository connected. Learn
+    how to [connect your GitHub repository](/build/building-from-github/) to get started.
+  </Requirement>
+</Prerequisites>
+
+### Syntax
+
+```yaml
+jobs:
+  open_pull_request:
+    type: github-pull-request
+    params:
+      head: string # required - the branch that contains the changes
+      title: string # required - the title of the pull request
+      base: string # optional - defaults to the default branch of the repository
+      body: string # optional - the description of the pull request
+      draft: boolean # optional - defaults to false
+```
+
+#### Parameters
+
+| Parameter | Type    | Description                                                                                                    |
+| --------- | ------- | -------------------------------------------------------------------------------------------------------------- |
+| head      | string  | Required. The branch that contains the changes. The branch must already exist in the linked GitHub repository. |
+| title     | string  | Required. The title of the pull request.                                                                       |
+| base      | string  | Optional. The branch to merge the changes into. Defaults to the default branch of the repository.              |
+| body      | string  | Optional. The description of the pull request.                                                                 |
+| draft     | boolean | Optional. Whether to open the pull request as a draft. Defaults to `false`.                                    |
+
+#### Run the job again
+
+If this job already opened a pull request for the same `head` and `base` branches, the job updates that pull request instead of opening a new one:
+
+- The job replaces the title.
+- If you set `body`, the job replaces the description, including manual edits. If you do not set `body`, the job keeps the description.
+- The job does not change the draft state.
+
+### Examples
+
+<Collapsible summary="Open a pull request for a branch that a job pushes">
+
+The `change` job pushes a branch and exposes its name and a title as [outputs](/eas/workflows/syntax/#jobsjob_idoutputs). The `open_pull_request` job opens a pull request for that branch.
+
+```yaml
+name: Open a pull request
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  change:
+    outputs:
+      branch: ${{ steps.push.outputs.branch }}
+      title: ${{ steps.push.outputs.title }}
+    steps:
+      - uses: eas/checkout
+      - id: push
+        name: Change the code and push a branch
+        run: |
+          # Change files, commit, and push the branch here.
+          set-output branch "my-branch"
+          set-output title "My change"
+
+  open_pull_request:
+    needs: [change]
+    type: github-pull-request
+    params:
+      head: ${{ needs.change.outputs.branch }}
+      title: ${{ needs.change.outputs.title }}
+      draft: true
+```
+
+</Collapsible>
+
+For a complete workflow in which a coding agent changes your code and this job opens the pull request, see [Issue to PR](/agentic-workflows/issue-to-pr/).
+
 ## Apple device registration request
 
 Pause a workflow run until an iOS device enrolls for a specific [Apple team](https://expo.fyi/apple-team) and a team member approves that enrollment on [expo.dev](https://expo.dev). Use this job to automate registering a device for [internal distribution](/build/internal-distribution/) inside Expo Workflows.

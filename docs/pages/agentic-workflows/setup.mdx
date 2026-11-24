@@ -496,7 +496,7 @@ If you changed **app.json**, also add it. If you use Cursor, also add **.cursor/
 
 ## Add a GitHub token to Expo Services
 
-Issue to PR and Bug triage need this step. Issue to PR pushes a branch, opens a PR, and adds comments to the issue. Bug triage creates issues for TestFlight feedback and posts its verdict on the issue. QA Swarm needs this step only to post its report on a PR. These tasks need a GitHub token.
+Issue to PR and Bug triage need this step. Issue to PR uses the token to push a branch and add comments to the issue. Bug triage creates issues for TestFlight feedback and posts its verdict on the issue. QA Swarm needs this step only to post its report on a PR. These tasks need a GitHub token.
 
 On GitHub, create a [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new). Under **Repository access**, select only your repository. Give it these permissions:
 
@@ -513,7 +513,7 @@ In the project dashboard, open **Project settings** > [**Environment variables**
 
 The job removes the GitHub token from the environment of the agent. An agent that can run shell commands can still read the variables of the job. So give the token access only to this repository. See [What the agent can do](#what-the-agent-can-do) for more information.
 
-GitHub shows the owner of the token as the author of each PR that Issue to PR opens. GitHub does not let an author approve their own PR. If your repository requires a review, another person must approve these PRs. To keep your own approval, create the token with a separate GitHub account for the agent.
+Issue to PR opens pull requests through the [`github-pull-request` job](/eas/workflows/pre-packaged-jobs/#github-pull-request), which authenticates with the Expo GitHub App installation for the linked repository. The job does not use your `GITHUB_TOKEN` to open the PR.
 
 </Step>
 
