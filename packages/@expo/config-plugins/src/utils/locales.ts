@@ -115,18 +115,20 @@ function filterStringValues(
 ): LocaleJson {
   const strings: LocaleJson = {};
   const skipped: string[] = [];
-  for (const [key, value] of Object.entries(values)) {
-    if (typeof value === 'object') {
-      skipped.push(key);
+  for (const key of Object.keys(values)) {
+    if (values[key] == null) {
+      continue;
+    } else if (key !== '__proto__' && typeof values[key] !== 'object') {
+      strings[key] = `${values[key]}`;
     } else {
-      strings[key] = value as string;
+      skipped.push(key);
     }
   }
   if (skipped.length) {
     addWarningForPlatform(
       forPlatform,
       `locales.${lang}`,
-      `Skipped locale keys with invalid values: ${skipped.join(', ')}. Values must be strings.`,
+      `Skipped locale keys with invalid values: ${skipped.join(', ')}. Values must be convertible to strings.`,
       'https://docs.expo.dev/guides/localization/#translating-app-metadata'
     );
   }
