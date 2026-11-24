@@ -10,6 +10,7 @@ import {
   CalendarEvent,
   CalendarReminder,
   CalendarType,
+  type CalendarDetails,
   EntityTypes,
   EventAccessLevel,
   EventStatus,
@@ -36,14 +37,14 @@ const defaultCalendarData = {
     name: 'expo',
     type: 'local',
   },
-} satisfies Partial<Calendar>;
+} satisfies CalendarDetails;
 
-function createTestCalendar(patch: Partial<Calendar> = {}): Promise<Calendar> {
+function createTestCalendar(patch: CalendarDetails = {}): Promise<Calendar> {
   return Calendar.create({
     ...defaultCalendarData,
     sourceId: pickCalendarSourceId(),
     ...patch,
-  } satisfies Partial<Calendar>);
+  } satisfies CalendarDetails);
 }
 
 function pickCalendarSourceId() {

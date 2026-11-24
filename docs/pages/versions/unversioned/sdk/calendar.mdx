@@ -189,7 +189,6 @@ Unless specified otherwise, all dates are returned in the ISO 8601 format.
 
 <APISection
   packageName="expo-calendar"
-  apiName="Calendar"
   headersMapping={{
     systemProvidedUI: 'Launching system-provided calendar dialogs',
   }}
@@ -207,7 +206,7 @@ Otherwise, you must add the following permissions to your **app.json** inside th
 
 ### iOS
 
-To only add events without reading existing calendar data, enable the `writeOnlyAccess` option in the [config plugin](#configuration-in-app-config) and request write-only access by passing `true` to [`Calendar.requestPermissions`](#requestpermissionswriteonly). This is sufficient for methods like [`Calendar.createEvent`](#createeventdetails). Methods that read calendar data, such as [`Calendar.getAll`](#getallentitytype), [`CalendarEvent.list`](#listcalendars-startdate-enddate), or [`Calendar.presentPicker`](#presentpicker), require full calendar access.
+To only add events without reading existing calendar data, enable the `writeOnlyAccess` option in the [config plugin](#configuration-in-app-config) and request write-only access by passing `true` to [`Calendar.requestPermissions`](#requestpermissionswriteonly). This is sufficient for methods like [`calendar.createEvent`](#createeventdetails). Methods that read calendar data, such as [`Calendar.getAll`](#getallentitytype), [`CalendarEvent.list`](#listcalendars-startdate-enddate), or [`Calendar.presentPicker`](#presentpicker), require full calendar access.
 
 The following usage description keys are used by this library:
 

@@ -262,7 +262,7 @@ export declare class ExpoCalendar {
    * > resolved - real calendars require full calendar access.
    *
    * @param calendarId The ID of the calendar to get.
-   * @returns An [`Calendar`](#calendar) object representing the calendar.
+   * @returns A [`Calendar`](#calendar) object representing the calendar.
    */
   static get(calendarId: string): Promise<ExpoCalendar>;
 }
@@ -493,7 +493,7 @@ export declare class ExpoCalendarEvent {
   /**
    * Gets an event by its ID. Throws an error if the event with the given ID does not exist.
    * @param eventId The ID of the event to get.
-   * @returns An [`CalendarEvent`](#calendarevent) object representing the event.
+   * @returns A [`CalendarEvent`](#calendarevent) object representing the event.
    */
   static get(eventId: string): Promise<ExpoCalendarEvent>;
 }
@@ -582,7 +582,7 @@ export declare class ExpoCalendarReminder {
   /**
    * Gets a reminder by its ID. Throws an error if the reminder with the given ID does not exist.
    * @param reminderId The ID of the reminder to get.
-   * @returns An [`CalendarReminder`](#calendarreminder) object representing the reminder.
+   * @returns A [`CalendarReminder`](#calendarreminder) object representing the reminder.
    * @platform ios
    */
   static get(reminderId: string): Promise<ExpoCalendarReminder>;

@@ -109,7 +109,7 @@ export class CalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
 
   /**
    * Lists events from the device's calendar. It can be used to search events in multiple calendars.
-   * > **Note:** If you want to search events in a single calendar, you can use [`Calendar.listEvents`](#listeventsstartdate-enddate) instead.
+   * > **Note:** If you want to search events in a single calendar, you can use [`calendar.listEvents`](#listeventsstartdate-enddate) instead.
    * @param calendars An array of calendar IDs (`string[]`) or [`Calendar`](#calendar) objects to search for events.
    * @param startDate The start date of the time range to search for events.
    * @param endDate The end date of the time range to search for events.
@@ -276,7 +276,7 @@ export class Calendar extends InternalExpoCalendar.ExpoCalendar {
   /**
    * Creates a new calendar on the device, allowing events to be added later and displayed in the OS Calendar app.
    * @param details A map of details for the calendar to be created.
-   * @returns An [`Calendar`](#calendar) object representing the newly created calendar.
+   * @returns A [`Calendar`](#calendar) object representing the newly created calendar.
    */
   static async create(details: CalendarDetails = {}): Promise<Calendar> {
     const color = details.color ? processColor(details.color) : undefined;
@@ -295,7 +295,7 @@ export class Calendar extends InternalExpoCalendar.ExpoCalendar {
    * > **Android:** This function is not available on Android. Android does not expose a single
    * > system-managed default calendar. Use `Calendar.getAll()` and choose an appropriate writable
    * > calendar for your app; `isPrimary` can help identify per-account primary calendars.
-   * @return An [`Calendar`](#calendar) object that is the user's default calendar.
+   * @return A [`Calendar`](#calendar) object that is the user's default calendar.
    * @platform ios
    */
   static getDefaultSync(): Calendar {
@@ -308,7 +308,7 @@ export class Calendar extends InternalExpoCalendar.ExpoCalendar {
 
   /**
    * Presents the OS calendar picker and returns the selected calendar.
-   * @return An [`Calendar`](#calendar) object or `null` when the picker is cancelled.
+   * @return A [`Calendar`](#calendar) object or `null` when the picker is cancelled.
    * @platform ios
    */
   static async presentPicker(): Promise<Calendar | null> {
