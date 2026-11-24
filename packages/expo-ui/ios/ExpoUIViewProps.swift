@@ -53,6 +53,10 @@ public struct ModifierList: JavaScriptDecodable {
         if let modifier = try? modifierType.decode(element, in: runtime) {
           modifiers.append(.modifier(modifier))
         }
+      case .eventDispatchingType(let modifierType):
+        if let modifier = try? modifierType.decode(element, in: runtime) {
+          modifiers.append(.eventDispatchingModifier(modifier))
+        }
       case .factory:
         if let params = try? foundationValue(of: element) as? [String: Any] {
           modifiers.append(.params(params))
@@ -68,6 +72,8 @@ public struct ModifierList: JavaScriptDecodable {
 internal enum DecodedModifier {
   /// A modifier registered by its type, decoded from its JavaScript object.
   case modifier(any ViewModifier)
+  /// A modifier that sends events, decoded like `modifier`. The view gives it its event dispatcher when it applies it.
+  case eventDispatchingModifier(any EventDispatchingViewModifier)
   /// The params of a modifier registered with the deprecated factory, which creates the modifier when the view applies it.
   case params([String: Any])
 }
@@ -183,7 +189,10 @@ private struct AppliedModifier: ViewModifier {
   private var viewModifier: (any ViewModifier)? {
     switch modifier {
     case .modifier(let modifier):
-      return withEventDispatcher(modifier, eventDispatcher)
+      return modifier
+    case .eventDispatchingModifier(var modifier):
+      modifier.eventDispatcher = eventDispatcher
+      return modifier
     case .params(let params):
       guard let type = params["$type"] as? String, let appContext else {
         return nil
