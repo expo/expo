@@ -20,8 +20,8 @@
           "type": "cpp",
           "name": "ExpoModulesCore_common_cpp",
           "path": "common/cpp",
-          "pattern": "**/*.cpp",
-          "headerPattern": "**/*.h",
+          "pattern": "fabric/**/*.cpp",
+          "headerPattern": "fabric/**/*.h",
           "exclude": [],
           "dependencies": [
             "Hermes",
