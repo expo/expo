@@ -268,6 +268,11 @@ describe('renameTemplateAppNameAsync', () => {
       ['?attr', 'strings.xml', '<string>\\?attr</string>'],
       ['C:\\Temp', 'strings.xml', '<string>C:\\\\Temp</string>'],
       [' Padded ', 'strings.xml', '<string>" Padded "</string>'],
+      ['A  B', 'strings.xml', '<string>"A  B"</string>'],
+      ['A  & <B>', 'strings.xml', '<string>"A  &amp; &lt;B&gt;"</string>'],
+      ['Line\rBreak', 'strings.xml', '<string>Line\\u000dBreak</string>'],
+      ['Form\fFeed', 'strings.xml', '<string>Form\\u000cFeed</string>'],
+      ['Null\0Byte', 'strings.xml', '<string>Null\\u0000Byte</string>'],
       ["Bob's App", 'app.plist', '<string>Bob&apos;s App</string>'],
       ['A "B" C', 'app.plist', '<string>A &quot;B&quot; C</string>'],
       // replacement patterns in the name are inserted literally, not expanded
