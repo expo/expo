@@ -133,9 +133,7 @@ class DevLauncherController private constructor(
     }
 
     try {
-      ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)?.let { destroyed ->
-        withTimeoutOrNull(5_000) { destroyed.await() }
-      }
+      ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)?.let { awaitHostDestroyed(it) }
       (updatesInterface as UpdatesDevLauncherInterface?)?.reset()
 
       val result = createAppLoader(url, projectUrl, context, appHost, updatesInterface, this, installationIDHelper)
@@ -233,9 +231,7 @@ class DevLauncherController private constructor(
     }
 
     try {
-      ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)?.let { destroyed ->
-        withTimeoutOrNull(5_000) { destroyed.await() }
-      }
+      ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)?.let { awaitHostDestroyed(it) }
 
       val appIntent = createAppIntent()
       val appLoader = DevLauncherEmbeddedAppLoader(appHost, context, this)
@@ -401,9 +397,13 @@ class DevLauncherController private constructor(
     return false
   }
 
-  // Returns a deferred that completes when the old host is destroyed, or null if there was nothing to destroy.
-  // `ReactHost.destroy()` finishes asynchronously, and launching the app activity before it does fails the
-  // check in `DevLauncherAppLoader`, so the load paths wait for it.
+  private suspend fun awaitHostDestroyed(destroyed: Deferred<Unit>) {
+    if (withTimeoutOrNull(5_000) { destroyed.await() } == null) {
+      Log.w("DevLauncherController", "The previous React host was not destroyed within 5 seconds. Launching the app anyway.")
+    }
+  }
+
+  // Returns a deferred that completes when the old host is destroyed, or null when there was nothing to destroy.
   private fun ensureHostWasCleared(host: ReactHost, activityToBeInvalidated: ReactActivity? = null): Deferred<Unit>? {
     if (host.currentReactContext?.hasActiveReactInstance() != true) {
       return null
