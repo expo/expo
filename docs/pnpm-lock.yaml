@@ -149,8 +149,8 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1(@types/react@19.3.0)(react@19.3.1)
       '@modelcontextprotocol/sdk':
-        specifier: ^1.29.0
-        version: 1.29.0(zod@4.4.3)
+        specifier: ^1.32.0
+        version: 1.32.0(supports-color@10.2.2)(zod@4.4.3)
       '@radix-ui/react-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -1406,8 +1406,8 @@ packages:
   '@mixmark-io/domino@2.2.0':
     resolution: {integrity: sha512-Y28PR25bHXUg88kCV7nivXrP2Nj2RueZ3/l/jdx6J9f8J4nsEGcgX0Qe6lt7Pa+J79+kPiJU3LguR6O/6zrLOw==}
 
-  '@modelcontextprotocol/sdk@1.29.0':
-    resolution: {integrity: sha512-zo37mZA9hJWpULgkRpowewez1y6ML5GsXJPY8FI0tBBCd77HEvza4jDqRKOXgHNn867PVGCyTdzqpz0izu5ZjQ==}
+  '@modelcontextprotocol/sdk@1.32.0':
+    resolution: {integrity: sha512-8BviX/hK4Gd2eL1KdTwm0gfl4d3wdoErW0Jd00h6nomUAtk6IJk5vwQJc6kfWtJTzN5OEV/lgIiJKI8fiDGAlA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@cfworker/json-schema': ^4.1.1
@@ -8304,7 +8304,7 @@ snapshots:
 
   '@mixmark-io/domino@2.2.0': {}
 
-  '@modelcontextprotocol/sdk@1.29.0(zod@4.4.3)':
+  '@modelcontextprotocol/sdk@1.32.0(supports-color@10.2.2)(zod@4.4.3)':
     dependencies:
       '@hono/node-server': 1.19.19(hono@4.13.18)
       ajv: 8.20.0
@@ -8314,8 +8314,8 @@ snapshots:
       cross-spawn: 7.0.6
       eventsource: 3.0.7
       eventsource-parser: 3.1.0
-      express: 5.2.1
-      express-rate-limit: 8.6.0(express@5.2.1)
+      express: 5.2.1(supports-color@10.2.2)
+      express-rate-limit: 8.6.0(express@5.2.1(supports-color@10.2.2))(supports-color@10.2.2)
       hono: 4.13.18
       jose: 6.2.4
       json-schema-typed: 8.0.2
@@ -10308,7 +10308,7 @@ snapshots:
 
   blake3-wasm@2.1.5: {}
 
-  body-parser@2.3.0:
+  body-parser@2.3.0(supports-color@10.2.2):
     dependencies:
       bytes: 3.1.2
       content-type: 2.0.0
@@ -11434,18 +11434,18 @@ snapshots:
       jest-message-util: 29.7.0
       jest-util: 29.7.0
 
-  express-rate-limit@8.6.0(express@5.2.1):
+  express-rate-limit@8.6.0(express@5.2.1(supports-color@10.2.2))(supports-color@10.2.2):
     dependencies:
       debug: 4.4.3(supports-color@10.2.2)
-      express: 5.2.1
+      express: 5.2.1(supports-color@10.2.2)
       ip-address: 10.3.1
     transitivePeerDependencies:
       - supports-color
 
-  express@5.2.1:
+  express@5.2.1(supports-color@10.2.2):
     dependencies:
       accepts: 2.0.0
-      body-parser: 2.3.0
+      body-parser: 2.3.0(supports-color@10.2.2)
       content-disposition: 1.1.0
       content-type: 1.0.5
       cookie: 0.7.2
@@ -11455,7 +11455,7 @@ snapshots:
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
-      finalhandler: 2.1.1
+      finalhandler: 2.1.1(supports-color@10.2.2)
       fresh: 2.0.0
       http-errors: 2.0.1
       merge-descriptors: 2.0.0
@@ -11466,9 +11466,9 @@ snapshots:
       proxy-addr: 2.0.7
       qs: 6.15.3
       range-parser: 1.3.0
-      router: 2.2.0
-      send: 1.2.1
-      serve-static: 2.2.1
+      router: 2.2.0(supports-color@10.2.2)
+      send: 1.2.1(supports-color@10.2.2)
+      serve-static: 2.2.1(supports-color@10.2.2)
       statuses: 2.0.2
       type-is: 2.1.0
       vary: 1.1.2
@@ -11507,7 +11507,7 @@ snapshots:
     dependencies:
       to-regex-range: 5.0.1
 
-  finalhandler@2.1.1:
+  finalhandler@2.1.1(supports-color@10.2.2):
     dependencies:
       debug: 4.4.3(supports-color@10.2.2)
       encodeurl: 2.0.0
@@ -14057,7 +14057,7 @@ snapshots:
       '@rollup/rollup-win32-x64-msvc': 4.62.2
       fsevents: 2.3.3
 
-  router@2.2.0:
+  router@2.2.0(supports-color@10.2.2):
     dependencies:
       debug: 4.4.3(supports-color@10.2.2)
       depd: 2.0.0
@@ -14121,7 +14121,7 @@ snapshots:
 
   semver@7.8.5: {}
 
-  send@1.2.1:
+  send@1.2.1(supports-color@10.2.2):
     dependencies:
       debug: 4.4.3(supports-color@10.2.2)
       encodeurl: 2.0.0
@@ -14137,12 +14137,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  serve-static@2.2.1:
+  serve-static@2.2.1(supports-color@10.2.2):
     dependencies:
       encodeurl: 2.0.0
       escape-html: 1.0.3
       parseurl: 1.3.3
-      send: 1.2.1
+      send: 1.2.1(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
