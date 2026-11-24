@@ -146,6 +146,7 @@ export {
 // Type exports
 export type {
   BottomSheetProps,
+  BottomSheetContentWindowInsets,
   BottomSheetMethods,
   BottomSheetViewProps,
   BottomSheetHandleProps,
