@@ -60,7 +60,7 @@ export async function getPermissions(
  *
  * @return A promise that either rejects if the method is unavailable, or resolves to `void`.
  * > __Note:__ This method doesn't inform you if the user changes which assets your app has access to.
- * That information is only exposed by iOS, and to obtain it, you need to subscribe for updates to the user's media library using [`addListener()`](#addlistenerlistener-1).
+ * That information is only exposed by iOS, and to obtain it, you need to subscribe for updates to the user's media library using [`MediaLibrary.addListener()`](#addlistenerlistener-1).
  * If `hasIncrementalChanges` is `false`, the user changed their permissions.
  *
  * @platform android 14+
