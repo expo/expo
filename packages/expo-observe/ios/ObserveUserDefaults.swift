@@ -23,8 +23,10 @@ internal struct PersistedBundleDefaults: Codable {
 /// Class that manages a custom `UserDefaults` database with `"dev.expo.observe"` suite name.
 @AppMetricsActor
 internal final class ObserveUserDefaults: UserDefaults {
+  private nonisolated static let suiteName = "dev.expo.observe"
+
   /// Singleton instance of the user defaults for EAS Observe.
-  private static let defaults = ObserveUserDefaults()
+  private static let defaults = ConsentGatedDefaults(ObserveUserDefaults())
 
   /// Enum with keys used within this user defaults database.
   private enum Keys: String {
@@ -38,14 +40,14 @@ internal final class ObserveUserDefaults: UserDefaults {
   private init() {
     // It's safe to force-unwrap as `init?(suiteName:)` fails only if `suiteName`
     // is the same as the app's main bundle identifier or the global domain.
-    super.init(suiteName: "dev.expo.observe")!
+    super.init(suiteName: Self.suiteName)!
     Self.cleanUpLegacyKeys(from: self)
   }
 
   /// Date when events with metrics were last sent and received by the backend.
   static var lastDispatchDate: Date? {
     get {
-      if let dateString = defaults.string(forKey: Keys.lastDispatchDate.rawValue) {
+      if let dateString = defaults.object(forKey: Keys.lastDispatchDate.rawValue) as? String {
         let formatter = ISO8601DateFormatter()
         return formatter.date(from: dateString)
       }
@@ -80,7 +82,7 @@ internal final class ObserveUserDefaults: UserDefaults {
   }
 
   static var config: PersistedConfig? {
-    guard let data = defaults.data(forKey: Keys.config.rawValue) else { return nil }
+    guard let data = defaults.object(forKey: Keys.config.rawValue) as? Data else { return nil }
     return try? JSONDecoder().decode(PersistedConfig.self, from: data)
   }
 
@@ -90,13 +92,18 @@ internal final class ObserveUserDefaults: UserDefaults {
   }
 
   static var bundleDefaults: PersistedBundleDefaults? {
-    guard let data = defaults.data(forKey: Keys.bundleDefaults.rawValue) else { return nil }
+    guard let data = defaults.object(forKey: Keys.bundleDefaults.rawValue) as? Data else { return nil }
     return try? JSONDecoder().decode(PersistedBundleDefaults.self, from: data)
   }
 
   static func setBundleDefaults(_ newValue: PersistedBundleDefaults) {
     guard let data = try? JSONEncoder().encode(newValue) else { return }
     defaults.set(data, forKey: Keys.bundleDefaults.rawValue)
+  }
+
+  /// Deletes every saved value. Runs at a launch without consent.
+  nonisolated static func deleteStoredSettings() {
+    UserDefaults.standard.removePersistentDomain(forName: suiteName)
   }
 
   // MARK: - Legacy keys

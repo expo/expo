@@ -219,6 +219,34 @@ struct NetworkRequestMonitorTests {
     #expect(collector.received.first?.url.host == "api.expo.dev")
   }
 
+  @Test
+  func `drops starts and completions while consent is not granted`() {
+    let monitor = NetworkRequestMonitor(isGranted: { false })
+    let collector = CollectingDelegate()
+    monitor.addDelegate(collector)
+
+    monitor.recordStart(makeStarted(url: "https://expo.dev/x", method: "GET"))
+    monitor.record(makeRequest(url: "https://expo.dev/x"))
+
+    #expect(monitor.recent.isEmpty)
+    #expect(collector.receivedStarts.isEmpty)
+    #expect(collector.received.isEmpty)
+  }
+
+  @Test
+  func `records starts and completions while consent is granted`() {
+    let monitor = NetworkRequestMonitor(isGranted: { true })
+    let collector = CollectingDelegate()
+    monitor.addDelegate(collector)
+
+    monitor.recordStart(makeStarted(url: "https://expo.dev/x", method: "GET"))
+    monitor.record(makeRequest(url: "https://expo.dev/x"))
+
+    #expect(monitor.recent.count == 1)
+    #expect(collector.receivedStarts.count == 1)
+    #expect(collector.received.count == 1)
+  }
+
   private func makeStarted(url: String, method: String) -> NetworkRequestStarted {
     return NetworkRequestStarted(id: UUID(), url: URL(string: url)!, method: method, startedAt: Date())
   }

@@ -1,6 +1,7 @@
 package expo.modules.observe
 
 import android.content.Context
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.Session
@@ -40,6 +41,8 @@ class BaseObservabilityManagerTest {
 
   @Before
   fun setUp() {
+    mockkObject(ObserveConsent)
+    every { ObserveConsent.isGranted } returns true
     mockkObject(ObservePreferences)
     every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = true)
     every { ObservePreferences.getBundleDefaults(any()) } returns null
@@ -761,6 +764,33 @@ class BaseObservabilityManagerTest {
 
   // endregion
 
+  // region Consent tests
+
+  @Test
+  fun `nothing is read or sent while consent is not granted`() = runTest {
+    mockkObject(ObserveConsent)
+    every { ObserveConsent.isGranted } returns false
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.5)
+    var sampleReads = 0
+    val manager = createManager(deterministicUniformValueProvider = {
+      sampleReads += 1
+      0.0
+    })
+
+    manager.dispatchUnsentMetrics()
+    manager.dispatchUnsentLogs()
+    manager.dispatchUnsentSpans()
+
+    assertEquals(0, sampleReads)
+    coVerify(exactly = 0) { sessionManager.getMaxMetricId() }
+    coVerify(exactly = 0) { sessionManager.getMaxLogId() }
+    coVerify(exactly = 0) { sessionManager.getMaxSpanId() }
+    coVerify(exactly = 0) { sessionManager.getSpans(any(), any()) }
+    verify(exactly = 0) { ObservePreferences.getConfig(any()) }
+  }
+
+  // endregion
+
   // region Cleanup tests
 
   @Test
@@ -1260,7 +1290,8 @@ class BaseObservabilityManagerTest {
     chunkSize: Int = DISPATCH_CHUNK_SIZE,
     currentTimeMs: () -> Long = { 0 },
     isDebugBuild: Boolean = false,
-    deterministicUniformValue: Double = 0.0
+    deterministicUniformValue: Double = 0.0,
+    deterministicUniformValueProvider: () -> Double = { deterministicUniformValue }
   ): BaseObservabilityManager {
     val manager = BaseObservabilityManager(
       context = context,
@@ -1268,7 +1299,7 @@ class BaseObservabilityManagerTest {
       projectId = "project",
       baseUrl = "https://example.com/",
       isDebugBuild = isDebugBuild,
-      deterministicUniformValueProvider = { deterministicUniformValue },
+      deterministicUniformValueProvider = deterministicUniformValueProvider,
       currentTimeMs = currentTimeMs,
       dispatchChunkSize = chunkSize
     )

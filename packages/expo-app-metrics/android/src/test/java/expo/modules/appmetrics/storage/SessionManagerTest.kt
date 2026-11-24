@@ -1,12 +1,18 @@
 package expo.modules.appmetrics.storage
 
+import expo.modules.appmetrics.ObserveConsentGrantedRule
+import org.junit.Rule
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.AppUpdatesInfo
 import expo.modules.appmetrics.BuildConfig
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
+import io.mockk.every
+import io.mockk.mockkObject
+import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.*
@@ -19,6 +25,9 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class SessionManagerTest {
+  @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
   private lateinit var database: MetricsDatabase
   private lateinit var sessionManager: SessionManager
 
@@ -34,6 +43,7 @@ class SessionManagerTest {
 
   @After
   fun tearDown() {
+    unmockkAll()
     database.close()
   }
 
@@ -251,6 +261,34 @@ class SessionManagerTest {
 
       assertEquals("production", active?.session?.environment)
       assertEquals("staging", inactive?.session?.environment)
+    }
+
+  // endregion
+
+  // region Consent Tests
+
+  @Test
+  fun `writes do nothing and reads are empty while consent is not granted`() =
+    runTest {
+      sessionManager.startSessionWithIdAt("stored", "2025-01-01T00:00:00.000Z")
+      sessionManager.addMetrics(listOf(createMetric("stored-metric", "")), "stored")
+      mockkObject(ObserveConsent)
+      every { ObserveConsent.isGranted } returns false
+
+      sessionManager.startSessionWithIdAt("new", "2025-01-01T01:00:00.000Z")
+      sessionManager.addMetrics(listOf(createMetric("new-metric", "")), "new")
+      sessionManager.addLogs(listOf(createLog("new-log", "")), "new")
+      sessionManager.clearAllData()
+
+      assertNull(sessionManager.getSessionRow("stored"))
+      assertTrue(sessionManager.getMetrics(-1, 100).isEmpty())
+      assertNull(sessionManager.getMaxMetricId())
+
+      // Nothing was written, and `clearAllData` left the stored rows alone.
+      every { ObserveConsent.isGranted } returns true
+      assertNull(sessionManager.getSessionRow("new"))
+      assertTrue(sessionManager.getLogs(-1, 100).isEmpty())
+      assertEquals(listOf("stored-metric"), sessionManager.getMetrics(-1, 100).map { it.name })
     }
 
   // endregion

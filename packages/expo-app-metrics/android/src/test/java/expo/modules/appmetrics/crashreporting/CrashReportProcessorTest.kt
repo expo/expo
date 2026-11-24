@@ -1,5 +1,6 @@
 package expo.modules.appmetrics.crashreporting
 
+import expo.modules.appmetrics.ObserveConsentGrantedRule
 import android.app.ApplicationExitInfo
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -25,6 +26,9 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class CrashReportProcessorTest {
+  @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
   @get:Rule
   val tmp = TemporaryFolder()
 

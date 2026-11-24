@@ -1,5 +1,7 @@
 package expo.modules.appmetrics.networkrequests
 
+import expo.modules.appmetrics.ObserveConsentGrantedRule
+import org.junit.Rule
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -21,6 +23,9 @@ import java.io.IOException
  * aren't polluted by the process-wide singleton.
  */
 class NetworkRequestInterceptorTest {
+  @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
   private lateinit var server: MockWebServer
   private lateinit var monitor: NetworkRequestMonitor
   private lateinit var client: OkHttpClient
