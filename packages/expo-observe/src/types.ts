@@ -77,6 +77,12 @@ export type ObserveFeedback = {
   attributes?: ObserveAttributes;
 };
 
+/**
+ * Whether the user consents to Observe collecting data. The `consent` option of the `expo-observe`
+ * config plugin sets the value for the first launch, and `setConsent` changes it at runtime.
+ */
+export type ObserveConsent = 'not-granted' | 'granted';
+
 export type ObserveConfig = {
   /**
    * The environment for observability events
@@ -316,6 +322,8 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * can carry the previous id over. It identifies an installation, not a user or a device.
    *
    * `null` on web, where there is no EAS client id.
+   * Reading the id creates it on the device when it does not exist, also while consent is not
+   * granted. A revoke keeps the id.
    *
    * @example
    * ```ts
@@ -332,6 +340,34 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * @platform ios
    */
   readonly clientId: string | null;
+  /**
+   * Changes whether the user consents to Observe collecting data. The device saves the value, and
+   * it overrides the `consent` option of the `expo-observe` config plugin on later launches.
+   *
+   * A grant starts collection and saves the startup metrics of the current launch. A revoke stops
+   * collection and deletes the Observe data stored on the device, but keeps `clientId`. A call
+   * with the current value leaves collection unchanged.
+   *
+   * Observe starts collection at most one time in each app launch. After a revoke, a grant only
+   * saves the value, and collection starts at the next launch.
+   *
+   * @param consent The new consent value.
+   * @returns A promise that resolves when the change is applied. Calls are applied one at a time,
+   * in call order. On Android, the promise rejects if the device cannot save the value, even for
+   * the current value. In that case, a revoke still stops collection and deletes stored data,
+   * and a grant leaves collection unchanged.
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * await Observe.setConsent(userAccepted ? 'granted' : 'not-granted');
+   * ```
+   *
+   * @platform android
+   * @platform ios
+   */
+  setConsent(consent: ObserveConsent): Promise<void>;
   /**
    * Dispatches pending events to the server immediately.
    *

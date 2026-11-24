@@ -6,6 +6,7 @@ const mockNativeTarget = {
   configure: jest.fn(),
   setBundleDefaults: jest.fn(),
   dispatchEvents: jest.fn(() => Promise.resolve()),
+  setConsent: jest.fn(),
 };
 // The real native module is a JSI host object.
 // Mirror that here so the AppMetrics-fallback tests exercise the actual on-device bug — a fallback
@@ -789,5 +790,54 @@ describe('module Proxy', () => {
     });
     expect(() => Observe.reportFeedback({ id: 'checkout', rating: 5 })).not.toThrow();
     expect(warnSpy).toHaveBeenCalled();
+  });
+});
+
+describe('setConsent', () => {
+  type PendingCall = { consent: string; resolve: () => void; reject: (error: Error) => void };
+  const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+  function deferNativeCalls() {
+    const calls: PendingCall[] = [];
+    mockNativeTarget.setConsent.mockImplementation(
+      (consent: string) =>
+        new Promise<void>((resolve, reject) => calls.push({ consent, resolve, reject }))
+    );
+    return calls;
+  }
+
+  it('starts each native call after the previous one settles, in call order', async () => {
+    const Observe = loadModule();
+    const calls = deferNativeCalls();
+
+    const grant = Observe.setConsent('granted');
+    const revoke = Observe.setConsent('not-granted');
+    await flush();
+    expect(calls.map((call) => call.consent)).toEqual(['granted']);
+
+    calls[0]!.resolve();
+    await grant;
+    await flush();
+    expect(calls.map((call) => call.consent)).toEqual(['granted', 'not-granted']);
+
+    calls[1]!.resolve();
+    await expect(revoke).resolves.toBeUndefined();
+  });
+
+  it('runs a later call after an earlier call rejects, and rejects only the failed call', async () => {
+    const Observe = loadModule();
+    const calls = deferNativeCalls();
+
+    const grant = Observe.setConsent('granted');
+    const revoke = Observe.setConsent('not-granted');
+    await flush();
+    expect(calls.map((call) => call.consent)).toEqual(['granted']);
+    calls[0]!.reject(new Error('not saved'));
+    await expect(grant).rejects.toThrow('not saved');
+    await flush();
+
+    expect(calls.map((call) => call.consent)).toEqual(['granted', 'not-granted']);
+    calls[1]!.resolve();
+    await expect(revoke).resolves.toBeUndefined();
   });
 });

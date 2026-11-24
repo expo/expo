@@ -101,7 +101,7 @@ internal final class ObserveUserDefaults: UserDefaults {
     defaults.set(data, forKey: Keys.bundleDefaults.rawValue)
   }
 
-  /// Deletes every saved value. Runs at a launch without consent.
+  /// Deletes every saved value. Runs at a launch without consent and at a revoke.
   nonisolated static func deleteStoredSettings() {
     UserDefaults.standard.removePersistentDomain(forName: suiteName)
   }

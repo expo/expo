@@ -177,6 +177,30 @@ struct ObserveUserDefaultsTests {
     #expect(ObserveUserDefaults.lastDispatchDate == nil)
   }
 
+  // MARK: - Revoke
+
+  @Test
+  func `a revoke deletes every Observe setting`() {
+    ObserveUserDefaults.lastDispatchedMetricId = 5
+    ObserveUserDefaults.lastDispatchedLogId = 7
+    ObserveUserDefaults.lastDispatchDate = Date()
+
+    applyConsent(.notGranted) { _ in }
+
+    #expect(ObserveUserDefaults.lastDispatchedMetricId == -1)
+    #expect(ObserveUserDefaults.lastDispatchedLogId == -1)
+    #expect(ObserveUserDefaults.lastDispatchDate == nil)
+  }
+
+  @Test
+  func `a grant keeps the Observe settings`() {
+    ObserveUserDefaults.lastDispatchedMetricId = 5
+
+    applyConsent(.granted) { _ in }
+
+    #expect(ObserveUserDefaults.lastDispatchedMetricId == 5)
+  }
+
   @Test
   func `cleanUpLegacyKeys removes only the legacy keys`() throws {
     let suiteName = "dev.expo.observe.tests.legacy-keys"

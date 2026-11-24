@@ -12,7 +12,9 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
+import kotlinx.coroutines.CancellationException
 
 @OptimizedRecord
 class Config(
@@ -31,6 +33,11 @@ class BundleDefaults(
   @Field val environment: String = "",
   @Field val isJsDev: Boolean = false
 ) : Record
+
+internal enum class ConsentValue(val value: String) : Enumerable {
+  GRANTED("granted"),
+  NOT_GRANTED("not-granted")
+}
 
 class ObserveModule : Module() {
   private val context: Context
@@ -71,6 +78,10 @@ class ObserveModule : Module() {
 
       Constant("clientId") {
         EASClientID(context).uuid.toString().lowercase()
+      }
+
+      AsyncFunction("setConsent") Coroutine { consent: ConsentValue ->
+        applyConsent(context, consent, appMetricsModule::setConsent)
       }
 
       AsyncFunction("dispatchEvents") Coroutine { ->
@@ -125,4 +136,61 @@ class ObserveModule : Module() {
         appMetricsModule.setEnvironment(defaults.environment)
       }
     }
+}
+
+/**
+ * Applies `Observe.setConsent`. A revoke deletes the Observe data under the app metrics consent
+ * lock, after the gate closes, also when the consent save failed. A failed consent save is reported
+ * before a failed delete.
+ */
+internal suspend fun applyConsent(
+  context: Context,
+  consent: ConsentValue,
+  setAppMetricsConsent: suspend (Boolean, suspend () -> Unit) -> Unit
+) {
+  var deleteError: Exception? = null
+  try {
+    setAppMetricsConsent(consent == ConsentValue.GRANTED) {
+      try {
+        deleteObserveData(context)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        deleteError = e
+      }
+    }
+  } catch (e: CancellationException) {
+    throw e
+  } catch (e: Exception) {
+    deleteError?.let(e::addSuppressed)
+    throw e
+  }
+  deleteError?.let { throw it }
+}
+
+/**
+ * Deletes the Observe settings, the dispatch cursors among them, and the scheduled dispatch. Each
+ * step runs also when an earlier step fails. The first error is thrown, with the others attached.
+ */
+internal suspend fun deleteObserveData(context: Context) {
+  var error: Exception? = null
+  // The local deletes first, because they do not suspend. So a canceled dispatch cancel cannot
+  // skip them.
+  val localDeletes = listOf({ context.deleteDatabase(LEGACY_DATABASE_NAME) }, { ObservePreferences.deleteStoredSettings(context) })
+  for (delete in localDeletes) {
+    try {
+      delete()
+    } catch (e: Exception) {
+      error?.addSuppressed(e) ?: run { error = e }
+    }
+  }
+  try {
+    ObservabilityBackgroundWorker.cancelBackgroundDispatch(context)
+  } catch (e: CancellationException) {
+    error?.let(e::addSuppressed)
+    throw e
+  } catch (e: Exception) {
+    error?.addSuppressed(e) ?: run { error = e }
+  }
+  error?.let { throw it }
 }

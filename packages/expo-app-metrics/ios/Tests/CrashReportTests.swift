@@ -239,6 +239,31 @@ struct CrashReportTests {
   @Suite("storeCrashReports")
   struct StoreCrashReportsTests {
     @Test
+    func `drops windows that began before consent before matching or creating sessions`() throws {
+      try withTemporaryDatabase { database in
+        let grant = Date.now
+        let before = grant.addingTimeInterval(-60)
+        let after = grant.addingTimeInterval(60)
+        try database.insert(session: makeMainSessionRow(id: "existing", startDate: grant, endDate: nil))
+        let reports = [
+          makeCrashReport(timestampBegin: before, timestampEnd: after),
+          makeCrashReport(timestampBegin: before, timestampEnd: after, processId: 100),
+          makeCrashReport(timestampBegin: grant, timestampEnd: after, processId: 200),
+          makeCrashReport(timestampBegin: after, timestampEnd: after, processId: 300),
+        ]
+
+        MetricKitSubscriber.storeCrashReports(reports, in: database, consentStart: grant)
+
+        let sessions = try database.getMainSessions()
+        #expect(try database.getLogs(sessionId: "existing").isEmpty)
+        #expect(sessions.compactMap(\.processId).sorted() == [200, 300])
+        for session in sessions where session.processId != nil {
+          #expect(try database.getLogs(sessionId: session.id).map(\.name) == [nativeExceptionLogName])
+        }
+      }
+    }
+
+    @Test
     func `stores a crash of a process with no session under a new session`() throws {
       try withTemporaryDatabase { database in
         let report = makeCrashReport(
