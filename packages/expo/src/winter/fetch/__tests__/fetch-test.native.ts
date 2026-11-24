@@ -54,3 +54,36 @@ describe('Setting the Content-Type header from the body', () => {
     expect(getStartedHeaders()).toEqual([['Content-Type', 'image/jpeg']]);
   });
 });
+
+describe('DevTools request id', () => {
+  beforeEach(() => {
+    mockStart.mockClear();
+  });
+
+  afterEach(() => {
+    delete (globalThis as any).__NETWORK_REPORTER__;
+  });
+
+  it('creates a DevTools request id in the calling frame and passes it to native', async () => {
+    const createDevToolsRequestId = jest.fn(() => 'devtools-request-id');
+    (globalThis as any).__NETWORK_REPORTER__ = { createDevToolsRequestId };
+
+    const pending = fetch('https://example.com/', { body: 'hello', method: 'POST' });
+    // Must run before the first `await` so the initiator stack points at the caller.
+    expect(createDevToolsRequestId).toHaveBeenCalledTimes(1);
+    await pending;
+
+    expect(mockStart).toHaveBeenCalledWith(
+      'https://example.com/',
+      expect.objectContaining({ devToolsRequestId: 'devtools-request-id' }),
+      expect.anything()
+    );
+  });
+
+  it('passes no DevTools request id when the network reporter is unavailable', async () => {
+    await fetch('https://example.com/');
+
+    const [, requestInit] = mockStart.mock.calls[0] as any[];
+    expect(requestInit.devToolsRequestId).toBeUndefined();
+  });
+});
