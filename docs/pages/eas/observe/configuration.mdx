@@ -153,7 +153,7 @@ Set the `consent` option of the `expo-observe` config plugin to `'not-granted'` 
 }
 ```
 
-The option is `'granted'` or `'not-granted'`, and the default is `'granted'`. Any other value makes the config plugin throw an error when the app config is evaluated. Prebuild writes the value to the native projects, so a change needs a new build. An update from EAS Update does not change it.
+The option is `'granted'` or `'not-granted'`, and the default is `'granted'`. Any other value makes the config plugin throw an error when the app config is evaluated. Prebuild writes the value to the native projects, so a change needs a new build. An update from Expo Update does not change it.
 
 When the user makes a choice, call `Observe.setConsent()` on Android or iOS:
 
@@ -163,7 +163,7 @@ import { Observe } from 'expo-observe';
 await Observe.setConsent(userAccepted ? 'granted' : 'not-granted');
 ```
 
-A call with `'granted'` is a grant. A call with `'not-granted'` is a revoke. The device saves the value. On later launches, the saved value overrides the config plugin value.
+A call with `'granted'` is a grant. A call with `'not-granted'` is a revoke. The device saves the value. On later launches, the saved value overrides the config plugin value. On Android, the promise rejects when the device cannot save the value. A grant then changes nothing. A revoke still stops collection in the current launch.
 
 ### While consent is not granted
 
@@ -177,7 +177,7 @@ A call with `'granted'` is a grant. A call with `'not-granted'` is a revoke. The
 
 `configure({ dispatchingEnabled: false })` stops only the upload. Expo Observe still collects data and stores it on the device. A `not-granted` value also stops collection and storage, and a revoke deletes the stored data. Use consent when the user must agree before Expo Observe collects data.
 
-<Collapsible summary="Not using prebuild?">
+<Collapsible summary="Manual setup">
 
 If your app does not use [Expo Prebuild](/more/glossary-of-terms/#prebuild), add the value to the native projects yourself. Like the config plugin value, it applies only until `setConsent()` saves a value. Without a native value or a saved value, Expo Observe collects data.
 
