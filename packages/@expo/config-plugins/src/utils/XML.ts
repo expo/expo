@@ -70,12 +70,18 @@ export function format(manifest: any, { indentLevel = 2, newline = EOL } = {}): 
 
     // For strings.xml
     if (Array.isArray(manifest?.resources?.string)) {
-      for (const string of manifest?.resources?.string) {
-        if (string.$.translatable === 'false' || string.$.translatable === false) {
-          continue;
-        }
-        string._ = escapeAndroidString(string._);
-      }
+      manifest = {
+        ...manifest,
+        resources: {
+          ...manifest.resources,
+          string: manifest.resources.string.map((string: any) => {
+            if (string.$.translatable === 'false' || string.$.translatable === false) {
+              return string;
+            }
+            return { ...string, _: escapeAndroidString(string._) };
+          }),
+        },
+      };
     }
 
     xmlInput = builder.buildObject(manifest);
