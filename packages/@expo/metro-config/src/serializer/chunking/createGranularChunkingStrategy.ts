@@ -139,7 +139,7 @@ export function createGranularChunkingStrategy(context: ChunkingContext): Chunki
             ),
           }),
         entryPaths: [...(application!.entryPathsByChunk.get(chunk) ?? [])].sort(),
-        modulePaths: chunk.sealed ? modulePaths : modulePaths.sort(),
+        modulePaths: modulePaths.sort(),
       };
     },
   };
@@ -169,8 +169,9 @@ function materializeChunkPlan(
     toPosixPath(path.relative(options.serverRoot ?? options.projectRoot, modulePath));
   const getChunkName = (prefix: string, paths: string[]) =>
     `/${prefix}-${createHash('sha256').update(JSON.stringify(paths)).digest('hex').slice(0, 16)}.js`;
-  // The application and each worker can have a chunk for the same module, with different
-  // contents. The worker entry in the name gives each chunk of a worker its own filename.
+  // The application and each worker can have a chunk for the same module, and each of these
+  // chunks lists the files of its own module registry. The worker entry in the name gives each
+  // chunk of a worker its own filename.
   const getWorkerChunkName = (ownerPaths: string[]) =>
     getChunkName('__worker', [getRelativePath(entryFile), ...ownerPaths]);
   const chunks = new Set<Chunk>();

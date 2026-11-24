@@ -53,11 +53,10 @@ export class Chunk {
   // These are included in the HTML as <script> tags.
   public requiredChunks: Set<Chunk> = new Set();
 
-  /** Whether this chunk owns an isolated module registry and must retain all of its dependencies.
+  /** Whether this chunk is the entry of an isolated module registry and carries its own runtime.
    * @remarks
-   * When a chunk is sealed, its `deps` and `preModules` shouldn't be altered, and it doesn't qualify
-   * for bundle/chunk splitting. This is the case for web workers, which must form a "closed" and
-   * self-sufficient entry bundle.
+   * This is the case for the entry chunk of a web worker. Its modules must not move into chunks of
+   * the application or of another worker. A chunk that a worker loads later is not sealed.
    */
   public sealed = false;
 

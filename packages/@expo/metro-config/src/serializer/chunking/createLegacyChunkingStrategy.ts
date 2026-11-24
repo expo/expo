@@ -52,7 +52,7 @@ export function createLegacyChunkingStrategy(context: ChunkingContext): Chunking
     async serializeAsync() {
       // Create chunks for splitting.
       const chunks = new Set<Chunk>();
-      const collectChunk = createChunkCollector(context, strategy, chunks, () => true);
+      const collectChunk = createChunkCollector(context, strategy, chunks);
       const entryChunk = collectChunk(entryFile, preModules, false, true);
       if (entryChunk) {
         removeEntryDepsFromAsyncChunks(entryChunk, chunks);

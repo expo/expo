@@ -215,7 +215,10 @@ function compareModules(a: GraphModule, b: GraphModule): number {
   return a.path < b.path ? -1 : a.path > b.path ? 1 : 0;
 }
 
-/** Analyze a complete application graph, excluding worker dependencies. */
+/**
+ * Analyze the complete graph of the application or of one worker, excluding the dependencies
+ * of the workers that it starts.
+ */
 export function analyzeBitSetGraph(
   initialEntries: readonly GraphModule[],
   graph: ReadOnlyGraph,
