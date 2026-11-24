@@ -64,7 +64,11 @@ const {
 const { resolveAppTarget } = require('../app-target');
 const { findModuleRoot } = require('../classify');
 const { spmUpdateCommand } = require('../commands');
-const { UnsupportedModulesError, renderBuildFromSourceFallbackWarning } = require('../diagnostics');
+const {
+  UnsupportedModulesError,
+  pluginError,
+  renderBuildFromSourceFallbackWarning,
+} = require('../diagnostics');
 const { emitCompanionPackage, emitDirectPackage } = require('../direct');
 const { emitPureSwiftSourcePackage } = require('../manifests');
 const {
@@ -4856,11 +4860,18 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
   const documented = (packageName, productName, autolinkWhen = null) =>
     metadataEntry(path.join(tmp, packageName), productName, autolinkWhen && { autolinkWhen });
 
-  const run = ({ packages, metadata, precompiled = [], properties = null }) => {
+  const run = ({
+    packages,
+    metadata,
+    precompiled = [],
+    properties = null,
+    buildFromSource = [],
+  }) => {
     withPodfileProperties(tmp, properties);
     resolveExpoModules.mockReturnValue({
       modules: ['expo-modules-core', ...packages].map((name) => modules[name]),
       extraDependencies: [],
+      buildFromSource,
     });
     prebuiltMetadata.mockReturnValue(metadata);
     resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
@@ -5070,8 +5081,8 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
   // expo-modules-core ships one too, and every sync precompiles that module. The
   // document declares RNWorklets whenever react-native-worklets is installed.
   describe("expo-modules-core's worklets adapter", () => {
-    const adapter = () =>
-      metadataEntry(path.join(tmp, 'expo-modules-core'), 'ExpoModulesWorkletsAdapter', {
+    const adapter = (packageRoot = path.join(tmp, 'expo-modules-core')) =>
+      metadataEntry(packageRoot, 'ExpoModulesWorkletsAdapter', {
         sourceOnly: true,
         autolinkWhen: { podName: 'RNWorklets' },
       });
@@ -5151,8 +5162,29 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
       const adapterPackage = () =>
         path.join(tmp, 'out', 'expo', 'direct', 'ExpoModulesWorkletsAdapter');
 
+      const adapterEmission = () => ({
+        ok: {
+          packageDep: { name: 'ExpoModulesWorkletsAdapter', path: adapterPackage() },
+          productDeps: [
+            { name: 'ExpoModulesWorkletsAdapter', package: 'ExpoModulesWorkletsAdapter' },
+          ],
+          spmProductNames: [],
+          partlyProvidedPackages: [],
+        },
+      });
+
+      const workletsLibrary = () => path.join(tmp, 'out', 'libs', 'RNWorklets');
+
+      beforeEach(() => {
+        fs.mkdirSync(workletsLibrary(), { recursive: true });
+        emitCompanionPackage.mockReset();
+        emitCompanionPackage.mockImplementation(adapterEmission);
+      });
+
+      afterEach(restoreModuleMocks);
+
       // expo-modules-core lists ExpoModulesWorklets beside ExpoModulesCore, both precompiled.
-      const runWithAdapter = () => {
+      const runWithAdapter = ({ packages = [], metadata, precompiled = [], ...options } = {}) => {
         const coreRoot = path.join(tmp, 'expo-modules-core');
         fs.writeFileSync(
           path.join(coreRoot, 'spm.config.json'),
@@ -5163,28 +5195,24 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
           podName: 'ExpoModulesWorklets',
           podspecDir: path.join(coreRoot, 'ios'),
         });
-        emitCompanionPackage.mockReset();
-        emitCompanionPackage.mockReturnValue({
-          ok: {
-            packageDep: { name: 'ExpoModulesWorkletsAdapter', path: adapterPackage() },
-            productDeps: [
-              { name: 'ExpoModulesWorkletsAdapter', package: 'ExpoModulesWorkletsAdapter' },
-            ],
-            spmProductNames: [],
-            partlyProvidedPackages: [],
-          },
-        });
         return run({
-          packages: [],
+          packages,
           metadata: {
             ExpoModulesCore: documented('expo-modules-core', 'ExpoModulesCore'),
             ExpoModulesWorklets: documented('expo-modules-core', 'ExpoModulesWorklets'),
             ExpoModulesWorkletsAdapter: adapter(),
             RNWorklets: documented('react-native-worklets', 'RNWorklets'),
+            ...metadata,
           },
-          precompiled: ['ExpoModulesWorklets'],
+          precompiled: ['ExpoModulesWorklets', ...precompiled],
+          ...options,
         });
       };
+
+      const leftOutWarning = () =>
+        logs.warn.mock.calls
+          .map(([text]) => text)
+          .find((text) => text.includes('"ExpoModulesWorkletsAdapter" is left out of the app'));
 
       it('links the product of the package it generates where the app declares RNWorklets', () => {
         const { result, thrown } = runWithAdapter();
@@ -5217,6 +5245,101 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
           package: 'ExpoModulesWorkletsAdapter',
         });
         expect(printed(logs.warn)).not.toContain('ExpoModulesWorkletsAdapter');
+      });
+
+      it('is generated where its documented root reaches expo-modules-core through a link', () => {
+        const link = path.join(tmp, 'linked-expo-modules-core');
+        fs.symlinkSync(path.join(tmp, 'expo-modules-core'), link);
+        const { thrown } = runWithAdapter({
+          metadata: { ExpoModulesWorkletsAdapter: adapter(link) },
+        });
+
+        expect(thrown).toBeNull();
+        expect(emitCompanionPackage).toHaveBeenCalledTimes(1);
+        expect(printed(logs.warn)).not.toContain('ExpoModulesWorkletsAdapter');
+      });
+
+      it('is generated without the macros where no module is built from its own Package.swift', () => {
+        const { thrown } = runWithAdapter();
+
+        expect(thrown).toBeNull();
+        expect(emitCompanionPackage).toHaveBeenCalledWith(
+          expect.objectContaining({ macrosPackageRoot: null })
+        );
+      });
+
+      it('is left out with the reason where React Native linked no RNWorklets package', () => {
+        fs.rmSync(workletsLibrary(), { recursive: true });
+        emitCompanionPackage.mockImplementation(
+          jest.requireActual('../direct').emitCompanionPackage
+        );
+        const { thrown } = runWithAdapter();
+
+        expect(thrown).toBeNull();
+        expect(leftOutWarning()).toContain(
+          `ExpoModulesWorkletsAdapter's Package.swift depends on RNWorkletsHeaders, but React Native linked no RNWorklets package at ${workletsLibrary()}. react-native-worklets is not installed in the app`
+        );
+        expect(leftOutWarning()).not.toContain(rerunSpmUpdate);
+        expect(fs.existsSync(path.join(tmp, 'out', 'expo', 'direct'))).toBe(false);
+      });
+
+      it('is left out with the reason where its headers do not resolve', () => {
+        resolveHeadersXCFrameworkWithSource.mockImplementation(({ productName }) =>
+          productName === 'ExpoModulesWorklets'
+            ? null
+            : { xcframework: `/abs/${productName}Headers.xcframework`, source: null }
+        );
+        const { thrown } = runWithAdapter();
+
+        expect(thrown).toBeNull();
+        expect(emitCompanionPackage).not.toHaveBeenCalled();
+        expect(leftOutWarning()).toContain(
+          'The plugin could not generate a package for "ExpoModulesWorkletsAdapter": Expo modules built from their own Package.swift compile against ExpoModulesWorkletsHeaders.xcframework, which was not found'
+        );
+        expect(leftOutWarning()).not.toContain(rerunSpmUpdate);
+      });
+
+      it('is left out with the reason where generating its package fails', () => {
+        emitCompanionPackage.mockImplementation(() => {
+          throw pluginError({ what: 'The adapter needs X.', why: 'Y.', how: 'Install X.' });
+        });
+        const { thrown } = runWithAdapter();
+
+        expect(thrown).toBeNull();
+        expect(leftOutWarning()).toContain('The adapter needs X. Y.');
+        expect(leftOutWarning()).not.toContain('Install X.');
+      });
+
+      // The pattern matches a module with no source route, so a second round links it
+      // precompiled.
+      it('is removed where a later round does not generate it', () => {
+        modules['expo-mixed'] = {
+          packageName: 'expo-mixed',
+          pods: [
+            {
+              podName: 'ExpoMixed',
+              podspecDir: mixedModule(path.join(tmp, 'expo-mixed'), 'ExpoMixed'),
+            },
+          ],
+        };
+        hasPrecompiledArtifact.mockReturnValue(true);
+        emitCompanionPackage
+          .mockImplementationOnce(() => {
+            fs.mkdirSync(adapterPackage(), { recursive: true });
+            return adapterEmission();
+          })
+          .mockImplementationOnce(() => {
+            throw pluginError({ what: 'Not this round.' });
+          });
+        const { thrown } = runWithAdapter({
+          packages: ['expo-mixed'],
+          precompiled: ['ExpoMixed'],
+          buildFromSource: ['expo-mix.*'],
+        });
+
+        expect(thrown).toBeNull();
+        expect(emitCompanionPackage).toHaveBeenCalledTimes(2);
+        expect(fs.existsSync(adapterPackage())).toBe(false);
       });
     });
 

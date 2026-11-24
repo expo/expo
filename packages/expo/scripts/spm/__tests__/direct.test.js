@@ -778,6 +778,30 @@ describe('companionPackage', () => {
       },
     ],
     [
+      'a source pattern that selects less than every Objective-C file',
+      { ...workletsAdapter, targets: [{ ...workletsAdapter.targets[0], pattern: '**/*.m' }] },
+    ],
+    [
+      'no header pattern',
+      {
+        ...workletsAdapter,
+        targets: [{ ...workletsAdapter.targets[0], headerPattern: undefined }],
+      },
+    ],
+    ['targets that are not a list', { ...workletsAdapter, targets: {} }],
+    [
+      'a target with no name',
+      { ...workletsAdapter, targets: [{ ...workletsAdapter.targets[0], name: undefined }] },
+    ],
+    [
+      'a target path that is not a string',
+      { ...workletsAdapter, targets: [{ ...workletsAdapter.targets[0], path: 5 }] },
+    ],
+    ['platforms that are not a list', { ...workletsAdapter, platforms: 'iOS("16.4")' }],
+    ['a platform that is not a string', { ...workletsAdapter, platforms: [1] }],
+    ['an iOS platform in Swift syntax', { ...workletsAdapter, platforms: ['iOS(.v17)'] }],
+    ['a platform other than iOS', { ...workletsAdapter, platforms: ['tvOS("16")'] }],
+    [
       'compiler flags on its target',
       {
         ...workletsAdapter,
@@ -927,6 +951,17 @@ let package = Package(
       'ExpoModulesWorkletsHeaders',
       'RNWorkletsHeaders',
     ]);
+  });
+
+  it('leaves the macros out of the ExpoModulesCore headers package when given no macros package', () => {
+    macrosPackageRoot = null;
+    emit();
+    const coreHeaders = fs.readFileSync(
+      path.join(outDir, 'direct', 'ExpoModulesCoreHeaders', 'Package.swift'),
+      'utf8'
+    );
+    expect(coreHeaders).not.toContain('expo-modules-macros');
+    expect(coreHeaders).not.toContain('ExpoModulesMacrosPlugin');
   });
 
   it('fails, writing no package, when React Native linked no RNWorklets package', () => {

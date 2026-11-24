@@ -61,13 +61,26 @@ function rerunSpmUpdate() {
 const BUILD_FROM_SOURCE_OPTION =
   '`"expo": { "autolinking": { "buildFromSource": [...] } }` (or its `"ios"` section) in your package.json';
 
+class PluginError extends Error {
+  constructor({ what, why, how }, options) {
+    super(`[expo-spm-plugin] ${[what, why, how].filter(Boolean).join(' ')}`, options);
+    this.what = what;
+    this.why = why;
+  }
+}
+
 /**
  * An error the plugin fails the sync with, namespaced so the failure is
  * attributable to it: what failed, then why and what to do next when known.
- * `options` goes to the Error, so a `cause` passed there is kept.
+ * `options` goes to the Error, so a `cause` passed there is kept. It keeps `what` and `why`, so
+ * a caller that recovers can report them without the `how` advice.
  */
 function pluginError({ what, why, how }, options) {
-  return new Error(`[expo-spm-plugin] ${[what, why, how].filter(Boolean).join(' ')}`, options);
+  return new PluginError({ what, why, how }, options);
+}
+
+function isPluginError(error) {
+  return error instanceof PluginError;
 }
 
 class UnsupportedModulesError extends Error {
@@ -746,19 +759,32 @@ function renderUnmappedDependencyWarning(entries) {
 /**
  * Gated companions left out where CocoaPods would link them. Their condition names a
  * pod or an npm package the app installs for its own reasons, so failing the sync
- * would block the app over a feature it may not use.
+ * would block the app over a feature it may not use. An entry's `skipReason`, when set, says
+ * why the plugin could not generate the companion's package.
  */
 function renderLeftOutCompanionWarning(entries) {
   return entries
-    .map(({ packageName, moduleRoot, productName, precompiled, linkedThrough, autolinkWhen }) =>
-      renderBlock(
-        `warning: Expo module "${packageName}" links its pod ${linkedThrough} ${linkedAsPhrase(precompiled)}, so its product "${productName}" is left out of the app.`,
-        [
-          `CocoaPods links "${productName}" because ${companionCondition(autolinkWhen).because}. The sync continues without it, so the feature "${productName}" provides is unavailable at runtime.`,
-          `Swift Package Manager links "${productName}" only when ${packageName} is built from a checked-in Package.swift that exports it as a \`.library(name: "${productName}", …)\` product. Otherwise, if the app needs "${productName}", build the app with CocoaPods.`,
-        ],
-        moduleRoot
-      )
+    .map(
+      ({
+        packageName,
+        moduleRoot,
+        productName,
+        precompiled,
+        linkedThrough,
+        autolinkWhen,
+        skipReason,
+      }) =>
+        renderBlock(
+          `warning: Expo module "${packageName}" links its pod ${linkedThrough} ${linkedAsPhrase(precompiled)}, so its product "${productName}" is left out of the app.`,
+          [
+            `CocoaPods links "${productName}" because ${companionCondition(autolinkWhen).because}. The sync continues without it, so the feature "${productName}" provides is unavailable at runtime.`,
+            `Swift Package Manager links "${productName}" only when ${packageName} is built from a checked-in Package.swift that exports it as a \`.library(name: "${productName}", …)\` product. Otherwise, if the app needs "${productName}", build the app with CocoaPods.`,
+            ...(skipReason != null
+              ? [`The plugin could not generate a package for "${productName}": ${skipReason}`]
+              : []),
+          ],
+          moduleRoot
+        )
     )
     .join('\n\n');
 }
@@ -904,6 +930,7 @@ function reportUnsupported(entries) {
 }
 
 module.exports = {
+  isPluginError,
   pluginError,
   BUILD_FROM_SOURCE_OPTION,
   rerunSpmUpdate,
