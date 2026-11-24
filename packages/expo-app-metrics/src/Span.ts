@@ -36,7 +36,8 @@ export declare class Span extends SharedObject {
   setAttributes(attributes: Record<string, LogAttributeValue>): void;
   /**
    * Adds a point-in-time event to the span, such as a checkpoint inside the measured operation.
-   * An event without a name is dropped. At most 32 events of a span reach the server.
+   * An event is dropped with a warning when its name is empty, starts with the reserved `expo.`
+   * prefix, or is longer than 256 characters. At most 32 events of a span reach the server.
    *
    * Has no effect after `end()`.
    *

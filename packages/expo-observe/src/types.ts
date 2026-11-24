@@ -447,9 +447,9 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * Records a span for an operation that you already measured. The result is the same as
    * `startSpan` followed immediately by `end()`, with the times that you supply.
    *
-   * The span is not recorded, and a warning is logged, when `startTime` or `endTime` is missing,
-   * when one of them is not a Unix epoch time in milliseconds, or when `endTime` is before
-   * `startTime`. A value from `performance.now()` is not a Unix epoch time, so use `Date.now()`.
+   * The span is not recorded when `startTime` or `endTime` is missing or is not in Unix epoch
+   * milliseconds. The same applies when `endTime` is before `startTime`. In each case, Observe
+   * logs a warning. A value from `performance.now()` is not a Unix epoch time, so use `Date.now()`.
    * This method never throws.
    *
    * @param name A short, stable name for the operation. The span is not recorded when the name is
