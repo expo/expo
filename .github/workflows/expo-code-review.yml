@@ -214,6 +214,7 @@ jobs:
           BRAVE_SEARCH_API_KEY: ${{ github.event.pull_request.head.repo.full_name == github.repository && secrets.BRAVE_SEARCH_API_KEY || '' }}
           # Optional: override the model for every agent.
           REVIEWER_MODEL: ${{ vars.REVIEWER_MODEL }}
+          SESSION_STORE_REPO: expo/code-review-sessions
 
       # Observability: the per-run log (token/cache/cost totals + per-pass timing +
       # coverage notes) is written under .expo-agents/code-review/.runs/ but git-ignored, so

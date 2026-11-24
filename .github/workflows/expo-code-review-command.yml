@@ -288,6 +288,7 @@ jobs:
           BRAVE_SEARCH_API_KEY: ${{ secrets.BRAVE_SEARCH_API_KEY }}
           # Optional: override the model for every agent.
           REVIEWER_MODEL: ${{ vars.REVIEWER_MODEL }}
+          SESSION_STORE_REPO: expo/code-review-sessions
           AGENTS: ${{ steps.cmd.outputs.agents }}
           ROUTE: ${{ steps.cmd.outputs.route }}
           DISPATCH: ${{ github.event_name == 'workflow_dispatch' }}
