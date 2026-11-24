@@ -41,6 +41,7 @@ import expo.modules.devlauncher.logs.DevLauncherRemoteLogManager
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import expo.modules.devlauncher.services.DependencyInjection
+import expo.modules.devlauncher.services.signInFromLaunchUrl
 import expo.modules.devmenu.launch.ExpoLauncherUrl
 import expo.modules.devmenu.launch.applyDevMenuLaunchParams
 import expo.modules.kotlin.weak
@@ -307,6 +308,7 @@ class DevLauncherController private constructor(
 
         // The dev menu params apply to every launcher command, with or without a `__expo_url`.
         DependencyInjection.devMenuPreferences?.let { launch.applyDevMenuLaunchParams(it) }
+        coroutineScope.launch { signInFromLaunchUrl(uri) }
 
         if (launch.targetUrl == null) {
           if (!launch.isLegacyHost && launch.remainderHasDestination) {
