@@ -36,6 +36,8 @@ export async function fetch(
   input: string | URL | FetchRequestLike,
   init?: FetchRequestInit
 ): Promise<FetchResponse> {
+  // Created before any `await`, so React Native DevTools captures this call stack as the initiator
+  const devToolsRequestId = globalThis.__NETWORK_REPORTER__?.createDevToolsRequestId();
   const initFromRequest = isRequest(input);
   const url = initFromRequest ? input.url : input;
   const body =
@@ -78,6 +80,7 @@ export async function fetch(
     headers,
     method: method != null ? normalizeMethod(method) : 'GET',
     redirect: redirect ?? 'follow',
+    devToolsRequestId,
   };
 
   if (signal && signal.aborted) {
