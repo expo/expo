@@ -6,30 +6,26 @@ import Foundation
 @available(iOS, deprecated: 18.0, message: "Use Mutex from the Synchronization framework")
 @available(macOS, deprecated: 15.0, message: "Use Mutex from the Synchronization framework")
 @available(tvOS, deprecated: 18.0, message: "Use Mutex from the Synchronization framework")
-public final class Mutex<Value>: @unchecked Sendable {
-  private var _value: Value
-
-  // An `os_unfair_lock` must not move in memory, so it lives in its own allocation. Under contention it
-  // costs much less than `NSLock`, which waits in the kernel.
-  private let _lock: os_unfair_lock_t = {
-    let lock = os_unfair_lock_t.allocate(capacity: 1)
-    lock.initialize(to: os_unfair_lock())
-    return lock
-  }()
+@frozen
+public struct Mutex<Value>: ~Copyable, @unchecked Sendable {
+  // An `os_unfair_lock` must not move in memory. The buffer object keeps it after the value, so the lock and the
+  // value take one allocation, as in `OSAllocatedUnfairLock`. Under contention it costs much less than `NSLock`,
+  // which waits in the kernel.
+  private let buffer: ManagedBuffer<Value, os_unfair_lock>
 
   public init(_ initialValue: Value) {
-    _value = initialValue
-  }
-
-  deinit {
-    _lock.deinitialize(count: 1)
-    _lock.deallocate()
+    buffer = ManagedBuffer<Value, os_unfair_lock>.create(minimumCapacity: 1) { buffer in
+      buffer.withUnsafeMutablePointerToElements { $0.initialize(to: os_unfair_lock()) }
+      return initialValue
+    }
   }
 
   @discardableResult
-  public func withLock<T>(_ body: (inout Value) throws -> T) rethrows -> T {
-    os_unfair_lock_lock(_lock)
-    defer { os_unfair_lock_unlock(_lock) }
-    return try body(&_value)
+  public borrowing func withLock<T>(_ body: (inout Value) throws -> T) rethrows -> T {
+    return try buffer.withUnsafeMutablePointers { value, lock in
+      os_unfair_lock_lock(lock)
+      defer { os_unfair_lock_unlock(lock) }
+      return try body(&value.pointee)
+    }
   }
 }
