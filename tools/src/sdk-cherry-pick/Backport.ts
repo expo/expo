@@ -14,8 +14,6 @@ export type BackportOptions = {
   prNumber: number;
   sdkVersion: number;
   mergeSha: string;
-  /** The branch that the pull request merged into. The bot backports only from `main`. */
-  baseBranch: string;
   /** The login of the pull request author, whom the `CHANGELOG.md` entries credit. */
   author: string;
   /**
@@ -178,8 +176,10 @@ git cherry-pick -x ${mergeSha}`;
     }
     // Before the fetch, the ref may be missing. Then the plain steps stay.
     await readChangesetConfigAsync(`refs/remotes/origin/${targetBranch}`).catch(() => {});
-    if (options.baseBranch !== 'main') {
-      const reason = `The bot backports only pull requests that merged into \`main\`. This pull request merged into \`${options.baseBranch}\`, so the bot did not backport it to \`${targetBranch}\`.`;
+    // A pull request of a merged stack reports the branch below it as its base, but its merge
+    // commit is on main. So check the commit, not the base.
+    if (!(await github.branchContainsAsync('main', mergeSha))) {
+      const reason = `The bot backports only pull requests whose merge commit is on \`main\`. The merge commit ${mergeSha} of this pull request is not on \`main\`, so the bot did not backport it to \`${targetBranch}\`.`;
       await commentAsync(`${reason}\n\n${manualSteps}`);
       throw new Error(reason);
     }

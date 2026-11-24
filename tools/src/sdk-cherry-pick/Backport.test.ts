@@ -117,7 +117,6 @@ async function backport(
       prNumber,
       sdkVersion,
       mergeSha,
-      baseBranch: 'main',
       author: 'octocat',
       dryRun: false,
       github,
@@ -351,14 +350,26 @@ exec "${REAL_GIT}" "$@"
     }
   });
 
-  it('pushes nothing and comments once when the pull request did not merge into main', async () => {
+  it('pushes nothing and comments once when the merge commit is not on main', async () => {
     const before = createTargetBranch('sdk-68', 'sdk-90');
-    const run = await backport(45, 68, shas.changeset, { baseBranch: 'sdk-57' });
+    const seed = path.join(root, 'seed');
+    git(seed, 'checkout', '-q', '-b', 'feature', 'main');
+    let featureSha: string;
+    try {
+      featureSha = commit(seed, { 'feature.txt': 'feature\n' }, 'Add a feature (#47)');
+      git(seed, 'push', '-q', origin, 'feature');
+    } finally {
+      git(seed, 'checkout', '-q', 'main');
+    }
+    const run = await backport(47, 68, featureSha);
 
     assert.ok(run.error);
     assert.equal(remoteBranch('sdk-68'), before);
     assert.equal(run.comments.length, 1);
-    assert.match(run.comments[0], /^#45 [^\n]*only pull requests that merged into `main`/);
+    assert.match(
+      run.comments[0],
+      new RegExp(`^#47 [^\\n]*merge commit ${featureSha} of this pull request is not on \`main\``)
+    );
     assertNoTemporaryWorktree();
   });
 
