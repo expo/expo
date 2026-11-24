@@ -9,10 +9,6 @@ public enum ObserveConsent {
   public enum State: Sendable {
     case granted
     case notGranted
-    /// The saved value could not be read, for example before the first unlock after a restart.
-    /// Nothing is stored, and the launch cleanup keeps the stored data, because it can belong to
-    /// a user who granted consent.
-    case unknown
   }
 
   /// The consent of this process and the changes it allows.
@@ -44,16 +40,9 @@ public enum ObserveConsent {
 
   /// Resolved on first access: the saved value, else the `Info.plist` value that the `expo-observe`
   /// config plugin writes.
-  private static let gate = OSAllocatedUnfairLock<Gate?>(initialState: nil)
+  private static let gate = OSAllocatedUnfairLock(initialState: Gate(state: resolveState(from: .standard)))
 
-  #if !os(tvOS)
-  // A file, because its read tells a missing value from one that cannot be read before the first
-  // unlock. On tvOS this directory is in Caches, which the system can purge.
-  private static let savedValueUrl = try? MetricsDatabase.defaultDirectoryUrl()
-    .appendingPathComponent("observe-consent")
-  #endif
-
-  // The tvOS store. Not in a settings suite, because a revoke deletes those suites.
+  // A revoke deletes the settings suites, so the consent value lives in standard defaults.
   static let savedValueKey = "dev.expo.app-metrics.observe-consent"
 
   public static var isGranted: Bool {
@@ -61,82 +50,36 @@ public enum ObserveConsent {
   }
 
   public static var state: State {
-    return gate.withLock { gate in
-      if let gate {
-        return gate.state
-      }
-      let state = resolveState()
-      gate = Gate(state: state)
-      return state
-    }
+    return gate.withLock { $0.state }
   }
 
-  private static func resolveState() -> State {
-    #if os(tvOS)
-    let savedState = readSavedState(from: .standard)
-    #else
-    guard let savedValueUrl else {
-      return .unknown
+  static func resolveState(
+    from defaults: UserDefaults,
+    settings: Any? = Bundle.main.object(forInfoDictionaryKey: "ExpoObserve")
+  ) -> State {
+    // TODO(ENG-29437): Verify the iOS UserDefaults read after reboot and before the first unlock.
+    if let saved = defaults.string(forKey: savedValueKey) {
+      return saved == "granted" ? .granted : .notGranted
     }
-    let savedState = readSavedState(at: savedValueUrl)
-    #endif
-    let settings = Bundle.main.object(forInfoDictionaryKey: "ExpoObserve")
-    return savedState ?? (isGranted(settings: settings) ? .granted : .notGranted)
+    return isGranted(settings: settings) ? .granted : .notGranted
   }
 
-  /// Saves the value and changes the gate. When the save fails, a revoke still closes the gate,
-  /// but a grant changes nothing: the next launch would read the earlier value.
-  static func update(granted: Bool) -> (changed: Bool, isSaved: Bool) {
-    #if os(tvOS)
+  /// Saves the choice for the next launch and returns whether collection changes in this process.
+  static func update(granted: Bool) -> Bool {
+    // Read the previous choice before saving the new one on the first call.
+    let gate = Self.gate
     save(granted: granted, to: .standard)
-    // `UserDefaults` cannot report a failed save.
-    let isSaved = true
-    #else
-    let isSaved = savedValueUrl.map { save(granted: granted, to: $0) } ?? false
-    #endif
-    _ = state
-    let changed = ConsentGatedDefaults.transitionLock.withLock {
+    return ConsentGatedDefaults.transitionLock.withLock {
       gate.withLock { gate in
-        guard isSaved || !granted, var next = gate, next.apply(granted: granted) else {
+        guard gate.apply(granted: granted) else {
           return false
         }
         if granted {
-          // Before the gate opens, so no reader sees the stored settings without them.
           ConsentGatedDefaults.saveUnsavedValues()
         }
-        gate = next
         return true
       }
     }
-    return (changed, isSaved)
-  }
-
-  /// `nil` when no value was saved, `.unknown` when the saved value cannot be read.
-  static func readSavedState(at url: URL) -> State? {
-    do {
-      return try String(contentsOf: url, encoding: .utf8) == "granted" ? .granted : .notGranted
-    } catch CocoaError.fileReadNoSuchFile {
-      return nil
-    } catch {
-      logger.warn("[AppMetrics] Failed to read the saved Observe consent: \(error.localizedDescription)")
-      return .unknown
-    }
-  }
-
-  /// Returns whether the value was written.
-  static func save(granted: Bool, to url: URL) -> Bool {
-    do {
-      try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
-      try Data((granted ? "granted" : "not-granted").utf8).write(to: url, options: .atomic)
-      return true
-    } catch {
-      logger.warn("[AppMetrics] Failed to save the Observe consent: \(error.localizedDescription)")
-      return false
-    }
-  }
-
-  static func readSavedState(from defaults: UserDefaults) -> State? {
-    return defaults.string(forKey: savedValueKey).map { $0 == "granted" ? .granted : .notGranted }
   }
 
   static func save(granted: Bool, to defaults: UserDefaults) {

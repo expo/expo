@@ -338,16 +338,16 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    *
    * A grant starts collection and saves the startup metrics of the current launch. A revoke stops
    * collection and deletes the Observe data stored on the device, but keeps `clientId`. A call
-   * with the current value does not change collection, but its promise can still reject when the
-   * device cannot save the value.
+   * with the current value leaves collection unchanged.
    *
    * Observe starts collection at most one time in each app launch. After a revoke, a grant only
    * saves the value, and collection starts at the next launch.
    *
    * @param consent The new consent value.
    * @returns A promise that resolves when the change is applied. Calls are applied one at a time,
-   * in call order. The promise rejects when the device cannot save the value. A revoke still stops
-   * collection and deletes the stored data, but a grant then changes nothing.
+   * in call order. On Android, the promise rejects if the device cannot save the value, even for
+   * the current value. In that case, a revoke still stops collection and deletes stored data,
+   * and a grant leaves collection unchanged.
    *
    * @example
    * ```ts

@@ -179,17 +179,13 @@ struct ObserveUserDefaultsTests {
 
   // MARK: - Revoke
 
-  private struct SaveFailed: Error {}
-
   @Test
-  func `a revoke deletes every Observe setting, also when saving it fails`() async {
+  func `a revoke deletes every Observe setting`() {
     ObserveUserDefaults.lastDispatchedMetricId = 5
     ObserveUserDefaults.lastDispatchedLogId = 7
     ObserveUserDefaults.lastDispatchDate = Date()
 
-    await #expect(throws: SaveFailed.self) {
-      try await applyConsent(.notGranted) { _ in throw SaveFailed() }
-    }
+    applyConsent(.notGranted) { _ in }
 
     #expect(ObserveUserDefaults.lastDispatchedMetricId == -1)
     #expect(ObserveUserDefaults.lastDispatchedLogId == -1)
@@ -197,10 +193,10 @@ struct ObserveUserDefaultsTests {
   }
 
   @Test
-  func `a grant keeps the Observe settings`() async throws {
+  func `a grant keeps the Observe settings`() {
     ObserveUserDefaults.lastDispatchedMetricId = 5
 
-    try await applyConsent(.granted) { _ in }
+    applyConsent(.granted) { _ in }
 
     #expect(ObserveUserDefaults.lastDispatchedMetricId == 5)
   }

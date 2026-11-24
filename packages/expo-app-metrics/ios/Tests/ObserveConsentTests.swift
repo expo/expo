@@ -175,48 +175,6 @@ struct ConsentGatedDefaultsTests {
   }
 }
 
-@Suite("ObserveConsent saved value")
-struct ObserveConsentSavedValueTests {
-  @Test
-  func `no saved value falls back to the app config`() throws {
-    try withTemporaryDirectory { directory in
-      #expect(ObserveConsent.readSavedState(at: directory.appendingPathComponent("observe-consent")) == nil)
-    }
-  }
-
-  @Test
-  func `the saved value round-trips`() throws {
-    try withTemporaryDirectory { directory in
-      let url = directory.appendingPathComponent("ExpoAppMetrics/observe-consent")
-
-      #expect(ObserveConsent.save(granted: false, to: url))
-      #expect(ObserveConsent.readSavedState(at: url) == .notGranted)
-
-      #expect(ObserveConsent.save(granted: true, to: url))
-      #expect(ObserveConsent.readSavedState(at: url) == .granted)
-    }
-  }
-
-  @Test
-  func `a save to an unwritable location fails`() throws {
-    try withTemporaryDirectory { directory in
-      // A file in place of the parent directory makes the save fail.
-      let file = directory.appendingPathComponent("ExpoAppMetrics")
-      try Data("x".utf8).write(to: file)
-
-      #expect(!ObserveConsent.save(granted: false, to: file.appendingPathComponent("observe-consent")))
-    }
-  }
-
-  @Test
-  func `an unreadable saved value makes consent unknown`() throws {
-    try withTemporaryDirectory { directory in
-      // A directory at the path fails the read with an error other than a missing file.
-      #expect(ObserveConsent.readSavedState(at: directory) == .unknown)
-    }
-  }
-}
-
 @Suite("ObserveConsent value in UserDefaults", .serialized)
 struct ObserveConsentUserDefaultsTests {
   private let suiteName = "dev.expo.app-metrics.tests.observe-consent"
@@ -229,30 +187,34 @@ struct ObserveConsentUserDefaultsTests {
   func `no saved value falls back to the app config`() throws {
     let defaults = try #require(UserDefaults(suiteName: suiteName))
 
-    #expect(ObserveConsent.readSavedState(from: defaults) == nil)
+    #expect(ObserveConsent.resolveState(from: defaults, settings: ["consent": "not-granted"]) == .notGranted)
+    #expect(ObserveConsent.resolveState(from: defaults, settings: nil) == .granted)
   }
 
   @Test
-  func `the saved value round-trips`() throws {
+  func `the saved value overrides the app config`() throws {
     let defaults = try #require(UserDefaults(suiteName: suiteName))
 
     ObserveConsent.save(granted: false, to: defaults)
-    #expect(ObserveConsent.readSavedState(from: defaults) == .notGranted)
+    #expect(ObserveConsent.resolveState(from: defaults, settings: ["consent": "granted"]) == .notGranted)
 
     ObserveConsent.save(granted: true, to: defaults)
-    #expect(ObserveConsent.readSavedState(from: defaults) == .granted)
+    #expect(ObserveConsent.resolveState(from: defaults, settings: ["consent": "not-granted"]) == .granted)
   }
 
   @Test
   func `a saved revoke survives the deletion of the settings`() {
-    defer {
-      UserDefaults.standard.removeObject(forKey: ObserveConsent.savedValueKey)
-    }
-    ObserveConsent.save(granted: false, to: .standard)
+    let defaults = UserDefaults.standard
+    let previous = defaults.object(forKey: ObserveConsent.savedValueKey)
+    defer { defaults.set(previous, forKey: ObserveConsent.savedValueKey) }
+
+    // Other tests use the process gate while this test changes the saved choice.
+    _ = ObserveConsent.state
+    ObserveConsent.save(granted: false, to: defaults)
 
     AppMetricsUserDefaults.deleteStoredSettings()
 
-    #expect(ObserveConsent.readSavedState(from: .standard) == .notGranted)
+    #expect(defaults.string(forKey: ObserveConsent.savedValueKey) == "not-granted")
   }
 }
 
@@ -278,17 +240,6 @@ struct ObserveConsentGateTests {
 
     #expect(apply([true, false, true], to: &gate) == [true, true, false])
     #expect(gate.state == .notGranted)
-  }
-
-  @Test
-  func `an unknown consent changes on either value`() {
-    var revoked = ObserveConsent.Gate(state: .unknown)
-    var granted = ObserveConsent.Gate(state: .unknown)
-
-    #expect(apply([false], to: &revoked) == [true])
-    #expect(revoked.state == .notGranted)
-    #expect(apply([true], to: &granted) == [true])
-    #expect(granted.state == .granted)
   }
 }
 

@@ -1,5 +1,5 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
-import ExpoModulesCore
+import Foundation
 
 #if !os(tvOS)
 import MetricKit
@@ -103,18 +103,10 @@ public struct AppMetrics {
   /// Applies a consent change from `Observe.setConsent`. It runs on the actor without suspending,
   /// so the changes run one at a time.
   @AppMetricsActor
-  public static func setConsent(granted: Bool) throws {
-    let update = ObserveConsent.update(granted: granted)
-    if update.changed {
-      apply(granted: granted)
+  public static func setConsent(granted: Bool) {
+    guard ObserveConsent.update(granted: granted) else {
+      return
     }
-    if !update.isSaved {
-      throw ConsentNotSavedException(granted)
-    }
-  }
-
-  @AppMetricsActor
-  private static func apply(granted: Bool) {
     if granted {
       // The launch inserts did nothing without consent, so the session rows are inserted now.
       mainSession.insertRow()
@@ -258,17 +250,5 @@ public struct AppMetrics {
       foregroundSession?.stop()
       foregroundSession = nil
     }
-  }
-}
-
-internal final class ConsentNotSavedException: GenericException<Bool>, @unchecked Sendable {
-  override var reason: String {
-    if param {
-      return "Observe could not save the consent value 'granted' on the device, so collection did not start. "
-        + "The device storage may be full or unavailable. Free storage and call setConsent('granted') again."
-    }
-    return "Observe could not save the consent value 'not-granted' on the device. Collection stopped and the "
-      + "stored data was deleted, but the next launch may read the earlier value. The device storage may be "
-      + "full or unavailable. Free storage and call setConsent('not-granted') again."
   }
 }
