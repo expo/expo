@@ -89,21 +89,21 @@ describe('e2e: Android locales', () => {
     expect(vol.readFileSync('/app/android/app/src/main/res/values-b+es/strings.xml').toString())
       .toMatchInlineSnapshot(`
       "<resources>
-        <string name="CFBundleDisplayName">"spanish-name"</string>
+        <string name="CFBundleDisplayName">spanish-name</string>
       </resources>"
     `);
     // backwards compatibility
     expect(vol.readFileSync('/app/android/app/src/main/res/values-b+en/strings.xml').toString())
       .toMatchInlineSnapshot(`
       "<resources>
-        <string name="CFBundleDisplayName">"us-name"</string>
-        <string name="app_name">"us-name"</string>
+        <string name="CFBundleDisplayName">us-name</string>
+        <string name="app_name">us-name</string>
       </resources>"
     `);
     expect(vol.readFileSync('/app/android/app/src/main/res/values-b+en+US/strings.xml').toString())
       .toMatchInlineSnapshot(`
       "<resources>
-        <string name="app_name">"us-name"</string>
+        <string name="app_name">us-name</string>
       </resources>"
     `);
 
@@ -112,14 +112,14 @@ describe('e2e: Android locales', () => {
     expect(vol.readFileSync('/app/android/app/src/main/res/values-b+iw/strings.xml').toString())
       .toMatchInlineSnapshot(`
       "<resources>
-        <string name="app_name">"hebrew-name"</string>
+        <string name="app_name">hebrew-name</string>
       </resources>"
     `);
     expect(vol.existsSync('/app/android/app/src/main/res/values-b+id+ID')).toBe(false);
     expect(vol.readFileSync('/app/android/app/src/main/res/values-b+in+ID/strings.xml').toString())
       .toMatchInlineSnapshot(`
       "<resources>
-        <string name="app_name">"indonesian-name"</string>
+        <string name="app_name">indonesian-name</string>
       </resources>"
     `);
 
@@ -129,6 +129,24 @@ describe('e2e: Android locales', () => {
       'Failed to parse JSON of locale file for language: xx',
       'https://docs.expo.dev/guides/localization/#translating-app-metadata'
     );
+  });
+
+  it.each([
+    ['quotes', 'Say "hi"', 'Say \\"hi\\"'],
+    ['backslash_n', String.raw`Line\nBreak`, String.raw`Line\\nBreak`],
+    ['windows_path', String.raw`C:\users`, String.raw`C:\\users`],
+    ['trailing_backslash', 'Repro\\', 'Repro\\\\'],
+    ['entities', '< & &quot;', '&lt; &amp; &amp;quot;'],
+    ['apostrophe', "l'app @home", String.raw`l\'app \@home`],
+    ['whitespace', '  a  b\\n  ', String.raw`"  a  b\\n  "`],
+    ['carriage_return', 'Line\rBreak', String.raw`Line\u000dBreak`],
+    ['nul', 'Repro\0FR', 'ReproFR'],
+  ])('escapes %s in locale resources', async (name, value, escaped) => {
+    await setLocalesAsync({ locales: { fr: { android: { app_name: value } } } }, { projectRoot });
+
+    expect(
+      vol.readFileSync('/app/android/app/src/main/res/values-b+fr/strings.xml').toString()
+    ).toBe(`<resources>\n  <string name="app_name">${escaped}</string>\n</resources>`);
   });
 
   it('skips non-string values instead of writing "[object Object]"', async () => {
@@ -149,7 +167,7 @@ describe('e2e: Android locales', () => {
       .toString();
     expect(strings).toMatchInlineSnapshot(`
       "<resources>
-        <string name="app_name">"pt-name"</string>
+        <string name="app_name">pt-name</string>
       </resources>"
     `);
     expect(strings).not.toMatch(/object Object/);

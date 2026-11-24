@@ -56,14 +56,14 @@ export async function setLocalesAsync(
     await writeXMLAsync({
       path: stringsFilePath,
       xml: {
-        resources: Object.entries(localizationObj).map(([k, v]) => ({
-          string: {
+        resources: {
+          string: Object.entries(localizationObj).map(([k, v]) => ({
             $: {
               name: k,
             },
-            _: `"${v}"`,
-          },
-        })),
+            _: v,
+          })),
+        },
       },
     });
   }
