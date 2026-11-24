@@ -234,18 +234,10 @@ Expo Hosting supports server rendering out of the box. Export your app and deplo
 
 <Terminal
   cmd={{
-    npm: ['$ npx expo export --platform web', '', '$ npx eas-cli@latest hosting:deploy dist'],
-    yarn: [
-      '$ yarn expo export --platform web',
-      '',
-      '$ yarn dlx eas-cli@latest hosting:deploy dist',
-    ],
-    pnpm: [
-      '$ pnpm expo export --platform web',
-      '',
-      '$ pnpm dlx eas-cli@latest hosting:deploy dist',
-    ],
-    bun: ['$ bun expo export --platform web', '', '$ bunx eas-cli@latest hosting:deploy dist'],
+    npm: ['$ npx expo export --platform web', '', '$ npx eas-cli@latest deploy'],
+    yarn: ['$ yarn expo export --platform web', '', '$ yarn dlx eas-cli@latest deploy'],
+    pnpm: ['$ pnpm expo export --platform web', '', '$ pnpm dlx eas-cli@latest deploy'],
+    bun: ['$ bun expo export --platform web', '', '$ bunx eas-cli@latest deploy'],
   }}
 />
 
