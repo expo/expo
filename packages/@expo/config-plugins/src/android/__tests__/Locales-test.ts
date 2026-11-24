@@ -131,6 +131,24 @@ describe('e2e: Android locales', () => {
     );
   });
 
+  it.each([
+    ['quotes', 'Say "hi"', 'Say \\"hi\\"'],
+    ['backslash_n', String.raw`Line\nBreak`, String.raw`Line\\nBreak`],
+    ['windows_path', String.raw`C:\users`, String.raw`C:\\users`],
+    ['trailing_backslash', 'Repro\\', 'Repro\\\\'],
+    ['entities', '< & &quot;', '&lt; &amp; &amp;quot;'],
+    ['apostrophe', "l'app @home", String.raw`l\'app \@home`],
+    ['whitespace', '  a  b\\n  ', String.raw`"  a  b\\n  "`],
+    ['carriage_return', 'Line\rBreak', String.raw`Line\u000dBreak`],
+    ['nul', 'Repro\0FR', 'ReproFR'],
+  ])('escapes %s in locale resources', async (name, value, escaped) => {
+    await setLocalesAsync({ locales: { fr: { android: { app_name: value } } } }, { projectRoot });
+
+    expect(
+      vol.readFileSync('/app/android/app/src/main/res/values-b+fr/strings.xml').toString()
+    ).toBe(`<resources>\n  <string name="app_name">${escaped}</string>\n</resources>`);
+  });
+
   it('skips non-string values instead of writing "[object Object]"', async () => {
     await setLocalesAsync(
       {
