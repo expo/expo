@@ -105,7 +105,7 @@ wait_or_terminate() {
   kill -TERM "$1" 2> /dev/null
 }
 
-# On the Linux runners, the egress client ignores SIGINT.
+# The egress client can ignore SIGINT. wait_or_terminate then sends SIGTERM.
 stop_egress() {
   kill -INT "$EGRESS_PID" 2> /dev/null
   wait_or_terminate "$EGRESS_PID" "egress client"
