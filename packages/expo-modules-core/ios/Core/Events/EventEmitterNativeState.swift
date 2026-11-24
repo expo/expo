@@ -25,12 +25,6 @@ internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendab
     super.init()
   }
 
-  /// Creates a native state whose C++ state `factory` makes. See `JavaScriptNativeState.init(factory:)`.
-  internal init(primaryRuntimeId: JavaScriptRuntime.ID?, factory: @escaping Factory) {
-    self.primaryRuntimeId = primaryRuntimeId
-    super.init(factory: factory)
-  }
-
   /// Returns the listeners of the given runtime, or `nil` when the runtime has no listeners. Call it on the thread of
   /// that runtime.
   @JavaScriptActor

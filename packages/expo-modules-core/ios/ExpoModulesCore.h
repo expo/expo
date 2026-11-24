@@ -34,7 +34,6 @@
 #import <ExpoModulesCore/EXTaskRunnerInterface.h>
 #import <ExpoModulesCore/EXTaskServiceInterface.h>
 #import <ExpoModulesCore/EXJSIInstaller.h>
-#import <ExpoModulesCore/EXSharedObjectUtils.h>
 #import <ExpoModulesCore/EXOptimizedFunctionUtils.h>
 #import <ExpoModulesCore/EXExportedModule.h>
 #import <ExpoModulesCore/EXSingletonModule.h>
