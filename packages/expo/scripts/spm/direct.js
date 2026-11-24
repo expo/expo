@@ -11,6 +11,9 @@
  *                          entry sets `reactHeaders`, on React Native's header products
  *   direct/<placeholder> → a React Native library's product, as RN_LIBRARY_PLACEHOLDERS
  *                          lists them
+ *
+ * It also generates a package beside them for a sourceOnly companion, from its spm.config.json
+ * entry, as `companionPackage` plans it.
  */
 
 'use strict';
@@ -87,6 +90,50 @@ const RN_LIBRARY_PLACEHOLDERS = {
 const PLACEHOLDER_IOS_FLOOR = '15.1';
 
 /**
+ * The direct package a companion's spm.config.json dependency maps to, by dependency name.
+ * The ExpoModulesCore stand-in brings React Native's headers and the ExpoModulesJSI headers
+ * package, so React, Hermes, ReactNativeDependencies and ExpoModulesJSI map to it.
+ */
+const COMPANION_DEPENDENCIES = {
+  ExpoModulesCore: 'ExpoModulesCoreHeaders',
+  ExpoModulesWorklets: 'ExpoModulesWorkletsHeaders',
+  React: 'ExpoModulesCoreHeaders',
+  Hermes: 'ExpoModulesCoreHeaders',
+  ReactNativeDependencies: 'ExpoModulesCoreHeaders',
+  'expo-modules-jsi/ExpoModulesJSI': 'ExpoModulesCoreHeaders',
+  ...Object.fromEntries(
+    Object.entries(RN_LIBRARY_PLACEHOLDERS).map(([name, { productName }]) => [productName, name])
+  ),
+};
+
+// Any other field asks for a build the generated package would silently leave out.
+const COMPANION_PRODUCT_FIELDS = new Set([
+  'name',
+  'podName',
+  'sourceOnly',
+  'autolinkWhen',
+  'platforms',
+  'externalDependencies',
+  'targets',
+]);
+const COMPANION_TARGET_FIELDS = new Set([
+  'type',
+  'name',
+  'path',
+  'pattern',
+  'headerPattern',
+  'dependencies',
+  'linkedFrameworks',
+  'includeDirectories',
+]);
+// The generated target compiles every Objective-C source and exposes every header in its folder,
+// so the entry must select exactly those.
+const COMPANION_SOURCE_PATTERN = '**/*.{m,mm}';
+const COMPANION_HEADER_PATTERN = '**/*.h';
+// The generated manifest renders only an iOS floor, from a version string.
+const COMPANION_PLATFORM = /^iOS\("[\d.]+"\)$/;
+
+/**
  * The names of the products a dumped manifest's targets depend on. A `byName` dependency
  * counts: SwiftPM resolves it to that product when no target of the package has the name.
  */
@@ -105,15 +152,20 @@ function productDependencyNamesOf(manifest) {
  * name one, so the list is empty for any other.
  */
 function headersStandInsOf(manifest) {
+  return withDependedStandIns(
+    productDependencyNamesOf(manifest).filter((name) => Object.hasOwn(HEADERS_STAND_INS, name))
+  );
+}
+
+/** The stand-ins `names`, with the stand-ins they depend on, each once and after those. */
+function withDependedStandIns(names) {
   const standIns = new Set();
   const add = (name) => {
     if (standIns.has(name)) return;
     HEADERS_STAND_INS[name].standIns.forEach(add);
     standIns.add(name);
   };
-  productDependencyNamesOf(manifest)
-    .filter((name) => Object.hasOwn(HEADERS_STAND_INS, name))
-    .forEach(add);
+  names.forEach(add);
   return [...standIns];
 }
 
@@ -124,6 +176,55 @@ function headersStandInsOf(manifest) {
 function rnLibraryPlaceholdersOf(manifest) {
   const names = productDependencyNamesOf(manifest);
   return Object.keys(RN_LIBRARY_PLACEHOLDERS).filter((name) => names.includes(name));
+}
+
+/**
+ * The package to generate for a companion product, from its spm.config.json entry:
+ * `{ name, platforms, target, standIns, placeholders }`, `standIns` as `headersStandInsOf`
+ * orders them. Null when there is no entry, or when the generator cannot build what it
+ * declares: anything but one Objective-C target, a field it does not render, source or header
+ * patterns other than those that select every Objective-C source and header, a platform other
+ * than an iOS version, or a dependency COMPANION_DEPENDENCIES does not map.
+ */
+function companionPackage(product) {
+  if (product == null || Object.keys(product).some((key) => !COMPANION_PRODUCT_FIELDS.has(key))) {
+    return null;
+  }
+  const platforms = product.platforms ?? [];
+  if (
+    !Array.isArray(product.targets) ||
+    !Array.isArray(platforms) ||
+    !platforms.every(
+      (platform) => typeof platform === 'string' && COMPANION_PLATFORM.test(platform)
+    )
+  ) {
+    return null;
+  }
+  const [target, ...others] = product.targets;
+  if (
+    target == null ||
+    others.length > 0 ||
+    target.type !== 'objc' ||
+    typeof target.name !== 'string' ||
+    typeof target.path !== 'string' ||
+    target.pattern !== COMPANION_SOURCE_PATTERN ||
+    target.headerPattern !== COMPANION_HEADER_PATTERN ||
+    Object.keys(target).some((key) => !COMPANION_TARGET_FIELDS.has(key))
+  ) {
+    return null;
+  }
+  const dependencies = [...(product.externalDependencies ?? []), ...(target.dependencies ?? [])];
+  if (!dependencies.every((name) => Object.hasOwn(COMPANION_DEPENDENCIES, name))) return null;
+  const packages = new Set(dependencies.map((name) => COMPANION_DEPENDENCIES[name]));
+  return {
+    name: product.name,
+    platforms,
+    target,
+    standIns: withDependedStandIns(
+      Object.keys(HEADERS_STAND_INS).filter((name) => packages.has(name))
+    ),
+    placeholders: Object.keys(RN_LIBRARY_PLACEHOLDERS).filter((name) => packages.has(name)),
+  };
 }
 
 /**
@@ -209,6 +310,68 @@ let package = Package(
 }
 
 /**
+ * Mirrors the settings style of manifests.js. `includeDirectories` are relative to the target's
+ * path, as SwiftPM reads a header search path.
+ *
+ * @param packageName the npm package whose spm.config.json declares the companion.
+ */
+function companionManifest(
+  packageName,
+  { name, platforms, target, standIns, placeholders },
+  minimumIosDeploymentTarget
+) {
+  const dependencies = [...standIns, ...placeholders];
+  const lines = (indent, entries) => entries.map((entry) => `${indent}${entry},\n`).join('');
+  const declaredIos =
+    platforms.map((platform) => platform.match(/^iOS\("(.+)"\)$/)?.[1]).find(Boolean) ?? null;
+  const ios = raiseFloor(
+    raiseFloor(declaredIos, minimumIosDeploymentTarget),
+    placeholders.length > 0 ? PLACEHOLDER_IOS_FLOOR : null
+  );
+  const platformsArgument = ios != null ? `\n    platforms: [.iOS("${ios}")],` : '';
+  const packages = dependencies.map((dependency) => `.package(path: "../${dependency}")`);
+  const products = dependencies.map(
+    (dependency) => `.product(name: "${dependency}", package: "${dependency}")`
+  );
+  const headerSearchPaths = (target.includeDirectories ?? [])
+    .map((directory) => `.headerSearchPath("${directory}")`)
+    .join(', ');
+  const linkedFrameworks = (target.linkedFrameworks ?? [])
+    .map((framework) => `.linkedFramework("${framework}")`)
+    .join(', ');
+  const targetArguments = [
+    `name: "${target.name}"`,
+    `dependencies: [\n${lines('                ', products)}            ]`,
+    `path: "${target.name}"`,
+    'publicHeadersPath: "."',
+    ...(headerSearchPaths
+      ? [`cSettings: [${headerSearchPaths}]`, `cxxSettings: [${headerSearchPaths}]`]
+      : []),
+    ...(linkedFrameworks ? [`linkerSettings: [${linkedFrameworks}]`] : []),
+  ];
+  return `// swift-tools-version: 6.0
+// AUTO-GENERATED by expo/scripts/spm/direct.js — do not edit.
+// The ${name} product of ${packageName}, as its spm.config.json declares it.
+import PackageDescription
+
+let package = Package(
+    name: "${name}",${platformsArgument}
+    products: [
+        .library(name: "${name}", targets: ["${target.name}"]),
+    ],
+    dependencies: [
+${lines('        ', packages)}    ],
+    targets: [
+        .target(
+${targetArguments.map((argument) => `            ${argument}`).join(',\n')}
+        ),
+    ],
+    cxxLanguageStandard: .cxx20
+)
+`;
+}
+
+/**
  * SwiftPM names a package by the last component of its path and does not resolve links, so
  * the library is declared through React Native's `libs/<productName>` link, never its real
  * directory: that would be a second package with the same targets.
@@ -237,7 +400,10 @@ function writeIfChanged(file, contents) {
   fs.writeFileSync(file, contents);
 }
 
-/** @param packageRoots the directory of each package in `HEADERS_STAND_INS[name].packages`. */
+/**
+ * @param packageRoots the directory of each package in `HEADERS_STAND_INS[name].packages`. The
+ *   stand-in leaves out a package whose directory is null.
+ */
 function emitStandInPackage(directDir, name, headersXCFramework, packageRoots, reactDependencies) {
   const { productName, standIns, packages, reactHeaders } = HEADERS_STAND_INS[name];
   const pkgDir = path.join(directDir, name);
@@ -251,7 +417,9 @@ function emitStandInPackage(directDir, name, headersXCFramework, packageRoots, r
       product: standIn,
       root: path.join(directDir, standIn),
     })),
-    ...packages.map((dependency) => ({ ...dependency, root: packageRoots[dependency.name] })),
+    ...packages
+      .filter((dependency) => packageRoots[dependency.name] != null)
+      .map((dependency) => ({ ...dependency, root: packageRoots[dependency.name] })),
   ].map(({ root, ...dependency }) => ({ ...dependency, path: path.relative(pkgDir, root) }));
   writeIfChanged(
     path.join(pkgDir, 'Package.swift'),
@@ -297,6 +465,110 @@ function emitDirectPackage({
   minimumIosDeploymentTarget,
   manifest,
 }) {
+  const directDir = emitDirectNeighbours({
+    dependent: packageName,
+    builtFrom: 'its own Package.swift',
+    outDir,
+    headersXCFrameworks,
+    placeholders,
+    jsiHeadersPkgPath,
+    macrosPackageRoot,
+    react,
+    codegenPkgPath,
+    reactNativeLibsDir,
+    minimumIosDeploymentTarget,
+  });
+  const link = path.join(directDir, packageName);
+  fs.mkdirSync(path.dirname(link), { recursive: true });
+  relativeSymlink(moduleRoot, link);
+  fs.rmSync(path.join(outDir, 'expo-source', manifest.name), { recursive: true, force: true });
+
+  return {
+    ok: {
+      packageDep: { name: manifest.name, path: link },
+      productDeps: manifest.products.map((p) => ({ name: p.name, package: manifest.name })),
+      spmProductNames: placeholders.map((name) => RN_LIBRARY_PLACEHOLDERS[name].productName),
+      partlyProvidedPackages: [],
+    },
+  };
+}
+
+/**
+ * Generates a companion's package, as `companionPackage` planned it, beside the stand-ins and
+ * placeholders it depends on. The parameters are those of `emitDirectPackage`, where
+ * `moduleRoot` and `packageName` name the module whose spm.config.json declares the companion.
+ *
+ * @param macrosPackageRoot the expo-modules-macros package, or null to leave the macro plugin out
+ *   of the ExpoModulesCore headers package. Only a Swift module uses the macros, and the plugin's
+ *   package depends on swift-syntax, which SwiftPM must fetch.
+ */
+function emitCompanionPackage({
+  moduleRoot,
+  packageName,
+  companion,
+  outDir,
+  headersXCFrameworks,
+  jsiHeadersPkgPath,
+  macrosPackageRoot,
+  react,
+  codegenPkgPath,
+  reactNativeLibsDir,
+  minimumIosDeploymentTarget,
+}) {
+  const directDir = emitDirectNeighbours({
+    dependent: companion.name,
+    builtFrom: `a Package.swift generated from ${packageName}'s spm.config.json`,
+    outDir,
+    headersXCFrameworks,
+    placeholders: companion.placeholders,
+    jsiHeadersPkgPath,
+    macrosPackageRoot,
+    react,
+    codegenPkgPath,
+    reactNativeLibsDir,
+    minimumIosDeploymentTarget,
+  });
+  const pkgDir = path.join(directDir, companion.name);
+  fs.mkdirSync(pkgDir, { recursive: true });
+  relativeSymlink(
+    path.join(moduleRoot, companion.target.path),
+    path.join(pkgDir, companion.target.name)
+  );
+  writeIfChanged(
+    path.join(pkgDir, 'Package.swift'),
+    companionManifest(packageName, companion, minimumIosDeploymentTarget)
+  );
+
+  return {
+    ok: {
+      packageDep: { name: companion.name, path: pkgDir },
+      productDeps: [{ name: companion.name, package: companion.name }],
+      spmProductNames: [],
+      partlyProvidedPackages: [],
+    },
+  };
+}
+
+/**
+ * Writes `<outDir>/direct` with the stand-ins in `headersXCFrameworks` and the `placeholders`,
+ * once every package they need is known to exist. Returns that directory.
+ *
+ * @param dependent the package that depends on them, as errors name it.
+ * @param builtFrom the Package.swift `dependent` is built from, as errors describe it.
+ */
+function emitDirectNeighbours({
+  dependent,
+  builtFrom,
+  outDir,
+  headersXCFrameworks,
+  placeholders,
+  jsiHeadersPkgPath,
+  macrosPackageRoot,
+  react,
+  codegenPkgPath,
+  reactNativeLibsDir,
+  minimumIosDeploymentTarget,
+}) {
   const standIns = Object.keys(headersXCFrameworks);
   const packages = new Set(
     standIns.flatMap((name) =>
@@ -305,21 +577,46 @@ function emitDirectPackage({
   );
   if (packages.has(JSI_HEADERS) && jsiHeadersPkgPath == null) {
     throw pluginError({
-      what: `${packageName} is built from its own Package.swift and needs the ExpoModulesJSI headers, but expo-modules-jsi is not autolinked.`,
+      what: `${dependent} is built from ${builtFrom} and needs the ExpoModulesJSI headers, but expo-modules-jsi is not autolinked.`,
       why: 'The ExpoModulesCore headers it compiles against re-export ExpoModulesJSI.',
       how: `expo-modules-core depends on expo-modules-jsi, so reinstall your JavaScript dependencies, and remove expo-modules-jsi from \`"expo": { "autolinking": { "exclude": [...] } }\` in your package.json if it is listed there. ${rerunSpmUpdate()}`,
     });
   }
   if (
+    macrosPackageRoot != null &&
     packages.has(MACROS_PACKAGE) &&
     !fs.existsSync(path.join(macrosPackageRoot, 'Package.swift'))
   ) {
     throw pluginError({
-      what: `${packageName} is built from its own Package.swift and needs the Expo Swift macros as a Swift package, but ${MACROS_PACKAGE} at ${macrosPackageRoot} has no Package.swift.`,
+      what: `${dependent} is built from ${builtFrom} and needs the Expo Swift macros as a Swift package, but ${MACROS_PACKAGE} at ${macrosPackageRoot} has no Package.swift.`,
       why: `SwiftPM builds the macro plugin from that package, and versions of ${MACROS_PACKAGE} before 0.29.0 ship it only as a prebuilt binary.`,
       how: `expo-modules-core must depend on ${MACROS_PACKAGE} 0.29.0 or later. Run \`npx expo install --fix\` to align the Expo package versions. ${rerunSpmUpdate()}`,
     });
   }
+  const libraryLinks = rnLibraryLinks(dependent, placeholders, reactNativeLibsDir);
+  const directDir = path.join(outDir, 'direct');
+  fs.mkdirSync(directDir, { recursive: true });
+  const packageRoots = { [JSI_HEADERS]: jsiHeadersPkgPath, [MACROS_PACKAGE]: macrosPackageRoot };
+  const reactDependencies = {
+    packages: react != null ? reactPackageDeclarations(react, codegenPkgPath) : [],
+    products: react != null ? reactProductDependencies(react) : [],
+  };
+  for (const name of standIns) {
+    emitStandInPackage(directDir, name, headersXCFrameworks[name], packageRoots, reactDependencies);
+  }
+  for (const [name, libraryLink] of Object.entries(libraryLinks)) {
+    emitRNLibraryPlaceholder(directDir, name, libraryLink, minimumIosDeploymentTarget);
+  }
+  return directDir;
+}
+
+/**
+ * React Native's `libs/<productName>` link to the library of each of the `placeholders`, by
+ * placeholder. Fails when React Native's sync linked no package there.
+ *
+ * @param dependent the package that depends on the placeholders, as the error names it.
+ */
+function rnLibraryLinks(dependent, placeholders, reactNativeLibsDir) {
   const libraryLinks = Object.fromEntries(
     placeholders.map((name) => [
       name,
@@ -335,37 +632,12 @@ function emitDirectPackage({
     } = RN_LIBRARY_PLACEHOLDERS[name];
     const versions = packageSwiftVersions != null ? ` (${packageSwiftVersions})` : '';
     throw pluginError({
-      what: `${packageName}'s Package.swift depends on ${name}, but React Native linked no ${productName} package at ${libraryLink}.`,
+      what: `${dependent}'s Package.swift depends on ${name}, but React Native linked no ${productName} package at ${libraryLink}.`,
       why: `${libraryPackage} is not installed in the app, or the installed version ships no Package.swift, so React Native's sync did not link it.`,
       how: `Install a version of ${libraryPackage} that ships a Package.swift${versions}. \`npx expo install ${libraryPackage}\` can pick a version that does not. ${rerunSpmUpdate()}`,
     });
   }
-  const directDir = path.join(outDir, 'direct');
-  fs.mkdirSync(directDir, { recursive: true });
-  const packageRoots = { [JSI_HEADERS]: jsiHeadersPkgPath, [MACROS_PACKAGE]: macrosPackageRoot };
-  const reactDependencies = {
-    packages: react != null ? reactPackageDeclarations(react, codegenPkgPath) : [],
-    products: react != null ? reactProductDependencies(react) : [],
-  };
-  for (const name of standIns) {
-    emitStandInPackage(directDir, name, headersXCFrameworks[name], packageRoots, reactDependencies);
-  }
-  for (const [name, libraryLink] of Object.entries(libraryLinks)) {
-    emitRNLibraryPlaceholder(directDir, name, libraryLink, minimumIosDeploymentTarget);
-  }
-  const link = path.join(directDir, packageName);
-  fs.mkdirSync(path.dirname(link), { recursive: true });
-  relativeSymlink(moduleRoot, link);
-  fs.rmSync(path.join(outDir, 'expo-source', manifest.name), { recursive: true, force: true });
-
-  return {
-    ok: {
-      packageDep: { name: manifest.name, path: link },
-      productDeps: manifest.products.map((p) => ({ name: p.name, package: manifest.name })),
-      spmProductNames: placeholders.map((name) => RN_LIBRARY_PLACEHOLDERS[name].productName),
-      partlyProvidedPackages: [],
-    },
-  };
+  return libraryLinks;
 }
 
 /**
@@ -397,8 +669,11 @@ function dumpFailureDetail(error) {
 
 module.exports = {
   HEADERS_STAND_INS,
+  companionPackage,
   dumpModuleManifest,
+  emitCompanionPackage,
   emitDirectPackage,
   headersStandInsOf,
+  rnLibraryLinks,
   rnLibraryPlaceholdersOf,
 };
