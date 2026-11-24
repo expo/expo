@@ -61,7 +61,7 @@ describe('asyncRequireModule', () => {
           });
         } catch (error) {
           if (!(error instanceof TypeError)) throw error;
-          // The module uses a native import() here, which this evaluated copy cannot run.
+          // The module creates nativeImport with the Function constructor.
           return Promise.all(pendingUrls.map(function(url) {
             return nativeImport(url).then(function() { loadedWorkerChunks.add(url); });
           })).then(function() {});

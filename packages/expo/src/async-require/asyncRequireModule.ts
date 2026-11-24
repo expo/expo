@@ -58,10 +58,15 @@ function loadWorkerChunks(urls: readonly string[]): void | Promise<void> {
   } catch (error) {
     // `importScripts` throws a `TypeError` in a module worker, which loads scripts with `import()`.
     if (!(error instanceof TypeError)) throw error;
+    // With graph optimization, the Metro transform rejects `import(url)`, also with an ignore
+    // comment. The `Function` constructor keeps the call out of the module source.
+    // eslint-disable-next-line no-new-func
+    const nativeImport: (url: string) => Promise<unknown> = new Function(
+      'url',
+      'return import(url)'
+    ) as any;
     return Promise.all(
-      pendingUrls.map((url) =>
-        import(/* @metro-ignore */ url).then(() => void loadedWorkerChunks.add(url))
-      )
+      pendingUrls.map((url) => nativeImport(url).then(() => void loadedWorkerChunks.add(url)))
     ).then(() => {});
   }
 }
