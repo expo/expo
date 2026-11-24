@@ -149,6 +149,7 @@ cleanup() {
   exit $exit_code
 }
 
+install_tools
 if ! "${EAS[@]}" simulator:availability --json --non-interactive | grep -q '"available": *true'; then
   echo "Expo Simulators is not available for this account. It needs a paid EAS plan." >&2
   exit 1

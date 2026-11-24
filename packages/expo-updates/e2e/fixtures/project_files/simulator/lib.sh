@@ -3,8 +3,9 @@
 # simulator-test-executor.sh sources this file and sets PLATFORM, CONFIGURATION and
 # UPDATES_SERVER_PORT first. Flows call these functions; any failed step fails the flow.
 
-EAS=(npx --yes eas-cli@latest)
-AGENT_DEVICE=("${EAS[@]}" simulator:exec npx --yes agent-device@latest)
+TOOLS_DIR="$PWD/simulator/tools"
+EAS=("$TOOLS_DIR/node_modules/.bin/eas")
+AGENT_DEVICE=("${EAS[@]}" simulator:exec "$TOOLS_DIR/node_modules/.bin/agent-device")
 APP_ID="dev.expo.updatese2e"
 
 case "$PLATFORM" in
@@ -20,6 +21,15 @@ case "$PLATFORM" in
     ;;
 esac
 
+# #region Tools
+
+# The Expo Simulators commands change often, so each run installs the latest versions.
+install_tools() {
+  npm install --prefix "$TOOLS_DIR" --no-save --no-audit --no-fund --loglevel=error \
+    eas-cli@latest agent-device@latest
+}
+
+# #endregion
 # #region Updates server
 
 updates_server_get() {
