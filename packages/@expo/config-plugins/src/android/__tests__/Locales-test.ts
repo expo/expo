@@ -89,21 +89,21 @@ describe('e2e: Android locales', () => {
     expect(vol.readFileSync('/app/android/app/src/main/res/values-b+es/strings.xml').toString())
       .toMatchInlineSnapshot(`
       "<resources>
-        <string name="CFBundleDisplayName">"spanish-name"</string>
+        <string name="CFBundleDisplayName">spanish-name</string>
       </resources>"
     `);
     // backwards compatibility
     expect(vol.readFileSync('/app/android/app/src/main/res/values-b+en/strings.xml').toString())
       .toMatchInlineSnapshot(`
       "<resources>
-        <string name="CFBundleDisplayName">"us-name"</string>
-        <string name="app_name">"us-name"</string>
+        <string name="CFBundleDisplayName">us-name</string>
+        <string name="app_name">us-name</string>
       </resources>"
     `);
     expect(vol.readFileSync('/app/android/app/src/main/res/values-b+en+US/strings.xml').toString())
       .toMatchInlineSnapshot(`
       "<resources>
-        <string name="app_name">"us-name"</string>
+        <string name="app_name">us-name</string>
       </resources>"
     `);
 
@@ -112,14 +112,14 @@ describe('e2e: Android locales', () => {
     expect(vol.readFileSync('/app/android/app/src/main/res/values-b+iw/strings.xml').toString())
       .toMatchInlineSnapshot(`
       "<resources>
-        <string name="app_name">"hebrew-name"</string>
+        <string name="app_name">hebrew-name</string>
       </resources>"
     `);
     expect(vol.existsSync('/app/android/app/src/main/res/values-b+id+ID')).toBe(false);
     expect(vol.readFileSync('/app/android/app/src/main/res/values-b+in+ID/strings.xml').toString())
       .toMatchInlineSnapshot(`
       "<resources>
-        <string name="app_name">"indonesian-name"</string>
+        <string name="app_name">indonesian-name</string>
       </resources>"
     `);
 
@@ -167,7 +167,7 @@ describe('e2e: Android locales', () => {
       .toString();
     expect(strings).toMatchInlineSnapshot(`
       "<resources>
-        <string name="app_name">"pt-name"</string>
+        <string name="app_name">pt-name</string>
       </resources>"
     `);
     expect(strings).not.toMatch(/object Object/);
