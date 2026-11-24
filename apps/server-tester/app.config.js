@@ -18,7 +18,7 @@ module.exports = {
   newArchEnabled: true,
   experiments: {
     chunking: {
-      mode: process.env.E2E_ROUTER_SPLIT_STRATEGY === 'granular' ? 'granular' : 'legacy',
+      mode: process.env.E2E_ROUTER_SPLIT_STRATEGY === 'legacy' ? 'legacy' : 'granular',
     },
     noxcturnalTransformWorker: true,
     autolinkingModuleResolution: true,
