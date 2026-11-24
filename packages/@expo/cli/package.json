@@ -161,7 +161,7 @@
     "react-refresh": "^0.14.2",
     "react-test-renderer": "19.3.0",
     "tree-kill": "^1.2.2",
-    "zod": "^3.25.76"
+    "zod": "^4.6.6"
   },
   "peerDependencies": {
     "expo": "*",
