@@ -15,6 +15,7 @@ import expo.modules.kotlin.exception.Exceptions
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeout
@@ -70,17 +71,16 @@ internal class PedometerPlayServices(private val context: Context) {
       throw ReadDataFailedException(response.status.statusCode, response.status.statusMessage)
     }
 
-    return response.buckets
-      .flatMap { it.dataSets }
-      .flatMap { it.dataPoints }
-      .sumOf { it.getValue(LocalField.FIELD_STEPS).asInt() }
-      .toLong()
+    return response.buckets.asSequence()
+      .flatMap { it.dataSets.asSequence() }
+      .flatMap { it.dataPoints.asSequence() }
+      .sumOf { it.getValue(LocalField.FIELD_STEPS).asInt().toLong() }
   }
 }
 
 private suspend fun <T> Task<T>.await(): T {
   try {
-    return withTimeout(TimeUnit.SECONDS.toMillis(TaskTimeoutSeconds)) {
+    return withTimeout(TaskTimeoutSeconds.seconds) {
       suspendCancellableCoroutine { continuation ->
         addOnCompleteListener { task ->
           when {
