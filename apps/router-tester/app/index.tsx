@@ -1,7 +1,6 @@
 import { Link, Stack, usePathname, useRouter, type Href } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const HomeIndex = () => {
   const pathname = usePathname();
@@ -17,7 +16,7 @@ const HomeIndex = () => {
 
   return (
     <ScrollView style={styles.container} contentInsetAdjustmentBehavior="automatic">
-      <SafeAreaView edges={['left', 'right']} style={styles.content}>
+      <View style={styles.content}>
         <Stack.Screen
           options={{ headerShown: true, title: 'Router Tester', headerLargeTitle: true }}
         />
@@ -69,7 +68,7 @@ const HomeIndex = () => {
             <Text style={styles.buttonText}>Error boundaries</Text>
           </Pressable>
         </Section>
-      </SafeAreaView>
+      </View>
     </ScrollView>
   );
 };

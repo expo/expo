@@ -7,7 +7,6 @@ import {
 import { SymbolView } from 'expo-symbols';
 import { useRef, useState } from 'react';
 import { PlatformColor, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import type { SplitHostCommands } from 'react-native-screens/experimental';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -218,24 +217,21 @@ export default function Layout() {
                 : undefined
             }>
             <ScrollView contentInsetAdjustmentBehavior="automatic">
-              {/* The floating sidebar of iOS 26 covers the leading edge of this column. */}
-              <SafeAreaView edges={['left']}>
-                {MESSAGES.map((m) => (
-                  <Pressable
-                    key={m.id}
-                    style={[
-                      styles.message,
-                      m.id === id && { backgroundColor: PlatformColor('systemGray5') },
-                    ]}
-                    onPress={() => {
-                      router.replace(`/split-view-mail/${m.id}`);
-                      splitRef.current?.show('secondary');
-                    }}>
-                    <Text style={styles.sender}>{m.sender}</Text>
-                    <Text>{m.subject}</Text>
-                  </Pressable>
-                ))}
-              </SafeAreaView>
+              {MESSAGES.map((m) => (
+                <Pressable
+                  key={m.id}
+                  style={[
+                    styles.message,
+                    m.id === id && { backgroundColor: PlatformColor('systemGray5') },
+                  ]}
+                  onPress={() => {
+                    router.replace(`/split-view-mail/${m.id}`);
+                    splitRef.current?.show('secondary');
+                  }}>
+                  <Text style={styles.sender}>{m.sender}</Text>
+                  <Text>{m.subject}</Text>
+                </Pressable>
+              ))}
             </ScrollView>
           </SplitView.Column>
         )}

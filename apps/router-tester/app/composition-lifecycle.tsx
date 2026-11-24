@@ -10,7 +10,6 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CompositionLifecycleScreen() {
   // Title
@@ -71,7 +70,7 @@ export default function CompositionLifecycleScreen() {
       {showSearchBar && <Stack.SearchBar placeholder="Search..." onChangeText={() => {}} />}
 
       <ScrollView style={styles.container} contentInsetAdjustmentBehavior="automatic">
-        <SafeAreaView edges={['left', 'right']} style={styles.contentContainer}>
+        <View style={styles.contentContainer}>
           <Text style={styles.title}>Composition Lifecycle</Text>
           <Text style={styles.subtitle}>
             Tests mount/unmount of each composition component via conditional rendering.
@@ -226,7 +225,7 @@ export default function CompositionLifecycleScreen() {
               4. Components use conditional rendering (not hidden prop) to fully mount/unmount
             </Text>
           </View>
-        </SafeAreaView>
+        </View>
       </ScrollView>
     </>
   );

@@ -9,7 +9,6 @@ import {
 } from 'expo-router';
 import React, { use } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 type SuspenseScreenConfig = {
   href: Href;
@@ -119,7 +118,7 @@ export function SuspenseScreen({ initial, consecutive }: { initial: number; cons
     <ScrollView
       style={{ flex: 1, backgroundColor: '#fff' }}
       contentInsetAdjustmentBehavior="automatic">
-      <SafeAreaView edges={['left', 'right']} style={{ padding: 16, gap: 12 }}>
+      <View style={{ padding: 16, gap: 12 }}>
         <Text>Current Path: {pathname}</Text>
         <Text style={{ fontSize: 28, fontWeight: 'bold' }}>Initial: {formatDelay(initial)}</Text>
         <Text style={{ fontSize: 28, fontWeight: 'bold' }}>
@@ -127,7 +126,7 @@ export function SuspenseScreen({ initial, consecutive }: { initial: number; cons
         </Text>
         <Text>Focus count: {record.focusCount}</Text>
         <SuspenseLinks />
-      </SafeAreaView>
+      </View>
     </ScrollView>
   );
 }
