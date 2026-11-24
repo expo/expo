@@ -1,0 +1,1 @@
+../../docs/public/_worker.js

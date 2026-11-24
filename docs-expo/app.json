@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Expo Documentation",
+    "slug": "expo-docs",
+    "version": "58.0.0",
+    "scheme": "expodocs",
+    "platforms": ["web"],
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "root": "./src/app",
+          "sitemap": false
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false,
+      "chunking": {
+        "mode": "granular"
+      }
+    }
+  }
+}

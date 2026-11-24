@@ -1,0 +1,21 @@
+# docs-expo/ is a standalone pnpm project, like docs/. This file stops pnpm from
+# using the root workspace.
+packages: []
+
+nodeLinker: hoisted
+
+minimumReleaseAge: 1440
+
+minimumReleaseAgeExclude:
+  - '@expo/*'
+
+# The lockfile started as a copy of `../docs/pnpm-lock.yaml`, so that the packages that both
+# projects use have the same versions.
+overrides:
+  baseline-browser-mapping: 2.9.15
+
+allowBuilds:
+  '@fingerprintjs/fingerprintjs-pro-react': false
+  esbuild: false
+  sharp: false
+  unrs-resolver: false

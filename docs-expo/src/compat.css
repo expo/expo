@@ -1,0 +1,51 @@
+/* `next/font` generates these fallback faces. They have the metrics of the web fonts, which
+   prevents a layout shift when the web fonts load. The values are from the Next.js build. */
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  ascent-override: 90.44%;
+  descent-override: 22.52%;
+  line-gap-override: 0%;
+  size-adjust: 107.12%;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono Fallback';
+  src: local('Arial');
+  ascent-override: 75.79%;
+  descent-override: 22.29%;
+  line-gap-override: 0%;
+  size-adjust: 134.59%;
+}
+
+/* `../docs/pages/_app.tsx` sets these rules with styled-jsx. */
+html,
+body,
+kbd,
+button,
+input,
+select,
+tspan,
+text {
+  font-family: 'Inter', 'Inter Fallback', sans-serif;
+}
+
+code,
+pre,
+table.diff {
+  font-family: 'JetBrains Mono', 'JetBrains Mono Fallback', monospace;
+}
+
+/* Expo Router renders the app inside a React Native Web `View`: `#root > div > #__next`.
+   Next.js renders `body > #__next`. The `View` is a flex container with its own stacking
+   context. `display: contents` removes its box, so that `#__next` has the same layout as
+   in the Next.js build. */
+#root > div {
+  display: contents;
+}
+
+/* The `View` also sets `list-style: none`, which the page content inherits. This restores
+   the initial value. */
+#__next {
+  list-style: disc outside none;
+}

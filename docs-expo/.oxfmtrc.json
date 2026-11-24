@@ -1,0 +1,44 @@
+{
+  "$schema": "../docs/node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 100,
+  "tabWidth": 2,
+  "singleQuote": true,
+  "bracketSameLine": true,
+  "trailingComma": "es5",
+  "arrowParens": "avoid",
+  "sortImports": {
+    "groups": [
+      ["builtin", "external"],
+      ["internal", "subpath"],
+      ["parent", "sibling", "index"],
+      "unknown"
+    ],
+    "ignoreCase": false
+  },
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    ".expo",
+    "pnpm-lock.yaml",
+    "src/app/*/**",
+    "src/routes.generated.json",
+    "src/fonts.generated.ts",
+    "REPORT.md"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "pages/versions/unversioned/sdk/ui/swift-ui/*.mdx",
+        "pages/versions/unversioned/sdk/ui/jetpack-compose/*.mdx",
+        "pages/versions/v57.0.0/sdk/ui/swift-ui/*.mdx",
+        "pages/versions/v57.0.0/sdk/ui/jetpack-compose/*.mdx",
+        "pages/versions/v58.0.0/sdk/ui/swift-ui/*.mdx",
+        "pages/versions/v58.0.0/sdk/ui/jetpack-compose/*.mdx"
+      ],
+      "options": {
+        "printWidth": 68
+      }
+    }
+  ]
+}

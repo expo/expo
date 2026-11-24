@@ -1,0 +1,12 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "~/*": ["../docs/*"]
+    }
+  },
+  "include": ["src"]
+}
