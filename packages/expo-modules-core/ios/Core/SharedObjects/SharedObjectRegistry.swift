@@ -29,17 +29,10 @@ public final class SharedObjectRegistry: Sendable {
   internal struct State: @unchecked Sendable {
     /**
      Maps each shared object id to the native object's `SharedObjectNativeState`, which carries the
-     native object and its per-runtime JS counterparts. The state is held strongly so an id stays
-     resolvable via `get(_:)` until an explicit `delete(_:)`, independent of JS garbage collection.
+     native object. The state is held strongly so an id stays resolvable via `get(_:)` until an
+     explicit `delete(_:)`, independent of JS garbage collection.
      */
     var pairs = [SharedObjectId: SharedObjectNativeState]()
-
-    /**
-     The native states that were released while another runtime pairs a JS object with them. That JS object can hold
-     the C++ state, with values of the main runtime in it, after the main runtime is destroyed. `clear()` releases
-     those values. An entry is removed when its C++ state is destroyed.
-     */
-    var releasedNativeStates = [SharedObjectId: SharedObjectNativeState]()
 
     /**
      The counter of IDs to assign to the shared objects.
@@ -89,7 +82,7 @@ public final class SharedObjectRegistry: Sendable {
 
   /**
    Returns the native state registered under the given ID, or `nil` when there is no such entry.
-   The state carries the native object (`native`) and its per-runtime JS counterparts.
+   The state carries the native object (`native`).
    */
   internal func get(_ id: SharedObjectId) -> SharedObjectNativeState? {
     return state.withLock { state in
@@ -116,16 +109,10 @@ public final class SharedObjectRegistry: Sendable {
     let mainRuntime = try? appContext?.runtime
     let runtime = runtime ?? mainRuntime
 
-    // Attach the shared-object native state, which also keeps the event listeners.
+    // Attach the shared-object native state. Each runtime keeps its JS object and its event listeners.
     // The existing C++ native state is attached only while it is alive. When it is destroyed on another
     // thread, its release must not apply to `jsObject`, so the native object gets a new native state and ID.
-    let isMainRuntime = runtime?.id == mainRuntime?.id
-    let (nativeState, id) = attachNativeState(
-      of: nativeObject,
-      to: jsObject,
-      isMainRuntime: isMainRuntime,
-      mainRuntimeId: mainRuntime?.id
-    )
+    let (nativeState, id) = attachNativeState(of: nativeObject, to: jsObject, mainRuntimeId: mainRuntime?.id)
 
     // Assign the app context to the object.
     nativeObject.appContext = appContext
@@ -155,27 +142,22 @@ public final class SharedObjectRegistry: Sendable {
   private func attachNativeState(
     of nativeObject: SharedObject,
     to jsObject: borrowing JavaScriptObject,
-    isMainRuntime: Bool,
     mainRuntimeId: JavaScriptRuntime.ID?
   ) -> (nativeState: SharedObjectNativeState, id: SharedObjectId) {
     while true {
       let registered = registeredNativeState(of: nativeObject)
-      if let registered,
-        isMainRuntime || registered.nativeState.markPairedInOtherRuntime(),
-        jsObject.setNativeStateIfAlive(registered.nativeState)
-      {
+      if let registered, jsObject.setNativeStateIfAlive(registered.nativeState) {
         return registered
       }
       let id = pullNextId()
       // Runs when the JS objects of all runtimes are collected.
       let releaser: (SharedObjectId) -> Void = { [weak self] id in
-        self?.delete(id, reason: .nativeStateDestroyed)
+        self?.delete(id)
       }
       let nativeState = SharedObjectNativeState(
         native: nativeObject,
         objectId: id,
         mainRuntimeId: mainRuntimeId,
-        isPairedInOtherRuntime: !isMainRuntime,
         releaser: releaser
       )
 
@@ -221,62 +203,28 @@ public final class SharedObjectRegistry: Sendable {
     }
   }
 
-  /**
-   Deletes the shared objects pair with a given ID.
-   */
+  /// Deletes the pair with the given ID, and removes the JS objects and the listeners that the runtimes with listeners
+  /// keep for the native state. It runs when the native object is released, in JS or native code, and when the C++
+  /// state is destroyed after the JS objects of all runtimes were collected, which can be on a garbage collector thread.
   internal func delete(_ id: SharedObjectId) {
-    delete(id, reason: .released)
-  }
-
-  /// Deletes the pair with the given ID, for `release()` called in JS. When another runtime pairs a JS object with the
-  /// native state, `clear()` releases the values of the main runtime in it. A release in the main runtime also releases
-  /// them right away, on the thread of the main runtime. The other runtimes release their values on their threads.
-  internal func release(_ id: SharedObjectId, inMainRuntime: Bool) {
-    delete(id, reason: inMainRuntime ? .releasedInMainRuntime : .released)
-  }
-
-  private enum DeletionReason {
-    /// Released on the thread of the main runtime.
-    case releasedInMainRuntime
-    /// Released on another thread, for example in another runtime.
-    case released
-    /// The C++ state was destroyed, after the JS objects of all runtimes were collected.
-    case nativeStateDestroyed
-  }
-
-  private func delete(_ id: SharedObjectId, reason: DeletionReason) {
-    let deleted: (nativeState: SharedObjectNativeState, isCurrent: Bool, isPairedInOtherRuntime: Bool)? = state.withLock { state in
+    let deleted: (nativeState: SharedObjectNativeState, isCurrent: Bool)? = state.withLock { state in
       guard let nativeState = state.pairs[id] else {
-        if reason == .nativeStateDestroyed && !state.releasedNativeStates.isEmpty {
-          state.releasedNativeStates[id] = nil
-        }
         return nil
       }
-      let isPairedInOtherRuntime = nativeState.markReleased()
+      nativeState.markReleased()
 
       // Delete the entry from the dictionary.
       state.pairs[id] = nil
 
-      // A JS object of another runtime can hold the C++ state after the main runtime is destroyed. A frozen JS object
-      // of the main runtime keeps the native state after the release, so its listeners can come back.
-      if reason != .nativeStateDestroyed && isPairedInOtherRuntime {
-        state.releasedNativeStates[id] = nativeState
-      }
-
       // A native object that was paired again after its JS object died has a new native state and ID,
       // and stays paired.
-      return (nativeState, nativeState.native.nativeState === nativeState, isPairedInOtherRuntime)
+      return (nativeState, nativeState.native.nativeState === nativeState)
     }
     guard let deleted else {
       return
     }
     let nativeState = deleted.nativeState
-    if reason == .releasedInMainRuntime && deleted.isPairedInOtherRuntime {
-      nativeState.releaseRuntimeValues()
-    }
-    if reason != .nativeStateDestroyed && deleted.isPairedInOtherRuntime {
-      nativeState.releaseOtherRuntimeValues()
-    }
+    nativeState.releaseRuntimeValues()
     guard deleted.isCurrent else {
       return
     }
@@ -334,7 +282,7 @@ public final class SharedObjectRegistry: Sendable {
   }
 
   /// Returns the native state of the native object and its ID while this registry has it, that is, until it is
-  /// released. A native state of another app context's registry holds values of another main runtime.
+  /// released. A native state of another app context's registry has an ID and a main runtime of that app context.
   private func registeredNativeState(of nativeObject: SharedObject) -> (nativeState: SharedObjectNativeState, id: SharedObjectId)? {
     guard let nativeState = nativeObject.nativeState else {
       return nil
@@ -365,20 +313,17 @@ public final class SharedObjectRegistry: Sendable {
     return createSharedJavaScriptObject(runtime: runtime, nativeObject: nativeObject)
   }
 
-  /// Removes all pairs. Before that, the native states release the values of the runtime that created them, because
-  /// a JS object of another runtime can keep a native state alive after that runtime is destroyed. This includes the
-  /// released native states that such a JS object still holds.
+  /// Removes and ends all pairs. Each runtime releases the JS objects and the listeners that it keeps for the native
+  /// states when it is destroyed.
   @JavaScriptActor
   internal func clear() {
     let nativeStates = state.withLock { state in
       defer {
         state.pairs.removeAll()
-        state.releasedNativeStates.removeAll()
       }
-      return Array(state.pairs.values) + Array(state.releasedNativeStates.values)
+      return Array(state.pairs.values)
     }
     for nativeState in nativeStates {
-      nativeState.releaseRuntimeValues()
       nativeState.native.endPairing(with: nativeState)
     }
   }

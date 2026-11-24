@@ -664,7 +664,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       inheriting: eventEmitterClass.asValue().getFunction(),
       in: runtime
     ) { [weak sharedObjectRegistry] objectId in
-      sharedObjectRegistry?.release(objectId, inMainRuntime: isMainRuntime)
+      sharedObjectRegistry?.delete(objectId)
     }
 
     // Install `global.expo.SharedRef`.
