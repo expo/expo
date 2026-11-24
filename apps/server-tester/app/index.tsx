@@ -93,6 +93,7 @@ export default function HomeRoute() {
       <Section title="Web workers">
         <RouteLinks>
           <RouteLink href="/workers" />
+          <RouteLink href="/workers/async-imports" />
         </RouteLinks>
       </Section>
       <Section title="Routing">

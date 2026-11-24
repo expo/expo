@@ -150,9 +150,12 @@ describe('exports static with granular bundle splitting', () => {
         'multi-group',
         ...Array(3).fill('\\[postId\\]'),
         // workers
+        'async-imports',
         'other',
-        'worker-client',
+        'worker-async',
         'worker-one',
+        // The `worker-async` web worker imports four modules asynchronously. Each one is a chunk.
+        ...Array(4).fill('__worker'),
       ]
         .sort()
         .map((file) =>

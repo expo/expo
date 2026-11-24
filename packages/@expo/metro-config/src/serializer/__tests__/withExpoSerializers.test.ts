@@ -7,7 +7,6 @@ import vm from 'node:vm';
 
 import * as graphAssets from '../../transform-worker/getAssets';
 import { createGranularChunkingStrategy } from '../chunking/createGranularChunkingStrategy';
-import * as workerScan from '../chunking/findUnsupportedWorkerAsyncDependency';
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
 import {
   createJSVirtualModule,
@@ -15,7 +14,6 @@ import {
   serializeTo,
 } from '../fork/__tests__/serializer-test-utils';
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
-import * as chunkSerializer from '../serializeChunks';
 import { serializeServerBundleAsync } from '../serializeServerBundle';
 import { flattenSourceMap } from '../sourceMap';
 import type { SerialAsset, Serializer } from '../withExpoSerializers';
@@ -826,26 +824,59 @@ describe('Granular chunk emission', () => {
     ).toBe(true);
   });
 
-  it('uses legacy page chunks when a worker dynamically imports a module', async () => {
+  it.each([
+    ['async', 'import'],
+    ['maybeSync', 'require.unstable_importMaybeSync'],
+    ['prefetch', '__prefetchImport'],
+  ])('emits the %s imports of a worker as chunks of the worker', async (_asyncType, importCall) => {
     const artifacts: SerialAsset[] = await serializeSplitAsync(
       {
         ...publicGraph,
         'index.js': `import('./a'); import('./b'); require.unstable_resolveWorker('./worker');`,
-        'worker.js': `import('./worker-target');`,
+        'worker.js': `${importCall}('./worker-target'); ${importCall}('./a');`,
         'worker-target.js': `console.log('worker target');`,
       },
       { chunkingStrategy: 'granular' }
     );
 
-    const commonChunk = artifacts.find((asset) => asset.filename.includes('__common'));
-    expect(commonChunk?.metadata.modulePaths).toContain('/app/shared.js');
-    expect(artifacts.some((asset) => asset.filename.includes('__shared-'))).toBe(false);
-    expect(artifacts.every((asset) => asset.metadata.chunkingStrategy === undefined)).toBe(true);
-    expect(
-      artifacts
-        .flatMap((asset) => Object.values(asset.metadata.paths ?? {}).flatMap(Object.values))
-        .every((value) => typeof value === 'string')
-    ).toBe(true);
+    expect(artifacts[0]!.metadata.chunkingStrategy).toBe('granular');
+    const worker = artifacts.find((asset) => asset.originFilename === 'worker.js')!;
+    expect(worker.metadata.modulePaths).not.toContain('/app/worker-target.js');
+    expect(worker.metadata.modulePaths).not.toContain('/app/a.js');
+    const getModulePaths = (urls: unknown) =>
+      (urls as string[]).map(
+        (url) => artifacts.find((asset) => '/' + asset.filename === url)!.metadata.modulePaths
+      );
+    const workerPaths = worker.metadata.paths!['/app/worker.js']!;
+    expect(getModulePaths(workerPaths['/app/worker-target.js'])).toEqual([
+      ['/app/worker-target.js'],
+    ]);
+    // The application has `shared.js` in a chunk for `a.js` and `b.js`. The worker does not
+    // import `b.js`, so its chunk for `a.js` contains `shared.js`.
+    expect(getModulePaths(workerPaths['/app/a.js'])).toEqual([['/app/a.js', '/app/shared.js']]);
+    expect(getModulePaths(artifacts[0]!.metadata.paths!['/app/index.js']!['/app/a.js'])).toEqual(
+      expect.arrayContaining([['/app/a.js'], ['/app/shared.js']])
+    );
+  });
+
+  it('gives a worker chunk its own filename when the application has the same chunk', async () => {
+    const artifacts: SerialAsset[] = await serializeSplitAsync(
+      {
+        'index.js': `import('./lazy'); require.unstable_resolveWorker('./worker');`,
+        'worker.js': `import('./lazy');`,
+        'lazy.js': `console.log('lazy');`,
+      },
+      { chunkingStrategy: 'granular' }
+    );
+
+    const worker = artifacts.find((asset) => asset.originFilename === 'worker.js')!;
+    const [workerUrl] = worker.metadata.paths!['/app/worker.js']!['/app/lazy.js'] as string[];
+    const [applicationUrl] = artifacts[0]!.metadata.paths!['/app/index.js']![
+      '/app/lazy.js'
+    ] as string[];
+    expect(workerUrl).toMatch(/\/__worker-[\da-f]{16}-[\da-f]+\.js$/);
+    expect(workerUrl).not.toBe(applicationUrl);
+    expect(new Set(artifacts.map((asset) => asset.filename)).size).toBe(artifacts.length);
   });
 
   it('keeps DOM exports on the legacy pipeline even when requested', async () => {
@@ -1161,162 +1192,6 @@ describe('Granular chunk emission', () => {
         expect(asset.source).not.toContain('__expo_chunk_completion__');
       }
     }
-  });
-});
-
-describe('worker compatibility', () => {
-  let bundle: Awaited<ReturnType<typeof microBundle>>;
-  let chunkSerializerSpy: jest.SpyInstance;
-  beforeAll(async () => {
-    bundle = await microBundle({
-      fs: { 'index.js': `import('./route');`, 'route.js': 'export const value = 1;' },
-      options: {
-        platform: 'web',
-        dev: false,
-        output: 'static',
-        splitChunks: true,
-        chunkingStrategy: 'granular',
-      },
-    });
-  });
-  beforeEach(() => {
-    chunkSerializerSpy = jest.spyOn(chunkSerializer, 'graphToSerialAssetsAsync');
-  });
-  afterEach(() => {
-    chunkSerializerSpy.mockRestore();
-  });
-
-  async function serialize(graph = bundle[2], options: ExpoSerializerOptions = bundle[3]) {
-    const serializer = createSerializerFromSerialProcessors({ projectRoot }, [], null);
-    await serializer(bundle[0], bundle[1], graph, options);
-  }
-
-  async function createWorkerBundle(workerSource: string) {
-    return microBundle({
-      fs: {
-        'index.js': `import './shared'; require.unstable_resolveWorker('./worker');`,
-        'worker.js': workerSource,
-        'shared.js': `export const load = () => import('./target');`,
-        'target.js': `export const value = 1;`,
-        'nested.js': `import './shared';`,
-      },
-      options: {
-        platform: 'web',
-        dev: false,
-        output: 'static',
-        splitChunks: true,
-        chunkingStrategy: 'granular',
-      },
-    });
-  }
-
-  it.each(['async', 'maybeSync', 'prefetch'] as const)(
-    'falls back for a shared worker importer with a %s edge',
-    async (asyncType) => {
-      const [entry, , graph, options] = await createWorkerBundle(`import './shared';`);
-      const shared = graph.dependencies.get('/app/shared.js')!;
-      const [key, dependency] = [...shared.dependencies].find(
-        ([, dep]) => dep.data.data.asyncType === 'async'
-      )!;
-      shared.dependencies.set(key, {
-        ...dependency,
-        data: { ...dependency.data, data: { ...dependency.data.data, asyncType } },
-      });
-      expect(workerScan.findUnsupportedWorkerAsyncDependency(entry, graph)).toEqual({
-        workerEntry: '/app/worker.js',
-        importer: '/app/shared.js',
-        target: '/app/target.js',
-        asyncType,
-      });
-      await serialize(graph, options);
-
-      expect(chunkSerializerSpy).toHaveBeenCalledWith(
-        { projectRoot },
-        expect.objectContaining({ chunkingStrategy: 'legacy' }),
-        bundle[0],
-        bundle[1],
-        graph,
-        expect.anything()
-      );
-    }
-  );
-
-  it('finds async edges inside nested workers', async () => {
-    const [entry, , graph] = await createWorkerBundle(
-      `require.unstable_resolveWorker('./nested');`
-    );
-    expect(workerScan.findUnsupportedWorkerAsyncDependency(entry, graph)).toEqual({
-      workerEntry: '/app/nested.js',
-      importer: '/app/shared.js',
-      target: '/app/target.js',
-      asyncType: 'async',
-    });
-  });
-
-  it('ignores weak worker edges even when the fixture manufactures their target', async () => {
-    const [entry, , graph] = await createWorkerBundle(`require.resolveWeak('./shared');`);
-    expect(workerScan.findUnsupportedWorkerAsyncDependency(entry, graph)).toBeUndefined();
-  });
-
-  it('does not treat page-only async edges as worker edges', async () => {
-    const [, , graph, options] = await createWorkerBundle(`import './target';`);
-    await serialize(graph, options);
-
-    expect(chunkSerializerSpy).toHaveBeenCalledWith(
-      { projectRoot },
-      expect.objectContaining({ chunkingStrategy: 'granular' }),
-      bundle[0],
-      bundle[1],
-      graph,
-      expect.anything()
-    );
-  });
-
-  it('ignores unresolved worker edges', async () => {
-    const [entry, , graph] = await createWorkerBundle(`import('./target');`);
-    const worker = graph.dependencies.get('/app/worker.js')!;
-    for (const [key, dependency] of worker.dependencies) {
-      if (dependency.data.data.asyncType === 'async') {
-        worker.dependencies.set(key, { data: dependency.data });
-      }
-    }
-    expect(workerScan.findUnsupportedWorkerAsyncDependency(entry, graph)).toBeUndefined();
-  });
-
-  it('does not scan workers when splitting is disabled', async () => {
-    const [, , graph, original] = await createWorkerBundle(`import('./target');`);
-    const options = original as ExpoSerializerOptions;
-    const scan = jest.spyOn(workerScan, 'findUnsupportedWorkerAsyncDependency');
-    try {
-      await serialize(graph, {
-        ...options,
-        serializerOptions: { ...options.serializerOptions, splitChunks: false },
-      });
-
-      expect(chunkSerializerSpy).toHaveBeenCalledWith(
-        { projectRoot },
-        expect.objectContaining({ chunkingStrategy: 'legacy', splitChunks: false }),
-        bundle[0],
-        bundle[1],
-        graph,
-        expect.anything()
-      );
-      expect(scan).not.toHaveBeenCalled();
-    } finally {
-      scan.mockRestore();
-    }
-  });
-
-  it('terminates on synchronous worker cycles', async () => {
-    const [entry, , graph] = await microBundle({
-      fs: {
-        'index.js': `require.unstable_resolveWorker('./worker');`,
-        'worker.js': `import './other';`,
-        'other.js': `import './worker';`,
-      },
-      options: { platform: 'web', dev: false, splitChunks: true },
-    });
-    expect(workerScan.findUnsupportedWorkerAsyncDependency(entry, graph)).toBeUndefined();
   });
 });
 
