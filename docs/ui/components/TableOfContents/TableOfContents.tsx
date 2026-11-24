@@ -1,7 +1,5 @@
-import { Button, ButtonBase, mergeClasses } from '@expo/styleguide';
-import { ArrowCircleUpIcon } from '@expo/styleguide-icons/outline/ArrowCircleUpIcon';
+import { ButtonBase, mergeClasses } from '@expo/styleguide';
 import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
-import { LayoutAlt03Icon } from '@expo/styleguide-icons/outline/LayoutAlt03Icon';
 import { useRouter } from 'next/compat/router';
 import {
   PropsWithChildren,
@@ -21,7 +19,7 @@ import { isVersionedPath } from '~/common/routes';
 import { prefersReducedMotion } from '~/common/window';
 import { HeadingManagerProps, HeadingsContext } from '~/common/withHeadingManager';
 import { type ScrollContainerHandle } from '~/components/ScrollContainer';
-import { CALLOUT } from '~/ui/components/Text';
+import { PageVote } from '~/ui/components/Footer/PageVote';
 
 import { TableOfContentsLink } from './TableOfContentsLink';
 
@@ -49,7 +47,6 @@ export const TableOfContents = forwardRef<
   const isVersioned = isVersionedPath(router?.pathname ?? '');
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [activeParentSlug, setActiveParentSlug] = useState<string | null>(null);
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [collapsedH3s, setCollapsedH3s] = useState<Set<string>>(() =>
     isVersioned
@@ -94,12 +91,6 @@ export const TableOfContents = forwardRef<
   }
 
   function handleContentScroll(contentScrollPosition: number) {
-    const showScrollTopValue = contentScrollPosition > 120;
-
-    if (showScrollTopValue !== showScrollTop) {
-      setShowScrollTop(showScrollTopValue);
-    }
-
     const { scrollElement, viewportHeight, scrollHeight, activationOffset } = getScrollMetrics();
     const activationLine = contentScrollPosition + activationOffset;
     const bottomThreshold = Math.min(200, viewportHeight * 0.1);
@@ -303,21 +294,6 @@ export const TableOfContents = forwardRef<
     queueHeadingFocus(ref);
   }
 
-  function handleTopClick(event: MouseEvent) {
-    event.preventDefault();
-
-    contentRef?.current?.getScrollRef().current?.scrollTo({
-      behavior: reducedMotion ? 'instant' : 'smooth',
-      top: 0,
-    });
-
-    if (history?.replaceState) {
-      history.replaceState(history.state, '', ' ');
-    }
-
-    queueHeadingFocus(headings[0]?.ref);
-  }
-
   const toggleH3 = (slug: string, event: SyntheticEvent) => {
     event.preventDefault();
     event.stopPropagation();
@@ -378,10 +354,19 @@ export const TableOfContents = forwardRef<
           key={heading.slug}
           role="listitem"
           className={mergeClasses(
-            'flex items-center',
+            'flex items-center border-l border-default',
             currentH3 && heading.level > BASE_HEADING_LEVEL + 2 && 'ml-0',
-            hasChildren && isVersioned && '-ml-6'
+            isActive && 'border-current text-default'
           )}>
+          <TableOfContentsLink
+            heading={heading}
+            onClick={event => {
+              handleLinkClick(event, heading);
+            }}
+            isActive={isActive}
+            ref={isActive ? activeItemRef : undefined}
+            shortenCode
+          />
           {hasChildren && isVersioned && (
             <ButtonBase
               onClick={event => {
@@ -395,52 +380,28 @@ export const TableOfContents = forwardRef<
               }}
               aria-expanded={!collapsedH3s.has(heading.slug)}
               aria-controls={`toc-section-${heading.slug}`}
-              className="flex min-h-6 w-6 shrink-0 cursor-pointer items-center justify-center self-start hocus:opacity-75"
+              className="mt-0.5 mr-3 ml-0.5 flex size-4 shrink-0 cursor-pointer items-center justify-center self-start hocus:opacity-75"
               aria-label={`${collapsedH3s.has(heading.slug) ? 'Expand' : 'Collapse'} section ${heading.title}`}>
               <ChevronDownIcon
                 aria-hidden="true"
                 className={mergeClasses(
-                  'icon-sm text-icon-secondary transition-transform',
+                  'icon-2xs text-icon-default transition-transform',
                   collapsedH3s.has(heading.slug) ? '-rotate-90' : 'rotate-0'
                 )}
               />
             </ButtonBase>
           )}
-          <TableOfContentsLink
-            heading={heading}
-            onClick={event => {
-              handleLinkClick(event, heading);
-            }}
-            isActive={isActive}
-            ref={isActive ? activeItemRef : undefined}
-            shortenCode
-          />
         </div>
       );
     });
   };
 
   return (
-    <nav className="w-70 px-6 pt-13 pb-10" data-toc>
-      <CALLOUT
-        weight="medium"
-        className={mergeClasses(
-          'absolute z-100 -mt-13 -ml-6 flex min-h-8 w-68 select-none',
-          'items-center gap-2 bg-linear-to-b from-default from-80% to-transparent py-3 pl-6'
-        )}>
-        <LayoutAlt03Icon aria-hidden="true" className="icon-sm" />{' '}
+    <nav className="flex w-50 flex-col gap-1 py-16" data-toc>
+      <PageVote />
+      <p className="pt-6 pr-3 pb-2 eyebrow text-[#80838d] select-none dark:text-tertiary">
         {intl.formatMessage({ id: 'onThisPage' })}
-        <Button
-          theme="quaternary"
-          size="xs"
-          className={mergeClasses(
-            'mr-2 ml-auto px-2 transition-opacity duration-300',
-            !showScrollTop && 'pointer-events-none opacity-0'
-          )}
-          onClick={handleTopClick}>
-          <ArrowCircleUpIcon className="icon-sm text-icon-secondary" aria-label="Scroll to top" />
-        </Button>
-      </CALLOUT>
+      </p>
       <div role="list">{renderTOC()}</div>
     </nav>
   );

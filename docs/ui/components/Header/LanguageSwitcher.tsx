@@ -1,3 +1,4 @@
+import { mergeClasses } from '@expo/styleguide';
 import { useRouter } from 'next/router';
 import { useIntl } from 'react-intl';
 
@@ -14,7 +15,11 @@ const options = [
   { id: 'ja', label: '日本語' },
 ];
 
-export function LanguageSwitcher() {
+type LanguageSwitcherProps = {
+  className?: string;
+};
+
+export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
   const router = useRouter();
   const intl = useIntl();
   const currentLocale = getLocaleFromPath(router.asPath);
@@ -33,7 +38,7 @@ export function LanguageSwitcher() {
 
   return (
     <Select
-      className="min-w-25 whitespace-nowrap"
+      className={mergeClasses('min-w-25 whitespace-nowrap', className)}
       value={currentLocale}
       onValueChange={onLocaleSelect}
       options={options}

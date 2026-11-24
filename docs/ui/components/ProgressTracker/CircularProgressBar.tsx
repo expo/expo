@@ -6,13 +6,13 @@ type CircularProgressBarProps = {
 
 export function CircularProgressBar({ progress }: CircularProgressBarProps) {
   const strokeWidth = 2;
-  const size = 14;
+  const size = 12;
   const radius = (size - strokeWidth) / 2;
   const circumference = Math.PI * 2 * radius;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="mr-1 flex items-center justify-center">
+    <div className="flex items-center justify-center">
       <svg aria-hidden="true" width={size} height={size}>
         {/* The background circle */}
         <circle

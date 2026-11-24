@@ -136,7 +136,7 @@ export const DiffBlock = ({
               rightSlot={
                 <ArrowUpRightIcon
                   aria-hidden="true"
-                  className="icon-sm shrink-0 text-icon-secondary"
+                  className="icon-xs shrink-0 text-button-quaternary-icon"
                 />
               }
               onClick={() => {

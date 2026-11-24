@@ -74,6 +74,8 @@ export const formatName = (name: PlatformName) => {
     return cleanName.replace('macos', 'macOS');
   } else if (cleanName.includes('tvos')) {
     return cleanName.replace('tvos', 'tvOS');
+  } else if (cleanName.startsWith('web')) {
+    return cleanName;
   } else {
     return capitalize(name);
   }

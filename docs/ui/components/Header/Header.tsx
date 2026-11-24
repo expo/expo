@@ -1,8 +1,6 @@
 import { Button, mergeClasses } from '@expo/styleguide';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
-import { Star01DuotoneIcon } from '@expo/styleguide-icons/duotone/Star01DuotoneIcon';
 import { Menu01Icon } from '@expo/styleguide-icons/outline/Menu01Icon';
-import { Star01Icon } from '@expo/styleguide-icons/outline/Star01Icon';
 import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -54,33 +52,11 @@ export const Header = ({
           <Button
             openInNewTab
             theme="quaternary"
-            className={mergeClasses('group px-2 text-secondary', 'max-lg:hidden')}
-            leftSlot={
-              <>
-                <Star01Icon
-                  aria-hidden="true"
-                  className="icon-sm group-hover:hidden group-focus-visible:hidden"
-                />
-                <Star01DuotoneIcon
-                  aria-hidden="true"
-                  className="hidden icon-sm text-icon-warning group-hover:flex group-focus-visible:flex"
-                />
-              </>
-            }
-            href="https://github.com/expo/expo">
-            {intl.formatMessage({ id: 'headerStarOnGitHub' })}
-          </Button>
-          <Button
-            openInNewTab
-            theme="quaternary"
             href="https://github.com/expo/expo"
             aria-label="GitHub"
             className={mergeClasses('hidden px-2', 'max-lg:flex')}>
             <GithubIcon aria-hidden="true" className="icon-lg" />
           </Button>
-          <div className="max-lg:hidden">
-            <ThemeSelector />
-          </div>
           <div className={mergeClasses('hidden', 'max-lg:flex')}>
             <Button
               theme="quaternary"
@@ -116,7 +92,7 @@ export const Header = ({
         <div className="h-[calc(100dvh-120px)] overflow-x-hidden overflow-y-auto bg-subtle">
           <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
           {sidebar}
-          <SidebarFooter isMobileMenuVisible={isMobileMenuVisible} />
+          <SidebarFooter />
         </div>
       )}
     </>

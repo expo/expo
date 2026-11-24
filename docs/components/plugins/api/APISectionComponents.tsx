@@ -2,7 +2,7 @@ import { mergeClasses } from '@expo/styleguide';
 
 import { hardcodedTypeLinks } from '~/components/plugins/api/APIStaticData';
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
-import { H2, DEMI, CODE, CALLOUT, A } from '~/ui/components/Text';
+import { H2, DEMI, CODE, A, P } from '~/ui/components/Text';
 
 import {
   CommentData,
@@ -112,7 +112,7 @@ const renderComponent = (
       <APISectionDeprecationNote comment={extractedComment} sticky />
       <APIBoxHeader name={resolvedName} comment={extractedComment} />
       {resolvedType && resolvedTypeParameters && !hideType && (
-        <CALLOUT className={mergeClasses(ELEMENT_SPACING, VERTICAL_SPACING)}>
+        <P className={mergeClasses(ELEMENT_SPACING, VERTICAL_SPACING)}>
           <DEMI className={STYLES_SECONDARY}>Type:</DEMI>{' '}
           <CODE>
             {extendedTypes ? (
@@ -126,7 +126,7 @@ const renderComponent = (
               </>
             )}
           </CODE>
-        </CALLOUT>
+        </P>
       )}
       <APICommentTextBlock comment={extractedComment} includePlatforms={false} />
       {componentsProps?.length ? (

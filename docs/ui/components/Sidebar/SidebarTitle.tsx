@@ -1,19 +1,15 @@
-import type { ComponentType, HTMLAttributes, PropsWithChildren } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
 
-import { LABEL } from '../Text';
-
-type SidebarTitleProps = {
-  Icon?: ComponentType<HTMLAttributes<SVGSVGElement>>;
+type SidebarTitleProps = PropsWithChildren<{
   sectionName?: string;
-} & PropsWithChildren;
+  trailing?: ReactNode;
+}>;
 
-export const SidebarTitle = ({ children, Icon, sectionName }: SidebarTitleProps) => (
+export const SidebarTitle = ({ children, sectionName, trailing }: SidebarTitleProps) => (
   <div
-    className="relative -mr-4 ml-3 flex items-center gap-2 pb-1"
+    className="flex items-center justify-between gap-2 px-(--sidebar-entry-px,12px) py-2"
     {...(sectionName && { 'data-section-name': sectionName })}>
-    {Icon && <Icon aria-hidden="true" className="icon-sm" />}
-    <LABEL weight="medium" crawlable={false}>
-      {children}
-    </LABEL>
+    <span className="eyebrow text-[#80838d] dark:text-tertiary">{children}</span>
+    {trailing}
   </div>
 );

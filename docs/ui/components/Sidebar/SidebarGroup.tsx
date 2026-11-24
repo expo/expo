@@ -1,27 +1,7 @@
-import { Button, RouterLogo } from '@expo/styleguide';
-import { EasMetadataIcon } from '@expo/styleguide-icons/custom/EasMetadataIcon';
-import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
-import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
-import { Smartphone02Icon } from '@expo/styleguide-icons/custom/Smartphone02Icon';
-import { StoplightIcon } from '@expo/styleguide-icons/custom/StoplightIcon';
+import { Button } from '@expo/styleguide';
 import { PlaySquareDuotoneIcon } from '@expo/styleguide-icons/duotone/PlaySquareDuotoneIcon';
-import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
 import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
-import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
-import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
-import { CpuChip01Icon } from '@expo/styleguide-icons/outline/CpuChip01Icon';
-import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
-import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
-import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
-import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
-import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
-import { PaletteIcon } from '@expo/styleguide-icons/outline/PaletteIcon';
-import { Phone01Icon } from '@expo/styleguide-icons/outline/Phone01Icon';
 import { PlaySquareIcon } from '@expo/styleguide-icons/outline/PlaySquareIcon';
-import { PuzzlePiece01Icon } from '@expo/styleguide-icons/outline/PuzzlePiece01Icon';
-import { Rocket01Icon } from '@expo/styleguide-icons/outline/Rocket01Icon';
-import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
-import { TerminalBrowserIcon } from '@expo/styleguide-icons/outline/TerminalBrowserIcon';
 import { useRouter } from 'next/compat/router';
 import { useIntl } from 'react-intl';
 
@@ -35,7 +15,6 @@ import { isRouteActive } from '~/common/routes';
 import { reportEasTutorialCompleted } from '~/providers/Analytics';
 import { useTutorialChapterCompletion } from '~/providers/TutorialChapterCompletionProvider';
 import { NavigationRoute } from '~/types/common';
-import { HandWaveIcon } from '~/ui/components/CustomIcons/HandWaveIcon';
 import { CircularProgressBar } from '~/ui/components/ProgressTracker/CircularProgressBar';
 import { type TutorialName } from '~/ui/components/ProgressTracker/TutorialData';
 
@@ -50,7 +29,6 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   const intl = useIntl();
 
   const title = route.sidebarTitle ?? route.name;
-  const Icon = route.hideIcon ? undefined : getIconElement(route.name);
 
   const tutorialTracks: Record<
     string,
@@ -110,22 +88,23 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
     };
 
     return (
-      <div className="mb-5">
+      <div className="mb-4 flex flex-col gap-0.5">
         {!shouldSkipTitle(route, parentRoute) && title && (
-          <div className="flex flex-row items-center justify-between py-0">
-            <SidebarTitle Icon={Icon} sectionName={title}>
-              {title}
-            </SidebarTitle>
-            <div className="flex shrink-0 flex-row items-center pb-1">
-              <CircularProgressBar progress={progressPercentage} />{' '}
-              <p className="ml-2 text-sm whitespace-nowrap text-tertiary">
-                {intl.formatMessage(
-                  { id: 'sidebarTutorialProgress' },
-                  { completed: completedChaptersCount, total: totalChapters }
-                )}
-              </p>
-            </div>
-          </div>
+          <SidebarTitle
+            sectionName={title}
+            trailing={
+              <div className="flex shrink-0 items-center gap-1">
+                <p className="text-[10px] leading-none font-medium tracking-[-0.5px] whitespace-nowrap text-quaternary">
+                  {intl.formatMessage(
+                    { id: 'sidebarTutorialProgress' },
+                    { completed: completedChaptersCount, total: totalChapters }
+                  )}
+                </p>
+                <CircularProgressBar progress={progressPercentage} />
+              </div>
+            }>
+            {title}
+          </SidebarTitle>
         )}
         {route.children.map(child => {
           const childSlug = child.href;
@@ -143,16 +122,16 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
                   (!isSelected ? (
                     <PlaySquareIcon
                       aria-hidden="true"
-                      className="ml-1 inline icon-xs text-icon-secondary"
+                      className="ml-1 inline icon-sm text-icon-secondary"
                     />
                   ) : (
                     <PlaySquareDuotoneIcon
                       aria-hidden="true"
-                      className="ml-1 inline icon-xs text-palette-blue11"
+                      className="ml-1 inline icon-sm text-palette-blue11"
                     />
                   ))}
               </span>
-              {completed && <CheckIcon aria-hidden="true" className="ml-auto icon-sm" />}
+              {completed && <CheckIcon aria-hidden="true" className="icon-sm shrink-0" />}
             </SidebarLink>
           );
         })}
@@ -170,11 +149,9 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   }
 
   return (
-    <div className="mb-5">
+    <div className="mb-4 flex flex-col gap-0.5">
       {!shouldSkipTitle(route, parentRoute) && title && (
-        <SidebarTitle Icon={Icon} sectionName={title}>
-          {title}
-        </SidebarTitle>
+        <SidebarTitle sectionName={title}>{title}</SidebarTitle>
       )}
       {(route.children ?? []).map(child =>
         child.type === 'page' ? (
@@ -209,67 +186,4 @@ function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
   }
 
   return false;
-}
-
-function getIconElement(iconName?: string) {
-  switch (iconName) {
-    case 'AI':
-      return Star06Icon;
-    case 'Develop':
-      return TerminalBrowserIcon;
-    case 'Review':
-      return StoplightIcon;
-    case 'Deploy':
-      return Rocket01Icon;
-    case 'Monitor':
-      return DataIcon;
-    case 'Development process':
-      return CodeSquare01Icon;
-    case 'Expo Build':
-      return Cube01Icon;
-    case 'Expo Submit':
-      return EasSubmitIcon;
-    case 'Expo Update':
-      return LayersTwo02Icon;
-    case 'Expo Metadata':
-      return EasMetadataIcon;
-    case 'Expo Insights':
-      return DataIcon;
-    case 'Expo Workflows':
-      return Dataflow03Icon;
-    case 'Agentic workflows':
-      return Star06Icon;
-    case 'Expo Hosting':
-      return Cloud01Icon;
-    case 'Expo Observe':
-      return ActivityIcon;
-    case 'Expo Simulators':
-      return Smartphone02Icon;
-    case 'Expo Modules API':
-      return CpuChip01Icon;
-    case 'Expo Router':
-      return RouterLogo;
-    case 'Push notifications':
-      return NotificationBoxIcon;
-    case 'Integrations':
-      return PuzzlePiece01Icon;
-    case 'Distribution':
-      return Phone01Icon;
-    case 'UI programming':
-      return PaletteIcon;
-    case 'EAS':
-      return PlanEnterpriseIcon;
-    case 'Get started':
-      return HandWaveIcon;
-    case 'Expo tutorial':
-      return HandWaveIcon;
-    case 'Build with AI tutorial':
-      return Star06Icon;
-    case 'Expo Services tutorial':
-      return PlanEnterpriseIcon;
-    case 'CI/CD tutorial':
-      return Dataflow03Icon;
-    default:
-      return undefined;
-  }
 }

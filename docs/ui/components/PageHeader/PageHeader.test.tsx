@@ -50,7 +50,7 @@ describe(PageHeader, () => {
         testRequire={require}
       />
     );
-    const linkElement = screen.getAllByRole('link', { hidden: false, name: 'Changelog' })[0];
+    const linkElement = screen.getAllByRole('link', { hidden: false, name: 'changelog' })[0];
     expect(linkElement.getAttribute('href')).toEqual(
       'https://github.com/expo/expo/tree/main/packages/expo-audio/CHANGELOG.md'
     );
@@ -70,7 +70,7 @@ describe(PageHeader, () => {
         testRequire={require}
       />
     );
-    const linkElement = screen.queryAllByRole('link', { hidden: false, name: 'Changelog' })[0];
+    const linkElement = screen.queryAllByRole('link', { hidden: false, name: 'changelog' })[0];
     expect(linkElement).toBe(undefined);
   });
 
@@ -83,7 +83,7 @@ describe(PageHeader, () => {
         testRequire={require}
       />
     );
-    await screen.findByText(/recommended version:/i);
+    await screen.findByText(/recommended:/i);
   });
 
   test('explains the recommended version through an accessible tooltip', async () => {
@@ -140,7 +140,7 @@ describe(PageHeader, () => {
       isReady: false,
     });
 
-    expect(screen.queryAllByText('Copy page')).toHaveLength(0);
+    expect(screen.queryAllByText('Copy link')).toHaveLength(0);
   });
 
   test('shows markdown actions once the router is ready with a version pair', () => {
@@ -150,7 +150,7 @@ describe(PageHeader, () => {
       isReady: true,
     });
 
-    expect(screen.queryAllByText('Copy page').length).toBeGreaterThan(0);
+    expect(screen.queryAllByText('Copy link').length).toBeGreaterThan(0);
   });
 
   test('keeps markdown actions hidden on the upgrade helper without a version pair', () => {
@@ -160,7 +160,7 @@ describe(PageHeader, () => {
       isReady: true,
     });
 
-    expect(screen.queryAllByText('Copy page')).toHaveLength(0);
+    expect(screen.queryAllByText('Copy link')).toHaveLength(0);
   });
 
   test('shows markdown actions on regular pages during the hydration render', () => {
@@ -170,7 +170,7 @@ describe(PageHeader, () => {
       isReady: false,
     });
 
-    expect(screen.queryAllByText('Copy page').length).toBeGreaterThan(0);
+    expect(screen.queryAllByText('Copy link').length).toBeGreaterThan(0);
   });
 
   test('has no axe violations', async () => {

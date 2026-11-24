@@ -1,39 +1,28 @@
 import { SnackLogo } from '@expo/styleguide';
-import { ChangelogIcon } from '@expo/styleguide-icons/custom/ChangelogIcon';
 import { DiscordIcon } from '@expo/styleguide-icons/custom/DiscordIcon';
-import { Mail01Icon } from '@expo/styleguide-icons/outline/Mail01Icon';
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { useRouter } from 'next/compat/router';
+import { useIntl } from 'react-intl';
 
 import { getPageSection } from '~/common/routes';
 
 import { SidebarSingleEntry } from './SidebarSingleEntry';
 import { ArchiveIcon } from './icons/Archive';
 
-type SideBarFooterProps = {
-  isMobileMenuVisible?: boolean;
-};
-
-export const SidebarFooter = ({ isMobileMenuVisible }: SideBarFooterProps) => {
+export const SidebarFooter = () => {
+  const intl = useIntl();
   const router = useRouter();
   const isArchive = router?.pathname ? getPageSection(router.pathname) === 'archive' : false;
   return (
-    <div className="flex flex-col gap-0.5 border-t border-t-default bg-default p-4">
+    <div className="mt-4 flex flex-col gap-0.5 border-t-0.5 border-t-default pt-2.5">
+      <SidebarSingleEntry href="/archive" title="Archive" Icon={ArchiveIcon} isActive={isArchive} />
       <SidebarSingleEntry
-        secondary
-        href="/archive"
-        title="Archive"
-        Icon={ArchiveIcon}
-        isActive={isArchive}
-      />
-      <SidebarSingleEntry
-        secondary
         href="https://snack.expo.dev"
         title="Expo Snack"
         Icon={SnackLogo}
         isExternal
       />
       <SidebarSingleEntry
-        secondary
         href="https://chat.expo.dev"
         title="Discord and forums"
         Icon={DiscordIcon}
@@ -41,21 +30,11 @@ export const SidebarFooter = ({ isMobileMenuVisible }: SideBarFooterProps) => {
         shouldLeakReferrer
       />
       <SidebarSingleEntry
-        secondary
-        href="https://expo.dev/mailing-list/signup"
-        title="Newsletter"
-        Icon={Mail01Icon}
+        href="https://github.com/expo/expo"
+        title={intl.formatMessage({ id: 'headerStarOnGitHub' })}
+        Icon={GithubIcon}
         isExternal
       />
-      {isMobileMenuVisible && (
-        <SidebarSingleEntry
-          secondary
-          href="https://expo.dev/changelog"
-          title="Changelog"
-          Icon={ChangelogIcon}
-          isExternal
-        />
-      )}
     </div>
   );
 };

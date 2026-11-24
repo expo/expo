@@ -7,8 +7,6 @@ import { useEffect, useRef, useState } from 'react';
 import { stripVersionFromPath } from '~/common/utilities';
 import { NavigationRoute } from '~/types/common';
 
-import { CALLOUT } from '../Text';
-
 if (typeof window !== 'undefined' && !window.hasOwnProperty('sidebarState')) {
   window.sidebarState = {};
 }
@@ -76,28 +74,22 @@ export function SidebarCollapsible({ info, children }: Props) {
       <ButtonBase
         ref={ref}
         className={mergeClasses(
-          'relative flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 transition duration-150 select-none',
+          'relative flex w-full cursor-pointer items-center gap-2 rounded-lg px-(--sidebar-entry-px,12px) py-2 text-left text-sm leading-[1.4] font-medium text-default transition duration-150 select-none',
           'hocus:bg-element'
         )}
         aria-expanded={isOpen ? 'true' : 'false'}
         onClick={toggleIsOpen}
         {...customDataAttributes}>
-        <div className="flex size-4 items-center justify-center rounded-sm border border-default bg-default shadow-xs">
-          <ChevronDownIcon
-            aria-hidden="true"
-            className={mergeClasses(
-              'icon-xs text-icon-secondary transition-transform duration-150',
-              !isOpen && 'translate-x-[0.5px] -rotate-90'
-            )}
-          />
-        </div>
-        <CALLOUT crawlable={false}>{info.name}</CALLOUT>
+        <span>{info.name}</span>
+        <ChevronDownIcon
+          aria-hidden="true"
+          className={mergeClasses(
+            'icon-sm shrink-0 text-icon-default transition-transform duration-150',
+            !isOpen && '-rotate-90'
+          )}
+        />
       </ButtonBase>
-      {isOpen && (
-        <div aria-hidden={!isOpen ? 'true' : 'false'} className="pl-2.5">
-          {children}
-        </div>
-      )}
+      {isOpen && <div aria-hidden={!isOpen ? 'true' : 'false'}>{children}</div>}
     </>
   );
 }

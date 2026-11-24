@@ -7,17 +7,7 @@ import { HeadingType } from '~/common/headingManager';
 import { Code as PrismCodeBlock } from '~/components/base/code';
 import { InlineHelp } from '~/ui/components/InlineHelp';
 import { HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
-import {
-  A,
-  BOLD,
-  CALLOUT,
-  CODE,
-  createPermalinkedComponent,
-  H4,
-  LI,
-  OL,
-  UL,
-} from '~/ui/components/Text';
+import { A, BOLD, CODE, createPermalinkedComponent, H4, LI, OL, P, UL } from '~/ui/components/Text';
 
 import {
   CommentContentData,
@@ -74,7 +64,7 @@ export const mdComponents: Components = {
   h1: ({ children }) => <H4 hideInSidebar>{children}</H4>,
   ul: ({ children }) => <UL className={ELEMENT_SPACING}>{children}</UL>,
   ol: ({ children }) => <OL className={ELEMENT_SPACING}>{children}</OL>,
-  li: ({ children }) => <LI className="text-sm">{children}</LI>,
+  li: ({ children }) => <LI>{children}</LI>,
   a: ({ href, children }) => {
     if (
       href?.startsWith('../') &&
@@ -89,8 +79,7 @@ export const mdComponents: Components = {
     }
     return <A href={href}>{children}</A>;
   },
-  p: ({ children }) =>
-    children ? <CALLOUT className={ELEMENT_SPACING}>{children}</CALLOUT> : null,
+  p: ({ children }) => (children ? <P className={ELEMENT_SPACING}>{children}</P> : null),
   strong: ({ children }) => <BOLD>{children}</BOLD>,
   span: ({ children }) => (children ? <span>{children}</span> : null),
   table: ({ children }) => <Table>{children}</Table>,

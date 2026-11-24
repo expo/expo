@@ -111,7 +111,7 @@ export function AgentPrompt({
   return (
     <div
       data-testid="agent-prompt"
-      className="mb-4 rounded-3xl border border-palette-purple7 bg-palette-purple3 px-4 py-3.5 shadow-xs">
+      className="mb-4 rounded-lg border border-palette-purple7 bg-palette-purple3 px-4 py-3.5 shadow-xs">
       <div className={mergeClasses('flex flex-wrap items-center gap-3', 'sm:gap-4')}>
         <div className="flex min-w-0 flex-1 basis-80 gap-3">
           <MagicWand01Icon
@@ -119,8 +119,10 @@ export function AgentPrompt({
             className="mt-0.5 icon-md shrink-0 text-palette-purple11 max-sm:hidden"
           />
           <div>
-            <HEADLINE tag="h2">{title}</HEADLINE>
-            <CALLOUT theme="secondary" className="mt-0.5">
+            <HEADLINE tag="h2" className="text-base leading-[1.4] font-semibold text-default">
+              {title}
+            </HEADLINE>
+            <CALLOUT theme="secondary" className="mt-0.5 leading-[1.4] font-medium tracking-normal">
               {description}
             </CALLOUT>
           </div>
@@ -185,7 +187,7 @@ export function AgentPrompt({
             hidden={!isPromptVisible}
             className="mt-3 [&_.code-block-wrapper]:my-0">
             {prompt ? (
-              <div className="code-block-wrapper overflow-clip rounded-3xl border border-secondary bg-subtle">
+              <div className="code-block-wrapper overflow-clip rounded-lg border border-secondary bg-subtle">
                 <pre className="relative max-h-96 overflow-auto wrap-break-word whitespace-pre-wrap">
                   <div className="p-4">
                     <code className="text-xs text-default">{prompt}</code>

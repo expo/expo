@@ -10,7 +10,6 @@ type SidebarSingleEntryProps = {
   Icon: ComponentType<HTMLAttributes<SVGSVGElement>>;
   isActive?: boolean;
   isExternal?: boolean;
-  secondary?: boolean;
   shouldLeakReferrer?: boolean;
   allowCompactDisplay?: boolean;
   mainSection?: string;
@@ -22,7 +21,6 @@ export const SidebarSingleEntry = ({
   Icon,
   isActive = false,
   isExternal = false,
-  secondary = false,
   shouldLeakReferrer = false,
   allowCompactDisplay = false,
   mainSection,
@@ -33,23 +31,18 @@ export const SidebarSingleEntry = ({
         <LinkBase
           href={href}
           className={mergeClasses(
-            'flex min-h-8 items-center gap-3 rounded-lg px-2 py-1 text-sm leading-[100%]! text-secondary',
+            'flex items-center rounded-lg text-sm',
+            'gap-2 px-3 py-2 leading-[1.4] font-medium text-default',
             'hocus:bg-element',
             'focus-visible:relative focus-visible:z-10',
             allowCompactDisplay && 'compact-height:justify-center compact-height:bg-subtle',
-            secondary && 'text-sm',
-            isActive &&
-              'bg-selected! font-medium text-default hocus:bg-selected! hocus:text-default'
+            isActive && 'bg-[#e7e8ec]! dark:bg-hover! dark:hocus:bg-hover! hocus:bg-[#e7e8ec]!'
           )}
           {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
           {...(isActive && mainSection && { 'data-main-section': mainSection })}>
           <Icon
             aria-hidden="true"
-            className={mergeClasses(
-              'shrink-0',
-              secondary ? 'icon-xs' : 'icon-sm',
-              isActive ? 'text-icon-default' : 'text-icon-tertiary'
-            )}
+            className={mergeClasses('shrink-0', 'icon-sm text-icon-default')}
           />
           <span className={mergeClasses(allowCompactDisplay && 'compact-height:hidden')}>
             {title}

@@ -17,13 +17,14 @@ export const SdkPackageButton = ({ label, Icon, tooltip, href }: SdkPackageButto
       <Tooltip.Trigger asChild>
         <Button
           theme="quaternary"
-          className="justify-center px-2.5"
+          size="2xs"
+          className="h-auto border-0 px-0 hocus:bg-transparent hocus:opacity-80"
           openInNewTab
           href={href}
           aria-label={label}>
-          <div className="flex items-center gap-1.5">
-            <Icon aria-hidden="true" className="icon-sm text-icon-secondary" />
-            <FOOTNOTE crawlable={false} theme="secondary" className="max-md:hidden">
+          <div className="flex items-center gap-1">
+            <Icon aria-hidden="true" className="icon-xs text-icon-default" />
+            <FOOTNOTE crawlable={false} theme="secondary" className="leading-[1.6] max-md:hidden">
               {label}
             </FOOTNOTE>
           </div>

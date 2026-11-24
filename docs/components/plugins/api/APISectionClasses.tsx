@@ -117,7 +117,7 @@ const renderClass = (
       <APISectionDeprecationNote comment={comment} sticky />
       <APIBoxHeader name={name} comment={comment} />
       {(extendedTypes?.length || implementedTypes?.length) && (
-        <CALLOUT className={mergeClasses('mb-3 font-normal!', STYLES_SECONDARY, VERTICAL_SPACING)}>
+        <CALLOUT className={mergeClasses('mb-3', STYLES_SECONDARY, VERTICAL_SPACING)}>
           <span className="font-medium">Type: </span>
           {type ? <CODE>{resolveTypeName(type, sdkVersion)}</CODE> : <span>Class</span>}
           {extendedTypes?.length && (

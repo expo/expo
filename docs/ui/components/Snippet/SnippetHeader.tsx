@@ -9,6 +9,8 @@ export type SnippetHeaderProps = PropsWithChildren<{
   title: string | ReactNode;
   Icon?: ComponentType<HTMLAttributes<SVGSVGElement>>;
   titleSlot?: ReactNode;
+  titleClassName?: string;
+  className?: string;
   alwaysDark?: boolean;
   float?: boolean;
   operationType?: 'delete' | 'add' | 'modify' | undefined;
@@ -20,6 +22,8 @@ export const SnippetHeader = ({
   children,
   Icon,
   titleSlot,
+  titleClassName,
+  className,
   float,
   alwaysDark = false,
   operationType,
@@ -28,22 +32,25 @@ export const SnippetHeader = ({
   <div
     data-md="snippet-header"
     className={mergeClasses(
-      'flex min-h-10 justify-between overflow-hidden border border-default bg-default pl-4',
-      !float && 'rounded-t-3xl border-b-0',
-      float && 'rounded-3xl',
-      Icon && 'pl-3',
-      alwaysDark && 'dark-theme bg-palette-gray3! pr-2 dark:border-transparent'
+      'flex min-h-9.5 items-center justify-between gap-2 overflow-hidden border border-default bg-default pt-px pr-1.75 pb-0.5 pl-3.75',
+      !float && 'rounded-t-lg border-b-0',
+      float && 'rounded-lg',
+      alwaysDark && 'dark-theme bg-palette-gray3! dark:border-transparent',
+      className
     )}>
     <LABEL
       className={mergeClasses(
-        'flex min-h-10 w-full items-center gap-2 overflow-x-auto py-1 pr-4 leading-tight! font-medium',
+        'flex w-full items-center gap-2 self-stretch overflow-x-auto text-sm leading-[1.4] font-medium tracking-normal text-default',
         alwaysDark && 'text-palette-white'
       )}>
-      {Icon && <Icon aria-hidden="true" className="icon-sm shrink-0" />}
-      <span className="w-max max-w-[60dvw] truncate wrap-break-word">{title}</span>
+      {Icon && <Icon aria-hidden="true" className="icon-md shrink-0 text-icon-default" />}
+      <span
+        className={mergeClasses('w-max max-w-[60dvw] truncate wrap-break-word', titleClassName)}>
+        {title}
+      </span>
       {showOperation && operationType ? <FileStatus type={operationType} /> : null}
       {titleSlot}
     </LABEL>
-    {!!children && <div className="flex items-center justify-end">{children}</div>}
+    {!!children && <div className="flex shrink-0 items-center gap-1">{children}</div>}
   </div>
 );

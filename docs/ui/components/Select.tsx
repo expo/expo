@@ -84,7 +84,7 @@ export function Select({
           position="popper"
           sideOffset={4}
           className={mergeClasses(
-            'relative z-605 overflow-hidden rounded-xl border border-default bg-overlay shadow-md',
+            'relative z-605 overflow-hidden rounded-lg border border-default bg-overlay shadow-md',
             'max-h-(--radix-select-content-available-height) min-w-(--radix-select-trigger-width)',
             'max-w-[87.5vw] max-md:max-w-[unset]'
           )}>

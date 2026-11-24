@@ -7,7 +7,7 @@ import { Item } from '~/ui/components/Dropdown/Item';
 // note(simek): Radix Jest ESM issue workaround: https://github.com/radix-ui/primitives/issues/1848
 let RadixDropdownMenuPrimitive = { default: undefined, ...RawRadixDropdownMenuPrimitive };
 RadixDropdownMenuPrimitive = RadixDropdownMenuPrimitive.default ?? RadixDropdownMenuPrimitive;
-const { Trigger, Root, Portal, Content, Arrow } = RadixDropdownMenuPrimitive;
+const { Trigger, Root, Portal, Content } = RadixDropdownMenuPrimitive;
 
 type Props = RawRadixDropdownMenuPrimitive.DropdownMenuContentProps & {
   trigger: ReactNode;
@@ -20,6 +20,7 @@ export function Dropdown({
   sideOffset = 0,
   collisionPadding = { left: 16, right: 16 },
   side = 'bottom',
+  align = 'end',
   ...rest
 }: Props) {
   return (
@@ -28,17 +29,15 @@ export function Dropdown({
       <Portal>
         <Content
           className={mergeClasses(
-            'flex min-w-45 flex-col gap-1 rounded-xl border border-default bg-default p-2 shadow-md',
+            'flex min-w-50 flex-col gap-1 rounded-lg border-0.5 border-default bg-default p-[3.5px] shadow-sm',
             'will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFadeIn',
             className
           )}
           side={side}
+          align={align}
           sideOffset={sideOffset}
           collisionPadding={collisionPadding}
           {...rest}>
-          <Arrow asChild>
-            <div className="relative -top-1 size-2.5 rotate-45 border-r border-b border-default bg-default" />
-          </Arrow>
           {children}
         </Content>
       </Portal>

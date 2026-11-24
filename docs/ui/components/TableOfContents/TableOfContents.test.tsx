@@ -111,13 +111,13 @@ describe('TableOfContents', () => {
 
     act(() => tocRef.current?.handleContentScroll?.(0));
     expect(tocRef.current).not.toBeNull();
-    expect(screen.getByText('Intro')).toHaveClass('text-link!');
+    expect(screen.getByText('Intro')).toHaveClass('text-default!');
 
     act(() => tocRef.current?.handleContentScroll?.(950));
-    expect(screen.getByText('Middle')).toHaveClass('text-link!');
+    expect(screen.getByText('Middle')).toHaveClass('text-default!');
 
     act(() => tocRef.current?.handleContentScroll?.(1500));
-    expect(screen.getByText('End')).toHaveClass('text-link!');
+    expect(screen.getByText('End')).toHaveClass('text-default!');
   });
 
   test('scrolls to align heading with activation line on click', () => {

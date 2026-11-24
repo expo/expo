@@ -3,71 +3,85 @@
 exports[`TableOfContents correctly matches snapshot 1`] = `
 <div>
   <nav
-    class="w-70 px-6 pt-13 pb-10"
+    class="flex w-50 flex-col gap-1 py-16"
     data-toc="true"
   >
-    <p
-      class="text-inherit text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium absolute z-100 -mt-13 -ml-6 flex min-h-8 w-68 select-none items-center gap-2 bg-linear-to-b from-default from-80% to-transparent py-3 pl-6"
-      data-text="true"
+    <div
+      class="flex flex-col gap-1"
     >
-      <svg
-        aria-hidden="true"
-        class="text-icon-default translate-z shrink-0 icon-sm"
-        fill="currentColor"
-        role="img"
-        viewBox="0 0 24 24"
+      <p
+        class="py-2 eyebrow text-[#80838d] dark:text-tertiary"
       >
-        <g
-          id="layout-alt-03-outline-icon"
-        >
-          <path
-            d="M20 10H4V16.2002C4 17.0566 4.00035 17.6388 4.03711 18.0889C4.07293 18.5273 4.13809 18.7518 4.21778 18.9082C4.40951 19.2845 4.71554 19.5905 5.0918 19.7822C5.2482 19.8619 5.47272 19.9271 5.91113 19.9629C6.36117 19.9997 6.94342 20 7.79981 20H16.2002C17.0566 20 17.6388 19.9997 18.0889 19.9629C18.5273 19.9271 18.7518 19.8619 18.9082 19.7822C19.2845 19.5905 19.5905 19.2845 19.7822 18.9082C19.8619 18.7518 19.9271 18.5273 19.9629 18.0889C19.9997 17.6388 20 17.0566 20 16.2002V10ZM17.5 16C18.0523 16 18.5 16.4477 18.5 17C18.5 17.5523 18.0523 18 17.5 18H6.5C5.94772 18 5.5 17.5523 5.5 17C5.5 16.4477 5.94772 16 6.5 16H17.5ZM17.5 12C18.0523 12 18.5 12.4477 18.5 13C18.5 13.5523 18.0523 14 17.5 14H6.5C5.94772 14 5.5 13.5523 5.5 13C5.5 12.4477 5.94772 12 6.5 12H17.5ZM20 7.79981C20 6.94342 19.9997 6.36117 19.9629 5.91113C19.9271 5.47272 19.8619 5.2482 19.7822 5.0918C19.5905 4.71554 19.2845 4.40951 18.9082 4.21778C18.7518 4.13809 18.5273 4.07293 18.0889 4.03711C17.6388 4.00035 17.0566 4 16.2002 4H7.79981C6.94342 4 6.36117 4.00035 5.91113 4.03711C5.47272 4.07293 5.2482 4.13809 5.0918 4.21778C4.71555 4.40951 4.40951 4.71555 4.21778 5.0918C4.13809 5.2482 4.07293 5.47272 4.03711 5.91113C4.00035 6.36117 4 6.94342 4 7.79981V8H20V7.79981ZM22 16.2002C22 17.0237 22.001 17.7016 21.9561 18.252C21.9101 18.814 21.8117 19.3311 21.5645 19.8164C21.181 20.5689 20.5689 21.181 19.8164 21.5645C19.3311 21.8117 18.814 21.9101 18.252 21.9561C17.7016 22.001 17.0237 22 16.2002 22H7.79981C6.97632 22 6.29843 22.001 5.74805 21.9561C5.18599 21.9101 4.6689 21.8117 4.1836 21.5645C3.43109 21.181 2.81902 20.5689 2.43555 19.8164C2.18827 19.3311 2.08988 18.814 2.04395 18.252C1.99898 17.7016 2 17.0237 2 16.2002V7.79981C2 6.97632 1.99898 6.29843 2.04395 5.74805C2.08988 5.18599 2.18827 4.6689 2.43555 4.1836C2.81902 3.43109 3.43109 2.81902 4.1836 2.43555C4.6689 2.18827 5.18599 2.08988 5.74805 2.04395C6.29843 1.99898 6.97632 2 7.79981 2H16.2002C17.0237 2 17.7016 1.99898 18.252 2.04395C18.814 2.08988 19.3311 2.18827 19.8164 2.43555C20.5689 2.81902 21.181 3.43109 21.5645 4.1836C21.8117 4.6689 21.9101 5.18599 21.9561 5.74805C22.001 6.29843 22 6.97632 22 7.79981V16.2002Z"
-            id="Icon"
-          />
-        </g>
-      </svg>
-       
-      On this page
-      <button
-        class="cursor-pointer inline-flex border border-solid rounded-full font-medium items-center whitespace-nowrap gap-1.5 h-8 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 mr-2 ml-auto px-2 transition-opacity duration-300 pointer-events-none opacity-0"
-        type="button"
+        Is this helpful
+      </p>
+      <div
+        class="flex items-center gap-1 rounded-[48px] py-1"
       >
-        <span
-          class="flex self-center text-inherit leading-none"
+        <button
+          aria-label="Vote up"
+          class="cursor-pointer flex items-center rounded-[24px] border-[0.5px] border-default p-[7.5px] text-icon-default hocus:bg-subtle"
+          type="button"
         >
           <svg
-            aria-label="Scroll to top"
-            class="translate-z shrink-0 icon-sm text-icon-secondary"
+            aria-hidden="true"
+            class="text-icon-default translate-z shrink-0 icon-xs"
             fill="currentColor"
             role="img"
             viewBox="0 0 24 24"
           >
             <g
-              id="arrow-circle-up-outline-icon"
+              id="check-outline-icon"
             >
               <path
-                d="M21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12ZM11 16V10.4141L8.70703 12.707C8.31651 13.0976 7.68349 13.0976 7.29297 12.707C6.90244 12.3165 6.90244 11.6835 7.29297 11.293L11.293 7.29297L11.3691 7.22461C11.7619 6.90426 12.3409 6.92685 12.707 7.29297L16.707 11.293C17.0976 11.6835 17.0976 12.3165 16.707 12.707C16.3165 13.0976 15.6835 13.0976 15.293 12.707L13 10.4141V16C13 16.5523 12.5523 17 12 17C11.4477 17 11 16.5523 11 16ZM23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12Z"
+                d="M19.293 5.29295C19.6835 4.90243 20.3165 4.90243 20.707 5.29295C21.0975 5.68348 21.0975 6.31649 20.707 6.70702L9.70702 17.707C9.31649 18.0975 8.68348 18.0975 8.29295 17.707L3.29295 12.707C2.90243 12.3165 2.90243 11.6835 3.29295 11.293C3.68348 10.9024 4.31649 10.9024 4.70702 11.293L8.99999 15.5859L19.293 5.29295Z"
                 id="Icon"
               />
             </g>
           </svg>
-        </span>
-      </button>
+        </button>
+        <button
+          aria-label="Vote down"
+          class="cursor-pointer flex items-center rounded-[24px] border-[0.5px] border-default p-[7.5px] text-icon-default hocus:bg-subtle"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="text-icon-default translate-z shrink-0 icon-xs"
+            fill="currentColor"
+            role="img"
+            viewBox="0 0 24 24"
+          >
+            <g
+              id="x-close-outline-icon"
+            >
+              <path
+                d="M17.293 5.29289C17.6835 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31643 18.7071 6.70696L13.4141 11.9999L18.7071 17.2929C19.0976 17.6834 19.0976 18.3164 18.7071 18.707C18.3166 19.0975 17.6835 19.0975 17.293 18.707L12 13.414L6.70708 18.707C6.31655 19.0975 5.68354 19.0975 5.29302 18.707C4.90249 18.3164 4.90249 17.6834 5.29302 17.2929L10.586 11.9999L5.29302 6.70696C4.90249 6.31643 4.90249 5.68342 5.29302 5.29289C5.68354 4.90237 6.31655 4.90237 6.70708 5.29289L12 10.5859L17.293 5.29289Z"
+                id="Icon"
+              />
+            </g>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <p
+      class="pt-6 pr-3 pb-2 eyebrow text-[#80838d] select-none dark:text-tertiary"
+    >
+      On this page
     </p>
     <div
       role="list"
     >
       <div
-        class="flex items-center"
+        class="flex items-center border-l border-default"
         role="listitem"
       >
         <a
-          class="mb-1 flex min-h-6 items-center justify-between truncate text-pretty! focus-visible:relative focus-visible:z-10"
+          class="flex min-w-0 items-center justify-between truncate py-1 pr-3 pl-2.75 text-pretty! last:grow not-last:pr-0 focus-visible:relative focus-visible:z-10"
           data-state="closed"
           href="#base-level-heading"
         >
           <p
-            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full text-default! hocus:text-link!"
+            class="text-inherit text-[12px] w-full text-xs! leading-[1.6] font-medium text-secondary! hocus:text-default!"
             data-text="true"
           >
             Base level heading
@@ -75,16 +89,16 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
         </a>
       </div>
       <div
-        class="flex items-center"
+        class="flex items-center border-l border-default"
         role="listitem"
       >
         <a
-          class="mb-1 flex min-h-6 items-center justify-between truncate text-pretty! pl-3 focus-visible:relative focus-visible:z-10"
+          class="flex min-w-0 items-center justify-between truncate py-1 pr-3 text-pretty! last:grow not-last:pr-0 pt-0 pl-[23px] focus-visible:relative focus-visible:z-10"
           data-state="closed"
           href="#level-3-subheading"
         >
           <p
-            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full text-default! hocus:text-link!"
+            class="text-inherit text-[12px] w-full text-xs! leading-[1.6] font-medium text-secondary! hocus:text-default!"
             data-text="true"
           >
             Level 3 subheading
@@ -92,20 +106,20 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
         </a>
       </div>
       <div
-        class="flex items-center"
+        class="flex items-center border-l border-default"
         role="listitem"
       >
         <a
-          class="mb-1 flex min-h-6 items-center justify-between truncate text-pretty! pl-3 focus-visible:relative focus-visible:z-10"
+          class="flex min-w-0 items-center justify-between truncate py-1 pr-3 text-pretty! last:grow not-last:pr-0 pt-0 pl-[23px] focus-visible:relative focus-visible:z-10"
           data-state="closed"
           href="#code-heading-depth-1"
         >
-          <code
-            class="leading-[1.6154] text-inherit w-full text-default! hocus:text-link! truncate text-xs!"
+          <p
+            class="text-inherit text-[12px] w-full text-xs! leading-[1.6] font-medium text-secondary! hocus:text-default! truncate"
             data-text="true"
           >
             Code heading depth 1
-          </code>
+          </p>
         </a>
       </div>
     </div>

@@ -9,6 +9,7 @@ import {
   getCodeData,
   getCollapseHeight,
   getCodeBlockDataFromChildren,
+  wrapCodeLines,
 } from '~/common/code-utilities';
 import { useCodeBlockSettingsContext } from '~/providers/CodeBlockSettingsProvider';
 import { usePageApiVersion } from '~/providers/page-api-version';
@@ -51,7 +52,10 @@ export function Code({ className, children, title }: CodeProps) {
   const collapseHeight = getCollapseHeight(params);
   const showExpand = !isExpanded && blockHeight && collapseBound && blockHeight > collapseBound;
   const resolvedVersion = params?.sdkVersion ? `v${params.sdkVersion}` : version;
-  const highlightedHtml = getCodeData(value, language, resolvedVersion);
+  const codeLinesHtml = wrapCodeLines(
+    getCodeData(value, language, resolvedVersion).replace(/^@@@.+@@@/g, ''),
+    language
+  );
 
   useEffect(() => {
     if (contentRef?.current?.clientHeight) {
@@ -69,11 +73,30 @@ export function Code({ className, children, title }: CodeProps) {
     setCollapseBound(undefined);
   }
 
-  const forceWordWrap = params?.wrap === 'true';
-  const commonClasses = mergeClasses(
-    '[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin',
-    (wordWrap || forceWordWrap) && 'wrap-anywhere! whitespace-pre-wrap!',
+  const isWrapped = wordWrap || params?.wrap === 'true';
+  const preClasses = mergeClasses(
+    'code-lines [scrollbar-color:var(--slate-5)_transparent] relative scrollbar-thin overflow-x-auto whitespace-pre',
+    isWrapped && 'wrap-anywhere! whitespace-pre-wrap!',
     showExpand && !isExpanded && 'overflow-y-hidden!'
+  );
+  const codeElement = (
+    <pre
+      ref={contentRef}
+      data-md-lang={language}
+      style={{
+        maxHeight: collapseBound,
+      }}
+      className={preClasses}
+      {...attributes}>
+      <code
+        className={mergeClasses(
+          'block py-4 text-sm leading-[1.4] text-default',
+          isWrapped ? 'w-full' : 'w-max min-w-full'
+        )}
+        dangerouslySetInnerHTML={{ __html: codeLinesHtml }}
+      />
+      {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
+    </pre>
   );
 
   return codeBlockTitle ? (
@@ -82,48 +105,18 @@ export function Code({ className, children, title }: CodeProps) {
         <CopyAction text={cleanCopyValue(value, resolvedVersion)} />
         <SettingsAction />
       </SnippetHeader>
-      <SnippetContent className="p-0">
-        <pre
-          ref={contentRef}
-          data-md-lang={language}
-          style={{
-            maxHeight: collapseBound,
-          }}
-          className={mergeClasses('relative whitespace-pre', commonClasses)}
-          {...attributes}>
-          <div className="w-fit p-4">
-            <code
-              className="text-xs text-default"
-              dangerouslySetInnerHTML={{ __html: highlightedHtml.replace(/^@@@.+@@@/g, '') }}
-            />
-          </div>
-          {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
-        </pre>
+      <SnippetContent className="border-x-0 border-b-0 p-0 after:pointer-events-none after:absolute after:inset-0 after:content-[''] after:rounded-b-lg after:border after:border-t-0 after:border-default">
+        {codeElement}
       </SnippetContent>
     </Snippet>
   ) : (
     <div
       className={mergeClasses(
-        'code-block-wrapper my-4 overflow-clip rounded-3xl border border-secondary bg-subtle',
+        "code-block-wrapper relative my-5 overflow-clip rounded-lg bg-subtle after:pointer-events-none after:absolute after:inset-0 after:content-[''] after:rounded-lg after:border after:border-default",
         preferredTheme === Themes.DARK && 'dark-theme',
         '[p+&]:mt-0'
       )}>
-      <pre
-        ref={contentRef}
-        data-md-lang={language}
-        style={{
-          maxHeight: collapseBound,
-        }}
-        className={mergeClasses('relative overflow-x-auto whitespace-pre', commonClasses)}
-        {...attributes}>
-        <div className="w-fit p-4">
-          <code
-            className="text-xs text-default"
-            dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-          />
-        </div>
-        {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
-      </pre>
+      {codeElement}
     </div>
   );
 }

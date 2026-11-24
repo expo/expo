@@ -101,7 +101,10 @@ export const SnackInline = ({
           <SnippetAction
             disabled={!isReady}
             rightSlot={
-              <ArrowUpRightIcon aria-hidden="true" className="icon-sm text-icon-secondary" />
+              <ArrowUpRightIcon
+                aria-hidden="true"
+                className="icon-xs text-button-quaternary-icon"
+              />
             }
             className="max-sm:gap-0 [&_p]:max-sm:hidden"
             type="submit"

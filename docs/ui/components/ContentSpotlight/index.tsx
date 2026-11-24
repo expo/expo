@@ -80,11 +80,11 @@ export function ContentSpotlight({
   return (
     <figure
       className={mergeClasses(
-        'my-5 cursor-pointer overflow-hidden rounded-3xl py-2.5 text-center',
+        'my-5 cursor-pointer overflow-hidden rounded-lg py-2.5 text-center',
         containerClassName,
         !isVideo && !isComponentVariant && 'bg-subtle',
         isComponentVariant &&
-          'relative mx-auto my-6 max-w-full cursor-auto overflow-hidden rounded-md border border-default bg-default py-0',
+          'relative mx-auto my-6 max-w-full cursor-auto overflow-hidden rounded-lg border border-default bg-default py-0',
         isComponentVariant && aspect && ASPECT_CLASS[aspect]
       )}
       onClick={() => {
@@ -119,7 +119,7 @@ export function ContentSpotlight({
       ) : isVideo ? (
         <div
           className={mergeClasses(
-            'relative overflow-hidden rounded-3xl bg-palette-black',
+            'relative overflow-hidden rounded-lg bg-palette-black',
             hasCustomPlayerSize ? 'mx-auto' : 'aspect-video'
           )}
           ref={playerRef}

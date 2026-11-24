@@ -5,9 +5,13 @@ import { versionToText } from '~/common/utilities';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { Select } from '~/ui/components/Select';
-import { A, FOOTNOTE } from '~/ui/components/Text';
+import { A } from '~/ui/components/Text';
 
-const { VERSIONS } = versions;
+const { VERSIONS, LATEST_VERSION } = versions;
+const SELECTABLE_VERSIONS = VERSIONS.filter(version => version !== LATEST_VERSION);
+
+export const SIDEBAR_SELECT_CLASS_NAME =
+  'w-full min-w-full gap-2.5 rounded-3xl border-0.5 border-default bg-default py-2 pr-[15.5px] pl-[11.5px] text-sm leading-[1.4] font-medium text-secondary shadow-xs hocus:bg-element hocus:dark:bg-subtle [&_div]:leading-[1.4] [&_div]:font-medium [&_div]:text-secondary [&_span]:leading-[1.4] [&_svg]:text-icon-default';
 
 export function ApiVersionSelect() {
   const { version, hasVersion, setVersion } = usePageApiVersion();
@@ -19,16 +23,15 @@ export function ApiVersionSelect() {
   return (
     <div
       className={mergeClasses(
-        'flex flex-col gap-1 border-b border-b-default bg-default px-4 pt-3 pb-4',
-        'max-lg:sticky max-lg:top-0 max-lg:z-10'
+        'lg:mt-4',
+        'max-lg:sticky max-lg:top-0 max-lg:z-10 max-lg:border-b max-lg:border-b-default max-lg:bg-default max-lg:p-4'
       )}>
-      <FOOTNOTE theme="secondary">Reference version</FOOTNOTE>
       <Select
         id="api-version-select"
-        className="min-w-full"
-        value={version}
+        className={SIDEBAR_SELECT_CLASS_NAME}
+        value={version === LATEST_VERSION ? 'latest' : version}
         onValueChange={setVersion}
-        options={VERSIONS.map(version => ({
+        options={SELECTABLE_VERSIONS.map(version => ({
           id: version,
           label: versionToText(version),
           Icon: version === 'unversioned' ? Beaker02Icon : undefined,

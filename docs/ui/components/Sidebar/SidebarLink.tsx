@@ -3,7 +3,6 @@ import { PlaySquareDuotoneIcon } from '@expo/styleguide-icons/duotone/PlaySquare
 import { AlertTriangleIcon } from '@expo/styleguide-icons/outline/AlertTriangleIcon';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { PlaySquareIcon } from '@expo/styleguide-icons/outline/PlaySquareIcon';
-import { AlertTriangleSolidIcon } from '@expo/styleguide-icons/solid/AlertTriangleSolidIcon';
 import { useRouter } from 'next/compat/router';
 import { useEffect, useRef, type PropsWithChildren } from 'react';
 
@@ -16,6 +15,9 @@ type SidebarLinkProps = PropsWithChildren<{
 }>;
 
 const HEAD_NAV_HEIGHT = 160;
+
+const BADGE_CLASS_NAME =
+  'inline-flex shrink-0 items-center rounded-full border px-[5px] py-0.5 text-[10px] leading-none font-semibold';
 
 const isLinkInViewport = (element: HTMLAnchorElement) => {
   const rect = element.getBoundingClientRect();
@@ -61,40 +63,37 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       href={info.href}
       ref={ref}
       className={mergeClasses(
-        'group -ml-2.5 flex w-full scroll-m-15 items-center p-1 pr-0 text-sm text-secondary decoration-0',
-        'hocus:text-link [&_svg]:hocus:text-icon-info',
-        isSelected && 'text-link [&_svg]:text-icon-info',
+        'flex w-full scroll-m-15 items-center gap-2 rounded-lg px-(--sidebar-entry-px,12px) py-2 text-sm leading-[1.4] font-medium text-default decoration-0',
+        'hocus:bg-element',
+        isSelected && 'bg-selected hocus:bg-selected',
         info.isDeprecated && 'line-through',
         className
       )}
       {...customDataAttributes}>
-      <div
-        className={mergeClasses(
-          'mx-1.5 my-2 size-1.5 shrink-0 self-start rounded-full',
-          isSelected && 'bg-palette-blue11'
-        )}
-      />
       {children}
       {info.isDeprecated && <span className="sr-only">Deprecated</span>}
       {info.hasVideoLink && !isSelected && (
-        <PlaySquareIcon className="ml-1.5 icon-xs text-icon-secondary" aria-hidden="true" />
+        <PlaySquareIcon className="icon-sm shrink-0 text-icon-secondary" aria-hidden="true" />
       )}
       {info.hasVideoLink && isSelected && (
-        <PlaySquareDuotoneIcon className="ml-1.5 icon-xs text-palette-blue11" aria-hidden="true" />
+        <PlaySquareDuotoneIcon
+          className="icon-sm shrink-0 text-palette-blue11"
+          aria-hidden="true"
+        />
       )}
-      {info.isDeprecated && !isSelected && (
-        <AlertTriangleIcon className="ml-1.5 icon-xs text-icon-warning!" aria-hidden="true" />
-      )}
-      {info.isDeprecated && isSelected && (
-        <AlertTriangleSolidIcon className="ml-1.5 icon-xs text-icon-warning!" aria-hidden="true" />
+      {info.isDeprecated && (
+        <AlertTriangleIcon
+          className="icon-md shrink-0 text-[#ad6200] dark:text-icon-warning"
+          aria-hidden="true"
+        />
       )}
       {info.isNew && (
         <div
           className={mergeClasses(
-            'ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-blue10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
+            BADGE_CLASS_NAME,
             isSelected
               ? 'border-palette-blue11 bg-palette-blue11 text-palette-white dark:text-palette-black'
-              : 'border-palette-blue10 bg-none text-palette-blue11 dark:border-palette-blue9 dark:text-palette-blue9'
+              : 'border-palette-blue10 text-palette-blue11 dark:border-palette-blue9 dark:text-palette-blue9'
           )}>
           NEW
         </div>
@@ -102,10 +101,10 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       {info.isAlpha && (
         <div
           className={mergeClasses(
-            'ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-purple10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
+            BADGE_CLASS_NAME,
             isSelected
-              ? 'bg-palette-purple10 text-palette-white dark:text-palette-black'
-              : 'border-palette-purple10 bg-none text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
+              ? 'border-palette-purple10 bg-palette-purple10 text-palette-white dark:text-palette-black'
+              : 'border-[#8445bc] text-[#8445bc] dark:border-palette-purple9 dark:text-palette-purple10'
           )}>
           ALPHA
         </div>
@@ -113,10 +112,10 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       {info.isBeta && (
         <div
           className={mergeClasses(
-            'ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-purple10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
+            BADGE_CLASS_NAME,
             isSelected
-              ? 'bg-palette-purple10 text-palette-white dark:text-palette-black'
-              : 'border-palette-purple10 bg-none text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
+              ? 'border-palette-purple10 bg-palette-purple10 text-palette-white dark:text-palette-black'
+              : 'border-palette-purple10 text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
           )}>
           BETA
         </div>
@@ -124,10 +123,10 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       {info.isPreview && (
         <div
           className={mergeClasses(
-            'ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-purple10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
+            BADGE_CLASS_NAME,
             isSelected
-              ? 'bg-palette-purple10 text-palette-white dark:text-palette-black'
-              : 'border-palette-purple10 bg-none text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
+              ? 'border-palette-purple10 bg-palette-purple10 text-palette-white dark:text-palette-black'
+              : 'border-palette-purple10 text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
           )}>
           PREVIEW
         </div>
@@ -135,7 +134,7 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       {isExternal && (
         <ArrowUpRightIcon
           aria-hidden="true"
-          className="ml-auto icon-sm text-icon-secondary group-hover:text-icon-info"
+          className="ml-auto icon-sm shrink-0 text-icon-secondary"
         />
       )}
     </LinkBase>

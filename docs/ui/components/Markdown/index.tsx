@@ -35,18 +35,18 @@ const markdownStyles: Record<string, Config | null> = {
   },
   p: {
     Component: P,
-    className: 'mb-[1.5ch]',
+    className: 'mb-5',
   },
   strong: {
     Component: BOLD,
   },
   ul: {
     Component: UL,
-    className: 'mb-[1.5ch] pl-[1ch]',
+    className: 'mb-5 ml-0 pl-[21px]',
   },
   ol: {
     Component: OL,
-    className: 'mb-[1.5ch] pl-[1ch]',
+    className: 'mb-5 ml-0 pl-[21px]',
   },
   li: {
     Component: LI,

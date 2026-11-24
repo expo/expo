@@ -21,6 +21,9 @@ import {
 } from './packageManagerStore';
 import type { PackageManagerKey } from './packageManagerStore';
 
+const TERMINAL_TEXT_CLASSES =
+  'border-none! bg-transparent! px-0 py-0 text-[15px] leading-[1.625] tracking-[-0.03px] whitespace-pre';
+
 export type PackageManagerCommandSet = Partial<Record<PackageManagerKey, string[]>>;
 
 type TerminalProps = {
@@ -94,7 +97,7 @@ export const Terminal = ({
         activeManager={activeManager}
         tokens={preferenceTokens}
         onSelect={setActiveManager}
-        className="ml-6 hidden min-[641px]:inline-flex"
+        className="hidden self-stretch min-[641px]:flex"
       />
     </>
   ) : null;
@@ -107,14 +110,19 @@ export const Terminal = ({
       <SnippetHeader
         alwaysDark
         title={title}
+        className={shouldShowPackageTabs ? 'min-[641px]:py-0' : undefined}
+        titleClassName={shouldShowPackageTabs ? 'min-[641px]:hidden' : undefined}
         titleSlot={packageManagerSlot}
-        Icon={TerminalSquareIcon}>
-        <div className="flex items-center gap-2">
+        Icon={shouldShowPackageTabs ? undefined : TerminalSquareIcon}>
+        <div className="flex items-center gap-1">
           {browserAction && <BrowserAction {...browserAction} />}
           <CopyButton cmd={activeCmd} cmdCopy={cmdCopy} />
         </div>
       </SnippetHeader>
-      <SnippetContent alwaysDark hideOverflow={hideOverflow} className="flex flex-col">
+      <SnippetContent
+        alwaysDark
+        hideOverflow={hideOverflow}
+        className="flex flex-col leading-relaxed!">
         {shouldShowPackageTabs
           ? availableManagers.map(manager => (
               <div key={manager} data-pm-block={preferenceTokens.get(manager)}>
@@ -232,7 +240,7 @@ const PackageTabs = ({
   <span
     role="tablist"
     aria-label="Package managers"
-    className={mergeClasses('inline-flex items-center gap-1 whitespace-nowrap', className)}>
+    className={mergeClasses('items-stretch gap-4 whitespace-nowrap', className)}>
     {managers.map(manager => (
       <button
         key={manager}
@@ -240,7 +248,7 @@ const PackageTabs = ({
         role="tab"
         data-pm-tab={tokens.get(manager)}
         aria-selected={manager === activeManager}
-        className="rounded-md px-2 py-1 text-sm font-semibold transition-colors"
+        className="flex items-center border-b-2 py-2 text-sm leading-[1.4] font-medium transition-colors"
         onClick={() => {
           onSelect(manager);
         }}>
@@ -272,7 +280,10 @@ const BrowserAction = ({ href, label }: BrowserActionProps) => (
     alwaysDark
     className="max-sm:gap-0 [&_p]:max-sm:hidden"
     rightSlot={
-      <ArrowUpRightIcon aria-hidden="true" className="icon-sm shrink-0 text-icon-secondary" />
+      <ArrowUpRightIcon
+        aria-hidden="true"
+        className="icon-xs shrink-0 text-button-quaternary-icon"
+      />
     }
     onClick={() => {
       if (typeof window !== 'undefined') {
@@ -303,7 +314,7 @@ function cmdMapper(line: string, index: number) {
       <CODE
         key={key}
         data-md="skip"
-        className="border-none! bg-transparent! whitespace-pre text-palette-gray10! select-none">
+        className={mergeClasses(TERMINAL_TEXT_CLASSES, 'text-palette-gray10! select-none')}>
         {line}
       </CODE>
     );
@@ -314,11 +325,11 @@ function cmdMapper(line: string, index: number) {
       <div key={key} className="w-fit">
         <CODE
           data-md="skip"
-          className="border-none! bg-transparent! whitespace-pre text-secondary! select-none">
+          className={mergeClasses(TERMINAL_TEXT_CLASSES, 'text-secondary! select-none')}>
           -&nbsp;
         </CODE>
         <CODE
-          className="border-none! bg-transparent! whitespace-pre text-default"
+          className={mergeClasses(TERMINAL_TEXT_CLASSES, 'text-secondary')}
           dangerouslySetInnerHTML={{
             __html: Prism.highlight(
               line.slice(1).trim(),
@@ -332,7 +343,7 @@ function cmdMapper(line: string, index: number) {
   }
 
   return (
-    <CODE key={key} className="border-none! bg-transparent! whitespace-pre text-default">
+    <CODE key={key} className={mergeClasses(TERMINAL_TEXT_CLASSES, 'text-secondary')}>
       {line}
     </CODE>
   );

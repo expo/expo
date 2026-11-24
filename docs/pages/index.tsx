@@ -3,17 +3,15 @@ import { useEffect } from 'react';
 import { getLinkText } from '~/common/click-tracking';
 import DocumentationPage from '~/components/DocumentationPage';
 import { reportHomeClick, reportSectionView } from '~/providers/Analytics';
-import { AppJSBanner } from '~/ui/components/AppJSBanner';
-import { DevicesImageMasks } from '~/ui/components/Home/resources';
 import {
-  QuickStart,
-  CommandLineTools,
-  DiscoverMore,
-  ExploreAPIs,
-  Talks,
+  BuildWithAI,
+  Ecosystem,
+  Hero,
   JoinTheCommunity,
+  SetupExpo,
+  Talks,
+  Tutorials,
 } from '~/ui/components/Home/sections';
-import { ExploreExamples } from '~/ui/components/Home/sections/ExploreExamples';
 
 function getSection(control: HTMLElement) {
   return (
@@ -68,24 +66,20 @@ function Home() {
       hideTOC
       hideFromSearch
       description="Build one JavaScript/TypeScript project that runs natively on all your users' devices.">
-      <div className="h-0">
-        <DevicesImageMasks />
-      </div>
-      <AppJSBanner />
-      <section data-home-section="quick-start">
-        <QuickStart />
+      <section data-home-section="hero">
+        <Hero />
       </section>
-      <section data-home-section="command-line-tools">
-        <CommandLineTools />
+      <section data-home-section="build-with-ai">
+        <BuildWithAI />
       </section>
-      <section data-home-section="discover-more">
-        <DiscoverMore />
+      <section data-home-section="setup-expo">
+        <SetupExpo />
       </section>
-      <section data-home-section="explore-apis">
-        <ExploreAPIs />
+      <section data-home-section="ecosystem">
+        <Ecosystem />
       </section>
-      <section data-home-section="explore-examples">
-        <ExploreExamples />
+      <section data-home-section="tutorials">
+        <Tutorials />
       </section>
       <section data-home-section="talks">
         <Talks />

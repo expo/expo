@@ -16,7 +16,7 @@ export function MethodSelectCard({ Icon, title, description, isSelected, onClick
     <ButtonBase onClick={onClick}>
       <div
         className={mergeClasses(
-          'flex h-full w-68 flex-col overflow-hidden rounded-3xl border border-default shadow-xs transition-all',
+          'flex h-full w-68 flex-col overflow-hidden rounded-lg border border-default shadow-xs transition-all',
           'hocus:scale-[102%] hocus:shadow-sm'
         )}>
         <div
@@ -46,9 +46,11 @@ export function MethodSelectCard({ Icon, title, description, isSelected, onClick
                 )}
               />
             </div>
-            <HEADLINE className="text-left">{title}</HEADLINE>
+            <HEADLINE className="text-left leading-[1.4]">{title}</HEADLINE>
           </div>
-          <CALLOUT theme="secondary" className="text-left">
+          <CALLOUT
+            theme="secondary"
+            className="text-left leading-[1.4] font-medium tracking-normal">
             {description}
           </CALLOUT>
         </div>

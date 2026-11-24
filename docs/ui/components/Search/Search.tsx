@@ -1,5 +1,6 @@
+import { SearchLgIcon } from '@expo/styleguide-icons/outline/SearchLgIcon';
 import type { SharedAskAiEntry } from '@expo/styleguide-search-ui';
-import { CommandMenuTrigger, useCommandMenuShortcut } from '@expo/styleguide-search-ui/trigger';
+import { useCommandMenuShortcut } from '@expo/styleguide-search-ui/trigger';
 import { lazy, ReactNode, Suspense, useEffect, useRef, useState } from 'react';
 
 import { usePageApiVersion } from '~/providers/page-api-version';
@@ -23,6 +24,7 @@ export const Search = ({ mainSection }: SearchProps) => {
   const [open, setOpen] = useState(false);
   const [expoDashboardItems, setExpoDashboardItems] = useState<ReactNode[]>([]);
   const [sharedAiEntry, setSharedAiEntry] = useState<SharedAskAiEntry | null>(null);
+  const [shortcutLabel, setShortcutLabel] = useState<string | null>(null);
   const hasOpened = useRef(false);
 
   if (open) {
@@ -30,6 +32,10 @@ export const Search = ({ mainSection }: SearchProps) => {
   }
 
   useCommandMenuShortcut(setOpen, { enabled: !hasOpened.current });
+
+  useEffect(() => {
+    setShortcutLabel(/mac|iphone|ipod|ipad/i.test(navigator.userAgent) ? '⌘K' : 'Ctrl K');
+  }, []);
 
   useEffect(() => {
     // Cheap literal pre-check so anchor hashes never trigger loading the search bundle.
@@ -86,10 +92,24 @@ export const Search = ({ mainSection }: SearchProps) => {
           />
         </Suspense>
       )}
-      <CommandMenuTrigger
-        setOpen={setOpen}
-        className="mb-2.5 hocus:bg-element hocus:dark:bg-subtle"
-      />
+      <button
+        type="button"
+        onClick={() => {
+          setOpen(true);
+        }}
+        className="flex h-9 w-full items-center gap-2.5 rounded-3xl border-[0.5px] border-default bg-default py-2 pr-[15.5px] pl-[7.5px] shadow-xs hocus:bg-element hocus:dark:bg-subtle">
+        <span className="flex min-w-0 flex-1 items-center gap-2">
+          <SearchLgIcon aria-hidden="true" className="icon-md shrink-0 text-icon-default" />
+          <span className="truncate text-sm leading-[1.4] font-medium text-secondary">
+            Search or ask AI
+          </span>
+        </span>
+        {shortcutLabel && (
+          <span className="text-sm leading-[1.4] font-medium text-quaternary max-md:hidden">
+            {shortcutLabel}
+          </span>
+        )}
+      </button>
     </>
   );
 };

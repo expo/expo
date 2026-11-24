@@ -1,8 +1,8 @@
 import { Button } from '@expo/styleguide';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { NpmIcon } from '@expo/styleguide-icons/custom/NpmIcon';
-import { ClockRefreshIcon } from '@expo/styleguide-icons/outline/ClockRefreshIcon';
 import { Edit05Icon } from '@expo/styleguide-icons/outline/Edit05Icon';
+import { GitCommitIcon } from '@expo/styleguide-icons/outline/GitCommitIcon';
 import { useRouter } from 'next/compat/router';
 import { useIntl } from 'react-intl';
 
@@ -16,32 +16,40 @@ type Props = {
   sourceCodeUrl?: string;
 };
 
-export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
+function EditPageButton() {
   const router = useRouter();
   const intl = useIntl();
-  const showEditButton = !sourceCodeUrl && !packageName && router?.pathname;
+
+  if (!router?.pathname) {
+    return null;
+  }
 
   return (
+    <Button
+      theme="quaternary"
+      size="2xs"
+      className="h-auto shrink-0 border-0 px-3 py-1"
+      openInNewTab
+      href={githubUrl(router.pathname)}
+      aria-label="Edit content of this page on GitHub">
+      <div className="flex flex-row items-center gap-1">
+        <Edit05Icon aria-hidden="true" className="icon-2xs text-icon-default" />
+        <FOOTNOTE crawlable={false} theme="secondary" weight="medium" className="leading-[1.6]">
+          {intl.formatMessage({ id: 'editPage' })}
+        </FOOTNOTE>
+      </div>
+    </Button>
+  );
+}
+
+export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
+  return (
     <>
-      {showEditButton && (
-        <Button
-          theme="quaternary"
-          className="justify-center pr-2 pl-2.5"
-          openInNewTab
-          href={githubUrl(router.pathname)}
-          aria-label="Edit content of this page on GitHub">
-          <div className="flex flex-row items-center gap-2">
-            <Edit05Icon aria-hidden="true" className="icon-sm text-icon-secondary" />
-            <FOOTNOTE crawlable={false} theme="secondary">
-              {intl.formatMessage({ id: 'editPage' })}
-            </FOOTNOTE>
-          </div>
-        </Button>
-      )}
+      {!sourceCodeUrl && !packageName && <EditPageButton />}
       {(sourceCodeUrl ||
         sourceCodeUrl?.startsWith('https://github.com/expo/expo') ||
         packageName) && (
-        <span className="flex items-center gap-1">
+        <span className="flex items-center gap-3">
           {sourceCodeUrl && (
             <>
               <SdkPackageButton
@@ -64,8 +72,8 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
           )}
           {sourceCodeUrl?.startsWith('https://github.com/expo/expo') && (
             <SdkPackageButton
-              label="Changelog"
-              Icon={ClockRefreshIcon}
+              label="changelog"
+              Icon={GitCommitIcon}
               href={`${sourceCodeUrl}/CHANGELOG.md`}
               tooltip="View library changelog on GitHub"
             />

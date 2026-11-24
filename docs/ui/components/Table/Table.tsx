@@ -20,7 +20,7 @@ export const Table = ({
 }: TableProps) => (
   <div
     className={mergeClasses(
-      'table-wrapper mb-4 overflow-clip rounded-3xl border border-default shadow-xs',
+      'table-wrapper mb-5 overflow-clip rounded-lg border border-default shadow-xs',
       containerClassName
     )}>
     <div className="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden">

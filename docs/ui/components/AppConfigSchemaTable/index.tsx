@@ -43,7 +43,10 @@ export default function AppConfigSchemaTable({ schema }: AppConfigSchemaProps) {
 type PropertyNameProps = { name: string; nestingLevel: number };
 
 const PROPERTY_HEADING_CLASSNAME = 'font-normal text-base [&_strong]:wrap-break-word';
-const PropertyHeadingH3 = createTextComponent(TextElement.H3, PROPERTY_HEADING_CLASSNAME);
+const PropertyHeadingH3 = createTextComponent(
+  TextElement.H3,
+  'text-base leading-[1.4] font-semibold text-default [&_strong]:wrap-break-word'
+);
 const PropertyHeadingH4 = createTextComponent(TextElement.H4, PROPERTY_HEADING_CLASSNAME);
 const PropertyHeadingH5 = createTextComponent(TextElement.H5, PROPERTY_HEADING_CLASSNAME);
 
@@ -88,8 +91,8 @@ function AppConfigProperty({
     <APIBox
       className={mergeClasses(
         'mb-0! rounded-none! border-b-0! shadow-none!',
-        '[&]:first-of-type:rounded-t-3xl!',
-        '[&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default!',
+        '[&]:first-of-type:rounded-t-lg!',
+        '[&]:last-of-type:rounded-b-lg! [&]:last-of-type:border-b! [&]:last-of-type:border-default!',
         'px-4 py-3'
       )}>
       <PropertyName name={name} nestingLevel={nestingLevel} />
@@ -104,13 +107,13 @@ function AppConfigProperty({
             <CALLOUT theme="secondary" tag="span">
               One of types:
             </CALLOUT>
-            <UL className="[&>li]:leading-loose">
+            <UL>
               {type.map((oneOfType, index) => {
                 const typeData = JSON.parse(oneOfType);
 
                 if (typeData.type === 'string') {
                   return (
-                    <LI theme="secondary" className="text-sm" key={`${name}-string-${index}`}>
+                    <LI theme="secondary" key={`${name}-string-${index}`}>
                       {typeData.pattern ? (
                         <>
                           <CODE>string</CODE> matching the following pattern:{' '}
@@ -123,7 +126,7 @@ function AppConfigProperty({
                   );
                 } else if (typeData.type === 'object' && typeData.properties) {
                   return (
-                    <LI theme="secondary" className="text-sm" key={`${name}-object-${index}`}>
+                    <LI theme="secondary" key={`${name}-object-${index}`}>
                       <span className="mb-2 block">
                         An <CODE>object</CODE> with the following properties:
                       </span>

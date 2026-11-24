@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, CALLOUT, CODE, DEMI } from '~/ui/components/Text';
+import { H2, CODE, DEMI, P } from '~/ui/components/Text';
 
 import {
   CommentData,
@@ -124,14 +124,14 @@ const renderInterface = (
       <APISectionDeprecationNote comment={comment} sticky />
       <APIBoxHeader name={name} comment={comment} />
       {extendedTypes?.length ? (
-        <CALLOUT className={mergeClasses(ELEMENT_SPACING, 'px-4')}>
+        <P className={mergeClasses(ELEMENT_SPACING, 'px-4')}>
           <span className={STYLES_SECONDARY}>Extends: </span>
           {extendedTypes.map(extendedType => (
             <CODE key={`extend-${extendedType.name}`}>
               {resolveTypeName(extendedType, sdkVersion)}
             </CODE>
           ))}
-        </CALLOUT>
+        </P>
       ) : null}
       <APICommentTextBlock comment={comment} includePlatforms={false} />
       {interfaceFields.length > 0 && (

@@ -81,7 +81,7 @@ async function initPrismAsync() {
 
 await initPrismAsync();
 
-export const EXPAND_SNIPPET_BOUND = 408;
+export const EXPAND_SNIPPET_BOUND = 340;
 export const LANGUAGES_REMAP: Record<string, string> = {
   'objective-c': 'objc',
   sh: 'bash',
@@ -296,6 +296,125 @@ export function getCodeBlockDataFromChildren(children?: ReactNode, className?: s
 export function getCollapseHeight(params?: Record<string, string>) {
   const customCollapseHeight = params?.collapseHeight;
   return customCollapseHeight ? Number(customCollapseHeight) : EXPAND_SNIPPET_BOUND;
+}
+
+type OpenTag = { tagName: string; openingTag: string; classNames: string[] };
+
+type CodeLine = {
+  html: string;
+  hasVisibleText: boolean;
+  hasHiddenText: boolean;
+  startsHidden: boolean;
+  diffType?: 'added' | 'removed';
+};
+
+const HTML_TAG_PATTERN = /<(\/?)([A-Za-z]+)([^>]*)>/g;
+
+function isInsideHiddenCode(stack: OpenTag[]) {
+  return stack.some(tag => tag.classNames.includes('code-hidden'));
+}
+
+function getDiffType(stack: OpenTag[]) {
+  const classNames = stack.flatMap(tag => tag.classNames);
+  if (classNames.includes('inserted')) {
+    return 'added';
+  }
+  if (classNames.includes('deleted')) {
+    return 'removed';
+  }
+  return undefined;
+}
+
+function closeOpenTags(stack: OpenTag[]) {
+  return stack
+    .toReversed()
+    .map(tag => `</${tag.tagName}>`)
+    .join('');
+}
+
+function startCodeLine(stack: OpenTag[]): CodeLine {
+  return {
+    html: stack.map(tag => tag.openingTag.replace(/\s+tabindex="[^"]*"/, '')).join(''),
+    hasVisibleText: false,
+    hasHiddenText: false,
+    startsHidden: isInsideHiddenCode(stack),
+  };
+}
+
+function addTextToCodeLine(line: CodeLine, text: string, stack: OpenTag[], isDiff: boolean) {
+  if (!text) {
+    return;
+  }
+  line.html += text;
+  if (isInsideHiddenCode(stack)) {
+    line.hasHiddenText = true;
+    return;
+  }
+  if (text.trim()) {
+    line.hasVisibleText = true;
+    if (isDiff && !line.diffType) {
+      line.diffType = getDiffType(stack);
+    }
+  }
+}
+
+function renderCodeLine(line: CodeLine, isLast: boolean) {
+  const isHidden = !line.hasVisibleText && (line.hasHiddenText || line.startsHidden);
+  const classNames = [
+    'code-line',
+    isHidden && 'code-hidden',
+    line.diffType && `code-line-${line.diffType}`,
+  ].filter(Boolean);
+  return `<span class="${classNames.join(' ')}"><span class="code-line-content">${line.html}${
+    isLast ? '' : '\n'
+  }</span></span>`;
+}
+
+export function wrapCodeLines(html: string, language?: string) {
+  const isDiff = language === 'diff';
+  const stack: OpenTag[] = [];
+  const lines: CodeLine[] = [];
+  let line = startCodeLine(stack);
+
+  const addText = (text: string) => {
+    const [first, ...rest] = text.split('\n');
+    addTextToCodeLine(line, first, stack, isDiff);
+    for (const segment of rest) {
+      line.html += closeOpenTags(stack);
+      lines.push(line);
+      line = startCodeLine(stack);
+      addTextToCodeLine(line, segment, stack, isDiff);
+    }
+  };
+
+  let cursor = 0;
+  for (const match of html.matchAll(HTML_TAG_PATTERN)) {
+    addText(html.slice(cursor, match.index));
+    cursor = match.index + match[0].length;
+    const [tag, isClosing, tagName, attributes] = match;
+    if (isClosing) {
+      if (stack.length > 0) {
+        stack.pop();
+        line.html += tag;
+      }
+      continue;
+    }
+    const classNames = attributes.match(/class="([^"]*)"/)?.[1].split(/\s+/) ?? [];
+    stack.push({ tagName, openingTag: tag, classNames });
+    line.html += tag;
+  }
+  addText(html.slice(cursor));
+  line.html += closeOpenTags(stack);
+  lines.push(line);
+
+  const lastLine = lines.at(-1);
+  if (lines.length > 1 && lastLine && !lastLine.hasVisibleText && !lastLine.hasHiddenText) {
+    lines.pop();
+  }
+
+  return lines
+    .map((codeLine, index) => renderCodeLine(codeLine, index === lines.length - 1))
+    .join('');
 }
 
 export function getCodeData(value: string, className?: string, version?: string) {
