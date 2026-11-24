@@ -292,6 +292,31 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - ExpoAppMetrics/ColdStartTests (58.0.14):
+    - ExpoModulesCore
+    - EXUpdatesInterface
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-Core-prebuilt
+    - React-cxxstableapi
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - ExpoAppMetrics/Tests (58.0.14):
     - ExpoModulesCore
     - EXUpdatesInterface
@@ -3678,6 +3703,7 @@ DEPENDENCIES:
   - ExpoApplication (from `../../../packages/expo-application/ios`)
   - ExpoApplication/Tests (from `../../../packages/expo-application/ios`)
   - ExpoAppMetrics (from `../../../packages/expo-app-metrics/ios`)
+  - ExpoAppMetrics/ColdStartTests (from `../../../packages/expo-app-metrics/ios`)
   - ExpoAppMetrics/Tests (from `../../../packages/expo-app-metrics/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
@@ -4441,7 +4467,7 @@ SPEC CHECKSUMS:
   ExpoAppIntents: 03febe7aaf7ceee1a331086a40c4053f042b9b3a
   ExpoAppleAuthentication: 86e09d699399d4c09c2cb32bce32901a9d4ca334
   ExpoApplication: 83b6ab89ec15abe689419990b83d9b9192562358
-  ExpoAppMetrics: d18d96c4a1303c189899703e0c60f1801416ac97
+  ExpoAppMetrics: 8760ab4d181e92265dcc960ba7850683682ce54a
   ExpoAsset: 9548991f0332bd8ed8819299e0b413d713104a1a
   ExpoAudio: 7f919daf0ebf1b0e1cf8b7464b7c85be6664a412
   ExpoBackgroundFetch: a7f3f09822c310c201056cb86c167ed76036b048

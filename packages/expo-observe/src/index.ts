@@ -43,6 +43,7 @@ export type {
   ObserveAttribute,
   ObserveAttributes,
   ObserveConfig,
+  ObserveConsent,
   ObserveEventName,
   ObserveFeedback,
   ObserveIntegrationsConfig,

@@ -1,6 +1,7 @@
 package expo.modules.observe
 
 import android.content.Context
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.easclient.EASClientID
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
@@ -40,6 +41,9 @@ class EventDispatcherTest {
     // Mock Android Context
     mockContext = mockk(relaxed = true)
 
+    mockkObject(ObserveConsent)
+    every { ObserveConsent.isGranted } returns true
+
     // Mock EASClientID to return a predictable UUID
     mockkConstructor(EASClientID::class)
     every { anyConstructed<EASClientID>().uuid } returns testEasClientId
@@ -58,6 +62,25 @@ class EventDispatcherTest {
     mockServer.shutdown()
     unmockkAll()
   }
+
+  @Test
+  fun `a revoke during the request preparation starts no request`() =
+    runTest {
+      var granted = true
+      mockkObject(ObserveConsent)
+      every { ObserveConsent.isGranted } answers { granted }
+      // The client id is read while the payload is built.
+      every { anyConstructed<EASClientID>().uuid } answers {
+        granted = false
+        testEasClientId
+      }
+      mockServer.enqueue(MockResponse().setResponseCode(200))
+
+      val result = eventDispatcher.dispatch(listOf(createTestEvent()))
+
+      assertEquals(DispatchResult.RetryableFailure(retryAfterMs = null), result)
+      assertEquals(0, mockServer.requestCount)
+    }
 
   @Test
   fun `dispatch returns Success on 200 response`() =

@@ -1,5 +1,5 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
-import ExpoModulesCore
+import Foundation
 
 #if !os(tvOS)
 import MetricKit
@@ -77,7 +77,7 @@ public struct AppMetrics {
   // Make the initializer private to prevent non-singleton usage.
   private init() {}
 
-  /// Deletes the stored data. Runs at a launch without consent.
+  /// Deletes the stored data. Runs at a launch without consent and at a revoke.
   static func deleteStoredData() {
     guard let databaseDirectory = try? MetricsDatabase.defaultDirectoryUrl(),
       let pendingErrorsDirectory = try? PendingErrorStore.directoryUrl()
@@ -95,9 +95,34 @@ public struct AppMetrics {
     } catch {
       logger.warn("[AppMetrics] Failed to delete the metrics database: \(error.localizedDescription)")
     }
-    try? FileManager.default.removeItem(at: pendingErrorsDirectory)
+    PendingErrorStore.delete(in: pendingErrorsDirectory)
     AppMetricsUserDefaults.deleteStoredSettings()
     MetricsDatabase.cleanUpLegacyStorage()
+  }
+
+  /// Applies a consent change from `Observe.setConsent`. It runs on the actor without suspending,
+  /// so the changes run one at a time.
+  @AppMetricsActor
+  public static func setConsent(granted: Bool) {
+    guard ObserveConsent.update(granted: granted) else {
+      return
+    }
+    if granted {
+      // The launch inserts did nothing without consent, so the session rows are inserted now.
+      mainSession.insertRow()
+      foregroundSession?.insertRow()
+      mainSession.saveUnsavedStartupMetrics()
+      #if !os(tvOS) && !targetEnvironment(simulator)
+      // Past payloads are from before the grant, so they are not processed.
+      MXMetricManager.shared.add(metricKitSubscriber)
+      #endif
+    } else {
+      #if !os(tvOS) && !targetEnvironment(simulator)
+      MXMetricManager.shared.remove(metricKitSubscriber)
+      #endif
+      // The open database is not used again in this process, so its files can be deleted.
+      deleteStoredData()
+    }
   }
 
   // MARK: - Read API for downstream consumers (e.g. expo-observe)

@@ -159,4 +159,27 @@ class SpanWriterTest {
     // The dropped batch counts as done, so the caller does not keep it for a retry.
     assertEquals(1, completions)
   }
+
+  @Test
+  fun `a span that starts without consent is not written after a grant`() = runTest(testDispatcher) {
+    insertSession("s")
+    val writer = SpanWriter(database = database, scope = this)
+    every { ObserveConsent.isGranted } returns false
+    val beforeGrant = SpanHandle(
+      SpanRecorder(name = "before-grant", sessionId = "s", attributes = mapOf("step" to "pay"), startTimestampMs = START_MS),
+      writer.onEndOfNewSpan()
+    )
+    beforeGrant.recorder.addEvent(name = "tapped", attributes = null, timeMs = START_MS + 10)
+
+    every { ObserveConsent.isGranted } returns true
+    val afterGrant = SpanHandle(
+      SpanRecorder(name = "after-grant", sessionId = "s", startTimestampMs = START_MS),
+      writer.onEndOfNewSpan()
+    )
+    beforeGrant.end(statusCode = null, statusMessage = null, endTimestampMs = END_MS)
+    afterGrant.end(statusCode = null, statusMessage = null, endTimestampMs = END_MS)
+    testScheduler.advanceUntilIdle()
+
+    assertEquals(listOf("after-grant"), allSpanNames())
+  }
 }

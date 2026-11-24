@@ -35,6 +35,17 @@ class SpanWriter(
   fun write(span: Span) = write { span }
 
   /**
+   * The end action for a span that starts now. A span that starts without consent holds data from
+   * before a grant, so it is never written. `write` still drops a span that ends after a revoke.
+   */
+  fun onEndOfNewSpan(): (Span) -> Unit =
+    if (ObserveConsent.isGranted) {
+      { span -> write(span) }
+    } else {
+      { _ -> }
+    }
+
+  /**
    * Writes one row built lazily on `scope`. Producers that would otherwise convert on a hot
    * thread (the OkHttp dispatcher) pass a builder, keeping their path to a single dispatch.
    *

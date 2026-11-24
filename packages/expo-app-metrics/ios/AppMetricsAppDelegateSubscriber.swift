@@ -2,7 +2,7 @@ import ExpoModulesCore
 
 public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func appDelegateWillBeginInitialization() {
-    if !ObserveConsent.isGranted {
+    if ObserveConsent.state == .notGranted {
       AppMetrics.deleteStoredData()
     }
     AppMetrics.mainSession.appStartupMonitor.markMain()
