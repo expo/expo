@@ -22,7 +22,7 @@ class InertSpan extends SharedObject {
  * it. The span's identity (trace and span ids) is assigned immediately, so other spans can be
  * started with this one as `parent` before it ends. Nothing is persisted until `end()`.
  *
- * The span is attributed to the current main session and exported to EAS Observe with the next
+ * The span is attributed to the current main session and exported to Expo Observe with the next
  * dispatch after it ends. Starting a span never throws: when the span can't be recorded, a warning
  * is logged and the returned span still accepts every call.
  *

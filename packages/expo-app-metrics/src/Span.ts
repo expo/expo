@@ -3,9 +3,11 @@ import type { SharedObject } from 'expo';
 import type { LogAttributeValue, SpanEndOptions, SpanEventOptions } from './types';
 
 /**
- * A span in flight, backed by a native shared object returned by `startSpan`. Mutators
- * accumulate state in memory; nothing is persisted until `end()`, which writes the completed
- * span exactly once. A `Span` that is garbage-collected without `end()` is dropped.
+ * An operation that is being measured, as returned by `startSpan` or passed to the `withSpan`
+ * callback. While the operation runs, the span collects attributes and events. Pass the span as
+ * `parent` to start a nested span.
+ *
+ * The span is saved only when `end()` is called. A span that is never ended is not sent.
  */
 export declare class Span extends SharedObject {
   /**
@@ -18,24 +20,52 @@ export declare class Span extends SharedObject {
    */
   readonly spanId: string;
   /**
-   * Merges attributes into the span; keys set later win over earlier ones. Values go through
-   * the same validation as `logEvent` attributes: empty keys and the reserved `expo.*`
+   * Adds attributes to the span. Setting a key again replaces its value. Values go through the
+   * same validation as `logEvent` attributes: empty keys and keys in the reserved `expo.*`
    * namespace are dropped with a warning.
    *
    * Has no effect after `end()`.
+   *
+   * @param attributes The attributes to add.
+   *
+   * @example
+   * ```ts
+   * span.setAttributes({ 'cart.items': 3, 'payment.method': 'card' });
+   * ```
    */
   setAttributes(attributes: Record<string, LogAttributeValue>): void;
   /**
-   * Appends a point-in-time event to the span, like a checkpoint inside the measured
-   * operation. Events without a name are dropped. At most 32 events reach the server;
-   * anything past that is counted as dropped.
+   * Adds a point-in-time event to the span, such as a checkpoint inside the measured operation.
+   * An event without a name is dropped. At most 32 events of a span reach the server.
    *
    * Has no effect after `end()`.
+   *
+   * @param name The event name, for example, `'cart-validated'`.
+   * @param options Event attributes and an optional event time.
+   *
+   * @example
+   * ```ts
+   * span.addEvent('cart-validated', { attributes: { 'cart.items': 3 } });
+   * ```
    */
   addEvent(name: string, options?: SpanEventOptions): void;
   /**
-   * Ends the span and persists it for export. Only the first call has an effect; later calls
-   * are ignored with a warning.
+   * Ends the span and saves it, so it is sent with the next dispatch. Only the first call has an
+   * effect. Later calls log a warning and do nothing.
+   *
+   * @param options An optional status, an error message for the `'error'` status, and an
+   * optional end time.
+   *
+   * @example
+   * ```ts
+   * try {
+   *   await submitOrder();
+   *   span.end();
+   * } catch (error) {
+   *   span.end({ status: 'error', message: String(error) });
+   *   throw error;
+   * }
+   * ```
    */
   end(options?: SpanEndOptions): void;
 }
