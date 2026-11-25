@@ -206,7 +206,8 @@ fails right solution. Report one `Right solution:` finding that says why, and no
   it calls, that now tells the user something untrue or to do something wrong. For example,
   a retry hint for a step the change now retries itself. A message that is true on one
   branch and false on another is still false. A wrong instruction to delete, move, or
-  replace the user's files is a `warning`, including when that branch is a second failure.
+  replace the user's files is at least a `warning`, including when that branch is a second
+  failure.
 
 ## Always needs a human
 
@@ -288,8 +289,9 @@ what failure looks like there, what always needs a human.
 - **warning**: should fix before merge. A concrete cost you can name: the caller that must work
   around it, the sibling that now behaves differently, the duplicated code that will drift,
   the work that runs on every launch.
-- **suggestion**: worth doing, with no correctness or safety impact. Two title prefixes mark
-  special kinds:
+- **suggestion**: worth doing, with no correctness or safety impact beyond a `Low` edge case
+  (see "Finding confidence and shipping impact"). Two title prefixes mark special
+  kinds:
   - `Nit:` when the whole fix is a rename or a comment edit.
   - `Pre-existing:` for a real defect next to the changed lines that this PR did not
     introduce. At most one per review. It never affects the decision.
@@ -352,7 +354,7 @@ For every real finding, assess two separate dimensions:
     limited but plausible path.
   - `Low` — a bounded edge case with little correctness or safety effect. `deep`
     still reports it, as a `suggestion`. A wrong instruction to delete, move, or
-    replace the user's files is not Low. It is a `warning`.
+    replace the user's files is not Low. It is at least a `warning`.
 
 Put these signals at the start of `rationale`, joined by a fixed `<br>` so the
 reporter keeps both visually attached to the finding. Follow them with the
@@ -430,8 +432,8 @@ changes the decision.
   Do not mark a message true until you have walked every branch that prints it.
   An untraced branch is an uncertainty or a finding, not a checked conclusion.
 - `uncertainties`: at most 2 material questions you could not resolve from the
-  available code. An empty array is valid. A sentence that names a line and says
-  what that line does wrong is a finding. Put it in `findings` before you return.
+  available code. An empty array is valid. A defect that meets the evidence
+  requirement is a finding, not an uncertainty. Put it in `findings` before you return.
   Do not leave a proved defect here. The engine does not send this list to the
   coordinator, so a defect that stays here is never posted.
 - Keep each item under 240 characters. State conclusions only. Do not include raw

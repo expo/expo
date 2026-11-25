@@ -32,8 +32,10 @@ The patch files are user data. Users commit them to their own repositories.
   `.patch-project-tmp/<platform>/` and deletes that directory in a `finally`. A change to this
   flow must keep the user's project recoverable when any step throws. The iOS project file is
   normalized before the diff, and `revertNormalizeNativeProjectsAsync` restores it. Patch
-  files under `cng-patches/` are user data too. Do not delete them before the temp directory
-  exists and the run can still restore the native project. A throw while preparing
+  files under `cng-patches/` are user data too. The run deletes them before it moves the
+  native project, and it has no step that moves the project back when a later call throws.
+  A change that deletes user files earlier, or adds a call that can throw before the new
+  patch is written, must also put those files back on a throw. A throw while preparing
   `.patch-project-tmp` must leave the existing patch files in place.
 - **Patch file names and format.** The name ties a patch to a template checksum. A change to
   the name, the location (`patchRoot`) or the diff options can break patches that users

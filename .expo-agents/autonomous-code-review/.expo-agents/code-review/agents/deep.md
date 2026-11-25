@@ -118,8 +118,8 @@ Before you return, read each finding again. This pass removes noise, never a rea
 
 - Keep every `critical` and `warning` that meets the evidence requirement, whatever the size
   of the fix.
-- A proved defect goes in `findings`. Do not leave it in `trace.uncertainties`, and do not
-  describe it only in the summary. If you can name the line and what it does wrong, file it.
+- A defect that meets the evidence requirement goes in `findings`. Do not leave it in
+  `trace.uncertainties`, and do not describe it only in the summary.
 - Drop a finding you cannot defend when the author asks "why?". Open the code again before
   you drop it: the answer may make the finding stronger.
 - Drop a `suggestion` that is not worth the author's time, or whose comment is longer than
