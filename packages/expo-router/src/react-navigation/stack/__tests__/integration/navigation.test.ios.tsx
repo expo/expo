@@ -10,6 +10,7 @@ import { Tabs } from '../../../../layouts/Tabs';
 import { NativeTabs } from '../../../../native-tabs';
 import { renderRouter } from '../../../../testing-library';
 import { type ParamListBase, useFocusEffect, useIsFocused, useNavigation } from '../../../native';
+import { CommonActions } from '../../../routers';
 import type { StackNavigationProp } from '../../types';
 
 jest.mock('react-native-screens', () => {
@@ -38,6 +39,7 @@ jest.mock('react-native-screens', () => {
 
 afterEach(() => {
   jest.useRealTimers();
+  jest.restoreAllMocks();
 });
 
 it('supports push, back, and replace through useRouter', async () => {
@@ -154,6 +156,61 @@ it('emits transition events when opening and closing a route', async () => {
   expect(events.at(-1)).toEqual({ type: 'start', closing: true });
   await act(() => jest.runAllTimers());
   expect(events.at(-1)).toEqual({ type: 'end', closing: true });
+});
+
+it('accepts touches on a screen revealed after a route below a transparent modal is removed', async () => {
+  const onPress = jest.fn();
+  // In Jest, native driver animations never call JS listeners, so no card would become inert.
+  jest
+    .spyOn(
+      jest.requireMock<{ default: { shouldUseNativeDriver: () => boolean } }>(
+        'react-native/src/private/animated/NativeAnimatedHelper'
+      ).default,
+      'shouldUseNativeDriver'
+    )
+    .mockReturnValue(false);
+
+  function Modal() {
+    const navigation = useNavigation();
+    return (
+      <Button
+        title="Remove second"
+        onPress={() => {
+          const state = navigation.getState()!;
+          navigation.dispatch(
+            CommonActions.reset({
+              ...state,
+              routes: state.routes.filter((route) => route.name !== 'second'),
+              index: 1,
+            })
+          );
+        }}
+      />
+    );
+  }
+
+  await renderRouter({
+    _layout: () => (
+      <JSStack>
+        <JSStack.Screen name="modal" options={{ presentation: 'transparentModal' }} />
+      </JSStack>
+    ),
+    index: () => <Button title="Index action" onPress={onPress} />,
+    second: () => <View testID="second" />,
+    modal: Modal,
+  });
+
+  await act(() => router.push('/second'));
+  await act(() => jest.runAllTimers());
+  await act(() => router.push('/modal'));
+  await act(() => jest.runAllTimers());
+  await fireEvent.press(screen.getByText('Remove second'));
+  await act(() => router.back());
+  await act(() => jest.runAllTimers());
+
+  expect(screen).toHavePathname('/');
+  await fireEvent.press(screen.getByText('Index action'));
+  expect(onPress).toHaveBeenCalledTimes(1);
 });
 
 it('renders preloaded routes without focusing them', async () => {
