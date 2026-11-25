@@ -216,21 +216,23 @@ git cherry-pick -x ${mergeSha}`;
     // commit that lands before the commits below it can apply cleanly and still not compile.
     const blockers: string[] = [];
     for (const entry of options.stackBelow) {
-      if (!entry.labels.includes(targetBranch)) {
-        blockers.push(`#${entry.number} does not have the \`${targetBranch}\` label.`);
-      } else if (!entry.mergeSha || !entry.mergedAt) {
+      if (!entry.mergeSha || !entry.mergedAt) {
         blockers.push(`#${entry.number} is not merged.`);
       } else if (
-        !(await github.branchContainsAsync(targetBranch, entry.mergeSha)) &&
-        !(await github.branchHasCherryPickAsync(targetBranch, entry.mergeSha, entry.mergedAt))
+        (await github.branchContainsAsync(targetBranch, entry.mergeSha)) ||
+        (await github.branchHasCherryPickAsync(targetBranch, entry.mergeSha, entry.mergedAt))
       ) {
+        continue;
+      } else if (!entry.labels.includes(targetBranch)) {
+        blockers.push(`#${entry.number} does not have the \`${targetBranch}\` label.`);
+      } else {
         blockers.push(`#${entry.number} is not on \`${targetBranch}\` yet.`);
       }
     }
     if (blockers.length > 0) {
       const reason = `The bot did not backport this pull request to \`${targetBranch}\`, because a pull request below it in the stack must be there first. ${blockers.join(' ')}`;
       await commentAsync(
-        `${reason}\n\nWhen each pull request below this one is on \`${targetBranch}\`, remove the \`${targetBranch}\` label from this pull request and add it again.`
+        `${reason}\n\nAdd the \`${targetBranch}\` label to each pull request named above that does not have it. When each one is on \`${targetBranch}\`, remove the \`${targetBranch}\` label from this pull request and add it again. If a pull request below this one was backported by hand without \`git cherry-pick -x\`, the bot cannot find it on \`${targetBranch}\`. Then backport this one by hand too.\n\n${manualSteps}`
       );
       throw new Error(reason);
     }
