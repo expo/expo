@@ -653,6 +653,13 @@ describe('Request', () => {
         expect(descriptor?.enumerable).toBe(true);
       }
     );
+
+    it('does not expose the FormData boundary', () => {
+      const formData = new FormData();
+      formData.append('a', 'b');
+      const request = new Request('https://example.test/', { method: 'POST', body: formData });
+      expect('_formDataBoundary' in request).toBe(false);
+    });
   });
 
   it('is tagged as a Request', () => {

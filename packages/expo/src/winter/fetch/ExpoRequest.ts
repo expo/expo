@@ -1,4 +1,4 @@
-import { isBlob, normalizeBodyInitAsync, normalizeMethod } from './RequestUtils';
+import { HTTP_TOKEN, isBlob, normalizeBodyInitAsync, normalizeMethod } from './RequestUtils';
 import { convertFormDataAsync, createBoundary } from './convertFormData';
 import { createReactNativeBlobAsync, isReactNativeBlobGlobal } from './createBlob';
 import type { FetchRequestInit } from './fetch.types';
@@ -12,11 +12,10 @@ type UniversalFormData = globalThis.FormData & RNFormData;
 const BODYLESS_METHODS = new Set(['GET', 'HEAD']);
 // Methods the Fetch standard forbids, compared case-insensitively.
 const FORBIDDEN_METHODS = new Set(['CONNECT', 'TRACE', 'TRACK']);
-// An HTTP token, which a request method must be.
-const METHOD_TOKEN = /^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$/;
 
 function validateMethod(method: string): string {
-  if (!METHOD_TOKEN.test(method)) {
+  // A request method must be an HTTP token.
+  if (!HTTP_TOKEN.test(method)) {
     throw new TypeError(
       `Failed to construct 'Request': '${method}' is not a valid HTTP method. Use a method name such as 'GET' or 'POST'.`
     );
@@ -88,8 +87,13 @@ function isRequest(input: unknown): input is Request {
   );
 }
 
+// The multipart boundary of a request's FormData body. Set at construction, like the spec's body
+// extraction, so the Content-Type header matches the body that `text()` and `fetch()` produce.
+// Kept out of the class, so it isn't part of the public `Request` type.
+const formDataBoundaries = new WeakMap<Request, string>();
+
 export function getRequestFormDataBoundary(request: object): string | undefined {
-  return request instanceof Request ? (request._formDataBoundary ?? undefined) : undefined;
+  return request instanceof Request ? formDataBoundaries.get(request) : undefined;
 }
 
 // Reads the boundary of a `multipart/form-data` content type.
@@ -251,9 +255,6 @@ export class Request implements Body {
   // The lazily-created body stream. Cached so `.body` returns the same object across gets, and
   // so reading or locking it disturbs this request's body (sets `consumed`) per the Fetch spec.
   private bodyStream: ReadableStream<Uint8Array<ArrayBuffer>> | null = null;
-  // The multipart boundary of a FormData body. Set at construction, like the spec's body
-  // extraction, so the Content-Type header matches the body that `text()` and `fetch()` produce.
-  _formDataBoundary: string | null = null;
 
   // A default for `init` keeps `Request.length` at 1, like WebIDL's optional arguments.
   constructor(input: string | URL | Request, init: FetchRequestInit = {}) {
@@ -402,12 +403,16 @@ export class Request implements Body {
     if (this._bodyInit instanceof FormData) {
       const contentType = this.headers.get('content-type');
       if (contentType == null) {
-        this._formDataBoundary = createBoundary();
-        this.headers.set('content-type', `multipart/form-data; boundary=${this._formDataBoundary}`);
+        const boundary = createBoundary();
+        formDataBoundaries.set(this, boundary);
+        this.headers.set('content-type', `multipart/form-data; boundary=${boundary}`);
       } else {
         // Keep the boundary of an explicit multipart content type, including one copied from a
         // source request, so the body matches the header.
-        this._formDataBoundary = parseMultipartBoundary(contentType);
+        const boundary = parseMultipartBoundary(contentType);
+        if (boundary != null) {
+          formDataBoundaries.set(this, boundary);
+        }
       }
     }
 
@@ -503,7 +508,7 @@ export class Request implements Body {
           try {
             // Serialize a FormData body with the boundary that the Content-Type header names.
             const { body } = await normalizeBodyInitAsync(bodyInit, {
-              formDataBoundary: this._formDataBoundary ?? undefined,
+              formDataBoundary: formDataBoundaries.get(this),
             });
             if (body != null) {
               controller.enqueue(new Uint8Array(body));
@@ -628,7 +633,7 @@ export class Request implements Body {
     }
     this.markConsumed(method);
     if (body instanceof FormData) {
-      const { body: bytes } = await convertFormDataAsync(body, this._formDataBoundary ?? undefined);
+      const { body: bytes } = await convertFormDataAsync(body, formDataBoundaries.get(this));
       return bytes as Uint8Array<ArrayBuffer>;
     }
     const { body: bytes } = await normalizeBodyInitAsync(body);

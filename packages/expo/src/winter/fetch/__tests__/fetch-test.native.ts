@@ -160,6 +160,20 @@ describe('fetch', () => {
     expect(sentBody()).toMatch(new RegExp(`^--${boundary}\r\n`));
   });
 
+  it('keeps the quotes of a quoted multipart boundary', async () => {
+    const formData = new FormData();
+    formData.append('a', 'b');
+    const request = new Request('https://example.test/', {
+      method: 'POST',
+      body: formData,
+      headers: { 'Content-Type': 'multipart/form-data; boundary="a b"' },
+    });
+    await fetch(request);
+    const sentHeaders = new Map(getStartedHeaders().map(([k, v]) => [k.toLowerCase(), v]));
+    expect(sentHeaders.get('content-type')).toBe('multipart/form-data; boundary="a b"');
+    expect(sentBody()).toMatch(/^--a b\r\n/);
+  });
+
   it('does not use the Request signal when the init signal is null', async () => {
     const request = new Request('https://example.test/', { signal: AbortSignal.abort() });
     await expect(fetch(request, { signal: null })).resolves.toBeDefined();

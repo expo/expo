@@ -2,6 +2,9 @@ import { blobToArrayBufferAsync } from '../../utils/blobUtils';
 import type { NativeHeadersType } from './NativeRequest';
 import { convertFormDataAsync } from './convertFormData';
 
+// An HTTP token, e.g. a request method or a header parameter value that needs no quotes.
+export const HTTP_TOKEN = /^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$/;
+
 /**
  * convert a ReadableStream to a Uint8Array
  */
@@ -94,10 +97,12 @@ export async function normalizeBodyInitAsync(
 
   if (body instanceof FormData) {
     const { body: result, boundary } = await convertFormDataAsync(body, options.formDataBoundary);
+    // A boundary that isn't an HTTP token, e.g. one with a space, needs quotes in the header.
+    const headerBoundary = HTTP_TOKEN.test(boundary) ? boundary : `"${boundary}"`;
 
     return {
       body: result,
-      overriddenHeaders: [['Content-Type', `multipart/form-data; boundary=${boundary}`]],
+      overriddenHeaders: [['Content-Type', `multipart/form-data; boundary=${headerBoundary}`]],
     };
   }
 
