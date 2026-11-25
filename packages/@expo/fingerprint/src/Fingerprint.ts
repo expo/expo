@@ -105,20 +105,28 @@ export function diffFingerprints(
       source1 = sources1[++index1];
       source2 = sources2[++index2];
     } else if (compareResult < 0) {
-      diff.push({ op: 'removed', removedSource: source1 });
+      if (source1.hash != null) {
+        diff.push({ op: 'removed', removedSource: source1 });
+      }
       source1 = sources1[++index1];
     } else {
-      diff.push({ op: 'added', addedSource: source2 });
+      if (source2.hash != null) {
+        diff.push({ op: 'added', addedSource: source2 });
+      }
       source2 = sources2[++index2];
     }
   }
 
   while (source1 != null) {
-    diff.push({ op: 'removed', removedSource: source1 });
+    if (source1.hash != null) {
+      diff.push({ op: 'removed', removedSource: source1 });
+    }
     source1 = sources1[++index1];
   }
   while (source2 != null) {
-    diff.push({ op: 'added', addedSource: source2 });
+    if (source2.hash != null) {
+      diff.push({ op: 'added', addedSource: source2 });
+    }
     source2 = sources2[++index2];
   }
 
