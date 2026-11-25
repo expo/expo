@@ -239,12 +239,25 @@ function registerCommonJsDependency(
   return dependency;
 }
 
+/**
+ * Native lowering injects `@babel/runtime` helper imports into ESM files. Babel's pipeline only marks
+ * imports that exist in the original source as ESM, so injected helpers resolve as CommonJS there.
+ * An injected helper's specifier cannot appear in the original source text.
+ */
+export function isInjectedRuntimeHelperImport(originalSource: string, name: string): boolean {
+  return name.startsWith('@babel/runtime/helpers/') && !originalSource.includes(name);
+}
+
 export function registerNativeEsmDependency(
   state: MetroDependencyState,
   name: string,
   location: ReturnType<NativeNodePath['getLocation']>,
-  exportNames: readonly string[] = ['*']
+  exportNames: readonly string[] = ['*'],
+  originalSource?: string
 ) {
+  if (originalSource != null && isInjectedRuntimeHelperImport(originalSource, name)) {
+    return registerCommonJsDependency(state, name, location);
+  }
   const key = `${name}\0import`;
   let dependency = state.dependencies.get(key);
   if (!dependency) {

@@ -959,6 +959,45 @@ export default [primary, namespace, a, d1, b, d2, g, a2, commonOne, commonTwo];`
   expect(JSON.stringify(result.dependencies)).not.toContain('exportNameSet');
 });
 
+it('does not mark injected Babel runtime helpers as ESM imports in Noxcturnal, matching Babel', async () => {
+  const contents = `export async function* gen(xs) { for await (const x of xs) yield x; }`;
+  const transformOptions: JsTransformOptions = {
+    ...baseTransformOptions,
+    dev: false,
+    experimentalImportSupport: true,
+    unstable_transformProfile: 'hermes-stable',
+    customTransformOptions: { engine: 'hermes' },
+  };
+  const helperDependencies = async (enabled: boolean) => {
+    const config = { ...baseConfig, unstable_noxcturnalTransformWorker: enabled || undefined };
+    const result = await Transformer.transform(
+      config,
+      '/root',
+      '/root/node_modules/example/index.js',
+      Buffer.from(contents, 'utf8'),
+      transformOptions
+    );
+    return new Map(
+      result.dependencies
+        .filter((dependency) => dependency.name.startsWith('@babel/runtime/helpers/'))
+        .map(
+          (dependency) =>
+            [
+              dependency.name,
+              { key: dependency.data.key, isESMImport: dependency.data.isESMImport },
+            ] as const
+        )
+    );
+  };
+
+  const babel = await helperDependencies(false);
+  const noxcturnal = await helperDependencies(true);
+  expect(noxcturnal.size).toBeGreaterThan(0);
+  for (const [name, data] of noxcturnal) {
+    expect(data).toEqual({ key: babel.get(name)?.key, isESMImport: false });
+  }
+});
+
 it('uses Noxcturnal for the complete Metro transform of eligible dependencies', async () => {
   const contents = `var oddly_spaced= require('dep');\nmodule.exports=oddly_spaced;`;
   const result = await Transformer.transform(
