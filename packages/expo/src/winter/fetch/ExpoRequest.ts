@@ -1,4 +1,4 @@
-import { normalizeBodyInitAsync, normalizeMethod } from './RequestUtils';
+import { isBlob, normalizeBodyInitAsync, normalizeMethod } from './RequestUtils';
 import { convertFormDataAsync, createBoundary } from './convertFormData';
 import { createReactNativeBlobAsync, isReactNativeBlobGlobal } from './createBlob';
 import type { FetchRequestInit } from './fetch.types';
@@ -600,6 +600,11 @@ export class Request implements Body {
       );
     }
     this.consumed = true;
+    // Lock a `.body` stream that was already created, so it can't read the body again. A stream
+    // body is skipped, because `consumeAsBytes()` must still get a reader for it.
+    if (this.bodyStream != null && this.bodyStream !== this._bodyInit) {
+      this.bodyStream.getReader();
+    }
   }
 
   private setDefaultContentType(): void {
@@ -608,7 +613,7 @@ export class Request implements Body {
     }
     if (typeof this._bodyInit === 'string') {
       this.headers.set('content-type', 'text/plain;charset=UTF-8');
-    } else if (this._bodyInit instanceof Blob && this._bodyInit.type) {
+    } else if ((this._bodyInit instanceof Blob || isBlob(this._bodyInit)) && this._bodyInit.type) {
       this.headers.set('content-type', this._bodyInit.type);
     } else if (this._bodyInit instanceof URLSearchParams) {
       this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');

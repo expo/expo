@@ -82,6 +82,14 @@ describe('Request', () => {
     expect(request.headers.get('content-type')).toBe('application/json');
   });
 
+  it('sets the default content-type from the type of a Blob-like body', async () => {
+    // Like a `File` from `expo-file-system`, which isn't an instance of `Blob`.
+    const body = { type: 'image/png', arrayBuffer: async () => new ArrayBuffer(0) };
+    const request = new Request('https://example.test/', { method: 'POST', body: body as any });
+    expect(request.headers.get('content-type')).toBe('image/png');
+    expect((await request.blob()).type).toBe('image/png');
+  });
+
   it('preserves the original body for later retrieval', () => {
     const request = new Request('https://example.test/', { method: 'POST', body: 'payload' });
     // The fetch implementation needs the raw body without consuming the request.
@@ -196,6 +204,13 @@ describe('Request', () => {
       const request = new Request('https://example.test/', { method: 'POST', body: 'hello' });
       await readStream(request.body!);
       await expect(request.text()).rejects.toThrow(TypeError);
+    });
+
+    it('locks the body stream after another read method reads the body', async () => {
+      const request = new Request('https://example.test/', { method: 'POST', body: 'hello' });
+      const body = request.body!;
+      await request.text();
+      expect(body.locked).toBe(true);
     });
 
     it('passes a ReadableStream body through unchanged', () => {
