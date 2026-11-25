@@ -272,7 +272,7 @@ static jsi::Value callWorklet(jsi::Runtime &rt, std::shared_ptr<worklets::Serial
   });
 }
 
-- (BOOL)runSyncWithRuntimeHandle:(id)runtimeHandle block:(NS_NOESCAPE void (^)(void))block
+- (BOOL)runSyncWithRuntimeHandle:(id)runtimeHandle block:(NS_NOESCAPE void (^)(void *runtimePointer))block
 {
   ExpoWorkletsRuntimeHandle *runtimeWrapper = runtimeHandleFromOpaqueHandle(runtimeHandle, @"lock");
   if (!runtimeWrapper) {
@@ -282,8 +282,9 @@ static jsi::Value callWorklet(jsi::Runtime &rt, std::shared_ptr<worklets::Serial
   if (!workletRuntime) {
     return NO;
   }
-  workletRuntime->runSync([block](jsi::Runtime &) {
-    block();
+  // A reference, because copying the block to the lambda would copy it to the heap on each call.
+  workletRuntime->runSync([&block](jsi::Runtime &rt) {
+    block(&rt);
   });
   return YES;
 }

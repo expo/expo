@@ -45,6 +45,6 @@ extension WorkletRuntime: JavaScriptRuntimeLocking {
    also takes when it runs a worklet on this runtime.
    */
   public func withLock(_ body: () -> Void) -> Bool {
-    return workletHandle.runSync(body)
+    return workletHandle.runSync { _ in body() }
   }
 }

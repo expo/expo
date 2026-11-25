@@ -47,9 +47,9 @@ NS_SWIFT_NAME(WorkletsProvider)
                               arguments:(NSArray *)arguments
     NS_SWIFT_NAME(executeWorklet(runtimeHandle:serializable:arguments:));
 
-// Runs `block` on the calling thread while holding the lock of the worklet runtime, as the runtime's own
-// synchronous jobs do, and returns YES. Returns NO without running `block` when the runtime is gone.
-- (BOOL)runSyncWithRuntimeHandle:(id)runtimeHandle block:(NS_NOESCAPE void (^)(void))block
+// Runs `block` on the calling thread with the raw `jsi::Runtime *` of the worklet runtime, while holding its lock as
+// the runtime's own synchronous jobs do, and returns YES. Returns NO without running `block` when the runtime is gone.
+- (BOOL)runSyncWithRuntimeHandle:(id)runtimeHandle block:(NS_NOESCAPE void (^)(void *runtimePointer))block
     NS_SWIFT_NAME(runSync(runtimeHandle:block:));
 
 @end

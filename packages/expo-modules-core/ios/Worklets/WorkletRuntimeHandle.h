@@ -31,10 +31,10 @@ NS_SWIFT_NAME(WorkletRuntimeHandle)
              arguments:(NSArray *)arguments;
 
 /**
- Runs `block` on the calling thread while holding the lock of the worklet runtime, and returns YES.
- Returns NO without running `block` when the runtime is gone.
+ Runs `block` on the calling thread with the raw `jsi::Runtime *` of the worklet runtime, while holding its lock, and
+ returns YES. Returns NO without running `block` when the runtime is gone.
  */
-- (BOOL)runSync:(NS_NOESCAPE void (^)(void))block NS_SWIFT_NAME(runSync(_:));
+- (BOOL)runSync:(NS_NOESCAPE void (^)(void *runtimePointer))block NS_SWIFT_NAME(runSync(_:));
 
 @end
 

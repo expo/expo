@@ -45,7 +45,7 @@
                                    arguments:arguments];
 }
 
-- (BOOL)runSync:(NS_NOESCAPE void (^)(void))block
+- (BOOL)runSync:(NS_NOESCAPE void (^)(void *runtimePointer))block
 {
   return [_provider runSyncWithRuntimeHandle:_runtimeHandle block:block];
 }
