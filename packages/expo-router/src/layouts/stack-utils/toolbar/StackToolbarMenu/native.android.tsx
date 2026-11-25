@@ -240,7 +240,10 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
         source={props.source}
         tint={sourceTint}
         size={24}
-        contentDescription={getBadgeContentDescription(props.accessibilityLabel, props.badge)}
+        contentDescription={getBadgeContentDescription(
+          props.accessibilityLabel ?? props.label,
+          props.badge
+        )}
       />
     </IconButton>
   );

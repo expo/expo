@@ -259,7 +259,13 @@ describe('NativeToolbarButton', () => {
     });
 
     it('passes accessibilityLabel to Icon as contentDescription', async () => {
-      await render(<NativeToolbarButton {...defaultProps} accessibilityLabel="Open settings" />);
+      await render(
+        <NativeToolbarButton
+          {...defaultProps}
+          label="Settings"
+          accessibilityLabel="Open settings"
+        />
+      );
 
       expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
         contentDescription: 'Open settings',
@@ -280,11 +286,11 @@ describe('NativeToolbarButton', () => {
       });
     });
 
-    it('omits contentDescription when accessibilityLabel is not provided', async () => {
-      await render(<NativeToolbarButton {...defaultProps} />);
+    it('uses label as contentDescription when accessibilityLabel is not provided', async () => {
+      await render(<NativeToolbarButton {...defaultProps} label="Open settings" />);
 
       expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
-        contentDescription: undefined,
+        contentDescription: 'Open settings',
       });
     });
   });
@@ -475,10 +481,14 @@ describe('NativeToolbarButton', () => {
       });
     });
 
-    it('does not set contentDescription when no accessibilityLabel', async () => {
-      await render(<NativeToolbarButton {...defaultProps} badge={{ value: '3' }} />);
+    it('appends badge value to label when accessibilityLabel is not provided', async () => {
+      await render(
+        <NativeToolbarButton {...defaultProps} label="Notifications" badge={{ value: '3' }} />
+      );
 
-      expect(MockedIcon.mock.calls[0]![0].contentDescription).toBeUndefined();
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
+        contentDescription: 'Notifications, 3',
+      });
     });
   });
 });
