@@ -1,3 +1,5 @@
+import { PluginError } from '@expo/config-plugins';
+
 import * as Log from '../../../../log';
 import { ExpoMiddleware } from '../ExpoMiddleware';
 import type { ServerNext, ServerRequest, ServerResponse } from '../server.types';
@@ -118,9 +120,65 @@ describe('getHandler', () => {
 
     expect(next).not.toHaveBeenCalled();
     // Returns error info.
-    expect(res.end).toHaveBeenCalledWith(JSON.stringify({ error: 'Error: demo' }));
+    expect(res.end).toHaveBeenCalledWith(JSON.stringify({ error: 'Error: demo', name: 'Error' }));
     // Ensure the user sees the error in the terminal.
     expect(Log.exception).toHaveBeenCalled();
+  });
+
+  it(`returns the error name and code as JSON`, async () => {
+    const middleware = new MockExpoMiddleware('/', ['/']);
+    middleware.handleRequestAsync = jest.fn(async () => {
+      throw new PluginError('Failed to resolve plugin for module "foo"', 'PLUGIN_NOT_FOUND');
+    });
+
+    const res = {
+      setHeader: jest.fn(),
+      end: jest.fn(),
+      statusCode: 200,
+    };
+
+    await middleware.getHandler()(
+      asReq({ url: '/', headers: {} }),
+      // @ts-expect-error
+      res,
+      jest.fn()
+    );
+
+    expect(res.statusCode).toEqual(500);
+    expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
+    expect(JSON.parse(res.end.mock.calls[0][0])).toEqual({
+      error: 'PluginError: Failed to resolve plugin for module "foo"',
+      name: 'PluginError',
+      code: 'PLUGIN_NOT_FOUND',
+    });
+  });
+
+  it(`ends the response without new headers when headers were already sent`, async () => {
+    const middleware = new MockExpoMiddleware('/', ['/']);
+    middleware.handleRequestAsync = jest.fn(async () => {
+      throw new Error('stream failed');
+    });
+
+    const res = {
+      headersSent: true,
+      setHeader: jest.fn(() => {
+        throw new Error('Cannot set headers after they are sent to the client');
+      }),
+      end: jest.fn(),
+      statusCode: 200,
+    };
+
+    await middleware.getHandler()(
+      asReq({ url: '/', headers: {} }),
+      // @ts-expect-error
+      res,
+      jest.fn()
+    );
+
+    expect(res.setHeader).not.toHaveBeenCalled();
+    expect(res.end).toHaveBeenCalledWith(
+      JSON.stringify({ error: 'Error: stream failed', name: 'Error' })
+    );
   });
 
   it(`continues`, async () => {
