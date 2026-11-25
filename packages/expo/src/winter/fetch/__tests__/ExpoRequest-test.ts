@@ -1,7 +1,5 @@
 /// <reference types="node" />
 
-/** @jest-environment node */
-
 import { Request } from '../ExpoRequest';
 
 globalThis.ReadableStream = require('node:stream/web').ReadableStream;

@@ -88,11 +88,6 @@ function isRequest(input: unknown): input is Request {
   );
 }
 
-/**
- * Returns the body input of a request from any `Request` implementation, without reading it.
- * Our own `Request` and `whatwg-fetch` keep the raw body input, other implementations expose
- * only the `body` stream.
- */
 export function getRequestFormDataBoundary(request: object): string | undefined {
   return request instanceof Request ? (request._formDataBoundary ?? undefined) : undefined;
 }
@@ -103,6 +98,11 @@ function parseMultipartBoundary(contentType: string): string | null {
   return match ? (match[1] ?? match[2] ?? null) : null;
 }
 
+/**
+ * Returns the body input of a request from any `Request` implementation, without reading it.
+ * Our own `Request` and `whatwg-fetch` keep the raw body input, other implementations expose
+ * only the `body` stream.
+ */
 export function getRequestBodyInit(request: object): BodyInit | null {
   if (request instanceof Request) {
     return request._bodyInit;
