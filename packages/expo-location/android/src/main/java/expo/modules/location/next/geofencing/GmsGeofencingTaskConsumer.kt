@@ -12,7 +12,6 @@ import android.util.Log
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.Geofence
-import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.GeofencingEvent
 import com.google.android.gms.location.GeofencingRequest
@@ -35,9 +34,6 @@ class GmsGeofencingTaskConsumer(
   @Volatile
   private var pendingIntent: PendingIntent? = null
 
-  @Volatile
-  private var currentRegionIds: Set<String> = emptySet()
-
   private val geofencingClient: GeofencingClient by lazy {
     LocationServices.getGeofencingClient(context)
   }
@@ -57,15 +53,14 @@ class GmsGeofencingTaskConsumer(
   @SuppressLint("MissingPermission")
   private fun updateRegions(options: Map<String, Any?>?) {
     val currentPendingIntent = pendingIntent ?: return
-    val regions = options.toGeofencingRegions()
-    val newRegionIds = regions.map { it.identifier }.toSet()
-    val removedRegionIds = currentRegionIds - newRegionIds
-    currentRegionIds = newRegionIds
+    val taskName = task?.name ?: return
+    val regions = options.orEmpty().toGeofencingRegions()
+    geofencingClient.removeGeofences(currentPendingIntent).addOnFailureListener(::stopRequestAndReportError)
 
     if (regions.isNotEmpty()) {
       val request = GeofencingRequest.Builder()
         .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER or GeofencingRequest.INITIAL_TRIGGER_EXIT)
-        .addGeofences(regions.map { it.toGeofence() })
+        .addGeofences(regions.map { it.toGeofence(taskName) })
         .build()
       try {
         geofencingClient.addGeofences(request, currentPendingIntent).addOnFailureListener(::stopRequestAndReportError)
@@ -73,15 +68,10 @@ class GmsGeofencingTaskConsumer(
         stopRequestAndReportError(e)
       }
     }
-
-    if (removedRegionIds.isNotEmpty()) {
-      geofencingClient.removeGeofences(removedRegionIds.toList()).addOnFailureListener(::stopRequestAndReportError)
-    }
   }
 
   override fun didUnregister() {
     task = null
-    currentRegionIds = emptySet()
     pendingIntent?.let { currentPendingIntent ->
       runCatching { geofencingClient.removeGeofences(currentPendingIntent) }
       currentPendingIntent.cancel()
@@ -98,19 +88,7 @@ class GmsGeofencingTaskConsumer(
       return
     }
 
-    val state = when (event.geofenceTransition) {
-      Geofence.GEOFENCE_TRANSITION_ENTER -> "inside"
-      Geofence.GEOFENCE_TRANSITION_EXIT -> "outside"
-      else -> return
-    }
-    val timestamp = (event.triggeringLocation?.time ?: System.currentTimeMillis()).toDouble()
-    val bundles = event.triggeringGeofences.orEmpty().map { geofence ->
-      PersistableBundle().apply {
-        putString("identifier", geofence.requestId)
-        putString("state", state)
-        putDouble("timestamp", timestamp)
-      }
-    }
+    val bundles = event.toBundles(currentTask.name)
     if (bundles.isEmpty()) {
       return
     }
@@ -146,26 +124,8 @@ class GmsGeofencingTaskConsumer(
 
   private fun stopRequestAndReportError(cause: Exception) {
     val currentTask = task ?: return
-    val statusCode = (cause as? ApiException)?.statusCode
-    val message = when (statusCode) {
-      null ->
-        "Android could not monitor the regions passed to start: ${cause.message ?: cause}"
-      GeofenceStatusCodes.GEOFENCE_NOT_AVAILABLE ->
-        "Android stopped monitoring the regions because geofencing is not available. Check that location " +
-          "services are on and the background location permission is granted, then start the geofencing task again"
-      GeofenceStatusCodes.GEOFENCE_TOO_MANY_GEOFENCES ->
-        "Android monitors at most 100 regions per app, so it rejected the regions passed to start. " +
-          "Reduce the number of regions passed to start, including regions monitored elsewhere in the app, " +
-          "and start the geofencing task again"
-      GeofenceStatusCodes.GEOFENCE_TOO_MANY_PENDING_INTENTS ->
-        "Android allows at most 5 pending intents for geofencing per app, so it rejected the regions passed " +
-          "to start. Remove other geofencing registrations in the app and start the geofencing task again"
-      else ->
-        "Android could not monitor the regions passed to start: ${GeofenceStatusCodes.getStatusCodeString(statusCode)}"
-    }
     pendingIntent?.let { runCatching { geofencingClient.removeGeofences(it) } }
-    currentRegionIds = emptySet()
-    val bundles = listOf(PersistableBundle().apply { putString("error", message) })
+    val bundles = listOf(PersistableBundle().apply { putString("error", cause.toGeofencingErrorMessage()) })
     executeOrScheduleTask(currentTask, bundles)
   }
 
@@ -177,5 +137,21 @@ class GmsGeofencingTaskConsumer(
     runCatching {
       taskManagerUtils.scheduleJob(context, currentTask, bundles)
     }.onFailure { Log.w(TAG, "Could not schedule a job for the geofencing event", it) }
+  }
+}
+
+private fun GeofencingEvent.toBundles(taskName: String): List<PersistableBundle> {
+  val state = when (geofenceTransition) {
+    Geofence.GEOFENCE_TRANSITION_ENTER -> "inside"
+    Geofence.GEOFENCE_TRANSITION_EXIT -> "outside"
+    else -> return emptyList()
+  }
+  val timestamp = (triggeringLocation?.time ?: System.currentTimeMillis()).toDouble()
+  return triggeringGeofences.orEmpty().map { geofence ->
+    PersistableBundle().apply {
+      putString("identifier", geofence.requestId.removePrefix("$taskName/"))
+      putString("state", state)
+      putDouble("timestamp", timestamp)
+    }
   }
 }

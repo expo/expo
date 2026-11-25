@@ -25,8 +25,10 @@ class GeofencingRegion(
     "radius" to radius
   )
 
-  fun toGeofence(): Geofence = Geofence.Builder()
-    .setRequestId(identifier)
+  fun requestId(taskName: String): String = "$taskName/$identifier"
+
+  fun toGeofence(taskName: String): Geofence = Geofence.Builder()
+    .setRequestId(requestId(taskName))
     .setCircularRegion(latitude, longitude, radius.toFloat())
     .setExpirationDuration(Geofence.NEVER_EXPIRE)
     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
@@ -47,7 +49,7 @@ fun List<GeofencingRegion>.toTaskOptions(): Map<String, Any> = if (isEmpty()) {
   mapOf("regions" to map { it.toMap() })
 }
 
-fun Map<String, Any?>?.toGeofencingRegions(): List<GeofencingRegion> {
-  val rawRegions = this?.get("regions") as? List<*> ?: emptyList<Any>()
+fun Map<String, Any?>.toGeofencingRegions(): List<GeofencingRegion> {
+  val rawRegions = this["regions"] as? List<*> ?: emptyList<Any>()
   return rawRegions.mapNotNull { (it as? Map<*, *>)?.toGeofencingRegion() }
 }

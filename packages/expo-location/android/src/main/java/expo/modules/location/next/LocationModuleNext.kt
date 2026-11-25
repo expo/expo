@@ -268,25 +268,25 @@ class LocationModuleNext : Module() {
           throw GeofencingPreciseLocationNotGranted()
         }
 
-        val geofencingTaskConsumer = when (val consumer = getExistingOrNewGeofencingTaskConsumer(handle, taskManager)) {
-          is ProviderResult.Available -> consumer.value
+        val consumerClass = when (val result = getExistingOrNewGeofencingTaskConsumer(handle, taskManager)) {
+          is ProviderResult.Available -> result.value
           else -> throw GeofencingUnsupported()
         }
 
         val optionsMap = regions.toTaskOptions()
-        taskManager.registerTask(handle.taskName, geofencingTaskConsumer, optionsMap)
+        taskManager.registerTask(handle.taskName, consumerClass, optionsMap)
       }
 
       AsyncFunction("stop") { handle: GeofencingHandle ->
-        val registeredConsumer = handle.locationProvider.getRegisteredGeofencingTaskConsumerClass(taskManager, handle.taskName)
-        if (registeredConsumer is ProviderResult.Available) {
-          taskManager.unregisterTask(handle.taskName, registeredConsumer.value)
+        val registeredConsumerClass = handle.locationProvider.getRegisteredGeofencingTaskConsumerClass(taskManager, handle.taskName)
+        if (registeredConsumerClass is ProviderResult.Available) {
+          taskManager.unregisterTask(handle.taskName, registeredConsumerClass.value)
         }
       }
 
       AsyncFunction("hasStarted") { handle: GeofencingHandle ->
-        val registeredConsumer = handle.locationProvider.getRegisteredGeofencingTaskConsumerClass(taskManager, handle.taskName)
-        return@AsyncFunction registeredConsumer is ProviderResult.Available
+        val registeredConsumerClass = handle.locationProvider.getRegisteredGeofencingTaskConsumerClass(taskManager, handle.taskName)
+        return@AsyncFunction registeredConsumerClass is ProviderResult.Available
       }
     }
 

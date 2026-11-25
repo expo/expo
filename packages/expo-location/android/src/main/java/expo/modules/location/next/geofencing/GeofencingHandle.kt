@@ -6,6 +6,8 @@ import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.location.next.locationProviders.LocationProvider
 import expo.modules.location.next.locationProviders.ProviderResult
 
+private const val MAX_REQUEST_ID_LENGTH = 100
+
 class GeofencingHandle(
   val taskName: String,
   val locationProvider: LocationProvider
@@ -20,7 +22,8 @@ class GeofencingHandle(
 
     val identifiers = mutableSetOf<String>()
     for (region in regions) {
-      if (!region.isValid() || !identifiers.add(region.identifier)) {
+      val requestIdLength = region.requestId(taskName).length
+      if (!region.isValid() || requestIdLength > MAX_REQUEST_ID_LENGTH || !identifiers.add(region.identifier)) {
         throw GeofencingRegionInvalid(region.identifier)
       }
     }
