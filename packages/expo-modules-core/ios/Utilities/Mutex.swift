@@ -9,10 +9,11 @@ import Foundation
 @frozen
 public struct Mutex<Value>: ~Copyable, @unchecked Sendable {
   // An `os_unfair_lock` must not move in memory. The buffer object keeps it after the value, so the lock and the
-  // value take one allocation, as in `OSAllocatedUnfairLock`. Under contention it costs much less than `NSLock`,
-  // which waits in the kernel.
-  private let buffer: ManagedBuffer<Value, os_unfair_lock>
+  // value take one allocation, as in `OSAllocatedUnfairLock`.
+  @usableFromInline
+  internal let buffer: ManagedBuffer<Value, os_unfair_lock>
 
+  @inlinable
   public init(_ initialValue: Value) {
     buffer = ManagedBuffer<Value, os_unfair_lock>.create(minimumCapacity: 1) { buffer in
       buffer.withUnsafeMutablePointerToElements { $0.initialize(to: os_unfair_lock()) }
@@ -20,6 +21,7 @@ public struct Mutex<Value>: ~Copyable, @unchecked Sendable {
     }
   }
 
+  @inlinable
   @discardableResult
   public borrowing func withLock<T>(_ body: (inout Value) throws -> T) rethrows -> T {
     return try buffer.withUnsafeMutablePointers { value, lock in
