@@ -127,15 +127,7 @@ final class CompatibilityGeofencingSource: NSObject, GeofencingSource, CLLocatio
     for region in regions {
       let identifier = namespace + region.identifier
       let circularRegion = region.toCircularRegion(identifier: identifier)
-      if let existing = monitored[identifier]?.region {
-        let unchanged = existing.center.latitude == circularRegion.center.latitude
-          && existing.center.longitude == circularRegion.center.longitude
-          && existing.radius == circularRegion.radius
-        if unchanged {
-          continue
-        }
-        stopMonitoring(identifier)
-      }
+      stopMonitoring(identifier)
       monitored[identifier] = Monitored(region: circularRegion)
       manager.startMonitoring(for: circularRegion)
       manager.requestState(for: circularRegion)
