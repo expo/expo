@@ -54,8 +54,7 @@ extension MediaSessionObserver {
   public func mediaSessionNowPlayingOwnerChanged(_ owner: (any NowPlayingOwner)?) {}
 }
 
-/// The manager keeps the observer until `remove()` is called or this registration is deallocated.
-public final class ObserverRegistration: Sendable {
+final class CoordinatorObserverRegistration: ObserverRegistration {
   private let removal: Mutex<(@Sendable () -> Void)?>
 
   init(remove: @escaping @Sendable () -> Void) {
@@ -66,7 +65,7 @@ public final class ObserverRegistration: Sendable {
     remove()
   }
 
-  public func remove() {
+  func remove() {
     let removal = removal.withLock { removal in
       defer { removal = nil }
       return removal
@@ -75,7 +74,7 @@ public final class ObserverRegistration: Sendable {
   }
 }
 
-public final class MediaSessionManager: @unchecked Sendable {
+public final class MediaSessionManager: MediaSessionManaging, @unchecked Sendable {
   public static let shared = MediaSessionManager(
     backend: AVAudioSessionBackend(),
     scheduler: DispatchScheduler(),
@@ -86,7 +85,7 @@ public final class MediaSessionManager: @unchecked Sendable {
   let coordinator: SessionCoordinator
   let nowPlaying: NowPlayingStack
   private let systemEvents: SystemEventSource?
-  private let nowPlayingEvents: ObserverRegistration
+  private let nowPlayingEvents: any ObserverRegistration
 
   init(
     backend: any SessionBackend,
@@ -114,16 +113,40 @@ public final class MediaSessionManager: @unchecked Sendable {
     coordinator.policy
   }
 
-  public func beginUse(client: String, requirements: SessionRequirements = .init()) -> SessionUse {
+  public func beginUse(
+    client: String,
+    requirements: SessionRequirements,
+    delegate: (any SessionUseDelegate)?,
+    queue: DispatchQueue
+  ) -> any SessionUse {
     let activation = ActivationSignal()
-    let id = coordinator.begin(client: client, requirements: requirements, activation: activation)
-    return SessionUse(id: id, client: client, activation: activation, coordinator: coordinator)
+    let id = coordinator.reserveID()
+    let use = CoordinatorSessionUse(id: id, client: client, activation: activation, coordinator: coordinator)
+    coordinator.begin(
+      id: id,
+      client: client,
+      requirements: requirements,
+      activation: activation,
+      delegate: delegate,
+      queue: queue,
+      token: use
+    )
+    return use
   }
 
-  public func hold(client: String) -> SessionHold {
+  public func hold(client: String) -> any SessionHold {
     let activation = ActivationSignal()
-    let id = coordinator.begin(client: client, requirements: .init(), activation: activation)
-    return SessionHold(id: id, client: client, activation: activation, coordinator: coordinator)
+    let id = coordinator.reserveID()
+    coordinator.begin(
+      id: id,
+      client: client,
+      requirements: .init(),
+      activation: activation,
+      delegate: nil,
+      queue: .main,
+      token: nil
+    )
+    return CoordinatorSessionHold(id: id, client: client, activation: activation, coordinator: coordinator)
   }
 
   public func suspendWrites(reason: String) {
@@ -142,7 +165,7 @@ public final class MediaSessionManager: @unchecked Sendable {
     _ owner: any NowPlayingOwner,
     info: NowPlayingInfo,
     commands: Set<RemoteCommandKind>
-  ) -> NowPlayingClaim {
+  ) -> any NowPlayingClaim {
     nowPlaying.offer(owner, info: info, commands: commands)
   }
 
@@ -150,18 +173,23 @@ public final class MediaSessionManager: @unchecked Sendable {
     nowPlaying.owner
   }
 
-  public func addObserver(_ observer: any MediaSessionObserver) -> ObserverRegistration {
+  public func addObserver(_ observer: any MediaSessionObserver) -> any ObserverRegistration {
     coordinator.addObserver(observer)
   }
 }
 
-/// Store the token for as long as the audio plays. Deinit ends the use.
-public final class SessionUse: @unchecked Sendable {
+final class CoordinatorSessionUse: SessionUse, @unchecked Sendable {
   private let id: UInt64
   private let client: String
   private let activation: ActivationSignal
   private weak var coordinator: SessionCoordinator?
-  private let ended = Mutex(false)
+  private let state = Mutex(State.live)
+
+  private enum State {
+    case live
+    case endedByModule
+    case endedByClient
+  }
 
   init(id: UInt64, client: String, activation: ActivationSignal, coordinator: SessionCoordinator) {
     self.id = id
@@ -174,6 +202,14 @@ public final class SessionUse: @unchecked Sendable {
     end()
   }
 
+  var acceptsCommands: Bool {
+    state.withLock { $0 != .endedByClient }
+  }
+
+  private var isLive: Bool {
+    state.withLock { $0 == .live }
+  }
+
   var isActivationPending: Bool {
     activation.isPending
   }
@@ -182,34 +218,41 @@ public final class SessionUse: @unchecked Sendable {
     activation.waiterCount
   }
 
-  public func activated() async throws {
-    guard !ended.withLock({ $0 }) else {
+  func activated() async throws {
+    guard isLive else {
       throw SessionUseEndedException(client)
     }
     try await activation.wait()
   }
 
-  public func update(_ requirements: SessionRequirements) {
-    guard !ended.withLock({ $0 }) else {
+  func update(_ requirements: SessionRequirements) {
+    guard isLive else {
       return
     }
     coordinator?.update(id: id, requirements: requirements)
   }
 
-  public func end() {
-    let wasEnded = ended.withLock { ended in
-      defer { ended = true }
-      return ended
+  func end() {
+    let previous = state.withLock { state in
+      defer { state = .endedByClient }
+      return state
     }
-    if !wasEnded {
+    if previous == .live {
       activation.finish(.failure(SessionUseEndedException(client)))
       coordinator?.end(id: id)
     }
   }
+
+  func markEndedByCoordinator() {
+    state.withLock { state in
+      if state == .live {
+        state = .endedByModule
+      }
+    }
+  }
 }
 
-/// Store the token for as long as the session must stay active. Deinit releases the hold.
-public final class SessionHold: @unchecked Sendable {
+final class CoordinatorSessionHold: SessionHold, @unchecked Sendable {
   private let id: UInt64
   private let client: String
   private let activation: ActivationSignal
@@ -227,14 +270,14 @@ public final class SessionHold: @unchecked Sendable {
     release()
   }
 
-  public func activated() async throws {
+  func activated() async throws {
     guard !released.withLock({ $0 }) else {
       throw SessionUseEndedException(client)
     }
     try await activation.wait()
   }
 
-  public func release() {
+  func release() {
     let wasReleased = released.withLock { released in
       defer { released = true }
       return released

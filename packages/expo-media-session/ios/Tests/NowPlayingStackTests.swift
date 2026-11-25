@@ -12,7 +12,7 @@ struct NowPlayingStackTests {
   let center = FakeNowPlayingCenter()
   let observer = RecordingObserver()
   let manager: MediaSessionManager
-  let registration: ObserverRegistration
+  let registration: any ObserverRegistration
 
   init() throws {
     manager = MediaSessionManager(backend: backend, scheduler: scheduler, nowPlayingCenter: center)
@@ -117,7 +117,11 @@ struct NowPlayingStackTests {
     let b = FakeNowPlayingOwner("b")
     let c = FakeNowPlayingOwner("c")
     let aClaim = manager.offerNowPlaying(a, info: NowPlayingInfo(title: "A"), commands: playback)
-    var bClaim: NowPlayingClaim? = manager.offerNowPlaying(b, info: NowPlayingInfo(title: "B"), commands: playback)
+    var bClaim: (any NowPlayingClaim)? = manager.offerNowPlaying(
+      b,
+      info: NowPlayingInfo(title: "B"),
+      commands: playback
+    )
     let cClaim = manager.offerNowPlaying(c, info: NowPlayingInfo(title: "C"), commands: playback)
 
     #expect(bClaim != nil)

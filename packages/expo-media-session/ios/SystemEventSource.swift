@@ -35,6 +35,10 @@ final class SystemEventSource {
         [weak coordinator] _ in
         coordinator?.mediaServicesWereReset()
       },
+      center.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) {
+        [weak coordinator] _ in
+        coordinator?.didEnterBackground()
+      },
       center.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) {
         [weak coordinator] _ in
         coordinator?.willEnterForeground()

@@ -11,12 +11,13 @@ struct SystemEventTests {
   let backend = FakeSessionBackend()
   let observer = RecordingObserver()
   let manager: MediaSessionManager
-  let registration: ObserverRegistration
+  let registration: any ObserverRegistration
 
   init() throws {
     manager = MediaSessionManager(backend: backend, scheduler: scheduler, nowPlayingCenter: FakeNowPlayingCenter())
     registration = manager.addObserver(observer)
     try manager.setPolicy(AudioPolicyUpdate(interruptionMode: .doNotMix))
+    backend.clearCalls()
   }
 
   private func resolved(_ requirements: [SessionRequirements] = [.init()]) -> ResolvedSession {
@@ -189,6 +190,7 @@ struct SystemEventTests {
   @Test
   func testMediaServicesResetRestoresState() throws {
     try manager.setPolicy(AudioPolicyUpdate(interruptionMode: .duckOthers))
+    backend.clearCalls()
     let requirements = SessionRequirements(mode: .spokenAudio)
     let use = manager.beginUse(client: "a", requirements: requirements)
     #expect(backend.calls == [.configure(resolved([requirements])), .activate])
@@ -258,19 +260,19 @@ struct SystemEventTests {
   func testCategoryChangeWritesOnlyWhenLiveSessionDiffers() {
     let use = manager.beginUse(client: "a")
     manager.coordinator.routeChanged(.categoryChange)
-    #expect(configures == 1)
+    #expect(configures == 0)
 
     backend.live = SessionConfiguration(category: .ambient)
     manager.coordinator.routeChanged(.categoryChange)
-    #expect(configures == 2)
+    #expect(configures == 1)
     #expect(backend.live == resolved().configuration)
 
     backend.live = SessionConfiguration(category: .ambient)
     manager.coordinator.routeChanged(.categoryChange)
-    #expect(configures == 2)
+    #expect(configures == 1)
 
     use.update(SessionRequirements())
-    #expect(configures == 3)
+    #expect(configures == 2)
     #expect(
       observer.events == [
         .routeChanged(.categoryChange), .routeChanged(.categoryChange), .routeChanged(.categoryChange),

@@ -11,12 +11,13 @@ struct SessionCoordinatorTests {
   let backend = FakeSessionBackend()
   let observer = RecordingObserver()
   let manager: MediaSessionManager
-  let registration: ObserverRegistration
+  let registration: any ObserverRegistration
 
   init() throws {
     manager = MediaSessionManager(backend: backend, scheduler: scheduler, nowPlayingCenter: FakeNowPlayingCenter())
     registration = manager.addObserver(observer)
     try manager.setPolicy(AudioPolicyUpdate(interruptionMode: .doNotMix))
+    backend.clearCalls()
   }
 
   private func resolved(_ requirements: [SessionRequirements] = [.init()]) -> ResolvedSession {
@@ -37,7 +38,8 @@ struct SessionCoordinatorTests {
     let use = manager.beginUse(client: "a")
     try await use.activated()
 
-    #expect(backend.calls == [.configure(resolved()), .activate])
+    #expect(backend.calls == [.activate])
+    #expect(backend.configuration == resolved())
     use.end()
   }
 
@@ -78,7 +80,7 @@ struct SessionCoordinatorTests {
   @Test
   func testBeginDuringDeactivationReactivates() {
     manager.beginUse(client: "a").end()
-    let second = Box<SessionUse?>(nil)
+    let second = Box<(any SessionUse)?>(nil)
     backend.duringDeactivation { [manager] in
       second.value = manager.beginUse(client: "b")
     }
@@ -151,7 +153,7 @@ struct SessionCoordinatorTests {
     scheduler.advance(milliseconds: 1)
     #expect(deactivations == 1)
 
-    var dropped: SessionHold? = manager.hold(client: "c")
+    var dropped: (any SessionHold)? = manager.hold(client: "c")
     #expect(manager.coordinator.useCount == 1)
     _ = dropped
     dropped = nil
@@ -161,15 +163,16 @@ struct SessionCoordinatorTests {
   }
 
   @Test
-  func testSetPolicyWithoutUseWritesNothing() throws {
+  func testSetPolicyWithoutUseConfiguresWithoutActivating() throws {
     try manager.setPolicy(
       AudioPolicyUpdate(playsInSilentMode: true, interruptionMode: .duckOthers, allowsRecording: true)
     )
-    #expect(backend.calls.isEmpty)
+    #expect(backend.calls == [.configure(resolved([]))])
     #expect(manager.policy.interruptionMode == .duckOthers)
+    backend.clearCalls()
 
     let use = manager.beginUse(client: "a")
-    #expect(backend.calls.first == .configure(resolved()))
+    #expect(backend.calls == [.activate])
     #expect(backend.configuration?.configuration.category == .playAndRecord)
     #expect(backend.configuration?.configuration.options.contains(.duckOthers) == true)
     use.end()
@@ -196,7 +199,7 @@ struct SessionCoordinatorTests {
   @Test
   func testConcurrentBeginEndConverges() {
     DispatchQueue.concurrentPerform(iterations: 8) { thread in
-      var open: [SessionUse] = []
+      var open: [any SessionUse] = []
       for index in 0..<1000 {
         let use = manager.beginUse(client: "thread-\(thread)")
         if index.isMultiple(of: 2) {
@@ -235,7 +238,7 @@ struct SessionCoordinatorTests {
     use.end()
     scheduler.advance(milliseconds: 5000)
     #expect(manager.coordinator.useCount == 0)
-    #expect(backend.calls == [.configure(resolved()), .activate])
+    #expect(backend.calls == [.activate])
   }
 
   @Test
@@ -336,13 +339,13 @@ struct SessionCoordinatorTests {
   @Test
   func testActivationWaitsForResume() async throws {
     manager.suspendWrites(reason: "call")
-    let use = manager.beginUse(client: "a")
+    let use = try #require(manager.beginUse(client: "a") as? CoordinatorSessionUse)
     #expect(use.isActivationPending)
     #expect(backend.calls.isEmpty)
 
     manager.resumeWrites()
     try await use.activated()
-    #expect(backend.calls == [.configure(resolved()), .activate])
+    #expect(backend.calls == [.activate])
     use.end()
   }
 
@@ -365,7 +368,7 @@ struct SessionCoordinatorTests {
     let use = manager.beginUse(client: "a")
     try await use.activated()
     try await use.activated()
-    #expect(backend.calls == [.configure(resolved()), .activate])
+    #expect(backend.calls == [.activate])
     use.end()
     await #expect(throws: SessionUseEndedException.self) {
       try await use.activated()
@@ -384,7 +387,7 @@ struct SessionCoordinatorTests {
   @Test
   func testManagerKeepsObserverUntilRegistrationIsRemoved() {
     weak var released: RecordingObserver?
-    var registration: ObserverRegistration?
+    var registration: (any ObserverRegistration)?
     do {
       let unowned = RecordingObserver()
       released = unowned
@@ -414,7 +417,7 @@ struct SessionCoordinatorTests {
   @Test
   func testDeallocatedRegistrationRemovesObserver() {
     let second = RecordingObserver()
-    var registration: ObserverRegistration? = manager.addObserver(second)
+    var registration: (any ObserverRegistration)? = manager.addObserver(second)
     _ = registration
     registration = nil
     manager.suspendWrites(reason: "call")
@@ -448,7 +451,7 @@ struct SessionCoordinatorTests {
   @Test
   func testCancelledActivationWaitThrowsWithoutEndingUse() async {
     manager.suspendWrites(reason: "call")
-    let use = manager.beginUse(client: "a")
+    let use = manager.beginUse(client: "a") as! CoordinatorSessionUse
     let waiter = Task { try await use.activated() }
     while use.activationWaiterCount == 0 {
       await Task.yield()
@@ -481,5 +484,28 @@ struct SessionCoordinatorTests {
     }
 
     #expect(result == "cancelled")
+  }
+
+  @Test
+  func testStricterPolicyReleasesAnIdleMixingSessionBeforeConfiguring() throws {
+    try manager.setPolicy(AudioPolicyUpdate(interruptionMode: .mixWithOthers))
+    manager.beginUse(client: "a").end()
+    scheduler.advance(milliseconds: 2000)
+    backend.clearCalls()
+
+    try manager.setPolicy(AudioPolicyUpdate(interruptionMode: .doNotMix))
+
+    #expect(backend.calls == [.deactivate(notifyingOthers: true), .configure(resolved([]))])
+  }
+
+  @Test
+  func testServicesResetWithoutAUseRewritesThePolicy() throws {
+    try manager.setPolicy(AudioPolicyUpdate(allowsRecording: true))
+    backend.resetMediaServices()
+    backend.clearCalls()
+
+    manager.coordinator.mediaServicesWereReset()
+
+    #expect(backend.calls == [.configure(resolved([]))])
   }
 }

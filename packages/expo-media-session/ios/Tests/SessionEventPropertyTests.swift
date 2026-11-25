@@ -58,8 +58,8 @@ private final class PropertyRun {
   private let backend = FakeSessionBackend()
   private let manager: MediaSessionManager
   private let observer: EndedObserver
-  private let registration: ObserverRegistration
-  private var uses: [SessionUse] = []
+  private let registration: any ObserverRegistration
+  private var uses: [any SessionUse] = []
   private var suspendDepth = 0
   private var now = 0
   private var idleSince = 0

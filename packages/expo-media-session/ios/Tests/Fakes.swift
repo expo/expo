@@ -122,6 +122,10 @@ final class FakeSessionBackend: SessionBackend, @unchecked Sendable {
     lock.withLock { recorded }
   }
 
+  func clearCalls() {
+    lock.withLock { recorded.removeAll() }
+  }
+
   var configuration: ResolvedSession? {
     lock.withLock { lastGood }
   }
@@ -468,5 +472,78 @@ final class FakeNowPlayingOwner: NowPlayingOwner, @unchecked Sendable {
 extension MediaSessionManager {
   var nowPlayingOwnerID: String? {
     (nowPlayingOwner as? FakeNowPlayingOwner)?.nowPlayingID
+  }
+}
+
+final class RecordingUseDelegate: SessionUseDelegate, @unchecked Sendable {
+  enum Command: Equatable {
+    case pause(String, SessionPauseReason)
+    case resume(String)
+    case duck(String, Bool)
+    case failed(String)
+    case ended(String)
+  }
+
+  private enum Kind {
+    case pause(SessionPauseReason)
+    case resume
+    case duck(Bool)
+    case failed
+    case ended
+  }
+
+  let queue = DispatchQueue(label: "expo.modules.mediasession.tests.delegate")
+
+  private let lock = NSLock()
+  private var recorded: [(use: ObjectIdentifier, kind: Kind)] = []
+  private var names: [ObjectIdentifier: String] = [:]
+
+  var commands: [Command] {
+    queue.sync {}
+    return lock.withLock {
+      recorded.map { entry in
+        let name = names[entry.use] ?? "?"
+        switch entry.kind {
+        case .pause(let reason): return .pause(name, reason)
+        case .resume: return .resume(name)
+        case .duck(let isDucked): return .duck(name, isDucked)
+        case .failed: return .failed(name)
+        case .ended: return .ended(name)
+        }
+      }
+    }
+  }
+
+  func name(_ use: any SessionUse, _ name: String) {
+    lock.withLock { names[ObjectIdentifier(use)] = name }
+  }
+
+  func clear() {
+    queue.sync {}
+    lock.withLock { recorded.removeAll() }
+  }
+
+  private func record(_ use: any SessionUse, _ kind: Kind) {
+    lock.withLock { recorded.append((ObjectIdentifier(use), kind)) }
+  }
+
+  func sessionUse(_ use: any SessionUse, pause reason: SessionPauseReason) {
+    record(use, .pause(reason))
+  }
+
+  func sessionUseResume(_ use: any SessionUse) {
+    record(use, .resume)
+  }
+
+  func sessionUse(_ use: any SessionUse, duck isDucked: Bool) {
+    record(use, .duck(isDucked))
+  }
+
+  func sessionUse(_ use: any SessionUse, didFail error: Error) {
+    record(use, .failed)
+  }
+
+  func sessionUseDidEnd(_ use: any SessionUse) {
+    record(use, .ended)
   }
 }

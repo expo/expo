@@ -71,7 +71,11 @@ final class NowPlayingStack: @unchecked Sendable {
     published.withLock { $0.owner }
   }
 
-  func offer(_ owner: any NowPlayingOwner, info: NowPlayingInfo, commands: Set<RemoteCommandKind>) -> NowPlayingClaim {
+  func offer(
+    _ owner: any NowPlayingOwner,
+    info: NowPlayingInfo,
+    commands: Set<RemoteCommandKind>
+  ) -> StackNowPlayingClaim {
     let id = nextID.withLock { value in
       value += 1
       return value
@@ -80,7 +84,7 @@ final class NowPlayingStack: @unchecked Sendable {
     scheduler.async { [self] in
       push(pending.owner, claimID: id, info: info, commands: commands)
     }
-    return NowPlayingClaim(id: id, stack: self)
+    return StackNowPlayingClaim(id: id, stack: self)
   }
 
   func update(id: UInt64, info: NowPlayingInfo, commands: Set<RemoteCommandKind>?) {
