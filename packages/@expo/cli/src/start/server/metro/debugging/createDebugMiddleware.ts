@@ -1,8 +1,13 @@
 import type { NextHandleFunction } from 'connect';
+import type { IncomingMessage } from 'http';
 import { WebSocketServer } from 'ws';
 
 import { env, envIsHeadless } from '../../../../utils/env';
-import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
+import {
+  isLocalSocket,
+  isMatchingOrigin,
+  shouldThrottleRemoteDevCall,
+} from '../../../../utils/net';
 import type { TerminalReporter } from '../TerminalReporter';
 import { event } from '../inspectorEvents';
 import { createHandlersFactory } from './createHandlersFactory';
@@ -74,15 +79,28 @@ export function createDebugMiddleware({
 
   return {
     debugMiddleware(req, res, next) {
-      // The debugger middleware is skipped entirely if the connection isn't a loopback request
       if (isLocalSocket(req.socket)) {
         return middleware(req, res, next);
-      } else {
+      } else if (!isOpenDebuggerLaunch(req)) {
         return next();
+      } else if (!isMatchingOrigin(req, serverBaseUrl)) {
+        res.writeHead(403).end();
+      } else if (shouldThrottleRemoteDevCall()) {
+        res.writeHead(429).end();
+      } else {
+        return middleware(req, res, next);
       }
     },
     debugWebsocketEndpoints: websocketEndpoints,
   };
+}
+
+// Dev menus on physical devices reach the dev server over the network to launch React Native DevTools
+function isOpenDebuggerLaunch(req: IncomingMessage): boolean {
+  return (
+    req.method === 'POST' &&
+    new URL(req.url ?? '/', 'http://localhost').pathname === '/open-debugger'
+  );
 }
 
 function createLogger(
