@@ -34,7 +34,7 @@ struct AudioPlayerStatusTests {
 
     #expect(item.status != .readyToPlay)
     #expect(item.currentDateCalls == 0)
-    #expect(status["currentOffsetFromLive"] as? Double == nil)
+    #expect(status.currentOffsetFromLive == nil)
   }
 
   @Test
@@ -43,7 +43,7 @@ struct AudioPlayerStatusTests {
 
     let status = player.currentStatus(knownCurrentTime: 12.5)
 
-    #expect(status["currentTime"] as? Double == 12.5)
+    #expect(status.currentTime == 12.5)
     #expect(item.currentTimeCalls == 0)
   }
 
@@ -51,10 +51,10 @@ struct AudioPlayerStatusTests {
   func `reads the item's time only for an update that does not carry one`() {
     let (player, item) = makePlayer()
 
-    player.updateStatus(with: ["currentTime": 3.0])
+    player.updateStatus(currentTime: 3.0)
     #expect(item.currentTimeCalls == 0)
 
-    player.updateStatus(with: [:])
+    player.updateStatus()
     #expect(item.currentTimeCalls == 1)
   }
 
