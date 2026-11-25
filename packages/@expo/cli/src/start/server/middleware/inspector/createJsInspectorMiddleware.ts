@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import type { NextHandleFunction } from 'connect';
 import type { IncomingMessage, ServerResponse } from 'http';
+import { isIPv6 } from 'node:net';
 import { URL } from 'url';
 
 import { isMatchingOrigin, shouldThrottleRemoteDevCall } from '../../../../utils/net';
@@ -31,9 +32,10 @@ export function createJsInspectorMiddleware({
       return;
     }
 
-    // The debug middleware only answers local sockets, and `serverBaseUrl` can be the
-    // REACT_NATIVE_PACKAGER_HOSTNAME or proxy address, so ask Metro over loopback.
-    const metroOrigin = `http://127.0.0.1:${req.socket.localPort}`;
+    const { localAddress, localPort } = req.socket;
+    const hostname = isIPv6(localAddress!) ? `[${localAddress}]` : localAddress!;
+    const protocol = 'encrypted' in req.socket && req.socket.encrypted ? 'https:' : 'http:';
+    const metroOrigin = new URL(`${protocol}//${hostname}:${localPort}`).origin;
 
     let app;
     try {

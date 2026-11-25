@@ -123,6 +123,39 @@ describe('createJsInspectorMiddleware', () => {
     }
   );
 
+  it.each([
+    ['an IPv6 local address', { localAddress: '::1' }, 'http://[::1]:8081'],
+    ['a non-default IPv4 loopback', { localAddress: '127.0.0.2' }, 'http://127.0.0.2:8081'],
+    ['an encrypted socket', { encrypted: true }, 'https://127.0.0.1:8081'],
+  ])(
+    'queries the inspector on the address and protocol the request arrived on, for %s',
+    async (_, socket, metroOrigin) => {
+      const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0]!;
+      const req = createRequest(
+        `http://localhost:8081/_expo/debugger?applicationId=${app.description}`,
+        'GET',
+        socket
+      );
+      const res = createMockedResponse();
+      const next = jest.fn();
+      (
+        JsInspector.queryInspectorAppAsync as jest.MockedFunction<
+          typeof JsInspector.queryInspectorAppAsync
+        >
+      ).mockReturnValue(Promise.resolve(app));
+
+      const middlewareAsync = createJsInspectorMiddleware({
+        serverBaseUrl: 'http://localhost:8081',
+      });
+      await middlewareAsync(req, res as ServerResponse, next);
+
+      expect(JsInspector.queryInspectorAppAsync).toHaveBeenCalledWith(
+        metroOrigin,
+        expect.anything()
+      );
+    }
+  );
+
   it('responds with 500 instead of rejecting when the inspector query fails', async () => {
     const req = createRequest('http://localhost:8081/_expo/debugger?applicationId=any');
     const res = createMockedResponse();
@@ -198,7 +231,11 @@ describe('createJsInspectorMiddleware', () => {
 function createRequest(
   requestUrl: string,
   method?: 'GET' | 'POST' | 'PUT',
-  { remoteAddress = '127.0.0.1' }: { remoteAddress?: string } = {}
+  {
+    remoteAddress = '127.0.0.1',
+    localAddress = '127.0.0.1',
+    encrypted,
+  }: { remoteAddress?: string; localAddress?: string; encrypted?: boolean } = {}
 ): IncomingMessage {
   const url = new URL(requestUrl);
   const req: Partial<IncomingMessage> = {
@@ -207,10 +244,11 @@ function createRequest(
       host: url.host,
     },
     socket: {
-      localAddress: '127.0.0.1',
+      localAddress,
       localPort: Number(url.port || 80),
       remoteAddress,
       remoteFamily: 'IPv4',
+      ...(encrypted !== undefined && { encrypted }),
     } as Socket,
     url: `${url.pathname}${url.search}`,
   };
