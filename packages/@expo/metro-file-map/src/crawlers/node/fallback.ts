@@ -108,13 +108,13 @@ export default function createFallbackFilesystem(
             const target = normalizePathSeparatorsToPosix(
               rootPathUtils.resolveSymlinkToNormal(childNormalPath, symlinkTarget)
             );
-            result.set(name, [null, 0, 0, null, target, null]);
+            result.set(name, [null, null, 0, null, target, null]);
           } catch {}
         }
       } else if (entry.isFile()) {
         const ext = path.extname(name).slice(1);
         if (exts[ext] && !result.has(name)) {
-          result.set(name, [null, 0, 0, null, 0, null]);
+          result.set(name, [null, null, 0, null, 0, null]);
         }
       }
     }
