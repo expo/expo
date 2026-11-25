@@ -779,8 +779,10 @@ PODS:
     - ExpoModulesWorklets
     - React-RCTFabric
   - ExpoVideo (58.0.12):
+    - ExpoMediaSession
     - ExpoModulesCore
   - ExpoVideo/Tests (58.0.12):
+    - ExpoMediaSession
     - ExpoModulesCore
   - ExpoVideoDashSupportModule (1.0.0):
     - ExpoModulesCore
@@ -4483,7 +4485,7 @@ SPEC CHECKSUMS:
   ExpoMaps: 56acbfda3c93f738b9c7d4c54af4b4058cdd7ecf
   ExpoMediaLibrary: 7e70cbd590acc2b1a21f486ade3134890197b184
   ExpoMediaLibraryImageLoader: 6131955b7bbc3f9ce4c4c97cec9b1b6455a7828d
-  ExpoMediaSession: 12fe9246f2363bb513dc9564d09e8ba02ab4c77f
+  ExpoMediaSession: 11cb38d6cc2534b69e1cee006d2df389da525289
   ExpoMeshGradient: 778fd9893abcff50f3861e13c8768c8442e6cb78
   ExpoModulesCore: db285f1afd687fdd0a6979b38d8bc6c606248c31
   ExpoModulesJSI: d9f7f7a1625c1a29cb116a6c264f1752230d4783
@@ -4511,7 +4513,7 @@ SPEC CHECKSUMS:
   ExpoTaskManager: a9a9c3ccecdf3e0b76d11c35893a5ee0989ccd7a
   ExpoTrackingTransparency: 16604a38f96b01b3d75c4407b5322a91759c09a3
   ExpoUI: ee7843da6bf0b16255f3f5c5de69c3cd4f956cd6
-  ExpoVideo: dcfa5764e56e73c9eb1cf54c7c218967280701b7
+  ExpoVideo: c962df9004ad6f7e0d142bc12c5098b4b112e82d
   ExpoVideoDashSupportModule: a8197584e7b7e533a67e75d3349c5fa827358ad6
   ExpoWebBrowser: dca6b04fee3f7a2bca26c9534a010badef0db355
   EXStructuredHeaders: d38b81fb2ff838c15bf28135deb247e76293d2b9
