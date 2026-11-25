@@ -122,7 +122,7 @@ Expo Observe saves each span on the device when the span ends. It sends the span
 
 Spans follow the same [configuration](/eas/observe/configuration/) as metrics:
 
-- `dispatchingEnabled`, `dispatchInDebug`, and `sampleRate` apply to spans. An installation that is out of sample deletes its pending spans.
+- `dispatchingEnabled`, `dispatchInDebug`, and `sampleRate` apply to spans. When one of them stops an installation from sending, the installation deletes its pending spans.
 - `errorSampleRate` and `ignoredEvents` do not apply to spans.
 
 The device keeps at most 2,000 spans that are not sent yet. When it saves a new span past that limit, it deletes the oldest one. Custom spans and network spans share this limit.
