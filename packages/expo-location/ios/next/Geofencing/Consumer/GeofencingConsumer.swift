@@ -49,7 +49,7 @@ final class GeofencingConsumer: NSObject, EXTaskConsumerInterface {
     } else {
       CompatibilityGeofencingSource(options: options)
     }
-    let delivery = Task { [weak task] in
+    let delivery = Task { @MainActor [weak task] in
       do {
         for try await event in source.updates {
           let data = event.toDictionary()
