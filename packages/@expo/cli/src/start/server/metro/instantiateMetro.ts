@@ -26,7 +26,6 @@ import { shouldReduceLogs } from '../../../utils/interactive';
 import type DevToolsPluginManager from '../devtools/DevToolsPluginManager';
 import { DevToolsPluginEndpoint } from '../devtools/DevToolsPluginManager';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
-import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
@@ -438,7 +437,6 @@ export async function instantiateMetroAsync(
     });
     Object.assign(websocketEndpoints, debugWebsocketEndpoints);
     middleware.use(debugMiddleware);
-    middleware.use('/_expo/debugger', createJsInspectorMiddleware({ serverBaseUrl }));
 
     // TODO(cedric): `enhanceMiddleware` is deprecated, but is currently used to unify the middleware stacks
     // See: https://github.com/facebook/metro/commit/22e85fde85ec454792a1b70eba4253747a2587a9

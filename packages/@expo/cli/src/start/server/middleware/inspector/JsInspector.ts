@@ -73,14 +73,6 @@ export async function openJsInspector(metroBaseUrl: string, app: MetroInspectorP
   return response?.ok ?? true;
 }
 
-export async function queryInspectorAppAsync(
-  metroServerOrigin: string,
-  appId: string
-): Promise<MetroInspectorProxyApp | null> {
-  const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
-  return apps.find((app) => app.appId === appId) ?? null;
-}
-
 export async function queryAllInspectorAppsAsync(
   metroServerOrigin: string
 ): Promise<MetroInspectorProxyApp[]> {
