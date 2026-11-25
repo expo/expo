@@ -8,7 +8,7 @@ fun getIconNameResId(context: Context, iconName: String): Int? {
   var resId: Int
   val packageName = context.packageName
   val baseResourceName = filenameToBasename(iconName)
-  val resourceNameWithExpoVideoPlugin = "${EXPO_VIDEO_ICON_PREFIX}${baseResourceName}"
+  val resourceNameWithExpoVideoPlugin = "${EXPO_VIDEO_ICON_PREFIX}$baseResourceName"
 
   resId = context.resources.getIdentifier(
     resourceNameWithExpoVideoPlugin,
@@ -16,7 +16,7 @@ fun getIconNameResId(context: Context, iconName: String): Int? {
     packageName
   )
 
-  if(resId == 0){
+  if (resId == 0) {
     resId = context.resources.getIdentifier(
       baseResourceName,
       "drawable",
@@ -24,7 +24,7 @@ fun getIconNameResId(context: Context, iconName: String): Int? {
     )
   }
 
-  if(resId == 0){
+  if (resId == 0) {
     return null
   }
 

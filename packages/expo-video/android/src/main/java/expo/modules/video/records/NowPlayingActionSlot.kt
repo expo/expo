@@ -22,4 +22,3 @@ enum class NowPlayingActionSlot(val value: String) : Enumerable {
     }
   }
 }
-
