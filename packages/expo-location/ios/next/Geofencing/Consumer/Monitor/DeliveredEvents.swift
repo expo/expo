@@ -1,4 +1,4 @@
-import Foundation
+import CoreLocation
 
 /// Drops events the monitor has already delivered.
 ///
@@ -7,7 +7,7 @@ import Foundation
 final class DeliveredEvents {
   private var dates: [String: Date] = [:]
 
-  func admit(_ event: MonitorEvent) -> Bool {
+  func admit(_ event: CLMonitor.Event) -> Bool {
     guard dates[event.identifier] != event.date else {
       return false
     }

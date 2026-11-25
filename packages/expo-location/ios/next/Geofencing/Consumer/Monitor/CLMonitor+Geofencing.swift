@@ -15,8 +15,7 @@ extension CLMonitor {
   func forward(to shared: SharedMonitor) async {
     do {
       for try await event in events {
-        let monitorEvent = MonitorEvent(event)
-        shared.deliver(monitorEvent)
+        shared.deliver(event)
       }
       shared.end(nil)
     } catch {

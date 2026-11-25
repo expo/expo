@@ -57,7 +57,7 @@ final class SharedMonitor {
     pendingRegionUpdates.yield(regions)
   }
 
-  func deliver(_ event: MonitorEvent) {
+  func deliver(_ event: CLMonitor.Event) {
     lock.withLock {
       if let failure = event.failure {
         receiver?.finish(throwing: failure)
