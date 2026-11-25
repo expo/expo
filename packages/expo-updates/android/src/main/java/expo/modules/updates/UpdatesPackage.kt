@@ -59,9 +59,13 @@ class UpdatesPackage : Package {
         UpdatesController.instance.onDidCreateReactInstance(reactContext)
       }
 
+      // The React host calls only this method, not `handleReactInstanceException`.
       override fun onReactInstanceException(useDeveloperSupport: Boolean, exception: Exception) {
         UpdatesController.instance.onReactInstanceException(exception)
       }
+
+      override fun handleReactInstanceException(useDeveloperSupport: Boolean, exception: Exception): Boolean =
+        UpdatesController.instance.onReactInstanceException(exception)
     }
     return listOf(handler)
   }
