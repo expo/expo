@@ -114,7 +114,7 @@ describe(getTransformEnvironment, () => {
 describe(getEnvVarDevString, () => {
   it(`always formats env var code in one line`, () => {
     expect(getEnvVarDevString({})).toMatchInlineSnapshot(
-      `"/* HMR env vars from Expo CLI (dev-only) */ process.env=Object.defineProperties(process.env, {});"`
+      `"/* HMR env vars from Expo CLI (dev-only) */ process.env=Object.defineProperties(process.env, {});Object.defineProperty(process.env, Symbol.for("expo.env.overrides"), { configurable: true, value: [] });"`
     );
   });
   it(`formats env vars with new line characters in them`, () => {
@@ -123,7 +123,7 @@ describe(getEnvVarDevString, () => {
         EXPO_PUBLIC_TEST: 'test\nvalue',
       })
     ).toMatchInlineSnapshot(
-      `"/* HMR env vars from Expo CLI (dev-only) */ process.env=Object.defineProperties(process.env, {"EXPO_PUBLIC_TEST": { enumerable: true, value: "test\\nvalue" }});"`
+      `"/* HMR env vars from Expo CLI (dev-only) */ process.env=Object.defineProperties(process.env, {"EXPO_PUBLIC_TEST": { enumerable: true, value: "test\\nvalue" }});Object.defineProperty(process.env, Symbol.for("expo.env.overrides"), { configurable: true, value: ["EXPO_PUBLIC_TEST"] });"`
     );
   });
   it(`formats multiple env vars`, () => {
@@ -133,7 +133,7 @@ describe(getEnvVarDevString, () => {
         EXPO_PUBLIC_B: 'b',
       })
     ).toMatchInlineSnapshot(
-      `"/* HMR env vars from Expo CLI (dev-only) */ process.env=Object.defineProperties(process.env, {"EXPO_PUBLIC_A": { enumerable: true, value: "a" },"EXPO_PUBLIC_B": { enumerable: true, value: "b" }});"`
+      `"/* HMR env vars from Expo CLI (dev-only) */ process.env=Object.defineProperties(process.env, {"EXPO_PUBLIC_A": { enumerable: true, value: "a" },"EXPO_PUBLIC_B": { enumerable: true, value: "b" }});Object.defineProperty(process.env, Symbol.for("expo.env.overrides"), { configurable: true, value: ["EXPO_PUBLIC_A","EXPO_PUBLIC_B"] });"`
     );
   });
 });
