@@ -1,3 +1,5 @@
+import { SharedObject } from 'expo';
+
 /**
  * Describes how the app's audio behaves next to audio from other apps.
  *
@@ -269,6 +271,80 @@ export interface NowPlayingClaim {
    * Removes the owner from the stack. The next owner below it becomes the top. Later calls do nothing.
    */
   withdraw(): void;
+}
+
+/**
+ * What a session use needs from the shared audio session.
+ */
+export type SessionRequirements = {
+  /**
+   * A mixing mode for this use. It can only make the app-wide `interruptionMode` stricter. The
+   * order from strictest is `doNotMix`, `duckOthers`, then `mixWithOthers`.
+   */
+  mixing?: 'mixWithOthers' | 'duckOthers' | 'doNotMix';
+  /**
+   * Input that the use needs. `record` records from the microphone. `measurement` reads raw
+   * microphone input, for example for analysis. On iOS, the module picks one category that covers
+   * every active use.
+   */
+  capabilities?: ('record' | 'measurement')[];
+  /**
+   * Whether the use keeps playing when the app goes to the background. When `false`, the module
+   * sends `pause` when the app goes to the background and `resume` when it returns. The module acts
+   * only on the transition: a use that begins in the background is not paused. On iOS, background
+   * audio also needs the `audio` background mode.
+   * @default false
+   */
+  continuesInBackground?: boolean;
+};
+
+/**
+ * Why the module paused a session use.
+ *
+ * - `interruption`: Another app or a call took the audio. The module sends `resume` when the
+ * interruption ends and the app can play again. Otherwise, it ends the use.
+ * - `background`: The app went to the background and the use does not continue there.
+ * - `outputDisconnected`: Headphones or another output disconnected. The module ends the use.
+ * - `focusLost`: Another app took audio focus for good (Android only). The module ends the use.
+ */
+export type SessionPauseReason =
+  | 'interruption'
+  | 'background'
+  | 'outputDisconnected'
+  | 'focusLost'
+  | (string & {});
+
+/**
+ * @hidden
+ */
+export type SessionUseEvents = {
+  pause(event: { reason: SessionPauseReason }): void;
+  resume(): void;
+  duck(event: { isDucked: boolean }): void;
+  fail(event: { message: string }): void;
+  ended(): void;
+};
+
+/**
+ * One use of the shared audio session, such as one player that plays. The module sends the use
+ * commands as events: `pause`, `resume`, `duck` (`{ isDucked }`), and `fail` (`{ message }`). Pause
+ * or resume the player on those events, and lower its volume while it is ducked.
+ *
+ * Begin a new use on every play, and end it when the user pauses or stops, or when playback ends.
+ * Leave the use alone in the event listeners. When the module will not resume a use, it ends the
+ * use itself and sends `ended`. An ended use sends no more events.
+ */
+export declare class SessionUse extends SharedObject<SessionUseEvents> {
+  /**
+   * Replaces the use's requirements. A change of `continuesInBackground` takes effect at the next
+   * background transition.
+   */
+  update(requirements: SessionRequirements): void;
+  /**
+   * Ends the use. The module releases the session 1 second after the last use or hold ends. Later
+   * calls do nothing.
+   */
+  end(): void;
 }
 
 /**

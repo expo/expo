@@ -7,6 +7,9 @@ import type {
   NowPlayingInfo,
   NowPlayingOwner,
   RemoteCommandKind,
+  SessionRequirements,
+  SessionUse,
+  SessionUseEvents,
 } from './MediaSession.types';
 import { BrowserNowPlayingCenter } from './web/BrowserNowPlayingCenter';
 import { NowPlayingStack } from './web/NowPlayingStack';
@@ -17,6 +20,12 @@ const defaultPolicy: AudioPolicy = {
   allowsRecording: false,
   shouldRouteThroughEarpiece: false,
 };
+
+class WebSessionUse extends globalThis.expo.SharedObject<SessionUseEvents> implements SessionUse {
+  update(requirements: SessionRequirements): void {}
+
+  end(): void {}
+}
 
 class ExpoMediaSessionWeb extends NativeModule<MediaSessionEvents> {
   private policy: AudioPolicy = defaultPolicy;
@@ -40,6 +49,10 @@ class ExpoMediaSessionWeb extends NativeModule<MediaSessionEvents> {
   holdSession(key: string): void {}
 
   releaseSession(key: string): void {}
+
+  beginSessionUse(client: string, requirements: SessionRequirements): SessionUse {
+    return new WebSessionUse();
+  }
 
   getNowPlayingOwner(): NowPlayingOwner | null {
     return this.stack.owner;

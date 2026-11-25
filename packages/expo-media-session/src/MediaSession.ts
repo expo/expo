@@ -11,6 +11,8 @@ import type {
   NowPlayingOwnerChangeEvent,
   RemoteCommandKind,
   RouteChangeEvent,
+  SessionRequirements,
+  SessionUse,
 } from './MediaSession.types';
 
 type NativeOwnerRegistration = {
@@ -64,6 +66,45 @@ export function getAudioPolicy(): AudioPolicy {
  */
 export function holdSession(key: string): void {
   ExpoMediaSession.holdSession(key);
+}
+
+/**
+ * Begins a use of the shared audio session for a player that is about to play. The call returns at
+ * once, and the module activates the session or requests audio focus in the background. If the
+ * activation fails, the use sends a `fail` event, the module ends it, and the `activationError`
+ * listener also receives the error.
+ *
+ * Native media libraries begin uses from Swift or Kotlin instead. See
+ * [For library authors](#for-library-authors). On web, the use never sends events.
+ *
+ * @param client A name for the use, such as `my-player`. Errors and logs report it.
+ * @param requirements What the use needs from the session.
+ * @return The use. Listen for its events, and end it when playback stops.
+ *
+ * @example
+ * ```ts
+ * let use: SessionUse | null = null;
+ *
+ * function play() {
+ *   use?.end();
+ *   use = beginSessionUse('my-player', { continuesInBackground: true });
+ *   use.addListener('pause', () => player.pause());
+ *   use.addListener('resume', () => player.play());
+ *   player.play();
+ * }
+ *
+ * function pause() {
+ *   use?.end();
+ *   use = null;
+ *   player.pause();
+ * }
+ * ```
+ */
+export function beginSessionUse(
+  client: string,
+  requirements: SessionRequirements = {}
+): SessionUse {
+  return ExpoMediaSession.beginSessionUse(client, requirements);
 }
 
 /**
