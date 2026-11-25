@@ -29,6 +29,10 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
     ?? RCTReleaseLevel.Stable
 
     super.init(delegate: delegate, releaseLevel: releaseLevel)
+    nonisolated(unsafe) let factory = self
+    MainActor.assumeIsolated {
+      factory.rootViewFactory = factory.makeRootViewFactory()
+    }
   }
 
   // `RCTBundleConfiguration` is only available in react-native 0.84+, so it doesn't exist yet on react-native-macos.
@@ -73,7 +77,7 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
 #endif
 
   @MainActor
-  @objc func createRCTRootViewFactory() -> RCTRootViewFactory {
+  private func makeRootViewFactory() -> RCTRootViewFactory {
     // Alan: This is temporary. We need to cast to ExpoReactNativeFactoryDelegate here because currently, if you extend RCTReactNativeFactory
     // from Swift, customizeRootView will not work on the new arch because the cast to RCTRootView will never
     // succeed which breaks expo-splash-screen and react-native-bootsplash.
@@ -113,24 +117,21 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
       fatalError("recreateRootView: Missing RCTReactNativeFactoryDelegate")
     }
 
-    let configuration = self.rootViewFactory.value(forKey: "_configuration") as? RCTRootViewFactoryConfiguration
-
-    if let bundleURL = withBundleURL {
-      configuration?.bundleURLBlock = {
-        return bundleURL
-      }
-    }
-
 #if os(iOS) || os(tvOS)
     adoptInfoPlistMetroPort()
 #endif
 
     let rootView: UIView
     if let factory = self.rootViewFactory as? ExpoReactRootViewFactory {
+      if let bundleURL = withBundleURL {
+        factory.fallbackBundleURLBlock = {
+          return bundleURL
+        }
+      }
       // bundleConfiguration is only accepted in react-native 0.84+
 #if os(iOS) || os(tvOS)
       let bundleConfiguration = ExpoBundleConfiguration.configuration(
-        bundleURL: withBundleURL ?? configuration?.bundleURLBlock()
+        bundleURL: withBundleURL ?? factory.fallbackBundleURLBlock()
       )
       // When calling `recreateRootViewWithBundleURL:` from `EXReactRootViewFactory`,
       // we don't want to loop the ReactDelegate again. Otherwise, it will be an infinite loop.
@@ -150,6 +151,12 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
       )
 #endif
     } else {
+      let configuration = self.rootViewFactory.value(forKey: "_configuration") as? RCTRootViewFactoryConfiguration
+      if let bundleURL = withBundleURL {
+        configuration?.bundleURLBlock = {
+          return bundleURL
+        }
+      }
 #if os(iOS) || os(tvOS)
       let bundleConfiguration = ExpoBundleConfiguration.configuration(
         bundleURL: withBundleURL ?? configuration?.bundleURLBlock()
