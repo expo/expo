@@ -3,7 +3,7 @@ import type { ColorValue, NativeSyntheticEvent } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { SafeAreaView, Split } from '../optional-libraries/react-native-screens';
+import { SafeAreaView, Split, splitColumnProps } from '../optional-libraries/react-native-screens';
 import { SplitViewColumnHeader } from './header';
 
 export interface SplitViewToolbarItem {
@@ -192,7 +192,7 @@ export interface SplitViewColumnProps {
 }
 
 export function SplitViewColumn(props: SplitViewColumnProps) {
-  return <Split.Column>{getSplitColumnChildren(props)}</Split.Column>;
+  return <Split.Column {...splitColumnProps}>{getSplitColumnChildren(props)}</Split.Column>;
 }
 
 export interface SplitViewContentProps {
