@@ -13,11 +13,24 @@ on:
         default: canary
         options:
           - canary
+          - package-preview
           - sync-published-packages
       dry-run:
-        description: Validate the sync without changing npm tags or www
+        description: Validate the sync or the package preview without changing npm tags or www
         type: boolean
         default: true
+      package:
+        description: "Package preview: the package to preview, such as expo-observe"
+        type: string
+      sdk:
+        description: "Package preview: target Expo SDK major version, such as 58"
+        type: string
+      build:
+        description: "Package preview: dependencies to preview from this branch as well, comma-separated"
+        type: string
+      use:
+        description: "Package preview: exact published dependency versions, such as expo-eas-client@58.0.2"
+        type: string
   schedule:
     - cron: 0 1 * * * # Nightly at 1:00 AM UTC
 
@@ -298,7 +311,7 @@ jobs:
     if: >-
       needs.stable-mode.outputs.canary == 'true' &&
       (github.event_name == 'schedule' ||
-       (github.event_name == 'workflow_dispatch' && inputs.operation != 'sync-published-packages'))
+       (github.event_name == 'workflow_dispatch' && inputs.operation == 'canary'))
     runs-on:
       group: macos-publishing
     timeout-minutes: 180
@@ -349,3 +362,45 @@ jobs:
           webhook: ${{ secrets.slack_webhook_api }}
           author_name: Publish Packages
           fields: job,message,author,took
+
+  package-preview:
+    name: Publish package preview
+    needs: stable-mode
+    if: >-
+      needs.stable-mode.outputs.canary == 'true' &&
+      github.event_name == 'workflow_dispatch' && inputs.operation == 'package-preview'
+    # A preview ships native source, so it needs no Xcode or Android toolchain.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: npm-publish-canary
+    concurrency:
+      group: publish-packages-preview-${{ github.ref_name }}-${{ inputs.package }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org/
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Build Expo Tools and workspace dependencies
+        run: pnpm turbo run build --filter=expotools...
+      - name: Publish package preview
+        run: >-
+          pnpm expotools publish-canary
+          --package "$PREVIEW_PACKAGE" --sdk "$PREVIEW_SDK"
+          --build "$PREVIEW_BUILD" --use "$PREVIEW_USE"
+          ${{ inputs.dry-run && '--dry-run' || '' }}
+        env:
+          FORCE_COLOR: "2"
+          PREVIEW_PACKAGE: ${{ inputs.package }}
+          PREVIEW_SDK: ${{ inputs.sdk }}
+          PREVIEW_BUILD: ${{ inputs.build }}
+          PREVIEW_USE: ${{ inputs.use }}
