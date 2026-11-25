@@ -18,12 +18,14 @@ export type DeviceConsoleLevel =
 
 interface DeviceConsoleReporter {
   logDeviceConsole(log: { level: DeviceConsoleLevel; data: string[]; device?: string }): void;
+  update(event: { type: 'unstable_server_log'; level: 'warn'; data: string[] }): void;
 }
 
 interface StreamConsoleLogsOptions {
   serverBaseUrl: string;
   deviceSocketServer: WebSocketServer;
   reporter: DeviceConsoleReporter;
+  sessionGraceMs?: number;
 }
 
 const LEVEL_BY_TYPE: Partial<Record<ConsoleApiType, DeviceConsoleLevel>> = {
@@ -42,17 +44,56 @@ const LEVEL_BY_TYPE: Partial<Record<ConsoleApiType, DeviceConsoleLevel>> = {
   endGroup: 'groupEnd',
 };
 
-/** Prints the console output of each connected app through the terminal reporter. */
+/**
+ * Prints the console output of each connected app through the terminal reporter.
+ *
+ * A device that connects to the inspector proxy and has no console session after `sessionGraceMs`
+ * gets one warning, since nothing else reports its logs.
+ */
 export function streamConsoleLogs({
   serverBaseUrl,
   deviceSocketServer,
   reporter,
+  sessionGraceMs = 3000,
 }: StreamConsoleLogsOptions): ConsoleTargetWatcher {
   let printed = Promise.resolve();
+  let graceTimer: ReturnType<typeof setTimeout> | undefined;
+  const warnedDeviceIds = new Set<string>();
+
+  function warnAboutDevicesWithoutSession() {
+    clearTimeout(graceTimer);
+    const attachedDeviceIds = new Set(
+      [...watcher.targets.values()].map((target) => target.logicalDeviceId)
+    );
+    const deadlines: number[] = [];
+    for (const [deviceId, device] of watcher.devices) {
+      if (attachedDeviceIds.has(deviceId) || warnedDeviceIds.has(deviceId)) {
+        continue;
+      }
+      const deadline = device.connectedAt + sessionGraceMs;
+      if (Date.now() < deadline) {
+        deadlines.push(deadline);
+        continue;
+      }
+      warnedDeviceIds.add(deviceId);
+      reporter.update({
+        type: 'unstable_server_log',
+        level: 'warn',
+        data: [
+          `No CDP console session opened with ${device.name} within ${sessionGraceMs / 1000} seconds. ` +
+            'Its logs are not printed here. Open React Native DevTools to read them.',
+        ],
+      });
+    }
+    if (deadlines.length) {
+      graceTimer = setTimeout(warnAboutDevicesWithoutSession, Math.min(...deadlines) - Date.now());
+    }
+  }
 
   const watcher = watchConsoleTargets({
     serverBaseUrl,
     deviceSocketServer,
+    onChange: () => warnAboutDevicesWithoutSession(),
     onEntry(entry) {
       const level = LEVEL_BY_TYPE[entry.type];
       if (!level) {

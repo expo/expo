@@ -9,11 +9,21 @@ interface ConsoleTargetWatcherOptions {
   serverBaseUrl: string;
   deviceSocketServer: WebSocketServer;
   onEntry(entry: ConsoleEntry): void;
+  // Called when a device connects or disconnects, and when a session opens or closes.
+  onChange?(): void;
   enableIntervalMs?: number;
 }
 
+export interface ConnectedDevice {
+  name: string;
+  connectedAt: number;
+}
+
 export interface ConsoleTargetWatcher {
+  // Apps with an open session, by page ID.
   readonly targets: ReadonlyMap<string, ConsoleTarget>;
+  // Devices connected to the inspector proxy, by logical device ID.
+  readonly devices: ReadonlyMap<string, ConnectedDevice>;
   close(): void;
 }
 
@@ -44,10 +54,12 @@ export function watchConsoleTargets({
   serverBaseUrl,
   deviceSocketServer,
   onEntry,
+  onChange = () => {},
   enableIntervalMs = 5000,
 }: ConsoleTargetWatcherOptions): ConsoleTargetWatcher {
   const sessions = new Map<string, ConsoleSession>();
   const targets = new Map<string, ConsoleTarget>();
+  const devices = new Map<string, ConnectedDevice>();
   const seenUntilByDevice = new Map<string, number>();
   const startedAt = Date.now();
   let enabledAt = startedAt;
@@ -73,16 +85,20 @@ export function watchConsoleTargets({
       serverBaseUrl,
       seenUntil: seenUntilByDevice.get(target.logicalDeviceId) ?? startedAt,
       onEntry,
+      onOpen() {
+        targets.set(target.id, target);
+        onChange();
+      },
       onClose() {
         seenUntilByDevice.set(target.logicalDeviceId, session.seenUntil);
         if (sessions.get(target.id) === session) {
           sessions.delete(target.id);
           targets.delete(target.id);
+          onChange();
         }
       },
     });
     sessions.set(target.id, session);
-    targets.set(target.id, target);
   }
 
   function onDeviceMessage(deviceId: string, deviceName: string, data: RawData) {
@@ -113,14 +129,23 @@ export function watchConsoleTargets({
         session.enable();
       }
     }
-    const deviceName = query.get('name') ?? 'Unknown';
-    socket.on('message', (data) => onDeviceMessage(deviceId, deviceName, data));
+    const device = { name: query.get('name') ?? 'Unknown', connectedAt: Date.now() };
+    devices.set(deviceId, device);
+    socket.on('message', (data) => onDeviceMessage(deviceId, device.name, data));
+    socket.on('close', () => {
+      if (devices.get(deviceId) === device) {
+        devices.delete(deviceId);
+        onChange();
+      }
+    });
+    onChange();
   }
 
   deviceSocketServer.on('connection', onDeviceConnection);
 
   return {
     targets,
+    devices,
     close() {
       isClosed = true;
       deviceSocketServer.off('connection', onDeviceConnection);
