@@ -45,9 +45,16 @@ fi
 UPDATES_SERVER_PID=""
 EGRESS_PID=""
 SESSION_ID=""
+SESSION_STARTED=""
 
 reset_dotenv() {
   printf '# managed by eas-cli\n' > .env.eas-simulator
+}
+
+# Usage: json_field FIELD. Prints the top-level FIELD of the JSON object on stdin.
+json_field() {
+  node -e 'let s = ""; process.stdin.on("data", (d) => (s += d))
+    .on("end", () => console.log(JSON.parse(s)[process.argv[1]] ?? ""))' "$1"
 }
 
 start_updates_server() {
@@ -142,8 +149,12 @@ cleanup() {
     echo "===== end ====="
   fi
   echo 'Cleaning up...'
-  if grep -q EAS_SIMULATOR_SESSION_ID .env.eas-simulator 2> /dev/null; then
-    "${EAS[@]}" simulator:stop --non-interactive
+  if [[ -n "$SESSION_STARTED" ]] &&
+    grep -q EAS_SIMULATOR_SESSION_ID .env.eas-simulator 2> /dev/null; then
+    "${EAS[@]}" simulator:stop --non-interactive ||
+      { sleep 5 && "${EAS[@]}" simulator:stop --non-interactive; } ||
+      echo "Could not stop the session. Stop it with:" \
+        "eas simulator:stop --id ${SESSION_ID:-<see .env.eas-simulator>}" >&2
   fi
   reset_dotenv
   if [[ -n "$EGRESS_PID" ]]; then
@@ -160,25 +171,37 @@ cleanup() {
 }
 
 install_tools
-if ! "${EAS[@]}" simulator:availability --json --non-interactive | grep -q '"available": *true'; then
-  echo "Expo Simulators is not available for this account. It needs a paid EAS plan." >&2
+if ! AVAILABILITY="$("${EAS[@]}" simulator:availability --json --non-interactive)"; then
+  echo "Could not check Expo Simulators access." \
+    "Check the Expo login or EXPO_TOKEN, and the network." >&2
+  exit 1
+fi
+if [[ "$(json_field available <<< "$AVAILABILITY")" != "true" ]]; then
+  echo "Expo Simulators is not available for the account" \
+    "$(json_field accountName <<< "$AVAILABILITY"). It needs a paid EAS plan." >&2
   exit 1
 fi
 
 trap cleanup EXIT
 start_updates_server
 reset_dotenv
+SESSION_STARTED=1
 "${EAS[@]}" simulator:start --platform "$PLATFORM" ${DEVICE_ARGS[@]+"${DEVICE_ARGS[@]}"} \
   --type agent-device \
   --egress local --egress-allow "localhost:$UPDATES_SERVER_PORT" \
-  --max-duration-minutes 30 --name "$SESSION_NAME" --tag updates-e2e --non-interactive
-SESSION_ID="$("${EAS[@]}" simulator:get --json --non-interactive |
-  node -e 'let s = ""; process.stdin.on("data", (d) => (s += d)).on("end", () => console.log(JSON.parse(s).id ?? ""))')"
+  --max-duration-minutes 30 --max-idle-time-minutes 5 \
+  --name "$SESSION_NAME" --tag updates-e2e --non-interactive
+SESSION_ID="$("${EAS[@]}" simulator:get --json --non-interactive | json_field id)"
 start_egress
 
 # The suite is read on fd 3, so the commands in a flow cannot read it from stdin.
-while read -r flow <&3; do
+while read -r flow <&3 || [[ -n "$flow" ]]; do
   [[ -z "$flow" || "$flow" == \#* ]] && continue
+  if ! kill -0 "$EGRESS_PID" 2> /dev/null; then
+    echo "The egress client stopped, so the app cannot reach the updates server. Its log:" >&2
+    tail -50 "$OUTPUT_DIR/egress.log" >&2
+    exit 1
+  fi
   echo "===== $flow ($PLATFORM $CONFIGURATION) ====="
   # shellcheck disable=SC1090 # The suite file names the flows.
   . "./simulator/tests/$flow"

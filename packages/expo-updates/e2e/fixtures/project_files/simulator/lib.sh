@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 # Helpers for updates E2E flows that run on a device in Expo Simulators.
-# simulator-test-executor.sh sources this file and sets PLATFORM, CONFIGURATION and
+# simulator-test-executor.sh sources this file and sets PLATFORM, CONFIGURATION, OUTPUT_DIR and
 # UPDATES_SERVER_PORT first. Flows call these functions; any failed step fails the flow.
 
 TOOLS_DIR="$PWD/simulator/tools"
@@ -78,6 +78,9 @@ expect_update_string() {
   if ! device wait "id=\"updateString\" text=\"$1\"" 15000; then
     echo "Expected updateString to be \"$1\". It is:" >&2
     device get text 'id="updateString"' >&2 || true
+    if grep -q "Egress tunnel disconnected" "$OUTPUT_DIR/egress.log" 2> /dev/null; then
+      echo "The egress tunnel disconnected during the run. See $OUTPUT_DIR/egress.log." >&2
+    fi
     return 1
   fi
 }
