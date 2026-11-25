@@ -49,8 +49,24 @@ describe('asyncRequireModule', () => {
       }
 
       var loadedWorkerChunks = new Set();
+      var isModuleWorker;
 
       function loadWorkerChunks(urls) {
+        if (isModuleWorker === undefined) {
+          try {
+            importScripts();
+            isModuleWorker = false;
+          } catch (error) {
+            isModuleWorker = true;
+          }
+        }
+        if (isModuleWorker) {
+          throw new Error(
+            'Cannot load chunks in a module web worker: ' + urls.join(', ') + '. ' +
+            "Async imports are not supported yet in a worker created with \`{ type: 'module' }\`. " +
+            'Create the worker without the \`type\` option.'
+          );
+        }
         urls.forEach(function(url) {
           if (loadedWorkerChunks.has(url)) return;
           importScripts(url);
@@ -216,13 +232,18 @@ describe('asyncRequireModule', () => {
       expect(
         asyncRequire.unstable_importMaybeSync(43, { 43: ['/shared.js', '/other.js'] })
       ).toEqual({ default: 'module-43' });
-      expect(importScripts.mock.calls).toEqual([['/shared.js'], ['/route.js'], ['/other.js']]);
+      // The call without a URL finds the type of the worker.
+      expect(importScripts.mock.calls).toEqual([[], ['/shared.js'], ['/route.js'], ['/other.js']]);
       expect(loader).not.toHaveBeenCalled();
     });
 
     it('rejects when importScripts throws, and loads the chunk again on the next import', async () => {
-      importScripts.mockImplementationOnce(() => {
-        throw new Error('NetworkError');
+      let hasFailed = false;
+      importScripts.mockImplementation((url?: string) => {
+        if (url && !hasFailed) {
+          hasFailed = true;
+          throw new Error('NetworkError');
+        }
       });
 
       await expect(asyncRequire(42, { 42: ['/route.js'] })).rejects.toThrow('NetworkError');
@@ -230,7 +251,18 @@ describe('asyncRequireModule', () => {
       await expect(asyncRequire(42, { 42: ['/route.js'] })).resolves.toEqual({
         default: 'module-42',
       });
-      expect(importScripts).toHaveBeenCalledTimes(2);
+      expect(importScripts.mock.calls).toEqual([[], ['/route.js'], ['/route.js']]);
+    });
+
+    it('rejects with an error about module workers when importScripts is not available', async () => {
+      importScripts.mockImplementation(() => {
+        throw new TypeError("Module scripts don't support importScripts().");
+      });
+
+      await expect(asyncRequire(42, { 42: ['/route.js'] })).rejects.toThrow(
+        'Cannot load chunks in a module web worker: /route.js.'
+      );
+      expect(mockImportAll).not.toHaveBeenCalled();
     });
 
     it('does not load chunks for prefetch', () => {

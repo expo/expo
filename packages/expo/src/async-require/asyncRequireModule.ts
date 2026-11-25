@@ -45,10 +45,27 @@ function makeWorkerContent(url: string): string {
 }
 
 const loadedWorkerChunks = new Set<string>();
+let isModuleWorker: boolean | undefined;
 
 // A worker has its own module registry and no `<script>` elements. `importScripts` loads a chunk
 // into the registry of the worker, and returns after the chunk registered its modules.
 function loadWorkerChunks(urls: readonly string[]): void {
+  if (isModuleWorker === undefined) {
+    try {
+      // Without a URL, `importScripts` loads nothing. It throws only in a module worker.
+      importScripts!();
+      isModuleWorker = false;
+    } catch {
+      isModuleWorker = true;
+    }
+  }
+  if (isModuleWorker) {
+    throw new Error(
+      `Cannot load chunks in a module web worker: ${urls.join(', ')}. ` +
+        "Async imports are not supported yet in a worker created with `{ type: 'module' }`. " +
+        'Create the worker without the `type` option.'
+    );
+  }
   for (const url of urls) {
     if (loadedWorkerChunks.has(url)) continue;
     importScripts!(url);
