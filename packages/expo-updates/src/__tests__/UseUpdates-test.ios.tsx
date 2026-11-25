@@ -231,6 +231,28 @@ describe('useUpdates()', () => {
       expect(isUpdatePendingView).toHaveTextContent('true');
     });
 
+    it('Shows a state change that arrives between the first render and the listener', async () => {
+      // This component renders after the hook, so its event comes before the hook's effect runs.
+      let emitted = false;
+      const EmitDuringFirstRender = () => {
+        if (!emitted) {
+          emitted = true;
+          emitTestStateChangeEvent(updateDownloadedEvent);
+        }
+        return null;
+      };
+      await render(
+        <>
+          <UseUpdatesTestApp />
+          <EmitDuringFirstRender />
+        </>
+      );
+      const updateIdView = await screen.findByTestId('downloadedUpdate_updateId');
+      expect(updateIdView).toHaveTextContent('0000-2222');
+      const isUpdatePendingView = await screen.findByTestId('isUpdatePending');
+      expect(isUpdatePendingView).toHaveTextContent('true');
+    });
+
     it('Handles error during downloadUpdate()', async () => {
       await render(<UseUpdatesTestApp />);
       await act(async () => {
