@@ -355,6 +355,7 @@ jobs:
           # Optional: override the model for every agent.
           REVIEWER_MODEL: ${{ vars.REVIEWER_MODEL }}
           SESSION_STORE_REPO: expo/code-review-sessions
+          SESSION_STORE_TOKEN: ${{ secrets.ECR_SESSION_STORE_TOKEN }}
 
       # ecr rewrote its comment, so add the count back. always(), so a review that a new
       # push cancelled still counts once ecr wrote its comment: it spent model calls.

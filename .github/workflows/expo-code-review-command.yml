@@ -346,6 +346,7 @@ jobs:
           # Optional: override the model for every agent.
           REVIEWER_MODEL: ${{ vars.REVIEWER_MODEL }}
           SESSION_STORE_REPO: expo/code-review-sessions
+          SESSION_STORE_TOKEN: ${{ secrets.ECR_SESSION_STORE_TOKEN }}
           AGENTS: ${{ steps.cmd.outputs.agents }}
           ROUTE: ${{ steps.cmd.outputs.route }}
           DISPATCH: ${{ github.event_name == 'workflow_dispatch' }}
