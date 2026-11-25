@@ -265,6 +265,15 @@ describe('Request', () => {
       expect(original.bodyUsed).toBe(false);
     });
 
+    it('does not add a default content-type for a body from the source request', () => {
+      const original = new Request('https://example.test/', {
+        method: 'POST',
+        body: new URLSearchParams('a=1'),
+      });
+      const copy = new Request(original, { headers: { 'X-Trace': '1' } });
+      expect(copy.headers.get('content-type')).toBeNull();
+    });
+
     it('copies url, method, headers and body from a whatwg-fetch Request', async () => {
       const original = new WhatwgFetchRequest('https://example.test/', {
         method: 'POST',
@@ -421,15 +430,10 @@ describe('Request', () => {
     });
 
     describe('signal', () => {
-      it('creates a new signal that follows the init signal', () => {
+      it('uses the init signal', () => {
         const controller = new AbortController();
         const request = new Request('https://example.test/', { signal: controller.signal });
-        expect(request.signal).not.toBe(controller.signal);
-        expect(request.signal.aborted).toBe(false);
-        const reason = new Error('stop');
-        controller.abort(reason);
-        expect(request.signal.aborted).toBe(true);
-        expect(request.signal.reason).toBe(reason);
+        expect(request.signal).toBe(controller.signal);
       });
 
       it('is aborted when the init signal is already aborted', () => {
@@ -485,6 +489,16 @@ describe('Request', () => {
         const request = new Request('https://example.test/', { method: 'POST', body: bytes });
         bytes[0] = 'x'.charCodeAt(0);
         expect(await request.text()).toBe('abc');
+      });
+
+      it('returns a copy of a byte body from bytes()', async () => {
+        const request = new Request('https://example.test/', {
+          method: 'POST',
+          body: new TextEncoder().encode('abc'),
+        });
+        const bytes = await request.bytes();
+        bytes[0] = 'x'.charCodeAt(0);
+        expect(new TextDecoder().decode(request._bodyInit as Uint8Array)).toBe('abc');
       });
 
       it('copies a FormData body at construction', async () => {

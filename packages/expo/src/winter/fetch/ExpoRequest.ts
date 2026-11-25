@@ -39,18 +39,6 @@ function serializeURL(input: string | URL): string {
   }
 }
 
-// Returns a new signal that aborts with the given signal. Not `AbortSignal.any()`, which not every
-// runtime this code runs in provides.
-function followSignal(signal: AbortSignal): AbortSignal {
-  const controller = new AbortController();
-  if (signal.aborted) {
-    controller.abort(signal.reason);
-  } else {
-    signal.addEventListener('abort', () => controller.abort(signal.reason), { once: true });
-  }
-  return controller.signal;
-}
-
 function copyFormData(source: FormData): FormData {
   const copy = new FormData();
   source.forEach((value, name) => {
@@ -217,7 +205,8 @@ type RequestState = {
 /**
  * A `Request` implementation for `expo/fetch` that follows the Fetch standard, with a few
  * deviations kept for compatibility with `whatwg-fetch`: invalid URLs don't throw, stream bodies
- * don't require `duplex`, and forbidden or `no-cors` request headers aren't filtered.
+ * don't require `duplex`, forbidden or `no-cors` request headers aren't filtered, and `signal` is
+ * the given signal instead of a new one that follows it.
  *
  * React Native installs the `whatwg-fetch` polyfill as the global `Request`, which is not fully
  * spec-compliant and forces `expo/fetch` to reach into its private fields to recover the body.
@@ -347,8 +336,9 @@ export class Request implements Body {
       headers: new Headers(headers),
       credentials: credentials ?? 'same-origin',
       redirect: redirect ?? 'follow',
-      // Per the spec, the request gets its own signal that follows the given one.
-      signal: signal != null ? followSignal(signal) : new AbortController().signal,
+      // Kept as-is, like in `whatwg-fetch`. The spec's own signal that follows the given one needs an
+      // `abort` listener on the given signal, and nothing could remove that listener.
+      signal: signal ?? new AbortController().signal,
       mode: mode ?? 'cors',
       cache: cache ?? 'default',
       referrer: referrer != null ? parseReferrer(referrer) : 'about:client',
@@ -359,7 +349,11 @@ export class Request implements Body {
     };
 
     this._bodyInit = initBody ?? inputBody;
-    this.setDefaultContentType();
+    // Per the spec, only a body from `init` sets a default Content-Type. A body from the input
+    // request keeps the input's headers, unless `init.headers` replaced them.
+    if (initBody != null) {
+      this.setDefaultContentType();
+    }
     if (this._bodyInit != null) {
       this._bodyInit = copyBodyInit(this._bodyInit);
     }
@@ -438,6 +432,10 @@ export class Request implements Body {
   }
 
   get bodyUsed(): boolean {
+    // `fetch()` reads a stream body directly, so the stream itself shows whether it was used.
+    if (this._bodyInit instanceof ReadableStream) {
+      return this.consumed || isStreamUnusable(this._bodyInit);
+    }
     // A locked stream counts as disturbed even before the first read completes.
     return this.consumed || this.bodyStream?.locked === true;
   }
@@ -492,7 +490,8 @@ export class Request implements Body {
   }
 
   async bytes(): Promise<Uint8Array<ArrayBuffer>> {
-    return this.consumeAsBytes('bytes');
+    // A byte body comes back as a view of the stored body, which `fetch()` can still send.
+    return (await this.consumeAsBytes('bytes')).slice();
   }
 
   async blob(): Promise<Blob> {

@@ -167,4 +167,18 @@ describe('fetch', () => {
     await fetch(request, { method: 'POST', body: 'override' });
     expect(sentBody()).toBe('override');
   });
+
+  it('marks a stream body as used after sending it', async () => {
+    const body = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('streamed'));
+        controller.close();
+      },
+    });
+    const request = new Request('https://example.test/', { method: 'POST', body });
+    await fetch(request);
+    expect(sentBody()).toBe('streamed');
+    expect(request.bodyUsed).toBe(true);
+    expect(() => request.clone()).toThrow('Request body is already used');
+  });
 });
