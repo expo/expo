@@ -27,6 +27,7 @@ import {
 } from '../middleware/metroOptions';
 import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metroErrorInterface';
 import { event } from './rscEvents';
+import { getServerEntryArtifact, persistServerArtifacts } from './serverArtifacts';
 
 type SSRLoadModuleArtifactsFunc = (
   filePath: string,
@@ -139,7 +140,8 @@ export function createServerComponentsMiddleware(
       platform,
       entryPoints,
       domRoot,
-    }: { platform: string; entryPoints: string[]; domRoot?: string },
+      includeSourceMaps = false,
+    }: { platform: string; entryPoints: string[]; domRoot?: string; includeSourceMaps?: boolean },
     files: ExportAssetMap
   ): Promise<{
     clientBoundaries: string[];
@@ -163,18 +165,22 @@ export function createServerComponentsMiddleware(
         runModule: true,
         // Required to ensure assets load as client boundaries.
         domRoot,
+        includeSourceMaps,
+        excludeSource: true,
+        splitChunks: false,
+        outputDirectory: `_expo/rsc/${platform}`,
       });
 
-      const reactClientReferences = contents.artifacts
-        .filter((a) => a.type === 'js')[0]
-        ?.metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
+      const reactClientReferences = getServerEntryArtifact(
+        contents.artifacts
+      )?.metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
 
       if (reactClientReferences) {
         nestedClientBoundaries.push(...reactClientReferences!);
       }
-      const reactServerReferences = contents.artifacts
-        .filter((a) => a.type === 'js')[0]
-        ?.metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
+      const reactServerReferences = getServerEntryArtifact(
+        contents.artifacts
+      )?.metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
 
       if (reactServerReferences) {
         nestedServerBoundaries.push(...reactServerReferences!);
@@ -192,14 +198,7 @@ export function createServerComponentsMiddleware(
         platform,
         environment: 'react-server',
       });
-      const safeName = path.basename(contents.artifacts.find((a) => a.type === 'js')!.filename!);
-
-      const outputName = `_expo/rsc/${platform}/${safeName}`;
-      // While we're here, export the router for the server to dynamically render RSC.
-      files.set(outputName, {
-        targetDomain: 'server',
-        contents: wrapBundle(contents.src),
-      });
+      const outputName = persistServerArtifacts(contents.artifacts, files);
 
       // Match babel plugin.
       const publicModuleId = './' + toPosixPath(path.relative(projectRoot, entryPoint));
@@ -242,7 +241,11 @@ export function createServerComponentsMiddleware(
   }
 
   async function getExpoRouterClientReferencesAsync(
-    { platform, domRoot }: { platform: string; domRoot?: string },
+    {
+      platform,
+      domRoot,
+      includeSourceMaps = false,
+    }: { platform: string; domRoot?: string; includeSourceMaps?: boolean },
     files: ExportAssetMap
   ): Promise<{
     reactClientReferences: string[];
@@ -254,24 +257,28 @@ export function createServerComponentsMiddleware(
       platform,
       modulesOnly: true,
       domRoot,
+      includeSourceMaps,
+      excludeSource: true,
+      splitChunks: false,
+      entryFilename: `_expo/rsc/${platform}/router.js`,
     });
 
     // Extract the global CSS modules that are imported from the router.
     // These will be injected in the head of the HTML document for the website.
     const cssModules = contents.artifacts.filter((a) => a.type.startsWith('css'));
 
-    const reactServerReferences = contents.artifacts
-      .filter((a) => a.type === 'js')[0]
-      ?.metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
+    const reactServerReferences = getServerEntryArtifact(
+      contents.artifacts
+    )?.metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
 
     if (!reactServerReferences) {
       throw new Error(
         'Static server action references were not returned from the Metro SSR bundle for definedRouter'
       );
     }
-    const reactClientReferences = contents.artifacts
-      .filter((a) => a.type === 'js')[0]
-      ?.metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
+    const reactClientReferences = getServerEntryArtifact(
+      contents.artifacts
+    )?.metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
 
     if (!reactClientReferences) {
       throw new Error(
@@ -279,11 +286,7 @@ export function createServerComponentsMiddleware(
       );
     }
 
-    // While we're here, export the router for the server to dynamically render RSC.
-    files.set(`_expo/rsc/${platform}/router.js`, {
-      targetDomain: 'server',
-      contents: wrapBundle(contents.src),
-    });
+    persistServerArtifacts(contents.artifacts, files);
 
     return { reactClientReferences, reactServerReferences, cssModules };
   }
@@ -645,10 +648,3 @@ const encodeInput = (input: string) => {
   }
   return input + '.txt';
 };
-
-function wrapBundle(str: string) {
-  // Skip the metro runtime so debugging is a bit easier.
-  // Replace the __r() call with an export statement.
-  // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
-  return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
-}
