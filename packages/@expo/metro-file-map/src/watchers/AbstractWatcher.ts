@@ -34,6 +34,15 @@ export class AbstractWatcher implements WatcherBackend {
 
   #emitter: EventEmitter = new EventEmitter();
 
+  /**
+   * Whether a watch reports every change made after `startWatching` resolves.
+   * If not, `Watcher` confirms each watch with a change of its own before
+   * relying on it.
+   */
+  static isLiveOnStart(): boolean {
+    return true;
+  }
+
   constructor(dir: string, opts: WatcherBackendOptions) {
     const { ignored, included } = opts;
     this.ignored = ignored;
