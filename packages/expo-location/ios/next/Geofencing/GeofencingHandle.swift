@@ -13,7 +13,6 @@ final class GeofencingHandle: SharedObject {
 
   func start(regions: [GeofencingRegion]) throws {
     try validateRegions(regions)
-    try validateUniqueIdentifiers(regions)
 
     guard CLLocationManager.locationServicesEnabled() else {
       throw LocationServicesDisabledGlobally()
@@ -57,18 +56,10 @@ final class GeofencingHandle: SharedObject {
   }
 
   private func validateRegions(_ regions: [GeofencingRegion]) throws {
-    for region in regions {
-      guard region.isValid else {
-        throw GeofencingRegionInvalid(region.identifier)
-      }
-    }
-  }
-
-  private func validateUniqueIdentifiers(_ regions: [GeofencingRegion]) throws {
     var identifiers = Set<String>()
 
     for region in regions {
-      if identifiers.contains(region.identifier) {
+      guard region.isValid && !identifiers.contains(region.identifier) else {
         throw GeofencingRegionInvalid(region.identifier)
       }
 
