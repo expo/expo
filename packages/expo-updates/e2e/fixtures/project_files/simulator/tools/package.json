@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "description": "Pinned tools for the updates E2E flows in Expo Simulators. Bump the versions on purpose.",
+  "dependencies": {
+    "agent-device": "0.21.42",
+    "eas-cli": "27.11.0"
+  }
+}

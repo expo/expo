@@ -23,10 +23,12 @@ esac
 
 # #region Tools
 
-# The Expo Simulators commands change often, so each run installs the latest versions.
+# simulator/tools/package-lock.json pins the versions. The job holds an Expo token and an npm
+# token, so install scripts do not run.
 install_tools() {
-  npm install --prefix "$TOOLS_DIR" --no-save --no-audit --no-fund --loglevel=error \
-    eas-cli@latest agent-device@latest
+  npm ci --prefix "$TOOLS_DIR" --ignore-scripts --no-audit --no-fund --loglevel=error
+  echo "eas-cli: $("${EAS[@]}" --version)"
+  echo "agent-device: $("$TOOLS_DIR/node_modules/.bin/agent-device" --version)"
 }
 
 # #endregion
