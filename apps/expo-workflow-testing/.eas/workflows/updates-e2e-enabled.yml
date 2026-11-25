@@ -71,7 +71,7 @@ concurrency:
   cancel_in_progress: true
 
 jobs:
-  ios:
+  ios-debug:
     runs_on: macos-large
     image: latest
     # Stop the app when the updates state machine drops an event that is not allowed from its
@@ -98,26 +98,50 @@ jobs:
           pnpm run generate-test-update-bundles ios
           pnpm run ios:pod-install
       - name: Build E2E test app (debug)
-        id: builddebug
+        id: build
         working_directory: ../../../updates-e2e
         run: |
           pnpm run maestro:ios:debug:build
-      - name: Build E2E test app (release)
-        id: buildrelease
-        working_directory: ../../../updates-e2e
-        run: |
-          pnpm run maestro:ios:release:build
       - name: Run tests in Expo Simulators (debug)
-        id: testdebug
+        id: test
         working_directory: ../../../updates-e2e
         run: |
           ./simulator/simulator-test-executor.sh ./simulator/tests/updates-e2e-enabled.txt ios debug
+  ios-release:
+    runs_on: macos-large
+    image: latest
+    env:
+      EX_UPDATES_ASSERT_INVALID_STATE: 'true'
+    steps:
+      - uses: eas/checkout
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - name: Set up Updates E2E enabled project
+        id: setup
+        working_directory: ../..
+        env:
+          UPDATES_HOST: localhost
+          UPDATES_PORT: '4747'
+        run: |
+          pnpm --silent ts-node ./packages/expo-updates/e2e/setup/create-eas-project.ts
+          ls -la ../updates-e2e
+      - name: Prepare E2E project
+        id: prepare
+        working_directory: ../../../updates-e2e
+        run: |
+          pnpm run generate-test-update-bundles ios
+          pnpm run ios:pod-install
+      - name: Build E2E test app (release)
+        id: build
+        working_directory: ../../../updates-e2e
+        run: |
+          pnpm run maestro:ios:release:build
       - name: Run tests in Expo Simulators (release)
-        id: testrelease
+        id: test
         working_directory: ../../../updates-e2e
         run: |
           ./simulator/simulator-test-executor.sh ./simulator/tests/updates-e2e-enabled.txt ios release
-  android:
+  android-debug:
     runs_on: linux-large-nested-virtualization
     image: latest
     env:
@@ -141,22 +165,45 @@ jobs:
         run: |
           pnpm run generate-test-update-bundles android
       - name: Build E2E test app (debug)
-        id: builddebug
+        id: build
         working_directory: ../../../updates-e2e
         run: |
           pnpm run maestro:android:debug:build
+      - name: Run tests in Expo Simulators (debug)
+        id: test
+        working_directory: ../../../updates-e2e
+        run: |
+          ./simulator/simulator-test-executor.sh ./simulator/tests/updates-e2e-enabled.txt android debug
+  android-release:
+    runs_on: linux-large-nested-virtualization
+    image: latest
+    env:
+      EX_UPDATES_ASSERT_INVALID_STATE: 'true'
+    steps:
+      - uses: eas/checkout
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - name: Set up Updates E2E enabled project
+        id: setup
+        working_directory: ../..
+        env:
+          UPDATES_HOST: localhost
+          UPDATES_PORT: '4747'
+        run: |
+          pnpm --silent ts-node ./packages/expo-updates/e2e/setup/create-eas-project.ts
+          ls -la ../updates-e2e
+      - name: Prepare E2E project
+        id: prepare
+        working_directory: ../../../updates-e2e
+        run: |
+          pnpm run generate-test-update-bundles android
       - name: Build E2E test app (release)
-        id: buildrelease
+        id: build
         working_directory: ../../../updates-e2e
         run: |
           pnpm run maestro:android:release:build
       - name: Run tests in Expo Simulators (release)
-        id: testrelease
+        id: test
         working_directory: ../../../updates-e2e
         run: |
           ./simulator/simulator-test-executor.sh ./simulator/tests/updates-e2e-enabled.txt android release
-      - name: Run tests in Expo Simulators (debug)
-        id: testdebug
-        working_directory: ../../../updates-e2e
-        run: |
-          ./simulator/simulator-test-executor.sh ./simulator/tests/updates-e2e-enabled.txt android debug
