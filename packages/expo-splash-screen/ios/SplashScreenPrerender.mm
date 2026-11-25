@@ -222,9 +222,11 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   return instance;
 }
 
-// The constructor registers a notification observer so that `prepare` runs after
-// `didFinishLaunchingWithOptions:` returns. By then every static initializer has run and the
-// factory has set up the React Native feature flags, so the renderer is safe to use.
+// The constructor registers a notification observer so that `prepare` runs right after
+// `ExpoReactNativeFactory` finishes init (which sets up the React Native feature flags).
+// This is early in `didFinishLaunchingWithOptions:`, so the preparation gets a head start.
+// Apps that never create the factory (brownfield apps that open React Native later) never
+// trigger the notification, so the flags are not read before the app's override.
 static void __attribute__((constructor)) ExpoSplashScreenPrerenderInit(void)
 {
   SplashScreenPrerender *prerender = [SplashScreenPrerender shared];
@@ -233,11 +235,11 @@ static void __attribute__((constructor)) ExpoSplashScreenPrerenderInit(void)
   }
   [prerender log:@"constructor (registering observer)"];
   [[NSNotificationCenter defaultCenter]
-      addObserverForName:UIApplicationDidFinishLaunchingNotification
+      addObserverForName:@"ExpoReactNativeFactoryDidCreate"
                   object:nil
                    queue:nil
               usingBlock:^(NSNotification *) {
-                [prerender log:@"didFinishLaunching"];
+                [prerender log:@"factory created"];
                 [prerender prepare];
               }];
 }

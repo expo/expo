@@ -29,6 +29,7 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
     ?? RCTReleaseLevel.Stable
 
     super.init(delegate: delegate, releaseLevel: releaseLevel)
+    NotificationCenter.default.post(name: .init("ExpoReactNativeFactoryDidCreate"), object: self)
   }
 
   // `RCTBundleConfiguration` is only available in react-native 0.84+, so it doesn't exist yet on react-native-macos.

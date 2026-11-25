@@ -9,10 +9,10 @@ NS_ASSUME_NONNULL_BEGIN
 
  When the app hides the splash screen, the screen that replaces it is captured (the view hierarchy
  with the frames UIKit resolved, and the custom fonts it uses) and stored in the Caches directory. On the
- next launch, after `didFinishLaunchingWithOptions:` returns, the snapshot is built and laid out on a
- background thread, mounted into a detached view, and shown in an overlay window when the window scene
- connects. Only the renderer and the mounting layer are used: no React host, no JS runtime, no
- TurboModules. The overlay fades out when the app hides the splash screen.
+ next launch, right after `ExpoReactNativeFactory` finishes init (early in `didFinishLaunchingWithOptions:`),
+ the snapshot is built and laid out on a background thread, mounted into a detached view, and shown in an
+ overlay window when the window scene connects. Only the renderer and the mounting layer are used: no React
+ host, no JS runtime, no TurboModules. The overlay fades out when the app hides the splash screen.
 
  `ExpoSplashScreenPrerenderSnapshot` in Info.plist turns it on. tvOS has no prerender.
  */
