@@ -35,6 +35,25 @@ public protocol AnyJavaScriptClass: AnyObject {
     arguments: borrowing JavaScriptValuesBuffer,
     in runtime: JavaScriptRuntime
   ) throws -> (any AnyJavaScriptClass)?
+
+  /// Creates the native state that the JavaScript constructor of a `@JSClass` class attaches to `object`, the
+  /// JavaScript object of this instance. The native state holds the instance. Core doesn't call it for a shared object,
+  /// which the shared object registry pairs with its JavaScript object.
+  ///
+  /// The default implementation creates a plain native state. Core calls the implementation of the root class, also
+  /// for its subclasses, so implement it only in a root class.
+  @JavaScriptActor
+  func _makeNativeState(for object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime)
+    -> JavaScriptClassNativeState
+}
+
+extension AnyJavaScriptClass {
+  @JavaScriptActor
+  public func _makeNativeState(for object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime)
+    -> JavaScriptClassNativeState
+  {
+    return JavaScriptClassNativeState(instance: self)
+  }
 }
 
 // MARK: - JavaScript class chain
@@ -80,11 +99,11 @@ extension AnyJavaScriptClass {
   @JavaScriptActor
   @inlinable
   public static func _native(from object: borrowing JavaScriptObject) throws -> Self {
-    guard let nativeState = object.getNativeState(as: JavaScriptClassNativeState.self) else {
+    guard let native = object.getNativeState(as: JavaScriptClassNativeState.self)?.instance else {
       throw JavaScriptClassNativeState.NotFoundException(_jsName)
     }
-    guard let instance = nativeState.native as? Self else {
-      let actual = Swift.type(of: nativeState.native)._jsName
+    guard let instance = native as? Self else {
+      let actual = Swift.type(of: native)._jsName
       throw JavaScriptClassNativeState.TypeMismatchException((expected: _jsName, actual: actual))
     }
     return instance
@@ -108,15 +127,19 @@ extension JavaScriptDecodable where Self: AnyJavaScriptClass {
   }
 }
 
-/// The native state that pairs the JavaScript object of a `@JSClass` class with its native instance. The JavaScript
-/// constructor attaches it. It holds the instance strongly, so the instance lives at least as long as the object.
-@usableFromInline
-internal final class JavaScriptClassNativeState: JavaScriptNativeState {
+/// The native state that pairs a JavaScript object with its native instance. The JavaScript constructor of a `@JSClass`
+/// class attaches it. It holds the instance strongly, so the instance lives at least as long as the object.
+///
+/// The native state of an event emitter is a subclass, so `_native(from:)` reads the instance of any object with one
+/// cast. The native state of a shared object holds the shared object. A module object and a plain `expo.EventEmitter`
+/// object have no instance.
+public class JavaScriptClassNativeState: JavaScriptNativeState {
+  /// The native instance, or `nil` for an object that has no native instance.
   @usableFromInline
-  let native: any AnyJavaScriptClass
+  let instance: (any AnyJavaScriptClass)?
 
-  init(native: any AnyJavaScriptClass) {
-    self.native = native
+  init(instance: (any AnyJavaScriptClass)?) {
+    self.instance = instance
     super.init()
   }
 

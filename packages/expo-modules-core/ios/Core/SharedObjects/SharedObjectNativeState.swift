@@ -24,7 +24,10 @@ import os
 /// and a release can come from any of them or from a garbage collector thread. `listeningRuntimes` is behind the lock
 /// of the native object's `nativeState`.
 internal final class SharedObjectNativeState: EventEmitterNativeState, @unchecked Sendable {
-  internal let native: SharedObject
+  /// The native object. The base class holds it.
+  internal var native: SharedObject {
+    return unsafeDowncast(instance.unsafelyUnwrapped as AnyObject, to: SharedObject.self)
+  }
 
   /// The ID that the native object got with this native state. `release` and the `__expo_shared_object_id__` getter
   /// read it. The registry sets the ID of the native object to 0 when it releases the object, but a JS object that
@@ -68,11 +71,10 @@ internal final class SharedObjectNativeState: EventEmitterNativeState, @unchecke
     isPairedInOtherRuntime: Bool,
     releaser: @escaping (SharedObjectId) -> Void
   ) {
-    self.native = native
     self.objectId = objectId
     self.mainRuntimeId = mainRuntimeId
     self.flags = OSAllocatedUnfairLock(initialState: Flags(isPairedInOtherRuntime: isPairedInOtherRuntime))
-    super.init(primaryRuntimeId: mainRuntimeId)
+    super.init(primaryRuntimeId: mainRuntimeId, instance: native)
     setDeallocator { _ in
       releaser(objectId)
     }

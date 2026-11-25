@@ -17,9 +17,10 @@ internal enum JavaScriptBindings {
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }
+      let runtime = try appContext.runtime
       // Pair the native instance with `this` (returning a different object would drop the prototype
       // chain `new` set up). Without a `@JS init`, only the native side can create a shared object.
-      guard let instance = try type._constructInstance(this: this, arguments: arguments, in: appContext.runtime) else {
+      guard let instance = try type._constructInstance(this: this, arguments: arguments, in: runtime) else {
         if type is AnySharedObject.Type {
           throw Exceptions.ConstructorUnavailable(name)
         }
@@ -28,7 +29,8 @@ internal enum JavaScriptBindings {
       if let sharedObject = instance as? SharedObject {
         appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: this.getObject(), inheritsBaseClass: true)
       } else {
-        guard try this.asObject().trySetNativeState(JavaScriptClassNativeState(native: instance)) else {
+        let object = try this.asObject()
+        guard object.trySetNativeState(instance._makeNativeState(for: object, in: runtime)) else {
           throw JavaScriptClassNativeState.NotAttachableException(name)
         }
       }
@@ -49,8 +51,8 @@ internal enum JavaScriptBindings {
 
   /// Creates the JavaScript class of a native class, without its members. The class extends the JavaScript class of
   /// `resolvedJSSuperclassType`, which is built first when it isn't built yet. Without that superclass, the class of a
-  /// shared object extends the base `SharedObject` or `SharedRef` class, and the class of a `@JSClass` class extends
-  /// no class.
+  /// shared object extends the base `SharedObject` or `SharedRef` class, the class of a `BaseEventEmitter` subclass
+  /// extends `expo.EventEmitter`, and the class of any other `@JSClass` class extends no class.
   @JavaScriptActor
   static func createClass(
     _ type: any AnyJavaScriptClass.Type,
@@ -68,6 +70,9 @@ internal enum JavaScriptBindings {
     }
     if type is AnySharedObject.Type {
       return try runtime.createSharedObjectClass(name, constructor)
+    }
+    if type is BaseEventEmitter.Type {
+      return try runtime.createClass(name: name, inheriting: runtime.getEventEmitterClass(), constructor)
     }
     return try runtime.createClass(name: name, constructor)
   }

@@ -70,7 +70,27 @@ private final class JSClassMath {
   }
 }
 
-@ExpoModule(classes: [JSClassPoint.self, JSClassShape.self, JSClassSquare.self, JSClassMath.self])
+/// Emits events, so its JavaScript class extends `expo.EventEmitter`.
+@JSClass
+private final class JSClassTimer: BaseEventEmitter {
+  let interval: Double
+
+  @Event(.inline)
+  var onTick: (Int) -> Void
+
+  @JS
+  init(interval: Double) {
+    self.interval = interval
+    super.init()
+  }
+
+  @JS
+  func describe() -> String {
+    return "timer \(interval)"
+  }
+}
+
+@ExpoModule(classes: [JSClassPoint.self, JSClassShape.self, JSClassSquare.self, JSClassMath.self, JSClassTimer.self])
 private final class MacroJSClassModule: Module {}
 
 /// Holds an object weakly, so that the test doesn't keep it alive.
@@ -185,6 +205,51 @@ private struct MacroJSClassTests {
     ).asObject()
     #expect(try error.getProperty("code").asString() == "ERR_NATIVE_INSTANCE_NOT_FOUND")
     #expect(try error.getProperty("message").asString().contains("'JSClassPoint'"))
+  }
+
+  @Test
+  func `the class of an event emitter extends expo.EventEmitter`() throws {
+    try runtime.eval("timer = new expo.modules.MacroJSClassModule.JSClassTimer(1)")
+
+    #expect(try runtime.eval(
+      "Object.getPrototypeOf(expo.modules.MacroJSClassModule.JSClassTimer) === expo.EventEmitter"
+    ).asBool())
+    #expect(try runtime.eval("timer instanceof expo.EventEmitter").asBool())
+    #expect(try runtime.eval("timer.describe()").asString() == "timer 1.0")
+  }
+
+  @Test
+  func `an event emitter calls the listeners that JavaScript adds`() throws {
+    let result = try runtime.eval(
+      """
+      timer = new expo.modules.MacroJSClassModule.JSClassTimer(1);
+      received = [];
+      timer.addListener('tick', value => received.push(value));
+      timer.emit('tick', 2);
+      [timer.listenerCount('tick')].concat(received);
+      """
+    ).asArray()
+    #expect(try result.getValue(at: 0).asInt() == 1)
+    #expect(try result.getValue(at: 1).asInt() == 2)
+  }
+
+  @Test
+  func `the native instance of an event emitter emits to its JavaScript object`() throws {
+    let runtime = try runtime
+    let received = try runtime.execute {
+      let timer = try JSClassTimer._native(
+        from: runtime.eval(
+          """
+          timer = new expo.modules.MacroJSClassModule.JSClassTimer(1)
+          timer.addListener('tick', value => { globalThis.received = value })
+          timer
+          """
+        ).asObject()
+      )
+      timer.onTick(3)
+      return try runtime.eval("globalThis.received").asInt()
+    }
+    #expect(received == 3)
   }
 
   @Test
