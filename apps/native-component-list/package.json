@@ -123,7 +123,7 @@
     "hsv2rgb": "^1.1.0",
     "i18n-js": "^3.1.0",
     "lottie-react-native": "^7.5.0",
-    "moment": "^2.29.4",
+    "moment": "^2.31.0",
     "path": "^0.12.7",
     "pixi.js": "^4.6.1",
     "react": "19.3.0",

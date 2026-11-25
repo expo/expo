@@ -1215,8 +1215,8 @@ importers:
         specifier: ^7.5.0
         version: 7.5.0(patch_hash=c573205561bc30560581ae4e627193e6d0262af6e34fdf831e9bab6dabcb6c34)(@lottiefiles/dotlottie-react@0.13.5(react@19.3.0))(react-native@0.89.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       moment:
-        specifier: ^2.29.4
-        version: 2.30.1
+        specifier: ^2.31.0
+        version: 2.31.0
       path:
         specifier: ^0.12.7
         version: 0.12.7
@@ -14001,8 +14001,8 @@ packages:
     resolution: {integrity: sha512-VUhC7/wotZwooobTlBl5+ZAgHoLCdckDqGz9HqdiXeYIXeATKWiiuas4HIjzOs3/qIstv+3e0u/lYYbXACIbOQ==}
     engines: {node: '>=4'}
 
-  moment@2.30.1:
-    resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
+  moment@2.31.0:
+    resolution: {integrity: sha512-0acOTfMiWOheYS4eoWb80yYMb/JLvVv9SHbs2PehaDzfUG0Bw855SKyk0IKTnPGa5+U2bmi3W68l1+sGLX/pvw==}
 
   morgan@1.11.0:
     resolution: {integrity: sha512-zSkVu3t18r39pw4ixfBKvfZi3y2UOqr7d4WYwcj3m8nXpEQK4rPO6GLzs/CExoRgmX3y9EjmmcXqv6jq0SK46g==}
@@ -23984,7 +23984,7 @@ snapshots:
 
   mk-dirs@1.0.0: {}
 
-  moment@2.30.1: {}
+  moment@2.31.0: {}
 
   morgan@1.11.0:
     dependencies:
