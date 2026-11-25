@@ -5,6 +5,7 @@ private let maxMonitoredRegions = 20
 private struct Monitored {
   let region: CLCircularRegion
   var lastState: CLRegionState?
+  var hasRetried = false
 }
 
 final class CompatibilityGeofencingSource: NSObject, GeofencingSource, CLLocationManagerDelegate {
@@ -60,6 +61,11 @@ final class CompatibilityGeofencingSource: NSObject, GeofencingSource, CLLocatio
     case is CLError where all.count >= maxMonitoredRegions && !all.contains(region):
       let error = GeofencingRegionLimitExceeded()
       end(error)
+    case is CLError where monitored[region.identifier]?.hasRetried == false:
+      monitored[region.identifier]?.hasRetried = true
+      manager.stopMonitoring(for: region)
+      manager.startMonitoring(for: region)
+      manager.requestState(for: region)
     case is CLError:
       let identifier = localIdentifier(of: region)
       let error = GeofencingRegionUnmonitored(identifier)
