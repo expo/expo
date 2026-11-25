@@ -1,4 +1,5 @@
 import { resolveEntryPoint } from '@expo/config/paths';
+import { flattenSourceMap } from '@expo/metro-config/build/serializer/sourceMap';
 import fs from 'fs';
 import path from 'path';
 
@@ -65,6 +66,10 @@ jest.unmock('resolve-from');
   it('has expected files', async () => {
     // Ensure the standard files are included.
     expect(fs.existsSync(path.resolve(outputDir, 'index.js'))).toBe(true);
+    const sourceMap = flattenSourceMap(
+      JSON.parse(fs.readFileSync(path.join(outputDir, 'index.js.map'), 'utf8'))
+    );
+    expect(sourceMap.sources).toContain('__e2e__/01-rsc/components/counter.tsx');
     expect(fs.existsSync(path.resolve(outputDir, 'assets'))).toBe(true);
 
     // Ensure the SSG RSC payload is included in the binary
