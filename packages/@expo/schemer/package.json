@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@expo/schema-utils": "workspace:*",
-    "probe-image-size": "^7.1.0"
+    "probe-image-size": "^7.4.0"
   },
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
