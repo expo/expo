@@ -44,6 +44,7 @@ import {
   withMetroCacheVary,
 } from './withMetroCacheVary';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
+import { withNativeBuildIgnores } from './withNativeBuildIgnores';
 
 declare module '2g' {
   interface EventRegistry {
@@ -256,6 +257,7 @@ export async function loadMetroConfigAsync(
       ...config.resolver,
       // Expo CLI uses the Node crawler and watcher unless Watchman is explicitly enabled
       useWatchman: config.resolver.useWatchman ?? false,
+      blockList: withNativeBuildIgnores(config.resolver.blockList, config.projectRoot),
     },
     server: {
       ...config.server,
