@@ -998,6 +998,78 @@ it('does not mark injected Babel runtime helpers as ESM imports in Noxcturnal, m
   }
 });
 
+it.each([
+  {
+    title: 'the automatic JSX runtime',
+    filename: 'local/view.js',
+    contents: `export const view = <div />;`,
+    platform: 'ios',
+    expected: { 'react/jsx-runtime': false },
+  },
+  {
+    title: 'the createElement fallback',
+    filename: 'local/view.js',
+    contents: `const props = {}; export const view = <div {...props} key="key" />;`,
+    platform: 'ios',
+    expected: { react: false },
+  },
+  {
+    title: 'a react-native-web rewrite of a source import',
+    filename: 'local/platform.js',
+    contents: `import { Platform } from 'react-native'; export const os = Platform.OS;`,
+    platform: 'web',
+    expected: { 'react-native-web/dist/exports/Platform': false },
+  },
+  {
+    title: 'a react-native-web rewrite of a source re-export',
+    filename: 'local/platform.js',
+    contents: `export { Platform } from 'react-native';`,
+    platform: 'web',
+    expected: { 'react-native-web/dist/exports/Platform': false },
+  },
+  {
+    title: 'a source import next to the automatic JSX runtime',
+    filename: 'local/view.js',
+    contents: `import React from 'react'; export const view = [React, <div />];`,
+    platform: 'ios',
+    expected: { react: true, 'react/jsx-runtime': false },
+  },
+])(
+  'marks only source imports as ESM in Noxcturnal for $title, matching Babel',
+  async ({ filename, contents, platform, expected }) => {
+    const transformOptions: JsTransformOptions = {
+      ...baseTransformOptions,
+      dev: false,
+      experimentalImportSupport: true,
+      platform,
+    };
+    const dependencies = async (enabled: boolean) => {
+      const config = { ...baseConfig, unstable_noxcturnalTransformWorker: enabled || undefined };
+      const result = await Transformer.transform(
+        config,
+        '/root',
+        filename,
+        Buffer.from(contents, 'utf8'),
+        transformOptions
+      );
+      return result.dependencies
+        .map((dependency) => ({
+          name: dependency.name,
+          key: dependency.data.key,
+          isESMImport: dependency.data.isESMImport,
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name) || a.key.localeCompare(b.key));
+    };
+
+    const babel = await dependencies(false);
+    const noxcturnal = await dependencies(true);
+    expect(babel.map(({ name, isESMImport }) => [name, isESMImport])).toEqual(
+      Object.entries(expected).sort(([a], [b]) => a.localeCompare(b))
+    );
+    expect(noxcturnal).toEqual(babel);
+  }
+);
+
 it('uses Noxcturnal for the complete Metro transform of eligible dependencies', async () => {
   const contents = `var oddly_spaced= require('dep');\nmodule.exports=oddly_spaced;`;
   const result = await Transformer.transform(

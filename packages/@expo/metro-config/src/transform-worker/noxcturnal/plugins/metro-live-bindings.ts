@@ -373,7 +373,7 @@ export function createMetroLiveBindingsPlugin(
           },
         },
         (exportPath, state) => {
-          const { collectOnly, shared } = metroPluginData(exportPath.context);
+          const { collectOnly, input, shared } = metroPluginData(exportPath.context);
           state.sawEsm = true;
           if (exportPath.node.exportKind && exportPath.node.exportKind !== 'value') {
             if (!collectOnly) exportPath.remove();
@@ -407,7 +407,9 @@ export function createMetroLiveBindingsPlugin(
               const dependency = registerNativeEsmDependency(
                 dependencyState!,
                 source,
-                exportPath.getLocation()
+                exportPath.getLocation(),
+                undefined,
+                input.source
               );
               const requiredLocal = generateUid(exportPath.scope.getProgramParent(), source);
               module = {
@@ -552,7 +554,7 @@ export function createMetroLiveBindingsPlugin(
         'ExportAllDeclaration',
         { fields: ['source', 'exportKind', 'exported'], scope: true },
         (exportPath, state) => {
-          const { collectOnly, shared } = metroPluginData(exportPath.context);
+          const { collectOnly, input, shared } = metroPluginData(exportPath.context);
           state.sawEsm = true;
           if (exportPath.node.exportKind && exportPath.node.exportKind !== 'value') {
             if (!collectOnly) exportPath.remove();
@@ -572,7 +574,9 @@ export function createMetroLiveBindingsPlugin(
             const dependency = registerNativeEsmDependency(
               dependencyState!,
               source,
-              exportPath.getLocation()
+              exportPath.getLocation(),
+              undefined,
+              input.source
             );
             const requiredLocal = generateUid(exportPath.scope.getProgramParent(), source);
             module = {

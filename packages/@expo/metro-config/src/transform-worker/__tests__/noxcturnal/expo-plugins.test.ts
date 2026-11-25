@@ -1602,7 +1602,7 @@ it('completes eligible production Node application source through the native Met
   if (result.status !== 'complete') return;
   expect(result.dependencies.map(({ name, data }) => [name, data.isESMImport])).toEqual(
     expect.arrayContaining([
-      ['react/jsx-runtime', true],
+      ['react/jsx-runtime', false],
       ['./value', true],
     ])
   );
