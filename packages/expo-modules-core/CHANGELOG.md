@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed a potential use-after-free when native code scheduled work onto the JS thread (e.g. settling an async function's promise from a background queue) while the React instance was concurrently tearing down the runtime scheduler on reload. The dispatch trampoline now references the scheduler weakly and drops the task once the scheduler is gone. ([#47492](https://github.com/expo/expo/pull/47492) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 56.0.27 — 2026-09-29

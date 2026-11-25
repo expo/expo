@@ -48,6 +48,10 @@ open class JavaScriptNativeState {
 
   /// Sets a deallocator, a closure that is invoked when this native state is no longer attached to any JS object.
   /// Replaces any previously set deallocator.
+  // `@inline(never)` works around a Swift 6.4 SIL optimizer crash (CopyPropagation /
+  // EarlyPerfInliner `createDestroyValue` assertion) when this typed-throws setter is inlined into an
+  // in-module caller, such as `JavaScriptRuntime.installLongLivedObjectsTeardown()`.
+  @inline(never)
   public func setDeallocator(_ deallocator: @escaping Deallocator) throws(NativeStateReleasedError) {
     if isReleased {
       throw NativeStateReleasedError()
