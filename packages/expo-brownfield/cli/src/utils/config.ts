@@ -41,17 +41,8 @@ export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
   const buildProductsPath = path.join(derivedDataPath, 'Build/Products');
 
   const buildConfiguration = resolveBuildConfiguration(options);
-  // tvOS support (e.g. react-native-tvos): when the generated project targets
-  // tvOS its Podfile declares `platform :tvos`, in which case xcodebuild emits
-  // `*-appletvos`/`*-appletvsimulator` product dirs and needs tvOS destinations
-  // instead of the iphoneos/iphonesimulator defaults.
-  const applePlatform = resolveApplePlatform();
-  const deviceSdk = applePlatform === 'tvos' ? 'appletvos' : 'iphoneos';
-  const simulatorSdk = applePlatform === 'tvos' ? 'appletvsimulator' : 'iphonesimulator';
-  const destinations =
-    applePlatform === 'tvos'
-      ? ['generic/platform=tvOS', 'generic/platform=tvOS Simulator']
-      : ['generic/platform=iphoneos', 'generic/platform=iphonesimulator'];
+  const { deviceSdk, simulatorSdk, destinations } =
+    APPLE_PLATFORMS[resolveApplePlatform(!!options.verbose)];
   const device = path.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-${deviceSdk}`);
   const scheme = resolveScheme(options);
   const simulator = path.join(
@@ -264,22 +255,31 @@ const resolveScheme = (options: OptionValues): string => {
   return options.scheme || findScheme();
 };
 
-// Infer whether the generated iOS project actually targets tvOS by reading the
-// platform declaration from the generated Podfile. This keeps the detection
-// decoupled from any specific RN distribution (react-native-tvos etc.).
-const resolveApplePlatform = (): 'ios' | 'tvos' => {
-  try {
-    const podfile = path.join(process.cwd(), 'ios/Podfile');
-    if (fs.existsSync(podfile)) {
-      const contents = fs.readFileSync(podfile, 'utf8');
-      if (/^\s*platform\s+:tvos/m.test(contents)) {
-        return 'tvos';
-      }
-    }
-  } catch {
-    // fall through to the iOS default
+// xcodebuild names the product directories after the SDK (appletvos vs iphoneos).
+const APPLE_PLATFORMS = {
+  ios: {
+    deviceSdk: 'iphoneos',
+    simulatorSdk: 'iphonesimulator',
+    destinations: ['generic/platform=iphoneos', 'generic/platform=iphonesimulator'],
+  },
+  tvos: {
+    deviceSdk: 'appletvos',
+    simulatorSdk: 'appletvsimulator',
+    destinations: ['generic/platform=tvOS', 'generic/platform=tvOS Simulator'],
+  },
+};
+
+// A tvOS project (e.g. from react-native-tvos) declares `platform :tvos` in its Podfile.
+const resolveApplePlatform = (verbose: boolean): keyof typeof APPLE_PLATFORMS => {
+  const podfile = path.join(process.cwd(), 'ios/Podfile');
+  const platform =
+    fs.existsSync(podfile) && /^\s*platform\s+:tvos/m.test(fs.readFileSync(podfile, 'utf8'))
+      ? 'tvos'
+      : 'ios';
+  if (verbose) {
+    console.log(`Detected Apple platform: ${platform}`);
   }
-  return 'ios';
+  return platform;
 };
 
 const resolveWorkspace = (options: OptionValues): string => {
