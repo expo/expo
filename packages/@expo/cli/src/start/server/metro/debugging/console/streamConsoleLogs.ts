@@ -17,7 +17,7 @@ export type DeviceConsoleLevel =
   | 'debug';
 
 interface DeviceConsoleReporter {
-  logDeviceConsole(log: { level: DeviceConsoleLevel; data: string[] }): void;
+  logDeviceConsole(log: { level: DeviceConsoleLevel; data: string[]; device?: string }): void;
 }
 
 interface StreamConsoleLogsOptions {
@@ -50,7 +50,7 @@ export function streamConsoleLogs({
 }: StreamConsoleLogsOptions): ConsoleTargetWatcher {
   let printed = Promise.resolve();
 
-  return watchConsoleTargets({
+  const watcher = watchConsoleTargets({
     serverBaseUrl,
     deviceSocketServer,
     onEntry(entry) {
@@ -59,11 +59,13 @@ export function streamConsoleLogs({
         return;
       }
       const resolved = resolveLogDataAsync(entry, level);
+      const device = watcher.targets.size > 1 ? entry.target.deviceName : undefined;
       printed = printed.then(async () =>
-        reporter.logDeviceConsole({ level, data: await resolved })
+        reporter.logDeviceConsole({ level, data: await resolved, device })
       );
     },
   });
+  return watcher;
 }
 
 async function resolveLogDataAsync(

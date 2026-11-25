@@ -281,8 +281,8 @@ export class MetroTerminalReporter extends TerminalReporter {
   }
 
   /** Prints a console call read from a connected app over CDP. */
-  logDeviceConsole({ level, data }: { level: ClientLogLevel; data: string[] }): void {
-    this.update({ type: 'client_log', level, data, mode: CDP_LOG_MODE } as TerminalReportableEvent);
+  logDeviceConsole(log: { level: ClientLogLevel; data: string[]; device?: string }): void {
+    this.update({ type: 'client_log', mode: CDP_LOG_MODE, ...log } as TerminalReportableEvent);
   }
 
   shouldFilterBundleEvent(event: TerminalReportableEvent): boolean {
@@ -376,12 +376,13 @@ export class MetroTerminalReporter extends TerminalReporter {
     level?: ClientLogLevel;
     data: unknown[];
     mode?: string;
+    device?: string;
   }) {
     const { level = 'log' } = evt;
     // Apply printf-style format substitution (e.g. %s, %d) that browsers handle
     // natively in console methods but Node/Metro terminal logging does not.
     const data = evt.mode === CDP_LOG_MODE ? evt.data : applyConsoleFormatting(evt.data);
-    const platformTag = getPlatformTagForClientLog(evt.mode);
+    const platformTag = evt.device ?? getPlatformTagForClientLog(evt.mode);
     if (level === 'warn' || (level as string) === 'error') {
       let hasStack = false;
       const parsed = data.map((msg) => {
