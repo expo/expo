@@ -545,9 +545,10 @@ export default class FileMap extends EventEmitter {
       console: this.#console,
       enableSymlinks,
       extensions,
-      healthCheckFilePrefix: this.#options.healthCheck.enabled
-        ? this.#options.healthCheck.filePrefix
-        : null,
+      // Files whose names start with this prefix are health check files, which
+      // are left out of the crawl and the watcher's changes. Every name starts
+      // with an empty prefix, so the default is used instead.
+      healthCheckFilePrefix: this.#options.healthCheck.filePrefix || '.metro-health-check',
       ignoreForCrawl,
       ignorePatternForWatch: ignorePattern,
       perfLogger: this.#startupPerfLogger,
@@ -1011,7 +1012,7 @@ export default class FileMap extends EventEmitter {
     this.#changeInterval = setInterval(emitChange, CHANGE_INTERVAL);
 
     invariant(this.#watcher != null, 'Expected #watcher to have been initialised by build()');
-    await this.#watcher.watch(onChange);
+    await this.#watcher.watch(onChange, clocks);
 
     if (this.#options.healthCheck.enabled) {
       const performHealthCheck = () => {

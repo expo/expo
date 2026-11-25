@@ -51,6 +51,11 @@ export default class FallbackWatcher extends AbstractWatcher {
   readonly #knownSymlinks: Set<string> = new Set();
   readonly #watched: { [key: string]: FSWatcher } = Object.create(null);
 
+  // Not live on darwin, though FallbackWatcher isn't currently used there.
+  static isLiveOnStart(): boolean {
+    return platform !== 'darwin';
+  }
+
   async startWatching(): Promise<void> {
     this.#watchdir(this.root);
 

@@ -11,7 +11,7 @@
 import type { Stats } from 'fs';
 import path from 'path';
 
-import type { ChangeEventMetadata, WatcherIncludedFiles } from '../types';
+import type { ChangeEventMetadata, WatcherIncludedFiles, WatchmanClockSpec } from '../types';
 
 export const DELETE_EVENT = 'delete';
 export const TOUCH_EVENT = 'touch';
@@ -19,6 +19,11 @@ export const RECRAWL_EVENT = 'recrawl';
 export const ALL_EVENT = 'all';
 
 export interface WatcherOptions {
+  // Clocks captured by the crawl, keyed by absolute Watchman watch root.
+  // Only consumed by WatchmanWatcher, which subscribes `since` the clock for
+  // its root rather than a fresh one, so that changes made while the crawl
+  // result is applied and persisted are not missed.
+  readonly clocks?: Map<string, WatchmanClockSpec> | null;
   readonly included: WatcherIncludedFiles | null | undefined;
   readonly ignored: RegExp | null | undefined;
   readonly watchmanDeferStates: readonly string[];
