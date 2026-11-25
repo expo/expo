@@ -11,6 +11,8 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.io.IOException
@@ -21,6 +23,10 @@ private class RecordingSink : ExpoNetworkReporter.Sink {
 
   override fun willSendRequest(requestId: String, request: Request) {
     events.add("start $requestId ${request.method} ${request.url}")
+  }
+
+  override fun willFollowRedirect(requestId: String, request: Request, redirectResponse: Response) {
+    events.add("redirect $requestId ${request.method} ${request.url} from ${redirectResponse.code} ${redirectResponse.request.url}")
   }
 
   override fun didReceiveResponse(requestId: String, response: Response) {
@@ -130,5 +136,34 @@ class ExpoNetworkReporterTest {
       "start js-2 GET https://example.com/data",
       "failed js-2 cancelled=false"
     ).inOrder()
+  }
+
+  @Test
+  fun `reports each redirect a request follows`() {
+    MockWebServer().use { server ->
+      server.enqueue(MockResponse().setResponseCode(302).setHeader("Location", "/next"))
+      server.enqueue(MockResponse().setResponseCode(301).setHeader("Location", "/final"))
+      server.enqueue(MockResponse().setBody("done"))
+      val reporter = ExpoNetworkReporter(sink)
+      val client = OkHttpClient.Builder()
+        .addInterceptor(reporter)
+        .addNetworkInterceptor(reporter.redirectInterceptor)
+        .build()
+      val request = Request.Builder()
+        .url(server.url("/start"))
+        .tag(DevToolsRequestId::class.java, DevToolsRequestId("js-3"))
+        .build()
+
+      client.newCall(request).execute().use { it.body?.string() }
+
+      Truth.assertThat(sink.events).containsExactly(
+        "start js-3 GET ${server.url("/start")}",
+        "redirect js-3 GET ${server.url("/next")} from 302 ${server.url("/start")}",
+        "redirect js-3 GET ${server.url("/final")} from 301 ${server.url("/next")}",
+        "response js-3 200",
+        "data js-3 4",
+        "end js-3 4"
+      ).inOrder()
+    }
   }
 }

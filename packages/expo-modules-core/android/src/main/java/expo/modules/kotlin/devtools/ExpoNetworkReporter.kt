@@ -18,6 +18,7 @@ import okio.Source
 import okio.buffer
 import java.io.IOException
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * The React Native DevTools request id of an OkHttp request, set as a request tag. An id created
@@ -32,16 +33,42 @@ class DevToolsRequestId(val value: String)
  * the Web Performance APIs. For networking stacks that bypass React Native's `NetworkingModule`.
  *
  * A request tagged with [DevToolsRequestId] is reported under that id. Requests reported here are
- * skipped by Expo's network inspector, so they reach DevTools once.
+ * skipped by Expo's network inspector, so they reach DevTools once. Redirects are reported by
+ * [redirectInterceptor], added to the same client as a network interceptor.
  */
 class ExpoNetworkReporter internal constructor(
   private val sink: Sink
 ) : Interceptor {
   constructor() : this(InspectorSink)
 
+  private val pendingRedirects = ConcurrentHashMap<String, Response>()
+
+  /**
+   * An OkHttp network interceptor that reports each redirect followed by a request this reporter
+   * reports. Add it with `addNetworkInterceptor` to the client this reporter is added to.
+   */
+  val redirectInterceptor = Interceptor { chain ->
+    val request = chain.request()
+    val requestId = request.tag(DevToolsRequestId::class.java)?.value
+    if (requestId == null || !isReported(request)) {
+      return@Interceptor chain.proceed(request)
+    }
+    pendingRedirects.remove(requestId)?.let { redirectResponse ->
+      sink.willFollowRedirect(requestId, request, redirectResponse)
+    }
+    val response = chain.proceed(request)
+    if (response.isRedirect) {
+      pendingRedirects[requestId] = response
+    }
+    response
+  }
+
   override fun intercept(chain: Interceptor.Chain): Response {
-    val request = chain.request().newBuilder().tag(Reported::class.java, Reported).build()
-    val requestId = request.tag(DevToolsRequestId::class.java)?.value ?: UUID.randomUUID().toString()
+    val requestId = chain.request().tag(DevToolsRequestId::class.java)?.value ?: UUID.randomUUID().toString()
+    val request = chain.request().newBuilder()
+      .tag(Reported::class.java, Reported)
+      .tag(DevToolsRequestId::class.java, DevToolsRequestId(requestId))
+      .build()
 
     sink.willSendRequest(requestId, request)
     val response = try {
@@ -49,6 +76,8 @@ class ExpoNetworkReporter internal constructor(
     } catch (e: IOException) {
       sink.didFailLoading(requestId, cancelled = chain.call().isCanceled())
       throw e
+    } finally {
+      pendingRedirects.remove(requestId)
     }
     sink.didReceiveResponse(requestId, response)
 
@@ -68,6 +97,7 @@ class ExpoNetworkReporter internal constructor(
    */
   internal interface Sink {
     fun willSendRequest(requestId: String, request: Request)
+    fun willFollowRedirect(requestId: String, request: Request, redirectResponse: Response)
     fun didReceiveResponse(requestId: String, response: Response)
     fun didReceiveData(requestId: String, dataLength: Int)
     fun didFinishLoading(requestId: String, encodedDataLength: Long, body: StoredBody?)
@@ -95,6 +125,20 @@ class ExpoNetworkReporter internal constructor(
         0
       )
       InspectorNetworkReporter.reportConnectionTiming(requestId, headers)
+    }
+
+    override fun willFollowRedirect(requestId: String, request: Request, redirectResponse: Response) {
+      InspectorNetworkReporter.reportRequestStart(
+        requestId,
+        request.url.toString(),
+        request.method,
+        request.headers.toMap(),
+        requestBodyPreview(request.body),
+        0,
+        redirectResponse.request.url.toString(),
+        redirectResponse.code,
+        redirectResponse.headers.toMap()
+      )
     }
 
     override fun didReceiveResponse(requestId: String, response: Response) {
