@@ -16,6 +16,7 @@ import { findUnsupportedWorkerAsyncDependency } from './chunking/findUnsupported
 import { stringToUUID } from './debugId';
 import {
   environmentVariableSerializerPlugin,
+  projectRootSerializerPlugin,
   serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
 import { event } from './events';
@@ -76,6 +77,7 @@ export function withExpoSerializers<Config extends InputConfigT = InputConfigT>(
 ): Config {
   const processors: SerializerPlugin[] = [];
   processors.push(serverPreludeSerializerPlugin);
+  processors.push(projectRootSerializerPlugin);
   if (!env.EXPO_NO_CLIENT_ENV_VARS) {
     processors.push(environmentVariableSerializerPlugin);
   }
