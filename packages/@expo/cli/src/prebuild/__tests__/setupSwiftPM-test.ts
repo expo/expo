@@ -1,4 +1,5 @@
 import type { ExpoConfig } from '@expo/config';
+import { IOSConfig } from '@expo/config-plugins';
 import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 import Module from 'module';
@@ -24,6 +25,42 @@ const updateArgs = ['update', '--yes', '--config-command', configCommandJson];
 const printedNodeScript = 'node node_modules/react-native/scripts/setup-apple-spm.js';
 const printedAddCommand = `${printedNodeScript} add --deintegrate --yes --config-command ${quotedConfigCommand}`;
 const marker = `${projectRoot}/ios/App.xcodeproj/.spm-injected.json`;
+
+const pbxprojPath = `${projectRoot}/ios/App.xcodeproj/project.pbxproj`;
+const templatePbxproj = jest
+  .requireActual<typeof import('fs')>('fs')
+  .readFileSync(
+    path.join(
+      __dirname,
+      '../../../../../../templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj'
+    ),
+    'utf8'
+  );
+const podsModulesProvider = 'Pods/Target Support Files/Pods-HelloWorld/ExpoModulesProvider.swift';
+const generatedModulesProvider = 'build/generated/autolinking/expo/ExpoModulesProvider.swift';
+
+/** Adds what Expo's CocoaPods integration leaves in the Xcode project of the template. */
+function withCocoaPodsLeftovers(pbxproj: string): string {
+  const root = '/template';
+  vol.fromJSON({ [`${root}/ios/HelloWorld.xcodeproj/project.pbxproj`]: pbxproj });
+  const project = IOSConfig.XcodeUtils.getPbxproj(root);
+  const target = project.getFirstTarget().uuid;
+  project.addBuildPhase(
+    [],
+    'PBXShellScriptBuildPhase',
+    '[Expo] Configure project',
+    target,
+    {
+      shellPath: '/bin/sh',
+      shellScript: '"${PODS_ROOT}/Target Support Files/Pods-HelloWorld/expo-configure-project.sh"',
+    },
+    ''
+  );
+  const group = project.findPBXGroupKey({ name: 'HelloWorld' })!;
+  project.addSourceFile(podsModulesProvider, { target }, group);
+  project.addSourceFile(generatedModulesProvider, { target }, group);
+  return project.writeSync();
+}
 
 const loggedOutput = () =>
   jest
@@ -59,7 +96,7 @@ beforeEach(() => {
   mockReactNativeAt(`${projectRoot}/node_modules/react-native`);
   vol.fromJSON({
     [`${projectRoot}/package.json`]: '{}',
-    [`${projectRoot}/ios/App.xcodeproj/project.pbxproj`]: '',
+    [pbxprojPath]: templatePbxproj,
     [localScript]: '',
   });
   jest.mocked(spawnAsync).mockReset();
@@ -134,6 +171,18 @@ describe(setupSwiftPMAsync, () => {
     await setupSwiftPMAsync(projectRoot, { install: true });
 
     expectSpawnedScriptWith(addArgs);
+  });
+
+  it(`removes the CocoaPods items that Expo added to the Xcode project`, async () => {
+    vol.writeFileSync(pbxprojPath, withCocoaPodsLeftovers(templatePbxproj));
+
+    await setupSwiftPMAsync(projectRoot, { install: true });
+
+    const pbxproj = vol.readFileSync(pbxprojPath, 'utf8') as string;
+    expect(pbxproj).not.toContain('[Expo] Configure project');
+    expect(pbxproj).not.toContain(podsModulesProvider);
+    expect(pbxproj).toContain(generatedModulesProvider);
+    expect(pbxproj).toContain('AppDelegate.swift');
   });
 
   it(`updates Swift Package Manager when the marker exists`, async () => {

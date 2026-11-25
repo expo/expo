@@ -1,4 +1,5 @@
 import type { ExpoConfig } from '@expo/config';
+import { IOSConfig } from '@expo/config-plugins';
 import type { SpawnResult } from '@expo/spawn-async';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
@@ -24,6 +25,10 @@ const AUTOLINKING_CONFIG_COMMAND = JSON.stringify([
   '--platform',
   'ios',
 ]);
+
+const CONFIGURE_PROJECT_PHASE_NAME = '[Expo] Configure project';
+const PODS_MODULES_PROVIDER_PATH =
+  /^Pods\/Target Support Files\/[^/]+\/ExpoModulesProvider\.swift$/;
 
 /**
  * Returns the marker React Native writes to `ios/<name>.xcodeproj` when it sets up Swift Package
@@ -128,7 +133,62 @@ export async function setupSwiftPMAsync(
       ].join('\n')
     );
   }
+  removeExpoCocoaPodsIntegration(projectRoot);
   step.succeed('Set up Swift Package Manager for iOS');
+}
+
+/**
+ * Removes what Expo's CocoaPods integration added to the Xcode project and points into `Pods/`:
+ * the `[Expo] Configure project` build phase and the `ExpoModulesProvider.swift` source file.
+ * React Native's `setup-apple-spm.js` deletes `Pods/` but does not know about these items.
+ */
+function removeExpoCocoaPodsIntegration(projectRoot: string): void {
+  const project = IOSConfig.XcodeUtils.getPbxproj(projectRoot);
+  const objects: Record<string, Record<string, any>> = project.hash.project.objects;
+  const unquote = (value: unknown) => String(value).replace(/^"(.*)"$/, '$1');
+  // Sections pair each uuid with a `<uuid>_comment` string, which is not an object.
+  const entriesOf = (section: Record<string, any> = {}): [string, any][] =>
+    Object.entries(section).filter(([uuid]) => !uuid.endsWith('_comment'));
+  const remove = (section: Record<string, any>, uuid: string) => {
+    delete section[uuid];
+    delete section[`${uuid}_comment`];
+  };
+  let changed = false;
+
+  for (const [uuid, phase] of entriesOf(objects.PBXShellScriptBuildPhase)) {
+    if (unquote(phase.name) !== CONFIGURE_PROJECT_PHASE_NAME) {
+      continue;
+    }
+    remove(objects.PBXShellScriptBuildPhase!, uuid);
+    for (const [, target] of entriesOf(objects.PBXNativeTarget)) {
+      target.buildPhases = target.buildPhases?.filter((ref: any) => ref.value !== uuid);
+    }
+    changed = true;
+  }
+
+  for (const [fileUuid, fileReference] of entriesOf(objects.PBXFileReference)) {
+    if (!PODS_MODULES_PROVIDER_PATH.test(unquote(fileReference.path))) {
+      continue;
+    }
+    remove(objects.PBXFileReference!, fileUuid);
+    for (const [buildFileUuid, buildFile] of entriesOf(objects.PBXBuildFile)) {
+      if (buildFile.fileRef !== fileUuid) {
+        continue;
+      }
+      remove(objects.PBXBuildFile!, buildFileUuid);
+      for (const [, phase] of entriesOf(objects.PBXSourcesBuildPhase)) {
+        phase.files = phase.files?.filter((ref: any) => ref.value !== buildFileUuid);
+      }
+    }
+    for (const [, group] of entriesOf(objects.PBXGroup)) {
+      group.children = group.children?.filter((ref: any) => ref.value !== fileUuid);
+    }
+    changed = true;
+  }
+
+  if (changed) {
+    fs.writeFileSync(project.filepath, project.writeSync());
+  }
 }
 
 function resolveSetupAppleSpmScript(projectRoot: string): string | null {
