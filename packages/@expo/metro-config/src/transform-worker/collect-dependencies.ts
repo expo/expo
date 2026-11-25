@@ -203,11 +203,15 @@ function collectDependencies<TAst extends t.File>(
             // Replace `new Worker` invocation with `asyncRequire.unstable_createWorker` helper call,
             // creating an Object URL with a shim script that remaps `importScripts` and `fetch`, while calling the entrypoint with `importScripts`.
             // This works around COEP/CORP issues, since worker entrypoint scripts aren't necessarily expected to match these headers
-            path.get('callee').replaceWith(
-              makeCreateWorkerTemplate({
-                ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
-              })
-            );
+            // A shared worker is keyed by its script URL, and a per-document Object URL would give
+            // every document its own worker, so `new SharedWorker` keeps its constructor
+            if (path.node.callee.name === 'Worker') {
+              path.get('callee').replaceWith(
+                makeCreateWorkerTemplate({
+                  ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
+                })
+              );
+            }
           }
         }
       },
