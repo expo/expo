@@ -60,7 +60,7 @@
     "compression": "^1.8.0",
     "esbuild": "^0.28.1",
     "express": "^5.1.0",
-    "morgan": "^1.11.0",
+    "morgan": "^1.12.1",
     "tailwindcss": "^3.3.5",
     "tiny": "^0.0.10",
     "workerd": "^1.20250807.0"
