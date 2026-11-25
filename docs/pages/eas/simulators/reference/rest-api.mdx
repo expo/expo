@@ -1,7 +1,7 @@
 ---
 title: Expo Simulators REST API
 sidebar_title: REST API
-description: Create, inspect, connect to, and stop Expo Simulators sessions from your own systems with the REST API.
+description: Create, list, inspect, connect to, and stop Expo Simulators sessions from your own systems with the REST API.
 ---
 
 import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
@@ -11,7 +11,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 The Expo Simulators REST API lets you manage remote device sessions from CI, an agent, or another HTTP client without running EAS CLI. All endpoints live under `https://api.expo.dev`. Requests and responses are JSON, and successful responses wrap the result in `data`.
 
-Create a session, poll it until connection details are available, and stop it when you finish. The REST API manages the session lifecycle. Use the selected controller for device actions such as installing an app, pressing a button, or taking a screenshot.
+Create a session, poll it until connection details are available, and stop it when you finish. List sessions to find one again by tag, status, or name. The REST API manages the session lifecycle. Use the selected controller for device actions such as installing an app, pressing a button, or taking a screenshot.
 
 ## Authentication
 
@@ -27,6 +27,8 @@ Content-Type: application/json
 The examples below read the token from the `EXPO_TOKEN` environment variable. Keep this token in your CI secret store or server environment, not in client code.
 
 > **warning** Session responses can include controller credentials. Treat connection details as secrets: do not commit them, include them in logs, or expose them in a public response. Successful responses carry `Cache-Control: private, no-store` and `Pragma: no-cache`. Do not cache session responses.
+>
+> Only the [get endpoint](#get-a-session) returns live connection details. Items from the [list endpoint](#list-sessions) do not include `remoteConfig`, so list output does not carry connection credentials. To connect, get one session by its ID.
 
 ## Create a session
 
@@ -139,7 +141,9 @@ Only paid plans can start sessions. The duration limit is 115 minutes. When you 
 GET /v2/device-run-sessions/:deviceRunSessionId
 ```
 
-Returns `200 OK` with the same session object as the create endpoint, including its current status, timestamps, and `remoteConfig`. Replace `:deviceRunSessionId` with the session ID. No separate connection request is needed.
+Returns `200 OK` with the same session object as the create endpoint, including its current status, timestamps, and `remoteConfig`. It also includes the session's `artifacts` and `errors`. Replace `:deviceRunSessionId` with the session ID. No separate connection request is needed.
+
+This is the only endpoint that returns live connection details for a running session. Treat its response as a secret.
 
 ### Example
 
@@ -182,10 +186,32 @@ An agent-device session that is ready returns connection details alongside its m
     "startedAt": "2026-08-28T10:01:00.000Z",
     "finishedAt": null,
     "createdAt": "2026-08-28T10:00:00.000Z",
-    "updatedAt": "2026-08-28T10:01:00.000Z"
+    "updatedAt": "2026-08-28T10:01:00.000Z",
+    "artifacts": [],
+    "errors": []
   }
 }
 ```
+
+### Artifacts and errors
+
+`artifacts` lists the files that the session saved, newest first. It is an empty array when the session saved no files. Each artifact has these fields:
+
+| Field           | Type           | Description                                                      |
+| --------------- | -------------- | ---------------------------------------------------------------- |
+| `id`            | string         | The artifact ID.                                                 |
+| `name`          | string         | The artifact name.                                               |
+| `filename`      | string         | The file name.                                                   |
+| `kind`          | string or null | The kind of file, such as `agent-device-log-archive`, or `null`. |
+| `fileSizeBytes` | number or null | The file size in bytes, or `null` when the size is not known.    |
+| `downloadUrl`   | string         | A link on expo.dev that downloads the file.                      |
+| `metadata`      | object or null | Extra values stored with the file, or `null`.                    |
+| `createdAt`     | string         | When the artifact was created, as an ISO 8601 timestamp.         |
+| `updatedAt`     | string         | When the artifact was last updated, as an ISO 8601 timestamp.    |
+
+`errors` lists why the session's job failed. It is an empty array when the job has no errors. Each error has an `errorCode`, a `message`, and a `docsUrl` that is `null` when no documentation page exists for the error. Check `errors` when `status` is `errored`.
+
+These fields are the same as the output of `eas simulator:get`. Only the get endpoint returns them.
 
 ### Session status
 
@@ -239,6 +265,78 @@ You can also make a public link that contains the preview token. Anyone who has 
 To call `previewApiUrl`, add the token as a `token` query parameter. URL-encode the token in each case. For a session with `publicPreview` set to `true`, EAS CLI builds these URLs for you in `eas simulator:get --json` output. For other sessions, EAS CLI shows the private link and does not show the token.
 
 Android sessions also include a browser preview that streams the emulator. Select **Open preview** on the session page on expo.dev to open it in a new tab.
+
+## List sessions
+
+```text
+GET /v2/device-run-sessions?appId=:appId
+```
+
+Returns the sessions of a project, newest first. Use it to find a session again, for example by a tag that your CI job set when it created the session.
+
+### Query parameters
+
+Repeat a parameter to pass more than one value, such as `tags=checkout&tags=ios`.
+
+| Parameter   | Type          | Required | Description                                                                                                                                    |
+| ----------- | ------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `appId`     | string (UUID) | Yes      | The Expo Services project ID.                                                                                                                  |
+| `tags`      | string        | No       | Returns only sessions that have every listed tag. Case-insensitive. Up to 16 tags of 1 to 64 characters each.                                  |
+| `statuses`  | string        | No       | Returns only sessions with one of these [statuses](#session-status), such as `in-progress`.                                                    |
+| `platforms` | string        | No       | `android` or `ios`.                                                                                                                            |
+| `types`     | string        | No       | `agent-device`, `appium`, `argent`, or `web-preview-only`. `web-preview-only` also returns sessions created with the removed `serve-sim` type. |
+| `name`      | string        | No       | Returns only sessions whose name contains this text. Case-insensitive. 1 to 255 characters.                                                    |
+| `limit`     | integer       | No       | The number of sessions to return, from 1 to 100. Defaults to 25.                                                                               |
+| `cursor`    | string        | No       | The `nextCursor` value from the previous page. Omit it for the first page.                                                                     |
+
+### Example
+
+<Terminal
+  cmdCopy={`curl "https://api.expo.dev/v2/device-run-sessions?appId=a415eac6-231a-4b38-b481-3255a59f13b8&tags=checkout&statuses=in-progress" -H "Authorization: Bearer $EXPO_TOKEN"`}
+  cmd={[
+    `$ curl "https://api.expo.dev/v2/device-run-sessions?appId=a415eac6-231a-4b38-b481-3255a59f13b8&tags=checkout&statuses=in-progress" \\`,
+    `    -H "Authorization: Bearer $EXPO_TOKEN"`,
+  ]}
+/>
+
+### Response
+
+Returns `200 OK` with a page of sessions and a cursor for the next page:
+
+```json
+{
+  "data": {
+    "sessions": [
+      {
+        "id": "019d9d17-013a-7e05-89aa-4aa83ff68c32",
+        "appId": "a415eac6-231a-4b38-b481-3255a59f13b8",
+        "url": "https://expo.dev/accounts/acme/projects/example/simulator-sessions/019d9d17-013a-7e05-89aa-4aa83ff68c32",
+        "jobRunId": "019d9d17-1a3f-7c10-bdee-5f2811a9d6ad",
+        "name": "Checkout flow screenshots",
+        "tags": ["checkout"],
+        "type": "agent-device",
+        "packageVersion": null,
+        "buildId": "f9609423-5072-4ea2-a0a5-c345eedf2c2a",
+        "applicationArchiveUrl": null,
+        "platform": "ios",
+        "status": "in-progress",
+        "publicPreview": false,
+        "maxDurationMinutes": 30,
+        "maxIdleTimeMinutes": 5,
+        "startedAt": "2026-08-28T10:01:00.000Z",
+        "finishedAt": null,
+        "createdAt": "2026-08-28T10:00:00.000Z",
+        "updatedAt": "2026-08-28T10:01:00.000Z"
+      }
+    ],
+    "nextCursor": null
+  }
+}
+```
+
+Each item has the same fields as the session object from the create endpoint, except `remoteConfig`. List items never include connection details, even for a running session. To connect to a session from the list, [get the session](#get-a-session) by its `id`.
+
+`nextCursor` is `null` on the last page. To get the next page, send the same request with `cursor` set to `nextCursor`.
 
 ## Stop a session
 
