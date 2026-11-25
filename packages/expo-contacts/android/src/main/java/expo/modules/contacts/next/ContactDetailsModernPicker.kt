@@ -19,11 +19,20 @@ class ContactDetailsModernPicker(
     val extractableFields = mapper.toExtractableFields(fields).toSet()
     val request = ContactDetailsPickerRequest(extractableFields)
     warnAboutOlderAndroidIfNeeded(request)
-    val sessionUri = intentDelegate.launchPickContactDetails(request.mimeTypes)
+    val sessionUri = intentDelegate.launchPickContactDetails(request.mimeTypes, allowsMultipleSelection = false)
       ?: return null
-    val pickedContact = repository.getByUri(request.sharedFields, sessionUri)
+    val pickedContact = repository.getAllByUri(request.sharedFields, sessionUri).firstOrNull()
       ?: throw ContactNotFoundException()
     return mapper.toRecord(pickedContact)
+  }
+
+  override suspend fun pickMultiple(fields: Set<ContactField>): List<GetContactDetailsRecord> {
+    val extractableFields = mapper.toExtractableFields(fields).toSet()
+    val request = ContactDetailsPickerRequest(extractableFields)
+    warnAboutOlderAndroidIfNeeded(request)
+    val sessionUri = intentDelegate.launchPickContactDetails(request.mimeTypes, allowsMultipleSelection = true)
+      ?: return emptyList()
+    return repository.getAllByUri(request.sharedFields, sessionUri).map { mapper.toRecord(it) }
   }
 
   private fun warnAboutOlderAndroidIfNeeded(request: ContactDetailsPickerRequest) {
@@ -33,6 +42,6 @@ class ContactDetailsModernPicker(
     if (request.singleDataKindUri != null || permissionsDelegate.isReadPermissionDeclared()) {
       return
     }
-    warn("On Android 16 and lower, Contact.pickDetails rejects this request: ${ContactsPickerUnavailableException.MESSAGE}")
+    warn("On Android 16 and lower, the contact details picker rejects this request: ${ContactsPickerUnavailableException.MESSAGE}")
   }
 }

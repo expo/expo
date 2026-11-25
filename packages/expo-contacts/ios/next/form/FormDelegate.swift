@@ -24,7 +24,7 @@ class FormDelegate: OnContactPickingResultHandler {
 
   private let delegate = ContactControllerDelegate()
   private var presentingViewController: UIViewController?
-  private var contactPickerDelegate: ContactPickerControllerDelegate?
+  private var contactPickerDelegate: CNContactPickerDelegate?
   private var contactPickingPromise: Promise?
   private var onContactPicked: ((CNContact) throws -> Void)?
   private var contactManipulationPromise: Promise?
@@ -110,6 +110,40 @@ class FormDelegate: OnContactPickingResultHandler {
     contactPickerDelegate = pickerDelegate
     contactPickingPromise = promise
     self.onContactPicked = onContactPicked
+  }
+
+  func presentMultiplePicker(promise: Promise, onContactsPicked: @escaping ([CNContact]) throws -> Void) throws {
+    if contactPickingPromise != nil {
+      throw ContactPickingInProgressException()
+    }
+    let pickerDelegate = MultipleContactsPickerControllerDelegate(
+      onPick: { [weak self] contacts in
+        do {
+          try onContactsPicked(contacts)
+        } catch {
+          promise.reject(error)
+        }
+        self?.contactPickingPromise = nil
+        self?.contactPickerDelegate = nil
+      },
+      onCancel: { [weak self] in
+        let noContacts: [Any] = []
+        promise.resolve(noContacts)
+        self?.contactPickingPromise = nil
+        self?.contactPickerDelegate = nil
+      }
+    )
+
+    let pickerController = CNContactPickerViewController()
+    pickerController.delegate = pickerDelegate
+
+    guard let currentController = appContext?.utilities?.currentViewController() else {
+      throw MissingViewControllerException()
+    }
+    currentController.present(pickerController, animated: true)
+
+    contactPickerDelegate = pickerDelegate
+    contactPickingPromise = promise
   }
 
   private func applyCancelButton(to controller: inout ContactsViewController, showsCancelButton: Bool?, cancelButtonTitle: String?) {

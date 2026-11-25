@@ -29,8 +29,8 @@ class ContactIntentDelegate {
   suspend fun launchPickContact() =
     pickContactLauncher.launch(PickContactInput())
 
-  suspend fun launchPickContactDetails(mimeTypes: List<String>): Uri? {
-    val input = PickContactDetailsInput(ArrayList(mimeTypes))
+  suspend fun launchPickContactDetails(mimeTypes: List<String>, allowsMultipleSelection: Boolean): Uri? {
+    val input = PickContactDetailsInput(ArrayList(mimeTypes), allowsMultipleSelection)
     return pickContactDetailsLauncher.launch(input)
   }
 

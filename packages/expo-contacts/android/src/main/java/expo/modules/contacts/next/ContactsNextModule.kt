@@ -385,6 +385,13 @@ class ContactsNextModule : Module() {
         }
       }
 
+      StaticAsyncFunction("pickMultipleDetails") Coroutine { fields: Set<ContactField> ->
+        val formatter = SkipFormatter(fields)
+        Contact.pickMultipleDetails(contactDetailsPicker, fields).map {
+          formatter.format(it)
+        }
+      }
+
       StaticAsyncFunction("getAll") Coroutine { contactQueryOptions: ContactQueryOptions? ->
         Contact.getAll(contactRepository, contactFactory, contactQueryOptions)
       }

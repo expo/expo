@@ -192,10 +192,10 @@ class ContactRepository(val contentResolver: ContentResolver) {
     }
   }
 
-  suspend fun getByUri(
+  suspend fun getAllByUri(
     extractableFields: Set<ExtractableField<*>>,
     uri: Uri
-  ): ExistingContact? = withContext(Dispatchers.IO) {
+  ): List<ExistingContact> = withContext(Dispatchers.IO) {
     val queryAggregator = QueryAggregator(extractableFields)
     val queryBuilder = QueryBuilder(extractableFields)
 
@@ -208,7 +208,7 @@ class ContactRepository(val contentResolver: ContentResolver) {
         .asSequence()
         .forEach { _ -> queryAggregator.aggregateJoinedRow(cursor) }
     }
-    return@withContext queryAggregator.buildContacts().firstOrNull()
+    return@withContext queryAggregator.buildContacts()
   }
 
   suspend fun getAllPaginated(

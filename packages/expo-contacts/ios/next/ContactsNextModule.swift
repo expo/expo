@@ -400,6 +400,24 @@ public class ContactsNextModule: Module {
         }
       }.runOnQueue(.main)
 
+      StaticAsyncFunction("pickMultipleDetails") { (fields: [ContactField], promise: Promise) in
+        let detailsMapper = GetContactDetailsMapper(imageService: imageService)
+        try formDelegate.presentMultiplePicker(promise: promise) { contacts in
+          DispatchQueue.global(qos: .userInitiated).async {
+            do {
+              let details = try contacts.map { contact in
+                try detailsMapper.map(contact: contact).format { formatter in
+                  getDetailsFormat(formatter: formatter, fields: fields)
+                }
+              }
+              promise.resolve(details)
+            } catch {
+              promise.reject(error)
+            }
+          }
+        }
+      }.runOnQueue(.main)
+
       StaticAsyncFunction("presentAccessPicker") { (promise: Promise) in
         return try formDelegate.presentAccessPicker(promise: promise)
       }.runOnQueue(.main)
