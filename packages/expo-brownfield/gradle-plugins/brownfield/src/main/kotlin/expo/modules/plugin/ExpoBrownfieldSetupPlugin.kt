@@ -12,6 +12,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     project.evaluationDependsOn(":expo")
     setupDependencySubstitution(project)
+    setupFusedModeStripping(project)
 
     project.afterEvaluate { project ->
       setupSourceSets(project)
@@ -20,6 +21,61 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
       setupCopyingNativeLibsForType(project, "Debug")
       setupHostAppArtifactForwardingForRelease(project)
       wireDevLauncherTasks(project)
+    }
+  }
+
+  /**
+   * In `--fused` builds, strips entries from the autolinking-generated
+   * `ExpoModulesPackageList.kt` by package prefix, via
+   * `-Pbrownfield.fused.strip-packages=expo.modules.foo.,expo.modules.bar.`.
+   *
+   * This is the companion escape hatch to `-Pbrownfield.fused.skip=<project,...>`
+   * in the fused sibling's build script: a module excluded from the fat AAR still
+   * has its `Package` class referenced by `ExpoModulesPackageList.<clinit>`, which
+   * would crash the host with `NoClassDefFoundError` at startup — stripping the
+   * matching entries here keeps the package list consistent with the AAR contents.
+   * Inert unless both properties are set.
+   */
+  private fun setupFusedModeStripping(brownfieldProject: Project) {
+    if (brownfieldProject.findProperty("brownfield.fused") != "true") return
+
+    val expoProject = brownfieldProject.rootProject.findProject(":expo") ?: return
+
+    val stripPrefixes =
+      (brownfieldProject.findProperty("brownfield.fused.strip-packages") as? String)
+        ?.split(',')
+        ?.map { it.trim() }
+        ?.filter { it.isNotEmpty() }
+        ?.toSet()
+        ?: emptySet()
+
+    if (stripPrefixes.isEmpty()) return
+
+    // `:expo` is already evaluated (forced by `evaluationDependsOn(":expo")` at the
+    // top of `apply`), so we read the task directly — no afterEvaluate needed.
+    val task = expoProject.tasks.findByName("generatePackagesList") ?: return
+    task.doLast {
+      val outputFile =
+        expoProject.layout.buildDirectory
+          .file("generated/expo/src/main/java/expo/modules/ExpoModulesPackageList.kt")
+          .get()
+          .asFile
+      if (!outputFile.exists()) {
+        expoProject.logger.warn(
+          "brownfield.fused: ExpoModulesPackageList.kt not found at ${outputFile.path}; nothing to strip"
+        )
+        return@doLast
+      }
+      val original = outputFile.readText()
+      val stripped =
+        original
+          .lineSequence()
+          .filter { line -> stripPrefixes.none { prefix -> line.contains(prefix) } }
+          .joinToString("\n")
+      outputFile.writeText(stripped)
+      expoProject.logger.lifecycle(
+        "brownfield.fused: stripped ExpoModulesPackageList entries matching ${stripPrefixes.joinToString(", ")}"
+      )
     }
   }
 
