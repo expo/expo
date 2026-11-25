@@ -35,6 +35,9 @@
     "typecheck": "tsc -b tsconfig.all.json",
     "prepack": "expo-module prepack"
   },
+  "dependencies": {
+    "expo-media-session": "workspace:~"
+  },
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
     "@types/jest": "^30.0.0",

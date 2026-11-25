@@ -1,3 +1,4 @@
+import ExpoMediaSession
 import ExpoModulesCore
 
 @Record
@@ -28,21 +29,6 @@ struct PartialAudioMode {
       shouldRouteThroughEarpiece: shouldRouteThroughEarpiece ?? current.shouldRouteThroughEarpiece,
       allowsBackgroundRecording: allowsBackgroundRecording ?? current.allowsBackgroundRecording
     )
-  }
-}
-
-enum InterruptionMode: String, Enumerable {
-  case mixWithOthers
-  case doNotMix
-  case doNotMixPersistent
-  case duckOthers
-
-  var preventsMixing: Bool {
-    self == .doNotMix || self == .doNotMixPersistent
-  }
-
-  var shouldNotifyOthersOnDeactivation: Bool {
-    self != .doNotMixPersistent
   }
 }
 

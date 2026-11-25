@@ -1,4 +1,5 @@
 import AVFoundation
+import ExpoMediaSession
 import ExpoModulesCore
 
 @Record
@@ -15,7 +16,7 @@ struct AudioStreamBufferEvent {
 }
 
 @SharedObject
-public final class AudioStream: SharedObject {
+public final class AudioStream: SharedObject, SessionCommandTarget {
   @JS
   let id = UUID().uuidString
 
@@ -34,8 +35,9 @@ public final class AudioStream: SharedObject {
   private var fileWriter: AudioStreamFileWriter?
   private let fileWriterQueue = DispatchQueue(label: "expo.audio.filewrite", qos: .default)
   private var fileWriterError: Error?
-  private let sessionQueue: DispatchQueue
-  weak var module: AudioModule?
+  private var startTask: Task<Void, Error>?
+  var allowsBackgroundRecording: () -> Bool = { false }
+  let sessionUse: SessionUseSlot
 
   @Event("audioStreamStatus")
   var onAudioStreamStatus: (AudioStreamStatusEvent) -> Void
@@ -43,12 +45,50 @@ public final class AudioStream: SharedObject {
   @Event("audioStreamBuffer")
   var onAudioStreamBuffer: (AudioStreamBufferEvent) -> Void
 
-  init(options: AudioStreamOptions, sessionQueue: DispatchQueue) {
-    self.sessionQueue = sessionQueue
+  init(options: AudioStreamOptions, session: any MediaSessionManaging = MediaSessionManager.shared) {
     self.requestedSampleRate = options.sampleRate
     self.requestedChannels = options.channels
     self.encoding = options.encoding
+    self.sessionUse = SessionUseSlot(session: session, label: "stream")
     super.init()
+    sessionUse.client = "expo-audio:stream:\(id)"
+    sessionUse.target = self
+  }
+
+  @JS
+  func start() async throws {
+    #if os(iOS)
+    try AudioRecordingRequester.requirePermission()
+    #endif
+    guard !isStreaming else {
+      return
+    }
+    let requirements = SessionRequirements(
+      capabilities: .measurement,
+      preferredSampleRate: requestedSampleRate,
+      continuesInBackground: allowsBackgroundRecording()
+    )
+    let starting = Task {
+      let use = sessionUse.sync {
+        sessionUse.begin(requirements)
+      }
+      do {
+        try await use.activated()
+        try await sessionUse.queue.perform {
+          guard self.sessionUse.isCurrent(use) else {
+            throw AudioStreamException("The stream was stopped while it was starting. Call start() again to stream")
+          }
+          try self.startCapture()
+        }
+      } catch {
+        sessionUse.sync {
+          sessionUse.end(ifCurrent: use)
+        }
+        throw error
+      }
+    }
+    startTask = starting
+    try await starting.value
   }
 
   @JS("sampleRate")
@@ -66,24 +106,10 @@ public final class AudioStream: SharedObject {
     isStreaming
   }
 
-  @JS("start")
-  func startFromJS() async throws {
-    #if os(iOS)
-    try AudioRecordingRequester.requirePermission()
-    #endif
-    try await sessionQueue.perform {
-      guard let module = self.module else {
-        throw Exceptions.AppContextLost()
-      }
-      try module.activateRecordingSession { _, deactivateOnFailure in
-        try self.start(deactivateSessionOnFailure: deactivateOnFailure)
-      }
-    }
-  }
-
   @JS
   func startFileRecordingAsync(_ options: AudioStreamFileRecordingOptions?) async throws -> AudioStreamFileRecordingStartResult {
-    try await sessionQueue.perform {
+    _ = try? await startTask?.value
+    return try await sessionUse.queue.perform {
       try self.startFileRecording(options)
     }
   }
@@ -111,23 +137,13 @@ public final class AudioStream: SharedObject {
 
   @JS
   func stopFileRecordingAsync() async throws -> AudioStreamFileRecordingResult {
-    try await sessionQueue.perform {
+    try await sessionUse.queue.perform {
       try self.stopFileRecording()
     }
   }
 
-  func start(deactivateSessionOnFailure: Bool = true) throws {
+  private func startCapture() throws {
     guard !isStreaming else { return }
-
-    let session = AVAudioSession.sharedInstance()
-    defer {
-      if !isStreaming && deactivateSessionOnFailure {
-        try? session.setActive(false)
-      }
-    }
-    try session.setCategory(.record, mode: .measurement)
-    try session.setPreferredSampleRate(requestedSampleRate)
-    try session.setActive(true)
 
     let engine = AVAudioEngine()
     let inputNode = engine.inputNode
@@ -192,7 +208,15 @@ public final class AudioStream: SharedObject {
     }
   }
 
-  func stop() {
+  @JS
+  nonisolated func stop() {
+    sessionUse.sync {
+      stopCapture()
+      sessionUse.end()
+    }
+  }
+
+  private func stopCapture() {
     guard isStreaming else { return }
     audioEngine?.inputNode.removeTap(onBus: 0)
     audioEngine?.stop()
@@ -374,8 +398,30 @@ public final class AudioStream: SharedObject {
     return AVAudioTime.seconds(forHostTime: when.hostTime) - AVAudioTime.seconds(forHostTime: startTimestamp.hostTime)
   }
 
+  // Deinit can run on the session use queue, so it must not call stop().
   deinit {
-    stop()
+    stopCapture()
+    sessionUse.queue.async { [sessionUse] in
+      sessionUse.end()
+    }
+  }
+
+  func sessionPause(reason: SessionPauseReason) {
+    audioEngine?.pause()
+  }
+
+  func sessionResume() {
+    try? audioEngine?.start()
+  }
+
+  func sessionDuck(_ isDucked: Bool) {}
+
+  func sessionDidFail(_ error: Error) {
+    stopCapture()
+  }
+
+  func sessionDidEnd() {
+    stopCapture()
   }
 }
 
