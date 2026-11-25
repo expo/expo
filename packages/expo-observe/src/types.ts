@@ -4,6 +4,9 @@ import type {
   LogEventOptions,
   MetricAttributes,
   NetworkRequestFilter,
+  RecordSpanOptions,
+  Span,
+  StartSpanOptions,
 } from 'expo-app-metrics';
 
 /**
@@ -21,7 +24,7 @@ export type ObserveAttributes = Record<string, ObserveAttribute>;
 
 // Keep in sync with `metricNameMap` in `ios/OpenTelemetry.swift` and `android/.../OpenTelemetry.kt` (except legacy entries).
 /**
- * Name of a metric that EAS Observe sends.
+ * Name of a metric that Expo Observe sends
  */
 export type ObserveMetricName =
   | 'expo.app_startup.tti'
@@ -36,7 +39,7 @@ export type ObserveMetricName =
   | 'expo.navigation.tbt';
 
 /**
- * Name of an event that EAS Observe sends. Custom names passed to `logEvent` are allowed.
+ * Name of an event that Expo Observe sends. You can also pass a custom name to `logEvent`.
  */
 export type ObserveEventName =
   | 'js.exception'
@@ -381,20 +384,92 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    */
   dispatchEvents(): Promise<void>;
   /**
-   * Starts a trace span measuring an operation that is underway. See `startSpan` in
-   * `expo-app-metrics` for the full contract.
+   * Starts a trace span for an operation that is underway, and returns the span. The span gets
+   * its trace ID and span ID immediately, so you can pass it as `parent` to other spans before it
+   * ends.
+   *
+   * Observe saves the span when you call `end()`, and sends it with the next dispatch as part of
+   * the current session. If you never call `end()`, Observe never sends the span.
+   *
+   * This method never throws. When it cannot record the span, it logs a warning. The span that it
+   * returns still accepts every call.
+   *
+   * @param name A short, stable name for the operation, for example, `'checkout'`. Observe does
+   * not record the span when the name is empty, starts with the reserved `expo.` prefix, or is
+   * longer than 256 characters.
+   * @param options Initial attributes, a parent span, and an optional start time
+   * @returns The span. Call `end()` on it when the operation finishes.
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * const span = Observe.startSpan('checkout', { attributes: { 'cart.items': 3 } });
+   * span.addEvent('cart-validated');
+   * span.end();
+   * ```
    */
-  startSpan: typeof import('expo-app-metrics').startSpan;
+  startSpan(name: string, options?: StartSpanOptions): Span;
   /**
-   * Runs a callback inside a span that ends automatically. See `withSpan` in
-   * `expo-app-metrics` for the full contract.
+   * Runs `callback` inside a span. The span starts first and ends when the callback returns or its
+   * promise settles.
+   *
+   * When the callback throws or its promise rejects, the span ends with the `'error'` status and
+   * the error message. The returned promise then rejects with the same error, so your own error
+   * handling still works. An error inside Observe never changes the result: the returned promise
+   * settles the same way as the callback.
+   *
+   * The callback receives the span. Use the span to add attributes and events, and pass it as
+   * `parent` to nested spans. Observe does not nest spans automatically. A span that you start
+   * inside the callback without `parent` begins its own trace.
+   *
+   * @param name A short, stable name for the operation. Observe does not record the span when the
+   * name is empty, starts with the reserved `expo.` prefix, or is longer than 256 characters. The
+   * callback still runs.
+   * @param callback The operation to measure. It can be synchronous or asynchronous.
+   * @param options Initial attributes, a parent span, and an optional start time
+   * @returns A promise fulfilled with the result of the callback
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * const receipt = await Observe.withSpan('checkout', async (span) => {
+   *   await Observe.withSpan('validate-cart', () => validateCart(), { parent: span });
+   *   span.addEvent('cart-validated');
+   *   return submitOrder();
+   * });
+   * ```
    */
-  withSpan: typeof import('expo-app-metrics').withSpan;
+  withSpan<T>(
+    name: string,
+    callback: (span: Span) => T | Promise<T>,
+    options?: StartSpanOptions
+  ): Promise<T>;
   /**
-   * Records a span for an already-measured operation. See `recordSpan` in `expo-app-metrics`
-   * for the full contract.
+   * Records a span for an operation that you already measured. The result is the same as
+   * `startSpan` followed immediately by `end()`, with the times that you supply.
+   *
+   * Observe does not record the span when `startTime` or `endTime` is missing or is not in Unix
+   * epoch milliseconds. The same applies when `endTime` is before `startTime`. In each case,
+   * Observe logs a warning. A value from `performance.now()` is not a Unix epoch time, so use
+   * `Date.now()`. This method never throws.
+   *
+   * @param name A short, stable name for the operation. Observe does not record the span when the
+   * name is empty, starts with the reserved `expo.` prefix, or is longer than 256 characters.
+   * @param options The start and end times in Unix epoch milliseconds (both required), optional
+   * attributes, and an optional parent span
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * const startTime = Date.now();
+   * decodeImage();
+   * Observe.recordSpan('image-decode', { startTime, endTime: Date.now() });
+   * ```
    */
-  recordSpan: typeof import('expo-app-metrics').recordSpan;
+  recordSpan(name: string, options: RecordSpanOptions): void;
   /**
    * Configures how observability events are collected and dispatched at runtime, such as
    * the environment label, dispatching behavior, sampling, and integrations.
