@@ -47,6 +47,7 @@ export function createServerComponentsMiddleware(
   projectRoot: string,
   {
     rscPath,
+    outputExtension = '.js',
     instanceMetroOptions,
     ssrLoadModule,
     ssrLoadModuleArtifacts,
@@ -55,6 +56,7 @@ export function createServerComponentsMiddleware(
     routerOptions,
   }: {
     rscPath: string;
+    outputExtension?: '.js' | '.cjs';
     instanceMetroOptions: Partial<ExpoMetroOptions>;
     ssrLoadModule: SSRLoadModuleFunc;
     ssrLoadModuleArtifacts: SSRLoadModuleArtifactsFunc;
@@ -203,7 +205,6 @@ export function createServerComponentsMiddleware(
       // Match babel plugin.
       const publicModuleId = './' + toPosixPath(path.relative(projectRoot, entryPoint));
 
-      // Import relative to `dist/server/_expo/rsc/web/router.js`
       manifest[publicModuleId] = [String(relativeName), outputName];
     }
 
@@ -232,7 +233,7 @@ export function createServerComponentsMiddleware(
     await processEntryPoints(uniqueEntryPoints);
 
     // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
-    files.set(`_expo/rsc/${platform}/action-manifest.js`, {
+    files.set(`_expo/rsc/${platform}/action-manifest${outputExtension}`, {
       targetDomain: 'server',
       contents: 'module.exports = ' + JSON.stringify(manifest),
     });
@@ -260,7 +261,7 @@ export function createServerComponentsMiddleware(
       includeSourceMaps,
       excludeSource: true,
       splitChunks: false,
-      entryFilename: `_expo/rsc/${platform}/router.js`,
+      entryFilename: `_expo/rsc/${platform}/router${outputExtension}`,
     });
 
     // Extract the global CSS modules that are imported from the router.
