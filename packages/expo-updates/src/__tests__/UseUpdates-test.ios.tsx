@@ -1,4 +1,5 @@
 import { act, render, screen } from '@testing-library/react-native';
+import { useLayoutEffect } from 'react';
 
 import type { Manifest, UpdatesNativeStateMachineContext } from '../Updates.types';
 import { emitTestStateChangeEvent, resetLatestContext } from '../UpdatesEmitter';
@@ -225,6 +226,26 @@ describe('useUpdates()', () => {
       });
       const isUpdateAvailableView = await screen.findByTestId('isUpdateAvailable');
       expect(isUpdateAvailableView).toHaveTextContent('true');
+      const updateIdView = await screen.findByTestId('downloadedUpdate_updateId');
+      expect(updateIdView).toHaveTextContent('0000-2222');
+      const isUpdatePendingView = await screen.findByTestId('isUpdatePending');
+      expect(isUpdatePendingView).toHaveTextContent('true');
+    });
+
+    it('Shows a state change that arrives before the hook subscribes', async () => {
+      // A layout effect runs after the first render and before the passive effect that subscribes.
+      const EmitBeforeSubscription = () => {
+        useLayoutEffect(() => {
+          emitTestStateChangeEvent(updateDownloadedEvent);
+        }, []);
+        return null;
+      };
+      await render(
+        <>
+          <UseUpdatesTestApp />
+          <EmitBeforeSubscription />
+        </>
+      );
       const updateIdView = await screen.findByTestId('downloadedUpdate_updateId');
       expect(updateIdView).toHaveTextContent('0000-2222');
       const isUpdatePendingView = await screen.findByTestId('isUpdatePending');

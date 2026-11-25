@@ -60,6 +60,8 @@ export const useUpdates: () => UseUpdatesReturnType = () => {
     const subscription = addUpdatesStateChangeListener((event) => {
       setUpdatesState(updatesStateFromContext(event.context));
     });
+    // Read after subscribing, so a state change from after the first render is not lost.
+    setUpdatesState(updatesStateFromContext(latestContext));
     return () => subscription.remove();
   }, []);
 
