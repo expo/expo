@@ -27,3 +27,12 @@ data class IntentLauncherParams(
   @Field
   val className: String?
 ) : Record
+
+@OptimizedRecord
+internal data class IntentChooserComponent(
+  @Field
+  val packageName: String,
+
+  @Field
+  val className: String
+) : Record

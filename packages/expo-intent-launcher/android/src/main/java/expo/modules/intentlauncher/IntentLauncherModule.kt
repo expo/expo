@@ -35,7 +35,12 @@ class IntentLauncherModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoIntentLauncher")
 
-    AsyncFunction("startActivity") { activityAction: String, params: IntentLauncherParams, promise: Promise ->
+    fun launchActivity(
+      activityAction: String,
+      params: IntentLauncherParams,
+      promise: Promise,
+      excludedComponents: List<IntentChooserComponent>? = null
+    ) {
       if (pendingPromise != null) {
         throw ActivityAlreadyStartedException()
       }
@@ -86,11 +91,25 @@ class IntentLauncherModule : Module() {
       params.category?.let { intent.addCategory(it) }
 
       try {
-        appContext.throwingActivity.startActivityForResult(intent, REQUEST_CODE)
+        val launchIntent = excludedComponents?.let { components ->
+          Intent.createChooser(intent, null).apply {
+            val excluded = components.map { ComponentName(it.packageName, it.className) }
+            putExtra(Intent.EXTRA_EXCLUDE_COMPONENTS, excluded.toTypedArray())
+          }
+        } ?: intent
+        appContext.throwingActivity.startActivityForResult(launchIntent, REQUEST_CODE)
         pendingPromise = promise
       } catch (e: Throwable) {
         promise.reject(e.toCodedException())
       }
+    }
+
+    AsyncFunction("startActivity") { activityAction: String, params: IntentLauncherParams, promise: Promise ->
+      launchActivity(activityAction, params, promise)
+    }
+
+    AsyncFunction("startChooser") { activityAction: String, params: IntentLauncherParams, excludedComponents: List<IntentChooserComponent>, promise: Promise ->
+      launchActivity(activityAction, params, promise, excludedComponents)
     }
 
     Function("openApplication") { packageName: String ->
