@@ -13,6 +13,10 @@ export interface NativeTabsTriggerLabelProps {
   selectedStyle?: StyleProp<NativeTabsLabelStyle>;
   /**
    * If true, the label will be hidden.
+   *
+   * On Android and iOS, the text of the hidden label is used as the accessibility label of the tab,
+   * unless the trigger sets `accessibilityLabel`.
+   *
    * @default false
    */
   hidden?: boolean;
