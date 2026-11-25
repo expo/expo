@@ -13,16 +13,16 @@ import Testing
 /// A class with the macro whose superclass doesn't have it.
 private class ChainRoot: SharedObject {
   override class var _jsName: String { "ChainRoot" }
-  override class var _jsClassType: (any AnySharedObject.Type)? { ChainRoot.self }
-  override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
+  override class var _jsClassType: (any AnyJavaScriptClass.Type)? { ChainRoot.self }
+  override class var _jsSuperclassType: (any AnyJavaScriptClass.Type)? { super._jsClassType }
 
   @JavaScriptActor
-  override class func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
+  override class func _decorateClass(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
     prototype.setProperty("rootMethod", value: runtime.createFunction("rootMethod") { _, _ in .number(1) }.asValue())
   }
 
   @JavaScriptActor
-  override class func _decorateSharedObject(constructor: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
+  override class func _decorateClass(constructor: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
     constructor.setProperty("rootStatic", value: runtime.createFunction("rootStatic") { _, _ in .number(10) }.asValue())
   }
 }
@@ -33,23 +33,23 @@ private class ChainMiddle: ChainRoot {}
 /// A class with the macro whose superclass doesn't have it, but a class above does.
 private final class ChainLeaf: ChainMiddle {
   override class var _jsName: String { "ChainLeaf" }
-  override class var _jsClassType: (any AnySharedObject.Type)? { ChainLeaf.self }
-  override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
+  override class var _jsClassType: (any AnyJavaScriptClass.Type)? { ChainLeaf.self }
+  override class var _jsSuperclassType: (any AnyJavaScriptClass.Type)? { super._jsClassType }
 
   @JavaScriptActor
-  override class func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
+  override class func _decorateClass(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
     prototype.setProperty("leafMethod", value: runtime.createFunction("leafMethod") { _, _ in .number(2) }.asValue())
   }
 
   @JavaScriptActor
-  override class func _decorateSharedObject(constructor: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
+  override class func _decorateClass(constructor: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
 
   @JavaScriptActor
-  override class func _constructSharedObject(
+  override class func _constructInstance(
     this: borrowing JavaScriptValue,
     arguments: borrowing JavaScriptValuesBuffer,
     in runtime: JavaScriptRuntime
-  ) throws -> SharedObject? {
+  ) throws -> (any AnyJavaScriptClass)? {
     return ChainLeaf()
   }
 }
@@ -57,21 +57,21 @@ private final class ChainLeaf: ChainMiddle {
 /// A second class with the macro that extends `ChainRoot`.
 private final class ChainSibling: ChainRoot {
   override class var _jsName: String { "ChainSibling" }
-  override class var _jsClassType: (any AnySharedObject.Type)? { ChainSibling.self }
-  override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
+  override class var _jsClassType: (any AnyJavaScriptClass.Type)? { ChainSibling.self }
+  override class var _jsSuperclassType: (any AnyJavaScriptClass.Type)? { super._jsClassType }
 
   @JavaScriptActor
-  override class func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
+  override class func _decorateClass(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
 
   @JavaScriptActor
-  override class func _decorateSharedObject(constructor: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
+  override class func _decorateClass(constructor: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
 
   @JavaScriptActor
-  override class func _constructSharedObject(
+  override class func _constructInstance(
     this: borrowing JavaScriptValue,
     arguments: borrowing JavaScriptValuesBuffer,
     in runtime: JavaScriptRuntime
-  ) throws -> SharedObject? {
+  ) throws -> (any AnyJavaScriptClass)? {
     return ChainSibling()
   }
 }
@@ -79,31 +79,31 @@ private final class ChainSibling: ChainRoot {
 /// A class with the macro that no module registers.
 private final class ChainUnregistered: ChainRoot {
   override class var _jsName: String { "ChainUnregistered" }
-  override class var _jsClassType: (any AnySharedObject.Type)? { ChainUnregistered.self }
-  override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
+  override class var _jsClassType: (any AnyJavaScriptClass.Type)? { ChainUnregistered.self }
+  override class var _jsSuperclassType: (any AnyJavaScriptClass.Type)? { super._jsClassType }
 
   @JavaScriptActor
-  override class func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
+  override class func _decorateClass(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
     let method = runtime.createFunction("unregisteredMethod") { _, _ in .number(3) }
     prototype.setProperty("unregisteredMethod", value: method.asValue())
   }
 
   @JavaScriptActor
-  override class func _decorateSharedObject(constructor: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
+  override class func _decorateClass(constructor: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
 }
 
 /// A `SharedRef` class with the macro.
 private class ChainRefRoot: SharedRef<String> {
   override class var _jsName: String { "ChainRefRoot" }
-  override class var _jsClassType: (any AnySharedObject.Type)? { ChainRefRoot.self }
-  override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
+  override class var _jsClassType: (any AnyJavaScriptClass.Type)? { ChainRefRoot.self }
+  override class var _jsSuperclassType: (any AnyJavaScriptClass.Type)? { super._jsClassType }
 }
 
 /// A subclass of `ChainRefRoot` with the macro.
 private final class ChainRefLeaf: ChainRefRoot {
   override class var _jsName: String { "ChainRefLeaf" }
-  override class var _jsClassType: (any AnySharedObject.Type)? { ChainRefLeaf.self }
-  override class var _jsSuperclassType: (any AnySharedObject.Type)? { super._jsClassType }
+  override class var _jsClassType: (any AnyJavaScriptClass.Type)? { ChainRefLeaf.self }
+  override class var _jsSuperclassType: (any AnyJavaScriptClass.Type)? { super._jsClassType }
 }
 
 /// A class without `_jsClassType`, like a class that an earlier version of the macro expands.
@@ -163,7 +163,7 @@ private struct SharedObjectClassChainTests {
 
   @Test
   func `an instance is an instance of each class in the chain`() throws {
-    let rootClass = try appContext.getSharedObjectClass(ChainRoot.self)
+    let rootClass = try appContext.getJavaScriptClass(ChainRoot.self)
     try runtime.global().setProperty("rootClass", value: rootClass.asValue())
     try runtime.eval("leaf = new expo.modules.ClassChainModule.ChainLeaf()")
     #expect(try evalBool("leaf instanceof expo.modules.ClassChainModule.ChainLeaf"))
@@ -200,7 +200,7 @@ private struct SharedObjectClassChainTests {
         === Object.getPrototypeOf(expo.modules.ClassChainModule.ChainSibling)
       """
     ))
-    let rootClass = try appContext.getSharedObjectClass(ChainRoot.self)
+    let rootClass = try appContext.getJavaScriptClass(ChainRoot.self)
     try runtime.global().setProperty("rootClass", value: rootClass.asValue())
     #expect(try evalBool("rootClass === Object.getPrototypeOf(expo.modules.ClassChainModule.ChainLeaf)"))
   }
@@ -279,7 +279,7 @@ private struct SharedObjectClassChainTests {
 
   @Test
   func `an object of a class without the macro gets the class of its nearest superclass with the macro`() throws {
-    let rootClass = try appContext.getSharedObjectClass(ChainRoot.self)
+    let rootClass = try appContext.getJavaScriptClass(ChainRoot.self)
     try runtime.global().setProperty("rootClass", value: rootClass.asValue())
     let middle = ChainMiddle()
     try runtime.global().setProperty("middle", value: try ChainMiddle.encode(middle, in: runtime))

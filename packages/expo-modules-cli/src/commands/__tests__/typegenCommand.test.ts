@@ -106,14 +106,14 @@ describe(describeEmptyScan, () => {
 
 describe(describeCounts, () => {
   it('lists only the kinds with declarations, in a fixed order', () => {
-    expect(describeCounts({ modules: 1, sharedObjects: 0, records: 1, enums: 4, unions: 0 })).toBe(
-      '1 module, 1 record, 4 enums'
-    );
+    expect(
+      describeCounts({ modules: 1, sharedObjects: 0, classes: 0, records: 1, enums: 4, unions: 0 })
+    ).toBe('1 module, 1 record, 4 enums');
   });
 
   it('pluralizes each kind by its own count', () => {
-    expect(describeCounts({ modules: 2, sharedObjects: 1, records: 0, enums: 0, unions: 3 })).toBe(
-      '2 modules, 1 shared object, 3 unions'
-    );
+    expect(
+      describeCounts({ modules: 2, sharedObjects: 1, classes: 2, records: 0, enums: 0, unions: 3 })
+    ).toBe('2 modules, 1 shared object, 2 classes, 3 unions');
   });
 });
