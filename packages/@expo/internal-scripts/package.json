@@ -58,6 +58,7 @@
   "scripts": {
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
+    "test": "node --test",
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
