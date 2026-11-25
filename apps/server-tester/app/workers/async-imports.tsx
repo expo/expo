@@ -34,17 +34,7 @@ export default function WorkerAsyncImportsRoute() {
       worker.postMessage(scenario);
     }
 
-    const moduleWorker = createAsyncImportsWorker({ type: 'module' });
-    if (!moduleWorker) return;
-    moduleWorker.onmessage = (event: MessageEvent<{ scenario: Scenario; result: string }>) => {
-      setResult(`module-worker-${event.data.scenario}`, event.data.result);
-    };
-    moduleWorker.postMessage('worker-only');
-
-    return () => {
-      worker.terminate();
-      moduleWorker.terminate();
-    };
+    return () => worker.terminate();
   }, []);
 
   return (
