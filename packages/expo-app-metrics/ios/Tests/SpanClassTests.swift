@@ -6,7 +6,7 @@ import Testing
 
 @Suite("Span JavaScript class", .serialized)
 @JavaScriptActor
-struct SpanClassTests {
+final class SpanClassTests {
   let appContext: AppContext
   let runtime: ExpoRuntime
   let consent = Mutex(true)
@@ -15,7 +15,7 @@ struct SpanClassTests {
     appContext = AppContext.create()
     runtime = try appContext.runtime
     let module = AppMetricsModule(appContext: appContext)
-    module.isConsentGranted = { [consent] in consent.withLock { $0 } }
+    module.isConsentGranted = { [weak self] in self?.consent.withLock { $0 } ?? false }
     appContext.moduleRegistry.register(
       holder: ModuleHolder(
         appContext: appContext,
