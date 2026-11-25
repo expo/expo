@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix parameter transform execution order on Hermes to avoid off-by-one in default parameter argument indices for functions with TypeScript `this:` annotation. ([#46034](https://github.com/expo/expo/issues/46034) by [@mikk1max](https://github.com/mikk1max))
+
 ### 💡 Others
 
 ## 55.0.25 — 2026-08-25

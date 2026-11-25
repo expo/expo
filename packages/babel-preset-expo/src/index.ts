@@ -213,15 +213,10 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       { loose: true, useBuiltIns: true },
     ]);
   } else if (!isModernEngine) {
-    // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
-    // JSX is used in a function body. This is technically not required in production, but we
-    // should retain the same behavior since it's hard to debug the differences.
-    extraPlugins.push(
-      require('@babel/plugin-transform-parameters'),
-
-      // Add support for class static blocks.
-      [require('@babel/plugin-transform-class-static-block'), { loose: true }]
-    );
+    // NOTE: @babel/plugin-transform-parameters and @babel/plugin-transform-class-static-block
+    // are moved to babelPresetReactNativeEnv.overrides below to ensure they run after
+    // TypeScript type stripping. When added to extraPlugins, transform-parameters runs before
+    // @babel/plugin-transform-typescript, causing an off-by-one bug with TypeScript `this:` annotations.
   }
 
   const inlines: Record<string, null | boolean | string> = {
@@ -404,6 +399,18 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         babelPresetReactNativeEnv.overrides.push({
           plugins: [require('./babel-plugin-transform-export-namespace-from')],
         });
+
+        if (!isModernEngine) {
+          // Push transform-parameters AFTER TypeScript stripping so that the
+          // `this:` pseudo-parameter is already removed when argument indices are computed.
+          // Fixes default params in generator functions with TypeScript `this:` annotations.
+          babelPresetReactNativeEnv.overrides.push({
+            plugins: [
+              require('@babel/plugin-transform-parameters'),
+              [require('@babel/plugin-transform-class-static-block'), { loose: true }],
+            ],
+          });
+        }
 
         return babelPresetReactNativeEnv;
       })(),
