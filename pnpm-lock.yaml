@@ -6562,7 +6562,7 @@ importers:
   packages/expo-video:
     dependencies:
       '@expo/image-utils':
-        specifier: workspace:^0.10.1
+        specifier: workspace:^
         version: link:../@expo/image-utils
       react:
         specifier: '*'
