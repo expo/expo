@@ -52,27 +52,27 @@ final class CompatibilityGeofencingSource: NSObject, GeofencingSource, CLLocatio
       return
     }
     let all = manager.monitoredRegions
+    let failure: Error
     switch error {
     case CLError.regionMonitoringDenied:
-      let error = LocationAuthorizationDenied()
-      end(error)
+      failure = LocationAuthorizationDenied()
     case CLError.regionMonitoringSetupDelayed, CLError.regionMonitoringResponseDelayed:
       return
     case is CLError where all.count >= maxMonitoredRegions && !all.contains(region):
-      let error = GeofencingRegionLimitExceeded()
-      end(error)
+      failure = GeofencingRegionLimitExceeded()
     case is CLError where monitored[region.identifier]?.hasRetried == false:
       monitored[region.identifier]?.hasRetried = true
       manager.stopMonitoring(for: region)
       manager.startMonitoring(for: region)
       manager.requestState(for: region)
+      return
     case is CLError:
       let identifier = localIdentifier(of: region)
-      let error = GeofencingRegionUnmonitored(identifier)
-      end(error)
+      failure = GeofencingRegionUnmonitored(identifier)
     default:
       return
     }
+    end(failure)
   }
 
   func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
