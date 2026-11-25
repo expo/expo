@@ -80,4 +80,27 @@ struct DisplayContentsViewTests {
 
     #expect(wrapper.frame == CGRect(x: 16, y: 100, width: 0, height: 0))
   }
+
+  @Test
+  func `outer wrapper follows a child that moves inside a nested wrapper`() {
+    let host = UIView(frame: CGRect(x: 0, y: 0, width: 400, height: 800))
+    let outer = NativeLinkPreviewView(appContext: nil)
+    host.addSubview(outer)
+    outer.center = CGPoint(x: 16, y: 100)
+    outer.bounds = .zero
+    let inner = LinkZoomTransitionSource(appContext: nil)
+    inner.center = CGPoint(x: 10, y: 20)
+    inner.bounds = .zero
+    let leaf = UIView()
+    leaf.center = CGPoint(x: 100, y: 20)
+    leaf.bounds = CGRect(x: 0, y: 0, width: 200, height: 40)
+    inner.mountChildComponentView(leaf, index: 0)
+    outer.mountChildComponentView(inner, index: 0)
+
+    leaf.center = CGPoint(x: 110, y: 30)
+    leaf.bounds = CGRect(x: 0, y: 0, width: 220, height: 60)
+
+    #expect(outer.frame == CGRect(x: 26, y: 120, width: 220, height: 60))
+    #expect(leaf.convert(leaf.bounds, to: host) == CGRect(x: 26, y: 120, width: 220, height: 60))
+  }
 }

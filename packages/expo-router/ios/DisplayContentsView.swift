@@ -22,10 +22,13 @@ class DisplayContentsView: RouterViewWithLogger {
 
   override func didAddSubview(_ subview: UIView) {
     super.didAddSubview(subview)
-    observations[ObjectIdentifier(subview)] = [
-      subview.observe(\.center) { [weak self] _, _ in MainActor.assumeIsolated { self?.fitSubviews() } },
-      subview.observe(\.bounds) { [weak self] _, _ in MainActor.assumeIsolated { self?.fitSubviews() } },
-    ]
+    // A nested `DisplayContentsView` notifies this view itself, from `fitSubviews`.
+    if !(subview is DisplayContentsView) {
+      observations[ObjectIdentifier(subview)] = [
+        subview.observe(\.center) { [weak self] _, _ in MainActor.assumeIsolated { self?.fitSubviews() } },
+        subview.observe(\.bounds) { [weak self] _, _ in MainActor.assumeIsolated { self?.fitSubviews() } },
+      ]
+    }
     fitSubviews()
   }
 
@@ -54,11 +57,16 @@ class DisplayContentsView: RouterViewWithLogger {
     }
     let newBounds = content.isNull ? .zero : content
     let newCenter = CGPoint(x: fabricOrigin.x + newBounds.midX, y: fabricOrigin.y + newBounds.midY)
+    let changed = super.bounds != newBounds || super.center != newCenter
     if super.bounds != newBounds {
       super.bounds = newBounds
     }
     if super.center != newCenter {
       super.center = newCenter
+    }
+    // Observers do not see the `super` writes above, so a parent wrapper must refit here.
+    if changed {
+      (superview as? DisplayContentsView)?.fitSubviews()
     }
   }
 }
