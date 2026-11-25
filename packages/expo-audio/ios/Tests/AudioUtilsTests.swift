@@ -7,7 +7,7 @@ import AudioToolbox
 @Suite("AudioUtils.createRecordingOptions")
 struct CreateRecordingOptionsTests {
   private func makeOptions() -> RecordingOptions {
-    let options = RecordingOptions()
+    var options = RecordingOptions()
     options.sampleRate = 44100
     options.numberOfChannels = 2
     options.bitRate = 128000
@@ -26,7 +26,7 @@ struct CreateRecordingOptionsTests {
 
   @Test(arguments: [BitRateStrategy.constant, .longTermAverage])
   func `uses the constant quality key for non-variable strategies`(strategy: BitRateStrategy) {
-    let options = makeOptions()
+    var options = makeOptions()
     options.bitRateStrategy = strategy
 
     let settings = AudioUtils.createRecordingOptions(options)
@@ -38,7 +38,7 @@ struct CreateRecordingOptionsTests {
 
   @Test(arguments: [BitRateStrategy.variable, .variableConstrained])
   func `uses the VBR quality key for variable strategies`(strategy: BitRateStrategy) {
-    let options = makeOptions()
+    var options = makeOptions()
     options.bitRateStrategy = strategy
 
     let settings = AudioUtils.createRecordingOptions(options)
@@ -59,7 +59,7 @@ struct CreateRecordingOptionsTests {
 
   @Test
   func `includes optional PCM keys when the options provide them`() {
-    let options = makeOptions()
+    var options = makeOptions()
     options.bitDepthHint = 24
     options.linearPCMBitDepth = 16
     options.linearPCMIsBigEndian = false
@@ -78,7 +78,7 @@ struct CreateRecordingOptionsTests {
     ("aac ", kAudioFormatMPEG4AAC),
   ] as [(String, AudioFormatID)])
   func `packs the output format string into a CoreAudio format id`(format: String, expected: AudioFormatID) {
-    let options = makeOptions()
+    var options = makeOptions()
     options.outputFormat = format
 
     let settings = AudioUtils.createRecordingOptions(options)
@@ -91,7 +91,7 @@ struct CreateRecordingOptionsTests {
 struct ValidateAudioModeTests {
   @Test
   func `accepts a mode that plays in silent mode`() throws {
-    let mode = AudioMode()
+    var mode = AudioMode()
     mode.playsInSilentMode = true
     mode.interruptionMode = .duckOthers
     mode.allowsRecording = true
@@ -104,7 +104,7 @@ struct ValidateAudioModeTests {
 
   @Test
   func `rejects ducking others while not playing in silent mode`() {
-    let mode = AudioMode()
+    var mode = AudioMode()
     mode.playsInSilentMode = false
     mode.interruptionMode = .duckOthers
 
@@ -115,7 +115,7 @@ struct ValidateAudioModeTests {
 
   @Test
   func `rejects recording while not playing in silent mode`() {
-    let mode = AudioMode()
+    var mode = AudioMode()
     mode.playsInSilentMode = false
     mode.allowsRecording = true
 
@@ -126,7 +126,7 @@ struct ValidateAudioModeTests {
 
   @Test
   func `rejects background playback while not playing in silent mode`() {
-    let mode = AudioMode()
+    var mode = AudioMode()
     mode.playsInSilentMode = false
     mode.shouldPlayInBackground = true
 
