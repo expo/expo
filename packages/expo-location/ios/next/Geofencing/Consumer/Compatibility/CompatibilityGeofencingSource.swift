@@ -2,14 +2,18 @@ import CoreLocation
 
 private let maxMonitoredRegions = 20
 
+private struct Monitored {
+  let region: CLCircularRegion
+  var lastState: CLRegionState?
+}
+
 final class CompatibilityGeofencingSource: NSObject, GeofencingSource, CLLocationManagerDelegate {
   let updates: AsyncThrowingStream<GeofencingEvent, Error>
 
   private let continuation: AsyncThrowingStream<GeofencingEvent, Error>.Continuation
   private let manager: CLLocationManager
   private let namespace: String
-  private var monitored: [String: CLCircularRegion] = [:]
-  private var states: [String: CLRegionState] = [:]
+  private var monitored: [String: Monitored] = [:]
   private let lock = NSLock()
   private var ended = false
 
@@ -32,11 +36,11 @@ final class CompatibilityGeofencingSource: NSObject, GeofencingSource, CLLocatio
   }
 
   func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
-    guard monitored[region.identifier] != nil, states[region.identifier] != state,
+    guard let entry = monitored[region.identifier], entry.lastState != state,
       let eventState = GeofencingEventState(state) else {
       return
     }
-    states[region.identifier] = state
+    monitored[region.identifier]?.lastState = state
     let identifier = localIdentifier(of: region)
     let event = GeofencingEvent(identifier: identifier, state: eventState, date: Date())
     continuation.yield(event)
@@ -117,7 +121,7 @@ final class CompatibilityGeofencingSource: NSObject, GeofencingSource, CLLocatio
     for region in regions {
       let identifier = namespace + region.identifier
       let circularRegion = region.toCircularRegion(identifier: identifier)
-      if let existing = monitored[identifier] {
+      if let existing = monitored[identifier]?.region {
         let unchanged = existing.center.latitude == circularRegion.center.latitude
           && existing.center.longitude == circularRegion.center.longitude
           && existing.radius == circularRegion.radius
@@ -126,18 +130,17 @@ final class CompatibilityGeofencingSource: NSObject, GeofencingSource, CLLocatio
         }
         stopMonitoring(identifier)
       }
-      monitored[identifier] = circularRegion
+      monitored[identifier] = Monitored(region: circularRegion)
       manager.startMonitoring(for: circularRegion)
       manager.requestState(for: circularRegion)
     }
   }
 
   private func stopMonitoring(_ identifier: String) {
-    guard let region = monitored.removeValue(forKey: identifier) else {
+    guard let entry = monitored.removeValue(forKey: identifier) else {
       return
     }
-    states.removeValue(forKey: identifier)
-    manager.stopMonitoring(for: region)
+    manager.stopMonitoring(for: entry.region)
   }
 
   private func stopMonitoringAll() {
