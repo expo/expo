@@ -11,6 +11,7 @@
 - Fix invalid CSS transformer output when (unstable) graph optimization is enabled ([#52126](https://github.com/expo/expo/pull/52126) by [@kitten](https://github.com/kitten))
 - Avoid a deprecation warning when displaying CSS code frames. ([#52523](https://github.com/expo/expo/pull/52523) by [@LuisPeixoto](https://github.com/LuisPeixoto))
 - Fix corruption of unrelated string literals in native exports containing DOM components by resolving HTML filenames before Hermes compilation. Defer Hermes compilation only for chunks that reference DOM components. ([#52752](https://github.com/expo/expo/pull/52752) by [@kitten](https://github.com/kitten))
+- Fix `new SharedWorker(new URL(...))` creating a dedicated `Worker` instead of a `SharedWorker` on web. ([#53392](https://github.com/expo/expo/pull/53392) by [@Gabrola](https://github.com/Gabrola))
 
 ### 💡 Others
 
