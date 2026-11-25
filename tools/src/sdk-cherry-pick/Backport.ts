@@ -6,7 +6,7 @@ import { GitDirectory } from '../Git';
 import { spawnErrorOutput } from '../Utils';
 import { convertChangesetsAsync } from '../changesets/BackportChangelog';
 import { isChangesetPath } from '../code-review/Changesets';
-import { GitHub } from './GitHub';
+import { GitHub, StackEntry } from './GitHub';
 
 export type BackportOptions = {
   /** A clone of the repository with an `origin` remote. */
@@ -16,6 +16,8 @@ export type BackportOptions = {
   mergeSha: string;
   /** The login of the pull request author, whom the `CHANGELOG.md` entries credit. */
   author: string;
+  /** The pull requests below this one in its GitHub stack, bottom first. Empty without a stack. */
+  stackBelow: StackEntry[];
   /**
    * For a branch without changesets: the checked patch of the `build/` folders that the workflow
    * rebuilt for this backport. A missing file means that the rebuild failed.
@@ -209,6 +211,28 @@ git cherry-pick -x ${mergeSha}`;
         `This change is already on \`${targetBranch}\`: the branch contains ${mergeSha}. No backport was made.`
       );
       return;
+    }
+    // Each pull request of a merged stack gets its own run, and the runs finish in any order. A
+    // commit that lands before the commits below it can apply cleanly and still not compile.
+    const blockers: string[] = [];
+    for (const entry of options.stackBelow) {
+      if (!entry.labels.includes(targetBranch)) {
+        blockers.push(`#${entry.number} does not have the \`${targetBranch}\` label.`);
+      } else if (!entry.mergeSha || !entry.mergedAt) {
+        blockers.push(`#${entry.number} is not merged.`);
+      } else if (
+        !(await github.branchContainsAsync(targetBranch, entry.mergeSha)) &&
+        !(await github.branchHasCherryPickAsync(targetBranch, entry.mergeSha, entry.mergedAt))
+      ) {
+        blockers.push(`#${entry.number} is not on \`${targetBranch}\` yet.`);
+      }
+    }
+    if (blockers.length > 0) {
+      const reason = `The bot did not backport this pull request to \`${targetBranch}\`, because a pull request below it in the stack must be there first. ${blockers.join(' ')}`;
+      await commentAsync(
+        `${reason}\n\nWhen each pull request below this one is on \`${targetBranch}\`, remove the \`${targetBranch}\` label from this pull request and add it again.`
+      );
+      throw new Error(reason);
     }
     if (options.buildPatch !== undefined && !fs.existsSync(options.buildPatch)) {
       const reason = options.buildPatchRejected

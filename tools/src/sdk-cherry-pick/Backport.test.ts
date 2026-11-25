@@ -110,6 +110,16 @@ async function backport(
         return false;
       }
     },
+    branchHasCherryPickAsync: async (branch, sha, since) =>
+      git(
+        origin,
+        'log',
+        '--format=%H',
+        `--since=${since}`,
+        '--fixed-strings',
+        `--grep=(cherry picked from commit ${sha})`,
+        `refs/heads/${branch}`
+      ) !== '',
   };
   try {
     run.result = await backportAsync({
@@ -118,6 +128,7 @@ async function backport(
       sdkVersion,
       mergeSha,
       author: 'octocat',
+      stackBelow: [],
       dryRun: false,
       github,
       log: (message) => {
@@ -370,6 +381,46 @@ exec "${REAL_GIT}" "$@"
       run.comments[0],
       new RegExp(`^#47 [^\\n]*merge commit ${featureSha} of this pull request is not on \`main\``)
     );
+    assertNoTemporaryWorktree();
+  });
+
+  it('refuses a stacked pull request until the pull request below it is on sdk-NN, then backports it', async () => {
+    const before = createTargetBranch('sdk-56', 'sdk-90');
+    const lowerSha = commitOnMain({ 'stack-1.txt': 'one\n' }, 'Add a lower change (#48)');
+    const upperSha = commitOnMain({ 'stack-2.txt': 'two\n' }, 'Add an upper change (#49)');
+    const stackBelow = [
+      { number: 48, labels: ['sdk-56'], mergeSha: lowerSha, mergedAt: '2000-01-01T00:00:00Z' },
+    ];
+
+    const refused = await backport(49, 56, upperSha, { stackBelow });
+    assert.ok(refused.error);
+    assert.equal(remoteBranch('sdk-56'), before);
+    assert.equal(refused.comments.length, 1);
+    assert.match(refused.comments[0], /^#49 [^\n]*#48 is not on `sdk-56`/);
+
+    assert.equal((await backport(48, 56, lowerSha)).error, undefined);
+    const accepted = await backport(49, 56, upperSha, { stackBelow });
+    assert.equal(accepted.error, undefined);
+    const tip = remoteBranch('sdk-56')!;
+    assert.equal(git(origin, 'log', '-1', '--format=%s', tip), 'Add an upper change (#49)');
+    assert.equal(git(origin, 'log', '-1', '--format=%s', `${tip}^`), 'Add a lower change (#48)');
+    assertNoTemporaryWorktree();
+  });
+
+  it('refuses a stacked pull request when the pull request below it does not have the sdk-NN label', async () => {
+    const before = createTargetBranch('sdk-57', 'sdk-90');
+    const lowerSha = commitOnMain({ 'stack-3.txt': 'three\n' }, 'Add a lower change (#50)');
+    const upperSha = commitOnMain({ 'stack-4.txt': 'four\n' }, 'Add an upper change (#51)');
+
+    const run = await backport(51, 57, upperSha, {
+      stackBelow: [
+        { number: 50, labels: ['sdk-90'], mergeSha: lowerSha, mergedAt: '2000-01-01T00:00:00Z' },
+      ],
+    });
+    assert.ok(run.error);
+    assert.equal(remoteBranch('sdk-57'), before);
+    assert.equal(run.comments.length, 1);
+    assert.match(run.comments[0], /^#51 [^\n]*#50 does not have the `sdk-57` label/);
     assertNoTemporaryWorktree();
   });
 
