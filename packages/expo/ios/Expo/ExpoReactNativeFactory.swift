@@ -29,6 +29,10 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
     ?? RCTReleaseLevel.Stable
 
     super.init(delegate: delegate, releaseLevel: releaseLevel)
+    nonisolated(unsafe) let factory = self
+    MainActor.assumeIsolated {
+      factory.rootViewFactory = factory.makeRootViewFactory()
+    }
   }
 
   // `RCTBundleConfiguration` is only available in react-native 0.84+, so it doesn't exist yet on react-native-macos.
@@ -73,7 +77,7 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
 #endif
 
   @MainActor
-  @objc func createRCTRootViewFactory() -> RCTRootViewFactory {
+  private func makeRootViewFactory() -> RCTRootViewFactory {
     // Alan: This is temporary. We need to cast to ExpoReactNativeFactoryDelegate here because currently, if you extend RCTReactNativeFactory
     // from Swift, customizeRootView will not work on the new arch because the cast to RCTRootView will never
     // succeed which breaks expo-splash-screen and react-native-bootsplash.
