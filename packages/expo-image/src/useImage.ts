@@ -1,10 +1,11 @@
 'use client';
 
 import type { DependencyList } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Image } from './Image';
 import type { ImageLoadOptions, ImageRef, ImageSource } from './Image.types';
+import { captureDevToolsRequestId } from './utils/captureDevToolsRequestId';
 import { resolveSource } from './utils/resolveSources';
 
 /**
@@ -54,6 +55,14 @@ export function useImage(
 ): ImageRef | null {
   const resolvedSource = resolveSource(source) as ImageSource;
   const [image, setImage] = useState<ImageRef | null>(null);
+  // Captured during render, while the calling component is on the stack, and used by the first load
+  // of the effect only: React Native consumes an id with its request, so a retry captures its own.
+  const renderDevToolsRequestId = useMemo(
+    () => captureDevToolsRequestId(resolvedSource?.uri),
+    // Spreads the caller-provided dependency list, as the load effect does.
+    // oxlint-disable-next-line react/use-memo
+    [resolvedSource?.uri, ...dependencies]
+  );
 
   // Since options are not dependencies of the below effect, we store them in a ref.
   // Once the image is asynchronously loaded, the effect will use the most recent options,
@@ -65,9 +74,14 @@ export function useImage(
     // We're doing some asynchronous action in this effect, so we should keep track
     // if the effect was already cleaned up. In that case, the async action shouldn't change the state.
     let isEffectValid = true;
+    let devToolsRequestId = renderDevToolsRequestId;
 
     function loadImage() {
-      Image.loadAsync(resolvedSource, options)
+      const loadSource = devToolsRequestId
+        ? { ...resolvedSource, devToolsRequestId }
+        : resolvedSource;
+      devToolsRequestId = undefined;
+      Image.loadAsync(loadSource, options)
         .then((image) => {
           if (isEffectValid) {
             setImage(image);
@@ -91,7 +105,13 @@ export function useImage(
         });
     }
 
-    loadImage();
+    // StrictMode runs this effect, its cleanup and the effect again synchronously in development, so
+    // only the run that stays mounted loads and uses the render's request id.
+    queueMicrotask(() => {
+      if (isEffectValid) {
+        loadImage();
+      }
+    });
 
     return () => {
       // Invalidate the effect. The current image stays rendered until the next one replaces it.
