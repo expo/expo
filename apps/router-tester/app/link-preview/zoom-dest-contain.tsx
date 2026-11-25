@@ -27,7 +27,13 @@ export default function ZoomDestScreen() {
       </View>
       <Link.AppleZoomTarget>
         <View style={{ width: '100%', aspectRatio: 1 }}>
-          <Image source={require('@/assets/frog.jpg')} style={{ width: '100%', height: '100%' }} />
+          <Image
+            accessible
+            accessibilityLabel="Zoom target frog"
+            testID="zoom-target-image"
+            source={require('@/assets/frog.jpg')}
+            style={{ width: '100%', height: '100%' }}
+          />
         </View>
       </Link.AppleZoomTarget>
     </SafeAreaView>
