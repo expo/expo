@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
-import android.util.Log
 import androidx.core.net.toUri
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
@@ -14,11 +13,6 @@ import expo.modules.devmenu.DevMenuSettings
 import expo.modules.devmenu.api.CustomPerformanceMonitor
 import expo.modules.devmenu.api.DevMenuApi
 import expo.modules.devmenu.compose.DevMenuAction
-import expo.modules.devmenu.websockets.DevMenuMetroClient
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 
 class DevMenuDevToolsDelegate(
@@ -95,33 +89,8 @@ class DevMenuDevToolsDelegate(
     }
   }
 
-  private fun getDevServerHost(): String? {
-    val sourceUri = reactContext?.sourceURL?.toUri()
-    val scheme = sourceUri?.scheme
-    // A bundle loaded from disk has no reachable origin.
-    if (sourceUri != null && (scheme == "http" || scheme == "https")) {
-      sourceUri.authority?.let { authority ->
-        return "$scheme://$authority"
-      }
-    }
-    val debugServerHost = devSettings?.packagerConnectionSettings?.debugServerHost ?: return null
-    return "http://$debugServerHost"
-  }
-
-  @OptIn(DelicateCoroutinesApi::class)
   fun openJSInspector() {
-    val context = context ?: return
-    val devServerHost = getDevServerHost() ?: return
-
-    // We can use GlobalScope here because this operation is not tied to any specific lifecycle.
-    // We just want to fire and forget.
-    GlobalScope.launch(Dispatchers.Default) {
-      try {
-        DevMenuMetroClient.openJSInspector(devServerHost, context.packageName)
-      } catch (e: Exception) {
-        Log.w("DevMenu", "Unable to open js inspector: ${e.message}", e)
-      }
-    }
+    devSupportManager?.openDebugger()
   }
 
   /**
