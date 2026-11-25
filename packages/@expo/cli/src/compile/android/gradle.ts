@@ -30,6 +30,16 @@ export async function buildAsync(
       { cwd: androidProjectRoot, stdio: 'inherit' }
     );
   } catch (error: any) {
+    if (error.signal) {
+      throw new CommandError(
+        `Failed to build Android project. "gradlew" was stopped by ${error.signal}.`
+      );
+    }
+    if (error.code) {
+      throw new CommandError(
+        `Failed to build Android project. Could not run "gradlew" (${error.code}).`
+      );
+    }
     throw new CommandError(
       `Failed to build Android project. "gradlew" exited with error code ${error.status}.`
     );
