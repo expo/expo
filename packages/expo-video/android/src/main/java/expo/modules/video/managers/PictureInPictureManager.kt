@@ -19,6 +19,7 @@ import expo.modules.kotlin.AppContext
 import expo.modules.video.PictureInPictureHelperFragment
 import expo.modules.video.PictureInPictureFragmentListener
 import expo.modules.video.VideoView
+import expo.modules.video.VideoView.Companion.isPictureInPictureSupported
 import expo.modules.video.listeners.VideoManagerListener
 import expo.modules.video.listeners.VideoViewListener
 import expo.modules.video.receivers.PiPActionReceiver
@@ -55,6 +56,7 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
     get() = videoViews.mapNotNull { it.get() }
   private val rootViewChildrenOriginalVisibility = mutableMapOf<Int, Int>()
   private var isReleased = false
+  private var hasAppliedPiPActions = false
 
   init {
     VideoManager.registerListener(this)
@@ -124,9 +126,18 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
 
     val context = appContext.get()?.reactContext ?: return
     val currentActivity = mainActivity.get() ?: return
+
+    if (!isPictureInPictureSupported(currentActivity)) return
+
     val remoteActions = buildPiPRemoteActions(context, videoView)
 
-    applyPiPActions(currentActivity, remoteActions)
+    if (!remoteActions.isNullOrEmpty()) {
+      applyPiPActions(currentActivity, remoteActions)
+      hasAppliedPiPActions = true
+    } else if (hasAppliedPiPActions) {
+      applyPiPActions(currentActivity, emptyList())
+      hasAppliedPiPActions = false
+    }
   }
 
   override fun onPiPParamsChanged(videoView: VideoView, oldPiPParams: PiPParams, newPiPParams: PiPParams) {
@@ -139,7 +150,7 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
   }
 
   override fun onPiPActionsChanged(videoView: VideoView, pipActions: List<PiPAction>?) {
-    if(videoView.videoViewId == currentPiPViewCandidate.get()?.videoViewId){
+    if (videoView.videoViewId == currentPiPViewCandidate.get()?.videoViewId) {
       applyPiPActionsForView(videoView)
     }
   }
@@ -365,11 +376,11 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
   }
 
   @RequiresApi(Build.VERSION_CODES.O)
-  private fun buildPiPRemoteActions(context: Context, videoView: VideoView): List<RemoteAction> {
+  private fun buildPiPRemoteActions(context: Context, videoView: VideoView): List<RemoteAction>? {
     val remoteActions = videoView.videoPlayer?.pictureInPictureActions?.mapNotNull {
       val resId = getIconNameResId(context, it.iconName)
 
-      if(resId == null){
+      if (resId == null) {
         appContext.get()?.jsLogger?.error(
           "expo-video: Custom icon '${it.iconName}' not found in native app. " +
             "Make sure the icon file (e.g. 'custom_icon.png') is included in the expo-video config plugin icons array in app config."
@@ -377,7 +388,7 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
         return@mapNotNull null
       }
 
-      val icon =  Icon.createWithResource(context, resId)
+      val icon = Icon.createWithResource(context, resId)
 
       val intent = buildPiPRemoteActionIntent(context, it.action, videoView.videoViewId)
       val remoteAction = RemoteAction(icon, it.title, it.description, intent)
@@ -385,13 +396,13 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
       return@mapNotNull remoteAction
     }
 
-    return remoteActions ?: emptyList()
+    return remoteActions
   }
 
-  fun onPiPRemoteAction(videoViewId: String, action: String){
+  fun onPiPRemoteAction(videoViewId: String, action: String) {
     val videoView = currentPiPViewCandidate.get() ?: return
 
-    if(videoView.videoViewId == videoViewId){
+    if (videoView.videoViewId == videoViewId) {
       videoView.videoPlayer?.onPiPRemoteAction(action)
     }
   }

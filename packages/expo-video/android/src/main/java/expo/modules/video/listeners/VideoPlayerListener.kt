@@ -33,5 +33,5 @@ interface VideoPlayerListener {
   fun onVideoSourceLoaded(player: VideoPlayer, videoSource: VideoSource?, duration: Double?, availableVideoTracks: List<VideoTrack>, availableSubtitleTracks: List<SubtitleTrack>, availableAudioTracks: List<AudioTrack>) {}
   fun onTargetViewChanged(player: VideoPlayer, newTargetView: VideoView?, oldTargetView: VideoView?) {}
   fun onRenderedFirstFrame(player: VideoPlayer) {}
-  fun onPiPActionsChanged(pipActions: List<PiPAction>?){}
+  fun onPiPActionsChanged(player: VideoPlayer, pipActions: List<PiPAction>?) {}
 }

@@ -191,8 +191,4 @@ object VideoManager {
       }
     }
   }
-
-  fun onNowPlayingAction(videoPlayerId: String, customAction: String){
-    videoPlayersToVideoViews.keys.find { it.id == videoPlayerId }?.onNowPlayingAction(customAction)
-  }
 }

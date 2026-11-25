@@ -106,8 +106,9 @@ internal fun applyPiPParams(activity: Activity, autoEnterPiP: Boolean, aspectRat
   }
 }
 
-internal fun applyPiPActions(activity: Activity, actions: List<RemoteAction>) {
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+internal fun applyPiPActions(activity: Activity, remoteActions: List<RemoteAction>) {
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isPictureInPictureSupported(activity)) {
+    val actions = remoteActions.take(activity.maxNumPictureInPictureActions)
     val actionsParams = PictureInPictureParams.Builder().setActions(actions).build()
 
     runWithPiPMisconfigurationSoftHandling {

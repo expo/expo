@@ -339,7 +339,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
     }
   }
 
-  override fun onPiPActionsChanged(pipActions: List<PiPAction>?) {
+  override fun onPiPActionsChanged(player: VideoPlayer, pipActions: List<PiPAction>?) {
     listeners.forEach {
       it.get()?.onPiPActionsChanged(this, pipActions)
     }

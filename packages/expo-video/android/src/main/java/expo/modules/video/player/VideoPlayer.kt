@@ -41,7 +41,6 @@ import expo.modules.video.enums.PlayerStatus.*
 import expo.modules.video.getPlaybackServiceErrorMessage
 import expo.modules.video.listeners.VideoPlayerListener
 import expo.modules.video.playbackService.ExpoVideoPlaybackService
-import expo.modules.video.playbackService.ExpoVideoPlaybackService.Companion.MEDIA_SESSION_CUSTOM_COMMAND
 import expo.modules.video.playbackService.PlaybackServiceConnection
 import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.NowPlayingAction
@@ -63,12 +62,10 @@ import java.lang.ref.WeakReference
 import kotlin.time.DurationUnit
 import expo.modules.video.records.PiPAction
 import expo.modules.video.utils.getIconNameResId
-import java.util.UUID
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
 class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSource?, val playerBuilderOptions: expo.modules.video.records.PlayerBuilderOptions? = null) : AutoCloseable, SharedObject(appContext), IntervalUpdateEmitter {
-  val id = "VideoPlayer_${UUID.randomUUID()}"
   // This improves the performance of playing DRM-protected content
   private var renderersFactory = DefaultRenderersFactory(context)
     .forceEnableMediaCodecAsynchronousQueueing()
@@ -255,16 +252,20 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
 
   var nowPlayingActions: List<NowPlayingAction>? = null
-    set(value){
+    set(value) {
       field = value
       applyNowPlayingActionsToSession()
     }
 
   var pictureInPictureActions: List<PiPAction>? = null
-    set(value){
+    set(value) {
       field = value
-      listeners.forEach {
-        it.get()?.onPiPActionsChanged(value)
+
+      val listenersSnapshot = synchronized(listeners) {
+        listeners.mapNotNull { it.get() }
+      }
+      appContext?.mainQueue?.launch {
+        listenersSnapshot.forEach { it.onPiPActionsChanged(this@VideoPlayer, value) }
       }
     }
 
@@ -570,9 +571,17 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   private fun buildMediaSessionCommandButton(nowPlayingAction: NowPlayingAction): CommandButton? {
     val context = appContext?.reactContext ?: return null
 
+    if (nowPlayingAction.displayName.isBlank()) {
+      appContext?.jsLogger?.warn(
+        "[expo-video] Ignoring a `nowPlayingAction` with a blank `displayName`: Android requires a " +
+          "non-empty name for media notification actions. Set `displayName` to the label the control should show."
+      )
+      return null
+    }
+
     val resId = getIconNameResId(context, nowPlayingAction.iconName)
 
-    if(resId == null){
+    if (resId == null) {
       appContext?.jsLogger?.error(
         "expo-video: Custom icon '${nowPlayingAction.iconName}' not found in native app. " +
           "Make sure the icon file (e.g. 'custom_icon.png') is included in the expo-video config plugin icons array in app config."
@@ -584,26 +593,26 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       "action" to nowPlayingAction.action
     )
 
-    val sessionCommand = SessionCommand(MEDIA_SESSION_CUSTOM_COMMAND, bundle)
+    val sessionCommand = SessionCommand(ExpoVideoPlaybackService.MEDIA_SESSION_CUSTOM_COMMAND, bundle)
 
-    val commandButton = CommandButton.Builder(resId)
+    val commandButton = CommandButton.Builder(CommandButton.ICON_UNDEFINED)
       .setDisplayName(nowPlayingAction.displayName)
       .setSessionCommand(sessionCommand)
-      .setIconResId(resId)
+      .setCustomIconResId(resId)
 
-    nowPlayingAction.slots?.let { slots ->
-      val commandButtonSlots = slots.map { it.toCommandButtonSlot() }
-      commandButton.setSlots(* commandButtonSlots.toIntArray())
+    val slots = nowPlayingAction.slots?.map { it.toCommandButtonSlot() }?.toIntArray()
+    if (slots != null && slots.isNotEmpty()) {
+      commandButton.setSlots(*slots)
     }
 
     return commandButton.build()
   }
 
-  private fun applyNowPlayingActionsToSession(){
+  private fun applyNowPlayingActionsToSession() {
     val nowPlayingActions = this@VideoPlayer.nowPlayingActions
 
     appContext?.mainQueue?.launch {
-      if(nowPlayingActions == null){
+      if (nowPlayingActions == null) {
         mediaSession.setMediaButtonPreferences(ExpoVideoPlaybackService.getDefaultNowPlayingActions())
         return@launch
       }
@@ -614,11 +623,11 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
   }
 
-  fun onNowPlayingAction(action: String){
+  fun onNowPlayingAction(action: String) {
     sendEvent(PlayerEvent.NowPlayingActionPressed(action))
   }
 
-  fun onPiPRemoteAction(action: String){
+  fun onPiPRemoteAction(action: String) {
     sendEvent(PlayerEvent.PiPActionPressed(action))
   }
 
