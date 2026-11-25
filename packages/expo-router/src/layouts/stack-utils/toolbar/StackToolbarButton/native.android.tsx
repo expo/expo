@@ -46,7 +46,10 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
         source={props.source}
         tint={tintColor}
         size={24}
-        contentDescription={getBadgeContentDescription(props.accessibilityLabel, props.badge)}
+        contentDescription={getBadgeContentDescription(
+          props.accessibilityLabel ?? props.label,
+          props.badge
+        )}
       />
     </IconButton>
   );
