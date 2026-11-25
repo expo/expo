@@ -218,7 +218,7 @@ struct ViewPropsDecoderTests {
   }
 
   @Test
-  func `props of another lineage count as all changed`() throws {
+  func `props with no decode in common count as all changed`() throws {
     let other = try decode("{ title: 'Other' }")
     let decoded = try #require(try decode("{ title: 'Card' }"))
 

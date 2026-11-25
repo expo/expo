@@ -133,8 +133,8 @@ internal func applyDecodedProps<View: AnyNativeUIKitView>(
   if new === old {
     return
   }
-  // New props from another lineage come with their own dispatcher. It's connected before `didUpdateProps`, which
-  // can dispatch events.
+  // Props decoded without previous props come with their own dispatcher. It's connected before `didUpdateProps`,
+  // which can dispatch events.
   if let events = new.events, events !== old?.events {
     events.connect(nativeView)
   }

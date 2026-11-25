@@ -41,8 +41,8 @@ public final class DecodedViewProps<Props>: @unchecked Sendable {
 }
 
 extension DecodedViewProps where Props: AnyViewProps {
-  /// Creates the next decode of `previous`, or the first decode of a lineage when `previous` is `nil`. Then `events` is
-  /// the dispatcher that the event props of `props` are bound to. Later decodes take the one of `previous`.
+  /// Creates the next decode of `previous`, or the first decode when `previous` is `nil`. Then `events` is the
+  /// dispatcher that the event props of `props` are bound to. Later decodes take the one of `previous`.
   @inlinable
   internal convenience init(
     props: Props,

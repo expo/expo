@@ -47,7 +47,7 @@ internal enum ViewPropsRuntimes {
   private static let entryKey: pthread_key_t = {
     var key = pthread_key_t()
     pthread_key_create(&key) { entry in
-      Unmanaged<AnyObject>.fromOpaque(entry).release()
+      Unmanaged<Entry>.fromOpaque(entry).release()
     }
     return key
   }()
