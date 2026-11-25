@@ -46,7 +46,7 @@
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
     "@types/semver": "^7.7.1",
-    "sharp": "~0.34.2",
+    "sharp": "~0.35.5",
     "sharp-cli": "^5.2.0"
   }
 }
