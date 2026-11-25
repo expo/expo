@@ -1,7 +1,7 @@
 import { SharedObject } from 'expo';
 
-import { type VideoPlayerEvents } from './VideoPlayerEvents.types';
-import { VideoThumbnail } from './VideoThumbnail';
+import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
+import type { VideoThumbnail } from './VideoThumbnail';
 
 /**
  * A class that represents an instance of the video player.
@@ -281,6 +281,8 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    * Determines the custom actions to show in Picture in Picture (PiP) mode.
    *
    * > **Note:** The default playback controls are provided by [`MediaSession`](https://developer.android.com/develop/ui/views/picture-in-picture#add_controls)(Previous, Play/Pause and Next).
+   *
+   * > **Note:** The system displays a [limited number of actions](https://developer.android.com/reference/android/app/Activity#getMaxNumPictureInPictureActions()), which is at least three and can change while the app is running. Actions are displayed in the order they are defined.
    *
    * @default null
    * @platform android 8+
