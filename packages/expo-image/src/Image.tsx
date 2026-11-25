@@ -22,6 +22,7 @@ import {
   resolveDefaultSize,
   resolveTransition,
 } from './utils';
+import { captureDevToolsRequestId } from './utils/captureDevToolsRequestId';
 import { resolveSource, resolveSources } from './utils/resolveSources';
 
 /**
@@ -317,7 +318,12 @@ export class Image extends React.PureComponent<ImageProps> {
     const resolvedOptions = options?.tintColor
       ? { ...options, tintColor: processColor(options.tintColor) as number }
       : options;
-    return await ImageModule.loadAsync(resolvedSource, resolvedOptions);
+    const devToolsRequestId =
+      resolvedSource?.devToolsRequestId ?? captureDevToolsRequestId(resolvedSource?.uri);
+    return await ImageModule.loadAsync(
+      devToolsRequestId ? { ...resolvedSource, devToolsRequestId } : resolvedSource,
+      resolvedOptions
+    );
   }
 
   render() {
