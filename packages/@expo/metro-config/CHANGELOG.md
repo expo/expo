@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `new SharedWorker(new URL(...))` creating a dedicated `Worker` instead of a `SharedWorker` on web. ([#53392](https://github.com/expo/expo/pull/53392) by [@Gabrola](https://github.com/Gabrola))
+
 ### 💡 Others
 
 ## 57.0.14 — 2026-11-05
