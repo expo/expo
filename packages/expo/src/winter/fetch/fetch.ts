@@ -10,6 +10,12 @@ import {
 } from './RequestUtils';
 import type { FetchRequestInit, FetchRequestLike } from './fetch.types';
 
+// Installed by React Native in development when network inspection is enabled. Typed here, not in
+// `global.d.ts`, because other packages typecheck this file without that declaration.
+type NetworkReporterGlobal = {
+  __NETWORK_REPORTER__?: { createDevToolsRequestId(): string };
+};
+
 /** Returns if `input` is a Request object */
 const isRequest = (input: any): input is FetchRequestLike => {
   if (input == null || typeof input !== 'object') {
@@ -37,7 +43,9 @@ export async function fetch(
   init?: FetchRequestInit
 ): Promise<FetchResponse> {
   // Created before any `await`, so React Native DevTools captures this call stack as the initiator
-  const devToolsRequestId = globalThis.__NETWORK_REPORTER__?.createDevToolsRequestId();
+  const devToolsRequestId = (
+    globalThis as NetworkReporterGlobal
+  ).__NETWORK_REPORTER__?.createDevToolsRequestId();
   const initFromRequest = isRequest(input);
   const url = initFromRequest ? input.url : input;
   const body =
