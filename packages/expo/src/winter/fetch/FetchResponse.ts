@@ -316,14 +316,13 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
 
           pull: async (controller) => {
             if (body.streamingState === 'none') {
+              body.streamingState = 'started';
               const completedData = await this.startStreaming();
 
               if (completedData != null) {
                 this.enqueueBodyChunk(controller, completedData);
                 this.closeBodyStream(controller);
                 body.streamingState = 'completed';
-              } else {
-                body.streamingState = 'started';
               }
             } else if (body.streamingState === 'completed') {
               this.closeBodyStream(controller);

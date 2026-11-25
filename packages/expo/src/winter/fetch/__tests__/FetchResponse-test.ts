@@ -199,7 +199,7 @@ describe('FetchResponse', () => {
     // without calling controller.error(), so the bodyStreamClosed guard goes stale.
     // Native events landing after that used to throw on the errored stream.
 
-    it('surfaces the underlying error to the reader', async () => {
+    it('should surface the error and mark the body used after the first read rejects', async () => {
       const response = makeResponse();
 
       (response as any).startStreaming = async () => {
@@ -207,7 +207,12 @@ describe('FetchResponse', () => {
       };
 
       const reader = response.body!.getReader();
+      expect(response.bodyUsed).toBe(false);
       await expect(reader.read()).rejects.toThrow('native module call failed');
+      reader.releaseLock();
+
+      expect(response.bodyUsed).toBe(true);
+      expect(() => response.clone()).toThrow(TypeError);
     });
 
     it('does not throw on native events that arrive after pull() rejected', async () => {
