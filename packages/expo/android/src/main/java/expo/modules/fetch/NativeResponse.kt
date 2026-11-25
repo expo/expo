@@ -5,6 +5,7 @@ package expo.modules.fetch
 import android.util.Log
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -54,6 +55,9 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   }
 
   fun startStreaming(): ByteArray? {
+    if (state == ResponseState.ERROR_RECEIVED) {
+      throw error?.toCodedException() ?: FetchUnknownException()
+    }
     if (isInvalidState(ResponseState.RESPONSE_RECEIVED, ResponseState.BODY_COMPLETED)) {
       return null
     }
@@ -165,10 +169,12 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
         }
       }
 
-      if (this@NativeResponse.state == ResponseState.BODY_STREAMING_STARTED) {
-        emit("didComplete")
+      if (this@NativeResponse.state != ResponseState.ERROR_RECEIVED) {
+        if (this@NativeResponse.state == ResponseState.BODY_STREAMING_STARTED) {
+          emit("didComplete")
+        }
+        this@NativeResponse.state = ResponseState.BODY_COMPLETED
       }
-      this@NativeResponse.state = ResponseState.BODY_COMPLETED
       emit("readyForJSFinalization")
     }
   }
@@ -232,6 +238,10 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
         }
       }
     } catch (e: IOException) {
+      // A canceled request is already in the error state. Keep its error.
+      if (state == ResponseState.ERROR_RECEIVED) {
+        return
+      }
       this.error = e
       if (state == ResponseState.BODY_STREAMING_STARTED) {
         emit("didFailWithError", e.localizedMessageWithCauseLocalizedMessage())
