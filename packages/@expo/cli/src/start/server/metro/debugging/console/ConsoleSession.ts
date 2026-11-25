@@ -9,6 +9,7 @@ interface ConsoleSessionOptions {
   // Entries at or before this timestamp were delivered by an earlier session with the same app.
   seenUntil?: number;
   onEntry(entry: ConsoleEntry): void;
+  onOpen(): void;
   onClose(): void;
 }
 
@@ -34,6 +35,7 @@ export function openConsoleSession({
   serverBaseUrl,
   seenUntil = 0,
   onEntry,
+  onOpen,
   onClose,
 }: ConsoleSessionOptions): ConsoleSession {
   const socket = new WebSocket(target.webSocketDebuggerUrl, {
@@ -67,7 +69,10 @@ export function openConsoleSession({
     },
   };
 
-  socket.on('open', session.enable);
+  socket.on('open', () => {
+    session.enable();
+    onOpen();
+  });
 
   socket.on('message', (data) => {
     let message: CdpMessage;
