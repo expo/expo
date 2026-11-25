@@ -26,6 +26,9 @@ class ContactDetailsLegacyPicker(
     }
   }
 
+  override suspend fun pickMultiple(fields: Set<ContactField>): List<GetContactDetailsRecord> =
+    listOfNotNull(pick(fields))
+
   private suspend fun pickContact(extractableFields: Set<ExtractableField<*>>): GetContactDetailsRecord? {
     val contactUri = intentDelegate.launchPickContact()
       ?: return null
@@ -42,7 +45,7 @@ class ContactDetailsLegacyPicker(
       ?: throw ContactsPickerUnavailableException()
     val dataUri = intentDelegate.launchPickContactData(dataKindUri)
       ?: return null
-    val pickedContact = repository.getByUri(request.sharedFields, dataUri)
+    val pickedContact = repository.getAllByUri(request.sharedFields, dataUri).firstOrNull()
       ?: throw ContactNotFoundException()
     return mapper.toRecord(pickedContact)
   }

@@ -50,6 +50,15 @@ export default function ContactPickersScreen() {
     }
   };
 
+  const handlePickMultipleDetails = async (fields: ContactField[]) => {
+    try {
+      const details = await Contact.pickMultipleDetails(fields);
+      setPickedDetails(JSON.stringify(details, null, 2));
+    } catch (error) {
+      setPickedDetails(String(error));
+    }
+  };
+
   const handlePresentCreateForm = async () => {
     try {
       await Contact.presentCreateForm({ givenName: 'PresentCreateForm' });
@@ -92,6 +101,13 @@ export default function ContactPickersScreen() {
             key={preset.title}
             title={`Contact.pickDetails(${preset.title})`}
             onPress={() => handlePickDetails(preset.fields)}
+          />
+        ))}
+        {DETAILS_PRESETS.map((preset) => (
+          <Button
+            key={preset.title}
+            title={`Contact.pickMultipleDetails(${preset.title})`}
+            onPress={() => handlePickMultipleDetails(preset.fields)}
           />
         ))}
         {pickedDetails && <BodyText>{pickedDetails}</BodyText>}

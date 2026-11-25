@@ -7,12 +7,16 @@ import android.net.Uri
 import expo.modules.kotlin.activityresult.AppContextActivityResultContract
 import java.io.Serializable
 
-data class PickContactDetailsInput(val mimeTypes: ArrayList<String>) : Serializable
+data class PickContactDetailsInput(
+  val mimeTypes: ArrayList<String>,
+  val allowsMultipleSelection: Boolean
+) : Serializable
 
 class PickContactDetailsContract : AppContextActivityResultContract<PickContactDetailsInput, Uri?> {
   override fun createIntent(context: Context, input: PickContactDetailsInput): Intent {
     val intent = Intent(ACTION_PICK_CONTACTS)
     intent.putStringArrayListExtra(EXTRA_REQUESTED_DATA_FIELDS, input.mimeTypes)
+    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, input.allowsMultipleSelection)
     return intent
   }
 

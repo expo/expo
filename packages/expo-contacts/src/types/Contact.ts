@@ -1077,6 +1077,10 @@ export declare class Contact {
     fields: T
   ): Promise<PartialContactDetails<T> | null>;
 
+  static pickMultipleDetails<T extends readonly ContactField[]>(
+    fields: T
+  ): Promise<PartialContactDetails<T>[]>;
+
   /**
    * A static method that presents a system dialog to request access to specific contacts (iOS 18+).
    * @platform ios
