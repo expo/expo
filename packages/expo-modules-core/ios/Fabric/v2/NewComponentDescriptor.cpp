@@ -184,15 +184,19 @@ DecodedProps NewComponentDescriptor::decodeProps(const react::RawProps &rawProps
     return decoder.decode(jsiProps->runtime, jsiProps->value, previous);
   }
 
-  // TODO: Decode these props too, without converting `folly::dynamic` values.
+  // Props without a runtime come as `folly::dynamic`.
   const auto dynamicProps = static_cast<folly::dynamic>(rawProps);
-  std::vector<std::string_view> propNames;
-  propNames.reserve(dynamicProps.size());
-  for (const auto &key : dynamicProps.keys()) {
-    propNames.emplace_back(key.getString());
+  std::vector<std::pair<size_t, const folly::dynamic *>> dynamicValues;
+  for (const auto &[key, value] : dynamicProps.items()) {
+    const auto &name = key.getString();
+    if (const auto index = propIndex(RAW_PROPS_KEY_HASH(name), name)) {
+      dynamicValues.emplace_back(*index, &value);
+    }
   }
-  decoder.didSkipProps(propNames);
-  return previous;
+  if (dynamicValues.empty()) {
+    return previous;
+  }
+  return decoder.decodeDynamicValues(dynamicValues, previous);
 }
 #endif
 

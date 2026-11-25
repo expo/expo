@@ -52,8 +52,6 @@ public:
   {
     return previous;
   }
-
-  void didSkipProps(const std::vector<std::string_view> &) const override {}
 };
 
 /**

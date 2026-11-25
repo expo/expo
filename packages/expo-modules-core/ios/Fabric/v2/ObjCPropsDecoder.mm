@@ -94,18 +94,4 @@ DecodedProps ObjCPropsDecoder::decodeDynamicValues(
   return decoded;
 }
 
-void ObjCPropsDecoder::didSkipProps(const std::vector<std::string_view> &propNames) const {
-  NSMutableArray<NSString *> *names = [NSMutableArray arrayWithCapacity:propNames.size()];
-  for (const auto &name : propNames) {
-    // `nil` when the name isn't valid UTF-8.
-    NSString *nameString = [[NSString alloc] initWithBytes:name.data()
-                                                     length:name.size()
-                                                   encoding:NSUTF8StringEncoding];
-    if (nameString != nil) {
-      [names addObject:nameString];
-    }
-  }
-  [decoder_ didSkipProps:names];
-}
-
 } // namespace expo::views

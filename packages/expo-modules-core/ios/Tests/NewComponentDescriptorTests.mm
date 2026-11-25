@@ -45,7 +45,6 @@ namespace {
 class RecordingDecoder final : public views::NewPropsDecoder {
 public:
   mutable int decodeCount = 0;
-  mutable std::vector<std::string> skippedPropNames;
   // When set, a decode returns no decoded props, as a decoder that has nothing to decode may.
   bool returnsNothing = false;
 
@@ -93,19 +92,6 @@ public:
     }
     std::sort(keys.begin(), keys.end());
     return record(keys, previous);
-  }
-
-  void didSkipProps(const std::vector<std::string_view> &propNames) const override {
-    // Sorted, because a `folly::dynamic` object doesn't keep the order of its keys. Only the decoder's own
-    // props, because the descriptor may pass the other keys too.
-    const auto ownNames = this->propNames();
-    skippedPropNames.clear();
-    for (const auto &name : propNames) {
-      if (std::find(ownNames.begin(), ownNames.end(), name) != ownNames.end()) {
-        skippedPropNames.emplace_back(name);
-      }
-    }
-    std::sort(skippedPropNames.begin(), skippedPropNames.end());
   }
 
 private:

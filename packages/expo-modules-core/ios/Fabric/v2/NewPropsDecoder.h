@@ -133,13 +133,6 @@ public:
     const std::vector<std::pair<size_t, const folly::dynamic *>> &values,
     const DecodedProps &previous
   ) const = 0;
-
-  /**
-   Called instead of `decode` for props that come as `folly::dynamic` before React Native 0.87, where they
-   aren't decoded, so the decoded props keep their values. `propNames` may have all keys of the update, the
-   base view props too, so the decoder reports only the ones it would have decoded.
-   */
-  virtual void didSkipProps(const std::vector<std::string_view> &propNames) const = 0;
 };
 
 } // namespace expo::views
