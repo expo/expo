@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import RNScreens
 
-class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDelegate,
+class NativeLinkPreviewView: DisplayContentsView, UIContextMenuInteractionDelegate,
   RNSDismissibleModalProtocol, LinkPreviewMenuUpdatable
 {
   private var preview: NativeLinkPreviewContentView?
