@@ -6,15 +6,13 @@ import ExpoModulesJSI
 internal let globalCoreObjectPropertyName = "expo"
 
 @JavaScriptActor
-internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
+internal class ExpoRuntimeInstaller {
   private let appContext: AppContext
   private let runtime: JavaScriptRuntime
 
   internal init(appContext: AppContext, runtime: JavaScriptRuntime) {
     self.appContext = appContext
     self.runtime = runtime
-    let pointer = runtime.withUnsafePointee { $0 }
-    super.init(runtime: pointer)
   }
 
   /**

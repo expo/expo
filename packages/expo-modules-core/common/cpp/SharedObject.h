@@ -48,15 +48,9 @@ public:
   const ObjectReleaser releaser;
 
   /**
-   Initializes a native state for the shared object with the given ID. The `context`
-   and `contextDeallocator` are forwarded to the base so the JS-side `getNativeState`
-   can round-trip back to a Swift wrapper on Apple; ignored on platforms without
-   ExpoModulesJSI.
+   Initializes a native state for the shared object with the given ID.
    */
-  NativeState(ObjectId objectId,
-              ObjectReleaser releaser,
-              void *context = nullptr,
-              void (*contextDeallocator)(void *) = nullptr);
+  NativeState(ObjectId objectId, ObjectReleaser releaser);
 
   ~NativeState() override;
 }; // class NativeState
