@@ -56,11 +56,14 @@ test.describe(inputDir, () => {
   test.afterEach(async () => {
     // Ensure mutations never leak into the next test or the worktree.
     await mutateFile(indexFile, (contents) => {
-      return contents.replace(/ROUTE_VALUE_[\d\w]+/g, 'ROUTE_VALUE');
+      return contents
+        .replace(/ROUTE_VALUE_[\d\w]+/g, 'ROUTE_VALUE')
+        .replace(/styles\.green/g, 'styles.test');
     });
     await mutateFile(layoutFile, (contents) => {
       return contents.replace(/LAYOUT_VALUE_[\d\w]+/g, 'LAYOUT_VALUE');
     });
+    await mutateFile(cssFile, (contents) => contents.replace(/color:\s*blue;/g, 'color: red;'));
 
     if (fs.existsSync(appDir + tempRoute)) {
       await fsPromise.unlink(appDir + tempRoute);

@@ -275,6 +275,9 @@ describe.each(
       expect(routesJson.pageHeaders).toEqual([
         // Header-less loader routes: the SSG default, applied to each page and loader file.
         { namedRegex: '^/errors/loader(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/hmr(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/hmr/posts/\\[postId\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/hmr/posts/hmr\\-post\\-1(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/loaders(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/loaders/env(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/loaders/error(?:/)?$', headers: SSG_DEFAULT },
@@ -306,6 +309,9 @@ describe.each(
         { namedRegex: '^/loaders/slow(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/loaders/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/errors/loader(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/hmr/index(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/hmr/posts/\\[postId\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/hmr/posts/hmr\\-post\\-1(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/loaders/env(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/loaders/error(?:/)?$', headers: SSG_DEFAULT },
         {

@@ -186,6 +186,19 @@ exports[`server-output express requests exported files has expected routes manif
           "/_expo/static/js/web/entry-[hash].js",
         ],
       },
+      "file": "./hmr/index.tsx",
+      "loader": "_expo/loaders/hmr/index.js",
+      "namedRegex": "^/hmr(?:/)?$",
+      "page": "/hmr/index",
+      "routeKeys": {},
+    },
+    {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./index.tsx",
       "namedRegex": "^/(?:/)?$",
       "page": "/index",
@@ -462,6 +475,18 @@ exports[`server-output express requests exported files has expected routes manif
       "file": "./loaders/no-loader.tsx",
       "namedRegex": "^/loaders/no\\-loader(?:/)?$",
       "page": "/loaders/no-loader",
+      "routeKeys": {},
+    },
+    {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
+      "file": "./hmr/no-loader.tsx",
+      "namedRegex": "^/hmr/no\\-loader(?:/)?$",
+      "page": "/hmr/no-loader",
       "routeKeys": {},
     },
     {
@@ -794,6 +819,21 @@ exports[`server-output express requests exported files has expected routes manif
       "page": "/loaders/nullish/[value]",
       "routeKeys": {
         "value": "value",
+      },
+    },
+    {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
+      "file": "./hmr/posts/[postId].tsx",
+      "loader": "_expo/loaders/hmr/posts/[postId].js",
+      "namedRegex": "^/hmr/posts/(?<postId>[^/]+?)(?:/)?$",
+      "page": "/hmr/posts/[postId]",
+      "routeKeys": {
+        "postId": "postId",
       },
     },
     {
@@ -1049,6 +1089,19 @@ exports[`server-output workerd requests exported files has expected routes manif
           "/_expo/static/js/web/entry-[hash].js",
         ],
       },
+      "file": "./hmr/index.tsx",
+      "loader": "_expo/loaders/hmr/index.js",
+      "namedRegex": "^/hmr(?:/)?$",
+      "page": "/hmr/index",
+      "routeKeys": {},
+    },
+    {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./index.tsx",
       "namedRegex": "^/(?:/)?$",
       "page": "/index",
@@ -1325,6 +1378,18 @@ exports[`server-output workerd requests exported files has expected routes manif
       "file": "./loaders/no-loader.tsx",
       "namedRegex": "^/loaders/no\\-loader(?:/)?$",
       "page": "/loaders/no-loader",
+      "routeKeys": {},
+    },
+    {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
+      "file": "./hmr/no-loader.tsx",
+      "namedRegex": "^/hmr/no\\-loader(?:/)?$",
+      "page": "/hmr/no-loader",
       "routeKeys": {},
     },
     {
@@ -1657,6 +1722,21 @@ exports[`server-output workerd requests exported files has expected routes manif
       "page": "/loaders/nullish/[value]",
       "routeKeys": {
         "value": "value",
+      },
+    },
+    {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
+      "file": "./hmr/posts/[postId].tsx",
+      "loader": "_expo/loaders/hmr/posts/[postId].js",
+      "namedRegex": "^/hmr/posts/(?<postId>[^/]+?)(?:/)?$",
+      "page": "/hmr/posts/[postId]",
+      "routeKeys": {
+        "postId": "postId",
       },
     },
     {

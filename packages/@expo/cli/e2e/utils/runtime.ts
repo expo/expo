@@ -166,7 +166,7 @@ export function prepareServers(
       },
       createServer: (overrideServe) =>
         createBackgroundServer({
-          command: [
+          command: (port) => [
             'node_modules/.bin/workerd',
             'serve',
             path.join(
@@ -174,9 +174,10 @@ export function prepareServers(
               generateOutputDir('workerd', uniqueOutputKey),
               'server/config.capnp'
             ),
+            // Test files run in parallel, so each server replaces the fixed port of `config.capnp`.
+            `--socket-addr=http=*:${port}`,
           ],
           host: (chunk: any) => processFindPrefixedValue(chunk, 'Workerd server listening'),
-          port: 8787,
           cwd: projectRoot,
           env: {
             ...overrideServe?.env,
