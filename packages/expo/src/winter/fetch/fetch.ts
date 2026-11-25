@@ -1,3 +1,5 @@
+/// <reference path="../../ts-declarations/network-reporter.d.ts" />
+
 import { ExpoFetchModule } from './ExpoFetchModule';
 import { FetchError } from './FetchErrors';
 import { FetchResponse, type AbortSubscriptionCleanupFunction } from './FetchResponse';
