@@ -1,6 +1,6 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
-import ExpoModulesJSI
+@_spi(Internal) import ExpoModulesJSI
 import Foundation
 
 /// The runtime that the props decoders of v2 views use on each thread for props that come as `folly::dynamic`,
@@ -20,11 +20,12 @@ internal enum ViewPropsRuntimes {
     pthread_setspecific(entryKey, entry)
   }
 
-  /// Adds an app context whose main runtime can find the worklets UI runtime for the main thread.
-  static func addAppContext(_ appContext: AppContext) {
+  /// Adds an app context whose main runtime can find the worklets UI runtime for the main thread. Call it on the
+  /// JavaScript thread of `mainRuntime`.
+  static func addAppContext(_ appContext: AppContext, mainRuntime: JavaScriptRuntime) {
     appContexts.withLock { appContexts in
       appContexts.removeAll { $0.appContext == nil }
-      appContexts.append(WeakAppContext(appContext: appContext))
+      appContexts.append(WeakAppContext(appContext: appContext, scheduler: mainRuntime.scheduler))
     }
   }
 
@@ -83,7 +84,7 @@ internal enum ViewPropsRuntimes {
   private static var pendingLookups = 0
 
   private static func findRuntimeIfMainThread() {
-    guard pthread_main_np() != 0 else {
+    guard pthread_main_np() != 0, AppContext.uiRuntimeLocator != nil else {
       return
     }
     MainActor.assumeIsolated {
@@ -95,10 +96,12 @@ internal enum ViewPropsRuntimes {
       lookupNumber += 1
 
       let number = lookupNumber
-      let appContexts = appContexts.withLock { $0.compactMap(\.appContext) }
+      let appContexts = appContexts.withLock { entries in
+        entries.compactMap { entry in entry.appContext.map { ($0, entry.scheduler) } }
+      }
       pendingLookups = appContexts.count
-      for appContext in appContexts {
-        appContext.findWorkletsUIRuntime {
+      for (appContext, scheduler) in appContexts {
+        appContext.findWorkletsUIRuntime(scheduler: scheduler) {
           if number == lookupNumber {
             pendingLookups -= 1
           }
@@ -113,6 +116,9 @@ internal enum ViewPropsRuntimes {
 
   private struct WeakAppContext {
     weak var appContext: AppContext?
+    // The main thread schedules the lookup with it. It doesn't read the runtime of the app context, which the
+    // JavaScript thread sets.
+    let scheduler: JavaScriptRuntime.Scheduler
   }
 
   // MARK: - Entries
@@ -141,12 +147,15 @@ internal enum ViewPropsRuntimes {
 }
 
 extension AppContext {
-  /// Finds the worklets UI runtime through the main runtime and registers it for the main thread, without
-  /// installing Expo on it. `completion` runs on the main thread after the lookup. It doesn't run when the main runtime
-  /// is torn down before the lookup runs on the JavaScript thread.
+  /// Finds the worklets UI runtime through the main runtime, which `scheduler` runs tasks on, and registers it for the
+  /// main thread, without installing Expo on it. `completion` runs on the main thread after the lookup. It doesn't run
+  /// when the main runtime is torn down before the lookup runs on the JavaScript thread.
   @MainActor
-  fileprivate func findWorkletsUIRuntime(completion: @escaping @MainActor @Sendable () -> Void) {
-    guard let mainRuntime = try? runtime else {
+  fileprivate func findWorkletsUIRuntime(
+    scheduler: JavaScriptRuntime.Scheduler,
+    completion: @escaping @MainActor @Sendable () -> Void
+  ) {
+    guard scheduler.mayBeAlive else {
       completion()
       return
     }
@@ -155,7 +164,7 @@ extension AppContext {
       completion()
       return
     }
-    mainRuntime.schedule { [weak self] in
+    scheduler.schedule { [weak self] mainRuntime in
       let makeUIRuntime = self?.locateWorkletsUIRuntime(in: mainRuntime)
       DispatchQueue.main.async { [weak self] in
         if let makeUIRuntime, let uiRuntime = self?.storedOrNewWorkletsUIRuntime(makeUIRuntime) {

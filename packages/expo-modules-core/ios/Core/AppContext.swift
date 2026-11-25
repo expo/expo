@@ -675,7 +675,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       // runtime there, for example from Reanimated's commit hook during a React commit. The main runtime also
       // finds the worklets UI runtime, which decodes them on the main thread.
       ViewPropsRuntimes.registerForCurrentThread(runtime)
-      ViewPropsRuntimes.addAppContext(self)
+      ViewPropsRuntimes.addAppContext(self, mainRuntime: runtime)
     }
 
     // Bind the `@JS` members of the core module.
