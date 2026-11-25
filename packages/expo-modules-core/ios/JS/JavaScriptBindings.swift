@@ -14,7 +14,6 @@ internal enum JavaScriptBindings {
   static func buildClass(_ type: any AnyJavaScriptClass.Type, appContext: AppContext) throws -> JavaScriptObject {
     let name = type._jsName
     let isSharedObject = type is AnySharedObject.Type
-    let isEventEmitter = type is BaseEventEmitter.Type
     let constructor: JavaScriptRuntime.SyncFunctionClosure = { [weak appContext] this, arguments in
       guard let appContext else {
         throw Exceptions.AppContextLost()
@@ -35,12 +34,8 @@ internal enum JavaScriptBindings {
       }
       if let sharedObject = instance as? SharedObject {
         appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: this.getObject(), inheritsBaseClass: true)
-      } else if isEventEmitter, let eventEmitter = instance as? BaseEventEmitter {
-        guard try eventEmitter.attachNativeState(to: this.asObject(), appContext: appContext, in: runtime) else {
-          throw JavaScriptClassNativeState.NotAttachableException(name)
-        }
       } else {
-        guard try this.asObject().trySetNativeState(JavaScriptClassNativeState(instance: instance)) else {
+        guard try attachNativeState(of: instance, to: this.asObject(), in: runtime) else {
           throw JavaScriptClassNativeState.NotAttachableException(name)
         }
       }
@@ -57,6 +52,18 @@ internal enum JavaScriptBindings {
 
     appContext.classRegistry.register(nativeClassId: ObjectIdentifier(type), prototype: prototype)
     return klass
+  }
+
+  /// Attaches the native state that the class of `instance` creates to `object`. Returns `false` when the engine
+  /// doesn't allow a native state on the object. Generic, so that a call with an existential opens it and reaches the
+  /// `makeNativeState(for:object:in:)` of the class of the instance.
+  @JavaScriptActor
+  private static func attachNativeState<Instance: AnyJavaScriptClass>(
+    of instance: Instance,
+    to object: borrowing JavaScriptObject,
+    in runtime: JavaScriptRuntime
+  ) -> Bool {
+    return object.trySetNativeState(Instance.makeNativeState(for: instance, object: object, in: runtime))
   }
 
   /// Creates the JavaScript class of a native class, without its members. The class extends the JavaScript class of

@@ -12,7 +12,7 @@
 /// `listeners(inOtherRuntime:creatingIfNeeded:)`).
 ///
 /// `@unchecked Sendable`: the listeners of a runtime are used only on the thread of that runtime.
-internal class EventEmitterNativeState: JavaScriptClassNativeState, @unchecked Sendable {
+public class EventEmitterNativeState: JavaScriptClassNativeState, @unchecked Sendable {
   /// The runtime whose listeners are in `primaryListeners`.
   private let primaryRuntimeId: JavaScriptRuntime.ID?
 

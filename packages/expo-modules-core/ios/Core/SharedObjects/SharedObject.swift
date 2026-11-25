@@ -316,8 +316,9 @@ extension SharedObjectNativeState {
 }
 
 /// The locks of the native state of shared objects and `BaseEventEmitter` objects, picked by the address of the object.
-/// A lock of its own would cost an allocation for every object. A lock is never held while another one is taken, so two objects
-/// that share a lock can't deadlock. The listening runtimes of a native state are behind the lock of its native object.
+/// A lock of its own would cost an allocation for every object. A lock is never held while another one is taken, so two
+/// objects that share a lock can't deadlock. The listening runtimes of a native state are behind the lock of its native
+/// object.
 internal enum SharedObjectLock {
   private static let count = 64
 

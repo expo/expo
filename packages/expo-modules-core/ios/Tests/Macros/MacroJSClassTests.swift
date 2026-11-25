@@ -90,7 +90,43 @@ private final class JSClassTimer: BaseEventEmitter {
   }
 }
 
-@ExpoModule(classes: [JSClassPoint.self, JSClassShape.self, JSClassSquare.self, JSClassMath.self, JSClassTimer.self])
+/// A native state that keeps a label next to the native instance.
+private final class LabeledNativeState: JavaScriptClassNativeState {
+  let label: String
+
+  init(instance: JSClassLabeled, label: String) {
+    self.label = label
+    super.init(instance: instance)
+  }
+}
+
+/// Has a native state of its own type.
+@JSClass
+private final class JSClassLabeled {
+  typealias NativeState = LabeledNativeState
+
+  @JS
+  init() {}
+
+  @JS
+  func greet() -> String {
+    return "hello"
+  }
+
+  @JavaScriptActor
+  static func makeNativeState(
+    for instance: JSClassLabeled,
+    object: borrowing JavaScriptObject,
+    in runtime: JavaScriptRuntime
+  ) -> LabeledNativeState {
+    return LabeledNativeState(instance: instance, label: "labeled")
+  }
+}
+
+@ExpoModule(
+  classes: [
+    JSClassPoint.self, JSClassShape.self, JSClassSquare.self, JSClassMath.self, JSClassTimer.self, JSClassLabeled.self,
+  ])
 private final class MacroJSClassModule: Module {}
 
 /// Holds an object weakly, so that the test doesn't keep it alive.
@@ -279,6 +315,36 @@ private struct MacroJSClassTests {
       mainRuntime.collectGarbage { timer.object == nil }
     }
     #expect(timer.object == nil)
+  }
+
+  @Test
+  func `the constructor attaches the native state that the class creates`() throws {
+    let labeled = try runtime.eval("labeled = new expo.modules.MacroJSClassModule.JSClassLabeled()").asObject()
+
+    #expect(labeled.getNativeState(as: LabeledNativeState.self)?.label == "labeled")
+    #expect(try runtime.eval("labeled.greet()").asString() == "hello")
+  }
+
+  @Test
+  func `an event emitter is unpaired when its JavaScript object is collected`() throws {
+    let mainRuntime = try runtime
+    try mainRuntime.eval("timer = new expo.modules.MacroJSClassModule.JSClassTimer(1)")
+    let timer = try JSClassTimer._native(from: mainRuntime.eval("timer").asObject())
+
+    try mainRuntime.eval("timer = undefined")
+    try mainRuntime.execute {
+      mainRuntime.collectGarbage {
+        guard case .baseEventEmitter(nil) = EventEmitterReference(timer) else {
+          return false
+        }
+        return true
+      }
+    }
+    // `emit` drops the events of an unpaired emitter without scheduling them.
+    guard case .baseEventEmitter(nil) = EventEmitterReference(timer) else {
+      Issue.record("The event emitter is still paired with its collected JavaScript object")
+      return
+    }
   }
 
   @Test
