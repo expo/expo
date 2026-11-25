@@ -1072,10 +1072,20 @@ public final class ImageView: ExpoView {
       }
       if enableLiveTextInteraction {
         let imageAnalysisInteraction = ImageAnalysisInteraction()
+        imageAnalysisInteraction.isSupplementaryInterfaceHidden = liveTextSupplementaryInterfaceHidden
         sdImageView.addInteraction(imageAnalysisInteraction)
       } else if let interaction = findImageAnalysisInteraction() {
         sdImageView.removeInteraction(interaction)
       }
+    }
+  }
+
+  var liveTextSupplementaryInterfaceHidden: Bool = false {
+    didSet {
+      guard #available(iOS 16.0, macCatalyst 17.0, *), oldValue != liveTextSupplementaryInterfaceHidden else {
+        return
+      }
+      findImageAnalysisInteraction()?.setSupplementaryInterfaceHidden(liveTextSupplementaryInterfaceHidden, animated: true)
     }
   }
 

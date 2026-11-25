@@ -13,6 +13,10 @@ export default function ImageBlurhashScreen() {
   const toggleLiveTextInteraction = React.useCallback(() => {
     setEnabled(!enabled);
   }, [enabled]);
+  const [supplementaryInterfaceHidden, setSupplementaryInterfaceHidden] = React.useState(false);
+  const toggleSupplementaryInterface = React.useCallback(() => {
+    setSupplementaryInterfaceHidden(!supplementaryInterfaceHidden);
+  }, [supplementaryInterfaceHidden]);
 
   return (
     <View style={styles.container}>
@@ -26,6 +30,12 @@ export default function ImageBlurhashScreen() {
         onPress={toggleLiveTextInteraction}
       />
 
+      <Button
+        style={styles.toggleButton}
+        title={`${supplementaryInterfaceHidden ? 'Show' : 'Hide'} Live Text Buttons`}
+        onPress={toggleSupplementaryInterface}
+      />
+
       <ScrollView>
         <Image
           style={styles.image}
@@ -33,6 +43,7 @@ export default function ImageBlurhashScreen() {
           contentFit="contain"
           cachePolicy="none"
           enableLiveTextInteraction={enabled}
+          liveTextSupplementaryInterfaceHidden={supplementaryInterfaceHidden}
         />
         <Image
           style={styles.image}
@@ -40,6 +51,7 @@ export default function ImageBlurhashScreen() {
           contentFit="contain"
           cachePolicy="none"
           enableLiveTextInteraction={enabled}
+          liveTextSupplementaryInterfaceHidden={supplementaryInterfaceHidden}
         />
         <Image
           style={styles.image}
@@ -47,6 +59,7 @@ export default function ImageBlurhashScreen() {
           contentFit="contain"
           cachePolicy="none"
           enableLiveTextInteraction={enabled}
+          liveTextSupplementaryInterfaceHidden={supplementaryInterfaceHidden}
         />
         <Image
           style={styles.image}
@@ -54,6 +67,7 @@ export default function ImageBlurhashScreen() {
           contentFit="contain"
           cachePolicy="none"
           enableLiveTextInteraction={enabled}
+          liveTextSupplementaryInterfaceHidden={supplementaryInterfaceHidden}
         />
       </ScrollView>
     </View>
