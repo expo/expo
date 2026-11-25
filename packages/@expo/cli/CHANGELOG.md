@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix dev-server calling `/_expo/debugger` against the external `REACT_NATIVE_PACKAGER_HOSTNAME` or `EXPO_PACKAGER_PROXY_URL` host instead of its local socket ([#54163](https://github.com/expo/expo/pull/54163) by [@harpreetkbadhan](https://github.com/harpreetkbadhan))
+
 ### 💡 Others
 
 ## 57.0.35 — 2026-11-23

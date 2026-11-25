@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import type { NextHandleFunction } from 'connect';
 import type { IncomingMessage, ServerResponse } from 'http';
+import { isIPv6 } from 'node:net';
 import { URL } from 'url';
 
 import { openJsInspector, queryInspectorAppAsync } from './JsInspector';
@@ -31,7 +32,21 @@ export function createJsInspectorMiddleware({
       return;
     }
 
-    const app = await queryInspectorAppAsync(serverBaseUrl, appId);
+    const { localAddress, localPort } = req.socket;
+    const hostname = isIPv6(localAddress!) ? `[${localAddress}]` : localAddress!;
+    const protocol = 'encrypted' in req.socket && req.socket.encrypted ? 'https:' : 'http:';
+    const metroOrigin = new URL(`${protocol}//${hostname}:${localPort}`).origin;
+
+    let app;
+    try {
+      app = await queryInspectorAppAsync(metroOrigin, appId);
+    } catch (error: any) {
+      console.error(
+        chalk.red('Error querying JS inspector targets: ' + (error?.message ?? 'Unknown error'))
+      );
+      res.writeHead(500).end();
+      return;
+    }
     if (!app) {
       res.writeHead(404).end('Unable to find inspector target from @react-native/dev-middleware');
       console.warn(
@@ -56,7 +71,7 @@ export function createJsInspectorMiddleware({
         return;
       }
       try {
-        await openJsInspector(serverBaseUrl, app);
+        await openJsInspector(metroOrigin, app);
       } catch (error: any) {
         // abort(Error: Command failed: osascript -e POSIX path of (path to application "google chrome")
         // 15:50: execution error: Google Chrome got an error: Application isn’t running. (-600)
