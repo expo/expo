@@ -5,16 +5,14 @@ name: AI code review (stale approval)
 # A push that gets no review (the automatic review limit, a fork PR that a
 # maintainer reviewed once, a PR that leaves the scope) must not keep it.
 #
-# expo-bot approves only PRs that change the autonomous paths, so `paths` keeps this
-# off other pushes. expo-code-review-owners.yml checks that it matches routing.jsonc.
+# No `paths` filter: GitHub matches it against the whole PR diff, so a push that
+# moves the PR out of the scope would skip this run.
 #
 # SECURITY: `pull_request_target` with a checkout of the default branch. It runs no PR code.
 on:
   pull_request_target:
     types: [synchronize]
     branches: [main, 'sdk-*']
-    paths:
-      - packages/patch-project/**
 
 # The writes use EXPO_BOT_REVIEW_TOKEN, so GITHUB_TOKEN only reads the checkout.
 permissions:

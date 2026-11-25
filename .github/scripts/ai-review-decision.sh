@@ -190,9 +190,15 @@ list_reviews() {
   gh api --paginate --slurp "repos/${REPO}/pulls/${PR}/reviews?per_page=100" | jq -c 'add // []'
 }
 
+# A failed dismissal leaves an approval that counts, so it fails the step.
+dismiss_failed=0
+trap '[ "$dismiss_failed" = 0 ] || exit 1' EXIT
 dismiss() {
   gh api -X PUT "repos/${REPO}/pulls/${PR}/reviews/$1/dismissals" \
-    -f event=DISMISS -f message="$2" > /dev/null
+    -f event=DISMISS -f message="$2" > /dev/null && return 0
+  echo "::error::expo-bot could not dismiss its approval $1 of PR #${PR}, so the approval still counts. Check that EXPO_BOT_REVIEW_TOKEN may dismiss reviews, then dismiss it by hand."
+  dismiss_failed=1
+  return 1
 }
 
 reviews=$(list_reviews) || {
@@ -202,8 +208,6 @@ reviews=$(list_reviews) || {
 for id in $(stale_approvals "$BOT_LOGIN" "$live_head" "$reviews"); do
   if dismiss "$id" "This approval is for an older commit. The AI review approves each commit again."; then
     echo "decision: dismissed approval ${id} of an older commit"
-  else
-    echo "decision: could not dismiss approval ${id}"
   fi
 done
 
@@ -286,8 +290,6 @@ if [ "$event" = approve ]; then
   if [ "$now" != "$HEAD_SHA" ]; then
     if dismiss "$id" "The pull request moved past the reviewed commit."; then
       echo "decision: dismissed the new approval because the pull request moved"
-    else
-      echo "decision: could not dismiss the new approval"
     fi
   fi
 fi

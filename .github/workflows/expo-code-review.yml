@@ -375,8 +375,9 @@ jobs:
 
       # expo-bot is a code owner of the autonomous paths. Submit its decision only
       # when every changed file is in that scope, so a mixed PR is not blocked by
-      # the other scopes. Every run dismisses expo-bot's approval of an older commit.
-      # A failed call does not fail the job.
+      # the other scopes. A run whose review succeeded also dismisses expo-bot's approval
+      # of an older commit. expo-code-review-stale.yml does it for every push.
+      # A failed call does not fail the job. A failed dismissal fails this step.
       - name: Submit the autonomous review decision
         if: steps.review.outcome == 'success'
         continue-on-error: true
