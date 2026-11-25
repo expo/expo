@@ -112,6 +112,20 @@ export interface CacheManagerWriteOptions {
 //  - Real (no symlinks in path, though the path itself may be a symlink)
 export type CanonicalPath = string;
 
+/**
+ * A directory whose files a file map holds.
+ */
+export interface FileMapRoot {
+  readonly absolutePath: string;
+  // Relative to `rootDir`, in the form of other paths relative to it, which
+  // reaches a root on another Windows drive as if the drive were a top-level
+  // directory, e.g. `..\..\D:\foo`. Empty for `rootDir` itself.
+  readonly rootRelativePath: string;
+  // Whether the root was added after construction, rather than given in
+  // `roots`.
+  readonly dynamic: boolean;
+}
+
 export interface ChangedFileMetadata {
   readonly isSymlink: boolean;
   readonly modifiedTime?: number | undefined | null;
