@@ -6,14 +6,15 @@ import { basename, extname, resolve } from 'path';
 const BASELINE_PIXEL_SIZE = 96;
 const ERROR_MSG_PREFIX = 'An error occurred while configuring Android expo-video icons. ';
 
-const ANDROID_DRAWABLE_PATH = 'android/app/src/main/res/drawable/';
+const ANDROID_DRAWABLE_PATH = 'app/src/main/res/drawable/';
 const EXPO_VIDEO_ICON_PREFIX = 'expo_video_icon_';
 
 function validateAndroidResourceName(name: string) {
   return /^[a-z0-9_]+$/.test(name);
 }
-async function writeIconAsync(icon: string, projectRoot: string) {
-  const drawableFolderPath = resolve(projectRoot, ANDROID_DRAWABLE_PATH);
+
+async function writeIconAsync(icon: string, projectRoot: string, platformProjectRoot: string) {
+  const drawableFolderPath = resolve(platformProjectRoot, ANDROID_DRAWABLE_PATH);
 
   if (!existsSync(drawableFolderPath)) {
     mkdirSync(drawableFolderPath, { recursive: true });
@@ -33,8 +34,7 @@ async function writeIconAsync(icon: string, projectRoot: string) {
       )
     ).source;
 
-    const originalIconName = basename(icon);
-    const iconFilename = `${EXPO_VIDEO_ICON_PREFIX}${originalIconName}`;
+    const iconFilename = `${EXPO_VIDEO_ICON_PREFIX}${basename(icon, extname(icon))}.png`;
     writeFileSync(resolve(drawableFolderPath, iconFilename), resizedIcon);
   } catch (e) {
     throw new Error(ERROR_MSG_PREFIX + 'Encountered an issue resizing icon: ' + e);
@@ -84,8 +84,12 @@ export const withIcons: ConfigPlugin<{ icons?: string[] }> = (config, { icons = 
         iconResourceNames.set(iconName, iconPath);
       }
 
-      await removeIconImageFiles(config.modRequest.projectRoot);
-      await Promise.all(icons.map((icon) => writeIconAsync(icon, config.modRequest.projectRoot)));
+      await removeIconImageFiles(config.modRequest.platformProjectRoot);
+      await Promise.all(
+        icons.map((icon) =>
+          writeIconAsync(icon, config.modRequest.projectRoot, config.modRequest.platformProjectRoot)
+        )
+      );
 
       return config;
     },
