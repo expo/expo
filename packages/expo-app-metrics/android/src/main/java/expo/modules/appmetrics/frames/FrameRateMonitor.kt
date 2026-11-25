@@ -30,9 +30,15 @@ internal object FrameRateMonitor {
 
   @Synchronized
   fun removeRecorder(recorder: FrameMetricsRecorder) {
-    // Use CopyOnWriteArrayList's atomic removeIf — Kotlin's removeAll { } extension
-    // uses an indexed iterator that is not safe against concurrent add().
-    recorders.removeIf { ref -> ref.get().let { it === recorder || it == null } }
+    // Don't use `removeIf`: on API 24-25 CopyOnWriteArrayList has no override, so it falls back to
+    // Collection.removeIf, whose iterator.remove() throws UnsupportedOperationException. The override
+    // only exists from API 26. `removeAll(Collection)` is a real synchronized implementation on both.
+    // API 24: https://android.googlesource.com/platform/libcore/+/refs/tags/android-7.0.0_r1/luni/src/main/java/java/util/concurrent/CopyOnWriteArrayList.java
+    //   (`removeAll` at line 362; no `removeIf`)
+    // API 26: https://android.googlesource.com/platform/libcore/+/refs/tags/android-8.0.0_r1/ojluni/src/main/java/java/util/concurrent/CopyOnWriteArrayList.java
+    //   (both implemented)
+    val matches = recorders.filter { ref -> ref.get().let { it === recorder || it == null } }
+    if (matches.isNotEmpty()) recorders.removeAll(matches)
     stopMonitoringIfEmpty()
   }
 
@@ -63,7 +69,8 @@ internal object FrameRateMonitor {
   }
 
   private fun removeReleasedRecorders() {
-    recorders.removeIf { it.get() == null }
+    val stale = recorders.filter { it.get() == null }
+    if (stale.isNotEmpty()) recorders.removeAll(stale)
   }
 
   internal fun dispatchFrame(frameDurationMs: Long) {
