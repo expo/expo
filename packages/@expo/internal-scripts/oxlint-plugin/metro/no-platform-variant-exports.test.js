@@ -131,13 +131,8 @@ new RuleTester({ cwd }).run('metro/no-platform-variant-exports', rule, {
       code: `import './Image.tsx';`,
       errors: [
         {
-          messageId: 'ignoredVariant',
-          data: {
-            specifier: './Image.tsx',
-            resolved: 'Image.tsx',
-            name: 'Image',
-            variants: '"Image.web.tsx"',
-          },
+          messageId: 'fileExtension',
+          data: { specifier: './Image.tsx', variants: '"Image.web.tsx"' },
         },
       ],
     },
