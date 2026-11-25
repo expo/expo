@@ -61,7 +61,6 @@ object DevLauncherPackageDelegate {
         private val currentActivity
           get() = currentActivityHolder.get()
         private var reactHostHolder: WeakReference<ReactHost> = WeakReference(null)
-        private var reactActivityDelegateHolder: WeakReference<ReactActivityDelegate> = WeakReference(null)
         private var containerHolder: WeakReference<ViewGroup> = WeakReference(null)
         private var currentModuleName: String? = null
         private val fragment by DevMenuApi.fragment { currentActivity }
@@ -72,7 +71,6 @@ object DevLauncherPackageDelegate {
         }
 
         override fun onDidCreateReactActivityDelegate(activity: ReactActivity, delegate: ReactActivityDelegate): ReactActivityDelegate? {
-          reactActivityDelegateHolder = delegate.weak()
           // Capture the initial component name so the dev menu can highlight it before
           // the user ever switches. `ReactActivity.getMainComponentName()` is protected,
           // but the delegate exposes the same value publicly.
@@ -96,7 +94,6 @@ object DevLauncherPackageDelegate {
             switchToComponentAction = { moduleName ->
               val ok = DevLauncherComponentSwitcher.switch(
                 activity = currentActivity,
-                delegate = reactActivityDelegateHolder.get(),
                 container = containerHolder.get(),
                 moduleName = moduleName
               )
