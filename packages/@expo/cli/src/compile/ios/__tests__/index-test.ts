@@ -231,3 +231,41 @@ it('reports a failed build', async () => {
   });
   expect(Log.log).not.toHaveBeenCalledWith(expect.stringContaining('Build complete'));
 });
+
+it('reports when xcodebuild cannot start', async () => {
+  jest
+    .mocked(spawnAsync)
+    .mockImplementation(
+      (command) =>
+        (command === 'xcodebuild'
+          ? Promise.reject(Object.assign(new Error(), { code: 'ENOENT', status: null }))
+          : Promise.resolve({ stdout: '' })) as any
+    );
+
+  await expect(expoCompileIos(['--dev'])).rejects.toThrow(/EXIT_CALLED/);
+
+  expect(Log.exit).toHaveBeenCalledWith(
+    expect.objectContaining({
+      message: 'Failed to build iOS project. Could not run "xcodebuild" (ENOENT).',
+    })
+  );
+});
+
+it('reports when xcodebuild is stopped by a signal', async () => {
+  jest
+    .mocked(spawnAsync)
+    .mockImplementation(
+      (command) =>
+        (command === 'xcodebuild'
+          ? Promise.reject(Object.assign(new Error(), { signal: 'SIGKILL', status: null }))
+          : Promise.resolve({ stdout: '' })) as any
+    );
+
+  await expect(expoCompileIos(['--dev'])).rejects.toThrow(/EXIT_CALLED/);
+
+  expect(Log.exit).toHaveBeenCalledWith(
+    expect.objectContaining({
+      message: 'Failed to build iOS project. "xcodebuild" was stopped by SIGKILL.',
+    })
+  );
+});

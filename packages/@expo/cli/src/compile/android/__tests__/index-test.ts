@@ -211,3 +211,31 @@ it('reports a failed build', async () => {
   });
   expect(Log.log).not.toHaveBeenCalledWith(expect.stringContaining('Build complete'));
 });
+
+it('reports when gradlew cannot start', async () => {
+  jest
+    .mocked(spawnAsync)
+    .mockRejectedValueOnce(Object.assign(new Error(), { code: 'EACCES', status: null }));
+
+  await expect(expoCompileAndroid(['--dev'])).rejects.toThrow(/EXIT_CALLED/);
+
+  expect(Log.exit).toHaveBeenCalledWith(
+    expect.objectContaining({
+      message: 'Failed to build Android project. Could not run "gradlew" (EACCES).',
+    })
+  );
+});
+
+it('reports when gradlew is stopped by a signal', async () => {
+  jest
+    .mocked(spawnAsync)
+    .mockRejectedValueOnce(Object.assign(new Error(), { signal: 'SIGKILL', status: null }));
+
+  await expect(expoCompileAndroid(['--dev'])).rejects.toThrow(/EXIT_CALLED/);
+
+  expect(Log.exit).toHaveBeenCalledWith(
+    expect.objectContaining({
+      message: 'Failed to build Android project. "gradlew" was stopped by SIGKILL.',
+    })
+  );
+});
