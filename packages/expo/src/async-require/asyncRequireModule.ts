@@ -49,7 +49,8 @@ let isModuleWorker: boolean | undefined;
 
 // A worker has its own module registry and no `<script>` elements. `importScripts` loads a chunk
 // into the registry of the worker, and returns after the chunk registered its modules.
-function loadWorkerChunks(urls: readonly string[]): void {
+function loadWorkerChunks(urls: readonly string[]): void | Promise<void> {
+  const pendingUrls = urls.filter((url) => !loadedWorkerChunks.has(url));
   if (isModuleWorker === undefined) {
     try {
       // Without a URL, `importScripts` loads nothing. It throws only in a module worker.
@@ -57,20 +58,28 @@ function loadWorkerChunks(urls: readonly string[]): void {
       isModuleWorker = false;
     } catch {
       isModuleWorker = true;
+      // A module worker loads each chunk with `import()`, as a separate module. That module
+      // cannot read the `process` variable that the worker entry declares.
+      (globalThis as any).process ??= process;
     }
   }
-  if (isModuleWorker) {
-    throw new Error(
-      `Cannot load chunks in a module web worker: ${urls.join(', ')}. ` +
-        "Async imports are not supported yet in a worker created with `{ type: 'module' }`. " +
-        'Create the worker without the `type` option.'
-    );
+  if (!isModuleWorker) {
+    for (const url of pendingUrls) {
+      importScripts!(url);
+      loadedWorkerChunks.add(url);
+    }
+    return;
   }
-  for (const url of urls) {
-    if (loadedWorkerChunks.has(url)) continue;
-    importScripts!(url);
-    loadedWorkerChunks.add(url);
-  }
+  // With graph optimization, the Metro transform rejects `import(url)`, also with an ignore
+  // comment. The `Function` constructor keeps the call out of the module source.
+  // eslint-disable-next-line no-new-func
+  const nativeImport: (url: string) => Promise<unknown> = new Function(
+    'url',
+    'return import(url)'
+  ) as any;
+  return Promise.all(
+    pendingUrls.map((url) => nativeImport(url).then(() => void loadedWorkerChunks.add(url)))
+  ).then(() => {});
 }
 
 function maybeLoadBundle(moduleID: number, paths: DependencyMapPaths): void | Promise<void> {
@@ -108,8 +117,8 @@ function asyncRequireImpl<T>(
     if (Array.isArray(bundlePath)) {
       if (typeof importScripts === 'function') {
         try {
-          loadWorkerChunks(bundlePath);
-          return importAll();
+          const loading = loadWorkerChunks(bundlePath);
+          return loading ? loading.then(importAll) : importAll();
         } catch (error) {
           return Promise.reject(error);
         }

@@ -201,8 +201,9 @@ test.describe('server rendering with async routes in production', () => {
     await expect(page.getByTestId('worker-shared-importer')).toHaveText('6');
     await expect(page.getByTestId('worker-maybe-sync')).toHaveText('maybe-sync-target');
     await expect(page.getByTestId('worker-prefetch')).toHaveText('prefetch-target');
+    await expect(page.getByTestId('module-worker-worker-only')).toHaveText('worker-only');
 
-    // The worker loads the modules that it imports asynchronously from separate chunks.
+    // The workers load the modules that they import asynchronously from separate chunks.
     expect(scripts).toContainEqual(expect.stringMatching(/\/__worker-[^/]+\.js$/));
     expect(pageErrors.all).toEqual([]);
   });

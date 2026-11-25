@@ -15,6 +15,7 @@ describe('asyncRequireModule', () => {
   let mockImportAll: jest.Mock;
   let mockRequire: any;
   let asyncRequire: any;
+  let nativeImport: jest.Mock;
   const originalExpoOs = process.env.EXPO_OS;
 
   beforeEach(() => {
@@ -41,6 +42,7 @@ describe('asyncRequireModule', () => {
       'module',
       'exports',
       '__METRO_GLOBAL_PREFIX__',
+      'nativeImport',
       `
       "use strict";
 
@@ -52,26 +54,27 @@ describe('asyncRequireModule', () => {
       var isModuleWorker;
 
       function loadWorkerChunks(urls) {
+        var pendingUrls = urls.filter(function(url) { return !loadedWorkerChunks.has(url); });
         if (isModuleWorker === undefined) {
           try {
             importScripts();
             isModuleWorker = false;
           } catch (error) {
             isModuleWorker = true;
+            if (globalThis.process == null) globalThis.process = process;
           }
         }
-        if (isModuleWorker) {
-          throw new Error(
-            'Cannot load chunks in a module web worker: ' + urls.join(', ') + '. ' +
-            "Async imports are not supported yet in a worker created with \`{ type: 'module' }\`. " +
-            'Create the worker without the \`type\` option.'
-          );
+        if (!isModuleWorker) {
+          pendingUrls.forEach(function(url) {
+            importScripts(url);
+            loadedWorkerChunks.add(url);
+          });
+          return;
         }
-        urls.forEach(function(url) {
-          if (loadedWorkerChunks.has(url)) return;
-          importScripts(url);
-          loadedWorkerChunks.add(url);
-        });
+        // The module creates nativeImport with the Function constructor.
+        return Promise.all(pendingUrls.map(function(url) {
+          return nativeImport(url).then(function() { loadedWorkerChunks.add(url); });
+        })).then(function() {});
       }
 
       function maybeLoadBundle(moduleID, paths) {
@@ -97,8 +100,8 @@ describe('asyncRequireModule', () => {
           if (Array.isArray(bundlePath)) {
             if (typeof importScripts === 'function') {
               try {
-                loadWorkerChunks(bundlePath);
-                return importAll();
+                var loading = loadWorkerChunks(bundlePath);
+                return loading ? loading.then(importAll) : importAll();
               } catch (error) {
                 return Promise.reject(error);
               }
@@ -152,7 +155,8 @@ describe('asyncRequireModule', () => {
       module.exports = asyncRequire;
       `
     );
-    moduleFn(mockRequire, moduleObj, moduleObj.exports, '');
+    nativeImport = jest.fn(async () => {});
+    moduleFn(mockRequire, moduleObj, moduleObj.exports, '', nativeImport);
     asyncRequire = moduleObj.exports;
   });
 
@@ -254,15 +258,26 @@ describe('asyncRequireModule', () => {
       expect(importScripts.mock.calls).toEqual([[], ['/route.js'], ['/route.js']]);
     });
 
-    it('rejects with an error about module workers when importScripts is not available', async () => {
+    it('does not use import() when a chunk throws a TypeError in a classic worker', async () => {
+      importScripts.mockImplementation((url?: string) => {
+        if (url) throw new TypeError('chunk error');
+      });
+
+      await expect(asyncRequire(42, { 42: ['/route.js'] })).rejects.toThrow('chunk error');
+      expect(nativeImport).not.toHaveBeenCalled();
+    });
+
+    it('loads chunks with import() in a module worker, then imports', async () => {
       importScripts.mockImplementation(() => {
         throw new TypeError("Module scripts don't support importScripts().");
       });
 
-      await expect(asyncRequire(42, { 42: ['/route.js'] })).rejects.toThrow(
-        'Cannot load chunks in a module web worker: /route.js.'
-      );
+      const result = asyncRequire(42, { 42: ['/shared.js', '/route.js'] });
       expect(mockImportAll).not.toHaveBeenCalled();
+      await expect(result).resolves.toEqual({ default: 'module-42' });
+      expect(nativeImport.mock.calls).toEqual([['/shared.js'], ['/route.js']]);
+      await asyncRequire(43, { 43: ['/shared.js'] });
+      expect(nativeImport).toHaveBeenCalledTimes(2);
     });
 
     it('does not load chunks for prefetch', () => {
