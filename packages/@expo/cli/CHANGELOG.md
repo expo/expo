@@ -13,6 +13,7 @@
 - Fix `expo run:ios --device` staying open after installing and launching an app on a network-paired device when the bundler is disabled. ([#52741](https://github.com/expo/expo/pull/52741) by [@kitten](https://github.com/kitten))
 - Fix `expo start` skipping all manifest assets (icons, splash images) when a config section on an asset path, such as `splash`, is `null` or `undefined` ([#52975](https://github.com/expo/expo/pull/52975) by [@Shaurya55555](https://github.com/Shaurya55555))
 - Fix parsing Android device serials containing spaces. ([#53129](https://github.com/expo/expo/pull/53129) by [@kitten](https://github.com/kitten))
+- Fix dev-server calling `/_expo/debugger` against the external `REACT_NATIVE_PACKAGER_HOSTNAME` or `EXPO_PACKAGER_PROXY_URL` host instead of its local socket ([#54163](https://github.com/expo/expo/pull/54163) by [@harpreetkbadhan](https://github.com/harpreetkbadhan))
 
 ### 💡 Others
 
