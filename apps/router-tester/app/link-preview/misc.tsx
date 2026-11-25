@@ -76,7 +76,7 @@ const HomeIndex = () => {
         </Link>
         <Link href="/link-preview/one" asChild>
           <Link.Trigger>
-            <Pressable style={{ backgroundColor: '#fff' }}>
+            <Pressable testID="preview-trigger-pressable" style={{ backgroundColor: '#fff' }}>
               <Text>Link with preview and asChild: /one</Text>
               <View style={{ width: 20, height: 20, backgroundColor: 'orange' }} />
               <Text>Multiple children</Text>
