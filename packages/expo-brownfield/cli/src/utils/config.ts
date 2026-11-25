@@ -41,11 +41,13 @@ export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
   const buildProductsPath = path.join(derivedDataPath, 'Build/Products');
 
   const buildConfiguration = resolveBuildConfiguration(options);
-  const device = path.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-iphoneos`);
+  const { deviceSdk, simulatorSdk, destinations } =
+    APPLE_PLATFORMS[resolveApplePlatform(!!options.verbose)];
+  const device = path.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-${deviceSdk}`);
   const scheme = resolveScheme(options);
   const simulator = path.join(
     buildProductsPath,
-    `${buildConfiguration.toLowerCase()}-iphonesimulator`
+    `${buildConfiguration.toLowerCase()}-${simulatorSdk}`
   );
   // Detect prebuilt Expo module xcframeworks dropped into ios/Pods/ when the project's
   // expo-build-properties config sets `ios.usePrecompiledModules` (or the user ran
@@ -73,6 +75,7 @@ export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
     buildConfiguration,
     derivedDataPath,
     device,
+    destinations,
     hostProvidedFrameworks: resolveHostProvidedFrameworks(options),
     simulator,
     scheme: resolveScheme(options),
@@ -250,6 +253,33 @@ const resolveBuildConfiguration = (options: OptionValues): BuildConfiguration =>
 
 const resolveScheme = (options: OptionValues): string => {
   return options.scheme || findScheme();
+};
+
+// xcodebuild names the product directories after the SDK (appletvos vs iphoneos).
+const APPLE_PLATFORMS = {
+  ios: {
+    deviceSdk: 'iphoneos',
+    simulatorSdk: 'iphonesimulator',
+    destinations: ['generic/platform=iphoneos', 'generic/platform=iphonesimulator'],
+  },
+  tvos: {
+    deviceSdk: 'appletvos',
+    simulatorSdk: 'appletvsimulator',
+    destinations: ['generic/platform=tvOS', 'generic/platform=tvOS Simulator'],
+  },
+};
+
+// A tvOS project (e.g. from react-native-tvos) declares `platform :tvos` in its Podfile.
+const resolveApplePlatform = (verbose: boolean): keyof typeof APPLE_PLATFORMS => {
+  const podfile = path.join(process.cwd(), 'ios/Podfile');
+  const platform =
+    fs.existsSync(podfile) && /^\s*platform\s+:tvos/m.test(fs.readFileSync(podfile, 'utf8'))
+      ? 'tvos'
+      : 'ios';
+  if (verbose) {
+    console.log(`Detected Apple platform: ${platform}`);
+  }
+  return platform;
 };
 
 const resolveWorkspace = (options: OptionValues): string => {
