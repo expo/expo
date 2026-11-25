@@ -15,8 +15,14 @@ export default function ModalScreen() {
       <ObserveInteractiveMarker />
       <Text style={[styles.heading, { color: theme.text.default }]}>Modal</Text>
       <Text style={[styles.body, { color: theme.text.secondary }]}>{`presentation: 'modal'`}</Text>
-      <Button title="Open form sheet" onPress={() => router.push('/examples/modals/formsheet')} />
-      <Button title="Open page sheet" onPress={() => router.push('/examples/modals/pagesheet')} />
+      <Button
+        title="Open form sheet"
+        onPress={() => router.push('/examples/modals/formsheet')}
+      />
+      <Button
+        title="Open page sheet"
+        onPress={() => router.push('/examples/modals/pagesheet')}
+      />
       <Button
         title="Back to index"
         theme="secondary"

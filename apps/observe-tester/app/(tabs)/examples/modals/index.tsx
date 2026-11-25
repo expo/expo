@@ -17,8 +17,14 @@ export default function ModalsIndex() {
         Each presentation pushes onto this stack and slides in differently on iOS.
       </Text>
       <Button title="Open modal" onPress={() => router.push('/examples/modals/modal')} />
-      <Button title="Open form sheet" onPress={() => router.push('/examples/modals/formsheet')} />
-      <Button title="Open page sheet" onPress={() => router.push('/examples/modals/pagesheet')} />
+      <Button
+        title="Open form sheet"
+        onPress={() => router.push('/examples/modals/formsheet')}
+      />
+      <Button
+        title="Open page sheet"
+        onPress={() => router.push('/examples/modals/pagesheet')}
+      />
     </ScrollView>
   );
 }

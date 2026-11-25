@@ -28,7 +28,11 @@ export default function PreloadedIndex() {
           <Text style={[styles.rowLabel, { color: theme.text.default }]}>Screen {label}</Text>
           <View style={styles.actions}>
             <View style={styles.action}>
-              <Button title="Preload" theme="secondary" onPress={() => router.prefetch(href)} />
+              <Button
+                title="Preload"
+                theme="secondary"
+                onPress={() => router.prefetch(href)}
+              />
             </View>
             <View style={styles.action}>
               <Button title="Open" onPress={() => router.push(href)} />

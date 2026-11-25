@@ -33,9 +33,7 @@ export default function CorrectImage() {
         `expo-image.oversized` warning is logged.
       </Text>
       {failed ? (
-        <Text style={[styles.body, { color: theme.text.secondary }]}>
-          Failed to load the image.
-        </Text>
+        <Text style={[styles.body, { color: theme.text.secondary }]}>Failed to load the image.</Text>
       ) : null}
     </ScrollView>
   );

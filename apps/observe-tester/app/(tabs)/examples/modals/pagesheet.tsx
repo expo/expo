@@ -18,7 +18,10 @@ export default function PageSheetScreen() {
         {`presentation: 'pageSheet'`}
       </Text>
       <Button title="Open modal" onPress={() => router.push('/examples/modals/modal')} />
-      <Button title="Open form sheet" onPress={() => router.push('/examples/modals/formsheet')} />
+      <Button
+        title="Open form sheet"
+        onPress={() => router.push('/examples/modals/formsheet')}
+      />
       <Button
         title="Back to index"
         theme="secondary"

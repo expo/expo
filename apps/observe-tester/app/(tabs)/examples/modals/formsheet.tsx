@@ -18,7 +18,10 @@ export default function FormSheetScreen() {
         {`presentation: 'formSheet'`} with detents [0.5, 1] and a visible grabber.
       </Text>
       <Button title="Open modal" onPress={() => router.push('/examples/modals/modal')} />
-      <Button title="Open page sheet" onPress={() => router.push('/examples/modals/pagesheet')} />
+      <Button
+        title="Open page sheet"
+        onPress={() => router.push('/examples/modals/pagesheet')}
+      />
       <Button
         title="Back to index"
         theme="secondary"
