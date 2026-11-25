@@ -17,48 +17,41 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.session.MediaSession
 import expo.modules.audio.service.AudioPlaybackServiceConnection
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.exception.Exceptions
+import expo.modules.v2.legacyAppContext
+import io.github.expo.modules.v2.Event
+import io.github.expo.modules.v2.ExpoSharedObject
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.module
+import io.github.expo.modules.v2.react.androidContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.ref.WeakReference
 
-private const val PLAYBACK_STATUS_UPDATE = "playbackStatusUpdate"
-private const val AUDIO_SAMPLE_UPDATE = "audioSampleUpdate"
 private const val SEEK_JUMP_INTERVAL_MS: Long = 10_000
 
 @UnstableApi
-class AudioPlayer(
-  context: Context,
-  appContext: AppContext,
-  source: MediaSource?,
+@ExpoSharedObject
+class AudioPlayer @JS constructor(
+  source: AudioSource?,
   updateInterval: Double,
-  bufferDurationMs: Long = 0
-) : BaseAudioPlayer(
-  player = ExoPlayer.Builder(context, AudioRenderersFactory(context))
-    .setLooper(context.mainLooper)
-    .setAudioAttributes(AudioAttributes.DEFAULT, false)
-    .setHandleAudioBecomingNoisy(true)
-    .setSeekForwardIncrementMs(SEEK_JUMP_INTERVAL_MS)
-    .setSeekBackIncrementMs(SEEK_JUMP_INTERVAL_MS)
-    .apply {
-      if (bufferDurationMs > 0) {
-        setLoadControl(
-          DefaultLoadControl.Builder()
-            .setBufferDurationsMs(
-              DefaultLoadControl.DEFAULT_MIN_BUFFER_MS,
-              bufferDurationMs.toInt().coerceAtLeast(DefaultLoadControl.DEFAULT_MIN_BUFFER_MS),
-              DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS,
-              DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
-            )
-            .build()
-        )
-      }
-    }
-    .build(),
-  appContext = appContext,
-  updateInterval = updateInterval,
-  statusEventName = PLAYBACK_STATUS_UPDATE
-),
+  keepAudioSessionActive: Boolean,
+  preferredForwardBufferDuration: Double,
+  @Suppress("UNUSED_PARAMETER") allowsExternalPlayback: Boolean?
+) : BaseAudioPlayer(updateInterval),
   LockScreenPlayable {
+  private val module: AudioModule = context.module<AudioModule>() ?: throw AudioModuleNotFoundException()
+  private val mediaSource = module.createMediaItem(source)
+  override val ref: ExoPlayer = module.runOnMain {
+    buildPlayer(androidContext, (preferredForwardBufferDuration * 1000).toLong())
+  }
+
+  @Event(name = "playbackStatusUpdate")
+  private val onPlaybackStatusUpdate = event<Map<String, Any?>>(onStartObserving = { sendStatusUpdateOnMain() })
+
+  @Event(name = "audioSampleUpdate")
+  private val onAudioSampleUpdate = event<Map<String, Any?>>()
+
   var preservesPitch = true
   var keepAudioSessionActive = false
 
@@ -66,8 +59,8 @@ class AudioPlayer(
   override var isActiveForLockScreen = false
   override var metadata: Metadata? = null
   override var lockScreenOptions: AudioLockScreenOptions? = null
-  override var mediaSession: MediaSession = buildBasicMediaSession(context, ref) { requestPlay() }
-  override val serviceConnection = AudioPlaybackServiceConnection(WeakReference(this), appContext)
+  override var mediaSession: MediaSession = module.runOnMain { buildBasicMediaSession(androidContext, ref) { requestPlay() } }
+  override val serviceConnection = AudioPlaybackServiceConnection(WeakReference(this), legacyAppContext)
 
   override val isLive: Boolean
     get() = ref.isCurrentMediaItemLive
@@ -84,16 +77,178 @@ class AudioPlayer(
 
   private var samplingEnabled = false
   private var visualizer: Visualizer? = null
-  private val context by lazy {
-    appContext.reactContext
-      ?: throw Exceptions.ReactContextLost()
-  }
 
   init {
-    installPlayerListeners()
-    source?.let {
-      setMediaSource(source)
+    module.runOnMain {
+      installPlayerListeners()
+      mediaSource?.let {
+        setMediaSource(it)
+      }
+      module.registerPlayer(this, keepAudioSessionActive)
     }
+  }
+
+  @JS("id")
+  val idFromJS: String
+    get() = id
+
+  @JS("isBuffering")
+  val isBufferingFromJS: Boolean
+    get() = module.runOnMain { ref.playbackState == Player.STATE_BUFFERING }
+
+  @JS("currentStatus")
+  val currentStatusFromJS: Map<String, Any?>
+    get() = module.runOnMain { currentStatus() }
+
+  @JS("isAudioSamplingSupported")
+  val isAudioSamplingSupportedFromJS: Boolean
+    get() = true
+
+  @JS("loop")
+  var loopFromJS: Boolean
+    get() = module.runOnMain { ref.repeatMode == Player.REPEAT_MODE_ONE }
+    set(isLooping) {
+      module.runOnMain {
+        ref.repeatMode = if (isLooping) {
+          Player.REPEAT_MODE_ONE
+        } else {
+          Player.REPEAT_MODE_OFF
+        }
+      }
+    }
+
+  @JS("isLoaded")
+  val isLoadedFromJS: Boolean
+    get() = module.runOnMain { ref.playbackState == Player.STATE_READY }
+
+  @JS("playing")
+  val playingFromJS: Boolean
+    get() = module.runOnMain { ref.isPlaying }
+
+  @JS("paused")
+  val pausedFromJS: Boolean
+    get() = module.runOnMain { !ref.isPlaying }
+
+  @JS("muted")
+  var mutedFromJS: Boolean?
+    get() = isMuted
+    set(muted) {
+      val newMuted = muted ?: false
+      isMuted = newMuted
+      setVolume(
+        if (newMuted) {
+          0f
+        } else {
+          previousVolume
+        }
+      )
+    }
+
+  @JS("shouldCorrectPitch")
+  var shouldCorrectPitchFromJS: Boolean
+    get() = preservesPitch
+    set(value) {
+      preservesPitch = value
+    }
+
+  @JS("currentTime")
+  val currentTimeFromJS: Double
+    get() = module.runOnMain { currentTime }
+
+  @JS("duration")
+  val durationFromJS: Double
+    get() = module.runOnMain { duration }
+
+  @JS("playbackRate")
+  var playbackRatePropertyFromJS: Float
+    get() = module.runOnMain { ref.playbackParameters.speed }
+    set(rate) {
+      module.appContext.mainQueue.launch {
+        setPlaybackRate(rate)
+      }
+    }
+
+  @JS("volume")
+  var volumeFromJS: Float?
+    get() = module.runOnMain { ref.volume }
+    set(volume) {
+      setVolume(volume)
+    }
+
+  @JS("isActiveForLockScreen")
+  val isActiveForLockScreenFromJS: Boolean
+    get() = module.runOnMain { isActiveForLockScreen }
+
+  @JS("play")
+  fun playFromJS() {
+    module.runOnMain {
+      module.playWithAudioFocus(this)
+    }
+  }
+
+  @JS("pause")
+  fun pauseFromJS() {
+    module.pause(this)
+  }
+
+  @JS("replace")
+  fun replaceFromJS(source: AudioSource?) {
+    module.replace(this, source)
+  }
+
+  @JS("setActiveForLockScreen")
+  fun setActiveForLockScreenFromJS(active: Boolean, metadata: Metadata?, options: AudioLockScreenOptions?) {
+    module.runOnMain {
+      setActiveForLockScreen(active, metadata, options)
+    }
+  }
+
+  @JS("updateLockScreenMetadata")
+  fun updateLockScreenMetadataFromJS(metadata: Metadata) {
+    module.runOnMain {
+      updateLockScreenMetadata(metadata)
+    }
+  }
+
+  @JS("clearLockScreenControls")
+  fun clearLockScreenControlsFromJS() {
+    module.runOnMain {
+      clearLockScreenControls()
+    }
+  }
+
+  @JS("setAudioSamplingEnabled")
+  fun setAudioSamplingEnabledFromJS(enabled: Boolean) {
+    module.runOnMain {
+      setSamplingEnabled(enabled)
+    }
+  }
+
+  @JS("seekTo")
+  suspend fun seekToFromJS(
+    seekTime: Double,
+    @Suppress("UNUSED_PARAMETER") toleranceMillisBefore: Double?,
+    @Suppress("UNUSED_PARAMETER") toleranceMillisAfter: Double?
+  ): Unit = withContext(Dispatchers.Main) {
+    seekTo(seekTime)
+  }
+
+  @JS("setPlaybackRate")
+  fun setPlaybackRateFromJS(rate: Float) {
+    module.appContext.mainQueue.launch {
+      setPlaybackRate(rate)
+    }
+  }
+
+  @JS("remove")
+  fun removeFromJS() {
+    module.runOnMain {
+      module.removePlayer(id)
+    }
+  }
+
+  override fun emitStatus(body: Map<String, Any?>) {
+    onPlaybackStatusUpdate(body)
   }
 
   fun setMediaSource(source: MediaSource) {
@@ -202,7 +357,7 @@ class AudioPlayer(
 
   override fun assignBasicMediaSession() {
     mediaSession.release()
-    mediaSession = buildBasicMediaSession(context, ref) { requestPlay() }
+    mediaSession = buildBasicMediaSession(androidContext, ref) { requestPlay() }
   }
 
   private fun sendAudioSampleUpdate(sample: List<Float>) {
@@ -212,7 +367,7 @@ class AudioPlayer(
       ),
       "timestamp" to ref.currentPosition
     )
-    emit(AUDIO_SAMPLE_UPDATE, body)
+    onAudioSampleUpdate(body)
   }
 
   private fun playbackStateToString(state: Int): String {
@@ -269,5 +424,28 @@ class AudioPlayer(
 
   companion object {
     val TAG = AudioPlayer::class.simpleName
+
+    private fun buildPlayer(context: Context, bufferDurationMs: Long): ExoPlayer =
+      ExoPlayer.Builder(context, AudioRenderersFactory(context))
+        .setLooper(context.mainLooper)
+        .setAudioAttributes(AudioAttributes.DEFAULT, false)
+        .setHandleAudioBecomingNoisy(true)
+        .setSeekForwardIncrementMs(SEEK_JUMP_INTERVAL_MS)
+        .setSeekBackIncrementMs(SEEK_JUMP_INTERVAL_MS)
+        .apply {
+          if (bufferDurationMs > 0) {
+            setLoadControl(
+              DefaultLoadControl.Builder()
+                .setBufferDurationsMs(
+                  DefaultLoadControl.DEFAULT_MIN_BUFFER_MS,
+                  bufferDurationMs.toInt().coerceAtLeast(DefaultLoadControl.DEFAULT_MIN_BUFFER_MS),
+                  DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS,
+                  DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
+                )
+                .build()
+            )
+          }
+        }
+        .build()
   }
 }

@@ -10,29 +10,34 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.session.MediaSession
 import expo.modules.audio.service.AudioPlaybackServiceConnection
-import expo.modules.kotlin.AppContext
+import expo.modules.v2.legacyAppContext
+import io.github.expo.modules.v2.Event
+import io.github.expo.modules.v2.ExpoSharedObject
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.module
+import io.github.expo.modules.v2.react.androidContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.ref.WeakReference
 
-private const val PLAYLIST_STATUS_UPDATE = "playlistStatusUpdate"
-private const val TRACK_CHANGED = "trackChanged"
-
 @UnstableApi
-class AudioPlaylist(
-  context: Context,
-  appContext: AppContext,
+@ExpoSharedObject
+class AudioPlaylist @JS constructor(
   initialSources: List<AudioSource>,
-  updateInterval: Double
-) : BaseAudioPlayer(
-  player = ExoPlayer.Builder(context, AudioRenderersFactory(context))
-    .setLooper(context.mainLooper)
-    .setAudioAttributes(AudioAttributes.DEFAULT, false)
-    .setHandleAudioBecomingNoisy(true)
-    .build(),
-  appContext = appContext,
-  updateInterval = updateInterval,
-  statusEventName = PLAYLIST_STATUS_UPDATE
-),
+  updateInterval: Double,
+  loop: LoopMode
+) : BaseAudioPlayer(updateInterval),
   LockScreenPlayable {
+  private val module: AudioModule = context.module<AudioModule>() ?: throw AudioModuleNotFoundException()
+  override val ref: ExoPlayer = module.runOnMain { buildPlayer(androidContext) }
+
+  @Event(name = "playlistStatusUpdate")
+  private val onPlaylistStatusUpdate = event<Map<String, Any?>>(onStartObserving = { sendStatusUpdateOnMain() })
+
+  @Event(name = "trackChanged")
+  private val onTrackChanged = event<Map<String, Any?>>()
+
   private var sources: MutableList<AudioSource> = initialSources.toMutableList()
   private var currentRate = 1f
   private var previousMediaItemIndex = 0
@@ -40,8 +45,8 @@ class AudioPlaylist(
   override var isActiveForLockScreen = false
   override var metadata: Metadata? = null
   override var lockScreenOptions: AudioLockScreenOptions? = null
-  override var mediaSession: MediaSession = buildBasicMediaSession(context, ref) { requestPlay() }
-  override val serviceConnection = AudioPlaybackServiceConnection(WeakReference(this), appContext)
+  override var mediaSession: MediaSession = module.runOnMain { buildBasicMediaSession(androidContext, ref) { requestPlay() } }
+  override val serviceConnection = AudioPlaybackServiceConnection(WeakReference(this), legacyAppContext)
   override val supportsNextTrack = true
   override val supportsPreviousTrack = true
 
@@ -51,8 +56,192 @@ class AudioPlaylist(
   private var createMediaSourceForSource: ((AudioSource) -> MediaSource?)? = null
 
   init {
-    installPlayerListeners()
-    startUpdating()
+    module.runOnMain {
+      installPlayerListeners()
+      startUpdating()
+      loopMode = loop
+      setMediaSourceCreator { source ->
+        module.createMediaItem(source)
+      }
+      loadInitialPlaylist()
+      module.registerPlaylist(this)
+    }
+  }
+
+  @JS("id")
+  val idFromJS: String
+    get() = id
+
+  @JS("currentIndex")
+  val currentIndexFromJS: Int
+    get() = module.runOnMain { currentTrackIndex }
+
+  @JS("trackCount")
+  val trackCountFromJS: Int
+    get() = module.runOnMain { trackCount }
+
+  @JS("sources")
+  val sourcesFromJS: List<AudioSource>
+    get() = getSources()
+
+  @JS("playing")
+  val playingFromJS: Boolean
+    get() = module.runOnMain { ref.isPlaying }
+
+  @JS("muted")
+  var mutedFromJS: Boolean?
+    get() = isMuted
+    set(muted) {
+      val newMuted = muted ?: false
+      isMuted = newMuted
+      setVolume(
+        if (newMuted) {
+          0f
+        } else {
+          previousVolume
+        }
+      )
+    }
+
+  @JS("isLoaded")
+  val isLoadedFromJS: Boolean
+    get() = module.runOnMain { ref.playbackState == Player.STATE_READY }
+
+  @JS("isBuffering")
+  val isBufferingFromJS: Boolean
+    get() = module.runOnMain { ref.playbackState == Player.STATE_BUFFERING }
+
+  @JS("currentTime")
+  val currentTimeFromJS: Double
+    get() = module.runOnMain { currentTime }
+
+  @JS("duration")
+  val durationFromJS: Double
+    get() = module.runOnMain { duration }
+
+  @JS("volume")
+  var volumeFromJS: Float?
+    get() = module.runOnMain { ref.volume }
+    set(volume) {
+      setVolume(volume)
+    }
+
+  @JS("playbackRate")
+  var playbackRateFromJS: Float
+    get() = module.runOnMain { ref.playbackParameters.speed }
+    set(rate) {
+      module.appContext.mainQueue.launch {
+        setPlaybackRate(rate)
+      }
+    }
+
+  @JS("loop")
+  var loopFromJS: LoopMode
+    get() = module.runOnMain { loopMode }
+    set(mode) {
+      module.runOnMain {
+        loopMode = mode
+      }
+    }
+
+  @JS("currentStatus")
+  val currentStatusFromJS: Map<String, Any?>
+    get() = module.runOnMain { currentStatus() }
+
+  @JS("isActiveForLockScreen")
+  val isActiveForLockScreenFromJS: Boolean
+    get() = module.runOnMain { isActiveForLockScreen }
+
+  @JS("play")
+  fun playFromJS() {
+    module.runOnMain {
+      module.playWithAudioFocus(this)
+    }
+  }
+
+  @JS("pause")
+  fun pauseFromJS() {
+    module.pause(this)
+  }
+
+  @JS("next")
+  fun nextFromJS() {
+    module.runOnMain {
+      next()
+    }
+  }
+
+  @JS("previous")
+  fun previousFromJS() {
+    module.runOnMain {
+      previous()
+    }
+  }
+
+  @JS("skipTo")
+  fun skipToFromJS(index: Int) {
+    module.runOnMain {
+      skipTo(index)
+    }
+  }
+
+  @JS("seekTo")
+  suspend fun seekToFromJS(seconds: Double): Unit = withContext(Dispatchers.Main) {
+    seekTo(seconds)
+  }
+
+  @JS("add")
+  fun addFromJS(source: AudioSource) {
+    module.runOnMain {
+      add(source)
+    }
+  }
+
+  @JS("insert")
+  fun insertFromJS(source: AudioSource, index: Int) {
+    module.runOnMain {
+      insert(source, index)
+    }
+  }
+
+  @JS("remove")
+  fun removeFromJS(index: Int) {
+    module.removePlaylistTrack(this, index)
+  }
+
+  @JS("clear")
+  fun clearFromJS() {
+    module.clearPlaylist(this)
+  }
+
+  @JS("setActiveForLockScreen")
+  fun setActiveForLockScreenFromJS(active: Boolean, metadata: Metadata?, options: AudioLockScreenOptions?) {
+    module.runOnMain {
+      setActiveForLockScreen(active, metadata, options)
+    }
+  }
+
+  @JS("updateLockScreenMetadata")
+  fun updateLockScreenMetadataFromJS(metadata: Metadata) {
+    module.runOnMain {
+      updateLockScreenMetadata(metadata)
+    }
+  }
+
+  @JS("clearLockScreenControls")
+  fun clearLockScreenControlsFromJS() {
+    module.runOnMain {
+      clearLockScreenControls()
+    }
+  }
+
+  @JS("destroy")
+  fun destroyFromJS() {
+    module.destroyPlaylist(this)
+  }
+
+  override fun emitStatus(body: Map<String, Any?>) {
+    onPlaylistStatusUpdate(body)
   }
 
   fun setMediaSourceCreator(creator: (AudioSource) -> MediaSource?) {
@@ -234,8 +423,7 @@ class AudioPlaylist(
   }
 
   private fun emitTrackChanged(previousIndex: Int, currentIndex: Int) {
-    emit(
-      TRACK_CHANGED,
+    onTrackChanged(
       mapOf(
         "previousIndex" to previousIndex,
         "currentIndex" to currentIndex
@@ -252,5 +440,14 @@ class AudioPlaylist(
     }
     serviceConnection.unbind()
     super.releasePlayer()
+  }
+
+  companion object {
+    private fun buildPlayer(context: Context): ExoPlayer =
+      ExoPlayer.Builder(context, AudioRenderersFactory(context))
+        .setLooper(context.mainLooper)
+        .setAudioAttributes(AudioAttributes.DEFAULT, false)
+        .setHandleAudioBecomingNoisy(true)
+        .build()
   }
 }
