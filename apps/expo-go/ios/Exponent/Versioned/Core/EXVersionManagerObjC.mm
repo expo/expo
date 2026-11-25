@@ -207,7 +207,8 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     // the return type
     RCTTriggerReloadCommandListeners(@"Dev menu - reload");
   } else if ([key isEqualToString:@"dev-remote-debug"]) {
-    [self _openJsInspector:bundleURL];
+    [RCTInspectorDevServerHelper openDebugger:bundleURL
+                             withErrorMessage:@"Failed to open debugger. Please check that the dev server is running and reload the app."];
   } else if ([key isEqualToString:@"dev-profiler"]) {
     devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
   } else if ([key isEqualToString:@"dev-hmr"]) {
@@ -263,18 +264,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 - (BOOL)_isDevModeEnabledForHost:(NSURL *)bundleURL
 {
   return ([RCTGetURLQueryParam(bundleURL, @"dev") boolValue] || _manifest.isDevelopmentMode);
-}
-
-- (void)_openJsInspector:(NSURL *)bundleURL
-{
-  // TODO(@kitten): This might be unreachable. If it isn't it shouldn't hardcode `http`, but it looks unused to me
-  NSInteger port = [[bundleURL port] integerValue] ?: RCT_METRO_PORT;
-  NSString *host = [bundleURL host] ?: @"localhost";
-  NSString *url =
-      [NSString stringWithFormat:@"http://%@:%lld/_expo/debugger?applicationId=%@", host, (long long)port, NSBundle.mainBundle.bundleIdentifier];
-  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
-  request.HTTPMethod = @"PUT";
-  [[[NSURLSession sharedSession] dataTaskWithRequest:request] resume];
 }
 
 - (id<RCTTurboModule>)_moduleInstanceForHost:(id)host named:(NSString *)name
