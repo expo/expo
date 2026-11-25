@@ -48,7 +48,9 @@ export async function fetch(
   const body = initBody ?? (initFromRequest ? getRequestBodyInit(input) : null);
   // Serialize a Request's FormData body with the boundary its Content-Type header already names.
   const formDataBoundary = bodySource != null ? getRequestFormDataBoundary(bodySource) : undefined;
-  const signal = init?.signal ?? (initFromRequest ? input.signal : undefined);
+  // A `null` signal in the init replaces the Request's signal, like in the `Request` constructor.
+  const signal =
+    init?.signal !== undefined ? init.signal : initFromRequest ? input.signal : undefined;
   const redirect = init?.redirect ?? (initFromRequest ? input.redirect : undefined);
   const method = init?.method ?? (initFromRequest ? input.method : undefined);
 
@@ -113,7 +115,7 @@ export async function fetch(
  * A wrapper of `AbortSignal.addEventListener` that returns a cleanup function.
  */
 function addAbortSignalListener(
-  signal: AbortSignal | undefined,
+  signal: AbortSignal | null | undefined,
   listener: Parameters<AbortSignal['addEventListener']>[1]
 ): AbortSubscriptionCleanupFunction {
   signal?.addEventListener('abort', listener);

@@ -160,6 +160,11 @@ describe('fetch', () => {
     expect(sentBody()).toMatch(new RegExp(`^--${boundary}\r\n`));
   });
 
+  it('does not use the Request signal when the init signal is null', async () => {
+    const request = new Request('https://example.test/', { signal: AbortSignal.abort() });
+    await expect(fetch(request, { signal: null })).resolves.toBeDefined();
+  });
+
   it('lets the init body override the Request body', async () => {
     const request = new Request('https://example.test/', { method: 'POST', body: 'original' });
     await fetch(request, { method: 'POST', body: 'override' });

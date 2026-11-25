@@ -278,6 +278,15 @@ describe('Request', () => {
       expect(original.bodyUsed).toBe(false);
     });
 
+    it('applies the mode check to a stream body from the source request', () => {
+      const original = new Request('https://example.test/', {
+        method: 'POST',
+        body: new ReadableStream<Uint8Array>(),
+      });
+      expect(() => new Request(original, { mode: 'no-cors' })).toThrow(TypeError);
+      expect(original.bodyUsed).toBe(false);
+    });
+
     it('does not add a default content-type for a body from the source request', () => {
       const original = new Request('https://example.test/', {
         method: 'POST',
@@ -440,6 +449,20 @@ describe('Request', () => {
         expect(copy.integrity).toBe('sha256-abc');
         expect(copy.keepalive).toBe(true);
       });
+
+      it('resets the referrer and referrer policy of a source request for a non-empty init', () => {
+        const original = new Request('https://example.test/', {
+          referrer: 'https://referrer.test/',
+          referrerPolicy: 'origin',
+        });
+        const copy = new Request(original, { redirect: 'manual' });
+        expect(copy.referrer).toBe('about:client');
+        expect(copy.referrerPolicy).toBe('');
+        // Like in WebIDL, an init with only undefined members is empty.
+        const copyWithEmptyInit = new Request(original, { signal: undefined });
+        expect(copyWithEmptyInit.referrer).toBe('https://referrer.test/');
+        expect(copyWithEmptyInit.referrerPolicy).toBe('origin');
+      });
     });
 
     describe('signal', () => {
@@ -463,6 +486,14 @@ describe('Request', () => {
         expect(copy.signal.aborted).toBe(true);
         expect(clone.signal.aborted).toBe(true);
       });
+
+      it('does not follow the source request signal when the init signal is null', () => {
+        const controller = new AbortController();
+        const original = new Request('https://example.test/', { signal: controller.signal });
+        const copy = new Request(original, { signal: null });
+        controller.abort();
+        expect(copy.signal.aborted).toBe(false);
+      });
     });
 
     describe('body', () => {
@@ -473,6 +504,23 @@ describe('Request', () => {
           headers: { 'content-type': 'text/foo' },
         });
         expect((await request.blob()).type).toBe('text/foo');
+      });
+
+      it('converts a number or boolean body to a string', async () => {
+        const request = new Request('https://example.test/', { method: 'POST', body: 123 as any });
+        expect(request.headers.get('content-type')).toBe('text/plain;charset=UTF-8');
+        expect(await request.text()).toBe('123');
+        const booleanRequest = new Request('https://example.test/', {
+          method: 'POST',
+          body: false as any,
+        });
+        expect(await booleanRequest.text()).toBe('false');
+      });
+
+      it('throws for a Symbol body', () => {
+        expect(
+          () => new Request('https://example.test/', { method: 'POST', body: Symbol('x') as any })
+        ).toThrow(TypeError);
       });
 
       it('parses a urlencoded body with formData()', async () => {

@@ -174,6 +174,30 @@ function isStreamUnusable(stream: ReadableStream): boolean {
   return stream.locked || (stream as { _disturbed?: boolean })._disturbed === true;
 }
 
+const REQUEST_INIT_MEMBERS: (keyof FetchRequestInit)[] = [
+  'method',
+  'headers',
+  'body',
+  'referrer',
+  'referrerPolicy',
+  'mode',
+  'credentials',
+  'cache',
+  'redirect',
+  'integrity',
+  'keepalive',
+  'signal',
+  'duplex',
+  'priority',
+  'window',
+];
+
+// Like a WebIDL dictionary, an init is empty when none of its members is set to a value other than
+// `undefined`.
+function isEmptyInit(init: FetchRequestInit | null | undefined): boolean {
+  return init == null || REQUEST_INIT_MEMBERS.every((member) => init[member] === undefined);
+}
+
 function isBodyInit(body: object): boolean {
   return (
     body instanceof Blob ||
@@ -262,12 +286,18 @@ export class Request implements Body {
       method ??= input.method;
       credentials ??= input.credentials;
       redirect ??= input.redirect;
-      signal ??= input.signal;
+      // A `null` signal in the init replaces the input's signal.
+      if (signal === undefined) {
+        signal = input.signal;
+      }
       // `whatwg-fetch` leaves some of these unset or `null`, so they fall back to the defaults.
       mode ??= input.mode ?? undefined;
       cache ??= input.cache ?? undefined;
-      referrer ??= input.referrer ?? undefined;
-      referrerPolicy ??= input.referrerPolicy ?? undefined;
+      // Per the spec, a non-empty init resets the referrer and referrer policy of the input.
+      if (isEmptyInit(init)) {
+        referrer = input.referrer ?? undefined;
+        referrerPolicy = input.referrerPolicy ?? undefined;
+      }
       integrity ??= input.integrity ?? undefined;
       keepalive ??= input.keepalive ?? undefined;
       if (headers == null) {
@@ -296,9 +326,14 @@ export class Request implements Body {
     }
 
     let initBody: BodyInit | null = init?.body ?? null;
-    if (initBody != null && typeof initBody === 'object' && !isBodyInit(initBody)) {
-      // WebIDL converts other values to a string, e.g. through their `toString()`.
-      initBody = String(initBody);
+    if (
+      initBody != null &&
+      typeof initBody !== 'string' &&
+      !(typeof initBody === 'object' && isBodyInit(initBody))
+    ) {
+      // WebIDL converts other values to a string, e.g. a number, or an object through its
+      // `toString()`. A template literal also throws for a Symbol, like WebIDL does.
+      initBody = `${initBody}`;
     }
     if ((initBody != null || inputBody != null) && BODYLESS_METHODS.has(normalizedMethod)) {
       throw new TypeError(
@@ -317,11 +352,18 @@ export class Request implements Body {
           "Failed to construct 'Request': the body stream is locked or was already read. Pass a fresh ReadableStream."
         );
       }
-      if (mode != null && mode !== 'cors' && mode !== 'same-origin') {
-        throw new TypeError(
-          "Failed to construct 'Request': a ReadableStream body can be used only with the 'cors' or 'same-origin' mode."
-        );
-      }
+    }
+    // Per the spec, this check also applies to a stream body from the input request, so that
+    // `clone()` accepts every request that the constructor accepts.
+    if (
+      (initBody ?? inputBody) instanceof ReadableStream &&
+      mode != null &&
+      mode !== 'cors' &&
+      mode !== 'same-origin'
+    ) {
+      throw new TypeError(
+        "Failed to construct 'Request': a ReadableStream body can be used only with the 'cors' or 'same-origin' mode."
+      );
     }
     const reuseInputBody = initBody == null && inputBody != null;
     if (reuseInputBody && (input as Request).bodyUsed) {
