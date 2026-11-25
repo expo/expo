@@ -30,7 +30,7 @@ import { View, Text } from 'react-native';
 import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import { File, Paths } from 'expo-file-system';
-import { Asset, requestPermissionsAsync } from 'expo-media-library';
+import { Asset, MediaLibrary } from 'expo-media-library';
 
 export default function SaveToMediaLibraryExample() {
   const [asset, setAsset] = useState<Asset | null>(null);
@@ -48,7 +48,7 @@ export default function SaveToMediaLibraryExample() {
   useEffect(() => {
     const downloadAndSaveAsset = async () => {
       const file = await downloadFile();
-      const { status } = await requestPermissionsAsync();
+      const { status } = await MediaLibrary.requestPermissions();
       if (status !== 'granted') {
         return;
       }
@@ -83,7 +83,7 @@ export default function SaveToMediaLibraryExample() {
 ```tsx
 import { View, Text } from 'react-native';
 import { useEffect, useState } from 'react';
-import { AssetField, MediaType, Query, requestPermissionsAsync } from 'expo-media-library';
+import { AssetField, MediaType, Query, MediaLibrary } from 'expo-media-library';
 
 export default function RetrievingAssetPropertiesExample() {
   const [assetInfo, setAssetInfo] = useState<{
@@ -98,7 +98,7 @@ export default function RetrievingAssetPropertiesExample() {
 
   useEffect(() => {
     const querySomeAsset = async () => {
-      const { status } = await requestPermissionsAsync();
+      const { status } = await MediaLibrary.requestPermissions();
       if (status !== 'granted') {
         return;
       }
@@ -169,14 +169,7 @@ export default function RetrievingAssetPropertiesExample() {
 ```tsx
 import { View, Text, FlatList, Image, Button } from 'react-native';
 import { useState } from 'react';
-import {
-  Asset,
-  AssetField,
-  MediaType,
-  Query,
-  requestPermissionsAsync,
-  Album,
-} from 'expo-media-library';
+import { Asset, AssetField, MediaType, Query, MediaLibrary, Album } from 'expo-media-library';
 
 export default function CreateAlbumExample() {
   const [assets, setAssets] = useState<Asset[]>([]);
@@ -184,7 +177,7 @@ export default function CreateAlbumExample() {
   const [albumTitle, setAlbumTitle] = useState<string>('');
 
   const createAlbumWithAsset = async () => {
-    await requestPermissionsAsync();
+    await MediaLibrary.requestPermissions();
 
     const [asset] = await new Query().limit(1).eq(AssetField.MEDIA_TYPE, MediaType.IMAGE).exe();
 
@@ -236,4 +229,4 @@ export default function CreateAlbumExample() {
 
 ## API
 
-<APISection packageName="expo-media-library" apiName="MediaLibrary" />
+<APISection packageName="expo-media-library" />

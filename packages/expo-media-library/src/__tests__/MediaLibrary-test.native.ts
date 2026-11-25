@@ -34,6 +34,7 @@ describe('entrypoints', () => {
     expect(root.Album).toBeDefined();
     expect(root.Query).toBeDefined();
     expect(root.presentPermissionsPicker).toBeDefined();
+    expect(root.MediaLibrary.requestPermissions).toBeDefined();
   });
 
   it('legacy API exports the old methods', () => {
@@ -51,6 +52,7 @@ describe('entrypoints', () => {
     expect(next.Album).toBeDefined();
     expect(next.Query).toBeDefined();
     expect(next.presentPermissionsPicker).toBeDefined();
+    expect(next.MediaLibrary.requestPermissions).toBeDefined();
   });
 
   it('root legacy method stubs warn and throw', async () => {
