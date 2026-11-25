@@ -35,7 +35,7 @@ data class ExitRecord(
   val isStandaloneCrash: Boolean
     get() = reason == ApplicationExitInfo.REASON_CRASH ||
       reason == ApplicationExitInfo.REASON_CRASH_NATIVE ||
-      reason == ApplicationExitInfo.REASON_SIGNALED
+      (reason == ApplicationExitInfo.REASON_SIGNALED && status != SIGKILL)
 
   /**
    * Whether this record describes the same death as a pending JVM crash file:
@@ -65,6 +65,7 @@ data class ExitRecord(
 
   companion object {
     private const val PID_TIME_WINDOW_MS = 1 * 60 * 1000L // 1 minute
+    private const val SIGKILL = 9
   }
 }
 
