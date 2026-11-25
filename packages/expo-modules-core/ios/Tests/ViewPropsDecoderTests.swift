@@ -198,12 +198,23 @@ struct ViewPropsDecoderTests {
   }
 
   @Test
-  func `props decoded from the same previous props as the mounted ones count as all changed`() throws {
+  func `props decoded from the same previous props as the mounted ones have the changes of both decodes`() throws {
     let created = try decode("{ title: 'Card' }")
     let mounted = try #require(try decode("{ title: 'New card' }", previous: created))
     let sibling = try #require(try decode("{ radius: 8 }", previous: created))
 
-    #expect(sibling.changedProps(since: mounted) == DecoderTestProps.allProps)
+    #expect(sibling.changedProps(since: mounted) == [.title, .radius])
+  }
+
+  @Test
+  func `props decoded on top of a sibling of the mounted props have the changes of both branches`() throws {
+    // Reanimated's commit hook decodes on top of each React decode, and React decodes from its own copy.
+    let reactCreated = try decode("{ title: 'Card' }")
+    let mounted = try #require(try decode("{ radius: 8 }", previous: reactCreated))
+    let reactUpdated = try #require(try decode("{ tint: 'red' }", previous: reactCreated))
+    let latest = try #require(try decode("{ radius: 9 }", previous: reactUpdated))
+
+    #expect(latest.changedProps(since: mounted) == [.radius, .tint])
   }
 
   @Test
