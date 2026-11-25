@@ -5,13 +5,13 @@ final class GeofencingHandle: SharedObject {
   let taskName: String
   private let accessGuard: LocationAccessGuard
 
-  init(taskName: String, accessGuard: LocationAccessGuard) {
+  init(taskName: String, accessGuard: LocationAccessGuard) throws {
+    try GeofencingHandle.validateMonitorName(taskName)
     self.taskName = taskName
     self.accessGuard = accessGuard
   }
 
   func start(regions: [GeofencingRegion]) throws {
-    try validateMonitorName(taskName)
     try validateRegions(regions)
     try validateUniqueIdentifiers(regions)
 
@@ -47,7 +47,7 @@ final class GeofencingHandle: SharedObject {
     return taskManager
   }
 
-  private func validateMonitorName(_ name: String) throws {
+  private static func validateMonitorName(_ name: String) throws {
     let hasOnlyASCIIAlphanumerics = name.allSatisfy { character in
       return character.isASCII && (character.isLetter || character.isNumber)
     }

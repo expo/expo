@@ -162,7 +162,7 @@ public final class LocationModuleNext: Module {
 
     Class(GeofencingHandle.self) {
       Constructor { (taskName: String) -> GeofencingHandle in
-        GeofencingHandle(taskName: taskName, accessGuard: accessGuard)
+        try GeofencingHandle(taskName: taskName, accessGuard: accessGuard)
       }
 
       AsyncFunction("start") { (handle: GeofencingHandle, regions: [GeofencingRegion]) in
