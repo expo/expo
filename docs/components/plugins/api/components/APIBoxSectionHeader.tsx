@@ -32,7 +32,7 @@ export const APIBoxSectionHeader = ({
         className
       )}>
       <TextWrapper className="flex flex-row items-center gap-2 text-xs font-medium text-tertiary">
-        {Icon && <Icon className="icon-sm text-icon-secondary" />}
+        {Icon && <Icon aria-hidden="true" className="icon-sm text-icon-secondary" />}
         {text}
       </TextWrapper>
     </CALLOUT>

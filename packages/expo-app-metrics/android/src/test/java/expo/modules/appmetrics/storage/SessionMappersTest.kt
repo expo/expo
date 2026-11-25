@@ -22,11 +22,9 @@ class SessionMappersTest {
   )
 
   private fun makeMetric(
-    metricId: String = "metric-1",
     sessionId: String = "session-1",
     params: String? = null
   ): Metric = Metric(
-    metricId = metricId,
     sessionId = sessionId,
     timestamp = "2025-01-01T00:00:01.000Z",
     category = "appStartup",
@@ -36,12 +34,10 @@ class SessionMappersTest {
   )
 
   private fun makeLog(
-    logId: String = "log-1",
     sessionId: String = "session-1",
     name: String = "auth.login_failed",
     attributes: String? = null
   ): LogRecord = LogRecord(
-    logId = logId,
     sessionId = sessionId,
     timestamp = "2025-01-01T00:00:02.000Z",
     name = name,
@@ -51,13 +47,13 @@ class SessionMappersTest {
   )
 
   @Test
-  fun `JsSession_fromSessionWithMetrics exposes the JS-facing field names`() {
-    val swm = SessionWithMetrics(
+  fun `JsSession_fromSessionWithChildren exposes the JS-facing field names`() {
+    val swc = SessionWithChildren(
       session = makeSession(id = "abc", startTimestamp = "2025-06-15T10:00:00.000Z"),
       metrics = emptyList()
     )
 
-    val js = JsSession.fromSessionWithMetrics(swm)
+    val js = JsDebugSession.fromSessionWithChildren(swc)
 
     assertEquals("abc", js.id)
     assertEquals("main", js.type)
@@ -67,13 +63,13 @@ class SessionMappersTest {
   }
 
   @Test
-  fun `JsSession_fromSessionWithMetrics surfaces endDate when set`() {
-    val swm = SessionWithMetrics(
+  fun `JsSession_fromSessionWithChildren surfaces endDate when set`() {
+    val swc = SessionWithChildren(
       session = makeSession(endTimestamp = "2025-01-02T00:00:00.000Z"),
       metrics = emptyList()
     )
 
-    val js = JsSession.fromSessionWithMetrics(swm)
+    val js = JsDebugSession.fromSessionWithChildren(swc)
 
     assertEquals("2025-01-02T00:00:00.000Z", js.endDate)
   }
@@ -106,9 +102,8 @@ class SessionMappersTest {
 
   @Test
   fun `JsMetric_fromMetric copies scalar fields verbatim`() {
-    val js = JsMetric.fromMetric(makeMetric(metricId = "m-42", sessionId = "session-1"))
+    val js = JsMetric.fromMetric(makeMetric(sessionId = "session-1"))
 
-    assertEquals("m-42", js.metricId)
     assertEquals("session-1", js.sessionId)
     assertEquals("appStartup", js.category)
     assertEquals("timeToInteractive", js.name)
@@ -117,17 +112,17 @@ class SessionMappersTest {
   }
 
   @Test
-  fun `JsSession_fromSessionWithMetrics surfaces stored logs`() {
-    val swm = SessionWithMetrics(
+  fun `JsSession_fromSessionWithChildren surfaces stored logs`() {
+    val swc = SessionWithChildren(
       session = makeSession(),
       metrics = emptyList(),
       logs = listOf(
-        makeLog(logId = "l-1", name = "first.event"),
-        makeLog(logId = "l-2", name = "second.event")
+        makeLog(name = "first.event"),
+        makeLog(name = "second.event")
       )
     )
 
-    val js = JsSession.fromSessionWithMetrics(swm)
+    val js = JsDebugSession.fromSessionWithChildren(swc)
 
     assertEquals(2, js.logs.size)
     assertEquals("first.event", js.logs[0].name)
@@ -183,6 +178,7 @@ class SessionMappersTest {
     // Both should decode the nested user object the same way.
     @Suppress("UNCHECKED_CAST")
     val metricUser = metricResult?.get("user") as? Map<String, Any?>
+
     @Suppress("UNCHECKED_CAST")
     val logUser = logResult?.get("user") as? Map<String, Any?>
     assertEquals(metricUser, logUser)
@@ -195,5 +191,108 @@ class SessionMappersTest {
     // And arrays decode identically too.
     assertEquals(listOf("a", "b"), metricResult?.get("tags"))
     assertEquals(metricResult?.get("tags"), logResult?.get("tags"))
+  }
+
+  @Test
+  fun `SessionMetricInput_toMetric injects the sessionId`() {
+    val input = SessionMetricInput(
+      category = "custom",
+      name = "purchase",
+      value = 9.99
+    )
+
+    val metric = input.toMetric("session-42")
+
+    assertEquals("session-42", metric.sessionId)
+  }
+
+  @Test
+  fun `SessionMetricInput_toMetric maps scalar fields verbatim`() {
+    val input = SessionMetricInput(
+      category = "custom",
+      name = "purchase",
+      value = 9.99,
+      timestamp = "2025-03-01T12:00:00.000Z",
+      routeName = "Checkout"
+    )
+
+    val metric = input.toMetric("session-42")
+
+    assertEquals("custom", metric.category)
+    assertEquals("purchase", metric.name)
+    assertEquals(9.99, metric.value, 0.0)
+    assertEquals("2025-03-01T12:00:00.000Z", metric.timestamp)
+    assertEquals("Checkout", metric.routeName)
+    assertNull(metric.updateId)
+  }
+
+  @Test
+  fun `SessionMetricInput_toMetric JSON-encodes params`() {
+    val input = SessionMetricInput(
+      category = "custom",
+      name = "purchase",
+      value = 1.0,
+      params = mapOf("screen" to "Home", "attempt" to 3, "flag" to true)
+    )
+
+    val metric = input.toMetric("session-42")
+
+    // Round-trip through the JsMetric decoder to assert the encoding is valid.
+    val decoded = JsMetric.fromMetric(metric).params
+    assertEquals("Home", decoded?.get("screen"))
+    assertEquals(3L, decoded?.get("attempt"))
+    assertEquals(true, decoded?.get("flag"))
+  }
+
+  @Test
+  fun `SessionMetricInput_toMetric yields null params when none provided`() {
+    val input = SessionMetricInput(category = "custom", name = "purchase", value = 1.0)
+
+    val metric = input.toMetric("session-42")
+
+    assertNull(metric.params)
+  }
+
+  @Test
+  fun `JsSession_fromSessionWithChildren decodes the crash report payload`() {
+    val payload =
+      """{"appVersion":"1.0.0","timestampBegin":"2026-06-12T10:00:00Z",""" +
+        """"exceptionReason":"java.lang.IllegalStateException: boom"}"""
+    val value = SessionWithChildren(
+      session = makeSession(),
+      metrics = emptyList(),
+      crashReports = listOf(CrashReportEntity(payload = payload, createdAt = "2026-06-12T10:00:00Z"))
+    )
+
+    val js = JsDebugSession.fromSessionWithChildren(value)
+
+    val crashReport = js.crashReport
+    assertEquals("1.0.0", crashReport?.get("appVersion"))
+    assertEquals("java.lang.IllegalStateException: boom", crashReport?.get("exceptionReason"))
+  }
+
+  @Test
+  fun `JsSession_fromSessionWithChildren yields null crashReport when no payload is stored`() {
+    val value = SessionWithChildren(
+      session = makeSession(),
+      metrics = emptyList()
+    )
+
+    val js = JsDebugSession.fromSessionWithChildren(value)
+
+    assertNull(js.crashReport)
+  }
+
+  @Test
+  fun `JsSession_fromSessionWithChildren yields null crashReport for a malformed payload`() {
+    val value = SessionWithChildren(
+      session = makeSession(),
+      metrics = emptyList(),
+      crashReports = listOf(CrashReportEntity(payload = "{ this is not valid json", createdAt = "2026-06-12T10:00:00Z"))
+    )
+
+    val js = JsDebugSession.fromSessionWithChildren(value)
+
+    assertNull(js.crashReport)
   }
 }

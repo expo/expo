@@ -1,9 +1,11 @@
 {
   "platforms": ["apple", "android"],
-  "apple": {
-    "modules": ["MailComposerModule"]
-  },
   "android": {
-    "modules": ["expo.modules.mailcomposer.MailComposerModule"]
+    "modules": ["expo.modules.mailcomposer.MailComposerModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.mailcomposer",
+      "repository": "local-maven-repo"
+    }
   }
 }

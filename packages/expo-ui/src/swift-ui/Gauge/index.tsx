@@ -4,7 +4,7 @@ import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type GaugeProps = {
+export interface GaugeProps extends CommonViewModifierProps {
   /**
    * The current value of the gauge.
    */
@@ -35,7 +35,7 @@ export type GaugeProps = {
    * A label showing the maximum value. Use `Text` or `Label` to display the value.
    */
   maximumValueLabel?: React.ReactNode;
-} & CommonViewModifierProps;
+}
 
 type NativeGaugeProps = Omit<
   GaugeProps,

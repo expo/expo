@@ -2,12 +2,12 @@ import type { ExpoConfig } from '@expo/config-types';
 import fs from 'node:fs';
 import xcode, { type XCBuildConfiguration } from 'xcode';
 
+import type { ConfigPlugin, XcodeProject } from '../Plugin.types';
+import { withXcodeProject } from '../plugins/ios-plugins';
 import { getAllPBXProjectPaths } from './Paths';
 import { getNativeTargets } from './Target';
-import type { ConfigPlugin, XcodeProject } from '../Plugin.types';
 import { getBuildConfigurationsForListId } from './utils/Xcodeproj';
 import { trimQuotes } from './utils/string';
-import { withXcodeProject } from '../plugins/ios-plugins';
 
 /**
  * Set the Apple development team ID for all build configurations using the first native target.

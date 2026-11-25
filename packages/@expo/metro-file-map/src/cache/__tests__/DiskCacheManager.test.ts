@@ -24,7 +24,6 @@ const buildParameters: BuildParameters = {
   cacheBreaker: '',
   computeSha1: true,
   enableSymlinks: false,
-  forceNodeFilesystemAPI: true,
   ignorePattern: /ignored/,
   retainAllFiles: false,
   extensions: ['js', 'json'],
@@ -140,6 +139,33 @@ describe('DiskCacheManager', () => {
 
     const written = vol.readFileSync(cm.getCacheFilePath());
     expect(serialize(snapshot)).toEqual(Buffer.from(written as Uint8Array));
+  });
+
+  test('serialises the snapshot before anything can change it', async () => {
+    const cm = new DiskCacheManager({ buildParameters }, defaultConfig);
+    // The file map's own state, which may change at the next `await`.
+    const fileSystemData = new Map<string, unknown>();
+    const snapshot: CacheData = {
+      clocks: new Map(),
+      fileSystemData,
+      plugins: new Map(),
+    };
+    const expected = serialize(snapshot);
+    const getSnapshot = () => {
+      queueMicrotask(() => {
+        fileSystemData.set('later.js', [0, 0, 0, null, 0]);
+      });
+      return snapshot;
+    };
+
+    await cm.write(getSnapshot, {
+      changedSinceCacheRead: true,
+      eventSource: { onChange: () => () => {} },
+      onWriteError: () => {},
+    });
+
+    const written = vol.readFileSync(cm.getCacheFilePath());
+    expect(Buffer.from(written as Uint8Array)).toEqual(expected);
   });
 
   test('does not write when there have been no changes', async () => {

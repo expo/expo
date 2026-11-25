@@ -1,4 +1,6 @@
 package expo.modules.filesystem
+
+import android.net.Uri
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.services.FilePermissionService
 
@@ -32,6 +34,16 @@ internal class UnableToReadHandleException(reason: String) :
 internal class UnableToWriteHandleException(reason: String) :
   CodedException("Unable to write to a file handle: '$reason'")
 
+internal class UnsupportedContentUriReadWriteException :
+  CodedException(
+    "READ_WRITE mode is not supported for content:// URIs. " +
+      "Content providers may not support simultaneous read and write access. " +
+      "Use READ or WRITE mode instead."
+  )
+
+internal class UnsupportedDigestAlgorithmException(algorithm: String) :
+  CodedException("Unsupported digest algorithm: '$algorithm'.")
+
 internal class MissingAppContextException :
   CodedException("The app context is missing.")
 
@@ -40,6 +52,9 @@ internal class PickerCancelledException :
 
 internal class DestinationAlreadyExistsException :
   CodedException("Destination already exists")
+
+internal class DestinationContainsSourceException :
+  CodedException("Destination is the source or contains it, overwriting it would delete the source")
 
 internal class UnableToCopyException(reason: String) :
   CodedException("Unable to copy file or directory: $reason")
@@ -70,3 +85,13 @@ internal class WatcherPathNotFoundException(path: String) :
 
 internal class WatcherUnsupportedPathException(path: String) :
   CodedException("Cannot watch path '$path'. Only local file:// paths are supported.")
+
+internal class FilePreviewUnsupportedException(mimeType: String?, cause: Throwable? = null) :
+  CodedException(
+    mimeType?.let { "No app can preview files of type '$it'." }
+      ?: "No MIME type could be resolved for this file.",
+    cause
+  )
+
+internal class FilePreviewFileNotFoundException(uri: Uri) :
+  CodedException("File does not exist: '$uri'")

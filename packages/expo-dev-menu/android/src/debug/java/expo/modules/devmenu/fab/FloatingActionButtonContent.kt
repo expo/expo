@@ -27,8 +27,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.composeunstyled.Icon
-import com.composeunstyled.Text
+import com.composeunstyled.UnstyledIcon
+import com.composeunstyled.UnstyledText
 import expo.modules.devmenu.R
 
 private val FabBlue = Color(0xFF007AFF)
@@ -42,17 +42,29 @@ fun FloatingActionButtonContent(
   showLabel: Boolean = true
 ) {
   val scale by animateFloatAsState(
-    targetValue = if (isPressed && !isDragging) 0.9f else 1f,
+    targetValue = if (isPressed && !isDragging) {
+      0.9f
+    } else {
+      1f
+    },
     label = "pressScale"
   )
 
   val idleAlpha by animateFloatAsState(
-    targetValue = if (isIdle) 0.5f else 1f,
+    targetValue = if (isIdle) {
+      0.5f
+    } else {
+      1f
+    },
     label = "idleAlpha"
   )
 
   val idleSaturation by animateFloatAsState(
-    targetValue = if (isIdle) 0f else 1f,
+    targetValue = if (isIdle) {
+      0f
+    } else {
+      1f
+    },
     label = "idleSaturation"
   )
 
@@ -88,7 +100,7 @@ fun FloatingActionButtonContent(
         .padding(4.dp)
         .background(FabBlue, CircleShape)
     ) {
-      Icon(
+      UnstyledIcon(
         painter = painterResource(R.drawable.gear_fill),
         contentDescription = "Tools",
         tint = Color.White,
@@ -107,7 +119,7 @@ fun FloatingActionButtonContent(
           .background(Color.White, RoundedCornerShape(percent = 50))
           .padding(horizontal = 10.dp, vertical = 4.dp)
       ) {
-        Text(
+        UnstyledText(
           text = "Tools",
           color = Color.Black,
           fontSize = 11.sp,

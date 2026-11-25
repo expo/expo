@@ -1,7 +1,5 @@
 #include "Serializable.h"
 
-#if WORKLETS_ENABLED
-
 namespace expo {
 
 constexpr jint toStableId(worklets::Serializable::ValueType type) {
@@ -91,5 +89,3 @@ std::shared_ptr<worklets::Serializable> Serializable::getSerializable() {
 }
 
 } // namespace expo
-
-#endif

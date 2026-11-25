@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { consumeConfigEnvMode, loadProjectEnv } from '@expo/env';
 import chalk from 'chalk';
 
 import { Command } from './cli';
@@ -25,7 +26,7 @@ export const syncConfigurationToNative: Command = async (argv) => {
       chalk`
 {bold Description}
 Sync configuration from Expo config to native project files if applicable. Note that this really
-only needs to be used by the EAS CLI for generic projects that do't use continuous native generation.
+only needs to be used by the EAS CLI for generic projects that don't use continuous native generation.
 
 {bold Usage}
   {dim $} npx expo-updates configuration:syncnative --platform <platform>
@@ -51,8 +52,11 @@ only needs to be used by the EAS CLI for generic projects that do't use continuo
     );
   }
 
+  const projectRoot = getProjectRoot(args);
+  loadProjectEnv(projectRoot, { mode: consumeConfigEnvMode() ?? 'production' });
+
   await syncConfigurationToNativeAsync({
-    projectRoot: getProjectRoot(args),
+    projectRoot,
     platform,
     workflow,
   });

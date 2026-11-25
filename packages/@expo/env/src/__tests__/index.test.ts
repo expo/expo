@@ -5,14 +5,17 @@ import { stripVTControlCharacters } from 'node:util';
 
 import type { loadEnvFiles } from '../';
 import {
+  consumeConfigEnvMode,
   getEnvFiles,
   getOriginalEnv,
   getOriginalEnvValue,
   LOADED_ENV_NAME,
   loadProjectEnv,
   logLoadedEnv,
+  parseEnv,
   parseEnvFiles,
   parseProjectEnv,
+  setNodeEnv,
 } from '../';
 
 jest.mock('node:console', () => {
@@ -36,6 +39,54 @@ beforeEach(() => {
 afterAll(() => {
   // Clear the mocked environment, reusing the original object instance
   process.env = originalEnv;
+});
+
+describe(setNodeEnv, () => {
+  it('overwrites an inherited NODE_ENV value', () => {
+    process.env.NODE_ENV = 'test';
+
+    expect(setNodeEnv('production')).toBe(process.env);
+    expect(process.env.NODE_ENV).toBe('production');
+  });
+
+  it('removes an inherited BABEL_ENV value', () => {
+    process.env.BABEL_ENV = 'development';
+
+    setNodeEnv('production');
+
+    expect(process.env.BABEL_ENV).toBeUndefined();
+  });
+
+  it('updates a custom environment without changing process.env', () => {
+    process.env.NODE_ENV = 'development';
+    const systemEnv = { NODE_ENV: 'test', EXAMPLE: 'value' };
+
+    expect(setNodeEnv('production', { systemEnv })).toBe(systemEnv);
+
+    expect(systemEnv).toEqual({
+      NODE_ENV: 'production',
+      EXAMPLE: 'value',
+    });
+    expect(process.env.NODE_ENV).toBe('development');
+  });
+});
+
+describe(consumeConfigEnvMode, () => {
+  it('reads and removes __EXPO_CONFIG_MODE', () => {
+    const systemEnv = { __EXPO_CONFIG_MODE: 'production' };
+
+    expect(consumeConfigEnvMode({ systemEnv })).toBe('production');
+    expect(systemEnv.__EXPO_CONFIG_MODE).toBeUndefined();
+  });
+
+  it('removes an invalid __EXPO_CONFIG_MODE value', () => {
+    process.env.__EXPO_CONFIG_MODE = 'staging';
+
+    expect(() => consumeConfigEnvMode()).toThrow(
+      'Invalid __EXPO_CONFIG_MODE value: "staging". Use "development" or "production".'
+    );
+    expect(process.env.__EXPO_CONFIG_MODE).toBeUndefined();
+  });
 });
 
 describe(getEnvFiles, () => {
@@ -299,9 +350,33 @@ describe(parseProjectEnv, () => {
 
     expect(parseProjectEnv('/')).toMatchObject({ env: {}, files: ['/.env'] });
   });
+
+  it.each(['BABEL_ENV', 'babel_env'])('ignores %s in env files', (key) => {
+    vol.fromJSON({ '.env': [`${key}=production`, 'FOO=default'].join('\n') }, '/');
+
+    expect(parseProjectEnv('/').env).toEqual({ FOO: 'default' });
+  });
 });
 
 describe(loadProjectEnv, () => {
+  it('sets NODE_ENV before loading project env files', () => {
+    process.env.NODE_ENV = 'test';
+    vol.fromJSON(
+      {
+        '.env.production': ['FOO=production', 'NODE_ENV=development'].join('\n'),
+      },
+      '/'
+    );
+
+    expect(loadProjectEnv('/', { mode: 'production' })).toMatchObject({
+      result: 'loaded',
+      env: { FOO: 'production' },
+      files: ['/.env.production'],
+      loaded: ['FOO'],
+    });
+    expect(process.env.NODE_ENV).toBe('production');
+  });
+
   it('parses .env file with mutating system environment variables', () => {
     delete process.env.FOO;
     vol.fromJSON({ '.env': 'FOO=bar' }, '/');
@@ -457,6 +532,49 @@ describe(getOriginalEnv, () => {
     expect(getOriginalEnv()[LOADED_ENV_NAME]).toBeUndefined();
   });
 
+  it('removes dotenv values inherited from a parent process', () => {
+    const inheritedEnv = {
+      FOO: 'from-parent-dotenv',
+      PRE_EXISTING: 'original',
+      [LOADED_ENV_NAME]: JSON.stringify(['FOO']),
+    };
+
+    expect(getOriginalEnv(inheritedEnv)).toEqual({ PRE_EXISTING: 'original' });
+  });
+
+  it('keeps inherited dotenv values listed in EXPO_UNSAFE_DOTENV_KEYS', () => {
+    const prev = process.env.EXPO_UNSAFE_DOTENV_KEYS;
+    process.env.EXPO_UNSAFE_DOTENV_KEYS = 'DOTENV_VALUE';
+    try {
+      jest.isolateModules(() => {
+        const mod = require('../');
+        const inheritedEnv = {
+          DOTENV_VALUE: 'from-parent-dotenv',
+          [LOADED_ENV_NAME]: JSON.stringify(['DOTENV_VALUE']),
+        };
+
+        expect(mod.getOriginalEnv(inheritedEnv)).toEqual({
+          DOTENV_VALUE: 'from-parent-dotenv',
+        });
+      });
+    } finally {
+      if (prev === undefined) delete process.env.EXPO_UNSAFE_DOTENV_KEYS;
+      else process.env.EXPO_UNSAFE_DOTENV_KEYS = prev;
+    }
+  });
+
+  it('removes inherited dotenv values after a forced local load', () => {
+    const inheritedEnv = {
+      FOO: 'from-parent-dotenv',
+      [LOADED_ENV_NAME]: JSON.stringify(['FOO']),
+    };
+    vol.fromJSON({ '.env': 'BAR=from-current-dotenv' }, '/');
+
+    loadProjectEnv('/', { force: true, systemEnv: inheritedEnv });
+
+    expect(getOriginalEnv(inheritedEnv)).toEqual({});
+  });
+
   it('preserves the pre-load value when loadProjectEnv skipped the assignment', () => {
     process.env.FOO = 'shell-provided';
     vol.fromJSON({ '.env': 'FOO=from-env' }, '/');
@@ -554,6 +672,18 @@ describe(getOriginalEnvValue, () => {
     expect(getOriginalEnvValue('FOO')).toBeUndefined();
   });
 
+  it('returns undefined for a dotenv value inherited from a parent process', () => {
+    const inheritedEnv = {
+      FOO: 'from-parent-dotenv',
+      PRE_EXISTING: 'original',
+      [LOADED_ENV_NAME]: JSON.stringify(['FOO']),
+    };
+
+    expect(getOriginalEnvValue('FOO', inheritedEnv)).toBeUndefined();
+    expect(getOriginalEnvValue('PRE_EXISTING', inheritedEnv)).toBe('original');
+    expect(getOriginalEnvValue(LOADED_ENV_NAME, inheritedEnv)).toBeUndefined();
+  });
+
   it('falls through to systemEnv for keys @expo/env never touched', () => {
     process.env.UNRELATED = 'unrelated-value';
     delete process.env.FOO;
@@ -637,6 +767,19 @@ describe(getOriginalEnvValue, () => {
 });
 
 describe('isLocalEnvKey policy', () => {
+  it('tracks mixed-case local-only keys as sensitive without changing their spelling', () => {
+    vol.fromJSON({ '.env.local': 'android_home=/dev/sdk' }, '/');
+    const result = parseEnvFiles(['/.env.local'], { systemEnv: {} });
+    expect(result.env).toEqual({ android_home: '/dev/sdk' });
+    expect(result.sensitiveLoadedKeys).toEqual(['android_home']);
+  });
+
+  it('filters mixed-case protected keys in the single-file parser', () => {
+    expect(parseEnv('npm_config_registry=https://attacker.example/npm\nAPP_VALUE=ok')).toEqual({
+      APP_VALUE: 'ok',
+    });
+  });
+
   it('throws when a local-only key is set in a non-.local file', () => {
     delete process.env.ANDROID_HOME;
     vol.fromJSON({ '.env': 'ANDROID_HOME=/evil/sdk\nUNRELATED=ok' }, '/');
@@ -719,6 +862,28 @@ describe('isLocalEnvKey policy', () => {
     expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/EXPO_UNSAFE_DOTENV_KEYS/);
   });
 
+  it('blocks __EXPO_CONFIG_MODE in env files', () => {
+    vol.fromJSON({ '.env': '__EXPO_CONFIG_MODE=production' }, '/');
+
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/__EXPO_CONFIG_MODE/);
+  });
+
+  it('keeps __EXPO_CONFIG_MODE blocked when the unsafe list includes it', () => {
+    const prev = process.env.EXPO_UNSAFE_DOTENV_KEYS;
+    process.env.EXPO_UNSAFE_DOTENV_KEYS = '__EXPO_CONFIG_MODE';
+    try {
+      jest.isolateModules(() => {
+        const mod = require('../');
+        vol.fromJSON({ '.env': '__EXPO_CONFIG_MODE=production' }, '/');
+
+        expect(() => mod.parseProjectEnv('/', { systemEnv: {} })).toThrow(/__EXPO_CONFIG_MODE/);
+      });
+    } finally {
+      if (prev === undefined) delete process.env.EXPO_UNSAFE_DOTENV_KEYS;
+      else process.env.EXPO_UNSAFE_DOTENV_KEYS = prev;
+    }
+  });
+
   it('combines both violation classes into a single thrown error', () => {
     process.env.NODE_ENV = 'development';
     delete process.env.ANDROID_HOME;
@@ -732,6 +897,19 @@ describe('isLocalEnvKey policy', () => {
     expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(
       /NODE_OPTIONS[\s\S]*ANDROID_HOME/
     );
+  });
+
+  it('throws when ignored keys use mixed casing (Windows bypass)', () => {
+    vol.fromJSON({ '.env': 'npm_config_registry=https://attacker.example/npm' }, '/');
+
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/npm_config_registry/);
+  });
+
+  it('throws when local-only keys use mixed casing (Windows bypass)', () => {
+    vol.fromJSON({ '.env': 'android_home=/evil/sdk' }, '/');
+
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/android_home/);
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/\.local/);
   });
 
   it('throws on package-manager registry/install vars even in .local files', () => {
@@ -764,6 +942,7 @@ describe(logLoadedEnv, () => {
     files: ['/.env.production.local', '/.env.production', '.env.local'],
     env: { FOO: 'test1', BAR: 'test2' },
     loaded: ['FOO', 'BAR'],
+    sensitiveLoadedKeys: [],
   };
 
   it('logs environment vaiables and files', () => {
@@ -773,11 +952,11 @@ describe(logLoadedEnv, () => {
     // Ensure `logLoadedEnv` returns the env info as-is
     expect(logLoadedEnv(envInfo)).toBe(envInfo);
     // Ensure `console.log` with environment files was called first
-    expect(stripVTControlCharacters(jest.mocked(console.log).mock.calls[0][0])).toBe(
+    expect(stripVTControlCharacters(jest.mocked(console.log).mock.calls[0]![0])).toBe(
       'env: load .env.production.local .env.production .env.local'
     );
     // Ensure `console.log` with environment variables was called second
-    expect(stripVTControlCharacters(jest.mocked(console.log).mock.calls[1][0])).toBe(
+    expect(stripVTControlCharacters(jest.mocked(console.log).mock.calls[1]![0])).toBe(
       'env: export FOO BAR'
     );
   });
@@ -791,7 +970,7 @@ describe(logLoadedEnv, () => {
     // Ensure `logLoadedEnv` returns the env info as-is
     expect(logLoadedEnv(skippedEnvInfo)).toBe(skippedEnvInfo);
     // Ensure no `console.log` was called
-    expect(stripVTControlCharacters(jest.mocked(console.log).mock.calls[0][0])).toBe(
+    expect(stripVTControlCharacters(jest.mocked(console.log).mock.calls[0]![0])).toBe(
       'env: export FOO BAR'
     );
   });

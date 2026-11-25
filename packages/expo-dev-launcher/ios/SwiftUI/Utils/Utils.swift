@@ -39,19 +39,29 @@ extension Text {
   func monospacedCaption() -> some View {
     self
       .font(.system(.caption, design: .monospaced))
-      .foregroundColor(.primary)
+      .foregroundStyle(Color.primary)
   }
 
   func monospacedCaptionSecondary() -> some View {
     self
       .font(.system(.caption, design: .monospaced))
-      .foregroundColor(.secondary)
+      .foregroundStyle(Color.secondary)
   }
 }
 
 extension View {
   func systemGroupedBackground() -> some View {
     return self.background(Color.expoSystemGroupedBackground)
+  }
+
+  @ViewBuilder
+  func maxContentWidth() -> some View {
+#if os(iOS)
+    frame(maxWidth: 600)
+      .frame(maxWidth: .infinity)
+#else
+    self
+#endif
   }
 }
 

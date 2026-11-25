@@ -3,6 +3,9 @@ title: Using Facebook authentication
 description: A guide on using react-native-fbsdk-next library to integrate Facebook authentication in your Expo project.
 ---
 
+import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
+import { Rocket01Icon } from '@expo/styleguide-icons/outline/Rocket01Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
@@ -33,17 +36,22 @@ Adding Android as a platform in your Facebook project requires you to have your 
 
 <ContentSpotlight
   alt="Facebook project not recognizing unpublished Android app's package that doesn't have a valid Google Play Store URL."
-  src="/static/images/guides/android-package-error.png"
+  src="/static/images/guides/android-package-error.webp"
   className="max-w-[720px]"
 />
 
 See the following guides for more information on how to build your project for app stores:
 
-<BoxLink title="Build your project for app stores" href="/deploy/build-project/" />
+<BoxLink
+  title="Build your project for app stores"
+  href="/deploy/build-project/"
+  Icon={Rocket01Icon}
+/>
 
 <BoxLink
-  title="Manually upload Android app for the first time"
-  href="https://expo.fyi/first-android-submission"
+  title="Submit to the Google Play Store with Expo Submit"
+  href="/submit/android/"
+  Icon={EasSubmitIcon}
 />
 
 Once you have uploaded the app to the Play Store you can submit your app review. When it is approved the Facebook project will be able to access it at a Play Store URL.
@@ -52,7 +60,7 @@ After that, go to your Facebook project's **Settings** > **Basic** and add the *
 
 <ContentSpotlight
   alt="Required fields to add Android platform in the Facebook project."
-  src="/static/images/guides/android-required-fields.png"
+  src="/static/images/guides/android-required-fields.webp"
   className="max-w-[720px]"
 />
 

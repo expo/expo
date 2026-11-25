@@ -89,7 +89,9 @@
 
 .transition {
   overflow: hidden;
-  transition: height 0.3s ease, opacity 0.3s ease;
+  transition:
+    height 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .warningBox {

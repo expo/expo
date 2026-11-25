@@ -11,11 +11,11 @@ import type { Client, FileChange, SubscribeResponse, WatchProjectResponse } from
 import watchman from 'fb-watchman';
 import invariant from 'invariant';
 
+import normalizePathSeparatorsToSystem from '../lib/normalizePathSeparatorsToSystem';
 import { AbstractWatcher } from './AbstractWatcher';
 import RecrawlWarning from './RecrawlWarning';
 import * as common from './common';
 import type { WatcherOptions } from './common';
-import normalizePathSeparatorsToSystem from '../lib/normalizePathSeparatorsToSystem';
 
 // NOTE(@kitten): Local type aliases for Watchman types not exported by @types/fb-watchman
 interface WatchmanClockResponse {
@@ -97,6 +97,7 @@ export default class WatchmanWatcher extends AbstractWatcher {
       this.#client.removeAllListeners();
     }
 
+    // oxlint-disable-next-line typescript/no-this-alias
     const self = this;
     this.#client = new watchman.Client();
     this.#client.on('error', (error: Error) => {
@@ -160,18 +161,6 @@ export default class WatchmanWatcher extends AbstractWatcher {
         defer: self.#watchmanDeferStates as string[],
         relative_root: watchProjectInfo.relativePath,
       };
-
-      // Make sure we honor the dot option if even we're not using globs.
-      if (self.globs.length === 0 && !self.dot) {
-        options.expression = [
-          'match',
-          '**',
-          'wholename',
-          {
-            includedotfiles: false,
-          },
-        ];
-      }
 
       (self.#client!.command as Function)(
         ['subscribe', getWatchRoot(), self.subscriptionName, options],
@@ -237,6 +226,7 @@ export default class WatchmanWatcher extends AbstractWatcher {
     changeDescriptor: WatchmanFileChange,
     rawClock: WatchmanSubscriptionEvent['clock']
   ) {
+    // oxlint-disable-next-line typescript/no-this-alias
     const self = this;
     const watchProjectInfo = self.#watchProjectInfo;
 
@@ -271,10 +261,7 @@ export default class WatchmanWatcher extends AbstractWatcher {
       return;
     }
 
-    if (
-      this.doIgnore(relativePath) ||
-      !common.includedByGlob(type, this.globs, this.dot, relativePath)
-    ) {
+    if (this.doIgnore(relativePath) || !common.isIncluded(type, this.included, relativePath)) {
       return;
     }
 

@@ -5,11 +5,32 @@ import SwiftUI
 struct AccountSheet: View {
   @Environment(\.dismiss) private var dismiss
   @EnvironmentObject var viewModel: DevLauncherViewModel
+  @State private var showingLogoutConfirmation = false
 
   var body: some View {
-    VStack(spacing: 0) {
-      accountScreenHeader
+    NavigationStack {
+      content
+        .navigationTitle("Account")
+        #if os(iOS)
+        .navigationBarTitleDisplayMode(.inline)
+        #endif
+        .toolbar {
+          ToolbarItem(placement: .cancellationAction) {
+            Button {
+              dismiss()
+            } label: {
+              Image(systemName: "xmark")
+            }
+            .accessibilityLabel("Close")
+          }
+          .verticalBarPreferred()
+        }
+    }
+    .presentationDetents(viewModel.isAuthenticated ? [.medium, .large] : [.large])
+  }
 
+  private var content: some View {
+    VStack(spacing: 0) {
       if !viewModel.isAuthenticated {
         Spacer()
         Image("expo-go-logo", bundle: getDevLauncherBundle())
@@ -26,36 +47,12 @@ struct AccountSheet: View {
           loginSignupCard
         }
       }
-      .padding(.horizontal, 16)
+      .padding(.horizontal, 20)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     #if !os(tvOS) && !os(macOS)
     .background(Color(.systemGroupedBackground))
     #endif
-  }
-
-  private var accountScreenHeader: some View {
-    VStack(spacing: 8) {
-      HStack {
-        Text("Account")
-          .font(.title2)
-          .fontWeight(.semibold)
-
-        Spacer()
-
-        Button {
-          dismiss()
-        }
-        label: {
-          Image(systemName: "xmark")
-            .font(.system(size: 16, weight: .medium))
-            .foregroundColor(.primary)
-            .frame(width: 44, height: 44)
-        }
-      }
-      .padding(.horizontal, 16)
-      .padding(.top, 8)
-    }
   }
 
   private var userAccountSelector: some View {
@@ -71,24 +68,37 @@ struct AccountSheet: View {
                 }
               }
             }
-            .cornerRadius(12)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
           }
         }
       }
 
-      Button {
+      logOutButton
+    }
+  }
+
+  private var logOutButton: some View {
+    Button(role: .destructive) {
+      showingLogoutConfirmation = true
+    }
+    label: {
+      Text("Log out")
+        .font(.headline)
+        .foregroundStyle(Color.red)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+    }
+    .background(Color.expoSecondarySystemBackground)
+    .clipShape(RoundedRectangle(cornerRadius: 12))
+    .confirmationDialog(
+      "Are you sure you want to log out?",
+      isPresented: $showingLogoutConfirmation,
+      titleVisibility: .visible
+    ) {
+      Button("Log out", role: .destructive) {
         viewModel.signOut()
       }
-      label: {
-        Text("Log out")
-          .font(.headline)
-          .fontWeight(.bold)
-          .foregroundColor(.white)
-          .frame(maxWidth: .infinity)
-          .padding(.vertical, 12)
-      }
-      .background(Color.black)
-      .cornerRadius(12)
+      Button("Cancel", role: .cancel) {}
     }
   }
 
@@ -96,7 +106,7 @@ struct AccountSheet: View {
     VStack(spacing: 16) {
       Text("Log in or create an account to view local development servers and more.")
         .font(.system(size: 14))
-        .foregroundColor(.secondary)
+        .foregroundStyle(Color.secondary)
 
       #if os(tvOS)
       VStack(spacing: 8) {
@@ -130,13 +140,13 @@ struct AccountSheet: View {
           .font(.headline)
           .fontWeight(.semibold)
       }
-      .foregroundColor(.white)
+      .foregroundStyle(Color.expoSystemBackground)
       .frame(maxWidth: .infinity)
       .padding(.vertical, 12)
       .animation(.easeInOut(duration: 0.2), value: viewModel.isAuthenticating)
     }
-    .background(Color.black)
-    .cornerRadius(12)
+    .background(Color.primary)
+    .clipShape(RoundedRectangle(cornerRadius: 12))
     .disabled(viewModel.isAuthenticating)
   }
 
@@ -150,12 +160,12 @@ struct AccountSheet: View {
       Text("Sign up")
         .font(.headline)
         .fontWeight(.semibold)
-        .foregroundColor(.black.opacity(0.7))
+        .foregroundStyle(Color.black.opacity(0.7))
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
     }
     .background(Color(.white))
-    .cornerRadius(12)
+    .clipShape(RoundedRectangle(cornerRadius: 12))
     .disabled(viewModel.isAuthenticating)
   }
 
@@ -170,7 +180,7 @@ struct AccountSheet: View {
         VStack(alignment: .leading, spacing: 2) {
           Text(account.ownerUserActor?.username ?? account.name)
             .font(.headline)
-            .foregroundColor(.primary)
+            .foregroundStyle(Color.primary)
             .multilineTextAlignment(.leading)
         }
 
@@ -179,7 +189,7 @@ struct AccountSheet: View {
         if viewModel.selectedAccountId == account.id {
           Image(systemName: "checkmark.circle.fill")
             .font(.system(size: 16, weight: .medium))
-            .foregroundColor(.green)
+            .foregroundStyle(Color.green)
         }
       }
       .padding(.horizontal, 16)
@@ -194,7 +204,7 @@ struct AccountSheet: View {
   @ViewBuilder
   private func createAvatar(account: UserAccount) -> some View {
     let isOrganization = account.ownerUserActor == nil
-    let profilePhoto = account.ownerUserActor?.profilePhoto
+    let profilePhoto = account.ownerUserActor?.primaryAccountProfileImageUrl
     let name = account.ownerUserActor?.fullName ?? account.name
 
     if isOrganization {
@@ -206,7 +216,7 @@ struct AccountSheet: View {
         .overlay(
           Image(systemName: "building.2")
             .font(.system(size: 18))
-            .foregroundColor(color.foreground)
+            .foregroundStyle(color.foreground)
         )
     } else if let profilePhoto,
       let url = URL(string: profilePhoto) {
@@ -222,7 +232,7 @@ struct AccountSheet: View {
           .overlay(
             Image(systemName: "person")
               .font(.system(size: 18))
-              .foregroundColor(.secondary)
+              .foregroundStyle(Color.secondary)
           )
       }
       .frame(width: 32, height: 32)
@@ -238,7 +248,7 @@ struct AccountSheet: View {
         .overlay(
           Text(firstLetter)
             .font(.system(size: 18, weight: .medium))
-            .foregroundColor(color.foreground)
+            .foregroundStyle(color.foreground)
         )
     }
   }

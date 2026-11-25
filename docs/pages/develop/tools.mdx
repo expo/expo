@@ -3,8 +3,8 @@ title: Tools for development
 description: An overview of Expo tools and websites that will help you during various aspects of your project-building journey.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { CodeBrowserIcon } from '@expo/styleguide-icons/outline/CodeBrowserIcon';
+import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -35,7 +35,7 @@ In a nutshell, Expo CLI allows you to develop, compile, start your app, and more
 
 ## EAS CLI
 
-EAS CLI is used to log in to your Expo account and compile your app using different EAS services such as Build, Update, or Submit. You can also use this tool to:
+EAS CLI is used to log in to your Expo account and compile your app using different Expo Services such as Build, Update, or Submit. You can also use this tool to:
 
 - Publish your app to the app stores
 - Create a development, preview, or production build of your app
@@ -45,7 +45,14 @@ EAS CLI is used to log in to your Expo account and compile your app using differ
 
 To use EAS CLI, you need to install it globally on your local machine by running the command:
 
-<Terminal cmd={['$ npm install -g eas-cli']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global eas-cli'],
+    yarn: ['$ yarn global add eas-cli'],
+    pnpm: ['$ pnpm add --global eas-cli'],
+    bun: ['$ bun add --global eas-cli'],
+  }}
+/>
 
 You can use `eas --help` in your terminal window to learn more about the available commands. For a complete reference, see [`eas-cli` npm page](https://www.npmjs.com/package/eas-cli).
 
@@ -53,13 +60,20 @@ You can use `eas --help` in your terminal window to learn more about the availab
 
 Expo Doctor is a command-line tool used to diagnose issues in your Expo project. To use it, run the following command in your project's root directory:
 
-<Terminal cmd={['$ npx expo-doctor']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-doctor'],
+    yarn: ['$ yarn dlx expo-doctor'],
+    pnpm: ['$ pnpm dlx expo-doctor'],
+    bun: ['$ bunx expo-doctor'],
+  }}
+/>
 
 This command performs checks and analyzes your project's codebase for common issues in [app config](/workflow/configuration/) and **package.json** files, dependency compatibility, configuration files, and the overall health of the project. Once the check is complete, Expo Doctor outputs the results.
 
 If Expo Doctor finds an issue, it provides a description of the problem along with advice on how to fix it or where to find help.
 
-By default, Expo Doctor validates your project's packages against the [React Native directory](https://reactnative.directory/) and checks if app config properties are properly synced when native directories exist. You can configure these checks in your project's **package.json** file. See [`reactNativeDirectoryCheck`](/versions/latest/config/package-json/#reactnativedirectorycheck) and [`appConfigFieldsNotSyncedCheck`](/versions/latest/config/package-json/#appconfigfieldsnotsynced) for more details.
+By default, Expo Doctor validates your project's packages against the [React Native directory](https://reactnative.directory/) and checks if app config properties are properly synced when native directories exist. You can configure these checks in your project's **package.json** file. See [`reactNativeDirectoryCheck`](/versions/latest/config/package-json/#reactnativedirectorycheck) and [`appConfigFieldsNotSyncedCheck`](/versions/latest/config/package-json/#appconfigfieldsnotsyncedcheck) for more details.
 
 You can also use `npx expo-doctor --help` to display usage information.
 
@@ -67,11 +81,11 @@ You can also use `npx expo-doctor --help` to display usage information.
 
 Orbit is a macOS, Windows, and Linux app that enables:
 
-- Install and launch builds from EAS on physical devices and emulators.
-- Install and launch updates from EAS on Android Emulators or iOS Simulators.
+- Install and launch builds from Expo Build on physical devices and emulators.
+- Install and launch updates from Expo Update on Android Emulators or iOS Simulators.
 - Launch snack projects on Android Emulators or iOS Simulators.
 - Use local files to install and launch apps. Orbit supports any Android **.apk**, iOS Simulator compatible **.app**, or ad hoc signed apps.
-- See a list of pinned projects from your EAS dashboard.
+- See a list of pinned projects from your Expo dashboard.
 
 <ContentSpotlight file="orbit/basic-features.mp4" />
 
@@ -105,12 +119,12 @@ You can download Orbit for Linux directly from the [GitHub releases](https://git
 
 > **info** Orbit relies on the Android SDK on macOS, Windows, and Linux, and `xcrun` for device management only on macOS, which requires setting up both [Android Studio](/workflow/android-studio-emulator/) and [Xcode](/workflow/ios-simulator/).
 
-{/* TODO: (@aman) to add update https://docs.expo.dev/build/orbit/ with instructions on how to actually use Expo Orbit with EAS Build, add link to https://docs.expo.dev/review/with-orbit/ to add the following section */}
+{/* TODO: (@aman) to add update https://docs.expo.dev/build/orbit/ with instructions on how to actually use Expo Orbit with Expo Build, add link to https://docs.expo.dev/review/with-orbit/ to add the following section */}
 {/* ### Usage */}
 
 ## Expo Tools for VS Code
 
-Expo Tools is a VS Code extension to improve your development experience when working with app config files. It provides features such as autocomplete and intellisense for files such as app config, EAS config, store config and Expo Module config files.
+Expo Tools is a VS Code extension to improve your development experience when working with app config files. It provides features such as autocomplete and intellisense for files such as app config, **eas.json**, store config and Expo Module config files.
 
 <BoxLink
   title="Install Expo Tools VS Code extension"
@@ -142,15 +156,56 @@ For more information on how to use it:
 
 > **Note:** Expo Go is limited and not useful for building production-grade projects. Use [development builds](/get-started/set-up-your-environment/?mode=development-build) instead.
 
+#### `expo-go` CLI
+
+The [`expo-go` CLI](https://www.npmjs.com/package/expo-go) is a standalone tool that downloads an Expo Go binary for a platform and specific SDK version, or prints its download URL. Pass an SDK version to pin a specific release, or omit it for the latest release, and specify a platform to download the correct binary.
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Download Expo Go for a platform',
+      '$ npx expo-go download android latest',
+      '',
+      '# Print the download URL instead of downloading',
+      '$ npx expo-go url ios latest',
+    ],
+    yarn: [
+      '# Download Expo Go for a platform',
+      '$ yarn dlx expo-go download android latest',
+      '',
+      '# Print the download URL instead of downloading',
+      '$ yarn dlx expo-go url ios latest',
+    ],
+    pnpm: [
+      '# Download Expo Go for a platform',
+      '$ pnpm dlx expo-go download android latest',
+      '',
+      '# Print the download URL instead of downloading',
+      '$ pnpm dlx expo-go url ios latest',
+    ],
+    bun: [
+      '# Download Expo Go for a platform',
+      '$ bunx expo-go download android latest',
+      '',
+      '# Print the download URL instead of downloading',
+      '$ bunx expo-go url ios latest',
+    ],
+  }}
+/>
+
+This command downloads the Expo Go app to the current directory and caches it under **~/.expo**.
+
+> **warning** The `expo-go` CLI works for Android device, Android Emulator, iOS Simulator. Due to Apple's policies, an iPhone device does not support side-loading older app versions in general and the `expo-go` CLI does not support it.
+
 <Collapsible summary="What if I open a project with an unsupported SDK version?">
 
 When running a project that was created for an unsupported SDK version in Expo Go, you'll see the following error:
 
-```sh
+```text
 "Project is incompatible with this version of Expo Go"
 ```
 
-To fix this, upgrading your project to a [supported SDK version](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) is recommended. If you want to learn how to do it, see [Upgrade the project to a new SDK Version](#how-do-i-upgrade-my-project-from).
+The correct fix depends on whether you are using an Android device, a physical iOS device, or a simulator. See [Troubleshoot an Expo Go version mismatch](/troubleshooting/expo-go-version-mismatch/) to install a compatible version or upgrade your project.
 
 </Collapsible>
 
@@ -170,5 +225,5 @@ Any library that is compatible with React Native works in an Expo project when y
   title="Use libraries"
   description="See this guide to learn more about the difference between React Native core libraries, Expo SDK libraries, and third-party libraries. It also explains how to determine third-party library compatibility."
   href="/workflow/using-libraries/"
-  Icon={BookOpen02Icon}
+  Icon={CodeSquare01Icon}
 />

@@ -19,14 +19,29 @@ const SlotNativeView: React.ComponentType<SlotNativeViewProps> = requireNativeVi
  * @platform android
  */
 export type SliderColors = {
+  /** The thumb color when enabled. */
   thumbColor?: ColorValue;
+  /** The active track color when enabled. */
   activeTrackColor?: ColorValue;
+  /** The inactive track color when enabled. */
   inactiveTrackColor?: ColorValue;
+  /** The active tick color when enabled. */
   activeTickColor?: ColorValue;
+  /** The inactive tick color when enabled. */
   inactiveTickColor?: ColorValue;
+  /** The thumb color when disabled. */
+  disabledThumbColor?: ColorValue;
+  /** The active track color when disabled. */
+  disabledActiveTrackColor?: ColorValue;
+  /** The inactive track color when disabled. */
+  disabledInactiveTrackColor?: ColorValue;
+  /** The active tick color when disabled. */
+  disabledActiveTickColor?: ColorValue;
+  /** The inactive tick color when disabled. */
+  disabledInactiveTickColor?: ColorValue;
 };
 
-export type SliderProps = {
+export interface SliderProps {
   /**
    * The current value of the slider.
    * @default 0
@@ -84,7 +99,15 @@ export type SliderProps = {
    * Slot children for custom thumb and track.
    */
   children?: React.ReactNode;
-};
+}
+
+export interface VerticalSliderProps extends SliderProps {
+  /**
+   * Whether the direction of the slider is reversed. By default, values increase from top to bottom.
+   * @default false
+   */
+  reverseDirection?: boolean;
+}
 
 type NativeSliderProps = Omit<SliderProps, 'onValueChange' | 'onValueChangeFinished' | 'children'> &
   ViewEvent<'onValueChange', { value: number }> &
@@ -94,6 +117,10 @@ const SliderNativeView: React.ComponentType<NativeSliderProps> = requireNativeVi
   'ExpoUI',
   'SliderView'
 );
+
+const VerticalSliderNativeView: React.ComponentType<
+  NativeSliderProps & Pick<VerticalSliderProps, 'reverseDirection'>
+> = requireNativeView('ExpoUI', 'VerticalSliderView');
 
 function transformSliderProps(
   props: Omit<SliderProps, 'children'>
@@ -118,7 +145,7 @@ function transformSliderProps(
 }
 
 /**
- * A custom thumb slot for `Slider`.
+ * A custom thumb slot for `Slider` and `VerticalSlider`.
  * Wrap any content to use as the slider's thumb indicator.
  *
  * @platform android
@@ -128,7 +155,7 @@ function Thumb(props: { children: React.ReactNode }) {
 }
 
 /**
- * A custom track slot for `Slider`.
+ * A custom track slot for `Slider` and `VerticalSlider`.
  * Wrap any content to use as the slider's track.
  *
  * @platform android
@@ -149,5 +176,24 @@ function SliderComponent(props: SliderProps) {
 
 SliderComponent.Thumb = Thumb;
 SliderComponent.Track = Track;
+
+/**
+ * A vertical slider component that wraps Material3's `VerticalSlider`.
+ *
+ * @platform android
+ */
+export function VerticalSlider(props: VerticalSliderProps) {
+  const { children, reverseDirection, ...sliderProps } = props;
+  return (
+    <VerticalSliderNativeView
+      {...transformSliderProps(sliderProps)}
+      reverseDirection={reverseDirection}>
+      {children}
+    </VerticalSliderNativeView>
+  );
+}
+
+VerticalSlider.Thumb = Thumb;
+VerticalSlider.Track = Track;
 
 export { SliderComponent as Slider };

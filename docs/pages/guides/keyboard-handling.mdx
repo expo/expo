@@ -13,7 +13,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-Keyboard handling is crucial for creating an excellent user experience in your Expo app. React Native provides [`Keyboard`](https://reactnative.dev/docs/keyboard) and [`KeyboardAvoidingView`](https://reactnative.dev/docs/keyboardavoidingview), which are commonly used to handle keyboard events. For more complex or custom keyboard interactions, you can consider using [`react-native-keyboard-controller`](https://kirillzyusko.github.io/react-native-keyboard-controller), which is a library that offers advanced keyboard handling capabilities.
+Keyboard handling affects the user experience of your Expo app. React Native provides [`Keyboard`](https://reactnative.dev/docs/keyboard) and [`KeyboardAvoidingView`](https://reactnative.dev/docs/keyboardavoidingview), which are commonly used to handle keyboard events. For more complex or custom keyboard interactions, you can consider using [`react-native-keyboard-controller`](https://kirillzyusko.github.io/react-native-keyboard-controller), which is a library that offers advanced keyboard handling capabilities.
 
 This guide covers common keyboard interactions and how to manage them effectively.
 
@@ -31,35 +31,25 @@ The following sections explain how to handle keyboard interactions with common A
 
 The `KeyboardAvoidingView` is a component that automatically adjusts a view's height, position, or bottom padding based on the keyboard height to remain visible while it is displayed.
 
-Android and iOS interact with the `behavior` property differently. On iOS, `padding` is usually what works best, and for Android, just having the `KeyboardAvoidingView` prevents covering the input. This is why the following example uses `undefined` for Android. Playing around with the `behavior` is a good practice since a different option could work best for your app.
+Set a `behavior` on both platforms. On Android, Expo apps are edge-to-edge, so the window no longer resizes for the keyboard. A view without a `behavior` stays under the keyboard. On iOS, the keyboard covers the app. `padding` usually works best. If the view is under a navigation header, pass `useHeaderHeight()` from `expo-router/react-navigation` as `keyboardVerticalOffset`. The value includes the status bar height.
 
 ```tsx home-screen.tsx
 import { KeyboardAvoidingView, TextInput } from 'react-native';
 
 export default function HomeScreen() {
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
+    <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
       <TextInput placeholder="Type here..." />
-    </KeyboardAvoidingView>;
+    </KeyboardAvoidingView>
   );
 }
 ```
 
-In the above example, the height of the `KeyboardAvoidingView` automatically adjusts based on the device's keyboard height, which ensures that the input is always visible.
+In the above example, the `KeyboardAvoidingView` adds bottom padding equal to the keyboard height, which keeps the input visible.
 
-When using a Bottom Tab navigator on Android, you might notice that focusing on an input field causes the bottom tabs to be pushed above the keyboard. To address this issue, add the `softwareKeyboardLayoutMode` property to your Android configuration in [app config](/workflow/configuration/) and set it to `pan`.
+On Android, do not set `softwareKeyboardLayoutMode` to `pan` with `behavior="padding"`. The window pans and the view adds padding, so the input moves up twice.
 
-```json app.json
-"expo" {
-  "android": {
-    "softwareKeyboardLayoutMode": "pan"
-  }
-}
-```
-
-After adding this property, restart the development server and reload your app to apply the changes.
-
-It's also possible to hide the bottom tab when the keyboard opens using [`tabBarHideOnKeyboard`](https://reactnavigation.org/docs/bottom-tab-navigator/#tabbarhideonkeyboard). It is an option with the Bottom Tab Navigator. If set to `true`, it will hide the bar when the keyboard opens.
+To hide the bottom tab bar while the keyboard is open, set the Bottom Tab Navigator's [`tabBarHideOnKeyboard`](https://reactnavigation.org/docs/bottom-tab-navigator/#tabbarhideonkeyboard) option to `true`.
 
 ```tsx src/app/_layout.tsx
 import { Tabs } from 'expo-router';
@@ -125,7 +115,8 @@ For more complex keyboard interactions, such as larger scrollable entry forms wi
 <Prerequisites>
   <Requirement title="A development build">
     The Keyboard Controller library is not included in Expo Go. See [Create a development
-    build](/develop/development-builds/create-a-build/) for more information.
+    build](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build)
+    for more information.
   </Requirement>
   <Requirement
     title={

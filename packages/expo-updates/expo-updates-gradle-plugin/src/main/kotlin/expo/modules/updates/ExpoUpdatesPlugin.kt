@@ -45,6 +45,10 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
         it.nodeExecutableAndArgs.set(reactExtension.nodeExecutableAndArgs.get())
         it.debuggableVariant.set(isDebuggableVariant)
         it.entryFile.set(entryFile.toPath().toString())
+        val bundleTaskName = "createBundle${targetName}JsAndAssets"
+        if (bundleTaskName in project.tasks.names) it.inputs.files(project.tasks.named(bundleTaskName))
+        // The fingerprint depends on native files, patches, and config that are not inputs of this task.
+        it.outputs.upToDateWhen { false }
       }
       variant.sources.assets?.addGeneratedSourceDirectory(createUpdatesResourcesTask, CreateUpdatesResourcesTask::assetDir)
     }
@@ -83,6 +87,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
           add(assetDir.get().toString())
           add(if (debuggableVariant.get()) "only-fingerprint" else "all")
           add(entryFile.get())
+          add(if (debuggableVariant.get()) "development" else "production")
         }
 
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {

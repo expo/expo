@@ -1,7 +1,3 @@
-/* eslint-env browser */
-import * as CapabilityUtils from './WebCapabilityUtils';
-import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './WebConstants';
-import { requestUserMediaAsync } from './WebUserMediaManager';
 import type {
   CameraType,
   CameraCapturedPicture,
@@ -10,6 +6,10 @@ import type {
   WebCameraSettings,
   CameraPictureOptions,
 } from '../Camera.types';
+/* eslint-env browser */
+import * as CapabilityUtils from './WebCapabilityUtils';
+import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './WebConstants';
+import { requestUserMediaAsync } from './WebUserMediaManager';
 
 interface ConstrainLongRange {
   max?: number;
@@ -60,6 +60,15 @@ function ensureCameraPictureOptions(config: CameraPictureOptions): CameraPicture
 }
 
 const DEFAULT_QUALITY = 0.92;
+
+/**
+ * Whether the video has a decoded frame that can be drawn to a canvas.
+ * Live streams may never reach `HAVE_ENOUGH_DATA` in some browsers (WebKit stays at `HAVE_FUTURE_DATA`),
+ * so a current frame with known dimensions is all that is required to capture a picture.
+ */
+export function isVideoReadyForCapture(video: HTMLVideoElement): boolean {
+  return video.readyState >= video.HAVE_CURRENT_DATA && video.videoWidth > 0;
+}
 
 export function captureImageContext(
   video: HTMLVideoElement,

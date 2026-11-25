@@ -14,7 +14,6 @@ export interface ExpoProcessEnv {
   EXPO_DEV_SERVER_ORIGIN?: string;
 
   EXPO_ROUTER_IMPORT_MODE?: string;
-  EXPO_ROUTER_ABS_APP_ROOT?: string;
   EXPO_ROUTER_APP_ROOT?: string;
 
   /** Maps to the `experiments.baseUrl` property in the project Expo config. This is injected by `babel-preset-expo` and supports automatic cache invalidation. */
@@ -41,6 +40,14 @@ export interface ExpoProcess {
 declare namespace ExpoGlobal {
   /** Host object that is used to access native Expo modules. */
   export let modules: Record<string, any>;
+
+  /**
+   * Host object that is used to access the native modules and shared object classes of each npm package,
+   * for example `expo.packages['expo-audio'].AudioPlayer`. It has the modules declared with the Expo Modules API 2.0
+   * macros (`@ExpoModule`).
+   * @platform ios
+   */
+  export let packages: Record<string, any>;
 
   // Natively defined JS classes
   export { EventEmitter };
@@ -78,6 +85,11 @@ declare namespace ExpoGlobal {
    */
   export const documentsDir: undefined | string;
 
+  /**
+   * Whether the app is running on a Meta Quest device. Always `false` on iOS and web.
+   */
+  export const isRunningOnQuest: boolean;
+
   // Utils
 
   /**
@@ -102,10 +114,11 @@ declare namespace ExpoGlobal {
   export function reloadAppAsync(reason: string): Promise<void>;
 
   /**
-   * Installs Expo Modules inside the Reanimated UI worklet runtime.
-   * @platform android
+   * Installs Expo Modules inside the worklets UI runtime.
+   * @param uiRuntimeHolder The UI runtime holder from `getUIRuntimeHolder()` in
+   * `react-native-worklets`.
    */
-  export function installOnUIRuntime(): void;
+  export function installOnUIRuntime(uiRuntimeHolder: object): void;
 }
 
 /* eslint-disable no-var */

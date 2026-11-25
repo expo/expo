@@ -32,6 +32,8 @@ class NativeDatabase {
   }
 
   async closeAsync(): Promise<void> {}
+  interruptSync(): void {}
+
   closeSync(): void {}
 
   async execAsync(source: string): Promise<void> {}
@@ -134,13 +136,22 @@ export class NativeSession {
     return new Uint8Array().buffer;
   }
 
-  async applyChangesetAsync(database: NativeDatabase, changeset: Changeset | NativeChangeset): Promise<void> {}
+  async applyChangesetAsync(
+    database: NativeDatabase,
+    changeset: Changeset | NativeChangeset
+  ): Promise<void> {}
   applyChangesetSync(database: NativeDatabase, changeset: Changeset | NativeChangeset): void {}
 
-  async invertChangesetAsync(database: NativeDatabase, changeset: Changeset | NativeChangeset): Promise<NativeChangeset> {
+  async invertChangesetAsync(
+    database: NativeDatabase,
+    changeset: Changeset | NativeChangeset
+  ): Promise<NativeChangeset> {
     return new Uint8Array().buffer;
   }
-  invertChangesetSync(database: NativeDatabase, changeset: Changeset | NativeChangeset): NativeChangeset {
+  invertChangesetSync(
+    database: NativeDatabase,
+    changeset: Changeset | NativeChangeset
+  ): NativeChangeset {
     return new Uint8Array().buffer;
   }
 }

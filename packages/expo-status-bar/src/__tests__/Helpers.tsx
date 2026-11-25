@@ -2,7 +2,12 @@ import { render } from '@testing-library/react-native';
 import type { ColorSchemeName } from 'react-native';
 import * as ReactNative from 'react-native';
 
-export function mockProperty(obj, propertyName, mock, fn: any) {
+export function mockProperty<T, K extends keyof T>(
+  obj: T,
+  propertyName: K,
+  mock: T[K],
+  fn: () => void
+) {
   const originalValue = obj[propertyName];
   obj[propertyName] = mock;
   try {
@@ -12,21 +17,28 @@ export function mockProperty(obj, propertyName, mock, fn: any) {
   }
 }
 
-export function mockAppearance(colorScheme: ColorSchemeName, fn: any) {
+export async function mockAppearance(colorScheme: ColorSchemeName, fn: () => Promise<void>) {
   const mockUseColorScheme = jest
     .spyOn(ReactNative, 'useColorScheme')
     .mockImplementationOnce(() => colorScheme);
   try {
-    fn();
+    await fn();
   } finally {
+    mockUseColorScheme.mockRestore();
   }
-  mockUseColorScheme.mockRestore();
 }
 
-export function renderedPropValue(element: any, prop: string) {
-  const result = render(element);
-  // @ts-ignore: brentvatne: I'm not sure how else to read the props off of a
-  // component that renders null in testing-library, so I'm using this fairly
-  // brittle internal API.
-  return result.UNSAFE_root._fiber.return.child.child.pendingProps[prop];
+export async function renderedPropValue(element: React.ReactElement, prop: string) {
+  const result = await render(element);
+  return result.root?.props[prop];
+}
+
+export function mockNativeStatusBar() {
+  jest.mock('react-native/Libraries/Components/StatusBar/StatusBar', () => {
+    const React = require('react') as typeof import('react');
+    return {
+      __esModule: true,
+      default: (props: Record<string, unknown>) => React.createElement('StatusBar', props),
+    };
+  });
 }

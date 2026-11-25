@@ -1,59 +1,58 @@
 {
   "name": "expo-notifications",
-  "version": "56.0.14",
+  "version": "58.1.6",
   "description": "Provides an API to fetch push notification tokens and to present, schedule, receive, and respond to notifications.",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "sideEffects": [
-    "./build/DevicePushTokenAutoRegistration.fx.js"
-  ],
-  "scripts": {
-    "build": "expo-module build",
-    "build:plugin": "expo-module build plugin",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
   "keywords": [
-    "react-native",
     "expo",
-    "notifications",
     "expo-notifications",
-    "push-nofifications"
+    "notifications",
+    "push-nofifications",
+    "react-native"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/notifications/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-notifications"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/notifications/",
-  "jest": {
-    "projects": [
-      {
-        "preset": "jest-expo/ios"
-      }
-    ]
+  "sideEffects": [
+    "./build/DevicePushTokenAutoRegistration.fx.js"
+  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json",
+    "prepack": "expo-module prepack"
   },
   "dependencies": {
-    "@expo/image-utils": "workspace:^0.10.1",
+    "@expo/image-utils": "workspace:^",
     "abort-controller": "^3.0.0",
     "badgin": "^1.1.5",
-    "expo-application": "workspace:~56.0.3",
-    "expo-constants": "workspace:~56.0.16"
+    "expo-application": "workspace:~",
+    "expo-constants": "workspace:~"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*",
-    "memfs": "^3.2.0"
+    "memfs": "^3.6.0"
   },
   "peerDependencies": {
     "expo": "*",

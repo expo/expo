@@ -5,8 +5,11 @@ import * as Log from '../../log';
 import { link } from '../../utils/link';
 import { ora } from '../../utils/ora';
 import { promptAsync } from '../../utils/prompts';
-import type { DevToolsPlugin } from '../server/DevToolsPlugin';
-import type { DevToolsPluginCommand, DevToolsPluginOutput } from '../server/DevToolsPlugin.schema';
+import type { DevToolsPlugin } from '../server/devtools/DevToolsPlugin';
+import type {
+  DevToolsPluginCommand,
+  DevToolsPluginOutput,
+} from '../server/devtools/DevToolsPlugin.schema';
 
 /**
  * Handles the CLI extension menu item selection and execution of the plugin command for use
@@ -80,7 +83,7 @@ export const cliExtensionMenuItemHandler = async (
       onOutput: (output) => handleOutput(output, spinner),
     });
 
-    // Format with warning or success depending on wether the client reported any errors
+    // Format with warning or success depending on whether the client reported any errors
     formatResults(command.title, results, spinner);
   } catch (error: any) {
     spinner.fail(`Failed to execute command "${command.title}".\n${error.toString().trim()}`);

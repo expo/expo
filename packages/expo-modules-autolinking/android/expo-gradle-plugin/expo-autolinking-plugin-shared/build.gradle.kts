@@ -1,9 +1,10 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   kotlin("jvm")
-  kotlin("plugin.serialization") version "1.9.24"
+  kotlin("plugin.serialization") version "2.3.21"
 }
 
 repositories {
@@ -23,8 +24,8 @@ java {
 }
 
 tasks.withType<KotlinCompile> {
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_11.toString()
+  compilerOptions {
+    jvmTarget.set(JvmTarget.JVM_11)
   }
 }
 

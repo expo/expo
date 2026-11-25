@@ -110,7 +110,7 @@ function wrapCallSite(site: NodeJS.CallSite, state: WalkState): string {
     return String(site);
   }
 
-  const sm = nodeModule.findSourceMap(scriptName);
+  const sm = findSourceMap(scriptName);
   if (!sm) {
     state.curPosition = null;
     return String(site);
@@ -152,6 +152,17 @@ function wrapCallSite(site: NodeJS.CallSite, state: WalkState): string {
   wrapped.getColumnNumber = () => position.column;
   wrapped.getScriptNameOrSourceURL = () => position.source;
   return String(wrapped);
+}
+
+function findSourceMap(scriptName: string): nodeModule.SourceMap | undefined {
+  try {
+    return nodeModule.findSourceMap(scriptName);
+  } catch {
+    // Before v22.14.0 and v23.6.0, Node throws here for a module whose source map it failed
+    // to load, such as an index map (with `sections`). Throwing from `prepareStackTrace`
+    // replaces the error being formatted, so fall back to the unmapped frame instead.
+    return undefined;
+  }
 }
 
 function maybeFileURLToPath(maybeFileURL: string): string {

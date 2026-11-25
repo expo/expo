@@ -23,6 +23,7 @@ private func sanitizeUrlString(_ urlString: String) -> String? {
 }
 
 private let urlInputAnimation = Animation.easeInOut(duration: 0.3)
+private let keyboardShortcuts = ["http://", "https://", "127.0.0.1", ":", "/"]
 
 struct DevServersView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
@@ -49,29 +50,35 @@ struct DevServersView: View {
 
       LazyVStack(alignment: .leading, spacing: 6) {
         if viewModel.devServers.isEmpty {
-          Text("No development servers found")
-            .foregroundColor(.primary)
-            .multilineTextAlignment(.leading)
+          // Nothing left to search for when discovery found servers and the filters hid them all.
+          if viewModel.hiddenDevServerCount == 0 && viewModel.permissionStatus != .denied {
+            HStack {
+              Text("Searching for development servers...")
+                .foregroundStyle(Color.secondary)
+              Spacer()
+              ProgressView()
+                .controlSize(.small)
+            }
             .padding()
-          Divider()
+            Divider()
+          }
         } else {
-          ForEach(viewModel.devServers, id: \.self) { server in
+          ForEach(viewModel.devServers, id: \.url) { server in
             DevServerRow(server: server) {
               viewModel.openApp(url: server.url)
             }
           }
         }
+
+        if viewModel.hiddenDevServerCount > 0 {
+          HiddenDevServersNotice(count: viewModel.hiddenDevServerCount)
+        }
+
         if viewModel.hasEmbeddedBundle {
           embeddedBundleRow
         }
         enterUrl
       }
-    }
-    .onAppear {
-      viewModel.startServerDiscovery()
-    }
-    .onDisappear {
-      viewModel.stopServerDiscovery()
     }
   }
 
@@ -93,25 +100,49 @@ struct DevServersView: View {
             .font(.system(size: 14))
             #endif
           Spacer()
-          if viewModel.isLoadingServer && viewModel.devServers.isEmpty {
+          if viewModel.loadingServerURL != nil && viewModel.devServers.isEmpty {
             ProgressView()
           }
         }
       }
 
       if showingURLInput {
-        TextField("exp://", text: $urlText)
+        TextField("http://", text: $urlText)
           .onSubmit {
             connectToURL()
           }
           .submitLabel(.go)
         #if !os(macOS)
-          .autocapitalization(.none)
+          .keyboardType(.URL)
+          .textInputAutocapitalization(.never)
         #endif
-          .disableAutocorrection(true)
+          .autocorrectionDisabled()
+          .toolbar {
+            #if os(tvOS)
+            ToolbarItemGroup(placement: .automatic) {
+              ForEach(keyboardShortcuts, id: \.self) { shortcut in
+                Button {
+                  urlText += shortcut
+                } label: {
+                  Text(shortcut)
+                }
+              }
+            }
+            #else
+            ToolbarItemGroup(placement: .keyboard) {
+              ForEach(keyboardShortcuts, id: \.self) { shortcut in
+                Button {
+                  urlText += shortcut
+                } label: {
+                  Text(shortcut)
+                }
+              }
+            }
+            #endif
+          }
           .padding(.horizontal, 16)
           .padding(.vertical, 12)
-          .foregroundColor(.primary)
+          .foregroundStyle(Color.primary)
         #if !os(tvOS)
           .overlay(
             RoundedRectangle(cornerRadius: 5)
@@ -137,18 +168,22 @@ struct DevServersView: View {
     } label: {
       HStack {
         Image(systemName: "doc.fill")
-          .foregroundColor(.blue)
+          .foregroundStyle(Color.blue)
           .frame(width: 12)
         Text("Load embedded bundle")
-          .foregroundColor(.primary)
+          .foregroundStyle(Color.primary)
         Spacer()
-        if viewModel.isLoadingLocalBundle {
-          ProgressView()
-        } else {
-          Image(systemName: "chevron.right")
-            .font(.caption)
-            .foregroundColor(.secondary)
+        Group {
+          if viewModel.isLoadingLocalBundle {
+            ProgressView()
+              .controlSize(.small)
+          } else {
+            Image(systemName: "chevron.right")
+              .font(.caption)
+              .foregroundStyle(Color.secondary)
+          }
         }
+        .frame(width: 20, height: 20)
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)
@@ -161,7 +196,7 @@ struct DevServersView: View {
     HStack {
       Text("development servers".uppercased())
         .font(.caption)
-        .foregroundColor(.primary.opacity(0.6))
+        .foregroundStyle(Color.primary.opacity(0.6))
 
       Spacer()
 
@@ -170,7 +205,7 @@ struct DevServersView: View {
       } label: {
         Text("info".uppercased())
           #if os(tvOS)
-          .foregroundColor(.primary)
+          .foregroundStyle(Color.primary)
           .font(.system(size: 24))
           #else
           .font(.system(size: 12))
@@ -186,14 +221,36 @@ struct DevServersView: View {
     } label: {
       Text("Connect")
         .font(.headline)
-        .foregroundColor(.white)
+        .foregroundStyle(Color.expoSystemBackground)
         .frame(maxWidth: .infinity)
         .padding()
-        .background(urlText.isEmpty ? Color.gray : Color.black)
+        .background(urlText.isEmpty ? Color.gray : Color.primary)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     .disabled(urlText.isEmpty)
     .buttonStyle(.plain)
+  }
+}
+
+struct HiddenDevServersNotice: View {
+  let count: Int
+
+  private var message: String {
+    let servers = count == 1 ? "1 server" : "\(count) servers"
+    return "\(servers) hidden by your discovery filters. Change them in Settings."
+  }
+
+  var body: some View {
+    HStack(spacing: 6) {
+      Image(systemName: "line.3.horizontal.decrease.circle")
+        .foregroundStyle(Color.secondary)
+      Text(message)
+        .font(.system(size: 13))
+        .foregroundStyle(Color.secondary)
+      Spacer()
+    }
+    .padding(.horizontal)
+    .padding(.vertical, 8)
   }
 }
 
@@ -214,30 +271,34 @@ struct DevServerRow: View {
 
         if server.description == server.url {
           Text(server.description)
-            .foregroundColor(.primary)
+            .foregroundStyle(Color.primary)
             .lineLimit(1)
         } else {
           VStack(alignment: .leading) {
             Text(server.description)
               .font(.headline)
-              .foregroundColor(.primary)
+              .foregroundStyle(Color.primary)
               .lineLimit(1)
             Text(server.url)
               .font(.caption)
-              .foregroundColor(.secondary)
+              .foregroundStyle(Color.secondary)
               .lineLimit(1)
           }
         }
 
         Spacer()
 
-        if viewModel.isLoadingServer {
-          ProgressView()
-        } else {
-          Image(systemName: "chevron.right")
-            .font(.caption)
-            .foregroundColor(.secondary)
+        Group {
+          if viewModel.loadingServerURL == server.url {
+            ProgressView()
+              .controlSize(.small)
+          } else {
+            Image(systemName: "chevron.right")
+              .font(.caption)
+              .foregroundStyle(Color.secondary)
+          }
         }
+        .frame(width: 20, height: 20)
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)

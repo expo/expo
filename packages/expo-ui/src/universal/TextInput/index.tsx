@@ -2,8 +2,8 @@ import { useImperativeHandle, useRef, useState } from 'react';
 import { TextInput as RNTextInput, StyleSheet } from 'react-native';
 
 import { useNativeState } from '../State';
-import type { TextInputProps } from './types';
 import { colors, durations, easings, shadows } from '../webUtils';
+import type { TextInputProps } from './types';
 
 const styles = StyleSheet.create({
   input: {
@@ -41,6 +41,7 @@ export function TextInput({
   value,
   onChangeText,
   placeholder,
+  accessibilityLabel,
   autoFocus,
   editable,
   multiline,
@@ -107,6 +108,7 @@ export function TextInput({
       ref={innerRef}
       value={state.value}
       placeholder={placeholder}
+      accessibilityLabel={accessibilityLabel}
       placeholderTextColor={placeholderTextColor ?? colors.gray[500]}
       autoFocus={autoFocus}
       editable={editable}

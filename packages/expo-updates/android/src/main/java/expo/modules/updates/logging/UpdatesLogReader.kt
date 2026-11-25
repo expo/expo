@@ -28,6 +28,13 @@ class UpdatesLogReader(
   }
 
   /**
+   * Remove every expo-updates log entry
+   */
+  fun clearLogEntries(completionHandler: (_: Exception?) -> Unit) {
+    persistentLog.purgeEntriesNotMatchingFilter({ false }, completionHandler)
+  }
+
+  /**
    * Get expo-updates logs newer than the given date
    * Returns a list of strings in the JSON format of UpdatesLogEntry
    */
@@ -54,6 +61,6 @@ class UpdatesLogReader(
   }
 
   companion object {
-    private const val ONE_DAY_MILLISECONDS = 86400
+    private const val ONE_DAY_MILLISECONDS = 86_400_000L
   }
 }

@@ -2,6 +2,7 @@ import Checkbox from 'expo-checkbox';
 import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 
+import { BodyText } from '../BodyText';
 import EnumButton from './EnumButton';
 import Platforms from './Platforms';
 import {
@@ -15,7 +16,6 @@ import {
   StringParameter,
 } from './index.types';
 import { isCurrentPlatformSupported } from './utils';
-import { BodyText } from '../BodyText';
 
 type Props = {
   name: ArgumentName;

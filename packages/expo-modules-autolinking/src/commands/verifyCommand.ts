@@ -3,8 +3,6 @@ import type commander from 'commander';
 import fs from 'fs';
 import path from 'path';
 
-import type { AutolinkingCommonArguments } from './autolinkingOptions';
-import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
 import {
   type BaseDependencyResolution,
   type DependencyResolution,
@@ -14,6 +12,8 @@ import {
   mergeResolutionResults,
   scanDependencyResolutionsForPlatform,
 } from '../dependencies';
+import type { AutolinkingCommonArguments } from './autolinkingOptions';
+import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
 
 // NOTE(@kitten): These are excluded explicitly, but we want to include them for the verify command explicitly
 const INCLUDE_PACKAGES = ['react-native', 'react-native-tvos'];

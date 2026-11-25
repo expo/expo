@@ -63,7 +63,14 @@ Different minifiers have tradeoffs between speed and compression. You can custom
 
 To install Terser in a project, run the command:
 
-<Terminal cmd={['$ yarn add --dev metro-minify-terser']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --save-dev metro-minify-terser'],
+    yarn: ['$ yarn add --dev metro-minify-terser'],
+    pnpm: ['$ pnpm add --save-dev metro-minify-terser'],
+    bun: ['$ bun add --dev metro-minify-terser'],
+  }}
+/>
 
 </Step>
 
@@ -129,7 +136,14 @@ You can use [`uglify-es`](https://github.com/mishoo/UglifyJS) by following the s
 
 To install Uglify in a project, run the command:
 
-<Terminal cmd={['$ yarn add --dev metro-minify-uglify']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --save-dev metro-minify-uglify'],
+    yarn: ['$ yarn add --dev metro-minify-uglify'],
+    pnpm: ['$ pnpm add --save-dev metro-minify-uglify'],
+    bun: ['$ bun add --dev metro-minify-uglify'],
+  }}
+/>
 
 > Make sure the version of `metro-minify-uglify` matches the version of `metro` in your project.
 

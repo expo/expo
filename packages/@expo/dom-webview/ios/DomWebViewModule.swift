@@ -44,6 +44,10 @@ public final class DomWebViewModule: Module {
         view.useExpoModulesBridge = enabled
       }
 
+      Prop("hideKeyboardAccessoryView") { (view: DomWebView, hidden: Bool) in
+        view.hideKeyboardAccessoryView = hidden
+      }
+
       // MARK: - WKWebViewConfiguration props (init-only)
 
       Prop("allowsInlineMediaPlayback") { (view: DomWebView, enabled: Bool) in

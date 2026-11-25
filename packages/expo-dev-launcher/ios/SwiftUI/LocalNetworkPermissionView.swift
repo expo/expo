@@ -11,6 +11,9 @@ struct LocalNetworkPermissionView: View {
   @State private var showNoAccessMessage = false
   @State private var showTryAgainFailedAlert = false
   @State private var showAlreadyGrantedAlert = false
+  @State private var showMisconfiguredAlert = false
+  @State private var showCouldNotVerifyAlert = false
+  @State private var couldNotVerifyMessage = ""
 
   private var isDenied: Bool {
     viewModel.permissionStatus == .denied
@@ -34,7 +37,7 @@ struct LocalNetworkPermissionView: View {
 
         Text("Expo Dev Launcher needs to access your local network to discover development servers running on your computer.")
           .font(.body)
-          .foregroundColor(.secondary)
+          .foregroundStyle(Color.secondary)
           .multilineTextAlignment(.center)
           .fixedSize(horizontal: false, vertical: true)
 
@@ -73,6 +76,16 @@ struct LocalNetworkPermissionView: View {
       Text("Local network access is already enabled. You're all set!")
         .multilineTextAlignment(.center)
     }
+    .alert("Dev Server Discovery Isn't Set Up", isPresented: $showMisconfiguredAlert) {
+      Button("OK", role: .cancel) {}
+    } message: {
+      Text("iOS is blocking discovery because this build's Info.plist is missing the \"_expo._tcp\" Bonjour entry. This is separate from the Local Network permission. Make sure the expo-dev-client config plugin is applied, then re-run \"npx expo prebuild --clean\" and rebuild.")
+    }
+    .alert("Couldn't Verify Access", isPresented: $showCouldNotVerifyAlert) {
+      Button("OK", role: .cancel) {}
+    } message: {
+      Text(couldNotVerifyMessage)
+    }
   }
 
   private var continueButton: some View {
@@ -87,12 +100,12 @@ struct LocalNetworkPermissionView: View {
           .padding()
       }
       .background(Color.accentColor)
-      .foregroundColor(.white)
-      .cornerRadius(12)
+      .foregroundStyle(Color.white)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
 
       Text("When the system prompt pops up, tap \"Allow\" to continue.")
         .font(.footnote)
-        .foregroundColor(.secondary)
+        .foregroundStyle(Color.secondary)
         .multilineTextAlignment(.center)
         .fixedSize(horizontal: false, vertical: true)
     }
@@ -109,16 +122,11 @@ struct LocalNetworkPermissionView: View {
           .padding()
       }
       .background(Color.accentColor)
-      .foregroundColor(.white)
-      .cornerRadius(12)
+      .foregroundStyle(Color.white)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
 
-      checkAccessButton(label: "I was not prompted") { hasAccess in
-        if hasAccess {
-          showAlreadyGrantedAlert = true
-        } else {
-          showNoAccessMessage = true
-          showTryAgainFailedAlert = true
-        }
+      checkAccessButton(label: "I was not prompted") { verdict in
+        handleCheckVerdict(verdict, onGranted: { showAlreadyGrantedAlert = true })
       }
     }
   }
@@ -127,7 +135,7 @@ struct LocalNetworkPermissionView: View {
     Group {
       Text("Local network permission was not granted. Enable it in Settings \u{2192} Privacy & Security \u{2192} Local Network.")
         .font(.footnote)
-        .foregroundColor(.secondary)
+        .foregroundStyle(Color.secondary)
         .multilineTextAlignment(.center)
         .fixedSize(horizontal: false, vertical: true)
 
@@ -144,16 +152,14 @@ struct LocalNetworkPermissionView: View {
           .padding()
       }
       .background(Color.expoSecondarySystemBackground)
-      .foregroundColor(.primary)
-      .cornerRadius(12)
+      .foregroundStyle(Color.primary)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
 
-      checkAccessButton(label: "Try Again") { hasAccess in
-        if hasAccess {
+      checkAccessButton(label: "Try Again") { verdict in
+        handleCheckVerdict(verdict, onGranted: {
           viewModel.startServerDiscovery()
           onContinue()
-        } else {
-          showTryAgainFailedAlert = true
-        }
+        })
       }
 
       Button {
@@ -165,19 +171,39 @@ struct LocalNetworkPermissionView: View {
           .padding()
       }
       .background(Color.expoSecondarySystemBackground)
-      .foregroundColor(.secondary)
-      .cornerRadius(12)
+      .foregroundStyle(Color.secondary)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
     }
   }
 
-  private func checkAccessButton(label: String, onResult: @escaping (Bool) -> Void) -> some View {
+  private func handleCheckVerdict(_ verdict: LocalNetworkVerdict, onGranted: @escaping () -> Void) {
+    switch verdict {
+    case .granted:
+      onGranted()
+    case .denied:
+      showNoAccessMessage = true
+      showTryAgainFailedAlert = true
+    case .misconfigured:
+      showMisconfiguredAlert = true
+    case .undetermined:
+      Task {
+        let hasNetwork = await viewModel.hasSatisfiedNetworkPath()
+        couldNotVerifyMessage = hasNetwork
+          ? "Couldn't verify local network access. If the system prompt didn't appear, make sure a dev server is running and try again. You can also check Settings \u{2192} Privacy & Security \u{2192} Local Network."
+          : "No network connection. Connect to Wi-Fi and try again to discover development servers running on your computer."
+        showCouldNotVerifyAlert = true
+      }
+    }
+  }
+
+  private func checkAccessButton(label: String, onResult: @escaping (LocalNetworkVerdict) -> Void) -> some View {
     Button {
       isCheckingAccess = true
       viewModel.stopServerDiscovery()
       Task {
-        let hasAccess = await viewModel.checkLocalNetworkAccess()
+        let verdict = await viewModel.checkLocalNetworkAccess()
         isCheckingAccess = false
-        onResult(hasAccess)
+        onResult(verdict)
       }
     } label: {
       if isCheckingAccess {
@@ -193,8 +219,8 @@ struct LocalNetworkPermissionView: View {
     }
     .disabled(isCheckingAccess)
     .background(Color.expoSecondarySystemBackground)
-    .foregroundColor(.secondary)
-    .cornerRadius(12)
+    .foregroundStyle(Color.secondary)
+    .clipShape(RoundedRectangle(cornerRadius: 12))
   }
 }
 

@@ -43,7 +43,7 @@ describe('e2e: Android locales', () => {
             app_name: 'us-name',
           },
         }),
-        // backwards compatiblity test
+        // backwards compatibility test
         'lang/en.json': JSON.stringify({
           CFBundleDisplayName: 'us-name',
           app_name: 'us-name',
@@ -52,13 +52,13 @@ describe('e2e: Android locales', () => {
       projectRoot
     );
     const mockXML = {
-      writeXMLAsync: ({ path, xml }) => {
+      writeXMLAsync: ({ path, xml }: { path: string; xml: any }) => {
         vol.mkdirSync(nodePath.dirname(path), { recursive: true });
         vol.writeFileSync(path, jest.requireActual('../../utils/XML').format(xml));
       },
     };
     const mockJSONFile = {
-      readAsync: (path) => JSON.parse(vol.readFileSync(path).toString()),
+      readAsync: (path: string) => JSON.parse(vol.readFileSync(path).toString()),
     };
     jest.mock('../../utils/XML', () => mockXML);
     jest.mock('@expo/json-file', () => mockJSONFile);
@@ -79,6 +79,8 @@ describe('e2e: Android locales', () => {
           xx: 'lang/xx.json',
           // partially support inlining the JSON so our Expo Config type doesn't conflict with the resolved manifest type.
           es: { CFBundleDisplayName: 'spanish-name' },
+          he: { app_name: 'hebrew-name' },
+          'id-ID': { app_name: 'indonesian-name' },
         },
       },
       { projectRoot }
@@ -87,21 +89,37 @@ describe('e2e: Android locales', () => {
     expect(vol.readFileSync('/app/android/app/src/main/res/values-b+es/strings.xml').toString())
       .toMatchInlineSnapshot(`
       "<resources>
-        <string name="CFBundleDisplayName">"spanish-name"</string>
+        <string name="CFBundleDisplayName">spanish-name</string>
       </resources>"
     `);
     // backwards compatibility
     expect(vol.readFileSync('/app/android/app/src/main/res/values-b+en/strings.xml').toString())
       .toMatchInlineSnapshot(`
       "<resources>
-        <string name="CFBundleDisplayName">"us-name"</string>
-        <string name="app_name">"us-name"</string>
+        <string name="CFBundleDisplayName">us-name</string>
+        <string name="app_name">us-name</string>
       </resources>"
     `);
     expect(vol.readFileSync('/app/android/app/src/main/res/values-b+en+US/strings.xml').toString())
       .toMatchInlineSnapshot(`
       "<resources>
-        <string name="app_name">"us-name"</string>
+        <string name="app_name">us-name</string>
+      </resources>"
+    `);
+
+    // Android resolves these languages under their legacy codes
+    expect(vol.existsSync('/app/android/app/src/main/res/values-b+he')).toBe(false);
+    expect(vol.readFileSync('/app/android/app/src/main/res/values-b+iw/strings.xml').toString())
+      .toMatchInlineSnapshot(`
+      "<resources>
+        <string name="app_name">hebrew-name</string>
+      </resources>"
+    `);
+    expect(vol.existsSync('/app/android/app/src/main/res/values-b+id+ID')).toBe(false);
+    expect(vol.readFileSync('/app/android/app/src/main/res/values-b+in+ID/strings.xml').toString())
+      .toMatchInlineSnapshot(`
+      "<resources>
+        <string name="app_name">indonesian-name</string>
       </resources>"
     `);
 
@@ -109,6 +127,55 @@ describe('e2e: Android locales', () => {
       'android',
       'locales.xx',
       'Failed to parse JSON of locale file for language: xx',
+      'https://docs.expo.dev/guides/localization/#translating-app-metadata'
+    );
+  });
+
+  it.each([
+    ['quotes', 'Say "hi"', 'Say \\"hi\\"'],
+    ['backslash_n', String.raw`Line\nBreak`, String.raw`Line\\nBreak`],
+    ['windows_path', String.raw`C:\users`, String.raw`C:\\users`],
+    ['trailing_backslash', 'Repro\\', 'Repro\\\\'],
+    ['entities', '< & &quot;', '&lt; &amp; &amp;quot;'],
+    ['apostrophe', "l'app @home", String.raw`l\'app \@home`],
+    ['whitespace', '  a  b\\n  ', String.raw`"  a  b\\n  "`],
+    ['carriage_return', 'Line\rBreak', String.raw`Line\u000dBreak`],
+    ['nul', 'Repro\0FR', 'ReproFR'],
+  ])('escapes %s in locale resources', async (name, value, escaped) => {
+    await setLocalesAsync({ locales: { fr: { android: { app_name: value } } } }, { projectRoot });
+
+    expect(
+      vol.readFileSync('/app/android/app/src/main/res/values-b+fr/strings.xml').toString()
+    ).toBe(`<resources>\n  <string name="app_name">${escaped}</string>\n</resources>`);
+  });
+
+  it('skips non-string values instead of writing "[object Object]"', async () => {
+    await setLocalesAsync(
+      {
+        locales: {
+          pt: {
+            app_name: 'pt-name',
+            plugins: { 'expo-camera': { cameraPermission: 'pt-camera-nested' } } as any,
+          },
+        },
+      },
+      { projectRoot }
+    );
+
+    const strings = vol
+      .readFileSync('/app/android/app/src/main/res/values-b+pt/strings.xml')
+      .toString();
+    expect(strings).toMatchInlineSnapshot(`
+      "<resources>
+        <string name="app_name">pt-name</string>
+      </resources>"
+    `);
+    expect(strings).not.toMatch(/object Object/);
+
+    expect(WarningAggregator.addWarningForPlatform).toHaveBeenCalledWith(
+      'android',
+      'locales.pt',
+      'Skipped locale keys with invalid values: plugins. Values must be convertible to strings.',
       'https://docs.expo.dev/guides/localization/#translating-app-metadata'
     );
   });

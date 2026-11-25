@@ -3,9 +3,9 @@ import type { ColorValue, KeyboardTypeOptions, ReturnKeyTypeOptions } from 'reac
 
 import type { ModifierConfig } from '../../types';
 import type { ObservableState } from '../State';
-import type { AutoComplete, EnterKeyHint, InputMode } from './utils';
 import type { UniversalTextStyle } from '../Text/types';
 import type { UniversalStyle } from '../types';
+import type { AutoComplete, EnterKeyHint, InputMode } from './utils';
 
 /**
  * Imperative methods exposed via the `TextInput` ref.
@@ -51,6 +51,11 @@ export interface TextInputProps {
    * Placeholder text shown when the field is empty.
    */
   placeholder?: string;
+
+  /**
+   * Label announced by screen readers, including when the field contains text.
+   */
+  accessibilityLabel?: string;
 
   /**
    * If true, focuses the input on mount.
@@ -194,7 +199,11 @@ export interface TextInputProps {
   rows?: number;
 
   /**
-   * Color of the underline indicator on Android. iOS / web ignore this.
+   * Color of the underline indicator on Android.
+   *
+   * @deprecated The Android `TextInput` renders an unstyled `BasicTextField` that
+   * has no underline indicator, so this has no effect. To draw your own border,
+   * pass it through `style` or `modifiers`.
    * @platform android
    */
   underlineColorAndroid?: ColorValue;
@@ -214,7 +223,7 @@ export interface TextInputProps {
   onContentSizeChange?: (size: { width: number; height: number }) => void;
 
   /**
-   * Maximum number of characters allowed.
+   * Maximum number of UTF-16 code units allowed, as JavaScript counts string length.
    */
   maxLength?: number;
 

@@ -1,43 +1,47 @@
 {
   "name": "expo-screen-orientation",
-  "version": "56.0.5",
+  "version": "58.0.3",
   "description": "Expo universal module for managing device's screen orientation",
-  "main": "build/ScreenOrientation.js",
-  "types": "build/ScreenOrientation.d.ts",
-  "sideEffects": false,
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
   "keywords": [
-    "react-native",
     "expo",
     "expo-screen-orientation",
     "orientation",
+    "react-native",
     "screen"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/screen-orientation/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-screen-orientation"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/screen-orientation/",
-  "jest": {
-    "preset": "expo-module-scripts"
+  "sideEffects": false,
+  "main": "build/ScreenOrientation.js",
+  "types": "build/ScreenOrientation.d.ts",
+  "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json",
+    "prepack": "expo-module prepack"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",

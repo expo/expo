@@ -2,7 +2,7 @@
 
 package expo.modules.plugin
 
-import com.android.build.gradle.LibraryExtension
+import com.android.build.api.dsl.LibraryExtension
 import expo.modules.plugin.android.PublicationInfo
 import expo.modules.plugin.android.applyLinterOptions
 import expo.modules.plugin.android.applyPublishingVariant
@@ -12,33 +12,42 @@ import expo.modules.plugin.android.createEmptyExpoPublishToMavenLocalTask
 import expo.modules.plugin.android.createExpoPublishTask
 import expo.modules.plugin.android.createExpoPublishToMavenLocalTask
 import expo.modules.plugin.android.createReleasePublication
+import expo.modules.plugin.android.validateProjectConfiguration
 import expo.modules.plugin.gradle.ExpoModuleExtension
-import io.github.lukmccall.pika.PikaGradleExtension
+import io.github.expo.pika.PikaGradleExtension
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.internal.extensions.core.extra
 import java.io.File
 
 internal fun Project.applyDefaultPlugins() {
-  if (!plugins.hasPlugin("com.android.library")) {
-    plugins.apply("com.android.library")
+  applyPluginIfNeeded("com.android.library")
+
+  if (!hasBuiltInKotlinSupport()) {
+    // AGP 9 ships built-in Kotlin support (enabled by default), so applying `kotlin-android` on top
+    // of it fails with "Cannot add extension with name 'kotlin', …".
+    applyPluginIfNeeded("kotlin-android")
   }
-  if (!plugins.hasPlugin("kotlin-android")) {
-    plugins.apply("kotlin-android")
-  }
-  if (!plugins.hasPlugin("maven-publish")) {
-    plugins.apply("maven-publish")
-  }
+
+  applyPluginIfNeeded("maven-publish")
 }
 
 internal fun Project.applyPikaPlugin() {
-  if (!plugins.hasPlugin("io.github.lukmccall.pika")) {
-    plugins.apply("io.github.lukmccall.pika")
-  }
-
+  applyPluginIfNeeded("io.github.expo.pika")
+  
   val pika = extensions.getByType(PikaGradleExtension::class.java)
   pika.introspectableAnnotation("expo.modules.kotlin.types.OptimizedRecord")
   pika.introspectableAnnotation("expo.modules.kotlin.views.OptimizedComposeProps")
+}
+
+internal fun Project.applyExpoModulesV2Plugin() {
+  applyPluginIfNeeded("io.github.expo.modules.v2")
+}
+
+private fun Project.applyPluginIfNeeded(id: String) {
+  if (!plugins.hasPlugin(id)) {
+    plugins.apply(id)
+  }
 }
 
 internal fun Project.configurePika(shouldBeEnabled: Boolean = true) {
@@ -72,9 +81,7 @@ internal fun Project.applyDefaultAndroidSdkVersions() {
       compileSdk = rootProject.extra.safeGet("compileSdkVersion")
         ?: logger.warnIfNotDefined("compileSdkVersion", 36),
       minSdk = rootProject.extra.safeGet("minSdkVersion")
-        ?: logger.warnIfNotDefined("minSdkVersion", 24),
-      targetSdk = rootProject.extra.safeGet("targetSdkVersion")
-        ?: logger.warnIfNotDefined("targetSdkVersion", 36)
+        ?: logger.warnIfNotDefined("minSdkVersion", 24)
     )
     applyLinterOptions()
   }
@@ -82,7 +89,7 @@ internal fun Project.applyDefaultAndroidSdkVersions() {
 
 /**
  * Applies the necessary configuration for publishing to the local Maven repository.
- * It need to be called when DSL is finalized.
+ * It needs to be called when DSL is finalized.
  */
 internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) {
   if (!expoModulesExtension.canBePublished) {
@@ -97,26 +104,48 @@ internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) 
     .applyPublishingVariant()
 
   afterEvaluate {
-    val publicationInfo = PublicationInfo(this)
+    val project = this
+    // AGP 9's built-in Kotlin registers the "release" software component later than our
+    // afterEvaluate, so react when it becomes available instead of reading it eagerly. On AGP 8
+    // the component already exists, so this fires immediately.
+    components.matching { it.name == "release" }.all {
+      val publicationInfo = PublicationInfo(project)
 
-    publishingExtension()
-      .publications
-      .createReleasePublication(
-        publicationInfo,
-        expoModulesExtension.pomConfigurator
-      )
+      project.publishingExtension()
+        .publications
+        .createReleasePublication(
+          publicationInfo,
+          expoModulesExtension.pomConfigurator
+        )
 
-    createExpoPublishToMavenLocalTask(publicationInfo, expoModulesExtension)
+      project.createExpoPublishToMavenLocalTask(publicationInfo, expoModulesExtension)
 
-    val npmLocalRepositoryRelativePath = "local-maven-repo"
-    val npmLocalRepository = File("${project.projectDir.parentFile}/${npmLocalRepositoryRelativePath}").toURI()
-    publishingExtension().repositories.mavenLocal { mavenRepo ->
-      mavenRepo.name = "NPMPackage"
-      mavenRepo.url = npmLocalRepository
+      val npmLocalRepositoryRelativePath = "local-maven-repo"
+      val precompileRepository = project.providers.gradleProperty("expo.precompileAndroid.repository")
+        .orNull
+        ?.let(::File)
+        ?.absoluteFile
+      if (precompileRepository != null) {
+        project.validateProjectConfiguration(expoModulesExtension)
+      }
+      val npmLocalRepository = precompileRepository
+        ?: File("${project.projectDir.parentFile}/${npmLocalRepositoryRelativePath}")
+      project.publishingExtension().repositories.mavenLocal { mavenRepo ->
+        mavenRepo.name = "NPMPackage"
+        mavenRepo.url = npmLocalRepository.toURI()
+      }
+
+      project.createExpoPublishTask(publicationInfo, expoModulesExtension, npmLocalRepositoryRelativePath)
     }
-
-    createExpoPublishTask(publicationInfo, expoModulesExtension, npmLocalRepositoryRelativePath)
   }
+}
+
+/**
+ * Whether AGP's built-in Kotlin support is active, meaning the `kotlin-android` plugin must not be
+ * applied. AGP 9 enables it by default unless the project explicitly opts out with `android.builtInKotlin=false`.
+ */
+internal fun Project.hasBuiltInKotlinSupport(): Boolean {
+  return findProperty("android.builtInKotlin")?.toString()?.toBoolean() ?: true
 }
 
 internal fun Project.androidLibraryExtension() = extensions.getByType(LibraryExtension::class.java)

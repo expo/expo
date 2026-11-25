@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
-import { useBananas, useFruit } from './hooks/useFruit';
+import { useBananas, useFruit } from '../hooks/useFruit';
 
 let count = 0;
 

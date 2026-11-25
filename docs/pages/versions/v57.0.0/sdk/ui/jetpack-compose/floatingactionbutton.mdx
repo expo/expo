@@ -1,0 +1,268 @@
+---
+title: FloatingActionButton
+description: Jetpack Compose FloatingActionButton components following Material Design 3.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-57/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+Expo UI provides four FloatingActionButton variants matching the Material Design 3 [`FloatingActionButton`](https://developer.android.com/develop/ui/compose/components/fab) API:
+
+- `SmallFloatingActionButton` — a compact FAB
+- `FloatingActionButton` — the standard FAB (default size)
+- `LargeFloatingActionButton` — a larger FAB
+- `ExtendedFloatingActionButton` — a FAB with an icon and a text label, supporting animated expand/collapse
+
+Each component uses slot-based children (`.Icon` and, for `ExtendedFloatingActionButton`, `.Text`) to compose content.
+
+> **Note:** If you need multiple action buttons in a floating toolbar, use [`HorizontalFloatingToolbar`](/versions/latest/sdk/ui/jetpack-compose/horizontalfloatingtoolbar/) instead.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/floatingactionbutton/android-light.webp"
+  darkSrc="/static/images/expo-ui/floatingactionbutton/android-dark.webp"
+  alt="Small, regular, and large Material 3 floating action buttons"
+/>
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Standard FloatingActionButton
+
+<ComponentExample
+  title="StandardFABExample.tsx"
+  src="/static/images/expo-ui/examples/fab-standard-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/fab-standard-android-dark.webp"
+  alt="A standard floating action button with a plus icon">
+
+```tsx
+import {
+  FloatingActionButton,
+  Host,
+  Icon,
+} from '@expo/ui/jetpack-compose';
+
+export default function StandardFABExample() {
+  return (
+    <Host matchContents>
+      <FloatingActionButton
+        onClick={() => console.log('FAB pressed')}>
+        <FloatingActionButton.Icon>
+          <Icon source={require('./assets/add.xml')} />
+        </FloatingActionButton.Icon>
+      </FloatingActionButton>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### FAB variants
+
+<ComponentExample
+  title="FABVariantsExample.tsx"
+  src="/static/images/expo-ui/examples/fab-variants-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/fab-variants-android-dark.webp"
+  alt="Small, standard, and large floating action buttons side by side, each with a plus icon">
+
+```tsx
+import {
+  FloatingActionButton,
+  Host,
+  Icon,
+  LargeFloatingActionButton,
+  SmallFloatingActionButton,
+} from '@expo/ui/jetpack-compose';
+import { View } from 'react-native';
+
+export default function FABVariantsExample() {
+  return (
+    <View style={{ flexDirection: 'row', gap: 16 }}>
+      <Host matchContents>
+        <SmallFloatingActionButton onClick={() => {}}>
+          <SmallFloatingActionButton.Icon>
+            <Icon source={require('./assets/add.xml')} />
+          </SmallFloatingActionButton.Icon>
+        </SmallFloatingActionButton>
+      </Host>
+      <Host matchContents>
+        <FloatingActionButton onClick={() => {}}>
+          <FloatingActionButton.Icon>
+            <Icon source={require('./assets/add.xml')} />
+          </FloatingActionButton.Icon>
+        </FloatingActionButton>
+      </Host>
+      <Host matchContents>
+        <LargeFloatingActionButton onClick={() => {}}>
+          <LargeFloatingActionButton.Icon>
+            <Icon source={require('./assets/add.xml')} />
+          </LargeFloatingActionButton.Icon>
+        </LargeFloatingActionButton>
+      </Host>
+    </View>
+  );
+}
+```
+
+</ComponentExample>
+
+### ExtendedFloatingActionButton
+
+<ComponentExample
+  title="ExtendedFABExample.tsx"
+  src="/static/images/expo-ui/examples/fab-extended-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/fab-extended-android-dark.webp"
+  alt="An extended floating action button with a pencil icon and the label Edit">
+
+```tsx
+import {
+  ExtendedFloatingActionButton,
+  Host,
+  Icon,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import { useState } from 'react';
+
+export default function ExtendedFABExample() {
+  const [expanded, setExpanded] = useState(true);
+
+  return (
+    <Host matchContents>
+      <ExtendedFloatingActionButton
+        expanded={expanded}
+        onClick={() => setExpanded(v => !v)}>
+        <ExtendedFloatingActionButton.Icon>
+          <Icon source={require('./assets/edit.xml')} />
+        </ExtendedFloatingActionButton.Icon>
+        <ExtendedFloatingActionButton.Text>
+          <Text>Edit</Text>
+        </ExtendedFloatingActionButton.Text>
+      </ExtendedFloatingActionButton>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Floating over content
+
+Use a Compose `Box` with `align('bottomEnd')` to position the FAB over scrollable content entirely within the Compose layer.
+
+<ComponentExample
+  title="FloatingFABExample.tsx"
+  src="/static/images/expo-ui/examples/fab-floating-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/fab-floating-android-dark.webp"
+  alt="A floating action button in the bottom right corner over a scrollable list of items">
+
+```tsx
+import {
+  Box,
+  FloatingActionButton,
+  Host,
+  Icon,
+  LazyColumn,
+  ListItem,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import {
+  align,
+  fillMaxSize,
+  offset,
+} from '@expo/ui/jetpack-compose/modifiers';
+
+const ITEMS = Array.from(
+  { length: 20 },
+  (_, index) => `Item ${index + 1}`
+);
+
+export default function FloatingFABExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Box modifiers={[fillMaxSize()]}>
+        <LazyColumn modifiers={[fillMaxSize()]}>
+          {ITEMS.map(item => (
+            <ListItem key={item}>
+              <ListItem.HeadlineContent>
+                <Text>{item}</Text>
+              </ListItem.HeadlineContent>
+            </ListItem>
+          ))}
+        </LazyColumn>
+
+        <FloatingActionButton
+          modifiers={[align('bottomEnd'), offset(-16, -16)]}
+          onClick={() => console.log('pressed')}>
+          <FloatingActionButton.Icon>
+            <Icon source={require('./assets/add.xml')} />
+          </FloatingActionButton.Icon>
+        </FloatingActionButton>
+      </Box>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Custom color
+
+<ComponentExample
+  title="FABCustomColorExample.tsx"
+  src="/static/images/expo-ui/examples/fab-custom-color-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/fab-custom-color-android-dark.webp"
+  alt="An extended floating action button with a light purple container and the label New item">
+
+```tsx
+import {
+  ExtendedFloatingActionButton,
+  Host,
+  Icon,
+  Text,
+} from '@expo/ui/jetpack-compose';
+
+export default function FABCustomColorExample() {
+  return (
+    <Host matchContents>
+      <ExtendedFloatingActionButton
+        containerColor="#E8DEF8"
+        onClick={() => console.log('pressed')}>
+        <ExtendedFloatingActionButton.Icon>
+          <Icon source={require('./assets/add.xml')} />
+        </ExtendedFloatingActionButton.Icon>
+        <ExtendedFloatingActionButton.Text>
+          <Text>New item</Text>
+        </ExtendedFloatingActionButton.Text>
+      </ExtendedFloatingActionButton>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+## API
+
+```tsx
+import {
+  SmallFloatingActionButton,
+  FloatingActionButton,
+  LargeFloatingActionButton,
+  ExtendedFloatingActionButton,
+} from '@expo/ui/jetpack-compose';
+```
+
+<APISection
+  packageName="expo-ui/jetpack-compose/floatingactionbutton"
+  apiName="FloatingActionButton"
+/>

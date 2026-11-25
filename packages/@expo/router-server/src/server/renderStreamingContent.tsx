@@ -12,18 +12,25 @@ import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
 import { ServerDocument } from 'expo-router/internal/server';
-import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
-import React, { ReactNode } from 'react';
+import {
+  getRouteInfoForMatchedRoute,
+  InnerRoot,
+  registerStaticRootComponent,
+} from 'expo-router/internal/static';
+import { normalizeCssAssets, type AssetInfo, type MatchedRoute } from 'expo-server/private';
+import React, { type ReactNode } from 'react';
 import ReactDOMServer from 'react-dom/server';
 
 import { getRootComponent } from '../static/getRootComponent';
 import { createDebug } from '../utils/debug';
 import {
+  createFaviconAsNode,
   createInjectedCssAsNodes,
   createInjectedFontsAsNodes,
-  createInjectedInlineCssAsNodes,
+  createInjectedScriptAsNodes,
   getBootstrapContents,
 } from '../utils/react';
+import { isCrawler } from './isCrawler';
 
 const debug = createDebug('expo:router:server:renderStreamingContent');
 
@@ -48,25 +55,25 @@ export type GetStreamingContentOptions = {
     headNodes: ReactNode[];
   } | null;
   request?: Request;
+  /** The route the server matched for `location`. */
+  route: MatchedRoute;
+  /** The params the server captured for `route`. */
+  params?: Record<string, string | string[]>;
   /** Assets for hydration bundles and development-only inline CSS. */
-  assets?: {
-    css: string[];
-    /** CSS source to inline into the document head, used by development SSR. */
-    inlineCss?: {
-      source: string;
-      hmrId?: string;
-    }[];
-    js: string[];
-  };
+  assets?: AssetInfo;
+  /** Sets the output mode when exporting. */
+  output?: 'static' | 'server';
+  hydrate?: boolean;
 };
 
-/**
- * Shared setup for both `getStaticContent()` and `getStreamingContent()`. Creates the React element
- * tree, resets server contexts, and computes loader data.
- */
-function prepareRenderContext(location: URL, options?: GetStreamingContentOptions) {
+function prepareRenderContext(location: URL, options: GetStreamingContentOptions) {
   const headContext: { helmet?: any } = {};
   const Root = getRootComponent();
+  const { pathname, params, searchParams } = getRouteInfoForMatchedRoute(
+    options.route,
+    options.params ?? {},
+    location
+  );
 
   const {
     // NOTE: The `element` that's returned adds two extra Views and
@@ -77,25 +84,20 @@ function prepareRenderContext(location: URL, options?: GetStreamingContentOption
     location,
     context: ctx,
     wrapper: ({ children }: React.ComponentProps<any>) => (
-      <Root>
+      <Root pathname={pathname} params={params}>
         <div id="root">{children}</div>
       </Root>
     ),
   });
 
-  // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
-  // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
-  Font.resetServerContext();
-
-  // This MUST be run before `ReactDOMServer.renderToString` to prevent
-  // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
 
-  const loaderKey = options?.loader ? options.loader.key + location.search : null;
+  const search = searchParams.toString();
+  const loaderKey = options.loader ? options.loader.key + (search ? `?${search}` : '') : null;
 
   const loadedData = loaderKey
     ? {
-        [loaderKey]: options?.loader?.data ?? null,
+        [loaderKey]: options.loader?.data ?? null,
       }
     : null;
 
@@ -103,60 +105,97 @@ function prepareRenderContext(location: URL, options?: GetStreamingContentOption
 }
 
 function FontResources() {
+  // NOTE(@hassankhan): runs once during the shell pass; fonts loaded inside late-resolving
+  // Suspense boundaries register after this and won't be emitted.
   const descriptors = Font.getServerResourceDescriptors();
   debug(`Pushing fonts: (count: ${descriptors.length})`, descriptors);
   return createInjectedFontsAsNodes(descriptors);
 }
 
 /**
- * Streaming SSR renderer using `renderToReadableStream`. Returns a web `ReadableStream`
- * that emits the full HTML document with head injections applied.
+ * Renders the document using `renderToReadableStream`. Static output waits for Suspense
+ * and returns HTML; server output returns a stream, waiting for Suspense for known crawlers.
  */
+export function getStreamingContent(
+  location: URL,
+  options: GetStreamingContentOptions & { output: 'static' }
+): Promise<string>;
+export function getStreamingContent(
+  location: URL,
+  options: GetStreamingContentOptions & { output?: 'server' }
+): Promise<ReadableStream<Uint8Array>>;
 export async function getStreamingContent(
   location: URL,
-  options?: GetStreamingContentOptions
-): Promise<ReadableStream<Uint8Array>> {
-  const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
-    location,
-    options
-  );
+  options: GetStreamingContentOptions
+): Promise<string | ReadableStream<Uint8Array>> {
+  return Font.withServerContext(async () => {
+    const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
+      location,
+      options
+    );
 
-  const { headNodes: headCssNodes } = createInjectedCssAsNodes(options?.assets?.css ?? []);
-  const { headNodes: inlineCssNodes } = createInjectedInlineCssAsNodes(options?.assets?.inlineCss);
+    const { headNodes: cssNodes } = createInjectedCssAsNodes(normalizeCssAssets(options.assets));
+    const faviconNode = options.assets?.favicon
+      ? createFaviconAsNode(options.assets?.favicon)
+      : undefined;
 
-  const serverDocumentData = {
-    headNodes: [
-      ...(options?.metadata?.headNodes ?? []),
-      getStyleElement({ key: 'rnw-style-element' }),
-      ...(headCssNodes ?? []),
-      ...(inlineCssNodes ?? []),
-    ],
-    bodyNodes: [<FontResources key="font-resources" />],
-  };
+    const { headNodes: headJsNodes, bodyNodes: bodyJsNodes } = createInjectedScriptAsNodes(
+      options.assets?.js ?? []
+    );
 
-  return await ReactDOMServer.renderToReadableStream(
-    <ServerDocument data={serverDocumentData}>
-      {/* TODO(@hassankhan): Remove `<Head.Provider>` when `unstable_useServerRendering` is stabilized */}
-      <Head.Provider context={headContext}>
-        <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
-      </Head.Provider>
-    </ServerDocument>,
-    {
-      // TODO(@hassankhan): Experiment and see if we can calculate a better default
-      // We're doubling the default here so non-JavaScript renders show some content
-      progressiveChunkSize: 12800 * 2,
-      bootstrapScriptContent: getBootstrapContents({ hydrate: true, loadedData }),
-      bootstrapScripts: options?.assets?.js,
-      signal: options?.request?.signal,
-      onError(error) {
-        if (options?.request?.signal.aborted) {
-          return;
-        }
+    const serverDocumentData = {
+      headNodes: [
+        ...(options.metadata?.headNodes ?? []),
+        faviconNode,
+        getStyleElement({ key: 'rnw-style-element' }),
+        ...(cssNodes ?? []),
+        ...(headJsNodes ?? []),
+      ].filter(Boolean),
+      // NOTE(@hassankhan): React's bootstrapScripts emits async scripts, but Metro chunks must
+      // execute in asset order so the runtime initializes before dependent chunks.
+      bodyNodes: [<FontResources key="font-resources" />, ...(bodyJsNodes ?? [])],
+    };
 
-        console.error('SSR streaming render error:', error);
-      },
+    const isStatic = options.output === 'static';
+    const renderErrors: unknown[] = [];
+    const stream = await ReactDOMServer.renderToReadableStream(
+      <ServerDocument data={serverDocumentData}>
+        <Head.Provider context={headContext}>
+          <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
+        </Head.Provider>
+      </ServerDocument>,
+      {
+        progressiveChunkSize: Number.MAX_SAFE_INTEGER,
+        bootstrapScriptContent:
+          getBootstrapContents({
+            hydrate: options.hydrate ?? true,
+            loadedData,
+          }) || undefined,
+        signal: options.request?.signal,
+        onError(error) {
+          if (options.request?.signal.aborted) {
+            return;
+          }
+
+          if (isStatic) {
+            renderErrors.push(error);
+          } else {
+            console.error('SSR streaming render error:', error);
+          }
+        },
+      }
+    );
+    if (isStatic || isCrawler(options.request?.headers.get('user-agent') ?? '')) {
+      await stream.allReady;
     }
-  );
+    if (isStatic) {
+      if (renderErrors.length > 0) {
+        throw renderErrors[0];
+      }
+      return new Response(stream).text();
+    }
+    return stream;
+  });
 }
 
 export { resolveMetadata } from './metadata';

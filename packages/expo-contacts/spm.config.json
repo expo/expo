@@ -1,12 +1,11 @@
 {
   "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "publishPrebuilds": true,
   "products": [
     {
       "name": "ExpoContacts",
       "podName": "ExpoContacts",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -25,12 +24,7 @@
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit",
-            "Contacts",
-            "ContactsUI"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit", "Contacts", "ContactsUI"]
         }
       ]
     }

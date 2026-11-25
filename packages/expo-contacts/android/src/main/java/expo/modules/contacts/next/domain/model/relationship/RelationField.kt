@@ -5,6 +5,9 @@ import android.provider.ContactsContract.CommonDataKinds.Relation
 import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.relationship.operations.ExistingRelation
 import expo.modules.contacts.next.domain.wrappers.DataId
+import expo.modules.contacts.next.extensions.getNullableInt
+import expo.modules.contacts.next.extensions.getNullableString
+import expo.modules.contacts.next.extensions.getRequiredString
 
 object RelationField : ExtractableField.Data<ExistingRelation> {
   override val projection = arrayOf(Relation._ID, Relation.NAME, Relation.TYPE, Relation.LABEL)
@@ -13,14 +16,14 @@ object RelationField : ExtractableField.Data<ExistingRelation> {
 
   override fun extract(cursor: Cursor): ExistingRelation = with(cursor) {
     return ExistingRelation(
-      dataId = DataId(getString(getColumnIndexOrThrow(DataId.COLUMN_IN_DATA_TABLE))),
-      name = getString(getColumnIndexOrThrow(Relation.NAME)),
+      dataId = DataId(getRequiredString(getColumnIndexOrThrow(DataId.COLUMN_IN_DATA_TABLE))),
+      name = getNullableString(getColumnIndexOrThrow(Relation.NAME)),
       label = extractLabel()
     )
   }
 
   private fun Cursor.extractLabel() =
-    when (getInt(getColumnIndexOrThrow(Relation.TYPE))) {
+    when (getNullableInt(Relation.TYPE)) {
       Relation.TYPE_ASSISTANT -> RelationLabel.Assistant
       Relation.TYPE_BROTHER -> RelationLabel.Brother
       Relation.TYPE_CHILD -> RelationLabel.Child
@@ -35,9 +38,13 @@ object RelationField : ExtractableField.Data<ExistingRelation> {
       Relation.TYPE_RELATIVE -> RelationLabel.Relative
       Relation.TYPE_SISTER -> RelationLabel.Sister
       Relation.TYPE_SPOUSE -> RelationLabel.Spouse
+      null -> {
+        val customLabel = getNullableString(getColumnIndexOrThrow(Relation.LABEL))
+        RelationLabel.MalformedType(customLabel)
+      }
       else -> {
-        val customLabel = getString(getColumnIndexOrThrow(Relation.LABEL))
-        RelationLabel.Custom(customLabel)
+        val customLabel = getNullableString(getColumnIndexOrThrow(Relation.LABEL))
+        customLabel?.let { RelationLabel.Custom(it) } ?: RelationLabel.MalformedCustom
       }
     }
 }

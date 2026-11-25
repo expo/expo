@@ -10,7 +10,7 @@ jest.mock('../JsInspector');
 
 describe('createJsInspectorMiddleware', () => {
   it('should return specific app entity for GET request with given applicationId', async () => {
-    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0];
+    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0]!;
     const req = createRequest(`http://localhost:8081/inspector?applicationId=${app.description}`);
     const res = createMockedResponse();
     const next = jest.fn();
@@ -27,7 +27,7 @@ describe('createJsInspectorMiddleware', () => {
   });
 
   it('should handle ipv6 address', async () => {
-    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0];
+    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0]!;
     const req = createRequest(
       `http://[::ffff:127.0.0.1]/inspector?applicationId=${app.description}`
     );
@@ -73,7 +73,7 @@ describe('createJsInspectorMiddleware', () => {
   });
 
   it('queries the local server origin even when the request URL is absolute-form', async () => {
-    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0];
+    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0]!;
     const req = createRequest(
       `http://localhost:8081/_expo/debugger?applicationId=${app.description}`
     );
@@ -108,8 +108,27 @@ describe('createJsInspectorMiddleware', () => {
     expect(JsInspector.queryInspectorAppAsync).not.toHaveBeenCalled();
   });
 
+  it('should set Content-Length to the byte length of the response, not its UTF-16 string length', async () => {
+    const app = { ...METRO_INSPECTOR_RESPONSE_FIXTURE[0]!, deviceName: 'José’s iPhone 📱' };
+    const req = createRequest(`http://localhost:8081/inspector?applicationId=${app.description}`);
+    const res = createMockedResponse();
+    const next = jest.fn();
+    (
+      JsInspector.queryInspectorAppAsync as jest.MockedFunction<
+        typeof JsInspector.queryInspectorAppAsync
+      >
+    ).mockReturnValue(Promise.resolve(app));
+
+    const middlewareAsync = createJsInspectorMiddleware({ serverBaseUrl: 'http://localhost:8081' });
+    await middlewareAsync(req, res as ServerResponse, next);
+
+    const body = JSON.stringify(app);
+    const headers = res.writeHead.mock.calls[0][1];
+    expect(Number(headers['Content-Length'])).toBe(Buffer.byteLength(body, 'utf8'));
+  });
+
   it('should open browser for PUT request with given applicationId', async () => {
-    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0];
+    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0]!;
     const req = createRequest(
       `http://localhost:8081/inspector?applicationId=${app.description}`,
       'PUT'

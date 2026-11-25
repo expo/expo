@@ -1,5 +1,5 @@
-import { EventEmitter, NativeModule, SharedObject, SharedRef } from './CoreModule';
 import uuid from '../uuid/index.web';
+import { EventEmitter, NativeModule, SharedObject, SharedRef } from './CoreModule';
 
 // jest-expo imports to this file directly without going through the global types
 // Exporting the types to let jest-expo to know the globalThis types
@@ -14,6 +14,7 @@ export function installExpoGlobalPolyfill() {
     SharedObject,
     SharedRef,
     modules: globalThis.ExpoDomWebView?.expoModulesProxy ?? {},
+    packages: {},
     uuidv4: uuid.v4,
     uuidv5: uuid.v5,
     getViewConfig: () => {
@@ -26,8 +27,9 @@ export function installExpoGlobalPolyfill() {
     expoModulesCoreVersion: undefined,
     cacheDir: undefined,
     documentsDir: undefined,
+    isRunningOnQuest: false,
 
-    installOnUIRuntime: () => {
+    installOnUIRuntime: (_uiRuntimeHolder: object) => {
       throw new Error('Method not implemented.');
     },
   };

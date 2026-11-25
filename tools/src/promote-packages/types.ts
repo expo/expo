@@ -1,4 +1,7 @@
-import { BaseParcel } from '../publish-packages/types';
+import { Changelog } from '../Changelogs';
+import { GitDirectory } from '../Git';
+import { PackageViewType } from '../Npm';
+import { Package } from '../Packages';
 
 /**
  * Command's options.
@@ -25,6 +28,12 @@ export type PromoteState = {
   isDemoting?: boolean;
 };
 
-export type Parcel = BaseParcel<PromoteState>;
+export type Parcel = {
+  pkg: Package;
+  pkgView: PackageViewType | null;
+  changelog: Changelog;
+  gitDir: GitDirectory;
+  state: PromoteState;
+};
 
 export type TaskArgs = [Parcel[], CommandOptions];

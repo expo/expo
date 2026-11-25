@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 
 import type { ConfigPlugin, XcodeProject } from '../Plugin.types';
-import { addBuildSourceFileToGroup, getProjectName } from './utils/Xcodeproj';
 import { withXcodeProject } from '../plugins/ios-plugins';
+import { addBuildSourceFileToGroup, getProjectName } from './utils/Xcodeproj';
 
 /**
  * Create a build source file and link it to Xcode.

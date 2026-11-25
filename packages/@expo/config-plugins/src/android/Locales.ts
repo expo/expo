@@ -1,11 +1,16 @@
 import type { ExpoConfig } from '@expo/config-types';
 import path from 'path';
 
-import { AndroidConfig, withDangerousMod } from '..';
 import type { ConfigPlugin } from '../Plugin.types';
+import { withDangerousMod } from '../plugins/withDangerousMod';
 import { writeXMLAsync } from '../utils/XML';
 import type { LocaleJson } from '../utils/locales';
 import { getResolvedLocalesAsync } from '../utils/locales';
+import * as Paths from './Paths';
+
+// Android looks up resources for these languages under their legacy ISO 639 codes.
+// See `adjustLanguageTag` in `android.content.res.ResourcesImpl`.
+const LEGACY_LANGUAGE_CODES: Record<string, string> = { he: 'iw', id: 'in', yi: 'ji' };
 
 export const withLocales: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
@@ -25,6 +30,14 @@ export function getLocales(
   return config.locales ?? null;
 }
 
+function getResourceQualifier(locale: string): string {
+  const tag = locale.replace(
+    /^[a-z]+/i,
+    (language) => LEGACY_LANGUAGE_CODES[language.toLowerCase()] ?? language
+  );
+  return `b+${tag.replaceAll('-', '+')}`;
+}
+
 export async function setLocalesAsync(
   config: Pick<ExpoConfig, 'locales'>,
   { projectRoot }: { projectRoot: string }
@@ -36,21 +49,21 @@ export async function setLocalesAsync(
   const { localesMap } = await getResolvedLocalesAsync(projectRoot, locales, 'android');
   for (const [lang, localizationObj] of Object.entries(localesMap)) {
     const stringsFilePath = path.join(
-      await AndroidConfig.Paths.getResourceFolderAsync(projectRoot),
-      `values-b+${lang.replaceAll('-', '+')}`,
+      await Paths.getResourceFolderAsync(projectRoot),
+      `values-${getResourceQualifier(lang)}`,
       'strings.xml'
     );
-    writeXMLAsync({
+    await writeXMLAsync({
       path: stringsFilePath,
       xml: {
-        resources: Object.entries(localizationObj).map(([k, v]) => ({
-          string: {
+        resources: {
+          string: Object.entries(localizationObj).map(([k, v]) => ({
             $: {
               name: k,
             },
-            _: `"${v}"`,
-          },
-        })),
+            _: v,
+          })),
+        },
       },
     });
   }

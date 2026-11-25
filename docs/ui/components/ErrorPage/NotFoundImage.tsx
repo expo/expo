@@ -1,7 +1,7 @@
 import { theme } from '@expo/styleguide';
 
 export const NotFoundImage = () => (
-  <svg width="218" height="133" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg aria-hidden="true" width="218" height="133" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="m25.977 131.315 63.762-8.961c5.47-.769 9.28-5.826 8.511-11.295l-9.14-65.046a10 10 0 0 0-3.885-6.594L56.807 18.005a10 10 0 0 0-7.41-1.917l-38.846 5.46c-5.47.769-9.28 5.825-8.511 11.294l12.643 89.962c.769 5.469 5.825 9.279 11.294 8.511z"
       stroke={theme.border.default}

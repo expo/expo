@@ -120,7 +120,9 @@ object ImagePickerConstants {
         ExifInterface.TAG_GPS_DIFFERENTIAL,
         ExifInterface.TAG_IMAGE_LENGTH,
         ExifInterface.TAG_IMAGE_WIDTH,
+        @Suppress("DEPRECATION") // Deprecated, but we keep it as it can still be present in EXIF data.
         ExifInterface.TAG_ISO_SPEED_RATINGS,
+        ExifInterface.TAG_PHOTOGRAPHIC_SENSITIVITY,
         ExifInterface.TAG_JPEG_INTERCHANGE_FORMAT,
         ExifInterface.TAG_JPEG_INTERCHANGE_FORMAT_LENGTH,
         ExifInterface.TAG_LIGHT_SOURCE,

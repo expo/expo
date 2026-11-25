@@ -1,4 +1,4 @@
-import { EventEmitter, Platform } from 'expo-modules-core';
+import { EventEmitter, Platform } from 'expo';
 
 import { type BatteryEvents, BatteryState } from './Battery.types';
 

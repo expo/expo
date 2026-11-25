@@ -50,14 +50,14 @@ describe(setProductName, () => {
     for (const [input, output] of [
       ['My Cool Thing', `"MyCoolThing"`],
       ['h"&<world/>🚀', `"hworld"`],
-    ]) {
+    ] as [string, string][]) {
       // Ensure the value can be parsed and written.
       const project = setProductNameForRoot({ name: input, slug: '' }, projectRoot);
       expect(
         Object.entries(project.pbxXCBuildConfigurationSection())
           .filter(isNotComment)
           // @ts-ignore
-          .filter(isBuildConfig)[0][1]?.buildSettings?.PRODUCT_NAME
+          .filter(isBuildConfig)[0]![1]?.buildSettings?.PRODUCT_NAME
         // Ensure the value is wrapped in quotes.
       ).toBe(output);
     }

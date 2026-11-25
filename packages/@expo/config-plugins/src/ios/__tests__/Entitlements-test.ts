@@ -60,7 +60,7 @@ describe(ensureApplicationTargetEntitlementsFileConfigured, () => {
     expect(entitlementsPath).toBe('/app/ios/testproject/testproject.entitlements');
 
     // New file has the contents of the old entitlements file
-    const data = plist.parse(await fs.promises.readFile(entitlementsPath, 'utf8'));
+    const data = plist.parse(await fs.promises.readFile(entitlementsPath!, 'utf8'));
     expect(data).toEqual({});
   });
 
@@ -81,7 +81,7 @@ describe(ensureApplicationTargetEntitlementsFileConfigured, () => {
     expect(entitlementsPath).toBe('/app/ios/testapp/example.entitlements');
 
     // New file has the contents of the old entitlements file
-    const data = plist.parse(await fs.promises.readFile(entitlementsPath, 'utf8'));
+    const data = plist.parse(await fs.promises.readFile(entitlementsPath!, 'utf8'));
     expect(data).toEqual({ special: true });
 
     // entitlement file in default location does not exist

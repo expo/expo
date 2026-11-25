@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 import { vol } from 'memfs';
 
-import { getDirFromFS } from './utils/getDirFromFS';
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as WarningAggregator from '../../utils/warnings';
 import { getLocales, setLocalesAsync } from '../Locales';
 import { getPbxproj } from '../utils/Xcodeproj';
+import { getDirFromFS } from './utils/getDirFromFS';
 
 jest.mock('fs');
 jest.mock('../../utils/warnings');
@@ -70,10 +70,20 @@ describe('e2e: iOS locales', () => {
           ios: {
             'Localizable.strings': {
               NOTIF_KEY: 'de-notification',
+              'Sample Widget': 'DE Sample Widget',
+              'A sample widget.': 'DE A sample widget.',
+              'A "quoted" key': 'DE A "quoted" key',
             },
           },
           android: {
             app_name: 'de-name',
+          },
+        }),
+        // nested objects are invalid and must not be written as "[object Object]"
+        'lang/pt.json': JSON.stringify({
+          NSCameraUsageDescription: 'pt-camera',
+          plugins: {
+            'expo-camera': { cameraPermission: 'pt-camera-nested' },
           },
         }),
       },
@@ -92,6 +102,8 @@ describe('e2e: iOS locales', () => {
       {
         locales: {
           fr: 'lang/fr.json',
+          // no Info.plist keys, must not stop the locales listed after it
+          de: 'lang/de.json',
           // doesn't exist
           xx: 'lang/xx.json',
 
@@ -101,8 +113,6 @@ describe('e2e: iOS locales', () => {
           // support backwards compatibility for `locales` structure without platform keys.
           en: 'lang/en.json',
           ar: 'lang/ar.json',
-          // shouldn't have an infoPlist
-          de: 'lang/de.json',
         },
       },
       { project, projectRoot }
@@ -122,27 +132,53 @@ describe('e2e: iOS locales', () => {
       'ios/testproject/Supporting/en.lproj/InfoPlist.strings',
       'ios/testproject/Supporting/ar.lproj/InfoPlist.strings',
     ]);
-    expect(after[infoPlists[0]]).toMatchSnapshot();
+    expect(after[infoPlists[0]!]).toMatchSnapshot();
     // Test that the inlined locale is resolved.
-    expect(after[infoPlists[1]]).toMatch(/spanish-name/);
-    expect(after[infoPlists[2]]).toMatchInlineSnapshot(`"CFBundleDisplayName = "us-name";"`);
-    expect(after[infoPlists[3]]).toMatchInlineSnapshot(`
-      "CFBundleDisplayName = "us-name";
-      app_name = "us-name";"
+    expect(after[infoPlists[1]!]).toMatch(/spanish-name/);
+    expect(after[infoPlists[2]!]).toMatchInlineSnapshot(`""CFBundleDisplayName" = "us-name";"`);
+    expect(after[infoPlists[3]!]).toMatchInlineSnapshot(`
+      ""CFBundleDisplayName" = "us-name";
+      "app_name" = "us-name";"
     `);
-    expect(after[infoPlists[4]]).toMatchInlineSnapshot(`"CFBundleDisplayName = "ar-name";"`);
+    expect(after[infoPlists[4]!]).toMatchInlineSnapshot(`""CFBundleDisplayName" = "ar-name";"`);
     expect(localizableStrings).toStrictEqual([
       'ios/testproject/Supporting/ar.lproj/Localizable.strings',
       'ios/testproject/Supporting/de.lproj/Localizable.strings',
     ]);
-    expect(after[localizableStrings[0]]).toMatchInlineSnapshot(`"NOTIF_KEY = "ar-notification";"`);
-    expect(after[localizableStrings[1]]).toMatchInlineSnapshot(`"NOTIF_KEY = "de-notification";"`);
+    expect(after[localizableStrings[0]!]).toMatchInlineSnapshot(
+      `""NOTIF_KEY" = "ar-notification";"`
+    );
+    expect(after[localizableStrings[1]!]).toMatchInlineSnapshot(`
+      ""NOTIF_KEY" = "de-notification";
+      "Sample Widget" = "DE Sample Widget";
+      "A sample widget." = "DE A sample widget.";
+      "A \\"quoted\\" key" = "DE A \\"quoted\\" key";"
+    `);
 
     // Test a warning is thrown for an invalid locale JSON file.
     expect(WarningAggregator.addWarningForPlatform).toHaveBeenCalledWith(
       'ios',
       'locales.xx',
       'Failed to parse JSON of locale file for language: xx',
+      'https://docs.expo.dev/guides/localization/#translating-app-metadata'
+    );
+  });
+
+  it('skips non-string values instead of writing "[object Object]"', async () => {
+    let project = getPbxproj(projectRoot);
+
+    project = await setLocalesAsync({ locales: { pt: 'lang/pt.json' } }, { project, projectRoot });
+    fs.writeFileSync(project.filepath, project.writeSync());
+
+    const after = getDirFromFS(vol.toJSON(), projectRoot);
+    const infoPlist = after['ios/testproject/Supporting/pt.lproj/InfoPlist.strings'];
+    expect(infoPlist).toBe('"NSCameraUsageDescription" = "pt-camera";');
+    expect(infoPlist).not.toMatch(/object Object/);
+
+    expect(WarningAggregator.addWarningForPlatform).toHaveBeenCalledWith(
+      'ios',
+      'locales.pt',
+      'Skipped locale keys with invalid values: plugins. Values must be convertible to strings.',
       'https://docs.expo.dev/guides/localization/#translating-app-metadata'
     );
   });

@@ -18,7 +18,7 @@ export type NativeSegmentedControlChangeEvent = {
  */
 export type NativeSegmentedControlIOSChangeEvent = NativeSegmentedControlChangeEvent;
 
-export type SegmentedControlProps = {
+export interface SegmentedControlProps {
   /**
    * The labels for the control's segment buttons, in order.
    */
@@ -43,7 +43,6 @@ export type SegmentedControlProps = {
   onValueChange?: (value: string) => void;
   /**
    * Accent color of the control.
-   * @platform android, web
    */
   tintColor?: string;
   /**
@@ -52,7 +51,12 @@ export type SegmentedControlProps = {
   appearance?: 'dark' | 'light';
   style?: StyleProp<ViewStyle>;
   testID?: string;
-};
+  /**
+   * The name of the control that screen readers announce.
+   * @platform ios
+   */
+  accessibilityLabel?: string;
+}
 
 /**
  * Builds a synthetic `onChange` event matching the community library shape.

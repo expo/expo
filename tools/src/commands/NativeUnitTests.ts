@@ -11,10 +11,16 @@ async function thisAction({
   platform,
   type = 'local',
   packages,
+  affected,
+  since,
+  benchmarks,
 }: {
   platform?: PlatformName;
   type: TestType;
   packages?: string;
+  affected?: boolean;
+  since?: string;
+  benchmarks?: boolean;
 }) {
   if (!platform) {
     console.log(chalk.yellow("You haven't specified platform to run unit tests for!"));
@@ -32,7 +38,7 @@ async function thisAction({
   const runAndroid = platform === 'android' || platform === 'both';
   const runIos = platform === 'ios' || platform === 'both';
   if (runIos) {
-    await iosNativeUnitTests({ packages });
+    await iosNativeUnitTests({ packages, affected, since, benchmarks });
   }
   if (runAndroid) {
     await androidNativeUnitTests({ type, packages });
@@ -53,6 +59,21 @@ export default (program: any) => {
     .option(
       '--packages <string>',
       '[optional] Comma-separated list of package names to run unit tests for. Defaults to all packages with unit tests.'
+    )
+    .option(
+      '--affected',
+      '[optional] Only test packages affected by changes since `--since`, including their dependents. iOS only for now. Ignored when `--packages` is passed.',
+      false
+    )
+    .option(
+      '-s, --since <ref>',
+      '[optional] Git ref to diff against for `--affected`. Defaults to `main`.',
+      'main'
+    )
+    .option(
+      '--benchmarks',
+      "[optional] Run the packages' `Benchmarks` test specs instead of their unit tests, in Release and natively on the Mac (Mac Catalyst). iOS only for now.",
+      false
     )
     .description('Runs native unit tests for each unimodules that provides them.')
     .asyncAction(thisAction);

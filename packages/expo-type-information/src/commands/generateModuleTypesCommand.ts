@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import commander from 'commander';
 
+import { generateModuleTypesFileContent } from '../typescriptGeneration';
 import {
   addCommonOptions,
   getFileTypeInformationFromArgs,
@@ -9,11 +10,10 @@ import {
   TypeInformationCommandCommonAllArguments,
   writeStringToFileOrPrintToConsole,
 } from './commandUtils';
-import { generateModuleTypesFileContent } from '../typescriptGeneration';
 
 export function generateModuleTypesCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-module-types'))
-    .description('Generates a type declaration file content for a module.')
+    .description('generate a type declaration file content for a module')
     .action(async (options: TypeInformationCommandCommonAllArguments) => {
       const parsedArgs = await parseCommandArguments(options);
       if (!parsedArgs) {

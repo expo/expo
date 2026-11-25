@@ -2,8 +2,10 @@ package expo.modules.devlauncher.nsd
 
 import android.app.Application
 import android.content.Context
+import android.net.NetworkRequest
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
+import android.os.Build
 import android.util.Log
 import expo.modules.devlauncher.helpers.await
 import expo.modules.devlauncher.services.PackagerInfo
@@ -18,14 +20,14 @@ import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
-import kotlin.time.toJavaDuration
 
 private const val SERVICE_TYPE = "_expo._tcp."
 
 internal val HEALTH_CHECK_INTERVAL = 3.toDuration(DurationUnit.SECONDS)
-private val HEALTH_CHECK_TIMEOUT = 5.toDuration(DurationUnit.SECONDS).toJavaDuration()
+private const val HEALTH_CHECK_TIMEOUT_SECONDS = 5L
 
 internal abstract class NsdDiscoveryBase(
   application: Application,
@@ -35,9 +37,9 @@ internal abstract class NsdDiscoveryBase(
 
   protected val healthCheckClient: OkHttpClient = httpClient
     .newBuilder()
-    .connectTimeout(HEALTH_CHECK_TIMEOUT)
-    .readTimeout(HEALTH_CHECK_TIMEOUT)
-    .writeTimeout(HEALTH_CHECK_TIMEOUT)
+    .connectTimeout(HEALTH_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+    .readTimeout(HEALTH_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+    .writeTimeout(HEALTH_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
     .build()
 
   private val _manager: NsdManager? =
@@ -76,18 +78,38 @@ internal abstract class NsdDiscoveryBase(
     }
   )
 
-  override fun start() = synchronized(this) {
+  override fun start(): Unit = synchronized(this) {
     if (isDiscovering) {
       return
     }
 
-    val listener = createDiscoveryListener()
-    discoveryListener = listener
-    manager.discoverServices(
-      SERVICE_TYPE,
-      NsdManager.PROTOCOL_DNS_SD,
-      listener
-    )
+    val listener = createDiscoveryListener().also {
+      discoveryListener = it
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      // Matches every network (clearing the default capabilities also drops NET_CAPABILITY_NOT_VPN,
+      // so VPN/proxy networks are included).
+      val discoveryNetworkRequest = NetworkRequest
+        .Builder()
+        .clearCapabilities()
+        .build()
+
+      manager.discoverServices(
+        SERVICE_TYPE,
+        NsdManager.PROTOCOL_DNS_SD,
+        discoveryNetworkRequest,
+        Runnable::run,
+        listener
+      )
+    } else {
+      manager.discoverServices(
+        SERVICE_TYPE,
+        NsdManager.PROTOCOL_DNS_SD,
+        listener
+      )
+    }
+
     isDiscovering = true
   }
 

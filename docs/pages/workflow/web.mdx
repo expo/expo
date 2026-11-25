@@ -6,8 +6,8 @@ hideTOC: true
 ---
 
 import { RouterLogo } from '@expo/styleguide';
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
+import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -61,7 +61,14 @@ Development features like Fast Refresh, debugging, environment variables, and [b
 
 ### Install web dependencies
 
-<Terminal cmd={['$ npx expo install react-dom react-native-web @expo/metro-runtime']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install react-dom react-native-web @expo/metro-runtime'],
+    yarn: ['$ yarn expo install react-dom react-native-web @expo/metro-runtime'],
+    pnpm: ['$ pnpm expo install react-dom react-native-web @expo/metro-runtime'],
+    bun: ['$ bun expo install react-dom react-native-web @expo/metro-runtime'],
+  }}
+/>
 
 <Collapsible summary={<>Not using the <CODE>expo</CODE> package in your app yet?</>}>
 
@@ -69,7 +76,14 @@ If you haven't added Expo to your React Native app yet, you can either [install 
 
 1. Install [Expo CLI](/more/expo-cli/) in your project:
 
-<Terminal cmd={['$ npm install expo']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install expo'],
+    yarn: ['$ yarn add expo'],
+    pnpm: ['$ pnpm add expo'],
+    bun: ['$ bun add expo'],
+  }}
+/>
 
 2. Modify the entry file to use [`registerRootComponent`](/versions/latest/sdk/expo/#registerrootcomponentcomponent) instead of `AppRegistry.registerComponent`:
 
@@ -93,11 +107,25 @@ import App from './App';
 
 You can now start the dev server and develop in the browser with:
 
-<Terminal cmd={['$ npx expo start --web']} cmdCopy="npx expo start --web" />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --web'],
+    yarn: ['$ yarn expo start --web'],
+    pnpm: ['$ pnpm expo start --web'],
+    bun: ['$ bun expo start --web'],
+  }}
+/>
 
 The app can be exported as a production website with:
 
-<Terminal cmd={['$ npx expo export --platform web']} cmdCopy="npx expo export --platform web" />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export --platform web'],
+    yarn: ['$ yarn expo export --platform web'],
+    pnpm: ['$ pnpm expo export --platform web'],
+    bun: ['$ bun expo export --platform web'],
+  }}
+/>
 
 ## Next
 
@@ -116,8 +144,8 @@ The app can be exported as a production website with:
 />
 
 <BoxLink
-  title="Deploy instantly with EAS Hosting"
-  description="EAS Hosting is the best way to deploy your Expo Router and React Native web apps with support for custom domains, SSL, and more."
+  title="Deploy instantly with Expo Hosting"
+  description="Expo Hosting is the best way to deploy your Expo Router and React Native web apps with support for custom domains, SSL, and more."
   href="/eas/hosting/get-started"
   Icon={Cloud01Icon}
 />
@@ -126,5 +154,5 @@ The app can be exported as a production website with:
   title="Customizing the JavaScript bundler"
   description="Customize Metro bundler for your project."
   href="/guides/customizing-metro"
-  Icon={BookOpen02Icon}
+  Icon={CodeSquare01Icon}
 />

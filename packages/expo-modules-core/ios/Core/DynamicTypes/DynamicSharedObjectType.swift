@@ -41,15 +41,15 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
       let nativeSharedObject = appContext.sharedObjectRegistry.get(sharedObjectId)?.native {
       return nativeSharedObject
     }
-    throw NativeSharedObjectNotFoundException()
+    throw SharedObject.NotFoundException()
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     if jsValue.kind == .number {
       let sharedObjectId = jsValue.getInt() as SharedObjectId
 
       guard let nativeSharedObject = appContext.sharedObjectRegistry.get(sharedObjectId)?.native else {
-        throw NativeSharedObjectNotFoundException()
+        throw SharedObject.NotFoundException()
       }
       return nativeSharedObject
     }
@@ -57,11 +57,26 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
       let nativeSharedObject = appContext.sharedObjectRegistry.toNativeObject(jsObject) {
       return nativeSharedObject
     }
-    throw NativeSharedObjectNotFoundException()
+    throw SharedObject.NotFoundException()
   }
 
   var description: String {
     return "SharedObject<\(innerType)>"
+  }
+
+  func castToJS<ValueType>(
+    _ value: ValueType,
+    appContext: AppContext,
+    in runtime: JavaScriptRuntime
+  ) throws -> JavaScriptValue {
+    guard let nativeObject = value as? SharedObject, let sharedObjectType = innerType as? SharedObject.Type else {
+      return try castToJS(value, appContext: appContext)
+    }
+    // Called on the declared type. The main runtime gives its class to a new object whose type has no `_jsClassType`.
+    nonisolated(unsafe) let sharedObject = nativeObject
+    return try JavaScriptActor.assumeIsolated {
+      return try sharedObjectType.encode(sharedObject, in: runtime)
+    }
   }
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
@@ -71,36 +86,23 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
       if let jsObject = sharedObject.getJavaScriptObject() {
         return jsObject.asValue()
       }
-      guard let jsObject = (try? appContext.newObject(nativeClassId: typeIdentifier)) ?? (try? newBaseSharedObject(appContext, nativeType: innerType)) else {
+      guard let jsObject = (try? appContext.newObject(of: innerType)) ?? (try? newBaseSharedObject(appContext, isSharedRef: sharedObject.sharedRefType != nil)) else {
         // Throwing is not possible here due to swift-objC interop.
         log.warn("Unable to create a JS object for \(description)")
-        return JavaScriptValue.undefined
+        return JavaScriptValue.undefined()
       }
 
       // Add newly created objects to the registry.
-      appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: jsObject)
+      appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: jsObject, inheritsBaseClass: true)
 
       return jsObject.asValue()
     }
-    throw NativeSharedObjectNotFoundException()
+    throw SharedObject.NotFoundException()
   }
 }
 
-private func getBaseSharedType(_ appContext: AppContext, nativeType: AnySharedObject.Type) throws -> JavaScriptFunction {
-  let isSharedRef = nativeType is AnySharedRef.Type
+private func newBaseSharedObject(_ appContext: AppContext, isSharedRef: Bool) throws -> JavaScriptObject? {
   return try JavaScriptActor.assumeIsolated {
-    return try isSharedRef ? appContext.runtime.getSharedRefClass() : appContext.runtime.getSharedObjectClass()
-  }
-}
-
-private func newBaseSharedObject(_ appContext: AppContext, nativeType: AnySharedObject.Type) throws -> JavaScriptObject? {
-  let jsClass = try getBaseSharedType(appContext, nativeType: nativeType)
-  let prototype = jsClass.asObject().getPropertyAsObject("prototype")
-  return try appContext.runtime.createObject(prototype: prototype)
-}
-
-internal final class NativeSharedObjectNotFoundException: Exception {
-  override var reason: String {
-    "Unable to find the native shared object associated with given JavaScript object"
+    return try appContext.runtime.createBaseSharedObject(isSharedRef: isSharedRef)
   }
 }

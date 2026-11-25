@@ -44,6 +44,9 @@ export function extractFieldSectionSlots(children: ReactNode): ExtractedFieldSec
 
   const walk = (node: ReactNode) => {
     Children.forEach(node, (child) => {
+      if (child == null || typeof child === 'boolean') {
+        return;
+      }
       if (!isValidElement(child)) {
         rows.push(child);
         return;

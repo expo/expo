@@ -27,7 +27,7 @@ export type SwitchColors = {
   disabledUncheckedIconColor?: ColorValue;
 };
 
-export type SwitchProps = {
+export interface SwitchProps {
   /**
    * Indicates whether the switch is checked.
    */
@@ -39,6 +39,8 @@ export type SwitchProps = {
   enabled?: boolean;
   /**
    * Callback function that is called when the checked state changes.
+   * When omitted, the switch is not interactive on its own, so a parent with the
+   * `toggleable` modifier can handle input and accessibility for it.
    */
   onCheckedChange?: (value: boolean) => void;
   /**
@@ -54,10 +56,11 @@ export type SwitchProps = {
    * @platform android
    */
   children?: React.ReactNode;
-};
+}
 
 type NativeSwitchProps = Omit<SwitchProps, 'onCheckedChange' | 'children'> & {
   children?: React.ReactNode;
+  nativeClickable: boolean;
   onCheckedChange: (event: NativeSyntheticEvent<{ value: boolean }>) => void;
 };
 
@@ -94,6 +97,7 @@ function transformSwitchProps(props: SwitchProps): Omit<NativeSwitchProps, 'chil
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
+    nativeClickable: onCheckedChange != null,
     onCheckedChange: ({ nativeEvent: { value } }) => {
       onCheckedChange?.(value);
     },

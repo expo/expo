@@ -11,7 +11,13 @@ on:
       - '!**/*.md'
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/communication.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/navigation.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/state.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/dev-menu.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/_nested-flows/**
   pull_request:
+    if: ${{ !startsWith(github.event.pull_request.head.ref, 'changeset-release/') }}
     paths:
       - apps/expo-workflow-testing/.eas/workflows/test-suite-brownfield-isolated.yml
       - apps/brownfield-tester/expo-app/**
@@ -19,6 +25,11 @@ on:
       - '!**/*.md'
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/communication.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/navigation.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/state.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/dev-menu.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/_nested-flows/**
 
 concurrency:
   group: ${{ workflow.filename }}-${{ github.ref }}
@@ -26,7 +37,8 @@ concurrency:
 
 defaults:
   tools:
-    node: 22.14.0
+    node: 22.23.5
+    pnpm: '12.2.1'
 
 jobs:
   detect_platform:
@@ -62,15 +74,13 @@ jobs:
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
-      - name: Build Expo CLI
-        run: pnpm --filter @expo/cli prepare
       - name: Remove EAS Gradle init script
         run: rm -f /home/expo/.gradle/init.gradle
       - name: Build and publish Android brownfield artifacts
         working_directory: ../brownfield-tester/expo-app
         run: |
           npx expo prebuild --clean -p android
-          npx expo-brownfield build:android --repo MavenLocal --verbose
+          npx expo-brownfield build:android --fused --repo MavenLocal --verbose
       - uses: eas/start_android_emulator
         with:
           device_name: pixel_4
@@ -113,8 +123,13 @@ jobs:
             -e APP_ID=dev.expo.brownfieldintegratedtester \
             $GITHUB_WORKSPACE/packages/expo-brownfield/e2e/maestro/__tests__/common/communication.yml \
             $GITHUB_WORKSPACE/packages/expo-brownfield/e2e/maestro/__tests__/common/navigation.yml
+          # The dev menu shows the runtime version derived from the installed expo
+          # package (exposdk:<major>.0.0). Resolve it so the flow doesn't go stale
+          # on SDK bumps.
+          EXPO_SDK_MAJOR=$(cd $GITHUB_WORKSPACE/apps/brownfield-tester/expo-app && node -p "require('expo/package.json').version.split('.')[0]")
           retry maestro test \
             -e APP_ID=dev.expo.brownfieldintegratedtester \
+            -e RUNTIME_VERSION="exposdk:${EXPO_SDK_MAJOR}.0.0" \
             $GITHUB_WORKSPACE/packages/expo-brownfield/e2e/maestro/__tests__/common/dev-menu.yml
 
   ios_build_and_e2e:
@@ -136,8 +151,6 @@ jobs:
           platform: ios
       - name: Install xcodeproj gem
         run: gem install xcodeproj
-      - name: Build Expo CLI
-        run: pnpm --filter @expo/cli prepare
       - name: Build iOS artifacts (Release)
         working_directory: ../brownfield-tester/expo-app
         run: |
@@ -147,7 +160,7 @@ jobs:
         run: ruby $GITHUB_WORKSPACE/packages/expo-brownfield/e2e/scripts/add_xcframeworks.rb
       - uses: eas/start_ios_simulator
         with:
-          device_identifier: iPhone 17 Pro
+          device_identifier: iPhone 18 Pro
       - name: Run Release e2e tests
         run: $GITHUB_WORKSPACE/packages/expo-brownfield/e2e/scripts/run-e2e-ios.sh
       # Disabled until we can make this more stable

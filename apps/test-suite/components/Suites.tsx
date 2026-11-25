@@ -10,12 +10,12 @@ import {
   View,
 } from 'react-native';
 
+import { useTheme } from '../../common/ThemeProvider';
 import Statuses from '../constants/Statuses';
 import { type Suite } from '../types';
 import StatusIndicator from './StatusIndicator';
 import SuiteResult from './SuiteResult';
 import TestStatusHeader from './TestStatusHeader';
-import { useTheme } from '../../common/ThemeProvider';
 
 const supportsGlass = isLiquidGlassAvailable();
 
@@ -163,12 +163,8 @@ export default function Suites({
     }
     const totalCount = passedCount + failedCount;
 
-    // Maestro E2E asserts visibility of test_suite_summary_result_text after the FlatList
-    // auto-scrolls to the bottom, so that text lives in the bottom footer block below.
     return (
-      <View
-        testID="test_suite_text_results"
-        style={[styles.summary, { borderTopColor: theme.border.secondary }]}>
+      <View style={[styles.summary, { borderTopColor: theme.border.secondary }]}>
         <Text
           style={[
             styles.summaryTitle,
@@ -234,18 +230,6 @@ export default function Suites({
           </TouchableOpacity>
           {failedCount > 0 && failures != null && <CopyFailuresButton failures={failures} />}
         </View>
-        <View style={[styles.resultFooter, { borderTopColor: theme.border.secondary }]}>
-          <Text style={[styles.resultFooterLabel, { color: theme.text.secondary }]}>Result</Text>
-          <Text
-            testID="test_suite_summary_result_text"
-            style={[
-              styles.summaryTitle,
-              styles.resultFooterTitle,
-              { color: failedCount > 0 ? theme.text.danger : theme.text.success },
-            ]}>
-            {failedCount > 0 ? 'Some tests failed!' : 'All tests passed!'}
-          </Text>
-        </View>
       </View>
     );
   }, [
@@ -299,8 +283,8 @@ export default function Suites({
         renderItem={({ item }) => (
           <SuiteResult suite={item} depth={0} failuresOnly={failuresOnly} />
         )}
-        ListHeaderComponent={header}
-        ListFooterComponent={footer}
+        ListHeaderComponent={header ?? undefined}
+        ListFooterComponent={footer ?? undefined}
         stickyHeaderIndices={[0]}
         onContentSizeChange={onContentSizeChange}
         onLayout={onLayout}
@@ -364,20 +348,5 @@ const styles = StyleSheet.create({
   actionText: {
     fontSize: 16,
     fontWeight: '600',
-  },
-  resultFooter: {
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    alignItems: 'center',
-  },
-  resultFooterLabel: {
-    fontSize: 12,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
-  resultFooterTitle: {
-    marginBottom: 0,
   },
 });

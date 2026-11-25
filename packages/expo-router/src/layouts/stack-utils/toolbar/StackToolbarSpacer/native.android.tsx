@@ -1,9 +1,8 @@
 'use client';
-import { Box } from '@expo/ui/jetpack-compose';
-import { width } from '@expo/ui/jetpack-compose/modifiers';
 
-import type { NativeToolbarSpacerProps } from './types';
+import { requireExpoUI } from '../../../../optional-libraries/expo-ui';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
+import type { NativeToolbarSpacerProps } from './types';
 
 /**
  * Native toolbar spacer component for Android bottom toolbar.
@@ -13,6 +12,12 @@ export const NativeToolbarSpacer: React.FC<NativeToolbarSpacerProps> = (props) =
   if (!props.width) {
     return null;
   }
+  const {
+    expoUI: { Box },
+    modifiers: { width },
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
 
   return (
     <AnimatedItemContainer visible={!props.hidden}>

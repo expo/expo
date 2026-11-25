@@ -49,7 +49,7 @@ export interface HasteMapOptions {
 }
 
 export default class HastePlugin implements HasteMap, FileMapPlugin<null, string | null> {
-  readonly name: 'haste' = 'haste';
+  readonly name = 'haste' as const;
 
   readonly #console: Console | undefined | null;
   readonly #duplicates: DuplicatesIndex = new Map();

@@ -17,6 +17,10 @@ import androidx.annotation.UiThread
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.size
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.savedstate.SavedStateRegistryOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.types.enforceType
@@ -42,7 +46,11 @@ inline fun <T : ComposableScope> T.withIf(
   condition: Boolean,
   block: T.() -> T
 ): T {
-  return if (condition) block() else this
+  return if (condition) {
+    block()
+  } else {
+    this
+  }
 }
 
 /**
@@ -52,9 +60,13 @@ abstract class ExpoComposeView<T : ComposeProps>(
   context: Context,
   appContext: AppContext,
   private val withHostingView: Boolean = false
-) : ExpoView(context, appContext) {
+) : ExpoView(context, appContext), ComposeHostingView {
   open val props: T? = null
   protected var recomposeScope: RecomposeScope? = null
+
+  // Retained so the composition can be disposed on unmount: its strategy is
+  // pinned to the Activity lifecycle, so nothing disposes it on window detach.
+  private var hostingComposeView: ComposeView? = null
 
   private val globalEvent = ViewEvent<Pair<String, Map<String, Any?>>>(GLOBAL_EVENT_NAME, this, null)
 
@@ -70,9 +82,16 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
   override val shouldUseAndroidLayout = withHostingView
 
+  // A measure pass skipped while detached is cached by Android, so the same specs will not measure
+  // the Compose content again. Set when that happens, so the first attach can request a new pass.
+  // React Native can attach this view from inside its own `layout()`, which clears the forced-layout
+  // flag when it returns, so the scheduled layout forces the measure when it runs.
+  private var needsLayoutOnAttach = false
+
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
     // In case of issues there's an alternative solution in previous commits at https://github.com/expo/expo/pull/33759
     if (shouldUseAndroidLayout && !isAttachedToWindow) {
+      needsLayoutOnAttach = true
       setMeasuredDimension(widthMeasureSpec, heightMeasureSpec)
       return
     }
@@ -80,6 +99,9 @@ abstract class ExpoComposeView<T : ComposeProps>(
   }
 
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+    if (shouldUseAndroidLayout && !isAttachedToWindow) {
+      return
+    }
     super.onLayout(changed, left, top, right, bottom)
 
     // Makes sure the child ComposeView is sticky with the current hosting view
@@ -97,6 +119,10 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
+    if (needsLayoutOnAttach) {
+      needsLayoutOnAttach = false
+      scheduleLayout(forceMeasure = true)
+    }
     if (!withHostingView) {
       validateHostingAncestor()
     }
@@ -129,7 +155,9 @@ abstract class ExpoComposeView<T : ComposeProps>(
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
       // Hosting children render themselves via their own ComposeView; skip to avoid double-rendering.
-      if (child.shouldUseAndroidLayout) continue
+      if (child.shouldUseAndroidLayout) {
+        continue
+      }
       key(child) {
         with(composableScope ?: ComposableScope()) {
           with(child) {
@@ -145,7 +173,9 @@ abstract class ExpoComposeView<T : ComposeProps>(
     recomposeScope = currentRecomposeScope
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
-      if (child.shouldUseAndroidLayout) continue
+      if (child.shouldUseAndroidLayout) {
+        continue
+      }
       if (!filter(child)) {
         continue
       }
@@ -163,7 +193,9 @@ abstract class ExpoComposeView<T : ComposeProps>(
   fun Child(composableScope: ComposableScope, index: Int) {
     recomposeScope = currentRecomposeScope
     val child = getChildAt(index) as? ExpoComposeView<*> ?: return
-    if (child.shouldUseAndroidLayout) return
+    if (child.shouldUseAndroidLayout) {
+      return
+    }
     key(child) {
       with(composableScope) {
         with(child) {
@@ -182,6 +214,15 @@ abstract class ExpoComposeView<T : ComposeProps>(
     if (withHostingView) {
       clipChildren = false
       clipToPadding = false
+      addOnAttachStateChangeListener(
+        OnAttachAfterDetachmentListener(
+          onAttachAfterDetachment = {
+            // Restore the Android layout pass after a real detach. The listener deliberately
+            // ignores the first attach and React Native's same-loop reparenting.
+            requestLayout()
+          }
+        )
+      )
       addComposeView()
     } else {
       this.visibility = GONE
@@ -191,20 +232,60 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
   private fun addComposeView() {
     val composeView = ComposeView(context).also {
+      // Give each Host a unique rememberSaveable namespace. All Hosts share the Activity's
+      // SavedStateRegistry (set below), so without one they'd collide on a single key and only
+      // the first could save/restore state.
+      HostingViewSaveableState.assignNamespace(it)
       it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-      it.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+      // Pin the composition to the Activity lifecycle so it survives
+      // react-native-screens detaching inactive screens on every switch.
+      // The strategy alone isn't enough: Compose's WrappedComposition also
+      // observes the view-tree lifecycle owner found at first attach — the
+      // screen fragment's, which RN-screens destroys per switch — and
+      // self-disposes on its ON_DESTROY, leaving a dead composition that
+      // never recreates. Overriding the owners on the ComposeView (nearest
+      // tag wins) points both at the Activity. Unmount disposes explicitly
+      // via disposeHostedComposition().
+      val activity = appContext.currentActivity
+      if (activity is LifecycleOwner && activity is SavedStateRegistryOwner) {
+        it.setViewTreeLifecycleOwner(activity)
+        it.setViewTreeSavedStateRegistryOwner(activity)
+        it.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnLifecycleDestroyed(activity.lifecycle))
+      } else {
+        // No Activity to pin to: keep the prior behavior, including the
+        // dispose-on-reattach workaround for blank compositions after
+        // navigation (https://github.com/expo/expo/pull/34689).
+        it.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        it.addOnAttachStateChangeListener(
+          OnAttachAfterDetachmentListener(onAttachAfterDetachment = {
+            it.disposeComposition()
+          })
+        )
+      }
       it.setContent {
         with(ComposableScope()) {
           Content()
         }
       }
-      it.addOnAttachStateChangeListener(
-        OnAttachAfterDetachmentListener(onAttachAfterDetachment = {
-          it.disposeComposition()
-        })
-      )
     }
+    hostingComposeView = composeView
     addView(composeView)
+  }
+
+  override fun disposeHostedComposition() {
+    hostingComposeView?.let {
+      // disposeComposition() alone leaves the composition strategy's lifecycle observer
+      // registered on the Activity, which leaks this view.
+      // Swapping the strategy first detaches that observer, then we dispose.
+      it.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindow)
+      // If the view is still attached when RN drops it, react-native-screens is keeping it
+      // on-screen for an in-progress navigation transition (e.g. a pop). Disposing now blanks
+      // the Compose content before the animation finishes (https://github.com/expo/expo/issues/47086).
+      // View eventually gets decomposed when RN screen detaches view from window
+      if (!it.isAttachedToWindow) {
+        it.disposeComposition()
+      }
+    }
   }
 
   override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {
@@ -315,7 +396,11 @@ class FunctionalComposableScope(
     val currentHandler = rememberUpdatedState(handler)
     DisposableEffect(name) {
       view.functionHandlers[name] = { args ->
-        val arg = if (args.isEmpty()) Unit else args[0]
+        val arg = if (args.isEmpty()) {
+          Unit
+        } else {
+          args[0]
+        }
         enforceType<P0>(arg)
         currentHandler.value(arg)
       }
@@ -511,7 +596,8 @@ class ComposeFunctionHolder<Props : ComposeProps>(
   appContext: AppContext,
   override val name: String,
   private val composableContent: @Composable FunctionalComposableScope.(props: Props) -> Unit,
-  override val props: Props
+  override val props: Props,
+  override val callbacksDefinition: CallbacksDefinition?
 ) : ExpoComposeView<Props>(context, appContext), ViewFunctionHolder {
   val propsMutableState = mutableStateOf(props)
 

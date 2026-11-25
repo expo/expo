@@ -25,7 +25,10 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTDevSettings.h>
+#import <React/RCTDevMenu.h>
+#import <React/RCTPackagerConnection.h>
 #import <React/RCTRootView.h>
+#import <Expo/EXBundleConfiguration.h>
 
 #if __has_include(<ExpoModulesCore-Swift.h>)
 #import <ExpoModulesCore-Swift.h>
@@ -133,12 +136,30 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     [self _startObservingNotificationsForHost];
     
     if (!_isHeadless) {
-      _reactRootView = [self.expoAppInstance.reactNativeFactory.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
+      _reactRootView = [self.expoAppInstance.reactNativeFactory.rootViewFactory viewWithModuleName:[self applicationKeyForRootView]
+                                                                                 initialProperties:[self initialPropertiesForRootView]
+                                                                                     launchOptions:nil
+                                                                               bundleConfiguration:[EXBundleConfiguration configurationWithBundleURL:[self bundleUrl]]
+                                                                              devMenuConfiguration:[self _devMenuConfiguration]];
     }
 
     [self setupWebSocketControls];
     [_delegate reactAppManagerIsReadyForLoad:self];
   }
+}
+
+- (RCTDevMenuConfiguration *)_devMenuConfiguration
+{
+#if RCT_DEV_MENU
+  // Expo Go presents its own dev menu, and expo-dev-menu owns the shake gesture and keyboard
+  // shortcuts. RN's dev menu stays constructed so it can be opened programmatically, but must not
+  // respond to those gestures itself.
+  return [[RCTDevMenuConfiguration alloc] initWithDevMenuEnabled:YES
+                                            shakeGestureEnabled:NO
+                                       keyboardShortcutsEnabled:NO];
+#else
+  return [RCTDevMenuConfiguration defaultConfiguration];
+#endif
 }
 
 - (void)_createAppInstance
@@ -203,6 +224,8 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     _reactRootView = nil;
   }
   if (_expoAppInstance) {
+    [[[self _devSettings] packagerConnection] stop];
+
     _expoAppInstance = nil;
     if (_delegate) {
       [_delegate reactAppManagerDidInvalidate:self];
@@ -224,7 +247,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 - (NSURL *)bundleUrl
 {
-  return [EXApiUtil bundleUrlFromManifest:_appRecord.appLoader.manifest];
+  return [EXApiUtil bundleUrlFromManifest:_appRecord.appLoader.manifest relativeTo:_appRecord.appLoader.manifestUrl];
 }
 
 #pragma mark - EXAppFetcherDataSource
@@ -452,51 +475,56 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 - (void)setupWebSocketControls
 {
-  if ([self enablesDeveloperTools]) {
-    if ([_versionManager respondsToSelector:@selector(addWebSocketNotificationHandler:queue:forMethod:)]) {
-      __weak __typeof(self) weakSelf = self;
+  if (![self enablesDeveloperTools]) {
+    return;
+  }
 
-      // Attach listeners to the bundler's dev server web socket connection.
-      // This enables tools to automatically reload the client remotely (i.e. in expo-cli).
+  RCTDevSettings *devSettings = [self _devSettings];
+  if (!devSettings) {
+    return;
+  }
 
-      // Enable a lot of tools under the same command namespace
-      [_versionManager addWebSocketNotificationHandler:^(id params) {
-        if (params != [NSNull null] && (NSDictionary *)params) {
-          NSDictionary *_params = (NSDictionary *)params;
-          if (_params[@"name"] != nil && (NSString *)_params[@"name"]) {
-            NSString *name = _params[@"name"];
-            if ([name isEqualToString:@"reload"]) {
-              [[EXKernel sharedInstance] reloadVisibleApp];
-            } else if ([name isEqualToString:@"toggleDevMenu"]) {
-              [weakSelf toggleDevMenu];
-            } else if ([name isEqualToString:@"toggleElementInspector"]) {
-              [weakSelf toggleElementInspector];
-            } else if ([name isEqualToString:@"togglePerformanceMonitor"]) {
-              [weakSelf togglePerformanceMonitor];
-            }
-          }
+  __weak __typeof(self) weakSelf = self;
+
+  // Attach listeners to the bundler's dev server web socket connection.
+  // This enables tools to automatically reload the client remotely (i.e. in expo-cli).
+
+  // Enable a lot of tools under the same command namespace
+  [devSettings addNotificationHandler:^(id params) {
+    if (params != [NSNull null] && (NSDictionary *)params) {
+      NSDictionary *_params = (NSDictionary *)params;
+      if (_params[@"name"] != nil && (NSString *)_params[@"name"]) {
+        NSString *name = _params[@"name"];
+        if ([name isEqualToString:@"reload"]) {
+          [[EXKernel sharedInstance] reloadVisibleApp];
+        } else if ([name isEqualToString:@"toggleDevMenu"]) {
+          [weakSelf toggleDevMenu];
+        } else if ([name isEqualToString:@"toggleElementInspector"]) {
+          [weakSelf toggleElementInspector];
+        } else if ([name isEqualToString:@"togglePerformanceMonitor"]) {
+          [weakSelf togglePerformanceMonitor];
         }
       }
-                                                 queue:dispatch_get_main_queue()
-                                             forMethod:@"sendDevCommand"];
-
-      // These (reload and devMenu) are here to match RN dev tooling.
-
-      // Reload the app on "reload"
-      [_versionManager addWebSocketNotificationHandler:^(id params) {
-        [[EXKernel sharedInstance] reloadVisibleApp];
-      }
-                                                 queue:dispatch_get_main_queue()
-                                             forMethod:@"reload"];
-
-      // Open the dev menu on "devMenu"
-      [_versionManager addWebSocketNotificationHandler:^(id params) {
-        [weakSelf toggleDevMenu];
-      }
-                                                 queue:dispatch_get_main_queue()
-                                             forMethod:@"devMenu"];
     }
   }
+                                queue:dispatch_get_main_queue()
+                            forMethod:@"sendDevCommand"];
+
+  // These (reload and devMenu) are here to match RN dev tooling.
+
+  // Reload the app on "reload"
+  [devSettings addNotificationHandler:^(id params) {
+    [[EXKernel sharedInstance] reloadVisibleApp];
+  }
+                                queue:dispatch_get_main_queue()
+                            forMethod:@"reload"];
+
+  // Open the dev menu on "devMenu"
+  [devSettings addNotificationHandler:^(id params) {
+    [weakSelf toggleDevMenu];
+  }
+                                queue:dispatch_get_main_queue()
+                            forMethod:@"devMenu"];
 }
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItems
@@ -513,7 +541,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 - (RCTDevSettings *)_devSettings
 {
-  return (RCTDevSettings *)[self.reactModuleRegistry moduleForName:"DevSettings"];
+  return (RCTDevSettings *)[self.reactModuleRegistry moduleForName:"DevSettings" lazilyLoadIfNecessary:YES];
 }
 
 - (BOOL)isHotLoadingEnabled

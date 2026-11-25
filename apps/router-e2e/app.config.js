@@ -26,9 +26,13 @@ module.exports = {
     package: 'dev.expo.routere2e',
   },
   // For testing the output bundle
-  jsEngine: process.env.E2E_ROUTER_JS_ENGINE ?? (process.env.E2E_ROUTER_SRC ? 'jsc' : 'hermes'),
+  jsEngine: 'hermes',
   newArchEnabled: true,
   experiments: {
+    chunking: {
+      mode: process.env.E2E_ROUTER_SPLIT_STRATEGY === 'granular' ? 'granular' : 'legacy',
+    },
+    noxcturnalTransformWorker: true,
     autolinkingModuleResolution: true,
     baseUrl: process.env.EXPO_E2E_BASE_PATH || undefined,
     tsconfigPaths: process.env.EXPO_USE_PATH_ALIASES,
@@ -40,6 +44,7 @@ module.exports = {
   web: {
     output: process.env.EXPO_USE_STATIC ?? 'static',
     bundler: 'metro',
+    favicon: process.env.E2E_FAVICON || undefined,
   },
   plugins: [
     [
@@ -66,8 +71,8 @@ module.exports = {
             ? true
             : process.env.E2E_ROUTER_ASYNC === 'false'
               ? false
-              : process.env.E2E_ROUTER_ASYNC || false,
-        root: path.join('__e2e__', process.env.E2E_ROUTER_SRC ?? 'static-rendering', 'app'),
+              : process.env.E2E_ROUTER_ASYNC,
+        root: path.join('__e2e__', process.env.E2E_ROUTER_SRC ?? 'router-misc', 'app'),
         origin: 'http://localhost:8081/',
         sitemap:
           process.env.E2E_ROUTER_SITEMAP === 'false' ? false : process.env.E2E_ROUTER_SITEMAP,
@@ -79,21 +84,13 @@ module.exports = {
           : undefined,
         headers: process.env.E2E_ROUTER_HEADERS
           ? JSON.parse(process.env.E2E_ROUTER_HEADERS)
-          : process.env.E2E_ROUTER_HEADERS_PREDEFINED
-            ? {
-                'X-Powered-By': 'expo-server',
-                'Set-Cookie': ['session=123', 'token=xyz'],
-              }
-            : undefined,
-        unstable_useServerDataLoaders: process.env.E2E_ROUTER_SERVER_LOADERS === 'true',
-        unstable_useServerMiddleware: process.env.E2E_ROUTER_SERVER_MIDDLEWARE === 'true',
-        unstable_useServerRendering: process.env.E2E_ROUTER_SERVER_RENDERING === 'true',
-      },
-    ],
-    [
-      'expo-asset',
-      {
-        assets: ['./assets/expo-logo.png', './assets/expo-transparent.png'],
+          : undefined,
+        pageHeaders: process.env.E2E_ROUTER_PAGE_HEADERS
+          ? JSON.parse(process.env.E2E_ROUTER_PAGE_HEADERS)
+          : undefined,
+        apiRoutes: process.env.E2E_ROUTER_API_ROUTES
+          ? process.env.E2E_ROUTER_API_ROUTES === 'true'
+          : undefined,
       },
     ],
   ],

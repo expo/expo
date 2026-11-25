@@ -1,7 +1,5 @@
 package expo.modules.updates.codesigning
 
-import org.bouncycastle.asn1.ASN1Primitive
-import org.bouncycastle.asn1.DEROctetString
 import java.security.cert.CertificateException
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
@@ -12,6 +10,8 @@ private const val CODE_SIGNING_OID = "1.3.6.1.5.5.7.3.3"
 
 // OID of expo project info, stored as `<projectId>,<scopeKey>`
 private const val EXPO_PROJECT_INFORMATION_OID = "1.2.840.113556.1.8000.2554.43437.254.128.102.157.7894389.20439.2.1"
+
+private const val DER_OCTET_STRING_TAG = 0x04
 
 data class ExpoProjectInformation(val projectId: String, val scopeKey: String)
 
@@ -60,13 +60,7 @@ class CertificateChain(private val certificateStrings: List<String>) {
 
     fun X509Certificate.expoProjectInformation(): ExpoProjectInformation? {
       return getExtensionValue(EXPO_PROJECT_INFORMATION_OID)?.let {
-        ASN1Primitive.fromByteArray(it)
-      }?.let {
-        if (it is DEROctetString) {
-          it.octets.decodeToString()
-        } else {
-          null
-        }
+        decodeDerOctetString(it).decodeToString()
       }?.let {
         val components = it.split(',').map { component -> component.trim() }
         if (components.size != 2) {
@@ -74,6 +68,38 @@ class CertificateChain(private val certificateStrings: List<String>) {
         }
         ExpoProjectInformation(components[0], components[1])
       }
+    }
+
+    /**
+     * Returns the contents of the DER-encoded OCTET STRING.
+     * Throws for any other input, so that a malformed extension never reads as a missing one.
+     */
+    private fun decodeDerOctetString(der: ByteArray): ByteArray {
+      val invalid = { throw CertificateException("Invalid Expo project information extension value") }
+
+      val input = der.inputStream()
+      if (input.read() != DER_OCTET_STRING_TAG) {
+        invalid()
+      }
+      var length = input.read()
+      // Long form: 0x81-0x83 means that the next 1-3 bytes hold the length.
+      if (length >= 0x80) {
+        val lengthByteCount = length - 0x80
+        if (lengthByteCount !in 1..3 || input.available() < lengthByteCount) {
+          invalid()
+        }
+
+        length = 0
+        repeat(lengthByteCount) {
+          length = (length shl 8) or input.read()
+        }
+      }
+
+      if (length != input.available()) {
+        invalid()
+      }
+
+      return input.readBytes()
     }
 
     private fun X509Certificate.isCACertificate(): Boolean {

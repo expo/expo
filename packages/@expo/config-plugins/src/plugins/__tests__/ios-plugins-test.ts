@@ -1,11 +1,11 @@
 import type { ExpoConfig } from '@expo/config-types';
 import { vol } from 'memfs';
 
-import rnFixture from './fixtures/react-native-project';
 import { addWarningIOS } from '../../utils/warnings';
 import { createInfoPlistPluginWithPropertyGuard } from '../ios-plugins';
 import { evalModsAsync } from '../mod-compiler';
 import { getIosModFileProviders, withIosBaseMods } from '../withIosBaseMods';
+import rnFixture from './fixtures/react-native-project';
 
 jest.mock('../../utils/warnings', () => ({
   addWarningIOS: jest.fn(),
@@ -61,7 +61,7 @@ describe(createInfoPlistPluginWithPropertyGuard, () => {
       assertMissingModProviders: true,
     });
 
-    expect(results.ios.infoPlist.CFFakeValue).toEqual(false);
+    expect(results.ios!.infoPlist!.CFFakeValue).toEqual(false);
 
     expect(setter).not.toHaveBeenCalled();
     expect(addWarningIOS).toHaveBeenCalledWith(
@@ -102,7 +102,7 @@ describe(createInfoPlistPluginWithPropertyGuard, () => {
       assertMissingModProviders: true,
     });
 
-    expect(results.ios.infoPlist.CFFakeValue).toEqual(false);
+    expect(results.ios!.infoPlist!.CFFakeValue).toEqual(false);
 
     expect(setter).not.toHaveBeenCalled();
     expect(addWarningIOS).not.toHaveBeenCalled();

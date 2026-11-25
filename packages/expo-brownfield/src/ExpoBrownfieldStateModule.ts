@@ -1,5 +1,5 @@
 import { requireNativeModule } from 'expo';
-import type { EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
 import { useCallback, useEffect, useState } from 'react';
 
 import type {

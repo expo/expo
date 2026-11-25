@@ -9,9 +9,10 @@ import java.nio.ByteBuffer
  * A Kotlin representation of native-owned ArrayBuffer.
  * Can be created on any thread and safely returned to JavaScript.
  */
+@Deprecated("Use ArrayBuffer instead", ReplaceWith("ArrayBuffer"))
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-class NativeArrayBuffer : Destructible, ArrayBuffer {
+class NativeArrayBuffer : Destructible {
   @DoNotStrip private val mHybridData: HybridData
 
   @DoNotStrip
@@ -31,16 +32,21 @@ class NativeArrayBuffer : Destructible, ArrayBuffer {
 
   fun isValid() = mHybridData.isValid
 
-  external override fun size(): Int
+  external fun size(): Int
 
-  external override fun readByte(position: Int): Byte
-  external override fun read2Byte(position: Int): Short
-  external override fun read4Byte(position: Int): Int
-  external override fun read8Byte(position: Int): Long
-  external override fun readFloat(position: Int): Float
-  external override fun readDouble(position: Int): Double
+  external fun readByte(position: Int): Byte
+  external fun read2Byte(position: Int): Short
+  external fun read4Byte(position: Int): Int
+  external fun read8Byte(position: Int): Long
+  external fun readFloat(position: Int): Float
+  external fun readDouble(position: Int): Double
 
-  external override fun toDirectBuffer(): ByteBuffer
+  external fun toDirectBuffer(): ByteBuffer
+
+  /**
+   * Creates a native-owned copy of this ArrayBuffer.
+   */
+  fun copy(): NativeArrayBuffer = copyOf(this)
 
   @Throws(Throwable::class)
   protected fun finalize() {
@@ -72,6 +78,18 @@ class NativeArrayBuffer : Destructible, ArrayBuffer {
      * Copy given [ArrayBuffer] into a new native-owned `ArrayBuffer`.
      */
     fun copyOf(other: ArrayBuffer): NativeArrayBuffer =
+      copyOf(other.toDirectBuffer())
+
+    /**
+     * Copy given [JavaScriptArrayBuffer] into a new native-owned `ArrayBuffer`.
+     */
+    fun copyOf(other: JavaScriptArrayBuffer): NativeArrayBuffer =
+      copyOf(other.toDirectBuffer())
+
+    /**
+     * Copy given [NativeArrayBuffer] into a new native-owned `ArrayBuffer`.
+     */
+    fun copyOf(other: NativeArrayBuffer): NativeArrayBuffer =
       copyOf(other.toDirectBuffer())
 
     fun copyOf(byteBuffer: ByteBuffer): NativeArrayBuffer {

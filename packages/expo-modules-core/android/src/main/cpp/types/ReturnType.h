@@ -28,6 +28,7 @@ enum class ReturnType {
   LONG_ARRAY = 1 << 17,
   FLOAT_ARRAY = 1 << 18,
   BOOLEAN_ARRAY = 1 << 19,
+  ARRAY_BUFFER = 1 << 20,
 };
 
 } // namespace expo

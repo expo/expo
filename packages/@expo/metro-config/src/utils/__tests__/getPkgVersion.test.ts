@@ -1,119 +1,143 @@
-import JsonFile from '@expo/json-file';
-import path from 'path';
-import resolveFrom from 'resolve-from';
+import { vol } from 'memfs';
 
-import { findUpPackageJson, getPkgVersion, getPkgVersionFromPath } from '../getPkgVersion';
+import { getPkgVersion } from '../getPkgVersion';
 
-jest.mock('resolve-from', () => ({
-  silent: jest.fn(),
-}));
+// NOTE(@kitten): The resolver falls back to Node's own resolution, which reads the real
+// filesystem and `NODE_PATH`. Jest sets `NODE_PATH`, so real package names would leak into
+// these tests. All fixtures use names that only exist in the in-memory filesystem.
+const PKG = 'fixture-pkg';
+const PEER = 'fixture-peer';
 
-jest.mock('@expo/json-file', () => ({
-  read: jest.fn(),
-}));
+const pkgJson = (name: string, version?: unknown) =>
+  JSON.stringify(version === undefined ? { name } : { name, version });
+
+beforeEach(() => {
+  vol.reset();
+});
 
 describe(getPkgVersion, () => {
-  const projectRoot = '/project';
-
-  beforeEach(() => {
-    jest.mocked(resolveFrom.silent).mockReset();
-    jest.mocked(JsonFile.read).mockReset();
+  it('returns the version of a package installed in the project', () => {
+    vol.fromJSON({
+      '/proj/package.json': pkgJson('app', '1.0.0'),
+      [`/proj/node_modules/${PKG}/package.json`]: pkgJson(PKG, '2.3.4'),
+    });
+    expect(getPkgVersion('/proj', PKG)).toBe('2.3.4');
   });
 
-  it('should return the version string from the resolved package', () => {
-    jest
-      .mocked(resolveFrom.silent)
-      .mockReturnValueOnce('/project/node_modules/expo/index.js')
-      .mockReturnValueOnce('/project/node_modules/expo/package.json');
-    jest.mocked(JsonFile.read).mockReturnValueOnce({ version: '52.0.0' } as any);
-
-    expect(getPkgVersion(projectRoot, 'expo')).toBe('52.0.0');
+  it('returns the version of a scoped package', () => {
+    vol.fromJSON({
+      '/proj/package.json': pkgJson('app', '1.0.0'),
+      '/proj/node_modules/@fixture/scoped/package.json': pkgJson('@fixture/scoped', '7.0.0-beta.1'),
+    });
+    expect(getPkgVersion('/proj', '@fixture/scoped')).toBe('7.0.0-beta.1');
   });
 
-  it('should return null when the package cannot be resolved', () => {
-    jest.mocked(resolveFrom.silent).mockReturnValue(undefined as any);
-
-    expect(getPkgVersion(projectRoot, 'nonexistent')).toBeNull();
-    expect(JsonFile.read).not.toHaveBeenCalled();
+  it('resolves a package hoisted to a parent node_modules folder', () => {
+    vol.fromJSON({
+      '/monorepo/package.json': pkgJson('monorepo'),
+      [`/monorepo/node_modules/${PKG}/package.json`]: pkgJson(PKG, '2.3.4'),
+      '/monorepo/apps/app/package.json': pkgJson('app', '1.0.0'),
+    });
+    expect(getPkgVersion('/monorepo/apps/app', PKG)).toBe('2.3.4');
   });
 
-  it('should return null when package.json has no version field', () => {
-    jest
-      .mocked(resolveFrom.silent)
-      .mockReturnValueOnce('/project/node_modules/expo/index.js')
-      .mockReturnValueOnce('/project/node_modules/expo/package.json');
-    jest.mocked(JsonFile.read).mockReturnValueOnce({ name: 'expo' } as any);
-
-    expect(getPkgVersion(projectRoot, 'expo')).toBeNull();
+  it('returns null when the package is not installed', () => {
+    vol.fromJSON({ '/proj/package.json': pkgJson('app', '1.0.0') });
+    expect(getPkgVersion('/proj', PKG)).toBeNull();
   });
 
-  it('should return null when version is not a string', () => {
-    jest
-      .mocked(resolveFrom.silent)
-      .mockReturnValueOnce('/project/node_modules/expo/index.js')
-      .mockReturnValueOnce('/project/node_modules/expo/package.json');
-    jest.mocked(JsonFile.read).mockReturnValueOnce({ version: 123 } as any);
-
-    expect(getPkgVersion(projectRoot, 'expo')).toBeNull();
-  });
-});
-
-describe(getPkgVersionFromPath, () => {
-  beforeEach(() => {
-    jest.mocked(JsonFile.read).mockReset();
+  it('returns null when the package has no version field', () => {
+    vol.fromJSON({
+      '/proj/package.json': pkgJson('app', '1.0.0'),
+      [`/proj/node_modules/${PKG}/package.json`]: pkgJson(PKG),
+    });
+    expect(getPkgVersion('/proj', PKG)).toBeNull();
   });
 
-  it('should return the version string from the package.json path', () => {
-    jest.mocked(JsonFile.read).mockReturnValueOnce({ version: '1.2.3' } as any);
-
-    expect(getPkgVersionFromPath('/project/node_modules/expo/package.json')).toBe('1.2.3');
-    expect(JsonFile.read).toHaveBeenCalledWith('/project/node_modules/expo/package.json');
+  it('returns null when the version field is not a string', () => {
+    vol.fromJSON({
+      '/proj/package.json': pkgJson('app', '1.0.0'),
+      [`/proj/node_modules/${PKG}/package.json`]: pkgJson(PKG, 42),
+    });
+    expect(getPkgVersion('/proj', PKG)).toBeNull();
   });
 
-  it('should return null when package.json has no version field', () => {
-    jest.mocked(JsonFile.read).mockReturnValueOnce({ name: 'expo' } as any);
-
-    expect(getPkgVersionFromPath('/project/node_modules/expo/package.json')).toBeNull();
+  it('returns null when the package.json is malformed', () => {
+    vol.fromJSON({
+      '/proj/package.json': pkgJson('app', '1.0.0'),
+      [`/proj/node_modules/${PKG}/package.json`]: '{ not json',
+    });
+    expect(getPkgVersion('/proj', PKG)).toBeNull();
   });
 
-  it('should return null when version is not a string', () => {
-    jest.mocked(JsonFile.read).mockReturnValueOnce({ version: 123 } as any);
-
-    expect(getPkgVersionFromPath('/project/node_modules/expo/package.json')).toBeNull();
-  });
-});
-
-describe(findUpPackageJson, () => {
-  beforeEach(() => {
-    jest.mocked(resolveFrom.silent).mockReset();
+  it('returns null when the package.json is empty', () => {
+    vol.fromJSON({
+      '/proj/package.json': pkgJson('app', '1.0.0'),
+      [`/proj/node_modules/${PKG}/package.json`]: '',
+    });
+    expect(getPkgVersion('/proj', PKG)).toBeNull();
   });
 
-  it('should return package.json path when found in the given directory', () => {
-    jest.mocked(resolveFrom.silent).mockReturnValueOnce('/project/node_modules/expo/package.json');
-
-    expect(findUpPackageJson('/project/node_modules/expo/src/index.js')).toBe(
-      '/project/node_modules/expo/package.json'
-    );
+  it('reads the package.json of the package itself, not a nested one', () => {
+    // `dist/package.json` markers (e.g. `{ "type": "module" }`) must not shadow the real manifest
+    vol.fromJSON({
+      '/proj/package.json': pkgJson('app', '1.0.0'),
+      [`/proj/node_modules/${PKG}/package.json`]: pkgJson(PKG, '2.3.4'),
+      [`/proj/node_modules/${PKG}/dist/package.json`]: JSON.stringify({ type: 'module' }),
+      [`/proj/node_modules/${PKG}/dist/index.js`]: '',
+    });
+    expect(getPkgVersion('/proj', PKG)).toBe('2.3.4');
   });
 
-  it('should walk up directories until package.json is found', () => {
-    jest
-      .mocked(resolveFrom.silent)
-      .mockReturnValueOnce(undefined as any)
-      .mockReturnValueOnce(undefined as any)
-      .mockReturnValueOnce('/project/node_modules/expo/package.json');
+  describe('peerDependent fallback', () => {
+    it('resolves a package nested under the peer dependent', () => {
+      vol.fromJSON({
+        '/proj/package.json': pkgJson('app', '1.0.0'),
+        [`/proj/node_modules/${PEER}/package.json`]: pkgJson(PEER, '4.0.0'),
+        [`/proj/node_modules/${PEER}/node_modules/${PKG}/package.json`]: pkgJson(PKG, '0.6.0'),
+      });
+      expect(getPkgVersion('/proj', PKG, PEER)).toBe('0.6.0');
+    });
 
-    expect(findUpPackageJson('/project/node_modules/expo/src/deep/index.js')).toBe(
-      '/project/node_modules/expo/package.json'
-    );
-    expect(resolveFrom.silent).toHaveBeenCalledTimes(3);
-  });
+    it('does not resolve the nested package without the peerDependent argument', () => {
+      vol.fromJSON({
+        '/proj/package.json': pkgJson('app', '1.0.0'),
+        [`/proj/node_modules/${PEER}/package.json`]: pkgJson(PEER, '4.0.0'),
+        [`/proj/node_modules/${PEER}/node_modules/${PKG}/package.json`]: pkgJson(PKG, '0.6.0'),
+      });
+      expect(getPkgVersion('/proj', PKG)).toBeNull();
+    });
 
-  it('should return null when reaching the root directory', () => {
-    expect(findUpPackageJson(path.sep)).toBeNull();
-  });
+    it('prefers the project-level package over the peer dependent copy', () => {
+      vol.fromJSON({
+        '/proj/package.json': pkgJson('app', '1.0.0'),
+        [`/proj/node_modules/${PKG}/package.json`]: pkgJson(PKG, '0.9.0'),
+        [`/proj/node_modules/${PEER}/package.json`]: pkgJson(PEER, '4.0.0'),
+        [`/proj/node_modules/${PEER}/node_modules/${PKG}/package.json`]: pkgJson(PKG, '0.6.0'),
+      });
+      expect(getPkgVersion('/proj', PKG, PEER)).toBe('0.9.0');
+    });
 
-  it('should return null for relative root', () => {
-    expect(findUpPackageJson('.')).toBeNull();
+    it('returns null when the peer dependent is not installed', () => {
+      vol.fromJSON({ '/proj/package.json': pkgJson('app', '1.0.0') });
+      expect(getPkgVersion('/proj', PKG, PEER)).toBeNull();
+    });
+
+    it('returns null when the peer dependent does not contain the package', () => {
+      vol.fromJSON({
+        '/proj/package.json': pkgJson('app', '1.0.0'),
+        [`/proj/node_modules/${PEER}/package.json`]: pkgJson(PEER, '4.0.0'),
+      });
+      expect(getPkgVersion('/proj', PKG, PEER)).toBeNull();
+    });
+
+    it('returns null when the nested package has no version field', () => {
+      vol.fromJSON({
+        '/proj/package.json': pkgJson('app', '1.0.0'),
+        [`/proj/node_modules/${PEER}/package.json`]: pkgJson(PEER, '4.0.0'),
+        [`/proj/node_modules/${PEER}/node_modules/${PKG}/package.json`]: pkgJson(PKG),
+      });
+      expect(getPkgVersion('/proj', PKG, PEER)).toBeNull();
+    });
   });
 });

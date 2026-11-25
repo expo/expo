@@ -88,7 +88,7 @@ public class ModuleRegistry {
    *******************************************************/
 
   /**
-   * Register a {@link ModuleRegistryConsumer} as interested of
+   * Register a {@link ModuleRegistryConsumer} as interested in
    * when {@link ModuleRegistry} will be ready, i.e. will have
    * all the {@link InternalModule} instances registered.
    */

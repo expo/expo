@@ -58,11 +58,12 @@ export function Select({
           aria-label={ariaLabel}
           rightSlot={
             <ChevronDownIcon
+              aria-hidden="true"
               className={mergeClasses('icon-sm text-icon-secondary', size === 'lg' && 'icon-md')}
             />
           }
           className={mergeClasses(
-            'min-h-9 transform-none justify-between truncate px-3',
+            'min-h-9 justify-between truncate px-3 active:scale-100',
             !value && 'text-quaternary',
             size === 'lg' && 'min-h-13',
             className
@@ -80,14 +81,15 @@ export function Select({
       </SelectPrimitive.Trigger>
       <SelectPrimitive.Portal>
         <SelectPrimitive.Content
-          // z-[605] to be above the dialogs (601)
+          position="popper"
+          sideOffset={4}
           className={mergeClasses(
-            'relative z-605 max-w-[87.5vw] overflow-hidden rounded-md border border-default bg-overlay shadow-md',
-            'max-md:max-w-[unset]'
-          )}
-          data-orientation="horizontal">
-          <SelectPrimitive.ScrollUpButton className="flex h-7 items-center justify-center rounded-t-md bg-element">
-            <ChevronUpIcon className="icon-sm text-icon-secondary" />
+            'relative z-605 overflow-hidden rounded-xl border border-default bg-overlay shadow-md',
+            'max-h-(--radix-select-content-available-height) min-w-(--radix-select-trigger-width)',
+            'max-w-[87.5vw] max-md:max-w-[unset]'
+          )}>
+          <SelectPrimitive.ScrollUpButton className="flex h-7 items-center justify-center bg-element">
+            <ChevronUpIcon aria-hidden="true" className="icon-sm text-icon-secondary" />
           </SelectPrimitive.ScrollUpButton>
           <SelectPrimitive.Viewport>
             <SelectPrimitive.Group>
@@ -114,7 +116,10 @@ export function Select({
                       {leftSlot}
                       {Icon && (
                         <SelectPrimitive.Icon>
-                          <Icon className={mergeClasses('icon-sm', size === 'lg' && 'icon-md')} />
+                          <Icon
+                            aria-hidden="true"
+                            className={mergeClasses('icon-sm', size === 'lg' && 'icon-md')}
+                          />
                         </SelectPrimitive.Icon>
                       )}
                       {imageUrl && (
@@ -126,6 +131,7 @@ export function Select({
                   </SelectPrimitive.ItemText>
                   <SelectPrimitive.ItemIndicator>
                     <CheckIcon
+                      aria-hidden="true"
                       className={mergeClasses(
                         'icon-sm shrink-0 text-icon-secondary',
                         size === 'lg' && 'icon-md'
@@ -136,8 +142,8 @@ export function Select({
               ))}
             </SelectPrimitive.Group>
           </SelectPrimitive.Viewport>
-          <SelectPrimitive.ScrollDownButton className="flex h-7 items-center justify-center rounded-b-md bg-element">
-            <ChevronDownIcon className="icon-sm text-icon-secondary" />
+          <SelectPrimitive.ScrollDownButton className="flex h-7 items-center justify-center bg-element">
+            <ChevronDownIcon aria-hidden="true" className="icon-sm text-icon-secondary" />
           </SelectPrimitive.ScrollDownButton>
         </SelectPrimitive.Content>
       </SelectPrimitive.Portal>

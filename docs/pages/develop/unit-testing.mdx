@@ -4,6 +4,7 @@ sidebar_title: Unit testing
 description: Learn how to set up and configure the jest-expo library to write unit and snapshot tests for a project with Jest.
 ---
 
+import { RouterLogo } from '@expo/styleguide';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 
@@ -33,13 +34,27 @@ Install `jest-expo` and other required dev dependencies in your project. Run the
 
 <Tab label="macOS/Linux">
 
-<Terminal cmd={['$ npx expo install jest-expo jest @types/jest --dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install jest-expo jest @types/jest --dev'],
+    yarn: ['$ yarn expo install jest-expo jest @types/jest --dev'],
+    pnpm: ['$ pnpm expo install jest-expo jest @types/jest --dev'],
+    bun: ['$ bun expo install jest-expo jest @types/jest --dev'],
+  }}
+/>
 
 </Tab>
 
 <Tab label="Windows">
 
-<Terminal cmd={['$ npx expo install jest-expo jest @types/jest "--" --dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install jest-expo jest @types/jest "--" --dev'],
+    yarn: ['$ yarn expo install jest-expo jest @types/jest "--" --dev'],
+    pnpm: ['$ pnpm expo install jest-expo jest @types/jest "--" --dev'],
+    bun: ['$ bun expo install jest-expo jest @types/jest "--" --dev'],
+  }}
+/>
 
 </Tab>
 
@@ -119,7 +134,22 @@ You can transpile node modules your project uses by configuring [`transformIgnor
   "preset": "jest-expo",
   /* @info */
   "transformIgnorePatterns": [
-    "node_modules/(?!(?:.pnpm/)?((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg))"
+    "node_modules/(?!(.pnpm|(jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg))"
+  ]
+  /* @end */
+}
+```
+
+</Tab>
+
+<Tab label="Bun">
+
+```json package.json
+"jest": {
+  "preset": "jest-expo",
+  /* @info */
+  "transformIgnorePatterns": [
+    "node_modules/(?!(.bun|(jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg))"
   ]
   /* @end */
 }
@@ -143,13 +173,27 @@ To install it, run the following command:
 
 <Tab label="macOS/Linux">
 
-<Terminal cmd={['$ npx expo install @testing-library/react-native --dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @testing-library/react-native --dev'],
+    yarn: ['$ yarn expo install @testing-library/react-native --dev'],
+    pnpm: ['$ pnpm expo install @testing-library/react-native --dev'],
+    bun: ['$ bun expo install @testing-library/react-native --dev'],
+  }}
+/>
 
 </Tab>
 
 <Tab label="Windows">
 
-<Terminal cmd={['$ npx expo install @testing-library/react-native "--" --dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @testing-library/react-native "--" --dev'],
+    yarn: ['$ yarn expo install @testing-library/react-native "--" --dev'],
+    pnpm: ['$ pnpm expo install @testing-library/react-native "--" --dev'],
+    bun: ['$ bun expo install @testing-library/react-native "--" --dev'],
+  }}
+/>
 
 </Tab>
 
@@ -207,8 +251,8 @@ import { render } from '@testing-library/react-native';
 import HomeScreen, { CustomText } from '@/app/index';
 
 describe('<HomeScreen />', () => {
-  test('Text renders correctly on HomeScreen', () => {
-    const { getByText } = render(<HomeScreen />);
+  test('Text renders correctly on HomeScreen', async () => {
+    const { getByText } = await render(<HomeScreen />);
 
     getByText('Welcome!');
   });
@@ -223,7 +267,14 @@ In the above example, the `getByText` query helps your tests find relevant eleme
 
 Run the following command in a terminal window to execute the test:
 
-<Terminal cmd={['$ npm run test']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm run test'],
+    yarn: ['$ yarn run test'],
+    pnpm: ['$ pnpm run test'],
+    bun: ['$ bun run test'],
+  }}
+/>
 
 You will see one test being passed.
 
@@ -268,8 +319,8 @@ To add a snapshot test for `<HomeScreen />`, add the following code snippet in t
 describe('<HomeScreen />', () => {
   /* @hide ... */ /* @end */
 
-  test('CustomText renders correctly', () => {
-    const tree = render(<CustomText>Some text</CustomText>).toJSON();
+  test('CustomText renders correctly', async () => {
+    const tree = (await render(<CustomText>Some text</CustomText>)).toJSON();
 
     expect(tree).toMatchSnapshot();
   });
@@ -325,6 +376,12 @@ You can also use different flows to run your tests. Below are a few example scri
 
 For more information, see [CLI Options](https://jestjs.io/docs/en/cli) in Jest documentation.
 
+## Migrate tests to SDK 58
+
+In SDK 58 and later, `jest-expo` requires Jest 30. When upgrading an existing app, update `jest` and `@types/jest` along with `jest-expo`.
+
+For Expo Router tests, also update `@testing-library/react-native` to version 14 or later and follow the [Router testing migration guide](/router/migrate/sdk-57-to-58/#update-router-tests).
+
 ## Additional information
 
 <BoxLink
@@ -338,12 +395,12 @@ For more information, see [CLI Options](https://jestjs.io/docs/en/cli) in Jest d
   title="Testing configuration for Expo Router"
   description="Learn how to create integration tests for your app when using Expo Router."
   href="/router/reference/testing/"
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 <BoxLink
-  title="E2E tests with EAS Workflows"
-  description="Learn how to set up and run E2E tests on EAS Workflows with Maestro."
+  title="E2E tests with Expo Workflows"
+  description="Learn how to set up and run E2E tests on Expo Workflows with Maestro."
   href="/eas/workflows/examples/e2e-tests/"
   Icon={Dataflow03Icon}
 />

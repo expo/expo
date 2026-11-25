@@ -1,5 +1,10 @@
+import { Asset } from 'expo-asset';
 import Checkbox from 'expo-checkbox';
-import * as Contacts from 'expo-contacts';
+import {
+  Contact,
+  ContactField,
+  requestPermissionsAsync as requestContactsPermissionsAsync,
+} from 'expo-contacts';
 import { File, Directory, Paths, FileMode, UploadType, DownloadTask } from 'expo-file-system';
 import type {
   FileHandle,
@@ -49,6 +54,65 @@ function formatBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
+const previewPdfFixture = `%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 47 >>
+stream
+BT /F1 24 Tf 72 720 Td (File Preview PDF) Tj ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f
+0000000009 00000 n
+0000000058 00000 n
+0000000115 00000 n
+0000000241 00000 n
+0000000338 00000 n
+trailer
+<< /Root 1 0 R /Size 6 >>
+startxref
+408
+%%EOF`;
+
+const getPreviewDirectory = () => {
+  const directory = new Directory(Paths.cache, 'file-system-preview');
+  directory.create({ intermediates: true, idempotent: true });
+  return directory;
+};
+
+async function writePreviewFixtureAsync(fileName: string, contents: string) {
+  const file = new File(getPreviewDirectory(), fileName);
+  await file.write(contents);
+  return file;
+}
+
+async function copyPreviewAssetAsync(assetModule: number, fileName: string) {
+  const asset = Asset.fromModule(assetModule);
+  await asset.downloadAsync();
+
+  if (!asset.localUri) {
+    throw new Error('Unable to resolve local asset URI.');
+  }
+
+  const source = new File(asset.localUri);
+  const destination = new File(getPreviewDirectory(), fileName);
+  await source.copy(destination, { overwrite: true });
+  return destination;
+}
+
 export default function FileSystemScreen() {
   const [currentFile, setCurrentFile] = useState<File | null>(null);
   const [safDirectory, setSafDirectory] = useState<Directory | null>(null);
@@ -73,6 +137,11 @@ export default function FileSystemScreen() {
 
         <FileSourcesSection setCurrentFile={setCurrentFile} />
         <FileInfoSection withCurrentFile={withCurrentFile} />
+        <FilePreviewSection
+          currentFile={currentFile}
+          setCurrentFile={setCurrentFile}
+          withCurrentFile={withCurrentFile}
+        />
         <ReadWriteSection withCurrentFile={withCurrentFile} />
         <FileHandleSection currentFile={currentFile} />
         <FileWatcherSection currentFile={currentFile} />
@@ -164,20 +233,17 @@ function FileSourcesSection({ setCurrentFile }: { setCurrentFile: (f: File) => v
         title="Pick from Contacts"
         onPress={async () => {
           try {
-            const { status } = await Contacts.requestPermissionsAsync();
+            const { status } = await requestContactsPermissionsAsync();
             if (status !== 'granted') {
               Alert.alert('Permission denied');
               return;
             }
-            const { data: contacts } = await Contacts.getContactsAsync({
-              fields: ['imageAvailable', 'image'],
-              pageSize: 100,
-            });
+            const contacts = await Contact.getAllDetails([ContactField.IMAGE], { limit: 100 });
             if (contacts.length === 0) {
               Alert.alert('No contacts found');
               return;
             }
-            const contactImageURI = contacts.find((contact) => contact.imageAvailable)?.image?.uri;
+            const contactImageURI = contacts.find((contact) => contact.image)?.image;
             if (!contactImageURI) {
               Alert.alert('No contact with profile image found');
               return;
@@ -227,7 +293,8 @@ function FileInfoSection({ withCurrentFile }: { withCurrentFile: WithCurrentFile
           exists: file.exists,
           size: file.size,
           type: file.type,
-          md5: file.md5,
+          md5: await file.digest('MD5'),
+          sha256: await file.digest('SHA-256'),
           modificationTime: file.modificationTime,
           creationTime: file.creationTime,
         }))}
@@ -241,9 +308,106 @@ function FileInfoSection({ withCurrentFile }: { withCurrentFile: WithCurrentFile
           }))}
         />
       )}
+      <SimpleActionDemo title="Show info()" action={withCurrentFile(async (file) => file.info())} />
+    </>
+  );
+}
+
+// ===== Section: File Preview =====
+
+function FilePreviewSection({
+  currentFile,
+  setCurrentFile,
+  withCurrentFile,
+}: {
+  currentFile: File | null;
+  setCurrentFile: (f: File) => void;
+  withCurrentFile: WithCurrentFile;
+}) {
+  async function createFixture(title: string, prepareFileAsync: () => Promise<File>) {
+    try {
+      const file = await prepareFileAsync();
+      setCurrentFile(file);
+      Alert.alert(title, file.uri);
+    } catch (e: any) {
+      Alert.alert('Error', e.message);
+    }
+  }
+
+  return (
+    <>
+      <HeadingText>File Preview</HeadingText>
+      <Text style={styles.note}>Open local files with the platform file preview flow</Text>
+
+      <ListButton
+        title="Create PDF fixture"
+        onPress={() =>
+          createFixture('PDF fixture', () =>
+            writePreviewFixtureAsync('file-preview-test.pdf', previewPdfFixture)
+          )
+        }
+      />
+      <ListButton
+        title="Create image fixture"
+        onPress={() =>
+          createFixture('Image fixture', () =>
+            copyPreviewAssetAsync(
+              require('../../assets/images/large-example.jpg'),
+              'file-preview-test.jpg'
+            )
+          )
+        }
+      />
+      <ListButton
+        title="Create text fixture"
+        onPress={() =>
+          createFixture('Text fixture', () =>
+            writePreviewFixtureAsync(
+              'file-preview-test.txt',
+              'File Preview text fixture.\n\nThis file was generated locally in the Expo test app.'
+            )
+          )
+        }
+      />
       <SimpleActionDemo
-        title="Show info({ md5: true })"
-        action={withCurrentFile(async (file) => file.info({ md5: true }))}
+        title="canPreview()"
+        action={withCurrentFile(async (file) => ({
+          uri: file.uri,
+          type: file.type,
+          canPreview: await file.canPreview(),
+        }))}
+      />
+      <ListButton
+        title="preview()"
+        disabled={!currentFile}
+        onPress={async () => {
+          try {
+            await currentFile!.preview({
+              title: currentFile!.name,
+            });
+          } catch (e: any) {
+            Alert.alert('Error', e.message);
+          }
+        }}
+      />
+      <SimpleActionDemo
+        title="Static preview capability (single file)"
+        action={withCurrentFile((file) => File.canPreview(file))}
+      />
+      <SimpleActionDemo
+        title="Preview collection at index 1 (iOS)"
+        action={async () => {
+          const files = await Promise.all([
+            writePreviewFixtureAsync('collection-first.txt', 'First item'),
+            writePreviewFixtureAsync('collection-second.pdf', previewPdfFixture),
+            writePreviewFixtureAsync('collection-third.txt', 'Third item'),
+          ]);
+          const available = await File.canPreview(files);
+          if (available) {
+            await File.preview(files, { initialIndex: 1 });
+          }
+          return { available, fileCount: files.length };
+        }}
       />
     </>
   );

@@ -19,7 +19,7 @@ import {
   parseCommentContent,
 } from '../APISectionUtils';
 import { ELEMENT_SPACING, STYLES_SECONDARY } from '../styles';
-import { APIBoxSectionHeader } from './APIBoxSectionHeader';
+import { APIBoxExampleHeader } from './APIBoxExampleHeader';
 import { APISectionPlatformTags } from './APISectionPlatformTags';
 
 type Props = {
@@ -71,11 +71,11 @@ export const APICommentTextBlock = ({
               'my-1.5 flex flex-row items-center gap-1.5 font-medium text-tertiary',
               !isMultiline && 'my-0'
             )}>
-            <CodeSquare01Icon className="-mt-px icon-sm text-icon-tertiary" />
+            <CodeSquare01Icon aria-hidden="true" className="-mt-px icon-sm text-icon-tertiary" />
             Example
           </CALLOUT>
         ) : (
-          <APIBoxSectionHeader text="Example" className="-mx-4 mt-1 mb-3" Icon={CodeSquare01Icon} />
+          <APIBoxExampleHeader />
         )}
         <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
           {exampleText}

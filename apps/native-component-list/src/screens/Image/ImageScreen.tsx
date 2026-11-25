@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { componentScreensToListElements } from '../ComponentListScreen';
@@ -10,6 +10,14 @@ export const ImageScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ImageComparisonScreen'));
+    },
+  },
+  {
+    name: 'Comparison with original image (e2e)',
+    route: 'image/comparison-e2e',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ImageComparisonE2EScreen'));
     },
   },
   {
@@ -131,6 +139,20 @@ export const ImageScreens = [
     route: 'image/svg-sizing',
     getComponent() {
       return optionalRequire(() => require('./ImageSvgSizingScreen'));
+    },
+  },
+  {
+    name: 'Large SVG view (Android software layer)',
+    route: 'image/svg-large-view',
+    getComponent() {
+      return optionalRequire(() => require('./ImageSvgLargeViewScreen'));
+    },
+  },
+  {
+    name: 'SVG variables',
+    route: 'image/svg-variables',
+    getComponent() {
+      return optionalRequire(() => require('./ImageSvgVariablesScreen'));
     },
   },
   {

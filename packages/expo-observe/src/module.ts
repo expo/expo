@@ -1,18 +1,92 @@
 import { requireNativeModule } from 'expo';
-import AppMetrics from 'expo-app-metrics';
+import AppMetrics, {
+  recordSpan,
+  setErrorHandlerEnabled,
+  startSpan,
+  withSpan,
+} from 'expo-app-metrics';
 
 import { initRouterIntegration } from './integrations/expo-router/init';
 import { isRouterInstalled } from './integrations/expo-router/router';
+import {
+  disableReanimatedIntegration,
+  initReanimatedIntegration,
+} from './integrations/react-native-reanimated/init';
 import { initReactNavigationIntegration } from './integrations/react-navigation/init';
 import { isReactNavigationInstalled } from './integrations/react-navigation/reactNavigation';
-import type { ObserveConfig, ObserveModule } from './types';
+import { reportCaughtError } from './reportCaughtError';
+import { reportFeedback } from './reportFeedback';
+import type {
+  ObserveConfig,
+  ObserveConsent,
+  ObserveFeedback,
+  ObserveIntegrationsConfig,
+  ObserveModule,
+} from './types';
+
+/**
+ * Normalizes the `networkTraces` sugar (`true` / `false` / `{ enabled, filter }`) into the config
+ * shape the native producer persists. `configure` is a full replacement, so an absent
+ * `networkTraces` resets to the default: disabled, no filter.
+ */
+function networkTracesConfigFromOption(networkTraces: ObserveConfig['networkTraces']) {
+  const option = networkTraces ?? false;
+  if (typeof option === 'boolean') {
+    return { enabled: option };
+  }
+  if (__DEV__) {
+    // Hosts are compared against the URL's host, so a full URL or a host:port pair matches
+    // nothing and silently records zero traces.
+    const malformed = option.filter?.hosts?.filter((host) => /[/:]/.test(host));
+    if (malformed?.length) {
+      console.warn(
+        `[expo-observe] \`networkTraces.filter.hosts\` expects bare hostnames, but got ${malformed.join(', ')}. ` +
+          'These match no request, so nothing will be recorded for them. Use "api.myapp.com" rather than "https://api.myapp.com/".'
+      );
+    }
+  }
+  // The object form records by default: passing a filter means "record these", so `enabled`
+  // only has to be spelled out to turn recording off while keeping the filter configured.
+  const enabled = option.enabled ?? true;
+  return option.filter != null ? { enabled, filter: option.filter } : { enabled };
+}
+
+function warnIfErrorSampleRateIsLower({ sampleRate, errorSampleRate }: ObserveConfig) {
+  if (errorSampleRate == null) {
+    return;
+  }
+  // Native code clamps both rates and treats an unset `sampleRate` as 1.
+  const clamp = (rate: number) => Math.min(Math.max(rate, 0), 1);
+  const errorRate = clamp(errorSampleRate);
+  const overallRate = clamp(sampleRate ?? 1);
+  if (errorRate < overallRate) {
+    console.warn(
+      `[expo-observe] \`errorSampleRate\` (${errorRate}) is lower than \`sampleRate\` (${overallRate}) and has no effect. ` +
+        'Errors are sent from every installation in the `sampleRate` sample. ' +
+        'Set `errorSampleRate` to at least `sampleRate`.'
+    );
+  }
+}
 
 const native = requireNativeModule<ObserveModule>('ExpoObserve');
+
+// Native code can apply two concurrent calls in either order, so each call starts after the
+// previous one settles. A rejected call does not stop the calls after it.
+let consentQueue: Promise<unknown> = Promise.resolve();
 
 const Observe: ObserveModule = new Proxy(native, {
   get(target, prop, receiver) {
     if (prop === 'configure') {
       return (config: ObserveConfig) => {
+        // The handler is already installed at this point (it installs on import), so this only
+        // toggles whether it records anything.
+        setErrorHandlerEnabled(config.errorHandlingEnabled ?? true);
+
+        // Recording is gated in expo-app-metrics (the producer side), so the setting travels
+        // there rather than into the native `configure` payload. Applies to future captures
+        // only; spans persisted earlier in the launch still dispatch.
+        AppMetrics.setNetworkTracesConfig(networkTracesConfigFromOption(config.networkTraces));
+
         const routerEnabled = !!config.integrations?.['expo-router'];
         const reactNavigationEnabled = !!config.integrations?.['react-navigation'];
 
@@ -39,18 +113,86 @@ const Observe: ObserveModule = new Proxy(native, {
         }
 
         if (shouldInitRouterIntegration) {
-          initRouterIntegration();
+          initRouterIntegration(config.integrations?.['expo-router']);
         } else if (shouldInitReactNavigationIntegration) {
-          initReactNavigationIntegration();
+          initReactNavigationIntegration(config.integrations?.['react-navigation']);
         }
+        const reanimatedConfig = config.integrations?.['react-native-reanimated'];
+        if (reanimatedConfig) {
+          initReanimatedIntegration(reanimatedConfig);
+        } else {
+          disableReanimatedIntegration();
+        }
+        warnIfErrorSampleRateIsLower(config);
         return target.configure(config);
       };
     }
-    if (typeof prop === 'string' && !(prop in target)) {
+
+    if (prop === 'setConsent') {
+      return (consent: ObserveConsent) => {
+        const call = consentQueue.then(() => target.setConsent(consent));
+        consentQueue = call.catch(() => {});
+        return call;
+      };
+    }
+
+    if (prop === 'reportError') {
+      return (error: unknown) => reportCaughtError(error);
+    }
+    if (prop === 'reportFeedback') {
+      return (feedback: ObserveFeedback) => reportFeedback(feedback, target);
+    }
+
+    // The span wrappers add JS-side behavior over the raw native functions (`parent` folding,
+    // `withSpan`'s auto-end), so forward them explicitly instead of letting the fallback below
+    // reach the native members with the same names.
+    if (prop === 'startSpan') {
+      return startSpan;
+    }
+    if (prop === 'withSpan') {
+      return withSpan;
+    }
+    if (prop === 'recordSpan') {
+      return recordSpan;
+    }
+
+    if (prop === 'registerIntegration') {
+      return <K extends keyof ObserveIntegrationsConfig>(
+        name: K,
+        callback: (config: ObserveIntegrationsConfig[K]) => void
+      ) => registerIntegrationImpl(target, name, callback);
+    }
+
+    // On Android, the native module is a JSI host object, so `prop in target` (and `hasOwnProperty`) report
+    // `true` for names it doesn't implement — a host object has no `has` hook. `Object.keys(target)`
+    // goes through `getPropertyNames`, which lists the module's actual members, so use it to forward
+    // anything not really there (e.g. `logEvent`) to the AppMetrics module.
+    if (typeof prop === 'string' && !Object.keys(target).includes(prop)) {
       return Reflect.get(AppMetrics, prop);
     }
     return Reflect.get(target, prop, receiver);
   },
 });
+
+export function registerIntegrationImpl<K extends keyof ObserveIntegrationsConfig>(
+  target: Pick<ObserveModule, 'addListener' | 'getIntegrations'>,
+  name: K,
+  callback: (config: ObserveIntegrationsConfig[K]) => void
+): void {
+  const integrations = target.getIntegrations();
+  if (integrations) {
+    if (integrations[name]) {
+      callback(integrations[name]);
+    }
+    return;
+  }
+
+  const subscription = target.addListener('configure', ({ integrations }) => {
+    subscription.remove();
+    if (integrations?.[name]) {
+      callback(integrations[name]);
+    }
+  });
+}
 
 export default Observe;

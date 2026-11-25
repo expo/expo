@@ -108,6 +108,7 @@ export const A = (props: LinkBaseProps & { isStyled?: boolean; shouldLeakReferre
       )}
       {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
       openInNewTab={(!shouldLeakReferrer && openInNewTab) ?? isExternalLink(props.href)}
+      skipNextLink={props.href?.startsWith('#')}
       {...rest}
     />
   );

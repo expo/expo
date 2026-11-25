@@ -3,6 +3,30 @@ import ComponentListScreen, { componentScreensToListElements } from '../Componen
 
 export const UIScreens = [
   {
+    name: 'List.ForEach data',
+    route: 'ui/virtualized-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./DataListForEachScreen'));
+    },
+  },
+  {
+    name: 'LazyVStack.ForEach / LazyHStack.ForEach data',
+    route: 'ui/lazy-stack-for-each',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LazyStackForEachScreen'));
+    },
+  },
+  {
+    name: 'Label component',
+    route: 'ui/label',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LabelScreen'));
+    },
+  },
+  {
     name: 'Button component',
     route: 'ui/button',
     options: {},
@@ -136,6 +160,30 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./StepperScreen'));
+    },
+  },
+  {
+    name: 'NavigationStack component',
+    route: 'ui/navigationstack',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./NavigationStackScreen'));
+    },
+  },
+  {
+    name: 'NavigationSplitView component',
+    route: 'ui/navigationsplitview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./NavigationSplitViewScreen'));
+    },
+  },
+  {
+    name: 'ArrangementView component',
+    route: 'ui/arrangementview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ArrangementViewScreen'));
     },
   },
   {
@@ -299,6 +347,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Geometry Group',
+    route: 'ui/geometry-group',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./GeometryGroupScreen'));
+    },
+  },
+  {
     name: 'LazyVStack / LazyHStack',
     route: 'ui/lazy-stack',
     options: {},
@@ -371,6 +427,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Background component',
+    route: 'ui/background',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BackgroundScreen'));
+    },
+  },
+  {
     name: 'Popover component',
     route: 'ui/popover',
     options: {},
@@ -416,6 +480,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./Rotation3DEffectScreen'));
+    },
+  },
+  {
+    name: 'onHingeChange modifier',
+    route: 'ui/on-hinge-change',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HingeChangeScreen'));
     },
   },
 ];

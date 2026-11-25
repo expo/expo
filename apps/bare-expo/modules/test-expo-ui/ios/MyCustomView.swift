@@ -6,6 +6,7 @@ import ExpoUI
 
 final class MyCustomViewProps: UIBaseViewProps {
   @Field var title: String = ""
+  var onCustomTap = EventDispatcher()
 }
 
 struct MyCustomView: ExpoSwiftUI.View {
@@ -16,6 +17,9 @@ struct MyCustomView: ExpoSwiftUI.View {
       Text(props.title)
         .font(.headline)
       Children()
+    }
+    .onTapGesture {
+      props.onCustomTap()
     }
   }
 }

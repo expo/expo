@@ -1,6 +1,6 @@
+import { Platform, CodedError, UnavailabilityError } from 'expo';
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
-import { Platform, CodedError, UnavailabilityError } from 'expo-modules-core';
 
 import { setAutoServerRegistrationEnabledAsync } from './DevicePushTokenAutoRegistration.fx';
 import ServerRegistrationModule from './ServerRegistrationModule';
@@ -16,6 +16,10 @@ const productionBaseUrl = 'https://exp.host/--/api/v2/';
  * (for example, due to the device being offline, experiencing a network timeout, or other HTTPS request failures).
  * To provide offline support to your users, you should `try/catch` this method and implement retry logic to attempt
  * to get the push token later, once the device is back online.
+ *
+ * If the [app config](/workflow/configuration/) has no project ID and `options.projectId` is not
+ * set, this method rejects with the `ERR_NOTIFICATIONS_NO_EXPERIENCE_ID` error.
+ * See [`ExpoPushTokenOptions`](#expopushtokenoptions).
  *
  * > For Expo's backend to be able to send notifications to your app, you will need to provide it with push notification keys.
  * For more information, see [credentials](/push-notifications/push-notifications-setup/#get-credentials-for-development-builds) in the push notifications setup.

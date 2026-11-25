@@ -1,20 +1,20 @@
 import { getConfig } from '@expo/config';
 
-import { queryAndGenerateAsync, selectAndGenerateAsync } from './generate';
-import type { Options } from './resolveOptions';
-import type { DestinationResolutionProps } from './templates';
 import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { getPlatformBundlers } from '../start/server/platformBundlers';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
-import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
+import { loadEnvFiles } from '../utils/nodeEnv';
+import { reportProgramResult } from '../utils/programStatus';
+import { queryAndGenerateAsync, selectAndGenerateAsync } from './generate';
+import type { Options } from './resolveOptions';
+import type { DestinationResolutionProps } from './templates';
 
 export async function customizeAsync(files: string[], options: Options, extras: any[]) {
-  setNodeEnv('development');
   // Locate the project root based on the process current working directory.
   // This enables users to run `npx expo customize` from a subdirectory of the project.
   const projectRoot = findUpProjectRootOrAssert(process.cwd());
 
-  loadEnvFiles(projectRoot);
+  loadEnvFiles(projectRoot, { mode: 'development' });
 
   // Get the static path (defaults to 'web/')
   // Doesn't matter if expo is installed or which mode is used.
@@ -36,16 +36,17 @@ export async function customizeAsync(files: string[], options: Options, extras: 
 
   // If the user provided files, we'll generate them without prompting.
   if (files.length) {
-    return queryAndGenerateAsync(projectRoot, {
+    await queryAndGenerateAsync(projectRoot, {
       files,
       props,
       extras,
     });
+  } else {
+    // Otherwise, we'll prompt the user to select which files to generate.
+    await selectAndGenerateAsync(projectRoot, {
+      props,
+      extras,
+    });
   }
-
-  // Otherwise, we'll prompt the user to select which files to generate.
-  await selectAndGenerateAsync(projectRoot, {
-    props,
-    extras,
-  });
+  reportProgramResult({ state: 'done', msg: 'Finished customizing' });
 }

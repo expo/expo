@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
 
-import { logPlatformRunCommand } from './hints';
-import type { Command } from '../../bin/cli';
+import type { Command } from '../index';
 import { assertWithOptionsArgs, printHelp } from '../utils/args';
 import { CommandError, logCmdError } from '../utils/errors';
+import { logPlatformRunCommand } from './hints';
 
 export const expoRun: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -43,10 +43,17 @@ export const expoRun: Command = async (argv) => {
 
     if (!platform) {
       const { selectAsync } = await import('../utils/prompts.js');
-      platform = await selectAsync('Select the platform to run', [
-        { title: 'Android', value: 'android' },
-        { title: 'iOS', value: 'ios' },
-      ]);
+      platform = await selectAsync(
+        'Select the platform to run',
+        [
+          { title: 'Android', value: 'android' },
+          { title: 'iOS', value: 'ios' },
+        ],
+        {
+          nonInteractiveHelp:
+            'platform: argument must be provided in non-interactive mode. Valid choices are: android, ios',
+        }
+      );
     }
 
     logPlatformRunCommand(platform, argsWithoutPlatform);
@@ -66,6 +73,6 @@ export const expoRun: Command = async (argv) => {
         throw new CommandError('UNSUPPORTED_PLATFORM', `Unsupported platform: ${platform}`);
     }
   } catch (error: any) {
-    logCmdError(error);
+    return logCmdError(error);
   }
 };

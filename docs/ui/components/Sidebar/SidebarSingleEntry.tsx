@@ -33,27 +33,30 @@ export const SidebarSingleEntry = ({
         <LinkBase
           href={href}
           className={mergeClasses(
-            'flex min-h-8 items-center gap-3 rounded-md px-2 py-1 text-sm leading-[100%]! text-secondary',
+            'flex min-h-8 items-center gap-3 rounded-lg px-2 py-1 text-sm leading-[100%]! text-secondary',
             'hocus:bg-element',
             'focus-visible:relative focus-visible:z-10',
             allowCompactDisplay && 'compact-height:justify-center compact-height:bg-subtle',
             secondary && 'text-sm',
             isActive &&
-              'bg-palette-blue3! font-medium text-link hocus:bg-palette-blue4! hocus:text-link'
+              'bg-selected! font-medium text-default hocus:bg-selected! hocus:text-default'
           )}
           {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
           {...(isActive && mainSection && { 'data-main-section': mainSection })}>
           <Icon
+            aria-hidden="true"
             className={mergeClasses(
               'shrink-0',
               secondary ? 'icon-xs' : 'icon-sm',
-              isActive ? 'text-palette-blue11' : 'text-icon-tertiary'
+              isActive ? 'text-icon-default' : 'text-icon-tertiary'
             )}
           />
           <span className={mergeClasses(allowCompactDisplay && 'compact-height:hidden')}>
             {title}
           </span>
-          {isExternal && <ArrowUpRightIcon className="ml-auto icon-sm text-icon-secondary" />}
+          {isExternal && (
+            <ArrowUpRightIcon aria-hidden="true" className="ml-auto icon-sm text-icon-secondary" />
+          )}
         </LinkBase>
       </Tooltip.Trigger>
       <Tooltip.Content

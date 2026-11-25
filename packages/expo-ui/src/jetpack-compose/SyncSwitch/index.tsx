@@ -4,7 +4,7 @@ import { getStateId, type ObservableState, useWorkletProp } from '../../State';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-export type SyncSwitchProps = {
+export interface SyncSwitchProps {
   /**
    * An observable state that drives the switch.
    * Create one with `useNativeState(false)`.
@@ -24,7 +24,7 @@ export type SyncSwitchProps = {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
-};
+}
 
 type NativeSyncSwitchProps = Omit<SyncSwitchProps, 'isOn' | 'onCheckedChangeSync'> & {
   isOn?: number | null;

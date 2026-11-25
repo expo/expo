@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+
 import { Banana } from '../components/icons';
 const AsyncChunk = React.lazy(() => import('../components/async-chunk'));
 
 try {
-  let AbsolutelyMissingLibrary = require('@bacons/absolute-missing-library');
+  const AbsolutelyMissingLibrary = require('@bacons/absolute-missing-library');
   console.log(AbsolutelyMissingLibrary);
 } catch {}
 

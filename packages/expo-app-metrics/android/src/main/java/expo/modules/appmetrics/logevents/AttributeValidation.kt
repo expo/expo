@@ -20,6 +20,13 @@ private val RESERVED_ATTRIBUTE_PATTERNS: List<Regex> = listOf(
 )
 
 /**
+ * Attribute key under which the SDK stores a log event's display name. Reserved (it matches the
+ * `expo.*` pattern above), so callers can't set it themselves; the SDK injects it after
+ * sanitization via [withDisplayNameAttribute].
+ */
+internal const val DISPLAY_NAME_ATTRIBUTE_KEY = "expo.log.display_name"
+
+/**
  * Maximum number of attributes accepted per log record. Mirrors the OTel SDK
  * default (`OTEL_LOGRECORD_ATTRIBUTE_COUNT_LIMIT`) — collectors and backends
  * start to push back well before this limit, so we cap eagerly and surface the
@@ -44,6 +51,37 @@ data class SanitizedLogAttributes(
 )
 
 /**
+ * Strips non-finite numbers (NaN, infinity) from an attribute value at any depth, returning null
+ * when the value itself is one. Arrays and maps are rebuilt without the offending entries.
+ */
+private fun withoutNonFiniteNumbers(value: Any?): Any? = when {
+  value is Double && !value.isFinite() -> null
+  value is Float && !value.isFinite() -> null
+  value is List<*> -> buildList {
+    // Each element is sanitized once. A null the caller passed stays, so the list keeps the shape
+    // that iOS records.
+    for (element in value) {
+      val sanitized = withoutNonFiniteNumbers(element)
+      if (sanitized != null || element == null) {
+        add(sanitized)
+      }
+    }
+  }
+  value is Map<*, *> ->
+    value.entries
+      .mapNotNull { entry ->
+        val sanitized = withoutNonFiniteNumbers(entry.value)
+        if (sanitized == null && entry.value != null) {
+          null
+        } else {
+          entry.key to sanitized
+        }
+      }
+      .toMap()
+  else -> value
+}
+
+/**
  * Filters caller-provided log-event attributes. Drops:
  *
  * - keys that are empty after trimming whitespace,
@@ -53,7 +91,10 @@ data class SanitizedLogAttributes(
  * Each rule warns with its own message so the developer can tell at a glance
  * which rule fired.
  */
-internal fun sanitizeLogEventAttributes(attributes: Map<String, Any?>?): SanitizedLogAttributes {
+internal fun sanitizeLogEventAttributes(
+  attributes: Map<String, Any?>?,
+  source: String = "logEvent"
+): SanitizedLogAttributes {
   if (attributes == null) {
     return SanitizedLogAttributes(attributes = null, droppedCount = 0)
   }
@@ -61,6 +102,7 @@ internal fun sanitizeLogEventAttributes(attributes: Map<String, Any?>?): Sanitiz
   val sanitized = mutableMapOf<String, Any?>()
   var emptyKeyDrops = 0
   val reservedKeyDrops = mutableListOf<String>()
+  val nonFiniteDrops = mutableListOf<String>()
 
   for ((key, value) in attributes) {
     val trimmedKey = key.trim()
@@ -72,7 +114,15 @@ internal fun sanitizeLogEventAttributes(attributes: Map<String, Any?>?): Sanitiz
       reservedKeyDrops += key
       continue
     }
-    sanitized[trimmedKey] = value
+    // JSON has no representation for NaN or infinity. `JsonAny` would encode them as null at
+    // any depth, but they are dropped here so both platforms agree on what a record contains:
+    // on iOS a non-finite number makes `JSONSerialization` raise an uncatchable ObjC exception.
+    val finiteValue = withoutNonFiniteNumbers(value)
+    if (finiteValue == null && value != null) {
+      nonFiniteDrops += key
+      continue
+    }
+    sanitized[trimmedKey] = finiteValue
   }
 
   // Apply the per-record cap last so the count reflects every other rule first.
@@ -91,25 +141,51 @@ internal fun sanitizeLogEventAttributes(attributes: Map<String, Any?>?): Sanitiz
   if (emptyKeyDrops > 0) {
     Log.w(
       TAG,
-      "[AppMetrics] logEvent dropped $emptyKeyDrops attribute(s) with empty or whitespace-only keys."
+      "[AppMetrics] $source dropped $emptyKeyDrops attribute(s) with empty or whitespace-only keys."
     )
   }
   if (reservedKeyDrops.isNotEmpty()) {
     val formattedKeys = reservedKeyDrops.sorted().joinToString(", ") { "`$it`" }
     Log.w(
       TAG,
-      "[AppMetrics] logEvent dropped attributes that overlap SDK-set keys or use the reserved `expo.` namespace: $formattedKeys."
+      "[AppMetrics] $source dropped attributes that overlap SDK-set keys or use the reserved `expo.` namespace: $formattedKeys."
+    )
+  }
+  if (nonFiniteDrops.isNotEmpty()) {
+    val formattedKeys = nonFiniteDrops.sorted().joinToString(", ") { "`$it`" }
+    Log.w(
+      TAG,
+      "[AppMetrics] $source dropped attributes whose values are not finite numbers (NaN or infinity), which JSON cannot represent: $formattedKeys."
     )
   }
   if (overflowDrops > 0) {
     Log.w(
       TAG,
-      "[AppMetrics] logEvent dropped $overflowDrops attribute(s) past the $MAX_ATTRIBUTE_COUNT-attribute per-record cap."
+      "[AppMetrics] $source dropped $overflowDrops attribute(s) past the $MAX_ATTRIBUTE_COUNT-attribute per-record cap."
     )
   }
 
   return SanitizedLogAttributes(
-    attributes = if (sanitized.isEmpty()) null else sanitized,
-    droppedCount = emptyKeyDrops + reservedKeyDrops.size + overflowDrops
+    attributes = if (sanitized.isEmpty()) {
+      null
+    } else {
+      sanitized
+    },
+    droppedCount = emptyKeyDrops + reservedKeyDrops.size + nonFiniteDrops.size + overflowDrops
   )
+}
+
+/**
+ * Returns `attributes` with the validated display name added under [DISPLAY_NAME_ATTRIBUTE_KEY],
+ * or `attributes` unchanged when `displayName` is `null`. Call this after
+ * [sanitizeLogEventAttributes] so the reserved key bypasses the `expo.*` drop.
+ */
+internal fun withDisplayNameAttribute(
+  attributes: Map<String, Any?>?,
+  displayName: String?
+): Map<String, Any?>? {
+  if (displayName == null) {
+    return attributes
+  }
+  return (attributes ?: emptyMap()) + (DISPLAY_NAME_ATTRIBUTE_KEY to displayName)
 }

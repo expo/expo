@@ -33,7 +33,7 @@ export type Locale = {
   /**
    * Currency code for the locale.
    * On iOS, it's the currency code from the `Region` setting under Language & Region, not for the current locale.
-   * On Android, it's the currency specifc to the locale in the list, as there are no separate settings for selecting a region.
+   * On Android, it's the currency specific to the locale in the list, as there are no separate settings for selecting a region.
    * Is `null` on Web, use a table lookup based on region instead.
    * @example
    * `'USD'`, `'EUR'`, `'PLN'`.

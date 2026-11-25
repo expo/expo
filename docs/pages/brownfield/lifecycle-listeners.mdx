@@ -45,7 +45,14 @@ Alternatively, if your `AppDelegate` doesn't already extend another class, you c
 
 To test if the callbacks are working correctly, install a module that relies on them. Install `expo-linking`, which uses lifecycle listeners to handle deep links:
 
-<Terminal cmd={['$ npx expo install expo-linking']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-linking'],
+    yarn: ['$ yarn expo install expo-linking'],
+    pnpm: ['$ pnpm expo install expo-linking'],
+    bun: ['$ bun expo install expo-linking'],
+  }}
+/>
 
 Add a listener for deep links in your code and observe the console when opening a deep link:
 
@@ -65,11 +72,34 @@ useEffect(() => {
 Run the following command to open a deep link to your app:
 
 <Terminal
-  cmd={[
-    '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
-    '$ npx uri-scheme open com.example.app://somepath/details --android',
-    '',
-    '# If you have a `scheme` defined in your app.json',
-    '$ npx uri-scheme open myapp://somepath/details --ios',
-  ]}
+  cmd={{
+    npm: [
+      '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+      '$ npx uri-scheme open com.example.app://somepath/details --android',
+      '',
+      '# If you have a `scheme` defined in your app.json',
+      '$ npx uri-scheme open myapp://somepath/details --ios',
+    ],
+    yarn: [
+      '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+      '$ yarn dlx uri-scheme open com.example.app://somepath/details --android',
+      '',
+      '# If you have a `scheme` defined in your app.json',
+      '$ yarn dlx uri-scheme open myapp://somepath/details --ios',
+    ],
+    pnpm: [
+      '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+      '$ pnpm dlx uri-scheme open com.example.app://somepath/details --android',
+      '',
+      '# If you have a `scheme` defined in your app.json',
+      '$ pnpm dlx uri-scheme open myapp://somepath/details --ios',
+    ],
+    bun: [
+      '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+      '$ bunx uri-scheme open com.example.app://somepath/details --android',
+      '',
+      '# If you have a `scheme` defined in your app.json',
+      '$ bunx uri-scheme open myapp://somepath/details --ios',
+    ],
+  }}
 />

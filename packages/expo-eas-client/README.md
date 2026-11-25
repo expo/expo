@@ -13,4 +13,3 @@ On Android, this is stored in SharedPreferences. By default since Android 6, Sha
 ## Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
-

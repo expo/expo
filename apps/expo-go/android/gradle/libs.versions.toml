@@ -7,7 +7,7 @@ buildTools = "36.0.0"
 # Dependencies versions
 agp = "8.11.0"
 fresco = "3.6.0"
-apollo = "4.3.3"
+apollo = "4.4.3"
 
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }

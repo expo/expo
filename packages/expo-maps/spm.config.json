@@ -1,12 +1,11 @@
 {
   "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "publishPrebuilds": true,
   "products": [
     {
       "name": "ExpoMaps",
       "podName": "ExpoMaps",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -25,11 +24,7 @@
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit",
-            "MapKit"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit", "MapKit"]
         }
       ]
     }

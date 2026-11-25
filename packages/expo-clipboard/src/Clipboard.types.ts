@@ -67,6 +67,54 @@ export type GetStringOptions = {
   preferredFormat?: StringFormat;
 };
 
+/**
+ * @platform android
+ */
+export type SetStringAndroidOptions = {
+  /**
+   * Whether the clipboard content should be marked as [sensitive](https://developer.android.com/privacy-and-security/risks/secure-clipboard-handling#flag-sensitive-data).
+   *
+   * When `true`, sets the Android
+   * [`ClipDescription.EXTRA_IS_SENSITIVE`](https://developer.android.com/reference/android/content/ClipDescription#EXTRA_IS_SENSITIVE) flag.
+   *
+   * On Android 13+ (API 33+), this:
+   * - Prevents the clipboard preview overlay from displaying the copied content
+   * - Signals input methods (e.g., keyboards) to avoid showing clipboard previews
+   *
+   * On older Android versions, a compatibility flag is applied where supported.
+   *
+   * Recommended for secrets and private data such as passwords, recovery phrases,
+   * private keys, access tokens, or financial information.
+   *
+   * @default false
+   */
+  isSensitive?: boolean;
+};
+
+/**
+ * @platform ios
+ */
+export type SetStringIOSOptions = {
+  /**
+   * Whether the clipboard content should stay on this device.
+   *
+   * When `true`, sets the
+   * [`UIPasteboard.OptionsKey.localOnly`](https://developer.apple.com/documentation/uikit/uipasteboard/optionskey/localonly)
+   * option, so the content isn't shared with the user's other devices through Universal Clipboard.
+   *
+   * @default false
+   */
+  localOnly?: boolean;
+  /**
+   * The time after which the system removes the copied content from the clipboard.
+   *
+   * Sets the
+   * [`UIPasteboard.OptionsKey.expirationDate`](https://developer.apple.com/documentation/uikit/uipasteboard/optionskey/expirationdate)
+   * option.
+   */
+  expiresAt?: Date;
+};
+
 export type SetStringOptions = {
   /**
    * The input format of the provided string.
@@ -75,6 +123,48 @@ export type SetStringOptions = {
    * @default StringFormat.PLAIN_TEXT
    */
   inputFormat?: StringFormat;
+  /**
+   * Android-specific options for clipboard behavior.
+   * @platform android
+   */
+  android?: SetStringAndroidOptions;
+  /**
+   * iOS-specific options for clipboard behavior.
+   * @platform ios
+   */
+  ios?: SetStringIOSOptions;
+};
+
+/**
+ * @platform android
+ */
+export type SetImageAndroidOptions = {
+  /**
+   * Whether the clipboard content should be marked as [sensitive](https://developer.android.com/privacy-and-security/risks/secure-clipboard-handling#flag-sensitive-data).
+   *
+   * When `true`, sets the Android
+   * [`ClipDescription.EXTRA_IS_SENSITIVE`](https://developer.android.com/reference/android/content/ClipDescription#EXTRA_IS_SENSITIVE) flag.
+   *
+   * On Android 13+ (API 33+), this:
+   * - Prevents the clipboard preview overlay from displaying the copied content
+   * - Signals input methods (e.g., keyboards) to avoid showing clipboard previews
+   *
+   * On older Android versions, a compatibility flag is applied where supported.
+   *
+   * Recommended for secrets and private data such as passwords, recovery phrases,
+   * private keys, access tokens, or financial information.
+   *
+   * @default false
+   */
+  isSensitive?: boolean;
+};
+
+export type SetImageOptions = {
+  /**
+   * Android-specific options for clipboard behavior.
+   * @platform android
+   */
+  android?: SetImageAndroidOptions;
 };
 
 export type AcceptedContentType = 'plain-text' | 'image' | 'url' | 'html';

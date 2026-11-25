@@ -75,11 +75,25 @@ The necessary changes to the native Android and iOS files are minimal and can be
 
 The fastest way to generate a new project is described in the [TV example](https://github.com/expo/examples/tree/master/with-tv) within the Expo examples repository:
 
-<Terminal cmd={['$ npx create-expo-app MyTVProject -e with-tv']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app MyTVProject -e with-tv'],
+    yarn: ['$ yarn create expo-app MyTVProject -e with-tv'],
+    pnpm: ['$ pnpm create expo-app MyTVProject -e with-tv'],
+    bun: ['$ bun create expo MyTVProject -e with-tv'],
+  }}
+/>
 
 You can start with the [TV Router example](https://github.com/expo/examples/tree/master/with-router-tv):
 
-<Terminal cmd={['$ npx create-expo-app MyTVProject -e with-router-tv']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app MyTVProject -e with-router-tv'],
+    yarn: ['$ yarn create expo-app MyTVProject -e with-router-tv'],
+    pnpm: ['$ pnpm create expo-app MyTVProject -e with-router-tv'],
+    bun: ['$ bun create expo MyTVProject -e with-router-tv'],
+  }}
+/>
 
 This creates a new project that uses [Expo Router](/router/introduction/) for file-based navigation, modeled after the [**create-expo-app** default template](/get-started/create-a-project/).
 
@@ -92,7 +106,6 @@ At this time, TV applications work with the following libraries and APIs listed 
 - [Audio](/versions/latest/sdk/audio)
 - [Asset](/versions/latest/sdk/asset/)
 - [AsyncStorage](/versions/latest/sdk/async-storage/)
-- [AV](/versions/v54.0.0/sdk/av/)
 - [BackgroundTask](/versions/latest/sdk/background-task/)
 - [BlurView](/versions/latest/sdk/blur-view/)
 - [BuildProperties](/versions/latest/sdk/build-properties/)
@@ -126,15 +139,14 @@ At this time, TV applications work with the following libraries and APIs listed 
 - [TrackingTransparency](/versions/latest/sdk/tracking-transparency/)
 - [Updates](/versions/latest/sdk/updates/)
 - [Video](/versions/latest/sdk/video/)
-- [VideoThumbnails](/versions/latest/sdk/video-thumbnails/)
 
 TV also works with [React Navigation](https://reactnavigation.org/), [React Native Skia](https://shopify.github.io/react-native-skia/), and many other commonly used third-party React Native libraries. See [React Native directory](https://reactnative.directory/?tvos=true) to learn more about supported third-party libraries.
 
-#### Limitations
+### Limitations
 
 - The [Expo DevClient](/versions/latest/sdk/dev-client/) library is only supported in SDK 54 and later:
   - **Android TV**: All operations are supported, similar to an Android phone.
-  - **Apple TV**: Basic operations with a local or tunneled packager are supported. Authentication to EAS and listing of EAS builds and updates is not yet supported.
+  - **Apple TV**: Basic operations with a local or tunneled packager are supported. Authentication to Expo Services and listing of builds and updates is not yet supported.
 
 </Collapsible>
 
@@ -204,7 +216,14 @@ The `react-native-tvos` version must match the Expo SDK you are using. For examp
 
 ### Add the TV config plugin
 
-<Terminal cmd={['$ npx expo install @react-native-tvos/config-tv -- --dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @react-native-tvos/config-tv -- --dev'],
+    yarn: ['$ yarn expo install @react-native-tvos/config-tv -- --dev'],
+    pnpm: ['$ pnpm expo install @react-native-tvos/config-tv -- --dev'],
+    bun: ['$ bun expo install @react-native-tvos/config-tv -- --dev'],
+  }}
+/>
 
 When installed, the plugin will modify the project for TV when either:
 
@@ -251,7 +270,14 @@ Set the `EXPO_TV` environment variable, and run prebuild to make the TV modifica
 
 Start an Android TV emulator and use the following command to start the app on the emulator:
 
-<Terminal cmd={['$ npx expo run:android']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:android'],
+    yarn: ['$ yarn expo run:android'],
+    pnpm: ['$ pnpm expo run:android'],
+    bun: ['$ bun expo run:android'],
+  }}
+/>
 
 </Step>
 <Step label="5">
@@ -260,7 +286,14 @@ Start an Android TV emulator and use the following command to start the app on t
 
 Run the following command to build and run the app on an Apple TV simulator:
 
-<Terminal cmd={['$ npx expo run:ios']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:ios'],
+    yarn: ['$ yarn expo run:ios'],
+    pnpm: ['$ pnpm expo run:ios'],
+    bun: ['$ bun expo run:ios'],
+  }}
+/>
 
 </Step>
 <Step label="6">
@@ -275,9 +308,9 @@ You can revert the changes for TV and go back to phone development by unsetting 
 
 <Step label="7">
 
-### Create EAS Build profiles for both TV and phone
+### Create Expo Build profiles for both TV and phone
 
-Since the TV build can be driven by the value of an environment variable, it is easy to set up EAS Build profiles that build from the same source but target TV instead of phone.
+Since the TV build can be driven by the value of an environment variable, it is easy to set up Expo Build profiles that build from the same source but target TV instead of phone.
 
 The following example **eas.json** shows how to extend existing profiles (`development` and `preview`) to create TV profiles (`development_tv` and `preview_tv`).
 
@@ -330,6 +363,20 @@ The following example **eas.json** shows how to extend existing profiles (`devel
   "submit": {}
 }
 ```
+
+</Step>
+
+<Step label="8">
+
+### Credentials for tvOS App Store builds
+
+tvOS uses the same bundle IDs and distribution certificates as iOS and other Apple platforms. However, tvOS does not use the same provisioning profiles as iOS.
+
+Since the Expo dashboard and EAS CLI only create iOS provisioning profiles, some extra steps are required for tvOS projects. There are two ways for you to proceed:
+
+1. If a project is targeting only tvOS, you can have your credentials stored in Expo Services. Create the bundle ID, and upload the distribution certificate on the project's website, as you would for an iOS project. Then, you should go to Apple's developer web site and create a tvOS provisioning profile there, using the bundle ID that Expo Services created. Then download that profile to your computer, and upload it to the project at [your Expo Services project website](https://expo.dev/accounts/[account]/projects/[project]/credentials/). See the [app credentials guide](/app-signing/app-credentials/).
+
+2. If a project is targeting both tvOS and iOS, you should use [local credentials](/app-signing/local-credentials/) for tvOS, as the credentials stored in Expo Services will be needed by your iOS builds.
 
 </Step>
 

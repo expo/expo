@@ -8,6 +8,9 @@ describe(getMimeType, () => {
       ['https://example.com/image.png?query=1', 'image/png'],
       ['../foo.jpg', 'image/jpeg'],
       ['more.ios.jpeg', 'image/jpeg'],
+      ['icon.PNG', 'image/png'],
+      ['splash.JPG', 'image/jpeg'],
+      ['https://example.com/Icon.Webp?query=1', 'image/webp'],
       // Invalid
       ['more.ios.jpeg?foo', null],
       // Unsupported
@@ -25,7 +28,7 @@ describe('Image #getPngInfo', () => {
     try {
       await getPngInfo('random/path');
     } catch (e) {
-      expect(e.message).toEqual("ENOENT: no such file or directory, open 'random/path'");
+      expect((e as Error).message).toEqual("ENOENT: no such file or directory, open 'random/path'");
     }
   });
 
@@ -33,7 +36,7 @@ describe('Image #getPngInfo', () => {
     try {
       await getPngInfo(path.join(__dirname, '/assets/icon.jpg'));
     } catch (e) {
-      expect(e.message).toEqual('Invalid file signature');
+      expect((e as Error).message).toEqual('Invalid file signature');
     }
   });
 
@@ -41,7 +44,7 @@ describe('Image #getPngInfo', () => {
     try {
       await getPngInfo(path.join(__dirname, '/assets/icon.svg'));
     } catch (e) {
-      expect(e.message).toEqual('Invalid file signature');
+      expect((e as Error).message).toEqual('Invalid file signature');
     }
   });
 
@@ -49,7 +52,7 @@ describe('Image #getPngInfo', () => {
     try {
       await getPngInfo(path.join(__dirname, '/assets/icon.pdf'));
     } catch (e) {
-      expect(e.message).toEqual('Invalid file signature');
+      expect((e as Error).message).toEqual('Invalid file signature');
     }
   });
 
@@ -57,7 +60,7 @@ describe('Image #getPngInfo', () => {
     try {
       await getPngInfo(path.join(__dirname, '/assets/fakePng.png'));
     } catch (e) {
-      expect(e.message).toEqual('Invalid file signature');
+      expect((e as Error).message).toEqual('Invalid file signature');
     }
   });
 

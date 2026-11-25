@@ -1,0 +1,34 @@
+import ExpoModulesCore
+import Foundation
+
+/// A single recorded App Intent invocation, persisted until JS removes it
+/// with `removePendingInvocationAsync`. Delivery to JS is at-least-once.
+public struct AppIntentInvocation: Codable, Sendable {
+  public let id: String
+  public let name: String
+  /// Intent-specific values. The top-level invocation schema is fixed; put custom
+  /// data for each intent here.
+  public let params: AppIntentParams
+  public let createdAt: Double
+
+  public init(name: String, params: AppIntentParams) {
+    self.id = UUID().uuidString
+    self.name = name
+    // Params are made JSON-representable here, so the same values reach the persisted queue and
+    // the live event, and so no invocation can be lost to an encoding failure later on.
+    self.params = params.mapValues { $0.jsonSafe() }
+    self.createdAt = Date().timeIntervalSince1970 * 1000
+  }
+
+  func toDict() -> [String: Any] {
+    // swift-format requires a trailing comma in multiline collection literals.
+    // swiftlint:disable trailing_comma
+    return [
+      "id": id,
+      "name": name,
+      "params": params.mapValues(\.foundationValue),
+      "createdAt": createdAt,
+    ]
+    // swiftlint:enable trailing_comma
+  }
+}

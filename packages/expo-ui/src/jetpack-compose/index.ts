@@ -10,6 +10,7 @@ export * from './Chip';
 export * from './Button';
 export * from './colors';
 export * from './Icon';
+export * from './Image';
 export * from './IconButton';
 export * from './DropdownMenu';
 export * from './ExposedDropdownMenuBox';
@@ -22,14 +23,20 @@ export * from './RNHostView';
 export * from './DatePicker';
 export * from './SegmentedButton';
 export * from './Progress';
+export * from './RangeSlider';
 export * from './Slider';
 export * from './Spacer';
+export * from './SplitButtonLayout';
 export * from './Switch';
 export * from './SyncSwitch';
 export {
   TextField,
   OutlinedTextField,
+  BasicTextField,
   type TextFieldProps,
+  type OutlinedTextFieldProps,
+  type BasicTextFieldProps,
+  type BasicTextFieldRef,
   type TextFieldRef,
   type TextFieldCapitalization,
   type TextFieldImeAction,
@@ -37,6 +44,8 @@ export {
   type TextFieldKeyboardType,
   type TextFieldKeyboardActions,
   type TextFieldColors,
+  type TextFieldTextStyle,
+  type CommonTextFieldProperties,
 } from './TextField';
 export * from './ToggleButton';
 export * from './Shape';
@@ -52,6 +61,7 @@ export * from './SearchBar';
 export * from './Snackbar';
 export * from './DockedSearchBar';
 export * from './HorizontalFloatingToolbar';
+export * from './TopAppBar';
 export * from './FloatingActionButton';
 export * from './PullToRefreshBox';
 export * from './RadioButton';
@@ -64,7 +74,8 @@ export * from './AnimatedVisibility';
 export * from './Box';
 export * from './Row';
 export * from './Column';
+export * from './CompositionLocalProvider';
 export * from './FlowRow';
-export { useNativeState } from '../State';
+export { useNativeState, useWorkletCallback, type WorkletCallback } from '../State';
 export type { ViewEvent } from '../types';
 export type { PrimitiveBaseProps } from './layout-types';

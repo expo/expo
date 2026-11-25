@@ -36,25 +36,31 @@ function SecureStoreView() {
   const [key, setKey] = React.useState<string | undefined>();
   const [value, setValue] = React.useState<string | undefined>();
   const [service, setService] = React.useState<string | undefined>();
-  const [requireAuth, setRequireAuth] = React.useState<boolean>(false);
+  const [authMethod, setAuthMethod] = React.useState<SecureStore.AuthenticationMethod>('none');
+  const [requireConfirmation, setRequireConfirmation] = React.useState<boolean>(true);
   const [byteSize, setByteSize] = React.useState<string>('4096');
+
+  const canUseBiometric = SecureStore.canUseBiometricAuthentication();
+  const canUseDeviceCredentials = SecureStore.canUseDeviceCredentialsAuthentication();
+  const availableAuthMethods: SecureStore.AuthenticationMethod[] = [
+    'none',
+    ...(canUseBiometric ? (['biometry'] as const) : []),
+    ...(canUseDeviceCredentials ? (['deviceCredentials'] as const) : []),
+  ];
 
   const storeOptions = React.useMemo<SecureStore.SecureStoreOptions>(
     () => ({
       keychainService: service,
-      requireAuthentication: requireAuth,
-      authenticationPrompt: requireAuth ? 'Authenticate' : undefined,
+      requireAuthentication: authMethod,
+      authenticationPrompt: authMethod === 'none' ? undefined : 'Authenticate',
+      ...(Platform.OS === 'android' ? { requireConfirmation } : {}),
     }),
-    [requireAuth, service]
+    [authMethod, requireConfirmation, service]
   );
 
   async function storeValueAsync(value: string, key: string) {
     try {
-      await SecureStore.setItemAsync(key, value, {
-        keychainService: service,
-        requireAuthentication: requireAuth,
-        authenticationPrompt: 'Authenticate',
-      });
+      await SecureStore.setItemAsync(key, value, storeOptions);
       Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
         { text: 'OK', onPress: () => {} },
       ]);
@@ -65,11 +71,7 @@ function SecureStoreView() {
 
   function storeValue(value: string, key: string) {
     try {
-      SecureStore.setItem(key, value, {
-        keychainService: service,
-        requireAuthentication: requireAuth,
-        authenticationPrompt: 'Authenticate',
-      });
+      SecureStore.setItem(key, value, storeOptions);
       Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
         { text: 'OK', onPress: () => {} },
       ]);
@@ -80,11 +82,7 @@ function SecureStoreView() {
 
   async function getValueAsync(key: string) {
     try {
-      const fetchedValue = await SecureStore.getItemAsync(key, {
-        keychainService: service,
-        requireAuthentication: requireAuth,
-        authenticationPrompt: 'Authenticate',
-      });
+      const fetchedValue = await SecureStore.getItemAsync(key, storeOptions);
       Alert.alert('Success!', 'Fetched value: ' + fetchedValue, [
         { text: 'OK', onPress: () => {} },
       ]);
@@ -95,11 +93,7 @@ function SecureStoreView() {
 
   function getValue(key: string) {
     try {
-      const fetchedValue = SecureStore.getItem(key, {
-        keychainService: service,
-        requireAuthentication: requireAuth,
-        authenticationPrompt: 'Authenticate',
-      });
+      const fetchedValue = SecureStore.getItem(key, storeOptions);
       Alert.alert('Success!', 'Fetched value: ' + fetchedValue, [
         { text: 'OK', onPress: () => {} },
       ]);
@@ -181,12 +175,22 @@ function SecureStoreView() {
         onChangeText={setService}
       />
       <BodyText style={{ marginBottom: 10 }}>
-        Can use biometric authentication: {SecureStore.canUseBiometricAuthentication().toString()}
+        Can use biometric authentication: {canUseBiometric.toString()}
       </BodyText>
-      {SecureStore.canUseBiometricAuthentication() && (
-        <View style={styles.authToggleContainer}>
-          <BodyText>Requires authentication:</BodyText>
-          <Switch value={requireAuth} onValueChange={setRequireAuth} />
+      <BodyText style={{ marginBottom: 10 }}>
+        Can use device credentials authentication: {canUseDeviceCredentials.toString()}
+      </BodyText>
+      {availableAuthMethods.length > 1 &&
+        availableAuthMethods.map((method) => (
+          <View key={method} style={[styles.authToggleContainer, { marginBottom: 10 }]}>
+            <BodyText>Authentication: {method}</BodyText>
+            <Switch value={authMethod === method} onValueChange={() => setAuthMethod(method)} />
+          </View>
+        ))}
+      {Platform.OS === 'android' && authMethod !== 'none' && (
+        <View style={[styles.authToggleContainer, { marginBottom: 10 }]}>
+          <BodyText>Requires confirmation:</BodyText>
+          <Switch value={requireConfirmation} onValueChange={setRequireConfirmation} />
         </View>
       )}
       {value && key && (

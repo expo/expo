@@ -1,0 +1,121 @@
+import fs from 'fs';
+import path from 'path';
+
+import { buildExpandArgs, buildFixArgs, resolveExpandBinary, runExpand } from '../scanner/expand';
+import { parseArgs } from './args';
+
+const OPTIONS_HELP = `  --symbol <name>   Only a type ('MyModule', 'MyModule.Options') or a member
+                    ('MyModule.greet') and its diagnostics. Repeatable.
+  --json            Print a JSON report instead of text. The exit code is then 0
+                    also when there is an error.
+  --scanner <path>  Path to the Expo Modules executable. Defaults to the one of
+                    the expo-modules-macros version that expo-modules-core
+                    depends on.
+  -h, --help        Display this message.`;
+
+const EXPAND_HELP = `Usage: expo-modules swift:expand [options] <path...>
+
+Prints the code that the Expo Modules macros generate for Swift sources, as
+"Expand Macro" does in Xcode, without a build. A path is a .swift file or a
+directory, where only the files that use one of the macros are expanded. The
+macro diagnostics go to stderr, and the exit code is 1 when there is an error.
+
+Options:
+${OPTIONS_HELP}`;
+
+const CHECK_HELP = `Usage: expo-modules swift:check [options] [path...]
+
+Checks Swift sources for the errors and warnings of the Expo Modules macros,
+without a build. A path is a .swift file or a directory (default: the current
+directory). Exits with code 1 when there is an error. Errors that need type
+checking still need a build.
+
+Options:
+  --fix             Apply the Fix-Its of the diagnostics to the files in place,
+                    then check them again. Doesn't format the files. Can't be
+                    combined with --json.
+${OPTIONS_HELP}`;
+
+export async function swiftExpandCommand(argv: string[]) {
+  await runSwiftExpand(argv, {
+    command: 'swift:expand',
+    help: EXPAND_HELP,
+    diagnosticsOnly: false,
+  });
+}
+
+export async function swiftCheckCommand(argv: string[]) {
+  await runSwiftExpand(argv, { command: 'swift:check', help: CHECK_HELP, diagnosticsOnly: true });
+}
+
+async function runSwiftExpand(
+  argv: string[],
+  { command, help, diagnosticsOnly }: { command: string; help: string; diagnosticsOnly: boolean }
+) {
+  const args = parseArgs(
+    {
+      '--symbol': [String],
+      '--json': Boolean,
+      '--scanner': String,
+      '--help': Boolean,
+      '-h': '--help',
+      // Only `swift:check` takes `--fix`, so the other commands parse it as an unknown option.
+      ...(diagnosticsOnly ? { '--fix': Boolean } : {}),
+    },
+    argv,
+    `expo-modules ${command}`
+  );
+  if (args['--help']) {
+    console.log(help);
+    return;
+  }
+
+  const paths = args._.length > 0 ? args._ : diagnosticsOnly ? ['.'] : [];
+  const [firstPath] = paths;
+  if (firstPath === undefined) {
+    throw new Error(
+      `\`expo-modules ${command}\` needs at least one .swift file or directory. ` +
+        `Run \`expo-modules ${command} --help\` to see the usage.`
+    );
+  }
+
+  const fix = args['--fix'] === true;
+  if (fix && args['--json']) {
+    throw new Error(
+      `\`expo-modules ${command}\` can't combine --fix with --json, because the Fix-Its are ` +
+        `printed as text.`
+    );
+  }
+
+  const binaryPath = args['--scanner']
+    ? path.resolve(args['--scanner'])
+    : resolveExpandBinary(packageDirectoryOf(firstPath));
+  const symbols = args['--symbol'];
+
+  // The check after the Fix-Its reports the diagnostics that are left, which have no Fix-It or
+  // whose Fix-It was skipped. A usage error would fail the check the same way, so it stops here.
+  let fixExitCode = 0;
+  if (fix) {
+    fixExitCode = await runExpand(binaryPath, buildFixArgs({ paths, symbols }));
+    if (fixExitCode === 2) {
+      process.exitCode = fixExitCode;
+      return;
+    }
+  }
+  const exitCode = await runExpand(
+    binaryPath,
+    buildExpandArgs({ paths, symbols, json: args['--json'], diagnosticsOnly })
+  );
+  process.exitCode = Math.max(exitCode, fixExitCode);
+}
+
+/**
+ * The directory to find the macros from: the first path, or the directory of a file. The macros
+ * resolve through `node_modules` above it, so any directory in the module package works.
+ */
+export function packageDirectoryOf(sourcePath: string): string {
+  const resolved = path.resolve(sourcePath);
+  return fs.existsSync(resolved) && fs.statSync(resolved).isFile()
+    ? path.dirname(resolved)
+    : resolved;
+}

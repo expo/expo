@@ -1,5 +1,5 @@
-import type { Ref } from 'react';
-import type { View, ViewProps } from 'react-native';
+import type { ComponentRef, Ref } from 'react';
+import type { ColorValue, View, ViewProps } from 'react-native';
 
 export type GlassStyle = 'clear' | 'regular' | 'none';
 
@@ -32,7 +32,7 @@ export type GlassViewProps = {
   /**
    * Tint color to apply to the glass effect.
    */
-  tintColor?: string;
+  tintColor?: ColorValue;
   /**
    * Whether the glass effect should be interactive.
    * @default false
@@ -44,5 +44,5 @@ export type GlassViewProps = {
    * @default 'auto'
    */
   colorScheme?: GlassColorScheme;
-  ref?: Ref<View>;
+  ref?: Ref<ComponentRef<typeof View>>;
 } & ViewProps;

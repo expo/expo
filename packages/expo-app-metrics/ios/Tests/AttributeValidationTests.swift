@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 
 @testable import ExpoAppMetrics
@@ -35,7 +36,7 @@ struct AttributeValidationTests {
     let result = sanitizeLogEventAttributes([
       "": "x",
       "   ": "y",
-      "valid": "z"
+      "valid": "z",
     ])
     #expect(result.droppedCount == 2)
     let attributes = try! #require(result.attributes)
@@ -48,7 +49,7 @@ struct AttributeValidationTests {
     let result = sanitizeLogEventAttributes([
       "expo.app.name": "spoofed",
       "expo.eas_client.id": "spoofed",
-      "userId": "u_42"
+      "userId": "u_42",
     ])
     #expect(result.droppedCount == 2)
     let attributes = try! #require(result.attributes)
@@ -61,7 +62,7 @@ struct AttributeValidationTests {
     let result = sanitizeLogEventAttributes([
       "event.name": "spoofed",
       "session.id": "spoofed",
-      "ok": true
+      "ok": true,
     ])
     #expect(result.droppedCount == 2)
     let attributes = try! #require(result.attributes)
@@ -89,7 +90,7 @@ struct AttributeValidationTests {
       "expoFoo": "ok",
       "expo": "ok",
       "session.idx": "ok",
-      "event.name.extra": "ok"
+      "event.name.extra": "ok",
     ])
     #expect(result.droppedCount == 0)
     let attributes = try! #require(result.attributes)
@@ -117,7 +118,7 @@ struct AttributeValidationTests {
   func `returns nil attributes when every entry is dropped`() {
     let result = sanitizeLogEventAttributes([
       "expo.foo": "x",
-      "expo.bar": "y"
+      "expo.bar": "y",
     ])
     #expect(result.attributes == nil)
     #expect(result.droppedCount == 2)
@@ -129,11 +130,85 @@ struct AttributeValidationTests {
       "": "empty-key-drop",
       "expo.foo": "namespace-drop",
       "session.id": "sdk-drop",
-      "valid": "ok"
+      "valid": "ok",
     ])
     #expect(result.droppedCount == 3)
     let attributes = try! #require(result.attributes)
     #expect(attributes.count == 1)
     #expect(attributes["valid"] as? String == "ok")
+  }
+
+  @Test
+  func `drops non-finite values and counts them`() {
+    let result = sanitizeLogEventAttributes([
+      "nan": Double.nan,
+      "infinity": Double.infinity,
+      "valid": 1.5,
+    ])
+    #expect(result.droppedCount == 2)
+    let attributes = try! #require(result.attributes)
+    #expect(attributes.count == 1)
+    #expect(attributes["valid"] as? Double == 1.5)
+  }
+
+  @Test
+  func `strips non-finite numbers nested in arrays and dictionaries`() {
+    let result = sanitizeLogEventAttributes([
+      "timings": [1.0, Double.nan, 3.0],
+      "meta": ["ratio": -Double.infinity, "ok": 2.0],
+    ])
+    let attributes = try! #require(result.attributes)
+    #expect(attributes["timings"] as? [Double] == [1.0, 3.0])
+    #expect(attributes["meta"] as? [String: Double] == ["ok": 2.0])
+  }
+
+  @Test
+  func `keeps bridged booleans as booleans`() throws {
+    // A boolean `NSNumber` also casts to `Double`, so the non-finite check must not return the cast value.
+    let result = sanitizeLogEventAttributes([
+      "flag": NSNumber(value: true),
+      "list": [NSNumber(value: false)],
+      "map": ["flag": NSNumber(value: true)],
+    ])
+    let attributes = try #require(result.attributes)
+    let json = try JSONSerialization.data(withJSONObject: attributes, options: [.sortedKeys])
+    #expect(String(data: json, encoding: .utf8) == #"{"flag":true,"list":[false],"map":{"flag":true}}"#)
+  }
+
+  @Test
+  func `keeps null values at any depth`() {
+    // Only non-finite numbers are stripped; a null is a value the caller passed.
+    let result = sanitizeLogEventAttributes([
+      "missing": NSNull(),
+      "list": ["a", NSNull()],
+      "map": ["key": NSNull()],
+    ])
+    #expect(result.droppedCount == 0)
+    let attributes = try! #require(result.attributes)
+    #expect(attributes["missing"] is NSNull)
+    #expect((attributes["list"] as? [Any])?.last is NSNull)
+    #expect((attributes["map"] as? [String: Any])?["key"] is NSNull)
+  }
+
+  @Test
+  func `withDisplayNameAttribute leaves attributes unchanged when display name is nil`() {
+    #expect(withDisplayNameAttribute(["userId": "u_42"], displayName: nil)?["userId"] as? String == "u_42")
+    #expect(withDisplayNameAttribute(nil, displayName: nil) == nil)
+  }
+
+  @Test
+  func `withDisplayNameAttribute adds the reserved key even onto a nil map`() {
+    let result = try! #require(withDisplayNameAttribute(nil, displayName: "Login failed"))
+    #expect(result["expo.log.display_name"] as? String == "Login failed")
+  }
+
+  @Test
+  func `withDisplayNameAttribute injects the reserved key past sanitization`() {
+    // The key matches the `expo.*` reserved pattern, so it only survives because it is
+    // added after `sanitizeLogEventAttributes` rather than passing through it.
+    let sanitized = sanitizeLogEventAttributes(["userId": "u_42"]).attributes
+    let result = try! #require(withDisplayNameAttribute(sanitized, displayName: "Login failed"))
+    #expect(result["userId"] as? String == "u_42")
+    #expect(result["expo.log.display_name"] as? String == "Login failed")
   }
 }

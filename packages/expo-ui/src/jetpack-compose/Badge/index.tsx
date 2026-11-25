@@ -4,7 +4,7 @@ import { type ColorValue } from 'react-native';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-export type BadgeProps = {
+export interface BadgeProps {
   /**
    * Background color of the badge.
    * @default BadgeDefaults.containerColor
@@ -24,7 +24,7 @@ export type BadgeProps = {
    * When omitted, renders as a small indicator dot.
    */
   children?: React.ReactNode;
-};
+}
 
 const BadgeNativeView: React.ComponentType<BadgeProps> = requireNativeView('ExpoUI', 'BadgeView');
 

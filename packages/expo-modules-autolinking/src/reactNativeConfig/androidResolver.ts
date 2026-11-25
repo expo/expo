@@ -1,13 +1,13 @@
 import fs from 'fs/promises';
 import path from 'path';
 
+import type { ExpoModuleConfig } from '../ExpoModuleConfig';
+import { taskAll } from '../concurrency';
+import { scanFilesRecursively, fileExistsAsync, fastJoin, loadPackageJson } from '../utils';
 import type {
   RNConfigDependencyAndroid,
   RNConfigReactNativePlatformsConfigAndroid,
 } from './reactNativeConfig.types';
-import type { ExpoModuleConfig } from '../ExpoModuleConfig';
-import { taskAll } from '../concurrency';
-import { scanFilesRecursively, fileExistsAsync, fastJoin, loadPackageJson } from '../utils';
 
 export async function resolveDependencyConfigImplAndroidAsync(
   packageRoot: string,
@@ -72,14 +72,18 @@ export async function resolveDependencyConfigImplAndroidAsync(
     (await parseComponentDescriptorsAsync(packageRoot, packageJson));
   let cmakeListsPath = reactNativeConfig?.cmakeListsPath
     ? path.join(androidDir, reactNativeConfig?.cmakeListsPath)
-    : path.join(androidDir, 'build/generated/source/codegen/jni/CMakeLists.txt');
+    : isPureCxxDependency
+      ? null
+      : path.join(androidDir, 'build/generated/source/codegen/jni/CMakeLists.txt');
   const cxxModuleCMakeListsModuleName = reactNativeConfig?.cxxModuleCMakeListsModuleName || null;
   const cxxModuleHeaderName = reactNativeConfig?.cxxModuleHeaderName || null;
   let cxxModuleCMakeListsPath = reactNativeConfig?.cxxModuleCMakeListsPath
     ? path.join(androidDir, reactNativeConfig?.cxxModuleCMakeListsPath)
     : null;
   if (process.platform === 'win32') {
-    cmakeListsPath = cmakeListsPath.replace(/\\/g, '/');
+    if (cmakeListsPath) {
+      cmakeListsPath = cmakeListsPath.replace(/\\/g, '/');
+    }
     if (cxxModuleCMakeListsPath) {
       cxxModuleCMakeListsPath = cxxModuleCMakeListsPath.replace(/\\/g, '/');
     }

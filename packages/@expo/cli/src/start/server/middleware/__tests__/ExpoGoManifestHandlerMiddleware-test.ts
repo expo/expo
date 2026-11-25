@@ -103,6 +103,8 @@ describe('getParsedHeaders', () => {
       responseContentType: ResponseContentType.TEXT_PLAIN,
       hostname: null,
       platform: 'ios',
+      protocol: undefined,
+      forwarded: null,
     });
   });
 
@@ -116,6 +118,8 @@ describe('getParsedHeaders', () => {
       expectSignature: null,
       hostname: null,
       platform: 'android',
+      protocol: undefined,
+      forwarded: null,
     });
   });
 
@@ -132,6 +136,8 @@ describe('getParsedHeaders', () => {
       expectSignature: null,
       hostname: null,
       platform: 'android',
+      protocol: undefined,
+      forwarded: null,
     });
 
     expect(
@@ -146,6 +152,8 @@ describe('getParsedHeaders', () => {
       expectSignature: null,
       hostname: null,
       platform: 'android',
+      protocol: undefined,
+      forwarded: null,
     });
   });
 
@@ -168,6 +176,44 @@ describe('getParsedHeaders', () => {
       hostname: 'localhost',
       // We don't care much about the platform here since it's already tested.
       platform: 'ios',
+      protocol: undefined,
+      forwarded: null,
+    });
+  });
+
+  it('parses the forwarded address when forwarding headers are present', () => {
+    expect(
+      middleware.getParsedHeaders(
+        asReq({
+          url: 'http://localhost:3000',
+          headers: {
+            host: 'localhost:8081',
+            'expo-platform': 'ios',
+            forwarded: 'host="proxy.test:4443";proto=https',
+          },
+        })
+      )
+    ).toMatchObject({
+      hostname: 'localhost',
+      platform: 'ios',
+      protocol: 'https',
+      forwarded: { authority: 'proxy.test:4443', protocol: 'https' },
+    });
+  });
+
+  it('returns a null forwarded address for direct requests', () => {
+    expect(
+      middleware.getParsedHeaders(
+        asReq({
+          url: 'http://localhost:3000',
+          headers: { host: 'localhost:8081', 'expo-platform': 'ios' },
+        })
+      )
+    ).toMatchObject({
+      hostname: 'localhost',
+      platform: 'ios',
+      protocol: undefined,
+      forwarded: null,
     });
   });
 });
@@ -180,7 +226,15 @@ describe('_getManifestResponseAsync', () => {
       id: 'userwat',
       username: 'wat',
       primaryAccount: { id: 'blah-account' },
-      accounts: [],
+      accounts: [
+        {
+          id: 'blah-account',
+          viewerUserPermission2: {
+            permissions: ['OWN', 'ADMIN', 'PUBLISH_PROTECTED', 'PUBLISH', 'RUN', 'VIEW'],
+            effectivePermissions: ['OWN', 'ADMIN', 'PUBLISH_PROTECTED', 'PUBLISH', 'RUN', 'VIEW'],
+          },
+        },
+      ],
     }));
 
     jest.mocked(AppQuery.byIdAsync).mockImplementation(
@@ -559,7 +613,10 @@ describe('_getManifestResponseAsync', () => {
     }
 
     expect([...partsSeen]).toEqual(['manifest', 'certificate_chain']);
-  });
+    // Increased timeout: RSA development certificate generation can exceed the default
+    // 5s under load; a timed-out test leaks its pending `toMatchSnapshot()` into the
+    // following test and corrupts the snapshot file.
+  }, 20_000);
 
   it('returns a code signed manifest with developers own key when requested when offline', async () => {
     vol.fromJSON({
@@ -690,7 +747,8 @@ describe('_getManifestResponseAsync', () => {
     }
 
     expect([...partsSeen]).toEqual(['manifest', 'certificate_chain']);
-  });
+    // Increased timeout: see the sibling expo-root chain test above.
+  }, 20_000);
 
   it('returns application/json when requested', async () => {
     const middleware = createMiddleware();

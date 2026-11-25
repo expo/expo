@@ -1,6 +1,5 @@
-import { useObserve } from 'expo-observe';
+import { ObserveInteractiveMarker } from 'expo-observe';
 import { router } from 'expo-router';
-import { useEffect } from 'react';
 import { Platform, ScrollView, StyleSheet, Text } from 'react-native';
 
 import { Button } from '@/components/Button';
@@ -8,25 +7,18 @@ import { useTheme } from '@/utils/theme';
 
 export default function PageSheetScreen() {
   const theme = useTheme();
-  const { markInteractive } = useObserve();
-
-  useEffect(() => {
-    markInteractive();
-  }, []);
 
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background.screen }]}
       contentContainerStyle={styles.content}>
+      <ObserveInteractiveMarker />
       <Text style={[styles.heading, { color: theme.text.default }]}>Page sheet</Text>
       <Text style={[styles.body, { color: theme.text.secondary }]}>
         {`presentation: 'pageSheet'`}
       </Text>
       <Button title="Open modal" onPress={() => router.push('/examples/modals/modal')} />
-      <Button
-        title="Open form sheet"
-        onPress={() => router.push('/examples/modals/formsheet')}
-      />
+      <Button title="Open form sheet" onPress={() => router.push('/examples/modals/formsheet')} />
       <Button
         title="Back to index"
         theme="secondary"

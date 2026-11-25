@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <style>
+    .window {
+      fill: var(--window, #9ad0ff);
+      stroke: var(--frame, #333333);
+      stroke-width: var(--frame-width, 1);
+    }
+  </style>
+  <circle cx="82" cy="18" r="9" fill="var(--sun, #ffcc33)" opacity="var(--sun-opacity)" />
+  <rect x="20" y="45" width="60" height="45" fill="var(--wall, #cccccc)" />
+  <polygon points="10,50 50,15 90,50" fill="var(--roof, #888888)" />
+  <rect x="64" y="22" width="8" height="18" fill="var(--roof, #888888)" />
+  <rect x="43" y="62" width="14" height="28" style="fill: var(--door, #6b4f2a)" />
+  <rect class="window" x="27" y="55" width="12" height="12" />
+  <rect class="window" x="61" y="55" width="12" height="12" />
+</svg>

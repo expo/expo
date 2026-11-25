@@ -1,30 +1,29 @@
 import JsonFile from '@expo/json-file';
-import path from 'path';
-import resolveFrom from 'resolve-from';
+import { resolveFrom } from '@expo/require-utils';
 
-export function getPkgVersion(projectRoot: string, pkgName: string): string | null {
-  const targetPkg = resolveFrom.silent(projectRoot, pkgName);
-  if (!targetPkg) return null;
-  const targetPkgJson = findUpPackageJson(targetPkg);
-  if (!targetPkgJson) return null;
-  return getPkgVersionFromPath(targetPkgJson);
-}
+export function getPkgVersion(
+  projectRoot: string,
+  pkgName: string,
+  peerDependent?: string
+): string | null {
+  let pkgPath: string | null = null;
 
-export function getPkgVersionFromPath(packageJsonPath: string): string | null {
-  const pkg = JsonFile.read(packageJsonPath);
-  const pkgVersion = pkg.version;
-  if (typeof pkgVersion === 'string') {
-    return pkgVersion;
+  pkgPath = resolveFrom(projectRoot, `${pkgName}/package.json`);
+  if (!pkgPath && peerDependent) {
+    const peerDependentPath = resolveFrom(projectRoot, `${peerDependent}/package.json`);
+    if (peerDependentPath) {
+      pkgPath = resolveFrom(peerDependentPath, `${pkgName}/package.json`);
+    }
   }
-  return null;
-}
 
-export function findUpPackageJson(cwd: string): string | null {
-  if (['.', path.sep].includes(cwd)) return null;
-
-  const found = resolveFrom.silent(cwd, './package.json');
-  if (found) {
-    return found;
+  if (!pkgPath) {
+    return null;
   }
-  return findUpPackageJson(path.dirname(cwd));
+
+  try {
+    const pkg = JsonFile.read(pkgPath);
+    return typeof pkg.version === 'string' ? pkg.version : null;
+  } catch {
+    return null;
+  }
 }

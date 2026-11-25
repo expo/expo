@@ -3,6 +3,26 @@ package expo.modules.sqlite
 import java.io.File
 import java.io.IOException
 
+/**
+ * Deletes the database file together with its `-journal`, `-wal` and `-shm` sidecar files,
+ * mirroring the behavior of Android's `SQLiteDatabase.deleteDatabase()`.
+ */
+@Throws(DatabaseNotFoundException::class, DeleteDatabaseFileException::class)
+internal fun deleteDatabaseFiles(dbFile: File, databaseName: String) {
+  if (!dbFile.exists()) {
+    throw DatabaseNotFoundException(databaseName)
+  }
+  if (!dbFile.delete()) {
+    throw DeleteDatabaseFileException(databaseName)
+  }
+  for (suffix in listOf("-journal", "-wal", "-shm")) {
+    val sidecarFile = File(dbFile.path + suffix)
+    if (sidecarFile.exists()) {
+      sidecarFile.delete()
+    }
+  }
+}
+
 @Throws(IOException::class)
 internal fun ensureDirExists(dir: File): File {
   if (!dir.isDirectory) {

@@ -9,15 +9,11 @@ require() {
 
 require node
 require npm
-require git-lfs
 require direnv
 
 # Set up submodules
 git submodule update --init
 git submodule foreach --recursive git checkout .
-
-# Pull the large git files
-git lfs pull
 
 if [[ "$1" == "--native" ]]; then
   # We can install pnpm because `npm install` is cross-platform

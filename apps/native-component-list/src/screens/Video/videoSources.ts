@@ -16,6 +16,16 @@ const localVideoSource: VideoSource = {
   },
 };
 
+const starVideoId: VideoSource = require('../../../assets/videos/star.mp4') as number;
+
+const starVideoSource: VideoSource = {
+  assetId: starVideoId,
+  metadata: {
+    title: 'Star',
+    artist: 'Expo',
+  },
+};
+
 export const seekOptimizedSource: VideoSource = {
   assetId: seekOptimizedVideoId,
   metadata: {
@@ -149,6 +159,7 @@ export {
   forBiggerBlazesSource,
   elephantsDreamSource,
   localVideoSource,
+  starVideoSource,
   androidDrmSource,
   videoLabels,
   videoSources,

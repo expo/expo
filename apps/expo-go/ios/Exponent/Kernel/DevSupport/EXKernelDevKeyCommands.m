@@ -72,6 +72,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @end
 
+static BOOL EXIsWebContentView(UIResponder *responder)
+{
+  static Class WKContentView;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    // this is a runtime header that is not publicly exported from the Webkit.framework
+    // obfuscating selector WKContentView
+    NSArray<NSString *> *webViewClass = @[ @"WKCo", @"ntentVi", @"ew"];
+    WKContentView = NSClassFromString([webViewClass componentsJoinedByString:@""]);
+  });
+  return WKContentView != nil && [responder isKindOfClass:WKContentView];
+}
+
 #if TARGET_IPHONE_SIMULATOR
 @interface UIEvent (UIPhysicalKeyboardEvent)
 
@@ -106,14 +119,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     
     if (firstResponder) {
       BOOL isTextField = [firstResponder isKindOfClass: [UITextField class]] || [firstResponder isKindOfClass: [UITextView class]];
-      
-      // this is a runtime header that is not publicly exported from the Webkit.framework
-      // obfuscating selector WKContentView
-      NSArray<NSString *> *webViewClass = @[ @"WKCo", @"ntentVi", @"ew"];
-      Class WKContentView = NSClassFromString([webViewClass componentsJoinedByString:@""]);
-      
-      BOOL isWebView = [firstResponder isKindOfClass:[WKContentView class]];
-      
+      BOOL isWebView = EXIsWebContentView(firstResponder);
+
       if (!isTextField && !isWebView) {
         [EXKernelDevKeyCommands handleKeyboardEvent:event];
       }
@@ -132,7 +139,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return @[];
   }
   NSSet<EXKeyCommand *> *commands = [EXKernelDevKeyCommands sharedInstance].commands;
-  return [[commands valueForKeyPath:@"keyCommand"] allObjects];
+  NSArray<UIKeyCommand *> *keyCommands = [[commands valueForKeyPath:@"keyCommand"] allObjects];
+  if (EXIsWebContentView([RCTKeyWindow() valueForKey:@"firstResponder"])) {
+    return [keyCommands filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"modifierFlags != 0"]];
+  }
+  return keyCommands;
 }
 
 - (void)EX_handleKeyCommand:(UIKeyCommand *)key

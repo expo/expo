@@ -2,23 +2,24 @@
 import * as React from 'react';
 import { Animated } from 'react-native';
 
-import type { NavigationState } from '../../routers';
+import type { BottomTabViewState } from '../types';
 
-export function useAnimatedHashMap({ routes, index }: NavigationState) {
-  const refs = React.useRef<Record<string, Animated.Value>>({});
+export function useAnimatedHashMap({ routes, index }: BottomTabViewState) {
+  const refs = React.useRef<Record<string, Animated.Value>>(Object.create(null));
   const previous = refs.current;
-  const routeKeys = Object.keys(previous);
+  const routeNames = Object.keys(previous);
 
   if (
-    routes.length === routeKeys.length &&
-    routes.every((route) => routeKeys.includes(route.key))
+    routes.length === routeNames.length &&
+    routes.every((route) => routeNames.includes(route.name))
   ) {
     return previous;
   }
-  refs.current = {};
+  refs.current = Object.create(null);
 
-  routes.forEach(({ key }, i) => {
-    refs.current[key] = previous[key] ?? new Animated.Value(i === index ? 0 : i >= index ? 1 : -1);
+  routes.forEach(({ name }, i) => {
+    refs.current[name] =
+      previous[name] ?? new Animated.Value(i === index ? 0 : i >= index ? 1 : -1);
   });
 
   return refs.current;

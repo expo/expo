@@ -1,0 +1,9 @@
+{
+  "extends": "@expo/internal-scripts/tsconfig.node",
+  "compilerOptions": {
+    "lib": ["es2023"],
+    "noEmit": true,
+    "rootDir": "./src"
+  },
+  "include": ["src/**/*"]
+}

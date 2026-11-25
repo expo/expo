@@ -6,7 +6,7 @@ class ContactNext: SharedObject {
   private let contactRepository: ContactRepository
   private let imageService: ImageService
   private let imageMapper: ImageMapper
-  private let thumbnailMapper: ImageMapper
+  private let thumbnailMapper: ThumbnailMapper
 
   init(
     id: String,
@@ -21,7 +21,7 @@ class ContactNext: SharedObject {
       filename: "\(id)-\(CNContactImageDataKey).png"
     )
 
-    self.thumbnailMapper = ImageMapper(
+    self.thumbnailMapper = ThumbnailMapper(
       service: imageService,
       filename: "\(id)-\(CNContactThumbnailImageDataKey).png"
     )
@@ -62,7 +62,7 @@ class ContactNext: SharedObject {
 
   func getFullName() throws -> String {
     let keys = CNContactFormatter.descriptorForRequiredKeys(for: .fullName)
-    guard let contact = contactRepository.getById(id: id, keysToFetch: [keys] as [CNKeyDescriptor]) else {
+    guard let contact = try contactRepository.getById(id: id, keysToFetch: [keys] as [CNKeyDescriptor]) else {
       throw ContactNotFoundException(id)
     }
     return FullNameExtractor.extract(from: contact)
@@ -74,8 +74,10 @@ class ContactNext: SharedObject {
   }
 
   func getDetails(fields: [ContactField]?) throws -> GetContactDetailsRecord {
-    let keys = CNKeyDescriptorMapper.map(from: fields ?? ContactField.allCases)
-    guard let contact = contactRepository.getById(id: id, keysToFetch: keys) else {
+    // Without fields, the caller asks for all available fields, so a field that the app cannot access is left out.
+    let keys = fields.map { CNKeyDescriptorMapper.map(from: $0) }
+      ?? CNKeyDescriptorMapper.map(from: ContactField.allCases).filter(contactRepository.isAccessible)
+    guard let contact = try contactRepository.getById(id: id, keysToFetch: keys) else {
       throw ContactNotFoundException(id)
     }
     return try GetContactDetailsMapper(imageService: imageService)
@@ -115,7 +117,8 @@ class ContactNext: SharedObject {
       offset: queryOptions?.offset,
       sortOrder: queryOptions?.sortOrder.map {
         CNContactSortOrderMapper.map($0)
-      }
+      },
+      unifyResults: queryOptions?.rawContacts != true
     )
     .map { contactFactory.create(id: $0.identifier) }
   }
@@ -126,8 +129,10 @@ class ContactNext: SharedObject {
     contactRepository: ContactRepository,
     getContactDetailsMapper: GetContactDetailsMapper
   ) throws -> [GetContactDetailsRecord] {
+    let keys = fields.map { CNKeyDescriptorMapper.map(from: $0) }
+      ?? CNKeyDescriptorMapper.map(from: ContactField.allCases).filter(contactRepository.isAccessible)
     return try contactRepository.getPaginated(
-      keysToFetch: CNKeyDescriptorMapper.map(from: fields ?? ContactField.allCases),
+      keysToFetch: keys,
       predicate: queryOptions?.name.flatMap {
         $0.isEmpty ? nil : CNContact.predicateForContacts(matchingName: $0)
       },
@@ -135,7 +140,8 @@ class ContactNext: SharedObject {
       offset: queryOptions?.offset,
       sortOrder: queryOptions?.sortOrder.map {
         CNContactSortOrderMapper.map($0)
-      }
+      },
+      unifyResults: queryOptions?.rawContacts != true
     )
     .map { try getContactDetailsMapper.map(contact: $0) }
   }

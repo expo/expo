@@ -1,17 +1,18 @@
 import type { AudioMetadata } from './Audio.types';
 import type { AudioLockScreenOptions } from './AudioConstants';
+import { normalizeLockScreenOptions } from './utils/lockScreenOptions';
 
 interface MediaSessionPlayer {
   play(): void;
   pause(): void;
   seekTo(seconds: number): Promise<void>;
+  next?(): void;
+  previous?(): void;
   readonly playing: boolean;
   readonly currentTime: number;
   readonly duration: number;
   readonly playbackRate: number;
 }
-
-const SKIP_SECONDS = 10;
 
 class MediaSessionController {
   private activePlayer: MediaSessionPlayer | null = null;
@@ -31,7 +32,7 @@ class MediaSessionController {
 
     this.activePlayer = player;
     this.metadata = metadata ?? null;
-    this.options = options ?? null;
+    this.options = normalizeLockScreenOptions(options);
 
     this._applyMetadata();
     this._applyActionHandlers();
@@ -157,14 +158,14 @@ class MediaSessionController {
     });
 
     const seekForward = (details: MediaSessionActionDetails) => {
-      const skipTime = details.seekOffset ?? SKIP_SECONDS;
+      const skipTime = details.seekOffset ?? this.options?.seekForwardIntervalSeconds ?? 10;
       const newTime = Math.min(player.currentTime + skipTime, player.duration || 0);
       player.seekTo(newTime);
       this.updatePositionState(player);
     };
 
     const seekBackward = (details: MediaSessionActionDetails) => {
-      const skipTime = details.seekOffset ?? SKIP_SECONDS;
+      const skipTime = details.seekOffset ?? this.options?.seekBackwardIntervalSeconds ?? 10;
       const newTime = Math.max(player.currentTime - skipTime, 0);
       player.seekTo(newTime);
       this.updatePositionState(player);
@@ -172,17 +173,31 @@ class MediaSessionController {
 
     if (this.options?.showSeekForward === true) {
       this._setHandler('seekforward', seekForward);
-      this._setHandler('nexttrack', seekForward);
     } else {
       this._setHandler('seekforward', null);
-      this._setHandler('nexttrack', null);
     }
 
     if (this.options?.showSeekBackward === true) {
       this._setHandler('seekbackward', seekBackward);
-      this._setHandler('previoustrack', seekBackward);
     } else {
       this._setHandler('seekbackward', null);
+    }
+
+    if (this.options?.showNextTrack === true && player.next) {
+      this._setHandler('nexttrack', () => {
+        player.next?.();
+        this.updatePositionState(player);
+      });
+    } else {
+      this._setHandler('nexttrack', null);
+    }
+
+    if (this.options?.showPreviousTrack === true && player.previous) {
+      this._setHandler('previoustrack', () => {
+        player.previous?.();
+        this.updatePositionState(player);
+      });
+    } else {
       this._setHandler('previoustrack', null);
     }
   }

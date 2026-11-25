@@ -2,16 +2,13 @@ import type { ExpoConfig } from '@expo/config';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { updateTSConfigAsync } from './updateTSConfig';
 import * as Log from '../../../log';
 import { fileExistsAsync } from '../../../utils/dir';
 import { env } from '../../../utils/env';
 import { memoize } from '../../../utils/fn';
-import { everyMatchAsync } from '../../../utils/glob';
 import { ProjectPrerequisite } from '../Prerequisite';
 import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync';
-
-const debug = require('debug')('expo:doctor:typescriptSupport') as typeof console.log;
+import { updateTSConfigAsync } from './updateTSConfig';
 
 const warnDisabled = memoize(() => {
   Log.warn('Skipping TypeScript setup: EXPO_NO_TYPESCRIPT_SETUP is enabled.');
@@ -29,8 +26,6 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> 
       warnDisabled();
       return true;
     }
-    debug('Ensuring TypeScript support is setup');
-
     const tsConfigPath = path.join(this.projectRoot, 'tsconfig.json');
 
     // Ensure the project is TypeScript before continuing.
@@ -127,18 +122,24 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> 
   /** Return the first TypeScript file in the project. */
   async _queryFirstTypeScriptFileAsync(): Promise<null | string> {
     try {
-      // TODO(Bacon): Use `everyMatch` since a bug causes `anyMatch` to return inaccurate results when used multiple times.
-      const results = await everyMatchAsync('**/*.@(ts|tsx)', {
+      const signal = AbortSignal.timeout(5000);
+      for await (const file of fs.glob('**/*.@(ts|tsx)', {
         cwd: this.projectRoot,
-        signal: AbortSignal.timeout(5000),
-        ignore: [
-          '**/@(Carthage|Pods|node_modules)/**',
-          '**/*.d.ts',
-          '@(ios|android|web|web-build|dist)/**',
-        ],
-      });
-
-      return results[0] ?? null;
+        exclude: (entry) => {
+          signal.throwIfAborted();
+          const parts = entry.split(path.sep);
+          return (
+            entry.endsWith('.d.ts') ||
+            parts.some((part) => ['Carthage', 'Pods', 'node_modules'].includes(part)) ||
+            ['ios', 'android', 'web', 'web-build', 'dist'].includes(parts[0] ?? '')
+          );
+        },
+      })) {
+        signal.throwIfAborted();
+        return file;
+      }
+      signal.throwIfAborted();
+      return null;
     } catch (error: any) {
       if (error.name === 'TimeoutError') {
         return null;

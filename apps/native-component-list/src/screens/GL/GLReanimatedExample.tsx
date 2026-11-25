@@ -2,7 +2,7 @@ import { Asset, useAssets } from 'expo-asset';
 import { ExpoWebGLRenderingContext, GLView, getWorkletContext } from 'expo-gl';
 import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, { runOnUI, useSharedValue, withSpring } from 'react-native-reanimated';
 
 interface RenderContext {
@@ -101,7 +101,6 @@ function useWorkletAwareGlContext<T>(
         const workletGl = getWorkletContext(glCtxId)!;
         const ctx = onInit(workletGl);
         const renderer = () => {
-          'worklet';
           if (canceled.value) {
             return;
           }
@@ -150,15 +149,16 @@ export default function GLReanimated() {
     }
   }, [assets]);
 
-  const panGestureHandler = Gesture.Pan()
-    .onUpdate((event) => {
+  const panGestureHandler = usePanGesture({
+    onUpdate: (event) => {
       x.value = event.translationX;
       y.value = event.translationY;
-    })
-    .onEnd(() => {
+    },
+    onDeactivate: () => {
       x.value = withSpring(0);
       y.value = withSpring(0);
-    });
+    },
+  });
 
   const onContextCreate = useWorkletAwareGlContext<RenderContext>(
     {

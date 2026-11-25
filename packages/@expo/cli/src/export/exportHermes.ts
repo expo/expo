@@ -1,6 +1,7 @@
 import type { ExpoConfig, Platform } from '@expo/config';
 import { getConfigFilePaths } from '@expo/config';
 import JsonFile from '@expo/json-file';
+import { isAppleTargetPlatform } from '@expo/platforms';
 import fs from 'fs';
 import path from 'path';
 
@@ -52,18 +53,16 @@ export function isEnableHermesManaged(
   expoConfig: Partial<Pick<ExpoConfig, 'ios' | 'android'>>,
   platform: string
 ): boolean {
-  switch (platform) {
-    case 'android': {
-      // NOTE(@kitten): `jsEngine` was deprecated, but we're preserving the check
-      return ((expoConfig.android as any)?.jsEngine ?? (expoConfig as any).jsEngine) !== 'jsc';
-    }
-    case 'ios': {
-      // NOTE(@kitten): `jsEngine` was deprecated, but we're preserving the check
-      return ((expoConfig.ios as any)?.jsEngine ?? (expoConfig as any).jsEngine) !== 'jsc';
-    }
-    default:
-      return false;
+  if (platform === 'android') {
+    // NOTE(@kitten): `jsEngine` was deprecated, but we're preserving the check
+    return ((expoConfig.android as any)?.jsEngine ?? (expoConfig as any).jsEngine) !== 'jsc';
   }
+  if (isAppleTargetPlatform(platform)) {
+    // NOTE(@kitten): `jsEngine` was deprecated, but we're preserving the check
+    // Apple platforms all read the `ios` config key.
+    return ((expoConfig.ios as any)?.jsEngine ?? (expoConfig as any).jsEngine) !== 'jsc';
+  }
+  return false;
 }
 
 export function parseGradleProperties(content: string): Record<string, string> {
@@ -105,7 +104,12 @@ export async function maybeThrowFromInconsistentEngineAsync(
     );
   }
 
-  if (platform === 'ios' && (await maybeInconsistentEngineIosAsync(projectRoot, isHermesManaged))) {
+  // TODO(@kitten): Since Hermes is now assumed, we loosen the relevant check for tvos and macos and just
+  // assume we should look at the ios folder, and can otherwise assume Hermes
+  if (
+    isAppleTargetPlatform(platform) &&
+    (await maybeInconsistentEngineIosAsync(projectRoot, isHermesManaged))
+  ) {
     throw new Error(
       `JavaScript engine configuration is inconsistent between ${configFileName} and iOS native project.\n` +
         `In ${configFileName}: Hermes is ${isHermesManaged ? 'enabled' : 'not enabled'}\n` +
@@ -252,6 +256,10 @@ export function isAndroidUsingHermes(projectRoot: string) {
 }
 
 export function isIosUsingHermes(projectRoot: string) {
+  // Assume Hermes and/or just check iOS
+  if (!fs.existsSync(path.join(projectRoot, 'ios'))) {
+    return true;
+  }
   // If nullish, then assume Hermes is used.
   return isHermesPossiblyEnabled(projectRoot) !== false;
 }

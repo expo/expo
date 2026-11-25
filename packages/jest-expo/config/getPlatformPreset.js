@@ -3,12 +3,17 @@
 const { getBareExtensions } = require('./extensions');
 const { withWatchPlugins } = require('./withWatchPlugins');
 const expoPreset = require('../jest-preset');
+const { resolveBabelOptions } = require('../src/resolveBabelOptions');
+
+const babelJestPath = require.resolve('babel-jest');
+
+function isBabelJest(transformer) {
+  return transformer === 'babel-jest' || transformer === babelJestPath;
+}
 
 function getUpstreamBabelJest(transform) {
   const upstreamBabelJest = Object.keys(transform).find((key) =>
-    Array.isArray(transform[key])
-      ? transform[key][0] === 'babel-jest'
-      : transform[key] === 'babel-jest'
+    Array.isArray(transform[key]) ? isBabelJest(transform[key][0]) : isBabelJest(transform[key])
   );
   return upstreamBabelJest;
 }
@@ -40,6 +45,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
   });
 
   const upstreamBabelJest = getUpstreamBabelJest(expoPreset.transform) ?? '\\.[jt]sx?$';
+  const babelJestOptions = resolveBabelOptions(process.cwd());
 
   if (isReactServer && displayOptions && displayOptions.name) {
     displayOptions.name = `rsc/${extensions[0]}`;
@@ -49,11 +55,12 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     transform: {
       ...expoPreset.transform,
       [upstreamBabelJest]: [
-        'babel-jest',
+        babelJestPath,
         {
+          ...babelJestOptions,
           caller: {
             name: 'metro',
-            bundler: 'metro',
+            bundler: 'jest',
             // Add support for the `platform` babel transforms and inlines such as
             // Platform.OS and `process.env.EXPO_OS`.
             platform,
@@ -86,6 +93,22 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     },
   });
 
+  preset.testEnvironmentOptions ??= {};
+  if (!preset.testEnvironmentOptions.customExportConditions) {
+    preset.testEnvironmentOptions.customExportConditions = isServer
+      ? ['node', 'require']
+      : platform === 'web'
+        ? ['browser']
+        : ['react-native'];
+  }
+  preset.moduleNameMapper = {
+    // See the note in `../jest-preset.js`: mapped targets must be absolute paths on Jest 30.
+    '^react-native/asset-registry$': expoPreset.moduleNameMapper['^react-native/asset-registry$'],
+    '^react-native/unstable-internals-do-not-use$':
+      expoPreset.moduleNameMapper['^react-native/unstable-internals-do-not-use$'],
+    ...preset.moduleNameMapper,
+  };
+
   if (isServer) {
     preset.testEnvironment = 'node';
   }
@@ -101,7 +124,6 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     preset.setupFilesAfterEnv ??= [];
     preset.setupFilesAfterEnv.push(require.resolve('../src/rsc-expect.ts'));
 
-    preset.testEnvironmentOptions ??= {};
     // Matches withMetroMultiPlatform, e.g. resolution for RSC.
     preset.testEnvironmentOptions.customExportConditions = [
       'node',
@@ -129,44 +151,59 @@ function getBaseWebPreset() {
   };
 }
 
+// `getPlatformPreset` builds its own `moduleNameMapper` from scratch, so spreading it over the
+// base preset drops the mappers that the base preset defines. Those mappers are required: since
+// React Native 0.87 `jest/setup.js` mocks `react-native/setup-env`, which is only reachable
+// through the `^react-native/setup-env$` alias, and `withTypescriptMapping` adds the aliases from
+// the project's `tsconfig.json` `paths`. Merge them back for every platform preset, keeping the
+// platform mappers last so platform-specific entries still win.
+function withBaseModuleNameMapper(basePreset, platformPreset) {
+  return {
+    ...basePreset,
+    ...platformPreset,
+    moduleNameMapper: {
+      ...basePreset.moduleNameMapper,
+      ...platformPreset.moduleNameMapper,
+    },
+  };
+}
+
 module.exports = {
   getWebPreset({ isReactServer } = {}) {
-    const preset = {
-      ...getBaseWebPreset(),
-      testEnvironment: 'jsdom',
-      ...getPlatformPreset({ name: 'Web', color: 'magenta' }, ['web'], 'web', {
+    return withBaseModuleNameMapper(
+      { ...getBaseWebPreset(), testEnvironment: 'jsdom' },
+      getPlatformPreset({ name: 'Web', color: 'magenta' }, ['web'], 'web', {
         isReactServer,
-      }),
-    };
-    return preset;
+      })
+    );
   },
   getNodePreset() {
-    return {
-      ...getBaseWebPreset(),
-      ...getPlatformPreset({ name: 'Node', color: 'cyan' }, ['node', 'web'], 'web', {
+    return withBaseModuleNameMapper(
+      getBaseWebPreset(),
+      getPlatformPreset({ name: 'Node', color: 'cyan' }, ['node', 'web'], 'web', {
         isServer: true,
-      }),
-    };
+      })
+    );
   },
   getIOSPreset({ isReactServer } = {}) {
-    return {
-      ...expoPreset,
-      ...getPlatformPreset({ name: 'iOS', color: 'white' }, ['ios', 'native'], 'ios', {
+    return withBaseModuleNameMapper(
+      expoPreset,
+      getPlatformPreset({ name: 'iOS', color: 'white' }, ['ios', 'native'], 'ios', {
         isReactServer,
-      }),
-    };
+      })
+    );
   },
   getAndroidPreset({ isReactServer } = {}) {
-    return {
-      ...expoPreset,
-      ...getPlatformPreset(
+    return withBaseModuleNameMapper(
+      expoPreset,
+      getPlatformPreset(
         { name: 'Android', color: 'blueBright' },
         ['android', 'native'],
         'android',
         {
           isReactServer,
         }
-      ),
-    };
+      )
+    );
   },
 };

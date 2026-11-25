@@ -12,16 +12,19 @@ JavaCallback::CallbackContext::CallbackContext(
   jsi::Runtime &rt,
   std::weak_ptr<react::CallInvoker> jsCallInvokerHolder,
   std::optional<jsi::Function> resolveHolder,
-  std::optional<jsi::Function> rejectHolder
+  std::optional<jsi::Function> rejectHolder,
+  std::vector<jsi::Value> retainedValues
 ) : react::LongLivedObject(rt),
     rt(rt),
     jsCallInvokerHolder(std::move(jsCallInvokerHolder)),
     resolveHolder(std::move(resolveHolder)),
-    rejectHolder(std::move(rejectHolder)) {}
+    rejectHolder(std::move(rejectHolder)),
+    retainedValues(std::move(retainedValues)) {}
 
 void JavaCallback::CallbackContext::invalidate() {
   resolveHolder.reset();
   rejectHolder.reset();
+  retainedValues.clear();
   allowRelease();
 }
 
@@ -41,6 +44,7 @@ void JavaCallback::registerNatives() {
                    makeNativeMethod("invokeNative", JavaCallback::invokeWritableArray),
                    makeNativeMethod("invokeNative", JavaCallback::invokeWritableMap),
                    makeNativeMethod("invokeNative", JavaCallback::invokeSharedObject),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeArrayBuffer),
                    makeNativeMethod("invokeNative", JavaCallback::invokeJavaScriptArrayBuffer),
                    makeNativeMethod("invokeNative", JavaCallback::invokeNativeArrayBuffer),
                    makeNativeMethod("invokeNative", JavaCallback::invokeError),
@@ -156,10 +160,7 @@ void JavaCallback::invokeFloat(float result) {
 }
 
 void JavaCallback::invokeString(jni::alias_ref<jstring> result) {
-  JNIEnv *env = jni::Environment::current();
-  const char *rawValue = env->GetStringUTFChars(result.get(), nullptr);
-  std::string parsedResult = rawValue;
-  env->ReleaseStringUTFChars(result.get(), rawValue);
+  std::string parsedResult = jstringToUtf8(jni::Environment::current(), result);
   invokeWithResolver(
     [parsedResult = std::move(parsedResult)](jsi::Runtime &rt, jsi::Function &jsFunction) {
       jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, parsedResult));
@@ -205,6 +206,15 @@ void JavaCallback::invokeWritableMap(jni::alias_ref<react::WritableNativeMap::ja
 }
 
 void JavaCallback::invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> result) {
+  auto globalResult = jni::make_global(result);
+  invokeWithResolver(
+    [globalResult = std::move(globalResult)](jsi::Runtime &rt, jsi::Function &jsFunction) mutable {
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, std::move(globalResult)));
+    }
+  );
+}
+
+void JavaCallback::invokeArrayBuffer(jni::alias_ref<ArrayBuffer::javaobject> result) {
   auto globalResult = jni::make_global(result);
   invokeWithResolver(
     [globalResult = std::move(globalResult)](jsi::Runtime &rt, jsi::Function &jsFunction) mutable {

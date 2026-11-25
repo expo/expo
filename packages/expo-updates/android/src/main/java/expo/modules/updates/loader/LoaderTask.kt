@@ -5,23 +5,24 @@ import android.os.Handler
 import android.os.HandlerThread
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
-import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
+import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.DatabaseLauncher
 import expo.modules.updates.launcher.Launcher
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.Update
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import expo.modules.updatesinterface.UpdatesLogMessage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineScope
 import org.json.JSONObject
 import java.io.File
+import java.io.IOException
 import java.util.Date
 
 /**
@@ -46,7 +47,7 @@ import java.util.Date
 class LoaderTask(
   private val context: Context,
   private val configuration: UpdatesConfiguration,
-  private val databaseHolder: DatabaseHolder,
+  private val database: UpdatesDatabase,
   private val directory: File,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
@@ -198,9 +199,9 @@ class LoaderTask(
         isRunning = false
         callback.onFinishedAllLoading()
       } else {
+        logger.error(UpdatesLogMessage.LaunchFailed, e, mapOf("launch" to "initial"))
         launchRemoteUpdate()
       }
-      logger.error("Failed to launch embedded or launchable update", e, UpdatesErrorCode.UpdateFailedToLoad)
     }
   }
 
@@ -246,9 +247,6 @@ class LoaderTask(
     if (!timeoutFinished) {
       stopTimer()
     }
-    if (e != null) {
-      logger.error("Unexpected error encountered while loading this app", e, UpdatesErrorCode.Unknown)
-    }
   }
 
   /**
@@ -281,7 +279,6 @@ class LoaderTask(
   }
 
   private suspend fun launchFallbackUpdateFromDisk() {
-    val database = databaseHolder.database
     val launcher =
       DatabaseLauncher(context, configuration, directory, fileDownloader, selectionPolicy, logger, scope)
     candidateLauncher = launcher
@@ -293,7 +290,7 @@ class LoaderTask(
       val embeddedUpdate =
         EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)!!.updateEntity
       val launchableUpdate = launcher.getLaunchableUpdate(database)
-      val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
+      val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration, logger)
       if (selectionPolicy.shouldLoadNewUpdate(
           embeddedUpdate,
           launchableUpdate,
@@ -308,7 +305,7 @@ class LoaderTask(
         } catch (e: CancellationException) {
           throw e
         } catch (e: Exception) {
-          logger.error("Unexpected error copying embedded update", e, UpdatesErrorCode.Unknown)
+          logger.error(UpdatesLogMessage.EmbeddedUpdateCopyFailed, e)
         }
         launcher.launch(database)
       } else {
@@ -320,7 +317,6 @@ class LoaderTask(
   }
 
   private suspend fun launchRemoteUpdateInBackground() {
-    val database = databaseHolder.database
     callback.onRemoteCheckForUpdateStarted()
     val remoteLoader = RemoteLoader(context, configuration, logger, database, fileDownloader, directory, candidateLauncher?.launchedUpdate, scope)
 
@@ -417,21 +413,13 @@ class LoaderTask(
             null
           )
         }
-      } catch (e: Exception) {
-        callback.onRemoteUpdateFinished(
-          RemoteUpdateStatus.ERROR,
-          null,
-          e
-        )
-        logger.error("Loaded new update but it failed to launch", e, UpdatesErrorCode.UpdateFailedToLoad)
+      } catch (e: CancellationException) {
         throw e
+      } catch (e: Exception) {
+        throw IOException("Loaded new update but it failed to launch", e)
       }
     } catch (e: Exception) {
-      // If we haven't already reported an error from the launcher, report the loader error
-      if (e.message?.contains("Loaded new update but it failed to launch") != true) {
-        callback.onRemoteUpdateFinished(RemoteUpdateStatus.ERROR, null, e)
-        logger.error("Failed to download remote update", e, UpdatesErrorCode.UpdateFailedToLoad)
-      }
+      callback.onRemoteUpdateFinished(RemoteUpdateStatus.ERROR, null, e)
       throw e
     } finally {
       progressJob.cancel()
@@ -442,13 +430,13 @@ class LoaderTask(
     synchronized(this@LoaderTask) {
       val finalizedLaunchedUpdate = finalizedLauncher?.launchedUpdate
       if (finalizedLaunchedUpdate != null) {
-        val database = databaseHolder.database
         Reaper.reapUnusedUpdates(
           configuration,
           database,
           directory,
           finalizedLaunchedUpdate,
-          selectionPolicy
+          selectionPolicy,
+          logger
         )
       }
     }

@@ -20,7 +20,7 @@ describe(getUserTerminal, () => {
   };
   afterEach(() => {
     Object.keys(originalValues).forEach((key) => {
-      process.env[key] = originalValues[key];
+      process.env[key] = originalValues[key as keyof typeof originalValues];
     });
   });
   beforeEach(() => {

@@ -1,9 +1,9 @@
 import path from 'path';
 
-import type { MemoryContext } from './context-stubs';
-import { inMemoryContext, requireContext, requireContextWithOverrides } from './context-stubs';
 import { getNavigationConfig } from '../getLinkingConfig';
 import { getExactRoutes } from '../getRoutes';
+import type { MemoryContext } from './context-stubs';
+import { inMemoryContext, requireContext, requireContextWithOverrides } from './context-stubs';
 
 export type MockContextConfig =
   | string // Pathname to a directory

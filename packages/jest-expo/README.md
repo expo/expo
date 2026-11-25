@@ -27,7 +27,7 @@ A [Jest](https://facebook.github.io/jest/) preset to painlessly test your Expo /
 
 - Run `npm test` and it should pass
 
->  You can use a different version of `jest` than the one that is installed with `expo install`, but keep in mind that the SDK and `jest-expo` are built against that version.
+> You can use a different version of `jest` than the one that is installed with `expo install`, but keep in mind that the SDK and `jest-expo` are built against that version.
 
 ## Platforms
 
@@ -116,3 +116,18 @@ Alternative to `jest-expo/node`. This runs in a Node environment for testing **S
 ### Learning Jest
 
 [Read the Jest documentation](https://facebook.github.io/jest/)
+
+## Regenerating native module mocks
+
+The mocks in `src/preset/moduleMocks/expoModules.js` are reflected from the native module
+registry of a bare dev build.
+
+1. Build and run `apps/bare-expo` on an iOS simulator.
+2. In native-component-list, open APIs → Expo Modules Core → Jest Mock Generator.
+3. The generated `module.exports = …` is copied to your clipboard.
+4. Paste it over `src/preset/moduleMocks/expoModules.js`.
+5. Format it: `npx prettier --write src/preset/moduleMocks/expoModules.js`.
+6. Verify: `et check-packages jest-expo`.
+
+The generator reflects only the modules linked into `bare-expo` (the full SDK, via its
+`native-component-list` dependency), so a module missing from that app is missing from the mocks.

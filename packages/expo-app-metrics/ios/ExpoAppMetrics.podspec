@@ -28,6 +28,8 @@ Pod::Spec.new do |s|
 
   s.libraries = 'sqlite3'
 
+  s.resource_bundles = {'ExpoAppMetrics_privacy' => ['PrivacyInfo.xcprivacy']}
+
   install_modules_dependencies(s)
 
   s.pod_target_xcconfig = {
@@ -46,6 +48,15 @@ Pod::Spec.new do |s|
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'Tests'
+    test_spec.exclude_files = 'Tests/ColdStart'
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '-lc++'
+    }
+  end
+
+  # Run in a fresh test process so other tests cannot initialize the consent gate.
+  s.test_spec 'ColdStartTests' do |test_spec|
+    test_spec.source_files = 'Tests/ColdStart'
     test_spec.pod_target_xcconfig = {
       'OTHER_LDFLAGS' => '-lc++'
     }

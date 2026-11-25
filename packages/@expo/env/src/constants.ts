@@ -3,18 +3,24 @@ import os from 'node:os';
 const platform = os.platform();
 
 // WARN(@kitten): We don't read this dynamically to ignore later modifications to this env var
-const safeKeys = new Set(process.env.EXPO_UNSAFE_DOTENV_KEYS?.split(',').filter((x) => !!x));
+const safeKeys = new Set(
+  process.env.EXPO_UNSAFE_DOTENV_KEYS?.split(',')
+    .filter((x) => !!x)
+    .map((name) => name.toUpperCase())
+);
 
 export function isUnsafeAllowedEnvKey(name: string): boolean {
-  return safeKeys.has(name);
+  name = name.toUpperCase();
+  return name !== '__EXPO_CONFIG_MODE' && safeKeys.has(name);
 }
 
 export function isIgnoredEnvKey(name: string) {
+  name = name.toUpperCase();
   if (platform === 'darwin' && name.startsWith('DYLD_')) {
     return true;
   } else if (platform === 'linux' && name.startsWith('LD_')) {
     return true;
-  } else if (safeKeys.has(name)) {
+  } else if (isUnsafeAllowedEnvKey(name)) {
     return false;
   }
 
@@ -25,6 +31,7 @@ export function isIgnoredEnvKey(name: string) {
   switch (name) {
     // NOTE: Expo internal env vars
     case '__EXPO_ENV_LOADED':
+    case '__EXPO_CONFIG_MODE':
     case 'EXPO_NO_DOTENV':
     case 'EXPO_UNSAFE_DOTENV_KEYS':
       return true;
@@ -95,7 +102,7 @@ export function isIgnoredEnvKey(name: string) {
     case 'PYTHONUSERBASE':
     case 'PYTHONEXECUTABLE':
     case 'PYTHONSAFEPATH':
-    case 'PYTJONNOUSERSITE':
+    case 'PYTHONNOUSERSITE':
       return true;
 
     // Ruby libs
@@ -136,7 +143,6 @@ export function isIgnoredEnvKey(name: string) {
 
     // Windows-owned
     case 'SYSTEMROOT':
-    case 'SystemRoot':
       return true;
 
     // User tools
@@ -198,6 +204,7 @@ export function isIgnoredEnvKey(name: string) {
  * Honors `EXPO_UNSAFE_DOTENV_KEYS`: opt-in keys are allowed in any env file.
  */
 export function isLocalEnvKey(name: string): boolean {
+  name = name.toUpperCase();
   if (safeKeys.has(name)) return false;
   switch (name) {
     // Android tooling
@@ -240,15 +247,10 @@ export function isLocalEnvKey(name: string): boolean {
     case 'BROWSER':
     case 'BROWSER_ARGS':
     case 'HTTP_PROXY':
-    case 'http_proxy':
     case 'HTTPS_PROXY':
-    case 'https_proxy':
     case 'ALL_PROXY':
-    case 'all_proxy':
     case 'NO_PROXY':
-    case 'no_proxy':
     case 'FTP_PROXY':
-    case 'ftp_proxy':
     case 'SSL_CRT_FILE':
     case 'SSL_KEY_FILE':
     case 'REACT_NATIVE_PACKAGER_HOSTNAME':

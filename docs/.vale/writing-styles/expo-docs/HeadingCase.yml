@@ -15,13 +15,22 @@ exceptions:
   - '.*app\.plugin\.js.*'
   - '.*app directory.*'
   - '.*assets.*'
+  - '.*build\.yml.*'
   - '.*create-expo-app.*'
   - '.*create-react-native-app.*'
+  - '.*e2e-test.*'
+  - '.*env.*-simulator.*'
+  - '.*get-build.*'
+  - '.*hello\.yml.*'
   - '.*^iOS(.*)'
   - '.*iPhone.*'
+  - '.*preview\.yml.*'
+  - '.*production\.yml.*'
   - '.*web.*'
   - '.*AASA.*'
   - '.*AES.*'
+  - '.*Agentic CI.*'
+  - '.*AGENTS\.md.*'
   - '.*\bAI\b.*'
   - '.*API.*'
   - '.*APIs.*'
@@ -33,8 +42,10 @@ exceptions:
   - '.*APNs.*'
   - '.*App Links.*'
   - '.*AppDelegate.*'
+  - '.*AppDrop.*'
   - '.*App Store.*'
   - '.*App Store Connect.*'
+  - '.*Appium.*'
   - '.*Apple.*'
   - '.*Apple App Store.*'
   - '.*Apple Developer.*'
@@ -43,6 +54,7 @@ exceptions:
   - '.*Apple Developer Portal.*'
   - '.*Apple ID.*'
   - '.*Apple Pay.*'
+  - '.*Argent.*'
   - '.*Asset Links.*'
   - '.*Async Storage.*'
   - '.*Autolinking.*'
@@ -51,6 +63,8 @@ exceptions:
   - '.*AWS.*'
   - '.*Babel.*'
   - '.*babel\.config\.js.*'
+  - '.*Beta App Review.*'
+  - '.*Bug triage.*'
   - '.*Bundler.*'
   - '.*Cache-Control.*'
   - '.*Can I pay.*'
@@ -60,22 +74,28 @@ exceptions:
   - '.*CLI.*'
   - '.*TTI.*'
   - '.*Classic Updates.*'
+  - '.*CLAUDE\.md.*'
+  - '.*Claude Code.*'
   - '.*Clerk.*'
+  - '.*CMake.*'
   - '.*CNG.*'
   - '.*CocoaPods.*'
   - '.*CodePush.*'
+  - '.*Codex.*'
   - '.*Convex.*'
   - '.*Command Line Tools.*'
   - '.*Config Plugin.*'
   - '.*CORS.*'
   - '.*CRUD.*'
   - '.*credentials\.json.*'
+  - '.*Cursor.*'
   - '.*DevTools.*'
   - '.*Developer Console.*'
   - '.*Developer Mode.*'
   - '.*detach.*'
   - '.*develop.*apps.*Windows.*'
   - '.*DNS.*'
+  - '.*DOM.*'
   - '.*E2E.*'
   - '.*EAS.*'
   - '.*EAS Build.*'
@@ -99,8 +119,8 @@ exceptions:
   - '.*FileSystem.*'
   - '.*FlatList.*'
   - '.*Flipper.*'
-  - '.*Frequently Asked Questions.*'
   - '.*Frame Content-Security Policy.*'
+  - '.*Full Git workflow.*'
   - '.*FAB.*'
   - '.*FAQ.*'
   - '.*FCM.*'
@@ -116,6 +136,7 @@ exceptions:
   - '.*Google Font.*'
   - '.*Google Service Account.*'
   - '.*Google Pay.*'
+  - '.*Grok Build.*'
   - ".*Giphy's.*"
   - '.*GLView.*'
   - '.*gitignore.*'
@@ -130,6 +151,8 @@ exceptions:
   - '.*HTTPS.*'
   - '.*Info\.plist.*'
   - '.*iOS.*Simulator.*'
+  - '.*iPad.*'
+  - '.*JDK.*'
   - '.*JSON.*'
   - '.*JavaScript.*'
   - '.*JavaScriptCore.*'
@@ -141,7 +164,10 @@ exceptions:
   - '.*Legend-State.*'
   - '.*Link component.*'
   - '.*Linking.*'
+  - '.*Linux.*'
+  - '.*LiveKit.*'
   - '.*MCP*'
+  - '.*Mac Catalyst.*'
   - '.*Material Symbols.*'
   - '.*MultiBrowse.*'
   - '.*macOS.*'
@@ -150,10 +176,10 @@ exceptions:
   - '.*Maven.*'
   - '.*Netlify.*'
   - '.*Node\.js.*'
-  - '.*Node Package Managers.*'
   - '.*NavigationContainer.*'
   - '.*Next\.js.*'
   - '.*New Architecture.*'
+  - '.*No VCS workflow.*'
   - '.*Notification Message.*'
   - '.*npm.*'
   - '.*OAuth.*'
@@ -169,6 +195,7 @@ exceptions:
   - '.*PWA.*'
   - '.*package\.json.*'
   - '.*props.*'
+  - '.*QA Swarm.*'
   - '.*QR.*'
   - '.*RTL.*'
   - '.*React.*'
@@ -201,6 +228,7 @@ exceptions:
   - '.*Storage Access Framework.*'
   - '.*Strict-Transport-Security.*'
   - '.*SSO.*'
+  - '.*Supabase.*'
   - '.*Suspense.*'
   - '.*Swift.*'
   - '.*Terser.*'
@@ -215,6 +243,7 @@ exceptions:
   - '.*TypeScript module.*'
   - '.*Watchman.*'
   - '.*UI.*'
+  - '.*Unity.*'
   - '.*USB.*'
   - '.*URI.*'
   - '.*URL.*'
@@ -223,6 +252,7 @@ exceptions:
   - '.*VS Code.*'
   - '.*WebGL.*'
   - '.*WebView.*'
+  - '.*Windows.*'
   - '.*Wix.*'
   - '.*webpack.*'
   - '.*Xcode.*'
@@ -234,7 +264,7 @@ exceptions:
   # Standalone Expo UI component names
   - '^(?:BottomSheet|Button|Chip|CircularProgress|ColorPicker|ContextMenu|DatePicker|DateTimePicker|DisclosureGroup|Divider|DropdownMenu|Form|Gauge|Host|LinearProgress|List|Menu|Modifiers|Namespace|Picker|Popover|ProgressView|Section|Slider|Switch|TextField|TextInput|Toggle)(?:\s*\([^)]+\))?$'
   # Component, service and product names that are proper nouns
-  - '^(?:TinyBase|LiveStore|LaunchDarkly|OneSignal|CleverTap|LogRocket|Vexo|BugSnag|Meta|Vercel|TabTrigger|TabList|Tabs|Drawer|TextEncoder|TextDecoder|AudioPlayer|VideoPlayer|Popover|HStack|VStack)(?:\s*\([^)]+\))?$'
+  - '^(?:TinyBase|LiveStore|LaunchDarkly|OneSignal|CleverTap|LogRocket|BugSnag|Meta|Vercel|TabTrigger|TabList|Tabs|Drawer|TextEncoder|TextDecoder|AudioPlayer|VideoPlayer|Popover|HStack|VStack)(?:\s*\([^)]+\))?$'
   # Specific edge cases
   - two-factor
   - (deprecated)
@@ -290,7 +320,6 @@ exceptions:
   - Maestro
   - Maestro Cloud
   - Require Approval
-  - Asset Caching
   - Getting Started
   - Keyboard Controller
   - PR
@@ -309,8 +338,9 @@ exceptions:
   - Live Activity
   - 'Prerequisite: Creating widget'
   - 'Prerequisite: Creating Live Activity'
+  - 'Prerequisite: Creating a widget'
+  - 'Prerequisite: Creating a Live Activity'
   - Hiding the Tab bar
-  - Integrated vs Isolated
   - Expo Skills
   - DSL
   - TriStateCheckbox
@@ -320,3 +350,5 @@ exceptions:
   - HorizontalUncontainedCarousel
   - Serving Markdown to AI Agents
   - Clerk Publishable Key
+  - Compose
+  - Pressable

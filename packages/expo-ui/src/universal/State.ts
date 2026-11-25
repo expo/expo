@@ -1,6 +1,8 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
-export type ObservableState<T> = { value: T };
+import type { ObservableState } from './types';
+
+export type { ObservableState };
 
 /**
  * Web polyfill for the native `useNativeState` hook.
@@ -11,17 +13,31 @@ export function useNativeState<T>(initialValue: T): ObservableState<T> {
   const valRef = useRef<T>(val);
   valRef.current = val;
 
-  const stateRef = useRef<ObservableState<T> | null>(null);
-  if (stateRef.current === null) {
-    stateRef.current = {
-      get value() {
-        return valRef.current;
-      },
-      set value(v: T) {
+  const accessorsRef = useRef<Pick<ObservableState<T>, 'get' | 'set'> | null>(null);
+  if (accessorsRef.current === null) {
+    accessorsRef.current = {
+      get: () => valRef.current,
+      set: (v: T) => {
         valRef.current = v;
         setVal(v);
       },
     };
   }
-  return stateRef.current;
+  const { get, set } = accessorsRef.current;
+
+  // A new object for each value, so an element memoized on the state (for example, by the React
+  // Compiler) renders the write.
+  return useMemo(
+    () => ({
+      get value() {
+        return get();
+      },
+      set value(v: T) {
+        set(v);
+      },
+      get,
+      set,
+    }),
+    [get, set, val]
+  );
 }

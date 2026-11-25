@@ -31,6 +31,15 @@ public struct Exceptions {
     }
   }
 
+  /// No app context is associated with a JavaScript runtime because that runtime was never prepared
+  /// by Expo modules (its `global.expo` object carries no native state). Thrown by code that only
+  /// has a runtime and recovers the context via `AppContext.from(runtime:)`.
+  public final class AppContextNotFound: Exception {
+    override public var reason: String {
+      "Cannot find an app context associated with the JavaScript runtime"
+    }
+  }
+
   /**
    An exception to throw when the operation is not supported on the simulator.
    */
@@ -55,11 +64,47 @@ public struct Exceptions {
   }
 
   /**
+   An exception to throw when a JavaScript caller passes a number of arguments outside the range the
+   native function accepts. The accepted range spans the required count (total minus the trailing run
+   of parameters that have a default value or an optional type) through the maximum (total parameters).
+   Thrown by the bindings the Expo Modules macros synthesize for `@JS` functions.
+   */
+  public final class ArgumentsRangeMismatch: GenericException<(functionName: String, received: Int, required: Int, maximum: Int)> {
+    override public var reason: String {
+      if param.required == param.maximum {
+        return "'\(param.functionName)' takes \(param.maximum) argument(s), but received \(param.received)"
+      }
+      return "'\(param.functionName)' takes from \(param.required) to \(param.maximum) arguments, but received \(param.received)"
+    }
+  }
+
+  /**
+   An exception to throw when a value does not match any case of a `@Union` enum. The synthesized
+   `decode` throws it when no case decodes the JavaScript value (`received` is the JS kind, such as
+   `number`). The synthesized `as(_:)` throws it when the union holds a different case (`received` is
+   that case's payload type).
+   */
+  public final class UnionCaseMismatch: GenericException<(unionName: String, received: String, expected: [String])> {
+    override public var reason: String {
+      "'\(param.unionName)' expected \(param.expected.joined(separator: " or ")), but received \(param.received)"
+    }
+  }
+
+  /**
    An exception to throw when there is no module implementing the `EXFileSystemInterface` interface.
    */
   public final class FileSystemModuleNotFound: Exception {
     override public var reason: String {
       "FileSystem module not found, make sure 'expo-file-system' is linked correctly"
+    }
+  }
+
+  /// An exception thrown when JavaScript calls `new` on a class whose native instance only the
+  /// native side can build. The class exposes no `@JS init` and no DSL `Constructor`, so there is
+  /// nothing to construct it with.
+  public final class ConstructorUnavailable: GenericException<String> {
+    override public var reason: String {
+      "'\(param)' cannot be constructed from JavaScript because its native instance is created by the module that owns it. Get an instance from that module's API instead of calling `new \(param)()`."
     }
   }
 

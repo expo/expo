@@ -4,9 +4,8 @@
     {
       "name": "ExpoUI",
       "podName": "ExpoUI",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "headersXCFramework": true,
+      "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -22,17 +21,9 @@
           "path": "ios",
           "pattern": "**/*.{m,mm}",
           "headerPattern": "**/*.h",
-          "dependencies": [
-            "Hermes",
-            "React",
-            "ReactNativeDependencies"
-          ],
-          "linkedFrameworks": [
-            "Foundation"
-          ],
-          "includeDirectories": [
-            "."
-          ]
+          "dependencies": ["Hermes", "React", "ReactNativeDependencies"],
+          "linkedFrameworks": ["Foundation"],
+          "includeDirectories": ["."]
         },
         {
           "type": "swift",
@@ -47,10 +38,7 @@
             "expo-modules-core/ExpoModulesWorklets",
             "ExpoUI_ios_objc"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit"]
         }
       ]
     }

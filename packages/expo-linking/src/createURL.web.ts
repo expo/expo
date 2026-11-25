@@ -39,7 +39,7 @@ export function parse(url: string): ParsedURL {
   }
   const queryParams: Record<string, string> = {};
   parsed.searchParams.forEach((value, key) => {
-    queryParams[key] = decodeURIComponent(value);
+    queryParams[key] = value;
   });
   return {
     hostname: parsed.hostname || null,

@@ -112,7 +112,7 @@ export type AuthRequestConfig = {
   clientId: string;
   /**
    * After completing an interaction with a resource owner the
-   * server will redirect to this URI. Learn more about [linking in Expo](/guides/linking/).
+   * server will redirect to this URI. Learn more about [linking in Expo](/linking/overview/).
    *
    * [Section 3.1.2](https://tools.ietf.org/html/rfc6749#section-3.1.2)
    */

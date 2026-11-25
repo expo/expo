@@ -64,7 +64,7 @@ function createMiddleware(overrides: Partial<OpenMiddlewareOptions> = {}): {
     (overrides.getInfo as GetInfoMock) ??
     (jest.fn(async ({ runtime }) =>
       singleResult({
-        runtime: runtime === 'default' ? 'expo' : runtime,
+        runtime: runtime === 'default' || runtime === 'unknown' ? 'expo' : runtime,
       })
     ) as GetInfoMock);
   const open =
@@ -163,7 +163,7 @@ describe('GET /_expo/open with platform', () => {
         scheme: 'myapp',
         availableRuntimes: ['expo', 'custom'],
         ...disambiguation,
-      })),
+      })) as unknown as GetInfoMock,
     });
     const res = createMockResponse();
     await middleware.handleRequestAsync(
@@ -222,7 +222,7 @@ describe('GET /_expo/open without platform (discovery)', () => {
           },
           web: { runtime: 'web', url: 'http://127.0.0.1:8081', appId: null },
         },
-      })),
+      })) as unknown as GetInfoMock,
     });
     const res = createMockResponse();
 

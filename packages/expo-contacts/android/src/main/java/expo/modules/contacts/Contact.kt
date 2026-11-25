@@ -4,7 +4,6 @@ import android.content.ContentProviderOperation
 import android.content.ContentValues
 import android.database.Cursor
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
@@ -122,7 +121,10 @@ class Contact(var contactId: String, var appContext: AppContext) {
         emails.add(item)
       }
 
-      CommonDataKinds.Im.CONTENT_ITEM_TYPE -> {
+      // Legacy API supports IM addresses, deprecated since Android API 35. The new Contacts API removes these fields.
+      @Suppress("DEPRECATION")
+      CommonDataKinds.Im.CONTENT_ITEM_TYPE
+      -> {
         val item = ImAddressModel()
         item.fromCursor(cursor)
         imAddresses.add(item)
@@ -174,16 +176,28 @@ class Contact(var contactId: String, var appContext: AppContext) {
   }
 
   fun getFinalFirstName(): String {
-    return firstName ?: if (displayName == null) "" else displayName!!
+    return firstName ?: if (displayName == null) {
+      ""
+    } else {
+      displayName!!
+    }
   }
 
   fun getFinalLastName(): String {
-    return lastName ?: if (displayName == null) "" else displayName!!
+    return lastName ?: if (displayName == null) {
+      ""
+    } else {
+      displayName!!
+    }
   }
 
   fun getFinalDisplayName(): String? {
     return if (displayName == null && firstName != null) {
-      if (lastName == null) firstName else String.format("%s %s", firstName, lastName).trim { it <= ' ' }
+      if (lastName == null) {
+        firstName
+      } else {
+        String.format("%s %s", firstName, lastName).trim { it <= ' ' }
+      }
     } else {
       displayName
     }
@@ -289,7 +303,14 @@ class Contact(var contactId: String, var appContext: AppContext) {
     }
     op = ContentProviderOperation.newUpdate(ContactsContract.Contacts.CONTENT_URI)
       .withSelection("${ContactsContract.Contacts._ID}=?", arrayOf(contactId))
-      .withValue(ContactsContract.Contacts.STARRED, if (isFavorite) 1 else 0)
+      .withValue(
+        ContactsContract.Contacts.STARRED,
+        if (isFavorite) {
+          1
+        } else {
+          0
+        }
+      )
     ops.add(op.build())
 
     // Flush all data from linked db
@@ -320,6 +341,8 @@ class Contact(var contactId: String, var appContext: AppContext) {
     get() = arrayOf(
       CommonDataKinds.Event.CONTENT_ITEM_TYPE,
       CommonDataKinds.Email.CONTENT_ITEM_TYPE,
+      // Legacy API supports IM addresses, deprecated since Android API 35. The new Contacts API removes these fields.
+      @Suppress("DEPRECATION")
       CommonDataKinds.Im.CONTENT_ITEM_TYPE,
       CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
       CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE,
@@ -334,7 +357,14 @@ class Contact(var contactId: String, var appContext: AppContext) {
     val contact = Bundle().apply {
       putString("lookupKey", lookupKey)
       putString("id", contactId)
-      putString("name", if (!displayName.isNullOrEmpty()) displayName else "$firstName $lastName")
+      putString(
+        "name",
+        if (!displayName.isNullOrEmpty()) {
+          displayName
+        } else {
+          "$firstName $lastName"
+        }
+      )
 
       firstName
         ?.takeIf(String::isNotEmpty)
@@ -541,7 +571,14 @@ class Contact(var contactId: String, var appContext: AppContext) {
         contactData.add(image)
       }
       val isFavoriteValue = ContentValues().apply {
-        put("isFavorite", if (isFavorite) 1 else 0)
+        put(
+          "isFavorite",
+          if (isFavorite) {
+            1
+          } else {
+            0
+          }
+        )
       }
       contactData.add(isFavoriteValue)
       for (map in baseModels) {
@@ -554,9 +591,6 @@ class Contact(var contactId: String, var appContext: AppContext) {
 
   private fun getThumbnailBitmap(photoUri: String): Bitmap {
     val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-    val uri = photoUri.toUri()
-    context.contentResolver.openInputStream(uri).use { inputStream ->
-      return BitmapFactory.decodeStream(inputStream)
-    }
+    return ContactPhotoDecoder.decode(context.contentResolver, photoUri.toUri())
   }
 }

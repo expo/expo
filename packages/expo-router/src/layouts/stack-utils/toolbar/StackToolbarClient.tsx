@@ -2,6 +2,10 @@
 import { useMemo, type ReactNode } from 'react';
 import type { ColorValue } from 'react-native';
 
+import { useCompositionOption } from '../../../fork/native-stack/composition-options';
+import { NativeMenuContext } from '../../../link/NativeMenuContext';
+import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
+import { RouterToolbarHost } from '../../../toolbar/native';
 import { StackToolbarButton } from './StackToolbarButton';
 import { StackToolbarMenu, StackToolbarMenuAction } from './StackToolbarMenu';
 import { StackToolbarSearchBarSlot } from './StackToolbarSearchBarSlot';
@@ -16,10 +20,6 @@ import {
 } from './context';
 import { processHeaderItemsForPlatform } from './processHeaderItemsForPlatform';
 import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './toolbar-primitives';
-import { useCompositionOption } from '../../../fork/native-stack/composition-options';
-import { NativeMenuContext } from '../../../link/NativeMenuContext';
-import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
-import { RouterToolbarHost } from '../../../toolbar/native';
 
 export interface StackToolbarProps {
   /**
@@ -78,6 +78,13 @@ export interface StackToolbarProps {
    * @platform android
    */
   backgroundColor?: ColorValue;
+  /**
+   * Color of the round container behind each header button and menu button.
+   * Use it to keep buttons visible over content, like a photo or a map.
+   *
+   * @platform android
+   */
+  buttonContainerColor?: ColorValue;
 }
 
 /**
@@ -139,7 +146,6 @@ export interface StackToolbarProps {
  * }
  * ```
  *
- * @experimental
  * @platform android
  * @platform ios
  */
@@ -186,6 +192,7 @@ const StackToolbarHeader = ({
   disableImePadding,
   tintColor,
   backgroundColor,
+  buttonContainerColor,
 }: StackToolbarProps) => {
   if (placement !== 'left' && placement !== 'right') {
     throw new Error(
@@ -205,9 +212,18 @@ const StackToolbarHeader = ({
           disableImePadding,
           tintColor,
           backgroundColor,
+          buttonContainerColor,
         } satisfies Record<keyof StackToolbarProps, unknown>
       ),
-    [children, placement, asChild, disableImePadding, tintColor, backgroundColor]
+    [
+      children,
+      placement,
+      asChild,
+      disableImePadding,
+      tintColor,
+      backgroundColor,
+      buttonContainerColor,
+    ]
   );
   useCompositionOption(options);
 
@@ -228,6 +244,7 @@ export function appendStackToolbarPropsToOptions(
   const colors: ToolbarColors = {
     tintColor: props.tintColor,
     backgroundColor: props.backgroundColor,
+    buttonContainerColor: props.buttonContainerColor,
   };
 
   if (asChild) {

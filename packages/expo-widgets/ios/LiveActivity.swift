@@ -12,20 +12,40 @@ final class LiveActivity: SharedObject {
     super.init()
   }
 
-  func update(props: String) async throws {
-    guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
-
+  func getState() throws -> String {
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
       throw LiveActivityNotFoundException(id)
     }
 
-    let newState = LiveActivityAttributes.ContentState(name: name, props: props)
-    await activity.update(ActivityContent(state: newState, staleDate: nil))
+    return switch activity.activityState {
+    case .pending: "pending"
+    case .active: "active"
+    case .stale: "stale"
+    case .ended: "ended"
+    case .dismissed: "dismissed"
+    @unknown default: "unknown"
+    }
+  }
+
+  func update(props: String?, options: LiveActivityUpdateOptions) async throws {
+    guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
+      throw LiveActivityNotFoundException(id)
+    }
+
+    let content = ActivityContent(
+      state: LiveActivityAttributes.ContentState(name: name, props: props),
+      staleDate: options.staleDate,
+      relevanceScore: options.relevanceScore
+    )
+
+    guard let contentDate = options.contentDate, #available(iOS 17.2, *) else {
+      return await activity.update(content)
+    }
+
+    await activity.update(content, timestamp: contentDate)
   }
 
   func end(dismissalPolicy: LiveActivityDismissalPolicy?, afterDate: Date?, props: String?, contentDate: Date?) async throws {
-    guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
-
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
       throw LiveActivityNotFoundException(id)
     }
@@ -45,8 +65,6 @@ final class LiveActivity: SharedObject {
   }
 
   func getPushToken() throws -> String? {
-    guard #available(iOS 16.1, *) else { throw LiveActivitiesNotSupportedException() }
-
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
       throw LiveActivityNotFoundException(id)
     }
@@ -56,13 +74,15 @@ final class LiveActivity: SharedObject {
     return tokenData.reduce("") { $0 + String(format: "%02x", $1) }
   }
 
-  @available(iOS 16.1, *)
   func observePushTokenUpdates(for activity: Activity<LiveActivityAttributes>, pushNotificationsEnabled: Bool) {
     guard pushNotificationsEnabled else {
       return
     }
 
-    pushTokenObserverTask?.cancel()
+    guard pushTokenObserverTask == nil else {
+      return
+    }
+
     pushTokenObserverTask = Task {
       for await data in activity.pushTokenUpdates {
         let token = data.reduce("") { $0 + String(format: "%02x", $1) }

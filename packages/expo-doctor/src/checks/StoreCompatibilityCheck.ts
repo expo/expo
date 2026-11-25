@@ -2,9 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 
-import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 import { existsAndIsNotIgnoredAsync } from '../utils/files';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 // See https://support.google.com/googleplay/android-developer/answer/11926878?hl=en
 // Update these values as minimum requirements change

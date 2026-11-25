@@ -14,7 +14,9 @@
 
 + (NSDate *)getRunJSBundleEndTime
 {
-  return [self getDateFromMediaTime:StartupLogger::getInstance().getRunJSBundleEndTime()];
+  // React Native logs `APP_STARTUP_STOP` right after bundle evaluation, so it stands in for the
+  // bundle end time.
+  return [self getDateFromMediaTime:StartupLogger::getInstance().getAppStartupEndTime()];
 }
 
 + (NSDate *)getDateFromMediaTime:(double)mediaTime

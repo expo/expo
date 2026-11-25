@@ -1,3 +1,7 @@
+import { unwrapDevLaunchURL } from 'expo-linking';
+
+import { safeDecodeURIComponent } from '../utils/url';
+
 export function parsePathAndParamsFromExpoGoLink(url: string): {
   pathname: string;
   queryString: string;
@@ -21,6 +25,9 @@ export function parsePathFromExpoGoLink(url: string): string {
 
 // This is only run on native.
 function extractExactPathFromURL(url: string): string {
+  // Resolve launch URLs to the URL the app should route, dropping the reserved `__expo_*` params.
+  url = unwrapDevLaunchURL(url);
+
   if (
     // If a universal link / app link / web URL is used, we should use the path
     // from the URL, while stripping the origin.
@@ -29,8 +36,8 @@ function extractExactPathFromURL(url: string): string {
     const { origin, href, hostname } = new URL(url);
 
     if (hostname === 'exp.host' || hostname === 'u.expo.dev') {
-      // These are QR code generate deep-link that always like to the '/' path
-      // TODO: In the future, QR code may link to a specific path and this logic will need to be udpated
+      // These are QR code generated deep-links that always link to the '/' path
+      // TODO: In the future, QR code may link to a specific path and this logic will need to be updated
       return '';
     }
 
@@ -59,14 +66,7 @@ function extractExactPathFromURL(url: string): string {
     return '';
   }
 
-  // TODO: Support dev client URLs
-
   return fromDeepLink(url);
-}
-
-/** Major hack to support the makeshift expo-development-client system. */
-function isExpoDevelopmentClient(url: URL): boolean {
-  return url.hostname === 'expo-development-client';
 }
 
 function fromDeepLink(url: string): string {
@@ -94,14 +94,6 @@ function fromDeepLink(url: string): string {
     return url.replace(/^[^:]+:\/\//, '');
   }
 
-  if (isExpoDevelopmentClient(res)) {
-    if (!res.searchParams.get('url')) {
-      return '';
-    }
-    const incomingUrl = res.searchParams.get('url')!;
-    return extractExactPathFromURL(decodeURI(incomingUrl));
-  }
-
   let results = '';
 
   if (res.host) {
@@ -115,7 +107,9 @@ function fromDeepLink(url: string): string {
   const qs = !res.search
     ? ''
     : // @ts-ignore: `entries` is not on `URLSearchParams` in some typechecks.
-      [...res.searchParams.entries()].map(([k, v]) => `${k}=${decodeURIComponent(v)}`).join('&');
+      [...res.searchParams.entries()]
+        .map(([k, v]) => `${k}=${safeDecodeURIComponent(v)}`)
+        .join('&');
 
   if (qs) {
     results += '?' + qs;

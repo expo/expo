@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
+import { PresentedContent } from '../../PresentedContentContext';
 import { type ViewEvent, type ModifierConfig, type DialogProperties } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -26,7 +27,7 @@ export type AlertDialogColors = {
   textContentColor?: ColorValue;
 };
 
-export type AlertDialogProps = {
+export interface AlertDialogProps {
   /**
    * Colors for the alert dialog.
    */
@@ -54,7 +55,7 @@ export type AlertDialogProps = {
    * `AlertDialog.ConfirmButton`, `AlertDialog.DismissButton`, `AlertDialog.Icon`).
    */
   children?: React.ReactNode;
-};
+}
 
 type NativeAlertDialogProps = Omit<AlertDialogProps, 'onDismissRequest'> &
   ViewEvent<'onDismissRequest', { onDismissRequest?: () => void }>;
@@ -123,7 +124,11 @@ function AlertDialogIcon(props: { children: React.ReactNode }) {
  */
 function AlertDialogComponent(props: AlertDialogProps) {
   const { children, ...restProps } = props;
-  return <AlertDialogNativeView {...transformProps(restProps)}>{children}</AlertDialogNativeView>;
+  return (
+    <AlertDialogNativeView {...transformProps(restProps)}>
+      <PresentedContent>{children}</PresentedContent>
+    </AlertDialogNativeView>
+  );
 }
 
 AlertDialogComponent.Title = AlertDialogTitle;

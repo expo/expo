@@ -111,7 +111,7 @@ const BottomSheetSectionList = SectionList;
  * @remarks This is a direct re-export of React Native's `TextInput`.
  * Native platform sheets handle keyboard behavior automatically.
  */
-const BottomSheetTextInput = TextInput;
+const BottomSheetTextInput: typeof TextInput = TextInput;
 
 // #endregion
 
@@ -146,6 +146,7 @@ export {
 // Type exports
 export type {
   BottomSheetProps,
+  BottomSheetContentWindowInsets,
   BottomSheetMethods,
   BottomSheetViewProps,
   BottomSheetHandleProps,

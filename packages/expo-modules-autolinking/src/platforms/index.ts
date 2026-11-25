@@ -1,3 +1,5 @@
+import { getReactNativeHostPackage } from '@expo/platforms';
+
 import type { SupportedPlatform } from '../types';
 
 interface PlatformImplementations {
@@ -51,3 +53,21 @@ function getLinkingImplementationForPlatform(
 }
 
 export { getLinkingImplementationForPlatform };
+
+export function getSupportPackageForPlatform(platform: SupportedPlatform): string | null {
+  switch (platform) {
+    case 'ios':
+    case 'android':
+    case 'tvos':
+    case 'macos':
+    case 'windows':
+      // The host package names are shared tooling-wide data in @expo/platforms.
+      return getReactNativeHostPackage(platform)!;
+    case 'apple':
+    case 'web':
+    case 'devtools':
+      return null;
+    default:
+      throw new Error(`No support package is known for platform "${platform}"`);
+  }
+}

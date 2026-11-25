@@ -1,3 +1,4 @@
+import type { UrlCreator } from '../UrlCreator';
 import type {
   OpenActionResult,
   OpenInfoResult,
@@ -7,7 +8,6 @@ import type {
   OpenPlatformInfo,
   OpenRequestedRuntime,
 } from './OpenMiddleware';
-import type { UrlCreator } from '../UrlCreator';
 
 interface InfoHandlerDeps {
   /** Stable UrlCreator instance — its `defaults` mutate when `toggleRuntimeMode` runs, so the same instance keeps producing fresh URLs and reflects the current scheme. */
@@ -108,15 +108,13 @@ async function resolvePlatformInfo(
     if (isRedirectPageEnabled) {
       return { url: urlCreator.constructLoadingUrl({}, platform), appId };
     }
-    return { runtime: 'expo', url: urlCreator.constructUrl({ scheme: 'exp' }), appId };
+    return { runtime: 'expo', url: urlCreator.constructExpoGoUrl(), appId };
   }
 
   return {
     runtime,
     url:
-      runtime === 'custom'
-        ? urlCreator.constructDevClientUrl()
-        : urlCreator.constructUrl({ scheme: 'exp' }),
+      runtime === 'custom' ? urlCreator.constructDevClientUrl() : urlCreator.constructExpoGoUrl(),
     appId,
   };
 }

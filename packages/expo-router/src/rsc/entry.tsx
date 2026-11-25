@@ -8,12 +8,12 @@
 'use client';
 
 import React from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { Router } from './router/client';
+import { SafeAreaProvider } from '../SafeAreaProvider';
 import { ErrorBoundary } from '../views/ErrorBoundary';
 import type { ErrorBoundaryProps } from '../views/Try';
 import { Try } from '../views/Try';
+import { Router } from './router/client';
 
 // Add root error recovery.
 function RootErrorBoundary(props: ErrorBoundaryProps) {

@@ -1,6 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesJSI
+import Foundation
 import Testing
 
 @Suite
@@ -11,7 +12,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.testFn = function() { return 42; }")
 
-    let fn = runtime.global().getPropertyAsFunction("testFn")
+    let fn = try runtime.global().getPropertyAsFunction("testFn")
     let result = try fn.call()
 
     #expect(result.isNumber() == true)
@@ -23,7 +24,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.double = function(x) { return x * 2; }")
 
-    let fn = runtime.global().getPropertyAsFunction("double")
+    let fn = try runtime.global().getPropertyAsFunction("double")
     let result = try fn.call(arguments: 21)
 
     #expect(result.getInt() == 42)
@@ -34,7 +35,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.sum = function(a, b, c) { return a + b + c; }")
 
-    let fn = runtime.global().getPropertyAsFunction("sum")
+    let fn = try runtime.global().getPropertyAsFunction("sum")
     let result = try fn.call(arguments: 10, 20, 12)
 
     #expect(result.getInt() == 42)
@@ -48,8 +49,8 @@ struct JavaScriptFunctionTests {
       "globalThis.obj = { value: 42 };"
     )
 
-    let fn = runtime.global().getPropertyAsFunction("getValue")
-    let obj = runtime.global().getPropertyAsObject("obj")
+    let fn = try runtime.global().getPropertyAsFunction("getValue")
+    let obj = try runtime.global().getPropertyAsObject("obj")
     let result = try fn.call(this: obj)
 
     #expect(result.getInt() == 42)
@@ -63,8 +64,8 @@ struct JavaScriptFunctionTests {
       "globalThis.obj = { value: 40 };"
     )
 
-    let fn = runtime.global().getPropertyAsFunction("add")
-    let obj = runtime.global().getPropertyAsObject("obj")
+    let fn = try runtime.global().getPropertyAsFunction("add")
+    let obj = try runtime.global().getPropertyAsObject("obj")
     let result = try fn.call(this: obj, arguments: 2)
 
     #expect(result.getInt() == 42)
@@ -75,7 +76,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.concat = function(a, b) { return a + ' ' + b; };")
 
-    let fn = runtime.global().getPropertyAsFunction("concat")
+    let fn = try runtime.global().getPropertyAsFunction("concat")
     let result = try fn.call(arguments: "hello", "world")
 
     #expect(result.getString() == "hello world")
@@ -86,7 +87,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.format = function(name, age) { return name + ' is ' + age + ' years old'; };")
 
-    let fn = runtime.global().getPropertyAsFunction("format")
+    let fn = try runtime.global().getPropertyAsFunction("format")
     let result = try fn.call(arguments: "Alice", 30)
 
     #expect(result.getString() == "Alice is 30 years old")
@@ -97,7 +98,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.makeObj = function(x) { return { value: x }; };")
 
-    let fn = runtime.global().getPropertyAsFunction("makeObj")
+    let fn = try runtime.global().getPropertyAsFunction("makeObj")
     let result = try fn.call(arguments: 42)
 
     #expect(result.isObject() == true)
@@ -109,7 +110,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.makeArray = function(a, b) { return [a, b]; };")
 
-    let fn = runtime.global().getPropertyAsFunction("makeArray")
+    let fn = try runtime.global().getPropertyAsFunction("makeArray")
     let result = try fn.call(arguments: 1, 2)
 
     #expect(result.isObject() == true)
@@ -124,7 +125,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.throwError = function() { throw new Error('Test error'); };")
 
-    let fn = runtime.global().getPropertyAsFunction("throwError")
+    let fn = try runtime.global().getPropertyAsFunction("throwError")
 
     #expect(throws: Error.self) {
       try fn.call()
@@ -136,7 +137,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.Person = function(name) { this.name = name; };")
 
-    let constructor = runtime.global().getPropertyAsFunction("Person")
+    let constructor = try runtime.global().getPropertyAsFunction("Person")
     let result = try constructor.callAsConstructor("Alice")
 
     #expect(result.isObject() == true)
@@ -148,7 +149,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.Point = function(x, y) { this.x = x; this.y = y; };")
 
-    let constructor = runtime.global().getPropertyAsFunction("Point")
+    let constructor = try runtime.global().getPropertyAsFunction("Point")
     let result = try constructor.callAsConstructor(10, 20)
 
     #expect(result.isObject() == true)
@@ -161,7 +162,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.Empty = function() { this.initialized = true; };")
 
-    let constructor = runtime.global().getPropertyAsFunction("Empty")
+    let constructor = try runtime.global().getPropertyAsFunction("Empty")
     let result = try constructor.callAsConstructor()
 
     #expect(result.isObject() == true)
@@ -173,7 +174,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.testFn = function() { return 1; }")
 
-    let fn = runtime.global().getPropertyAsFunction("testFn")
+    let fn = try runtime.global().getPropertyAsFunction("testFn")
     let value = fn.asValue()
 
     #expect(value.isObject() == true)
@@ -184,7 +185,7 @@ struct JavaScriptFunctionTests {
   func `asObject returns JavaScriptObject`() throws {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.testFn = function testFn() { return 1; }")
-    let fn = runtime.global().getPropertyAsFunction("testFn")
+    let fn = try runtime.global().getPropertyAsFunction("testFn")
 
     // Functions are objects in JavaScript
     #expect(fn.asObject().getProperty("name").getString() == "testFn")
@@ -203,7 +204,7 @@ struct JavaScriptFunctionTests {
       "globalThis.counter = globalThis.makeCounter();"
     )
 
-    let counter = runtime.global().getPropertyAsFunction("counter")
+    let counter = try runtime.global().getPropertyAsFunction("counter")
 
     let result1 = try counter.call()
     #expect(result1.getInt() == 1)
@@ -220,7 +221,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.noReturn = function() { let x = 1 + 1; };")
 
-    let fn = runtime.global().getPropertyAsFunction("noReturn")
+    let fn = try runtime.global().getPropertyAsFunction("noReturn")
     let result = try fn.call()
 
     #expect(result.isUndefined() == true)
@@ -231,7 +232,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.arrow = (x, y) => x + y;")
 
-    let fn = runtime.global().getPropertyAsFunction("arrow")
+    let fn = try runtime.global().getPropertyAsFunction("arrow")
     let result = try fn.call(arguments: 20, 22)
 
     #expect(result.getInt() == 42)
@@ -242,11 +243,11 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.asyncFn = async function(x) { return x * 2; };")
 
-    let fn = runtime.global().getPropertyAsFunction("asyncFn")
+    let fn = try runtime.global().getPropertyAsFunction("asyncFn")
     let result = try fn.call(arguments: 21)
 
     #expect(result.isObject() == true)
-    #expect(result.is("Promise"))
+    #expect(result.is("Promise") == true)
   }
 
   @Test
@@ -265,7 +266,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.testFn = function() { return 42; }")
 
-    let fn = runtime.global().getPropertyAsFunction("testFn")
+    let fn = try runtime.global().getPropertyAsFunction("testFn")
     let value = fn.toJavaScriptValue(in: runtime)
 
     #expect(value.isFunction() == true)
@@ -280,7 +281,7 @@ struct JavaScriptFunctionTests {
       "globalThis.myFunction.customProp = 'custom';"
     )
 
-    let fn = runtime.global().getPropertyAsFunction("myFunction")
+    let fn = try runtime.global().getPropertyAsFunction("myFunction")
     let obj = fn.asObject()
 
     // Functions have properties like 'name' and 'length'
@@ -293,7 +294,7 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.testBool = function(a, b) { return a && !b; };")
 
-    let fn = runtime.global().getPropertyAsFunction("testBool")
+    let fn = try runtime.global().getPropertyAsFunction("testBool")
     let result = try fn.call(arguments: true, false)
 
     #expect(result.getBool() == true)
@@ -304,11 +305,133 @@ struct JavaScriptFunctionTests {
     let runtime = JavaScriptRuntime()
     try runtime.eval("globalThis.checkArgs = function(a, b) { return [a === null, b === undefined]; };")
 
-    let fn = runtime.global().getPropertyAsFunction("checkArgs")
-    let result = try fn.call(arguments: JavaScriptValue.null, JavaScriptValue.undefined)
+    let fn = try runtime.global().getPropertyAsFunction("checkArgs")
+    let result = try fn.call(arguments: JavaScriptValue.null().ref(), JavaScriptValue.undefined().ref())
     let array = result.getArray()
 
     #expect(try array.getValue(at: 0).getBool() == true)
     #expect(array[1].getBool() == true)
+  }
+
+  @Test
+  func `call function with emplaced arguments`() throws {
+    let runtime = JavaScriptRuntime()
+    let fn = try runtime.eval(
+      "(count, name, date, options) => `${count}|${name}|${date instanceof Date}|${options.verbose}`"
+    ).getFunction()
+    let options = try runtime.eval("({ verbose: true })").getObject()
+    let result = try fn.call(argumentCount: 4, returning: String.self) { arguments, runtime in
+      try arguments.emplace(2.5, at: 0, in: runtime)
+      try arguments.emplace("photo.jpg", at: 1, in: runtime)
+      try arguments.emplace(Date(), at: 2, in: runtime)
+      arguments.emplace(options.asValue(), at: 3)
+    }
+    #expect(result == "2.5|photo.jpg|true|true")
+  }
+
+  @Test
+  func `call function passes undefined for arguments that are not emplaced`() throws {
+    let runtime = JavaScriptRuntime()
+    let fn = try runtime.eval("(function() { return `${arguments.length}|${arguments[1]}`; })").getFunction()
+    let result = try fn.call(argumentCount: 2, returning: String.self) { arguments, runtime in
+      try arguments.emplace(1, at: 0, in: runtime)
+    }
+    #expect(result == "2|undefined")
+  }
+
+  @Test
+  func `call function rethrows an error from emplacing arguments without calling the function`() throws {
+    struct EmplaceError: Error {}
+    let runtime = JavaScriptRuntime()
+    try runtime.eval("globalThis.called = false")
+    let fn = try runtime.eval("(function() { globalThis.called = true; })").getFunction()
+    #expect(throws: EmplaceError.self) {
+      _ = try fn.call(argumentCount: 2) { arguments, runtime in
+        try arguments.emplace("emplaced before the error", at: 0, in: runtime)
+        throw EmplaceError()
+      }
+    }
+    #expect(try runtime.eval("globalThis.called").asBool() == false)
+  }
+
+  @Test
+  func `call function throws when the result does not decode as the requested type`() throws {
+    let runtime = JavaScriptRuntime()
+    let fn = try runtime.eval("(function() { return 'text'; })").getFunction()
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try fn.call(argumentCount: 0, returning: Int.self) { _, _ in }
+    }
+  }
+
+  // MARK: - JavaScriptCodable
+
+  @Test
+  func `decodes and encodes as JavaScriptCodable`() throws {
+    let runtime = JavaScriptRuntime()
+    let value = try runtime.eval("(function(x) { return x * 2; })")
+    let fn = try JavaScriptFunction.decode(value, in: runtime)
+    #expect(try fn.call(arguments: 21).getInt() == 42)
+    let encoded = try JavaScriptFunction.encode(fn, in: runtime)
+    #expect(encoded.isFunction() == true)
+    #expect(try encoded.getFunction().call(arguments: 2).getInt() == 4)
+  }
+
+  @Test
+  func `encodes the same function`() throws {
+    let runtime = JavaScriptRuntime()
+    try runtime.eval("globalThis.fn = function() {}")
+    let fn = try runtime.global().getPropertyAsFunction("fn")
+    let encoded = try JavaScriptFunction.encode(fn, in: runtime)
+    let isSame = try runtime.eval("(function(other) { return other === globalThis.fn; })").getFunction()
+    #expect(try isSame.call(arguments: encoded.ref()).getBool() == true)
+  }
+
+  @Test
+  func `decodes from an unowned value`() throws {
+    let runtime = JavaScriptRuntime()
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: try runtime.eval("(function() { return 42; })").ref(),
+      try runtime.eval("({})").ref()
+    )
+    let fn = try JavaScriptFunction.decode(buffer.unownedValue(at: 0), in: runtime)
+    #expect(try fn.call().getInt() == 42)
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptFunction.decode(buffer.unownedValue(at: 1), in: runtime)
+    }
+  }
+
+  @Test
+  func `decoding rejects a value that is not a function`() throws {
+    let runtime = JavaScriptRuntime()
+    let number = try runtime.eval("42")
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptFunction.decode(number, in: runtime)
+    }
+    let object = try runtime.eval("({})")
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptFunction.decode(object, in: runtime)
+    }
+  }
+
+  @Test
+  func `decodable kinds are objects`() {
+    #expect(JavaScriptFunction.decodableKinds == .object)
+  }
+
+  @Test
+  func `call function returns a decoded function`() throws {
+    let runtime = JavaScriptRuntime()
+    let fn = try runtime.eval("(function() { return function() { return 'inner'; }; })").getFunction()
+    let inner = try fn.call(argumentCount: 0, returning: JavaScriptFunction.self) { _, _ in }
+    #expect(try inner.call().getString() == "inner")
+  }
+
+  @Test
+  func `decoding rejects a runtime-free value`() throws {
+    let runtime = JavaScriptRuntime()
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptFunction.decode(JavaScriptValue.number(42), in: runtime)
+    }
   }
 }

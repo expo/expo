@@ -1,13 +1,16 @@
-import { LegacyEventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo';
+import { LegacyEventEmitter } from 'expo-modules-core';
 import { AppRegistry } from 'react-native';
 
 import ExpoTaskManager from './ExpoTaskManager';
 
-// Register a no-op headless task so that HeadlessJsTaskContext.startTask()
-// doesn't log a warning. On Android, TaskService registers a headless task
-// in native code to keep JS timers alive during background task execution.
+// On Android, TaskService starts this headless task in native code to keep JS timers
+// alive during background task execution, and finishes it natively once the task is done
+// (or after a timeout).
+// The JS side must never settle: a resolved promise makes AppRegistry call
+// notifyTaskFinished, which ends the task right away and pauses timers again.
 if (Platform.OS === 'android') {
-  AppRegistry.registerHeadlessTask('expo-task-manager', () => async () => {});
+  AppRegistry.registerHeadlessTask('expo-task-manager', () => () => new Promise(() => {}));
 }
 
 // @needsAudit @docsMissing
@@ -76,7 +79,8 @@ export interface TaskManagerTask {
    * values emitted by Expo SDK libraries are `'location'` and `'geofencing'`
    * (`expo-location`), `'backgroundFetch'` (`expo-background-fetch`),
    * `'expo-background-task'` on Android or `'backgroundTask'` on iOS
-   * (`expo-background-task`), and `'remote-notification'`
+   * (`expo-background-task`), `'onDemandTask'` on iOS for tasks that native code runs on demand
+   * (for example, App Intents), and `'remote-notification'`
    * (`expo-notifications`). User-registered tasks may have any string value.
    */
   taskType: string;
@@ -110,6 +114,17 @@ function _validate(taskName: unknown) {
   }
 }
 
+// The hasFinishedInitPhase variable tracks whether the initial, synchronous evaluation of the JavaScript bundle has finished:
+// Its value is:
+// - false - when accessing it from the global scope in synchronous functions
+// - true - when accessing it from React components, effects, event handlers, timers.
+// It may be either value, when:
+// - accessing it in an async function called from the global scope.
+let hasFinishedInitPhase = false;
+Promise.resolve().then(() => {
+  hasFinishedInitPhase = true;
+});
+
 // @needsAudit
 /**
  * Defines task function. It must be called in the global scope of your JavaScript bundle,
@@ -131,6 +146,13 @@ export function defineTask<T = unknown>(
   if (!taskExecutor || typeof taskExecutor !== 'function') {
     console.warn(`TaskManager.defineTask: 'task' argument must be a function.`);
     return;
+  }
+  if (!tasks.has(taskName) && hasFinishedInitPhase) {
+    console.warn(
+      `TaskManager.defineTask: the task "${taskName}" was defined after the JavaScript bundle finished loading.
+The call was most likely inside a React component. Components are not mounted when the app is launched in the background. In that case this task will not be defined.
+Call \`TaskManager.defineTask\` synchronously in the global scope of a module imported at startup.`
+    );
   }
   tasks.set(taskName, taskExecutor);
 }
@@ -218,7 +240,7 @@ export async function getRegisteredTasksAsync(): Promise<TaskManagerTask[]> {
 /**
  * Unregisters task from the app, so the app will not be receiving updates for that task anymore.
  * _It is recommended to use methods specialized by modules that registered the task, eg.
- * [`Location.stopLocationUpdatesAsync`](./location/#expolocationstoplocationupdatesasynctaskname)._
+ * [`Location.stopLocationUpdatesAsync`](./location/#locationstoplocationupdatesasynctaskname)._
  *
  * @param taskName Name of the task to unregister.
  * @return A promise which fulfills as soon as the task is unregistered.
@@ -246,6 +268,21 @@ export async function unregisterAllTasksAsync(): Promise<void> {
   await ExpoTaskManager.unregisterAllTasksAsync();
 }
 
+// A task can throw any value, and reading it can throw too: a `message` getter can throw, and so can
+// `String()` for an object without a prototype. Failing here would report the run as a success with
+// no result.
+function describeThrownValue(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  try {
+    const message = (error as { message?: unknown } | null | undefined)?.message;
+    return typeof message === 'string' ? message : String(error);
+  } catch {
+    return 'Unknown error';
+  }
+}
+
 if (ExpoTaskManager) {
   const eventEmitter = new LegacyEventEmitter(ExpoTaskManager);
   eventEmitter.addListener<TaskManagerTaskBody>(
@@ -256,21 +293,39 @@ if (ExpoTaskManager) {
       let result: any = null;
 
       if (taskExecutor) {
+        // Reported to native code, so a native caller waiting for this run can tell a failure from
+        // a task that resolved with no value.
+        let taskError: TaskManagerError | null = null;
         try {
           // Execute JS task
           result = await taskExecutor({ data, error, executionInfo });
         } catch (error) {
           console.error(`TaskManager: Task "${taskName}" failed:`, error);
+          taskError = {
+            code: 'ERR_TASK_EXECUTION_FAILED',
+            message: describeThrownValue(error),
+          };
         } finally {
           // Notify manager the task is finished.
-          await ExpoTaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });
+          await ExpoTaskManager.notifyTaskFinishedAsync(taskName, {
+            eventId,
+            result,
+            ...(taskError ? { error: taskError } : null),
+          });
         }
       } else {
         console.warn(
           `TaskManager: Execution of "${taskName}" was requested but looks like it is not defined. Available tasks: [${[...tasks.keys()].join(', ')}]. Make sure that "TaskManager.defineTask" is called during initialization phase.`
         );
         // No tasks defined -> we need to notify about finish anyway.
-        await ExpoTaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });
+        await ExpoTaskManager.notifyTaskFinishedAsync(taskName, {
+          eventId,
+          result,
+          error: {
+            code: 'ERR_TASK_NOT_DEFINED',
+            message: `Task "${taskName}" is not defined. Call "TaskManager.defineTask" synchronously in the global scope of a module imported at startup.`,
+          },
+        });
         // We should also unregister such tasks automatically as the task might have been removed
         // from the app or just renamed - in that case it needs to be registered again (with the new name).
         await ExpoTaskManager.unregisterTaskAsync(taskName);

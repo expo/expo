@@ -1,5 +1,6 @@
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { memoize } from '../../utils/fn';
+import { event } from './events';
 
 /** An error that is memoized and asserted whenever a Prerequisite.assertAsync is subsequently called. */
 export class PrerequisiteCommandError extends CommandError {
@@ -30,11 +31,18 @@ export class Prerequisite<T = void, TProps = void> {
       throw this.cachedError;
     }
     try {
-      return await this._assertAsync(props);
+      const result = await this._assertAsync(props);
+      event('check', { name: this.constructor.name, satisfied: true });
+      return result;
     } catch (error) {
       if (error instanceof PrerequisiteCommandError) {
         this.cachedError = error;
       }
+      event('check', {
+        name: this.constructor.name,
+        satisfied: false,
+        message: error instanceof Error ? error.message : undefined,
+      });
       throw error;
     }
   }

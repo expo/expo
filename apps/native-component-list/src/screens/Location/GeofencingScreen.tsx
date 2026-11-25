@@ -1,7 +1,6 @@
 import { BlurView } from 'expo-blur';
 import * as Location from 'expo-location';
 import { AppleMaps, Coordinates } from 'expo-maps';
-import { AppleMapsCircle } from 'expo-maps/build/apple/AppleMaps.types';
 import * as Notifications from 'expo-notifications';
 import * as TaskManager from 'expo-task-manager';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -103,7 +102,7 @@ function GeofencingAppleScreen() {
     setGeofencingRegions(newGeofencingRegions);
   }
 
-  const circles: AppleMapsCircle[] = useMemo(() => {
+  const circles: AppleMaps.Circle[] = useMemo(() => {
     return geofencingRegions.map((region) => {
       return {
         center: {

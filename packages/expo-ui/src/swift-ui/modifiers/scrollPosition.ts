@@ -1,6 +1,6 @@
 import type { UnitPointValue } from '.';
-import { createModifier, createModifierWithEventListener } from './createModifier';
 import { getStateId, type ObservableState } from '../../State';
+import { createModifier, createModifierWithEventListener } from './createModifier';
 
 /**
  * Attaches a stable identifier to a view so it can be referenced by scroll target bindings.

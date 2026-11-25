@@ -46,21 +46,21 @@ export default [
     name: 'ascApiKeyPath',
     type: 'string',
     description: [
-      'The path to your [App Store Connect Api Key **.p8** file](https://expo.fyi/creating-asc-api-key).',
+      'The path to your [App Store Connect API Key **.p8** file](https://expo.fyi/creating-asc-api-key). The path can include environment variables, such as `$ASC_API_KEY_PATH`, which EAS CLI replaces with values from the environment where it runs.',
     ],
   },
   {
     name: 'ascApiKeyIssuerId',
     type: 'string',
     description: [
-      'The Issuer ID of your [App Store Connect Api Key](https://expo.fyi/creating-asc-api-key).',
+      'The Issuer ID of your [App Store Connect API Key](https://expo.fyi/creating-asc-api-key). The value can include environment variables, such as `$ASC_API_KEY_ISSUER_ID`, which EAS CLI replaces with values from the environment where it runs.',
     ],
   },
   {
     name: 'ascApiKeyId',
     type: 'string',
     description: [
-      'The Key ID of your [App Store Connect Api Key](https://expo.fyi/creating-asc-api-key).',
+      'The Key ID of your [App Store Connect API Key](https://expo.fyi/creating-asc-api-key). The value can include environment variables, such as `$ASC_API_KEY_ID`, which EAS CLI replaces with values from the environment where it runs.',
     ],
   },
   {

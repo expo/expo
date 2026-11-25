@@ -4,11 +4,36 @@ import process from 'node:process';
 import {
   buildDirMatchObjects,
   buildPathMatchObjects,
+  getNodeModulesPackageJsonPath,
   isIgnoredPath,
   normalizeFilePath,
   pathExistsAsync,
   toPosixPath,
 } from '../Path';
+
+describe(getNodeModulesPackageJsonPath, () => {
+  it('should resolve the package.json for a file inside a node_modules package', () => {
+    expect(getNodeModulesPackageJsonPath('node_modules/expo-camera/android/src/Camera.kt')).toBe(
+      'node_modules/expo-camera/package.json'
+    );
+  });
+
+  it('should resolve the package.json for a scoped package', () => {
+    expect(getNodeModulesPackageJsonPath('node_modules/@expo/ui/ios')).toBe(
+      'node_modules/@expo/ui/package.json'
+    );
+  });
+
+  it('should use the innermost node_modules for a nested dependency', () => {
+    expect(getNodeModulesPackageJsonPath('node_modules/a/node_modules/b/lib/index.js')).toBe(
+      'node_modules/a/node_modules/b/package.json'
+    );
+  });
+
+  it('should return null when the path is not inside node_modules', () => {
+    expect(getNodeModulesPackageJsonPath('modules/my-local-module/android')).toBeNull();
+  });
+});
 
 jest.mock('fs/promises');
 jest.mock('node:process', () => ({
@@ -72,6 +97,14 @@ describe(isIgnoredPath, () => {
         '../../packages/@expo/config-plugins/node_modules/chalk/package.json',
         ignorePaths
       )
+    ).toBe(true);
+  });
+
+  it('should keep matching other patterns inside a virtual store', () => {
+    expect(
+      isIgnoredPath('node_modules/.pnpm/sharp@1.0.0/node_modules/sharp/build/Release/sharp.node', [
+        '**/node_modules/**/*.node',
+      ])
     ).toBe(true);
   });
 

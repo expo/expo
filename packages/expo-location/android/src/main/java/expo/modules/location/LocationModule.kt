@@ -13,11 +13,11 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
-import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
@@ -28,7 +28,6 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.ActivityRecognition
 import com.google.android.gms.location.ActivityRecognitionResult
-import com.google.android.gms.location.DetectedActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
@@ -36,8 +35,8 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.Priority
 import expo.modules.core.interfaces.ActivityEventListener
-import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.Promise
@@ -49,29 +48,31 @@ import expo.modules.location.records.GeocodeResponse
 import expo.modules.location.records.GeofencingOptions
 import expo.modules.location.records.Heading
 import expo.modules.location.records.HeadingEventResponse
+import expo.modules.location.records.HeadingOptions
 import expo.modules.location.records.LocationLastKnownOptions
 import expo.modules.location.records.LocationOptions
 import expo.modules.location.records.LocationProviderStatus
 import expo.modules.location.records.LocationResponse
 import expo.modules.location.records.LocationTaskOptions
-import expo.modules.location.records.MotionActivitiesRecord
-import expo.modules.location.records.MotionActivityConfidence
-import expo.modules.location.records.MotionActivityObjectRecord
-import expo.modules.location.records.MotionActivityStateRecord
-import expo.modules.location.records.MotionActivityType
+import expo.modules.location.records.MotionActivityTaskOptions
 import expo.modules.location.records.PermissionDetailsLocationAndroid
 import expo.modules.location.records.PermissionRequestResponse
 import expo.modules.location.records.ReverseGeocodeLocation
 import expo.modules.location.records.ReverseGeocodeResponse
 import expo.modules.location.taskConsumers.GeofencingTaskConsumer
 import expo.modules.location.taskConsumers.LocationTaskConsumer
+import expo.modules.location.taskConsumers.MotionActivityTaskConsumer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import kotlin.math.abs
 
-class LocationModule : Module(), LifecycleEventListener, SensorEventListener, ActivityEventListener {
+class LocationModule : Module(), SensorEventListener, ActivityEventListener {
   private var mGeofield: GeomagneticField? = null
   private val mLocationCallbacks = HashMap<Int, LocationCallback>()
   private val mLocationRequests = HashMap<Int, LocationRequest>()
@@ -88,32 +89,16 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
   private var mAccuracy = 0
   private var mLastUpdate: Long = 0
   private var mGeocoderPaused = false
+  private var mHeadingFilterDegrees: Double? = null
 
   // Motion activity
-  private val mMotionActivityWatchIds = mutableSetOf<Int>()
+  private val mMotionActivityWatchIds: MutableSet<Int> = ConcurrentHashMap.newKeySet()
   private var mMotionActivityPendingIntent: PendingIntent? = null
   private var mMotionActivityReceiverRegistered = false
   private val mMotionActivityReceiver = object : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
       val result = ActivityRecognitionResult.extractResult(intent) ?: return
-
-      // When multiple Android types map to the same unified type
-      // (e.g. WALKING + ON_FOOT -> walking), take the highest confidence.
-      val confidenceByType = result.probableActivities
-        .groupBy { it.toMotionActivityType() }
-        .mapValues { (_, activities) -> activities.maxOf { it.confidence } }
-
-      val activity = MotionActivityObjectRecord(
-        activities = MotionActivitiesRecord(
-          automotive = confidenceByType.stateFor(MotionActivityType.AUTOMOTIVE),
-          cycling = confidenceByType.stateFor(MotionActivityType.CYCLING),
-          running = confidenceByType.stateFor(MotionActivityType.RUNNING),
-          walking = confidenceByType.stateFor(MotionActivityType.WALKING),
-          stationary = confidenceByType.stateFor(MotionActivityType.STATIONARY),
-          unknown = confidenceByType.stateFor(MotionActivityType.UNKNOWN)
-        ),
-        timestamp = System.currentTimeMillis().toDouble()
-      )
+      val activity = LocationHelpers.motionActivityRecordFromResult(result)
       for (id in mMotionActivityWatchIds) {
         sendEvent(MOTION_ACTIVITY_EVENT_NAME, mapOf("watchId" to id, "activity" to activity))
       }
@@ -214,8 +199,9 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       return@AsyncFunction getProviderStatus()
     }
 
-    AsyncFunction("watchDeviceHeading") { watchId: Int ->
+    AsyncFunction("watchDeviceHeading") { watchId: Int, options: HeadingOptions ->
       mHeadingId = watchId
+      mHeadingFilterDegrees = options.headingFilter
       return@AsyncFunction startHeadingUpdate()
     }
 
@@ -263,10 +249,6 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
           stopMotionActivityWatch()
         }
         return@AsyncFunction
-      }
-
-      if (isMissingForegroundPermissions()) {
-        throw LocationUnauthorizedException()
       }
 
       // Check if we want to stop watching location or compass
@@ -328,7 +310,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
         throw ForegroundServiceStartNotAllowedException()
       }
 
-      if (!hasForegroundServicePermissions()) {
+      if (shouldUseForegroundService && !hasForegroundServicePermissions(Manifest.permission.FOREGROUND_SERVICE_LOCATION)) {
         throw ForegroundServicePermissionsException()
       }
 
@@ -371,12 +353,51 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       return@AsyncFunction
     }
 
+    AsyncFunction("startMotionActivityUpdatesAsync") { taskName: String, options: MotionActivityTaskOptions ->
+      val shouldUseForegroundService = options.foregroundService != null
+
+      if (isMissingActivityRecognitionPermission()) {
+        throw MotionActivityUnauthorizedException()
+      }
+      if (!AppForegroundedSingleton.isForegrounded && shouldUseForegroundService) {
+        throw ForegroundServiceStartNotAllowedException()
+      }
+      if (shouldUseForegroundService && !hasForegroundServicePermissions(Manifest.permission.FOREGROUND_SERVICE_HEALTH)) {
+        throw ForegroundServicePermissionsException()
+      }
+
+      mTaskManager.registerTask(taskName, MotionActivityTaskConsumer::class.java, options.toMutableMap())
+      return@AsyncFunction
+    }
+
+    AsyncFunction("stopMotionActivityUpdatesAsync") { taskName: String ->
+      mTaskManager.unregisterTask(taskName, MotionActivityTaskConsumer::class.java)
+      return@AsyncFunction
+    }
+
+    AsyncFunction("hasStartedMotionActivityUpdatesAsync") { taskName: String ->
+      return@AsyncFunction mTaskManager.taskHasConsumerOfClass(taskName, MotionActivityTaskConsumer::class.java)
+    }
+
     OnActivityEntersForeground {
       AppForegroundedSingleton.isForegrounded = true
+      resumeGeocoder()
+      resumeLocationUpdates()
+      resumeHeadingWatch()
+      resumeMotionActivityWatch()
     }
 
     OnActivityEntersBackground {
       AppForegroundedSingleton.isForegrounded = false
+      stopWatching()
+      stopHeadingWatch()
+      pauseMotionActivityWatch()
+    }
+
+    OnDestroy {
+      stopWatching()
+      stopHeadingWatch()
+      stopMotionActivityWatch()
     }
   }
 
@@ -596,7 +617,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       )
     } else {
       val locationRequest = LocationRequest.Builder(
-        LocationRequest.PRIORITY_HIGH_ACCURACY,
+        Priority.PRIORITY_HIGH_ACCURACY,
         0L
       ).setMaxUpdates(1)
         .build()
@@ -637,7 +658,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
 
       // Make sure Delta is big enough to warrant an update
       // Currently: 50ms and ~2 degrees of change (android has a lot of useless updates block up the sending)
-      if (abs(orientation[0] - mLastAzimuth) > DEGREE_DELTA && System.currentTimeMillis() - mLastUpdate > TIME_DELTA) {
+      if (abs(orientation[0] - mLastAzimuth) > headingDegreeDelta() && System.currentTimeMillis() - mLastUpdate > TIME_DELTA) {
         mLastAzimuth = orientation[0]
         mLastUpdate = System.currentTimeMillis()
         val magneticNorth: Float = calcMagNorth(orientation[0])
@@ -659,7 +680,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
 
   internal fun sendLocationResponse(watchId: Int, response: LocationResponse) {
     val responseBundle = bundleOf()
-    responseBundle.putBundle("location", response.toBundle(Bundle::class.java))
+    responseBundle.putBundle("location", response.toBundle())
     responseBundle.putInt("watchId", watchId)
     sendEvent(LOCATION_EVENT_NAME, responseBundle)
   }
@@ -667,6 +688,15 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
   private fun calcMagNorth(azimuth: Float): Float {
     val azimuthDeg = Math.toDegrees(azimuth.toDouble()).toFloat()
     return (azimuthDeg + 360) % 360
+  }
+
+  private fun headingDegreeDelta(): Double {
+    val degrees = mHeadingFilterDegrees ?: return DEGREE_DELTA
+    // 0 or negative disables the degree gate, leaving only the time rate limit.
+    if (degrees <= 0.0) {
+      return 0.0
+    }
+    return Math.toRadians(degrees)
   }
 
   private fun calcTrueNorth(magNorth: Float): Float {
@@ -687,16 +717,21 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     mHeadingId = 0
     mLastAzimuth = 0f
     mAccuracy = 0
+    mHeadingFilterDegrees = null
   }
 
-  private fun startWatching() {
+  private fun resumeGeocoder() {
     // if permissions not granted it won't work anyway, but this can be invoked when permission dialog disappears
     if (!isMissingForegroundPermissions()) {
       mGeocoderPaused = false
     }
+  }
 
-    // Resume paused location updates
-    resumeLocationUpdates()
+  private fun resumeHeadingWatch() {
+    if (mHeadingId == 0) {
+      return
+    }
+    startHeadingUpdate()
   }
 
   private fun stopWatching() {
@@ -763,20 +798,40 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       throw NoGeocodeException()
     }
 
-    return suspendCoroutine { continuation ->
-      val locations = Geocoder(mContext, Locale.getDefault()).getFromLocationName(address, 1)
-      locations?.let { location ->
-        location.let {
-          val results = it.mapNotNull { address ->
-            val newLocation = Location(LocationManager.GPS_PROVIDER)
-            newLocation.latitude = address.latitude
-            newLocation.longitude = address.longitude
-            GeocodeResponse.from(newLocation)
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      suspendCancellableCoroutine { continuation ->
+        Geocoder(mContext, Locale.getDefault()).getFromLocationName(
+          address,
+          1,
+          object : Geocoder.GeocodeListener {
+            override fun onGeocode(addresses: MutableList<Address?>) {
+              val results = addresses
+                .filterNotNull()
+                .mapNotNull { address -> address.toGeocodeResponse() }
+              continuation.resume(results)
+            }
+
+            override fun onError(errorMessage: String?) {
+              continuation.resumeWithException(GeocodeException(errorMessage))
+            }
           }
-          continuation.resume(results)
-        }
-      } ?: continuation.resume(emptyList())
+        )
+      }
+    } else {
+      withContext(Dispatchers.IO) {
+        @Suppress("DEPRECATION") // When minSdkVersion is 33, this code will be removed and the above code will be used instead.
+        val addresses = Geocoder(mContext, Locale.getDefault()).getFromLocationName(address, 1).orEmpty()
+        addresses.filterNotNull()
+          .mapNotNull { it.toGeocodeResponse() }
+      }
     }
+  }
+
+  private fun Address.toGeocodeResponse(): GeocodeResponse? {
+    val newLocation = Location(LocationManager.GPS_PROVIDER)
+    newLocation.latitude = latitude
+    newLocation.longitude = longitude
+    return GeocodeResponse.from(newLocation)
   }
 
   private suspend fun reverseGeocode(location: ReverseGeocodeLocation): List<ReverseGeocodeResponse> {
@@ -797,16 +852,38 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       longitude = location.longitude
     }
 
-    return suspendCoroutine { continuation ->
-      val locations = Geocoder(mContext, Locale.getDefault()).getFromLocation(androidLocation.latitude, androidLocation.longitude, 1)
-      locations?.let { addresses ->
-        val results = addresses.mapNotNull { address ->
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      suspendCancellableCoroutine { continuation ->
+        Geocoder(mContext, Locale.getDefault()).getFromLocation(
+          androidLocation.latitude,
+          androidLocation.longitude,
+          1,
+          object : Geocoder.GeocodeListener {
+            override fun onGeocode(addresses: MutableList<Address?>) {
+              val results = addresses.mapNotNull { address ->
+                address?.let {
+                  ReverseGeocodeResponse(address)
+                }
+              }
+              continuation.resume(results)
+            }
+
+            override fun onError(errorMessage: String?) {
+              continuation.resumeWithException(GeocodeException(errorMessage))
+            }
+          }
+        )
+      }
+    } else {
+      withContext(Dispatchers.IO) {
+        @Suppress("DEPRECATION") // When minSdkVersion is 33, this code will be removed and the above code will be used instead.
+        val addresses = Geocoder(mContext, Locale.getDefault()).getFromLocation(androidLocation.latitude, androidLocation.longitude, 1).orEmpty()
+        return@withContext addresses.mapNotNull { address ->
           address?.let {
             ReverseGeocodeResponse(it)
           }
         }
-        continuation.resume(results)
-      } ?: continuation.resume(emptyList())
+      }
     }
   }
 
@@ -946,27 +1023,6 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     return false
   }
 
-  private fun DetectedActivity.toMotionActivityType(): MotionActivityType = when (type) {
-    DetectedActivity.IN_VEHICLE -> MotionActivityType.AUTOMOTIVE
-    DetectedActivity.ON_BICYCLE -> MotionActivityType.CYCLING
-    DetectedActivity.RUNNING -> MotionActivityType.RUNNING
-    DetectedActivity.WALKING, DetectedActivity.ON_FOOT -> MotionActivityType.WALKING
-    DetectedActivity.STILL -> MotionActivityType.STATIONARY
-    else -> MotionActivityType.UNKNOWN
-  }
-
-  private fun Map<MotionActivityType, Int>.stateFor(type: MotionActivityType): MotionActivityStateRecord {
-    val raw = getOrDefault(type, 0)
-    return MotionActivityStateRecord(
-      detected = raw >= 50,
-      confidence = when {
-        raw >= 75 -> MotionActivityConfidence.HIGH
-        raw >= 50 -> MotionActivityConfidence.MEDIUM
-        else -> MotionActivityConfidence.LOW
-      }
-    )
-  }
-
   // endregion
 
   //region private methods
@@ -981,15 +1037,18 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     } ?: throw Exceptions.AppContextLost()
   }
 
-  private fun hasForegroundServicePermissions(): Boolean {
+  /**
+   * Checks whether the app can run a foreground service typed as [typedForegroundServicePermission]
+   * (e.g. `FOREGROUND_SERVICE_LOCATION`, `FOREGROUND_SERVICE_HEALTH`).
+   */
+  private fun hasForegroundServicePermissions(typedForegroundServicePermission: String): Boolean {
     appContext.permissions?.let {
       return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-        val canAccessForegroundServiceLocation = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE_LOCATION)
+        val canAccessTypedForegroundService = it.hasGrantedPermissions(typedForegroundServicePermission)
         val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
-        canAccessForegroundService && canAccessForegroundServiceLocation
+        canAccessForegroundService && canAccessTypedForegroundService
       } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
-        canAccessForegroundService
+        it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
       } else {
         true
       }
@@ -1052,24 +1111,6 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
 
     const val DEGREE_DELTA = 0.0355 // in radians, about 2 degrees
     const val TIME_DELTA = 50f // in milliseconds
-  }
-
-  override fun onHostResume() {
-    startWatching()
-    startHeadingUpdate()
-    resumeMotionActivityWatch()
-  }
-
-  override fun onHostPause() {
-    stopWatching()
-    stopHeadingWatch()
-    pauseMotionActivityWatch()
-  }
-
-  override fun onHostDestroy() {
-    stopWatching()
-    stopHeadingWatch()
-    stopMotionActivityWatch()
   }
 
   override fun onSensorChanged(event: SensorEvent?) {

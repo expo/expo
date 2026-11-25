@@ -1,11 +1,11 @@
-import type { UrlObject } from '../LocationProvider';
+import type { UrlObject } from '../global-state/getRouteInfoFromState';
 import type { LinkToOptions } from '../global-state/routing';
 import type { Href } from '../types';
 
 /** Resolve an href object into a fully qualified, relative href. */
-export const resolveHref = (href: Href): string => {
+export const resolveHref = (href: Href | string): string => {
   if (typeof href === 'string') {
-    return resolveHref({ pathname: href });
+    return href;
   }
   const path = href.pathname ?? '';
   if (!href?.params) {

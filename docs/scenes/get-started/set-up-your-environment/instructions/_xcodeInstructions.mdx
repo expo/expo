@@ -14,11 +14,11 @@ Open up the Mac App Store, search for [Xcode](https://apps.apple.com/us/app/xcod
 
 ### Install Xcode Command Line Tools
 
-Open Xcode, choose **Settings...** from the Xcode menu (or press <kbd>cmd ⌘</kbd> + <kbd>,</kbd>). Go to the **Locations** and install the tools by selecting the most recent version in the **Command Line Tools** dropdown.
+Open Xcode, choose **Settings...** from the Xcode menu (or press <kbd>cmd ⌘</kbd> + <kbd>,</kbd>). Select **Locations** in the sidebar, then install the tools by choosing the most recent version in the **Command Line Tools** dropdown.
 
 <ContentSpotlight
-  alt="Xcode preferences"
-  src="/static/images/ios-simulator/xcode-command-line.png"
+  alt="Locations settings in Xcode with a version selected in the Command Line Tools dropdown."
+  src="/static/images/ios-simulator/xcode-command-line.webp"
   className="max-w-[580px]"
 />
 
@@ -35,6 +35,8 @@ To install an iOS Simulator, open **Xcode > Settings... > Components**, and unde
 <Step label="4">
 
 ### Install Watchman
+
+> **info** Installing Watchman is only required for projects on SDK 55 and earlier.
 
 [Watchman](https://facebook.github.io/watchman/docs/install#macos) is a tool for watching changes in the filesystem. Installing it will result in better performance. You can install it with:
 

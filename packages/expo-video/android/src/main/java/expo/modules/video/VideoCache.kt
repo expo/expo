@@ -9,6 +9,7 @@ import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.video.cache.CacheVariantIndex
 import expo.modules.video.managers.VideoManager
 import java.io.File
 import java.lang.ref.WeakReference
@@ -87,6 +88,9 @@ class VideoCache(context: Context) {
     instance = SimpleCache(getCacheDir(), cacheEvictor, databaseProvider)
     oldCache.release()
     oldCacheDirectory.deleteRecursively()
+    // Variants live in a sibling directory outside SimpleCache, so they must
+    // be wiped explicitly — otherwise an explicit clear leaves orphan records.
+    CacheVariantIndex.clearAll(context)
   }
 
   private fun getFileSize(file: File): Long {

@@ -1,12 +1,9 @@
 import { vol } from 'memfs';
-import path from 'path';
 
 import { createMemoizer, _verifyMemoizerFreed } from '../../memoize';
 import { loadConfigAsync } from '../config';
 
 jest.mock('fs/promises');
-
-const EXPO_MONOREPO_ROOT = path.resolve(__dirname, '../../../../..');
 
 const itWithMemoize = (name: string, fn: () => Promise<void>) => {
   return it(name, async () => {

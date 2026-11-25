@@ -5,6 +5,7 @@
 #include "ExpoHeader.pch"
 #include "JNIDeallocator.h"
 #include "JSharedObject.h"
+#include "ArrayBuffer.h"
 #include "JavaScriptArrayBuffer.h"
 #include "NativeArrayBuffer.h"
 
@@ -32,13 +33,18 @@ public:
       jsi::Runtime &rt,
       std::weak_ptr<react::CallInvoker> jsCallInvokerHolder,
       std::optional<jsi::Function> resolveHolder,
-      std::optional<jsi::Function> rejectHolder
+      std::optional<jsi::Function> rejectHolder,
+      std::vector<jsi::Value> retainedValues = {}
     );
 
     jsi::Runtime &rt;
     std::weak_ptr<react::CallInvoker> jsCallInvokerHolder;
     std::optional<jsi::Function> resolveHolder;
     std::optional<jsi::Function> rejectHolder;
+    /**
+     * JS values that have to stay alive until the promise is settled.
+     */
+    std::vector<jsi::Value> retainedValues;
 
     void invalidate();
   };
@@ -78,6 +84,8 @@ private:
   void invokeMap(jni::alias_ref<jni::JMap<jstring, jobject>> result);
 
   void invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> result);
+
+  void invokeArrayBuffer(jni::alias_ref<ArrayBuffer::javaobject> result);
 
   void invokeJavaScriptArrayBuffer(jni::alias_ref<JavaScriptArrayBuffer::javaobject> result);
 

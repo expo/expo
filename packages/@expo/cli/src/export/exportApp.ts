@@ -2,12 +2,29 @@ import { getConfig } from '@expo/config';
 import type { Platform } from '@expo/config';
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import assert from 'assert';
+import { createFaviconAsString } from '@expo/router-server/build/utils/html';
 import chalk from 'chalk';
-import fs from 'fs';
-import path from 'path';
+import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
 
+import * as Log from '../log';
+import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
+import { DevServerManager } from '../start/server/DevServerManager';
+import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
+import {
+  getRouterDirectoryModuleIdWithManifest,
+  isApiRoutesEnabled,
+} from '../start/server/metro/router';
+import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
+import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
+import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
+import { env } from '../utils/env';
+import { CommandError } from '../utils/errors';
+import { reportProgramResult } from '../utils/programStatus';
+import { compileHermesArtifactsAsync } from './compileHermesArtifacts';
 import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
+import { event } from './events';
 import { exportAssetsAsync } from './exportAssets';
 import {
   addDomBundleToMetadataAsync,
@@ -17,24 +34,13 @@ import {
 } from './exportDomComponents';
 import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes';
 import { exportApiRoutesStandaloneAsync, exportFromServerAsync } from './exportStaticAsync';
-import { getVirtualFaviconAssetsAsync } from './favicon';
+import { generateFaviconAssetAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { copyPublicFolderAsync, getPublicFolderPath } from './publicFolder';
 import type { Options } from './resolveOptions';
 import type { ExportAssetMap, BundleOutput, BundleAssetWithFileHashes } from './saveAssets';
 import { getFilesFromSerialAssets, persistMetroFilesAsync } from './saveAssets';
 import { createAssetMap } from './writeContents';
-import * as Log from '../log';
-import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
-import { DevServerManager } from '../start/server/DevServerManager';
-import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
-import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
-import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
-import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
-import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
-import { env } from '../utils/env';
-import { CommandError } from '../utils/errors';
-import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 
 export async function exportAppAsync(
   projectRoot: string,
@@ -67,12 +73,6 @@ export async function exportAppAsync(
     | 'hostedNative'
   >
 ): Promise<void> {
-  // Force the environment during export and do not allow overriding it.
-  const environment = dev ? 'development' : 'production';
-  process.env.NODE_ENV = environment;
-  setNodeEnv(environment);
-  loadEnvFiles(projectRoot);
-
   const projectConfig = getConfig(projectRoot);
   const exp = await getPublicExpoManifestAsync(projectRoot, {
     // Web doesn't require validation.
@@ -85,13 +85,18 @@ export async function exportAppAsync(
 
   const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
 
-  if (skipSSG && exp.web?.output !== 'server') {
-    throw new CommandError('--no-ssg can only be used with `web.output: server`');
+  const exportServer =
+    exp.web?.output === 'server' || (exp.web?.output === 'static' && isApiRoutesEnabled(exp));
+
+  if (skipSSG && !exportServer) {
+    throw new CommandError(
+      '--no-ssg requires server output or static output with apiRoutes: true in the expo-router config plugin'
+    );
   }
 
   const baseUrl = getBaseUrlFromExpoConfig(exp);
 
-  if (!bytecode && (platforms.includes('ios') || platforms.includes('android'))) {
+  if (!bytecode && platforms.some((platform) => platform !== 'web')) {
     Log.warn(
       `Bytecode makes the app startup faster, disabling bytecode is highly discouraged and should only be used for debugging purposes.`
     );
@@ -112,6 +117,8 @@ export async function exportAppAsync(
   const mode = dev ? 'development' : 'production';
   const publicPath = getPublicFolderPath(projectRoot);
   const outputPath = path.resolve(projectRoot, outputDir);
+
+  const doneExport = event.span();
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
 
@@ -173,6 +180,7 @@ export async function exportAppAsync(
             files?: ExportAssetMap;
           };
 
+          const bundleStartedAt = Date.now();
           try {
             // Run metro bundler and create the JS bundles/source maps.
             bundle = await devServer.nativeExportBundleAsync(
@@ -188,7 +196,7 @@ export async function exportAppAsync(
                 }),
                 mode: dev ? 'development' : 'production',
                 engine: isHermes ? 'hermes' : undefined,
-                serializerIncludeMaps: sourceMaps || inlineSourceMaps,
+                includeSourceMaps: sourceMaps || inlineSourceMaps,
                 inlineSourceMap: inlineSourceMaps,
                 bytecode: bytecode && isHermes,
                 reactCompiler: !!exp.experiments?.reactCompiler,
@@ -204,15 +212,19 @@ export async function exportAppAsync(
               Log.error('Failed to bundle the app');
               Log.log(error as any);
             }
+            reportProgramResult({
+              state: 'error',
+              msg: error instanceof Error ? error.message : 'Failed to bundle the app',
+            });
             process.exit(1);
           }
 
           bundles[platform] = bundle;
 
-          getFilesFromSerialAssets(bundle.artifacts, {
-            includeSourceMaps: sourceMaps,
-            files,
-            isServerHosted: devServer.isReactServerComponentsEnabled || hostedNative,
+          event('bundle', {
+            platform,
+            assets: bundle.assets.length,
+            ms: Date.now() - bundleStartedAt,
           });
 
           const expoDomComponentReferences = [
@@ -265,30 +277,37 @@ export async function exportAppAsync(
             })
           );
 
-          if (platform === 'web') {
-            // TODO: Unify with exportStaticAsync
-            // TODO: Maybe move to the serializer.
-            let html = await serializeHtmlWithAssets({
-              isExporting: true,
-              resources: bundle.artifacts,
-              template: await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
-                scripts: [],
-                cssLinks: [],
-                exp: projectConfig.exp,
-              }),
-              baseUrl,
-            });
+          if (bytecode && isHermes && !dev) {
+            await compileHermesArtifactsAsync(projectRoot, bundle.artifacts);
+          }
 
-            // Add the favicon assets to the HTML.
-            const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, {
+          getFilesFromSerialAssets(bundle.artifacts, {
+            includeSourceMaps: sourceMaps,
+            files,
+            isServerHosted: devServer.isReactServerComponentsEnabled || hostedNative,
+          });
+
+          if (platform === 'web') {
+            const faviconAsset = await generateFaviconAssetAsync(projectRoot, {
               outputDir,
               baseUrl,
               files,
               exp: projectConfig.exp,
             });
-            if (modifyHtml) {
-              html = modifyHtml(html);
-            }
+
+            // TODO: Unify with exportStaticAsync
+            // TODO: Maybe move to the serializer.
+            const html = serializeHtmlWithAssets({
+              isExporting: true,
+              resources: bundle.artifacts,
+              template: await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
+                scripts: [],
+                cssLinks: [],
+                extraHead: faviconAsset ? createFaviconAsString(faviconAsset.href) : undefined,
+                exp: projectConfig.exp,
+              }),
+              baseUrl,
+            });
 
             // HACK: This is used for adding SSR shims in React Server Components.
             templateHtml = html;
@@ -352,8 +371,6 @@ export async function exportAppAsync(
     // Additional web-only steps...
 
     if (platforms.includes('web') && useServerRendering) {
-      const exportServer = exp.web?.output === 'server';
-
       if (exportServer) {
         // TODO: Remove when this is abstracted into the files map
         await copyPublicFolderAsync(publicPath, path.resolve(outputPath, 'client'));
@@ -403,4 +420,11 @@ export async function exportAppAsync(
 
   // Write all files at the end for unified logging.
   await persistMetroFilesAsync(files, outputPath);
+
+  doneExport('done', {
+    platforms,
+    outputDir,
+    mode: (exp.web?.output as 'static' | 'server' | 'single') ?? 'single',
+    dev: !!dev,
+  });
 }

@@ -29,8 +29,17 @@ Expo UI DropdownMenu matches the official Jetpack Compose [Menu API](https://dev
 ### Basic dropdown menu
 
 ```tsx BasicDropdownMenuExample.tsx
-import { Host, DropdownMenu, DropdownMenuItem, Button, Text, Icon } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  DropdownMenu,
+  DropdownMenuItem,
+  OutlinedButton,
+  Text,
+  Icon,
+} from '@expo/ui/jetpack-compose';
 import { useState } from 'react';
+
+const homeIcon = require('./assets/home.xml');
 
 export default function BasicDropdownMenuExample() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -38,9 +47,7 @@ export default function BasicDropdownMenuExample() {
     <Host matchContents>
       <DropdownMenu expanded={isExpanded} onDismissRequest={() => setIsExpanded(false)}>
         <DropdownMenu.Trigger>
-          <Button variant="bordered" onClick={() => setIsExpanded(true)}>
-            Show Menu
-          </Button>
+          <OutlinedButton onClick={() => setIsExpanded(true)}>Show Menu</OutlinedButton>
         </DropdownMenu.Trigger>
         <DropdownMenu.Items>
           <DropdownMenuItem

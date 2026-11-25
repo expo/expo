@@ -12,7 +12,6 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import org.apache.commons.io.FilenameUtils
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -83,11 +82,11 @@ class DocumentPickerModule : Module() {
     val outputFilePath = FileUtilities.generateOutputPath(
       context.cacheDir,
       "DocumentPicker",
-      FilenameUtils.getExtension(name)
+      File(name).extension
     )
     val outputFile = File(outputFilePath)
     context.contentResolver.openInputStream(documentUri).use { inputStream ->
-      inputStream ?: throw FileNotFoundException("Inputstream for $documentUri was null.")
+      inputStream ?: throw FileNotFoundException("InputStream for $documentUri was null.")
       FileOutputStream(outputFile).use { outputStream ->
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           FileUtils.copy(inputStream, outputStream)

@@ -8,6 +8,7 @@ export function HandWaveIcon({ className }: Props) {
   return (
     <svg
       viewBox="0 0 15 16"
+      aria-hidden="true"
       className={mergeClasses('icon-sm stroke-icon-default', className)}
       fill="none"
       xmlns="http://www.w3.org/2000/svg">

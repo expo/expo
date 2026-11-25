@@ -1,5 +1,5 @@
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index 34b96c71c33..fc185e53bc3 100644
+index 34b96c71c33..66d64fd22ed 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -11,7 +11,7 @@ def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
@@ -38,11 +38,12 @@ index 34b96c71c33..fc185e53bc3 100644
              signingConfig signingConfigs.debug
 -            shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
 -            minifyEnabled enableProguardInReleaseBuilds
+-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+-            crunchPngs (findProperty('android.enablePngCrunchInReleaseBuilds')?.toBoolean() ?: true)
 +            def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
 +            shrinkResources enableShrinkResources.toBoolean()
 +            minifyEnabled enableMinifyInReleaseBuilds
-             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
--            crunchPngs (findProperty('android.enablePngCrunchInReleaseBuilds')?.toBoolean() ?: true)
++            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
 +            def enablePngCrunchInRelease = findProperty('android.enablePngCrunchInReleaseBuilds') ?: 'true'
 +            crunchPngs enablePngCrunchInRelease.toBoolean()
          }
@@ -69,7 +70,7 @@ index 00000000000..3ec2507bab7
 +    <application android:usesCleartextTraffic="true" tools:targetApi="28" tools:ignore="GoogleAppIndexingWarning" tools:replace="android:usesCleartextTraffic" />
 +</manifest>
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-index 150248b6b3c..14bdba124ab 100644
+index 150248b6b3c..30ef6349e33 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 @@ -1,12 +1,13 @@
@@ -94,7 +95,7 @@ index 150248b6b3c..14bdba124ab 100644
  
    <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:supportsRtl="true">
 -    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
-+    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
++    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize|assetsPaths" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
        <intent-filter>
          <action android:name="android.intent.action.MAIN"/>
          <category android:name="android.intent.category.LAUNCHER"/>
@@ -171,10 +172,16 @@ index 267e20c30e5..cbb5ddb85d0 100644
    }
  
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index fa7b11e23c1..0554dd156c1 100644
+index fa7b11e23c1..521e972aa7b 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
-@@ -12,21 +12,8 @@ buildscript {
+@@ -8,25 +8,13 @@ buildscript {
+   dependencies {
+     classpath('com.android.tools.build:gradle')
+     classpath('com.facebook.react:react-native-gradle-plugin')
+-    classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
++    def kotlinVersion = findProperty('android.kotlinVersion')
++    classpath(kotlinVersion ? "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion" : 'org.jetbrains.kotlin:kotlin-gradle-plugin')
    }
  }
  
@@ -197,20 +204,22 @@ index fa7b11e23c1..0554dd156c1 100644
      mavenCentral()
      maven { url 'https://www.jitpack.io' }
 diff --git a/templates/expo-template-bare-minimum/android/gitignore b/templates/expo-template-bare-minimum/android/gitignore
-index 8a6be077181..1ea9b6464ec 100644
+index 8a6be077181..01581731149 100644
 --- a/templates/expo-template-bare-minimum/android/gitignore
 +++ b/templates/expo-template-bare-minimum/android/gitignore
-@@ -12,5 +12,8 @@ local.properties
+@@ -11,6 +11,10 @@ local.properties
+ *.iml
  *.hprof
  .cxx/
- 
++gradle/gradle-daemon-jvm.properties
++
 +# generated inline modules
 +app/src/main/java/inline/
-+
+ 
  # Bundle artifacts
  *.jsbundle
 diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
-index 7531e9eb23c..97271b9456f 100644
+index 7531e9eb23c..6826811f37f 100644
 --- a/templates/expo-template-bare-minimum/android/gradle.properties
 +++ b/templates/expo-template-bare-minimum/android/gradle.properties
 @@ -15,7 +15,7 @@ org.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=512m
@@ -222,30 +231,66 @@ index 7531e9eb23c..97271b9456f 100644
  
  # AndroidX package structure to make it clearer which packages are bundled with the
  # Android operating system, and which are packaged with your app's APK
-@@ -41,6 +41,11 @@ newArchEnabled=true
+@@ -25,6 +25,12 @@ android.useAndroidX=true
+ # Enable AAPT2 PNG crunching
+ android.enablePngCrunchInReleaseBuilds=true
+ 
++# Enable R8 in release builds to shrink, optimize and obfuscate the Java/Kotlin code.
++# The app is optimized using the `proguard-android-optimize.txt` preset.
++# Add custom keep rules to android/app/proguard-rules.pro.
++# See https://developer.android.com/topic/performance/app-optimization/enable-app-optimization
++android.enableMinifyInReleaseBuilds=true
++
+ # Use this property to specify which architecture you want to build.
+ # You can also override it from the CLI using
+ # ./gradlew <task> -PreactNativeArchitectures=x86_64
+@@ -41,12 +47,21 @@ newArchEnabled=true
  # If set to false, you will be using JSC instead.
  hermesEnabled=true
  
+-# Enable GIF support in React Native images (~200 B increase)
 +# Use this property to enable edge-to-edge display support.
 +# This allows your app to draw behind system bars for an immersive UI.
 +# Note: Only works with ReactActivity and should not be used with custom Activity.
 +edgeToEdgeEnabled=true
 +
- # Enable GIF support in React Native images (~200 B increase)
++# Enable GIF support in React Native's <Image> component.
++# Disable to reduce app size if you only render GIFs via expo-image.
++# See https://docs.expo.dev/distribution/app-size/
  expo.gif.enabled=true
- # Enable webp support in React Native images (~85 KB increase)
+-# Enable webp support in React Native images (~85 KB increase)
++# Enable WebP support in React Native's <Image> component.
++# Disable to reduce app size if you only render WebP via expo-image.
++# See https://docs.expo.dev/distribution/app-size/
+ expo.webp.enabled=true
+-# Enable animated webp support (~3.4 MB increase)
+-# Disabled by default because iOS doesn't support animated webp
++# Enable animated WebP support in React Native's <Image> component.
++# Disabled by default because iOS doesn't support animated WebP.
+ expo.webp.animated=false
+ 
+ # Enable network inspector
+@@ -54,3 +69,8 @@ EX_DEV_CLIENT_NETWORK_INSPECTOR=true
+ 
+ # Use legacy packaging to compress native libraries in the resulting APK.
+ expo.useLegacyPackaging=false
++
++# Opt out of built-in kotlin and new DSL behavior that ships with AGP 9.
++# Starting from AGP 10.x these opt outs will be removed.
++android.builtInKotlin=false
++android.newDsl=false
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar
 index a4b76b9530d..61285a659d1 100644
 Binary files a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar and b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar differ
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
-index 37f853b1c84..37f78a6af83 100644
+index 37f853b1c84..c61a118f7dd 100644
 --- a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
 +++ b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
 @@ -1,6 +1,6 @@
  distributionBase=GRADLE_USER_HOME
  distributionPath=wrapper/dists
 -distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip
-+distributionUrl=https\://services.gradle.org/distributions/gradle-9.3.1-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-9.4.1-bin.zip
  networkTimeout=10000
  validateDistributionUrl=true
  zipStoreBase=GRADLE_USER_HOME
@@ -323,10 +368,34 @@ index 9b42019c791..39baf4d6846 100644
  :end
  @rem End local scope for the variables with windows NT shell
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
-index 1b7513bd31b..39fa5afe55b 100644
+index 1b7513bd31b..ad9f97ad63d 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
-@@ -168,6 +168,8 @@
+@@ -11,6 +11,7 @@
+ 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
+ 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+ 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
++		F11748442D0307B40044C1D9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748432D0307B40044C1D9 /* SceneDelegate.swift */; };
+ /* End PBXBuildFile section */
+ 
+ /* Begin PBXFileReference section */
+@@ -21,6 +22,7 @@
+ 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+ 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+ 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = HelloWorld/AppDelegate.swift; sourceTree = "<group>"; };
++		F11748432D0307B40044C1D9 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = HelloWorld/SceneDelegate.swift; sourceTree = "<group>"; };
+ 		F11748442D0722820044C1D9 /* HelloWorld-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "HelloWorld-Bridging-Header.h"; path = "HelloWorld/HelloWorld-Bridging-Header.h"; sourceTree = "<group>"; };
+ /* End PBXFileReference section */
+ 
+@@ -39,6 +41,7 @@
+ 			isa = PBXGroup;
+ 			children = (
+ 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
++				F11748432D0307B40044C1D9 /* SceneDelegate.swift */,
+ 				F11748442D0722820044C1D9 /* HelloWorld-Bridging-Header.h */,
+ 				BB2F792B24A3F905000567C9 /* Supporting */,
+ 				13B07FB51A68108700A75B9A /* Images.xcassets */,
+@@ -168,13 +171,15 @@
  			files = (
  			);
  			inputPaths = (
@@ -335,7 +404,23 @@ index 1b7513bd31b..39fa5afe55b 100644
  			);
  			name = "Bundle React Native code and images";
  			outputPaths = (
-@@ -246,11 +248,12 @@
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 			shellPath = /bin/sh;
+-			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Source .xcode.env.updates if it exists to allow\n# SKIP_BUNDLING to be unset if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.updates\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.updates\"\nfi\n# Source local changes to allow overrides\n# if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
++			shellScript = "if [[ -f \"$SRCROOT/.xcode.env\" ]]; then\n  source \"$SRCROOT/.xcode.env\"\nfi\nif [[ -f \"$SRCROOT/.xcode.env.local\" ]]; then\n  source \"$SRCROOT/.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Source .xcode.env.updates if it exists to allow\n# SKIP_BUNDLING to be unset if needed\nif [[ -f \"$SRCROOT/.xcode.env.updates\" ]]; then\n  source \"$SRCROOT/.xcode.env.updates\"\nfi\n# Source local changes to allow overrides\n# if needed\nif [[ -f \"$SRCROOT/.xcode.env.local\" ]]; then\n  source \"$SRCROOT/.xcode.env.local\"\nfi\n\n\"`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\"\n\n";
+ 		};
+ 		08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {
+ 			isa = PBXShellScriptBuildPhase;
+@@ -228,6 +233,7 @@
+ 			buildActionMask = 2147483647;
+ 			files = (
+ 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
++				F11748442D0307B40044C1D9 /* SceneDelegate.swift in Sources */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -246,11 +252,12 @@
  					"FB_SONARKIT_ENABLED=1",
  				);
  				INFOPLIST_FILE = HelloWorld/Info.plist;
@@ -349,7 +434,7 @@ index 1b7513bd31b..39fa5afe55b 100644
  				MARKETING_VERSION = 1.0;
  				OTHER_LDFLAGS = (
  					"$(inherited)",
-@@ -273,11 +276,12 @@
+@@ -273,11 +280,12 @@
  				CLANG_ENABLE_MODULES = YES;
  				CURRENT_PROJECT_VERSION = 1;
  				INFOPLIST_FILE = HelloWorld/Info.plist;
@@ -363,7 +448,7 @@ index 1b7513bd31b..39fa5afe55b 100644
  				MARKETING_VERSION = 1.0;
  				OTHER_LDFLAGS = (
  					"$(inherited)",
-@@ -339,7 +343,7 @@
+@@ -339,7 +347,7 @@
  				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
  				GCC_WARN_UNUSED_FUNCTION = YES;
  				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -372,7 +457,7 @@ index 1b7513bd31b..39fa5afe55b 100644
  				LD_RUNPATH_SEARCH_PATHS = (
  					/usr/lib/swift,
  					"$(inherited)",
-@@ -391,7 +395,7 @@
+@@ -391,7 +399,7 @@
  				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
  				GCC_WARN_UNUSED_FUNCTION = YES;
  				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -382,7 +467,7 @@ index 1b7513bd31b..39fa5afe55b 100644
  					/usr/lib/swift,
  					"$(inherited)",
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
-index a7887e1e5b1..9670a1ff07e 100644
+index a7887e1e5b1..34fd928b70c 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
 @@ -1,9 +1,9 @@
@@ -394,18 +479,90 @@ index a7887e1e5b1..9670a1ff07e 100644
 -@UIApplicationMain
 -public class AppDelegate: ExpoAppDelegate {
 +@main
-+class AppDelegate: ExpoAppDelegate {
++class AppDelegate: ExpoAppDelegate, ExpoReactNativeFactoryProvider {
    var window: UIWindow?
  
    var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
-@@ -19,7 +19,6 @@ public class AppDelegate: ExpoAppDelegate {
+@@ -19,37 +19,11 @@ public class AppDelegate: ExpoAppDelegate {
  
      reactNativeDelegate = delegate
      reactNativeFactory = factory
 -    bindReactNativeFactory(factory)
+-
+-#if os(iOS) || os(tvOS)
+-    window = UIWindow(frame: UIScreen.main.bounds)
+-    factory.startReactNative(
+-      withModuleName: "main",
+-      in: window,
+-      launchOptions: launchOptions)
+-#endif
  
- #if os(iOS) || os(tvOS)
-     window = UIWindow(frame: UIScreen.main.bounds)
++    // The window is created and React Native is started by `SceneDelegate` under the
++    // scene-based life cycle (required by the iOS 27 SDK).
+     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+   }
+-
+-  // Linking API
+-  public override func application(
+-    _ app: UIApplication,
+-    open url: URL,
+-    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+-  ) -> Bool {
+-    return super.application(app, open: url, options: options) || RCTLinkingManager.application(app, open: url, options: options)
+-  }
+-
+-  // Universal Links
+-  public override func application(
+-    _ application: UIApplication,
+-    continue userActivity: NSUserActivity,
+-    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+-  ) -> Bool {
+-    let result = RCTLinkingManager.application(application, continue: userActivity, restorationHandler: restorationHandler)
+-    return super.application(application, continue: userActivity, restorationHandler: restorationHandler) || result
+-  }
+ }
+ 
+ class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
+index 596dc7ce6b5..e33bda957c9 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
+@@ -33,6 +33,23 @@
+ 		<key>NSAllowsLocalNetworking</key>
+ 		<true/>
+ 	</dict>
++	<key>UIApplicationSceneManifest</key>
++	<dict>
++		<key>UIApplicationSupportsMultipleScenes</key>
++		<false/>
++		<key>UISceneConfigurations</key>
++		<dict>
++			<key>UIWindowSceneSessionRoleApplication</key>
++			<array>
++				<dict>
++					<key>UISceneConfigurationName</key>
++					<string>Default Configuration</string>
++					<key>UISceneDelegateClassName</key>
++					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
++				</dict>
++			</array>
++		</dict>
++	</dict>
+ 	<key>UILaunchStoryboardName</key>
+ 	<string>SplashScreen</string>
+ 	<key>UIRequiredDeviceCapabilities</key>
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/SceneDelegate.swift b/templates/expo-template-bare-minimum/ios/HelloWorld/SceneDelegate.swift
+new file mode 100644
+index 00000000000..788dde8f463
+--- /dev/null
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/SceneDelegate.swift
+@@ -0,0 +1,6 @@
++internal import Expo
++
++@objc(SceneDelegate)
++class SceneDelegate: ExpoAppSceneDelegate {
++  // Extension point for config plugins.
++}
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard b/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
 index 447b4188985..58d21796e1d 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
@@ -443,10 +600,10 @@ index 447b4188985..58d21796e1d 100644
      </resources>
  </document>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 29503ff0cc1..c3158e3fb9b 100644
+index 29503ff0cc1..1a7b1969798 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -4,12 +4,20 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
+@@ -4,12 +4,23 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
  require 'json'
  podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
  
@@ -466,13 +623,16 @@ index 29503ff0cc1..c3158e3fb9b 100644
 +ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
 +ENV['RCT_USE_RN_DEP'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
 +ENV['RCT_USE_PREBUILT_RNCORE'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
-+ENV['RCT_HERMES_V1_ENABLED'] ||= '1' if podfile_properties['expo.useHermesV1'] == 'true'
-+ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] != 'false'
++ENV['RCT_HERMES_V1_ENABLED'] ||= '0' if podfile_properties['expo.useHermesV1'] == 'false'
++# An explicit `ios.usePrecompiledModules: false` must win even when the env var is already set
++# (e.g. EXPO_USE_PRECOMPILED_MODULES exported by EAS Build), so force-disable here before the default.
++ENV['EXPO_USE_PRECOMPILED_MODULES'] = '0' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] == 'false'
++ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1'
 +platform :ios, podfile_properties['ios.deploymentTarget'] || '16.4'
  
  prepare_react_native_project!
  
-@@ -20,7 +28,10 @@ target 'HelloWorld' do
+@@ -20,7 +31,10 @@ target 'HelloWorld' do
      config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];
    else
      config_command = [
@@ -484,7 +644,7 @@ index 29503ff0cc1..c3158e3fb9b 100644
        'expo-modules-autolinking',
        'react-native-config',
        '--json',
-@@ -47,18 +58,7 @@ target 'HelloWorld' do
+@@ -47,18 +61,7 @@ target 'HelloWorld' do
        installer,
        config[:reactNativePath],
        :mac_catalyst_enabled => false,
@@ -505,19 +665,24 @@ index 29503ff0cc1..c3158e3fb9b 100644
    end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 661f6b6addf..8843d0fcae7 100644
+index 661f6b6addf..c05e7ceb2b8 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
-@@ -2,7 +2,7 @@
+@@ -2,7 +2,12 @@
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
    "license": "0BSD",
 -  "version": "53.0.42",
-+  "version": "56.0.17",
++  "version": "58.0.25",
++  "repository": {
++    "type": "git",
++    "url": "https://github.com/expo/expo.git",
++    "directory": "templates/expo-template-bare-minimum"
++  },
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
-@@ -11,12 +11,14 @@
+@@ -11,12 +16,14 @@
      "web": "expo start --web"
    },
    "dependencies": {
@@ -525,10 +690,10 @@ index 661f6b6addf..8843d0fcae7 100644
 -    "expo-status-bar": "~2.2.3",
 -    "react": "19.0.0",
 -    "react-native": "0.79.6"
-+    "expo": "~56.0.3",
-+    "expo-status-bar": "~56.0.4",
-+    "react": "19.2.3",
-+    "react-native": "0.85.3"
++    "expo": "~58.0.16",
++    "expo-status-bar": "~58.0.3",
++    "react": "19.3.0",
++    "react-native": "0.88.0"
    },
 -  "devDependencies": {
 -    "@babel/core": "^7.20.0"

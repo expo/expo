@@ -22,16 +22,7 @@ jest.mock('react-native-screens', () => {
 });
 
 jest.mock('@expo/ui/jetpack-compose', () => {
-  const { View }: typeof import('react-native') = jest.requireActual('react-native');
-
-  const DropdownMenu = jest.fn((props) => (
-    <View testID="DropdownMenu" {...props} />
-  )) as unknown as jest.MockedFunction<React.FC<Record<string, unknown>>> & {
-    Trigger: jest.MockedFunction<React.FC<Record<string, unknown>>>;
-    Items: jest.MockedFunction<React.FC<Record<string, unknown>>>;
-  };
-  DropdownMenu.Trigger = jest.fn((props) => <View testID="DropdownMenu.Trigger" {...props} />);
-  DropdownMenu.Items = jest.fn((props) => <View testID="DropdownMenu.Items" {...props} />);
+  const { Text, View }: typeof import('react-native') = jest.requireActual('react-native');
 
   const DropdownMenuItem = jest.fn((props) => (
     <View testID="DropdownMenuItem" {...props} />
@@ -40,7 +31,7 @@ jest.mock('@expo/ui/jetpack-compose', () => {
     LeadingIcon: jest.MockedFunction<React.FC<Record<string, unknown>>>;
     TrailingIcon: jest.MockedFunction<React.FC<Record<string, unknown>>>;
   };
-  DropdownMenuItem.Text = jest.fn((props) => <View testID="DropdownMenuItem.Text" {...props} />);
+  DropdownMenuItem.Text = jest.fn((props) => <Text testID="DropdownMenuItem.Text" {...props} />);
   DropdownMenuItem.LeadingIcon = jest.fn((props) => (
     <View testID="DropdownMenuItem.LeadingIcon" {...props} />
   ));
@@ -54,12 +45,16 @@ jest.mock('@expo/ui/jetpack-compose', () => {
     HorizontalFloatingToolbar: jest.fn((props) => (
       <View testID="HorizontalFloatingToolbar" {...props} />
     )),
-    DropdownMenu,
+    DropdownMenuGroup: jest.fn((props) => <View testID="DropdownMenuGroup" {...props} />),
     DropdownMenuItem,
+    DropdownMenuPopup: jest.fn((props) => <View testID="DropdownMenuPopup" {...props} />),
+    Spacer: jest.fn((props) => <View testID="Spacer" {...props} />),
     Divider: jest.fn(() => <View testID="Divider" />),
     Icon: jest.fn((props) => <View testID="Icon" {...props} />),
     IconButton: jest.fn((props) => <View testID="IconButton" {...props} />),
-    Text: jest.fn((props) => <View testID="ComposeText" {...props} />),
+    Badge: jest.fn((props) => <View testID="Badge" {...props} />),
+    Box: jest.fn((props) => <View testID="Box" {...props} />),
+    Text: jest.fn((props) => <Text testID="ComposeText" {...props} />),
     RNHostView: jest.fn((props) => <View testID="RNHostView" {...props} />),
   };
 });
@@ -72,6 +67,7 @@ jest.mock('@expo/ui/jetpack-compose/modifiers', () => ({
   padding: jest.fn((...args: number[]) => ({ type: 'padding', values: args })),
   imePadding: jest.fn(() => ({ type: 'imePadding' })),
   width: jest.fn((w: number) => ({ type: 'width', width: w })),
+  verticalScroll: jest.fn(() => ({ type: 'verticalScroll' })),
 }));
 
 jest.mock('../../../color', () => ({
@@ -144,8 +140,8 @@ describe('Stack.Toolbar Android integration tests', () => {
   describe('left/right placement from layout', () => {
     it.each(['left', 'right'] as const)(
       'renders Host > Row for %s toolbar with no headerBarButtonItems',
-      (placement) => {
-        renderRouter({
+      async (placement) => {
+        await renderRouter({
           _layout: () => (
             <Stack>
               <Stack.Screen name="index">
@@ -181,8 +177,8 @@ describe('Stack.Toolbar Android integration tests', () => {
       }
     );
 
-    it('renders both left and right toolbars simultaneously', () => {
-      renderRouter({
+    it('renders both left and right toolbars simultaneously', async () => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">
@@ -214,10 +210,52 @@ describe('Stack.Toolbar Android integration tests', () => {
       expect(MockedScreenStackHeaderRightView).toHaveBeenCalled();
     });
 
+    it('draws right toolbar buttons on a container in buttonContainerColor', async () => {
+      await renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Toolbar placement="right" buttonContainerColor="#000000b3">
+                <Stack.Toolbar.Button icon={{ uri: 'search-icon' }} />
+              </Stack.Toolbar>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('IconButton').props.colors).toEqual({
+        containerColor: '#000000b3',
+        disabledContainerColor: '#000000b3',
+      });
+    });
+
+    it('draws left toolbar menu buttons on a container in buttonContainerColor', async () => {
+      await renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Toolbar placement="left" buttonContainerColor="#000000b3">
+                <Stack.Toolbar.Menu icon={{ uri: 'menu-icon' }}>
+                  <Stack.Toolbar.MenuAction onPress={() => {}}>Action 1</Stack.Toolbar.MenuAction>
+                </Stack.Toolbar.Menu>
+              </Stack.Toolbar>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('IconButton').props.colors).toEqual({
+        containerColor: '#000000b3',
+        disabledContainerColor: '#000000b3',
+      });
+    });
+
     it.each(['left', 'right'] as const)(
       'asChild mode for %s placement renders children directly',
-      (placement) => {
-        renderRouter({
+      async (placement) => {
+        await renderRouter({
           _layout: () => (
             <Stack>
               <Stack.Screen name="index">
@@ -247,9 +285,9 @@ describe('Stack.Toolbar Android integration tests', () => {
   });
 
   it.each(['left', 'right'] as const)(
-    'renders menu with DropdownMenu inside %s toolbar',
-    (placement) => {
-      renderRouter({
+    'renders menu with DropdownMenuPopup inside %s toolbar',
+    async (placement) => {
+      await renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index">
@@ -268,7 +306,7 @@ describe('Stack.Toolbar Android integration tests', () => {
 
       const host = screen.getByTestId('Host');
       expect(host).toBeDefined();
-      expect(within(host).getByTestId('DropdownMenu')).toBeDefined();
+      expect(within(host).getByTestId('DropdownMenuPopup')).toBeDefined();
       expect(within(host).getByTestId('IconButton')).toBeDefined();
 
       if (placement === 'left') {
@@ -279,8 +317,8 @@ describe('Stack.Toolbar Android integration tests', () => {
     }
   );
 
-  it('renders RouterToolbarHost for bottom toolbar', () => {
-    renderRouter({
+  it('renders RouterToolbarHost for bottom toolbar', async () => {
+    await renderRouter({
       index: () => (
         <>
           <Stack.Toolbar placement="bottom">
@@ -297,8 +335,8 @@ describe('Stack.Toolbar Android integration tests', () => {
 
   it.each(['left', 'right'] as const)(
     'renders %s toolbar from page with Host > Row wrapper',
-    (placement) => {
-      renderRouter({
+    async (placement) => {
+      await renderRouter({
         _layout: () => <Stack />,
         index: () => (
           <>
@@ -323,4 +361,173 @@ describe('Stack.Toolbar Android integration tests', () => {
       }
     }
   );
+
+  describe('badge support in left/right placement', () => {
+    it.each(['left', 'right'] as const)(
+      'renders Box with Badge when button has a Badge child in %s placement',
+      async (placement) => {
+        await renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement={placement}>
+                  <Stack.Toolbar.Button icon={{ uri: 'icon' }}>
+                    <Stack.Toolbar.Icon src={{ uri: 'icon' }} />
+                    <Stack.Toolbar.Badge>3</Stack.Toolbar.Badge>
+                  </Stack.Toolbar.Button>
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <View testID="index" />,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(screen.getByTestId('Box')).toBeDefined();
+        const badge = screen.getByTestId('Badge');
+        expect(badge).toBeDefined();
+        expect(within(badge).getByTestId('ComposeText')).toBeDefined();
+        expect(within(badge).getByTestId('ComposeText').props.children).toBe('3');
+      }
+    );
+
+    it('renders dot badge when Badge has no children', async () => {
+      await renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Toolbar placement="right">
+                <Stack.Toolbar.Button icon={{ uri: 'icon' }}>
+                  <Stack.Toolbar.Icon src={{ uri: 'icon' }} />
+                  <Stack.Toolbar.Badge />
+                </Stack.Toolbar.Button>
+              </Stack.Toolbar>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screen.getByTestId('Badge')).toBeDefined();
+      expect(screen.queryByTestId('ComposeText')).toBeNull();
+    });
+
+    it('does not render Box when button has no Badge child', async () => {
+      await renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Toolbar placement="right">
+                <Stack.Toolbar.Button icon={{ uri: 'icon' }}>
+                  <Stack.Toolbar.Icon src={{ uri: 'icon' }} />
+                </Stack.Toolbar.Button>
+              </Stack.Toolbar>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screen.queryByTestId('Box')).toBeNull();
+    });
+  });
+
+  describe('menu badge support in left/right placement', () => {
+    it.each(['left', 'right'] as const)(
+      'renders a badge Box next to the menu Box when menu has a Badge child in %s placement',
+      async (placement) => {
+        await renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement={placement}>
+                  <Stack.Toolbar.Menu icon={{ uri: 'menu-icon' }}>
+                    <Stack.Toolbar.Badge>3</Stack.Toolbar.Badge>
+                    <Stack.Toolbar.MenuAction onPress={() => {}}>Action 1</Stack.Toolbar.MenuAction>
+                  </Stack.Toolbar.Menu>
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <View testID="index" />,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        // One Box holds the menu trigger and popup. The other Box holds the badge.
+        expect(screen.getAllByTestId('Box')).toHaveLength(2);
+        const badge = screen.getByTestId('Badge');
+        expect(badge).toBeDefined();
+        expect(within(badge).getByTestId('ComposeText')).toBeDefined();
+        expect(within(badge).getByTestId('ComposeText').props.children).toBe('3');
+      }
+    );
+
+    it('renders dot badge when menu Badge has no children', async () => {
+      await renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Toolbar placement="right">
+                <Stack.Toolbar.Menu icon={{ uri: 'menu-icon' }}>
+                  <Stack.Toolbar.Badge />
+                  <Stack.Toolbar.MenuAction onPress={() => {}}>Action 1</Stack.Toolbar.MenuAction>
+                </Stack.Toolbar.Menu>
+              </Stack.Toolbar>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      const badge = screen.getByTestId('Badge');
+      expect(badge).toBeDefined();
+      expect(within(badge).queryByTestId('ComposeText')).toBeNull();
+    });
+
+    it('folds the badge value into the icon contentDescription for TalkBack', async () => {
+      await renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Toolbar placement="right">
+                <Stack.Toolbar.Menu icon={{ uri: 'menu-icon' }} accessibilityLabel="Notifications">
+                  <Stack.Toolbar.Badge>5</Stack.Toolbar.Badge>
+                  <Stack.Toolbar.MenuAction onPress={() => {}}>Action 1</Stack.Toolbar.MenuAction>
+                </Stack.Toolbar.Menu>
+              </Stack.Toolbar>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
+      expect(icon.props.contentDescription).toBe('Notifications, 5');
+    });
+
+    it('does not render a badge Box when menu has no Badge child', async () => {
+      await renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Toolbar placement="right">
+                <Stack.Toolbar.Menu icon={{ uri: 'menu-icon' }}>
+                  <Stack.Toolbar.MenuAction onPress={() => {}}>Action 1</Stack.Toolbar.MenuAction>
+                </Stack.Toolbar.Menu>
+              </Stack.Toolbar>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      // Only the Box that holds the menu trigger and popup.
+      expect(screen.getAllByTestId('Box')).toHaveLength(1);
+    });
+  });
 });

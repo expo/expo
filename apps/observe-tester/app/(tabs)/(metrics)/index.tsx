@@ -1,5 +1,5 @@
-import AppMetrics from 'expo-app-metrics';
 import { Observe, useObserve } from 'expo-observe';
+import { AppMetrics } from 'expo-observe/debug';
 import { checkForUpdateAsync, fetchUpdateAsync, reloadAsync, useUpdates } from 'expo-updates';
 import { Platform, ScrollView, StyleSheet, Text } from 'react-native';
 
@@ -14,6 +14,13 @@ export default function Index() {
   const { markInteractive } = useObserve();
 
   async function handleMarkInteractive() {
+    // Fire a network request first so it lands inside the launch→TTI window and shows up in the
+    // TTI metric's expo.network.requests.* params. Failures are swallowed — this is exercise code.
+    try {
+      await fetch('https://expo.dev');
+    } catch {
+      // ignore
+    }
     await markInteractive();
   }
 

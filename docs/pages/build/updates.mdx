@@ -1,11 +1,11 @@
 ---
-title: Using EAS Update
-description: Learn how to use EAS Update with EAS Build.
+title: Using Expo Update
+description: Learn how to use Expo Update with Expo Build.
 ---
 
-EAS Build includes some special benefits for [`expo-updates`](/versions/latest/sdk/updates/) library. In particular, you can configure the [`channel`](/eas-update/how-it-works/#distributing-builds) property in **eas.json** and EAS Build will take care of updating it in your native project at build time.
+Expo Build includes some special benefits for [`expo-updates`](/versions/latest/sdk/updates/) library. In particular, you can configure the [`channel`](/eas-update/how-it-works/#distributing-builds) property in **eas.json** and Expo Build will take care of updating it in your native project at build time.
 
-This document covers concerns specific to using `expo-updates` library with EAS Build. For more general information about configuring the library with EAS Update, see [Getting started with EAS Update ](/eas-update/getting-started/).
+This document covers concerns specific to using the `expo-updates` library with Expo Build. For more general information about configuring the library with Expo Update, see [Getting started with Expo Update](/eas-update/getting-started/).
 
 ## Setting the channel for a build profile
 
@@ -31,7 +31,7 @@ The following example demonstrates how you might use the `"production"` channel 
 
 Your native runtime may change on each build, depending on whether you modify the code in a way that changes the API contract with JavaScript. If you publish a JavaScript bundle to a binary with an incompatible native runtime (for example, a function that the JavaScript bundle expects to exist does not exist) then your app may not work as expected, or it may crash.
 
-We recommend using a different [runtime version](/eas-update/runtime-versions/) for each binary version of your app. Any time you change the native runtime (in managed apps, this happens when you add or remove a native library, or modify **app.json**), you should increment the runtime version.
+We recommend using a different [runtime version](/eas-update/runtime-versions/) for each binary version of your app. Any time you change the native runtime (in projects that use [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/), this happens when you add or remove a native library, or modify **app.json**), you should increment the runtime version.
 
 ## Previewing updates in development builds
 
@@ -39,4 +39,4 @@ Updates published with the `runtimeVersion` field can't be loaded in Expo Go. In
 
 ## Environment variables and `eas update`
 
-Environment variables set on the `env` field in build profiles are not available when you run `eas update`. Learn more about using [environment variables with EAS Update](/eas/environment-variables/usage/#using-environment-variables-with-eas-update).
+Environment variables set on the `env` field in build profiles are not available when you run `eas update`. Learn more about using [environment variables with Expo Update](/eas/environment-variables/usage/#using-environment-variables-with-expo-update).

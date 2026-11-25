@@ -1,9 +1,9 @@
 import * as PackageManager from '@expo/package-manager';
 import { execSync } from 'child_process';
 
-import { CLI_NAME } from './cmd';
+import { PACKAGE_NAME } from './utils/update-check';
 
-export type PackageManagerName = 'npm' | 'pnpm' | 'yarn' | 'bun';
+export type PackageManagerName = 'npm' | 'pnpm' | 'yarn' | 'bun' | 'nub';
 
 const debug = require('debug')('expo:init:resolvePackageManager') as typeof console.log;
 
@@ -18,6 +18,8 @@ export function resolvePackageManager(): PackageManagerName {
     return 'pnpm';
   } else if (userAgent?.startsWith('bun')) {
     return 'bun';
+  } else if (userAgent?.startsWith('nub')) {
+    return 'nub';
   } else if (userAgent?.startsWith('npm')) {
     return 'npm';
   }
@@ -29,6 +31,8 @@ export function resolvePackageManager(): PackageManagerName {
     return 'pnpm';
   } else if (isPackageManagerAvailable('bun')) {
     return 'bun';
+  } else if (isPackageManagerAvailable('nub')) {
+    return 'nub';
   }
 
   return 'npm';
@@ -50,6 +54,8 @@ export function formatRunCommand(packageManager: PackageManagerName, cmd: string
       return `yarn ${cmd}`;
     case 'bun':
       return `bun run ${cmd}`;
+    case 'nub':
+      return `nub run ${cmd}`;
     case 'npm':
     default:
       return `npm run ${cmd}`;
@@ -60,13 +66,15 @@ export function formatSelfCommand() {
   const packageManager = resolvePackageManager();
   switch (packageManager) {
     case 'pnpm':
-      return `pnpx ${CLI_NAME}`;
+      return `pnpx ${PACKAGE_NAME}`;
     case 'bun':
-      return `bunx ${CLI_NAME}`;
+      return `bunx ${PACKAGE_NAME}`;
+    case 'nub':
+      return `nubx ${PACKAGE_NAME}`;
     case 'yarn':
     case 'npm':
     default:
-      return `npx ${CLI_NAME}`;
+      return `npx ${PACKAGE_NAME}`;
   }
 }
 
@@ -81,6 +89,8 @@ function createPackageManager(
       return new PackageManager.PnpmPackageManager(options);
     case 'bun':
       return new PackageManager.BunPackageManager(options);
+    case 'nub':
+      return new PackageManager.NubPackageManager(options);
     case 'npm':
     default:
       return new PackageManager.NpmPackageManager(options);

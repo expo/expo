@@ -3,9 +3,9 @@ import type { Choice, Options, PromptObject } from 'prompts';
 import prompts from 'prompts';
 
 import { AbortCommandError, CommandError } from './errors';
+import { event } from './events';
 import { isInteractive } from './interactive';
-
-const debug = require('debug')('expo:utils:prompts') as typeof console.log;
+import { withProgramStatus } from './programStatus';
 
 export type Question<V extends string = string> = PromptObject<V> & {
   optionsPerPage?: number;
@@ -15,7 +15,10 @@ export interface ExpoChoice<T> extends Choice {
   value: T;
 }
 
-type PromptOptions = { nonInteractiveHelp?: string } & Options;
+type PromptOptions = {
+  nonInteractiveHelp?: string;
+  programStatusKind?: 'permission' | 'question' | 'auth';
+} & Options;
 
 export type NamelessQuestion = Omit<Question<'value'>, 'name' | 'type'>;
 
@@ -28,7 +31,7 @@ const listeners: InteractionCallback[] = [];
 
 export default async function prompt(
   questions: Question | Question[],
-  { nonInteractiveHelp, ...options }: PromptOptions = {}
+  { nonInteractiveHelp, programStatusKind, ...options }: PromptOptions = {}
 ) {
   questions = Array.isArray(questions) ? questions : [questions];
   if (!isInteractive() && questions.length) {
@@ -47,16 +50,24 @@ export default async function prompt(
     throw new CommandError('NON_INTERACTIVE', message);
   }
 
+  const kind =
+    programStatusKind ??
+    (questions.some((question) => question.type === 'password')
+      ? 'auth'
+      : questions[0]?.type === 'confirm'
+        ? 'permission'
+        : 'question');
+  const msg = typeof questions[0]?.message === 'string' ? questions[0].message : undefined;
   pauseInteractions();
   try {
-    const results = await prompts(questions, {
-      onCancel() {
-        throw new AbortCommandError();
-      },
-      ...options,
-    });
-
-    return results;
+    return await withProgramStatus({ state: 'blocked', kind, msg }, () =>
+      prompts(questions, {
+        onCancel() {
+          throw new AbortCommandError();
+        },
+        ...options,
+      })
+    );
   } finally {
     resumeInteractions();
   }
@@ -120,15 +131,13 @@ export function removeInteractionListener(callback: InteractionCallback) {
 
 /** Notify all listeners that keypress observations must pause. */
 export function pauseInteractions(options: Omit<InteractionOptions, 'pause'> = {}) {
-  debug('Interaction observers paused');
   for (const listener of listeners) {
     listener({ pause: true, ...options });
   }
 }
 
-/** Notify all listeners that keypress observations can start.. */
+/** Notify all listeners that keypress observations can start. */
 export function resumeInteractions(options: Omit<InteractionOptions, 'pause'> = {}) {
-  debug('Interaction observers resumed');
   for (const listener of listeners) {
     listener({ pause: false, ...options });
   }
@@ -144,7 +153,7 @@ export function createSelectionFilter(): (input: any, choices: Choice[]) => Prom
       const regex = new RegExp(escapeRegex(input), 'i');
       return choices.filter((choice: any) => regex.test(choice.title));
     } catch (error: any) {
-      debug('Error filtering choices', error);
+      event('prompt_filter_error', { error: event.error(error as Error) });
       return [];
     }
   };

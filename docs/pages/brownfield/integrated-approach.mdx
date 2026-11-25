@@ -43,7 +43,14 @@ Learn more from the [Set up environment guide](/get-started/set-up-your-environm
 
 First, create an Expo project inside your existing native project's root directory.
 
-<Terminal cmd={['$ npx create-expo-app@latest my-project --template default@sdk-56']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest my-project'],
+    yarn: ['$ yarn create expo-app my-project'],
+    pnpm: ['$ pnpm create expo-app my-project'],
+    bun: ['$ bun create expo my-project'],
+  }}
+/>
 
 This command creates a new directory named **my-project** that contains your new Expo project. While you can name the project anything, this guide uses **my-project** for consistency. The new project includes an example TypeScript application to help you get started.
 
@@ -71,7 +78,7 @@ A standard React Native project places native code in **android** and **ios** di
 
 ### Set up a monorepo
 
-Monorepos, or "monolithic repositories", are single repositories containing multiple apps or packages. [Learn more](/guides/monorepos/).
+Monorepos, or "monolithic repositories", are single repositories containing multiple apps or packages. See [how to work with monorepos](/guides/monorepos/).
 
 Setting up a monorepo will ensure that Android and iOS scripts will be able to invoke commands from Node libraries even with a custom folder structure. To set up a Yarn monorepo, create a **package.json** file at the root of your project and add the following content:
 
@@ -284,7 +291,7 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
 
 require 'json'
 
-platform :ios, '15.1'
+platform :ios, '16.4'
 install! 'cocoapods',
   :deterministic_uuids => false
 
@@ -354,7 +361,7 @@ engine](https://github.com/facebook/hermes/blob/main/README.md) that is shipped 
 
   <ContentSpotlight
     alt="Xcode Build Settings"
-    src="/static/images/brownfield/user-script-sandboxing.png"
+    src="/static/images/brownfield/user-script-sandboxing.webp"
   />
 </Step>
 
@@ -362,7 +369,7 @@ engine](https://github.com/facebook/hermes/blob/main/README.md) that is shipped 
 
 Now switch to the **Build Phases** tab and add a new `Run Script Phase` before the `[CP] Embed Pods Frameworks` phase. This script will bundle your JavaScript code and assets into the iOS application.
 
-<ContentSpotlight alt="Xcode Build Phases" src="/static/images/brownfield/run-script-phase.png" />
+<ContentSpotlight alt="Xcode build phases" src="/static/images/brownfield/run-script-phase.webp" />
 
 ```sh Build React Native code and image
 if [[ -f "$PODS_ROOT/../.xcode.env" ]]; then
@@ -431,7 +438,7 @@ import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
 
-class ReactNativeViewController: UIViewController {
+class ReactViewController: UIViewController {
   var reactNativeFactory: RCTReactNativeFactory?
   var reactNativeFactoryDelegate: RCTReactNativeFactoryDelegate?
 
@@ -440,7 +447,7 @@ class ReactNativeViewController: UIViewController {
     reactNativeFactoryDelegate = ReactNativeDelegate()
     reactNativeFactoryDelegate!.dependencyProvider = RCTAppDependencyProvider()
     reactNativeFactory = RCTReactNativeFactory(delegate: reactNativeFactoryDelegate!)
-    view = reactNativeFactory!.rootViewFactory.view(withModuleName: "HelloWorld")
+    view = reactNativeFactory!.rootViewFactory.view(withModuleName: "main")
 
   }
 }
@@ -507,6 +514,13 @@ class ViewController: UIViewController {
 
 You have completed all the basic steps to integrate React Native with your application. Now run the following command in the React Native directory to start the [Metro bundler](https://metrobundler.dev/)
 
-<Terminal cmd={['$ yarn start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm run start'],
+    yarn: ['$ yarn run start'],
+    pnpm: ['$ pnpm run start'],
+    bun: ['$ bun run start'],
+  }}
+/>
 
 Metro builds your TypeScript application code into a bundle, serves it through its HTTP server, and shares the bundle from `localhost` on your developer environment to a simulator or device, allowing for [hot reloading](https://reactnative.dev/blog/2016/03/24/introducing-hot-reloading). Now you can build and run your app as normal. Once you reach your React-powered Activity inside the app, it should load the JavaScript code from the development server.

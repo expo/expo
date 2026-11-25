@@ -5,10 +5,10 @@ import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.descriptors.TypeDescriptor
 import expo.modules.kotlin.types.descriptors.toRawTypeDescriptor
 import expo.modules.kotlin.types.descriptors.toTypeDescriptor
-import io.github.lukmccall.pika.PIntrospectionData
-import io.github.lukmccall.pika.PTypeDescriptor
-import io.github.lukmccall.pika.introspectionOf
-import io.github.lukmccall.pika.isIntrospectable
+import io.github.expo.pika.PIntrospectionData
+import io.github.expo.pika.PTypeDescriptor
+import io.github.expo.pika.introspectionOf
+import io.github.expo.pika.isIntrospectable
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 

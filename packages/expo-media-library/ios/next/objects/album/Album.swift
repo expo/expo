@@ -4,10 +4,12 @@ import UniformTypeIdentifiers
 
 class Album: SharedObject {
   let id: String
+  private let assetMapper: AssetMapper
   private(set) var collection: PHAssetCollection?
 
-  init(id: String) {
+  init(id: String, assetMapper: AssetMapper) {
     self.id = id
+    self.assetMapper = assetMapper
   }
 
   func getCollection() async throws -> PHAssetCollection {
@@ -18,7 +20,7 @@ class Album: SharedObject {
   func getAssets() async throws -> [Asset] {
     let collection = try await requirePHAssetCollection()
     let phAssets = AssetRepository.shared.get(by: collection)
-    return phAssets.map { Asset(localIdentifier: $0.localIdentifier) }
+    return phAssets.map { Asset(localIdentifier: $0.localIdentifier, assetMapper: assetMapper) }
   }
 
   func title() async throws -> String {
@@ -27,6 +29,16 @@ class Album: SharedObject {
       throw FailedToGetPropertyException("Album title not found")
     }
     return title
+  }
+
+  func getType() async throws -> AlbumType {
+    let collection = try await requirePHAssetCollection()
+    return try AlbumType.from(collection.assetCollectionType)
+  }
+
+  func getAssetCount() async throws -> Int {
+    let collection = try await requirePHAssetCollection()
+    return PHAsset.fetchAssets(in: collection, options: nil).count
   }
 
   func add(_ assets: [Asset]) async throws {
@@ -89,8 +101,23 @@ class Album: SharedObject {
     }
   }
 
-  static func getAll() async throws -> [Album] {
-    AssetCollectionRepository.shared.getAll()
-      .map { Album(id: $0.localIdentifier) }
+  static func getAll(assetMapper: AssetMapper) async throws -> [Album] {
+    AssetCollectionRepository.shared.getUserAlbums()
+      .map { Album(id: $0.localIdentifier, assetMapper: assetMapper) }
+  }
+
+  static func getSmartAlbums(assetMapper: AssetMapper) async throws -> [Album] {
+    AssetCollectionRepository.shared.get(type: .smartAlbum)
+      .map { Album(id: $0.localIdentifier, assetMapper: assetMapper) }
+  }
+
+  static func getAlbumsMetadata() async throws -> [AlbumMetadata] {
+    AssetCollectionRepository.shared.getUserAlbums().map { collection in
+      AlbumMetadata(
+        id: collection.localIdentifier,
+        title: collection.localizedTitle ?? "",
+        type: try? AlbumType.from(collection.assetCollectionType)
+      )
+    }
   }
 }

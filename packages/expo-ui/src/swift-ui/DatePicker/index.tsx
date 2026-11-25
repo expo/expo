@@ -11,7 +11,7 @@ export type DateRange = {
   end?: Date;
 };
 
-export type DatePickerProps = {
+export interface DatePickerProps extends CommonViewModifierProps {
   /**
    * A title/label displayed on the picker.
    */
@@ -37,7 +37,7 @@ export type DatePickerProps = {
    * Children to use as a custom label.
    */
   children?: React.ReactNode;
-} & CommonViewModifierProps;
+}
 
 type NativeDatePickerProps = Omit<DatePickerProps, 'selection' | 'range' | 'onDateChange'> & {
   selection?: string;

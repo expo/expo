@@ -1,23 +1,29 @@
 package expo.modules.plugin
 
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.variant.AndroidComponentsExtension
-import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.internal.tasks.factory.dependsOn
 import expo.modules.plugin.configuration.ExpoModule
 import expo.modules.plugin.text.Colors
 import expo.modules.plugin.text.withColor
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.Directory
-import org.gradle.api.file.RegularFile
+import org.gradle.api.plugins.UnknownPluginException
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
-import java.nio.file.Paths
 
 const val generatedPackageListNamespace = "expo.modules"
 const val generatedPackageListFilename = "ExpoModulesPackageList.kt"
 const val generatedFilesSrcDir = "generated/expo/src/main/java"
+
+/**
+ * The Gradle plugin that registers the Expo Modules v2 Kotlin compiler plugin. It expands the
+ * `discoveredExpoModules()` call in the `expo` package's `ExpoModulesV2ModuleList`.
+ */
+const val expoModulesV2PluginId = "io.github.expo.modules.v2"
 
 open class ExpoAutolinkingPlugin : Plugin<Project> {
   override fun apply(project: Project) {
@@ -44,31 +50,6 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
       project.logger.quiet("  - ${subproject.name.withColor(Colors.GREEN)} (${subproject.version})")
     }
 
-   project.gradle.projectsEvaluated {
-    val srcDir = project.file("src/main/java/inline/modules/").absolutePath
-    val buildDir = project.file("build/inline/modules/").absolutePath
-    val nodeWorkingDir = project.rootProject.projectDir
-    val watchedDirectoriesSerialized = project.findProperty("expo.inlineModules.watchedDirectories") ?: emptyList<String>()
-
-    project.providers.exec { spec ->
-        spec.workingDir(nodeWorkingDir)
-        spec.commandLine(
-            "node",
-            "--no-warnings",
-            "--eval",
-            "require('expo/bin/autolinking')",
-            "expo-modules-autolinking",
-            "mirror-kotlin-inline-modules",
-            "--kotlin-files-mirror-directory",
-            srcDir,
-            "--inline-modules-list-directory",
-            buildDir,
-            "--watched-directories-serialized",
-            watchedDirectoriesSerialized
-        )
-    }.standardOutput.asText.get()
-}
-
     prebuiltProjects.forEach { prebuiltProject ->
       val publication = requireNotNull(prebuiltProject.publication)
       project.dependencies.add("api", "${publication.groupId}:${publication.artifactId}:${publication.version}")
@@ -78,21 +59,49 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
 
     project.logger.quiet("")
 
-    // Creates a task that generates a list of expo modules.
-    val generatePackagesList = createGeneratePackagesListTask(project, gradleExtension.config.modules, gradleExtension.hash)
+    // The `expo` package's ExpoModulesV2ModuleList is filled in by the compiler, so this project
+    // has to compile with the Expo Modules v2 compiler plugin.
+    applyExpoModulesV2CompilerPlugin(project)
 
-    // Ensures that the task is executed before the build.
+    // Creates the tasks that generate the expo module package list and the inline modules list.
+    val generatePackagesList = createGeneratePackagesListTask(project, gradleExtension.config.modules, gradleExtension.hash)
+    val generateInlineModules = createGenerateInlineModulesTask(project)
+
+    // Ensures the generators run before the build.
     project.tasks
       .named("preBuild", Task::class.java)
-      .dependsOn(generatePackagesList)
+      .configure { it.dependsOn(generatePackagesList, generateInlineModules) }
 
-    // Adds the generated file to the source set.
-    project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
-      ext
-        .sourceSets
-        .getByName("main")
-        .java
-        .srcDirs(getPackageListDir(project), getInlineModulesDir(project))
+    // Registers the generated sources through the Variant Sources API. AGP 9 only compiles .kt
+    // files from the variant `kotlin` sources and disallows Provider instances in the legacy
+    // SourceSet API.
+    val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
+    androidComponents.onVariants { variant ->
+      @Suppress("UnstableApiUsage")
+      val kotlinSource = requireNotNull(variant.sources.kotlin) { "Can't access kotlin source sets" }
+
+      with(kotlinSource) {
+        addGeneratedSourceDirectory(generatePackagesList) { it.outputDirectory }
+        addGeneratedSourceDirectory(generateInlineModules) { it.outputDirectory }
+      }
+    }
+  }
+
+  private fun applyExpoModulesV2CompilerPlugin(project: Project) {
+    if (project.plugins.hasPlugin(expoModulesV2PluginId)) {
+      return
+    }
+
+    try {
+      project.pluginManager.apply(expoModulesV2PluginId)
+    } catch (e: UnknownPluginException) {
+      throw GradleException(
+        "Expo autolinking cannot apply the `$expoModulesV2PluginId` Gradle plugin to `${project.path}`, " +
+          "so `ExpoModulesV2ModuleList` would not compile. The plugin ships with " +
+          "`expo-module-gradle-plugin`; apply that plugin in `${project.path}` before `expo-autolinking`, " +
+          "or check that `expo-modules-core` and `expo-modules-autolinking` come from the same Expo SDK version.",
+        e
+      )
     }
   }
 
@@ -101,24 +110,27 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
   }
 
   fun getInlineModulesDir(project: Project): Provider<Directory> {
-    return project.layout.buildDirectory.dir("inline/modules");
-  }
-
-  fun getPackageListFile(project: Project): Provider<RegularFile> {
-    val packageListRelativePath = Paths.get(
-      generatedFilesSrcDir,
-      generatedPackageListNamespace.replace('.', '/'),
-      generatedPackageListFilename
-    ).toString()
-    return project.layout.buildDirectory.file(packageListRelativePath)
+    return project.layout.buildDirectory.dir("inline/modules")
   }
 
   fun createGeneratePackagesListTask(project: Project, modules: List<ExpoModule>, hash: String): TaskProvider<GeneratePackagesListTask> {
     return project.tasks.register("generatePackagesList", GeneratePackagesListTask::class.java) {
       it.hash.set(hash)
       it.namespace.set(generatedPackageListNamespace)
-      it.outputFile.set(getPackageListFile(project))
+      it.outputDirectory.set(getPackageListDir(project))
       it.modules = modules
+    }
+  }
+
+  fun createGenerateInlineModulesTask(project: Project): TaskProvider<GenerateInlineModulesTask> {
+    return project.tasks.register("generateInlineModules", GenerateInlineModulesTask::class.java) {
+      it.nodeWorkingDir.set(project.rootProject.layout.projectDirectory)
+      it.mirrorDirectory.set(project.layout.projectDirectory.dir("src/main/java/inline/modules"))
+      it.outputDirectory.set(getInlineModulesDir(project))
+      it.watchedDirectoriesSerialized.set(
+        (project.findProperty("expo.inlineModules.watchedDirectories")
+          ?: emptyList<String>()).toString()
+      )
     }
   }
 
@@ -130,10 +142,10 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     project: Project,
     appProject: Project
   ) {
-    val appAndroid = appProject.extensions.findByName("android") as? BaseExtension ?: run {
+    val appAndroid = appProject.extensions.findByName("android") as? ApplicationExtension ?: run {
       return
     }
-    val consumerAndroid = project.extensions.findByName("android") as? BaseExtension ?: run {
+    val consumerAndroid = project.extensions.findByName("android") as? LibraryExtension ?: run {
       return
     }
 
@@ -143,15 +155,15 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
 
   private fun syncFlavorDimensions(
     project: Project,
-    consumerAndroid: BaseExtension,
-    appAndroid: BaseExtension
+    consumerAndroid: LibraryExtension,
+    appAndroid: ApplicationExtension
   ): List<String> {
     val appDimensions = appAndroid
-      .flavorDimensionList
+      .flavorDimensions
       .takeIf { it.isNotEmpty() }
       ?: return emptyList()
 
-    val consumerDimensions = (consumerAndroid.flavorDimensionList).toMutableList()
+    val consumerDimensions = (consumerAndroid.flavorDimensions).toMutableList()
     val dimensionsAdded = appDimensions.any { dimension ->
       if (dimension !in consumerDimensions) {
         consumerDimensions.add(dimension)
@@ -162,7 +174,8 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     }
 
     if (dimensionsAdded) {
-      consumerAndroid.flavorDimensions(*consumerDimensions.toTypedArray())
+      consumerAndroid.flavorDimensions.clear()
+      consumerAndroid.flavorDimensions.addAll(consumerDimensions)
       project.logger.quiet("  -> Copied/merged flavorDimensions: ${consumerDimensions.joinToString()}")
     }
 
@@ -171,8 +184,8 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
 
   private fun copyMissingProductFlavors(
     project: Project,
-    consumerAndroid: BaseExtension,
-    appAndroid: BaseExtension,
+    consumerAndroid: LibraryExtension,
+    appAndroid: ApplicationExtension,
     appDimensions: List<String>
   ) {
     val appFlavors = appAndroid.productFlavors

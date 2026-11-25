@@ -5,6 +5,11 @@
     "appDelegateSubscribers": ["AppMetricsAppDelegateSubscriber"]
   },
   "android": {
-    "modules": ["expo.modules.appmetrics.AppMetricsModule"]
+    "modules": ["expo.modules.appmetrics.AppMetricsModule"],
+    "publication": {
+      "groupId": "expo.modules.appmetrics",
+      "artifactId": "expo.modules.appmetrics",
+      "repository": "local-maven-repo"
+    }
   }
 }

@@ -79,6 +79,12 @@ internal final class DestinationAlreadyExistsException: Exception {
   }
 }
 
+internal final class DestinationContainsSourceException: Exception {
+  override var reason: String {
+    "Destination is the source or contains it, overwriting it would delete the source"
+  }
+}
+
 internal final class MissingPermissionException: GenericException<String> {
   override var reason: String {
     "Missing permission for uri: \(param)"
@@ -178,5 +184,47 @@ internal final class WatcherPathNotFoundException: GenericException<String> {
 internal final class WatcherUnsupportedPathException: GenericException<String> {
   override var reason: String {
     "Cannot watch path '\(param)'. Only local file:// paths are supported."
+  }
+}
+
+internal final class FilePreviewInProgressException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "File preview is already in progress"
+  }
+}
+
+internal final class FilePreviewMissingViewControllerException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "No view controller available for presenting file preview"
+  }
+}
+
+internal final class FilePreviewUnsupportedException: GenericException<URL>, @unchecked Sendable {
+  override var reason: String {
+    "The file cannot be previewed: \(param.absoluteString)"
+  }
+}
+
+internal final class FilePreviewFileNotFoundException: GenericException<URL>, @unchecked Sendable {
+  override var reason: String {
+    "File does not exist: \(param.absoluteString)"
+  }
+}
+
+internal final class FilePreviewInvalidInputException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    param
+  }
+}
+
+internal final class FilePreviewPresentationException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Unable to present file preview"
+  }
+}
+
+internal final class BackgroundDownloadNotFinishedException: Exception {
+  override var reason: String {
+    "Background completion can only be acknowledged after the download finishes"
   }
 }

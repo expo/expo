@@ -31,8 +31,9 @@ public:
   using ScheduleTaskCallback = void(^)();
 
   /**
-   Trampoline implemented by the host — casts `nativeScheduler` back to
-   react::RuntimeScheduler* and calls scheduleTask on it. Keeping it as a
+   Trampoline implemented by the host. It resolves `nativeScheduler` (an opaque
+   host-owned handle) to the real react::RuntimeScheduler and calls scheduleTask
+   on it, or drops the task when the scheduler no longer exists. Keeping it as a
    function pointer keeps React types out of this header.
    */
   using ScheduleFn = void (*)(void *nativeScheduler, int priority, ScheduleTaskCallback callback);
@@ -43,21 +44,36 @@ private:
 
   std::atomic<int> refCount{1};
 
-public:
-  /**
-   Constructs a scheduler bound to a host-provided native RuntimeScheduler.
-   `scheduleTask` dispatches through `fn`, which the host implements against
-   the real react::RuntimeScheduler.
-   */
+  std::atomic<bool> runtimeAlive{true};
+
   RuntimeScheduler(void *scheduler, ScheduleFn fn) noexcept
       : nativeScheduler(scheduler), scheduleFn(fn) {}
 
+  RuntimeScheduler() noexcept {}
+
+public:
+  // Swift creates instances through the static `create` functions rather than the constructors.
+  // Annotating the constructors with `SWIFT_RETURNS_RETAINED` silences the Swift 6.4 "cannot infer
+  // ownership" warning, but Swift 6.2 rejects that annotation on a constructor as an error. Static
+  // functions returning a shared reference accept the annotation on every Swift version.
+
   /**
-   Constructs a no-op scheduler. Scheduled tasks run synchronously on the
+   Creates a scheduler bound to a host-provided native RuntimeScheduler.
+   `scheduleTask` dispatches through `fn`, which the host implements against
+   the real react::RuntimeScheduler.
+   */
+  static RuntimeScheduler *create(void *scheduler, ScheduleFn fn) noexcept SWIFT_RETURNS_RETAINED {
+    return new RuntimeScheduler(scheduler, fn);
+  }
+
+  /**
+   Creates a no-op scheduler. Scheduled tasks run synchronously on the
    caller's thread — intended for standalone runtimes (e.g. tests) that have
    no React scheduler.
    */
-  RuntimeScheduler() {}
+  static RuntimeScheduler *create() noexcept SWIFT_RETURNS_RETAINED {
+    return new RuntimeScheduler();
+  }
 
   RuntimeScheduler(const RuntimeScheduler &) = delete;
 
@@ -75,6 +91,22 @@ public:
     } else {
       callback();
     }
+  }
+
+  /**
+   Whether the runtime that owns this scheduler may still be alive. Safe to call from any thread.
+   `false` is final. `true` may already be stale off the JavaScript thread, so a scheduled task must
+   check the runtime again on that thread.
+   */
+  bool isRuntimeAlive() const noexcept {
+    return runtimeAlive.load(std::memory_order_acquire);
+  }
+
+  /**
+   Marks the runtime as gone. Called from the runtime's `deinit`.
+   */
+  void markRuntimeGone() noexcept {
+    runtimeAlive.store(false, std::memory_order_release);
   }
 
   void retain() {

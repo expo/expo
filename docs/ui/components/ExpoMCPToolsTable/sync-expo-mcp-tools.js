@@ -5,11 +5,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { ensureTrailingPeriod } from '../utils/syncUtils.ts';
+import { getExpoMcpAccessToken, EXPO_MCP_URL } from './expo-mcp-oauth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_FILE = path.join(__dirname, 'data/expo-mcp-tools.json');
-
-const EXPO_MCP_URL = 'https://mcp.expo.dev/mcp';
 
 const GITHUB_RAW_BASE =
   'https://raw.githubusercontent.com/expo/expo-mcp/main/packages/expo-mcp/src/mcp';
@@ -33,7 +32,7 @@ const LOCAL_REQUIREMENTS = {
  * Keyed by tool name.
  */
 const SERVER_REQUIREMENTS = {
-  search_documentation: 'requires an EAS paid plan',
+  search_documentation: 'requires an Expo Services paid plan',
 };
 
 /**
@@ -60,6 +59,20 @@ const SERVER_EXAMPLE_PROMPTS = {
   workflow_run: 'run the build-and-deploy workflow',
   workflow_cancel: 'cancel the running workflow',
   workflow_validate: 'validate my workflow file',
+  observe_versions: 'list the app versions Observe has seen in the last 30 days',
+  observe_metrics_summary: 'did startup get slower in the latest iOS release',
+  observe_metrics: 'find the slowest cold launches this week',
+  observe_routes: 'which routes have the worst time to interactive on Android',
+  observe_event_names: 'which custom events is the app emitting',
+  observe_events: 'show the latest onboarding.completed events',
+  observe_session: 'show the timeline for session <session-id>',
+  observe_errors: 'list the most common errors and crashes from the last 7 days',
+  observe_error_occurrences: 'show the stack trace of the latest occurrence of error <fingerprint>',
+  observe_error_breakdown: 'which app versions and devices have error <fingerprint>',
+  observe_span_names: 'which kinds of network requests does the app record',
+  observe_spans: 'find network requests that took longer than 2 seconds today',
+  observe_trace: 'show every span of trace <trace-id>',
+  sentry_issue: 'show the stack trace and tags of Sentry issue <issue-id>',
 };
 
 /**
@@ -94,17 +107,13 @@ async function fetchText(url) {
 
 /**
  * Fetches server tools from the Expo MCP server using the MCP client SDK.
- * Requires EXPO_TOKEN environment variable.
+ *
+ * mcp.expo.dev is an OAuth 2.0 protected resource (it no longer accepts Expo
+ * personal access tokens), so this runs the authorization-code + PKCE flow via
+ * getExpoMcpAccessToken() and sends the resulting access token as a bearer.
  */
 async function fetchServerTools() {
-  const token = process.env.EXPO_TOKEN;
-  if (!token) {
-    throw new Error(
-      'EXPO_TOKEN environment variable is required to fetch server tools.\n' +
-        'Create a personal access token at https://expo.dev/settings/access-tokens\n' +
-        'and add it to docs/.env as EXPO_TOKEN=<your-token>'
-    );
-  }
+  const token = await getExpoMcpAccessToken();
 
   const client = new Client({ name: 'expo-docs-sync', version: '1.0.0' });
 

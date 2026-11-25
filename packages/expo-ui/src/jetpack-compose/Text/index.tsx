@@ -1,8 +1,10 @@
 import { requireNativeView } from 'expo';
 import * as React from 'react';
+import type { ColorValue } from 'react-native';
 
 import { type ModifierConfig } from '../../types';
 import { getTextFromChildren } from '../../utils';
+import { flattenFragments } from '../../utils/flattenFragments';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
@@ -73,7 +75,7 @@ export type TextShadow = {
   /**
    * The color of the shadow.
    */
-  color?: string;
+  color?: ColorValue;
   /**
    * The horizontal offset of the shadow in dp.
    */
@@ -147,7 +149,7 @@ export type TextSpanStyleBase = {
   /**
    * The background color behind the text.
    */
-  background?: string;
+  background?: ColorValue;
 
   /**
    * The shadow applied to the text.
@@ -190,11 +192,11 @@ export type TextStyle = TextSpanStyleBase & {
  */
 type TextSpanRecord = TextSpanStyleBase & {
   text?: string;
-  color?: string;
+  color?: ColorValue;
   children?: TextSpanRecord[];
 };
 
-export type TextProps = {
+export interface TextProps {
   /**
    * The text content to display. Can be a string, number, or nested `Text` components
    * for inline styled spans.
@@ -204,7 +206,7 @@ export type TextProps = {
   /**
    * The color of the text.
    */
-  color?: string;
+  color?: ColorValue;
 
   /**
    * How visual overflow should be handled.
@@ -238,7 +240,7 @@ export type TextProps = {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
-};
+}
 
 type NativeTextProps = Omit<TextProps, 'children' | 'style'> &
   TextSpanStyleBase & {
@@ -259,7 +261,7 @@ const TextNativeView: React.ComponentType<NativeTextProps> = requireNativeView(
 function collectSpans(children: React.ReactNode): TextSpanRecord[] | null {
   if (children === undefined || children === null) return null;
 
-  const childArray = React.Children.toArray(children);
+  const childArray = flattenFragments(children);
   if (childArray.length === 0) return null;
 
   const hasNestedText = childArray.some(
@@ -293,14 +295,14 @@ function collectSpans(children: React.ReactNode): TextSpanRecord[] | null {
       if (nestedSpans) {
         span.children = nestedSpans;
       } else {
-        span.text = getTextFromChildren(childProps.children) ?? '';
+        span.text = getTextFromChildren(flattenFragments(childProps.children)) ?? '';
       }
 
       spans.push(span);
     } else if (__DEV__ && React.isValidElement(child)) {
       console.warn(
         'Text: Unsupported child element of type "%s" inside <Text>. Only <Text>, string, and number children are supported.',
-        typeof child.type === 'function' ? child.type.name || 'Unknown' : child.type
+        typeof child.type === 'function' ? child.type.name || 'Unknown' : String(child.type)
       );
     }
   }
@@ -318,7 +320,7 @@ function transformTextProps(props: TextProps): NativeTextProps {
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     // When spans are present, use them instead of flat text
-    ...(spans ? { spans } : { text: getTextFromChildren(children) ?? '' }),
+    ...(spans ? { spans } : { text: getTextFromChildren(flattenFragments(children)) ?? '' }),
     // Extract typography from style (used as base style)
     typography: style?.typography,
     // Flatten other style properties (these override the typography style)

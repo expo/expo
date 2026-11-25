@@ -17,4 +17,10 @@
   return touchHandler;
 }
 
++ (void)detachTouchHandler:(UIGestureRecognizer *)touchHandler fromView:(UIView *)view {
+  if ([touchHandler isKindOfClass:[RCTSurfaceTouchHandler class]]) {
+    [(RCTSurfaceTouchHandler *)touchHandler detachFromView:view];
+  }
+}
+
 @end

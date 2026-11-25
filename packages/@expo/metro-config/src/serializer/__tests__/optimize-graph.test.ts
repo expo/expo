@@ -9,7 +9,7 @@ jest.mock('../exportHermes', () => {
   };
 });
 
-jest.mock('../findUpPackageJsonPath', () => ({
+jest.mock('../../utils/findUpPackageJsonPath', () => ({
   findUpPackageJsonPath: jest.fn(() => null),
 }));
 
@@ -270,16 +270,16 @@ describe('cjs', () => {
       },
     ]);
     expect(artifacts[0].source).toMatch('subtract');
-    expect(artifacts[0].source).toMatch('_$$_REQUIRE(_dependencyMap[0]);');
+    expect(artifacts[0].source).toMatch('require(_dependencyMap[0]);');
 
     expect(artifacts[0].source).toMatchInlineSnapshot(`
-      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         const {
           add
-        } = _$$_REQUIRE(_dependencyMap[0]);
+        } = require(_dependencyMap[0]);
         console.log('keep', add(1, 2));
       },"/app/index.js",["/app/math.js"]);
-      __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
         Object.defineProperty(exports, '__esModule', {
@@ -294,7 +294,7 @@ describe('cjs', () => {
           return a - b;
         }
       },"/app/math.js",[]);
-      TEST_RUN_MODULE("/app/index.js");"
+      __r("/app/index.js");"
     `);
   });
 });
@@ -369,39 +369,39 @@ it(`recursively expands export all statements with nested statements`, async () 
   expect(artifact.source).toMatch('z3');
   expect(artifact.source).toMatch('z2');
   expect(artifact.source).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
-      console.log(_$$_REQUIRE(_dependencyMap[0]).z1, _$$_REQUIRE(_dependencyMap[0]).DDD);
+      console.log(require(_dependencyMap[0]).z1, require(_dependencyMap[0]).DDD);
     },"/app/index.js",["/app/x0.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      Object.keys(_$$_REQUIRE(_dependencyMap[0])).forEach(function (k) {
+      Object.keys(require(_dependencyMap[0])).forEach(function (k) {
         if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
           Object.defineProperty(exports, k, {
             enumerable: true,
             get: function () {
-              return _$$_REQUIRE(_dependencyMap[0])[k];
+              return require(_dependencyMap[0])[k];
             }
           });
         }
       });
-      Object.keys(_$$_REQUIRE(_dependencyMap[1])).forEach(function (k) {
+      Object.keys(require(_dependencyMap[1])).forEach(function (k) {
         if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
           Object.defineProperty(exports, k, {
             enumerable: true,
             get: function () {
-              return _$$_REQUIRE(_dependencyMap[1])[k];
+              return require(_dependencyMap[1])[k];
             }
           });
         }
       });
     },"/app/x0.js",["/app/x1.js","/app/x2.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -413,19 +413,19 @@ it(`recursively expands export all statements with nested statements`, async () 
           return z1;
         }
       });
-      Object.keys(_$$_REQUIRE(_dependencyMap[0])).forEach(function (k) {
+      Object.keys(require(_dependencyMap[0])).forEach(function (k) {
         if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
           Object.defineProperty(exports, k, {
             enumerable: true,
             get: function () {
-              return _$$_REQUIRE(_dependencyMap[0])[k];
+              return require(_dependencyMap[0])[k];
             }
           });
         }
       });
       const z1 = 0;
     },"/app/x1.js",["/app/x2.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -446,6 +446,6 @@ it(`recursively expands export all statements with nested statements`, async () 
       const z2 = 0;
       const z3 = 0;
     },"/app/x2.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });

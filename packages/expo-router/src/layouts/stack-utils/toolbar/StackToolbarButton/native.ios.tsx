@@ -2,8 +2,8 @@
 import { useId } from 'react';
 import { StyleSheet } from 'react-native';
 
-import type { NativeToolbarButtonProps } from './types';
 import { RouterToolbarItem } from '../../../../toolbar/native';
+import type { NativeToolbarButtonProps } from './types';
 
 /**
  * Native toolbar button component for bottom toolbar.
@@ -33,6 +33,7 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
       possibleTitles={props.possibleTitles}
       selected={props.selected}
       sharesBackground={!props.separateBackground}
+      axisBehavior={props.axisBehavior}
       systemImageName={props.icon}
       xcassetName={props.xcassetName}
       title={props.label}

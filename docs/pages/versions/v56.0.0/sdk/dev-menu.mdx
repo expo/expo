@@ -64,9 +64,16 @@ If you are using [development builds](/develop/development-builds/introduction/)
 
 - A configurable launcher UI for switching between development servers
 - Improved debugging tools
-- Support for loading updates from [EAS Update](/eas-update/introduction/)
+- Support for loading updates from [Expo Update](/eas-update/introduction/)
 
-<Terminal cmd={['$ npx expo install expo-dev-client']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-dev-client'],
+    yarn: ['$ yarn expo install expo-dev-client'],
+    pnpm: ['$ pnpm expo install expo-dev-client'],
+    bun: ['$ bun expo install expo-dev-client'],
+  }}
+/>
 
 For more information, check the [`expo-dev-client` reference](/versions/latest/sdk/dev-client/).
 

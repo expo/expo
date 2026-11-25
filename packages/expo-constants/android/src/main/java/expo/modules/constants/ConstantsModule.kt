@@ -10,8 +10,10 @@ class ConstantsModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExponentConstants")
 
-    Constants {
-      return@Constants appContext.service<ConstantsInterface>()?.constants ?: emptyMap()
+    appContext.service<ConstantsInterface>()?.constants?.forEach {
+      Constant(it.key) {
+        it.value
+      }
     }
 
     AsyncFunction<String?>("getWebViewUserAgentAsync") {

@@ -23,7 +23,7 @@ describe.each([
   let n = 0;
   const test =
     (name: string) =>
-    ([code]: readonly string[]) => [`${++n}. ${name}`, code];
+    ([code]: readonly string[]): [string, string] => [`${++n}. ${name}`, code!];
 
   it.each([
     // Exports

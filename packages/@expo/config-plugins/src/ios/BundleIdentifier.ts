@@ -6,14 +6,14 @@ import fs from 'fs';
 import type { XCBuildConfiguration } from 'xcode';
 import xcode from 'xcode';
 
+import type { ConfigPlugin, XcodeProject } from '../Plugin.types';
+import { withXcodeProject } from '../plugins/ios-plugins';
 import type { InfoPlist } from './IosConfig.types';
 import { getAllInfoPlistPaths, getAllPBXProjectPaths, getPBXProjectPath } from './Paths';
 import { findFirstNativeTarget, getXCBuildConfigurationFromPbxproj } from './Target';
-import type { ConfigPlugin, XcodeProject } from '../Plugin.types';
 import type { ConfigurationSectionEntry } from './utils/Xcodeproj';
 import { getBuildConfigurationsForListId, resolveXcodeBuildSetting } from './utils/Xcodeproj';
 import { trimQuotes } from './utils/string';
-import { withXcodeProject } from '../plugins/ios-plugins';
 
 export const withBundleIdentifier: ConfigPlugin<{ bundleIdentifier?: string }> = (
   config,

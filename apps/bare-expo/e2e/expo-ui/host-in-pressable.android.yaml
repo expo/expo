@@ -1,0 +1,52 @@
+appId: dev.expo.payments
+---
+# Start from a fresh screen, so the counts start at 0.
+- openLink: bareexpo://components/ui
+- openLink: bareexpo://components/ui/host-in-pressable
+
+# A press on an @expo/ui control inside a Pressable presses only the control.
+- tapOn:
+    id: inside-button
+- assertVisible: 'inside: button 1, pressable 0'
+- tapOn:
+    id: expo-ui-switch
+- assertVisible: 'switch: on, pressable 0'
+
+# The rest of the Pressable still presses it.
+- tapOn:
+    id: inside-pressable
+    point: 90%,50%
+- assertVisible: 'inside: button 1, pressable 1'
+
+# A press on Compose content that isn't a control still presses the Pressable.
+- scrollUntilVisible:
+    element:
+      id: expo-ui-text
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: expo-ui-text
+- assertVisible: 'text: pressable 1'
+- scrollUntilVisible:
+    element:
+      id: inside-button
+    direction: UP
+
+# A drag that starts on the control scrolls the screen and presses nothing.
+- swipe:
+    from:
+      id: inside-button
+    direction: UP
+- assertVisible: 'inside: button 1, pressable 1'
+
+# A swipe on a Host's content that isn't a control reaches the scroll view under it.
+- scrollUntilVisible:
+    element:
+      id: overlay-host
+    direction: DOWN
+    centerElement: true
+- swipe:
+    from:
+      id: overlay-host
+    direction: LEFT
+- assertVisible: 'overlay: scrolled'

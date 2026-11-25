@@ -1,0 +1,144 @@
+---
+title: ステータスバー、スプラッシュスクリーン、アプリアイコンを設定する
+description: このチュートリアルでは、ステータスバー、アプリアイコン、スプラッシュスクリーンを設定する基本を学びます。
+hasVideoLink: true
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+この章では、アプリストアへのデプロイ前に、ステータスバーのテーマ設定、アプリアイコンとスプラッシュスクリーンのカスタマイズなど、アプリの細部を整えていきます。
+
+<VideoBoxLink
+  videoId="OgGCYdElcZo"
+  title="視聴：ユニバーサル Expo アプリの仕上げを行う"
+  description="アプリストアへのデプロイ前に、ステータスバーを設定し、アプリアイコンをカスタマイズし、スプラッシュスクリーンを準備します。"
+/>
+
+---
+
+<Step label="1">
+
+## ステータスバーを設定する
+
+[`expo-status-bar`](/versions/latest/sdk/status-bar/) ライブラリは、`create-expo-app` で作成したすべてのプロジェクトにあらかじめインストールされています。このライブラリは、アプリのステータスバーのスタイルを設定するための `StatusBar` コンポーネントを提供します。
+
+**src/app/\_layout.tsx** で次の手順を行います。
+
+1. `expo-status-bar` から `StatusBar` をインポートします。
+2. `GestureHandlerRootView` の中で、`Stack` コンポーネントの後に `StatusBar` コンポーネントを追加します。`style` プロパティを `light` に設定して、暗い背景の上でステータスバーのテキストとアイコンが明るい色で表示されるようにします。
+
+{/* prettier-ignore */}
+```tsx src/app/_layout.tsx
+import { Stack } from 'expo-router';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+/* @tutinfo */
+import { StatusBar } from 'expo-status-bar';
+/* @end */
+
+export default function RootLayout() {
+  return (
+    <GestureHandlerRootView>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+      /* @tutinfo `light` スタイルの `StatusBar` コンポーネントを追加します。 */<StatusBar style="light" />/* @end */
+    </GestureHandlerRootView>
+  );
+}
+```
+
+それでは、Android と iOS でアプリの様子を見てみましょう。
+
+<ContentSpotlight
+  alt="Android と iOS の両方で表示される、light スタイルの StatusBar。"
+  src="/static/images/tutorial/statusbar-example.webp"
+  className="max-w-[480px]"
+/>
+
+</Step>
+
+<Step label="2">
+
+## アプリアイコン
+
+プロジェクト内の **assets/images** ディレクトリに **icon.png** ファイルがあります。これがアプリアイコンです。1024px × 1024px の画像で、見た目は次のとおりです。
+
+<ContentSpotlight
+  alt="デフォルトのアプリアイコン。濃い色の角丸の四角形に、白い画像のアイコンと黄色いスマイリーフェイスが表示されています。"
+  src="/static/images/tutorial/icon.webp"
+  className="max-w-[150px]"
+/>
+
+スプラッシュスクリーン画像と同様に、**app.json** ファイルの `"icon"` プロパティでアプリアイコンのパスを設定します。デフォルトでは、新しい Expo プロジェクトには `"./assets/images/icon.png"` という正しいパスが設定されています。
+
+新しい Expo プロジェクトには、プラットフォーム固有のアイコンプロパティもあり、これらは `"icon"` よりも優先されます。
+
+- Android では、`"android.adaptiveIcon"` プロパティが **assets/images** ディレクトリの **android-icon-foreground.png**、**android-icon-background.png**、**android-icon-monochrome.png** ファイルを使用します。[ダウンロードしたアセット](/ja/tutorial/create-your-first-app/#アセットをダウンロードする) によってこれらのファイルは StickerSmash のアイコンに置き換えられているため、何も変更する必要はありません。
+- iOS では、`"ios.icon"` プロパティが **assets/expo.icon** ファイルのデフォルトの Expo アイコンを使用します。iOS で **icon.png** を使用するには、**app.json** から次の `"ios"` プロパティを削除します。
+
+```json app.json
+{
+  "expo": {
+    "icon": "./assets/images/icon.png",
+    /* @hide ... */ /* @end */
+    "ios": {
+      "icon": "./assets/expo.icon"
+    }
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+Expo Go にはこのアプリのアイコンは表示されません。アプリをビルドした後に、デバイス上でアイコンを確認できます。詳しくは、[アプリアイコン](/develop/user-interface/splash-screen-and-app-icon/#app-icon) ガイドを参照してください。
+
+> アプリストア向けにアプリをビルドする段階になると、[Expo Services](/eas/) がこの画像を使って、各デバイスに最適化されたアイコンを生成します。
+
+</Step>
+
+<Step label="3">
+
+## スプラッシュスクリーン
+
+スプラッシュスクリーンは、アプリのコンテンツが読み込まれる前に表示されます。アプリアイコンのような小さな画像を中央に配置し、アプリのコンテンツが表示できる状態になると非表示になります。
+
+[`expo-splash-screen`](/versions/latest/sdk/splash-screen/) プラグインは、`create-expo-app` で作成したすべてのプロジェクトにあらかじめインストールされています。このライブラリは、スプラッシュスクリーンを設定するためのコンフィグプラグインを提供します。
+
+**app.json** では、アプリアイコン ([ダウンロード可能なアセット](/ja/tutorial/create-your-first-app/#アセットをダウンロードする) に含まれます) をスプラッシュスクリーン画像として使用するように、`expo-splash-screen` プラグインがすでに設定されています。`backgroundColor` はデフォルトの Expo ブルー (`#208AEF`) です。スプラッシュスクリーンがアプリやアイコンと同じ暗い背景になるように、これを `#25292e` に変更します。
+
+```json app.json
+{
+  "plugins": [
+    /* @hide ... */ /* @end */
+    [
+      "expo-splash-screen",
+      {
+        "backgroundColor": "#25292e",
+        "image": "./assets/images/splash-icon.png",
+        "imageWidth": 76
+      }
+    ]
+  ]
+}
+```
+
+ただし、**スプラッシュスクリーンをテストするには、Expo Go や [開発ビルド](/develop/development-builds/introduction/) は使用できません**。テストするには、アプリのプレビュービルドまたはプロダクションビルドを作成する必要があります。スプラッシュスクリーンの設定とテスト方法の詳細については、次のリソースを参照してみてください。
+
+- [スプラッシュスクリーンアイコンの作成](/develop/user-interface/splash-screen-and-app-icon/#splash-screen) ガイドで、スプラッシュスクリーンアイコンの設定方法を確認できます。
+- プレビュービルドの作成方法については、Expo Services チュートリアルの [内部配布](/ja/tutorial/eas/internal-distribution-builds/) ガイドを参照してください。プロダクションビルドを作成する場合は、[Android](/ja/tutorial/eas/android-production-build/) と [iOS](/ja/tutorial/eas/ios-production-build/) のガイドを参照してください。
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/configuration"
+  name="GET_STARTED"
+  chapterTitle="第 9 章：ステータスバー、スプラッシュスクリーン、アプリアイコンを設定する"
+  summary="おつかれさまでした！同じコードベースから Android、iOS、web で動作するアプリを作り上げました。"
+  nextChapterDescription="次のセクションでは、ここで扱った概念や軽く触れたトピックについて、さらに詳しく学べるリソースを紹介します。"
+  nextChapterTitle="学習リソース"
+  nextChapterLink="/ja/tutorial/follow-up"
+/>

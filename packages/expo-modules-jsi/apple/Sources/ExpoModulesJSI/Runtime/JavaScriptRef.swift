@@ -52,9 +52,34 @@ public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType,
     return value.take()
   }
 
+  /// Borrows the referenced value for the duration of `body` without consuming it, so the reference
+  /// keeps holding the value and can be read again. `body` receives the value as a borrow, or `nil` when
+  /// the reference is empty (already taken, released, or never set), and its result is returned as-is.
+  /// Use this instead of `take()` when the value must stay in the reference (e.g. a long-lived ref read
+  /// repeatedly).
+  ///
+  /// `body` returns `R` directly (rather than this method wrapping it in `R?`) so the result can itself
+  /// be a non-`Copyable` optional like `JavaScriptObject?`, which can't be nested inside another optional.
+  public func withValue<R: ~Copyable>(_ body: (borrowing T?) throws -> R?) rethrows -> R? {
+    return try body(value)
+  }
+
+  /// Borrows the referenced value for the duration of `body` when the reference holds one, and
+  /// returns `nil` without calling `body` when it is empty. Prefer this over `withValue(_:)` when
+  /// `body` has nothing to do for an empty reference: a borrowed non-copyable optional cannot be
+  /// unwrapped with `if let` or optional chaining, only with a `switch`.
+  public func withUnwrappedValue<R: ~Copyable>(_ body: (borrowing T) throws -> R) rethrows -> R? {
+    switch value {
+    case .some(let value):
+      return try body(value)
+    case .none:
+      return nil
+    }
+  }
+
   /// Takes the value as a `JavaScriptValue`. Returns `undefined` value if the reference does not hold any value.
   public func asValue() -> JavaScriptValue {
-    return take()?.asValue() ?? .undefined
+    return take()?.asValue() ?? .undefined()
   }
 
   /// An error thrown when attempting to `take()` a value from a ref that has already been taken, released, or was never set.
@@ -68,15 +93,16 @@ public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType,
 }
 
 extension JavaScriptRef: JavaScriptRepresentable where T: JavaScriptRepresentable & ~Copyable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> JavaScriptRef<T> {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> JavaScriptRef<T> {
     return JavaScriptRef(T.fromJavaScriptValue(value))
   }
 
   public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
-    return take()?.toJavaScriptValue(in: runtime) ?? .undefined
+    return take()?.toJavaScriptValue(in: runtime) ?? .undefined()
   }
 }
 
+@_spi(Internal)
 extension JavaScriptRef: JSIRepresentable where T: JSIRepresentable & ~Copyable {
   static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> JavaScriptRef {
     FatalError.unimplemented()

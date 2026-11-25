@@ -67,7 +67,7 @@ describe('parseAndValidateArgs', () => {
   test('exits with code 1 and warns about missing paths when transform has no paths', async () => {
     await expect(parseAndValidateArgs([TRANSFORM])).rejects.toThrow(/path/i);
     expect(exitMock).toHaveBeenCalledTimes(1);
-    const [message, code] = exitMock.mock.calls[0];
+    const [message, code] = exitMock.mock.calls[0]!;
     expect(message).toEqual(expect.stringContaining(TRANSFORM));
     expect(message).toEqual(expect.stringContaining('src/**/*.{ts,tsx,js,jsx}'));
     expect(message).toEqual(expect.stringContaining('--help'));
@@ -119,21 +119,21 @@ describe('resolveAndDispatch', () => {
     globMock.mockResolvedValue(['a.tsx', 'b.tsx']);
     await resolveAndDispatch({ transform: TRANSFORM, paths: ['src'] });
     expect(runMock).toHaveBeenCalledTimes(1);
-    expect(runMock.mock.calls[0][0].parser).toBe('tsx');
+    expect(runMock.mock.calls[0]![0].parser).toBe('tsx');
   });
 
   test('only dispatches jsx when only jsx files match', async () => {
     globMock.mockResolvedValue(['a.js', 'b.jsx']);
     await resolveAndDispatch({ transform: TRANSFORM, paths: ['src'] });
     expect(runMock).toHaveBeenCalledTimes(1);
-    expect(runMock.mock.calls[0][0].parser).toBe('jsx');
+    expect(runMock.mock.calls[0]![0].parser).toBe('jsx');
   });
 
   test('only dispatches ts when only ts files match', async () => {
     globMock.mockResolvedValue(['a.ts', 'b.ts']);
     await resolveAndDispatch({ transform: TRANSFORM, paths: ['src'] });
     expect(runMock).toHaveBeenCalledTimes(1);
-    expect(runMock.mock.calls[0][0].parser).toBe('ts');
+    expect(runMock.mock.calls[0]![0].parser).toBe('ts');
   });
 
   test('does not dispatch when no files match', async () => {

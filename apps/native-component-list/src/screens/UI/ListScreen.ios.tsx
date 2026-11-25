@@ -7,6 +7,7 @@ import {
   listStyle,
   pickerStyle,
   refreshable,
+  sectionIndexLabel,
   tag,
   environment,
 } from '@expo/ui/swift-ui/modifiers';
@@ -25,6 +26,19 @@ const INITIAL_ITEMS: ListItem[] = [
   { id: '3', title: 'Star', icon: 'star.fill' },
   { id: '4', title: 'Cloud', icon: 'cloud.fill' },
   { id: '5', title: 'Rain', icon: 'cloud.rain.fill' },
+];
+
+const ANIMALS_BY_LETTER: [string, string[]][] = [
+  ['A', ['Alpaca', 'Antelope', 'Armadillo']],
+  ['B', ['Badger', 'Beaver', 'Bison']],
+  ['C', ['Camel', 'Cheetah', 'Coyote']],
+  ['D', ['Dingo', 'Dolphin', 'Donkey']],
+  ['E', ['Eagle', 'Elephant', 'Emu']],
+  ['F', ['Falcon', 'Ferret', 'Flamingo']],
+  ['G', ['Gazelle', 'Giraffe', 'Gorilla']],
+  ['H', ['Hedgehog', 'Heron', 'Hippo']],
+  ['I', ['Ibex', 'Iguana', 'Impala']],
+  ['J', ['Jackal', 'Jaguar', 'Jellyfish']],
 ];
 
 const LIST_STYLES: ListStyle[] = [
@@ -103,19 +117,23 @@ export default function ListScreen() {
 
         <Section title="Items" footer={<Text>Swipe to delete, drag to reorder</Text>}>
           <List.ForEach
+            data={items}
+            keyExtractor={(item) => item.id}
+            recycling={false}
             onDelete={handleDelete}
             onMove={handleMove}
             modifiers={[animation(Animation.default, editMode)]}>
-            {items.map((item) => (
-              <Label
-                key={item.id}
-                title={item.title}
-                systemImage={item.icon}
-                modifiers={[tag(item.id)]}
-              />
-            ))}
+            {({ item }) => <Label title={item.title} systemImage={item.icon} />}
           </List.ForEach>
         </Section>
+
+        {ANIMALS_BY_LETTER.map(([letter, animals]) => (
+          <Section key={letter} title={letter} modifiers={[sectionIndexLabel(letter)]}>
+            {animals.map((animal) => (
+              <Text key={animal}>{animal}</Text>
+            ))}
+          </Section>
+        ))}
       </List>
     </Host>
   );

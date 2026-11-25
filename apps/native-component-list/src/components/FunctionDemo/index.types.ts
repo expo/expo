@@ -42,7 +42,7 @@ export type PrimitiveParameter =
 
 export type ObjectParameter = Parameter & {
   type: 'object';
-  properties: PrimitiveParameter[];
+  properties: FunctionParameter[];
 };
 
 export type ConstantParameter = Parameter & {
@@ -54,13 +54,13 @@ export type FunctionParameter = PrimitiveParameter | ObjectParameter | ConstantP
 
 export type PrimitiveArgument = boolean | number | string | Tuple | undefined;
 
-export type FunctionArgument = PrimitiveArgument | Record<string, PrimitiveArgument>;
+export type FunctionArgument = PrimitiveArgument | { [key: string]: FunctionArgument };
 
 /**
  * Generic and intentionally not very well typed function signature to describe any action that can be called from the FunctionDemo.
  */
 export type ActionFunction = (...args: any[]) => Promise<unknown> | unknown;
 
-export type ArgumentName = string | [objectName: string, propertyName: string];
+export type ArgumentName = string | [objectName: string, propertyPath: string];
 
 export type OnArgumentChangeCallback = (name: ArgumentName, value: PrimitiveArgument) => void;

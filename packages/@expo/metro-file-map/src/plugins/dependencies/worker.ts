@@ -9,13 +9,13 @@
 
 'use strict';
 
-import { extract } from './dependencyExtractor';
 import type {
   DependencyExtractor,
   MetadataWorker,
   V8Serializable,
   WorkerMessage,
 } from '../../types';
+import { extract } from './dependencyExtractor';
 
 export default class DependencyExtractorWorker implements MetadataWorker {
   readonly #dependencyExtractor: DependencyExtractor | undefined | null;
@@ -27,11 +27,8 @@ export default class DependencyExtractorWorker implements MetadataWorker {
     }
   }
 
-  async processFile(
-    data: WorkerMessage,
-    utils: { readonly getContent: () => Promise<Buffer> }
-  ): Promise<V8Serializable> {
-    const content = (await utils.getContent()).toString();
+  processFile(data: WorkerMessage, utils: { readonly getContent: () => Buffer }): V8Serializable {
+    const content = utils.getContent().toString();
     const { filePath } = data;
 
     const dependencies =

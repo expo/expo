@@ -1,0 +1,7 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <application>
+    <service
+      android:name="expo.modules.mediasession.service.MediaPlaybackService"
+      android:exported="false" />
+  </application>
+</manifest>

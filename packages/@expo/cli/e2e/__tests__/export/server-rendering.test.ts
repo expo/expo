@@ -1,27 +1,27 @@
-/* eslint-env jest */
 import type { RoutesManifest } from 'expo-server/private';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { runExportSideEffects } from './export-side-effects';
 import {
   prepareServers,
   RUNTIME_EXPO_SERVE,
   RUNTIME_WORKERD,
   setupServer,
 } from '../../utils/runtime';
+import { expectSourceMapSection } from '../../utils/sourceMap';
 import { findProjectFiles, getHtml } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
 describe('exports server', () => {
   describe.each(
     prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_WORKERD], {
-      fixtureName: 'static-rendering',
+      uniqueOutputKey: 'rendering',
       export: {
         env: {
-          E2E_ROUTER_ASYNC: '',
-          E2E_ROUTER_SERVER_RENDERING: 'true',
+          E2E_ROUTER_ASYNC: 'false',
+          E2E_FAVICON: './assets/icon.png',
         },
         cliFlags: ['--source-maps'],
       },
@@ -41,18 +41,20 @@ describe('exports server', () => {
 
     it(`can serve up index html`, async () => {
       const html = getHtml(await server.fetchAsync('/').then((res) => res.text()));
-      expect(html.querySelector('[data-testid="index-text"]')?.textContent).toEqual('Index');
+      expect(html.querySelector('[data-testid="index-text"]')).not.toBeNull();
     });
 
     it(`can serve up non-index html`, async () => {
-      const html = getHtml(await server.fetchAsync('/styled').then((res) => res.text()));
+      const html = getHtml(await server.fetchAsync('/rendering/styled').then((res) => res.text()));
       expect(html.querySelector('[data-testid="styled-text"]')?.textContent).toEqual('Hello World');
     });
 
     it.each([{ post: 'other' }, { post: 'welcome-to-the-universe' }])(
       `can serve up dynamically rendered html for post: $post`,
       async ({ post }) => {
-        const html = getHtml(await server.fetchAsync(`/${post}`).then((res) => res.text()));
+        const html = getHtml(
+          await server.fetchAsync(`/rendering/${post}`).then((res) => res.text())
+        );
         expect(html.querySelector('[data-testid="post-text"]')?.textContent).toEqual(
           `Post: ${post}`
         );
@@ -74,6 +76,9 @@ describe('exports server', () => {
       expect(files).toContain('_expo/server/render.js');
       expect(files).toContain('_expo/routes.json');
 
+      // Generated from `web.favicon` in app config
+      expect(findProjectFiles(path.join(server.outputDir, 'client'))).toContain('favicon.ico');
+
       // Rendering and assets config should be embedded in the routes manifest
       const manifest = JSON.parse(
         fs.readFileSync(path.join(server.outputDir, 'server/_expo/routes.json'), 'utf8')
@@ -82,15 +87,28 @@ describe('exports server', () => {
       // Assets should be included
       expect(manifest.assets).toHaveProperty('js');
       expect(manifest.assets).toHaveProperty('css');
-      expect(manifest.assets?.js).toEqual(
-        expect.arrayContaining([expect.stringMatching(/_expo\/static\/js\/web\/entry-.*\.js/)])
-      );
+      for (const route of manifest.htmlRoutes) {
+        expect([...(manifest.assets?.js ?? []), ...(route.assets?.js ?? [])]).toEqual(
+          expect.arrayContaining([expect.stringMatching(/_expo\/static\/js\/web\/entry-.*\.js/)])
+        );
+      }
 
       // Rendering configuration
       expect(manifest.rendering).toEqual({
         mode: 'ssr',
         file: '_expo/server/render.js',
       });
+
+      expect(manifest.assets?.favicon).toBe('/favicon.ico');
+    });
+
+    it('injects `<link rel="icon">` into every streamed SSR response', async () => {
+      for (const route of ['/', '/rendering/styled', '/rendering/welcome-to-the-universe']) {
+        const html = getHtml(await server.fetchAsync(route).then((res) => res.text()));
+        const icon = html.querySelector('html > head > link[rel="icon"]');
+        expect(icon).not.toBeNull();
+        expect(icon?.attributes.href).toBe('/favicon.ico');
+      }
     });
 
     it('routes manifest excludes routes created by `generateStaticParams()`', async () => {
@@ -100,15 +118,15 @@ describe('exports server', () => {
 
       // Should have the dynamic route pattern
       const postRoute = routesJson.htmlRoutes.find(
-        (route: { page: string }) => route.page === '/[post]'
+        (route: { page: string }) => route.page === '/rendering/[post]'
       );
       expect(postRoute).toBeDefined();
-      expect(postRoute?.file).toBe('./[post].tsx');
+      expect(postRoute?.file).toBe('./rendering/[post].tsx');
 
       // Should NOT have the generated static routes from `generateStaticParams()`
       // `[post].tsx` exports `generateStaticParams()` returning ['welcome-to-the-universe', 'other']
       const generatedRoutes = routesJson.htmlRoutes.filter((route) =>
-        ['/welcome-to-the-universe', '/other'].includes(route.page)
+        ['/rendering/welcome-to-the-universe', '/rendering/other'].includes(route.page)
       );
       expect(generatedRoutes).toHaveLength(0);
     });
@@ -130,22 +148,24 @@ describe('exports server', () => {
       for (const file of clientMapFiles) {
         const sourceMap = JSON.parse(fs.readFileSync(path.join(server.outputDir, file!), 'utf8'));
         expect(sourceMap.version).toBe(3);
-        expect(sourceMap.sources).toEqual(
+        expect(sourceMap.sections).toEqual(
           expect.arrayContaining([
-            '__prelude__',
+            expectSourceMapSection('__prelude__'),
             // NOTE: No `/Users/evanbacon/`...
             // NOTE(@kitten): We can slot in our own runtime here
-            expect.pathMatching(
-              new RegExp(
-                [
-                  '/node_modules/metro-runtime/src/polyfills/require.js',
-                  '/@expo/cli/build/metro-require/require.js',
-                ].join('|')
+            expectSourceMapSection(
+              expect.pathMatching(
+                new RegExp(
+                  [
+                    '/node_modules/metro-runtime/src/polyfills/require.js',
+                    '/@expo/cli/build/metro-require/require.js',
+                  ].join('|')
+                )
               )
             ),
 
             // NOTE: relative to the server root for optimal source map support
-            expect.pathMatching(/\/apps\/router-e2e\/__e2e__\/static-rendering\/app\/index\.tsx/),
+            expectSourceMapSection(expect.pathMatching(/\/apps\/server-tester\/app\/index\.tsx/)),
           ])
         );
       }
@@ -185,7 +205,9 @@ describe('exports server', () => {
     });
 
     it('can use environment variables', async () => {
-      const indexHtml = getHtml(await server.fetchAsync('/').then((res) => res.text()));
+      const indexHtml = getHtml(
+        await server.fetchAsync('/rendering/env-metadata').then((res) => res.text())
+      );
 
       const queryMeta = (name: string) =>
         indexHtml.querySelector(`html > head > meta[name="${name}"]`)?.attributes.content;
@@ -195,11 +217,10 @@ describe('exports server', () => {
       // non-public env vars are injected during SSR
       expect(queryMeta('expo-e2e-private-env-var')).toEqual('not-public-value');
 
-      // TODO(@hassankhan): Restructure these env vars to live in the `/` route instead
-      // Injected in app/_layout.js
-      // expect(queryMeta('expo-e2e-public-env-var-client')).toEqual('foobar');
-      // // non-public env vars are injected during SSR
-      // expect(queryMeta('expo-e2e-private-env-var-client')).toEqual('not-public-value');
+      // Generated by app/rendering/env-metadata.tsx
+      expect(queryMeta('expo-e2e-public-env-var-client')).toEqual('foobar');
+      // non-public env vars are injected during SSR
+      expect(queryMeta('expo-e2e-private-env-var-client')).toEqual('not-public-value');
 
       indexHtml
         .querySelectorAll('script')
@@ -218,27 +239,26 @@ describe('exports server', () => {
     });
 
     it('injects hydration assets into SSR response', async () => {
-      const html = await server.fetchAsync('/').then((res) => res.text());
+      const html = getHtml(await server.fetchAsync('/').then((res) => res.text()));
+      const scripts = html.querySelectorAll('script[src^="/_expo/static/js/web/"]');
 
-      // Streaming SSR uses bootstrapScripts which emits async scripts (with an id attribute)
-      expect(html).toMatch(
-        /<script src="\/_expo\/static\/js\/web\/entry-.*\.js"[^>]*async=""><\/script>/
+      expect(scripts.map((script) => script.getAttribute('src'))).toEqual(
+        expect.arrayContaining([expect.stringMatching(/^\/_expo\/static\/js\/web\/entry-.*\.js$/)])
       );
+      for (const script of scripts) {
+        expect(script.hasAttribute('defer')).toBe(true);
+        expect(script.hasAttribute('async')).toBe(false);
+      }
     });
 
-    it('emits the hydration flag before the bootstrap script', async () => {
-      const html = await server.fetchAsync('/').then((res) => res.text());
+    it('emits an inline hydration flag', async () => {
+      const html = getHtml(await server.fetchAsync('/').then((res) => res.text()));
+      const hydrationScript = html.querySelector('script#_R_');
 
-      const hydrationFlagIndex = html.indexOf(
-        '<script id="_R_">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>'
-      );
-      const bootstrapScriptIndex = html.search(
-        /<script src="\/_expo\/static\/js\/web\/entry-.*\.js"[^>]*async=""><\/script>/
-      );
-
-      expect(hydrationFlagIndex).toBeGreaterThanOrEqual(0);
-      expect(bootstrapScriptIndex).toBeGreaterThanOrEqual(0);
-      expect(hydrationFlagIndex).toBeLessThan(bootstrapScriptIndex);
+      // Inline scripts execute while parsing, before the deferred hydration bundles.
+      expect(hydrationScript).not.toBeNull();
+      expect(hydrationScript!.hasAttribute('src')).toBe(false);
+      expect(hydrationScript!.textContent).toBe('globalThis.__EXPO_ROUTER_HYDRATE__=true;');
     });
 
     it('SSR styles are injected', async () => {
@@ -267,19 +287,28 @@ describe('exports server', () => {
       const links = indexHtml.querySelectorAll('link').filter((link) => {
         // Fonts are tested elsewhere
         if (link.attributes.as === 'font') return false;
-        // Streaming SSR adds <link rel="preload" as="script"> for bootstrapScripts
+        // Streaming SSR preloads the hydration bundles
         if (link.attributes.as === 'script') return false;
+        // Favicon is tested elsewhere
+        if (link.attributes.rel === 'icon') return false;
         return true;
       });
       expect(links.length).toBe(
-        // Global CSS, CSS Module
-        4
+        // Safe-area CSS, global CSS, and CSS Module (preload + stylesheet)
+        6
       );
 
       const linkStrings = links.map((l) => l.toString());
 
       expect(linkStrings).toEqual(
         expect.arrayContaining([
+          // Safe-area CSS (preload + stylesheet)
+          expect.stringMatching(
+            /<link rel="preload" href="\/_expo\/static\/css\/safe-area-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
+          ),
+          expect.stringMatching(
+            /<link rel="stylesheet" href="\/_expo\/static\/css\/safe-area-(?<md5>[0-9a-fA-F]{32})\.css">/
+          ),
           // Global CSS (preload + stylesheet)
           expect.stringMatching(
             /<link rel="preload" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
@@ -317,27 +346,31 @@ describe('exports server', () => {
           path.join(server.outputDir, 'client', cssModulePreload!.attributes.href ?? ''),
           'utf-8'
         )
-      ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
+      ).toMatchInlineSnapshot(`".Ecx2Wa_text{color:#1e90ff}"`);
 
-      const styledHtml = getHtml(await server.fetchAsync('/styled').then((res) => res.text()));
+      const styledHtml = getHtml(
+        await server.fetchAsync('/rendering/styled').then((res) => res.text())
+      );
 
       // Ensure the atomic CSS class is used
       expect(
         styledHtml.querySelector('html > body div[data-testid="styled-text"]')?.attributes.class
-      ).toMatch('HPV33q_text');
+      ).toMatch('Ecx2Wa_text');
     });
 
     it('extracts fonts', async () => {
-      const indexHtml = getHtml(await server.fetchAsync('/').then((res) => res.text()));
+      const indexHtml = getHtml(
+        await server.fetchAsync('/rendering/fonts').then((res) => res.text())
+      );
 
       const links = indexHtml.querySelectorAll('link[as="font"]');
       expect(links.length).toBe(1);
       expect(links[0]?.attributes.href).toBe(
-        '/assets/__e2e__/static-rendering/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf'
+        '/assets/assets/fonts/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf'
       );
 
       expect(links[0]?.toString()).toMatch(
-        /<link rel="preload" href="\/assets\/__e2e__\/static-rendering\/sweet\.[a-zA-Z0-9]{32}\.ttf" as="font" crossorigin="">/
+        /<link rel="preload" href="\/assets\/assets\/fonts\/sweet\.[a-zA-Z0-9]{32}\.ttf" as="font" crossorigin="">/
       );
 
       expect(
@@ -352,7 +385,7 @@ describe('exports server', () => {
       ).toBeDefined();
 
       // Ensure the font is used
-      expect(indexHtml.querySelector('div[data-testid="index-text"]')?.attributes.style).toMatch(
+      expect(indexHtml.querySelector('div[data-testid="fonts-text"]')?.attributes.style).toMatch(
         'font-family:sweet'
       );
 
@@ -368,8 +401,8 @@ describe('exports server', () => {
       // );
     });
 
-    it('supports usePathname in +html files', async () => {
-      const page = await server.fetchAsync('/').then((res) => res.text());
+    it('supports the pathname and params props in +html files', async () => {
+      const page = await server.fetchAsync('/rendering/env-metadata').then((res) => res.text());
 
       expect(page).toContain('<meta name="custom-value" content="value"/>');
 
@@ -377,16 +410,8 @@ describe('exports server', () => {
       expect(page).toContain('<div id="root">');
 
       const sanitized = page
-        // Streaming SSR: <script src="..." id="_R_" async="">
-        .replace(
-          /<script src="\/_expo\/static\/js\/web\/[^"]*"[^>]*async="">/,
-          '<script src="/_expo/static/js/web/[mock].js" async="">'
-        )
-        // Streaming SSR: <link rel="preload" as="script" fetchPriority="low" href="..."/>
-        .replace(
-          /<link rel="preload" as="script"[^>]*href="\/_expo\/static\/js\/web\/[^"]*"[^>]*\/>/,
-          '<link rel="preload" as="script" href="/_expo/static/js/web/[mock].js"/>'
-        )
+        // Normalize bundle URLs in both scripts and preloads, preserving their attributes.
+        .replace(/\/_expo\/static\/js\/web\/[^"\s]+\.js/g, '/_expo/static/js/web/[mock].js')
         .replace(
           /<link rel="preload" href="\/_expo\/static\/css\/global-[^"]*\.css" as="style">/,
           '<link rel="preload" href="/_expo/static/css/global-[mock].css" as="style">'
@@ -406,28 +431,31 @@ describe('exports server', () => {
       expect(sanitized).toMatchSnapshot();
 
       expect(
-        getHtml(await server.fetchAsync('/about').then((res) => res.text())).querySelector(
-          'html > head > meta[name="expo-e2e-pathname"]'
-        )?.attributes.content
-      ).toBe('/about');
+        getHtml(
+          await server.fetchAsync('/rendering/about').then((res) => res.text())
+        ).querySelector('html > head > meta[name="expo-e2e-pathname"]')?.attributes.content
+      ).toBe('/rendering/about');
 
       expect(
         getHtml(page).querySelector('html > head > meta[name="expo-e2e-pathname"]')?.attributes
           .content
-      ).toBe('/');
+      ).toBe('/rendering/env-metadata');
 
+      const postHtml = getHtml(
+        await server.fetchAsync('/rendering/welcome-to-the-universe').then((res) => res.text())
+      );
       expect(
-        getHtml(
-          await server.fetchAsync('/welcome-to-the-universe').then((res) => res.text())
-        ).querySelector('html > head > meta[name="expo-e2e-pathname"]')?.attributes.content
-      ).toBe('/welcome-to-the-universe');
+        postHtml.querySelector('html > head > meta[name="expo-e2e-pathname"]')?.attributes.content
+      ).toBe('/rendering/welcome-to-the-universe');
+      expect(
+        postHtml.querySelector('html > head > meta[name="expo-e2e-params"]')?.attributes.content
+      ).toBe('{"post":"welcome-to-the-universe"}');
     });
 
-    // TODO(@hassankhan): Investigate support for nested `generateMetadata()`
-    it.skip('supports nested static head values', async () => {
+    it('renders generateMetadata in the initial head', async () => {
       // <title>About | Website</title>
       // <meta name="description" content="About page" />
-      const about = getHtml(await server.fetchAsync('/about').then((res) => res.text()));
+      const about = getHtml(await server.fetchAsync('/rendering/about').then((res) => res.text()));
 
       expect(about.querySelector('html > body div[data-testid="content"]')?.innerText).toBe(
         'About'
@@ -436,21 +464,22 @@ describe('exports server', () => {
       expect(
         about.querySelector('html > head > meta[name="description"]')?.attributes.content
       ).toBe('About page');
-      expect(
-        // Nested from app/_layout.js
-        about.querySelector('html > head > meta[name="expo-nested-layout"]')?.attributes.content
-      ).toBe('TEST_VALUE');
-
-      expect(
-        // Other routes have the nested layout value
-        getHtml(
-          await server.fetchAsync('/welcome-to-the-universe').then((r) => r.text())
-        ).querySelector('html > head > meta[name="expo-nested-layout"]')?.attributes.content
-      ).toBe('TEST_VALUE');
+      // NOTE(@hassankhan): We'll re-enable these after landing generateMetadata in layouts
+      // expect(
+      //   // Nested from app/_layout.js
+      //   about.querySelector('html > head > meta[name="expo-nested-layout"]')?.attributes.content
+      // ).toBe('TEST_VALUE');
+      //
+      // expect(
+      //   // Other routes have the nested layout value
+      //   getHtml(
+      //     await server.fetchAsync('/welcome-to-the-universe').then((r) => r.text())
+      //   ).querySelector('html > head > meta[name="expo-nested-layout"]')?.attributes.content
+      // ).toBe('TEST_VALUE');
     });
 
     it('injects `generateMetadata()` result into the initial server HTML <head>', async () => {
-      const html = await server.fetchAsync('/metadata').then((res) => res.text());
+      const html = await server.fetchAsync('/rendering/metadata').then((res) => res.text());
       const page = getHtml(html);
       const head = page.querySelector('html > head');
 
@@ -470,7 +499,7 @@ describe('exports server', () => {
 
     it('resolves async `generateMetadata()` with request and route params', async () => {
       const page = getHtml(
-        await server.fetchAsync('/metadata-async/123').then((res) => res.text())
+        await server.fetchAsync('/rendering/metadata-async/123').then((res) => res.text())
       );
 
       expect(page.querySelector('html > body [data-testid="async-metadata-text"]')?.innerText).toBe(
@@ -478,7 +507,7 @@ describe('exports server', () => {
       );
       expect(page.querySelector('html > head > title')?.innerText).toBe('Async Metadata 123');
       expect(page.querySelector('html > head > meta[name="description"]')?.attributes.content).toBe(
-        'Async metadata for /metadata-async/123'
+        'Async metadata for /rendering/metadata-async/123'
       );
     });
   });

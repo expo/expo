@@ -6,7 +6,6 @@
  */
 
 import './location/install';
-
 import '@expo/metro-runtime/rsc/runtime';
 
 if (__DEV__) {
@@ -17,5 +16,5 @@ if (__DEV__) {
   require('./promiseRejectionTracking').enablePromiseRejectionTracking();
 
   // @ts-expect-error: TODO: Remove this when we remove the log box.
-  globalThis.__expo_dev_resetErrors = require('@expo/log-box/src/LogBox').default.clearAllLogs;
+  globalThis.__expo_dev_resetErrors = require('@expo/log-box/LogBox').default.clearAllLogs;
 }

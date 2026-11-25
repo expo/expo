@@ -1,0 +1,122 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "dangerouslyDisablePackageManagerCheck": true,
+  "noUpdateNotifier": true,
+  "concurrency": "90%",
+  "cacheMaxAge": "10d",
+  "cacheMaxSize": "10GB",
+  "tasks": {
+    "build": {
+      "outputs": [
+        "build/**",
+        "plugin/build/**",
+        "cli/build/**",
+        "utils/build/**"
+      ],
+      "outputLogs": "new-only",
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "typecheck": {
+      "outputs": [
+        ".tsbuildinfo",
+        "*/.tsbuildinfo"
+      ],
+      "outputLogs": "new-only"
+    },
+    "depscheck": {
+      "inputs": [
+        "package.json",
+        "app.plugin.*",
+        "src/**",
+        "plugin/src/**",
+        "cli/src/**",
+        "utils/src/**"
+      ],
+      "outputLogs": "errors-only"
+    },
+    "lint": {
+      "cache": false
+    },
+    "format": {
+      "cache": false,
+      "dependsOn": [
+        "lint"
+      ]
+    },
+    "test": {
+      "cache": false,
+      "outputLogs": "errors-only"
+    },
+    "precompile-ios": {
+      "dependsOn": ["expo-modules-core#precompile-ios"],
+      "inputs": [
+        "spm.config.json",
+        "*.podspec",
+        "ios/**",
+        "node_modules/react-native/package.json",
+        "node_modules/react-native/sdks/hermes-engine/version.properties",
+        "$TURBO_ROOT$/tools/src/prebuilds/**"
+      ],
+      "env": ["RCT_HERMES_V1_ENABLED"],
+      "outputs": [".expo-prebuild/output/**"],
+      "outputLogs": "new-only"
+    },
+    "precompile-android": {
+      "dependsOn": [
+        "//#prepare-precompile-android",
+        "expo-modules-core#precompile-android-inputs",
+        "expo-modules-core#precompile-android",
+        "expo-modules-autolinking#precompile-android-inputs",
+        "expo-modules-autolinking#build",
+        "^precompile-android-inputs"
+      ],
+      "inputs": [
+        "package.json",
+        "expo-module.config.json",
+        "common/**",
+        "android/**",
+        "!android/**/build/**",
+        "!android/**/.gradle/**",
+        "!android/**/.cxx/**",
+        "!android/prebuilt/**",
+        "node_modules/react-native/package.json",
+        "$TURBO_ROOT$/tools/android-precompile/**",
+        "$TURBO_ROOT$/tools/src/prebuilds/**",
+        "$TURBO_ROOT$/tools/src/commands/PrebuildAndroidPackageForPublish.ts",
+        "$TURBO_ROOT$/packages/expo-modules-core/expo-module-gradle-plugin/**",
+        "!$TURBO_ROOT$/packages/expo-modules-core/expo-module-gradle-plugin/**/build/**",
+        "!$TURBO_ROOT$/packages/expo-modules-core/expo-module-gradle-plugin/**/.gradle/**"
+      ],
+      "passThroughEnv": ["JAVA_HOME", "GRADLE_USER_HOME", "ANDROID_HOME", "ANDROID_SDK_ROOT"],
+      "outputs": [".expo-prebuild-android/**"],
+      "outputLogs": "new-only"
+    },
+    "//#prepare-precompile-android": {
+      "cache": false,
+      "dependsOn": ["expo-modules-autolinking#build"],
+      "passThroughEnv": ["JAVA_HOME", "GRADLE_USER_HOME", "ANDROID_HOME", "ANDROID_SDK_ROOT", "PATH"]
+    },
+    "precompile-android-inputs": {
+      "inputs": [
+        "package.json",
+        "expo-module.config.json",
+        "android/**",
+        "!android/**/build/**",
+        "!android/**/.gradle/**",
+        "!android/**/.cxx/**",
+        "!android/prebuilt/**",
+        "common/**",
+        "src/**"
+      ],
+      "outputLogs": "errors-only"
+    }
+  },
+  "remoteCache": {
+    "preflight": true,
+    "apiUrl": "https://turbo.exp.host",
+    "teamId": "team_expo",
+    "teamSlug": "expo"
+  }
+}

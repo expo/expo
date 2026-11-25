@@ -5,18 +5,18 @@
 // and adds the ability to access the bundler instance.
 import { createConnectMiddleware } from '@expo/metro/metro';
 import type { RunServerOptions } from '@expo/metro/metro';
+import type { ConfigT } from '@expo/metro/metro-config';
 import MetroHmrServer, { type Client as MetroHmrClient } from '@expo/metro/metro/HmrServer';
 import type Server from '@expo/metro/metro/Server';
 import createWebsocketServer from '@expo/metro/metro/lib/createWebsocketServer';
-import type { ConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 import http from 'http';
 import https from 'https';
 import type { WebSocketServer } from 'ws';
 
-import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { Log } from '../../../log';
 import type { ConnectAppType } from '../middleware/server.types';
+import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
 
 export interface SecureServerOptions {
   readonly key: string | Buffer;

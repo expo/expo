@@ -61,7 +61,9 @@ function flag(name, fallback) {
   return args[idx + 1] || fallback;
 }
 
-const appRoot = path.resolve(flag('app', path.join(__dirname, '..', '..', '..', 'apps', 'router-e2e')));
+const appRoot = path.resolve(
+  flag('app', path.join(__dirname, '..', '..', '..', 'apps', 'router-e2e'))
+);
 const runs = Math.max(2, parseInt(flag('runs', '5'), 10) || 5);
 const jsonOutput = args.includes('--json');
 
@@ -117,7 +119,14 @@ if (selectedConfigs.length === 0) {
 
 const SOURCE_EXTS = new Set(['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs']);
 const IGNORE_DIRS = new Set([
-  '__tests__', '__mocks__', '__fixtures__', '.git', '.expo', 'android', 'ios', 'dist',
+  '__tests__',
+  '__mocks__',
+  '__fixtures__',
+  '.git',
+  '.expo',
+  'android',
+  'ios',
+  'dist',
 ]);
 
 function collectFiles(dir, files = [], insideNodeModules = false) {
@@ -492,7 +501,9 @@ function profileConfig(config) {
       });
     }
 
-    console.error(`    Run ${run + 1}/${runs}: ${totalTransformMs.toFixed(1)}ms${isWarmup ? ' (warmup, discarded)' : ''}`);
+    console.error(
+      `    Run ${run + 1}/${runs}: ${totalTransformMs.toFixed(1)}ms${isWarmup ? ' (warmup, discarded)' : ''}`
+    );
   }
 
   // Average results across measured runs
@@ -537,7 +548,9 @@ function profileConfig(config) {
 
   const totalPluginMs = sortedPlugins.reduce((s, p) => s + p.totalMs, 0);
 
-  console.error(`  Average: ${totalPluginMs.toFixed(1)}ms plugin time (${measuredRuns} measured runs, ${processed} files, ${skipped} skipped, ${errored} errored)`);
+  console.error(
+    `  Average: ${totalPluginMs.toFixed(1)}ms plugin time (${measuredRuns} measured runs, ${processed} files, ${skipped} skipped, ${errored} errored)`
+  );
 
   return {
     name: config.name,
@@ -573,21 +586,27 @@ for (let i = 0; i < selectedConfigs.length; i++) {
 // ---------------------------------------------------------------------------
 
 if (jsonOutput) {
-  console.log(JSON.stringify({
-    appRoot,
-    runs,
-    filesTotal: files.length,
-    configs: results.map((r) => ({
-      name: r.name,
-      description: r.description,
-      filesProcessed: r.processed,
-      filesSkipped: r.skipped,
-      filesErrored: r.errored,
-      totalPluginMs: r.totalPluginMs,
-      plugins: r.sortedPlugins,
-      slowestFiles: r.fileTimings.sort((a, b) => b.durationMs - a.durationMs).slice(0, 20),
-    })),
-  }, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        appRoot,
+        runs,
+        filesTotal: files.length,
+        configs: results.map((r) => ({
+          name: r.name,
+          description: r.description,
+          filesProcessed: r.processed,
+          filesSkipped: r.skipped,
+          filesErrored: r.errored,
+          totalPluginMs: r.totalPluginMs,
+          plugins: r.sortedPlugins,
+          slowestFiles: r.fileTimings.sort((a, b) => b.durationMs - a.durationMs).slice(0, 20),
+        })),
+      },
+      null,
+      2
+    )
+  );
   process.exit(0);
 }
 
@@ -599,7 +618,9 @@ for (const r of results) {
   console.log(`BABEL PLUGIN PROFILING REPORT — ${r.name}`);
   console.log(`${r.description}`);
   console.log(`App: ${appRoot}`);
-  console.log(`Files: ${r.processed} | Runs: ${runs} (first discarded as warmup, ${runs - 1} averaged)`);
+  console.log(
+    `Files: ${r.processed} | Runs: ${runs} (first discarded as warmup, ${runs - 1} averaged)`
+  );
   console.log(`Total plugin time: ${r.totalPluginMs.toFixed(1)}ms`);
   console.log('='.repeat(W));
   console.log('');
@@ -608,30 +629,26 @@ for (const r of results) {
   console.log('-'.repeat(W));
   console.log(
     'Plugin'.padEnd(58) +
-    'Total (ms)'.padStart(12) +
-    '%'.padStart(9) +
-    'Calls'.padStart(10) +
-    'Files'.padStart(8)
+      'Total (ms)'.padStart(12) +
+      '%'.padStart(9) +
+      'Calls'.padStart(10) +
+      'Files'.padStart(8)
   );
   console.log('-'.repeat(W));
 
   for (const p of r.sortedPlugins) {
-    const pct = r.totalPluginMs > 0 ? ((p.totalMs / r.totalPluginMs) * 100) : 0;
+    const pct = r.totalPluginMs > 0 ? (p.totalMs / r.totalPluginMs) * 100 : 0;
     console.log(
       p.plugin.substring(0, 57).padEnd(58) +
-      p.totalMs.toFixed(1).padStart(12) +
-      (pct.toFixed(1) + '%').padStart(9) +
-      p.callCount.toString().padStart(10) +
-      p.fileCount.toString().padStart(8)
+        p.totalMs.toFixed(1).padStart(12) +
+        (pct.toFixed(1) + '%').padStart(9) +
+        p.callCount.toString().padStart(10) +
+        p.fileCount.toString().padStart(8)
     );
   }
 
   console.log('-'.repeat(W));
-  console.log(
-    'TOTAL'.padEnd(58) +
-    r.totalPluginMs.toFixed(1).padStart(12) +
-    '100.0%'.padStart(9)
-  );
+  console.log('TOTAL'.padEnd(58) + r.totalPluginMs.toFixed(1).padStart(12) + '100.0%'.padStart(9));
   console.log('');
 
   // Slowest files
@@ -644,8 +661,8 @@ for (const r of results) {
     for (const f of slowFiles) {
       console.log(
         f.file.substring(0, 79).padEnd(80) +
-        f.durationMs.toFixed(1).padStart(12) +
-        f.size.toString().padStart(12)
+          f.durationMs.toFixed(1).padStart(12) +
+          f.size.toString().padStart(12)
       );
     }
     console.log('');
@@ -666,22 +683,22 @@ if (results.length > 1) {
   const compW = nameW + 16 + 8 + 10;
   console.log(
     'Config'.padEnd(nameW) +
-    'Plugin (ms)'.padStart(16) +
-    'Files'.padStart(8) +
-    'Plugins'.padStart(10)
+      'Plugin (ms)'.padStart(16) +
+      'Files'.padStart(8) +
+      'Plugins'.padStart(10)
   );
   console.log('-'.repeat(compW));
 
   for (const r of results) {
     console.log(
       r.name.padEnd(nameW) +
-      r.totalPluginMs.toFixed(1).padStart(16) +
-      r.processed.toString().padStart(8) +
-      r.sortedPlugins.length.toString().padStart(10)
+        r.totalPluginMs.toFixed(1).padStart(16) +
+        r.processed.toString().padStart(8) +
+        r.sortedPlugins.length.toString().padStart(10)
     );
   }
 
-  const fastest = results.reduce((a, b) => a.totalPluginMs < b.totalPluginMs ? a : b);
+  const fastest = results.reduce((a, b) => (a.totalPluginMs < b.totalPluginMs ? a : b));
   console.log('');
   console.log(`Fastest: ${fastest.name} (${fastest.totalPluginMs.toFixed(1)}ms)`);
   for (const r of results) {

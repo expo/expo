@@ -5,9 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 declare module 'node:module' {
-  namespace Module {
-    const globalPaths: readonly string[] | void;
-  }
+  export const globalPaths: readonly string[] | void;
 }
 
 const memoize = <Args extends any[], T>(fn: (...args: Args) => T): ((...args: Args) => T) => {

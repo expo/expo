@@ -1,11 +1,11 @@
 import { Text as RNText, StyleSheet, useColorScheme } from 'react-native';
 
-import type { TextProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
+import type { TextProps } from './types';
 
 const styles = StyleSheet.create({
-  light: { color: '#000000' },
-  dark: { color: '#FFFFFF' },
+  light: { color: 'var(--expo-ui-foreground, #000000)' },
+  dark: { color: 'var(--expo-ui-foreground, #FFFFFF)' },
   hidden: { display: 'none' },
   disabled: { opacity: 0.5 },
 });

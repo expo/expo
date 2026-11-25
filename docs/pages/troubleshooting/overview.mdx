@@ -1,20 +1,23 @@
 ---
 title: Troubleshooting overview
 sidebar_title: Overview
-description: An overview of troubleshooting guides for app development with Expo and EAS.
+description: An overview of troubleshooting guides for app development with Expo and Expo Services.
 ---
 
 import { RouterLogo } from '@expo/styleguide';
 import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
 import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
+import { TerminalBrowserIcon } from '@expo/styleguide-icons/outline/TerminalBrowserIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { CODE } from '~/ui/components/Text';
 
-This page lists a collection of various troubleshooting guides for Expo and EAS.
+This page lists a collection of various troubleshooting guides for Expo and Expo Services.
 
 ## Error and warnings
 
@@ -22,21 +25,21 @@ This page lists a collection of various troubleshooting guides for Expo and EAS.
   title="View logs"
   description="Learn how to view logs when using Expo CLI to encounter errors and warnings while developing your app."
   href="/workflow/logging/"
-  Icon={BookOpen02Icon}
+  Icon={CodeSquare01Icon}
 />
 
 <BoxLink
   title="Errors and warnings"
   description="Learn about Redbox errors and stack traces to help you debug your Expo project."
   href="/debugging/errors-and-warnings/"
-  Icon={BookOpen02Icon}
+  Icon={TerminalBrowserIcon}
 />
 
 <BoxLink
   title="Common development errors"
   description="A list of common development errors that are encountered by developers using Expo."
   href="/workflow/common-development-errors/"
-  Icon={BookOpen02Icon}
+  Icon={CodeSquare01Icon}
 />
 
 <BoxLink
@@ -61,6 +64,27 @@ This page lists a collection of various troubleshooting guides for Expo and EAS.
 />
 
 <BoxLink
+  title='"Filename longer than 260 characters" error on Windows'
+  description="Learn how to fix the Filename longer than 260 characters error when building an Android app on Windows."
+  href="/troubleshooting/windows-long-paths/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title='"Project is incompatible with this version of Expo Go" error'
+  description="Learn how to install a version of Expo Go that is compatible with your project's Expo SDK version."
+  href="/troubleshooting/expo-go-version-mismatch/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title='"You need to be signed in to Expo Go and Expo CLI" error'
+  description="Learn why Expo Go on a physical iOS device requires Expo CLI and Expo Go to be signed in to the same Expo account."
+  href="/troubleshooting/expo-go-sign-in-required/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
   title='"React Native version mismatch" errors'
   description="Learn about what React Native version mismatch means and how to resolve it in an Expo or React Native app."
   href="/troubleshooting/react-native-version-mismatch/"
@@ -80,21 +104,21 @@ This page lists a collection of various troubleshooting guides for Expo and EAS.
   title="Debugging runtime issues"
   description="Learn about different techniques to debug your native runtime issues in development and production."
   href="/debugging/runtime-issues/"
-  Icon={BookOpen02Icon}
+  Icon={TerminalBrowserIcon}
 />
 
 <BoxLink
   title="Debugging and profiling tools"
   description="Learn about different tools available to inspect your Expo project at runtime."
   href="/debugging/tools/"
-  Icon={BookOpen02Icon}
+  Icon={TerminalBrowserIcon}
 />
 
 <BoxLink
   title="Dev tools plugins"
   description="Learn about using dev tools plugins to inspect and debug your Expo project."
   href="/debugging/devtools-plugins/"
-  Icon={BookOpen02Icon}
+  Icon={TerminalBrowserIcon}
 />
 
 ## Expo Router
@@ -122,31 +146,31 @@ This page lists a collection of various troubleshooting guides for Expo and EAS.
   Icon={NotificationBoxIcon}
 />
 
-## EAS
+## Expo Services
 
 <BoxLink
-  title="EAS Build: Troubleshooting errors and crashes"
-  description="A reference for troubleshooting build errors and crashes when using EAS Build."
+  title="Expo Build: Troubleshooting errors and crashes"
+  description="A reference for troubleshooting build errors and crashes when using Expo Build."
   href="/build-reference/troubleshooting/"
   Icon={Cube01Icon}
 />
 
 <BoxLink
-  title="EAS Update: Basic debugging"
+  title="Expo Update: Basic debugging"
   description="Learn how to use basic debugging techniques to fix an update issue."
   href="/eas-update/debug/"
   Icon={LayersTwo02Icon}
 />
 
 <BoxLink
-  title="EAS Update: Advanced debugging"
-  description="Learn advanced strategies on how to debug EAS Update."
+  title="Expo Update: Advanced debugging"
+  description="Learn advanced strategies on how to debug Expo Update."
   href="/eas-update/debug/"
   Icon={LayersTwo02Icon}
 />
 
 <BoxLink
-  title="EAS Update: Error recovery"
+  title="Expo Update: Error recovery"
   description={
     <>
       Learn how to take advantage of using built-in error recovery when using{' '}
@@ -158,8 +182,15 @@ This page lists a collection of various troubleshooting guides for Expo and EAS.
 />
 
 <BoxLink
-  title="EAS Observe: Troubleshooting"
-  description="Solutions for common issues when setting up and using EAS Observe."
+  title="Expo Observe: Troubleshooting"
+  description="Solutions for common issues when setting up and using Expo Observe."
   href="/eas/observe/reference/troubleshooting/"
   Icon={ActivityIcon}
+/>
+
+<BoxLink
+  title="Expo Workflows: Troubleshooting"
+  description="Diagnose and fix common issues when running Expo Workflows."
+  href="/eas/workflows/troubleshooting/"
+  Icon={Dataflow03Icon}
 />

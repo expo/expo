@@ -3,20 +3,21 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class SlotViewProps: ExpoSwiftUI.ViewProps {
+public final class SlotViewProps: ExpoSwiftUI.ViewProps {
   @Field var name: String = ""
   @Field var extraProps: [String: Any]?
 }
 
-internal struct SlotView: ExpoSwiftUI.View {
-  @ObservedObject var props: SlotViewProps
+public struct SlotView: ExpoSwiftUI.View {
+  @ObservedObject public var props: SlotViewProps
 
-  init(props: SlotViewProps) {
+  public init(props: SlotViewProps) {
     self.props = props
   }
 
-  var body: some View {
+  public var body: some View {
     Children()
+      .publishZeroContentOrigin(props.shadowNodeProxy)
   }
 
   func extra<T>(_ key: String, as type: T.Type = T.self) -> T? {
@@ -28,6 +29,11 @@ extension [any ExpoSwiftUI.AnyChild] {
   func slot(_ name: String) -> SlotView? {
     compactMap { $0.childView as? SlotView }
       .first { $0.props.name == name }
+  }
+
+  func slots(_ name: String) -> [SlotView] {
+    compactMap { $0.childView as? SlotView }
+      .filter { $0.props.name == name }
   }
 
   func withoutSlot(_ name: String) -> [any ExpoSwiftUI.AnyChild] {

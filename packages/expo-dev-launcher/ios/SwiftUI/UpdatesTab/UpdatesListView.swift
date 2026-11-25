@@ -1,6 +1,17 @@
 import SwiftUI
 // swiftlint:disable closure_body_length
 
+private let isoFormatterWithFractionalSeconds: ISO8601DateFormatter = {
+  let formatter = ISO8601DateFormatter()
+  formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+  return formatter
+}()
+private let isoFormatter = ISO8601DateFormatter()
+
+private func createdAtDate(_ value: String) -> Date {
+  isoFormatterWithFractionalSeconds.date(from: value) ?? isoFormatter.date(from: value) ?? .distantPast
+}
+
 struct UpdatesListView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
   @State private var branches: [BranchWithUpdates] = []
@@ -21,11 +32,11 @@ struct UpdatesListView: View {
           applyFilters()
         }
         .font(.caption)
-        .foregroundColor(.blue)
+        .foregroundStyle(Color.blue)
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)
-      .cornerRadius(12)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
 
       if isLoading {
         loading
@@ -37,7 +48,7 @@ struct UpdatesListView: View {
         LazyVStack(alignment: .leading) {
           Text("Updates (\(filteredUpdates.count))".uppercased())
             .font(.caption)
-            .foregroundColor(.primary.opacity(0.6))
+            .foregroundStyle(Color.primary.opacity(0.6))
           ForEach(filteredUpdates, id: \.update.id) { tuple in
             UpdateRow(update: tuple.update, branchName: tuple.branchName, isCompatible: viewModel.isCompatibleRuntime(tuple.update.runtimeVersion))
           }
@@ -78,7 +89,7 @@ struct UpdatesListView: View {
               appId: viewModel.structuredBuildInfo.appId,
               branchName: branch.name,
               page: 1,
-              pageSize: 10
+              pageSize: viewModel.updatesPageSize
             )
 
             let branchWithUpdates = BranchWithUpdates(
@@ -126,16 +137,13 @@ struct UpdatesListView: View {
     }
 
     filtered.sort {
-      let formatter = DateFormatter()
-      formatter.dateFormat = "MMMM d, yyyy, h:mma"
-
-      let date1 = formatter.date(from: $0.update.createdAt) ?? Date.distantPast
-      let date2 = formatter.date(from: $1.update.createdAt) ?? Date.distantPast
+      let date1 = createdAtDate($0.update.createdAt)
+      let date2 = createdAtDate($1.update.createdAt)
 
       return sortByRecency ? date1 > date2 : date1 < date2
     }
 
-    filteredUpdates = filtered
+    filteredUpdates = Array(filtered.prefix(viewModel.updatesPageSize))
   }
 
   private var loading: some View {
@@ -152,7 +160,7 @@ struct UpdatesListView: View {
   func createError(message: String) -> some View {
     VStack(spacing: 12) {
       Image(systemName: "exclamationmark.triangle")
-        .foregroundColor(.red)
+        .foregroundStyle(Color.red)
         .font(.title2)
 
       Text("Error loading updates")
@@ -172,22 +180,44 @@ struct UpdatesListView: View {
   }
 
   private var emptyUpdates: some View {
-    Section {
-      VStack(spacing: 16) {
-        Image(systemName: "tray")
-          .font(.largeTitle)
-          .foregroundColor(.gray)
+    VStack(spacing: 16) {
+      Image(systemName: "tray")
+        .resizable()
+        .scaledToFit()
+        .frame(width: 44, height: 44)
+        .foregroundStyle(Color.gray)
 
-        Text("No updates available")
-          .font(.headline)
+      if filterByCompatibility {
+        VStack(spacing: 8) {
+          Text("No compatible updates")
+            .font(.headline)
+            .multilineTextAlignment(.center)
 
-        Text(filterByCompatibility ? "No compatible updates found for this runtime version." : "No updates found.")
-          .font(.caption)
-          .foregroundStyle(.secondary)
-          .multilineTextAlignment(.center)
+          Text("No updates match this runtime version. Turn off \"Compatible only\" to see all updates.")
+            .font(.system(size: 14))
+            .multilineTextAlignment(.center)
+            .foregroundStyle(.secondary)
+        }
+      } else {
+        VStack(spacing: 8) {
+          Text("No updates yet")
+            .font(.headline)
+            .multilineTextAlignment(.center)
+
+          Text("Publish an update with EAS Update and it will appear here.")
+            .font(.system(size: 14))
+            .multilineTextAlignment(.center)
+            .foregroundStyle(.secondary)
+
+          if let destination = URL(string: "https://docs.expo.dev/eas-update/getting-started/") {
+            Link("Learn how to publish", destination: destination)
+              .font(.system(size: 14))
+              .foregroundStyle(Color.blue)
+          }
+        }
       }
-      .padding()
     }
+    .padding()
   }
 }
 // swiftlint:enable closure_body_length

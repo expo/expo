@@ -89,8 +89,8 @@ Whenever installing or updating native code, [manually increment the `"runtimeVe
 
 ### Roll out the update gradually
 
-If you're not sure about the impact of a new update, you can roll it out to a small group of users first. Use [rollouts](/eas-update/rollouts/) to publish the update to a small percentage of users and monitor the error rate for the update on the EAS dashboard. If you are noticing high error rates, then cancel the rollout. If you already rolled it out fully, then [roll it back](/eas-update/rollbacks/).
+If you're not sure about the impact of a new update, you can roll it out to a small group of users first. Use [rollouts](/eas-update/rollouts/) to publish the update to a small percentage of users and monitor the error rate for the update on the Expo dashboard. If you are noticing high error rates, then cancel the rollout. If you already rolled it out fully, then [roll it back](/eas-update/rollbacks/).
 
 ### Manually verify updates with a smaller group of users
 
-When you deploy to production, create a preview build that uses the same runtime but points to a different channel. Test your updates on those builds before promoting them to production (learn more about this in the [deployment guide](/eas-update/deployment/#deploying-previews)). Alternatively, you can opt-in certain users of your app to receive the update by overriding update parameters at runtime ([learn more](/eas-update/override/)).
+When you deploy to production, create a preview build that uses the same runtime but points to a different channel. Test your updates on those builds before promoting them to production (learn more about this in the [deployment guide](/eas-update/deployment/#deploying-previews)). Alternatively, you can opt in certain users of your app to receive the update with [channel surfing](/eas-update/channel-surfing/).

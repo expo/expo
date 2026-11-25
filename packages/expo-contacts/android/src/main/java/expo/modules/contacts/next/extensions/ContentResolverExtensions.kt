@@ -50,7 +50,7 @@ suspend fun ContentResolver.getContactIdFromRawContactId(
   val contactIdString = queryOne(
     uri = ContactsContract.RawContacts.CONTENT_URI,
     column = ContactId.COLUMN_IN_RAW_CONTACTS_TABLE,
-    extractor = Cursor::getString,
+    extractor = Cursor::getRequiredString,
     selection = "${ContactsContract.RawContacts._ID} = ?",
     selectionArgs = arrayOf(rawContactId.value)
   )

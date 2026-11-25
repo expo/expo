@@ -3,8 +3,8 @@ import type { NextHandleFunction } from 'connect';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { URL } from 'url';
 
-import { openJsInspector, queryInspectorAppAsync } from './JsInspector';
 import { isMatchingOrigin, shouldThrottleRemoteDevCall } from '../../../../utils/net';
+import { openJsInspector, queryInspectorAppAsync } from './JsInspector';
 
 interface JsInspectorMiddlewareOptions {
   serverBaseUrl: string;
@@ -47,7 +47,7 @@ export function createJsInspectorMiddleware({
       res.writeHead(200, {
         'Content-Type': 'application/json; charset=UTF-8',
         'Cache-Control': 'no-cache',
-        'Content-Length': data.length.toString(),
+        'Content-Length': Buffer.byteLength(data, 'utf8').toString(),
       });
       res.end(data);
     } else if (req.method === 'POST' || req.method === 'PUT') {

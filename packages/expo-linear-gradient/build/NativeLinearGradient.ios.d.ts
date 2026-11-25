@@ -1,5 +1,0 @@
-import type * as React from 'react';
-import type { NativeLinearGradientProps } from './NativeLinearGradient.types';
-declare const NativeLinearGradient: React.FC<NativeLinearGradientProps>;
-export default NativeLinearGradient;
-//# sourceMappingURL=NativeLinearGradient.ios.d.ts.map

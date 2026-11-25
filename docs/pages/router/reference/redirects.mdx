@@ -1,13 +1,15 @@
 ---
-title: Redirects
-description: Learn how to redirect URLs in Expo Router.
+title: Redirects and rewrites
+description: Learn how to redirect and rewrite URLs in Expo Router, in the app and on the server.
 ---
 
-You can redirect a request to a different URL based on some in-app criteria. Expo Router supports a number of different redirection patterns.
+You can redirect or rewrite an incoming request to a different URL. Expo Router supports this for both in-app navigation and for server requests.
 
-## Using `Redirect` component
+## In-app redirects
 
-You can immediately redirect from a particular screen by using the `Redirect` component:
+### Using `<Redirect>`
+
+You can immediately redirect from a particular screen by using [`<Redirect>`](/versions/latest/sdk/router/link/#redirect):
 
 ```tsx
 import { View, Text } from 'react-native';
@@ -34,9 +36,9 @@ export default function Page() {
 }
 ```
 
-## Using `useRouter` hook
+### Using `useRouter`
 
-You can also redirect imperatively with the `useRouter` hook:
+You can also redirect imperatively with the [`useRouter`](/versions/latest/sdk/router/#userouter) hook:
 
 ```tsx
 import { Text } from 'react-native';
@@ -55,3 +57,193 @@ function MyScreen() {
   return <Text>My Screen</Text>;
 }
 ```
+
+## Server redirects
+
+Use the `redirects` option of the `expo-router` config plugin in your [app config](/workflow/configuration/) to redirect routes that no longer exist in your **app** directory. The server matches each rule against the request URL, not the screen name, and responds with a redirect status code and a `Location` header.
+
+> **info** For redirects that depend on properties of the request, such as headers or cookies, use [middleware](/router/web/middleware/).
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-router",
+      {
+        "redirects": [
+          {
+            "source": "/redirect/from/here",
+            "destination": "/to/this/route"
+          },
+          {
+            "source": "/or/redirect/from/here",
+            "destination": "https://to.this.site"
+          }
+        ]
+      }
+    ]
+  ]
+}
+```
+
+See [`RedirectConfig`](/versions/latest/sdk/router/#redirectconfig-1) in the API reference for the properties of a redirect rule.
+
+### Rules
+
+`source` and `destination` are URL paths, not the route files on disk. Do not add the `/index` suffix for a directory route or `+api` for an API route.
+
+### Permanent redirects
+
+Set `permanent` to `true` when the resource has a new permanent URL. Clients should then use `destination` for all future requests, and can cache the redirect. The default is `false`, which means the resource is temporarily at a different URL.
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-router",
+      {
+        "redirects": [
+          {
+            "source": "/old-pricing",
+            "destination": "/pricing",
+            "permanent": true
+          }
+        ]
+      }
+    ]
+  ]
+}
+```
+
+The status code depends on `permanent` and on the request method:
+
+| Request method | `permanent: false` (default) | `permanent: true` |
+| -------------- | ---------------------------- | ----------------- |
+| `GET`, `HEAD`  | 302                          | 301               |
+| Other methods  | 307                          | 308               |
+
+### Dynamic segments
+
+`source` and `destination` can use the [dynamic route syntax](/router/basics/notation/#square-brackets). A segment name that appears in both `source` and `destination` keeps its value.
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-router",
+      {
+        "redirects": [
+          {
+            "source": "/redirect/[slug]",
+            "destination": "/target/[slug]"
+          }
+        ]
+      }
+    ]
+  ]
+}
+```
+
+A segment that only appears in `source` becomes a query parameter of the destination.
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-router",
+      {
+        "redirects": [
+          {
+            "source": "/redirect/[fruit]/[vegetable]/[meat]",
+            "destination": "/target/[vegetable]/[fruit]"
+          }
+        ]
+      }
+    ]
+  ]
+}
+```
+
+With the rule above, the server redirects `/redirect/apple/carrot/beef` to `/target/carrot/apple?meat=beef`.
+
+A catch-all segment matches the rest of the path.
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-router",
+      {
+        "redirects": [
+          {
+            "source": "/redirect/docs/[...path]",
+            "destination": "/guides/[...path]"
+          }
+        ]
+      }
+    ]
+  ]
+}
+```
+
+With the rule above, the server redirects `/redirect/docs/router/intro` to `/guides/router/intro`.
+
+### HTTP methods
+
+To redirect only some HTTP methods, list them in `methods`. Screen requests use the `GET` method. The supported values are `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `OPTIONS`, and `HEAD`.
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-router",
+      {
+        "redirects": [
+          {
+            "source": "/redirect/[slug]",
+            "destination": "/target/[slug]",
+            "methods": ["POST"]
+          }
+        ]
+      }
+    ]
+  ]
+}
+```
+
+## Server rewrites
+
+> **warning** Rewrites only work with `web.output: "server"`. Static output does not support them. See [Server rules in the app](#server-rules-in-the-app) for the in-app behavior.
+
+Use the `rewrites` option of the `expo-router` config plugin to serve one route at another URL. The server handles a request for `source` as if the client had requested `destination`. The URL in the browser does not change, and the server does not send a redirect status code.
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-router",
+      {
+        "rewrites": [
+          {
+            "source": "/rewrite/from/here",
+            "destination": "/to/this/route"
+          }
+        ]
+      }
+    ]
+  ]
+}
+```
+
+See [`RewriteConfig`](/versions/latest/sdk/router/#rewriteconfig) in the API reference for the properties of a rewrite rule. The [rules](#rules) for redirects also apply to rewrites, with one difference: an external URL is not a valid `destination`.
+
+Dynamic segments work the same way as in [redirects](#dynamic-segments).
+
+## Server rules in the app
+
+The app reads the `redirects` and `rewrites` rules from the app config at runtime on Android, iOS, and web. It applies them to the initial URL, to incoming deep links, and to every navigation call, such as `router.push()` or a `Link` press. This keeps the behavior consistent between a server request and in-app navigation. The in-app behavior differs from the server in the following ways:
+
+- The app treats a rewrite rule as a redirect rule. Navigation to a rewrite `source` goes to its `destination`, and the URL changes.
+- The app ignores `permanent` and `methods`. There is no HTTP response in the app.
+- The app opens an external `destination` with the device's URL handler instead of navigating.
+- The app drops a dynamic segment that only appears in `source`. It does not add the segment as a query parameter.

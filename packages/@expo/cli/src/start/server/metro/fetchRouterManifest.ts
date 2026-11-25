@@ -33,7 +33,7 @@ async function fetchManifest(
   options: FetchManifestOptions
 ): Promise<RoutesManifest | null> {
   const getManifest = getExpoRouteManifestBuilderAsync(projectRoot);
-  const paths = getRoutePaths(options.appDir);
+  const paths = await getRoutePaths(options.appDir);
   // Get the serialized manifest
   const jsonManifest = getManifest(paths, options);
   if (!jsonManifest) {
@@ -53,6 +53,8 @@ async function fetchManifest(
 
 export { fetchManifest };
 
+// TODO(@hassankhan): This should be a re-export of `initManifestRegExp()` from
+// `expo-server`
 // Convert the serialized manifest to a usable format
 export function inflateManifest(json: RoutesManifest<string>): RoutesManifest<RegExp> {
   return {
@@ -83,6 +85,12 @@ export function inflateManifest(json: RoutesManifest<string>): RoutesManifest<Re
       };
     }),
     rewrites: json.rewrites?.map((value: any) => {
+      return {
+        ...value,
+        namedRegex: new RegExp(value.namedRegex),
+      };
+    }),
+    pageHeaders: json.pageHeaders?.map((value) => {
       return {
         ...value,
         namedRegex: new RegExp(value.namedRegex),

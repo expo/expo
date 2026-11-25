@@ -1,13 +1,9 @@
-import { glob, GlobOptions } from 'glob';
 import { vol } from 'memfs';
 import { resolveWorkspaceRoot } from 'resolve-workspace-root';
 
-import { isFileIgnoredAsync } from '../../utils/files';
 import { LockfileCheck } from '../LockfileCheck';
 
 jest.mock('fs');
-jest.mock('glob');
-jest.mock('../../utils/files');
 jest.mock('resolve-workspace-root', () => ({
   resolveWorkspaceRoot: jest.fn(() => null),
 }));
@@ -27,13 +23,6 @@ const additionalProjectProps = {
   staticConfigPath: null,
   dynamicConfigPath: null,
 };
-
-/**
- * Helper to mock the results of isFileIgnoredAsync for all matching files.
- */
-function mockIsFileIgnoredResult(isFileIgnored: boolean) {
-  (isFileIgnoredAsync as jest.Mock).mockResolvedValue(isFileIgnored);
-}
 
 describe('runAsync', () => {
   afterEach(() => {

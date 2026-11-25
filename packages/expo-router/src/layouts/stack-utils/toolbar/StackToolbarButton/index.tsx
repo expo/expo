@@ -1,8 +1,6 @@
 'use client';
 import { Children, useMemo } from 'react';
 
-import { NativeToolbarButton } from './native';
-import type { StackToolbarButtonProps } from './types';
 import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
 import { filterAllowedChildrenElements, getFirstChildOfType } from '../../../../utils/children';
 import { useToolbarPlacement } from '../context';
@@ -10,8 +8,11 @@ import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
   extractIconRenderingMode,
   extractXcassetName,
+  warnIfHeaderItemHasImage,
 } from '../shared';
 import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from '../toolbar-primitives';
+import { NativeToolbarButton } from './native';
+import type { StackToolbarButtonProps } from './types';
 
 export type { StackToolbarButtonProps, NativeToolbarButtonProps } from './types';
 
@@ -96,6 +97,7 @@ export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => 
   return (
     <NativeToolbarButton
       {...sharedProps}
+      axisBehavior={props.axisBehavior}
       icon={icon}
       source={source}
       xcassetName={xcassetName}
@@ -111,6 +113,7 @@ export function convertStackToolbarButtonPropsToRNHeaderItem(
   if (props.hidden) {
     return undefined;
   }
+  warnIfHeaderItemHasImage('Stack.Toolbar.Button', props.image);
 
   return {
     ...convertStackHeaderSharedPropsToRNSharedHeaderItem(props),

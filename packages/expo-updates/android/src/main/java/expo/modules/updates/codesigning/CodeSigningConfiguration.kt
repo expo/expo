@@ -1,14 +1,13 @@
 package expo.modules.updates.codesigning
 
 import android.util.Base64
-import android.util.Log
 import expo.modules.structuredheaders.BooleanItem
 import expo.modules.structuredheaders.Dictionary
 import expo.modules.structuredheaders.StringItem
 import expo.modules.updates.codesigning.CertificateChain.Companion.expoProjectInformation
+import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updatesinterface.UpdatesLogMessage
 import java.security.Signature
-
-private const val TAG = "CodeSigning"
 
 enum class ValidationResult {
   VALID,
@@ -43,7 +42,12 @@ class CodeSigningConfiguration(
     codeSigningMetadata?.get(CODE_SIGNING_METADATA_KEY_ID_KEY) ?: CODE_SIGNING_METADATA_DEFAULT_KEY_ID
   }
 
-  fun validateSignature(signature: String?, bodyBytes: ByteArray, manifestResponseCertificateChain: String?): SignatureValidationResult {
+  fun validateSignature(
+    signature: String?,
+    bodyBytes: ByteArray,
+    manifestResponseCertificateChain: String?,
+    logger: UpdatesLogger
+  ): SignatureValidationResult {
     if (signature == null) {
       if (!allowUnsignedManifests) {
         throw Exception("No expo-signature header specified")
@@ -56,11 +60,17 @@ class CodeSigningConfiguration(
     return validateSignatureInternal(
       SignatureHeaderInfo.parseSignatureHeader(signature),
       bodyBytes,
-      manifestResponseCertificateChain
+      manifestResponseCertificateChain,
+      logger
     )
   }
 
-  private fun validateSignatureInternal(info: SignatureHeaderInfo, bodyBytes: ByteArray, manifestResponseCertificateChain: String?): SignatureValidationResult {
+  private fun validateSignatureInternal(
+    info: SignatureHeaderInfo,
+    bodyBytes: ByteArray,
+    manifestResponseCertificateChain: String?,
+    logger: UpdatesLogger
+  ): SignatureValidationResult {
     val certificateChain = if (includeManifestResponseCertificateChain) {
       CertificateChain(
         separateCertificateChain(manifestResponseCertificateChain ?: "") + embeddedCertificateString
@@ -74,10 +84,7 @@ class CodeSigningConfiguration(
       // note that a mismatched algorithm doesn't fail early. it still tries to verify the signature with the
       // algorithm specified in the configuration
       if (info.algorithm != algorithmFromMetadata) {
-        Log.i(
-          TAG,
-          "Key with alg=${info.algorithm} from signature does not match client configuration algorithm, continuing"
-        )
+        logger.warn(UpdatesLogMessage.SystemCodeSigningAlgorithmMismatch, values = mapOf("alg" to info.algorithm.toString()))
       }
 
       CertificateChain(listOf(embeddedCertificateString))
@@ -96,7 +103,11 @@ class CodeSigningConfiguration(
     }.verify(Base64.decode(info.signature, Base64.DEFAULT))
 
     return SignatureValidationResult(
-      if (isValid) ValidationResult.VALID else ValidationResult.INVALID,
+      if (isValid) {
+        ValidationResult.VALID
+      } else {
+        ValidationResult.INVALID
+      },
       certificateChain.codeSigningCertificate.expoProjectInformation()
     )
   }

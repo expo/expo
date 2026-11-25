@@ -1,3 +1,3 @@
-import AssetSourceResolver from 'react-native/Libraries/Image/AssetSourceResolver';
+import { AssetSourceResolver } from 'react-native/unstable-internals-do-not-use';
+
 export default AssetSourceResolver;
-export * from 'react-native/Libraries/Image/AssetSourceResolver';

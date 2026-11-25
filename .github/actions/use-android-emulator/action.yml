@@ -39,7 +39,7 @@ runs:
     - name: '💿 Setup Android Emulator #1'
       id: retries-1
       continue-on-error: true
-      uses: reactivecircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a # v2
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
       with:
         api-level: ${{ inputs.avd-api }}
         avd-name: ${{ inputs.avd-name }}
@@ -47,7 +47,7 @@ runs:
         disable-animations: true
         target: google_apis
         profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
-        disk-size: 4G # Reduced disk size to avoid running out of disk space when setting up the emulator
+        disk-size: 6G # The emulator raises the data partition of a new AVD to at least 6G.
         # gpu hw acceleration is not available on GitHub-hosted runners
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
@@ -62,7 +62,7 @@ runs:
       id: retries-2
       continue-on-error: true
       if: steps.retries-1.outcome == 'failure'
-      uses: reactivecircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a # v2
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
       with:
         api-level: ${{ inputs.avd-api }}
         avd-name: ${{ inputs.avd-name }}
@@ -70,7 +70,7 @@ runs:
         disable-animations: true
         target: google_apis
         profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
-        disk-size: 4G # Reduced disk size to avoid running out of disk space when setting up the emulator
+        disk-size: 6G # The emulator raises the data partition of a new AVD to at least 6G.
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
           # Try to close SystemUI ANR prompt
@@ -84,7 +84,7 @@ runs:
       id: retries-3
       # continue-on-error: true
       if: steps.retries-2.outcome == 'failure'
-      uses: reactivecircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a # v2
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
       with:
         api-level: ${{ inputs.avd-api }}
         avd-name: ${{ inputs.avd-name }}
@@ -92,7 +92,7 @@ runs:
         disable-animations: true
         target: google_apis
         profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
-        disk-size: 4G # Reduced disk size to avoid running out of disk space when setting up the emulator
+        disk-size: 6G # The emulator raises the data partition of a new AVD to at least 6G.
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
           # Try to close SystemUI ANR prompt

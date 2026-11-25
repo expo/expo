@@ -1,10 +1,10 @@
 import { ctx } from 'expo-router/_ctx';
 import { getContextKey, sortRoutes, type RouteNode } from 'expo-router/internal/routing';
 
-import { createPages, type CreatePagesApi } from './createPages';
 import { getRoutes } from '../../getRoutesSSR';
 import { evalStaticParamsAsync } from '../../loadStaticParamsAsync';
 import type { EntriesDev } from '../server';
+import { createPages, type CreatePagesApi } from './createPages';
 
 type RouteSettings = {
   render?: 'static' | 'dynamic';

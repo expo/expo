@@ -1,4 +1,5 @@
 #include "NativeArrayBuffer.h"
+#include "MutableBufferNativeState.h"
 
 #include "JavaScriptRuntime.h"
 #include "JSIContext.h"
@@ -6,6 +7,14 @@
 namespace expo {
 
 ByteBufferJSIWrapper::ByteBufferJSIWrapper(const jni::alias_ref<jni::JByteBuffer> &byteBuffer) : _byteBuffer(jni::make_global(byteBuffer)) {
+  _byteBuffer->order(jni::JByteOrder::nativeOrder());
+}
+
+ByteBufferJSIWrapper::ByteBufferJSIWrapper(
+  const jni::alias_ref<jni::JByteBuffer> &byteBuffer,
+  std::shared_ptr<jsi::MutableBuffer> retainedBuffer
+) : _byteBuffer(jni::make_global(byteBuffer)),
+    _retainedBuffer(std::move(retainedBuffer)) {
   _byteBuffer->order(jni::JByteOrder::nativeOrder());
 }
 
@@ -49,6 +58,15 @@ NativeArrayBuffer::initHybrid(jni::alias_ref<JavaPart::javaobject>,
 jni::local_ref<NativeArrayBuffer::javaobject>
 NativeArrayBuffer::newInstance(JSIContext *jsiContext, jsi::Runtime &runtime,
                                jsi::ArrayBuffer &arrayBuffer) {
+  auto mutableBuffer = expo::tryGetMutableBuffer(runtime, arrayBuffer);
+  if (mutableBuffer) {
+    auto byteBuffer = jni::JByteBuffer::wrapBytes(mutableBuffer->data(), mutableBuffer->size());
+    byteBuffer->order(jni::JByteOrder::nativeOrder());
+    auto value = NativeArrayBuffer::newObjectCxxArgs(byteBuffer, std::move(mutableBuffer));
+    jsiContext->jniDeallocator->addReference(value);
+    return value;
+  }
+
   size_t size = arrayBuffer.size(runtime);
   auto byteBuffer = jni::JByteBuffer::allocateDirect(size);
   byteBuffer->order(jni::JByteOrder::nativeOrder());
@@ -62,8 +80,19 @@ NativeArrayBuffer::newInstance(JSIContext *jsiContext, jsi::Runtime &runtime,
 jni::local_ref<NativeArrayBuffer::javaobject>
 NativeArrayBuffer::newInstance(JSIContext *jsiContext, jsi::Runtime &runtime,
                                expo::TypedArray& typedArray) {
-
   size_t size = typedArray.byteLength(runtime);
+
+  auto backingBuffer = typedArray.getBuffer(runtime);
+  auto mutableBuffer = expo::tryGetMutableBuffer(runtime, backingBuffer);
+  if (mutableBuffer) {
+    size_t offset = typedArray.byteOffset(runtime);
+    auto byteBuffer = jni::JByteBuffer::wrapBytes(
+      mutableBuffer->data() + offset, size);
+    byteBuffer->order(jni::JByteOrder::nativeOrder());
+    auto value = NativeArrayBuffer::newObjectCxxArgs(byteBuffer, std::move(mutableBuffer));
+    jsiContext->jniDeallocator->addReference(value);
+    return value;
+  }
 
   auto byteBuffer = jni::JByteBuffer::allocateDirect(static_cast<jint>(size));
   byteBuffer->order(jni::JByteOrder::nativeOrder());
@@ -76,6 +105,11 @@ NativeArrayBuffer::newInstance(JSIContext *jsiContext, jsi::Runtime &runtime,
 
 NativeArrayBuffer::NativeArrayBuffer(const jni::alias_ref<jni::JByteBuffer> &byteBuffer)
   : buffer(std::make_shared<ByteBufferJSIWrapper>(byteBuffer)) { }
+
+NativeArrayBuffer::NativeArrayBuffer(
+  const jni::alias_ref<jni::JByteBuffer> &byteBuffer,
+  std::shared_ptr<jsi::MutableBuffer> retainedBuffer
+) : buffer(std::make_shared<ByteBufferJSIWrapper>(byteBuffer, std::move(retainedBuffer))) { }
 
 int NativeArrayBuffer::size() {
   return (int) buffer->size();

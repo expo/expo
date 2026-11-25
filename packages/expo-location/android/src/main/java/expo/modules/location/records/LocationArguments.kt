@@ -36,6 +36,11 @@ internal class LocationLastKnownOptions(
 ) : Record, Serializable
 
 @OptimizedRecord
+internal class HeadingOptions(
+  @Field var headingFilter: Double? = null
+) : Record, Serializable
+
+@OptimizedRecord
 internal open class LocationOptions(
   @Field var accuracy: Int = ACCURACY_BALANCED,
   @Field var distanceInterval: Int? = null,
@@ -43,10 +48,15 @@ internal open class LocationOptions(
   @Field var timeInterval: Long? = null
 ) : Record, Serializable {
   constructor(map: Map<String, Any?>) : this(
-    accuracy = map["accuracy"] as? Int ?: ACCURACY_BALANCED,
-    distanceInterval = map["distanceInterval"] as? Int?,
+    // Numbers in the task options map arrive as Double (RN bridge / TaskManager
+    // persistence). Safe-casts like `as? Long` don't coerce numeric types and
+    // return null, silently dropping the configured intervals and falling back
+    // to the accuracy preset defaults. Coerce via Number instead, matching
+    // LocationTaskConsumer.shouldReportDeferredLocations.
+    accuracy = (map["accuracy"] as? Number)?.toInt() ?: ACCURACY_BALANCED,
+    distanceInterval = (map["distanceInterval"] as? Number)?.toInt(),
     mayShowUserSettingsDialog = map["mayShowUserSettingsDialog"] as? Boolean? ?: true,
-    timeInterval = map["timeInterval"] as? Long
+    timeInterval = (map["timeInterval"] as? Number)?.toLong()
   )
 }
 
@@ -93,6 +103,17 @@ internal class LocationTaskServiceOptions(
     "killServiceOnDestroy" to killServiceOnDestroy,
     "notificationColor" to notificationColor
   )
+}
+
+@OptimizedRecord
+internal class MotionActivityTaskOptions(
+  @Field var foregroundService: LocationTaskServiceOptions? = null
+) : Record, Serializable {
+  internal fun toMutableMap(): MutableMap<String, Any?> = mutableMapOf<String, Any?>().apply {
+    foregroundService?.let {
+      this["foregroundService"] = it.toMutableMap()
+    }
+  }
 }
 
 @OptimizedRecord

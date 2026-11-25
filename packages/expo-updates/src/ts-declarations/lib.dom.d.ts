@@ -2,7 +2,7 @@
 export {};
 
 /**
- * Handle deprecations and missing typings that not available in the main lib.dom.d.ts file.
+ * Handle deprecations and missing typings that are not available in the main lib.dom.d.ts file.
  */
 declare global {
   interface Location {

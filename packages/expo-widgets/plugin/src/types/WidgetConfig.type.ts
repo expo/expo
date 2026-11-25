@@ -5,9 +5,9 @@ export type WidgetConfig = {
   displayName: string;
   description: string;
   // @deprecated: use `ios.supportedFamilies` instead.
-  supportedFamilies: WidgetFamily[];
+  supportedFamilies?: WidgetFamily[];
   // @deprecated: use `ios.contentMarginsDisabled` instead.
-  contentMarginsDisabled: boolean;
+  contentMarginsDisabled?: boolean;
   // @deprecated: use `ios.configuration` instead.
   configuration?: {
     title: string;
@@ -17,6 +17,7 @@ export type WidgetConfig = {
   ios?: {
     supportedFamilies: WidgetFamily[];
     contentMarginsDisabled?: boolean;
+    initialLayout?: string;
     configuration?: {
       title: string;
       description?: string;
@@ -29,6 +30,7 @@ export type WidgetConfig = {
     targetCellWidth?: number;
     targetCellHeight?: number;
     resizeMode?: 'none' | 'horizontal' | 'vertical' | 'both';
+    initialLayout?: string;
   } | null;
 };
 
@@ -50,6 +52,7 @@ export type WidgetParameterBoolean = {
 export type WidgetParameterEnum = {
   title: string;
   type: 'enum';
+  dynamic?: boolean;
   values: {
     name: string;
     value: string;

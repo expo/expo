@@ -14,7 +14,11 @@ public typealias UIHostingController = NSHostingController
 public typealias UIViewRepresentable = NSViewRepresentable
 public typealias UILabel = NSLabel
 public typealias UIImage = NSImage
+public typealias UIImageView = NSImageView
 public typealias UIPasteboard = NSPasteboard
+public typealias UIColor = NSColor
+public typealias UIGestureRecognizer = NSGestureRecognizer
+public typealias UITextContentType = NSTextContentType
 
 extension UIApplication {
   public typealias LaunchOptionsKey = String

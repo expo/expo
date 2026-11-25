@@ -1,0 +1,31 @@
+---
+title: Manifests
+description: A library that provides types for Expo Manifests.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-57/packages/expo-manifests'
+packageName: 'expo-manifests'
+platforms: ['android', 'ios', 'tvos', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+`expo-manifests` provides TypeScript types for Expo manifests. A manifest is a JSON object that describes an update. An update is a version of your app's JavaScript bundle and assets.
+
+The library has types for two kinds of manifests:
+
+- `ExpoUpdatesManifest` describes an update that your app loads from an update server. This kind of manifest follows the [Expo Updates protocol](/technical-specs/expo-updates-1/#manifest-body). It includes the update ID, the runtime version, the assets, and your [app config](/workflow/configuration/) in `extra.expoClient`.
+- `EmbeddedManifest` describes the update that the build embeds in your app binary.
+
+`expo-updates` and `expo-constants` use these types. For example, [`Updates.manifest`](./updates/#updatesmanifest) contains the manifest of the update that is running. Use these types when your code reads the fields of a manifest. To read your app config, use [`Constants.expoConfig`](./constants/#nativeconstants) instead.
+
+## Installation
+
+<APIInstallSection />
+
+## API
+
+```js
+import * as Manifests from 'expo-manifests';
+```
+
+<APISection packageName="expo-manifests" apiName="Manifests" />

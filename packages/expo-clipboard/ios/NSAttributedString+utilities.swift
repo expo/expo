@@ -1,6 +1,8 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#if !os(macOS)
 import MobileCoreServices
+#endif
 
 extension NSAttributedString {
   @objc

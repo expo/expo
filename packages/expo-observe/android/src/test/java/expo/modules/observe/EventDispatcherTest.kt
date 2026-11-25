@@ -1,6 +1,7 @@
 package expo.modules.observe
 
 import android.content.Context
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.easclient.EASClientID
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
@@ -16,6 +17,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
@@ -39,6 +41,9 @@ class EventDispatcherTest {
     // Mock Android Context
     mockContext = mockk(relaxed = true)
 
+    mockkObject(ObserveConsent)
+    every { ObserveConsent.isGranted } returns true
+
     // Mock EASClientID to return a predictable UUID
     mockkConstructor(EASClientID::class)
     every { anyConstructed<EASClientID>().uuid } returns testEasClientId
@@ -59,7 +64,26 @@ class EventDispatcherTest {
   }
 
   @Test
-  fun `dispatch returns true on successful 200 response`() =
+  fun `a revoke during the request preparation starts no request`() =
+    runTest {
+      var granted = true
+      mockkObject(ObserveConsent)
+      every { ObserveConsent.isGranted } answers { granted }
+      // The client id is read while the payload is built.
+      every { anyConstructed<EASClientID>().uuid } answers {
+        granted = false
+        testEasClientId
+      }
+      mockServer.enqueue(MockResponse().setResponseCode(200))
+
+      val result = eventDispatcher.dispatch(listOf(createTestEvent()))
+
+      assertEquals(DispatchResult.RetryableFailure(retryAfterMs = null), result)
+      assertEquals(0, mockServer.requestCount)
+    }
+
+  @Test
+  fun `dispatch returns Success on 200 response`() =
     runTest {
       // Arrange
       mockServer.enqueue(
@@ -74,7 +98,7 @@ class EventDispatcherTest {
       val result = eventDispatcher.dispatch(events)
 
       // Assert
-      assertTrue(result)
+      assertEquals(DispatchResult.Success, result)
       assertEquals(1, mockServer.requestCount)
 
       val request = mockServer.takeRequest()
@@ -85,7 +109,7 @@ class EventDispatcherTest {
     }
 
   @Test
-  fun `dispatch returns true on successful 201 response`() =
+  fun `dispatch returns Success on 201 response`() =
     runTest {
       // Arrange
       mockServer.enqueue(
@@ -100,25 +124,26 @@ class EventDispatcherTest {
       val result = eventDispatcher.dispatch(events)
 
       // Assert
-      assertTrue(result)
+      assertEquals(DispatchResult.Success, result)
     }
 
   @Test
-  fun `dispatch returns false when empty event list is provided`() =
+  fun `dispatch returns Success on empty event list without hitting the network`() =
     runTest {
-      // Arrange
+      // Empty input is a no-op; we still report Success so the caller treats it as "nothing
+      // to do" rather than as a transient failure to retry.
       val emptyEvents = emptyList<Event>()
 
       // Act
       val result = eventDispatcher.dispatch(emptyEvents)
 
       // Assert
-      assertFalse(result)
+      assertEquals(DispatchResult.Success, result)
       assertEquals(0, mockServer.requestCount)
     }
 
   @Test
-  fun `dispatch returns false on 400 error response`() =
+  fun `dispatch returns NonRetryable on 400 error response`() =
     runTest {
       // Arrange
       mockServer.enqueue(
@@ -133,14 +158,31 @@ class EventDispatcherTest {
       val result = eventDispatcher.dispatch(events)
 
       // Assert
-      assertFalse(result)
+      assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryableFailure)
+      assertTrue((result as DispatchResult.NonRetryableFailure).reason.contains("400"))
       assertEquals(1, mockServer.requestCount)
     }
 
   @Test
-  fun `dispatch returns false on 500 server error`() =
+  fun `dispatch returns PayloadTooLarge on 413 response`() =
     runTest {
-      // Arrange
+      mockServer.enqueue(
+        MockResponse()
+          .setResponseCode(413)
+          .setBody("""{"error": "Payload Too Large"}""")
+      )
+
+      val result = eventDispatcher.dispatch(listOf(createTestEvent()))
+
+      assertEquals(DispatchResult.PayloadTooLarge, result)
+      assertEquals(1, mockServer.requestCount)
+    }
+
+  @Test
+  fun `dispatch returns NonRetryable on 500 server error`() =
+    runTest {
+      // 500 is NOT in OTLP's retryable list — only 429/502/503/504 are. 500 means an
+      // internal server error we can't reason about, so we drop the batch.
       mockServer.enqueue(
         MockResponse()
           .setResponseCode(500)
@@ -153,12 +195,50 @@ class EventDispatcherTest {
       val result = eventDispatcher.dispatch(events)
 
       // Assert
-      assertFalse(result)
+      assertTrue("expected NonRetryable, got $result", result is DispatchResult.NonRetryableFailure)
       assertEquals(1, mockServer.requestCount)
     }
 
   @Test
-  fun `dispatch includes correct easClientId in payload`() =
+  fun `dispatch returns Retryable on 503 with Retry-After header`() =
+    runTest {
+      // Server says 5 s; that's below the client's 60 s base, so `parseRetryAfter` clamps
+      // up to base — the client wouldn't dispatch faster than that anyway.
+      mockServer.enqueue(
+        MockResponse()
+          .setResponseCode(503)
+          .setHeader("Retry-After", "5")
+          .setBody("""{"error": "Service Unavailable"}""")
+      )
+
+      val events = listOf(createTestEvent())
+
+      val result = eventDispatcher.dispatch(events)
+
+      assertTrue("expected Retryable, got $result", result is DispatchResult.RetryableFailure)
+      assertEquals(
+        DispatchUtils.backoffBaseMs,
+        (result as DispatchResult.RetryableFailure).retryAfterMs
+      )
+    }
+
+  @Test
+  fun `dispatch returns Retryable on 429 without Retry-After`() =
+    runTest {
+      mockServer.enqueue(
+        MockResponse()
+          .setResponseCode(429)
+          .setBody("""{"error": "Too Many Requests"}""")
+      )
+
+      val result = eventDispatcher.dispatch(listOf(createTestEvent()))
+
+      assertTrue("expected Retryable, got $result", result is DispatchResult.RetryableFailure)
+      assertEquals(null, (result as DispatchResult.RetryableFailure).retryAfterMs)
+    }
+
+  @Test
+  fun `dispatch includes the easClientId as a resource attribute`() =
     runTest {
       // Arrange
       mockServer.enqueue(
@@ -176,7 +256,16 @@ class EventDispatcherTest {
       val request = mockServer.takeRequest()
       val requestBody = request.body.readUtf8()
       val json = JSONObject(requestBody)
-      assertEquals(testEasClientId.toString(), json.getString("easClientId"))
+      val resource = json.getJSONArray("resourceMetrics").getJSONObject(0).getJSONObject("resource")
+      val attributes = resource.getJSONArray("attributes")
+
+      val clientIdAttribute = (0 until attributes.length())
+        .map { attributes.getJSONObject(it) }
+        .first { it.getString("key") == "expo.eas_client.id" }
+      assertEquals(
+        testEasClientId.toString(),
+        clientIdAttribute.getJSONObject("value").getString("stringValue")
+      )
     }
 
   @Test
@@ -199,26 +288,15 @@ class EventDispatcherTest {
       val result = eventDispatcher.dispatch(events)
 
       // Assert
-      assertTrue(result)
+      assertEquals(DispatchResult.Success, result)
       assertEquals(1, mockServer.requestCount)
 
       val request = mockServer.takeRequest()
       val requestBody = request.body.readUtf8()
       val json = JSONObject(requestBody)
-      val eventsArray = json.getJSONArray("events")
+      val resourceMetrics = json.getJSONArray("resourceMetrics")
 
-      assertEquals(3, eventsArray.length())
-
-      val metricNames = mutableListOf<String>()
-      for (i in 0 until eventsArray.length()) {
-        val event = eventsArray.getJSONObject(i)
-        val metrics = event.getJSONArray("metrics")
-        metricNames.add(metrics.getJSONObject(0).getString("name"))
-      }
-
-      assertTrue(metricNames.contains("metric1"))
-      assertTrue(metricNames.contains("metric2"))
-      assertTrue(metricNames.contains("metric3"))
+      assertEquals(3, resourceMetrics.length())
     }
 
   @Test
@@ -238,29 +316,27 @@ class EventDispatcherTest {
 
       // Assert
       val request = mockServer.takeRequest()
-      assertEquals("/$testProjectId", request.path)
+      assertEquals("/$testProjectId/v1/metrics", request.path)
     }
 
   @Test
-  fun `dispatch throws exception on network failure`() =
+  fun `dispatch returns Retryable on network failure`() =
     runTest {
-      // Arrange
+      // Transport-level errors (DNS, TLS, timeouts, connection reset) are transient by
+      // definition — fold them into Retryable(null) so the next dispatch round picks the
+      // batch up again instead of crashing the WorkManager job.
       mockServer.shutdown() // Shutdown server to simulate network failure
 
       val events = listOf(createTestEvent())
 
-      // Act & Assert
-      try {
-        eventDispatcher.dispatch(events)
-        fail("Expected exception to be thrown")
-      } catch (e: Exception) {
-        // Expected behavior
-        assertNotNull(e)
-      }
+      val result = eventDispatcher.dispatch(events)
+
+      assertTrue("expected Retryable, got $result", result is DispatchResult.RetryableFailure)
+      assertEquals(null, (result as DispatchResult.RetryableFailure).retryAfterMs)
     }
 
   @Test
-  fun `dispatch includes all metadata fields in payload`() =
+  fun `dispatch maps metadata to OTel resource attributes`() =
     runTest {
       // Arrange
       mockServer.enqueue(
@@ -288,7 +364,7 @@ class EventDispatcherTest {
 
       val metric = EASMetric(
         sessionId = "session-123",
-        timestamp = "2025-11-26T10:00:00Z",
+        timestamp = "2025-11-26T10:00:00.000Z",
         category = "performance",
         name = "app_start",
         value = 1500.0
@@ -303,26 +379,29 @@ class EventDispatcherTest {
       val request = mockServer.takeRequest()
       val requestBody = request.body.readUtf8()
       val json = JSONObject(requestBody)
-      val eventsArray = json.getJSONArray("events")
-      val event = eventsArray.getJSONObject(0)
-      val metadataJson = event.getJSONObject("metadata")
+      val resource = json.getJSONArray("resourceMetrics").getJSONObject(0).getJSONObject("resource")
+      val attributes = resource.getJSONArray("attributes")
 
-      assertEquals("TestApp", metadataJson.getString("appName"))
-      assertEquals("com.test.app", metadataJson.getString("appIdentifier"))
-      assertEquals("1.0.0", metadataJson.getString("appVersion"))
-      assertEquals("100", metadataJson.getString("appBuildNumber"))
-      assertEquals("en-US", metadataJson.getString("languageTag"))
-      assertEquals("Android", metadataJson.getString("deviceOs"))
-      assertEquals("14", metadataJson.getString("deviceOsVersion"))
-      assertEquals("Pixel 8", metadataJson.getString("deviceModel"))
-      assertEquals("TestDevice", metadataJson.getString("deviceName"))
-      assertEquals("52.0.0", metadataJson.getString("expoSdkVersion"))
-      assertEquals("0.76.0", metadataJson.getString("reactNativeVersion"))
-      assertEquals("1.0.0", metadataJson.getString("clientVersion"))
+      val stringAttributes = (0 until attributes.length())
+        .map { attributes.getJSONObject(it) }
+        .associate { it.getString("key") to it.getJSONObject("value").getString("stringValue") }
+
+      assertEquals("com.test.app", stringAttributes["service.name"])
+      assertEquals("1.0.0", stringAttributes["service.version"])
+      assertEquals("100", stringAttributes["expo.app.build_number"])
+      assertEquals("en-US", stringAttributes["browser.language"])
+      assertEquals("Android", stringAttributes["os.name"])
+      assertEquals("14", stringAttributes["os.version"])
+      assertEquals("Pixel 8", stringAttributes["device.model.identifier"])
+      assertEquals("TestDevice", stringAttributes["device.model.name"])
+      assertEquals("52.0.0", stringAttributes["expo.sdk.version"])
+      assertEquals("0.76.0", stringAttributes["expo.react_native.version"])
+      assertEquals("1.0.0", stringAttributes["telemetry.sdk.version"])
+      assertEquals("TestApp", stringAttributes["expo.app.name"])
     }
 
   @Test
-  fun `dispatch handles 299 response as success`() =
+  fun `dispatch handles 299 response as Success`() =
     runTest {
       // Arrange
       mockServer.enqueue(
@@ -337,7 +416,65 @@ class EventDispatcherTest {
       val result = eventDispatcher.dispatch(events)
 
       // Assert
-      assertTrue(result)
+      assertEquals(DispatchResult.Success, result)
+    }
+
+  @Test
+  fun `dispatch returns PartialSuccess on 200 with partial_success that rejected records`() =
+    runTest {
+      // A 2xx body that includes `partialSuccess` with rejectedDataPoints > 0 means the
+      // collector accepted the batch but rejected those rows server-side. Surface as
+      // `PartialSuccess` so the caller logs the per-record rejection without describing it
+      // as a wholesale drop.
+      mockServer.enqueue(
+        MockResponse()
+          .setResponseCode(200)
+          .setBody("""{"partialSuccess":{"rejectedDataPoints":3,"errorMessage":"metric_kind_mismatch"}}""")
+      )
+
+      val result = eventDispatcher.dispatch(listOf(createTestEvent()))
+
+      assertEquals(
+        DispatchResult.PartialSuccess(
+          OTPartialSuccess(rejectedDataPoints = 3, errorMessage = "metric_kind_mismatch")
+        ),
+        result
+      )
+    }
+
+  @Test
+  fun `metrics, logs, and spans are sent as compact JSON`() =
+    runTest {
+      repeat(3) {
+        mockServer.enqueue(MockResponse().setResponseCode(200).setBody("{}"))
+      }
+      val log = LogEvent(
+        sessionId = "test-session",
+        timestamp = "2025-11-26T10:00:00.000Z",
+        name = "test_log",
+        severity = "info"
+      )
+      val span = OTSpan(
+        traceId = "0af7651916cd43dd8448eb211c80319c",
+        spanId = "b7ad6b7169203331",
+        name = "GET",
+        kind = 3,
+        startTimeUnixNano = 1_000_000,
+        endTimeUnixNano = 2_000_000,
+        attributes = emptyList(),
+        events = emptyList()
+      )
+      val results = listOf(
+        eventDispatcher.dispatch(listOf(createTestEvent())),
+        eventDispatcher.dispatchLogs(listOf(createTestEvent().copy(logs = listOf(log)))),
+        eventDispatcher.dispatchSpans(listOf(SpanBatch(event = createTestEvent(), spans = listOf(span))))
+      )
+      assertEquals(List(3) { DispatchResult.Success }, results)
+      repeat(3) {
+        val request = requireNotNull(mockServer.takeRequest(5, TimeUnit.SECONDS)) { "Expected a request" }
+        val body = request.body.readUtf8()
+        assertFalse("Request body is pretty-printed: $body", body.contains('\n'))
+      }
     }
 
   // Helper function to create test events
@@ -361,7 +498,7 @@ class EventDispatcherTest {
 
     val metric = EASMetric(
       sessionId = "test-session",
-      timestamp = "2025-11-26T10:00:00Z",
+      timestamp = "2025-11-26T10:00:00.000Z",
       category = "test",
       name = metricName,
       value = 123.45

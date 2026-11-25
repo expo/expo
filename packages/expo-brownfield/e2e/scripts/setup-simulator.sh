@@ -25,15 +25,15 @@ function wait_for_simulator_ready() {
 }
 
 function start_simulator() {
-  local DEVICE="iPhone 17 Pro"
+  local DEVICE="iPhone 18 Pro"
   local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-  local IOS_VERSION="26"
+  local IOS_VERSION="27"
   local RETRIES=3
   local CI=${CI:-true}
 
   echo " 🔍 Looking for device: $DEVICE with iOS version: $IOS_VERSION..."
 
-  DEVICE_ID=$(xcrun simctl list devices iPhone available --json | jq -r --arg device "$DEVICE" --arg ios_version "$IOS_VERSION" '.devices | to_entries[] | select(.key | contains("com.apple.CoreSimulator.SimRuntime.iOS-" + $ios_version + "-2")) | .value[] | select(.name == $device) | .udid' | head -n1)
+  DEVICE_ID=$(xcrun simctl list devices iPhone available --json | jq -r --arg device "$DEVICE" --arg ios_version "$IOS_VERSION" '.devices | to_entries[] | select(.key | contains("com.apple.CoreSimulator.SimRuntime.iOS-" + $ios_version + "-")) | .value[] | select(.name == $device) | .udid' | head -n1)
   if [[ -z "$DEVICE_ID" ]]; then
       echo " ⚠️  No device found for $DEVICE with iOS $IOS_VERSION"
       return 1

@@ -33,9 +33,9 @@ describe(findApplicationTargetWithDependenciesAsync, () => {
     expect(applicationTarget.type).toBe(TargetType.APPLICATION);
     expect(applicationTarget.signable).toBe(true);
     expect(applicationTarget.dependencies?.length).toBe(1);
-    expect(applicationTarget.dependencies?.[0].name).toBe('shareextension');
-    expect(applicationTarget.dependencies?.[0].type).toBe(TargetType.EXTENSION);
-    expect(applicationTarget.dependencies?.[0].signable).toBe(true);
+    expect(applicationTarget.dependencies?.[0]!.name).toBe('shareextension');
+    expect(applicationTarget.dependencies?.[0]!.type).toBe(TargetType.EXTENSION);
+    expect(applicationTarget.dependencies?.[0]!.signable).toBe(true);
   });
 
   it('also reads dependency dependencies', async () => {
@@ -58,12 +58,12 @@ describe(findApplicationTargetWithDependenciesAsync, () => {
     expect(applicationTarget.name).toBe('easwatchtest');
     expect(applicationTarget.type).toBe(TargetType.APPLICATION);
     expect(applicationTarget.dependencies?.length).toBe(1);
-    expect(applicationTarget.dependencies?.[0].name).toBe('eas-watch-test');
-    expect(applicationTarget.dependencies?.[0].type).toBe(TargetType.OTHER);
-    expect(applicationTarget.dependencies?.[0].dependencies?.[0].name).toBe(
+    expect(applicationTarget.dependencies?.[0]!.name).toBe('eas-watch-test');
+    expect(applicationTarget.dependencies?.[0]!.type).toBe(TargetType.OTHER);
+    expect(applicationTarget.dependencies?.[0]!.dependencies?.[0]!.name).toBe(
       'eas-watch-test WatchKit Extension'
     );
-    expect(applicationTarget.dependencies?.[0].dependencies?.[0].type).toBe(TargetType.OTHER);
+    expect(applicationTarget.dependencies?.[0]!.dependencies?.[0]!.type).toBe(TargetType.OTHER);
   });
 
   it('marks framework targets as non-signable', async () => {
@@ -86,6 +86,6 @@ describe(findApplicationTargetWithDependenciesAsync, () => {
       'myapp'
     );
     expect(applicationTarget.signable).toBe(true);
-    expect(applicationTarget.dependencies?.[0].signable).toBe(false);
+    expect(applicationTarget.dependencies?.[0]!.signable).toBe(false);
   });
 });

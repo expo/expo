@@ -9,6 +9,20 @@ export type AndroidVariant = 'picker' | 'input';
 export type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
 
 /**
+ * The date range reported by `DateRangePicker` and `DateRangePickerDialog`.
+ */
+export type DateRangeSelection = {
+  /**
+   * The selected start date, or `null` when no start date is selected.
+   */
+  start: Date | null;
+  /**
+   * The selected end date, or `null` until the user selects the second date of the range.
+   */
+  end: Date | null;
+};
+
+/**
  * Color overrides for the Material 3 DatePicker component.
  * All properties are optional — unset values use Material 3 theme defaults.
  */
@@ -75,6 +89,10 @@ export type TimePickerElementColors = {
   /** The color of clock dial numbers when selected or overlapping the selector. */
   clockDialSelectedContentColor?: ColorValue;
   /** The color of clock dial numbers when unselected. */
+  clockDialContentColor?: ColorValue;
+  /**
+   * @deprecated Use `clockDialContentColor` instead.
+   */
   clockDialUnselectedContentColor?: ColorValue;
   /** The color of the clock dial selector (hand). */
   selectorColor?: ColorValue;
@@ -83,40 +101,72 @@ export type TimePickerElementColors = {
   /** The background color of the selected AM/PM period. */
   periodSelectorSelectedContainerColor?: ColorValue;
   /** The background color of the unselected AM/PM period. */
+  periodSelectorContainerColor?: ColorValue;
+  /**
+   * @deprecated Use `periodSelectorContainerColor` instead.
+   */
   periodSelectorUnselectedContainerColor?: ColorValue;
   /** The text color of the selected AM/PM period. */
   periodSelectorSelectedContentColor?: ColorValue;
   /** The text color of the unselected AM/PM period. */
+  periodSelectorContentColor?: ColorValue;
+  /**
+   * @deprecated Use `periodSelectorContentColor` instead.
+   */
   periodSelectorUnselectedContentColor?: ColorValue;
   /** The background color of the selected hour/minute segment. */
   timeSelectorSelectedContainerColor?: ColorValue;
   /** The background color of the unselected hour/minute segment. */
+  timeSelectorContainerColor?: ColorValue;
+  /**
+   * @deprecated Use `timeSelectorContainerColor` instead.
+   */
   timeSelectorUnselectedContainerColor?: ColorValue;
   /** The text color of the selected hour/minute segment. */
   timeSelectorSelectedContentColor?: ColorValue;
   /** The text color of the unselected hour/minute segment. */
+  timeSelectorContentColor?: ColorValue;
+  /**
+   * @deprecated Use `timeSelectorContentColor` instead.
+   */
   timeSelectorUnselectedContentColor?: ColorValue;
 };
 
-export type DateTimePickerProps = {
+export interface DateTimePickerProps {
   /**
    * The initial date to display on the picker.
    */
   initialDate?: string | null;
   /**
-   * Callback function that is called when a date is selected.
+   * Called when the selection changes. The date is `null` when date input is incomplete or invalid.
    */
-  onDateSelected?: (date: Date) => void;
+  onDateSelected?: (date: Date | null) => void;
   /**
    * The variant of the picker, which determines its appearance and behavior.
    * @default 'picker'
    */
   variant?: AndroidVariant;
   /**
-   * Show to button to toggle between variants on Android.
+   * Show a button to toggle between variants on Android. This prop has no effect when
+   * `displayedComponents` is `'hourAndMinute'`, because the Material 3 `TimePicker` and `TimeInput`
+   * have no toggle.
    * @default true
    */
   showVariantToggle?: boolean;
+  /**
+   * Whether the picker shows its title, such as "Select date". When `false`, the picker passes
+   * `null` to Material 3's `title` slot. This prop has no effect when `displayedComponents` is
+   * `'hourAndMinute'`.
+   * @default true
+   */
+  showTitle?: boolean;
+  /**
+   * Whether the picker shows its headline, which displays the current selection. When `false`,
+   * the picker passes `null` to Material 3's `headline` slot. This prop has no effect when
+   * `displayedComponents` is `'hourAndMinute'`.
+   * @default true
+   */
+  showHeadline?: boolean;
   /**
    * The components that the picker should display.
    * On Android, you can have a picker that selects just the date or just the time.
@@ -142,7 +192,7 @@ export type DateTimePickerProps = {
   elementColors?: DatePickerElementColors & TimePickerElementColors;
   /**
    * Determines what format the clock should be displayed in on Android.
-   * @default true
+   * Defaults to the device's 12-hour or 24-hour setting.
    */
   is24Hour?: boolean;
   /**
@@ -154,7 +204,7 @@ export type DateTimePickerProps = {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
-};
+}
 
 type NativeDatePickerProps = Omit<
   DateTimePickerProps,
@@ -164,7 +214,7 @@ type NativeDatePickerProps = Omit<
   initialDate?: number | null;
   selectableDates?: { start?: number | null; end?: number | null } | null;
   elementColors?: DatePickerElementColors & TimePickerElementColors;
-} & ViewEvent<'onDateSelected', { date: Date }>;
+} & ViewEvent<'onDateSelected', { date: number | null }>;
 
 function convertSelectableDates(selectableDates?: {
   start?: Date;
@@ -175,6 +225,10 @@ function convertSelectableDates(selectableDates?: {
     start: selectableDates.start ? selectableDates.start.getTime() : null,
     end: selectableDates.end ? selectableDates.end.getTime() : null,
   };
+}
+
+function convertTimestampToDate(timestamp: number | null): Date | null {
+  return timestamp == null ? null : new Date(timestamp);
 }
 
 function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePickerProps {
@@ -191,7 +245,7 @@ function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePic
     initialDate: initialDateTimestamp,
     selectableDates: convertSelectableDates(selectableDates),
     onDateSelected: ({ nativeEvent: { date } }) => {
-      props.onDateSelected?.(new Date(date));
+      props.onDateSelected?.(convertTimestampToDate(date));
     },
     variant,
     ...(elementColors != null ? { elementColors } : undefined),
@@ -210,12 +264,134 @@ export function DateTimePicker(props: DateTimePickerProps) {
   return <DatePickerNativeView {...transformDateTimePickerProps(props)} />;
 }
 
+export interface DateRangePickerProps {
+  /**
+   * The initially selected start date, as an ISO 8601 string.
+   */
+  initialStartDate?: string | null;
+  /**
+   * The initially selected end date, as an ISO 8601 string. It must be on or after `initialStartDate`.
+   */
+  initialEndDate?: string | null;
+  /**
+   * Called once when the component mounts with the initial range, and again whenever the selected date range changes.
+   * The end date is `null` while the user is selecting a range.
+   */
+  onDateRangeSelected?: (range: DateRangeSelection) => void;
+  /**
+   * The variant of the picker, which determines its appearance and behavior.
+   * @default 'picker'
+   */
+  variant?: AndroidVariant;
+  /**
+   * Show a button to toggle between variants on Android.
+   * @default true
+   */
+  showVariantToggle?: boolean;
+  /**
+   * Whether the picker shows its title, such as "Select date". When `false`, the picker passes
+   * `null` to Material 3's `title` slot.
+   * @default true
+   */
+  showTitle?: boolean;
+  /**
+   * Whether the picker shows its headline, which displays the current selection. When `false`,
+   * the picker passes `null` to Material 3's `headline` slot.
+   * @default true
+   */
+  showHeadline?: boolean;
+  /**
+   * The tint color to use on the picker elements.
+   */
+  color?: ColorValue;
+  /**
+   * Fine-grained color overrides for individual picker elements.
+   */
+  elementColors?: DatePickerElementColors;
+  /**
+   * Constrains which dates can be selected. `start` is the earliest selectable date and `end` is
+   * the latest.
+   */
+  selectableDates?: { start?: Date; end?: Date };
+  /**
+   * Modifiers for the component.
+   */
+  modifiers?: ModifierConfig[];
+}
+
+type NativeDateRangePickerProps = Omit<
+  DateRangePickerProps,
+  'onDateRangeSelected' | 'initialStartDate' | 'initialEndDate' | 'selectableDates'
+> & {
+  initialStartDate?: number | null;
+  initialEndDate?: number | null;
+  selectableDates?: { start?: number | null; end?: number | null } | null;
+} & ViewEvent<'onDateRangeSelected', { start: number | null; end: number | null }>;
+
+function transformDateRangePickerProps(
+  props: Omit<DateRangePickerProps, 'modifiers'>
+): Omit<NativeDateRangePickerProps, 'modifiers'> {
+  const {
+    initialStartDate,
+    initialEndDate,
+    selectableDates,
+    elementColors,
+    onDateRangeSelected,
+    ...rest
+  } = props;
+  return {
+    ...rest,
+    initialStartDate: initialStartDate ? new Date(initialStartDate).getTime() : null,
+    initialEndDate: initialEndDate ? new Date(initialEndDate).getTime() : null,
+    selectableDates: convertSelectableDates(selectableDates),
+    onDateRangeSelected: ({ nativeEvent: { start, end } }) => {
+      onDateRangeSelected?.({
+        start: convertTimestampToDate(start),
+        end: convertTimestampToDate(end),
+      });
+    },
+    ...(elementColors != null ? { elementColors } : undefined),
+  };
+}
+
+const DateRangePickerNativeView: React.ComponentType<NativeDateRangePickerProps> =
+  requireNativeView('ExpoUI', 'DateRangePickerView');
+
+/**
+ * Renders an inline Material 3 date range picker.
+ */
+export function DateRangePicker(props: DateRangePickerProps) {
+  const { modifiers, ...rest } = props;
+  const nativeProps: NativeDateRangePickerProps = {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...transformDateRangePickerProps(rest),
+  };
+  return <DateRangePickerNativeView {...nativeProps} />;
+}
+
 // -- Dialog views (used internally by the compat layer) ---------------------
 
-export type DatePickerDialogProps = {
+export interface DatePickerDialogProps {
+  /**
+   * The initially selected date. When omitted, the dialog opens on the current month with no
+   * selection and the confirm button stays disabled until a date is picked.
+   */
   initialDate?: string | null;
   variant?: AndroidVariant;
   showVariantToggle?: boolean;
+  /**
+   * Whether the picker shows its title, such as "Select date". When `false`, the picker passes
+   * `null` to Material 3's `title` slot.
+   * @default true
+   */
+  showTitle?: boolean;
+  /**
+   * Whether the picker shows its headline, which displays the current selection. When `false`,
+   * the picker passes `null` to Material 3's `headline` slot.
+   * @default true
+   */
+  showHeadline?: boolean;
   confirmButtonLabel?: string;
   dismissButtonLabel?: string;
   color?: ColorValue;
@@ -223,7 +399,7 @@ export type DatePickerDialogProps = {
   selectableDates?: { start?: Date; end?: Date };
   onDateSelected?: (date: Date) => void;
   onDismissRequest: () => void;
-};
+}
 
 type NativeDatePickerDialogProps = Omit<
   DatePickerDialogProps,
@@ -260,8 +436,54 @@ export function DatePickerDialog(props: DatePickerDialogProps) {
   return <DatePickerDialogNativeView {...nativeProps} />;
 }
 
-export type TimePickerDialogProps = {
+export interface DateRangePickerDialogProps extends Omit<DateRangePickerProps, 'modifiers'> {
+  /**
+   * The label for the button that confirms the selected range.
+   * Defaults to the system "Ok" string.
+   */
+  confirmButtonLabel?: string;
+  /**
+   * The label for the button that dismisses the dialog.
+   * Defaults to the system "Cancel" string.
+   */
+  dismissButtonLabel?: string;
+  /** The tint color to use on the picker elements and dialog buttons. */
+  color?: ColorValue;
+  /** Callback function that is called when the user confirms a complete date range. */
+  onDateRangeSelected?: (range: DateRangeSelection) => void;
+  /** Callback function that is called when the dialog is dismissed. */
+  onDismissRequest: () => void;
+}
+
+type NativeDateRangePickerDialogProps = Omit<NativeDateRangePickerProps, 'modifiers'> &
+  Pick<DateRangePickerDialogProps, 'confirmButtonLabel' | 'dismissButtonLabel'> &
+  ViewEvent<'onDismissRequest', void>;
+
+const DateRangePickerDialogNativeView: React.ComponentType<NativeDateRangePickerDialogProps> =
+  requireNativeView('ExpoUI', 'DateRangePickerDialogView');
+
+/**
+ * Renders a modal Material 3 date range picker.
+ */
+export function DateRangePickerDialog(props: DateRangePickerDialogProps) {
+  const { confirmButtonLabel, dismissButtonLabel, onDismissRequest, ...rest } = props;
+  const nativeProps: NativeDateRangePickerDialogProps = {
+    ...transformDateRangePickerProps(rest),
+    confirmButtonLabel,
+    dismissButtonLabel,
+    onDismissRequest,
+  };
+  return <DateRangePickerDialogNativeView {...nativeProps} />;
+}
+
+export interface TimePickerDialogProps {
   initialDate?: string | null;
+  /**
+   * The variant of the picker. `'picker'` shows the clock dial and `'input'` shows text fields for
+   * the hour and the minute.
+   * @default 'picker'
+   */
+  variant?: AndroidVariant;
   is24Hour?: boolean;
   confirmButtonLabel?: string;
   dismissButtonLabel?: string;
@@ -269,7 +491,7 @@ export type TimePickerDialogProps = {
   elementColors?: DatePickerElementColors & TimePickerElementColors;
   onDateSelected?: (date: Date) => void;
   onDismissRequest: () => void;
-};
+}
 
 type NativeTimePickerDialogProps = Omit<
   TimePickerDialogProps,

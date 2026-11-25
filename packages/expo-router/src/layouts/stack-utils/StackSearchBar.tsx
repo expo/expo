@@ -27,7 +27,7 @@ export interface StackSearchBarProps extends SearchBarProps {}
  *     <>
  *       <Stack.SearchBar
  *         placeholder="Search..."
- *         onChangeText={(text) => console.log(text)}
+ *         onChangeText={(event) => console.log(event.nativeEvent.text)}
  *       />
  *      <ScreenContent />
  *     </>

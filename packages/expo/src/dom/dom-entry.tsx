@@ -1,11 +1,10 @@
 // Entry file for a DOM Component.
 import '@expo/metro-runtime';
-
 import React from 'react';
 
-import type { JSONValue } from './dom.types';
-import { addEventListener, getActionsObject } from './marshal';
 import registerRootComponent from '../launch/registerRootComponent';
+import type { JSONValue } from './dom.types';
+import { addEventListener, getActionsObject, notifyDOMReady } from './marshal';
 
 export interface MarshalledProps {
   names: string[];
@@ -82,6 +81,8 @@ export function registerDOMComponent(AppModule: any) {
           setProps(msg.data as MarshalledProps);
         }
       });
+      // Must stay after `addEventListener`: props emitted before it existed were dropped.
+      notifyDOMReady();
       return () => {
         remove();
       };

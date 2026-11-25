@@ -1,8 +1,7 @@
 {
-  "extends": "expo-module-scripts/tsconfig.base",
+  "extends": "@expo/internal-scripts/tsconfig.base",
   "compilerOptions": {
     "noEmit": true
   },
-  "include": ["./**/*"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+  "include": ["./**/*"]
 }

@@ -1,48 +1,45 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 import MessageUI
-import MobileCoreServices
 import ExpoModulesCore
 
+@ExpoModule("ExpoMailComposer")
 public class MailComposerModule: Module {
+  @MainActor
   var currentSession: MailComposingSession?
 
-  public func definition() -> ModuleDefinition {
-    // TODO: Rename the package to 'ExpoMail'
-    Name("ExpoMailComposer")
+  @JS(.concurrent)
+  func isAvailableAsync() async -> Bool {
+    return canSendMail()
+  }
 
-    AsyncFunction("isAvailableAsync", canSendMail)
-
-    AsyncFunction("composeAsync") { (options: MailComposerOptions, promise: Promise) in
-      guard canSendMail() else {
-        throw CannotSendMailException()
-      }
-      guard self.currentSession == nil else {
-        throw OperationInProgressException()
-      }
-      guard let appContext = self.appContext else {
-        throw Exceptions.AppContextLost()
-      }
-
-      let session = MailComposingSession(appContext)
-      try session.compose(options: options)
-
-      // This is important to retain the session until it finishes
-      self.currentSession = session
-
-      session.presentViewController { result in
-        promise.settle(with: result)
-
-        // Release the session so it can get deallocated
-        self.currentSession = nil
-      }
+  @JS
+  @MainActor
+  func composeAsync(options: MailComposerOptions) async throws -> [String: String] {
+    guard canSendMail() else {
+      throw CannotSendMailException()
     }
-    .runOnQueue(.main)
-
-    // Function to check the availability of listed mail clients on the device
-    Function("getClients") { () -> [MailClient] in
-      return getAvailableMailClients()
+    guard currentSession == nil else {
+      throw OperationInProgressException()
     }
+    guard let appContext else {
+      throw Exceptions.AppContextLost()
+    }
+
+    let session = MailComposingSession(appContext)
+    try session.compose(options: options)
+
+    // This is important to retain the session until it finishes
+    currentSession = session
+    defer { currentSession = nil }
+
+    return try await session.present()
+  }
+
+  // Function to check the availability of listed mail clients on the device
+  @JS
+  func getClients() -> [MailClient] {
+    return getAvailableMailClients()
   }
 }
 

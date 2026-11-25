@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
+import HeadingText from '../../components/HeadingText';
 import AudioModeSelector from './AudioModeSelector';
 import AudioPlayer from './AudioPlayer';
 import Recorder from './Recorder';
-import HeadingText from '../../components/HeadingText';
 
 export default function RecordingScreen() {
   const [uri, setUri] = useState<string | undefined>(undefined);

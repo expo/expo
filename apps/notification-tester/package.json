@@ -1,54 +1,55 @@
 {
   "name": "notification-tester",
-  "main": "index.ts",
-  "version": "1.0.0",
+  "version": "1.0.13",
   "private": true,
+  "main": "index.ts",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "test": "jest --watchAll",
+    "test": "jest",
     "lint": "expo lint",
     "prebuild:android": "./scripts/prebuild-android.sh",
     "prebuild:ios": "./scripts/prebuild-ios.sh",
     "set-debug-app": "adb shell am set-debug-app -w --persistent \"com.brents.microfoam\"",
     "clear-debug-app": "adb shell am clear-debug-app \"com.brents.microfoam\""
   },
-  "jest": {
-    "preset": "jest-expo"
-  },
   "dependencies": {
-    "@react-navigation/bottom-tabs": "^7.15.5",
-    "@react-navigation/native": "^7.1.33",
     "@expo/ui": "workspace:*",
     "@expo/vector-icons": "^15.0.2",
+    "@react-navigation/bottom-tabs": "^7.15.5",
+    "@react-navigation/native": "^7.1.33",
+    "color": "^5.0.3",
     "expo": "workspace:*",
+    "expo-constants": "workspace:*",
+    "expo-dev-client": "workspace:*",
+    "expo-device": "workspace:*",
     "expo-font": "workspace:*",
     "expo-linking": "workspace:*",
     "expo-localization": "workspace:*",
+    "expo-notifications": "workspace:*",
     "expo-router": "workspace:*",
-    "expo-device": "workspace:*",
-    "expo-constants": "workspace:*",
-    "expo-dev-client": "workspace:*",
     "expo-sqlite": "workspace:*",
     "expo-status-bar": "workspace:*",
-    "expo-notifications": "workspace:*",
+    "expo-task-manager": "workspace:*",
     "expo-updates": "workspace:*",
     "native-component-list": "workspace:*",
-    "test-suite": "workspace:*",
-    "expo-task-manager": "workspace:*",
-    "react-native-gesture-handler": "~2.31.2",
-    "react": "19.2.3",
-    "react-native": "0.86.0-rc.2",
-    "react-native-reanimated": "4.3.0",
-    "react-native-safe-area-context": "5.7.0",
-    "react-native-screens": "4.25.2",
-    "react-native-worklets": "0.8.3"
+    "react": "19.3.0",
+    "react-native": "0.89.0-rc.3",
+    "react-native-gesture-handler": "~3.5.0",
+    "react-native-reanimated": "4.8.0",
+    "react-native-safe-area-context": "~5.11.1",
+    "react-native-screens": "4.30.1",
+    "react-native-worklets": "0.14.0",
+    "test-suite": "workspace:*"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
-    "@types/react": "~19.2.0"
+    "@types/jest": "^30.0.0",
+    "@types/react": "~19.3.0"
+  },
+  "jest": {
+    "preset": "jest-expo"
   },
   "expo": {
     "autolinking": {
@@ -69,6 +70,7 @@
         "react-native-view-shot",
         "react-native-webview",
         "@expo/app-integrity",
+        "@expo/dom-webview",
         "expo-age-range",
         "expo-apple-authentication",
         "expo-audio",
@@ -84,6 +86,7 @@
         "expo-contacts",
         "expo-crypto",
         "expo-document-picker",
+        "expo-file-system",
         "expo-gl",
         "expo-haptics",
         "expo-image-manipulator",
@@ -109,7 +112,6 @@
         "expo-system-ui",
         "expo-tracking-transparency",
         "expo-video",
-        "expo-video-thumbnails",
         "expo-web-browser"
       ]
     }

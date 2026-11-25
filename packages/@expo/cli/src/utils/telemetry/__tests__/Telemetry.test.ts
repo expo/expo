@@ -1,5 +1,28 @@
 import { Telemetry } from '../Telemetry';
 import { commandEvent } from '../events';
+import { getAgentTelemetryContext } from '../utils/agent';
+import { getSandboxTelemetryContext } from '../utils/sandbox';
+
+jest.mock('../utils/agent', () => ({
+  getAgentTelemetryContext: jest.fn(),
+}));
+jest.mock('../utils/sandbox', () => ({
+  getSandboxTelemetryContext: jest.fn(),
+}));
+
+const getAgentTelemetryContextMock = getAgentTelemetryContext as jest.MockedFunction<
+  typeof getAgentTelemetryContext
+>;
+const getSandboxTelemetryContextMock = getSandboxTelemetryContext as jest.MockedFunction<
+  typeof getSandboxTelemetryContext
+>;
+
+beforeEach(() => {
+  getAgentTelemetryContextMock.mockReset();
+  getAgentTelemetryContextMock.mockReturnValue(null);
+  getSandboxTelemetryContextMock.mockReset();
+  getSandboxTelemetryContextMock.mockReturnValue(null);
+});
 
 it('starts with default detached client', () => {
   const telemetry = new Telemetry({ anonymousId: 'xxx' });
@@ -25,6 +48,10 @@ it('waits until telemetry is initialized', () => {
   expect(client.record).toHaveBeenCalledWith([
     expect.objectContaining({
       userHash: null,
+      context: expect.not.objectContaining({
+        agent: expect.anything(),
+        sandbox_provider: expect.anything(),
+      }),
     }),
   ]);
 });
@@ -50,11 +77,50 @@ it('preprocesses all records', () => {
       }),
     }),
   ]);
+  expect(client.record.mock.calls[0][0][0].context).not.toHaveProperty('agent');
+  expect(client.record.mock.calls[0][0][0].context).not.toHaveProperty('sandbox_provider');
 
   // Ensure the user hash was used instead of the actual user id
   expect(client.record).toHaveBeenCalledWith([
     expect.objectContaining({
       userHash: expect.not.stringMatching('yyy'),
+    }),
+  ]);
+});
+
+it('adds detected agent context to all records', () => {
+  getAgentTelemetryContextMock.mockReturnValue({ id: 'codex', sessionId: 'zzz' });
+
+  const telemetry = new Telemetry({ anonymousId: 'xxx', userId: 'yyy' });
+  const client = mockTelemetryClient(telemetry);
+
+  telemetry.record(commandEvent('start'));
+
+  expect(client.record).toHaveBeenCalledWith([
+    expect.objectContaining({
+      context: expect.objectContaining({
+        agent: {
+          id: 'codex',
+          sessionId: 'zzz',
+        },
+      }),
+    }),
+  ]);
+});
+
+it('adds detected sandbox context to all records', () => {
+  getSandboxTelemetryContextMock.mockReturnValue('e2b');
+
+  const telemetry = new Telemetry({ anonymousId: 'xxx', userId: 'yyy' });
+  const client = mockTelemetryClient(telemetry);
+
+  telemetry.record(commandEvent('start'));
+
+  expect(client.record).toHaveBeenCalledWith([
+    expect.objectContaining({
+      context: expect.objectContaining({
+        sandbox_provider: 'e2b',
+      }),
     }),
   ]);
 });

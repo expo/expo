@@ -1,10 +1,12 @@
 'use client';
-import { IconButton, Icon } from '@expo/ui/jetpack-compose';
 
-import type { NativeToolbarButtonProps } from './types';
+import { requireExpoUI } from '../../../../optional-libraries/expo-ui';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
+import { getBadgeContentDescription, ToolbarItemBadge } from '../ToolbarItemBadge';
 import { useToolbarColors } from '../context';
 import { DEFAULT_TOOLBAR_TINT_COLOR } from '../defaults';
+import { getIconButtonContainerColors } from '../getIconButtonContainerColors';
+import type { NativeToolbarButtonProps } from './types';
 
 /**
  * Native toolbar button component for Android bottom toolbar.
@@ -21,22 +23,39 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
     }
     return null;
   }
+  const {
+    expoUI: { Icon, IconButton },
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
 
+  // `tint={null}` tells `<Icon>` to draw the source in its original colors.
+  // `undefined` would fall back to `LocalContentColor`, i.e. the IconButton's
+  // content color, which is still a tint.
   const tintColor =
     props.imageRenderingMode === 'original'
-      ? undefined
+      ? null
       : (props.tintColor ?? toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR());
+
+  const button = (
+    <IconButton
+      onClick={props.onPress}
+      enabled={!props.disabled}
+      colors={getIconButtonContainerColors(toolbarColors.buttonContainerColor)}>
+      <Icon
+        source={props.source}
+        tint={tintColor}
+        size={24}
+        contentDescription={getBadgeContentDescription(props.accessibilityLabel, props.badge)}
+      />
+    </IconButton>
+  );
 
   return (
     <AnimatedItemContainer visible={!props.hidden}>
-      <IconButton onClick={props.onPress} enabled={!props.disabled}>
-        <Icon
-          source={props.source}
-          tint={tintColor}
-          size={24}
-          contentDescription={props.accessibilityLabel}
-        />
-      </IconButton>
+      <ToolbarItemBadge badge={props.badge} disabled={props.disabled}>
+        {button}
+      </ToolbarItemBadge>
     </AnimatedItemContainer>
   );
 };

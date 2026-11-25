@@ -2,13 +2,13 @@ import { AndroidConfig, ConfigPlugin, withDangerousMod } from 'expo/config-plugi
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { WidgetConfig } from '../types/WidgetConfig.type';
 import {
   getProviderClassName,
   getWidgetDescriptionResourceName,
   getWidgetDisplayNameResourceName,
   getWidgetInfoResourceName,
 } from './resourceNames';
-import { WidgetConfig } from '../types/WidgetConfig.type';
 
 const withAndroidWidgetFiles: ConfigPlugin<WidgetConfig[]> = (config, widgets) => {
   return withDangerousMod(config, [
@@ -30,9 +30,13 @@ const withAndroidWidgetFiles: ConfigPlugin<WidgetConfig[]> = (config, widgets) =
         'app/src/main/java',
         ...androidPackage.split('.')
       );
+      const layoutRegistryConfigPath = path.join(
+        projectRoot,
+        'app/src/main/expo-widgets-layout-registry.config.json'
+      );
       const xmlDirectory = path.join(projectRoot, 'app/src/main/res/xml');
       const valuesDirectory = path.join(projectRoot, 'app/src/main/res/values');
-      const widgetsXmlPath = path.join(xmlDirectory, 'expo_widgets.xml');
+      const widgetsXmlPath = path.join(valuesDirectory, 'expo_widgets.xml');
 
       fs.mkdirSync(packageDirectory, { recursive: true });
       fs.mkdirSync(xmlDirectory, { recursive: true });
@@ -42,6 +46,7 @@ const withAndroidWidgetFiles: ConfigPlugin<WidgetConfig[]> = (config, widgets) =
         fs.rmSync(widgetsXmlPath);
       }
       fs.writeFileSync(widgetsXmlPath, createWidgetStringsXml(widgets));
+      fs.writeFileSync(layoutRegistryConfigPath, createLayoutRegistryConfig(widgets));
 
       for (const widget of widgets) {
         const providerPath = path.join(packageDirectory, `${getProviderClassName(widget)}.kt`);
@@ -68,6 +73,19 @@ const withAndroidWidgetFiles: ConfigPlugin<WidgetConfig[]> = (config, widgets) =
   ]);
 };
 
+const createLayoutRegistryConfig = (widgets: WidgetConfig[]): string => {
+  const config = {
+    widgets: widgets
+      .filter((widget) => widget.android?.initialLayout != null)
+      .map((widget) => ({
+        name: widget.name,
+        initialLayout: widget.android?.initialLayout,
+      })),
+  };
+
+  return `${JSON.stringify(config, null, 2)}\n`;
+};
+
 const createWidgetProviderKt = (androidPackage: string, widget: WidgetConfig): string => {
   return `package ${androidPackage}
 
@@ -87,7 +105,7 @@ const createWidgetInfoXml = (widget: WidgetConfig): string => {
   android:targetCellWidth="${android.targetCellWidth}"
   android:targetCellHeight="${android.targetCellHeight}"
   android:updatePeriodMillis="0"
-  android:initialLayout="@layout/glance_default_loading_layout"
+  android:initialLayout="@layout/expo_widgets_initial_layout"
   android:description="@string/${getWidgetDescriptionResourceName(widget)}"
   android:resizeMode="${getWidgetResizeMode(widget)}"
   android:widgetCategory="home_screen" />
@@ -118,22 +136,30 @@ const getAndroidWidgetConfig = (widget: WidgetConfig): NonNullable<WidgetConfig[
   };
 };
 
-const escapeXmlSpecialChars = (value: string): string => {
+// XML entities are not enough for `<string>` resources: they decode back to raw
+// characters before AAPT parses the value, so quotes must be backslash-escaped
+// and a leading @/? must not be read as a resource reference.
+const escapeAndroidString = (value: string): string => {
   return value
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"')
+    .replace(/^([@?])/, '\\$1')
     .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 };
 
-const createWidgetStringsXml = (widgets: WidgetConfig[]): string => {
+export const createWidgetStringsXml = (widgets: WidgetConfig[]): string => {
   return `<?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string-array name="expo_widgets_names">
+${widgets.map((widget) => `    <item>${escapeAndroidString(widget.name)}</item>`).join('\n')}
+  </string-array>
 ${widgets
   .map((widget) => {
-    return `  <string name="${getWidgetDisplayNameResourceName(widget)}">${escapeXmlSpecialChars(widget.displayName)}</string>
-  <string name="${getWidgetDescriptionResourceName(widget)}">${escapeXmlSpecialChars(widget.description)}</string>`;
+    return `  <string name="${getWidgetDisplayNameResourceName(widget)}">${escapeAndroidString(widget.displayName)}</string>
+  <string name="${getWidgetDescriptionResourceName(widget)}">${escapeAndroidString(widget.description)}</string>`;
   })
   .join('\n')}
 </resources>

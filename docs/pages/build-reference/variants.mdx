@@ -7,6 +7,7 @@ description: Learn how to install multiple variants of an app on the same device
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
 
 When creating [development, preview, and production builds](/build/eas-json/#common-use-cases), installing these build variants simultaneously on the same device is common. This allows working in development, previewing the next version of the app, and running the production version on a device without needing to uninstall and reinstall the app.
 
@@ -39,7 +40,7 @@ You have created a project using Expo tooling, and now you want to create a deve
 }
 ```
 
-If your project has EAS Build configured, the **eas.json** also has a similar configuration as shown below:
+If your project has Expo Build configured, the **eas.json** also has a similar configuration as shown below:
 
 ```json eas.json
 {
@@ -98,7 +99,7 @@ You can customize other aspects of your app on a per-variant basis. You can swap
 **Examples:**
 
 - If you are using a library that requires you to register your application identifier with an external service to use its SDK, such as Google Maps or Firebase Cloud Messaging (FCM), you'll need to have a separate configuration for that API for the `android.package` and `ios.bundleIdentifier`.
-- If you're using [development builds](/develop/development-builds/introduction/), you can configure the `expo-dev-client` plugin to disable the app scheme used by Expo CLI and EAS Update QR codes in non-development builds. This ensures that those URLs will always launch the development build, regardless of your device's defaults:
+- If you're using [development builds](/develop/development-builds/introduction/), you can configure the `expo-dev-client` plugin to disable the app scheme used by Expo CLI and Expo Update QR codes in non-development builds. This ensures that those URLs will always launch the development build, regardless of your device's defaults:
 
 ```js app.config.js
 plugins: [
@@ -113,7 +114,7 @@ plugins: [
 
 </Collapsible>
 
-### Configuration for EAS Build
+### Configuration for Expo Build
 
 In **eas.json**, set the `APP_VARIANT` environment variable to run builds with the **development** profile by using the `env` property:
 
@@ -131,7 +132,7 @@ In **eas.json**, set the `APP_VARIANT` environment variable to run builds with t
 }
 ```
 
-Now, when you run `eas build --profile development`, the environment variable `APP_VARIANT` is set to `development` when evaluating **app.config.js** both locally and on the EAS Build builder.
+Now, when you run `eas build --profile development`, the environment variable `APP_VARIANT` is set to `development` when evaluating **app.config.js** both locally and on the Expo Build builder.
 
 ### Using the development server
 
@@ -151,9 +152,53 @@ A shortcut for this is to add the following script to your **package.json**:
 
 When you run `eas build --profile production` the `APP_VARIANT` variable environment is not set, and the build runs as the production variant.
 
-> **Note**: If you use EAS Update to publish JavaScript updates of your app, you should be cautious to set the correct environment variables for the app variant that you are publishing for when you run the `eas update` command. See the EAS Build [Environment variables and secrets](/build/updates) for more information.
+> **Note**: If you use Expo Update to publish JavaScript updates of your app, you should be cautious to set the correct environment variables for the app variant that you are publishing for when you run the `eas update` command. See the Expo Build [Environment variables and secrets](/build/updates) for more information.
 
-### In an existing (bare) React Native project
+### Build and run multiple app variants locally
+
+If you [build your app locally](/guides/local-app-overview/) with [`expo run:android|ios`](/workflow/continuous-native-generation/#usage), set the `APP_VARIANT` environment variable when you run the `expo run` command. For example, to compile the `development` variant for iOS as a debug build, run:
+
+<Terminal
+  cmd={{
+    npm: ['$ APP_VARIANT=development npx expo run:ios'],
+    yarn: ['$ APP_VARIANT=development yarn expo run:ios'],
+    pnpm: ['$ APP_VARIANT=development pnpm expo run:ios'],
+    bun: ['$ APP_VARIANT=development bun expo run:ios'],
+  }}
+/>
+
+`APP_VARIANT` changes only the app's name and package name on Android and bundle identifier on iOS. It does not affect how the binary is compiled. When you switch variants, the existing **android** and **ios** directories still reflect the previous variant. If a native directory is already present, `expo run` skips regenerating it and compiles it as-is.
+
+To switch variants, you need to regenerate the native directories again with `prebuild --clean` before compiling the app. In the example below, the `development` variant (existing debug build) is switched to `test`, which is another debug build. To regenerate the **android** and **ios** directories and then compile the `test` variant, set `APP_VARIANT` on both commands so that the clean prebuild and the compilation use the same variant:
+
+<Terminal
+  cmd={{
+    npm: [
+      '$ APP_VARIANT=test npx expo prebuild --clean',
+      '',
+      '$ APP_VARIANT=test npx expo run:ios',
+    ],
+    yarn: [
+      '$ APP_VARIANT=test yarn expo prebuild --clean',
+      '',
+      '$ APP_VARIANT=test yarn expo run:ios',
+    ],
+    pnpm: [
+      '$ APP_VARIANT=test pnpm expo prebuild --clean',
+      '',
+      '$ APP_VARIANT=test pnpm expo run:ios',
+    ],
+    bun: [
+      '$ APP_VARIANT=test bun expo prebuild --clean',
+      '',
+      '$ APP_VARIANT=test bun expo run:ios',
+    ],
+  }}
+/>
+
+The **android** and **ios** directories are managed by [Continuous Native Generation](/workflow/continuous-native-generation/), so regenerating them is safe when they are listed in your **.gitignore**.
+
+### In an existing React Native project
 
 > **info** If you want to use your [app config file](/workflow/configuration/) as the source of truth for your app configuration (including bundle identifiers and package names for variants), you need to migrate to [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/) and add **android** and **ios** directories to your **.gitignore** file. This is especially important if you started with a React Native CLI project and added custom native code. This ensures that the native project configuration doesn't take precedence over your app config, especially when using bundle ID lookup behavior. Without this, you may experience issues where the wrong app variant runs or development builds aren't detected properly. Alternatively, you can explicitly opt for the Android flavors and iOS schemes as described below.
 
@@ -181,7 +226,7 @@ android {
 
 > **Note**: Currently, EAS CLI supports only the `applicationId` field. If you use `applicationIdSuffix` inside `productFlavors` or `buildTypes` sections then this value will not be detected correctly.
 
-Assign Android flavors to EAS Build profiles by specifying a `gradleCommand` in the **eas.json**:
+Assign Android flavors to Expo Build profiles by specifying a `gradleCommand` in the **eas.json**:
 
 ```json eas.json
 {
@@ -222,10 +267,10 @@ android {
 }
 ```
 
-The rest of the configuration at this point is not specific to EAS, it's the same as it would be for any Android project with flavors. There are a few common configurations that you might want to apply to your project:
+The rest of the configuration at this point is the same as for any Android project with flavors. There are a few common configurations that you might want to apply to your project:
 
-- To change the name of the app built with the development profile, create a **android/app/src/development/res/value/strings.xml** file:
-  ```xml android/app/src/development/res/value/strings.xml
+- To change the name of the app built with the development profile, create an **android/app/src/development/res/values/strings.xml** file:
+  ```xml android/app/src/development/res/values/strings.xml
   <resources>
       <string name="app_name">MyApp - Dev</string>
   </resources>
@@ -284,7 +329,7 @@ Open project in Xcode, click on the project name in the navigation panel, right 
 
 <ContentSpotlight
   alt="Duplicate Xcode target"
-  src="/static/images/eas-build/variants/1-ios-duplicate-target.png"
+  src="/static/images/eas-build/variants/1-ios-duplicate-target.webp"
   className="max-w-[720px]"
 />
 
@@ -299,7 +344,7 @@ Configure a scheme for the new target:
 
 <ContentSpotlight
   alt="Xcode scheme list"
-  src="/static/images/eas-build/variants/2-scheme-list.png"
+  src="/static/images/eas-build/variants/2-scheme-list.webp"
   className="max-w-[720px]"
 />
 
@@ -314,7 +359,7 @@ By default, the newly created target has separate **Info.plist** file (in the ab
 
 <ContentSpotlight
   alt="Xcode build settings"
-  src="/static/images/eas-build/variants/3-target-build-settings.png"
+  src="/static/images/eas-build/variants/3-target-build-settings.webp"
   className="max-w-[720px]"
 />
 

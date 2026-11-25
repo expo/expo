@@ -9,7 +9,7 @@ import ExpoModulesJSI
 public class ExpoRuntime: JavaScriptRuntime, @unchecked Sendable {
   @JavaScriptActor
   internal func getCoreObject() throws -> JavaScriptObject {
-    return try global().getProperty(EXGlobalCoreObjectPropertyName).asObject()
+    return try global().getProperty(globalCoreObjectPropertyName).asObject()
   }
 
   @JavaScriptActor
@@ -20,6 +20,19 @@ public class ExpoRuntime: JavaScriptRuntime, @unchecked Sendable {
   @JavaScriptActor
   internal func getSharedRefClass() throws -> JavaScriptFunction {
     return try getCoreObject().getPropertyAsFunction("SharedRef")
+  }
+
+  /// Creates an instance of the base `SharedObject` class, or of the base `SharedRef` class if `isSharedRef` is true.
+  /// The prototypes of both classes are looked up once per runtime and cached.
+  @JavaScriptActor
+  internal func createBaseSharedObject(isSharedRef: Bool) throws -> JavaScriptObject {
+    let prototypes = try cached(baseSharedObjectPrototypesKey) {
+      return try BaseSharedObjectPrototypes(in: self)
+    }
+    if isSharedRef {
+      return createObject(prototype: prototypes.sharedRef)
+    }
+    return createObject(prototype: prototypes.sharedObject)
   }
 
   @JavaScriptActor
@@ -42,3 +55,18 @@ public class ExpoRuntime: JavaScriptRuntime, @unchecked Sendable {
     return try createClass(name: name, inheriting: sharedRefBaseClass, constructor)
   }
 }
+
+/// The prototypes of the base `SharedObject` and `SharedRef` classes.
+private final class BaseSharedObjectPrototypes {
+  let sharedObject: JavaScriptObject
+  let sharedRef: JavaScriptObject
+
+  @JavaScriptActor
+  init(in runtime: ExpoRuntime) throws {
+    sharedObject = try runtime.getSharedObjectClass().asObject().getPropertyAsObject("prototype")
+    sharedRef = try runtime.getSharedRefClass().asObject().getPropertyAsObject("prototype")
+  }
+}
+
+/// Key of the base shared object prototypes in each runtime's cache.
+private let baseSharedObjectPrototypesKey = JavaScriptRuntime.Cache.Key<BaseSharedObjectPrototypes>()

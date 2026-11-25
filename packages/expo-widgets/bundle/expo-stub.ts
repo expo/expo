@@ -1,5 +1,9 @@
+import ExpoUI from './modules/expo-ui';
+
+const nativeModuleStubs: Record<string, any> = { ExpoUI };
+
 export function requireNativeModule(name: string) {
-  return {};
+  return nativeModuleStubs[name] ?? {};
 }
 
 export function requireNativeView(moduleName: string, viewName: string) {

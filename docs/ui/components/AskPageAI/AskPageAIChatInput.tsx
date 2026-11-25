@@ -44,9 +44,10 @@ export function AskPageAIChatInput({
           type="submit"
           theme="quaternary"
           size="sm"
+          aria-label="Send message"
           className="flex size-6 items-center justify-center rounded-full p-0!"
           disabled={isBusy || question.trim().length === 0}>
-          <ArrowCircleUpDuotoneIcon className="icon-md text-icon-default" />
+          <ArrowCircleUpDuotoneIcon aria-hidden="true" className="icon-md text-icon-default" />
         </Button>
       </form>
     </div>

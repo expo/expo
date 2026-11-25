@@ -5,8 +5,11 @@ import {
   Tabs,
   type TabSelectedEvent,
   type TabsHostProps,
+  type TabsScreenProps,
   // @ts-expect-error: method is declared in mock below
   __triggerTabSelected,
+  // @ts-expect-error: method is declared in mock below
+  __triggerTabSelectionPrevented,
 } from 'react-native-screens';
 
 import { router } from '../../imperative-api';
@@ -15,24 +18,36 @@ import { act, renderRouter } from '../../testing-library';
 import { useNavigation } from '../../useNavigation';
 import { NativeTabs } from '../NativeTabs';
 
+// `TabSelectionPreventedEvent` is not re-exported from the package root in
+// react-native-screens@4.25.2, so derive its payload from the callback prop.
+type TabSelectionPreventedNativeEvent = Parameters<
+  NonNullable<TabsHostProps['onTabSelectionPrevented']>
+>[0];
+
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
   const actualModule = jest.requireActual(
     'react-native-screens'
   ) as typeof import('react-native-screens');
   let triggerTabSelected: NonNullable<TabsHostProps['onTabSelected']> = () => {};
+  let triggerTabSelectionPrevented: NonNullable<
+    TabsHostProps['onTabSelectionPrevented']
+  > = () => {};
   return {
     ...actualModule,
     Tabs: {
       ...actualModule.Tabs,
-      Host: jest.fn(({ children, onTabSelected }) => {
+      Host: jest.fn(({ children, onTabSelected, onTabSelectionPrevented }) => {
         triggerTabSelected = onTabSelected || (() => {});
+        triggerTabSelectionPrevented = onTabSelectionPrevented || (() => {});
         return <View testID="TabsHost">{children}</View>;
       }),
       Screen: jest.fn(({ children }) => <View testID="TabsScreen">{children}</View>),
     },
     __triggerTabSelected: (event: Parameters<NonNullable<TabsHostProps['onTabSelected']>>[0]) =>
       triggerTabSelected(event),
+    __triggerTabSelectionPrevented: (event: TabSelectionPreventedNativeEvent) =>
+      triggerTabSelectionPrevented(event),
   };
 });
 
@@ -41,7 +56,15 @@ const triggerNativeFocusChange: NonNullable<TabsHostProps['onTabSelected']> = (e
     __triggerTabSelected(event);
   });
 
-const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
+const triggerTabSelectionPrevented: NonNullable<TabsHostProps['onTabSelectionPrevented']> = (
+  event
+) =>
+  act(() => {
+    __triggerTabSelectionPrevented(event);
+  });
+
+// `Tabs` is mocked by `jest.mock` above; cast to read `.mock` with the props type.
+const TabsScreen = Tabs.Screen as jest.MockedFunction<(props: TabsScreenProps) => React.ReactNode>;
 
 const warn = jest.fn();
 const error = jest.fn();
@@ -60,10 +83,10 @@ afterEach(() => {
   jest.useRealTimers();
 });
 
-it('emits tabPress event onNativeFocusChange', () => {
+it('emits tabPress event onNativeFocusChange', async () => {
   const indexTabPressHandler = jest.fn();
   const secondTabPressHandler = jest.fn();
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" />
@@ -94,17 +117,19 @@ it('emits tabPress event onNativeFocusChange', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
-  expect(TabsScreen).toHaveBeenCalledTimes(2);
-  expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/index-[-\w]+/);
-  expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/second-[-\w]+/);
+  expect(TabsScreen).toHaveBeenCalledTimes(4);
+  expect(TabsScreen.mock.calls[0]![0].screenKey).toBe('index');
+  expect(TabsScreen.mock.calls[1]![0].screenKey).toBe('second');
+  expect(TabsScreen.mock.calls[2]![0].screenKey).toBe('index');
+  expect(TabsScreen.mock.calls[3]![0].screenKey).toBe('second');
 
-  const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
-  const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
+  const indexTabKey = TabsScreen.mock.calls[2]![0].screenKey;
+  const secondTabKey = TabsScreen.mock.calls[3]![0].screenKey;
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(secondTabPressHandler).toHaveBeenCalledTimes(0);
 
-  triggerNativeFocusChange({
+  await triggerNativeFocusChange({
     nativeEvent: {
       selectedScreenKey: indexTabKey,
       provenance: 0,
@@ -114,14 +139,14 @@ it('emits tabPress event onNativeFocusChange', () => {
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(1);
   expect(secondTabPressHandler).toHaveBeenCalledTimes(0);
 
   jest.clearAllMocks();
 
-  triggerNativeFocusChange({
+  await triggerNativeFocusChange({
     nativeEvent: {
       selectedScreenKey: secondTabKey,
       provenance: 0,
@@ -131,14 +156,14 @@ it('emits tabPress event onNativeFocusChange', () => {
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(secondTabPressHandler).toHaveBeenCalledTimes(1);
 
   jest.clearAllMocks();
 
-  triggerNativeFocusChange({
+  await triggerNativeFocusChange({
     nativeEvent: {
       selectedScreenKey: secondTabKey,
       provenance: 0,
@@ -148,7 +173,7 @@ it('emits tabPress event onNativeFocusChange', () => {
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(secondTabPressHandler).toHaveBeenCalledTimes(1);
@@ -159,7 +184,7 @@ it('does not pop stack on repeated tab press', async () => {
   const indexTabPressHandler = jest.fn();
   const aIndexTabPressHandler = jest.fn();
   const aBTabPressHandler = jest.fn();
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" />
@@ -201,18 +226,20 @@ it('does not pop stack on repeated tab press', async () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('a-index')).toBeVisible();
-  expect(TabsScreen).toHaveBeenCalledTimes(2);
-  expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/index-[-\w]+/);
-  expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/a-[-\w]+/);
+  expect(TabsScreen).toHaveBeenCalledTimes(4);
+  expect(TabsScreen.mock.calls[0]![0].screenKey).toBe('index');
+  expect(TabsScreen.mock.calls[1]![0].screenKey).toBe('a');
+  expect(TabsScreen.mock.calls[2]![0].screenKey).toBe('index');
+  expect(TabsScreen.mock.calls[3]![0].screenKey).toBe('a');
 
-  const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
-  const aTabKey = TabsScreen.mock.calls[1][0].screenKey;
+  const indexTabKey = TabsScreen.mock.calls[2]![0].screenKey;
+  const aTabKey = TabsScreen.mock.calls[3]![0].screenKey;
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(aIndexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(aBTabPressHandler).toHaveBeenCalledTimes(0);
 
-  triggerNativeFocusChange({
+  await triggerNativeFocusChange({
     nativeEvent: {
       selectedScreenKey: indexTabKey,
       provenance: 0,
@@ -222,14 +249,14 @@ it('does not pop stack on repeated tab press', async () => {
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(1);
   expect(aIndexTabPressHandler).toHaveBeenCalledTimes(0);
 
   jest.clearAllMocks();
 
-  triggerNativeFocusChange({
+  await triggerNativeFocusChange({
     nativeEvent: {
       selectedScreenKey: aTabKey,
       provenance: 0,
@@ -239,14 +266,14 @@ it('does not pop stack on repeated tab press', async () => {
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   // The events are only emitted in tabs, so they are not propagated to stack children
   expect(aIndexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(aBTabPressHandler).toHaveBeenCalledTimes(0);
 
-  act(() => {
+  await act(() => {
     router.push('/a/b');
   });
 
@@ -254,7 +281,7 @@ it('does not pop stack on repeated tab press', async () => {
 
   jest.clearAllMocks();
 
-  triggerNativeFocusChange({
+  await triggerNativeFocusChange({
     nativeEvent: {
       selectedScreenKey: aTabKey,
       provenance: 0,
@@ -264,11 +291,121 @@ it('does not pop stack on repeated tab press', async () => {
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(aIndexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(aBTabPressHandler).toHaveBeenCalledTimes(0);
 
   expect(screen).toHavePathname('/a/b');
+});
+
+it('emits tabPress with isPrevented and does not navigate when a disabled tab is tapped', async () => {
+  const indexTabPressHandler = jest.fn();
+  const secondTabPressHandler = jest.fn();
+  await renderRouter({
+    _layout: () => (
+      <NativeTabs>
+        <NativeTabs.Trigger name="index" />
+        <NativeTabs.Trigger name="second" disabled />
+      </NativeTabs>
+    ),
+    index: function Index() {
+      const navigation = useNavigation();
+      React.useEffect(() => {
+        // @ts-expect-error: tabPress is only available on tab navigators. This is react-navigation types issue.
+        return navigation.addListener('tabPress', (e) => {
+          indexTabPressHandler(e);
+        });
+      }, [navigation]);
+      return <View testID="index" />;
+    },
+    second: function Second() {
+      const navigation = useNavigation();
+      React.useEffect(() => {
+        // @ts-expect-error: tabPress is only available on tab navigators. This is react-navigation types issue.
+        return navigation.addListener('tabPress', (e) => {
+          secondTabPressHandler(e);
+        });
+      }, [navigation]);
+      return <View testID="second" />;
+    },
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.getByTestId('second')).toBeVisible();
+  expect(TabsScreen).toHaveBeenCalledTimes(4);
+
+  const indexTabKey = TabsScreen.mock.calls[2]![0].screenKey;
+  const secondTabKey = TabsScreen.mock.calls[3]![0].screenKey;
+
+  expect(screen).toHavePathname('/');
+  expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
+  expect(secondTabPressHandler).toHaveBeenCalledTimes(0);
+
+  await triggerTabSelectionPrevented({
+    nativeEvent: {
+      // `selectedScreenKey` is the still-active tab; `preventedScreenKey` is the disabled tab tapped.
+      selectedScreenKey: indexTabKey,
+      provenance: 0,
+      preventedScreenKey: secondTabKey,
+    },
+  } as TabSelectionPreventedNativeEvent);
+
+  await act(() => jest.runAllTimers());
+
+  // The prevented (disabled) tab's listener fires; the focused tab's does not (target isolation).
+  expect(secondTabPressHandler).toHaveBeenCalledTimes(1);
+  expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
+  // The event carries the `isPrevented` flag in its data.
+  expect(secondTabPressHandler.mock.calls[0][0].data).toEqual({
+    __internalTabsType: 'native',
+    isPrevented: true,
+  });
+  // Navigation did not change — JUMP_TO was skipped.
+  expect(screen).toHavePathname('/');
+});
+
+it('emits tabPress with isPrevented false on a normal native selection', async () => {
+  const secondTabPressHandler = jest.fn();
+  await renderRouter({
+    _layout: () => (
+      <NativeTabs>
+        <NativeTabs.Trigger name="index" />
+        <NativeTabs.Trigger name="second" />
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+    second: function Second() {
+      const navigation = useNavigation();
+      React.useEffect(() => {
+        // @ts-expect-error: tabPress is only available on tab navigators. This is react-navigation types issue.
+        return navigation.addListener('tabPress', (e) => {
+          secondTabPressHandler(e);
+        });
+      }, [navigation]);
+      return <View testID="second" />;
+    },
+  });
+
+  const secondTabKey = TabsScreen.mock.calls[1]![0].screenKey;
+
+  await triggerNativeFocusChange({
+    nativeEvent: {
+      selectedScreenKey: secondTabKey,
+      provenance: 0,
+      isRepeated: false,
+      hasTriggeredSpecialEffect: false,
+      actionOrigin: 'user',
+    },
+  } as NativeSyntheticEvent<TabSelectedEvent>);
+
+  await act(() => jest.runAllTimers());
+
+  expect(secondTabPressHandler).toHaveBeenCalledTimes(1);
+  expect(secondTabPressHandler.mock.calls[0][0].data).toEqual({
+    __internalTabsType: 'native',
+    isPrevented: false,
+  });
+  expect(screen).toHavePathname('/second');
 });

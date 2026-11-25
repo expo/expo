@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo';
 
 import type { NotificationCategoriesModule } from './NotificationCategoriesModule.types';
 
@@ -8,6 +8,9 @@ const notificationCategoriesModule: NotificationCategoriesModule = {
   },
   async setNotificationCategoryAsync() {
     throw new UnavailabilityError('Notifications', 'setNotificationCategoryAsync');
+  },
+  async setNotificationCategoriesAsync() {
+    throw new UnavailabilityError('Notifications', 'setNotificationCategoriesAsync');
   },
   async deleteNotificationCategoryAsync() {
     return false;

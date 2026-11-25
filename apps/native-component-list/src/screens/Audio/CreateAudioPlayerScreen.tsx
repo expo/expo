@@ -2,9 +2,9 @@ import { createAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import React from 'react';
 import { PixelRatio, ScrollView, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
+import HeadingText from '../../components/HeadingText';
 import { JsiAudioBar } from './JsiAudioBar';
 import Player from './Player';
-import HeadingText from '../../components/HeadingText';
 
 export default function CreateAudioPlayerScreen(props: any) {
   React.useLayoutEffect(() => {

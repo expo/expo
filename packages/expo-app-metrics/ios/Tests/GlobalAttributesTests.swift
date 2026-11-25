@@ -88,7 +88,7 @@ struct GlobalAttributesTests {
     GlobalAttributes.set([
       "expo.app.name": "spoofed",
       "session.id": "spoofed",
-      "tier": "pro"
+      "tier": "pro",
     ])
     let merged = GlobalAttributes.merged(with: nil)
     let attributes = try! #require(merged)

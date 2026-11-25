@@ -1,0 +1,19 @@
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+
+| Property           | Type   | Required    | Description                                                                                                            |
+| ------------------ | ------ | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `query`            | string | <YesIcon /> | A HogQL query. The step clears when the first column of the first row is `true` or a nonzero number.                   |
+| `timeout_seconds`  | number | <NoIcon />  | Maximum time to wait, in seconds. Defaults to `600`.                                                                   |
+| `interval_seconds` | number | <NoIcon />  | Time between checks, in seconds. Defaults to `30`.                                                                     |
+| `api_key`          | string | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `query:read` scope. |
+| `project_id`       | string | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                     |
+
+<BoxLink
+  title="eas/posthog_wait_for_query source code"
+  description="View the source code for the eas/posthog_wait_for_query function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/waitForPosthogQuery.ts"
+/>

@@ -36,7 +36,14 @@ To load an asset at build time, you can use the [config plugin](/versions/latest
 
 Install the `expo-asset` library.
 
-<Terminal cmd={['$ npx expo install expo-asset']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-asset'],
+    yarn: ['$ yarn expo install expo-asset'],
+    pnpm: ['$ pnpm expo install expo-asset'],
+    bun: ['$ bun expo install expo-asset'],
+  }}
+/>
 
 </Step>
 
@@ -67,7 +74,7 @@ The path to each asset file must be relative to your project's root since the ap
 
 <Step label="3">
 
-After embedding the asset with the config plugin, [create a new development build](/develop/development-builds/create-a-build/). Now, you can import and use the asset in your project without using a `require` or an `import` statement.
+After embedding the asset with the config plugin, [create a new development build](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build). Now, you can import and use the asset in your project without using a `require` or an `import` statement.
 
 For example, the **example.png** is linked by the above config plugin. You can directly import it into your component and use its resource name as the URI. Note that when rendering assets without using `require`, you need to explicitly provide a width / height.
 
@@ -92,7 +99,14 @@ The `useAssets` hook from `expo-asset` library allows loading assets asynchronou
 
 Install the `expo-asset` library.
 
-<Terminal cmd={['$ npx expo install expo-asset']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-asset'],
+    yarn: ['$ yarn expo install expo-asset'],
+    pnpm: ['$ pnpm expo install expo-asset'],
+    bun: ['$ bun expo install expo-asset'],
+  }}
+/>
 
 </Step>
 
@@ -144,7 +158,7 @@ You can compress images using the following:
 
 - [`guetzli`](https://github.com/google/guetzli)
 - [`pngcrush`](https://pmt.sourceforge.io/pngcrush/)
-- [`optipng`](http://optipng.sourceforge.net/)
+- [`optipng`](https://optipng.sourceforge.net/)
 
 Some image optimizers are lossless. They re-encode your image to be smaller without any change or loss in the pixels displayed. When you need each pixel to be untouched from the original image, a lossless optimizer and a lossless image format like PNG are a good choice.
 

@@ -1,5 +1,7 @@
 package expo.modules.appmetrics.storage
 
+import expo.modules.appmetrics.ObserveConsentGrantedRule
+import org.junit.Rule
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -19,6 +21,9 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class SessionManagerGlobalAttributesTest {
+  @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
   private lateinit var database: MetricsDatabase
   private lateinit var sessionManager: SessionManager
   private val sessionId = "session-1"
@@ -182,13 +187,11 @@ class SessionManagerGlobalAttributesTest {
   }
 
   private fun metric(
-    metricId: String = "m-1",
     name: String = "test-metric",
     params: Map<String, Any?>? = null,
     rawParams: String? = null
   ): Metric =
     Metric(
-      metricId = metricId,
       sessionId = "",
       timestamp = "2025-01-01T00:00:00.000Z",
       category = "test",
@@ -198,13 +201,11 @@ class SessionManagerGlobalAttributesTest {
     )
 
   private fun log(
-    logId: String = "l-1",
     name: String = "test.event",
     attributes: Map<String, Any?>? = null,
     rawAttributes: String? = null
   ): LogRecord =
     LogRecord(
-      logId = logId,
       sessionId = "",
       timestamp = "2025-01-01T00:00:00.000Z",
       name = name,

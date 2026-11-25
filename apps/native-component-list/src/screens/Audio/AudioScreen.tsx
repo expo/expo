@@ -1,8 +1,8 @@
 import { preload } from 'expo-audio';
 
-import { sfx1, sfx2 } from './AudioPreloadScreen';
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
+import { sfx1, sfx2 } from './AudioPreloadScreen';
 
 preload(sfx1);
 preload(sfx2);

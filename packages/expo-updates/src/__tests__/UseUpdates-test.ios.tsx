@@ -1,10 +1,9 @@
 import { act, render, screen } from '@testing-library/react-native';
-import React from 'react';
 
-import UseUpdatesTestApp from './UseUpdatesTestApp';
 import type { Manifest, UpdatesNativeStateMachineContext } from '../Updates.types';
 import { emitTestStateChangeEvent, resetLatestContext } from '../UpdatesEmitter';
 import { updateFromManifest } from '../UseUpdatesUtils';
+import UseUpdatesTestApp from './UseUpdatesTestApp';
 
 type UpdatesNativeStateChangeTestEvent = {
   context: UpdatesNativeStateMachineContext & {
@@ -164,7 +163,7 @@ describe('useUpdates()', () => {
     }, 8000);
 
     it('Shows available update after receiving state change', async () => {
-      render(<UseUpdatesTestApp />);
+      await render(<UseUpdatesTestApp />);
       await act(async () => {
         emitTestStateChangeEvent(isCheckingEvent);
       });
@@ -183,7 +182,7 @@ describe('useUpdates()', () => {
     });
 
     it('Shows no available update after receiving state change', async () => {
-      render(<UseUpdatesTestApp />);
+      await render(<UseUpdatesTestApp />);
       await act(async () => {
         emitTestStateChangeEvent(isCheckingEvent);
       });
@@ -203,7 +202,7 @@ describe('useUpdates()', () => {
     });
 
     it('Handles error in checkForUpdate()', async () => {
-      render(<UseUpdatesTestApp />);
+      await render(<UseUpdatesTestApp />);
       await act(async () => {
         emitTestStateChangeEvent(isCheckingEvent);
       });
@@ -217,7 +216,7 @@ describe('useUpdates()', () => {
     });
 
     it('Shows downloaded update after receiving state change', async () => {
-      render(<UseUpdatesTestApp />);
+      await render(<UseUpdatesTestApp />);
       await act(async () => {
         emitTestStateChangeEvent(isDownloadingEvent);
       });
@@ -233,7 +232,7 @@ describe('useUpdates()', () => {
     });
 
     it('Handles error during downloadUpdate()', async () => {
-      render(<UseUpdatesTestApp />);
+      await render(<UseUpdatesTestApp />);
       await act(async () => {
         emitTestStateChangeEvent(isDownloadingEvent);
       });
@@ -249,7 +248,7 @@ describe('useUpdates()', () => {
     });
 
     it('Handles rollback', async () => {
-      render(<UseUpdatesTestApp />);
+      await render(<UseUpdatesTestApp />);
       await act(async () => {
         emitTestStateChangeEvent(isCheckingEvent);
       });

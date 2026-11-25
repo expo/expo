@@ -33,7 +33,7 @@ const getWrappedBody = (): string => {
   const workerCalls = jest.mocked(upstreamTransformer.transform).mock.calls;
   const shimCalls = jest.mocked(transformShimMod.transformShim).mock.calls;
   expect(workerCalls.length + shimCalls.length).toBe(1);
-  return workerCalls.length ? workerCalls[0][3].toString('utf8') : (shimCalls[0][2] as string);
+  return workerCalls.length ? workerCalls[0]![3].toString('utf8') : (shimCalls[0]![2] as string);
 };
 
 const doTransformForOutput = async (
@@ -74,6 +74,19 @@ it(`performs a sanity check by transforming a JS file as expected`, async () => 
       platform: 'web',
     })
   ).toMatchInlineSnapshot(`"export default {}"`);
+});
+
+it('marks prewarm transforms to skip the persistent cache', async () => {
+  jest.mocked(upstreamTransformer.transform).mockResolvedValueOnce({
+    dependencies: [],
+    output: [{ type: 'js/module', data: {} }],
+  } as any);
+
+  const result = await doTransform('__prewarm__/0.js', 'export default {}', {
+    customTransformOptions: { prewarm: '1' },
+  });
+
+  expect(result.output[0]!.data.skipCache).toBe(true);
 });
 
 it(`transforms a global CSS file in dev for web`, async () => {

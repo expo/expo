@@ -1,6 +1,7 @@
 // Side effect file to load shared object support in worklets
 
 import { installOnUIRuntime } from 'expo';
+import { Platform } from 'react-native';
 
 import { worklets } from './optionalWorklets';
 import {
@@ -41,7 +42,8 @@ function registerSharedObjectSerializer(): void {
     unpack: (packed) => {
       'worklet';
       const obj = (globalThis as any).expo.SharedObject.__resolveInWorklet(packed.objectId);
-      // Define .value property if the object has getValue/setValue (e.g. ObservableState)
+      // Define .value plus the get/set accessors if the object has
+      // getValue/setValue (e.g. ObservableState)
       if (typeof obj.getValue === 'function' && typeof obj.setValue === 'function') {
         Object.defineProperty(obj, 'value', {
           get() {
@@ -51,6 +53,8 @@ function registerSharedObjectSerializer(): void {
             obj.setValue({ value: v });
           },
         });
+        obj.get = () => obj.getValue();
+        obj.set = (v: any) => obj.setValue({ value: v });
       }
       return obj;
     },
@@ -58,11 +62,13 @@ function registerSharedObjectSerializer(): void {
 }
 
 try {
-  // reanimated import is needed to initialise __WORKLET_RUNTIME global, which is required by the installOnUIRuntime
-  require('react-native-reanimated');
-
-  installOnUIRuntime();
-  registerSharedObjectSerializer();
+  if (worklets) {
+    installOnUIRuntime(worklets.getUIRuntimeHolder());
+    // On iOS, `expo-modules-core` registers a serializer for all shared objects.
+    if (Platform.OS !== 'ios') {
+      registerSharedObjectSerializer();
+    }
+  }
 } catch {
   // Fail silently as worklet support is currently optional in Expo UI
 }

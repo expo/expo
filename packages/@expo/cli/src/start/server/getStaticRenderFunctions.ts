@@ -5,21 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getMetroServerRoot } from '@expo/config/paths';
+import { flattenSourceMap } from '@expo/metro-config/build/serializer/sourceMap';
 import { evalModule } from '@expo/require-utils';
 import fs from 'fs';
+import Module from 'node:module';
 import path from 'path';
 
-import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metro/metroErrorInterface';
-import type { ExpoMetroOptions } from './middleware/metroOptions';
-import { createBundleUrlPath } from './middleware/metroOptions';
-import { augmentLogs } from './serverLogLikeMetro';
 import { delayAsync } from '../../utils/delay';
 import { isPathInside } from '../../utils/dir';
 import { SilentError } from '../../utils/errors';
 import { toPosixPath } from '../../utils/filePath';
 import { profile } from '../../utils/profile';
-
-const debug = require('debug')('expo:start:server:getStaticRenderFunctions') as typeof console.log;
+import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metro/metroErrorInterface';
+import { event } from './metro/ssrEvents';
+import type { ExpoMetroOptions } from './middleware/metroOptions';
+import { createBundleUrlPath } from './middleware/metroOptions';
+import { augmentLogs } from './serverLogLikeMetro';
 
 /** The list of input keys will become optional, everything else will remain the same. */
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -126,13 +127,23 @@ export function evalMetroNoHandling(
   // but doesn't validate that the filename exists. These debug messages should help identify
   // these problems, if they occur in user projects without reproductions
   if (!fs.existsSync(path.dirname(filename))) {
-    debug(`evalMetroNoHandling received filename in a directory that does not exist: ${filename}`);
+    event('eval_filename_not_in_dir', { filename: event.path(filename) });
   } else if (!toPosixPath(path.dirname(filename)).startsWith(toPosixPath(projectRoot))) {
-    debug(`evalMetroNoHandling received filename outside of the project root: ${filename}`);
+    event('eval_filename_outside_root', { filename: event.path(filename) });
   }
 
   return profile(evalModule, 'eval-metro-bundle')(src, filename, {
+    // Resolve externals from the project root to match the resolver rather than from the bundle's
+    // entry directory.
+    // TODO: DVT-179
+    paths: [...Module._nodeModulePaths(projectRoot)],
     cache: false,
-    sourceMap,
+    sourceMap: sourceMap && toFlatSourceMap(sourceMap),
   });
+}
+
+// Legacy serializers, including wrappers around Expo, may return indexed maps that Node cannot use.
+function toFlatSourceMap(sourceMap: string): string {
+  const parsed = JSON.parse(sourceMap);
+  return 'sections' in parsed ? JSON.stringify(flattenSourceMap(parsed)) : sourceMap;
 }

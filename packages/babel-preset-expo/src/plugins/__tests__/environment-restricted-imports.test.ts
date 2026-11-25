@@ -41,7 +41,7 @@ afterAll(() => {
   process.env = { ...originalEnv };
 });
 
-function getOpts(caller: Record<string, string | boolean>) {
+function getOpts(caller: Record<string, string | boolean | undefined>) {
   return {
     ...DEF_OPTIONS,
     caller: getCaller({ ...ENABLED_CALLER, ...caller }),

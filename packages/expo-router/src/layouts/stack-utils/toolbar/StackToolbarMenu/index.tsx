@@ -1,10 +1,6 @@
 'use client';
-import { Children, useMemo, type ReactNode } from 'react';
-import type { ImageSourcePropType } from 'react-native';
-import type { PlatformIconIOS } from 'react-native-screens';
+import { Children, cloneElement, useMemo, type ReactElement, type ReactNode } from 'react';
 
-import { NativeToolbarMenu, NativeToolbarMenuAction } from './native';
-import type { StackToolbarMenuProps, StackToolbarMenuActionProps } from './types';
 import type {
   NativeStackHeaderItemMenu,
   NativeStackHeaderItemMenuAction,
@@ -20,8 +16,11 @@ import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
   extractIconRenderingMode,
   extractXcassetName,
+  warnIfHeaderItemHasImage,
 } from '../shared';
 import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from '../toolbar-primitives';
+import { NativeToolbarMenu, NativeToolbarMenuAction } from './native';
+import type { StackToolbarMenuProps, StackToolbarMenuActionProps } from './types';
 
 export type {
   StackToolbarMenuProps,
@@ -47,6 +46,29 @@ function computeMenuLabelAndTitle(
     label: labelFromChild ?? title ?? '',
     menuTitle: title ?? '',
   };
+}
+
+/**
+ * Returns the allowed children of a menu. In development, throws when a child is not allowed.
+ * On Android, an inline submenu does not render: its parent menu reads its children. So the
+ * children of each inline submenu are checked here too.
+ */
+function filterMenuChildren(children: ReactNode): ReactElement[] {
+  const validChildren = filterAllowedChildrenElements(children, ALLOWED_CHILDREN);
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    Children.toArray(children).length !== validChildren.length
+  ) {
+    throw new Error(
+      `Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu, Stack.Toolbar.MenuAction, Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.`
+    );
+  }
+  return validChildren.map((child) =>
+    (isChildOfType(child, StackToolbarMenu) || isChildOfType(child, NativeToolbarMenu)) &&
+    child.props.inline
+      ? cloneElement(child, { children: filterMenuChildren(child.props.children) })
+      : child
+  );
 }
 
 /**
@@ -95,10 +117,7 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
     throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
   }
 
-  const validChildren = useMemo(
-    () => filterAllowedChildrenElements(props.children, ALLOWED_CHILDREN),
-    [props.children]
-  );
+  const validChildren = useMemo(() => filterMenuChildren(props.children), [props.children]);
 
   // Use shared conversion that doesn't bail on hidden, so source is always computed
   // and NativeToolbarMenu always renders — letting AnimatedItemContainer handle visibility.
@@ -112,16 +131,7 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
   const xcassetName = extractXcassetName(props);
   const imageRenderingMode = extractIconRenderingMode(props) ?? props.iconRenderingMode;
 
-  if (process.env.NODE_ENV !== 'production') {
-    const allChildren = Children.toArray(props.children);
-    if (allChildren.length !== validChildren.length) {
-      throw new Error(
-        `Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu, Stack.Toolbar.MenuAction, Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.`
-      );
-    }
-  }
-
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'production' && placement === 'bottom') {
     const hasBadge = getFirstChildOfType(props.children, StackToolbarBadge);
     if (hasBadge) {
       console.warn(
@@ -141,6 +151,7 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
       imageRenderingMode={imageRenderingMode}
       label={computedLabel}
       title={computedMenuTitle}
+      badge={sharedProps?.badge}
       children={validChildren}
     />
   );
@@ -153,6 +164,7 @@ export function convertStackToolbarMenuPropsToRNHeaderItem(
   if (props.hidden) {
     return undefined;
   }
+  warnIfHeaderItemHasImage('Stack.Toolbar.Menu', props.image);
   const { title, ...rest } = props;
   const actions = Children.toArray(props.children).filter(
     (child) =>
@@ -189,25 +201,13 @@ export function convertStackToolbarMenuPropsToRNHeaderItem(
   return item;
 }
 
-// Custom menu action icons are not supported in react-navigation yet
-// But they are supported in react-native-screens
-// TODO(@ubax): Remove this workaround once react-navigation supports custom icons for menu actions.
-// https://linear.app/expo/issue/ENG-19853/remove-custom-conversion-logic-for-icon-from-packagesexpo
-function convertImageIconToPlatformIcon(icon: {
-  source: ImageSourcePropType;
-  tinted?: boolean;
-}): PlatformIconIOS {
-  return icon.tinted
-    ? { type: 'templateSource', templateSource: icon.source }
-    : { type: 'imageSource', imageSource: icon.source };
-}
-
 function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(
   props: StackToolbarMenuProps
 ): NativeStackHeaderItemMenuSubmenu | undefined {
   if (props.hidden) {
     return undefined;
   }
+  warnIfHeaderItemHasImage('Stack.Toolbar.Menu', props.image);
   const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
   const actions = Children.toArray(props.children).filter(
     (child) =>
@@ -240,13 +240,7 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(
   // TODO: Add elementSize to react-native-screens
 
   if (sharedProps.icon) {
-    if (sharedProps.icon.type === 'sfSymbol') {
-      item.icon = sharedProps.icon;
-    } else {
-      item.icon = convertImageIconToPlatformIcon(
-        sharedProps.icon
-      ) as unknown as NativeStackHeaderItemMenuSubmenu['icon'];
-    }
+    item.icon = sharedProps.icon;
   }
 
   return item;
@@ -302,6 +296,7 @@ export const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps> = (pr
 export function convertStackToolbarMenuActionPropsToRNHeaderItem(
   props: StackToolbarMenuActionProps
 ): NativeStackHeaderItemMenuAction {
+  warnIfHeaderItemHasImage('Stack.Toolbar.MenuAction', props.image);
   const { children, isOn, unstable_keepPresented, icon, ...rest } = props;
   const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
   const item: NativeStackHeaderItemMenuAction = {
@@ -316,13 +311,7 @@ export function convertStackToolbarMenuActionPropsToRNHeaderItem(
     item.keepsMenuPresented = unstable_keepPresented;
   }
   if (sharedProps.icon) {
-    if (sharedProps.icon.type === 'sfSymbol') {
-      item.icon = sharedProps.icon;
-    } else {
-      item.icon = convertImageIconToPlatformIcon(
-        sharedProps.icon
-      ) as unknown as NativeStackHeaderItemMenuAction['icon'];
-    }
+    item.icon = sharedProps.icon;
   }
   return item;
 }

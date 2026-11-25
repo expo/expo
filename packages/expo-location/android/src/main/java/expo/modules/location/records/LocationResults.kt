@@ -12,13 +12,19 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.location.ConversionException
 import expo.modules.location.LocationModule
+import expo.modules.location.next.verticalAccuracy
 import java.io.Serializable
 
 @OptimizedRecord
 internal class MotionActivityStateRecord(
   @Field var detected: Boolean,
   @Field var confidence: MotionActivityConfidence
-) : Record, Serializable
+) : Record, Serializable {
+  internal fun toPersistableBundle() = PersistableBundle().apply {
+    putBoolean("detected", detected)
+    putInt("confidence", confidence.value)
+  }
+}
 
 @OptimizedRecord
 internal class MotionActivitiesRecord(
@@ -28,13 +34,27 @@ internal class MotionActivitiesRecord(
   @Field var walking: MotionActivityStateRecord,
   @Field var stationary: MotionActivityStateRecord,
   @Field var unknown: MotionActivityStateRecord
-) : Record, Serializable
+) : Record, Serializable {
+  internal fun toPersistableBundle() = PersistableBundle().apply {
+    putPersistableBundle("automotive", automotive.toPersistableBundle())
+    putPersistableBundle("cycling", cycling.toPersistableBundle())
+    putPersistableBundle("running", running.toPersistableBundle())
+    putPersistableBundle("walking", walking.toPersistableBundle())
+    putPersistableBundle("stationary", stationary.toPersistableBundle())
+    putPersistableBundle("unknown", unknown.toPersistableBundle())
+  }
+}
 
 @OptimizedRecord
 internal class MotionActivityObjectRecord(
   @Field var activities: MotionActivitiesRecord,
   @Field var timestamp: Double
-) : Record, Serializable
+) : Record, Serializable {
+  internal fun toPersistableBundle() = PersistableBundle().apply {
+    putPersistableBundle("activities", activities.toPersistableBundle())
+    putDouble("timestamp", timestamp)
+  }
+}
 
 @OptimizedRecord
 internal class PermissionRequestResponse(
@@ -109,25 +129,27 @@ internal class LocationResponse(
   constructor(location: Location) : this(
     coords = LocationObjectCoords(location),
     timestamp = location.time.toDouble(),
-    mocked = location.isFromMockProvider
+    mocked = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      location.isMock
+    } else {
+      @Suppress("DEPRECATION") // When minSdkVersion is 31, this code will be removed and the above code will be used instead.
+      location.isFromMockProvider
+    }
   )
 
-  internal fun <BundleType : BaseBundle> toBundle(bundleTypeClass: Class<BundleType>): BundleType {
-    val bundle: BundleType = when (bundleTypeClass) {
-      PersistableBundle::class.java -> PersistableBundle()
-      else -> Bundle()
-    } as? BundleType
-      ?: throw ConversionException(LocationResponse::class.java, bundleTypeClass, "Unsupported bundleTypeClass")
+  internal fun toBundle() = Bundle().apply {
+    putLocationResponseFields()
+    putBundle("coords", coords?.toBundle())
+  }
 
-    return bundle.apply {
-      timestamp?.let { putDouble("timestamp", it) }
-      mocked?.let { putBoolean("mocked", it) }
-      if (bundle is PersistableBundle) {
-        (this as PersistableBundle).putPersistableBundle("coords", coords?.toBundle(PersistableBundle::class.java))
-      } else if (bundle is Bundle) {
-        (this as Bundle).putBundle("coords", coords?.toBundle(Bundle::class.java))
-      }
-    }
+  internal fun toPersistableBundle() = PersistableBundle().apply {
+    putLocationResponseFields()
+    putPersistableBundle("coords", coords?.toPersistableBundle())
+  }
+
+  private fun BaseBundle.putLocationResponseFields() {
+    timestamp?.let { putDouble("timestamp", it) }
+    mocked?.let { putBoolean("mocked", it) }
   }
 }
 
@@ -136,6 +158,7 @@ internal class LocationObjectCoords(
   @Field var latitude: Double? = null,
   @Field var longitude: Double? = null,
   @Field var altitude: Double? = null,
+  @Field var mslAltitude: Double? = null,
   @Field var accuracy: Double? = null,
   @Field var altitudeAccuracy: Double? = null,
   @Field var heading: Double? = null,
@@ -144,34 +167,47 @@ internal class LocationObjectCoords(
   constructor(location: Location) : this(
     latitude = location.latitude,
     longitude = location.longitude,
-    altitude = location.altitude,
-    accuracy = location.accuracy.toDouble(),
-    altitudeAccuracy = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      location.verticalAccuracyMeters.toDouble()
+    altitude = if (location.hasAltitude()) {
+      location.altitude
     } else {
       null
     },
+    mslAltitude = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && location.hasMslAltitude()) {
+      location.mslAltitudeMeters
+    } else {
+      null
+    },
+    accuracy = location.accuracy.toDouble(),
+    altitudeAccuracy = location.verticalAccuracy(),
     heading = location.bearing.toDouble(),
     speed = location.speed.toDouble()
   )
 
-  internal fun <BundleType : BaseBundle> toBundle(bundleTypeClass: Class<BundleType>): BundleType {
-    val bundle: BundleType = when (bundleTypeClass) {
-      PersistableBundle::class.java -> PersistableBundle()
-      else -> Bundle()
-    } as? BundleType
-      ?: throw ConversionException(LocationObjectCoords::class.java, bundleTypeClass, "Requested an unsupported bundle type")
+  internal fun toBundle() = Bundle().apply {
+    putLocationObjectCoordsFields()
+  }
 
-    bundle.apply {
-      latitude?.let { putDouble("latitude", it) }
-      longitude?.let { putDouble("longitude", it) }
-      altitude?.let { putDouble("altitude", it) }
-      accuracy?.let { putDouble("accuracy", it) }
-      altitudeAccuracy?.let { putDouble("altitudeAccuracy", it) }
-      heading?.let { putDouble("heading", it) }
-      speed?.let { putDouble("speed", it) }
+  internal fun toPersistableBundle() = PersistableBundle().apply {
+    putLocationObjectCoordsFields()
+  }
+
+  private fun BaseBundle.putLocationObjectCoordsFields() {
+    putNullableDouble("latitude", latitude)
+    putNullableDouble("longitude", longitude)
+    putNullableDouble("altitude", altitude)
+    putNullableDouble("mslAltitude", mslAltitude)
+    putNullableDouble("accuracy", accuracy)
+    putNullableDouble("altitudeAccuracy", altitudeAccuracy)
+    putNullableDouble("heading", heading)
+    putNullableDouble("speed", speed)
+  }
+
+  private fun BaseBundle.putNullableDouble(key: String, value: Double?) {
+    if (value != null) {
+      putDouble(key, value)
+    } else {
+      putString(key, null)
     }
-    return bundle
   }
 }
 

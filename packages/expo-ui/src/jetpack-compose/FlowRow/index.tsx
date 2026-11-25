@@ -7,7 +7,7 @@ import {
   transformProps,
 } from '../layout-types';
 
-export type FlowRowProps = {
+export interface FlowRowProps extends PrimitiveBaseProps {
   children?: React.ReactNode;
   /**
    * Horizontal arrangement of children.
@@ -17,7 +17,7 @@ export type FlowRowProps = {
    * Vertical arrangement of children.
    */
   verticalArrangement?: VerticalArrangement;
-} & PrimitiveBaseProps;
+}
 
 const FlowRowNativeView: React.ComponentType<FlowRowProps> = requireNativeView(
   'ExpoUI',

@@ -21,9 +21,11 @@ In the example below, **src/app/\_layout.tsx** is the tab bar and each route has
   ]}
 />
 
-> When reloading the page, the first alphabetical match is rendered.
+Group segments are not part of the URL, so every shared route matches the same URL. Expo Router uses the group you are in to select between them. In-app navigation keeps the current group. A page reload, a bookmark, a shared URL, and a deep link are all cold links. A cold link has no current group, so Expo Router renders the first alphabetical match. The same URL can therefore render one screen after in-app navigation and a different screen after a page reload.
 
-Shared routes can be navigated directly by including the group name in the route. For example, `/(search)/baconbrix` navigates to `/baconbrix` in the "search" layout.
+Shared routes can be navigated directly by including the group name in the route. For example, `/(search)/baconbrix` navigates to `/baconbrix` in the "search" layout. Use this form when a link must always open one specific group.
+
+> **warning** Do not use shared routes to give different user roles a different version of a screen. The URL does not carry the user's role, so a cold link cannot select the correct group, and [protected routes](/router/advanced/protected/) do not change that. Declare the screen once and control access with `Stack.Protected`.
 
 ## Arrays
 
@@ -43,14 +45,14 @@ export default function DynamicLayout({ segment }) {
 }
 ```
 
-To enable the **array syntax**, specify the [`initialRouteName`](/router/advanced/router-settings/#initialroutename) for each group using `unstable_settings` object in the dynamic layout:
+To enable the **array syntax**, specify the [`anchor`](/router/advanced/router-settings/#anchor) for each group using the `unstable_settings` object in the dynamic layout:
 
 {/* prettier-ignore */}
 ```tsx src/app/(home,search)/_layout.tsx
 export const unstable_settings = {
-  initialRouteName: 'home',
+  anchor: 'home',
   search: {
-    initialRouteName: 'search',
+    anchor: 'search',
   },
 };
 
@@ -65,4 +67,4 @@ In the above example, the `home` route is the default route for the `home` group
 
 - You can only provide groups for the current navigator.
 - When using the array syntax, if there are two groups (for example, `(one)/(two)`), only the last group's segment is used for matching the route.
-- If there are at least two group `initialRouteNames`, but a default `initialRouteName` is not provided, the first group's `initialRouteName` is used.
+- If there are at least two group anchors, but a default `anchor` is not provided, the first group's anchor is used.

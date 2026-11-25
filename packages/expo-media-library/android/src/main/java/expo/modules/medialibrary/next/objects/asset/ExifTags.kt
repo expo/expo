@@ -62,7 +62,9 @@ val EXIF_TAGS = arrayOf(
   arrayOf("double", ExifInterface.TAG_FOCAL_PLANE_X_RESOLUTION),
   arrayOf("double", ExifInterface.TAG_FOCAL_PLANE_Y_RESOLUTION),
   arrayOf("int", ExifInterface.TAG_GAIN_CONTROL),
+  @Suppress("DEPRECATION") // Deprecated, but we keep it as it can still be present in EXIF data.
   arrayOf("int", ExifInterface.TAG_ISO_SPEED_RATINGS),
+  arrayOf("int", ExifInterface.TAG_PHOTOGRAPHIC_SENSITIVITY),
   arrayOf("string", ExifInterface.TAG_IMAGE_UNIQUE_ID),
   arrayOf("int", ExifInterface.TAG_LIGHT_SOURCE),
   arrayOf("string", ExifInterface.TAG_MAKER_NOTE),

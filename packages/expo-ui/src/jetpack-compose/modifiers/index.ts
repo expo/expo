@@ -79,10 +79,23 @@ export const fillMaxWidth = (fraction?: number) => createModifier('fillMaxWidth'
 export const fillMaxHeight = (fraction?: number) => createModifier('fillMaxHeight', { fraction });
 
 /**
- * Sets the exact width of the view.
- * @param value - Width in dp.
+ * Intrinsic width values for the `width` modifier. `Min` is the smallest width at which the content
+ * still draws correctly, and `Max` is the width the content needs when nothing limits it.
  */
-export const width = (value: number) => createModifier('width', { width: value });
+export const IntrinsicSize = { Min: 'min', Max: 'max' } as const;
+export type IntrinsicSize = (typeof IntrinsicSize)[keyof typeof IntrinsicSize];
+
+/**
+ * Sets the width of the view to an exact value, or to the minimum or maximum intrinsic width of its
+ * content. The incoming constraints can still make the view narrower or wider than that width.
+ * @param value - Width in dp, or an `IntrinsicSize`. `IntrinsicSize.Min` uses the minimum intrinsic
+ * width, the smallest width at which the content still draws correctly (for a text, its widest word).
+ * `IntrinsicSize.Max` uses the maximum intrinsic width, the width the content needs when nothing
+ * limits it (for a text, a single line).
+ * @see [Compose `width(IntrinsicSize)` modifier](https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/width.modifier#(androidx.compose.ui.Modifier).width(androidx.compose.foundation.layout.IntrinsicSize))
+ * @see [Intrinsic measurements in Compose layouts](https://developer.android.com/develop/ui/compose/layouts/intrinsic-measurements)
+ */
+export const width = (value: number | IntrinsicSize) => createModifier('width', { width: value });
 
 /**
  * Sets the exact height of the view.
@@ -164,6 +177,42 @@ export const border = (borderWidth: number, borderColor: ColorValue) =>
 export const shadow = (elevation: number) => createModifier('shadow', { elevation });
 
 /**
+ * Options for the `dropShadow` and `innerShadow` modifiers.
+ */
+export type ShadowConfig = {
+  /** Blur radius of the shadow in dp. */
+  radius?: number;
+  /** Amount to expand (positive) or contract (negative) the shadow geometry in dp. */
+  spread?: number;
+  /** Shadow color string (hex). Defaults to black. */
+  color?: ColorValue;
+  /** Horizontal offset of the shadow in dp. */
+  offsetX?: number;
+  /** Vertical offset of the shadow in dp. */
+  offsetY?: number;
+  /** Shadow opacity, from 0.0 to 1.0. */
+  alpha?: number;
+};
+
+/**
+ * Draws a shadow behind the view with control over the blur radius, spread, offset, and color. Unlike
+ * `shadow`, it does not require an elevation value.
+ * @param shape - The shape of the shadow, for example `Shapes.RoundedCorner(16)` or `Shapes.Circle`.
+ * @param config - Options that control the shadow's appearance.
+ */
+export const dropShadow = (shape: BuiltinShape, config: ShadowConfig = {}) =>
+  createModifier('dropShadow', { shape, ...config });
+
+/**
+ * Draws a shadow inside the view to create an inset effect. The view's `background` must come before
+ * this modifier for the shadow to render.
+ * @param shape - The shape of the shadow, for example `Shapes.RoundedCorner(16)` or `Shapes.Circle`.
+ * @param config - Options that control the shadow's appearance.
+ */
+export const innerShadow = (shape: BuiltinShape, config: ShadowConfig = {}) =>
+  createModifier('innerShadow', { shape, ...config });
+
+/**
  * Sets the opacity/alpha of the view.
  * @param alpha - Opacity value (0.0 to 1.0).
  */
@@ -174,6 +223,17 @@ export const alpha = (alpha: number) => createModifier('alpha', { alpha });
  * @param radius - Blur radius in dp.
  */
 export const blur = (radius: number) => createModifier('blur', { radius });
+
+/**
+ * Adds rounded corners to the component.
+ *
+ * > **Note:** Works only inside Android widgets built with `expo-widgets`, on Android 12 (API level 31) and later.
+ *
+ * Jetpack Compose has no exact equivalent of Glance's `cornerRadius`, so Expo UI ignores this
+ * modifier. Use `clip(Shapes.RoundedCorner(radius))` to round corners in an app.
+ * @param radius - Corner radius in dp.
+ */
+export const cornerRadius = (radius: number) => createModifier('cornerRadius', { radius });
 
 // =============================================================================
 // Transform Modifiers
@@ -270,10 +330,20 @@ export const matchParentSize = () => createModifier('matchParentSize');
 /**
  * Marks a composable as the anchor for an `ExposedDropdownMenuBox`.
  * Only works when used inside `ExposedDropdownMenuBox`.
- * @param type - Anchor type. Currently only `'primaryNotEditable'` is supported.
+ * @param type - Anchor type, matching Compose's `ExposedDropdownMenuAnchorType`. Defaults to `'primaryNotEditable'`.
+ * - `'primaryNotEditable'`: a read-only text field — taps toggle the menu, and the menu popup is a
+ *   focusable window.
+ * - `'primaryEditable'`: an editable text field (autocomplete) — taps focus the field for typing, and
+ *   the menu popup is created non-focusable so the field keeps window focus (cursor rendering and IME
+ *   key events keep working) while the menu is open.
+ * - `'secondaryEditable'`: a secondary element of an editable text field, such as its trailing icon —
+ *   taps toggle the menu without moving focus away from the field.
  * @param enabled - Whether the anchor is enabled. Defaults to `true`.
  */
-export const menuAnchor = (type?: 'primaryNotEditable', enabled?: boolean) =>
+export const menuAnchor = (
+  type?: 'primaryNotEditable' | 'primaryEditable' | 'secondaryEditable',
+  enabled?: boolean
+) =>
   createModifier('menuAnchor', {
     ...(type && { type }),
     ...(typeof enabled === 'boolean' && { enabled }),
@@ -343,13 +413,21 @@ export const selectableGroup = () => createModifier('selectableGroup');
  * @param value - The current toggle state.
  * @param handler - Function to call when toggled.
  * @param options - Optional configuration.
- * @param options.role - The semantic role for accessibility: `'checkbox'`, `'radioButton'`, `'switch'`, or `'tab'`.
+ * @param options.role - The semantic role for accessibility: `'checkbox'`, `'radioButton'`,
+ * `'switch'`, or `'tab'`.
+ * @param options.enabled - Whether the view responds to input and is reported as enabled to
+ * accessibility services. Defaults to `true`.
  */
 export const toggleable = (
   value: boolean,
   handler: () => void,
-  options?: { role?: 'checkbox' | 'radioButton' | 'switch' | 'tab' }
-) => createModifierWithEventListener('toggleable', handler, { value, role: options?.role });
+  options?: { role?: 'checkbox' | 'radioButton' | 'switch' | 'tab'; enabled?: boolean }
+) =>
+  createModifierWithEventListener('toggleable', handler, {
+    value,
+    role: options?.role,
+    enabled: options?.enabled,
+  });
 
 // =============================================================================
 // Lifecycle Modifiers
@@ -384,6 +462,19 @@ export const onSizeChanged = (handler: (size: { width: number; height: number })
     handler(size)
   );
 
+/**
+ * Calls the handler whenever the composable is positioned, with its position and size.
+ * `x` and `y` are relative to the window. All values are in dp.
+ * @param handler - Function called with the new layout.
+ */
+export const onGloballyPositioned = (
+  handler: (layout: { x: number; y: number; width: number; height: number }) => void
+) =>
+  createModifierWithEventListener(
+    'onGloballyPositioned',
+    (layout: { x: number; y: number; width: number; height: number }) => handler(layout)
+  );
+
 // =============================================================================
 // Utility Modifiers
 // =============================================================================
@@ -395,9 +486,24 @@ export const onSizeChanged = (handler: (size: { width: number; height: number })
 export const testID = (tag: string) => createModifier('testID', { testID: tag });
 
 /**
+ * Options for the `semantics` modifier.
+ */
+export type SemanticsConfig = {
+  /**
+   * An autofill hint, such as `'email'` or `'password'`.
+   */
+  contentType?: string;
+  /**
+   * What accessibility services such as TalkBack announce for the element. Useful when the visible
+   * content does not read well aloud, as with an abbreviation or a glyph.
+   */
+  contentDescription?: string;
+};
+
+/**
  * Applies semantic properties. Wraps `Modifier.semantics { ... }`.
  */
-export const semantics = (params: { contentType?: string }) => createModifier('semantics', params);
+export const semantics = (params: SemanticsConfig) => createModifier('semantics', params);
 
 // =============================================================================
 // Clip Modifier & Shapes
@@ -522,6 +628,23 @@ export const Shapes = {
  */
 export const clip = (shape: BuiltinShape) => createModifier('clip', { shape });
 
+/**
+ * Clips a carousel item's mask to the given shape, so the item keeps its shape while the
+ * carousel masks it. Wraps Compose's `CarouselItemScope.maskClip`.
+ *
+ * A carousel reveals each item through a mask, so a plain `clip` on the item loses its
+ * corners as the item squeezes into a peek. Clipping the mask itself keeps them.
+ *
+ * Only works on a child of a Carousel component. Like `clip`, it only affects what is
+ * drawn after it in the modifier chain, so place it before `background`.
+ *
+ * @example
+ * ```tsx
+ * modifiers={[size(300, 200), maskClip(Shapes.RoundedCorner(28)), background('#6200EE')]}
+ * ```
+ */
+export const maskClip = (shape: BuiltinShape) => createModifier('maskClip', { shape });
+
 // =============================================================================
 // Scroll Modifiers
 // =============================================================================
@@ -539,6 +662,19 @@ export const verticalScroll = () => createModifier('verticalScroll');
  * Use on a Row to create a non-lazy scrollable container.
  */
 export const horizontalScroll = () => createModifier('horizontalScroll');
+
+/**
+ * Hides the keyboard and clears focus when the user starts to drag the scrollable content.
+ *
+ * When used with `verticalScroll()` or `horizontalScroll()` modifier, it must be placed
+ * before them in the modifier list.
+ *
+ * @example
+ * ```tsx
+ * modifiers={[scrollDismissesKeyboard(), verticalScroll()]}
+ * ```
+ */
+export const scrollDismissesKeyboard = () => createModifier('scrollDismissesKeyboard');
 
 export { createModifier, createModifierWithEventListener } from './createModifier';
 export { createViewModifierEventListener } from './utils';

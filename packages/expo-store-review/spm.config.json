@@ -4,32 +4,25 @@
     {
       "name": "ExpoStoreReview",
       "podName": "ExpoStoreReview",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
         "Hermes",
         "expo-modules-core/ExpoModulesCore"
       ],
+      "swiftLanguageVersions": ["5"],
       "targets": [
         {
           "type": "swift",
           "name": "ExpoStoreReview",
-          "path": "ios",
-          "pattern": "*.swift",
           "dependencies": [
             "Hermes",
             "React",
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit",
-            "StoreKit"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit", "StoreKit"]
         }
       ]
     }

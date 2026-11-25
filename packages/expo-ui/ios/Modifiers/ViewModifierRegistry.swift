@@ -16,7 +16,7 @@ internal struct ListSectionSpacingModifier: ViewModifier, Record {
   @Field var value: CGFloat = 0
 
   func body(content: Content) -> some View {
-#if os(tvOS)
+#if os(tvOS) || os(macOS)
     content
 #else
     if #available(iOS 17.0, *) {
@@ -83,31 +83,75 @@ internal struct FrameModifier: ViewModifier, Record {
 }
 
 internal struct PaddingModifier: ViewModifier, Record {
-  @Field var all: CGFloat?
-  @Field var horizontal: CGFloat?
-  @Field var vertical: CGFloat?
+  @Field var all: PaddingValue?
+  @Field var horizontal: PaddingValue?
+  @Field var vertical: PaddingValue?
 
-  @Field var top: CGFloat?
-  @Field var leading: CGFloat?
-  @Field var bottom: CGFloat?
-  @Field var trailing: CGFloat?
+  @Field var top: PaddingValue?
+  @Field var leading: PaddingValue?
+  @Field var bottom: PaddingValue?
+  @Field var trailing: PaddingValue?
+
+  /**
+   The value of each edge, where a value set for a specific edge wins over the shorthands
+   covering that edge. A `nil` edge was not set at all and gets no padding.
+   */
+  private var resolvedEdges: (top: PaddingValue?, leading: PaddingValue?, bottom: PaddingValue?, trailing: PaddingValue?) {
+    (
+      top: top ?? vertical ?? all,
+      leading: leading ?? horizontal ?? all,
+      bottom: bottom ?? vertical ?? all,
+      trailing: trailing ?? horizontal ?? all
+    )
+  }
+
+  /**
+   The edges left to the system, which `EdgeInsets` cannot express.
+   */
+  private var defaultEdges: Edge.Set {
+    let edges = resolvedEdges
+    var result: Edge.Set = []
+
+    if edges.top?.isDefault == true {
+      result.insert(.top)
+    }
+    if edges.leading?.isDefault == true {
+      result.insert(.leading)
+    }
+    if edges.bottom?.isDefault == true {
+      result.insert(.bottom)
+    }
+    if edges.trailing?.isDefault == true {
+      result.insert(.trailing)
+    }
+    return result
+  }
+
+  private var insets: EdgeInsets {
+    let edges = resolvedEdges
+
+    return EdgeInsets(
+      top: edges.top?.length ?? 0,
+      leading: edges.leading?.length ?? 0,
+      bottom: edges.bottom?.length ?? 0,
+      trailing: edges.trailing?.length ?? 0
+    )
+  }
 
   func body(content: Content) -> some View {
-    let hasCustomPadding = [
-      all, horizontal, vertical, top, leading, bottom, trailing
-    ].contains { $0 != nil }
+    let edges = resolvedEdges
 
-    if !hasCustomPadding {
+    if edges.top == nil && edges.leading == nil && edges.bottom == nil && edges.trailing == nil {
       // Default SwiftUI padding (system spacing)
       content.padding()
     } else {
-      let insets = EdgeInsets(
-        top: top ?? vertical ?? all ?? 0,
-        leading: leading ?? horizontal ?? all ?? 0,
-        bottom: bottom ?? vertical ?? all ?? 0,
-        trailing: trailing ?? horizontal ?? all ?? 0
-      )
-      content.padding(insets)
+      // `EdgeInsets` can only carry lengths, so the edges left to the system are applied by a
+      // second call. Padding modifiers add up and these two cover disjoint edges.
+      if defaultEdges.isEmpty {
+        content.padding(insets)
+      } else {
+        content.padding(insets).padding(defaultEdges)
+      }
     }
   }
 }
@@ -187,11 +231,11 @@ internal struct MonospacedDigitModifier: ViewModifier, Record {
 }
 
 internal struct TintModifier: ViewModifier, Record {
-  @Field var color: Color?
+  @Field var tint: ShapeStyleValue?
 
   func body(content: Content) -> some View {
-    if let color = color {
-      content.tint(color)
+    if let shapeStyle = tint?.toAnyShapeStyle() {
+      content.tint(shapeStyle)
     } else {
       content
     }
@@ -221,6 +265,61 @@ internal struct DisabledModifier: ViewModifier, Record {
 
   func body(content: Content) -> some View {
     content.disabled(disabled)
+  }
+}
+
+internal enum RedactionReason: String, Enumerable {
+  case placeholder
+  case privacy
+  case invalidated
+}
+
+internal struct RedactedModifier: ViewModifier, Record {
+  @Field var reasons: [RedactionReason] = [.placeholder]
+
+  func body(content: Content) -> some View {
+    content.redacted(reason: resolveReasons())
+  }
+
+  private func resolveReasons() -> RedactionReasons {
+    var set: RedactionReasons = []
+    for reason in reasons {
+      switch reason {
+      case .placeholder: set.insert(.placeholder)
+      case .privacy: set.insert(.privacy)
+      case .invalidated:
+        if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+          set.insert(.invalidated)
+        }
+      }
+    }
+    return set
+  }
+}
+
+internal struct UnredactedModifier: ViewModifier, Record {
+  func body(content: Content) -> some View {
+    content.unredacted()
+  }
+}
+
+internal struct PrivacySensitiveModifier: ViewModifier, Record {
+  @Field var sensitive: Bool = true
+
+  func body(content: Content) -> some View {
+    content.privacySensitive(sensitive)
+  }
+}
+
+internal struct InvalidatableContentModifier: ViewModifier, Record {
+  @Field var invalidatable: Bool = true
+
+  func body(content: Content) -> some View {
+    if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+      content.invalidatableContent(invalidatable)
+    } else {
+      content
+    }
   }
 }
 
@@ -285,11 +384,16 @@ internal struct GrayscaleModifier: ViewModifier, Record {
 }
 
 internal struct BorderModifier: ViewModifier, Record {
-  @Field var color: Color = .white
+  // Declared as `shapeStyle` because `content` is taken by the parameter of `body(content:)`.
+  @Field("content") var shapeStyle: ShapeStyleValue?
   @Field var width: CGFloat = 1.0
 
   func body(content: Content) -> some View {
-    content.border(color, width: width)
+    if let resolvedStyle = shapeStyle?.toAnyShapeStyle() {
+      content.border(resolvedStyle, width: width)
+    } else {
+      content
+    }
   }
 }
 
@@ -314,6 +418,49 @@ internal struct ClipShapeModifier: ViewModifier, Record {
       content.clipShape(Rectangle())
     case .roundedRectangle:
       content.clipShape(makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle))
+    }
+  }
+}
+
+internal struct StrokeBorderModifier: ViewModifier, Record {
+  // Declared as `shapeStyle` because `content` is taken by the parameter of `body(content:)`.
+  @Field("content") var shapeStyle: ShapeStyleValue?
+  @Field var style: StrokeStyleConfig?
+  @Field var antialiased: Bool = true
+  @Field var shape: ShapeType = .rectangle
+  @Field var cornerRadius: CGFloat = 8
+  @Field var roundedCornerStyle: RoundedCornerStyle?
+  @Field var cornerSize: CornerSize?
+
+  func body(content: Content) -> some View {
+    content.overlay(strokeBorderView())
+  }
+
+  @ViewBuilder
+  private func strokeBorderView() -> some View {
+    let strokeStyle = (style ?? StrokeStyleConfig()).toStrokeStyle()
+    switch shape {
+    case .capsule:
+      applyStrokeBorder(makeCapsule(style: roundedCornerStyle), strokeStyle)
+    case .circle:
+      applyStrokeBorder(Circle(), strokeStyle)
+    case .containerRelativeShape:
+      applyStrokeBorder(ContainerRelativeShape(), strokeStyle)
+    case .ellipse:
+      applyStrokeBorder(Ellipse(), strokeStyle)
+    case .rectangle:
+      applyStrokeBorder(Rectangle(), strokeStyle)
+    case .roundedRectangle:
+      applyStrokeBorder(makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle), strokeStyle)
+    }
+  }
+
+  @ViewBuilder
+  private func applyStrokeBorder<S: InsettableShape>(_ shape: S, _ strokeStyle: StrokeStyle) -> some View {
+    if let resolvedStyle = shapeStyle?.toAnyShapeStyle() {
+      shape.strokeBorder(resolvedStyle, style: strokeStyle, antialiased: antialiased)
+    } else {
+      shape.strokeBorder(style: strokeStyle, antialiased: antialiased)
     }
   }
 }
@@ -440,7 +587,11 @@ internal struct MenuActionDismissBehaviorModifier: ViewModifier, Record {
       case .automatic:
         content.menuActionDismissBehavior(.automatic)
       case .disabled:
+#if os(macOS)
+        content.menuActionDismissBehavior(.automatic)
+#else
         content.menuActionDismissBehavior(.disabled)
+#endif
       case .enabled:
         content.menuActionDismissBehavior(.enabled)
       }
@@ -483,6 +634,154 @@ internal struct AccessibilityValueModifier: ViewModifier, Record {
     } else {
       content
     }
+  }
+}
+
+internal struct AccessibilityInputLabelsModifier: ViewModifier, Record {
+  @Field var inputLabels: [String]?
+
+  func body(content: Content) -> some View {
+    if let inputLabels = inputLabels {
+      content.accessibilityInputLabels(inputLabels.map { Text($0) })
+    } else {
+      content
+    }
+  }
+}
+
+internal struct AccessibilityIdentifierModifier: ViewModifier, Record {
+  @Field var identifier: String?
+
+  func body(content: Content) -> some View {
+    if let identifier = identifier {
+      content.accessibilityIdentifier(identifier)
+    } else {
+      content
+    }
+  }
+}
+
+internal struct AccessibilityHiddenModifier: ViewModifier, Record {
+  @Field var hidden: Bool = true
+
+  func body(content: Content) -> some View {
+    content.accessibilityHidden(hidden)
+  }
+}
+
+internal enum AccessibilityChildBehaviorType: String, Enumerable {
+  case ignore
+  case combine
+  case contain
+
+  func toNative() -> AccessibilityChildBehavior {
+    switch self {
+    case .ignore:
+      return .ignore
+    case .combine:
+      return .combine
+    case .contain:
+      return .contain
+    }
+  }
+}
+
+internal struct AccessibilityElementModifier: ViewModifier, Record {
+  @Field var children: AccessibilityChildBehaviorType = .ignore
+
+  func body(content: Content) -> some View {
+    content.accessibilityElement(children: children.toNative())
+  }
+}
+
+internal enum AccessibilityTraitType: String, Enumerable {
+  case isButton
+  case isHeader
+  case isImage
+  case isSelected
+  case isLink
+  case isModal
+  case isSummaryElement
+  case updatesFrequently
+  case startsMediaSession
+  case allowsDirectInteraction
+  case causesPageTurn
+  case isToggle
+  case playsSound
+  case isStaticText
+  case isSearchField
+  case isKeyboardKey
+  case isTabBar
+
+  func toNative() -> AccessibilityTraits? {
+    switch self {
+    case .isButton:
+      return .isButton
+    case .isHeader:
+      return .isHeader
+    case .isImage:
+      return .isImage
+    case .isSelected:
+      return .isSelected
+    case .isLink:
+      return .isLink
+    case .isModal:
+      return .isModal
+    case .isSummaryElement:
+      return .isSummaryElement
+    case .updatesFrequently:
+      return .updatesFrequently
+    case .startsMediaSession:
+      return .startsMediaSession
+    case .allowsDirectInteraction:
+      return .allowsDirectInteraction
+    case .causesPageTurn:
+      return .causesPageTurn
+    case .isToggle:
+      if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+        return .isToggle
+      }
+      return nil
+    case .playsSound:
+      return .playsSound
+    case .isStaticText:
+      return .isStaticText
+    case .isSearchField:
+      return .isSearchField
+    case .isKeyboardKey:
+      return .isKeyboardKey
+    case .isTabBar:
+      if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+        return .isTabBar
+      }
+      return nil
+    }
+  }
+}
+
+internal func combineAccessibilityTraits(_ traits: [AccessibilityTraitType]) -> AccessibilityTraits {
+  var combined: AccessibilityTraits = []
+  for trait in traits {
+    if let native = trait.toNative() {
+      combined.formUnion(native)
+    }
+  }
+  return combined
+}
+
+internal struct AccessibilityAddTraitsModifier: ViewModifier, Record {
+  @Field var traits: [AccessibilityTraitType] = []
+
+  func body(content: Content) -> some View {
+    content.accessibilityAddTraits(combineAccessibilityTraits(traits))
+  }
+}
+
+internal struct AccessibilityRemoveTraitsModifier: ViewModifier, Record {
+  @Field var traits: [AccessibilityTraitType] = []
+
+  func body(content: Content) -> some View {
+    content.accessibilityRemoveTraits(combineAccessibilityTraits(traits))
   }
 }
 
@@ -621,6 +920,26 @@ internal struct AnyViewModifier: ViewModifier {
   }
 }
 
+/**
+ * Prunability-stable wrapper for `AnyViewModifier`
+ */
+internal struct StableViewModifier: ViewModifier {
+  let params: [String: Any]
+  weak var appContext: AppContext?
+  let dispatcher: EventDispatcher
+
+  func body(content: Content) -> some View {
+    if let type = params["$type"] as? String,
+      let appContext,
+      let factory = ViewModifierRegistry.shared.modifierFactories[type],
+      let modifier = try? factory(params, appContext, dispatcher) {
+      content.modifier(AnyViewModifier(modifier))
+    } else {
+      content
+    }
+  }
+}
+
 internal struct AnimationModifier: ViewModifier, Record {
   @Field var animation: AnimationConfig
   @Field var animatedValue: Either<Double, Bool>?
@@ -712,6 +1031,83 @@ internal struct ListRowSeparator: ViewModifier, Record {
   }
 }
 
+internal struct ListRowSeparatorTint: ViewModifier, Record {
+  @Field var color: Color?
+  @Field var edges: VerticalEdgeOptions?
+
+  func body(content: Content) -> some View {
+#if os(tvOS)
+    content
+#else
+    if let edges {
+      content.listRowSeparatorTint(color, edges: edges.toVerticalEdges())
+    } else {
+      content.listRowSeparatorTint(color)
+    }
+#endif
+  }
+}
+
+internal struct ListRowSpacing: ViewModifier, Record {
+  @Field var spacing: Double?
+
+  func body(content: Content) -> some View {
+#if os(iOS)
+    if #available(iOS 15.0, *) {
+      content.listRowSpacing(spacing.map { CGFloat($0) })
+    } else {
+      content
+    }
+#else
+    content
+#endif
+  }
+}
+
+internal enum AlignmentGuideOptions: String, Enumerable {
+  case leading
+  case center
+  case trailing
+  case listRowSeparatorLeading
+  case listRowSeparatorTrailing
+
+  var horizontalAlignment: HorizontalAlignment? {
+    switch self {
+    case .leading:
+      return .leading
+    case .center:
+      return .center
+    case .trailing:
+      return .trailing
+    case .listRowSeparatorLeading:
+#if os(tvOS)
+      return nil
+#else
+      return .listRowSeparatorLeading
+#endif
+    case .listRowSeparatorTrailing:
+#if os(tvOS)
+      return nil
+#else
+      return .listRowSeparatorTrailing
+#endif
+    }
+  }
+}
+
+internal struct AlignmentGuideModifier: ViewModifier, Record {
+  @Field var guide: AlignmentGuideOptions = .leading
+  @Field var value: Double = 0
+
+  func body(content: Content) -> some View {
+    if let alignment = guide.horizontalAlignment {
+      content.alignmentGuide(alignment) { _ in CGFloat(value) }
+    } else {
+      content
+    }
+  }
+}
+
 internal enum TextTruncationModeTypes: String, Enumerable {
   case head
   case middle
@@ -757,6 +1153,14 @@ internal struct TextAllowsTightening: ViewModifier, Record {
   }
 }
 
+internal struct MinimumScaleFactorModifier: ViewModifier, Record {
+  @Field var factor: CGFloat = 1.0
+
+  func body(content: Content) -> some View {
+    content.minimumScaleFactor(factor)
+  }
+}
+
 internal enum TextCaseTypes: String, Enumerable {
   case lowercase
   case uppercase
@@ -781,6 +1185,18 @@ internal enum TextLinePattern: String, Enumerable {
   case dot
   case dashDot
   case dashDotDot
+}
+
+internal extension TextLinePattern {
+  func toSwiftUI() -> Text.LineStyle.Pattern {
+    switch self {
+    case .solid: return .solid
+    case .dash: return .dash
+    case .dot: return .dot
+    case .dashDot: return .dashDot
+    case .dashDotDot: return .dashDotDot
+    }
+  }
 }
 
 internal struct TextUnderLine: ViewModifier, Record {
@@ -922,21 +1338,21 @@ internal struct HeaderProminence: ViewModifier, Record {
 }
 
 internal struct ListRowInsets: ViewModifier, Record {
-  @Field var top: CGFloat = 0
-  @Field var leading: CGFloat = 0
-  @Field var bottom: CGFloat = 0
-  @Field var trailing: CGFloat = 0
+  @Field var top: CGFloat?
+  @Field var leading: CGFloat?
+  @Field var bottom: CGFloat?
+  @Field var trailing: CGFloat?
 
   func body(content: Content) -> some View {
-    if top != 0 || leading != 0 || bottom != 0 || trailing != 0 {
-      content.listRowInsets(.init(
-        top: top,
-        leading: leading,
-        bottom: bottom,
-        trailing: trailing
-      ))
-    } else {
+    if top == nil && leading == nil && bottom == nil && trailing == nil {
       content
+    } else {
+      content.listRowInsets(.init(
+        top: top ?? 0,
+        leading: leading ?? 0,
+        bottom: bottom ?? 0,
+        trailing: trailing ?? 0
+      ))
     }
   }
 }
@@ -991,7 +1407,7 @@ internal struct ListSectionMargins: ViewModifier, Record {
   @Field var edges: EdgeOptions?
 
   func body(content: Content) -> some View {
-#if compiler(>=6.2) && !os(tvOS) // Xcode 26
+#if compiler(>=6.2) && !os(tvOS) && !os(macOS) // Xcode 26
     if #available(iOS 26.0, *) {
       if let edges {
         content.listSectionMargins(edges.toEdge(), length ?? 0)
@@ -1129,6 +1545,8 @@ public class ViewModifierRegistry {
   public typealias ModifierFactory = ([String: Any], AppContext, EventDispatcher) throws -> any ViewModifier
   private(set) internal var modifierFactories: [String: ModifierFactory] = [:]
 
+  public static var widgetKit: WidgetKitModifiers?
+
   private init() {
     registerBuiltInModifiers()
   }
@@ -1188,10 +1606,14 @@ public class ViewModifierRegistry {
     globalEventDispatcher: EventDispatcher,
     params: [String: Any]
   ) -> AnyView {
-    guard let viewModifier = try? modifierFactories[type]?(params, appContext, globalEventDispatcher) else {
+    guard modifierFactories[type] != nil else {
       return view
     }
-    return AnyView(view.modifier(AnyViewModifier(viewModifier)))
+    return AnyView(view.modifier(StableViewModifier(
+      params: params,
+      appContext: appContext,
+      dispatcher: globalEventDispatcher
+    )))
   }
 
   /**
@@ -1212,14 +1634,7 @@ public class ViewModifierRegistry {
       return text.monospacedDigit()
     case "font":
       guard let modifier = try? FontModifier(from: params, appContext: appContext) else { return text }
-      if let family = modifier.family {
-        return text.font(Font.custom(family, size: modifier.size ?? 17))
-      }
-      return text.font(.system(
-        size: modifier.size ?? 17,
-        weight: modifier.weight?.toSwiftUI() ?? .regular,
-        design: modifier.design?.toSwiftUI() ?? .default
-      ))
+      return text.font(modifier.resolveFont())
     case "foregroundColor":
       guard let modifier = try? ForegroundColorModifier(from: params, appContext: appContext),
             let color = modifier.color else { return text }
@@ -1228,10 +1643,16 @@ public class ViewModifierRegistry {
       guard let modifier = try? ForegroundStyleModifier(from: params, appContext: appContext) else { return text }
       if #available(iOS 17.0, tvOS 17.0, *) {
         return applyForegroundStyle(modifier, to: text)
-      } else if modifier.styleType == .color, let color = modifier.color {
-          return text.foregroundColor(color)
-      } 
+      } else if modifier.style?.type == .color, let color = modifier.style?.color {
+        return text.foregroundColor(color)
+      }
       return text
+    case "underline":
+      guard let modifier = try? TextUnderLine(from: params, appContext: appContext) else { return text }
+      return text.underline(modifier.isActive, pattern: modifier.pattern.toSwiftUI(), color: modifier.color)
+    case "strikethrough":
+      guard let modifier = try? TextStrikeThrough(from: params, appContext: appContext) else { return text }
+      return text.strikethrough(modifier.isActive, pattern: modifier.pattern.toSwiftUI(), color: modifier.color)
     default:
       #if DEBUG
       return Text(" ['\(type)' not supported for nested Text]").foregroundColor(.red)
@@ -1255,6 +1676,9 @@ public class ViewModifierRegistry {
       guard let modifier = try? ResizableModifier(from: params, appContext: appContext)
       else { return image.resizable() }
       return image.resizable(capInsets: EdgeInsets(top: modifier.top, leading: modifier.leading, bottom: modifier.bottom, trailing: modifier.trailing), resizingMode: modifier.resizingMode.toResizingMode)
+    case "renderingMode":
+      let modifier = try? RenderingModeModifier(from: params, appContext: appContext)
+      return image.renderingMode(modifier?.mode?.toTemplateRenderingMode)
     default:
       #if DEBUG
       return image
@@ -1279,13 +1703,46 @@ public class ViewModifierRegistry {
   }
 }
 
+internal enum MatchedGeometryPropertiesOptions: String, Enumerable {
+  case frame
+  case position
+  case size
+
+  var toMatchedGeometryProperties: MatchedGeometryProperties {
+    switch self {
+    case .frame: return .frame
+    case .position: return .position
+    case .size: return .size
+    }
+  }
+}
+
 internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
   @Field var id: String?
   @Field var namespaceId: String?
+  @Field var properties: MatchedGeometryPropertiesOptions = .frame
+  @Field var anchor: UnitPointOptions = .center
+  @Field var isSource: Bool = true
 
   func body(content: Content) -> some View {
     if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId) {
-      content.matchedGeometryEffect(id: id, in: namespace)
+      content.matchedGeometryEffect(
+        id: id,
+        in: namespace,
+        properties: properties.toMatchedGeometryProperties,
+        anchor: anchor.toUnitPoint,
+        isSource: isSource
+      )
+    } else {
+      content
+    }
+  }
+}
+
+internal struct GeometryGroupModifier: ViewModifier, Record {
+  func body(content: Content) -> some View {
+    if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+      content.geometryGroup()
     } else {
       content
     }
@@ -1370,6 +1827,96 @@ internal struct TextFieldStyleModifier: ViewModifier, Record {
   }
 }
 
+internal struct NavigationTitleModifier: ViewModifier, Record {
+  @Field var title: String?
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    if let title {
+      content.navigationTitle(title)
+    } else {
+      content
+    }
+  }
+}
+
+internal enum NavigationBarTitleDisplayMode: String, Enumerable {
+  case automatic
+  case inline
+  case large
+
+#if os(iOS)
+  var value: NavigationBarItem.TitleDisplayMode {
+    switch self {
+    case .automatic:
+      return .automatic
+    case .inline:
+      return .inline
+    case .large:
+      return .large
+    }
+  }
+#endif
+}
+
+internal struct NavigationBarTitleDisplayModeModifier: ViewModifier, Record {
+  @Field var displayMode: NavigationBarTitleDisplayMode = .automatic
+
+  func body(content: Content) -> some View {
+#if os(iOS)
+    content.navigationBarTitleDisplayMode(displayMode.value)
+#else
+    content
+#endif
+  }
+}
+
+internal enum ToolbarTitleDisplayModeType: String, Enumerable {
+  case automatic
+  case inline
+  case inlineLarge
+  case large
+
+  @available(iOS 17.0, tvOS 17.0, macOS 14.0, *)
+  var value: SwiftUI.ToolbarTitleDisplayMode? {
+    switch self {
+    case .automatic:
+      return .automatic
+    case .inline:
+      return .inline
+    case .inlineLarge:
+#if os(tvOS)
+      return nil
+#else
+      return .inlineLarge
+#endif
+    case .large:
+#if os(iOS)
+      return .large
+#else
+      return nil
+#endif
+    }
+  }
+}
+
+internal struct ToolbarTitleDisplayModeModifier: ViewModifier, Record {
+  @Field var mode: ToolbarTitleDisplayModeType = .automatic
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+      if let value = mode.value {
+        content.toolbarTitleDisplayMode(value)
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
 // MARK: - Built-in Modifier Registration
 
 // swiftlint:disable:next no_grouping_extension
@@ -1393,6 +1940,10 @@ extension ViewModifierRegistry {
 
     register("frame") { params, appContext, _ in
       return try FrameModifier(from: params, appContext: appContext)
+    }
+
+    register("universalLayout") { params, appContext, _ in
+      return try UniversalLayoutModifier(from: params, appContext: appContext)
     }
 
     register("padding") { params, appContext, _ in
@@ -1447,6 +1998,10 @@ extension ViewModifierRegistry {
       return try TintModifier(from: params, appContext: appContext)
     }
 
+    register("selectedSegmentTintColor") { params, appContext, _ in
+      return try SelectedSegmentTintColorModifier(from: params, appContext: appContext)
+    }
+
     register("hidden") { params, appContext, _ in
       return try HiddenModifier(from: params, appContext: appContext)
     }
@@ -1457,6 +2012,22 @@ extension ViewModifierRegistry {
 
     register("disabled") { params, appContext, _ in
       return try DisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("redacted") { params, appContext, _ in
+      return try RedactedModifier(from: params, appContext: appContext)
+    }
+
+    register("unredacted") { params, appContext, _ in
+      return try UnredactedModifier(from: params, appContext: appContext)
+    }
+
+    register("privacySensitive") { params, appContext, _ in
+      return try PrivacySensitiveModifier(from: params, appContext: appContext)
+    }
+
+    register("invalidatableContent") { params, appContext, _ in
+      return try InvalidatableContentModifier(from: params, appContext: appContext)
     }
 
     register("zIndex") { params, appContext, _ in
@@ -1489,6 +2060,9 @@ extension ViewModifierRegistry {
 
     register("border") { params, appContext, _ in
       return try BorderModifier(from: params, appContext: appContext)
+    }
+    register("strokeBorder") { params, appContext, _ in
+      return try StrokeBorderModifier(from: params, appContext: appContext)
     }
 
     register("clipShape") { params, appContext, _ in
@@ -1523,6 +2097,46 @@ extension ViewModifierRegistry {
       return try HueRotationModifier(from: params, appContext: appContext)
     }
 
+    register("navigationTitle") { params, appContext, _ in
+      return try NavigationTitleModifier(from: params, appContext: appContext)
+    }
+
+    register("navigationBarTitleDisplayMode") { params, appContext, _ in
+      return try NavigationBarTitleDisplayModeModifier(from: params, appContext: appContext)
+    }
+
+    register("toolbarTitleDisplayMode") { params, appContext, _ in
+      return try ToolbarTitleDisplayModeModifier(from: params, appContext: appContext)
+    }
+
+    register("navigationSplitViewStyle") { params, appContext, _ in
+      return try NavigationSplitViewStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("navigationSplitViewColumnWidth") { params, appContext, _ in
+      return try NavigationSplitViewColumnWidthModifier(from: params, appContext: appContext)
+    }
+
+    register("arrangementViewStyle") { params, appContext, _ in
+      return try ArrangementViewStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("splitArrangementLayoutRatio") { params, appContext, _ in
+      return try SplitArrangementLayoutRatioModifier(from: params, appContext: appContext)
+    }
+
+    register("splitArrangementLayoutSize") { params, appContext, _ in
+      return try SplitArrangementLayoutSizeModifier(from: params, appContext: appContext)
+    }
+
+    register("splitArrangementFixedLayoutSize") { params, appContext, _ in
+      return try SplitArrangementFixedLayoutSizeModifier(from: params, appContext: appContext)
+    }
+
+    register("overlayArrangementEdge") { params, appContext, _ in
+      return try OverlayArrangementEdgeModifier(from: params, appContext: appContext)
+    }
+
     register("accessibilityLabel") { params, appContext, _ in
       return try AccessibilityLabelModifier(from: params, appContext: appContext)
     }
@@ -1533,6 +2147,30 @@ extension ViewModifierRegistry {
 
     register("accessibilityValue") { params, appContext, _ in
       return try AccessibilityValueModifier(from: params, appContext: appContext)
+    }
+
+    register("accessibilityInputLabels") { params, appContext, _ in
+      return try AccessibilityInputLabelsModifier(from: params, appContext: appContext)
+    }
+
+    register("accessibilityIdentifier") { params, appContext, _ in
+      return try AccessibilityIdentifierModifier(from: params, appContext: appContext)
+    }
+
+    register("accessibilityHidden") { params, appContext, _ in
+      return try AccessibilityHiddenModifier(from: params, appContext: appContext)
+    }
+
+    register("accessibilityElement") { params, appContext, _ in
+      return try AccessibilityElementModifier(from: params, appContext: appContext)
+    }
+
+    register("accessibilityAddTraits") { params, appContext, _ in
+      return try AccessibilityAddTraitsModifier(from: params, appContext: appContext)
+    }
+
+    register("accessibilityRemoveTraits") { params, appContext, _ in
+      return try AccessibilityRemoveTraitsModifier(from: params, appContext: appContext)
     }
 
     register("layoutPriority") { params, appContext, _ in
@@ -1575,6 +2213,10 @@ extension ViewModifierRegistry {
       return try MatchedGeometryEffectModifier.init(from: params, appContext: appContext)
     }
 
+    register("geometryGroup") { params, appContext, _ in
+      return try GeometryGroupModifier(from: params, appContext: appContext)
+    }
+
     register("fixedSize") { params, appContext, _ in
       return try FixedSizeModifier(from: params, appContext: appContext)
     }
@@ -1597,6 +2239,10 @@ extension ViewModifierRegistry {
 
     register("buttonStyle") { params, appContext, _ in
       return try ButtonStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("buttonBorderShape") { params, appContext, _ in
+      return try ButtonBorderShapeModifier(from: params, appContext: appContext)
     }
 
     register("toggleStyle") { params, appContext, _ in
@@ -1627,6 +2273,18 @@ extension ViewModifierRegistry {
       return try ListRowSeparator(from: params, appContext: appContext)
     }
 
+    register("listRowSeparatorTint") { params, appContext, _ in
+      return try ListRowSeparatorTint(from: params, appContext: appContext)
+    }
+
+    register("listRowSpacing") { params, appContext, _ in
+      return try ListRowSpacing(from: params, appContext: appContext)
+    }
+
+    register("alignmentGuide") { params, appContext, _ in
+      return try AlignmentGuideModifier(from: params, appContext: appContext)
+    }
+
     register("truncationMode") { params, appContext, _ in
       return try TextTruncationMode(from: params, appContext: appContext)
     }
@@ -1637,6 +2295,10 @@ extension ViewModifierRegistry {
 
     register("allowsTightening") { params, appContext, _ in
       return try TextAllowsTightening(from: params, appContext: appContext)
+    }
+
+    register("minimumScaleFactor") { params, appContext, _ in
+      return try MinimumScaleFactorModifier(from: params, appContext: appContext)
     }
 
     register("textCase") { params, appContext, _ in
@@ -1703,6 +2365,14 @@ extension ViewModifierRegistry {
       return try FontModifier(from: params, appContext: appContext)
     }
 
+    register("dynamicTypeSize") { params, appContext, _ in
+      return try DynamicTypeSizeModifier(from: params, appContext: appContext)
+    }
+
+    register("imageScale") { params, appContext, _ in
+      return try ImageScaleModifier(from: params, appContext: appContext)
+    }
+
     register("gridCellUnsizedAxes") { params, appContext, _ in
       return try GridCellUnsizedAxes(from: params, appContext: appContext)
     }
@@ -1739,8 +2409,28 @@ extension ViewModifierRegistry {
       return try ScrollPositionModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
+    register("searchable") { params, appContext, eventDispatcher in
+      return try SearchableModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
+    register("searchToolbarBehavior") { params, appContext, _ in
+      return try SearchToolbarBehaviorModifier(from: params, appContext: appContext)
+    }
+
     register("pickerStyle") { params, appContext, _ in
       return try PickerStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("menuOrder") { params, appContext, _ in
+      return try MenuOrderModifier(from: params, appContext: appContext)
+    }
+
+    register("menuStyle") { params, appContext, _ in
+      return try MenuStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("menuIndicator") { params, appContext, _ in
+      return try MenuIndicatorModifier(from: params, appContext: appContext)
     }
 
     register("submitLabel") { params, appContext, _ in
@@ -1763,8 +2453,20 @@ extension ViewModifierRegistry {
       return try ScrollDisabledModifier(from: params, appContext: appContext)
     }
 
+    register("preferredColorScheme") { params, appContext, _ in
+      return try PreferredColorSchemeModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollClipDisabled") { params, appContext, _ in
+      return try ScrollClipDisabledModifier(from: params, appContext: appContext)
+    }
+
     register("scrollIndicators") { params, appContext, _ in
       return try ScrollIndicatorsModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollEdgeEffectStyle") { params, appContext, _ in
+      return try ScrollEdgeEffectStyleModifier(from: params, appContext: appContext)
     }
 
     register("tabViewStyle") { params, appContext, _ in
@@ -1799,6 +2501,10 @@ extension ViewModifierRegistry {
       return try PresentationDragIndicatorModifier(from: params, appContext: appContext)
     }
 
+    register("presentationCornerRadius") { params, appContext, _ in
+      return try PresentationCornerRadiusModifier(from: params, appContext: appContext)
+    }
+
     register("presentationBackgroundInteraction") { params, appContext, _ in
       return try PresentationBackgroundInteractionModifier(from: params, appContext: appContext)
     }
@@ -1806,13 +2512,21 @@ extension ViewModifierRegistry {
     register("interactiveDismissDisabled") { params, appContext, _ in
       return try InteractiveDismissDisabledModifier(from: params, appContext: appContext)
     }
-    
+
     register("presentationBackground") { params, appContext, _ in
       return try PresentationBackgroundModifier(from: params, appContext: appContext)
     }
 
+    register("presentationSizing") { params, appContext, _ in
+      return try PresentationSizingModifier(from: params, appContext: appContext)
+    }
+
     register("listStyle") { params, appContext, _ in
       return try ListStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("sectionIndexLabel") { params, appContext, _ in
+      return try SectionIndexLabelModifier(from: params, appContext: appContext)
     }
 
     register("moveDisabled") { params, appContext, _ in
@@ -1831,10 +2545,6 @@ extension ViewModifierRegistry {
       return try ContentTransitionModifier(from: params, appContext: appContext)
     }
 
-    register("widgetURL") { params, appContext, _ in
-      return try WidgetURLModifier(from: params, appContext: appContext)
-    }
-
     register("keyboardType") { params, appContext, _ in
       return try KeyboardTypeModifier(from: params, appContext: appContext)
     }
@@ -1848,7 +2558,11 @@ extension ViewModifierRegistry {
     }
 
     register("containerBackground") { params, appContext, _ in
-      return try ContainerBackgroundModifier(from: params, appContext: appContext)
+      let modifier = try ContainerBackgroundModifier(from: params, appContext: appContext)
+      #if DEBUG
+      modifier.warnIfWidgetPlacementIsUnavailable()
+      #endif
+      return modifier
     }
 
     register("symbolEffect") { params, appContext, _ in
@@ -1861,6 +2575,10 @@ extension ViewModifierRegistry {
 
     register("onScrollGeometryChange") { params, appContext, eventDispatcher in
       return try OnScrollGeometryChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
+    register("onHingeChange") { params, appContext, eventDispatcher in
+      return try OnHingeChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
   }
 }

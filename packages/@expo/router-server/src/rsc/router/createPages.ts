@@ -3,9 +3,9 @@ import type { RouteProps } from 'expo-router/internal/rsc';
 import { createElement } from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 
-import { unstable_defineRouter } from './defineRouter';
 import { getNamedParametrizedRoute } from '../../getNamedParametrizedRoute';
 import type { BuildConfig } from '../server';
+import { unstable_defineRouter } from './defineRouter';
 
 type ComponentKind = 'page' | 'layout';
 type SlugMapping = Record<string, string | string[]>;

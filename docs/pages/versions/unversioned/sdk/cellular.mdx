@@ -12,7 +12,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 import { ConfigReactNative } from '~/ui/components/ConfigSection';
 
-`expo-cellular` provides information about the user's cellular service provider, such as its unique identifier, cellular connection type, and whether it allows VoIP calls on its network.
+`expo-cellular` provides information about the user's cellular service provider, such as its unique identifier and cellular connection type.
 
 ## Installation
 
@@ -22,7 +22,7 @@ import { ConfigReactNative } from '~/ui/components/ConfigSection';
 
 <ConfigReactNative>
 
-If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using native a **android** project manually, then you need to add `android.permission.READ_PHONE_STATE` permission to your project's **AndroidManifest.xml**. This permission is used for `TelephonyManager`.
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native **android** project manually, then you need to add `android.permission.READ_PHONE_STATE` permission to your project's **AndroidManifest.xml**. This permission is used for `TelephonyManager`.
 
 ```xml android/app/src/main/AndroidManifest.xml
 <uses-permission android:name="android.permission.READ_PHONE_STATE" />

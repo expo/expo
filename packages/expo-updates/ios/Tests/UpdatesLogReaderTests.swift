@@ -1,25 +1,39 @@
 //  Copyright (c) 2022 650 Industries, Inc. All rights reserved.
 
-import Testing
+import EXUpdatesInterface
 import ExpoModulesCore
+import Testing
+
 @testable import EXUpdates
 
 @Suite("UpdatesLogReader", .serialized)
 struct UpdatesLogReaderTests {
+  /// Unique log category per test invocation. Swift Testing instantiates the suite struct fresh
+  /// for each `@Test`, so this UUID is regenerated every test — guaranteeing the underlying
+  /// `<AppSupport>/dev.expo.modules.core.logging.<category>.txt` file is unique. Without this,
+  /// other test suites that construct `UpdatesLogger()` (e.g. `ErrorRecoveryTests`,
+  /// `UpdatesBuildDataTests`, `DatabaseIntegrityCheckSpec`) write to the production
+  /// `"expo-updates"` file and intermittently break this suite's entry counts in CI.
+  private let category: String
+  private let logger: UpdatesLogger
+  private let logReader: UpdatesLogReader
+
   init() async {
+    let category = "expo-updates-tests-\(UUID().uuidString)"
+    self.category = category
+    self.logger = UpdatesLogger(category: category)
+    self.logReader = UpdatesLogReader(category: category)
     await clearLogAsync()
   }
 
   @Test
   @MainActor
   func `PurgeOldLogs`() async throws {
-    let logReader = UpdatesLogReader()
-
     let date1 = Date()
-    await purgeEntriesAsync(logReader: logReader, olderThan: date1)
+    await purgeEntriesAsync(olderThan: date1)
 
     await logErrorAsync(message: "Test message", code: .noUpdatesAvailable)
-    try await Task.sleep(nanoseconds: 1_000_000_000)
+    try await Task.sleep(for: .seconds(1))
 
     let date2 = Date()
     await logWarnAsync(message: "Test message", code: .assetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
@@ -36,7 +50,7 @@ struct UpdatesLogReaderTests {
       }
     #expect(entries2.count == 1)
 
-    await purgeEntriesAsync(logReader: logReader, olderThan: date2)
+    await purgeEntriesAsync(olderThan: date2)
 
     let entries3: [String] = logReader.getLogEntries(newerThan: date1)
       .filter { entryString in
@@ -48,24 +62,75 @@ struct UpdatesLogReaderTests {
 
   @Test
   @MainActor
-  func `BasicLoggingWorks`() async throws {
-    let logger = UpdatesLogger()
+  func `timestamps have millisecond precision`() async throws {
+    let before = UInt(Date().timeIntervalSince1970 * 1000)
+    logger.info(message: "Precision message")
+    try await Task.sleep(for: .seconds(0.1))
+    let after = UInt(Date().timeIntervalSince1970 * 1000)
 
-    // Mark the date
+    let entry = logReader.getLogEntries(newerThan: Date(timeIntervalSinceNow: -60))
+      .compactMap { UpdatesLogEntry.create(from: $0) }
+      .first { $0.message == "Precision message" }
+
+    let timestamp = try #require(entry?.timestamp)
+    #expect(timestamp >= before)
+    #expect(timestamp <= after)
+  }
+
+  @Test
+  @MainActor
+  func `reads entries newer than a subsecond date`() async throws {
+    // A reader that cuts timestamps to whole seconds returns both entries only when the older
+    // entry and the cutoff date fall in the same second, so the test runs inside one second and
+    // tries again when the task is paused across a second boundary.
+    for attempt in 1...5 {
+      try await sleepUntilStartOfNextSecond()
+      let olderMessage = "Older message \(attempt)"
+      let newerMessage = "Newer message \(attempt)"
+      await logWarnAsync(message: olderMessage, code: .none, updateId: nil, assetId: nil)
+      try await Task.sleep(for: .milliseconds(50))
+      let date = Date()
+      await logWarnAsync(message: newerMessage, code: .none, updateId: nil, assetId: nil)
+
+      let entries = logReader.getLogEntries(newerThan: Date(timeIntervalSinceNow: -60))
+        .compactMap { UpdatesLogEntry.create(from: $0) }
+      let olderTimestamp = try #require(entries.first { $0.message == olderMessage }?.timestamp)
+      guard olderTimestamp / 1000 == UInt(date.timeIntervalSince1970) else {
+        continue
+      }
+
+      let messages = logReader.getLogEntries(newerThan: date)
+        .compactMap { UpdatesLogEntry.create(from: $0)?.message }
+        .filter { $0.hasSuffix(" \(attempt)") }
+      #expect(messages == [newerMessage])
+      return
+    }
+    Issue.record("The older entry and the cutoff date never fell in the same second")
+  }
+
+  @Test
+  @MainActor
+  func `BasicLoggingWorks`() async throws {
+    try await Task.sleep(for: .seconds(1.1))
+
+    // Mark the date immediately before writing, so the tolerance below measures the gap between
+    // writing an entry and reading it back rather than the preceding sleep. Under CI load the
+    // suite can be descheduled for tens of seconds, which used to push the entry timestamp
+    // outside the window and fail the test spuriously.
     let epoch = Date()
 
-    try await Task.sleep(nanoseconds: 1_100_000_000)
-
     // Write a log message
-    logger.error(cause: UpdatesError.appLoaderFailedToLoadAllAssets, code: .noUpdatesAvailable)
+    logger.error(.remoteFetchFailed, cause: UpdatesError.fileDownloaderRemoteUpdateMissingBody)
 
     // Write another log message
-    logger.warn(message: "Warning message", code: .assetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
+    logger.warn(
+      .remoteAssetDownloadFailed,
+      values: ["assetKey": "myAssetId", "cause": "Warning message"],
+      updateId: "myUpdateId",
+      assetId: "myAssetId"
+    )
 
-    try await Task.sleep(nanoseconds: 100_000_000)
-
-    // Use reader to retrieve messages
-    let logReader = UpdatesLogReader()
+    try await Task.sleep(for: .seconds(0.1))
 
     let logEntries: [String] = logReader.getLogEntries(newerThan: epoch)
 
@@ -78,9 +143,9 @@ struct UpdatesLogReaderTests {
 
     let logEntry = UpdatesLogEntry.create(from: logEntryText)
     let timestamp = Double(logEntry!.timestamp / 1_000)
-    #expect(abs(timestamp - epoch.timeIntervalSince1970) < 10)
-    #expect(logEntry?.message == "Failed to load all assets")
-    #expect(logEntry?.code == "NoUpdatesAvailable")
+    #expect(abs(timestamp - epoch.timeIntervalSince1970) < 120)
+    #expect(logEntry?.message == "Failed to download new update: Missing body in remote update")
+    #expect(logEntry?.code == "UpdateFailedToLoad")
     #expect(logEntry?.level == "error")
     #expect(logEntry?.updateId == nil)
     #expect(logEntry?.assetId == nil)
@@ -89,8 +154,8 @@ struct UpdatesLogReaderTests {
     let logEntryText2: String = logEntries[logEntries.count - 1] as String
     let logEntry2 = UpdatesLogEntry.create(from: logEntryText2)
     let timestamp2 = Double(logEntry2!.timestamp / 1_000)
-    #expect(abs(timestamp2 - epoch.timeIntervalSince1970) < 10)
-    #expect(logEntry2?.message == "Warning message")
+    #expect(abs(timestamp2 - epoch.timeIntervalSince1970) < 120)
+    #expect(logEntry2?.message == "Failed to download asset myAssetId: Warning message")
     #expect(logEntry2?.code == "AssetsFailedToLoad")
     #expect(logEntry2?.level == "warn")
     #expect(logEntry2?.updateId == "myUpdateId")
@@ -100,21 +165,69 @@ struct UpdatesLogReaderTests {
 
   @Test
   @MainActor
-  func `TimerWorks`() async throws {
-    let logger = UpdatesLogger()
-    let logReader = UpdatesLogReader()
+  func `a keyed warning has its key, values and filled template`() async throws {
+    let epoch = Date()
 
+    logger.warn(
+      .reaperAssetDeleteFailed,
+      cause: UpdatesError.remoteAppLoaderAssetMissingUrl,
+      values: ["path": "/tmp/a.png"],
+      updateId: "myUpdateId"
+    )
+    try await Task.sleep(for: .seconds(0.1))
+
+    let entry = try #require(
+      logReader.getLogEntries(newerThan: epoch).compactMap { UpdatesLogEntry.create(from: $0) }.last
+    )
+    let cause = UpdatesError.remoteAppLoaderAssetMissingUrl.localizedDescription
+    #expect(entry.key == "reaper.assetDeleteFailed")
+    #expect(entry.values == ["path": "/tmp/a.png", "cause": cause])
+    #expect(entry.message == "Error deleting asset at /tmp/a.png: \(cause)")
+    #expect(entry.code == "None")
+    #expect(entry.level == "warn")
+    #expect(entry.updateId == "myUpdateId")
+
+    let dict = entry.asDict()
+    #expect(dict["key"] as? String == "reaper.assetDeleteFailed")
+    #expect(dict["values"] as? [String: String] == ["path": "/tmp/a.png", "cause": cause])
+  }
+
+  @Test
+  func `an entry written before log message keys has no key or values`() throws {
+    let line = #"{"timestamp":1700000000000,"message":"Old message","code":"None","level":"warn"}"#
+
+    let entry = try #require(UpdatesLogEntry.create(from: line))
+
+    #expect(entry.message == "Old message")
+    #expect(entry.key == nil)
+    #expect(entry.values == nil)
+    #expect(entry.asDict()["key"] == nil)
+    #expect(entry.asDict()["values"] == nil)
+  }
+
+  @Test
+  func `fill leaves a placeholder with no value and does not fill values`() {
+    let filled = UpdatesLogger.fill(
+      "Asset {assetKey} failed: {cause} ({reason})",
+      with: ["assetKey": "{cause}", "cause": "timeout"]
+    )
+
+    #expect(filled == "Asset {cause} failed: timeout ({reason})")
+  }
+
+  @Test
+  @MainActor
+  func `TimerWorks`() async throws {
     // Mark the date
     let epoch = Date()
 
     let timer = logger.startTimer(label: "testlabel")
-    try await Task.sleep(nanoseconds: 1_000_000_000)
+    try await Task.sleep(for: .seconds(1))
     let result = timer.stop()
     #expect(result > 0)
 
-    try await Task.sleep(nanoseconds: 100_000_000)
+    try await Task.sleep(for: .seconds(0.1))
 
-    // Use reader to retrieve messages
     let logEntries: [String] = logReader.getLogEntries(newerThan: epoch)
 
     // Verify number of log entries and decoded values
@@ -123,7 +236,7 @@ struct UpdatesLogReaderTests {
     let logEntryText: String = logEntries[0]
     let logEntry = UpdatesLogEntry.create(from: logEntryText)
     #expect(logEntry?.message == "testlabel")
-    #expect(logEntry?.code  == UpdatesErrorCode.none.asString)
+    #expect(logEntry?.code == UpdatesErrorCode.none.asString)
     #expect(logEntry?.level == "\(LogType.timer)")
     #expect(logEntry?.updateId == nil)
     #expect(logEntry?.assetId == nil)
@@ -131,12 +244,81 @@ struct UpdatesLogReaderTests {
     #expect((logEntry?.duration)! >= 300)
   }
 
+  /// Regression test for a SIGABRT during log purge.
+  ///
+  /// `logStringToFilteredLogEntry` used to guard on `lengthOfBytes(using: .utf8) < 2` and then
+  /// advance the index by two *Characters*. Every persisted line begins with `LogType.prefix` —
+  /// a colored-circle emoji that is 4–6 UTF-8 bytes but a single Character — so a line consisting
+  /// of only that prefix passed the byte guard and trapped in `index(_:offsetBy:)` with
+  /// "String index is out of bounds". Such a line is what a torn append leaves behind, since
+  /// `PersistentFileLog.appendTextToFile` writes non-atomically. The trap fired before the purge
+  /// could rewrite the file, so the bad line survived and the app aborted on every launch.
+  ///
+  /// Note: on the unfixed reader this aborts the test process (a Swift runtime trap is not a
+  /// recoverable `#expect` failure).
+  @Test
+  @MainActor
+  func `PurgeSurvivesTruncatedSingleCharacterEntry`() async throws {
+    let date1 = Date()
+
+    // U+1F7E2 LARGE GREEN CIRCLE — the value of `LogType.info.prefix`, written as an escape
+    // because `prefix` is internal to ExpoModulesCore. 4 UTF-8 bytes, 1 Character.
+    let truncatedEntry = "\u{1F7E2}"
+    await appendRawEntryAsync(entry: truncatedEntry)
+    await logErrorAsync(message: "Test message", code: .noUpdatesAvailable)
+
+    // Reading must skip the malformed entry rather than trapping.
+    let entries: [String] = logReader.getLogEntries(newerThan: date1)
+    #expect(entries.count == 1)
+
+    // The purge must run to completion and drop the malformed entry, so the next launch is clean.
+    await purgeEntriesAsync(olderThan: date1)
+
+    let remaining = PersistentFileLog(category: category).readEntries()
+    #expect(remaining.count == 1)
+    #expect(!remaining.contains(truncatedEntry))
+  }
+
+  @Test
+  func `clearing the log removes entries with any timestamp`() async throws {
+    let futureTimestamp = UInt(Date().timeIntervalSince1970 * 1000) + 60_000
+    let futureEntry =
+      "xx{\"timestamp\":\(futureTimestamp),\"message\":\"Test message\",\"code\":\"None\",\"level\":\"error\"}"
+    await appendRawEntryAsync(entry: futureEntry)
+
+    let error: Error? = await withCheckedContinuation { continuation in
+      logReader.clearLogEntries { error in
+        continuation.resume(returning: error)
+      }
+    }
+
+    #expect(error == nil)
+    #expect(PersistentFileLog(category: category).readEntries().isEmpty)
+  }
+
   // MARK: - Private methods
+
+  func sleepUntilStartOfNextSecond() async throws {
+    let now = Date().timeIntervalSince1970
+    let remaining = now.rounded(.down) + 1 - now
+    try await Task.sleep(for: .seconds(remaining + 0.01))
+  }
 
   func clearLogAsync() async {
     await withCheckedContinuation { continuation in
-      let persistentLog = PersistentFileLog(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
+      let persistentLog = PersistentFileLog(category: category)
       persistentLog.clearEntries { _ in
+        continuation.resume()
+      }
+    }
+  }
+
+  /// Appends a raw string as a log line, bypassing `UpdatesLogger`'s formatting. Used to simulate
+  /// a torn write.
+  func appendRawEntryAsync(entry: String) async {
+    await withCheckedContinuation { continuation in
+      let persistentLog = PersistentFileLog(category: category)
+      persistentLog.appendEntry(entry: entry) { _ in
         continuation.resume()
       }
     }
@@ -144,25 +326,48 @@ struct UpdatesLogReaderTests {
 
   func logErrorAsync(message: String, code: UpdatesErrorCode) async {
     await withCheckedContinuation { continuation in
-      let persistentLog = PersistentFileLog(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
-      let logEntryString = "xx" + UpdatesLogger().logEntryString(message: message, code: code, level: .error, duration: nil, updateId: nil, assetId: nil)
+      let persistentLog = PersistentFileLog(category: category)
+      let logEntryString =
+        "xx"
+        + logger.logEntryString(
+          message: message,
+          code: code,
+          level: .error,
+          duration: nil,
+          updateId: nil,
+          assetId: nil
+        )
       persistentLog.appendEntry(entry: logEntryString) { _ in
         continuation.resume()
       }
     }
   }
 
-  func logWarnAsync(message: String, code: UpdatesErrorCode, updateId: String?, assetId: String?) async {
+  func logWarnAsync(
+    message: String,
+    code: UpdatesErrorCode,
+    updateId: String?,
+    assetId: String?
+  ) async {
     await withCheckedContinuation { continuation in
-      let persistentLog = PersistentFileLog(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
-      let logEntryString = "xx" + UpdatesLogger().logEntryString(message: message, code: code, level: .warn, duration: nil, updateId: updateId, assetId: assetId)
+      let persistentLog = PersistentFileLog(category: category)
+      let logEntryString =
+        "xx"
+        + logger.logEntryString(
+          message: message,
+          code: code,
+          level: .warn,
+          duration: nil,
+          updateId: updateId,
+          assetId: assetId
+        )
       persistentLog.appendEntry(entry: logEntryString) { _ in
         continuation.resume()
       }
     }
   }
 
-  func purgeEntriesAsync(logReader: UpdatesLogReader, olderThan: Date) async {
+  func purgeEntriesAsync(olderThan: Date) async {
     await withCheckedContinuation { continuation in
       logReader.purgeLogEntries(olderThan: olderThan) { _ in
         continuation.resume()

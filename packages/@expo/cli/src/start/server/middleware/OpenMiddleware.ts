@@ -1,7 +1,7 @@
+import { isLocalSocket, isMatchingOrigin } from '../../../utils/net';
 import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
 import { parsePlatformHeader } from './resolvePlatform';
 import type { ServerRequest, ServerResponse } from './server.types';
-import { isLocalSocket, isMatchingOrigin } from '../../../utils/net';
 
 export const OpenEndpoint = '/_expo/open';
 

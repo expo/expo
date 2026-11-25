@@ -1,10 +1,17 @@
 import React, { useCallback, useDeferredValue, useMemo } from 'react';
-import { View } from 'react-native';
-import type { TabsHostProps } from 'react-native-screens';
+import { View, type ViewProps } from 'react-native';
+import { Tabs, type TabsHostProps, type TabsScreenProps } from 'react-native-screens';
 
+import { useTheme } from '../react-navigation/native';
 import type { NativeTabOptions, NativeTabsViewProps } from './types';
 import { useAwaitedScreensIcon } from './utils/icon';
-import { useTheme } from '../react-navigation/native';
+
+// `Tabs.Screen` spreads extra props onto its native view, which accepts `ViewProps`,
+// but `TabsScreenProps` does not declare the ones we pass.
+// TODO(ENG-28105): Drop `nativeID` once the route key moves to `screenKey`.
+export const TabsScreen = Tabs.Screen as React.ComponentType<
+  TabsScreenProps & Pick<ViewProps, 'nativeID' | 'pointerEvents'>
+>;
 
 export function useSelectedScreenKey({
   focusedIndex,
@@ -26,7 +33,7 @@ export function useSelectedScreenKey({
     deferredFocusedIndex < tabs.length ? deferredFocusedIndex : focusedIndex;
 
   return {
-    selectedScreenKey: tabs[inBoundsDeferredFocusedIndex]!.routeKey,
+    selectedScreenKey: tabs[inBoundsDeferredFocusedIndex]!.name,
     provenance: deferredProvenance,
   };
 }
@@ -45,12 +52,31 @@ export function useOnTabSelectedHandler(
   );
 }
 
+export function useOnTabSelectionPreventedHandler(
+  onTabChange: NativeTabsViewProps['onTabChange']
+): NonNullable<TabsHostProps['onTabSelectionPrevented']> {
+  return useCallback<NonNullable<TabsHostProps['onTabSelectionPrevented']>>(
+    ({ nativeEvent: { preventedScreenKey, provenance } }) => {
+      // Forward the disabled tab the user tapped (`preventedScreenKey`), not the
+      // still-active `selectedScreenKey`. `isNativeAction` is required by the payload
+      // and is always `true` here, since programmatic JS navigation bypasses
+      // `preventNativeSelection` and therefore never reaches this callback.
+      onTabChange({
+        selectedKey: preventedScreenKey,
+        provenance,
+        isNativeAction: true,
+        isPrevented: true,
+      });
+    },
+    [onTabChange]
+  );
+}
+
 /**
  * Cross-platform fields used to render a single tab screen. Each platform
  * extends this with its own appearance fields.
  */
 export interface InternalTabScreenProps {
-  routeKey: string;
   name: string;
   // TODO(@ubax): https://linear.app/expo/issue/ENG-20736/remove-pointerevents-from-nativetabsview
   isFocused: boolean;
@@ -59,7 +85,7 @@ export interface InternalTabScreenProps {
 }
 
 export function useSharedScreenProps(props: InternalTabScreenProps) {
-  const { options, isFocused, name, routeKey } = props;
+  const { options, isFocused, name } = props;
   const title = options.title ?? name;
   const {
     ios: nativeIosOverrides,
@@ -79,7 +105,7 @@ export function useSharedScreenProps(props: InternalTabScreenProps) {
     nativeIosOverrides,
     nativeAndroidOverrides,
     nativeRestOverrides,
-    screenKey: routeKey,
+    screenKey: name,
     icon,
     selectedIcon,
   };

@@ -88,6 +88,7 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
                 item.sharesBackground = sharesBackground
               }
             }
+            (menu.axisBehavior ?? .automatic).apply(to: item)
             if let titleStyle = menu.titleStyle {
               RouterFontUtils.setTitleStyle(fromConfig: titleStyle, for: item)
             }
@@ -114,7 +115,9 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
 
         controller.setToolbarItems(items, animated: true)
         controller.navigationController?.setToolbarHidden(
-          false, animated: true)
+          false,
+          animated: true
+        )
         return
       }
     }
@@ -152,7 +155,8 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
     } else if let menu = childComponentView as? LinkPreviewNativeActionView {
       if menu.identifier.isEmpty {
         logger?.warn(
-          "[expo-router] Menu identifier is empty. This is most likely a bug in expo-router.")
+          "[expo-router] Menu identifier is empty. This is most likely a bug in expo-router."
+        )
         return
       }
       removeToolbarItemWithId(menu.identifier)
@@ -172,7 +176,7 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
       if let controller = cachedController {
         controller.setToolbarItems(nil, animated: true)
       }
-      cachedController = nil  // Clear cache when removed from window
+      cachedController = nil // Clear cache when removed from window
     } else {
       // View was added to window - update toolbar items
       updateToolbarItems()

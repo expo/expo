@@ -2,31 +2,33 @@ import { CheckCircleSolidIcon } from '@expo/styleguide-icons/solid/CheckCircleSo
 import { render, screen } from '@testing-library/react';
 import ReactMarkdown from 'react-markdown';
 
+import { axe } from '~/common/test-utilities';
+
 import { InlineHelp } from '.';
 
 describe(InlineHelp, () => {
   it('renders inline help with icon component', () => {
     render(<InlineHelp icon={CheckCircleSolidIcon}>Hello</InlineHelp>);
-    expect(screen.getByRole('img')).toBeInTheDocument();
+    expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument();
     expect(screen.getByText('Hello')).toBeInTheDocument();
   });
 
   it('renders inline help with default icon from info type', () => {
     render(<InlineHelp type="info">Hello</InlineHelp>);
-    expect(screen.getByRole('img')).toBeInTheDocument();
-    expect(screen.getByRole('img')).toHaveClass('icon-sm text-info');
+    expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument();
+    expect(screen.getByRole('img', { hidden: true })).toHaveClass('icon-sm text-info');
   });
 
   it('renders inline help with default icon from warning type', () => {
     render(<InlineHelp type="warning">Hello</InlineHelp>);
-    expect(screen.getByRole('img')).toBeInTheDocument();
-    expect(screen.getByRole('img')).toHaveClass('icon-sm text-warning');
+    expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument();
+    expect(screen.getByRole('img', { hidden: true })).toHaveClass('icon-sm text-warning');
   });
 
   it('renders inline help with default icon from error type', () => {
     render(<InlineHelp type="error">Hello</InlineHelp>);
-    expect(screen.getByRole('img')).toBeInTheDocument();
-    expect(screen.getByRole('img')).toHaveClass('icon-sm text-danger');
+    expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument();
+    expect(screen.getByRole('img', { hidden: true })).toHaveClass('icon-sm text-danger');
   });
 
   it('renders inline help with warning style from warning type', () => {
@@ -61,7 +63,7 @@ describe(InlineHelp, () => {
     );
     expect(screen.getByTestId('callout-container')).toBeInTheDocument();
     expect(screen.getByTestId('callout-container')).toHaveClass('bg-warning');
-    expect(screen.getByRole('img')).toBeInTheDocument();
+    expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument();
     expect(screen.getByText('Hello')).toBeInTheDocument();
   });
 
@@ -72,5 +74,20 @@ describe(InlineHelp, () => {
     expect(screen.getByTestId('callout-container')).toBeInTheDocument();
     expect(screen.getByText('Note')).toBeInTheDocument();
     expect(screen.getByText(': Hello')).toBeInTheDocument();
+  });
+
+  it('has no axe violations across callout types', async () => {
+    const { container } = render(
+      <>
+        <InlineHelp>
+          Default with a <a href="https://expo.dev/privacy">link</a>
+        </InlineHelp>
+        <InlineHelp type="warning">Warning</InlineHelp>
+        <InlineHelp type="error">Error</InlineHelp>
+        <InlineHelp type="info">Info</InlineHelp>
+        <InlineHelp type="important">Important</InlineHelp>
+      </>
+    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 });

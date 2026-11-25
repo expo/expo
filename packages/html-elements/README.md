@@ -88,15 +88,15 @@ Here is a list of all the currently supported elements and the web feature they 
 | [`<tr />`][html-tr]                 |         [`<TR />`](#tr)         |
 | [`<ul />`][html-ul]                 |         [`<UL />`](#ul)         |
 | [`<li />`][html-li]                 |         [`<LI />`](#li)         |
-| [`<details />`][html-details]       |           ⏱ Pending            |
-| [`<summary />`][html-summary]       |           ⏱ Pending            |
-| [`<progress />`][html-progress]     |           ⏱ Pending            |
-| [`<select />`][html-select]         |           ⏱ Pending            |
-| [`<picture />`][html-picture]       |           ⏱ Pending            |
-| [`<figure />`][html-figure]         |           ⏱ Pending            |
-| [`<figcaption />`][html-figcaption] |           ⏱ Pending            |
-| [`<form />`][html-form]             |           ⏱ Pending            |
-| [`<label />`][html-label]           |           ⏱ Pending            |
+| [`<details />`][html-details]       |            ⏱ Pending            |
+| [`<summary />`][html-summary]       |            ⏱ Pending            |
+| [`<progress />`][html-progress]     |            ⏱ Pending            |
+| [`<select />`][html-select]         |            ⏱ Pending            |
+| [`<picture />`][html-picture]       |            ⏱ Pending            |
+| [`<figure />`][html-figure]         |            ⏱ Pending            |
+| [`<figcaption />`][html-figcaption] |            ⏱ Pending            |
+| [`<form />`][html-form]             |            ⏱ Pending            |
+| [`<label />`][html-label]           |            ⏱ Pending            |
 
 ## External
 
@@ -420,7 +420,7 @@ Standard paragraph element.
 
 ### `<B/>`
 
-Bold text text.
+Bold text.
 
 | Platform  | Output                                    |
 | --------- | ----------------------------------------- |
@@ -734,7 +734,7 @@ Create a cell in a Table.
 
 ### `<Caption/>`
 
-Used to caption your table. Excepts text as a child.
+Used to caption your table. Accepts text as a child.
 
 | Platform | Output                      |
 | -------- | --------------------------- |

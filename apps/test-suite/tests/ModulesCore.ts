@@ -1,8 +1,10 @@
 import { EventEmitter, requireNativeModule } from 'expo';
 
+import type { JasmineInterface } from '../types';
+
 export const name = 'ModulesCore';
 
-export function test({ describe, expect, it }) {
+export function test({ describe, expect, it }: JasmineInterface) {
   describe('EventEmitter', () => {
     it('does not propagate errors from listeners', () => {
       expect(() => {

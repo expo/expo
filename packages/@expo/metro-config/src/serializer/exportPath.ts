@@ -8,6 +8,29 @@ import path from 'path';
 
 import { fileNameFromContents } from './getCssDeps';
 
+export function getExportFilename(
+  contentFilename: string,
+  {
+    entryFilename,
+    outputDirectory,
+    outputExtension = '.js',
+  }: { entryFilename?: string; outputDirectory?: string; outputExtension?: string }
+): string {
+  if (entryFilename != null) return entryFilename;
+  const filename = contentFilename.replace(/\.js$/, outputExtension);
+  return outputDirectory != null
+    ? path.posix.join(outputDirectory, path.posix.basename(filename))
+    : filename;
+}
+
+export function getChunkUrl(baseUrl: string, filename: string): string {
+  return baseUrl.replace(/\/+$/, '') + '/' + filename.replace(/^\/+/, '');
+}
+
+export function getSiblingSourceMapUrl(filename: string): string {
+  return encodeURIComponent(path.posix.basename(filename) + '.map');
+}
+
 export function getExportPathForDependencyWithOptions(
   dependencyPath: string,
   { platform, src, serverRoot }: { platform: string; serverRoot: string; src: string }

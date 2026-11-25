@@ -1,6 +1,6 @@
-import { withMod } from './withMod';
 import type { ConfigPlugin, ExportedConfigWithProps, Mod } from '../Plugin.types';
 import type { Manifest, Paths, Properties, Resources } from '../android';
+import { withMod } from './withMod';
 
 type OptionalPromise<T> = T | Promise<T>;
 

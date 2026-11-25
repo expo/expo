@@ -1,4 +1,4 @@
-import type { EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
 
 import type {
   Album,
@@ -164,4 +164,11 @@ export async function setAssetFavoriteAsync(
   isFavorite: boolean
 ): Promise<boolean> {
   throw errorOnLegacyMethodUse('setAssetFavoriteAsync');
+}
+
+/**
+ * @deprecated Import this method from `expo-media-library/legacy`. This method will throw in runtime.
+ */
+export async function getAssetContentUriAsync(asset: AssetRef): Promise<string> {
+  throw errorOnLegacyMethodUse('getAssetContentUriAsync');
 }

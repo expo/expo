@@ -1,8 +1,10 @@
+import type { NativePlatform } from '@expo/config';
 import path from 'path';
 
 import type { BundleOutput } from './saveAssets';
 
-export type BundlePlatform = 'android' | 'ios';
+/** Native platforms that produce a bundle in `metadata.json` (web is handled separately). */
+export type BundlePlatform = NativePlatform;
 
 type PlatformMetadataAsset = { path: string; ext: string };
 

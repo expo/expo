@@ -13,26 +13,18 @@ internal struct OnGeometryChangeModifier: ViewModifier, Record {
     self.eventDispatcher = eventDispatcher
   }
 
-  private func dispatch(_ size: CGSize) {
+  private func dispatch(_ frame: CGRect) {
     eventDispatcher?(["onGeometryChange": [
-      "width": size.width,
-      "height": size.height
+      "x": frame.origin.x,
+      "y": frame.origin.y,
+      "width": frame.size.width,
+      "height": frame.size.height
     ]])
   }
 
   func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
-      content.onGeometryChange(for: CGSize.self, of: { proxy in proxy.size }, action: {
-        dispatch($0)
-      })
-    } else {
-      content.background(
-        GeometryReader { geometry in
-          Color.clear
-            .onAppear { dispatch(geometry.size) }
-            .onChange(of: geometry.size) { dispatch($0) }
-        }
-      )
-    }
+    content.onGeometryChange(for: CGRect.self, of: { proxy in proxy.frame(in: .global) }, action: {
+      dispatch($0)
+    })
   }
 }

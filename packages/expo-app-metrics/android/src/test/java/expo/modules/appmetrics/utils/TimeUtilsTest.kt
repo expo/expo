@@ -24,6 +24,23 @@ class TimeUtilsTest {
   }
 
   @Test
+  fun `uptimeToDate maps the current uptime to the current wall-clock time`() {
+    val now = TimeUtils.uptimeToDate(TimeUtils.getCurrentTimeInMillis())
+
+    assertEquals(System.currentTimeMillis().toDouble(), now.time.toDouble(), 100.0)
+  }
+
+  @Test
+  fun `uptimeToDate keeps the distance between two uptimes`() {
+    val uptime = TimeUtils.getCurrentTimeInMillis()
+
+    val earlier = TimeUtils.uptimeToDate(uptime - 5_000)
+    val later = TimeUtils.uptimeToDate(uptime)
+
+    assertEquals(5_000.0, (later.time - earlier.time).toDouble(), 100.0)
+  }
+
+  @Test
   fun `getCurrentTimeInMillis returns monotonically increasing values`() {
     // Given
     val time1 = TimeUtils.getCurrentTimeInMillis()
@@ -174,5 +191,42 @@ class TimeUtilsTest {
       "Parsed timestamp should be a reasonable date (not ancient)",
       parsedDate.time > tenYearsAgo
     )
+  }
+
+  @Test
+  fun `dateToIsoUtcSeconds formats a fixed date as whole-second UTC`() {
+    // Given
+    val date = Date(1_700_000_000_000L)
+
+    // When
+    val timestamp = TimeUtils.dateToIsoUtcSeconds(date)
+
+    // Then
+    assertEquals("2023-11-14T22:13:20Z", timestamp)
+  }
+
+  @Test
+  fun `millisToTimestamp formats a fixed value as millisecond-precision UTC`() {
+    // Given
+    val millis = 1_700_000_000_123L
+
+    // When
+    val timestamp = TimeUtils.millisToTimestamp(millis)
+
+    // Then
+    assertEquals("2023-11-14T22:13:20.123Z", timestamp)
+  }
+
+  @Test
+  fun `timestampToDateNS round-trips a timestamp produced by millisToTimestamp`() {
+    // Given
+    val millis = 1_700_000_000_123L
+    val timestamp = TimeUtils.millisToTimestamp(millis)
+
+    // When
+    val nanos = TimeUtils.timestampToDateNS(timestamp)
+
+    // Then
+    assertEquals(millis * 1_000_000L, nanos)
   }
 }

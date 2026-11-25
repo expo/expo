@@ -11,12 +11,20 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class AuthenticationPrompt(private val currentActivity: FragmentActivity, context: Context, title: String) {
+class AuthenticationPrompt(
+  private val currentActivity: FragmentActivity,
+  context: Context,
+  title: String,
+  requireConfirmation: Boolean,
+  authenticationMethod: AuthenticationMethod
+) {
   private var executor: Executor = ContextCompat.getMainExecutor(context)
-  private var promptInfo = PromptInfo.Builder()
-    .setTitle(title)
-    .setNegativeButtonText(context.getString(android.R.string.cancel))
-    .build()
+  private var promptInfo = buildAuthenticationPromptInfo(
+    context,
+    title,
+    requireConfirmation,
+    authenticationMethod
+  )
 
   suspend fun authenticate(cipher: Cipher): BiometricPrompt.AuthenticationResult? =
     suspendCoroutine { continuation ->
@@ -26,10 +34,13 @@ class AuthenticationPrompt(private val currentActivity: FragmentActivity, contex
         object : BiometricPrompt.AuthenticationCallback() {
           override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
             super.onAuthenticationError(errorCode, errString)
-
-            val errorType = convertErrorCode(errorCode)
-            val message = "$errorType. $errString"
-            continuation.resumeWithException(AuthenticationException(message))
+            val message = convertErrorCode(errorCode)
+            val detail = if (errString.isNotEmpty()) {
+              "$message. $errString"
+            } else {
+              message
+            }
+            continuation.resumeWithException(AuthenticationException(detail))
           }
 
           override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
@@ -58,3 +69,18 @@ class AuthenticationPrompt(private val currentActivity: FragmentActivity, contex
     }
   }
 }
+
+internal fun buildAuthenticationPromptInfo(
+  context: Context,
+  title: String,
+  requireConfirmation: Boolean = true,
+  authenticationMethod: AuthenticationMethod = AuthenticationMethod.BIOMETRY
+): PromptInfo = PromptInfo.Builder().apply {
+  setTitle(title)
+  setAllowedAuthenticators(authenticationMethod.promptAuthenticators)
+  setConfirmationRequired(requireConfirmation)
+  // A negative button is not allowed (and throws) when DEVICE_CREDENTIAL is an allowed authenticator.
+  if (authenticationMethod != AuthenticationMethod.DEVICE_CREDENTIALS) {
+    setNegativeButtonText(context.getString(android.R.string.cancel))
+  }
+}.build()

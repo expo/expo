@@ -1,12 +1,13 @@
 import type { ModConfig } from '@expo/config-plugins';
 import type { JSONObject } from '@expo/json-file';
 import JsonFile from '@expo/json-file';
+import { OUT_OF_TREE_PLATFORMS, getReactNativeHostPackage } from '@expo/platforms';
 import { resolveFrom } from '@expo/require-utils';
-import deepMerge from 'deepmerge';
-import { sync as globSync } from 'glob';
+import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 import slugify from 'slugify';
+import { isDeepStrictEqual } from 'util';
 
 import type {
   AppJSONConfig,
@@ -21,6 +22,7 @@ import type {
 } from './Config.types';
 import { getDynamicConfig, getStaticConfig } from './getConfig';
 import { getExpoSDKVersion } from './getExpoSDKVersion';
+import { mergeConfig } from './mergeConfig';
 import { withConfigPlugins } from './plugins/withConfigPlugins';
 import { withInternal } from './plugins/withInternal';
 import { getRootPackageJsonPath } from './resolvePackageJson';
@@ -72,13 +74,38 @@ function reduceExpoObject(config?: any): SplitConfigs | null {
  * @param projectRoot
  * @param exp
  */
-function getSupportedPlatforms(projectRoot: string): Platform[] {
+function getSupportedPlatforms(projectRoot: string, exp: Partial<ExpoConfig>): Platform[] {
   const platforms: Platform[] = [];
   if (resolveFrom(projectRoot, 'react-native/package.json')) {
     platforms.push('ios', 'android');
   }
   if (resolveFrom(projectRoot, 'react-dom/package.json')) {
     platforms.push('web');
+  }
+  if (exp.experiments?.outOfTreePlatforms) {
+    for (const platform of OUT_OF_TREE_PLATFORMS) {
+      if (resolveFrom(projectRoot, `${getReactNativeHostPackage(platform)}/package.json`)) {
+        platforms.push(platform);
+      }
+    }
+  }
+  return platforms;
+}
+
+/**
+ * Resolves the platforms a project targets, as configured or detected.
+ *
+ * @param projectRoot
+ * @param exp
+ */
+export function getPlatformsFromConfig(projectRoot: string, exp: Partial<ExpoConfig>): Platform[] {
+  let platforms =
+    (exp?.platforms as Platform[] | undefined) ?? getSupportedPlatforms(projectRoot, exp);
+  // TODO(@kitten): Update when XDL schema is modified
+  if (!exp.experiments?.outOfTreePlatforms) {
+    platforms = platforms.filter(
+      (platform) => platform === 'android' || platform === 'ios' || platform === 'web'
+    );
   }
   return platforms;
 }
@@ -160,7 +187,7 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
     }
 
     if (options.isPublicConfig) {
-      // TODD(EvanBacon): Drop plugins array after it's been resolved.
+      // TODO(EvanBacon): Drop plugins array after it's been resolved.
 
       // Remove internal values with references to user's file paths from the public config.
       delete configWithDefaultValues.exp._internal;
@@ -289,7 +316,7 @@ export async function modifyConfigAsync(
   if (
     config.staticConfigPath &&
     config.dynamicConfigObjectType === 'function' &&
-    !modifications.hasOwnProperty('plugins') // We don't know what plugins are in dynamic configs
+    !Object.hasOwn(modifications, 'plugins') // We don't know what plugins are in dynamic configs
   ) {
     const outputConfig = mergeConfigModifications(config, modifications);
 
@@ -306,7 +333,7 @@ export async function modifyConfigAsync(
 
     // Verify that the dynamic config is using the static config
     const newConfig = getConfig(projectRoot, readOptions);
-    const newConfighasModifications = isMatchingObject(modifications, newConfig.exp);
+    const newConfighasModifications = hasConfigModifications(modifications, newConfig.exp);
     if (newConfighasModifications) {
       return {
         type: 'success',
@@ -330,6 +357,22 @@ export async function modifyConfigAsync(
 }
 
 /**
+ * Append the source items to the target array, then remove duplicate entries, keeping the first
+ * occurrence. Used only for `updates`, whose arrays are sets: `eas update:configure` sends the
+ * existing `updates` object back with a new `url`, and the default merge would write each existing
+ * entry twice. Other arrays keep the default merge, because plugins can depend on it.
+ */
+function mergeArraysWithoutDuplicates(target: unknown[], source: unknown[]): unknown[] {
+  const result: unknown[] = [];
+  for (const item of [...target, ...source]) {
+    if (!result.some((existing) => isDeepStrictEqual(existing, item))) {
+      result.push(item);
+    }
+  }
+  return result;
+}
+
+/**
  * Merge the config modifications, using an optional possible top-level `expo` object.
  * Note, changes in the plugins are merged differently to avoid duplicate entries.
  */
@@ -337,9 +380,15 @@ function mergeConfigModifications(
   config: ProjectConfig,
   { plugins, ...modifications }: Partial<ExpoConfig>
 ): AppJSONConfig {
-  const modifiedExpoConfig: ExpoConfig = !config.rootConfig.expo
-    ? deepMerge(config.rootConfig, modifications)
-    : deepMerge(config.rootConfig.expo, modifications);
+  const baseConfig: Partial<ExpoConfig> = config.rootConfig.expo || config.rootConfig;
+  const modifiedExpoConfig = mergeConfig<ExpoConfig>(baseConfig, modifications);
+  if (isPlainObject(modifications.updates)) {
+    modifiedExpoConfig.updates = mergeConfig(
+      isPlainObject(baseConfig.updates) ? baseConfig.updates : {},
+      modifications.updates,
+      mergeArraysWithoutDuplicates
+    );
+  }
 
   if (plugins?.length) {
     // When adding plugins, ensure the config has a plugin list
@@ -361,7 +410,7 @@ function mergeConfigModifications(
       if (!pluginName) continue;
 
       // Add the plugin if it doesn't exist yet, including its properties
-      if (!(pluginName in existingPlugins)) {
+      if (!Object.hasOwn(existingPlugins, pluginName)) {
         modifiedExpoConfig.plugins.push(plugin);
         continue;
       }
@@ -385,7 +434,7 @@ function mergeConfigModifications(
 
           // Merge the props to the existing plugin properties
           if (Array.isArray(existingPlugin) && existingPlugin[0]) {
-            return [existingPlugin[0], deepMerge(existingPlugin[1] ?? {}, pluginProps)];
+            return [existingPlugin[0], mergeConfig(existingPlugin[1] ?? {}, pluginProps)];
           }
 
           return existingPlugin;
@@ -404,17 +453,44 @@ function mergeConfigModifications(
   return finalizedConfig as AppJSONConfig;
 }
 
+function isPlainObject(value: unknown): value is Record<string, any> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * `updates` arrays are merged as sets (see `mergeArraysWithoutDuplicates`), so they are compared
+ * as sets. Arrays everywhere else are compared item by item, in order.
+ */
+function hasConfigModifications(modifications: Partial<ExpoConfig>, config: ExpoConfig): boolean {
+  const { updates, ...otherModifications } = modifications;
+  if (!isMatchingObject(otherModifications, config)) {
+    return false;
+  }
+  if (!('updates' in modifications)) {
+    return true;
+  }
+  if (!isPlainObject(updates)) {
+    return isMatchingObject<Record<string, any>>({ updates }, config);
+  }
+  return isPlainObject(config.updates) && isMatchingObject(updates, config.updates, true);
+}
+
 function isMatchingObject<T extends Record<string, any>>(
   expectedValues: T,
-  actualValues: T
+  actualValues: T,
+  matchArraysAsSets = false
 ): boolean {
   for (const key in expectedValues) {
-    if (!expectedValues.hasOwnProperty(key)) {
+    if (!Object.hasOwn(expectedValues, key)) {
       continue;
     }
 
-    if (typeof expectedValues[key] === 'object' && actualValues[key] !== null) {
-      if (!isMatchingObject(expectedValues[key], actualValues[key])) {
+    if (matchArraysAsSets && Array.isArray(expectedValues[key])) {
+      if (!isMatchingArray(expectedValues[key], actualValues[key])) {
+        return false;
+      }
+    } else if (typeof expectedValues[key] === 'object' && actualValues[key] !== null) {
+      if (!isMatchingObject(expectedValues[key], actualValues[key], matchArraysAsSets)) {
         return false;
       }
     } else {
@@ -424,6 +500,23 @@ function isMatchingObject<T extends Record<string, any>>(
     }
   }
   return true;
+}
+
+/**
+ * An expected array matches when each of its items is in the actual array, regardless of order or
+ * repeated items.
+ */
+function isMatchingArray(expectedItems: unknown[], actualItems: unknown): boolean {
+  if (!Array.isArray(actualItems)) {
+    return false;
+  }
+  return expectedItems.every((expected) =>
+    actualItems.some((actual) =>
+      typeof expected === 'object' && expected !== null
+        ? typeof actual === 'object' && actual !== null && isMatchingObject(expected, actual, true)
+        : expected === actual
+    )
+  );
 }
 
 function ensureConfigHasDefaultValues({
@@ -473,10 +566,10 @@ function ensureConfigHasDefaultValues({
     if (!skipSDKVersionRequirement) throw error;
   }
 
-  let platforms = exp.platforms;
-  if (!platforms) {
-    platforms = getSupportedPlatforms(projectRoot);
-  }
+  // TODO(@kitten): Remove once platforms are updated in XDL schema
+  const platforms = getPlatformsFromConfig(projectRoot, exp) as NonNullable<
+    ExpoConfig['platforms']
+  >;
 
   return {
     exp: { ...expWithDefaults, sdkVersion, platforms },
@@ -533,21 +626,28 @@ function isBareWorkflowProject(projectRoot: string): boolean {
     return false;
   }
 
-  const xcodeprojFiles = globSync('ios/**/*.xcodeproj', {
-    absolute: true,
-    cwd: projectRoot,
-  });
-  if (xcodeprojFiles.length) {
-    return true;
-  }
-  const gradleFiles = globSync('android/**/*.gradle', {
-    absolute: true,
-    cwd: projectRoot,
-  });
-  if (gradleFiles.length) {
-    return true;
-  }
+  return (
+    hasNativeProjectFile(path.join(projectRoot, 'ios'), '.xcodeproj') ||
+    hasNativeProjectFile(path.join(projectRoot, 'android'), '.gradle')
+  );
+}
 
+function hasNativeProjectFile(parentPath: string, extension: string): boolean {
+  const queue = [parentPath];
+  let targetPath: string | undefined;
+  while ((targetPath = queue.shift()) != null) {
+    try {
+      const entries = fs.readdirSync(targetPath, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.name.startsWith('.')) continue;
+        if (entry.name.endsWith(extension)) return true;
+        if (entry.isDirectory()) queue.push(path.join(targetPath, entry.name));
+      }
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code !== 'ENOENT' && code !== 'ENOTDIR') throw error;
+    }
+  }
   return false;
 }
 

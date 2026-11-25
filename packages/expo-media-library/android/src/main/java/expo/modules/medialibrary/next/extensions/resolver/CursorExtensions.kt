@@ -5,10 +5,12 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import expo.modules.medialibrary.next.extensions.getNullableInt
 
-fun Cursor.extractAssetContentUri(idColumn: Int, typeColumn: Int): Uri {
-  val id = getLong(idColumn)
-  val mediaType = getInt(typeColumn)
+fun Cursor.extractAssetContentUri(idColumn: Int, typeColumn: Int): Uri =
+  extractAssetContentUri(getLong(idColumn), getNullableInt(typeColumn))
+
+fun extractAssetContentUri(id: Long, mediaType: Int?): Uri {
   val baseUri = if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
     when (mediaType) {
       MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE -> MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)

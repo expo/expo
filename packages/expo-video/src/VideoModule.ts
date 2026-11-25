@@ -1,4 +1,4 @@
-import NativeVideoModule from './NativeVideoModule';
+import NativeVideoModule from './ExpoVideo';
 
 /**
  * Returns whether the current device supports Picture in Picture (PiP) mode.

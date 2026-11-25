@@ -1,5 +1,6 @@
 import {
-  TextField as ComposeTextField,
+  BasicTextField,
+  Box,
   Text,
   type TextFieldImeAction,
   type TextFieldKeyboardType,
@@ -23,6 +24,17 @@ function mapReturnKeyType(value: ReturnKeyTypeOptions): TextFieldImeAction {
   if (value === 'google' || value === 'yahoo') return 'search';
   if (value === 'join' || value === 'route' || value === 'emergency-call') return 'default';
   return value as TextFieldImeAction;
+}
+
+function mapSecureKeyboardType(value: KeyboardTypeOptions | undefined): TextFieldKeyboardType {
+  switch (value) {
+    case 'numeric':
+    case 'number-pad':
+    case 'decimal-pad':
+      return 'numberPassword';
+    default:
+      return 'password';
+  }
 }
 
 function mapKeyboardType(value: KeyboardTypeOptions): TextFieldKeyboardType {
@@ -58,6 +70,7 @@ export function TextInput({
   value,
   onChangeText,
   placeholder,
+  accessibilityLabel,
   autoFocus,
   editable: editableProp,
   multiline,
@@ -97,8 +110,6 @@ export function TextInput({
   const numberOfLines = numberOfLinesProp ?? rows;
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
   const returnKeyType = returnKeyTypeProp ?? enterKeyHintToReturnKeyType(enterKeyHint);
-  const { backgroundColor: styleBackgroundColor, ...boxStyle } = style ?? {};
-  const hideIndicator = boxStyle.borderWidth === 0 && underlineColorAndroid == null;
 
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
@@ -134,12 +145,23 @@ export function TextInput({
     else onBlur?.();
   };
 
+  // `visualTransformation` only masks the text. The keyboard reads the keyboard type,
+  // so a secure field also needs a password type.
+  const resolvedKeyboardType = secureTextEntry
+    ? mapSecureKeyboardType(keyboardType)
+    : keyboardType
+      ? mapKeyboardType(keyboardType)
+      : undefined;
+  const resolvedAutoCorrect = secureTextEntry ? false : autoCorrect;
+
   const keyboardOptions =
-    keyboardType || autoCapitalize || autoCorrect !== undefined || returnKeyType
+    resolvedKeyboardType || autoCapitalize || resolvedAutoCorrect !== undefined || returnKeyType
       ? {
-          ...(keyboardType ? { keyboardType: mapKeyboardType(keyboardType) } : null),
+          ...(resolvedKeyboardType ? { keyboardType: resolvedKeyboardType } : null),
           ...(autoCapitalize ? { capitalization: autoCapitalize } : null),
-          ...(autoCorrect !== undefined ? { autoCorrectEnabled: autoCorrect } : null),
+          ...(resolvedAutoCorrect !== undefined
+            ? { autoCorrectEnabled: resolvedAutoCorrect }
+            : null),
           ...(returnKeyType ? { imeAction: mapReturnKeyType(returnKeyType) } : null),
         }
       : undefined;
@@ -156,11 +178,10 @@ export function TextInput({
     : undefined;
 
   return (
-    <ComposeTextField
+    <BasicTextField
       ref={innerRef}
       modifiers={[
-        ...(userModifiers ?? []),
-        ...transformToModifiers(boxStyle, {}),
+        ...transformToModifiers(style, {}, userModifiers, { componentName: 'TextInput' }),
         ...(testID ? [testIDModifier(testID)] : []),
         ...(autoComplete ? [semantics({ contentType: autoComplete })] : []),
         ...(onContentSizeChange ? [onSizeChanged(onContentSizeChange)] : []),
@@ -171,50 +192,7 @@ export function TextInput({
       singleLine={!multiline}
       maxLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
       minLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
-      colors={
-        caretHidden ||
-        cursorColor ||
-        underlineColorAndroid ||
-        placeholderTextColor ||
-        styleBackgroundColor ||
-        hideIndicator
-          ? {
-              ...(caretHidden
-                ? { cursorColor: 'transparent' }
-                : cursorColor
-                  ? { cursorColor }
-                  : null),
-              ...(styleBackgroundColor
-                ? {
-                    focusedContainerColor: styleBackgroundColor,
-                    unfocusedContainerColor: styleBackgroundColor,
-                    disabledContainerColor: styleBackgroundColor,
-                    errorContainerColor: styleBackgroundColor,
-                  }
-                : null),
-              ...(underlineColorAndroid
-                ? {
-                    unfocusedIndicatorColor: underlineColorAndroid,
-                    focusedIndicatorColor: underlineColorAndroid,
-                  }
-                : hideIndicator
-                  ? {
-                      focusedIndicatorColor: 'transparent',
-                      unfocusedIndicatorColor: 'transparent',
-                      disabledIndicatorColor: 'transparent',
-                      errorIndicatorColor: 'transparent',
-                    }
-                  : null),
-              ...(placeholderTextColor
-                ? {
-                    unfocusedPlaceholderColor: placeholderTextColor,
-                    focusedPlaceholderColor: placeholderTextColor,
-                    disabledPlaceholderColor: placeholderTextColor,
-                  }
-                : null),
-            }
-          : undefined
-      }
+      cursorColor={caretHidden ? 'transparent' : (cursorColor ?? selectionColor)}
       textStyle={
         textStyle || (textAlign && textAlign !== 'auto')
           ? {
@@ -237,18 +215,40 @@ export function TextInput({
       onValueChange={onChangeText}
       maxLength={maxLength}
       onFocusChanged={handleFocusChanged}
-      selection={selection as Parameters<typeof ComposeTextField>[0]['selection']}
+      selection={selection as Parameters<typeof BasicTextField>[0]['selection']}
       onSelectionChange={onSelectionChange}>
-      {placeholder ? (
-        <ComposeTextField.Placeholder>
-          <Text
-            modifiers={[fillMaxWidth()]}
-            style={textAlign && textAlign !== 'auto' ? { textAlign } : undefined}>
-            {placeholder}
-          </Text>
-        </ComposeTextField.Placeholder>
-      ) : null}
-    </ComposeTextField>
+      <BasicTextField.DecorationBox>
+        <Box
+          modifiers={[
+            fillMaxWidth(),
+            ...(accessibilityLabel !== undefined
+              ? [semantics({ contentDescription: accessibilityLabel })]
+              : []),
+          ]}
+          contentAlignment={
+            textAlign === 'center' ? 'topCenter' : textAlign === 'right' ? 'topEnd' : undefined
+          }>
+          {placeholder != null ? (
+            <BasicTextField.Placeholder>
+              <Text
+                color={placeholderTextColor as string | undefined}
+                modifiers={[fillMaxWidth()]}
+                style={
+                  textStyle || (textAlign && textAlign !== 'auto')
+                    ? {
+                        ...textStyle,
+                        ...(textAlign && textAlign !== 'auto' ? { textAlign } : null),
+                      }
+                    : undefined
+                }>
+                {placeholder}
+              </Text>
+            </BasicTextField.Placeholder>
+          ) : null}
+          <BasicTextField.InnerTextField />
+        </Box>
+      </BasicTextField.DecorationBox>
+    </BasicTextField>
   );
 }
 

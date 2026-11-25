@@ -9,7 +9,7 @@ import {
   transformProps,
 } from '../layout-types';
 
-export type ColumnProps = {
+export interface ColumnProps extends PrimitiveBaseProps {
   children?: React.ReactNode;
   /**
    * Horizontal arrangement of children.
@@ -27,7 +27,12 @@ export type ColumnProps = {
    * Vertical alignment of children.
    */
   verticalAlignment?: VerticalAlignment;
-} & PrimitiveBaseProps;
+  /**
+   * When `true`, a child percentage is a fraction of this column.
+   * Universal `Column` sets this. Leave it unset to keep the Compose `Column`.
+   */
+  resolvesChildPercentages?: boolean;
+}
 
 const ColumnNativeView: React.ComponentType<ColumnProps> = requireNativeView(
   'ExpoUI',

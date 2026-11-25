@@ -4,10 +4,7 @@ on:
     types: [labeled]
   # pull_request_target is required so fork PRs get a write token when a
   # maintainer applies a label (e.g. "Version bump PR") that triggers a canned
-  # reply. Most jobs here only post API comments — safe. The one job that
-  # checks out code and uses high-value secrets (issue-accepted) is explicitly
-  # gated to `event_name == 'issues'` so a same-named label on a PR can't
-  # cause fork content to be processed with secrets in env.
+  # reply. Jobs here only post API comments and never check out PR code.
   pull_request_target:
     types: [labeled]
 
@@ -16,7 +13,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: "${{ github.repository == 'expo/expo' && contains(github.event.label.name, 'incomplete issue: missing or invalid repro') }}"
     steps:
-      - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
@@ -60,7 +57,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: "${{ github.repository == 'expo/expo' && contains(github.event.label.name, 'incomplete issue: missing info') }}"
     steps:
-      - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
@@ -89,14 +86,11 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       issues: write
-    # event_name guard is load-bearing: this job checks out code and runs
-    # expotools with EXPO_BOT_GITHUB_TOKEN, LINEAR_API_KEY, and OPENAI_API_KEY
-    # in env. Without the guard, applying an "issue accepted" label to a PR
-    # would trigger the same flow on a pull_request_target event.
+    # Only for issues, so an "issue accepted" label on a PR does not post this comment.
     if: github.repository == 'expo/expo' && github.event_name == 'issues' && github.event.label.name == 'issue accepted'
     steps:
       - name: Comment on issue
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
@@ -109,7 +103,7 @@ jobs:
               However, we can’t promise any sort of timeline for resolution. We prioritize issues based on severity, breadth of impact, and alignment with our roadmap. If you’d like to help move it more quickly, you can continue to investigate it more deeply and/or you can open a pull request that fixes the cause.
             `})
       - name: Remove "Needs Review" label
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             try {
@@ -124,36 +118,12 @@ jobs:
                 throw e;
               }
             }
-      - name: 👀 Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-      - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
-        with:
-          version: 10
-      - name: 🔨 Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: 22
-          cache: 'pnpm'
-      - name: 📦 Install dependencies
-        run: pnpm install --ignore-scripts --frozen-lockfile
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-      - name: 🔎 Import issue to Linear
-        run: pnpm expotools import-github-issue-to-linear --issue "${{ github.event.issue.number }}" --importer "${{ github.triggering_actor }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
-          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
   question:
     runs-on: ubuntu-24.04
     if: "${{ github.repository == 'expo/expo' && contains(github.event.label.name, 'invalid issue: question') }}"
     steps:
-      - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
@@ -181,7 +151,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: "${{ github.repository == 'expo/expo' && contains(github.event.label.name, 'invalid issue: feature request') }}"
     steps:
-      - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
@@ -204,7 +174,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: "${{ github.repository == 'expo/expo' && contains(github.event.label.name, 'invalid issue: third-party library') }}"
     steps:
-      - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
@@ -231,7 +201,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: "${{ github.repository == 'expo/expo' && contains(github.event.label.name, 'invalid issue: react-native-core') }}"
     steps:
-      - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
@@ -253,7 +223,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: "${{ github.repository == 'expo/expo' && github.event.label.name == 'Comments on closed issue' }}"
     steps:
-      - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
@@ -275,7 +245,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: "${{ github.repository == 'expo/expo' && github.event.label.name == 'invalid issue: EAS Build troubleshooting' }}"
     steps:
-      - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
@@ -297,7 +267,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: "${{ github.repository == 'expo/expo' && github.event.label.name == 'Version bump PR' }}"
     steps:
-      - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |

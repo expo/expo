@@ -1,0 +1,376 @@
+---
+title: 画像ピッカーを使用する
+description: このチュートリアルでは、Expo Image Picker を使って、Android、iOS、Web の React Native アプリでメディアライブラリから画像を選択し、表示する方法を学びます。
+hasVideoLink: true
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+React Native は、`<View>`、`<Text>`、`<Pressable>` などの組み込みコンポーネントを標準的な構成要素として提供しています。ここで作成するのは、デバイスのメディアライブラリから画像を選択する機能です。これはコアコンポーネントだけでは実現できないため、この機能をアプリに追加するためにライブラリが必要になります。
+
+[Expo SDK](/versions/latest/) のライブラリである [`expo-image-picker`](/versions/latest/sdk/imagepicker) を使用します。
+
+> `expo-image-picker` は、デバイスのメディアライブラリから画像や動画を選択するためのシステム UI へのアクセスを提供します。
+
+<VideoBoxLink
+  videoId="iEQZU58naS8"
+  title="視聴：ユニバーサル Expo アプリで画像ピッカーを使用する"
+  description="expo-image-picker を使ってデバイスのメディアライブラリから画像を選択する方法を学びます。"
+/>
+
+---
+
+<Step label="1">
+
+## expo-image-picker をインストールする
+
+`expo-image-picker` ライブラリをインストールするには、ターミナルで <kbd>Ctrl</kbd> + <kbd>C</kbd> を押して開発サーバーを停止してから、次のコマンドを実行します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-image-picker'],
+    yarn: ['$ yarn expo install expo-image-picker'],
+    pnpm: ['$ pnpm expo install expo-image-picker'],
+    bun: ['$ bun expo install expo-image-picker'],
+  }}
+/>
+
+[`npx expo install`](/more/expo-cli/#installation) コマンドは、ライブラリをインストールし、**package.json** のプロジェクトの依存関係に追加します。
+
+> **info** **ヒント：** プロジェクトに新しいライブラリをインストールするときは、ターミナルで <kbd>Ctrl</kbd> + <kbd>C</kbd> を押して開発サーバーを停止してから、インストールコマンドを実行します。インストールが完了したら、`npx expo start` を実行して開発サーバーを再起動します。
+
+</Step>
+
+<Step label="2">
+
+## デバイスのメディアライブラリから画像を選択する
+
+`expo-image-picker` は、デバイスのメディアライブラリから画像や動画を選択するためのシステム UI を開く `launchImageLibraryAsync()` メソッドを提供します。このメソッドを呼び出す関数を作成し、前の章の primary ボタンに接続します。
+
+**src/app/(tabs)/index.tsx** で `expo-image-picker` ライブラリをインポートし、`Index` コンポーネント内に `pickImageAsync()` 関数を作成します。
+
+{/* prettier-ignore */}
+```tsx src/app/(tabs)/index.tsx|collapseHeight=440
+// ...rest of the import statements remain unchanged
+/* @tutinfo `ImagePicker` をインポートします。 */ import * as ImagePicker from 'expo-image-picker';/* @end */
+
+export default function Index() {
+  /* @tutinfo `launchImageLibraryAsync()` に画像ピッカーのオプションを渡します */
+  const pickImageAsync = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      /* @tutinfo 画像が選択された場合、その情報をターミナルウィンドウに出力します。 */
+      console.log(result);
+      /* @end */
+    } else {
+      /* @tutinfo ユーザーが画像を選択しなかった場合、アラートを表示します。 */
+      alert('You did not select any image.');
+      /* @end */
+    }
+  };
+  /* @end */
+
+  // ...rest of the code remains same
+}
+```
+
+上記のコードが何をしているのか確認しましょう。
+
+- `launchImageLibraryAsync()` メソッドは、さまざまなオプションを指定するためのオブジェクトを受け取ります。このオブジェクトは [`ImagePickerOptions`](/versions/latest/sdk/imagepicker/#imagepickeroptions) オブジェクトで、メソッドを呼び出すときに渡します。
+- `allowsEditing` を `true` に設定すると、Android と iOS では選択時に画像をトリミングできます。Web では、トリミングの手順なしでブラウザのファイルピッカーが開きます。
+
+</Step>
+
+<Step label="3">
+
+## ボタンを画像ピッカーに接続する
+
+前の章の `Button` コンポーネントは、すでに `onPress` プロパティを受け取れます。**src/app/(tabs)/index.tsx** で、1 つ目の `<Button>` の `onPress` プロパティに `pickImageAsync()` 関数を渡します。
+
+{/* prettier-ignore */}
+```tsx src/app/(tabs)/index.tsx
+import { Platform, View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
+
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
+
+const PlaceholderImage = require('@/assets/images/background-image.png');
+
+export default function Index() {
+  const pickImageAsync = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      console.log(result);
+    } else {
+      alert('You did not select any image.');
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.imageContainer}>
+        <ImageViewer imgSource={PlaceholderImage} />
+      </View>
+      <View style={styles.footerContainer}>
+        <Button theme="primary" label="Choose a photo" onPress={/* @tutinfo `alert()` 関数を `pickImageAsync` に置き換えます。 */pickImageAsync/* @end */} />
+        <Button label="Use this photo" onPress={() => alert('You pressed a button.')} />
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+    paddingTop: Platform.select({ web: 96, default: 20 }),
+  },
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+  },
+});
+```
+
+`pickImageAsync()` 関数は `ImagePicker.launchImageLibraryAsync()` を呼び出し、その結果を処理します。`launchImageLibraryAsync()` メソッドは、選択された画像に関する情報を含むオブジェクトを返します。
+
+`result` オブジェクトとそのプロパティの例を次に示します。
+
+<Tabs>
+
+<Tab label="Android">
+
+```json collapseHeight=280
+{
+  "assets": [
+    {
+      "assetId": null,
+      "base64": null,
+      "duration": null,
+      "exif": null,
+      "fileName": "ea574eaa-f332-44a7-85b7-99704c22b402.jpeg",
+      "fileSize": 4513577,
+      "height": 4570,
+      "mimeType": "image/jpeg",
+      "rotation": null,
+      "type": "image",
+      "uri": "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252FStickerSmash-13f21121-fc9d-4ec6-bf89-bf7d6165eb69/ImagePicker/ea574eaa-f332-44a7-85b7-99704c22b402.jpeg",
+      "width": 2854
+    }
+  ],
+  "canceled": false
+}
+```
+
+</Tab>
+
+<Tab label="iOS">
+
+```json collapseHeight=280
+{
+  "assets": [
+    {
+      "assetId": null,
+      "base64": null,
+      "duration": null,
+      "exif": null,
+      "fileName": null,
+      "fileSize": 1117716,
+      "height": 804,
+      "mimeType": "image/jpeg",
+      "pairedVideoAsset": null,
+      "type": "image",
+      "uri": "file:///Users/your-username/Library/Developer/CoreSimulator/Devices/5119422D-B277-4A92-A3A7-486CE7DAE180/data/Containers/Data/Application/31FB73D4-CBA3-4A39-B487-10D01CE6E8DD/Library/Caches/ImagePicker/DAA4F160-F5D7-41EC-B8CE-7AD0E52EA6BD.jpg",
+      "width": 1205
+    }
+  ],
+  "canceled": false
+}
+```
+
+</Tab>
+
+<Tab label="web">
+
+```json
+{
+  "assets": [
+    {
+      "file": {},
+      "fileName": "test-photo.jpg",
+      "fileSize": 104756,
+      "height": 1600,
+      "mimeType": "image/jpeg",
+      "type": "image",
+      "uri": "blob:http://localhost:8081/b139661f-8776-484e-a838-165e95a9a84c",
+      "width": 1200
+    }
+  ],
+  "canceled": false
+}
+```
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step label="4">
+
+## 選択した画像を使用する
+
+`result` オブジェクトには `assets` 配列があり、その中に選択された画像の `uri` が含まれています。この値を画像ピッカーから取得して、選択された画像をアプリに表示します。
+
+**src/app/(tabs)/index.tsx** ファイルを変更します。
+
+1. React の [`useState`](https://react.dev/learn/state-a-components-memory#adding-a-state-variable) フックを使って、`selectedImage` という状態変数を宣言します。この状態変数は選択された画像の URI を保持するために使います。
+2. `pickImageAsync()` 関数を更新して、画像の URI を `selectedImage` 状態変数に保存します。
+3. `selectedImage` をプロパティとして `ImageViewer` コンポーネントに渡します。
+
+{/* prettier-ignore */}
+```tsx src/app/(tabs)/index.tsx
+/* @tutinfo `react` から `useState` フックをインポートします。*/
+import { useState } from 'react';
+/* @end */
+import { Platform, View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
+
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
+
+const PlaceholderImage = require('@/assets/images/background-image.png');
+
+export default function Index() {
+  /* @tutinfo 選択された画像の値を保持する state 変数を作成します。 */
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+  /* @end */
+
+  const pickImageAsync = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      /* @tutinfo `assets` 配列から最初の uri を取得します。また、一度に選択される画像は 1 つだけなので、ここを変更する必要はありません。 */
+      setSelectedImage(result.assets[0].uri);
+      /* @end */
+    } else {
+      alert('You did not select any image.');
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.imageContainer}>
+        /* @tutinfo 選択された画像の URI を `ImageViewer` コンポーネントに渡します。 */
+        <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
+        /* @end */
+      </View>
+      <View style={styles.footerContainer}>
+        <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
+        <Button label="Use this photo" onPress={() => alert('You pressed a button.')} />
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+    paddingTop: Platform.select({ web: 96, default: 20 }),
+  },
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+  },
+});
+```
+
+プレースホルダー画像の代わりに選択された画像を表示するために、`selectedImage` プロパティを `ImageViewer` コンポーネントに渡します。
+
+1. **src/components/image-viewer.tsx** ファイルを変更して、`selectedImage` プロパティを受け取れるようにします。
+2. 画像のソースが長くなっているので、`imageSource` という別の変数に切り出します。
+3. `Image` コンポーネントの `source` プロパティの値として `imageSource` を渡します。
+
+{/* prettier-ignore */}
+```tsx src/components/image-viewer.tsx
+import { StyleSheet } from 'react-native';
+import { Image, type ImageSource } from 'expo-image';
+
+type Props = {
+  imgSource: ImageSource;
+  /* @tutinfo */
+  selectedImage?: string;
+  /* @end */
+};
+
+export default function ImageViewer({ imgSource, /* @tutinfo `selectedImage` プロパティを渡します。*/selectedImage/* @end */ }: Props) {
+  /* @tutinfo `selectedImage` に値がある場合は、デバイスからの画像を表示します。それ以外の場合は、プレースホルダー画像を表示します。 */
+  const imageSource = selectedImage ? { uri: selectedImage } : imgSource;
+  /* @end */
+
+  /* @tutinfo `imgSource` を `imageSource` に置き換えます。 */
+  return <Image source={imageSource} style={styles.image} />;
+  /* @end */
+}
+
+const styles = StyleSheet.create({
+  image: {
+    width: 320,
+    height: 440,
+    borderRadius: 18,
+  },
+});
+```
+
+上記のスニペットでは、`Image` コンポーネントは条件演算子を使って画像のソースを読み込みます。選択された画像は、プレースホルダー画像のようなローカルアセットではなく、[`uri` 文字列](https://reactnative.dev/docs/images#network-images) です。
+
+アプリの状態を確認してみましょう。
+
+<ContentSpotlight file="tutorial/image-picker-selected-image.mp4" />
+
+> このチュートリアルのサンプルアプリで使用されている画像は [Unsplash](https://unsplash.com) から取得しました。
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/image-picker"
+  name="GET_STARTED"
+  chapterTitle="第 4 章：画像ピッカーを使用する"
+  summary="デバイスのメディアライブラリから画像を選択する機能の追加が完了しました。"
+  nextChapterDescription="次の章では、絵文字ピッカーのモーダルコンポーネントを作成する方法を学びます。"
+  nextChapterTitle="絵文字ピッカーのモーダルを作成する"
+  nextChapterLink="/ja/tutorial/create-a-modal"
+/>

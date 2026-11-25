@@ -1,5 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+import UIKit
+
 /**
  Transformer that draws a new image by resizing given image to specified size.
  */

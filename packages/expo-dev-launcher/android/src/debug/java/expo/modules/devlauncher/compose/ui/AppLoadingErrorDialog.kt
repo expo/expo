@@ -17,12 +17,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.composables.core.Dialog
-import com.composables.core.DialogPanel
-import com.composables.core.DialogState
-import com.composables.core.Scrim
-import com.composables.core.rememberDialogState
-import com.composeunstyled.Button
+import com.composeunstyled.DialogState
+import com.composeunstyled.UnstyledDialog
+import com.composeunstyled.UnstyledDialogPanel
+import com.composeunstyled.UnstyledScrim
+import com.composeunstyled.UnstyledButton
+import com.composeunstyled.rememberDialogState
 import expo.modules.devlauncher.compose.models.HomeAction
 import expo.modules.devlauncher.compose.models.HomeState
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
@@ -52,10 +52,10 @@ fun AppLoadingErrorDialog(
   dialogState: DialogState,
   currentError: String?
 ) {
-  Dialog(state = dialogState) {
-    Scrim()
+  UnstyledDialog(state = dialogState) {
+    UnstyledScrim()
 
-    DialogPanel(
+    UnstyledDialogPanel(
       modifier = Modifier
         .displayCutoutPadding()
         .systemBarsPadding()
@@ -78,7 +78,7 @@ fun AppLoadingErrorDialog(
             )
           )
 
-          Button(onClick = {
+          UnstyledButton(onClick = {
             dialogState.visible = false
           }) {
             MenuIcons.Close(

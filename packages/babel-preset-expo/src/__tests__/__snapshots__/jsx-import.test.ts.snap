@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`auto runtime (default) compiles for Metro ios in dev 1`] = `
 "Object.defineProperty(exports, "__esModule", { value: true });exports.default = App;

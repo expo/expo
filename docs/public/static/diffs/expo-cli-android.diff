@@ -1,5 +1,5 @@
 diff --git a/android/app/build.gradle b/android/app/build.gradle
-index 804b381..475de6a 100644
+index e441fee..6091cd1 100644
 --- a/android/app/build.gradle
 +++ b/android/app/build.gradle
 @@ -52,6 +52,11 @@ react {
@@ -12,3 +12,5 @@ index 804b381..475de6a 100644
 +    cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim())
 +    bundleCommand = "export:embed"
  }
+
+ /**

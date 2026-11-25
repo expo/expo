@@ -3,20 +3,11 @@
 #import <ExpoModulesCore/BridgelessJSCallInvoker.h>
 #import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/EXJSIInstaller.h>
-#import <ExpoModulesCore/SharedObject.h>
-#import <ExpoModulesCore/SharedRef.h>
-#import <ExpoModulesCore/EventEmitter.h>
-#import <ExpoModulesCore/NativeModule.h>
 
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 
 namespace jsi = facebook::jsi;
-
-/**
- Property name of the core object in the global scope of the Expo JS runtime.
- */
-NSString *const EXGlobalCoreObjectPropertyName = @"expo";
 
 /**
  Property name used to define the modules host object in the main object of the
@@ -35,30 +26,6 @@ static NSString *modulesHostObjectPropertyName = @"modules";
     _runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), reinterpret_cast<jsi::Runtime *>(runtime));
   }
   return self;
-}
-
-#pragma mark - Installing JSI bindings
-
-- (void)installSharedObjectClass:(void (^_Nonnull)(long))releaser
-{
-  expo::SharedObject::installBaseClass(*_runtime, [releaser](expo::SharedObject::ObjectId objectId) {
-    releaser(objectId);
-  });
-}
-
-- (void)installSharedRefClass
-{
-  expo::SharedRef::installBaseClass(*_runtime);
-}
-
-- (void)installEventEmitterClass
-{
-  expo::EventEmitter::installClass(*_runtime);
-}
-
-- (void)installNativeModuleClass
-{
-  expo::NativeModule::installClass(*_runtime);
 }
 
 @end

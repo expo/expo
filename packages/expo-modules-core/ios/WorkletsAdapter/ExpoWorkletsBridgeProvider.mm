@@ -7,7 +7,9 @@
 
 #include <memory>
 #include <vector>
-#include <worklets/SharedItems/Serializable.h>
+#include <worklets/Compat/StableApi.h>
+#include <worklets/SharedItems/Serializable/Serializable.h>
+#include <worklets/SharedItems/Serializable/SerializableWorklet.h>
 #include <worklets/WorkletRuntime/WorkletRuntime.h>
 
 namespace jsi = facebook::jsi;
@@ -31,6 +33,27 @@ namespace jsi = facebook::jsi;
 
 @implementation ExpoWorkletsRuntimeHandle
 @end
+
+namespace {
+
+// The scheduler handle of a worklet runtime. It's never freed, because the runtime can dispatch with it
+// after the worklet runtime is gone, so it holds the runtime weakly.
+struct WorkletRuntimeScheduler {
+  std::weak_ptr<worklets::WorkletRuntime> runtime;
+};
+
+void scheduleOnWorkletRuntime(void *scheduler, int priority, void (^callback)())
+{
+  auto workletRuntime = static_cast<WorkletRuntimeScheduler *>(scheduler)->runtime.lock();
+  if (!workletRuntime) {
+    return;
+  }
+  workletRuntime->schedule([callback](jsi::Runtime &) {
+    callback();
+  });
+}
+
+} // namespace
 
 static EXSerializableValueType toObjCValueType(worklets::Serializable::ValueType type)
 {
@@ -163,6 +186,38 @@ static jsi::Value callWorklet(jsi::Runtime &rt, std::shared_ptr<worklets::Serial
   return handle;
 }
 
+- (void * _Nullable)schedulerWithRuntimePointer:(void *)runtimePointer
+                                       dispatch:(const void * _Nullable * _Nonnull)dispatch
+{
+  jsi::Runtime *jsiRuntime = reinterpret_cast<jsi::Runtime *>(runtimePointer);
+  auto weakRuntime = worklets::WorkletRuntime::getWeakRuntimeFromJSIRuntime(*jsiRuntime);
+  if (!weakRuntime.lock()) {
+    return nullptr;
+  }
+  *dispatch = reinterpret_cast<const void *>(&scheduleOnWorkletRuntime);
+  return new WorkletRuntimeScheduler{weakRuntime};
+}
+
+- (void * _Nullable)uiRuntimePointerWithRuntimePointer:(void *)runtimePointer
+                                         holderPointer:(const void *)holderPointer
+{
+  jsi::Runtime &rt = *reinterpret_cast<jsi::Runtime *>(runtimePointer);
+  const jsi::Value &holderValue = *reinterpret_cast<const jsi::Value *>(holderPointer);
+
+  if (!holderValue.isObject()) {
+    return nullptr;
+  }
+
+  jsi::Object holder = holderValue.getObject(rt);
+  std::shared_ptr<worklets::WorkletRuntime> workletRuntime = worklets::getWorkletRuntimeFromHolder(rt, holder);
+  if (!workletRuntime) {
+    return nullptr;
+  }
+
+  jsi::Runtime &uiRuntime = worklets::getJSIRuntimeFromWorkletRuntime(workletRuntime);
+  return &uiRuntime;
+}
+
 - (void)scheduleWorkletWithRuntimeHandle:(id)runtimeHandle
                             serializable:(EXJavaScriptSerializable *)serializable
                                arguments:(NSArray *)arguments
@@ -212,8 +267,8 @@ static jsi::Value callWorklet(jsi::Runtime &rt, std::shared_ptr<worklets::Serial
     return;
   }
 
-  workletRuntime->executeSync([worklet, arguments](jsi::Runtime &rt) -> jsi::Value {
-    return callWorklet(rt, worklet, arguments);
+  workletRuntime->runSync([worklet, arguments](jsi::Runtime &rt) {
+    callWorklet(rt, worklet, arguments);
   });
 }
 

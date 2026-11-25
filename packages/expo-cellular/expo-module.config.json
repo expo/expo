@@ -1,9 +1,11 @@
 {
   "platforms": ["apple", "android", "web"],
-  "apple": {
-    "modules": ["CellularModule"]
-  },
   "android": {
-    "modules": ["expo.modules.cellular.CellularModule"]
+    "modules": ["expo.modules.cellular.CellularModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.cellular",
+      "repository": "local-maven-repo"
+    }
   }
 }

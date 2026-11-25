@@ -7,9 +7,9 @@ import {
   type ModifierConfig,
 } from '@expo/ui/jetpack-compose/modifiers';
 
+import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
 import type { SpacerProps } from './types';
-import { useUniversalLifecycle } from '../hooks';
 
 /**
  * A layout spacer that produces empty space between siblings in a
@@ -48,10 +48,12 @@ export function Spacer({
     layoutMods.push(sizeModifier(size, size));
   }
 
-  const modifiers = transformToModifiers(style, { disabled, hidden, testID }, [
-    ...layoutMods,
-    ...(extraModifiers ?? []),
-  ]);
+  const modifiers = transformToModifiers(
+    style,
+    { disabled, hidden, testID },
+    [...layoutMods, ...(extraModifiers ?? [])],
+    { componentName: 'Spacer' }
+  );
 
   return <ComposeSpacer modifiers={modifiers} />;
 }

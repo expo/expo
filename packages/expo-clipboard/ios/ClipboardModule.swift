@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import UIKit
+import UniformTypeIdentifiers
 
 let onClipboardChanged = "onClipboardChanged"
 
@@ -21,6 +21,26 @@ public class ClipboardModule: Module {
     }
 
     AsyncFunction("setStringAsync") { (content: String?, options: SetStringOptions) -> Bool in
+      #if !os(macOS)
+      if let content, options.localOnly || options.expiresAt != nil {
+        var pasteboardOptions: [UIPasteboard.OptionsKey: Any] = [:]
+        if options.localOnly {
+          pasteboardOptions[.localOnly] = true
+        }
+        if let expiresAt = options.expiresAt {
+          pasteboardOptions[.expirationDate] = Date(timeIntervalSince1970: expiresAt / 1000)
+        }
+        let item: [String: Any]
+        switch options.inputFormat {
+        case .plainText:
+          item = [UTType.utf8PlainText.identifier: content]
+        case .html:
+          item = UIPasteboard.htmlItem(content) ?? [UTType.utf8PlainText.identifier: ""]
+        }
+        UIPasteboard.general.setItems([item], options: pasteboardOptions)
+        return true
+      }
+      #endif
       switch options.inputFormat {
       case .plainText:
         UIPasteboard.general.string = content
@@ -51,7 +71,7 @@ public class ClipboardModule: Module {
 
     // MARK: - Images
 
-    AsyncFunction("setImageAsync") { (content: String) in
+    AsyncFunction("setImageAsync") { (content: String, _options: SetImageOptions) in
       guard let data = Data(base64Encoded: content),
             let image = UIImage(data: data) else {
         throw InvalidImageException(content)
@@ -83,9 +103,11 @@ public class ClipboardModule: Module {
     }
 
     Property("isPasteButtonAvailable") { () -> Bool in
+      #if !os(macOS)
       if #available(iOS 16.0, *) {
         return true
       }
+      #endif
       return false
     }
 
@@ -93,6 +115,7 @@ public class ClipboardModule: Module {
 
     Events(onClipboardChanged)
 
+    #if !os(macOS)
     OnStartObserving {
       NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: nil)
       NotificationCenter.default.addObserver(
@@ -106,9 +129,11 @@ public class ClipboardModule: Module {
     OnStopObserving {
       NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: nil)
     }
+    #endif
 
     // MARK: - View
 
+    #if !os(macOS)
     View(ClipboardPasteButton.self) {
       Events("onPastePressed")
 
@@ -144,14 +169,17 @@ public class ClipboardModule: Module {
         view.update()
       }
     }
+    #endif
   }
 
+  #if !os(macOS)
   @objc
   func clipboardChangedListener() {
     sendEvent(onClipboardChanged, [
       "contentTypes": availableContentTypes()
     ])
   }
+  #endif
 }
 
 private func imageToData(_ image: UIImage, options: GetImageOptions) -> Data? {

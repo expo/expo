@@ -9,7 +9,7 @@ import {
   transformProps,
 } from '../layout-types';
 
-export type RowProps = {
+export interface RowProps extends PrimitiveBaseProps {
   children?: React.ReactNode;
   /**
    * Horizontal arrangement of children.
@@ -27,7 +27,12 @@ export type RowProps = {
    * Vertical alignment of children.
    */
   verticalAlignment?: VerticalAlignment;
-} & PrimitiveBaseProps;
+  /**
+   * When `true`, a child percentage is a fraction of this row.
+   * Universal `Row` sets this. Leave it unset to keep the Compose `Row`.
+   */
+  resolvesChildPercentages?: boolean;
+}
 
 const RowNativeView: React.ComponentType<RowProps> = requireNativeView('ExpoUI', 'RowView');
 

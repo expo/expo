@@ -1,8 +1,52 @@
 // expo-router is an optional peerDependency of expo-observe. When the host app
 // hasn't installed it, `require` throws and the integration becomes a no-op.
-let optionalRouter: typeof import('expo-router') | undefined;
+export interface RouterPageMarkDetail {
+  pathname: string;
+  params: Record<string, string | string[] | undefined>;
+  screenId: string;
+  segments: string[];
+}
+
+export type RouterPerformanceMark =
+  | { name: 'expo-router:action-enqueued'; startTime: number; detail: { actionId: number } }
+  | {
+      name: 'expo-router:action-dispatched';
+      startTime: number;
+      // `actionId` is missing in expo-router versions without the action-enqueued mark.
+      detail: { actionType: string; actionId?: number };
+    }
+  | {
+      name:
+        | 'expo-router:page-preloaded'
+        | 'expo-router:page-focused'
+        | 'expo-router:page-blurred'
+        | 'expo-router:page-removed';
+      startTime: number;
+      detail: RouterPageMarkDetail;
+    };
+
+export type RouterPerformanceObserver = new (
+  callback: (list: { getEntries(): Pick<PerformanceEntry, 'name' | 'startTime'>[] }) => void
+) => {
+  observe(options: { type: 'mark' }): void;
+  disconnect(): void;
+};
+
+interface OptionalRouter {
+  unstable_enablePerformanceIntegration(): void;
+  unstable_PerformanceObserver: RouterPerformanceObserver;
+  useCurrentRouteInfo(): {
+    pathname: string;
+    params: Record<string, string | string[]>;
+    segments: string[];
+  };
+  useNavigation(): { isFocused(): boolean };
+  useRoute(): { key: string };
+}
+
+let optionalRouter: OptionalRouter | undefined;
 try {
-  optionalRouter = require('expo-router');
+  optionalRouter = require('expo-router') as OptionalRouter;
 } catch {
   // expo-router not installed — integration disabled.
 }

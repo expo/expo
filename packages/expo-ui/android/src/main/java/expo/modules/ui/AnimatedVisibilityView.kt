@@ -73,32 +73,64 @@ data class ExitTransitionRecord(
 // TODO(@ubax): expose animationSpec parameter (tween, spring, duration) for all transitions
 private fun EnterTransitionRecord.toComposeTransition(): EnterTransition = when (type) {
   EnterTransitionType.FADE_IN ->
-    if (initialAlpha != null) fadeIn(initialAlpha = initialAlpha) else fadeIn()
+    if (initialAlpha != null) {
+      fadeIn(initialAlpha = initialAlpha)
+    } else {
+      fadeIn()
+    }
   EnterTransitionType.SLIDE_IN_HORIZONTALLY ->
-    if (initialOffsetX != null) slideInHorizontally { (it * initialOffsetX).toInt() } else slideInHorizontally()
+    if (initialOffsetX != null) {
+      slideInHorizontally { (it * initialOffsetX).toInt() }
+    } else {
+      slideInHorizontally()
+    }
   EnterTransitionType.SLIDE_IN_VERTICALLY ->
-    if (initialOffsetY != null) slideInVertically { (it * initialOffsetY).toInt() } else slideInVertically()
+    if (initialOffsetY != null) {
+      slideInVertically { (it * initialOffsetY).toInt() }
+    } else {
+      slideInVertically()
+    }
   // TODO(@ubax): expose expandFrom (Alignment) and initialSize parameters for expand transitions
   EnterTransitionType.EXPAND_IN -> expandIn()
   EnterTransitionType.EXPAND_HORIZONTALLY -> expandHorizontally()
   EnterTransitionType.EXPAND_VERTICALLY -> expandVertically()
   EnterTransitionType.SCALE_IN ->
-    if (initialScale != null) scaleIn(initialScale = initialScale) else scaleIn()
+    if (initialScale != null) {
+      scaleIn(initialScale = initialScale)
+    } else {
+      scaleIn()
+    }
 }
 
 private fun ExitTransitionRecord.toComposeTransition(): ExitTransition = when (type) {
   ExitTransitionType.FADE_OUT ->
-    if (targetAlpha != null) fadeOut(targetAlpha = targetAlpha) else fadeOut()
+    if (targetAlpha != null) {
+      fadeOut(targetAlpha = targetAlpha)
+    } else {
+      fadeOut()
+    }
   ExitTransitionType.SLIDE_OUT_HORIZONTALLY ->
-    if (targetOffsetX != null) slideOutHorizontally { (it * targetOffsetX).toInt() } else slideOutHorizontally()
+    if (targetOffsetX != null) {
+      slideOutHorizontally { (it * targetOffsetX).toInt() }
+    } else {
+      slideOutHorizontally()
+    }
   ExitTransitionType.SLIDE_OUT_VERTICALLY ->
-    if (targetOffsetY != null) slideOutVertically { (it * targetOffsetY).toInt() } else slideOutVertically()
+    if (targetOffsetY != null) {
+      slideOutVertically { (it * targetOffsetY).toInt() }
+    } else {
+      slideOutVertically()
+    }
   // TODO(@ubax): expose shrinkTowards (Alignment) and targetSize parameters for shrink transitions
   ExitTransitionType.SHRINK_OUT -> shrinkOut()
   ExitTransitionType.SHRINK_HORIZONTALLY -> shrinkHorizontally()
   ExitTransitionType.SHRINK_VERTICALLY -> shrinkVertically()
   ExitTransitionType.SCALE_OUT ->
-    if (targetScale != null) scaleOut(targetScale = targetScale) else scaleOut()
+    if (targetScale != null) {
+      scaleOut(targetScale = targetScale)
+    } else {
+      scaleOut()
+    }
 }
 
 private fun List<EnterTransitionRecord>.toComposedEnterTransition(): EnterTransition? =

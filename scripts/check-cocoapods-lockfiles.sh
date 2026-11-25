@@ -5,12 +5,24 @@ if [[ "$OSTYPE" != "darwin"* ]]; then
   exit 0
 fi
 
+pathsToCheck=("ios" "apps/bare-expo/ios")
+
+# Hooks pass a commit range; skip when no Podfile.lock changed within it.
+if [[ -n "$1" && -n "$2" ]]; then
+  lockfiles=()
+  for path in "${pathsToCheck[@]}"; do
+    lockfiles+=("$path/Podfile.lock")
+  done
+  if git diff --quiet "$1" "$2" -- "${lockfiles[@]}" 2>/dev/null; then
+    exit 0
+  fi
+fi
+
 green="tput setaf 2"
 yellow="tput setaf 3"
 blue="tput setaf 4"
 reset="tput sgr0"
 
-pathsToCheck=("ios" "apps/bare-expo/ios")
 pathsToUpdate=()
 
 for path in ${pathsToCheck[@]}; do

@@ -20,7 +20,7 @@ internal struct DynamicStringType: AnyDynamicType {
     throw Conversions.CastingException<String>(value)
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     if jsValue.kind == .string {
       return jsValue.getString()
     }

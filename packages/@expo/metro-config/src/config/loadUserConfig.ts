@@ -1,8 +1,9 @@
 import { mergeConfig, type ConfigT } from '@expo/metro/metro-config';
 
 import { getDefaultConfig } from '../ExpoMetroConfig';
-import { type LoadMetroConfigParams, resolveMetroUserConfig } from './resolveMetroUserConfig';
 import { resolveBabelrcName } from '../loadBabelConfig';
+import type { ExpoJsTransformerConfig } from '../transform-worker/types';
+import { type LoadMetroConfigParams, resolveMetroUserConfig } from './resolveMetroUserConfig';
 
 export type { LoadMetroConfigParams } from './resolveMetroUserConfig';
 
@@ -28,19 +29,10 @@ export async function loadUserConfig(params: LoadMetroConfigParams): Promise<Con
   };
 
   // NOTE(@kitten): Pass a hint to the transformer on where to find the Babel config
-  asWritable(config.transformer).extendsBabelConfigPath =
+  asWritable(config.transformer as ExpoJsTransformerConfig).extendsBabelConfigPath =
     config.transformer.enableBabelRCLookup !== false
       ? resolveBabelrcName(params.projectRoot)
       : undefined;
-
-  // NOTE(@kitten): `useWatchman` is currently enabled by default, but it also disables `forceNodeFilesystemAPI`.
-  // If we instead set it to the special value `null`, it gets enables but also bypasses the "native find" codepath,
-  // which is slower than just using the Node filesystem API
-  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro-file-map/src/index.js#L326
-  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro/src/node-haste/DependencyGraph/createFileMap.js#L109
-  if (config.resolver.useWatchman === true) {
-    asWritable(config.resolver).useWatchman = null as any;
-  }
 
   return config;
 }

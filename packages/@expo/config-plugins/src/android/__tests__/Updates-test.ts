@@ -7,7 +7,7 @@ import { format } from '../../utils/XML';
 import * as XML from '../../utils/XML';
 import type { AndroidManifest } from '../Manifest';
 import { getMainApplication } from '../Manifest';
-import { readResourcesXMLAsync } from '../Resources';
+import { ensureDefaultResourceXML, readResourcesXMLAsync } from '../Resources';
 import * as Updates from '../Updates';
 
 async function getFixtureManifestAsync() {
@@ -47,6 +47,7 @@ describe('Android Updates config', () => {
         checkAutomatically: 'ON_ERROR_RECOVERY',
         useEmbeddedUpdate: false,
         enableBsdiffPatchSupport: true,
+        maxUpdatesToKeep: 5,
         codeSigningCertificate: 'hello',
         codeSigningMetadata: {
           alg: 'rsa-v1_5-sha256',
@@ -84,31 +85,31 @@ describe('Android Updates config', () => {
       (e) => e.$['android:name'] === 'expo.modules.updates.ENABLED'
     );
     expect(enabled).toHaveLength(1);
-    expect(enabled[0].$['android:value']).toMatch('false');
+    expect(enabled[0]!.$['android:value']).toMatch('false');
 
     const hasEmbeddedUpdate = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.HAS_EMBEDDED_UPDATE'
     );
     expect(hasEmbeddedUpdate).toHaveLength(1);
-    expect(hasEmbeddedUpdate[0].$['android:value']).toMatch('false');
+    expect(hasEmbeddedUpdate[0]!.$['android:value']).toMatch('false');
 
     const checkOnLaunch = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH'
     );
     expect(checkOnLaunch).toHaveLength(1);
-    expect(checkOnLaunch[0].$['android:value']).toMatch('ERROR_RECOVERY_ONLY');
+    expect(checkOnLaunch[0]!.$['android:value']).toMatch('ERROR_RECOVERY_ONLY');
 
     const timeout = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS'
     );
     expect(timeout).toHaveLength(1);
-    expect(timeout[0].$['android:value']).toMatch('2000');
+    expect(timeout[0]!.$['android:value']).toMatch('2000');
 
     const codeSigningCertificate = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.CODE_SIGNING_CERTIFICATE'
     );
     expect(codeSigningCertificate).toHaveLength(1);
-    expect(codeSigningCertificate[0].$['android:value']).toMatch(
+    expect(codeSigningCertificate[0]!.$['android:value']).toMatch(
       fsReal.readFileSync(sampleCodeSigningCertificatePath, 'utf-8')
     );
 
@@ -116,7 +117,7 @@ describe('Android Updates config', () => {
       (e) => e.$['android:name'] === 'expo.modules.updates.CODE_SIGNING_METADATA'
     );
     expect(codeSigningMetadata).toHaveLength(1);
-    expect(codeSigningMetadata[0].$['android:value']).toMatch(
+    expect(codeSigningMetadata[0]!.$['android:value']).toMatch(
       '{"alg":"rsa-v1_5-sha256","keyid":"test"}'
     );
 
@@ -125,7 +126,7 @@ describe('Android Updates config', () => {
         e.$['android:name'] === 'expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY'
     );
     expect(requestHeaders).toHaveLength(1);
-    expect(requestHeaders[0].$['android:value']).toMatch(
+    expect(requestHeaders[0]!.$['android:value']).toMatch(
       '{"expo-channel-name":"test","testheader":"test"}'
     );
 
@@ -133,13 +134,19 @@ describe('Android Updates config', () => {
       (e) => e.$['android:name'] === 'expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT'
     );
     expect(bsdiffPatchSupport).toHaveLength(1);
-    expect(bsdiffPatchSupport[0].$['android:value']).toMatch('true');
+    expect(bsdiffPatchSupport[0]!.$['android:value']).toMatch('true');
+
+    const maxUpdatesToKeep = mainApplication['meta-data'].filter(
+      (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATES_MAX_UPDATES_TO_KEEP'
+    );
+    expect(maxUpdatesToKeep).toHaveLength(1);
+    expect(maxUpdatesToKeep[0]?.$['android:value']).toBe('5');
 
     const runtimeVersion = mainApplication['meta-data']?.filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_RUNTIME_VERSION'
     );
     expect(runtimeVersion).toHaveLength(1);
-    expect(runtimeVersion[0].$['android:value']).toMatch('@string/expo_runtime_version');
+    expect(runtimeVersion![0]!.$['android:value']).toMatch('@string/expo_runtime_version');
   });
 
   describe('Runtime version tests', () => {
@@ -181,7 +188,7 @@ describe('Android Updates config', () => {
         (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_RUNTIME_VERSION'
       );
       expect(runtimeVersion).toHaveLength(1);
-      expect(runtimeVersion && runtimeVersion[0].$['android:value']).toMatch(
+      expect(runtimeVersion && runtimeVersion[0]!.$['android:value']).toMatch(
         '@string/expo_runtime_version'
       );
     });
@@ -197,7 +204,7 @@ describe('Android Updates config', () => {
       } as any;
       await Updates.applyRuntimeVersionFromConfigAsync(config, stringsJSON);
       expect(format(stringsJSON)).toEqual(
-        '<resources>\n  <string name="expo_runtime_version">1.10</string>\n</resources>'
+        '<resources>\n  <string name="expo_runtime_version" translatable="false">1.10</string>\n</resources>'
       );
 
       const config2 = {
@@ -210,8 +217,72 @@ describe('Android Updates config', () => {
       expect(format(stringsJSON)).toEqual('<resources/>');
     });
 
+    it('Marks the runtime version string non-translatable', async () => {
+      const stringsPath = '/app/android/app/src/main/res/values/strings.xml';
+      const stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
+      const config = {
+        runtimeVersion: '1.10',
+        modRequest: {
+          projectRoot: '/',
+        },
+      } as any;
+      await Updates.applyRuntimeVersionFromConfigAsync(config, stringsJSON);
+
+      const runtimeVersionString = stringsJSON.resources.string?.find(
+        (e) => e.$.name === 'expo_runtime_version'
+      );
+      expect(runtimeVersionString).toBeDefined();
+      expect(runtimeVersionString!.$.translatable).toBe('false');
+      expect(runtimeVersionString!._).toBe('1.10');
+    });
+
+    it('Adds translatable="false" to a runtime version string written by an older plugin version', async () => {
+      const stringsJSON = ensureDefaultResourceXML({
+        resources: {
+          string: [
+            { $: { name: 'app_name' }, _: 'foo' },
+            { $: { name: 'expo_runtime_version' }, _: '1.9' },
+          ],
+        },
+      });
+      const config = {
+        runtimeVersion: '1.10',
+        modRequest: {
+          projectRoot: '/',
+        },
+      } as any;
+      await Updates.applyRuntimeVersionFromConfigAsync(config, stringsJSON);
+
+      expect(format(stringsJSON)).toEqual(
+        '<resources>\n  <string name="app_name">foo</string>\n  <string name="expo_runtime_version" translatable="false">1.10</string>\n</resources>'
+      );
+    });
+
     afterAll(async () => {
       vol.reset();
     });
   });
+});
+
+it('removes a stale retention setting when the option is omitted', async () => {
+  const config = {
+    slug: 'my-app',
+    runtimeVersion: '1.0.0',
+    updates: { url: 'https://u.expo.dev/x', maxUpdatesToKeep: 5 },
+  };
+  const configured = await Updates.setUpdatesConfigAsync(
+    '/app',
+    config,
+    await getFixtureManifestAsync()
+  );
+  const cleared = await Updates.setUpdatesConfigAsync(
+    '/app',
+    { ...config, updates: { url: config.updates.url } },
+    configured
+  );
+  expect(
+    getMainApplication(cleared)!['meta-data']?.filter(
+      (item) => item.$['android:name'] === Updates.Config.MAX_UPDATES_TO_KEEP
+    )
+  ).toEqual([]);
 });

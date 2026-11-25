@@ -1,5 +1,5 @@
 import { renderMetadataTags } from '../render';
-import type { ResolvedMetadata } from '../types';
+import type { MetadataTag, ResolvedMetadata } from '../types';
 
 function metaName(name: string, content: string): MetadataTag {
   return { tagName: 'meta', attributes: { name, content } };
@@ -98,7 +98,7 @@ describe(renderMetadataTags, () => {
 
     expect(tags).toContainEqual(link({ rel: 'canonical', href: 'https://example.dev' }));
     expect(tags).toContainEqual(
-      link({ rel: 'alternate', href: 'https://example.dev/en', hreflang: 'en' })
+      link({ rel: 'alternate', href: 'https://example.dev/en', hrefLang: 'en' })
     );
   });
 

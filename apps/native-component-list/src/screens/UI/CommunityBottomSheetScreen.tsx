@@ -4,8 +4,9 @@ import BottomSheet, {
   BottomSheetView,
   useBottomSheet,
 } from '@expo/ui/community/bottom-sheet'; // can replace with `@gorhom/bottom-sheet` to check compatibility
+import { ignoreSafeArea } from '@expo/ui/swift-ui/modifiers';
 import { useRef, useState } from 'react';
-import { Button, Platform, StyleSheet, Text, View } from 'react-native';
+import { Button, Modal, Platform, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { BodyText } from '../../components/BodyText';
@@ -31,7 +32,11 @@ export default function CommunityBottomSheetScreen() {
   const sheetRef = useRef<BottomSheet>(null);
   const modalRef = useRef<BottomSheetModal>(null);
   const fitRef = useRef<BottomSheetModal>(null);
+  const modalFromDismissRef = useRef<BottomSheetModal>(null);
+  const edgeToEdgeRef = useRef<BottomSheetModal>(null);
 
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalSheetIndex, setModalSheetIndex] = useState(-1);
   const [log, setLog] = useState<string[]>([]);
   const addLog = (msg: string) =>
     setLog((prev) => [`${new Date().toLocaleTimeString()} ${msg}`, ...prev].slice(0, 15));
@@ -68,6 +73,24 @@ export default function CommunityBottomSheetScreen() {
             />
           </View>
 
+          {/* 4. Present a React Native Modal from onDismiss */}
+          <BodyText style={styles.heading}>Modal from onDismiss</BodyText>
+          <BodyText style={styles.hint}>
+            Close the sheet — onDismiss presents a React Native Modal
+          </BodyText>
+          <View style={styles.buttonRow}>
+            <Button title="Open" onPress={() => modalFromDismissRef.current?.present()} />
+          </View>
+
+          {/* 5. Content up to the sheet's edges through the modifiers prop */}
+          <BodyText style={styles.heading}>Edge-to-edge content (modifiers)</BodyText>
+          <BodyText style={styles.hint}>
+            iOS: ignoreSafeArea(horizontal) lets the content fill the sheet on a folded iPhone Duo
+          </BodyText>
+          <View style={styles.buttonRow}>
+            <Button title="Open" onPress={() => edgeToEdgeRef.current?.present()} />
+          </View>
+
           {/* Event log */}
           <View style={styles.log}>
             <Text style={styles.logTitle}>Events</Text>
@@ -94,6 +117,7 @@ export default function CommunityBottomSheetScreen() {
                 </Text>
               )}
               <SheetControls snapCount={3} />
+              <Button title="Open Modal over sheet" onPress={() => setIsModalVisible(true)} />
             </BottomSheetView>
           </BottomSheet>
 
@@ -127,6 +151,55 @@ export default function CommunityBottomSheetScreen() {
               <SheetControls />
             </BottomSheetView>
           </BottomSheetModal>
+
+          {/* Sheet 4: presents a React Native Modal once fully dismissed */}
+          <BottomSheetModal
+            ref={modalFromDismissRef}
+            snapPoints={['50%']}
+            onDismiss={() => {
+              addLog('dismiss-then-modal onDismiss');
+              setIsModalVisible(true);
+            }}
+            enablePanDownToClose>
+            <BottomSheetView style={styles.sheetView}>
+              <Text style={styles.sheetTitle}>Modal from onDismiss</Text>
+              <SheetControls />
+            </BottomSheetView>
+          </BottomSheetModal>
+
+          {/* Sheet 5: the modifiers prop, applied to the sheet content on iOS */}
+          <BottomSheetModal
+            ref={edgeToEdgeRef}
+            modifiers={
+              Platform.OS === 'ios' ? [ignoreSafeArea({ edges: 'horizontal' })] : undefined
+            }
+            enablePanDownToClose>
+            <BottomSheetView style={styles.edgeToEdge}>
+              <Text style={styles.sheetTitle}>Edge to edge</Text>
+              <Text style={styles.hint}>This view fills the sheet's width</Text>
+              <SheetControls />
+            </BottomSheetView>
+          </BottomSheetModal>
+
+          <Modal visible={isModalVisible} transparent animationType="fade">
+            <View style={styles.modalBackdrop}>
+              <View style={styles.modalCard}>
+                <Text style={styles.sheetTitle}>Modal presented</Text>
+                <Button title="Close Modal" onPress={() => setIsModalVisible(false)} />
+                <Button title="Open sheet over Modal" onPress={() => setModalSheetIndex(0)} />
+              </View>
+            </View>
+            <BottomSheet
+              index={modalSheetIndex}
+              snapPoints={['50%']}
+              enablePanDownToClose
+              onChange={setModalSheetIndex}>
+              <BottomSheetView style={styles.sheetView}>
+                <Text style={styles.sheetTitle}>Sheet over Modal</Text>
+                <Button title="Close sheet over Modal" onPress={() => setModalSheetIndex(-1)} />
+              </BottomSheetView>
+            </BottomSheet>
+          </Modal>
         </View>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
@@ -180,6 +253,9 @@ const styles = StyleSheet.create({
   sheetView: {
     flex: 1,
   },
+  edgeToEdge: {
+    backgroundColor: '#ffe0d6',
+  },
   sheetContent: {
     padding: 16,
     alignItems: 'center',
@@ -190,5 +266,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginTop: 8,
+  },
+  modalBackdrop: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  },
+  modalCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 24,
+    gap: 8,
   },
 });

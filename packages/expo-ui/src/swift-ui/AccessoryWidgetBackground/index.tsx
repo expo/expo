@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 
 import { type CommonViewModifierProps } from '../types';
 
-export type AccessoryWidgetBackgroundProps = CommonViewModifierProps;
+export interface AccessoryWidgetBackgroundProps extends CommonViewModifierProps {}
 
 const AccessoryWidgetBackgroundNativeView: React.ComponentType<AccessoryWidgetBackgroundProps> =
   requireNativeView('ExpoUI', 'AccessoryWidgetBackgroundView');

@@ -11,7 +11,6 @@ import invariant from 'invariant';
 import * as path from 'path';
 import { performance } from 'perf_hooks';
 
-import { planQuery } from './planQuery';
 import { RootPathUtils } from '../../lib/RootPathUtils';
 import isWatcherExcluded from '../../lib/isWatcherExcluded';
 import normalizePathSeparatorsToPosix from '../../lib/normalizePathSeparatorsToPosix';
@@ -25,6 +24,7 @@ import type {
   FileMetadata,
   Path,
 } from '../../types';
+import { planQuery } from './planQuery';
 
 // NOTE(@kitten): Not exported by @types/fb-watchman
 interface WatchmanWatchResponse extends WatchProjectResponse {

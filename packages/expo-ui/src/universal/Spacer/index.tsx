@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
-import type { SpacerProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
+import type { SpacerProps } from './types';
 
 const styles = StyleSheet.create({
   flexible: { flex: 1 },

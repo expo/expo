@@ -21,7 +21,7 @@ export function Talks() {
         <Button
           theme="secondary"
           className="ml-auto"
-          rightSlot={<ArrowRightIcon />}
+          rightSlot={<ArrowRightIcon aria-hidden="true" />}
           href="/additional-resources/#talks">
           See more talks
         </Button>
@@ -67,37 +67,43 @@ export function TalkGridCell({
       openInNewTab
       href={link ?? `https://www.youtube.com/watch?v=${videoId}`}
       className={mergeClasses(
-        'relative flex h-full min-h-66.5 flex-col justify-between overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
+        'relative flex h-full min-h-66.5 flex-col justify-between overflow-hidden rounded-3xl border border-default bg-default shadow-xs transition',
         '[&_h2]:my-0! [&_h3]:mt-0!',
         'hocus:shadow-sm',
         className
       )}
       isStyled>
       <div>
-        <div
-          style={{
-            backgroundImage: `url(${
+        <div className="h-34.5 border-b border-b-default max-sm:h-42">
+          <img
+            src={
               thumbnail
                 ? `/static/thumbnails/${thumbnail}`
-                : `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`
-            })`,
-          }}
-          className="h-34.5 border-b border-b-default bg-cover bg-center max-sm:h-42"
-        />
+                : `https://i.ytimg.com/vi_webp/${videoId}/sddefault.webp`
+            }
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="size-full object-cover object-center"
+          />
+        </div>
         <div className="flex min-h-7.5 items-start justify-between gap-1 bg-default px-4 py-3">
           <LABEL className="block leading-normal">{title}</LABEL>
-          <ArrowUpRightIcon className="mt-1 icon-sm shrink-0 text-icon-secondary" />
+          <ArrowUpRightIcon
+            aria-hidden="true"
+            className="mt-1 icon-sm shrink-0 text-icon-secondary"
+          />
         </div>
       </div>
       <div className="flex flex-col gap-0.5 bg-default px-4 pb-2">
         {description && (
           <CALLOUT theme="secondary" className="flex items-center gap-2">
-            <Users02Icon className="icon-xs shrink-0 text-icon-tertiary" />
+            <Users02Icon aria-hidden="true" className="icon-xs shrink-0 text-icon-tertiary" />
             {description}
           </CALLOUT>
         )}
         <CALLOUT theme="secondary" className="flex items-center gap-2">
-          <AtSignIcon className="icon-xs shrink-0 text-icon-tertiary" />
+          <AtSignIcon aria-hidden="true" className="icon-xs shrink-0 text-icon-tertiary" />
           {event}
         </CALLOUT>
       </div>

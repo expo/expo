@@ -1,4 +1,4 @@
-import { ConfigPlugin, withXcodeProject } from 'expo/config-plugins';
+import { ConfigPlugin, withXcodeProject, type XcodeProject } from 'expo/config-plugins';
 import * as path from 'path';
 
 import { addBuildPhases } from './addBuildPhases';
@@ -17,6 +17,37 @@ type TargetXcodeProjectProps = {
   getFileUris: () => string[];
 };
 
+type PbxGroup = {
+  children: { value: string; comment?: string }[];
+};
+
+function getGroupAtPath(xcodeProject: XcodeProject, groupPath: string): PbxGroup | null {
+  const { firstProject } = xcodeProject.getFirstProject();
+  let group = xcodeProject.getPBXGroupByKey(firstProject.mainGroup) as PbxGroup | undefined;
+
+  for (const component of groupPath.split('/')) {
+    const child = group?.children.find(({ comment }) => comment === component);
+    if (!child) {
+      return null;
+    }
+    group = xcodeProject.getPBXGroupByKey(child.value) as PbxGroup | undefined;
+  }
+
+  return group ?? null;
+}
+
+export function getLocalizableStringsFileRefs(
+  xcodeProject: XcodeProject,
+  projectName: string,
+  languages: string[]
+): string[] {
+  return languages.flatMap((language) => {
+    const localeGroup = getGroupAtPath(xcodeProject, `${projectName}/Supporting/${language}.lproj`);
+    const file = localeGroup?.children.find(({ comment }) => comment === 'Localizable.strings');
+    return file ? [file.value] : [];
+  });
+}
+
 const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
   config,
   { targetName, bundleIdentifier, deploymentTarget, appleTeamId, getFileUris }
@@ -25,17 +56,20 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
     const xcodeProject = config.modResults;
     const targetUuid = xcodeProject.generateUuid();
     const groupName = 'Embed Foundation Extensions';
+    const marketingVersion = config.ios?.version ?? config.version ?? '1.0';
+    const currentProjectVersion = config.ios?.buildNumber ?? '1';
 
-    const xCConfigurationList = addXCConfigurationList(xcodeProject, {
+    // TODO(@kitten): This was untyped before and is now failing
+    const xCConfigurationList: any = addXCConfigurationList(xcodeProject, {
       targetName,
       bundleIdentifier,
       deploymentTarget,
       appleTeamId,
-      marketingVersion: '1.0',
-      currentProjectVersion: '1',
+      marketingVersion,
+      currentProjectVersion,
     });
-
-    const productFile = addProductFile(xcodeProject, {
+    // TODO(@kitten): This was untyped before and is now failing
+    const productFile: any = addProductFile(xcodeProject, {
       targetName,
       groupName,
     });
@@ -55,12 +89,17 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
     const targetDirectory = path.join(projectRoot, targetName);
     const relativePaths = getFileUris().map((file) => path.relative(targetDirectory, file));
     const swiftWidgetFiles = relativePaths.filter((file) => file.endsWith('.swift'));
+    const languages = Object.keys(config.locales ?? {});
+    const localizableStringsFileRefs = languages.length
+      ? getLocalizableStringsFileRefs(xcodeProject, config.modRequest.projectName!, languages)
+      : [];
 
     addBuildPhases(xcodeProject, {
       targetUuid: target.uuid,
       groupName,
       productFile,
       widgetFiles: swiftWidgetFiles,
+      resourceFileRefs: localizableStringsFileRefs,
     });
 
     addPbxGroup(xcodeProject, {

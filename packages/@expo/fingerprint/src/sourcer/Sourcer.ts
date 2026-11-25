@@ -1,6 +1,10 @@
 import chalk from 'chalk';
 import semver from 'semver';
 
+import { getExpoConfigAsync } from '../ExpoConfig';
+import { resolveExpoAutolinkingVersion } from '../ExpoResolver';
+import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
+import { profile } from '../utils/Profile';
 import {
   getBareAndroidSourcesAsync,
   getBareIosSourcesAsync,
@@ -17,12 +21,8 @@ import {
   getExpoConfigSourcesAsync,
   getExpoCNGPatchSourcesAsync,
 } from './Expo';
-import { getExpoConfigAsync } from '../ExpoConfig';
-import { resolveExpoAutolinkingVersion } from '../ExpoResolver';
 import { getDefaultPackageSourcesAsync } from './Packages';
 import { getPatchPackageSourcesAsync } from './PatchPackage';
-import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
-import { profile } from '../utils/Profile';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Sourcer');
 

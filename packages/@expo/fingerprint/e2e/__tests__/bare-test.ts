@@ -1,9 +1,11 @@
 import spawnAsync from '@expo/spawn-async';
+import { realpathSync } from 'fs';
 import fs from 'fs/promises';
+import os from 'os';
 import path from 'path';
 
-import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import { createProjectHashAsync } from '../../src/Fingerprint';
+import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import { E2E_TEMPLATE_SDK_VERSION } from './utils/constants';
 
 jest.mock('../../src/ExpoConfigLoader', () => ({
@@ -15,7 +17,7 @@ jest.mock('../../src/ExpoConfigLoader', () => ({
 
 describe('bare project test', () => {
   jest.setTimeout(600000);
-  const tmpDir = require('temp-dir');
+  const tmpDir = realpathSync(os.tmpdir());
   const projectName = 'fingerprint-e2e-bare';
   const projectRoot = path.join(tmpDir, projectName);
 
@@ -91,7 +93,7 @@ describe('bare project test', () => {
     expect(hash).not.toBe(hash2);
   });
 
-  it('should have same hash for specifing android platform after changing podfile', async () => {
+  it('should have same hash for specifying android platform after changing podfile', async () => {
     const hash = await createProjectHashAsync(projectRoot, { platforms: ['android'] });
     const hashCLI = await getFingerprintHashFromCLIAsync(projectRoot, ['--platform', 'android']);
     expect(hash).toEqual(hashCLI);

@@ -1,46 +1,56 @@
 {
   "name": "expo-task-manager",
-  "version": "56.0.15",
+  "version": "58.0.12",
   "description": "Expo module that provides support for tasks that can run in the background.",
-  "main": "build/TaskManager.js",
-  "types": "build/TaskManager.d.ts",
-  "sideEffects": false,
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
   "keywords": [
+    "background",
     "expo",
     "react-native",
-    "task-manager",
     "task",
-    "background"
+    "task-manager"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/task-manager/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-task-manager"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "sideEffects": false,
+  "main": "build/TaskManager.js",
+  "types": "build/TaskManager.d.ts",
+  "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "test": "jest",
+    "format": "expo-module format",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json",
+    "prepack": "expo-module prepack"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/task-manager/",
   "dependencies": {
-    "unimodules-app-loader": "workspace:~56.0.0"
+    "unimodules-app-loader": "workspace:~"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
+  },
+  "jest": {
+    "preset": "@expo/internal-scripts"
   }
 }

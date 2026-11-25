@@ -1,12 +1,12 @@
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import type { DestinationResolutionProps } from './templates';
-import { selectTemplatesAsync, TEMPLATES } from './templates';
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
 import { copyAsync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
+import type { DestinationResolutionProps } from './templates';
+import { selectTemplatesAsync, TEMPLATES } from './templates';
 
 export async function queryAndGenerateAsync(
   projectRoot: string,

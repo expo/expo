@@ -1,15 +1,9 @@
 import spawnAsync from '@expo/spawn-async';
-import { glob } from 'glob';
 import fs from 'node:fs';
-import path from 'node:path';
 import os from 'node:os';
+import path from 'node:path';
 
-import {
-  executeCommandAsync,
-  executeCreateExpoCLIAsync,
-  executeExpoCLIAsync,
-  sleep,
-} from './process';
+import { executeCreateExpoCLIAsync, executeExpoCLIAsync, sleep } from './process';
 import type { PluginProps, TemplateEntry } from './types';
 
 const PROJECT_NAME = 'testapp';
@@ -117,13 +111,11 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
     throw new Error(`Template directory not found at: ${templatePath}`);
   }
 
-  let tarballs = await glob('*.tgz', { cwd: templatePath });
+  const tarballs = (await Array.fromAsync(fs.promises.glob('*.tgz', { cwd: templatePath })))
+    .sort()
+    .reverse();
   if (tarballs.length === 0) {
-    await executeCommandAsync(templatePath, 'pnpm', ['pack', '--json']);
-    tarballs = await glob('*.tgz', { cwd: templatePath });
-    if (tarballs.length === 0) {
-      throw new Error(`No tarballs found in template directory: ${templatePath}`);
-    }
+    throw new Error(`No template tarball found in ${templatePath}.`);
   }
 
   await executeCreateExpoCLIAsync(at, [
@@ -138,11 +130,11 @@ const listWorkspaces = async (): Promise<Record<string, string>> => {
   const { stdout } = await spawnAsync('pnpm', ['list', '--depth=-1', '-r', '--json'], {
     cwd: path.join(__dirname, '../../'),
   });
-  const workspaces: { name: string; path: string; }[] = JSON.parse(stdout);
-  return workspaces.reduce((acc, entry) => {
+  const workspaces: { name: string; path: string }[] = JSON.parse(stdout);
+  return workspaces.reduce<Record<string, string>>((acc, entry) => {
     acc[entry.name] = entry.path;
     return acc;
-  }, {} as Record<string, string>);
+  }, {});
 };
 
 /**
@@ -152,15 +144,15 @@ const installPackage = async (projectRoot: string) => {
   const packageJsonPath = path.join(projectRoot, 'package.json');
   const packageJson = JSON.parse(await fs.promises.readFile(packageJsonPath, 'utf8'));
 
-  packageJson.resolutions ??= {};
   packageJson.dependencies ??= {};
+  const overrides: Record<string, string> = {};
 
   // Strip npm_config_minimum_release_age inherited from the monorepo's pnpm-workspace.yaml,
   // as it blocks recently published packages without the matching exclusion list.
   const { npm_config_minimum_release_age, ...processEnv } = process.env;
 
   const packageRoot = path.join(__dirname, '../../');
-  packageJson.resolutions['expo-brownfield'] = `link:${path.relative(projectRoot, packageRoot)}`;
+  overrides['expo-brownfield'] = `link:${path.relative(projectRoot, packageRoot)}`;
   packageJson.dependencies['expo-brownfield'] = '*';
 
   // NOTE(@kitten): Forcefully links all monorepo packages
@@ -169,18 +161,24 @@ const installPackage = async (projectRoot: string) => {
   const workspaces = await listWorkspaces();
   for (const name in packageJson.dependencies) {
     if (workspaces[name]) {
-      packageJson.resolutions[name] = `link:${path.relative(projectRoot, workspaces[name])}`;
+      overrides[name] = `link:${path.relative(projectRoot, workspaces[name])}`;
       packageJson.dependencies[name] = '*';
     }
   }
   for (const name in packageJson.devDependencies) {
     if (workspaces[name]) {
-      packageJson.resolutions[name] = `link:${path.relative(projectRoot, workspaces[name])}`;
+      overrides[name] = `link:${path.relative(projectRoot, workspaces[name])}`;
       packageJson.dependencies[name] = '*';
     }
   }
 
   await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  await fs.promises.appendFile(
+    path.join(projectRoot, 'pnpm-workspace.yaml'),
+    `\noverrides:\n${Object.entries(overrides)
+      .map(([name, version]) => `  ${JSON.stringify(name)}: ${JSON.stringify(version)}`)
+      .join('\n')}\n`
+  );
 
   await spawnAsync('pnpm', ['install'], {
     cwd: projectRoot,

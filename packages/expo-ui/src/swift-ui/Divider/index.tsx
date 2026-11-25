@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 
 import { type CommonViewModifierProps } from '../types';
 
-export type DividerProps = CommonViewModifierProps;
+export interface DividerProps extends CommonViewModifierProps {}
 
 const DividerNativeView: React.ComponentType<DividerProps> = requireNativeView(
   'ExpoUI',

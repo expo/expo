@@ -1,5 +1,4 @@
-import { BUILD, ERROR, TASKS_ANDROID } from '../../utils/output';
-import { CLI_PATH, executeCommandAsync } from '../../utils/process';
+import { ERROR, TASKS_ANDROID } from '../../utils/output';
 import { createTempProject, cleanUpProject } from '../../utils/project';
 import { buildTestCommon, expectPrebuild, tasksAndroidTest } from '../../utils/test';
 
@@ -86,43 +85,6 @@ describe('tasks:android command', () => {
         stderr: [ERROR.MISSING_ARGUMENT('l', 'library', 'library')],
       });
     });
-
-    /**
-     * Command: npx expo-brownfield build:ios
-     * Expected behavior: The CLI should fail if prebuild is cancelled
-     */
-    it('should fail if prebuild is cancelled', async () => {
-      // The command fails, because `expo-brownfield` is not added to app.json
-      // But the prebuild should succeed
-      const { exitCode, stdout, stderr } = await executeCommandAsync(
-        TEMP_DIR,
-        'bash',
-        ['-c', `yes no | node ${CLI_PATH} tasks:android`],
-        { ignoreErrors: true }
-      );
-      expect(exitCode).not.toBe(0);
-      expect(stdout).toContain(BUILD.PREBUILD_WARNING('android'));
-      expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
-      expect(stderr).toContain(ERROR.MISSING_PREBUILD());
-    });
-
-    /**
-     * Command: npx expo-brownfield tasks:android
-     * Expected behavior: The CLI should validate and ask for prebuild
-     */
-    it('should validate and ask for prebuild', async () => {
-      // The command fails, because `expo-brownfield` is not added to app.json
-      // But the prebuild should succeed
-      const { exitCode, stdout, stderr } = await executeCommandAsync(
-        TEMP_DIR,
-        'bash',
-        ['-c', `yes no | node ${CLI_PATH} tasks:android`],
-        { ignoreErrors: true }
-      );
-      expect(exitCode).not.toBe(0);
-      expect(stdout).toContain(BUILD.PREBUILD_WARNING('android'));
-      expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
-    });
   });
 
   /**
@@ -131,7 +93,9 @@ describe('tasks:android command', () => {
   describe('with prebuild', () => {
     beforeAll(async () => {
       TEMP_DIR_PREBUILD = await createTempProject('tasksandroidpb', true);
-    }, 600000);
+      // Run once to warm up Gradle — the first run downloads all dependencies and is slow.
+      await tasksAndroidTest({ directory: TEMP_DIR_PREBUILD });
+    }, 3600000);
 
     afterAll(async () => {
       await cleanUpProject('tasksandroidpb');

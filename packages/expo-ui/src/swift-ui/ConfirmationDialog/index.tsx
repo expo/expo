@@ -8,7 +8,7 @@ import { type CommonViewModifierProps } from '../types';
 /**
  * Props of the `ConfirmationDialog` component.
  */
-export type ConfirmationDialogProps = {
+export interface ConfirmationDialogProps extends CommonViewModifierProps {
   /**
    * The contents of the confirmation dialog.
    * Should include `ConfirmationDialog.Trigger`, `ConfirmationDialog.Actions`, and optionally `ConfirmationDialog.Message`.
@@ -31,7 +31,7 @@ export type ConfirmationDialogProps = {
    * @default 'automatic'
    */
   titleVisibility?: 'automatic' | 'visible' | 'hidden';
-} & CommonViewModifierProps;
+}
 
 type NativeConfirmationDialogProps = Omit<ConfirmationDialogProps, 'onIsPresentedChange'> & {
   onIsPresentedChange?: (event: NativeSyntheticEvent<{ isPresented: boolean }>) => void;
@@ -76,6 +76,7 @@ function ConfirmationDialog(props: ConfirmationDialogProps) {
   return (
     <ConfirmationDialogNativeView
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      modifiers={modifiers}
       {...restProps}
       onIsPresentedChange={handleIsPresentedChange}>
       {children}

@@ -737,23 +737,23 @@ export namespace StorageAccessFramework {
   }
 
   /**
-   * Alias for [`writeAsStringAsync`](#filesystemwriteasstringasyncfileuri-contents-options) method.
+   * Alias for [`writeAsStringAsync`](#filesystem-legacywriteasstringasyncfileuri-contents-options) method.
    */
   export const writeAsStringAsync = baseWriteAsStringAsync;
   /**
-   * Alias for [`readAsStringAsync`](#filesystemreadasstringasyncfileuri-options) method.
+   * Alias for [`readAsStringAsync`](#filesystem-legacyreadasstringasyncfileuri-options) method.
    */
   export const readAsStringAsync = baseReadAsStringAsync;
   /**
-   * Alias for [`deleteAsync`](#filesystemdeleteasyncfileuri-options) method.
+   * Alias for [`deleteAsync`](#filesystem-legacydeleteasyncfileuri-options) method.
    */
   export const deleteAsync = baseDeleteAsync;
   /**
-   * Alias for [`moveAsync`](#filesystemmoveasyncoptions) method.
+   * Alias for [`moveAsync`](#filesystem-legacymoveasyncoptions) method.
    */
   export const moveAsync = baseMoveAsync;
   /**
-   * Alias for [`copyAsync`](#filesystemcopyasyncoptions) method.
+   * Alias for [`copyAsync`](#filesystem-legacycopyasyncoptions) method.
    */
   export const copyAsync = baseCopyAsync;
 }

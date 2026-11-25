@@ -1,4 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
+import { realpathSync } from 'fs';
 import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';
@@ -17,7 +18,7 @@ const macosDescribe = os.platform() === 'darwin' ? describe : describe.skip;
 
 describe('default template ignore paths', () => {
   jest.setTimeout(600000);
-  const tmpDir = require('temp-dir');
+  const tmpDir = realpathSync(os.tmpdir());
   const projectName = 'fingerprint-e2e-default-ignore-paths';
   const projectRoot = path.join(tmpDir, projectName);
 
@@ -45,7 +46,9 @@ describe('default template ignore paths', () => {
   it('should not contain non-native node modules', async () => {
     const fingerprint = await createFingerprintAsync(projectRoot);
     for (const source of fingerprint.sources) {
-      if (source.type === 'contents') {
+      // `contents` and `package` sources are hashed by value/identity, not by including a module's
+      // files, so they're not subject to this check (e.g. the `react-native` package source).
+      if (source.type === 'contents' || source.type === 'package') {
         continue;
       }
       const { filePath } = source;
@@ -90,10 +93,52 @@ export default ({ config }) => {
     expect(packageJsonSource).toBeUndefined();
     await fs.rm(appConfigPath, { force: true });
   });
+
+  it('loads development env files after inheriting dotenv values from a parent process', async () => {
+    const appConfigPath = path.join(projectRoot, 'app.config.js');
+    const envPath = path.join(projectRoot, '.env.development');
+    const appConfigContent = `\
+export default ({ config }) => ({
+  ...config,
+  extra: {
+    ...config.extra,
+    fingerprintDev: globalThis.__DEV__,
+    fingerprintConfigModeIsSet: process.env.__EXPO_CONFIG_MODE !== undefined,
+    fingerprintEnvValue: process.env.EXPO_PUBLIC_FINGERPRINT_MODE,
+  },
+});
+`;
+    await fs.writeFile(appConfigPath, appConfigContent);
+    await fs.writeFile(envPath, 'EXPO_PUBLIC_FINGERPRINT_MODE=development-value\n');
+    const originalEnv = process.env;
+    process.env = {
+      ...originalEnv,
+      NODE_ENV: 'production',
+      __EXPO_CONFIG_MODE: 'production',
+      __EXPO_ENV_LOADED: JSON.stringify(['EXPO_PUBLIC_FINGERPRINT_MODE']),
+      EXPO_PUBLIC_FINGERPRINT_MODE: 'from-parent-dotenv',
+    };
+    try {
+      const fingerprint = await createFingerprintAsync(projectRoot);
+      const expoConfigSource = fingerprint.sources.find(
+        (source) => source.type === 'contents' && source.id === 'expoConfig'
+      );
+      expect(expoConfigSource?.type).toBe('contents');
+      if (expoConfigSource?.type === 'contents') {
+        const expoConfig = JSON.parse(expoConfigSource.contents.toString());
+        expect(expoConfig.extra.fingerprintDev).toBe(true);
+        expect(expoConfig.extra.fingerprintConfigModeIsSet).toBe(false);
+        expect(expoConfig.extra.fingerprintEnvValue).toBe('development-value');
+      }
+    } finally {
+      process.env = originalEnv;
+      await Promise.all([fs.rm(appConfigPath, { force: true }), fs.rm(envPath, { force: true })]);
+    }
+  });
 });
 
 macosDescribe('CocoaPods generated files', () => {
-  const tmpDir = require('temp-dir');
+  const tmpDir = realpathSync(os.tmpdir());
   const projectName = 'fingerprint-e2e-cocoapods-generated-files';
   const projectRoot = path.join(tmpDir, projectName);
 

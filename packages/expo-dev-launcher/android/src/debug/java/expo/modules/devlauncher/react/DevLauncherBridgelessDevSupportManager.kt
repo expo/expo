@@ -2,6 +2,7 @@ package expo.modules.devlauncher.react
 
 import android.content.Context
 import android.util.Log
+import androidx.core.net.toUri
 import com.facebook.react.devsupport.NonFinalBridgelessDevSupportManager
 import com.facebook.react.devsupport.ReactInstanceDevHelper
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
@@ -11,6 +12,7 @@ import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.helpers.injectDevServerHelper
 import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
+import expo.modules.devlauncher.logs.DevLauncherRemoteLogManager
 
 class DevLauncherBridgelessDevSupportManager(
   applicationContext: Context,
@@ -34,16 +36,13 @@ class DevLauncherBridgelessDevSupportManager(
   null,
   null
 ) {
-  private val controller = DevLauncherController.nullableInstance
+  // Resolved lazily: this manager is constructed while the ReactHost is being built, which can
+  // happen before DevLauncherController.initialize has set the instance.
+  private val controller get() = DevLauncherController.nullableInstance
 
   init {
-    injectDevServerHelper(applicationContext, this, controller)
+    injectDevServerHelper(applicationContext, this) { DevLauncherController.nullableInstance }
   }
-
-  // TODO(kudo,20250217) - Remove this when we drop react-native 0.78 support
-  @Suppress("INAPPLICABLE_JVM_NAME", "NOTHING_TO_OVERRIDE")
-  @get:JvmName("getjSBundleURLForRemoteDebugging")
-  override val jSBundleURLForRemoteDebugging: String? = null
 
   override fun showNewJavaError(message: String?, e: Throwable) {
     Log.e("DevLauncher", "$message", e)
@@ -53,11 +52,14 @@ class DevLauncherBridgelessDevSupportManager(
       return
     }
 
-    val activity = reactInstanceDevHelper?.currentActivity
+    val activity = reactInstanceDevHelper.currentActivity
     if (activity == null || activity.isFinishing || activity.isDestroyed) {
       return
     }
 
+    controller?.let {
+      DevLauncherRemoteLogManager.reportError(it.httpClient, sourceUrl.toUri(), message ?: "Native error", e)
+    }
     controller?.onAppLoadedWithError()
     DevLauncherErrorActivity.showError(activity, DevLauncherAppError(message, e))
   }

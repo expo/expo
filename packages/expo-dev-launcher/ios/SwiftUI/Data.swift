@@ -1,7 +1,7 @@
 import Network
 
 struct DiscoveryResult {
-  let name: String?
+  let metadata: DevServerMetadata
   let endpoint: NWEndpoint
 }
 
@@ -16,14 +16,9 @@ struct DevServer: Hashable {
   let url: String
   let description: String
   let source: String
-
-  static func == (lhs: Self, rhs: Self) -> Bool {
-    return lhs.url == rhs.url
-  }
-
-  func hash(into hasher: inout Hasher) {
-    hasher.combine(url)
-  }
+  let slug: String?
+  let bundleIdentifier: String?
+  let username: String?
 
   static func < (lhs: Self, rhs: Self) -> Bool {
     return lhs.url < rhs.url
@@ -47,9 +42,12 @@ struct BuildInfo {
 }
 
 struct RecentlyOpenedApp: Identifiable {
-  let id = UUID().uuidString
   let name: String
   let url: String
   let timestamp: Date
   let isEasUpdate: Bool?
+
+  var id: String {
+    "\(name)|\(url)"
+  }
 }

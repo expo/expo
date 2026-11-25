@@ -124,7 +124,30 @@ Object.keys(mockNativeModules.NativeUnimoduleProxy.viewManagersMetadata).forEach
 );
 
 // Mock Expo's default async require messaging sockets when running tests
-jest.mock('expo/src/async-require/messageSocket', () => undefined);
+[
+  'expo/src/async-require/messageSocket',
+  'expo/src/async-require/messageSocket.native',
+  'expo/build/async-require/messageSocket',
+  'expo/build/async-require/messageSocket.native',
+].forEach((moduleName) => {
+  try {
+    jest.doMock(require.resolve(moduleName), () => undefined);
+  } catch {
+    jest.doMock(moduleName, () => undefined, { virtual: true });
+  }
+});
+
+[
+  '../../../expo/src/async-require/messageSocket.ts',
+  '../../../expo/src/async-require/messageSocket.native.ts',
+  '../../../expo/build/async-require/messageSocket.js',
+  '../../../expo/build/async-require/messageSocket.native.js',
+]
+  .map((modulePath) => path.resolve(__dirname, modulePath))
+  .filter((modulePath) => fs.existsSync(modulePath))
+  .forEach((modulePath) => {
+    jest.doMock(modulePath, () => undefined);
+  });
 
 try {
   jest.mock('expo-file-system/legacy', () => ({
@@ -146,7 +169,7 @@ try {
   }
 }
 
-jest.mock('@react-native/assets-registry/registry', () => ({
+jest.mock('react-native/asset-registry', () => ({
   registerAsset: jest.fn(() => 1),
   getAssetByID: jest.fn(() => ({
     fileSystemLocation: '/full/path/to/directory',
@@ -162,6 +185,18 @@ jest.mock('@react-native/assets-registry/registry', () => ({
     height: 1,
   })),
 }));
+
+// `import { AssetRegistry } from 'react-native'` loads this private module directly, not
+// `react-native/asset-registry`. It is not in the `exports` map, so it needs an absolute path.
+const reactNativeAssetRegistryPath = path.join(
+  path.dirname(require.resolve('react-native/package.json')),
+  'src/private/assets/AssetRegistry.js'
+);
+if (fs.existsSync(reactNativeAssetRegistryPath)) {
+  jest.doMock(reactNativeAssetRegistryPath, () => ({
+    AssetRegistry: jest.requireMock('react-native/asset-registry'),
+  }));
+}
 
 jest.doMock('react-native/Libraries/BatchedBridge/NativeModules', () => ({
   __esModule: true,
@@ -193,6 +228,10 @@ function attemptLookup(moduleName) {
       return true;
     }
 
+    // Jest's own files never call requireNativeModule, and reading them dominates the lookup cost.
+    if (/[\\/]node_modules[\\/](?:@jest[\\/]|jest-[^\\/]+[\\/])/.test(line.fileName)) {
+      return false;
+    }
     if (!fs.existsSync(line.fileName)) {
       return false;
     }
@@ -331,6 +370,31 @@ globalThis.expo.modules.ExpoFetchModule = {
     cancelStreaming() {}
     arrayBuffer() {}
     text() {}
+  },
+};
+
+// `@expo/ui` constructs these SharedObject classes, which the generated module
+// mocks cannot describe. This object shadows the generated `ExpoUI` mock, so it
+// also repeats that mock's functions.
+globalThis.expo.modules.ExpoUI = {
+  completeRefresh: jest.fn(async () => {}),
+  withAnimation: jest.fn(),
+  ObservableState: class extends globalThis.expo.SharedObject {
+    #value;
+    constructor({ value }) {
+      super();
+      this.#value = value;
+    }
+    getValue() {
+      return this.#value;
+    }
+    setValue({ value }) {
+      this.#value = value;
+    }
+    setOnChange() {}
+  },
+  WorkletCallback: class extends globalThis.expo.SharedObject {
+    setWorklet() {}
   },
 };
 

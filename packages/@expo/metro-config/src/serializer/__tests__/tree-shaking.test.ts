@@ -1,4 +1,5 @@
 import { parse } from '@babel/core';
+import type { Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 
 import { serializeShakingAsync } from '../fork/__tests__/serializer-test-utils';
 import { isModuleEmptyFor } from '../treeShakeSerializerPlugin';
@@ -12,17 +13,38 @@ jest.mock('../exportHermes', () => {
   };
 });
 
-jest.mock('../findUpPackageJsonPath', () => ({
+jest.mock('../../utils/findUpPackageJsonPath', () => ({
   findUpPackageJsonPath: jest.fn(() => null),
 }));
 
-function expectSideEffects(graph, name: string) {
-  return expect(graph.dependencies.get(name).sideEffects);
+function expectSideEffects(graph: ReadOnlyGraph, name: string) {
+  return expect(
+    (graph.dependencies.get(name) as (Module & { sideEffects?: boolean | null }) | undefined)
+      ?.sideEffects
+  );
 }
-function expectImports(graph, name: string) {
+function expectImports(graph: ReadOnlyGraph, name: string) {
   if (!graph.dependencies.has(name)) throw new Error(`Module not found: ${name}`);
-  return expect([...graph.dependencies.get(name).dependencies.values()]);
+  return expect([...graph.dependencies.get(name)!.dependencies.values()]);
 }
+
+it('plans opted-in async chunks after unused exports and dependencies are removed', async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync(
+    {
+      'index.js': `import('./route');`,
+      'route.js': `import { used } from './values'; console.log(used);`,
+      'values.js': `export const used = 'kept'; export { discarded } from './unused';`,
+      'unused.js': `export const discarded = 'removed';`,
+    },
+    { chunkingStrategy: 'granular' }
+  );
+  expect(graph.dependencies.has('/app/unused.js')).toBe(false);
+  expect(artifacts[0].metadata.chunkingStrategy).toBe('granular');
+  expect(artifacts.some((asset: any) => asset.metadata.entryPaths?.includes('/app/route.js'))).toBe(
+    true
+  );
+  expect(artifacts.map((asset: any) => asset.source).join('\n')).not.toContain('removed');
+});
 
 it(`doesn't unlink if a single import chain is removed`, async () => {
   const [[, , graph], artifacts] = await serializeShakingAsync({
@@ -253,10 +275,10 @@ describe('side-effecty imports', () => {
     );
     expect(artifacts[0].source).not.toMatch('side-effect');
     expect(artifacts[0].source).toMatchInlineSnapshot(`
-          "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
             "use strict";
           },"/app/index.js",[]);
-          TEST_RUN_MODULE("/app/index.js");"
+          __r("/app/index.js");"
         `);
   });
 
@@ -274,15 +296,15 @@ var hey = 0;
 
     expectSideEffects(graph, '/app/node_modules/foo/index.js').toBe(true);
     expect(artifact.source).toMatchInlineSnapshot(`
-          "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
             "use strict";
 
-            _$$_REQUIRE(_dependencyMap[0]);
+            require(_dependencyMap[0]);
           },"/app/index.js",["/app/node_modules/foo/index.js"]);
-          __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+          __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
             var hey = 0;
           },"/app/node_modules/foo/index.js",[]);
-          TEST_RUN_MODULE("/app/index.js");"
+          __r("/app/index.js");"
       `);
   });
 
@@ -301,10 +323,10 @@ var hey = 0;
     expectImports(graph, '/app/index.js').toEqual([]);
 
     expect(artifact.source).toMatchInlineSnapshot(`
-      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
       },"/app/index.js",[]);
-      TEST_RUN_MODULE("/app/index.js");"
+      __r("/app/index.js");"
     `);
   });
 });
@@ -394,35 +416,37 @@ it(`barrel default as`, async () => {
 });
 
 describe(isModuleEmptyFor, () => {
-  [
-    ``,
-    `// comment`,
-    `"use strict"`,
-    // `true`,
+  (
     [
-      'directives',
-      `
+      ``,
+      `// comment`,
+      `"use strict"`,
+      // `true`,
+      [
+        'directives',
+        `
     "use client"
     // Hey
     `,
-    ],
-    [
-      'multi-line comment',
-      `
-      /** 
-       * multi-line comment 
+      ],
+      [
+        'multi-line comment',
+        `
+      /**
+       * multi-line comment
        */`,
-    ],
-  ].forEach((source) => {
+      ],
+    ] as (string | [string, string])[]
+  ).forEach((source) => {
     const [title, src] = Array.isArray(source) ? source : [source, source];
     it(`returns true for: ${title}`, () => {
-      expect(isModuleEmptyFor(parse(src, { sourceType: 'unambiguous' }))).toBe(true);
+      expect(isModuleEmptyFor(parse(src, { sourceType: 'unambiguous' }) ?? undefined)).toBe(true);
     });
   });
   [`export {}`, `const foo = 'bar'`, `3`, `{}`, `true`, `console.log('hey')`].forEach((source) => {
     const [title, src] = Array.isArray(source) ? source : [source, source];
     it(`returns false for: ${title}`, () => {
-      expect(isModuleEmptyFor(parse(src, { sourceType: 'unambiguous' }))).toBe(false);
+      expect(isModuleEmptyFor(parse(src, { sourceType: 'unambiguous' }) ?? undefined)).toBe(false);
     });
   });
 });
@@ -473,13 +497,14 @@ describe('metro require', () => {
     expect(artifacts[0].source).toMatch('subtract');
   });
   it(`require.resolveWeak`, async () => {
-    // Basically just bundle splitting...
-    const [[, , graph], artifacts] = await serializeShakingAsync({
-      'index.js': `
+    // Keep the legacy fixture's weak-only target in the graph.
+    const [[, , graph], artifacts] = await serializeShakingAsync(
+      {
+        'index.js': `
           const Math = require.resolveWeak('./math');
           console.log('keep', Math.add(1, 2));
         `,
-      'math.js': `
+        'math.js': `
           module.exports.add = function add(a, b) {
             return subtract(a, b);
           }
@@ -488,7 +513,9 @@ describe('metro require', () => {
             return a - b;
           }
         `,
-    });
+      },
+      { legacyTraverseWeakDependencies: true }
+    );
 
     expectImports(graph, '/app/index.js').toEqual([
       expect.objectContaining({
@@ -606,16 +633,16 @@ describe('cjs', () => {
       },
     ]);
     expect(artifacts[0].source).toMatch('subtract');
-    expect(artifacts[0].source).toMatch('_$$_REQUIRE(_dependencyMap[0]);');
+    expect(artifacts[0].source).toMatch('require(_dependencyMap[0]);');
 
     expect(artifacts[0].source).toMatchInlineSnapshot(`
-      "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         const {
           add
-        } = _$$_REQUIRE(_dependencyMap[0]);
+        } = require(_dependencyMap[0]);
         console.log('keep', add(1, 2));
       },"/app/index.js",["/app/math.js"]);
-      __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
         Object.defineProperty(exports, '__esModule', {
@@ -630,7 +657,7 @@ describe('cjs', () => {
           return a - b;
         }
       },"/app/math.js",[]);
-      TEST_RUN_MODULE("/app/index.js");"
+      __r("/app/index.js");"
     `);
   });
 });
@@ -657,12 +684,12 @@ it(`export var with trailing exports`, async () => {
       `,
   });
   expect(artifacts[0].source).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
-      console.log('keep', (0, _$$_REQUIRE(_dependencyMap[0]).add)(1, 2));
+      console.log('keep', (0, require(_dependencyMap[0]).add)(1, 2));
     },"/app/index.js",["/app/lib.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -679,10 +706,10 @@ it(`export var with trailing exports`, async () => {
           return add;
         }
       });
-      var client = _interopDefault(_$$_REQUIRE(_dependencyMap[0]));
+      var client = _interopDefault(require(_dependencyMap[0]));
       var add = client.default.add;
     },"/app/lib.js",["/app/b.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -702,7 +729,7 @@ it(`export var with trailing exports`, async () => {
       };
       var _default = createInstance();
     },"/app/b.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 
   expectImports(graph, '/app/index.js').toEqual([
@@ -728,12 +755,12 @@ it(`export var with trailing exports (const and function)`, async () => {
     `,
   });
   expect(artifacts[0].source).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
-      console.log('keep', (0, _$$_REQUIRE(_dependencyMap[0]).add)(1, 2));
+      console.log('keep', (0, require(_dependencyMap[0]).add)(1, 2));
     },"/app/index.js",["/app/lib.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -747,7 +774,7 @@ it(`export var with trailing exports (const and function)`, async () => {
       });
       const add = function () {};
     },"/app/lib.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 
   expectImports(graph, '/app/index.js').toEqual([
@@ -1043,12 +1070,12 @@ export { Worm as default };
   expect(artifacts[0].source).not.toMatch('icons');
   expect(artifacts[0].source).not.toMatch('Worm');
   expect(artifacts[0].source).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
-      console.log('keep', _$$_REQUIRE(_dependencyMap[0]).AArrowDown);
+      console.log('keep', require(_dependencyMap[0]).AArrowDown);
     },"/app/index.js",["/app/lucide.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1065,9 +1092,9 @@ export { Worm as default };
           return _aArrowDownJs2.default;
         }
       });
-      var _aArrowDownJs2 = _interopDefault(_$$_REQUIRE(_dependencyMap[0]));
+      var _aArrowDownJs2 = _interopDefault(require(_dependencyMap[0]));
     },"/app/lucide.js",["/app/a-arrow-down.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1084,10 +1111,10 @@ export { Worm as default };
           return AArrowDown;
         }
       });
-      var createLucideIcon = _interopDefault(_$$_REQUIRE(_dependencyMap[0]));
+      var createLucideIcon = _interopDefault(require(_dependencyMap[0]));
       const AArrowDown = (0, createLucideIcon.default)();
     },"/app/a-arrow-down.js",["/app/createLucideIcon.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1101,7 +1128,7 @@ export { Worm as default };
       });
       const createLucideIcon = (iconName, iconNode) => {};
     },"/app/createLucideIcon.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });
 
@@ -1164,7 +1191,7 @@ it(`removes unused exports`, async () => {
   expect(artifacts).toMatchInlineSnapshot(`
     [
       {
-        "filename": "_expo/static/js/web/index-d1e560ce32dfe033241094be8aa906e6.js",
+        "filename": "_expo/static/js/web/index-c2509941615149769c29c0e33208cdfa.js",
         "metadata": {
           "expoDomComponentReferences": [],
           "isAsync": false,
@@ -1179,12 +1206,12 @@ it(`removes unused exports`, async () => {
           "requires": [],
         },
         "originFilename": "index.js",
-        "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        "source": "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
-      console.log('keep', (0, _$$_REQUIRE(_dependencyMap[0]).add)(1, 2));
+      console.log('keep', (0, require(_dependencyMap[0]).add)(1, 2));
     },"/app/index.js",["/app/math.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1195,7 +1222,7 @@ it(`removes unused exports`, async () => {
         return a + b;
       }
     },"/app/math.js",[]);
-    TEST_RUN_MODULE("/app/index.js");",
+    __r("/app/index.js");",
         "type": "js",
       },
     ]
@@ -1365,12 +1392,12 @@ it(`preserves remapped imports when an import with the same name is removed`, as
   });
 
   expect(artifact.source).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
-      console.log(_$$_REQUIRE(_dependencyMap[0]).Platform.KIOSK);
+      console.log(require(_dependencyMap[0]).Platform.KIOSK);
     },"/app/index.js",["/app/x0.ts"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1387,9 +1414,9 @@ it(`preserves remapped imports when an import with the same name is removed`, as
         return Platform;
       }({});
     },"/app/x0.ts",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
-  expect(artifact.source).toMatch('_$$_REQUIRE(_dependencyMap[0]).Platform');
+  expect(artifact.source).toMatch('require(_dependencyMap[0]).Platform');
 });
 
 it(`recursively expands export all statements (shallow)`, async () => {
@@ -1410,12 +1437,12 @@ it(`recursively expands export all statements (shallow)`, async () => {
   );
   expect(artifact.source).toMatch('z1');
   expect(artifact.source).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
-      console.log(_$$_REQUIRE(_dependencyMap[0]).z1, _$$_REQUIRE(_dependencyMap[0]).DDD);
+      console.log(require(_dependencyMap[0]).z1, require(_dependencyMap[0]).DDD);
     },"/app/index.js",["/app/x0.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1424,11 +1451,11 @@ it(`recursively expands export all statements (shallow)`, async () => {
       Object.defineProperty(exports, "z1", {
         enumerable: true,
         get: function () {
-          return _$$_REQUIRE(_dependencyMap[0]).z1;
+          return require(_dependencyMap[0]).z1;
         }
       });
     },"/app/x0.js",["/app/x1.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1442,7 +1469,7 @@ it(`recursively expands export all statements (shallow)`, async () => {
       });
       const z1 = 0;
     },"/app/x1.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });
 
@@ -1464,7 +1491,7 @@ it(`recursively expands unused with overlapping exports`, async () => {
 
   expect(artifact.source).toMatch('z1');
   expect(artifact.source).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       function _interopDefault(e) {
@@ -1472,10 +1499,10 @@ it(`recursively expands unused with overlapping exports`, async () => {
           default: e
         };
       }
-      var m = _interopDefault(_$$_REQUIRE(_dependencyMap[0]));
+      var m = _interopDefault(require(_dependencyMap[0]));
       console.log(m.default.z1, DDD);
     },"/app/index.js",["/app/x0.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1492,10 +1519,10 @@ it(`recursively expands unused with overlapping exports`, async () => {
           return _default;
         }
       });
-      var X = _interopDefault(_$$_REQUIRE(_dependencyMap[0]));
+      var X = _interopDefault(require(_dependencyMap[0]));
       var _default = X.default;
     },"/app/x0.js",["/app/x1.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1509,7 +1536,7 @@ it(`recursively expands unused with overlapping exports`, async () => {
       });
       var _default = {};
     },"/app/x1.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });
 
@@ -1532,10 +1559,10 @@ it(`removes all overlapping exports (export-all and default)`, async () => {
 
   expect(artifact.source).not.toMatch('z1');
   expect(artifact.source).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
     },"/app/index.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });
 
@@ -1559,12 +1586,12 @@ it(`TODO: removes default export with overlapping exports (export-all and defaul
 
   expect(artifact.source).toMatch('z1');
   expect(artifact.source).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
-      consol.log(_$$_REQUIRE(_dependencyMap[0]).z1);
+      consol.log(require(_dependencyMap[0]).z1);
     },"/app/index.js",["/app/x0.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1578,7 +1605,7 @@ it(`TODO: removes default export with overlapping exports (export-all and defaul
       Object.defineProperty(exports, "z1", {
         enumerable: true,
         get: function () {
-          return _$$_REQUIRE(_dependencyMap[0]).z1;
+          return require(_dependencyMap[0]).z1;
         }
       });
       Object.defineProperty(exports, "default", {
@@ -1587,10 +1614,10 @@ it(`TODO: removes default export with overlapping exports (export-all and defaul
           return _default;
         }
       });
-      var X = _interopDefault(_$$_REQUIRE(_dependencyMap[0]));
+      var X = _interopDefault(require(_dependencyMap[0]));
       var _default = X.default;
     },"/app/x0.js",["/app/x1.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1611,7 +1638,7 @@ it(`TODO: removes default export with overlapping exports (export-all and defaul
       const z1 = 0;
       var _default = {};
     },"/app/x1.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });
 
@@ -1658,12 +1685,12 @@ it(`recursively expands export all statements`, async () => {
   expect(artifact.source).not.toMatch('z3');
   expect(artifact.source).not.toMatch('z2');
   expect(artifact.source).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
-      console.log(_$$_REQUIRE(_dependencyMap[0]).z1, _$$_REQUIRE(_dependencyMap[0]).DDD);
+      console.log(require(_dependencyMap[0]).z1, require(_dependencyMap[0]).DDD);
     },"/app/index.js",["/app/x0.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1672,11 +1699,11 @@ it(`recursively expands export all statements`, async () => {
       Object.defineProperty(exports, "z1", {
         enumerable: true,
         get: function () {
-          return _$$_REQUIRE(_dependencyMap[0]).z1;
+          return require(_dependencyMap[0]).z1;
         }
       });
     },"/app/x0.js",["/app/x1.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1685,11 +1712,11 @@ it(`recursively expands export all statements`, async () => {
       Object.defineProperty(exports, "z1", {
         enumerable: true,
         get: function () {
-          return _$$_REQUIRE(_dependencyMap[0]).z1;
+          return require(_dependencyMap[0]).z1;
         }
       });
     },"/app/x1.js",["/app/x2.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1703,7 +1730,7 @@ it(`recursively expands export all statements`, async () => {
       });
       const z1 = 0;
     },"/app/x2.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });
 it(`recursively expands export all statements with nested statements`, async () => {
@@ -1733,12 +1760,12 @@ it(`recursively expands export all statements with nested statements`, async () 
   expect(artifact.source).not.toMatch('z3');
   expect(artifact.source).not.toMatch('z2');
   expect(artifact.source).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
-      console.log(_$$_REQUIRE(_dependencyMap[0]).z1, _$$_REQUIRE(_dependencyMap[0]).DDD);
+      console.log(require(_dependencyMap[0]).z1, require(_dependencyMap[0]).DDD);
     },"/app/index.js",["/app/x0.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1747,11 +1774,11 @@ it(`recursively expands export all statements with nested statements`, async () 
       Object.defineProperty(exports, "z1", {
         enumerable: true,
         get: function () {
-          return _$$_REQUIRE(_dependencyMap[0]).z1;
+          return require(_dependencyMap[0]).z1;
         }
       });
     },"/app/x0.js",["/app/x1.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1765,7 +1792,7 @@ it(`recursively expands export all statements with nested statements`, async () 
       });
       const z1 = 0;
     },"/app/x1.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });
 it(`cannot expands export all statements with cjs usage`, async () => {
@@ -1848,13 +1875,14 @@ it(`recursively expands export all statements while omitting existing and defaul
   );
   expect(artifact.source).toMatch('z1');
   expect(artifact.source).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       function _interopNamespace(e) {
         if (e && e.__esModule) return e;
         var n = {};
         if (e) Object.keys(e).forEach(function (k) {
+          if (k === 'default') return;
           var d = Object.getOwnPropertyDescriptor(e, k);
           Object.defineProperty(n, k, d.get ? d : {
             enumerable: true,
@@ -1866,10 +1894,10 @@ it(`recursively expands export all statements while omitting existing and defaul
         n.default = e;
         return n;
       }
-      var _all = _interopNamespace(_$$_REQUIRE(_dependencyMap[0]));
+      var _all = _interopNamespace(require(_dependencyMap[0]));
       console.log(_all);
     },"/app/index.js",["/app/x0.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1878,13 +1906,13 @@ it(`recursively expands export all statements while omitting existing and defaul
       Object.defineProperty(exports, "z2", {
         enumerable: true,
         get: function () {
-          return _$$_REQUIRE(_dependencyMap[0]).z2;
+          return require(_dependencyMap[0]).z2;
         }
       });
       Object.defineProperty(exports, "z3", {
         enumerable: true,
         get: function () {
-          return _$$_REQUIRE(_dependencyMap[0]).z3;
+          return require(_dependencyMap[0]).z3;
         }
       });
       Object.defineProperty(exports, "z1", {
@@ -1895,7 +1923,7 @@ it(`recursively expands export all statements while omitting existing and defaul
       });
       const z1 = 0;
     },"/app/x0.js",["/app/x1.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1904,13 +1932,13 @@ it(`recursively expands export all statements while omitting existing and defaul
       Object.defineProperty(exports, "z2", {
         enumerable: true,
         get: function () {
-          return _$$_REQUIRE(_dependencyMap[0]).z2;
+          return require(_dependencyMap[0]).z2;
         }
       });
       Object.defineProperty(exports, "z3", {
         enumerable: true,
         get: function () {
-          return _$$_REQUIRE(_dependencyMap[0]).z3;
+          return require(_dependencyMap[0]).z3;
         }
       });
       Object.defineProperty(exports, "default", {
@@ -1921,7 +1949,7 @@ it(`recursively expands export all statements while omitting existing and defaul
       });
       var _default = 0;
     },"/app/x1.js",["/app/x2.js"]);
-    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
@@ -1949,7 +1977,7 @@ it(`recursively expands export all statements while omitting existing and defaul
       const z3 = 0;
       var _default = 0;
     },"/app/x2.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });
 

@@ -17,20 +17,8 @@ internal struct DynamicSerializableType: AnyDynamicType {
     return false
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    let runtime = try appContext.runtime
-    let jsSerializable: JavaScriptSerializable? = runtime.withUnsafePointee { runtimePointee in
-      return jsValue.withUnsafePointee { valuePointee in
-        return SerializableExtractor.extractSerializable(
-          runtimePointer: runtimePointee,
-          valuePointer: valuePointee
-        )
-      }
-    }
-    guard let jsSerializable else {
-      throw NotSerializableException(innerType)
-    }
-    return Serializable(jsSerializable)
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
+    return Serializable(try extractSerializable(jsValue, in: try appContext.runtime, as: innerType))
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
@@ -51,6 +39,30 @@ internal struct DynamicSerializableType: AnyDynamicType {
   var description: String {
     return String(describing: innerType)
   }
+}
+
+/// Extracts the serializable of `react-native-worklets` that the JS value holds.
+internal func extractSerializable(
+  _ jsValue: borrowing JavaScriptValue,
+  in runtime: borrowing JavaScriptRuntime,
+  as type: any AnySerializable.Type
+) throws -> JavaScriptSerializable {
+  let jsSerializable: JavaScriptSerializable? = runtime.withUnsafePointee { runtimePointee in
+    return jsValue.withUnsafePointee { valuePointee in
+      return SerializableExtractor.extractSerializable(
+        runtimePointer: runtimePointee,
+        valuePointer: valuePointee
+      )
+    }
+  }
+  guard let jsSerializable else {
+    // Adapter not linked → the extractor returns nil for every value; give an actionable error.
+    if WorkletsProviderRegistry.shared == nil {
+      throw WorkletsNotInstalledException()
+    }
+    throw NotSerializableException(type)
+  }
+  return jsSerializable
 }
 
 internal final class NotSerializableException: GenericException<AnySerializable.Type>, @unchecked Sendable {

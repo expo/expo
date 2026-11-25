@@ -9,7 +9,7 @@ platforms: ['android', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-@expo/ui/jetpack-compose exposes the [Material 3 color palette](https://m3.material.io/styles/color/system/overview) used by Jetpack Compose so you can pick a palette source and have every component under a [`<Host>`](./host) theme from it consistently.
+Expo UI Jetpack Compose exposes the [Material 3 color palette](https://m3.material.io/styles/color/system/overview) used by Jetpack Compose so you can pick a palette source and have every component under a [`<Host>`](./host) theme from it consistently.
 
 The palette source depends on the options you pass:
 
@@ -70,16 +70,16 @@ function PaletteInspector() {
 
 ### Computing a specific palette with arguments
 
-Pass arguments to [`useMaterialColors()`](#usematerialcolorsoptions) to compute a palette on demand, even outside a `<Host>`. The `scheme` takes `'light'` or `'dark'`, you can omit it to follow the system.
+Pass arguments to [`useMaterialColors()`](#usematerialcolorsoptions) to compute a palette on demand, even outside a `<Host>`. The `colorScheme` takes `'light'` or `'dark'`, you can omit it to follow the system.
 
 ```tsx UseMaterialColorsExample.tsx
 import { Column, Host, Text, useMaterialColors } from '@expo/ui/jetpack-compose';
 import { padding } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function UseMaterialColorsExample() {
-  const dark = useMaterialColors({ scheme: 'dark' });
+  const dark = useMaterialColors({ colorScheme: 'dark' });
   const brand = useMaterialColors({ seedColor: '#8E24AA' });
-  const brandedDark = useMaterialColors({ scheme: 'dark', seedColor: '#8E24AA' });
+  const brandedDark = useMaterialColors({ colorScheme: 'dark', seedColor: '#8E24AA' });
 
   return (
     <Host style={{ flex: 1 }}>

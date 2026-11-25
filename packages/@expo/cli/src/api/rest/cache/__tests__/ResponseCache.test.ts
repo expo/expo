@@ -57,7 +57,10 @@ describe(getRequestBodyCacheData, () => {
 
   it('converts legacy node stream', () => {
     vol.fromJSON({ '/test': 'data' });
-    const stream = fs.createReadStream('/test');
+    // `getRequestBodyCacheData` supports legacy node-fetch ReadStream bodies, which aren't part of the static body type.
+    const stream = fs.createReadStream('/test') as unknown as Parameters<
+      typeof getRequestBodyCacheData
+    >[0];
     expect(getRequestBodyCacheData(stream)).toBe('/test');
   });
 });

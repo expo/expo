@@ -1,4 +1,4 @@
-import { requireNativeViewManager } from 'expo-modules-core';
+import { requireNativeView } from 'expo';
 import React from 'react';
 import type { NativeSyntheticEvent } from 'react-native';
 import { StyleSheet, Platform, processColor } from 'react-native';
@@ -10,7 +10,7 @@ import type {
   ImageProgressEventData,
 } from './Image.types';
 
-const NativeExpoImage = requireNativeViewManager('ExpoImage');
+const NativeExpoImage = requireNativeView('ExpoImage');
 
 function withDeprecatedNativeEvent<NativeEvent>(
   event: NativeSyntheticEvent<NativeEvent>
@@ -69,7 +69,6 @@ class ExpoImage extends React.PureComponent<ImageNativeProps> {
       delete resolvedStyle.shadowOpacity;
       delete resolvedStyle.shadowRadius;
     } else {
-      // @ts-expect-error
       delete resolvedStyle.elevation;
     }
 

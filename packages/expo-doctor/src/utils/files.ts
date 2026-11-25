@@ -13,7 +13,7 @@ async function isGitIgnored(filePath: string, rootPath = process.cwd()): Promise
     }));
     return true;
   } catch {
-    // A non 0/1 satus code means that `git` isn't available, for example if the
+    // A non 0/1 status code means that `git` isn't available, for example if the
     // repository is uninitialized
     return result?.child?.exitCode === 1 ? false : null;
   }

@@ -1,19 +1,20 @@
 package expo.modules.ui
 
 import android.graphics.Color
-import android.os.Build
 import android.util.Log
 import androidx.compose.ui.graphics.vector.ImageVector
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.ColorCompat
 
 fun colorToComposeColorOrNull(color: Color?): androidx.compose.ui.graphics.Color? {
   return color?.let {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      androidx.compose.ui.graphics.Color(it.red(), it.green(), it.blue(), it.alpha())
-    } else {
-      null
-    }
+    androidx.compose.ui.graphics.Color(
+      ColorCompat.red(it),
+      ColorCompat.green(it),
+      ColorCompat.blue(it),
+      ColorCompat.alpha(it)
+    )
   }
 }
 
@@ -31,7 +32,9 @@ val Color?.composeOrNull: androidx.compose.ui.graphics.Color?
  * Gets the ImageVector for a given icon name using reflection.
  */
 fun getImageVector(icon: String?): ImageVector? {
-  if (icon.isNullOrEmpty()) return null
+  if (icon.isNullOrEmpty()) {
+    return null
+  }
   return try {
     val (theme, name) = icon.split(".")
     val clazz = Class.forName("androidx.compose.material.icons.$theme.${name}Kt")

@@ -19,7 +19,7 @@ internal struct DynamicEnumType: AnyDynamicType {
     return false
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     let rawValue = try innerType.getRawValueDynamicType().cast(jsValue: jsValue, appContext: appContext)
     return try innerType.create(fromRawValue: rawValue)
   }

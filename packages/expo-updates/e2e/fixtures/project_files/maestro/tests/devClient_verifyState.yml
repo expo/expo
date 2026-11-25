@@ -14,7 +14,7 @@ onFlowStart:
           text: Enter URL manually
       - tapOn:
           label: Tap on "Updates URL" text field
-          text: '.*exp:.*'
+          text: '.*http:.*'
           below: Enter URL manually
 - runFlow:
     when:
@@ -26,7 +26,7 @@ onFlowStart:
           optional: true
       - tapOn:
           label: Tap on "Updates URL" text field
-          text: '.*exp:.*'
+          text: '.*http:.*'
 - inputText:
     label: Input local update server URL
     text: "http://localhost:8081\n"

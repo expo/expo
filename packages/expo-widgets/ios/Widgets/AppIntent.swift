@@ -23,7 +23,6 @@ struct WidgetReload: AppIntent {
   }
 }
 
-@available(iOS 16.0, *)
 struct WidgetUserInteraction: AppIntent {
   // title is not used for non-discoverable intents, but it is required
   static var title: LocalizedStringResource = "User Interaction"
@@ -53,7 +52,9 @@ struct WidgetUserInteraction: AppIntent {
       return .result()
     }
 
-    let layout = WidgetsStorage.getString(forKey: "__expo_widgets_\(source)_layout") ?? ""
+    guard let layout = WidgetsLayoutRegistry.layout(for: source) else {
+      return .result()
+    }
     let timeline = WidgetsStorage.getArray(forKey: "__expo_widgets_\(source)_timeline")
 
     guard let timeline,
@@ -100,7 +101,6 @@ struct WidgetUserInteraction: AppIntent {
   }
 }
 
-@available(iOS 16.0, *)
 struct LiveActivityUserInteraction: LiveActivityIntent {
   // title is not used for non-discoverable intents, but it is required
   static var title: LocalizedStringResource = "User Interaction"

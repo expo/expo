@@ -1,4 +1,3 @@
-/* eslint-env jest */
 declare const process: {
   env: {
     NODE_ENV: string;

@@ -1,14 +1,7 @@
+import { events } from '2g';
 import assert from 'assert';
 import resolveFrom from 'resolve-from';
 
-import { AsyncNgrok } from './AsyncNgrok';
-import { AsyncWsTunnel } from './AsyncWsTunnel';
-import { Bonjour } from './Bonjour';
-import DevToolsPluginManager from './DevToolsPluginManager';
-import { DevelopmentSession } from './DevelopmentSession';
-import type { CreateURLOptions } from './UrlCreator';
-import { UrlCreator } from './UrlCreator';
-import type { PlatformBundlers } from './platformBundlers';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
@@ -17,11 +10,34 @@ import { CommandError } from '../../utils/errors';
 import { isInteractive } from '../../utils/interactive';
 import { openBrowserAsync } from '../../utils/open';
 import type { BaseResolveDeviceProps, PlatformManager } from '../platforms/PlatformManager';
+import { AsyncNgrok } from './AsyncNgrok';
+import { AsyncWsTunnel } from './AsyncWsTunnel';
+import { Bonjour } from './Bonjour';
+import { DevelopmentSession } from './DevelopmentSession';
+import type { CreateURLOptions } from './UrlCreator';
+import { UrlCreator } from './UrlCreator';
+import DevToolsPluginManager from './devtools/DevToolsPluginManager';
+import { debugEvent } from './events';
+import type { PlatformBundlers } from './platformBundlers';
 
-const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
+declare module '2g' {
+  interface EventRegistry {
+    'devserver:url': {
+      bundler: string;
+      url: string;
+      runtimeUrl: string | null;
+      hostType: 'localhost' | 'lan' | 'tunnel' | null;
+      port: number;
+    };
+    'devserver:stop': { bundler: string; ms: number };
+  }
+}
+
+const event = events('devserver');
 
 export type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
+  getClientCount?: () => number;
 };
 
 export type ServerLike = {
@@ -46,6 +62,8 @@ export type DevServerInstance = {
 };
 
 export interface BundlerStartOptions {
+  /** Tunnel provider. Defaults to Expo. */
+  tunnelProvider?: 'expo' | 'ngrok';
   /** Should the dev server use `https` protocol. */
   https?: boolean;
   /** Should start the dev servers in development mode (minify). */
@@ -108,11 +126,14 @@ export abstract class BundlerDevServer {
   protected bonjour: Bonjour | null = null;
   /** Http server and related info. */
   protected instance: DevServerInstance | null = null;
+  private isHeadless = false;
   /** Native platform interfaces for opening projects.  */
   private platformManagers: { [K in keyof PlatformManagers]?: PlatformManagers[K] | undefined } =
     {};
   /** Manages the creation of dev server URLs. */
   protected urlCreator?: UrlCreator | null = null;
+  /** The resolved port every URL and `instance.location` is built from. */
+  private resolvedPort: number | null = null;
 
   private notifier: FileNotifier | null = null;
   protected readonly devToolsPluginManager: DevToolsPluginManager;
@@ -172,8 +193,21 @@ export abstract class BundlerDevServer {
       instance = await this.startImplementationAsync(options);
     }
 
+    this.isHeadless = !!options.headless;
     this.setInstance(instance);
     await this.postStartAsync(options);
+    const url =
+      this.getTunnelUrl() ??
+      this.getUrlCreator().constructUrl({
+        scheme: instance.location.protocol,
+      });
+    event('url', {
+      bundler: this.name,
+      url,
+      runtimeUrl: this.getNativeRuntimeUrl(),
+      hostType: options.location.hostType ?? null,
+      port: instance.location.port,
+    });
     return instance;
   }
 
@@ -210,11 +244,11 @@ export abstract class BundlerDevServer {
       },
       location: {
         // The port is the main thing we want to send back.
-        port: options.port,
+        port: this.getPort(),
         // localhost isn't always correct.
         host: 'localhost',
         // http is the only supported protocol on native.
-        url: `http://localhost:${options.port}`,
+        url: `http://localhost:${this.getPort()}`,
         protocol: 'http',
       },
       middleware: {},
@@ -237,9 +271,9 @@ export abstract class BundlerDevServer {
       // This is a hack to prevent using tunnel on web since we block it upstream for some reason.
       this.isTargetingNative()
     ) {
-      await this._startTunnelAsync();
+      await this._startTunnelAsync(options.tunnelProvider);
     } else if (envIsWebcontainer()) {
-      await this._startTunnelAsync();
+      await this._startTunnelAsync(options.tunnelProvider);
     }
 
     if (!options.isExporting) {
@@ -256,16 +290,28 @@ export abstract class BundlerDevServer {
     this.notifier.startObserving();
   }
 
-  /** Create ngrok instance and start the tunnel server. Exposed for testing. */
-  public async _startTunnelAsync(): Promise<AsyncNgrok | AsyncWsTunnel | null> {
+  /** Create the tunnel instance and start the tunnel server. Exposed for testing. */
+  public async _startTunnelAsync(
+    provider?: BundlerStartOptions['tunnelProvider']
+  ): Promise<AsyncNgrok | AsyncWsTunnel | null> {
     const port = this.getInstance()?.location.port;
     if (!port) return null;
-    debug('[tunnel] connect to port: ' + port);
-    this.tunnel = envIsWebcontainer()
-      ? new AsyncWsTunnel(this.projectRoot, port)
-      : new AsyncNgrok(this.projectRoot, port);
+    this.tunnel = this._createTunnel(port, provider);
     await this.tunnel.startAsync();
     return this.tunnel;
+  }
+
+  /** Resolve which tunnel implementation to use, without starting it. */
+  private _createTunnel(
+    port: number,
+    provider?: BundlerStartOptions['tunnelProvider']
+  ): AsyncNgrok | AsyncWsTunnel {
+    if (provider === 'ngrok') {
+      return new AsyncNgrok(this.projectRoot, port);
+    }
+    return new AsyncWsTunnel(this.projectRoot, port, {
+      useExpoAccount: !envIsWebcontainer(),
+    });
   }
 
   protected async startDevSessionAsync() {
@@ -314,7 +360,14 @@ export abstract class BundlerDevServer {
     method: 'reload' | 'devMenu' | 'sendDevCommand',
     params?: Record<string, any>
   ) {
-    this.getInstance()?.messageSocket.broadcast(method, params);
+    const instance = this.getInstance();
+    debugEvent('send_command', {
+      method,
+      commandName: getCommandName(params),
+      bundler: this.name,
+      receiverCount: instance?.messageSocket.getClientCount?.() ?? null,
+    });
+    instance?.messageSocket.broadcast(method, params);
   }
 
   /** Get the running dev server instance. */
@@ -324,8 +377,11 @@ export abstract class BundlerDevServer {
 
   /** Stop the running dev server instance. */
   async stopAsync() {
+    const stoppedAt = Date.now();
+    const hadOwnedInstance = this.instance != null && !this.isHeadless;
     // Reset url creator
     this.urlCreator = undefined;
+    // Keep `resolvedPort`: the manifest middleware still builds URLs until the server closes below.
 
     // Stop file watching.
     this.notifier?.stopObserving();
@@ -343,16 +399,12 @@ export abstract class BundlerDevServer {
       Log.exception(e);
     });
 
-    return resolveWithTimeout(
+    await resolveWithTimeout(
       () =>
         new Promise<void>((resolve, reject) => {
-          // Close the server.
-          debug(`Stopping dev server (bundler: ${this.name})`);
-
           if (this.instance?.server) {
             // Check if server is even running.
             this.instance.server.close((error) => {
-              debug(`Stopped dev server (bundler: ${this.name})`);
               this.instance = null;
               if (error) {
                 if ('code' in error && error.code === 'ERR_SERVER_NOT_RUNNING') {
@@ -365,7 +417,6 @@ export abstract class BundlerDevServer {
               }
             });
           } else {
-            debug(`Stopped dev server (bundler: ${this.name})`);
             this.instance = null;
             resolve();
           }
@@ -376,6 +427,10 @@ export abstract class BundlerDevServer {
         errorMessage: `Timeout waiting for '${this.name}' dev server to close`,
       }
     );
+
+    if (hadOwnedInstance) {
+      event('stop', { bundler: this.name, ms: Date.now() - stoppedAt });
+    }
   }
 
   // TODO(@kitten): This should be created top-down rather than bottom up from implementors
@@ -384,9 +439,13 @@ export abstract class BundlerDevServer {
   ) {
     assert(options?.port, 'Dev server instance not found');
     assert(!this.urlCreator, 'Dev server is already initialized');
+    this.resolvedPort = options.port;
+    // TODO: Drop the undocumented REACT_NATIVE_PACKAGER_HOSTNAME
     const urlCreator = await UrlCreator.init(options.location, {
-      port: options.port,
+      getPort: () => this.getPort(),
       getTunnelUrl: this.getTunnelUrl.bind(this),
+      getHostnameOverride: () => env.REACT_NATIVE_PACKAGER_HOSTNAME,
+      getProxyUrl: () => env.EXPO_PACKAGER_PROXY_URL,
     });
     this.urlCreator = urlCreator;
     return urlCreator;
@@ -397,10 +456,15 @@ export abstract class BundlerDevServer {
     return this.urlCreator;
   }
 
+  protected getPort() {
+    assert(this.resolvedPort != null, 'Dev server port is unresolved');
+    return this.resolvedPort;
+  }
+
   public getNativeRuntimeUrl(opts: Partial<CreateURLOptions> = {}) {
     return this.isDevClient
       ? (this.getUrlCreator().constructDevClientUrl(opts) ?? this.getDevServerUrl())
-      : this.getUrlCreator().constructUrl({ ...opts, scheme: 'exp' });
+      : this.getUrlCreator().constructExpoGoUrl(opts);
   }
 
   /** Get the URL for the running instance of the dev server. */
@@ -412,7 +476,7 @@ export abstract class BundlerDevServer {
 
     // If we have an active WS tunnel instance, we always need to return the tunnel location.
     if (this.tunnel && this.tunnel instanceof AsyncWsTunnel) {
-      return this.getUrlCreator().constructUrl();
+      return this.getUrlCreator().constructUrl({ scheme: 'http' });
     }
 
     const { location } = instance;
@@ -494,7 +558,7 @@ export abstract class BundlerDevServer {
 
   /** Get the URL for opening in Expo Go. */
   protected getExpoGoUrl(): string {
-    return this.getUrlCreator().constructUrl({ scheme: 'exp' });
+    return this.getUrlCreator().constructExpoGoUrl();
   }
 
   /** Should use the interstitial page for selecting which runtime to use. */
@@ -511,7 +575,6 @@ export abstract class BundlerDevServer {
   /** Get the redirect URL when redirecting is enabled. */
   public getRedirectUrl(platform: keyof PlatformManagers | null = null): string | null {
     if (!this.isRedirectPageEnabled()) {
-      debug('Redirect page is disabled');
       return null;
     }
 
@@ -535,7 +598,7 @@ export abstract class BundlerDevServer {
           'Cannot interact with native platforms until dev server has started'
         );
       }
-      debug(`Creating platform manager (platform: ${platform}, port: ${port})`);
+      debugEvent('platform_manager_created', { platform, port });
       const managerParams = {
         getCustomRuntimeUrl: this.urlCreator.constructDevClientUrl.bind(this.urlCreator),
         getExpoGoUrl: this.getExpoGoUrl.bind(this),
@@ -557,4 +620,8 @@ export abstract class BundlerDevServer {
     }
     return this.platformManagers[platform] as PlatformManagers[Platform];
   }
+}
+
+function getCommandName(params?: Record<string, any>): string | undefined {
+  return typeof params?.name === 'string' ? params.name : undefined;
 }

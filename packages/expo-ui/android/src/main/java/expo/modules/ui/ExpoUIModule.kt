@@ -2,6 +2,7 @@
 
 package expo.modules.ui
 
+import android.os.Handler
 import android.os.Looper
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SwitchDefaults
@@ -28,33 +29,66 @@ import expo.modules.ui.button.IconButtonContent
 import expo.modules.ui.button.FilledIconButtonContent
 import expo.modules.ui.button.FilledTonalIconButtonContent
 import expo.modules.ui.button.OutlinedIconButtonContent
+import expo.modules.ui.graphics.ImageLoader
 import expo.modules.ui.icon.IconView
+import expo.modules.ui.image.ImageView
 import expo.modules.ui.menu.DropdownMenuContent
+import expo.modules.ui.menu.DropdownMenuGroupContent
+import expo.modules.ui.menu.DropdownMenuGroupProps
+import expo.modules.ui.menu.DropdownMenuPopupContent
+import expo.modules.ui.menu.DropdownMenuPopupProps
 import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
 import expo.modules.ui.menu.DropdownMenuItemProps
+import expo.modules.kotlin.jni.fabric.NativeStatePropsGetter
 import expo.modules.kotlin.jni.worklets.Worklet
 import expo.modules.ui.state.ObservableState
 import expo.modules.ui.state.WorkletCallback
+import expo.modules.ui.textfield.BasicTextFieldContent
+import expo.modules.ui.textfield.BasicTextFieldProps
+import expo.modules.ui.textfield.InnerTextFieldView
+import expo.modules.ui.textfield.KeyboardActionEvent
+import expo.modules.ui.textfield.PlaceholderView
+import expo.modules.ui.textfield.TextFieldContent
+import expo.modules.ui.textfield.TextFieldProps
+import expo.modules.ui.textfield.TextFieldSelectionPayload
+import expo.modules.ui.textfield.TextFieldValuePayload
 import expo.modules.ui.menu.ExposedDropdownMenuBoxContent
 import expo.modules.ui.menu.ExposedDropdownMenuBoxProps
 import expo.modules.ui.menu.ExposedDropdownMenuContent
 import expo.modules.ui.menu.ExposedDropdownMenuProps
+import expo.modules.ui.menu.SelectableDropdownMenuItemContent
+import expo.modules.ui.menu.SelectableDropdownMenuItemProps
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 
 class ExpoUIModule : Module() {
   var okHttpClient: OkHttpClient? = null
     private set
+  var imageLoader: ImageLoader? = null
+    private set
 
   override fun definition() = ModuleDefinition {
     Name("ExpoUI")
 
     OnCreate {
-      okHttpClient = OkHttpClient.Builder().build()
+      val context = requireNotNull(appContext.reactContext) {
+        "ExpoUIModule requires an active React context"
+      }
+      okHttpClient = appContext.createOkHttpClientBuilder().build()
+      imageLoader = ImageLoader(context, requireNotNull(okHttpClient))
     }
 
     OnDestroy {
+      // `RNHostView` publishes its content origin into a process-global registry keyed by view tag.
+      // Tags restart in the next app context, so an entry whose view was never torn down would be
+      // read by an unrelated view after a reload.
+      NativeStatePropsGetter().clearAllContentOrigins()
+      // React Native destroys modules on a background thread, but `ZeroContentOrigins` is UI-thread only.
+      Handler(Looper.getMainLooper()).post { ZeroContentOrigins.clear() }
+
+      imageLoader?.close()
+      imageLoader = null
       okHttpClient?.dispatcher?.executorService?.shutdown()
       okHttpClient?.connectionPool?.evictAll()
       okHttpClient?.cache?.close()
@@ -68,6 +102,13 @@ class ExpoUIModule : Module() {
         val callback = WorkletCallback()
         callback.worklet = worklet
         callback
+      }
+
+      Function("setWorklet") { callback: WorkletCallback, worklet: Worklet ->
+        // Dispatch on main thread as callback is read on the main thread
+        appContext.mainQueue.launch {
+          callback.worklet = worklet
+        }
       }
 
       Property("__expo_ui_shared_object__") { _: WorkletCallback ->
@@ -109,8 +150,7 @@ class ExpoUIModule : Module() {
     //region Views use expo-modules-core DSL for uncommon features
 
     View(HostView::class) {
-      // See ShadowNodeSyncFlush.kt for why onExpoUISyncFlush is needed.
-      Events("onLayoutContent", "onExpoUISyncFlush")
+      Events("onLayoutContent")
 
       OnViewDidUpdateProps { view ->
         view.onViewDidUpdateProps()
@@ -136,7 +176,11 @@ class ExpoUIModule : Module() {
         ?: appContext.reactContext
         ?: throw Exceptions.ReactContextLost()
       val resolvedScheme = options?.scheme
-        ?: if (context.isSystemInDarkTheme()) ExpoColorScheme.DARK else ExpoColorScheme.LIGHT
+        ?: if (context.isSystemInDarkTheme()) {
+          ExpoColorScheme.DARK
+        } else {
+          ExpoColorScheme.LIGHT
+        }
       val isDark = resolvedScheme == ExpoColorScheme.DARK
       val seedArgb = options?.seedColor?.composeOrNull?.toArgb()
       val colorScheme = if (seedArgb != null) {
@@ -148,16 +192,39 @@ class ExpoUIModule : Module() {
     }
 
     View(RNHostView::class) {
-      // See ShadowNodeSyncFlush.kt for why this internal phantom event is needed.
-      Events("onExpoUISyncFlush")
+      // Also consumed by `ExpoViewShadowNode` in C++, which marks the shadow node with the
+      // `RootNodeKind` trait so `measure()` reports positions relative to this view. Kotlin reads
+      // the same prop to decide whether this view dispatches its subtree's touches, so the
+      // position in `measure()` and the dispatcher can never disagree.
+      Prop("layoutRoot") { view: RNHostView, layoutRoot: Boolean ->
+        view.setLayoutRoot(layoutRoot)
+      }
+
+      OnViewDestroys { view: RNHostView ->
+        view.clearPublishedContentOrigin()
+      }
     }
 
     View(SlotView::class) {
       Events("onSlotEvent")
     }
+    View(InnerTextFieldView::class)
+    View(PlaceholderView::class)
     View(IconView::class)
+    View(ImageView::class) {
+      Events("onLoad", "onError")
+    }
     View(LazyColumnView::class)
     View(LazyRowView::class)
+    View(LazyItemsView::class) {
+      Events("onWindowChange")
+
+      OnViewDestroys { view: LazyItemsView ->
+        view.cancelPendingWindowChange()
+      }
+    }
+    View(LazyItemsPoolView::class)
+    View(LazyItemsSlotView::class)
 
     // Class-based views so TooltipBoxView can detect them by type via findChildOfType
     View(PlainTooltipView::class)
@@ -298,10 +365,29 @@ class ExpoUIModule : Module() {
     }
 
     ExpoUIView<SliderProps>("SliderView") {
-      Events("onValueChange", "onValueChangeFinished")
+      val onValueChange by Event<SliderValueChangedEvent>()
+      val onValueChangeFinished by Event<Unit>()
 
       Content { props ->
-        SliderContent(props)
+        SliderContent(props, { onValueChange(it) }, { onValueChangeFinished(it) })
+      }
+    }
+
+    ExpoUIView<RangeSliderProps>("RangeSliderView") {
+      val onValueChange by Event<RangeSliderRange>()
+      val onValueChangeFinished by Event<Unit>()
+
+      Content { props ->
+        RangeSliderContent(props, { onValueChange(it) }, { onValueChangeFinished(it) })
+      }
+    }
+
+    ExpoUIView<VerticalSliderProps>("VerticalSliderView") {
+      val onValueChange by Event<SliderValueChangedEvent>()
+      val onValueChangeFinished by Event<Unit>()
+
+      Content { props ->
+        VerticalSliderContent(props, { onValueChange(it) }, { onValueChangeFinished(it) })
       }
     }
 
@@ -331,12 +417,29 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<DateRangePickerProps>("DateRangePickerView") {
+      val onDateRangeSelected by Event<DateRangePickerResult>()
+
+      Content { props ->
+        DateRangePickerContent(props) { onDateRangeSelected(it) }
+      }
+    }
+
     ExpoUIView<DatePickerDialogProps>("DatePickerDialogView") {
       val onDateSelected by Event<DatePickerResult>()
       val onDismissRequest by Event<Unit>()
 
       Content { props ->
         ExpoDatePickerDialogContent(props, { onDateSelected(it) }, { onDismissRequest(Unit) })
+      }
+    }
+
+    ExpoUIView<DateRangePickerDialogProps>("DateRangePickerDialogView") {
+      val onDateRangeSelected by Event<DateRangePickerResult>()
+      val onDismissRequest by Event<Unit>()
+
+      Content { props ->
+        ExpoDateRangePickerDialogContent(props, { onDateRangeSelected(it) }, { onDismissRequest(Unit) })
       }
     }
 
@@ -357,11 +460,33 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<DropdownMenuPopupProps>("DropdownMenuPopupView") {
+      val onDismissRequest by Event<Unit>()
+
+      Content { props ->
+        DropdownMenuPopupContent(props) { onDismissRequest(Unit) }
+      }
+    }
+
+    ExpoUIView<DropdownMenuGroupProps>("DropdownMenuGroupView") {
+      Content { props ->
+        DropdownMenuGroupContent(props)
+      }
+    }
+
     ExpoUIView<DropdownMenuItemProps>("DropdownMenuItemView") {
       val onItemPressed by Event<Unit>()
 
       Content { props ->
         DropdownMenuItemContent(props) { onItemPressed(Unit) }
+      }
+    }
+
+    ExpoUIView<SelectableDropdownMenuItemProps>("SelectableDropdownMenuItemView") {
+      val onItemPressed by Event<Unit>()
+
+      Content { props ->
+        SelectableDropdownMenuItemContent(props) { onItemPressed(Unit) }
       }
     }
 
@@ -398,6 +523,12 @@ class ExpoUIModule : Module() {
     ExpoUIView<CircularWavyProgressIndicatorProps>("CircularWavyProgressIndicatorView") {
       Content { props ->
         CircularWavyProgressIndicatorContent(props)
+      }
+    }
+
+    ExpoUIView<CompositionLocalProviderProps>("CompositionLocalProviderView") {
+      Content { props ->
+        CompositionLocalProviderContent(props)
       }
     }
 
@@ -444,6 +575,34 @@ class ExpoUIModule : Module() {
 
       Content { props ->
         DockedSearchBarContent(props) { onQueryChange(it) }
+      }
+    }
+
+    ExpoUIView<SplitButtonLayoutProps>("SplitButtonLayoutView") {
+      Content { props ->
+        SplitButtonLayoutContent(props)
+      }
+    }
+
+    ExpoUIView<SplitButtonLeadingButtonProps>("SplitButtonLeadingButtonView") {
+      val onButtonPressed by Event<Unit>()
+
+      Content { props ->
+        SplitButtonLeadingButtonContent(props) { onButtonPressed(Unit) }
+      }
+    }
+
+    ExpoUIView<SplitButtonTrailingButtonProps>("SplitButtonTrailingButtonView") {
+      val onCheckedChange by Event<SplitButtonCheckedChangeEvent>()
+
+      Content { props ->
+        SplitButtonTrailingButtonContent(props) { onCheckedChange(it) }
+      }
+    }
+
+    ExpoUIView<TopAppBarProps>("TopAppBarView") {
+      Content { props ->
+        TopAppBarContent(props)
       }
     }
 
@@ -683,6 +842,33 @@ class ExpoUIModule : Module() {
 
       Content { props ->
         TextFieldContent(
+          props,
+          setText,
+          setSelection,
+          clear,
+          focus,
+          blur,
+          onValueChanged = { onValueChange(it) },
+          onFocusChange = { onFocusChanged(it) },
+          onKeyboardActionTriggered = { onKeyboardAction(it) },
+          onSelectionChanged = { onSelectionChange(it) }
+        )
+      }
+    }
+
+    ExpoUIView<BasicTextFieldProps>("BasicTextFieldView") {
+      val setText by AsyncFunction<String>()
+      val setSelection by AsyncFunction<Int, Int>()
+      val clear by AsyncFunction()
+      val focus by AsyncFunction()
+      val blur by AsyncFunction()
+      val onValueChange by Event<TextFieldValuePayload>()
+      val onFocusChanged by Event<GenericEventPayload1<Boolean>>()
+      val onKeyboardAction by Event<KeyboardActionEvent>()
+      val onSelectionChange by Event<TextFieldSelectionPayload>()
+
+      Content { props ->
+        BasicTextFieldContent(
           props,
           setText,
           setSelection,

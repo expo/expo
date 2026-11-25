@@ -1,11 +1,11 @@
-/* eslint-env jest */
 import { resolveEntryPoint } from '@expo/config/paths';
+import { flattenSourceMap } from '@expo/metro-config/build/serializer/sourceMap';
 import fs from 'fs';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -55,7 +55,6 @@ jest.unmock('resolve-from');
           E2E_ROUTER_ASYNC: 'development',
 
           EXPO_USE_STATIC: 'single',
-          E2E_ROUTER_JS_ENGINE: 'hermes',
 
           E2E_RSC_ENABLED: '1',
           TEST_SECRET_VALUE: 'test-secret',
@@ -67,6 +66,10 @@ jest.unmock('resolve-from');
   it('has expected files', async () => {
     // Ensure the standard files are included.
     expect(fs.existsSync(path.resolve(outputDir, 'index.js'))).toBe(true);
+    const sourceMap = flattenSourceMap(
+      JSON.parse(fs.readFileSync(path.join(outputDir, 'index.js.map'), 'utf8'))
+    );
+    expect(sourceMap.sources).toContain('__e2e__/01-rsc/components/counter.tsx');
     expect(fs.existsSync(path.resolve(outputDir, 'assets'))).toBe(true);
 
     // Ensure the SSG RSC payload is included in the binary

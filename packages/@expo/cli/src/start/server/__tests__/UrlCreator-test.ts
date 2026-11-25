@@ -1,15 +1,29 @@
 import * as Log from '../../../log';
+import { isInteractive } from '../../../utils/interactive';
+import * as ip from '../../../utils/ip';
 import { UrlCreator } from '../UrlCreator';
 
 jest.mock('../../../log');
+jest.mock('../../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => true),
+}));
+
+const NO_DEV_MENU_QUERY =
+  '__expo_disable_fab=1&__expo_disable_auto_launch=1&__expo_disable_onboarding=1';
 
 beforeEach(() => {
-  delete process.env.EXPO_PACKAGER_PROXY_URL;
-  delete process.env.REACT_NATIVE_PACKAGER_HOSTNAME;
+  delete process.env.EXPO_NO_DEV_MENU;
+  jest.mocked(isInteractive).mockReturnValue(true);
 });
 
-function createDefaultCreator() {
-  return new UrlCreator({}, { port: 8081, getTunnelUrl: () => `http://tunnel.dev/` });
+function createDefaultCreator(overrides?: {
+  getProxyUrl?: () => string;
+  getHostnameOverride?: () => string | null;
+}) {
+  return new UrlCreator(
+    {},
+    { getPort: () => 8081, getTunnelUrl: () => `http://tunnel.dev/`, ...overrides }
+  );
 }
 
 describe('constructLoadingUrl', () => {
@@ -36,6 +50,32 @@ describe('constructLoadingUrl', () => {
       `"http://100.100.1.100:8081/_expo/loading"`
     );
   });
+  it(`ignores EXPO_NO_DEV_MENU`, () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    expect(createDefaultCreator().constructLoadingUrl({}, 'ios')).toBe(
+      'http://100.100.1.100:8081/_expo/loading?platform=ios'
+    );
+  });
+});
+
+describe('constructExpoGoUrl', () => {
+  it(`creates default`, () => {
+    expect(createDefaultCreator().constructExpoGoUrl()).toBe('exp://100.100.1.100:8081');
+  });
+  it(`uses the exps scheme`, () => {
+    expect(createDefaultCreator().constructExpoGoUrl({}, 'exps')).toBe('exps://100.100.1.100:8081');
+  });
+  it(`ignores a custom scheme option`, () => {
+    expect(createDefaultCreator().constructExpoGoUrl({ scheme: 'foobar' })).toBe(
+      'exp://100.100.1.100:8081'
+    );
+  });
+  it(`appends the dev menu launch params when EXPO_NO_DEV_MENU is set`, () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    expect(createDefaultCreator().constructExpoGoUrl()).toBe(
+      `exp://100.100.1.100:8081?${NO_DEV_MENU_QUERY}`
+    );
+  });
 });
 
 describe('constructDevClientUrl', () => {
@@ -53,32 +93,102 @@ describe('constructDevClientUrl', () => {
   });
   it(`creates default`, () => {
     expect(createDefaultCreator().constructDevClientUrl({ scheme: 'bacon' })).toMatchInlineSnapshot(
-      `"bacon://expo-development-client/?url=http%3A%2F%2F100.100.1.100%3A8081"`
+      `"bacon://?__expo_url=http%3A%2F%2F100.100.1.100%3A8081"`
     );
   });
-  it(`creates tunnel`, () => {
+  it(`uses the forwarded address`, () => {
     expect(
-      createDefaultCreator().constructDevClientUrl({ scheme: 'bacon', hostType: 'tunnel' })
-    ).toMatchInlineSnapshot(`"bacon://expo-development-client/?url=http%3A%2F%2Ftunnel.dev"`);
+      createDefaultCreator().constructDevClientUrl({
+        scheme: 'bacon',
+        forwarded: { authority: 'proxy.test:4443', protocol: 'https', viaForwardedHeader: true },
+      })
+    ).toMatchInlineSnapshot(`"bacon://?__expo_url=https%3A%2F%2Fproxy.test%3A4443"`);
+  });
+  it(`creates tunnel`, () => {
+    const creator = createDefaultCreator();
+    creator.defaults.hostType = 'tunnel';
+    expect(creator.constructDevClientUrl({ scheme: 'bacon' })).toBe(
+      'bacon://?__expo_url=http%3A%2F%2Ftunnel.dev'
+    );
+    expect(creator.constructDevClientUrl({ scheme: 'bacon', hostType: 'lan' })).toBe(
+      'bacon://?__expo_url=http%3A%2F%2F100.100.1.100%3A8081'
+    );
   });
   it(`creates localhost`, () => {
     expect(
       createDefaultCreator().constructDevClientUrl({ scheme: 'bacon', hostType: 'localhost' })
-    ).toMatchInlineSnapshot(`"bacon://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081"`);
+    ).toMatchInlineSnapshot(`"bacon://?__expo_url=http%3A%2F%2F127.0.0.1%3A8081"`);
   });
   it(`uses custom hostname`, () => {
     expect(
       createDefaultCreator().constructDevClientUrl({ scheme: 'bacon', hostname: 'foobar.dev' })
-    ).toMatchInlineSnapshot(
-      `"bacon://expo-development-client/?url=http%3A%2F%2Ffoobar.dev%3A8081"`
+    ).toMatchInlineSnapshot(`"bacon://?__expo_url=http%3A%2F%2Ffoobar.dev%3A8081"`);
+  });
+  it(`appends the dev menu launch params when EXPO_NO_DEV_MENU is set`, () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    expect(createDefaultCreator().constructDevClientUrl({ scheme: 'bacon' })).toBe(
+      `bacon://?__expo_url=http%3A%2F%2F100.100.1.100%3A8081&${NO_DEV_MENU_QUERY}`
+    );
+  });
+  it(`appends the dev menu launch params when the process is not interactive`, () => {
+    jest.mocked(isInteractive).mockReturnValue(false);
+    expect(createDefaultCreator().constructDevClientUrl({ scheme: 'bacon' })).toBe(
+      `bacon://?__expo_url=http%3A%2F%2F100.100.1.100%3A8081&${NO_DEV_MENU_QUERY}`
+    );
+  });
+  it(`keeps the dev menu when EXPO_NO_DEV_MENU=0 in a non-interactive process`, () => {
+    jest.mocked(isInteractive).mockReturnValue(false);
+    process.env.EXPO_NO_DEV_MENU = '0';
+    expect(createDefaultCreator().constructDevClientUrl({ scheme: 'bacon' })).toBe(
+      'bacon://?__expo_url=http%3A%2F%2F100.100.1.100%3A8081'
     );
   });
 });
 
 describe('constructUrl', () => {
-  it(`skips default port with environment variable`, () => {
-    process.env.EXPO_PACKAGER_PROXY_URL = 'http://expo.dev';
-    expect(createDefaultCreator().constructUrl({})).toMatchInlineSnapshot(`"http://expo.dev"`);
+  it(`uses the forwarded authority`, () => {
+    expect(
+      createDefaultCreator().constructUrl({
+        scheme: 'http',
+        forwarded: { authority: 'proxy.test:4443', protocol: undefined, viaForwardedHeader: true },
+      })
+    ).toMatchInlineSnapshot(`"http://proxy.test:4443"`);
+  });
+  it(`uses the forwarded authority without a port`, () => {
+    expect(
+      createDefaultCreator().constructUrl({
+        scheme: 'http',
+        forwarded: { authority: 'proxy.test', protocol: undefined, viaForwardedHeader: true },
+      })
+    ).toMatchInlineSnapshot(`"http://proxy.test"`);
+  });
+  it(`uses the forwarded authority over a requested hostname and the tunnel`, () => {
+    expect(
+      createDefaultCreator().constructUrl({
+        hostname: 'foobar.dev',
+        hostType: 'tunnel',
+        forwarded: { authority: 'proxy.test:4443', protocol: undefined, viaForwardedHeader: true },
+      })
+    ).toMatchInlineSnapshot(`"http://proxy.test:4443"`);
+  });
+  it(`ignores a forwarded protocol without an authority`, () => {
+    expect(
+      createDefaultCreator().constructUrl({
+        forwarded: { authority: undefined, protocol: 'https', viaForwardedHeader: false },
+      })
+    ).toMatchInlineSnapshot(`"http://100.100.1.100:8081"`);
+  });
+  it(`keeps the proxy url over the forwarded authority`, () => {
+    expect(
+      createDefaultCreator({ getProxyUrl: () => 'http://expo.dev' }).constructUrl({
+        forwarded: { authority: 'proxy.test:4443', protocol: undefined, viaForwardedHeader: true },
+      })
+    ).toMatchInlineSnapshot(`"http://expo.dev"`);
+  });
+  it(`skips default port with proxy url`, () => {
+    expect(
+      createDefaultCreator({ getProxyUrl: () => 'http://expo.dev' }).constructUrl({})
+    ).toMatchInlineSnapshot(`"http://expo.dev"`);
   });
 
   it(`creates default`, () => {
@@ -90,6 +200,10 @@ describe('constructUrl', () => {
     expect(createDefaultCreator().constructUrl({ scheme: 'exp' })).toMatchInlineSnapshot(
       `"exp://100.100.1.100:8081"`
     );
+  });
+  it(`ignores EXPO_NO_DEV_MENU`, () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    expect(createDefaultCreator().constructUrl({ scheme: 'exp' })).toBe('exp://100.100.1.100:8081');
   });
   it(`uses localhost`, () => {
     expect(createDefaultCreator().constructUrl({ hostType: 'localhost' })).toMatchInlineSnapshot(
@@ -108,18 +222,20 @@ describe('constructUrl', () => {
   });
   it(`uses defaults`, () => {
     expect(
-      new UrlCreator({ scheme: 'foobar' }, { port: 8081 }).constructUrl({})
+      new UrlCreator({ scheme: 'foobar' }, { getPort: () => 8081 }).constructUrl({})
     ).toMatchInlineSnapshot(`"foobar://100.100.1.100:8081"`);
   });
   it(`uses function options over defaults`, () => {
     expect(
-      new UrlCreator({ scheme: 'foobar' }, { port: 8081 }).constructUrl({ scheme: 'newer' })
+      new UrlCreator({ scheme: 'foobar' }, { getPort: () => 8081 }).constructUrl({
+        scheme: 'newer',
+      })
     ).toMatchInlineSnapshot(`"newer://100.100.1.100:8081"`);
   });
   it(`warns when tunnel isn't available`, () => {
     jest.mocked(Log.warn).mockClear();
     expect(
-      new UrlCreator({}, { port: 8081, getTunnelUrl: () => null }).constructUrl({
+      new UrlCreator({}, { getPort: () => 8081, getTunnelUrl: () => null }).constructUrl({
         hostType: 'tunnel',
       })
     ).toMatchInlineSnapshot(`"http://100.100.1.100:8081"`);
@@ -136,10 +252,9 @@ describe('constructUrl', () => {
       `"http://foobar.dev:8081"`
     );
   });
-  it(`uses env variable as proxy`, () => {
-    process.env.EXPO_PACKAGER_PROXY_URL = 'http://localhost:9999';
+  it(`uses proxy url over every other host`, () => {
     expect(
-      createDefaultCreator().constructUrl({
+      createDefaultCreator({ getProxyUrl: () => 'http://localhost:9999' }).constructUrl({
         // scheme will be used, all others will be ignored...
         scheme: 'foobar',
         hostType: 'tunnel',
@@ -147,4 +262,87 @@ describe('constructUrl', () => {
       })
     ).toMatchInlineSnapshot(`"foobar://localhost:9999"`);
   });
+  it(`uses hostname override over a custom hostname`, () => {
+    expect(
+      createDefaultCreator({ getHostnameOverride: () => 'override.dev' }).constructUrl({
+        hostname: 'foobar.dev',
+      })
+    ).toMatchInlineSnapshot(`"http://override.dev:8081"`);
+  });
+  it(`ignores a missing hostname override`, () => {
+    expect(
+      createDefaultCreator({ getHostnameOverride: () => null }).constructUrl({})
+    ).toMatchInlineSnapshot(`"http://100.100.1.100:8081"`);
+  });
+  it(`reads the hostname override on every url`, () => {
+    let hostname = 'first.dev';
+    const urlCreator = createDefaultCreator({ getHostnameOverride: () => hostname });
+    expect(urlCreator.constructUrl({})).toBe('http://first.dev:8081');
+    hostname = 'second.dev';
+    expect(urlCreator.constructUrl({})).toBe('http://second.dev:8081');
+  });
+});
+
+describe('HTTPS tunnel transport', () => {
+  const creator = new UrlCreator(
+    { hostType: 'tunnel', scheme: 'myapp' },
+    { getPort: () => 8081, getTunnelUrl: () => 'https://project.on.expo.app:4443/' }
+  );
+
+  it('converts the resolved transport to the Expo Go scheme', () => {
+    expect(creator.constructExpoGoUrl()).toBe('exps://project.on.expo.app:4443');
+    expect(creator.constructExpoGoUrl({ hostType: 'lan' })).toBe('exp://100.100.1.100:8081');
+    expect(createDefaultCreator().constructExpoGoUrl({ hostType: 'tunnel' })).toBe(
+      'exp://tunnel.dev'
+    );
+  });
+
+  it('resolves a tunnel selected per call for both runtimes', () => {
+    const perCallCreator = new UrlCreator(
+      { scheme: 'myapp' },
+      { getPort: () => 8081, getTunnelUrl: () => 'https://project.on.expo.app/' }
+    );
+    expect(perCallCreator.constructExpoGoUrl({ hostType: 'tunnel' })).toBe(
+      'exps://project.on.expo.app'
+    );
+    expect(perCallCreator.constructDevClientUrl({ hostType: 'tunnel' })).toBe(
+      'myapp://?__expo_url=https%3A%2F%2Fproject.on.expo.app'
+    );
+  });
+
+  it('resolves HTTPS proxy transport before choosing the Expo Go scheme', () => {
+    expect(
+      createDefaultCreator({ getProxyUrl: () => 'https://proxy.test:4443' }).constructExpoGoUrl()
+    ).toBe('exps://proxy.test:4443');
+  });
+
+  it('uses a forwarded HTTPS address for Expo Go', () => {
+    const forwarded = {
+      authority: 'forwarded.test:4443',
+      protocol: 'https' as const,
+      viaForwardedHeader: true,
+    };
+    expect(creator.constructExpoGoUrl({ forwarded })).toBe('exps://forwarded.test:4443');
+  });
+});
+
+it('does not discover a LAN address for localhost URL creation', async () => {
+  const discover = jest.spyOn(ip, 'getGatewayAsync');
+  const discoverSync = jest.spyOn(ip, 'getGateway');
+  try {
+    const creator = await UrlCreator.init({ hostType: 'localhost' }, { getPort: () => 8081 });
+    expect(creator.constructUrl()).toBe('http://127.0.0.1:8081');
+    expect(discover).not.toHaveBeenCalled();
+    expect(discoverSync).not.toHaveBeenCalled();
+  } finally {
+    discover.mockRestore();
+    discoverSync.mockRestore();
+  }
+});
+
+it('preserves LAN overrides and the default route on a localhost creator', async () => {
+  const creator = await UrlCreator.init({ hostType: 'localhost' }, { getPort: () => 8081 });
+  expect(creator.constructUrl()).toBe('http://127.0.0.1:8081');
+  expect(creator.constructUrl({ hostType: 'lan' })).toBe('http://100.100.1.100:8081');
+  expect(creator.getDefaultRouteAddress()).toBe('100.100.1.100');
 });

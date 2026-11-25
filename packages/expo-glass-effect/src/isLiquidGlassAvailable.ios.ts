@@ -1,4 +1,4 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from 'expo';
 
 let IS_LIQUID_GLASS_AVAILABLE: boolean | undefined;
 

@@ -6,15 +6,30 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
 import okhttp3.Call
 import okhttp3.CookieJar
+import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
 
 private data class RequestHolder(var request: Request?)
 
 internal val METHODS_REQUIRING_BODY = arrayOf("POST", "PUT", "PATCH")
+
+internal fun buildRequestBody(method: String, requestBody: ByteArray?, mediaType: MediaType?): RequestBody? {
+  return requestBody?.toRequestBody(mediaType) ?: run {
+    // OkHttp requires a non-null body for POST/PATCH/PUT, unlike WinterTC fetch. Provide an empty
+    // (zero-length) body to match it, not `byteArrayOf(0)`, which sends a single 0x00 byte.
+    // Ref: https://github.com/expo/expo/issues/46668
+    if (method in METHODS_REQUIRING_BODY) {
+      ByteArray(0).toRequestBody(mediaType)
+    } else {
+      null
+    }
+  }
+}
 
 internal class NativeRequest(appContext: AppContext, internal val response: NativeResponse) :
   SharedObject(appContext) {
@@ -36,17 +51,7 @@ internal class NativeRequest(appContext: AppContext, internal val response: Nati
 
     val headers = requestInit.headers.toHeaders()
     val mediaType = headers["Content-Type"]?.toMediaTypeOrNull()
-    val reqBody = requestBody?.toRequestBody(mediaType) ?: run {
-      // OkHttp requires a non-null body for POST, PATCH, and PUT requests.
-      // WinterTC fetch, however, does not have this limitation.
-      // Provide an empty body to make OkHttp behave like WinterTC fetch.
-      // Ref: https://github.com/expo/expo/issues/35950#issuecomment-3245173248
-      if (requestInit.method in METHODS_REQUIRING_BODY) {
-        byteArrayOf(0).toRequestBody(mediaType)
-      } else {
-        null
-      }
-    }
+    val reqBody = buildRequestBody(requestInit.method, requestBody, mediaType)
     val request = Request.Builder()
       .headers(headers)
       .method(requestInit.method, reqBody)

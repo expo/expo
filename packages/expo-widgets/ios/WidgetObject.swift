@@ -3,9 +3,14 @@ import WidgetKit
 
 final class WidgetObject: SharedObject {
   let name: String
-  init(name: String, layout: String) {
+  init(name: String, layout: String, initialProps: [String: Any]?) {
     self.name = name
     WidgetsStorage.set(layout, forKey: "__expo_widgets_\(name)_layout")
+    if let initialProps {
+      WidgetsStorage.set(initialProps, forKey: "__expo_widgets_\(name)_initial_props")
+    } else {
+      WidgetsStorage.removeObject(forKey: "__expo_widgets_\(name)_initial_props")
+    }
   }
 
   func reload() {
@@ -27,5 +32,17 @@ final class WidgetObject: SharedObject {
       return []
     }
     return try entries.map { try WidgetsJSTimelineEntry(from: $0, appContext: appContext) }
+  }
+
+  func setConfigurationParameterEnum(parameterName: String, options: [WidgetConfigurationOptionRecord]?) {
+    if let options {
+      WidgetsStorage.set(
+        options.map { $0.toDictionary() },
+        forKey: "__expo_widgets_\(name)_configuration_options_\(parameterName)"
+      )
+    } else {
+      WidgetsStorage.removeObject(forKey: "__expo_widgets_\(name)_configuration_options_\(parameterName)")
+    }
+    self.reload()
   }
 }

@@ -1,7 +1,5 @@
-import { parse } from 'url';
-
-import type { ServerNext, ServerRequest, ServerResponse } from './server.types';
 import * as Log from '../../../log';
+import type { ServerNext, ServerRequest, ServerResponse } from './server.types';
 
 /** Base middleware creator for Expo dev servers. */
 export abstract class ExpoMiddleware {
@@ -18,13 +16,13 @@ export abstract class ExpoMiddleware {
     if (!req.url) {
       return false;
     }
-    const parsed = parse(req.url);
-    // Strip the query params
-    if (!parsed.pathname) {
+
+    const pathname = URL.parse(req.url, 'file:')?.pathname;
+    if (!pathname) {
       return false;
     }
 
-    return this.supportedPaths.includes(parsed.pathname);
+    return this.supportedPaths.includes(pathname);
   }
 
   abstract handleRequestAsync(

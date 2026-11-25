@@ -23,7 +23,7 @@ internal struct DynamicArrayType: AnyDynamicType {
     return false
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     if jsValue.isArray() {
       return try jsValue.getArray().map { value in
         return try elementType.cast(jsValue: value, appContext: appContext)
@@ -52,7 +52,7 @@ internal struct DynamicArrayType: AnyDynamicType {
   /**
    Type-aware conversion for arrays that were already normalized by `convertResult`.
    Elements must use `castToJS` here to avoid re-entering `convertResult` for values that
-   are already in their post-conversion shape, such as `JavaScriptValue.undefined`.
+   are already in their post-conversion shape, such as `JavaScriptValue.undefined()`.
    */
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
     return try castToJS(value, appContext: appContext, in: try appContext.runtime)

@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { glob } from 'glob';
+import { glob } from 'node:fs/promises';
 import ora from 'ora';
 import path from 'path';
 
@@ -14,7 +14,7 @@ import {
   isExternalPackage,
   SPMPackageSource,
 } from './ExternalPackage';
-import { SPMProduct } from './SPMConfig.types';
+import { FrameworkTarget, SPMProduct } from './SPMConfig.types';
 import { resolvePackagePath } from './resolvePackage';
 
 /**
@@ -52,6 +52,32 @@ export function runWithLogPrefix<T>(prefix: string, fn: () => T): T {
 
 export function getActiveLogPrefix(): string | null {
   return _logPrefixStorage.getStore() ?? null;
+}
+
+/**
+ * Resolves the directory holding a framework target's xcframework.
+ *
+ * By default the xcframework ships inside the package being built. Some packages ship their
+ * binaries in a separate npm package instead (e.g. `@shopify/react-native-skia` publishes its
+ * Skia slices as `react-native-skia-apple-ios`); those targets name it in `package` and their
+ * `path` is then relative to that package's root.
+ */
+export function resolveFrameworkTargetPath(packagePath: string, target: FrameworkTarget): string {
+  if (!target.package) {
+    return path.join(packagePath, target.path);
+  }
+  let packageJsonPath: string;
+  try {
+    packageJsonPath = require.resolve(`${target.package}/package.json`, { paths: [packagePath] });
+  } catch {
+    throw new Error(
+      `Cannot find "${target.package}", the package that ships the "${target.name}" xcframework. ` +
+        `Its spm.config.json expects it next to "${packagePath}", so it is either not a dependency ` +
+        `of that package anymore or node_modules is out of date. Run \`pnpm install\` and, if it ` +
+        `still fails, update the framework targets in the package's spm.config.json.`
+    );
+  }
+  return path.join(path.dirname(packageJsonPath), target.path);
 }
 
 /**
@@ -145,6 +171,16 @@ export const discoverAllSPMPackagesAsync = async (): Promise<SPMPackageSource[]>
   return [...expoPackages, ...externalPackages];
 };
 
+export const selectDistributedPackages = (
+  expoPackages: Package[],
+  allPackages: boolean
+): Package[] => {
+  if (allPackages) {
+    return expoPackages;
+  }
+  return expoPackages.filter((pkg) => pkg.getSwiftPMConfiguration().publishPrebuilds === true);
+};
+
 /**
  * Builds a map from CocoaPods pod name to SPM dependency string
  * (e.g., "UMAppLoader" -> "unimodules-app-loader/UMAppLoader").
@@ -215,19 +251,14 @@ export const validatePodNamesAsync = async (
     }
 
     // Look for matching podspec
-    const foundPodspecs = await glob(podspecPattern, {
-      cwd: searchPath,
-      absolute: false,
-    });
+    const foundPodspecs = await Array.fromAsync(glob(podspecPattern, { cwd: searchPath }));
 
     if (foundPodspecs.length === 0) {
       // Find all podspecs in the package to help debug
-      const allPodspecs = await glob(
-        isExternalPackage(pkg) ? '*.podspec' : '{*.podspec,ios/*.podspec,apple/*.podspec}',
-        {
+      const allPodspecs = await Array.fromAsync(
+        glob(isExternalPackage(pkg) ? '*.podspec' : '{*.podspec,ios/*.podspec,apple/*.podspec}', {
           cwd: searchPath,
-          absolute: false,
-        }
+        })
       );
 
       errors.push({
@@ -294,22 +325,30 @@ export const validateAllPodNamesAsync = async (
  * @param packageNames Names of packages to verify (if empty, discovers all SPM packages)
  * @param includeExternal Whether to include external packages in discovery (default: true)
  * @param externalOnly Whether to only include external packages (default: false)
+ * @param allPackages When discovering, build every Expo package with an spm.config.json
+ *   instead of only the default distributed set (default: false)
  * @returns Parsed SPMPackageSources that were verified
  */
 export const verifyAllPackagesAsync = async (
   packageNames: string[],
   includeExternal: boolean = true,
-  externalOnly: boolean = false
+  externalOnly: boolean = false,
+  allPackages: boolean = false
 ): Promise<SPMPackageSource[]> => {
-  // If no package names provided, discover all packages with spm.config.json
+  // If no package names provided, discover packages with spm.config.json. By default
+  // only the distributed set is built; --all-packages widens this to every Expo package.
   if (packageNames.length === 0) {
     let packages: SPMPackageSource[];
     if (externalOnly) {
       packages = await discoverExternalPackagesAsync();
     } else if (includeExternal) {
-      packages = await discoverAllSPMPackagesAsync();
+      const [expoPackages, externalPackages] = await Promise.all([
+        discoverPackagesWithSPMConfigAsync(),
+        discoverExternalPackagesAsync(),
+      ]);
+      packages = [...selectDistributedPackages(expoPackages, allPackages), ...externalPackages];
     } else {
-      packages = await discoverPackagesWithSPMConfigAsync();
+      packages = selectDistributedPackages(await discoverPackagesWithSPMConfigAsync(), allPackages);
     }
 
     if (packages.length === 0) {
@@ -358,6 +397,48 @@ export const verifyAllPackagesAsync = async (
       );
     })
   );
+};
+
+const normalizeHermesVersion = (value: string) =>
+  value
+    .replace(/^hermes-?/i, '')
+    .replace(/^v/i, '')
+    .trim();
+
+/**
+ * Picks which Hermes engine's version to use, given the keys `version.properties` exposes.
+ *
+ * React Native 0.85.x shipped two engines side by side, keyed as HERMES_VERSION_NAME (classic)
+ * and HERMES_V1_VERSION_NAME (V1); the podspec defaulted to V1 unless RCT_HERMES_V1_ENABLED was
+ * set to "0". Newer RN (0.87+) collapsed back to a single HERMES_VERSION_NAME. So prefer the V1
+ * key only when it actually exists, and fall back to HERMES_VERSION_NAME otherwise — matching
+ * whatever hermes-engine.podspec reads. Getting the polarity wrong downloads classic Hermes
+ * headers while the app links V1, which crashes on struct-layout drift.
+ *
+ * Kept pure and exported so every combination is testable without a matching RN checkout.
+ *
+ * @param properties Parsed `sdks/hermes-engine/version.properties`.
+ * @param tags Contents of the `.hermesversion` / `.hermesv1version` tag files, if present.
+ * @param env Environment to read `RCT_HERMES_V1_ENABLED` from.
+ * @returns The normalized Hermes version, preferring the tag matching the selected engine.
+ */
+export const resolveHermesVersion = (
+  properties: Record<string, string | undefined>,
+  tags: { classic?: string | null; v1?: string | null },
+  env: Record<string, string | undefined>
+): string => {
+  const useV1 = env.RCT_HERMES_V1_ENABLED !== '0' && !!properties.HERMES_V1_VERSION_NAME;
+  const version = useV1 ? properties.HERMES_V1_VERSION_NAME : properties.HERMES_VERSION_NAME;
+
+  if (!version) {
+    throw new Error(
+      'Hermes version could not be resolved from version.properties. ' +
+        'Provide --hermes-version explicitly.'
+    );
+  }
+
+  const tag = useV1 ? tags.v1 : tags.classic;
+  return normalizeHermesVersion(tag ?? version);
 };
 
 /**
@@ -431,40 +512,24 @@ export const getVersionsInfoAsync = async (options: {
     let classicTag: string | null = null;
     let v1Tag: string | null = null;
 
+    // The .hermesversion / .hermesv1version tag files only exist in the React Native
+    // monorepo source — they are not shipped in published npm tarballs, so a miss here
+    // is expected and harmless (we fall back to the version from version.properties).
     try {
       classicTag = await readHermesTag(reactNativePath);
     } catch (error) {
-      logger.warn(`Could not read .hermesversion: ${String((error as Error).message || error)}`);
+      logger.verbose(`Could not read .hermesversion: ${String((error as Error).message || error)}`);
     }
 
     try {
       v1Tag = await readHermesV1Tag(reactNativePath);
     } catch (error) {
-      logger.warn(`Could not read .hermesv1version: ${String((error as Error).message || error)}`);
-    }
-
-    const normalizeHermesVersion = (value: string) =>
-      value
-        .replace(/^hermes-?/i, '')
-        .replace(/^v/i, '')
-        .trim();
-
-    // Matches hermes-engine.podspec polarity: V1 is the default, classic is
-    // selected only when the consuming app explicitly sets the env var to "0".
-    const isHermesV1Enabled = process.env.RCT_HERMES_V1_ENABLED !== '0';
-    const version = isHermesV1Enabled
-      ? properties.HERMES_V1_VERSION_NAME
-      : properties.HERMES_VERSION_NAME;
-    const tag = isHermesV1Enabled ? v1Tag : classicTag;
-
-    if (!version) {
-      throw new Error(
-        'Hermes version could not be resolved from version.properties. ' +
-          'Provide --hermes-version explicitly.'
+      logger.verbose(
+        `Could not read .hermesv1version: ${String((error as Error).message || error)}`
       );
     }
 
-    return normalizeHermesVersion(tag ?? version);
+    return resolveHermesVersion(properties, { classic: classicTag, v1: v1Tag }, process.env);
   };
 
   const reactNativeVersion =

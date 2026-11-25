@@ -36,9 +36,9 @@ export type RouteNode = {
   /** The type of RouteNode */
   type: 'route' | 'api' | 'layout' | 'redirect' | 'rewrite';
   /** Load a route into memory. Returns the exports from a route. */
-  loadRoute: () => Partial<LoadedRoute>;
-  /** Loaded initial route name. */
-  initialRouteName?: string;
+  loadRoute: () => LoadedRoute;
+  /** Last group in the layout path. Selects group-specific `unstable_settings` and the default anchor. */
+  groupName?: string;
   /** Nested routes */
   children: RouteNode[];
   /** Is the route a dynamic path */
@@ -69,6 +69,10 @@ const CurrentRouteContext = createContext<RouteNode | null>(null);
 /** This context allows a `_layout.tsx` to provide a Suspense fallback for its child routes. */
 export const SuspenseFallbackContext = createContext<
   ComponentType<SuspenseFallbackProps> | undefined
+>(undefined);
+/** This context carries the error boundary configured by the current layout or navigator. */
+export const ScreenErrorBoundaryContext = createContext<
+  ComponentType<ErrorBoundaryProps> | undefined
 >(undefined);
 export const LocalRouteParamsContext = createContext<object | undefined>({});
 

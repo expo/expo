@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
-import { BottomSheetContext, BottomSheetInternalContext } from './context';
-import type { BottomSheetMethods, BottomSheetProps } from './types';
-import { parseSnapPoint } from './types';
 import { Host } from '../../jetpack-compose/Host';
 import { ModalBottomSheet, type ModalBottomSheetRef } from '../../jetpack-compose/ModalBottomSheet';
 import { RNHostView } from '../../jetpack-compose/RNHostView';
+import { BottomSheetContext, BottomSheetInternalContext } from './context';
+import { SheetScrollContextReset } from './scrollContextReset';
+import type { BottomSheetMethods, BottomSheetProps } from './types';
+import { parseSnapPoint } from './types';
 
 export { useBottomSheet } from './context';
 
@@ -63,6 +64,8 @@ export function BottomSheet(props: BottomSheetProps) {
     enableDynamicSizing = true,
     handleComponent,
     backgroundStyle,
+    modifiers,
+    contentWindowInsets,
     children,
   } = props;
   const { width } = useWindowDimensions();
@@ -112,23 +115,16 @@ export function BottomSheet(props: BottomSheetProps) {
       setIsOpen(false);
       fireCloseCallbacks();
     } else if (indexProp >= 0) {
-      pendingIndexRef.current = clampIndex(indexProp);
       closedRef.current = false;
       setIsOpen(true);
     }
-  }, [clampIndex, indexProp, fireCloseCallbacks]);
+  }, [indexProp, fireCloseCallbacks]);
 
   useEffect(() => {
-    if (!isOpen) return;
-
-    const targetIndex = pendingIndexRef.current ?? 0;
-    if (hasMultipleSnapPoints && targetIndex === maxIndex) {
-      sheetRef.current?.expand();
-    } else if (hasMultipleSnapPoints) {
-      sheetRef.current?.partialExpand();
-    }
-    pendingIndexRef.current = null;
-  }, [hasMultipleSnapPoints, isOpen, maxIndex]);
+    const requestedIndex = indexProp >= 0 ? indexProp : pendingIndexRef.current;
+    if (requestedIndex == null) return;
+    pendingIndexRef.current = clampIndex(requestedIndex);
+  }, [indexProp, clampIndex]);
 
   const handleDismiss = useCallback(() => {
     setIsOpen(false);
@@ -197,20 +193,30 @@ export function BottomSheet(props: BottomSheetProps) {
   return (
     <BottomSheetInternalContext.Provider value={internalContextValue}>
       <BottomSheetContext.Provider value={methods}>
-        <Host style={{ position: 'absolute', width }}>
+        {/* Fill the parent, so `removeClippedSubviews` doesn't detach a zero-height host. */}
+        <Host style={{ position: 'absolute', top: 0, bottom: 0, width }} pointerEvents="none">
           <ModalBottomSheet
             ref={sheetRef}
             onDismissRequest={handleDismiss}
             skipPartiallyExpanded={skipPartially}
+            initialFullyExpanded={hasMultipleSnapPoints && pendingIndexRef.current === maxIndex}
             showDragHandle={handleComponent !== null}
             sheetGesturesEnabled={enablePanDownToClose}
             containerColor={containerColor}
+            modifiers={modifiers}
+            contentWindowInsets={contentWindowInsets}
             properties={{
               shouldDismissOnBackPress: enablePanDownToClose,
               shouldDismissOnClickOutside: enablePanDownToClose,
             }}>
             <RNHostView matchContents={fitToContents}>
-              <View style={fitToContents ? undefined : { flex: 1 }}>{children}</View>
+              {/* With matchContents, RNHostView lays the hosted view out at its own size, so `width` gives it
+                  the sheet width while its height stays content-sized. Otherwise flexGrow:1 + height:0
+                  (flex-basis 0) fills RNHostView's measured height without inheriting the scrollable
+                  child's content height, which would block scrolling to the end. */}
+              <View style={fitToContents ? { width } : { flexGrow: 1, height: 0 }}>
+                <SheetScrollContextReset>{children}</SheetScrollContextReset>
+              </View>
             </RNHostView>
           </ModalBottomSheet>
         </Host>

@@ -23,9 +23,7 @@ import org.gradle.api.component.SoftwareComponent
 import org.gradle.api.publish.PublicationContainer
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.TaskProvider
-import java.nio.file.Path
-import kotlin.io.path.exists
-import kotlin.io.path.toPath
+import java.io.File
 
 internal data class PublicationInfo(
   val components: SoftwareComponent,
@@ -41,17 +39,15 @@ internal data class PublicationInfo(
     artifactId = requireNotNull(project.androidLibraryExtension().namespace) {
       "'android.namespace' is not defined"
     },
-    version = requireNotNull(project.androidLibraryExtension().defaultConfig.versionName) {
-      "'android.defaultConfig.versionName' is not defined"
+    version = requireNotNull(project.version.toString().takeUnless { it == "unspecified" }) {
+      "'project.version' is not defined. Set `version = \"<x.y.z>\"` in the module's android/build.gradle."
     },
   )
 
-  fun resolvePath(repositoryPath: Path): Path {
+  fun resolvePath(repositoryPath: File): File {
     val groupPath = groupId.replace('.', '/')
     val artifactPath = "$groupPath/$artifactId/$version"
-    val publicationPath = repositoryPath.resolve(artifactPath)
-
-    return publicationPath
+    return File(repositoryPath, artifactPath)
   }
 
   override fun toString(): String {
@@ -123,7 +119,7 @@ internal fun Project.createExpoPublishTask(publicationInfo: PublicationInfo, exp
     val publishTask = tasks.getByName("publish")
 
     task.group = "publishing"
-    task.description = "Publishes the library to the GitHub Packages repository"
+    task.description = "Publishes the library to the embedded npm Maven repository"
     task.dependsOn(publishTask)
   }
 
@@ -138,7 +134,7 @@ internal fun Project.createEmptyExpoPublishTask(): TaskProvider<Task> {
   }
   taskProvider.configure { task ->
     task.group = "publishing"
-    task.description = "Publishes the library to the GitHub Packages repository"
+    task.description = "Publishes the library to the embedded npm Maven repository"
   }
 
   return taskProvider
@@ -180,7 +176,7 @@ private fun Project.expoPublishBody(publicationInfo: PublicationInfo, expoModule
 
   if (pathToRepository == null) {
     val mavenLocal = publishingExtension().repositories.mavenLocal()
-    val mavenLocalPath = mavenLocal.url.toPath()
+    val mavenLocalPath = File(mavenLocal.url)
     val publicationPath = publicationInfo.resolvePath(mavenLocalPath)
 
     if (!publicationPath.exists()) {
@@ -208,11 +204,11 @@ private fun Project.expoPublishBody(publicationInfo: PublicationInfo, expoModule
   providers.exec { env ->
     env.workingDir(layout.projectDirectory.file(".."))
     // TODO(@lukmccall): support other package managers
-    env.commandLine("pnpm", "prettier", "--write", "expo-module.config.json")
+    env.commandLine("pnpm", "oxfmt", "--write", "expo-module.config.json")
   }.result.get()
 }
 
-private fun Project.validateProjectConfiguration(expoModulesExtension: ExpoModuleExtension) {
+internal fun Project.validateProjectConfiguration(expoModulesExtension: ExpoModuleExtension) {
   val shouldUsePublicationScript = expoModulesExtension.autolinking.getShouldUsePublicationScriptPath(this)
     ?: return // If the path to the script is not defined, we assume that we can publish the module.
 

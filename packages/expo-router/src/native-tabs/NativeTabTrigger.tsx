@@ -1,9 +1,13 @@
 'use client';
 
-import { useCallback, type ReactElement, type ReactNode } from 'react';
+import { use, useCallback, type ReactElement, type ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 
+import { useIsPreview } from '../link/preview/PreviewRouteContext';
+import { NavigatorTypeContext } from '../react-navigation/core';
 import { useNavigation, useRoute } from '../react-navigation/native';
+import { useFocusEffect } from '../useFocusEffect';
+import { filterAllowedChildrenElements, isChildOfType } from '../utils/children';
 import {
   NativeTabsTriggerIcon,
   NativeTabsTriggerBadge,
@@ -14,9 +18,6 @@ import {
 } from './common/elements';
 import type { NativeTabOptions, NativeTabTriggerProps } from './types';
 import { appendIconOptions } from './utils/optionsIconConverter';
-import { useIsPreview } from '../link/preview/PreviewRouteContext';
-import { useFocusEffect } from '../useFocusEffect';
-import { filterAllowedChildrenElements, isChildOfType } from '../utils/children';
 
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.
@@ -26,7 +27,7 @@ import { filterAllowedChildrenElements, isChildOfType } from '../utils/children'
  *
  * @example
  * ```tsx app/_layout.tsx
- * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ * import { NativeTabs } from 'expo-router/native-tabs';
  *
  * export default function Layout() {
  *   return (
@@ -40,7 +41,7 @@ import { filterAllowedChildrenElements, isChildOfType } from '../utils/children'
  *
  * @example
  * ```tsx app/home.tsx
- * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ * import { NativeTabs } from 'expo-router/native-tabs';
  *
  * export default function HomeScreen() {
  *   return (
@@ -58,6 +59,7 @@ function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
   const route = useRoute();
   const navigation = useNavigation();
   const isInPreview = useIsPreview();
+  const navigatorType = use(NavigatorTypeContext);
 
   useFocusEffect(
     useCallback(() => {
@@ -65,15 +67,22 @@ function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
       // As long as all tabs are loaded at the start, we don't need this check.
       // It is here to ensure similar behavior to stack
       if (!isInPreview) {
-        if (navigation.getState()?.type !== 'tab') {
+        if (navigatorType !== 'tab') {
           throw new Error(
             `Trigger component can only be used in the tab screen. Current route: ${route.name}`
+          );
+        }
+        if (process.env.NODE_ENV !== 'production' && props.prominent) {
+          console.warn(
+            `NativeTabs ignores \`prominent\` on the \`NativeTabs.Trigger\` inside the "${route.name}" screen. ` +
+              'The prominent tab can be set only in the layout. ' +
+              `Set \`prominent\` on \`<NativeTabs.Trigger name="${route.name}">\` in the layout file.`
           );
         }
         const options = convertTabPropsToOptions(props, true);
         navigation.setOptions(options);
       }
-    }, [props, isInPreview])
+    }, [props, isInPreview, navigatorType])
   );
 
   return null;
@@ -91,6 +100,8 @@ export function convertTabPropsToOptions(
     hidden,
     children,
     role,
+    prominent,
+    disableAutomaticSearchActivation,
     disablePopToTop,
     disableScrollToTop,
     unstable_nativeProps,
@@ -102,6 +113,8 @@ export function convertTabPropsToOptions(
     indicatorColor,
     disableIndicator,
     labelVisibilityMode,
+    testID,
+    accessibilityLabel,
   }: NativeTabTriggerProps,
   isDynamic: boolean = false
 ) {
@@ -109,11 +122,18 @@ export function convertTabPropsToOptions(
     ? {
         ...(unstable_nativeProps ? { nativeProps: unstable_nativeProps } : {}),
         ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
+        ...(disableAutomaticSearchActivation !== undefined
+          ? { disableAutomaticSearchActivation }
+          : {}),
         ...(disabled !== undefined ? { disabled } : {}),
         ...(rippleColor !== undefined ? { rippleColor } : {}),
         ...(indicatorColor !== undefined ? { indicatorColor } : {}),
         ...(disableIndicator !== undefined ? { disableIndicator } : {}),
         ...(labelVisibilityMode !== undefined ? { labelVisibilityMode } : {}),
+        ...(testID !== undefined ? { tabBarItemTestID: testID } : {}),
+        ...(accessibilityLabel !== undefined
+          ? { tabBarItemAccessibilityLabel: accessibilityLabel }
+          : {}),
       }
     : {
         hidden: !!hidden,
@@ -125,14 +145,22 @@ export function convertTabPropsToOptions(
         },
         contentStyle,
         role,
+        ...(prominent !== undefined ? { prominent } : {}),
         nativeProps: unstable_nativeProps,
         disableAutomaticContentInsets,
         ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
+        ...(disableAutomaticSearchActivation !== undefined
+          ? { disableAutomaticSearchActivation }
+          : {}),
         ...(disabled !== undefined ? { disabled } : {}),
         ...(rippleColor !== undefined ? { rippleColor } : {}),
         ...(indicatorColor !== undefined ? { indicatorColor } : {}),
         ...(disableIndicator !== undefined ? { disableIndicator } : {}),
         ...(labelVisibilityMode !== undefined ? { labelVisibilityMode } : {}),
+        ...(testID !== undefined ? { tabBarItemTestID: testID } : {}),
+        ...(accessibilityLabel !== undefined
+          ? { tabBarItemAccessibilityLabel: accessibilityLabel }
+          : {}),
       };
   const allowedChildren = filterAllowedChildrenElements(children, [
     NativeTabsTriggerBadge,

@@ -5,6 +5,7 @@ import expo.modules.appmetrics.AppUpdatesInfo
 import expo.modules.appmetrics.MetricCategory
 import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.storage.Metric
+import expo.modules.appmetrics.storage.SessionSharedObject
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesNativeInterfaceStateContext
@@ -15,7 +16,7 @@ import expo.modules.updatesinterface.UpdatesStateChangeSubscription
  * The subscription lifecycle and state change listening are managed by AppMetricsModule.
  */
 class UpdatesMonitoring(
-  private val sessionId: String
+  private val session: SessionSharedObject
 ) {
 
   /**
@@ -28,7 +29,11 @@ class UpdatesMonitoring(
     val launchedUpdateId = controller.launchedUpdateId
     val embeddedUpdateId = controller.embeddedUpdateId
     // Ignore embedded launches – they are not available on the website anyway.
-    val updateId = if (launchedUpdateId == embeddedUpdateId) null else launchedUpdateId?.toString()?.lowercase()
+    val updateId = if (launchedUpdateId == embeddedUpdateId) {
+      null
+    } else {
+      launchedUpdateId?.toString()?.lowercase()
+    }
     return AppUpdatesInfo(
       updateId = updateId,
       runtimeVersion = controller.runtimeVersion,
@@ -40,10 +45,16 @@ class UpdatesMonitoring(
    * Patches the app metadata with the OTA updates info if applicable.
    */
   fun patchAppInfoIfNeeded(currentMetadata: expo.modules.appmetrics.AppMetadata?): expo.modules.appmetrics.AppMetadata? {
-    if (currentMetadata == null) return currentMetadata
+    if (currentMetadata == null) {
+      return currentMetadata
+    }
     val updatesInfo = getUpdatesMetricsInfo()
-    if (updatesInfo.updateId == null && updatesInfo.runtimeVersion == null) return currentMetadata
-    if (currentMetadata.appUpdatesInfo?.updateId != null) return currentMetadata
+    if (updatesInfo.updateId == null && updatesInfo.runtimeVersion == null) {
+      return currentMetadata
+    }
+    if (currentMetadata.appUpdatesInfo?.updateId != null) {
+      return currentMetadata
+    }
     Log.d(TAG, "OTA update info found, patching AppMetadata")
     return currentMetadata.copy(appUpdatesInfo = updatesInfo)
   }
@@ -58,11 +69,17 @@ class UpdatesMonitoring(
     val updateId = downloadedManifest["id"] as? String ?: return null
     val startTime = context.downloadStartTime ?: return null
     val finishTime = context.downloadFinishTime ?: return null
+    // expo-updates emits `downloadCompleteWithUpdate` for an update that is already downloaded and
+    // ready on disk too. We don't want to write metrics for those events, so check for
+    // downloadProgress > 0, which only happens on real asset downloads.
+    if (context.downloadProgress <= 0) {
+      return null
+    }
 
     val downloadTimeSeconds = (finishTime.time - startTime.time).toDouble() / 1000.0
 
     return Metric(
-      sessionId = sessionId,
+      sessionId = session.sessionId,
       timestamp = TimeUtils.getCurrentTimestampInISOFormat(),
       category = MetricCategory.Updates.categoryName,
       name = "updateDownloadTime",

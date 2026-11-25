@@ -3,6 +3,7 @@ import type { ColorValue } from 'react-native';
 
 import type { ModifierConfig, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
+import type { MenuShapePosition } from './index';
 
 type SlotNativeViewProps = {
   slotName: string;
@@ -31,12 +32,18 @@ export type DropdownMenuItemElementColors = {
 /**
  * Props of the `DropdownMenuItem` component.
  */
-export type DropdownMenuItemProps = {
+export interface DropdownMenuItemProps {
   /**
    * Whether the menu item is enabled.
    * @default true
    */
   enabled?: boolean;
+  /**
+   * The position of the item in its `DropdownMenuGroup`, which sets its shape through Compose's
+   * `MenuDefaults.itemShape(index, count).shape`. When set, the item is a Material 3 Expressive
+   * menu item and can show `SupportingText`.
+   */
+  shape?: MenuShapePosition;
   /**
    * Color overrides for the menu item.
    */
@@ -53,7 +60,7 @@ export type DropdownMenuItemProps = {
    * Slot children for text, leading/trailing icons.
    */
   children?: React.ReactNode;
-};
+}
 
 type NativeDropdownMenuItemProps = Omit<DropdownMenuItemProps, 'onClick' | 'children'> &
   ViewEvent<'onItemPressed', void> & { children?: React.ReactNode };
@@ -79,6 +86,16 @@ function LeadingIcon(props: { children: React.ReactNode }) {
  */
 function TrailingIcon(props: { children: React.ReactNode }) {
   return <SlotNativeView slotName="trailingIcon">{props.children}</SlotNativeView>;
+}
+
+/**
+ * A supporting text slot for `DropdownMenuItem`, shown below the text.
+ * Only applies to an item with a `shape`.
+ *
+ * @platform android
+ */
+function SupportingText(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="supportingText">{props.children}</SlotNativeView>;
 }
 
 /**
@@ -114,5 +131,6 @@ function DropdownMenuItemComponent(props: DropdownMenuItemProps) {
 DropdownMenuItemComponent.Text = TextSlot;
 DropdownMenuItemComponent.LeadingIcon = LeadingIcon;
 DropdownMenuItemComponent.TrailingIcon = TrailingIcon;
+DropdownMenuItemComponent.SupportingText = SupportingText;
 
 export { DropdownMenuItemComponent as DropdownMenuItem };

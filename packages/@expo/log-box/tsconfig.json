@@ -1,12 +1,9 @@
 {
-  "extends": "expo-module-scripts/tsconfig.node",
+  "extends": "@expo/internal-scripts/tsconfig.base",
   "compilerOptions": {
-    "lib": ["dom", "DOM.Iterable", "esnext"],
     "noEmit": true,
-    "jsx": "react",
-    "plugins": [{ "name": "typescript-plugin-css-modules" }],
-    "customConditions": ["react-native-strict-api-UNSAFE-ALLOW-SUBPATHS"]
+    "rootDir": ".",
+    "customConditions": ["expo-source", "react-native-unstable-internals"]
   },
-  "include": ["src/**/*", "app/**/*"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+  "include": ["src", "app"]
 }

@@ -8,7 +8,6 @@ const path = require('node:path');
 const semver = require('semver');
 const prettier = require('prettier');
 
-
 let version = '';
 
 const packageJSON = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'));
@@ -19,16 +18,18 @@ const program = new Command(packageJSON.name)
   .usage(`${chalk.green('[version]')} [options]`)
   .description('Generate TypeScript types from the Expo config JSON schema.')
   .option('-p, --path <schema-path>', 'Path to a local JSON schema to use.')
-  .action(/** @param {string} inputVersion */ (inputVersion, _options) => {
-    version = inputVersion;
-  })
+  .action(
+    /** @param {string} inputVersion */ (inputVersion, _options) => {
+      version = inputVersion;
+    }
+  )
   .allowUnknownOption()
   .parse(process.argv);
 
 /**
-  * @param {string} version
-  * @returns {Promise<Record<string, any>>}
-  */
+ * @param {string} version
+ * @returns {Promise<Record<string, any>>}
+ */
 async function fetchSchemaAsync(version) {
   const url = `https://exp.host/--/api/v2/project/configuration/schema/${version}`;
   const response = await fetch(url);
@@ -91,7 +92,7 @@ async function fetchSchemaAsync(version) {
     ].join('\n'),
     unknownAny: false,
   });
-  
+
   code = await prettier.format(code, {
     filepath: 'src/ExpoConfig.ts',
     parser: 'typescript',

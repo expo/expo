@@ -17,7 +17,7 @@ import nodeCrawl from '../index';
 jest.mock('path', () => jest.requireActual<typeof import('path')>('path').posix);
 
 const rootDir = '/project';
-const processFile = async () => null;
+const processFile = () => null;
 
 function makeTreeFS(files?: FileData): TreeFS {
   return new TreeFS({ rootDir, files, processFile });
@@ -31,7 +31,6 @@ function crawl(overrides: Partial<CrawlerOptions> = {}) {
     computeSha1: false,
     console,
     extensions: ['js'],
-    forceNodeFilesystemAPI: true,
     ignore: () => false,
     includeSymlinks: false,
     onStatus: jest.fn(),
@@ -313,7 +312,7 @@ describe('node crawler', () => {
     expect(removedFiles).toEqual(new Set());
   });
 
-  test('marks symlinks correctly when stat is skipped', async () => {
+  test('stats symlinks on a cold start', async () => {
     vol.fromJSON({
       '/project/fruits/apple.js': 'a',
       '/project/fruits/target.js': 'target',
@@ -324,10 +323,10 @@ describe('node crawler', () => {
 
     const linkMeta = changedFiles.get('fruits/link.js')!;
     expect(linkMeta).toBeDefined();
-    // On cold start, mtime is deferred
-    expect(linkMeta[H.MTIME]).toBeNull();
-    expect(linkMeta[H.SIZE]).toBe(0);
-    // But symlink flag is still correctly set
+    // Unlike a regular file, a symlink is stat'd even on a cold start
+    expect(linkMeta[H.MTIME]).toEqual(expect.any(Number));
+    expect(changedFiles.get('fruits/apple.js')![H.MTIME]).toBeNull();
+    // Its target is read later, in FileMap
     expect(linkMeta[H.SYMLINK]).toBe(1);
   });
 
@@ -365,7 +364,7 @@ describe('node crawler', () => {
 
   describe('VCS directories', () => {
     test('skips .git and .hg directories without consulting ignore', async () => {
-      const ignore = jest.fn(() => false);
+      const ignore = jest.fn((_p: string) => false);
 
       vol.fromJSON({
         '/project/fruits/apple.js': 'a',
@@ -379,7 +378,7 @@ describe('node crawler', () => {
       expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js']);
       // The early-skip happens before any `ignore()` call for the .git/.hg
       // directory entries, so the matcher is never asked about those paths.
-      const seenPaths = ignore.mock.calls.map((args) => args[0] as string);
+      const seenPaths = ignore.mock.calls.map((args) => args[0]);
       expect(seenPaths.some((p) => p.includes('.git'))).toBe(false);
       expect(seenPaths.some((p) => p.includes('.hg'))).toBe(false);
     });

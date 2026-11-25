@@ -1,12 +1,20 @@
 import { ReactElementNode } from './jsx-runtime-stub';
 
+const interactiveTargetTypes = [
+  'Button',
+  'FilledTonalButton',
+  'OutlinedButton',
+  'ElevatedButton',
+  'TextButton',
+];
+
 export function decorateInteractiveTargets(node: unknown) {
   return decorateNode(node, {
     nearestParentKey: null,
     nextTargetIndex: {
       current: 0,
     },
-    typesToDecorate: ['Button'],
+    typesToDecorate: interactiveTargetTypes,
   });
 }
 
@@ -22,6 +30,15 @@ function decorateNode(
 ): unknown {
   if (Array.isArray(node)) {
     return node.map((child) => decorateNode(child, context));
+  }
+
+  if (isSectionMap(node)) {
+    return Object.fromEntries(
+      Object.entries(node).map(([section, child]) => [
+        section,
+        decorateNode(child, { ...context, nearestParentKey: section }),
+      ])
+    );
   }
 
   if (!isReactElementNode(node)) {
@@ -48,6 +65,10 @@ function decorateNode(
 
 function isReactElementNode(node: unknown): node is ReactElementNode {
   return Boolean(node) && typeof node === 'object' && 'type' in node && 'props' in node;
+}
+
+function isSectionMap(node: unknown): node is Record<string, unknown> {
+  return Boolean(node) && typeof node === 'object' && !isReactElementNode(node);
 }
 
 function buildButtonTargetId(index: number, parentKey: string | null) {

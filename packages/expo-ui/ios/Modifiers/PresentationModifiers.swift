@@ -67,17 +67,13 @@ internal struct PresentationDetentsModifier: ViewModifier, Record {
 
   func body(content: Content) -> some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
-      if selection != nil || eventDispatcher != nil {
-        PresentationDetentsSelectionView(
-          detents: parseDetents(),
-          rawDetents: detents ?? [],
-          initialSelection: selection.flatMap { parsePresentationDetent($0) },
-          eventDispatcher: eventDispatcher
-        ) {
-          content
-        }
-      } else {
-        content.presentationDetents(parseDetents())
+      PresentationDetentsSelectionView(
+        detents: parseDetents(),
+        rawDetents: detents ?? [],
+        initialSelection: selection.flatMap { parsePresentationDetent($0) },
+        eventDispatcher: eventDispatcher
+      ) {
+        content
       }
     } else {
       content
@@ -128,7 +124,10 @@ private struct PresentationDetentsSelectionView<WrappedContent: View>: View {
     self.initialSelection = initialSelection
     self.eventDispatcher = eventDispatcher
     self.wrappedContent = content()
-    self._selectedDetent = State(initialValue: initialSelection ?? detents.first ?? .large)
+    // Default to the first detent in the ordered array, not `detents.first` (the Set's order is
+    // randomized per process), so the sheet always opens at the same detent.
+    let firstOrderedDetent = rawDetents.compactMap { parsePresentationDetent($0) }.first
+    self._selectedDetent = State(initialValue: initialSelection ?? firstOrderedDetent ?? .large)
   }
 
   var body: some View {
@@ -158,6 +157,16 @@ internal struct PresentationDragIndicatorModifier: ViewModifier, Record {
     } else {
       content
     }
+  }
+}
+
+// MARK: - Presentation Corner Radius
+
+internal struct PresentationCornerRadiusModifier: ViewModifier, Record {
+  @Field var cornerRadius: Double?
+
+  func body(content: Content) -> some View {
+    content.presentationCornerRadius(cornerRadius.map { CGFloat($0) })
   }
 }
 
@@ -209,13 +218,59 @@ internal struct InteractiveDismissDisabledModifier: ViewModifier, Record {
 // MARK: - Presentation Background
 
 internal struct PresentationBackgroundModifier: ViewModifier, Record {
-  @Field var color: Color?
+  @Field var style: ShapeStyleValue?
 
   func body(content: Content) -> some View {
-    if #available(iOS 16.4, tvOS 16.4, *), let color {
-      content.presentationBackground(color)
+    if let shapeStyle = style?.toAnyShapeStyle() {
+      content.presentationBackground(shapeStyle)
     } else {
       content
+    }
+  }
+}
+
+// MARK: - Presentation Sizing
+
+internal enum PresentationSizingOption: String, Enumerable {
+  case automatic
+  case fitted
+  case form
+  case page
+}
+
+internal struct PresentationSizingFittedAxes: Record {
+  @Field var horizontal: Bool = false
+  @Field var vertical: Bool = false
+}
+
+internal struct PresentationSizingModifier: ViewModifier, Record {
+  @Field var sizing: PresentationSizingOption = .automatic
+  @Field var fitted: PresentationSizingFittedAxes?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 18.0, tvOS 18.0, macOS 15.0, *) {
+      switch sizing {
+      case .automatic:
+        applySizing(content, .automatic)
+      case .fitted:
+        applySizing(content, .fitted)
+      case .form:
+        applySizing(content, .form)
+      case .page:
+        applySizing(content, .page)
+      }
+    } else {
+      content
+    }
+  }
+
+  @available(iOS 18.0, tvOS 18.0, macOS 15.0, *)
+  @ViewBuilder
+  private func applySizing(_ content: Content, _ sizing: some PresentationSizing) -> some View {
+    if let fitted {
+      content.presentationSizing(sizing.fitted(horizontal: fitted.horizontal, vertical: fitted.vertical))
+    } else {
+      content.presentationSizing(sizing)
     }
   }
 }

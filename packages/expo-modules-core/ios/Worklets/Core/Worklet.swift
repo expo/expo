@@ -1,6 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import ExpoModulesJSI
 
 /**
  A wrapper class for worklets from react-native-worklets.
@@ -41,8 +42,33 @@ public class Worklet: AnySerializable {
   }
 }
 
+extension Worklet: JavaScriptDecodable {
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
+  @JavaScriptActor
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Self {
+    let serializable = Serializable(try extractSerializable(value, in: runtime, as: Self.self))
+    guard let worklet = try Worklet(serializable) as? Self else {
+      throw NotSerializableException(Self.self)
+    }
+    return worklet
+  }
+}
+
 internal final class NotWorkletException: GenericException<SerializableValueType>, @unchecked Sendable {
   override var reason: String {
     "Expected Serializable of type Worklet but got \(param)"
+  }
+}
+
+/// Thrown when a worklet operation is attempted but the `react-native-worklets` native
+/// adapter isn't linked (its provider is `nil`). Replaces misleading lower-level errors.
+internal final class WorkletsNotInstalledException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "This feature requires `react-native-worklets`, but its native adapter isn't linked — usually " +
+    "because the package isn't installed (it's an optional peer dependency of libraries like Expo UI " +
+    "and Reanimated). Install it with `npx expo install react-native-worklets`, then rebuild the app."
   }
 }

@@ -3,8 +3,6 @@ package expo.modules.cellular
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.sip.SipManager
-import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
 import expo.modules.interfaces.permissions.Permissions
@@ -28,10 +26,6 @@ class CellularModule : Module() {
       }
     }
 
-    AsyncFunction<Boolean>("allowsVoipAsync") {
-      SipManager.isVoipSupported(context)
-    }
-
     AsyncFunction<String?>("getIsoCountryCodeAsync") {
       telephonyManager()?.simCountryIso
     }
@@ -41,11 +35,11 @@ class CellularModule : Module() {
     }
 
     AsyncFunction<String?>("getMobileCountryCodeAsync") {
-      telephonyManager()?.simOperator?.substring(0, 3)
+      validSimOperator()?.substring(0, 3)
     }
 
     AsyncFunction<String?>("getMobileNetworkCodeAsync") {
-      telephonyManager()?.simOperator?.substring(3)
+      validSimOperator()?.substring(3)
     }
 
     AsyncFunction("requestPermissionsAsync") { promise: Promise ->
@@ -65,6 +59,13 @@ class CellularModule : Module() {
     }
   }
 
+  /**
+   * The SIM operator as MCC (3 digits) followed by MNC (2 or 3 digits), or `null` if it isn't available.
+   * `getSimOperator()` can return an empty string even when the SIM state is `SIM_STATE_READY`.
+   */
+  private fun validSimOperator(): String? =
+    telephonyManager()?.simOperator?.takeIf { it.length >= 5 }
+
   private fun telephonyManager() =
     (context.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
       it?.simState == TelephonyManager.SIM_STATE_READY
@@ -80,13 +81,8 @@ class CellularModule : Module() {
   private fun getCurrentGeneration(): Int {
     val telephonyManager = telephonyManager()
       ?: return CellularGeneration.UNKNOWN.value
-    val networkType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      telephonyManager.dataNetworkType
-    } else {
-      @Suppress("DEPRECATION")
-      telephonyManager.networkType
-    }
-    return when (networkType) {
+    @Suppress("DEPRECATION") // Legacy CDMA constants are deprecated, but can still be returned on older devices, so we keep mapping them instead of returning UNKNOWN
+    return when (telephonyManager.dataNetworkType) {
       TelephonyManager.NETWORK_TYPE_GPRS,
       TelephonyManager.NETWORK_TYPE_EDGE,
       TelephonyManager.NETWORK_TYPE_CDMA,

@@ -1,8 +1,20 @@
+import {
+  buildLocalePath,
+  getJapaneseSectionTitle,
+  getCanonicalPath,
+  getJapaneseSidebarTitle,
+  hasJapaneseTranslation,
+  type SupportedLocale,
+} from '~/common/i18n';
 import * as Utilities from '~/common/utilities';
 import { stripVersionFromPath } from '~/common/utilities';
 import { PageApiVersionContextType } from '~/providers/page-api-version';
 import navigation from '~/public/static/constants/navigation.json';
 import { NavigationRoute, NavigationRouteWithSection } from '~/types/common';
+
+if (import.meta.webpackHot) {
+  import.meta.webpackHot.decline('~/public/static/constants/navigation.json');
+}
 
 export const getRoutes = (
   path: string,
@@ -16,43 +28,50 @@ export const getRoutes = (
 };
 
 export const isArchivePath = (path: string) => {
-  return Utilities.pathStartsWith('archive', path);
+  return Utilities.pathStartsWith('archive', getCanonicalPath(path));
 };
 
 export const isInternalPath = (path: string) => {
-  return Utilities.pathStartsWith('internal', path);
+  return Utilities.pathStartsWith('internal', getCanonicalPath(path));
 };
 
 export const isVersionedPath = (path: string) => {
-  return Utilities.pathStartsWith('versions', path);
+  return Utilities.pathStartsWith('versions', getCanonicalPath(path));
 };
 
 export const isReferencePath = (path: string) => {
-  return navigation.referenceDirectories.some(name => Utilities.pathStartsWith(name, path));
+  const canonical = getCanonicalPath(path);
+  return navigation.referenceDirectories.some(name => Utilities.pathStartsWith(name, canonical));
 };
 
 export const isHomePath = (path: string) => {
-  return navigation.homeDirectories.some(name => Utilities.pathStartsWith(name, path));
+  const canonical = getCanonicalPath(path);
+  return navigation.homeDirectories.some(name => Utilities.pathStartsWith(name, canonical));
 };
 
 export const isGeneralPath = (path: string) => {
-  return navigation.generalDirectories.some(name => Utilities.pathStartsWith(name, path));
+  const canonical = getCanonicalPath(path);
+  return navigation.generalDirectories.some(name => Utilities.pathStartsWith(name, canonical));
 };
 
 export const isFeaturePreviewPath = (path: string) => {
-  return navigation.featurePreview.some(name => Utilities.pathStartsWith(name, path));
+  const canonical = getCanonicalPath(path);
+  return navigation.featurePreview.some(name => Utilities.pathStartsWith(name, canonical));
 };
 
 export const isPreviewPath = (path: string) => {
-  return navigation.previewDirectories.some(name => Utilities.pathStartsWith(name, path));
+  const canonical = getCanonicalPath(path);
+  return navigation.previewDirectories.some(name => Utilities.pathStartsWith(name, canonical));
 };
 
 export const isLearnPath = (path: string) => {
-  return navigation.learnDirectories.some(name => Utilities.pathStartsWith(name, path));
+  const canonical = getCanonicalPath(path);
+  return navigation.learnDirectories.some(name => Utilities.pathStartsWith(name, canonical));
 };
 
 export const isEasPath = (path: string) => {
-  return navigation.easDirectories.some(name => Utilities.pathStartsWith(name, path));
+  const canonical = getCanonicalPath(path);
+  return navigation.easDirectories.some(name => Utilities.pathStartsWith(name, canonical));
 };
 
 export const getPageSection = (path: string) => {
@@ -78,7 +97,7 @@ export const getPageSection = (path: string) => {
 };
 
 export const getCanonicalUrl = (path: string) => {
-  if (isReferencePath(path)) {
+  if (isVersionedPath(path)) {
     return `https://docs.expo.dev${Utilities.replaceVersionInUrl(path, 'latest')}/`;
   } else if (path !== `/`) {
     return `https://docs.expo.dev${path}/`;
@@ -86,6 +105,33 @@ export const getCanonicalUrl = (path: string) => {
     return `https://docs.expo.dev`;
   }
 };
+
+function collectPageHrefs(routes: NavigationRoute[], acc: Set<string>) {
+  for (const route of routes) {
+    if (!route) {
+      continue;
+    }
+    if (route.type === 'page' && route.href) {
+      acc.add(route.href);
+    }
+    if (route.children) {
+      collectPageHrefs(route.children, acc);
+    }
+  }
+}
+
+/**
+ * Resolve the path shown in the banner on unversioned pages. Returns undefined when the page has no
+ * counterpart in `latest`, which is the case for pages added after an SDK cut.
+ */
+export function getLatestVersionPath(routes: NavigationRoute[], pathname: string) {
+  const path = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+  const latestPath = Utilities.replaceVersionInUrl(path, 'latest');
+  const pages = new Set<string>();
+  collectPageHrefs(routes, pages);
+
+  return pages.has(latestPath) ? latestPath : undefined;
+}
 
 export const getMarkdownPath = (asPath: string) => {
   const path = asPath.split('?')[0].split('#')[0];
@@ -114,28 +160,27 @@ export const isRouteActive = (
 
 const DOCS_ROOT = 'https://docs.expo.dev';
 
-function getAncestorUrl(node: NavigationRoute): string {
-  if (!node.children) {
-    return DOCS_ROOT;
-  }
+function getPageUrl(href: string) {
+  return `${DOCS_ROOT}${href}/`;
+}
 
-  for (const child of node.children as NavigationRoute[]) {
-    if (!child || child.hidden) {
+function collectVisiblePages(nodes: NavigationRoute[] = [], pages: NavigationRoute[] = []) {
+  for (const node of nodes) {
+    if (!node || node.hidden) {
       continue;
     }
-    if (child.type === 'page' && child.href) {
-      if (child.isIndex) {
-        return `${DOCS_ROOT}${child.href}`;
-      }
+    if (node.type === 'page' && node.href) {
+      pages.push(node);
     }
-    if (child.children) {
-      const url = getAncestorUrl(child);
-      if (url !== DOCS_ROOT) {
-        return url;
-      }
-    }
+    collectVisiblePages(node.children as NavigationRoute[], pages);
   }
-  return DOCS_ROOT;
+  return pages;
+}
+
+function getAncestorUrl(node: NavigationRoute): string {
+  const pages = collectVisiblePages(node.children as NavigationRoute[]);
+  const page = pages.find(child => child.isIndex) ?? pages[0];
+  return page ? getPageUrl(page.href) : DOCS_ROOT;
 }
 
 export function getBreadcrumbTrail(
@@ -156,7 +201,7 @@ export function getBreadcrumbTrail(
           return true;
         }
       } else if (node.children) {
-        trail.push({ name: node.name, node });
+        trail.push({ name: node.sidebarTitle ?? node.name, node });
         if (search(node.children)) {
           return true;
         }
@@ -177,18 +222,69 @@ export function getBreadcrumbTrail(
       }
 
       const url =
-        item.node.type === 'page' ? `${DOCS_ROOT}${item.node.href}` : getAncestorUrl(item.node);
+        item.node.type === 'page' ? getPageUrl(item.node.href) : getAncestorUrl(item.node);
 
       return { name: item.name, url };
     });
 }
 
+function isInternalHref(href?: string) {
+  if (!href) {
+    return false;
+  }
+  if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//')) {
+    return false;
+  }
+  return href.startsWith('/');
+}
+
+export function localizeRoutes<T extends NavigationRoute | NavigationRouteWithSection>(
+  routes: T[],
+  locale: SupportedLocale
+): T[] {
+  if (locale === 'en') {
+    return routes;
+  }
+  return routes.map(route => localizeRoute(route, locale));
+}
+
+function localizeRoute<T extends NavigationRoute | NavigationRouteWithSection>(
+  route: T,
+  locale: SupportedLocale
+): T {
+  const next: T = { ...route };
+  if (isInternalHref(next.href) && hasJapaneseTranslation(next.href)) {
+    next.href = buildLocalePath(next.href, locale);
+  }
+  if (isInternalHref(next.as) && hasJapaneseTranslation(next.as as string)) {
+    next.as = buildLocalePath(next.as as string, locale);
+  }
+  if (locale === 'ja' && next.type === 'page' && route.href) {
+    const translatedTitle = getJapaneseSidebarTitle(route.href);
+    if (translatedTitle) {
+      next.name = translatedTitle;
+      next.sidebarTitle = translatedTitle;
+    }
+  }
+  if (locale === 'ja' && next.type !== 'page' && route.name) {
+    const translatedSection = getJapaneseSectionTitle(route.name);
+    if (translatedSection) {
+      next.sidebarTitle = translatedSection;
+    }
+  }
+  if (next.children) {
+    next.children = next.children.map(child => localizeRoute(child, locale));
+  }
+  return next;
+}
+
 export function appendSectionToRoute(route?: NavigationRouteWithSection) {
   if (route?.children) {
+    const sectionName = route.sidebarTitle ?? route.name;
     return route.children.map((entry: NavigationRouteWithSection) =>
       route.type !== 'page'
         ? Object.assign(entry, {
-            section: route.section ? `${route.section} - ${route.name}` : route.name,
+            section: route.section ? `${route.section} - ${sectionName}` : sectionName,
           })
         : route
     );

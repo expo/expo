@@ -1,0 +1,86 @@
+name: Changesets Precompile Android
+
+# Precompiles Android Maven repositories for the "Version packages" PR into the Turbo remote
+# cache, so `stable-publish` in publish-packages.yml can reuse them instead of building them
+# itself. It waits for in-progress runs of this workflow before publishing.
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+
+concurrency:
+  # Release PRs reuse the same branch; only cancel older runs for the same PR.
+  group: ${{ github.workflow }}-${{ github.event.number || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  precompile:
+    name: Changesets native precompile (Android)
+    if: >-
+      github.repository == 'expo/expo' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (startsWith(github.head_ref, 'changeset-release/') &&
+        github.event.pull_request.head.repo.full_name == github.repository))
+    # Blacksmith's largest x64 runner: 32 vCPU, 128 GB.
+    runs-on: blacksmith-32vcpu-ubuntu-2404
+    timeout-minutes: 60
+    env:
+      RCT_HERMES_V1_ENABLED: '1'
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: expo
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: 🔑 Verify Turbo cache credentials
+        run: test -n "$TURBO_TOKEN" || (echo "TURBO_TOKEN is not set" >&2; exit 1)
+      - name: 🔨 Install pnpm
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          install: false
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: 🔨 Use JDK 17
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: ♻️ Restore Gradle caches
+        # Writable, unlike expo-caches on PRs: this workflow only runs for same-repo release
+        # branches and manual dispatches, and later runs reuse the downloaded dependencies.
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+        with:
+          cache-read-only: false
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
+      - name: 🔍 Read the NDK version
+        id: ndk
+        # The NDK version that `et prepare-precompile-android` installs
+        # (tools/src/prebuilds/AndroidToolchain.ts). The runner image already has the platform and
+        # build tools, and restoring over those root-owned directories fails.
+        run: |
+          catalog="$(node -p "path.join(path.dirname(require.resolve('react-native/package.json', { paths: ['apps/bare-expo'] })), 'gradle/libs.versions.toml')")"
+          version="$(sed -nE "s/^ndkVersion *= *[\"']([^\"']+)[\"'].*/\1/p" "$catalog")"
+          test -n "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "path=$ANDROID_HOME/ndk/$version" >> "$GITHUB_OUTPUT"
+      - name: ♻️ Restore Android NDK
+        # Saved only after a successful job, so a corrupt sdkmanager download is never cached.
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.ndk.outputs.path }}
+          key: ${{ runner.os }}-android-ndk-${{ steps.ndk.outputs.version }}
+      - name: 🏗️ Precompile embedded Maven repositories
+        # Every package builds in its own Gradle process, and they contend for the shared Gradle
+        # user home: at 16 concurrent builds the precompile took 23.1 min with the CPUs ~90% idle,
+        # at 4 it took 13.5 min.
+        run: |
+          echo "Precompiling commit ${{ github.sha }}"
+          expo-turbo run precompile-android --concurrency=4

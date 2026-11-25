@@ -1,7 +1,10 @@
 import { requireNativeView } from 'expo';
 
 import type { ExpoModifier } from '../../types';
+import { LazyItems } from '../LazyItems';
 import { createViewModifierEventListener } from '../modifiers/utils';
+
+export { LazyItems, type LazyItemsProps } from '../LazyItems';
 
 /**
  * Content padding values for LazyColumn.
@@ -25,7 +28,7 @@ export type ContentPadding = {
   bottom?: number;
 };
 
-export type LazyColumnProps = {
+export interface LazyColumnProps {
   /**
    * The content to display inside the lazy column.
    */
@@ -54,7 +57,7 @@ export type LazyColumnProps = {
    * Modifiers for the component.
    */
   modifiers?: ExpoModifier[];
-};
+}
 
 type NativeLazyColumnProps = LazyColumnProps;
 const LazyColumnNativeView: React.ComponentType<NativeLazyColumnProps> = requireNativeView(
@@ -77,3 +80,5 @@ function transformProps(props: LazyColumnProps): NativeLazyColumnProps {
 export function LazyColumn(props: LazyColumnProps) {
   return <LazyColumnNativeView {...transformProps(props)} />;
 }
+
+LazyColumn.Items = LazyItems;

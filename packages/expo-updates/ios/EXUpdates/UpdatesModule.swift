@@ -68,7 +68,7 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
           ])
           return
         case .error(let error):
-          promise.reject("ERR_UPDATES_CHECK", error.localizedDescription)
+          promise.reject(CheckForUpdateException(error))
           return
         }
       } error: { error in
@@ -95,19 +95,19 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
     AsyncFunction("readLogEntriesAsync") { (maxAge: Int) -> [[String: Any]] in
       // maxAge is in milliseconds, convert to seconds
       do {
-        return try UpdatesLogReader().getLogEntries(newerThan: Date(timeIntervalSinceNow: TimeInterval(-1 * (maxAge / 1000))))
+        return try UpdatesLogReader().getLogEntries(newerThan: Date(timeIntervalSinceNow: -TimeInterval(maxAge) / 1000))
       } catch {
-        throw Exception(name: "ERR_UPDATES_READ_LOGS", description: error.localizedDescription)
+        throw ReadLogEntriesException(error)
       }
     }
 
     AsyncFunction("clearLogEntriesAsync") { (promise: Promise) in
-      UpdatesLogReader().purgeLogEntries(olderThan: Date()) { error in
+      UpdatesLogReader().clearLogEntries { error in
         guard let error = error else {
           promise.resolve(nil)
           return
         }
-        promise.reject("ERR_UPDATES_READ_LOGS", error.localizedDescription)
+        promise.reject(ClearLogEntriesException(error))
       }
     }
 
@@ -134,7 +134,7 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
           ])
           return
         case .error(let error):
-          promise.reject("ERR_UPDATES_FETCH", error.localizedDescription)
+          promise.reject(FetchUpdateException(error))
           return
         }
       } error: { error in

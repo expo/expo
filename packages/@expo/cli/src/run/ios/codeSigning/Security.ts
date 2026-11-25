@@ -1,5 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
-import forge from 'node-forge';
+import { X509Certificate } from 'crypto';
 
 import { SecurityBinPrerequisite } from '../../../start/doctor/SecurityBinPrerequisite';
 import { CommandError } from '../../../utils/errors';
@@ -31,9 +31,9 @@ export async function getSecurityPemAsync(id: string) {
   return pem;
 }
 
-export async function getCertificateForSigningIdAsync(id: string): Promise<forge.pki.Certificate> {
+export async function getCertificateForSigningIdAsync(id: string): Promise<X509Certificate> {
   const pem = await getSecurityPemAsync(id);
-  return forge.pki.certificateFromPem(pem);
+  return new X509Certificate(pem);
 }
 
 /**
@@ -84,11 +84,13 @@ export async function resolveCertificateSigningInfoAsync(
   signingCertificateId: string
 ): Promise<CertificateSigningInfo> {
   const certificate = await getCertificateForSigningIdAsync(signingCertificateId);
+  const { subject } = certificate.toLegacyObject();
+  const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
   return {
     signingCertificateId,
-    codeSigningInfo: certificate.subject.getField('CN')?.value,
-    appleTeamName: certificate.subject.getField('O')?.value,
-    appleTeamId: certificate.subject.getField('OU')?.value,
+    codeSigningInfo: first(subject.CN),
+    appleTeamName: first(subject.O),
+    appleTeamId: first(subject.OU),
   };
 }
 

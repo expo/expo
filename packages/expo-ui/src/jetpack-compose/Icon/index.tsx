@@ -9,7 +9,7 @@ import {
 import type { ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-export type IconProps = {
+export interface IconProps {
   /**
    * The source of the icon. Can be a URI string or the result of `require()`.
    * On Android, supports XML vector drawables loaded via Metro bundler.
@@ -81,7 +81,7 @@ export type IconProps = {
    * ```
    */
   modifiers?: ModifierConfig[];
-};
+}
 
 /**
  * @hidden

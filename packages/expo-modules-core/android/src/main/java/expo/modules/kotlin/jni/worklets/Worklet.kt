@@ -1,5 +1,6 @@
 package expo.modules.kotlin.jni.worklets
 
+import expo.modules.kotlin.jni.WorkletsSoLoader
 import expo.modules.kotlin.runtime.WorkletRuntime
 import expo.modules.kotlin.types.JSTypeConverterProvider
 
@@ -61,4 +62,10 @@ class Worklet internal constructor(
     serializable: Serializable,
     args: Array<Any?>
   )
+
+  companion object {
+    init {
+      WorkletsSoLoader.loadIfPresent()
+    }
+  }
 }

@@ -1,10 +1,12 @@
 import spawnAsync from '@expo/spawn-async';
+import chalk from 'chalk';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
 import { usesExpoUI } from './features';
 import { installDependencies, type PackageManagerName } from './packageManager';
+import { getTemplateDistTag } from './templateUtils';
 import type { SubstitutionData } from './types';
 import { env } from './utils/env';
 import { newStep } from './utils/ora';
@@ -37,18 +39,23 @@ export async function createExampleApp(
   }
 
   await newStep('Initializing the example app', async (step) => {
-    const templateVersion = env.EXPO_BETA ? 'next' : 'latest';
-    const template = `expo-template-blank-typescript@${templateVersion}`;
-    debug(`Using example template: ${template}`);
-    const command = createCommand(packageManager, exampleProjectSlug, template);
+    // Pin the example template to the same SDK as the module template (derived from the CLI's own
+    // version), so `create-expo-module@sdk-XX` scaffolds an SDK XX example rather than always using
+    // `latest`. Fall back to `latest` when the SDK can't be determined or its template isn't published.
+    const distTag = env.EXPO_BETA ? 'next' : getTemplateDistTag(require('../package.json').version);
+
     try {
-      await spawnAsync(packageManager, command, {
-        cwd: targetDir,
-      });
+      await initExampleApp(packageManager, exampleProjectSlug, targetDir, distTag);
     } catch (error: any) {
-      throw new Error(
-        `${command.join(' ')} failed with exit code: ${error?.status}.\n\nError stack:\n${error?.stderr}`
+      if (env.EXPO_BETA || distTag === 'latest') {
+        throw error;
+      }
+
+      console.warn(
+        chalk.yellow(`Failed to use the "${distTag}" example template, falling back to "latest".`)
       );
+
+      await initExampleApp(packageManager, exampleProjectSlug, targetDir, 'latest');
     }
 
     step.succeed('Initialized the example app');
@@ -74,20 +81,26 @@ export async function createExampleApp(
     step.succeed('Configured the example app');
   });
 
-  await prebuildExampleApp(appTargetPath);
-
   await modifyPackageJson(appTargetPath);
 
+  // Install once the template files are in place, so that the example app's own
+  // `pnpm-workspace.yaml` keeps it out of the module's pnpm workspace.
   await newStep('Installing dependencies in the example app', async (step) => {
     await installDependencies(packageManager, appTargetPath);
     if (usesExpoUI(data.project.features)) {
       await installExpoUI(appTargetPath);
     }
+    step.succeed('Installed dependencies in the example app');
+  });
+
+  await prebuildExampleApp(appTargetPath);
+
+  await newStep('Installing CocoaPods in the example app', async (step) => {
     if (os.platform() === 'darwin') {
       await podInstall(appTargetPath);
-      step.succeed('Installed dependencies in the example app');
+      step.succeed('Installed CocoaPods in the example app');
     } else {
-      step.succeed('Installed dependencies in the example app (skipped installing CocoaPods)');
+      step.succeed('Skipped installing CocoaPods in the example app, CocoaPods requires macOS');
     }
   });
 }
@@ -103,6 +116,30 @@ async function installExpoUI(exampleAppPath: string): Promise<void> {
   });
 }
 
+/**
+ * Initializes the example app from `expo-template-blank-typescript` at the given dist-tag.
+ */
+async function initExampleApp(
+  packageManager: PackageManagerName,
+  exampleProjectSlug: string,
+  targetDir: string,
+  distTag: string
+): Promise<void> {
+  const template = `expo-template-blank-typescript@${distTag}`;
+  debug(`Using example template: ${template}`);
+  const command = createCommand(packageManager, exampleProjectSlug, template);
+
+  try {
+    await spawnAsync(packageManager, command, {
+      cwd: targetDir,
+    });
+  } catch (error: any) {
+    throw new Error(
+      `${command.join(' ')} failed with exit code: ${error?.status}.\n\nError stack:\n${error?.stderr}`
+    );
+  }
+}
+
 function createCommand(
   packageManager: PackageManagerName,
   exampleProjectSlug: string,
@@ -112,7 +149,7 @@ function createCommand(
   if (packageManager === 'npm') {
     command.push('--');
   }
-  return command.concat([exampleProjectSlug, '--template', template, '--yes']);
+  return command.concat([exampleProjectSlug, '--template', template, '--yes', '--no-install']);
 }
 
 /**
@@ -140,9 +177,13 @@ async function moveFiles(fromPath: string, toPath: string): Promise<void> {
 }
 
 /**
- * Adds missing configuration that are required to run `npx expo prebuild`.
+ * Adds the app config that the example app needs: the app IDs required to run `npx expo prebuild`,
+ * and module resolution that keeps a single copy of each package in the bundle.
  */
-async function addMissingAppConfigFields(appPath: string, data: SubstitutionData): Promise<void> {
+export async function addMissingAppConfigFields(
+  appPath: string,
+  data: SubstitutionData
+): Promise<void> {
   const appConfigPath = path.join(appPath, 'app.json');
   const appConfigContent = await fs.promises.readFile(appConfigPath, 'utf8');
   const appConfig = JSON.parse(appConfigContent);
@@ -159,6 +200,11 @@ async function addMissingAppConfigFields(appPath: string, data: SubstitutionData
     appConfig.expo.ios = {};
   }
   appConfig.expo.ios.bundleIdentifier = appId;
+
+  // The module's devDependencies install a second copy of react-native, expo and other packages
+  // in its node_modules. Make Metro resolve them to the copies that autolinking uses for the
+  // example app, so that the bundle includes only one copy of each package.
+  appConfig.expo.experiments = { ...appConfig.expo.experiments, autolinkingModuleResolution: true };
 
   await fs.promises.writeFile(appConfigPath, JSON.stringify(appConfig, null, 2), 'utf8');
 }

@@ -13,6 +13,8 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 `Pedometer` from `expo-sensors` uses the system `hardware.Sensor` on Android and Core Motion on iOS to get the user's step count, and also allows you to subscribe to pedometer updates.
 
+> **warning** Pedometer is not available in Expo Go for Android. Expo Go does not include the `ACTIVITY_RECOGNITION` permission that Pedometer needs. With this permission, Google Play could classify Expo Go as a health app. To use Pedometer on Android, create a [development build](/develop/development-builds/introduction/).
+
 ## Installation
 
 <APIInstallSection />

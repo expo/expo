@@ -9,12 +9,12 @@
 #include "../JavaScriptTypedArray.h"
 #include "../JSIContext.h"
 #include "../JavaScriptObject.h"
+#include "../ArrayBuffer.h"
 #include "../JavaScriptArrayBuffer.h"
 #include "../NativeArrayBuffer.h"
 #include "../JavaScriptValue.h"
 #include "../JavaScriptFunction.h"
 #include "../javaclasses/Collections.h"
-#include "../worklets/Serializable.h"
 
 #include "react/jni/ReadableNativeMap.h"
 #include "react/jni/ReadableNativeArray.h"
@@ -112,12 +112,27 @@ bool DoubleFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &val
   return value.isNumber();
 }
 
+namespace {
+
+/**
+ * Builds a Java string from UTF-16, which is what a Java string already stores, so the code units
+ * go straight to `NewString` with their length and no encoding step.
+ */
+jstring makeJavaString(JNIEnv *env, const std::u16string &utf16) {
+  if (utf16.empty()) {
+    return env->NewStringUTF("");
+  }
+  return static_cast<jstring>(jni::make_jstring(utf16).release());
+}
+
+} // namespace
+
 jobject StringFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
   const jsi::Value &value
 ) const {
-  return env->NewStringUTF(value.asString(rt).utf8(rt).c_str());
+  return makeJavaString(env, value.asString(rt).utf16(rt));
 }
 
 bool StringFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -199,6 +214,38 @@ bool TypedArrayFrontendConverter::canConvert(
   const jsi::Value &value
 ) const {
   return value.isObject();
+}
+
+jobject ArrayBufferFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  JSIContext *jsiContext = getJSIContext(rt);
+  auto object = value.asObject(rt);
+
+  if (isTypedArray(rt, object)) {
+    auto typedArray = TypedArray(rt, object);
+    return ArrayBuffer::newInstance(jsiContext, rt, typedArray).release();
+  }
+
+  auto arrayBuffer = object.getArrayBuffer(rt);
+  return ArrayBuffer::newInstance(
+    jsiContext,
+    rt,
+    std::move(arrayBuffer)
+  ).release();
+}
+
+bool ArrayBufferFrontendConverter::canConvert(
+  jsi::Runtime &rt,
+  const jsi::Value &value
+) const {
+  if (value.isObject()) {
+    auto object = value.getObject(rt);
+    return object.isArrayBuffer(rt) || isTypedArray(rt, object);
+  }
+  return false;
 }
 
 jobject NativeArrayBufferFrontendConverter::convert(
@@ -576,7 +623,7 @@ jobject MapFrontendConverter::convert(
     auto key = propertyNames.getValueAtIndex(rt, i).getString(rt);
     auto jsValue = jsObject.getProperty(rt, key);
 
-    auto convertedKey = env->NewStringUTF(key.utf8(rt).c_str());
+    auto convertedKey = makeJavaString(env, key.utf16(rt));
 
     auto convertedValue = valueConverter->convert(
       rt, env, jsValue
@@ -682,7 +729,7 @@ jobject AnyFrontendConvert::convert(
     auto key = propertyNames.getValueAtIndex(rt, i).getString(rt);
     auto jsValue = obj.getProperty(rt, key);
 
-    auto convertedKey = env->NewStringUTF(key.utf8(rt).c_str());
+    auto convertedKey = makeJavaString(env, key.utf16(rt));
     auto convertedValue = this->convert(
       rt, env, jsValue
     );
@@ -755,33 +802,5 @@ jobject ValueOrUndefinedFrontendConverter::convert(
 
   return parameterConverter->convert(rt, env, value);
 }
-
-#if WORKLETS_ENABLED
-
-jobject SynchronizableFrontendConverter::convert(
-  jsi::Runtime &rt,
-  JNIEnv *env,
-  const jsi::Value &value
-) const {
-  JSIContext *jsiContext = getJSIContext(rt);
-
-  auto worklet = worklets::extractSerializableOrThrow(rt, value);
-  return Serializable::newInstance(
-    jsiContext,
-    worklet
-  ).release();
-}
-
-bool SynchronizableFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
-  try {
-    // TODO(@lukmccall): find a better way to check this without throwing exception
-    (void)worklets::extractSerializableOrThrow(rt, value);
-    return true;
-  } catch (...) {
-    return false;
-  }
-}
-
-#endif
 
 } // namespace expo

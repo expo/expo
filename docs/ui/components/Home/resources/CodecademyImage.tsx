@@ -2,6 +2,7 @@ import { theme } from '@expo/styleguide';
 
 export const CodecademyImage = () => (
   <svg
+    aria-hidden="true"
     className="absolute right-5 bottom-5"
     width="126"
     height="154"
@@ -116,7 +117,7 @@ export const CodecademyImage = () => (
 );
 
 export const CodecademyImageMasks = () => (
-  <svg width="0" height="0">
+  <svg aria-hidden="true" width="0" height="0">
     <mask
       id="9cc3c1cf68eeb3d655221dab7774e70e"
       style={{ maskType: 'alpha' }}

@@ -258,7 +258,7 @@ struct DynamicTypeTests {
     
     @Test
     func `returns mixed elements to JS`() throws {
-      let mixedArray: [Any] = [1, NativeArrayBuffer.allocate(size: 3)]
+      let mixedArray: [Any] = [1, ArrayBuffer(size: 3)]
 
       let converted = try (~[Any].self).convertResult(mixedArray, appContext: appContext)
       let jsValue = try (~[Any].self).castToJS(converted, appContext: appContext)
@@ -352,7 +352,7 @@ struct DynamicTypeTests {
 
     @Test
     func `returns mixed elements to JS`() throws {
-      let mixedDict: [String: Any] = ["num": 1, "buf": NativeArrayBuffer.allocate(size: 3)]
+      let mixedDict: [String: Any] = ["num": 1, "buf": ArrayBuffer(size: 3)]
 
       let converted = try (~[String: Any].self).convertResult(mixedDict, appContext: appContext)
       let jsValue = try (~[String: Any].self).castToJS(converted, appContext: appContext)
@@ -485,6 +485,21 @@ struct DynamicTypeTests {
 
       #expect(result.kind == .string)
       #expect(result.getString() == "#ff0000ff")
+    }
+
+    @Test
+    func `does not recurse for a convertible with the default convertResult`() throws {
+      struct SelfConvertible: Convertible {
+        static func convert(from value: Any?, appContext: AppContext) throws -> SelfConvertible {
+          return SelfConvertible()
+        }
+      }
+
+      // The default `convertResult` returns the value unchanged, so redispatching it into
+      // the same dynamic type can never make progress and must fall back to `undefined`.
+      let result = try (~SelfConvertible.self).convertToJS(SelfConvertible(), appContext: appContext)
+
+      #expect(result.isUndefined() == true)
     }
 
     @Test
@@ -660,8 +675,8 @@ struct DynamicTypeTests {
     }
 
     @Test
-    func `throws NativeSharedObjectNotFoundException`() {
-      #expect(throws: NativeSharedObjectNotFoundException.self) {
+    func `throws SharedObject.NotFoundException`() {
+      #expect(throws: SharedObject.NotFoundException.self) {
         try (~TestSharedObject.self).cast("a string", appContext: appContext)
       }
     }

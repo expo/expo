@@ -16,6 +16,7 @@ export function SuccessCheckmark({ size = 'md', className }: Props) {
         className
       )}>
       <CheckIcon
+        aria-hidden="true"
         className={mergeClasses(
           'text-success',
           size === 'md' && 'size-10',

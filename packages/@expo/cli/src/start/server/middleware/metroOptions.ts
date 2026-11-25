@@ -5,9 +5,9 @@ import type { BundleOptions as MetroBundleOptions } from '@expo/metro/metro/shar
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
+import type { EnvironmentMode } from '../../../utils/nodeEnv';
+import { debugEvent } from '../metro/metroDebugEvents';
 import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
-
-const debug = require('debug')('expo:metro:options') as typeof console.log;
 
 /** Enforce conversion of `true` to `'true'` */
 function toBoolStr(x: true): 'true';
@@ -19,20 +19,23 @@ function toBoolStr(x: boolean): 'true' | 'false' {
 
 export type MetroEnvironment = 'node' | 'react-server' | 'client';
 
-export type ExpoMetroOptions = {
+export type ExpoMetroOptions = Pick<SerializerOptions, 'includeSourceMaps' | 'output'> & {
   platform: string;
   mainModuleName: string;
-  mode: string;
+  mode: EnvironmentMode;
   minify?: boolean;
   environment?: MetroEnvironment;
-  serializerOutput?: 'static';
-  serializerIncludeMaps?: boolean;
+  entryFilename?: string;
+  outputDirectory?: string;
+  outputExtension?: string;
   lazy?: boolean;
   engine?: 'hermes';
   preserveEnvVars?: boolean;
   bytecode?: boolean;
   /** Enable async routes (route-based bundle splitting) in Expo Router. */
   asyncRoutes?: boolean;
+  /** The chunking strategy to use when `splitChunks` is enabled. */
+  chunkingStrategy?: 'granular' | 'legacy';
   /** Module ID relative to the projectRoot for the Expo Router app directory. */
   routerRoot?: string;
   /** Enable React compiler support in Babel. */
@@ -68,7 +71,11 @@ export type ExpoMetroOptions = {
 export type SerializerOptions = {
   includeSourceMaps?: boolean;
   output?: 'static';
+  entryFilename?: string;
+  outputDirectory?: string;
+  outputExtension?: string;
   splitChunks?: boolean;
+  chunkingStrategy?: 'granular' | 'legacy';
   usedExports?: boolean;
   exporting?: boolean;
 };
@@ -120,7 +127,11 @@ export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
   return exp.experiments?.baseUrl?.trim().replace(/\/+$/, '') ?? '';
 }
 
-export function getAsyncRoutesFromExpoConfig(exp: ExpoConfig, mode: string, platform: string) {
+export function getAsyncRoutesFromExpoConfig(
+  exp: ExpoConfig,
+  mode: EnvironmentMode,
+  platform: string
+) {
   let asyncRoutesSetting;
 
   if (exp.extra?.router?.asyncRoutes) {
@@ -146,7 +157,21 @@ export function getMetroDirectBundleOptionsForExpoConfig(
     baseUrl: getBaseUrlFromExpoConfig(exp),
     routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     asyncRoutes: getAsyncRoutesFromExpoConfig(exp, options.mode, options.platform),
+    chunkingStrategy: getChunkingStrategyFromExpoConfig(exp),
   });
+}
+
+export function getChunkingStrategyFromExpoConfig(exp: ExpoConfig): 'granular' | 'legacy' {
+  const experiments = exp.experiments as
+    | (NonNullable<ExpoConfig['experiments']> & {
+        chunking?: { mode: 'granular' | 'legacy' };
+      })
+    | undefined;
+  return experiments?.chunking?.mode === 'granular' &&
+    !exp.experiments?.reactServerComponentRoutes &&
+    !exp.experiments?.reactServerFunctions
+    ? 'granular'
+    : 'legacy';
 }
 
 export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
@@ -156,8 +181,11 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     mode,
     minify,
     environment,
-    serializerOutput,
-    serializerIncludeMaps,
+    output,
+    entryFilename,
+    outputDirectory,
+    outputExtension,
+    includeSourceMaps,
     bytecode,
     lazy,
     engine,
@@ -168,6 +196,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     isExporting,
     inlineSourceMap,
     splitChunks,
+    chunkingStrategy,
     usedExports,
     reactCompiler,
     optimize,
@@ -186,7 +215,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
   const isHermes = engine === 'hermes';
 
   if (isExporting) {
-    debug('Disabling lazy bundling for export build');
+    debugEvent('options_lazy_disabled_for_export', {});
     options.lazy = false;
   }
 
@@ -194,12 +223,12 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
   let fakeSourceMapUrl: string | undefined;
 
   // TODO: Upstream support to Metro for passing custom serializer options.
-  if (serializerIncludeMaps != null || serializerOutput != null) {
+  if (includeSourceMaps != null || output != null) {
     fakeSourceUrl = new URL(
       createBundleUrlPath(options).replace(/^\//, ''),
       'http://localhost:8081'
     ).toString();
-    if (serializerIncludeMaps) {
+    if (includeSourceMaps) {
       fakeSourceMapUrl = fakeSourceUrl.replace('.bundle?', '.map?');
     }
   }
@@ -251,9 +280,13 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     sourceUrl: fakeSourceUrl,
     serializerOptions: {
       splitChunks,
+      chunkingStrategy,
       usedExports: usedExports || undefined,
-      output: serializerOutput,
-      includeSourceMaps: serializerIncludeMaps,
+      output,
+      entryFilename,
+      outputDirectory,
+      outputExtension,
+      includeSourceMaps,
       exporting: isExporting || undefined,
       excludeSource: excludeSource ?? Server.DEFAULT_BUNDLE_OPTIONS.excludeSource,
     },
@@ -299,8 +332,8 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     mode,
     minify,
     environment,
-    serializerOutput,
-    serializerIncludeMaps,
+    output,
+    includeSourceMaps,
     lazy,
     bytecode,
     engine,
@@ -320,6 +353,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     runModule,
     hosted,
     liveBindings,
+    isLoaderBundle,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -376,6 +410,9 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   if (hosted) {
     queryParams.append('transform.hosted', '1');
   }
+  if (isLoaderBundle) {
+    queryParams.append('transform.isLoaderBundle', 'true');
+  }
 
   if (environment) {
     queryParams.append('resolver.environment', environment);
@@ -395,11 +432,11 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   if (optimize) {
     queryParams.append('transform.optimize', String(optimize));
   }
-  if (serializerOutput) {
-    queryParams.append('serializer.output', serializerOutput);
+  if (output) {
+    queryParams.append('serializer.output', output);
   }
-  if (serializerIncludeMaps) {
-    queryParams.append('serializer.map', String(serializerIncludeMaps));
+  if (includeSourceMaps) {
+    queryParams.append('serializer.map', String(includeSourceMaps));
   }
   if (engine === 'hermes') {
     queryParams.append('unstable_transformProfile', 'hermes-stable');
@@ -421,7 +458,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
 
 /**
  * Convert all path separators to `/`, including on Windows.
- * Metro asumes that all module specifiers are posix paths.
+ * Metro assumes that all module specifiers are posix paths.
  * References to directories can still be Windows-style paths in Metro.
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules#importing_features_into_your_script

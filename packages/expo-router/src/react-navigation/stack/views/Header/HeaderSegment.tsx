@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { type LayoutChangeEvent, Platform, StyleSheet, type ViewStyle } from 'react-native';
 
+import { useWarnOnce } from '../../../../useDeprecated';
 import {
   getDefaultHeaderHeight,
   Header,
@@ -9,7 +10,9 @@ import {
   type HeaderBackButtonProps,
   HeaderTitle,
 } from '../../../elements';
+import { isMaskedViewAvailable } from '../../../elements/MaskedView';
 import { useLocale } from '../../../native';
+import { forUIKit } from '../../TransitionConfigs/HeaderStyleInterpolators';
 import type {
   Layout,
   SceneProgress,
@@ -85,6 +88,18 @@ export function HeaderSegment(props: Props) {
     styleInterpolator,
     ...rest
   } = props;
+
+  // `forUIKit` slides the back label behind the back icon, so it is masked.
+  useWarnOnce(
+    'The back button label in `expo-router/js-stack` is not masked during the `forUIKit` header animation because `@react-native-masked-view/masked-view` is not installed or not linked in the native app. Run `npx expo install @react-native-masked-view/masked-view`, then rebuild the native app.',
+    Platform.OS === 'ios' &&
+      !isMaskedViewAvailable &&
+      styleInterpolator === forUIKit &&
+      onGoBack != null &&
+      props.headerLeft === undefined &&
+      !headerBackImage &&
+      headerBackButtonDisplayMode !== 'minimal'
+  );
 
   const defaultHeight = getDefaultHeaderHeight(layout, modal, headerStatusBarHeight);
 

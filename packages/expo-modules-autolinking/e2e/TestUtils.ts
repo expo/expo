@@ -28,9 +28,21 @@ export async function autolinkingRunAsync(
   }
 }
 
-// For some reason, it can't be async, cause otherwise we will get `yarn did not print valid JSON:` error
+// Lifecycle scripts are skipped: the tests only need `node_modules`, and a failing script
+// makes `yarn install` exit with an error but prints no output that explains it.
 export function yarnSync(options?: SpawnOptions) {
-  spawnSync('yarn', ['install', '--silent'], options);
+  const result = spawnSync('yarn', ['install', '--frozen-lockfile', '--ignore-scripts'], {
+    encoding: 'utf8',
+    ...options,
+  });
+  if (result.error) {
+    throw result.error;
+  }
+  if (result.status !== 0) {
+    throw new Error(
+      `yarn install exited with ${result.status ?? result.signal}\n------\nSTDOUT:\n${result.stdout}\n------\nSTDERR:\n${result.stderr}`
+    );
+  }
 }
 
 export function combinations<T, U>(
@@ -40,8 +52,8 @@ export function combinations<T, U>(
   b: U[]
 ): { [key: string]: T | U }[] {
   const result = [];
-  a.forEach(aValue => {
-    b.forEach(bValue => {
+  a.forEach((aValue) => {
+    b.forEach((bValue) => {
       result.push({
         [aKey]: aValue,
         [bKey]: bValue,

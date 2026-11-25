@@ -1,10 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { getServerTesterRoot } from '../__tests__/utils';
 import { createExpoServe, createExpoStart, executeExpoAsync } from './expo';
 import { executeAsync, processFindPrefixedValue } from './process';
 import { BackgroundServer, createBackgroundServer } from './server';
-import { getRouterE2ERoot } from '../__tests__/utils';
 
 export const RUNTIME_EXPO_SERVE = 'expo serve';
 export const RUNTIME_EXPO_START = 'expo start';
@@ -24,9 +24,7 @@ export type ServerTestConfiguration = {
 };
 
 export type ServerTestOptions = {
-  /** The E2E test scenario directory name (e.g., 'server-middleware-async') */
-  fixtureName: string;
-  /** A unique value to ensure the output directory is not overwritten by another test running in parallel. Useful for tests that share the same `fixtureName` */
+  /** A unique value to keep suites with different export options in separate output directories. */
   uniqueOutputKey?: string;
   /** Options for the export command */
   export?: {
@@ -43,19 +41,16 @@ export type ServerTestOptions = {
 };
 
 /**
- * Creates server test configurations for the specified runtimes.
+ * Creates server-tester configurations for the specified runtimes.
  * Use with `describe.each()` to run the same tests against multiple server implementations.
  *
  * @param runtimes - Array of runtime identifiers to prepare (e.g., `['expo serve', 'workerd']`)
- * @param options - Configuration options for the test servers
+ * @param options - Optional configuration for the test servers
  *
  * @example
  * ```ts
  * describe.each(
- *   prepareServers(['expo serve', 'workerd'], {
- *     fixtureName: 'server-middleware-async',
- *     export: { env: { E2E_ROUTER_SERVER_MIDDLEWARE: 'true' } },
- *   })
+ *   prepareServers(['expo serve', 'workerd'])
  * )('$name requests', (config) => {
  *   const ctx = setupServer(config);
  *   it('can serve html', async () => {
@@ -66,10 +61,11 @@ export type ServerTestOptions = {
  */
 export function prepareServers(
   runtimes: RuntimeType[],
-  options: ServerTestOptions
+  options: ServerTestOptions = {}
 ): ServerTestConfiguration[] {
-  const { fixtureName, uniqueOutputKey } = options;
-  const projectRoot = getRouterE2ERoot();
+  const { uniqueOutputKey } = options;
+  const projectRoot = getServerTesterRoot();
+  const workerdDir = path.join(projectRoot, 'servers/workerd');
 
   const exportEnv = options.export?.env ?? {};
   const exportCliFlags = options.export?.cliFlags ?? [];
@@ -78,23 +74,35 @@ export function prepareServers(
   const defaultExportEnv = {
     NODE_ENV: 'production',
     EXPO_USE_STATIC: 'server',
-    E2E_ROUTER_SRC: fixtureName,
     ...exportEnv,
   } as const;
+
+  let sharedProductionExport: Promise<string> | undefined;
+
+  async function prepareProductionDist(runtimeName: string) {
+    const sharedOutputName = generateOutputDir('shared', uniqueOutputKey);
+    const sharedOutputDir = path.join(projectRoot, sharedOutputName);
+
+    sharedProductionExport ??= executeExpoAsync(
+      projectRoot,
+      ['export', '-p', 'web', '--output-dir', sharedOutputName, ...exportCliFlags],
+      { env: defaultExportEnv }
+    ).then(() => sharedOutputDir);
+
+    const sourceDir = await sharedProductionExport;
+    const outputName = generateOutputDir(runtimeName, uniqueOutputKey);
+    const outputDir = path.join(projectRoot, outputName);
+
+    await fs.promises.rm(outputDir, { force: true, recursive: true });
+    await fs.promises.cp(sourceDir, outputDir, { recursive: true });
+
+    return [outputDir, outputName] as const;
+  }
 
   const knownRuntimeConfigs: Record<RuntimeType, Omit<ServerTestConfiguration, 'name'>> = {
     [RUNTIME_EXPO_SERVE]: {
       prepareDist: async () => {
-        const outputName = generateOutputDir('expo-serve', fixtureName, uniqueOutputKey);
-        const outputDir = path.join(projectRoot, outputName);
-
-        await executeExpoAsync(
-          projectRoot,
-          ['export', '-p', 'web', '--output-dir', outputName, ...exportCliFlags],
-          { env: defaultExportEnv }
-        );
-
-        return [outputDir, outputName];
+        return await prepareProductionDist('expo-serve');
       },
       createServer: (overrideServe) =>
         createExpoServe({
@@ -123,20 +131,11 @@ export function prepareServers(
     },
     [RUNTIME_EXPRESS_SERVER]: {
       prepareDist: async () => {
-        const outputName = generateOutputDir('express', fixtureName, uniqueOutputKey);
-        const outputDir = path.join(projectRoot, outputName);
-
-        await executeExpoAsync(
-          projectRoot,
-          ['export', '-p', 'web', '--output-dir', outputName, ...exportCliFlags],
-          { env: defaultExportEnv }
-        );
-
-        return [outputDir, outputName];
+        return await prepareProductionDist('express');
       },
       createServer: (overrideServe) =>
         createBackgroundServer({
-          command: ['node', path.join(projectRoot, `__e2e__/${fixtureName}/express.js`)],
+          command: ['node', path.join(projectRoot, 'servers/express.js')],
           host: (chunk: any) => processFindPrefixedValue(chunk, 'Express server listening'),
           cwd: projectRoot,
           env: {
@@ -148,14 +147,7 @@ export function prepareServers(
     },
     [RUNTIME_WORKERD]: {
       prepareDist: async () => {
-        const outputName = generateOutputDir('workerd', fixtureName, uniqueOutputKey);
-        const outputDir = path.join(projectRoot, outputName);
-
-        await executeExpoAsync(
-          projectRoot,
-          ['export', '-p', 'web', '--output-dir', outputName, ...exportCliFlags],
-          { env: defaultExportEnv }
-        );
+        const [outputDir] = await prepareProductionDist('workerd');
 
         await executeAsync(projectRoot, [
           'node_modules/.bin/esbuild',
@@ -163,10 +155,10 @@ export function prepareServers(
           '--format=esm',
           '--platform=node',
           `--outfile=${path.join(outputDir, 'server/workerd.js')}`,
-          path.join(projectRoot, `__e2e__/${fixtureName}/workerd/workerd.mjs`),
+          path.join(workerdDir, 'workerd.mjs'),
         ]);
         fs.copyFileSync(
-          path.join(projectRoot, `__e2e__/${fixtureName}/workerd/config.capnp`),
+          path.join(workerdDir, 'config.capnp'),
           path.join(outputDir, 'server/config.capnp')
         );
 
@@ -179,7 +171,7 @@ export function prepareServers(
             'serve',
             path.join(
               projectRoot,
-              generateOutputDir('workerd', fixtureName, uniqueOutputKey),
+              generateOutputDir('workerd', uniqueOutputKey),
               'server/config.capnp'
             ),
           ],
@@ -200,9 +192,15 @@ export function prepareServers(
       throw new Error(`Unknown runtime "${runtime}". Known runtimes: ${knownRuntimes.join(', ')}`);
     }
 
+    const config = knownRuntimeConfigs[runtime];
+    let preparedDist: ReturnType<ServerTestConfiguration['prepareDist']> | undefined;
+
     return {
-      ...knownRuntimeConfigs[runtime],
+      ...config,
       name: runtime,
+      // A configuration can be reused by multiple describe blocks that vary only the server
+      // environment. The exported files are identical, so prepare them once for the test file.
+      prepareDist: () => (preparedDist ??= config.prepareDist()),
     };
   });
 }
@@ -265,6 +263,6 @@ export function setupServer(
   };
 }
 
-function generateOutputDir(runtimeName: string, fixtureName: string, uniqueOutputKey?: string) {
-  return `dist-${fixtureName}-${runtimeName}${uniqueOutputKey ? `-${uniqueOutputKey}` : ''}`;
+function generateOutputDir(runtimeName: string, uniqueOutputKey?: string) {
+  return ['dist', runtimeName, uniqueOutputKey].filter(Boolean).join('-');
 }

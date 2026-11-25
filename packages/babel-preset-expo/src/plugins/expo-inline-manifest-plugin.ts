@@ -1,6 +1,6 @@
 import type { ConfigAPI, PluginObj, PluginPass } from '@babel/core';
-import type { ExpoConfig, ProjectConfig } from 'expo/config';
 import type { Props as SplashProps } from 'expo-splash-screen/plugin';
+import type { ExpoConfig, ProjectConfig } from 'expo/config';
 
 import { getIsReactServer, getPlatform, getPossibleProjectRoot } from '../common';
 

@@ -8,7 +8,7 @@ export const CreateAppButton = ({ href, name }: CreateAppButtonProps) => (
     className="flex w-fit justify-center max-medium:min-w-full"
     href={href}
     openInNewTab
-    rightSlot={<ArrowUpRightIcon />}>
+    rightSlot={<ArrowUpRightIcon aria-hidden="true" />}>
     Create {name} App
   </Button>
 );

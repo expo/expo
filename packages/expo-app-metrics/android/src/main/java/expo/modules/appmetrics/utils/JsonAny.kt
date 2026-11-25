@@ -28,8 +28,16 @@ object JsonAny {
       is Boolean -> JsonPrimitive(value)
       is Int -> JsonPrimitive(value)
       is Long -> JsonPrimitive(value)
-      is Double -> if (value.isFinite()) JsonPrimitive(value) else JsonNull
-      is Float -> if (value.isFinite()) JsonPrimitive(value.toDouble()) else JsonNull
+      is Double -> if (value.isFinite()) {
+        JsonPrimitive(value)
+      } else {
+        JsonNull
+      }
+      is Float -> if (value.isFinite()) {
+        JsonPrimitive(value.toDouble())
+      } else {
+        JsonNull
+      }
       is Number -> JsonPrimitive(value.toDouble())
       is String -> JsonPrimitive(value)
       is Map<*, *> -> JsonObject(
@@ -48,10 +56,11 @@ object JsonAny {
       is JsonNull -> null
       is JsonPrimitive -> when {
         element.isString -> element.content
-        else -> element.booleanOrNull
-          ?: element.longOrNull
-          ?: element.doubleOrNull
-          ?: element.content
+        else ->
+          element.booleanOrNull
+            ?: element.longOrNull
+            ?: element.doubleOrNull
+            ?: element.content
       }
       is JsonObject -> element.mapValues { (_, v) -> fromElement(v) }
       is JsonArray -> element.map { fromElement(it) }

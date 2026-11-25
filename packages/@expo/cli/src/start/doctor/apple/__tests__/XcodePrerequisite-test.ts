@@ -1,4 +1,4 @@
-import spawnAsync from '@expo/spawn-async';
+import spawnAsync, { SpawnResult } from '@expo/spawn-async';
 import { execSync } from 'child_process';
 
 import * as Log from '../../../../log';
@@ -8,12 +8,13 @@ import { getXcodeVersionAsync, XcodePrerequisite } from '../XcodePrerequisite';
 jest.mock('@expo/spawn-async');
 jest.mock(`../../../../log`);
 jest.mock('../../../../utils/prompts');
+jest.mock('../../../../utils/interactive', () => ({ isInteractive: () => false }));
 
 function mockXcodeInstalled() {
   return jest.mocked(spawnAsync).mockResolvedValueOnce({
     stdout: `Xcode 14.3
   Build version 14E222b`,
-  });
+  } as unknown as SpawnResult);
 }
 
 describe(getXcodeVersionAsync, () => {
@@ -25,7 +26,7 @@ describe(getXcodeVersionAsync, () => {
     expect(await getXcodeVersionAsync({ force: true })).toEqual('14.3.0');
   });
   it(`logs an error when the xcode cli format is invalid`, async () => {
-    jest.mocked(spawnAsync).mockResolvedValueOnce({ stdout: `foobar` });
+    jest.mocked(spawnAsync).mockResolvedValueOnce({ stdout: `foobar` } as unknown as SpawnResult);
     expect(await getXcodeVersionAsync({ force: true })).toEqual(null);
     expect(Log.warn).toHaveBeenLastCalledWith(
       expect.stringMatching(/Unable to check Xcode version/)
@@ -88,7 +89,7 @@ for (const platform of ['darwin', 'win32']) {
           .mockResolvedValueOnce({
             stdout: `Xcode ${xcodeVersion}
           Build version 13A1030d`,
-          });
+          } as unknown as SpawnResult);
         jest
           .mocked(execSync)
           // Skip actually opening the app store.
@@ -106,10 +107,13 @@ for (const platform of ['darwin', 'win32']) {
 
         await expect(XcodePrerequisite.instance.assertImplementation()).rejects.toThrow();
 
-        expect(confirmAsync).toHaveBeenLastCalledWith({
-          initial: true,
-          message: expect.stringMatching(promptRegex),
-        });
+        expect(confirmAsync).toHaveBeenLastCalledWith(
+          {
+            initial: true,
+            message: expect.stringMatching(promptRegex),
+          },
+          expect.anything()
+        );
         // Opens the app store...
         expect(execSync).toHaveBeenLastCalledWith(
           platform === 'darwin'
@@ -121,3 +125,19 @@ for (const platform of ['darwin', 'win32']) {
     }
   });
 }
+
+it(`names the next step in non-interactive mode`, async () => {
+  mockPlatform('darwin');
+  jest.mocked(spawnAsync).mockResolvedValueOnce({
+    stdout: `Xcode 1.0
+  Build version 13A1030d`,
+  } as unknown as SpawnResult);
+  jest
+    .mocked(confirmAsync)
+    .mockReset()
+    .mockImplementationOnce(jest.requireActual('../../../../utils/prompts').confirmAsync);
+
+  await expect(XcodePrerequisite.instance.assertImplementation()).rejects.toThrow(
+    'Install or update Xcode from the App Store and try again.'
+  );
+});

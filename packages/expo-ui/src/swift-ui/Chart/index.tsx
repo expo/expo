@@ -102,6 +102,16 @@ export type PieChartStyle = {
    * Space between slices in points.
    */
   angularInset?: number;
+  /**
+   * Corner radius of each slice in points. On a donut, half the ring's thickness gives fully rounded ends.
+   * @default 0
+   */
+  cornerRadius?: number;
+  /**
+   * Opacity of each slice, from 0 to 1.
+   * @default 0.8
+   */
+  opacity?: number;
 };
 
 /**
@@ -144,7 +154,7 @@ export type RuleChartStyle = {
   dashArray?: number[];
 };
 
-export type ChartProps = {
+export interface ChartProps extends CommonViewModifierProps {
   /**
    * Array of data points to display.
    */
@@ -201,7 +211,7 @@ export type ChartProps = {
    * Rule mark specific styling options.
    */
   ruleStyle?: RuleChartStyle;
-} & CommonViewModifierProps;
+}
 
 const ChartNativeView: React.ComponentType<ChartProps> = requireNativeView('ExpoUI', 'ChartView');
 

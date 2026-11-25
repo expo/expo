@@ -1,23 +1,26 @@
 import AppMetrics from 'expo-app-metrics';
 
+import { getNavigationRouteParams } from '../navigationConfig';
+import type { NavigationBlockingTime } from '../shared/navigation/blockingTime';
 import { emitTTI } from './emitTTI';
+import { getPathname } from './getPathname';
+import { getReactNavigationIntegrationConfig } from './init';
 import { collectMountedKeys, findFocusedLeaf } from './stateTraversal';
 import type { ReactNavigationIntegrationStorage } from './storage';
-import type { GetPathname, NavigationStateLike } from './types';
+import type { NavigationStateLike } from './types';
 
 export function createStateChangeHandler(
   storage: ReactNavigationIntegrationStorage,
-  getPathname: GetPathname,
   appLaunchTime: number
-): (state: NavigationStateLike | undefined) => void {
+): (state: NavigationStateLike | undefined, blockingTime: NavigationBlockingTime) => void {
   let previousFocusedKey: string | null = null;
+  const focusedKeys = new Set<string>();
 
-  return async function handleStateChange(state) {
+  return async function handleStateChange(state, blockingTime) {
     if (!state) return;
     // Snapshot clocks once so every metric written below is stamped with
-    // the moment the focus actually fired, not the moment
-    // `addCustomMetricToSession` happens to run after the awaited
-    // `getMainSession()` round-trip.
+    // the moment the focus actually fired, not the moment `addMetric` happens
+    // to run after the surrounding async work.
     const now = performance.now();
     const timestamp = new Date().toISOString();
     // Mark all non-focused mounted screens as already rendered so a later
@@ -60,13 +63,20 @@ export function createStateChangeHandler(
 
     if (focused.key === previousFocusedKey) return;
     previousFocusedKey = focused.key;
+    // Not derived from `dispatchTime`, which the loop above also sets on screens mounted unfocused.
+    const isFirstFocus = !focusedKeys.has(focused.key);
+    focusedKeys.add(focused.key);
 
     const pathname = getPathname(state) ?? focused.route.name;
-    const routeParams = focused.route.params ?? {};
+    const navigationParams = getNavigationRouteParams(
+      getReactNavigationIntegrationConfig(),
+      focused.route.params ?? {}
+    );
     const name = isInitial ? 'cold_ttr' : 'warm_ttr';
 
-    const mainSessionId = (await AppMetrics.getMainSession())?.id;
-    if (!mainSessionId) return;
+    // The main session is a static shared object, available synchronously and
+    // never null. Metrics are recorded against it directly via `addMetric`.
+    const mainSession = AppMetrics.getMainSession();
 
     if (isColdAppLaunch) {
       const appLaunchTtrSeconds = (now - appLaunchTime) / 1000;
@@ -77,22 +87,21 @@ export function createStateChangeHandler(
           lastInteractiveCall: now,
         };
       }
-      AppMetrics.addCustomMetricToSession({
-        sessionId: mainSessionId,
+      mainSession.addMetric({
         timestamp,
         category: 'navigation',
         name,
         routeName: pathname,
         value: appLaunchTtrSeconds,
-        params: { isAppLaunch: true, routeParams },
+        params: { isAppLaunch: true, ...navigationParams },
       });
       if (hasPendingInteractive) {
         await emitTTI({
-          sessionId: mainSessionId,
+          session: mainSession,
           timestamp,
           routeName: pathname,
           value: appLaunchTtrSeconds,
-          routeParams,
+          ...navigationParams,
         });
       }
       storage.pendingActions.length = 0;
@@ -108,22 +117,33 @@ export function createStateChangeHandler(
       };
     }
 
-    AppMetrics.addCustomMetricToSession({
-      sessionId: mainSessionId,
+    mainSession.addMetric({
       timestamp,
       category: 'navigation',
       name,
       routeName: pathname,
       value: ttrSeconds,
-      params: { isAppLaunch: false, routeParams },
+      params: { isAppLaunch: false, ...navigationParams },
     });
+    if (isFirstFocus) {
+      blockingTime?.setMetric(
+        {
+          timestamp,
+          category: 'navigation',
+          name: 'tbt',
+          routeName: pathname,
+          params: navigationParams,
+        },
+        now
+      );
+    }
     if (hasPendingInteractive) {
       await emitTTI({
-        sessionId: mainSessionId,
+        session: mainSession,
         timestamp,
         routeName: pathname,
         value: ttrSeconds,
-        routeParams,
+        ...navigationParams,
       });
     }
     storage.pendingActions.length = 0;

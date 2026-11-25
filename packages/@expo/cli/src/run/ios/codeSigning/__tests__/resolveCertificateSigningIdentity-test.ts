@@ -62,7 +62,7 @@ describe(selectDevelopmentTeamAsync, () => {
 
 describe(resolveCertificateSigningIdentityAsync, () => {
   it(`asserts when no IDs are provided`, async () => {
-    const ids = [];
+    const ids: string[] = [];
     await expect(resolveCertificateSigningIdentityAsync(projectRoot, ids)).rejects.toThrow(
       'No code signing certificates are available to use.'
     );

@@ -1,21 +1,44 @@
 {
   "name": "expo-sqlite",
-  "version": "56.0.4",
+  "version": "58.0.14",
   "description": "Provides access to a database using SQLite (https://www.sqlite.org/). The database is persisted across restarts of your app.",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "keywords": [
+    "async-storage",
+    "expo",
+    "react-native",
+    "sql",
+    "sqlite",
+    "storage"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/sqlite/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-sqlite"
+  },
   "sideEffects": [
     "./localStorage/install.js"
   ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "default": "./build/index.js",
-      "types": "./build/index.d.ts"
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
     },
     "./kv-store": {
-      "default": "./kv-store.js",
-      "types": "./kv-store.d.ts"
+      "types": "./kv-store.d.ts",
+      "default": "./kv-store.js"
     },
     "./localStorage/install": {
       "default": "./localStorage/install.js"
@@ -24,52 +47,41 @@
     "./plugin": "./plugin/build/index.js"
   },
   "scripts": {
-    "build": "expo-module build",
-    "bundle:webui": "pushd dev-plugin-webui && bun run build && popd && rm -rf dev-plugin-dist && mv dev-plugin-webui/dist dev-plugin-dist",
+    "precompile-android": "et prebuild-android-package-for-publish",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "build:webui": "node ./scripts/bundle_webui.mjs --force",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "sqlite",
-    "sql",
-    "storage",
-    "async-storage"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-sqlite"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/sqlite/",
-  "jest": {
-    "preset": "expo-module-scripts"
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepack": "expo-module prepack",
+    "prepublishOnly": "expo-module prepublishOnly && pnpm run build:webui",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json",
+    "typegen": "expo-modules typegen"
   },
   "dependencies": {
     "await-lock": "^2.2.2"
   },
   "devDependencies": {
-    "@testing-library/react-native": "^13.3.0",
-    "@types/better-sqlite3": "^7.6.6",
+    "@expo/internal-scripts": "workspace:*",
+    "@expo/spawn-async": "^1.8.0",
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "@types/react": "~19.2.0",
-    "better-sqlite3": "^11.6.0",
+    "@types/react": "~19.3.0",
     "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*",
-    "react-error-boundary": "^4.0.11"
+    "react-error-boundary": "^4.0.11",
+    "tar": "^7.5.22"
   },
   "peerDependencies": {
     "expo": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "jest": {
+    "preset": "@expo/internal-scripts"
   }
 }

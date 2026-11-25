@@ -1,11 +1,14 @@
 package expo.modules.filesystem
 
 import android.net.Uri
+import android.os.Build
 import android.os.FileObserver
 import androidx.core.net.toUri
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.OptimizedRecord
@@ -81,6 +84,14 @@ internal class FileSystemWatcher(
     if (!watchedFile.canRead()) {
       throw WatcherPermissionException(path)
     }
+    // Watching a directory reports the names of the files inside it and every change to them, so it
+    // needs the same read permission as reading those files. canRead() only reflects the process
+    // UID, which in Expo Go is shared by every experience.
+    val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+    val permissions = appContext.filePermission?.getPathPermissions(context, watchedFile.path)
+    if (permissions?.contains(FilePermissionService.Permission.READ) != true) {
+      throw WatcherPermissionException(path)
+    }
 
     watchedUri = watchedFile.toUri()
     isWatchingDirectory = watchedFile.isDirectory
@@ -91,12 +102,29 @@ internal class FileSystemWatcher(
       return
     }
 
-    observer = object : FileObserver(watchedFile.path, WATCH_MASK) {
-      override fun onEvent(event: Int, path: String?) {
-        handleEvent(RawWatchEvent(WatchEventFlags(event), path))
-      }
-    }.also {
+    observer = createFileObserver(watchedFile).also {
       it.startWatching()
+    }
+  }
+
+  private fun createFileObserver(watchedFile: File): FileObserver {
+    fun handleRawEvent(event: Int, path: String?) {
+      handleEvent(RawWatchEvent(WatchEventFlags(event), path))
+    }
+
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      object : FileObserver(watchedFile, WATCH_MASK) {
+        override fun onEvent(event: Int, path: String?) {
+          handleRawEvent(event, path)
+        }
+      }
+    } else {
+      @Suppress("DEPRECATION")
+      object : FileObserver(watchedFile.path, WATCH_MASK) {
+        override fun onEvent(event: Int, path: String?) {
+          handleRawEvent(event, path)
+        }
+      }
     }
   }
 
@@ -239,7 +267,11 @@ internal class FileSystemWatcher(
         isDirectory = isDirectory,
         nativeEventFlags = flags.rawValue,
         newPath = newPath,
-        newPathIsDirectory = if (newPath != null) newPathIsDirectory ?: isDirectory else null
+        newPathIsDirectory = if (newPath != null) {
+          newPathIsDirectory ?: isDirectory
+        } else {
+          null
+        }
       )
     )
   }
@@ -282,7 +314,11 @@ internal class FileSystemWatcher(
       get() = flags.isSelfEvent
 
     val selfEventType: WatchEventType
-      get() = if (flags.isSelfDelete) WatchEventType.DELETED else WatchEventType.RENAMED
+      get() = if (flags.isSelfDelete) {
+        WatchEventType.DELETED
+      } else {
+        WatchEventType.RENAMED
+      }
 
     fun resolveIsDirectory(watchedFile: File, defaultValue: Boolean): Boolean {
       return when {

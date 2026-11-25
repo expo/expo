@@ -1,12 +1,5 @@
 import * as React from 'react';
 
-import {
-  extractPickerItems,
-  PickerItem,
-  type PickerItemProps,
-  type PickerItemValue,
-  type PickerProps,
-} from './types';
 import { useNativeState } from '../../State';
 import { DropdownMenuItem } from '../../jetpack-compose/DropdownMenu/DropdownMenuItem';
 import {
@@ -17,6 +10,13 @@ import { Host } from '../../jetpack-compose/Host';
 import { Text } from '../../jetpack-compose/Text';
 import { TextField } from '../../jetpack-compose/TextField';
 import { menuAnchor } from '../../jetpack-compose/modifiers';
+import {
+  extractPickerItems,
+  PickerItem,
+  type PickerItemProps,
+  type PickerItemValue,
+  type PickerProps,
+} from './types';
 
 /**
  * A drop-in replacement for `@react-native-picker/picker` on Android.
@@ -35,6 +35,11 @@ export function Picker<T extends PickerItemValue>(props: PickerProps<T>) {
   const selectedItem = items.find((item) => item.value === selectedValue);
   const selectedLabel = selectedItem?.label ?? '';
   const labelState = useNativeState(selectedLabel);
+
+  // `useNativeState` only captures its initial value, so push later changes to the field.
+  React.useEffect(() => {
+    labelState.set(selectedLabel);
+  }, [labelState, selectedLabel]);
 
   return (
     <Host style={style} matchContents={{ vertical: true }}>

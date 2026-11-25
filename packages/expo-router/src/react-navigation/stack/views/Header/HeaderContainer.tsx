@@ -2,27 +2,17 @@
 import { use } from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
-import { Header } from './Header';
 import { getHeaderTitle, HeaderBackContext } from '../../../elements';
-import {
-  NavigationProvider,
-  type ParamListBase,
-  type Route,
-  useLinkBuilder,
-} from '../../../native';
+import { getUnfocusedScreenProps } from '../../../elements/getUnfocusedScreenProps';
+import { NavigationProvider, type Route, useLinkBuilder } from '../../../native';
 import {
   forNoAnimation,
   forSlideLeft,
   forSlideRight,
   forSlideUp,
 } from '../../TransitionConfigs/HeaderStyleInterpolators';
-import type {
-  Layout,
-  Scene,
-  StackHeaderMode,
-  StackHeaderProps,
-  StackNavigationProp,
-} from '../../types';
+import type { Layout, Scene, StackHeaderMode, StackHeaderProps } from '../../types';
+import { Header } from './Header';
 
 export type Props = {
   mode: StackHeaderMode;
@@ -69,15 +59,16 @@ export function HeaderContainer({
           return null;
         }
 
-        const isFocused = focusedRoute.key === scene.descriptor.route.key;
+        const isFocused = focusedRoute.key === scene.route.key;
         const previousScene = getPreviousScene({
-          route: scene.descriptor.route,
+          route: scene.route,
         });
 
         let headerBack = parentHeaderBack;
 
         if (previousScene) {
-          const { options, route } = previousScene.descriptor;
+          const { options } = previousScene.descriptor;
+          const { route } = previousScene;
 
           headerBack = previousScene
             ? {
@@ -119,8 +110,9 @@ export function HeaderContainer({
           back: headerBack,
           progress: scene.progress,
           options: scene.descriptor.options,
-          route: scene.descriptor.route,
-          navigation: scene.descriptor.navigation as StackNavigationProp<ParamListBase>,
+          route: scene.route,
+          // Expo Router adds route-scoped navigation to standard descriptors.
+          navigation: scene.descriptor.navigation!,
           styleInterpolator:
             mode === 'float'
               ? isHeaderStatic
@@ -136,9 +128,9 @@ export function HeaderContainer({
 
         return (
           <NavigationProvider
-            key={scene.descriptor.route.key}
-            route={scene.descriptor.route}
-            navigation={scene.descriptor.navigation}>
+            key={scene.route.key}
+            route={scene.route}
+            navigation={scene.descriptor.navigation!}>
             <View
               onLayout={
                 onContentHeightChange
@@ -146,13 +138,13 @@ export function HeaderContainer({
                       const { height } = e.nativeEvent.layout;
 
                       onContentHeightChange({
-                        route: scene.descriptor.route,
+                        route: scene.route,
                         height,
                       });
                     }
                   : undefined
               }
-              aria-hidden={!isFocused}
+              {...getUnfocusedScreenProps(isFocused)}
               style={[
                 {
                   pointerEvents: isFocused ? 'box-none' : 'none',

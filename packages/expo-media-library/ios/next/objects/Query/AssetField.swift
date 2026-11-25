@@ -7,6 +7,8 @@ enum AssetField: String, Enumerable {
   case WIDTH = "width"
   case HEIGHT = "height"
   case DURATION = "duration"
+  case IS_FAVORITE = "isFavorite"
+  case MEDIA_SUBTYPES = "mediaSubtypes"
 
   func photosKey() -> String {
     switch self {
@@ -22,6 +24,10 @@ enum AssetField: String, Enumerable {
       return "duration"
     case .MEDIA_TYPE:
       return "mediaType"
+    case .IS_FAVORITE:
+      return "isFavorite"
+    case .MEDIA_SUBTYPES:
+      return "mediaSubtypes"
     }
   }
 }

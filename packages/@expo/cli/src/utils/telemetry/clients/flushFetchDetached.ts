@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
-import { FetchClient } from './FetchClient';
 import type { TelemetryRecordInternal } from '../types';
+import { FetchClient } from './FetchClient';
 
 const telemetryFile = process.argv[2];
 

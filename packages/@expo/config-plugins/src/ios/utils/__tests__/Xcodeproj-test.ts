@@ -1,26 +1,50 @@
 import { resolveXcodeBuildSetting, sanitizedName } from '../Xcodeproj';
 
 describe(sanitizedName, () => {
-  it(`formats basic name`, () => {
-    expect(sanitizedName('bacon')).toBe('bacon');
-  });
-  it(`formats android/xcode unsupported name`, () => {
-    expect(sanitizedName('あいう')).toBe('app');
-  });
-  it(`uses slugify for better name support`, () => {
-    expect(sanitizedName('\u2665')).toBe('love');
+  it.each([
+    // plain names pass through
+    ['bacon', 'bacon'],
+    // diacritics decompose via NFKD and keep their base letters
+    ['Árbók', 'Arbok'],
+    ['Pěkná applikačka', 'Peknaapplikacka'],
+    // letters that slugify has no charmap entry for survive via NFKD
+    ['Ċittadin', 'Cittadin'],
+    ['Ǻpp', 'App'],
+    // compatibility letters and numbers decompose via NFKD
+    ['Ǉubljana', 'LJubljana'],
+    ['ﬁre', 'fire'],
+    ['Ｅｘｐｏ', 'Expo'],
+    ['x² app', 'x2app'],
+    // letters that NFKD cannot decompose are transliterated by slugify
+    ['Æøå', 'AEoa'],
+    ['Łódź', 'Lodz'],
+    ['Straße', 'Strasse'],
+    ['Привет', 'Privet'],
+    // symbols are stripped, not transliterated
+    ['A & B', 'AB'],
+    ['Expo®', 'Expo'],
+    ['Priçe €10', 'Price10'],
+    ['h"&<world/>🚀', 'hworld'],
+    // symbol-only names fall back to a slugify of the full name
+    ['♥', 'love'],
+    // nothing usable remains
+    ['あいう', 'app'],
+  ])(`sanitizes %j to %j`, (name, expected) => {
+    expect(sanitizedName(name)).toBe(expected);
   });
 });
 
 describe(resolveXcodeBuildSetting, () => {
   it(`resolves build setting`, () => {
     const lookup = jest.fn(
-      (v) =>
-        ({
-          CURRENT_VARIANT: 'variant',
-          PLATFORM_PREFERRED_ARCH: 'arch',
-          LINK_FILE_LIST_variant_arch: './../foo/./bar.js',
-        })[v]
+      (v: string): string | undefined =>
+        (
+          ({
+            CURRENT_VARIANT: 'variant',
+            PLATFORM_PREFERRED_ARCH: 'arch',
+            LINK_FILE_LIST_variant_arch: './../foo/./bar.js',
+          }) as Record<string, string>
+        )[v]
     );
     const r = resolveXcodeBuildSetting(
       '$(LINK_FILE_LIST_$(CURRENT_VARIANT)_$(PLATFORM_PREFERRED_ARCH):dir:standardizepath:file:default=arm64)',
@@ -33,14 +57,17 @@ describe(resolveXcodeBuildSetting, () => {
     expect(r).toBe('foo');
   });
   it(`resolves build setting using "default" modifier`, () => {
-    const lookup = jest.fn((v) => ({})[v]);
+    const lookup = jest.fn((v: string): string | undefined => (({}) as Record<string, string>)[v]);
     const r = resolveXcodeBuildSetting('$(LINK_FILE_LIST:default=arm64)', lookup);
     expect(lookup).toHaveBeenNthCalledWith(1, 'LINK_FILE_LIST');
     expect(lookup).toHaveBeenCalledTimes(1);
     expect(r).toBe('arm64');
   });
   it(`resolves build settings looked up with more build settings`, () => {
-    const lookup = jest.fn((v) => ({ FOO: '$(BAR:lower)', BAR: '$(hey)', hey: 'Found' })[v]);
+    const lookup = jest.fn(
+      (v: string): string | undefined =>
+        (({ FOO: '$(BAR:lower)', BAR: '$(hey)', hey: 'Found' }) as Record<string, string>)[v]
+    );
     const r = resolveXcodeBuildSetting('$(FOO)', lookup);
     expect(lookup).toHaveBeenNthCalledWith(1, 'FOO');
     expect(lookup).toHaveBeenNthCalledWith(2, 'BAR');
@@ -49,7 +76,9 @@ describe(resolveXcodeBuildSetting, () => {
     expect(r).toBe('found');
   });
   it(`resolves build setting using "default" modifier with variable`, () => {
-    const lookup = jest.fn((v) => ({ FOO: 'FOO' })[v]);
+    const lookup = jest.fn(
+      (v: string): string | undefined => (({ FOO: 'FOO' }) as Record<string, string>)[v]
+    );
     const r = resolveXcodeBuildSetting('$(LINK_FILE_LIST:default=$(FOO:lower))', lookup);
     expect(lookup).toHaveBeenNthCalledWith(1, 'FOO');
     expect(lookup).toHaveBeenNthCalledWith(2, 'LINK_FILE_LIST');
@@ -57,13 +86,17 @@ describe(resolveXcodeBuildSetting, () => {
     expect(r).toBe('foo');
   });
   it(`resolves with "rfc1034identifier" modifier`, () => {
-    const lookup = jest.fn((v) => ({ FOO: 'ab/cd-e_f.g h*' })[v]);
+    const lookup = jest.fn(
+      (v: string): string | undefined => (({ FOO: 'ab/cd-e_f.g h*' }) as Record<string, string>)[v]
+    );
     const r = resolveXcodeBuildSetting('$(FOO:rfc1034identifier)', lookup);
     expect(lookup).toHaveBeenNthCalledWith(1, 'FOO');
     expect(r).toBe('ab-cd-e-f-g-h-');
   });
   it(`resolves with "c99extidentifier" modifier`, () => {
-    const lookup = jest.fn((v) => ({ FOO: 'ab/cd-e_f.g h*' })[v]);
+    const lookup = jest.fn(
+      (v: string): string | undefined => (({ FOO: 'ab/cd-e_f.g h*' }) as Record<string, string>)[v]
+    );
     const r = resolveXcodeBuildSetting('$(FOO:c99extidentifier)', lookup);
     expect(lookup).toHaveBeenNthCalledWith(1, 'FOO');
     expect(r).toBe('ab/cd_e_f.g_h*');

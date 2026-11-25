@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package host.exp.exponent.modules
 
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -19,8 +18,6 @@ import host.exp.exponent.kernel.ExponentKernelModuleProvider.KernelEvent
 import host.exp.exponent.kernel.ExponentKernelModuleProvider.KernelEventCallback
 import host.exp.exponent.kernel.Kernel
 import host.exp.exponent.storage.ExponentSharedPreferences
-import host.exp.exponent.utils.BundleJSONConverter
-import org.json.JSONObject
 import java.util.UUID
 import javax.inject.Inject
 
@@ -67,49 +64,6 @@ class ExponentKernelModule(reactContext: ReactApplicationContext?) :
   }
 
   //region Exported methods
-  @ReactMethod
-  fun getSessionAsync(promise: Promise) {
-    val sessionString = exponentSharedPreferences.getString(ExponentSharedPreferences.ExponentSharedPreferencesKey.EXPO_AUTH_SESSION)
-    if (sessionString == null) {
-      promise.resolve(null)
-      return
-    }
-
-    try {
-      val sessionJsonObject = JSONObject(sessionString)
-      val session = Arguments.fromBundle(BundleJSONConverter.convertToBundle(sessionJsonObject))
-      promise.resolve(session)
-    } catch (e: Exception) {
-      promise.resolve(null)
-      EXL.e(TAG, e)
-    }
-  }
-
-  @ReactMethod
-  fun setSessionAsync(session: ReadableMap, promise: Promise) {
-    try {
-      val sessionJsonObject = (session.toHashMap() as Map<*, *>?)?.let { JSONObject(it) }
-      sessionJsonObject?.let {
-        exponentSharedPreferences.updateSession(it)
-      }
-      promise.resolve(null)
-    } catch (e: Exception) {
-      promise.reject("ERR_SESSION_NOT_SAVED", "Could not save session secret", e)
-      EXL.e(TAG, e)
-    }
-  }
-
-  @ReactMethod
-  fun removeSessionAsync(promise: Promise) {
-    try {
-      exponentSharedPreferences.removeSession()
-      promise.resolve(null)
-    } catch (e: Exception) {
-      promise.reject("ERR_SESSION_NOT_REMOVED", "Could not remove session secret", e)
-      EXL.e(TAG, e)
-    }
-  }
-
   @ReactMethod
   fun getLastCrashDate(promise: Promise) {
     try {

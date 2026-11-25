@@ -8,11 +8,6 @@ class CustomReactNativeFactoryDelegate: ExpoReactNativeFactoryDelegate {
   let packagerUrl = URL(string: "http://localhost:8081/index.bundle?platform=ios&dev=true")
   let bundledUrl = Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 
-  override func sourceURL(for bridge: RCTBridge) -> URL? {
-    // needed to return the correct URL for expo-dev-client.
-    bridge.bundleURL ?? bundleURL()
-  }
-
   override func bundleURL() -> URL? {
     if AppDelegate.isRunningWithPackager() {
       return packagerUrl
@@ -65,22 +60,16 @@ class AppDelegate: ExpoAppDelegate {
   }
 
   /**
-   Application launch initializes the custom view controller: all React Native
-   and updates initialization is handled there
+   Application launch creates the React Native factory and the updates controller.
+   The window and the custom view controller (where the React Native view is created)
+   are set up by `SceneDelegate` under the scene-based life cycle (required by the
+   iOS 27 SDK).
    */
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
     initializeReactNativeAndUpdates(launchOptions)
-
-    // Create custom view controller, where the React Native view will be created
-    self.window = UIWindow(frame: UIScreen.main.bounds)
-    let controller = CustomViewController()
-    controller.view.clipsToBounds = true
-    self.window?.rootViewController = controller
-    window?.makeKeyAndVisible()
-
     return true
   }
 

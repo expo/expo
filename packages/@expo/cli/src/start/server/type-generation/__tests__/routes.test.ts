@@ -15,9 +15,9 @@ describe(`${CAPTURE_DYNAMIC_PARAMS}`, () => {
     const matches = [...'/test/[...param1]/[param2]/[param3]'.matchAll(CAPTURE_DYNAMIC_PARAMS)];
 
     // Need to convert RegexMatchArray to an array to easily compare
-    expect([...matches[0]]).toStrictEqual(['[...param1]', 'param1']);
-    expect([...matches[1]]).toStrictEqual(['[param2]', 'param2']);
-    expect([...matches[2]]).toStrictEqual(['[param3]', 'param3']);
+    expect([...matches[0]!]).toStrictEqual(['[...param1]', 'param1']);
+    expect([...matches[1]!]).toStrictEqual(['[param2]', 'param2']);
+    expect([...matches[2]!]).toStrictEqual(['[param3]', 'param3']);
   });
 });
 
@@ -28,7 +28,7 @@ describe(`${CATCH_ALL}`, () => {
 
     // Need to convert RegexMatchArray to an array to easily compare
     expect(matches).toHaveLength(1);
-    expect([...matches[0]]).toStrictEqual(['[...param1]']);
+    expect([...matches[0]!]).toStrictEqual(['[...param1]']);
   });
 });
 
@@ -39,9 +39,9 @@ describe(`${SLUG}`, () => {
 
     // Need to convert RegexMatchArray to an array to easily compare
     expect(matches).toHaveLength(3);
-    expect([...matches[0]]).toStrictEqual(['[...param1]']);
-    expect([...matches[1]]).toStrictEqual(['[param2]']);
-    expect([...matches[2]]).toStrictEqual(['[param3]']);
+    expect([...matches[0]!]).toStrictEqual(['[...param1]']);
+    expect([...matches[1]!]).toStrictEqual(['[param2]']);
+    expect([...matches[2]!]).toStrictEqual(['[param3]']);
   });
 });
 
@@ -54,9 +54,9 @@ describe(`${ARRAY_GROUP_REGEX}`, () => {
 
     // Need to convert RegexMatchArray to an array to easily compare
     expect(matches).toHaveLength(3);
-    expect([...matches[0]]).toStrictEqual(['(a,b,c)']);
-    expect([...matches[1]]).toStrictEqual(['(d,e)']);
-    expect([...matches[2]]).toStrictEqual(['(  my group, my other group )']);
+    expect([...matches[0]!]).toStrictEqual(['(a,b,c)']);
+    expect([...matches[1]!]).toStrictEqual(['(d,e)']);
+    expect([...matches[2]!]).toStrictEqual(['(  my group, my other group )']);
     // (f) is ignored as it is not an array group
   });
 });
@@ -68,9 +68,9 @@ describe(`${CAPTURE_GROUP_REGEX}`, () => {
 
     // Need to convert RegexMatchArray to an array to easily compare
     expect(matches).toHaveLength(3);
-    expect([...matches[0]]).toStrictEqual(['(group1', 'group1']);
-    expect([...matches[1]]).toStrictEqual([',group2', 'group2']);
-    expect([...matches[2]]).toStrictEqual([',group3', 'group3']);
+    expect([...matches[0]!]).toStrictEqual(['(group1', 'group1']);
+    expect([...matches[1]!]).toStrictEqual([',group2', 'group2']);
+    expect([...matches[2]!]).toStrictEqual([',group3', 'group3']);
   });
 
   it('trims the name, but preserves spaces within names', () => {
@@ -80,9 +80,9 @@ describe(`${CAPTURE_GROUP_REGEX}`, () => {
 
     // Need to convert RegexMatchArray to an array to easily compare
     expect(matches).toHaveLength(3);
-    expect([...matches[0]]).toStrictEqual(['(   group1  ', 'group1']);
-    expect([...matches[1]]).toStrictEqual([', my group', 'my group']);
-    expect([...matches[2]]).toStrictEqual([', my other   group  ', 'my other   group']);
+    expect([...matches[0]!]).toStrictEqual(['(   group1  ', 'group1']);
+    expect([...matches[1]!]).toStrictEqual([', my group', 'my group']);
+    expect([...matches[2]!]).toStrictEqual([', my other   group  ', 'my other   group']);
   });
 });
 

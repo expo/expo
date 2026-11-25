@@ -110,5 +110,11 @@ function buildTemplateLiteral(t: typeof import('@babel/core').types, code: strin
 }
 
 function escapeTemplateLiteral(value: string) {
-  return value.replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
+  // Escape backslashes first so escape sequences in the serialized widget
+  // source (e.g. `\n` in a string literal) survive being re-cooked when the app
+  // evaluates this template literal at runtime. Without this, a `\n` inside a
+  // string literal cooks into a real newline, which corrupts the stored layout
+  // and makes the widget runtime's `eval('(' + layout + ')')` throw a
+  // SyntaxError (surfaced on-device as "SyntaxError: Unexpected EOF").
+  return value.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
 }

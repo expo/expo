@@ -1,5 +1,5 @@
-import AppMetrics from 'expo-app-metrics';
 import { useObserve } from 'expo-observe';
+import { AppMetrics } from 'expo-observe/debug';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 
@@ -8,7 +8,13 @@ import { CrashReportsSection } from '@/components/CrashReportsSection';
 import { Divider } from '@/components/Divider';
 import { GlobalAttributesSection } from '@/components/GlobalAttributesSection';
 import { JSAnimation } from '@/components/JSAnimation';
+import { JSErrorsSection } from '@/components/JSErrorsSection';
 import { LogEventsSection } from '@/components/LogEventsSection';
+import { NetworkRequestObserverSection } from '@/components/NetworkRequestObserverSection';
+import { RenderErrorSection } from '@/components/RenderErrorSection';
+import { ReportErrorSection } from '@/components/ReportErrorSection';
+import { StoredDataSection } from '@/components/StoredDataSection';
+import CrashTester from '@/modules/crash-tester';
 import { useTheme } from '@/utils/theme';
 
 export default function Debug() {
@@ -27,10 +33,20 @@ export default function Debug() {
     <ScrollView
       style={{ backgroundColor: theme.background.screen }}
       contentContainerStyle={styles.container}>
+      <StoredDataSection />
+      <Divider />
       <LogEventsSection />
       <Divider />
+      <NetworkRequestObserverSection />
+      <Divider />
       <CrashReportsSection />
-      {typeof AppMetrics.triggerCrash === 'function' ? <Divider /> : null}
+      {CrashTester != null ? <Divider /> : null}
+      <JSErrorsSection />
+      <Divider />
+      <ReportErrorSection />
+      <Divider />
+      <RenderErrorSection />
+      <Divider />
       <GlobalAttributesSection />
       <Divider />
       <Button
@@ -41,7 +57,30 @@ export default function Debug() {
       {showAnimation && <JSAnimation />}
       <Button
         title="Log main session to console"
-        onPress={() => AppMetrics.getMainSession().then(JSON.stringify).then(console.log)}
+        onPress={async () => {
+          const session = AppMetrics.getMainSession();
+          const [metrics, logs, isActive, endDate] = await Promise.all([
+            session.getMetrics(),
+            session.getLogs(),
+            session.isActive(),
+            session.getEndDate(),
+          ]);
+          console.log(
+            JSON.stringify(
+              {
+                id: session.id,
+                type: session.type,
+                startDate: session.startDate,
+                endDate,
+                isActive,
+              },
+              null,
+              2
+            )
+          );
+          console.log(JSON.stringify(metrics, null, 2));
+          console.log(JSON.stringify(logs, null, 2));
+        }}
         theme="secondary"
       />
     </ScrollView>

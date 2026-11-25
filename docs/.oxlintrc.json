@@ -22,7 +22,7 @@
     "**/out",
     "**/public",
     "pages/versions/latest",
-    "scripts/generate-llms/talks.js",
+    "components/plugins/permissions/data/android.json",
     "types/global.d.ts",
     "README.md",
     "next-env.d.ts",
@@ -255,6 +255,7 @@
       "error",
       {
         "allowlist": [
+          "code-block-wrapper",
           "dark-theme",
           "react-player",
           "table-wrapper",

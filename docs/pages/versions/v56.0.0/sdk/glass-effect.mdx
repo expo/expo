@@ -14,7 +14,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 React components that render native iOS liquid glass effect using [`UIVisualEffectView`](https://developer.apple.com/documentation/uikit/uivisualeffectview). Supports customizable glass styles and tint color.
 
-#### Known issues
+## Known issues
 
 - Setting `opacity` to `0` on `GlassView` or any of its parent views causes the glass effect to not render at all. To fade in/out the glass effect, use the built-in [`animate` and `animationDuration`](#animated-glass-effect-style) props in `glassEffectStyle` instead of changing opacity. If you still want to use `opacity`, see the [opacity animation workaround](#opacity-animation-workaround) example. For more details, see [Apple's documentation](https://developer.apple.com/documentation/uikit/uivisualeffectview#Set-the-correct-alpha-value) and [GitHub issue #41024](https://github.com/expo/expo/issues/41024).
 

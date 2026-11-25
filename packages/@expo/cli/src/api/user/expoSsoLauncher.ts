@@ -80,14 +80,13 @@ export async function getSessionUsingBrowserAuthFlowAsync({
       `code_challenge=${codeChallenge}`,
       `code_challenge_method=S256`,
       `state=${state}`,
-      `confirm_account=true`,
     ].join('&');
     return `${expoWebsiteUrl}${sso ? '/sso-login' : '/login'}?${params}`;
   };
 
   // Start server and begin auth flow
   const executeAuthFlow = (): Promise<string> => {
-    return new Promise<string>(async (resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
       const connections = new Set<Socket>();
 
       const server = http.createServer(

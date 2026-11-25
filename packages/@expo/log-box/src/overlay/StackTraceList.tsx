@@ -6,8 +6,6 @@
  */
 import React, { useState, type SVGProps } from 'react';
 
-import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
-import styles from './StackTraceList.module.css';
 import { useDevServer } from '../ContextDevServer';
 import type { StackType, MetroStackFrame } from '../Data/Types';
 import {
@@ -15,6 +13,8 @@ import {
   isStackFileAnonymous,
   openFileInEditor,
 } from '../utils/devServerEndpoints';
+import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
+import styles from './StackTraceList.module.css';
 
 function Transition({
   children,
@@ -180,7 +180,7 @@ export function StackTraceList({
   stack: MetroStackFrame[] | null;
   symbolicationStatus: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';
 }) {
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(() => stack?.some(({ collapse }) => !collapse));
 
   const stackCount = stack?.length;
 

@@ -8,8 +8,8 @@ import {
   View as NativeView,
 } from 'react-native';
 
-import { createDevView } from './createDevView';
 import { createSafeStyledView } from '../css/createSafeStyledView';
+import { createDevView } from './createDevView';
 
 // https://github.com/necolas/react-native-web/issues/832
 
@@ -44,15 +44,15 @@ export interface WebViewStyle {
   /** @platform web */
   backgroundClip?: string;
   /** @platform web */
-  backgroundImage?: string;
+  backgroundImage?: NativeViewStyle['backgroundImage'] | string;
   /** @platform web */
   backgroundOrigin?: 'border-box' | 'content-box' | 'padding-box';
   /** @platform web */
-  backgroundPosition?: string;
+  backgroundPosition?: NativeViewStyle['backgroundPosition'] | string;
   /** @platform web */
-  backgroundRepeat?: string;
+  backgroundRepeat?: NativeViewStyle['backgroundRepeat'] | string;
   /** @platform web */
-  backgroundSize?: string;
+  backgroundSize?: NativeViewStyle['backgroundSize'] | string;
   /** @platform web */
   boxShadow?: string | readonly BoxShadowValue[];
   /** @platform web */

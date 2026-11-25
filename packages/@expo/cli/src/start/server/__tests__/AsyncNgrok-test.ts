@@ -165,7 +165,7 @@ describe('_getProjectHostnameAsync', () => {
     );
 
     // randomness is persisted
-    expect(JSON.parse(vol.toJSON()['/.expo/settings.json']).urlRandomness).toBeDefined();
+    expect(JSON.parse(vol.toJSON()['/.expo/settings.json']!).urlRandomness).toBeDefined();
   });
 
   it(`ignore invalid urlRandomness values`, async () => {
@@ -182,7 +182,7 @@ describe('_getProjectHostnameAsync', () => {
     expect(hostname).not.toEqual('_abcd-anonymous-3000.exp.direct');
 
     // New randomness should be generated
-    expect(JSON.parse(vol.toJSON()['/.expo/settings.json']).urlRandomness).not.toEqual(
+    expect(JSON.parse(vol.toJSON()['/.expo/settings.json']!).urlRandomness).not.toEqual(
       invalidRandomness
     );
   });

@@ -11,16 +11,37 @@ export {
   SharedObject,
   SharedRef,
   NativeModule,
+  UnavailabilityError,
+  CodedError,
 
   // Methods
   requireNativeModule,
   requireOptionalNativeModule,
   requireNativeViewManager as requireNativeView,
+  requireNative,
+  requireOptionalNative,
   registerWebModule,
   reloadAppAsync,
 
   // Worklets
   installOnUIRuntime,
+
+  // Utils
+  Platform,
+  uuid,
+  createSnapshotFriendlyRef,
+  useReleasingSharedObject,
+  useReleasingSharedObjectWithLifecycle,
+} from 'expo-modules-core';
+
+export type {
+  EventSubscription,
+  TypedArray,
+  IntBasedTypedArray,
+  UintBasedTypedArray,
+  FloatBasedTypedArray,
+  ReleasingSharedObjectLifecycle,
+  ReleasingSharedObjectLifecycleContext,
 } from 'expo-modules-core';
 
 export type {

@@ -258,6 +258,7 @@ export type Metadata = {
 };
 
 export type GenerateMetadataFunction = (
-  request: ImmutableRequest,
+  /** Undefined during static rendering, including development. */
+  request: ImmutableRequest | undefined,
   params: Record<string, string | string[]>
 ) => Metadata | null | undefined | Promise<Metadata | null | undefined>;

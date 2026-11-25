@@ -7,13 +7,14 @@ import type { ViewStyle } from 'react-native';
 import { Image, StyleSheet, Text, View, ScrollView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Link } from '../link/Link';
+import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
+import type { Href } from '../types';
 import { NoSSR } from './NoSSR';
 import type { PressableProps } from './Pressable';
 import { Pressable } from './Pressable';
 import type { SitemapType } from './useSitemap';
 import { useSitemap } from './useSitemap';
-import { Link } from '../link/Link';
-import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 
 const INDENT = 20;
 
@@ -98,7 +99,7 @@ function SitemapItem({ node, level = 0 }: SitemapItemProps) {
     () => node.children.length > 0 || node.contextKey.match(/_layout\.[jt]sx?$/),
     [node]
   );
-  const info = node.isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
+  const info = node.isGenerated ? 'Generated' : '';
 
   if (isLayout) {
     return <LayoutSitemapItem node={node} level={level} info={info} />;
@@ -134,7 +135,7 @@ function LayoutSitemapItem({ node, level, info }: Required<SitemapItemProps>) {
 
 function StandardSitemapItem({ node, info, level }: Required<SitemapItemProps>) {
   return (
-    <Link accessibilityLabel={node.contextKey} href={node.href} asChild replace>
+    <Link accessibilityLabel={node.contextKey} href={node.href as Href} asChild replace>
       <SitemapItemPressable
         leftIcon={<FileIcon />}
         rightIcon={<ForwardIcon />}

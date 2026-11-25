@@ -9,6 +9,11 @@
       "expo.modules.maps.MapsModule",
       "expo.modules.maps.GoogleMapsModule",
       "expo.modules.maps.StreetViewModule"
-    ]
+    ],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.maps",
+      "repository": "local-maven-repo"
+    }
   }
 }

@@ -3,11 +3,26 @@ import ExpoModulesCore
 class SymbolView: ExpoView {
   let imageView = UIImageView()
 
+  // MARK: Defaults
+#if os(macOS)
+  static let defaultScale: UIImage.SymbolScale = .medium
+  static let defaultContentMode: NSImageScaling = .scaleProportionallyUpOrDown
+#else
+  static let defaultScale: UIImage.SymbolScale = .unspecified
+  static let defaultContentMode: UIView.ContentMode = .scaleAspectFit
+#endif
+
   // MARK: Properties
   var name: String = ""
+#if os(macOS)
+  var weight: NSFont.Weight = .regular
+  var scale: UIImage.SymbolScale = .medium
+  var imageContentMode: NSImageScaling = .scaleProportionallyUpOrDown
+#else
   var weight: UIImage.SymbolWeight = .unspecified
   var scale: UIImage.SymbolScale = .default
   var imageContentMode: UIView.ContentMode = .scaleToFill
+#endif
   var symbolType: SymbolType = .monochrome
   var tint: UIColor?
   var animationSpec: AnimationSpec?
@@ -24,6 +39,15 @@ class SymbolView: ExpoView {
   }
 
   func reloadSymbol() {
+#if os(macOS)
+    reloadSymbolMacOS()
+#else
+    reloadSymbolIOS()
+#endif
+  }
+
+#if !os(macOS)
+  private func reloadSymbolIOS() {
     guard let image = UIImage(systemName: name) else {
       return
     }
@@ -45,8 +69,33 @@ class SymbolView: ExpoView {
       }
     }
   }
+#else
+  private func reloadSymbolMacOS() {
+    guard let image = NSImage(systemSymbolName: name, accessibilityDescription: nil) else {
+      return
+    }
+    // NSImage has no `withTintColor` and NSImageView has no `preferredSymbolConfiguration`;
+    // bake the config into a new NSImage and apply tint via `contentTintColor` on the view.
+    let configuredImage = image.withSymbolConfiguration(getSymbolConfig()) ?? image
+    imageView.image = configuredImage
+    imageView.imageScaling = imageContentMode
 
-  @available(iOS 17.0, tvOS 17.0, *)
+    if let tint, symbolType != .hierarchical {
+      imageView.contentTintColor = tint
+    } else {
+      imageView.contentTintColor = nil
+    }
+
+    if #available(macOS 14.0, *) {
+      imageView.removeAllSymbolEffects()
+      if animated {
+        addSymbolEffects()
+      }
+    }
+  }
+#endif
+
+  @available(iOS 17.0, tvOS 17.0, macOS 14.0, *)
   private func addSymbolEffects() {
     if let animationSpec {
       let repeating = animationSpec.repeating ?? false
@@ -80,7 +129,7 @@ class SymbolView: ExpoView {
 
     switch symbolType {
     case .monochrome:
-      if #available(iOS 16.0, tvOS 16.0, *) {
+      if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
         config = config.applying(UIImage.SymbolConfiguration.preferringMonochrome())
       }
     case .hierarchical:

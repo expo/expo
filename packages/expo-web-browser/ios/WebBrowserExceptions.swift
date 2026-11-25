@@ -20,3 +20,15 @@ final class WebBrowserNotOpenException: Exception {
   }
 }
 
+final class WebAuthSessionFailedToStartException: Exception {
+  override var reason: String {
+    "The authentication session could not be started."
+  }
+}
+
+final class WebAuthSessionHeadersUnsupportedException: Exception {
+  override var reason: String {
+    "Authentication headers require iOS 17.4 or macOS 14.4 or later. Omit additionalHeaderFields on older systems."
+  }
+}
+

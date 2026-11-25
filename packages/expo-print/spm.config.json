@@ -1,35 +1,29 @@
 {
   "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "publishPrebuilds": true,
   "products": [
     {
       "name": "ExpoPrint",
       "podName": "ExpoPrint",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
         "Hermes",
         "expo-modules-core/ExpoModulesCore"
       ],
+      "swiftLanguageVersions": ["5"],
       "targets": [
         {
           "type": "swift",
           "name": "ExpoPrint",
-          "path": "ios",
-          "pattern": "*.swift",
           "dependencies": [
             "Hermes",
             "React",
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit",
-            "WebKit"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit", "WebKit"]
         }
       ]
     }

@@ -3,11 +3,12 @@ import * as nodeModule from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
 import url from 'node:url';
-import type * as ts from 'typescript';
+import vm from 'node:vm';
 
-import { annotateError, formatDiagnostic } from './codeframe';
+import { annotateError, formatDiagnostic, type Diagnostic } from './codeframe';
 import { installSourceMapStackTrace } from './stacktrace';
 import { toCommonJS } from './transform';
+import { transpile } from './typescript';
 
 declare module 'node:module' {
   export function _nodeModulePaths(base: string): readonly string[];
@@ -26,22 +27,6 @@ declare global {
       isBun?: boolean;
     }
   }
-}
-
-let _ts: typeof import('typescript') | null | undefined;
-function loadTypescript() {
-  if (_ts === undefined) {
-    try {
-      _ts = require('typescript');
-    } catch (error: any) {
-      if (error.code !== 'MODULE_NOT_FOUND') {
-        throw error;
-      } else {
-        _ts = null;
-      }
-    }
-  }
-  return _ts;
 }
 
 const parent = module;
@@ -63,26 +48,36 @@ function maybeReadFileSync(filename: string) {
   }
 }
 
-type Format = 'commonjs' | 'module' | 'module-typescript' | 'commonjs-typescript' | 'typescript';
+interface Format {
+  mode:
+    | 'commonjs'
+    | 'module'
+    | 'module-typescript'
+    | 'commonjs-typescript'
+    | 'typescript'
+    | undefined;
+  legacy: boolean;
+}
 
-function toFormat(filename: string, isLegacy: true): Format;
-function toFormat(filename: string, isLegacy: false): Format | null;
-function toFormat(filename: string, isLegacy: boolean): Format | null {
+function toFormat(filename: string, isLegacy: boolean): Format {
+  let mode: Format['mode'];
+  let legacy = false;
   if (filename.endsWith('.cjs')) {
-    return 'commonjs';
+    mode = 'commonjs';
   } else if (filename.endsWith('.mjs')) {
-    return 'module';
+    mode = 'module';
   } else if (filename.endsWith('.js')) {
-    return isLegacy ? 'commonjs' : null;
+    legacy = isLegacy;
+    mode = isLegacy ? 'commonjs' : undefined;
   } else if (filename.endsWith('.mts')) {
-    return 'module-typescript';
+    mode = 'module-typescript';
   } else if (filename.endsWith('.cts')) {
-    return 'commonjs-typescript';
+    mode = 'commonjs-typescript';
   } else if (filename.endsWith('.ts')) {
-    return isLegacy ? 'commonjs-typescript' : 'typescript';
-  } else {
-    return null;
+    legacy = isLegacy;
+    mode = isLegacy ? 'commonjs-typescript' : 'typescript';
   }
+  return { mode, legacy };
 }
 
 export interface ModuleOptions {
@@ -214,7 +209,7 @@ function compileModule(code: string, filename: string, opts: ModuleOptions) {
   }
 
   try {
-    mod._compile(inputCode, compileFilename, format != null ? format : undefined);
+    mod._compile(inputCode, compileFilename, format.mode);
     mod.loaded = true;
     if (shouldCache) {
       require.cache[compileFilename] = mod;
@@ -233,9 +228,14 @@ function compileModule(code: string, filename: string, opts: ModuleOptions) {
     throw error;
   } finally {
     if (mapPath) {
+      // Node 24.22 and later lazily parse the source-map, at which point it'll be removed. Looking it up now, forces this to be done in time
+      try {
+        nodeModule.findSourceMap?.(compileFilename);
+      } catch {
+        /* noop */
+      }
       // Restore, so subsequent requires of node_modules won't have their source-maps read
       setSourceMapsState(priorSourceMapsState ?? { enabled: false });
-      // Node parses source maps eagerly during _compile, so the file can be removed now.
       try {
         fs.unlinkSync(mapPath);
       } catch {
@@ -245,7 +245,36 @@ function compileModule(code: string, filename: string, opts: ModuleOptions) {
   }
 }
 
+function containsModuleSyntax(code: string): boolean {
+  // Fast-path: We can assume that if there's no ESM keyword, we don't need to check at all
+  if (!/\b(?:import|export|await)\b/.test(code)) {
+    return false;
+  }
+  try {
+    const CJS_WRAP_PARAMS = ['exports', 'require', 'module', '__filename', '__dirname'];
+    vm.compileFunction(code, CJS_WRAP_PARAMS);
+    return false;
+  } catch {
+    return true;
+  }
+}
+
 const hasStripTypeScriptTypes = typeof nodeModule.stripTypeScriptTypes === 'function';
+
+function supportsStripTypeScriptTypesTransform(): boolean {
+  const nodeVersion = process.versions.node.split('.', 1).map(Number);
+  return nodeVersion[0]! < 26;
+}
+
+function stripTypeScriptTypes(code: string): string {
+  if (!supportsStripTypeScriptTypesTransform()) {
+    return nodeModule.stripTypeScriptTypes(code);
+  }
+  return nodeModule.stripTypeScriptTypes(code, {
+    mode: 'transform',
+    sourceMap: true,
+  });
+}
 
 function evalModule(
   code: string,
@@ -257,53 +286,25 @@ function evalModule(
 
   let inputCode = code;
   let inputFilename = filename;
-  let diagnostic: ts.Diagnostic | undefined;
+  let diagnostic: Diagnostic | undefined;
   if (
-    format === 'typescript' ||
-    format === 'module-typescript' ||
-    format === 'commonjs-typescript'
+    format.mode === 'typescript' ||
+    format.mode === 'module-typescript' ||
+    format.mode === 'commonjs-typescript'
   ) {
-    const ts = loadTypescript();
-
-    if (ts) {
-      let module: ts.ModuleKind;
-      if (format === 'commonjs-typescript') {
-        module = ts.ModuleKind.CommonJS;
-      } else if (format === 'module-typescript') {
-        module = ts.ModuleKind.ESNext;
-      } else {
-        // NOTE(@kitten): We can "preserve" the output, meaning, it can either be ESM or CJS
-        // and stop TypeScript from either transpiling it to CommonJS or adding an `export {}`
-        // if no exports are used. This allows the user to choose if this file is CJS or ESM
-        // (but not to mix both)
-        module = ts.ModuleKind.Preserve;
-      }
-      const output = ts.transpileModule(code, {
-        fileName: filename,
-        reportDiagnostics: true,
-        compilerOptions: {
-          module,
-          moduleResolution: ts.ModuleResolutionKind.Bundler,
-          // `verbatimModuleSyntax` needs to be off, to erase as many imports as possible
-          verbatimModuleSyntax: false,
-          target: ts.ScriptTarget.ESNext,
-          newLine: ts.NewLineKind.LineFeed,
-          inlineSourceMap: true,
-          esModuleInterop: true,
-        },
-      });
-      inputCode = output?.outputText || inputCode;
-      if (output?.diagnostics?.length) {
-        diagnostic = output.diagnostics[0];
-      }
+    const output = transpile(code, filename, format.mode);
+    if (output) {
+      inputCode = output.outputText;
+      diagnostic = output.diagnostic;
     }
 
     if (hasStripTypeScriptTypes && inputCode === code) {
       // This may throw its own error, but this contains a code-frame already
-      inputCode = nodeModule.stripTypeScriptTypes(code, {
-        mode: 'transform',
-        sourceMap: true,
-      });
+      inputCode = stripTypeScriptTypes(code);
+      if (format.mode === 'commonjs-typescript') {
+        // NOTE(@kitten): Match TypeScript's CommonJS emit with esModuleInterop enabled.
+        inputCode = toCommonJS(filename, inputCode, 'babel');
+      }
     }
 
     if (inputCode !== code) {
@@ -313,8 +314,20 @@ function evalModule(
         inputFilename = path.join(path.dirname(filename), path.basename(filename, ext) + inputExt);
       }
     }
-  } else if (format === 'commonjs') {
+  } else if (format.mode === 'commonjs') {
     inputCode = toCommonJS(filename, code);
+  }
+
+  // NOTE(@kitten): If we've transpiling to CommonJS ourselves above, we should check if
+  // the output contains module syntax, which prevents us from loading this file as CommonJS.
+  // If it does, we run the non-legacy ESM code path instead
+  if (
+    format.legacy &&
+    (format.mode === 'commonjs' || format.mode === 'commonjs-typescript') &&
+    containsModuleSyntax(inputCode)
+  ) {
+    format = toFormat(filename, false);
+    return evalModule(code, filename, opts, format);
   }
 
   try {
@@ -326,7 +339,7 @@ function evalModule(
   } catch (error: any) {
     // If we have a diagnostic from TypeScript, we issue its error with a codeframe first,
     // since it's likely more useful than the eval error
-    const diagnosticError = formatDiagnostic(diagnostic);
+    const diagnosticError = formatDiagnostic(code, diagnostic);
     if (diagnosticError) {
       throw diagnosticError;
     }
@@ -338,9 +351,10 @@ async function requireOrImport(filename: string) {
   try {
     return require(filename);
   } catch {
-    return await import(
-      path.isAbsolute(filename) ? url.pathToFileURL(filename).toString() : filename
-    );
+    const importFilename = path.isAbsolute(filename)
+      ? url.pathToFileURL(filename).toString()
+      : filename;
+    return await import(importFilename);
   }
 }
 
@@ -362,15 +376,17 @@ async function loadModule(filename: string) {
 function loadModuleSync(filename: string) {
   const format = toFormat(filename, true);
   const isTypeScript =
-    format === 'module-typescript' || format === 'commonjs-typescript' || format === 'typescript';
+    format.mode === 'module-typescript' ||
+    format.mode === 'commonjs-typescript' ||
+    format.mode === 'typescript';
   try {
-    if (format !== 'module' && !isTypeScript) {
+    if (format.mode !== 'module' && !isTypeScript) {
       return require(filename);
     }
   } catch (error: any) {
     if (error.code === 'MODULE_NOT_FOUND') {
       throw error;
-    } else if (format == null) {
+    } else if (format.mode == null) {
       const code = maybeReadFileSync(filename);
       throw annotateError(code, filename, error) || error;
     }

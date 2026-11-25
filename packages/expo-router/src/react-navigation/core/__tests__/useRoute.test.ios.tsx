@@ -1,17 +1,17 @@
 import { render } from '@testing-library/react-native';
 
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import type { RouteProp } from '../types';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { useRoute } from '../useRoute';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
   MockRouterKey.current = 0;
 });
 
-test('gets route prop from context', () => {
+test('gets route prop from context', async () => {
   expect.assertions(1);
 
   const TestNavigator = (props: any): any => {
@@ -25,17 +25,17 @@ test('gets route prop from context', () => {
   };
 
   const Test = () => {
-    const route = useRoute<RouteProp<{ sample: { x: string } }, 'sample'>>();
+    const route = useRoute<RouteProp<{ foo: { x: number } }, 'foo'>>();
 
-    expect(route?.params?.x).toBe(1);
+    expect(route.params.x).toBe(1);
 
     return null;
   };
 
-  render(
-    <BaseNavigationContainer>
+  await render(
+    <BaseNavigationContainer initialState={{ routes: [{ name: 'foo', params: { x: 1 } }] }}>
       <TestNavigator>
-        <Screen name="foo" component={Test} initialParams={{ x: 1 }} />
+        <Screen name="foo" component={Test} />
       </TestNavigator>
     </BaseNavigationContainer>
   );

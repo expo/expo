@@ -3,6 +3,21 @@
 
 @import './tailwind-compat.css';
 
+/* Selectors are doubled to outrank the same-specificity declarations in
+   @expo/styleguide/dist/expo-theme.css, which _app.tsx imports after this file. */
+:root:root {
+  /* AA contrast on inline-code and blue3/blue4 backgrounds, where text-link falls
+     short. blue4 clears by 0.02, so do not lighten this. */
+  --expo-theme-text-link: #0c6bbf;
+  /* AA contrast: styleguide maps tertiary text to slate-10, a solid-background step */
+  --expo-theme-text-tertiary: #686c75;
+}
+
+.dark-theme.dark-theme {
+  --expo-theme-text-link: var(--blue-11);
+  --expo-theme-text-tertiary: #888c94;
+}
+
 @layer base {
   html {
     @apply bg-default;
@@ -15,6 +30,24 @@
 
   input {
     appearance: unset;
+  }
+
+  /* iOS Safari 26+ draws in-flow content under its floating toolbar, down to the screen
+     edge. 100lvh stops above the toolbar area, and env(safe-area-inset-bottom) is 0, so on
+     iOS the layout uses the screen height that pages/_document.tsx sets. The content
+     padding (layout height - 100dvh) keeps the page end above the toolbar. pages/_document.tsx
+     adds the ios-webkit class. */
+  [data-nested-scroll-layout] {
+    --nested-scroll-layout-height: 100dvh;
+  }
+
+  .ios-webkit [data-nested-scroll-layout] {
+    --nested-scroll-layout-height: max(100lvh, var(--nested-scroll-layout-screen-height, 0px));
+  }
+
+  /* On iOS the layout is taller than the viewport. Without this, the document scrolls. */
+  html.ios-webkit:has([data-nested-scroll-layout]) {
+    overflow: hidden;
   }
 
   #__next[aria-hidden] {
@@ -43,6 +76,10 @@ code {
   outline: none !important;
 }
 
+[cmdk-input]:focus-visible {
+  @apply rounded-3xl;
+}
+
 /* Collapsible */
 
 details::details-content {
@@ -61,7 +98,6 @@ details::details-content {
 }
 
 *:focus-visible:not(div) {
-  @apply rounded-sm;
   outline: 3px solid var(--expo-theme-icon-info);
   outline-offset: 1px;
 }
@@ -90,12 +126,8 @@ div:not(#root) > ::-webkit-scrollbar-thumb:hover {
   @apply bg-palette-gray6;
 }
 
-div[class*='terminal-snippet'] > ::-webkit-scrollbar-thumb {
-  @apply bg-palette-gray11;
-}
-
-div[class*='terminal-snippet'] > ::-webkit-scrollbar-thumb:hover {
-  @apply bg-palette-gray12;
+div[class*='terminal-snippet'] > * {
+  scrollbar-color: var(--slate-11) transparent;
 }
 
 details > summary::-webkit-details-marker {
@@ -124,28 +156,86 @@ details > summary::-webkit-details-marker {
   position: absolute;
 }
 
-/* Tippy */
+/* Code annotation tooltip */
 
-div.tippy-box {
-  @apply rounded-md;
+.code-annotation-tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: max-content;
+  max-width: min(350px, calc(100vw - 10px));
+  visibility: hidden;
+  pointer-events: none;
+  transition: visibility 250ms;
+}
+
+.code-annotation-tooltip[data-state='visible'] {
+  visibility: visible;
+  pointer-events: auto;
+  transition-duration: 300ms;
+}
+
+.code-annotation-tooltip[data-reference-hidden='true'] {
+  visibility: hidden;
+}
+
+.code-annotation-tooltip-box {
+  position: relative;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition-property: opacity, transform;
+  transition-duration: 250ms;
+}
+
+.code-annotation-tooltip[data-placement^='bottom'] .code-annotation-tooltip-box {
   transform: translateY(6px);
 }
 
-.tippy-box svg {
-  transform: rotate(180deg);
+.code-annotation-tooltip[data-state='visible'] .code-annotation-tooltip-box {
+  opacity: 1;
+  transform: none;
+  transition-duration: 300ms;
 }
 
-.tippy-box[data-theme~='expo'] .tippy-content {
-  @apply bg-palette-black text-palette-white rounded-md px-4 py-3 text-sm;
+.code-annotation-tooltip-content {
+  @apply bg-palette-black text-palette-white rounded-lg px-4 py-3 text-sm;
+  max-width: 100%;
   line-height: 1.525;
 }
 
-.tippy-box[data-state='visible'] {
-  transform: translateY(12px);
+.code-annotation-tooltip-arrow {
+  position: absolute;
+  top: 100%;
+  width: 16px;
+  height: 6px;
+  line-height: 0;
 }
 
-.tippy-content a {
-  @apply text-palette-white;
+.code-annotation-tooltip-arrow svg {
+  @apply fill-palette-black;
+  transform: rotate(180deg);
+}
+
+.code-annotation-tooltip[data-placement^='bottom'] .code-annotation-tooltip-arrow {
+  top: auto;
+  bottom: 100%;
+}
+
+.code-annotation-tooltip[data-placement^='bottom'] .code-annotation-tooltip-arrow svg {
+  transform: none;
+}
+
+/* Cookie banner */
+
+/* iOS Safari fills the area under its toolbar with one color when a fixed element touches the
+   bottom edge, and it clips fixed elements at the layout viewport bottom, which cuts the card
+   shadow. The document does not scroll with the nested scroll layout, so an absolute root stays
+   in place. DataGrail renders the banner in the host element and positions it with a :host rule;
+   page styles override that rule on the host. The modal layout is a full-viewport overlay, so it
+   keeps its fixed position. */
+html.ios-webkit:has([data-nested-scroll-layout]) aside.dg-consent-banner:not(.dg-modal) {
+  position: absolute;
 }
 
 /* Diff */
@@ -253,12 +343,12 @@ div.tippy-box {
 .token.prolog,
 .token.doctype,
 .token.cdata {
-  @apply text-palette-gray10;
+  @apply text-palette-gray11;
 }
 
 .token.operator,
 .token.punctuation {
-  @apply text-palette-gray9;
+  @apply text-palette-gray11;
 }
 
 .token.attr-name,
@@ -267,7 +357,7 @@ div.tippy-box {
 .token.constant,
 .token.symbol,
 .token.deleted {
-  @apply text-palette-red10;
+  @apply text-palette-red11;
 }
 
 .token.selector,
@@ -275,7 +365,7 @@ div.tippy-box {
 .token.builtin,
 .token.script,
 .token.inserted {
-  @apply text-palette-green10;
+  @apply text-palette-green11;
 }
 
 .token.entity,
@@ -284,7 +374,7 @@ div.tippy-box {
 }
 
 .token.keyword {
-  @apply text-palette-pink10;
+  @apply text-palette-pink11;
 }
 
 .token.property,
@@ -298,18 +388,18 @@ div.tippy-box {
 .token.regex,
 .token.important,
 .token.tag {
-  @apply text-palette-orange11;
+  @apply text-[#c24900] dark:text-palette-orange11;
 }
 
 .token.number,
 .token.string {
-  @apply text-palette-yellow11;
+  @apply text-[#a65e00] dark:text-palette-yellow11;
 }
 
 .token.url,
 .token.literal-property,
 .token.property-access {
-  @apply text-palette-blue11;
+  @apply text-[#006fd7] dark:text-palette-blue11;
 }
 
 .token.important {
@@ -346,8 +436,41 @@ div.tippy-box {
   }
 }
 
+/* Package manager selection */
+
+[data-pm-block] {
+  display: none;
+}
+
+.pm-npm [data-pm-block~='npm'],
+.pm-yarn [data-pm-block~='yarn'],
+.pm-pnpm [data-pm-block~='pnpm'],
+.pm-bun [data-pm-block~='bun'] {
+  display: contents;
+}
+
+[data-pm-tab] {
+  @apply text-palette-gray11;
+}
+
+[data-pm-tab]:hover,
+[data-pm-tab]:focus-visible {
+  @apply bg-palette-gray5;
+}
+
+.pm-npm [data-pm-tab~='npm'],
+.pm-yarn [data-pm-tab~='yarn'],
+.pm-pnpm [data-pm-tab~='pnpm'],
+.pm-bun [data-pm-tab~='bun'] {
+  @apply bg-palette-gray6 text-palette-white;
+}
+
 /* Misc */
 
 .react-player > video {
   outline: none;
+}
+
+:lang(ja) {
+  line-break: strict;
 }

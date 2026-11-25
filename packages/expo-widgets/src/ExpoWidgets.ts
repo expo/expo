@@ -1,27 +1,43 @@
-import type { EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
 
+import type {
+  CustomNotificationUpdateOptions,
+  NativeCustomNotification,
+  NativeCustomNotificationFactory,
+} from './CustomNotifications.types';
 import type {
   ExpoTimelineEntry,
   ExpoWidgetsEvents,
   NativeLiveActivity,
   NativeLiveActivityFactory,
+  NativeLiveActivityStartOptions,
+  NativeLiveActivityUpdateOptions,
   NativeWidgetObject,
+  WidgetConfigurationEnum,
 } from './Widgets.types';
 
 const noopSubscription: EventSubscription = { remove() {} };
 
 class WidgetStub {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-  constructor(_name: string, _layout: string) {}
+  constructor(_name: string, _layout: string, _initialProps?: Record<string, any>) {}
   reload(): void {}
+  updateSnapshot(_props: Record<string, any>): void {}
   updateTimeline(_entries: ExpoTimelineEntry[]): void {}
   async getTimeline(): Promise<ExpoTimelineEntry[]> {
     return [];
   }
+  setConfigurationParameterEnum(
+    _parameterName: string,
+    _options?: WidgetConfigurationEnum[]
+  ): void {}
 }
 
 class LiveActivityStub {
-  async update(_props: string): Promise<void> {}
+  getId(): string {
+    return '';
+  }
+  async update(_props: string, _options: NativeLiveActivityUpdateOptions): Promise<void> {}
   async end(
     _dismissalPolicy?: string,
     _afterDate?: number,
@@ -39,7 +55,7 @@ class LiveActivityStub {
 class LiveActivityFactoryStub {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(_name: string, _layout: string) {}
-  start(_props: string, _url?: string): NativeLiveActivity {
+  start(_props: string, _options: NativeLiveActivityStartOptions): NativeLiveActivity {
     return new LiveActivityStub() as NativeLiveActivity;
   }
   getInstances(): NativeLiveActivity[] {
@@ -47,11 +63,51 @@ class LiveActivityFactoryStub {
   }
 }
 
+class CustomNotificationStub {
+  getId(): string {
+    return '';
+  }
+  async getProps(): Promise<Record<string, any>> {
+    return {};
+  }
+  async update(
+    _props: Record<string, any>,
+    _options: CustomNotificationUpdateOptions
+  ): Promise<void> {}
+  async cancel(): Promise<void> {}
+}
+
+class CustomNotificationFactoryStub {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor(_name: string, _layout: string) {}
+  async post(
+    _id: string,
+    _props: Record<string, any>,
+    _options: CustomNotificationUpdateOptions
+  ): Promise<NativeCustomNotification> {
+    return new CustomNotificationStub() as unknown as NativeCustomNotification;
+  }
+  async get(_id: string): Promise<NativeCustomNotification | null> {
+    return null;
+  }
+  async getActive(): Promise<NativeCustomNotification[]> {
+    return [];
+  }
+  async cancelAll(): Promise<void> {}
+}
+
 const ExpoWidgetsModule = {
+  widgetsDirectory: '',
   reloadAllWidgets(): void {},
+  areActivitiesEnabled(): boolean {
+    return false;
+  },
   Widget: WidgetStub as typeof NativeWidgetObject,
   LiveActivityFactory: LiveActivityFactoryStub as typeof NativeLiveActivityFactory,
   LiveActivity: LiveActivityStub as typeof NativeLiveActivity,
+  CustomNotificationFactory:
+    CustomNotificationFactoryStub as typeof NativeCustomNotificationFactory,
+  CustomNotification: CustomNotificationStub as typeof NativeCustomNotification,
   addListener<EventName extends keyof ExpoWidgetsEvents>(
     _eventName: EventName,
     _listener: ExpoWidgetsEvents[EventName]

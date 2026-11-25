@@ -3,7 +3,6 @@
  */
 
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 
 import { LinearGradient } from '../LinearGradient';
 import { getLinearGradientBackgroundImage } from '../NativeLinearGradient.web';
@@ -17,6 +16,7 @@ it(`renders`, () => {
     <div
       class="css-view-g5y9jx"
       data-testid="gradient"
+      style="background-image: linear-gradient(180deg, rgba(0,255,255,1.00), rgba(255,0,255,1.00), rgba(0,0,0,0.00), rgba(0,255,255,0.50));"
     />
   `);
 });

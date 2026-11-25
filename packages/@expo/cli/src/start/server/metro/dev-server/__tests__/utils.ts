@@ -1,6 +1,5 @@
 import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
-import { parse } from 'node:url';
 import { promisify } from 'node:util';
 import type { ClientOptions } from 'ws';
 import { WebSocket } from 'ws';
@@ -41,10 +40,14 @@ export function withMetroServer(projectRoot = '/project'): {
 
   // Ensure the websockets can be tested
   server.on('upgrade', (request, socket, head) => {
-    const { pathname } = parse(request.url!);
-    if (pathname != null && metro.websocketEndpoints[pathname]) {
-      metro.websocketEndpoints[pathname].handleUpgrade(request, socket, head, (ws) => {
-        metro.websocketEndpoints[pathname].emit('connection', ws, request);
+    const pathname = URL.parse(request.url!, 'file:')?.pathname;
+    const endpoint =
+      pathname != null
+        ? metro.websocketEndpoints[pathname as keyof typeof metro.websocketEndpoints]
+        : undefined;
+    if (endpoint) {
+      endpoint.handleUpgrade(request, socket, head, (ws) => {
+        endpoint.emit('connection', ws, request);
       });
     } else {
       socket.destroy();
@@ -109,7 +112,7 @@ export function waitForExpect(
       try {
         Promise.resolve(expectation()).then(resolve).catch(retryOnReject);
       } catch (error) {
-        retryOnReject(error);
+        retryOnReject(error as Error);
       }
     }
 

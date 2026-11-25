@@ -20,7 +20,7 @@ For [managed](https://docs.expo.dev/archive/managed-vs-bare/) Expo projects, ple
 
 # Installation in bare React Native projects
 
-***Sharing content into your app is not supported in bare React Native projects.***
+**_Sharing content into your app is not supported in bare React Native projects._**
 
 For bare React Native projects, you must ensure that you have [installed and configured the `expo` package](https://docs.expo.dev/bare/installing-expo-modules/) before continuing.
 

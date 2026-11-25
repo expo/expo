@@ -13,11 +13,14 @@ public class EXDevLauncherErrorManager: NSObject {
   @objc
   public init(controller: EXDevLauncherController) {
     self.controller = controller
-    EXDevLauncherRedBoxInterceptor.isInstalled = true
   }
 
   @objc
   public func showError(_ error: EXDevLauncherAppError) {
+    if let serverUrl = controller?.appManifestURLWithFallback() {
+      EXDevLauncherRemoteLogsManager.reportError(error.message, toServerAt: serverUrl)
+    }
+
 #if !os(macOS)
     let launcherVC = controller?.currentWindow()?.rootViewController
 #else

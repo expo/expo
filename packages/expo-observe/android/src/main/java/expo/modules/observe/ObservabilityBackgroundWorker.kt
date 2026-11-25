@@ -14,17 +14,13 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import androidx.work.await
 import androidx.work.workDataOf
-import expo.modules.observe.storage.PendingLogsManager
-import expo.modules.observe.storage.PendingMetricsManager
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.appmetrics.storage.SessionManager
 
 /**
- * Background worker that dispatches previously queued metrics to EAS Observe.
- *
- * This worker intentionally does NOT register a [SessionManager.MetricsInsertListener].
- * It only dispatches metrics that were already queued in the pending table by the foreground
- * [ObservabilityManager].
+ * Background worker that dispatches stored metrics, logs, and spans to EAS Observe.
  */
 class ObservabilityBackgroundWorker(
   context: Context,
@@ -33,7 +29,6 @@ class ObservabilityBackgroundWorker(
   private val observabilityManager: BaseObservabilityManager? = run {
     val projectId = inputData.getString("projectId")
     val baseUrl = inputData.getString("baseUrl")
-    val useOpenTelemetry = inputData.getBoolean("useOpenTelemetry", false)
 
     if (projectId == null || baseUrl == null) {
       return@run null
@@ -43,18 +38,12 @@ class ObservabilityBackgroundWorker(
       context = context
     )
 
-    val pendingMetricsManager = PendingMetricsManager(context)
-    val pendingLogsManager = PendingLogsManager(context)
-
     BaseObservabilityManager(
       context = context,
       projectId = projectId,
       sessionManager = sessionManager,
-      pendingMetricsManager = pendingMetricsManager,
-      pendingLogsManager = pendingLogsManager,
       baseUrl = baseUrl,
-      isDebugBuild = BuildConfig.DEBUG,
-      useOpenTelemetry = useOpenTelemetry
+      isDebugBuild = BuildConfig.DEBUG
     )
   }
 
@@ -74,6 +63,9 @@ class ObservabilityBackgroundWorker(
   }
 
   override suspend fun doWork(): Result {
+    if (!ObserveConsent.isGranted) {
+      return Result.success()
+    }
     return try {
       if (observabilityManager == null) {
         Log.e(OBSERVE_TAG, "ObservabilityManager is null - missing projectId or baseUrl")
@@ -85,23 +77,27 @@ class ObservabilityBackgroundWorker(
       observabilityManager.cleanup()
       observabilityManager.dispatchUnsentMetrics()
       observabilityManager.dispatchUnsentLogs()
-      Log.d(OBSERVE_TAG, "Successfully dispatched unsent metrics and logs")
+      observabilityManager.dispatchUnsentSpans()
+      Log.d(OBSERVE_TAG, "Successfully dispatched unsent metrics, logs, and spans")
       Result.success()
     } catch (e: Exception) {
-      Log.e(OBSERVE_TAG, "Failed to dispatch metrics", e)
+      Log.e(OBSERVE_TAG, "Failed to dispatch metrics, logs, and spans", e)
       // Retry with exponential backoff
       Result.retry()
     }
   }
 
   companion object {
-    private const val WORK_NAME = "eas-observe-dispatch"
+    internal const val WORK_NAME = "eas-observe-dispatch"
+
+    suspend fun cancelBackgroundDispatch(context: Context) {
+      WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME).await()
+    }
 
     fun scheduleBackgroundDispatch(
       context: Context,
       projectId: String,
-      baseUrl: String,
-      useOpenTelemetry: Boolean = false
+      baseUrl: String
     ) {
       val constraints = Constraints
         .Builder()
@@ -110,8 +106,7 @@ class ObservabilityBackgroundWorker(
 
       val data = workDataOf(
         Pair("projectId", projectId),
-        Pair("baseUrl", baseUrl),
-        Pair("useOpenTelemetry", useOpenTelemetry)
+        Pair("baseUrl", baseUrl)
       )
 
       val periodicWork = OneTimeWorkRequestBuilder<ObservabilityBackgroundWorker>()
@@ -123,7 +118,8 @@ class ObservabilityBackgroundWorker(
         .getInstance(context)
         .enqueueUniqueWork(
           WORK_NAME,
-          ExistingWorkPolicy.REPLACE,
+          // Keep an in-flight dispatch; canceling it can duplicate a request the server received.
+          ExistingWorkPolicy.KEEP,
           periodicWork
         )
     }

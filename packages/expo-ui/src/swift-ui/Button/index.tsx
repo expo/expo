@@ -10,10 +10,12 @@ import { type CommonViewModifierProps } from '../types';
  * - `default` - The default button role.
  * - `cancel` - A button that cancels the current operation.
  * - `destructive` - A button that deletes data or performs a destructive action.
+ * - `close` - A button that closes the view it is presented in. Given no `label` and no children,
+ *   the system draws it as an xmark.
  */
-export type ButtonRole = 'default' | 'cancel' | 'destructive';
+export type ButtonRole = 'default' | 'cancel' | 'destructive' | 'close';
 
-export type ButtonProps = {
+export interface ButtonProps extends CommonViewModifierProps {
   /**
    * A callback that is called when the button is pressed.
    */
@@ -40,7 +42,7 @@ export type ButtonProps = {
    * Target identifier for the button, used for identifying which button was pressed in widgets and live activities.
    */
   target?: string;
-} & CommonViewModifierProps;
+}
 
 type NativeButtonProps = Omit<ButtonProps, 'onPress'> & ViewEvent<'onButtonPress', void>;
 

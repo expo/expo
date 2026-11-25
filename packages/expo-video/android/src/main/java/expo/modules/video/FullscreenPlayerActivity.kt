@@ -102,6 +102,7 @@ class FullscreenPlayerActivity : Activity(), VideoManagerListener {
     val buttonConfig = videoView.buttonOptions.copy(showBottomBar = true) // Always show bottom bar in fullscreen mode so user can exit
     playerView.applyButtonOptions(buttonConfig, requiresLinearPlayback)
     playerView.setTimeBarInteractive(requiresLinearPlayback)
+    playerView.controllerAutoShow = videoView.controllerAutoShow
     playerView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
       // On every re-layout ExoPlayer makes the timeBar interactive.
       // We need to disable it to keep scrubbing off.

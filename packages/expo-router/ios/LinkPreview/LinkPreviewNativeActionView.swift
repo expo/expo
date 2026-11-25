@@ -33,6 +33,7 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
   @NativeActionProp(updateAction: true, updateMenu: true) var routerHidden: Bool = false
   @NativeActionProp(updateMenu: true) var titleStyle: TitleStyle?
   @NativeActionProp(updateMenu: true) var sharesBackground: Bool?
+  @NativeActionProp(updateMenu: true) var axisBehavior: AxisBehavior?
   @NativeActionProp(updateMenu: true) var hidesSharedBackground: Bool?
   @NativeActionProp(updateAction: true, updateMenu: true) var customTintColor: UIColor?
   @NativeActionProp(updateMenu: true) var barButtonItemStyle: UIBarButtonItem.Style?
@@ -77,7 +78,7 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
     menuAction = UIMenu(title: "", image: nil, options: [], children: [])
     super.init(appContext: appContext)
     clipsToBounds = true
-    baseUiAction = UIAction(title: "", handler: { _ in self.onSelected() })
+    baseUiAction = UIAction(title: "", handler: { [weak self] _ in self?.onSelected() })
   }
 
   func updateMenu() {

@@ -1,10 +1,12 @@
 import { act, render, renderHook, screen, waitFor } from '@testing-library/react-native';
+import { Asset } from 'expo-asset';
 // @ts-ignore-next-line: no @types/node
 import fs from 'fs/promises';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Text, View } from 'react-native';
 
+import * as SQLiteDatabase from '../SQLiteDatabase';
 import { deepEqual, useSQLiteContext, SQLiteProvider, type SQLiteProviderProps } from '../hooks';
 
 jest.mock('expo/devtools', () => ({
@@ -21,13 +23,10 @@ describe(useSQLiteContext, () => {
     const wrapper = ({ children }: React.PropsWithChildren) => (
       <SQLiteProvider databaseName=":memory:">{children}</SQLiteProvider>
     );
-    const { result } = renderHook(() => useSQLiteContext(), { wrapper });
-    await act(async () => {
-      await waitFor(() => {
-        expect(result).not.toBeNull();
-      });
+    const { result } = await renderHook(() => useSQLiteContext(), { wrapper });
+    await waitFor(() => {
+      expect(result.current).toHaveProperty('execAsync');
     });
-    expect(result.current).toHaveProperty('execAsync');
     expect(result.current).toHaveProperty('runAsync');
   });
 
@@ -41,40 +40,155 @@ describe(useSQLiteContext, () => {
       );
     };
 
-    const { rerender } = render(
+    const { rerender } = await render(
       <SQLiteProviderWithView databaseName=":memory:" options={{ enableChangeListener: true }} />
     );
     expect(openDatabaseSpy).toHaveBeenCalledTimes(1);
 
     // Passing same options from new object should not re-open the database
-    rerender(
+    await rerender(
       <SQLiteProviderWithView databaseName=":memory:" options={{ enableChangeListener: true }} />
     );
     expect(openDatabaseSpy).toHaveBeenCalledTimes(1);
 
     // Passing different options should re-open the database
-    rerender(<SQLiteProviderWithView databaseName=":memory:" />);
+    await rerender(<SQLiteProviderWithView databaseName=":memory:" />);
     expect(openDatabaseSpy).toHaveBeenCalledTimes(2);
 
     // Passing different databaseName should re-open the database
-    rerender(<SQLiteProviderWithView databaseName="test.db" />);
+    await rerender(<SQLiteProviderWithView databaseName="test.db" />);
     expect(openDatabaseSpy).toHaveBeenCalledTimes(3);
 
+    // Flush the providers' deferred open/state updates so they settle inside act().
+    await act(async () => {});
     openDatabaseSpy.mockRestore();
+  });
+
+  it('should re-render when only `children` changes', async () => {
+    function App({ flag }: { flag: boolean }) {
+      return (
+        <SQLiteProvider databaseName=":memory:">
+          {flag ? <Text>after</Text> : <Text>before</Text>}
+        </SQLiteProvider>
+      );
+    }
+
+    const { rerender } = await render(<App flag={false} />);
+    await waitFor(() => {
+      expect(screen.queryByText('before')).not.toBeNull();
+    });
+
+    await rerender(<App flag />);
+    await waitFor(() => {
+      expect(screen.queryByText('after')).not.toBeNull();
+    });
+    expect(screen.queryByText('before')).toBeNull();
+  });
+
+  it('should re-import when the asset source changes and ignore a new object with the same contents', async () => {
+    const openDatabaseSpy = jest.spyOn(require('../SQLiteDatabase'), 'openDatabaseAsync');
+    const assetModuleSpy = jest.spyOn(Asset, 'fromModule').mockImplementation((assetId) => {
+      return {
+        downloadAsync: async () => ({ localUri: `file:///asset-${assetId}.db` }),
+      } as Asset;
+    });
+    const importSpy = jest.fn(async (..._args: unknown[]) => {});
+    require('../ExpoSQLite').default.importAssetDatabaseAsync = importSpy;
+
+    function App({ assetId, forceOverwrite }: { assetId: number; forceOverwrite?: boolean }) {
+      return (
+        <SQLiteProvider
+          databaseName=":memory:"
+          options={{ enableChangeListener: true }}
+          assetSource={{ assetId, forceOverwrite }}>
+          <Text>ready</Text>
+        </SQLiteProvider>
+      );
+    }
+
+    const { rerender } = await render(<App assetId={1} />);
+    await waitFor(() => {
+      expect(screen.queryByText('ready')).not.toBeNull();
+    });
+    expect(openDatabaseSpy).toHaveBeenCalledTimes(1);
+    expect(importSpy).toHaveBeenCalledTimes(1);
+
+    await rerender(<App assetId={1} />);
+    expect(openDatabaseSpy).toHaveBeenCalledTimes(1);
+    expect(importSpy).toHaveBeenCalledTimes(1);
+
+    await rerender(<App assetId={2} />);
+    await waitFor(() => {
+      expect(importSpy).toHaveBeenCalledTimes(2);
+    });
+    expect(openDatabaseSpy).toHaveBeenCalledTimes(2);
+    expect(assetModuleSpy).toHaveBeenLastCalledWith(2);
+
+    await rerender(<App assetId={2} forceOverwrite />);
+    await waitFor(() => {
+      expect(importSpy).toHaveBeenCalledTimes(3);
+    });
+    expect(importSpy.mock.lastCall?.[2]).toBe(true);
+
+    openDatabaseSpy.mockRestore();
+    assetModuleSpy.mockRestore();
+  });
+
+  it('should re-import a suspense database when the asset source changes', async () => {
+    const assetModuleSpy = jest.spyOn(Asset, 'fromModule').mockImplementation((assetId) => {
+      return {
+        downloadAsync: async () => ({ localUri: `file:///asset-${assetId}.db` }),
+      } as Asset;
+    });
+    const importSpy = jest.fn(async () => {});
+    require('../ExpoSQLite').default.importAssetDatabaseAsync = importSpy;
+
+    function App({ assetId }: { assetId: number }) {
+      return (
+        <React.Suspense fallback={<Text>loading</Text>}>
+          <SQLiteProvider
+            databaseName=":memory:"
+            options={{ enableChangeListener: true }}
+            assetSource={{ assetId }}
+            useSuspense>
+            <Text>ready</Text>
+          </SQLiteProvider>
+        </React.Suspense>
+      );
+    }
+
+    const { rerender } = await render(<App assetId={1} />);
+    await waitFor(() => {
+      expect(screen.queryByText('ready')).not.toBeNull();
+    });
+    expect(importSpy).toHaveBeenCalledTimes(1);
+
+    await rerender(<App assetId={1} />);
+    expect(importSpy).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText('ready')).not.toBeNull();
+
+    await rerender(<App assetId={2} />);
+    await waitFor(() => {
+      expect(importSpy).toHaveBeenCalledTimes(2);
+    });
+    expect(assetModuleSpy).toHaveBeenLastCalledWith(2);
+    await waitFor(() => {
+      expect(screen.queryByText('ready')).not.toBeNull();
+    });
+
+    assetModuleSpy.mockRestore();
   });
 
   it('should return the same SQLite instance on subsequent calls', async () => {
     const wrapper = ({ children }: React.PropsWithChildren) => (
       <SQLiteProvider databaseName=":memory:">{children}</SQLiteProvider>
     );
-    const { result, rerender } = renderHook(() => useSQLiteContext(), { wrapper });
-    await act(async () => {
-      await waitFor(() => {
-        expect(result).not.toBeNull();
-      });
+    const { result, rerender } = await renderHook(() => useSQLiteContext(), { wrapper });
+    await waitFor(() => {
+      expect(result.current).toHaveProperty('execAsync');
     });
     const firstResult = result.current;
-    rerender({});
+    await rerender({});
     expect(result.current).toBe(firstResult);
   });
 
@@ -85,13 +199,10 @@ describe(useSQLiteContext, () => {
         {children}
       </SQLiteProvider>
     );
-    const { result } = renderHook(() => useSQLiteContext(), { wrapper });
-    await act(async () => {
-      await waitFor(() => {
-        expect(result).not.toBeNull();
-      });
+    const { result } = await renderHook(() => useSQLiteContext(), { wrapper });
+    await waitFor(() => {
+      expect(mockonInit).toHaveBeenCalled();
     });
-    expect(mockonInit).toHaveBeenCalled();
     expect(mockonInit.mock.calls[0][0]).toBe(result.current);
   });
 
@@ -111,22 +222,35 @@ describe(useSQLiteContext, () => {
         </SQLiteProvider>
       </React.Suspense>
     );
-    const { result } = renderHook(() => useSQLiteContext(), { wrapper });
-
-    expect(screen.queryByText(loadingText)).not.toBeNull();
-
-    // Ensure that the loading fallback is removed after the database is ready
-    await act(async () => {
-      await waitFor(() => {
-        expect(result).not.toBeNull();
-      });
+    let releaseOpen!: () => void;
+    const openGate = new Promise<void>((resolve) => {
+      releaseOpen = resolve;
     });
-    expect(screen.queryByText(loadingText)).toBeNull();
+    const openDatabaseAsync = SQLiteDatabase.openDatabaseAsync;
+    const openSpy = jest
+      .spyOn(SQLiteDatabase, 'openDatabaseAsync')
+      .mockImplementationOnce(async (...args) => {
+        await openGate;
+        return openDatabaseAsync(...args);
+      });
+    try {
+      await renderHook(() => useSQLiteContext(), { wrapper });
+
+      expect(screen.queryByText(loadingText)).not.toBeNull();
+
+      releaseOpen();
+      // Ensure that the loading fallback is removed after the database is ready
+      await waitFor(() => {
+        expect(screen.queryByText(loadingText)).toBeNull();
+      });
+    } finally {
+      openSpy.mockRestore();
+    }
   }, 10000);
 
   it('should call onError from SQLiteProvider if failed to open database', async () => {
     const mockErrorHandler = jest.fn();
-    render(
+    await render(
       <SQLiteProvider databaseName="/nonexistent/nonexistent.db" onError={mockErrorHandler}>
         <View />
       </SQLiteProvider>
@@ -154,19 +278,16 @@ describe(useSQLiteContext, () => {
         </React.Suspense>
       </ErrorBoundary>
     );
-    const { result } = renderHook(() => useSQLiteContext(), { wrapper });
-    await act(async () => {
-      await waitFor(() => {
-        expect(result).not.toBeNull();
-      });
+    await renderHook(() => useSQLiteContext(), { wrapper });
+    await waitFor(() => {
+      expect(screen.queryByText(errorText)).not.toBeNull();
     });
-    expect(screen.queryByText(errorText)).not.toBeNull();
   });
 
   it('should throw when using `onError` and `useSuspense` together', async () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     const mockErrorHandler = jest.fn();
-    render(
+    await render(
       <ErrorBoundary fallback={<View />} onError={mockErrorHandler}>
         <SQLiteProvider
           databaseName="/nonexistent/nonexistent.db"

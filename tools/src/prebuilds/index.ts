@@ -10,6 +10,7 @@ export {
   discoverAllSPMPackagesAsync,
   discoverPackagesWithSPMConfigAsync,
   getVersionsInfoAsync,
+  selectDistributedPackages,
   validateAllPodNamesAsync,
   validatePodNamesAsync,
   verifyAllPackagesAsync,

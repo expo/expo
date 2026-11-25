@@ -1,14 +1,57 @@
 # Changelog
 
-## Unpublished
+## 58.0.5
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Accept a callback ref in the `BlurTargetView` `ref` prop. ([#51659](https://github.com/expo/expo/pull/51659) by [@behenate](https://github.com/behenate))
+
+## 58.0.4
+
+### Patch Changes
+
+- Accept a `View` ref from React Native 0.87 and later in the `blurTarget` prop and the `BlurTargetView` `ref` prop. The prop types now use `ComponentRef<typeof View>`, so `useRef<ViewInstance>(null)` and `useRef<ComponentRef<typeof View>>(null)` type-check with the default React Native typings. With the default typings, a ref typed `useRef<View | null>(null)` no longer type-checks for these props. Type it as `useRef<ComponentRef<typeof View>>(null)` instead. ([#51640](https://github.com/expo/expo/pull/51640) by [@juliusmarminge](https://github.com/juliusmarminge))
+
+## 58.0.3
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.2
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
 
 ### 🐛 Bug fixes
 
+- Fix `BlurView` not applying border radius styles to the native blur layer. ([#45691](https://github.com/expo/expo/pull/45691) by [@mvincentong](https://github.com/mvincentong)) and [@behenate](https://github.com/behenate)
+- [Android] Fix content inside a `BlurTargetView` disappearing during screen exit animations. ([#48141](https://github.com/expo/expo/pull/48141) by [@alok-debnath](https://github.com/alok-debnath))
+
 ### 💡 Others
+
+- Document that every `tint` value adds a color layer on top of the blur. ([#49248](https://github.com/expo/expo/pull/49248) by [@expo-bot](https://github.com/expo-bot))
+
+## 57.0.2 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-07-15
+
+### 🐛 Bug fixes
+
+- [Android] Fix gesture handlers treating views under a `BlurTargetView` as detached and cancelling their gestures. ([#47404](https://github.com/expo/expo/pull/47404) by [@efstathiosntonas](https://github.com/efstathiosntonas))
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.3 — 2026-05-06
 

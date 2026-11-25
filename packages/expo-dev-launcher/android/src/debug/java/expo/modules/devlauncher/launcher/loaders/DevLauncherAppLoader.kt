@@ -10,10 +10,10 @@ import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * An abstract class of app loader. An object of this class will launch provided `Intent` with all the needed setup.
@@ -71,11 +71,11 @@ abstract class DevLauncherAppLoader(
   }
 
   open suspend fun launch(intent: Intent): Boolean = withContext(Dispatchers.Main) {
-    suspendCoroutine { callback ->
+    suspendCancellableCoroutine { callback ->
       if (injectBundleLoader()) {
         continuation = callback
         launchIntent(intent)
-        return@suspendCoroutine
+        return@suspendCancellableCoroutine
       }
       callback.resume(false)
     }

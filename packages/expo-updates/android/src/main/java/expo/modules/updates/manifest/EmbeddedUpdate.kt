@@ -57,7 +57,7 @@ class EmbeddedUpdate private constructor(
             resourcesFolder = assetObject.getNullable("resourcesFolder")
           }
           val scales = assetObject.getNullable<JSONArray>("scales")
-          // if there's only one scale we don't to decide later on which one to copy
+          // if there's only one scale we don't need to decide later on which one to copy
           // so we avoid this work now
           if (scales != null && scales.length() > 1) {
             assetEntity.scale = assetObject.optDouble("scale").toFloat()

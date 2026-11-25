@@ -1,15 +1,7 @@
-import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
 import { unstable_transformerPath, internal_supervisingTransformerPath } from '@expo/metro-config';
 
-const debug = require('debug')(
-  'expo:metro:withMetroSupervisingTransformWorker'
-) as typeof console.log;
-
-declare module '@expo/metro/metro-transform-worker' {
-  export interface JsTransformerConfig {
-    expo_customTransformerPath?: string | false;
-  }
-}
+import type { ExpoMetroConfig } from './ExpoMetroConfig';
+import { debugEvent } from './metroDebugEvents';
 
 // The default babel transformer is either `@expo/metro-config/babel-transformer` set by the user
 // or @expo/metro-config/build/babel-transformer
@@ -41,7 +33,7 @@ const defaultBabelTransformerPaths = [
  * versions of Metro. This is unsupported and undefined behavior and will lead to
  * bugs and errors.
  */
-export function withMetroSupervisingTransformWorker(config: MetroConfig): MetroConfig {
+export function withMetroSupervisingTransformWorker(config: ExpoMetroConfig): ExpoMetroConfig {
   // NOTE: This is usually a required property, but we don't always set it in mocks
   const originalBabelTransformerPath = config.transformer?.babelTransformerPath;
   const originalTransformerPath = config.transformerPath;
@@ -56,22 +48,22 @@ export function withMetroSupervisingTransformWorker(config: MetroConfig): MetroC
 
   // DEBUGGING: When set to false the supervisor is disabled for debugging
   if (config.transformer?.expo_customTransformerPath === false) {
-    debug('Skipping transform worker supervisor: transformer.expo_customTransformerPath is false');
+    debugEvent('transform_worker_supervisor_skipped', {});
     return config;
   }
 
   // We modify the config if the user either has a custom transformerPath or
   // a custom transformer.babelTransformerPath
-  // NOTE: It's not a bad thing if we load the superivising transformer even if
+  // NOTE: It's not a bad thing if we load the supervising transformer even if
   // we don't need to. It will do nothing to our transformer
   if (!hasDefaultTransformerPath) {
-    debug('Detected customized "transformerPath"');
+    debugEvent('transform_worker_supervisor_custom_transformer', {});
   }
   if (!hasDefaultBabelTransformerPath) {
-    debug('Detected customized "transformer.babelTransformerPath"');
+    debugEvent('transform_worker_supervisor_custom_babel_transformer', {});
   }
 
-  debug('Applying transform worker supervisor to "transformerPath"');
+  debugEvent('transform_worker_supervisor_applied', {});
   return {
     ...config,
     transformerPath: internal_supervisingTransformerPath,

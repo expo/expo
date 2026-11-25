@@ -43,10 +43,11 @@ export function VideoBoxLink({
         openInNewTab
         href={`https://www.youtube.com/watch?v=${videoId}${time ? `&t=${time}` : ''}`}
         className={mergeClasses(
-          'group relative flex items-stretch overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
+          'group relative flex items-stretch overflow-hidden rounded-3xl border border-default bg-default shadow-xs transition',
           'hocus:bg-subtle hocus:shadow-sm',
           'max-sm:flex-col',
           '[&+hr]:mt-6!',
+          '[&+&]:mt-3',
           className
         )}
         aria-label={`Watch video: ${title} (opens in new tab)`}>
@@ -56,8 +57,9 @@ export function VideoBoxLink({
             'max-sm:max-w-full max-sm:border-r-0 max-sm:border-b'
           )}>
           <img
-            src={`https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`}
-            className="aspect-video transition duration-300 group-hover:scale-105 group-focus-visible:scale-105"
+            src={`https://i.ytimg.com/vi_webp/${videoId}/sddefault.webp`}
+            loading="lazy"
+            className="aspect-video object-cover object-center transition duration-300 group-hover:scale-105 group-focus-visible:scale-105"
             alt={title}
             aria-label={`Video thumbnail for ${title}`}
           />
@@ -65,7 +67,7 @@ export function VideoBoxLink({
             className="absolute top-[calc(50%-22px)] right-[calc(50%-22px)] flex size-11 items-center justify-center rounded-full bg-[#000a]"
             role="presentation"
             aria-hidden="true">
-            <PlaySolidIcon className="ml-0.5 icon-lg text-palette-white" />
+            <PlaySolidIcon aria-hidden="true" className="ml-0.5 icon-lg text-palette-white" />
           </div>
         </div>
         <div className="flex flex-col justify-center gap-1 px-4 py-2">

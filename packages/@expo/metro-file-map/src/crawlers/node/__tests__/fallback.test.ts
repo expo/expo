@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 
 import { RootPathUtils } from '../../../lib/RootPathUtils';
-import type { FallbackFilesystem } from '../../../types';
+import type { FallbackFilesystem, FileMetadata } from '../../../types';
 import createFallbackFilesystem, { isFallbackDir } from '../fallback';
 
 // memfs is POSIX-only; pin to POSIX path semantics
@@ -153,7 +153,7 @@ describe('createFallbackFilesystem', () => {
       expect(result!.get('sub')).toBeInstanceOf(Map);
     });
 
-    test('includes symlinks with unresolved marker when includeSymlinks is true', () => {
+    test('includes symlinks with their targets when includeSymlinks is true', () => {
       vol.fromJSON({ '/project/src/target.js': 'target' });
       vol.symlinkSync('/project/src/target.js', '/project/src/link.js');
       const fallback = createFallback({ includeSymlinks: true });
@@ -161,7 +161,7 @@ describe('createFallbackFilesystem', () => {
 
       expect(result).toBeInstanceOf(Map);
       const linkMeta = result!.get('link.js') as any[];
-      expect(linkMeta[4]).toBe(1); // unresolved symlink marker
+      expect(linkMeta[4]).toBe('src/target.js');
     });
 
     test('skips symlinks when includeSymlinks is false', () => {
@@ -215,10 +215,10 @@ describe('createFallbackFilesystem', () => {
         '/project/src/file.js': 'new',
       });
       const fallback = createFallback();
-      const existing = new Map([['file.js', [999, 5, 0, null, 0, null] as any]]);
+      const existing = new Map([['file.js', [999, 5, 0, null, 0, null] as FileMetadata]]);
       const result = fallback.readdir('src', '/project/src', existing);
 
-      expect(result!.get('file.js')?.[0]).toBe(999); // preserved
+      expect((result!.get('file.js') as FileMetadata)?.[0]).toBe(999); // preserved
     });
 
     test('skips .git and .hg directories', () => {

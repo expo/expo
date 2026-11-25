@@ -25,7 +25,7 @@ Move your **app** directory to **src/app**.
 
 <Step label="2">
 
-Update [TypeScript path aliases](/guides/typescript#path-aliases) in the **tsconfig.json** file to point to the **src** directory instead of the root directory. If you use the default `@/*` alias, set it to **./src/\***:
+Update [TypeScript path aliases](/guides/typescript#path-aliases-optional) in the **tsconfig.json** file to point to the **src** directory instead of the root directory. If you use the default `@/*` alias, set it to **./src/\***:
 
 ```json tsconfig.json
 {
@@ -46,12 +46,34 @@ This keeps `@/` imports working after moving your app directory into **src**.
 Restart your development server.
 
 {/* prettier-ignore */}
-<Terminal cmd={[
-  '$ npx expo start',
-  '',
-  '# Or export for production',
-  '$ npx expo export'
-]} />
+<Terminal
+  cmd={{
+    npm: [
+      '$ npx expo start',
+      '',
+      '# Or export for production',
+      '$ npx expo export',
+    ],
+    yarn: [
+      '$ yarn expo start',
+      '',
+      '# Or export for production',
+      '$ yarn expo export',
+    ],
+    pnpm: [
+      '$ pnpm expo start',
+      '',
+      '# Or export for production',
+      '$ pnpm expo export',
+    ],
+    bun: [
+      '$ bun expo start',
+      '',
+      '# Or export for production',
+      '$ bun expo export',
+    ],
+  }}
+/>
 
 </Step>
 
@@ -61,7 +83,7 @@ Restart your development server.
 - The **src/app** directory takes higher precedence than the root **app** directory. Only the **src/app** directory will be used if you have both.
 - The **public** directory should remain in the root directory.
 - Static rendering will automatically use the **src/app** directory if it exists.
-- You may consider updating any [type aliases](/guides/typescript#path-aliases) to point to the **src** directory instead of the root directory.
+- You may consider updating any [type aliases](/guides/typescript#path-aliases-optional) to point to the **src** directory instead of the root directory.
 
 ## Custom directory
 

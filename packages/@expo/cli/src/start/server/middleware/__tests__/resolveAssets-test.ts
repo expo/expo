@@ -1,3 +1,4 @@
+import type { ExpoConfig } from '@expo/config';
 import { vol } from 'memfs';
 
 import * as Log from '../../../../log';
@@ -26,6 +27,7 @@ describe(getAssetFieldPathsForManifestAsync, () => {
         icon: './icon.png',
         name: '',
         slug: '',
+        // `notification` is read dynamically via the asset schemas but is no longer in the ExpoConfig type.
         notification: { icon: './notification.png' },
         android: {
           adaptiveIcon: {
@@ -33,7 +35,7 @@ describe(getAssetFieldPathsForManifestAsync, () => {
             foregroundImage: './foreground.png',
           },
         },
-      })
+      } as ExpoConfig)
     ).toStrictEqual([
       'icon',
       'notification.icon',

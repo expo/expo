@@ -1,10 +1,13 @@
 import url from 'node:url';
-import type { Diagnostic } from 'typescript';
+
+export interface Diagnostic {
+  message: string;
+  loc?: { line: number; column: number };
+}
 
 function errorToLoc(filename: string, error: Error) {
-  if (error.name === 'ReferenceError' || error.name === 'SyntaxError') {
-    let stack = `${error.stack || ''}`;
-    stack = stack.slice(error.name.length + 2 /* '${name}: ' prefix */);
+  if (typeof error.name === 'string' && typeof error.stack === 'string') {
+    let stack = error.stack.slice(error.name.length + 2 /* '${name}: ' prefix */);
     stack = stack.slice(error.message.length);
     const trace = stack.match(/at ([^\n]+):(\d+):(\d+)/m);
     if (url.pathToFileURL(filename).href === trace?.[1]) {
@@ -15,17 +18,15 @@ function errorToLoc(filename: string, error: Error) {
   return null;
 }
 
-export function formatDiagnostic(diagnostic: Diagnostic | undefined) {
+export function formatDiagnostic(code: string, diagnostic: Diagnostic | undefined) {
   if (!diagnostic) {
     return null;
   }
-  const { start, file, messageText } = diagnostic;
-  if (file && messageText && start != null) {
+  const { loc, message } = diagnostic;
+  if (loc && message) {
     const { codeFrameColumns }: typeof import('@babel/code-frame') = require('@babel/code-frame');
-    const { line, character } = file.getLineAndCharacterOfPosition(start);
-    const loc = { line: line + 1, column: character + 1 };
-    const codeFrame = codeFrameColumns(file.getText(), { start: loc }, { highlightCode: true });
-    const annotatedError = new SyntaxError(`${messageText}\n${codeFrame}`) as SyntaxError & {
+    const codeFrame = codeFrameColumns(code, { start: loc }, { highlightCode: true });
+    const annotatedError = new SyntaxError(`${message}\n${codeFrame}`) as SyntaxError & {
       codeFrame: string;
     };
     annotatedError.codeFrame = codeFrame;

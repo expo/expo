@@ -1,6 +1,5 @@
-import { useObserve } from 'expo-observe';
+import { ObserveInteractiveMarker } from 'expo-observe';
 import { router } from 'expo-router';
-import { useEffect } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/Button';
@@ -14,16 +13,12 @@ const SCREENS = [
 
 export default function PreloadedIndex() {
   const theme = useTheme();
-  const { markInteractive } = useObserve();
-
-  useEffect(() => {
-    markInteractive();
-  }, []);
 
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background.screen }]}
       contentContainerStyle={styles.content}>
+      <ObserveInteractiveMarker />
       <Text style={[styles.hint, { color: theme.text.secondary }]}>
         Tap Preload to warm up a screen, then Open to push it. Opening without preloading mounts
         cold — compare the TTI metrics in the Metrics tab.
@@ -33,11 +28,7 @@ export default function PreloadedIndex() {
           <Text style={[styles.rowLabel, { color: theme.text.default }]}>Screen {label}</Text>
           <View style={styles.actions}>
             <View style={styles.action}>
-              <Button
-                title="Preload"
-                theme="secondary"
-                onPress={() => router.prefetch(href)}
-              />
+              <Button title="Preload" theme="secondary" onPress={() => router.prefetch(href)} />
             </View>
             <View style={styles.action}>
               <Button title="Open" onPress={() => router.push(href)} />

@@ -45,13 +45,31 @@ public final class WidgetsModule: Module {
       pushToStartTokenObserverTask = nil
     }
 
+    Constant("widgetsDirectory") { () -> String? in
+      guard let appGroupIdentifier = WidgetsStorage.appGroupIdentifier,
+            let containerUrl = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier) else {
+        return nil
+      }
+      let directoryUrl = containerUrl.appendingPathComponent("ExpoWidgets", isDirectory: true)
+      do {
+        try FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
+        return directoryUrl.absoluteString
+      } catch {
+        return nil
+      }
+    }
+
     Function("reloadAllWidgets") {
       WidgetCenter.shared.reloadAllTimelines()
     }
 
+    Function("areActivitiesEnabled") { () -> Bool in
+      return ActivityAuthorizationInfo().areActivitiesEnabled
+    }
+
     Class("Widget", WidgetObject.self) {
-      Constructor { (name: String, layout: String) in
-        WidgetObject(name: name, layout: layout)
+      Constructor { (name: String, layout: String, initialProps: [String: Any]?) in
+        WidgetObject(name: name, layout: layout, initialProps: initialProps)
       }
 
       Function("reload") { (widget: WidgetObject) in
@@ -65,6 +83,10 @@ public final class WidgetsModule: Module {
       Function("getTimeline") { (widget: WidgetObject) in
         try widget.getTimeline()
       }
+
+      Function("setConfigurationParameterEnum") { (widget: WidgetObject, parameterName: String, options: [WidgetConfigurationOptionRecord]?) in
+        widget.setConfigurationParameterEnum(parameterName: parameterName, options: options)
+      }
     }
 
     Class("LiveActivityFactory", LiveActivityFactory.self) {
@@ -72,8 +94,8 @@ public final class WidgetsModule: Module {
         LiveActivityFactory(name: name, layout: layout)
       }
 
-      Function("start") { (liveActivity: LiveActivityFactory, props: String, url: URL?) in
-        try liveActivity.start(props: props, url: url)
+      Function("start") { (liveActivity: LiveActivityFactory, props: String?, options: LiveActivityStartOptions) in
+        try liveActivity.start(props: props, options: options)
       }
 
       Function("getInstances") { (liveActivity: LiveActivityFactory) in
@@ -82,8 +104,16 @@ public final class WidgetsModule: Module {
     }
 
     Class("LiveActivity", LiveActivity.self) {
-      AsyncFunction("update") { (instance: LiveActivity, props: String) in
-        try await instance.update(props: props)
+      Function("getId") { (instance: LiveActivity) in
+        instance.id
+      }
+
+      Function("getState") { (instance: LiveActivity) in
+        try instance.getState()
+      }
+
+      AsyncFunction("update") { (instance: LiveActivity, props: String?, options: LiveActivityUpdateOptions) in
+        try await instance.update(props: props, options: options)
       }
 
       AsyncFunction("end") { (instance: LiveActivity, dismissalPolicy: LiveActivityDismissalPolicy?, afterDate: Date?, props: String?, contentDate: Date?) in

@@ -2,38 +2,33 @@
 
 import ExpoAppMetrics
 
-/**
- Snapshot of the last `configure(...)` payload.
- */
+/// Snapshot of the last `configure(...)` payload.
 internal struct PersistedConfig: Codable {
   var dispatchingEnabled: Bool?
   var dispatchInDebug: Bool?
   var sampleRate: Double?
+  var errorSampleRate: Double?
+  var ignoredMetrics: [String]?
+  var ignoredEvents: [String]?
 }
 
-/**
- Bundle-derived facts pushed from the JS layer at package import time.
-
- Set atomically by `setBundleDefaults`.
- */
+/// Bundle-derived facts pushed from the JS layer at package import time.
+///
+/// Set atomically by `setBundleDefaults`.
 internal struct PersistedBundleDefaults: Codable {
   var environment: String
   var isJsDev: Bool
 }
 
-/**
- Class that manages a custom `UserDefaults` database with `"dev.expo.observe"` suite name.
- */
+/// Class that manages a custom `UserDefaults` database with `"dev.expo.observe"` suite name.
 @AppMetricsActor
 internal final class ObserveUserDefaults: UserDefaults {
-  /**
-   Singleton instance of the user defaults for EAS Observe.
-   */
-  private static let defaults = ObserveUserDefaults()
+  private nonisolated static let suiteName = "dev.expo.observe"
 
-  /**
-   Enum with keys used within this user defaults database.
-   */
+  /// Singleton instance of the user defaults for EAS Observe.
+  private static let defaults = ConsentGatedDefaults(ObserveUserDefaults())
+
+  /// Enum with keys used within this user defaults database.
   private enum Keys: String {
     case lastDispatchedMetricId
     case lastDispatchedLogId
@@ -45,15 +40,14 @@ internal final class ObserveUserDefaults: UserDefaults {
   private init() {
     // It's safe to force-unwrap as `init?(suiteName:)` fails only if `suiteName`
     // is the same as the app's main bundle identifier or the global domain.
-    super.init(suiteName: "dev.expo.observe")!
+    super.init(suiteName: Self.suiteName)!
+    Self.cleanUpLegacyKeys(from: self)
   }
 
-  /**
-   Date when events with metrics were last sent and received by the backend.
-   */
+  /// Date when events with metrics were last sent and received by the backend.
   static var lastDispatchDate: Date? {
     get {
-      if let dateString = defaults.string(forKey: Keys.lastDispatchDate.rawValue) {
+      if let dateString = defaults.object(forKey: Keys.lastDispatchDate.rawValue) as? String {
         let formatter = ISO8601DateFormatter()
         return formatter.date(from: dateString)
       }
@@ -64,11 +58,9 @@ internal final class ObserveUserDefaults: UserDefaults {
     }
   }
 
-  /**
-   Id of the last metric row dispatched. Each successful dispatch advances this past the largest id
-   in the batch so the next dispatch reads only newer rows. Auto-increment ids are monotonic in
-   SQLite, so a date-independent cursor avoids drift when the device clock changes.
-   */
+  /// Id of the last metric row dispatched. Each successful dispatch advances this past the largest id
+  /// in the batch so the next dispatch reads only newer rows. Auto-increment ids are monotonic in
+  /// SQLite, so a date-independent cursor avoids drift when the device clock changes.
   static var lastDispatchedMetricId: Int64 {
     get {
       return (defaults.object(forKey: Keys.lastDispatchedMetricId.rawValue) as? Int64) ?? -1
@@ -78,10 +70,8 @@ internal final class ObserveUserDefaults: UserDefaults {
     }
   }
 
-  /**
-   Id of the last log row dispatched. Tracked separately from the metric cursor so a logs request
-   failure does not block metrics dispatch (and vice versa) — both signals move forward independently.
-   */
+  /// Id of the last log row dispatched. Tracked separately from the metric cursor so a logs request
+  /// failure does not block metrics dispatch (and vice versa) — both signals move forward independently.
   static var lastDispatchedLogId: Int64 {
     get {
       return (defaults.object(forKey: Keys.lastDispatchedLogId.rawValue) as? Int64) ?? -1
@@ -92,7 +82,7 @@ internal final class ObserveUserDefaults: UserDefaults {
   }
 
   static var config: PersistedConfig? {
-    guard let data = defaults.data(forKey: Keys.config.rawValue) else { return nil }
+    guard let data = defaults.object(forKey: Keys.config.rawValue) as? Data else { return nil }
     return try? JSONDecoder().decode(PersistedConfig.self, from: data)
   }
 
@@ -102,12 +92,36 @@ internal final class ObserveUserDefaults: UserDefaults {
   }
 
   static var bundleDefaults: PersistedBundleDefaults? {
-    guard let data = defaults.data(forKey: Keys.bundleDefaults.rawValue) else { return nil }
+    guard let data = defaults.object(forKey: Keys.bundleDefaults.rawValue) as? Data else { return nil }
     return try? JSONDecoder().decode(PersistedBundleDefaults.self, from: data)
   }
 
   static func setBundleDefaults(_ newValue: PersistedBundleDefaults) {
     guard let data = try? JSONEncoder().encode(newValue) else { return }
     defaults.set(data, forKey: Keys.bundleDefaults.rawValue)
+  }
+
+  /// Deletes every saved value. Runs at a launch without consent and at a revoke.
+  nonisolated static func deleteStoredSettings() {
+    UserDefaults.standard.removePersistentDomain(forName: suiteName)
+  }
+
+  // MARK: - Legacy keys
+
+  /// Keys that older versions wrote and nothing reads anymore.
+  private enum LegacyKeys: String, CaseIterable {
+    /// Replaced by `config`.
+    case dispatchingEnabled
+    /// Replaced by `lastDispatchedMetricId` when the JSON storage was replaced with SQLite.
+    case lastDispatchedEntryId
+    /// Replaced by `lastDispatchedLogId` when the JSON storage was replaced with SQLite.
+    case lastDispatchedLogEntryId
+  }
+
+  /// Removes the values stored under `LegacyKeys` so they don't stay on the device forever.
+  nonisolated static func cleanUpLegacyKeys(from defaults: UserDefaults) {
+    for key in LegacyKeys.allCases where defaults.object(forKey: key.rawValue) != nil {
+      defaults.removeObject(forKey: key.rawValue)
+    }
   }
 }

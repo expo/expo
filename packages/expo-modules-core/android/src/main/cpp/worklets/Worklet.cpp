@@ -1,7 +1,5 @@
 #include "Worklet.h"
 
-#if WORKLETS_ENABLED
-
 #include "../types/JNIToJSIConverter.h"
 
 namespace expo {
@@ -38,7 +36,7 @@ void Worklet::execute(
     synchronizable->cthis()->getSerializable()
   );
 
-  workletRuntime->runSync(worklet);
+  workletRuntime->runSyncAndDiscard(worklet);
 }
 
 void Worklet::scheduleWithArgs(
@@ -90,5 +88,3 @@ void Worklet::executeWithArgs(
 }
 
 } // namespace expo
-
-#endif

@@ -28,7 +28,7 @@ describe(readResourcesXMLAsync, () => {
   it(`can write the escaped name and then read it back in unescaped format`, async () => {
     const stringsPath = '/app/android/app/src/main/res/values/strings.xml';
     let stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
-    expect(stringsJSON.resources.string.filter((e) => e.$.name === 'app_name')[0]._).toBe(
+    expect(stringsJSON.resources.string!.filter((e) => e.$.name === 'app_name')[0]!._).toBe(
       `exp'o &bo<y>'`
     );
     stringsJSON = setStringItem(
@@ -41,8 +41,8 @@ describe(readResourcesXMLAsync, () => {
     expect(format(stringsJSON).includes(`\\'E&amp;x&lt;p&gt;o\\"\\@\\n`)).toBe(true);
 
     // And parsed in unescaped form
-    expect(stringsJSON.resources.string.filter((e) => e.$.name === 'app_name')[0]._).toBe(
-      `\\'E&x<p>o\\"\\@\\n`
+    expect(stringsJSON.resources.string!.filter((e) => e.$.name === 'app_name')[0]!._).toBe(
+      `'E&x<p>o"@\n`
     );
   });
 });
@@ -69,6 +69,34 @@ describe('read and write', () => {
     const stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
     await writeXMLAsync({ path: stringsPath, xml: stringsJSON });
     expect(await fs.promises.readFile(stringsPath, 'utf-8')).toBe(example);
+  });
+
+  it('writes the same resource object twice without adding extra escapes', async () => {
+    const stringsPath = '/app/android/app/src/main/res/values/strings.xml';
+    const stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
+    await writeXMLAsync({ path: stringsPath, xml: stringsJSON });
+    const firstWrite = await fs.promises.readFile(stringsPath, 'utf-8');
+
+    await writeXMLAsync({ path: stringsPath, xml: stringsJSON });
+    expect(await fs.promises.readFile(stringsPath, 'utf-8')).toBe(firstWrite);
+  });
+});
+
+describe(format, () => {
+  it('leaves the resource object unchanged when escaping strings', () => {
+    const xml = {
+      resources: {
+        string: [
+          buildResourceItem({ name: 'app_name', value: `Expo's "test" C:\\Temp\n` }),
+          buildResourceItem({ name: 'reference', value: '@string/app_name', translatable: false }),
+        ],
+      },
+    };
+    const original = structuredClone(xml);
+
+    format(xml);
+
+    expect(xml).toEqual(original);
   });
 });
 
@@ -103,14 +131,111 @@ describe(escapeAndroidString, () => {
   it(`can escape Android strings`, () => {
     expect(escapeAndroidString(`@`)).toBe(`\\@`);
     expect(escapeAndroidString(`'''`)).toBe(`\\'\\'\\'`);
-    expect(escapeAndroidString('"E&x<p>o"@\n\r\t')).toBe(`\\"E&x<p>o\\"\\@\\n\\r\\t`);
+    expect(escapeAndroidString('"E&x<p>o"@\n\r\t')).toBe(`\\"E&x<p>o\\"\\@\\n\\u000d\\t`);
+    expect(escapeAndroidString('?attr/foo')).toBe('\\?attr/foo');
+    expect(escapeAndroidString('C:\\Temp')).toBe('C:\\\\Temp');
   });
 });
 
 describe(unescapeAndroidString, () => {
   it(`can remove escape sequences from Android strings`, () => {
-    expect(unescapeAndroidString(`test\\test`)).toBe('testtest');
+    expect(unescapeAndroidString(`test\\test`)).toBe('test\test');
     expect(unescapeAndroidString(`test\\'test`)).toBe("test'test");
     expect(unescapeAndroidString(`test\\\\'test`)).toBe("test\\'test");
+  });
+});
+
+describe('Android whitespace decoding', () => {
+  const cases = [
+    ['NUL Unicode escape', 'a\\u0000b', 'ab'],
+    ['one-digit NUL escape', '\\u0', ''],
+    ['two-digit NUL escape', '\\u00', ''],
+    ['three-digit NUL escape', '\\u000', ''],
+    ['four-digit NUL escape', '\\u0000', ''],
+    ['bare Unicode escape', '\\u', ''],
+    ['one-digit Unicode escape', 'x\\u4', 'x\u0004'],
+    ['two-digit Unicode escape', 'x\\u41', 'xA'],
+    ['three-digit Unicode escape', 'x\\u004', 'x\u0004'],
+    ['escaped newline and tab', 'one\\ntwo\\tthree', 'one\ntwo\tthree'],
+    ['Unicode escapes', 'caf\\u00e9\\u2026', 'café…'],
+    ['quoted padding', '"  padded  "', '  padded  '],
+    ['quoted repeated spaces', '"a  b"', 'a  b'],
+    ['quoted tabs and newlines', '"a\t\nb"', 'a\t\nb'],
+    ['Unicode carriage return', 'a\\u000db', 'a\rb'],
+    ['Unicode form feed', 'a\\u000cb', 'a\fb'],
+    ['unquoted spaces', 'a  b', 'a b'],
+    ['unquoted padding', '  a  ', 'a'],
+    ['only whitespace', ' \t\n ', ''],
+    ['literal tabs and newlines', 'a\t\nb', 'a b'],
+    ['mixed quoted regions', 'a  "b  c"  d', 'a b  c d'],
+    ['padding outside quotes', '  " a "  ', ' a '],
+    ['empty quoted region', 'a  ""  b', 'a  b'],
+    ['escaped quote does not open a region', 'a\\"  b', 'a" b'],
+    ['escaped backslash before whitespace', 'a\\\\  b', 'a\\ b'],
+    ['escaped space next to literal spaces', 'a  \\u0020  b', 'a   b'],
+    ['escaped newline next to literal spaces', 'a  \\n  b', 'a \n b'],
+    ['escaped literal newline', 'a\\\nb', 'a\nb'],
+    ['trailing backslash', 'a\\', 'a'],
+  ];
+
+  it.each(cases)('decodes %s', (_name, source, expected) => {
+    expect(unescapeAndroidString(source)).toBe(expected);
+  });
+
+  const roundTripCases = [
+    ...cases,
+    ['quoted empty string', '""', ''],
+    ['padded quoted empty string', ' "" ', ''],
+    ['repeated empty quoted regions', '""""', ''],
+    ['Unicode FFFE', 'x\\ufffe', 'x\ufffe'],
+    ['Unicode FFFF', 'x\\uffff', 'x\uffff'],
+  ];
+
+  it.each(roundTripCases.filter(([name]) => name !== 'only whitespace'))(
+    'preserves %s through XML read/write cycles',
+    async (_name, source, expected) => {
+      const stringsPath = '/app/android/app/src/main/res/values/strings.xml';
+      vol.fromJSON({
+        [stringsPath]: `<resources><string name="example">${source}</string></resources>`,
+      });
+      try {
+        for (let cycle = 0; cycle < 3; cycle++) {
+          const xml = await readResourcesXMLAsync({ path: stringsPath });
+          expect(xml.resources.string![0]!._).toBe(expected);
+          await writeXMLAsync({ path: stringsPath, xml });
+        }
+      } finally {
+        vol.reset();
+      }
+    }
+  );
+
+  it('writes carriage returns as Unicode escapes', () => {
+    expect(escapeAndroidString('a\rb')).toBe('a\\u000db');
+  });
+});
+
+describe('Android string writer boundaries', () => {
+  it.each([
+    ['', '""'],
+    ['a\ufffeb', 'a\\ufffeb'],
+    ['a\uffffb', 'a\\uffffb'],
+  ])('escapes %j as %j', (value, expected) => {
+    expect(escapeAndroidString(value)).toBe(expected);
+  });
+
+  it.each([
+    ['\u0000Name', 'Name'],
+    ['Name\u0000', 'Name'],
+    ['Null\u0000Byte', 'NullByte'],
+    ['\u0000', '""'],
+    ['a \u0000 b', '"a  b"'],
+    ['\u0000 Padded\u0000', '" Padded"'],
+    ['Padded \u0000', '"Padded "'],
+  ])('discards NUL from %j and writes %j', (value, expected) => {
+    expect(escapeAndroidString(value)).toBe(expected);
+  });
+  it('discards literal NUL when decoding', () => {
+    expect(unescapeAndroidString('Null\0Byte')).toBe('NullByte');
   });
 });

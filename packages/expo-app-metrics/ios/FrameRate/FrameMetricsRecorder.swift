@@ -1,11 +1,9 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-/**
- A lightweight recorder that accumulates frame rate metrics independently.
- Multiple recorders can be active simultaneously (e.g., one for the main session, one per screen),
- each tracking its own metrics. Call `start()` to begin recording and `stop()` to finish
- and retrieve the accumulated metrics.
- */
+/// A lightweight recorder that accumulates frame rate metrics independently.
+/// Multiple recorders can be active simultaneously (e.g., one for the main session, one per screen),
+/// each tracking its own metrics. Call `start()` to begin recording and `stop()` to finish
+/// and retrieve the accumulated metrics.
 public final class FrameMetricsRecorder: Sendable {
   @AppMetricsActor
   public private(set) var metrics: FrameRateMetrics = .zero
@@ -44,13 +42,15 @@ public final class FrameMetricsRecorder: Sendable {
 
     let fpsIsChanging = !frame.equal(duration: previousFrame.duration) || !frame.equal(duration: frame.targetDuration)
 
-    let noMoreThanOneFrameDropped = actualFrameDuration < 2 * frame.targetDuration + FrameRateMetrics.refreshRateDurationThreshold
+    let noMoreThanOneFrameDropped =
+      actualFrameDuration < 2 * frame.targetDuration + FrameRateMetrics.refreshRateDurationThreshold
 
     if fpsIsChanging && noMoreThanOneFrameDropped {
       actualFrameDuration = frame.targetDuration
     }
 
-    metrics = metrics + FrameRateMetrics.metrics(frameDuration: actualFrameDuration, targetDuration: frame.targetDuration)
+    metrics =
+      metrics + FrameRateMetrics.metrics(frameDuration: actualFrameDuration, targetDuration: frame.targetDuration)
     previousFrame = frame
   }
 }

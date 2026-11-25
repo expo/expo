@@ -3,6 +3,7 @@ export type PageMetadata = {
   description?: string;
   sourceCodeUrl?: string;
   packageName?: string;
+  exampleName?: string;
   cliVersion?: string;
   maxHeadingDepth?: number;
   iconUrl?: string;
@@ -70,6 +71,7 @@ export type PlatformName =
   | 'android-noemu'
   | 'web'
   | 'expo'
+  | 'expo-widgets'
   | 'macos'
   | 'tvos'
   | string;

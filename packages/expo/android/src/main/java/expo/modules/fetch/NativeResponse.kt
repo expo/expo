@@ -8,7 +8,9 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
@@ -39,9 +41,9 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   val bodyUsed: Boolean
     get() = this.sink.bodyUsed
 
-  override fun deallocate() {
+  override fun sharedObjectDidRelease() {
     this.sink.finalize(directBuffer = false)
-    super.deallocate()
+    super.sharedObjectDidRelease()
   }
 
   fun onStarted() {
@@ -67,8 +69,21 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   }
 
   fun cancelStreaming() {
-    if (isInvalidState(ResponseState.BODY_STREAMING_STARTED)) {
+    if (state == ResponseState.BODY_COMPLETED ||
+      state == ResponseState.BODY_STREAMING_CANCELED ||
+      state == ResponseState.ERROR_RECEIVED
+    ) {
       return
+    }
+    if (isInvalidState(
+        ResponseState.RESPONSE_RECEIVED,
+        ResponseState.BODY_STREAMING_STARTED
+      )
+    ) {
+      return
+    }
+    if (state == ResponseState.RESPONSE_RECEIVED) {
+      sink.discard()
     }
     state = ResponseState.BODY_STREAMING_CANCELED
   }
@@ -138,10 +153,17 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     responseInit = createResponseInit(response)
     state = ResponseState.RESPONSE_RECEIVED
 
-    coroutineScope.launch(Dispatchers.IO) {
+    coroutineScope.launch {
       val stream = response.body?.source() ?: return@launch
-      pumpResponseBodyStream(stream)
-      response.close()
+      try {
+        pumpResponseBodyStream(stream)
+      } finally {
+        // Close off the modules queue so the blocking call doesn't stall it.
+        // NonCancellable guarantees the response is released even if the scope is canceled mid-stream.
+        withContext(NonCancellable + Dispatchers.IO) {
+          response.close()
+        }
+      }
 
       if (this@NativeResponse.state == ResponseState.BODY_STREAMING_STARTED) {
         emit("didComplete")
@@ -182,9 +204,17 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     )
   }
 
-  private fun pumpResponseBodyStream(stream: BufferedSource) {
+  private suspend fun pumpResponseBodyStream(stream: BufferedSource) {
     try {
-      while (!stream.exhausted()) {
+      while (true) {
+        val data = withContext(Dispatchers.IO) {
+          if (stream.exhausted()) {
+            null
+          } else {
+            stream.buffer.readByteArray()
+          }
+        } ?: break
+
         if (isInvalidState(
             ResponseState.RESPONSE_RECEIVED,
             ResponseState.BODY_STREAMING_STARTED,
@@ -194,9 +224,9 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
           break
         }
         if (state == ResponseState.RESPONSE_RECEIVED) {
-          sink.appendBufferBody(stream.buffer.readByteArray())
+          sink.appendBufferBody(data)
         } else if (state == ResponseState.BODY_STREAMING_STARTED) {
-          emit("didReceiveResponseData", stream.buffer.readByteArray())
+          emit("didReceiveResponseData", data)
         } else {
           break
         }

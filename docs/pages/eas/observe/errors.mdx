@@ -1,0 +1,311 @@
+---
+title: Error reporting
+sidebar_title: Errors
+description: Record JavaScript errors and native crashes from your app and investigate stack traces in the Expo Observe dashboard.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+> **important** Error reporting in Expo Observe is in [preview](/more/release-statuses/#preview) and requires SDK 57 or later. Native crashes additionally require `expo-observe` 57.0.21 or later. See [Still to come](#still-to-come) for more features.
+
+The `expo-observe` library records JavaScript errors and native crashes from your app alongside its performance metrics. Errors are persisted on-device, batched, and dispatched on the next flush. They appear in the **Errors** page of the Expo Observe dashboard.
+
+<ContentSpotlight
+  alt="The Errors page of the Expo Observe dashboard, showing the crash-free sessions chart and the list of distinct errors."
+  src="/static/images/expo-observe/observe-errors-light.webp"
+  darkSrc="/static/images/expo-observe/observe-errors-dark.webp"
+/>
+
+## JavaScript errors
+
+JavaScript errors are captured through three paths: unhandled errors are recorded automatically, render errors are caught by `ObserveErrorBoundary`, and handled errors can be reported with `Observe.reportError`.
+
+### Unhandled errors
+
+Unhandled JavaScript errors are recorded automatically. The library installs a global error handler when it is first imported, so no setup is required. React Native's own behavior is unchanged: the red box still appears in development, and fatal errors still terminate the app in production.
+
+To turn off automatic recording, set `errorHandlingEnabled` to `false` via [`configure()`](/versions/latest/sdk/observe/#configureconfig):
+
+```tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  errorHandlingEnabled: false,
+});
+```
+
+This only affects unhandled JavaScript errors. Errors caught by `ObserveErrorBoundary`, errors reported with `Observe.reportError`, and native crashes are still recorded.
+
+### Render errors
+
+Without an error boundary, an error thrown while rendering is recorded by the global error handler as an unhandled error. Wrap a subtree with `ObserveErrorBoundary` to record it together with the React component stack and show a fallback UI in place of the subtree that threw:
+
+```tsx
+import { ObserveErrorBoundary } from 'expo-observe';
+
+export default function FeedScreen() {
+  return (
+    <ObserveErrorBoundary
+      fallback={({ error, resetError }) => <ErrorScreen error={error} onRetry={resetError} />}>
+      <Feed />
+    </ObserveErrorBoundary>
+  );
+}
+```
+
+The `fallback` prop accepts a React element, `null`, or a function that receives the thrown `error` and a `resetError` callback. Calling `resetError()` clears the caught error and re-mounts the children, so they restart from a clean state.
+
+To place a boundary around your whole app, pass `errorBoundaryFallback` to the `ObserveRoot` component instead of wrapping it manually:
+
+```tsx src/app/_layout.tsx
+import { ObserveRoot } from 'expo-observe';
+
+export default function RootLayout() {
+  return (
+    <ObserveRoot errorBoundaryFallback={<FallbackScreen />}>
+      <Stack />
+    </ObserveRoot>
+  );
+}
+```
+
+Render errors that no boundary catches are still recorded by the global error handler.
+
+### Handled errors
+
+Errors your code catches and recovers from reach neither the global handler nor an error boundary. Report them with `Observe.reportError`:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+async function handleSync() {
+  try {
+    await syncCart();
+  } catch (error) {
+    Observe.reportError(error);
+  }
+}
+```
+
+`reportError` accepts any thrown value. An `Error` contributes its name, message, and stack trace. Any other value (a string, a plain object, a number) is stringified into the message without a stack trace.
+
+Avoid Personally Identifiable Information (PII) in error messages. Everything you report is visible in the dashboard and is dispatched off-device.
+
+## Native crashes
+
+A native crash terminates the app before your JavaScript can react to it, so the report is written on the device and dispatched the next time the app launches. Native crashes are recorded automatically on Android and iOS with `expo-observe` 57.0.21 or later, and no setup is required. They appear with the **Native** source in the dashboard.
+
+On Android, Expo Observe records uncaught Java and Kotlin exceptions, including the `Caused by` chain. On Android 11 and later, it also reads the crash records the operating system keeps for your app, which covers crashes in native code such as `SIGSEGV` and `SIGABRT`.
+
+On iOS, Expo Observe uses MetricKit to collect the crash reports the system produces for your app. These cover Mach exceptions such as `EXC_BAD_ACCESS` and `EXC_BREAKPOINT`, and Unix signals such as `SIGSEGV`, `SIGBUS`, and `SIGTRAP`. On iOS 17 and later, they also cover uncaught Objective-C and Swift exceptions.
+
+> **Note:** Native crashes are not recorded on tvOS or on the iOS Simulator. Application Not Responding (ANR) events and out-of-memory terminations are not recorded on either platform.
+
+## Investigate an error
+
+Click an error in the list to open its details. The page shows how often the error occurs, how many users it affects, when it was first and last seen, and how it splits across platforms.
+
+<ContentSpotlight
+  alt="The error details page of the Expo Observe dashboard, showing the stack trace of a native crash and the session records that preceded it."
+  src="/static/images/expo-observe/observe-error-details-light.webp"
+  darkSrc="/static/images/expo-observe/observe-error-details-dark.webp"
+/>
+
+Below the summary, **Occurrence** steps through the individual reports one at a time, each with the app version, device, and OS it came from. **Stack trace** shows the frames for the selected occurrence, and **Before the crash** lists the last session records that preceded it. Open **Session timeline** to see the full session. Use the **Breakdown** section to see which app versions, operating systems, devices, and countries the error affects, and click a value to filter the page by it.
+
+The **Occurrences** tab lists every report in the group, so you can scan the versions and devices an error appears on.
+
+### Hand off to AI
+
+Select **Hand off to AI** on the error details page to start investigating the error with a coding agent. It prepares a prompt that describes the error, its stack trace, the filters currently applied, and the breakdown by version, OS, device, and country. Send the prompt straight to Claude Code or Codex, or copy it and paste it into another assistant.
+
+The agent uses the prompt to map the stack trace onto your source and to pull more context with the `eas observe:` commands, such as the session the crash came from.
+
+## Symbolicated stack traces
+
+In a production app, your JavaScript is bundled and minified. Stack traces point at line and column positions in the generated bundle, not in your source files. A source map translates those positions back. When a source map is stored for a build or an update, the dashboard shows the original file, line, and column for each frame, and links the build or the update the error came from next to the stack trace.
+
+If no source map is stored for the build or the update, the dashboard shows the reported stack trace as-is. Frames then reference positions in the minified bundle, such as `index.android.bundle:1:481231`, and are difficult to map back to your code.
+
+### Upload source maps with Expo Build
+
+To store a source map for each build, set `uploadSourceMaps` to `true` in the build profile in **eas.json**:
+
+```json eas.json
+{
+  "build": {
+    "production": {
+      "uploadSourceMaps": true
+    }
+  }
+}
+```
+
+With this setting, Expo Build uploads the source map produced when your app's JavaScript is bundled. Symbolication then works for every error reported from that build. No changes to your app code are required.
+
+> **info** Source map upload requires EAS CLI version 22.0.0 or later and only works for builds that run on Expo Build servers. Local builds created with `eas build --local` do not upload source maps.
+
+The source code embedded in the source map (`sourcesContent`) is removed before upload. Only file names and position mappings are stored. If the upload fails, the build still completes and shows a warning in the build logs.
+
+### Upload source maps with Expo Update
+
+> **info** Source map upload for updates requires EAS CLI version 24.9.0 or later.
+
+To store source maps for an update, pass `--upload-source-maps` to `eas update` command:
+
+<Terminal cmd={['$ eas update --upload-source-maps']} />
+
+With this flag, EAS CLI uploads the Android and iOS source maps produced when your update's JavaScript is bundled, so JavaScript stack traces from that update are symbolicated.
+
+### Native stack traces
+
+Source maps only apply to JavaScript. Native frames need the debug symbols of the native binary instead.
+
+On Android, frames from Java and Kotlin exceptions already carry the class, method, and line number.
+
+On iOS, the device resolves frames in system libraries to symbol names. The dashboard shows frames in your app and its bundled frameworks as a binary name and an offset, such as `MyApp + 19160`. To see function names, files, and lines for these frames, upload the app's debug symbol (dSYM) files to Expo Observe.
+
+> **info** Native crash symbolication requires `expo-observe` 57.0.25 or later for SDK 57, and 58.0.5 or later for SDK 58. Crash reports from earlier versions do not include the universally unique identifiers (UUIDs) of the binaries, which Expo Observe needs to find the debug symbols.
+
+#### About debug symbols
+
+When Xcode builds your app for release, it writes the debug information of each binary to a separate **.dSYM** bundle. There is one bundle for the app and one for each framework that Xcode compiles. A prebuilt framework, such as Hermes, has no bundle in the archive. Download its dSYM from the framework's publisher and add it to the **.zip** file you upload. A binary and its dSYM share a UUID. Each native crash report lists the UUIDs of the binaries in its stack trace, and Expo Observe uses them to find the matching dSYM files.
+
+Every build produces new UUIDs, so upload the dSYM files of each build you release. Symbolication happens when you view a crash, so an upload also applies to earlier crashes.
+
+#### Find the debug symbols
+
+The location of the dSYM files depends on where you built the app.
+
+##### Expo Build
+
+Expo Build archives your app with fastlane. During the archive, fastlane compresses every dSYM in the archive into one file at **ios/build/&lt;app name&gt;.app.dSYM.zip**. To keep this file, add it to `buildArtifactPaths` in the build profile in **eas.json**:
+
+```json eas.json
+{
+  "build": {
+    "production": {
+      "buildArtifactPaths": ["ios/build/*.app.dSYM.zip"]
+    }
+  }
+}
+```
+
+When the build finishes, download the build artifacts from the build details page. If the download is a **.tar.gz** archive, extract it to get the **.app.dSYM.zip** file.
+
+##### Local builds
+
+With `eas build --local`, the same `buildArtifactPaths` setting applies. EAS CLI writes the build artifacts to the directory where you ran the command, next to the **.ipa** file. When the pattern matches one file, the artifact is the **.app.dSYM.zip** file itself, renamed to **build-&lt;timestamp&gt;.zip**. Do not pass `--output`. With it, EAS CLI writes the **.ipa** file and the build artifacts to the same path, so one file replaces the other.
+
+##### Xcode archives
+
+When you archive the app in Xcode, the dSYM files are inside the archive:
+
+<Step label="1">
+
+In Xcode, open **Window** > **Organizer** and select **Archives**.
+
+</Step>
+
+<Step label="2">
+
+Right-click the archive of the build and select **Show in Finder**.
+
+</Step>
+
+<Step label="3">
+
+Right-click the **.xcarchive** file and select **Show Package Contents**.
+
+</Step>
+
+<Step label="4">
+
+Compress the **dSYMs** folder into a **.zip** file.
+
+</Step>
+
+#### Upload the debug symbols
+
+<Step label="1">
+
+Open a native crash in [**Observe** > **Errors**](https://expo.dev/accounts/[account]/projects/[project]/observe/errors). If binaries in the stack trace have no debug symbols, a warning such as **Missing debug symbols** appears above it.
+
+</Step>
+
+<Step label="2">
+
+Click **Upload debug symbols**. The dialog lists each binary that needs debug symbols with its UUID, and shows whether its debug symbols are **Uploaded** or **Missing**.
+
+</Step>
+
+<Step label="3">
+
+Select the **.zip** file and click **Upload**. Expo Observe reads the dSYM files and stores their symbols. When processing finishes, the stack trace shows function names, files, and lines, and the **Symbolicated** tag appears next to it.
+
+</Step>
+
+The **.dSYM** bundles can be at any depth in the **.zip** file. The file must be at most 1 GB, contain at most 1,000 dSYM files, and not be protected with a password. The dSYM files in it must add up to at most 2 GB uncompressed, so split a larger set into several **.zip** files. Only members who can publish to the project can upload or delete debug symbols.
+
+To upload debug symbols before a crash, or to see and delete earlier uploads, navigate to [**Project settings** > **Observe debug symbols**](https://expo.dev/accounts/[account]/projects/[project]/settings/debug-symbols).
+
+## View errors
+
+Open your project and navigate to [**Observe** > **Errors**](https://expo.dev/accounts/[account]/projects/[project]/observe/errors).
+
+The **Crash-free sessions** card shows the share of sessions in the selected time range that finished without a fatal error. It also shows crash-free users, fatal and non-fatal counts, and the number of affected users.
+
+**Distinct errors** lists the errors recorded in the selected time range, grouped by error. The **Source** column tells you where an error came from:
+
+| Source     | Description                                        |
+| ---------- | -------------------------------------------------- |
+| JavaScript | An error thrown by your app's JavaScript           |
+| Native     | A crash in native code, reported by Android or iOS |
+| Other      | An error recorded by another part of the runtime   |
+
+Filter the list by source, by severity (**Fatal** or **Non-fatal**), by platform, by environment, and by release. Fatal errors are reported on the app's next launch, so a recent crash can take time to appear.
+
+## Trigger a workflow for a new error
+
+Use [`on.observe.new_error`](/eas/workflows/syntax/#onobservenew_error) to start a workflow run in [Expo Workflows](/eas/workflows/introduction/) when Expo Observe detects a new error group. For example, you can notify your team or start an investigation.
+
+[Connect your project's GitHub repository](/eas/workflows/get-started/#automate-workflows-with-github-events), then add this file to **.eas/workflows** on the repository's default branch:
+
+```yaml .eas/workflows/review-observe-error.yml
+name: Review a new Observe error
+
+on:
+  observe:
+    new_error:
+      environments: [production]
+      platforms: [android, ios]
+      if: ${{ observe.event.severity == 'fatal' }}
+
+jobs:
+  error_details:
+    type: doc
+    params:
+      md: |
+        # New fatal error
+        - Type: ${{ observe.event.exception.type }}
+        - Message: ${{ observe.event.exception.message }}
+        - Environment: ${{ observe.event.environment }}
+        - Platform: ${{ observe.event.platform }}
+  review:
+    needs: [error_details]
+    type: require-approval
+```
+
+This workflow displays the error details and waits for approval. It matches new fatal errors in production on Android and iOS. Omit `environments`, `platforms`, or `if` to remove that filter.
+
+Newness is per project, environment, and error fingerprint, not per platform or app version. Repeated occurrences of the same group do not start another run. Adding the workflow does not trigger runs for existing error groups.
+
+See the [trigger reference](/eas/workflows/syntax/#onobservenew_error) for filter behavior and the [`observe` context](/eas/workflows/syntax/#observe) for all event fields. The event context does not include the stack trace.
+
+## Still to come
+
+Error reporting is in preview, and the following are not available yet:
+
+- **Symbolication for Android**: uploading Android ProGuard and R8 mapping files is not supported yet.

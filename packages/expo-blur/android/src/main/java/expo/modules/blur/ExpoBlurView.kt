@@ -2,8 +2,12 @@ package expo.modules.blur
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Path
+import android.graphics.RectF
 import android.os.Build
+import android.util.TypedValue
 import eightbitlab.com.blurview.BlurView
 import expo.modules.blur.enums.BlurMethod
 import expo.modules.blur.enums.TintStyle
@@ -30,10 +34,27 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   private var blurConfiguration = BlurViewConfiguration.NONE
   private var blurTargetId: Int? = null
   private var blurTarget: ExpoBlurTargetView? = null
+  private val clippingPath = Path()
+  private val clippingRect = RectF()
+  private var borderRadii = FloatArray(8)
+  private var needsClippingPathUpdate = true
 
   private val blurView = BlurView(context).also {
     it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
     addView(it)
+  }
+
+  fun setBorderRadii(radii: FloatArray) {
+    borderRadii = FloatArray(8) { index ->
+      val radius = radii.getOrElse(index) { 0f }
+      TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        radius,
+        context.resources.displayMetrics
+      )
+    }
+    needsClippingPathUpdate = true
+    invalidate()
   }
 
   fun setBlurTargetId(blurTargetId: Int?) {
@@ -50,12 +71,17 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
 
     this.blurTargetId = blurTargetId
     configureBlurView()
+    // `setupWith` turns the blur on. Apply the blur method again, so that
+    // `DIMEZIS_BLUR_VIEW_SDK_31_PLUS` doesn't blur below API 31.
+    applyCurrentBlurSettings()
   }
 
   fun setBlurRadius(radius: Float) {
     blurRadius = radius
 
-    if (blurConfiguration == BlurViewConfiguration.UNCONFIGURED) return
+    if (blurConfiguration == BlurViewConfiguration.UNCONFIGURED) {
+      return
+    }
 
     when (blurMethod) {
       BlurMethod.NONE -> {
@@ -87,7 +113,9 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
       BlurMethod.NONE
     }
 
-    if (blurConfiguration == BlurViewConfiguration.UNCONFIGURED) return
+    if (blurConfiguration == BlurViewConfiguration.UNCONFIGURED) {
+      return
+    }
 
     when (safeMethod) {
       BlurMethod.NONE -> {
@@ -118,7 +146,9 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   }
 
   fun applyTint() {
-    if (blurConfiguration == BlurViewConfiguration.UNCONFIGURED) return
+    if (blurConfiguration == BlurViewConfiguration.UNCONFIGURED) {
+      return
+    }
 
     when (blurMethod) {
       BlurMethod.NONE -> {
@@ -144,6 +174,24 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
       configureBlurView()
       applyCurrentBlurSettings()
     }
+  }
+
+  override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+    super.onSizeChanged(w, h, oldw, oldh)
+    needsClippingPathUpdate = true
+  }
+
+  override fun draw(canvas: Canvas) {
+    if (borderRadii.none { it > 0f }) {
+      super.draw(canvas)
+      return
+    }
+
+    updateClippingPathIfNeeded()
+    val saveCount = canvas.save()
+    canvas.clipPath(clippingPath)
+    super.draw(canvas)
+    canvas.restoreToCount(saveCount)
   }
 
   private fun configureBlurView() {
@@ -195,5 +243,16 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
     } else {
       setBackgroundColor(tint.toBlurEffect(blurRadius))
     }
+  }
+
+  private fun updateClippingPathIfNeeded() {
+    if (!needsClippingPathUpdate) {
+      return
+    }
+
+    clippingRect.set(0f, 0f, width.toFloat(), height.toFloat())
+    clippingPath.reset()
+    clippingPath.addRoundRect(clippingRect, borderRadii, Path.Direction.CW)
+    needsClippingPathUpdate = false
   }
 }

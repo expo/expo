@@ -30,12 +30,13 @@ struct DevMenuAppInfo: View {
         label: {
           HStack {
             Text(viewModel.clipboardMessage ?? "Copy system info")
-              .foregroundColor(.blue)
+              .foregroundColor(.primary)
             Spacer()
-            Image(systemName: "document.on.clipboard")
+            Image(systemName: "doc.on.clipboard")
               .resizable()
+              .scaledToFit()
               .frame(width: 16, height: 16)
-              .opacity(0.6)
+              .foregroundColor(.secondary)
           }
           .padding(.vertical)
           .disabled(viewModel.clipboardMessage != nil)

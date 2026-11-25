@@ -2,6 +2,12 @@ import { StatusFailureIcon } from '@expo/styleguide-icons/custom/StatusFailureIc
 
 import { IconBase, DocIconProps } from './IconBase';
 
-export const NoIcon = ({ small }: DocIconProps) => (
-  <IconBase Icon={StatusFailureIcon} className="text-icon-danger" small={small} />
+export const NoIcon = ({ small, ...rest }: DocIconProps) => (
+  <IconBase
+    Icon={StatusFailureIcon}
+    className="text-icon-danger"
+    small={small}
+    aria-label="No"
+    {...rest}
+  />
 );

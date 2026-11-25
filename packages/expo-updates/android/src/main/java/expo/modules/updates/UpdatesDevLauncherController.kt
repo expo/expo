@@ -8,7 +8,6 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.easclient.EASClientID
 import expo.modules.kotlin.exception.CodedException
-import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
@@ -20,7 +19,6 @@ import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.reloadscreen.ReloadScreenManager
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyDevelopmentClient
@@ -32,6 +30,7 @@ import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updatesinterface.UpdatesDevLauncherInterface
 import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
+import expo.modules.updatesinterface.UpdatesLogMessage
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
 import kotlinx.coroutines.CancellationException
@@ -72,7 +71,7 @@ class UpdatesDevLauncherController(
   private var previousUpdatesConfiguration: UpdatesConfiguration? = null
   private var updatesConfiguration: UpdatesConfiguration? = initialUpdatesConfiguration
 
-  private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context, Dispatchers.IO))
+  private val database = UpdatesDatabase.getInstance(context, Dispatchers.IO)
   private val controllerScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
   private var mSelectionPolicy: SelectionPolicy? = null
@@ -99,7 +98,7 @@ class UpdatesDevLauncherController(
   @get:Synchronized
   override val launchAssetFile: String?
     get() {
-      logger.warn("launchAssetFile should not be called from expo-dev-client build, except for Detox testing")
+      logger.warn(UpdatesLogMessage.DevLauncherLaunchAssetFileCalled)
       return null
     }
 
@@ -131,11 +130,18 @@ class UpdatesDevLauncherController(
   private val localAssetFiles: Map<AssetEntity, String>?
     get() = launcher?.localAssetFiles
 
+  private var _isUsingEmbeddedAssetsOverride: Boolean? = null
+
   private val isUsingEmbeddedAssets: Boolean
-    get() = launcher?.isUsingEmbeddedAssets ?: false
+    get() = _isUsingEmbeddedAssetsOverride ?: launcher?.isUsingEmbeddedAssets ?: false
 
   override fun reset() {
     launcher = null
+    _isUsingEmbeddedAssetsOverride = null
+  }
+
+  override fun setIsUsingEmbeddedAssets(isUsingEmbeddedAssets: Boolean) {
+    _isUsingEmbeddedAssetsOverride = isUsingEmbeddedAssets
   }
 
   override val runtimeVersion: String?
@@ -179,13 +185,13 @@ class UpdatesDevLauncherController(
       EASClientID(context).uuid.toString(),
       updatesConfiguration!!,
       logger,
-      databaseHolder.database
+      database
     )
     val loader = RemoteLoader(
       context,
       updatesConfiguration!!,
       logger,
-      databaseHolder.database,
+      database,
       fileDownloader,
       updatesDirectory,
       null,
@@ -238,7 +244,7 @@ class UpdatesDevLauncherController(
       createUpdatesConfiguration(configuration)
       true
     } catch (e: Exception) {
-      logger.error("Invalid updates configuration", e, UpdatesErrorCode.InitializationError)
+      logger.warn(UpdatesLogMessage.DevLauncherConfigInvalid, e)
       false
     }
   }
@@ -308,7 +314,7 @@ class UpdatesDevLauncherController(
       controllerScope
     )
     try {
-      launcher.launch(databaseHolder.database)
+      launcher.launch(database)
       this@UpdatesDevLauncherController.launcher = launcher
       callback.onSuccess(object : UpdatesDevLauncherInterface.Update {
         override val manifest: JSONObject
@@ -326,18 +332,16 @@ class UpdatesDevLauncherController(
     }
   }
 
-  private fun getDatabase(): UpdatesDatabase = databaseHolder.database
-
   private fun runReaper() {
     controllerScope.launch {
       updatesConfiguration?.let {
-        val databaseLocal = getDatabase()
         Reaper.reapUnusedUpdates(
           it,
-          databaseLocal,
+          database,
           updatesDirectory,
           launchedUpdate,
-          selectionPolicy
+          selectionPolicy,
+          logger
         )
       }
     }
@@ -396,9 +400,5 @@ class UpdatesDevLauncherController(
 
   override fun shutdown() {
     controllerScope.cancel()
-  }
-
-  companion object {
-    private val TAG = UpdatesDevLauncherController::class.java.simpleName
   }
 }

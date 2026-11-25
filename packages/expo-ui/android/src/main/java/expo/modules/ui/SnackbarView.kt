@@ -83,7 +83,11 @@ fun FunctionalComposableScope.SnackbarHostContent(
       "long" -> SnackbarDuration.Long
       "indefinite" -> SnackbarDuration.Indefinite
       // M3 default: indefinite when there's an action label, else short.
-      else -> if (options.actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite
+      else -> if (options.actionLabel == null) {
+        SnackbarDuration.Short
+      } else {
+        SnackbarDuration.Indefinite
+      }
     }
     val result = try {
       withContext(scope.coroutineContext) {

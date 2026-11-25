@@ -1,1 +1,0 @@
-{"version":3,"file":"CodedError.d.ts","sourceRoot":"","sources":["../../src/errors/CodedError.ts"],"names":[],"mappings":"AAAA;;;;GAIG;AACH,qBAAa,UAAW,SAAQ,KAAK;IACnC,IAAI,EAAE,MAAM,CAAC;IACb,IAAI,CAAC,EAAE,GAAG,CAAC;gBAEC,IAAI,EAAE,MAAM,EAAE,OAAO,EAAE,MAAM;CAI1C"}

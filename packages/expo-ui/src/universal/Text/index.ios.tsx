@@ -9,6 +9,7 @@ import {
 } from '@expo/ui/swift-ui/modifiers';
 import type { ModifierConfig } from '@expo/ui/swift-ui/modifiers';
 
+import { omitUserOverridden } from '../modifierUtils';
 import { transformToModifiers } from '../transformStyle';
 import type { TextProps, UniversalFontWeight } from './types';
 
@@ -95,10 +96,12 @@ export function Text({
   const universalModifiers = transformToModifiers(
     style,
     { onPress, onAppear, onDisappear, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'Text' }
   );
 
-  const modifiers = [...textModifiers, ...universalModifiers];
+  // A user-supplied modifier replaces any text-derived modifier of the same type.
+  const modifiers = [...omitUserOverridden(textModifiers, extraModifiers), ...universalModifiers];
 
   return (
     <SwiftUIText modifiers={modifiers} testID={testID}>

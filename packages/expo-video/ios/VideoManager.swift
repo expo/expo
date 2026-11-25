@@ -11,29 +11,39 @@ class VideoManager {
   static var shared = VideoManager()
 
   private static var managerQueue = DispatchQueue(label: "com.expo.video.manager.managerQueue")
+  private var mediaServicesResetObserver: NSObjectProtocol?
   private var videoViews = NSHashTable<VideoView>.weakObjects()
-  private var videoPlayers = NSHashTable<VideoPlayer>.weakObjects()
+  private let videoPlayers = SynchronizedHashTable<VideoPlayer>(weakObjects: true)
 
   var hasRegisteredPlayers: Bool {
     return !videoPlayers.allObjects.isEmpty
   }
 
-  func register(videoPlayer: VideoPlayer) {
-    Self.managerQueue.async { [weak self, weak videoPlayer] in
-      guard let self = self, let videoPlayer = videoPlayer else {
-        return
-      }
-      self.videoPlayers.add(videoPlayer)
+  private init() {
+    // When the system resets media services all audio/video objects become invalid. We have to
+    // re-establish the audio session and rebuild every player's item, otherwise they stay in a
+    // failed state and `AVPlayerViewController` keeps showing its broken-playback placeholder.
+    mediaServicesResetObserver = NotificationCenter.default.addObserver(
+      forName: AVAudioSession.mediaServicesWereResetNotification,
+      object: nil,
+      queue: nil
+    ) { [weak self] _ in
+      self?.onMediaServicesWereReset()
     }
   }
 
-  func unregister(videoPlayer: VideoPlayer) {
-    Self.managerQueue.async { [weak self, weak videoPlayer] in
-      guard let self = self, let videoPlayer = videoPlayer else {
-        return
-      }
-      self.videoPlayers.remove(videoPlayer)
+  deinit {
+    if let mediaServicesResetObserver {
+      NotificationCenter.default.removeObserver(mediaServicesResetObserver)
     }
+  }
+
+  func register(videoPlayer: VideoPlayer) {
+    videoPlayers.add(videoPlayer)
+  }
+
+  func unregister(videoPlayer: VideoPlayer) {
+    videoPlayers.remove(videoPlayer)
   }
 
   func register(videoView: VideoView) {
@@ -44,7 +54,32 @@ class VideoManager {
     videoViews.remove(videoView)
   }
 
-  func onAppForegrounded() {}
+  func onAppForegrounded() {
+    // While the app is backgrounded iOS can release the decode pipeline, leaving items in a
+    // `.failed` state once we come back.
+    reloadPlayers { $0.reloadIfFailed() }
+  }
+
+  private func onMediaServicesWereReset() {
+    setAppropriateAudioSessionOrWarn()
+    reloadPlayers { $0.reloadCurrentSource() }
+  }
+
+  private func reloadPlayers(_ reload: @escaping (VideoPlayer) -> Void) {
+    Self.managerQueue.async { [weak self] in
+      guard let self else {
+        return
+      }
+
+      let players = self.videoPlayers.allObjects
+
+      DispatchQueue.main.async {
+        for player in players {
+          reload(player)
+        }
+      }
+    }
+  }
 
   func onAppBackgrounded() {
     for videoView in videoViews.allObjects {
@@ -72,66 +107,39 @@ class VideoManager {
 
   private func setAudioSession() {
     let audioSession = AVAudioSession.sharedInstance()
-    let audioMixingMode = findAudioMixingMode()
-    var audioSessionCategoryOptions: AVAudioSession.CategoryOptions = audioSession.categoryOptions
+    // Compare the policy with these values, not with a new read. Another module can change the session
+    // in the meantime, and writing these values back would undo its change.
+    let category = audioSession.category
+    let mode = audioSession.mode
+    let options = audioSession.categoryOptions
+    let policy = AudioSessionPolicy.evaluate(
+      category: category,
+      mode: mode,
+      options: options,
+      players: videoPlayers.allObjects.map { player in
+        AudioSessionPolicy.PlayerState(
+          isPlaying: player.isPlaying,
+          isMuted: player.isMuted,
+          showNowPlayingNotification: player.showNowPlayingNotification,
+          audioMixingMode: player.audioMixingMode
+        )
+      }
+    )
 
-    let isOutputtingAudio = videoPlayers.allObjects.contains { player in
-      player.isPlaying && !player.isMuted
-    }
-    let anyPlayerShowsNotification = videoPlayers.allObjects.contains { player in
-      player.showNowPlayingNotification
-    }
-
-    let shouldMixOverride = audioMixingMode == .mixWithOthers
-    let doNotMixOverride = audioMixingMode == .doNotMix
-    let shouldDuckOthers = audioMixingMode == .duckOthers && isOutputtingAudio
-
-    // The now playing notification won't be shown if we allow the audio to mix with others
-    let autoShouldMix = !isOutputtingAudio && !anyPlayerShowsNotification
-    let shouldMixWithOthers = shouldMixOverride || autoShouldMix
-
-    if shouldMixWithOthers && !shouldDuckOthers && !doNotMixOverride {
-      audioSessionCategoryOptions.insert(.mixWithOthers)
-    } else {
-      audioSessionCategoryOptions.remove(.mixWithOthers)
-    }
-
-    if shouldDuckOthers && !doNotMixOverride {
-      audioSessionCategoryOptions.insert(.duckOthers)
-    } else {
-      audioSessionCategoryOptions.remove(.duckOthers)
-    }
-
-    if audioSession.categoryOptions != audioSessionCategoryOptions || audioSession.category != .playback || audioSession.mode != .moviePlayback {
+    if options != policy.options || category != policy.category || mode != policy.mode {
       do {
-        try audioSession.setCategory(.playback, mode: .moviePlayback, options: audioSessionCategoryOptions)
+        try audioSession.setCategory(policy.category, mode: policy.mode, options: policy.options)
       } catch {
         log.warn("[expo-video] Failed to set audio session category. This might cause issues with audio playback and Picture in Picture. \(error.localizedDescription)")
       }
     }
 
-    // Make sure audio session is active if any video is playing
-    if isOutputtingAudio || doNotMixOverride {
+    if policy.shouldActivate {
       do {
         try audioSession.setActive(true)
       } catch {
         log.warn("[expo-video] Failed to activate the audio session. This might cause issues with audio playback. \(error.localizedDescription)")
       }
     }
-  }
-
-  private func findAudioMixingMode() -> AudioMixingMode? {
-    let playingPlayers = videoPlayers.allObjects.filter({ player in
-      player.isPlaying
-    })
-    var audioMixingMode: AudioMixingMode = .mixWithOthers
-
-    if playingPlayers.isEmpty {
-      return nil
-    }
-    for videoPlayer in playingPlayers where (audioMixingMode.priority()) < videoPlayer.audioMixingMode.priority() {
-      audioMixingMode = videoPlayer.audioMixingMode
-    }
-    return audioMixingMode
   }
 }

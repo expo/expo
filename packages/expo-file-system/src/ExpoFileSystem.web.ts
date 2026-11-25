@@ -2,6 +2,14 @@ class FileSystemFile {
   constructor() {
     console.warn('expo-file-system is not supported on web');
   }
+  canPreview(_options?: unknown): Promise<boolean> {
+    console.warn('expo-file-system is not supported on web');
+    return Promise.resolve(false);
+  }
+  preview(_options?: unknown): Promise<void> {
+    console.warn('expo-file-system is not supported on web');
+    return Promise.reject(new Error('File preview is not supported on web'));
+  }
 }
 
 class FileSystemDirectory {
@@ -28,6 +36,10 @@ class FileSystemUploadTask {
 }
 
 class FileSystemDownloadTask {
+  get response() {
+    console.warn('expo-file-system is not supported on web');
+    return { status: null, headers: {} };
+  }
   start() {
     console.warn('expo-file-system is not supported on web');
     return Promise.resolve(null);

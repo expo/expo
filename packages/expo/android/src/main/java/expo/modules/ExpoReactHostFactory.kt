@@ -11,6 +11,7 @@ import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
+import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.defaults.DefaultComponentsRegistry
 import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate
 import com.facebook.react.fabric.ComponentFactory
@@ -36,7 +37,8 @@ object ExpoReactHostFactory {
     override val bindingsInstaller: BindingsInstaller? = null,
     override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder =
       DefaultTurboModuleManagerDelegate.Builder(),
-    private val hostHandlers: List<ReactNativeHostHandler>
+    private val hostHandlers: List<ReactNativeHostHandler>,
+    override val jsRuntimeFactory: JSRuntimeFactory = HermesInstance()
   ) : ReactHostDelegate {
 
     val hostDelegateJsBundleFilePath: String?
@@ -77,9 +79,6 @@ object ExpoReactHostFactory {
         return JSBundleLoader.createAssetLoader(context, "assets://$hostDelegateJSBundleAssetPath", true)
       }
 
-    override val jsRuntimeFactory: JSRuntimeFactory
-      get() = HermesInstance()
-
     override val reactPackages: List<ReactPackage>
       get() = packageList
 
@@ -109,6 +108,8 @@ object ExpoReactHostFactory {
       val hostHandlers = ExpoModulesPackage.packageList
         .flatMap { it.createReactNativeHostHandlers(context) }
 
+      val devSupportManagerFactory = hostHandlers.firstNotNullOfOrNull { it.devSupportManagerFactory as? DevSupportManagerFactory }
+
       val reactHostDelegate = ExpoReactHostDelegate(
         WeakReference(context),
         packageList,
@@ -117,7 +118,8 @@ object ExpoReactHostFactory {
         jsBundleFilePath,
         useDevSupport,
         bindingsInstaller,
-        hostHandlers = hostHandlers
+        hostHandlers = hostHandlers,
+        jsRuntimeFactory = jsRuntimeFactory ?: HermesInstance()
       )
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
@@ -129,10 +131,11 @@ object ExpoReactHostFactory {
       val reactHostImpl =
         ReactHostImpl(
           context,
-          delegate = reactHostDelegate,
+          reactHostDelegate = reactHostDelegate,
           componentFactory = componentFactory,
           allowPackagerServerAccess = true,
-          useDevSupport = useDevSupport
+          useDevSupport = useDevSupport,
+          devSupportManagerFactory = devSupportManagerFactory
         )
 
       hostHandlers.forEach { handler ->

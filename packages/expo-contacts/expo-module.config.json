@@ -7,6 +7,11 @@
     "modules": [
       "expo.modules.contacts.ContactsModule",
       "expo.modules.contacts.next.ContactsNextModule"
-    ]
+    ],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.contacts",
+      "repository": "local-maven-repo"
+    }
   }
 }

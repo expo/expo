@@ -41,7 +41,7 @@ export default class TemplateProject {
     fs.renameSync(path.join(parentFolder, appName), projectPath);
 
     const repoRoot = path.resolve(this.configFilePath, '..', '..', '..');
-    const localCliBin = path.join(repoRoot, 'packages/@expo/cli/build/bin/cli');
+    const localCliBin = path.join(repoRoot, 'packages/@expo/cli/bin/cli.js');
     await spawnAsync(localCliBin, ['install', 'detox', 'jest'], {
       stdio: 'inherit',
       cwd: projectPath,
@@ -49,6 +49,21 @@ export default class TemplateProject {
 
     // add local dependencies
     let packageJson = JSON.parse(fs.readFileSync(path.join(projectPath, 'package.json'), 'utf-8'));
+    const overrides = {
+      ...packageJson.resolutions,
+      'expo-application': `file:${repoRoot}/packages/expo-application`,
+      'expo-asset': `file:${repoRoot}/packages/expo-asset`,
+      'expo-constants': `file:${repoRoot}/packages/expo-constants`,
+      'expo-dev-launcher': `file:${repoRoot}/packages/expo-dev-launcher`,
+      'expo-dev-menu': `file:${repoRoot}/packages/expo-dev-menu`,
+      'expo-file-system': `file:${repoRoot}/packages/expo-file-system`,
+      'expo-font': `file:${repoRoot}/packages/expo-font`,
+      'expo-keep-awake': `file:${repoRoot}/packages/expo-keep-awake`,
+      'expo-manifests': `file:${repoRoot}/packages/expo-manifests`,
+      'expo-modules-autolinking': `file:${repoRoot}/packages/expo-modules-autolinking`,
+      'expo-modules-core': `file:${repoRoot}/packages/expo-modules-core`,
+      'expo-updates-interface': `file:${repoRoot}/packages/expo-updates-interface`,
+    };
     packageJson = {
       ...packageJson,
       dependencies: {
@@ -59,26 +74,18 @@ export default class TemplateProject {
         expo: `file:${repoRoot}/packages/expo`,
         'jest-circus': packageJson.dependencies.jest,
       },
-      resolutions: {
-        ...packageJson.resolutions,
-        'expo-application': `file:${repoRoot}/packages/expo-application`,
-        'expo-asset': `file:${repoRoot}/packages/expo-asset`,
-        'expo-constants': `file:${repoRoot}/packages/expo-constants`,
-        'expo-dev-launcher': `file:${repoRoot}/packages/expo-dev-launcher`,
-        'expo-dev-menu': `file:${repoRoot}/packages/expo-dev-menu`,
-        'expo-file-system': `file:${repoRoot}/packages/expo-file-system`,
-        'expo-font': `file:${repoRoot}/packages/expo-font`,
-        'expo-keep-awake': `file:${repoRoot}/packages/expo-keep-awake`,
-        'expo-manifests': `file:${repoRoot}/packages/expo-manifests`,
-        'expo-modules-autolinking': `file:${repoRoot}/packages/expo-modules-autolinking`,
-        'expo-modules-core': `file:${repoRoot}/packages/expo-modules-core`,
-        'expo-updates-interface': `file:${repoRoot}/packages/expo-updates-interface`,
-      },
+      resolutions: undefined,
     };
     fs.writeFileSync(
       path.join(projectPath, 'package.json'),
       JSON.stringify(packageJson, null, 2),
       'utf-8'
+    );
+    fs.writeFileSync(
+      path.join(projectPath, 'pnpm-workspace.yaml'),
+      `overrides:\n${Object.entries(overrides)
+        .map(([name, version]) => `  ${JSON.stringify(name)}: ${JSON.stringify(version)}`)
+        .join('\n')}\n`
     );
 
     // configure app.json

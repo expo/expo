@@ -4,33 +4,25 @@
     {
       "name": "ExpoWebBrowser",
       "podName": "ExpoWebBrowser",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
         "Hermes",
         "expo-modules-core/ExpoModulesCore"
       ],
+      "swiftLanguageVersions": ["5"],
       "targets": [
         {
           "type": "swift",
           "name": "ExpoWebBrowser",
-          "path": "ios",
-          "pattern": "*.swift",
           "dependencies": [
             "Hermes",
             "React",
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit",
-            "SafariServices",
-            "AuthenticationServices"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit", "SafariServices", "AuthenticationServices"]
         }
       ]
     }

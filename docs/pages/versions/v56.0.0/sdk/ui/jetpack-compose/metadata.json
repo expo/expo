@@ -1,4 +1,5 @@
 {
   "sidebarTitle": "Jetpack Compose",
-  "expanded": false
+  "expanded": false,
+  "order": 1
 }

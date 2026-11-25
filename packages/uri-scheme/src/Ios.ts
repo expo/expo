@@ -4,26 +4,16 @@ import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
-import { globSync } from 'glob';
 import * as path from 'path';
 
 import type { Options } from './Options';
 import { CommandError } from './Options';
-
-const ignoredPaths = ['**/@(Carthage|Pods|vendor|node_modules)/**'];
+import { escapeUriParams } from './URIScheme';
 
 export function isAvailable(projectRoot: string): boolean {
-  const reactNativeIos = globSync('ios/*.xcodeproj', {
-    ignore: ignoredPaths,
-    absolute: true,
-    cwd: projectRoot,
-  });
-  const currentIos = globSync('*.xcodeproj', {
-    ignore: ignoredPaths,
-    absolute: true,
-    cwd: projectRoot,
-  });
-  return !!currentIos.length || !!reactNativeIos.length;
+  return [projectRoot, path.join(projectRoot, 'ios')].some((directory) =>
+    readProjectEntries(directory).some((file) => file.endsWith('.xcodeproj'))
+  );
 }
 
 export async function addAsync({
@@ -104,9 +94,10 @@ export async function getAsync({
 
 function getInfoPlistsInDirectory(projectRoot: string): string[] {
   // longer name means more suffixes, we want the shortest possible one to be first.
-  return globSync('*/Info.plist', { ignore: ignoredPaths, absolute: true, cwd: projectRoot }).sort(
-    (a, b) => a.length - b.length
-  );
+  return readProjectEntries(projectRoot)
+    .map((entry) => path.join(entry, 'Info.plist'))
+    .filter((file) => fs.existsSync(file))
+    .sort((a, b) => a.length - b.length);
 }
 
 export function getConfigPath(projectRoot: string): string {
@@ -145,16 +136,31 @@ function writeConfig(path: string, plistObject: any) {
  *
  * @example
  * - `myapp://(tabs)/explore` -> `myapp://(tabs)/explore`
- * - `myapp://(tabs)/explore?test=a|b|c` -> `myapp://(tabs)/explore?test=a%257Cb%257Cc`
+ * - `myapp://(tabs)/explore?test=a|b|c` -> `myapp://(tabs)/explore?test=a%7Cb%7Cc`
  */
 export function escapeUri(uri: string) {
   if (!uri.includes('?')) return uri;
 
-  const [uriWithoutParams, uriParams] = uri.split('?', 2);
-  const escapedUriParams = new URLSearchParams(uriParams);
-  for (const [key, value] of escapedUriParams.entries()) {
-    escapedUriParams.set(key, encodeURIComponent(decodeURIComponent(value)));
-  }
+  const [uriWithoutParams, uriParams = ''] = uri.split('?', 2);
 
-  return `${uriWithoutParams}?${escapedUriParams.toString()}`;
+  return `${uriWithoutParams}?${escapeUriParams(uriParams)}`;
+}
+
+function readProjectEntries(directory: string): string[] {
+  let names: string[];
+  try {
+    names = fs.readdirSync(directory);
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    if (code === 'ENOENT' || code === 'ENOTDIR') return [];
+    throw error;
+  }
+  return names
+    .filter(
+      (name) =>
+        !name.startsWith('.') && !['Carthage', 'Pods', 'vendor', 'node_modules'].includes(name)
+    )
+    .sort()
+    .reverse()
+    .map((name) => path.resolve(directory, name));
 }

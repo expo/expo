@@ -1,7 +1,9 @@
 import { ImmutableRequest } from '../ImmutableRequest';
 import type { Manifest, MiddlewareInfo, Route } from '../manifest';
+import { isForbiddenOrigin } from '../utils/checkOrigin';
 import { getRedirectRewriteLocation, isResponse, parseParams } from '../utils/matchers';
 import { MiddlewareModule, shouldRunMiddleware } from '../utils/middleware';
+import { appendHeadersRecord, mergeHeaderInputs } from '../utils/headers';
 
 const LOADER_PREFIX = '/_expo/loaders';
 
@@ -27,6 +29,7 @@ type ResponseInitLike = Omit<ResponseInit, 'headers'> & {
   cf?: unknown;
   webSocket?: unknown;
 };
+type ResponseOverrides = { headers: Record<string, string | string[]> };
 type CallbackRouteType = 'html' | 'api' | 'notFoundHtml' | 'notAllowedApi';
 type CallbackRoute = (Route & { type: CallbackRouteType }) | { type: null };
 // NOTE(@krystofwoldrich): For better general usability of the callback bodyInit could be also passed as arg.
@@ -43,6 +46,8 @@ function noopBeforeResponse(
 }
 
 export interface RequestHandlerParams {
+  /** Check cross-origin form submissions. Defaults to true; 'sec-only' skips the Origin fallback. */
+  checkOrigin?: boolean | 'sec-only';
   /** Before handler response 4XX, not before unhandled error */
   beforeErrorResponse?: BeforeResponseCallback;
   /** Before handler responses */
@@ -54,6 +59,7 @@ export interface RequestHandlerParams {
 }
 
 export interface RequestHandlerInput {
+  isDevelopment?: boolean;
   getHtml(request: Request, route: Route): Promise<string | ReadableStream | Response | null>;
   getRoutesManifest(): Promise<Manifest | null>;
   getApiRoute(route: Route): Promise<any>;
@@ -67,11 +73,17 @@ export function createRequestHandler({
   getApiRoute,
   getMiddleware,
   getLoaderData,
+  isDevelopment = false,
+  checkOrigin = true,
   beforeErrorResponse = noopBeforeResponse,
   beforeResponse = noopBeforeResponse,
   beforeHTMLResponse = noopBeforeResponse,
   beforeAPIResponse = noopBeforeResponse,
 }: RequestHandlerParams & RequestHandlerInput) {
+  if (isDevelopment && checkOrigin) {
+    checkOrigin = 'sec-only';
+  }
+
   let manifest: Manifest | null = null;
 
   return async function handler(request: Request): Promise<Response> {
@@ -94,6 +106,24 @@ export function createRequestHandler({
 
     let request = incomingRequest;
     let url = new URL(request.url);
+
+    if (isForbiddenOrigin(request, checkOrigin, manifest.origin)) {
+      return createResponse(
+        null,
+        null,
+        'This request was blocked because it came from a different origin.',
+        {
+          status: 403,
+          headers: new Headers({
+            'Content-Type': 'text/plain',
+          }),
+        }
+      );
+    }
+
+    const globalOverrides = manifest.headers ? { headers: manifest.headers } : undefined;
+    // `pageHeaders` rules apply to HTML and loader responses, matched on the request pathname.
+    const pageOverrides = { headers: resolveRouteHeaders(url.pathname) };
 
     if (manifest.middleware) {
       const middleware = await getMiddleware(manifest.middleware);
@@ -161,11 +191,16 @@ export function createRequestHandler({
           // NOTE(@hassankhan): Relocate the request rewriting logic from here
           url.pathname = matchedPath;
           const loaderRequest = new Request(url, request);
-          return createResponseFrom('api', route, await getLoaderData(loaderRequest, route));
+          return createResponseFrom(
+            'api',
+            route,
+            await getLoaderData(loaderRequest, route),
+            pageOverrides
+          );
         }
 
         const html = await getHtml(request, route);
-        return respondHTML(html, route);
+        return respondHTML(html, route, pageOverrides);
       }
     }
 
@@ -175,7 +210,7 @@ export function createRequestHandler({
         continue;
       }
       const mod = await getApiRoute(route);
-      return await respondAPI(mod, request, route);
+      return await respondAPI(mod, request, route, globalOverrides);
     }
 
     // Finally, test 404 routes
@@ -187,7 +222,7 @@ export function createRequestHandler({
 
         try {
           const contents = await getHtml(request, route);
-          return respondNotFoundHTML(contents, route);
+          return respondNotFoundHTML(contents, route, pageOverrides);
         } catch {
           // NOTE(@krystofwoldrich): Should we show a dismissible RedBox in development?
           // Handle missing/corrupted not found route files
@@ -197,17 +232,24 @@ export function createRequestHandler({
     }
 
     // 404
-    return createResponse(null, null, 'Not found', {
-      status: 404,
-      headers: new Headers({ 'Content-Type': 'text/plain' }),
-    });
+    return createResponse(
+      null,
+      null,
+      'Not found',
+      {
+        status: 404,
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+      },
+      globalOverrides
+    );
   }
 
   function createResponse(
     routeType: CallbackRouteType | null = null,
     route: (Route & { type?: CallbackRouteType }) | null,
     bodyInit: BodyInit | null,
-    responseInit: ResponseInitLike
+    responseInit: ResponseInitLike,
+    overrides?: ResponseOverrides
   ): Response {
     const originalStatus = responseInit.status;
     let callbackRoute: CallbackRoute;
@@ -220,20 +262,10 @@ export function createRequestHandler({
 
     let modifiedResponseInit = responseInit;
 
-    // Apply user-defined headers, if provided
-    if (manifest?.headers) {
-      for (const headerName in manifest.headers) {
-        if (Array.isArray(manifest.headers[headerName])) {
-          for (const headerValue of manifest.headers[headerName]) {
-            modifiedResponseInit.headers.append(headerName, headerValue);
-          }
-        } else if (
-          manifest.headers[headerName] != null &&
-          !modifiedResponseInit.headers.has(headerName)
-        ) {
-          modifiedResponseInit.headers.set(headerName, manifest.headers[headerName]);
-        }
-      }
+    // Headers already set on the response are never replaced (see `PageHeaderInfo` for the
+    // full precedence order)
+    if (overrides?.headers) {
+      appendHeadersRecord(modifiedResponseInit.headers, overrides.headers, false);
     }
 
     // Callback call order matters, general rule is to call more specific callbacks first.
@@ -264,29 +296,38 @@ export function createRequestHandler({
   function createResponseFrom(
     routeType: CallbackRouteType | null = null,
     route: (Route & { type?: CallbackRouteType }) | null,
-    response: Response
+    response: Response,
+    overrides?: ResponseOverrides
   ): Response {
     const modifiedResponseInit: ResponseInitLike = {
       headers: new Headers(response.headers),
       status: response.status,
       statusText: response.statusText,
-      cf: response.cf,
-      webSocket: response.webSocket,
+      // NOTE(@kitten): Depending on if workerd types are used this may not be defined
+      cf: (response as Response & { cf?: unknown }).cf,
+      webSocket: (response as Response & { webSocket?: unknown }).webSocket,
     };
-    return createResponse(routeType, route, response.body, modifiedResponseInit);
+    return createResponse(routeType, route, response.body, modifiedResponseInit, overrides);
   }
 
   async function respondNotFoundHTML(
     html: string | ReadableStream | Response | null,
-    route: Route
+    route: Route,
+    overrides?: ResponseOverrides
   ): Promise<Response> {
     if (typeof html === 'string') {
-      return createResponse('notFoundHtml', route, html, {
-        status: 404,
-        headers: new Headers({
-          'Content-Type': 'text/html',
-        }),
-      });
+      return createResponse(
+        'notFoundHtml',
+        route,
+        html,
+        {
+          status: 404,
+          headers: new Headers({
+            'Content-Type': 'text/html',
+          }),
+        },
+        overrides
+      );
     }
 
     if (isResponse(html)) {
@@ -295,18 +336,24 @@ export function createRequestHandler({
     }
 
     if (html != null) {
-      return createResponse('notFoundHtml', route, html, {
-        status: 404,
-        headers: new Headers({
-          'Content-Type': 'text/html',
-        }),
-      });
+      return createResponse(
+        'notFoundHtml',
+        route,
+        html,
+        {
+          status: 404,
+          headers: new Headers({
+            'Content-Type': 'text/html',
+          }),
+        },
+        overrides
+      );
     }
 
     throw new ExpoError(`HTML route file ${route.page}.html could not be loaded`);
   }
 
-  async function respondAPI(mod: any, request: Request, route: Route): Promise<Response> {
+  async function respondAPI(mod: any, request: Request, route: Route, overrides?: ResponseOverrides): Promise<Response> {
     if (!mod || typeof mod !== 'object') {
       throw new ExpoError(`API route module ${route.page} could not be loaded`);
     }
@@ -318,12 +365,18 @@ export function createRequestHandler({
 
     const handler = mod[request.method];
     if (!handler || typeof handler !== 'function') {
-      return createResponse('notAllowedApi', route, 'Method not allowed', {
-        status: 405,
-        headers: new Headers({
-          'Content-Type': 'text/plain',
-        }),
-      });
+      return createResponse(
+        'notAllowedApi',
+        route,
+        'Method not allowed',
+        {
+          status: 405,
+          headers: new Headers({
+            'Content-Type': 'text/plain',
+          }),
+        },
+        overrides
+      );
     }
 
     const params = parseParams(request, route);
@@ -334,17 +387,27 @@ export function createRequestHandler({
       );
     }
 
-    return createResponseFrom('api', route, response);
+    return createResponseFrom('api', route, response, overrides);
   }
 
-  function respondHTML(html: string | ReadableStream | Response | null, route: Route): Response {
+  function respondHTML(
+    html: string | ReadableStream | Response | null,
+    route: Route,
+    overrides?: ResponseOverrides
+  ): Response {
     if (typeof html === 'string') {
-      return createResponse('html', route, html, {
-        status: 200,
-        headers: new Headers({
-          'Content-Type': 'text/html',
-        }),
-      });
+      return createResponse(
+        'html',
+        route,
+        html,
+        {
+          status: 200,
+          headers: new Headers({
+            'Content-Type': 'text/html',
+          }),
+        },
+        overrides
+      );
     }
 
     if (isResponse(html)) {
@@ -353,12 +416,18 @@ export function createRequestHandler({
     }
 
     if (html != null) {
-      return createResponse('html', route, html, {
-        status: 200,
-        headers: new Headers({
-          'Content-Type': 'text/html',
-        }),
-      });
+      return createResponse(
+        'html',
+        route,
+        html,
+        {
+          status: 200,
+          headers: new Headers({
+            'Content-Type': 'text/html',
+          }),
+        },
+        overrides
+      );
     }
 
     throw new ExpoError(`HTML route file ${route.page}.html could not be loaded`);
@@ -380,5 +449,17 @@ export function createRequestHandler({
       status,
       headers: { Location: target },
     });
+  }
+
+  function resolveRouteHeaders(pathname: string): Record<string, string | string[]> {
+    const pageHeaderRules = (manifest?.pageHeaders ?? []).filter((rule) =>
+      rule.namedRegex.test(pathname)
+    );
+
+    let mergedHeaders = manifest?.headers ?? {};
+    for (const rule of pageHeaderRules) {
+      mergedHeaders = mergeHeaderInputs(mergedHeaders, rule.headers);
+    }
+    return mergedHeaders;
   }
 }

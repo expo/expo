@@ -4,11 +4,11 @@ import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundle
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import path from 'path';
 
-import type { CSSMetadata } from './jsOutput';
-import type { SerialAsset } from './serializerAssets';
 import { pathToHtmlSafeName } from '../transform-worker/css';
 import { toPosixPath } from '../utils/filePath';
 import { hashString } from '../utils/hash';
+import type { CSSMetadata } from './jsOutput';
+import type { SerialAsset } from './serializerAssets';
 
 type Options = {
   processModuleFilter: (modules: Module) => boolean;
@@ -73,25 +73,16 @@ export function getCssSerialAssets<T extends any>(
 
       if (cssMetadata.externalImports) {
         for (const external of cssMetadata.externalImports) {
-          let source = `<link rel="stylesheet" href="${escapeHtmlAttribute(external.url)}"`;
-
-          // TODO: How can we do this for local css imports?
-          if (external.media) {
-            source += ` media="${escapeHtmlAttribute(external.media)}"`;
-          }
-
-          // TODO: supports attribute
-
-          source += '>';
-
           assets.push({
             type: 'css-external',
             originFilename,
             filename: external.url,
-            // Link CSS file
-            source,
+            // External stylesheets have no file contents. Keep the required SerialAsset field;
+            // static and streaming consumers build links from the URL and metadata below.
+            source: '',
             metadata: {
               hmrId: pathToHtmlSafeName(originFilename),
+              media: external.media ?? undefined,
             },
           });
         }
@@ -162,8 +153,4 @@ export function fileNameFromContents({ filepath, src }: { filepath: string; src:
 // TODO(@hassankhan): Investigate why we don't always pass the filename with extension here
 export function getFileName(module: string) {
   return path.basename(module).replace(/\.\w+$/, '');
-}
-
-function escapeHtmlAttribute(value: string): string {
-  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }

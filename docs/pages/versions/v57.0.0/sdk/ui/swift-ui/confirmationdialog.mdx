@@ -1,0 +1,259 @@
+---
+title: ConfirmationDialog
+description: A SwiftUI ConfirmationDialog component for presenting confirmation prompts.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-57/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+Expo UI ConfirmationDialog matches the official SwiftUI [confirmationDialog API](<https://developer.apple.com/documentation/swiftui/view/confirmationdialog(_:ispresented:titlevisibility:actions:message:)>) and presents an action sheet-style dialog with a title, actions, and an optional message.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/confirmationdialog/ios-light.webp"
+  darkSrc="/static/images/expo-ui/confirmationdialog/ios-dark.webp"
+  alt="ConfirmationDialog asking the user to confirm a destructive action"
+/>
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic confirmation dialog
+
+Use `ConfirmationDialog.Trigger` to define the visible element and `ConfirmationDialog.Actions` to provide the dialog buttons.
+
+<ComponentExample
+  title="BasicConfirmationDialogExample.tsx"
+  src="/static/images/expo-ui/examples/confirmationdialog-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/confirmationdialog-basic-ios-dark.webp"
+  alt="A dialog anchored under the trigger, titled Are you sure? with a Confirm button">
+
+```tsx
+import { useState } from 'react';
+import {
+  Host,
+  ConfirmationDialog,
+  Button,
+} from '@expo/ui/swift-ui';
+
+export default function BasicConfirmationDialogExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <ConfirmationDialog
+        title="Are you sure?"
+        isPresented={isPresented}
+        onIsPresentedChange={setIsPresented}
+        titleVisibility="visible">
+        <ConfirmationDialog.Trigger>
+          <Button
+            label="Show dialog"
+            onPress={() => setIsPresented(true)}
+          />
+        </ConfirmationDialog.Trigger>
+        <ConfirmationDialog.Actions>
+          <Button
+            label="Confirm"
+            onPress={() => setIsPresented(false)}
+          />
+          <Button label="Cancel" role="cancel" />
+        </ConfirmationDialog.Actions>
+      </ConfirmationDialog>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Destructive action confirmation
+
+Use `role="destructive"` on a `Button` inside `ConfirmationDialog.Actions` to style it as a destructive action.
+
+<ComponentExample
+  title="DestructiveConfirmationDialogExample.tsx"
+  src="/static/images/expo-ui/examples/confirmationdialog-destructive-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/confirmationdialog-destructive-ios-dark.webp"
+  alt="A dialog titled Delete Item? with a message and a red Delete button">
+
+```tsx
+import { useState } from 'react';
+import {
+  Host,
+  ConfirmationDialog,
+  Button,
+  Text,
+} from '@expo/ui/swift-ui';
+
+export default function DestructiveConfirmationDialogExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <ConfirmationDialog
+        title="Delete Item?"
+        isPresented={isPresented}
+        onIsPresentedChange={setIsPresented}
+        titleVisibility="visible">
+        <ConfirmationDialog.Trigger>
+          <Button
+            label="Delete"
+            role="destructive"
+            onPress={() => setIsPresented(true)}
+          />
+        </ConfirmationDialog.Trigger>
+        <ConfirmationDialog.Actions>
+          <Button
+            label="Delete"
+            role="destructive"
+            onPress={() => {
+              console.log('Deleted');
+              setIsPresented(false);
+            }}
+          />
+          <Button label="Cancel" role="cancel" />
+        </ConfirmationDialog.Actions>
+        <ConfirmationDialog.Message>
+          <Text>This action cannot be undone.</Text>
+        </ConfirmationDialog.Message>
+      </ConfirmationDialog>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### With message and multiple actions
+
+Use `ConfirmationDialog.Message` to display a descriptive message below the title, and include multiple action buttons for different choices.
+
+<ComponentExample
+  title="MultiActionConfirmationDialogExample.tsx"
+  src="/static/images/expo-ui/examples/confirmationdialog-multi-action-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/confirmationdialog-multi-action-ios-dark.webp"
+  alt="A dialog titled Save Changes? with a message, a Save button, and a red Discard button">
+
+```tsx
+import { useState } from 'react';
+import {
+  Host,
+  ConfirmationDialog,
+  Button,
+  Text,
+} from '@expo/ui/swift-ui';
+
+export default function MultiActionConfirmationDialogExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <ConfirmationDialog
+        title="Save Changes?"
+        isPresented={isPresented}
+        onIsPresentedChange={setIsPresented}
+        titleVisibility="visible">
+        <ConfirmationDialog.Trigger>
+          <Button
+            label="Close document"
+            onPress={() => setIsPresented(true)}
+          />
+        </ConfirmationDialog.Trigger>
+        <ConfirmationDialog.Actions>
+          <Button
+            label="Save"
+            onPress={() => console.log('Saved')}
+          />
+          <Button
+            label="Discard"
+            role="destructive"
+            onPress={() => console.log('Discarded')}
+          />
+          <Button label="Cancel" role="cancel" />
+        </ConfirmationDialog.Actions>
+        <ConfirmationDialog.Message>
+          <Text>
+            You have unsaved changes. What would you like to do?
+          </Text>
+        </ConfirmationDialog.Message>
+      </ConfirmationDialog>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Hidden title
+
+Set `titleVisibility="hidden"` to hide the dialog title while still showing the actions and message. You should still provide a `title` for accessibility.
+
+<ComponentExample
+  title="HiddenTitleConfirmationDialogExample.tsx"
+  src="/static/images/expo-ui/examples/confirmationdialog-hidden-title-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/confirmationdialog-hidden-title-ios-dark.webp"
+  alt="A dialog showing only a message and an OK button, with no title">
+
+```tsx
+import { useState } from 'react';
+import {
+  Host,
+  ConfirmationDialog,
+  Button,
+  Text,
+} from '@expo/ui/swift-ui';
+
+export default function HiddenTitleConfirmationDialogExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <ConfirmationDialog
+        title="Hidden Title"
+        isPresented={isPresented}
+        onIsPresentedChange={setIsPresented}
+        titleVisibility="hidden">
+        <ConfirmationDialog.Trigger>
+          <Button
+            label="Show dialog"
+            onPress={() => setIsPresented(true)}
+          />
+        </ConfirmationDialog.Trigger>
+        <ConfirmationDialog.Actions>
+          <Button
+            label="OK"
+            onPress={() => setIsPresented(false)}
+          />
+          <Button label="Cancel" role="cancel" />
+        </ConfirmationDialog.Actions>
+        <ConfirmationDialog.Message>
+          <Text>Only the message and actions are visible.</Text>
+        </ConfirmationDialog.Message>
+      </ConfirmationDialog>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+## API
+
+```tsx
+import { ConfirmationDialog } from '@expo/ui/swift-ui';
+```
+
+<APISection
+  packageName="expo-ui/swift-ui/confirmationdialog"
+  apiName="ConfirmationDialog"
+/>

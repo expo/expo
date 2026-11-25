@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
-import com.composeunstyled.Icon
+import com.composeunstyled.UnstyledIcon
 import expo.modules.devlauncher.R
 
 object LauncherIcons {
@@ -16,7 +16,7 @@ object LauncherIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.plus),
       contentDescription = "Plus",
       tint = tint,
@@ -32,7 +32,7 @@ object LauncherIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.expo_logo),
       contentDescription = "Expo Logo",
       tint = tint,
@@ -48,7 +48,7 @@ object LauncherIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.show_at_launch),
       contentDescription = "Show at launch",
       tint = tint,
@@ -64,7 +64,7 @@ object LauncherIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.settings),
       contentDescription = "Settings",
       tint = tint,
@@ -80,7 +80,7 @@ object LauncherIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.user),
       contentDescription = "User",
       tint = tint,
@@ -96,7 +96,7 @@ object LauncherIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.check_circle),
       contentDescription = "Check",
       tint = tint,
@@ -112,7 +112,7 @@ object LauncherIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.updates_nav),
       contentDescription = "Updates",
       tint = tint,
@@ -128,7 +128,7 @@ object LauncherIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.update_icon),
       contentDescription = "Updates",
       tint = tint,
@@ -144,7 +144,7 @@ object LauncherIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.home),
       contentDescription = "Home",
       tint = tint,
@@ -160,7 +160,7 @@ object LauncherIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.download),
       contentDescription = "Download",
       tint = tint,
@@ -176,7 +176,7 @@ object LauncherIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.scan),
       contentDescription = "Scan",
       tint = tint,
@@ -192,7 +192,7 @@ object LauncherIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.chevron_right),
       contentDescription = "Chevron",
       tint = tint,
@@ -208,7 +208,7 @@ object LauncherIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.branch_icon),
       contentDescription = "Branch",
       tint = tint,
@@ -224,7 +224,7 @@ object LauncherIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.package_search),
       contentDescription = "Branch",
       tint = tint,
@@ -240,7 +240,7 @@ object LauncherIcons {
     tint: Color,
     modifier: Modifier = Modifier
   ) {
-    Icon(
+    UnstyledIcon(
       painter = painterResource(R.drawable.link),
       contentDescription = "Branch",
       tint = tint,

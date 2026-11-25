@@ -24,6 +24,25 @@ describe('jsx-runtime-stub', () => {
     expect(tree.props.children[1].props.target).toBe('__expo_widgets_target_1');
   });
 
+  it('adds targets to material button variants during render', () => {
+    globalThis.__expoWidgetLayout = () =>
+      jsxs('View', {
+        children: [
+          jsx('FilledTonalButton', { label: 'First', onButtonPress: () => ({ id: 'first' }) }),
+          jsx('OutlinedButton', { label: 'Second', onButtonPress: () => ({ id: 'second' }) }),
+          jsx('ElevatedButton', { label: 'Third', onButtonPress: () => ({ id: 'third' }) }),
+          jsx('TextButton', { label: 'Fourth', onButtonPress: () => ({ id: 'fourth' }) }),
+        ],
+      });
+
+    const tree = globalThis.__expoWidgetRender({}, { timestamp: 1 }) as any;
+
+    expect(tree.props.children[0].props.target).toBe('__expo_widgets_target_0');
+    expect(tree.props.children[1].props.target).toBe('__expo_widgets_target_1');
+    expect(tree.props.children[2].props.target).toBe('__expo_widgets_target_2');
+    expect(tree.props.children[3].props.target).toBe('__expo_widgets_target_3');
+  });
+
   it('uses the nearest keyed parent when generating button targets', () => {
     globalThis.__expoWidgetLayout = () =>
       jsx(

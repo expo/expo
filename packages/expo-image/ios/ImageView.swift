@@ -1,6 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 internal import SDWebImage
+internal import SDWebImageSVGCoder
 import ExpoModulesCore
 import Symbols
 #if !os(tvOS)
@@ -36,14 +37,45 @@ public final class ImageView: ExpoView {
   /**
    An array of sources from which the view will asynchronously load one of them that fits best into the view bounds.
    */
-  var sources: [ImageSource]?
+  var sources: [ImageSource]? {
+    didSet {
+      renderedImage = nil
+    }
+  }
 
   /**
    An image that has been loaded from one of the `sources` or set by the shared ref to an image.
    */
-  var sourceImage: UIImage?
+  var sourceImage: UIImage? {
+    didSet {
+      if sourceImage !== renderedImage?.image {
+        renderedImage = nil
+      }
+    }
+  }
 
   var pendingOperation: SDWebImageCombinedOperation?
+
+  private struct SourceLoad {
+    let id: Int
+    let sourceIndex: Int
+    let isThumbnail: Bool
+  }
+
+  private struct RenderedImage {
+    let image: UIImage
+    let sourceIndex: Int
+    let sourcePixelSize: CGSize
+  }
+
+  private var latestLoadID = 0
+  private var renderedImage: RenderedImage?
+
+  /// Rebuilds the image from a substituted SVG document after the manager delivered the original.
+  var pendingSVGVariablesTask: Task<Void, Never>?
+
+  /// Blurs an asset catalog image, which doesn't go through SDWebImage's transformers.
+  var pendingAssetCatalogBlurTask: Task<Void, Never>?
 
   var contentFit: ContentFit = .cover
 
@@ -54,6 +86,15 @@ public final class ImageView: ExpoView {
   var blurRadius: CGFloat = 0.0
 
   var imageTintColor: UIColor?
+
+  /// Values for the CSS custom properties — `var(--name)` — used by an SVG source. They are
+  /// substituted into the document before it is parsed, so the image stays a vector and different
+  /// parts of one document can be given different values.
+  ///
+  /// Not limited to colors: anything a custom property can stand in for, such as `stroke-width` or
+  /// `opacity`, works the same way.
+  /// `nil` leaves SVG documents untouched. An empty map still resolves `var()` fallbacks.
+  var svgVariables: [String: String]?
 
   var cachePolicy: ImageCachePolicy = .disk
 
@@ -68,6 +109,9 @@ public final class ImageView: ExpoView {
       if oldValue != nil && recyclingKey != oldValue {
         sdImageView.image = nil
         placeholderImage = nil
+        sourceImage = nil
+        // `reload()` returns early in a locked view, so a running load must not show its image here.
+        latestLoadID += 1
       }
     }
   }
@@ -92,6 +136,8 @@ public final class ImageView: ExpoView {
    */
   var imageLayoutSize: CGSize = .zero
 
+  private var maskObservation: NSKeyValueObservation?
+
   // MARK: - Events
 
   let onLoadStart = EventDispatcher()
@@ -109,7 +155,12 @@ public final class ImageView: ExpoView {
   public override var bounds: CGRect {
     didSet {
       // Reload the image when the bounds size has changed and is not empty.
-      if oldValue.size != bounds.size && bounds.size != .zero {
+      guard oldValue.size != bounds.size && bounds.size != .zero else {
+        return
+      }
+      if let renderedImage = reusableRenderedImage() {
+        layOutImage(sourcePixelSize: renderedImage.sourcePixelSize)
+      } else {
         reload()
       }
     }
@@ -128,20 +179,20 @@ public final class ImageView: ExpoView {
     sdImageView.layer.minificationFilter = .trilinear
 
     addSubview(sdImageView)
+
+    maskObservation = sdImageView.layer.observe(\.mask) { [weak self] _, _ in
+      MainActor.assumeIsolated {
+        guard let self, self.imageLayoutSize != .zero else {
+          return
+        }
+        self.applyContentPosition(contentSize: self.imageLayoutSize, containerSize: self.frame.size)
+      }
+    }
   }
 
   deinit {
     // Cancel pending requests when the view is deallocated.
     cancelPendingOperation()
-  }
-
-  public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-    super.traitCollectionDidChange(previousTraitCollection)
-    if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-      // The mask layer we adjusted would be invaliated from `RCTViewComponentView.traitCollectionDidChange`.
-      // After that we have to recalculate the mask layer in `applyContentPosition`.
-      applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
-    }
   }
 
   // MARK: - Implementation
@@ -150,6 +201,8 @@ public final class ImageView: ExpoView {
     if lockResource && !force {
       return
     }
+    // Before the early returns, so that a downscale that is still running for the previous source is dropped.
+    latestLoadID += 1
     if isViewEmpty {
       if placeholderImage != nil {
         displayPlaceholderIfNecessary()
@@ -157,7 +210,7 @@ public final class ImageView: ExpoView {
         loadPlaceholderIfNecessary()
       }
     }
-    guard let source = bestSource else {
+    guard let sourceIndex = bestSourceIndex, let source = sources?[sourceIndex] else {
       displayPlaceholderIfNecessary()
       return
     }
@@ -177,16 +230,14 @@ public final class ImageView: ExpoView {
       context[.imageTransformer] = createTransformPipeline()
     }
 
-    // It seems that `UIImageView` can't tint some vector graphics. If the `tintColor` prop is specified,
-    // we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
-    let shouldEarlyResize = imageTintColor != nil || enforceEarlyResizing || source.isPhotoLibraryAsset
-    if shouldEarlyResize {
+    let thumbnailPixelSize = thumbnailPixelSize(for: source)
+    if let thumbnailPixelSize {
       context[.imagePreserveAspectRatio] = true
-      context[.imageThumbnailPixelSize] = CGSize(
-        width: sdImageView.bounds.size.width * screenScale,
-        height: sdImageView.bounds.size.height * screenScale
-      )
+      context[.imageThumbnailPixelSize] = thumbnailPixelSize
     }
+
+    renderedImage = nil
+    let load = SourceLoad(id: latestLoadID, sourceIndex: sourceIndex, isThumbnail: thumbnailPixelSize != nil)
 
     // Some loaders (e.g. PhotoLibraryAssetLoader) may need to know the screen scale.
     context[ImageView.screenScaleKey] = screenScale
@@ -194,7 +245,7 @@ public final class ImageView: ExpoView {
     context[ImageView.contentFitKey] = contentFit
 
     // Do it here so we don't waste resources trying to fetch from a remote URL
-    if maybeRenderLocalAsset(from: source) {
+    if maybeRenderLocalAsset(from: source, load: load) {
       return
     }
 
@@ -211,11 +262,25 @@ public final class ImageView: ExpoView {
       options: loadingOptions,
       context: context,
       progress: imageLoadProgress(_:_:_:),
-      completed: imageLoadCompleted(_:_:_:_:_:_:)
+      completed: { [weak self] image, data, error, cacheType, finished, imageUrl in
+        self?.imageLoadCompleted(image, data, error, cacheType, finished, imageUrl, load: load)
+      }
     )
   }
 
-  // MARK: - Loading
+  /// The pixel size to decode a vector source to a bitmap at, or `nil` to keep it a vector.
+  /// It seems that `UIImageView` can't tint some vector graphics. If the `tintColor` prop is specified,
+  /// we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
+  private func thumbnailPixelSize(for source: ImageSource?) -> CGSize? {
+    let isPhotoLibraryAsset = source?.isPhotoLibraryAsset ?? false
+    guard imageTintColor != nil || enforceEarlyResizing || isPhotoLibraryAsset else {
+      return nil
+    }
+    return CGSize(
+      width: sdImageView.bounds.size.width * screenScale,
+      height: sdImageView.bounds.size.height * screenScale
+    )
+  }
 
   private func imageLoadProgress(_ receivedSize: Int, _ expectedSize: Int, _ imageUrl: URL?) {
     // Don't send the event when the expected size is unknown (it's usually -1 or 0 when called for the first time).
@@ -241,7 +306,8 @@ public final class ImageView: ExpoView {
     _ error: Error?,
     _ cacheType: SDImageCacheType,
     _ finished: Bool,
-    _ imageUrl: URL?
+    _ imageUrl: URL?,
+    load: SourceLoad
   ) {
     if let error = error {
       let code = (error as NSError).code
@@ -257,32 +323,130 @@ public final class ImageView: ExpoView {
       log.debug("Loading the image has been canceled")
       return
     }
-
-    if let image {
-      onLoad([
-        "cacheType": cacheTypeToString(cacheType),
-        "source": [
-          "url": imageUrl?.absoluteString,
-          "width": image.size.width,
-          "height": image.size.height,
-          "mediaType": imageFormatToMediaType(image.sd_imageFormat),
-          "isAnimated": image.sd_isAnimated
-        ]
-      ])
-
-      let scale = window?.screen.scale ?? UIScreen.main.scale
-      imageLayoutSize = idealSize(
-        contentPixelSize: image.size * image.scale,
-        containerSize: frame.size,
-        scale: scale,
-        contentFit: contentFit
-      )
-      let imageIdealSize = imageLayoutSize.rounded(.up)
-      let image = processImage(image, idealSize: imageIdealSize, scale: scale)
-      applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
-      renderSourceImage(image)
-    } else {
+    guard let image else {
       displayPlaceholderIfNecessary()
+      return
+    }
+
+    // The manager delivered the original document, which is all it ever caches. With variables set the
+    // image it decoded is discarded, not shown, and rebuilt from the substituted document. A memory hit
+    // or a transformed image comes without data, but `SVGCoder` left the document on the image.
+    let document = data ?? (image.sd_extendedObject as? Data)
+    if let variables = svgVariables, let document, SDImageSVGCoder.shared.canDecode(from: document) {
+      substituteSVGVariables(
+        variables,
+        in: document,
+        replacing: image,
+        cacheType: cacheType,
+        imageUrl: imageUrl,
+        load: load
+      )
+      return
+    }
+    didLoad(image, cacheType: cacheType, imageUrl: imageUrl, load: load)
+  }
+
+  /// Rebuilds the image from the original SVG document with the variables substituted, then displays
+  /// it in place of the one the manager decoded. Only that original is ever cached, under its plain
+  /// key, so variants share one download and a substituted image can never be served for another set
+  /// of variables or for a load without any.
+  private func substituteSVGVariables(
+    _ variables: [String: String],
+    in data: Data,
+    replacing original: UIImage,
+    cacheType: SDImageCacheType,
+    imageUrl: URL?,
+    load: SourceLoad
+  ) {
+    let scale = original.scale
+    let thumbnailPixelSize = thumbnailPixelSize(for: bestSource)
+
+    pendingSVGVariablesTask = Task { [weak self] in
+      // Parsing happens off the main actor. The view is main-actor isolated, so the rest of this task is too.
+      let result = await Task.detached(priority: .userInitiated) {
+        SubstitutedSVG(image: Self.decodeSVG(data, variables: variables, scale: scale, thumbnailPixelSize: thumbnailPixelSize))
+      }.value
+      // A newer load may have superseded this one while parsing.
+      guard let self, !Task.isCancelled else {
+        return
+      }
+      self.pendingSVGVariablesTask = nil
+      guard let image = result.image else {
+        self.onError([
+          "error": "Failed to parse the SVG document after substituting its variables. "
+            + "The substituted document may not be valid SVG — check the values passed to `svgVariables`."
+        ])
+        return
+      }
+      self.didLoad(image, cacheType: cacheType, imageUrl: imageUrl, load: load)
+    }
+  }
+
+  private nonisolated static func decodeSVG(
+    _ data: Data,
+    variables: [String: String],
+    scale: CGFloat,
+    thumbnailPixelSize: CGSize?
+  ) -> UIImage? {
+    let substituted = SVGVariables.substitute(in: data, variables: variables)
+    var options: [SDImageCoderOption: Any] = [.decodeScaleFactor: scale]
+
+    // Without a thumbnail size the SVG coder takes its vector branch, which keeps the image sharp at
+    // any size. The view asks for one when it needs a bitmap, as `tintColor` does.
+    if let thumbnailPixelSize {
+      options[.decodeThumbnailPixelSize] = thumbnailPixelSize
+      options[.decodePreserveAspectRatio] = true
+    }
+    return SDImageSVGCoder.shared.decodedImage(with: substituted, options: options)
+  }
+
+  /// Reports a finished load and displays the image.
+  private func didLoad(_ image: UIImage, cacheType: SDImageCacheType, imageUrl: URL?, load: SourceLoad) {
+    onLoad([
+      "cacheType": cacheTypeToString(cacheType),
+      "source": [
+        "url": imageUrl?.absoluteString,
+        "width": image.size.width,
+        "height": image.size.height,
+        "mediaType": imageFormatToMediaType(image.sd_imageFormat),
+        "isAnimated": image.sd_isAnimated
+      ]
+    ])
+
+    appContext?.moduleRegistry.getModule(implementing: ImageModule.self)?.emitImageLoaded(
+      url: imageUrl?.absoluteString ?? "",
+      width: image.size.width * image.scale,
+      height: image.size.height * image.scale
+    )
+
+    let sourcePixelSize = image.size * image.scale
+
+    if !image.sd_isAnimated && !bounds.isEmpty, let size = downscaledSize(sourcePixelSize: sourcePixelSize) {
+      // The view keeps its current image until the downscaled one is ready.
+      let scale = screenScale
+      DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+        let resized = resize(image: image, toSize: size, scale: scale)
+        DispatchQueue.main.async {
+          guard let self, load.id == self.latestLoadID else {
+            return
+          }
+          self.sdImageView.animationTransformer = nil
+          self.layOutImage(sourcePixelSize: sourcePixelSize)
+          self.renderLoadedImage(resized, sourcePixelSize: sourcePixelSize, cacheType: cacheType, load: load)
+        }
+      }
+      return
+    }
+    layOutImage(sourcePixelSize: sourcePixelSize)
+    renderLoadedImage(processImage(image), sourcePixelSize: sourcePixelSize, cacheType: cacheType, load: load)
+  }
+
+  private func renderLoadedImage(_ image: UIImage?, sourcePixelSize: CGSize, cacheType: SDImageCacheType, load: SourceLoad) {
+    renderSourceImage(image, cacheType: ImageCacheType.fromSdCacheType(cacheType))
+    // SDWebImage can complete a cancelled load after `reload()` starts the next one.
+    // A thumbnail and an animated image depend on the view's size at load time.
+    if let image, load.id == latestLoadID, !load.isThumbnail, !image.sd_isAnimated {
+      renderedImage = RenderedImage(image: image, sourceIndex: load.sourceIndex, sourcePixelSize: sourcePixelSize)
     }
   }
 
@@ -351,9 +515,20 @@ public final class ImageView: ExpoView {
     onDisplay()
   }
 
-  private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
+  private func maybeRenderLocalAsset(from source: ImageSource, load: SourceLoad) -> Bool {
+    if let image = assetCatalogImage(for: source.uri) {
+      onLoadStart([:])
+      if blurRadius > 0 {
+        blurAssetCatalogImage(image, imageUrl: source.uri, load: load)
+      } else {
+        didLoad(image, cacheType: .memory, imageUrl: source.uri, load: load)
+      }
+      return true
+    }
     if let local = localAssetImage(from: source) {
-      renderSourceImage(local)
+      // `UIImage(named:)` serves bundled assets from the system's in-memory cache, so report a
+      // memory hit — this lets `transition.skipOnCacheHit` treat them as instantly available.
+      renderSourceImage(local, cacheType: .memory)
       return true
     }
 
@@ -365,6 +540,28 @@ public final class ImageView: ExpoView {
       return nil
     }
     return UIImage(named: path)
+  }
+
+  /**
+   Applies `blurRadius` to an asset catalog image. These skip SDWebImage, which would otherwise run
+   the blur transformer on a background queue, so the blur runs off the main actor here.
+   */
+  private func blurAssetCatalogImage(_ image: UIImage, imageUrl: URL?, load: SourceLoad) {
+    let radius = blurRadius
+
+    pendingAssetCatalogBlurTask = Task { [weak self] in
+      let result = await Task.detached(priority: .userInitiated) {
+        let blurred = SDImageBlurTransformer(radius: radius).transformedImage(with: image, forKey: "")
+        blurred?.sd_imageFormat = image.sd_imageFormat
+        return BlurredImage(image: blurred)
+      }.value
+      // A newer load may have superseded this one while blurring.
+      guard let self, !Task.isCancelled else {
+        return
+      }
+      self.pendingAssetCatalogBlurTask = nil
+      self.didLoad(result.image ?? image, cacheType: .memory, imageUrl: imageUrl, load: load)
+    }
   }
 
   // MARK: - Placeholder
@@ -419,7 +616,7 @@ public final class ImageView: ExpoView {
 
     // Asset catalog (xcassets) images aren't resolvable by SDWebImage, so try the
     // local lookup first — mirroring the proper source path in `maybeRenderLocalAsset`.
-    if let localImage = localAssetImage(from: placeholder) {
+    if let localImage = assetCatalogImage(for: placeholder.uri) ?? localAssetImage(from: placeholder) {
       placeholderImage = localImage
       displayPlaceholderIfNecessary()
       return
@@ -453,6 +650,38 @@ public final class ImageView: ExpoView {
     setImage(placeholder, contentFit: placeholderContentFit, isPlaceholder: true)
   }
 
+  private func reusableRenderedImage() -> RenderedImage? {
+    guard let renderedImage, renderedImage.sourceIndex == bestSourceIndex else {
+      return nil
+    }
+    let image = renderedImage.image
+    let downscaledSize = downscaledSize(sourcePixelSize: renderedImage.sourcePixelSize)
+    let neededPixelSize = downscaledSize.map { return $0 * screenScale } ?? renderedImage.sourcePixelSize
+    let pixelSize = image.size * image.scale
+    guard pixelSize.width >= neededPixelSize.width && pixelSize.height >= neededPixelSize.height else {
+      return nil
+    }
+    // `.center` draws the image at its size in points and does not scale it to the view.
+    if sdImageView.contentMode == .center, let downscaledSize, image.size != downscaledSize {
+      return nil
+    }
+    return renderedImage
+  }
+
+  private func layOutImage(sourcePixelSize: CGSize) {
+    imageLayoutSize = layoutSize(sourcePixelSize: sourcePixelSize)
+    applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
+  }
+
+  private func layoutSize(sourcePixelSize: CGSize) -> CGSize {
+    return idealSize(
+      contentPixelSize: sourcePixelSize,
+      containerSize: frame.size,
+      scale: screenScale,
+      contentFit: contentFit
+    )
+  }
+
   // MARK: - Processing
 
   private func createTransformPipeline() -> SDImagePipelineTransformer? {
@@ -462,19 +691,28 @@ public final class ImageView: ExpoView {
     return SDImagePipelineTransformer(transformers: transformers)
   }
 
-  private func processImage(_ image: UIImage?, idealSize: CGSize, scale: Double) -> UIImage? {
-    guard let image = image, !bounds.isEmpty else {
+  private func downscaledSize(sourcePixelSize: CGSize) -> CGSize? {
+    // Rounding to the nearest pixel, not up to a whole point, keeps the aspect ratio of the source within half a pixel.
+    let pixelSize = (layoutSize(sourcePixelSize: sourcePixelSize) * screenScale).rounded(.toNearestOrAwayFromZero)
+    let size = CGSize(width: max(pixelSize.width, 1), height: max(pixelSize.height, 1)) / screenScale
+    guard allowDownscaling && shouldDownscale(pixelSize: sourcePixelSize, toSize: size, scale: screenScale) else {
+      return nil
+    }
+    return size
+  }
+
+  private func processImage(_ image: UIImage) -> UIImage? {
+    guard !bounds.isEmpty else {
       return nil
     }
     sdImageView.animationTransformer = nil
     // Downscale the image only when necessary
-    if allowDownscaling && shouldDownscale(image: image, toSize: idealSize, scale: scale) {
+    if let size = downscaledSize(sourcePixelSize: image.size * image.scale) {
       if image.sd_isAnimated {
-        let size = idealSize * scale
-        sdImageView.animationTransformer = SDImageResizingTransformer(size: size, scaleMode: .fill)
+        sdImageView.animationTransformer = SDImageResizingTransformer(size: size * screenScale, scaleMode: .fill)
         return image
       }
-      return resize(image: image, toSize: idealSize, scale: scale)
+      return resize(image: image, toSize: size, scale: screenScale)
     }
     return image
   }
@@ -486,6 +724,13 @@ public final class ImageView: ExpoView {
    */
   private func applyContentPosition(contentSize: CGSize, containerSize: CGSize) {
     let offset = contentPosition.offset(contentSize: contentSize, containerSize: containerSize)
+
+    // Core Animation raises `CALayerInvalidGeometry` when a layer position contains NaN.
+    guard offset.x.isFinite, offset.y.isFinite else {
+      log.warn("Skipping the content position update because the offset is not finite: \(offset)")
+      return
+    }
+
     if sdImageView.layer.mask != nil {
       // In New Architecture mode, React Native adds a mask layer to image subviews.
       // When moving the layer frame, we must move the mask layer with a compensation value.
@@ -502,14 +747,23 @@ public final class ImageView: ExpoView {
     }
   }
 
-  internal func renderSourceImage(_ image: UIImage?) {
+  /// Displays the image of an image ref. A running load doesn't replace it, also in a locked view.
+  func renderImageRef(_ image: UIImage) {
+    latestLoadID += 1
+    renderSourceImage(image)
+  }
+
+  internal func renderSourceImage(_ image: UIImage?, cacheType: ImageCacheType = .none) {
+    let isInitialDisplay = sourceImage == nil
+
     // Update the source image before it gets rendered or transitioned to.
     sourceImage = image
 
     // For SF Symbol replace effect, skip the UIView transition and let the native symbol animation handle it
     let isSFReplaceEffect = transition?.effect.isSFReplaceEffect == true && isSFSymbolSource
 
-    if let transition = transition, transition.duration > 0, !isSFReplaceEffect {
+    if let transition = transition, transition.duration > 0, !isSFReplaceEffect,
+      transition.shouldPlay(forCacheType: cacheType, isInitialDisplay: isInitialDisplay) {
       let options = transition.toAnimationOptions()
       let seconds = transition.duration / 1000
 
@@ -746,6 +1000,10 @@ public final class ImageView: ExpoView {
   func cancelPendingOperation() {
     pendingOperation?.cancel()
     pendingOperation = nil
+    pendingSVGVariablesTask?.cancel()
+    pendingSVGVariablesTask = nil
+    pendingAssetCatalogBlurTask?.cancel()
+    pendingAssetCatalogBlurTask = nil
   }
 
   /**
@@ -760,7 +1018,11 @@ public final class ImageView: ExpoView {
    The image source that fits best into the view bounds.
    */
   var bestSource: ImageSource? {
-    return getBestSource(from: sources, forSize: bounds.size, scale: screenScale)
+    return bestSourceIndex.flatMap { return sources?[$0] }
+  }
+
+  var bestSourceIndex: Int? {
+    return getBestSourceIndex(from: sources, forSize: bounds.size, scale: screenScale)
   }
 
   /**
@@ -872,4 +1134,14 @@ func localAssetName(from url: URL?) -> String? {
     path.removeFirst()
   }
   return path.isEmpty ? nil : path
+}
+
+/// Carries a freshly decoded image from the parsing task back to the main actor. Unchecked because
+/// `UIImage` isn't `Sendable`; the image is never touched again from the parsing side.
+private struct SubstitutedSVG: @unchecked Sendable {
+  let image: UIImage?
+}
+
+private struct BlurredImage: @unchecked Sendable {
+  let image: UIImage?
 }

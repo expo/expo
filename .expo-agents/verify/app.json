@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "verify-workflows",
+    "slug": "verify-workflows",
+    "owner": "expo-verification-bot",
+    "extra": {
+      "eas": {
+        "projectId": "48c34336-2a8b-4c3b-b301-c2280bd0e7bc"
+      }
+    }
+  }
+}

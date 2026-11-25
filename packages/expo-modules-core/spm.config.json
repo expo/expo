@@ -1,25 +1,20 @@
 {
   "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "publishPrebuilds": true,
   "products": [
     {
       "name": "ExpoModulesCore",
       "podName": "ExpoModulesCore",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "headersXCFramework": true,
+      "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
         "Hermes",
         "expo-modules-jsi/ExpoModulesJSI"
       ],
-      "swiftLanguageVersions": [
-        "6.0"
-      ],
-      "excludeFromUmbrella": [
-        "EXModuleRegistryAdapter.h",
-        "EXModuleRegistryHolderReactModule.h"
-      ],
+      "swiftLanguageVersions": ["6.0"],
+      "excludeFromUmbrella": ["EXModuleRegistryAdapter.h", "EXModuleRegistryHolderReactModule.h"],
       "targets": [
         {
           "type": "cpp",
@@ -34,18 +29,18 @@
             "ReactNativeDependencies",
             "expo-modules-jsi/ExpoModulesJSI"
           ],
-          "includeDirectories": [
-            "."
-          ]
+          "includeDirectories": ["."]
         },
         {
           "type": "objc",
           "name": "ExpoModulesCore_ios_objc",
           "path": "ios",
-          "pattern": "**/*.{m,mm}",
+          "pattern": "**/*.{m,mm,cpp}",
           "headerPattern": "**/*.h",
           "exclude": [
             "Tests/**",
+            "Benchmarks/**",
+            "WorkletsTests/**",
             "Worklets/**",
             "WorkletsAdapter/**"
           ],
@@ -63,19 +58,12 @@
             "expo-modules-jsi/ExpoModulesJSI",
             "ExpoModulesCore_common_cpp"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UserNotifications",
-            "AVKit",
-            "AVFoundation",
-            "UIKit"
-          ],
-          "includeDirectories": [
-            "."
-          ],
+          "linkedFrameworks": ["Foundation", "UserNotifications", "AVKit", "AVFoundation", "UIKit"],
+          "includeDirectories": ["."],
           "compilerFlags": {
             "common": [
-              "-DEXPO_MODULES_CORE_VERSION=${PACKAGE_VERSION}"
+              "-DEXPO_MODULES_CORE_VERSION=${PACKAGE_VERSION}",
+              "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_MINOR_VERSION}"
             ]
           }
         },
@@ -87,6 +75,8 @@
           "exclude": [
             "JSI/**",
             "Tests/**",
+            "Benchmarks/**",
+            "WorkletsTests/**",
             "BridgeModule/**",
             "Views/**",
             "Worklets/**",
@@ -114,18 +104,15 @@
     {
       "name": "ExpoModulesWorklets",
       "podName": "ExpoModulesWorklets",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "headersXCFramework": true,
+      "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
         "Hermes",
         "expo-modules-jsi/ExpoModulesJSI"
       ],
-      "swiftLanguageVersions": [
-        "6.0"
-      ],
+      "swiftLanguageVersions": ["6.0"],
       "targets": [
         {
           "type": "objc",
@@ -141,12 +128,8 @@
             "expo-modules-jsi/ExpoModulesJSI",
             "ExpoModulesCore"
           ],
-          "linkedFrameworks": [
-            "Foundation"
-          ],
-          "includeDirectories": [
-            "."
-          ]
+          "linkedFrameworks": ["Foundation"],
+          "includeDirectories": ["."]
         },
         {
           "type": "swift",
@@ -161,10 +144,7 @@
             "ExpoModulesCore",
             "ExpoModulesWorklets_ios_objc"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit"]
         }
       ]
     },
@@ -172,9 +152,7 @@
       "name": "ExpoModulesWorkletsAdapter",
       "podName": "ExpoModulesWorkletsAdapter",
       "sourceOnly": true,
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(\"16.4\")"],
       "autolinkWhen": {
         "podName": "RNWorklets"
       },
@@ -202,12 +180,8 @@
             "ExpoModulesWorklets",
             "RNWorklets"
           ],
-          "linkedFrameworks": [
-            "Foundation"
-          ],
-          "includeDirectories": [
-            "."
-          ]
+          "linkedFrameworks": ["Foundation"],
+          "includeDirectories": ["."]
         }
       ]
     }

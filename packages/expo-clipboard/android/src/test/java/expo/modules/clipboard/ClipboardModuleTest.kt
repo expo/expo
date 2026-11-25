@@ -9,11 +9,22 @@ import android.os.Build
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.errorCodeOf
-import expo.modules.test.core.legacy.ModuleMock
-import expo.modules.test.core.legacy.ModuleMockHolder
 import expo.modules.test.core.legacy.assertCodedException
-import io.mockk.confirmVerified
-import io.mockk.verify
+import io.github.expo.modules.v2.ExpoObject
+import io.github.expo.modules.v2.async.AsyncContext
+import io.github.expo.modules.v2.async.JSScheduler
+import io.github.expo.modules.v2.core.ExpoModulesV2
+import io.github.expo.modules.v2.events.Event
+import io.github.expo.modules.v2.events.EventSupport
+import io.github.expo.modules.v2.react.androidContext
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockkObject
+import io.mockk.mockkStatic
+import io.mockk.runs
+import io.mockk.unmockkObject
+import io.mockk.unmockkStatic
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -25,20 +36,81 @@ import org.robolectric.annotation.Implementation
 import org.robolectric.annotation.Implements
 import org.robolectric.shadows.ShadowContextImpl
 
-private interface ClipboardModuleTestInterface {
+/** Calls the module's suspend exports the way JavaScript would, with the default options. */
+private class ClipboardModuleTestWrapper(private val module: ClipboardModule) {
   @Throws(CodedException::class)
-  fun getStringAsync(options: GetStringOptions = GetStringOptions()): String
+  fun getStringAsync(options: GetStringOptions = GetStringOptions()): String =
+    runBlocking { module.getStringAsync(options) }
 
   @Throws(CodedException::class)
-  fun setStringAsync(content: String, options: SetStringOptions = SetStringOptions()): Boolean
+  fun setStringAsync(content: String, options: SetStringOptions = SetStringOptions()): Boolean =
+    runBlocking { module.setStringAsync(content, options) }
 
   @Throws(CodedException::class)
-  fun hasStringAsync(): Boolean
+  fun hasStringAsync(): Boolean = runBlocking { module.hasStringAsync() }
 }
 
-private inline fun withClipboardMock(
-  block: ModuleMockHolder<ClipboardModuleTestInterface, ClipboardModule>.() -> Unit
-) = ModuleMock.createMock(ClipboardModuleTestInterface::class, ClipboardModule(), block = block)
+private class ClipboardModuleMock(val clipboardModule: ClipboardModule) {
+  val module = ClipboardModuleTestWrapper(clipboardModule)
+  val emittedEvents = mutableListOf<ClipboardChangedEvent>()
+  lateinit var eventEmitter: ClipboardEventEmitter
+}
+
+// A JVM test has no Expo Modules v2 native library, so the module reads the application through
+// a mocked `androidContext`, and the test listens to the clipboard the way the module does when
+// JavaScript adds a listener.
+private inline fun withClipboardMock(block: ClipboardModuleMock.() -> Unit) {
+  val clipboardModule = ClipboardModule()
+  val mock = ClipboardModuleMock(clipboardModule)
+  val context = ApplicationProvider.getApplicationContext<Context>()
+
+  mockkStatic(REACT_CONTEXT_EXTENSIONS)
+  every { clipboardModule.androidContext } returns context
+  mock.eventEmitter = ClipboardEventEmitter(
+    clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager,
+    reactContext = null,
+    onChange = { mock.emittedEvents.add(it) }
+  )
+  mock.eventEmitter.attachListener()
+  try {
+    mock.block()
+  } finally {
+    mock.eventEmitter.detachListener()
+    unmockkStatic(REACT_CONTEXT_EXTENSIONS)
+  }
+}
+
+/** The file class that holds `androidContext`, which mockk mocks as a static. */
+private const val REACT_CONTEXT_EXTENSIONS = "io.github.expo.modules.v2.react.ReactContextExtensionsKt"
+
+/** Keeps the emits for a runtime instead of delivering them, because delivery needs the native library. */
+private class RecordingJSScheduler : JSScheduler {
+  val jobs = mutableListOf<Runnable>()
+  override val isOnJSThread = false
+  override fun post(job: Runnable) {
+    jobs.add(job)
+  }
+}
+
+/**
+ * Adds or removes a JavaScript listener for the event that [module] exports as [jsName], the way
+ * the native side does when JavaScript calls `addListener` or `remove`.
+ */
+private fun observeEvent(
+  module: ClipboardModule,
+  jsName: String,
+  context: AsyncContext,
+  observing: Boolean
+) {
+  // `ExpoObject.events` is internal to Expo Modules v2.
+  @Suppress("UNCHECKED_CAST")
+  val events = ExpoObject::class.java.getField("events").get(module) as List<Event<*>>?
+  val index = events.orEmpty().indexOfFirst { it.name == jsName }
+  check(index >= 0) {
+    "ClipboardModule does not export '$jsName'. It exports: ${events.orEmpty().map { it.name }}"
+  }
+  EventSupport.observe(module, index, context, observing)
+}
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [Build.VERSION_CODES.P]) // API 28
@@ -74,9 +146,7 @@ class ClipboardModuleTest {
 
     val plainResult = module.getStringAsync()
     val htmlResult = module.getStringAsync(
-      GetStringOptions().apply {
-        preferredFormat = StringFormat.HTML
-      }
+      GetStringOptions(preferredFormat = StringFormat.HTML)
     )
     assertEquals("hello world", plainResult)
     assertEquals("<p>hello world</p>", htmlResult)
@@ -86,9 +156,7 @@ class ClipboardModuleTest {
   fun `setStringAsync should support HTML`() = withClipboardMock {
     module.setStringAsync(
       "<p>hello</p>",
-      SetStringOptions().apply {
-        inputFormat = StringFormat.HTML
-      }
+      SetStringOptions(inputFormat = StringFormat.HTML)
     )
 
     assertTrue(
@@ -129,28 +197,40 @@ class ClipboardModuleTest {
 
     // assert
     assertTrue(result)
-    verify {
-      eventEmitter.emit(
-        CLIPBOARD_CHANGED_EVENT_NAME,
-        match {
-          it.getStringArrayList("contentTypes")?.contains("plain-text") == true
-        }
-      )
+    assertTrue(emittedEvents.single().contentTypes.contains(ContentType.PLAIN_TEXT))
+  }
+
+  @Test
+  fun `should emit onClipboardChanged to a JavaScript listener`() = withClipboardMock {
+    // An `AsyncContext` loads the native library when its class initializes.
+    mockkObject(ExpoModulesV2)
+    every { ExpoModulesV2.load() } just runs
+    try {
+      val scheduler = RecordingJSScheduler()
+      val jsContext = AsyncContext(scheduler)
+
+      observeEvent(clipboardModule, "onClipboardChanged", jsContext, observing = true)
+      module.setStringAsync("minerva mcgonagall")
+      assertEquals(1, scheduler.jobs.size)
+
+      observeEvent(clipboardModule, "onClipboardChanged", jsContext, observing = false)
+      module.setStringAsync("rubeus hagrid")
+      assertEquals(1, scheduler.jobs.size)
+    } finally {
+      unmockkObject(ExpoModulesV2)
     }
-    confirmVerified(eventEmitter)
   }
 
   @Test
   fun `shouldn't emit events when in background`() = withClipboardMock {
     // prepare
-    controller.onActivityEntersBackground()
+    eventEmitter.onHostPause()
 
     // update clipboard content
     module.setStringAsync("ronald weasley")
 
-    // assert that emit() was NOT called
-    verify(inverse = true) { eventEmitter.emit(CLIPBOARD_CHANGED_EVENT_NAME, any()) }
-    confirmVerified(eventEmitter)
+    // assert that no event was emitted
+    assertTrue(emittedEvents.isEmpty())
   }
 
   @Test
@@ -161,6 +241,72 @@ class ClipboardModuleTest {
     assertCodedException(exception) {
       assertEquals(errorCodeOf<ClipboardUnavailableException>(), it.code)
     }
+  }
+
+  @Test
+  @Config(sdk = [Build.VERSION_CODES.TIRAMISU]) // API 33
+  fun `setStringAsync should set isSensitive flag on Android 13+`() = withClipboardMock {
+    module.setStringAsync(
+      "sensitive password",
+      SetStringOptions(isSensitive = true)
+    )
+
+    val clipDescription = clipboardManager.primaryClipDescription
+    val extras = clipDescription?.extras
+
+    assertTrue("isSensitive flag should be set", extras?.getBoolean(ClipDescription.EXTRA_IS_SENSITIVE) == true)
+  }
+
+  @Test
+  @Config(sdk = [Build.VERSION_CODES.S]) // API 31
+  fun `setStringAsync should set isSensitive flag on Android 12L and below`() = withClipboardMock {
+    module.setStringAsync(
+      "sensitive password",
+      SetStringOptions(isSensitive = true)
+    )
+
+    val clipDescription = clipboardManager.primaryClipDescription
+    val extras = clipDescription?.extras
+
+    assertTrue("isSensitive flag should be set with legacy key", extras?.getBoolean("android.content.extra.IS_SENSITIVE") == true)
+  }
+
+  @Test
+  fun `setStringAsync should not set isSensitive flag when false`() = withClipboardMock {
+    module.setStringAsync(
+      "normal text",
+      SetStringOptions(isSensitive = false)
+    )
+
+    val clipDescription = clipboardManager.primaryClipDescription
+    val extras = clipDescription?.extras
+
+    assertTrue("extras should be null when isSensitive is false", extras == null)
+  }
+
+  @Test
+  fun `setStringAsync should not set isSensitive flag by default`() = withClipboardMock {
+    module.setStringAsync("normal text")
+
+    val clipDescription = clipboardManager.primaryClipDescription
+    val extras = clipDescription?.extras
+
+    assertTrue("extras should be null by default", extras == null)
+  }
+
+  @Test
+  @Config(sdk = [Build.VERSION_CODES.TIRAMISU]) // API 33
+  fun `setStringAsync with HTML should set isSensitive flag`() = withClipboardMock {
+    module.setStringAsync(
+      "<p>sensitive content</p>",
+      SetStringOptions(inputFormat = StringFormat.HTML, isSensitive = true)
+    )
+
+    val clipDescription = clipboardManager.primaryClipDescription
+    val extras = clipDescription?.extras
+
+    assertTrue("HTML content should have isSensitive flag", extras?.getBoolean(ClipDescription.EXTRA_IS_SENSITIVE) == true)
+    assertTrue("Should be HTML content", clipDescription?.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) == true)
   }
 
   private val clipboardManager: ClipboardManager

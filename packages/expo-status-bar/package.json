@@ -1,65 +1,65 @@
 {
   "name": "expo-status-bar",
-  "version": "56.0.4",
+  "version": "58.0.4",
   "description": "Provides the same interface as the React Native StatusBar API, but with slightly different defaults to work great in Expo environments.",
-  "main": "src/StatusBar",
+  "keywords": [
+    "expo",
+    "expo-status-bar",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/status-bar/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-status-bar"
+  },
+  "main": "build/StatusBar.js",
   "types": "build/StatusBar.d.ts",
   "exports": {
     ".": {
-      "types": "./build/StatusBar.d.ts",
-      "default": "./src/StatusBar.ts"
+      "types": {
+        "expo-source": "./src/StatusBar.ts",
+        "default": "./build/StatusBar.d.ts"
+      },
+      "expo-source": "./src/StatusBar.ts",
+      "default": "./build/StatusBar.js"
     },
     "./plugin": "./plugin/build/index.js",
     "./package.json": "./package.json",
     "./app.plugin.js": "./app.plugin.js"
   },
   "scripts": {
-    "build": "expo-module build",
+    "precompile-android": "et prebuild-android-package-for-publish",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json",
+    "prepack": "expo-module prepack"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-status-bar"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-status-bar"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/status-bar/",
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
-    "@testing-library/react-native": "^13.3.0",
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "@types/react": "~19.2.0",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "@types/react": "~19.3.0"
   },
   "peerDependencies": {
     "expo": "*",
     "react": "*",
     "react-native": "*"
-  },
-  "jest": {
-    "projects": [
-      {
-        "preset": "jest-expo/ios"
-      },
-      {
-        "preset": "jest-expo/android"
-      }
-    ]
   }
 }

@@ -1,13 +1,13 @@
 import { promises } from 'fs';
 import path from 'path';
 
-import type { ForwardedBaseModOptions } from './createBaseMod';
-import { provider, withGeneratedBaseMods } from './createBaseMod';
 import type { ExportedConfig, ModConfig } from '../Plugin.types';
 import { Colors, Manifest, Paths, Properties, Resources, Strings, Styles } from '../android';
 import type { AndroidManifest } from '../android/Manifest';
 import { parseXMLAsync, writeXMLAsync } from '../utils/XML';
 import { reverseSortString, sortObject, sortObjWithOrder } from '../utils/sortObject';
+import type { ForwardedBaseModOptions } from './createBaseMod';
+import { provider, withGeneratedBaseMods } from './createBaseMod';
 
 const { readFile, writeFile } = promises;
 

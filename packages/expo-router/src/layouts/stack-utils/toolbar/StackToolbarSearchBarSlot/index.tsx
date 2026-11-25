@@ -1,8 +1,8 @@
 'use client';
 
+import { useToolbarPlacement } from '../context';
 import { NativeToolbarSearchBarSlot } from './native';
 import type { StackToolbarSearchBarSlotProps } from './types';
-import { useToolbarPlacement } from '../context';
 
 export type { StackToolbarSearchBarSlotProps, NativeToolbarSearchBarSlotProps } from './types';
 

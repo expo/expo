@@ -23,8 +23,8 @@ class NotificationForwarderActivity : Activity() {
       sendBroadcast(broadcastIntent)
     } catch (e: IllegalArgumentException) {
       Log.e("expo-notifications", "Failed to handle notification response: could not recover notification data from intent extras. This may happen on some Android versions. Opening app to foreground.", e)
-      // Open the app anyway so the user isn't stuck
-      packageManager.getLaunchIntentForPackage(packageName)?.let {
+      // Open the app anyway so the user isn't stuck.
+      ExpoHandlingDelegate.getMainActivityLauncher(this)?.let {
         startActivity(it)
       }
     }

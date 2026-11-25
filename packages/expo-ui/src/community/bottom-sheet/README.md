@@ -4,11 +4,11 @@ A drop-in replacement for [`@gorhom/bottom-sheet`](https://github.com/gorhom/rea
 
 - **iOS**: SwiftUI sheet presentation with detents
 - **Android**: Material 3 ModalBottomSheet with `expand()`/`partialExpand()` native methods
-- **Web**: [vaul](https://github.com/emilkowalski/vaul) drawer with spring-physics gestures
+- **Web**: HTML `<dialog>` bottom sheet
 
 ## Installation
 
-No extra dependencies needed beyond `@expo/ui`. vaul is bundled for web.
+No extra dependencies needed beyond `@expo/ui`.
 
 ## Usage
 
@@ -30,8 +30,7 @@ export default function App() {
         index={-1}
         onChange={(index) => console.log('onChange', index)}
         onClose={() => console.log('closed')}
-        enablePanDownToClose
-      >
+        enablePanDownToClose>
         <BottomSheetView style={{ flex: 1, padding: 24, alignItems: 'center' }}>
           <Text>Sheet Content</Text>
         </BottomSheetView>
@@ -58,7 +57,7 @@ That's it. Ref types (`useRef<BottomSheet>`, `useRef<BottomSheetModal>`), method
 
 ### Behavioral difference: modal vs inline
 
-`@gorhom/bottom-sheet`'s `BottomSheet` renders **inline** — a View at the bottom of its container, always mounted and visible at some snap point height. This component uses **native modal** presentation on iOS and Android — an overlay that is either presented or dismissed. On web, vaul renders a drawer overlay.
+`@gorhom/bottom-sheet`'s `BottomSheet` renders **inline** — a View at the bottom of its container, always mounted and visible at some snap point height. This component uses **native modal** presentation on iOS and Android — an overlay that is either presented or dismissed. On web, it renders a dialog overlay.
 
 **What this means:**
 
@@ -71,79 +70,79 @@ That's it. Ref types (`useRef<BottomSheet>`, `useRef<BottomSheetModal>`), method
 
 ### Exports
 
-| Export | Supported | Notes |
-|--------|-----------|-------|
-| `BottomSheet` (default) | Yes | Modal on iOS/Android, vaul drawer on web |
-| `BottomSheetView` | Yes | Pass-through `View` wrapper (strips `flex` for fit-to-content) |
-| `BottomSheetScrollView` | Yes | Re-export of `ScrollView` |
-| `BottomSheetFlatList` | Yes | Re-export of `FlatList` |
-| `BottomSheetSectionList` | Yes | Re-export of `SectionList` |
-| `BottomSheetTextInput` | Yes | Re-export of `TextInput` |
-| `BottomSheetModal` | Yes | Starts closed, opened via `present()` |
-| `BottomSheetModalProvider` | Yes | No-op wrapper for compatibility |
-| `useBottomSheet` | Yes | Context-based, returns ref methods |
-| `BottomSheetBackdrop` | No | Native/vaul handles backdrop |
-| `BottomSheetHandle` | No | Native/vaul handles drag indicator |
-| `BottomSheetFooter` | No | No equivalent |
-| `BottomSheetDraggableView` | No | Not applicable |
-| `BottomSheetVirtualizedList` | No | Use `FlatList` instead |
-| `BottomSheetFlashList` | No | Use `FlatList` instead |
-| `useBottomSheetModal` | No | Use `useBottomSheet` instead |
-| `useBottomSheetSpringConfigs` | No | Native/vaul handles animations |
-| `useBottomSheetTimingConfigs` | No | Native/vaul handles animations |
+| Export                        | Supported | Notes                                                          |
+| ----------------------------- | --------- | -------------------------------------------------------------- |
+| `BottomSheet` (default)       | Yes       | Modal on iOS/Android, HTML dialog on web                       |
+| `BottomSheetView`             | Yes       | Pass-through `View` wrapper (strips `flex` for fit-to-content) |
+| `BottomSheetScrollView`       | Yes       | Re-export of `ScrollView`                                      |
+| `BottomSheetFlatList`         | Yes       | Re-export of `FlatList`                                        |
+| `BottomSheetSectionList`      | Yes       | Re-export of `SectionList`                                     |
+| `BottomSheetTextInput`        | Yes       | Re-export of `TextInput`                                       |
+| `BottomSheetModal`            | Yes       | Starts closed, opened via `present()`                          |
+| `BottomSheetModalProvider`    | Yes       | No-op wrapper for compatibility                                |
+| `useBottomSheet`              | Yes       | Context-based, returns ref methods                             |
+| `BottomSheetBackdrop`         | No        | Native/web sheet handles backdrop                              |
+| `BottomSheetHandle`           | No        | Native/web sheet handles drag indicator                        |
+| `BottomSheetFooter`           | No        | No equivalent                                                  |
+| `BottomSheetDraggableView`    | No        | Not applicable                                                 |
+| `BottomSheetVirtualizedList`  | No        | Use `FlatList` instead                                         |
+| `BottomSheetFlashList`        | No        | Use `FlatList` instead                                         |
+| `useBottomSheetModal`         | No        | Use `useBottomSheet` instead                                   |
+| `useBottomSheetSpringConfigs` | No        | Native/web sheet handles animations                            |
+| `useBottomSheetTimingConfigs` | No        | Native/web sheet handles animations                            |
 
 ### Props
 
-| Prop | Supported | Notes |
-|------|-----------|-------|
-| `snapPoints` | Yes | iOS: full support. Android: 2 states (partial/expanded). Web: full support via CSS height. |
-| `index` | Yes | `-1` = closed, `0+` = open at snap point. Default `-1` (gorhom defaults `0`). |
-| `onChange` | Yes | |
-| `onClose` | Yes | |
-| `onDismiss` | Yes | Alias for `onClose` (gorhom `BottomSheetModal` compat) |
-| `enablePanDownToClose` | Yes | iOS: enables swipe + backdrop tap. Android: swipe + back button + scrim tap. |
-| `enableDynamicSizing` | Yes | Fit-to-content when no `snapPoints`. Cannot combine with explicit snap points. |
-| `handleComponent` | Partial | `null` hides handle, non-null shows native/vaul handle. Custom components not rendered. |
-| `backgroundStyle` | Partial | Android: `backgroundColor` extracted for `containerColor`. iOS: not applied (SwiftUI sheet uses system background). Web: full style is applied. |
-| `style` | Partial | Passed through where possible |
-| `children` | Yes | |
-| `animateOnMount` | No | Accepted, no effect. |
-| `enableContentPanningGesture` | No | Accepted, no effect. |
-| `enableHandlePanningGesture` | No | Accepted, no effect. |
-| `enableOverDrag` | No | Accepted, no effect. |
-| `overDragResistanceFactor` | No | Accepted, no effect. |
-| `keyboardBehavior` | No | Accepted, no effect. |
-| `keyboardBlurBehavior` | No | Accepted, no effect. |
-| `backdropComponent` | No | Accepted, no effect. |
-| `backgroundComponent` | No | Accepted, no effect. |
-| `footerComponent` | No | Accepted, no effect. |
-| `handleStyle` | No | Accepted, no effect. |
-| `handleIndicatorStyle` | No | Accepted, no effect. |
-| `containerStyle` | No | Accepted, no effect. |
-| `animatedIndex` | No | Not supported |
-| `animatedPosition` | No | Not supported |
-| `animationConfigs` | No | Not supported |
-| `detached` | No | Not supported |
+| Prop                          | Supported | Notes                                                                                                                                           |
+| ----------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `snapPoints`                  | Yes       | iOS: full support. Android: 2 states (partial/expanded). Web: full support via CSS height.                                                      |
+| `index`                       | Yes       | `-1` = closed, `0+` = open at snap point. Default `-1` (gorhom defaults `0`).                                                                   |
+| `onChange`                    | Yes       |                                                                                                                                                 |
+| `onClose`                     | Yes       |                                                                                                                                                 |
+| `onDismiss`                   | Yes       | Alias for `onClose` (gorhom `BottomSheetModal` compat)                                                                                          |
+| `enablePanDownToClose`        | Yes       | iOS: enables swipe + backdrop tap. Android: swipe + back button + scrim tap.                                                                    |
+| `enableDynamicSizing`         | Yes       | Fit-to-content when no `snapPoints`. Cannot combine with explicit snap points.                                                                  |
+| `handleComponent`             | Partial   | `null` hides handle, non-null shows native/web handle. Custom components not rendered.                                                          |
+| `backgroundStyle`             | Partial   | Android: `backgroundColor` extracted for `containerColor`. iOS: not applied (SwiftUI sheet uses system background). Web: full style is applied. |
+| `style`                       | Partial   | Passed through where possible                                                                                                                   |
+| `children`                    | Yes       |                                                                                                                                                 |
+| `animateOnMount`              | No        | Accepted, no effect.                                                                                                                            |
+| `enableContentPanningGesture` | No        | Accepted, no effect.                                                                                                                            |
+| `enableHandlePanningGesture`  | No        | Accepted, no effect.                                                                                                                            |
+| `enableOverDrag`              | No        | Accepted, no effect.                                                                                                                            |
+| `overDragResistanceFactor`    | No        | Accepted, no effect.                                                                                                                            |
+| `keyboardBehavior`            | No        | Accepted, no effect.                                                                                                                            |
+| `keyboardBlurBehavior`        | No        | Accepted, no effect.                                                                                                                            |
+| `backdropComponent`           | No        | Accepted, no effect.                                                                                                                            |
+| `backgroundComponent`         | No        | Accepted, no effect.                                                                                                                            |
+| `footerComponent`             | No        | Accepted, no effect.                                                                                                                            |
+| `handleStyle`                 | No        | Accepted, no effect.                                                                                                                            |
+| `handleIndicatorStyle`        | No        | Accepted, no effect.                                                                                                                            |
+| `containerStyle`              | No        | Accepted, no effect.                                                                                                                            |
+| `animatedIndex`               | No        | Not supported                                                                                                                                   |
+| `animatedPosition`            | No        | Not supported                                                                                                                                   |
+| `animationConfigs`            | No        | Not supported                                                                                                                                   |
+| `detached`                    | No        | Not supported                                                                                                                                   |
 
 ### Ref methods
 
-| Method | Supported | Notes |
-|--------|-----------|-------|
-| `snapToIndex(index)` | Yes | Android: maps to `expand()`/`partialExpand()` (2 states) |
-| `snapToPosition(position)` | Partial | Mapped to nearest snap point |
-| `expand()` | Yes | |
-| `collapse()` | Yes | |
-| `close()` | Yes | |
-| `forceClose()` | Yes | Same as `close()` |
-| `present()` | Yes | Opens at first snap point |
-| `dismiss()` | Yes | Same as `close()` |
+| Method                     | Supported | Notes                                                    |
+| -------------------------- | --------- | -------------------------------------------------------- |
+| `snapToIndex(index)`       | Yes       | Android: maps to `expand()`/`partialExpand()` (2 states) |
+| `snapToPosition(position)` | Partial   | Mapped to nearest snap point                             |
+| `expand()`                 | Yes       |                                                          |
+| `collapse()`               | Yes       |                                                          |
+| `close()`                  | Yes       |                                                          |
+| `forceClose()`             | Yes       | Same as `close()`                                        |
+| `present()`                | Yes       | Opens at first snap point                                |
+| `dismiss()`                | Yes       | Same as `close()`                                        |
 
 ### Platform-specific snap point behavior
 
-| Snap points | iOS | Android | Web |
-|-------------|-----|---------|-----|
-| `['25%']` | Single detent at 25% | Expanded (skips partial) | Single height at 25% |
-| `['25%', '50%']` | Two detents | Partial (~50%) + expanded | Two heights |
-| `['25%', '50%', '90%']` | Three detents | Partial + expanded (middle ignored) | Three heights |
-| `[200, 500]` | Two height detents | Partial + expanded | Two heights |
-| Not provided | `medium` + `large` | Fit to content | Fit to content |
+| Snap points             | iOS                  | Android                             | Web                  |
+| ----------------------- | -------------------- | ----------------------------------- | -------------------- |
+| `['25%']`               | Single detent at 25% | Expanded (skips partial)            | Single height at 25% |
+| `['25%', '50%']`        | Two detents          | Partial (~50%) + expanded           | Two heights          |
+| `['25%', '50%', '90%']` | Three detents        | Partial + expanded (middle ignored) | Three heights        |
+| `[200, 500]`            | Two height detents   | Partial + expanded                  | Two heights          |
+| Not provided            | `medium` + `large`   | Fit to content                      | Fit to content       |

@@ -1,4 +1,4 @@
-import { CodedError, NativeModule, registerWebModule } from 'expo-modules-core';
+import { CodedError, NativeModule, registerWebModule } from 'expo';
 
 import type { SpeechOptions, WebVoice } from './Speech.types';
 import { VoiceQuality } from './Speech.types';

@@ -14,11 +14,9 @@ import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.notifications.BuildConfig
 import expo.modules.notifications.notifications.model.NotificationBehaviorRecord
 import expo.modules.notifications.notifications.model.*
-import expo.modules.notifications.service.delegates.ExpoCategoriesDelegate
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
 import expo.modules.notifications.service.delegates.ExpoSchedulingDelegate
-import expo.modules.notifications.service.interfaces.CategoriesDelegate
 import expo.modules.notifications.service.interfaces.HandlingDelegate
 import expo.modules.notifications.service.interfaces.PresentationDelegate
 import expo.modules.notifications.service.interfaces.SchedulingDelegate
@@ -47,15 +45,13 @@ open class NotificationsService : BroadcastReceiver() {
     private const val RECEIVE_TYPE = "receive"
     private const val RECEIVE_RESPONSE_TYPE = "receiveResponse"
     private const val DROPPED_TYPE = "dropped"
-    private const val GET_CATEGORIES_TYPE = "getCategories"
-    private const val SET_CATEGORY_TYPE = "setCategory"
-    private const val DELETE_CATEGORY_TYPE = "deleteCategory"
     private const val SCHEDULE_TYPE = "schedule"
     private const val TRIGGER_TYPE = "trigger"
     private const val GET_ALL_SCHEDULED_TYPE = "getAllScheduled"
     private const val GET_SCHEDULED_TYPE = "getScheduled"
     private const val REMOVE_SELECTED_TYPE = "removeSelected"
     private const val REMOVE_ALL_TYPE = "removeAll"
+    private const val GROUPED_NOTIFICATION_DELETED_TYPE = "groupedNotificationDeleted"
 
     // Messages parts
     const val SUCCESS_CODE = 0
@@ -72,13 +68,10 @@ open class NotificationsService : BroadcastReceiver() {
     const val NOTIFICATION_KEY = "notification"
     const val NOTIFICATION_RESPONSE_KEY = "notificationResponse"
     const val TEXT_INPUT_NOTIFICATION_RESPONSE_KEY = "textInputNotificationResponse"
-    const val SUCCEEDED_KEY = "succeeded"
     const val IDENTIFIERS_KEY = "identifiers"
     const val IDENTIFIER_KEY = "identifier"
     const val NOTIFICATION_BEHAVIOR_KEY = "notificationBehavior"
     const val NOTIFICATIONS_KEY = "notifications"
-    const val NOTIFICATION_CATEGORY_KEY = "notificationCategory"
-    const val NOTIFICATION_CATEGORIES_KEY = "notificationCategories"
     const val NOTIFICATION_REQUEST_KEY = "notificationRequest"
     const val NOTIFICATION_REQUESTS_KEY = "notificationRequests"
     const val NOTIFICATION_ACTION_KEY = "notificationAction"
@@ -192,72 +185,6 @@ open class NotificationsService : BroadcastReceiver() {
         context,
         Intent(NOTIFICATION_EVENT_ACTION).apply {
           putExtra(EVENT_TYPE_KEY, DROPPED_TYPE)
-        }
-      )
-    }
-
-    /**
-     * A helper function for dispatching a "get notification categories" command to the service.
-     *
-     * @param context Context where to start the service.
-     */
-    fun getCategories(context: Context, receiver: ResultReceiver? = null) {
-      doWork(
-        context,
-        Intent(
-          NOTIFICATION_EVENT_ACTION,
-          getUriBuilder()
-            .appendPath("categories")
-            .build()
-        ).apply {
-          putExtra(EVENT_TYPE_KEY, GET_CATEGORIES_TYPE)
-          putExtra(RECEIVER_KEY, receiver)
-        }
-      )
-    }
-
-    /**
-     * A helper function for dispatching a "set notification category" command to the service.
-     *
-     * @param context Context where to start the service.
-     * @param category Notification category to be set
-     */
-    fun setCategory(context: Context, category: NotificationCategory, receiver: ResultReceiver? = null) {
-      doWork(
-        context,
-        Intent(
-          NOTIFICATION_EVENT_ACTION,
-          getUriBuilder()
-            .appendPath("categories")
-            .appendPath(category.identifier)
-            .build()
-        ).apply {
-          putExtra(EVENT_TYPE_KEY, SET_CATEGORY_TYPE)
-          putExtra(NOTIFICATION_CATEGORY_KEY, category as Parcelable)
-          putExtra(RECEIVER_KEY, receiver)
-        }
-      )
-    }
-
-    /**
-     * A helper function for dispatching a "delete notification category" command to the service.
-     *
-     * @param context Context where to start the service.
-     * @param identifier Category Identifier
-     */
-    fun deleteCategory(context: Context, identifier: String, receiver: ResultReceiver? = null) {
-      doWork(
-        context,
-        Intent(
-          NOTIFICATION_EVENT_ACTION,
-          getUriBuilder()
-            .appendPath("categories")
-            .appendPath(identifier)
-            .build()
-        ).apply {
-          putExtra(EVENT_TYPE_KEY, DELETE_CATEGORY_TYPE)
-          putExtra(IDENTIFIER_KEY, identifier)
-          putExtra(RECEIVER_KEY, receiver)
         }
       )
     }
@@ -430,12 +357,38 @@ open class NotificationsService : BroadcastReceiver() {
       }
 
       // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
-      val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+      val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        PendingIntent.FLAG_MUTABLE
+      } else {
+        0
+      }
       return PendingIntent.getBroadcast(
         context,
         intent.component?.className?.hashCode() ?: NotificationsService::class.java.hashCode(),
         intent,
         PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag
+      )
+    }
+
+    fun createGroupedNotificationDeletedIntent(context: Context, notification: Notification): PendingIntent {
+      // The identifier in the URI keeps FLAG_UPDATE_CURRENT from replacing one child's extras with another's.
+      val intent = Intent(
+        NOTIFICATION_EVENT_ACTION,
+        getUriBuilderForIdentifier(notification.notificationRequest.identifier).appendPath("groupedDeleted").build()
+      ).also { intent ->
+        findDesignatedBroadcastReceiver(context, intent)?.let {
+          intent.component = ComponentName(it.packageName, it.name)
+        }
+        intent.putExtra(EVENT_TYPE_KEY, GROUPED_NOTIFICATION_DELETED_TYPE)
+        intent.putExtra(NOTIFICATION_KEY, notification)
+        // Byte-array copy: Parcelable extras can come back null from a PendingIntent, see #38908
+        marshalObject(notification)?.let { intent.putExtra(NOTIFICATION_BYTES_KEY, it) }
+      }
+      return PendingIntent.getBroadcast(
+        context,
+        0,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
       )
     }
 
@@ -480,7 +433,11 @@ open class NotificationsService : BroadcastReceiver() {
       }
 
       // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
-      val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+      val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        PendingIntent.FLAG_MUTABLE
+      } else {
+        0
+      }
       return PendingIntent.getBroadcast(
         context,
         intent.component?.className?.hashCode() ?: NotificationsService::class.java.hashCode(),
@@ -578,7 +535,7 @@ open class NotificationsService : BroadcastReceiver() {
     }
 
     /**
-     * Marshals [Parcelable] into to a byte array.
+     * Marshals [Parcelable] into a byte array.
      *
      * @param notificationResponse Notification response to marshall
      * @return Given request marshalled to a byte array or null if the process failed.
@@ -617,9 +574,6 @@ open class NotificationsService : BroadcastReceiver() {
 
   protected open fun getHandlingDelegate(context: Context): HandlingDelegate =
     ExpoHandlingDelegate(context)
-
-  protected open fun getCategoriesDelegate(context: Context): CategoriesDelegate =
-    ExpoCategoriesDelegate(context)
 
   protected open fun getSchedulingDelegate(context: Context): SchedulingDelegate =
     ExpoSchedulingDelegate(context)
@@ -663,15 +617,6 @@ open class NotificationsService : BroadcastReceiver() {
 
           DISMISS_ALL_TYPE -> onDismissAllNotifications(context, intent)
 
-          GET_CATEGORIES_TYPE ->
-            resultData = onGetCategories(context, intent)
-
-          SET_CATEGORY_TYPE ->
-            resultData = onSetCategory(context, intent)
-
-          DELETE_CATEGORY_TYPE ->
-            resultData = onDeleteCategory(context, intent)
-
           GET_ALL_SCHEDULED_TYPE ->
             resultData = onGetAllScheduledNotifications(context, intent)
 
@@ -685,6 +630,8 @@ open class NotificationsService : BroadcastReceiver() {
           REMOVE_ALL_TYPE -> onRemoveAllScheduledNotifications(context, intent)
 
           TRIGGER_TYPE -> onNotificationTriggered(context, intent)
+
+          GROUPED_NOTIFICATION_DELETED_TYPE -> onGroupedNotificationDeleted(context, intent)
 
           else -> throw IllegalArgumentException("Received event of unrecognized type: $eventType. Ignoring.")
         }
@@ -745,44 +692,24 @@ open class NotificationsService : BroadcastReceiver() {
   open fun onReceiveNotificationResponse(context: Context, intent: Intent) {
     val response = getNotificationResponseFromBroadcastIntent(intent)
     getHandlingDelegate(context).handleNotificationResponse(response)
+    // Auto-cancel on tap does not fire the delete intent. Action buttons do not dismiss.
+    val content = response.notification.notificationRequest.content
+    val isTap = response.actionIdentifier == NotificationResponse.DEFAULT_ACTION_IDENTIFIER
+    if (isTap && content.isAutoDismiss && content.group != null) {
+      getPresentationDelegate(context).removeOrphanedGroupSummaries(response.notification)
+    }
   }
 
   open fun onNotificationsDropped(context: Context, intent: Intent) =
     getHandlingDelegate(context).handleNotificationsDropped()
 
-  //endregion
+  open fun onGroupedNotificationDeleted(context: Context, intent: Intent) {
+    val notification = intent.getParcelableExtra<Notification>(NOTIFICATION_KEY)
+      ?: unmarshalObject(Notification.CREATOR, intent.getByteArrayExtra(NOTIFICATION_BYTES_KEY))
+      ?: throw IllegalArgumentException("$NOTIFICATION_KEY not found in the intent extras.")
+    getPresentationDelegate(context).removeOrphanedGroupSummaries(notification)
+  }
 
-  //region Category handling
-
-  open fun onGetCategories(context: Context, intent: Intent) =
-    Bundle().apply {
-      putParcelableArrayList(
-        NOTIFICATION_CATEGORIES_KEY,
-        ArrayList(
-          getCategoriesDelegate(context).getCategories()
-        )
-      )
-    }
-
-  open fun onSetCategory(context: Context, intent: Intent) =
-    Bundle().apply {
-      putParcelable(
-        NOTIFICATION_CATEGORY_KEY,
-        getCategoriesDelegate(context).setCategory(
-          intent.getParcelableExtra(NOTIFICATION_CATEGORY_KEY)!!
-        )
-      )
-    }
-
-  open fun onDeleteCategory(context: Context, intent: Intent) =
-    Bundle().apply {
-      putBoolean(
-        SUCCEEDED_KEY,
-        getCategoriesDelegate(context).deleteCategory(
-          intent.extras?.getString(IDENTIFIER_KEY)!!
-        )
-      )
-    }
   //endregion
 
   //region Scheduling notifications

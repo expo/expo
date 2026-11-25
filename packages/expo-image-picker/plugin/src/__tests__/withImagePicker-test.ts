@@ -1,10 +1,10 @@
-import { readAndroidManifestAsync } from '@expo/config-plugins/build/android/Manifest';
+import { AndroidConfig } from 'expo/config-plugins';
 import path from 'path';
 
 import { withAndroidImagePickerPermissions } from '../withImagePicker';
 
 function getMockAndroidManifest() {
-  return readAndroidManifestAsync(
+  return AndroidConfig.Manifest.readAndroidManifestAsync(
     path.resolve(__dirname, 'fixtures/react-native-AndroidManifest.xml')
   );
 }
@@ -24,7 +24,7 @@ describe(withAndroidImagePickerPermissions, () => {
       modResults: await getMockAndroidManifest(),
     });
 
-    expect(config.android.permissions).toEqual(['android.permission.RECORD_AUDIO']);
+    expect(config.android?.permissions).toEqual(['android.permission.RECORD_AUDIO']);
 
     expect(modResults).toEqual({
       manifest: {

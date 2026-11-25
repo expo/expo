@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <permission
-        android:name="host.exp.exponent.permission.C2D_MESSAGE"
+        android:name="${applicationId}.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
     <!-- These are required permissions to make the app run -->
-    <uses-permission android:name="host.exp.exponent.permission.C2D_MESSAGE" />
+    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -201,29 +201,6 @@
             android:name=".ExponentIntentService"
             android:exported="false" />
 
-        <!-- Analytics -->
-        <!--
-        This crashes: https://code.google.com/p/analytics-issues/issues/detail?id=667
-        TODO: turn it back on when it's fixed
-        <service
-          android:name="com.google.android.gms.analytics.CampaignTrackingService"
-          android:enabled="true"
-          android:exported="false" />-->
-
-        <receiver
-            android:name="com.google.android.gms.analytics.AnalyticsReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
-            </intent-filter>
-        </receiver>
-
-        <service
-            android:name="com.google.android.gms.analytics.AnalyticsService"
-            android:enabled="true"
-            android:exported="false" />
-
         <!-- FCM -->
         <service
             android:name=".fcm.ExpoFcmMessagingService"
@@ -250,12 +227,6 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/notification_icon_color" />
-
-
-        <!-- ImagePicker native module -->
-        <activity
-            android:name="com.canhub.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat" />
 
     </application>
 </manifest>

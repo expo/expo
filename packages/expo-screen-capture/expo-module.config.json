@@ -4,6 +4,11 @@
     "modules": ["ScreenCaptureModule"]
   },
   "android": {
-    "modules": ["expo.modules.screencapture.ScreenCaptureModule"]
+    "modules": ["expo.modules.screencapture.ScreenCaptureModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.screencapture",
+      "repository": "local-maven-repo"
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 import * as React from 'react';
 
+import { flattenFragments } from '../../utils/flattenFragments';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type ClosedRangeDate, type CommonViewModifierProps } from '../types';
 
@@ -98,7 +99,7 @@ export function Text(props: TextProps) {
     return null;
   }
 
-  const childArray = React.Children.toArray(children);
+  const childArray = flattenFragments(children);
   if (childArray.length === 0) return null;
 
   const isSimpleText = childArray.every(

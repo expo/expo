@@ -34,7 +34,9 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
     }
   }
 
-  nonisolated func markDidFinishLaunching() {
+  /// - Parameter runningInBackground: Whether the app is running in the background. Tests pass it explicitly.
+  @MainActor
+  func markDidFinishLaunching(runningInBackground: Bool = AppStartupMonitoring.isRunningInBackground()) {
     // App has finished loading – save the current app launch state
     AppMetricsUserDefaults.lastAppLaunchState = appLaunchState
 
@@ -42,12 +44,20 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       return
     }
     let currentTime = CACurrentMediaTime()
+    let currentDate = Date()
 
     AppMetricsActor.isolated { [self] in
       if startupState != .launching {
         return
       }
+      // The system may launch the app in the background, for example for a background fetch or a silent push notification.
+      // Such launches are interrupted right away, otherwise TTR and TTI would include the whole time until the user opens the app.
+      if runningInBackground {
+        startupState = .interrupted
+        return
+      }
       markers.finishedLaunching = currentTime
+      markers.finishedLaunchingDate = currentDate
 
       // Start tracking frame metrics from this point so the data
       // matches the TTI window (finishedLaunching → markInteractive).
@@ -73,6 +83,11 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
         return
       }
       markers.timeToFirstRender = currentTime
+
+      if let ttfr = markers.getTTFR(), ttfr > Self.maxStartupDuration {
+        startupState = .interrupted
+        return
+      }
 
       // There is no event for when the bundle finished loading,
       // but we're sure it's already available once the first render occurs.
@@ -102,14 +117,25 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       markers.timeToInteractive = currentTime
 
       if let tti = markers.getTTI() {
+        if tti > Self.maxStartupDuration {
+          startupState = .interrupted
+          return
+        }
         let frameMetrics = frameMetricsRecorder.stop()
         let deviceState = await DeviceConditions.deviceState()
         let networkPath = await NetworkPathMonitor.shared.waitForFirstPath()
+        let networkRequests: NetworkRequestSummary? = {
+          guard let anchor = markers.finishedLaunchingDate else {
+            return nil
+          }
+          return NetworkRequestMonitor.shared.summarize(start: anchor, end: Date())
+        }()
         let mergedParams = MetricParamsBuilder.build(
           userParams: params,
           frameMetrics: frameMetrics,
           deviceState: deviceState,
-          networkPath: networkPath
+          networkPath: networkPath,
+          networkRequests: networkRequests
         )
         let metric = Metric(
           category: .appStartup,
@@ -138,30 +164,22 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
   // MARK: - AppLaunchType
 
   internal enum AppLaunchType: String {
-    /**
-     The app is launched from scratch. The system must allocate memory, start a fresh runtime environment,
-     load the app's code and resources from disk, and initialize its components before rendering the UI.
-     This is the slowest type of launch and typically occurs after a fresh install, reboot,
-     or when the OS has killed the app to reclaim memory
-     */
+    /// The app is launched from scratch. The system must allocate memory, start a fresh runtime environment,
+    /// load the app's code and resources from disk, and initialize its components before rendering the UI.
+    /// This is the slowest type of launch and typically occurs after a fresh install, reboot,
+    /// or when the OS has killed the app to reclaim memory
     case cold
-    /**
-     The app's main process is still running in memory, but the UI and navigation state have been torn down.
-     The system does not need to restart the app process or reinitialize the runtime environment,
-     but it must recreate the app's interface and restore any preserved state.
-     This often happens when the app is in a background state and the system has cleared its UI to free up memory.
-     */
+    /// The app's main process is still running in memory, but the UI and navigation state have been torn down.
+    /// The system does not need to restart the app process or reinitialize the runtime environment,
+    /// but it must recreate the app's interface and restore any preserved state.
+    /// This often happens when the app is in a background state and the system has cleared its UI to free up memory.
     case warm
-    /**
-     The system prewarmed the app, partially running its launch sequence in the background before the user opens it.
-     In this case we can't reliably measure app startup times, so we do not collect these metrics.
-     */
+    /// The system prewarmed the app, partially running its launch sequence in the background before the user opens it.
+    /// In this case we can't reliably measure app startup times, so we do not collect these metrics.
     case prewarmed
   }
 
-  /**
-   Tries to guess what type of launch it was. This most likely does not cover all cases and may sometimes return warm when it was actually cold
-   */
+  /// Tries to guess what type of launch it was. This most likely does not cover all cases and may sometimes return warm when it was actually cold
   private func getAppLaunchType() -> AppLaunchType {
     // `ActivePrewarm` flag was set => prewarmed launch
     if AppLoadTimeProvider.wasPrewarmActive() {
@@ -192,5 +210,25 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       return .warm
     }
     return .cold
+  }
+
+  // MARK: - Background launches
+
+  /// TTR and TTI longer than this are dropped. It is a safety guard for background launches that
+  /// `isRunningInBackground` doesn't detect, as their startup times include the whole time until the user opens the app.
+  private static let maxStartupDuration: TimeInterval = 3 * 60
+
+  /// Background launches got about 30 seconds in our tests. Apple only documents the foreground value as
+  /// "suitably large", so we compare against a threshold rather than `greatestFiniteMagnitude`.
+  private static let backgroundTimeRemainingThreshold: TimeInterval = 60 * 60
+
+  /// Returns whether the app is currently running in the background.
+  ///
+  /// `UIApplication.applicationState` can't be used here, because apps using the scene-based life cycle report
+  /// `.background` in `didFinishLaunching` even when the user launches them from the home screen.
+  /// In the foreground there is no limit on the background execution time, so `backgroundTimeRemaining` is very large.
+  @MainActor
+  private static func isRunningInBackground() -> Bool {
+    return UIApplication.shared.backgroundTimeRemaining < backgroundTimeRemainingThreshold
   }
 }

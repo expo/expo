@@ -20,6 +20,7 @@ import type {
   AlarmMethod,
   OpenEventDialogResult,
   Attendee,
+  Calendar,
 } from './legacy/Calendar';
 import type { RecurrenceRule } from './types/RecurrenceRule';
 
@@ -34,10 +35,18 @@ export type AddEventWithFormOptions = PresentationOptions & {
   allDay?: boolean;
   notes?: string;
   location?: string;
+  /**
+   * @platform ios
+   */
   url?: string;
+  /**
+   * @platform ios
+   */
   alarms?: Alarm[];
   recurrenceRule?: RecurrenceRule;
 };
+
+export type CalendarDetails = Partial<Calendar>;
 
 export type ModifiableCalendarProperties = Pick<ExpoCalendar, 'color' | 'title'>;
 
@@ -72,6 +81,31 @@ export type ModifiableReminderProperties = Pick<
 >;
 
 export type ModifiableAttendeeProperties = ExpoCalendarAttendee;
+
+/**
+ * Key/value pair attached to an event, stored in Android's `CalendarContract.ExtendedProperties`
+ * table. Use it to keep your own data on an event, for example the id of a record in your app.
+ * @platform android
+ */
+export type ExtendedProperty = {
+  /**
+   * Name the property is stored under, prefix included.
+   *
+   * > **Note:** On a Google account the name must start with `private:` or `shared:`;
+   * > the sync adapter drops any other name.
+   * > The visibility of each kind and the size limits are described in
+   * > [Google's extended properties guide](https://developers.google.com/workspace/calendar/api/guides/extended-properties).
+   */
+  name: string;
+  /**
+   * Value stored under `name`.
+   *
+   * > **Note:** On a Google account the
+   * > [size limits](https://developers.google.com/workspace/calendar/api/guides/extended-properties#limits)
+   * > apply, and `setExtendedProperty()` throws rather than letting a longer value be truncated.
+   */
+  value: string;
+};
 
 export declare class ExpoCalendar {
   constructor(id: string);
@@ -175,7 +209,8 @@ export declare class ExpoCalendar {
    * @param startDate Beginning of time period to search for reminders in, or `null` for all completed reminders before `endDate`.
    * @param endDate End of time period to search for reminders in, or `null` for all completed reminders after `startDate`.
    * @param status One of `Calendar.ReminderStatus.COMPLETED` or `Calendar.ReminderStatus.INCOMPLETE`. If not defined, both completed and incomplete reminders will be returned.
-   * @return An array of [`ExpoCalendarReminder`](#expocalendarreminder) objects matching the search criteria.
+   * @return An array of [`CalendarReminder`](#calendarreminder) objects matching the search criteria.
+   * @platform ios
    */
   listReminders(
     startDate?: Date | string | null,
@@ -196,6 +231,7 @@ export declare class ExpoCalendar {
    * Creates a new reminder in the calendar.
    * @param reminderData A map of details for the reminder to be created.
    * @return An instance of the created reminder.
+   * @platform ios
    */
   createReminder(
     reminderData: Omit<Partial<ExpoCalendarReminder>, 'id' | 'calendarId'>
@@ -221,8 +257,12 @@ export declare class ExpoCalendar {
 
   /**
    * Gets a calendar by its ID. Throws an error if the calendar with the given ID does not exist.
+   *
+   * > **iOS 17+:** With write-only calendar access, only the virtual calendar's ID can be
+   * > resolved - real calendars require full calendar access.
+   *
    * @param calendarId The ID of the calendar to get.
-   * @returns An [`ExpoCalendar`](#expocalendar) object representing the calendar.
+   * @returns A [`Calendar`](#calendar) object representing the calendar.
    */
   static get(calendarId: string): Promise<ExpoCalendar>;
 }
@@ -363,24 +403,19 @@ export declare class ExpoCalendarEvent {
    * @return A promise which resolves with information about the dialog result.
    * @header systemProvidedUI
    */
-  openInCalendar(
-    params?: CalendarDialogOpenParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
-  ): Promise<OpenEventDialogResult>;
+  openInCalendar(params?: CalendarDialogOpenParamsNext): Promise<OpenEventDialogResult>;
 
   /**
    * Launches the calendar UI provided by the OS to edit or delete an event.
    * @return A promise which resolves with information about the dialog result.
    * @header systemProvidedUI
    */
-  editInCalendar(
-    params?: CalendarDialogParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
-  ): Promise<DialogEventResult>;
+  editInCalendar(params?: CalendarDialogParamsNext): Promise<DialogEventResult>;
 
   /**
    * Returns an event instance for a given event (or instance of a recurring event).
    * @param recurringEventOptions A map of options for recurring events.
    * @return An event instance.
-   * @platform ios
    */
   getOccurrenceSync(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
 
@@ -389,6 +424,48 @@ export declare class ExpoCalendarEvent {
    * @return An array of [`Attendee`](#attendee) associated with the specified event.
    */
   getAttendees(): Promise<ExpoCalendarAttendee[]>;
+
+  /**
+   * Gets the extended properties attached to this event, including the ones written by other apps
+   * or by the calendar's own sync adapter.
+   * @return A promise that resolves to the properties stored on the event.
+   * @platform android
+   */
+  getExtendedProperties(): Promise<ExtendedProperty[]>;
+
+  /**
+   * Stores a key/value pair on this event, replacing the value already stored under the same name.
+   *
+   * > **Note:** On a Google account `name` has to start with `private:` or `shared:`, and both
+   * > `name` and `value` have to stay within Google's size limits, otherwise this method throws.
+   * > See [`ExtendedProperty`](#extendedproperty).
+   *
+   * @param name Name to store the value under.
+   * @param value Value to store.
+   *
+   * @example
+   * ```ts
+   * await event.setExtendedProperty('private:my-app-id', 'a4f1c2');
+   * ```
+   *
+   * @platform android
+   */
+  setExtendedProperty(name: string, value: string): Promise<void>;
+
+  /**
+   * Removes the property stored under `name` on this event.
+   *
+   * > **Note:** Google Calendar keeps a removed name on the server with an empty value, and it
+   * > still counts toward the
+   * > [limit of properties per event](https://developers.google.com/workspace/calendar/api/guides/extended-properties#limits).
+   * > Reuse names instead of creating one per record.
+   *
+   * @param name Name of the property to remove.
+   * @return A promise that resolves to `true` when the property was removed, and to `false` when
+   * the event had none under that name.
+   * @platform android
+   */
+  deleteExtendedProperty(name: string): Promise<boolean>;
 
   /**
    * Updates the provided details of an existing calendar stored on the device. To remove a property,
@@ -416,7 +493,7 @@ export declare class ExpoCalendarEvent {
   /**
    * Gets an event by its ID. Throws an error if the event with the given ID does not exist.
    * @param eventId The ID of the event to get.
-   * @returns An [`ExpoCalendarEvent`](#expocalendarevent) object representing the event.
+   * @returns A [`CalendarEvent`](#calendarevent) object representing the event.
    */
   static get(eventId: string): Promise<ExpoCalendarEvent>;
 }
@@ -488,6 +565,9 @@ export declare class ExpoCalendarReminder {
    */
   completionDate?: string | Date;
 
+  /**
+   * @platform ios
+   */
   update(
     details: Partial<ModifiableReminderProperties>,
     nullableFields?: (keyof ModifiableReminderProperties)[]
@@ -495,20 +575,21 @@ export declare class ExpoCalendarReminder {
 
   /**
    * Deletes the reminder.
+   * @platform ios
    */
   delete(): Promise<void>;
 
   /**
    * Gets a reminder by its ID. Throws an error if the reminder with the given ID does not exist.
    * @param reminderId The ID of the reminder to get.
-   * @returns An [`ExpoCalendarReminder`](#expocalendarreminder) object representing the reminder.
+   * @returns A [`CalendarReminder`](#calendarreminder) object representing the reminder.
+   * @platform ios
    */
   static get(reminderId: string): Promise<ExpoCalendarReminder>;
 }
 
 /**
  * Represents a calendar attendee object.
- * @platform android
  */
 export declare class ExpoCalendarAttendee {
   /**

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`renders Stack.Toolbar to RSC 1`] = `
 "1:I["src/layouts/stack-utils/toolbar/StackToolbarClient.tsx",[],"",1]

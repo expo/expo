@@ -72,6 +72,7 @@ struct TwoFactorView: View {
           let filtered = String(newValue.filter { $0.isNumber }.prefix(6))
           if filtered != newValue {
             loginViewModel.otpCode = filtered
+            return
           }
           if filtered.count == 6 {
             Task {

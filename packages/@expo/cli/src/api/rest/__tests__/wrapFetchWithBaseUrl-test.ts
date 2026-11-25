@@ -1,3 +1,4 @@
+import type { RequestInfo } from 'fetch-nodeshim';
 import { URLSearchParams } from 'url';
 
 import { wrapFetchWithBaseUrl } from '../wrapFetchWithBaseUrl';
@@ -34,6 +35,7 @@ describe(wrapFetchWithBaseUrl, () => {
   it(`does not support non-string URLs`, async () => {
     const input = jest.fn();
     const next = wrapFetchWithBaseUrl(input, 'https://example.com/v2');
-    expect(() => next({ href: 'foo' }, {})).toThrow(/string URL/);
+    // Intentionally passes a non-string URL to exercise the runtime guard.
+    expect(() => next({ href: 'foo' } as unknown as RequestInfo, {})).toThrow(/string URL/);
   });
 });

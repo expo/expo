@@ -5,9 +5,9 @@ import {
   TextButton,
 } from '@expo/ui/jetpack-compose';
 
+import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
 import type { ButtonProps, ButtonVariant } from './types';
-import { useUniversalLifecycle } from '../hooks';
 
 export function Button({
   children,
@@ -26,7 +26,9 @@ export function Button({
 
   if (hidden) return null;
 
-  const modifiers = transformToModifiers(style, { disabled, hidden, testID }, extraModifiers);
+  const modifiers = transformToModifiers(style, { disabled, hidden, testID }, extraModifiers, {
+    componentName: 'Button',
+  });
 
   const content = children ?? <Text>{label ?? ''}</Text>;
   const commonProps = {

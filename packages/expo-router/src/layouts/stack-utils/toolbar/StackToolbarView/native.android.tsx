@@ -1,16 +1,19 @@
 'use client';
-import { Box, RNHostView } from '@expo/ui/jetpack-compose';
-import { fillMaxHeight } from '@expo/ui/jetpack-compose/modifiers';
 
-import type { NativeToolbarViewProps } from './types';
+import { requireExpoUI } from '../../../../optional-libraries/expo-ui';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
 import { useToolbarPlacement } from '../context';
-
-const bottomPlacementModifiers = [fillMaxHeight()];
+import type { NativeToolbarViewProps } from './types';
 
 export const NativeToolbarView: React.FC<NativeToolbarViewProps> = ({ children, hidden }) => {
+  const {
+    expoUI: { Box, RNHostView },
+    modifiers: { fillMaxHeight },
+  } = requireExpoUI(
+    "Stack.Toolbar on Android requires '@expo/ui'. Install it with `npx expo install @expo/ui` and rebuild your app."
+  );
   const placement = useToolbarPlacement();
-  const modifiers = placement === 'bottom' ? bottomPlacementModifiers : undefined;
+  const modifiers = placement === 'bottom' ? [fillMaxHeight()] : undefined;
 
   return (
     <Box contentAlignment="center" modifiers={modifiers}>

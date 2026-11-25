@@ -8,6 +8,7 @@ const typeOrder = {
   file: 0,
   dir: 1,
   contents: 2,
+  package: 3,
 };
 
 /**
@@ -24,14 +25,25 @@ export function compareSource(a: HashSource, b: HashSource): number {
     if (a.type === 'file' && b.type === 'file') {
       const aValue = a.overrideHashKey ?? a.filePath;
       const bValue = b.overrideHashKey ?? b.filePath;
-      return aValue.localeCompare(bValue);
+      return stringCompareNoLocale(aValue, bValue);
     } else if (a.type === 'dir' && b.type === 'dir') {
       const aValue = a.overrideHashKey ?? a.filePath;
       const bValue = b.overrideHashKey ?? b.filePath;
-      return aValue.localeCompare(bValue);
+      return stringCompareNoLocale(aValue, bValue);
     } else if (a.type === 'contents' && b.type === 'contents') {
-      return a.id.localeCompare(b.id);
+      return stringCompareNoLocale(a.id, b.id);
+    } else if (a.type === 'package' && b.type === 'package') {
+      const aValue = a.overrideHashKey ?? `${a.name}@${a.version}`;
+      const bValue = b.overrideHashKey ?? `${b.name}@${b.version}`;
+      return stringCompareNoLocale(aValue, bValue);
     }
   }
   return typeResult;
+}
+
+/**
+ * Compares strings by UTF-16 code unit so the order does not depend on the system locale.
+ */
+export function stringCompareNoLocale(a: string, b: string): number {
+  return a < b ? -1 : a > b ? 1 : 0;
 }

@@ -11,8 +11,11 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
+import expo.modules.devlauncher.DevLauncherController
+import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
 
 class DevLauncherDevSupportManagerFactory : DevSupportManagerFactory {
+  @Deprecated("Use the other create() method with useDevSupport parameter for New Architecture. This method will be removed in a future release.")
   override fun create(
     applicationContext: Context,
     reactInstanceManagerHelper: ReactInstanceDevHelper,
@@ -26,7 +29,7 @@ class DevLauncherDevSupportManagerFactory : DevSupportManagerFactory {
     devLoadingViewManager: DevLoadingViewManager?,
     pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
   ): DevSupportManager {
-    throw IllegalStateException("Legacy architecture is not longer supported.")
+    throw IllegalStateException("Legacy architecture is no longer supported.")
   }
 
   override fun create(
@@ -46,6 +49,12 @@ class DevLauncherDevSupportManagerFactory : DevSupportManagerFactory {
     return if (!useDevSupport) {
       ReleaseDevSupportManager()
     } else {
+      val expoCommandHandlers = DevMenuCommandHandlersProvider {
+        DevLauncherController.nullableInstance?.appHost?.devSupportManager
+      }.createCommandHandlers()
+      val mergedCommandHandlers =
+        (customPackagerCommandHandlers.orEmpty() + expoCommandHandlers).toMutableMap()
+
       DevLauncherBridgelessDevSupportManager(
         applicationContext,
         reactInstanceManagerHelper,
@@ -54,7 +63,7 @@ class DevLauncherDevSupportManagerFactory : DevSupportManagerFactory {
         redBoxHandler,
         devBundleDownloadListener,
         minNumShakes,
-        customPackagerCommandHandlers?.toMutableMap()
+        mergedCommandHandlers
       )
     }
   }

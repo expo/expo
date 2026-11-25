@@ -112,6 +112,11 @@ module Expo
       project.native_targets.each do |native_target|
         native_target.build_configurations.each do |build_configuration|
           configuration_flag = "-D #{CONFIGURATION_FLAG_PREFIX}#{build_configuration.debug? ? "DEBUG" : "RELEASE"}"
+          resolved_flags = build_configuration.resolve_build_setting(SWIFT_FLAGS, native_target)
+
+          # Respect flags inherited from xcconfig files instead of duplicating them in the project file.
+          next if Array(resolved_flags).join(' ').include?(configuration_flag)
+
           build_settings = build_configuration.build_settings
 
           # For some targets it might be `nil` by default which is an equivalent to `$(inherited)`
@@ -143,34 +148,66 @@ module Expo
           core_src_root = Expo::PrecompiledModules.package_root_for('ExpoModulesCore') ||
             File.realpath(core_pod_target.sandbox.pod_dir(core_pod_target.root_spec.name).to_s)
           macros_plugin_dir = resolve_macros_plugin_dir(core_src_root)
-          macro_flags = "-Xfrontend -load-plugin-executable -Xfrontend \"#{macros_plugin_dir}/ExpoModulesMacros-tool#ExpoModulesMacros\""
+          # Swift driver resolves the plugin path so it stays out of the compilation cache key.
+          macro_flags = "-load-plugin-executable \"#{macros_plugin_dir}/ExpoModulesMacros#ExpoModulesMacros\""
+        end
+
+        # Inline modules compile in the app target itself, so its xcconfigs need the plugin too.
+        target.user_build_configurations.each_key do |build_configuration_name|
+          xcconfig_path = target.xcconfig_path(build_configuration_name)
+          append_macro_flags(target.build_settings(build_configuration_name), xcconfig_path, macro_flags)
         end
 
         target.pod_targets.each do |pod_target|
           is_core = pod_target.name == 'ExpoModulesCore'
           has_core_dependency = pod_target.dependencies.find { |dependency| dependency == 'ExpoModulesCore' }
           next unless is_core || has_core_dependency
+
           pod_target.build_settings.each do |build_configuration_name, build_settings|
-            xcconfig = build_settings.xcconfig
-            swift_flags = xcconfig.attributes[SWIFT_FLAGS] || '$(inherited)'
-            unless swift_flags.include?(macro_flags)
-              xcconfig_path = pod_target.xcconfig_path(build_configuration_name)
-              xcconfig.attributes[SWIFT_FLAGS] = "#{swift_flags} #{macro_flags}"
-              xcconfig.save_as(xcconfig_path)
+            xcconfig_path = pod_target.xcconfig_path(build_configuration_name)
+            append_macro_flags(build_settings, xcconfig_path, macro_flags)
+          end
+
+          # Test specs are compiled into their own native targets with their own xcconfigs, so the flag
+          # set on the library target above doesn't reach them. Apply it to each test spec's build
+          # settings as well, so macros can be used from unit tests.
+          pod_target.test_specs.each do |test_spec|
+            test_type = test_spec.consumer(pod_target.platform).test_type
+            pod_target.test_spec_build_settings_by_config[test_spec.name].each do |build_configuration_name, build_settings|
+              xcconfig_variant = "#{test_type.capitalize}-#{pod_target.subspec_label(test_spec)}.#{build_configuration_name}"
+              xcconfig_path = pod_target.xcconfig_path(xcconfig_variant)
+              append_macro_flags(build_settings, xcconfig_path, macro_flags)
             end
           end
         end
       end
     end
 
+    # Appends the macro plugin flags to the target's `OTHER_SWIFT_FLAGS` and saves the xcconfig,
+    # skipping it when the flags are already present.
+    #
+    # Read the file from disk rather than `build_settings.xcconfig`. Earlier `post_install`
+    # hooks write to it too — React Native's puts its module map flags there — and rebuilding
+    # it from CocoaPods' in-memory settings would throw those away.
+    def self.append_macro_flags(build_settings, xcconfig_path, macro_flags)
+      xcconfig = File.exist?(xcconfig_path) ? Xcodeproj::Config.new(xcconfig_path) : build_settings.xcconfig
+      swift_flags = xcconfig.attributes[SWIFT_FLAGS] || '$(inherited)'
+      return if swift_flags.include?(macro_flags)
+
+      xcconfig.attributes[SWIFT_FLAGS] = "#{swift_flags} #{macro_flags}"
+      xcconfig.save_as(xcconfig_path)
+    end
+
     def self.resolve_macros_plugin_dir(core_src_root)
-      js = "require.resolve('@expo/expo-modules-macros-plugin/package.json', { paths: #{[core_src_root].to_json} })"
+      js = "require.resolve('expo-modules-macros/package.json', { paths: #{[core_src_root].to_json} })"
       stdout, stderr, status = Open3.capture3('node', '--print', js)
       pkg_json_path = stdout.strip
 
       if !status.success? || pkg_json_path.empty?
         node_error = stderr.lines.find { |line| line.start_with?('Error:') }&.strip
-        raise "[Expo] Could not resolve `@expo/expo-modules-macros-plugin` from #{core_src_root}.#{node_error ? " (#{node_error})" : ''} Reinstall your JavaScript dependencies and rerun `pod install`."
+        raise "[Expo] Could not resolve `expo-modules-macros` from #{core_src_root}.#{node_error ? " (#{node_error})" : ''} " \
+          "`expo-modules-core` must be a version that depends on `expo-modules-macros`, the new name of `@expo/expo-modules-macros-plugin`. " \
+          "Run `npx expo install --fix` to align the Expo package versions, then rerun `pod install`."
       end
 
       File.join(File.dirname(pkg_json_path), 'apple')
@@ -242,7 +279,7 @@ module Expo
       # Write to the shell script so it's always in-sync with the autolinking configuration
       IO.write(
         support_script_path,
-        generate_support_script(autolinking_manager, modules_provider_path, entitlement_path)
+        generate_support_script(autolinking_manager, target.target_definition.name, modules_provider_path, entitlement_path)
       )
 
       # Make the support script executable
@@ -284,13 +321,15 @@ module Expo
     end
 
     # Generates the support script that is executed by the build script phase.
-    def self.generate_support_script(autolinking_manager, modules_provider_path, entitlement_path)
+    def self.generate_support_script(autolinking_manager, target_name, modules_provider_path, entitlement_path)
       args = autolinking_manager.base_command_args.map { |arg| "\"#{arg}\"" }
       platform = autolinking_manager.platform_name.downcase
       package_names = autolinking_manager.packages_to_generate.map { |package| "\"#{package.name}\"" }
       entitlement_param = entitlement_path.nil? ? '' : "--entitlement \"#{entitlement_path}\""
       app_root_param = autolinking_manager.custom_app_root.nil? ? '' : "--app-root \"#{autolinking_manager.custom_app_root}\""
       podfile_properties_param = "--podfile-properties-file-path \"#{autolinking_manager.get_podfile_properties_path()}\""
+      # Links only the scanned classes that compile for this platform.
+      target_platform_param = "--target-platform \"#{platform}\""
 
       <<~SUPPORT_SCRIPT
       #!/usr/bin/env bash
@@ -342,10 +381,12 @@ module Expo
         expo-modules-autolinking \\
         generate-modules-provider #{args.join(' ')} \\
         --target "#{modules_provider_path}" \\
+        --target-name "#{target_name}" \\
         #{entitlement_param} \\
         #{app_root_param} \\
         #{podfile_properties_param} \\
         --platform "apple" \\
+        #{target_platform_param} \\
         --packages #{package_names.join(' ')}
       SUPPORT_SCRIPT
     end

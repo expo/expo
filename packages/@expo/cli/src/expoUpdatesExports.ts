@@ -8,7 +8,6 @@ import path from 'node:path';
 import { createMetroServerAndBundleRequestAsync as internal_createMetroServerAndBundleRequestAsync } from './export/embed/exportEmbedAsync';
 
 // NOTE for Expo Maintainers: Do not add to this file. We want to remove this
-export { drawableFileTypes } from './export/metroAssetLocalPath';
 export { exportEmbedAssetsAsync } from './export/embed/exportEmbedAsync';
 
 /** Older versions of expo-updates may pass a path relative to the server root. But relative paths are expected to be relative to `projectRoot`, so we turn them into absolute paths */

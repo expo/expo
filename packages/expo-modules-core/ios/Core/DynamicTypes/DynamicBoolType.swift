@@ -28,7 +28,7 @@ internal struct DynamicBoolType: AnyDynamicType {
     throw Conversions.CastingException<Bool>(value)
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     if jsValue.kind == .bool {
       return jsValue.getBool()
     }

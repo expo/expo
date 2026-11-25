@@ -1,8 +1,9 @@
+import { isAppleTargetPlatform } from '@expo/platforms';
 import type commander from 'commander';
 
+import { createReactNativeConfigAsync } from '../reactNativeConfig';
 import type { AutolinkingCommonArguments } from './autolinkingOptions';
 import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
-import { createReactNativeConfigAsync } from '../reactNativeConfig';
 
 interface ReactNativeConfigArguments extends AutolinkingCommonArguments {
   sourceDir?: string | null;
@@ -22,7 +23,7 @@ export function reactNativeConfigCommand(cli: commander.CommanderStatic) {
     .action(async (searchPaths: string[] | null, commandArguments: ReactNativeConfigArguments) => {
       // TODO(@kitten): Do we need to restrict this?
       const platform = commandArguments.platform ?? 'ios';
-      if (platform !== 'android' && platform !== 'ios') {
+      if (platform !== 'android' && !isAppleTargetPlatform(platform)) {
         throw new Error(`Unsupported platform: ${platform}`);
       }
 

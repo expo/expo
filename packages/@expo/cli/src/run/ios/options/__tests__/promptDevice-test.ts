@@ -1,5 +1,9 @@
+import type { Device } from '../../../../start/platforms/ios/simctl';
 import { stripAnsi } from '../../../../utils/ansi';
-import { formatDeviceChoice } from '../promptDevice';
+import type { ConnectedDevice } from '../../appleDevice/AppleDevice';
+import { formatDeviceChoice, promptDeviceAsync } from '../promptDevice';
+
+jest.mock('../../../../utils/interactive', () => ({ isInteractive: () => false }));
 
 describe(formatDeviceChoice, () => {
   it(`formats USB connected device`, () => {
@@ -10,7 +14,8 @@ describe(formatDeviceChoice, () => {
       deviceType: 'device',
       connectionType: 'USB',
       udid: '00008101-001964A22629003A',
-    });
+      osType: 'iOS',
+    } as ConnectedDevice);
 
     expect(stripAnsi(option.title)).toEqual(`🔌 Evan's phone (15.4.1)`);
     expect(stripAnsi(option.value)).toEqual('00008101-001964A22629003A');
@@ -23,7 +28,8 @@ describe(formatDeviceChoice, () => {
       deviceType: 'device',
       connectionType: 'Network',
       udid: '00008101-001964A22629003A',
-    });
+      osType: 'iOS',
+    } as ConnectedDevice);
 
     expect(stripAnsi(option.title)).toEqual(`🌐 Evan's phone (15.4.1)`);
     expect(stripAnsi(option.value)).toEqual('00008101-001964A22629003A');
@@ -44,7 +50,7 @@ describe(formatDeviceChoice, () => {
       osVersion: '15.4',
       windowName: 'iPhone 8 (15.4)',
       osType: 'iOS',
-    });
+    } as Device);
 
     expect(stripAnsi(option.title)).toEqual(`iPhone 8 (15.4)`);
     expect(stripAnsi(option.value)).toEqual('ADEF1A93-5D20-40C3-826C-5A4E04DBBB52');
@@ -64,9 +70,23 @@ describe(formatDeviceChoice, () => {
       osVersion: '15.4',
       windowName: 'iPhone 8 Plus (15.4)',
       osType: 'iOS',
-    });
+    } as Device);
 
     expect(stripAnsi(option.title)).toEqual(`iPhone 8 Plus (15.4)`);
     expect(stripAnsi(option.value)).toEqual('4DE5F2E1-C6FF-4CCE-BD27-7D40E2674066');
+  });
+});
+
+describe(promptDeviceAsync, () => {
+  it(`names the --device argument in non-interactive mode`, async () => {
+    await expect(
+      promptDeviceAsync([
+        { name: 'iPhone 17 Pro', udid: 'A' },
+        { name: 'iPhone 17 Pro', udid: 'B' },
+        { name: 'iPad Air', udid: 'C' },
+      ] as Device[])
+    ).rejects.toThrow(
+      '--device: argument must be provided with a device name or UDID in non-interactive mode. Valid choices are: iPhone 17 Pro, iPad Air'
+    );
   });
 });

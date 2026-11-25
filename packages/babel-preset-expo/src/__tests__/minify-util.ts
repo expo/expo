@@ -15,6 +15,7 @@ export async function minifyLikeMetroAsync({
   return metroMinify({
     code,
     map,
+    filename: '/index.js',
     reserved: [],
     config: {
       ...terserConfig,

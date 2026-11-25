@@ -1,9 +1,9 @@
 import { LazyColumn, useMaterialColors } from '@expo/ui/jetpack-compose';
 
-import { groupFieldGroupChildren } from './groupChildren';
-import type { FieldGroupProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
+import { groupFieldGroupChildren } from './groupChildren';
+import type { FieldGroupProps } from './types';
 
 /**
  * A scrollable container for grouped settings-style rows. On Android this
@@ -27,7 +27,14 @@ export function FieldGroup({
   if (hidden) return null;
 
   const mergedStyle = { backgroundColor: colors.surface, ...style };
-  const modifiers = transformToModifiers(mergedStyle, { disabled, hidden, testID }, extraModifiers);
+  const modifiers = transformToModifiers(
+    mergedStyle,
+    { disabled, hidden, testID },
+    extraModifiers,
+    {
+      componentName: 'FieldGroup',
+    }
+  );
 
   return (
     <LazyColumn

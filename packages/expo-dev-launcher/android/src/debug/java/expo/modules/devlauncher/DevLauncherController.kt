@@ -21,8 +21,7 @@ import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.DevLauncherMetadataHelper
 import expo.modules.devlauncher.helpers.DevLauncherUrl
 import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
-import expo.modules.devlauncher.helpers.hasUrlQueryParam
-import expo.modules.devlauncher.helpers.isDevLauncherUrl
+import expo.modules.devlauncher.helpers.hasEnabledFlag
 import expo.modules.devlauncher.helpers.runBlockingOnMainThread
 import expo.modules.devlauncher.launcher.DevLauncherActivity
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
@@ -35,16 +34,20 @@ import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
 import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
 import expo.modules.devlauncher.launcher.errors.DevLauncherUncaughtExceptionHandler
-import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoaderFactory
+import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoader
 import expo.modules.devlauncher.launcher.loaders.DevLauncherEmbeddedAppLoader
-import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
+import expo.modules.devlauncher.launcher.loaders.createAppLoader
+import expo.modules.devlauncher.logs.DevLauncherRemoteLogManager
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import expo.modules.devlauncher.services.DependencyInjection
+import expo.modules.devlauncher.services.signInFromLaunchUrl
+import expo.modules.devmenu.launch.ExpoLauncherUrl
+import expo.modules.devmenu.launch.applyDevMenuLaunchParams
 import expo.modules.kotlin.weak
 import expo.modules.manifests.core.Manifest
-import expo.modules.updatesinterface.UpdatesInterface
 import expo.modules.updatesinterface.UpdatesDevLauncherInterface
+import expo.modules.updatesinterface.UpdatesInterface
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -108,10 +111,6 @@ class DevLauncherController private constructor(
   private var networkInterceptor: DevLauncherNetworkInterceptor? = null
   private var pendingIntentExtras: Bundle? = null
 
-  private fun isEASUpdateURL(url: Uri): Boolean {
-    return url.host.equals("u.expo.dev") || url.host.equals("staging-u.expo.dev")
-  }
-
   override fun onRequestRelaunch() {
     val latestLoadedApp = latestLoadedApp ?: return
     coroutineScope.launch {
@@ -133,50 +132,34 @@ class DevLauncherController private constructor(
 
     try {
       ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
-      val devLauncherUrl = DevLauncherUrl(url)
-      val parsedUrl = devLauncherUrl.url
-      var parsedProjectUrl = projectUrl ?: url
-
-      val isEASUpdate = isEASUpdateURL(url)
-
-      // default to the EXPO_UPDATE_URL value configured in AndroidManifest.xml when project url is unspecified for an EAS update
-      if (isEASUpdate && projectUrl == null) {
-        val projectUrlString = getMetadataValue(context, "expo.modules.updates.EXPO_UPDATE_URL")
-        parsedProjectUrl = projectUrlString.toUri()
-      }
-
-      val manifestParser = DevLauncherManifestParser(httpClient, parsedUrl, installationIDHelper.getOrCreateInstallationID(context))
-      val appIntent = createAppIntent()
-
       (updatesInterface as UpdatesDevLauncherInterface?)?.reset()
 
-      val appLoaderFactory = DevLauncherAppLoaderFactory(
-        context,
-        appHost,
-        updatesInterface,
-        this,
-        installationIDHelper
-      )
-      val appLoader = appLoaderFactory.createAppLoader(parsedUrl, parsedProjectUrl, manifestParser)
-      useDeveloperSupport = appLoaderFactory.shouldUseDeveloperSupport()
-      manifest = appLoaderFactory.getManifest()
-      manifestURL = parsedUrl
+      val result = createAppLoader(url, projectUrl, context, appHost, updatesInterface, this, installationIDHelper)
 
+      useDeveloperSupport = result.useDeveloperSupport
+      manifest = result.manifest
+      manifestURL = result.manifestURL
+
+      // Dev menu params on URLs that did not come through `handleIntent`, e.g. typed into the launcher.
+      DependencyInjection.devMenuPreferences?.let { result.devLauncherUrl?.launch?.applyDevMenuLaunchParams(it) }
       if (url.toString().contains("disableOnboarding=1") || manifestURL?.toString()?.contains("disableOnboarding=1") == true) {
         DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
       }
 
-      val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
-      lifecycle.addListener(appLoaderListener)
-      mode = Mode.APP
+      if (hasEnabledFlag(url, "disableFab")) {
+        DependencyInjection.devMenuPreferences?.showFab = false
+      }
 
-      _isLoadingToBundler.value = false
-      // Note that `launch` method is a suspend one. So the execution will be stopped here until the method doesn't finish.
-      if (appLoader.launch(appIntent)) {
-        recentlyOpedAppsRegistry.appWasOpened(parsedUrl.toString(), devLauncherUrl.queryParams, manifest)
-        latestLoadedApp = parsedUrl
-        // Here the app will be loaded - we can remove listener here.
-        lifecycle.removeListener(appLoaderListener)
+      if (hasEnabledFlag(url, "disableAutoLaunch")) {
+        DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
+        DependencyInjection.devMenuPreferences?.showsAtLaunch = false
+      }
+
+      if (launchAppLoader(result.appLoader)) {
+        latestLoadedApp = result.resolvedUrl
+        result.devLauncherUrl?.let { devLauncherUrl ->
+          recentlyOpedAppsRegistry.appWasOpened(devLauncherUrl.url.toString(), devLauncherUrl.queryParams, manifest)
+        }
       } else {
         // The app couldn't be loaded. For now, we just return to the launcher.
         mode = Mode.LAUNCHER
@@ -190,6 +173,19 @@ class DevLauncherController private constructor(
       }
       throw e
     }
+  }
+
+  private suspend fun launchAppLoader(appLoader: DevLauncherAppLoader): Boolean {
+    val listener = appLoader.createOnDelegateWillBeCreatedListener()
+    lifecycle.addListener(listener)
+    mode = Mode.APP
+    _isLoadingToBundler.value = false
+
+    val launched = appLoader.launch(createAppIntent())
+    if (launched) {
+      lifecycle.removeListener(listener)
+    }
+    return launched
   }
 
   override suspend fun loadApp(url: Uri, mainActivity: ReactActivity?) {
@@ -298,20 +294,36 @@ class DevLauncherController private constructor(
     intent
       ?.data
       ?.let { uri ->
+        val launch = ExpoLauncherUrl(uri)
+
         // used by appetize for snack
         if (intent.getBooleanExtra("EXDevMenuDisableAutoLaunch", false)) {
           DependencyInjection.devMenuPreferences?.showsAtLaunch = false
           DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
         }
 
-        if (!isDevLauncherUrl(uri)) {
+        if (!launch.isLauncherCommand) {
           return handleExternalIntent(intent)
         }
 
-        if (!hasUrlQueryParam(uri)) {
-          // edge case: this is a dev launcher url but it does not specify what url to open
-          // fallback to navigating to the launcher home screen
+        // The dev menu params apply to every launcher command, with or without a `__expo_url`.
+        DependencyInjection.devMenuPreferences?.let { launch.applyDevMenuLaunchParams(it) }
+        coroutineScope.launch { signInFromLaunchUrl(uri) }
 
+        if (launch.targetUrl == null) {
+          if (!launch.isLegacyHost && launch.remainderHasDestination) {
+            // e.g. `myapp://login?__expo_disable_fab=1`: the reserved params are applied above,
+            // the app receives the rest as a regular deep link.
+            intent.data = launch.strippedUrl
+            return handleExternalIntent(intent)
+          }
+          if (!launch.isLegacyHost && mode == Mode.APP) {
+            // e.g. `exp+slug://?__expo_disable_fab=1` while a project is open: the params are applied
+            // above and there is nothing to open, so keep the project running.
+            return true
+          }
+          // edge case: this is a dev launcher url, but it does not specify what url to open
+          // fallback to navigating to the launcher home screen
           if (useDefaultLaunchUrlFallback) {
             launchDefaultUrlOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
             return true
@@ -322,9 +334,12 @@ class DevLauncherController private constructor(
 
         coroutineScope.launch {
           try {
-            pendingIntentRegistry.intent = intent
+            // The app must not see the reserved params.
+            pendingIntentRegistry.intent = Intent(intent).setData(launch.strippedUrl)
             loadApp(uri, activityToBeInvalidated)
           } catch (e: Throwable) {
+            val appUrl = DevLauncherUrl(uri).url
+            DevLauncherRemoteLogManager.reportError(httpClient, appUrl, "Failed to load app from $appUrl.", e)
             DevLauncherErrorActivity.showFatalError(context, DevLauncherAppError(e.message, e))
           }
         }
@@ -337,10 +352,27 @@ class DevLauncherController private constructor(
         return@let
       }
 
-      val shouldTryToLaunchLastOpenedBundle = getMetadataValue(context, "DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE", "true").toBoolean()
+      val shouldTryToLaunchLastOpenedBundle =
+        DependencyInjection.devMenuPreferences?.tryToLaunchLastBundle ?: true
       val lastOpenedApp = recentlyOpedAppsRegistry.getMostRecentApp()
       if (shouldTryToLaunchLastOpenedBundle && lastOpenedApp != null) {
-        launchDefaultUrlOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
+        // Forward the launching intent's extras (e.g. launch arguments passed by
+        // Maestro / Detox / `adb am start -e`) so they reach the loaded app via
+        // `createAppIntent()`. Without this, cold-launching the last opened bundle
+        // drops the extras and consumers like `react-native-launch-arguments` read
+        // nothing. Mirrors `handleExternalIntent`, which already stores extras.
+        pendingIntentExtras = intent.extras
+        coroutineScope.launch {
+          try {
+            loadApp(lastOpenedApp.url.toUri(), activityToBeInvalidated)
+          } catch (_: Throwable) {
+            if (useDefaultLaunchUrlFallback) {
+              launchDefaultUrlOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
+            } else {
+              navigateToLauncher()
+            }
+          }
+        }
         return true
       }
 
@@ -484,9 +516,7 @@ class DevLauncherController private constructor(
     internal fun initialize(context: Context, reactHost: ReactHost) {
       try {
         val splashScreenManagerClass = Class.forName("expo.modules.splashscreen.SplashScreenManager")
-        val splashScreenManager = splashScreenManagerClass
-          .kotlin
-          .objectInstance
+        val splashScreenManager = splashScreenManagerClass.getField("INSTANCE").get(null)
         splashScreenManagerClass.getMethod("hide")
           .invoke(splashScreenManager)
       } catch (e: Throwable) {

@@ -1,4 +1,4 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from 'expo';
 
 let IS_GLASS_EFFECT_API_AVAILABLE: boolean | undefined;
 

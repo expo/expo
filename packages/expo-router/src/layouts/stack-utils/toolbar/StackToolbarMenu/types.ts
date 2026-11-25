@@ -4,6 +4,8 @@ import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'reac
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type { LinkMenuActionProps } from '../../../../link/elements';
+import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
+import type { ToolbarAxisBehavior } from '../../../../toolbar/axisBehavior';
 import type { StackHeaderItemSharedProps } from '../shared';
 
 export interface StackToolbarMenuProps {
@@ -20,6 +22,22 @@ export interface StackToolbarMenuProps {
    * @platform ios
    */
   accessibilityHint?: string;
+  /**
+   * Controls whether this item can move into the vertical bar that iOS 27.1 shows on iPhone Duo.
+   * `automatic` lets the system decide from the item's content. `horizontalOnly` keeps the item in
+   * the horizontal bar and hides it when no horizontal bar is present. `verticalPreferred` prefers
+   * the vertical bar when both bars are present.
+   *
+   * On a bottom toolbar, `horizontalOnly` on one item keeps the whole toolbar horizontal.
+   *
+   * Android ignores this prop.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/axisbehavior-swift.property) for more information.
+   *
+   * @default 'automatic'
+   * @platform ios 27.1+
+   */
+  axisBehavior?: ToolbarAxisBehavior;
   /**
    * Menu content - can include icons, labels, badges and menu actions.
    *
@@ -165,6 +183,15 @@ export interface StackToolbarMenuProps {
    */
   title?: string;
   /**
+   * Corner radius in dp for the dropdown menu container.
+   *
+   * @deprecated This prop has no effect. The Material 3 Expressive menu sets the corner shape of
+   * each group.
+   *
+   * @platform android
+   */
+  cornerRadius?: number;
+  /**
    * @default 'plain'
    *
    * @platform ios
@@ -194,6 +221,8 @@ export interface NativeToolbarMenuProps {
   hidesSharedBackground?: boolean;
   icon?: SFSymbol;
   xcassetName?: string;
+  /** @platform android */
+  cornerRadius?: number;
   // TODO(@ubax): Add useImage support in a follow-up PR.
   /**
    * Image to display for the menu item.
@@ -204,6 +233,7 @@ export interface NativeToolbarMenuProps {
   label?: string;
   palette?: boolean;
   separateBackground?: boolean;
+  axisBehavior?: ToolbarAxisBehavior;
   style?: StyleProp<TextStyle>;
   title?: string;
   tintColor?: ColorValue;
@@ -211,6 +241,9 @@ export interface NativeToolbarMenuProps {
   elementSize?: 'auto' | 'small' | 'medium' | 'large';
   /** @platform android */
   source?: ImageSourcePropType;
+  /** Badge overlay on the menu icon. Only rendered at the root (left/right placements).
+   * @platform android */
+  badge?: NativeStackHeaderItemButton['badge'];
 }
 
 export interface StackToolbarMenuActionProps {

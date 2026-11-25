@@ -2,19 +2,21 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-## Install Watchman and JDK
+## Install JDK
 
 <Tabs>
 
 <Tab label='macOS'>
 
-#### Prerequisites
+#### macOS prerequisites
 
 Use a package manager such as [Homebrew](https://brew.sh/) to install the following dependency.
 
-#### Install dependencies
+#### Install dependencies on macOS
 
 <Step label="1">
+
+> **info** Installing Watchman is only required for projects on SDK 55 and earlier.
 
 [Install Watchman](https://facebook.github.io/watchman/docs/install#macos) using a tool such as Homebrew:
 
@@ -42,11 +44,11 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
 
 <Tab label='Windows'>
 
-#### Prerequisites
+#### Windows prerequisites
 
 Use a package manager such as [Chocolatey](https://chocolatey.org/) to install the following dependencies.
 
-#### Install dependencies
+#### Install dependencies on Windows
 
 Install [Java SE Development Kit (JDK)](https://openjdk.org/):
 
@@ -56,9 +58,11 @@ Install [Java SE Development Kit (JDK)](https://openjdk.org/):
 
 <Tab label="Linux">
 
-#### Install dependencies
+#### Install dependencies on Linux
 
 <Step label="1">
+
+> **info** Installing Watchman is only required for projects on SDK 55 and earlier.
 
 Follow [instructions from the Watchman documentation](https://facebook.github.io/watchman/docs/install#linux) to compile and install it from the source.
 

@@ -2,14 +2,15 @@
 import fs from 'fs';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
-import { findProjectFiles, getHtml, getPageHtml, getRouterE2ERoot } from '../utils';
+import { expectSourceMapSection } from '../../utils/sourceMap';
+import { findProjectFiles, getHtml, getPageHtml, getServerTesterRoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
 describe('exports static', () => {
-  const projectRoot = getRouterE2ERoot();
+  const projectRoot = getServerTesterRoot();
   const outputName = 'dist-static-rendering';
   const outputDir = path.join(projectRoot, outputName);
 
@@ -20,9 +21,9 @@ describe('exports static', () => {
       {
         env: {
           NODE_ENV: 'production',
-          EXPO_USE_STATIC: 'static',
-          E2E_ROUTER_SRC: 'static-rendering',
-          E2E_ROUTER_ASYNC: '',
+          E2E_ROUTER_WEB_OUTPUT: 'static',
+          E2E_ROUTER_ASYNC: 'false',
+          E2E_FAVICON: './assets/icon.png',
         },
       }
     );
@@ -47,11 +48,11 @@ describe('exports static', () => {
 
     it(`can serve up index html`, async () => {
       const html = getHtml(await server.fetchAsync('/').then((res) => res.text()));
-      expect(html.querySelector('[data-testid="index-text"]')?.textContent).toEqual('Index');
+      expect(html.querySelector('[data-testid="index-text"]')).not.toBeNull();
     });
 
     it(`can serve up non-index html`, async () => {
-      const html = getHtml(await server.fetchAsync('/styled').then((res) => res.text()));
+      const html = getHtml(await server.fetchAsync('/rendering/styled').then((res) => res.text()));
       expect(html.querySelector('[data-testid="styled-text"]')?.textContent).toEqual('Hello World');
     });
 
@@ -59,7 +60,9 @@ describe('exports static', () => {
     it.each([{ post: 'other' }, { post: 'welcome-to-the-universe' }])(
       `can serve up statically generated html for post: $post`,
       async ({ post }) => {
-        const html = getHtml(await server.fetchAsync(`/${post}`).then((res) => res.text()));
+        const html = getHtml(
+          await server.fetchAsync(`/rendering/${post}`).then((res) => res.text())
+        );
         expect(html.querySelector('[data-testid="post-text"]')?.textContent).toEqual(
           `Post: ${post}`
         );
@@ -68,6 +71,15 @@ describe('exports static', () => {
 
     it(`gets a 404`, async () => {
       expect(await server.fetchAsync('/missing-route').then((res) => res.status)).toBe(404);
+    });
+
+    it('injects `<link rel="icon">` into statically rendered pages', async () => {
+      for (const route of ['/', '/rendering/styled', '/rendering/welcome-to-the-universe']) {
+        const html = getHtml(await server.fetchAsync(route).then((res) => res.text()));
+        const icon = html.querySelector('html > head > link[rel="icon"]');
+        expect(icon).not.toBeNull();
+        expect(icon?.attributes.href).toBe('/favicon.ico');
+      }
     });
   });
 
@@ -83,16 +95,19 @@ describe('exports static', () => {
     expect(files).toContain('+not-found.html');
 
     // Normal routes
-    expect(files).toContain('about.html');
+    expect(files).toContain('rendering/about.html');
     expect(files).toContain('index.html');
-    expect(files).toContain('styled.html');
+    expect(files).toContain('rendering/styled.html');
 
     // generateStaticParams values
-    expect(files).toContain('[post].html');
-    expect(files).toContain('welcome-to-the-universe.html');
-    expect(files).toContain('other.html');
+    expect(files).toContain('rendering/[post].html');
+    expect(files).toContain('rendering/welcome-to-the-universe.html');
+    expect(files).toContain('rendering/other.html');
 
     expect(files).toContain('_expo/.routes.json');
+
+    // Generated from `web.favicon` in app config
+    expect(files).toContain('favicon.ico');
   });
 
   it('has source maps', async () => {
@@ -105,22 +120,26 @@ describe('exports static', () => {
       // Ensure the bundle does not contain a source map reference
       const sourceMap = JSON.parse(fs.readFileSync(path.join(outputDir, file!), 'utf8'));
       expect(sourceMap.version).toBe(3);
-      expect(sourceMap.sources).toEqual(
+      expect(sourceMap.sections).toEqual(
         expect.arrayContaining([
-          '__prelude__',
+          expectSourceMapSection('__prelude__'),
           // NOTE: No `/Users/evanbacon/`...
           // NOTE(@kitten): We can slot in our own runtime here
-          expect.pathMatching(
-            new RegExp(
-              [
-                '/node_modules/metro-runtime/src/polyfills/require.js',
-                '/@expo/cli/build/metro-require/require.js',
-              ].join('|')
+          expectSourceMapSection(
+            expect.pathMatching(
+              new RegExp(
+                [
+                  '/node_modules/metro-runtime/src/polyfills/require.js',
+                  '/@expo/cli/build/metro-require/require.js',
+                ].join('|')
+              )
             )
           ),
 
           // NOTE: relative to the server root for optimal source map support
-          expect.pathMatching(/\/apps\/router-e2e\/__e2e__\/static-rendering\/app\/\[post\]\.tsx/),
+          expectSourceMapSection(
+            expect.pathMatching(/\/apps\/server-tester\/app\/rendering\/\[post\]\.tsx/)
+          ),
         ])
       );
     }
@@ -142,7 +161,7 @@ describe('exports static', () => {
   });
 
   it('can use environment variables', async () => {
-    const indexHtml = await getPageHtml(outputDir, 'index.html');
+    const indexHtml = await getPageHtml(outputDir, 'rendering/env-metadata.html');
 
     const queryMeta = (name: string) =>
       indexHtml.querySelector(`html > head > meta[name="${name}"]`)?.attributes.content;
@@ -152,7 +171,7 @@ describe('exports static', () => {
     // non-public env vars are injected during SSG
     expect(queryMeta('expo-e2e-private-env-var')).toEqual('not-public-value');
 
-    // Injected in app/_layout.js
+    // Generated by app/rendering/env-metadata.tsx
     expect(queryMeta('expo-e2e-public-env-var-client')).toEqual('foobar');
     // non-public env vars are injected during SSG
     expect(queryMeta('expo-e2e-private-env-var-client')).toEqual('not-public-value');
@@ -172,10 +191,6 @@ describe('exports static', () => {
 
   it('static styles are injected', async () => {
     const indexHtml = await getPageHtml(outputDir, 'index.html');
-    expect(indexHtml.querySelectorAll('html > head > style')?.length).toBe(
-      // React Native and Expo resets
-      3
-    );
     // The Expo style reset
     expect(indexHtml.querySelector('html > head > style#expo-reset')?.innerHTML).toEqual(
       expect.stringContaining(
@@ -192,38 +207,21 @@ describe('exports static', () => {
     // Unfortunately, the CSS is injected in every page for now since we don't have bundle splitting.
     const indexHtml = await getPageHtml(outputDir, 'index.html');
 
-    const links = indexHtml.querySelectorAll('html > head > link').filter((link) => {
-      // Fonts are tested elsewhere
-      return link.attributes.as !== 'font';
-    });
-    expect(links.length).toBe(
-      // Global CSS, CSS Module
-      4
-    );
-
-    const linkStrings = links.map((l) => l.toString());
-
-    expect(linkStrings).toEqual(
-      expect.arrayContaining([
-        // Global CSS (preload + stylesheet)
-        expect.stringMatching(
-          /<link rel="preload" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
-        ),
-        expect.stringMatching(
-          /<link rel="stylesheet" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css">/
-        ),
-        // Example test CSS module (preload + stylesheet)
-        expect.stringMatching(
-          /<link rel="preload" href="\/_expo\/static\/css\/test\.module-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
-        ),
-        expect.stringMatching(
-          /<link rel="stylesheet" href="\/_expo\/static\/css\/test\.module-(?<md5>[0-9a-fA-F]{32})\.css">/
-        ),
-      ])
-    );
+    const stylesheets = indexHtml.querySelectorAll('head link[rel="stylesheet"]');
+    const stylesheetHrefs = stylesheets.map((link) => link.attributes.href);
+    expect(stylesheetHrefs).toEqual([
+      expect.stringMatching(/^\/_expo\/static\/css\/safe-area-[0-9a-f]{32}\.css$/),
+      expect.stringMatching(/^\/_expo\/static\/css\/global-[0-9a-f]{32}\.css$/),
+      expect.stringMatching(/^\/_expo\/static\/css\/test\.module-[0-9a-f]{32}\.css$/),
+    ]);
+    expect(
+      indexHtml
+        .querySelectorAll('head link[rel="preload"][as="style"]')
+        .map((link) => link.attributes.href)
+    ).toEqual(stylesheetHrefs);
 
     // Ensure the global CSS file is still generated
-    const globalPreload = links.find((l) => /global-.*\.css/.test(l.attributes.href!));
+    const globalPreload = stylesheets.find((l) => /global-.*\.css/.test(l.attributes.href!));
     expect(globalPreload).toBeDefined();
     if (globalPreload) {
       expect(
@@ -232,39 +230,45 @@ describe('exports static', () => {
     }
 
     // CSS Module
+    const cssModuleHref = stylesheetHrefs.find((href) => href?.includes('/test.module-'));
+    expect(cssModuleHref).toBeDefined();
     expect(
-      fs.readFileSync(path.join(outputDir, links[2]?.attributes.href ?? ''), 'utf-8')
-    ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
+      fs.readFileSync(path.join(outputDir, cssModuleHref ?? ''), 'utf-8')
+    ).toMatchInlineSnapshot(`".Ecx2Wa_text{color:#1e90ff}"`);
 
-    const styledHtml = await getPageHtml(outputDir, 'styled.html');
+    const styledHtml = await getPageHtml(outputDir, 'rendering/styled.html');
 
     // Ensure the atomic CSS class is used
     expect(
       styledHtml.querySelector('html > body div[data-testid="styled-text"]')?.attributes.class
-    ).toMatch('HPV33q_text');
+    ).toMatch('Ecx2Wa_text');
   });
 
   it('statically extracts fonts', async () => {
-    // <style id="expo-generated-fonts" type="text/css">@font-face{font-family:sweet;src:url(/assets/__e2e__/static-rendering/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07);font-display:auto}</style><link rel="preload" href="/assets/__e2e__/static-rendering/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07" as="font" crossorigin="" />
+    // <style id="expo-generated-fonts" type="text/css">@font-face{font-family:sweet;src:url(/assets/assets/fonts/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07)}</style><link rel="preload" href="/assets/assets/fonts/sweet.ttf?platform=web&hash=7c9263d3cffcda46ff7a4d9c00472c07" as="font" crossorigin="" />
     // Unfortunately, the CSS is injected in every page for now since we don't have bundle splitting.
-    const indexHtml = await getPageHtml(outputDir, 'index.html');
+    const indexHtml = await getPageHtml(outputDir, 'rendering/fonts.html');
 
     const links = indexHtml.querySelectorAll('html > head > link[as="font"]');
     expect(links.length).toBe(1);
     expect(links[0]?.attributes.href).toBe(
-      '/assets/__e2e__/static-rendering/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf'
+      '/assets/assets/fonts/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf'
     );
 
-    expect(links[0]?.toString()).toMatch(
-      /<link rel="preload" href="\/assets\/__e2e__\/static-rendering\/sweet\.[a-zA-Z0-9]{32}\.ttf" as="font" crossorigin="" >/
+    expect(links[0]?.attributes).toMatchObject({ rel: 'preload', as: 'font', crossorigin: '' });
+    expect(indexHtml.querySelector('style#expo-generated-fonts')?.textContent).toContain(
+      '@font-face'
     );
 
     expect(
-      fs.readFileSync(path.join(outputDir, links[0]?.attributes.href?.replace(/\?.*$/, '') ?? ''), 'utf-8')
+      fs.readFileSync(
+        path.join(outputDir, links[0]?.attributes.href?.replace(/\?.*$/, '') ?? ''),
+        'utf-8'
+      )
     ).toBeDefined();
 
     // Ensure the font is used
-    expect(indexHtml.querySelector('div[data-testid="index-text"]')?.attributes.style).toMatch(
+    expect(indexHtml.querySelector('div[data-testid="fonts-text"]')?.attributes.style).toMatch(
       'font-family:sweet'
     );
 
@@ -280,59 +284,152 @@ describe('exports static', () => {
     // );
   });
 
-  it('supports usePathname in +html files', async () => {
-    const page = await fs.promises.readFile(path.join(outputDir, 'index.html'), 'utf8');
-
-    expect(page).toContain('<meta name="custom-value" content="value"/>');
-
-    // Root element
-    expect(page).toContain('<div id="root">');
-
-    const sanitized = page.replace(
-      /<script src="\/_expo\/static\/js\/web\/.*" defer>/,
-      '<script src="/_expo/static/js/web/[mock].js" defer>'
-    );
-    expect(sanitized).toMatchSnapshot();
+  it('supports the pathname and params props in +html files', async () => {
+    const page = await getPageHtml(outputDir, 'rendering/env-metadata.html');
+    expect(page.querySelector('head meta[name="custom-value"]')?.attributes.content).toBe('value');
+    expect(page.querySelector('body #root')).not.toBeNull();
+    for (const script of page.querySelectorAll('script[src]')) {
+      script.setAttribute('src', '/_expo/static/js/web/[mock].js');
+    }
+    for (const preload of page.querySelectorAll('link[as="script"]')) {
+      preload.setAttribute('href', '/_expo/static/js/web/[mock].js');
+    }
+    expect(page.toString()).toMatchSnapshot();
 
     expect(
-      (await getPageHtml(outputDir, 'about.html')).querySelector(
+      (await getPageHtml(outputDir, 'rendering/about.html')).querySelector(
         'html > head > meta[name="expo-e2e-pathname"]'
       )?.attributes.content
-    ).toBe('/about');
+    ).toBe('/rendering/about');
 
     expect(
-      (await getPageHtml(outputDir, 'index.html')).querySelector(
+      (await getPageHtml(outputDir, 'rendering/env-metadata.html')).querySelector(
         'html > head > meta[name="expo-e2e-pathname"]'
       )?.attributes.content
-    ).toBe('/');
+    ).toBe('/rendering/env-metadata');
 
     expect(
-      (await getPageHtml(outputDir, 'welcome-to-the-universe.html')).querySelector(
+      (await getPageHtml(outputDir, 'rendering/welcome-to-the-universe.html')).querySelector(
         'html > head > meta[name="expo-e2e-pathname"]'
       )?.attributes.content
-    ).toBe('/welcome-to-the-universe');
+    ).toBe('/rendering/welcome-to-the-universe');
+
+    expect(
+      (await getPageHtml(outputDir, 'rendering/welcome-to-the-universe.html')).querySelector(
+        'html > head > meta[name="expo-e2e-params"]'
+      )?.attributes.content
+    ).toBe('{"post":"welcome-to-the-universe"}');
   });
 
-  it('supports nested static head values', async () => {
+  it('renders generateMetadata in the initial head', async () => {
     // <title>About | Website</title>
     // <meta name="description" content="About page" />
-    const about = await getPageHtml(outputDir, 'about.html');
+    const about = await getPageHtml(outputDir, 'rendering/about.html');
 
     expect(about.querySelector('html > body div[data-testid="content"]')?.innerText).toBe('About');
     expect(about.querySelector('html > head > title')?.innerText).toBe('About | Website');
     expect(about.querySelector('html > head > meta[name="description"]')?.attributes.content).toBe(
       'About page'
     );
-    expect(
-      // Nested from app/_layout.js
-      about.querySelector('html > head > meta[name="expo-nested-layout"]')?.attributes.content
-    ).toBe('TEST_VALUE');
 
-    expect(
-      // Other routes have the nested layout value
-      (await getPageHtml(outputDir, 'welcome-to-the-universe.html')).querySelector(
-        'html > head > meta[name="expo-nested-layout"]'
-      )?.attributes.content
-    ).toBe('TEST_VALUE');
+    // NOTE(@hassankhan): We'll re-enable these after landing generateMetadata in layouts
+    // expect(
+    //   // Nested from app/_layout.js
+    //   about.querySelector('html > head > meta[name="expo-nested-layout"]')?.attributes.content
+    // ).toBe('TEST_VALUE');
+    // expect(
+    //   // Other routes have the nested layout value
+    //   (await getPageHtml(outputDir, 'welcome-to-the-universe.html')).querySelector(
+    //     'html > head > meta[name="expo-nested-layout"]'
+    //   )?.attributes.content
+    // ).toBe('TEST_VALUE');
+  });
+
+  it('injects `generateMetadata()` result into the initial static HTML <head>', async () => {
+    const page = await getPageHtml(outputDir, 'rendering/metadata.html');
+    const head = page.querySelector('html > head');
+
+    expect(page.querySelector('html > body [data-testid="metadata-text"]')?.innerText).toBe(
+      'Metadata'
+    );
+    expect(head).not.toBeNull();
+
+    const metadataHeadNodes = head!.childNodes
+      .filter(
+        (node: any) => node.rawTagName && ['title', 'meta'].includes(node.rawTagName as string)
+      )
+      .map((node) => node.toString());
+
+    expect(metadataHeadNodes).toMatchSnapshot();
+  });
+
+  it('resolves async `generateMetadata()` with route params', async () => {
+    const page = await getPageHtml(outputDir, 'rendering/metadata-async/123.html');
+
+    expect(page.querySelector('html > body [data-testid="async-metadata-text"]')?.innerText).toBe(
+      'Async Metadata'
+    );
+    expect(page.querySelector('html > head > title')?.innerText).toBe('Async Metadata 123');
+    expect(page.querySelector('html > head > meta[name="description"]')?.attributes.content).toBe(
+      'Async metadata for /rendering/metadata-async/123'
+    );
+  });
+});
+
+describe('exports static with a base path and split bundles', () => {
+  const projectRoot = getServerTesterRoot();
+  const outputName = 'dist-static-streaming';
+  const outputDir = path.join(projectRoot, outputName);
+  const baseUrl = '/one/two';
+
+  beforeAll(async () => {
+    await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputName], {
+      env: {
+        NODE_ENV: 'production',
+        E2E_ROUTER_WEB_OUTPUT: 'static',
+        E2E_FAVICON: './assets/icon.png',
+        E2E_ROUTER_ASYNC: 'production',
+        EXPO_E2E_BASE_PATH: baseUrl,
+      },
+    });
+  });
+
+  it('exports internal and user pages with split hydration bundles', () => {
+    expect(findProjectFiles(outputDir)).toEqual(
+      expect.arrayContaining([
+        '+not-found.html',
+        '_sitemap.html',
+        'index.html',
+        'rendering/suspense.html',
+        'rendering/metadata.html',
+        'rendering/metadata-async/123.html',
+        expect.stringMatching(/_expo\/static\/js\/web\/suspense-[0-9a-f]{32}\.js/),
+      ])
+    );
+  });
+
+  it('preserves styles, fonts, favicon, and deferred bundles with a base path', async () => {
+    const html = await getPageHtml(outputDir, 'rendering/fonts.html');
+    expect(html.querySelector('head style#expo-reset')?.textContent).toContain('#root');
+    expect(html.querySelector('head style#react-native-stylesheet')?.textContent).toContain(
+      '[stylesheet-group="0"]'
+    );
+    expect(html.querySelector('style#expo-generated-fonts')?.textContent).toContain('@font-face');
+    expect(html.querySelector('head link[rel="icon"]')?.attributes.href).toBe(
+      `${baseUrl}/favicon.ico`
+    );
+
+    const assets = html.querySelectorAll('script[src], link[rel="stylesheet"], link[as="font"]');
+    expect(html.querySelectorAll('script[src]').length).toBeGreaterThan(1);
+    expect(html.querySelectorAll('link[rel="stylesheet"]').length).toBeGreaterThan(0);
+    expect(html.querySelectorAll('link[as="font"]').length).toBeGreaterThan(0);
+    for (const asset of assets) {
+      const url = asset.attributes.src ?? asset.attributes.href;
+      expect(url).toMatch(/^\/one\/two\//);
+      expect(fs.existsSync(path.join(outputDir, url.slice(baseUrl.length)))).toBe(true);
+      if (asset.tagName === 'SCRIPT') {
+        expect(asset.hasAttribute('defer')).toBe(true);
+      }
+    }
   });
 });

@@ -1,0 +1,304 @@
+---
+title: Custom navigators
+description: Learn how to build your own navigator in Expo Router and how library authors can integrate an existing navigator with the router.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { FileTree } from '~/ui/components/FileTree';
+
+Expo Router ships with navigators for the most common patterns — [Stack](/router/advanced/stack/), [Tabs](/router/advanced/tabs/), [Native tabs](/router/advanced/native-tabs/), and [Drawer](/router/advanced/drawer/). When none of them fit, you can build your own navigator and use it as a layout, with file-based routing, deep linking, and typed routes working exactly as they do for the built-in navigators.
+
+Choose the entry point that matches your goal:
+
+- **App developers** building a navigator for one app use [`createStandardRouterNavigator`](#create-a-navigator-in-your-app).
+- **Library authors** shipping a reusable navigator for both Expo Router and React Navigation use [`integrateWithRouter`](#integrate-an-existing-navigator-library-authors).
+
+> **info** The stable `createStandardRouterNavigator` and `integrateWithRouter` APIs are available in **SDK 58 and later**. In SDK 56 and SDK 57, use `unstable_createStandardRouterNavigator` and `unstable_integrateWithRouter` instead.
+
+For a stack navigator that renders routes as web modal overlays, see [Build custom web modals](/router/advanced/web-modals/).
+
+## Create a navigator in your app
+
+Use `createStandardRouterNavigator` to turn a content component into a navigator you can render as a layout. It takes two required arguments:
+
+- **`NavigatorContent`**: a component that renders your navigator's UI. It receives the current navigation `state`, the `descriptors` for each screen, `actions` to navigate, and an `emitter` to send events.
+- **`router`**: the routing behavior to use. Import `StackRouter` for stack-like navigation or `TabRouter` for tab-like navigation from `expo-router`.
+
+The following example builds a minimal tab navigator:
+
+```tsx components/Tabs.tsx
+import { createStandardRouterNavigator, TabRouter, type NavigatorContentProps } from 'expo-router';
+import { Pressable, Text, View } from 'react-native';
+
+// The first type argument is the options you can set per screen
+type TabsContentProps = NavigatorContentProps<{ title?: string }>;
+
+function TabsContent({ state, descriptors, actions }: TabsContentProps) {
+  const focusedRoute = state.routes[state.index];
+
+  return (
+    <View style={{ flex: 1 }}>
+      {/* Render the screen for the focused route. */}
+      <View style={{ flex: 1 }}>{descriptors[focusedRoute.key].render()}</View>
+
+      {/* A simple tab bar. */}
+      <View style={{ flexDirection: 'row' }}>
+        {state.routes.map(route => (
+          <Pressable
+            key={route.key}
+            style={{ flex: 1, padding: 16 }}
+            onPress={() => actions.navigate(route.name)}>
+            <Text>{descriptors[route.key].options.title ?? route.name}</Text>
+          </Pressable>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+export const Tabs = createStandardRouterNavigator(TabsContent, TabRouter);
+```
+
+The returned navigator has a `.Screen` child for declaring screens, so you can use it in a `_layout` file like any other layout:
+
+```tsx app/_layout.tsx
+import { Tabs } from '../components/Tabs';
+
+export default function Layout() {
+  return (
+    <Tabs>
+      <Tabs.Screen name="index" options={{ title: 'Home' }} />
+      <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
+    </Tabs>
+  );
+}
+```
+
+### What `NavigatorContent` receives
+
+| Property      | Description                                                                                                                            |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `state`       | The current navigation state: `{ index, routes }`, where each route has a `key`, `name`, `params`, and an `href`.                      |
+| `descriptors` | A map keyed by `route.key`. Each descriptor exposes the screen's resolved `options` and a `render()` function that renders the screen. |
+| `actions`     | Functions to change the navigation state: `navigate(name, params?)` and `back()`.                                                      |
+| `emitter`     | An object with an `emit()` method for sending events to screens.                                                                       |
+
+### Typed events
+
+If your navigator emits events, declare them in the second type argument to `NavigatorContentProps`. Each key is an event name, and its value describes the event's `data` and whether it `canPreventDefault`. `emitter.emit` is then typed against that map — unknown event names and mismatched payloads are rejected:
+
+```tsx
+type TabsContentProps = NavigatorContentProps<
+  { title?: string },
+  { tabPress: { data: undefined; canPreventDefault: true } }
+>;
+
+function TabsContent({ emitter }: TabsContentProps) {
+  emitter.emit({ type: 'tabPress', canPreventDefault: true });
+  // ...
+}
+```
+
+`createStandardRouterNavigator` infers the event map from the component, so you do not pass it again at the call site. Omit the second type argument for a navigator that emits no events.
+
+### Options
+
+Both `createStandardRouterNavigator` and `integrateWithRouter` accept an optional `options` object as their third argument. Use `createProps` to derive navigator-specific props that are not part of the standard `state` and `actions`:
+
+```tsx
+export const Tabs = createStandardRouterNavigator(TabsContent, TabRouter, {
+  createProps: ({ state, dispatch }) => ({
+    activeRouteKey: state.routes[state.index].key,
+    preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
+  }),
+});
+```
+
+Declare the props returned by `createProps` in the fourth type argument to `NavigatorContentProps` so `NavigatorContent` receives them in a typed way:
+
+```tsx
+type TabsContentProps = NavigatorContentProps<
+  { title?: string },
+  // No custom events in this example.
+  Record<string, never>,
+  // No custom navigator props in this example.
+  object,
+  // Props injected by `createProps`.
+  { activeRouteKey: string; preload: (name: string) => void }
+>;
+
+function TabsContent({ activeRouteKey, preload }: TabsContentProps) {
+  // ...
+}
+```
+
+> **info** `createProps` receives the processed Expo Router `state` and raw `dispatch`. These are internal and may have small breaking changes between releases, so prefer the `state` and `actions` passed to `NavigatorContent` when they suffice. If something you need is missing from the standard `state`, `actions`, or `emitter`, [open an issue on GitHub](https://github.com/expo/expo/issues).
+
+### Tab back history
+
+> **info** `unstable_useReconcileTabHistory` is available in **SDK 58 and later**. It is unstable and may change in a future release.
+
+A navigator that uses `TabRouter` stores the tab that Back goes to in the `history` of its navigation state. Call `unstable_useReconcileTabHistory` in `NavigatorContent` to save the back target in the navigation state, so code that reads the state sees it.
+
+```tsx components/Tabs.tsx
+import { unstable_useReconcileTabHistory } from 'expo-router';
+
+function TabsContent({ state, descriptors, actions }: TabsContentProps) {
+  unstable_useReconcileTabHistory();
+  // ...
+}
+```
+
+## Integrate an existing navigator (library authors)
+
+### The standard navigator API
+
+The `NavigatorContent` component shown above is a [standard navigator](https://github.com/react-navigation/standard-navigation). It implements a minimal, framework-agnostic contract defined by the [`standard-navigation`](https://www.npmjs.com/package/standard-navigation) package. The `state`, `descriptors`, `actions`, and `emitter` your content receives are exactly the [same API](#what-navigatorcontent-receives) as the in-app navigator above. The only difference is who creates the navigator.
+
+`createStandardRouterNavigator` is a shortcut that calls `createStandardNavigator` (from `standard-navigation`) for you and integrates the result with Expo Router in one step. As a library author, call `createStandardNavigator` yourself and keep a reference to the navigator:
+
+```tsx src/index.ts
+import { createStandardNavigator } from 'standard-navigation';
+import { TabsContent } from './TabsContent';
+
+// Framework-agnostic: this navigator targets the standard contract, not any one host.
+// The first type argument is the per-screen options; the second is the event map.
+export const navigator = createStandardNavigator<
+  { title?: string },
+  { tabPress: { data: undefined; canPreventDefault: true } }
+>(TabsContent);
+```
+
+Because `TabsContent` and `navigator` depend only on the standard contract, the same code runs on Expo Router, React Navigation, or any other host that implements it. You write the navigator once and ship a thin integration entry point per framework.
+
+### Integrate with Expo Router
+
+Wire your navigator into Expo Router with `integrateWithRouter`:
+
+```tsx src/expo-router.ts
+import { integrateWithRouter, TabRouter } from 'expo-router';
+import { navigator } from './index';
+
+export const Tabs = integrateWithRouter(navigator, TabRouter);
+```
+
+The returned component works exactly like the one from `createStandardRouterNavigator`, including the `.Screen` child and the same [options](#options).
+
+### Add props for a built-in navigator
+
+> **info** The helpers in this section are available in **SDK 58 and later**.
+
+When your library wraps an Expo Router navigator, pass its `createProps` helper to `integrateWithRouter`. The helper adds the navigator-specific behavior that Expo Router expects.
+
+| Navigator        | Helper                   | Import from            | Router        |
+| ---------------- | ------------------------ | ---------------------- | ------------- |
+| JavaScript stack | `createJSStackProps`     | `expo-router/js-stack` | `StackRouter` |
+| JavaScript tabs  | `createJSTabsProps`      | `expo-router/js-tabs`  | `TabRouter`   |
+| Native stack     | `createNativeStackProps` | `expo-router`          | `StackRouter` |
+
+For example, integrate a JavaScript stack like this:
+
+```tsx src/expo-router.ts
+import { StackRouter, integrateWithRouter } from 'expo-router';
+import { createJSStackProps } from 'expo-router/js-stack';
+import { navigator } from './navigator';
+
+export const Stack = integrateWithRouter(navigator, StackRouter, {
+  createProps: createJSStackProps,
+});
+```
+
+For a lower-level implementation, use `createBaseStackProps` or `createBaseTabProps` from `expo-router` and add the behavior your navigator needs.
+
+### Library entry points
+
+Keep the navigator content and the standard navigator framework-agnostic, then expose one entry point per framework so consumers import the integration that matches their app:
+
+<FileTree
+  files={[
+    ['./src/TabsContent.tsx', 'Navigator UI implementing the standard navigator API'],
+    ['./src/index.ts', 'Root entry — exports the framework-agnostic navigator'],
+    ['./src/react-navigation.ts', 'React Navigation entry — integrates the same navigator'],
+    ['./src/expo-router.ts', 'Expo Router entry — integrateWithRouter(navigator, ...)'],
+    ['./package.json', 'Maps subpath exports to each framework entry'],
+  ]}
+/>
+
+Map each entry point to a [subpath export](https://nodejs.org/api/packages.html#subpath-exports) in your library's **package.json**, pointing at your build output:
+
+```json package.json
+{
+  "exports": {
+    ".": {
+      "types": "./lib/typescript/index.d.ts",
+      "default": "./lib/module/index.js"
+    },
+    "./react-navigation": {
+      "types": "./lib/typescript/react-navigation.d.ts",
+      "default": "./lib/module/react-navigation.js"
+    },
+    "./expo-router": {
+      "types": "./lib/typescript/expo-router.d.ts",
+      "default": "./lib/module/expo-router.js"
+    }
+  }
+}
+```
+
+Consumers then import the integration for their framework (for example, `import { Tabs } from 'my-tabs/expo-router'`) while you maintain the navigator logic in one place.
+
+<BoxLink
+  title="React Navigation integration"
+  href="https://reactnavigation.org/docs/standard-navigator/"
+  description="Learn how to integrate the same standard navigator with React Navigation."
+  Icon={BookOpen02Icon}
+/>
+
+## Customize router behavior
+
+> **info** `extendRouter` and `extendRouterActions` are available in **SDK 58 and later**.
+
+Use `extendRouterActions` when you only need to handle navigation actions. Return a result to handle the action, `RouterActionHandling.Delegate` to let the base router handle it, or `RouterActionHandling.Unhandled` so the navigator ignores it.
+
+Use `extendRouter` when you need to customize other router members, such as `actionCreators`, `getStateForRouteFocus`, or `normalizeState`. Members you do not return are inherited from the base router.
+
+The following example adds a `CLEAR` action and an action creator for it:
+
+```tsx src/router.ts
+import {
+  extendRouter,
+  extendRouterActions,
+  RouterActionHandling,
+  StackRouter,
+  type CommonNavigationAction,
+  type StackActionType,
+} from 'expo-router';
+
+type ClearAction = { type: 'CLEAR' };
+
+const RouterWithClearAction = extendRouterActions(
+  StackRouter,
+  (state, action: CommonNavigationAction | StackActionType | ClearAction, { nextKey }) => {
+    if (action.type !== 'CLEAR') {
+      return RouterActionHandling.Delegate;
+    }
+
+    const route = { key: nextKey('index'), name: 'index' };
+    return {
+      state: { ...state, index: 0, routes: [route] },
+      affectedRouteKey: route.key,
+    };
+  }
+);
+
+export const Router = extendRouter(RouterWithClearAction, ({ baseRouter }) => ({
+  actionCreators: {
+    ...baseRouter.actionCreators,
+    clear: (): ClearAction => ({ type: 'CLEAR' }),
+  },
+}));
+```
+
+Both helpers provide `baseRouter`, `options`, and `nextKey`. Use `baseRouter` to call the base router and change its result, `options` to read values passed to the router factory, and `nextKey` when adding a route to the state. Use `isActionHandled` to check whether the base router handled an action.

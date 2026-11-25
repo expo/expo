@@ -1,53 +1,31 @@
 package expo.modules.appmetrics.storage
 
 import android.content.Context
-import android.util.Log
+import androidx.room.withTransaction
 import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.AppMetricsPreferences
-import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
-import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.GlobalAttributes
+import expo.modules.appmetrics.ObserveConsent
+import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
 import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.appmetrics.utils.TimeUtils
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import java.util.UUID
-import java.util.concurrent.CopyOnWriteArrayList
 
 class SessionManager(
-  context: Context,
-  database: MetricsDatabase? = null
+  private val context: Context,
+  private val injectedDatabase: MetricsDatabase? = null
 ) {
-  private val context: Context = context
-  private val database: MetricsDatabase = database ?: MetricsDatabase.getDatabase(context)
-
-  fun interface MetricsInsertListener {
-    suspend fun onMetricsInserted(metricIds: List<String>)
-  }
-
-  fun interface LogsInsertListener {
-    suspend fun onLogsInserted(logIds: List<String>)
-  }
-
-  private val metricsInsertListeners = CopyOnWriteArrayList<MetricsInsertListener>()
-  private val logsInsertListeners = CopyOnWriteArrayList<LogsInsertListener>()
-
-  fun addMetricsInsertListener(listener: MetricsInsertListener) {
-    metricsInsertListeners.add(listener)
-  }
-
-  fun removeMetricsInsertListener(listener: MetricsInsertListener) {
-    metricsInsertListeners.remove(listener)
-  }
-
-  fun addLogsInsertListener(listener: LogsInsertListener) {
-    logsInsertListeners.add(listener)
-  }
-
-  fun removeLogsInsertListener(listener: LogsInsertListener) {
-    logsInsertListeners.remove(listener)
-  }
+  // Every database access goes through this. While consent is not granted, it is null and the
+  // database is never opened, so writes do nothing and reads are empty.
+  private val database: MetricsDatabase?
+    get() = if (ObserveConsent.isGranted) {
+      injectedDatabase ?: MetricsDatabase.getDatabase(context)
+    } else {
+      null
+    }
 
   fun createSessionId(): String = UUID.randomUUID().toString()
 
@@ -82,11 +60,11 @@ class SessionManager(
       clientVersion = metadata?.clientVersion,
       languageTag = metadata?.languageTag
     )
-    database.sessionDao().insert(session)
+    database?.sessionDao()?.insert(session)
   }
 
   suspend fun stopSession(sessionId: String) {
-    database.sessionDao().stopSessionAt(
+    database?.sessionDao()?.stopSessionAt(
       sessionId,
       endTimestamp = TimeUtils.getCurrentTimestampInISOFormat()
     )
@@ -102,35 +80,129 @@ class SessionManager(
         params = mergeGlobalAttributesIntoJsonString(metric.params)
       )
     }
-    database.metricDao().insertAll(metricsWithSession)
-    val metricIds = metricsWithSession.map { it.metricId }
-    metricsInsertListeners.forEach { listener ->
-      try {
-        listener.onMetricsInserted(metricIds)
-      } catch (e: Exception) {
-        Log.e(TAG, "MetricsInsertListener failed", e)
+    database?.metricDao()?.insertAll(metricsWithSession)
+  }
+
+  /**
+   * Inactive sessions with their metrics, logs, and crash report attached, most
+   * recent first. The crash report joins via the `sessionId` foreign key, so only
+   * attributed reports map back; orphans (null sessionId) are excluded.
+   */
+  suspend fun getInactiveSessions(): List<SessionWithChildren> =
+    database?.sessionDao()?.getInactive() ?: emptyList()
+
+  /**
+   * Persists a crash report. A non-null `sessionId` attributes the report to an
+   * existing session (the FK requires the row to exist) and replaces any previous
+   * report for it — only one crash per session is meaningful. A null `sessionId`
+   * stores an orphan — see `CrashReportEntity`.
+   */
+  suspend fun setCrashReport(
+    sessionId: String?,
+    payload: String,
+    createdAt: String = TimeUtils.getCurrentTimestampInISOFormat()
+  ) {
+    database?.crashReportDao()?.upsert(
+      CrashReportEntity(sessionId = sessionId, payload = payload, createdAt = createdAt)
+    )
+  }
+
+  /**
+   * Stores a crash report and its log for `sessionId`, but only when the session
+   * has no report yet. Reprocessing the same crash must not add a second log.
+   */
+  suspend fun storeCrashReportIfNew(sessionId: String, payload: String, log: LogRecord) {
+    val database = database ?: return
+    database.withTransaction {
+      if (database.crashReportDao().getBySessionId(sessionId) == null) {
+        database.crashReportDao().upsert(
+          CrashReportEntity(
+            sessionId = sessionId,
+            payload = payload,
+            createdAt = TimeUtils.getCurrentTimestampInISOFormat()
+          )
+        )
+        database.logDao().insertAll(logsWithSession(listOf(log), sessionId))
       }
     }
   }
 
-  suspend fun getAllSessions(): List<SessionWithMetrics> = database.sessionDao().getAll()
+  suspend fun getCrashReport(sessionId: String): String? =
+    database?.crashReportDao()?.getBySessionId(sessionId)?.payload
 
-  suspend fun getSessionById(id: String): SessionWithMetrics? = database.sessionDao().getSessionWithMetricsBySessionId(id)
+  /**
+   * Every stored crash report, newest first — both reports attributed to a
+   * session and orphans (startup crashes before the session existed, or native
+   * crashes that couldn't be attributed). Returns the entities so callers can
+   * read each report's `sessionId` (null for an orphan) alongside its payload.
+   */
+  suspend fun getAllCrashReports(): List<CrashReportEntity> =
+    database?.crashReportDao()?.getAll() ?: emptyList()
+
+  suspend fun getSessionById(id: String): SessionWithMetrics? = database?.sessionDao()?.getSessionWithMetricsBySessionId(id)
+
+  suspend fun getSessionRow(id: String): Session? = database?.sessionDao()?.getById(id)
+
+  /**
+   * The most recent main session other than `currentSessionId`, or `null` when
+   * none exists. Used to attribute crashes that carry no session id of their own
+   * (native crashes, lost crash files) to the session that most likely produced
+   * them — the previous process's. Android has no session `type` column yet, so
+   * every stored session is treated as main.
+   */
+  suspend fun getPreviousMainSessionId(currentSessionId: String?): String? =
+    database?.sessionDao()?.getPreviousMainSessionId(currentSessionId)
+
+  suspend fun getMetricsForSession(sessionId: String): List<Metric> =
+    database?.metricDao()?.getMetricsForSession(sessionId) ?: emptyList()
+
+  suspend fun getMetrics(afterId: Long, limit: Int): List<Metric> =
+    database?.metricDao()?.getAfterId(afterId, limit) ?: emptyList()
+
+  suspend fun getMaxMetricId(): Long? = database?.metricDao()?.getMaxId()
+
+  suspend fun getSpansForSession(sessionId: String): List<Span> =
+    database?.spanDao()?.getSpansForSession(sessionId) ?: emptyList()
+
+  suspend fun getSpans(afterId: Long, limit: Int): List<Span> =
+    database?.spanDao()?.getSpans(afterId, limit) ?: emptyList()
+
+  suspend fun getMaxSpanId(): Long? = database?.spanDao()?.getMaxId()
+
+  suspend fun deleteSpansUpTo(rowId: Long) {
+    database?.spanDao()?.deleteUpTo(rowId)
+  }
+
+  suspend fun getLogsForSession(sessionId: String): List<LogRecord> =
+    database?.logDao()?.getLogsForSession(sessionId) ?: emptyList()
+
+  suspend fun getLogs(afterId: Long, limit: Int): List<LogRecord> =
+    database?.logDao()?.getAfterId(afterId, limit) ?: emptyList()
+
+  suspend fun getMaxLogId(): Long? = database?.logDao()?.getMaxId()
 
   suspend fun clearAllData() {
+    val database = database ?: return
     database.sessionDao().deleteAll()
+    // Deleting the sessions cascades to their attributed reports, but orphan
+    // reports (null sessionId) don't cascade, so wipe the table explicitly too.
+    database.crashReportDao().deleteAll()
   }
 
   suspend fun deactivateAllSessionsBefore(timestamp: String) {
-    database.sessionDao().deactivateAllSessionsBefore(timestamp)
+    database?.sessionDao()?.deactivateAllSessionsBefore(timestamp)
   }
 
   /**
-   * Prunes inactive sessions whose `startTimestamp` is older than the
-   * retention window. Their metrics are removed via the foreign-key cascade.
+   * Prunes inactive sessions whose `startTimestamp` is older than the retention
+   * window. Their metrics and attributed crash reports are removed via the
+   * foreign-key cascade; orphan reports (null sessionId) have no session to
+   * cascade from and are aged out separately by `createdAt`.
    */
   suspend fun cleanupOldSessions() {
+    val database = database ?: return
     val cutoffTimestamp = TimeUtils.getTimestampInISOFormatFromPast(MetricsConstants.SECONDS_TO_REMOVE_OLD_METRICS)
+    database.crashReportDao().deleteOrphansOlderThan(cutoffTimestamp)
     database.sessionDao().deleteSessionsOlderThan(cutoffTimestamp)
   }
 
@@ -138,83 +210,32 @@ class SessionManager(
     logs: List<LogRecord>,
     sessionId: String
   ) {
-    val logsWithSession = logs.map { log ->
+    database?.logDao()?.insertAll(logsWithSession(logs, sessionId))
+  }
+
+  private fun logsWithSession(logs: List<LogRecord>, sessionId: String): List<LogRecord> =
+    logs.map { log ->
       log.copy(
         sessionId = sessionId,
         attributes = mergeGlobalAttributesIntoJsonString(log.attributes)
       )
     }
-    database.logDao().insertAll(logsWithSession)
-    val logIds = logsWithSession.map { it.logId }
-    logsInsertListeners.forEach { listener ->
-      try {
-        listener.onLogsInserted(logIds)
-      } catch (e: Exception) {
-        Log.e(TAG, "LogsInsertListener failed", e)
-      }
-    }
-  }
 
   suspend fun cleanupOldLogs() {
     val cutoffTimestamp = TimeUtils.getTimestampInISOFormatFromPast(MetricsConstants.SECONDS_TO_REMOVE_OLD_METRICS)
-    database.logDao().deleteLogsOlderThan(cutoffTimestamp)
+    database?.logDao()?.deleteLogsOlderThan(cutoffTimestamp)
   }
 
   suspend fun updateEnvironmentForActiveSessions(environment: String) {
-    database.sessionDao().updateEnvironmentForActiveSessions(environment)
+    database?.sessionDao()?.updateEnvironmentForActiveSessions(environment)
   }
 
-  suspend fun getSessionsWithMetrics(metricIds: List<String>): List<SessionWithMetrics> {
-    val metricIdSet = metricIds.toSet()
-    if (metricIds.size <= SQLITE_MAX_BIND_VARIABLES) {
-      return database.sessionDao().getSessionsWithMetricsByMetricIds(metricIds).map { sessionWithMetrics ->
-        sessionWithMetrics.copy(metrics = sessionWithMetrics.metrics.filter { it.metricId in metricIdSet })
-      }
-    }
-
-    val allResults = metricIds.chunked(SQLITE_MAX_BIND_VARIABLES).flatMap { chunk ->
-      database.sessionDao().getSessionsWithMetricsByMetricIds(chunk)
-    }
-    return allResults
-      .groupBy { it.session.id }
-      .map { (_, sessions) ->
-        SessionWithMetrics(
-          session = sessions.first().session,
-          metrics = sessions
-            .flatMap { it.metrics }
-            .distinctBy { it.metricId }
-            .filter { it.metricId in metricIdSet }
-        )
-      }
-  }
-
-  suspend fun getSessionsWithLogs(logIds: List<String>): List<SessionWithLogs> {
-    val logIdSet = logIds.toSet()
-    if (logIds.size <= SQLITE_MAX_BIND_VARIABLES) {
-      return database.sessionDao().getSessionsWithLogsByLogIds(logIds).map { sessionWithLogs ->
-        sessionWithLogs.copy(logs = sessionWithLogs.logs.filter { it.logId in logIdSet })
-      }
-    }
-
-    val allResults = logIds.chunked(SQLITE_MAX_BIND_VARIABLES).flatMap { chunk ->
-      database.sessionDao().getSessionsWithLogsByLogIds(chunk)
-    }
-    return allResults
-      .groupBy { it.session.id }
-      .map { (_, sessions) ->
-        SessionWithLogs(
-          session = sessions.first().session,
-          logs = sessions
-            .flatMap { it.logs }
-            .distinctBy { it.logId }
-            .filter { it.logId in logIdSet }
-        )
-      }
-  }
+  suspend fun getSessions(sessionIds: Collection<String>): List<Session> =
+    sessionIds.chunked(SQLITE_MAX_BIND_VARIABLES).flatMap { database?.sessionDao()?.getByIds(it) ?: emptyList() }
 
   /**
    * Decodes a JSON-encoded `params` / `attributes` column, folds the current
-   * [GlobalAttributes] snapshot into it, and re-encodes. Returns the original
+   * `GlobalAttributes` snapshot into it, and re-encodes. Returns the original
    * string when there's nothing to merge in — empty globals, or a non-null
    * input that couldn't be parsed as a JSON object (we preserve whatever the
    * caller wrote rather than silently replacing it).

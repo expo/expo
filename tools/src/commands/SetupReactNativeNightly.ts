@@ -30,10 +30,6 @@ async function main() {
   logger.info('Adding pinned packages:');
   const pinnedPackages = {
     'react-native': nightlyVersion,
-    '@react-native/assets-registry': await queryNpmDistTagVersionAsync(
-      '@react-native/assets-registry',
-      'nightly'
-    ),
 
     // These 3rd party libraries are broken from react-native nightlies, trying to update them to newer versions.
     ...(await queryLatest3rdPartyLibrariesAsync({
@@ -41,7 +37,7 @@ async function main() {
       'lottie-react-native': 'latest',
       'react-native-pager-view': 'latest',
       'react-native-safe-area-context': 'latest',
-      'react-native-screens': '3.29.0',
+      'react-native-screens': 'latest',
       'react-native-svg': 'latest',
       'react-native-webview': 'latest',
     })),
@@ -51,15 +47,9 @@ async function main() {
   logger.info('Installing...');
   await workspaceInstallAsync();
 
-  const patches = [
-    'datetimepicker.patch',
-    'lottie-react-native.patch',
-    'react-native-gesture-handler.patch',
-    'react-native-pager-view.patch',
-    'react-native-screens.patch',
-    'react-native-reanimated.patch',
-    'react-native-safe-area-context.patch',
-  ];
+  // Patches for 3rd party libraries that don't build against react-native nightlies yet.
+  // Add a `*.patch` file under `react-native-nightlies/patches` and list its filename here.
+  const patches: string[] = [];
   await Promise.all(
     patches.map(async (patch) => {
       const patchFile = path.join(PATCHES_ROOT, patch);
@@ -104,14 +94,18 @@ async function addBareExpoOptionalPackagesAsync() {
 }
 
 async function addPinnedPackagesAsync(packages: Record<string, string>) {
-  const workspacePackageJsonPath = path.join(EXPO_DIR, 'package.json');
-  const json = await JsonFile.readAsync(workspacePackageJsonPath);
-  json.resolutions ||= {};
   for (const [name, version] of Object.entries(packages)) {
     logger.log('  ', `${name}@${version}`);
-    json.resolutions[name] = version;
   }
-  await JsonFile.writeAsync(workspacePackageJsonPath, json);
+  const { stdout } = await spawnAsync('pnpm', ['config', 'get', 'overrides', '--json'], {
+    cwd: EXPO_DIR,
+  });
+  const overrides = { ...JSON.parse(stdout), ...packages };
+  await spawnAsync(
+    'pnpm',
+    ['config', 'set', '--location=project', '--json', 'overrides', JSON.stringify(overrides)],
+    { cwd: EXPO_DIR }
+  );
 }
 
 async function updateExpoModulesAsync() {

@@ -1,6 +1,6 @@
 import ExpoModulesCore
 
-final internal class MissionPermissionsException: GenericException<String> {
+final internal class MissingPermissionsException: GenericException<String> {
   override var reason: String {
     "\(param) permission is required to do this operation"
   }

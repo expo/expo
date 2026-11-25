@@ -8,7 +8,6 @@ import Button from '../components/Button';
 import MonoText from '../components/MonoText';
 
 type CellularInfo = {
-  allowsVoip: boolean | null;
   carrier: string | null;
   isoCountryCode: string | null;
   mobileCountryCode: string | null;
@@ -29,7 +28,6 @@ export default function CellularScreen() {
       }
       const generation = await Cellular.getCellularGenerationAsync();
       setCellularInfo({
-        allowsVoip: await Cellular.allowsVoipAsync(),
         carrier: await Cellular.getCarrierNameAsync(),
         isoCountryCode: await Cellular.getIsoCountryCodeAsync(),
         mobileCountryCode: await Cellular.getMobileCountryCodeAsync(),

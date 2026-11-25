@@ -16,7 +16,7 @@ target 'BareExpo-macOS' do
     'react-native-config',
     '--json',
     '--platform',
-    'ios',
+    'macos',
     '--source-dir',
     File.expand_path('.', __dir__)
   ]

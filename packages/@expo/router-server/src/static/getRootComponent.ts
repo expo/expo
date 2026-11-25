@@ -15,7 +15,7 @@ export function getRootComponent() {
   if (keys.length > 1) {
     throw new Error(`Multiple components match the root HTML element: ${keys.join(', ')}`);
   }
-  const exp = rootContext(keys[0]);
+  const exp = rootContext(keys[0]!);
 
   if (!exp.default) {
     throw new Error(`The root HTML element "${keys[0]}" is missing the required default export.`);

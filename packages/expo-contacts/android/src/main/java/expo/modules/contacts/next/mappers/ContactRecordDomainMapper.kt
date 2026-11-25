@@ -118,7 +118,9 @@ class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter
         ContactField.NICKNAME,
         ContactField.MAIDEN_NAME,
         ContactField.IM_ADDRESS,
-        ContactField.SOCIAL_PROFILES
+        ContactField.SOCIAL_PROFILES,
+        ContactField.BIRTHDAY,
+        ContactField.NON_GREGORIAN_BIRTHDAY
         -> null
       }
     }
@@ -152,7 +154,13 @@ class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter
       record.urlAddresses?.let { addAll(it.map(WebsiteMapper::toNew)) }
     }
     return NewContact(
-      Starred(if (record.isFavourite) 1 else 0),
+      Starred(
+        if (record.isFavourite) {
+          1
+        } else {
+          0
+        }
+      ),
       modelsToInsert
     )
   }
