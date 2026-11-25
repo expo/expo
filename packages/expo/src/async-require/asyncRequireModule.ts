@@ -45,41 +45,15 @@ function makeWorkerContent(url: string): string {
 }
 
 const loadedWorkerChunks = new Set<string>();
-let isModuleWorker: boolean | undefined;
 
 // A worker has its own module registry and no `<script>` elements. `importScripts` loads a chunk
 // into the registry of the worker, and returns after the chunk registered its modules.
-function loadWorkerChunks(urls: readonly string[]): void | Promise<void> {
-  const pendingUrls = urls.filter((url) => !loadedWorkerChunks.has(url));
-  if (isModuleWorker === undefined) {
-    try {
-      // Without a URL, `importScripts` loads nothing. It throws only in a module worker.
-      importScripts!();
-      isModuleWorker = false;
-    } catch {
-      isModuleWorker = true;
-      // A module worker loads each chunk with `import()`, as a separate module. That module
-      // cannot read the `process` variable that the worker entry declares.
-      (globalThis as any).process ??= process;
-    }
+function loadWorkerChunks(urls: readonly string[]): void {
+  for (const url of urls) {
+    if (loadedWorkerChunks.has(url)) continue;
+    importScripts!(url);
+    loadedWorkerChunks.add(url);
   }
-  if (!isModuleWorker) {
-    for (const url of pendingUrls) {
-      importScripts!(url);
-      loadedWorkerChunks.add(url);
-    }
-    return;
-  }
-  // With graph optimization, the Metro transform rejects `import(url)`, also with an ignore
-  // comment. The `Function` constructor keeps the call out of the module source.
-  // eslint-disable-next-line no-new-func
-  const nativeImport: (url: string) => Promise<unknown> = new Function(
-    'url',
-    'return import(url)'
-  ) as any;
-  return Promise.all(
-    pendingUrls.map((url) => nativeImport(url).then(() => void loadedWorkerChunks.add(url)))
-  ).then(() => {});
 }
 
 function maybeLoadBundle(moduleID: number, paths: DependencyMapPaths): void | Promise<void> {
@@ -117,8 +91,8 @@ function asyncRequireImpl<T>(
     if (Array.isArray(bundlePath)) {
       if (typeof importScripts === 'function') {
         try {
-          const loading = loadWorkerChunks(bundlePath);
-          return loading ? loading.then(importAll) : importAll();
+          loadWorkerChunks(bundlePath);
+          return importAll();
         } catch (error) {
           return Promise.reject(error);
         }
