@@ -149,8 +149,8 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   nonisolated(unsafe) public static var uiRuntimeFactory: UIRuntimeFactory?
 
   /// Finds the worklets UI runtime of a holder that `react-native-worklets` returns in `runtime`, with JSI calls only on
-  /// `runtime`. Returns a function that makes the wrapper of the UI runtime on the main thread, or `nil` when the holder
-  /// has no UI runtime. The function returns `nil` when the UI runtime is gone.
+  /// `runtime`. Returns a function that makes the wrapper of the UI runtime on the main thread while it holds the lock of
+  /// the UI runtime, or `nil` when the holder has no UI runtime. The function returns `nil` when the UI runtime is gone.
   @_spi(Internal)
   public typealias UIRuntimeLocator = (
     _ holder: borrowing JavaScriptValue,

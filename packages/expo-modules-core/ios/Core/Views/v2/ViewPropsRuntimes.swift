@@ -185,12 +185,22 @@ extension AppContext {
       let holder = try proxyObject.getPropertyAsFunction("getUIRuntimeHolder").call(this: proxyObject)
       return locator(holder, runtime)
     } catch {
-      log.warn(
-        "Can't find the worklets UI runtime, so the props of v2 views that Reanimated animates on the main thread aren't applied: \(error). Call `installOnUIRuntime` from `expo` to install Expo on the UI runtime instead"
-      )
+      let isFirstReport = Self.reportedUIRuntimeLookupFailure.withLock { reported in
+        defer { reported = true }
+        return !reported
+      }
+      if isFirstReport {
+        log.warn(
+          "Can't find the worklets UI runtime: \(error). Until Expo finds it, the props of v2 views that Reanimated animates on the main thread change only at React commits. Expo tries again each second while it gets such props, and doesn't log this again. If these animations stay choppy, report it to Expo with this message"
+        )
+      }
       return nil
     }
   }
+
+  /// Whether a lookup logged that it can't find the worklets UI runtime. Lookups repeat each second during an
+  /// animation, so only the first failure logs.
+  private static let reportedUIRuntimeLookupFailure = Mutex(false)
 
   /// Returns the wrapper of the worklets UI runtime, and makes it with `makeUIRuntime` when there's none yet.
   @MainActor

@@ -183,7 +183,7 @@ public final class ViewPropsDecoder<Props: AnyViewProps>: @unchecked Sendable {
     if !newlySkipped.isEmpty {
       let thread = Thread.isMainThread ? "the main thread" : "the thread '\(Thread.current.name ?? "")'"
       log.warn(
-        "The \(newlySkipped) props of '\(viewName)' weren't applied: they came from outside React, for example from Reanimated or Animated, on \(thread), which has no JavaScript runtime that can decode them. On the main thread, install react-native-worklets: Expo decodes them in its UI runtime"
+        "The \(newlySkipped) props of '\(viewName)' weren't applied: they came from outside React, for example from Reanimated or Animated, on \(thread), which has no JavaScript runtime that can decode them. On the main thread, install react-native-worklets: Expo decodes them in its UI runtime. Otherwise, set them from React"
       )
     }
   }
