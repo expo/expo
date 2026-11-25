@@ -35,25 +35,6 @@ public protocol AnyJavaScriptClass: AnyObject {
     arguments: borrowing JavaScriptValuesBuffer,
     in runtime: JavaScriptRuntime
   ) throws -> (any AnyJavaScriptClass)?
-
-  /// Creates the native state that the JavaScript constructor of a `@JSClass` class attaches to `object`, the
-  /// JavaScript object of this instance. The native state holds the instance. Core doesn't call it for a shared object,
-  /// which the shared object registry pairs with its JavaScript object.
-  ///
-  /// The default implementation creates a plain native state. Core calls the implementation of the root class, also
-  /// for its subclasses, so implement it only in a root class.
-  @JavaScriptActor
-  func _makeNativeState(for object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime)
-    -> JavaScriptClassNativeState
-}
-
-extension AnyJavaScriptClass {
-  @JavaScriptActor
-  public func _makeNativeState(for object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime)
-    -> JavaScriptClassNativeState
-  {
-    return JavaScriptClassNativeState(instance: self)
-  }
 }
 
 // MARK: - JavaScript class chain
@@ -133,7 +114,8 @@ extension JavaScriptDecodable where Self: AnyJavaScriptClass {
 /// The native state of an event emitter is a subclass, so `_native(from:)` reads the instance of any object with one
 /// cast. The native state of a shared object holds the shared object. A module object and a plain `expo.EventEmitter`
 /// object have no instance.
-public class JavaScriptClassNativeState: JavaScriptNativeState {
+@usableFromInline
+internal class JavaScriptClassNativeState: JavaScriptNativeState {
   /// The native instance, or `nil` for an object that has no native instance.
   @usableFromInline
   let instance: (any AnyJavaScriptClass)?
@@ -175,6 +157,21 @@ public class JavaScriptClassNativeState: JavaScriptNativeState {
       """
       Expected an instance of '\(param.expected)', but got an instance of '\(param.actual)'. Pass an instance of \
       '\(param.expected)' or of a subclass of it.
+      """
+    }
+  }
+
+  /// Thrown when the JavaScript constructor is called on an object that has a native state already, for example with
+  /// `Point.call(point)`.
+  internal final class AlreadyAttachedException: GenericException<String>, @unchecked Sendable {
+    override var code: String {
+      "ERR_NATIVE_INSTANCE_ALREADY_ATTACHED"
+    }
+
+    override var reason: String {
+      """
+      The constructor of '\(param)' was called on an object that has a native instance already, so it didn't create \
+      another one. Create a new object with `new \(param)`.
       """
     }
   }

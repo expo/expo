@@ -13,24 +13,34 @@ internal enum JavaScriptBindings {
   @JavaScriptActor
   static func buildClass(_ type: any AnyJavaScriptClass.Type, appContext: AppContext) throws -> JavaScriptObject {
     let name = type._jsName
+    let isSharedObject = type is AnySharedObject.Type
+    let isEventEmitter = type is BaseEventEmitter.Type
     let constructor: JavaScriptRuntime.SyncFunctionClosure = { [weak appContext] this, arguments in
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }
       let runtime = try appContext.runtime
+      // A second call on the same object, for example `Point.call(point)`, would replace its native instance, and the
+      // listeners of an event emitter.
+      if !isSharedObject, try this.asObject().hasNativeState() {
+        throw JavaScriptClassNativeState.AlreadyAttachedException(name)
+      }
       // Pair the native instance with `this` (returning a different object would drop the prototype
       // chain `new` set up). Without a `@JS init`, only the native side can create a shared object.
       guard let instance = try type._constructInstance(this: this, arguments: arguments, in: runtime) else {
-        if type is AnySharedObject.Type {
+        if isSharedObject {
           throw Exceptions.ConstructorUnavailable(name)
         }
         throw JavaScriptClassNativeState.ConstructorUnavailableException(name)
       }
       if let sharedObject = instance as? SharedObject {
         appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: this.getObject(), inheritsBaseClass: true)
+      } else if isEventEmitter, let eventEmitter = instance as? BaseEventEmitter {
+        guard try eventEmitter.attachNativeState(to: this.asObject(), appContext: appContext, in: runtime) else {
+          throw JavaScriptClassNativeState.NotAttachableException(name)
+        }
       } else {
-        let object = try this.asObject()
-        guard object.trySetNativeState(instance._makeNativeState(for: object, in: runtime)) else {
+        guard try this.asObject().trySetNativeState(JavaScriptClassNativeState(instance: instance)) else {
           throw JavaScriptClassNativeState.NotAttachableException(name)
         }
       }

@@ -182,6 +182,17 @@ private struct MacroJSClassTests {
   }
 
   @Test
+  func `constructing onto an object that has a native instance already throws`() throws {
+    let code = try runtime.eval(
+      """
+      Point = expo.modules.MacroJSClassModule.JSClassPoint;
+      point = new Point(0, 0);
+      try { Point.call(point, 1, 1); 'no error' } catch (error) { error.code }
+      """)
+    #expect(try code.asString() == "ERR_NATIVE_INSTANCE_ALREADY_ATTACHED")
+  }
+
+  @Test
   func `releases the native instance when its JavaScript object is collected`() throws {
     let mainRuntime = try runtime
     try mainRuntime.eval("point = new expo.modules.MacroJSClassModule.JSClassPoint(0, 0)")
@@ -250,6 +261,24 @@ private struct MacroJSClassTests {
       return try runtime.eval("globalThis.received").asInt()
     }
     #expect(received == 3)
+  }
+
+  @Test
+  func `releases an event emitter with a listener when its JavaScript object is collected`() throws {
+    let mainRuntime = try runtime
+    try mainRuntime.eval(
+      """
+      timer = new expo.modules.MacroJSClassModule.JSClassTimer(1);
+      timer.addListener('tick', () => {});
+      """)
+    let timer = WeakReference(try JSClassTimer._native(from: mainRuntime.eval("timer").asObject()))
+    #expect(timer.object != nil)
+
+    try mainRuntime.eval("timer = undefined")
+    try mainRuntime.execute {
+      mainRuntime.collectGarbage { timer.object == nil }
+    }
+    #expect(timer.object == nil)
   }
 
   @Test

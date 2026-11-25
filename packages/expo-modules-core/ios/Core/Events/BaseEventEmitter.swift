@@ -25,8 +25,14 @@ open class BaseEventEmitter: AnyJavaScriptClass, JavaScriptDecodable {
   /// The app context of the JavaScript object. The JavaScript constructor sets it.
   public private(set) weak var appContext: AppContext?
 
-  /// The native state of the JavaScript object. Weak, because the native state holds this instance.
-  private weak var eventEmitterState: BaseEventEmitterNativeState?
+  /// The native state of the JavaScript object, or `nil` before the constructor attaches it and after the object is
+  /// collected.
+  ///
+  /// The reference is strong: a weak reference would give the native state a side table, which makes every retain and
+  /// release of it slower, also when a JS method finds it on its JS object. The native state holds this instance too, so
+  /// its deallocator ends the pair when the JS object is collected. The deallocator can run on another thread than
+  /// `withEventTarget`, so the reference is behind a lock. Use it only under the lock.
+  private var pairedNativeState: BaseEventEmitterNativeState?
 
   public init() {}
 
@@ -66,23 +72,50 @@ open class BaseEventEmitter: AnyJavaScriptClass, JavaScriptDecodable {
     return nil
   }
 
-  /// Creates a native state that keeps the event listeners and the JavaScript object, so that this instance can emit
-  /// events to it.
+  // MARK: - Pairing with the JavaScript object
+
+  /// Attaches a native state that keeps the event listeners and `object`, so that this instance emits events to it. The
+  /// JavaScript constructor calls it. Returns `false` when the engine doesn't allow a native state on the object.
   @JavaScriptActor
-  public func _makeNativeState(for object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime)
-    -> JavaScriptClassNativeState
-  {
+  internal func attachNativeState(
+    to object: borrowing JavaScriptObject,
+    appContext: AppContext,
+    in runtime: JavaScriptRuntime
+  ) -> Bool {
     let nativeState = BaseEventEmitterNativeState(instance: self, object: object, in: runtime)
-    appContext = AppContext.from(runtime: runtime)
-    eventEmitterState = nativeState
-    return nativeState
+    guard object.trySetNativeState(nativeState) else {
+      return false
+    }
+    self.appContext = appContext
+    SharedObjectLock.withLock(for: self) {
+      pairedNativeState = nativeState
+    }
+    return true
+  }
+
+  /// Ends the pair with the native state, when it is the paired one. Its deallocator calls it when the JavaScript object
+  /// is collected.
+  fileprivate func endPairing(with nativeState: BaseEventEmitterNativeState) {
+    let oldValue: BaseEventEmitterNativeState? = SharedObjectLock.withLock(for: self) {
+      guard pairedNativeState === nativeState else {
+        return nil
+      }
+      let oldValue = pairedNativeState
+      pairedNativeState = nil
+      return oldValue
+    }
+    // The old native state can be deallocated here, so it is released after the lock is unlocked.
+    withExtendedLifetime(oldValue) {}
   }
 }
 
 extension BaseEventEmitter: EventEmitter {
   @JavaScriptActor
   public func withEventTarget<R>(_ body: (borrowing JavaScriptObject) throws -> R) rethrows -> R? {
-    guard let target = eventEmitterState?.object.lock() else {
+    let nativeState = SharedObjectLock.withLock(for: self) {
+      return pairedNativeState
+    }
+    guard let target = nativeState?.object.lock() else {
       return nil
     }
     return try body(target)
@@ -99,5 +132,10 @@ internal final class BaseEventEmitterNativeState: EventEmitterNativeState, @unch
   init(instance: BaseEventEmitter, object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) {
     self.object = object.createWeak()
     super.init(primaryRuntimeId: runtime.id, instance: instance)
+    setDeallocator { nativeState in
+      let nativeState = unsafeDowncast(nativeState, to: BaseEventEmitterNativeState.self)
+      unsafeDowncast(nativeState.instance.unsafelyUnwrapped as AnyObject, to: BaseEventEmitter.self)
+        .endPairing(with: nativeState)
+    }
   }
 }
