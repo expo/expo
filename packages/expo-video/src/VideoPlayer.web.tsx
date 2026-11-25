@@ -263,6 +263,15 @@ export default class VideoPlayerWeb
       video.muted = this._muted;
       video.playbackRate = this._playbackRate;
     }
+    // The player sets `src`, not the `VideoView` render. Setting `src` again restarts the load and
+    // rejects a pending `play()`, so a render after `replace()` would stop the new source.
+    const uri = getSourceUri(this.src);
+    if (uri && video.getAttribute('src') !== uri) {
+      video.setAttribute('src', uri);
+    } else if (!uri && video.hasAttribute('src')) {
+      video.removeAttribute('src');
+      video.load();
+    }
     this._mountedVideos.add(video);
     this._addListeners(video);
     this._synchronizeWithFirstVideo(video);

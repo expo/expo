@@ -2,7 +2,6 @@ import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react
 import { StyleSheet } from 'react-native';
 
 import type VideoPlayer from './VideoPlayer.web';
-import { getSourceUri } from './VideoPlayer.web';
 import type { VideoViewProps } from './VideoView.types';
 
 type FullscreenChangeListeners = {
@@ -285,7 +284,6 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
       }}
       disablePictureInPicture={!props.allowsPictureInPicture}
       playsInline={props.playsInline}
-      src={getSourceUri(props.player?.src) ?? undefined}
     />
   );
 });
