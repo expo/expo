@@ -3,8 +3,10 @@ import { WebSocketServer } from 'ws';
 
 import { env, envIsHeadless } from '../../../../utils/env';
 import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
+import type { MetroTerminalReporter } from '../MetroTerminalReporter';
 import type { TerminalReporter } from '../TerminalReporter';
 import { event } from '../inspectorEvents';
+import { streamConsoleLogs } from './console/streamConsoleLogs';
 import { createHandlersFactory } from './createHandlersFactory';
 import { recordNetworkResponse } from './messageHandlers/NetworkResponse';
 
@@ -15,7 +17,7 @@ interface DebugMiddleware {
 
 interface DebugMiddlewareParams {
   serverBaseUrl: string;
-  reporter: TerminalReporter;
+  reporter: MetroTerminalReporter;
 }
 
 export function createDebugMiddleware({
@@ -61,6 +63,14 @@ export function createDebugMiddleware({
   // report through core.
   if (!env.EXPO_UNSTABLE_CORE_NETWORK_INSPECTOR) {
     websocketEndpoints['/inspector/network'] = createNetworkWebsocket(debuggerWebsocketEndpoint);
+  }
+
+  if (env.EXPO_UNSTABLE_CDP_LOGS) {
+    streamConsoleLogs({
+      serverBaseUrl,
+      deviceSocketServer: websocketEndpoints['/inspector/device'] as WebSocketServer,
+      reporter,
+    });
   }
 
   // Explicitly limit debugger websocket to loopback requests
