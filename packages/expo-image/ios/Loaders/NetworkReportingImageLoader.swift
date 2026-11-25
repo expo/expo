@@ -69,7 +69,7 @@ final class NetworkReportingImageLoader: NSObject, SDImageLoader {
     // Runs only when this load starts a new download. SDWebImage calls it when it creates the download
     // operation, before the operation waits in the download queue, so the reported start includes that wait.
     let requestModifier = context[.downloadRequestModifier] as? SDWebImageDownloaderRequestModifierProtocol ?? downloader.requestModifier
-    context[.downloadRequestModifier] = SDWebImageDownloaderRequestModifier { [reports] request in
+    context[.downloadRequestModifier] = SDWebImageDownloaderRequestModifier { [self] request in
       let modifiedRequest = requestModifier.map { $0.modifiedRequest(with: request) } ?? request
       guard let modifiedRequest,
         let mutableRequest = (modifiedRequest as NSURLRequest).mutableCopy() as? NSMutableURLRequest else {
@@ -85,7 +85,7 @@ final class NetworkReportingImageLoader: NSObject, SDImageLoader {
     }
 
     let responseModifier = context[.downloadResponseModifier] as? SDWebImageDownloaderResponseModifierProtocol ?? downloader.responseModifier
-    context[.downloadResponseModifier] = SDWebImageDownloaderResponseModifier { [reports] response in
+    context[.downloadResponseModifier] = SDWebImageDownloaderResponseModifier { [self] response in
       let modifiedResponse = responseModifier.map { $0.modifiedResponse(with: response) } ?? response
       if let modifiedResponse {
         reports.withLock { _ in
@@ -96,7 +96,7 @@ final class NetworkReportingImageLoader: NSObject, SDImageLoader {
       return modifiedResponse
     }
 
-    let operation = downloader.requestImage(with: url, options: options, context: context, progress: progressBlock) { [reports] image, data, error, finished in
+    let operation = downloader.requestImage(with: url, options: options, context: context, progress: progressBlock) { [self] image, data, error, finished in
       guard finished else {
         completedBlock?(image, data, error, finished)
         return
