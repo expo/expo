@@ -84,19 +84,18 @@ final class CompatibilityGeofencingSource: NSObject, GeofencingSource, CLLocatio
   }
 
   func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+    let failure: Error
     switch manager.authorizationStatus {
     case .denied where !CLLocationManager.locationServicesEnabled():
-      let error = LocationServicesDisabledGlobally()
-      end(error)
+      failure = LocationServicesDisabledGlobally()
     case .denied:
-      let error = LocationAuthorizationDenied()
-      end(error)
+      failure = LocationAuthorizationDenied()
     case .restricted:
-      let error = LocationAuthorizationRestricted()
-      end(error)
+      failure = LocationAuthorizationRestricted()
     default:
       return
     }
+    end(failure)
   }
 
   func setRegions(_ regions: [GeofencingRegion]) {
