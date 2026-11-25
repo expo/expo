@@ -210,8 +210,8 @@ export default class TreeFS implements MutableFileSystem {
   readonly #pathUtils: RootPathUtils;
   readonly #processFile: ProcessFileFunction;
   readonly #rootDir: Path;
-  readonly #rootPattern: RegExp | null;
-  readonly #roots: readonly string[];
+  #rootPattern: RegExp | null;
+  #roots: readonly string[];
   #rootNode: DirectoryNode = new Map();
 
   constructor(opts: TreeFSOptions) {
@@ -254,6 +254,30 @@ export default class TreeFS implements MutableFileSystem {
     });
     tfs.#rootNode = fileSystemData;
     return tfs;
+  }
+
+  /**
+   * Set the directories this file system holds, i.e. those it saves and does
+   * not fill on demand. Files that were filled on demand under a new root are
+   * dropped without notifying listeners, which were never told of them, so
+   * that the root's crawl reports them.
+   */
+  setRoots(roots: readonly Path[]): void {
+    const previousRoots = this.#roots.map((root) => this.#pathUtils.normalToAbsolute(root));
+    const newRootPrefixes = roots
+      .filter((root) => !previousRoots.includes(root))
+      .map((root) => this.#absoluteDirPrefix(this.#normalizePath(root)));
+    if (this.#fallbackFilesystem != null && newRootPrefixes.length > 0) {
+      const filledPaths = Array.from(this.pathsOutsideRoots(previousRoots)).filter((filePath) => {
+        const absolutePath = this.#pathUtils.normalToAbsolute(filePath);
+        return newRootPrefixes.some((prefix) => absolutePath.startsWith(prefix));
+      });
+      for (const filePath of filledPaths) {
+        this.#removeNormalPath(filePath);
+      }
+    }
+    this.#roots = roots.map((root) => this.#pathUtils.absoluteToNormal(root));
+    this.#rootPattern = pathsToPattern(roots, this.#pathUtils);
   }
 
   /**

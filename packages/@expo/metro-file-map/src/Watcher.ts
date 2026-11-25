@@ -87,11 +87,15 @@ type WatcherBackendClass = typeof WatchmanWatcher | typeof NativeWatcher | typeo
 
 export class Watcher extends EventEmitter {
   #activeWatcher: string | undefined | null;
-  #backends: readonly WatcherBackend[] = [];
+  #backends: WatcherBackend[] = [];
   // Events received by started backends before watch() is called, to be
   // replayed once it is.
   #bufferedEvents: WatcherBackendChangeEvent[] = [];
   #closed: boolean = false;
+  #createBackend: ((root: Path) => Promise<WatcherBackend>) | null = null;
+  // Whether a started backend's watches need confirming before they are
+  // relied on.
+  #confirmWatches: boolean = false;
   readonly #instanceId: number;
   #nextHealthCheckId: number = 0;
   #onChange: ((change: WatcherBackendChangeEvent) => void) | null = null;
@@ -293,7 +297,10 @@ export class Watcher extends EventEmitter {
       );
     }
 
-    const createWatcherBackend = (root: Path): Promise<WatcherBackend> => {
+    const createWatcherBackend = (
+      root: Path,
+      rootClocks: Map<string, WatchmanClockSpec> | null
+    ): Promise<WatcherBackend> => {
       const watcherOptions: WatcherBackendOptions = {
         included: {
           extensions: new Set(extensions),
@@ -305,7 +312,7 @@ export class Watcher extends EventEmitter {
         },
         ignored: ignorePatternForWatch,
         watchmanDeferStates: this.#options.watchmanDeferStates,
-        clocks: watchmanClocks,
+        clocks: rootClocks,
       };
       const watcher: WatcherBackend = new WatcherImpl(root, watcherOptions);
 
@@ -347,10 +354,16 @@ export class Watcher extends EventEmitter {
       });
     };
 
-    this.#backends = await Promise.all(this.#options.roots.map(createWatcherBackend));
+    // A root added by watchRoot() is watched before it is crawled, so it
+    // needs no crawl clock.
+    this.#createBackend = (root) => createWatcherBackend(root, null);
+    this.#backends = await Promise.all(
+      this.#options.roots.map((root) => createWatcherBackend(root, watchmanClocks))
+    );
     // Confirmed only once every backend has started, because starting one may
     // restart the others' watches (NativeWatchers share one FSEvents stream).
-    if (!WatcherImpl.isLiveOnStart()) {
+    this.#confirmWatches = !WatcherImpl.isLiveOnStart();
+    if (this.#confirmWatches) {
       await Promise.all(this.#options.roots.map((root) => this.#waitUntilLive(root)));
     }
   }
@@ -376,6 +389,27 @@ export class Watcher extends EventEmitter {
         `metro-file-map: Could not confirm that ${root} is being watched ` +
           `(${result.type}). Changes made during startup may be missed.`
       );
+    }
+  }
+
+  /**
+   * Watch a root in addition to those given at construction, reporting its
+   * changes to the `onChange` passed to `watch()`. Does nothing outside watch
+   * mode, i.e. before the backends for the initial roots have started.
+   */
+  async watchRoot(root: Path): Promise<void> {
+    const backend = await this.#createBackend?.(root);
+    if (backend == null) {
+      return;
+    }
+    // `close()` may have been called while the backend was starting.
+    if (this.#closed) {
+      await backend.stopWatching();
+      return;
+    }
+    this.#backends.push(backend);
+    if (this.#confirmWatches) {
+      await this.#waitUntilLive(root);
     }
   }
 
