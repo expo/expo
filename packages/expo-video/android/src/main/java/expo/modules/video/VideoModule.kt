@@ -278,6 +278,7 @@ class VideoModule : Module() {
       }
 
       Function("pause") { ref: VideoPlayer ->
+        ref.mediaSessionClient.onPauseRequested()
         appContext.mainQueue.launch {
           ref.player.pause()
         }
