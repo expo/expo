@@ -39,18 +39,19 @@ export enum GeofencingEventState {
 
 /**
  * An event delivered to the task defined with `defineGeofencingTask`.
+ * The same state can be delivered more than once for a region, for example after `start()` or after the app is relaunched.
  */
 export type GeofencingEvent = {
   /**
-   * The `identifier` of the region that changed state.
+   * The `identifier` of the region the event is for.
    */
   identifier: string;
   /**
-   * The new state of the region.
+   * The state of the region when the event was determined.
    */
   state: GeofencingEventState;
   /**
-   * When the state changed, in milliseconds since the Unix epoch.
+   * When the state was determined, in milliseconds since the Unix epoch.
    */
   timestamp: number;
 };
