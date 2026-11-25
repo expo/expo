@@ -47,7 +47,7 @@ it('runs `npx expo run:ios --help`', async () => {
         --configuration <configuration>  Xcode configuration to use. Debug or Release. Default: Debug
         -d, --device [device]            Device name, UDID, or "generic" for build-only
         -o, --output <path>              Directory to output the built app binary
-        -p, --port <port>                Port to start the Metro bundler on. Default: 8081
+        -p, --port <port>                Port to start the Metro bundler on, or to connect to with --no-bundler. Default: 8081
         -h, --help                       Usage info
 
       Build for production (unsigned) with the Release configuration:

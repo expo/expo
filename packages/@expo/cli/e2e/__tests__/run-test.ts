@@ -65,7 +65,7 @@ it('runs `npx expo run android --help`', async () => {
         --variant <name>       Build variant or product flavor and build variant. Default: debug
         --binary <path>        Path to existing .apk or .aab to install.
         -d, --device [device]  Device name to run the app on
-        -p, --port <port>      Port to start the dev server on. Default: 8081
+        -p, --port <port>      Port to start the dev server on, or to connect to with --no-bundler. Default: 8081
         -h, --help             Output usage information
     "
   `);
@@ -91,7 +91,7 @@ it('runs `npx expo run ios --help`', async () => {
         --configuration <configuration>  Xcode configuration to use. Debug or Release. Default: Debug
         -d, --device [device]            Device name, UDID, or "generic" for build-only
         -o, --output <path>              Directory to output the built app binary
-        -p, --port <port>                Port to start the Metro bundler on. Default: 8081
+        -p, --port <port>                Port to start the Metro bundler on, or to connect to with --no-bundler. Default: 8081
         -h, --help                       Usage info
 
       Build for production (unsigned) with the Release configuration:

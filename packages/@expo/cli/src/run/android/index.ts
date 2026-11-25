@@ -53,7 +53,7 @@ export const expoRunAndroid: Command = async (argv) => {
     --variant <name>       Build variant or product flavor and build variant. {dim Default: debug}
     --binary <path>        Path to existing .apk or .aab to install.
     -d, --device [device]  Device name to run the app on
-    -p, --port <port>      Port to start the dev server on. {dim Default: 8081}
+    -p, --port <port>      Port to start the dev server on, or to connect to with --no-bundler. {dim Default: 8081}
     -h, --help             Output usage information
 `,
       0

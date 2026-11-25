@@ -48,7 +48,7 @@ it('runs `npx expo run:android --help`', async () => {
         --variant <name>       Build variant or product flavor and build variant. Default: debug
         --binary <path>        Path to existing .apk or .aab to install.
         -d, --device [device]  Device name to run the app on
-        -p, --port <port>      Port to start the dev server on. Default: 8081
+        -p, --port <port>      Port to start the dev server on, or to connect to with --no-bundler. Default: 8081
         -h, --help             Output usage information
     "
   `);

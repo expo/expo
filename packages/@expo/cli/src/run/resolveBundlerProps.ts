@@ -1,9 +1,8 @@
 import { Log } from '../log';
-import { CommandError } from '../utils/errors';
 import { isValidPort, resolveMetroPortAsync } from '../utils/port';
 
 export interface BundlerProps {
-  /** Port to start the dev server on. */
+  /** Port to start the dev server on, or to connect the app to when the bundler is skipped. */
   port: number;
   /** Skip opening the bundler from the native script. */
   shouldStartBundler: boolean;
@@ -18,14 +17,6 @@ export async function resolveBundlerPropsAsync(
 ): Promise<BundlerProps> {
   options.bundler = options.bundler ?? true;
 
-  if (
-    // If the user disables the bundler then they should not pass in the port property.
-    !options.bundler &&
-    options.port
-  ) {
-    throw new CommandError('BAD_ARGS', '--port and --no-bundler are mutually exclusive arguments');
-  }
-
   // Resolve the port if the bundler is used.
   let port = options.bundler
     ? await resolveMetroPortAsync(projectRoot, {
@@ -37,8 +28,13 @@ export async function resolveBundlerPropsAsync(
   // Skip bundling if the port is null -- meaning skip the bundler if the port is already running the app.
   options.bundler = !!port;
   if (!port) {
-    // Use a valid user-provided port, or the default port
-    port = isValidPort(options.port) ? options.port : 8081;
+    if (isValidPort(options.port)) {
+      port = options.port;
+      // The native build compiles the dev server port from `RCT_METRO_PORT`.
+      process.env.RCT_METRO_PORT = String(port);
+    } else {
+      port = 8081;
+    }
   }
   Log.debug(`Resolved port: ${port}, start dev server: ${options.bundler}`);
 
