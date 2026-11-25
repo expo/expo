@@ -1,6 +1,6 @@
-import { useLocalSearchParams } from 'expo-router';
+import { Link, useLocalSearchParams } from 'expo-router';
 import { use } from 'react';
-import { ScrollView, StyleSheet, Text } from 'react-native';
+import { PlatformColor, ScrollView, StyleSheet, Text } from 'react-native';
 
 import { MESSAGES, ToolbarPressContext } from '@/components/split-view-mail';
 
@@ -19,6 +19,12 @@ export default function MessageScreen() {
       <Text testID="split-view-mail-message-press">
         Last toolbar press: {use(ToolbarPressContext)}
       </Text>
+      <Text style={styles.sectionTitle}>Other messages</Text>
+      {MESSAGES.filter((m) => m.id !== id).map((m) => (
+        <Link key={m.id} href={`/split-view-mail/${m.id}`} push style={styles.link}>
+          {m.sender}: {m.subject}
+        </Link>
+      ))}
     </ScrollView>
   );
 }
@@ -29,4 +35,6 @@ const styles = StyleSheet.create({
   date: { color: 'gray' },
   subject: { fontSize: 28, fontWeight: '700', marginTop: 12 },
   body: { fontSize: 17, lineHeight: 24 },
+  sectionTitle: { fontSize: 13, color: 'gray', textTransform: 'uppercase', marginTop: 16 },
+  link: { fontSize: 16, color: PlatformColor('link'), paddingVertical: 4 },
 });
