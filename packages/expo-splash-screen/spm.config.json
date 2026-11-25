@@ -19,6 +19,7 @@
           "path": "ios",
           "pattern": "**/*.mm",
           "headerPattern": "**/*.h",
+          "excludeFromUmbrella": ["SplashScreenSnapshot.h"],
           "dependencies": [
             "ReactNativeDependencies",
             "React",

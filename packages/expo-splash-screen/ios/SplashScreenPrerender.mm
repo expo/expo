@@ -56,7 +56,6 @@
 #import "SplashScreenSnapshot.h"
 
 #import <CoreText/CoreText.h>
-#import <objc/message.h>
 
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTMountingManager.h>
@@ -207,6 +206,7 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   NSDictionary *_snapshotEnvironment;
   __weak UIView *_appRootView;
   BOOL _dismissed;
+  BOOL _sceneConnected;
   BOOL _capturePending;
   BOOL _captured;
   BOOL _waitedForPrepare;
@@ -222,15 +222,24 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   return instance;
 }
 
-// C++ constructors run after all +load methods of the image, so React Native's static initializers
-// (folly, Yoga) are ready. +load can run before them when the library is linked statically.
+// The constructor registers a notification observer so that `prepare` runs after
+// `didFinishLaunchingWithOptions:` returns. By then every static initializer has run and the
+// factory has set up the React Native feature flags, so the renderer is safe to use.
 static void __attribute__((constructor)) ExpoSplashScreenPrerenderInit(void)
 {
   SplashScreenPrerender *prerender = [SplashScreenPrerender shared];
-  if (prerender.isEnabled) {
-    [prerender log:@"constructor"];
-    [prerender prepare];
+  if (!prerender.isEnabled) {
+    return;
   }
+  [prerender log:@"constructor (registering observer)"];
+  [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIApplicationDidFinishLaunchingNotification
+                  object:nil
+                   queue:nil
+              usingBlock:^(NSNotification *) {
+                [prerender log:@"didFinishLaunching"];
+                [prerender prepare];
+              }];
 }
 
 - (instancetype)init
@@ -255,38 +264,12 @@ static void __attribute__((constructor)) ExpoSplashScreenPrerenderInit(void)
 
 #pragma mark - Preparation (background)
 
-/**
- React Native's feature flags can be overridden once and must not be read before that.
- `RCTReactNativeFactory` overrides them in its init, inside `didFinishLaunching`, and the renderer
- reads them everywhere. Running the factory's one-time setup here, with the release level it would
- use, lets the renderer run before the factory exists; the factory's later call is then a no-op.
- The later call raises an exception when its release level is different. An app that creates
- `RCTReactNativeFactory` with a release level must set the same level in `ReactNativeReleaseLevel`.
- */
-- (BOOL)setUpFeatureFlagsEarly
-{
-  Class factoryClass = NSClassFromString(@"RCTReactNativeFactory");
-  SEL selector = NSSelectorFromString(@"_setUpFeatureFlags:");
-  if (!factoryClass || ![factoryClass instancesRespondToSelector:selector]) {
-    return NO;
-  }
-  id plistValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ReactNativeReleaseLevel"];
-  if (plistValue && ![plistValue isKindOfClass:[NSString class]]) {
-    return NO;
-  }
-  NSString *level = [plistValue lowercaseString];
-  NSInteger releaseLevel = [level isEqualToString:@"canary"] ? 0 : [level isEqualToString:@"experimental"] ? 1 : 2;
-  ((void (*)(id, SEL, NSInteger))objc_msgSend)([factoryClass alloc], selector, releaseLevel);
-  return YES;
-}
-
 - (void)prepare
 {
   if (_prepared) {
     return;
   }
-  // The feature flags are set up only when there is a snapshot to draw.
-  if (![[NSFileManager defaultManager] fileExistsAtPath:[self snapshotURL].path] || ![self setUpFeatureFlagsEarly]) {
+  if (![[NSFileManager defaultManager] fileExistsAtPath:[self snapshotURL].path]) {
     [self log:@"no snapshot for this launch"];
     return;
   }
@@ -310,6 +293,7 @@ static void __attribute__((constructor)) ExpoSplashScreenPrerenderInit(void)
   NSDictionary *json = [self loadTemplate];
   if (!json) {
     [self log:@"no snapshot for this launch"];
+    [self removePrepareMarker];
     return;
   }
   folly::dynamic templateDynamic = convertIdToFollyDynamic(json);
@@ -372,6 +356,13 @@ static void __attribute__((constructor)) ExpoSplashScreenPrerenderInit(void)
   } catch (const std::exception &e) {
     NSLog(@"[expo-splash-screen] prerender: failed to build template: %s", e.what());
   }
+  [self removePrepareMarker];
+}
+
+- (void)removePrepareMarker
+{
+  NSURL *marker = [[self snapshotURL].URLByDeletingLastPathComponent URLByAppendingPathComponent:@"prepare-started"];
+  [[NSFileManager defaultManager] removeItemAtURL:marker error:nil];
 }
 
 #pragma mark - Snapshot file
@@ -419,13 +410,14 @@ static void __attribute__((constructor)) ExpoSplashScreenPrerenderInit(void)
   if ([[NSString stringWithContentsOfURL:prepareMarkerURL encoding:NSUTF8StringEncoding error:nil] isEqualToString:build]) {
     [self log:@"snapshot: skipped, the last prepare of this build crashed"];
     [fileManager removeItemAtURL:snapshotURL error:nil];
+    [fileManager removeItemAtURL:prepareMarkerURL error:nil];
     return nil;
   }
   NSData *snapshotData = [NSData dataWithContentsOfURL:snapshotURL];
   if (!snapshotData) {
     return nil;
   }
-  // Write a marker before preparing. It is removed after the overlay is shown successfully.
+  // Write a marker before preparing. It is removed when prepareWithLayoutDirection: finishes.
   [fileManager createDirectoryAtURL:snapshotURL.URLByDeletingLastPathComponent withIntermediateDirectories:YES attributes:nil error:nil];
   [build writeToURL:prepareMarkerURL atomically:NO encoding:NSUTF8StringEncoding error:nil];
   id snapshot = [NSJSONSerialization JSONObjectWithData:snapshotData options:0 error:nil];
@@ -637,6 +629,11 @@ static void __attribute__((constructor)) ExpoSplashScreenPrerenderInit(void)
   if (_containerView || _dismissed || !_preparedRoot) {
     return;
   }
+  // The notify fired after showInWindowScene: already returned — too late to show.
+  if (_sceneConnected && !_window) {
+    [self dismiss];
+    return;
+  }
   UIView *container = [[UIView alloc] initWithFrame:_bounds];
   container.userInteractionEnabled = NO;
   [_mountingManager attachSurfaceToView:container surfaceId:kSurfaceId];
@@ -658,6 +655,7 @@ static void __attribute__((constructor)) ExpoSplashScreenPrerenderInit(void)
 {
   RCTAssertMainQueue();
   [self log:@"scene connect"];
+  _sceneConnected = YES;
   [self mountIfPrepared];
   if (!_containerView || _window) {
     return;
@@ -676,11 +674,8 @@ static void __attribute__((constructor)) ExpoSplashScreenPrerenderInit(void)
   window.rootViewController = controller;
   window.hidden = NO;
   _window = window;
-  // The snapshot was shown; consume it and clear the crash-protection markers.
-  NSURL *snapshotURL = [self snapshotURL];
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-  [fileManager removeItemAtURL:snapshotURL error:nil];
-  [fileManager removeItemAtURL:[snapshotURL.URLByDeletingLastPathComponent URLByAppendingPathComponent:@"prepare-started"] error:nil];
+  // The snapshot was shown; consume it so the next capture writes the new one.
+  [[NSFileManager defaultManager] removeItemAtURL:[self snapshotURL] error:nil];
   [self log:@"shown"];
 }
 
