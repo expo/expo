@@ -197,8 +197,10 @@ function appendBadgeOptions(options: NativeTabOptions, props: NativeTabsTriggerB
 function appendLabelOptions(options: NativeTabOptions, props: NativeTabsTriggerLabelProps) {
   if (props.hidden) {
     options.title = '';
+    options.hiddenTitle = props.children || undefined;
   } else {
     options.title = props.children;
+    options.hiddenTitle = undefined;
     if (props.selectedStyle) {
       options.selectedLabelStyle = StyleSheet.flatten(props.selectedStyle);
     }
