@@ -78,7 +78,7 @@ public class ReactNativeHostManager: NSObject {
    */
   @objc public func cleanupPreviousInstance() {
     if let rootViewFactory = reactNativeFactory?.rootViewFactory {
-      rootViewFactory.setValue(nil, forKey: "_reactHost")
+      rootViewFactory.reactHost = nil
       reactNativeDelegate = nil
       reactNativeFactory = nil
     }
