@@ -1,5 +1,6 @@
 package expo.modules.mediasession
 
+import android.app.Application
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.os.Handler
@@ -11,6 +12,7 @@ import expo.modules.mediasession.service.MediaPlaybackServiceLogic
 import expo.modules.mediasession.service.NowPlayingSessionCenter
 import expo.modules.mediasession.service.ServiceConnector
 import java.lang.ref.WeakReference
+import java.util.concurrent.Executor
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
@@ -66,17 +68,14 @@ interface MediaSessionObserver {
   fun mediaSessionNowPlayingOwnerChanged(owner: NowPlayingOwner?) {}
 }
 
-/** The manager keeps the observer until [remove] or [close] is called. */
-class ObserverRegistration internal constructor(private val onRemove: () -> Unit) : AutoCloseable {
+internal class CoordinatorObserverRegistration(private val onRemove: () -> Unit) : ObserverRegistration {
   private val removed = AtomicBoolean(false)
 
-  fun remove() {
+  override fun remove() {
     if (removed.compareAndSet(false, true)) {
       onRemove()
     }
   }
-
-  override fun close() = remove()
 }
 
 class MediaSessionManager internal constructor(
@@ -84,9 +83,10 @@ class MediaSessionManager internal constructor(
   dispatcher: CoroutineDispatcher,
   nowPlayingCenter: NowPlayingCenterBackend = DetachedNowPlayingCenter,
   checkThread: () -> Unit = {}
-) {
+) : MediaSessionManaging {
   internal val coordinator = SessionCoordinator(backend, dispatcher)
   private var systemEvents: SystemEventSource? = null
+  private var appVisibility: AppVisibilitySource? = null
   private val nowPlaying = NowPlayingStack(
     nowPlayingCenter,
     mixingMode = { coordinator.effectiveInterruptionMode },
@@ -111,47 +111,55 @@ class MediaSessionManager internal constructor(
     }
   }
 
-  val policy: AudioPolicy
+  override val policy: AudioPolicy
     get() = coordinator.policy
 
-  fun beginUse(client: String, requirements: SessionRequirements = SessionRequirements()): SessionUse {
+  override fun beginUse(
+    client: String,
+    requirements: SessionRequirements,
+    delegate: SessionUseDelegate?,
+    executor: Executor
+  ): SessionUse {
     val activation = CompletableDeferred<Unit>()
-    val use = SessionUse(coordinator.nextId(), client, activation, coordinator)
-    coordinator.begin(use.id, client, requirements, activation, use)
+    val use = CoordinatorSessionUse(coordinator.nextId(), client, activation, coordinator)
+    coordinator.begin(use.id, client, requirements, activation, use, delegate, executor)
     return use
   }
 
-  fun hold(client: String): SessionHold {
+  override fun hold(client: String): SessionHold {
     val activation = CompletableDeferred<Unit>()
-    val hold = SessionHold(coordinator.nextId(), client, activation, coordinator)
-    coordinator.begin(hold.id, client, SessionRequirements(), activation, hold)
+    val hold = CoordinatorSessionHold(coordinator.nextId(), client, activation, coordinator)
+    coordinator.begin(hold.id, client, SessionRequirements(), activation, hold, delegate = null, executor = MainThreadExecutor)
     return hold
   }
 
-  fun suspendWrites(reason: String) {
+  override fun suspendWrites(reason: String) {
     coordinator.suspendWrites(reason)
   }
 
-  fun resumeWrites() {
+  override fun resumeWrites() {
     coordinator.resumeWrites()
   }
 
-  fun setPolicy(update: AudioPolicyUpdate) {
+  override fun setPolicy(update: AudioPolicyUpdate) {
     coordinator.setPolicy(update)
   }
 
-  /** Begin the owner's session use first. */
-  fun offerNowPlaying(owner: NowPlayingOwner, info: NowPlayingInfo, commands: Set<RemoteCommandKind>): NowPlayingClaim {
-    val claim = NowPlayingClaim(coordinator.nextId(), this)
+  override fun offerNowPlaying(
+    owner: NowPlayingOwner,
+    info: NowPlayingInfo,
+    commands: Set<RemoteCommandKind>
+  ): NowPlayingClaim {
+    val claim = ManagerNowPlayingClaim(coordinator.nextId(), this)
     val offered = commands.toSet()
     coordinator.post { nowPlaying.offer(owner, info, offered, claim.id, claim) }
     return claim
   }
 
-  val nowPlayingOwner: NowPlayingOwner?
+  override val nowPlayingOwner: NowPlayingOwner?
     get() = nowPlaying.owner
 
-  fun addObserver(observer: MediaSessionObserver): ObserverRegistration = coordinator.addObserver(observer)
+  override fun addObserver(observer: MediaSessionObserver): ObserverRegistration = coordinator.addObserver(observer)
 
   internal fun updateNowPlaying(id: Long, info: NowPlayingInfo, commands: Set<RemoteCommandKind>?) {
     coordinator.post { nowPlaying.update(id, info, commands) }
@@ -162,12 +170,13 @@ class MediaSessionManager internal constructor(
   }
 
   @VisibleForTesting
-  internal fun clearNowPlayingClaimReference(claim: NowPlayingClaim) {
+  internal fun clearNowPlayingClaimReference(claim: ManagerNowPlayingClaim) {
     coordinator.post { nowPlaying.clearClaimReference(claim.id) }
   }
 
   @VisibleForTesting
   internal fun close() {
+    appVisibility?.stop()
     systemEvents?.stop()
     coordinator.close()
   }
@@ -202,67 +211,77 @@ class MediaSessionManager internal constructor(
         checkThread
       ).apply {
         systemEvents = SystemEventSource(context, scheduler.handler, coordinator).also { it.start() }
+        appVisibility = (context as? Application)?.let { application ->
+          AppVisibilitySource(application, coordinator).also { it.start() }
+        }
       }
     }
   }
 }
 
-/** Keep a reference and close it when playback stops. */
-class SessionUse internal constructor(
-  internal val id: Long,
+internal class CoordinatorSessionUse(
+  val id: Long,
   private val client: String,
-  internal val activation: CompletableDeferred<Unit>,
+  val activation: CompletableDeferred<Unit>,
   coordinator: SessionCoordinator
-) : AutoCloseable {
+) : SessionUse {
   private val coordinator = WeakReference(coordinator)
-  private val ended = AtomicBoolean(false)
+  private val endedByClient = AtomicBoolean(false)
+  private val endedByModule = AtomicBoolean(false)
 
-  suspend fun awaitActivation() {
-    if (ended.get()) {
+  val isEndedByClient: Boolean
+    get() = endedByClient.get()
+
+  private val isEnded: Boolean
+    get() = endedByClient.get() || endedByModule.get()
+
+  override suspend fun awaitActivation() {
+    if (isEnded) {
       throw SessionUseEndedException(client)
     }
     activation.await()
   }
 
-  fun update(requirements: SessionRequirements) {
-    if (!ended.get()) {
+  override fun update(requirements: SessionRequirements) {
+    if (!isEnded) {
       coordinator.get()?.update(id, requirements)
     }
   }
 
-  fun end() {
-    if (ended.compareAndSet(false, true)) {
+  override fun end() {
+    if (endedByClient.compareAndSet(false, true)) {
       activation.completeExceptionally(SessionUseEndedException(client))
-      coordinator.get()?.end(id)
+      if (!endedByModule.get()) {
+        coordinator.get()?.end(id)
+      }
     }
   }
 
-  override fun close() = end()
+  fun markEndedByModule() {
+    endedByModule.set(true)
+  }
 }
 
-/** Keep a reference and close it when it is no longer needed. */
-class SessionHold internal constructor(
-  internal val id: Long,
+internal class CoordinatorSessionHold(
+  val id: Long,
   private val client: String,
-  internal val activation: CompletableDeferred<Unit>,
+  val activation: CompletableDeferred<Unit>,
   coordinator: SessionCoordinator
-) : AutoCloseable {
+) : SessionHold {
   private val coordinator = WeakReference(coordinator)
   private val released = AtomicBoolean(false)
 
-  suspend fun awaitActivation() {
+  override suspend fun awaitActivation() {
     if (released.get()) {
       throw SessionUseEndedException(client)
     }
     activation.await()
   }
 
-  fun release() {
+  override fun release() {
     if (released.compareAndSet(false, true)) {
       activation.completeExceptionally(SessionUseEndedException(client))
       coordinator.get()?.end(id)
     }
   }
-
-  override fun close() = release()
 }

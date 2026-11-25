@@ -3,6 +3,7 @@ package expo.modules.mediasession
 import android.media.AudioManager
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.mediasession.service.FakeMediaPlayerOwner
+import kotlinx.coroutines.CompletableDeferred
 
 internal class FakeSessionBackend : SessionBackend {
   sealed class Call {
@@ -188,3 +189,43 @@ internal val MediaSessionManager.nowPlayingOwnerId: String?
 
 internal val NowPlayingStack.ownerId: String?
   get() = owner.testId
+
+internal val SessionUse.id: Long
+  get() = (this as CoordinatorSessionUse).id
+
+internal val SessionUse.activation: CompletableDeferred<Unit>
+  get() = (this as CoordinatorSessionUse).activation
+
+internal class RecordingUseDelegate : SessionUseDelegate {
+  private val names = mutableMapOf<SessionUse, String>()
+  private val recorded = mutableListOf<Pair<SessionUse, (String) -> String>>()
+
+  val commands: List<String>
+    get() = recorded.map { (use, format) -> format(names[use] ?: "?") }
+
+  fun name(use: SessionUse, name: String) {
+    names[use] = name
+  }
+
+  fun clear() = recorded.clear()
+
+  override fun sessionUsePause(use: SessionUse, reason: SessionPauseReason) {
+    recorded.add(use to { name -> "pause $name ${reason.raw}" })
+  }
+
+  override fun sessionUseResume(use: SessionUse) {
+    recorded.add(use to { name -> "resume $name" })
+  }
+
+  override fun sessionUseDuck(use: SessionUse, isDucked: Boolean) {
+    recorded.add(use to { name -> "duck $name $isDucked" })
+  }
+
+  override fun sessionUseDidFail(use: SessionUse, error: CodedException) {
+    recorded.add(use to { name -> "failed $name" })
+  }
+
+  override fun sessionUseDidEnd(use: SessionUse) {
+    recorded.add(use to { name -> "ended $name" })
+  }
+}

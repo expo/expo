@@ -100,7 +100,7 @@ class NowPlayingClaimTest {
     val claim = manager.offerNowPlaying(FakeNowPlayingOwner("podcast"), NowPlayingInfo(title = "Podcast"), playback)
     run()
 
-    manager.clearNowPlayingClaimReference(claim)
+    manager.clearNowPlayingClaimReference(claim as ManagerNowPlayingClaim)
     manager.setPolicy(AudioPolicyUpdate(interruptionMode = InterruptionMode.DO_NOT_MIX))
     run()
 

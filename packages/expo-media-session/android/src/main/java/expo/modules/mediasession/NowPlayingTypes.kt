@@ -125,8 +125,7 @@ interface MediaPlayerOwner : NowPlayingOwner {
   val player: Player
 }
 
-/** Keep a reference while the owner shows on the lock screen, and close it when the owner stops. */
-class NowPlayingClaim internal constructor(internal val id: Long, manager: MediaSessionManager) : AutoCloseable {
+internal class ManagerNowPlayingClaim(val id: Long, manager: MediaSessionManager) : NowPlayingClaim {
   private val manager = WeakReference(manager)
   private val withdrawn = AtomicBoolean(false)
   private val release = ClaimRelease(id, this.manager, withdrawn)
@@ -137,19 +136,17 @@ class NowPlayingClaim internal constructor(internal val id: Long, manager: Media
     FinalizeGuardian(release)
   }
 
-  fun update(info: NowPlayingInfo, commands: Set<RemoteCommandKind>? = null) {
+  override fun update(info: NowPlayingInfo, commands: Set<RemoteCommandKind>?) {
     if (!withdrawn.get()) {
       manager.get()?.updateNowPlaying(id, info, commands?.toSet())
     }
   }
 
-  fun withdraw() {
+  override fun withdraw() {
     if (withdrawn.compareAndSet(false, true)) {
       manager.get()?.withdrawNowPlaying(id)
     }
   }
-
-  override fun close() = withdraw()
 }
 
 // Runs on the Cleaner or finalizer thread; it must not reference the claim.
