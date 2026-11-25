@@ -89,12 +89,12 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
 
   @objc
   public func isReactInstanceValid() -> Bool {
-    return self.reactNativeFactory?.rootViewFactory.value(forKey: "reactHost") != nil
+    return self.reactNativeFactory?.rootViewFactory.reactHost != nil
   }
 
   @objc
   public func destroyReactInstance() {
-    self.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "reactHost")
+    self.reactNativeFactory?.rootViewFactory.reactHost = nil
   }
 
   // MARK: EXDevelopmentClientControllerDelegate implementations
@@ -107,7 +107,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     self.reactNativeFactory = reactDelegate.reactNativeFactory as? RCTReactNativeFactory
 
     // Reset rctAppDelegate so we can relaunch the app
-    self.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
+    self.reactNativeFactory?.rootViewFactory.reactHost = nil
 
     let rootView = reactDelegate.reactNativeFactory.recreateRootView(
       withBundleURL: developmentClientController.sourceUrl(),
