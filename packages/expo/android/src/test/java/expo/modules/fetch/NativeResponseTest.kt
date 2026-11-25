@@ -60,6 +60,18 @@ internal class NativeResponseTest {
   }
 
   @Test
+  fun `should discard buffered bytes when reading the response body fails`() {
+    val response = newResponse()
+
+    response.onStarted()
+    response.onResponse(call, truncatedResponse("partial"))
+    awaitIdle()
+
+    assertThat(response.bodyUsed).isTrue()
+    assertThat(response.sink.finalize(directBuffer = false).array()).isEmpty()
+  }
+
+  @Test
   fun `startStreaming throws the recorded error after a truncated body`() {
     val response = newResponse()
 

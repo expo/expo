@@ -175,6 +175,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
       if (this@NativeResponse.state == ResponseState.ERROR_RECEIVED) {
         // `pumpResponseBodyStream` already recorded the failure. Overwriting it with
         // BODY_COMPLETED would hand JS a truncated body as a complete one.
+        sink.discard()
         emit("readyForJSFinalization")
         return@launch
       }
