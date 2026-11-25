@@ -45,12 +45,6 @@ NS_SWIFT_NAME(WorkletRuntimeHandle)
  */
 - (BOOL)runSync:(NS_NOESCAPE void (^)(void *runtimePointer))block NS_SWIFT_NAME(runSync(_:));
 
-/**
- Runs `block` with the raw `jsi::Runtime *` of the worklet runtime, which stays alive while `block` runs, and returns
- YES. Returns NO without running `block` when the runtime is gone.
- */
-- (BOOL)withRuntimePointer:(NS_NOESCAPE void (^)(void *runtimePointer))block NS_SWIFT_NAME(withRuntimePointer(_:));
-
 @end
 
 NS_ASSUME_NONNULL_END

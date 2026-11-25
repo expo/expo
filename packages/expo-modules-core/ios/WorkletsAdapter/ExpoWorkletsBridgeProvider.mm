@@ -237,20 +237,6 @@ static jsi::Value callWorklet(jsi::Runtime &rt, std::shared_ptr<worklets::Serial
   return handle;
 }
 
-- (BOOL)withRuntimePointerOfRuntimeHandle:(id)runtimeHandle block:(NS_NOESCAPE void (^)(void *runtimePointer))block
-{
-  ExpoWorkletsRuntimeHandle *runtimeWrapper = runtimeHandleFromOpaqueHandle(runtimeHandle, @"resolve");
-  if (!runtimeWrapper) {
-    return NO;
-  }
-  auto workletRuntime = runtimeWrapper->runtime.lock();
-  if (!workletRuntime) {
-    return NO;
-  }
-  block(&worklets::getJSIRuntimeFromWorkletRuntime(workletRuntime));
-  return YES;
-}
-
 - (void)scheduleWorkletWithRuntimeHandle:(id)runtimeHandle
                             serializable:(EXJavaScriptSerializable *)serializable
                                arguments:(NSArray *)arguments

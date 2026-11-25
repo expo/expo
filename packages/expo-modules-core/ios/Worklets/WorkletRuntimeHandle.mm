@@ -64,9 +64,4 @@
   return [_provider runSyncWithRuntimeHandle:_runtimeHandle block:block];
 }
 
-- (BOOL)withRuntimePointer:(NS_NOESCAPE void (^)(void *runtimePointer))block
-{
-  return [_provider withRuntimePointerOfRuntimeHandle:_runtimeHandle block:block];
-}
-
 @end

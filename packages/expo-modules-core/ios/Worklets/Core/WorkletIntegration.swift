@@ -33,10 +33,8 @@ public final class WorkletIntegration: NSObject {
       return {
         var workletRuntime: WorkletRuntime?
         // Making the wrapper calls JSI on the UI runtime, which the JavaScript thread can use at the same time.
-        _ = unsafeHandle.runSync {
-          _ = unsafeHandle.withRuntimePointer { runtimePointer in
-            workletRuntime = WorkletRuntime(runtimePointer: runtimePointer)
-          }
+        _ = unsafeHandle.runSync { runtimePointer in
+          workletRuntime = WorkletRuntime(runtimePointer: runtimePointer)
         }
         return workletRuntime
       }
