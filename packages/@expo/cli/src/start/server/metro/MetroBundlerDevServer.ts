@@ -194,7 +194,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private hmrServer: MetroHmrServer<MetroHmrClient> | null = null;
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
   private loaderGraphListeners: Map<string, () => void> = new Map();
-  private pendingLoaderInvalidationChangeIds: Set<string> = new Set();
+  private loaderRouteFiles: Set<string> = new Set();
+  private pendingLoaderInvalidations: Map<string, { listeners: number; isInvalid: boolean }> =
+    new Map();
   isReactServerComponentsEnabled?: boolean;
   isReactServerRoutesEnabled?: boolean;
 
@@ -1658,7 +1660,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           unlisten();
         }
         this.loaderGraphListeners.clear();
-        this.pendingLoaderInvalidationChangeIds.clear();
+        this.loaderRouteFiles.clear();
+        this.pendingLoaderInvalidations.clear();
         callback?.(err);
       });
     };
@@ -1957,9 +1960,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       debugEvent('loader_route_matched', { pathname: location.pathname, file: route.file });
 
       const appDir = path.join(this.projectRoot, routerRoot);
-      let modulePath = route.file;
-      modulePath = path.isAbsolute(modulePath) ? modulePath : path.join(appDir, modulePath);
-      modulePath = modulePath.replace(/\.(js|ts)x?$/, '');
+      const routeFile = path.isAbsolute(route.file) ? route.file : path.join(appDir, route.file);
+      const modulePath = routeFile.replace(/\.(js|ts)x?$/, '');
 
       const routeModule = await this.ssrLoadModule<any>(modulePath, {
         environment: 'node',
@@ -1967,6 +1969,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
 
       if (routeModule.loader) {
+        this.loaderRouteFiles.add(routeFile);
         const maybeResponse = await routeModule.loader(request, route.params);
 
         let data: unknown;
@@ -1993,6 +1996,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         return Response.json(data ?? null, { headers });
       }
 
+      this.loaderRouteFiles.delete(routeFile);
       return undefined;
     } catch (error: any) {
       throw Object.assign(
@@ -2101,50 +2105,103 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return;
     }
 
-    const deltaBundler = this.metro.getBundler().getDeltaBundler();
+    const bundler = this.metro.getBundler();
+    let errorMessage: string | undefined;
+    const updateGraphAsync = async (): Promise<boolean> => {
+      const hadLoader = this.hasLoader(graph, resolvedEntryFilePath);
+      try {
+        const revision = await bundler.getRevisionByGraphId(graphId);
+        if (!revision) {
+          return false;
+        }
+        const { delta } = await bundler.updateGraph(revision, false);
+        // The first update after an error must invalidate, also when the graph is the same again.
+        if (!hasGraphChanges(delta) && errorMessage === undefined) {
+          return false;
+        }
+        errorMessage = undefined;
+      } catch (error: any) {
+        if (errorMessage === error?.message) {
+          return false;
+        }
+        errorMessage = error?.message;
+        debugEvent('loader_bundle_failed', {
+          path: resolvedEntryFilePath,
+          error: debugEvent.error(error as Error),
+        });
+      }
+
+      if (!hadLoader && !this.hasLoader(graph, resolvedEntryFilePath)) {
+        return false;
+      }
+
+      debugEvent('loader_graph_changed', { path: resolvedEntryFilePath });
+      return true;
+    };
+
     // Metro's public type for `listen()` declares the callback as `() => Promise<void>`, but at
     // runtime DeltaCalculator emits `{ logger, changeId }`. Cast through a narrow local type so
     // we can dedupe shared file-change events across multiple loader graphs.
     type DeltaChangeEvent = { changeId?: string };
-    const onChange = async (changeEvent?: DeltaChangeEvent) => {
-      debugEvent('loader_graph_changed', { path: resolvedEntryFilePath });
-
-      if (!this.shouldBroadcastLoaderInvalidation(changeEvent?.changeId)) {
-        return;
-      }
-
-      if (typeof globalThis.__c === 'function') {
-        globalThis.__c();
-      }
-
-      this.broadcastMessage('sendDevCommand', {
-        name: 'loader-invalidate',
-        data: { scope: 'all' },
+    // Metro's `getDelta()` is not safe for more than two concurrent calls on one graph.
+    let activeUpdate: Promise<boolean> = Promise.resolve(false);
+    let queuedUpdate: Promise<boolean> | null = null;
+    const onChange = (changeEvent?: DeltaChangeEvent) => {
+      queuedUpdate ??= activeUpdate.then(() => {
+        queuedUpdate = null;
+        return updateGraphAsync();
       });
+      activeUpdate = queuedUpdate;
+      return this.invalidateLoadersAfterChangeAsync(changeEvent?.changeId, queuedUpdate);
     };
 
-    const unlisten = deltaBundler.listen(graph, onChange as () => Promise<void>);
+    const unlisten = bundler.getDeltaBundler().listen(graph, onChange as () => Promise<void>);
     this.loaderGraphListeners.set(graphId, unlisten);
   }
 
-  private shouldBroadcastLoaderInvalidation(changeId?: string) {
+  // The transformer does not mark every form of loader export, such as `export { loader }`.
+  private hasLoader(graph: GraphRevision['graph'], resolvedEntryFilePath: string) {
+    return hasLoaderExport(graph) || this.loaderRouteFiles.has(resolvedEntryFilePath);
+  }
+
+  private async invalidateLoadersAfterChangeAsync(
+    changeId: string | undefined,
+    isGraphInvalid: Promise<boolean>
+  ) {
     if (!changeId) {
-      return true;
+      if (await isGraphInvalid) {
+        this.invalidateLoaders();
+      }
+      return;
     }
 
-    if (this.pendingLoaderInvalidationChangeIds.has(changeId)) {
-      return false;
+    let change = this.pendingLoaderInvalidations.get(changeId);
+    if (!change) {
+      change = { listeners: 0, isInvalid: false };
+      this.pendingLoaderInvalidations.set(changeId, change);
     }
 
-    this.pendingLoaderInvalidationChangeIds.add(changeId);
-    // All listeners for a single filesystem change are dispatched synchronously from one
-    // DeltaCalculator EventEmitter.emit(), so dedupe collisions resolve within microseconds.
-    // The timeout exists only to bound memory: without it, this Set would accumulate one entry
-    // per change for the lifetime of the dev server.
-    setTimeout(() => {
-      this.pendingLoaderInvalidationChangeIds.delete(changeId);
-    }, 500);
-    return true;
+    change.listeners++;
+    if (await isGraphInvalid) {
+      change.isInvalid = true;
+    }
+    if (--change.listeners === 0) {
+      this.pendingLoaderInvalidations.delete(changeId);
+      if (change.isInvalid) {
+        this.invalidateLoaders();
+      }
+    }
+  }
+
+  private invalidateLoaders() {
+    if (typeof globalThis.__c === 'function') {
+      globalThis.__c();
+    }
+
+    this.broadcastMessage('sendDevCommand', {
+      name: 'loader-invalidate',
+      data: { scope: 'all' },
+    });
   }
 
   // Direct Metro access
@@ -2277,6 +2334,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         transformOptions.customTransformOptions?.isLoaderBundle === 'true'
       ) {
         this.setupLoaderGraphListener(revision.graphId, resolvedEntryFilePath, revision.graph);
+        // This request can take a file change before the graph listener does.
+        if (
+          !delta.reset &&
+          hasGraphChanges(delta) &&
+          this.hasLoader(revision.graph, resolvedEntryFilePath)
+        ) {
+          this.invalidateLoaders();
+        }
       }
 
       bundlePerfLogger?.annotate({
@@ -2508,6 +2573,25 @@ function getBuildID(buildNumber: number): string {
 
 function unique<T>(array: T[]): T[] {
   return Array.from(new Set(array));
+}
+
+function hasGraphChanges(delta: DeltaResult): boolean {
+  return delta.added.size > 0 || delta.modified.size > 0 || delta.deleted.size > 0;
+}
+
+function hasLoaderExport(graph: GraphRevision['graph']): boolean {
+  for (const entryPoint of graph.entryPoints) {
+    const module = graph.dependencies.get(entryPoint);
+    if (
+      module?.output.some(
+        (output) =>
+          typeof (output.data as { loaderReference?: unknown } | null)?.loaderReference === 'string'
+      )
+    ) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function getStreamingCssAssetsFromSerialAssets(
