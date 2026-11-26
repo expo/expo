@@ -76,11 +76,33 @@ public class AssetModule: Module {
       return
     }
 
-    let downloadTask = URLSession.shared.downloadTask(with: url) { urlOrNil, _, _ in
-      guard let fileURL = urlOrNil else {
+    // http(s) only. The download starts after `downloadAsync` has left the JS thread, and the
+    // native signature cannot take a request id, so this entry has no initiator.
+    let requestId = (url.scheme == "http" || url.scheme == "https") ? ExpoNetworkReporter.makeRequestId() : nil
+    let request = NSMutableURLRequest(url: url)
+    if let requestId {
+      ExpoNetworkReporter.mark(request, requestId: requestId)
+      ExpoNetworkReporter.shared.willSendRequest(requestId, request: request as URLRequest)
+    }
+
+    var downloadTask: URLSessionDownloadTask?
+    downloadTask = URLSession.shared.downloadTask(with: request as URLRequest) { fileURL, response, error in
+      if let requestId, let response {
+        ExpoNetworkReporter.shared.didReceiveResponse(requestId, response: response)
+      }
+      guard let fileURL else {
+        let cancelled = (error as NSError?)?.code == NSURLErrorCancelled
+        if let requestId {
+          ExpoNetworkReporter.shared.didFailLoading(requestId, cancelled: cancelled)
+        }
         promise.reject(UnableToDownloadAssetException(url))
         return
       }
+      // The bytes stay in the downloaded file. Reading them would pull large assets into the preview buffer.
+      if let requestId {
+        ExpoNetworkReporter.shared.didFinishLoading(requestId, encodedDataLength: Int(downloadTask?.countOfBytesReceived ?? 0))
+      }
+
       do {
         // the file may already exist, so we need to remove it first
         try? FileManager.default.removeItem(at: localUrl)
@@ -90,6 +112,6 @@ public class AssetModule: Module {
         promise.reject(UnableToSaveAssetToDirectoryException(localUrl))
       }
     }
-    downloadTask.resume()
+    downloadTask?.resume()
   }
 }
