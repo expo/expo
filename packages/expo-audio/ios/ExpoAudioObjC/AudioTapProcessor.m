@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import "AudioTapProcessor.h"
+#import <ExpoAudio/AudioTapProcessor.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <os/lock.h>
 

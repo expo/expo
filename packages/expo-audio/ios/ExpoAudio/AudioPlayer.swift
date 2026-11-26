@@ -1,6 +1,12 @@
 import ExpoModulesCore
 import Combine
 
+// SwiftPM compiles ExpoAudio and ExpoAudioObjC as separate modules; CocoaPods builds them
+// as one pod target where Swift sees the Objective-C source implicitly.
+#if canImport(ExpoAudioObjC)
+import ExpoAudioObjC
+#endif
+
 private enum AudioConstants {
   static let playbackStatus = "playbackStatusUpdate"
   static let audioSample = "audioSampleUpdate"
