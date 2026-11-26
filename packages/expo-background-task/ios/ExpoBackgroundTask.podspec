@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoTaskManager'
 
   s.source_files = "**/*.{h,m,swift}"
-  s.exclude_files = 'Tests/'
+  s.exclude_files = 'ExpoBackgroundTaskTests/'
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
@@ -31,6 +31,6 @@ Pod::Spec.new do |s|
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
 
-    test_spec.source_files = 'Tests/**/*.{m,swift}'
+    test_spec.source_files = 'ExpoBackgroundTaskTests/**/*.{m,swift}'
   end
 end
