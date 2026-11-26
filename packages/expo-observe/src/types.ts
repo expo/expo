@@ -183,6 +183,15 @@ export type ObserveConfig = {
    */
   errorHandlingEnabled?: boolean;
   /**
+   * Long tasks on the JavaScript thread that last longer than this many milliseconds are reported
+   * as `js.exception` warnings. The value is compared with the duration of the whole task, as
+   * React Native reports it. React Native reports only tasks that block the JavaScript thread for
+   * at least 50 ms without a break, so a smaller value has no effect.
+   *
+   * @default 500
+   */
+  longTaskThreshold?: number;
+  /**
    * Opt in to per-integration behavior. See the [Expo Router](/eas/observe/integrations/expo-router/)
    * and [React Navigation](/eas/observe/integrations/react-navigation/) integrations, or
    * [integrate your own package](/eas/observe/integrations/third-party/).
