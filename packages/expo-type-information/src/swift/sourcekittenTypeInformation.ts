@@ -220,6 +220,33 @@ const convertibleTypesConversions = new Map<string, ConvertibleType>([
   ['Data', ConvertibleType.UINT8_ARRAY],
 ]);
 
+function mapParametrizedTypeToTsType(parametrizedType: ParametrizedType): Type {
+  if (isEitherTypeIdentifier(parametrizedType.name)) {
+    return {
+      kind: TypeKind.SUM,
+      type: { types: parametrizedType.types },
+    };
+  } else if (parametrizedType.name === 'ValueOrUndefined') {
+    return {
+      kind: TypeKind.SUM,
+      type: {
+        types: [parametrizedType.types[0]!, { kind: TypeKind.BASIC, type: BasicType.UNDEFINED }],
+      },
+    };
+  } else if (parametrizedType.name === 'SharedRef') {
+    return {
+      kind: TypeKind.CONVERTIBLE,
+      // TODO(@HubertBer) Ignore the typing of `SharedRef` for now, need to handle it better in the future.
+      type: ConvertibleType.SHARED_REF,
+    };
+  }
+
+  return {
+    kind: TypeKind.PARAMETRIZED,
+    type: parametrizedType,
+  };
+}
+
 function mapSwiftTypeToTsType(type?: string): Type {
   if (!type) {
     return { kind: TypeKind.BASIC, type: BasicType.UNRESOLVED };
@@ -252,17 +279,7 @@ function mapSwiftTypeToTsType(type?: string): Type {
 
   if (isParametrizedType(type)) {
     const parametrizedType = unwrapParametrizedType(type);
-    if (isEitherTypeIdentifier(parametrizedType.name)) {
-      return {
-        kind: TypeKind.SUM,
-        type: { types: parametrizedType.types },
-      };
-    }
-
-    return {
-      kind: TypeKind.PARAMETRIZED,
-      type: parametrizedType,
-    };
+    return mapParametrizedTypeToTsType(parametrizedType);
   }
 
   const tsBasicType = basicTypesConversions.get(type);
@@ -664,11 +681,16 @@ async function parseModuleClassStructure(
 
   const removeImplicitThis = (functionDeclaration: FunctionDeclaration) => {
     const firstArg = functionDeclaration.arguments[0];
+    const firstArgIsNotAnnotated =
+      firstArg &&
+      firstArg.type.kind === TypeKind.BASIC &&
+      firstArg.type.type === BasicType.UNRESOLVED;
     if (
-      functionDeclaration.isStatic ||
-      firstArg === undefined ||
-      firstArg.type.kind !== TypeKind.IDENTIFIER ||
-      firstArg.type.type !== name
+      !firstArgIsNotAnnotated &&
+      (functionDeclaration.isStatic ||
+        firstArg === undefined ||
+        firstArg.type.kind !== TypeKind.IDENTIFIER ||
+        firstArg.type.type !== name)
     ) {
       return;
     }
