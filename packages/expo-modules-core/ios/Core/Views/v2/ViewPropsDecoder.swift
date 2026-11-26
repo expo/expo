@@ -194,5 +194,24 @@ public final class ViewPropsDecoder<Props: AnyViewProps>: @unchecked Sendable {
 /// doesn't include it.
 @usableFromInline
 internal func reportUndecodableProp(_ propName: String, of viewName: String, error: any Error) {
-  log.warn("Can't decode the '\(propName)' prop of '\(viewName)', so it keeps its value: \(error)")
+  guard
+    error is Exceptions.AppContextNotFound
+      || (error as? ChainableException)?.isCausedBy(Exceptions.AppContextNotFound.self) == true
+  else {
+    log.warn("Can't decode the '\(propName)' prop of '\(viewName)', so it keeps its value: \(error)")
+    return
+  }
+  // Without `installOnUIRuntime`, the worklets UI runtime has no app context, and Reanimated sends a decode there on
+  // each frame of an animation.
+  let isFirstReport = reportedPropsWithoutAppContext.withLock { reported in
+    reported.insert("\(viewName).\(propName)").inserted
+  }
+  if isFirstReport {
+    log.warn(
+      "The '\(propName)' prop of '\(viewName)' wasn't applied: its type needs Expo in the JavaScript runtime that decodes it, for example the worklets UI runtime, where Reanimated's animations run. Call `installOnUIRuntime(getUIRuntimeHolder())` once at startup, with `installOnUIRuntime` from `expo` and `getUIRuntimeHolder` from `react-native-worklets`. Otherwise, set it from React. Expo logs this only once for each prop"
+    )
+  }
 }
+
+/// The props whose decode needed an app context, as "view.prop", so that each one is reported only once.
+private let reportedPropsWithoutAppContext = Mutex<Set<String>>([])
