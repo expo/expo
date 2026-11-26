@@ -5404,3 +5404,140 @@ describe('a precompiled expo-widgets whose widget extension references its sourc
     expect(thrown.message).toContain(rerunSpmUpdate);
   });
 });
+
+describe('the xcconfig of the widget extension', () => {
+  captureConsole({ each: true });
+
+  afterEach(() => {
+    emitDirectPackage.mockReset();
+    runDumpPackage.mockReset();
+    restoreModuleMocks();
+  });
+
+  const spmPackage = (productName) => ({
+    url: `https://example.com/${productName}.git`,
+    productName,
+    version: { exact: '1.0.0' },
+  });
+  const rnCoreBinaries = [
+    '"$(RN_SPM_REACT_BINARY)"',
+    '"$(RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY)"',
+    '"$(RN_SPM_HERMES_BINARY)"',
+  ];
+
+  /**
+   * Syncs an app with expo-widgets (depending on ExpoModulesCore and ExpoUI, which links the
+   * UILib Swift package) and expo-file-system (linking FsLib), which the widget does not use.
+   * Every pod is precompiled, except ExpoWidgets when `widgetsFromSource`.
+   */
+  function sync({ widgetsFromSource }) {
+    const tmp = makeTempDir('expo-spm-widget-xcconfig-');
+    fs.mkdirSync(path.join(tmp, 'app', 'ios'), { recursive: true });
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const uiRoot = path.join(tmp, 'expo-ui');
+    const ui = pureSwiftModule(uiRoot, 'ExpoUI', spec("  s.dependency 'ExpoModulesCore'"));
+    const fileSystemRoot = path.join(tmp, 'expo-file-system');
+    const fileSystem = pureSwiftModule(
+      fileSystemRoot,
+      'ExpoFileSystem',
+      spec("  s.dependency 'ExpoModulesCore'")
+    );
+    const widgetsRoot = path.join(tmp, 'expo-widgets');
+    const widgets = pureSwiftModule(
+      widgetsRoot,
+      'ExpoWidgets',
+      spec("  s.dependency 'ExpoModulesCore'", "  s.dependency 'ExpoUI'")
+    );
+    if (widgetsFromSource) {
+      fs.writeFileSync(path.join(widgetsRoot, 'Package.swift'), '// swift-tools-version: 6.0\n');
+      runDumpPackage.mockReturnValue(
+        dumpedManifest('expo-widgets', 'ExpoWidgets', { onCoreHeaders: true })
+      );
+      emitDirectPackage.mockReturnValue({
+        ok: {
+          packageDep: { name: 'expo-widgets', path: widgetsRoot },
+          productDeps: [{ name: 'ExpoWidgets', package: 'expo-widgets' }],
+          spmProductNames: [],
+          partlyProvidedPackages: [],
+        },
+      });
+    }
+    resolveExpoModules.mockReturnValue(
+      modulesOf([
+        coreAt(core),
+        ['expo-file-system', [['ExpoFileSystem', fileSystem]]],
+        ['@expo/ui', [['ExpoUI', ui]]],
+        ['expo-widgets', [['ExpoWidgets', widgets]]],
+      ])
+    );
+    prebuiltMetadata.mockReturnValue({
+      ExpoUI: metadataEntry(uiRoot, 'ExpoUI', { spmPackages: [spmPackage('UILib')] }),
+      ExpoFileSystem: metadataEntry(fileSystemRoot, 'ExpoFileSystem', {
+        spmPackages: [spmPackage('FsLib')],
+      }),
+    });
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      widgetsFromSource && frameworkName === 'ExpoWidgets'
+        ? null
+        : { id: frameworkName, frameworkName }
+    );
+    resolveSpmDependencyFrameworks.mockReturnValue([
+      { id: 'expo-fs-lib', frameworkName: 'FsLib' },
+      { id: 'expo-ui-lib', frameworkName: 'UILib' },
+    ]);
+    providerWrittenTo(path.join(tmp, 'out'));
+    const thrown = thrownBy(() => runPlugin(tmp));
+    const xcconfig = path.join(tmp, 'app', 'ios', 'ExpoSPM', 'ExpoWidgetsExtension.xcconfig');
+    return { tmp, thrown, xcconfig };
+  }
+
+  const linkerFlags = (xcconfig) => {
+    const lines = fs
+      .readFileSync(xcconfig, 'utf8')
+      .split('\n')
+      .filter((line) => /^OTHER_LDFLAGS\b/.test(line));
+    expect(lines).toHaveLength(1);
+    return lines[0].replace(/^OTHER_LDFLAGS\s*=\s*/, '').split(' ');
+  };
+
+  it('includes the React Native SwiftPM xcconfig', () => {
+    const { thrown, xcconfig } = sync({ widgetsFromSource: false });
+    expect(thrown).toBeNull();
+    expect(fs.readFileSync(xcconfig, 'utf8').split('\n')).toContain(
+      '#include "../ReactNativeSPM/ReactNativeSPM.xcconfig"'
+    );
+  });
+
+  it('links only the frameworks of a precompiled ExpoWidgets and its dependencies', () => {
+    const { thrown, xcconfig } = sync({ widgetsFromSource: false });
+    expect(thrown).toBeNull();
+    expect(linkerFlags(xcconfig)).toEqual([
+      '-ObjC',
+      ...rnCoreBinaries,
+      '"$(RN_SPM_EXPOMODULESCORE_BINARY)"',
+      '"$(RN_SPM_EXPOUI_BINARY)"',
+      '"$(RN_SPM_EXPOWIDGETS_BINARY)"',
+      '"$(RN_SPM_EXPO_UI_LIB_BINARY)"',
+    ]);
+  });
+
+  it('links only the frameworks the dependencies of a source ExpoWidgets need', () => {
+    const { thrown, xcconfig } = sync({ widgetsFromSource: true });
+    expect(thrown).toBeNull();
+    expect(linkerFlags(xcconfig)).toEqual([
+      '-ObjC',
+      ...rnCoreBinaries,
+      '"$(RN_SPM_EXPOMODULESCORE_BINARY)"',
+      '"$(RN_SPM_EXPOUI_BINARY)"',
+      '"$(RN_SPM_EXPO_UI_LIB_BINARY)"',
+    ]);
+  });
+
+  it('leaves an unchanged xcconfig untouched on the next sync', () => {
+    const { tmp, xcconfig } = sync({ widgetsFromSource: false });
+    const past = new Date('2020-01-01T00:00:00Z');
+    fs.utimesSync(xcconfig, past, past);
+    expect(thrownBy(() => runPlugin(tmp))).toBeNull();
+    expect(fs.statSync(xcconfig).mtime).toEqual(past);
+  });
+});

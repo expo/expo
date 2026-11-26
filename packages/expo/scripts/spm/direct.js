@@ -282,4 +282,5 @@ module.exports = {
   dumpModuleManifest,
   emitDirectPackage,
   headersStandInsOf,
+  writeIfChanged,
 };

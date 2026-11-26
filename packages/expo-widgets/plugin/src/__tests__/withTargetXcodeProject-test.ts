@@ -156,14 +156,14 @@ describe(withTargetXcodeProject, () => {
       ).toEqual([dependencyUuid]);
     });
 
-    it('bases every extension configuration on the React Native SwiftPM xcconfig', () => {
+    it('bases every extension configuration on the xcconfig of the Expo SwiftPM plugin', () => {
       for (const configuration of targetConfigurations(xcodeProject)) {
         const fileReference = object(
           xcodeProject,
           'PBXFileReference',
           configuration.baseConfigurationReference!
         );
-        expect(unquote(fileReference.path)).toBe('ReactNativeSPM/ReactNativeSPM.xcconfig');
+        expect(unquote(fileReference.path)).toBe('ExpoSPM/ExpoWidgetsExtension.xcconfig');
       }
     });
 
