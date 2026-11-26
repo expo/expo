@@ -155,7 +155,7 @@ describe('verify shouldRun', () => {
 // ---------------------------------------------------------------------------
 
 describe('releaseFlavor "stub" gating', () => {
-  const product = (releaseFlavor?: 'stub'): SPMProduct => ({
+  const product = (releaseFlavor?: SPMProduct['releaseFlavor']): SPMProduct => ({
     name: 'DevTool',
     podName: 'DevTool',
     platforms: ['iOS(.v15)'],
@@ -175,6 +175,7 @@ describe('releaseFlavor "stub" gating', () => {
       [product('stub'), 'Release', false],
       [product('stub'), 'Debug', true],
       [product(), 'Release', true],
+      [product('realAndStub'), 'Release', true],
     ];
     for (const [unitProduct, flavor, builds] of units) {
       const ctx = unitCtx(unitProduct, flavor);

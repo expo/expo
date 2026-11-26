@@ -162,6 +162,34 @@ describe('Frameworks path functions', () => {
       );
     });
   });
+
+  describe('release stub paths', () => {
+    const versionPrefix = path.join('3.16.7', '0.83.0', '1.0.0');
+
+    it('puts the stub in the release-stub flavor folder', () => {
+      const output = path.join(buildPath, 'output', 'release-stub', 'xcframeworks');
+      assert.equal(
+        Frameworks.getReleaseStubFrameworkPath(buildPath, 'ExpoFoo'),
+        path.join(output, 'ExpoFoo.xcframework')
+      );
+      assert.equal(
+        Frameworks.getReleaseStubTarballPath(buildPath, 'ExpoFoo'),
+        path.join(output, 'ExpoFoo.tar.gz')
+      );
+    });
+
+    it('puts the stub under the version prefix when one is given', () => {
+      const output = path.join(buildPath, 'output', versionPrefix, 'release-stub', 'xcframeworks');
+      assert.equal(
+        Frameworks.getReleaseStubFrameworkPath(buildPath, 'ExpoFoo', versionPrefix),
+        path.join(output, 'ExpoFoo.xcframework')
+      );
+      assert.equal(
+        Frameworks.getReleaseStubTarballPath(buildPath, 'ExpoFoo', versionPrefix),
+        path.join(output, 'ExpoFoo.tar.gz')
+      );
+    });
+  });
 });
 
 // ---------------------------------------------------------------------------

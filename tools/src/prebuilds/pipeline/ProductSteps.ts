@@ -17,7 +17,12 @@ import {
 } from '../HeadersXCFramework';
 import { SPMBuild } from '../SPMBuild';
 import { SPMGenerator } from '../SPMGenerator';
-import { findStubMismatchesAsync, isReleaseStub } from '../StubXCFramework';
+import {
+  addsReleaseStub,
+  findStubMismatchesAsync,
+  isReleaseStub,
+  releaseStubErrorPrefix,
+} from '../StubXCFramework';
 import { FrameworkVerifier } from '../Verifier';
 import type { PrebuildContext } from './Context';
 import type { Step, ProductStage } from './Types';
@@ -56,7 +61,8 @@ function assertDebugUnitComposed(ctx: PrebuildContext): void {
     return;
   }
   const { packageName } = ctx.currentPackage!;
-  const { name } = ctx.currentProduct!;
+  const product = ctx.currentProduct!;
+  const { name } = product;
   const debugUnit = ctx.statuses.find((s) => s.unitId === `${packageName}/${name}[Debug]`);
   const failed = !!debugUnit && Object.values(debugUnit.stages).includes('failed');
   if (!failed && debugUnit?.stages.compose === 'success' && !debugUnit.skipReason) {
@@ -66,8 +72,7 @@ function assertDebugUnitComposed(ctx: PrebuildContext): void {
     ? 'failed in this run'
     : `was skipped in this run${debugUnit?.skipReason ? ` (${debugUnit.skipReason})` : ''}`;
   throw new Error(
-    `Cannot compose the Release flavor of ${name}: its spm.config.json sets ` +
-      `"releaseFlavor": "stub", so the Release flavor is made from this run's Debug XCFramework, ` +
+    `${releaseStubErrorPrefix(product)} this run's Debug XCFramework, ` +
       `and the Debug flavor of ${name} ${outcome}. An older Debug XCFramework on disk is not ` +
       `used, because it may not match the current sources. Fix the Debug failure reported above, ` +
       `then run the prebuild again.`
@@ -75,12 +80,15 @@ function assertDebugUnitComposed(ctx: PrebuildContext): void {
 }
 
 /** A stub has no code to check; it only has to pair with its Debug flavor. */
-async function verifyReleaseStubAsync(ctx: PrebuildContext): Promise<void> {
+async function verifyReleaseStubAsync(
+  ctx: PrebuildContext,
+  stubXCFramework: string
+): Promise<void> {
   const { buildPath, outputVersionPrefix } = ctx.currentPackage!;
   const { name } = ctx.currentProduct!;
   const mismatches = await findStubMismatchesAsync(
     Frameworks.getFrameworkPath(buildPath, name, 'Debug', outputVersionPrefix),
-    Frameworks.getFrameworkPath(buildPath, name, 'Release', outputVersionPrefix)
+    stubXCFramework
   );
   if (mismatches.length > 0) {
     setStage(ctx, 'verify', 'failed');
@@ -90,7 +98,6 @@ async function verifyReleaseStubAsync(ctx: PrebuildContext): Promise<void> {
         `missing: ${mismatches.join(', ')}. Build both flavors in one run to remake the stub.`
     );
   }
-  setStage(ctx, 'verify', 'success');
 }
 
 // ---------------------------------------------------------------------------
@@ -245,6 +252,11 @@ export const composeStep: Step<PrebuildContext> = {
       );
     }
 
+    if (addsReleaseStub(product, flavor)) {
+      assertDebugUnitComposed(ctx);
+      await Frameworks.composeReleaseStubXCFrameworkAsync(pkg, product, ctx.request.signing);
+    }
+
     if (shouldWriteHeadersXCFramework(product, flavor, ctx.request.buildFlavors)) {
       await composeHeadersXCFrameworkAsync(pkg, product, flavor);
     }
@@ -270,8 +282,14 @@ export const verifyStep: Step<PrebuildContext> = {
     const product = ctx.currentProduct!;
     const flavor = ctx.currentFlavor!;
 
+    const { buildPath, outputVersionPrefix } = pkg;
+
     if (isReleaseStub(product, flavor)) {
-      await verifyReleaseStubAsync(ctx);
+      await verifyReleaseStubAsync(
+        ctx,
+        Frameworks.getFrameworkPath(buildPath, product.name, 'Release', outputVersionPrefix)
+      );
+      setStage(ctx, 'verify', 'success');
       return;
     }
 
@@ -292,6 +310,13 @@ export const verifyStep: Step<PrebuildContext> = {
       setStage(ctx, 'verify', 'warning');
     } else {
       setStage(ctx, 'verify', 'success');
+    }
+
+    if (addsReleaseStub(product, flavor)) {
+      await verifyReleaseStubAsync(
+        ctx,
+        Frameworks.getReleaseStubFrameworkPath(buildPath, product.name, outputVersionPrefix)
+      );
     }
   },
 };

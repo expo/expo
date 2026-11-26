@@ -157,6 +157,12 @@ be built in the same run or be on disk. Verification only checks that `Headers/`
 `Modules/module.modulemap` match the Debug flavor. Versioned bundles (macOS, Mac Catalyst) are not
 supported.
 
+A product that sets `"releaseFlavor": "realAndStub"` builds its Release flavor as usual. After that,
+the pipeline also makes the same stub from the Debug XCFramework and writes it to a third flavor
+folder: `output[/<versionPrefix>]/release-stub/xcframeworks/<Product>.xcframework`, with its
+`<Product>.tar.gz` beside it. The Debug flavor must be built in the same run or be on disk, and the
+stub gets the same verification as a `"stub"` Release flavor.
+
 ## Troubleshooting
 
 `No Package.swift file found`
