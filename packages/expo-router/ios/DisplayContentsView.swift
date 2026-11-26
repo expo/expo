@@ -50,7 +50,8 @@ class DisplayContentsView: RouterViewWithLogger {
           y: subview.center.y - size.height / 2,
           width: size.width,
           height: size.height
-        ))
+        )
+      )
     }
     let newBounds = content.isNull ? .zero : content
     let newCenter = CGPoint(x: fabricOrigin.x + newBounds.midX, y: fabricOrigin.y + newBounds.midY)
