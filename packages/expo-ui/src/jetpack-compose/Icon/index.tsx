@@ -87,7 +87,7 @@ export interface IconProps {
  * @hidden
  */
 export type NativeIconProps = Omit<IconProps, 'source' | 'tint'> & {
-  source: ImageResolvedAssetSource;
+  source: ImageResolvedAssetSource | null;
   tint?: ColorValue;
   inheritTint: boolean;
 };
@@ -109,7 +109,7 @@ function transformIconProps(props: IconProps): NativeIconProps {
     ...restProps,
     tint: tint ?? undefined,
     inheritTint: !tintIsExplicitlyNull,
-    source: Image.resolveAssetSource(source),
+    source: Image.resolveAssetSource(source) ?? null,
   };
 }
 
