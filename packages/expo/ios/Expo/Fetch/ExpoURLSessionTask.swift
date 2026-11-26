@@ -78,8 +78,13 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
       self,
       task: task,
       willPerformHTTPRedirection: response,
-      newRequest: request,
-      completionHandler: completionHandler)
+      newRequest: request
+    ) { [reportedRequestId] newRequest in
+      if let reportedRequestId, let newRequest {
+        ExpoNetworkReporter.shared.willFollowRedirect(reportedRequestId, request: newRequest, redirectResponse: response)
+      }
+      completionHandler(newRequest)
+    }
   }
 
   func urlSession(
