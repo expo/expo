@@ -5,12 +5,14 @@ import { vol } from 'memfs';
 import { diffAsync } from '../../gitPatch';
 import { moveAsync } from '../dir';
 import { generateNativeProjectsAsync } from '../generateNativeProjects';
+import * as logger from '../logger';
+import { revertNormalizeNativeProjectsAsync } from '../normalizeNativeProjects';
 import { patchProjectAsync } from '../patchProjectAsync';
 
 jest.mock('fs');
 jest.mock('fs/promises');
-jest.mock('glob', () => ({
-  glob: jest.fn(async () => []),
+jest.mock('../../patchFiles', () => ({
+  getPatchFilesAsync: jest.fn(async () => []),
 }));
 jest.mock('../../gitPatch', () => ({
   initializeGitRepoAsync: jest.fn(),
@@ -25,6 +27,32 @@ jest.mock('../generateNativeProjects', () => ({
 jest.mock('../dir', () => {
   const actualDir = jest.requireActual('../dir');
   return { ...actualDir, moveAsync: jest.fn(actualDir.moveAsync) };
+});
+jest.mock('../normalizeNativeProjects', () => {
+  const actual = jest.requireActual('../normalizeNativeProjects');
+  const fs = require('fs/promises');
+  const path = require('path');
+  return {
+    ...actual,
+    // The real iOS normalization needs a real Xcode project. This fake keeps its backup contract.
+    normalizeNativeProjectsAsync: jest.fn(
+      async ({ projectRoot, platform, workingDirectories, backup }) => {
+        if (platform !== 'ios') {
+          return {};
+        }
+        const pbxprojPath = path.join(projectRoot, 'ios/app.xcodeproj/project.pbxproj');
+        const backupFileMappings: Record<string, string> = {};
+        if (backup) {
+          const backupPath = path.join(workingDirectories.tmpDir, 'project.pbxproj');
+          await fs.copyFile(pbxprojPath, backupPath);
+          backupFileMappings[pbxprojPath] = backupPath;
+        }
+        await fs.writeFile(pbxprojPath, 'normalized pbxproj');
+        return backupFileMappings;
+      }
+    ),
+    revertNormalizeNativeProjectsAsync: jest.fn(actual.revertNormalizeNativeProjectsAsync),
+  };
 });
 jest.mock('../logger', () => ({
   log: jest.fn(),
@@ -90,10 +118,17 @@ describe(patchProjectAsync, () => {
       vol.fromJSON({
         '/app/android/build.gradle': 'original build.gradle',
         '/app/android/app/src/main/AndroidManifest.xml': 'original manifest',
+        '/app/ios/app.xcodeproj/project.pbxproj': 'original pbxproj',
+        '/app/ios/app/AppDelegate.swift': 'original AppDelegate',
       });
       jest.mocked(loadProjectEnv).mockReturnValue({ result: 'skipped', loaded: [] });
       jest.mocked(getConfig).mockReturnValue({
-        exp: { name: 'app', slug: 'app', android: { package: 'com.example.app' } },
+        exp: {
+          name: 'app',
+          slug: 'app',
+          android: { package: 'com.example.app' },
+          ios: { bundleIdentifier: 'com.example.app' },
+        },
       } as ReturnType<typeof getConfig>);
       const { ensureValidPlatforms } = jest.requireMock('patch-project-resolve-options');
       jest.mocked(ensureValidPlatforms).mockImplementationOnce((platforms: string[]) => platforms);
@@ -105,6 +140,13 @@ describe(patchProjectAsync, () => {
         '/app/android/app/src/main/AndroidManifest.xml': 'original manifest',
       });
       expect(vol.existsSync('/app/.patch-project-tmp/android')).toBe(false);
+    }
+
+    function mockGeneratedIosProject() {
+      jest.mocked(generateNativeProjectsAsync).mockImplementationOnce(async () => {
+        vol.fromJSON({ '/app/ios/app.xcodeproj/project.pbxproj': 'generated pbxproj' });
+        return 'checksum';
+      });
     }
 
     it('restores the native project when generating the template project fails', async () => {
@@ -156,6 +198,80 @@ describe(patchProjectAsync, () => {
         '/app/.patch-project-tmp/android/diff/android/app/src/main/AndroidManifest.xml':
           'original manifest',
       });
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'The original project is in /app/.patch-project-tmp/android/diff/android.'
+        )
+      );
+    });
+
+    it('restores the original ios project.pbxproj when generating the patch fails', async () => {
+      mockGeneratedIosProject();
+      jest.mocked(diffAsync).mockRejectedValueOnce(new Error('git diff failed'));
+
+      await expect(patchProjectAsync('/app', { platforms: ['ios'] })).rejects.toThrow(
+        'git diff failed'
+      );
+
+      expect(vol.toJSON('/app/ios')).toEqual({
+        '/app/ios/app.xcodeproj/project.pbxproj': 'original pbxproj',
+        '/app/ios/app/AppDelegate.swift': 'original AppDelegate',
+      });
+      expect(vol.existsSync('/app/.patch-project-tmp/ios')).toBe(false);
+    });
+
+    it('keeps the project.pbxproj backup when reverting it fails after a failed patch', async () => {
+      mockGeneratedIosProject();
+      jest.mocked(diffAsync).mockRejectedValueOnce(new Error('git diff failed'));
+      jest
+        .mocked(revertNormalizeNativeProjectsAsync)
+        .mockRejectedValueOnce(new Error('revert failed'));
+
+      await expect(patchProjectAsync('/app', { platforms: ['ios'] })).rejects.toThrow(
+        'git diff failed'
+      );
+
+      expect(vol.readFileSync('/app/ios/app/AppDelegate.swift', 'utf8')).toBe(
+        'original AppDelegate'
+      );
+      expect(vol.readFileSync('/app/.patch-project-tmp/ios/tmp/project.pbxproj', 'utf8')).toBe(
+        'original pbxproj'
+      );
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'The original native project is back in /app/ios, but patch-project could not restore some files that it changed.'
+        )
+      );
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.stringContaining(
+          '/app/.patch-project-tmp/ios/tmp/project.pbxproj -> /app/ios/app.xcodeproj/project.pbxproj'
+        )
+      );
+    });
+
+    it('keeps the project.pbxproj backup when reverting it fails after a successful patch', async () => {
+      mockGeneratedIosProject();
+      jest.mocked(diffAsync).mockImplementationOnce(async (_diffDir, patchFilePath) => {
+        vol.writeFileSync(patchFilePath, 'patch');
+      });
+      jest
+        .mocked(revertNormalizeNativeProjectsAsync)
+        .mockRejectedValueOnce(new Error('revert failed'))
+        .mockRejectedValueOnce(new Error('revert failed again'));
+
+      await expect(patchProjectAsync('/app', { platforms: ['ios'] })).rejects.toThrow(
+        'revert failed'
+      );
+
+      expect(vol.readFileSync('/app/ios/app/AppDelegate.swift', 'utf8')).toBe(
+        'original AppDelegate'
+      );
+      expect(vol.readFileSync('/app/.patch-project-tmp/ios/tmp/project.pbxproj', 'utf8')).toBe(
+        'original pbxproj'
+      );
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.stringContaining('The original native project is back in /app/ios')
+      );
     });
   });
 });

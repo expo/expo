@@ -58,10 +58,6 @@ export async function patchProjectAsync(
 
   for (const platform of options.platforms) {
     await platformSanityCheckAsync({ exp, projectRoot, platform });
-
-    await removePatchFilesAsync(patchRoot, platform);
-    await fs.mkdir(path.join(projectRoot, patchRoot), { recursive: true });
-
     await patchProjectForPlatformAsync({ projectRoot, platform, patchRoot, exp, options });
   }
 }
@@ -88,6 +84,9 @@ async function patchProjectForPlatformAsync({
   let originalProjectDir: string | null = null;
   let shouldRemoveWorkingDirectories = true;
   try {
+    await removePatchFilesAsync(patchRoot, platform);
+    await fs.mkdir(path.join(projectRoot, patchRoot), { recursive: true });
+
     debug(`Normalizing native project files for original project`);
     backupFileMappings = await normalizeNativeProjectsAsync({
       projectRoot,
@@ -154,7 +153,6 @@ async function patchProjectForPlatformAsync({
       platformDir,
       originalProjectDir,
       backupFileMappings,
-      workingRootDir: workingDirectories.rootDir,
     });
     throw error;
   } finally {
@@ -164,36 +162,63 @@ async function patchProjectForPlatformAsync({
   }
 }
 
-/** Returns `false` when the original files could not be restored and are still in the working directory. */
+/**
+ * Returns `false` when some original files are still in the working directory.
+ * The caller must then keep that directory.
+ */
 async function restoreOriginalProjectAsync({
   platformDir,
   originalProjectDir,
   backupFileMappings,
-  workingRootDir,
 }: {
   platformDir: string;
+  /** Where the original native project is, or `null` when it is already in `platformDir`. */
   originalProjectDir: string | null;
   backupFileMappings: BackupFileMappings;
-  workingRootDir: string;
 }): Promise<boolean> {
-  try {
-    if (originalProjectDir) {
+  if (originalProjectDir) {
+    try {
       debug(`Restoring the original native projects - originalProjectDir[${originalProjectDir}]`);
       await moveAsync(originalProjectDir, platformDir);
+    } catch (moveError) {
+      logger.error(
+        chalk.red(
+          `Could not move the original native project back to ${platformDir} after patch-project failed. ` +
+            `The original project is in ${originalProjectDir}. ` +
+            `Move it to ${platformDir} manually before you run patch-project again. ` +
+            `A later run can delete that directory.` +
+            (Object.keys(backupFileMappings).length > 0
+              ? `\nThen copy each backup over its file:` +
+                formatBackupFileMappings(backupFileMappings)
+              : '')
+        )
+      );
+      logger.error(moveError);
+      return false;
     }
+  }
+
+  try {
     await revertNormalizeNativeProjectsAsync(backupFileMappings);
-    return true;
-  } catch (restoreError) {
+  } catch (revertError) {
     logger.error(
       chalk.red(
-        `Could not restore the original native project to ${platformDir} after patch-project failed. ` +
-          `The original files are still in ${workingRootDir}. ` +
-          `Move them back manually before you run patch-project again, because the next run deletes that directory.`
+        `The original native project is back in ${platformDir}, but patch-project could not restore some files that it changed. ` +
+          `Copy each backup over its file before you run patch-project again. ` +
+          `A later run deletes the backups:` +
+          formatBackupFileMappings(backupFileMappings)
       )
     );
-    logger.error(restoreError);
+    logger.error(revertError);
     return false;
   }
+  return true;
+}
+
+function formatBackupFileMappings(backupFileMappings: BackupFileMappings): string {
+  return Object.entries(backupFileMappings)
+    .map(([originalPath, backupPath]) => `\n  ${backupPath} -> ${originalPath}`)
+    .join('');
 }
 
 async function removePatchFilesAsync(patchRoot: string, platform: ModPlatform): Promise<void> {
