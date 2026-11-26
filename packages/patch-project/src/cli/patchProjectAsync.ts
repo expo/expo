@@ -156,8 +156,8 @@ async function patchProjectForPlatformAsync({
       // A failed step may already have told the user to delete these directories.
       logger.log(
         hadPatchFileBackups
-          ? `Restored the original ${platform} project to ${platformDir} and the old patch files. Do not delete the android or ios directory, or those patch files.`
-          : `Restored the original ${platform} project to ${platformDir}. Do not delete the android or ios directory.`
+          ? `Restored the original ${platform} project to ${platformDir} and the old patch files. Do not delete ${platformDir} or those patch files.`
+          : `Restored the original ${platform} project to ${platformDir}. Do not delete ${platformDir}.`
       );
       await fs.rm(workingDirectories.rootDir, { recursive: true, force: true });
     }

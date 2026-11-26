@@ -163,7 +163,7 @@ describe(patchProjectAsync, () => {
 
       expectOriginalNativeProjectRestored();
       expect(logger.log).toHaveBeenCalledWith(
-        'Restored the original android project to /app/android. Do not delete the android or ios directory.'
+        'Restored the original android project to /app/android. Do not delete /app/android.'
       );
     });
 
@@ -231,7 +231,7 @@ describe(patchProjectAsync, () => {
       });
       expectOriginalNativeProjectRestored();
       expect(logger.log).toHaveBeenCalledWith(
-        'Restored the original android project to /app/android and the old patch files. Do not delete the android or ios directory, or those patch files.'
+        'Restored the original android project to /app/android and the old patch files. Do not delete /app/android or those patch files.'
       );
     });
 
