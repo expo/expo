@@ -1375,3 +1375,60 @@ describe('routes without /index suffix', () => {
     });
   });
 });
+
+it('keeps a single index in the stack when pushing a route whose guard is already false', async () => {
+  await renderRouter({
+    _layout: function Layout() {
+      return (
+        <Stack>
+          <Stack.Screen name="index" />
+          <Stack.Protected guard={false}>
+            <Stack.Screen name="private" />
+          </Stack.Protected>
+        </Stack>
+      );
+    },
+    index: () => <Text testID="index">Index</Text>,
+    private: () => <Text testID="private">Private</Text>,
+  });
+
+  await act(() => router.push('/private'));
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(
+    navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+  ).toStrictEqual(['index']);
+});
+
+it('keeps a single index in a nested stack when pushing a route whose guard is already false', async () => {
+  await renderRouter(
+    {
+      index: () => <Text testID="root">Root</Text>,
+      'nested/_layout': function Layout() {
+        return (
+          <Stack>
+            <Stack.Screen name="index" />
+            <Stack.Protected guard={false}>
+              <Stack.Screen name="private" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      'nested/index': () => <Text testID="index">Index</Text>,
+      'nested/private': () => <Text testID="private">Private</Text>,
+    },
+    { initialUrl: '/nested' }
+  );
+
+  await act(() => router.push('/nested/private'));
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(
+    navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+  ).toStrictEqual(['nested']);
+  expect(
+    navigationRef
+      .getRootState()
+      .routes[0]!.state!.routes[0]!.state!.routes.map((route) => route.name)
+  ).toStrictEqual(['index']);
+});
