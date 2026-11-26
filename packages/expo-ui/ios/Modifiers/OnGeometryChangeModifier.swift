@@ -3,15 +3,10 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct OnGeometryChangeModifier: ViewModifier, Record {
+internal struct OnGeometryChangeModifier: EventDispatchingViewModifier, Record {
   var eventDispatcher: EventDispatcher?
 
   init() {}
-
-  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
-    try self = .init(from: params, appContext: appContext)
-    self.eventDispatcher = eventDispatcher
-  }
 
   private func dispatch(_ frame: CGRect) {
     eventDispatcher?(["onGeometryChange": [

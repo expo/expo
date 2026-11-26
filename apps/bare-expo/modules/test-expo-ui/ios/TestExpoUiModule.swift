@@ -6,9 +6,7 @@ public class TestExpoUiModule: Module {
     Name("TestExpoUi")
 
     OnCreate {
-      ViewModifierRegistry.register("customBorder") { params, appContext, _ in
-        return try CustomBorderModifier(from: params, appContext: appContext)
-      }
+      ViewModifierRegistry.register("customBorder", CustomBorderModifier.self)
     }
 
     OnDestroy {

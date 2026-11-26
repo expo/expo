@@ -26,6 +26,9 @@ internal struct ContainerBackgroundModifier: ViewModifier, Record {
   @Field var container: ContainerBackgroundPlacementOptions?
 
   func body(content: Content) -> some View {
+#if DEBUG
+    let _ = warnIfWidgetPlacementIsUnavailable()
+#endif
 #if os(tvOS) || os(macOS)
     content
 #else

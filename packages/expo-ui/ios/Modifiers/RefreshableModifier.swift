@@ -29,16 +29,11 @@ internal final class RefreshableManager {
   }
 }
 
-internal struct RefreshableModifier: ViewModifier, Record {
+internal struct RefreshableModifier: EventDispatchingViewModifier, Record {
   var eventDispatcher: EventDispatcher?
   @State private var currentRefreshId: String?
 
   init() {}
-
-  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
-    try self = .init(from: params, appContext: appContext)
-    self.eventDispatcher = eventDispatcher
-  }
 
   func body(content: Content) -> some View {
     content
