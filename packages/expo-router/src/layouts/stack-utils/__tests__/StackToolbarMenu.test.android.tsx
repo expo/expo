@@ -50,6 +50,7 @@ jest.mock('@expo/ui/jetpack-compose', () => {
   ));
 
   return {
+    Badge: jest.fn((props) => <View testID="Badge" {...props} />),
     Box: jest.fn((props) => <View testID="Box" {...props} />),
     DropdownMenuGroup: jest.fn((props) => <View testID="DropdownMenuGroup" {...props} />),
     DropdownMenuItem,
@@ -307,17 +308,21 @@ describe('NativeToolbarMenu', () => {
       });
 
       it('passes accessibilityLabel to root Icon as contentDescription', async () => {
-        await render(<NativeToolbarMenu {...defaultProps} accessibilityLabel="More options" />);
+        await render(
+          <NativeToolbarMenu {...defaultProps} label="Menu" accessibilityLabel="More options" />
+        );
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
         expect(icon.props.contentDescription).toBe('More options');
       });
 
-      it('omits contentDescription when accessibilityLabel is not provided', async () => {
-        await render(<NativeToolbarMenu {...defaultProps} />);
+      it('uses label and badge as contentDescription when accessibilityLabel is not provided', async () => {
+        await render(
+          <NativeToolbarMenu {...defaultProps} label="More options" badge={{ value: '3' }} />
+        );
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
-        expect(icon.props.contentDescription).toBeUndefined();
+        expect(icon.props.contentDescription).toBe('More options, 3');
       });
 
       it('renders the IconButton and the DropdownMenuPopup in one Box', async () => {
