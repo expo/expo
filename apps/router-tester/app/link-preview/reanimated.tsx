@@ -20,7 +20,7 @@ export default function ReanimatedLinkPreview() {
   const offset = useSharedValue(0);
 
   const widthStyle = useAnimatedStyle(() => ({ width: width.value }));
-  const offsetStyle = useAnimatedStyle(() => ({ transform: [{ translateX: offset.value }] }));
+  const offsetStyle = useAnimatedStyle(() => ({ marginLeft: offset.value }));
 
   return (
     <ScrollView style={{ backgroundColor: '#84DCC6' }} contentInsetAdjustmentBehavior="automatic">
@@ -52,11 +52,11 @@ export default function ReanimatedLinkPreview() {
         />
         <Link href="/link-preview/one" asChild>
           <Link.Trigger>
-            <Pressable testID="reanimated-move-trigger">
-              <Animated.View style={[styles.trigger, offsetStyle]}>
+            <AnimatedPressable testID="reanimated-move-trigger" style={offsetStyle}>
+              <View style={styles.trigger}>
                 <Text>Animated move</Text>
-              </Animated.View>
-            </Pressable>
+              </View>
+            </AnimatedPressable>
           </Link.Trigger>
           <Link.Preview />
         </Link>
