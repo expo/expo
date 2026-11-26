@@ -11,11 +11,15 @@ export function SegmentedControlTab({
   enabled,
   selected,
   tintColor,
+  activeTextColor,
+  inactiveTextColor,
   appearance,
   accessibilityHint,
 }: {
   value: string;
   tintColor?: string;
+  activeTextColor?: string;
+  inactiveTextColor?: string;
   onSelect: () => void;
   selected: boolean;
   enabled: boolean;
@@ -25,21 +29,19 @@ export function SegmentedControlTab({
   const colorSchemeHook = useColorScheme();
   const colorScheme = appearance || colorSchemeHook;
 
-  const getColor = () => {
-    if (tintColor) {
-      return 'white';
-    }
-    return colorScheme === 'dark' ? '#FFF' : '#000';
-  };
-  const color = getColor();
+  const defaultActiveColor = tintColor ? 'white' : colorScheme === 'dark' ? '#FFF' : '#000';
+  const defaultInactiveColor = colorScheme === 'dark' ? '#8E8E93' : '#3C3C43';
+
+  const activeColor = activeTextColor ?? defaultActiveColor;
+  const inactiveColor = inactiveTextColor ?? defaultInactiveColor;
 
   const activeStyle = {
     ...styles.activeText,
-    color,
+    color: activeColor,
   };
 
   const idleStyle = {
-    color,
+    color: inactiveColor,
   };
 
   return (
