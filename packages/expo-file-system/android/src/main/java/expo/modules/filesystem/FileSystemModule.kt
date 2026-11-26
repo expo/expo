@@ -1,13 +1,17 @@
 package expo.modules.filesystem
 
+import android.app.ActivityOptions
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.util.Base64
+import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.annotation.UiThread
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
@@ -68,6 +72,18 @@ class FileSystemModule : Module() {
 
   private fun canHandle(intent: Intent): Boolean {
     return context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isNotEmpty()
+  }
+
+  // Scales the viewer app up from the view the preview was opened from.
+  @UiThread
+  private fun createPreviewAnimation(sourceViewTag: Int): Bundle? {
+    val sourceView = appContext.findView<View>(sourceViewTag) ?: return null
+    if (!sourceView.isAttachedToWindow) {
+      return null
+    }
+    return ActivityOptions
+      .makeScaleUpAnimation(sourceView, 0, 0, sourceView.width, sourceView.height)
+      .toBundle()
   }
 
   private fun grantReadPermissions(intent: Intent, uri: Uri) {
@@ -318,7 +334,7 @@ class FileSystemModule : Module() {
         canHandle(createPreviewIntent(contentUri, mimeType))
       }
 
-      AsyncFunction("preview") { file: FileSystemFile, options: FilePreviewOptions? ->
+      AsyncFunction("preview") Coroutine { file: FileSystemFile, options: FilePreviewOptions? ->
         file.validateType()
         if (!file.exists) {
           throw FilePreviewFileNotFoundException(file.uri)
@@ -335,8 +351,12 @@ class FileSystemModule : Module() {
 
         grantReadPermissions(previewIntent, contentUri)
 
+        val animation = options?.sourceViewTag?.let { sourceViewTag ->
+          withContext(Dispatchers.Main) { createPreviewAnimation(sourceViewTag) }
+        }
+
         try {
-          appContext.throwingActivity.startActivity(previewIntent)
+          appContext.throwingActivity.startActivity(previewIntent, animation)
         } catch (exception: ActivityNotFoundException) {
           throw FilePreviewUnsupportedException(mimeType, exception)
         }

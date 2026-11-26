@@ -20,6 +20,7 @@ struct RelocationOptions: Record {
 struct FilePreviewOptions: Record {
   @Field var title: String?
   @Field var mimeType: String?
+  @Field var sourceViewTag: Int?
 }
 
 struct FilePickingOptions: Record {
