@@ -33,6 +33,21 @@ minimumReleaseAgeExclude:
   - multitars
   - noxcturnal
   - 2g
+  - metro
+  - metro-babel-transformer
+  - metro-cache
+  - metro-cache-key
+  - metro-config
+  - metro-core
+  - metro-file-map
+  - metro-minify-terser
+  - metro-resolver
+  - metro-runtime
+  - metro-source-map
+  - metro-symbolicate
+  - metro-transform-plugins
+  - metro-transform-worker
+  - ob1
   - react-native-reanimated@4.8.0
   - react-native-worklets@0.14.0
 
