@@ -8,6 +8,7 @@ import type {
   LiveActivityDismissalPolicy,
   LiveActivityStartOptions,
   LiveActivityState,
+  LiveActivityStateEvent,
   LiveActivityUpdateOptions,
   NativeLiveActivity,
   NativeLiveActivityFactory,
@@ -198,6 +199,28 @@ export class LiveActivity<T extends object = object> {
   addPushTokenListener(listener: (event: PushTokenEvent) => void): EventSubscription {
     return this.nativeLiveActivity.addListener('onExpoWidgetsTokenReceived', listener);
   }
+
+  /**
+   * Returns the current props of this Live Activity. If a push-to-start payload set `props` in
+   * `attributes`, the result also includes those props, and a content-state key overrides the same
+   * key from `attributes`. Returns `null` if the activity has no props or the props are not a valid
+   * JSON object. Throws if ActivityKit no longer returns the activity.
+   * @platform ios
+   */
+  getProps(): T | null {
+    return this.nativeLiveActivity.getProps() as T | null;
+  }
+
+  /**
+   * Adds a listener for state changes of this Live Activity, such as when the user dismisses it.
+   * Events are delivered only while the app process is running.
+   * @param listener Callback invoked when the state changes.
+   * @returns An event subscription that can be used to remove the listener.
+   * @platform ios
+   */
+  addStateListener(listener: (event: LiveActivityStateEvent) => void): EventSubscription {
+    return this.nativeLiveActivity.addListener('onExpoWidgetsLiveActivityStateChanged', listener);
+  }
 }
 
 /**
@@ -318,6 +341,21 @@ export function addPushToStartTokenListener(
   listener: ExpoWidgetsEvents['onExpoWidgetsPushToStartTokenReceived']
 ): EventSubscription {
   return ExpoWidgetsModule.addListener('onExpoWidgetsPushToStartTokenReceived', listener);
+}
+
+/**
+ * Adds a listener for Live Activity start events of every type, including starts by push-to-start.
+ * Use the event's `name` to find the factory, then `getInstances()` to get the instance.
+ * Events are delivered only while the app process is running, so also call `getInstances()` on
+ * launch.
+ * @param listener Callback function to handle start events.
+ * @return An event subscription that can be used to remove the listener.
+ * @platform ios
+ */
+export function addLiveActivityStartListener(
+  listener: ExpoWidgetsEvents['onExpoWidgetsLiveActivityStarted']
+): EventSubscription {
+  return ExpoWidgetsModule.addListener('onExpoWidgetsLiveActivityStarted', listener);
 }
 
 /**
