@@ -20,6 +20,7 @@ let package = Package(
     .package(url: "https://github.com/SDWebImage/SDWebImageWebPCoder.git", exact: "0.15.0"),
     .package(url: "https://github.com/SDWebImage/libavif-Xcode.git", exact: "1.0.0"),
     .package(url: "https://github.com/SDWebImage/libdav1d-Xcode.git", exact: "1.2.0"),
+    .package(url: "https://github.com/SDWebImage/libwebp-Xcode.git", exact: "1.6.0"),
   ],
   targets: [
     .target(
@@ -32,6 +33,7 @@ let package = Package(
         .product(name: "SDWebImageWebPCoder", package: "SDWebImageWebPCoder"),
         .product(name: "libavif", package: "libavif-Xcode"),
         .product(name: "libdav1d", package: "libdav1d-Xcode"),
+        .product(name: "libwebp", package: "libwebp-Xcode"),
       ],
       path: "ios/ExpoImage"
     )
