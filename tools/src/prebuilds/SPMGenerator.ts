@@ -94,7 +94,7 @@ ${allImports.join('\n')}
  * `import Testing` into the shipped `.swiftinterface`, which no consumer app can resolve.
  */
 export function getTargetExcludePatterns(target: Pick<SourceTarget, 'exclude'>): string[] {
-  return [...(target.exclude ?? []), '**/Tests/**'];
+  return [...(target.exclude ?? []), '**/Tests/**', '**/*Tests/**'];
 }
 
 export const SPMGenerator = {

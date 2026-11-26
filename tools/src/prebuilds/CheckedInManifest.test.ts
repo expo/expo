@@ -850,7 +850,7 @@ it('rejects uncovered nested test sources', async () => {
       'ios/Main.swift': 'public let value = 1',
       'ios/Nested/Tests/Bad.swift': 'INVALID SWIFT',
     }),
-    /: its Tests directory contains source "[^"]+" that is not excluded and would ship in the artifact\./
+    /: its tests directory contains source "[^"]+" that is not excluded and would ship in the artifact\./
   );
 });
 
@@ -892,7 +892,17 @@ it('rejects a Tests directory inside explicit sources', async () => {
       'ios/Main.swift': 'public let value = 1',
       'ios/Tests/Bad.swift': 'INVALID SWIFT',
     }),
-    /: its Tests directory contains source "[^"]+" that is not excluded and would ship in the artifact\./
+    /: its tests directory contains source "[^"]+" that is not excluded and would ship in the artifact\./
+  );
+});
+
+it('rejects an unexcluded <Target>Tests directory', async () => {
+  await rejectsManifest(
+    fixture('.target(name: "Main", path: "ios")', {
+      'ios/Main.swift': 'public let value = 1',
+      'ios/MainTests/Bad.swift': 'INVALID SWIFT',
+    }),
+    /: its tests directory contains source "[^"]+" that is not excluded and would ship in the artifact\./
   );
 });
 
