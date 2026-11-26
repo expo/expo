@@ -10,7 +10,7 @@ export const withConfigPlugins: ConfigPlugin<NonNullable<GetConfigOptions['plugi
   mode
 ) => {
   if (!Array.isArray(config.plugins)) {
-    if (mode === 'inspect' && config.plugins !== undefined) {
+    if (mode === 'inspect' && config.plugins != null) {
       throw new ConfigError(
         'Expected the plugins field to be an array. Wrap plugin entries in an array.',
         'INVALID_CONFIG'
