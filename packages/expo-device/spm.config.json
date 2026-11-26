@@ -16,6 +16,7 @@
         {
           "type": "swift",
           "name": "ExpoDevice",
+          "path": "ios/ExpoDevice",
           "dependencies": [
             "Hermes",
             "React",
@@ -23,7 +24,7 @@
             "expo-modules-core/ExpoModulesCore"
           ],
           "linkedFrameworks": ["Foundation", "UIKit"],
-          "resources": [{ "path": "ios/PrivacyInfo.xcprivacy", "rule": "copy" }]
+          "resources": [{ "path": "ios/ExpoDevice/PrivacyInfo.xcprivacy", "rule": "copy" }]
         }
       ]
     }
