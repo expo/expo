@@ -24,11 +24,11 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES'
   }
 
-  s.exclude_files = 'Tests/'
+  s.exclude_files = 'ExpoSMSTests/'
   s.test_spec 'Tests' do |test_spec|
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
 
-    test_spec.source_files = 'Tests/**/*.{m,swift}'
+    test_spec.source_files = 'ExpoSMSTests/**/*.{m,swift}'
   end
 end
