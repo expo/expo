@@ -1077,9 +1077,7 @@ it('throws when the redirectTo of a passing Protected component is an external U
         secret: () => <Text testID="secret">secret</Text>,
       })
     ).rejects.toThrow(
-      'Expo Router could not use the `redirectTo` "https://example.com/login" of a `Protected` component in "app/_layout", because it is an external URL. ' +
-        '`redirectTo` accepts only routes of the app. ' +
-        'Set `redirectTo` to a route of the app, and open the external URL from your app code, for example with `Linking.openURL`.'
+      '`Protected` in "app/_layout" requires an app route for `redirectTo`. Open external URLs with `Linking.openURL`.'
     );
   } finally {
     errorSpy.mockRestore();

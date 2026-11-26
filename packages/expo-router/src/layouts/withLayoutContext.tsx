@@ -69,9 +69,8 @@ export function useFilterScreenChildren<
           shouldLinkExternally(resolveHref(protectedRedirectTo))
         ) {
           throw new Error(
-            `Expo Router could not use the \`redirectTo\` "${resolveHref(protectedRedirectTo)}" of a \`Protected\` component in "app${contextKey}/_layout", because it is an external URL. ` +
-              '`redirectTo` accepts only routes of the app. ' +
-              'Set `redirectTo` to a route of the app, and open the external URL from your app code, for example with `Linking.openURL`.'
+            `\`Protected\` in "app${contextKey}/_layout" requires an app route for \`redirectTo\`. ` +
+              'Open external URLs with `Linking.openURL`.'
           );
         }
         // The outermost failing guard decides the redirect, so inner guards are not read.
