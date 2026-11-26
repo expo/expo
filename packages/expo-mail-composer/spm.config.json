@@ -16,6 +16,7 @@
         {
           "type": "swift",
           "name": "ExpoMailComposer",
+          "path": "ios/ExpoMailComposer",
           "dependencies": [
             "Hermes",
             "React",

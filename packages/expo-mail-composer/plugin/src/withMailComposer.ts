@@ -3,7 +3,7 @@ import { ConfigPlugin, createRunOncePlugin, withInfoPlist } from 'expo/config-pl
 const pkg = require('../../package.json');
 
 /**
- * Keep the mail client URLs in sync with those in the file `ios/MailClients.swift`.
+ * Keep the mail client URLs in sync with those in the file `ios/ExpoMailComposer/MailClients.swift`.
  */
 const mailClientURLs: string[] = [
   'airmail',
