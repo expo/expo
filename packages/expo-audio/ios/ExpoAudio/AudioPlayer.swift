@@ -114,6 +114,10 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     ref.timeControlStatus == .playing
   }
 
+  var isWaitingToPlay: Bool {
+    ref.timeControlStatus == .waitingToPlayAtSpecifiedRate && ref.reasonForWaitingToPlay != .noItemToPlay
+  }
+
   var isBuffering: Bool {
     ref.isBuffering(isPlaying: isPlaying)
   }
