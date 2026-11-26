@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.1.0
+
+### Minor Changes
+
+- Sign in to the launcher on a simulator or an emulator from the `__expo_device_code`, `__expo_device_match`, and `__expo_device_client` launch URL params. ([#53977](https://github.com/expo/expo/pull/53977) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 58.0.21
 
 ### Patch Changes

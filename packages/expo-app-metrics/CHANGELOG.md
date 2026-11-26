@@ -1,5 +1,20 @@
 # Changelog
 
+## 58.1.0
+
+### Minor Changes
+
+- Store no data when the `expo-observe` config plugin sets the `consent` option to `'not-granted'`. ([#53709](https://github.com/expo/expo/pull/53709) by [@Ubax](https://github.com/Ubax))
+- Apply the consent value from `Observe.setConsent`. A saved value overrides the `consent` option of the `expo-observe` config plugin on later launches. Without consent, startup metrics stay in memory until a grant saves them. ([#53710](https://github.com/expo/expo/pull/53710) by [@Ubax](https://github.com/Ubax))
+- [Internal] Add `reportFeedback` to record user feedback as an `expo.feedback` log event. ([#53261](https://github.com/expo/expo/pull/53261) by [@Ubax](https://github.com/Ubax))
+
+### Patch Changes
+
+- [iOS] Fixed `clearStoredEntries` doing nothing. It now deletes the stored metrics, logs, spans, crash reports, and pending fatal errors, while sessions that are still running keep recording. ([#51003](https://github.com/expo/expo/pull/51003) by [@jiunshinn](https://github.com/jiunshinn))
+- [iOS] Attribute native crash reports to the session of the crashed process on iOS 17 and later. Before, all crashes in one MetricKit payload went to the same session, and only the first crash was kept. A crash of a launch that never stored a session, for example a launch that failed before the app's code ran, now gets a new session with the app version, build number and OS version of that launch. The metrics database is recreated once after the update, so data that was not yet sent is lost. ([#53973](https://github.com/expo/expo/pull/53973) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix the main session being marked inactive when the metrics database opened in a later second than the session started. ([#54066](https://github.com/expo/expo/pull/54066) by [@Ubax](https://github.com/Ubax))
+- Redact credentials and signed query parameters in the redirect URLs of network trace spans, the same as in `url.full`. ([#53688](https://github.com/expo/expo/pull/53688) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.15
 
 ### Patch Changes

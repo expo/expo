@@ -1,5 +1,18 @@
 # Changelog
 
+## 58.0.7
+
+### Patch Changes
+
+- [Internal] Port `FileMap.addRoot()` and `getRoots()` from upstream Metro, which Metro 0.88 calls. ([#54148](https://github.com/expo/expo/pull/54148) by [@robhogan](https://github.com/robhogan))
+- Fix symlinks repointed while Metro isn't running (for example by `pnpm install`) resolving to their previous target. Symlinks are now stat'd and read when the file map is built, as in upstream Metro. ([#53732](https://github.com/expo/expo/pull/53732) by [@robhogan](https://github.com/robhogan))
+- Port `FallbackWatcher`, the default watcher on Linux and Windows, from upstream Metro. It starts without a stat per file or a 1s delay on Windows, closes every watch under a deleted directory, and has the file map recrawl a directory when Windows doesn't name what changed. ([#53805](https://github.com/expo/expo/pull/53805) by [@robhogan](https://github.com/robhogan))
+- Without Watchman, files are now stat'd only once Metro derives data from them, and a start stats only those files. This fixes plugin data (e.g. dependencies) that could go stale when a file was edited while Metro wasn't running, and recrawls that could miss changes to files that had not been stat'd yet. ([#54047](https://github.com/expo/expo/pull/54047) by [@robhogan](https://github.com/robhogan))
+- Process files synchronously in-band, as upstream `metro-file-map` does. This makes lazy SHA-1 computation and worker-thread crawls faster. For `unstable_fileMapPlugins` workers, `getContent()` returns a `Buffer` again rather than a promise, matching upstream. ([#53238](https://github.com/expo/expo/pull/53238) by [@robhogan](https://github.com/robhogan))
+- [Internal] Port `TreeFS` from upstream Metro's `main`, with `getSerializableState()` from react/metro#2219, keeping the on-demand filesystem, lazy symlink reads and snapshot root filtering. ([#53249](https://github.com/expo/expo/pull/53249) by [@robhogan](https://github.com/robhogan))
+- Fix files changed while Metro starts being missed until a restart. On macOS, also fix changes made straight after startup sometimes being missed. ([#54143](https://github.com/expo/expo/pull/54143) by [@robhogan](https://github.com/robhogan))
+- [Internal] Read `useWatchman` as upstream Metro does, now that `@expo/metro-config` defaults it to `false`. ([#53731](https://github.com/expo/expo/pull/53731) by [@robhogan](https://github.com/robhogan))
+
 ## 58.0.6
 
 ### Patch Changes

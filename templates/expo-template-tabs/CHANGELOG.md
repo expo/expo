@@ -1,5 +1,14 @@
 # expo-template-tabs
 
+## 58.0.36
+
+### Patch Changes
+
+- Updated dependencies. ([#54293](https://github.com/expo/expo/pull/54293), [#51571](https://github.com/expo/expo/pull/51571), [#54284](https://github.com/expo/expo/pull/54284), [#49324](https://github.com/expo/expo/pull/49324), [#54297](https://github.com/expo/expo/pull/54297), [#54294](https://github.com/expo/expo/pull/54294), [#53323](https://github.com/expo/expo/pull/53323), [#53320](https://github.com/expo/expo/pull/53320), [#52961](https://github.com/expo/expo/pull/52961), [#54295](https://github.com/expo/expo/pull/54295), [#54292](https://github.com/expo/expo/pull/54292), [#51802](https://github.com/expo/expo/pull/51802), [#53841](https://github.com/expo/expo/pull/53841), [#53415](https://github.com/expo/expo/pull/53415), [#53632](https://github.com/expo/expo/pull/53632), [#50736](https://github.com/expo/expo/pull/50736), [#53733](https://github.com/expo/expo/pull/53733), [#53450](https://github.com/expo/expo/pull/53450), [#53447](https://github.com/expo/expo/pull/53447), [#54296](https://github.com/expo/expo/pull/54296), [#53426](https://github.com/expo/expo/pull/53426), [#53634](https://github.com/expo/expo/pull/53634), [#52391](https://github.com/expo/expo/pull/52391), [#51695](https://github.com/expo/expo/pull/51695), [#54291](https://github.com/expo/expo/pull/54291))
+  - expo-router@58.0.33
+  - expo@58.1.0
+  - expo-splash-screen@58.0.15
+
 ## 58.0.35
 
 ### Patch Changes

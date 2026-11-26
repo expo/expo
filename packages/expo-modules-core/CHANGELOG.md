@@ -1,5 +1,20 @@
 # Changelog
 
+## 58.2.0
+
+### Minor Changes
+
+- [iOS] Ship an `ExpoModulesWorkletsHeaders.xcframework` with the iOS prebuilds. A module built from its checked-in Package.swift can depend on the `ExpoModulesWorkletsHeaders` product to compile against `ExpoModulesWorklets`. ([#53322](https://github.com/expo/expo/pull/53322) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Add the `legacyAppContext` and `legacyAppContextOrNull` extensions, which give an Expo Modules API 2.0 module or shared object the `AppContext` of the app. ([#53860](https://github.com/expo/expo/pull/53860) by [@lukmccall](https://github.com/lukmccall))
+
+### Patch Changes
+
+- [Android] Fixed a race in `SharedObjectRegistry` where a live shared object passed to an async function could be reported as already released (`UsingReleasedSharedObjectException`) while another thread added or released a shared object. ([#50939](https://github.com/expo/expo/pull/50939) by [@edwardsmatt](https://github.com/edwardsmatt))
+- [iOS] Fix a crash when several concurrent functions read `appContext.fileSystem` or `appContext.permissions` for the first time at once, such as parallel `openDatabaseAsync` calls in `expo-sqlite`. ([#54321](https://github.com/expo/expo/pull/54321) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fixed SwiftUI views (such as `@expo/ui`'s `Host`) rendering nothing when mounted outside any view controller, for example inside react-native-screens' `FullWindowOverlay`. ([#50966](https://github.com/expo/expo/pull/50966) by [@finn-pleo](https://github.com/finn-pleo))
+- Updated dependencies. ([#54091](https://github.com/expo/expo/pull/54091))
+  - expo-modules-jsi@58.0.24
+
 ## 58.1.0
 
 ### Minor Changes

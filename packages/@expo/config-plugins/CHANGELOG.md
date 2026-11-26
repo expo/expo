@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- Preserve Android string escape sequences, empty values, and quoted whitespace when reading and rewriting XML resources. Discard NUL characters while preserving the surrounding text. ([#54140](https://github.com/expo/expo/pull/54140) by [@kitten](https://github.com/kitten))
+- Warn about non-string values in `locales` JSON files. ([#47993](https://github.com/expo/expo/pull/47993) by [@soreavis](https://github.com/soreavis))
+- [Android] Mark the `expo_runtime_version` string resource as `translatable="false"`, so localization tooling and Android Lint treat it as the technical identifier it is rather than user-facing copy. ([#48232](https://github.com/expo/expo/pull/48232) by [@ahmdshrif](https://github.com/ahmdshrif))
+- Fix Android locale strings losing quotes and interpreting literal backslashes as escape sequences. ([#54179](https://github.com/expo/expo/pull/54179) by [@kitten](https://github.com/kitten))
+- Keep XML formatting from mutating Android string resources and adding extra escapes on repeated writes. ([#52592](https://github.com/expo/expo/pull/52592) by [@tedy69](https://github.com/tedy69))
+
 ## 58.0.13
 
 ### Patch Changes

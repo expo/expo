@@ -1,5 +1,23 @@
 # Changelog
 
+## 58.1.0
+
+### Minor Changes
+
+- Keep Observe inactive when the config plugin sets the `consent` option to `'not-granted'`. Observe then sends no data. ([#53709](https://github.com/expo/expo/pull/53709) by [@Ubax](https://github.com/Ubax))
+- Add a config plugin with a `consent` option. Prebuild writes the consent value to `AndroidManifest.xml` and `Info.plist`. ([#53878](https://github.com/expo/expo/pull/53878) by [@Ubax](https://github.com/Ubax))
+- Add `Observe.reportFeedback` to send user feedback. ([#53261](https://github.com/expo/expo/pull/53261) by [@Ubax](https://github.com/Ubax))
+- Add `Observe.setConsent` to change the consent value at runtime. A grant starts collection, and a revoke stops collection and deletes the Observe data stored on the device. ([#53710](https://github.com/expo/expo/pull/53710) by [@Ubax](https://github.com/Ubax))
+
+### Patch Changes
+
+- Add experimental navigation total blocking time (`tbt`) metric, enabled with `experimental_totalBlockingTime`. ([#51505](https://github.com/expo/expo/pull/51505) by [@Ubax](https://github.com/Ubax))
+- Warn in development on iOS when the app privacy manifest has no user content entry for `Observe.reportFeedback`. ([#53284](https://github.com/expo/expo/pull/53284) by [@Ubax](https://github.com/Ubax))
+- Add `ignoredMetrics` and `ignoredEvents` configure options to skip selected metrics and events during dispatch. ([#52524](https://github.com/expo/expo/pull/52524) by [@Ubax](https://github.com/Ubax))
+- Send at most 128 attributes for each log event, and keep the `expo.*` attributes first, so the server does not drop them. ([#53615](https://github.com/expo/expo/pull/53615) by [@Ubax](https://github.com/Ubax))
+- Updated dependencies. ([#51003](https://github.com/expo/expo/pull/51003), [#53973](https://github.com/expo/expo/pull/53973), [#54066](https://github.com/expo/expo/pull/54066), [#53709](https://github.com/expo/expo/pull/53709), [#53710](https://github.com/expo/expo/pull/53710), [#53688](https://github.com/expo/expo/pull/53688), [#53261](https://github.com/expo/expo/pull/53261))
+  - expo-app-metrics@58.1.0
+
 ## 58.0.19
 
 ### Patch Changes

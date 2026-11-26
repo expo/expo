@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.21.9
+
+### Patch Changes
+
+- Fix dependency checks failing with `EBADDEVENGINES` in projects whose `devEngines.packageManager` is not npm. ([#53443](https://github.com/expo/expo/pull/53443) by [@Sun-Wukhan](https://github.com/Sun-Wukhan))
+- Treat non-boolean `CI` values, like `CI=yes`, as false instead of failing. ([#53019](https://github.com/expo/expo/pull/53019) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ## 1.21.8
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.1.10
+
+### Patch Changes
+
+- [iOS] `requestPermissionsAsync` now resolves with the denied status, instead of rejecting with `ERR_PERMISSIONS_REQUEST_NOTIFICATIONS`, when the user denies the prompt in an iOS app on an Apple Silicon Mac ("Designed for iPad"). ([#52828](https://github.com/expo/expo/pull/52828) by [@LizunovSergey](https://github.com/LizunovSergey))
+
 ## 58.1.9
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # Changelog
 
+## 5.1.10
+
+### Patch Changes
+
+- Preserve empty values, repeated spaces, and XML-forbidden characters in Android template display names. Discard NUL characters while preserving the surrounding text. ([#54140](https://github.com/expo/expo/pull/54140) by [@kitten](https://github.com/kitten))
+- Treat non-boolean `CI` values, like `CI=yes`, as false instead of failing. ([#53019](https://github.com/expo/expo/pull/53019) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ## 5.1.9
 
 ### Patch Changes
