@@ -4,6 +4,7 @@
     {
       "name": "EXDevMenuInterface",
       "podName": "expo-dev-menu-interface",
+      "releaseFlavor": "stub",
       "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [],
       "swiftLanguageVersions": ["5"],
