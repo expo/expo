@@ -131,7 +131,8 @@ export function DrawerItem(props: Props) {
         onPress={onPress}
         role="button"
         aria-label={accessibilityLabel}
-        aria-selected={focused}
+        aria-current={process.env.EXPO_OS === 'web' ? (focused ? 'page' : undefined) : undefined}
+        aria-selected={process.env.EXPO_OS === 'web' ? undefined : focused}
         pressColor={pressColor}
         pressOpacity={pressOpacity}
         hoverEffect={{ color }}

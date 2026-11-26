@@ -155,6 +155,10 @@ function CardContainerInner({
   const { colors } = useTheme();
 
   React.useEffect(() => {
+    if (scene.progress.next == null) {
+      wrapperRef.current?.setInert(false);
+    }
+
     const listener = scene.progress.next?.addListener?.(({ value }: { value: number }) => {
       wrapperRef.current?.setInert(value > EPSILON);
     });
