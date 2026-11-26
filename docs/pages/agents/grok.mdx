@@ -7,7 +7,6 @@ description: Use Grok Build to build, upgrade, debug, and deploy your Expo and R
 import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
 import { XAILogoIcon } from '~/ui/components/CustomIcons/AIProviderIcons';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
@@ -122,22 +121,6 @@ After setup, describe Expo tasks in plain language. For example:
 | Verify the UI     | Take a screenshot and verify the blue circle view.                                |
 
 For more examples, see the Example prompts sections of [Expo Skills](/skills/#example-prompts) and [Expo MCP Server](/mcp/#what-does-expo-mcp-server-do).
-
-## Troubleshooting
-
-<Collapsible summary='No marketplace plugin named "expo" in any registered marketplace.'>
-
-If you see this error when you install the plugin, Grok Build has not registered the xAI plugin marketplace yet. Run `grok` one time and sign in, then install the plugin again. You can also add the marketplace manually:
-
-<Terminal
-  cmd={[
-    '$ grok plugin marketplace add xai-org/plugin-marketplace',
-    '',
-    '$ grok plugin install expo --trust',
-  ]}
-/>
-
-</Collapsible>
 
 ## Related guides
 
