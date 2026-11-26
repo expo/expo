@@ -2,4 +2,4 @@
 'jest-expo': patch
 ---
 
-Keep the `NativeModule` event methods on generated native module mocks, so `addListener` returns a subscription with `remove()` and `expo-notifications` `setNotificationHandler()` no longer throws `handleSubscription.remove is not a function`.
+Make `addListener` on generated native module mocks register the listener and return a subscription with `remove()`, so `expo-notifications` `setNotificationHandler()` no longer throws `handleSubscription.remove is not a function`.

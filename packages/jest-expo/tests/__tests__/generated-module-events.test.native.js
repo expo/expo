@@ -1,8 +1,13 @@
 const { NativeModulesProxy, requireNativeModule } = require('expo-modules-core');
 
 describe('generated native module mock events', () => {
+  const generatedAddListener = NativeModulesProxy.ExpoNotificationsEmitter.addListener;
+  const generatedImplementation = generatedAddListener.getMockImplementation();
+
   afterEach(() => {
     delete globalThis.expo.modules?.TestEventsModule;
+    generatedAddListener.mockReset();
+    generatedAddListener.mockImplementation(generatedImplementation);
   });
 
   it('returns a subscription from addListener that delivers and stops events', () => {
@@ -15,6 +20,10 @@ describe('generated native module mock events', () => {
     nativeModule.emit('onHandleNotification', { id: '2' });
 
     expect(nativeModule.addListener).toHaveBeenCalledTimes(1);
+    expect(NativeModulesProxy.ExpoNotificationsHandlerModule.addListener).toHaveBeenCalledWith(
+      'onHandleNotification',
+      listener
+    );
     expect(listener).toHaveBeenCalledTimes(1);
     expect(listener).toHaveBeenCalledWith({ id: '1' });
   });
@@ -28,14 +37,32 @@ describe('generated native module mock events', () => {
     expect(addListener).toHaveBeenCalledTimes(1);
   });
 
-  it('keeps a customized generated stub', () => {
-    const stub = NativeModulesProxy.ExpoNotificationsEmitter.addListener;
-    const defaultImpl = stub.getMockImplementation();
-    stub.mockReturnValue('custom');
-    try {
-      expect(requireNativeModule('ExpoNotificationsEmitter').addListener()).toBe('custom');
-    } finally {
-      stub.mockImplementation(defaultImpl);
-    }
+  it('uses a return value set on the generated addListener after require', () => {
+    const nativeModule = requireNativeModule('ExpoNotificationsEmitter');
+    generatedAddListener.mockReturnValue('custom');
+
+    expect(nativeModule.addListener('onNotificationReceived', jest.fn())).toBe('custom');
+    expect(generatedAddListener).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses a one time return value set on the generated addListener before require', () => {
+    generatedAddListener.mockReturnValueOnce('custom');
+    const nativeModule = requireNativeModule('ExpoNotificationsEmitter');
+
+    expect(nativeModule.addListener('onNotificationReceived', jest.fn())).toBe('custom');
+    expect(nativeModule.addListener('onNotificationReceived', jest.fn())).toEqual({
+      remove: expect.any(Function),
+    });
+    expect(generatedAddListener).toHaveBeenCalledTimes(2);
+  });
+
+  it('resolves count only addListener calls without registering a listener', async () => {
+    const nativeModule = requireNativeModule('ExpoNotificationsEmitter');
+
+    await expect(
+      NativeModulesProxy.ExpoNotificationsEmitter.addListener('onNotificationReceived')
+    ).resolves.toBeUndefined();
+    await expect(nativeModule.addListener('onNotificationReceived')).resolves.toBeUndefined();
+    expect(nativeModule.listenerCount('onNotificationReceived')).toBe(0);
   });
 });
