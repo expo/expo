@@ -1,6 +1,7 @@
 export { Paths } from './Paths';
 export { File } from './File';
 export { Directory } from './Directory';
+export { FileHandle } from './FileHandle';
 export { UploadTask, DownloadTask } from './NetworkTasks';
 
 export {
@@ -9,7 +10,6 @@ export {
   type FileDigestAlgorithm,
   type DirectoryCreateOptions,
   type RelocationOptions,
-  type FileHandle,
   type FileInfo,
   type FileCanPreviewOptions,
   type FilePreviewOptions,

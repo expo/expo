@@ -1,4 +1,4 @@
-import type { FileHandle } from '../File.types';
+import type { FileHandle } from '../FileHandle';
 
 export class FileSystemReadableStreamSource implements UnderlyingByteSource {
   handle: FileHandle;

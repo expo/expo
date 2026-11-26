@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
+import expo.modules.kotlin.jni.ArrayBuffer
 import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -303,7 +304,7 @@ class FileSystemModule : Module() {
         file.type
       }
 
-      Function("open") { file: FileSystemFile, mode: FileMode? ->
+      Function("openHandle") { file: FileSystemFile, mode: FileMode? ->
         file.openHandle(mode)
       }
 
@@ -347,29 +348,26 @@ class FileSystemModule : Module() {
       Constructor { file: FileSystemFile, mode: FileMode? ->
         file.openHandle(mode)
       }
-      AsyncFunction("readBytes") Coroutine { fileHandle: FileSystemFileHandle, bytes: Long ->
+      AsyncFunction("readAt") Coroutine { fileHandle: FileSystemFileHandle, position: Long, length: Long ->
         withContext(Dispatchers.IO) {
-          fileHandle.read(bytes)
+          ArrayBuffer.wrap(fileHandle.readAt(position, length))
         }
       }
-      Function("readBytesSync") { fileHandle: FileSystemFileHandle, bytes: Long ->
-        fileHandle.read(bytes)
+      Function("readAtSync") { fileHandle: FileSystemFileHandle, position: Long, length: Long ->
+        ArrayBuffer.wrap(fileHandle.readAt(position, length))
       }
-      AsyncFunction("writeBytes") Coroutine { fileHandle: FileSystemFileHandle, data: ByteArray ->
+      AsyncFunction("writeAt") Coroutine { fileHandle: FileSystemFileHandle, position: Long, data: ArrayBuffer ->
         withContext(Dispatchers.IO) {
-          fileHandle.write(data)
+          // `toDirectBuffer()` copies the bytes once; for a JS-heap-backed buffer that copy waits
+          // for the JS queue, so it runs here on the IO pool and never blocks the shared module queue.
+          fileHandle.writeAt(position, data.toDirectBuffer())
         }
       }
-      Function("writeBytesSync") { fileHandle: FileSystemFileHandle, data: ByteArray ->
-        fileHandle.write(data)
+      Function("writeAtSync") { fileHandle: FileSystemFileHandle, position: Long, data: ArrayBuffer ->
+        data.withJSBytes { buffer -> fileHandle.writeAt(position, buffer) }
       }
       Function("close") { fileHandle: FileSystemFileHandle ->
         fileHandle.close()
-      }
-      Property("offset") { fileHandle: FileSystemFileHandle ->
-        fileHandle.offset
-      }.set { fileHandle: FileSystemFileHandle, offset: Long ->
-        fileHandle.offset = offset
       }
       Property("size") { fileHandle: FileSystemFileHandle ->
         fileHandle.size
