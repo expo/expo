@@ -12,7 +12,7 @@ const REPO_FOLDERS = { '@expo/ui': 'expo-ui' };
 
 /**
  * Copies a repository package the way npm installs it: the package's `.npmignore` strips
- * `/ios/Tests/**`, so a manifest that excludes `Tests` names a directory that is not there.
+ * iOS test directories, so a manifest can exclude a directory that is missing from the install.
  */
 function installLikeNpm(packageName, destination) {
   const source = path.join(REPO_ROOT, 'packages', REPO_FOLDERS[packageName] ?? packageName);
@@ -21,7 +21,7 @@ function installLikeNpm(packageName, destination) {
     recursive: true,
     filter: (file) => {
       const relative = path.relative(source, file);
-      return relative !== 'node_modules' && relative !== path.join('ios', 'Tests');
+      return relative !== 'node_modules' && !/^ios\/[^/]*Tests$/.test(relative);
     },
   });
   return moduleRoot;
@@ -79,7 +79,8 @@ it.each(DIRECT_MANIFESTS)(
   (packageName, productName, standIns) => {
     const tmp = makeTempDir('spm-real-manifest-');
     const moduleRoot = installLikeNpm(packageName, path.join(tmp, 'app'));
-    expect(fs.existsSync(path.join(moduleRoot, 'ios', 'Tests'))).toBe(false);
+    const iosEntries = fs.readdirSync(path.join(moduleRoot, 'ios'));
+    expect(iosEntries.filter((entry) => entry.endsWith('Tests'))).toEqual([]);
 
     const { manifest } = dumpModuleManifest(moduleRoot, packageName);
     expect(headersStandInsOf(manifest)).toEqual(standIns);
