@@ -17,9 +17,6 @@
           "linkedFrameworks": [
             "Foundation",
             "UIKit"
-          ],
-          "exclude": [
-            "Tests/**"
           ]
         }
       ]
