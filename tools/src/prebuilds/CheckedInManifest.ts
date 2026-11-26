@@ -1304,7 +1304,8 @@ export async function resolveCheckedInManifestAsync(
         `Set "type" to "${language}" for this target in spm.config.json.`
       );
     }
-    const sources = prefixedSources ?? ['src'];
+    // SwiftPM gives a file in a listed source directory a second rule when it is also a resource.
+    const sources = prefixedSources ?? (resources.length ? files.map(prefix).sort() : ['src']);
     const linkedFrameworks = parseLinkedFrameworks(config?.linkedFrameworks, target.name);
     if (language === 'swift' && (linkedFrameworks.length || siblingDependencies.length)) {
       sources.push(`${product.name}+Exports.swift`);
