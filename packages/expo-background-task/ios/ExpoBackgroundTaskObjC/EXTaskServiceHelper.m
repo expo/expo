@@ -1,4 +1,4 @@
-#import "EXTaskServiceHelper.h"
+#import <ExpoBackgroundTask/EXTaskServiceHelper.h>
 
 @implementation EXTaskServiceHelper
 

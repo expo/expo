@@ -1,3 +1,5 @@
+import Foundation
+
 /**
  A stable public description of the source being evaluated by a
  ``VideoAssetTransportProvider``.

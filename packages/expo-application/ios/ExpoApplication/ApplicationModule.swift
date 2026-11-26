@@ -2,6 +2,10 @@
 import ExpoModulesCore
 import StoreKit
 
+#if canImport(ExpoApplicationObjC)
+import ExpoApplicationObjC
+#endif
+
 @ExpoModule("ExpoApplication")
 public class ApplicationModule: Module {
   let infoPlist = Bundle.main.infoDictionary

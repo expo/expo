@@ -1,3 +1,5 @@
+import Foundation
+
 public class ManifestProvider {
   /**
   * Fetches the manifest for brownfield setup
