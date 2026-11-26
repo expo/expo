@@ -239,7 +239,8 @@ struct SpanObjectTests {
     let object = SpanObject(
       SpanHandle(recorder: makeRecorder()) { row in
         rows.withLock { $0.append(row) }
-      }
+      },
+      isConsentGranted: { true }
     )
     var options = SpanEndOptions()
     options.status = "cancelled"

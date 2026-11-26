@@ -63,6 +63,32 @@ final class SpanClassTests {
   }
 
   @Test
+  func `metrics recorded with a span carry its trace id and span id`() async throws {
+    let id = UUID().uuidString
+    _ = AppMetrics.mainSession
+    let ids = try runtime.eval(
+      """
+      (() => {
+        const m = expo.modules.ExpoAppMetrics;
+        const span = m.startSpan('checkout', {}, undefined);
+        span.recordMetric('items.\(id)', 3, { unit: '{item}' });
+        m.recordMetric('total.\(id)', 9.5, null, span);
+        m.recordMetric('unlinked.\(id)', 1, null, undefined);
+        return [span.traceId, span.spanId].join(' ');
+      })()
+      """
+    ).asString().split(separator: " ").map(String.init)
+
+    try await AppMetricsActor.isolated {
+      let metrics = try AppMetrics.getMetrics(afterId: -1).filter { $0.name.hasSuffix(id) }
+      let linked = metrics.filter { $0.traceId != nil }
+      #expect(Set(linked.map(\.name)) == ["items.\(id)", "total.\(id)"])
+      #expect(linked.allSatisfy { [$0.traceId, $0.spanId] == ids.map(Optional.some) })
+      #expect(metrics.filter { $0.traceId == nil }.map(\.name) == ["unlinked.\(id)"])
+    }
+  }
+
+  @Test
   func `reports captured without consent are dropped even when the database is open at write time`() async throws {
     let id = UUID().uuidString
     _ = AppMetrics.mainSession

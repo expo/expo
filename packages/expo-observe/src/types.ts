@@ -482,6 +482,9 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * Observe adds the global attributes from `setGlobalAttributes` to the metric. To stop sending a
    * metric, add its name to `ignoredMetrics`.
    *
+   * To link the value to the span that measured it, pass the span as `span`, or call
+   * `span.recordMetric`. Observe then sends the trace ID and span ID with the value.
+   *
    * This method never throws. When it cannot record the metric, it logs a warning.
    *
    * @param name A short, stable name for the metric, for example, `'checkout.payment_time'`. The
@@ -490,7 +493,8 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * or is longer than 255 characters.
    * @param value The measured value. Observe does not record the metric when the value is not a
    * finite number.
-   * @param options The unit of the value and optional attributes
+   * @param options The unit of the value, optional attributes, and an optional span to link the
+   * value to
    *
    * @example
    * ```ts
@@ -503,6 +507,11 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * Observe.recordMetric('feed.items_loaded', items.length, {
    *   unit: '{item}',
    *   attributes: { 'feed.source': 'home' },
+   * });
+   *
+   * await Observe.withSpan('image-upload', async (span) => {
+   *   const bytes = await uploadImage();
+   *   span.recordMetric('image_upload.size', bytes, { unit: 'By' });
    * });
    * ```
    */

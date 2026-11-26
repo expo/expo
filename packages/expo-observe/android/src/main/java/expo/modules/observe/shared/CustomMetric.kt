@@ -17,16 +17,19 @@ private val METRIC_NAME_PATTERN = Regex("[A-Za-z][A-Za-z0-9_.\\-/]{0,254}")
 internal const val MAX_METRIC_UNIT_LENGTH = 63
 
 /**
- * Builds the metric of a `recordMetric` call for the session. Returns `null` and warns when the
- * name or the value is not valid, so the caller drops the metric. A unit that is not valid is
- * dropped with a warning, and the metric is kept.
+ * Builds the metric of a `recordMetric` call for the session, linked to the span with `traceId`
+ * and `spanId` when they are set. Returns `null` and warns when the name or the value is not valid,
+ * so the caller drops the metric. A unit that is not valid is dropped with a warning, and the
+ * metric is kept.
  */
 internal fun customMetric(
   sessionId: String,
   name: String,
   value: Double,
   unit: String?,
-  attributes: Map<String, Any?>?
+  attributes: Map<String, Any?>?,
+  traceId: String? = null,
+  spanId: String? = null
 ): Metric? {
   val trimmedName = name.trim()
   if (trimmedName.startsWith(RESERVED_EVENT_NAME_PREFIX)) {
@@ -63,7 +66,9 @@ internal fun customMetric(
     name = trimmedName,
     value = value,
     params = sanitizedAttributes?.let { JsonAny.encodeMapToJsonString(it) },
-    unit = validatedMetricUnit(unit, trimmedName)
+    unit = validatedMetricUnit(unit, trimmedName),
+    traceId = traceId,
+    spanId = spanId
   )
 }
 

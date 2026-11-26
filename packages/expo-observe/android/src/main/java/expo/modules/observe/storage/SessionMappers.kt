@@ -58,7 +58,9 @@ internal data class JsMetric(
   @Field val routeName: String? = null,
   @Field val updateId: String? = null,
   @Field val params: Map<String, Any?>? = null,
-  @Field val unit: String? = null
+  @Field val unit: String? = null,
+  @Field val traceId: String? = null,
+  @Field val spanId: String? = null
 ) : Record {
   fun toMetric(): Metric =
     Metric(
@@ -70,7 +72,9 @@ internal data class JsMetric(
       routeName = routeName,
       updateId = updateId,
       params = params?.let { JsonAny.encodeMapToJsonString(it) },
-      unit = unit
+      unit = unit,
+      traceId = traceId,
+      spanId = spanId
     )
 
   companion object {
@@ -84,7 +88,9 @@ internal data class JsMetric(
         routeName = metric.routeName,
         updateId = metric.updateId,
         params = decodeJsonObject(metric.params),
-        unit = metric.unit
+        unit = metric.unit,
+        traceId = metric.traceId,
+        spanId = metric.spanId
       )
   }
 }

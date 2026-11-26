@@ -103,7 +103,25 @@ struct OpenTelemetryTests {
     #expect(makeCustomMetric(unit: nil).toOTMetric().unit == "")
   }
 
-  private func makeCustomMetric(unit: String?) -> Event.Metric {
+  @Test
+  func `a metric linked to a span sends an exemplar with the span ids`() throws {
+    let metric = makeCustomMetric(unit: "ms", traceId: "a3ce929d0e0e4736a3ce929d0e0e4736", spanId: "00f067aa0ba902b7")
+    let dataPoint = metric.toOTMetric().gauge.dataPoints[0]
+    let exemplar = try #require(dataPoint.exemplars?.first)
+    #expect(dataPoint.exemplars?.count == 1)
+    #expect(exemplar.traceId == "a3ce929d0e0e4736a3ce929d0e0e4736")
+    #expect(exemplar.spanId == "00f067aa0ba902b7")
+    #expect(exemplar.asDouble == 120)
+    #expect(exemplar.timeUnixNano == dataPoint.timeUnixNano)
+  }
+
+  @Test
+  func `a metric without a span sends no exemplars key`() throws {
+    let json = try makeCustomMetric(unit: "ms").toOTMetric().toJSONString()
+    #expect(!json.contains("exemplars"))
+  }
+
+  private func makeCustomMetric(unit: String?, traceId: String? = nil, spanId: String? = nil) -> Event.Metric {
     Event.Metric(
       category: "custom",
       name: "checkout.payment_time",
@@ -114,7 +132,9 @@ struct OpenTelemetryTests {
       routeName: nil,
       updateId: nil,
       customParams: nil,
-      unit: unit
+      unit: unit,
+      traceId: traceId,
+      spanId: spanId
     )
   }
 

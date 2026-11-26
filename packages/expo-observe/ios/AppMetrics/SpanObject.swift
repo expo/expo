@@ -7,9 +7,11 @@ import ExpoModulesCore
 @SharedObject("Span")
 public final class SpanObject: SharedObject {
   let handle: SpanHandle
+  private let isConsentGranted: @Sendable () -> Bool
 
-  init(_ handle: SpanHandle) {
+  init(_ handle: SpanHandle, isConsentGranted: @escaping @Sendable () -> Bool) {
     self.handle = handle
+    self.isConsentGranted = isConsentGranted
     super.init()
   }
 
@@ -37,6 +39,14 @@ public final class SpanObject: SharedObject {
       attributes: options?.attributes,
       timeMs: resolvedTimestamp(options?.time, field: "time")
     )
+  }
+
+  @JS
+  func recordMetric(_ name: String, _ value: Double, _ options: RecordMetricOptions?) {
+    guard isConsentGranted() else {
+      return
+    }
+    recordCustomMetric(name: name, value: value, options: options, span: handle.recorder)
   }
 
   @JS

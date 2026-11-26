@@ -27,6 +27,9 @@ struct Metric: Codable, Sendable {
   /// UCUM unit of `value`, such as `ms` or `By`. `nil` means seconds for the SDK's own metrics
   /// and no unit for a custom metric.
   var unit: String? = nil
+  /// Trace ID and span ID of the span that the metric is linked to, or `nil` when it has no span.
+  var traceId: String? = nil
+  var spanId: String? = nil
   /// ID of the session this metric is attached to. `nil` until the metric is handed to a session
   /// (`Session.receiveMetric`) or hydrated from the database — at every JS-observable read path the
   /// field is populated, so consumers can rely on it.
@@ -41,6 +44,8 @@ struct Metric: Codable, Sendable {
     updateId: String? = nil,
     params: [String: Any]? = nil,
     unit: String? = nil,
+    traceId: String? = nil,
+    spanId: String? = nil,
     sessionId: String? = nil
   ) {
     self.category = category
@@ -51,6 +56,8 @@ struct Metric: Codable, Sendable {
     self.updateId = updateId
     self.params = params != nil ? AnyCodable(params) : nil
     self.unit = unit
+    self.traceId = traceId
+    self.spanId = spanId
     self.sessionId = sessionId
   }
 

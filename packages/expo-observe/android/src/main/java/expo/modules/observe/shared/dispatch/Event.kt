@@ -91,7 +91,10 @@ internal data class EASMetric(
   val customParams: JsonObject? = null,
   // UCUM unit of `value`. `null` means seconds for the SDK's own metrics and no unit for a custom
   // metric.
-  val unit: String? = null
+  val unit: String? = null,
+  // Trace id and span id of the span that the metric is linked to, or `null` when it has no span.
+  val traceId: String? = null,
+  val spanId: String? = null
 ) {
   companion object {
     fun fromMetric(metric: Metric): EASMetric =
@@ -105,7 +108,9 @@ internal data class EASMetric(
         updateId = metric.updateId,
         // TODO(@lukmccall): Consider using `org.json.JSONObject` instead of kotlinx.serialization. Also, we're not handling exceptions that might be thrown here.
         customParams = metric.params?.let { Json.decodeFromString<JsonObject>(it) },
-        unit = metric.unit
+        unit = metric.unit,
+        traceId = metric.traceId,
+        spanId = metric.spanId
       )
   }
 }

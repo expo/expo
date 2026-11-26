@@ -29,6 +29,7 @@ class WebSpan extends globalThis.expo.SharedObject {
 
   setAttributes() {}
   addEvent() {}
+  recordMetric() {}
   end() {}
 }
 
