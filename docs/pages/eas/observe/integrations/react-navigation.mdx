@@ -200,7 +200,7 @@ Emitted at most once per screen instance within a session.
 
 ### Per-screen total blocking time (`tbt`)
 
-> **important** This metric is [experimental](/more/release-statuses/#experimental) and requires `expo-observe` 58.0.20 or later. The `experimental_totalBlockingTime` option may change or be removed in a patch release.
+> **important** This metric is [experimental](/more/release-statuses/#experimental) and requires `expo-observe` 58.1.0 or later. The `experimental_totalBlockingTime` option may change or be removed in a patch release.
 
 **What it measures:** Total time that long tasks blocked the JavaScript thread in the 2 seconds after a navigation action is dispatched. A long task is one that occupies the thread for more than 50ms, and only the time past 50ms counts. The metric is reported in seconds when the window closes. See [Reading navigation metrics together](/eas/observe/reference/metrics/#reading-navigation-metrics-together) for how to interpret it alongside `cold_ttr` and `tti`.
 
