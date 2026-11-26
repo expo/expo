@@ -22,6 +22,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
   title,
   label,
   destructive,
+  disabled,
   children,
   icon,
   source,
@@ -53,6 +54,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
       image={image}
       imageRenderingMode={renderingMode}
       destructive={destructive}
+      disabled={disabled}
       subtitle={subtitle}
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}

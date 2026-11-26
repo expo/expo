@@ -586,6 +586,24 @@ describe('StackToolbarMenu component', () => {
     expect(MockedNativeLinkPreviewAction).toHaveBeenCalled();
   });
 
+  it.each([true, false, undefined])(
+    'passes disabled=%s to NativeLinkPreviewAction',
+    async (disabled) => {
+      await render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarMenu disabled={disabled}>
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+        expect.objectContaining({ disabled }),
+        undefined
+      );
+    }
+  );
+
   it('passes icon to NativeLinkPreviewAction', async () => {
     await render(
       <ToolbarPlacementContext.Provider value="bottom">
