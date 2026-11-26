@@ -25,19 +25,16 @@ internal enum PageIndexBackgroundDisplayMode: String, Enumerable {
 #endif
 }
 
-internal struct IndexViewStyleModifier: ViewModifier, UIRecord {
-  @Field var type: IndexViewStyleType?
-  @Field var backgroundDisplayMode: PageIndexBackgroundDisplayMode?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
+@MainActor @AnyViewBuilder
+internal func indexViewStyleModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let type: IndexViewStyleType? = try p.value("type", nil)
+  let backgroundDisplayMode: PageIndexBackgroundDisplayMode? = try p.value("backgroundDisplayMode", nil)
 #if os(macOS)
-    content
+  content
 #else
-    switch type ?? .page {
-    case .page:
-      content.indexViewStyle(.page(backgroundDisplayMode: (backgroundDisplayMode ?? .automatic).asSwiftUI))
-    }
-#endif
+  switch type ?? .page {
+  case .page:
+    content.indexViewStyle(.page(backgroundDisplayMode: (backgroundDisplayMode ?? .automatic).asSwiftUI))
   }
+#endif
 }

@@ -10,37 +10,34 @@ internal enum ButtonBorderShapeType: String, Enumerable {
   case circle
 }
 
-internal struct ButtonBorderShapeModifier: ViewModifier, UIRecord {
-  @Field var shape: ButtonBorderShapeType = .automatic
-  @Field var cornerRadius: CGFloat?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    switch shape {
-    case .automatic:
+@MainActor @AnyViewBuilder
+internal func buttonBorderShapeModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let shape: ButtonBorderShapeType = try p.value("shape", .automatic)
+  let cornerRadius: CGFloat? = try p.value("cornerRadius", nil)
+  switch shape {
+  case .automatic:
+    content.buttonBorderShape(.automatic)
+  case .capsule:
+    if #available(iOS 15.0, macOS 14.0, tvOS 17.0, *) {
+      content.buttonBorderShape(.capsule)
+    } else {
       content.buttonBorderShape(.automatic)
-    case .capsule:
-      if #available(iOS 15.0, macOS 14.0, tvOS 17.0, *) {
-        content.buttonBorderShape(.capsule)
+    }
+  case .roundedRectangle:
+    if #available(iOS 15.0, macOS 14.0, tvOS 17.0, *) {
+      if let cornerRadius {
+        content.buttonBorderShape(.roundedRectangle(radius: cornerRadius))
       } else {
-        content.buttonBorderShape(.automatic)
+        content.buttonBorderShape(.roundedRectangle)
       }
-    case .roundedRectangle:
-      if #available(iOS 15.0, macOS 14.0, tvOS 17.0, *) {
-        if let cornerRadius {
-          content.buttonBorderShape(.roundedRectangle(radius: cornerRadius))
-        } else {
-          content.buttonBorderShape(.roundedRectangle)
-        }
-      } else {
-        content.buttonBorderShape(.automatic)
-      }
-    case .circle:
-      if #available(iOS 17.0, macOS 14.0, tvOS 16.4, *) {
-        content.buttonBorderShape(.circle)
-      } else {
-        content.buttonBorderShape(.automatic)
-      }
+    } else {
+      content.buttonBorderShape(.automatic)
+    }
+  case .circle:
+    if #available(iOS 17.0, macOS 14.0, tvOS 16.4, *) {
+      content.buttonBorderShape(.circle)
+    } else {
+      content.buttonBorderShape(.automatic)
     }
   }
 }

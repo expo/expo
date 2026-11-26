@@ -33,15 +33,12 @@ internal enum ToggleStyleType: String, Enumerable {
   }
 }
 
-internal struct ToggleStyleModifier: ViewModifier, UIRecord {
-  @Field var style: ToggleStyleType?
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    if let style {
-      style.apply(to: content)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func toggleStyleModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let style: ToggleStyleType? = try p.value("style", nil)
+  if let style {
+    style.apply(to: content)
+  } else {
+    content
   }
 }

@@ -3,12 +3,11 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct ScrollTargetLayoutModifier: ViewModifier, UIRecord {
-  func body(content: Content) -> some View {
-    if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
-      content.scrollTargetLayout()
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func scrollTargetLayoutModifier(_ content: StableContent, _: ModifierParams) throws -> AnyView {
+  if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+    content.scrollTargetLayout()
+  } else {
+    content
   }
 }

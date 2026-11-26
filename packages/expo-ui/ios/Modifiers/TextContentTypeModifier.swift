@@ -184,14 +184,12 @@ internal enum TextContentTypeValue: String, Enumerable {
   }
 }
 
-internal struct TextContentTypeModifier: ViewModifier, UIRecord {
-  @Field var textContentType: TextContentTypeValue?
-
-  func body(content: Content) -> some View {
-    if let textContentType {
-      content.textContentType(textContentType.toUITextContentType)
-    } else {
-      content
-    }
+@MainActor @AnyViewBuilder
+internal func textContentTypeModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let textContentType: TextContentTypeValue? = try p.value("textContentType", nil)
+  if let textContentType {
+    content.textContentType(textContentType.toUITextContentType)
+  } else {
+    content
   }
 }

@@ -8,28 +8,25 @@ internal enum SearchToolbarBehaviorType: String, Enumerable {
   case minimize
 }
 
-internal struct SearchToolbarBehaviorModifier: ViewModifier, UIRecord {
-  @Field var behavior: SearchToolbarBehaviorType = .automatic
-
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
+@MainActor @AnyViewBuilder
+internal func searchToolbarBehaviorModifier(_ content: StableContent, _ p: ModifierParams) throws -> AnyView {
+  let behavior: SearchToolbarBehaviorType = try p.value("behavior", .automatic)
+  if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
 #if compiler(>=6.2) // Xcode 26
-      switch behavior {
-      case .automatic:
-        content.searchToolbarBehavior(.automatic)
-      case .minimize:
+    switch behavior {
+    case .automatic:
+      content.searchToolbarBehavior(.automatic)
+    case .minimize:
 #if os(macOS) || os(tvOS)
-        content.searchToolbarBehavior(.automatic)
+      content.searchToolbarBehavior(.automatic)
 #else
-        content.searchToolbarBehavior(.minimize)
+      content.searchToolbarBehavior(.minimize)
 #endif
-      }
-#else
-      content
-#endif
-    } else {
-      content
     }
+#else
+    content
+#endif
+  } else {
+    content
   }
 }
