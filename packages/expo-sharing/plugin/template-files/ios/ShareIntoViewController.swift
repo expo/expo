@@ -119,6 +119,12 @@ class ShareIntoViewController: SLComposeServiceViewController {
       return await handleText(provider)
     }
 
+    // Documents such as .pptx or .docx often register only their own type. It conforms to
+    // public.data, but not to public.file-url or any type above.
+    if provider.hasItemConformingToTypeIdentifier(UTType.data.identifier) {
+      return await handleFile(provider, type: .file, utType: .data)
+    }
+
     return nil
   }
 
@@ -127,6 +133,12 @@ class ShareIntoViewController: SLComposeServiceViewController {
   private func handleText(_ provider: NSItemProvider) async -> SharePayload? {
     return await withCheckedContinuation { continuation in
       provider.loadItem(forTypeIdentifier: UTType.text.identifier, options: nil) { item, _ in
+        // A text file such as .txt or .md arrives as a file URL, not as a string.
+        if let url = item as? URL, url.isFileURL {
+          continuation.resume(returning: self.copyAndProcessFile(url: url, type: .file))
+          return
+        }
+
         guard let text = item as? String else {
           continuation.resume(returning: nil)
           return
@@ -167,6 +179,7 @@ class ShareIntoViewController: SLComposeServiceViewController {
       let identifier = provider.registeredTypeIdentifiers.first { providerIdentifier in
         UTType(providerIdentifier)?.conforms(to: utType) ?? false
       } ?? utType.identifier
+      let suggestedName = provider.suggestedName
 
       provider.loadItem(forTypeIdentifier: identifier, options: nil) { item, _ in
         if let url = item as? URL {
@@ -176,7 +189,7 @@ class ShareIntoViewController: SLComposeServiceViewController {
         }
 
         if let data = item as? Data {
-          let fileName = UUID().randomFilename(forTypeIdentifier: identifier)
+          let fileName = Self.dataFileName(suggestedName: suggestedName, identifier: identifier)
           let result = self.saveDataToAppGroup(
             data: data,
             fileName: fileName,
@@ -205,6 +218,14 @@ class ShareIntoViewController: SLComposeServiceViewController {
     let fileName = safeShareFileName(url.lastPathComponent, fallback: UUID().uuidString)
     guard let destinationURL = try? ShareIntoFileStore(appGroupId: appGroupId)?.makeDestination(fileName: fileName) else {
       return nil
+    }
+
+    // Files from document providers, such as iCloud Drive, are security-scoped.
+    let didStartAccessing = url.startAccessingSecurityScopedResource()
+    defer {
+      if didStartAccessing {
+        url.stopAccessingSecurityScopedResource()
+      }
     }
 
     do {
@@ -250,6 +271,18 @@ class ShareIntoViewController: SLComposeServiceViewController {
       mimeType: mimeType ?? "application/octet-stream",
       metadata: ShareMetadata(originalName: fileName, size: data.count)
     )
+  }
+
+  // Keeps the sender's file name for a data item, and adds the type's extension when the name has none.
+  nonisolated private static func dataFileName(suggestedName: String?, identifier: String) -> String {
+    let randomName = UUID().randomFilename(forTypeIdentifier: identifier)
+    var fileName = safeShareFileName(suggestedName ?? "", fallback: randomName)
+    if fileName != randomName,
+      (fileName as NSString).pathExtension.isEmpty,
+      let preferredExtension = UTType(identifier)?.preferredFilenameExtension {
+      fileName += ".\(preferredExtension)"
+    }
+    return fileName
   }
 
   // MARK: - Open main app
