@@ -24,8 +24,7 @@ let package = Package(
         .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders"),
         .product(name: "ExpoModulesWorkletsHeaders", package: "ExpoModulesWorkletsHeaders")
       ],
-      path: "ios",
-      exclude: ["ExpoUI.podspec", "ExpoUIObjC"]
+      path: "ios/ExpoUI"
     ),
     .target(
       name: "ExpoUIObjC",

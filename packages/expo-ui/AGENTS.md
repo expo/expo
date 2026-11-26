@@ -29,11 +29,11 @@ Mirror the native API shape. If the underlying SwiftUI / Compose component expos
 
 ## File structure
 
-- iOS (SwiftUI): `packages/expo-ui/ios/<ComponentName>/<ComponentName>View.swift` (or `ios/<ComponentName>View.swift` for simple components)
+- iOS (SwiftUI): `packages/expo-ui/ios/ExpoUI/<ComponentName>/<ComponentName>View.swift` (or `ios/ExpoUI/<ComponentName>View.swift` for simple components)
 - Android (Compose): `packages/expo-ui/android/src/main/java/expo/modules/ui/<ComponentName>View.kt`
 - TypeScript (SwiftUI): `packages/expo-ui/src/swift-ui/<ComponentName>/index.tsx`
 - TypeScript (Compose): `packages/expo-ui/src/jetpack-compose/<ComponentName>/index.tsx`
-- Register views in `ios/ExpoUIModule.swift` and `android/.../ExpoUIModule.kt`
+- Register views in `ios/ExpoUI/ExpoUIModule.swift` and `android/.../ExpoUIModule.kt`
 - Export from `src/swift-ui/index.tsx` and `src/jetpack-compose/index.ts`
 
 ## Example screens
