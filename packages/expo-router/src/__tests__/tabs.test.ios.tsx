@@ -623,6 +623,35 @@ it('can set params for dynamic routes using href in nested folder', async () => 
   expect(screen.getByTestId('id-second')).toHaveTextContent('2345');
 });
 
+it('preserves the parent route parameter when opening a sibling tab', async () => {
+  await renderRouter(
+    {
+      '[id]/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="other" />
+        </Tabs>
+      ),
+      '[id]/index': function Index() {
+        const { id } = useLocalSearchParams();
+        return <Text testID="index-id">{id}</Text>;
+      },
+      '[id]/other': function Other() {
+        const { id } = useLocalSearchParams();
+        return <Text testID="other-id">{id}</Text>;
+      },
+    },
+    { initialUrl: '/1' }
+  );
+
+  expect(screen.getByTestId('index-id')).toHaveTextContent('1');
+  await act(() => router.navigate('/2'));
+  expect(screen.getByTestId('index-id')).toHaveTextContent('2');
+  await fireEvent.press(screen.getByLabelText('other, tab, 2 of 2'));
+  expect(screen).toHavePathname('/2/other');
+  expect(screen.getByTestId('other-id')).toHaveTextContent('2');
+});
+
 it('can set params for dynamic routes using href when nested stack is used', async () => {
   await renderRouter({
     _layout: () => (

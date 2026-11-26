@@ -2,11 +2,14 @@
 // TODO: Rename this file to `createStandardBottomTabNavigator.tsx` in a follow-up.
 import { createStandardNavigator } from 'standard-navigation';
 
+import { matchDynamicName } from '../../../matchers';
 import type { NavigatorContentProps } from '../../../standard-navigation/types';
 import { useNonStackAnchorWarning } from '../../../standard-navigation/useNonStackAnchorWarning';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
 import { useReconcileTabHistory } from '../../../standard-navigation/useReconcileTabHistory';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
+import type { FocusedRouteState } from '../../core/NavigationFocusedRouteStateContext';
+import { useStateForPath } from '../../core/useStateForPath';
 import type { TabRouterOptions } from '../../native';
 import type {
   BottomTabDescriptorMap,
@@ -35,6 +38,27 @@ type ContentArgs = NavigatorContentProps<
   BottomTabNavigatorCreateProps
 >;
 
+function getTabNavigationParams(state: FocusedRouteState | undefined, params: object | undefined) {
+  const inherited: [string, unknown][] = [];
+  while (state) {
+    const [ancestor] = state.routes;
+    // Navigation stores params as an object keyed by parameter name.
+    const ancestorParams = (ancestor.params ?? {}) as Record<string, unknown>;
+    for (const segment of ancestor.name.split('/')) {
+      const name = matchDynamicName(segment)?.name;
+      if (
+        name !== undefined &&
+        Object.hasOwn(ancestorParams, name) &&
+        ancestorParams[name] !== undefined
+      ) {
+        inherited.push([name, ancestorParams[name]]);
+      }
+    }
+    state = ancestor.state;
+  }
+  return inherited.length > 0 ? { ...Object.fromEntries(inherited), ...params } : params;
+}
+
 function BottomTabNavigatorContent({
   state,
   descriptors,
@@ -48,6 +72,7 @@ function BottomTabNavigatorContent({
   backBehavior,
   ...rest
 }: ContentArgs) {
+  const parentRouteState = useStateForPath();
   useNonStackAnchorWarning(backBehavior);
   useReconcileTabHistory();
   const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
@@ -62,7 +87,7 @@ function BottomTabNavigatorContent({
   const navigateToTab = (routeKey: string) => {
     const route = state.routes.find((route) => route.key === routeKey);
     if (route) {
-      actions.navigate(route.name, route.params);
+      actions.navigate(route.name, getTabNavigationParams(parentRouteState, route.params));
     } else if (__DEV__) {
       console.warn(
         `Bottom tabs could not switch to the tab "${routeKey}" because no tab with that key exists. ` +
