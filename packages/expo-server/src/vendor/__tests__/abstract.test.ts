@@ -211,6 +211,54 @@ describe(createRequestHandler, () => {
     expect(apiResponse.headers.get('X-Global')).toBeNull();
   });
 
+  it.each([
+    ['GET', ['/[...missing]'], '/hello', '/hello', '/hello'],
+    ['HEAD', ['/[...missing]'], '/hello', '/hello', '/hello'],
+    ['GET', ['/[slug]'], '/hello', '/hello', '/hello'],
+    ['GET', ['/(app)/[...missing]'], '/(api)/hello', '/hello', '/(api)/hello'],
+    ['GET', ['/blog/[...rest]'], '/blog/[id]', '/blog/1', '/blog/[id]'],
+    ['GET', ['/[a]/[b]'], '/foo/[...rest]', '/foo/bar', '/foo/[...rest]'],
+    ['GET', ['/[a]/[b]', '/foo/[b]'], '/foo/[c]', '/foo/bar', '/foo/[b].html'],
+    ['GET', ['/hello'], '/hello', '/hello', '/hello.html'],
+    ['GET', ['/[id]'], '/[slug]', '/hello', '/[id].html'],
+    ['GET', ['/hello'], '/[slug]', '/hello', '/hello.html'],
+    ['GET', ['/[slug]'], '/[...rest]', '/hello', '/[slug].html'],
+    ['GET', ['/blog/[id]'], '/[...rest]', '/blog/1', '/blog/[id].html'],
+  ])('%s %j vs API route %s on %s serves %s', async (method, pages, api, path, served) => {
+    const route = (page: string, file: string) => {
+      const pattern = page
+        .split('/')
+        .filter((segment) => segment && !/^\(.*\)$/.test(segment))
+        .map((segment) =>
+          segment.startsWith('[...') ? '/.+?' : segment.startsWith('[') ? '/[^/]+?' : `/${segment}`
+        )
+        .join('');
+      return { file, page, namedRegex: new RegExp(`^${pattern}/?$`), routeKeys: {} };
+    };
+    const handler = createRequestHandler({
+      getRoutesManifest: jest.fn(async () => ({
+        htmlRoutes: pages.map((page) => route(page, `${page}.html`)),
+        apiRoutes: [route(api, api)],
+        notFoundRoutes: [],
+        redirects: [],
+        rewrites: [],
+      })),
+      getHtml: jest.fn(async (_request, { file }) => file),
+      getApiRoute: jest.fn(async ({ file }) => ({
+        GET: async () => new Response(file),
+        HEAD: async () => new Response(null, { headers: { 'X-Route': file } }),
+      })),
+      getMiddleware: jest.fn(),
+      getLoaderData: jest.fn(),
+    });
+
+    const response = await handler(new Request(`http://localhost${path}`, { method }));
+
+    expect(response.status).toBe(200);
+    const body = method === 'HEAD' ? response.headers.get('X-Route') : await response.text();
+    expect(body).toBe(served);
+  });
+
   describe('loader requests', () => {
     it('returns loader data as JSON for a route with loader', async () => {
       const manifest: Manifest = {
