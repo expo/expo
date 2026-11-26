@@ -20,17 +20,13 @@ declare namespace globalThis {
 async function runAsync(programName: string, args: string[] = []) {
   if (args[0] == null) {
     console.log(
-      `Usage: ${programName} <projectRoot> [ignoredFile] --mode <development|production> --plugin-mode <apply|skip>`
+      `Usage: ${programName} <projectRoot> [ignoredFile] --mode <development|production> [--skipPlugins]`
     );
     return;
   }
 
   const projectRoot = path.resolve(args[0]);
-  const pluginModeIndex = args.indexOf('--plugin-mode');
-  const pluginMode = pluginModeIndex >= 0 ? args[pluginModeIndex + 1] : undefined;
-  if (pluginMode !== 'apply' && pluginMode !== 'skip') {
-    throw new Error('Expected --plugin-mode to be apply or skip.');
-  }
+  const skipPlugins = args.includes('--skipPlugins');
   const ignoredFileArg = args[1] && !args[1].startsWith('--') ? args[1] : null;
   const ignoredFile = ignoredFileArg ? path.resolve(ignoredFileArg) : null;
 
@@ -49,9 +45,9 @@ async function runAsync(programName: string, args: string[] = []) {
     const { getConfig } = require(resolveFrom(path.resolve(projectRoot), 'expo/config'));
     config = await getConfig(projectRoot, {
       skipSDKVersionRequirement: true,
-      pluginMode,
+      pluginMode: skipPlugins ? 'skip' : 'apply',
       // Older versions of the project's expo/config only recognize skipPlugins.
-      skipPlugins: pluginMode === 'skip',
+      skipPlugins,
     });
   } finally {
     uninstall();
@@ -69,7 +65,7 @@ async function runAsync(programName: string, args: string[] = []) {
 
   const result = JSON.stringify({
     // The plugins-skipped pass only contributes its module list to the diff; its config is unused.
-    config: pluginMode === 'skip' ? null : config,
+    config: skipPlugins ? null : config,
     loadedModules,
   });
 

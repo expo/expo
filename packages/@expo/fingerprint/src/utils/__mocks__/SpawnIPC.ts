@@ -12,18 +12,12 @@ export const spawnWithIpcAsync = jest
       // For unit tests, we don't really spawn a process to execute the ExpoConfigLoader because the file system is just a memfs.
       // Rather than that, we just call `getConfig` directly.
       const projectRoot = args[1]!;
-      const pluginMode = args[args.indexOf('--plugin-mode') + 1];
-      if (pluginMode !== 'apply' && pluginMode !== 'skip') {
-        throw new Error('Expected --plugin-mode to be apply or skip.');
-      }
+      const skipPlugins = args.includes('--skipPlugins');
       const config = await getConfig(projectRoot, {
         skipSDKVersionRequirement: true,
-        pluginMode,
+        pluginMode: skipPlugins ? 'skip' : 'apply',
       });
-      const message = JSON.stringify({
-        config: pluginMode === 'skip' ? null : config,
-        loadedModules: [],
-      });
+      const message = JSON.stringify({ config: skipPlugins ? null : config, loadedModules: [] });
       return {
         message,
       };

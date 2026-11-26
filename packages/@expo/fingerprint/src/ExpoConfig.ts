@@ -41,8 +41,8 @@ export async function getExpoConfigAsync(
       { config, loadedModules: modulesWithPlugins },
       { loadedModules: modulesWithoutPlugins },
     ] = await Promise.all([
-      spawnConfigLoaderAsync(projectRoot, ignoredFile, 'apply'),
-      spawnConfigLoaderAsync(projectRoot, ignoredFile, 'skip'),
+      spawnConfigLoaderAsync(projectRoot, ignoredFile, /* skipPlugins */ false),
+      spawnConfigLoaderAsync(projectRoot, ignoredFile, /* skipPlugins */ true),
     ]);
     result.config = config;
     result.loadedModules = diffLoadedModules(
@@ -66,7 +66,7 @@ export async function getExpoConfigAsync(
 async function spawnConfigLoaderAsync(
   projectRoot: string,
   ignoredFile: string,
-  pluginMode: 'apply' | 'skip'
+  skipPlugins: boolean
 ): Promise<{ config: ProjectConfig | null; loadedModules: LoadedModuleSource[] | null }> {
   const args = [
     getExpoConfigLoaderPath(),
@@ -74,9 +74,10 @@ async function spawnConfigLoaderAsync(
     ignoredFile,
     '--mode',
     FINGERPRINT_ENV_MODE,
-    '--plugin-mode',
-    pluginMode,
   ];
+  if (skipPlugins) {
+    args.push('--skipPlugins');
+  }
   const childEnv = setNodeEnv(FINGERPRINT_ENV_MODE, { systemEnv: getOriginalEnv() });
   childEnv.__EXPO_CONFIG_MODE = FINGERPRINT_ENV_MODE;
   const { message } = await spawnWithIpcAsync('node', args, { cwd: projectRoot, env: childEnv });
