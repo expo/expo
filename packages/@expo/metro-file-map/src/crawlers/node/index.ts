@@ -49,9 +49,8 @@ function find(options: CrawlerOptions): Promise<FileData> {
             const name = entry.name;
 
             // NOTE(@kitten): This replaces the VCS_DIRECTORIES ignore pattern
-            // NOTE(@kitten): `.cxx` is ephemeral and should always be safe to ignore
             const isDirectory = entry.isDirectory();
-            if (isDirectory && (name === '.git' || name === '.hg' || name === '.cxx')) {
+            if (isDirectory && (name === '.git' || name === '.hg')) {
               continue;
             }
 
@@ -71,11 +70,7 @@ function find(options: CrawlerOptions): Promise<FileData> {
                 : dirNormal + path.sep + name;
 
             if (isDirectory) {
-              // NOTE(@kitten): We'd like to be able to apply excludes to directories selectively based
-              // on their normal paths, so we can exclude using `^...`
-              if (!ignore(childNormal)) {
-                search(file, childNormal, isWithinRoot || childNormal === '');
-              }
+              search(file, childNormal, isWithinRoot || childNormal === '');
               continue;
             }
 
