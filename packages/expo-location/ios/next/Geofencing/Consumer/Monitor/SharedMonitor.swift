@@ -29,7 +29,7 @@ final class SharedMonitor {
     self.pendingRegionUpdates = pendingRegionUpdates
     instance = Task { await CLMonitor(name) }
     Task { [instance] in
-      await instance.value.forward(to: self)
+      await self.receiveEvents(from: instance.value)
     }
     Task { [instance] in
       for await regions in regionUpdates {
@@ -57,7 +57,18 @@ final class SharedMonitor {
     pendingRegionUpdates.yield(regions)
   }
 
-  func deliver(_ event: CLMonitor.Event) {
+  private func receiveEvents(from monitor: CLMonitor) async {
+    do {
+      for try await event in await monitor.events {
+        deliver(event)
+      }
+      end(nil)
+    } catch {
+      end(error)
+    }
+  }
+
+  private func deliver(_ event: CLMonitor.Event) {
     lock.withLock {
       if let failure = event.failure {
         receiver?.finish(throwing: failure)
@@ -71,7 +82,7 @@ final class SharedMonitor {
     }
   }
 
-  func end(_ error: Error?) {
+  private func end(_ error: Error?) {
     lock.withLock {
       let failure = error ?? GeofencingMonitorEnded()
       ended = failure

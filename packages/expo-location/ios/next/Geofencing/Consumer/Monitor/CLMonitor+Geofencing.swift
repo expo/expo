@@ -11,15 +11,4 @@ extension CLMonitor {
       add(condition, identifier: region.identifier)
     }
   }
-
-  func forward(to shared: SharedMonitor) async {
-    do {
-      for try await event in events {
-        shared.deliver(event)
-      }
-      shared.end(nil)
-    } catch {
-      shared.end(error)
-    }
-  }
 }
