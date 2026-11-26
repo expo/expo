@@ -256,11 +256,10 @@ describe(patchProjectAsync, () => {
       });
       jest
         .mocked(revertNormalizeNativeProjectsAsync)
-        .mockRejectedValueOnce(new Error('revert failed'))
-        .mockRejectedValueOnce(new Error('revert failed again'));
+        .mockRejectedValueOnce(new Error('revert failed'));
 
       await expect(patchProjectAsync('/app', { platforms: ['ios'] })).rejects.toThrow(
-        'revert failed'
+        'patch-project created the patch, but could not restore the original native project to /app/ios.'
       );
 
       expect(vol.readFileSync('/app/ios/app/AppDelegate.swift', 'utf8')).toBe(

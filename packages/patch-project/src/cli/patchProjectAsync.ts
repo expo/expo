@@ -82,7 +82,6 @@ async function patchProjectForPlatformAsync({
 
   let backupFileMappings: BackupFileMappings = {};
   let originalProjectDir: string | null = null;
-  let shouldRemoveWorkingDirectories = true;
   try {
     await removePatchFilesAsync(patchRoot, platform);
     await fs.mkdir(path.join(projectRoot, patchRoot), { recursive: true });
@@ -141,25 +140,27 @@ async function patchProjectForPlatformAsync({
       logger.log(`No changes detected, removing the patch file: ${patchFilePath}`);
       await fs.rm(patchFilePath);
     }
-
-    if (!options.clean) {
-      debug(`Moving the original native projects back to project root`);
-      await moveAsync(platformDiffDir, platformDir);
-      originalProjectDir = null;
-      await revertNormalizeNativeProjectsAsync(backupFileMappings);
-    }
   } catch (error) {
-    shouldRemoveWorkingDirectories = await restoreOriginalProjectAsync({
-      platformDir,
-      originalProjectDir,
-      backupFileMappings,
-    });
-    throw error;
-  } finally {
-    if (shouldRemoveWorkingDirectories) {
+    if (
+      await restoreOriginalProjectAsync({ platformDir, originalProjectDir, backupFileMappings })
+    ) {
       await fs.rm(workingDirectories.rootDir, { recursive: true, force: true });
     }
+    throw error;
   }
+
+  if (!options.clean) {
+    debug(`Moving the original native projects back to project root`);
+    if (
+      !(await restoreOriginalProjectAsync({ platformDir, originalProjectDir, backupFileMappings }))
+    ) {
+      throw new Error(
+        `patch-project created the patch, but could not restore the original native project to ${platformDir}. ` +
+          `Follow the steps in the message above to restore it manually.`
+      );
+    }
+  }
+  await fs.rm(workingDirectories.rootDir, { recursive: true, force: true });
 }
 
 /**
@@ -183,10 +184,10 @@ async function restoreOriginalProjectAsync({
     } catch (moveError) {
       logger.error(
         chalk.red(
-          `Could not move the original native project back to ${platformDir} after patch-project failed. ` +
+          `Could not move the original native project back to ${platformDir}. ` +
             `The original project is in ${originalProjectDir}. ` +
             `Move it to ${platformDir} manually before you run patch-project again. ` +
-            `A later run can delete that directory.` +
+            `A later run can delete ${originalProjectDir}.` +
             (Object.keys(backupFileMappings).length > 0
               ? `\nThen copy each backup over its file:` +
                 formatBackupFileMappings(backupFileMappings)
