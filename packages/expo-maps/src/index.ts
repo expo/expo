@@ -50,6 +50,9 @@ export namespace AppleMaps {
   export const ContourStyle = AppleTypes.AppleMapsContourStyle;
   export type ContourStyle = AppleTypes.AppleMapsContourStyle;
 
+  export const CameraUpdateFrequency = AppleTypes.AppleMapsCameraUpdateFrequency;
+  export type CameraUpdateFrequency = AppleTypes.AppleMapsCameraUpdateFrequency;
+
   export type Marker = AppleTypes.AppleMapsMarker;
   export type Annotation = AppleTypes.AppleMapsAnnotation;
   export type MapUISettings = AppleTypes.AppleMapsUISettings;
