@@ -41,5 +41,5 @@ let package = Package(
       publicHeadersPath: "include"
     ),
   ],
-  swiftLanguageModes: [.v5]
+  swiftLanguageModes: [.v6]
 )

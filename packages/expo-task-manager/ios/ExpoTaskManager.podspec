@@ -27,10 +27,10 @@ Pod::Spec.new do |s|
     'ExpoTaskManager_privacy' => ['ExpoTaskManager/PrivacyInfo.xcprivacy']
   }
   s.source_files = '**/*.{h,m,mm,swift}'
-  s.exclude_files = 'Tests/'
+  s.exclude_files = 'ExpoTaskManagerTests/'
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
-    test_spec.source_files = 'Tests/**/*.{m,swift}'
+    test_spec.source_files = 'ExpoTaskManagerTests/**/*.{m,swift}'
   end
 end
