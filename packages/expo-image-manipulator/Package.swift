@@ -25,8 +25,7 @@ let package = Package(
         .product(name: "SDWebImage", package: "SDWebImage"),
         .product(name: "SDWebImageWebPCoder", package: "SDWebImageWebPCoder"),
       ],
-      path: "ios",
-      exclude: ["ExpoImageManipulator.podspec", "Tests"]
+      path: "ios/ExpoImageManipulator"
     )
   ],
   swiftLanguageModes: [.v5]
