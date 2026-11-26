@@ -10,7 +10,7 @@ internal enum ButtonBorderShapeType: String, Enumerable {
   case circle
 }
 
-internal struct ButtonBorderShapeModifier: ViewModifier, Record {
+internal struct ButtonBorderShapeModifier: ViewModifier, UIRecord {
   @Field var shape: ButtonBorderShapeType = .automatic
   @Field var cornerRadius: CGFloat?
 

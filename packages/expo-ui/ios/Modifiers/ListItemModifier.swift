@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct MoveDisabledModifier: ViewModifier, Record {
+internal struct MoveDisabledModifier: ViewModifier, UIRecord {
   @Field var disabled: Bool = true
 
   func body(content: Content) -> some View {
@@ -11,7 +11,7 @@ internal struct MoveDisabledModifier: ViewModifier, Record {
   }
 }
 
-internal struct DeleteDisabledModifier: ViewModifier, Record {
+internal struct DeleteDisabledModifier: ViewModifier, UIRecord {
   @Field var disabled: Bool = true
 
   func body(content: Content) -> some View {

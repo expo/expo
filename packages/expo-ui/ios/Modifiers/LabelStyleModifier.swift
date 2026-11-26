@@ -24,7 +24,7 @@ internal enum LabelStyleType: String, Enumerable {
   }
 }
 
-internal struct LabelStyleModifier: ViewModifier, Record {
+internal struct LabelStyleModifier: ViewModifier, UIRecord {
   @Field var style: LabelStyleType?
 
   @ViewBuilder

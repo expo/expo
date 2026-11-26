@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct ScrollClipDisabledModifier: ViewModifier, Record {
+internal struct ScrollClipDisabledModifier: ViewModifier, UIRecord {
   @Field var disabled: Bool = true
 
   func body(content: Content) -> some View {

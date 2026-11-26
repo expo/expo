@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct OnScrollGeometryChangeModifier: ViewModifier, Record {
+internal struct OnScrollGeometryChangeModifier: ViewModifier, UIRecord {
   // Worklet path: synchronous invocation on the UI runtime (no JS-thread dispatch).
   @Field var workletCallback: WorkletCallback?
   // JS-thread path: async event via the global modifier event dispatcher.
@@ -34,7 +34,7 @@ internal struct OnScrollGeometryChangeModifier: ViewModifier, Record {
   }
 }
 
-internal struct OnScrollPhaseChangeModifier: ViewModifier, Record {
+internal struct OnScrollPhaseChangeModifier: ViewModifier, UIRecord {
   var eventDispatcher: EventDispatcher?
 
   init() {}

@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct LineLimitModifier: ViewModifier, Record {
+internal struct LineLimitModifier: ViewModifier, UIRecord {
   @Field var limit: Int?
   @Field var min: Int?
   @Field var max: Int?

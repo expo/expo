@@ -122,7 +122,7 @@ internal struct SymbolEffectConfig: Record {
 
 // MARK: - Modifier
 
-internal struct SymbolEffectModifier: ViewModifier, Record {
+internal struct SymbolEffectModifier: ViewModifier, UIRecord {
   @Field var effect: SymbolEffectConfig
   @Field var options: SymbolEffectOptionsConfig?
   @Field var isActive: ObservableState?

@@ -57,7 +57,7 @@ internal enum PickerStyleType: String, Enumerable {
   }
 }
 
-internal struct PickerStyleModifier: ViewModifier, Record {
+internal struct PickerStyleModifier: ViewModifier, UIRecord {
   @Field var style: PickerStyleType?
 
   @ViewBuilder

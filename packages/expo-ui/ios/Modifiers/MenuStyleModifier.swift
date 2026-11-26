@@ -8,7 +8,7 @@ internal enum MenuStyleType: String, Enumerable {
   case button
 }
 
-internal struct MenuStyleModifier: ViewModifier, Record {
+internal struct MenuStyleModifier: ViewModifier, UIRecord {
   @Field var style: MenuStyleType = .automatic
 
   @ViewBuilder

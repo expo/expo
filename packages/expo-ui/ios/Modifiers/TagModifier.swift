@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct TagModifier: ViewModifier, Record {
+internal struct TagModifier: ViewModifier, UIRecord {
   @Field var tag: Either<String, Double>?
 
   @ViewBuilder

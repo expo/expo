@@ -9,7 +9,7 @@ internal enum NavigationSplitViewStyleOptions: String, Enumerable {
   case prominentDetail
 }
 
-internal struct NavigationSplitViewStyleModifier: ViewModifier, Record {
+internal struct NavigationSplitViewStyleModifier: ViewModifier, UIRecord {
   @Field var style: NavigationSplitViewStyleOptions = .automatic
 
   @ViewBuilder
@@ -25,7 +25,7 @@ internal struct NavigationSplitViewStyleModifier: ViewModifier, Record {
   }
 }
 
-internal struct NavigationSplitViewColumnWidthModifier: ViewModifier, Record {
+internal struct NavigationSplitViewColumnWidthModifier: ViewModifier, UIRecord {
   @Field var width: CGFloat?
   @Field var min: CGFloat?
   @Field var ideal: CGFloat?

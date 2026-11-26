@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct ForegroundStyleModifier: ViewModifier, Record {
+internal struct ForegroundStyleModifier: ViewModifier, UIRecord {
   @Field var style: ShapeStyleValue?
 
   func body(content: Content) -> some View {

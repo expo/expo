@@ -29,7 +29,7 @@ internal enum SubmitLabelType: String, Enumerable {
   }
 }
 
-internal struct SubmitLabelModifier: ViewModifier, Record {
+internal struct SubmitLabelModifier: ViewModifier, UIRecord {
   @Field var submitLabel: SubmitLabelType?
 
   @ViewBuilder

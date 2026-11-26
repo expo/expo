@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct ScrollPositionModifier: ViewModifier, Record {
+internal struct ScrollPositionModifier: ViewModifier, UIRecord {
   @Field var id: ObservableState?
   @Field var anchor: UnitPointOptions?
   var eventDispatcher: EventDispatcher?

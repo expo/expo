@@ -29,7 +29,7 @@ internal final class RefreshableManager {
   }
 }
 
-internal struct RefreshableModifier: ViewModifier, Record {
+internal struct RefreshableModifier: ViewModifier, UIRecord {
   var eventDispatcher: EventDispatcher?
   @State private var currentRefreshId: String?
 

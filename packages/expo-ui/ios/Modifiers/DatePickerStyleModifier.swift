@@ -28,7 +28,7 @@ internal enum DatePickerStyleType: String, Enumerable {
 #endif
 }
 
-internal struct DatePickerStyleModifier: ViewModifier, Record {
+internal struct DatePickerStyleModifier: ViewModifier, UIRecord {
   @Field var style: DatePickerStyleType?
 
   @ViewBuilder

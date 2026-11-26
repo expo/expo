@@ -18,7 +18,7 @@ internal enum ScrollAnchorRoleOptions: String, Enumerable {
   }
 }
 
-internal struct DefaultScrollAnchorForRoleModifier: ViewModifier, Record {
+internal struct DefaultScrollAnchorForRoleModifier: ViewModifier, UIRecord {
   @Field var anchor: UnitPointOptions?
   @Field var role: ScrollAnchorRoleOptions = .initialOffset
 

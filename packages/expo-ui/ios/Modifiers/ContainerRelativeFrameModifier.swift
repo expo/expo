@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct ContainerRelativeFrameModifier: ViewModifier, Record {
+internal struct ContainerRelativeFrameModifier: ViewModifier, UIRecord {
   @Field var axes: AxisOptions = .both
   @Field var count: Int = 0
   @Field var span: Int = 1
