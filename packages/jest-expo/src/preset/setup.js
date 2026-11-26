@@ -285,11 +285,24 @@ jest.doMock('expo-modules-core', () => {
   // NOTE: The adapter validates the number of arguments, which we don't do in the mocked functions.
   // This means the mock functions will not throw validation errors the way they would in an app.
 
+  const defaultNativeMethodMockImplementation = async () => {};
+
+  function addListenerMockImplementation(eventName, listener) {
+    if (this instanceof EventEmitter && typeof listener === 'function') {
+      return NativeModule.prototype.addListener.call(this, eventName, listener);
+    }
+    return defaultNativeMethodMockImplementation();
+  }
+
   for (const moduleName of Object.keys(NativeModulesProxy)) {
     const nativeModule = NativeModulesProxy[moduleName];
     for (const propertyName of Object.keys(nativeModule)) {
       if (typeof nativeModule[propertyName] === 'function') {
-        nativeModule[propertyName] = jest.fn(async () => {});
+        nativeModule[propertyName] = jest.fn(
+          propertyName === 'addListener'
+            ? addListenerMockImplementation
+            : defaultNativeMethodMockImplementation
+        );
       }
     }
   }
