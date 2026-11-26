@@ -16,6 +16,7 @@
         {
           "type": "swift",
           "name": "ExpoSplashScreen",
+          "path": "ios/ExpoSplashScreen",
           "dependencies": [
             "Hermes",
             "React",
