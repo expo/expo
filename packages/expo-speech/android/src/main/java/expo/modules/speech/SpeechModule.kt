@@ -39,7 +39,7 @@ class SpeechModule : Module() {
     }
 
     OnActivityDestroys {
-      textToSpeech.shutdown()
+      resetTextToSpeech()
     }
 
     AsyncFunction<Boolean>("isSpeaking") {
@@ -69,7 +69,12 @@ class SpeechModule : Module() {
       }
 
       when (ttsState) {
-        TtsState.READY -> speakOut(id, text, options)
+        TtsState.READY -> if (speakOut(id, text, options) == TextToSpeech.ERROR) {
+          // The engine died and TextToSpeech never reconnects, so retry with a new instance
+          resetTextToSpeech()
+          delayedUtterances.add(Utterance(id, text, options))
+          textToSpeech
+        }
         TtsState.FAILED -> sendEvent(speakingErrorEvent, idToMap(id))
         TtsState.PENDING -> {
           delayedUtterances.add(Utterance(id, text, options))
@@ -105,7 +110,7 @@ class SpeechModule : Module() {
     }
   }
 
-  private fun speakOut(id: String, text: String, options: SpeechOptions) {
+  private fun speakOut(id: String, text: String, options: SpeechOptions): Int {
     options.pitch?.let(textToSpeech::setPitch)
     options.rate?.let(textToSpeech::setSpeechRate)
 
@@ -129,7 +134,7 @@ class SpeechModule : Module() {
 
     options.voice?.let { voiceName ->
       textToSpeech.voices
-        .firstOrNull { it.name == voiceName }
+        ?.firstOrNull { it.name == voiceName }
         ?.let(textToSpeech::setVoice)
     }
 
@@ -140,7 +145,7 @@ class SpeechModule : Module() {
       }
     }
 
-    textToSpeech.speak(
+    return textToSpeech.speak(
       text,
       TextToSpeech.QUEUE_ADD,
       params,
@@ -150,11 +155,29 @@ class SpeechModule : Module() {
 
   // TextToSpeech object related code
 
-  private val textToSpeech: TextToSpeech by lazy {
+  private val textToSpeech: TextToSpeech
+    get() = synchronized(this) { _textToSpeech ?: createTextToSpeech() }
+
+  private fun resetTextToSpeech() {
+    val oldTtsInstance = synchronized(this) {
+      ttsState = TtsState.PENDING
+      ttsGeneration++
+      _textToSpeech.also { _textToSpeech = null }
+    }
+    // Called outside the lock to avoid a deadlock with the init callback
+    oldTtsInstance?.shutdown()
+  }
+
+  private fun createTextToSpeech(): TextToSpeech {
+    val generation = ttsGeneration
     val newTtsInstance = TextToSpeech(appContext.reactContext) { status: Int ->
       if (status == TextToSpeech.SUCCESS) {
         // synchronize because in some cases this runs on another thread and _textToSpeech is null
         synchronized(this@SpeechModule) {
+          // Ignore a late callback from an instance that was already reset
+          if (generation != ttsGeneration) {
+            return@synchronized
+          }
           ttsState = TtsState.READY
           _textToSpeech!!.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
 
@@ -184,22 +207,31 @@ class SpeechModule : Module() {
             }
           })
           for ((id, text, options) in delayedUtterances) {
-            speakOut(id, text, options)
+            if (speakOut(id, text, options) == TextToSpeech.ERROR) {
+              sendEvent(speakingErrorEvent, idToMap(id))
+            }
           }
           for (promise in delayedGetVoices) {
             promise.resolve(getVoices())
           }
+          delayedUtterances.clear()
+          delayedGetVoices.clear()
         }
       } else {
         synchronized(this@SpeechModule) {
+          if (generation != ttsGeneration) {
+            return@synchronized
+          }
           ttsState = TtsState.FAILED
           delayedGetVoices.forEach { it.resolve(emptyList<VoiceRecord>()) }
           delayedUtterances.forEach { sendEvent(speakingErrorEvent, idToMap(it.id)) }
+          delayedUtterances.clear()
+          delayedGetVoices.clear()
         }
       }
     }
     _textToSpeech = newTtsInstance
-    newTtsInstance
+    return newTtsInstance
   }
 
   // Helpers
@@ -219,6 +251,7 @@ class SpeechModule : Module() {
     FAILED
   }
 
-  // do not refer to this - it's only needed when initializing `textToSpeech`
+  // use the `textToSpeech` getter instead, it creates the instance when needed
   private var _textToSpeech: TextToSpeech? = null
+  private var ttsGeneration = 0
 }
