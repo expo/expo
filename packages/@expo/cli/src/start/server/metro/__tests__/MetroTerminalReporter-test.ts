@@ -1010,3 +1010,35 @@ Caused by: Another message
     expect(actualCodeFrame).toBe(expectedCodeFrame);
   });
 });
+
+describe('EXPO_UNSTABLE_CDP_LOGS', () => {
+  const terminal = {
+    log: jest.fn(),
+    persistStatus: jest.fn(),
+    status: jest.fn(),
+    flush: jest.fn(),
+    _update: jest.fn(),
+  };
+  const reporter = new MetroTerminalReporter('/', terminal as any);
+
+  beforeEach(() => {
+    process.env.EXPO_UNSTABLE_CDP_LOGS = '1';
+    terminal.log.mockReset();
+  });
+
+  afterEach(() => {
+    delete process.env.EXPO_UNSTABLE_CDP_LOGS;
+  });
+
+  it('prints a console call read over CDP without formatting it again', () => {
+    reporter.logDeviceConsole({ level: 'log', data: ['100%s', 'done'] });
+
+    expect(stripVTControlCharacters(terminal.log.mock.calls[0].join(' '))).toBe(' LOG  100%s done');
+  });
+
+  it('drops the same log sent by a native app over the HMR socket', () => {
+    reporter._log({ type: 'client_log', level: 'log', data: ['hello'], mode: 'NOBRIDGE' } as any);
+
+    expect(terminal.log).not.toHaveBeenCalled();
+  });
+});
