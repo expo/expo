@@ -52,13 +52,7 @@ private inline fun Module.requestPermissions(
   val result = Promise<PermissionResponse>()
   val manager = legacyAppContext.permissions
   if (manager == null) {
-    result.reject(
-      CodedException(
-        "E_NO_PERMISSIONS",
-        "Permissions module is null. Are you sure all the installed Expo modules are properly linked?",
-        null
-      )
-    )
+    result.reject(PermissionsModuleNotFoundException())
     return result
   }
   request(

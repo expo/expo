@@ -36,3 +36,9 @@ class PlayServicesNotLinkedException : CodedException(
     "or set `expo.sensors.pedometer-play-services-enabled=true` in `android/gradle.properties`. Then rebuild the app.",
   null
 )
+
+class PermissionsModuleNotFoundException : CodedException(
+  "ERR_NO_PERMISSIONS",
+  "Permissions module is null. Are you sure all the installed Expo modules are properly linked?",
+  null
+)
