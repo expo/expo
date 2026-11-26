@@ -1,4 +1,4 @@
-import { sortRoutesWithInitial, type RouteNode } from '../Route';
+import { isLayoutRouteNode, sortRoutesWithInitial, type RouteNode } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
 import { createInitialState } from '../react-navigation/core/createInitialState';
@@ -85,7 +85,8 @@ export function createSeededNavigationState(
   anchorParams?: object
 ): NavigationState {
   const initialRouteName = getValidInitialRouteName(routeNode);
-  const routeNames = [...routeNode.children]
+  // TODO(@ubax): Extract layout child sorting into a shared helper.
+  const routeNames = [...(isLayoutRouteNode(routeNode) ? routeNode.children : [])]
     .sort(sortRoutesWithInitial(initialRouteName))
     .map((child) => child.route);
 
@@ -121,11 +122,12 @@ function completeExistingState(
     if (route.key === undefined) {
       routesChanged = true;
     }
-    if (!childNode || childNode.children.length === 0) {
+    if (!isLayoutRouteNode(childNode) || childNode.children.length === 0) {
       return completeRoute;
     }
 
     const initialRouteName = getValidInitialRouteName(childNode);
+    // TODO(@ubax): Extract layout child sorting into a shared helper.
     const childRouteNames = [...childNode.children]
       .sort(sortRoutesWithInitial(initialRouteName))
       .map((child) => child.route);
@@ -209,7 +211,7 @@ function createSeededState({
     const key = minter.mint(targetRoute.name);
     const childNode = findChildNode(targetRoute.name);
     const childState =
-      childNode && childNode.children.length > 0
+      isLayoutRouteNode(childNode) && childNode.children.length > 0
         ? createSeededNavigationState(
             'state' in targetRoute ? targetRoute.state : undefined,
             childNode,

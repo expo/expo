@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { use } from 'react';
 
-import type { RouteNode } from '../../Route';
+import { isLayoutRouteNode, type RouteNode } from '../../Route';
 import { createSeededNavigationState } from '../../global-state/createSeededNavigationState';
 import { findRouteNodeByName } from '../../routeNode';
 import { NavigationActivityProvider } from '../../views/NavigationActivityContext';
@@ -308,9 +308,10 @@ export function useDescriptors<
   const createMissingDescriptor = (route: RouteProp<ParamListBase, string>) => {
     // Seed a nested navigator the same way the global state does when the route is added.
     const childNode = findRouteNodeByName(routeNode, route.name);
-    const routeState = childNode?.children.length
-      ? createSeededNavigationState(undefined, childNode, getChainFromRouteKey(route.key))
-      : undefined;
+    const routeState =
+      isLayoutRouteNode(childNode) && childNode.children.length
+        ? createSeededNavigationState(undefined, childNode, getChainFromRouteKey(route.key))
+        : undefined;
     return createDescriptor(route, getNavigation(route, false), routeState);
   };
 
