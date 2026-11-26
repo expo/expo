@@ -134,7 +134,9 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
         if (screenId !== undefined) {
           setOpenPreviewKey(screenId);
         }
-        if (!isPad) {
+        if (!hasPreview) {
+          router.navigate(rest.href);
+        } else if (!isPad) {
           router.navigate(rest.href, { __internal__PreviewKey: screenId });
         }
       }}
