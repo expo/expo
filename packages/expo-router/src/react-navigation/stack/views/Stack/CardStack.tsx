@@ -1,8 +1,8 @@
-import type { VerticalBarEdgeIOS } from 'expo-status-bar';
 import * as React from 'react';
 import { Animated, type LayoutChangeEvent, Platform, StyleSheet, View } from 'react-native';
 import type { EdgeInsets } from 'react-native-safe-area-context';
 
+import type { VerticalBarEdgeIOS } from '../../../../utils/useVerticalBarEdgeIOS';
 import { getDefaultHeaderHeight, SafeAreaProviderCompat } from '../../../elements';
 import { getHeaderStatusBarHeight } from '../../../elements/Header/getHeaderStatusBarHeight';
 import type { LocaleDirection, Route } from '../../../native';

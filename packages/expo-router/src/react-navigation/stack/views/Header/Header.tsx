@@ -1,9 +1,9 @@
 'use client';
-import { useVerticalBarEdgeIOS } from 'expo-status-bar';
 import * as React from 'react';
 import { use } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useVerticalBarEdgeIOS } from '../../../../utils/useVerticalBarEdgeIOS';
 import { getHeaderTitle, HeaderShownContext } from '../../../elements';
 import { getHeaderStatusBarHeight } from '../../../elements/Header/getHeaderStatusBarHeight';
 import { StackActions } from '../../../native';

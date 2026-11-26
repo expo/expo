@@ -53,6 +53,18 @@ Object.defineProperty(mockNativeModules, 'LinkingManager', {
   get: () => mockNativeModules.Linking,
 });
 
+// React Native's preset mock lacks the emitter methods `useVerticalBarEdgeIOS` subscribes through.
+const mockStatusBarManager = {
+  ...mockNativeModules.StatusBarManager,
+  addListener: jest.fn(),
+  removeListeners: jest.fn(),
+};
+Object.defineProperty(mockNativeModules, 'StatusBarManager', {
+  configurable: true,
+  enumerable: true,
+  get: () => mockStatusBarManager,
+});
+
 const expoModules = merge(publicExpoModules, merge(thirdPartyModules, internalExpoModules));
 
 function mock(property, customMock) {
