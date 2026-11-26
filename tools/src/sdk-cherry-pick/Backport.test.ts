@@ -6,7 +6,7 @@ import path from 'node:path';
 import { after, before, describe, it } from 'node:test';
 
 import { BackportOptions, backportAsync } from './Backport';
-import { GitHub } from './GitHub';
+import { GitHub, StackEntry } from './GitHub';
 
 process.env.GIT_CONFIG_GLOBAL = '/dev/null';
 process.env.GIT_CONFIG_NOSYSTEM = '1';
@@ -95,7 +95,10 @@ async function backport(
   prNumber: number,
   sdkVersion: number,
   mergeSha: string,
-  options: Partial<BackportOptions> = {}
+  {
+    stackBelow = [],
+    ...options
+  }: Omit<Partial<BackportOptions>, 'stackBelow'> & { stackBelow?: StackEntry[] | Error } = {}
 ): Promise<Run> {
   const run: Run = { comments: [], log: '' };
   const github: GitHub = {
@@ -120,6 +123,12 @@ async function backport(
         `--grep=(cherry picked from commit ${sha})`,
         `refs/heads/${branch}`
       ) !== '',
+    readStackBelowAsync: async () => {
+      if (stackBelow instanceof Error) {
+        throw stackBelow;
+      }
+      return stackBelow;
+    },
   };
   try {
     run.result = await backportAsync({
@@ -128,7 +137,6 @@ async function backport(
       sdkVersion,
       mergeSha,
       author: 'octocat',
-      stackBelow: [],
       dryRun: false,
       github,
       log: (message) => {
@@ -421,6 +429,70 @@ exec "${REAL_GIT}" "$@"
     assert.equal(remoteBranch('sdk-57'), before);
     assert.equal(run.comments.length, 1);
     assert.match(run.comments[0], /^#51 [^\n]*#50 does not have the `sdk-57` label/);
+    assertNoTemporaryWorktree();
+  });
+
+  it('backports a stacked pull request when the pull request below it is on sdk-NN without the label', async () => {
+    createTargetBranch('sdk-58', 'sdk-90');
+    const lowerSha = commitOnMain({ 'stack-5.txt': 'five\n' }, 'Add a lower change (#52)');
+    const upperSha = commitOnMain({ 'stack-6.txt': 'six\n' }, 'Add an upper change (#53)');
+    assert.equal((await backport(52, 58, lowerSha)).error, undefined);
+
+    const run = await backport(53, 58, upperSha, {
+      stackBelow: [
+        { number: 52, labels: [], mergeSha: lowerSha, mergedAt: '2000-01-01T00:00:00Z' },
+      ],
+    });
+    assert.equal(run.error, undefined);
+    assert.equal(git(origin, 'log', '-1', '--format=%s', 'sdk-58'), 'Add an upper change (#53)');
+    assertNoTemporaryWorktree();
+  });
+
+  it('refuses a stacked pull request when the pull request below it is not merged', async () => {
+    const before = createTargetBranch('sdk-59', 'sdk-90');
+    const upperSha = commitOnMain({ 'stack-7.txt': 'seven\n' }, 'Add an upper change (#55)');
+
+    const run = await backport(55, 59, upperSha, {
+      stackBelow: [{ number: 54, labels: ['sdk-59'] }],
+    });
+    assert.ok(run.error);
+    assert.equal(remoteBranch('sdk-59'), before);
+    assert.equal(run.comments.length, 1);
+    assert.match(run.comments[0], /^#55 [^\n]*#54 is not merged/);
+    assertNoTemporaryWorktree();
+  });
+
+  it('pushes nothing and comments once when the stack read fails', async () => {
+    const before = createTargetBranch('sdk-85', 'sdk-90');
+    const sha = commitOnMain({ 'stack-8.txt': 'eight\n' }, 'Add a change (#56)');
+
+    const run = await backport(56, 85, sha, { stackBelow: new Error('GraphQL failed') });
+    assert.ok(run.error);
+    assert.equal(remoteBranch('sdk-85'), before);
+    assert.equal(run.comments.length, 1);
+    assert.match(run.comments[0], /^#56 The backport to `sdk-85` failed\./);
+    assertNoTemporaryWorktree();
+  });
+
+  it('comments that the change is already on sdk-NN for a stacked pull request that merged into sdk-NN', async () => {
+    createTargetBranch('sdk-55', 'sdk-90');
+    const seed = path.join(root, 'seed');
+    git(seed, 'fetch', '-q', origin, 'sdk-55');
+    git(seed, 'checkout', '-q', '--detach', 'FETCH_HEAD');
+    let sha: string;
+    try {
+      sha = commit(seed, { 'stack-9.txt': 'nine\n' }, 'Add an upper change (#57)');
+      git(seed, 'push', '-q', origin, 'HEAD:refs/heads/sdk-55');
+    } finally {
+      git(seed, 'checkout', '-q', 'main');
+    }
+
+    const run = await backport(57, 55, sha);
+    assert.equal(run.error, undefined);
+    assert.equal(remoteBranch('sdk-55'), sha);
+    assert.deepEqual(run.comments, [
+      `#57 This change is already on \`sdk-55\`: the branch contains ${sha}. No backport was made.`,
+    ]);
     assertNoTemporaryWorktree();
   });
 

@@ -6,7 +6,7 @@ import { GitDirectory } from '../Git';
 import { spawnErrorOutput } from '../Utils';
 import { convertChangesetsAsync } from '../changesets/BackportChangelog';
 import { isChangesetPath } from '../code-review/Changesets';
-import { GitHub, StackEntry } from './GitHub';
+import { GitHub } from './GitHub';
 
 export type BackportOptions = {
   /** A clone of the repository with an `origin` remote. */
@@ -16,8 +16,6 @@ export type BackportOptions = {
   mergeSha: string;
   /** The login of the pull request author, whom the `CHANGELOG.md` entries credit. */
   author: string;
-  /** The pull requests below this one in its GitHub stack, bottom first. Empty without a stack. */
-  stackBelow: StackEntry[];
   /**
    * For a branch without changesets: the checked patch of the `build/` folders that the workflow
    * rebuilt for this backport. A missing file means that the rebuild failed.
@@ -178,8 +176,16 @@ git cherry-pick -x ${mergeSha}`;
     }
     // Before the fetch, the ref may be missing. Then the plain steps stay.
     await readChangesetConfigAsync(`refs/remotes/origin/${targetBranch}`).catch(() => {});
-    // A pull request of a merged stack reports the branch below it as its base, but its merge
-    // commit is on main. So check the commit, not the base.
+    // A branch made from main after the merge already holds the change, and so does sdk-NN for a
+    // stack that merged into it. When the branch changed the same lines later, the cherry-pick
+    // conflicts instead of coming out empty.
+    if (await github.branchContainsAsync(targetBranch, mergeSha)) {
+      await commentAsync(
+        `This change is already on \`${targetBranch}\`: the branch contains ${mergeSha}. No backport was made.`
+      );
+      return;
+    }
+    // An upper pull request of a merged stack keeps the branch below it as its base.
     if (!(await github.branchContainsAsync('main', mergeSha))) {
       const reason = `The bot backports only pull requests whose merge commit is on \`main\`. The merge commit ${mergeSha} of this pull request is not on \`main\`, so the bot did not backport it to \`${targetBranch}\`.`;
       await commentAsync(`${reason}\n\n${manualSteps}`);
@@ -204,18 +210,10 @@ git cherry-pick -x ${mergeSha}`;
       return tip;
     };
     let base = await fetchTargetAsync();
-    // A branch made from main after the merge already holds the change. When it changed the same
-    // lines later, the cherry-pick conflicts instead of coming out empty.
-    if (await github.branchContainsAsync(targetBranch, mergeSha)) {
-      await commentAsync(
-        `This change is already on \`${targetBranch}\`: the branch contains ${mergeSha}. No backport was made.`
-      );
-      return;
-    }
     // Each pull request of a merged stack gets its own run, and the runs finish in any order. A
     // commit that lands before the commits below it can apply cleanly and still not compile.
     const blockers: string[] = [];
-    for (const entry of options.stackBelow) {
+    for (const entry of await github.readStackBelowAsync(prNumber)) {
       if (!entry.mergeSha || !entry.mergedAt) {
         blockers.push(`#${entry.number} is not merged.`);
       } else if (

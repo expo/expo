@@ -15,6 +15,8 @@ export type GitHub = {
   branchContainsAsync(branch: string, sha: string): Promise<boolean>;
   /** Whether a commit on `branch` after `since` has the `(cherry picked from commit <sha>)` line. */
   branchHasCherryPickAsync(branch: string, sha: string, since: string): Promise<boolean>;
+  /** The pull requests below this one in its GitHub stack, bottom first. Empty without a stack. */
+  readStackBelowAsync(prNumber: number): Promise<StackEntry[]>;
 };
 
 type PullRequestView = {
@@ -64,9 +66,7 @@ const STACK_QUERY = `query($owner: String!, $name: String!, $number: Int!) {
 
 /** Calls GitHub with the `gh` CLI, which reads the token from GH_TOKEN. */
 export function ghCli(repo: string): GitHub & {
-  viewPullRequestAsync(
-    prNumber: number
-  ): Promise<{ mergeSha: string; author: string; stackBelow: StackEntry[] }>;
+  viewPullRequestAsync(prNumber: number): Promise<{ mergeSha: string; author: string }>;
 } {
   const gh = async (...args: string[]) =>
     (await spawnAsync('gh', [...args, '--repo', repo])).stdout.trim();
@@ -103,6 +103,7 @@ export function ghCli(repo: string): GitHub & {
   };
 
   return {
+    readStackBelowAsync,
     async commentAsync(prNumber, body) {
       await gh('pr', 'comment', String(prNumber), '--body', body);
     },
@@ -130,8 +131,6 @@ export function ghCli(repo: string): GitHub & {
       return {
         mergeSha: view.mergeCommit.oid,
         author: view.author.login,
-        // A failed read throws, so the bot backports nothing instead of skipping the stack check.
-        stackBelow: await readStackBelowAsync(prNumber),
       };
     },
   };
