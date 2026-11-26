@@ -19,11 +19,11 @@ Pod::Spec.new do |s|
   s.weak_frameworks = 'FoundationModels'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.source_files = '**/*.{h,m,swift}'
-  s.exclude_files = 'Tests/**'
+  s.exclude_files = 'ExpoAITests/**'
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
-    test_spec.source_files = 'Tests/**/*.swift'
+    test_spec.source_files = 'ExpoAITests/**/*.swift'
     test_spec.requires_app_host = false
   end
 end
