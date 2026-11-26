@@ -1,5 +1,6 @@
 package expo.modules.webbrowser
 
+import android.content.Intent
 import android.content.ComponentName
 import android.net.Uri
 import android.os.Bundle
@@ -17,6 +18,7 @@ import io.mockk.slot
 import io.mockk.verify
 import junit.framework.ComparisonFailure
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -261,6 +263,38 @@ internal class WebBrowserModuleTest {
     )
     assertEquals(toolbarColor, colorSchemeParams.toolbarColor)
     assertEquals(secondaryToolbarColor, colorSchemeParams.secondaryToolbarColor)
+  }
+
+  @Test
+  fun testReferrerPassedToIntentWhenProvided() = withWebBrowserMock {
+    // given
+    val intentSlot = slot<CustomTabsIntent>()
+    val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
+    initialize(moduleSpy, customTabsActivitiesHelper = mock)
+
+    // when
+    module.openBrowserAsync(
+      "http://expo.io",
+      OpenBrowserOptions(referrer = "android-app://com.example.app")
+    )
+
+    // then
+    val referrer = intentSlot.captured.intent.getParcelableExtra<Uri>(Intent.EXTRA_REFERRER)
+    assertEquals(Uri.parse("android-app://com.example.app"), referrer)
+  }
+
+  @Test
+  fun testReferrerNotSetWhenAbsent() = withWebBrowserMock {
+    // given
+    val intentSlot = slot<CustomTabsIntent>()
+    val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
+    initialize(moduleSpy, customTabsActivitiesHelper = mock)
+
+    // when
+    module.openBrowserAsync("http://expo.io", OpenBrowserOptions())
+
+    // then
+    assertFalse(intentSlot.captured.intent.hasExtra(Intent.EXTRA_REFERRER))
   }
 
   @Test
