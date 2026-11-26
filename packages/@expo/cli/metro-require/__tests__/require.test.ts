@@ -142,7 +142,7 @@ describe('require', () => {
     });
   });
 
-  it('works with segmented bundles', () => {
+  it.each(['require', 'importAll'])('works with segmented bundles (%s)', (method) => {
     const createSegmentDefiner = (modules) => {
       return jest.fn(function (moduleId) {
         const mockModule = modules.find((m) => m.moduleId === moduleId);
@@ -204,7 +204,8 @@ describe('require', () => {
 
     createModuleSystem(moduleSystem, false, '');
 
-    const { __r, __registerSegment } = moduleSystem;
+    const { __r: requireModule, __registerSegment } = moduleSystem;
+    const __r = method === 'require' ? requireModule : (id) => requireModule.importAll(id).default;
 
     __registerSegment(
       0,
@@ -834,6 +835,61 @@ describe('require', () => {
   });
 
   describe('ES6 module support with Babel interoperability', () => {
+    describe.each([false, true])('guarded wildcard imports (dev: %s)', (dev) => {
+      let reportFatalError;
+
+      beforeEach(() => {
+        createModuleSystem(moduleSystem, dev, '');
+        reportFatalError = jest.fn();
+        moduleSystem.ErrorUtils = { reportFatalError };
+      });
+
+      it('allows catching a missing import and retrying after its chunk registers', () => {
+        const unrelatedSegment = jest.fn();
+        moduleSystem.__registerSegment(1, unrelatedSegment, [99]);
+
+        expect(() => moduleSystem.__r.importAll(42)).toThrow('Requiring unknown module "42".');
+        expect(reportFatalError).not.toHaveBeenCalled();
+        expect(unrelatedSegment).not.toHaveBeenCalled();
+
+        const factory = jest.fn((global, require, importDefault, importAll, module) => {
+          module.exports = 42;
+        });
+        moduleSystem.__d(factory, 42, []);
+        const namespace = moduleSystem.__r.importAll(42);
+        expect(namespace).toEqual({ default: 42 });
+        expect(moduleSystem.__r.importAll(42)).toBe(namespace);
+        expect(factory).toHaveBeenCalledTimes(1);
+        expect(reportFatalError).not.toHaveBeenCalled();
+      });
+
+      it.each(['factory', 'segment'])('reports the original %s error once', (source) => {
+        const error = new Error('load failed');
+        reportFatalError.mockImplementation((e) => {
+          throw e;
+        });
+        const factory = () => {
+          throw error;
+        };
+        if (source === 'segment') moduleSystem.__registerSegment(1, factory, [42]);
+        else moduleSystem.__d(factory, 42, []);
+
+        expect(() => moduleSystem.__r.importAll(42)).toThrowStrictEquals(error);
+        expect(reportFatalError).toHaveBeenCalledTimes(1);
+        expect(reportFatalError.mock.calls[0][0]).toBe(error);
+      });
+
+      it('reports a missing dependency inside a registered factory once', () => {
+        moduleSystem.__d((global, require, importDefault, importAll) => importAll(99), 42, [99]);
+
+        moduleSystem.__r.importAll(42);
+        expect(reportFatalError).toHaveBeenCalledTimes(1);
+        expect(reportFatalError.mock.calls[0][0].message).toContain(
+          'Requiring unknown module "99".'
+        );
+      });
+    });
+
     it('supports default imports from ES6 modules', () => {
       createModuleSystem(moduleSystem, false, '');
 
