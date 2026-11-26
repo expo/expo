@@ -16,6 +16,7 @@
         {
           "type": "swift",
           "name": "ExpoSharing",
+          "path": "ios/ExpoSharing",
           "dependencies": [
             "Hermes",
             "React",
