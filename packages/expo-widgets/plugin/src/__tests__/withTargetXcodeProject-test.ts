@@ -230,6 +230,36 @@ describe(withTargetXcodeProject, () => {
       });
     });
 
+    it('fails the ExpoModulesJSI phase with a clear error when expo-modules-jsi is too old', () => {
+      const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-widgets-'));
+      try {
+        for (const name of ['react-native', 'expo', 'expo-modules-core', 'expo-modules-jsi']) {
+          const packageDir = path.join(projectRoot, 'node_modules', name);
+          fs.mkdirSync(packageDir, { recursive: true });
+          fs.writeFileSync(path.join(packageDir, 'package.json'), JSON.stringify({ name }));
+        }
+        const script = path.join(
+          __dirname,
+          '../../../scripts/xcode-swiftpm-build-expo-modules-jsi.sh'
+        );
+        const { status, stderr } = spawnSync('/bin/bash', [script], {
+          encoding: 'utf8',
+          env: {
+            PATH: process.env.PATH,
+            NODE_BINARY: process.execPath,
+            PROJECT_ROOT: projectRoot,
+            SRCROOT: path.join(projectRoot, 'ios'),
+            DERIVED_FILE_DIR: path.join(projectRoot, 'derived'),
+          },
+        });
+
+        expect(status).toBe(1);
+        expect(stderr).toContain('has no apple/scripts/build-swiftpm-app-phase.sh');
+      } finally {
+        fs.rmSync(projectRoot, { recursive: true, force: true });
+      }
+    });
+
     it('adds nothing twice when it runs again', () => {
       const before = xcodeProject.writeSync();
       applyPlugin(xcodeProject, { swiftPackageManager: true });

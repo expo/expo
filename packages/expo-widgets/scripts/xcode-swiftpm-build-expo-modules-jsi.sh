@@ -34,6 +34,10 @@ if [ -z "$RN_DIR" ] || [ -z "$JSI_DIR" ]; then
   echo "error: The widget extension could not build ExpoModulesJSI because react-native, or expo-modules-jsi through expo and expo-modules-core, could not be resolved from $PROJECT_ROOT. Install the app's dependencies, then build again." >&2
   exit 1
 fi
+if [ ! -f "$JSI_DIR/apple/scripts/build-swiftpm-app-phase.sh" ]; then
+  echo "error: The widget extension could not build ExpoModulesJSI because $JSI_DIR has no apple/scripts/build-swiftpm-app-phase.sh. The installed expo-modules-jsi is older than this version of expo-widgets. Reinstall the app's dependencies so that the Expo package versions match, then build again." >&2
+  exit 1
+fi
 export RN_DIR
 
 # The app embeds and signs ExpoModulesJSI. The extension only links it, so the copy that the
