@@ -36,6 +36,28 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   audioMixingMode: AudioMixingMode;
 
   /**
+   * Determines whether the player manages the audio session on iOS and audio focus on Android.
+   *
+   * When `false`, the player does not activate or configure the audio session, and it does not request audio focus.
+   * The `audioMixingMode` property has no effect. Use the `expo-media-session` API to control the session:
+   * `setAudioPolicyAsync` sets the mixing behavior, and `holdSession` and `releaseSession` control when the session is active.
+   *
+   * > **Note**: When you set this property to `false` during playback, the player releases the session.
+   * > `expo-media-session` then deactivates the session, or releases audio focus on Android, unless the app holds
+   * > the session with `holdSession` or another player uses it. On iOS, a session that mixes with other apps stays active.
+   *
+   * Set the same value on all players. A player that manages the audio session can change the session that the app set.
+   *
+   * The player logs a warning when one of its properties cannot work with the session that the app set.
+   * For example, on iOS the Now Playing controls do not show for a session that mixes with other apps.
+   *
+   * @default true
+   * @platform android
+   * @platform ios
+   */
+  manageAudioSession: boolean;
+
+  /**
    * Boolean value whether the player is currently muted.
    * Setting this property to `true`/`false` will mute/unmute the player.
    * @default false
@@ -584,6 +606,8 @@ export type ContentType = 'auto' | 'progressive' | 'hls' | 'dash' | 'smoothStrea
  * - `doNotMix`: The player will pause playback in other apps, even when it's muted.
  *
  * > On iOS, the Now Playing notification is dependent on the audio mode. If the audio mode is different from `doNotMix` or `auto` this feature will not work.
+ *
+ * > The audio mode has no effect when the `manageAudioSession` property of the player is `false`.
  */
 export type AudioMixingMode = 'mixWithOthers' | 'duckOthers' | 'auto' | 'doNotMix';
 

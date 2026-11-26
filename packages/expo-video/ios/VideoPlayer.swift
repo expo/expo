@@ -95,6 +95,12 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
   }
 
+  var manageAudioSession = true {
+    didSet {
+      mediaSession?.update { $0.manageAudioSession = manageAudioSession }
+    }
+  }
+
   // TODO: @behenate - Once the Player instance is available in OnStartObserving we can automatically start/stop the interval.
   var timeUpdateEventInterval: Double = 0 {
     didSet {

@@ -52,6 +52,7 @@ export class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   loop: boolean = false;
   allowsExternalPlayback: boolean = true;
   audioMixingMode: AudioMixingMode = 'auto';
+  manageAudioSession: boolean = true;
   currentTime: number = 0;
   currentLiveTimestamp: number | null = null;
   currentOffsetFromLive: number | null = null;

@@ -19,6 +19,7 @@ import expo.modules.mediasession.SessionRequirements
 import expo.modules.mediasession.SessionUse
 import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.listeners.VideoPlayerListener
+import expo.modules.video.managers.VideoManager
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.AudioTrack
 import expo.modules.video.records.SubtitleTrack
@@ -57,6 +58,7 @@ internal class VideoMediaSessionClient(
   private var claim: NowPlayingClaim? = null
   private var info = VideoNowPlaying.info()
   private var published: Pair<NowPlayingInfo, Boolean>? = null
+  private var reportedConflicts = emptyList<VideoSessionConflict>()
 
   @Volatile
   private var isClosed = false
@@ -72,13 +74,36 @@ internal class VideoMediaSessionClient(
     registration = manager.addObserver(this)
   }
 
-  fun update(change: (VideoSessionState) -> VideoSessionState) = synchronized(lock) {
-    if (isClosed) {
-      return@synchronized
+  fun update(change: (VideoSessionState) -> VideoSessionState) = update(newInfo = null, change)
+
+  private fun update(newInfo: NowPlayingInfo?, change: (VideoSessionState) -> VideoSessionState) {
+    val warnings = synchronized(lock) {
+      if (isClosed) {
+        return
+      }
+      newInfo?.let {
+        info = it
+      }
+      state = change(state)
+      isPlaying = state.isPlaying
+      reconcile()
+      newWarnings()
     }
-    state = change(state)
-    isPlaying = state.isPlaying
-    reconcile()
+    warnings.forEach {
+      appContext.get()?.jsLogger?.warn(it)
+    }
+  }
+
+  // Call this while `lock` is held. A call after `close()` would add the released player to `VideoManager` again.
+  private fun newWarnings(): List<String> {
+    val conflicts = sessionConflicts(state)
+    val warnings = (conflicts - reportedConflicts.toSet()).map { it.message }.toMutableList()
+    reportedConflicts = conflicts
+
+    if (VideoManager.updateSessionManagement(this, state)) {
+      warnings.add(SESSION_MANAGEMENT_MIX_WARNING)
+    }
+    return warnings
   }
 
   override fun close() {
@@ -87,6 +112,7 @@ internal class VideoMediaSessionClient(
         return
       }
       isClosed = true
+      VideoManager.removeSessionManagement(this)
       withdrawClaim()
       endUse()
     }
@@ -135,15 +161,15 @@ internal class VideoMediaSessionClient(
     claim = null
   }
 
-  private fun setInfo(source: VideoSource?, isLive: Boolean, change: (VideoSessionState) -> VideoSessionState = { it }) = synchronized(lock) {
+  private fun setInfo(source: VideoSource?, isLive: Boolean, change: (VideoSessionState) -> VideoSessionState = { it }) {
     val metadata = source?.metadata
-    info = VideoNowPlaying.info(
+    val newInfo = VideoNowPlaying.info(
       title = metadata?.title,
       artist = metadata?.artist,
       artworkUrl = metadata?.artwork?.toString(),
       isLive = isLive
     )
-    update(change)
+    update(newInfo, change)
   }
 
   private fun beginUse(requirements: SessionRequirements) {

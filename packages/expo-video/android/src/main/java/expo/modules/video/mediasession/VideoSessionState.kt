@@ -14,6 +14,7 @@ internal data class VideoSessionState(
   val volume: Float = 1f,
   val audioMixingMode: AudioMixingMode = AudioMixingMode.AUTO,
   val showNowPlayingNotification: Boolean = false,
+  val manageAudioSession: Boolean = true,
   val hasSource: Boolean = false,
   val isAttachedToView: Boolean = false,
   val isPausedForTakeover: Boolean = false
@@ -24,7 +25,7 @@ internal data class VideoSessionState(
     get() = isPlaying && !isMuted && volume > 0
 
   val wantsUse: Boolean
-    get() = isPlaying
+    get() = manageAudioSession && isPlaying
 
   // The rule differs from iOS on purpose. The notification shows as soon as the source is set,
   // but only for a player that a `VideoView` displays.

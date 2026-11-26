@@ -246,6 +246,13 @@ public final class VideoModule: Module {
         player.showNowPlayingNotification = showNowPlayingNotification
       }
 
+      Property("manageAudioSession") { player -> Bool in
+        return player.manageAudioSession
+      }
+      .set { (player, manageAudioSession: Bool) in
+        player.manageAudioSession = manageAudioSession
+      }
+
       Property("status") { player in
         return player.status.rawValue
       }

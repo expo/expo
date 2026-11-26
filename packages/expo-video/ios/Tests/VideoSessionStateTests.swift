@@ -341,6 +341,146 @@ struct VideoSessionStateTests {
     #expect(!state.isPausedForTakeover)
   }
 
+  // MARK: - Manual audio session
+
+  @Test
+  func `a player that does not manage the audio session wants no use`() {
+    let state = makeState {
+      $0.manageAudioSession = false
+      $0.setHasItem(true)
+      $0.setPlaying(true)
+    }
+
+    #expect(!state.wantsUse)
+    #expect(sessionUseAction(isUseLive: true, applied: state.requirements, state: state) == .end)
+  }
+
+  @Test
+  func `a player that does not manage the audio session keeps its Now Playing claim`() {
+    let state = makeState {
+      $0.manageAudioSession = false
+      $0.showNowPlayingNotification = true
+      $0.setHasItem(true)
+      $0.setPlaying(true)
+    }
+
+    #expect(state.wantsNowPlaying)
+    #expect(!state.asksOtherPlayersNotToMix)
+  }
+
+  @Test
+  func `Now Playing conflicts with a manual session that mixes`() {
+    let state = makeState {
+      $0.manageAudioSession = false
+      $0.showNowPlayingNotification = true
+      $0.setHasItem(true)
+      $0.setPlaying(true)
+    }
+
+    #expect(sessionConflicts(state: state, policyMode: .mixWithOthers) == [.nowPlayingWithMixingSession])
+    #expect(sessionConflicts(state: state, policyMode: .duckOthers) == [.nowPlayingWithMixingSession])
+    #expect(sessionConflicts(state: state, policyMode: .doNotMix).isEmpty)
+    #expect(sessionConflicts(state: state, policyMode: .doNotMixPersistent).isEmpty)
+  }
+
+  @Test
+  func `an audio mixing mode conflicts with a manual session`() {
+    let state = makeState {
+      $0.manageAudioSession = false
+      $0.audioMixingMode = .doNotMix
+    }
+
+    #expect(sessionConflicts(state: state, policyMode: .doNotMix) == [.audioMixingModeIgnored])
+  }
+
+  @Test
+  func `a player that manages the audio session has no conflicts`() {
+    let state = makeState {
+      $0.audioMixingMode = .mixWithOthers
+      $0.showNowPlayingNotification = true
+      $0.setHasItem(true)
+      $0.setPlaying(true)
+    }
+
+    #expect(sessionConflicts(state: state, policyMode: .mixWithOthers).isEmpty)
+  }
+
+  @Test
+  func `reports one time when a manual player and a managed player are in use together`() {
+    var mix = SessionManagementMix<Int>()
+    let manual = makeState { $0.manageAudioSession = false }
+    let managedInUse = makeState {
+      $0.setHasItem(true)
+      $0.setPlaying(true)
+    }
+
+    let reports = [
+      mix.shouldWarn(afterUpdating: 1, to: manual),
+      mix.shouldWarn(afterUpdating: 2, to: VideoSessionState()),
+      mix.shouldWarn(afterUpdating: 2, to: managedInUse),
+      mix.shouldWarn(afterUpdating: 2, to: managedInUse)
+    ]
+
+    #expect(reports == [false, false, true, false])
+  }
+
+  @Test
+  func `does not report again when the managed player pauses and plays`() {
+    var mix = SessionManagementMix<Int>()
+    let managedInUse = makeState {
+      $0.setHasItem(true)
+      $0.setPlaying(true)
+    }
+    let managedPaused = makeState {
+      $0.setHasItem(true)
+    }
+    let reports = [
+      mix.shouldWarn(afterUpdating: 1, to: makeState { $0.manageAudioSession = false }),
+      mix.shouldWarn(afterUpdating: 2, to: managedInUse),
+      mix.shouldWarn(afterUpdating: 2, to: managedPaused),
+      mix.shouldWarn(afterUpdating: 2, to: managedInUse)
+    ]
+
+    #expect(reports == [false, true, false, false])
+  }
+
+  @Test
+  func `reports again after all the manual players are released`() {
+    var mix = SessionManagementMix<Int>()
+    let manual = makeState { $0.manageAudioSession = false }
+    let managedInUse = makeState {
+      $0.setHasItem(true)
+      $0.setPlaying(true)
+    }
+    let firstReports = [
+      mix.shouldWarn(afterUpdating: 1, to: manual),
+      mix.shouldWarn(afterUpdating: 2, to: managedInUse)
+    ]
+    mix.remove(1)
+    let reportAfterRelease = mix.shouldWarn(afterUpdating: 3, to: manual)
+
+    #expect(firstReports == [false, true])
+    #expect(reportAfterRelease)
+  }
+
+  @Test
+  func `a managed player that wants Now Playing counts as in use`() {
+    var mix = SessionManagementMix<Int>()
+    let managedOwner = makeState {
+      $0.showNowPlayingNotification = true
+      $0.setHasItem(true)
+      $0.setPlaying(true)
+      $0.setPlaying(false)
+    }
+
+    let reports = [
+      mix.shouldWarn(afterUpdating: 1, to: managedOwner),
+      mix.shouldWarn(afterUpdating: 2, to: makeState { $0.manageAudioSession = false })
+    ]
+
+    #expect(reports == [false, true])
+  }
+
   // MARK: - Failure description
 
   @Test

@@ -220,6 +220,14 @@ class VideoModule : Module() {
           ref.showNowPlayingNotification = showNotification
         }
 
+      Property("manageAudioSession")
+        .get { ref: VideoPlayer ->
+          ref.manageAudioSession
+        }
+        .set { ref: VideoPlayer, manageAudioSession: Boolean ->
+          ref.manageAudioSession = manageAudioSession
+        }
+
       Property("status")
         .get { ref: VideoPlayer ->
           ref.status
