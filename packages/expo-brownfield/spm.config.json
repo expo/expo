@@ -17,6 +17,7 @@
         {
           "type": "swift",
           "name": "ExpoBrownfield",
+          "path": "ios/ExpoBrownfield",
           "dependencies": [
             "Hermes",
             "React",
