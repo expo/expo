@@ -41,6 +41,17 @@ describe(stripBaseUrl, () => {
       ['///one/', '/one', '/'],
       ['one/', '/one', 'one/'],
       ['/a/b', '/one', '/a/b'],
+      // Base URL is matched as a whole path segment, not as a string prefix
+      ['/menu', '/m', '/menu'],
+      ['/m/menu', '/m', '/menu'],
+      ['/m', '/m', ''],
+      ['/m?foo=bar', '/m', '?foo=bar'],
+      ['/m#hash', '/m', '#hash'],
+      ['/one/twothree', '/one/two', '/one/twothree'],
+      // Trailing slashes in the base URL are ignored
+      ['/one/two', '/one/', '/two'],
+      ['/onetwo', '/one/', '/onetwo'],
+      ['/one', '/', '/one'],
     ] as const
   ).forEach(([path, baseUrl, result]) => {
     it(`strips baseUrl "${path}"`, () => {
@@ -103,6 +114,31 @@ describe('baseUrl', () => {
     });
     expect(getPathFromState(getStateFromPath<object>(path, config)!, config)).toBe('/expo/bar');
   });
+
+  it.each(['/menu', '/m/menu'])(
+    'does not strip baseUrl that is only a string prefix of the first segment: %s',
+    (path) => {
+      process.env.EXPO_BASE_URL = '/m';
+      const config = getMockConfig(['_layout.tsx', 'menu.tsx', 'index.tsx']);
+
+      expect(getStateFromPath<object>(path, config)).toEqual({
+        routes: [
+          {
+            name: '__root',
+            state: {
+              routes: [
+                {
+                  name: 'menu',
+                  path: '/menu',
+                },
+              ],
+            },
+          },
+        ],
+      });
+      expect(getPathFromState(getStateFromPath<object>(path, config)!, config)).toBe('/m/menu');
+    }
+  );
 });
 
 describe(getUrlWithReactNavigationConcessions, () => {
