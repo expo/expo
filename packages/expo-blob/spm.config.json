@@ -11,7 +11,7 @@
         "Hermes",
         "expo-modules-core/ExpoModulesCore"
       ],
-      "swiftLanguageVersions": ["5"],
+      "swiftLanguageVersions": ["6"],
       "targets": [
         {
           "type": "swift",

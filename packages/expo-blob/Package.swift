@@ -25,5 +25,5 @@ let package = Package(
       exclude: ["ExpoBlob.podspec", "Tests", "Benchmarks"]
     )
   ],
-  swiftLanguageModes: [.v5]
+  swiftLanguageModes: [.v6]
 )
