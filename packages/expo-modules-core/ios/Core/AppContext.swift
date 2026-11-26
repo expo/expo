@@ -314,17 +314,32 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    */
   public lazy var constants: EXConstantsInterface? = ConstantsProvider.shared
 
+  // Created on first access, like a `lazy var`, but under a lock: concurrent functions can read it on several threads at once.
+  private let fileSystemStorage = Mutex<FileSystemManager?>(nil)
+
   /**
    Provides access to the file system utilities. Can be overridden if the app should use different directories or file permissions.
    For instance, Expo Go uses sandboxed environment per project where the cache and document directories must be scoped.
    It's an optional type for historical reasons, for now let's keep it like this for backwards compatibility.
    */
-  public lazy var fileSystem: FileSystemManager? = FileSystemManager(appGroupSharedDirectories: self.config.appGroupSharedDirectories)
+  public var fileSystem: FileSystemManager? {
+    get {
+      fileSystemStorage.withLock { stored in
+        if let stored {
+          return stored
+        }
+        let fileSystem = FileSystemManager(appGroupSharedDirectories: config.appGroupSharedDirectories)
+        stored = fileSystem
+        return fileSystem
+      }
+    }
+    set { fileSystemStorage.withLock { $0 = newValue } }
+  }
 
   /**
    Provides access to the permissions manager.
    */
-  public lazy var permissions: EXPermissionsService? = EXPermissionsService()
+  public var permissions: EXPermissionsService? = EXPermissionsService()
 
   /**
    Provides access to the image loader from legacy module registry.
