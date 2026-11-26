@@ -24,7 +24,6 @@
         {
           "type": "swift",
           "name": "ExpoUI",
-          "path": "ios/ExpoUI",
           "dependencies": [
             "Hermes",
             "React",

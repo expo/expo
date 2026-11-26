@@ -12,7 +12,6 @@
         {
           "type": "objc",
           "name": "EXStructuredHeaders",
-          "path": "ios",
           "dependencies": [],
           "linkedFrameworks": [
             "Foundation",

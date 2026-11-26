@@ -16,7 +16,6 @@
         {
           "type": "swift",
           "name": "ExpoSMS",
-          "path": "ios/ExpoSMS",
           "dependencies": [
             "Hermes",
             "React",
