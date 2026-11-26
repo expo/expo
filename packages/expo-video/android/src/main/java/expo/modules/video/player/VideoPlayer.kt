@@ -85,12 +85,12 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       playerBuilderOptions?.seekForwardIncrement?.let {
         setSeekForwardIncrementMs((it).toLong(DurationUnit.MILLISECONDS).coerceIn(1, 999_000))
       }
-    }.build()
-    .apply {
+      // Set on the builder: the player is constructed on the JS thread, and the built
+      // ExoPlayer rejects setter calls from any thread other than its application looper.
       playerBuilderOptions?.videoChangeFrameRateStrategy?.let {
-        videoChangeFrameRateStrategy = it.toMedia3Strategy()
+        setVideoChangeFrameRateStrategy(it.toMedia3Strategy())
       }
-    }
+    }.build()
 
   internal val firstFrameEventGenerator: FirstFrameEventGenerator
   val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
