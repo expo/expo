@@ -233,6 +233,40 @@ describe(getConfig, () => {
         'withFailure',
       ]);
     });
+    describe('symbol values in plugin options', () => {
+      const projectRoot = '/symbol-plugin-options/';
+      beforeEach(() => {
+        vol.fromJSON(
+          {
+            'app.config.js': `module.exports = {
+              plugins: [[config => config, { nested: Symbol('example') }]]
+            };`,
+            'package.json': '{}',
+          },
+          projectRoot
+        );
+      });
+
+      it.each([{ skipPlugins: true }, { pluginMode: 'skip' }] as const)(
+        'omits plugins with %j',
+        (options) => {
+          const { exp } = getConfig(projectRoot, { ...options, skipSDKVersionRequirement: true });
+          expect(exp.plugins).toBeUndefined();
+        }
+      );
+
+      it.each(['inspect', 'apply'] as const)('rejects the symbol in %s mode', (pluginMode) => {
+        expect(() =>
+          getConfig(projectRoot, { pluginMode, skipSDKVersionRequirement: true })
+        ).toThrow(
+          expect.objectContaining({
+            name: 'ConfigError',
+            code: 'INVALID_CONFIG',
+            message: expect.stringContaining('Symbol(example)'),
+          })
+        );
+      });
+    });
     it('rejects a non-array plugin declaration during inspection', () => {
       vol.fromJSON(
         {

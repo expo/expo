@@ -57,7 +57,10 @@ function serializeAndEvaluatePlugin(val: any): any {
     return output;
   }
   // symbol
-  throw new ConfigError(`Expo config doesn't support \`Symbols\`: ${val}`, 'INVALID_CONFIG');
+  throw new ConfigError(
+    `Expo config doesn't support \`Symbols\`: ${String(val)}`,
+    'INVALID_CONFIG'
+  );
 }
 
 export function serializeAfterStaticPlugins(val: any): any {
