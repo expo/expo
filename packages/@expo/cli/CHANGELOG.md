@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix dev-server calling `/_expo/debugger` against the external `REACT_NATIVE_PACKAGER_HOSTNAME` or `EXPO_PACKAGER_PROXY_URL` host instead of its local socket ([#54163](https://github.com/expo/expo/pull/54163) by [@harpreetkbadhan](https://github.com/harpreetkbadhan))
+- Prevent false fatal errors when loading split chunks that have not been preloaded. ([#54284](https://github.com/expo/expo/pull/54284) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

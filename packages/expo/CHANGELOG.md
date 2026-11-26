@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent false fatal errors when loading split chunks that have not been preloaded. ([#54284](https://github.com/expo/expo/pull/54284) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 57.0.34 — 2026-11-23
