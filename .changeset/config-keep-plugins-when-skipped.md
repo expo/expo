@@ -1,5 +1,5 @@
 ---
-'@expo/config': patch
+'@expo/config': minor
 ---
 
-Keep the serialized `plugins` array in `getConfig` when `skipPlugins` is set, so callers can read which plugins a dynamic config declares without running them.
+Add a `pluginMode: 'inspect'` option to `getConfig` to read serialized plugin declarations without resolving or running the plugins.

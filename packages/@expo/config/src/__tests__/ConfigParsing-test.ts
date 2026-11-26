@@ -187,7 +187,7 @@ describe(getConfig, () => {
         skipSDKVersionRequirement: true,
         skipPlugins: true,
       });
-      expect(exp.plugins).toEqual(['__missing-plugin']);
+      expect(exp.plugins).toBeUndefined();
     });
     it(`skips JS plugin parsing`, () => {
       vol.fromJSON(
@@ -208,7 +208,42 @@ describe(getConfig, () => {
         skipPlugins: true,
       });
       expect(exp.name).toBe('cool+export-json_app.config');
-      expect(exp.plugins).toEqual(['withAnonymous']);
+      expect(exp.plugins).toBeUndefined();
+    });
+    it('inspects dynamic plugin declarations without loading or applying them', () => {
+      vol.fromJSON(
+        {
+          'app.config.js': `module.exports = () => ({
+            plugins: [
+              ['__missing-plugin', { nested: { root: 'src/routes' } }],
+              function withFailure() { throw new Error('plugin ran'); }
+            ]
+          });`,
+          'package.json': '{}',
+        },
+        '/inspect-plugins/'
+      );
+      const { exp } = getConfig('/inspect-plugins/', {
+        skipSDKVersionRequirement: true,
+        isPublicConfig: true,
+        pluginMode: 'inspect',
+      });
+      expect(exp.plugins).toEqual([
+        ['__missing-plugin', { nested: { root: 'src/routes' } }],
+        'withFailure',
+      ]);
+    });
+    it('rejects a non-array plugin declaration during inspection', () => {
+      vol.fromJSON(
+        {
+          'app.config.js': "module.exports = { plugins() { throw new Error('plugin ran'); } };",
+          'package.json': '{}',
+        },
+        '/invalid-plugins/'
+      );
+      expect(() =>
+        getConfig('/invalid-plugins/', { pluginMode: 'inspect', skipSDKVersionRequirement: true })
+      ).toThrow('Expected the plugins field to be an array');
     });
     it(`applies JS plugins`, () => {
       vol.fromJSON(

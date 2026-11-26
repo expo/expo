@@ -179,6 +179,11 @@ export type GetConfigOptions = {
    * Dangerously skip resolving plugins.
    */
   skipPlugins?: boolean;
+  /**
+   * Apply plugins (default), skip them, or inspect the serialized declarations without
+   * resolving or running the plugins. Takes precedence over `skipPlugins`.
+   */
+  pluginMode?: 'apply' | 'skip' | 'inspect';
   strict?: boolean;
 };
 

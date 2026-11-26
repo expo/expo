@@ -178,7 +178,7 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
     // Apply static json plugins, should be done after _internal
     configWithDefaultValues.exp = withConfigPlugins(
       configWithDefaultValues.exp,
-      !!options.skipPlugins
+      options.pluginMode ?? (options.skipPlugins ? 'skip' : 'apply')
     );
 
     if (!options.isModdedConfig) {
