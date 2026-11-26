@@ -16,6 +16,7 @@
         {
           "type": "swift",
           "name": "ExpoMediaSession",
+          "path": "ios/ExpoMediaSession",
           "dependencies": [
             "Hermes",
             "React",
