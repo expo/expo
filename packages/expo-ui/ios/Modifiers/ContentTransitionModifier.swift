@@ -22,7 +22,7 @@ internal enum ReplaceSymbolEffectDirection: String, Enumerable {
   case offUp
 }
 
-internal struct ContentTransitionSymbolEffectConfig: Record {
+internal struct ContentTransitionSymbolEffectConfig: UIRecord {
   @Field var effect: ContentTransitionSymbolEffectKind = .automatic
   @Field var direction: ReplaceSymbolEffectDirection?
   @Field var scope: SymbolEffectScope?
