@@ -8,16 +8,18 @@ import androidx.media3.session.SessionResult
 import com.google.common.util.concurrent.ListenableFuture
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
+import expo.modules.video.player.VideoPlayer
+import java.lang.ref.WeakReference
 
 @OptIn(UnstableApi::class)
-class VideoMediaSessionCallback : MediaSession.Callback {
+class VideoMediaSessionCallback(
+  private val videoPlayer: WeakReference<VideoPlayer>
+) : MediaSession.Callback {
   override fun onConnect(
     session: MediaSession,
     controller: MediaSession.ControllerInfo
   ): MediaSession.ConnectionResult {
     try {
-      // TODO @behenate: For now we're only allowing seek forward and back by 10 seconds and going to the
-      //  beginning of the video. In the future we should add more customization options for the users.
       return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
         .setAvailablePlayerCommands(
           MediaSession.ConnectionResult.DEFAULT_PLAYER_COMMANDS.buildUpon()
@@ -29,6 +31,7 @@ class VideoMediaSessionCallback : MediaSession.Callback {
           MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.buildUpon()
             .add(SessionCommand(ExpoVideoPlaybackService.SEEK_BACKWARD_COMMAND, Bundle.EMPTY))
             .add(SessionCommand(ExpoVideoPlaybackService.SEEK_FORWARD_COMMAND, Bundle.EMPTY))
+            .add(SessionCommand(ExpoVideoPlaybackService.MEDIA_SESSION_CUSTOM_COMMAND, Bundle.EMPTY))
             .build()
         )
         .build()
@@ -41,6 +44,14 @@ class VideoMediaSessionCallback : MediaSession.Callback {
     when (customCommand.customAction) {
       ExpoVideoPlaybackService.SEEK_FORWARD_COMMAND -> session.player.seekTo(session.player.currentPosition + ExpoVideoPlaybackService.SEEK_INTERVAL_MS)
       ExpoVideoPlaybackService.SEEK_BACKWARD_COMMAND -> session.player.seekTo(session.player.currentPosition - ExpoVideoPlaybackService.SEEK_INTERVAL_MS)
+      ExpoVideoPlaybackService.MEDIA_SESSION_CUSTOM_COMMAND -> {
+        val player = videoPlayer.get()
+        val action = customCommand.customExtras.getString("action") ?: args.getString("action")
+
+        if (player != null && action != null && player.nowPlayingActions?.any { it.action == action } == true) {
+          player.onNowPlayingAction(action)
+        }
+      }
     }
     return super.onCustomCommand(session, controller, customCommand, args)
   }
