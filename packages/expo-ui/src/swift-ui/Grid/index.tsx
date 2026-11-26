@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { requireNativeView, requireOptionalNative } from 'expo';
 import React from 'react';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -37,10 +37,10 @@ export interface GridProps extends CommonViewModifierProps {
 
 const GridNativeView: React.ComponentType<GridProps> = requireNativeView('ExpoUI', 'GridView');
 
-const GridRowNativeView: React.ComponentType<{ children: React.ReactNode }> = requireNativeView(
-  'ExpoUI',
-  'GridRowView'
-);
+// Only iOS has native views in `expo.packages`. Android also loads this file
+// (through `@expo/ui/swift-ui`), and there `requireNative` would throw.
+const GridRowNativeView: React.ComponentType<{ children: React.ReactNode }> =
+  requireOptionalNative('@expo/ui')?.GridRowView;
 
 const GridRow: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <GridRowNativeView>{children}</GridRowNativeView>;

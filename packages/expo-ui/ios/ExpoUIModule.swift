@@ -128,8 +128,6 @@ public final class ExpoUIModule: Module {
     // MARK: - Views that don't support common view modifiers
 
     View(SlotView.self)
-    View(NamespaceView.self)
-    View(GridRowView.self)
 
     // MARK: - Expo UI Views
 

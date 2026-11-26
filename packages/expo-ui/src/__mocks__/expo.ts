@@ -15,11 +15,26 @@ export const requireNativeModule = jest.fn(() => ({
   getMaterialColors: jest.fn(() => ({})),
 }));
 
-export const requireNativeView = jest.fn((moduleName: string, viewName: string) => {
+function createMockNativeView(viewName: string) {
   return function MockNativeView(props: Record<string, any>) {
     renderedNativeViews(viewName, props);
     // Swallow string children — the RN mock View can't render raw text.
     const children = typeof props.children === 'string' ? undefined : props.children;
     return createElement(View, { ...props, children });
   };
+}
+
+export const requireNativeView = jest.fn((moduleName: string, viewName: string) => {
+  return createMockNativeView(viewName);
 });
+
+// The package object of `@expo/ui` (`expo.packages['@expo/ui']`) has a mock view for each view name.
+export const requireOptionalNative = jest.fn(
+  () =>
+    new Proxy(
+      {},
+      {
+        get: (_target, name) => (typeof name === 'string' ? createMockNativeView(name) : undefined),
+      }
+    )
+);

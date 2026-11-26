@@ -398,6 +398,20 @@ globalThis.expo.modules.ExpoUI = {
   },
 };
 
+// `@expo/ui` reads its views of the Expo Modules API 2.0 from its package object, which only iOS has.
+// Like native, the mock creates the component of a view with `expo.__createNativeViewComponent`.
+globalThis.expo.packages['@expo/ui'] = new Proxy(
+  {},
+  {
+    get(_target, viewName) {
+      if (typeof viewName !== 'string') {
+        return undefined;
+      }
+      return globalThis.expo.__createNativeViewComponent(`expo_ui_${viewName}`, viewName, {}, {});
+    },
+  }
+);
+
 jest.doMock('expo/src/winter/FormData', () => ({
   // The `installFormDataPatch` function is for native runtime only,
   // so we don't need to patch `FormData` for the jest runtime.
